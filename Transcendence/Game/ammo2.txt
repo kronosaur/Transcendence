@@ -1,0 +1,35 @@
+TransData v1.0
+Copyright (c) 2001-2006 by Neurohack, Inc. All Rights Reserved.
+
+Loading...done.
+level	category	frequency	shortName	cost	mass	fireDelay	averageDamage
+2	Missile	C	KM100 Longbow missile	15	100	15	14000
+2	Missile	UC	SmartCannon round	2	10	8	7000
+3	Missile	C	400 Hexagene MAG	10	25	10	14000
+3	Missile	C	fragmentation missile	30	100	15	44000
+4	Missile	C	600 Hexagene MAG	15	30	10	21000
+4	Missile	C	Akan 30 cannon shell cartridge	2	20	5	19500
+4	Missile	C	Dragonfly missile cartridge	25	50	15	42000
+4	Missile	C	KM500 Stiletto missile	150	100	15	14000
+4	Missile	R	XM300 Reaper missile	250	100	15	17500
+5	Missile	C	800F Hexagene MAG	25	30	10	44000
+5	Missile	C	Nandao bolt cartridge	3	25	8	30000
+5	Missile	C	White Strelka missile	20	25	3	10500
+6	Missile	C	Green Strelka missile	35	25	3	15000
+6	Missile	C	kiloton cannon shell	150	100	10	132000
+6	Missile	UC	ZG24 Cluster MAG	50	100	10	168000
+7	Missile	C	Ares micronuke	350	20	20	6500
+7	Missile	C	CRM100 Fatboy mine	250	100	13	247000
+7	Missile	UC	3K Siege MAG	250	100	10	70000
+7	Missile	UC	Red Strelka missile	50	30	3	19500
+7	Missile	UC	thermo cannon shell cartridge	50	100	5	26000
+7	Missile	UC	XM900 Lucifer missile	1000	100	15	39000
+8	Missile	C	Gotha-10 missile	100	50	8	26000
+8	Missile	UC	CRM500 Running Man mine	500	100	13	247000
+8	Missile	UC	high-flux MAG	250	100	10	52000
+9	Missile	C	Gotha-400 seeker	200	50	8	26000
+9	Missile	R	Ares Warhammer nuke	1000	300	20	13000
+9	Missile	R	Black Strelka missile	150	35	3	45500
+12	Missile	UC	Kytryn plasma pod	1500	300	20	351000
+13	Missile	R	Quantumsphere shell	1000	500	15	27000
+

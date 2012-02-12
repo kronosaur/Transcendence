@@ -1,0 +1,3312 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svGladiator;"
+			name="gladiator"
+			alignment="constructive chaos"
+			>
+		<Relationships>
+			<Relationship sovereign="&svPlayer;" disposition="enemy" mutual="true"/>
+			<Relationship sovereign="&svGladiator;" disposition="enemy"/>
+		</Relationships>
+	</Sovereign>
+
+	<!-- Battle Arena 
+
+	GLOBAL DATA
+
+	arenaRank:		Status of player in arena:
+						Nil						= Player has never fought a battle
+						'rookie					= The player fights in 'last ship flying' contests
+						'gladiator				= The player fights in one-on-one battles
+						'challenger				= The player can challenge Champion (The Slicer)
+						'champion				= The player has defeated The Slicer
+						'retired				= The player has retired
+						'coward					= The player has declined too many times (or escaped the arena)
+						'loser					= The player challenged The Slicer and lost
+						'washout				= The player never became popular
+
+	arenaRep:		A number representing the player's reputation with the crowd					
+					If geq 600, the player is a crowd favorite.
+
+	arenaSkill:		Player's rating. This is computed based on the skill of the ships defeated by
+					the player.
+
+	katamiStatus:	Status of Mr. Katami mission:
+						Nil						= Never met
+						'instructor				= Katami is instructing the player
+						'ransomNote				= Show ransom note to player
+						'morgentalHelp			= Morgental offers help
+						'kidnapped				= Katami is at the Black Market station
+						'betrayed				= Player ignores Katami
+						'rescued				= Katami has been rescued by the player
+						'instructionDone		= Katami has been rescued by the player
+						'returned				= Player dies against The Slicer
+						'dead					= Katami is dead
+
+	EXTRA DATA
+
+	Status:			Status of contest:
+						Nil						= No battle in progress
+						'inProgress				= Battle in progress
+						'destroyed				= Opponent destroyed
+						'playerLeft				= Player left arena
+						'playerKilled			= Player killed in arena
+						'waitingForMatchEnd		= Player was killed and melee is not done yet
+
+	OpponentCount:	Number of opponents left
+	Opponent{n}:	Opponent 0-max
+	Opponents:		Ordered list of all challenges
+
+	gladiatorList:	List of objID for all active (not yet killed) gladiators
+
+	meleeCount:		Number of melee rounds that the player has been in
+	rookiePoints:	Points accumulated for destroying ships in this melee
+	rookieScore:	Total points accumulated as a rookie
+
+	matchCount:		Number of gladiator matches that the player was in
+	opponentSkill:	Skill of current opponent
+	repGain:		Rep gained for current fight
+	prizeGain:		Prize money for current fight
+	opponentShots:	Number of shots fired by opponent in this fight
+	lowestShields:	Lowest level that player shields reached
+	lowestArmor:	Lowest level that player armor reached
+	missileRep:		Current rep gained by firing missiles
+	explosionRep:	Current rep gained by explosions
+	fightTime:		Increment by 1 every 10 ticks
+	opponentArmor:	Lowest level that opponent's armor reached so far
+	timeTo50:		The fightTime at which the opponent's armor was 50 or below
+	timeTo25:		The fightTime at which the opponent's armor was 25 or below
+	timeTo10:		The fightTime at which the opponent's armor was 10 or below
+	timeToShieldsDown: The fightTime at which the opponent's shields are first dropped
+
+	results:		A list of the skill level of the last 4 opponents fought by the player
+					(or 0 for opponents that won)
+
+	EXTRA DATA ON GLADIATOR SHIPS
+
+	arenaName:			Name of gladiator
+	arenaSkill:			Skill of gladiator
+	arenaPrizeBonus:	Bonus to prize
+	arenaRepBonus:		Bonus to reputation
+
+	-->
+
+	<StationType UNID="&stBattleArena;"
+			name=				"Battle Arena Maximus"
+			sovereign=			"&svCorporate;"
+			dockScreen=			"Main"
+			defaultBackgroundID="&rsBattleArenaBkgnd;"
+			dockingPorts=		"1"
+			canAttack=			"true"
+			multiHull=			"true"
+			immutable=			"true"
+
+			attributes=			"battleArena, friendly, human, majorStation, populated"
+			level=				"2"
+			>
+
+		<Image			imageID="&rsBattleArena;" imageX="0" imageY="2560" imageWidth="128" imageHeight="256"/>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList arenaRank katamiStatus)
+					(setq arenaRank (typGetGlobalData &stBattleArena; "arenaRank"))
+					
+					(if (and arenaRank (not (eq arenaRank 'rookie)))
+						(setq theList (list
+							(list 
+								(switch
+									(eq arenaRank 'gladiator) "Became a gladiator in the Arena"
+									(eq arenaRank 'challenger) "Earned the right to challenge The Slicer in the Arena"
+									(eq arenaRank 'champion) "Became Legendary Hero of the Arena"
+									(eq arenaRank 'loser) "Defeated by The Slicer in the Arena"
+									(eq arenaRank 'washout) "Disappointed Mr. Katami"
+									(cat "ERROR: Battle Arena rank: " arenaRank)
+									) 
+								Nil 
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
+					
+					(if (and katamiStatus 
+							(not (eq katamiStatus 'instructor))
+							(not (eq katamiStatus 'ransomNote))
+							(not (eq katamiStatus 'morgentalHelp))
+							(not (eq katamiStatus 'kidnapped))
+							)
+						(setq theList (append theList (list
+							(list
+								(switch
+									(eq katamiStatus 'betrayed) "Betrayed Mr. Katami"
+									(eq katamiStatus 'rescued) "Rescued Mr. Katami from the Black Market"
+									(eq katamiStatus 'instructionDone) "Rescued Mr. Katami from the Black Market"
+									(eq katamiStatus 'dead) "Failed to save Mr. Katami"
+									(cat "ERROR: Mr. Katami status: " katamiStatus)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnCreate>
+				(block (classList gladiatorList)
+					; Load the list of standard gladiator classes
+					(setq classList (typFind "s +battleArena; +gladiator"))
+
+					; Create for all the created gladiators
+					(setq gladiatorList Nil)
+
+					; Loop over all classes
+					(enum classList theClass
+						(for i 1 (random '(1 1 1 2 2 3))
+							(block (theShip)
+								(setq theShip (bamCreateGladiator gSource theClass))
+								(setq gladiatorList (append gladiatorList (objGetID theShip)))
+								)
+							)
+						)
+
+					; Remember the list of gladiators
+					(objSetData gSource "gladiatorList" (shuffle gladiatorList))
+					)
+			</OnCreate>
+
+			<OnFightCheck>
+				(if (eq (objGetData gSource "Status") 'inProgress)
+					(block (fightTime arenaRep shieldLevel armorLevel opponentArmor opponentShield)
+						; Increment time
+						(setq fightTime (objIncData gSource "fightTime"))
+
+						; Keep track of the player's shield and armor level
+						(setq shieldLevel (objGetShieldLevel gPlayerShip))
+						(setq armorLevel (subtract 100 (objGetVisibleDamage gPlayerShip)))
+
+						; And also the opponent's shield and armor
+						(setq opponentShield (objGetShieldLevel (objGetObjRefData gSource "Opponent1")))
+						(setq opponentArmor (subtract 100 (objGetVisibleDamage (objGetObjRefData gSource "Opponent1"))))
+
+						; Some announcements are timed
+						(switch
+							(eq fightTime 1)
+								(plyMessage gPlayer "The crowd cheers as the match starts!")
+
+							(and (eq fightTime 30)
+									(geq (objGetData gSource "lowestShields") 80)
+									(geq opponentArmor 90))
+								(plyMessage gPlayer "The match is off to a slow start")
+
+							(and (eq fightTime 90)
+									(geq (objGetData gSource "lowestShields") 80)
+									(geq opponentArmor 90))
+								(plyMessage gPlayer "The crowd is frustrated at the slow pace")
+
+							(and (geq fightTime 120) (eq (modulo fightTime 30) 0)
+									(geq (objGetData gSource "lowestShields") 80)
+									(geq opponentArmor 90))
+								(plyMessage gPlayer "The crowd is bored")
+							)
+
+						; Keep track of the lowest shield level reached (for the player's shields)
+						(if (ls shieldLevel (objGetData gSource "lowestShields"))
+							(block Nil
+								(objSetData gSource "lowestShields" shieldLevel)
+
+								; If shields are down to 0, the crowd loves it
+								(if (eq shieldLevel 0)
+									(block Nil
+										(if (not arenaRep) (setq arenaRep (objGetGlobalData gSource "arenaRep")))
+										(if (geq arenaRep 600)
+											(plyMessage gPlayer "%name% is in trouble!")
+											(plyMessage gPlayer "Finish %him%! Finish %him%!")
+											)
+										)
+									)
+								)
+							)
+
+						; Keep track of the lowest armor level reached (for the player's armor)
+						(if (ls armorLevel (objGetData gSource "lowestArmor"))
+							(block Nil
+								; The crowd reacts if armor gets too low, but in different
+								; ways depending on reputation
+								(if (leq armorLevel 50)
+									(block (oldArmorLevel)
+										(setq oldArmorLevel (objGetData gSource "lowestArmor"))
+										(if (not arenaRep) (setq arenaRep (objGetGlobalData gSource "arenaRep")))
+										(if (geq arenaRep 600)
+
+											; The player is popular
+											(switch
+												(and (leq armorLevel 10) (gr oldArmorLevel 10))
+													(plyMessage gPlayer 
+														"The crowd is silent&#x97;could this be the end?")
+
+												(and (leq armorLevel 25) (gr oldArmorLevel 25))
+													(plyMessage gPlayer "The crowd is tense")
+
+												(and (leq armorLevel 50) (gr oldArmorLevel 50))
+													(plyMessage gPlayer 
+														"The crowd supports %name%&#x97;%he%'s been through worse")
+												)
+
+											; The player is not
+											(switch
+												(and (leq armorLevel 10) (gr oldArmorLevel 10))
+													(plyMessage gPlayer 
+														"The crowd is wild&#x97;what an exciting match!")
+
+												(and (leq armorLevel 25) (gr oldArmorLevel 25))
+													(plyMessage gPlayer "The crowd roars!")
+
+												(and (leq armorLevel 50) (gr oldArmorLevel 50))
+													(plyMessage gPlayer 
+														"The crowd cheers&#x97;%name% looks doomed")
+												)
+											)
+										)
+									)
+
+								(objSetData gSource "lowestArmor" armorLevel)
+								)
+							)
+
+						; Track how fast shields go down
+						(if (and (eq opponentShield 0) (ls fightTime (objGetData gSource "timeToShieldsDown")))
+							(block Nil
+								(objSetData gSource "timeToShieldsDown" fightTime)
+
+								(switch
+									(leq fightTime 15)
+										(plyMessage gPlayer 
+											"%name% is unstoppable! The crowd cheers!")
+
+									(leq fightTime 30)
+										(plyMessage gPlayer 
+											"%name% is fighting hard! The crowd cheers!")
+									)
+								)
+							)
+
+						; Keep track of how fast the opponent's armor drops
+						(if (ls opponentArmor (objGetData gSource "opponentArmor"))
+							(block (oldArmorLevel)
+								(setq oldArmorLevel (objGetData gSource "opponentArmor"))
+
+								(switch
+									(and (leq opponentArmor 10) (gr oldArmorLevel 10))
+										(block Nil
+											(objSetData gSource "timeTo10" fightTime)
+											(if (leq fightTime 45)
+												(plyMessage gPlayer "Go, %name%!")
+												)
+											)
+
+									(and (leq opponentArmor 25) (gr oldArmorLevel 25))
+										(block Nil
+											(objSetData gSource "timeTo25" fightTime)
+											(if (leq fightTime 30)
+												(plyMessage gPlayer "The crowd roars!")
+												)
+											)
+
+									(and (leq opponentArmor 50) (gr oldArmorLevel 50))
+										(block Nil
+											(objSetData gSource "timeTo50" fightTime)
+											(if (leq fightTime 15)
+												(plyMessage gPlayer 
+													"%name% is deadly fast! The crowd cheers!")
+												)
+											)
+									)
+
+								(objSetData gSource "opponentArmor" opponentArmor)
+								)
+							)
+						)
+					)
+			</OnFightCheck>
+
+			<OnObjDestroyed>
+				(block (status arenaRank matchFinished)
+					(setq status (objGetData gSource "Status"))
+					(setq arenaRank (objGetGlobalData gSource "arenaRank"))
+
+					(switch
+						(not status)
+							Nil
+
+						(eq arenaRank 'rookie)
+							(block (shipsLeft)
+								(switch
+
+									; If the player was destroyed, set status
+									(eq aObjDestroyed gPlayerShip)
+										(block Nil
+											(if (eq status 'inProgress)
+												(setq status 'playerKilled)
+												)
+
+											(setq shipsLeft (objGetData gSource "OpponentCount"))
+											)
+
+									; Otherwise, decrement the opponent count
+									(block Nil
+										(if (eq aOrderGiver gPlayerShip)
+											(objIncData gSource "rookiePoints" 1)
+											)
+
+										; Decrement an enemy and compute how many fighting ships left
+										; (including the player)
+										(setq shipsLeft (objIncData gSource "OpponentCount" -1))
+										(if (eq status 'inProgress)
+											(setq shipsLeft (add shipsLeft 1))
+											)
+
+										; If the ship left a wreck, then trash the items because we
+										; don't want the player to get too much loot from these wrecks
+
+										(if aWreckObj
+											(block (theItems)
+												(setq theItems (objGetItems aWreckObj "dNU"))
+												(enum theItems theItem (objRemoveItem aWreckObj theItem))
+												(enum theItems theItem (objAddItem aWreckObj (itmSetDamaged theItem True)))
+												)
+											)
+										)
+									)
+
+								; If only one ship is left, then the match is over
+								(if (leq shipsLeft 1)
+									(block Nil
+										; Open arena doors
+										(bamDoorsOpen gSource)
+
+										; Player wins
+										(if (eq status 'inProgress)
+											(block Nil
+												(setq status 'destroyed)
+												(plyMessage gPlayer "Victory!")
+												)
+											)
+
+										(objIncData gSource "meleeCount" 1)
+										(objIncData gSource "rookieScore" (objGetData gSource "rookiePoints"))
+										(objSetData gSource "OpponentCount" Nil)
+										)
+									)
+								)
+
+						(eq arenaRank 'gladiator)
+							(block Nil
+								(switch
+									; If the player was destroyed, set status
+									(eq aObjDestroyed gPlayerShip)
+										(block Nil
+											(setq status 'playerKilled)
+											)
+
+									; Otherwise, the player won
+									(block (fightTime repGain)
+										(setq status 'destroyed)
+
+										; Adjust timers in case we miss the window
+										(setq fightTime (objGetData gSource "fightTime"))
+										(if (gr (objGetData gSource "timeTo50") fightTime) (objSetData gSource "timeTo50" fightTime))
+										(if (gr (objGetData gSource "timeTo25") fightTime) (objSetData gSource "timeTo25" fightTime))
+										(if (gr (objGetData gSource "timeTo10") fightTime) (objSetData gSource "timeTo10" fightTime))
+
+										; Set the reputation. Note that this overwrites "repGain"
+										(setq repGain (bamComputeReputation gSource))
+										(objSetData gSource "repGain" repGain)
+
+										(switch
+											(geq repGain 200)
+												(plyMessage gPlayer 
+													"The crowd erupts in cheers: %name%! %name%!")
+
+											(geq repGain 100)
+												(plyMessage gPlayer 
+													"The crowd cheers! What an exciting match!")
+
+											(geq repGain 50)
+												(plyMessage gPlayer "The crowd cheers!")
+
+											(geq repGain 1)
+												(plyMessage gPlayer "The crowd is pleased")
+
+											(plyMessage gPlayer "The crowd is bored by the match")
+											)
+
+										; Remove the ship from the gladiator list
+										(objSetData gSource "gladiatorList"
+											(filter (objGetData gSource "gladiatorList") theID (not (eq theID (objGetID aObjDestroyed))))
+											)
+										)
+									)
+
+								; Either way, the match is over
+								(objIncData gSource "matchCount" 1)
+								(bamDoorsOpen gSource)
+
+								; Unregister (if necessary)
+								(objUnregisterForSystemEvents gSource)
+								(sysCancelTimerEvent gSource "OnFightCheck")
+								)
+
+						(eq arenaRank 'challenger)
+							(block Nil
+								(switch
+									; If the player was destroyed
+									(eq aObjDestroyed gPlayerShip)
+										(block Nil
+											(setq status 'playerKilled)
+											(plyMessage gPlayer "The crowd boos in disappointment!")
+											)
+
+									; Otherwise, player kills The Slicer
+									(block Nil
+										(setq status 'destroyed)
+
+										(plyMessage gPlayer 
+											"The crowd erupts in cheers: %name%! %name%!")
+										)
+									)
+
+								; Either way, the match is over
+								(bamDoorsOpen gSource)
+
+								; Unregister (if necessary)
+								(objUnregisterForSystemEvents gSource)
+								(sysCancelTimerEvent gSource "OnFightCheck")
+								)
+						)
+
+					(objSetData gSource "Status" status)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(if (and (eq aDockTarget gSource) (not (eq aObjDocked gPlayerShip)))
+					(block (arenaRank)
+						(setq arenaRank (objGetGlobalData gSource "arenaRank"))
+
+						(switch
+							(eq arenaRank 'gladiator)
+								(block Nil
+									(objMoveTo aObjDocked gSource)
+									(shpCancelOrders aObjDocked)
+									(objSuspend aObjDocked)
+									)
+
+							(block Nil
+								(objMoveTo aObjDocked (sysVectorPolarOffset gSource 270 300))
+								(objUnregisterForEvents gSource aObjDocked)
+								(shpCancelOrders aObjDocked)
+								(shpOrderGate aObjDocked)
+								)
+							)
+						)
+					)
+			</OnObjDocked>
+
+			<OnObjJumped>
+				(if (eq aObj gPlayerShip)
+					(block Nil
+						; Open arena doors
+						(bamDoorsOpen gSource)
+
+						; Unregister
+						(objUnregisterForEvents gSource gPlayerShip)
+						(objUnregisterForSystemEvents gSource)
+						(sysCancelTimerEvent gSource "OnFightCheck")
+
+						; Send all the opponents away
+						(for i 0 25
+							(block (ship)
+								(setq ship (objGetObjRefData gSource (cat "Opponent" i)))
+								(if ship
+									(block Nil
+										(objMoveTo ship (sysVectorPolarOffset gSource 270 300))
+										(objUnregisterForEvents gSource ship)
+										(shpCancelOrders ship)
+										(shpOrderGate ship)
+										)
+									)
+								)
+							)
+
+						; Set status
+						(objSetData gSource "Status" 'playerLeft)
+						(objSetData gSource "OpponentCount" Nil)
+						)
+					)
+			</OnObjJumped>
+
+			<OnSystemWeaponFire>
+				(switch
+					; If the player fires a missile (or other expensive disposable) she gets a bonus
+					(eq aWeaponObj gPlayerShip)
+						(block (theWeapon theLevel)
+							(setq theWeapon (itmCreate aWeaponUNID 1))
+							(setq theLevel (itmGetLevel theWeapon))
+							(if (itmMatches theWeapon "m &gt;$10")
+								(objIncData gSource "missileRep" (multiply theLevel (subtract theLevel 1)))
+								)
+							)
+
+					; Count up the number of times that the opponent fires
+					(eq aWeaponObj (objGetObjRefData gSource "Opponent1"))
+						(objIncData gSource "opponentShots" 1)
+					)
+			</OnSystemWeaponFire>
+
+			<OnSystemExplosion>
+				; Each explosion is +50
+				(objIncData gSource "explosionRep" 50)
+			</OnSystemExplosion>
+		</Events>
+
+		<DockScreens>
+			<Main>
+
+				<InitialPane>
+					(block (status)
+						(setq status (objGetData gSource "Status"))
+						(setq arenaRank (objGetGlobalData gSource "arenaRank"))
+
+						(switch
+							(eq (objGetGlobalData gSource "katamiStatus") 'rescued)
+								"ChallengerRescued"
+
+							(not status)
+								"Default"
+
+							(eq status 'inProgress)
+								"StillFighting"
+
+							(eq status 'destroyed)
+								(switch
+									(eq arenaRank 'rookie)
+										"MeleeWinner"
+
+									(eq arenaRank 'gladiator)
+										"GladiatorWinner"
+
+									(eq arenaRank 'challenger)
+										"ChallengerWinner"
+
+									"Default"
+									)
+
+							(eq status 'playerKilled)
+								(switch
+									(eq arenaRank 'rookie)
+										"MeleeLoser"
+
+									(eq arenaRank 'gladiator)
+										"GladiatorLoser"
+
+									(eq arenaRank 'challenger)
+										"ChallengerLoser"
+
+									"Default"
+									)
+
+							(eq status 'waitingForMatchEnd)
+								"Default"
+
+							(eq status 'playerLeft)
+								"PlayerLeft"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default
+							desc=	"Welcome to Battle Arena Maximus! Prepare yourself for the greatest show in space! Watch as the best pilots in the Commonwealth compete in mortal combat. The action is so real you'll swear its faked! See your ticket agent for reservations. Enquire within to join the elite combatants.">
+
+						<Actions>
+						<!--
+							<Action name="Purchase tickets" default="1" key="P">
+							</Action>
+						-->
+
+							<Action name="Enter combat" key="E">
+								(block (arenaRank)
+									(setq arenaRank (objGetGlobalData gSource "arenaRank"))
+									(switch
+										(not arenaRank)
+											(scrShowPane gScreen "FirstFight")
+
+										(eq arenaRank 'rookie)
+											(switch
+												(objGetData gSource "OpponentCount")
+													(scrShowPane gScreen "MeleeBusy")
+
+												(leq (objGetData gSource "meleeCount") 5)
+													(scrShowPane gScreen "Melee")
+
+												(scrShowPane gScreen "NoMoreMelees")
+												)
+
+										(eq arenaRank 'gladiator)
+											(switch
+												(not (objGetGlobalData gSource "katamiStatus"))
+													(scrShowPane gScreen "KatamiIntro")
+
+												(and (geq (objGetData gSource "matchCount") 16)
+														(ls (objGetGlobalData gSource "arenaRep") 500))
+													(scrShowPane gScreen "NoMoreGladiators")
+
+												(scrShowScreen gScreen "ChooseOpponent")	
+												)
+
+										(eq arenaRank 'challenger)
+											(block (katamiStatus)
+												(setq katamiStatus (objGetGlobalData gSource "katamiStatus"))
+												(switch
+													(eq katamiStatus 'ransomNote)
+														(scrShowPane gScreen "ChallengerRansomNote")
+
+													(eq katamiStatus 'morgentalHelp)
+														(scrShowPane gScreen "ChallengerMorgentalHelp")
+
+													(eq katamiStatus 'kidnapped)
+														(scrShowPane gScreen "ChallengerKidnapped")
+
+													(eq katamiStatus 'betrayed)
+														(scrShowPane gScreen "Challenger")
+
+													(scrShowPane gScreen "Challenger")
+													)
+												)
+
+										(eq arenaRank 'champion)
+											(scrShowPane gScreen "Champion")
+
+										(eq arenaRank 'loser)
+											(scrShowPane gScreen "Loser")
+
+										(eq arenaRank 'washout)
+											(scrShowPane gScreen "Loser")
+										)
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<Chicken
+							desc=	"&quot;This kind of challenge is not for the weak and fearful. You are wise to decline.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</Chicken>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itHeliumAssembly; 120) (&itHelium3FuelRod; 120)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 6)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install device" key="D" >
+								(block Nil
+									(setq gTechLevel 6)
+									(setq gTechModifier Nil)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsInstallDevice;")
+									)
+							</Action>
+
+							<Action name="Remove device" key="V" >
+								(block Nil
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRemoveDevice;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="n">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+					<Melee>
+						<OnPaneInit>
+							(block (desc rookieScore)
+								(setq rookieScore (objGetData gSource "rookieScore"))
+
+								(switch
+									(eq (objGetData gSource "meleeCount") 5)
+										(setq desc (cat
+											"\"I don't know if you have the killer instincts to be a gladiator. I'll make you a deal: "
+											"if you can destroy " (if (eq rookieScore 19) "one more ship" (cat (subtract 20 rookieScore) " more ships"))
+											" in this next melee then I'll make you a gladiator. OK?\""
+											))
+
+									(eq rookieScore 0)
+										(setq desc "\"A rookie from the provinces, eh? No sense in wasting a gladiator's time on you. Prove yourself by surviving a melee and then we'll see. Deal?\"")
+
+									(leq rookieScore 15)
+										(setq desc "\"A little more practice won't hurt you. Survive a melee and we'll pay you 25 credits for every opponent you kill.\"")
+
+									(setq desc (cat "\"Your skills have improved greatly. Kill " 
+										(if (eq rookieScore 19) "one more ship" (cat (subtract 20 rookieScore) " more ships"))
+										" in a melee and you will become a gladiator!\""
+										))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Fight!" default="1" key="F">
+								(block (opponentCount melee1 melee2)
+									(setq opponentCount (random 10 20))
+
+									; Find the ship classes to fight
+									(setq melee1 (typFind "s +battleArena; +melee1"))
+									(setq melee2 (typFind "s +battleArena; +melee2"))
+
+									; Create a bunch of ships and order them to attack each other
+									(bamCreateMeleeOpponents gSource opponentCount 20
+										(lambda Nil
+											(if (geq (random 1 20) (objGetData gSource "rookieScore"))
+												(random melee1)
+												(random melee2)
+												)
+											)
+										)
+
+									; Reset points
+									(objSetData gSource "rookiePoints" 0)
+									(objSetData gSource "prizeGain" 25)
+
+									; Done
+									(bamDoorsClose gSource)
+									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "Status" 'inProgress)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+
+							<Action name="Back out" cancel="1" key="B">
+								(scrShowPane gScreen "Chicken")
+							</Action>
+						</Actions>
+					</Melee>
+
+					<MeleeWinner>
+						<OnPaneInit>
+							(block (desc prize rookieScore rookiePoints)
+								(setq rookiePoints (objGetData gSource "rookiePoints"))
+								(setq rookieScore (objGetData gSource "rookieScore"))
+								(setq prize (multiply rookiePoints (objGetData gSource "prizeGain")))
+
+								(switch
+									(geq rookieScore 20)
+										(setq desc (cat
+											"\"Congratulations, you've proven yourself in the Arena. You may now call yourself a gladiator.\""
+											))
+
+									(geq (objGetData gSource "meleeCount") 6)
+										(setq desc (cat
+											"\"Sorry, but you don't have the killer instinct to be a gladiator.\"
+											))
+
+									(eq rookiePoints 0)
+										(setq desc (cat
+											"\"You didn't even kill a single opponent! You'll never be a gladiator at that rate!\""
+											))
+
+									(eq rookiePoints 1)
+										(setq desc (cat
+											"\"Looks like you're better at running away than killing! "
+											"For killing a single opponent, we award you " prize " credits.\""
+											))
+
+									(and (leq rookiePoints 3) (leq rookieScore 8))
+										(setq desc (cat
+											"\"Hiding in a corner is not what the Arena is all about! "
+											"We've deposited " prize " credits in your account, but you'll have to do better "
+											"if you want to be a gladiator."
+											))
+
+									(leq rookiePoints 8)
+										(setq desc (cat 
+											"\"You fight well for a rookie! You survived the melee and destroyed "
+											rookiePoints " opponents. We've deposited " prize
+											" credits in your account.\""
+											))
+
+									(leq rookiePoints 11)
+										(setq desc (cat 
+											"\"Your skills are impressive! You will make a fine gladiator soon. "
+											"For killing " rookiePoints " opponents we have deposited " prize
+											" credits in your account.\""
+											))
+
+									(setq desc (cat 
+										"\"You are a killing machine! For slaughtering " rookiePoints
+										" opponents, we award you " prize " credits.\""
+										))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (rookiePoints rookieScore prize)
+									(setq rookiePoints (objGetData gSource "rookiePoints"))
+									(setq rookieScore (objGetData gSource "rookieScore"))
+									(setq prize (multiply rookiePoints (objGetData gSource "prizeGain")))
+
+									; Open arena doors
+									(bamDoorsOpen gSource)
+
+									; Unregister
+									(objUnregisterForEvents gSource gPlayerShip)
+
+									; Set status
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+
+									; Pay the player
+									(plyCredit gPlayer prize)
+
+									; If the player has defeated enough enemies, then he is a gladiator
+									(if (geq rookieScore 20)
+										(block Nil
+											(objSetGlobalData gSource "arenaRank" 'gladiator)
+											(objSetGlobalData gSource "arenaRep" 0)
+											(objSetGlobalData gSource "arenaSkill" 200)
+											(objSetData gSource "matchCount" 0)
+											(objSetData gSource "results" '(0 0 0 0))
+											(scrShowPane gScreen "Default")
+											)
+										(scrShowPane gScreen "Default")
+										)
+									)
+							</Action>
+
+						</Actions>
+
+					</MeleeWinner>
+
+					<MeleeLoser>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"Are you sure you want to be a gladiator? You don't seem very good in the Arena. "
+								"Oh well, at least your death will be a good appetizer for the crowd.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MeleeLoser>
+
+					<NoMoreMelees>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"I'm sorry, you don't have the killer spirit that we need in a gladiator. "
+								"I'm afraid you'll just have to watch the matches on the 3DV like everyone else.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</NoMoreMelees>
+
+					<MeleeBusy>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"We're still in the middle of a match! Come back later.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MeleeBusy>
+
+					<KatamiIntro>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"As you enter the gladiators' quarters, a short man wearing a simple suit approaches you:\n\n"
+								"\"My name is Mr. Katami and I am prepared to train you. I watched you in the arena. "
+								"You've got skills and a good ship, but that's not enough. You have to be smart, and I can teach you how.\n\n"
+								"\"Are you ready?\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "KatamiIntro2")
+							</Action>
+						</Actions>
+					</KatamiIntro>
+
+					<KatamiIntro2>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"First you must be smart in choosing your opponent. Don't just pick someone "
+								"you can kill easily. Pick a fight the crowd wants to see. Win the crowd and you "
+								"will be a Legendary Hero.\n\n"
+								"\"Are you ready?\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetGlobalData gSource "katamiStatus" 'instructor)
+									(scrShowScreen gScreen "ChooseOpponent")
+									)
+							</Action>
+						</Actions>
+					</KatamiIntro2>
+
+					<GladiatorFight>
+						<OnPaneInit>
+							(block (arenaSkill arenaRep playerArmor playerWeapon playerShield desc theOpponent opponentArmor opponentWeapon opponentShield skill baseSkill theFullList theBetterList proposeList)
+								(setq arenaSkill (objGetGlobalData gSource "arenaSkill"))
+								(setq arenaRep (objGetGlobalData gSource "arenaRep"))
+								(setq theOpponent (objGetObjRefData gSource "Opponent1"))
+
+								; Compute the player's best weapon and shields
+								(setq playerArmor (bamComputeArmorLevel gPlayerShip))
+								(setq playerShield (bamComputeShieldLevel gPlayerShip))
+								(setq playerWeapon (bamComputeWeaponLevel gPlayerShip))
+								
+								; Compensate if the player has strong armor and weak shields (or vice versa)
+								(setq playerShield (max playerShield (subtract playerArmor 1)))
+								(setq playerArmor (max playerArmor (subtract playerShield 1)))
+
+								; Compute the opponent's best weapon and shields
+								(setq opponentArmor (bamComputeArmorLevel theOpponent))
+								(setq opponentShield (bamComputeShieldLevel theOpponent))
+								(setq opponentWeapon (bamComputeWeaponLevel theOpponent))
+
+								; Get some facts about the opponent
+								(setq skill (objGetData theOpponent "arenaSkill"))
+								(setq baseSkill (objGetStaticData theOpponent "arenaSkillBase"))
+								(setq repBonus (objGetData theOpponent "arenaRepBonus"))
+
+								; Generate the list of all gladiators (to see if the player chose correctly)
+								(setq theFullList (bamComputeOpponentList gSource arenaSkill arenaRep))
+
+								; Pick a better alternative
+								(setq theBetterList (filter theFullList theObj 
+									(and (not (eq theObj theOpponent))
+										(leq (bamComputeShieldLevel theObj) playerWeapon)
+										(leq (bamComputeWeaponLevel theObj) playerArmor)
+										(leq (bamComputeWeaponLevel theObj) playerShield)
+										(geq (subtract (objGetData theObj "arenaSkill") (objGetStaticData theObj "arenaSkillBase")) -150)
+										)
+									))
+									
+								; Compose message
+								(switch
+
+									; Warn the player if her shields are too weak
+									(gr opponentWeapon playerShield)
+										(setq desc (cat
+											"Katami shakes his head:\n\n"
+											"\"Are you sure you want to challenge such an opponent? Your shields are not strong enough "
+											"to resist " (objGetName theOpponent) "'s attacks.\""
+											))
+											
+									; Warn the player if her armor is too weak
+									(gr opponentWeapon playerArmor)
+										(setq desc (cat
+											"Katami shakes his head:\n\n"
+											"\"Are you sure you can survive such an opponent? Your armor is weak against "
+											(objGetName theOpponent) "'s weapon.\""
+											))
+
+									; Warn the player if her weapons are too weak
+									(gr opponentShield playerWeapon)
+										(setq desc (cat
+											"Katami sighs:\n\n"
+											"\"Are you sure you are up to the challenge? Your primary weapon is not strong enough "
+											"to penetrate " (objGetName theOpponent) "'s shields.\""
+											))
+
+									; If there are any other opponents with a greater repBonus...
+									(setq proposeList (filter theBetterList theObj (gr (objGetData theObj "arenaRepBonus") repBonus)))
+										(setq desc (cat
+											"Katami considers carefully:\n\n"
+											"\"An interesting choice. Have you considered " (objGetName (random proposeList)) " instead? "
+											"I think the crowd would prefer to see that match.\""
+											))
+
+									; If the opponent is underrated
+									(ls (subtract skill baseSkill) -150)
+										(setq desc (cat
+											"Katami looks up to the ceiling:\n\n"
+											"\"There is something disturbing about " (objGetName theOpponent) ". "
+											"I feel that he is more powerful than everyone believes. Be careful!\""
+											))
+
+									(setq desc (cat 
+										"Katami bows his head:\n\n"
+										"\"Fight with honor! Defeat your opponent and win the love of the crowd!\""
+										))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Fight!" default="1" key="F">
+								(block (theShip)
+									(setq theShip (objGetObjRefData gSource "Opponent1"))
+
+									; Position the opponent at the right spot
+									(objMoveTo theShip (sysVectorPolarOffset gSource (random 11 42) 77))
+									(objResume theShip)
+
+									; Orders
+									(shpOrder theShip 'attack gPlayerShip)
+									(shpOrder theShip 'dock gSource)
+
+									; Register
+									(objRegisterForEvents gSource theShip)
+
+									; Set the reward
+									(objSetData gSource "opponentSkill" (objGetData theShip "arenaSkill"))
+									(objSetData gSource "repGain" (objGetData theShip "arenaRepBonus"))
+									(objSetData gSource "missileRep" 0)
+									(objSetData gSource "explosionRep" 0)
+									(objSetData gSource "opponentShots" 0)
+									(objSetData gSource "opponentArmor" 100)
+									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
+									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
+									(objSetData gSource "fightTime" 0)
+									(objSetData gSource "timeTo50" 1000)
+									(objSetData gSource "timeTo25" 1000)
+									(objSetData gSource "timeTo10" 1000)
+									(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
+									(objSetData gSource "prizeGain" (bamComputePrize
+										(objGetGlobalData gSource "arenaSkill")
+										(objGetGlobalData gSource "arenaRep")
+										(objGetData theShip "arenaSkill")
+										(objGetData theShip "arenaPrizeBonus")
+										))
+
+									; Register for system events (so we can tell when ships fire)
+									(objRegisterForSystemEvents gSource 150)
+									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
+
+									; Done
+									(bamDoorsClose gSource)
+									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "Status" 'inProgress)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+
+							<Action name="Back out" cancel="1" key="B">
+								(scrShowScreen gScreen "ChooseOpponent")
+							</Action>
+						</Actions>
+					</GladiatorFight>
+
+					<GladiatorWinner>
+						<OnPaneInit>
+							(block (desc arenaRep repGain)
+								(setq arenaRep (objGetGlobalData gSource "arenaRep"))
+								(setq repGain (objGetData gSource "repGain"))
+
+								(switch
+									(geq repGain 200)
+										(setq desc (cat
+											"Katami beams a smile:\n\n"
+											"\"That's the way to do it! "
+											(switch
+												(geq arenaRep 500) "You've won the crowd's heart. Now they'll be waiting for you to challenge The Slicer!"
+												(geq arenaRep 400) "You're a favorite of the crowd now. Make sure you live up to it!"
+												(geq arenaRep 300) "You're on your way to win the love of the crowd! Keep giving them an exciting match every time!"
+												(geq arenaRep 200) "The crowd loves a good comeback!"
+												(geq arenaRep 100) "You're the young rising star that the crowd loves to root for."
+																   "You're learning fast. The crowd will soon clamor to see you fight!"
+												)
+											"\""
+											))
+
+									(ls repGain 50)
+										(setq desc (cat
+											"Katami stands with his arms crossed:\n\n"
+											"\""
+											(switch
+												(geq (objGetData gSource "lowestShields") 75)
+													"You barely took a hit during the match; next time pick a challenging opponent that will give the crowd something exciting to watch."
+												(geq (objGetData gSource "lowestArmor") 90)
+													"The crowd loves blood! Give them some excitement! It's better to win after taking heavy damage than to win without taking a scratch. Remember that."
+												(geq (objGetData gSource "fightTime") 300)
+													"The crowd has a short attention span. Don't take forever to kill your opponent. Give the crowd a good show!"
+													"Winning isn't enough! You have to give the crowd a good show! Make the match exciting and the crowd will love you for it."
+												)
+											"\""
+											))
+
+									(setq desc (cat
+										"Katami seems pleased:\n\n"
+										"\""
+										(random (list
+											"You remind me of my own time in the Arena: The roar of explosions blending with the noise of the crowd until both were one. There's nothing like it, is there?"
+											"The crowd loves a good match and they will pay to see it. The more popular you are, the more you will earn."
+											"You've done well, but don't get sloppy. To become Legendary Hero of the Arena you will need to defeat The Slicer, and he is fast, precise, and very deadly."
+											"Remember that it's not enough to kill quickly; you have to give the crowd a good show!"
+											"It's been a long time since I trained someone with your potential! Don't disappoint me!"
+											"The Arena is the one place where Corporate executives and small-time shareholders mix. Be sure to give them a good show!"
+											"You remind me of my own victories! Once I was so popular I was invited to dine with Robert Morgental himself! It was exquisite."
+											"You're doing well! Always keep improving. When you fight The Slicer you will need every bit of training that I can give you."
+											"Years ago I trained Kate Morgental! You remind me of her a lot. You fight hard at every match, but you're always thinking about something bigger than the Arena."
+											))
+										"\""
+										))
+									)
+
+								(scrSetDesc gScreen (cat
+									desc
+									"\n\nWinning this match has earned you " (objGetData gSource "prizeGain") " credits."
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (resultList repGain)
+									; Open arena doors
+									(bamDoorsOpen gSource)
+
+									; Unregister
+									(objUnregisterForEvents gSource gPlayerShip)
+									(sysCancelTimerEvent gSource "OnFightCheck")
+
+									; Add to reputation
+									(objSetGlobalData gSource "arenaRep" 
+										(min 1000 (add (objGetGlobalData gSource "arenaRep") (objGetData gSource "repGain")))
+										)
+
+									; Add record of win
+									(setq resultList (append (subset (objGetData gSource "results") 1) (objGetData gSource "opponentSkill")))
+									(objSetData gSource "results" resultList)
+
+									; Add to skill
+									(objSetGlobalData gSource "arenaSkill" (bamComputeSkill resultList))
+
+									; Pay player
+									(plyCredit gPlayer (objGetData gSource "prizeGain"))
+
+									; Unregister
+									(objUnregisterForSystemEvents gSource)
+
+									; Set status
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+
+									; See if the player can challenge The Slicer
+									(if (and (geq (objGetGlobalData gSource "arenaRep") 1000)
+											(geq (objGetGlobalData gSource "arenaSkill") 1000)
+											)
+
+										; Player can now challenge The Slicer
+										(block Nil
+											(objSetGlobalData gSource "arenaRank" 'challenger)
+											(objSetGlobalData gSource "katamiStatus" 'ransomNote)
+											(scrShowPane gScreen "ChallengerIntro")
+											)
+
+										; Otherwise, back to main screen
+										(scrShowPane gScreen "Default")
+										)
+									)
+							</Action>
+						</Actions>
+					</GladiatorWinner>
+
+					<GladiatorLoser>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"Mr. Katami is surprised, though pleased, to see you again:\n\n"
+								"\"I knew that opponent would be too much for you! I should have said something! "
+								"I am glad to see you alive, though. Don't let this setback stop you. You still "
+								"have a chance to improve and challenge The Slicer.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+
+									(scrShowScreen gScreen "ChooseOpponent")
+									)
+							</Action>
+						</Actions>
+					</GladiatorLoser>
+
+					<NoMoreGladiators>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"Katami looks disappointed:\n\n"
+								"\"I'm sorry, but I was not able to teach you properly. "
+								"The crowd no longer wants to see you fight.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(scrShowPane gScreen "Default")
+									(objSetGlobalData gSource "arenaRank" 'washout)
+									)
+							</Action>
+						</Actions>
+					</NoMoreGladiators>
+
+					<ChallengerLoser>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"Mr. Katami is surprised, though pleased, to see you again:\n\n"
+								"\"Too bad. The Slicer will retain his title. "
+								"Well, at least you're still alive! That's something.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+
+									(objSetGlobalData gSource "arenaRank" 'loser)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</ChallengerLoser>
+
+					<ChallengerIntro>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"Remember everything that I have taught you&#x97;you will need all your skills now.\n\n"
+								"\"After the last battle you are the #2 ranked gladiator in the Arena! Only one step remains: "
+								"You must challenge The Slicer! If you win, you will become the Legendary Hero of the Arena.\n\n"
+								"\"Go and prepare yourself and your ship! Come back ready to fight!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</ChallengerIntro>
+
+					<ChallengerRansomNote>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"You enter the gladiators' quarters but there is no sign of Mr. Katami. "
+								(if (typGetGlobalData &svCorporate; "statusKateM")
+									(cat
+										"You see Kate Morgental in his office looking through his files. She turns to you:\n\n"
+										"%name%, Mr. Katami is gone! He's been taken by the Black Market. I found a message that says that "
+										"they will kill him if you go ahead with the fight with The Slicer!\""
+										)
+									(cat
+										"A woman in an expensive suit is looking through Katami's files. She turns to you:\n\n"
+										"You must be %name%; I'm glad you're here. "
+										"I'm Kate Morgental. I received a message from the Black Market: They have captured Katami and "
+										"they're threatening to kill him if you fight The Slicer!\""
+										)
+									)
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "ChallengerRansomNote2")
+							</Action>
+						</Actions>
+					</ChallengerRansomNote>
+
+					<ChallengerRansomNote2>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"Katami was my old trainer and he means a lot to me. And the Black Market doesn't scare me; they're "
+								"just the parasites of the Corporate universe.\n\n"
+								"\"Help me to rescue him and you'll be able to defeat The Slicer without risking Katami's life.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;I'll help you.&quot;" default="1" key="H">
+								(block Nil
+									(objSetGlobalData gSource "katamiStatus" 'morgentalHelp)
+									(scrShowPane gScreen "ChallengerMorgentalHelp")
+									)
+							</Action>
+
+							<Action name="&quot;Katami can take care of himself.&quot;" key="T">
+								(block Nil
+									(objSetGlobalData gSource "katamiStatus" 'betrayed)
+									(scrShowPane gScreen "ChallengerBetrayed")
+									)
+							</Action>
+						</Actions>
+					</ChallengerRansomNote2>
+
+					<ChallengerMorgentalHelp>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"I knew you would agree! I will not forget this.\n\n"
+								"\"They're keeping Katami at the Black Market station in the outer asteroid field. Go to those "
+								"coordinates and destroy the Molotok guarding the base. When you've cleared the area I'll "
+								"blast the station and rescue Katami! Deal?\n\n"
+								"\"Alright, let's go!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (bmStation cruiserObj theAnchorObj)
+									; Kate status
+									(typSetGlobalData &svCorporate; "statusKateM" 'ally)
+									
+									; Find the black market station
+									(setq bmStation (sysFindObject gSource "TN +katamiRescue"))
+
+									; Order the player
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'attack bmStation)
+
+									; Create a marker for the cruiser
+									(setq theAnchorObj (sysCreateMarker "Morgental cruiser anchor" (sysVectorPolarOffset gSource 180 20) &svCorporate;))
+
+									; Create Morgental's cruiser
+									(setq cruiserObj (sysCreateShip 
+										&scKateMorgentalCruiser; 
+										(objGetPos theAnchorObj)
+										&svCorporate;
+										))
+									(objSetObjRefData cruiserObj "anchorObj" theAnchorObj)
+									(objFireEvent cruiserObj "OrderKatamiRescue")
+
+									(objSetGlobalData gSource "katamiStatus" 'kidnapped)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</ChallengerMorgentalHelp>
+
+					<ChallengerKidnapped>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"You receive a message from Kate:\n\n"
+								"\"Are you on your way? Get to the Black Market station and clear out those defenders!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Find the black market station
+									(setq bmStation (sysFindObject gSource "TN +katamiRescue"))
+
+									; Order the player
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'attack bmStation)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</ChallengerKidnapped>
+
+					<ChallengerBetrayed>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"Kate looks deflated, but quickly composes herself. She gives you a sharp look.\n\n"
+								"\"Nothing in it for you, huh? I clearly misjudged you. Go take care of yourself! I don't need your help!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(typSetGlobalData &svCorporate; "statusKateM" 'betrayedKatami)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</ChallengerBetrayed>
+
+					<ChallengerRescued>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"Mr. Katami meets you at the docking bay.\n\n"
+								"\"I owe you my life! The only way I can begin to repay you is to help you to defeat The Slicer. "
+								"Here, take this ROM biosoft. It may save your life.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetGlobalData gSource "katamiStatus" 'instructionDone)
+									(itmSetKnown &itHiroShieldOptimizer;)
+									(objAddItem gPlayerShip (itmCreate &itHiroShieldOptimizer; 1))
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</ChallengerRescued>
+
+					<Challenger>
+						<OnPaneInit>
+							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+								(scrSetDesc gScreen (cat
+									"Mr. Katami bows his head:\n\n"
+									"\"I have nothing more to teach you. Remember everything I've said and fight with honor!\""
+									))
+								(scrSetDesc gScreen (cat
+									"The gladiators' quarters feels cold and empty without Mr. Katami. You prepare yourself as best you can "
+									"to fight The Slicer."
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Fight!" default="1" key="F">
+								(block (theShip)
+									(setq theShip (sysCreateShip &scTheSlicerManticore; (objGetPos gSource) &svGladiator;))
+
+									; Position the opponent at the right spot
+									(objMoveTo theShip (sysVectorPolarOffset gSource (random 11 42) 77))
+
+									; Orders
+									(shpOrder theShip 'attack gPlayerShip)
+									(shpOrder theShip 'dock gSource)
+
+									; Register
+									(objRegisterForEvents gSource theShip)
+
+									; Set the reward
+									(objSetData gSource "prizeGain" 5000)
+									(objSetData gSource "repGain" 500)
+									(objSetData gSource "missileRep" 0)
+									(objSetData gSource "explosionRep" 0)
+									(objSetData gSource "opponentShots" 0)
+									(objSetData gSource "opponentArmor" 100)
+									(objSetData gSource "lowestShields" (if (objGetItems gPlayerShip "sI") 100 0))
+									(objSetData gSource "lowestArmor" (subtract 100 (objGetVisibleDamage gPlayerShip)))
+									(objSetData gSource "fightTime" 0)
+									(objSetData gSource "timeTo50" 1000)
+									(objSetData gSource "timeTo25" 1000)
+									(objSetData gSource "timeTo10" 1000)
+									(objSetData gSource "timeToShieldsDown" (if (objGetItems theShip "sI") 1000 -1))
+
+									; Register for system events (so we can tell when ships fire)
+									(objRegisterForSystemEvents gSource 150)
+									(sysAddObjRecurringTimerEvent 10 gSource "OnFightCheck")
+
+									; Done
+									(bamDoorsClose gSource)
+									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "Status" 'inProgress)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+
+							<Action name="Back out" cancel="1" key="B">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</Challenger>
+
+					<ChallengerWinner>
+						<OnPaneInit>
+							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+								(scrSetDesc gScreen (cat
+									"Pandemonium greets you as you enter the gladiators' quarters. Friends and partiers are celebrating your victory. "
+									"Mr. Katami hugs you like a long lost %son% and puts a drink in your hand. "
+									"At the edge of the room Kate Morgental shines her smile at you."
+									))
+								(scrSetDesc gScreen (cat
+									"Pandemonium greets you as you enter the gladiators' quarters. Partiers and hanger-ons celebrate your victory. "
+									"In the corner of the room you see a small memorial for Mr. Katami in danger of being trampled by the wild partying."
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Open arena doors
+									(bamDoorsOpen gSource)
+
+									; Unregister
+									(objUnregisterForEvents gSource gPlayerShip)
+									(sysCancelTimerEvent gSource "OnFightCheck")
+
+									; Pay player
+									(plyCredit gPlayer (objGetData gSource "prizeGain"))
+
+									; Unregister
+									(objUnregisterForSystemEvents gSource)
+
+									; Set status
+									(objSetData gSource "Status" Nil)
+									(objSetData gSource "OpponentCount" Nil)
+
+									; Player is champion
+									(objSetGlobalData gSource "arenaRank" 'champion)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</ChallengerWinner>
+
+					<Champion>
+						<OnPaneInit>
+							(if (eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+								(scrSetDesc gScreen (cat
+									"Mr. Katami greets you:\n\n"
+									"\"It's wonderful to see you again! Let's talk about the old times at the Arena.\""
+									))
+								(scrSetDesc gScreen (cat
+									"The gladiators' quarters feels cold and empty without Mr. Katami."
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</Champion>
+
+					<Loser>
+						<OnPaneInit>
+							(if (or (eq (objGetGlobalData gSource "katamiStatus") 'instructor)
+									(eq (objGetGlobalData gSource "katamiStatus") 'instructionDone)
+									)
+								(scrSetDesc gScreen (cat
+									"Mr. Katami greets you:\n\n"
+									"\"It's good to see you again. I'm training someone new now. Hopefully they won't disappoint me.\""
+									))
+								(scrSetDesc gScreen (cat
+									"The gladiators' quarters feels cold and empty without Mr. Katami."
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</Loser>
+
+					<FirstFight
+							desc=	"&quot;Welcome, citizen! You are about to join an elite group of men and women who have conquered their fears and proven their courage and skills in the ultimate test&#x97;mortal combat. All that remains is for you to sign this minor release indemnifying the Maximus Corporation against any liability in the event of harm, death, etc.&quot;">
+
+						<Actions>
+							<Action name="Sign" key="S">
+								(block Nil
+									(objSetGlobalData gSource "arenaRank" 'rookie)
+									(objSetData gSource "rookieScore" 0)
+									(objSetData gSource "meleeCount" 0)
+									(scrShowPane gScreen "Melee")
+									)
+							</Action>
+
+							<Action name="Back out" cancel="1" key="B">
+								<ShowPane pane="Chicken"/>
+							</Action>
+
+						</Actions>
+
+					</FirstFight>
+
+					<StillFighting
+							desc=	"&quot;You'll get no help here. Fight your own battles!&quot;">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</StillFighting>
+
+					<PlayerLeft
+							desc=	"&quot;You're banned from the games for leaving the arena in the middle of battle!&quot;">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</PlayerLeft>
+
+				</Panes>
+			</Main>
+
+			<ChooseOpponent
+				name=			"Battle Arena Maximus"
+				backgroundID=	"none"
+				>
+
+				<OnScreenInit>
+					(block (arenaSkill arenaRep)
+						(setq arenaSkill (objGetGlobalData gSource "arenaSkill"))
+						(setq arenaRep (objGetGlobalData gSource "arenaRep"))
+
+						; Generate a list of all gladiators that the player can challenge
+						(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
+
+						; If the list is empty, then we need to add some new opponents
+						(if (not gList)
+							(block (newGladiators)
+
+								; Create some new gladiators
+								(for i 1 (random 3 5)
+									(setq newGladiators
+										(append newGladiators
+											(objGetID (bamCreateGladiatorBySkill gSource arenaSkill))
+											)
+										)
+									)
+
+								; Add them to the list
+								(objSetData gSource "gladiatorList"
+									(append (objGetData gSource "gladiatorList") (shuffle newGladiators))
+									)
+
+								; Recompute the opponent list
+								(setq gList (bamComputeOpponentList gSource arenaSkill arenaRep))
+								
+								; If the list is stil empty then just pick a random gladiator
+								; from the new crop
+								(if (not gList)
+									(setq gList (list (objGetObjByID (random newGladiators))))
+									)
+								)
+							)
+
+						; Start at the beginning of the list
+						(setq gCursor 0)
+						(setq gSelect (item gList gCursor))
+						)
+				</OnScreenInit>
+
+				<Display>
+					<Image left="12" right="-44" top="12" height="100" align="center" valign="center" transparent="true">
+						(shpGetImageDesc gSelect 0)
+					</Image>
+
+					<Text left="12" right="-44" top="100" height="40" align="center" font="SubTitle" color="255,210,152">
+						(objGetName gSelect 0x00)
+					</Text>
+
+					<Text left="12" width="250" top="140" bottom="-140" align="right" font="MediumBold" color="200,206,199">
+						(cat
+							"hull:\n"
+							"max speed:\n"
+							"armor:\n"
+							"shields:\n"
+							"weapons:\n"
+							)
+					</Text>
+
+					<Text right="-44" width="250" top="140" bottom="-140" align="left" font="Medium" color="200,206,199">
+						(block (armorItem shieldItem allWeapons)
+							(setq armorItem (item (objGetItems gSelect "aI") 0))
+							(setq shieldItem (item (objGetItems gSelect "sI") 0))
+							
+							; Get the list of weapons
+							(setq allWeapons "")
+							(enum (objGetItems gSelect "wI") theWeapon
+								(setq allWeapons (cat allWeapons
+									(itmGetName theWeapon 0x181)
+									"\n"
+									))
+								)
+							(if (eq allWeapons "")
+								(setq allWeapons "None\n")
+								)
+
+							(cat
+								(shpGetClassName gSelect 1) "\n"
+								(objGetDataField gSelect "maxSpeed") "% lightspeed\n"
+								(if armorItem (itmGetName armorItem 0x181) "None") "\n"
+								(if shieldItem (itmGetName shieldItem 0x181) "None") "\n"
+								allWeapons
+								)
+							)
+					</Text>
+
+					<Text left="52" right="-84" bottom="-12" height="120" align="center" font="Large" color="200,206,199">
+						(block (desc skill repBonus thaName prize rnd1 rnd2 fromPlace)
+							(setq theName (objGetName gSelect 0x00))
+							(setq skill (objGetData gSelect "arenaSkill"))
+							(setq repBonus (objGetData gSelect "arenaRepBonus"))
+							(setq prize (bamComputePrize 
+								(objGetGlobalData gSource "arenaSkill")
+								(objGetGlobalData gSource "arenaRep")
+								skill
+								(objGetData gSelect "arenaPrizeBonus")
+								))
+
+							(setq rnd1 (modulo (objGetDestiny gSelect) 24))
+							(setq rnd2 (divide (objGetDestiny gSelect) 24))
+
+							(setq fromPlace (item '("Starton Eridani" "St. Katharine's Star" "Rigel Aurelius" "Centauri" "Kibo") (modulo rnd2 5)))
+
+							(switch
+								(leq skill 300)
+									(setq desc (eval (item 
+										'(
+											(cat theName " is a young gladiator from " fromPlace ".")
+											(cat theName " flies a " (shpGetClassName gSelect 1) ".")
+											(cat theName " is a novice pilot flying a beautiful " (shpGetClassName gSelect 1) ".")
+											)
+										(modulo rnd1 3)
+										)))
+
+								(setq desc (eval (item
+									'(
+										(cat theName " is a former Champion from " fromPlace ".")
+										(cat "The battle-hardened pilot known as " theName " will give you the fight of your life!")
+										(cat "Death comes quickly when you fight " theName ".")
+										)
+									(modulo rnd1 3)
+									)))
+								)
+
+							(switch
+								(geq repBonus 100)
+									(setq desc (cat desc " This is the match the audience has been waiting for."))
+
+								(geq repBonus 50)
+									(setq desc (cat desc " Defeating " theName " will excite the crowd and bring you great fame!"))
+
+								(geq repBonus 25)
+									(setq desc (cat desc " This is a well-matched opponent that will draw the crowd."))
+								)
+
+							(setq desc (cat desc " For defeating " theName " you will receive " prize " credits."))
+							)
+					</Text>
+				</Display>
+
+				<Panes>
+					<Default
+						desc=	"Choose an opponent:"
+						>
+
+						<OnPaneInit>
+							(block Nil
+								(scrEnableAction gScreen 1 (ls (add gCursor 1) (count gList)))
+								(scrEnableAction gScreen 2 (gr gCursor 0))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Challenge!" default="1" key="C">
+								(block Nil
+									(objSetData gSource "OpponentCount" 1)
+									(objSetObjRefData gSource "Opponent1" gSelect)
+									(scrShowScreen gScreen "Main" "GladiatorFight")
+									)
+							</Action>
+
+							<Action name="Next opponent" key="N" nextKey="1">
+								(block Nil
+									(setq gCursor (add gCursor 1))
+									(setq gSelect (item gList gCursor))
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+
+							<Action name="Previous opponent" key="P" prevKey="1">
+								(block Nil
+									(setq gCursor (subtract gCursor 1))
+									(setq gSelect (item gList gCursor))
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+
+							<Action name="Cancel" cancel="1" key="L">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ChooseOpponent>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="90"	y="0" />
+		</DockingPorts>
+	</StationType>
+
+	<!-- Battle Arena Wall -->
+
+	<StationType UNID="&stBattleArenaWall;"
+			name=				"(arena wall segment)"
+			sovereign=			"&svCommonwealth;"
+
+			barrier=			"true"
+			barrierEffect=		"&efBattleArenaWallHit;"
+			multiHull=			"true"
+			immutable=			"true"
+
+			mass=				"500"
+			noMapLabel=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="0"    imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="128"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="256"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="384"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="512"  imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="640"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="768"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="896"  imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1024" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1152" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1280" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1408" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1536" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1664" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1792" imageWidth="128" imageHeight="128"/>
+
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="1920" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2048" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2176" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2304" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArena;" imageX="0" imageY="2432" imageWidth="128" imageHeight="128"/>
+			
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="164"	imageWidth="164" imageHeight="164"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="18"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="18" imageY="182"	imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsBattleArenaExtra;" imageX="0" imageY="0"	imageWidth="0"	 imageHeight="0"/>
+		</ImageVariants>
+
+	</StationType>
+
+	<!-- Black Market Station -->
+
+	<StationType UNID="&stBlackMarketRigelAurelius;"
+			name=				"Black Market station"
+			sovereign=			"&svBlackMarket;"
+			dockScreen=			"Main"
+			abandonedScreen=	"KatamiRescue"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"250"
+			repairRate=			"3"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"blackMarket, friendly, human, katamiRescue, majorStation, populated"
+			>
+
+		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Ship	count="1"	class="&scMolotok;" orders="guard"/>
+
+			<Table count="1d4">
+				<Ship chance="25"  count="1" class="&scZulu-II;" orders="gateOnThreat"/>
+				<Ship chance="15"  count="1" class="&scOromo;" orders="gateOnThreat"/>
+				<Ship chance="15"  count="1" class="&scWolfen;" orders="gateOnThreat"/>
+				<Ship chance="30" count="1" class="&scEI500;" orders="gateOnThreat"/>
+				<Ship chance="15"  count="1" class="&scT31ArmedTransport;" orders="gateOnThreat">
+					<Items>
+						<Item					count="8d20" item="&itSmartCannonShell;"/>
+						<Lookup	chance="50"		count="1d3-1" table="&trIllegalItems2;"/>
+						<Table chance="50">
+							<Lookup chance="40" count="1" table="&trConsumables2;"/>
+							<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+							<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+						</Table>
+					</Items>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Devices>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Items>
+			<Item	count="1d12"	item="&itTempusSyrette;" />
+			<Item	count="1d12"	item="&itMartianNori;" />
+			<Item	count="1d12"	item="&itBooster;" />
+			<Item	count="1d12"	item="&itDeathDrugs;" />
+			<Lookup count="1d4" table="&trIllegalItems1;"/>
+			<Lookup count="1d4" table="&trIllegalItems2;"/>
+		</Items>
+
+		<Events>
+			<OnBountyHunterCheck>
+				(if (objGetData gPlayerShip "blackMarketCrimeCost")
+					(block (bountyHunter)
+						(setq bountyHunter (sysCreateShip &scMolotok; (objGetNearestStargate gPlayerShip) &svBlackMarket;))
+						(shpOrderAttack bountyHunter gPlayerShip)
+						)
+					)
+			</OnBountyHunterCheck>
+
+			<OnCreate>
+				; Register timer event for bounty hunters
+				(sysAddObjRecurringTimerEvent (random 4000 5000) gSource "OnBountyHunterCheck")
+			</OnCreate>
+
+			<OnDestroy>
+				(intBlackMarketOnDestroy 250000)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
+
+						<Actions>
+							<Action name="Talk to station boss" key="T">
+								(block Nil
+									(setq gPrevScreen "Main")
+									(scrShowScreen gScreen "Boss")
+									)
+							</Action>
+
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									intBlackMarketBuyPrice	; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell items" key="S">
+								(scrShowSellScreen
+									intBlackMarketSellPrice	; items bought from player
+									Nil						; obsolete
+									
+									'(
+										Nil					; title
+										100000				; max price per item
+										)
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" imageIndex="1" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Upgrade cargo hold" key="C">
+								(block Nil
+									(setq gCost 2200)
+									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
+									(setq gCheckMilitaryID Nil)
+									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+				</Panes>
+			</Main>
+
+			<KatamiRescue>
+
+				<InitialPane>
+					(block (katamiStatus)
+						(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
+						(switch
+							(or (eq katamiStatus 'morgentalHelp) (eq katamiStatus 'kidnapped))
+								"Rescue"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "You see nothing but the smoking remains of a Black Market station.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</Default>
+
+					<Rescue>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"You enter the smoking remains of the station. You follow the sounds of gunfire and "
+								"find Kate Morgental leading a team of armored men. They are unbinding Mr. Katami, who seems to "
+								"be weak but otherwise unharmed.\n\n"
+								"Kate flashes you a thumbs up: \"Thanks for your help&#x97;we'll get him back safely! See you back at the Arena: "
+								"You've got a date with The Slicer!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(block Nil
+									(typSetGlobalData &stBattleArena; "katamiStatus" 'rescued)
+									(shpCancelOrders gPlayerShip)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Rescue>
+				</Panes>
+			</KatamiRescue>
+
+			<Boss>
+
+				<InitialPane>
+					(block (katamiStatus)
+						(setq katamiStatus (typGetGlobalData &stBattleArena; "katamiStatus"))
+						(switch
+							(or (eq katamiStatus 'morgentalHelp) (eq katamiStatus 'kidnapped))
+								"WeGotHim"
+
+							"GetOut"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<WeGotHim>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"Men grab you and take you before the station boss:\n\n"
+								"\"There's no need to talk; you know what you need to do. Just stay out of the Arena and your friend will be fine.\""
+								"He turns towards his bodyguards, \"Get %him% out of here!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</WeGotHim>
+
+					<GetOut>
+						<OnPaneInit>
+							(scrSetDesc gScreen "You ask to see the station boss. Everyone turns to stare at you for a second, but then they go about their business and continue to ignore you.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</GetOut>
+				</Panes>
+			</Boss>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Kate Morgental's Corporate Cruiser
+
+	EXTRA DATA
+
+	behavior:			Current behavior
+							Nil						= Done
+							'katamiRescueWait		= Waiting for the player to destroy defenders
+							'katamiRescueDestroy	= Destroy the black market station
+							'katamiRescueDock		= Dock with black market station
+
+	target:				Target object
+	-->
+
+	<ShipClass UNID="&scKateMorgentalCruiser;"
+			manufacturer=		""
+			class=				"Corporate cruiser"
+			type=				""
+			score=				"2160"
+
+			mass=				"8000"
+			cargoSpace=			"1000"
+			thrust=				"5000"
+			maneuver=			"12"
+			maxSpeed=			"20"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"corporate, capitalShip, kateMorgental, majorShip"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="330" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="315" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="300" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="285" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="180" span="15" armorID="&itQuadroCarbideArmor;" />
+
+			<ArmorSection start="165" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="150" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="135" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="30"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="15"  span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="0"   span="15" armorID="&itQuadroCarbideArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="120" posRadius="60"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="240" posRadius="60"/>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
+		<Image imageID="&rsLargeShips1;" imageX="576" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="40d20" item="&itGotha10Missile;"/>
+			<Item count="2d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Names noArticle="true" personalName="true">Kate Morgental</Names>
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnBehavior>
+				(block (state)
+					(setq state (objGetData gSource "behavior"))
+					(switch
+						(eq state 'katamiRescueWait)
+							(if (not (filter (staGetSubordinates (objGetObjRefData gSource "target")) theGuard (eq (objGetType theGuard) &scMolotok;)))
+								(block (theTarget)
+									(setq theTarget (objGetObjRefData gSource "target"))
+									(objSendMessage gPlayerShip gSource "Nice work! Clear the area; we're inbound hot!")
+
+									(if (objIsAbandoned theTarget)
+										; If the station is already destroyed, just dock
+										(block Nil
+											(shpCancelOrders gSource)
+											(shpOrder gSource 'dock theTarget)
+
+											(objSetData gSource "behavior" 'katamiRescueDock)
+											)
+
+										; Otherwise, destroy the station
+										(block Nil
+											(shpCancelOrders gSource)
+											(shpOrder gSource 'attack theTarget)
+
+											(objSetData gSource "behavior" 'katamiRescueDestroy)
+											)
+										)
+									)
+								)
+
+						(eq state 'katamiRescueDestroy)
+							(if (objIsAbandoned (objGetObjRefData gSource "target"))
+								(block Nil
+									(objSendMessage gPlayerShip gSource "Target destroyed!")
+
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'dock (objGetObjRefData gSource "target"))
+
+									(objSetData gSource "behavior" 'katamiRescueDock)
+									)
+								)
+
+						(eq state 'katamiRescueDock)
+							(if (eq (typGetGlobalData &stBattleArena; "katamiStatus") 'rescued)
+								(block Nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'goto (objGetObjRefData gSource "anchorObj"))
+									(shpOrder gSource 'gate)
+
+									(sysCancelTimerEvent gSource "OnBehavior")
+
+									(objSetData gSource "behavior" Nil)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+
+			<OnDestroy>
+				(switch
+					; OK if Kate leaves
+					(eq aDestroyReason 'enteredStargate)
+						Nil
+						
+					; If player destroyed Kate's ship, then she remembers
+					(and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(typSetGlobalData &svCorporate; "statusKateM" 'destroyedByPlayer)
+					
+					; Otherwise, we remembed that she was destroyed
+					(typSetGlobalData &svCorporate; "statusKateM" 'destroyed)
+					)
+			</OnDestroy>
+
+			<OrderKatamiRescue>
+				(block (targetObj)
+					; Find the black market station
+					(setq targetObj (sysFindObject gSource "TN +katamiRescue"))
+					(objSetObjRefData gSource "target" targetObj)
+
+					; Orbit the black market station waiting for the player
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'orbit targetObj 180)
+
+					; State
+					(objSetData gSource "behavior" 'katamiRescueWait)
+
+					; Set a timer so that we can do some custom behavior
+					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
+					)
+			</OrderKatamiRescue>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Rigel Aurelius system -->
+
+	<SystemType UNID="&ssBattleArena;" noRandomEncounters="true">
+
+		<Tables>
+			<ArmsQuarterStation>
+				<Table>
+					<Station chance="40" type="&stArmorDealer;" noMapLabel="true">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+					</Station>
+
+					<Station chance="45" type="&stArmsDealer;" noMapLabel="true">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+					</Station>
+
+					<Station chance="15" type="&stArmsDealerMakayev;" noMapLabel="true">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 140)</OnCreate>
+					</Station>
+				</Table>
+			</ArmsQuarterStation>
+
+			<CorporateQuarterStation>
+				<Table>
+					<Station chance="40" type="&stCorporateEnclave;" noMapLabel="true"/>
+					<Station chance="45" type="&stCommonwealthDryDock;" noMapLabel="true"/>
+					<Station chance="15" type="&stInsuranceCompany;" noMapLabel="true"/>
+					<Station chance="15" type="&stHotel;" noMapLabel="true"/>
+				</Table>
+			</CorporateQuarterStation>
+
+			<MiddleQuarterStation>
+				<Table>
+					<Station chance="35" type="&stCorporateEnclave;" noMapLabel="true"/>
+					<Station chance="30" type="&stCommonwealthResidentials;" noMapLabel="true"/>
+					<Station chance="10" type="&stFuelDepot;" noMapLabel="true"/>
+					<Station chance="10" type="&stCommonwealthSlums;" noMapLabel="true"/>
+					<Station chance="5" type="&stMedicalSuburb;" noMapLabel="true"/>
+					<Null chance="10"/>
+				</Table>
+			</MiddleQuarterStation>
+
+			<LowerQuarterStation>
+				<Table>
+					<Station chance="25" type="&stCommonwealthSlums;" noMapLabel="true"/>
+					<Station chance="30" type="&stContainerHabitat;" noMapLabel="true"/>
+					<Station chance="5" type="&stCommonwealthResidentials;" noMapLabel="true"/>
+					<Null chance="40"/>
+				</Table>
+			</LowerQuarterStation>
+
+			<OtherStations>
+				<Table>
+					<Station chance="20" type="&stCorporateEnclave;"/>
+					<Station chance="20" type="&stMiningColony;"/>
+					<Station chance="15" type="&stArmorDealer;">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+					</Station>
+					<Station chance="15" type="&stArmsDealer;">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+					</Station>
+					<Station chance="10" type="&stArmsDealerMakayev;">
+						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 140)</OnCreate>
+					</Station>
+					<Station chance="10" type="&stCommonwealthSlums;"/>
+					<Station chance="10" type="&stFuelDepot;"/>
+				</Table>
+			</OtherStations>
+
+			<SeverusAsteroid>
+				<Table>
+					<Lookup chance="35" table="AsteroidSmallFrost"/>
+					<Lookup chance="10" table="AsteroidSmallMetallic"/>
+					<Lookup chance="45" table="AsteroidSmall"/>
+					<Lookup chance="4" table="AsteroidMediumFrost"/>
+					<Lookup chance="1" table="AsteroidMediumMetallic"/>
+					<Lookup chance="5" table="AsteroidMedium"/>
+				</Table>
+			</SeverusAsteroid>
+
+			<SeverusTrojans>
+				<Group>
+					<Siblings count="2d20" arcInc="2d205-206" radiusInc="-4-4">
+						<Lookup table="SeverusAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d20" arcInc="2d159-160" radiusInc="-6-6">
+						<Lookup table="SeverusAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d16" arcInc="2d109-110" radiusInc="-8-8">
+						<Lookup table="SeverusAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d12" arcInc="2d49-50" radiusInc="-12-12">
+						<Lookup table="SeverusAsteroid"/>
+					</Siblings>
+				</Group>
+			</SeverusTrojans>
+		</Tables>
+
+		<SystemGroup>
+
+			<!-- Star -->
+
+			<Station type="&stG-TypeStar;" name="Rigel Aurelius"/>
+
+			<!-- Carus -->
+
+			<Orbitals distance="90" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stCrateredPlanet;" 
+								name="Carus" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<Orbitals distance="18" angle="random">
+						<Group>
+							<Lookup table="StargateInbound"/>
+
+							<Orbitals count="2" distance="12" angle="equidistant">
+								<Station type="&stCommonwealthDryDock;" name="Rigel Dry Dock" noArticle="true"/>
+
+								<Station type="&stNavSign;" name="Death or Glory Awaits">
+									<InitialData>
+										<Info>
+											"Welcome, Traveler! You have just arrived at Rigel Aurelius, the universe's most famous tourist destination. Millions of us, from all star systems, have come to shed the constraints of our regimented life and trust to the luck of the Games. Join us at Battle Arena Maximus!"
+										</Info>
+									</InitialData>
+								</Station>
+							</Orbitals>
+						</Group>
+					</Orbitals>
+
+				</Group>
+			</Orbitals>
+
+			<!-- Tacitus -->
+
+			<Orbitals distance="3" scale="light-minute" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stCrateredPlanet;" 
+								name="Tacitus" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<Orbitals distance="12" angle="random">
+						<Lookup table="OtherStations"/>
+					</Orbitals>
+
+					<Trojan>
+						<Group>
+							<Orbitals count="2d4+4" distance="1d24" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="1d6" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Orbitals distance="2d8+6" angle="random">
+								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids,trojan"/>
+							</Orbitals>
+						</Group>
+					</Trojan>
+
+				</Group>
+			</Orbitals>
+
+			<!-- Geta -->
+
+			<Orbitals distance="5" scale="light-minute" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stCrateredPlanet;" 
+								name="Geta" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<AntiTrojan>
+						<Group>
+							<Orbitals count="4d4+8" distance="1d48" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="2d6" distance="1d36" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Orbitals distance="2d8+6" angle="random">
+								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids,trojan"/>
+							</Orbitals>
+						</Group>
+					</AntiTrojan>
+
+				</Group>
+			</Orbitals>
+
+			<!-- Severus -->
+
+			<Orbitals distance="9" scale="light-minute" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stMethaneGasGiant;" 
+								name="Severus" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<Orbitals distance="24" angle="random">
+						<Lookup table="StargateOutbound"/>
+					</Orbitals>
+
+					<!-- Battle Arena -->
+
+					<Trojan>
+						<Station type="&stBattleArena;" yOffset="-320"   xOffset="-1024" />
+
+						<Station type="&stNavSign;"			yOffset="-320"	   xOffset="-1280" name="Welcome, Gladiator!">
+							<InitialData>
+								<Info>
+									"Welcome to Battle Arena Maximus! Please enter through the gates and dock at the main station for registration information."
+								</Info>
+							</InitialData>
+						</Station>
+
+						<Station type="&stNavBeacon;"		yOffset="0"		 xOffset="-1024"  imageVariant="0"/>
+						<Station type="&stNavBeacon;"		yOffset="64"	 xOffset="-1088"  imageVariant="0"/>
+						<Station type="&stNavBeacon;"		yOffset="128"	 xOffset="-1154"  imageVariant="0"/>
+
+						<!-- ROW 1 -->
+						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="256"  imageVariant="11"/>
+						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="384"  imageVariant="14"/>
+						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="512"  imageVariant="2"/>
+						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="640"  imageVariant="14"/>
+						<Station type="&stBattleArenaWall;" yOffset="1152" xOffset="768"  imageVariant="4"/>
+
+						<!-- ROW 2 -->
+						<Station type="&stBattleArenaWall;" yOffset="1024" xOffset="128"  imageVariant="20"/>
+						<Station type="&stBattleArenaWall;" yOffset="1024" xOffset="896"  imageVariant="21"/>
+
+						<!-- ROW 3 -->
+						<Station type="&stBattleArenaWall;" yOffset="896"  xOffset="0"	  imageVariant="20"/>
+						<Station type="&stBattleArenaWall;" yOffset="896"  xOffset="1024" imageVariant="3"/>
+
+						<!-- ROW 4 -->
+						<Station type="&stBattleArenaWall;" yOffset="768"  xOffset="-128" imageVariant="1"/>
+						<Station type="&stBattleArenaWall;" yOffset="768"  xOffset="1152" imageVariant="21"/>
+
+						<!-- ROW 5 -->
+						<Station type="&stBattleArenaWall;" yOffset="640"  xOffset="-256" imageVariant="20"/>
+						<Station type="&stBattleArenaWall;" yOffset="640"  xOffset="1280" imageVariant="5"/>
+
+						<!-- ROW 6 -->
+						<Station type="&stBattleArenaWall;" yOffset="512"  xOffset="-384" imageVariant="1"/>
+						<Station type="&stBattleArenaWall;" yOffset="512"  xOffset="1280" imageVariant="12"/>
+
+						<!-- ROW 7 -->
+						<Station type="&stBattleArenaWall;" yOffset="384"  xOffset="-512" imageVariant="20"/>
+						<Station type="&stBattleArenaWall;" yOffset="384"  xOffset="1280" imageVariant="0"/>
+
+						<!-- ROW 8 -->
+						<Station type="&stBattleArenaWall;" yOffset="256"  xOffset="-640" imageVariant="1"/>
+						<Station type="&stBattleArenaWall;" yOffset="256"  xOffset="1280" imageVariant="12"/>
+
+						<!-- ROW 9 -->
+						<Station type="&stBattleArenaWall;" yOffset="64"  xOffset="1216" imageVariant="22"/>
+						
+						<Station type="&stBattleArenaWall;" yOffset="128"  xOffset="-768" imageVariant="20"/>
+						<Station type="&stBattleArenaWall;" yOffset="128"  xOffset="1280" imageVariant="6"/>
+
+						<!-- ROW 10 -->
+						<Station type="&stBattleArenaWall;" yOffset="-64"		xOffset="-960" imageVariant="24" objName="arenaDoor1c"/>
+						<Station type="&stBattleArenaWall;" yOffset="-64"		xOffset="1088" imageVariant="24" objName="arenaDoor2c"/>
+						
+						<Station type="&stBattleArenaWall;" yOffset="0"		xOffset="-896" imageVariant="16" objName="arenaDoor1a"/>
+						<Station type="&stBattleArenaWall;" yOffset="0"		xOffset="1152" imageVariant="16" objName="arenaDoor2a"/>
+						
+						<!-- ROW 11 -->
+						<Station type="&stBattleArenaWall;" yOffset="-128"   xOffset="-1024" imageVariant="17" objName="arenaDoor1b"/>
+						<Station type="&stBattleArenaWall;" yOffset="-128"   xOffset="1024" imageVariant="17" objName="arenaDoor2b"/>
+						
+						<!-- ROW 12 -->
+						<Station type="&stBattleArenaWall;" yOffset="-256"   xOffset="-1152" imageVariant="18"/>
+						<Station type="&stBattleArenaWall;" yOffset="-256"   xOffset="896"  imageVariant="20"/>
+
+						<!-- ROW 13 -->
+						<Station type="&stBattleArenaWall;" yOffset="-384"   xOffset="-1152" imageVariant="19"/>
+						<Station type="&stBattleArenaWall;" yOffset="-384"   xOffset="768"  imageVariant="1"/>
+
+						<!-- ROW 14 -->
+						<Station type="&stBattleArenaWall;" yOffset="-512"   xOffset="-1152" imageVariant="0"/>
+						<Station type="&stBattleArenaWall;" yOffset="-512"   xOffset="640"  imageVariant="20"/>
+
+						<!-- ROW 15 -->
+						<Station type="&stBattleArenaWall;" yOffset="-640"   xOffset="-1152" imageVariant="12"/>
+						<Station type="&stBattleArenaWall;" yOffset="-640"   xOffset="512"  imageVariant="1"/>
+
+						<!-- ROW 16 -->
+						<Station type="&stBattleArenaWall;" yOffset="-768"   xOffset="-1152" imageVariant="9"/>
+						<Station type="&stBattleArenaWall;" yOffset="-768"   xOffset="384"  imageVariant="20"/>
+
+						<!-- ROW 17 -->
+						<Station type="&stBattleArenaWall;" yOffset="-896"   xOffset="-1024" imageVariant="21"/>
+						<Station type="&stBattleArenaWall;" yOffset="-896"   xOffset="256"  imageVariant="1"/>
+
+						<!-- ROW 18 -->
+						<Station type="&stBattleArenaWall;" yOffset="-1024"  xOffset="-896" imageVariant="3"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1024"  xOffset="128"  imageVariant="20"/>
+
+						<!-- ROW 19 -->
+						<Station type="&stBattleArenaWall;" yOffset="-1152"  xOffset="-768" imageVariant="21"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1152"  xOffset="0"    imageVariant="20"/>
+
+						<!-- ROW 20 -->
+						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-640" imageVariant="8"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-512" imageVariant="14"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-384" imageVariant="2"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-256" imageVariant="14"/>
+						<Station type="&stBattleArenaWall;" yOffset="-1280"  xOffset="-128" imageVariant="7"/>
+
+						<!-- Nav Beacons -->
+						<Station type="&stNavBeacon;"		yOffset="1408"	 xOffset="512"  imageVariant="0"/>
+						<Station type="&stNavBeacon;"		yOffset="384"	 xOffset="1536" imageVariant="0"/>
+						<Station type="&stNavBeacon;"		yOffset="-512"	 xOffset="-1408" imageVariant="1"/>
+						<Station type="&stNavBeacon;"		yOffset="-1536"	 xOffset="-384" imageVariant="1"/>
+
+						<!-- Corporate Quarter -->
+
+						<Offset scale="pixel"				yOffset="-1152"		 xOffset="-1408">
+							<Station type="&stCorporateEnclave;" noMapLabel="true"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1536"		 xOffset="-1792">
+							<Station type="&stCommonwealthDryDock;" noMapLabel="true"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1536"		 xOffset="-1024">
+							<Station type="&stInsuranceCompany;" noMapLabel="true"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1920"		 xOffset="-1408">
+							<Station type="&stHotel;" noMapLabel="true"/>
+						</Offset>
+
+						<!-- Arms Quarter -->
+						<Offset scale="pixel"				yOffset="0"		 xOffset="-1280">
+							<Lookup table="ArmsQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="256"	 xOffset="-1024">
+							<Lookup table="ArmsQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="256"	 xOffset="-1536">
+							<Lookup table="ArmsQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="512"	 xOffset="-1280">
+							<Lookup table="ArmsQuarterStation"/>
+						</Offset>
+
+						<!-- Middle Quarter -->
+						<Offset scale="pixel"				yOffset="-1152"	 xOffset="348">
+							<Lookup table="MiddleQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1408"	 xOffset="128">
+							<Lookup table="MiddleQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1408"	 xOffset="640">
+							<Lookup table="MiddleQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="-1664"	 xOffset="384">
+							<Lookup table="MiddleQuarterStation"/>
+						</Offset>
+
+						<Table>
+							<Group chance="50">
+								<Offset scale="pixel"				yOffset="1536"	 xOffset="-256">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="1280"	 xOffset="-512">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="1280"	 xOffset="0">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="1024"	 xOffset="-256">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+							</Group>
+
+							<Group chance="50">
+								<Offset scale="pixel"				yOffset="-128"	 xOffset="1408">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="-384"	 xOffset="1152">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="-384"	 xOffset="1664">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+
+								<Offset scale="pixel"				yOffset="-640"	 xOffset="1408">
+									<Lookup table="MiddleQuarterStation"/>
+								</Offset>
+							</Group>
+						</Table>
+
+						<!-- Lower Quarter -->
+						<Offset scale="pixel"				yOffset="1920"	 xOffset="1024">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1920"	 xOffset="1280">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1664"	 xOffset="1024">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1664"	 xOffset="1280">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1664"	 xOffset="1536">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1664"	 xOffset="1792">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1408"	 xOffset="1024">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1408"	 xOffset="1280">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1408"	 xOffset="1536">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1408"	 xOffset="1792">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1152"	 xOffset="1280">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1152"	 xOffset="1536">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1152"	 xOffset="1792">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="1152"	 xOffset="2048">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="896"	 xOffset="1536">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="896"	 xOffset="1792">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+
+						<Offset scale="pixel"				yOffset="896"	 xOffset="2048">
+							<Lookup table="LowerQuarterStation"/>
+						</Offset>
+					</Trojan>
+
+					<AntiTrojan>
+						<Lookup table="SeverusTrojans"/>
+
+						<Orbitals distance="1d8+6" angle="random">
+							<Station type="&stBlackMarketRigelAurelius;"/>
+						</Orbitals>
+					</AntiTrojan>
+
+				</Group>
+			</Orbitals>
+
+		</SystemGroup>
+
+	</SystemType>
+
+<!-- Globals =============================================================== -->
+
+	<Globals>
+		(block Nil
+			(setq bamComputeArmorLevel (lambda (theObj)
+				(block (allArmor)
+					(setq allArmor (objGetItems theObj "aI"))
+					(if allArmor
+						(block (totalLevel)
+							(setq totalLevel 0)
+							(enum allArmor theArmor 
+								(setq totalLevel (add totalLevel (itmGetLevel theArmor)))
+								)
+							(divide totalLevel (count allArmor))
+							)
+
+						0
+						)
+					)
+				))
+
+			(setq bamComputeOpponentList (lambda (baseObj arenaSkill arenaRep)
+				(block (resultList)
+					(setq resultList Nil)
+					(enum (objGetData baseObj "gladiatorList") theObjID
+						(block (theObj objSkill)
+							(setq theObj (objGetObjByID theObjID))
+							(setq objSkill (objGetData theObj "arenaSkill"))
+
+							; Figure out if this ship is willing to fight with the player
+							(if (and (leq objSkill (add arenaSkill 100))
+									(geq objSkill (subtract arenaSkill 100))
+									(or (geq arenaRep 600) (leq objSkill 800))
+									)
+								(block Nil
+									(setq resultList (append resultList theObj))
+									)
+								)
+							)
+						)
+
+					resultList
+					)
+				))
+
+			(setq bamComputePrize (lambda (playerSkill playerRep opponentSkill prizeBonus)
+				(max
+					200
+					(intRoundDown
+						(add
+							(multiply
+								(divide playerRep 20)
+								(divide (add playerRep (multiply 2 (subtract opponentSkill playerSkill))) 20)
+								)
+							(if prizeBonus prizeBonus 0)
+							)
+						25
+						)
+					)
+				))
+
+			(setq bamComputeReputation (lambda (baseObj)
+				(block (repGain rep fightTime)
+
+					; Start with the bonus to rep that we get for killing this opponent
+					(setq repGain (objGetData baseObj "repGain"))
+					(if (not repGain)
+						(setq repGain 0)
+						)
+					;(dbgOutput "rep bonus: +" repGain)
+
+					; Add the rep that we gained from missiles and explosions
+					(setq rep (min 100 (add (objGetData baseObj "missileRep") (objGetData baseObj "explosionRep"))))
+					(setq repGain (add repGain rep))
+					;(dbgOutput "missiles fired: +" rep)
+
+					; Add 1 point of rep for every 5 shots fired by the opponent
+					(setq rep (divide (objGetData baseObj "opponentShots") 5))
+					(setq repGain (add repGain rep))
+					;(dbgOutput "shots fired: +" rep)
+
+					; Add bonus points if the shields were brought down
+					(switch
+						(leq (objGetData baseObj "lowestShields") 0)
+							(setq rep 100)
+
+						(leq (objGetData baseObj "lowestShields") 50)
+							(setq rep 25)
+
+						(leq (objGetData baseObj "lowestShields") 75)
+							(setq rep 10)
+
+						(setq rep 0)
+						)
+
+					; If the player doesn't use shields, divide bonus in 4
+					(if (not (objGetItems gPlayerShip "sI"))
+						(setq rep (divide rep 4))
+						)
+
+					;(dbgOutput "shields down: +" rep)
+					(setq repGain (add repGain rep))
+
+					; Add bonus points if armor was damaged
+					(switch
+						(leq (objGetData baseObj "lowestArmor") 10)
+							(setq rep 250)
+
+						(leq (objGetData baseObj "lowestArmor") 25)
+							(setq rep 150)
+
+						(leq (objGetData baseObj "lowestArmor") 50)
+							(setq rep 100)
+
+						(setq rep 0)
+						)
+
+					;(dbgOutput "armor damage: +" rep)
+					(setq repGain (add repGain rep))
+
+					; Add bonus points if opponent shields brought down quickly
+					(switch
+						(eq (objGetData baseObj "timeToShieldsDown") -1)
+							(setq rep 0)
+
+						(leq (objGetData baseObj "timeToShieldsDown") 15)
+							(setq rep 50)
+
+						(leq (objGetData baseObj "timeToShieldsDown") 30)
+							(setq rep 25)
+
+						(setq rep 0)
+						)
+
+					;(dbgOutput "fast shields down: +" rep)
+					(setq repGain (add repGain rep))
+
+					; Add bonus points if we killed the opponent quickly
+					(switch
+						(leq (objGetData baseObj "timeTo50") 15)
+							(setq rep 100)
+
+						(leq (objGetData baseObj "timeTo25") 30)
+							(setq rep 50)
+
+						(leq (objGetData baseObj "timeTo10") 45)
+							(setq rep 25)
+
+						(setq rep 0)
+						)
+
+					;(dbgOutput "fast kill: +" rep)
+					(setq repGain (add repGain rep))
+
+					; Time bonus based on battle length
+					(setq fightTime (objGetData baseObj "fightTime"))
+					(switch
+						(leq fightTime 50)
+							(setq rep 10)
+
+						(leq fightTime 75)
+							(setq rep 0)
+
+						(setq rep (subtract 0 (divide (objGetData baseObj "fightTime") 6)))
+						)
+
+					;(dbgOutput "time bonus: " (if (geq rep 0) "+" "") rep)
+					(setq repGain (add repGain rep))
+					(setq repGain (min repGain 200))
+
+					;(dbgOutput (if (gr repGain 0) "total rep: +" "total rep: ") repGain)
+					repGain
+					)
+				))
+				
+			(setq bamComputeShieldLevel (lambda (theObj)
+				(block (theShield)
+					(if (setq theShield (item (objGetItems theObj "sI") 0))
+						(itmGetLevel theShield)
+						0
+						)
+					)
+				))
+				
+			(setq bamComputeSkill (lambda (battleResults)
+				(block (bestResult skillDiff)
+					; Find the largest value in the battle results
+					(setq bestResult 0)
+					(enum battleResults i
+						(if (gr i bestResult)
+							(setq bestResult i)
+							)
+						)
+
+					; Compute the skill level diff
+					(setq skillDiff 0)
+					(enum battleResults i
+						(setq skillDiff (add skillDiff (subtract i bestResult)))
+						)
+					(setq skillDiff (divide skillDiff 4))
+
+					; Compute result
+					(add bestResult 200 skillDiff)
+					)
+				))
+				
+			(setq bamComputeWeaponLevel (lambda (theObj)
+				(block (allWeapons)
+					(setq allWeapons (objGetItems theObj "wI"))
+					(if allWeapons
+						(block (maxLevel)
+							(setq maxLevel 0)
+							(enum allWeapons theWeapon
+								(if (gr (itmGetLevel theWeapon) maxLevel)
+									(setq maxLevel (itmGetLevel theWeapon))
+									)
+								)
+							maxLevel
+							)
+
+						0
+						)
+					)
+				))
+
+			(setq bamCreateGladiator (lambda (baseObj shipClass)
+				(block (theShip)
+					; Note: We use a position instead of an object for the creation pos
+					; because an object would set the gate timer.
+					(setq theShip
+						(sysCreateShip
+							shipClass
+							(objGetPos baseObj)
+							&svGladiator;
+							)
+						)
+
+					; Set the name
+					(objSetData theShip "arenaName" "Joe Gladiator")
+
+					; Set the skill level
+					(objSetData theShip "arenaSkill"
+						(max 200
+							(min 1200
+								(add 
+									(objGetStaticData theShip "arenaSkillBase")
+									(random '(-500 -250 -100 -50 -25 -25 0 0 0 +25 +25 +50 +100))
+									)
+								)
+							)
+						)
+
+					; Chance of a prize bonus
+					(if (geq (random 1 100) 20)
+						(objSetData theShip "arenaPrizeBonus" (random '(100 100 100 150 150 150 200 200 200 250 250 300 300 350 400 450 500 750 1000)))
+
+						; Else, chance of a rep bonus
+						(if (geq (random 1 100) 20)
+							(objSetData theShip "arenaRepBonus" (random '(25 25 25 50 50 100)))
+							)
+						)
+
+					; Suspend the ship so that it is not visible until later
+					(objSuspend theShip)
+
+					; Return it
+					theShip
+					)
+				))
+
+			(setq bamCreateGladiatorBySkill (lambda (baseObj arenaSkill)
+				(block (classList maxSkill minSkill)
+					; Create a list of gladiators that are of the appropriate level
+					; for the player
+					(setq minSkill (subtract arenaSkill 100))
+					(setq maxSkill (add arenaSkill 100))
+
+					(setq classList
+						(filter (typFind "s +battleArena; +gladiator") theClass
+							(and
+								(leq (typGetStaticData theClass "arenaSkillBase") maxSkill)
+								(geq (typGetStaticData theClass "arenaSkillBase") minSkill)
+								)
+							)
+						)
+
+					; If the class list is empty (which should never happen) pick a
+					; tough class
+					(if (not classList)
+						(setq classList (list &scManticoreG6;))
+						)
+
+					; Pick a random class and create the ship
+					(bamCreateGladiator baseObj (random classList))
+					)
+				))
+
+			(setq bamCreateMeleeOpponents (lambda (sourceObj shipCount targetPlayerChance classFunc)
+				(block (offset)
+					(setq offset 0)
+					
+					; Create a bunch of ships and order them to attack
+					(for i 1 shipCount
+						(block (thisShip shipClass)
+							(setq shipClass (classFunc))
+							(setq thisShip
+								(sysCreateShip 
+									shipClass
+									(sysVectorPolarOffset sourceObj (random 11 42) (add 65 (multiply (modulo offset 12) 2)))
+									&svGladiator;
+									)
+								)
+								
+							; Some ships attack the player, others attack the nearest target
+							(if (leq (random 1 100) targetPlayerChance)
+								(block Nil
+									(shpOrder thisShip "attack" gPlayerShip)
+									(shpOrder thisShip "dock" sourceObj)
+									)
+
+								; We add some command code to the ship so that it chooses a
+								; random gladiator target
+								(shpSetCommandCode thisShip
+									(block (targetList theArena thePlayer)
+										(setq theArena (sysFindObject gSource "TN +battleArena;"))
+										(if (eq (objGetData theArena "status") 'inProgress)
+											(setq thePlayer gPlayerShip)
+											)
+
+										(setq targetList
+											(filter (sysFindObject gSource "sA N:150;") theObj 
+												(or (eq (objGetSovereign theObj) &svGladiator;) (eq theObj thePlayer))
+												)
+											)
+
+										(switch
+											targetList
+												(shpOrder gSource "attack" (random targetList))
+
+											thePlayer
+												(block Nil
+													(shpOrder gSource "attack" thePlayer)
+													(shpOrder gSource "dock" theArena)
+													)
+
+											(shpOrder gSource "dock" theArena)
+											)
+										)
+									)
+								)
+
+							(objRegisterForEvents sourceObj thisShip)
+
+							(objSetObjRefData sourceObj (cat "Opponent" i) thisShip)
+
+							(setq offset (add offset 1))
+							)
+						)
+
+					(objSetData sourceObj "OpponentCount" shipCount)
+					)
+				))
+
+			(setq bamDoorsClose (lambda (arenaObj)
+				(block Nil
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1a") 1)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1b") 1)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1c") 22)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2a") 1)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2b") 1)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2c") 22)
+					)
+				))
+
+			(setq bamDoorsOpen (lambda (arenaObj)
+				(block Nil
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1a") 16)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1b") 17)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor1c") 24)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2a") 16)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2b") 17)
+					(staSetImageVariant (sysGetObjectByName arenaObj "arenaDoor2c") 24)
+					)
+				))
+			)
+	</Globals>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsBattleArenaBkgnd;" bitmap="Resources\BattleArenaScreen.jpg" loadOnUse="true" />
+
+</TranscendenceModule>

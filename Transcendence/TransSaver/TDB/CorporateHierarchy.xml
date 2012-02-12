@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Corporate Hierarchy
+
+	GLOBAL DATA
+
+	statusKateM:		Status of player with respect to Kate Morgental
+							Nil						= Never met
+							'acquaintance			= Met once or twice
+							'ally					= Player has helped
+							'betrayedKatami			= Player did not help Mr. Katami
+							'destroyedByPlayer		= Player killed her
+							'destroyed				= She is dead
+
+	-->
+
+	<Sovereign UNID="&svCorporate;"
+			name="Corporate Hierarchy"
+			alignment="constructive chaos"
+			/>
+
+	<!-- CorporateCruiser -->
+
+	<ShipClass UNID="&scCorporateCruiser;"
+			manufacturer=		"Corporate"
+			class=				""
+			type=				"cruiser"
+			score=				"2160"
+
+			mass=				"8000"
+			cargoSpace=			"1000"
+			thrust=				"5000"
+			maneuver=			"12"
+			maxSpeed=			"20"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"corporate,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="330" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="315" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="300" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="285" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="180" span="15" armorID="&itQuadroCarbideArmor;" />
+
+			<ArmorSection start="165" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="150" span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="135" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="30"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
+			<ArmorSection start="15"  span="15" armorID="&itQuadroCarbideArmor;" />
+			<ArmorSection start="0"   span="15" armorID="&itQuadroCarbideArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="120" posRadius="60"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="240" posRadius="60"/>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
+		<Image imageID="&rsLargeShips1;" imageX="576" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="40d20" item="&itGotha10Missile;"/>
+			<Item count="2d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<Globals>
+		(block Nil
+			(setq intBushidoArmorEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0309 0x0329))
+				))
+
+			(setq intBushidoShieldEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0104 0x0824 0x0842 0xf03))
+				))
+
+			(setq intBushidoWeaponEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0f03 0x1002))
+				))
+
+			(setq intCorporateCrime (lambda (severity description)
+				(if (gr severity (int (objGetData gPlayerShip "corpCrimeSeverity")))
+					(block Nil
+						(objSetData gPlayerShip "corpCrimeSeverity" severity)
+						(objSetData gPlayerShip "corpCrime" description)
+						)
+					)
+				))
+
+			(setq intCorporateGenerateEnhancement (lambda (theItem)
+				(block (theCategory)
+					(setq theCategory (itmGetCategory theItem))
+					(switch
+						; Armor enhancements
+						(eq theCategory 0x0002)
+							(random (list 0x0101 0x0102 0x0102 0x0103))
+
+						; Shield enhancements
+						(eq theCategory 0x0080)
+							(random (list 0x0101 0x0102 0x0102 0x0103))
+
+						; Weapon enhancements
+						(eq theCategory 0x0004)
+							(random (list 0x0101 0x0102 0x0102 0x0103))
+
+						0x0000
+						)
+					)
+				))
+
+			(setq intCorporateOnInit (lambda (prevScreen)
+				(block Nil
+					(setq gPrevScreen prevScreen)
+
+					(switch
+						; If the ship is radioactive then refuse dock
+						(shpIsRadioactive gPlayerShip)
+							(scrShowScreen gScreen "&dsRefuseContamination;")
+
+						; If the player has committed crimes, then she's in trouble
+						(geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
+							(scrShowScreen gScreen "&dsCorporateImprison;")
+
+						; Check if the player has any active contracts
+						(intShowContractDeliveryScreen)
+							(scrShowScreen gScreen "&dsContractDelivery;")
+						)
+					)
+				))
+
+			(setq intCorporateOnDestroy (lambda Nil
+				(block (corporateCruiser theDestroyer)
+					; Destroy items on the station
+					(intDestroyItems gSource)
+
+					; Create a corporate cruiser to avenge the station
+					(setq corporateCruiser
+						(sysCreateShip &scCorporateCruiser; (objGetNearestStargate gSource) &svCorporate;)
+						)
+
+					; If someone destroyed the station, avenge
+					(setq theDestroyer aOrderGiver)
+					(if (and theDestroyer
+							(objCanAttack theDestroyer)
+							(not (eq (objGetSovereign theDestroyer) &svCorporate;)))
+						(block Nil
+							(objSendMessage gPlayerShip gSource "Security alert! Deploy corporate enforcer!")
+							(shpOrderAttack corporateCruiser theDestroyer)
+
+							; Since the cruiser is busy, deploy some transports to loot the station
+							(for i 1 (random 1 3)
+								(block (transport)
+									(setq transport
+										(sysCreateShip &scEI500; (objGetNearestStargate gSource) &svCorporate;)
+										)
+
+									(shpOrderLoot transport gSource)
+									(shpOrderGate transport)
+									)
+								)
+							)
+						)
+
+					; If the player destroyed the station, then she is banned
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(intCorporateCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						)
+
+					; Take all the items from the station (so that others won't loot it)
+					(shpOrderLoot corporateCruiser gSource)
+
+					; Gate out
+					(shpOrderGate corporateCruiser)
+					)
+				))
+
+			(setq intHPEnhancement1 (lambda Nil
+				(random (list 0x0101 0x0101 0x0102 0x0102 0x0103))
+				))
+
+			(setq intHPEnhancement2 (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0103 0x0104))
+				))
+
+			(setq intHPEnhancement3 (lambda Nil
+				(random (list 0x0102 0x0103 0x0103 0x0104 0x0104 0x0105))
+				))
+
+			(setq intMakayevArmorEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0103 0x0104 0x0b00 0x0c00))
+				))
+
+			(setq intMakayevWeaponEnhancement (lambda Nil
+				(random (list 0x0102 0x0103 0x0103 0x0104 0x0104 0x0105))
+				))
+
+			(setq intTaikonBuyMargin (lambda (thisItem)
+				(block (cost)
+					(switch
+						; Better not be installed or damaged
+						(or (itmIsInstalled thisItem) (itmIsDamaged thisItem))
+							(setq cost 0)
+
+						; 'Taikon' items are cheaper here
+						(itmHasModifier thisItem "Taikon")
+							(setq cost (divide (multiply (itmGetPrice thisItem) 17) 100))
+
+						; 'RingerValuable' items are expensive
+						(itmHasModifier thisItem "RingerValuable")
+							(setq cost (divide (multiply (itmGetPrice thisItem) 102) 100))
+
+						; 'Alien' items for 1/4 cost
+						(itmHasModifier thisItem "Alien")
+							(setq cost (divide (multiply (itmGetPrice thisItem) 25) 100))
+
+						; All other items for 1/5 price
+						(setq cost (divide (multiply (itmGetPrice thisItem) 20) 100))
+						)
+
+					; round up
+					(setq cost (multiply (divide (add cost 4) 5) 5))
+
+					(if (gr cost 0)
+						cost
+						Nil
+						)
+					)
+				))
+			)
+	</Globals>
+
+<!-- TABLES -->
+
+	<ShipTable unid="&tbCorpDefenders;">
+		<LevelTable>
+			<Ship levelFrequency="cccr- -----" count="1" class="&scRoninA;" orders="guard"/>
+			<Ship levelFrequency="ruucc cr---" count="1" class="&scRoninB;" orders="guard"/>
+			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="guard"/>
+			<Ship levelFrequency="---uu ccccu" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="ccccc ccccc" count="1" class="&scCenturion;" orders="guard"/>
+			<Ship levelFrequency="--ruc cuuuu" count="1" class="&scManticore;" orders="guard"/>
+			<Ship levelFrequency="----- -uuuu" count="1" class="&scBritannia;" orders="guard"/>
+		</LevelTable>
+	</ShipTable>
+	
+<!-- RESOURCES -->
+
+</TranscendenceModule>

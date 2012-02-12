@@ -1,0 +1,2993 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- MISC ENCOUNTERS VOLUME I
+
+	Abbasid Survivalists
+	Bennin Xenophobes
+	Death Drugs Cartel
+	Ferian Miners
+	Freeworld Anarchists
+	Gaian Terraformers
+	Heliotropes
+	Himal Separatists
+	Kobol Warlords
+	Marauders
+	Order of Penitence
+	Outlaws
+	Pteravores
+	Ranx Warlords
+	Salvagers
+	Sapiens
+	Sealed Cargo Container
+	Ventari Settlers
+	Weapons Cache
+
+-->
+
+<!-- Abbasid Survivalists ================================================= -->
+
+	<!-- Abbasid Thanogram -->
+
+	<ItemType UNID="&itAbbasidThanogram;"
+			name=				"Abbasid thanogram"
+			level=				"3"
+			value=				"500"
+			mass=				"5"
+			frequency=			"veryrare"
+			modifiers=			"Art; Consumable; Info; Soul; NotForSale"
+
+			description=		"This is a neural network initialized from the cerebral patterns of one or more Scholars of Abbasid. The legal, ethical, and moral knowledge of the Abbasid is contained and interpreted by these constructs."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+<!-- Bennin Xenophobes ==================================================== -->
+
+	<!-- Xenophobe Fighter -->
+
+	<ShipClass UNID="&scXenophobeFighter;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"fighter"
+			score=				"425"
+
+			mass=				"40"
+			cargoSpace=			"0"
+			thrust=				"300"
+			maneuver=			"2"
+			maxSpeed=			"25"
+
+			leavesWreck=		"25"
+
+			attributes=			"benninXenophobes,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightMeteorsteel;" />
+			<ArmorSection start="90"  span="180" armorID="&itLightMeteorsteel;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLancerCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="528" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"25"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-32" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Xenophobe Defender -->
+
+	<ShipClass UNID="&scXenophobeDefender;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"defender"
+			score=				"975"
+
+			mass=				"4500"
+			cargoSpace=			"500"
+			thrust=				"1000"
+			maneuver=			"10"
+			maxSpeed=			"12"
+
+			cyberDefenseLevel=	"5"
+
+			explosionType=		"&vtBlastExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"benninXenophobes,capitalShip,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="315" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="285" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="255" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="225" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="195" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="165" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="135" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="105" span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="75"  span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="45"  span="30" armorID="&itHeavyMeteorsteel;" />
+			<ArmorSection start="15"  span="30" armorID="&itHeavyMeteorsteel;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMarkIIIHowitzer;" omnidirectional="true" posAngle="180" posRadius="10"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="145" posRadius="28"/>
+			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="215" posRadius="28"/>
+		</Devices>
+
+		<Items>
+			<Item				count="1d12"	item="&itHeliumAssembly;"/>
+			<Table>
+				<Lookup	chance="40"	count="1d4"		table="&trConsumables7;"/>
+				<Lookup	chance="40"	count="1"		table="&trMinorItem7;"/>
+				<Lookup	chance="20"	count="1"		table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsMediumShips4;" imageX="512" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"25"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Xenophobe Worldship -->
+
+	<ShipClass UNID="&scXenophobeWorldship;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"worldship"
+			score=				"2830"
+
+			mass=				"50000"
+			cargoSpace=			"25000"
+			thrust=				"50000"
+			maneuver=			"16"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"benninXenophobes,capitalShip,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="315" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="300" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="285" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="180" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+
+			<ArmorSection start="165" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="150" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="135" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="30"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="15"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="0"   span="15" armorID="&itWorldshipArmorPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMarkVHowitzer;" omnidirectional="true" posAngle="0" posRadius="24"/>
+
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="345" maxFireArc="165" posAngle="30" posRadius="54"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="345" maxFireArc="135" posAngle="15" posRadius="60"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="225" maxFireArc="15"  posAngle="345" posRadius="60"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="195" maxFireArc="15"  posAngle="330" posRadius="54"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="180" maxFireArc="285" posAngle="220" posRadius="35"/>
+			<Device deviceID="&itXenophobeLancer;" secondaryWeapon="true" minFireArc="75"  maxFireArc="180" posAngle="140" posRadius="35"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&it500MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup chance="40"	count="1d6"		table="&trConsumables8;"/>
+				<Lookup	chance="30"	count="1d2"		table="&trMinorItem8;"/>
+				<Lookup	chance="30"	count="1"		table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsLargeShips1;" imageX="384" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Xenophobe Ark
+
+	behavior:			Current behavior
+							Nil						= not yet set up
+							'cruising				= We are just cruising
+
+	escort{n}:			Obj pointer to capital ship escort
+
+	escortCount:		Number of escorts
+
+	target:				Current target
+
+	tick:				Incremented on behavior
+
+	-->
+
+	<ShipClass UNID="&scXenophobeArk;"
+			manufacturer=		"Xenophobe"
+			class=				""
+			type=				"ark"
+			score=				"4575"
+
+			mass=				"150000"
+			cargoSpace=			"50000"
+			thrust=				"50000"
+			maneuver=			"16"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"benninXenophobes,capitalShip,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="315" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="300" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="285" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="180" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+
+			<ArmorSection start="165" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="150" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="135" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="30"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="15"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="0"   span="15" armorID="&itWorldshipArmorPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itFusionfireHowitzer;" minFireArc="280" maxFireArc="80"  posAngle="0" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="280" maxFireArc="80"  posAngle="15" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="280" maxFireArc="80"  posAngle="345" posRadius="60" secondaryWeapon="true"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" minFireArc="10"  maxFireArc="170" posAngle="90" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="10"  maxFireArc="170" posAngle="105" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="10"  maxFireArc="170" posAngle="75" posRadius="60" secondaryWeapon="true"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" minFireArc="100" maxFireArc="260" posAngle="180" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="100" maxFireArc="260" posAngle="165" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="100" maxFireArc="260" posAngle="195" posRadius="60" secondaryWeapon="true"/>
+
+			<Device deviceID="&itFusionfireHowitzer;" minFireArc="190" maxFireArc="350" posAngle="270" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="190" maxFireArc="350" posAngle="285" posRadius="60" secondaryWeapon="true"/>
+			<Device deviceID="&itXenophobeLancer;"	  minFireArc="190" maxFireArc="350" posAngle="255" posRadius="60" secondaryWeapon="true"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&it1GWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup chance="40"	count="1d6"		table="&trConsumables9;"/>
+				<Lookup	chance="30"	count="1d2"		table="&trMinorItem9;"/>
+				<Lookup	chance="30"	count="1"		table="&trMajorItem9;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsXenophobeArk;" imageWidth="256" imageHeight="256"/>
+
+		<Names definiteArticle="true">Ark of Bennin; Ark of Certitude; Ark of Justice &amp; Retribution; Ark of Purity;
+			Ark of the Seven Paths; Ark of Zoahatra;
+		</Names>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+		<Events>
+			<OnBehavior>
+				(block ((behavior (objGetData gSource "behavior")))
+					(switch
+						(not behavior)
+							(block ()
+								; Find all of our Defender escorts
+								(setq i 0)
+								(enum (sysFindObject gSource "sA O:escort; +capitalShip;") theEscort
+									(block ()
+										(setq i (add i 1))
+										(objSetObjRefData gSource (cat "escort" i) theEscort)
+										)
+									)
+								(objSetData gSource "escortCount" i)
+								(objSetData gSource "behavior" 'cruising)
+								)
+
+						(eq behavior 'cruising)
+							(block ()
+								; Look for threats
+								(if (eq (modulo (objGetData gSource "tick") 10) 7)
+									(block (threatList)
+										(setq threatList (filter (sysFindObject gSource "sAEN:400") theTarget
+											(or (gr (objGetCombatPower theTarget) 30) (eq theTarget gPlayerShip))
+											))
+
+										(if threatList
+											(block ()
+												(setq aTargetObj (random threatList))
+												(objFireEvent gSource "OrderDeter")
+												)
+											)
+										)
+									)
+								)
+
+						(eq behavior 'deterring)
+							(block ()
+								)
+						)
+
+					(objIncData gSource "tick")
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block ()
+					; Set a timer so that we can do some custom behavior
+					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
+					(objSetData gSource "tick" 0)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(block (
+					(behavior (objGetData gSource "behavior"))
+					(target (objGetObjRefData gSource "target"))
+					)
+					(switch
+						(and (eq behavior 'deterring) (eq target aObjDestroyed))
+							(objSetData gSource "behavior" 'cruising)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OrderDeter>
+				(block ()
+					; Send some of the escorts to attack the threat
+					(for i 1 (objGetData gSource "escortCount")
+						(block (theEscort)
+							(setq theEscort (objGetObjRefData gSource (cat "escort" i)))
+							(if (leq (objGetDestiny theEscort) 180)
+								(objCommunicate theEscort gSource 1 aTargetObj)
+								)
+							)
+						)
+
+					; Remember state
+					(objSetObjRefData gSource "target" aTargetObj)
+					(objRegisterForEvents gSource aTargetObj)
+					(objSetData gSource "behavior" 'deterring)
+					)
+			</OrderDeter>
+		</Events>
+
+	</ShipClass>
+
+	<!-- LEVEL VII ITEMS -->
+
+	<!-- Xenophobe lancer -->
+
+	<ItemType UNID="&itXenophobeLancer;"
+			name=				"Xenophobe ion lancer"
+			level=				"7"
+			value=				"45000"
+			mass=				"4500"
+			frequency=			"rare"
+			modifiers=			"EnergyWeapon; Military; MajorItem; NotForSale"
+
+			description=		"The Xenophobes developed this powerful ion weapon for their Worldships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				repeating=			"4"
+				damage=				"ion:1d10"
+				fireRate=			"15"
+				missileSpeed=		"100"
+				lifetime=			"60"
+				interaction=		"0"
+				powerUse=			"650"
+
+				sound=				"&snLaserCannon;"
+				>
+
+			<Effect>
+				<Shape
+						directional=		"true"
+						scaleLength=		"72" 
+						scaleWidth=			"6"
+
+						color=				"0x00, 0xfc, 0x00"
+						opacity=			"140"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-35"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-35"	y="-50"/>
+				</Shape>
+
+				<Shape
+						directional=		"true"
+						scaleLength=		"72" 
+						scaleWidth=			"3"
+
+						color=				"0xe0, 0xfc, 0xe0"
+						opacity=			"255"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-35"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-35"	y="-50"/>
+				</Shape>
+
+				<Shape
+						directional=		"true"
+						scaleLength=		"64" 
+						scaleWidth=			"2"
+
+						color=				"0xff, 0xff, 0xff"
+						opacity=			"255"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-25"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-25"	y="-50"/>
+				</Shape>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"		bitmask="Resources\XenophobeArkMask.bmp"	backColor="0x00000000"  loadOnUse="true"/>
+
+<!-- Death Drugs Cartel =================================================== -->
+
+	<!-- Meth Enforcer -->
+
+	<ShipClass UNID="&scMethEnforcer;"
+			manufacturer=		"Meth"
+			class=				""
+			type=				"enforcer"
+			score=				"320"
+
+			mass=				"250"
+			cargoSpace=			"10"
+			thrust=				"1000"
+			maneuver=			"2"
+			maxSpeed=			"20"
+
+			leavesWreck=		"35"
+
+			attributes=			"deathDrugsCartel,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itPolyceramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itPolyceramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<!-- <Device deviceID="&itSlamCannon;" minFireArc="345" maxFireArc="15"/>-->
+			<Device deviceID="&itSlamCannon;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="192" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-48" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+<!-- Ferian Miners ======================================================== -->
+
+	<Sovereign UNID="&svFerianMiners;"
+			name="Ferian miners"
+			alignment="neutral"
+			>
+		<Relationships>
+			<Relationship sovereign="&svRingers;" disposition="friend" mutual="true"/>
+		</Relationships>
+		
+		<Language>
+			<Message id="8"  text="Grrr! Defend the nest!"/>
+			<Message id="9"  text=""/>
+		</Language>
+	</Sovereign>
+
+	<Sovereign UNID="&svFerianMinersAngry;"
+			name="Ferian miners"
+			alignment="destructive order"
+			>
+		<Relationships>
+			<Relationship sovereign="&svFerianMiners;" disposition="friend" mutual="true"/>
+			<Relationship sovereign="&svRingers;" disposition="friend" mutual="true"/>
+		</Relationships>
+
+		<Language>
+			<Message id="8"  text=""/>
+			<Message id="9"  text=""/>
+		</Language>
+	</Sovereign>
+
+	<!-- Ferian Cannon -->
+
+	<ItemType UNID="&itFerianCannon;"
+			name=				"Ferian plasma cannon"
+			level=				"9"
+			value=				"88000"
+			mass=				"5000"
+			frequency=			"notrandom"
+			modifiers=			"Ferian; MajorItem; Military; NotForSale"
+
+			description=		"Ferians have adapted their plasma torches for combat."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"particles"
+
+				damage=				"plasma:50; mining2; WMD4"
+				fireRate=			"30"
+				missileSpeed=		"60"
+				lifetime=			"40"
+				powerUse=			"2000"
+
+				particleCount=		"500"
+				particleSpreadAngle="1"
+				particleSplashChance="50"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Particle
+						style=			"flame"
+						minWidth=		"3" 
+						maxWidth=		"3-7"
+						/>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Ferian Miner -->
+
+	<ShipClass UNID="&scFerianMiner;"
+			manufacturer=		""
+			class=				"Ferian miner"
+			type=				""
+			score=				"335"
+
+			mass=				"350"
+			cargoSpace=			"200"
+			thrust=				"1000"
+			maneuver=			"4"
+			maxSpeed=			"17"
+
+			leavesWreck=		"40"
+
+			attributes=			"ferian, ferianMiner, genericClass, zoanthrope"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itPlasmaTorch;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHeliumAssembly;"/>
+			<Table>
+				<Null chance="20"/>
+				<Item chance="35" count="1d4" item="&itXenotiteOre;"/>
+				<Item chance="25" count="1d4" item="&itPteracniumOre;"/>
+				<Item chance="20" count="1d4" item="&itChronimiumGas;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
+		
+		<Events>
+			<OnDestroy>
+				(if (eq (shpGetOrder gSource) 'mine)
+					(objFireEvent (shpGetOrderTarget gSource) "OnMinerDestroyed")
+					)
+			</OnDestroy>
+		</Events>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Ferian Warrior -->
+
+	<ShipClass UNID="&scFerianWarrior;"
+			manufacturer=		""
+			class=				"Ferian warrior"
+			type=				""
+			score=				"2145"
+
+			mass=				"1200"
+			cargoSpace=			"20"
+			thrust=				"12000"
+			maneuver=			"3"
+			maxSpeed=			"22"
+
+			leavesWreck=		"60"
+
+			attributes=			"ferian, ferianWarrior, genericClass, zoanthrope"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="315" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="285" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="255" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="225" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="195" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="165" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="135" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="105" span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="75"  span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="45"  span="30" armorID="&itHeavyBlastPlate;" />
+			<ArmorSection start="15"  span="30" armorID="&itHeavyBlastPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itFerianCannon;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsFerianWarrior;" imageWidth="144" imageHeight="144"/>
+		
+		<Events>
+		</Events>
+
+		<AISettings
+			combatStyle=		"chase"
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Resources -->
+	
+	<Image UNID="&rsFerianWarrior;"	bitmap="Resources\FerianWarrior.jpg"	bitmask="Resources\FerianWarriorMask.bmp"	backColor="0x00000000" loadOnUse="true"/>
+
+<!-- Freeworld Anarchists ================================================= -->
+
+	<!-- Earthzone Armed Shuttle -->
+
+	<ShipClass UNID="&scEarthzone;"
+			manufacturer=		"United African States"
+			class=				"Earthzone"
+			type=				"armed shuttle"
+			score=				"70"
+
+			mass=				"50"
+			cargoSpace=			"50"
+			thrust=				"120"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"35"
+
+			attributes=			"anarchists,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itTitaniumPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itTitaniumPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itTitaniumPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itTitaniumPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="192" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Hornet Battlepod -->
+
+	<ShipClass UNID="&scHornet;"
+			manufacturer=		"Earth Industries"
+			class=				"Hornet"
+			type=				"battlepod"
+			score=				"40"
+
+			mass=				"5"
+			cargoSpace=			"0"
+			thrust=				"50"
+			maneuver=			"1"
+			maxSpeed=			"35"
+
+			leavesWreck=		"0"
+
+			attributes=			"anarchists,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="128" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-34" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Anarchist Random Encounter Table -->
+	
+	<ShipTable UNID="&tbAnarchistEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="ccccc ccccc" count="1" class="&scHornet;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<LevelTable>
+						<Ship levelFrequency="c---- -----"  count="1d2"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="-c--- -----"  count="1d4"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="--c-- -----"  count="1d6"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="---c- -----"  count="1d6+2"	class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="----c ccccc"  count="1d6+4"	class="&scHornet;" orders="escort"/>
+					</LevelTable>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="-rucc ccccc" count="1" class="&scEarthzone;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<LevelTable>
+						<Ship levelFrequency="-c--- -----"  count="1d4"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="--c-- -----"  count="1d6"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="---c- -----"  count="1d6+2"	class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="----c ccccc"  count="1d6+4"	class="&scHornet;" orders="escort"/>
+					</LevelTable>
+				</Escorts>
+			</Ship>
+			<Ship levelFrequency="-vruc ccccc" count="1" class="&scEarthzone;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship									count="1"		class="&scEarthzone;" orders="escort"/>
+					<LevelTable>
+						<Ship levelFrequency="-c--- -----"  count="1d2"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="--c-- -----"  count="1d4"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="---c- -----"  count="1d6"		class="&scHornet;" orders="escort"/>
+						<Ship levelFrequency="----c ccccc"  count="1d6+2"	class="&scHornet;" orders="escort"/>
+					</LevelTable>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+<!-- Gaian Terraformers =================================================== -->
+
+	<!-- Gaian Demolition Cannon -->
+
+	<ItemType UNID="&itGaianDemolitionCannon;"
+			name=				"Gaian demolition cannon"
+			level=				"9"
+			value=				"150000"
+			mass=				"20000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			modifiers=			"EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"Gaians use these cannons for their vast engineering projects. The technology to power the cannon is known only to the Gaians."
+
+			charges=			"8"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+				deviceSlots=		"2"
+
+				damage=				"thermo:12d12; WMD7"
+				fireRate=			"60"
+				lifetime=			"30"
+				powerUse=			"3500"
+				charges=			"true"
+
+				beamType=			"heavyblaster"
+				primaryColor=		"0xfe, 0xfe, 0x75"
+				secondaryColor=		"0xc9, 0x64, 0x3a"
+				intensity=			"12"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG96;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="96" 
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Gaian Processor -->
+
+	<ShipClass UNID="&scGaianProcessor;"
+			manufacturer=		"Gaian"
+			class=				""
+			type=				"processor"
+			score=				"2415"
+
+			mass=				"50000"
+			cargoSpace=			"25000"
+			thrust=				"50000"
+			maneuver=			"16"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion3;"
+			leavesWreck=		"100"
+
+			attributes=			"gaianTerraformers,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="315" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="300" span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="285" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="180" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+
+			<ArmorSection start="165" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="150" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="135" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="30"  span="15" armorID="&itWorldshipArmorPlate;" />
+			<ArmorSection start="15"  span="15" armorID="&itWorldshipArmorPlate;" nonCritical="general"/>
+			<ArmorSection start="0"   span="15" armorID="&itWorldshipArmorPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itGaianDemolitionCannon;" omnidirectional="true" />
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="315" maxFireArc="45" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="45"  maxFireArc="135" posAngle="90" posRadius="30"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="135" maxFireArc="225" posAngle="180" posRadius="40"/>
+			<Device deviceID="&itThermoCannon;" secondaryWeapon="true" minFireArc="225" maxFireArc="315" posAngle="270" posRadius="30"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+		</Devices>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			<Item				count="100"		item="&itThermoCannonShell;"/>
+			<Table>
+				<Lookup chance="50"	count="1d4"		table="&trConsumables8;"/>
+				<Lookup chance="35"	count="1"		table="&trMinorItem8;"/>
+				<Lookup chance="15"	count="1"		table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsLargeShips1;" imageX="1536" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+<!-- Heliotropes ========================================================== -->
+
+	<Sovereign UNID="&svHeliotropes;"
+			name="Heliotropes"
+			alignment="destructive order"
+			/>
+
+	<!-- Heliotrope Fuel -->
+
+	<ItemType UNID="&itHeliotropeFuel;"
+			name=				"Heliotrope fuel cylinder"
+			level=				"5"
+			value=				"400"
+			mass=				"200"
+			frequency=			"rare"
+			numberAppearing=	"3d6"
+			modifiers=			"Consumable; Fuel; Heliotropes; NotForSale"
+
+			data=				"25000"
+
+			description=		"Heliotrope starship fuel is known to be one of the cleanest and most powerful fuels available. Too bad that the Heliotrope don't part with it willingly."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Events>
+			<OnRefuel>
+				; Chance that this will enhance the ship's drive
+				(if (leq (random 1 100) (multiply 2 (itmGetCount gItem)))
+					(objEnumItems gSource "rI" theItem
+						(switch
+							(itmIsDamaged theItem)
+								(block Nil
+									(objSendMessage gSource Nil (cat "Your " (itmGetName theItem 0) " has been repaired."))
+									(shpRepairItem gSource theItem)
+									)
+
+							(not (itmIsEnhanced theItem))
+								(block Nil
+									(objSendMessage gSource Nil (cat "Your " (itmGetName theItem 0) " has been enhanced."))
+									(shpEnhanceItem gSource theItem)
+									)
+							)
+						)
+					)
+			</OnRefuel>
+		</Events>
+	</ItemType>
+
+	<!-- Sunflare Cannon -->
+
+	<ItemType UNID="&itSunflareCannon;"
+			name=				"sunflare cannon"
+			level=				"5"
+			value=				"8500"
+			mass=				"6000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			modifiers=			"EnergyWeapon; Heliotropes; MajorItem; NotForSale;"
+
+			description=		"Heliotropes developed this heavy ion particle cannon. Its blast is almost as destructive as a solar eruption."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"particle:6d8; WMD2"
+				fireRate=			"30"
+				lifetime=			"40"
+				powerUse=			"200"
+
+				beamType=			"heavyblaster"
+				primaryColor=		"0xe6, 0xff, 0x6f"
+				secondaryColor=		"0xff, 0x8c, 0x00"
+				intensity=			"10"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Blinder Cannon -->
+
+	<ItemType UNID="&itBlinderCannon;"
+			name=				"blinder cannon"
+			level=				"3"
+			value=				"1350"
+			mass=				"2000"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			modifiers=			"EnergyWeapon; Heliotropes; MajorItem; NotForSale;"
+
+			description=		"A blinder cannon shoots out a thin stream of ionized particles that disrupts a ship's sensors."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:2d8+2; blinding3"
+				fireRate=			"15"
+				lifetime=			"30"
+				powerUse=			"50"
+
+				beamType=			"lightning"
+				primaryColor=		"0xa0, 0xf0, 0xff"
+				secondaryColor=		"0x00, 0xa9, 0xff"
+				intensity=			"1"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Heliotrope Destroyer -->
+
+	<ShipClass UNID="&scHeliotropeDestroyer;"
+			manufacturer=		"Heliotrope"
+			class=				""
+			type=				"destroyer"
+			score=				"325"
+
+			mass=				"250"
+			cargoSpace=			"50"
+			thrust=				"750"
+			maneuver=			"4"
+			maxSpeed=			"15"
+
+			leavesWreck=		"60"
+
+			attributes=			"genericClass,heliotropes"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itSolarArmor;" areaSet="0,2" />
+			<ArmorSection start="315" span="30" armorID="&itSolarArmor;" areaSet="3,4" />
+			<ArmorSection start="285" span="30" armorID="&itSolarArmor;" areaSet="1,6" />
+			<ArmorSection start="255" span="30" armorID="&itSolarArmor;" areaSet="7,13" />
+			<ArmorSection start="225" span="30" armorID="&itSolarArmor;" areaSet="0,2" />
+			<ArmorSection start="195" span="30" armorID="&itSolarArmor;" areaSet="3,4" />
+			<ArmorSection start="165" span="30" armorID="&itSolarArmor;" areaSet="1,6" />
+			<ArmorSection start="135" span="30" armorID="&itSolarArmor;" areaSet="7,13" />
+			<ArmorSection start="105" span="30" armorID="&itSolarArmor;" areaSet="0,2" />
+			<ArmorSection start="75"  span="30" armorID="&itSolarArmor;" areaSet="3,4" />
+			<ArmorSection start="45"  span="30" armorID="&itSolarArmor;" areaSet="1,6" />
+			<ArmorSection start="15"  span="30" armorID="&itSolarArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itSunflareCannon;"/>
+			<Device deviceID="&itSolonShieldGenerator;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<Items>
+			<Item				count="2d6"	item="&itHeliotropeFuel;"/>
+			<Lookup				count="1"	table="&trConsumables3;"/>
+		</Items>
+
+	</ShipClass>
+
+	<!-- Heliotrope Gunship -->
+
+	<ShipClass UNID="&scHeliotropeGunship;"
+			manufacturer=		"Heliotrope"
+			class=				""
+			type=				"gunship"
+			score=				"220"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrust=				"250"
+			maneuver=			"3"
+			maxSpeed=			"20"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass,heliotropes"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itCeramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itCeramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlinderCannon;"/>
+			<Device deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itSolarPanelArray;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="224" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-34" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Heliotrope Encounters -->
+
+	<ShipTable UNID="&tbHeliotropeEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="--ccu rr---" count="1"	class="&scHeliotropeGunship;" eventHandler="&evStdZoneEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d2"	class="&scHeliotropeGunship;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="--rcc uurr-" count="1"	class="&scHeliotropeGunship;" eventHandler="&evStdZoneEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4"	class="&scHeliotropeGunship;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="--ruu uurr-" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;"/>
+			
+			<Ship levelFrequency="--vuc cuurr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4"	class="&scHeliotropeGunship;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="---rr rrrrr" count="1"	class="&scHeliotropeDestroyer;" eventHandler="&evStdZoneEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d2"	class="&scHeliotropeDestroyer;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+<!-- Himal Separatists ==================================================== -->
+
+	<Sovereign UNID="&svHimalSeparatists;"
+			name="Himal Separatists"
+			alignment="destructive order"
+			/>
+
+	<!-- Himal Interceptor -->
+
+	<ShipClass UNID="&scHimalInterceptor;"
+			manufacturer=		"Himal"
+			class=				""
+			type=				"interceptor"
+			score=				"55"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrust=				"150"
+			maneuver=			"4"
+			maxSpeed=			"30"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass,himalSettlers"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumPlate;"/>
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlaster;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="720" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="5" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"40"
+			fireAccuracy=		"75"
+			perception=			"4"
+			combatStyle=		"flyby"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-40" y="-3"/>
+			<NozzlePos x="-40" y="3"/>
+		</DriveImages>
+
+	</ShipClass>
+
+<!-- Kobol Warlords ======================================================= -->
+
+	<Sovereign UNID="&svKobolWarlords;"
+			name="Kobol Warlords"
+			alignment="destructive chaos"
+			/>
+
+	<ShipClass UNID="&scKobolGunshipOmniTeV9;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			score=				"870"
+
+			mass=				"200"
+			cargoSpace=			"100"
+			thrust=				"1000"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itOmniTeV9Blaster;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="832" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-50" y="11"/>
+			<NozzlePos x="-50" y="-11"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<ShipClass UNID="&scKobolGunshipDualTeV9;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			score=				"990"
+
+			mass=				"200"
+			cargoSpace=			"100"
+			thrust=				"1000"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualTeV9Blaster;" />
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="896" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireRangeAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-50" y="11"/>
+			<NozzlePos x="-50" y="-11"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<ShipClass UNID="&scKobolGunshipMissiles;"
+			manufacturer=		""
+			class=				"Kobol gunship"
+			type=				""
+			score=				"1370"
+
+			mass=				"200"
+			cargoSpace=			"100"
+			thrust=				"1000"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass,kobolWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" posAngle="90" posRadius="20"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+			<Item chance="50" count="1d12" item="&itGotha400Seeker;"/>
+			<Item count="4d12" item="&itGotha10Missile;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="960" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-50" y="11"/>
+			<NozzlePos x="-50" y="-11"/>
+		</DriveImages>
+
+	</ShipClass>
+
+<!-- Marauders ============================================================ -->
+
+	<Sovereign UNID="&svMarauders;"
+			name="Marauders"
+			alignment="destructive order"
+			/>
+
+	<!-- Barbary-class Gunship -->
+
+	<ShipClass UNID="&scBarbary;"
+			manufacturer=		"Charon Pirates"
+			class=				"Barbary"
+			type=				"gunship"
+			score=				"485"
+
+			mass=				"50"
+			cargoSpace=			"5"
+			thrust=				"250"
+			maneuver=			"4"
+			maxSpeed=			"25"
+
+			leavesWreck=		"20"
+
+			attributes=			"charonPirates,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itHeavyReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itHeavyReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itIonCannon;"/>
+			<Device deviceID="&itDualTurbolaserCannon;"/>
+			<Device deviceID="&itClass2Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="432" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-9" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-30" y="-4"/>
+			<NozzlePos x="-30" y="4"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Marauder Raid Platform -->
+
+	<ShipClass UNID="&scMarauderRaidPlatform;"
+			manufacturer=		"Marauder"
+			class=				""
+			type=				"raid platform"
+			score=				"310"
+
+			mass=				"5000"
+			cargoSpace=			"500"
+			thrust=				"1000"
+			maneuver=			"24"
+			maxSpeed=			"6"
+
+			explosionType=		"&vtBlastExplosion1;"
+			leavesWreck=		"100"
+
+			attributes=			"genericClass,marauders"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="340" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="330" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="320" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="310" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="300" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="290" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="280" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="270" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="260" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="250" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="240" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+
+			<ArmorSection start="230" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="220" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="210" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="200" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="190" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="180" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="170" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="160" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="150" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="140" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="130" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="120" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+
+			<ArmorSection start="110" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="100" span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="90"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="80"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="70"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="60"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="50"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="40"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="30"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="20"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="10"  span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+			<ArmorSection start="0"   span="10" armorID="&itReinforcedTitanium2;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="90" posRadius="50"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="270" posRadius="50"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="2d6"	item="&itHeliumAssembly;"/>
+			<Lookup				count="1"	table="&trConsumables3;"/>
+			<Lookup				count="1"	table="&trConsumables4;"/>
+
+			<Item chance="50"	count="4d8"	item="&itKM100Missile;"/>
+			<Lookup chance="50" count="1"	table="&trMinorItem4;"/>
+			<Lookup chance="50" count="1"	table="&trMajorItem4;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips4;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Escorts>
+			<LevelTable>
+				<Group levelFrequency="cccur v----">
+					<Ship			count="1"	class="&scViking-II;"	orders="escort"/>
+					<Ship			count="1d4"	class="&scCorsair-II;"	orders="escort"/>
+				</Group>
+				<Group levelFrequency="---cu rv---">
+					<Ship			count="1"	class="&scBarbary;"		orders="escort"/>
+					<Table>
+						<Ship chance="60"	count="1d4"	class="&scViking-II;"	orders="escort"/>
+						<Ship chance="40"	count="1d4" class="&scCorsair-II;"	orders="escort"/>
+					</Table>
+				</Group>
+				<Group levelFrequency="----c urvvv">
+					<Ship		   count="1"	class="&scBarbary;"		orders="escort"	/>
+					<Table>
+						<Ship chance="60"	count="1d6+1"	class="&scViking-II;"	orders="escort"/>
+						<Ship chance="40"	count="1d6+1" class="&scCorsair-II;"	orders="escort"/>
+					</Table>
+				</Group>
+			</LevelTable>
+		</Escorts>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"5"
+			/>
+
+	</ShipClass>
+
+	<!-- Tripoli-class Destroyer -->
+
+	<ShipClass UNID="&scTripoli;"
+			manufacturer=		"Charon Pirates"
+			class=				"Tripoli"
+			type=				"destroyer"
+			score=				"1215"
+
+			mass=				"5000"
+			cargoSpace=			"500"
+			thrust=				"1000"
+			maneuver=			"8"
+			maxSpeed=			"12"
+
+			cyberDefenseLevel=	"4"
+
+			explosionType=		"&vtBlastExplosion1;"
+			leavesWreck=		"100"
+
+			attributes=			"genericClass,marauders"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
+			<ArmorSection start="315" span="30" armorID="&itBlastPlate;" areaSet="3,4" />
+			<ArmorSection start="285" span="30" armorID="&itBlastPlate;" areaSet="1,6" />
+			<ArmorSection start="255" span="30" armorID="&itBlastPlate;" areaSet="7,13" />
+			<ArmorSection start="225" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
+			<ArmorSection start="195" span="30" armorID="&itBlastPlate;" areaSet="3,4" />
+			<ArmorSection start="165" span="30" armorID="&itBlastPlate;" areaSet="1,6" />
+			<ArmorSection start="135" span="30" armorID="&itBlastPlate;" areaSet="7,13" />
+			<ArmorSection start="105" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
+			<ArmorSection start="75"  span="30" armorID="&itBlastPlate;" areaSet="3,4" />
+			<ArmorSection start="45"  span="30" armorID="&itBlastPlate;" areaSet="1,6" />
+			<ArmorSection start="15"  span="30" armorID="&itBlastPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="18" posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20" posAngle="342" posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="72" posRadius="30"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10" posAngle="288" posRadius="30"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
+			<Table>
+				<Item chance="80" count="10d40" item="&itFragmentationMissile;"/>
+				<Item chance="10" count="10d40" item="&itKM500Missile;"/>
+				<Item chance="10" count="10d40" item="&itKM550Missile;"/>
+			</Table>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsMediumShips4;" imageX="256" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"5"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+<!-- Order of Penitence =================================================== -->
+
+	<!-- Absolution cannon -->
+
+	<ItemType UNID="&itAbsolutionCannon;"
+			name=				"Penitent cannon"
+			level=				"4"
+			value=				"4000"
+			mass=				"2000"
+			frequency=			"rare"
+			modifiers=			"Alien; EnergyWeapon; MajorItem; NotForSale;"
+
+			description=		"Very little is known about these exotic, dark-matter weapons. The Order of Penitence uses these weapons in their ships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"darkAcid:1d8; WMD1"
+				fireRate=			"45"
+				missileSpeed=		"45"
+				lifetime=			"40"
+				powerUse=			"200"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMissiles4;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="1"/>
+			</Effect>
+
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Oracus HARASS power -->
+
+	<ItemType UNID="&itOracusHarassPower;"
+			name=				"Oracus HARASS power"
+			virtual=			"true"
+			level=				"5"
+			>
+
+		<Weapon
+				type=				"area"
+
+				damage=				"darkAcid:2d8; WMD1"
+				fireRate=			"30"
+				expansionSpeed=		"15"
+				missileSpeed=		"0"
+				lifetime=			"40"
+				powerUse=			"200"
+				>
+
+			<Effect>
+				<Shockwave>
+					<Image imageID=				"&rsShockwave1;"
+							imageX=				"0" 
+							imageY=				"128" 
+							imageWidth=			"512" 
+							imageHeight=		"64"
+							imageFrameCount=	"1"
+							imageTicksPerFrame=	"1"/>
+				</Shockwave>
+			</Effect>
+
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Atonement-class Gunship -->
+
+	<ShipClass UNID="&scAtonement;"
+			manufacturer=		"United Africa States"
+			class=				"Atonement"
+			type=				"heavy gunship"
+			score=				"545"
+
+			mass=				"100"
+			cargoSpace=			"25"
+			thrust=				"400"
+			maneuver=			"3"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass,penitent"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itHeavyPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHeavyPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itHeavyPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itHeavyPlasteelPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAbsolutionCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itKM500Missile;"/>
+			<Item count="5d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-54" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Repentant-class Gunship -->
+
+	<ShipClass UNID="&scRepentant;"
+			manufacturer=		"United Africa States"
+			class=				"Repentant"
+			type=				"gunship"
+			score=				"340"
+
+			mass=				"50"
+			cargoSpace=			"25"
+			thrust=				"250"
+			maneuver=			"2"
+			maxSpeed=			"25"
+
+			leavesWreck=		"35"
+
+			attributes=			"genericClass,penitent"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAbsolutionCannon;"/>
+			<!--<Device deviceID="&itOracusHarassPower;"/>-->
+			<Device deviceID="&itClass2Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-39" y="-8"/>
+			<NozzlePos x="-39" y="8"/>
+		</DriveImages>
+
+	</ShipClass>
+
+<!-- Outlaws ============================================================== -->
+
+	<!-- Oromo-class Gunship -->
+
+	<ShipClass UNID="&scOromo;"
+			manufacturer=		"United African States"
+			class=				"Oromo"
+			type=				"gunship"
+			score=				"105"
+
+			mass=				"75"
+			cargoSpace=			"25"
+			thrust=				"500"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"30"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itCeramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itCeramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itArbalestCannon;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="240" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-46" y="0"/>
+		</DriveImages>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Sotho-class Gunship -->
+
+	<ShipClass UNID="&scSotho;"
+			manufacturer=		"United African States"
+			class=				"Sotho"
+			type=				"gunship"
+			score=				"175"
+
+			mass=				"100"
+			cargoSpace=			"25"
+			thrust=				"500"
+			maneuver=			"3"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itHeavyCeramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itHeavyCeramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itArbalestCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="256" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-52" y="6"/>
+			<NozzlePos x="-52" y="-6"/>
+		</DriveImages>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- T31 Armed Transport -->
+
+	<ShipClass UNID="&scT31ArmedTransport;"
+			manufacturer=		"United African States"
+			class=				"T31"
+			type=				"armed transport"
+
+			mass=				"150"
+			cargoSpace=			"250"
+			thrust=				"120"
+			maneuver=			"3"
+			maxSpeed=			"16"
+
+			leavesWreck=		"75"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itSmartCannon;"/>
+			<Device deviceID="&itRecoillessCannon;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+			<Item count="3d20" item="&itSmartCannonShell;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="448" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- T55 Armed Transport -->
+
+	<ShipClass UNID="&scT55ArmedTransport;"
+			manufacturer=		"United African States"
+			class=				"T55"
+			type=				"armed transport"
+
+			mass=				"250"
+			cargoSpace=			"450"
+			thrust=				"160"
+			maneuver=			"3"
+			maxSpeed=			"16"
+
+			leavesWreck=		"90"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="338" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="293" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="248" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="203" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="158" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="113" span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="68"  span="45" armorID="&itPlasteelPlate;" />
+			<ArmorSection start="23"  span="45" armorID="&itPlasteelPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBallistaCannon;" omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Zulu-class Gunship -->
+
+	<ShipClass UNID="&scZulu;"
+			manufacturer=		"United African States"
+			class=				"Zulu"
+			type=				"gunship"
+			score=				"45"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrust=				"150"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightCeramicPlate;"/>
+			<ArmorSection start="90"  span="180" armorID="&itLightCeramicPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"50"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-37" y="-7"/>
+			<NozzlePos x="-37" y="7"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Zulu II-class Gunship -->
+
+	<ShipClass UNID="&scZulu-II;"
+			manufacturer=		"United African States"
+			class=				"Zulu II"
+			type=				"gunship"
+			score=				"70"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrust=				"200"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass,outlaws"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightCeramicPlate;"/>
+			<ArmorSection start="90"  span="180" armorID="&itLightCeramicPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itHeavyRecoillessCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="160" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"70"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-37" y="-7"/>
+			<NozzlePos x="-37" y="7"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<ShipTable UNID="&tbOutlawEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="ucv-- -----" count="1"	class="&scZulu;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d2"	class="&scZulu;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="-cuv- -----" count="1"	class="&scZulu-II;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4"	class="&scZulu;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="-cuv- -----" count="1"	class="&scOromo;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="20"	   count="1d4"	class="&scZulu;" orders="escort"/>
+						<Ship chance="40"	   count="1d2"	class="&scZulu-II;" orders="escort"/>
+						<Ship chance="40"	   count="1"	class="&scOromo;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="-rcur -----" count="1"	class="&scZulu-II;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d3"	class="&scZulu-II;" orders="escort"/>
+					<Ship					   count="1d8"	class="&scZulu;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="-rcur -----" count="1"	class="&scOromo;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="30"	   count="1d8"	class="&scZulu;" orders="escort"/>
+						<Ship chance="30"	   count="1d4"	class="&scZulu-II;" orders="escort"/>
+						<Ship chance="40"	   count="1d2"	class="&scOromo;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="-rcur -----" count="1"	class="&scSotho;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="40"	   count="1d6"	class="&scZulu;" orders="escort"/>
+						<Ship chance="40"	   count="1d2"	class="&scZulu-II;" orders="escort"/>
+						<Ship chance="10"	   count="1d2"	class="&scOromo;" orders="escort"/>
+						<Ship chance="10"	   count="1"	class="&scSotho;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="ccurr -----" count="1"	class="&scT31ArmedTransport;" eventHandler="&evStdConvoyEncounterBehavior;">
+				<Items>
+					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
+					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>
+					<Table>
+						<Lookup chance="40" count="1" table="&trConsumables2;"/>
+						<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+						<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+					</Table>
+				</Items>
+
+				<Escorts>
+					<Ship					   count="1d4+2"	class="&scZulu;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="ruccc -----" count="1"	class="&scT31ArmedTransport;" eventHandler="&evStdConvoyEncounterBehavior;">
+				<Items>
+					<Item					count="8d20" item="&itSmartCannonShell;"/>
+					<Lookup					count="1d8+1" table="&trIllegalItems2;"/>
+					<Table count="1d2">
+						<Lookup chance="40" count="1" table="&trConsumables2;"/>
+						<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+						<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+					</Table>
+				</Items>
+
+				<Escorts>
+					<Table>
+						<Ship chance="60"	   count="1d4+2"	class="&scZulu-II;" orders="escort"/>
+						<Ship chance="40"	   count="1d3+1"	class="&scOromo;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+	
+<!-- Pteravores =========================================================== -->
+
+	<!-- Pteravore Spore Launcher -->
+
+	<ItemType UNID="&vtPteravoreSporeLauncher;"
+			name=				"pteravore spore launcher"
+			level=				"10"
+			virtual=			"true"
+			>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"kinetic:4d6"
+				missileSpeed=		"12"
+				fireRate=			"30"
+				maneuverability=	"2"
+				lifetime=			"360"
+				powerUse=			"100"
+
+				hitPoints=			"20"
+				interaction=		"100"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsPteravoreClaw;" imageWidth="32" imageHeight="32" rotationCount="20"/>
+			</Effect>
+		</Weapon>
+
+		<Events>
+			<OnDamageArmor>
+				(block Nil
+					; Add the pteravore overlay, but only if we don't already
+					; have too many overlays
+
+					(if (leq (count (objGetOverlays gSource)) 12)
+						(objAddOverlay 
+							gSource 
+							&ovPteravoreFuelDrain; 
+							aHitPos 
+							(modulo (add aHitDir 180) 360)
+							)
+						)
+
+					; Return full damage
+					aDamageHP
+					)
+			</OnDamageArmor>
+
+			<OnDamageShields>
+				(block (probTable)
+					; Chance of passing through the shield is based on level
+					(setq probTable
+						'(100
+							100		; Level I
+							100		; Level II
+							100		; Level III
+							100		; Level IV
+							100		; Level V
+							100		; Level VI
+							100		; Level VII
+							100		; Level VIII
+							95		; Level IX
+							85		; Level X
+							65		; Level XI
+							30		; Level XII
+							5		; Level XIII
+							0		; Level XIV and higher
+							)
+						)
+
+					(if (leq (random 1 100) (item probTable (min 14 (itmGetLevel aDeviceItem))))
+
+						; If we penetrate shields, then return full damage
+						aDamageHP
+
+						; Otherwise, we return Nil to indicate that normal shield handling applies
+						Nil
+						)
+					)
+			</OnDamageShields>
+		</Events>
+	</ItemType>
+
+	<!-- Pteravore Bite -->
+
+	<ItemType UNID="&vtPteravoreBite;"
+			name=				"pteravore bite"
+			level=				"8"
+			virtual=			"true"
+			>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"plasma:4d12"
+				missileSpeed=		"20-30"
+				lifetime=			"20"
+				>
+		</Weapon>
+
+		<Events>
+			<OnDamageOverlay>
+				; Ignore any overlays
+
+				aDamageHP
+			</OnDamageOverlay>
+
+			<OnDamageShields>
+				; The pteravore is attached to the armor, so we always skip shields
+
+				aDamageHP
+			</OnDamageShields>
+		</Events>
+	</ItemType>
+
+	<!-- Pteravore Spore Overlay
+
+	EXTRA DATA
+
+	fuelConsumed:		Total amount of fuel consumed
+	timer:				If set, we wait until the timer expires
+
+	-->
+
+	<OverlayType UNID="&ovPteravoreFuelDrain;"
+			>
+		<Effect>
+			<Image imageID="&rsPteravoreClawOverlay;" imageWidth="32" imageHeight="32" rotationCount="40"/>
+		</Effect>
+
+		<HitEffect 
+				sound=	"&snArmorHit1;"
+				>
+			<ParticleExplosion
+					particleCount=		"2d4"
+					particleSpeed=		"25"
+					particleLifetime=	"20"
+					>
+				<Image imageID="&rsPteravoreDebris;" imageWidth="12" imageHeight="12" imageFrameCount="8" imageTicksPerFrame="3"/>
+			</ParticleExplosion>
+		</HitEffect>
+
+		<Events>
+			<OnCreate>
+				(objSetOverlayData gSource aOverlayID "hp" 60)
+			</OnCreate>
+
+			<OnDamage>
+				(switch
+					; Skip if we are hit by a pteravore
+					(eq aWeaponType &vtPteravoreSporeLauncher;)
+						Nil
+
+					; Overlay gets damaged
+					(block Nil
+						(if (leq (objIncOverlayData gSource aOverlayID "hp" (subtract 0 aDamageHP)) 0)
+							(objRemoveOverlay gSource aOverlayID)
+							)
+
+						; We take all the damage
+						0
+						)
+					)
+			</OnDamage>
+
+			<OnInsuranceClaim>
+				; Insurance cleans up pteravores
+				(objRemoveOverlay gSource aOverlayID)
+			</OnInsuranceClaim>
+
+			<OnUpdate>
+				(block Nil
+
+					; Consume some fuel
+					(switch
+						; If we've already consumed enough, then we detach
+						(gr (objGetOverlayData gSource aOverlayID "fuelConsumed") 500000)
+							(block Nil
+								(sysCreateWeaponFire &vtPteravoreSporeLauncher;
+									gSource
+									(objGetPos gSource)
+									(random 0 359)
+									12
+									(sysFindObject gSource "TN +pteravore;")
+									)
+								(objRemoveOverlay gSource aOverlayID)
+								)
+
+						; For the player ship, consume fuel
+						; (about 1 pteracnium rod every 2 seconds
+						(eq gSource gPlayerShip)
+							(block Nil
+								(shpConsumeFuel gPlayerShip 12500)
+								(objIncOverlayData gSource aOverlayID "fuelConsumed" 12500)
+								)
+
+						; If we have the timer on, then wait
+						(objGetOverlayData gSource aOverlayID "timer")
+							(if (leq (objIncOverlayData gSource aOverlayID "timer" -1) 0)
+								(objSetOverlayData gSource aOverlayID "timer" Nil)
+								)
+
+						; For other ships, consume fuel out of cargo space
+						(block (theItem)
+							; Choose a random fuel item
+							(setq theItem (random (objGetItems gSource "f")))
+
+							(if theItem
+								(block (fuelPerItem)
+									(setq fuelPerItem (max 2500 (itmGetTypeData theItem)))
+
+									; Consume one pteracnium rod worth
+									(setq consumeCount (max 1 (min (itmGetCount theItem) (divide 50000 fuelPerItem))))
+
+									; Consume the item
+									(objRemoveItem gSource theItem consumeCount)
+									(objIncOverlayData gSource aOverlayID "fuelConsumed" (multiply consumeCount fuelPerItem))
+
+									; Wait a while before consuming more
+									(objSetOverlayData gSource aOverlayID "timer" 
+										(max 1 (divide (multiply consumeCount fuelPerItem) 12500))
+										)
+									)
+
+								; If no fuel is found, wait a while before we try again
+								(objSetOverlayData gSource aOverlayID "timer" 101)
+								)
+							)
+						)
+
+					; There is a chance that the pteravore will do some damage
+					(if (leq (random 1 100) 5)
+						(block (result)
+
+							; Do damage
+							(setq result (objDamage 
+								gSource 
+								&vtPteravoreBite; 
+								'("pteravores" 0x40) 
+								(objGetOverlayPos gSource aOverlayID)
+								))
+
+							(switch
+								; If the source was destroyed by the damage, then
+								; we don't do anything else (gSource is invalid)
+
+								(eq result 'destroyed)
+									Nil
+
+								; Otherwise, tell the player what happened
+
+								(objSendMessage gSource gSource "Pteravores have damaged the ship!")
+								)
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+	</OverlayType>
+
+	<Image UNID="&rsPteravoreClaw;"			bitmap="Resources\PteravoreClaw.jpg"	bitmask="Resources\PteravoreClawMask.bmp"	backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsPteravoreLair;"			bitmap="Resources\PteravoreLair.jpg"	bitmask="Resources\PteravoreLairMask.bmp"	backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClawOverlay;"	bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsPteravoreDebris;"		bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	backColor="0x00000000" loadOnUse="true"/>
+
+<!-- Ranx Warlords ======================================================== -->
+
+	<!-- Segment of Depleted Uranium Armor -->
+
+	<ItemType UNID="&itDepletedUraniumArmor;"
+			name=				"[segment(s) of ]depleted uranium armor"
+			level=				"4"
+			value=				"600"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+			mass=				"5000"
+			modifiers=			"MinorItem; NotForSale"
+
+			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"75"
+				hpBonus=	"  +0,  +0, +25, +25, +25, +25"
+
+				repairTech=	"6"
+				installCostAdj="150"
+				/>
+	</ItemType>
+
+	<!-- Ranx Gunship -->
+
+	<ShipClass UNID="&scRanxGunship;"
+			manufacturer=		"Ranx"
+			class=				""
+			type=				"gunship"
+			score=				"490"
+
+			mass=				"100"
+			cargoSpace=			"10"
+			thrust=				"700"
+			maneuver=			"3"
+			maxSpeed=			"18"
+
+			leavesWreck=		"30"
+
+			attributes=			"genericClass,ranx"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itDepletedUraniumArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itDepletedUraniumArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itDepletedUraniumArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itDepletedUraniumArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAkan30Cannon;"/>
+			<Device deviceID="&itMonopoleDeflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="20d20"	item="&itAkan30CannonShell;" />
+			<Table>
+				<Item chance="60" count="2d6" item="&itHeliumAssembly;"/>
+				<Item chance="30" count="1d2" item="&itLightArmorRepair;"/>
+				<Item chance="10" count="1" item="&itMediumArmorRepair;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="624" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireRangeAdj=		"60"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-32" y="10"/>
+			<NozzlePos x="-32" y="-10"/>
+		</DriveImages>
+	</ShipClass>
+
+	<!-- Ranx Dreadnought -->
+
+	<ShipClass UNID="&scRanxDreadnought;"
+			manufacturer=		"Ranx"
+			class=				""
+			type=				"dreadnought"
+			score=				"1350"
+
+			mass=				"25000"
+			cargoSpace=			"15000"
+			thrust=				"10000"
+			maneuver=			"16"
+			maxSpeed=			"8"
+
+			cyberDefenseLevel=	"6"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"genericClass,ranx"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itTransuranicPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="315" span="15" armorID="&itTransuranicPlate;" />
+			<ArmorSection start="300" span="15" armorID="&itTransuranicPlate;" />
+			<ArmorSection start="285" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="180" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+
+			<ArmorSection start="165" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="150" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="135" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itTransuranicPlate;" />
+			<ArmorSection start="30"  span="15" armorID="&itTransuranicPlate;" />
+			<ArmorSection start="15"  span="15" armorID="&itTransuranicPlate;" nonCritical="general"/>
+			<ArmorSection start="0"   span="15" armorID="&itTransuranicPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itKilotonCannon;" omnidirectional="true" posAngle="0" posRadius="24"/>
+			<Device deviceID="&itPatchSpider;"/>
+			<Device deviceID="&itPatchSpider;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="1"		item="&itKilotonCannon;"/>
+			<Item				count="12d20"	item="&itKilotonCannonShell;"/>
+			<Item				count="2d12"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup	chance="40"	count="1d4"		table="&trConsumables8;"/>
+				<Lookup	chance="30"	count="1d2"		table="&trMinorItem8;"/>
+				<Lookup	chance="30"	count="1"		table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsLargeShips1;" imageX="960" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"35"
+			fireAccuracy=		"90"
+			perception=			"6"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Ranx Encounter Table -->
+	
+	<ShipTable unid="&tbRanxEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="----- ccurr" count="1"	class="&scRanxGunship;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d3"	class="&scRanxGunship;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- -ucur" count="1"	class="&scRanxGunship;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d6"	class="&scRanxGunship;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="----- -rrrr" count="1"	class="&scRanxDreadnought;"	orders="wander"	maxShips="4">
+				<Escorts>
+					<Ship					   count="1d4"	class="&scRanxGunship;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+<!-- Salvagers ============================================================ -->
+
+	<!-- Salvager Nomad -->
+
+	<ShipClass UNID="&scSalvagerNomad;"
+			manufacturer=		"Salvager"
+			class=				""
+			type=				"Nomad"
+			score=				"250"
+
+			mass=				"5000"
+			reactorPower=		"5000"
+			cargoSpace=			"500"
+			thrust=				"1000"
+			maneuver=			"24"
+			maxSpeed=			"6"
+			cyberDefenseLevel=	"4"
+
+			maxDevices=			"8"
+
+			explosionType=		"&vtKineticExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"genericClass,salvagers"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="340" span="10" armorID="&itReinforcedTitanium2;" nonCritical="scanners" />
+			<ArmorSection start="330" span="10" armorID="&itReinforcedTitanium2;" nonCritical="general" />
+			<ArmorSection start="320" span="10" armorID="&itReinforcedTitanium2;" nonCritical="general" />
+			<ArmorSection start="310" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="300" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="290" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="280" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="270" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="260" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="250" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="240" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="230" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="220" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="210" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="200" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="190" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="180" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="170" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="160" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="150" span="10" armorID="&itReinforcedTitanium2;"/>
+			<ArmorSection start="140" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="130" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="120" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="110" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="100" span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="90"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="80"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="70"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="60"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="50"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="40"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="cargo" />
+			<ArmorSection start="30"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="general" />
+			<ArmorSection start="20"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="general" />
+			<ArmorSection start="10"  span="10" armorID="&itReinforcedTitanium2;" nonCritical="tactical" />
+			<ArmorSection start="0"   span="10" armorID="&itReinforcedTitanium2;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" omnidirectional="true"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips4;" imageX="128" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+<!-- Sapiens ============================================================== -->
+
+	<!-- Plague Gunship -->
+
+	<ShipClass UNID="&scPlague;"
+			manufacturer=		"Freeworlds Designs"
+			class=				"Plague"
+			type=				"gunship"
+			score=				"180"
+
+			mass=				"50"
+			cargoSpace=			"50"
+			thrust=				"120"
+			maneuver=			"4"
+			maxSpeed=			"18"
+
+			leavesWreck=		"35"
+			radioactiveWreck=	"true"
+
+			attributes=			"genericClass,sapiens"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itHardenedReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itHardenedReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itWasteCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="384" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Revelations Missileship -->
+
+	<ShipClass UNID="&scRevelations;"
+			manufacturer=		"Freeworlds Designs"
+			class=				"Revelations"
+			type=				"missileship"
+			score=				"220"
+
+			mass=				"150"
+			cargoSpace=			"150"
+			thrust=				"200"
+			maneuver=			"8"
+			maxSpeed=			"18"
+
+			leavesWreck=		"55"
+			radioactiveWreck=	"true"
+
+			attributes=			"genericClass,sapiens"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itHardenedReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHardenedReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itHardenedReactiveArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itHardenedReactiveArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" minFireArc="300" maxFireArc="60" posAngle="0" posRadius="16"/>
+			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" />
+		</Devices>
+
+		<Items>
+			<Item count="4d6" item="&itXM300Missile;"/>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="128" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Sapiens Encounter Table -->
+	
+	<ShipTable unid="&tbSapiensEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="-ccur -----" count="1"	class="&scPlague;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d2-1" class="&scPlague;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="-rrv- -----" count="1"	class="&scRevelations;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Table>
+						<Null chance="75"/>
+						<Ship chance="25"	   count="1"	class="&scPlague;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="--ccu r----" count="1"	class="&scPlague;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4-1" class="&scPlague;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="--uuu r----" count="1"	class="&scRevelations;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Table>
+						<Null chance="35"/>
+						<Ship chance="25"	   count="1d2"	class="&scPlague;" orders="escort"/>
+						<Ship chance="40"	   count="1"	class="&scRevelations;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+<!-- Sealed Cargo Container =============================================== -->
+
+<!-- Ventari Settlers ===================================================== -->
+
+	<!-- Ventari Cruiser -->
+
+	<ShipClass UNID="&scVentariCruiser;"
+			manufacturer=		"Ventari"
+			class=				""
+			type=				"destroyer"
+			score=				"1670"
+
+			mass=				"5000"
+			cargoSpace=			"1000"
+			thrust=				"2500"
+			maneuver=			"12"
+			maxSpeed=			"13"
+
+			explosionType=		"&vtBlastExplosion1;"
+			leavesWreck=		"95"
+
+			attributes=			"genericClass,ventari"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="315" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="285" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="255" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="225" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="195" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="165" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="135" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="105" span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="75"  span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="45"  span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+			<ArmorSection start="15"  span="30" armorID="&itOrthoSteel;" enhancement="0x0945" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itIonDisruptor;" omnidirectional="true"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="90" posRadius="30"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="270" posRadius="30"/>
+			<Device deviceID="&itYoroiS500;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="2d12"	item="&itPteracniumFuelRod;"/>
+			<Item chance="20"	count="1d4"		item="&itIonResistCoating;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips3;" imageX="480" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"6"
+			/>
+
+	</ShipClass>
+
+<!-- Weapons Cache ======================================================== -->
+
+</TranscendenceModule>

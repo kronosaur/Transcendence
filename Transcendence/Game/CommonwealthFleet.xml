@@ -1,0 +1,4862 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Ares Campaign Ribbon -->
+
+	<ItemType UNID="&itAresCampaignRibbon;"
+			name=				"Ares Campaign Ribbon"
+			level=				"7"
+			value=				"50"
+			mass=				"1"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"Consumable; NotForSale"
+
+			description=		"The Commonwealth Fleet awards this ribbon to all who have been in combat against the Ares Orthodoxy."
+
+			sortName=			"medal, Ares Campaign Ribbon"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- R5B deflector -->
+
+	<ItemType UNID="&itR5BDeflector;"
+			name=				"R5-B deflector"
+			level=				"7"
+			value=				"45000"
+			mass=				"3500"
+			frequency=			"rare"
+			attributes=			"MajorItem; Military; Specialty"
+
+			description=		"Commonwealth Fleet labs created this variant of the R5 for its new Britannia-class gunships."
+
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"220"
+				hpBonus=		"  +0,  +0,  +0,  +0, +75, +25"
+				regen=			"40"
+				depletionDelay=	"360"
+				powerUse=		"550"
+				/>
+
+	</ItemType>
+
+	<!-- NM900 external missile pod -->
+
+	<ItemType UNID="&itNM900MissilePod;"
+			name=				"NM900 external missile pod"
+			level=				"7"
+			value=				"2000"
+			mass=				"1300"
+			frequency=			"rare"
+			attributes=			"Disposable; MajorItem; Military; NAMI; Specialty"
+
+			charges=			"36"
+			valueCharges=		"true"
+
+			description=		"This external pod is loaded with thirty-six XM900 nuclear missiles and can be installed without the aid of a station."
+			>
+
+		<Image imageID="&rsItemsNAMI4;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				launcher=			"true"
+				fireRate=			"30"
+				powerUse=			"5"
+				charges=			"true"
+
+				deviceSlots=		"0"
+				external=			"true"
+				
+				damage=				"thermo:6d24; momentum6; WMD7"
+				missileSpeed=		"40"
+				hitPoints=			"20"
+				lifetime=			"120"
+				maneuverability=	"2"
+
+				directional=		"true"
+				sound=				"&snMissileLauncher;"
+
+				vaporTrailLength=	"16"
+				vaporTrailWidth=	"110"
+				vaporTrailWidthInc=	"5"
+				vaporTrailColor=	"0xd0, 0xd0, 0xd0"
+				>
+
+			<Effect>
+				<Image imageID="&rsMissiles2;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+			</Effect>						
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG128;"
+						imageX="0"
+						imageY="0"
+						imageWidth="128"
+						imageHeight="128"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+
+			<Fragment 
+					count=			"1"
+					type=			"radius"
+
+					damage=			"thermo:6d24; momentum6; WMD7"
+					minRadius=		"1"
+					maxRadius=		"4"
+					missileSpeed=	"0"
+					>
+
+				<Effect>
+					<Flare
+							style=			"fadingBlast"
+							radius=			"170"
+							primaryColor=	"0xff, 0xff, 0xf0"
+							lifetime=		"8"
+							/>
+				</Effect>
+			</Fragment>
+
+		</Weapon>
+		
+		<Invoke>
+			(intAutoInstall gSource gItem)
+		</Invoke>
+
+		<Events>
+			<Reload>
+				; Reloads the pod with missiles
+				(objSetItemCharges gSource gItem 36)
+			</Reload>
+		</Events>
+	</ItemType>
+
+	<!-- Lamplighter Archcannon -->
+
+	<ItemType UNID="&itLamplighter;"
+			name=				"Lamplighter archcannon"
+			level=				"10"
+			value=				"600000"
+			mass=				"5500"
+			frequency=			"notrandom"
+			attributes=			"MajorItem; Military"
+
+			description=		"Commissioned by Admiral Decker, this Commonwealth secret weapon is the most powerful weapon created by humans."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"antimatter:6d12; WMD5"
+				fireRate=			"15"
+				missileSpeed=		"50"
+				lifetime=			"60"
+				hitPoints=			"30"
+				powerUse=			"2000"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Starburst
+						style=			"flare"
+						spikeCount=		"8"
+						spikeLength=	"20-30"
+						primaryColor=	"0xff, 0xff, 0x80"
+						secondaryColor=	"0xff, 0xff, 0x80"
+						/>
+
+				<ParticleComet
+						particleCount=	"200"
+						primaryColor=	"0xff, 0xff, 0x80"
+
+						width=			"8"
+						length=			"120"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Project Lamplighter Prototype -->
+
+	<ItemType UNID="&itLamplighterPrototype;"
+			name=				"Project Lamplighter prototype"
+			level=				"10"
+			value=				"600000"
+			mass=				"5500"
+			frequency=			"notrandom"
+			unknownType=		"&itUnknownLamplighterPrototype;"
+			attributes=			"MajorItem; Military; LamplighterPrototype"
+
+			description=		"This prototype is designed to test the antimatter blast chamber of the Project Lamplighter weapon."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				failureChance=		"10"
+
+				damage=				"antimatter:4d12; WMD5"
+				fireRate=			"15"
+				missileSpeed=		"60"
+				lifetime=			"40"
+				hitPoints=			"15"
+				powerUse=			"3000"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Starburst
+						style=			"plain"
+						spikeCount=		"8"
+						spikeLength=	"20-30"
+						primaryColor=	"0xff, 0xff, 0x80"
+						secondaryColor=	"0xff, 0xff, 0x80"
+						/>
+
+				<ParticleComet
+						particleCount=	"200"
+						primaryColor=	"0xff, 0xff, 0x80"
+
+						width=			"8"
+						length=			"120"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Lamplighter data ROM -->
+
+	<ItemType UNID="&itLamplighterDataROM;"
+			name=				"unmarked data ROM"
+			level=				"7"
+			value=				"0"
+			frequency=			"notrandom"
+			mass=				"1"
+			attributes=			"Consumable; Info; LamplighterDataROM"
+
+			description=		"This unmarked ROM contains what looks like experimental data. It contains millions of data points collected over several years; their meaning and purpose is unknown."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Unknown Prototype -->
+
+	<ItemType UNID="&itUnknownLamplighterPrototype;"
+			name=				"unknown prototype weapon"
+			virtual=			"true"
+			level=				"10"
+			value=				"100000"
+
+			description=		"This is weapon prototype of some kind. Its markings suggest that it was created by the Commonwealth Fleet."
+
+			attributes=			"unknown"
+			>
+
+		<Names>weapon protype marked "Alpha"; weapon prototype marked "Beta"; weapon prototype marked "Gamma";
+			weapon prototype marked "Delta"; weapon prototype marked "Epsilon"; weapon prototype marked "Omega";
+			weapon prototype marked "0.1"; weapon prototype marked "X17"; weapon prototype marked "Trinity";
+			weapon prototype marked "Halifax"; weapon prototype marked "Test No. 6"; weapon prototype marked "596";
+			weapon prototype marked "Hurricane"; weapon prototype marked "Ivy Mike"; weapon prototype marked "Castle Bravo";
+			weapon prototype marked "Tsar Bomba"; weapon prototype marked "Smiling Buddha"; weapon prototype marked "RDS-37"
+		</Names>
+
+	</ItemType>
+	
+	<!-- Damage Control Party -->
+
+	<ItemType UNID="&vtDamageControlParty;"
+			name=				"(damage control party)"
+			level=				"10"
+			virtual=			"true"
+			>
+
+		<RepairerDevice
+				regen=			"10,10,10, 7, 7,  7, 5, 5, 5, 4"
+				powerUse=		"50"
+				/>
+
+	</ItemType>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Aquila-class Cruiser -->
+
+	<ShipClass UNID="&scAquilaCruiser;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Aquila"
+			type=				"cruiser"
+			score=				"2835"
+
+			mass=				"10000"
+			cargoSpace=			"1000"
+			thrust=				"5000"
+			maneuver=			"12"
+			maxSpeed=			"16"
+
+			cyberDefenseLevel=	"8"
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="330" span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="315" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="300" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="285" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="180" span="15" armorID="&itP210HexphaseArmor;" />
+
+			<ArmorSection start="165" span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="150" span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="135" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="30"  span="15" armorID="&itP210HexphaseArmor;" nonCritical="general"/>
+			<ArmorSection start="15"  span="15" armorID="&itP210HexphaseArmor;" />
+			<ArmorSection start="0"   span="15" armorID="&itP210HexphaseArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="99" posRadius="22"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="261" posRadius="22"/>
+			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itR9Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsLargeShips1;" imageX="1728" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="4d20" item="&itM2Missile;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"4"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+	
+	<!-- CSC Base Class
+	
+	EXTRA DATA
+	
+	behavior:			Ship's current behavior
+							Nil					= holding position and available for missions
+							'defendingCritical	= CSC is being attack by powerful enemy
+							'moving				= CSC is moving to a new position
+
+	squadron:			Entries for each ship in the CSC's squadron.
+							Each entry in the squadron is a list:
+								0: objID
+								1: ship class
+								2: status:
+									'home
+									'deployed
+									'destroyed
+	
+	targetObj:			Target to destroy. If the CSC is in 'defendingCritical mode, then this
+						is the capital ship that is attacking it.
+	
+	-->
+
+	<ShipClass UNID="&baCSCBase;"
+			class=				"(CSC base class)"
+			virtual=			"true"
+			
+			attributes=			"baseClass"
+			>
+
+		<Events>
+			<OnAttackedByPlayer>
+				(block Nil
+					(if (not (eq (shpGetOrder gSource) 'attackHold))
+						(shpOrderImmediate gSource 'attackHold gPlayerShip 10)
+						)
+					)
+			</OnAttackedByPlayer>
+
+			<OnBehavior>
+				(block (behavior attackerList)
+					(setq behavior (objGetData gSource "behavior"))
+					
+					(switch
+						(eq behavior 'defendingCritical)
+							Nil
+							
+						(eq behavior 'moving)
+							Nil
+
+						(block (attackerList highValueEnemies)
+							(switch
+							
+								; If we don't have anyone attacking us, then there is
+								; nothing to do.
+								(not (setq attackerList (sysFindObject gSource "sAEPX")))
+									Nil
+									
+								; If any of the attackers are level 9 or higher, then we need
+								; help. Deploy some Britannias.
+								(setq highValueEnemies (filter attackerList theObj (geq (objGetLevel theObj) 9)))
+									(block (theTarget )
+										(setq theTarget (random highValueEnemies))
+										(objSetObjRefData gSource "targetObj" theTarget)
+										(objRegisterForEvents gSource theTarget)
+
+										(for i 1 6
+											(block (theShip)
+												(setq theShip (cscSquadronDeployShip gSource &scBritannia;))
+												(if theShip
+													(block Nil
+														(shpOrder theShip 'attack theTarget)
+														(shpOrder theShip 'attackNearestEnemy)
+														(shpOrder theShip 'gate gSource)
+														)
+													)
+												)
+											)
+
+										(objSetData gSource "behavior" 'defendingCritical)
+										)
+								)
+							)
+						)
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block (squadronList)
+					; Are we in a good spot? If not, then we give orders to move
+					(fltOrderCheckPosition gSource)
+
+					; Create the Britannia squadron
+					(for i 1 6
+						(cscSquadronCreateShip gSource &scBritannia;)
+						)
+
+					; Behavior event
+					(sysAddObjRecurringTimerEvent 90 gSource "OnBehavior")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(block (squadronList)
+					; Destroy our squadron
+					(setq squadronList (objGetData gSource "squadron"))
+					(objSetData gSource "squadron" Nil)
+					(enum squadronList theEntry
+						(if (eq (item theEntry 2) 'home)
+							(objDestroy (objGetObjByID (item theEntry 0)))
+							)
+						)
+					
+					; Commonwealth is mad too
+					(intCommonwealthOnDestroy)
+
+					; Military will execute the player
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(intFleetCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(block (behavior theID theEntry squadronList)
+					(setq behavior (objGetData gSource "behavior"))
+					
+					(switch
+						; See if we destroyed the target
+						(and (eq behavior 'defendingCritical)
+								(eq aObjDestroyed (objGetObjRefData gSource "targetObj"))
+								)
+							(block Nil
+								(objSetData gSource "behavior" Nil)
+								)
+						
+						; If the ship entered a stargate, then ignore it
+						(eq aDestroyReason 'enteredStargate)
+							Nil
+						
+						; See if this is one of our gunships	
+						(setq theEntry (match (setq squadronList (objGetData gSource "squadron")) theEntry 
+								(eq (item theEntry 0) (setq theID (objGetID aObjDestroyed)))
+								))
+							(block Nil
+							
+								; Mark the entry as destroyed
+								(setq squadronList (map squadronList theEntry
+									(if (eq (item theEntry 0) theID)
+										(list theID (item theEntry 1) 'destroyed)
+										theEntry
+										)
+									))
+									
+								(objSetData gSource "squadron" squadronList)
+								
+								;(dbgOutput theID ": Destroyed")
+								)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjEnteredGate>
+				(block (theID theEntry squadronList)
+					(setq theID (objGetID aObj))
+					
+					(switch
+						(not (setq theEntry (match (setq squadronList (objGetData gSource "squadron")) theEntry (eq (item theEntry 0) theID))))
+							Nil
+							
+						(block Nil
+							; Repair and reload the ship
+							(intArmorRepairAll aObj 10)
+							(shpRechargeShield aObj 1000)
+							(objFireEvent aObj "Reload")
+							
+							; Suspend object
+							(objSuspend aObj)
+							
+							; Mark the entry as home
+							(setq squadronList (map squadronList theEntry
+								(if (eq (item theEntry 0) theID)
+									(list theID (item theEntry 1) 'home)
+									theEntry
+									)
+								))
+								
+							(objSetData gSource "squadron" squadronList)
+
+							;(dbgOutput theID ": Returned to carrier")
+							)
+						)
+					)
+			</OnObjEnteredGate>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "behavior"))
+					(switch
+						(eq behavior 'moving)
+							(block Nil
+								(shpOrder gSource 'hold)
+								(objSetData gSource "behavior" Nil)
+								)
+
+						(block Nil
+							(shpOrder gSource 'hold)
+							(objSetData gSource "behavior" Nil)
+							)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+
+	<!-- CSC Task Force
+	
+	GLOBAL DATA
+	
+	missionsAccepted:	Total missions accepted
+	missionsCompleted:	Total missions completed successfully
+	missionsFailed:		Total missions failed
+
+	EXTRA DATA
+	
+	MissionID:			ID of current mission
+	MissionStatus:		Current status of mission:
+							Nil					= no mission in progress
+							'inprogress			= mission in progress
+							'success			= mission succeeded
+							'failure			= mission failed
+
+	PLAYER SHIP EXTRA
+	
+	fleetTFSuccess:		Total number of successful missions
+	fleetTFFailure:		Total number of failed missions
+
+	-->
+
+	<ShipClass UNID="&scCSCTaskForce;"
+			manufacturer=		""
+			class=				"Commonwealth Star Carrier"
+			type=				""
+			score=				"2330"
+
+			mass=				"50000"
+			cargoSpace=			"5000"
+			thrust=				"10000"
+			maneuver=			"24"
+			maxSpeed=			"2"
+
+			cyberDefenseLevel=	"8"
+			explosionType=		"&vtThermoExplosion4;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
+
+			dockScreen=			"Main"
+			defaultBackgroundID="&rsCSCBkgnd;"
+			
+			inherit=			"&baCSCBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&vtDamageControlParty;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"6"
+			/>
+
+		<StaticData>
+			<!--
+			The first code block must return a string describing the
+			mission (or Nil, if a mission could not be found).
+
+			The code should also place any data about the mission in global variable
+			that can be accessed by the second code block.
+
+			The second code block initiates the mission from global variables
+			set by the first code block. It should permanently store the mission
+			as object data.
+
+			The third code block returns a string describing the success of
+			the mission (or Nil, if the mission is in progress)
+			-->
+
+			<!-- Level 1 Missions -->
+
+			<Missions1>
+				(
+					; Recon mission
+					("mission1a"
+						; Code to describe mission
+						(lambda Nil
+							(block (stationList)
+								; Look for a major Ares station in the system
+								(setq stationList (sysFindObject gSource "AT +ares; +majorStation"))
+
+								; If we found at least one, then pick a random one
+								(setq gTarget (random stationList))
+
+								(switch
+									; If we have no target, then no mission
+									(not gTarget)
+										(block Nil
+											(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+											Nil
+											)
+
+									; Otherwise, OK
+									(cat "\"We need you to do a recon mission on " (objGetName gTarget 4) " in this system. All you have to do is fly past it and make visual contact. We'll enter the coordinates to your computer. What do you say?\"")
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (timer)
+								; Remember what we're supposed to recon
+								(objSetObjRefData gSource "Target" gTarget)
+
+								; Set the recon target in the player ship's computer
+								(shpOrderEscort gPlayerShip gTarget)
+								(objSetIdentified gTarget)
+
+								; Prepare the station to be reconned
+								(staClearReconned gTarget)
+								(staSetFireReconEvent gTarget)
+
+								; Get events for the station
+								(objRegisterForEvents gSource gTarget)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code on successful mission
+						(lambda Nil
+							(block (damage)
+								(setq damage (objGetVisibleDamage gPlayerShip))
+
+								; Set description
+								(switch
+									(gr damage 75)
+										(scrSetDesc gScreen "\"Outstanding mission! You better report to Docking Services to have all that damage repaired!\"")
+
+									(gr damage 25)
+										(scrSetDesc gScreen "\"Outstanding mission! Looks like you got a little banged up out there.\"")
+
+									(scrSetDesc gScreen "\"Outstanding mission! You made it look easy.\"")
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 100)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+
+					; Fleet Delivery mission
+					("mission1b"
+						; Code to describe mission
+						(lambda Nil
+							(block Nil
+								; Look for a major commonwealth station in the system that is at least
+								; 300 light-seconds from here.
+								(setq stationList (sysFindObject gSource "T:fleetDelivery; A R:300;"))
+
+								; If we found at least one, then pick a random one
+								(setq gTarget (random stationList))
+
+								(switch
+									; If we have no target, then no mission
+									(or (not gTarget) (objGetData gTarget "fleetMissionCargo"))
+										(block Nil
+											(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
+											Nil
+											)
+
+									; Otherwise, OK
+									(cat "\"We need you to take much needed supplies to " (objGetName gTarget 4) " in this system. We'll empty your cargo hold so that we can fit as much cargo as possible (but don't worry, you'll get all your stuff back). We'll program the delivery coordinates into your flight computer. What do you say?\"")
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (allItems count neededItem roll enemyAmbush)
+								; Remember the mission (so that we will know when we reach
+								; our destination)
+								(objSetObjRefData gPlayerShip "fleetMission" gSource)
+
+								; Remember where we're supposed to deliver this stuff
+								(objSetObjRefData gSource "Target" gTarget)
+
+								; Set the target in the player ship's computer
+								(shpOrderEscort gPlayerShip gTarget)
+								(objSetIdentified gTarget)
+
+								; Remove all uninstalled items from the player's ship (except missiles/ammo or IDs)
+								(objSetData gSource "fleetMissionSavedCargo" (setq allItems (objGetItems gPlayerShip "*U~m -ID;")))
+								(enum allItems thisItem
+									(objRemoveItem gPlayerShip thisItem)
+									)
+
+								; Pick a random item
+								(setq neededItem (random '(&itGradeAGrains; &itWaterIce; &itMedicalSupplies; &itSalmonite;)))
+
+								; Figure out how many barrels of grain we can take
+								(setq count (divide (objGetCargoSpaceLeft gPlayerShip) (itmGetMass (itmCreate neededItem 1))))
+								(if (eq count 0)
+									(setq count 1)
+									)
+
+								; Add the items to the player ship (and remember)
+								(objAddItem gPlayerShip (itmCreate neededItem count))
+								(objSetData gTarget "fleetMissionCargo" (objGetItems gPlayerShip "*U~m -ID;"))
+
+								; Figure out what kind of enemy will attack the player
+								(setq roll (random 1 100))
+								(switch
+									(leq roll 60)
+										(setq enemyAmbush &etKobolAmbush1;)
+
+									(leq roll 90)
+										(setq enemyAmbush &etRogueAmbush1;)
+
+									(setq enemyAmbush &etAresAmbush2;)
+									)
+
+								; On timer, enemies attack player
+								(sysAddEncounterEventAtDist 
+									(add 300 (random 0 150)) 
+									gPlayerShip 
+									enemyAmbush 
+									(random 120 200)
+									)
+								)
+							)
+
+						; Code on successful mission
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Nice work! Those supplies will do some good.\"")
+
+								; Restore the items that we took from the player
+								(enum (objGetData gSource "fleetMissionSavedCargo") thisItem
+									(objAddItem gPlayerShip thisItem)
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 100)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(block (target)
+								; Remove the supplies (if the player has any)
+								(setq target (objGetObjRefData gSource "Target"))
+								(setq items (objGetData target "fleetMissionCargo"))
+
+								(enum items thisItem
+									(objRemoveItem gPlayerShip thisItem)
+									)
+									
+								; Restore the items that we took from the player
+								(enum (objGetData gSource "fleetMissionSavedCargo") thisItem
+									(objAddItem gPlayerShip thisItem)
+									)
+
+								(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+								)
+							)
+						)
+
+					; Juan Carlos mission
+					("mission1c"
+						; Code to describe mission
+						(lambda Nil
+							(switch
+								; If we've already done this mission, then don't bother
+								(typGetGlobalData &scEI500JuanCarlos; "deliverROM")
+									(block Nil
+										(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
+										Nil
+										)
+
+								; Otherwise, OK
+								(cat "\"We need you to rendezvous and dock with a freighter a few light-minutes away. Pick up a data ROM and bring it back here safely. Understood?\"")
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (ship)
+								; Create the Juan Carlos some place relatively safe
+								(setq ship 
+									(sysCreateShip 
+										&scEI500JuanCarlos; 
+										(sysVectorRandom gSource (random 240 400) 60 "Ts")
+										&svCommonwealth;
+										)
+									)
+								(shpOrderHold ship)
+
+								; Set the player to go there
+								(shpOrderDock gPlayerShip ship)
+								(objSetIdentified ship)
+								(objSetObjRefData gPlayerShip "MissionSource" gSource)
+
+								; Track the player
+								(objRegisterForEvents gSource gPlayerShip)
+
+								; Sometimes the freighter is under attack
+								(if (leq (random 1 100) 50)
+									(sysAddEncounterEventAtDist 0 ship &etAresAmbush1; (objGetDistance gSource ship))
+									)
+
+								; Can't get this mission again
+								(typSetGlobalData &scEI500JuanCarlos; "deliverROM" True)
+								)
+							)
+
+						; Code on successful mission
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Nice work! The data on this ROM is very important for the admiral and the Fleet.\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 100)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+
+					; Intercept Ares patrol
+					("mission1d"
+						; Code to describe mission
+						(lambda Nil
+							"\"There's an Ares patrol inbound that wants to take a peek at us. Your mission is to intercept and destroy the entire flight before it can gate out of the system and report our location. Understood?\""
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (squadronCount startPos)
+								; Remember how many we need to kill
+								(setq squadronCount 8)
+								(objSetData gSource "TargetCount" squadronCount)
+								(objSetData gSource "TargetsLeft" squadronCount)
+
+								(setq startPos (sysVectorRandom gSource (random 100 120) 60))
+
+								; Create the squadron a certain distance away and send them 
+								; to the carrier.
+								(for i 0 (subtract squadronCount 1)
+									(block (ship)
+										(setq ship
+											(sysCreateShip 
+												&scSandstorm; 
+												(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
+												&svAres;
+												)
+											)
+
+										; Order the ship to patrol near the CSC
+										(shpOrderPatrol ship gSource 3)
+
+										; Remember the ship
+										(objSetObjRefData gSource (cat "Target" i) ship)
+										(objRegisterForEvents gSource ship)
+										)
+									)
+
+								; Set the target
+								(shpCancelOrders gPlayerShip)
+								(shpOrderAttack gPlayerShip (objGetObjRefData gSource "Target0"))
+								(objSetIdentified (objGetObjRefData gSource "Target0"))
+
+								; We create a timer to check on the position of the ships
+								(sysAddObjRecurringTimerEvent 30 gSource "OnAresPatrolCheck")
+								)
+							)
+
+						; Code on successful mission
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Outstanding, pilot! That's the way to do it!\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 100)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+					)
+			</Missions1>
+
+			<Missions2>
+				(
+					; Destroy Ares freighter
+					("mission2a"
+						; Code to describe mission
+						(lambda Nil
+							(block (gate stationList)
+								; Get the list of all Ares bases
+								(setq stationList (sysFindObject gSource "T:ares;A"))
+								(setq gEnd Nil)
+
+								; For each stargate, see if we can travel to an Ares base
+								; stop looking when we find a destination
+								(enumwhile
+									(sysFindObject gSource "G -uncharted;")
+									(not gEnd)
+									gate
+
+									(block (bestDist testDest)
+										; Pick a stargate
+										(setq gStart gate)
+
+										; Find the nearest base to the stargate that is at least
+										; 300 light-seconds away from the stargate
+										(setq bestDist 1200)
+										(enum stationList testDest
+											(if (and 
+													(gr (objGetDistance gStart testDest) 300)
+													(ls (objGetDistance gStart testDest) bestDist))
+												(block Nil
+													(setq bestDist (objGetDistance gStart testDest))
+													(setq gEnd testDest)
+													)
+												)
+											)
+										)
+									)
+
+								; If we found a station, then compose the mission text
+								(if gEnd
+									(cat "\"An Ares freighter is delivering supplies to " (objGetName gEnd 4) " in this system. Your orders are to intercept and destroy the freighter. Any questions?\"")
+									Nil
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (ship)
+								; create the transport
+								(setq ship (sysCreateShip &scPolar; gStart &svAres;))
+								(shpOrderDock ship gEnd)
+								(shpOrderGate ship)
+
+								; create the escorts
+								(for i 1 5
+									(block (escort)
+										(setq escort (sysCreateShip &scSandstorm; gStart &svAres;))
+										(shpOrderEscort escort ship)
+										)
+									)
+
+								; Add some items to the transport
+								(objAddItem ship (itmCreate &itPteracniumOre; (random 10 30)))
+								(objAddRandomItems ship &trConsumables6; (random 1 4))
+								(objAddRandomItems ship &trMinorItem6; 1)
+
+								; register so we know when the main ship is destroyed
+								(objRegisterForEvents gSource ship)
+								(objSetObjRefData gSource "Target" ship)
+
+								; orders
+								(shpCancelOrders gPlayerShip)
+								(shpOrderAttack gPlayerShip ship)
+								(objSetIdentified ship)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Outstanding mission! That's one less supply ship for the Martians&#x97;just a matter of time before this war is over.\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 150)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+
+					; Defend superfreighter
+					("mission2b"
+						; Code to describe mission
+						(lambda Nil
+							(block (gateList)
+								; Find a stargate more than 300 light-seconds away
+								(setq gateList (sysFindObject gSource "GR:300; -uncharted;"))
+
+								; See if we meet all requirements
+								(switch
+									; If there are no gates near by, there is no mission
+									(not gateList)
+										(block Nil
+											(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
+											Nil
+											)
+
+									; Otherwise, we compose the mission text
+									(block Nil
+										(setq gStart (random gateList))
+										(cat "\"A superfreighter carrying pteracnium ore will enter the system at " (objGetName gStart 0) " and rendezvous with us here. Your mission is to escort it safely from the gate to our location. Clear?\"")
+										)
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (obstacle roll)
+								; Choose a random obstacle for the mission
+								(setq roll (random 1 100))
+								(switch
+									(leq roll 60)
+										(setq obstacle 'aresAttack)
+
+									(leq roll 90)
+										(setq obstacle 'rogueAmbush)
+
+									(setq obstacle 'suicideRun)
+									)
+
+								(objSetData gSource "MissionVariant" obstacle)
+
+								; Remember the start point
+								(objSetObjRefData gSource "StartGate" gStart)
+
+								; Create a timer for the creation of the freighter
+								(sysAddObjTimerEvent (multiply (objGetDistance gPlayerShip gStart) 3) gSource "OnTimerFreighterAppears2B")
+
+								; point the player to the stargate
+								(shpCancelOrders gPlayerShip)
+								(shpOrderDock gPlayerShip gStart)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block Nil
+								; Set description
+								(if (eq (objGetData gSource "MissionVariant") 'suicideRun)
+									(scrSetDesc gScreen "\"Excellent mission! Your quick reaction probably saved hundreds of lives on this ship!\"")
+									(scrSetDesc gScreen "\"Excellent mission! That pteracnium fuel is desperately needed!\"")
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 150)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+					)
+			</Missions2>
+
+			<MissionRescueScientists>
+				(
+					("mission3rescue"
+						; Code to describe mission
+						(lambda Nil
+							(cat "\"OK, this is a high-profile rescue mission, so I don't want any screw-ups!\n\n"
+								"\"Two of our weapons designers have been kidnapped by rogue fleet elements. "
+								"We're sending an Aurochs transport with an extraction team to rescue our Einsteins. "
+								"All you've got to do is protect the transport to the rogue base and back. Clear?\""
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (base ship)
+								; Create the rogue base. The base position must be at least 120 light-seconds
+								; away from anything else.
+
+								(setq base (sysCreateStation &stRogueBaseRescue; (sysVectorRandom gSource (random 400 600) 120 "t")))
+								(objSetObjRefData gSource "Target" base)
+
+								; Create the rescue ship
+
+								(setq ship (sysCreateShip &scAurochs; gSource &svCommonwealthFleet;))
+								(shpOrderDock ship base)
+								(shpOrderWait ship (random 10 20))
+								(shpOrderDock ship gSource)
+								(shpOrderWait ship 5)
+								(shpOrderGate ship)
+
+								(objSetObjRefData gSource "Ship" ship)
+								(objRegisterForEvents gSource ship)
+
+								; orders
+								(shpOrderEscort gPlayerShip ship)
+								(objSetIdentified ship)
+								(objRegisterForEvents gSource gPlayerShip)
+
+								; Encounter
+								(if (leq (random 1 100) 60)
+									(sysAddEncounterEventAtDist (add 500 (random 0 100)) ship &etRogueAmbush1; (random 120 200))
+									)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Outstanding mission! Now we can put those Einsteins back to work!\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 350)
+
+								(typSetGlobalData &scCSCTerra; "p262scientists" "rescued")
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(block Nil
+								(scrSetDesc gScreen "\"That's what I get for counting on you!\n\n\"You're demoted back to Privateer! Now get out of my sight!\"")
+								(objSetData gPlayerShip "fleetXP" 400)
+								(objSetData gPlayerShip "fleetLevel" 2)
+
+								(typSetGlobalData &scCSCTerra; "p262scientists" "failed")
+								)
+							)
+						)
+					)
+			</MissionRescueScientists>
+
+			<Missions3>
+				(
+					; Defend supply ship
+					("mission3a"
+						; Code to describe mission
+						(lambda Nil
+							(block Nil
+								; Find a random stargate more than 400 light-seconds from us
+								(setq gStart (random (sysFindObject gSource "G R:400; -uncharted;")))
+
+								; Describe the mission
+								(if gStart
+									(cat "\"A supply ship is arriving at the " (objGetName gStart) ". Your orders are to escort it back to " (objGetName gSource 4) " and defend it against all enemies. Carry On!\"")
+									Nil
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block Nil
+								; Set a timer to give the player a chance to get to the stargate
+								(objSetObjRefData gSource "Target" gStart)
+								(setq timer (add (multiply 5 (objGetDistance gSource gStart)) (random 0 200)))
+								(sysAddObjTimerEvent timer gSource "OnTimerConvoyAppears3A")
+
+								; Add some enemy ships patrolling around the stargate
+								(for i 1 (random 4 6)
+									(block (patrol)
+										(setq patrol (sysCreateShip &scSandstorm; gStart &svAres;))
+										(shpOrderPatrol patrol gStart 20)
+										)
+									)
+
+								; orders
+								(shpOrderEscort gPlayerShip gStart)
+								(objSetIdentified gStart)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block Nil
+								; Set description
+								(scrSetDesc gScreen "\"Outstanding mission! Those supplies are desperately needed here.\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 250)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+
+					; Defend Refugee Convoy
+					("mission3b"
+						; Code to describe mission
+						(lambda Nil
+							(block (gateList)
+								(setq gStart Nil)
+
+								; Get the list of gates in the system
+								(setq gateList (sysFindObject gSource "G -uncharted;"))
+
+								; Make sure there are at least 2 gates
+								(if (geq (count gateList) 2)
+									(block Nil
+										(setq gStart (item gateList 0))
+										(setq gEnd (item gateList 1))
+
+										; The two gates better be at least 150 light-seconds
+										; away from each other
+										(if (ls (objGetDistance gStart gEnd) 150)
+											(setq gStart Nil)
+											)
+										)
+									)
+
+								; Describe mission
+								(switch
+									; If system is not configured correctly
+									(not gStart)
+										(block Nil
+											(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+											Nil
+											)
+
+									; Otherwise
+									(cat "\"A refugee convoy is passing through the system. Your mission is to lead a small squadron and escort the convoy safely through the system. Any questions?\"")
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block Nil
+								; Create some ships off-screen and bring them in
+								(intFleetCreateWingmen gSource 6 &scCenturion;)
+
+								; Set a timer to give the player a chance to get to the stargate
+								(setq timer (add (multiply 5 (objGetDistance gSource gStart)) (random 0 200)))
+								(sysAddObjTimerEvent timer gSource "OnTimerConvoyAppears3B")
+
+								(objSetObjRefData gSource "StartGate" gStart)
+								(objSetObjRefData gSource "EndGate" gEnd)
+
+								; orders
+								(shpOrderEscort gPlayerShip gStart)
+								(objSetIdentified gStart)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block Nil
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+
+								; Set description
+								(scrSetDesc gScreen "\"Outstanding mission! Those refugees have a chance to start a new life away from the war zone.\"")
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 250)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(block Nil
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+
+								(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+								)
+							)
+						)
+					)
+			</Missions3>
+
+			<Missions4>
+				(
+					; Destroy Ares station
+					("mission4a"
+						; Code to describe mission
+						(lambda Nil
+							(block Nil
+								; Pick a random Ares station in the system
+								(setq gTarget (random (sysFindObject gSource "AT +ares; +majorStation")))
+
+								; Compose description
+								(if gTarget
+									(cat "\"This mission is straight from Admiral Decker himself. We want you to lead a flight of Britannias to destroy " (objGetName gTarget 4) " in this system. Any questions?\"")
+									Nil
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block Nil
+								; Create some ships off-screen a bring them in
+								(intFleetCreateWingmen gSource 6 &scBritannia;)
+
+								; Point-out the station to destroy
+								(objSetObjRefData gSource "Target" gTarget)
+								(objRegisterForEvents gSource gTarget)
+								(shpOrderAttack gPlayerShip gTarget)
+								(objSetIdentified gTarget)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block (shipsLeft)
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+
+								; Set description
+								(switch
+									(eq shipsLeft 0)
+										(scrSetDesc gScreen (cat "\"A tough mission. We can't afford to lose so many good pilots.\""))
+
+									(eq shipsLeft 1)
+										(scrSetDesc gScreen (cat "\"Good mission! It's unfortunate that only one of your wingmen survived.\""))
+
+									(scrSetDesc gScreen (cat "\"Outstanding mission! Looks like you came back with " shipsLeft " wingmen.\""))
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" (add 250 (multiply shipsLeft 100)))
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+
+					; Destroy Ares convoy
+					("mission4b"
+						; Code to describe mission
+						(lambda Nil
+							(block (gateList)
+								(setq gStart Nil)
+
+								; Get the list of gates in the system
+								(setq gateList (sysFindObject gSource "G -uncharted;"))
+
+								; Make sure there are at least 2 gates
+								(if (geq (count gateList) 2)
+									(block Nil
+										(setq gStart (item gateList 0))
+										(setq gEnd (item gateList 1))
+
+										; The two gates better be at least 200 light-seconds
+										; away from each other
+										(if (ls (objGetDistance gStart gEnd) 200)
+											(setq gStart Nil)
+											)
+										)
+									)
+
+								; Set text
+								(switch
+									; If we have no target, then no mission
+									(not gStart)
+										(block Nil
+											(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+											Nil
+											)
+
+									; Otherwise, OK
+									(cat "\"A large Ares convoy will enter the system at " (objGetName gStart 0) ". Take a flight of Centurions and destroy as many freighters as you can before they leave the system. Any questions?\"")
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (variant)
+								; Create some ships off-screen a bring them in
+								(intFleetCreateWingmen gSource 6 &scCenturion;)
+
+								; Choose mission variant
+								(setq roll (random 1 100))
+								(switch
+									(leq roll 60)
+										(setq variant 'chasmEscort)
+
+									(leq roll 90)
+										(setq variant 'advancedPolar)
+
+									(setq variant 'deimosEscort)
+									)
+
+								(objSetData gSource "MissionVariant" variant)
+
+								; Remember the start and end point
+								(objSetObjRefData gSource "StartGate" gStart)
+								(objSetObjRefData gSource "EndGate" gEnd)
+
+								; Init counters
+								(objSetData gSource "FreightersEscaped" 0)
+								(objSetData gSource "TargetsDestroyed" 0)
+								(objSetData gSource "WingmenDestroyed" 0)
+
+								; Create a timer for the creation of the freighter
+								(sysAddObjTimerEvent (multiply (objGetDistance gPlayerShip gStart) 1) gSource "OnTimerConvoyAppears4B")
+
+								; point the player to the stargate
+								(shpCancelOrders gPlayerShip)
+								(shpOrderDock gPlayerShip gStart)
+								(objRegisterForEvents gSource gPlayerShip)
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block (shipsLeft shipsLeftText)
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+								(setq shipsLeftText (item (list 'zero 'one 'two 'three 'four 'five 'six) shipsLeft))
+
+								; Set description
+								(switch
+									(leq shipsLeft 2)
+										(scrSetDesc gScreen (cat "\"A tough mission. We can't afford to lose so many good pilots.\""))
+
+									(leq shipsLeft 4)
+										(scrSetDesc gScreen (cat "\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""))
+
+									(scrSetDesc gScreen (cat "\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""))
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" (multiply (objGetData gSource "TargetsDestroyed") 100))
+								(objIncData gPlayerShip "fleetXP" (multiply shipsLeft 50))
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(block Nil
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+
+								(switch
+									(eq (objGetData gSource "WingmenDestroyed") 6)
+										(scrSetDesc gScreen "\"What kind of a leader loses all %his% wingmen and dares to return alive! Next time do us all a favor and kill yourself!\"")
+
+									(gr (objGetData gSource "WingmenDestroyed") (objGetData gSource "TargetsDestroyed"))
+										(scrSetDesc gScreen "\"You lost more wingmen against those freighters than most people do against an Ares dreadnought! Your leadership skills are pathetic. Get out of my sight!\"")
+
+									(eq (objGetData gSource "TargetsDestroyed") 0)
+										(scrSetDesc gScreen "\"You didn't even destroy a single freighter! That wing of Centurions is wasted on you!\"")
+
+									(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+									)
+								)
+							)
+						)
+					)
+			</Missions4>
+
+			<Missions5>
+				(
+					; Destroy Target
+					("mission5a"
+						; Code to describe mission
+						(lambda Nil
+							(block Nil
+								(switch
+									; Otherwise, OK
+									(cat "\"Your orders are to lead a flight of Britannias and intercept and destroy an unknown hostile. We'll enter the coordinates to your computer. What do you say?\"")
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (targetPos roll)
+								; Create some ships off-screen a bring them in
+								(intFleetCreateWingmen gSource 6 &scBritannia;)
+
+								; Pick a random location for the target
+								(setq targetPos (sysVectorRandom gSource (random 300 600) 250))
+
+								; Create targets
+								(setq roll (random 1 100))
+								(switch
+									; Target is Phobos dreadnought
+									(leq roll 60)
+										(block (theShip)
+											(setq theShip (sysCreateShip &scPhobos; targetPos &svAres;))
+											(shpOrder theShip 'waitForTarget gPlayerShip)
+											(shpOrder theShip 'attack gPlayerShip)
+											(shpOrder theShip 'attack gSource)
+
+											(objSetObjRefData gSource "Target1" theShip)
+											(objRegisterForEvents gSource theShip)
+
+											(objSetData gSource "TargetCount" 1)
+											)
+
+									; Target is wing of Sandstorms
+									(leq roll 90)
+										(block (shipCount theLeader)
+											(setq shipCount 35)
+											(objSetData gSource "TargetCount" shipCount)
+
+											(for i 1 shipCount
+												(block (theShip)
+													(setq theShip 
+														(sysCreateShip &scSandstorm;
+															(sysVectorPolarOffset
+																targetPos
+																(random 0 359)
+																(add (random 1 12) (random 0 12))
+																)
+															&svAres;
+															)
+														)
+														
+													(if (not theLeader)
+														(block Nil
+															(shpOrder theShip 'waitForTarget gPlayerShip)
+															(shpOrder theShip 'attack gPlayerShip)
+															(shpOrder theShip 'attack gSource)
+															(setq theLeader theShip)
+															)
+														(shpOrder theShip 'escort theLeader)
+														)
+
+													(objSetObjRefData gSource (cat "Target" i) theShip)
+													(objRegisterForEvents gSource theShip)
+													)
+												)
+											)
+
+									; Target is flight of Deimos destroyers
+									(block (shipCount theLeader)
+										(setq shipCount 3)
+										(objSetData gSource "TargetCount" shipCount)
+
+										(for i 1 shipCount
+											(block (theShip)
+												(setq theShip 
+													(sysCreateShip &scDeimos;
+														(sysVectorPolarOffset
+															targetPos
+															(random 0 359)
+															(add (random 1 12) (random 0 12))
+															)
+														&svAres;
+														)
+													)
+													
+												(if (not theLeader)
+													(block Nil
+														(shpOrder theShip 'waitForTarget gPlayerShip)
+														(shpOrder theShip 'attack gPlayerShip)
+														(shpOrder theShip 'attack gSource)
+														(setq theLeader theShip)
+														)
+													(shpOrder theShip 'escort theLeader)
+													)
+
+												(objSetObjRefData gSource (cat "Target" i) theShip)
+												(objRegisterForEvents gSource theShip)
+												)
+											)
+										)
+									)
+
+								(objSetData gSource "TargetsDestroyed" 0)
+
+								; Point player at target
+								(shpCancelOrders gPlayerShip)
+								(shpOrder gPlayerShip 'attack (objGetObjRefData gSource "Target1"))
+								)
+							)
+
+						; Code to see if mission has been completed
+						(lambda Nil
+							(block (shipsLeft shipsLeftText)
+								; Disperse wingmen
+								(setq shipsLeft (intFleetDisperseWingmen gSource 6))
+								(setq shipsLeftText (item (list 'zero 'one 'two 'three 'four 'five 'six) shipsLeft))
+
+								; Set description
+								(switch
+									(leq shipsLeft 2)
+										(scrSetDesc gScreen (cat "\"A tough mission. We can't afford to lose so many good pilots.\""))
+
+									(leq shipsLeft 4)
+										(scrSetDesc gScreen (cat "\"Good mission! It's unfortunate that only " shipsLeftText " of your wingmen survived.\""))
+
+									(scrSetDesc gScreen (cat "\"Outstanding mission! Looks like you came back with " shipsLeftText " wingmen.\""))
+									)
+
+								; Increment XP
+								(objIncData gPlayerShip "fleetXP" 1000)
+								(objIncData gPlayerShip "fleetXP" (multiply shipsLeft 100))
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
+					)
+			</Missions5>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(block Nil
+					; If we're in the middle of the delivery mission, then put the player's
+					; stuff on the ship
+
+					(if (and (eq (objGetData gSource "MissionStatus") "inprogress")
+							(eq (objGetData gSource "MissionID") "mission1b")
+							)
+						(enum (objGetData gSource "fleetMissionSavedCargo") thisItem
+							(objAddItem gSource thisItem)
+							)
+						)
+						
+					; Base class
+					
+					(typFireObjEvent &baCSCBase; gSource 'OnDestroy)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							; If the player was destroyed, stop the mission
+							(eq aObjDestroyed gPlayerShip)
+								(block Nil
+									(objSetData gSource "MissionStatus" "failure")
+									(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+									(shpCancelOrders gPlayerShip)
+
+									; Disperse wingmen
+									(intFleetDisperseWingmen gSource 10)
+									)
+									
+							(and (eq missionID "mission1a") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission complete!")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(objUnregisterForEvents gSource aObjDestroyed)
+									(shpCancelOrders gPlayerShip)
+									)
+									
+							(eq missionID "mission1d")
+								(block (targetSet)
+									(for i 0 (subtract (objGetData gSource "TargetCount") 1)
+										(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Target" i)))
+											(objIncData gSource "TargetsLeft" -1)
+											(if (and (not targetSet) (objGetObjRefData gSource (cat "Target" i)))
+												(block Nil
+													(shpCancelOrders gPlayerShip)
+													(shpOrderAttack gPlayerShip (objGetObjRefData gSource (cat "Target" i)))
+													(objSetIdentified (objGetObjRefData gSource (cat "Target" i)))
+													(setq targetSet True)
+													)
+												)
+											)
+										)
+
+									(if (eq (objGetData gSource "TargetsLeft") 0)
+										(block Nil
+											(plyMessage gPlayer "Mission complete!")
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+											(sysCancelTimerEvent gSource "OnAresPatrolCheck")
+											)
+										(if (eq (objGetData gSource "TargetsLeft") 1)
+											(plyMessage gPlayer "1 target left!")
+											(plyMessage gPlayer (objGetData gSource "TargetsLeft") " targets left")
+											)
+										)
+									)
+
+							(and (eq missionID "mission2a") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission complete!")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(and (eq missionID "mission2b") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
+								(if (and 
+										(eq (objGetData gSource "MissionVariant") 'suicideRun)
+										(objGetData aObjDestroyed "Armed")
+										)
+									(block Nil
+										(sysCreateWeaponFire &itM5Missile; Nil (objGetPos aObjDestroyed) 0 0 gSource True)
+										(plyMessage gPlayer "Mission complete!")
+										(objSetData gSource "MissionStatus" "success")
+										(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+										(shpCancelOrders gPlayerShip)
+										)
+									(block Nil
+										(plyMessage gPlayer "Mission failed")
+										(objSetData gSource "MissionStatus" "failure")
+										(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+										(shpCancelOrders gPlayerShip)
+										)
+									)
+
+							(and (eq missionID "mission3rescue") (eq aObjDestroyed (objGetObjRefData gSource "Ship")))
+								(block Nil
+									(plyMessage gPlayer "Mission failed")
+									(objSetData gSource "MissionStatus" "failure")
+									(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(and (eq missionID "mission3a") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission failed")
+									(objSetData gSource "MissionStatus" "failure")
+									(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(eq missionID "mission3b")
+								(block (shipClass)
+									(setq shipClass (objGetType aObjDestroyed))
+									(switch
+										(eq shipClass &scScarabFreighter;)
+											(objIncData gSource "SuperfreightersDestroyed")
+
+										(eq shipClass &scEI100;)
+											(objIncData gSource "FreightersDestroyed")
+										)
+
+									; Tell the player
+
+									(plyMessage gPlayer (objGetName aObjDestroyed 1) " destroyed")
+
+									; If more than 1 superfreighter has been destroyed or if
+									; more than 4 freighters have been destroyed, then the player cannot win
+
+									(if (or (gr (objGetData gSource "SuperfreightersDestroyed") 1)
+											(gr (objGetData gSource "FreightersDestroyed") 4)
+											)
+										(block Nil
+											(plyMessage gPlayer "Mission failed")
+											(objSetData gSource "MissionStatus" "failure")
+											(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+											(shpCancelOrders gPlayerShip)
+											)
+										)
+									)
+
+							(and (eq missionID "mission4a") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission complete!")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(eq missionID "mission4b")
+								(block Nil
+									(for i 0 4
+										(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Target" i)))
+											(block (escaped destroyed lost)
+												(setq escaped (objGetData gSource "FreightersEscaped"))
+												(setq destroyed (add (objGetData gSource "TargetsDestroyed") 1))
+												(objSetData gSource "TargetsDestroyed" destroyed)
+												(setq lost (objGetData gSource "WingmenDestroyed"))
+
+												(if (eq (add escaped destroyed) 5)
+													(block Nil
+														(if	(or (eq destroyed 0) (gr lost destroyed))
+															(block Nil
+																(plyMessage gPlayer "Mission failed")
+																(objSetData gSource "MissionStatus" "failure")
+																(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+																)
+															(block Nil
+																(plyMessage gPlayer "Mission complete!")
+																(objSetData gSource "MissionStatus" "success")
+																(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+																)
+															)
+
+														(objUnregisterForEvents gSource gPlayerShip)
+														(shpCancelOrders gPlayerShip)
+														)
+													)
+												)
+											)
+										)
+
+									(for i 0 5
+										(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Wingman" i)))
+											(objIncData gSource "WingmenDestroyed")
+											)
+										)
+									)
+
+							(eq missionID "mission5a")
+								(block Nil
+									(for i 1 (objGetData gSource "TargetCount")
+										(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Target" i)))
+											(block Nil
+												(objIncData gSource "TargetsDestroyed")
+												(objSetObjRefData gSource (cat "Target" i) Nil)
+
+												; If we destroyed all targets, then we're done. Otherwise
+												; we point the player at a new target
+
+												(if (eq (objGetData gSource "TargetCount") (objGetData gSource "TargetsDestroyed"))
+													(block Nil
+														(plyMessage gPlayer "Mission complete!")
+														(objSetData gSource "MissionStatus" "success")
+														(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+														)
+													(block (foundTarget)
+														(for i 1 (objGetData gSource "TargetCount")
+															(block (theTarget)
+																(setq theTarget (objGetObjRefData gSource (cat "Target" i)))
+																(if (and theTarget (not foundTarget))
+																	(block Nil
+																		(shpCancelOrders gPlayerShip)
+																		(shpOrder gPlayerShip 'attack theTarget)
+																		(setq foundTarget True)
+																		)
+																	)
+																)
+															)
+														)
+													)
+												)
+											)
+										)
+									)
+							)
+							
+						; Call to base
+						(typFireObjEvent &baCSCBase; gSource 'OnObjDestroyed)
+						)
+
+					; Even if mission is no longer in progress we track wingmen
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(eq missionID "mission4b")
+								(for i 0 5
+									(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Wingman" i)))
+										(objIncData gSource "WingmenDestroyed")
+										)
+									)
+							)
+							
+						; Call to base
+						(typFireObjEvent &baCSCBase; gSource 'OnObjDestroyed)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(and (eq missionID "mission1c") (eq aObjDocked gPlayerShip) (eq aDockTarget gSource))
+								(if (objGetItems gPlayerShip "* +LamplighterDataROM;")
+									(block Nil
+										(objRemoveItem gPlayerShip (itmCreate &itLamplighterDataROM; 1))
+										(objSetData gSource "MissionStatus" "success")
+										(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+										(shpCancelOrders gPlayerShip)
+										)
+									)
+
+							(and (eq missionID "mission2a") (eq aObjDocked (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission failed")
+									(objSetData gSource "MissionStatus" "failure")
+									(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+									(objUnregisterForEvents gSource aObjDocked)
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(and (eq missionID "mission2b") (eq aObjDocked (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission complete!")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(objUnregisterForEvents gSource aObjDocked)
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(and (eq missionID "mission3rescue") (eq aObjDocked (objGetObjRefData gSource "Ship")))
+								(switch
+									; Docked with base
+									(eq aDockTarget (objGetObjRefData gSource "Target"))
+										(block Nil
+											(plyMessage gPlayer "Extraction commencing")
+
+											; Add some encounters
+											(sysAddEncounterEventAtDist (add 500 (random 0 100)) aObjDocked &etRogueAmbush2; (random 120 200))
+											(sysAddEncounterEventAtDist (add 1000 (random 0 100)) aObjDocked &etRogueAmbush1; (random 120 200))
+											)
+
+									; Docked back with the carrier
+									(eq aDockTarget gSource)
+										(block Nil
+											(plyMessage gPlayer "Mission complete!")
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+											(objUnregisterForEvents gSource aObjDocked)
+											(shpCancelOrders gPlayerShip)
+											)
+									)
+
+							(and (eq missionID "mission3a") (eq aObjDocked (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Mission complete!")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(objUnregisterForEvents gSource aObjDocked)
+									(shpCancelOrders gPlayerShip)
+									)
+							)
+						)
+					)
+			</OnObjDocked>
+
+			<OnObjEnteredGate>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(eq missionID "mission1d")
+								(block Nil
+									(for i 0 (subtract (objGetData gSource "TargetCount") 1)
+										(if (eq aObj (objGetObjRefData gSource (cat "Target" i)))
+											(block Nil
+												(plyMessage gPlayer "Mission failed")
+												(objSetData gSource "MissionStatus" "failure")
+												(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+												(sysCancelTimerEvent gSource "OnAresPatrolCheck")
+												)
+											)
+										)
+									)
+
+							(eq missionID "mission3b")
+								(block (shipClass)
+									(setq shipClass (objGetType aObj))
+									(switch
+										(eq shipClass &scScarabFreighter;)
+											(objIncData gSource "SuperfreightersEscaped")
+
+										(eq shipClass &scEI100;)
+											(objIncData gSource "FreightersEscaped")
+										)
+
+									; Unregister so that we don't get called again at OnObjDestroyed
+									(if (not (eq aObj gPlayerShip))
+										(objUnregisterForEvents gSource aObj)
+										)
+
+									; If all ships are accounted for, then the mission is
+									; successful.
+
+									(if (eq (add
+												(add (objGetData gSource "SuperfreightersDestroyed") 
+													(objGetData gSource "FreightersDestroyed"))
+												(add (objGetData gSource "SuperfreightersEscaped")
+													(objGetData gSource "FreightersEscaped"))
+												)
+											11)
+										(block Nil
+											(plyMessage gPlayer "Mission complete!")
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+											(objUnregisterForEvents gSource gPlayerShip)
+											(shpCancelOrders gPlayerShip)
+											)
+										)
+									)
+
+							(eq missionID "mission4b")
+								(for i 0 4
+									(if (eq aObj (objGetObjRefData gSource (cat "Target" i)))
+										(block (escaped destroyed lost)
+											(setq escaped (add (objGetData gSource "FreightersEscaped") 1))
+											(objSetData gSource "FreightersEscaped" escaped)
+											(setq destroyed (objGetData gSource "TargetsDestroyed"))
+											(setq lost (objGetData gSource "WingmenDestroyed"))
+
+											(objSetObjRefData gSource (cat "Target" i) Nil)
+											(objUnregisterForEvents gSource aObj)
+
+											(if (eq (add escaped destroyed) 5)
+												(block Nil
+													(if	(or (eq destroyed 0) (gr lost destroyed))
+														(block Nil
+															(plyMessage gPlayer "Mission failed")
+															(objSetData gSource "MissionStatus" "failure")
+															(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+															)
+														(block Nil
+															(plyMessage gPlayer "Mission complete!")
+															(objSetData gSource "MissionStatus" "success")
+															(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+															)
+														)
+
+													(objUnregisterForEvents gSource gPlayerShip)
+													(shpCancelOrders gPlayerShip)
+													)
+												)
+											)
+										)
+									)
+							)
+
+						; Call to base
+						(typFireObjEvent &baCSCBase; gSource 'OnObjEnteredGate)
+						)
+						
+					; Else
+					(typFireObjEvent &baCSCBase; gSource 'OnObjEnteredGate)
+					)
+			</OnObjEnteredGate>
+
+			<OnObjReconned>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(and (eq missionID "mission1a") (eq aObj (objGetObjRefData gSource "Target")))
+								(block Nil
+									(plyMessage gPlayer "Recon completed")
+									(objSetData gSource "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(objUnregisterForEvents gSource aObj)
+									(shpCancelOrders gPlayerShip)
+									)
+							)
+						)
+					)
+			</OnObjReconned>
+			
+			<OnAresPatrolCheck>
+				(block (inScanRange)
+					; Are Ares ships in scan range?
+					(for i 0 (subtract (objGetData gSource "TargetCount") 1)
+						(if (objGetObjRefData gSource (cat "Target" i))
+							(if (leq (objGetDistance (objGetObjRefData gSource (cat "Target" i)) gSource) 12)
+								(setq inScanRange True)
+								)
+							)
+						)
+
+					; Recall the ships
+					(if inScanRange
+						(block Nil
+							(for i 0 (subtract (objGetData gSource "TargetCount") 1)
+								(block (ship)
+									(setq ship (objGetObjRefData gSource (cat "Target" i)))
+									(if ship
+										(block Nil
+											(shpCancelOrders ship)
+											(shpOrderGate ship)
+											)
+										)
+									)
+								)
+
+							(sysCancelTimerEvent gSource "OnAresPatrolCheck")
+							)
+						)
+					)
+			</OnAresPatrolCheck>
+
+			<OnSuicideRunCheck2B>
+				(block (freighter dist)
+					(setq freighter (objGetObjRefData gSource "Target"))
+					(if freighter
+						(setq dist (objGetDistance gSource freighter))
+						)
+
+					(switch
+						(not freighter)
+							(block Nil
+								(sysCancelTimerEvent gSource "OnSuicideRunCheck2B")
+								)
+
+						(ls dist 3)
+							(block (pos)
+								(sysCancelTimerEvent gSource "OnSuicideRunCheck2B")
+
+								; Mission failed
+								(plyMessage gPlayer "Mission failed")
+								(objSetData gSource "MissionStatus" "failure")
+								(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+								(shpCancelOrders gPlayerShip)
+
+								(setq pos (objGetPos freighter))
+								(objDestroy freighter)
+								(sysCreateWeaponFire &itM5Missile; Nil pos 0 0 gSource True)
+								)
+
+						(and (ls dist 15) (objGetData freighter "Armed"))
+							(if (leq (random 1 100) 25)
+								(objSendMessage 
+									gPlayerShip
+									gSource
+									(random
+										(list
+											"Destroy the freighter!"
+											"Blast the bloody freighter!"
+											"Do you copy? Destroy the freighter now!"
+											(plyComposeString gPlayer "%name%, destroy the freighter!")
+											"The freighter is on a suicide run! Destroy it!"
+											)
+										)
+									)
+								)
+
+						(and (ls dist 25) (not (objGetData freighter "Armed")))
+							(block Nil
+								; Freighter is on sucide run
+								(objSetSovereign freighter &svRogueFleet;)
+								(shpCancelOrders freighter)
+								(shpOrderGoto freighter gSource)
+								(shpOrderHold freighter)
+								(objSetData freighter "Armed" True)
+
+								; Set the CSC to wait (so that it doesn't blast the freighter on its own)
+								; we assume that the CSC is caught by surprise
+								(shpCancelOrders gSource)
+								(shpOrderWait gSource 15)
+								(shpOrderHold gSource)
+
+								; Player should destroy freighter
+								(objSendMessage gPlayerShip gSource "Freighter on suicide run!")
+								(objSendMessage gPlayerShip gSource "Destroy the freighter!")
+								(shpCancelOrders gPlayerShip)
+								(shpOrderAttack gPlayerShip freighter)
+								(objSetIdentified freighter)
+								)
+						)
+					)
+			</OnSuicideRunCheck2B>
+
+			<OnTimerConvoyAppears3A>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (ship)
+						(plyMessage gPlayer "Transport has arrived")
+
+						; create the transport that will go back to the carrier
+						(setq ship (sysCreateShip &scAurochs; (objGetObjRefData gSource "Target") &svCommonwealthFleet;))
+						(shpOrderDock ship gSource)
+						(shpOrderGate ship)
+
+						; Remember this ship
+						(objSetObjRefData gSource "Target" ship)
+
+						; Add an encounter half-way
+						(if (leq (random 1 100) 90)
+							(sysAddEncounterEventAtDist 
+								(random 500 1000)
+								(if (eq (random 1 3) 1) gPlayerShip ship)
+								(random
+									(list
+										&etAresAmbush1;
+										&etAresAmbush2;
+										&etAresAmbush2;
+										&etRogueAmbush1;
+										&etRogueAmbush1;
+										&etRogueAmbush2;
+										)
+									)
+								(random 120 200)
+								)
+							)
+
+						; register so we know when the transport is destroyed
+						(objRegisterForEvents gSource ship)
+
+						; Point the player to the transport
+						(shpCancelOrders gPlayerShip)
+						(shpOrderEscort gPlayerShip ship)
+						(objSetIdentified ship)
+						)
+					)
+			</OnTimerConvoyAppears3A>
+
+			<OnTimerConvoyAppears3B>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (freightersLeft dist totalTime timePortion)
+						(plyMessage gPlayer "Convoy has arrived")
+
+						; A superfreighter takes 8 ticks to move 1 light-second.
+
+						(setq dist (objGetDistance (objGetObjRefData gSource "StartGate") (objGetObjRefData gSource "EndGate")))
+						(setq totalTime (multiply dist 8))
+						(setq timePortion (divide totalTime 12))
+
+						; Create all the ships
+
+						(setq freightersLeft 8)
+						(for i 0 2
+							(block (ship)
+								(setq ship (sysCreateShip &scScarabFreighter; (objGetObjRefData gSource "StartGate") &svCommonwealth;))
+								(shpOrderGate ship (objGetObjRefData gSource "EndGate"))
+								(objSetData ship "noPiracyCheck" True)
+								(objRegisterForEvents gSource ship)
+
+								(if (eq i 0)
+									(block Nil
+										(shpOrderEscort gPlayerShip ship)
+										(objSetIdentified ship)
+										)
+									)
+
+								(for j 0 2
+									(if (gr freightersLeft 0)
+										(block Nil
+											(setq escort (sysCreateShip &scEI100; (objGetObjRefData gSource "StartGate") &svCommonwealth;))
+											(objSetData escort "noPiracyCheck" True)
+											(shpOrderFollow escort ship)
+											(objRegisterForEvents gSource escort)
+
+											(setq freightersLeft (subtract freightersLeft 1))
+											)
+										)
+									)
+
+								; On timer, enemies attack ship
+								(sysAddEncounterEventAtDist 
+									(multiply timePortion (add (multiply i 4) (random 1 3)))
+									(if (eq (random 1 3) 1) gPlayerShip ship)
+									&etAresAmbush1; 
+									(random 120 200)
+									)
+								)
+							)
+
+						; Keep track of how many ship were destroyed and how many escaped
+						(objSetData gSource "SuperfreightersEscaped" 0)
+						(objSetData gSource "FreightersEscaped" 0)
+						(objSetData gSource "SuperfreightersDestroyed" 0)
+						(objSetData gSource "FreightersDestroyed" 0)
+						)
+					)
+			</OnTimerConvoyAppears3B>
+
+			<OnTimerConvoyAppears4B>
+				(block (variant startGate endGate)
+					(setq variant (objGetData gSource "MissionVariant"))
+					(setq startGate (objGetObjRefData gSource "StartGate"))
+					(setq endGate (objGetObjRefData gSource "EndGate"))
+
+					(switch
+						(eq variant 'chasmEscort)
+							(block Nil
+								(for i 0 4
+									(block (freighter escort)
+										(setq freighter (sysCreateShip &scPolar; startGate &svAres;))
+										(shpOrderGate freighter endGate)
+										(objSetObjRefData gSource (cat "Target" i) freighter)
+										(objRegisterForEvents gSource freighter)
+
+										(setq escort (sysCreateShip &scChasm; startGate &svAres;))
+										(shpOrderEscort escort freighter)
+										)
+									)
+								)
+
+						(eq variant 'advancedPolar)
+							(block Nil
+								(for i 0 4
+									(block (freighter escort)
+										(setq freighter (sysCreateShip &scPolar2; startGate &svAres;))
+										(shpOrderGate freighter endGate)
+										(objSetObjRefData gSource (cat "Target" i) freighter)
+										(objRegisterForEvents gSource freighter)
+
+										(setq escort (sysCreateShip &scSandstorm; startGate &svAres;))
+										(shpOrderEscort escort freighter)
+
+										(setq escort (sysCreateShip &scSandstorm; startGate &svAres;))
+										(shpOrderEscort escort freighter)
+										)
+									)
+								)
+
+						(eq variant 'deimosEscort)
+							(block Nil
+								(for i 0 4
+									(block (freighter escort)
+										(setq freighter (sysCreateShip &scPolar; startGate &svAres;))
+										(shpOrderGate freighter endGate)
+										(objSetObjRefData gSource (cat "Target" i) freighter)
+										(objRegisterForEvents gSource freighter)
+
+										(if (or (eq i 0) (eq i 2))
+											(block Nil
+												(setq escort (sysCreateShip &scDeimos; startGate &svAres;))
+												(shpOrderEscort escort freighter)
+												)
+											)
+										)
+									)
+								)
+						)
+
+					; Point the player at the lead freighter
+					(shpCancelOrders gPlayerShip)
+					(shpOrderAttack gPlayerShip (objGetObjRefData gSource "Target0"))
+					(objSetIdentified (objGetObjRefData gSource "Target0"))
+					)
+			</OnTimerConvoyAppears4B>
+
+			<OnTimerFreighterAppears2B>
+				(block (variant)
+					(setq variant (objGetData gSource "MissionVariant"))
+					(switch
+						(eq variant 'aresAttack)
+							(block (freighter)
+								; Create the superfreighter
+								(setq freighter (sysCreateShip &scScarabFreighter; (objGetObjRefData gSource "StartGate") &svCommonwealth;))
+								(objSetData freighter "noPiracyCheck" True)
+								(shpOrderDock freighter gSource)
+								(shpOrderWait freighter (random 6 18))
+								(shpOrderGate freighter)
+
+								(plyMessage gPlayer "Freighter arriving")
+								(objSetObjRefData gSource "Target" freighter)
+								(objRegisterForEvents gSource freighter)
+
+								; Create an encounter after a certain period of time
+								(sysAddEncounterEventAtDist 
+									(random 1000 1500) 
+									freighter 
+									&etAresAmbush4; 
+									(random 120 200)
+									)
+
+								(if (leq (random 1 100) 90)
+									(sysAddEncounterEventAtDist 
+										(random 1000 1500) 
+										gPlayerShip 
+										&etAresAmbush2; 
+										(random 120 200)
+										)
+									)
+
+								(if (leq (random 1 100) 20)
+									(sysAddEncounterEventAtDist 
+										(random 1350 1900) 
+										freighter 
+										&etAresAmbush2; 
+										(random 120 200)
+										)
+									)
+
+								; Order escort
+								(shpCancelOrders gPlayerShip)
+								(shpOrderEscort gPlayerShip freighter)
+								(objSetIdentified freighter)
+								)
+
+						(eq variant 'rogueAmbush)
+							(block (freighter ambushPos mineLayer waitPos pathPos)
+								; Create the superfreighter
+								(setq freighter (sysCreateShip &scScarabFreighter; (objGetObjRefData gSource "StartGate") &svCommonwealth;))
+								(objSetData freighter "noPiracyCheck" True)
+								(shpOrderDock freighter gSource)
+								(shpOrderWait freighter (random 6 18))
+								(shpOrderGate freighter)
+
+								(plyMessage gPlayer "Freighter arriving")
+								(objSetObjRefData gSource "Target" freighter)
+								(objRegisterForEvents gSource freighter)
+
+								; Figure out where the ambush point is
+								(setq pathPos (random 35 65))
+								(setq ambushPos (sysGetNavPathPoint
+									&svCommonwealth;
+									(objGetObjRefData gSource "StartGate")
+									gSource
+									pathPos
+									))
+
+								; Create a rogue transport that will lay mines in the path
+								(setq mineLayer (sysCreateShip &scRogueMineLayer; ambushPos &svRogueFleet;))
+								(objSetData mineLayer "MinePos" ambushPos)
+
+								; Create a bunch of mines in addition
+								(for i 0 (random 10 20)
+									(sysCreateWeaponFire &itStaticMine; mineLayer (sysVectorPolarOffset ambushPos (random 0 359) (random 1 5)) 0 0 Nil)
+									)
+
+								; Figure out where the centurions will wait
+								(setq waitPos (sysGetNavPathPoint
+									&svCommonwealth;
+									(objGetObjRefData gSource "StartGate")
+									gSource
+									(add pathPos 15)
+									))
+								(setq waitPos (sysCreateMarker "" waitPos &svRogueFleet;))
+
+								; Create some centurions that will attack once the freighter
+								; goes through the mines
+								(for i 0 (random 2 4)
+									(block (theShip thePos)
+										(setq thePos (sysVectorPolarOffset waitPos (random 0 359) (random 10 14)))
+										(setq theShip (sysCreateShip &scCenturion; thePos &svRogueFleet;))
+										(shpOrderPatrol theShip waitPos 7)
+										)
+									)
+
+								; Order escort
+								(shpCancelOrders gPlayerShip)
+								(shpOrderEscort gPlayerShip freighter)
+								(objSetIdentified freighter)
+								)
+
+						(eq variant 'suicideRun)
+							(block Nil
+								; Create the superfreighter
+								(setq freighter (sysCreateShip &scScarabFreighter; (objGetObjRefData gSource "StartGate") &svCommonwealth;))
+								(objSetData freighter "noPiracyCheck" True)
+								(shpOrderDock freighter gSource)
+
+								(plyMessage gPlayer "Freighter arriving")
+								(objSetObjRefData gSource "Target" freighter)
+								(objRegisterForEvents gSource freighter)
+
+								; Create a recurring timer that will turn the freighter into a suicide bomber
+								(sysAddObjRecurringTimerEvent 31 gSource "OnSuicideRunCheck2B")
+
+								; Order escort
+								(shpCancelOrders gPlayerShip)
+								(shpOrderEscort gPlayerShip freighter)
+								(objSetIdentified freighter)
+								)
+						)
+					)
+			</OnTimerFreighterAppears2B>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(block (missionID missionStatus)
+						(setq missionID (objGetData gSource "MissionID"))
+						(setq missionStatus (objGetData gSource "MissionStatus"))
+						
+						; If we're in the middle of the fleetDelivery mission and we can't
+						; dock with the target, then we fail
+						(if (and (eq missionID 'mission1b)
+								(eq missionStatus 'inprogress)
+								(objIsAngryAt (objGetObjRefData gSource "Target") gPlayerShip))
+							(block Nil
+								(setq missionStatus "failure")
+								(objSetData gSource "MissionStatus" missionStatus)
+								(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+								(shpCancelOrders gPlayerShip)
+								)
+							)
+						
+						(switch
+							(eq missionStatus "inprogress")
+								"MissionInProgress"
+
+							(eq missionStatus "failure")
+								"MissionFailure"
+
+							(eq missionStatus "success")
+								"MissionSuccess"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Bridge" key="B">
+								<Navigate screen="Bridge"/>
+							</Action>
+
+							<Action name="Flight Deck" key="F">
+								<Navigate screen="FlightDeck"/>
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(scrShowScreen gScreen "&dsFleetDockServices;")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<MissionFailure>
+						<OnPaneInit>
+							(block (success failure)
+								; Get the mission
+								(setq gMission (objGetData gSource "Mission"))
+
+								; Execute the post-mission code (which must set the description).
+								(apply (eval (item gMission 4)) Nil)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (success failure)
+									(objSetData gSource "MissionStatus" Nil)
+
+									(setq success (objGetData gPlayerShip "fleetTFSuccess"))
+									(setq failure (add (objGetData gPlayerShip "fleetTFFailure") 1))
+									(objSetData gPlayerShip "fleetTFFailure" failure)
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MissionFailure>
+
+					<MissionInProgress
+							desc="&quot;What is your major malfunction!? Get back out there and complete your mission!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionInProgress>
+
+					<MissionSuccess>
+
+						<OnPaneInit>
+							(block (success failure)
+								; Get the mission
+								(setq gMission (objGetData gSource "Mission"))
+
+								; Execute the post-mission code (which must set the description).
+								(apply (eval (item gMission 3)) Nil)
+
+								; Update mission success/failures
+								(setq success (add (objGetData gPlayerShip "fleetTFSuccess") 1))
+								(setq failure (objGetData gPlayerShip "fleetTFFailure"))
+								(objSetData gPlayerShip "fleetTFSuccess" success)
+
+								; Done with mission
+								(objSetData gSource "MissionStatus" Nil)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Back to default (we do this so that dsFleetPromotion
+									; returns to the proper place).
+									(scrShowPane gScreen "Default")
+									
+									; If see if we got promoted
+									(if (intFleetPromotion)
+										(block Nil
+											(setq gName Nil)
+											(scrShowScreen gScreen "&dsFleetPromotion;")
+											)
+										)
+									)
+							</Action>
+						</Actions>
+					</MissionSuccess>
+
+				</Panes>
+
+			</Main>
+
+			<Bridge
+				name=			"Bridge"
+				>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(switch
+								(eq (objGetData gSource "CSC") "america")
+									(scrSetDesc gScreen "You talk to the captain of the CSC America. \"The Ares have been ruthless. When we lost the CSC Europa, the damn Martians deliberately targeted the emergency capsules. We taught them a lesson after that, though: we torched several of their communes.\"")
+
+								(eq (objGetData gSource "CSC") "india")
+									(scrSetDesc gScreen "You talk to the captain of the CSC India. \"If you ever get back to the Commonwealth, you've got to tell them to send more ships. We're getting killed out here and I don't even know if anyone back home cares.\"")
+
+								(eq (objGetData gSource "CSC") "atlantica")
+									(scrSetDesc gScreen "You talk to the captain of the CSC Atlantica. \"This war has been tough on the troops. We've had to start scavenging for vital supplies. I'm not surprised that the discipline in some units has deteriorated.\"")
+
+								(eq (objGetData gSource "CSC") "asia")
+									(scrSetDesc gScreen "You talk to the captain of the CSC Asia. \"When the Antarctica went rogue, Admiral Decker just about pissed acid. He was furious! He took it as a personal betrayal.\"")
+
+								(eq (objGetData gSource "CSC") "pacifica")
+									(scrSetDesc gScreen "You talk to the captain of the CSC Pacifica. \"You ever meet a Martian? Not the meek little Syrtians&#x97;I mean the Ares clones. They all have this smug look of superiority that cranks me up. They look better in the crosshairs of TeV 9, that's for sure!\"")
+
+								(scrSetDesc gScreen "The captain welcomes you aboard.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+
+			</Bridge>
+
+			<FlightDeck
+				name=			"Flight Deck"
+				>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (behavior)
+								(setq behavior (objGetData gSource "behavior"))
+								(setq gLevel (objGetData gPlayerShip "fleetLevel"))
+								
+								(switch
+									(eq behavior 'moving)
+										(scrSetDesc gScreen
+											"You are on the flight deck of " (objGetName gSource 0x04) ". "
+											"The ship is on maneuvers and the XO is giving orders to the navigator and the sensor chief."
+											)
+											
+									(eq gLevel 1)
+										(scrSetDesc gScreen
+											"The flight deck of " (objGetName gSource 0x04) 
+											" hums with the activity of men and women working at terminals and holocharts. "
+											"The XO is giving orders to a squadron out on a mission."
+											)
+
+									(scrSetDesc gScreen
+										"You are on the flight deck of " (objGetName gSource 0x04) ". "
+										"Men and women work at terminals planning missions and communicating with squadrons on patrol. "
+										"The XO is near a holochart, listening to a report."
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Talk to Executive Officer" key="X">
+								(block (behavior)
+									(setq behavior (objGetData gSource "behavior"))
+									(switch
+										(eq behavior 'moving)
+											(scrShowPane gScreen "ShipMoving")
+										
+										(block Nil
+											(setq gPrevScreen "FlightDeck")
+											(setq gPrevPane "Default")
+											(setq gMissionTitle "Flight Deck")
+
+											; Get the list of missions for this level. If the player is at level 3
+											; and the scientist rescue mission has not been completed, then do that mission;
+											; otherwise, do a mission appropriate for the level
+
+											(if (and (geq (objGetData gPlayerShip "fleetLevel") 3)
+													(not (typGetGlobalData &scCSCTerra; "p262scientists"))
+													)
+												(setq gMissionListName "MissionRescueScientists")
+												(setq gMissionListName (cat "Missions" (objGetData gPlayerShip "fleetLevel")))
+												)
+
+											; Set some other parameters for the mission screen
+
+											(if (gr (objGetData gPlayerShip "fleetTFSuccess") 0)
+												(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+												(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+												)
+											(setq gMissionAcceptText (plyComposeString gPlayer "\"Good luck, %name%!\""))
+											(setq gMissionDeclineText "\"Get the hell out of here then!\"")
+											(scrShowScreen gScreen "&dsMission;")
+											)
+										)
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+						</Actions>
+					</Default>
+					
+					<ShipMoving>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"The XO is too busy to talk to you right now. He waves you away while he concentrates on the maneuvers."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</ShipMoving>
+				</Panes>
+			</FlightDeck>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="0"		y="-70" />
+			<Port x="50"	y="50" />
+			<Port x="50"	y="-50" />
+			<Port x="70"	y="0" />
+			<Port x="-70"	y="0" />
+			<Port x="-50"	y="50" />
+			<Port x="-50"	y="-50" />
+		</DockingPorts>
+
+	</ShipClass>
+
+	<!-- CSC Hospital -->
+
+	<ShipClass UNID="&scCSCHospital;"
+			manufacturer=		""
+			class=				"Commonwealth Star Carrier"
+			type=				""
+			score=				"2330"
+
+			mass=				"50000"
+			cargoSpace=			"5000"
+			thrust=				"10000"
+			maneuver=			"24"
+			maxSpeed=			"2"
+
+			cyberDefenseLevel=	"6"
+			explosionType=		"&vtThermoExplosion4;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
+
+			dockScreen=			"Main"
+			defaultBackgroundID="&rsCSCBkgnd;"
+
+			inherit=			"&baCSCBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&vtDamageControlParty;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<StaticData>
+			<arcticaCaptainWelcome>
+				(
+					"The captain of the CSC Arctica welcomes you aboard: \"How are things going back in the Commonwealth? I haven't been to St. Katharine's in more than five years&#x97;had an amazing time at this little bar in the inner system. You really should check it out&#x97;if you make it back, I mean.\""
+					)
+			</arcticaCaptainWelcome>
+
+			<arcticaGiftTable>
+				(	; donation	item						count	unique
+					(10000		&itPlasmaShieldGenerator;	1		'Gift1)
+					(5000		&itInvincibleDeflector;		1		'Gift2)
+					(2500		&itR5Deflector;				1		'Gift3)
+					(1250		&itEMPImmuneCoating;		4		'Gift4)
+					(0			&itKobeWater;				1		Nil)
+					)
+			</arcticaGiftTable>
+
+			<saharaCaptainWelcome>
+				(
+					"The captain of the CSC Sahara welcomes you aboard: \"I hope you will be able to help our good doctor to obtain medical supplies. This damn war has made more invalids than heroes.\""
+					)
+			</saharaCaptainWelcome>
+
+			<saharaGiftTable>
+				(	; donation	item						count	unique
+					(10000		&itMammoth100Deflector;		1		'Gift1)
+					(5000		&itBlueEtheriumCrystal;		1		'Gift2)
+					(2500		&itPatchSpider;				1		'Gift3)
+					(1250		&itR1Deflector;				1		'Gift4)
+					(0			&itEuropanIceVodka;			1		Nil)
+					)
+			</saharaGiftTable>
+		</StaticData>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Bridge" key="B">
+								(block Nil
+									(scrShowScreen gScreen "Bridge")
+								
+									; If see if we got promoted
+									(if (intFleetPromotion)
+										(block Nil
+											(setq gName Nil)
+											(scrShowScreen gScreen "&dsFleetPromotion;")
+											)
+										)
+									)
+							</Action>
+
+							<Action name="Infirmary" key="I">
+								<Navigate screen="Infirmary"/>
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(scrShowScreen gScreen "&dsFleetDockServices;")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+
+			</Main>
+
+			<Bridge
+				name=			"Bridge"
+				>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (intRandomMessage gSource (cat (objGetData gSource "CSC") "CaptainWelcome") "arcticaCaptainWelcome"))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+
+			</Bridge>
+
+			<Infirmary
+				name=			"Infirmary"
+				>
+
+				<Panes>
+					<Default
+							desc=	"You are in the main infirmary of a Commonwealth Star Carrier. Sleep-deprived technicians attend hundreds of patients in their rejuv tanks, mostly oblivious to the insistent medical alarms. The smell of blood, wounds, and antiseptics smother you.">
+
+						<Actions>
+							<Action name="Talk to Medical Officer" key="M">
+								(block Nil
+									; See if the player has any medical supplies
+									(setq gItem (objGetItems gPlayerShip "*U+Meds"))
+
+									(if gItem
+										(scrShowPane gScreen "SellMedicalItems")
+										(scrShowPane gScreen "NoMedicalItems")
+										)
+									)
+							</Action>
+
+							<!--
+							<Action name="Talk to patient" key="P">
+								</Action>
+								-->
+
+							<Action name="Leave" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<NoMedicalItems
+							desc=	"The Medical Officer complains about how hard it is to get medical supplies this deep in space. &quot;We're getting killed out here fighting the Ares and this is how the Commonwealth thanks us&#x97;no supplies, no reinforcements, nothing!&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</NoMedicalItems>
+
+					<SellMedicalItems>
+						<OnPaneInit>
+							(block (medicalItem)
+								; Figure out how much all the supplies cost
+								(setq gCost 0)
+								(enum gItem medicalItem
+									(setq gCost 
+										(add gCost 
+											; Offer 25% more
+											(divide (multiply 125 (itmGetPrice medicalItem 'credit) (itmGetCount medicalItem)) 100)
+											)
+										)
+									)
+
+								; Set the description
+								(if (eq (count gItem) 1)
+									; Only one item
+									(scrSetDesc gScreen 
+										"\"Welcome to the Infirmary, %sir%! We are in desperate need of medical supplies. "
+										"I'm prepared to offer you " gCost " credits for the " (itmGetName (item gItem 0) 16) " in your cargo hold. "
+										"What do you say?\""
+										)
+
+									; Multiple items
+									(block (medicalItem itemListDesc)
+										(enum gItem medicalItem
+											(if itemListDesc
+												(setq itemListDesc (cat itemListDesc ", " (itmGetName medicalItem 8)))
+												(setq itemListDesc (cat "(" (itmGetName medicalItem 8)))
+												)
+											)
+
+										(setq itemListDesc (cat itemListDesc ")"))
+
+										(scrSetDesc gScreen 
+											"\"Welcome to the Infirmary, %sir%! We are in desperate need of medical supplies. "
+											"I'm prepared to offer you " gCost " credits for all the medical items in your cargo hold: " itemListDesc 
+											". What do you say?\""
+											)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Sell items" default="1" key="S">
+								(block (medicalItem)
+									; Remove the items from the cargo hold
+									(enum gItem medicalItem
+										(block Nil
+											(objRemoveItem gPlayerShip medicalItem)
+											(plyRecordSellItem gPlayer medicalItem 
+												(divide (multiply 125 (itmGetPrice medicalItem 'credit) (itmGetCount medicalItem)) 100)
+												)
+											)
+										)
+
+									; Pay the player
+									(plyCredit gPlayer gCost)
+
+									; Done
+									(scrShowPane gScreen "DoneSelling")
+									)
+							</Action>
+
+							<Action name="Donate items" key="D">
+								(block (medicalItems)
+									; Remove the items from the cargo hold
+									(enum gItem medicalItem
+										(objRemoveItem gPlayerShip medicalItem)
+										)
+										
+									; Keep track of how much we donate
+									(typIncGlobalData &svCommonwealthFleet; "medsDonated" gCost)
+
+									; Player gets a gift depending on how much she donated
+									(scrShowPane gScreen "Donate")
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</SellMedicalItems>
+
+					<DoneSelling
+							desc=	"&quot;Thank you, those supplies are really going to help these troopers.&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</DoneSelling>
+
+					<Donate>
+						<OnPaneInit>
+							(block (gift giftTable fleetXP xpGain maxGain)
+								; Get the gift table
+								(setq giftTable (objGetStaticData gSource (cat (objGetData gSource "CSC") "GiftTable")))
+								(if (not giftTable)
+									(setq giftTable (objGetStaticData gSource "arcticaGiftTable"))
+									)
+
+								; Find the appropriate gift based on the donation. The donation amount
+								; must be greater than the minimum for the gift and the gift must have
+								; not been given before (or the gift must not be unique).
+								(setq gift Nil)
+								(enumwhile giftTable (not gift) thisEntry
+									(if (and (geq gCost (item thisEntry 0))
+											(or (not (item thisEntry 3)) (not (objGetData gSource (item thisEntry 3))))
+											)
+										(block Nil
+											(setq gift (itmCreate (item thisEntry 1) (item thisEntry 2)))
+
+											; Do not give this gift again
+											(if (item thisEntry 3)
+												(objSetData gSource (item thisEntry 3) True)
+												)
+											)
+										)
+									)
+
+								; Describe the gift
+								(scrSetDesc gScreen (cat "\"Your generosity humbles me! When I was posted in the front-lines I came across " (itmGetName gift 8) ". I would be honored if you would accept it as a gift.\""))
+
+								; Give the gift to the player
+								(objAddItem gPlayerShip gift)
+
+								; Figure out how much experience we could gain. We cannot gain more than
+								; 200xp or xp beyond 600 (Master Sergeant).
+								(setq fleetXP (objGetData gPlayerShip "fleetXP"))
+								(switch
+									(geq fleetXP 600)
+										(setq maxGain 0)
+
+									(geq fleetXP 400)
+										(setq maxGain (subtract 600 fleetXP))
+
+									(setq maxGain 200)
+									)
+
+								; Player gains experience at the rate of 1 xp per 10 credits
+								; up to a maximum
+								(setq xpGain (divide gCost 10))
+								(if (gr xpGain maxGain)
+									(setq xpGain maxGain)
+									)
+
+								(objIncData gPlayerShip "fleetXP" xpGain)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Done" default="1" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</Donate>
+
+				</Panes>
+
+			</Infirmary>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="0"		y="-70" />
+			<Port x="50"	y="50" />
+			<Port x="50"	y="-50" />
+			<Port x="70"	y="0" />
+			<Port x="-70"	y="0" />
+			<Port x="-50"	y="50" />
+			<Port x="-50"	y="-50" />
+		</DockingPorts>
+
+	</ShipClass>
+
+	<!-- Aurochs Transport -->
+
+	<ShipClass UNID="&scAurochs;"
+			manufacturer=		""
+			class=				"Aurochs"
+			type=				"transport"
+			score=				"1090"
+
+			mass=				"8000"
+			cargoSpace=			"5600"
+			thrust=				"3000"
+			maneuver=			"9"
+			maxSpeed=			"15"
+
+			explosionType=		"&vtBlastExplosion4;"
+			leavesWreck=		"80"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="315" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="285" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="255" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="225" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="195" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="165" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="135" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="105" span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="75"  span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="45"  span="30" armorID="&itP120HexphaseArmor;" />
+			<ArmorSection start="15"  span="30" armorID="&itP120HexphaseArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;" omnidirectional="true"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips3;" imageX="768" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="1d12" item="&itXenotiteFuelRod;"/>
+		</Items>
+
+		<Names noArticle="true">
+			Aurochs Alpha-%0%0; Aurochs Beta-%0%0; Aurochs Gamma-%0%0;
+			Aurochs Delta-%0%0; Aurochs Epsilon-%0%0; Aurochs Zeta-%0%0;
+			Aurochs Eta-%0%0; Aurochs Theta-%0%0; Aurochs Iota-%0%0;
+			Aurochs Kappa-%0%0; Aurochs Lambda-%0%0; Aurochs Mu-%0%0;
+			Aurochs Nu-%0%0; Aurochs Xi-%0%0; Aurochs Omicron-%0%0;
+			Aurochs Pi-%0%0; Aurochs Rho-%0%0; Aurochs Sigma-%0%0;
+			Aurochs Tau-%0%0; Aurochs Upsilon-%0%0; Aurochs Phi-%0%0;
+			Aurochs Chi-%0%0; Aurochs Psi-%0%0; Aurochs Omega-%0%0
+		</Names>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Juan Carlos's EI500 Freighter 
+
+	EXTRA DATA
+
+	status:			Current status of freighter
+						Nil = Waiting for someone to pick up ROM
+						"decoy" = Trying to draw attackers away from player and CSC
+						"waitingToThankPlayer" = Waiting for player to dock, so he can thank her
+						"journeyContinues" = Heading towards the frontier
+
+	GLOBAL DATA
+
+	deliverROM:		If True, player has been sent to get ROM from Juan Carlos
+	destroyed:		If True, Juan Carlos is dead
+	leftSystem:		If True, Juan Carlos has left the system
+
+	-->
+
+	<ShipClass UNID="&scEI500JuanCarlos;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+			score=				"1420"
+
+			mass=				"250"
+			cargoSpace=			"200"
+			thrust=				"200"
+			maneuver=			"6"
+			maxSpeed=			"18"
+
+			leavesWreck=		"75"
+
+			dockingPorts=		"4"			
+			dockScreen=			"Main"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itAdvancedCeralloyArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itOmniParticleCannon;"/>
+			<Device deviceID="&itR1Deflector;"/>
+			<Device deviceID="&itArmorRepairDevice;"/>
+			<Device deviceID="&itMnemonicProcessor;"/>
+			<Device deviceID="&itTritiumPropulsionUpgrade;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item count="5d12" item="&itHeliumAssembly;"/>
+			<Lookup count="1d3" table="&trConsumables2;"/>
+			<Lookup count="1"	table="&trMinorItem2;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-22" y="-16"	z="0"/>
+			<NozzlePos x="-22" y="16"	z="0"/>
+		</DriveImages>
+
+		<Names definiteArticle="true">freighter Forking Paths</Names>
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnDestroy>
+				; If we did not have a chance to give the ROM to the player, then
+				; the mission fails
+				(block Nil
+					(if (not (objGetData gSource "status"))
+						(block Nil
+							(plyMessage gPlayer "Mission failed")
+							(objSetData (objGetObjRefData gPlayerShip "MissionSource") "MissionStatus" "failure")
+							(typIncGlobalData &scCSCTaskForce; "missionsFailed")
+							(shpCancelOrders gPlayerShip)
+							)
+						)
+
+					; Remember that we're destroyed
+					(if (not (objGetGlobalData gSource "leftSystem"))
+						(objSetGlobalData gSource "destroyed" True)
+						)
+					)
+			</OnDestroy>
+
+			<OnEnteredGate>
+				(objSetGlobalData gSource "leftSystem" True)
+			</OnEnteredGate>
+		</Events>
+
+		<DockScreens>
+			<Main>
+
+				<OnScreenInit>
+					(block (status)
+						(setq gPrevScreen "Main")
+						(setq status (objGetData gSource "status"))
+
+						(switch
+							; Do not allow radioactive players to dock
+							(shpIsRadioactive gPlayerShip)
+								(scrShowScreen gScreen "RefuseDock")
+
+							; Begin mission
+							(and (not status) (not (objIsUnderAttack gSource)))
+								(scrShowScreen gScreen "DeliverROM")
+
+							; If we're the decoy and we're done fighting, then talk to player
+							(and (eq status "decoy") (not (objIsUnderAttack gSource)) (not (objIsUnderAttack gPlayerShip)))
+								(scrShowScreen gScreen "ThankPlayer")
+
+							; Mission done, leaving the system
+							)
+						)
+				</OnScreenInit>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(switch
+								(objIsUnderAttack gSource)
+									(scrSetDesc gScreen "\"No time to talk, compadre: I've got a fight on my hands!\"")
+
+								(objIsUnderAttack gPlayerShip)
+									(scrSetDesc gScreen "\"No time to talk, compadre: you have a fight on your hands!\"")
+
+								(scrSetDesc gScreen "\"Compadre, good to see you! I am traveling back out to the Outer Realm! Maybe we will meet again, no? Good luck!\"")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+
+			<DeliverROM>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (desc)
+								(setq desc "As you step out of the airlock you are met by a man in a flight suit. He rubs the top of his shaved head as he scrutinizes you. After a few moments, he reaches out to shake your hand:\n\n")
+								(switch
+									(eq (objGetType gPlayerShip) &scEI100XPlayer;)
+										(setq desc (cat desc "\"That is a nice ship you've got, friend. I am Juan Carlos Uribe y V&#xE1;zquez, at your service, and the Forking Paths is my ship; she is not so well armed as yours, maybe, but you are going to more dangerous places, no?\""))
+
+									(setq desc (cat desc "\"Welcome, friend. My name is Juan Carlos Uribe y V&#xE1;zquez and the Forking Paths is my ship.\""))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "DeliverROM2")
+							</Action>
+						</Actions>
+					</Default>
+
+					<DeliverROM2
+							desc="&quot;We do not have much time, friend. I have a ROM with information, you know what I am saying? Take it back to the carrier; but watch for the Ares&#x97;they are looking for it too!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "DeliverROM3")
+							</Action>
+						</Actions>
+					</DeliverROM2>
+
+					<DeliverROM3
+							desc="As you talk, a shrill alarm drowns out the conversation.\n\n&quot;Ah, I see that we are late. Quick, take this ROM back to the carrier; I will hold them off here! Maybe we will meet again, no? Adi&#xF3;s!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (dest)
+									; Give data ROM to player
+									(objAddItem gPlayerShip (itmCreate &itLamplighterDataROM; 1))
+
+									; Create Ares to attack Juan Carlos and player
+									(sysAddEncounterEventAtDist 0 gSource &etAresAmbush2; (random 100 130))
+									(sysAddEncounterEventAtDist 0 gPlayerShip &etAresAmbush2; (random 100 130))
+
+									; Point the player back to the carrier
+									(shpCancelOrders gPlayerShip)
+									(shpOrderDock gPlayerShip (objGetObjRefData gPlayerShip "MissionSource"))
+
+									; Juan Carlos stays for a while
+									(shpCancelOrders gSource)
+									(shpOrderHold gSource (random 120 180))
+									(shpOrderGate gSource)
+
+									(objSetData gSource "status" "decoy")
+
+									; Done
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</DeliverROM3>
+				</Panes>
+			</DeliverROM>
+
+			<ThankPlayer>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								(cat "Juan Carlos meets you at the airlock.\n\n"
+									"\"You got good weapons on your ship, compadre! Thank you for helping me out; but now you have to get that data back to the Fleet. The ROM has experimental results from a secret project called Lamplighter&#x97;I do not know any more than that. All I know is that it is important. See you out there, friend!\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(block Nil
+									(objSetData gSource "status" "journeyContinues")
+
+									(shpCancelOrders gSource)
+									(shpOrderGate gSource)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ThankPlayer>
+
+			<RefuseDock>
+				<Panes>
+					<Default desc="&quot;Mierda&#x97;you're glowing! I cannot help you; get back to the carrier!&quot;">
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U"><Exit/></Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</RefuseDock>
+		</DockScreens>
+
+	</ShipClass>
+
+	<!-- Britannia-class Heavy Gunship -->
+
+	<ShipClass UNID="&scBritannia;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Britannia"
+			type=				"heavy gunship"
+			score=				"635"
+
+			mass=				"300"
+			cargoSpace=			"50"
+			thrust=				"1250"
+			maneuver=			"3"
+			maxSpeed=			"22"
+
+			leavesWreck=		"40"
+
+			attributes=			"commonwealth,commonMilitary,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itP120HexphaseArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itP120HexphaseArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itP120HexphaseArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itP120HexphaseArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itR5BDeflector;"/>
+			<Device deviceID="&itNM900MissilePod;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsBritannia;" imageWidth="80" imageHeight="80"/>
+
+		<Events>
+			<Reload>
+				(block (theMissilePod)
+					(setq theMissilePod (item (objGetItems gSource "lI") 0))
+					(if theMissilePod
+						; Tell the missile pod to reload itself
+						(objFireItemEvent gSource theMissilePod "Reload")
+						)
+					)
+			</Reload>
+		</Events>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-24" y="12"	z="0"/>
+			<NozzlePos x="-24" y="-12"	z="0"/>
+		</DriveImages>
+	</ShipClass>
+
+	<!-- Centurion-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturion;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion"
+			type=				"heavy gunship"
+			score=				"635"
+
+			mass=				"250"
+			cargoSpace=			"50"
+			thrust=				"1250"
+			maneuver=			"3"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"commonwealth,commonMilitary,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itBlastPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itBlastPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itBlastPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itBlastPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"/>
+			<Device deviceID="&itR1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-24" y="18"	z="0"/>
+			<NozzlePos x="-24" y="-18"	z="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Centurion/X-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionX;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/X"
+			type=				"heavy gunship"
+			score=				"1230"
+
+			mass=				"250"
+			cargoSpace=			"50"
+			thrust=				"2000"
+			maneuver=			"3"
+			maxSpeed=			"22"
+
+			leavesWreck=		"50"
+
+			attributes=			"commonwealth,commonMilitary,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itP120HexphaseArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itP120HexphaseArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itP120HexphaseArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itP120HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itR5Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-24" y="18"	z="0"/>
+			<NozzlePos x="-24" y="-18"	z="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- CSC America Encounter -->
+
+	<StationType UNID="&stCSCAmericaEncounter;"
+			name=				"(CSC America)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -rur- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC America</Names>
+
+				<InitialData>
+					<CSC>"america"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Atlantica Encounter -->
+
+	<StationType UNID="&stCSCAtlanticaEncounter;"
+			name=				"(CSC Atlantica)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -rur- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Atlantica</Names>
+
+				<InitialData>
+					<CSC>"atlantica"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Arctica Encounter -->
+
+	<StationType UNID="&stCSCArcticaEncounter;"
+			name=				"(CSC Arctica)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- rcu-- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"*"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCHospital;" orders="hold">
+
+				<Names definiteArticle="true">CSC Arctica</Names>
+
+				<InitialData>
+					<CSC>"arctica"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Asia Encounter -->
+
+	<StationType UNID="&stCSCAsiaEncounter;"
+			name=				"(CSC Asia)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -rur- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Asia</Names>
+
+				<InitialData>
+					<CSC>"asia"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC India Encounter -->
+
+	<StationType UNID="&stCSCIndiaEncounter;"
+			name=				"(CSC India)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -rur- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC India</Names>
+
+				<InitialData>
+					<CSC>"india"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Pacifica Encounter -->
+
+	<StationType UNID="&stCSCPacificaEncounter;"
+			name=				"(CSC Pacifica)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -rur- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+
+				<Names definiteArticle="true">CSC Pacifica</Names>
+
+				<InitialData>
+					<CSC>"pacifica"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Sahara Encounter -->
+
+	<StationType UNID="&stCSCSaharaEncounter;"
+			name=				"(CSC Sahara)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- rcu-- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"*"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCHospital;" orders="hold">
+
+				<Names definiteArticle="true">CSC Sahara</Names>
+
+				<InitialData>
+					<CSC>"sahara"</CSC>
+				</InitialData>
+
+				<Escorts>
+					<Ship     count="2d6"	class="&scCenturion;"	orders="patrol" patrolDist="15"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- Station used for scientist rescue mission -->
+
+	<StationType UNID="&stRogueBaseRescue;"
+			name=				"Rogue Fleet settlement"
+			sovereign=			"&svRogueFleet;"
+			abandonedScreen=	"Main"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itP120HexphaseArmor;"
+			maxHitPoints=		"250"
+			hitPoints=			"0"
+			repairRate=			"1"
+			shipRepairRate=		"1"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
+			>
+
+		<Image			imageID="&rsStations8;" imageX="128" imageY="896" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship		count="1"		class="&scCenturionX;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2+1"	class="&scCenturion;" orders="patrol" patrolDist="20"/>
+			<Ship		count="1d2"		class="&scCenturion;" orders="guard"/>
+		</Ships>
+
+		<DockScreens>
+			<Main>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Smoke, debris, and blast marks remain after a ferocious battle. No one is left alive.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" cancel="1" default="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+	</StationType>
+
+	<Globals>
+		(block Nil
+			(setq intFleetCreateWingmen (lambda (aStation aCount theClass)
+				(block Nil
+					(if (not theClass)
+						(setq theClass &scCenturion;)
+						)
+						
+					(for i 0 (subtract aCount 1)
+						(block (ship)
+							(setq ship (sysCreateShip theClass aStation &svCommonwealthFleet; "fleet"))
+							(shpOrderEscort ship gPlayerShip i)
+
+							; Remember the escorts we assigned
+							(objSetObjRefData aStation (cat "Wingman" i) ship)
+							(objRegisterForEvents aStation ship)
+							)
+						)
+					)
+				))
+
+			(setq intFleetCrime (lambda (severity description)
+				(if (gr severity (int (objGetData gPlayerShip "fleetCrimeSeverity")))
+					(block Nil
+						(objSetData gPlayerShip "fleetCrimeSeverity" severity)
+						(objSetData gPlayerShip "fleetCrime" description)
+						)
+					)
+				))
+
+			(setq intFleetDisperseWingmen (lambda (aStation aCount)
+				(block (i shipsLeft)
+					(setq shipsLeft 0)
+					(for i 0 (subtract aCount 1)
+						(block (ship)
+							(setq ship (objGetObjRefData aStation (cat "Wingman" i)))
+							(if ship
+								(block Nil
+									(setq shipsLeft (add shipsLeft 1))
+									(shpCancelOrders ship)
+									(shpOrderDock ship aStation)
+									(shpOrderGate ship)
+									)
+								)
+							)
+						)
+					shipsLeft
+					)
+				))
+				
+			(setq fltOrderCheckPosition (lambda (theCSC)
+				(block (enemyObj)
+					; Are we in a good spot? If not, then we need to move
+					(if (and (setq enemyObj (sysFindObject theCSC "TAEPN"))
+							(leq (objGetDistance theCSC enemyObj) 80)
+							)
+						(block (dest bearing)
+							; bearing away from enemy
+							(setq bearing 
+								(sysVectorAngle (sysVectorSubtract (objGetPos theCSC) (objGetPos enemyObj)))
+								)
+								
+							; Pick a better spot that is away from the enemy
+							(setq dest (sysVectorRandom theCSC 
+								(lambda Nil
+									(sysVectorPolarOffset Nil
+										(modulo (add bearing 360 (random -80 80)) 360)
+										(random 120 180)
+										)
+									)
+								100 
+								"TA"
+								))
+							
+							; Order the ship to move
+							(shpCancelOrders theCSC)
+							(shpOrder theCSC 'holdCourse
+								(sysVectorAngle (sysVectorSubtract dest (objGetPos theCSC)))
+								(sysVectorDistance dest (objGetPos theCSC))
+								)
+
+							(objSetData theCSC "behavior" 'moving)
+							True
+							)
+						Nil
+						)
+					)
+				))
+
+			(setq cscSquadronCreateShip (lambda (theCSC theClass)
+				(block (theShip theEntry squadronList)
+				
+					; Create the ship
+					(setq theShip (sysCreateShip theClass theCSC &svCommonwealthFleet;))
+					(objSuspend theShip)
+					
+					; Create the squadron entry
+					(setq theEntry (list (objGetID theShip) theClass 'home))
+					
+					; Append to the squadron list
+					
+					(setq squadronList (append (objGetData theCSC "squadron") (list theEntry)))
+					(objSetData theCSC "squadron" squadronList)
+					
+					;(dbgOutput (objGetID theShip) ": Created " (typGetDataField theClass "name"))
+					)
+				))
+				
+			(setq cscSquadronDeployShip (lambda (theCSC theClass)
+				(block (theID theShip squadronList)
+					
+					; Look for a ship that matches the class and is currently
+					; at "home"
+					
+					(setq squadronList (objGetData theCSC "squadron"))
+					(setq theID (item (match squadronList theEntry (and (eq (item theEntry 1) theClass) (eq (item theEntry 2) 'home))) 0))
+					
+					; If we found one, deploy the ship
+					(if (and theID (setq theShip (objGetObjByID theID)))
+						(block Nil
+							
+							; Ship appears out of the CSC
+							(objResume theShip theCSC)
+							(objRegisterForEvents theCSC theShip)
+							
+							; Update squadron list
+							(setq squadronList 
+								(map squadronList theEntry
+									(if (eq (item theEntry 0) theID)
+										; Update this entry
+										(list theID (item theEntry 1) 'deployed)
+										
+										; Leave the entry alone
+										theEntry
+										)
+									)
+								)
+								
+							(objSetData theCSC "squadron" squadronList)
+							
+							;(dbgOutput theID ": Deployed")
+							
+							; Done
+							theShip
+							)
+							
+						; Otherwise, couldn't deploy
+						Nil
+						)
+					)
+				))
+
+			(setq intFleetPromotion (lambda Nil
+				; Returns level that the player is promoted to (or Nil)
+
+				(block (xp newLevel)
+					(setq xp (objGetData gPlayerShip "fleetXP"))
+					(switch
+						(geq xp 10000)
+							(setq newLevel 6)
+
+						(geq xp 3000)
+							(setq newLevel 5)
+
+						(geq xp 1500)
+							(setq newLevel 4)
+
+						(geq xp 600)
+							(setq newLevel 3)
+
+						(geq xp 200)
+							(setq newLevel 2)
+
+						(setq newLevel 1)
+						)
+
+					; Return if different from current level
+					(if (eq (objGetData gPlayerShip "fleetLevel") newLevel)
+						Nil
+						newLevel
+						)
+					)
+				))
+			)
+	</Globals>
+
+	<EncounterTable UNID="&etKobolAmbush1;">
+		<Table count="1d3+2">
+			<Ship chance="50"	count="1"	class="&scKobolGunshipDualTeV9;"	orders="attack" sovereign="&svDestructiveChaos;"/>
+			<Ship chance="30"	count="1"	class="&scKobolGunshipOmniTeV9;"	orders="attack" sovereign="&svDestructiveChaos;"/>
+			<Ship chance="20"	count="1"	class="&scKobolGunshipMissiles;"	orders="attack" sovereign="&svDestructiveChaos;"/>
+		</Table>
+	</EncounterTable>
+
+	<!-- Fleet Delivery	-->
+
+	<DockScreen UNID="&dsFleetDelivery;"	nestedScreen="true">
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (items)
+						(setq items (objGetData gSource "fleetMissionCargo"))
+
+						; See if the player has all the items that we expect
+						(setq gResult True)
+						(enum items thisItem
+							(if (not (objHasItem gPlayerShip thisItem))
+								(setq gResult Nil)
+								)
+							)
+
+						(if gResult
+							(scrSetDesc gScreen "The dockmaster meets you as you dock: \"Thank you for bringing these supplies&#x97;our situation is desperate.\"")
+							(scrSetDesc gScreen "The dockmaster meets you as you dock: \"Where are the supplies that you were supposed to be bringing? Those supplies are desperately needed!\"")
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block Nil
+							(if gResult
+								(block (items missionObj)
+									; Remove the supplies
+									(setq missionObj (objGetObjRefData gPlayerShip "fleetMission"))
+									(setq items (objGetData gSource "fleetMissionCargo"))
+
+									(enum items thisItem
+										(objRemoveItem gPlayerShip thisItem)
+										)
+
+									; Mission is a success
+									(objSetData missionObj "MissionStatus" "success")
+									(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+									(objSetData gSource "fleetMissionCargo" Nil)
+									(objSetObjRefData gPlayerShip "fleetMission" Nil)
+									(shpCancelOrders gPlayerShip)
+									)
+								)
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				; If we have a delivery mission to this station, then show
+				; the proper screen.
+				;
+				; The screen is shown with mission priority (4) meaning that
+				; it will show up after decon and confiscation screens.
+				
+				(if	(and (objMatches gSource Nil "sTAV")
+						(objGetData gSource "fleetMissionCargo")
+						)
+					(list &dsFleetDelivery; 4)
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</DockScreen>
+
+	<!-- Fleet only allows docking with military ID	-->
+
+	<DockScreen UNID="&dsFleetRefuseDock;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen 
+						(cat "As you exit the docking ramp, Commonwealth troopers train their weapons on you:\n\n\"This is a military "
+							 (if (objIsShip gSource) "ship" "installation")
+							 ", civie!\""
+							 )
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Undock" default="1" cancel="1" key="U">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+	<!-- Fleet Dock Services -->
+
+	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						; Set the description
+						(scrSetDesc gScreen "You are at the docking services deck.")
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Refuel" key="R">
+						(block Nil
+							; Figure out what kind of fuel to use
+							(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 88) (&itXenotiteFuelRod; 88) (&itHeliumAssembly; 88)))
+
+							; Free refueling if level 3 or higher
+							(if (geq (objGetData gPlayerShip "fleetLevel") 3)
+								(setq gCost 0)
+								)
+
+							(scrShowScreen gScreen "&dsRefuel;")
+							)
+					</Action>
+
+					<Action name="Repair or replace armor" key="A" >
+						(block Nil
+							(setq gTechLevel 10)
+							(setq gArmorSegment 0)
+							(setq gCheckMilitaryID True)
+							; Dock services are free if at fleetLevel 4 or greater
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsRepairArmor;")
+							)
+					</Action>
+
+					<Action name="Install device" key="D" >
+						(block Nil
+							(setq gTechLevel 9)
+							(setq gTechModifier Nil)
+							(setq gCheckMilitaryID True)
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsInstallDevice;")
+							)
+					</Action>
+
+					<Action name="Remove device" key="V" >
+						(block Nil
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsRemoveDevice;")
+							)
+					</Action>
+
+					<Action name="Upgrade reactor" key="P" >
+						(block (maxPower)
+							(setq gCheckMilitaryID Nil)
+
+							; Figure out what reactor to upgrade to
+							(setq maxPower (objGetMaxPower gPlayerShip))
+
+							(switch
+								(ls maxPower 1000)
+									(block Nil
+										(setq gCost 10000)
+										(setq gItem (itmCreate &it100MWReactor; 1))
+										)
+
+								(ls maxPower 1500)
+									(block Nil
+										(setq gCost 20000)
+										(setq gItem (itmCreate &it150MWReactor; 1))
+										)
+
+								(ls maxPower 2500)
+									(block Nil
+										(setq gCost 60000)
+										(setq gItem (itmCreate &it250MWReactor; 1))
+										)
+
+								(ls maxPower 5000)
+									(block Nil
+										(setq gCost 100000)
+										(setq gItem (itmCreate &it500MWReactor; 1))
+										)
+
+								(ls maxPower 10000)
+									(block Nil
+										(setq gCost 200000)
+										(setq gItem (itmCreate &it1GWReactor; 1))
+										)
+
+								(setq gItem Nil)
+								)
+
+							; Install screen
+							(if gItem
+								(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+								(scrShowPane gScreen "NoReactorUpgrade")
+								)
+							)
+					</Action>
+
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<NoReactorUpgrade
+					desc=	"The technology required to upgrade your reactor is not available.">
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</NoReactorUpgrade>
+		</Panes>
+	</DockScreen>
+
+	<!-- Fleet Promotion
+
+		gName: Name of captain (or Nil)
+	-->
+
+	<DockScreen UNID="&dsFleetPromotion;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (newLevel captainName)
+						(setq newLevel (intFleetPromotion))
+
+						(if gName
+							(setq captainName gName)
+							(setq captainName (cat "the captain of " (objGetName gSource 4)))
+							)
+
+						(switch
+							(eq newLevel 2)
+								(block Nil
+									(scrSetDesc gScreen (cat "In recognition of your service to the Fleet, " captainName " awards you the title of Privateer and bestows upon you the Ares Campaign Ribbon."))
+									(objAddItem gPlayerShip (itmCreate &itAresCampaignRibbon; 1))
+									)
+
+							(eq newLevel 3)
+								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " awards you the rank of master sergeant in the Commonwealth Fleet."))
+
+							(eq newLevel 4)
+								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet lieutenant."))
+
+							(eq newLevel 5)
+								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet commander."))
+
+							(eq newLevel 6)
+								(scrSetDesc gScreen (cat "In recognition of your service, " captainName " promotes you to the rank of Fleet captain."))
+
+							(scrSetDesc gScreen (cat captainName " commends you for your service."))
+							)
+
+						(objSetData gPlayerShip "fleetLevel" newLevel)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+	<!-- Fleet Crime Warning -->
+
+	<DockScreen UNID="&dsFleetCrimeWarning;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen (plyComposeString gPlayer (cat
+						"As you leave your ship a Fleet officer approaches you:\n\n"
+						"\"One moment, %sir%! Looks like you've been tagged by the Commonwealth for some kind of incident. "
+						"The record lists '" (objGetData gPlayerShip "commonCrime") ",' which is...uh...a serious crime, %sir%. "
+						"Probably a mistake, %sir%, I think. I just thought you'd want to know.\""
+						)))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block Nil
+							(typSetGlobalData &svCommonwealthFleet; "commonCrimeWarning" (objGetData gPlayerShip "commonCrime"))
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+	<!-- Fleet Decontamination -->
+
+	<DockScreen UNID="&dsFleetDecon;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen "The dockmaster decontaminates your ship before you are allowed to exit the airlock.")
+						(shpDecontaminate gPlayerShip)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrExitScreen gScreen (shpIsRadioactive gPlayerShip))
+					</Action>
+				</Actions>
+
+			</Default>
+		</Panes>
+	</DockScreen>
+
+	<!-- Fleet Discharge -->
+
+	<DockScreen UNID="&dsFleetDischarge;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat 
+							"As you enter you are surrounded by heavily armed soldiers. A Fleet officer approaches you:\n\n"
+							
+							(switch
+								(gr (objGetData gPlayerShip "fleetXP") 0)
+									"\"Because of your crimes against the Commonwealth you are hereby discharged from the Fleet.\""
+									
+								(objGetItems gPlayerShip "*+MilitaryID")
+									"\"Because of your crimes against the Commonwealth your military ID is hereby revoked.\""
+									
+								"\"You're nothing but a common criminal, not even worth putting in the locker.\""
+								)
+								
+							"\n\nThe soldiers escort you back to your ship."
+							))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Undock" default="1" cancel="1" key="U">
+						(block (milIDs)
+							(objSetData gPlayerShip "fleetLevel" 1)
+							(objSetData gPlayerShip "fleetXP" 0)
+							(enum (objGetItems gPlayerShip "* +MilitaryID") theItem
+								(objRemoveItem gPlayerShip theItem)
+								)
+							(scrExitScreen gScreen 'forceUndock)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+	<!-- Fleet Imprison -->
+
+	<DockScreen UNID="&dsFleetImprison;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "As you enter you are surrounded by heavily armed soldiers. A Fleet officer approaches you: \"You are charged with treason for " (objGetData gPlayerShip "fleetCrime") "\"" ))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block Nil
+							(plyDestroyed gPlayer (cat "was executed for " (objGetData gPlayerShip "fleetCrime")))
+							(scrExitScreen gScreen 'forceUndock)
+							)
+					</Action>
+				</Actions>
+
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+<!-- THE COMMONWEALTH FLEET
+
+	GLOBAL DATA
+	
+	medsDonated:		Cost of total medical supplies donated
+	
+-->
+
+	<Sovereign UNID="&svCommonwealthFleet;"
+			name="Commonwealth Fleet"
+			alignment="constructive chaos"
+			>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList p262rescue p262prototype antarcticaStatus medsDonated)
+
+					; Rank
+					
+					(if (gr (objGetData gPlayerShip "fleetXP") 0)
+						(block (rank)
+							(setq rank (objGetData gPlayerShip "fleetLevel"))
+							(setq theList (list
+								(list
+									"Commonwealth Fleet rank"
+									(switch
+										(eq rank 1) "Civilian"
+										(eq rank 2) "Privateer"
+										(eq rank 3) "Master sergeant"
+										(eq rank 4) "Fleet lieutenant"
+										(eq rank 5) "Fleet commander"
+										(eq rank 6) "Fleet captain"
+										(cat "ERROR: Fleet rank: " rank)
+										) 
+									)
+									
+								(list
+									"CSC missions"
+									(intMissionAchievementString (typGetGlobalData &scCSCTaskForce; "missionsCompleted") (typGetGlobalData &scCSCTaskForce; "missionsFailed"))
+									"missions &amp; activities"
+									)
+								))
+							)
+						)
+						
+					; Project262 rescue
+					
+					(setq p262rescue (typGetGlobalData &scCSCTerra; "p262scientists"))
+					(if p262rescue
+						(setq theList (append theList (list
+							(list
+								(switch
+									(eq p262rescue 'rescued) "Rescued Project Lamplighter scientists"
+									(eq p262rescue 'failed) "Failed to rescue Project Lamplighter scientists"
+									(cat "ERROR: p262scientists: " p262scientists)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)))
+						)
+						
+					; Project262 prototype
+					
+					(setq p262prototype (typGetGlobalData &scCSCTerra; "p262protoype"))
+					(if p262prototype
+						(setq theList (append theList (list
+							(list
+								(switch
+									(eq p262prototype 'recovered) "Recovered Project Lamplighter prototype"
+									(cat "ERROR: p262prototype: " p262prototype)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)))
+						)
+						
+					; Lamplighter
+					
+					(if (eq (typGetGlobalData &scCSCTerra; "p262test") 'installed)
+						(setq theList (append theList (list
+							(list "Acquired Lamplighter archcannon" Nil "achievements &amp; regrets")
+							)))
+						)
+						
+					; Antarctica
+					
+					(setq antarcticaStatus (typGetGlobalData &scCSCTerra; "antarctica"))
+					(if antarcticaStatus
+						(setq theList (append theList (list
+							(list
+								(switch
+									(eq antarcticaStatus 'escaped) "Defended the CSC Antarctica"
+									(eq antarcticaStatus 'destroyed) "Failed to defend the CSC Antarctica"
+									(eq antarcticaStatus 'destroyedByPlayer) "Destroyed the CSC Antarctica"
+									(eq antarcticaStatus 'betrayed) "Betrayed the CSC Antarctica"
+									(cat "ERROR: antarctica: " antarcticaStatus)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)))
+						)
+						
+					; Meds donated
+					
+					(if (setq medsDonated (typGetGlobalData &svCommonwealthFleet; "medsDonated"))
+						(setq theList (append theList (list
+							(list "Value of supplies donated to Commonwealth Fleet" medsDonated "missions &amp; activities")
+							)))
+						)
+
+					theList
+					)
+			</GetGlobalAchievements>
+			
+			<GetGlobalDockScreen>
+				(switch
+					; This only applies to Fleet ships and stations
+					(not (objMatches gSource Nil "sTAV +commonwealthFleet;"))
+						Nil
+						
+					; If the ship is radioactive then we need to decontaminate
+					(shpIsRadioactive gPlayerShip)
+						(list &dsFleetDecon; 10)
+						
+					; The remaining screens are only invoked if the ship/station
+					; implements Fleet Law (e.g., CSC Antarctica does not).
+					(not (objHasAttribute gSource "fleetLaw"))
+						Nil
+						
+					; If the player has committed a crime, then imprisonment
+					(geq (int (objGetData gPlayerShip "fleetCrimeSeverity")) 2)
+						(list &dsFleetImprison; 8)
+						
+					; If the player has committed a Commonwealth crime then she
+					; is kicked out of the military.
+					(and (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+							(leq (objGetData gPlayerShip "fleetLevel") 3))
+						(list &dsFleetDischarge; 8)
+						
+					; If the player does not have a military ID, then
+					; refuse dock
+					(not (objGetItems gPlayerShip "*+MilitaryID"))
+						(list &dsFleetRefuseDock; 6)
+						
+					; If the player has committed a Commonwealth crime but is a
+					; Fleet lieutenant or higher, then she gets a warning.
+					(and (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+							(not (eq (typGetGlobalData &svCommonwealthFleet; 'commonCrimeWarning) (objGetData gPlayerShip "commonCrime"))))
+						(list &dsFleetCrimeWarning; 5)
+
+					Nil
+					)
+			</GetGlobalDockScreen>
+
+			<OnGlobalUniverseCreated>
+				(block Nil
+					; Initialize all variables that we need
+					(objSetData gPlayerShip "fleetXP" 0)
+					(objSetData gPlayerShip "fleetLevel" 1)
+					(objSetData gPlayerShip "fleetTFSuccess" 0)
+					(objSetData gPlayerShip "fleetTFFailure" 0)
+					)
+			</OnGlobalUniverseCreated>
+		</Events>
+	</Sovereign>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsBritannia;"		bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCSCBkgnd;" bitmap="Resources\CSC.jpg" loadOnUse="true" />
+
+</TranscendenceModule>

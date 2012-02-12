@@ -1,0 +1,75 @@
+ITEM SUGGESTIONS FROM FORUMS
+----------------------------
+
+[ ] Advanced Autopilot ROM: Choose location, ship automatically moves towards it [Hui]
+[ ] Advanced Target system ROM: Allow cycling through targets; auto acquires new targets [Hui]
+[ ] Alien Hyperspace Drive: When used, ship is teleported to random location
+	in system, but ship is helpless for a moment [OddBob]
+[ ] Auto refueler: Automatically refuels ship from on-board fuel rods [gannon]
+[ ] Battle AI ROM: Takes over your ship and attacks all enemy ship [fossaman]
+[ ] Caltrips: Cloud of EMP mines; when hit, damage shields, engines, etc. [Narok]
+[ ] Capacitor upgrade module: Increase weapon's fire rate [ponkan]
+[ ] Charms: Increase some ship capability while on board [ponkan]
+[ ] Cosmic Cycler: When fired, particles (like shot from recoilless cannon) orbit around
+	the ship [Jason Miao]
+[ ] Counter-measure Pods: All tracking weapons will fire at this [OddBob]
+[ ] Cryostasis Pod: Activates automatically when ship is out of fuel; player can be rescued
+	for a feed; only works in Commonwealth space [El_FlyffyDragon]
+[ ] Dark Energy generator: Same as Oracus HARASS for a ship; causes shields to decrease
+	regeneration rate [ponkan]
+[ ] Dark Mass Beam: Collect ammo (dark matter) as ship moves; targets get hit with
+	damage and extra mass (which slows them down) [DasSmiter]
+[ ] Decoy Probe: Single-use auton; lures station guards away [fossaman]
+[ ] Displacement Shields: Ship appears in a different location [gannon]
+[ ] Dual missile rack: Missiles take up 75% less space [Dorne]
+[ ] Emergency Distress Beacon: When used, Commonwealth ships come to defend you
+	(only if in Commonwealth space and if not abused) [OddBob]
+[ ] Energy Absorbtion Shields: When hit by energy weapons, absorbs energy and
+	converts to fuel; does protect against matter weapons [Hui]
+[ ] Grapples: Allows a ship to capture another ship [Thelon Fairblade]
+[ ] Gravimetric Plates: Armor that bends shots around it; useless if armor is damaged; armor
+	cannot be reparied [Vin]
+[ ] Gravitic Distorter: Shots deflect away/around. Comsumes lots of fuel [Vin]
+[ ] Gravitic Manipulator: Ship can move in short bursts or come to full stop; also could be
+	used as tractor beam; consumes a lot of fuel [Vin]
+[ ] Gravitometric Distortion Beam: Beam distorts space around it, damaging ships; direct hit
+	is deadly. [fossaman]
+[ ] Hand Scanner: Identifies ROMs, barrels, and devices [fossaman]
+[ ] Hyperspace Weapons Mount: Increases device slots, but chance of losing/damaging
+	a device. [OddBob]
+[ ] I39 Matter Cannon: Targets increase mass and reduce maneuverability, but targets are also
+	protected somewhat [Amir Alawi]
+[ ] Jumpseeker Missile: Hit their targets via jump [Dorne]
+[x] Kick Drive: Like normal Titan 440, but when used, player jumps forward [fossaman]
+	[Implemented as Transpace Jumpdrive]
+[ ] Long Range Ballistic Missile: Can hit any target in system [Narok]
+[ ] Maneuvering Jets: When installed, increases turning rate [Crom]
+[ ] Mizari Nanocog: Nanites that attack enemy ships; Nanites must return to bottle [Narok]
+[ ] Multi Target Sensor: Player can have up to 10 targets [Dorne]
+[ ] Mobius Bay: Cargo hold; items inside do not contribute to ship mass [Narok]
+[ ] Nano Repairer Pod: Fixes damaged items [gannon]
+[ ] Nebular Particle Probability Matrix: No drag when ship is in nebula [Narok]
+[ ] Particle Scoop: When flying through debris, collects raw materials [Hui]
+[ ] Patch Spider: Repairs armor, no need for device slot [OddBob]
+	[Implemented as Patch Spider]
+[ ] Penetrator Missile: Jams missile defenses; penetrates shields [OddBob]
+[ ] Penitent Initiate Robes: No effects [Narok]
+[ ] Ramscoop: Generates fuel from interplanetary medium (proportional to speed?) [OddBob]
+[ ] Recon (or Survey) Auton: Auton moves through system mapping station; chance of enemy
+	spotting you [Hui]
+[ ] Remote Kinetic Annihilator: Counters Gravimetric Plates; does huge amount of damage [Hui]
+[ ] Salvage targeting system ROM: When wrecks/containers targeted, would see contents [Hui]
+[ ] Shockwave generator: Vaporizes everything around, but high chance that device burns-out 
+	after one use [OddBob]
+[ ] SmartCannon Mark II: More damage and range; also not affected by missile defense [OddBob]
+[ ] Suffering Pall: Penitent robes; if worn, Penitents are friendly (can dock) [Narok]
+[ ] Tractor Beam: Pulls wrecks (combined with Smelting Station, to deliver wrecks to) [Hui]
+[ ] Trieres Ram: Consumes shields to create a barrier; causes particle damage on ram; hold
+	down fire key to create barrier [Crom]
+[ ] Weapon Replicator: When installed, weapons never run out of ammo [gannon]
+[ ] Weapons Turret: Can install one weapon on it, which makes it auto-track [ponkan]
+[ ] Wormhole Mine: When invoked, anything in area is either destroyed or
+	teleported to another system. Maybe persists? [Narok]
+[ ] XM150 Recon Missile: When launched, can see from missile's perspective [ponkan]
+[ ] X-Shields: Nano-based shields; slow regen; when used, ship appears as
+	nearest ship; enemies do not attack [Narok]

@@ -1,0 +1,2983 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- LEVEL V ITEMS -->
+
+	<!-- itIncandescentStrawberries
+	
+	EXTRA DATA:
+	
+	expireTime:			After this time, food is rotted
+	status:				Current state
+							Nil =			Fresh
+							'ripe =			Ripe
+							'rotted =		Rotted
+	
+	-->
+
+	<ItemType UNID="&itIncandescentStrawberries;"
+			name=				"[case(s) of ]strawberries"
+			level=				"5"
+			value=				"250"
+			mass=				"5"
+			frequency=			"notrandom"
+			numberAppearing=	"1d12"
+			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+
+			description=		"Fresh strawberries are a delicacy found only near living worlds."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<StaticData>
+			<expireTime>5400</expireTime>
+			<priceIncrease>200</priceIncrease>
+		</StaticData>
+		
+		<Events>
+			<GetName>
+				(list (cat "[case of " (stkFreshFoodStatus gItem) " ]strawberries") 0x02)
+			</GetName>
+			
+			<GetTradePrice>
+				(stkFreshFoodPrice gItem)
+			</GetTradePrice>
+			
+			<OnUpdate>
+				(stkFreshFoodUpdate gSource gItem)
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+	<ItemType UNID="&itIncandescentPeaches;"
+			name=				"[case(s) of ]white peaches"
+			level=				"5"
+			value=				"300"
+			mass=				"5"
+			frequency=			"notrandom"
+			numberAppearing=	"1d12"
+			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+
+			description=		"White peaches are a delicacy found only near living worlds."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<StaticData>
+			<expireTime>7200</expireTime>
+			<priceIncrease>150</priceIncrease>
+		</StaticData>
+		
+		<Events>
+			<GetName>
+				(list (cat "[case of " (stkFreshFoodStatus gItem) " ]white peaches") 0x02)
+			</GetName>
+			
+			<GetTradePrice>
+				(stkFreshFoodPrice gItem)
+			</GetTradePrice>
+			
+			<OnUpdate>
+				(stkFreshFoodUpdate gSource gItem)
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+	<ItemType UNID="&itIncandescentBellFruit;"
+			name=				"[case(s) of ]bellfruits"
+			level=				"5"
+			value=				"450"
+			mass=				"5"
+			frequency=			"notrandom"
+			numberAppearing=	"1d12"
+			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+
+			description=		"Bellfruits are a delicacy found only near living worlds."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<StaticData>
+			<expireTime>7200</expireTime>
+			<priceIncrease>150</priceIncrease>
+		</StaticData>
+		
+		<Events>
+			<GetName>
+				(list (cat "[case of " (stkFreshFoodStatus gItem) " ]bellfruit") 0x02)
+			</GetName>
+			
+			<GetTradePrice>
+				(stkFreshFoodPrice gItem)
+			</GetTradePrice>
+			
+			<OnUpdate>
+				(stkFreshFoodUpdate gSource gItem)
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+	<ItemType UNID="&itIncandescentLucuma;"
+			name=				"[case(s) of ]lucumas"
+			level=				"5"
+			value=				"300"
+			mass=				"5"
+			frequency=			"notrandom"
+			numberAppearing=	"1d12"
+			attributes=			"Consumable; Food; FreshFood; Lux; Specialty"
+
+			description=		"Lucumas are a delicious fruit found only near living worlds."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<StaticData>
+			<expireTime>10800</expireTime>
+			<priceIncrease>100</priceIncrease>
+		</StaticData>
+		
+		<Events>
+			<GetName>
+				(list (cat "[case of " (stkFreshFoodStatus gItem) " ]lucumas") 0x02)
+			</GetName>
+			
+			<GetTradePrice>
+				(stkFreshFoodPrice gItem)
+			</GetTradePrice>
+			
+			<OnUpdate>
+				(stkFreshFoodUpdate gSource gItem)
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+	<ItemType UNID="&itIncandescentCoffee;"
+			name=				"[kilo(s) of ]Incandescent coffee"
+			level=				"6"
+			value=				"800"
+			mass=				"1"
+			frequency=			"notrandom"
+			numberAppearing=	"1d12"
+			attributes=			"Consumable; Food; Lux; Specialty"
+
+			description=		"Coffee beans from the tropical regions of the planet Incandescent are famous throughout Human Space."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+<!-- STATIONS -->
+
+	<!-- Arcology
+	
+	EXTRA DATA
+	
+	mission:			Current mission
+	missionStatus:		Current mission status:
+							Nil = No mission
+							'inProgress = Mission in progress
+							'success = Mission successful
+							'failure = Mission failed
+	missionTarget:		Current mission target
+	totalProduced:		Total number of items produced
+
+	-->
+	
+	<StationType UNID="&stStKatsArcology;"
+			name=				"Arcology of New Victoria"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			defaultBackgroundID="&rsStKatsArcologyScreen;"
+
+			virtual=			"true"
+			definiteArticle=	"true"
+			
+			attributes=			"commonwealthCustoms, dockObj, human, majorStation, stKatsArcology"
+			>
+
+		<Items>
+			<RandomItem count="20" 
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"2"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="20" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"2"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="5" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"3"
+					levelCurve=		"1"
+					/>
+					
+			<Item count="1d20" item="&itIncandescentCoffee;"/>
+		</Items>
+
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Military; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+		</Trade>
+		
+		<StaticData>
+			<ParliamentDebate>
+				(
+					(cat "\n\nThe minister from Zhang Li makes an impassioned appeal for "
+						"a bill funding the construction of three new Commonwealth Star Carriers. "
+						"She shows pictures of refugees displaced by the Ares, but the chamber "
+						"is nearly empty and her energy fades in mid-speech."
+						)
+					(cat "\n\nThe chamber is nearly full as ministers debate a bill calling for "
+						"material support to the Huari people. Those in favor cite the brutal and cruel "
+						"treatment the Huari have received under the Sung Slavers. Those opposed "
+						"recall that the Huari themselves were once aggressors who killed Commonwealth "
+						"settlers in the Ungoverned Territories."
+						)
+					(cat "The minister from 70 Ophiuchi speaks in the Center Well:\n\n"
+						"\"...and so I urge my fellow ministers to meet this challenge. With the "
+						"appropriations of CP1175 we can finally provide enough resources to the "
+						"Militia in order to secure the safety of our citizens against Marauder tyranny.\""
+						)
+					(cat "\n\nThe minister from Kinder's Star reads a bill commemorating the death of "
+						"Militia Colonel Simon Francis Jezerski, who was killed in the line of duty in "
+						"a confrontation with the Death Drugs Cartel."
+						)
+					(cat "The minister from Numerianus speaks in the Center Well:\n\n"
+						"\"My fellow citizens, if compassion is not enough to compel you to vote for "
+						"this bill, then consider the risk that we take by opposing it. If we do not provide "
+						"a safe home for our zoanthrope brethren then the Dwarg will happily exploit them."
+						)
+					)
+			</ParliamentDebate>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					(enum (sysFindObject gSource "T +arcology") theObj
+						(block Nil
+							; Create some visiting ships
+							(for i 1 (random 2 3)
+								(block (theShip)
+									(setq theShip (sysCreateShip 
+										&tbStKatsTraffic;
+										(sysVectorPolarOffset theObj (random 0 359) 10)
+										&svCommonwealth;
+										&evStKatsTrafficBehavior;
+										))
+										
+									(setq aDockObj theObj)
+									(objFireEvent theShip "OrderDockAtStKats")
+									)
+								)
+							
+							; Register for events from all the objects that make up
+							; the arcology
+							(objRegisterForEvents gSource theObj)
+							)
+						)
+						
+					; Register a callbacks
+					(sysAddObjRecurringTimerEvent 60 gSource "OnProduceProduction")
+					(sysAddObjRecurringTimerEvent 90 gSource "OnTrafficControl")
+					)
+			</OnCreate>
+			
+			<OnObjDestroyed>
+				(block (mission)
+					(setq mission (objGetData gSource "mission"))
+					(switch
+						(and (eq mission 'destroyStation)
+								(eq aObjDestroyed (objGetObjRefData gSource "missionTarget"))
+								)
+							(block Nil
+								(objSetData gSource "missionStatus" 'success)
+								(plyMessage gPlayer "Mission complete!")
+								(shpCancelOrders gPlayerShip)
+								(objUnregisterForEvents gSource aObjDestroyed)
+								)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnProduceProduction>
+				(block Nil
+					; Discard any rotted produce
+					(enum (objGetItems gSource "* +FreshFood") theItem
+						(if (eq (itmGetData theItem "status") 'rotted)
+							(block Nil
+								(objRemoveItem gSource theItem)
+								
+								; Rotted items don't count as "produced" so subtract 
+								(objIncData gSource "totalProduced" (subtract 0 (itmGetCount theItem)))
+								)
+							)
+						)
+						
+					; Add fresh produce
+					(if (leq (random 1 100) 5)
+						(block (produceAvail)
+							(setq produceAvail 0)
+							(enum (objGetItems gSource "* +FreshFood") theItem
+								(setq produceAvail (add produceAvail (itmGetCount theItem)))
+								)
+							
+							(if (and (ls produceAvail 20) 
+									(ls (objGetData gSource "totalProduced") 50)
+									)
+								(block (produceCount theMonth theItemUNID expireTime)
+									; Figure out how much to produce
+									(setq produceCount (random 10 20))
+									
+									; Figure out which to produce based on the real
+									; calendar
+									
+									(setq theMonth (item (unvGetRealDate) 1))
+									(switch
+										(leq theMonth 3)
+											(setq theItemUNID &itIncandescentLucuma;)
+											
+										(leq theMonth 6)
+											(setq theItemUNID &itIncandescentPeaches;)
+											
+										(leq theMonth 9)
+											(setq theItemUNID &itIncandescentStrawberries;)
+											
+										(setq theItemUNID &itIncandescentBellFruit;)
+										)
+										
+									; Expire time
+									(setq expireTime (typGetStaticData theItemUNID "expireTime"))
+										
+									(objAddItem gSource 
+										(itmSetData 
+											(itmCreate theItemUNID produceCount)
+											"expireTime"
+											(add (unvGetTick) (random expireTime (add expireTime 1800)))
+											produceCount
+											)
+										)
+										
+									(objIncData gSource "totalProduced" produceCount)
+									)
+								)
+							)
+						)
+					)
+			</OnProduceProduction>
+			
+			<OnTrafficControl>
+				(block (totalShips)
+					; Count the number of ships under traffic control
+					(setq totalShips (count (sysFindObject Nil "s D:0010201F_status")))
+					
+					; If less than the ideal number, new ships jump in
+					(if (ls totalShips 50)
+						(block (theShip theTarget)
+							(setq theShip (sysCreateShip 
+								&tbStKatsTraffic;
+								(random (sysFindObject Nil "G"))
+								&svCommonwealth;
+								&evStKatsTrafficBehavior;
+								))
+								
+							(objFireEvent theShip "OrderEnterSystem")
+							)
+						)
+					)
+			</OnTrafficControl>
+		</Events>
+	</StationType>
+	
+	<!-- Arcology Segment Base -->
+	
+	<StationType UNID="&baStKatsArcologyBase;"
+			name=				"(arcology base)"
+			>
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			7		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+			
+			<OnDockObjAdj>
+				(if (not (objIsAbandoned gSource))
+					(sysFindObject Nil "TNV +stKatsArcology;")
+					Nil
+					)
+			</OnDockObjAdj>
+		</Events>
+	</StationType>
+	
+	<!-- Arcology 15 -->
+	
+	<StationType UNID="&stStKatsArcology15;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="45" imageY="0" imageWidth="115" imageHeight="220"/>
+
+		<DockingPorts>
+			<Port x="39"	y="60"	rotation="-159" />
+			<Port x="55"	y="18"	rotation="-164"/>
+			<Port x="67"	y="-31" rotation="-170"/>
+			<Port x="-34"	y="-38" rotation="10"/>
+			<Port x="-48"	y="8"	rotation="19"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 45 -->
+	
+	<StationType UNID="&stStKatsArcology45;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="0" imageY="245" imageWidth="220" imageHeight="180"/>
+
+		<DockingPorts>
+			<Port x="7"		y="76"	rotation="-128" />
+			<Port x="45"	y="45"	rotation="-134"/>
+			<Port x="80"	y="8"	rotation="-141"/>
+			<Port x="-22"	y="-55"	rotation="42"/>
+			<Port x="-53"	y="-15"	rotation="50"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 75 -->
+	
+	<StationType UNID="&stStKatsArcology75;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="0" imageY="500" imageWidth="220" imageHeight="115"/>
+
+		<DockingPorts>
+			<Port x="-30"	y="70"	rotation="-94" />
+			<Port x="26"	y="65"	rotation="-102"/>
+			<Port x="76"	y="49"	rotation="-112"/>
+			<Port x="18"	y="-65"	rotation="69"/>
+			<Port x="-33"	y="-45"	rotation="77"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 105 -->
+	
+	<StationType UNID="&stStKatsArcology105;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="220" imageY="500" imageWidth="220" imageHeight="115"/>
+
+		<DockingPorts>
+			<Port x="-72"	y="48"	rotation="-70" />
+			<Port x="-22"	y="62"	rotation="-74"/>
+			<Port x="31"	y="71"	rotation="-80"/>
+			<Port x="36"	y="-46"	rotation="107"/>
+			<Port x="-21"	y="-57"	rotation="102"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 135 -->
+	
+	<StationType UNID="&stStKatsArcology135;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="220" imageY="245" imageWidth="220" imageHeight="180"/>
+
+		<DockingPorts>
+			<Port x="-84"	y="14"	rotation="-37" />
+			<Port x="-48"	y="51"	rotation="-47"/>
+			<Port x="-8"	y="76"	rotation="-56"/>
+			<Port x="49"	y="-20"	rotation="138"/>
+			<Port x="13"	y="-52"	rotation="132"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 165 -->
+	
+	<StationType UNID="&stStKatsArcology165;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="280" imageY="0" imageWidth="115" imageHeight="220"/>
+
+		<DockingPorts>
+			<Port x="-70"	y="-29"	rotation="-6" />
+			<Port x="-61"	y="22"	rotation="-14"/>
+			<Port x="-42"	y="62"	rotation="-23"/>
+			<Port x="53"	y="9"	rotation="168"/>
+			<Port x="38"	y="-39"	rotation="161"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 195 -->
+	
+	<StationType UNID="&stStKatsArcology195;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="500" imageY="0" imageWidth="115" imageHeight="220"/>
+
+		<DockingPorts>
+			<Port x="-48"	y="-54"	rotation="21" />
+			<Port x="-65"	y="-9"	rotation="12"/>
+			<Port x="-70"	y="37"	rotation="3"/>
+			<Port x="35"	y="35"	rotation="-161"/>
+			<Port x="54"	y="-10"	rotation="-167"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 225 -->
+	
+	<StationType UNID="&stStKatsArcology225;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="440" imageY="245" imageWidth="220" imageHeight="180"/>
+
+		<DockingPorts>
+			<Port x="-6"	y="-75"	rotation="56" />
+			<Port x="-51"	y="-43"	rotation="47"/>
+			<Port x="-88"	y="0"	rotation="35"/>
+			<Port x="11"	y="60"	rotation="-131"/>
+			<Port x="48"	y="27"	rotation="-139"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 255 -->
+	
+	<StationType UNID="&stStKatsArcology255;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="440" imageY="485" imageWidth="220" imageHeight="115"/>
+
+		<DockingPorts>
+			<Port x="37"	y="-73"	rotation="84" />
+			<Port x="-22"	y="-62"	rotation="74"/>
+			<Port x="-77"	y="-43"	rotation="63"/>
+			<Port x="-18"	y="57"	rotation="-105"/>
+			<Port x="32"	y="44"	rotation="-107"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 285 -->
+	
+	<StationType UNID="&stStKatsArcology285;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="660" imageY="485" imageWidth="220" imageHeight="115"/>
+
+		<DockingPorts>
+			<Port x="77"	y="-50"	rotation="114" />
+			<Port x="24"	y="-66"	rotation="103"/>
+			<Port x="-30"	y="-73"	rotation="93"/>
+			<Port x="-41"	y="40"	rotation="-80"/>
+			<Port x="16"	y="54"	rotation="-73"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 315 -->
+	
+	<StationType UNID="&stStKatsArcology315;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="660" imageY="245" imageWidth="220" imageHeight="180"/>
+
+		<DockingPorts>
+			<Port x="85"	y="2"	rotation="146" />
+			<Port x="53"	y="-35"	rotation="134"/>
+			<Port x="10"	y="-65"	rotation="125"/>
+			<Port x="-48"	y="28"	rotation="-54"/>
+			<Port x="-9"	y="60"	rotation="-47"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Arcology 345 -->
+	
+	<StationType UNID="&stStKatsArcology345;"
+			name=				"New Victoria arcology segment"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsStKatsArcology;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itBlastPlate;"
+			hitPoints=			"1000"
+			repairRate=			"10"
+			shipRepairRate=		"1"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcology, commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			inherit=			"&baStKatsArcologyBase;"
+			>
+
+		<Image imageID="&rsStKatsArcology;" imageX="705" imageY="0" imageWidth="115" imageHeight="220"/>
+
+		<DockingPorts>
+			<Port x="72"	y="39"	rotation="162" />
+			<Port x="63"	y="-9"	rotation="170"/>
+			<Port x="47"	y="-56"	rotation="178"/>
+			<Port x="-51"	y="-10"	rotation="-19"/>
+			<Port x="-33"	y="43"	rotation="-11"/>
+		</DockingPorts>
+	</StationType>
+	
+	<!-- Iocrym First Contact Monument
+	
+	-->
+
+	<StationType UNID="&stIocrymMonument;"
+			name=				"First Contact Monument"
+			definiteArticle=	"true"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsIocrymMonumentScreen;"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"100"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, monument, populated"
+			>
+
+		<Image imageID="&rsIocrymMonument;" imageWidth="160" imageHeight="236"/>
+		
+		<Ships>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+		
+		<StaticData>
+			<BarEncounter>
+				(
+					(cat "You talk to a pilgrim from Eridani:\n\n"
+						"\"Other pilgrims say that the way to the Core is blocked! "
+						"The Iocrym have trapped us in Human Space! Why does Domina call us? Why? "
+						"Is it all some sick joke?\""
+						)
+					(cat "You sit next to a couple of tourists:\n\n"
+						"\"We don't need aliens interfering in our affairs, you know? How would they "
+						"feel if we started flying around their worlds? I'm glad they're gone!\""
+						)
+					(cat "At the bar you talk with a young researcher who studies the Iocrym:\n\n"
+						"\"You wanna hear something that's not on the guided tour? We never actually "
+						"saw the Iocrym. I mean, we never saw the aliens themselves\x97we communicated with "
+						"their ships. But were we talking to them? Or were we talking to an AI? "
+						"We still don't know.\""
+						)
+					(cat "You talk to a pilgrim from Cairn:\n\n"
+						"\"Domina has a plan and I'm sure that the Iocrym are a part of it.\""
+						)
+					(cat "You sit next to two young men from New Victoria:\n\n"
+						"\"We're idiots if we trust the Iocrym. I bet they're preparing for an invasion "
+						"right now! Why else would they be gone so long? We have to be ready!\""
+						)
+					(cat "You talk to a scientist from New Victoria:\n\n"
+						"\"So you're a pilgrim, huh? Well don't get too excited about getting to the Core. "
+						"I have a couple of friends in the Heretic system who say that the way is blocked. "
+						"Nobody knows why, but the Iocrym don't want us to leave.\""
+						)
+					(cat "You sit next to a young man in a fancy corporate suit:\n\n"
+						"\"When the Iocrym return they will teach us how to live in peace. Why are humans "
+						"always trying to kill each other? The Ancient Races of the Galaxy have lived in "
+						"peace for millions of years! We should listen to them.\""
+						)
+					)
+			</BarEncounter>
+		</StaticData>
+		
+		<Events>
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+		</Events>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You are docked with a massive crystalline monument commemorating the point of "
+								"first contact between humans and alien intelligent life in the universe.\n\n"
+								"Scores of tourists wander around the vast hall, chatting softly and pausing "
+								"randomly at various points of interest."
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Information" default="1" key="I">
+								<ShowPane pane="Information"/>
+							</Action>
+							
+							<Action name="First Contact Pub" key="P">
+								<ShowPane pane="Pub"/>
+							</Action>
+							
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+					
+					<Information>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"A holoscreen flickers to life as you approach:\n\n"
+								"\"Here at this point, in the year 2363, members of the Human Race "
+								"first met with representatives of the Ancient Races of the Galaxy.\"\n\n"
+								"Do you want to know more?"
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="What was it like?" key="W">
+								<ShowPane pane="Info1"/>
+							</Action>
+							
+							<Action name="What did we learn?" key="l">
+								<ShowPane pane="Info2"/>
+							</Action>
+							
+							<Action name="Where are they now?" key="n">
+								<ShowPane pane="Info3"/>
+							</Action>
+							
+							<Action name="Leave" cancel="1" key="v">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</Information>
+					
+					<Info1>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"With almost no warning six alien ships, blue and translucent like "
+								"flying glaciers, appeared out of the inner gate. Fear gripped the Commonwealth "
+								"at first, but as the attitude of the alien fleet remained peaceful, wonderment "
+								"took over.\n\n"
+								"Scientists from New Victoria immediately attempted to communicate, but it "
+								"took two frustrating weeks before the Iocrym (as they called themselves) were able "
+								"to learn our language."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Info1B"/>
+							</Action>
+						</Actions>
+					</Info1>
+					
+					<Info1B>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"Communication proceeded via computer processed code. The Iocrym told us that they "
+								"were one of the many Ancient Races in the Galaxy and that they were curious about "
+								"us and our development. They shared much scientific knowledge with us and then they "
+								"continued on their journey to Sol.\n\n"
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Done" default="1" cancel="1" key="D">
+								<ShowPane pane="Information"/>
+							</Action>
+						</Actions>
+					</Info1B>
+					
+					<Info2>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"The Iocrym gave us several hyperglyph rods encoded with scientific information. "
+								"While most of the knowledge has been classified by the Council of Lords because of "
+								"its military potential, much remains public.\n\nScientists are overjoyed at the insights "
+								"gained from this treasure trove. In particular, our knowledge of antimatter, zero-point "
+								"energy, and transpace have been revolutionized by the Iocrym's gift."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Done" default="1" cancel="1" key="D">
+								<ShowPane pane="Information"/>
+							</Action>
+						</Actions>
+					</Info2>
+					
+					<Info3>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"The Iocrym promised to return, and why they have not remains a mystery. "
+								"Some scientists believe that the Ancient Races deal in "
+								"centuries and millenia, and thus will not return for many more years. Others believe "
+								"that their own alien morality prevents interference in the affairs of lesser species.\n\n"
+								"But regardless, the most important gift that the Iocrym left behind is "
+								"the knowledge that we are not alone in the Galaxy and that someday we will "
+								"join our alien bretheren as equals."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Done" default="1" cancel="1" key="D">
+								<ShowPane pane="Information"/>
+							</Action>
+						</Actions>
+					</Info3>
+					
+					<Pub desc="You are in a large restaurant and bar filled with monument visitors.">
+						
+						<Actions>
+							<Action name="Sit at the bar" default="1" key="S">
+								(if (geq (plyGetCredits gPlayer) 10)
+									(block Nil
+										(plyCharge gPlayer 10)
+										(scrShowPane gScreen "Story")
+										)
+									(scrShowPane gScreen "NoMoney")
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</Pub>
+					
+					<Story>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								(cat (eval (intRandomMessage gSource "BarEncounter"))
+									"\n\nYou settle the 10 credit bill and call it a night."
+									)
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</Story>
+					
+					<NoMoney desc="You hang around for a while, but you have no money to buy drinks.">
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</NoMoney>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="-36"	y="80" />
+			<Port x="-87"	y="40" />
+			<Port x="-92"	y="-33" />
+			<Port x="-42"	y="-85" />
+			<Port x="36"	y="80" />
+			<Port x="87"	y="40" />
+			<Port x="92"	y="-33" />
+			<Port x="42"	y="-85" />
+		</DockingPorts>
+	</StationType>
+
+<!-- DOCK SCREENS -->
+
+	<!-- Arcology -->
+
+	<DockScreen UNID="&dsStKatsArcology;">
+		
+		<Panes>
+			<Default
+					desc=	"Welcome to the Arcology of New Victoria!">
+					
+				<OnPaneInit>
+					(objSetData gSource "schematic" Nil)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Parliament Quarter" key="P">
+						(scrShowScreen gScreen &dsStKatsArcologyParliament;)
+					</Action>
+
+					<Action name="Commerce Quarter" key="C">
+						(scrShowScreen gScreen &dsStKatsArcologyCommerce;)
+					</Action>
+
+					<Action name="University Quarter" key="U">
+						(scrShowScreen gScreen &dsStKatsArcologyUniversity;)
+					</Action>
+
+					<Action name="Arts Quarter" key="A">
+						(scrShowScreen gScreen &dsStKatsArcologyArts;)
+					</Action>
+
+					<Action name="Dock Services" key="D">
+						<ShowPane pane="DockServices"/>
+					</Action>
+
+					<Action name="Undock" cancel="1" key="n">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+			
+			<!-- Dock Services -->
+			
+			<DockServices
+					desc=	"Your ship is docked.">
+
+				<Actions>
+					<Action name="Refuel" key="R">
+						(block Nil
+							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
+							(scrShowScreen gScreen "&dsRefuel;")
+							)
+					</Action>
+
+					<Action name="Repair or replace armor" key="A" >
+						(block Nil
+							(setq gTechLevel 7)
+							(setq gArmorSegment 0)
+							(setq gCheckMilitaryID True)
+							(setq gMargin 100)
+							(scrShowScreen gScreen "&dsRepairArmor;")
+							)
+					</Action>
+
+					<Action name="Install device" key="D" >
+						(block Nil
+							(setq gTechLevel 6)
+							(setq gTechModifier Nil)
+							(setq gCheckMilitaryID True)
+							(setq gMargin 100)
+							(scrShowScreen gScreen "&dsInstallDevice;")
+							)
+					</Action>
+
+					<Action name="Remove device" key="V" >
+						(block Nil
+							(setq gMargin 100)
+							(scrShowScreen gScreen "&dsRemoveDevice;")
+							)
+					</Action>
+
+					<Action name="Upgrade reactor" key="P" >
+						(block (maxPower)
+							(setq gCheckMilitaryID True)
+
+							; Figure out what reactor to upgrade to
+							(setq maxPower (objGetMaxPower gPlayerShip))
+
+							(switch
+								(ls maxPower 250)
+									(block Nil
+										(setq gCost 3000)
+										(setq gItem (itmCreate &it25MWReactor; 1))
+										)
+
+								(ls maxPower 500)
+									(block Nil
+										(setq gCost 5500)
+										(setq gItem (itmCreate &it50MWReactor; 1))
+										)
+
+								(setq gItem Nil)
+								)
+
+							; Install screen
+							(if gItem
+								(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+								(scrShowPane gScreen "NoReactorUpgrade")
+								)
+							)
+					</Action>
+
+					<Action name="Done" cancel="1" key="N">
+						<Navigate screen="&dsStKatsArcology;"/>
+					</Action>
+
+				</Actions>
+
+			</DockServices>
+
+			<NoReactorUpgrade
+					desc=	"The technology required to upgrade your reactor is not available at this station.">
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						<ShowPane pane="DockServices"/>
+					</Action>
+				</Actions>
+			</NoReactorUpgrade>
+		</Panes>
+	</DockScreen>
+	
+	<!-- Parliament Quarter -->
+	
+	<DockScreen UNID="&dsStKatsArcologyParliament;"
+			backgroundID=		"none"
+			>
+
+		<Display>
+			<Canvas>
+				(block Nil
+					(cnvDrawText 20 10 "Parliament Quarter" 'SubTitle '(128 128 128) 'left)
+					(cnvDrawImage 180 60 (list &rsStKatsArcologySchematic; 0 0 580 330))
+					(cnvDrawText 170 110 "Parliament" 'Header '(192 192 192) 'left)
+					(cnvDrawText 390 140 "Militia HQ" 'Header '(192 192 192) 'left)
+					(cnvDrawText 90 240 "Orange Sector" 'Large '(192 192 192) 'left)
+					(cnvDrawText 265 275 "Olympus Apartments" 'Large '(192 192 192) 'left)
+					(cnvDrawText 75 310 "The Romanus" 'Large '(192 192 192) 'left)
+					)
+			</Canvas>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen
+							"You are in the Parliament Quarter. Well-dressed men and women walk along the wide avenues of the quarter, "
+							"making their way to jobs in Commonwealth government."
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Parliament" default="1" key="P">
+						<ShowPane pane="Parliament"/>
+					</Action>
+					
+					<Action name="Militia Headquarters" key="M">
+						(block (mission status)
+							(setq mission (objGetData gSource "mission"))
+							(setq status (objGetData gSource "missionStatus"))
+							
+							(switch
+								(eq mission 'destroyStation)
+									(switch
+										(eq status 'success)
+											(scrShowPane gScreen "MissionDestroyStationSuccess")
+
+										(scrShowPane gScreen "MissionInProgress")
+										)
+										
+								mission
+									(scrShowPane gScreen "MissionInProgress")
+									
+								(milCanEnterCC)
+									(scrShowPane gScreen "MilitiaHQ")
+									
+								(scrShowPane gScreen "MilitiaAccessDenied")
+								)
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen &dsStKatsArcology;)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<Parliament>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"You enter a beautiful hall in which ministers from all over the "
+						"Commonwealth gather to legislate and debate."
+						(eval (intRandomMessage gSource "ParliamentDebate"))
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</Parliament>
+			
+			<MilitiaHQ>
+				<OnPaneInit>
+					(block Nil
+						(milInit)
+					
+						(scrSetDesc gScreen
+							"You are at Commonwealth Militia Headquarters. "
+							"The officer of the watch looks up from his displays and asks,\n\n"
+							"\"Are you looking for a mission, captain?\""
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
+						(block (playerRank allMissions allEnemyStations)
+							(setq playerRank (objGetData gPlayerShip "militiaRank"))
+							
+							; See if there are any enemy stations for the player to destroy
+							(setq allEnemyStations (append
+								(sysFindObject Nil "TAE +sapiensCompound;")
+								(sysFindObject Nil "TAE +sungSlaveCamp;")
+								(sysFindObject Nil "TAE +marauderCompound;")
+								))
+								
+							(if (and
+									(leq playerRank 1)
+									allEnemyStations
+									)
+								(setq allMissions (append allMissions 'destroyStation))
+								)
+							
+							; Pick a random mission
+							(setq theMission (random allMissions))
+							
+							(switch
+								(eq playerRank -1)
+									(scrShowPane gScreen "MilitiaTooManyFailures")
+									
+								(eq theMission 'destroyStation)
+									(block Nil
+										(objSetObjRefData gSource "missionTarget" (random allEnemyStations))
+										(scrShowPane gScreen "MissionDestroyStation")
+										)
+									
+								(scrShowPane gScreen "MilitiaNoMissions")
+								)
+							)
+					</Action>
+
+					<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
+						<ShowPane pane="MilitiaGetOut"/>
+					</Action>
+				</Actions>
+			</MilitiaHQ>
+			
+			<MissionDestroyStation>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"\"" (objGetName (objGetObjRefData gSource "missionTarget") 0x05) " is hiding among the outer asteroids. We want you to "
+						"go out there and destroy it. Clear?\""
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Accept" default="1" key="A">
+						(block (theTarget)
+							(setq theTarget (objGetObjRefData gSource "missionTarget"))
+							
+							(objSetData gSource "mission" 'destroyStation)
+							(objSetData gSource "missionStatus" 'inProgress)
+							
+							(shpCancelOrders gPlayerShip)
+							(shpOrder gPlayerShip 'attack theTarget)
+							(objRegisterForEvents gSource theTarget)
+							
+							(scrShowPane gScreen "MissionDestroyStationAccept")
+							)
+					</Action>
+
+					<Action name="Decline" cancel="1" key="D">
+						<ShowPane pane="MilitiaGetOut"/>
+					</Action>
+				</Actions>
+			</MissionDestroyStation>
+			
+			<MissionDestroyStationAccept>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"\"We've uploaded the coordinates of the target to your computer. Good luck, captain!\""
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Undock" default="1" cancel="1" key="U">
+						<Exit/>
+					</Action>
+				</Actions>
+			</MissionDestroyStationAccept>
+			
+			<MissionDestroyStationSuccess>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"\"Well done! You dealt with that threat expertly.\""
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block (promoted)
+							(objSetData gSource "mission" Nil)
+							(objSetData gSource "missionStatus" Nil)
+							
+							; Promotion?
+							(if (milMissionSuccess)
+								(milShowPromotionScreen &dsStKatsArcology; "ParliamentQuarter")
+								(scrShowPane gScreen "Default")
+								)
+							)
+					</Action>
+				</Actions>
+			</MissionDestroyStationSuccess>
+			
+			<MissionInProgress>
+				<OnPaneInit>
+					(scrSetDesc gScreen 
+						"\"You haven't completed your mission! Don't return until you have!\""
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</MissionInProgress>
+			
+			<MilitiaAccessDenied>
+				<OnPaneInit>
+					(scrSetDesc gScreen 
+						"Two guards flank the door to the Headquarters. One of them checks your ID against a computer list:\n\n"
+						"\"Sorry, %sir%, only experienced captains are allowed inside.\"")
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</MilitiaAccessDenied>
+			
+			<MilitiaGetOut
+					desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</MilitiaGetOut>
+
+			<MilitiaNoMissions>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"\"Sorry, there are no missions currently available.\""
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</MilitiaNoMissions>
+
+			<MilitiaTooManyFailures
+					desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</MilitiaTooManyFailures>
+		</Panes>
+	</DockScreen>
+	
+	<!-- Commerce Quarter -->
+	
+	<DockScreen UNID="&dsStKatsArcologyCommerce;"
+			backgroundID=		"none"
+			>
+
+		<Display>
+			<Canvas>
+				(block Nil
+					(cnvDrawText 20 10 "Commerce Quarter" 'SubTitle '(128 128 128) 'left)
+					(cnvDrawImage 5 60 (list &rsStKatsArcologySchematic; 165 0 415 330))
+					(cnvDrawText 280 80 "Commodities Exchange" 'Header '(192 192 192) 'left)
+					(cnvDrawText 345 140 "Green Sector" 'Large '(192 192 192) 'left)
+					(cnvDrawText 130 205 "Incandescent Exports" 'Large '(192 192 192) 'left)
+					(cnvDrawText 400 240 "The Pharaoh" 'Large '(192 192 192) 'left)
+					(cnvDrawText 170 275 "Planetside Apartments" 'Large '(192 192 192) 'left)
+					(cnvDrawText 420 310 "Jenra's Bar" 'Large '(192 192 192) 'left)
+					)
+			</Canvas>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"The Commerce Quarter is filled with sharp-dressed people and glowing "
+						"advertisements. A massive bioluminescent screen shows prices in front "
+						"of the Commodities Exchange, while smaller signs point to boutique "
+						"store fronts."
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Commodities Exchange" default="1" key="C">
+						<ShowPane pane="CommoditiesExchange"/>
+					</Action>
+					
+					<Action name="Incandescent Exports" key="I">
+						<ShowPane pane="IncandescentExports"/>
+					</Action>
+					
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen &dsStKatsArcology;)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<CommoditiesExchange>
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Buy items" default="1" key="B">
+						(scrShowBuyScreen 
+							"* -Specialty;"
+							Nil						; obsolete
+							
+							'(	"d"					; install devices
+								6					; of level 6 (and below)
+								Nil					; no special tech modifiers
+								True				; check for military ID
+								0)					; install cost margin
+							)
+					</Action>
+
+					<Action name="Sell items" key="S">
+						(scrShowSellScreen
+							"*"
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+
+				</Actions>
+			</CommoditiesExchange>
+
+			<IncandescentExports>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"Welcome to Incandescent Exports, specializing in selling unique items "
+						"up from the surface of the planet."
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Buy items" default="1" key="B">
+						; Buy screen
+						(scrShowBuyScreen 
+							"* +Food; +Specialty;"	; items sold to player
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</IncandescentExports>
+		</Panes>
+	</DockScreen>
+	
+	<!-- University Quarter
+	
+	GLOBAL DATA (on stStKatsArcology)
+	
+	exploreStatus:		Status of School of Exploration mission
+							Nil = Never encountered
+							'declined = Player declined the mission
+							'needBetterShip = Player wants to upgrade first
+							'inProgress = Player is looking for the sphere
+							'success = Professor Dall got his artifact
+						
+	-->
+
+	<DockScreen UNID="&dsStKatsArcologyUniversity;"
+			backgroundID=		"none"
+			>
+
+		<Display>
+			<Canvas>
+				(block Nil
+					(cnvDrawText 20 10 "University Quarter" 'SubTitle '(128 128 128) 'left)
+					(cnvDrawImage 5 -220 (list &rsStKatsArcologySchematic; 165 0 415 580))
+					(cnvDrawText 200 80 "School of Medicine" 'Large '(192 192 192) 'left)
+					(cnvDrawText 190 115 "School of Xenology" 'Large '(192 192 192) 'left)
+					(cnvDrawText 100 150 "School of Interstellar Relations" 'Large '(192 192 192) 'left)
+					(cnvDrawText 400 185 "School of Engineering" 'Large '(192 192 192) 'left)
+					(cnvDrawText 415 130 "Taikon School\nof Exploration" 'Large '(192 192 192) 'left)
+					(cnvDrawText 360 240 "Onyx Bar" 'Large '(192 192 192) 'left)
+					(cnvDrawText 330 275 "Lilac Apartments" 'Large '(192 192 192) 'left)
+					(cnvDrawText 290 310 "Nocturn Apartments" 'Large '(192 192 192) 'left)
+					)
+			</Canvas>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"The schools that make up the University of New Victoria are strung along "
+						"the spine of the arcology. Students and professors make their way along "
+						"the wide avenues."
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="School of Engineering" default="1" key="E">
+						<ShowPane pane="Engineering"/>
+					</Action>
+					
+					<Action name="Taikon School of Exploration" key="T">
+						(block (status)
+							(setq status (objGetGlobalData gSource "exploreStatus"))
+							(switch
+								(not status)
+									(scrShowPane gScreen "ExploreIntro")
+									
+								(eq status 'inProgress)
+									(scrShowPane gScreen "ExploreReturned")
+									
+								(eq status 'declined)
+									(scrShowPane gScreen "ExploreMission")
+									
+								(eq status 'needBetterShip)
+									(if (objGetItems gPlayerShip "sIN &gt;=5")
+										(scrShowPane gScreen "ExploreBetterShip")
+										(scrShowPane gScreen "ExploreShieldCheck")
+										)
+									
+								(scrShowPane gScreen "ExploreAftermath")
+								)
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen &dsStKatsArcology;)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<Engineering>
+				<OnPaneInit>
+					(block (roll course)
+						; Pick a random item to enhance
+						(setq roll (modulo (objGetDestiny gSource) 3))
+						(switch
+							(eq roll 0)
+								(block Nil
+									(setq gItem (random (objGetItems gPlayerShip "vI &lt;7 -Alien;")))
+									(setq course "starship engines")
+									)
+							(eq roll 1)
+								(block Nil
+									(setq gItem (random (objGetItems gPlayerShip "rI &lt;7 -Alien;")))
+									(setq course "starship reactors") 
+									)
+							(eq roll 2)
+								(block Nil
+									(setq gItem (random (objGetItems gPlayerShip "sI &lt;7 -Alien;")))
+									(setq course "shield generators")
+									)
+							(setq gItem Nil)
+							)
+							
+						(if (itmIsEnhanced gItem) (setq gItem Nil))
+						
+						(setq gCost (intRoundUp (divide (multiply 20 (itmGetPrice gItem 'credit)) 100) 10))
+
+						(scrSetDesc gScreen
+							"You enter a large computer-controlled engineering lab filled with students. "
+							"A professor approaches you:\n\n"
+							"\"Our project this semester is on " course "."
+							(if gItem
+								(cat " For " gCost " credits we can "
+									(if (itmIsDamaged gItem)
+										"repair"
+										"enhance"
+										)
+									" your ship's " (itmGetName gItem 0x80) "."
+									(if (ls (plyGetCredits gPlayer) gCost)
+										" Unfortunately, you cannot afford the cost."
+										""
+										)
+									)
+								""
+								)
+							"\""
+							)
+							
+						(scrShowAction gScreen 0 gItem)
+						(scrEnableAction gScreen 0 (geq (plyGetCredits gPlayer) gCost))
+						(scrSetActionLabel gScreen 0
+							(switch
+								(itmMatches gItem "v")
+									"Enhance drive"
+								(itmMatches gItem "r")
+									"Enhance reactor"
+								(itmMatches gItem "s")
+									"Enhance shields"
+								"Enhance"
+								)
+							"E"
+							)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Enhance ???" key="E">
+						(block Nil
+							(switch
+								(not gItem)
+									Nil
+									
+								(itmIsDamaged gItem)
+									(block Nil
+										(shpRepairItem gPlayerShip gItem)
+										(setq gResult (cat "Your " (itmGetName gItem 0x81) " has been repaired."))
+										)
+										
+								(block (result theEnhancement)
+									(switch
+										(itmMatches gItem "s")
+											(setq theEnhancement (random '(0x0101 0x0102 0x0102 0x0103 0x0104 0x0905 0x0915 0x0925 0x0935 0x0F02 0x0F02)))
+										(setq theEnhancement 0x0001)
+										)
+									
+									(setq result (shpEnhanceItem gPlayerShip gItem theEnhancement))
+									(setq gResult (intItemEnhanceStatus result (cat "Your " (itmGetName gItem 0x80) " is more powerful") (itmGetName gItem 0x80)))
+									)
+								)
+								
+							(plyCharge gPlayer gCost)
+							(scrShowPane gScreen "EnhanceSuccess")
+							)
+					</Action>
+					
+					<Action name="Leave" cancel="1" key="L">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</Engineering>
+			
+			<EnhanceSuccess>
+				<OnPaneInit>
+					(scrSetDesc gScreen gResult)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Done" default="1" cancel="1" key="D">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</EnhanceSuccess>
+			
+			<ExploreIntro>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (plyComposeString gPlayer (cat
+							"You meet one of the faculty members of the Taikon School:\n\n"
+							"\"I'm Professor Dall. Who are you? Another pilgrim? Many pass through here, always searching but not finding. "
+							"But I can help you, if you help me in turn.\n\n"
+							"\"I need you to fetch something for me; something that's been lost for a long time but now I've found. "
+							"You may have to fight for it, of course, but I'm sure you're used to that. "
+							"And it'll be nothing compared to what you're going to have to face, am I right?\""
+							)))
+						
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(if (objGetItems gPlayerShip "sIN &gt;=5")	
+							(scrShowPane gScreen "ExploreMission")
+							(scrShowPane gScreen "ExploreShieldCheck")
+							)
+					</Action>
+				</Actions>
+			</ExploreIntro>
+			
+			<ExploreShieldCheck>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (plyComposeString gPlayer (cat
+							"\"You are ready for combat are you not? I mean, I don't want to trust this discovery "
+							"to an unready ship or captain.\n\n"
+							"I expect a ship to need level 5 shields or higher to survive the dangers at the "
+							"edge of the system. I hope you're prepared.\""
+							)))
+						
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="&quot;Don't worry about my ship!&quot;" default="1" key="D">
+						(scrShowPane gScreen "ExploreMission")
+					</Action>
+					
+					<Action name="&quot;I'll be back.&quot;" cancel="1" key="I">
+						(block Nil
+							(objSetGlobalData gSource "exploreStatus" 'needBetterShip)
+							(scrShowPane gScreen "ExploreComeBackWhenReady")
+							)
+					</Action>
+				</Actions>
+			</ExploreShieldCheck>
+			
+			<ExploreComebackWhenReady>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (cat
+							"\"I've waited for twenty years, I can wait a bit longer. "
+							"Come back when your ship is ready for the mission.\""
+							))
+							
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</ExploreComebackWhenReady>
+
+			<ExploreBetterShip>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (cat
+							"\"You're back! Hopefully you're ready for the mission now.\""
+							))
+
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrShowPane gScreen "ExploreMission")
+					</Action>
+				</Actions>
+			</ExploreBetterShip>
+
+			<ExploreMission>
+				<OnPaneInit>
+					(block (desc status)
+						(setq status (objGetGlobalData gSource "exploreStatus"))
+						
+						(switch
+							(eq status 'declined)
+								(setq desc (cat
+									"Professor Dall greets you:\n\n"
+									"\"So you're back! Couldn't get stories of freighters carrying treasure out of your mind, am I right? "
+									"Well I'm still willing to help you if you fetch the artifact for me. Once they see what I've found they'll "
+									"have to pay attention!\n\n"
+									"\"What do you say?\""
+									))
+									
+							(setq desc (cat
+								"\"I'm looking for a very special cargo on a wrecked freighter out beyond Fulgent. "
+								"Two-hundred years ago the Huari found a magnificent object; an alien sphere left behind by who knows what race. "
+								"When the Sung arrived the Huari records were lost and with it the sphere. But according to a cryptic Sung memo, "
+								"it was found again; a freighter carrying the prize was dispatched to Jiang's Star, but it never arrived.\n\n"
+								"\"Now I'm the only one who knows where the freighter ended up. And I can tell you how to find it!\""
+								))
+							)
+						
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Accept" default="1" key="A">
+						(block (theWreck)
+							; For now we create the wreck only when the mission
+							; starts (because we are too lazy to deal with the
+							; alternatives, such as the player finding the wreck
+							; before she talks to the professor).
+							
+							(setq theWreck (sysCreateStation 
+								&stDallMissionWreck;
+								(sysVectorRandom Nil (random 800 1200) 300)
+								))
+								
+							; The sphere is in the universe
+							(typSetGlobalData &itDallSphere; "status" 'onFreighter)
+							
+							; Point the player
+							(shpCancelOrders gPlayerShip)
+							(shpOrderDock gPlayerShip theWreck);
+							
+							; Start
+							(typSetGlobalData &stStKatsArcology; "exploreStatus" 'inProgress)
+							(scrShowPane gScreen "ExploreAccepted")
+							)
+					</Action>
+					
+					<Action name="Decline" cancel="1" key="D">
+						(block Nil
+							(objSetGlobalData gSource "exploreStatus" 'declined)
+							(scrShowPane gScreen "ExploreDecline")
+							)
+					</Action>
+				</Actions>
+			</ExploreMission>
+			
+			<ExploreAccepted>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (cat
+							"\"I've made the calculations dozens of times; I'm sure of it. I've programmed the "
+							"location of the freighter into your computer. All you have to do is bring back the "
+							"sphere. I'd go myself, but I wouldn't do well in combat.\n\n"
+							"\"Good luck!\""
+							))
+							
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Undock" default="1" cancel="1" key="U">
+						(scrExitDock gScreen)
+					</Action>
+				</Actions>
+			</ExploreAccepted>
+			
+			<ExploreDecline>
+				<OnPaneInit>
+					(block (desc)
+						(setq desc (cat
+							"The professor looks down at his papers.\n\n"
+							"\"Well, I don't expect you to believe me. But I know it's out there. "
+							"It's out there and I'm going to find it. Twenty years I've spent looking; "
+							"twenty years of calculations and research! I won't stop now.\""
+							))
+							
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</ExploreDecline>
+			
+			<ExploreReturned>
+				<OnPaneInit>
+					(block (desc status)
+						(setq status (objGetGlobalData gSource "exploreStatus"))
+						
+						(switch
+							(objGetItems gPlayerShip "* +unid:&itDallSphere;")
+								(setq desc (cat
+									"\"It's beautiful! Twenty years of research and now I finally have proof! "
+									"Be careful with it! I've got a containment vessel ready for it. You didn't "
+									"damage it did you? Good!\n\n"
+									
+									(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
+										(cat 
+											"\"As promised, I have something to help you. I've written some "
+											"software to map your position throughout the galaxy. I've already "
+											"installed it on your ship's computer! Go and try it out!\""
+											)
+										""
+										)
+									))
+									
+							(setq desc (cat
+								"\"Did you find it? I'm sure those are the right coordinates! "
+								"It has to be there. You have to go out there and keep looking!\""
+								))
+							)
+							
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block (theSphere)
+							(if (setq theSphere (item (objGetItems gPlayerShip "* +unid:&itDallSphere;") 0))
+								(block Nil
+									(objRemoveItem gPlayerShip theSphere)
+									(typSetGlobalData &stStKatsArcology; "exploreStatus" 'success)
+									(typSetGlobalData &itDallSphere; "status" 'withDall)
+									
+									(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
+										(objChangeEquipmentStatus gPlayerShip 'GalacticMap 'install)
+										)
+										
+									; We reveal the key systems in Human Space
+									(sysSetKnown "CD" True)		; Sanctuary system
+									(sysSetKnown "C9" True)		; Jiang's Star system
+									(sysSetKnown "EC" True)		; Eta Ceti system
+									(sysSetKnown "PJ" True)		; Point Juno system
+									)
+								)
+								
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+				</Actions>
+			</ExploreReturned>
+
+			<ExploreAftermath>
+				<OnPaneInit>
+					(block (desc status)
+						(setq status (objGetGlobalData gSource "exploreStatus"))
+						
+						(switch
+							(eq status 'success)
+								(setq desc (cat
+									"You find Professor Dall working in his lab. The sphere is inside a massive "
+									"containment vessel connected through hundreds of wires to a bank of instruments. "
+									"The professor looks up for only a moment:\n\n"
+									"\"Yes, I'm making progress, but there are millions of pathways... "
+									"There is so much left to understand... and the power curves are immense; you "
+									"should see them...\""
+									))
+							)
+							
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</ExploreAftermath>
+		</Panes>
+	</DockScreen>
+	
+	<!-- Arts Quarter -->
+
+	<DockScreen UNID="&dsStKatsArcologyArts;"
+			backgroundID=		"none"
+			>
+
+		<Display>
+			<Canvas>
+				(block Nil
+					(cnvDrawText 20 10 "Arts Quarter" 'SubTitle '(128 128 128) 'left)
+					(cnvDrawImage 180 -220 (list &rsStKatsArcologySchematic; 0 0 580 580))
+					(cnvDrawText 250 80 "The Victorian Nightclub" 'Large '(192 192 192) 'left)
+					(cnvDrawText 260 115 "Commonwealth Museum of Art" 'Large '(192 192 192) 'left)
+					(cnvDrawText 100 150 "3DV Theatre" 'Large '(192 192 192) 'left)
+					(cnvDrawText 305 205 "Symphonic Center" 'Large '(192 192 192) 'left)
+					(cnvDrawText 150 240 "Muriel's Bar" 'Large '(192 192 192) 'left)
+					(cnvDrawText 190 275 "Blue Sector" 'Large '(192 192 192) 'left)
+					(cnvDrawText 170 310 "Korelux Apartments" 'Large '(192 192 192) 'left)
+					)
+			</Canvas>
+		</Display>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"The innovative architecture of the Arts Quarter draws tourists from "
+						"all over Human Space."
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="The Victorian Nightclub" key="V">
+						(scrShowScreen gScreen "&dsCommonwealthNightclub;")
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen &dsStKatsArcology;)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+<!-- Professor Dall's Mission -->
+
+	<!-- Dall Sphere
+
+	GLOBAL DATA
+		
+	status:			Status of Dall's sphere
+						Nil = Never created
+						'onFreighter = On the Sung freighter (in containment vessel)
+						'found = Retrieved by the player (or otherwise loose in the world)
+						'withDall = Returned to Dall by player
+
+	-->
+
+	<ItemType UNID="&itDallSphere;"
+			name=				"inert metal sphere"
+			level=				"10"
+			value=				"0"
+			mass=				"1000"
+			frequency=			"notRandom"
+			attributes=			"Alien; NotForSale"
+
+			description=		"This is a one-meter sphere of a dark metal, etched with a network of thin lines and complex shapes."
+			>
+
+		<Image imageID="&rsDallSphere;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<StaticData>
+			<00182001_Donation>
+				;		attd	rel		text
+				'(Nil	-1		200		"This is a remarkable item! Domina will be very pleased!")
+			</00182001_Donation>
+		</StaticData>
+		
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList theStatus)
+					(setq theStatus (typGetGlobalData &itDallSphere; "status"))
+					
+					(switch
+						(eq theStatus 'found)
+							(if (objGetItems gPlayerShip "* +unid:&itDallSphere;")
+								(setq theList (list (list "Found Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
+								(setq theList (list (list "Found and lost Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
+								)
+							
+						(eq theStatus 'withDall)
+							(setq theList (list (list "Found and delivered Professor Dall's alien sphere" Nil "achievements &amp; regrets")))
+						)
+					
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnObjDestroyed>
+				(if (eq gSource aObjDestroyed)
+				
+					; If our object gets destroyed and we don't end up on the
+					; resulting wreck, then we create our own object.
+					
+					(if (or (not aWreckObj) (not (objGetItems aWreckObj "* +unid:&itDallSphere;")))
+						(block (theObj)
+							(setq theObj (sysCreateStation &stDallSphere; (objGetPos gSource)))
+							(objAddItem theObj (itmCreate &itDallSphere; 1))
+							(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
+							)
+						)
+					)
+			</OnObjDestroyed>
+			
+			<OnUpdate>
+				(if (and (not (eq (sysGetNode) "SK")) (eq gSource gPlayerShip))
+					(block (roll)
+						(setq roll (random 1 100))
+						(switch
+							(leq roll 4)
+								(block Nil
+									(objMakeParalyzed gSource 150)
+									(objSendMessage gSource Nil "A power surge from the sphere disables your ship")
+									)
+									
+							(leq roll 10)
+								(objSendMessage gSource Nil "The sphere in your cargo hold pulses with power")
+							)
+						)
+					)
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+	<StationType UNID="&stDallSphere;"
+			name=				"inert metal sphere"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"1"
+			immutable=			"true" 
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<Image imageID="&rsDallSphere;" imageX="96" imageY="0" imageWidth="32" imageHeight="32"/>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=		"You find an inert metal sphere floating in space.">
+
+						<Actions>
+							<Action name="Loot" key="L" default="1" >
+								(block Nil
+									(setq gPrevScreen "Main")
+									(scrShowScreen gScreen "&dsLoot;")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="40" />
+			<Port x="0"		y="-40" />
+			<Port x="40"	y="0" />
+			<Port x="-40"	y="0" />
+		</DockingPorts>
+	</StationType>
+
+	<StationType UNID="&stDallMissionWreck;"
+			name=				"Sung transport wreck"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"shipwreck"
+			>
+			
+		<Image shipwreckID="&scSungTransport;"/>
+		
+		<Items>
+			<Item item="&itDallSphere;" count="1"/>
+		</Items>
+
+		<Ships>
+			<Ship	count="4d4+4"	class="&scDwargRaider;"	sovereign="&svDwargRaiders;" orders="patrol"	patrolDist="5" controller="zoanthrope"/>
+		</Ships>
+		
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(switch
+						(and (objGetItems gSource "* +unid:&itDallSphere;") 
+								(eq (typGetGlobalData &itDallSphere; "status") 'onFreighter))
+							"ContainmentVessel"
+
+						"Default"
+						)
+				</InitialPane>
+				
+				<Panes>
+					<Default
+							desc=		"You are docked with the wreck of a ship.">
+
+						<Actions>
+							<Action name="Loot" key="L" default="1" >
+								(block Nil
+									(setq gPrevScreen "Main")
+									(scrShowScreen gScreen "&dsLoot;")
+									)
+							</Action>
+
+							<Action name="Jettison" key="J">
+								(block Nil
+									(setq gPrevScreen "Main")
+									(scrShowScreen gScreen "&dsJettison;")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+					
+					<ContainmentVessel>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"You enter the cargo hold of the wrecked ship and see a massive containment vessel "
+								"with giant power couplings. Through a thick window in the containment vessel you "
+								"see a metal sphere with a complex series of etchings.\n\n"
+								"There is an emergency latch on one side that opens the containment vessel."
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Open containment" key="O" default="1">
+								(block (theSphere)
+									(setq theSphere (item (objGetItems gSource "* +unid:&itDallSphere;") 0))
+									
+									(objRemoveItem gSource theSphere)
+									(objAddItem gPlayerShip theSphere)
+									(typSetGlobalData &itDallSphere; "status" 'found)
+									
+									(shpCancelOrders gPlayerShip)
+									
+									(scrShowPane gScreen "OpenContainment")
+									)
+							</Action>
+							
+							<Action name="Undock" key="U" cancel="1">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</ContainmentVessel>
+
+					<OpenContainment>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The titanic doors of the containment vessel split open and air rushes into it. "
+								"The sphere is held in place by thin columns.\n\n"
+								"You take the sphere and put it in your cargo hold."
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" key="U" default="1" cancel="1">
+								(block Nil
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</OpenContainment>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="24" />
+			<Port x="0"		y="-24" />
+			<Port x="24"	y="0" />
+			<Port x="-24"	y="0" />
+		</DockingPorts>
+	</StationType>
+
+<!-- St Katharine's Star System -->
+
+	<SystemType UNID="&ssStKatharine;" noRandomEncounters="true">
+
+		<Tables>
+			<!-- Random Stations -->
+			
+			<FriendlyOuterStations>
+				<Table>
+					<Station weight="20" type="&stContainerHabitat;"/>
+					<Station weight="20" type="&stCommonwealthSlums;"/>
+					<Station weight="15" type="&stFuelDepot;"/>
+					<Station weight="15" type="&stIceFarm;"/>
+					<Station weight="10" type="&stArmorDealer;"/>
+					<Station weight="10" type="&stArmsDealer;"/>
+					<Station weight="10" type="&stSistersOfDomina;"/>
+					<Station weight="5"  type="&stHotel;"/>
+					<Station weight="5"  type="&stArmsDealerRasiermesser;"/>
+					<Station weight="5"  type="&stArmsDealerMakayev;"/>
+				</Table>
+			</FriendlyOuterStations>
+
+			<FriendlyStations>
+				<Table>
+					<Station weight="20" type="&stCorporateEnclave;"/>
+					<Station weight="20" type="&stCommonwealthResidentials;"/>
+					<Station weight="15" type="&stFuelDepot;"/>
+					<Station weight="15" type="&stHotel;"/>
+					<Station weight="10" type="&stContainerHabitat;"/>
+					<Station weight="10" type="&stCommonwealthSlums;"/>
+					<Station weight="10" type="&stArmorDealer;"/>
+					<Station weight="10" type="&stArmsDealer;"/>
+					<Station weight="10" type="&stManufacturingPlant;"/>
+					<Station weight="5"  type="&stTinkerGathering;"/>
+					<Station weight="5"  type="&stCommonwealthDryDock;"/>
+					<Station weight="5"  type="&stArmsDealerRasiermesser;"/>
+					<Station weight="5"  type="&stArmsDealerMakayev;"/>
+					<Station weight="5"  type="&stInsuranceCompany;"/>
+					<Station weight="5"  type="&stSistersOfDomina;"/>
+					<Station weight="2"  type="&stArmsDealerBushido;"/>
+				</Table>
+			</FriendlyStations>
+
+			<EnemyStations>
+				<Table>
+					<Station weight="15" type="&stOutlawHaven;"				noReinforcements="true"/>
+					<Station weight="15" type="&stCharonPirateOutpost3;"	noReinforcements="true"/>
+					<Station weight="10" type="&stTerroristCamp;"			noReinforcements="true"/>
+					<Station weight="10" type="&stMarauderOutpost;"			noReinforcements="true"/>
+					<Station weight="5"  type="&stTerroristCompound;"		noReinforcements="true"/>
+					<Station weight="5"  type="&stMarauderCompound;"		noReinforcements="true"/>
+					<Station weight="5"  type="&stDrugCartelOutpost;"		noReinforcements="true"/>
+					<Station weight="5"  type="&stWeaponsCache;"			noReinforcements="true"/>
+					<Station weight="5"  type="&stSungSlaveCamp;"			noReinforcements="true"/>
+				</Table>
+			</EnemyStations>
+
+		</Tables>
+
+		<SystemGroup>
+
+			<Station type="&stA-TypeStar;" name="St. Katharine's Star"/>
+
+			<!-- Redglow -->
+
+			<Orbitals distance="50" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stVolcanicPlanet;" name="Redglow" showOrbit="true" />
+					</Primary>
+
+					<Orbitals distance="18" angle="equidistant">
+						<Group>
+							<Lookup table="StargateOutbound"/>
+							
+							<Siblings radiusInc="8">
+								<Station type="&stNavSign;" name="Travel Warning!">
+									<InitialData>
+										<Info>
+											"WARNING! Systems beyond St. Katharine's Star are not controlled by the Commonwealth. By entering this stargate you agree to hold the Commonwealth Transport System immune to liability in the event of injury, involuntary servitude, or death."
+										</Info>
+									</InitialData>
+								</Station>
+							</Siblings>
+						</Group>
+						
+						<Station type="&stFuelDepot;" />
+						<Lookup chance="55" table="FriendlyStations" />
+						<Station type="&stIocrymMonument;" />
+						<Lookup chance="55" table="FriendlyStations" />
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+			<!-- Radiant -->
+
+			<Orbitals distance="110" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stDesertPlanet;" name="Radiant" showOrbit="true"/>
+					</Primary>
+
+					<Orbitals count="1d3" distance="10" angle="equidistant">
+						<Lookup table="FriendlyStations" />
+					</Orbitals>
+
+				</Group>
+			</Orbitals>
+
+			<!-- Incandescent -->
+
+			<Orbitals distance="260" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stBiospherePlanet;" name="Incandescent" showOrbit="true"/>
+						
+						<Station type="&stStKatsArcology;"/>
+						
+						<Station type="&stStKatsArcology15;"	xOffset="355"	 yOffset="88"/>
+						<Station type="&stStKatsArcology45;"	xOffset="260"	 yOffset="237"/>
+						<Station type="&stStKatsArcology75;"	xOffset="95"	 yOffset="320"/>
+						<Station type="&stStKatsArcology105;"	xOffset="-95"	 yOffset="320"/>
+						<Station type="&stStKatsArcology135;"	xOffset="-260"	 yOffset="237"/>
+						<Station type="&stStKatsArcology165;"	xOffset="-355"	 yOffset="88"/>
+						<Station type="&stStKatsArcology195;"	xOffset="-355"	 yOffset="-90"/>
+						<Station type="&stStKatsArcology225;"	xOffset="-260"	 yOffset="-252"/>
+						<Station type="&stStKatsArcology255;"	xOffset="-95"	 yOffset="-323"/>
+						<Station type="&stStKatsArcology285;"	xOffset="95"	 yOffset="-323"/>
+						<Station type="&stStKatsArcology315;"	xOffset="260"	 yOffset="-252"/>
+						<Station type="&stStKatsArcology345;"	xOffset="355"	 yOffset="-90"/>
+					</Primary>
+					
+					<Orbitals count="9" distance="36" angle="equidistant">
+						<Table>
+							<Station chance="5"  type="&stSistersOfDomina;"/>
+							<Station chance="5"  type="&stHotel;"/>
+							<Station chance="15" type="&stCorporateEnclave;"/>
+							<Station chance="10" type="&stFuelDepot;"/>
+							<Station chance="20" type="&stCommonwealthResidentials;" noMapLabel="true"/>
+							<Station chance="5"  type="&stInsuranceCompany;"/>
+							<Station chance="10" type="&stArmsDealerRasiermesser;"/>
+							<Station chance="5"  type="&stArmsDealerBushido;"/>
+							<Station chance="5"  type="&stAutonDealer;"/>
+							<Station chance="10" type="&stContainerHabitat;" noMapLabel="true"/>
+							<Station chance="10" type="&stManufacturingPlant;"/>
+						</Table>
+					</Orbitals>
+					
+					<Orbitals count="12-16" distance="48" angle="equidistant">
+						<Table>
+							<Station chance="20" type="&stCommonwealthResidentials;" noMapLabel="true"/>
+							<Station chance="30" type="&stContainerHabitat;" noMapLabel="true"/>
+							<Station chance="30" type="&stCommonwealthSlums;" noMapLabel="true"/>
+							<Station chance="20" type="&stManufacturingPlant;"/>
+						</Table>
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+			<!-- Majestic planetary system -->
+
+			<Orbitals distance="420" angle="random">
+				<Group>
+
+					<!-- Majestic -->
+
+					<Primary>
+						<Station type="&stHydrogenGasGiant;" name="Majestic" showOrbit="true" />
+					</Primary>
+
+					<!-- Majestic I -->
+
+					<Orbitals distance="22" angle="random">
+						<Group>
+							<Primary>
+								<Station type="&stCrateredPlanet;" name="Nearworld"/>
+							</Primary>
+
+							<Orbitals count="1d3-1" distance="10" angle="equidistant">
+								<Lookup table="FriendlyStations" />
+							</Orbitals>
+
+						</Group>
+					</Orbitals>
+
+					<!-- Majestic II -->
+
+					<Orbitals distance="45" angle="random">
+						<Group>
+							<Primary>
+								<Station type="&stIcePlanet;" name="Farworld"/>
+							</Primary>
+
+							<Orbitals distance="12" angle="equidistant">
+								<Lookup table="FriendlyOuterStations" />
+								<Lookup table="FriendlyOuterStations" />
+							</Orbitals>
+
+						</Group>
+					</Orbitals>
+
+					<!-- Trojans -->
+
+					<Trojan>
+						<Group>
+							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="1d6" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Table>
+								<Null chance="20"/>
+								<Lookup chance="50" table="FriendlyOuterStations" />
+								<Lookup chance="30" table="EnemyStations"/>
+							</Table>
+						</Group>
+					</Trojan>
+
+					<AntiTrojan>
+						<Group>
+							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="1d6" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Table>
+								<Null chance="20"/>
+								<Lookup chance="50" table="FriendlyOuterStations" />
+								<Lookup chance="30" table="EnemyStations"/>
+							</Table>
+						</Group>
+					</AntiTrojan>
+
+				</Group>
+			</Orbitals>
+
+			<!-- Fulgent -->
+
+			<Orbitals distance="10" scale="light-minute" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stIcePlanet;" name="Fulgent" showOrbit="true"/>
+					</Primary>
+
+					<Orbitals distance="18" angle="equidistant">
+						<Group>
+							<Lookup table="StargateInbound"/>
+							
+							<Siblings radiusInc="8">
+								<Station type="&stNavSign;" name="Welcome!">
+									<InitialData>
+										<Info>
+											"Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space."
+										</Info>
+									</InitialData>
+								</Station>
+							</Siblings>
+						</Group>
+						
+						<Lookup chance="25" table="FriendlyOuterStations" />
+						<Station type="&stFuelDepot;" />
+						<Lookup chance="25" table="FriendlyOuterStations" />
+						<Lookup chance="25" table="FriendlyOuterStations" />
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+			<!-- Icy Ring -->
+
+			<Orbitals distance="780" angle="random">
+				<Group>
+					<Siblings count="500" distribution="4d60-122">
+						<Lookup table="AsteroidSmallFrost"/>
+					</Siblings>
+
+					<Siblings count="50" distribution="4d20-42">
+						<Lookup table="AsteroidMediumFrost"/>
+					</Siblings>
+				</Group>
+			</Orbitals>
+			
+			<Orbitals count="2d4+4" distance="740-820" angle="minSeparation:10">
+				<Lookup table="EnemyStations"/>
+			</Orbitals>
+
+			<!-- Tenebrous -->
+
+			<Orbitals distance="17" scale="light-minute" angle="random">
+				<Group>
+					<Primary>
+						<Station type="&stIcePlanet;" name="Tenebrous" showOrbit="true"/>
+					</Primary>
+
+				</Group>
+			</Orbitals>
+
+		</SystemGroup>
+
+	</SystemType>
+
+<!-- GLOBALS -->
+
+	<Globals>
+		(block Nil
+			(setq stkDistanceToStK (lambda (nodeID nodesChecked)
+				(switch
+					(eq nodeID 'SK)
+						0
+						
+					(block (bestDist)
+						; Add this node to the list of nodes that we've checked
+						(setq nodesChecked (append nodesChecked (list nodeID)))
+						
+						; For all the stargates, return the closest distance
+						(setq bestDist 1000)
+						(enum (sysGetStargates nodeID) theGate
+							(block (theDestNode theDist)
+								(setq theDestNode (sysGetStargateDestinationNode nodeID theGate))
+								(if (not (find nodesChecked theDestNode))
+									(block Nil
+										(setq theDist (stkDistanceToStK theDestNode nodesChecked))
+										(if (ls theDist bestDist)
+											(setq bestDist theDist)
+											)
+										)
+									)
+								)
+							)
+							
+						; Done
+						(add bestDist 1)
+						)
+					)
+				))
+				
+			(setq stkFreshFoodStatus (lambda (theItem)
+				(switch
+					(eq (itmGetData theItem "status") 'rotted)
+						"rotted"
+						
+					(eq (itmGetData theItem "status") 'ripe)
+						"ripe"
+
+					"fresh"
+					)
+				))
+				
+			(setq stkFreshFoodPrice (lambda (theItem)
+				(switch
+					; If rotted, then food is worthless
+					(eq (itmGetData theItem "status") 'rotted)
+						0
+						
+					; If we're in the St Kat's system, then normal value
+					(eq (sysGetNode) 'SK)
+						(itmGetPrice theItem)
+
+					; Price increases the further away from StK's
+					(add (itmGetPrice theItem) (multiply (itmGetStaticData theItem "priceIncrease") (min 10 (stkDistanceToStK (sysGetNode)))))
+					)
+				))
+				
+			(setq stkFreshFoodUpdate (lambda (theSource theItem)
+				(block ((status (itmGetData theItem "status"))
+						(expireTime (itmGetData theItem "expireTime")))
+						
+					(switch
+						; If the food has rotted, mark it
+						(and (not (eq status 'rotted)) (gr (unvGetTick) expireTime))
+							(block Nil
+								(objSetItemData theSource theItem "status" 'rotted (itmGetCount theItem))
+								(if (eq theSource gPlayerShip)
+									(plyMessage gPlayer "The " (itmGetName theItem 0x80) " in your cargo hold have rotted")
+									)
+								)
+
+						; If the food has turned ripe, mark it
+						(and (not status) (gr (add (unvGetTick) 1800) expireTime))
+							(block Nil
+								(objSetItemData theSource theItem "status" 'ripe (itmGetCount theItem))
+								(if (eq theSource gPlayerShip)
+									(plyMessage gPlayer "The " (itmGetName theItem 0x80) " in your cargo hold look ripe")
+									)
+								)
+						)
+					)
+				))
+			)
+	</Globals>
+	
+<!-- BEHAVIORS -->
+
+	<ShipClass UNID="&evStKatsTrafficBehavior;"
+			class=				"(St Katharine's traffic behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+
+		<Events>
+			<OrderDockAtStKats>
+				(block Nil
+					(shpOrder gSource 'dock aDockObj)
+					(shpOrder gSource 'wait (random 10 200))
+					(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
+					)
+			</OrderDockAtStKats>
+			
+			<OrderEnterSystem>
+				(objSetData gSource "0010201F_status" 'enteredSystem)
+			</OrderEnterSystem>
+			
+			<OnOrdersCompleted>
+				(block (status dockedAt allLoot)
+					; Different order depending on our current state
+					(setq status (objGetData gSource "0010201F_status"))
+					(setq dockedAt (shpGetDockObj gSource))
+					
+					; If we're docked at an object, dump any loot that we found
+					(if (and dockedAt
+							(objHasAttribute dockedAt "populated")
+							
+							; Compose a list of all loot on board that the station
+							; might want to buy from us.
+							
+							(setq allLoot (filter (objGetItems gSource "*~mf U") theItem
+								(objGetBuyPrice dockedAt theItem)
+								))
+							)
+						(block Nil
+							(enum allLoot theItem (objRemoveItem gSource theItem))
+							(enum allLoot theItem (objAddItem dockedAt theItem))
+							)
+						)
+					
+					; Figure out what to do next
+					(switch
+						(eq status 'enteredSystem)
+							(block Nil
+								(setq theTarget (random (sysFindObject gSource "T +arcology")))
+								(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
+								(shpOrder gSource 'dock theTarget)
+								(shpOrder gSource 'wait (random 10 60))
+								(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
+								)
+								
+						(eq status 'dockedAtNewVictoria)
+							(block (roll allWrecks)
+								; When leaving new victoria, orbit around for a bit
+								(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
+								
+								; Randomly choose a path
+								(setq roll (random 1 100))
+								(switch
+									; Gate out
+									(leq roll 30)
+										(block Nil
+											(shpOrder gSource 'gate)
+											(objSetData gSource "0010201F_status" 'leavingSystem)
+											)
+											
+									; If there are wrecks in the area, loot them
+									(and (leq (objGetDestiny gSource) 180)
+											(not (objHasAttribute gSource "freighter"))
+											(leq (random 1 100) 50)
+											
+											; Compose a list of all wrecks in the area
+											
+											(setq allWrecks (filter (sysFindObject gSource "TK N:100; +shipwreck; -uncharted; -locked;") theObj
+												(and
+													(not (objIsRadioactive theObj))
+													(not (objGetData theObj "0010201F_marked"))
+													)
+												))
+											)
+										(block (destObj)
+											(setq destObj (random allWrecks))
+											(shpOrder gSource 'loot destObj)
+											(objSetData destObj "0010201F_marked" True)
+											(objSetData gSource "0010201F_status" 'dockedAtStation)
+											)
+											
+									; Dock at a random station in the system
+									(block (theTarget)
+										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
+										(shpOrder gSource 'dock theTarget)
+										(shpOrder gSource 'wait (random 10 20))
+										(objSetData gSource "0010201F_status" 'dockedAtStation)
+										)
+									)
+								)
+								
+						(eq status 'dockedAtStation)
+							(block (roll allWrecks)
+								; Randomly choose a path
+								(setq roll (random 1 100))
+								(switch
+									; Gate out
+									(leq roll 30)
+										(block Nil
+											(shpOrder gSource 'gate)
+											(objSetData gSource "0010201F_status" 'leavingSystem)
+											)
+											
+									; If there are wrecks in the area, loot them
+									(and (leq (objGetDestiny gSource) 180)
+											(not (objHasAttribute gSource "freighter"))
+											(leq (random 1 100) 50)
+											
+											; Compose a list of all wrecks in the area
+											
+											(setq allWrecks (filter (sysFindObject gSource "TK N:100; +shipwreck; -uncharted; -locked;") theObj
+												(and
+													(not (objIsRadioactive theObj))
+													(not (objGetData theObj "0010201F_marked"))
+													)
+												))
+											)
+										(block (destObj)
+											(setq destObj (random allWrecks))
+											(shpOrder gSource 'loot destObj)
+											(objSetData destObj "0010201F_marked" True)
+											(objSetData gSource "0010201F_status" 'dockedAtStation)
+											)
+											
+									; Dock at new victoria
+									(leq roll 80)
+										(block (theTarget)
+											(setq theTarget (random (sysFindObject gSource "T +arcology")))
+											(shpOrder gSource 'orbit (sysFindObject Nil "TNV +stKatsArcology;") 20 (random 20 40))
+											(shpOrder gSource 'dock theTarget)
+											(shpOrder gSource 'wait (random 10 60))
+											(objSetData gSource "0010201F_status" 'dockedAtNewVictoria)
+											)
+											
+									; Dock at a random station in the system
+									(block (theTarget)
+										(setq theTarget (random (sysFindObject gSource "TAF +populated; -arcology; -occupation;")))
+										(shpOrder gSource 'dock theTarget)
+										(shpOrder gSource 'wait (random 10 20))
+										(objSetData gSource "0010201F_status" 'dockedAtStation)
+										)
+									)
+								)
+						)
+						
+					; If we were docked at an object that we just looted, then destroy the object
+					(if (objGetData dockedAt "0010201F_marked")
+						(objDestroy dockedAt gSource)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+	
+<!-- TABLES -->
+
+	<ShipTable unid="&tbStKatsTraffic;">
+		<Table>
+			<Ship chance="2"	class="&scAntaresI;"/>
+			<Ship chance="4"	class="&scAntaresII;"/>
+			<Ship chance="3"	class="&scAntaresV;"/>
+			<Ship chance="3"	class="&scEI7000;"/>
+			<Ship chance="8"	class="&scEI500;"/>
+			<Ship chance="9"	class="&scEI200;"/>
+			<Ship chance="14"	class="&scEI100;"/>
+			<Ship chance="5"	class="&scIAVLight;"/>
+			<Ship chance="10"	class="&scIAVMedium;"/>
+			<Ship chance="5"	class="&scIAVHeavy;"/>
+			<Ship chance="10"	class="&scSapphireYacht;"/>
+			<Ship chance="3"	class="&scScarabFreighter;"/>
+			<Ship chance="14"	class="&scRoninB;"/>
+			<Ship chance="10"	class="&scWolfen;"/>
+		</Table>
+	</ShipTable>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsStKatsArcology;"	bitmap="Resources\StKatsArcology.jpg" bitmask="Resources\StKatsArcologyMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsIocrymMonument;"	bitmap="Resources\FirstContactMonument.jpg" bitmask="Resources\FirstContactMonumentMask.bmp"  loadOnUse="true"/>
+	
+	<Image UNID="&rsStKatsArcologyScreen;"		bitmap="Resources\StKatsArcologyScreen.jpg" loadOnUse="true"/>
+	<Image UNID="&rsStKatsArcologySchematic;"	bitmap="Resources\StKatsArcologySchematic.jpg" bitmask="Resources\StKatsArcologySchematicMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsIocrymMonumentScreen;"		bitmap="Resources\FirstContactMonumentScreen.jpg" loadOnUse="true"/>
+	
+	<Image UNID="&rsDallSphere;"		bitmap="Resources\DallSphere.jpg" bitmask="Resources\DallSphereMask.bmp" loadOnUse="true"/>
+
+</TranscendenceModule>
+

@@ -1,0 +1,946 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Charon Pirate Fortress
+
+	GLOBAL DATA
+
+	status:				Status of Charon Fortress
+							Nil						= OK
+							'destroyed				= fortress destroyed
+							'allDestroyed			= all Charon stations (including fortress) destroyed
+	-->
+
+	<StationType UNID="&stCharonPirateFortress;"
+			name=				"Fortress of the Charon Pirates"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itLightBlastPlate;"
+			hitPoints=			"200"
+			fireRateAdj=		"20"
+			explosionType=		"&vtBlastExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonFortress, charonPirates, enemy, human, majorStation, populated"
+			level=				"3"
+			alertWhenAttacked=	"100"
+
+			definiteArticle=	"true"
+			>
+
+		<Image			imageID="&rsStations3;" imageX="0" imageY="352" imageWidth="256" imageHeight="256"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scDrake;"		orders="patrol" patrolDist="20">
+					<Escorts>
+						<Ship			count="1d6"	class="&scViking;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Item					count="8d8"	item="&itKM100Missile;" />
+			<Item					count="4d8"	item="&itKM500Missile;" />
+			<Item					count="1"	item="&itClass3Deflector;" />
+			<Item					count="2d4"	item="&itLightBlastPlate;" />
+			<Table count="1d2">
+				<Lookup chance="40" count="1" table="&trConsumables4;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="60" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Ship chance="40" count="1d6" class="&scCorsair;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scViking;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scCorsair-II;" orders="escort"/>
+						</Table>
+					</Escorts>
+				</Ship>
+				<Ship chance="30" count="1"	class="&scCorsair-II;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship chance="60" count="1d6" class="&scCorsair;" orders="escort"/>
+						<Ship chance="40" count="1" class="&scViking;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;">
+					<OnCreate>(objFireEvent gSource "OrderAmbush")</OnCreate>
+				</Ship>
+			</Table>
+		</Encounters>
+
+		<Events>
+			<OnDestroy>
+				(objSetGlobalData gSource "status" 'destroyed)
+			</OnDestroy>
+		</Events>
+
+		<DockingPorts>
+			<Port x="-6"	y="114" />
+			<Port x="75"	y="103" />
+			<Port x="117"	y="70" />
+			<Port x="148"	y="-5" />
+			<Port x="135"	y="-68" />
+			<Port x="75"	y="-124" />
+			<Port x="7"		y="-143" />
+			<Port x="-89"	y="-116" />
+			<Port x="-127"	y="-72" />
+			<Port x="-142"	y="8" />
+			<Port x="-120"	y="58" />
+			<Port x="-58"	y="103" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Korolov Shipping in Charon System 
+
+	EXTRA DATA:
+
+	MissionStatus:		Status:
+							Nil						= Attack has not begun
+							'underAttack			= Station is under attack
+							'destroyed				= Station has been destroyed by pirate attack
+							'revenge				= Player has been asked to avenge the station (by destroying Charon Fortress)
+							'success				= Attack on station defeated
+							'attackPlan				= Player has been asked to destroy Charon Fortress
+							'fortressDestroyed		= Charon Fortress destroyed
+	-->
+
+	<StationType UNID="&stKorolovAtCharon;"
+			name=				"Korolov Shipping"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Dispatch"
+			abandonedScreen=	"Destroyed"
+			dockingPorts=		"10"
+			canAttack=			"true"
+			noBlacklist=		"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			maxHitPoints=		"250"
+			hitPoints=			"150"
+			repairRate=			"2"
+			shipRepairRate=		"3"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, populated, majorStation, KorolovCharon"
+
+			noArticle=			"true"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+
+		<Ships>
+			<Lookup count="1d2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+			<Ship	count="3d6" class="&scRoninB;" orders="patrol" patrolDist="10"/>
+		</Ships>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					; Create fleets of pirates to attack
+					(for i 1 5
+						(sysAddEncounterEventAtDist 500 gSource &etPirateAmbush3; (random 100 200))
+						)
+
+					; Under attack
+					(sysAddObjTimerEvent 500 gSource "OnTimerAttack1")
+
+					; Create drakes
+					(sysAddObjTimerEvent 850 gSource "OnTimerAttack2")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(if (and 
+						(eq (objGetData gSource "MissionStatus") "underAttack")
+						(not (eq aOrderGiver gPlayerShip))
+						)
+					(block Nil
+						(objSetData gSource "MissionStatus" "destroyed")
+						(sysAddObjRecurringTimerEvent 150 gSource "OnCheckRevenge")
+						)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(if (eq (objGetData gSource "MissionStatus") "underAttack")
+					(block Nil
+						(if (objGetData aObjDestroyed "Destroyer")
+							(objIncData gSource "DestroyerCount" -1)
+							)
+
+						(if (leq (objGetData gSource "DestroyerCount") 0)
+							(objSetData gSource "MissionStatus" "success")
+							)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnTimerAttack1>
+				(if (not (objIsAbandoned gSource))
+					(block Nil
+						(objSetData gSource "MissionStatus" "underAttack")
+						)
+					)
+			</OnTimerAttack1>
+
+			<OnTimerAttack2>
+				(if (eq (objGetData gSource "MissionStatus") 'underAttack)
+					(block (pos)
+						(setq pos (sysVectorPolarOffset gSource (random 0 359) 120))
+
+						; Create drake ships
+						(for i 1 5
+							(block (theShip)
+								(setq theShip 
+									(sysCreateShip 
+											&scDrake; 
+											(sysVectorPolarOffset pos (multiply i 30) 24)
+											&svPirates;)
+									)
+
+								(shpOrderAttack theShip gSource)
+								(shpOrderGate theShip)
+
+								(objSetData theShip "Destroyer" True)
+								(objRegisterForEvents gSource theShip)
+								)
+							)
+
+						(objSetData gSource "DestroyerCount" 5)
+						)
+					)
+			</OnTimerAttack2>
+
+			<OnCheckRevenge>
+				(block Nil
+					(if (and (not (sysFindObject gSource "AT:charonFortress;"))
+							(eq (count (sysFindObject gSource "AT:charonPirates;")) 0)
+							)
+
+						; Replace the destroyed korolov with new construction
+						(block (newStation)
+							(setq newStation (sysCreateStation &stKorolovAtCharonCons; (objGetPos gSource)))
+							(objSetKnown newStation)
+							(objDestroy gSource)
+							(typSetGlobalData &stCharonPirateFortress; "status" 'allDestroyed)
+							)
+						)
+					)
+			</OnCheckRevenge>
+		</Events>
+
+		<DockScreens>
+			<Dispatch
+				name=			"Korolov Shipping"
+				>
+
+				<InitialPane>
+					(block (missionStatus)
+						(setq missionStatus (objGetData gSource "MissionStatus"))
+
+						(switch
+							(and (eq missionStatus 'success)
+									(sysFindObject gSource "AT:charonPirates;"))
+								"DestroyFortressMission"
+
+							(and (eq missionStatus 'attackPlan)
+									(not (sysFindObject gSource "AT:charonPirates;")))
+								"DestroyFortressSuccess"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (desc playerLevel)
+								(setq playerLevel (korInitialize))
+								(scrSetDesc gScreen (korMsgWelcome playerLevel))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Escort freighter" default="1" key="E">
+								(block (missionStatus)
+									(setq missionStatus (objGetData gSource "MissionStatus"))
+									(switch
+										(eq missionStatus 'success)
+											(scrShowPane gScreen "MissionOver")
+
+										(eq missionStatus 'attackPlan)
+											(scrShowPane gScreen "DestroyFortressInProgress")
+
+										(eq missionStatus 'fortressDestroyed)
+											(scrShowPane gScreen "MissionOver")
+
+										(eq missionStatus 'underAttack)
+											(scrShowPane gScreen "UnderAttack")
+
+										(leq (typGetGlobalData &stKorolovShipping; "xp") 0)
+											(scrShowPane gScreen "CantUseCommandCenter")
+
+										(scrShowPane gScreen "Defend")
+										)
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(block (xp)
+									(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+									(if (leq xp 0)
+										(scrShowPane gScreen "CantUseDockServices")
+										(scrShowPane gScreen "DockServices")
+										)
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itHeliumAssembly; 92) (&itHelium3FuelRod; 80)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 8)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install device" key="D" >
+								(block Nil
+									(setq gTechLevel 6)
+									(setq gTechModifier Nil)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsInstallDevice;")
+									)
+							</Action>
+
+							<Action name="Remove device" key="V" >
+								(block Nil
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRemoveDevice;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="N">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+					<CantUseCommandCenter
+							desc=	"Sorry, only experienced pilots are allowed to escort freighters.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</CantUseCommandCenter>
+
+					<CantUseDockServices
+							desc=	"The dock services area is restricted to members only.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</CantUseDockServices>
+
+					<Defend
+							desc=	"As you enter the command center, you see several people gathered around a central display table.&#x0a;&#x0a;A woman approaches you, &quot;We're planning a big attack on the Charon fortress in this system and we could use all the help we can get. Are you...&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Defend2"/>
+							</Action>
+						</Actions>
+
+					</Defend>
+
+					<Defend2
+							desc=	"Before she can finish, the alarms bleat and she turns back to the display table.&#x0a;&#x0a;Her face goes white as she sees the mass of signals approaching the stations...">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								(block Nil
+									(if (not (objGetData gSource "MissionStatus"))
+										(objSetData gSource "MissionStatus" "underAttack")
+										)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+
+					</Defend2>
+
+					<MissionOver
+							desc=	"After a violent pirate attack, the command center is nearly ruined.&#x0a;&#x0a;&quot;Sorry, no freighters are looking for escorts right now.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</MissionOver>
+
+					<UnderAttack
+							desc=	"The command center is filled with men and women shouting orders and counter-orders. The constant drone of sirens is punctuated frequently by concussive blow of explosions.&#x0a;&#x0a;A woman shouts at you, &quot;Get out of here and make yourself useful!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+
+					</UnderAttack>
+
+					<DestroyFortressMission>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "The command center is smashed. Some people are caring for the injured while others look at the tactical screens. A woman approaches you:\n\n"
+								"\"Thanks for your help! We were lucky that you were in the area. Now we need you to strike while we have the initiative. Destroy all the Charon stations in the system!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(objSetData gSource "MissionStatus" 'attackPlan)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</DestroyFortressMission>
+
+					<DestroyFortressInProgress>
+						<OnPaneInit>
+							(block (pirateStationsLeft)
+								(setq pirateStationsLeft (count (sysFindObject gSource "AT:charonPirates; -charonFortress;")))
+								(setq fortress (sysFindObject gSource "AT:charonFortress;"))
+
+								(scrSetDesc gScreen (cat
+									"The command center is nearly ruined, but several people are tracking the tactical situation:\n\n"
+									(switch
+										(and (not fortress) (eq pirateStationsLeft 1))
+											"\"There is still one Charon station left in the system. Destroy it and you'll be done!\""
+
+										(not fortress)
+											(cat "\"Although the Charon Fortress has been destroyed there are still " (strNumber pirateStationsLeft) " Charon stations in the system.\"")
+
+										(eq pirateStationsLeft 1)
+											"\"There are two Charon stations still active in the system: the Fortress of the Charon Pirates and another lesser Charon station.\""
+
+										(cat "\"There are " (strNumber pirateStationsLeft) " Charon pirate stations left, in addition to the Fortress of the Charon Pirates.\"")
+										)
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</DestroyFortressInProgress>
+
+					<DestroyFortressSuccess>
+						<OnPaneInit>
+							(block (roll)
+								(setq roll (random 1 100))
+								(switch
+									(leq roll 30)
+										(setq gItem (itmCreate &itXRayLaserCannon; 1))
+
+									(leq roll 60)
+										(setq gItem (itmCreate &itOmniParticleCannon; 1))
+
+									(leq roll 80)
+										(setq gItem (itmCreate &itMarkIHowitzer; 1))
+
+									(setq gItem (itmCreate &itClass5Deflector; 1))
+									)
+
+								(scrSetDesc gScreen (cat "Everyone cheers as you enter.\n\n"
+									"\"We don't have much in the way of rewards, but it would be our honor if you would accept "
+									(itmGetName gItem 0x040)
+									". The Charon pirates will no longer threaten the Commonwealth, and we owe it all to you!\""
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(objAddItem gPlayerShip gItem)
+									(objSetData gSource "MissionStatus" 'fortressDestroyed)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</DestroyFortressSuccess>
+				</Panes>
+
+			</Dispatch>
+
+			<Destroyed
+				name=			"Korolov Shipping"
+				>
+
+				<OnScreenInit>
+					(if (not (eq (objGetData gSource "MissionStatus") "destroyed"))
+						(scrShowScreen gScreen "&dsAbandonedStation;")
+						)
+				</OnScreenInit>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at the lifeless ruins of a destroyed station. Amid wrecked machinery and smouldering bodies you find a woman who is still alive.&#x0a;&#x0a;She grabs your hand, &quot;Avenge us...the Fortress is in the system...kill them all...&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(setq gItem (itmCreate &itCharonPirateMapROM; 1))
+									(objAddItem gPlayerShip gItem)
+
+									(objSetData gSource "MissionStatus" "revenge")
+									(scrShowPane gScreen "Map")
+									)
+							</Action>
+						</Actions>
+					</Default>
+
+					<Map>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								(cat "As her lifeless hand releases yours, she drops " (itmGetName gItem 0x08) ".\n\nYou take the ROM with you, hoping that it will contain some useful information.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Map>
+				</Panes>
+			</Destroyed>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="100" />
+			<Port x="-80"	y="40" />
+			<Port x="80"	y="40" />
+			<Port x="-60"	y="-40" />
+			<Port x="60"	y="-40" />
+
+			<Port x="0"		y="-105" />
+			<Port x="-130"	y="-17" />
+			<Port x="130"	y="-17" />
+			<Port x="-70"	y="105" />
+			<Port x="70"	y="105" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Rebuilt Korolov -->
+
+	<StationType UNID="&stKorolovAtCharonCons;"
+			name=				"Korolov Shipping"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"10"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			maxHitPoints=		"250"
+			hitPoints=			"150"
+			repairRate=			"2"
+			shipRepairRate=		"3"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated"
+
+			noArticle=			"true"
+			>
+
+		<Image			imageID="&rsStations3;" imageX="0" imageY="128" imageWidth="224" imageHeight="224"/>
+
+		<Ships>
+			<Lookup count="1d2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+			<Ship	count="2d6" class="&scRoninC;" orders="patrol" patrolDist="10"/>
+		</Ships>
+
+		<DockScreens>
+			<Main
+				name=			"Korolov Shipping"
+				>
+
+				<OnScreenInit>
+					(switch
+						; If we have not yet rewarded the player, do so
+						(not (objGetData gSource "Reward"))
+							(scrShowScreen gScreen "Reward")
+						)
+				</OnScreenInit>
+
+				<Panes>
+					<Default desc="You are in the main hall of a Korolov Shipping Company station. The station is under construction.">
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+
+			<Reward
+				name=			"Korolov Shipping"
+				>
+
+				<Panes>
+					<Default
+							desc="You are docked at a station under construction. The manager of the station walks up to you to shake your hand.&#x0a;&#x0a;&quot;What do you think? We'll have this old station rebuilt in a few months. And we owe it all to you for destroying the pirates.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (roll)
+									; Pick a gift
+									(setq roll (random 1 100))
+									(switch
+										(leq roll 25)
+											(setq gItem (itmCreate &itTargetingComputerROM; 1))
+
+										(leq roll 50)
+											(setq gItem (itmCreate &itMilitaryID; 1))
+
+										(leq roll 75)
+											(setq gItem (itmCreate &itMuleAuton; 1))
+
+										(leq roll 90)
+											(setq gItem (itmCreate &itGreenEtheriumCrystal; 1))
+
+										(setq gItem (itmCreate &itRegeneratingNanos; 4))
+										)
+
+									(scrShowPane gScreen "Reward2")
+									)
+							</Action>
+						</Actions>
+					</Default>
+
+					<Reward2>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								(cat "\"We don't have much in the way of rewards here. But I've got something that might help in your travels.\"\n\nHe hands you " (itmGetName gItem 0x08) "."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(block (xp)
+									(objSetData gSource "Reward" True)
+
+									; Player gains korolov xp
+									(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+									(setq xp (add xp 500))
+									(typSetGlobalData &stKorolovShipping; "xp" xp)
+
+									; Give reward to player
+									(objAddItem gPlayerShip gItem)
+
+									; Done
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Reward2>
+				</Panes>
+			</Reward>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="100" />
+			<Port x="-80"	y="40" />
+			<Port x="80"	y="40" />
+			<Port x="-60"	y="-40" />
+			<Port x="60"	y="-40" />
+
+			<Port x="0"		y="-105" />
+			<Port x="-130"	y="-17" />
+			<Port x="130"	y="-17" />
+			<Port x="-70"	y="105" />
+			<Port x="70"	y="105" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Pirate Fortress System -->
+
+	<SystemType UNID="&ssCharonPirateFortress;">
+
+		<SystemGroup>
+
+			<!-- Star -->
+
+			<Station type="&stRedDwarfStar;" name="Cardel Orionis"/>
+
+			<!-- Lesser Anterock -->
+
+			<Orbitals distance="1d10+75" angle="random">
+				<Group>
+					<Station type="&stCrateredPlanet;" 
+							name="Lesser Anterock" 
+							showOrbit="true"
+							/>
+
+					<Orbitals distance="12" angle="random">
+						<Group>
+							<Siblings angleInc="0">
+								<Lookup table="StargateInbound"/>
+							</Siblings>
+
+							<Siblings angleInc="180">
+								<Station type="&stKorolovAtCharon;"/>
+							</Siblings>
+						</Group>
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+			<!-- Greater Anterock -->
+
+			<Orbitals distance="1d20+150" angle="random">
+				<Group>
+					<Station type="&stIcePlanet;" 
+							name="Greater Anterock" 
+							showOrbit="true"
+							/>
+
+					<Orbitals distance="12" angle="random">
+						<Label attributes="moon,planetary,frost"/>
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+			<!-- Cardel Prime -->
+
+			<Orbitals distance="7" scale="light-minute" angle="random" eccentricity="30" rotation="120">
+				<Group>
+					<Station type="&stHydrogenGasGiant;" 
+							name="Cardel Prime" 
+							showOrbit="true"
+							/>
+
+					<Orbitals distance="1d6+18" angle="random">
+						<Group>
+							<Station type="&stCrateredPlanet;" />
+
+							<Orbitals distance="2d8+12" angle="random">
+								<Label attributes="gasgiant,moon,planetary"/>
+							</Orbitals>
+						</Group>
+					</Orbitals>
+
+					<Orbitals distance="2d6+35" angle="random">
+						<Group probability="60">
+							<Station type="&stCrateredPlanet;" />
+
+							<Orbitals distance="2d8+12" angle="random">
+								<Label attributes="gasgiant,moon,planetary"/>
+							</Orbitals>
+						</Group>
+					</Orbitals>
+
+					<Orbitals distance="4d6+65" angle="random">
+						<Group>
+							<Station type="&stIcePlanet;" />
+
+							<Orbitals distance="2d8+12" angle="random">
+								<Lookup table="StargateOutbound"/>
+							</Orbitals>
+						</Group>
+					</Orbitals>
+
+					<Trojan>
+						<Table>
+							<Lookup chance="75" table="StdTrojans"/>
+							<Lookup chance="25" table="FrostTrojans"/>
+						</Table>
+					</Trojan>
+
+					<AntiTrojan>
+						<Table>
+							<Lookup chance="75" table="StdTrojans"/>
+							<Lookup chance="25" table="FrostTrojans"/>
+						</Table>
+					</AntiTrojan>
+				</Group>
+			</Orbitals>
+
+			<!-- Ice Belt -->
+
+			<Orbitals distance="12" scale="light-minute" angle="random" eccentricity="40" rotation="120">
+				<Group>
+					<Siblings count="500" distribution="4d60-122">
+						<Lookup table="AsteroidSmallFrost"/>
+					</Siblings>
+
+					<Siblings count="50" distribution="4d20-42">
+						<Lookup table="AsteroidMediumFrost"/>
+					</Siblings>
+
+					<Siblings count="2d6+6" distribution="4d40-82">
+						<Label attributes="asteroids,asteroidbelt,frost"/>
+					</Siblings>
+				</Group>
+			</Orbitals>
+
+			<!-- Charon Pirate Fortress -->
+
+			<RandomLocation locationCriteria="*asteroidbelt">
+				<Station type="&stCharonPirateFortress;"/>
+			</RandomLocation>
+
+			<!-- Charon Pirate Strongholds -->
+
+			<RandomLocation count="2d2+1" locationCriteria="++asteroids">
+				<Station type="&stCharonPirateOutpost3;"/>
+			</RandomLocation>
+
+			<!-- Random stations -->
+
+			<FillRandomLocation
+					count=				"1d4" 
+					stationCriteria=	"!primary,!debris,+envAir,-envAvoidsAir,!korolovShipping" 
+					percentEnemies=		"65"
+					separateEnemies=	"true"
+					/>
+
+			<!-- Random Debris -->
+
+			<RandomLocation probability="50" locationCriteria="++OuterSystem,++asteroids">
+				<Orbitals count="1d6" distance="1d8+6" angle="random">
+					<RandomStation stationCriteria="*debris"/>
+				</Orbitals>
+			</RandomLocation>
+
+			<RandomLocation count="2d2-1" match="++asteroids">
+				<RandomStation stationCriteria="*debris"/>
+			</RandomLocation>
+
+		</SystemGroup>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList theStatus)
+					(setq theStatus (typGetGlobalData &stCharonPirateFortress; "status"))
+					
+					(if theStatus
+						(setq theList (list
+							(list 
+								(switch
+									(eq theStatus 'destroyed) "Destroyed the Fortress in the Charon system"
+									(eq theStatus 'allDestroyed) "Cleared the Charon system for Korolov Shipping"
+									(cat "ERROR: Charon fortress status: " theStatus)
+									) 
+								Nil 
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</SystemType>
+
+</TranscendenceModule>

@@ -1,0 +1,32 @@
+level	category	frequency	shortName	cost	mass	averageDamage		 damage/credit 	damage/kg
+2	Missile	C	KM100 Longbow missile	15	50	14		 0.93 	0.28
+2	Missile	UC	SmartCannon round	5	10	7		 1.40 	0.7
+3	Missile	C	400 Hexagene MAG	20	25	14		 0.70 	0.56
+3	Missile	C	fragmentation missile	30	50	44		 1.47 	0.88
+4	Missile	R	XM300 Reaper missile	250	50	17.5		 0.07 	0.35
+4	Missile	C	KM500 Stiletto missile	50	60	14		 0.28 	0.233333333
+4	Missile	C	600 Hexagene MAG	30	30	21		 0.70 	0.7
+4	Missile	C	Dragonfly missile cartridge	25	50	42		 1.68 	0.84
+4	Missile	C	Akan 30 cannon shell cartridge	10	20	19.5		 1.95 	0.975
+5	Missile	C	White Strelka missile	20	25	10.5		 0.53 	0.42
+5	Missile	C	800F Hexagene MAG	50	30	44		 0.88 	1.466666667
+5	Missile	C	Nandao bolt cartridge	15	25	30		 2.00 	1.2
+6	Missile	C	Green Strelka missile	35	25	15		 0.43 	0.6
+6	Missile	C	kiloton cannon shell	150	150	132		 0.88 	0.88
+6	Missile	UC	ZG24 Cluster MAG	100	60	168		 1.68 	2.8
+7	Missile	C	Ares micronuke	350	20	6.5		 0.02 	0.325
+7	Missile	UC	XM900 Lucifer missile	150	100	39		 0.26 	0.39
+7	Missile	UC	3K Siege MAG	250	100	70		 0.28 	0.7
+7	Missile	UC	Red Strelka missile	50	30	19.5		 0.39 	0.65
+7	Missile	UC	thermo cannon shell cartridge	50	25	26		 0.52 	1.04
+7	Missile	C	CRM100 Fatboy mine	250	150	247		 0.99 	1.646666667
+8	Missile	UC	high-flux MAG	200	60	52		 0.26 	0.866666667
+8	Missile	C	Gotha-10 missile	50	50	26		 0.52 	0.52
+8	Missile	UC	TM7 warhead	100	60	30		 0.30 	0.5
+8	Missile	UC	CRM500 Running Man mine	500	150	247		 0.49 	1.646666667
+9	Missile	R	Ares Warhammer nuke	1000	300	13		 0.01 	0.043333333
+9	Missile	C	Gotha-400 seeker	100	50	26		 0.26 	0.52
+9	Missile	R	Black Strelka missile	150	35	45.5		 0.30 	1.3
+12	Missile	UC	Kytryn plasma pod	1500	300	351		 0.23 	1.17
+13	Missile	R	Quantumsphere shell	1000	500	27		 0.03 	0.054
+								 0.51 	 0.70 

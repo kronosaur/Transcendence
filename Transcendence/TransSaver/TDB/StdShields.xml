@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- LEVEL I -->
+
+	<!-- Class I Deflector -->
+
+	<ItemType UNID="&itClass1Deflector;"
+			name=				"class I deflector"
+			level=				"1"
+			value=				"500"
+			mass=				"1000"
+			frequency=			"uncommon"
+			modifiers=			"EI; MajorItem"
+			showReference=		"true"
+
+			description=		"The basic entry in Earth Industries' series of popular shield generators."
+
+			sortName=			"deflector, class I"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"35"
+				regen=			"12"
+				depletionDelay=	"300"
+				powerUse=		"10"
+				/>
+	</ItemType>
+
+	<!-- Cyclotron S10 Deflector -->
+
+	<ItemType UNID="&itCyclotronDeflectorI;"
+			name=				"Cyclotron S10 deflector"
+			level=				"1"
+			value=				"500"
+			mass=				"1000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; NAMI"
+			showReference=		"true"
+
+			description=		"NAMI's Cyclotron deflectors absorb a lot of damage, but take more time to regenerate."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"60"
+				regen=			"6"
+				depletionDelay=	"360"
+				powerUse=		"10"
+				/>
+	</ItemType>
+
+	<!-- Laser Deflector -->
+
+	<ItemType UNID="&itLaserDeflector;"
+			name=				"laser deflector"
+			level=				"1"
+			value=				"750"
+			mass=				"1200"
+			frequency=			"rare"
+			modifiers=			"MajorItem"
+			showReference=		"true"
+
+			description=		"Better than a class I at deflecting laser energy; worse at deflecting anything else."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"30"
+				hpBonus=		"+200,  +0,  +0,  +0"
+				regen=			"8"
+				depletionDelay=	"360"
+				powerUse=		"10"
+				/>
+	</ItemType>
+
+<!-- LEVEL II -->
+
+	<ItemType UNID="&itClass2Deflector;"
+			name=				"class II deflector"
+			level=				"2"
+			value=				"1000"
+			mass=				"1150"
+			frequency=			"uncommon"
+			modifiers=			"EI; MajorItem"
+			showReference=		"true"
+
+			description=		"Though not powerful enough for military-grade weapons, the class II provides adequate defense for freelancers and independent merchantships."
+
+			sortName=			"deflector, class II"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"45"
+				regen=			"16"
+				depletionDelay=	"360"
+				powerUse=		"20"
+				/>
+	</ItemType>
+
+	<!-- Hull Plate Ionizer -->
+
+	<ItemType UNID="&itHullPlateIonizer;"
+			name=				"hull plate ionizer"
+			level=				"2"
+			value=				"1500"
+			mass=				"1500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; NAMI"
+			showReference=		"true"
+
+			description=		"This device ionizes a ship's hull, repelling kinetic and blast damage. The ionization field weakens as the ship's armor is damaged."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"45"
+				armorShield=	"15"
+				hpBonus=		"  -5,+200, -25, +25"
+				regen=			"16"
+				depletionDelay=	"360"
+				powerUse=		"40"
+				/>
+	</ItemType>
+
+<!-- LEVEL III -->
+
+	<!-- Cyclotron S55 -->
+
+	<ItemType UNID="&itCyclotronDeflectorIII;"
+			name=				"Cyclotron S55 deflector"
+			level=				"3"
+			value=				"2000"
+			mass=				"1500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; NAMI"
+
+			description=		"Stronger than a class III deflector using less than half the power."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"120"
+				regen=			"8"
+				depletionDelay=	"360"
+				powerUse=		"40"
+				/>
+	</ItemType>
+
+	<!-- Monopole Deflector -->
+
+	<ItemType UNID="&itMonopoleDeflector;"
+			name=				"monopole deflector screen"
+			level=				"3"
+			value=				"2200"
+			mass=				"1600"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; NAMI"
+
+			description=		"A quantum magnetic field strongly deflects damage from kinetic and blast weapons. It is less effective against laser and particle beam attacks."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"60"
+				hpBonus=		" -10,+125, -25, +25"
+				regen=			"20"
+				depletionDelay=	"360"
+				powerUse=		"50"
+				/>
+	</ItemType>
+
+	<!-- Solon Shield Generator -->
+
+	<ItemType UNID="&itSolonShieldGenerator;"
+			name=				"Solon shield generator"
+			level=				"3"
+			value=				"2500"
+			mass=				"1500"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Solon"
+
+			description=		"Developed by the innovative Solon Industries, this shield absorbs most laser energy. A ship with Solon shields cannot fire any laser weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"60"
+				hpBonus=		"+650, +25, -25, -25"
+				regen=			"20"
+				depletionDelay=	"360"
+				powerUse=		"50"
+				weaponSuppress=	"laser"
+				/>
+	</ItemType>
+
+<!-- LEVEL IV -->
+
+	<ItemType UNID="&itCeratopsQuasiArmor1;"
+			name=				"Ceratops 1T quasi-armor"
+			level=				"4"
+			value=				"5000"
+			mass=				"1900"
+			frequency=			"uncommon"
+			modifiers=			"EI; MajorItem"
+
+			description=		"This quasi-matter generator protects a starship against blast energy."
+
+			sortName=			"Ceratops 01"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"70"
+				hpBonus=		"   +0, +50,  +0,+200,  +0, +25"
+				regen=			"20"
+				depletionDelay=	"360"
+				powerUse=		"100"
+				/>
+
+	</ItemType>
+
+	<ItemType UNID="&itClass3Deflector;"
+			name=				"class III deflector"
+			level=				"4"
+			value=				"4000"
+			mass=				"1600"
+			frequency=			"uncommon"
+			modifiers=			"EI; MajorItem"
+
+			description=		"Though based on a very old design, this powerful deflector is still being manufactured by Earth Industries."
+
+			sortName=			"deflector, class III"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"80"
+				regen=			"28"
+				depletionDelay=	"360"
+				powerUse=		"100"
+				/>
+
+	</ItemType>
+
+	<!-- Cyclotron S1200 -->
+
+	<ItemType UNID="&itCyclotronDeflectorIV;"
+			name=				"Cyclotron S1200 deflector"
+			level=				"4"
+			value=				"4000"
+			mass=				"1500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; NAMI"
+
+			description=		"The most powerful shield generator in NAMI's Cyclotron series."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"160"
+				regen=			"12"
+				depletionDelay=	"360"
+				powerUse=		"80"
+				/>
+
+	</ItemType>
+
+	<!-- R1 deflector -->
+
+	<ItemType UNID="&itR1Deflector;"
+			name=				"R1 deflector"
+			level=				"4"
+			value=				"5000"
+			mass=				"3000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem"
+
+			description=		"The R1 deflector was developed a few decades ago to protect Fleet ships against the powerful lightning cannons of the Ares Orthodoxy."
+
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"90"
+				hpBonus=		" -25, -25,  +0,  +0, +75, +25"
+				regen=			"30"
+				depletionDelay=	"360"
+				powerUse=		"200"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL V -->
+
+	<!-- Nephren P25 deflector -->
+
+	<ItemType UNID="&itNephrenP25;"
+			name=				"Nephren P25 shield generator"
+			level=				"5"
+			value=				"12000"
+			mass=				"3500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem"
+
+			description=		"Each model of the Nephren series is tuned for a different kind of damage. The P25 is designed to defend against particle and ion damage."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"100"
+				hpBonus=		"  +0,  +0,+100,  +0, +75,  +0"
+				regen=			"25"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+		</ItemType>
+
+	<!-- Superconducting Shields -->
+
+	<ItemType UNID="&itSuperconductingShields;"
+			name=				"superconducting shield generator"
+			level=				"5"
+			value=				"8000"
+			mass=				"1600"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Specialty"
+
+			description=		"This generator uses an array of superconducting coils. Individual coils must be replaced to restore the field after damage is taken."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"200"
+				hpBonus=		"+200,+200, +50, +50"
+				regen=			"0"
+				depletionDelay=	"0"
+				powerUse=		"50"
+				/>
+
+	</ItemType>
+	
+	<!-- Superconducting coil  -->
+
+	<ItemType UNID="&itSuperconductingCoil;"
+			name=				"superconducting coil"
+			level=				"4"
+			value=				"50"
+			mass=				"100"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6+1"
+			modifiers=			"Consumable"
+
+			description=		"This is a special type of coil used to repair superconducting shield generators."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="L">
+			(switch
+				; Does the ship have a superconducting shield? If not
+				; then we can't do anything.
+				(not (eq (shpGetShieldItemUNID gSource) &itSuperconductingShields;))
+					(objSendMessage gSource Nil "Superconducting shields required")
+
+				; Are the shields fully charged? If they are, then this
+				; won't do anything.
+				(eq (shpGetShieldDamage gSource) 0)
+					(objSendMessage gSource Nil "Superconducting shields already fully charged")
+
+				; Charge the shields
+				(block Nil
+					(shpRechargeShield gSource (random 40 60))
+					(objRemoveItem gSource gItem 1)
+					(objSendMessage gSource Nil "Superconducting shields recharged")
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Yoroi S100 -->
+
+	<ItemType UNID="&itYoroiS100;"
+			name=				"Yoroi S100 shield generator"
+			level=				"5"
+			value=				"8000"
+			mass=				"3000"
+			frequency=			"common"
+			modifiers=			"MajorItem; Specialty; Bushido"
+
+			description=		"This is the entry-level generator in Kabuto Defense's Yoroi line."
+
+			sortName=			"Yoroi shields, S100"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"100"
+				regen=			"36"
+				depletionDelay=	"360"
+				powerUse=		"200"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL VI -->
+
+	<ItemType UNID="&itCeratopsQuasiArmor2;"
+			name=				"Ceratops 5T quasi-armor"
+			level=				"6"
+			value=				"20000"
+			mass=				"2100"
+			frequency=			"uncommon"
+			modifiers=			"EI; MajorItem"
+
+			description=		"This is a larger and more powerful version of the quasi-matter deflector."
+
+			sortName=			"Ceratops 02"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"125"
+				hpBonus=		"  +0,  +0,  +0,+100,  +0,+200,  +0, +50"
+				regen=			"24"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+	</ItemType>
+
+	<!-- Invincible Deflector -->
+
+	<ItemType UNID="&itInvincibleDeflector;"
+			name=				"Invincible-class deflector"
+			level=				"6"
+			value=				"20000"
+			mass=				"6000"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The Invincible-class deflector is extremely powerful. Its one flaw is that it disables all other ship systems when it collapses."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"90"
+				hpBonus=		"+200,+200,+250,+250,+150,+150"
+				regen=			"48"
+				depletionDelay=	"480"
+				powerUse=		"300"
+				/>
+
+		<Events>
+			<OnShieldDown>
+				(block Nil
+					(objMakeParalyzed gSource (random 30 150))
+					(objSendMessage gSource Nil "Shield power surge!")
+					)
+			</OnShieldDown>
+		</Events>
+
+	</ItemType>
+
+	<!-- Mammoth 25MW deflector -->
+
+	<ItemType UNID="&itMammoth25Deflector;"
+			name=				"Mammoth 25MW deflector"
+			level=				"6"
+			value=				"16000"
+			mass=				"3000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Bushido"
+
+			description=		"Mammoth deflector shields can absorb immense amounts of damage, but their regeneration rate is lower than competitors."
+
+			sortName=			"Mammoth deflector, 025"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"270"
+				regen=			"20"
+				depletionDelay=	"480"
+				powerUse=		"250"
+				/>
+
+	</ItemType>
+
+	<!-- Mark I Omsk Deflector -->
+
+	<ItemType UNID="&itOmskDeflectorI;"
+			name=				"mark I Omsk deflector"
+			level=				"6"
+			value=				"25000"
+			mass=				"5000"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Specialty; Makayev; OmskDeflector; OmskDS"
+
+			description=		"When used in concert with Omsk armor segments, this deflector increases in strength up to 200 hit points."
+
+			sortName=			"Omsk deflector.30"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"80"
+				regen=			"45"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+		<Events>
+			<GetMaxHP>
+				(block (bonusHP)
+					; Enumerate the number of Omsk armor segments installed
+					(setq bonusHP 0)
+					(enum (objGetItems gSource "aI +OmskArmor;") theArmor
+						(if (geq (objGetArmorLevel gSource theArmor) 25)
+							(setq bonusHP (add bonusHP (itmGetStaticData theArmor "bonusHP")))
+							)
+						)
+
+					; We add up to a maximum of 120 hit points
+					(add aMaxHP (min 120 bonusHP))
+					)
+			</GetMaxHP>
+		</Events>
+	</ItemType>
+
+	<!-- R5 deflector -->
+
+	<ItemType UNID="&itR5Deflector;"
+			name=				"R5 deflector"
+			level=				"6"
+			value=				"20000"
+			mass=				"3500"
+			frequency=			"common"
+			modifiers=			"MajorItem; Military"
+
+			description=		"This is an updated version of the R1 deflector, designed to resist the Ares Orthodoxy's lightning cannons."
+
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"135"
+				hpBonus=		"  +0,  +0,  +0,  +0, +75, +25"
+				regen=			"48"
+				depletionDelay=	"360"
+				powerUse=		"400"
+				/>
+
+	</ItemType>
+
+	<!-- Yoroi S500 -->
+
+	<ItemType UNID="&itYoroiS500;"
+			name=				"Yoroi S500 shield generator"
+			level=				"6"
+			value=				"16000"
+			mass=				"5000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Specialty; Bushido"
+
+			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Kabuto Defense corporation."
+
+			sortName=			"Yoroi shields, S500"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"135"
+				regen=			"45"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL VII -->
+
+	<!-- Mammoth 50MW deflector -->
+
+	<ItemType UNID="&itMammoth50Deflector;"
+			name=				"Mammoth 50MW deflector"
+			level=				"7"
+			value=				"32000"
+			mass=				"4000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military; Bushido"
+
+			description=		"The 50MW Mammoth deflector is designed for military ships. Like other Mammoth designs, it has high hit points and a low regeneration rate."
+
+			sortName=			"Mammoth deflector, 050"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"350"
+				regen=			"28"
+				depletionDelay=	"480"
+				powerUse=		"500"
+				/>
+
+	</ItemType>
+
+	<!-- Nephren B700 deflector -->
+
+	<ItemType UNID="&itNephrenB700;"
+			name=				"Nephren B700 shield generator"
+			level=				"7"
+			value=				"45000"
+			mass=				"3500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military"
+
+			description=		"Each model of the Nephren series is tuned for a different kind of damage. The B700 is designed to defend against blast and thermonuclear damage."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"175"
+				hpBonus=		"  +0,  +0, -25,+100, -25, +50"
+				regen=			"48"
+				depletionDelay=	"360"
+				powerUse=		"750"
+				/>
+
+	</ItemType>
+
+	<!-- Trenton Field Generator -->
+
+	<ItemType UNID="&itTrentonFieldGenerator;"
+			name=				"Trenton field generator"
+			level=				"7"
+			value=				"40000"
+			mass=				"2300"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Specialty"
+
+			description=		"Trenton shields regenerate much faster than others, but at the cost of allowing some damage to leak through."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"160"
+				absorbAdj=		"100,100, 95, 95,  90, 90, 85, 85,  75, 75, 75, 75,  25, 25, 25, 25"
+				regen=			"120"
+				depletionDelay=	"180"
+				powerUse=		"500"
+				/>
+
+	</ItemType>
+
+	<!-- Yoroi MX -->
+
+	<ItemType UNID="&itYoroiMX;"
+			name=				"Yoroi MX shield generator"
+			level=				"7"
+			value=				"32000"
+			mass=				"5000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military; Specialty; Bushido"
+
+			description=		"This is the military version of the S500 shield generator created by the Kabuto Defense corporation."
+
+			sortName=			"Yoroi shields, MX"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"175"
+				regen=			"60"
+				depletionDelay=	"360"
+				powerUse=		"500"
+				/>
+	</ItemType>
+
+<!-- LEVEL VIII -->
+
+	<!-- Ion Reflector -->
+
+	<ItemType UNID="&itIonReflector;"
+			name=				"ion reflector"
+			level=				"8"
+			value=				"90000"
+			mass=				"4000"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Military"
+
+			description=		"This shield generator reflects all ion energy."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"160"
+				reflect=		"ion"
+				regen=			"60"
+				depletionDelay=	"360"
+				powerUse=		"1300"
+				/>
+	</ItemType>
+
+	<!-- Mammoth 100MW deflector -->
+
+	<ItemType UNID="&itMammoth100Deflector;"
+			name=				"Mammoth 100MW deflector"
+			level=				"8"
+			value=				"65000"
+			mass=				"5000"
+			modifiers=			"MajorItem; Military; Bushido"
+			frequency=			"uncommon"
+
+			description=		"This is the most powerful deflector in the Mammoth series."
+
+			sortName=			"Mammoth deflector, 100"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"600"
+				regen=			"28"
+				depletionDelay=	"480"
+				powerUse=		"1000"
+				/>
+
+		</ItemType>
+
+	<!-- Mark II Omsk Deflector -->
+
+	<ItemType UNID="&itOmskDeflectorII;"
+			name=				"mark II Omsk deflector"
+			level=				"8"
+			value=				"90000"
+			mass=				"6000"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Makayev; Military; OmskDeflector; OmskDS; Specialty"
+
+			description=		"When used in concert with Omsk armor segments, this deflector increases in strength up to 400 hit points."
+
+			sortName=			"Omsk deflector.20"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"140"
+				regen=			"80"
+				depletionDelay=	"360"
+				powerUse=		"1000"
+				/>
+
+		<Events>
+			<GetMaxHP>
+				(block (bonusHP)
+					; Enumerate the number of Omsk armor segments installed
+					(setq bonusHP 0)
+					(enum (objGetItems gSource "aI +OmskArmor;") theArmor
+						(if (geq (objGetArmorLevel gSource theArmor) 25)
+							(setq bonusHP (add bonusHP (itmGetStaticData theArmor "bonusHP")))
+							)
+						)
+
+					; We add up to a maximum of 260 hit points
+					(add aMaxHP (min 260 bonusHP))
+					)
+			</GetMaxHP>
+		</Events>
+	</ItemType>
+
+	<!-- Plasma Shield Generator -->
+
+	<ItemType UNID="&itPlasmaShieldGenerator;"
+			name=				"plasma shield generator"
+			level=				"8"
+			value=				"65000"
+			mass=				"2000"
+			modifiers=			"MajorItem; Military"
+			frequency=			"common"
+
+			description=		"Plasma shield generators are used on most military ships. Plasma shield generators cannot be used on civilian ships without a special military ID."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"225"
+				regen=			"80"
+				depletionDelay=	"360"
+				powerUse=		"1000"
+				/>
+
+	</ItemType>
+
+	<!-- R9 Deflector -->
+
+	<ItemType UNID="&itR9Deflector;"
+			name=				"R9 deflector"
+			level=				"8"
+			value=				"100000"
+			mass=				"6000"
+			modifiers=			"MajorItem; Military"
+			frequency=			"rare"
+
+			description=		"The most powerful version of the R-series deflectors is used on Commonwealth Fleet capital ships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"400"
+				hpBonus=		"  +0,  +0,  +0,  +0, +25, +25"
+				regen=			"70"
+				depletionDelay=	"360"
+				powerUse=		"1500"
+				/>
+
+	</ItemType>
+
+	<!-- Taikon-10 deflector -->
+
+	<ItemType UNID="&itTaikon10Deflector;"
+			name=				"Taikon-10 deflector"
+			level=				"8"
+			value=				"80000"
+			mass=				"4500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military; Taikon"
+
+			description=		"The Taikon-10 deflector is optimized to defend against thermonuclear attacks."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"250"
+				hpBonus=		"  +0,  +0,  +0,  +0, -25,+100, -25, +25"
+				regen=			"60"
+				depletionDelay=	"360"
+				powerUse=		"1300"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL IX -->
+
+	<!-- Jotun Deflector -->
+
+	<ItemType UNID="&itJotunDeflector;"
+			name=				"Jotun deflector"
+			level=				"9"
+			value=				"130000"
+			mass=				"5000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice;"
+			modifiers=			"Alien; MajorItem; Military"
+
+			description=		"This alien shield generator has controls to adjust its strength."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"100"
+				regen=			"100"
+				depletionDelay=	"360"
+				powerUse=		"1200"
+
+				HPBonusPerCharge=	"100"
+				powerBonusPerCharge="600"
+				maxCharges=		"3"
+				/>
+
+		<Invoke installedOnly="true">
+			(block (charges chargesDelta newStrength maxCharges)
+				(setq charges (itmGetCharges gItem))
+				(setq maxCharges 3)
+
+				(if (ls charges maxCharges)
+					(setq chargesDelta 1)
+					(setq chargesDelta (subtract 0 maxCharges))
+					)
+
+				(shpRechargeItem gSource gItem chargesDelta)
+				(objSendMessage gSource Nil (cat "Deflector strength at level " (add (add charges chargesDelta) 1)))
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Nephren X1 deflector -->
+
+	<ItemType UNID="&itNephrenX1;"
+			name=				"Nephren X1 shield generator"
+			level=				"9"
+			value=				"190000"
+			mass=				"4500"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The Nephren X1 is an experimental model that defends against ion and positron damage."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"220"
+				hpBonus=		"  +0,  +0,  +0,  +0, +75, -25,+100, -25"
+				regen=			"100"
+				depletionDelay=	"360"
+				powerUse=		"1500"
+				/>
+
+		</ItemType>
+
+<!-- LEVEL X -->
+
+	<!-- Lazarus Shield Generator -->
+
+	<ItemType UNID="&itLazarusShieldGenerator;"
+			name=				"Lazarus shield generator"
+			level=				"10"
+			value=				"250000"
+			mass=				"2500"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The Lazarus is an experimental shield generator. It has a phenomenal generation rate, but it consumes almost prohibitive amounts of power."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"60"
+				regenTime=		"10"
+				regenHP=		"12"
+				depletionDelay=	"5"
+				powerUse=		"9000"
+				/>
+
+	</ItemType>
+
+	<!-- Taikon-200 deflector -->
+
+	<ItemType UNID="&itTaikon200Deflector;"
+			name=				"Taikon-200 deflector"
+			level=				"10"
+			value=				"250000"
+			mass=				"5500"
+			frequency=			"rare"
+			modifiers=			"MajorItem; Military; Taikon"
+
+			description=		"The Taikon-200 deflector is optimized to defend against thermonuclear attacks."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"380"
+				hpBonus=		"  +0,  +0,  +0,  +0, -25,+100, -25, +25"
+				regen=			"100"
+				depletionDelay=	"360"
+				powerUse=		"1900"
+				/>
+
+	</ItemType>
+
+</TranscendenceModule>

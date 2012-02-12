@@ -1,0 +1,445 @@
+<?XML version="1.0"?>
+
+<NullPointScenario>
+
+<DefineOptions
+		BaseAnno="2000"
+		NullPointCount="100"
+		MaxPlayers="10"		
+		/>
+
+<DefineResourceClasses>
+	<DefineResourceClass UNID="1" Name="plasteel"/>
+	<DefineResourceClass UNID="2" Name="rare-earths"/>
+	<DefineResourceClass UNID="3" Name="pteracnium"/>
+	</DefineResourceClasses>
+
+<DefineSovereigns>
+	<DefineDefaultPlayer>
+		<Unit Class="0x0700000B"/>
+		<Unit Class="0x0700000B"/>
+		<Unit Class="0x07000004"/>
+		</DefineDefaultPlayer>
+	</DefineSovereigns>
+
+<DefineStructureClasses>
+	<DefineStructureClass UNID="1" Name="plasteel mill">
+		<General
+			BuildTech=		"techCyber"
+			BuildTime=		"1600"
+			IR=				"5"
+			ProdCycle=		"2"
+			Upgrade=		"2"
+			/>
+		<Desc>
+			Produces 1 kiloton plasteel every 20 dias.
+			</Desc>
+		<Produce Res="resPlasteel" Amount="1"/>
+		</DefineStructureClass>
+
+	<DefineStructureClass UNID="2" Name="plasteel autofac">
+		<General
+			BuildTech=		"techFusion"
+			BuildTime=		"3200"
+			IR=				"25"
+			Upgrade=		"3"
+			/>
+		<Desc>
+			Produces 5 kilotons plasteel every 10 dias.
+			</Desc>
+		<Produce Res="resPlasteel" Amount="5"/>
+		</DefineStructureClass>
+
+	<DefineStructureClass UNID="3" Name="plasteel nanoassembler">
+		<General
+			BuildTech=		"techPteracnium"
+			BuildTime=		"6400"
+			IR=				"125"
+			/>
+		<Desc>
+			Produces 50 kilotons plasteel every 10 dias.
+			</Desc>
+		<Produce Res="resPlasteel" Amount="50"/>
+		</DefineStructureClass>
+
+	<DefineStructureClass UNID="4" Name="spaceship assembler">
+		<General
+			BuildTech=		"techBio"
+			BuildTime=		"4800"
+			IR=				"50"
+			Upgrade=		"5"
+			/>
+		<Desc>
+			Builds ships of hull classes I, II, and III.
+			</Desc>
+		<Shipyard MinHull="1" MaxHull="3"/>
+		</DefineStructureClass>
+
+	<DefineStructureClass UNID="5" Name="orbital shipyard">
+		<General
+			BuildTech=		"techAI"
+			BuildTime=		"6400"
+			IR=				"100"
+			Upgrade=		"6"
+			/>
+		<Desc>
+			Builds ships of hull classes IV and V.
+			</Desc>
+		<Trait Trait="traitOrbital"/>
+		<Shipyard MinHull="4" MaxHull="5"/>
+		</DefineStructureClass>
+
+	<DefineStructureClass UNID="6" Name="imperial starship yard">
+		<General
+			BuildTech=		"techNano"
+			BuildTime=		"8000"
+			IR=				"250"
+			/>
+		<Desc>
+			Builds starships of hull class VI.
+			</Desc>
+		<Trait Trait="traitImperial"/>
+		<Trait Trait="traitOrbital"/>
+		<Shipyard MinHull="6" MaxHull="6"/>
+		</DefineStructureClass>
+
+	</DefineStructureClasses>
+
+<DefineSymbols>
+	<Define Name="resPlasteel"			Value="0x06000001"/>
+	<Define Name="resRareEarths"		Value="0x06000002"/>
+	<Define Name="resPteracnium"		Value="0x06000003"/>
+
+	<Define Name="techAgricultural"		Value="1"/>
+	<Define Name="techSteam"			Value="2"/>
+	<Define Name="techCyber"			Value="3"/>
+	<Define Name="techBio"				Value="4"/>
+	<Define Name="techFusion"			Value="5"/>
+	<Define Name="techAI"				Value="6"/>
+	<Define Name="techPteracnium"		Value="7"/>
+	<Define Name="techNano"				Value="8"/>
+	<Define Name="techDyson"			Value="9"/>
+	<Define Name="techQuantum"			Value="10"/>
+	<Define Name="techGraviton"			Value="11"/>
+	<Define Name="techDarkMatter"		Value="12"/>
+
+	<Define Name="traitNeothals"		Value="2"/>
+	<Define Name="traitLowGravity"		Value="3"/>
+	<Define Name="traitGasGiantMoon"	Value="4"/>
+	<Define Name="traitFertile"			Value="5"/>
+	<Define Name="traitRings"			Value="6"/>
+	<Define Name="traitTropical"		Value="7"/>
+	<Define Name="traitVolcanic"		Value="8"/>
+	<Define Name="traitDesert"			Value="9"/>
+	<Define Name="traitHighGravity"		Value="10"/>
+	<Define Name="traitIonized"			Value="11"/>
+	<Define Name="traitPermafrost"		Value="12"/>
+	<Define Name="traitOcean"			Value="13"/>
+	<Define Name="traitAirless"			Value="14"/>
+	<Define Name="traitRadioactive"		Value="15"/>
+	<Define Name="traitFreigther"		Value="16"/>
+	<Define Name="traitPlanetfall"		Value="17"/>
+	<Define Name="traitInfantry"		Value="18"/>
+	<Define Name="traitSpacers"			Value="19"/>
+	<Define Name="traitImperial"		Value="20"/>
+	<Define Name="traitAutonomous"		Value="21"/>
+	</DefineSymbols>
+
+<DefineUnitClasses>
+	<DefineUnitClass UNID="1" Name="destroyer">
+		<General
+			ClassName=		"Shiva"
+			Hull=			"6"
+			Firepower=		"6"
+			FireRate=		"2"
+			Armor=			"5"
+			Stealth=		"1"
+			Scanners=		"2"
+			Hyperdrive=		"16"
+			BuildTech=		"techNano"
+			BuildTime=		"400"
+			/>
+		<BuildConsume Res="resPlasteel" Amount="1000"/>
+		<BuildConsume Res="resRareEarths" Amount="100"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="2" Name="dropship squadron">
+		<General
+			ClassName=		"Omaha"
+			Squadron=		"5"
+			Hull=			"3"
+			Firepower=		"1"
+			FireRate=		"1"
+			Armor=			"1"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"1"
+			BuildTech=		"techFusion"
+			BuildTime=		"100"
+			/>
+		<Trait Trait="traitFreighter"/>
+		<Trait Trait="traitPlanetfall"/>
+		<BuildConsume Res="resPlasteel" Amount="5"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="3" Name="freighter">
+		<General
+			ClassName=		"Centauri"
+			Hull=			"4"
+			Firepower=		"2"
+			FireRate=		"1"
+			Armor=			"2"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"16"
+			BuildTech=		"techAI"
+			BuildTime=		"200"
+			/>
+		<Trait Trait="traitFreighter"/>
+		<Trait Trait="traitPlanetfall"/>
+		<BuildConsume Res="resPlasteel" Amount="10"/>
+		<BuildConsume Res="resRareEarths" Amount="1"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="4" Name="gunship squadron">
+		<General
+			ClassName=		"Kobe"
+			Squadron=		"7"
+			Hull=			"2"
+			Firepower=		"2"
+			FireRate=		"1"
+			Armor=			"1"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"1"
+			BuildTech=		"techBio"
+			BuildTime=		"100"
+			/>
+		<BuildConsume Res="resPlasteel" Amount="5"/>
+		<BuildConsume Res="resRareEarths" Amount="1"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="5" Name="hunter-killer">
+		<General
+			ClassName=		"Toltec"
+			Hull=			"4"
+			Firepower=		"5"
+			FireRate=		"2"
+			Armor=			"2"
+			Stealth=		"4"
+			Scanners=		"1"
+			Hyperdrive=		"16"
+			BuildTech=		"techNano"
+			BuildTime=		"300"
+			/>
+		<Trait Trait="traitImperial"/>
+		<BuildConsume Res="resPlasteel" Amount="20"/>
+		<BuildConsume Res="resRareEarths" Amount="20"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="6" Name="imperial cruiser">
+		<General
+			ClassName=		"Dragon"
+			Hull=			"6"
+			Firepower=		"7"
+			FireRate=		"3"
+			Armor=			"6"
+			Stealth=		"1"
+			Scanners=		"3"
+			Hyperdrive=		"16"
+			BuildTech=		"techDyson"
+			BuildTime=		"500"
+			/>
+		<Trait Trait="traitImperial"/>
+		<BuildConsume Res="resPlasteel" Amount="3000"/>
+		<BuildConsume Res="resRareEarths" Amount="500"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="7" Name="infantry regiment">
+		<General
+			Strength=		"16"
+			Firepower=		"1"
+			FireRate=		"1"
+			Armor=			"1"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"0"
+			BuildTech=		"techCyber"
+			BuildTime=		"100"
+			/>
+		<Trait Trait="traitInfantry"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="8" Name="missile ship">
+		<General
+			ClassName=		"Shaky"
+			Hull=			"3"
+			Firepower=		"5"
+			FireRate=		"1"
+			Armor=			"2"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"1"
+			BuildTech=		"techAI"
+			BuildTime=		"200"
+			/>
+		<BuildConsume Res="resPlasteel" Amount="10"/>
+		<BuildConsume Res="resRareEarths" Amount="2"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="9" Name="patrol frigate">
+		<General
+			ClassName=		"Triton"
+			Hull=			"5"
+			Firepower=		"4"
+			FireRate=		"3"
+			Armor=			"3"
+			Stealth=		"2"
+			Scanners=		"4"
+			Hyperdrive=		"16"
+			BuildTech=		"techPteracnium"
+			BuildTime=		"300"
+			/>
+		<BuildConsume Res="resPlasteel" Amount="200"/>
+		<BuildConsume Res="resRareEarths" Amount="50"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="10" Name="planetfall transport">
+		<General
+			ClassName=		"Atlantic"
+			Hull=			"4"
+			Firepower=		"2"
+			FireRate=		"1"
+			Armor=			"3"
+			Stealth=		"1"
+			Scanners=		"1"
+			Hyperdrive=		"16"
+			BuildTech=		"techPteracnium"
+			BuildTime=		"300"
+			/>
+		<Trait Trait="traitFreighter"/>
+		<Trait Trait="traitPlanetfall"/>
+		<BuildConsume Res="resPlasteel" Amount="50"/>
+		<BuildConsume Res="resRareEarths" Amount="3"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="11" Name="probe">
+		<General
+			ClassName=		"Yu-Ch'iang"
+			Hull=			"2"
+			Armor=			"1"
+			Stealth=		"4"
+			Scanners=		"2"
+			Hyperdrive=		"1"
+			BuildTech=		"techAI"
+			BuildTime=		"100"
+			/>
+		<Trait Trait="traitAutonomous"/>
+		<BuildConsume Res="resRareEarths" Amount="1"/>
+		</DefineUnitClass>
+
+	<DefineUnitClass UNID="12" Name="SLAM regiment">
+		<General
+			Hull=			"1"
+			Strength=		"16"
+			Firepower=		"2"
+			FireRate=		"1"
+			Armor=			"1"
+			Stealth=		"2"
+			Scanners=		"1"
+			Hyperdrive=		"0"
+			BuildTech=		"techPteracnium"
+			BuildTime=		"200"
+			/>
+		<Trait Trait="traitInfantry"/>
+		<Trait Trait="traitSpacers"/>
+		<BuildConsume Res="resPlasteel" Amount="1"/>
+		<BuildConsume Res="resRareEarths" Amount="1"/>
+		</DefineUnitClass>
+
+	</DefineUnitClasses>
+
+<DefineUniversalConstants>
+	<TechTable>
+		<Tech Name="agricultural"	Prod="10"   StdLiving="10"	Pollution="50000"/>
+		<Tech Name="steam"			Prod="16"	StdLiving="11"	Pollution="43000"/>
+		<Tech Name="cyber"			Prod="30"	StdLiving="16"	Pollution="19000"/>
+		<Tech Name="bio"			Prod="60"	StdLiving="30"	Pollution="9000"/>
+		<Tech Name="fusion"			Prod="130"	StdLiving="70"	Pollution="3000"/>
+		<Tech Name="AI"				Prod="290"	StdLiving="170"	Pollution="1400"/>
+		<Tech Name="pteracnium"		Prod="560"	StdLiving="320"	Pollution="600"/>
+		<Tech Name="nano"			Prod="750"	StdLiving="450"	Pollution="300"/>
+		<Tech Name="dyson"			Prod="850"	StdLiving="550"	Pollution="100"/>
+		<Tech Name="quantum"		Prod="920"	StdLiving="620"	Pollution="50"/>
+		<Tech Name="graviton"		Prod="980"	StdLiving="680"	Pollution="20"/>
+		<Tech Name="darkmatter"		Prod="1000"	StdLiving="700"	Pollution="10"/>
+		</TechTable>
+	</DefineUniversalConstants>
+
+<DefineWorldTechLevelTable>
+	<Tech Tech="techAgricultural"	Prob="16"/>
+	<Tech Tech="techSteam"			Prob="20"/>
+	<Tech Tech="techCyber"			Prob="20"/>
+	<Tech Tech="techBio"			Prob="16"/>
+	<Tech Tech="techFusion"			Prob="10"/>
+	<Tech Tech="techAI"				Prob="8"/>
+	<Tech Tech="techPteracnium"		Prob="5"/>
+	<Tech Tech="techNano"			Prob="2"/>
+	<Tech Tech="techDyson"			Prob="2"/>
+	<Tech Tech="techQuantum"		Prob="1"/>
+	<Tech Tech="techGraviton"		Prob="0"/>
+	<Tech Tech="techDarkMatter"		Prob="0"/>
+	</DefineWorldTechLevelTable>
+
+<DefineWorldTraitTable>
+	<Trait Trait="traitNeothals"		Table="1" Prob="50"/>
+	<Trait Trait="traitLowGravity"		Table="1" Prob="50">
+		<Unless Trait="traitHighGravity"/>
+		<Imply Trait="traitAirless" Prob="75"/>
+		</Trait>
+
+	<Trait Trait="traitGasGiantMoon"	Table="2" Prob="20"/>
+	<Trait Trait="traitFertile"			Table="2" Prob="20">
+		<Unless Trait="traitAirless"/>
+		<Unless Trait="traitDesert"/>
+		<Unless Trait="traitPermafrost"/>
+		<Unless Trait="traitRadioactive"/>
+		</Trait>
+	<Trait Trait="traitRings"			Table="2" Prob="20"/>
+	<Trait Trait="traitTropical"		Table="2" Prob="20">
+		<Unless Trait="traitAirless"/>
+		<Unless Trait="traitDesert"/>
+		<Unless Trait="traitPermafrost"/>
+		</Trait>
+	<Trait Trait="traitVolcanic"		Table="2" Prob="20"/>
+
+	<Trait Trait="traitDesert"			Table="3" Prob="20">
+		<Unless Trait="traitFertile"/>
+		<Unless Trait="traitTropical"/>
+		</Trait>
+	<Trait Trait="traitHighGravity"		Table="3" Prob="20">
+		<Unless Trait="traitLowGravity"/>
+		</Trait>
+	<Trait Trait="traitIonized"			Table="3" Prob="20"/>
+	<Trait Trait="traitPermafrost"		Table="3" Prob="20">
+		<Unless Trait="traitFertile"/>
+		<Unless Trait="traitTropical"/>
+		</Trait>
+	<Trait Trait="traitOcean"			Table="3" Prob="20">
+		<Unless Trait="traitAirless"/>
+		</Trait>
+
+	<Trait Trait="traitAirless"			Table="4" Prob="50">
+		<Unless Trait="traitFertile"/>
+		<Unless Trait="traitOcean"/>
+		<Unless Trait="traitTropical"/>
+		<Imply Trait="traitLowGravity" Prob="25"/>
+		</Trait>
+	<Trait Trait="traitRadioactive"		Table="4" Prob="50">
+		<Unless Trait="traitFertile"/>
+		<Imply Trait="traitIonized" Prob="25"/>
+		</Trait>
+
+	</DefineWorldTraitTable>
+
+</NullPointScenario>

@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- LEVEL I -->
+
+	<!-- Laser Collimator -->
+
+	<ItemType UNID="&itLaserEnhancer;"
+			name=				"laser collimator"
+			level=				"1"
+			value=				"500"
+			mass=				"500"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownEnhancer2;"
+			modifiers=			"MajorItem; WeaponEnhancer"
+
+			description=		"A laser collimator is an after-market device that sharpens the focus of your laser cannons thereby increasing their damage."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="laser"
+				
+				criteria=		"w~l +damageType:laser;"
+				hpBonus=		"+75"
+
+				powerUse=		"5"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL II -->
+
+	<!-- Cannon Accelerator -->
+
+	<ItemType UNID="&itKineticEnhancer;"
+			name=				"cannon accelerator"
+			level=				"2"
+			value=				"1100"
+			mass=				"500"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownEnhancer2;"
+			modifiers=			"MajorItem; WeaponEnhancer"
+
+			description=		"This device increases the velocity of mass drivers and recoilless cannons. When installed, a ship's kinetic weapons will inflict 50% more damage."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="kinetic"
+				
+				criteria=		"w~l +damageType:kinetic;"
+				hpBonus=		"+50"
+				
+				powerUse=		"10"
+				/>
+
+	</ItemType>
+
+	<!-- Cargo Hold Expansion -->
+
+	<ItemType UNID="&itCargoHoldExpansion;"
+			name=				"cargo hold expansion"
+			level=				"2"
+			value=				"1000"
+			mass=				"1000"
+			frequency=			"uncommon"
+			numberAppearing=	"1"
+			modifiers=			"MajorItem"
+
+			description=		"This is a pressurized hold that can be attached to a ship to increase the amount of cargo it can carry."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<CargoHoldDevice
+				cargoSpace=		"100"
+				/>
+	</ItemType>
+
+<!-- LEVEL III -->
+
+	<!-- Nova-25 reactor -->
+
+	<ItemType UNID="&it25MWReactor;"
+			name=				"Nova-25 reactor"
+			level=				"3"
+			value=				"3000"
+			frequency=			"uncommon"
+			mass=				"3000"
+			modifiers=			"MajorItem"
+
+			description=		"The Nova-25 reactor is a popular upgrade for those ships that need to support advanced weaponry. The reactor has a peak power output of 25MW."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"250"
+				fuelEfficiency=	"15"
+				maxFuel=		"60000"
+				minFuelTech=	"1"
+				maxFuelTech=	"3"
+				/>
+
+	</ItemType>
+
+	<!-- Solar Panel Array -->
+
+	<ItemType UNID="&itSolarPanelArray;"
+			name=				"solar panel array"
+			level=				"3"
+			value=				"650"
+			mass=				"1000"
+			frequency=			"rare"
+			modifiers=			"MajorItem"
+
+			description=		"A solar panel array converts sunlight into energy usable by a ship's reactor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<SolarDevice
+				refuel=			"60"
+				/>
+
+	</ItemType>
+
+	<!-- Tritium Propulsion Upgrade -->
+
+	<ItemType UNID="&itTritiumPropulsionUpgrade;"
+			name=				"tritium propulsion upgrade"
+			level=				"3"
+			value=				"900"
+			mass=				"2000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem"
+
+			description=		"Most small and medium sized ships use a fusion drive for propulsion. This device upgrade mixes-in a powerful tritium plasma to increase the thrust of the engines."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<DriveDevice
+				maxSpeed=		"20"
+				thrust=			"100"
+				powerUsed=		"50"
+				/>
+	</ItemType>
+
+<!-- LEVEL IV -->
+
+	<!-- Particle Enhancer -->
+
+	<ItemType UNID="&itParticleEnhancer;"
+			name=				"particle accelerator"
+			level=				"4"
+			value=				"5000"
+			mass=				"1500"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownEnhancer5;"
+			modifiers=			"MajorItem; WeaponEnhancer"
+
+			description=		"This compact particle accelerator boosts the damage of any installed particle energy weapon."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="particleAccelerator"
+				
+				criteria=		"w~l +damageType:particle; +EnergyWeapon;"
+				hpBonus=		"+25"
+
+				powerUse=		"100"
+				/>
+
+	</ItemType>
+
+	<!-- Smuggler's Cargo Hold -->
+
+	<ItemType UNID="&itSmugglersCargoHold;"
+			name=				"smuggler's cargo hold"
+			level=				"4"
+			value=				"2100"
+			mass=				"1000"
+			frequency=			"uncommon"
+			numberAppearing=	"1"
+			modifiers=			"Illegal; MajorItem; SmugglersHold"
+
+			description=		"This is a scan-shielded secret cargo hold. The customs inspections of most stations will not detect illegal items when this cargo hold is installed on your ship."
+
+			sortName=			"cargo hold, smuggler's"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<CargoHoldDevice
+				cargoSpace=		"50"
+				/>
+	</ItemType>
+
+	<!-- Missile Defense System -->
+
+	<ItemType UNID="&itMissileDefense;"
+			name=				"ICX missile defense turret"
+			level=				"4"
+			value=				"5000"
+			mass=				"1000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem"
+
+			description=		"This device combines a fast-doppler sensor with a targeting computer. Hostile missiles in its range are blasted into dust by a laser cannon."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<AutoDefenseDevice
+				target=			"missiles"
+				weapon=			"&vtICXLaserCannon;"
+				fireRate=		"15"
+				/>
+	</ItemType>
+
+	<!-- ICX laser cannon -->
+	
+	<ItemType UNID="&vtICXLaserCannon;"
+			name=				"laser cannon"
+			level=				"1"
+			virtual=			"true" 
+			>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"laser:1d8+4"
+				fireRate=			"15"
+				lifetime=			"30"
+				powerUse=			"10"
+
+				beamType=			"laser"
+				primaryColor=		"0xf1, 0x5f, 0x2a"
+				secondaryColor=		"0xff, 0x00, 0x00"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Nova-50 reactor -->
+
+	<ItemType UNID="&it50MWReactor;"
+			name=				"Nova-50 reactor"
+			level=				"4"
+			value=				"5500"
+			frequency=			"uncommon"
+			mass=				"3500"
+			modifiers=			"MajorItem"
+
+			description=		"This reactor has a peak power output of 50MW."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"500"
+				fuelEfficiency=	"15"
+				maxFuel=		"120000"
+				minFuelTech=	"1"
+				maxFuelTech=	"4"
+				/>
+
+	</ItemType>
+
+	<!-- Patcher Arm -->
+
+	<ItemType UNID="&itArmorRepairDevice;"
+			name=				"patcher arm"
+			level=				"4"
+			value=				"3500"
+			mass=				"2000"
+			frequency=			"rare"
+			modifiers=			"MajorItem"
+
+			description=		"The patcher arm, manufactured by Honoku-Tomashi, is a robotic arm that attaches to a ship's hull and performs basic repairs on its armor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<RepairerDevice
+				regen=			" 4, 3, 3, 2, 2,  2, 1, 1, 1, 1"
+				powerUse=		"5"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL V -->
+
+	<!-- Mnemonic Processor -->
+
+	<ItemType UNID="&itMnemonicProcessor;"
+			name=				"Heisenmachines quantum CPU"
+			level=				"5"
+			value=				"7500"
+			mass=				"1000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; QuantumCPU"
+
+			description=		"The Heisenmachines Corporation was the first commercial producer of quantum CPUs. Quantum CPUs are necessary for processing the instructions in a mnemonic memory cube."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<MiscellaneousDevice
+				powerUse=		"20"
+				/>
+
+	</ItemType>
+
+	<!-- Makayev Enhancer -->
+
+	<ItemType UNID="&itMakayevBlastEnhancer;"
+			name=				"Makayev weapon enhancer"
+			level=				"5"
+			value=				"9000"
+			mass=				"2000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownEnhancer5;"
+			modifiers=			"MajorItem; Makayev; WeaponEnhancer"
+
+			description=		"This enhancer increases the damage potential of installed Makayev blast weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="makayevEnhancer"
+				
+				criteria=		"w~l +damageType:blast; +Makayev;"
+				hpBonus=		"+50"
+
+				powerUse=		"150"
+				/>
+
+	</ItemType>
+
+	<!-- Nova-100 reactor -->
+
+	<ItemType UNID="&it100MWReactor;"
+			name=				"Nova-100 reactor"
+			level=				"5"
+			value=				"10000"
+			frequency=			"rare"
+			mass=				"4000"
+			modifiers=			"MajorItem"
+
+			description=		"With 100MW peak power output, this reactor can power all except the most advanced military weapons and devices."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"1000"
+				fuelEfficiency=	"18"
+				maxFuel=		"250000"
+				minFuelTech=	"2"
+				maxFuelTech=	"5"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL VI -->
+
+	<!-- High-Speed Loader -->
+
+	<ItemType UNID="&itHowitzerHighSpeedLoader;"
+			name=				"high-speed howitzer loader"
+			level=				"6"
+			value=				"18000"
+			mass=				"2000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownEnhancer5;"
+			modifiers=			"MajorItem; WeaponEnhancer"
+
+			description=		"This high-speed shell loader increases the fire rate of any installed howitzer."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="howitzerLoader"
+				
+				criteria=		"w~l +Howitzer;"
+				activateAdj=	"70"
+
+				powerUse=		"250"
+				/>
+
+	</ItemType>
+
+	<!-- Patch Spider -->
+
+	<ItemType UNID="&itPatchSpider;"
+			name=				"patch spider"
+			level=				"6"
+			value=				"7000"
+			mass=				"2000"
+			frequency=			"rare"
+			modifiers=			"MajorItem"
+
+			description=		"This robotic spider crawls along the ship's hull and repairs armor of up to technology level XII. It does not require a device slot."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<RepairerDevice
+				regen=			" 3, 3, 3, 3, 3,  2, 2, 2, 2, 1,  1, 1"
+				powerUse=		"50"
+
+				deviceSlots=	"0"
+				external=		"true"
+				/>
+
+		<Invoke>
+			(intAutoInstall gSource gItem)
+		</Invoke>
+	</ItemType>
+
+	<!-- Rasiermesser Enhancer -->
+
+	<ItemType UNID="&itRasiermesserEnhancer;"
+			name=				"Rasiermesser weapon enhancer"
+			level=				"6"
+			value=				"20000"
+			mass=				"1500"
+			frequency=			"rare"
+			unknownType=		"&itUnknownEnhancer5;"
+			modifiers=			"MajorItem; Rasiermesser; WeaponEnhancer"
+
+			description=		"This enhancer increases the damage potential of installed Rasiermesser kinetic and blast weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="rasiermesserEnhancer"
+				
+				criteria=		"w~l +Rasiermesser; -EnergyWeapon;"
+				hpBonus=		"+50"
+
+				powerUse=		"250"
+				/>
+
+	</ItemType>
+
+	<!-- 150NX reactor -->
+
+	<ItemType UNID="&it150MWReactor;"
+			name=				"150NX reactor"
+			level=				"6"
+			value=				"20000"
+			frequency=			"rare"
+			mass=				"5000"
+			modifiers=			"MajorItem"
+
+			description=		"Though older than the Nova series, the 150NX remains popular in the Commonwealth. It has peak power output of 150MW."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"1500"
+				fuelEfficiency=	"16"
+				maxFuel=		"375000"
+				minFuelTech=	"3"
+				maxFuelTech=	"6"
+				/>
+
+	</ItemType>
+
+	<!-- Titan 440 Fusion Drive -->
+
+	<ItemType UNID="&itTitanFusionDrive;"
+			name=				"Titan 440 fusion drive"
+			level=				"6"
+			value=				"4250"
+			frequency=			"uncommon"
+			mass=				"5000"
+			modifiers=			"MajorItem"
+
+			description=		"The Titan 440 fusion drive is the top-of-the-line commercial starship engine. Its thrust far exceeds that of any other non-military engine."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<DriveDevice
+				maxSpeed=		"25"
+				thrust=			"300"
+				powerUsed=		"300"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL VII -->
+
+	<!-- Bushido Enhancer -->
+
+	<ItemType UNID="&itBushidoEnhancer;"
+			name=				"Bushido weapon enhancer"
+			level=				"7"
+			value=				"40000"
+			mass=				"2500"
+			frequency=			"rare"
+			unknownType=		"&itUnknownEnhancer8;"
+			modifiers=			"Bushido; MajorItem; WeaponEnhancer"
+
+			description=		"This enhancer increases the damage potential of installed Bushido energy weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<EnhancerDevice
+				enhancementType="bushidoEnhancer"
+				
+				criteria=		"w~l +Bushido; +EnergyWeapon;"
+				hpBonus=		"+50"
+
+				powerUse=		"400"
+				/>
+
+	</ItemType>
+
+	<!-- Inertialess drive -->
+
+	<ItemType UNID="&itInertialessDrive;"
+			name=				"inertialess drive"
+			level=				"7"
+			value=				"35000"
+			mass=				"5000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice;"
+			modifiers=			"Alien; MajorItem"
+
+			description=		"This alien stardrive can instantaneously accelerate a ship without regard for mass."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<DriveDevice
+				maxSpeed=		"25"
+				thrust=			"350"
+				powerUsed=		"1000"
+				inertialessDrive="true"
+				/>
+
+	</ItemType>
+
+	<!-- Longreach I autocannon -->
+
+	<ItemType UNID="&itLongreachIAutocannon;"
+			name=				"Longreach I autocannon"
+			level=				"7"
+			value=				"30000"
+			mass=				"1000"
+			frequency=			"rare"
+			modifiers=			"MajorItem"
+
+			description=		"The Longreach is a missile-defense autocannon that fires high-velocity rounds."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<AutoDefenseDevice
+				target=			"missiles"
+				weapon=			"&vtLongreachI;"
+				fireRate=		"15"
+				/>
+
+	</ItemType>
+	
+	<!-- Longreach I autocannon weapon -->
+
+	<ItemType UNID="&vtLongreachI;"
+			name=				"Longreach I autocannon"
+			level=				"4"
+			virtual=			"true" 
+			>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"kinetic:3d8+8; momentum2"
+				fireRate=			"15"
+				missileSpeed=		"90"
+				lifetime=			"27"
+				interaction=		"20"
+				powerUse=			"100"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Bolt
+						length=				"64"
+						width=				"3"
+						primaryColor=		"0xcd, 0xf3, 0xff"
+						secondaryColor=		"0x8f, 0xa9, 0xb2"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+	</ItemType>
+
+	<!-- SN2500 reactor -->
+
+	<ItemType UNID="&it250MWReactor;"
+			name=				"SN2500 reactor"
+			level=				"7"
+			value=				"60000"
+			frequency=			"rare"
+			mass=				"5000"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The SN2500 is a military reactor designed for the advanced Centurion/X heavy gunship. At 250MW peak power, it is the most powerful reactor of its size."
+			reverseArticle=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"2500"
+				fuelEfficiency=	"15"
+				maxFuel=		"600000"
+				minFuelTech=	"4"
+				maxFuelTech=	"7"
+				/>
+
+	</ItemType>
+
+	<!-- Transpace Jumpdrive -->
+
+	<ItemType UNID="&itTranspaceJumpdrive;"
+			name=				"transpace jumpdrive"
+			level=				"7"
+			value=				"40000"
+			mass=				"5000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice;"
+			modifiers=			"Alien; MajorItem"
+
+			description=		"This arcane alien device can open a portal through transpace to teleport a ship to another location, much as stargates do."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<MiscellaneousDevice
+				powerUse=			"100"
+				capacitorPowerUse=	"900"
+				powerToActivate=	"1000000"
+				/>
+
+		<Invoke key="J" installedOnly="true">
+			(block Nil
+				(switch
+					; If we're affected by EMP, then strange things happen
+					(objIsParalyzed gSource)
+						(block (newPos theCrate)
+							; Jump
+							(setq newPos (sysVectorPolarOffset gSource (shpGetDirection gSource) 500))
+							(objJumpTo gSource newPos)
+							
+							; Scatter cargo
+							;
+							; For all items in cargo hold
+							(enum (objGetItems gPlayerShip "*U") theItem
+								(block Nil
+									; Make a crate
+									(if (not theCrate)
+										(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset newPos (random 0 359) (random 1 75))))
+										)
+								
+									; Remove from cargo hold
+									(objRemoveItem gPlayerShip theItem)
+									
+									(if (geq (itmGetMass theItem) 1000)
+									
+										; Add heavy items, one at a time, to crate
+										(for i 1 (itmGetCount theItem)
+											(block Nil
+												(objAddItem theCrate theItem 1)
+												
+												(if (leq (random 1 100) 15)
+													(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
+													)
+												)
+											)
+											
+										; Lighter items go in groups to crate
+										(block Nil
+											(objAddItem theCrate theItem)
+											
+											(if (leq (random 1 100) 15)
+												(setq theCrate (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip (random 0 359) (random 1 75))))
+												)
+											)
+										)
+									)
+								)
+
+							(if theCrate
+								(objSendMessage gSource Nil "Jumpdrive failure!")
+								)
+							)
+					
+					; If we are on top of a stargate, then jump to Elysium
+					(leq (objGetDistance gSource (sysFindObject gSource "GN")) 3)
+						(objGateTo gSource "Elysium" "Start" &efStargateOut;)
+						
+					; Otherwise, we jump
+					(block (newPos)
+						(setq newPos (sysVectorPolarOffset gSource (shpGetDirection gSource) 500))
+						(objJumpTo gSource newPos)
+						)
+					)
+					
+				; Item identified
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+	</ItemType>
+
+<!-- LEVEL VIII -->
+
+	<!-- Koshiba 500MW reactor -->
+
+	<ItemType UNID="&it500MWReactor;"
+			name=				"Koshiba-500 reactor"
+			level=				"8"
+			value=				"100000"
+			frequency=			"rare"
+			mass=				"7000"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The 500MW Koshiba reactor is the most powerful fusion reactor in existence."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"5000"
+				fuelEfficiency=	"16"
+				maxFuel=		"1200000"
+				minFuelTech=	"5"
+				maxFuelTech=	"8"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL IX -->
+
+	<!-- Hyperion reactor -->
+
+	<ItemType UNID="&it1GWReactor;"
+			name=				"Hyperion reactor"
+			level=				"9"
+			value=				"200000"
+			frequency=			"veryrare"
+			mass=				"7000"
+			modifiers=			"MajorItem; Military"
+
+			description=		"Based on a Ringer design, this is an exotic vacuum reactor rated at 1GW peak power output."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<ReactorDevice
+				maxPower=		"10000"
+				fuelEfficiency=	"15"
+				maxFuel=		"2500000"
+				minFuelTech=	"6"
+				maxFuelTech=	"9"
+				/>
+
+	</ItemType>
+
+	<!-- Pteracnium Megadrive -->
+
+	<ItemType UNID="&itPteracniumMegadrive;"
+			name=				"pteracnium megadrive"
+			level=				"9"
+			value=				"35000"
+			mass=				"10000"
+			frequency=			"uncommon"
+			modifiers=			"MajorItem; Military"
+
+			description=		"The pteracnium megadrive is a recently developed military starship engine based on Library Link schematics. Like most other military technology, megadrives cannot be used by civilian ships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<DriveDevice
+				maxSpeed=		"30"
+				thrust=			"750"
+				powerUsed=		"2000"
+				/>
+
+	</ItemType>
+
+</TranscendenceModule>

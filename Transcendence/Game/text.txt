@@ -1,0 +1,34 @@
+TransData v2.3
+Copyright (c) 2001-2011 by George Moromisato. All Rights Reserved.
+
+Loading...done.
+Commonwealth defense turret	1056777	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung defense tower	1646594	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung defense tower	1646595	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung defense tower	1646596	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung defense tower	1646597	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung Slave Quarters	1646600	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung slave quarters	1646601	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Sung defense satellite	1646602	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Ares commune	1777665	
+Ares outpost	1777667	
+Ares shipyard	1777668	
+Ringers research outpost	1843205	
+Iocrym outpost	1843208	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Ares research outpost	1843209	
+Ringers collective	1908737	
+Ringer shipyard	1908738	
+Teraton trading post	2039809	You are docked at the remains of a Teraton nest. The sickly sweet smell of burnt flesh fills the air and mucusy discharges flow out of organic walls.
+Teraton Defender	2039810	You are docked at the dead remains of a Teraton defender. Wisps of high-energy plasma vent from holes along a bony central mass.
+Teraton research center	2039811	You are docked at the remains of a Teraton nest. The sickly sweet smell of burnt flesh fills the air and mucusy discharges flow out of organic walls.
+Teraton factory	2039812	You are docked at the remains of a Teraton nest. The sickly sweet smell of burnt flesh fills the air and mucusy discharges flow out of organic walls.
+Teraton chrysalis	2039813	You are docked at the dead remains of a Teraton chrysalis. The bony, motionless mass at its center bleeds an ochre fluid.
+pteravore lair	134283584	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Luminous Assembler	134348992	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Dwarg colony	134349121	
+Dwarg fortress	134349122	
+Dwarg colony	134349131	
+Dwarg colony	134349132	
+Outlaw defense turret	134479881	You are docked at a destroyed structure. Leaking fluids and venting gases obscure the ruined machinery inside.
+Ferian colony	134480128	
+Nil

@@ -1,0 +1,1713 @@
+//	CDesignType.cpp
+//
+//	CDesignType class
+
+#include "PreComp.h"
+
+#define ADVENTURE_DESC_TAG						CONSTLIT("AdventureDesc")
+#define DOCK_SCREEN_TAG							CONSTLIT("DockScreen")
+#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
+#define ECONOMY_TYPE_TAG						CONSTLIT("EconomyType")
+#define EFFECT_TAG								CONSTLIT("Effect")
+#define EFFECT_TYPE_TAG							CONSTLIT("EffectType")
+#define ENCOUNTER_TABLE_TAG						CONSTLIT("EncounterTable")
+#define EVENTS_TAG								CONSTLIT("Events")
+#define GLOBAL_DATA_TAG							CONSTLIT("GlobalData")
+#define IMAGE_TAG								CONSTLIT("Image")
+#define ITEM_TABLE_TAG							CONSTLIT("ItemTable")
+#define ITEM_TYPE_TAG							CONSTLIT("ItemType")
+#define LANGUAGE_TAG							CONSTLIT("Language")
+#define OVERLAY_TYPE_TAG						CONSTLIT("OverlayType")
+#define POWER_TAG								CONSTLIT("Power")
+#define SHIP_CLASS_TAG							CONSTLIT("ShipClass")
+#define SHIP_ENERGY_FIELD_TYPE_TAG				CONSTLIT("ShipEnergyFieldType")
+#define SHIP_TABLE_TAG							CONSTLIT("ShipTable")
+#define SOVEREIGN_TAG							CONSTLIT("Sovereign")
+#define SPACE_ENVIRONMENT_TYPE_TAG				CONSTLIT("SpaceEnvironmentType")
+#define STATIC_DATA_TAG							CONSTLIT("StaticData")
+#define STATION_TYPE_TAG						CONSTLIT("StationType")
+#define SYSTEM_MAP_TAG							CONSTLIT("SystemMap")
+#define SYSTEM_FRAGMENT_TABLE_TAG				CONSTLIT("SystemPartTable")
+#define SYSTEM_TYPE_TAG							CONSTLIT("SystemType")
+
+#define ATTRIBUTES_ATTRIB						CONSTLIT("attributes")
+#define INHERIT_ATTRIB							CONSTLIT("inherit")
+#define MODIFIERS_ATTRIB						CONSTLIT("modifiers")
+#define UNID_ATTRIB								CONSTLIT("UNID")
+
+#define GET_CREATE_POS_EVENT					CONSTLIT("GetCreatePos")
+#define GET_GLOBAL_ACHIEVEMENTS_EVENT			CONSTLIT("GetGlobalAchievements")
+#define GET_GLOBAL_DOCK_SCREEN_EVENT			CONSTLIT("GetGlobalDockScreen")
+#define GET_GLOBAL_RESURRECT_POTENTIAL_EVENT	CONSTLIT("GetGlobalResurrectPotential")
+#define ON_GLOBAL_OBJ_DESTROYED_EVENT			CONSTLIT("OnGlobalObjDestroyed")
+#define ON_GLOBAL_DOCK_PANE_INIT_EVENT			CONSTLIT("OnGlobalPaneInit")
+#define ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT	CONSTLIT("OnGlobalPlayerChangedShips")
+#define ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT	CONSTLIT("OnGlobalPlayerEnteredSystem")
+#define ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT		CONSTLIT("OnGlobalPlayerLeftSystem")
+#define ON_GLOBAL_RESURRECT_EVENT				CONSTLIT("OnGlobalResurrect")
+#define ON_GLOBAL_TOPOLOGY_CREATED_EVENT		CONSTLIT("OnGlobalTopologyCreated")
+#define ON_GLOBAL_SYSTEM_CREATED_EVENT			CONSTLIT("OnGlobalSystemCreated")
+#define ON_GLOBAL_UNIVERSE_CREATED_EVENT		CONSTLIT("OnGlobalUniverseCreated")
+#define ON_GLOBAL_UNIVERSE_LOAD_EVENT			CONSTLIT("OnGlobalUniverseLoad")
+#define ON_GLOBAL_UNIVERSE_SAVE_EVENT			CONSTLIT("OnGlobalUniverseSave")
+#define ON_RANDOM_ENCOUNTER_EVENT				CONSTLIT("OnRandomEncounter")
+
+#define SPECIAL_UNID							CONSTLIT("unid:")
+
+#define FIELD_VERSION							CONSTLIT("version")
+#define FIELD_UNID								CONSTLIT("unid")
+
+static char DESIGN_CHAR[designCount] =
+	{
+		'i',
+		'b',
+		's',
+		'f',
+		'y',
+		't',
+		'v',
+		'd',
+		'c',
+		'p',
+
+		'e',
+		'h',
+		'a',
+		'g',
+		'm',
+		'u',
+		'n',
+		'q',
+		'z',
+		'w',
+
+		'$',
+	};
+
+static char *CACHED_EVENTS[CDesignType::evtCount] =
+	{
+		"OnObjDestroyed",
+		"OnSystemObjAttacked",
+		"OnSystemWeaponFire",
+	};
+
+CString ParseAchievementSection (ICCItem *pItem);
+CString ParseAchievementSort (ICCItem *pItem);
+CString ParseAchievementValue (ICCItem *pItem);
+
+CDesignType::CDesignType (void) : 
+		m_dwUNID(0), 
+		m_pLocalScreens(NULL), 
+		m_dwInheritFrom(0), 
+		m_pInheritFrom(NULL)
+	{
+	utlMemSet(m_EventsCache, sizeof(m_EventsCache), 0);
+	}
+
+CDesignType::~CDesignType (void)
+
+//	CDesignType destructor
+
+	{
+	if (m_pLocalScreens)
+		delete m_pLocalScreens;
+	}
+
+ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
+
+//	BindDesign
+//
+//	Bind design elements
+	
+	{
+	int i;
+
+	//	Now that we've connected to our based classes, update the event cache
+	//	with events from our ancestors.
+
+	if (m_pInheritFrom)
+		{
+		for (i = 0; i < evtCount; i++)
+			if (m_EventsCache[i] == NULL)
+				m_EventsCache[i] = m_pInheritFrom->GetInheritedCachedEvent((ECachedHandlers)i);
+
+		//	Update the language block with data from our ancestors
+
+		m_pInheritFrom->MergeLanguageTo(m_Language);
+		}
+
+	//	Type-specific
+
+	return OnBindDesign(Ctx);
+	}
+
+ALERROR CDesignType::ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sError)
+
+//	ComposeLoadError
+//
+//	Sets Ctx.sError appropriately and returns ERR_FAIL
+
+	{
+	Ctx.sError = strPatternSubst("%s (%x): %s", GetTypeName(), GetUNID(), sError);
+	return ERR_FAIL;
+	}
+
+ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType)
+
+//	CreateFromXML
+//
+//	Creates a design type from an XML element
+
+	{
+	ALERROR error;
+	CDesignType *pType = NULL;
+
+	if (strEquals(pDesc->GetTag(), ITEM_TYPE_TAG))
+		pType = new CItemType;
+	else if (strEquals(pDesc->GetTag(), ITEM_TABLE_TAG))
+		pType = new CItemTable;
+	else if (strEquals(pDesc->GetTag(), SHIP_CLASS_TAG))
+		pType = new CShipClass;
+	else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
+		pType = new CEnergyFieldType;
+	else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
+		pType = new CEnergyFieldType;
+	else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
+		pType = new CSystemType;
+	else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))
+		pType = new CStationType;
+	else if (strEquals(pDesc->GetTag(), SOVEREIGN_TAG))
+		pType = new CSovereign;
+	else if (strEquals(pDesc->GetTag(), DOCK_SCREEN_TAG))
+		pType = new CDockScreenType;
+	else if (strEquals(pDesc->GetTag(), POWER_TAG))
+		pType = new CPower;
+	else if (strEquals(pDesc->GetTag(), SPACE_ENVIRONMENT_TYPE_TAG))
+		pType = new CSpaceEnvironmentType;
+	else if (strEquals(pDesc->GetTag(), ENCOUNTER_TABLE_TAG))
+		pType = new CShipTable;
+	else if (strEquals(pDesc->GetTag(), SHIP_TABLE_TAG))
+		pType = new CShipTable;
+	else if (strEquals(pDesc->GetTag(), SYSTEM_FRAGMENT_TABLE_TAG))
+		pType = new CSystemTable;
+	else if (strEquals(pDesc->GetTag(), SYSTEM_MAP_TAG))
+		pType = new CSystemMap;
+	else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
+		pType = new CObjectImage;
+	else if (strEquals(pDesc->GetTag(), ECONOMY_TYPE_TAG))
+		pType = new CEconomyType;
+	else if (strEquals(pDesc->GetTag(), ADVENTURE_DESC_TAG))
+		{
+		//	Only valid if we are inside an Adventure
+
+		if (Ctx.pExtension != NULL && Ctx.pExtension->iType != extAdventure)
+			{
+			Ctx.sError = CONSTLIT("<AdventureDesc> element is only valid for Adventures");
+			return ERR_FAIL;
+			}
+
+		pType = new CAdventureDesc;
+		}
+	else if (strEquals(pDesc->GetTag(), EFFECT_TAG))
+		{
+		//	This is an old-style CEffectCreator for compatibility
+
+		if (error = CEffectCreator::CreateFromXML(Ctx, pDesc, NULL_STR, (CEffectCreator **)&pType))
+			return error;
+
+		//	Load UNID
+
+		pType->m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
+		if (!pDesc->FindAttribute(ATTRIBUTES_ATTRIB, &pType->m_sAttributes))
+			pType->m_sAttributes = pDesc->GetAttribute(MODIFIERS_ATTRIB);
+
+		if (retpType)
+			*retpType = pType;
+
+		//	We skip the normal initialization for backwards compatibility
+
+		return NOERROR;
+		}
+	else if (strEquals(pDesc->GetTag(), EFFECT_TYPE_TAG))
+		{
+		//	This is a full effect type. The actual class depends on the content
+
+		if (error = CEffectCreator::CreateTypeFromXML(Ctx, pDesc, (CEffectCreator **)&pType))
+			return error;
+		}
+	else
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Unknown design element: <%s>"), pDesc->GetTag());
+		return ERR_FAIL;
+		}
+
+	if (retpType)
+		*retpType = pType;
+
+	//	Initialize
+
+	return pType->InitFromXML(Ctx, pDesc);
+	}
+
+bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
+
+//	FindDataField
+//
+//	Subclasses should call this method when they do know the field.
+//	[Normally we would do an OnFindDataField pattern, but we're too lazy
+//	to change all the instances.]
+
+	{
+	if (strEquals(sField, FIELD_VERSION))
+		*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
+	else if (strEquals(sField, FIELD_UNID))
+		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
+	else
+		return false;
+
+	return true;
+	}
+
+bool CDesignType::FindEventHandler (const CString &sEvent, ICCItem **retpCode) const
+
+//	FindEventHandler
+//
+//	Returns an event handler
+
+	{
+	//	If we have it, great
+
+	if (m_Events.FindEvent(sEvent, retpCode))
+		return true;
+
+	//	Otherwise, see if we inherit
+
+	if (m_pInheritFrom)
+		return m_pInheritFrom->FindEventHandler(sEvent, retpCode);
+
+	//	Otherwise, nothing
+
+	return false;
+	}
+
+bool CDesignType::FindStaticData (const CString &sAttrib, const CString **retpData) const
+
+//	FindStaticData
+//
+//	Returns static data
+
+	{
+	if (m_StaticData.FindData(sAttrib, retpData))
+		return true;
+
+	if (m_pInheritFrom)
+		return m_pInheritFrom->FindStaticData(sAttrib, retpData);
+
+	return false;
+	}
+
+void CDesignType::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem **retpResult)
+
+//	FireCustomEvent
+//
+//	Fires a custom event
+
+	{
+	CCodeChainCtx Ctx;
+
+	ICCItem *pCode;
+	if (FindEventHandler(sEvent, &pCode))
+		{
+		Ctx.SetEvent(iEvent);
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(sEvent, pResult);
+
+		//	Either return the event result or discard it
+
+		if (retpResult)
+			*retpResult = pResult;
+		else
+			Ctx.Discard(pResult);
+		}
+	else
+		{
+		if (retpResult)
+			*retpResult = Ctx.CreateNil();
+		}
+	}
+
+bool CDesignType::FireGetCreatePos (CSpaceObject *pBase, CSpaceObject *pTarget, CSpaceObject **retpGate, CVector *retvPos)
+
+//	FireGetCreatePos
+//
+//	Fire GetCreatePos event
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(GET_CREATE_POS_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.DefineSpaceObject(CONSTLIT("aBaseObj"), pBase);
+		Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(GET_CREATE_POS_EVENT, pResult);
+
+		bool bResult;
+		if (pResult->IsInteger())
+			{
+			*retpGate = Ctx.AsSpaceObject(pResult);
+			*retvPos = (*retpGate)->GetPos();
+			bResult = true;
+			}
+		else if (pResult->IsList())
+			{
+			*retpGate = NULL;
+			*retvPos = Ctx.AsVector(pResult);
+			bResult = true;
+			}
+		else
+			bResult = false;
+
+		Ctx.Discard(pResult);
+		return bResult;
+		}
+
+	return false;
+	}
+
+void CDesignType::FireGetGlobalAchievements (CGameStats &Stats)
+
+//	FireGetGlobalAchievements
+//
+//	Fires GetGlobalAchievements event
+
+	{
+	int i;
+
+	ICCItem *pCode;
+	if (FindEventHandler(GET_GLOBAL_ACHIEVEMENTS_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(GET_GLOBAL_ACHIEVEMENTS_EVENT, pResult);
+		else if (pResult->IsNil())
+			;
+		else if (pResult->IsList())
+			{
+			//	If we have a list of lists, then we have 
+			//	a list of achievements
+
+			if (pResult->GetCount() > 0 && pResult->GetElement(0)->IsList())
+				{
+				for (i = 0; i < pResult->GetCount(); i++)
+					{
+					ICCItem *pAchievement = pResult->GetElement(i);
+					if (pAchievement->GetCount() > 0)
+						{
+						CString sName = pAchievement->GetElement(0)->GetStringValue();
+						CString sValue = ParseAchievementValue(pAchievement->GetElement(1));
+						CString sSection = ParseAchievementSection(pAchievement->GetElement(2));
+						CString sSort = ParseAchievementSort(pAchievement->GetElement(3));
+
+						if (!sName.IsBlank())
+							Stats.Insert(sName, sValue, sSection, sSort);
+						}
+					}
+				}
+
+			//	Otherwise, we have a single achievement
+
+			else if (pResult->GetCount() > 0)
+				{
+				CString sName = pResult->GetElement(0)->GetStringValue();
+				CString sValue = ParseAchievementValue(pResult->GetElement(1));
+				CString sSection = ParseAchievementSection(pResult->GetElement(2));
+				CString sSort = ParseAchievementSort(pResult->GetElement(3));
+
+				if (!sName.IsBlank())
+					Stats.Insert(sName, sValue, sSection, sSort);
+				}
+			}
+
+		Ctx.Discard(pResult);
+		}
+	}
+
+bool CDesignType::FireGetGlobalDockScreen (ICCItem *pCode, CSpaceObject *pObj, CString *retsScreen, int *retiPriority)
+
+//	FireGetGlobalDockScreen
+//
+//	Asks a type to see if it wants to override an object's
+//	dock screen.
+
+	{
+	ASSERT(pCode);
+
+	//	Set up
+
+	CCodeChainCtx Ctx;
+	Ctx.SaveAndDefineSourceVar(pObj);
+
+	//	Run
+
+	ICCItem *pResult = Ctx.Run(pCode);
+
+	bool bResult;
+
+	//	Error?
+
+	if (pResult->IsError())
+		{
+		ReportEventError(GET_GLOBAL_DOCK_SCREEN_EVENT, pResult);
+		bResult = false;
+		}
+
+	//	Parse the result
+
+	else if (pResult->IsNil())
+		bResult = false;
+
+	else if (pResult->IsList() && pResult->GetCount() >= 2)
+		{
+		*retsScreen = pResult->GetElement(0)->GetStringValue();
+		*retiPriority = pResult->GetElement(1)->GetIntegerValue();
+		bResult = true;
+		}
+	else if (pResult->GetCount() > 0)
+		{
+		*retsScreen = pResult->GetElement(0)->GetStringValue();
+		*retiPriority = 0;
+		bResult = true;
+		}
+	else
+		bResult = false;
+
+	//	Done
+
+	Ctx.Discard(pResult);
+	return bResult;
+	}
+
+int CDesignType::FireGetGlobalResurrectPotential (void)
+
+//	FireGetGlobalResurrectPotential
+//
+//	Returns the potential that this design type will resurrect the player
+//	(0 = no chance; 100 = greatest potential)
+
+	{
+	int iResult = 0;
+
+	ICCItem *pCode;
+	if (FindEventHandler(GET_GLOBAL_RESURRECT_POTENTIAL_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(GET_GLOBAL_RESURRECT_POTENTIAL_EVENT, pResult);
+		else
+			iResult = pResult->GetIntegerValue();
+
+		Ctx.Discard(pResult);
+		}
+
+	return iResult;
+	}
+
+void CDesignType::FireObjCustomEvent (const CString &sEvent, CSpaceObject *pObj, ICCItem **retpResult)
+
+//	FireObjCustomEvent
+//
+//	Fires a named event and optionally returns result
+
+	{
+	CCodeChainCtx Ctx;
+
+	ICCItem *pCode;
+	if (FindEventHandler(sEvent, &pCode))
+		{
+		Ctx.SaveAndDefineSourceVar(pObj);
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			pObj->ReportEventError(sEvent, pResult);
+
+		//	Either return the event result or discard it
+
+		if (retpResult)
+			*retpResult = pResult;
+		else
+			Ctx.Discard(pResult);
+		}
+	else
+		{
+		if (retpResult)
+			*retpResult = Ctx.CreateNil();
+		}
+	}
+
+ALERROR CDesignType::FireOnGlobalDockPaneInit (ICCItem *pCode, void *pScreen, DWORD dwScreenUNID, const CString &sScreen, const CString &sPane, CString *retsError)
+
+//	FireOnGlobalDockPaneInit
+//
+//	Dock pane initialized
+
+	{
+	if (pCode == NULL)
+		if (!FindEventHandler(ON_GLOBAL_DOCK_PANE_INIT_EVENT, &pCode))
+			return NOERROR;
+
+	//	Set up
+
+	CCodeChainCtx Ctx;
+	Ctx.SetScreen(pScreen);
+	Ctx.DefineInteger(CONSTLIT("aScreenUNID"), dwScreenUNID);
+	Ctx.DefineString(CONSTLIT("aScreen"), sScreen);
+	Ctx.DefineString(CONSTLIT("aPane"), sPane);
+
+	//	Run
+
+	ICCItem *pResult = Ctx.Run(pCode);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_DOCK_PANE_INIT_EVENT, pResult);
+
+	//	Done
+
+	Ctx.Discard(pResult);
+	return NOERROR;
+	}
+
+void CDesignType::FireOnGlobalObjDestroyed (ICCItem *pCode, SDestroyCtx &Ctx)
+
+//	FireOnGlobalObjDestroyed
+//
+//	Fires OnGlobalObjDestroyed
+
+	{
+	CCodeChainCtx CCCtx;
+
+	CCCtx.DefineSpaceObject(CONSTLIT("aObjDestroyed"), Ctx.pObj);
+	CCCtx.DefineSpaceObject(CONSTLIT("aDestroyer"), Ctx.Attacker.GetObj());
+	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.iCause) : NULL));
+	CCCtx.DefineSpaceObject(CONSTLIT("aWreckObj"), Ctx.pWreck);
+	CCCtx.DefineString(CONSTLIT("aDestroyReason"), GetDestructionName(Ctx.iCause));
+
+	//	Run code
+
+	ICCItem *pResult = CCCtx.Run(pCode);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_OBJ_DESTROYED_EVENT, pResult);
+
+	CCCtx.Discard(pResult);
+	}
+
+ALERROR CDesignType::FireOnGlobalPlayerChangedShips (CSpaceObject *pOldShip, CString *retsError)
+
+//	FireOnGlobalPlayerChangedShips
+//
+//	Player changed ships
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.DefineSpaceObject(CONSTLIT("aOldPlayerShip"), pOldShip);
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalPlayerEnteredSystem (CString *retsError)
+
+//	FireOnGlobalPlayerEnteredSystem
+//
+//	Player entered the system
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalPlayerLeftSystem (CString *retsError)
+
+//	FireOnGlobalPlayerLeftSystem
+//
+//	Player left the system
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalResurrect (CString *retsError)
+
+//	FireOnGlobalResurrect
+//
+//	Resurrection code invoked
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_RESURRECT_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_RESURRECT_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCtx, CString *retsError)
+
+//	FireOnGlobalSystemCreated
+//
+//	Fire event
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_SYSTEM_CREATED_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+		Ctx.SetSystemCreateCtx(&SysCreateCtx);
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_SYSTEM_CREATED_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalTopologyCreated (CString *retsError)
+
+//	FireOnGlobalTopologyCreated
+//
+//	Fire event
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_GLOBAL_TOPOLOGY_CREATED_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		//	Run code
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_GLOBAL_TOPOLOGY_CREATED_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalUniverseCreated (ICCItem *pCode)
+
+//	FireOnGlobalUniverseCreated
+//
+//	Fire event
+
+	{
+	CCodeChainCtx Ctx;
+
+	//	Run code
+
+	ICCItem *pResult = Ctx.Run(pCode);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_UNIVERSE_CREATED_EVENT, pResult);
+
+	//	Done
+
+	Ctx.Discard(pResult);
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalUniverseLoad (ICCItem *pCode)
+
+//	FireOnGlobalUniverseCreated
+//
+//	Fire event
+
+	{
+	CCodeChainCtx Ctx;
+
+	//	Run code
+
+	ICCItem *pResult = Ctx.Run(pCode);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_UNIVERSE_LOAD_EVENT, pResult);
+
+	//	Done
+
+	Ctx.Discard(pResult);
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalUniverseSave (ICCItem *pCode)
+
+//	FireOnGlobalUniverseSave
+//
+//	Fire event
+
+	{
+	CCodeChainCtx Ctx;
+
+	//	Run code
+
+	ICCItem *pResult = Ctx.Run(pCode);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_UNIVERSE_SAVE_EVENT, pResult);
+
+	//	Done
+
+	Ctx.Discard(pResult);
+	return NOERROR;
+	}
+
+void CDesignType::FireOnRandomEncounter (CSpaceObject *pObj)
+
+//	FireOnRandomEncounter
+//
+//	Fire OnRandomEncounter event
+
+	{
+	ICCItem *pCode;
+
+	if (FindEventHandler(ON_RANDOM_ENCOUNTER_EVENT, &pCode))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SaveAndDefineSourceVar(pObj);
+
+		ICCItem *pResult = Ctx.Run(pCode);
+		if (pResult->IsError())
+			ReportEventError(ON_RANDOM_ENCOUNTER_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+	}
+
+ICCItem *CDesignType::GetEventHandler (const CString &sEvent) const
+
+//	GetEventHandler
+//
+//	Returns an event handler (or NULL)
+
+	{
+	ICCItem *pCode;
+	if (FindEventHandler(sEvent, &pCode))
+		return pCode;
+	else
+		return NULL;
+	}
+
+const CEventHandler &CDesignType::GetEventHandlers (void)
+
+//	GetEventHandlers
+//
+//	Returns the event handler set
+
+	{
+	if (!m_Events.IsEmpty())
+		return m_Events;
+
+	if (m_pInheritFrom)
+		return m_pInheritFrom->GetEventHandlers();
+
+	return m_Events;
+	}
+
+CXMLElement *CDesignType::GetScreen (const CString &sUNID)
+
+//	GetScreen
+//
+//	Returns the given screen (either globally or from the local screens)
+
+	{
+	CDockScreenTypeRef Screen;
+	Screen.LoadUNID(sUNID);
+	Screen.Bind(GetLocalScreens());
+	return Screen.GetDesc();
+	}
+
+const CString &CDesignType::GetStaticData (const CString &sAttrib) const
+
+//	GetStaticData
+//
+//	Returns static data
+	
+	{
+	const CString *pData;
+	if (m_StaticData.FindData(sAttrib, &pData))
+		return *pData;
+
+	if (m_pInheritFrom)
+		return m_pInheritFrom->GetStaticData(sAttrib);
+
+	return NULL_STR;
+	}
+
+CString CDesignType::GetTypeChar (DesignTypes iType)
+
+//	GetTypeChar
+//
+//	Returns the character associated with the given type
+
+	{
+	return CString(&DESIGN_CHAR[iType], 1);
+	}
+
+bool CDesignType::HasSpecialAttribute (const CString &sAttrib) const
+
+//	HasSpecialAttribute
+//
+//	Returns TRUE if we have the special attribute
+
+	{
+	if (strStartsWith(sAttrib, SPECIAL_UNID))
+		{
+		DWORD dwUNID = strToInt(strSubString(sAttrib, SPECIAL_UNID.GetLength()), 0);
+		return (GetUNID() == dwUNID);
+		}
+	else
+		return OnHasSpecialAttribute(sAttrib);
+	}
+
+void CDesignType::InitCachedEvents (void)
+
+//	InitCachedEvents
+//
+//	Enumerates events and adds the appropriate ones to the cache
+
+	{
+	int i, j;
+
+	for (i = 0; i < m_Events.GetCount(); i++)
+		{
+		ICCItem *pCode;
+		const CString &sEvent = m_Events.GetEvent(i, &pCode);
+
+		for (j = 0; j < evtCount; j++)
+			{
+			if (strEquals(sEvent, CString(CACHED_EVENTS[j], -1, true)))
+				{
+				m_EventsCache[j] = pCode;
+				break;
+				}
+			}
+		}
+	}
+
+ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Creates a design type from an XML element
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Load UNID
+
+	m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
+	if (m_dwUNID == 0)
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("<%s> must have a valid UNID."), pDesc->GetTag());
+		return ERR_FAIL;
+		}
+
+	//	Version
+
+	m_dwVersion = (Ctx.pExtension ? Ctx.pExtension->dwVersion : EXTENSION_VERSION);
+
+	//	Inheritance
+
+	m_dwInheritFrom = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB));
+	m_pInheritFrom = NULL;
+
+	//	Load attributes
+
+	if (!pDesc->FindAttribute(ATTRIBUTES_ATTRIB, &m_sAttributes))
+		m_sAttributes = pDesc->GetAttribute(MODIFIERS_ATTRIB);
+
+	//	Initialize
+
+	m_pLocalScreens = NULL;
+
+	//	Load various elements
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (strEquals(pItem->GetTag(), EVENTS_TAG))
+			{
+			if (error = m_Events.InitFromXML(Ctx, pItem))
+				return ComposeLoadError(Ctx, Ctx.sError);
+
+			InitCachedEvents();
+			}
+		else if (strEquals(pItem->GetTag(), STATIC_DATA_TAG))
+			m_StaticData.SetFromXML(pItem);
+		else if (strEquals(pItem->GetTag(), GLOBAL_DATA_TAG))
+			{
+			m_InitGlobalData.SetFromXML(pItem);
+			m_GlobalData = m_InitGlobalData;
+			}
+		else if (strEquals(pItem->GetTag(), DOCK_SCREENS_TAG))
+			m_pLocalScreens = pItem->OrphanCopy();
+		else if (strEquals(pItem->GetTag(), LANGUAGE_TAG))
+			{
+			if (error = m_Language.InitFromXML(Ctx, pItem))
+				return ComposeLoadError(Ctx, Ctx.sError);
+			}
+
+		//	Otherwise, it is some element that we don't understand.
+		}
+
+	//	Load specific data
+
+	if (error = OnCreateFromXML(Ctx, pDesc))
+		return error;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+bool CDesignType::InSelfReference (CDesignType *pType)
+
+//	InSelfReference
+//
+//	Returns TRUE if the inheritance chain loops above this type
+
+	{
+	CDesignType *pParent = g_pUniverse->FindDesignType(pType->m_dwInheritFrom);
+	while (pParent)
+		{
+		if (pParent->m_dwUNID == pType->m_dwUNID)
+			return true;
+
+		if (InSelfReference(pParent))
+			return true;
+
+		pParent = g_pUniverse->FindDesignType(pParent->m_dwInheritFrom);
+		}
+
+	return false;
+	}
+
+bool CDesignType::MatchesCriteria (const CDesignTypeCriteria &Criteria)
+
+//	MatchesCriteria
+//
+//	Returns TRUE if this type matches the given criteria
+
+	{
+	int i;
+
+	//	If this type is not part of the criteria, then we're done
+
+	if (!Criteria.MatchesDesignType(GetType()))
+		return false;
+
+	//	Skip virtual
+
+	if (IsVirtual() && !Criteria.IncludesVirtual())
+		return false;
+
+	//	Check level
+
+	if (Criteria.ChecksLevel())
+		{
+		int iLevel = GetLevel();
+		if (iLevel == -1 || !Criteria.MatchesLevel(iLevel))
+			return false;
+		}
+
+	//	Check required attributes
+
+	for (i = 0; i < Criteria.GetRequiredAttribCount(); i++)
+		if (!HasAttribute(Criteria.GetRequiredAttrib(i)))
+			return false;
+
+	for (i = 0; i < Criteria.GetRequiredSpecialAttribCount(); i++)
+		if (!HasSpecialAttribute(Criteria.GetRequiredSpecialAttrib(i)))
+			return false;
+
+	//	Check excluded attributes
+
+	for (i = 0; i < Criteria.GetExcludedAttribCount(); i++)
+		if (HasAttribute(Criteria.GetExcludedAttrib(i)))
+			return false;
+
+	for (i = 0; i < Criteria.GetExcludedSpecialAttribCount(); i++)
+		if (HasSpecialAttribute(Criteria.GetExcludedSpecialAttrib(i)))
+			return false;
+
+	//	If we get this far, then we match
+
+	return true;
+	}
+
+void CDesignType::MergeLanguageTo (CLanguageDataBlock &Dest)
+
+//	MergeLanguageTo
+//
+//	Merges our language block into the destination such that we add new messages
+//	to the destination (i.e., we never overwrite existing messages in the
+//	destination.
+
+	{
+	Dest.MergeFrom(m_Language);
+
+	//	If we inherit from another type, add that data too
+
+	if (m_pInheritFrom)
+		m_pInheritFrom->MergeLanguageTo(Dest);
+	}
+
+ALERROR CDesignType::PrepareBindDesign (SDesignLoadCtx &Ctx)
+
+//	PrepareBindDesign
+//
+//	Do stuff that needs to happen before actual bind
+
+	{
+	//	Resolve inheritance
+
+	if (m_dwInheritFrom)
+		{
+		m_pInheritFrom = g_pUniverse->FindDesignType(m_dwInheritFrom);
+		if (m_pInheritFrom == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown inherit design type: %x"), m_dwInheritFrom);
+			return ERR_FAIL;
+			}
+
+		if (m_pInheritFrom->GetType() != GetType())
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Cannot inherit from a different type"));
+			return ERR_FAIL;
+			}
+
+		//	Make sure we are not in an inheritance loop
+
+		if (InSelfReference(this))
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Cannot inherit from self"));
+			return ERR_FAIL;
+			}
+		}
+
+	//	Done
+
+	return OnPrepareBindDesign(Ctx);
+	}
+
+void CDesignType::ReadFromStream (SUniverseLoadCtx &Ctx)
+
+//	ReadFromStream
+//
+//	Reads the variant portions of the design type
+	
+	{
+	//	Read global data
+
+	if (Ctx.dwVersion >= 3)
+		m_GlobalData.ReadFromStream(Ctx.pStream);
+
+	//	Allow sub-classes to load
+
+	OnReadFromStream(Ctx);
+	}
+
+void CDesignType::ReadGlobalData (SUniverseLoadCtx &Ctx)
+
+//	ReadGlobalData
+//
+//	For compatibility with older save versions
+
+	{
+	if (Ctx.dwVersion < 3)
+		m_GlobalData.ReadFromStream(Ctx.pStream);
+	}
+
+void CDesignType::Reinit (void)
+
+//	Reinit
+//
+//	Reinitializes the variant portions of the design type
+	
+	{
+	//	Reinit global data
+
+	m_GlobalData = m_InitGlobalData;
+
+	//	Allow sub-classes to reinit
+
+	OnReinit();
+	}
+
+void CDesignType::ReportEventError (const CString &sEvent, ICCItem *pError)
+
+//	ReportEventError
+//
+//	Reports an event error
+
+	{
+	CString sError = strPatternSubst(CONSTLIT("%s [%x]: %s"), sEvent, m_dwUNID, pError->GetStringValue());
+	CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+	if (pPlayer)
+		pPlayer->SendMessage(NULL, sError);
+
+	kernelDebugLogMessage(sError.GetASCIIZPointer());
+	}
+
+void CDesignType::WriteToStream (IWriteStream *pStream)
+
+//	WriteToStream
+//
+//	Writes the variant portions of the design type
+
+	{
+	//	Write out global data
+
+	m_GlobalData.WriteToStream(pStream, NULL);
+
+	//	Allow sub-classes to write
+
+	OnWriteToStream(pStream);
+	}
+
+//	CItemTypeRef --------------------------------------------------------------
+
+ALERROR CItemTypeRef::Bind (SDesignLoadCtx &Ctx, ItemCategories iCategory)
+	{
+	ALERROR error;
+	if (error = CDesignTypeRef<CItemType>::Bind(Ctx))
+		return error;
+
+	if (m_pType && m_pType->GetCategory() != iCategory)
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("%s item expected: %x"), ::GetItemCategoryName(iCategory), m_dwUNID);
+		return ERR_FAIL;
+		}
+
+	return NOERROR;
+	}
+
+//	CArmorClassRef -----------------------------------------------------------
+
+ALERROR CArmorClassRef::Bind (SDesignLoadCtx &Ctx)
+	{
+	if (m_dwUNID)
+		{
+		CDesignType *pBaseType = g_pUniverse->FindDesignType(m_dwUNID);
+		if (pBaseType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown armor design type: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		CItemType *pItemType = CItemType::AsType(pBaseType);
+		if (pItemType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Armor item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		m_pType = pItemType->GetArmorClass();
+		if (m_pType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Armor item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+		}
+
+	return NOERROR;
+	}
+
+//	CDeviceClassRef -----------------------------------------------------------
+
+ALERROR CDeviceClassRef::Bind (SDesignLoadCtx &Ctx)
+	{
+	if (m_dwUNID)
+		{
+		CDesignType *pBaseType = g_pUniverse->FindDesignType(m_dwUNID);
+		if (pBaseType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown device design type: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		CItemType *pItemType = CItemType::AsType(pBaseType);
+		if (pItemType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Device item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		m_pType = pItemType->GetDeviceClass();
+		if (m_pType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Device item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+		}
+
+	return NOERROR;
+	}
+
+void CDeviceClassRef::Set (CDeviceClass *pDevice)
+	{
+	if (pDevice)
+		{
+		m_pType = pDevice;
+		m_dwUNID = pDevice->GetUNID();
+		}
+	else
+		{
+		m_pType = NULL;
+		m_dwUNID = 0;
+		}
+	}
+
+//	CWeaponFireDescRef -----------------------------------------------------------
+
+ALERROR CWeaponFireDescRef::Bind (SDesignLoadCtx &Ctx)
+	{
+	if (m_dwUNID)
+		{
+		CDesignType *pBaseType = g_pUniverse->FindDesignType(m_dwUNID);
+		if (pBaseType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown weapon fire desc design type: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		CItemType *pItemType = CItemType::AsType(pBaseType);
+		if (pItemType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Weapon item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		CDeviceClass *pDevice = pItemType->GetDeviceClass();
+		if (pDevice == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Weapon item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		CWeaponClass *pWeapon = pDevice->AsWeaponClass();
+		if (pWeapon == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Weapon item type expected: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+
+		m_pType = pWeapon->GetVariant(0);
+		if (m_pType == NULL)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid weapon type: %x"), m_dwUNID);
+			return ERR_FAIL;
+			}
+		}
+
+	return NOERROR;
+	}
+
+//	CEffectCreatorRef ---------------------------------------------------------
+
+CEffectCreatorRef::~CEffectCreatorRef (void)
+	{
+	if (m_bDelete && m_pType)
+		delete m_pType;
+	}
+
+ALERROR CEffectCreatorRef::Bind (SDesignLoadCtx &Ctx)
+	{
+	if (m_dwUNID)
+		return CDesignTypeRef<CEffectCreator>::Bind(Ctx);
+	else if (m_pType)
+		return m_pType->BindDesign(Ctx);
+
+	return NOERROR;
+	}
+
+ALERROR CEffectCreatorRef::CreateBeamEffect (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
+	{
+	ALERROR error;
+
+	if (error = CEffectCreator::CreateBeamEffect(Ctx, pDesc, sUNID, &m_pType))
+		return error;
+
+	m_dwUNID = 0;
+	m_bDelete = true;
+
+	return NOERROR;
+	}
+
+ALERROR CEffectCreatorRef::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
+	{
+	ALERROR error;
+
+	if (error = CEffectCreator::CreateFromXML(Ctx, pDesc, sUNID, &m_pType))
+		return error;
+
+	m_dwUNID = 0;
+	m_bDelete = true;
+
+	return NOERROR;
+	}
+
+ALERROR CEffectCreatorRef::LoadEffect (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc, const CString &sAttrib)
+	{
+	ALERROR error;
+
+	if (pDesc)
+		{
+		if (error = CreateFromXML(Ctx, pDesc, sUNID))
+			return error;
+		}
+	else
+		LoadUNID(Ctx, sAttrib);
+
+	return NOERROR;
+	}
+
+void CEffectCreatorRef::Set (CEffectCreator *pEffect)
+
+//	Set
+//
+//	Sets the effect
+
+	{
+	if (m_bDelete && m_pType)
+		delete m_pType;
+
+	m_pType = pEffect;
+	m_bDelete = false;
+	if (m_pType)
+		m_dwUNID = m_pType->GetUNID();
+	else
+		m_dwUNID = 0;
+	}
+
+//	CDesignTypeCriteria --------------------------------------------------------
+
+bool CDesignTypeCriteria::MatchesLevel (int iLevel) const
+
+//	MatchesLevel
+//
+//	Returns true if we match the level
+
+	{
+	if (m_iGreaterThanLevel != INVALID_COMPARE && iLevel <= m_iGreaterThanLevel)
+		return false;
+
+	if (m_iLessThanLevel != INVALID_COMPARE && iLevel >= m_iLessThanLevel)
+		return false;
+
+	return true;
+	}
+
+ALERROR CDesignTypeCriteria::ParseCriteria (const CString &sCriteria, CDesignTypeCriteria *retCriteria)
+
+//	ParseCriteria
+//
+//	Parses the criteria and initializes retCriteria
+
+	{
+	//	Initialize
+
+	retCriteria->m_dwTypeSet = 0;
+	retCriteria->m_iGreaterThanLevel = INVALID_COMPARE;
+	retCriteria->m_iLessThanLevel = INVALID_COMPARE;
+	retCriteria->m_bIncludeVirtual = false;
+
+	//	Parse
+
+	char *pPos = sCriteria.GetPointer();
+	while (*pPos != '\0')
+		{
+		switch (*pPos)
+			{
+			case '*':
+				retCriteria->m_dwTypeSet = designSetAll;
+				break;
+
+			case charAdventureDesc:
+				retCriteria->m_dwTypeSet |= (1 << designAdventureDesc);
+				break;
+
+			case charItemTable:
+				retCriteria->m_dwTypeSet |= (1 << designItemTable);
+				break;
+
+			case charEffectType:
+				retCriteria->m_dwTypeSet |= (1 << designEffectType);
+				break;
+
+			case charDockScreen:
+				retCriteria->m_dwTypeSet |= (1 << designDockScreen);
+				break;
+
+			case charSpaceEnvironmentType:
+				retCriteria->m_dwTypeSet |= (1 << designSpaceEnvironmentType);
+				break;
+
+			case charEconomyType:
+				retCriteria->m_dwTypeSet |= (1 << designEconomyType);
+				break;
+
+			case charEnergyFieldType:
+				retCriteria->m_dwTypeSet |= (1 << designEnergyFieldType);
+				break;
+
+			case charGlobals:
+				retCriteria->m_dwTypeSet |= (1 << designGlobals);
+				break;
+
+			case charShipTable:
+				retCriteria->m_dwTypeSet |= (1 << designShipTable);
+				break;
+
+			case charItemType:
+				retCriteria->m_dwTypeSet |= (1 << designItemType);
+				break;
+
+			case charImage:
+				retCriteria->m_dwTypeSet |= (1 << designImage);
+				break;
+
+			case charSystemNode:
+				retCriteria->m_dwTypeSet |= (1 << designSystemNode);
+				break;
+
+			case charPower:
+				retCriteria->m_dwTypeSet |= (1 << designPower);
+				break;
+
+			case charShipClass:
+				retCriteria->m_dwTypeSet |= (1 << designShipClass);
+				break;
+
+			case charStationType:
+				retCriteria->m_dwTypeSet |= (1 << designStationType);
+				break;
+
+			case charSound:
+				retCriteria->m_dwTypeSet |= (1 << designSound);
+				break;
+
+			case charSovereign:
+				retCriteria->m_dwTypeSet |= (1 << designSovereign);
+				break;
+
+			case charSystemTable:
+				retCriteria->m_dwTypeSet |= (1 << designSystemTable);
+				break;
+
+			case charSystemType:
+				retCriteria->m_dwTypeSet |= (1 << designSystemType);
+				break;
+
+			case charSystemMap:
+				retCriteria->m_dwTypeSet |= (1 << designSystemMap);
+				break;
+
+			case charNameGenerator:
+				retCriteria->m_dwTypeSet |= (1 << designNameGenerator);
+				break;
+
+			case 'V':
+				retCriteria->m_bIncludeVirtual = true;
+				break;
+
+			case '+':
+			case '-':
+				{
+				bool bRequired = (*pPos == '+');
+				bool bBinaryParam;
+				CString sParam = ParseCriteriaParam(&pPos, false, &bBinaryParam);
+
+				if (bRequired)
+					{
+					if (bBinaryParam)
+						retCriteria->m_sRequireSpecial.Insert(sParam);
+					else
+						retCriteria->m_sRequire.Insert(sParam);
+					}
+				else
+					{
+					if (bBinaryParam)
+						retCriteria->m_sExcludeSpecial.Insert(sParam);
+					else
+						retCriteria->m_sExclude.Insert(sParam);
+					}
+				break;
+				}
+
+			case '=':
+			case '>':
+			case '<':
+				{
+				char chChar = *pPos;
+				pPos++;
+
+				//	<= or >=
+
+				int iEqualAdj;
+				if (*pPos == '=')
+					{
+					pPos++;
+					iEqualAdj = 1;
+					}
+				else
+					iEqualAdj = 0;
+
+				//	Is this price?
+
+				char comparison;
+				if (*pPos == '$' || *pPos == '#')
+					comparison = *pPos++;
+				else
+					comparison = '\0';
+
+				//	Get the number
+
+				char *pNewPos;
+				int iValue = strParseInt(pPos, 0, &pNewPos);
+
+				//	Back up one because we will increment at the bottom
+				//	of the loop.
+
+				if (pPos != pNewPos)
+					pPos = pNewPos - 1;
+
+				//	Level limits
+
+				if (chChar == '=')
+					{
+					retCriteria->m_iGreaterThanLevel = iValue - 1;
+					retCriteria->m_iLessThanLevel = iValue + 1;
+					}
+				else if (chChar == '>')
+					retCriteria->m_iGreaterThanLevel = iValue - iEqualAdj;
+				else if (chChar == '<')
+					retCriteria->m_iLessThanLevel = iValue + iEqualAdj;
+
+				break;
+				}
+			}
+
+		pPos++;
+		}
+
+	return NOERROR;
+	}
+
+//	Utility -------------------------------------------------------------------
+
+CString ParseAchievementSection (ICCItem *pItem)
+	{
+	if (pItem == NULL)
+		return NULL_STR;
+	else if (pItem->IsNil())
+		return NULL_STR;
+	else
+		return pItem->GetStringValue();
+	}
+
+CString ParseAchievementSort (ICCItem *pItem)
+	{
+	if (pItem == NULL)
+		return NULL_STR;
+	else if (pItem->IsNil())
+		return NULL_STR;
+	else if (pItem->IsInteger())
+		return strPatternSubst(CONSTLIT("%010d"), pItem->GetIntegerValue());
+	else
+		return pItem->GetStringValue();
+	}
+
+CString ParseAchievementValue (ICCItem *pItem)
+	{
+	if (pItem == NULL)
+		return NULL_STR;
+	else if (pItem->IsNil())
+		return NULL_STR;
+	else if (pItem->IsInteger())
+		return strFormatInteger(pItem->GetIntegerValue(), -1, FORMAT_THOUSAND_SEPARATOR | FORMAT_UNSIGNED);
+	else
+		return pItem->GetStringValue();
+	}

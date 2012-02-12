@@ -1,0 +1,880 @@
+|-		
+|[[Paris]]||[[Paris]]||[[Île-de-France (region)|Île-de-France]]||2,181,371||1
+|-
+|[[Marseille]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||839,043||2
+|-
+|[[Lyon]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||472,305||3
+|-
+|[[Toulouse]]||[[Haute-Garonne]]||[[Midi-Pyrénées]]||437,715||4
+|-
+|[[Nice]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||347,060||5
+|-
+|[[Nantes]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||282,853||6
+|-
+|[[Strasbourg]]||[[Bas-Rhin]]||[[Alsace]]||272,975||7
+|-
+|[[Montpellier]]||[[Hérault]]||[[Languedoc-Roussillon]]||251,634||8
+|-
+|[[Bordeaux]]||[[Gironde]]||[[Aquitaine]]||232,260||9
+|-
+|[[Lille]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||226,014||10
+|-
+|[[Rennes]]||[[Ille-et-Vilaine]]||[[Brittany (administrative region)|Brittany]]||209,613||11
+|-
+|[[Reims]]||[[Marne]]||[[Champagne-Ardenne]]||183,837||12
+|-
+|[[Le Havre]]||[[Seine-Maritime]]||[[Haute-Normandie]]||182,580||13
+|-
+|[[Saint-Étienne]]||[[Loire]]||[[Rhône-Alpes]]||177,480||14
+|-
+|[[Toulon]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||167,816||15
+|-
+|[[Grenoble]]||[[Isère]]||[[Rhône-Alpes]]||156,107||16
+|-
+|[[Angers]]||[[Maine-et-Loire]]||[[Pays de la Loire]]||152,337||17
+|-
+|[[Dijon]]||[[Côte-d'Or]]||[[Bourgogne]]||151,504||18
+|-
+|[[Brest, France|Brest]]||[[Finistère]]||[[Brittany (administrative region)|Brittany]]||144,548||19
+|-
+|[[Nîmes]]||[[Gard]]||[[Languedoc-Roussillon]]||144,092||20
+|-
+|[[Le Mans]]||[[Sarthe]]||[[Pays de la Loire]]||144,016||21
+|-
+|[[Aix-en-Provence]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||142,534||22
+|-
+|[[Clermont-Ferrand]]||[[Puy-de-Dôme]]||[[Auvergne (region)|Auvergne]]||138,992||23
+|-
+|[[Saint-Denis, Réunion|Saint-Denis]]||[[Réunion]]||[[Réunion]]||138,314||24
+|-
+|[[Tours]]||[[Indre-et-Loire]]||[[Centre (region)|Centre]]||136,942||25
+|-
+|[[Limoges]]||[[Haute-Vienne]]||[[Limousin (region)|Limousin]]||136,539||26
+|-
+|[[Villeurbanne]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||136,473||27
+|-
+|[[Amiens]]||[[Somme]]||[[Picardy (region)|Picardy]]||136,105||28
+|-
+|[[Metz]]||[[Moselle]]||[[Lorraine (region)|Lorraine]]||124,435||29
+|-
+|[[Besançon]]||[[Doubs]]||[[Franche-Comté]]||117,080||30
+|-
+|[[Perpignan]]||[[Pyrénées-Orientales]]||[[Languedoc-Roussillon]]||115,326||31
+|-
+|[[Orléans]]||[[Loiret]]||[[Centre (region)|Centre]]||113,130||32
+|-
+|[[Mulhouse]]||[[Haut-Rhin]]||[[Alsace]]||110,514||33
+|-
+|[[Caen]]||[[Calvados]]||[[Basse-Normandie]]||110,399||34
+|-
+|[[Boulogne-Billancourt]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||110,251||35
+|-
+|[[Rouen]]||[[Seine-Maritime]]||[[Haute-Normandie]]||107,904||36
+|-
+|[[Nancy]]||[[Meurthe-et-Moselle]]||[[Lorraine (region)|Lorraine]]||105,468||37
+|-
+|[[Argenteuil]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||102,683||38
+|-
+|[[Montreuil, Seine-Saint-Denis|Montreuil]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||101,587||39
+|-
+|[[Saint-Paul, Réunion|Saint-Paul]]||[[Réunion]]||[[Réunion]]||99,291||40
+|-
+|[[Roubaix]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||97,952||41
+|-
+|[[Saint-Denis]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||97,875||42
+|-
+|[[Avignon]]||[[Vaucluse]]||[[Provence-Alpes-Côte d'Azur]]||92,454||43
+|-
+|[[Tourcoing]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||92,357||44
+|-
+|[[Fort-de-France]]||[[Martinique]]||[[Martinique]]||90,347||45
+|-
+|[[Créteil]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||88,939||46
+|-
+|[[Poitiers]]||[[Vienne]]||[[Poitou-Charentes]]||88,776||47
+|-
+|[[Nanterre]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||88,316||48
+|-
+|[[Versailles]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||87,549||49
+|-
+|[[Courbevoie]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||84,415||50
+|-
+|[[Pau, Pyrénées-Atlantiques|Pau]]||[[Pyrénées-Atlantiques]]||[[Aquitaine]]||83,903||51
+|-
+|[[Vitry-sur-Seine]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||82,902||52
+|-
+|[[Asnières-sur-Seine]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||82,351||53
+|-
+|[[Colombes]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||82,026||54
+|-
+|[[Aulnay-sous-Bois]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||81,600||55
+|-
+|[[Rueil-Malmaison]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||77,625||56
+|-
+|[[La Rochelle]]||[[Charente-Maritime]]||[[Poitou-Charentes]]||77,196||57
+|-
+|[[Antibes]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||75,820||58
+|-
+|[[Saint-Maur-des-Fossés]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||75,214||59
+|-
+|[[Calais]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||74,888||60
+|-
+|[[Champigny-sur-Marne]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||74,863||61
+|-
+|[[Saint-Pierre, Réunion|Saint-Pierre]]||[[Réunion]]||[[Réunion]]||74,480||62
+|-
+|[[Aubervilliers]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||73,506||63
+|-
+|[[Béziers]]||[[Hérault]]||[[Languedoc-Roussillon]]||72,245||64
+|-
+|[[Bourges]]||[[Cher (department)|Cher]]||[[Centre (region)|Centre]]||70,828||65
+|-
+|[[Cannes]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||70,610||66
+|-
+|[[Le Tampon]]||[[Réunion]]||[[Réunion]]||69,849||67
+|-
+|[[Dunkerque]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||69,274||68
+|-
+|[[Saint-Nazaire]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||68,838||69
+|-
+|[[Drancy]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||66,063||70
+|-
+|[[Colmar]]||[[Haut-Rhin]]||[[Alsace]]||65,713||71
+|-
+|[[Mérignac, Gironde|Mérignac]]||[[Gironde]]||[[Aquitaine]]||65,469||72
+|-
+|[[Valence, Drôme|Valence]]||[[Drôme]]||[[Rhône-Alpes]]||65,263||73
+|-
+|[[Quimper, Finistère|Quimper]]||[[Finistère]]||[[Brittany (administrative region)|Brittany]]||64,902||74
+|-
+|[[Ajaccio]]||[[Corse-du-Sud]]||[[Corsica]]||63,723||75
+|-
+|[[Levallois-Perret]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||62,851||76
+|-
+|[[Issy-les-Moulineaux]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||61,471||77
+|-
+|[[Neuilly-sur-Seine]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||61,471||78
+|-
+|[[Troyes]]||[[Aube]]||[[Champagne-Ardenne]]||61,344||79
+|-
+|[[Noisy-le-Grand]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||61,341||80
+|-
+|[[Villeneuve d'Ascq]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||61,151||81
+|-
+|[[Antony, Hauts-de-Seine]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||60,552||82
+|-
+|[[Les Abymes]]||[[Guadeloupe]]||[[Guadeloupe]]||60,053||83
+|-
+|[[Sarcelles]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||58,654||84
+|-
+|[[Lorient]]||[[Morbihan]]||[[Brittany (administrative region)|Brittany]]||58,547||85
+|-
+|[[Niort]]||[[Deux-Sèvres]]||[[Poitou-Charentes]]||58,066||86
+|-
+|[[Cayenne]]||[[French Guiana]]||[[French Guiana]]||58,004||87
+|-
+|[[Chambéry]]||[[Savoie]]||[[Rhône-Alpes]]||57,543||88
+|-
+|[[Pessac]]||[[Gironde]]||[[Aquitaine]]||57,187||89
+|-
+|[[Vénissieux]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||57,179||90
+|-
+|[[Clichy, Hauts-de-Seine|Clichy]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||57,162||91
+|-
+|[[Cergy]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||56,873||92
+|-
+|[[Saint-Quentin, Aisne|Saint-Quentin]]||[[Aisne]]||[[Picardy (region)|Picardy]]||56,792||93
+|-
+|[[La Seyne-sur-Mer]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||56,768||94
+|-
+|[[Ivry-sur-Seine]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||55,608||95
+|-
+|[[Beauvais]]||[[Oise]]||[[Picardy (region)|Picardy]]||55,481||96
+|-
+|[[Hyères]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||55,007||97
+|-
+|[[Cholet]]||[[Maine-et-Loire]]||[[Pays de la Loire]]||54,632||98
+|-
+|[[Montauban]]||[[Tarn-et-Garonne]]||[[Midi-Pyrénées]]||53,941||99
+|-
+|[[Pantin]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||53,577||100
+|-
+|[[Bondy]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||53,311||101
+|-
+|[[Maisons-Alfort]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||53,233||102
+|-
+|[[Vannes]]||[[Morbihan]]||[[Brittany (administrative region)|Brittany]]||53,079||103
+|-
+|[[Évry, Essonne|Évry]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||52,651||104
+|-
+|[[Charleville-Mézières]]||[[Ardennes (department)|Ardennes]]||[[Champagne-Ardenne]]||51,997||105
+|-
+|[[Arles]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||51,970||106
+|-
+|[[Saint-André, Réunion|Saint-André]]||[[Réunion]]||[[Réunion]]||51,817||107
+|-
+|[[Fontenay-sous-Bois]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||51,727||108
+|-
+|[[Sartrouville]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||51,600||109
+|-
+|[[Épinay-sur-Seine]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||51,598||110
+|-
+|[[Fréjus]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||51,537||111
+|-
+|[[Évreux]]||[[Eure]]||[[Haute-Normandie]]||51,239||112
+|-
+|[[Laval, Mayenne|Laval]]||[[Mayenne]]||[[Pays de la Loire]]||51,233||113
+|-
+|[[Le Blanc-Mesnil]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||51,109||114
+|-
+|[[Sevran]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||51,106||115
+|-
+|[[Annecy]]||[[Haute-Savoie]]||[[Rhône-Alpes]]||51,023||116
+|-
+|[[Belfort]]||[[Territoire de Belfort]]||[[Franche-Comté]]||50,863||117
+|-
+|[[Narbonne]]||[[Aude]]||[[Languedoc-Roussillon]]||50,776||118
+|-
+|[[La Roche-sur-Yon]]||[[Vendée]]||[[Pays de la Loire]]||50,717||119
+|-
+|[[Clamart]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||50,655||120
+|-
+|[[Villejuif]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||50,571||121
+|-
+|[[Brive-la-Gaillarde]]||[[Corrèze]]||[[Limousin (region)|Limousin]]||50,009||122
+|-
+|[[Saint-Malo]]||[[Ille-et-Vilaine]]||[[Brittany (administrative region)|Brittany]]||49,661||123
+|-
+|[[Saint-Louis, Réunion|Saint-Louis]]||[[Réunion]]||[[Réunion]]||49,455||124
+|-
+|[[Meaux]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||48,842||125
+|-
+|[[Grasse]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||48,801||126
+|-
+|[[Albi]]||[[Tarn (department)|Tarn]]||[[Midi-Pyrénées]]||48,712||127
+|-
+|[[Chelles, Seine-et-Marne|Chelles]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||48,616||128
+|-
+|[[Blois]]||[[Loir-et-Cher]]||[[Centre (region)|Centre]]||48,487||129
+|-
+|[[Cagnes-sur-Mer]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||48,313||130
+|-
+|[[Bobigny]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||47,806||131
+|-
+|[[Châteauroux]]||[[Indre]]||[[Centre (region)|Centre]]||47,559||132
+|-
+|[[Vincennes]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||47,488||133
+|-
+|[[Carcassonne]]||[[Aude]]||[[Languedoc-Roussillon]]||46,639||134
+|-
+|[[Chalon-sur-Saône]]||[[Saône-et-Loire]]||[[Bourgogne]]||46,534||135
+|-
+|[[Saint-Brieuc]]||[[Côtes-d'Armor]]||[[Brittany (administrative region)|Brittany]]||46,437||136
+|-
+|[[Martigues]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||46,318||137
+|-
+|[[Châlons-en-Champagne]]||[[Marne]]||[[Champagne-Ardenne]]||46,184||138
+|-
+|[[Tarbes]]||[[Hautes-Pyrénées]]||[[Midi-Pyrénées]]||45,433||139
+|-
+|[[Montrouge]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||45,178||140
+|-
+|[[Meudon]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||44,745||141
+|-
+|[[Aubagne]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||44,682||142
+|-
+|[[Bayonne]]||[[Pyrénées-Atlantiques]]||[[Aquitaine]]||44,406||143
+|-
+|[[Boulogne-sur-Mer]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||44,273||144
+|-
+|[[Suresnes]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||44,197||145
+|-
+|[[Saint-Herblain]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||43,901||146
+|-
+|[[Bastia]]||[[Haute-Corse]]||[[Corsica]]||43,577||147
+|-
+|[[Castres]]||[[Tarn (department)|Tarn]]||[[Midi-Pyrénées]]||43,141||148
+|-
+|[[Gennevilliers]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||43,054||149
+|-
+|[[Sète]]||[[Hérault]]||[[Languedoc-Roussillon]]||43,008||150
+|-
+|[[Puteaux]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||42,981||151
+|-
+|[[Saint-Ouen, Seine-Saint-Denis|Saint-Ouen]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||42,950||152
+|-
+|[[Wattrelos]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||42,852||153
+|-
+|[[Douai]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||42,766||154
+|-
+|[[Alfortville]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||42,743||155
+|-
+|[[Le Cannet]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||42,531||156
+|-
+|[[Valenciennes]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||42,426||157
+|-
+|[[Angoulême]]||[[Charente]]||[[Poitou-Charentes]]||42,096||158
+|-
+|[[Istres]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||42,090||159
+|-
+|[[Compiègne]]||[[Oise]]||[[Picardy (region)|Picardy]]||42,036||160
+|-
+|[[Arras]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||42,015||161
+|-
+|[[Mantes-la-Jolie]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||41,930||162
+|-
+|[[Livry-Gargan]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||41,556||163
+|-
+|[[Caluire-et-Cuire]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||41,418||164
+|-
+|[[Saint-Germain-en-Laye]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||41,312||165
+|-
+|[[Rosny-sous-Bois]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||41,174||166
+|-
+|[[Thionville]]||[[Moselle]]||[[Lorraine (region)|Lorraine]]||41,127||167
+|-
+|[[Corbeil-Essonnes]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||40,929||168
+|-
+|[[Talence]]||[[Gironde]]||[[Aquitaine]]||40,920||169
+|-
+|[[Cherbourg-Octeville]]||[[Manche]]||[[Basse-Normandie]]||40,838||170
+|-
+|[[Saint-Priest, Rhône|Saint-Priest]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||40,746||171
+|-
+|[[Vaulx-en-Velin]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||40,300||172
+|-
+|[[Massy, Essonne|Massy]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||40,183||173
+|-
+|[[Bourg-en-Bresse]]||[[Ain]]||[[Rhône-Alpes]]||40,156||174
+|-
+|[[Salon-de-Provence]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||40,147||175
+|-
+|[[Chartres]]||[[Eure-et-Loir]]||[[Centre (region)|Centre]]||40,022||176
+|-
+|[[Alès]]||[[Gard]]||[[Languedoc-Roussillon]]||39,943||177
+|-
+|[[Montluçon]]||[[Allier]]||[[Auvergne (region)|Auvergne]]||39,889||178
+|-
+|[[Le Lamentin]]||[[Martinique]]||[[Martinique]]||39,847||179
+|-
+|[[Garges-lès-Gonesse]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||39,672||180
+|-
+|[[Marcq-en-Barœul]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||38,939||181
+|-
+|[[Bagneux, Hauts-de-Seine|Bagneux]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||38,936||182
+|-
+|[[Bron]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||38,919||183
+|-
+|[[Noisy-le-Sec]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||38,587||184
+|-
+|[[Nevers]]||[[Nièvre]]||[[Bourgogne]]||38,496||185
+|-
+|[[Le Port, Réunion|Le Port]]||[[Réunion]]||[[Réunion]]||38,148||186
+|-
+|[[Gagny]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||37,729||187
+|-
+|[[Melun]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||37,663||188
+|-
+|[[Anglet]]||[[Pyrénées-Atlantiques]]||[[Aquitaine]]||37,646||189
+|-
+|[[Auxerre]]||[[Yonne]]||[[Bourgogne]]||37,419||190
+|-
+|[[Rezé]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||37,333||191
+|-
+|[[Gap, Hautes-Alpes|Gap]]||[[Hautes-Alpes]]||[[Provence-Alpes-Côte d'Azur]]||37,332||192
+|-
+|[[Savigny-sur-Orge]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||37,259||193
+|-
+|[[Vitrolles, Bouches-du-Rhône|Vitrolles]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||37,190||194
+|-
+|[[Draguignan]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||37,088||195
+|-
+|[[La Courneuve]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||37,034||196
+|-
+|[[Joué-lès-Tours]]||[[Indre-et-Loire]]||[[Centre (region)|Centre]]||36,233||197
+|-
+|[[Choisy-le-Roi]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||36,198||198
+|-
+|[[Roanne]]||[[Loire]]||[[Rhône-Alpes]]||36,126||199
+|-
+|[[Poissy]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||35,860||200
+|-
+|[[Échirolles]]||[[Isère]]||[[Rhône-Alpes]]||35,687||201
+|-
+|[[Saint-Chamond]]||[[Loire]]||[[Rhône-Alpes]]||35,608||202
+|-
+|[[Villepinte, Seine-Saint-Denis|Villepinte]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||35,592||203
+|-
+|[[Lens, Pas-de-Calais|Lens]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||35,583||204
+|-
+|[[Tremblay-en-France]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||35,340||205
+|-
+|[[Saint-Martin-d'Hères]]||[[Isère]]||[[Rhône-Alpes]]||35,217||206
+|-
+|[[Haguenau]]||[[Bas-Rhin]]||[[Alsace]]||34,891||207
+|-
+|[[Stains]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||34,670||208
+|-
+|[[Pontault-Combault]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||34,546||209
+|-
+|[[Châtellerault]]||[[Vienne]]||[[Poitou-Charentes]]||34,402||210
+|-
+|[[Six-Fours-les-Plages]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||34,325||211
+|-
+|[[Villefranche-sur-Saône]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||34,188||212
+|-
+|[[Mâcon]]||[[Saône-et-Loire]]||[[Bourgogne]]||34,171||213
+|-
+|[[Bagnolet]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||34,069||214
+|-
+|[[Sainte-Geneviève-des-Bois, Essonne|Sainte-Geneviève-des-Bois]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||34,024||215
+|-
+|[[Épinal]]||[[Vosges]]||[[Lorraine (region)|Lorraine]]||34,014||216
+|-
+|[[Montigny-le-Bretonneux]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||33,968||217
+|-
+|[[Montélimar]]||[[Drôme]]||[[Rhône-Alpes]]||33,924||218
+|-
+|[[Saint-Raphaël, Var|Saint-Raphaël]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||33,804||219
+|-
+|[[Agen]]||[[Lot-et-Garonne]]||[[Aquitaine]]||33,728||220
+|-
+|[[Saint-Laurent-du-Maroni]]||[[French Guiana]]||[[French Guiana]]||33,707||221
+|-
+|[[Conflans-Sainte-Honorine]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||33,671||222
+|-
+|[[Dieppe, Seine-Maritime|Dieppe]]||[[Seine-Maritime]]||[[Haute-Normandie]]||33,618||223
+|-
+|[[Saint-Joseph, Réunion|Saint-Joseph]]||[[Réunion]]||[[Réunion]]||33,509||224
+|-
+|[[Creil]]||[[Oise]]||[[Picardy (region)|Picardy]]||33,479||225
+|-
+|[[Neuilly-sur-Marne]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||33,352||226
+|-
+|[[Saint-Benoît, Réunion|Saint-Benoît]]||[[Réunion]]||[[Réunion]]||33,187||227
+|-
+|[[Romans-sur-Isère]]||[[Drôme]]||[[Rhône-Alpes]]||33,138||228
+|-
+|[[Franconville, Val-d'Oise|Franconville]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||32,988||229
+|-
+|[[Marignane]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||32,921||230
+|-
+|[[Dreux]]||[[Eure-et-Loir]]||[[Centre (region)|Centre]]||32,723||231
+|-
+|[[Maubeuge]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||32,699||232
+|-
+|[[Les Mureaux]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||32,634||233
+|-
+|[[Cambrai]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||32,594||234
+|-
+|[[Liévin]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||32,565||235
+|-
+|[[La Ciotat]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||32,126||236
+|-
+|[[Colomiers]]||[[Haute-Garonne]]||[[Midi-Pyrénées]]||32,110||237
+|-
+|[[Châtillon, Hauts-de-Seine|Châtillon]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||32,077||238
+|-
+|[[Le Perreux-sur-Marne]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||32,067||239
+|-
+|[[Châtenay-Malabry]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||31,873||240
+|-
+|[[Plaisir, Yvelines|Plaisir]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||31,539||241
+|-
+|[[Vandœuvre-lès-Nancy]]||[[Meurthe-et-Moselle]]||[[Lorraine (region)|Lorraine]]||31,447||242
+|-
+|[[Viry-Châtillon]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||31,252||243
+|-
+|[[Schiltigheim]]||[[Bas-Rhin]]||[[Alsace]]||31,239||244
+|-
+|[[Thonon-les-Bains]]||[[Haute-Savoie]]||[[Rhône-Alpes]]||31,213||245
+|-
+|[[Houilles]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||30,835||246
+|-
+|[[Nogent-sur-Marne]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||30,632||247
+|-
+|[[Athis-Mons]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||30,615||248
+|-
+|[[Vallauris]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||30,610||249
+|-
+|[[Sainte-Marie, Réunion|Sainte-Marie]]||[[Réunion]]||[[Réunion]]||30,596||250
+|-
+|[[Malakoff]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||30,509||251
+|-
+|[[Villeneuve-Saint-Georges]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||30,450||252
+|-
+|[[L'Haÿ-les-Roses]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||30,428||253
+|-
+|[[Palaiseau]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||30,339||254
+|-
+|[[Mont-de-Marsan]]||[[Landes (department)|Landes]]||[[Aquitaine]]||30,230||255
+|-
+|[[Goussainville, Val-d'Oise|Goussainville]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||30,142||256
+|-
+|[[Vienne, Isère|Vienne]]||[[Isère]]||[[Rhône-Alpes]]||30,092||257
+|-
+|[[Saint-Laurent-du-Var]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||30,076||258
+|-
+|[[Sotteville-lès-Rouen]]||[[Seine-Maritime]]||[[Haute-Normandie]]||30,076||259
+|-
+|[[Villenave-d'Ornon]]||[[Gironde]]||[[Aquitaine]]||29,958||260
+|-
+|[[Orange, Vaucluse|Orange]]||[[Vaucluse]]||[[Provence-Alpes-Côte d'Azur]]||29,859||261
+|-
+|[[Rillieux-la-Pape]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||29,562||262
+|-
+|[[Périgueux]]||[[Dordogne]]||[[Aquitaine]]||29,558||263
+|-
+|[[Le Chesnay]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||29,542||264
+|-
+|[[Trappes]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||29,529||265
+|-
+|[[Aurillac]]||[[Cantal]]||[[Auvergne (region)|Auvergne]]||29,477||266
+|-
+|[[Chatou]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||29,472||267
+|-
+|[[Clichy-sous-Bois]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||29,412||268
+|-
+|[[Saint-Cloud]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||29,385||269
+|-
+|[[Villiers-sur-Marne]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||29,369||270
+|-
+|[[Thiais]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||29,315||271
+|-
+|[[Saint-Leu, Réunion|Saint-Leu]]||[[Réunion]]||[[Réunion]]||28,969||272
+|-
+|[[Meyzieu]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||28,738||273
+|-
+|[[Draveil]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||28,736||274
+|-
+|[[Pontoise]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||28,674||275
+|-
+|[[Saumur]]||[[Maine-et-Loire]]||[[Pays de la Loire]]||28,654||276
+|-
+|[[Annemasse]]||[[Haute-Savoie]]||[[Rhône-Alpes]]||28,572||277
+|-
+|[[Yerres]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||28,572||278
+|-
+|[[Lambersart]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||28,543||279
+|-
+|[[Alençon]]||[[Orne]]||[[Basse-Normandie]]||28,458||280
+|-
+|[[Soissons]]||[[Aisne]]||[[Picardy (region)|Picardy]]||28,442||281
+|-
+|[[Charenton-le-Pont]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||28,395||282
+|-
+|[[Villemomble]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||28,339||283
+|-
+|[[Guyancourt]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||28,219||284
+|-
+|[[Vierzon]]||[[Cher (department)|Cher]]||[[Centre (region)|Centre]]||28,147||285
+|-
+|[[Ermont]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||28,074||286
+|-
+|[[Baie-Mahault]]||[[Guadeloupe]]||[[Guadeloupe]]||27,906||287
+|-
+|[[Saint-Étienne-du-Rouvray]]||[[Seine-Maritime]]||[[Haute-Normandie]]||27,815||288
+|-
+|[[Bergerac, Dordogne|Bergerac]]||[[Dordogne]]||[[Aquitaine]]||27,716||289
+|-
+|[[Menton]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||27,655||290
+|-
+|[[Bezons]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||27,652||291
+|-
+|[[Cachan]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||27,590||292
+|-
+|[[Élancourt]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||27,577||293
+|-
+|[[Pierrefitte-sur-Seine]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||27,532||294
+|-
+|[[Carpentras]]||[[Vaucluse]]||[[Provence-Alpes-Côte d'Azur]]||27,451||295
+|-
+|[[Aix-les-Bains]]||[[Savoie]]||[[Rhône-Alpes]]||27,375||296
+|-
+|[[Le Gosier]]||[[Guadeloupe]]||[[Guadeloupe]]||27,370||297
+|-
+|[[La Garenne-Colombes]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||27,188||298
+|-
+|[[Bois-Colombes]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||27,151||299
+|-
+|[[Villiers-le-Bel]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||27,130||300
+|-
+|[[Saint-Dizier]]||[[Haute-Marne]]||[[Champagne-Ardenne]]||26,972||301
+|-
+|[[Sens]]||[[Yonne]]||[[Bourgogne]]||26,961||302
+|-
+|[[Saint-Médard-en-Jalles]]||[[Gironde]]||[[Aquitaine]]||26,934||303
+|-
+|[[Vanves]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||26,878||304
+|-
+|[[Biarritz]]||[[Pyrénées-Atlantiques]]||[[Aquitaine]]||26,690||305
+|-
+|[[Ris-Orangis]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||26,620||306
+|-
+|[[Montbéliard]]||[[Doubs]]||[[Franche-Comté]]||26,535||307
+|-
+|[[Saintes, Charente-Maritime|Saintes]]||[[Charente-Maritime]]||[[Poitou-Charentes]]||26,531||308
+|-
+|[[Laon]]||[[Aisne]]||[[Picardy (region)|Picardy]]||26,522||309
+|-
+|[[Béthune]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||26,472||310
+|-
+|[[Taverny]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||26,436||311
+|-
+|[[Illkirch-Graffenstaden]]||[[Bas-Rhin]]||[[Alsace]]||26,368||312
+|-
+|[[Vigneux-sur-Seine]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||26,333||313
+|-
+|[[Rochefort, Charente-Maritime|Rochefort]]||[[Charente-Maritime]]||[[Poitou-Charentes]]||26,299||314
+|-
+|[[Sucy-en-Brie]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||26,261||315
+|-
+|[[La Possession]]||[[Réunion]]||[[Réunion]]||26,242||316
+|-
+|[[Le Grand-Quevilly]]||[[Seine-Maritime]]||[[Haute-Normandie]]||26,226||317
+|-
+|[[Gonesse]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||26,152||318
+|-
+|[[Montfermeil]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||26,121||319
+|-
+|[[Vichy]]||[[Allier]]||[[Auvergne (region)|Auvergne]]||26,108||320
+|-
+|[[Grigny, Essonne|Grigny]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||25,981||321
+|-
+|[[Sannois]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||25,939||322
+|-
+|[[Hénin-Beaumont]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||25,915||323
+|-
+|[[Brunoy]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||25,856||324
+|-
+|[[Herblay]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||25,824||325
+|-
+|[[Cavaillon]]||[[Vaucluse]]||[[Provence-Alpes-Côte d'Azur]]||25,819||326
+|-
+|[[Oullins]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||25,694||327
+|-
+|[[Rambouillet]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||25,661||328
+|-
+|[[La Garde, Var|La Garde]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||25,621||329
+|-
+|[[Fresnes, Val-de-Marne|Fresnes]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||25,575||330
+|-
+|[[Le Kremlin-Bicêtre]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||25,567||331
+|-
+|[[Tournefeuille]]||[[Haute-Garonne]]||[[Midi-Pyrénées]]||25,444||332
+|-
+|[[Romainville]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||25,199||333
+|-
+|[[Savigny-le-Temple]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||25,130||334
+|-
+|[[Les Ulis]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||24,962||335
+|-
+|[[La Teste-de-Buch]]||[[Gironde]]||[[Aquitaine]]||24,911||336
+|-
+|[[Armentières]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||24,836||337
+|-
+|[[Décines-Charpieu]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||24,668||338
+|-
+|[[Dole, Jura|Dole]]||[[Jura (department)|Jura]]||[[Franche-Comté]]||24,606||339
+|-
+|[[Matoury]]||[[French Guiana]]||[[French Guiana]]||24,583||340
+|-
+|[[Villeneuve-la-Garenne]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||24,568||341
+|-
+|[[Miramas]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||24,517||342
+|-
+|[[Saint-Sébastien-sur-Loire]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||24,508||343
+|-
+|[[Champs-sur-Marne]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||24,499||344
+|-
+|[[Épernay]]||[[Marne]]||[[Champagne-Ardenne]]||24,456||345
+|-
+|[[Bègles]]||[[Gironde]]||[[Aquitaine]]||24,417||346
+|-
+|[[Chaumont, Haute-Marne|Chaumont]]||[[Haute-Marne]]||[[Champagne-Ardenne]]||24,357||347
+|-
+|[[Orvault]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||24,218||348
+|-
+|[[Abbeville]]||[[Somme]]||[[Picardy (region)|Picardy]]||24,052||349
+|-
+|[[Rodez]]||[[Aveyron]]||[[Midi-Pyrénées]]||24,028||350
+|-
+|[[Vernon, Eure|Vernon]]||[[Eure]]||[[Haute-Normandie]]||24,018||351
+|-
+|[[Fontenay-aux-Roses]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||23,964||352
+|-
+|[[Lunel]]||[[Hérault]]||[[Languedoc-Roussillon]]||23,914||353
+|-
+|[[Le Robert]]||[[Martinique]]||[[Martinique]]||23,856||354
+|-
+|[[Bruay-la-Buissière]]||[[Pas-de-Calais]]||[[Nord-Pas-de-Calais]]||23,813||355
+|-
+|[[Le Creusot]]||[[Saône-et-Loire]]||[[Bourgogne]]||23,813||356
+|-
+|[[Kourou]]||[[French Guiana]]||[[French Guiana]]||23,813||357
+|-
+|[[Sèvres]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||23,726||358
+|-
+|[[Bourgoin-Jallieu]]||[[Isère]]||[[Rhône-Alpes]]||23,659||359
+|-
+|[[Eaubonne]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||23,640||360
+|-
+|[[Muret]]||[[Haute-Garonne]]||[[Midi-Pyrénées]]||23,622||361
+|-
+|[[Oyonnax]]||[[Ain]]||[[Rhône-Alpes]]||23,618||362
+|-
+|[[Villeneuve-sur-Lot]]||[[Lot-et-Garonne]]||[[Aquitaine]]||23,466||363
+|-
+|[[Le Bouscat]]||[[Gironde]]||[[Aquitaine]]||23,411||364
+|-
+|[[Lisieux]]||[[Calvados]]||[[Basse-Normandie]]||23,343||365
+|-
+|[[Le Plessis-Robinson]]||[[Hauts-de-Seine]]||[[Île-de-France (region)|Île-de-France]]||23,312||366
+|-
+|[[Villeparisis]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||23,302||367
+|-
+|[[Libourne]]||[[Gironde]]||[[Aquitaine]]||23,296||368
+|-
+|[[Cenon]]||[[Gironde]]||[[Aquitaine]]||23,171||369
+|-
+|[[Montgeron]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||23,105||370
+|-
+|[[Sainte-Anne, Guadeloupe|Sainte-Anne]]||[[Guadeloupe]]||[[Guadeloupe]]||23,073||371
+|-
+|[[Coudekerque-Branche]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||22,994||372
+|-
+|[[Gradignan]]||[[Gironde]]||[[Aquitaine]]||22,988||373
+|-
+|[[Fontaine, Isère|Fontaine]]||[[Isère]]||[[Rhône-Alpes]]||22,936||374
+|-
+|[[Montigny-lès-Metz]]||[[Moselle]]||[[Lorraine (region)|Lorraine]]||22,843||375
+|-
+|[[Hérouville-Saint-Clair]]||[[Calvados]]||[[Basse-Normandie]]||22,766||376
+|-
+|[[Brétigny-sur-Orge]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||22,753||377
+|-
+|[[La Madeleine, Nord|La Madeleine]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||22,681||378
+|-
+|[[Saint-Ouen-l'Aumône]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||22,681||379
+|-
+|[[Lanester]]||[[Morbihan]]||[[Brittany (administrative region)|Brittany]]||22,627||380
+|-
+|[[Étampes]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||22,568||381
+|-
+|[[Maisons-Laffitte]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||22,566||382
+|-
+|[[Frontignan]]||[[Hérault]]||[[Languedoc-Roussillon]]||22,410||383
+|-
+|[[Mons-en-Barœul]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||22,360||384
+|-
+|[[Torcy, Seine-et-Marne|Torcy]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||22,299||385
+|-
+|[[Saint-Mandé]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||22,211||386
+|-
+|[[Sainte-Foy-lès-Lyon]]||[[Rhône (department)|Rhône]]||[[Rhône-Alpes]]||22,208||387
+|-
+|[[Millau]]||[[Aveyron]]||[[Midi-Pyrénées]]||22,133||388
+|-
+|[[Le Petit-Quevilly]]||[[Seine-Maritime]]||[[Haute-Normandie]]||22,132||389
+|-
+|[[Saint-Pol-sur-Mer]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||22,100||390
+|-
+|[[Les Lilas]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||22,071||391
+|-
+|[[La Valette-du-Var]]||[[Var (department)|Var]]||[[Provence-Alpes-Côte d'Azur]]||22,067||392
+|-
+|[[Forbach]]||[[Moselle]]||[[Lorraine (region)|Lorraine]]||21,956||393
+|-
+|[[Gif-sur-Yvette]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||21,816||394
+|-
+|[[Beaune]]||[[Côte-d'Or]]||[[Bourgogne]]||21,778||395
+|-
+|[[Sarreguemines]]||[[Moselle]]||[[Lorraine (region)|Lorraine]]||21,733||396
+|-
+|[[Morsang-sur-Orge]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||21,717||397
+|-
+|[[Sainte-Suzanne, Réunion|Sainte-Suzanne]]||[[Réunion]]||[[Réunion]]||21,714||398
+|-
+|[[Saint-Dié-des-Vosges]]||[[Vosges]]||[[Lorraine (region)|Lorraine]]||21,642||399
+|-
+|[[Combs-la-Ville]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||21,603||400
+|-
+|[[Auch]]||[[Gers]]||[[Midi-Pyrénées]]||21,545||401
+|-
+|[[Cormeilles-en-Parisis]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||21,503||402
+|-
+|[[Saint-Gratien, Val-d'Oise|Saint-Gratien]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||21,436||403
+|-
+|[[Schœlcher]]||[[Martinique]]||[[Martinique]]||21,419||404
+|-
+|[[Fleury-les-Aubrais]]||[[Loiret]]||[[Centre (region)|Centre]]||21,418||405
+|-
+|[[Montmorency, Val-d'Oise|Montmorency]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||21,416||406
+|-
+|[[Loos, Nord|Loos]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||21,410||407
+|-
+|[[Grande-Synthe]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||21,408||408
+|-
+|[[Agde]]||[[Hérault]]||[[Languedoc-Roussillon]]||21,293||409
+|-
+|[[Roissy-en-Brie]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||21,230||410
+|-
+|[[Deuil-la-Barre]]||[[Val-d'Oise]]||[[Île-de-France (region)|Île-de-France]]||21,230||411
+|-
+|[[La Celle-Saint-Cloud]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||21,202||412
+|-
+|[[Blagnac]]||[[Haute-Garonne]]||[[Midi-Pyrénées]]||21,199||413
+|-
+|[[Orly]]||[[Val-de-Marne]]||[[Île-de-France (region)|Île-de-France]]||21,197||414
+|-
+|[[Manosque]]||[[Alpes-de-Haute-Provence]]||[[Provence-Alpes-Côte d'Azur]]||21,162||415
+|-
+|[[Petit-Bourg]]||[[Guadeloupe]]||[[Guadeloupe]]||21,153||416
+|-
+|[[Hazebrouck]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||21,101||417
+|-
+|[[Vertou]]||[[Loire-Atlantique]]||[[Pays de la Loire]]||21,091||418
+|-
+|[[Gardanne]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||21,062||419
+|-
+|[[Longjumeau]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||21,048||420
+|-
+|[[Olivet, Loiret|Olivet]]||[[Loiret]]||[[Centre (region)|Centre]]||21,032||421
+|-
+|[[Le Moule]]||[[Guadeloupe]]||[[Guadeloupe]]||21,027||422
+|-
+|[[Lormont]]||[[Gironde]]||[[Aquitaine]]||20,944||423
+|-
+|[[Fougères]]||[[Ille-et-Vilaine]]||[[Brittany (administrative region)|Brittany]]||20,941||424
+|-
+|[[Croix, Nord|Croix]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||20,926||425
+|-
+|[[Mandelieu-la-Napoule]]||[[Alpes-Maritimes]]||[[Provence-Alpes-Côte d'Azur]]||20,850||426
+|-
+|[[Dammarie-lès-Lys]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||20,838||427
+|-
+|[[Dax, Landes|Dax]]||[[Landes (department)|Landes]]||[[Aquitaine]]||20,810||428
+|-
+|[[Voiron]]||[[Isère]]||[[Rhône-Alpes]]||20,672||429
+|-
+|[[Mont-Saint-Aignan]]||[[Seine-Maritime]]||[[Haute-Normandie]]||20,659||430
+|-
+|[[Moulins, Allier|Moulins]]||[[Allier]]||[[Auvergne (region)|Auvergne]]||20,599||431
+|-
+|[[Le Mée-sur-Seine]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||20,580||432
+|-
+|[[Denain]]||[[Nord (department)|Nord]]||[[Nord-Pas-de-Calais]]||20,339||433
+|-
+|[[Les Pennes-Mirabeau]]||[[Bouches-du-Rhône]]||[[Provence-Alpes-Côte d'Azur]]||20,231||434
+|-
+|[[Les Pavillons-sous-Bois]]||[[Seine-Saint-Denis]]||[[Île-de-France (region)|Île-de-France]]||20,204||435
+|-
+|[[Ozoir-la-Ferrière]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||20,152||436
+|-
+|[[Lagny-sur-Marne]]||[[Seine-et-Marne]]||[[Île-de-France (region)|Île-de-France]]||20,086||437
+|-
+|[[Cahors]]||[[Lot (department)|Lot]]||[[Midi-Pyrénées]]||20,062||438
+|-
+|[[Saint-Michel-sur-Orge]]||[[Essonne]]||[[Île-de-France (region)|Île-de-France]]||20,041||439
+|-
+|[[Vélizy-Villacoublay]]||[[Yvelines]]||[[Île-de-France (region)|Île-de-France]]||20,030||440

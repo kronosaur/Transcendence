@@ -1,0 +1,585 @@
+
+Library Link v1.0
+Copyright (c) 1997 by NeuroHack. All Rights Reserved.
+
+System Map Entries
+
+Boot [link]: Contains code to execute when the Library is opened.
+CommandLineBuffer [link]: Stores the command line text between sessions.
+NodeTable [link]: The contents of the $NodeTable
+NTFreeList [link]: The list of free nodes in the Node Table ($NTFreeList)
+Shutdown [link]: Contains code to execute when the Library is closed.
+
+Control Functions
+
+(apply func arg1 arg2 ... argn arg-list)
+(block (vars) exp1 exp2 ... expn)
+(errblock (error vars) exp1 exp2 ... expn error-exp)
+(eq exp1 exp2 ... expn)
+(if cond then else)
+(lambda (args) code)
+(setq var exp)
+
+Library Link Functions
+
+(libAddEntry entry)
+(libAddNode Title Class)
+(libDeleteEntry unid)
+(libEditor EditorID data)
+(libEditorData)
+(libGetMap)
+(libListMap)
+(libQuit)
+(libReadEntry unid)
+(libReadMapEntry symbol)
+(libReadNode NodeID)
+(libShowNode NodeID)
+(libWriteEntry unid entry)
+(libWriteMapEntry symbol entry)
+(libWriteNode NodeID data)
+
+List Functions
+
+(count list)
+(item list index)
+(list exp1 exp2 ... expn)
+(lnkAppend linked-list item)
+(lnkReplace linked-list index item)
+
+Math Functions
+
+(add int1 int2)
+(divide int1 int2)
+(multiply int1 int2)
+(subtract int1 int2)
+
+Miscellaneous Functions
+
+(iserror exp)
+(sysGlobals)
+(sysPoolUsage)
+
+Symbol Table Functions
+
+(symAddEntry symtab symbol entry)
+(symCreate)
+(symDeleteEntry symtab symbol)
+(symList symtab)
+(symLookup symtab symbol)
+
+Atom Table Functions
+
+(atmAddEntry atmtable atom entry)
+(atmAtomTable list)
+(atmDeleteEntry atmtable atom)
+(atmList atmtable)
+(atmLookup atmtable atom)
+
+Examples
+
+(setq square (lambda (x) (multiply x x)))
+
+sysPoolUsage Entries
+
+Integer
+String
+List
+Primitive
+Symbol Table
+Lambda
+Atom Table
+
+Object Oriented File System
+
+An "Object" is a list whose first element is an index into the Class table kept by the system. The class that the object points to describes the format of the object and the method by which the rest of the environment interfaces with it.
+
+Primitives
+
+The Library Link system has a few built-in primitive editors that provide a user-interface to all basic classes. Each primitive has a PrimitiveID which is used to identify it. The following are valid PrimitiveIDs:
+
+	Nil	No Editor Available
+	0	Command Line Shell
+	1	Line Editor
+	2	Node List (list of nodes in the library)
+
+Editors
+
+An editor is a user interface for showing and manipulating a node in the Library. The Editor table contains a list of editor definitions. The index of the entry in the table is the EditorID and is used to refer to a specific editor. Each editor definition is a list that contains the following information:
+
+Name		The name of the editor
+EditorID		The index of this editor in the Editor Table
+Classes		A list of all ClassIDs that this editor can handle
+PrimitiveID	Primitive editor to use
+PrimitiveCode	A lambda table that the primitive can call
+InterfaceCode	A lambda table that can be used to manipulate the editor
+
+The entries in the PrimitiveCode are defined by the actual primitive editor being used. The Editor Table is stored in the $Editors global variable.
+
+Interfaces
+
+Each class defines 0 or more interfaces as a means of accessing and modifying its data. The list of valid interfaces is kept in the $Interfaces global variable (and stored in the Interfaces entry). The format is a simple list of strings, each string corresponding to the name of an interface. The ordinal of the string in the list is the InterfaceID. Because of this, new interfaces should always be added at the end of the list, and deleted interfaces should be replaced with Nil.
+
+Classes
+
+The Classes Tables defines all the datatypes that are known to the Library Link system. The root class is the CNode class which represents any entry in the Node Table. The table is a list of class entries, each of which is a list containing the following information:
+
+Name		The name of the class
+ClassID		The index of this class in the Class Table
+Parent		The ClassID of the parent class
+InterfaceTable	Atom table that associates an InterfaceID with a lambda implementation
+
+The Classes Table is stored in the global variable called "$Classes"
+
+Node Table
+
+The Node Table is an index of all nodes. The table is a list of node entries, each of which is a list containing the following information:
+
+UNID		The UNID of the node
+Title		The title of this node
+Class		The ClassID of this node
+RefCount		The number of times that other nodes reference this one
+LinkList		A list of NodeIDs that this node references
+LastVersion	The NodeID of the previous version of this node
+EditorID		EditorID to use for this node
+
+The Node Table is stored in a global variable called "$NodeTable"
+
+Interface List
+
+This is an alphabetic list of all interfaces:
+
+(iLoadEditorData data) -> editor-data
+(iSaveEditorData editor-data) -> data
+
+--------------------------------------------------------------------------------------------------------
+Boot Entry
+
+(libWriteMapEntry 'Boot
+
+'(block Nil
+
+; Start by defining a whole bunch of functions
+
+; Object System Functions
+
+; (objClass obj)
+; Returns the class data for this object
+
+	(setq objClass
+	   (lambda (obj)
+	      (item $Classes (item obj 0))
+	   )
+	)
+
+; (objClassDef class-name ParentID)
+; Defines a new class and adds it to the $Classes table. Returns the ClassID 
+
+	(setq objClassDef
+	   (lambda (class-name ParentID)
+	      (block Nil
+	         (setq $Classes (lnkAppend $Classes (list class-name (count $Classes) ParentID (atmAtomTable Nil))))
+	         (subtract (count $Classes) 1)
+	      )
+	   )
+	)
+
+; (objCreate ClassID arg1 arg2 ... argn)
+; Create an instance of the given class
+
+	(setq objCreate
+	   (lambda (ClassID %args)
+	      (apply (atmLookup (item (item $Classes ClassID) 3) iCreate) ClassID %args)
+	   )
+	)
+
+; (objInterface obj)
+; Returns the interface table for this object
+
+	(setq objInterface
+	   (lambda (obj)
+	      (item (item $Classes (item obj 0)) 3)
+	   )
+	)
+
+; (objInvoke obj InterfaceID arg1 arg2 ... argn)
+; Invokes the method on the given object
+
+	(setq objInvoke
+	   (lambda (obj InterfaceID %args)
+	      (apply (atmLookup (objInterface obj) InterfaceID) obj %args)
+	   )
+	)
+
+; (objInvokeClass ClassID InterfaceID arg1 arg2 ... argn)
+; Invokes a class method
+
+	(setq objInvokeClass
+	   (lambda (ClassID InterfaceID %args)
+	      (apply (atmLookup (item (item $Classes ClassID) 3) InterfaceID) ClassID %args)
+	   )
+	)
+
+; (objMethodDef ClassID InterfaceID Method)
+; Defines a method for the class
+
+	(setq objMethodDef
+	   (lambda (ClassID InterfaceID Method)
+	      (atmAddEntry (item (item $Classes ClassID) 3) InterfaceID Method)
+	   )
+	)
+
+; INTERNAL (libNewNodeID)
+; Reserves a new NodeID for the Library. This routine should only
+; be called by other lib routines.
+
+	(setq libNewNodeID
+	   (lambda Nil
+	      (block (NodeID Temp)
+
+	         ; NodeID is just the index into the list
+	         (setq NodeID (count $NodeTable))
+
+	         ; Set to a temp variable first, in case of error. Then,
+	         ; we set the global variable. Note that this works even if
+	         ; $NodeTable starts out being Nil
+	         (setq Temp (lnkAppend $NodeTable Nil))
+	         (setq $NodeTable Temp)
+
+	         NodeID
+	      )
+	   )
+	)
+
+; INTERNAL (libStoreNodeID NodeID Node)
+; Stores the data for the given NodeID in the NodeTable
+
+	(setq libStoreNodeID
+	   (lambda (NodeID Node)
+	      (lnkReplace $NodeTable NodeID Node)
+	   )
+	)
+
+; (libAddNode Title Class)
+; Creates a new Node in the Library and returns the NodeID.
+; Title is some string (which does not have to be unique) and Class
+; is an index into the Classes table.
+
+	(setq libAddNode
+	   (lambda (Title Class)
+	      (block (UNID NodeID)
+	         (setq UNID (libAddEntry (objInvokeClass Class iCreate)))
+	         (setq NodeID (libNewNodeID))
+	         (libStoreNodeID NodeID (list UNID Title Class 0 Nil 0 (objInvokeClass Class iGetDefaultEditorID)))
+	         NodeID
+	      )
+	   )
+	)
+
+; (libListMap)
+; Returns a list of all map entries.
+
+	(setq libListMap (lambda Nil (symList (libGetMap))))
+
+; (libReadMapEntry symbol)
+; Looks up the UNID of the symbol in the map, then returns the entry
+; that the UNID points to
+
+	(setq libReadMapEntry
+	   (lambda (symbol)
+	      (libReadEntry (symLookup (libGetMap) symbol))
+	   )
+	)
+
+; (libReadNode NodeID)
+; Returns the data for the given NodeID
+
+	(setq libReadNode
+	   (lambda (NodeID)
+	      (libReadEntry (item (item $NodeTable NodeID) 0))
+	   )
+	)
+
+; (libSaveEditorData)
+; Saves the data in the currently displayed editor
+
+	(setq libSaveEditorData
+	   (lambda Nil
+	      (if $Editor
+	         (block (Data Entry)
+	            (setq Data (libEditorData))
+	            (setq $EditorData (objInvoke $EditorData iSetEditorData Data))
+	            (setq Entry (item $NodeTable $EditorNodeID))
+	            (libWriteEntry (item Entry 0) $EditorData)
+	         )
+	      )
+	   )
+	)
+
+; (libShowNode NodeID)
+; Loads the given node into the main editor. Returns True if successful,
+; error otherwise.
+
+	(setq libShowNode
+	   (lambda (NodeID)
+	      (block (Entry Data Editor EditorData)
+	         ; save the old data
+	         (libSaveEditorData)
+	         ; now load the new editor
+	         (setq Entry (item $NodeTable NodeID))		; load the entry
+	         (setq EditorData (libReadEntry (item Entry 0)))	; get the object contents
+	         (setq Data (objInvoke EditorData iGetEditorData))	; convert the data to editor format
+	         (setq Editor (objInvokeClass (item Entry 6) iCreate))	; create an editor object
+	         (libEditor (item Editor 3) Data)			; load the primitive editor
+	         ; on success, remember various settings
+	         (setq $EditorNodeID NodeID)			; remember the current NodeID
+	         (setq $Editor Editor)
+	         (setq $EditorData EditorData)
+	      )
+	   )
+	)
+
+; (libWriteMapEntry symbol entry)
+; If the symbol exists in the map, it overwrites the entry. Otherwise, it
+; adds a new entry and a symbol to the map
+
+	(setq libWriteMapEntry
+	   (lambda (symbol entry)
+	      (errblock (error UNID)
+	         (setq UNID (symLookup (libGetMap) symbol))
+	         (libWriteEntry UNID entry)
+	; on error: if this is error "not found" then add then entry; otherwise return error
+	         (if (eq error 1)
+	            (symAddEntry (libGetMap) symbol (libAddEntry entry))
+	            error
+	         )
+	      )
+	   )
+	)
+
+; (libWriteNode NodeID data)
+; Writes data to the given NodeID
+
+	(setq libWriteNode
+	   (lambda (NodeID data)
+	      (libWriteEntry (item (item $NodeTable NodeID) 0) data)
+	   )
+	)
+
+; Now perform boot functions
+; The first thing we do is load various global variables
+
+	(setq $Classes (libReadMapEntry 'Classes))
+	(setq $Interfaces (libReadMapEntry 'Interfaces))
+	(setq $NodeTable (libReadMapEntry 'NodeTable))
+	(setq $NTFreeList (libReadMapEntry 'NTFreeList))
+
+; Now define all Interfaces
+
+	(setq $i 0)
+	(enum $Interfaces Int
+	   (set Int (setq $i (add $i 1)))
+	)
+
+; No editor currently up
+
+	(setq $Editor Nil)
+
+)
+
+)
+--------------------------------------------------------------------------------------------------------
+Shutdown Entry
+
+(libWriteMapEntry 'Shutdown
+
+'(block Nil
+
+; Write out the contents of the current editor
+
+	(libSaveEditorData)
+
+; The first thing we do is save some globals
+
+	(libWriteMapEntry 'Classes $Classes)
+	(libWriteMapEntry 'Interfaces $Interfaces)
+	(libWriteMapEntry 'NodeTable $NodeTable)
+	(libWriteMapEntry 'NTFreeList $NTFreeList)
+
+)
+
+)
+
+--------------------------------------------------------------------------------------------------------
+Interfaces Table
+
+(setq $Interfaces
+	'(
+	iCreate					; 0001 (iCreate ClassID)
+	iDestroy
+	iGetDefaultEditorID				; 0003 (iGetDefaultEditorID ClassID)
+	iGetEditorData				; 0004 (iGetEditorData obj)
+	iSetEditorData				; 0005 (iSetEditorData obj Data)
+	iNodeListShowNode			; 0006 (iNodeListShowNode obj NodeID)
+	iGetRawImage				; 0007 (iGetRawImage obj) -> vector
+	)
+)
+
+--------------------------------------------------------------------------------------------------------
+Classes Table
+
+Name		The name of the class
+ClassID		The index of this class in the Class Table
+Parent		The ClassID of the parent class
+InterfaceTable	Atom table that associates an InterfaceID with a lambda implementation
+
+(block (ClassID)
+(setq $Classes Nil)
+
+; [0] CFormat
+; This object represents a data format that can be stored in the library
+;
+; (objID ...)
+
+	(objClassDef 'CFormat Nil)
+
+; [1] CEditor
+; This object is an editor that can edit one or more different CFormat objects
+;
+; (objID editor-name class-list PrimitiveID PrimitiveCode)
+
+	(objClassDef 'CEditor Nil)
+
+; [2] CCommandShellFormat
+; This is a single string that represents a command shell buffer
+;
+; (objID buffer)
+
+	(setq ClassID (objClassDef 'CCommandShellFormat 0))
+	(objMethodDef ClassID iCreate
+		(list ClassID "Command Shell Buffer")
+	)
+	(objMethodDef ClassID iGetDefaultEditorID
+		3
+	)
+	(objMethodDef ClassID iGetEditorData
+		(lambda (obj) (item obj 1))
+	)
+	(objMethodDef ClassID iSetEditorData
+		(lambda (obj Data) (list 2 Data))
+	)
+
+; [3] CCommandShellEditor
+; An editor for a command shell format
+;
+; (objID "Command Shell Editor" (2) 0 Nil)
+
+	(setq ClassID (objClassDef 'CCommandShellEditor 1))
+	(objMethodDef ClassID iCreate
+		(list ClassID "Command Shell Editor" '(2) 0 Nil)
+	)
+
+; [4] CNodeListFormat
+; This is a list of nodes
+;
+; (objID options select-exp node-list)
+
+	(setq ClassID (objClassDef 'CNodeListFormat 0))
+	(objMethodDef ClassID iCreate
+		(list ClassID Nil True Nil)
+	)
+	(objMethodDef ClassID iGetDefaultEditorID
+		5
+	)
+	(objMethodDef ClassID iGetEditorData
+		(lambda (obj) (list Nil (item obj 2) (item obj 3)))
+	)
+	(objMethodDef ClassID iSetEditorData
+		(lambda (obj Data) $EditorData)
+	)
+
+; [5] CNodeListEditor
+; An editor for a list of nodes
+;
+; (objID "Node List Editor" (4) 2 Nil)
+
+	(setq ClassID (objClassDef 'CNodeListEditor 1))
+	(objMethodDef ClassID iCreate
+		(list ClassID "Node List Editor" '(4) 2 Nil)
+	)
+	(objMethodDef ClassID iNodeListShowNode
+		(lambda (obj NodeID) (libShowNode NodeID))
+	)
+
+; [6] CImageFormat
+; A bitmap image
+;
+; (objID format regions image-data)
+
+	(setq ClassID (objClassDef 'CImageFormat 0))
+	(objMethodDef ClassID iCreate
+		(list ClassID '(1 1 Nil) Nil (vecVector 1))
+	)
+	(objMethodDef ClassID iGetRawImage
+		(lambda (obj) (item obj 3))
+	)
+
+(list (count $Classes) "classes defined")
+)
+--------------------------------------------------------------------------------------------------------
+
+
+
+(libShowNode 1)
+
+(libAddNode "All Nodes" 4)
+1
+$NodeTable
+((14 Command Shell Test 2 0 Nil 0 3) (12 All Nodes 4 0 Nil 0 5))
+(libReadEntry 12)
+((14 Command Shell Test 2 0 Nil 0 3) (12 All Nodes 4 0 Nil 0 5))
+(libReadEntry 12)
+(4 Nil True Nil)
+
+(libWriteEntry 12
+
+'(4 Nil 
+(block (AllNodes Index)
+   (setq AllNodes Nil)
+   (setq Index 0)
+   (enum $NodeTable Entry
+      (block Nil
+         (if Entry
+            (setq AllNodes (lnkAppend AllNodes Index))
+         )
+         (setq Index (add Index 1))
+      )
+   )
+   AllNodes
+)
+
+Nil))
+12
+(libReadEntry 12)
+
+Nil
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

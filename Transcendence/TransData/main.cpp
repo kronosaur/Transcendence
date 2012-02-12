@@ -1,0 +1,377 @@
+//	TransData
+//
+//	TransData is used to report information out of a Transcendence
+//	datafile
+
+#include <stdio.h>
+
+#include <windows.h>
+#include <ddraw.h>
+#include "Alchemy.h"
+#include "XMLUtil.h"
+#include "TransData.h"
+
+#define NOARGS								CONSTLIT("noArgs")
+#define QUESTION_MARK_SWITCH				CONSTLIT("?")
+#define HELP_SWITCH							CONSTLIT("help")
+#define H_SWITCH							CONSTLIT("h")
+#define NO_LOGO_SWITCH						CONSTLIT("nologo")
+
+#define ADVENTURE_SWITCH					CONSTLIT("adventure")
+#define ARMOR_TABLE_SWITCH					CONSTLIT("armortable")
+#define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
+#define DEBUG_SWITCH						CONSTLIT("debug")
+#define DECOMPILE_SWITCH					CONSTLIT("decompile")
+#define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
+#define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
+#define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
+#define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
+#define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
+#define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
+#define PERF_TEST_SWITCH					CONSTLIT("perftest")
+#define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
+#define RANDOM_NUMBER_TEST					CONSTLIT("randomnumbertest")
+#define RUN_SWITCH							CONSTLIT("run")
+#define SHIELD_TEST_SWITCH					CONSTLIT("shieldtest")
+#define SHIP_IMAGE_SWITCH					CONSTLIT("shipimage")
+#define SHIP_IMAGES_SWITCH					CONSTLIT("shipimages")
+#define SHIP_TABLE_SWITCH					CONSTLIT("shiptable")
+#define SIM_TABLES_SWITCH					CONSTLIT("simTables")
+#define SMOKE_TEST_SWITCH					CONSTLIT("smoketest")
+#define SNAPSHOT_SWITCH						CONSTLIT("snapshot")
+#define STATION_FREQUENCY_SWITCH			CONSTLIT("stationfrequency")
+#define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationplacesim")
+#define STATS_SWITCH						CONSTLIT("stats")
+#define STD_ARMOR_SWITCH					CONSTLIT("stdarmor")
+#define STD_SHIELD_SWITCH					CONSTLIT("stdshield")
+#define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
+#define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
+#define TOPOLOGY_SWITCH						CONSTLIT("topology")
+#define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
+#define WORD_LIST_SWITCH					CONSTLIT("wordlist")
+
+class CHost : public CUniverse::IHost
+	{
+	public:
+		CHost (void) { m_DefaultFont.Create(CONSTLIT("Tahoma"), -13); }
+
+		virtual void ConsoleOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual void DebugOutput (const CString &sLine) { printf("%s\n", sLine.GetASCIIZPointer()); }
+		virtual const CG16bitFont *GetFont (const CString &sFont) { return &m_DefaultFont; }
+
+	private:
+		CG16bitFont m_DefaultFont;
+	};
+
+void AlchemyMain (CXMLElement *pCmdLine);
+
+int main (int argc, char *argv[ ], char *envp[ ])
+
+//	main
+//
+//	main entry-point
+
+	{
+	//	Output Windows Western codepage
+	::SetConsoleOutputCP(1252);
+
+#ifdef DEBUG_MEMORY_LEAKS
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); 
+#endif
+
+	if (!kernelInit())
+		{
+		printf("ERROR: Unable to initialize Alchemy kernel.\n");
+		return 1;
+		}
+
+	//	Do it
+
+	{
+	ALERROR error;
+	CXMLElement *pCmdLine;
+	if (error = CreateXMLElementFromCommandLine(argc, argv, &pCmdLine))
+		{
+		printf("ERROR: Unable to parse command line.\n");
+		return 1;
+		}
+
+	AlchemyMain(pCmdLine);
+
+	delete pCmdLine;
+	}
+
+	//	Done
+
+	kernelCleanUp();
+	return 0;
+	}
+
+void AlchemyMain (CXMLElement *pCmdLine)
+
+//	AlchemyMain
+//
+//	Main entry-point after kernel initialization
+
+	{
+	ALERROR error;
+	bool bLogo = !pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
+
+	if (bLogo)
+		{
+		printf("TransData v2.41\n");
+		printf("Copyright (c) 2001-2011 by George Moromisato. All Rights Reserved.\n\n");
+		}
+
+	if (pCmdLine->GetAttributeBool(NOARGS)
+			|| pCmdLine->GetAttributeBool(QUESTION_MARK_SWITCH)
+			|| pCmdLine->GetAttributeBool(HELP_SWITCH)
+			|| pCmdLine->GetAttributeBool(H_SWITCH))
+		{
+		ShowHelp(pCmdLine);
+		return;
+		}
+
+	//	Set debug log
+
+#ifdef DEBUG
+	CTextFileLog LogFile(CONSTLIT("TransData.log"));
+	::kernelSetDebugLog(&LogFile, FALSE);
+#endif
+
+	//	Figure out the data file that we're working on
+
+	CString sDataFile = CONSTLIT("Transcendence");
+
+	//	See if we are doing a command that does not require parsing
+
+	if (pCmdLine->GetAttributeBool(WORD_LIST_SWITCH))
+		{
+		GenerateWordList(sDataFile, pCmdLine);
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+	else if (pCmdLine->GetAttributeBool(WORD_GENERATOR_SWITCH))
+		{
+		WordGenerator(pCmdLine);
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+	else if (pCmdLine->GetAttributeBool(ENTITIES_SWITCH))
+		{
+		GenerateEntitiesTable(sDataFile, pCmdLine);
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+	else if (pCmdLine->GetAttributeBool(DECOMPILE_SWITCH))
+		{
+		Decompile(sDataFile, pCmdLine);
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+
+	//	Figure out what adventure we need
+
+	DWORD dwAdventureUNID;
+	if (!pCmdLine->FindAttributeInteger(ADVENTURE_SWITCH, (int *)&dwAdventureUNID))
+		dwAdventureUNID = DEFAULT_ADVENTURE_UNID;
+
+	//	See if we need to load images
+
+	DWORD dwInitFlags = 0;
+	if (pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
+			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
+			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
+			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH))
+		;
+	else
+		dwInitFlags |= flagNoResources;
+
+	//	We don't need a version check
+
+	dwInitFlags |= flagNoVersionCheck;
+
+	//	Open the universe
+
+	if (bLogo)
+		printf("Loading...");
+
+	CHost Host;
+	CUniverse Universe;
+	Universe.SetHost(&Host);
+	CString sError;
+	if (error = Universe.Init(sDataFile, &sError, dwInitFlags))
+		{
+		printf("\n%s\n", sError.GetASCIIZPointer());
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+
+	if (pCmdLine->GetAttributeBool(DEBUG_SWITCH))
+		Universe.SetDebugMode();
+
+	if (error = Universe.InitAdventure(dwAdventureUNID, NULL, &sError, dwInitFlags))
+		{
+		printf("\n%s\n", sError.GetASCIIZPointer());
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+
+	if (error = Universe.InitGame(&sError))
+		{
+		printf("\n%s\n", sError.GetASCIIZPointer());
+		::kernelSetDebugLog(NULL);
+		return;
+		}
+
+	if (bLogo)
+		printf("done.\n");
+
+	//	Mark everything as known
+
+	MarkItemsKnown(Universe);
+
+	//	Figure out what to do
+
+	if (pCmdLine->GetAttributeBool(ARMOR_TABLE_SWITCH))
+		GenerateArmorTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
+		GenerateEncounterTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
+		GenerateItemFrequencyTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
+		{
+		CIDTable EntityTable(TRUE, TRUE);
+		ComputeUNID2EntityTable(sDataFile, EntityTable);
+		GenerateItemTable(Universe, pCmdLine, EntityTable);
+		}
+	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
+		GenerateLootSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(RANDOM_ITEMS_SWITCH))
+		GenerateRandomItemTables(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(RANDOM_NUMBER_TEST))
+		DoRandomNumberTest();
+	else if (pCmdLine->FindAttribute(RUN_SWITCH))
+		Run(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SHIELD_TEST_SWITCH))
+		GenerateShieldStats(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH))
+		GenerateShipImage(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))
+		GenerateShipImageChart(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SHIP_TABLE_SWITCH))
+		{
+		CIDTable EntityTable(TRUE, TRUE);
+		ComputeUNID2EntityTable(sDataFile, EntityTable);
+		GenerateShipTable(Universe, pCmdLine, EntityTable);
+		}
+	else if (pCmdLine->GetAttributeBool(SIM_TABLES_SWITCH))
+		GenerateSimTables(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH))
+		DoSmokeTest(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH))
+		GenerateSnapshot(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(STATION_FREQUENCY_SWITCH))
+		GenerateStationFrequencyTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(STATION_PLACE_SIM_SWITCH))
+		GenerateStationPlaceSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(STATS_SWITCH))
+		GenerateStats(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(STD_ARMOR_SWITCH))
+		GenerateStdArmorTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(STD_SHIELD_SWITCH))
+		GenerateStdShieldTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
+		GenerateSystemLabelCount(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SYSTEM_TEST_SWITCH))
+		GenerateSystemTest(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TOPOLOGY_SWITCH))
+		GenerateTopology(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ATTRIBUTE_LIST_SWITCH))
+		GenerateAttributeList(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(PERF_TEST_SWITCH))
+		PerformanceTest(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
+		RunEncounterSim(Universe, pCmdLine);
+	else
+		GenerateStats(Universe, pCmdLine);
+
+	//	Done
+
+	::kernelSetDebugLog(NULL);
+	}
+
+void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable)
+	{
+	ALERROR error;
+	int i;
+	CString sError;
+
+	//	Open the XML file
+
+	CResourceDb Resources(sDataFile);
+	if (error = Resources.Open())
+		{
+		printf("Unable to initialize data file.\n");
+		return;
+		}
+
+	CExternalEntityTable *pEntities;
+	if (error = Resources.LoadEntities(&sError, &pEntities))
+		{
+		printf("%s\n", sError.GetASCIIZPointer());
+		return;
+		}
+
+	//	Add the entities to an index of UNID to entity name
+
+	for (i = 0; i < pEntities->GetCount(); i++)
+		{
+		CString sEntity, sValue;
+		pEntities->GetEntity(i, &sEntity, &sValue);
+
+		//	Add to the list
+
+		DWORD dwUNID = strToInt(sValue, 0);
+		EntityTable.AddEntry(dwUNID, new CString(sEntity));
+		}
+	}
+
+void MarkItemsKnown (CUniverse &Universe)
+	{
+	int i;
+
+	for (i = 0; i < Universe.GetItemTypeCount(); i++)
+		{
+		CItemType *pItem = Universe.GetItemType(i);
+		pItem->SetKnown();
+		pItem->SetShowReference();
+		}
+	}
+
+void Run (CUniverse &Universe, CXMLElement *pCmdLine)
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
+
+	ICCItem *pCode = CC.Link(sCommand, 0);
+	if (pCode->IsError())
+		{
+		printf("ERROR: %s\n", pCode->GetStringValue().GetASCIIZPointer());
+		pCode->Discard(&CC);
+		return;
+		}
+
+	//	Execute
+
+	ICCItem *pResult = CC.TopLevel(pCode, NULL);
+
+	//	Output result
+
+	printf("%s\n", CC.Unlink(pResult).GetASCIIZPointer());
+
+	//	Done
+
+	pResult->Discard(&CC);
+	pCode->Discard(&CC);
+	}

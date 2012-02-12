@@ -1,0 +1,31 @@
+level	category	frequency	shortName	cost
+1	Misc	C	titanium ore	11
+1	Misc	R	uranium ore	50
+2	Misc	C	plasteel ore	30
+3	Misc	C	palladium ore	65
+3	Misc	R	cobalt-thorium ore	200
+4	Misc	C	Duralloy ore	100
+4	Misc	UC	gold ore	200
+4	Misc	R	xenotite ore	400
+5	Misc	UC	platinum ore	350
+5	Misc	R	pteracnium ore	750
+8	Misc	C	neutronium ore	3000
+
+
+
+
+7			ithalium ore							
+6			orthosteel ore							
+4			ceralloy ore							
+
+									cost	profit
+1	titanium	11		2	titanium plate	50	1.5		22	28
+2	plasteel	30		4	plasteel plate	400	3		120	280
+3		100							0	0
+4	ceralloy	200		4	ceralloy	1500			800	700
+5	Duralloy	350		5	Duralloy	3000	5		1750	1250
+6	orthosteel	800		10	orthosteel	10000	8		8000	2000
+7	ithalium	1500		12	ithalium	30000	11		18000	12000
+8	neutronium	3000		50	neutronium	100000	50		150000	-50000
+9										
+10										

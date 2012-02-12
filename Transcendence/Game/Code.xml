@@ -1,0 +1,1446 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- GLOBALS ===================================================================
+
+	PREFIXES
+	
+	int			Internal functions (may change from version to version)
+	math		General math functions
+	obj			General object functions
+	scr			General functions relating to dock screens
+	str			General string functions
+	sys			General functions relating to star systems
+	
+============================================================================ -->
+
+	<Globals>
+		(block Nil
+			; Internal functions -----------------------------------------------
+			
+			(setq intAmmoBoxOpen (lambda (theContents)
+				(block Nil
+					(objAddItem gSource theContents)
+					(objSendMessage gSource Nil (cat "The box contained " (itmGetName theContents 8)))
+
+					; Identify the box
+					(itmSetKnown gItem)
+
+					; Remove box
+					(objRemoveItem gSource gItem 1)
+					)
+				))
+
+			(setq intArmorEnhanceStatus (lambda (result)
+				(switch
+					(eq result 0)
+						""
+
+					(eq result 1)
+						" But it has no effect on your armor."
+
+					(eq result 2)
+						" But your armor is already enhanced."
+
+					(eq result 3)
+						" Your armor has weakened further."
+
+					(eq result 4)
+						" It seems to have restored your armor."
+
+					(eq result 5)
+						" Your armor has lost its enhancement."
+
+					(eq result 6)
+						" Unfortunately, your armor has lost its previous enhancement."
+
+					(eq result 7)
+						" Your armor has been further enhanced."
+
+					""
+					)
+				))
+
+			(setq intArmorRepairAll (lambda (theShip repairTech alwaysRepair)
+				(block (repaired noDamage tooMuchDamage noTech)
+					(setq repaired Nil)
+					(setq noDamage True)
+					(setq tooMuchDamage Nil)
+					(setq noTech Nil)
+					(objEnumItems theShip "aI" theItem
+						(block (armorSeg type damage maxHP)
+							(setq armorSeg (itmGetArmorInstalledLocation theItem))
+							(setq type (objGetArmorType theShip armorSeg))
+							(setq damage (objGetArmorDamage theShip armorSeg))
+							(if (gr damage 0) (setq noDamage Nil))
+							(setq maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+
+							(switch
+								; No need to repair if no damage
+								(eq damage 0)
+									Nil
+
+								; If armor needs higher tech to repair, we can't do anything
+								(gr (armGetRepairTech type) repairTech)
+									(setq noTech True)
+
+								; Can't repair if damage is too much
+								(and (not alwaysRepair) 
+										(ls (subtract maxHP damage) (divide maxHP 4)))
+									(setq tooMuchDamage True)
+
+								; Repair
+								(block Nil
+									(objRepairArmor theShip armorSeg)
+									(setq repaired True)
+									)
+								)
+							)
+						)
+
+					(switch
+						repaired
+							"repaired"
+
+						noDamage
+							"noDamage"
+
+						noTech
+							"noTech"
+
+						tooMuchDamage
+							"tooMuchDamage"
+
+						"noRepair"
+						)
+					)
+				))
+
+			(setq intAutoInstall (lambda (theSource theItem)
+				(if (itmIsInstalled theItem)
+
+					; Uninstall item
+					(block Nil
+						(switch
+							(gr (itmGetMass theItem) (objGetCargoSpaceLeft theSource))
+								(objSendMessage theSource Nil "No room in cargo hold to uninstall")
+
+							(block Nil
+								(shpRemoveDevice theSource theItem)
+								(objSendMessage theSource Nil (cat (itmGetName theItem 1) " uninstalled"))
+								)
+							)
+						)
+
+					; Install item
+					(block (result)
+						(setq result (shpCanInstallDevice theSource theItem))
+
+						(switch
+							(eq result 0)
+								(block Nil
+									(shpInstallDevice theSource theItem)
+									(objSendMessage theSource Nil (cat (itmGetName theItem 1) " installed"))
+									)
+
+							(eq result 2)
+								(objSendMessage theSource Nil "Ship cannot support another device")
+
+							(eq result 6)
+								(objSendMessage theSource Nil "Ship already has a missile launcher")
+
+							(eq result 7)
+								(objSendMessage theSource Nil "Reactor upgrade required")
+
+							(objSendMessage theSource Nil (cat (itmGetName theItem 1) " cannot be installed"))
+							)
+						)
+					)
+				))
+
+			(setq intBarricadeUse (lambda (barricadeClass)
+				(block (barricade newOrientation lastPos)
+
+					; Figure out the new position for the barricade
+					(setq newOrientation (typGetGlobalData &stBarricade1; "lastOrientation"))
+
+					(setq lastPos (sysVectorPolarOffset gPlayerShip 0 0))
+					(if (gr (sysVectorDistance lastPos (typGetGlobalData &stBarricade1; "lastPos")) 0)
+						(block Nil
+							(setq newOrientation Nil)
+							(typSetGlobalData &stBarricade1; "lastPos" lastPos)
+							)
+						)
+
+					(switch
+						(not newOrientation)
+							(setq newOrientation 1)
+
+						(setq newOrientation (modulo (add newOrientation 3) 4))
+						)
+					(typSetGlobalData &stBarricade1; "lastOrientation" newOrientation)
+
+					; Create a barricade
+					(setq barricade (sysCreateStation barricadeClass (sysVectorPolarOffset gPlayerShip (multiply newOrientation 90) 2)))
+
+					; Set the image
+					(switch
+						(eq newOrientation 0)
+							(staSetImageVariant barricade 1)
+
+						(eq newOrientation 1)
+							(staSetImageVariant barricade 0)
+
+						(eq newOrientation 2)
+							(staSetImageVariant barricade 3)
+
+						(eq newOrientation 3)
+							(staSetImageVariant barricade 2)
+						)
+
+					; If the item is damaged, then the barricade is damaged
+					(if (itmIsDamaged gItem)
+						(staSetStructuralHP barricade (divide (staGetStructuralHP barricade) 2))
+						)
+
+					; Use up the item
+					(objRemoveItem gSource gItem 1)
+					)
+				))
+
+			(setq intBuyItems (lambda (itemCount itemCost)
+				(block (itemsToBuy)
+					(setq itemsToBuy (scrRemoveItem gScreen itemCount))
+					
+					; Add to player ship
+					(objAddItem gPlayerShip itemsToBuy)
+					
+					; Charge the player
+					(objCharge gPlayerShip (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+					(plyRecordBuyItem gPlayer itemsToBuy (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+
+					; Add to station balance
+					(objCredit gSource (multiply itemCount itemCost))
+
+					; If the player bought items at a black market station then
+					; increase xp
+					(if (and
+							(objHasAttribute gSource "blackmarket")
+							(itmHasModifier itemsToBuy "Illegal")
+							)
+						(objIncData gPlayerShip "blackMarketXP" (divide (multiply itemCount itemCost) 100))
+						)
+					)
+				))
+
+			(setq intCalcExplosionType (lambda (theObj)
+				(block (totalExplosivePower)
+
+					; Compute the explosive power of the items based on level and mass
+					(setq totalExplosivePower 0)
+
+					(objEnumItems theObj "*" theItem
+						(block Nil
+							(switch
+								(or (itmMatches theItem "mf") (itmMatches theItem "* +Explosive;"))
+									(block (level)
+										; Missiles count for +1 level
+										(setq level (itmGetLevel theItem))
+										(if (or (itmMatches theItem "m") (itmHasAttribute theItem "Explosive"))
+											(setq level (add level 1))
+											)
+
+										; Explosive power = level^2 * sqrt(mass-in-tons)
+										; We compute mass in 10,000th of a tons and divide later (we divide by sqrt(10,000) or 100)
+
+										(setq totalExplosivePower
+											(add totalExplosivePower (multiply (power level 2) (sqrt (multiply 10 (itmGetMass theItem) (itmGetCount theItem)))))
+											)
+										)
+								)
+							)
+						)
+
+					; Convert to tons and tweak
+					(setq totalExplosivePower (divide totalExplosivePower 100))
+					(setq totalExplosivePower (divide (multiply 150 totalExplosivePower) 100))
+
+					; Convert to explosion type
+					(switch
+						(geq totalExplosivePower 2750)
+							&vtPlasmaExplosion2;
+
+						(geq totalExplosivePower 2200)
+							&vtPlasmaExplosion1;
+
+						(geq totalExplosivePower 1730)
+							&vtThermoExplosion4;
+
+						(geq totalExplosivePower 1330)
+							&vtThermoExplosion3;
+
+						(geq totalExplosivePower 1000)
+							&vtThermoExplosion2;
+
+						(geq totalExplosivePower 730)
+							&vtThermoExplosion1;
+
+						(geq totalExplosivePower 510)
+							&vtBlastExplosion4;
+
+						(geq totalExplosivePower 345)
+							&vtBlastExplosion3;
+
+						(geq totalExplosivePower 215)
+							&vtBlastExplosion2;
+
+						(geq totalExplosivePower 125)
+							&vtBlastExplosion1;
+
+						(geq totalExplosivePower 65)
+							&vtKineticExplosion4;
+
+						(geq totalExplosivePower 25)
+							&vtKineticExplosion3;
+
+						(geq totalExplosivePower 10)
+							&vtKineticExplosion2;
+
+						(geq totalExplosivePower 5)
+							&vtKineticExplosion1;
+
+						Nil
+						)
+					)
+				))
+				
+			(setq intComputeBuyPrice (lambda (thisItem)
+				(objGetBuyPrice gSource thisItem)
+				))
+
+			(setq intComputeSellPrice (lambda (thisItem)
+				(objGetSellPrice gSource thisItem)
+				))
+
+			(setq intComputeRandomEncounterPos (lambda (theTarget)
+				(block (playerCourse)
+
+					; Compute the player's current course
+					(setq playerCourse (sysVectorAngle (objGetVel theTarget)))
+
+					; Create a random position that is in front of the player
+					; and not near anything
+					(sysVectorRandom theTarget
+						(lambda Nil
+							(sysVectorPolarOffset 
+								Nil 
+								(modulo (add playerCourse 360 (random -80 80)) 360)
+								120
+								)
+							)
+						10
+						"sTA"
+						)
+					)
+				))
+
+			(setq intComputeRandomEncounterCourse (lambda (theObj theTarget)
+				(block (interceptPos)
+				
+					; Interception point is wherever the player will be in 100 ticks
+					(setq interceptPos 
+						(sysVectorPolarOffset theTarget (sysVectorAngle (objGetVel theTarget))
+							(sysCalcTravelDistance (objGetVel theTarget) 100)
+							)
+						)
+
+					; Compute course
+					(sysVectorAngle (sysVectorSubtract interceptPos (objGetPos theObj)))
+					)
+				))
+
+			(setq intComputeRandomEncounterPosEx (lambda ()
+				(block (playerCourse startPos interceptPos encounterCourse ttime)
+				
+					; Compute the player's current course
+					(setq playerCourse (sysVectorAngle (objGetVel gPlayerShip)))
+					
+					; Create a random position that is in front of the player
+					; and not near anything
+					(setq startPos (sysVectorRandom gPlayerShip
+						(lambda Nil
+							(sysVectorPolarOffset 
+								Nil 
+								(modulo (add playerCourse 360 (random -80 80)) 360)
+								120
+								)
+							)
+						10
+						"sTA"
+						))
+						
+					; Interception point is wherever the player will be in 100 ticks
+					(setq interceptPos 
+						(sysVectorPolarOffset gPlayerShip playerCourse 
+							(sysCalcTravelDistance (objGetVel gPlayerShip) 100)
+							)
+						)
+					
+					; Compute course
+					(setq encounterCourse (sysVectorAngle (sysVectorSubtract interceptPos startPos)))
+					
+					
+					; Return start pos, course, and intercept pos
+					(list startPos encounterCourse interceptPos)
+					)
+				))
+
+			(setq intContainerOnDamage (lambda (theObj damageHP)
+				(if (gr damageHP 0)
+					(block (items)
+						; Count the amount of explosive items on board
+						(setq items (append (objGetItems theObj "mf") (objGetItems theObj "* +Explosive")))
+						(if items
+							(block (theChance totalExplosives maxHP damageAdj)
+
+								; Add up the total mass of all explosive items. Items that are
+								; "volatile" count much more
+								(setq totalExplosives 0)
+								(enum items theItem
+									(setq totalExplosives 
+										(add totalExplosives 
+											(multiply 
+												(if (itmHasAttribute theItem "Volatile") 5 1) 
+												(itmGetCount theItem) 
+												(itmGetMass theItem)
+												)
+											)
+										)
+									)
+
+								; Convert to tons/10
+								(setq totalExplosives (max 1 (divide totalExplosives 100)))
+
+								; Compute the how powerful the damage is; 100 = enough to destroy all HP
+								(setq maxHP (staGetMaxStructuralHP theObj))
+								(if (gr maxHP 0)
+									(setq damageAdj (max 1 (divide (multiply 100 damageHP) maxHP)))
+									(block Nil
+										(setq damageAdj 1)
+										(setq maxHP 1)
+										)
+									)
+
+								; Probability of explosion is proportional to the ratio explosives to structural hp
+								(setq theChance (divide (multiply (min 25 damageAdj) 9 totalExplosives) (add maxHP 50)))
+
+								;(dbgOutput "maxHP = " maxHP)
+								;(dbgOutput "damageAdj = " damageAdj)
+								;(dbgOutput "totalExplosives = " totalExplosives)
+								;(dbgOutput "chance = " theChance)
+
+								; If the explosives blow up, convert the damage to a very high number so that
+								; the container is destroyed
+								(if (leq (random 1 100) theChance)
+									(block Nil
+										; Set data so that we know that we exploded
+										(objSetData theObj "DestroyedByExplosion" True)
+
+										; Very high damage
+										1000000
+										)
+									damageHP
+									)
+								)
+							damageHP
+							)
+						)
+					)
+				))
+
+			(setq intContainerGetExplosionType (lambda (theObj)
+				(switch
+					; If we were not destroyed by an internal explosion, then none is necessary
+					(not (objGetData theObj "DestroyedByExplosion"))
+						Nil
+
+					; If the player planted the explosives, then return the appropriate damage cause.
+					; Returning "playerCreatedExplosion" means that the damage will be blamed on the player
+					; when calling (objGetOrderGiver)
+
+					(objGetData theObj "PlayerExplosives")
+						(list (intCalcExplosionType theObj) 0 'playerCreatedExplosion)
+
+					; Otherwise, this is an internal explosion (return the UNID of the explosion)
+					(intCalcExplosionType theObj)
+					)
+				))
+
+			(setq intDestroyItems (lambda (theObj)
+				(block (allItems remainingItems)
+					(setq allItems (objGetItems theObj "*U"))
+
+					; Generate a list of the items that are left
+					(setq remainingItems Nil)
+					(enum allItems theItem
+						(block (damagedItemCount undamgedItemCount)
+							(setq undamagedItemCount 0)
+							(setq damagedItemCount 0)
+							(switch
+								; 70% of devices and armor are destroyed
+								; 20% are damaged
+								; 10% are OK
+								(itmMatches theItem "ad")
+									(block (tenth tenthMod)
+										(setq tenth (divide (itmGetCount theItem) 10))
+										(setq tenthMod (modulo (itmGetCount theItem) 10))
+
+										(setq undamagedItemCount (add undamagedItemCount tenth (if (leq (random 1 10) tenthMod) 1 0)))
+										(setq damagedItemCount (add damagedItemCount tenth (if (leq (random 1 10) tenthMod) 1 0) tenth (if (leq (random 1 10) tenthMod) 1 0)))
+										)
+
+								; 70% of other items are destroyed
+								(block Nil
+									(setq undamagedItemCount (divide (multiply 70 (itmGetCount theItem)) 100))
+									)
+								)
+
+							; Add to our list
+							(if (gr damagedItemCount 0)
+								(setq remainingItems (append remainingItems (list (itmSetCount (itmSetDamaged theItem) damagedItemCount))))
+								)
+
+							(if (gr undamagedItemCount 0)
+								(setq remainingItems (append remainingItems (list (itmSetCount theItem undamagedItemCount))))
+								)
+
+							; Remove from object
+							(objRemoveItem theObj theItem)
+							)
+						)
+
+					; Add back remaining items
+					(enum remainingItems theItem
+						(objAddItem theObj theItem)
+						)
+					)
+				))
+
+			(setq intGetGateToSystem (lambda (theSource destSystem)
+				(block (gateID gateObj)
+
+					; Figure out which gate in the system leads to dest
+					(setq gateID (item (filter (sysGetStargates (sysGetNode)) theGate (intIsGateToSystem (sysGetNode) theGate destSystem Nil)) 0))
+
+					; Return gate object
+					(if (and gateID (setq gateObj (sysFindObject theSource (cat "NG:" gateID))))
+						gateObj
+						
+						; If not found, return the nearest gate
+						(sysFindObject theSource "NG")
+						)
+					)
+				))
+				  
+			(setq intGetGlobalAchievements (lambda ()
+				(block (theList 
+						resurrectCount
+						totalGMProfit totalArmsProfit totalEquipProfit totalMedsProfit totalLuxProfit totalIllegalProfit
+						friendlyShipsDestroyed friendlyStationsDestroyed
+						systemData neverBacktracked
+						slavesFreed slaveSales
+						neverReachedBA neverReachedStK neverReachedJiangs neverReachedPointJuno neverReachedHeretic)
+				
+					; Game stats
+					(setq resurrectCount (plyGetStat gPlayer "resurrectCount"))
+				
+					; Commerce stats
+					(setq totalGMProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "*~fudam -Fuel; -Illegal; -Lux; -Meds;")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "*~fudam -Fuel; -Illegal; -Lux; -Meds;"))
+						)
+					(setq totalArmsProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "wsam")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "wsam"))
+						)
+					(setq totalEquipProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "fud~ws")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "fud~ws"))
+						)
+					(setq totalMedsProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "*~wsam +Meds")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "*~wsam +Meds"))
+						)
+					(setq totalLuxProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "*~wsam +Lux")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "*~wsam +Lux"))
+						)
+					(setq totalIllegalProfit (subtract (plyGetItemStat gPlayer "itemsSoldValue" "*~wsam +Illegal")
+						(plyGetItemStat gPlayer "itemsBoughtValue" "*~wsam +Illegal"))
+						)
+						
+					; Conducts
+					(setq systemData (plyGetStat gPlayer "systemData"))
+					(setq neverBacktracked (not (filter systemData theData (not (eq (item theData 1) (item theData 2))))))
+					(setq friendlyShipsDestroyed (plyGetStat gPlayer "friendlyShipsDestroyed"))
+					(setq friendlyStationsDestroyed (plyGetStat gPlayer "friendlyStationsDestroyed"))
+					
+					; Exploration
+					(setq neverReachedBA (not (find systemData "BA" 0)))
+					(setq neverReachedStK (not (find systemData "SK" 0)))
+					(setq neverReachedJiangs (not (find systemData "C9" 0)))
+					(setq neverReachedPointJuno (not (find systemData "PJ" 0)))
+					(setq neverReachedHeretic (not (find systemData "G2" 0)))
+					
+					; Misc
+					(setq slavesFreed (objGetData gPlayerShip "slavesFreed"))
+					(setq slaveSales (objGetData gPlayerShip "slaveSales"))
+					
+					; First add all the stats that are unconditional
+					(setq theList (list
+					
+						; Resurrect
+						(list (if (gr resurrectCount 0) "Game resurrections" "Honored permadeath")
+							(if (gr resurrectCount 0) resurrectCount Nil)
+							"conducts"
+							)
+						
+						; Systems visited
+						(list "Systems visited" (plyGetStat gPlayer "systemsVisited") "exploration")
+						
+						))
+					
+					; Next add all stats that are conditional (are not always added)
+					(setq theList (append theList 
+					
+						; Never backtracked
+						(if neverBacktracked
+							(list (list "Never backtracked" Nil "conducts"))
+							)
+							
+						; Never killed friendlies
+						(if (not friendlyStationsDestroyed)
+							(if (not friendlyShipsDestroyed)
+								(list (list "Never destroyed friendly ships or stations" Nil "conducts"))
+								(list (list "Never destroyed friendly stations" Nil "conducts"))
+								)
+							)
+							
+						; Exploration
+						(if	neverReachedBA
+							(list (list "Never reached Rigel Aurelius" Nil "exploration" "Z001"))
+							)
+						(if	neverReachedStK
+							(list (list "Never reached St. Katharine's Star" Nil "exploration" "Z002"))
+							)
+						(if	neverReachedJiangs
+							(list (list "Never reached Jiang's Star" Nil "exploration" "Z003"))
+							)
+						(if	neverReachedPointJuno
+							(list (list "Never reached Point Juno" Nil "exploration" "Z004"))
+							)
+						(if	neverReachedHeretic
+							(list (list "Never reached Heretic" Nil "exploration" "Z005"))
+							)
+						
+						(list (list "Never reached the Galactic Core" Nil "exploration" "Z006"))
+					
+						; Total goods profit
+						(if (gr totalGMProfit 0)
+							(list (list "Profit on goods and materials" totalGMProfit "commerce"))
+							)
+						(if (gr totalArmsProfit 0)
+							(list (list "Profit on arms" totalArmsProfit "commerce"))
+							)
+						(if (gr totalMedsProfit 0)
+							(list (list "Profit on medical supplies" totalMedsProfit "commerce"))
+							)
+						(if (gr totalLuxProfit 0)
+							(list (list "Profit on luxury goods" totalLuxProfit "commerce"))
+							)
+						(if (gr totalIllegalProfit 0)
+							(list (list "Profit on illegal items" totalIllegalProfit "commerce"))
+							)
+						(if (gr totalEquipProfit 0)
+							(list (list "Profit on ship's equipment" totalEquipProfit "commerce"))
+							)
+							
+						; Slave sales
+						(if slaveSales
+							(list (list "Profit on slave sales" slaveSales "commerce"))
+							)
+							
+						; Slaves freed
+						(if slavesFreed
+							(list (list "Slaves freed" slavesFreed "missions &amp; activities"))
+							)
+						))
+						
+					theList
+					)
+				))
+
+			(setq intItemEnhanceStatus (lambda (result successText itemName)
+				(switch
+					(eq result 0)
+						successText
+
+					(eq result 1)
+						"The enhancement has no effect"
+
+					(eq result 2)
+						(cat (strCapitalize itemName) " is already enhanced")
+
+					(eq result 3)
+						(cat (strCapitalize itemName) " has weakened further")
+
+					(eq result 4)
+						(cat (strCapitalize itemName) " has been repaired")
+
+					(eq result 5)
+						(cat (strCapitalize itemName) " has lost its enhancement")
+
+					(eq result 6)
+						(cat successText " (previous enhancement lost)")
+
+					(eq result 7)
+						(cat (strCapitalize itemName) " has been further enhanced")
+
+					""
+					)
+				))
+				
+			(setq intIsGateToSystem (lambda (nodeID gateID destSystem nodesChecked)
+				(block (destNode)
+					(setq destNode (sysGetStargateDestinationNode nodeID gateID))
+					(if (eq destNode destSystem)
+						True
+
+						(block (stargates)
+							(setq nodesChecked (append nodesChecked (list nodeID)))
+							(setq stargates (filter (sysGetStargates destNode) theGate
+								(not (find nodesChecked (sysGetStargateDestinationNode destNode theGate)))
+								))
+
+							(if stargates
+								(filter stargates theGate (intIsGateToSystem destNode theGate destSystem nodesChecked))
+								Nil
+								)
+							)
+						)
+					)
+				))
+				
+			(setq intJettisonItem (lambda (theObj theItem)
+				(block Nil
+					(objAddItem theObj theItem)
+
+					; If the player jettisoned explosive items, then mark the object
+					(if (or (itmMatches theItem "mf") (itmMatches theItem "* +explosive;"))
+						(objSetData theObj "PlayerExplosives" True)
+						)
+					)
+				))
+
+			(setq intLootAllItems (lambda (theSource theDest criteria)
+				(block (lootedItems)
+					(setq lootedItems (objGetItems theSource criteria))
+					(enum lootedItems theItem
+						(block (itemMass fitCount)
+							(setq itemMass (itmGetMass theItem))
+							(setq fitCount (divide (objGetCargoSpaceLeft theDest) itemMass))
+							(if (gr fitCount (itmGetCount theItem))
+								(setq fitCount (itmGetCount theItem))
+								)
+							(if (gr fitCount 0)
+								(block Nil
+									(objRemoveItem theSource theItem fitCount)
+									(objAddItem theDest theItem fitCount)
+									)
+								)
+							)
+						)
+					)
+				))
+
+			(setq intMissionAchievementString (lambda (missionsCompleted missionsFailed)
+				(if (eq (int missionsFailed) 0)
+					(int missionsCompleted)
+					(cat missionsCompleted " (" missionsFailed " failed)")
+					)
+				))
+
+			(setq intSellItems (lambda (itemCount itemCost)
+				(block (itemsToSell)
+					(setq itemsToSell (scrRemoveItem gScreen itemCount))
+					
+					; Add to player ship
+					(objAddItem gSource itemsToSell)
+					
+					; Credit the player
+					(objCredit gPlayerShip (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+					(plyRecordSellItem gPlayer itemsToSell (objGetDefaultCurrency gSource) (multiply itemCount itemCost))
+
+					; Remove from station balance
+					(objCharge gSource (multiply itemCount itemCost))
+
+					; If the player just sold slaves, then keep track
+					(if (itmHasModifier itemsToSell "Slaves")
+						(block Nil
+							(setq sales (objGetData gPlayerShip "slaveSales"))
+							(if (not sales)
+								(setq sales 0)
+								)
+
+							(setq sales (add sales (multiply itemCount itemCost)))
+							(objSetData gPlayerShip "slaveSales" sales)
+
+							; Chance of getting caught
+							(if (ls (random 1 50) itemCount)
+								(intCommonwealthCrime 2 "slave-trading")
+								)
+							)
+						)
+					)
+				))
+
+			(setq intSetCompatibleFuelEx (lambda (fuelList)
+			;
+			; fuelList should be a list of fuel price entries.
+			; Each fuel price entry is a list with two elements:
+			;
+			; fuel item UNID
+			; cost adjustment (100 = full price)
+			;
+			; The fuel price entries should be in order of most
+			; advanced fuel to least advanced fuel.
+			;
+			; Sets:
+			;
+			; gItem
+			; gCost
+			
+				(block (currencyUsed fuelFound)
+					(setq currencyUsed (objGetDefaultCurrency gSource))
+					(setq fuelFound Nil)
+					(enumwhile fuelList (not fuelFound) theFuel
+						(block Nil
+							(setq gItem (itmCreate (item theFuel 0) 1))
+							
+							; See if we are compatible with this fuel
+							
+							(if (shpIsFuelCompatible gPlayerShip gItem)
+								(block (baseCost)
+									; Compute price
+									(setq baseCost (itmGetPrice gItem currencyUsed))
+									(setq gCost (divide (multiply (item theFuel 1) baseCost) 100))
+									
+									; Done
+									(setq fuelFound True)
+									)
+								)
+							)
+						)
+						
+					; If fuel is not found, set gCost to 0 so that
+					; at least it is defined
+					(if (not fuelFound)
+						(setq gCost 0)
+						)
+						
+					fuelFound
+					)
+				))
+
+			(setq intRandomMessage (lambda (source staticVar altVar)
+				(block (msgList)
+					(setq msgList (objGetStaticData source staticVar))
+					(if	(not msgList)
+						(setq msgList (objGetStaticData source altVar))
+						)
+					(seededRandom (add (divide (unvGetTick) 1901) (objGetDestiny source)) msgList)
+					)
+				))
+
+			(setq intRoundDown (lambda (value multiple)
+				(multiply (divide value multiple) multiple)
+				))
+
+			(setq intRoundUp (lambda (value multiple)
+				(multiply (divide (add value (subtract multiple 1)) multiple) multiple)
+				))
+
+			(setq intInstallDevicePrepEx (lambda 
+				(
+					thisItem				; Item to install
+					costToInstall			; Total installation cost (Nil if we should compute this)
+					installMargin			; Markup on installation cost (only if costToInstall is Nil)
+					currencyUsed			; Currency to use in transaction
+					maxTechLevel			; Max tech level that we will install
+					techCriteria			; If not Nil, the item must match this criteria
+					checkMilitaryID			; If True, we make sure player has a militaryID
+					isItemInCargo			; If True, item is in player's cargo hold
+					buyAndInstall			; If True, we're installing as part of purchase
+					)
+
+				; We return a list with the following elements:
+				;
+				; (
+				;     canInstall			True if installation can proceed
+				;     totalCost             Total installation cost
+				;     desc					Description of installation attemp
+				;	  )
+
+				(block (totalCost canInstall desc theResult itemName)
+				
+					(setq itemName (itmGetName thisItem (if buyAndInstall 0x40 0x04)))
+					(setq canInstall Nil)
+
+					(if thisItem
+						(block (cargoNeeded replaceCriteria)
+						
+							; Compute the cost to install
+							
+							(switch
+								costToInstall
+									(setq totalCost costToInstall)
+									
+								(isfunction installMargin)
+									(setq totalCost (apply installMargin thisItem Nil))
+									
+								(setq totalCost (divide (multiply installMargin (itmGetInstallCost thisItem currencyUsed)) 100))
+								)
+
+							(setq theResult (shpCanInstallDevice gPlayerShip thisItem))
+							(setq replaceCriteria Nil)
+
+							(switch
+								; If we don't have the technology, we cannot install
+								; (except for specific items that we know about)
+								(and (gr (itmGetLevel thisItem) maxTechLevel)
+										(or (not techCriteria)
+											(not (itmMatches thisItem techCriteria)))
+										)
+									(setq desc (cat "We do not have the technology to install " itemName " on your ship."))
+
+								(and checkMilitaryID
+										(itmHasModifier thisItem "Military")
+										(not (objGetItems gPlayerShip "*+MilitaryID"))
+										)
+									(setq desc (cat "You must have a military ID to use " itemName "."))
+									
+								(and checkMilitaryID
+										(itmHasModifier thisItem "Illegal")
+										)
+									(setq desc "We do not install illegal items.")
+
+								(eq theResult 2)
+									(setq desc "Your ship cannot support any more devices.")
+
+								(eq theResult 4)
+									(block Nil
+										(setq desc (cat "We can remove your shield generator and install " itemName))
+										(setq replaceCriteria "sI")
+										(setq canInstall True)
+										)
+
+								(eq theResult 5)
+									(block Nil
+										(setq desc (cat "We can remove your propulsion system and install " itemName))
+										(setq replaceCriteria "vI")
+										(setq canInstall True)
+										)
+
+								(eq theResult 6)
+									(block Nil
+										(setq desc (cat "We can remove your missile launcher and install " itemName))
+										(setq replaceCriteria "lI")
+										(setq canInstall True)
+										)
+
+								(eq theResult 7)
+									(setq desc "Your ship's reactor is not powerful enough for this device.")
+
+								(eq theResult 8)
+									(setq desc "You already have a cargo expansion system installed.")
+
+								(eq theResult 9)
+									(block Nil
+										(setq desc (cat "We can remove your reactor upgrade and install " itemName))
+										(setq replaceCriteria "rI")
+										(setq canInstall True)
+										)
+
+								(eq theResult 10)
+									(setq desc "The cargo expansion system is too large to be installed in your ship.")
+
+								(eq theResult 11)
+									(setq desc (cat "The power output of " itemName " is too high for your ship."))
+
+								(eq theResult 12)
+									(setq desc "Your ship cannot support any more weapons.")
+
+								(eq theResult 13)
+									(setq desc "Your ship cannot support any more non-weapon devices.")
+
+								(not (isint theResult))
+									(setq desc theResult)
+
+								(not (eq theResult 0))
+									(setq desc "This device cannot be installed.")
+
+								(block Nil
+									(setq desc (cat "We can install " itemName " on your ship"))
+									(setq canInstall True)
+									)
+								)
+
+							; If we need to remove a device, then it will cost more
+
+							(setq cargoNeeded 0)
+							(if (and canInstall replaceCriteria)
+								(objEnumItems gPlayerShip replaceCriteria itemToRemove
+									(block Nil
+										(if (not costToInstall)
+											(setq totalCost 
+												(add totalCost 
+													; Remove cost is 1/2 of install cost
+													(divide (multiply gMargin (itmGetInstallCost itemToRemove currencyUsed)) 200)
+													)
+												)
+											)
+
+										; See how much cargo space we need to store the old item
+
+										(setq cargoNeeded (itmGetMass itemToRemove))
+										(if isItemInCargo
+											(setq cargoNeeded (subtract cargoNeeded (itmGetMass thisItem)))
+											)
+										)
+									)
+								)
+
+							; See if the item fits
+
+							(if canInstall
+								(if (gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
+									(block Nil
+										(setq desc (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap."))
+										(setq canInstall Nil)
+										)
+									)
+								)
+
+							; See if we can afford the installation
+
+							(if canInstall
+								(if (gr totalCost 0)
+									(if (gr totalCost (objGetBalance gPlayerShip currencyUsed))
+										(block Nil
+											(setq desc (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost."))
+											(setq canInstall Nil)
+											)
+										(setq desc (cat desc " for " (if buyAndInstall "an additional " "") (fmtCurrency currencyUsed totalCost) "."))
+										)
+									(setq desc (cat desc " at no charge."))
+									)
+								)
+							)
+						(setq desc "You do not have any devices that can be installed.")
+						)
+
+					; Return variables
+					(list canInstall totalCost desc)
+					)
+				))
+				
+			(setq neuConsumeCharge (lambda ()
+				(block (done)
+					(setq done Nil)
+					(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
+						(switch
+							done
+								Nil
+								
+							(eq (itmGetCharges theItem) 0)
+								(objRemoveItem gPlayerShip theItem)
+								
+							(eq (itmGetCharges theItem) 1)
+								(block Nil
+									(objRemoveItem gPlayerShip theItem 1)
+									(setq done True)
+									)
+								
+							(block Nil
+								(objIncItemCharges gPlayerShip theItem -1)
+								(setq done True)
+								)
+							)
+						)
+					)
+				))
+
+			(setq neuGetCharges (lambda ()
+				(block (theCharges)
+					(setq theCharges 0)
+					(enum (objGetItems gPlayerShip "* +NeurohackROM;") theItem
+						(setq theCharges (add theCharges (itmGetCharges theItem)))
+						)
+						
+					theCharges
+					)
+				))
+				
+			(setq srvFindRepairArmor (lambda (theSource maxDist minLevel)
+				(block (theServiceEntry)
+					(random
+						(filter (sysFindObject theSource (cat "sTAFN:" maxDist)) theObj
+							(and
+								(setq theServiceEntry (lookup (objGetStaticData theObj "NPCService") 'repairArmor 0))
+								(geq (item theServiceEntry 1) minLevel)
+								)
+							)
+						)
+					)
+				))
+				
+			; Math functions ---------------------------------------------------
+			
+			(setq mathProbTableLookup (lambda (probTable)
+			
+			; probTable is a table of probabilities of the following format:
+			;
+			; ( (totalProbability Nil)
+			;   ([prob 0] [value 0])
+			;	...
+			;	([prob n] [value n])
+			;	)
+			;
+			; The function returns a random value in the table in proportion to
+			; its probability.
+			
+				(block (theRoll theEntry theProb)
+					(setq theRoll (random 1 (item (item probTable 0) 0)))
+					(setq theEntry 1)
+					(loop (and (setq theProb (item (item probTable theEntry) 0))
+							(gr theRoll theProb)
+							)
+						(block Nil
+							(setq theRoll (subtract theRoll theProb))
+							(setq theEntry (add theEntry 1))
+							)
+						)
+						
+					(item (item probTable theEntry) 1)
+					)
+				))
+				
+			; Object functions -------------------------------------------------
+			
+			(setq objAddItemByValue (lambda (theObj theItem theValue theCurrency)
+				(block Nil
+					(setq itemPrice (itmGetPrice theItem theCurrency))
+					
+					(switch
+						(eq itemPrice 0)
+							(objAddItem theObj theItem theValue)
+							
+						(gr itemPrice theValue)
+							(if (leq (random 1 itemPrice) theValue)
+								(objAddItem theObj theItem 1)
+								)
+								
+						(block Nil
+							(objAddItem theObj theItem (divide theValue itemPrice))
+							(if (leq (random 1 itemPrice) (modulo theValue itemPrice))
+								(objAddItem theObj theItem 1)
+								)
+							)
+						)
+					)
+				))
+				
+			(setq objTranslateX (lambda (theObj theMessage theDefault)
+			
+			; This function is used to translate a well-known message code to
+			; English. The function looks up the message code in a static data
+			; section labeled "Language".
+			;
+			; If the message code is not found, the function returns the default
+			; message passed in. If no default message is provided, the function
+			; return Nil.
+			; ------------------------------------------------------------------
+			
+				(block (done theResult)
+				
+					; Look for the message in the object's Language store
+					(enumwhile (objGetStaticData theObj "Language") (not done) theEntry
+						(if (eq (item theEntry 0) theMessage)
+							(block Nil
+								(setq theResult (item theEntry 1))
+								(setq done True)
+								)
+							)
+						)
+					
+					; Handle it
+					(switch
+					
+						; If we have a result, then eval it
+						theResult
+							(eval theResult)
+							
+						; If we have a default value, then use that
+						theDefault
+							theDefault
+							
+						; Otherwise, we did not find it
+						Nil
+						)
+					)
+				))
+				
+			; Dock screen functions --------------------------------------------
+			
+			(setq scrShowBuyScreen (lambda (itemsToSell returnScreen installOptions)
+			
+			; Shows a dockscreen allowing the player to buy items from the
+			; station that the player is docked at.
+			;
+			; itemsToSell is either a function or an item criteria. If it is a
+			; function then it should return the price of an item (or Nil if the
+			; station will not buy the item.
+			;
+			; returnScreen is deprecated and no longer used.
+			;
+			; installOptions is an optional argument. If present the player is
+			; offered the option to install an item that she buys. InstallOptions
+			; is a list with the following elements:
+			;
+			; 0) Item criteria of items installed by this station.
+			; 1) Max tech level that the station installs.
+			; 2) Nil (Unused)
+			; 3) If True, check military ID before allowing install.
+			; 4) Markup in install cost (%)
+			; ------------------------------------------------------------------
+			
+				(block Nil
+					; Generate the function that computes price and availability
+					(switch
+						(isfunction itemsToSell)
+							(setq gMargin itemsToSell)
+						
+						; If itemsToSell is set, then combine with station's Trade descriptors
+						(and itemsToSell (not (eq itemsToSell "*")))
+							(setq gMargin 
+								(lambda (theItem)
+									(switch
+										(not (itmMatches theItem itemsToSell))
+											Nil
+											
+										(intComputeSellPrice theItem)
+										)
+									)
+								)
+							
+						; Otherwise, rely on station's Trade descriptors
+						(setq gMargin intComputeSellPrice)
+						)
+						
+					; If this station installs devices after purchase, set some vars
+					(if installOptions
+						(block Nil
+							(setq gInstallCriteria (item installOptions 0))
+							(setq gTechLevel (item installOptions 1))
+							(setq gTechModifier (item installOptions 2))
+							(setq gCheckMilitaryID (item installOptions 3))
+							; Note: gInstallMargin = 100 means no markup
+							(setq gInstallMargin (add 100 (item installOptions 4)))
+							)
+						(setq gInstallCriteria Nil)
+						)
+						
+					; Show the screen
+					(scrShowScreen gScreen "&dsExchangeBuy;")
+					)
+				))
+
+			(setq scrShowSellScreen (lambda (itemsToBuy returnScreen screenOptions)
+			
+			; Shows a dock screen allowing the player to sell items to the 
+			; station.
+			;
+			; itemsToBuy is either a function or an item criteria. If it is a 
+			; function then it should return the price offered for the item
+			; (or Nil if the station does not want to buy it).
+			;
+			; returnScreen is obsolete.
+			;
+			; screenOptions is an optional list with the following elements:
+			;
+			; 0) The title to use for the sell screen.
+			; 1) The maximum price that the station will offer.
+			; ------------------------------------------------------------------
+			
+				(block Nil
+					; Generate the function that computes price and availability
+					(switch
+						(isfunction itemsToBuy)
+							(setq gMargin itemsToBuy)
+							
+						; If itemsToBuy is set, then combine with station's Trade descriptors
+						(and itemsToBuy (not (eq itemsToBuy "*")))
+							(setq gMargin 
+								(lambda (theItem)
+									(switch
+										(not (itmMatches theItem itemsToBuy))
+											Nil
+											
+										(intComputeBuyPrice theItem)
+										)
+									)
+								)
+							
+						; Otherwise, rely on station's Trade descriptors
+						(setq gMargin intComputeBuyPrice)
+						)
+
+					; Handle some options (Nil is OK)
+					(setq gTitle (item screenOptions 0))
+					(setq gMaxPrice (item screenOptions 1))
+					
+					; Result
+					(setq gResult 0)
+
+					; Show the screen
+					(scrShowScreen gScreen "&dsExchangeSell;")
+					)
+				))
+			
+			; String functions -------------------------------------------------
+				
+			(setq strMassString (lambda (mass)
+			
+			; Returns a string for the mass with appropriate units. The mass
+			; argument is in kilograms. This function returns strings of the
+			; following forms:
+			;
+			; n Kg
+			; n.m tons
+			; ------------------------------------------------------------------
+			
+				(block Nil
+					(switch
+						(eq mass 1)
+							"1 Kg"
+
+						(ls mass 1000)
+							(cat mass " Kg")
+
+						(block (tons remainder)
+							(setq tons (divide mass 1000))
+							(setq remainder (divide (add (subtract mass (multiply tons 1000)) 50) 100))
+							(if (eq remainder 10)
+								(block Nil
+									(setq tons (add tons 1))
+									(setq remainder 0)
+									)
+								)
+							(cat tons "." remainder " tons")
+							)
+						)
+					)
+				))
+				
+			(setq strNumber (lambda (theValue)
+			
+			; If the number is small (less than 30) we spell out the number in
+			; English. Otherwise we just use arabic numerals.
+			; ------------------------------------------------------------------
+
+				(switch
+					(ls theValue 0)
+						theValue
+
+					(leq theValue 20)
+						(item 
+							'("zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten"
+								"eleven" "twelve" "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" "eighteen" "nineteen" "twenty")
+							theValue
+							)
+
+					(ls theValue 30)
+						(cat "twenty-" (strNumber (subtract theValue 20)))
+
+					theValue
+					)
+				))
+
+			; Star system functions  -------------------------------------------
+			
+			(setq sysGetRandomOreType (lambda ()
+			
+			; Returns a random ore type appropriate to the system. This function
+			; computes the probability of any one ore type appearing in the
+			; system based on the distribution of ore items in asteroids.
+			; ------------------------------------------------------------------
+			
+				(block (oreTable)
+					; Generate a probability table from the ore-bearing 
+					; asteroids in the system. The probability table is a list
+					; of entries. Each entry is a probability followed by an
+					; ore type. The first entry has Nil followed by the total
+					; probability count.
+					
+					(setq oreTable (sysGetData "08040003_oreTable"))
+					(if (not oreTable)
+						(block (tempTable totalProb)
+							(setq tempTable {})
+							
+							; Generate a symbol table keyed by ore type storing
+							; the amount of ore found for each ore type.
+							
+							(enum (sysFindObject Nil "t +asteroid") theObj 
+								(enum (objGetItems theObj "t +Ore;") theOre
+									(block (currentAmount)
+										(setq currentAmount (item tempTable (itmGetType theOre)))
+										(if (not currentAmount)
+											(setq currentAmount (itmGetCount theOre))
+											(setq currentAmount (add currentAmount (itmGetCount theOre)))
+											)
+										(setItem tempTable (itmGetType theOre) currentAmount)
+										)
+									)
+								)
+								
+							; Add the total probability
+							
+							(setq totalProb 0)
+							(enum tempTable theEntry
+								(setq totalProb (add totalProb (item theEntry 1)))
+								)
+							
+							; Generate a probability table
+								
+							(setq oreTable 
+								(append 
+									(list (list totalProb Nil))
+									(map tempTable theEntry
+										(list (item theEntry 1) (int (item theEntry 0)))
+										)
+									)
+								)
+								
+							(sysSetData "08040003_oreTable" oreTable)
+							)
+						)
+						
+					(mathProbTableLookup oreTable)
+					)
+				))
+			
+			; Aliases for backwards compatibility ------------------------------
+			(setq comShowBuyScreen scrShowBuyScreen)
+			(setq comShowSellScreen scrShowSellScreen)
+			(setq intMassString strMassString)
+			(setq intTranslate objTranslate)
+			)
+	</Globals>
+
+</TranscendenceModule>

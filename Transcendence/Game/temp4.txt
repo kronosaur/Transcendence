@@ -1,0 +1,79 @@
+Level	System	Loot
+1	5 Indi	1151.50
+4	70 Ophiuchi	54130.00
+5	Acheron	15434.10
+3	Al Maisan	1579.80
+6	Alembra	101035.50
+5	Amphion	83801.30
+3	Ankaa	13958.90
+6	Bhutihan	277643.50
+2	Cairn	6083.10
+3	Charon	61106.70
+2	Cygni	11621.40
+9	Dantalion	1597915.90
+9	Denebola	369602.10
+5	Domitus	28713.20
+4	Dorado	11435.80
+4	Draconis	37571.40
+9	Erebus	645901.50
+1	Eridani	8197.90
+5	Estelle	57886.50
+7	Eta Ceti	729208.00
+6	Exael	50172.00
+7	Flauros	294748.50
+6	Galgaliel	373835.90
+5	Gehenna	80020.70
+1	Groombridge	3899.90
+10	HD 11901	646878.10
+10	HD 44594	659354.00
+3	Hena's Star	25563.50
+10	Heretic	3999040.00
+4	Humboldt	37653.70
+10	IC 767	342370.00
+5	Jaoel	33244.90
+6	Jiang's Star	588196.50
+3	Jotunheim	2110.10
+3	Kaus Media	20130.10
+5	Khaldun	20287.30
+8	Ki Xyrrmir	402409.80
+5	Kinder's Star	112540.70
+7	Kunlun	66598.50
+2	Lacaille	3816.50
+1	Lalande	3858.90
+5	Lebezerin	40795.40
+8	Li	136750.20
+7	Liu Bai	93126.50
+10	LV 426	417125.50
+6	Maharashtra	61270.80
+3	Manchester	20750.50
+9	Meri	760655.10
+4	Mu Casser	10191.70
+2	Orgos	2354.40
+5	Orthrus	40567.30
+9	Penati	213830.30
+7	Peng Lai	256957.50
+9	Pharos	733222.80
+8	Point Juno	1021326.00
+8	Qilin	357748.10
+8	Que Qiao	163007.70
+2	Ras Alhague	13107.50
+5	Ravena	71485.90
+5	Raziel	73599.00
+2	Rigel Aurelius	78472.60
+2	Ross 248	4088.80
+5	Sanctuary	455029.00
+9	Saurus Mons	870936.30
+7	Severian's Star	188011.40
+7	Shenlong	124564.00
+7	Sleng	85247.00
+4	St. Katharine's Star	70977.90
+8	Tao Tie	819442.60
+5	Tarterus	36820.10
+5	Tiberius	109364.70
+5	Trajan	17519.50
+7	Tzadkiel	216274.80
+9	Umi	46416.00
+3	Van Maanen	21738.30
+9	Vori	874015.10
+6	Zethus	180507.90
+7	Zhang Li	83029.80

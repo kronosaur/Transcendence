@@ -1,0 +1,48 @@
+RELEASE
+-------------------------------------------------------------------------------
+
+[ ] Set version number in resource file
+[ ] Make sure new version is accepted by extensions (Utilities.cpp, LoadExtensionVersion)
+[ ] Make sure version number is set properly in Transcendence.xml
+[ ] Make sure Help screen is up-to-date
+[ ] Make sure Readme is up-to-date
+[ ] Increment saved game version, if necessary (CGameFile.cpp)
+[ ] Build for release mode
+[ ] Build tdb
+[ ] Test with tdb
+
+[ ] Label source safe
+[ ] Archive release
+
+[ ] Update version history
+[ ] Post build on web site
+[ ] Redirect older .zip files to new version
+[ ] Post source on web site
+
+
+NEW APPLICATION (UI)
+-------------------------------------------------------------------------------
+
+[ ] Create new Win32 project under /Dev/Transcendence
+[ ] Properties - All Configurations - General: Character Set = "Use Multi-Byte Character Set"
+[ ] Properties - All Configurations - C++/General: Additional Include Directories = "..\..\Includes"
+[ ] Properties - All Configurations - C++/General: Detect 64-bit Compatibility Issues = "No"
+[ ] Properties - All Configurations - Linker/Input: Additional Dependencies = "dxguid.lib version.lib vfw32.lib winmm.lib dsound.lib ddraw.lib odbc32.lib odbccp32.lib ws2_32.lib"
+[ ] Properties - Debug - C++/Code Generation: Runtime Library = "Multithreaded Debug (/MTd)"
+[ ] Properties - Release - C++/Code Generation: Runtime Library = "Multithreaded (/MT)"
+[ ] Add Kernel as a dependency
+[ ] Add Graphics as a dependency
+[ ] Add DirectXUtil as a dependency
+[ ] Add IntelJPEGLib as a dependency
+[ ] Add TSUI as a dependency
+[ ] Add TransMain.cpp to project
+[ ] Add TransMain.h to project
+[ ] stdafx.h: Remove definition of WIN32_LEAN_AND_MEAN
+[ ] stdafx.h: Include "TransMain.h"
+[ ] TransMain.h: Set TRANS_APP_TITLE
+[ ] TransMain.h: Set TRANS_APP_WINDOW_CLASS
+[ ] TransMain.h: Include application header (e.g., TransExplorer.h)
+[ ] Remove content from main application .cpp file, except include of stdafx.h
+[ ] Add declaration of CTranscendenceController in application header
+[ ] Implement CTranscendenceController
+[ ] Add DXFN (DirectX fonts) to resource file

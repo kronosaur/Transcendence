@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svAres;"
+			name="Ares Sect"
+			alignment="destructive order"
+			/>
+
+	<!-- Segment of light Tharsis plate -->
+
+	<ItemType UNID="&itLightTharsisPlate;"
+			name=				"[segment(s) of ]light Tharsis plate"
+			level=				"6"
+			value=				"750"
+			mass=				"1500"
+			modifiers=			"Ares; MinorItem; NotForSale;"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"The standard armor used by Ares gunships is light, yet resistant to particle beam damage; it is, however, vulnerable to blast damage."
+
+			sortName=			"Tharsis plate, light, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"60"
+				hpBonus=	"  +0,  +0, +50, -25"
+				/>
+
+	</ItemType>
+
+	<!-- Cydonian shields -->
+
+	<ItemType UNID="&itCydonianShields;"
+			name=				"Cydonian shield generator"
+			level=				"6"
+			value=				"20000"
+			mass=				"3000"
+			frequency=			"rare"
+			modifiers=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"Ares engineers cloned the Yoroi S500 and added ion resistance."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"130"
+				hpBonus=		"  +0,  +0,  +0,  +0,+100,  +0"
+				regen=			"40"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+		</ItemType>
+
+	<!-- Cydonian heavy shields -->
+
+	<ItemType UNID="&itCydonianHeavyShields;"
+			name=				"Cydonian heavy shield generator"
+			level=				"7"
+			value=				"40000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			modifiers=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"This is a more powerful version of the Cydonian shield generator."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"270"
+				hpBonus=		"  +0,  +0,  +0,  +0,+100,  +0"
+				regen=			"30"
+				depletionDelay=	"540"
+				powerUse=		"500"
+				/>
+
+		</ItemType>
+
+	<!-- Kaidun shields -->
+
+	<ItemType UNID="&itKaidunShields;"
+			name=				"Kaidun shield generator"
+			level=				"9"
+			value=				"150000"
+			mass=				"12000"
+			frequency=			"veryrare"
+			modifiers=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"The most advanced shield generator in the Ares Orthodoxy, the Kaidun generator is used by the Ares dreadnought."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"800"
+				hpBonus=		"  +0,  +0,  +0,  +0, +50, +50"
+				regen=			"30"
+				depletionDelay=	"540"
+				powerUse=		"2000"
+				/>
+
+		</ItemType>
+
+	<!-- Segment of Tharsis plate -->
+
+	<ItemType UNID="&itTharsisPlate;"
+			name=				"[segment(s) of ]Tharsis plate"
+			level=				"8"
+			value=				"6000"
+			mass=				"4000"
+			modifiers=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"Tharsis plate is used by the Tundra heavy gunship; it is resistant to thermonuclear damage."
+
+			sortName=			"Tharsis plate, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"200"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of heavy Tharsis plate -->
+
+	<ItemType UNID="&itHeavyTharsisPlate;"
+			name=				"[segment(s) of ]heavy Tharsis plate"
+			level=				"9"
+			value=				"18000"
+			mass=				"10000"
+			modifiers=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			description=		"This is a double layer of Tharsis plate."
+
+			sortName=			"Tharsis plate, heavy, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"400"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				repairTech=	"8"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of massive Tharsis plate -->
+
+	<ItemType UNID="&itMassiveTharsisPlate;"
+			name=				"[segment(s) of ]massive Tharsis plate"
+			level=				"10"
+			value=				"50000"
+			mass=				"25000"
+			modifiers=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"veryrare"
+			numberAppearing=	"1d4"
+
+			description=		"The capital ships of the Ares Orthodoxy use this massive armor."
+
+			sortName=			"Tharsis plate, massive, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"700"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				repairTech=	"8"
+				/>
+
+	</ItemType>
+
+	<!-- Ares Lightning Cannon -->
+
+	<ItemType UNID="&itLightningCannon;"
+			name=				"Ares lightning cannon"
+			level=				"7"
+			value=				"45000"
+			mass=				"3000"
+			frequency=			"uncommon"
+			modifiers=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"During the Syrtis War the lightning cannons of the Orthodoxy were devastating to the Earth Fleet."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:4d6+2"
+				fireRate=			"15"
+				lifetime=			"30"
+				powerUse=			"350"
+
+				beamType=			"lightning"
+				primaryColor=		"0xa0, 0xf0, 0xff"
+				secondaryColor=		"0x00, 0xa9, 0xff"
+				intensity=			"8"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Micronuke -->
+
+	<ItemType UNID="&itMicronuke;"
+			name=				"Ares micronuke"
+			level=				"7"
+			value=				"350"
+			mass=				"20"
+			modifiers=			"Ares; Consumable; Military; Missile; NotForSale;"
+			frequency=			"common"
+			numberAppearing=	"12d20"
+
+			description=		"The compact warheads detonate into an expanding shockwave of thermonuclear damage. They require a launcher."
+
+			sortName=			"Ares.30"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Ares Launcher -->
+
+	<ItemType UNID="&itAresLauncher;"
+			name=				"Ares launcher"
+			level=				"8"
+			value=				"75000"
+			mass=				"4000"
+			frequency=			"rare"
+			modifiers=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"These launchers can fire both a standard micronuke or the heavier and deadlier Warhammer nuke."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				launcher=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itWarhammerNuke;"
+						type=			"missile"
+						lifetime=		"480"
+						damage=			"thermo:2d12; WMD7"
+						missileSpeed=	"30"
+						hitPoints=		"30"
+
+						fragmentCount=	"1"
+						failsafe=		"15"
+
+						hitEffect=		"&efFragmentationExplosion;"
+						sound=			"&snMissileLauncher;"
+						vaporTrailLength="64"
+						vaporTrailWidth="400"
+						vaporTrailWidthInc="25"
+						vaporTrailColor="0xd0, 0xd0, 0xd0"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							type=			"area"
+
+							damage=			"thermo:2d12; WMD7"
+							expansionSpeed=	"25"
+							missileSpeed=	"0"
+							lifetime=		"24"
+							>
+
+						<Effect>
+							<Shockwave
+									fadeStart=	"70"
+									>
+								<Image imageID=				"&rsShockwave1;"
+										imageX=				"0" 
+										imageY=				"0" 
+										imageWidth=			"512" 
+										imageHeight=		"128"
+										imageFrameCount=	"1"
+										imageTicksPerFrame=	"1"/>
+							</Shockwave>
+						</Effect>
+					</Fragment>
+
+				</Missile>
+
+				<Missile ammoID="&itMicronuke;"
+						type=			"missile"
+						lifetime=		"180"
+						damage=			"thermo:3d12; WMD3"
+						missileSpeed=	"60"
+						hitPoints=		"20"
+
+						fragmentCount=	"1"
+						failsafe=		"6"
+
+						hitEffect=		"&efFragmentationExplosion;"
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							type=			"area"
+
+							damage=			"thermo:1d12; WMD3"
+							expansionSpeed=	"35"
+							missileSpeed=	"0"
+							lifetime=		"24"
+							>
+
+						<Effect>
+							<Shockwave
+									fadeStart=	"70"
+									>
+								<Image imageID=				"&rsShockwave1;"
+										imageX=				"0" 
+										imageY=				"0" 
+										imageWidth=			"512" 
+										imageHeight=		"128"
+										imageFrameCount=	"1"
+										imageTicksPerFrame=	"1"/>
+							</Shockwave>
+						</Effect>
+					</Fragment>
+
+				</Missile>
+			</Missiles>
+
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Ares Lightning Turret -->
+
+	<ItemType UNID="&itLightningTurret;"
+			name=				"Ares lightning turret"
+			level=				"8"
+			value=				"75000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			modifiers=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"This omnidirectional turret combines two lightning cannons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				omnidirectional=	"true"
+				configuration=		"alternating"
+				damage=				"ion:4d6+2"
+				fireRate=			"3"
+				lifetime=			"40"
+				powerUse=			"1000"
+
+				counter=			"capacitor"
+				counterActivate=	"-5"
+				counterUpdate=		"2"
+				counterUpdateRate=	"6"
+
+				beamType=			"lightning"
+				primaryColor=		"0xa0, 0xf0, 0xff"
+				secondaryColor=		"0x00, 0xa9, 0xff"
+				intensity=			"8"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Ares Micronuke Cannon -->
+
+	<ItemType UNID="&itMicronukeCannon;"
+			name=				"Ares micronuke cannon"
+			level=				"8"
+			value=				"65000"
+			mass=				"4000"
+			frequency=			"uncommon"
+			modifiers=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"These cannons can launch a micronuke warhead at 60% of lightspeed."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itMicronuke;"
+						type=			"missile"
+						lifetime=		"180"
+						damage=			"thermo:3d12; WMD3"
+						missileSpeed=	"60"
+						hitPoints=		"20"
+
+						fragmentCount=	"1"
+						failsafe=		"6"
+
+						hitEffect=		"&efFragmentationExplosion;"
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							type=			"area"
+
+							damage=			"thermo:1d12; WMD3"
+							expansionSpeed=	"35"
+							missileSpeed=	"0"
+							lifetime=		"24"
+							>
+
+						<Effect>
+							<Shockwave>
+								<Image imageID=				"&rsShockwave1;"
+										imageX=				"0" 
+										imageY=				"0" 
+										imageWidth=			"512" 
+										imageHeight=		"128"
+										imageFrameCount=	"1"
+										imageTicksPerFrame=	"1"/>
+							</Shockwave>
+						</Effect>
+					</Fragment>
+
+				</Missile>
+			</Missiles>
+
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Hecates Cannon -->
+
+	<ItemType UNID="&itHecatesCannon;"
+			name=				"Hecates cannon"
+			level=				"8"
+			value=				"85000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			modifiers=			"Ares; Howitzer; MajorItem; Military; NotForSale;"
+
+			description=		"The Hecates cannon is a fusion howitzer used by Ares destroyers."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"thermo:8d12+8; momentum3; WMD5"
+				fireRate=			"40"
+				missileSpeed=		"50"
+				lifetime=			"120"
+				hitPoints=			"30"
+				powerUse=			"900"
+				recoil=				"2"
+
+				fireEffect=			"&efMediumCannonFlash;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Starburst
+						style=			"morningStar"
+						spikeCount=		"2d6+10"
+						spikeLength=	"2d10"
+						primaryColor=	"0xff, 0xff, 0x80"
+						secondaryColor=	"0xd0, 0x20, 0x00"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG96;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="96" 
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Ares Warhammer nuke -->
+
+	<ItemType UNID="&itWarhammerNuke;"
+			name=				"Ares Warhammer nuke"
+			level=				"9"
+			value=				"1000"
+			mass=				"300"
+			modifiers=			"Ares; Consumable; Military; Missile; NotForSale;"
+			frequency=			"rare"
+			numberAppearing=	"1d6"
+
+			description=		"These long-range thermonuclear missiles are fired by Ares launchers."
+
+			sortName=			"Ares.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Ares positron cannon -->
+
+	<ItemType UNID="&itAresArchcannon;"
+			name=				"Ares positron cannon"
+			level=				"9"
+			value=				"200000"
+			mass=				"1500"
+			frequency=			"uncommon"
+			modifiers=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"Ares engineers created this weapon after the Commonwealth developed defenses against their lightning cannon."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"positron:4d8"
+				fireRate=			"15"
+				missileSpeed=		"80"
+				interaction=		"0"
+				lifetime=			"60"
+				powerUse=			"1000"
+
+				sound=				"&snLaserCannon;"
+				>
+
+			<Image imageID="&rsMissiles4;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="2" imageTicksPerFrame="4"/>
+
+			<Exhaust
+					creationRate=	"10"
+					lifetime=		"70"
+					drag=			"80">
+
+				<Image imageID="&rsMissiles4;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="10"/>
+			</Exhaust>
+
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Ares plasma cannon -->
+
+	<ItemType UNID="&itAresPlasmaCannon;"
+			name=				"Ares plasma archcannon"
+			level=				"10"
+			value=				"500000"
+			mass=				"10000"
+			frequency=			"veryrare"
+			modifiers=			"Ares; MajorItem; Military; NotForSale"
+
+			description=		"The most powerful weapon in the Ares fleet. The plasma archcannon can destroy anything that's not protected by massive shields and armor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				deviceSlots=		"2"
+
+				damage=				"plasma:24d12; WMD7"
+				fireRate=			"80"
+				missileSpeed=		"65"
+				lifetime=			"60"
+				hitPoints=			"30"
+				powerUse=			"3000"
+
+				sound=				"&snLaserCannon;"
+
+				vaporTrailLength=	"24"
+				vaporTrailWidth=	"150"
+				vaporTrailWidthInc=	"10"
+				vaporTrailColor=	"0x57, 0x38, 0x00"
+				>
+
+			<FireEffect>
+				<Flare
+						style=				"fadingBlast"
+						lifetime=			"6"
+						radius=				"80"
+						primaryColor=		"0xff, 0xff, 0xf0"
+					/>
+			</FireEffect>
+
+			<Effect>
+				<MoltenBolt
+						width=				"8"
+						growth=				"24"
+						primaryColor=		"0xff, 0xed, 0xcd"
+						secondaryColor=		"0xff, 0xb3, 0x27"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG96;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="96" 
+						imageHeight="96"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Ares Cannon -->
+
+	<ShipClass UNID="&scAresCannon;"
+			manufacturer=		""
+			class=				"Ares sentry"
+			type=				""
+			score=				"800"
+
+			mass=				"400"
+			cargoSpace=			"0"
+			thrust=				"0"
+			maneuver=			"3"
+			maxSpeed=			"0"
+
+			leavesWreck=		"50"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightTharsisPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightTharsisPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightTharsisPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightTharsisPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAresArchcannon;" minFireArc="350" maxFireArc="10" />
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="576" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-15" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"90"
+			perception=			"4"
+
+			noFriendlyFire=		"true"
+			/>
+
+	</ShipClass>
+
+	<!-- Chasm Heavy Gunship -->
+
+	<ShipClass UNID="&scChasm;"
+			manufacturer=		"Ares Sect"
+			class=				"Chasm"
+			type=				"heavy gunship"
+			score=				"1940"
+
+			mass=				"210"
+			cargoSpace=			"50"
+			thrust=				"500"
+			maneuver=			"3"
+			maxSpeed=			"20"
+
+			leavesWreck=		"65"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itTharsisPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAresArchcannon;"/>
+			<Device deviceID="&itCydonianShields;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips2;" imageX="1024" imageY="0" imageWidth="64" imageHeight="64" rotationOffset="-8" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"95"
+			perception=			"6"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-38" y="-3"/>
+			<NozzlePos x="-38" y="0"/>
+			<NozzlePos x="-38" y="3"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Cometfall missileship -->
+
+	<ShipClass UNID="&scCometfall;"
+			manufacturer=		"Ares Sect"
+			class=				"Cometfall"
+			type=				"missileship"
+			score=				"1730"
+
+			mass=				"4000"
+			cargoSpace=			"1000"
+			thrust=				"4000"
+			maneuver=			"8"
+			maxSpeed=			"10"
+
+			explosionType=		"&vtBlastExplosion2;"
+			leavesWreck=		"80"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="315" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="285" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="255" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="225" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="195" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="165" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="135" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="105" span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="75"  span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="45"  span="30" armorID="&itTharsisPlate;" />
+			<ArmorSection start="15"  span="30" armorID="&itTharsisPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
+			<Device deviceID="&itAresLauncher;"/>
+			<Device deviceID="&itCydonianShields;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips3;" imageX="576" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="3d20" item="&itWarhammerNuke;"/>
+			<Item count="12d20" item="&itMicronuke;"/>
+			<Item count="1d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<AISettings
+			combatStyle=		"standOff"
+			fireRateAdj=		"25"
+			fireAccuracy=		"90"
+			ignoreShieldsDown=	"true"
+			
+			perception=			"4"
+			/>
+
+		<!--
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-22" y="-3"/>
+			<NozzlePos x="-22" y="0"/>
+			<NozzlePos x="-22" y="3"/>
+		</DriveImages>
+			-->
+
+	</ShipClass>
+
+	<!-- Deimos Destroyer -->
+
+	<ShipClass UNID="&scDeimos;"
+			manufacturer=		"Ares Sect"
+			class=				"Deimos"
+			type=				"destroyer"
+			score=				"2135"
+
+			mass=				"8000"
+			cargoSpace=			"1000"
+			thrust=				"8000"
+			maneuver=			"6"
+			maxSpeed=			"12"
+
+			explosionType=		"&vtThermoExplosion1;"
+			leavesWreck=		"90"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="348" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="324" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="300" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="276" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="252" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="228" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="204" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="180" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="156" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="132" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="108" span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="84"  span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="60"  span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="36"  span="24" armorID="&itHeavyTharsisPlate;" />
+			<ArmorSection start="12"  span="24" armorID="&itHeavyTharsisPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itHecatesCannon;" posAngle="0" posRadius="50" minFireArc="345" maxFireArc="15" />
+			<Device deviceID="&itLightningTurret;" secondaryWeapon="true"/>
+			<Device deviceID="&itCydonianHeavyShields;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips4;" imageX="1024" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"90"
+			ignoreShieldsDown=	"true"
+			
+			perception=			"6"
+			/>
+
+	</ShipClass>
+
+	<!-- Polar-class Freighter -->
+
+	<ShipClass UNID="&scPolar;"
+			manufacturer=		"Ares Sect"
+			class=				"Polar"
+			type=				"freighter"
+			score=				"1150"
+
+			mass=				"8000"
+			cargoSpace=			"5000"
+			thrust=				"1000"
+			maneuver=			"20"
+			maxSpeed=			"8"
+
+			explosionType=		"&vtBlastExplosion4;"
+			leavesWreck=		"100"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="340" span="10" armorID="&itLightTharsisPlate;" nonCritical="scanners" />
+			<ArmorSection start="330" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
+			<ArmorSection start="320" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
+			<ArmorSection start="310" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="300" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="290" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="280" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="270" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="260" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="250" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="240" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="230" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="220" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="210" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="200" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="190" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="180" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="170" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="160" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="150" span="10" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="140" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="130" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="120" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="110" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="100" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="90"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="80"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="70"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="60"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="50"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="40"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
+			<ArmorSection start="30"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
+			<ArmorSection start="20"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
+			<ArmorSection start="10"  span="10" armorID="&itLightTharsisPlate;" nonCritical="tactical" />
+			<ArmorSection start="0"   span="10" armorID="&itLightTharsisPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
+		</Devices>
+
+		<Image imageID="&rsLargeShips1;" imageX="768" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"4"
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Sandstorm Gunship -->
+
+	<ShipClass UNID="&scSandstorm;"
+			manufacturer=		"Ares Sect"
+			class=				"Sandstorm"
+			type=				"gunship"
+			score=				"805"
+
+			mass=				"75"
+			cargoSpace=			"25"
+			thrust=				"300"
+			maneuver=			"2"
+			maxSpeed=			"20"
+
+			leavesWreck=		"25"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itLightTharsisPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itLightTharsisPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLightningCannon;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="144" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-30" y="-3"/>
+			<NozzlePos x="-30" y="0"/>
+			<NozzlePos x="-30" y="3"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Tundra Gunship -->
+
+	<ShipClass UNID="&scTundra;"
+			manufacturer=		"Ares Sect"
+			class=				"Tundra"
+			type=				"heavy gunship"
+			score=				"1445"
+
+			mass=				"130"
+			cargoSpace=			"50"
+			thrust=				"500"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"45"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="225" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="135" span="90" armorID="&itTharsisPlate;"/>
+			<ArmorSection start="45"  span="90" armorID="&itTharsisPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLightningCannon;"/>
+			<Device deviceID="&itMicronukeCannon;"/>
+			<Device deviceID="&itCydonianShields;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips2;" imageX="576" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item count="3d20" item="&itMicronuke;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-22" y="-3"/>
+			<NozzlePos x="-22" y="0"/>
+			<NozzlePos x="-22" y="3"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Phobos-class Dreadnought -->
+
+	<ShipClass UNID="&scPhobos;"
+			manufacturer=		"Ares Sect"
+			class=				"Phobos"
+			type=				"dreadnought"
+			score=				"3140"
+
+			mass=				"15000"
+			cargoSpace=			"5000"
+			thrust=				"10000"
+			maneuver=			"10"
+			maxSpeed=			"16"
+
+			cyberDefenseLevel=	"8"
+			explosionType=		"&vtThermoExplosion3;"
+			leavesWreck=		"100"
+
+			attributes=			"ares,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="315" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="300" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="285" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="180" span="15" armorID="&itMassiveTharsisPlate;" />
+
+			<ArmorSection start="165" span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="150" span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="135" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="30"  span="15" armorID="&itMassiveTharsisPlate;" nonCritical="general"/>
+			<ArmorSection start="15"  span="15" armorID="&itMassiveTharsisPlate;" />
+			<ArmorSection start="0"   span="15" armorID="&itMassiveTharsisPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itAresPlasmaCannon;" posAngle="0" posRadius="100"/>
+			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="0" posRadius="20"/>
+			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="180" posRadius="80"/>
+			<Device deviceID="&itKaidunShields;"/>
+		</Devices>
+
+		<Image imageID="&rsLargeShips2;" imageX="256" imageY="0" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Items>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			ignoreShieldsDown=	"true"
+			
+			perception=			"6"
+			/>
+
+	</ShipClass>
+
+<!-- MISCELLANEOUS -->
+
+	<!-- Encounters -->
+
+	<ShipTable UNID="&etAresAmbush1;">
+		<Ship count="1d2+2"	class="&scSandstorm;"	orders="attack"	sovereign="&svAres;"/>
+	</ShipTable>
+
+	<ShipTable UNID="&etAresAmbush2;">
+		<Ship count="1d3+3"	class="&scSandstorm;"	orders="attack"	sovereign="&svAres;"/>
+	</ShipTable>
+
+	<ShipTable UNID="&etAresAmbush3;">
+		<Ship count="1"		class="&scChasm;"		orders="attack" sovereign="&svAres;">
+			<Escorts>
+				<Ship count="1d2+4" class="&scSandstorm;"	orders="escort"/>
+			</Escorts>
+		</Ship>
+	</ShipTable>
+
+	<ShipTable UNID="&etAresAmbush4;">
+		<Ship count="1"		class="&scTundra;"		orders="attack" sovereign="&svAres;">
+			<Escorts>
+				<Ship count="1d2+4" class="&scSandstorm;"	orders="escort"/>
+			</Escorts>
+		</Ship>
+	</ShipTable>
+	
+	<!-- Ares Encounter Table -->
+	
+	<ShipTable unid="&tbAresEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="----- ucur-" count="1"	 class="&scSandstorm;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d3-1" class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- -vuur" count="1"	 class="&scSandstorm;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4-1" class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- --rrv" count="1"	 class="&scTundra;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d3"	 class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- --vuu" count="1"	 class="&scSandstorm;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d6-1" class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- ---rr" count="1"	 class="&scTundra;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d6" class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- ---rr" count="1"	 class="&scChasm;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d6" class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----- ruucu" count="1"	 class="&scPolar;" eventHandler="&evStdConvoyEncounterBehavior;">
+				<Items>
+					<Table>
+						<RandomItem chance="40" count="1d2" levelFrequency="----- ccurv" criteria="* +Ares;" />
+						<Item		chance="10" count="1d12" item="&itTetramiteOre;"/>
+						<Item		chance="10" count="3d12" item="&itXenotiteOre;"/>
+						<Item		chance="10" count="2d12" item="&itPteracniumOre;"/>
+						<Item		chance="10" count="3d12" item="&itPteracniumFuelRod;"/>
+						<Lookup chance="10" count="1d4" table="&trConsumables8;"/>
+						<Lookup chance="5" count="1" table="&trMinorItem8;"/>
+						<Lookup chance="5" count="1" table="&trMajorItem8;"/>
+					</Table>
+				</Items>
+
+				<Escorts>
+					<Ship					   count="2d4"	 class="&scSandstorm;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+	
+</TranscendenceModule>

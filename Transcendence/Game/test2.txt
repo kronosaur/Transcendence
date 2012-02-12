@@ -1,0 +1,433 @@
+AVERAGE STATION ENCOUNTERS BY LEVEL
+
+LEVEL I
+
+-	(asteroid)	314.72
+-	(planet)	17.23
+-	(star)	2.00
+enemy	(asteroid mine, titanium)	0.67
+enemy	(Centauri occupation)	0.64
+enemy	(shipwreck I)	5.69
+enemy	Abbasid Outpost	1.04
+enemy	Anarchist Camp	1.56
+enemy	Anarchist Gathering	1.08
+enemy	Centauri Stronghold	0.28
+enemy	Charon Pirate Cache	7.04
+enemy	Charon Pirate Outpost	0.62
+enemy	Outlaw Base	0.03
+enemy	Outlaw Camp	2.07
+friend	(agricultural station)	0.00
+friend	(armor dealer)	1.16
+friend	(arms dealer)	0.48
+friend	(commonwealth colony)	0.69
+friend	(fuel depot)	0.90
+friend	(merchant prince hotel)	0.44
+friend	(mining colony)	0.37
+friend	(navigational beacon)	4.21
+friend	(outlaw convoy)	1.81
+friend	(salvager)	0.74
+friend	(stargate)	3.00
+friend	(tinker gathering)	0.20
+friend	Abandoned Cargo Container	5.36
+friend	Commonwealth Dry Dock	1.19
+friend	Commonwealth Residentials	1.00
+friend	Commonwealth Station	1.09
+friend	Corporate Enclave	1.13
+friend	Ice Farm	0.04
+friend	Korolov Shipping	1.10
+friend	Sisters of Domina	1.04
+friend	Tempus Lab	0.13
+
+LEVEL II
+
+-	(asteroid)	450.05
+-	(planet)	16.52
+-	(star)	2.54
+enemy	(asteroid mine, duralloy)	0.65
+enemy	(asteroid mine, titanium)	1.17
+enemy	(Centauri occupation)	0.80
+enemy	(radioactive shipwreck)	0.83
+enemy	(shipwreck I)	7.50
+enemy	(shipwreck II)	2.08
+enemy	Abandoned Cargo Crate	0.97
+enemy	Abbasid Outpost	1.42
+enemy	Anarchist Camp	0.88
+enemy	Anarchist Gathering	8.14
+enemy	Anarchist Settlement	0.36
+enemy	Centauri Stronghold	0.83
+enemy	Charon Pirate Cache	1.86
+enemy	Charon Pirate Outpost	3.11
+enemy	Charon Pirate Stronghold	0.63
+enemy	Outlaw Base	1.71
+enemy	Outlaw Camp	1.62
+enemy	Sapiens Camp	0.00
+friend	(agricultural station)	0.05
+friend	(arena wall segment)	46.00
+friend	(armor dealer)	0.79
+friend	(arms dealer)	0.86
+friend	(commonwealth colony)	0.53
+friend	(fuel depot)	0.83
+friend	(merchant prince hotel)	0.91
+friend	(mining colony)	0.35
+friend	(navigational beacon)	7.15
+friend	(outlaw convoy)	1.33
+friend	(salvager)	1.23
+friend	(stargate)	5.08
+friend	(tinker gathering)	0.59
+friend	Abandoned Cargo Container	4.80
+friend	Battle Arena Maximus	1.00
+friend	Black Market Station	0.26
+friend	Clavius Insurance Conglomerate	0.13
+friend	Commonwealth Dry Dock	1.14
+friend	Commonwealth Station	0.55
+friend	Corporate Enclave	0.46
+friend	Ice Farm	0.21
+friend	Korolov Shipping	0.32
+friend	Rasiermesser Arms & Armor	0.25
+friend	Sisters of Domina	0.15
+friend	Tempus Lab	0.44
+
+LEVEL III
+
+-	(asteroid)	848.39
+-	(planet)	19.40
+-	(star)	2.58
+enemy	(asteroid mine, duralloy)	0.82
+enemy	(asteroid mine, pteracnium)	0.33
+enemy	(asteroid mine, titanium)	0.09
+enemy	(Centauri occupation)	0.03
+enemy	(radioactive shipwreck)	3.33
+enemy	(shipwreck I)	5.14
+enemy	(shipwreck II)	3.17
+enemy	(shipwreck III)	1.50
+enemy	Abandoned Cargo Crate	2.66
+enemy	Abbasid Outpost	0.67
+enemy	Anarchist Gathering	1.96
+enemy	Anarchist Settlement	1.26
+enemy	Centauri Stronghold	0.24
+enemy	Charon Pirate Cache	0.19
+enemy	Charon Pirate Outpost	1.56
+enemy	Charon Pirate Stronghold	7.72
+enemy	Death Drug Cartel Outpost	0.95
+enemy	Fortress of the Charon Pirates	1.00
+enemy	Heliotrope Outpost	1.07
+enemy	Marauder Outpost	0.53
+enemy	Outlaw Base	0.21
+enemy	Outlaw Camp	0.03
+enemy	Outlaw Haven	1.27
+enemy	Sapiens Camp	1.77
+enemy	Sapiens Compound	0.03
+enemy	Sung Defense Satellite	3.49
+enemy	Sung Slave Camp	0.52
+friend	(agricultural station)	0.08
+friend	(armor dealer)	0.26
+friend	(arms dealer)	0.87
+friend	(auton dealer)	0.12
+friend	(commonwealth colony)	0.87
+friend	(fuel depot)	0.71
+friend	(merchant prince hotel)	0.29
+friend	(mining colony)	0.09
+friend	(navigational beacon)	2.40
+friend	(outlaw convoy)	1.13
+friend	(salvager)	1.18
+friend	(stargate)	5.16
+friend	(tinker gathering)	0.41
+friend	Abandoned Cargo Container	3.35
+friend	Black Market Station	0.25
+friend	Clavius Insurance Conglomerate	0.28
+friend	Commonwealth Dry Dock	0.44
+friend	Commonwealth Fortress	0.01
+friend	Commonwealth Station	1.14
+friend	Corporate Enclave	0.70
+friend	Ice Farm	0.29
+friend	Korolov Shipping	0.11
+friend	Makayev-Energia Space Systems	0.33
+friend	Rasiermesser Arms & Armor	0.91
+friend	Sisters of Domina	0.37
+friend	Sung Slave Quarters	10.63
+friend	Tempus Lab	0.21
+
+LEVEL IV
+
+-	(asteroid)	811.47
+-	(planet)	20.83
+-	(star)	2.45
+enemy	(asteroid mine, duralloy)	0.05
+enemy	(asteroid mine, pteracnium)	0.67
+enemy	(radioactive shipwreck)	2.14
+enemy	(shipwreck I)	2.91
+enemy	(shipwreck II)	2.19
+enemy	(shipwreck III)	2.59
+enemy	Abandoned Cargo Crate	6.46
+enemy	Abbasid Outpost	0.21
+enemy	Anarchist Gathering	0.04
+enemy	Anarchist Settlement	0.50
+enemy	Centauri Stronghold	0.04
+enemy	Charon Pirate Outpost	0.04
+enemy	Charon Pirate Stronghold	3.05
+enemy	Death Drug Cartel Outpost	2.10
+enemy	Ferian Colony	0.00
+enemy	Heliotrope Colony	0.91
+enemy	Heliotrope Outpost	0.36
+enemy	Marauder Compound	0.24
+enemy	Marauder Outpost	2.40
+enemy	Outlaw Haven	2.49
+enemy	Penitent Shrine	0.22
+enemy	Sapiens Camp	1.75
+enemy	Sapiens Compound	1.91
+enemy	Sung Defense Satellite	18.86
+enemy	Sung Defense Tower	1.94
+enemy	Sung Fortress	0.44
+enemy	Sung Slave Camp	3.10
+friend	(armor dealer)	0.56
+friend	(arms dealer)	0.71
+friend	(auton dealer)	0.65
+friend	(commonwealth colony, armed)	0.28
+friend	(fuel depot)	4.25
+friend	(merchant prince hotel)	1.91
+friend	(mining colony)	0.06
+friend	(navigational beacon)	5.65
+friend	(outlaw convoy)	0.26
+friend	(salvager)	0.20
+friend	(stargate)	4.90
+friend	(tinker gathering)	0.53
+friend	Abandoned Cargo Container	2.44
+friend	Armed Commonwealth Station	0.07
+friend	Black Market Station	0.22
+friend	Bushido Merchant	0.62
+friend	Clavius Insurance Conglomerate	2.23
+friend	Commonwealth Defense Turret	1.27
+friend	Commonwealth Dry Dock	0.43
+friend	Commonwealth Fortress	0.53
+friend	Commonwealth Residentials	5.32
+friend	Commonwealth Station	1.10
+friend	Corporate Enclave	5.55
+friend	Ice Farm	0.04
+friend	Korolov Shipping	0.02
+friend	Makayev-Energia Space Systems	0.93
+friend	Rasiermesser Arms & Armor	1.49
+friend	Sisters of Domina	1.70
+friend	Sung Slave Quarters	57.09
+friend	Tempus Lab	0.08
+friend	Thor's Wondrous Devices	0.09
+
+LEVEL V
+
+-	(asteroid)	573.14
+-	(planet)	20.14
+-	(star)	2.44
+enemy	(asteroid mine, pteracnium)	0.31
+enemy	(radioactive shipwreck)	5.00
+enemy	(shipwreck I)	2.29
+enemy	(shipwreck II)	5.10
+enemy	(shipwreck III)	5.28
+enemy	(Xenophobe fleet)	0.06
+enemy	Abandoned Cargo Crate	6.10
+enemy	Anarchist Settlement	0.00
+enemy	Charon Pirate Stronghold	0.23
+enemy	Death Drug Cartel Outpost	1.60
+enemy	Ferian Colony	0.23
+enemy	Heliotrope Colony	1.66
+enemy	Heliotrope Outpost	0.02
+enemy	Marauder Compound	3.79
+enemy	Marauder Outpost	1.81
+enemy	Marauder Stronghold	0.78
+enemy	Penitent Sanctum	0.04
+enemy	Penitent Shrine	4.08
+enemy	Sapiens Camp	0.02
+enemy	Sapiens Compound	1.52
+enemy	Sung Citadel	1.03
+enemy	Sung Defense Satellite	18.41
+enemy	Sung Defense Tower	24.80
+enemy	Sung Fortress	6.11
+enemy	Sung Slave Camp	2.97
+friend	(auton dealer)	0.57
+friend	(commonwealth colony, armed)	0.43
+friend	(fuel depot)	0.79
+friend	(merchant prince hotel)	0.23
+friend	(navigational beacon)	3.04
+friend	(outlaw convoy)	0.06
+friend	(salvager)	0.21
+friend	(stargate)	4.88
+friend	(tinker gathering)	0.40
+friend	Abandoned Cargo Container	3.23
+friend	Armed Commonwealth Station	0.40
+friend	Black Market Station	0.19
+friend	Bushido Merchant	2.11
+friend	Clavius Insurance Conglomerate	1.00
+friend	Commonwealth Defense Turret	2.08
+friend	Commonwealth Dry Dock	0.45
+friend	Commonwealth Fortress	0.90
+friend	Commonwealth Station	0.01
+friend	Corporate Enclave	0.28
+friend	Ice Farm	0.21
+friend	Korolov Shipping	0.16
+friend	Makayev-Energia Space Systems	0.95
+friend	Rasiermesser Arms & Armor	0.31
+friend	Sisters of Domina	1.05
+friend	Sung Slave Quarters	55.05
+friend	Tempus Lab	0.51
+friend	Thor's Wondrous Devices	0.86
+
+LEVEL VI
+
+-	(asteroid)	695.20
+-	(planet)	18.98
+-	(star)	2.50
+enemy	(radioactive shipwreck)	4.97
+enemy	(shipwreck I)	1.65
+enemy	(shipwreck II)	4.38
+enemy	(shipwreck III)	9.09
+enemy	(Xenophobe fleet)	5.42
+enemy	Abandoned Cargo Crate	5.65
+enemy	Ares Outpost	1.55
+enemy	Death Drug Cartel Outpost	0.49
+enemy	Ferian Colony	1.12
+enemy	Heliotrope Colony	0.72
+enemy	Marauder Compound	1.48
+enemy	Marauder Outpost	0.57
+enemy	Marauder Stronghold	3.10
+enemy	Penitent Sanctum	3.13
+enemy	Penitent Shrine	1.51
+enemy	Ranx Outpost	0.63
+enemy	Rogue Fleet Cache	0.07
+enemy	Sapiens Compound	0.04
+enemy	Sung Citadel	5.33
+enemy	Sung Defense Satellite	7.12
+enemy	Sung Defense Tower	10.37
+enemy	Sung Fortress	2.57
+enemy	Sung Slave Camp	1.17
+enemy	Ventari Colony	2.39
+friend	(auton dealer)	1.56
+friend	(commonwealth colony, armed)	0.84
+friend	(fuel depot)	0.62
+friend	(merchant prince hotel)	0.11
+friend	(navigational beacon)	1.18
+friend	(stargate)	5.00
+friend	(tinker gathering)	0.31
+friend	Abandoned Cargo Container	1.98
+friend	Armed Commonwealth Station	0.20
+friend	Black Market Station	0.01
+friend	Bushido Merchant	1.87
+friend	Clavius Insurance Conglomerate	0.85
+friend	Commonwealth Defense Turret	3.45
+friend	Commonwealth Dry Dock	0.43
+friend	Commonwealth Fortress	0.36
+friend	Ice Farm	0.08
+friend	Makayev-Energia Space Systems	0.84
+friend	Ringer's Collective	0.32
+friend	Sisters of Domina	0.88
+friend	Sung Slave Quarters	21.11
+friend	Tempus Lab	0.45
+friend	Thor's Wondrous Devices	1.81
+
+LEVEL VII
+
+-	(asteroid)	649.73
+-	(planet)	20.38
+-	(star)	2.47
+enemy	(radioactive shipwreck)	3.17
+enemy	(shipwreck I)	2.98
+enemy	(shipwreck II)	3.24
+enemy	(shipwreck III)	8.46
+enemy	(Xenophobe fleet)	2.18
+enemy	(Xenophobe worldship)	0.08
+enemy	Abandoned Cargo Crate	0.17
+enemy	Ares Commune	0.40
+enemy	Ares Outpost	9.71
+enemy	Ferian Colony	1.30
+enemy	Luminous Assembler	0.81
+enemy	Marauder Compound	0.95
+enemy	Marauder Outpost	0.05
+enemy	Marauder Stronghold	1.99
+enemy	Penitent Sanctum	2.31
+enemy	Penitent Shrine	0.89
+enemy	Ranx Fortress	0.28
+enemy	Ranx Outpost	1.84
+enemy	Rogue Fleet Cache	4.19
+enemy	Sung Citadel	3.33
+enemy	Sung Defense Tower	5.33
+enemy	Sung Fortress	1.28
+enemy	Ventari Colony	4.40
+friend	(auton dealer)	1.17
+friend	(commonwealth colony, armed)	0.35
+friend	(commonwealth settlement)	1.56
+friend	(fuel depot)	0.19
+friend	(navigational beacon)	0.49
+friend	(stargate)	4.94
+friend	Abandoned Cargo Container	3.02
+friend	Armed Commonwealth Station	0.03
+friend	Bushido Merchant	0.22
+friend	Commonwealth Defense Turret	8.10
+friend	Commonwealth Fortress	0.14
+friend	Ice Farm	0.06
+friend	Ringer's Collective	2.28
+friend	Sisters of Domina	1.41
+friend	Thor's Wondrous Devices	1.93
+
+LEVEL VIII
+
+-	(asteroid)	737.46
+-	(planet)	19.24
+-	(star)	2.47
+enemy	(radioactive shipwreck)	1.46
+enemy	(shipwreck I)	1.57
+enemy	(shipwreck II)	8.68
+enemy	(shipwreck III)	7.51
+enemy	(Xenophobe fleet)	0.29
+enemy	(Xenophobe worldship)	4.46
+enemy	Ares Commune	7.11
+enemy	Ares Outpost	8.02
+enemy	Ferian Colony	0.22
+enemy	Luminous Assembler	2.60
+enemy	Marauder Compound	0.03
+enemy	Marauder Stronghold	0.84
+enemy	Penitent Sanctum	0.95
+enemy	Penitent Shrine	0.07
+enemy	Ranx Fortress	2.40
+enemy	Ranx Outpost	0.97
+enemy	Rogue Fleet Cache	2.30
+enemy	Sung Citadel	1.96
+enemy	Ventari Colony	4.01
+friend	(commonwealth settlement)	3.56
+friend	(stargate)	4.94
+friend	Abandoned Cargo Container	1.66
+friend	Commonwealth Defense Turret	14.42
+friend	Ringer's Collective	1.56
+
+LEVEL IX
+
+-	(asteroid)	1014.31
+-	(planet)	26.55
+-	(star)	3.44
+enemy	(shipwreck I)	3.41
+enemy	(shipwreck II)	3.69
+enemy	(shipwreck III)	18.83
+enemy	(Xenophobe worldship)	0.97
+enemy	Ares Commune	24.93
+enemy	Ares Outpost	9.88
+enemy	Luminous Assembler	4.15
+enemy	Marauder Stronghold	0.46
+enemy	Penitent Sanctum	0.48
+enemy	Ranx Fortress	1.46
+enemy	Ranx Outpost	2.00
+enemy	Ventari Colony	5.78
+friend	(commonwealth settlement)	4.36
+friend	(stargate)	6.88
+friend	Abandoned Cargo Container	3.77
+friend	Commonwealth Defense Turret	17.77
+friend	Ringer's Collective	4.97
+
+LEVEL X
+
+-	(asteroid)	368.25
+-	(planet)	8.83
+-	(star)	2.00
+enemy	(shipwreck II)	4.27
+enemy	(shipwreck III)	3.89
+enemy	Ares Commune	13.03
+enemy	Luminous Assembler	2.57
+friend	(stargate)	3.00
+friend	Heretic Gate	1.00
+friend	Ringer's Collective	1.54
+

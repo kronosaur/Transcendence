@@ -1,0 +1,102 @@
+//	Compile.cpp
+//
+//	Functions to manipulate .tdb files
+
+#include <stdio.h>
+
+#include <windows.h>
+#include <ddraw.h>
+#include "Alchemy.h"
+#include "XMLUtil.h"
+#include "TransData.h"
+
+ALERROR ExtractFile (const CString &sDest, const CString &sData);
+
+void Decompile (const CString &sDataFile, CXMLElement *pCmdLine)
+	{
+	ALERROR error;
+
+	//	Open the TDB file
+
+	CString sDb = CONSTLIT("Transcendence.tdb");
+
+	CResourceDb Resources(sDb);
+	if (error = Resources.Open())
+		{
+		printf("Unable to open data file: %s\n", sDb.GetASCIIZPointer());
+		return;
+		}
+
+	//	Output to a sub folder
+
+	CString sOutputFolder = pathStripExtension(sDb);
+	sOutputFolder.Append(CONSTLIT("Source"));
+
+	//	Extract the main game file
+
+	CString sData;
+	if (error = Resources.ExtractMain(&sData))
+		{
+		printf("Unable to extract file: Transcendence.xml\n");
+		return;
+		}
+
+	CString sOutputFilespec = pathAddComponent(sOutputFolder, CONSTLIT("Transcendence.xml"));
+	if (error = ExtractFile(sOutputFilespec, sData))
+		return;
+
+	//	Extract all the resources
+
+	int iCount = Resources.GetResourceCount();
+	for (int i = 0; i < iCount; i++)
+		{
+		CString sFilespec = Resources.GetResourceFilespec(i);
+
+		if (error = Resources.ExtractResource(sFilespec, &sData))
+			{
+			printf("Unable to extract file: %s\n", sFilespec.GetASCIIZPointer());
+			return;
+			}
+
+		if (Resources.GetVersion() < 11)
+			sOutputFilespec = pathAddComponent(sOutputFolder, pathAddComponent(CONSTLIT("Resources"), sFilespec));
+		else
+			sOutputFilespec = pathAddComponent(sOutputFolder, sFilespec);
+
+		if (error = ExtractFile(sOutputFilespec, sData))
+			return;
+		}
+	}
+
+ALERROR ExtractFile (const CString &sDest, const CString &sData)
+	{
+	ALERROR error;
+
+	//	Make sure the path exists
+
+	pathCreate(pathGetPath(sDest));
+
+	//	Write the file out
+
+	CFileWriteStream theFile(sDest, FALSE);
+	if (error = theFile.Create())
+		{
+		printf("Unable to create file: %s\n", sDest.GetASCIIZPointer());
+		return error;
+		}
+
+	if (error = theFile.Write(sData.GetASCIIZPointer(), sData.GetLength()))
+		{
+		printf("Unable to write file: %s\n", sDest.GetASCIIZPointer());
+		return error;
+		}
+
+	if (error = theFile.Close())
+		{
+		printf("Unable to write file: %s\n", sDest.GetASCIIZPointer());
+		return error;
+		}
+
+	printf("%s\n", sDest.GetASCIIZPointer());
+	return NOERROR;
+	}

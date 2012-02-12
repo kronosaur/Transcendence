@@ -1,0 +1,60 @@
+//	TrueSpace Animation Frames.lmc
+//
+//	Stitches together animation frames from TrueSpace into
+//	a single image.
+
+{
+name: "TrueSpace Animation Frames"
+desc: "Stitches together animation frames from TrueSpace into a single image."
+version: 2
+
+parameters:
+	[
+		{
+		name: "Pattern"
+		param: "filenamePattern"
+		type: "string"
+		default: "c:\\temp\\ship#0000.bmp"
+		},
+	]
+
+renderer: Code
+	{
+	function Renderer ()
+		{
+		//	These are input parameters
+		var frameCount = 20;
+
+		//	Open the first image to figure out how big
+		//	each frame is
+
+		var firstFrame = LoadImage(FormatNumber(0, filenamePattern));
+		var frameWidth = GetImageWidth(firstFrame);
+		var frameHeight = GetImageHeight(firstFrame);
+
+		//	Create the canvas
+
+		SetCanvasSize(frameWidth, frameHeight * frameCount);
+		var mainCanvas = GetCanvas();
+
+		//	Paint each frame
+
+		var i = 0;
+		while (i < frameCount)
+			{
+			var frame = LoadImage(FormatNumber(i, filenamePattern));
+
+			CopyImage(frame,
+					0,
+					0,
+					frameWidth,
+					frameHeight,
+					mainCanvas,
+					0,
+					i * frameHeight);
+
+			i = i + 1;
+			}
+		}
+	}
+}

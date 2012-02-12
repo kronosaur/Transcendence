@@ -1,0 +1,1903 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svCSCAntarctica;"
+			name="CSC Antarctica"
+			alignment="constructive chaos"
+			>
+		<Language>
+			<Text id="WatchYourTargets">"\"Cease fire! Cease fire or we will engage\""</Text>
+		</Language>
+
+		<Relationships>
+			<Relationship sovereign="&svAres;" disposition="neutral" mutual="true"/>
+			<Relationship sovereign="&svGaianTerraformers;" disposition="neutral" mutual="true"/>
+		</Relationships>
+	</Sovereign>
+
+	<Sovereign UNID="&svFleetAssassins;"
+			name="Commonwealth Fleet"
+			alignment="constructive chaos"
+			>
+
+		<Relationships>
+			<Relationship sovereign="&svCSCAntarctica;" disposition="enemy" mutual="true"/>
+		</Relationships>
+	</Sovereign>
+
+	<!-- CSC Antarctica 
+
+	EXTRA DATA
+
+	attackersLeft:	Number of attackers left
+	playerHelp:		Number of attackers destroyed by the player
+	dest:			Stargate destination
+	patrolLead:		Lead patrol ship (or Nil if none)
+	playerTalkedToDecker: True if the player says she talked to Decker
+					(only used for different mission text)
+
+	GLOBAL DATA
+
+	status:			Status of encounter
+						Nil = Never encountered
+						"enemy" = Player has attacked CSC Antarctica
+						"neutral" = Antarctica ignores the player
+						"friend" = Player has let the Antarctica escape
+						"underAttack" = CSC Antarctica is under attack
+
+	playerRewarded:	If True, player has been rewarded for letting the Antarctica
+					escape.
+
+	-->
+
+	<ShipClass UNID="&scCSCAntarctica;"
+			manufacturer=		""
+			class=				"Commonwealth Star Carrier"
+			type=				""
+			score=				"2855"
+
+			mass=				"50000"
+			cargoSpace=			"5000"
+			thrust=				"10000"
+			maneuver=			"24"
+			maxSpeed=			"2"
+
+			cyberDefenseLevel=	"6"
+			explosionType=		"&vtThermoExplosion4;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, cscAntarctica, majorShip, uncharted"
+
+			dockScreen=			"Main"
+			defaultBackgroundID="&rsCSCBkgnd;"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
+			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
+			
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&vtDamageControlParty;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="100"		item="&itM2Missile;"/>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnAttackedByPlayer>
+				(block Nil
+					; Message
+					(switch
+						(or (eq (objGetGlobalData gSource "status") "friend")
+								(eq (objGetGlobalData gSource "status") "underAttack"))
+							(objSendMessage gPlayerShip gSource "We will never forget your betrayal!")
+
+						(objSendMessage gPlayerShip gSource "So be it!")
+						)
+
+					; We are now enemies of the player (and vice versa)
+					(sovSetDisposition &svCSCAntarctica; &svPlayer; 0)
+					(sovSetDisposition &svPlayer; &svCSCAntarctica; 0)
+					(objSetGlobalData gSource "status" "enemy")
+
+					; If we're currently holding, escape
+					(if (or (eq (shpGetOrder gSource) 'hold)
+							(eq (objGetData gSource "behavior") 'moving)
+							)
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrderGate gSource (objGetObjRefData gSource "dest"))
+							(objSetData gSource "behavior" 'leaving)
+							)
+						)
+					)
+			</OnAttackedByPlayer>
+
+			<OnCreate>
+				(block (dest)
+					; Look for the Outbound stargate (since we want to get back to St. K's)
+					(setq dest (item (sysFindObject gSource "G:Inbound;") 0))
+					(objSetObjRefData gSource "dest" dest)
+
+					; Are we in a good spot? If not, then we give orders to move
+					(fltOrderCheckPosition gSource)
+					
+					; Every once in a while we send out a patrol
+					(sysAddObjRecurringTimerEvent 450 gSource "OnLaunchPatrol")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				; If we're destroyed, set the status (if we entered a gate, status will already be
+				; set, so don't set it again).
+
+				(switch
+					(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
+						Nil
+
+					(and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(if (objGetGlobalData gSource "playerRewarded")
+							(typSetGlobalData &scCSCTerra; "antarctica" "betrayed")
+							(typSetGlobalData &scCSCTerra; "antarctica" "destroyedByPlayer")
+							)
+
+					(typSetGlobalData &scCSCTerra; "antarctica" "destroyed")
+					)
+			</OnDestroy>
+
+			<OnEnteredGate>
+				; If we've entered a gate, set the status
+				(typSetGlobalData &scCSCTerra; "antarctica" "escaped")
+			</OnEnteredGate>
+
+			<OnObjDestroyed>
+				(block Nil
+					(objIncData gSource "attackersLeft" -1)
+
+					; If the player destroyed one, then keep track
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(block Nil
+							(objIncData gSource "playerHelp" 1)
+							(sovSetDisposition &svFleetAssassins; &svPlayer; 0)
+							(sovSetDisposition &svPlayer; &svFleetAssassins; 0)
+							)
+						)
+
+					(if (and (eq (objGetData gSource "attackersLeft") 0)
+							(eq (objGetGlobalData gSource "status") "underAttack"))
+						(block Nil
+							(objSetGlobalData gSource "status" "friend")
+
+							; Hold for a while until the player can dock with us again
+							(shpCancelOrders gSource)
+							(shpOrderHold gSource 120)
+							(shpOrderGate gSource (objGetObjRefData gSource "dest"))
+							(objSetData gSource "behavior" 'leaving)
+							)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnOrdersCompleted>
+				(block Nil
+					(shpOrder gSource 'hold)
+					(objSetData gSource "behavior" Nil)
+					)
+			</OnOrdersCompleted>
+
+			<OnPlayerLeftSystem>
+				; If we've destroyed the Aquilas and we're on our way to St. Kats, then
+				; set the global variable here (to trigger other missions, e.g., Ares in Heretic)
+				
+				(block Nil
+					(if (and (eq (objGetData gSource "behavior") 'leaving)
+							(eq (objGetData gSource "attackersLeft") 0)
+							(or (not (eq (objGetGlobalData gSource "status") "friend"))
+								(objGetGlobalData gSource "playerRewarded")
+								)
+							)
+						(block Nil
+							(typSetGlobalData &scCSCTerra; "antarctica" "escaped")
+							
+							; Destroy the Antarctica (because it has left)
+							(objDestroy gSource (list Nil 'enteredStargate Nil))
+							)
+						)
+						
+					Nil
+					)
+			</OnPlayerLeftSystem>
+
+			<OnLaunchPatrol>
+				(switch
+					; If there is a patrol out there, recall it
+					(and (objGetObjRefData gSource "patrolLead")
+							(eq (random 1 5) 1))
+						(block (leadShip)
+							(setq leadShip (objGetObjRefData gSource "patrolLead"))
+							(shpCancelOrders leadShip)
+							(shpOrderGate leadShip gSource)
+							(objSetObjRefData gSource "patrolLead" Nil)
+							)
+
+					; Launch patrol
+					(and (not (objGetGlobalData gSource "status"))
+							(not (objGetObjRefData gSource "patrolLead"))
+							(eq (random 1 3) 1))
+						(block (leadShip)
+							; Create the lead ship
+							(setq leadShip (sysCreateShip &scCenturion; gSource (objGetSovereign gSource)))
+
+							; Create wingmen
+							(for i 0 3
+								(block (ship)
+									(setq ship (sysCreateShip &scCenturion; gSource (objGetSovereign gSource) "fleet"))
+									(shpOrderEscort ship leadShip i)
+									)
+								)
+
+							; Patrol
+							(shpOrderPatrol leadShip gSource 100)
+							(objSetObjRefData gSource "patrolLead" leadShip)
+							)
+					)
+			</OnLaunchPatrol>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<OnScreenInit>
+					(block Nil
+						(setq gPrevScreen "Main")
+
+						; Allow dock?
+
+						(switch
+							; If we're moving, then nothing to do
+							(eq (objGetData gSource "behavior") 'moving)
+								(scrShowScreen gScreen "ShipMoving")
+
+							; If the player has never encountered the ship before, then take her
+							; to see the captain
+							(not (objGetGlobalData gSource "status"))
+								(scrShowScreen gScreen "Introduction")
+
+							; If player has declined to help, then kick her off the ship
+							(eq (objGetGlobalData gSource "status") "neutral")
+								(if (ls (objGetData gPlayerShip "fleetLevel") 5)
+									(scrShowScreen gScreen "Refuse")
+									(block Nil
+										(objSetGlobalData gSource "status" Nil)
+										(scrShowScreen gScreen "Introduction")
+										)
+									)
+
+							; If the player has helped the Antarctica escape, but has not yet
+							; been rewarded, celebrate the victory
+							(and (eq (objGetGlobalData gSource "status") "friend")
+									(not (objGetGlobalData gSource "playerRewarded"))
+									)
+								(scrShowScreen gScreen "Celebrate")
+							)
+						)
+				</OnScreenInit>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Bridge" key="B">
+								(scrShowScreen gScreen "Bridge")
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(scrShowScreen gScreen "&dsFleetDockServices;")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+
+			</Main>
+
+			<Introduction>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"As you enter the docking bay you are surrounded by heavily armed soldiers. "
+								"A Fleet officer approaches you and motions to the troops:\n\n"
+								"\"Take %him% to the captain.\"\n\n"
+								"Across the landing bay you see the insignia of the CSC Antarctica."
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Captain")
+							</Action>
+						</Actions>
+					</Default>
+
+					<Captain>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You enter the captain's chambers and stand before a striking woman with silver hair and dark eyes. "
+								"She looks up from a holochart as you enter and frowns:\n\n"
+								"\"Has Admiral Decker sent you to kill us?\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;Yes&#x97;He says you betrayed the Fleet.&quot;" default="1" key="Y">
+								(block Nil
+									(objSetData gSource "playerTalkedToDecker" True)
+									(scrShowPane gScreen "Explanation1")
+									)
+							</Action>
+
+							<Action name="&quot;I have no idea what you're talking about.&quot;" cancel="1" key="N">
+								(if (ls (objGetData gPlayerShip "fleetLevel") 5)
+									(scrShowPane gScreen "Dismiss")
+									(scrShowPane gScreen "Explanation1")
+									)
+							</Action>
+						</Actions>
+					</Captain>
+
+					<Explanation1>
+						<OnPaneInit>
+							(block (desc)
+								(if (objGetData gSource "playerTalkedToDecker")
+									(setq desc "She looks away for a moment and then dismisses the Fleet officer and the troops. She continues after they're gone:\n\n\"I did betray the Fleet. And I'll never be forgiven&#x97;I know that. You of all people must know what it's like to betray those you love for a greater calling.\"")
+									(setq desc "She dismisses the troops. Then:\n\n\"You're a Fleet officer! Are you trying to tell me that you've never heard of the Antarctica? You're either here to help or to kill us all! Maybe it doesn't matter either way...\"")
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Explanation2")
+							</Action>
+						</Actions>
+					</Explanation1>
+
+					<Explanation2>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"\"Three months ago we received a coded signal. It was from the Ares. Or at least from some faction of the Ares. They offered to negotiate a truce with us.\n\n\"Decker refused&#x97;he thought it was a trap. But I wasn't so sure.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Explanation3")
+							</Action>
+						</Actions>
+					</Explanation2>
+
+					<Explanation3>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"She pauses for a long while. Then she continues:\n\n\"After we left the Fleet, I met the Ares here in the Dantalion system. I have a message to take back with me to St. Katharine's. Unless, of course, you want to try to stop us.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;I won't try to stop you.&quot;" default="1" key="I">
+								(block (start)
+									(objSetGlobalData gSource "status" "underAttack")
+
+									; Send a battlefleet to attack the Antarctica
+
+									(setq start (sysFindObject gSource "GN -uncharted;"))
+									(objSetData gSource "attackersLeft" 6)
+									(for i 1 6
+										(block (attacker)
+											(setq attacker (sysCreateShip &scAquilaCruiser; start &svFleetAssassins;))
+											(shpOrderAttack attacker gSource)
+											(objSetObjRefData gSource (cat "attacker" i) attacker)
+											(objRegisterForEvents gSource attacker)
+											)
+										)
+
+									; Done
+
+									(scrShowPane gScreen "Accept")
+									)
+							</Action>
+
+							<Action name="&quot;I have my orders.&quot;" cancel="1" key="O">
+								(scrShowPane gScreen "Reject")
+							</Action>
+						</Actions>
+					</Explanation3>
+
+					<Accept>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"The captain looks at you intently and you meet her gaze. She smiles warmly and gets up:\n\n"
+								"\"Good. I'm glad. There's enough madness going on right now.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "UnderAttack1")
+							</Action>
+						</Actions>
+					</Accept>
+
+					<UnderAttack1>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"Just as you're about to say something, the Fleet officer barges in:\n\n\"Forgive me, captain, we've picked up new sensor readings. Captain, they've found us!\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "UnderAttack2")
+							</Action>
+						</Actions>
+					</UnderAttack1>
+
+					<UnderAttack2>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"Calmly, the captain turns to the Fleet officer:\n\n\"Go to condition 1 and set a direct course for the stargate.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "UnderAttack3")
+							</Action>
+						</Actions>
+					</UnderAttack2>
+
+					<UnderAttack3>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"Then, putting a hand on your shoulder, the captain says:\n\n\"I know this isn't your fight, but we can use all the help we can get.\"\n\nAnd with that, the captain heads for the bridge, leaving you alone with your thoughts."
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								(block Nil
+									; CSC heads for gate
+
+									(shpCancelOrders gSource)
+									(shpOrderGate gSource (objGetObjRefData gSource "dest"))
+									(objSetData gSource "behavior" 'leaving)
+
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</UnderAttack3>
+
+					<Reject>
+						<OnPaneInit>
+							(scrSetDesc gScreen "A look of disgust crosses the captain's face. She calls the troopers back into her chambers:\n\n\"Get %him% out of my sight!\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetGlobalData gSource "status" "enemy")
+									(sovSetDisposition &svCSCAntarctica; &svPlayer; 0)
+									(sovSetDisposition &svPlayer; &svCSCAntarctica; 0)
+									(shpCancelOrders gSource)
+									(shpOrderHold gSource (random 15 60))
+									(shpOrderGate gSource (objGetObjRefData gSource "dest"))
+									(objSetData gSource "behavior" 'leaving)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Reject>
+
+					<Dismiss>
+						<OnPaneInit>
+							(scrSetDesc gScreen "The captain looks at you intently and you try to avoid her gaze. She turns to the Fleet officer:\n\n\"Get %him% out of here.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetGlobalData gSource "status" "neutral")
+									(shpCancelOrders gSource)
+									(shpOrderHold gSource (random 15 60))
+									(shpOrderGate gSource (objGetObjRefData gSource "dest"))
+									(objSetData gSource "behavior" 'leaving)
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</Dismiss>
+				</Panes>
+
+			</Introduction>
+
+			<Celebrate>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Captain Helios and her officers meet you at the dock:\n\n\"We did it! When we get back to St. Katharine's we will bring the Ares peace plan to the Commonwealth!\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Reward")
+							</Action>
+						</Actions>
+					</Default>
+
+					<Reward>
+						<OnPaneInit>
+							(scrSetDesc gScreen "\"I know that your path lies elsewhere and that your journey is just beginning. Thank you for helping us in our need. In return, I want you to have this. It may help you someday.\"\n\nAnd with that, Captain Helios places a small glowing gem in your hand.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;Thank you!&quot;" default="1" cancel="1" key="T">
+								(block Nil
+									(objAddItem gPlayerShip (itmCreate &itGemOfSacrifice; 1))
+									(objSetGlobalData gSource "playerRewarded" True)
+									(scrShowPane gScreen "Goodbye")
+									)
+							</Action>
+						</Actions>
+					</Reward>
+
+					<Goodbye>
+						<OnPaneInit>
+							(scrSetDesc gScreen "\"Goodbye! May we meet again some day.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</Goodbye>
+				</Panes>
+			</Celebrate>
+
+			<Bridge
+				name=			"Bridge"
+				>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(switch
+								(eq (objGetGlobalData gSource "status") "underAttack")
+									(scrSetDesc gScreen "The captain is on the bridge directing the battle. She looks at you only briefly.")
+
+								(scrSetDesc gScreen 
+									"The captain of the CSC Antarctica welcomes you aboard:\n\n"
+									"\"%Name%! It's good to see you again. We're heading back to St. Katharine's. "
+									"I know your journey is just beginning, but maybe we'll see each other there someday.\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+
+			</Bridge>
+
+			<Refuse>
+
+				<Panes>
+					<Default
+						desc=	"As you exit the docking ramp, troopers train their weapons on you: &quot;The captain wants you off her ship.&quot;">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Refuse>
+			
+			<ShipMoving>
+				
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"As you exit the docking ramp you are met by a Fleet lieutenant:\n\n"
+								"\"Sorry, %sir%, we're on maneuvers and the captain has ordered that we keep the landing deck clear. "
+								"Follow us to our destination and you can dock with us then.\""
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								(scrExitDock gScreen)
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ShipMoving>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="0"		y="-70" />
+			<Port x="50"	y="50" />
+			<Port x="50"	y="-50" />
+			<Port x="70"	y="0" />
+			<Port x="-70"	y="0" />
+			<Port x="-50"	y="50" />
+			<Port x="-50"	y="-50" />
+		</DockingPorts>
+
+	</ShipClass>
+
+	<!-- CSC Terra
+
+	EXTRA DATA
+
+	MissionStatus:	Status of mission to destroy CSC Antarctica
+						Nil = mission not assigned
+						"assigned" = mission assigned, not yet complete
+						"complete" = mission complete (one way or the other)
+						"testing" = player has Lamplighter
+	MissionTime:	Tick on which mission was assigned.
+
+	GLOBAL DATA
+
+	antarctica:		Status of CSC Antarctica
+						Nil = Unknown state
+						"destroyedByPlayer" = Player destroyed antarctica
+						"destroyed" = Destroyed by others
+						"escaped" = Escaped Dantalion system (towards St. Katharines)
+						"betrayed" = Destroyed by player after she promised otherwise
+
+	p262scientists:	Status of scientists who defected to rogue fleet:
+						Nil = Mission not started
+						"rescued" = Scientists have been rescued
+						"failed" = Mission to rescue scientists has failed.
+
+	p262prototype:	Status of equipment in CSC Europa
+						Nil = Mission not started
+						"recovered" = Equipment recovered
+
+	p262test:		Who will test the weapon?
+						Nil = Unknown
+						"player" = Decker wants player to test weapon
+						"fleetCaptain" = Decker wants a Fleet Captain to test weapon
+						"notPlayer" = Decker does not want the player to test weapon
+						"installed" = Installed on player ship
+
+	-->
+
+	<ShipClass UNID="&scCSCTerra;"
+			manufacturer=		""
+			class=				"Commonwealth Star Carrier"
+			type=				""
+			score=				"3655"
+
+			mass=				"50000"
+			cargoSpace=			"5000"
+			thrust=				"10000"
+			maneuver=			"24"
+			maxSpeed=			"2"
+
+			cyberDefenseLevel=	"6"
+			explosionType=		"&vtThermoExplosion4;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
+
+			dockScreen=			"Main"
+			defaultBackgroundID="&rsCSCBkgnd;"
+			
+			inherit=			"&baCSCBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+
+			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="90" posRadius="44"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" omnidirectional="true" posAngle="270" posRadius="44"/>
+			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
+
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&vtDamageControlParty;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="300"		item="&itM2Missile;"/>
+			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "You are in the docking bay of the " (objGetName gSource) "."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Bridge" key="B">
+								(block (antarcticaStatus missionStatus behavior)
+									(setq behavior (objGetData gSource "behavior"))
+									(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+									(setq missionStatus (objGetData gSource "MissionStatus"))
+
+									(switch
+										; If not a Fleet Commander, cannot enter
+										(ls (objGetData gPlayerShip "fleetLevel") 5)
+											(scrShowPane gScreen "AccessDenied")
+											
+										; If on maneuvers, then too busy
+										(eq behavior 'moving)
+											(scrShowPane gScreen "ShipMoving")
+
+										; If the Lamplighter prototype has not been returned
+										; to Point Juno, then the Admiral has more important
+										; things to worry about.
+										(not (eq (objGetGlobalData gSource "p262prototype") "recovered"))
+											(scrShowPane gScreen "PrototypeNotFound")
+											
+										; No mission if the player has met the Antarctica
+										(and (not missionStatus)
+												(not antarcticaStatus)
+												(or (eq (typGetGlobalData &scCSCAntarctica; "status") "underAttack")
+													(eq (typGetGlobalData &scCSCAntarctica; "status") "friend")
+													)
+												)
+											(scrShowPane gScreen "PlayerMetAntarctica")
+
+										; Antarctica mission
+										(not missionStatus)
+											(if antarcticaStatus
+												(scrShowPane gScreen "AntarcticaDispatched")
+												(scrShowPane gScreen "AssignMission")
+												)
+
+										(eq missionStatus "assigned")
+											(if antarcticaStatus
+												(scrShowPane gScreen "AntarcticaDispatched")
+												(scrShowPane gScreen "RecapMission")
+												)
+
+										(eq missionStatus "complete")
+											(scrShowPane gScreen "MissionComplete")
+
+										(eq missionStatus "testing")
+											(scrShowPane gScreen "MissionTesting")
+										)
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								(switch
+									(and 
+										(eq (objGetData gSource "MissionStatus") "complete")
+										(or 
+											(eq (objGetGlobalData gSource "p262test") "player")
+											(and
+												(eq (objGetGlobalData gSource "p262test") "fleetCaptain")
+												(geq (objGetData gPlayerShip "fleetLevel") 6)
+												)
+											)
+										)
+										(scrShowPane gScreen "AssignTest")
+
+									(eq (objGetData gSource "MissionStatus") "testing")
+										(scrShowPane gScreen "TestingStatus")
+
+									(scrShowScreen gScreen "&dsFleetDockServices;")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<AssignMission>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "As you enter the bridge, you see Admiral Conrad Decker talking with his XO. "
+									"A guard approaches you and says,\n\n\"The admiral would like you to wait for him at his quarters.\"")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AssignMission2")
+							</Action>
+						</Actions>
+					</AssignMission>
+
+					<AssignMission2>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "Waiting in the admiral's quarters you see the artifacts of his life scattered around the room&#x97;"
+									"charts, papers, and empty glasses are randomly distributed. Pictures of the men and women that he's lost judge from the walls.\n\n"
+									"Fifteen minutes later, the admiral walks in.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AssignMission3")
+							</Action>
+						</Actions>
+					</AssignMission2>
+
+					<AssignMission3>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "\"" (objGetName gPlayerShip 0x05) " armed like a battleship and a lonely pilot heading for the Core. Another plaything for the Gods. What a waste.\n\n"
+									"\"I'll make a deal with you. Help me with my problem and I'll give you something you're going to need out there.\"")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AssignMission4")
+							</Action>
+						</Actions>
+					</AssignMission3>
+
+					<AssignMission4>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"\"My problem is Captain Helios and the CSC Antarctica. Two months ago we were on joint operations against an Ares stronghold. "
+								"Four carriers; hundreds of Centurions; one of the most complicated operations of the war.\n\n"
+								"\"A light-minute out, she breaks formation and recalls her wing. She left us out there at the most critical point!\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AssignMission5")
+							</Action>
+						</Actions>
+					</AssignMission4>
+
+					<AssignMission5>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"\"She's gone rogue. Or worse. And with a carrier. And with the secrets she knows... I really don't have a choice.\"\n\n"
+								"The admiral looks away, out the porthole. He looks tired. And old."
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AssignMission6")
+							</Action>
+						</Actions>
+					</AssignMission5>
+
+					<AssignMission6>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"When the admiral turns back to you there is a new intensity in his eyes and as he stands up his fists are clenched.\n\n"
+								"\"Your mission is to hunt down the Antarctica. And to destroy her, if you can.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetData gSource "MissionStatus" "assigned")
+									(objSetData gSource "MissionTime" (unvGetTick))
+									(ScrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</AssignMission6>
+
+					<RecapMission>
+						<OnPaneInit>
+							(block (lastVisit)
+								(setq lastVisit (subtract (unvGetTick) (objGetData gSource "MissionTime")))
+								(switch
+									; If the antactica is in the system, then we might have a clue
+									(sysFindObject gSource "sA +cscAntarctica;")
+										(scrSetDesc gScreen
+											"Admiral Decker talks with his XO at his center console. "
+											"They see you enter, and the admiral comes up to you quietly:\n\n"
+											"\"We've had a sighting of the Antarctica somewhere in this system! You know what to do. Return here when you've accomplished your mission.\""
+											)
+									
+									(ls lastVisit 300)
+										(scrSetDesc gScreen 
+											"The bridge of the CSC Terra is chaotic, but efficient. "
+											"Various officers discuss issues at their panels, raising their voice above the chatter of comm traffic. "
+											"The admiral is not on the bridge, but the XO approaches you:\n\n"
+											"\"I don't envy your mission. We don't have fresh intel on the Antarctica; you'll have to search system by system, I'm afraid.\""
+											)
+
+									(ls lastVisit 1800)
+										(scrSetDesc gScreen 
+											"Admiral Decker talks with his XO at the center of a chaotic, but efficient bridge. "
+											"The Admiral sees you come in, but he seems too busy to be able to talk to you."
+											)
+
+									(scrSetDesc gScreen 
+										"Admiral Decker talks with his XO at his center console. "
+										"They see you enter, and the XO comes up to you quietly:\n\n"
+										"\"Still no sign of the Antarctica. We've had reports that it might be in the Dantalion system.\""
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</RecapMission>
+
+					<AntarcticaDispatched>
+						<OnPaneInit>
+							(block (antarcticaStatus desc)
+								(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+								(switch
+									(eq antarcticaStatus "destroyedByPlayer")
+										(setq desc "As you enter the bridge all the officers rise and applaud. Admiral Decker stands next to you and says,\n\n\"The Fleet owes you a great debt. The valor and heroism that you showed in defeating the Antarctica will stand as a beacon of hope in this bloody war!\"\n\nAfter much cheering and congratulations, the Admiral leads you to his quarters for a private conversation.")
+
+									(eq antarcticaStatus "destroyed")
+										(setq desc "As you enter the bridge all the officers cheer. Admiral Decker stands next to you and announces,\n\n\"I can now confirm that the rogue ship Antarctica has been destroyed!\"\n\nAfter much cheering, the Admiral leads you to his quarters for a private conversation.")
+
+									(eq antarcticaStatus "escaped")
+										(setq desc "The bridge grows quiet as you enter. All the officers stare at you, some with disgust, others with pity. The XO walks up to you: \"The admiral is waiting for you in his quarters.\"")
+
+									(eq antarcticaStatus "betrayed")
+										(setq desc "The bridge grows quiet as you enter. All the officers stare at you, some with disgust, others with pity. The XO walks up to you: \"The admiral is waiting for you in his quarters.\"")
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "AntarcticaDispatched2")
+							</Action>
+						</Actions>
+					</AntarcticaDispatched>
+
+					<AntarcticaDispatched2>
+						<OnPaneInit>
+							(block (antarcticaStatus desc)
+								(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+								(switch
+									(eq antarcticaStatus "destroyedByPlayer")
+										(setq desc "\"You've done your part of the bargain, now let me help you with your journey. For the last few years we've been working on a new weapon&#x97;something that can hurt the Ares and win this war. I want you to test this new weapon. The dockmaster will install it. Good luck!\"")
+
+									(and (eq antarcticaStatus "destroyed") (geq (objGetData gPlayerShip "fleetLevel") 6))
+										(setq desc "\"Thanks for tracking down the Antarctica&#x97;we couldn't have done it without you. Now it's my turn to help you.\n\n\"For the last few years we've been working on a new weapon&#x97;something that will win this war. I want you to test it. Report to the dockmaster and he will explain. Good luck!\"")
+
+									(eq antarcticaStatus "destroyed")
+										(setq desc "\"Thanks for tracking down the Antarctica&#x97;we couldn't have done it without you. I know you're on your way to the Core, but if you stay with the Fleet and make captain, I guarantee that I'll remember your service. Good luck, and remember what I said.\"")
+
+									(eq antarcticaStatus "escaped")
+										(setq desc "The admiral broods in his chambers. He stares at you coldly:\n\n\"What happened out there? How did the Antarctica escape? If I ever find out that you helped them, I will make sure that you hang as a traitor! Until then, you are demoted to Master Sergeant. Now get the hell out of here.\"")
+
+									(eq antarcticaStatus "betrayed")
+										(setq desc "The admiral sits at his desk quietly studying you. He says,\n\n\"You're a cold-blooded killer, do you know that? I heard how you betrayed Captain Helios. I know she deserved it, but I'm glad that you're leaving Human Space. I'll see you in hell.\"")
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (antarcticaStatus)
+									(setq antarcticaStatus (objGetGlobalData gSource "antarctica"))
+									(switch
+										(eq antarcticaStatus "destroyedByPlayer")
+											(objSetGlobalData gSource "p262test" "player")
+
+										(eq antarcticaStatus "destroyed")
+											(objSetGlobalData gSource "p262test" "fleetCaptain")
+
+										(eq antarcticaStatus "escaped")
+											(block Nil
+												(objSetData gPlayerShip "fleetXP" 600)
+												(objSetData gPlayerShip "fleetLevel" 3)
+												(objSetGlobalData gSource "p262test" "notPlayer")
+												)
+
+										(eq antarcticaStatus "betrayed")
+											(objSetGlobalData gSource "p262test" "notPlayer")
+
+										(objSetGlobalData gSource "p262test" "fleetCaptain")
+										)
+
+									(objSetData gSource "MissionStatus" "complete")
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</AntarcticaDispatched2>
+
+					<MissionComplete>
+						<OnPaneInit>
+							(block (testStatus desc)
+								(setq testStatus (objGetGlobalData gSource "p262test"))
+								(switch
+									(eq testStatus "player")
+										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"Have you talked to the dockmaster yet?\"")
+
+									(and (eq testStatus "fleetCaptain") (geq (objGetData gPlayerShip "fleetLevel") 6))
+										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"I'm glad you're back. We've made a lot of progress since your last visit and now I'm ready to show you Project Lamplighter. Report to the dockmaster and he'll explain.\"")
+
+									(eq testStatus "fleetCaptain")
+										(setq desc "The bridge is chaotic as usual. The admiral looks at you as you enter:\n\n\"Remember what I said. Come back when you're a Fleet captain.\"")
+
+									(eq testStatus "notPlayer")
+										(setq desc "The bridge is chaotic as usual. The admiral and the XO confer privately about their latest operation. The officers and crew try hard to ignore you. You are not welcome here.")
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionComplete>
+
+					<MissionTesting>
+						<OnPaneInit>
+							(block (desc lastVisit)
+								(setq lastVisit (subtract (unvGetTick) (objGetData gSource "MissionTime")))
+								(switch
+									(ls lastVisit 1800)
+										(setq desc (cat "The bridge of the CSC Terra is busy with activity. Admiral Decker and his XO are discussing the results of the last operation."))
+
+									(setq desc (cat "As you enter the bridge, Admiral Decker approaches you. He is beaming with excitement:\n\n\"How's the testing going? It's a beautiful weapon, isn't it? "
+											"We're starting to produce them in higher quantities and equipping our Aquilas with them. We finally have a chance to end this war on our terms!\"")
+										)
+									)
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionTesting>
+
+					<AccessDenied>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Two armed guards block your path, \"I'm sorry, %sir%, the admiral does not like to be disturbed by junior officers.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</AccessDenied>
+					
+					<ShipMoving>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								"The bridge of the CSC Terra is busy with activity. Admiral Decker is leaning over a "
+								"holochart as the massive ship manuevers through the system."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</ShipMoving>
+
+					<PrototypeNotFound>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								(cat "The bridge of the CSC Terra is busy with activity. You overhear Admiral Decker talking with his XO:\n\n"
+									"\"We need that prototype, Jack. I don't care how you do it, we need to get it back!\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</PrototypeNotFound>
+
+					<PlayerMetAntarctica>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								(cat "The bridge of the CSC Terra is busy with activity. You overhear Admiral Decker talking with his XO:\n\n"
+									"\"I want an update on the Antarctica. Has the squadron made contact yet?\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</PlayerMetAntarctica>
+
+					<AssignTest>
+						<OnPaneInit>
+							(block (desc)
+								(setq desc (cat "The dockmaster approaches as you enter:\n\n\"Seems like it's your lucky day! "
+										"I got orders from the admiral to put you on our testing program for Lamplighter. You're gonna like it&#x97;"
+										"it's got a pure antimatter blast that'll cut through almost anything.\"")
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "AssignTest2")
+							</Action>
+						</Actions>
+					</AssignTest>
+
+					<AssignTest2>
+						<OnPaneInit>
+							(block (desc okToInstall theResult)
+								(setq gItem (itmCreate &itLamplighter; 1))
+								
+								(setq theResult
+									(intInstallDevicePrepEx
+										gItem								; item to install
+										0									; Free to install
+										Nil									; install cost margin
+										(objGetDefaultCurrency gSource)		; currency to use
+										25									; max tech level
+										Nil									; install criteria
+										Nil									; check military ID
+										Nil									; item is in cargo
+										Nil)								; buy and install
+									)
+									
+								(setq gCanInstall (item theResult 0))
+								(scrSetDesc gScreen (item theResult 2))
+
+								; Enable/disable buttons
+								(scrEnableAction gScreen 0 gCanInstall)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Install" key="I" default="1">
+								(if gCanInstall
+									(block Nil
+										; Install the item
+										(objAddItem gPlayerShip gItem)
+										(shpInstallDevice gPlayerShip gItem)
+
+										(objSetData gSource "MissionStatus" "testing")
+										(objSetData gSource "MissionTime" (unvGetTick))
+										(objSetGlobalData gSource "p262test" "installed")
+
+										(scrShowPane gScreen "AssignTestSuccess")
+										)
+									)
+							</Action>
+
+							<Action name="Cancel" key="C" cancel="1">
+								<ShowPane pane="AssignTestDeclined"/>
+							</Action>
+						</Actions>
+					</AssignTest2>
+
+					<AssignTestSuccess>
+						<OnPaneInit>
+							(block (desc)
+								(setq desc "\"All the numbers look good. This rig is ready for some action! Take her out and let us know how many Ares you blast!\"")
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</AssignTestSuccess>
+
+					<AssignTestDeclined>
+						<OnPaneInit>
+							(block (desc)
+								(setq desc "\"Anytime you're ready, just come back and I'll fix you up.\"")
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(scrShowScreen gScreen "Main")
+									(scrShowScreen gScreen "&dsFleetDockServices;")
+									)
+							</Action>
+						</Actions>
+					</AssignTestDeclined>
+
+					<TestingStatus>
+						<OnPaneInit>
+							(block (desc)
+								(setq desc "The dockmaster approaches you as you enter:\n\n\"How's the testing going? I bet you got ten thousand stories about that Lamplighter!\"")
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(scrShowScreen gScreen "Main")
+									(scrShowScreen gScreen "&dsFleetDockServices;")
+									)
+							</Action>
+						</Actions>
+					</TestingStatus>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="0"		y="-70" />
+			<Port x="50"	y="50" />
+			<Port x="50"	y="-50" />
+			<Port x="70"	y="0" />
+			<Port x="-70"	y="0" />
+			<Port x="-50"	y="50" />
+			<Port x="-50"	y="-50" />
+		</DockingPorts>
+
+	</ShipClass>
+
+	<!-- Dantalion Settlement 
+
+	EXTRA DATA
+
+	informant:		Status of informant
+						Nil = never encountered
+						"offered" = informant has offered to reveal location of Antarctica
+						"paid" = informant has been paid
+
+	-->
+
+	<StationType UNID="&stDantalionSettlement;"
+			name=				"Commonwealth settlement"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itP120HexphaseArmor;"
+			hitPoints=			"250"
+			repairRate=			"1"
+			shipRepairRate=		"1"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
+			>
+
+		<Names noArticle="true">Commonwealth Settlement %1%0%0%0</Names>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<RandomItem count="10" 
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"8"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="10" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"8"
+					levelCurve=		"2"
+					/>
+			<RandomItem count="3" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					level=			"9"
+					levelCurve=		"1"
+					/>
+
+			<Item count="4d12"	item="&itXenotiteFuelRod;" />
+		</Items>
+
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +Commonwealth; -PremiumAmmo; -Illegal; -NotForSale;" priceAdj="115" inventoryAdj="100"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+		</Trade>
+
+		<Ships>
+			<Lookup count="2" table="&tbCommDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Lookup chance="75" table="&tbCommDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<Satellites>
+			<Orbitals distance="6" angle="45">
+				<Station type="&stCommonwealthTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="6" angle="135">
+				<Station type="&stCommonwealthTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="6" angle="225">
+				<Station type="&stCommonwealthTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="6" angle="315">
+				<Station type="&stCommonwealthTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are in the docking bay of a Commonwealth settlement. Except for a few shuttles, the docking bay of this station is deserted. A loose hose is spilling dirty water onto the landing pad; elsewhere, an automatic load-lifter moves forward and back again as it unloads a ship's cargo hold. The air smells of liquid fuel and exhaust.">
+
+						<Actions>
+							<Action name="Meeting Hall" key="M" default="1">
+								<ShowPane pane="MeetingHall"/>
+							</Action>
+
+							<Action name="Commodities Exchange" key="C">
+								<ShowPane pane="CommoditiesExchange"/>
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<MeetingHall>
+						<OnPaneInit>
+							(block (desc)
+								(switch
+									; Antarctica not yet encountered
+									(not (typGetGlobalData &scCSCTerra; "antarctica"))
+										(setq desc (cat "The Meeting Hall is filled with worried-looking residents. Many are talking amongst themselves in low voices. The station master is addressing the group from the front of the hall:\n\n"
+												"\"Once again, I urge everyone to remain calm! We have no reason to believe that the Antarctica will approach this settlement. The Fleet has been informed of the sighting, but we do not know when or if they will arrive.\""
+												)
+											)
+
+									; Antarctica escaped
+									(eq (typGetGlobalData &scCSCTerra; "antarctica") "escaped")
+										(setq desc (cat "The Meeting Hall is filled with people. Most look happy and are talking amongst themselves. The station master addresses the crowd:\n\n"
+												"\"Our latest information is that the Antarctica has left the system. We believe that it is heading for St. Katharine's, where the Fleet will no doubt deal with her.\""
+												)
+											)
+
+									; Antarctica destroyed
+									(setq desc (cat "The Meeting Hall is filled with people. Most look happy and are talking amongst themselves. The station master addresses the crowd:\n\n"
+											"\"Our latest information is that the Antarctica was destroyed. We don't have any more information at this point, but we believe that the danger is over.\""
+											)
+										)
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(switch
+									(and (not (typGetGlobalData &scCSCTerra; "antarctica"))
+											(not (typGetGlobalData &scCSCAntarctica; "status"))
+											(not (eq (objGetData gSource "informant") 'paid))
+											)
+										(scrShowPane gScreen "Informant")
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MeetingHall>
+
+					<Informant>
+						<OnPaneInit>
+							(switch
+								(not (objGetData gSource "informant"))
+									(scrSetDesc gScreen "A woman wearing a ragged Fleet jacket with torn patches stops you as you leave.\n\n\"I know where the Antarctica is. It will cost you 10,000 rin if you want to know too.\"")
+
+								(scrSetDesc gScreen "The woman wearing the ragged Fleet jacket stops you again.\n\n\"I know you're still looking for the Antarctica. For 10,000 rin I will tell you her location.\"")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;OK, you have a deal.&quot;" key="O">
+								(block Nil
+									(objSetData gSource "informant" 'offered)
+									(switch
+										(ls (objGetBalance gPlayerShip 'rin) 10000)
+											(scrShowPane gScreen "NotEnoughRin")
+
+										(scrShowPane gScreen "Informant2")
+										)
+									)
+							</Action>
+
+							<Action name="&quot;No thanks, I'll find her myself.&quot;" key="N" cancel="1">
+								(block Nil
+									(objSetData gSource "informant" 'offered)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</Informant>
+
+					<Informant2>
+						<OnPaneInit>
+							(scrSetDesc gScreen "You transfer 10,000 rin to the woman's account. When she is satisfied, she takes your arm and whispers the coordinates in your ear. You memorize them and enter them into your computer.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block (theAntarctica)
+									(objSetData gSource "informant" 'paid)
+									(objCharge gPlayerShip 'rin 10000)
+
+									(enum (sysFindObject gSource "s D:CSC;") theObj
+										(if (eq (objGetData theObj "CSC") 'antarctica)
+											(setq theAntarctica theObj)
+											)
+										)
+
+									(if theAntarctica
+										(block Nil
+											(shpCancelOrders gPlayerShip)
+											(shpOrder gPlayerShip 'attack theAntarctica)
+											(objSetIdentified theAntarctica)
+											)
+										)
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</Informant2>
+
+					<NotEnoughRin>
+						<OnPaneInit>
+							(scrSetDesc gScreen 
+								(cat "Unfortunately, you "
+									(switch
+										(eq (objGetBalance gPlayerShip 'rin) 0)
+											"do not have any rin."
+										(eq (objGetBalance gPlayerShip 'rin) 1)
+											"only have a single rin."
+										(cat "only have " (objGetBalance gPlayerShip 'rin) " rin.")
+										)
+									"\n\nThe woman smiles at you and says, \"Come back when you have something to deal with.\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</NotEnoughRin>
+
+					<CommoditiesExchange>
+
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</CommoditiesExchange>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 94) (&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 8)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- CSC Antarctica Encounter -->
+
+	<StationType UNID="&stCSCAntarcticaEncounter;"
+			name=				"(CSC Antarctica)"
+			sovereign=			"&svCSCAntarctica;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			level=				"9"
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			unique=				"inUniverse"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCAntarctica;" orders="hold">
+				<Names definiteArticle="true">CSC Antarctica</Names>
+				
+				<InitialData>
+					<CSC>"antarctica"</CSC>
+				</InitialData>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- CSC Terra Encounter -->
+
+	<StationType UNID="&stCSCTerraEncounter;"
+			name=				"(CSC Terra)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- ---c- ----- ----- -----"
+			unique=				"inUniverse"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTerra;" orders="hold">
+				<Names definiteArticle="true">CSC Terra</Names>
+				
+				<InitialData>
+					<CSC>"terra"</CSC>
+				</InitialData>
+			</Ship>
+		</Ships>
+
+	</StationType>
+
+	<!-- Dantalion star system -->
+
+	<SystemType UNID="&ssDantalion;">
+
+		<SystemGroup>
+
+			<!-- Star -->
+
+			<Station type="&stRedGiantStar;"/>
+
+			<!-- Worlds -->
+
+			<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+
+				<Variants>
+					<Lookup	maxRadius="100" table="Vulcanoids"/>
+					<Table maxRadius="300">
+						<Lookup chance="75" table="VolcanicWorld"/>
+						<Lookup chance="20" table="DesertWorld"/>
+						<Lookup chance="5"  table="RockyWorld"/>
+					</Table>
+					<Table maxRadius="500">
+						<Lookup chance="25" table="DesertWorld"/>
+						<Lookup chance="50" table="VolcanicWorld"/>
+						<Lookup chance="15" table="RockyWorld"/>
+						<Lookup chance="10" table="GasGiant"/>
+					</Table>
+					<Table maxRadius="2000">
+						<Lookup chance="5"  table="DesertWorld"/>
+						<Lookup chance="15" table="IcyWorld"/>
+						<Lookup chance="20" table="GasGiant"/>
+						<Lookup chance="40" table="MethaneGiant"/>
+						<Lookup chance="15" table="RingedWorld"/>
+						<Lookup chance="5"  table="OuterRockyGroup"/>
+					</Table>
+				</Variants>
+
+			</Orbitals>
+
+			<!-- Place the two stargates -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
+			<!-- Primary Station -->
+
+			<RandomLocation locationCriteria="++LifeZone,*planet">
+				<Station type="&stDantalionSettlement;"/>
+			</RandomLocation>
+
+			<!-- Random Stations -->
+
+			<FillLocations
+					percentFull=		"80"
+					stationCriteria=	"!primary,!debris,+envFire,-envAvoidsFire" 
+					percentEnemies=		"75"
+					separateEnemies=	"true"
+					/>
+
+			<!-- Random Debris -->
+
+			<RandomLocation probability="50" locationCriteria="++OuterSystem,++asteroids">
+				<Orbitals count="1d6" distance="1d8+6" angle="random">
+					<RandomStation stationCriteria="*debris"/>
+				</Orbitals>
+			</RandomLocation>
+
+			<FillLocations
+					percentFull=		"50"
+					stationCriteria=	"*debris"
+					/>
+
+			<!-- Void Encounters -->
+
+			<Orbitals count="1d12" distance="3d200+240" angle="random" exclusionRadius="100">
+				<Table>
+					<RandomStation chance="80" stationCriteria="*debris"/>
+					<RandomStation chance="18" stationCriteria="*enemy" locationAttribs="void"/>
+					<RandomStation chance="2"  stationCriteria="*friendly,!debris,!primary" locationAttribs="void"/>
+				</Table>
+			</Orbitals>
+
+		</SystemGroup>
+
+		<Events>
+			<OnCreate>
+				(block (gate antarctica antarcticaPos)
+					; Find the inbound stargate
+					(setq gate (item (sysFindObject Nil "G:Inbound;") 0))
+
+					; The Antarctica is 210-220 light-seconds away from the gate so
+					; that it takes ~3 minutes (real time) to get to the gate
+
+					(setq antarcticaPos (sysVectorRandom gate (random 210 220) 10))
+					(setq antarctica (sysCreateStation &stCSCAntarcticaEncounter; antarcticaPos))
+
+					; If the Terra has not been encountered yet, create it on the other side
+					; of the system.
+
+					(if (not (staIsEncountered &stCSCTerraEncounter;))
+						(block (terra terraPos)
+							(setq terraPos (sysVectorRandom (sysVectorMultiply antarcticaPos -1) (random 40 60) 20))
+							(setq terra (sysCreateStation &stCSCTerraEncounter; terraPos))
+							)
+						)
+					)
+			</OnCreate>
+		</Events>
+	</SystemType>
+
+</TranscendenceModule>

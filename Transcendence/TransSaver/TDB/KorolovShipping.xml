@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Shipping Container -->
+
+	<ItemType UNID="&itKorolovShippingContainer;"
+			name=				"Korolov shipping container"
+			level=				"1"
+			value=				"125000"
+			mass=				"25000"
+			frequency=			"notrandom"
+			modifiers=			"NotForSale"
+
+			description=		"These standardized shipping containers hold everything from ore to consumers goods."
+
+			sortName=			"shipping container, Korolov"
+
+			charges=			"5000"
+			valueCharges=		"true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Class V Deflector -->
+
+	<ItemType UNID="&itClass5Deflector;"
+			name=				"class V deflector"
+			level=				"5"
+			value=				"15000"
+			mass=				"2500"
+			frequency=			"notrandom"
+			modifiers=			"EI; MajorItem; NotForSale"
+
+			description=		"High manufacturing costs and poor sales doomed it in the market, but many prefer this vintage deflector over modern imitators."
+
+			sortName=			"deflector, class V"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"100"
+				hpBonus=		"+100,  +0,+100,  +0,  +0,  +0"
+				regen=			"48"
+				depletionDelay=	"240"
+				powerUse=		"300"
+				/>
+
+		</ItemType>
+
+	<!-- Antares I Freighter -->
+
+	<ShipClass UNID="&scAntaresI;"
+			manufacturer=		"Makayev-Energia"
+			class=				"Antares I"
+			type=				"freighter"
+			score=				"100"
+
+			mass=				"1000"
+			cargoSpace=			"6000"
+			thrust=				"600"
+			maneuver=			"20"
+			maxSpeed=			"8"
+
+			leavesWreck=		"100"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="315" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="285" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="255" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="225" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="195" span="30" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="165" span="30" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="135" span="30" armorID="&itHeavyTitaniumPlate;" />
+			<ArmorSection start="105" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="75"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="45"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="15"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;" omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+		</Items>
+
+		<Image imageID="&rsAntaresIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Names noArticle="true">Antares Heavy 1%0%0</Names>
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"90"
+			perception=			"4"
+			combatStyle=		"standOff"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+						0 ; apprentices cannot escort
+						0 ; journeymen cannot escort
+
+						; Masters: 150 - 750 credits
+						; 36,000 - 180,000 cargo value
+						(multiply 25 (add (add (random 2 10) (random 2 10)) (random 2 10)))
+
+						750 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>350</korolovEscortRate>
+
+			<korolovMinLevel>3</korolovMinLevel>
+		</StaticData>
+		
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- Antares II Freighter -->
+
+	<ShipClass UNID="&scAntaresII;"
+			manufacturer=		"Makayev-Energia"
+			class=				"Antares II"
+			type=				"freighter"
+			score=				"140"
+
+			mass=				"1200"
+			cargoSpace=			"6000"
+			thrust=				"1200"
+			maneuver=			"20"
+			maxSpeed=			"12"
+
+			leavesWreck=		"100"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="315" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="285" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="255" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="225" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="195" span="30" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="165" span="30" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="135" span="30" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="105" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="75"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="45"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="15"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itHeavyRecoillessCannon;" secondaryWeapon="true" posAngle="0" posRadius="25" omnidirectional="true"/>
+			<Device deviceID="&itHeavyRecoillessCannon;" secondaryWeapon="true" posAngle="180" posRadius="25" omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+		</Items>
+
+		<Image imageID="&rsAntaresIIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Names noArticle="true">Antares Heavy 2%0%0</Names>
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"90"
+			perception=			"4"
+			combatStyle=		"standOff"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+						0 ; apprentices cannot escort
+
+						; Journeymen: 300 - 1200 credits
+						; 72,000 - 288,000
+						(multiply 10 (add (random 10 40) (random 10 40) (random 10 40)))
+
+						; Masters: 1000 - 2000 credits
+						; 240,000 - 480,000
+						(multiply 10 (add (add (random 30 60) (random 30 60)) (random 40 80)))
+
+						750 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>100</korolovEscortRate>
+
+			<korolovMinLevel>2</korolovMinLevel>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- Antares V Freighter -->
+
+	<ShipClass UNID="&scAntaresV;"
+			manufacturer=		"Makayev-Energia"
+			class=				"Antares V"
+			type=				"superfreighter"
+			score=				"380"
+
+			mass=				"2000"
+			cargoSpace=			"10000"
+			thrust=				"1200"
+			maneuver=			"20"
+			maxSpeed=			"8"
+
+			leavesWreck=		"100"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="15" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="330" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="315" span="15" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="300" span="15" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="285" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="270" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="240" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="210" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="195" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="180" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+
+			<ArmorSection start="165" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="150" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="135" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="120" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="105" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="90"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="60"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="15" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="30"  span="15" armorID="&itLightPlasteelPlate;" />
+			<ArmorSection start="15"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="0"   span="15" armorID="&itLightPlasteelPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="0" posRadius="50" omnidirectional="true"/>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="0" posRadius="0" omnidirectional="true"/>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="180" posRadius="50" omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+		</Items>
+
+		<Image imageID="&rsAntaresVImage;" imageX="0" imageY="0" imageWidth="180" imageHeight="180"/>
+
+		<Names noArticle="true">Antares Heavy 5%0%0</Names>
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"90"
+			perception=			"4"
+			combatStyle=		"standOff"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+						0 ; apprentices cannot escort
+
+						; Journeymen: 200 - 800 credits
+						; 80,000 - 320,000 cargo value
+						(multiply 50 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
+
+						; Masters: 800 - 2000 credits
+						; 320,000 - 800,000 cargo value
+						(add (multiply 50 (add (random 4 10) (random 4 10))) (multiply 50 (add (random 4 10) (random 4 10))))
+
+						2000 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>50</korolovEscortRate>
+
+			<korolovMinLevel>2</korolovMinLevel>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- EI100 Freighter -->
+
+	<ShipClass UNID="&scEI100;"
+			manufacturer=		"Earth Industries"
+			class=				"EI100"
+			type=				"freighter"
+			score=				"85"
+
+			mass=				"100"
+			cargoSpace=			"250"
+			thrust=				"200"
+			maneuver=			"6"
+			maxSpeed=			"12"
+
+			leavesWreck=		"75"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightReactiveArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightReactiveArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
+
+		<Names definiteArticle="true">
+			freighter Anon7; freighter Beta Antares; freighter Claire Rennard;
+			freighter Don Antonio; freighter Enfield; freighter Farsol;
+			freighter Gravity's Pull; freighter Heseltine; freighter Ibanez;
+			freighter Jovian Cargo; freighter Korean Star; freighter Liquid Metal;
+			freighter Matori Maru; freighter North Sea; freighter Ologous;
+			freighter Paolo Sante; freighter Qinlong; freighter Remora;
+			freighter San Cristobal; freighter Titus Gaelianus; freighter Umgala Kori;
+			freighter Velo; freighter Wantanabe Maru; freighter Xan; freighter Yasu Maru;
+			freighter Zodiac Bound
+		</Names>
+
+		<AISettings
+			fireRateAdj=		"80"
+			fireAccuracy=		"85"
+			perception=			"4"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+
+						; Apprentices: 1500 - 4000 credits
+						; 15,000 - 40,000 cargo value
+						(multiply 100 (random 15 40))
+
+						; Journeymen: 2500 - 5000 credits
+						; 25,000 - 50,000 cargo value
+						(multiply 100 (random 25 50))
+
+						; Masters: 3000 - 5000 credits
+						; 30,000 - 50,000 cargo value
+						(multiply 100 (random 30 50))
+
+						5000 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>200</korolovEscortRate>
+
+			<korolovMinLevel>1</korolovMinLevel>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- EI200 Freighter -->
+
+	<ShipClass UNID="&scEI200;"
+			manufacturer=		"Earth Industries"
+			class=				"EI200"
+			type=				"freighter"
+			score=				"150"
+
+			mass=				"200"
+			cargoSpace=			"500"
+			thrust=				"200"
+			maneuver=			"6"
+			maxSpeed=			"16"
+
+			leavesWreck=		"75"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="330" span="60" armorID="&itReactiveArmor;" />
+			<ArmorSection start="270" span="60" armorID="&itReactiveArmor;" />
+			<ArmorSection start="210" span="60" armorID="&itReactiveArmor;" />
+			<ArmorSection start="150" span="60" armorID="&itReactiveArmor;" />
+			<ArmorSection start="90"  span="60" armorID="&itReactiveArmor;" />
+			<ArmorSection start="30"  span="60" armorID="&itReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlaster;" omnidirectional="true"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+
+		<Names definiteArticle="true">
+			freighter King Albert; freighter Barbosa; freighter Cyteen;
+			freighter Domus; freighter Ernst Mach; freighter Foolhardy;
+			freighter Gianani; freighter Hashidate Maru; freighter Indomitable;
+			freighter Janus Order; freighter Kaiko Maru; freighter Lorenz Attractor;
+			freighter Mutant Child; freighter Nisshin Maru; freighter Oort Cloud;
+			freighter Peter Parker; freighter Quequeg; freighter Rendezvous;
+			freighter Semele Zeus; freighter Thomas Paine; freighter Umber17;
+			freighter Voltaire; freighter Washburn; freighter Xanthus; freighter Yushin Maru;
+			freighter Zephyr
+		</Names>
+
+		<AISettings
+			fireRateAdj=		"90"
+			fireAccuracy=		"85"
+			perception=			"4"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+
+						; Apprentices: 1500 - 4000 credits
+						; 30,000 - 80,000 cargo value
+						(multiply 100 (random 15 40))
+
+						; Journeymen: 1500 - 5000 credits
+						; 30,000 - 100,000 cargo value
+						(multiply 100 (random 15 50))
+
+						; Masters: 3000 - 5000 credits
+						; 60,000 - 100,000 cargo value
+						(multiply 100 (random 30 50))
+
+						5000 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>150</korolovEscortRate>
+
+			<korolovMinLevel>1</korolovMinLevel>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- EI7000 Freighter -->
+
+	<ShipClass UNID="&scEI7000;"
+			manufacturer=		"Earth Industries"
+			class=				"EI7000"
+			type=				"freighter"
+			score=				"535"
+
+			mass=				"850"
+			cargoSpace=			"2000"
+			thrust=				"1000"
+			maneuver=			"6"
+			maxSpeed=			"12"
+
+			leavesWreck=		"100"
+
+			attributes=			"commonwealth,freighter,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="315" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="285" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="255" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="225" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="195" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="165" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="135" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="105" span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="75"  span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="45"  span="30" armorID="&itAdvancedReactiveArmor;" />
+			<ArmorSection start="15"  span="30" armorID="&itAdvancedReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsEI7000Image;" imageX="0" imageY="0" imageWidth="110" imageHeight="110"/>
+
+		<Names definiteArticle="true">
+			freighter Ammon; freighter Caelestis; freighter Fulgurator;
+			freighter Laterius; freighter Lucetius; freighter Pluvius;
+			freighter Stator; freighter Terminus; freighter Tonans;
+			freighter Victor; freighter Summanus; freighter Feretrius;
+			freighter Optimus Maximus; freighter Brixianus; freighter Ladicus;
+			freighter Parthinus; freighter Poeninus; freighter Solutorius;
+			freighter Taranis; freighter Uxellinus
+		</Names>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"4"
+		/>
+
+		<StaticData>
+			<korolovContainerPrice>
+				(item
+					(list
+						0 ; no level 0
+						0 ; apprentices cannot escort
+
+						; Journeymen: 2000 - 4000 credits
+						; 160,000 - 320,000 cargo value
+						(multiply 100 (add (random 10 20) (random 10 20)))
+
+						; Masters: 4000 - 10000 credits
+						; 320,000 - 800,000 cargo value
+						(multiply 100 (add (random 20 50) (random 20 50)))
+
+						5000 ; legends don't escort, but add anyway
+						)
+					(typGetGlobalData &stKorolovShipping; "level")
+					)
+			</korolovContainerPrice>
+
+			<korolovEscortRate>50</korolovEscortRate>
+
+			<korolovMinLevel>2</korolovMinLevel>
+		</StaticData>
+
+		<Events>
+			<OnDestroy>
+				(korOnShipDestroyed)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+<!-- GLOBALS -->
+
+	<Globals>
+		(block Nil
+			(setq korComputePlayerLevel (lambda ()
+				(block (xp)
+					(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+					(setq totalMissionsFailed (typGetGlobalData &stKorolovShipping; "totalMissionsFailed"))
+
+					(switch
+						(ls xp 0)						-1
+						(ls xp 300)						1
+						(ls xp 1500)					2
+						(or (ls xp 3000)
+							(gr totalMissionsFailed 0))	3
+														4
+						)
+					)
+				))
+
+			(setq korEmptyFreighter (lambda (freighterObj)
+				(block Nil
+					(enum (objGetItems freighterObj "*U~m -ID;") theItem
+						(objRemoveItem freighterObj theItem)
+						)
+					)
+				))
+
+			(setq korEscortRecord (lambda (shipClass)
+				(block (transRecord successes failures totalMissions)
+					(setq transRecord (typGetGlobalData &stKorolovShipping; (cat "record" shipClass)))
+					(if transRecord
+						(block Nil
+							(setq successes (item transRecord 0))
+							(setq failures (item transRecord 1))
+							(setq totalMissions (add successes failures))
+							(if (leq totalMissions 0)
+								(setq transRecord Nil)
+								)
+							)
+						)
+
+					(switch
+						(and transRecord (eq failures 0))
+							(cat successes " successful " (if (gr successes 1) "missions" "mission"))
+
+						(and transRecord (eq successes 0))
+							(cat failures " failed " (if (gr failures 1) "missions" "mission"))
+
+						transRecord
+							(cat successes " out of " totalMissions " successful missions (" (divide (multiply 100 successes) totalMissions) "%)")
+
+						(gr (typGetStaticData shipClass "korolovMinLevel") (typGetGlobalData &stKorolovShipping; "level"))
+							"Not rated to escort this class"
+
+						"No missions completed"
+						)
+					)
+				))
+
+			(setq korFillFreighter (lambda (freighterObj pricePerContainer)
+				(block (container fitCount)
+					(setq container (itmSetCharges (itmCreate &itKorolovShippingContainer; 1) (divide pricePerContainer 25)))
+					(setq fitCount (divide (objGetCargoSpaceLeft freighterObj) (itmGetMass container)))
+					(objAddItem freighterObj container fitCount)
+
+					; Return the total value of the cargo
+					(multiply fitCount (itmGetActualPrice container))
+					)
+				))
+
+			(setq korFrigateDestroyed (lambda ()
+				(block (xp xpGain)
+					; Figure out how much xp player earns
+					(setq xpGain
+						(item
+							'(0 500 250 150)
+							(typGetGlobalData &scCharonFrigateRaider; "totalDestroyed")
+							)
+						)
+
+					(if (gr xp 0)
+						(typSetGlobalData 
+							&stKorolovShipping; 
+							"xp"
+							(add (typGetGlobalData &stKorolovShipping; "xp") xpGain)
+							)
+						)
+					)
+				))
+
+			(setq korInitialize (lambda ()
+				(block (playerLevel)
+					(setq playerLevel (typGetGlobalData &stKorolovShipping; "level"))
+					(if (not playerLevel)
+						(block Nil
+							(typSetGlobalData &stKorolovShipping; "level" 1)
+							(typSetGlobalData &stKorolovShipping; "totalMissionCount" 0)
+							(typSetGlobalData &stKorolovShipping; "xp" 0)
+							(typSetGlobalData &stKorolovShipping; "recordStrongholds" 0)
+							(if (not (typGetGlobalData &scCharonFrigateRaider; "totalDestroyed"))
+								(typSetGlobalData &scCharonFrigateRaider; "totalDestroyed" 0)
+								)
+
+							(setq playerLevel 1)
+							)
+						)
+
+					playerLevel
+					)
+				))
+
+			(setq korMissionFailure (lambda (transObj)
+				(block (xp totalMissionsFailed xpLost recordID transRecord)
+					(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+					(setq totalMissionsFailed (typGetGlobalData &stKorolovShipping; "totalMissionsFailed"))
+
+					; Lose xp
+					(switch
+						(eq totalMissionsFailed 0)
+							(setq xpLost 0)
+
+						(eq totalMissionsFailed 1)
+							(setq xpLost 50)
+
+						(eq totalMissionsFailed 2)
+							(setq xpLost 100)
+
+						(setq xpLost 200)
+						)
+
+					(if (ls xpLost xp)
+						(setq xp (subtract xp xpLost))
+						(setq xp 0)
+						)
+
+					; Store
+					(typSetGlobalData &stKorolovShipping; "xp" xp)
+					(typSetGlobalData &stKorolovShipping; "totalMissionsFailed" totalMissionsFailed)
+
+					; Keep track of which freighters have been escorted
+					(setq recordID (cat "record" (objGetType transObj)))
+					(setq transRecord (typGetGlobalData &stKorolovShipping; recordID))
+
+					(if transRecord
+						(setq transRecord 
+							(list
+								(item transRecord 0)
+								(add (item transRecord 1) 1)
+								)
+							)
+						(setq transRecord (list 0 1))
+						)
+
+					(typSetGlobalData &stKorolovShipping; recordID transRecord)
+					)
+				))
+
+			(setq korMissionSuccess (lambda (transObj missionXP)
+				(block (xp recordID transRecord)
+					(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+					(setq xp (add xp missionXP))
+
+					; If this is the player's 10th mission and she has never failed a mission
+					; then she gets a bonus
+					(if (and (eq (typGetGlobalData &stKorolovShipping; "totalMissionsFailed") 0)
+							(eq (typGetGlobalData &stKorolovShipping; "totalMissionCount") 10))
+						(setq xp (add xp 1500))
+						)
+
+					(typSetGlobalData &stKorolovShipping; "xp" xp)
+
+					; Keep track of which freighters have been escorted
+					(setq recordID (cat "record" (objGetType transObj)))
+					(setq transRecord (typGetGlobalData &stKorolovShipping; recordID))
+
+					(if transRecord
+						(setq transRecord 
+							(list
+								(add (item transRecord 0) 1)
+								(item transRecord 1)
+								)
+							)
+						(setq transRecord (list 1 0))
+						)
+
+					(typSetGlobalData &stKorolovShipping; recordID transRecord)
+					)
+				))
+
+			(setq korMissionStrongholdSuccess (lambda (missionXP destroyedByPlayer)
+				(block (xp)
+					(setq xp (typGetGlobalData &stKorolovShipping; "xp"))
+					(setq xp (add xp missionXP))
+					(typSetGlobalData &stKorolovShipping; "xp" xp)
+
+					(if destroyedByPlayer
+						(block (destCount)
+							(setq destCount (typGetGlobalData &stKorolovShipping; "recordStrongholds"))
+							(if destCount
+								(setq destCount (add destCount 1))
+								(setq destCount 1)
+								)
+							(typSetGlobalData &stKorolovShipping; "recordStrongholds" destCount)
+							)
+						)
+					)
+				))
+
+			(setq korMsgWelcome (lambda (playerLevel)
+				(block (desc)
+					(setq desc "You are in the main hall of a Korolov Shipping Company station.")
+
+					; Description depends on rank
+
+					(switch
+						; Blacklisted
+						(eq playerLevel -1)
+							(setq desc (cat desc " Conversations stop as you enter the room. Whispered condemnations make it clear that you are not welcome among the freighter crews and captains."))
+
+						; Probationary or apprentice
+						(or (eq playerLevel 0) (eq playerLevel 1))
+							(setq desc (cat desc " The walls are decorated with holopanes honoring the men and women who have died defending Korolov freighters.\n\nDo you wish to hire yourself out as a freighter escort?"))
+
+						; Journeyman
+						(eq playerLevel 2)
+							(setq desc (cat desc " The freighter captains welcome you as you enter.\n\nDo you wish to hire yourself out as a freighter escort?"))
+
+						; Master
+						(eq playerLevel 3)
+							(setq desc (cat desc " The more experienced escort captains welcome you as you enter; you are treated with deference and respect.\n\nDo you wish to hire yourself out as a freighter escort?"))
+
+						; Legend
+						(eq playerLevel 4)
+							(setq desc (cat desc " Murmured excitement ripples across the hall as you enter; everyone crowds around to greet you."))
+						)
+
+					desc
+					)
+				))
+
+			(setq korOnShipDestroyed (lambda ()
+				(block (theWitness)
+					(if (and aOrderGiver 
+							(eq aOrderGiver gPlayerShip)
+							(eq (sovGetDisposition &svCommonwealth; (objGetSovereign gSource)) 'friend)
+							(not (sysFindObject gPlayerShip "sTAE N:100"))
+							(setq theWitness (random 
+								(filter (sysFindObject gSource "sTAF Z N:100; -auton; -zoanthrope;") theObj 
+									(and (objCanDetectTarget theObj gSource)
+										(or (not (eq (shpGetOrder theObj) 'escort))
+											(not (eq (shpGetOrderTarget theObj) gPlayerShip))
+											)
+										)
+									)
+								))
+							(not (objGetData gSource "noPiracyCheck"))
+							)
+						(block Nil
+							(objSendMessage gPlayerShip theWitness "Pirate!")
+							(intCommonwealthCrime 2 "piracy")
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsAntaresIImage;"		bitmap="Resources\AntaresI.jpg" bitmask="Resources\AntaresIMask.bmp" backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsAntaresIIImage;"	bitmap="Resources\AntaresII.jpg" bitmask="Resources\AntaresIIMask.bmp" backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsAntaresVImage;"		bitmap="Resources\AntaresV.jpg" bitmask="Resources\AntaresVMask.bmp" backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsEI100Image;"		bitmap="Resources\EI100.jpg" bitmask="Resources\EI100Mask.bmp" backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsEI200Image;"		bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" backColor="0x00000000" loadOnUse="true"/>
+	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" backColor="0x00000000" loadOnUse="true"/>
+
+</TranscendenceModule>

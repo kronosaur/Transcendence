@@ -1,0 +1,236 @@
+ArmorClass functions
+--------------------
+(armGetName type) -> Name of the armor
+(armIsRadiationImmune type) -> True/Nil
+(armGetRepairCost type) -> Cost to repair 1 hit point
+(armGetRepairTech type) -> Tech level required to repair
+
+Item functions
+--------------
+(itmCreate type count) -> itemStruct
+(itmEnumTypes criteria item-var exp)
+(itmGetArmorInstalledLocation itemStruct) -> segment #
+(itmGetArmorType itemStruct)
+(itmGetCategory itemStruct)
+(itmGetCharges itemStruct) -> charges
+(itmGetCount itemStruct)
+(itmGetInstallCost itemStruct) -> cost
+(itmGetLevel itemStruct) -> level
+(itmGetMass itemStruct) -> mass of single item in Kg
+(itmGetName itemStruct flags)
+	flag 1 = capitalize
+	flag 2 = pluralize
+	flag 4 = prefix with 'the' or 'a'
+	flag 8 = prefix with count
+
+(itmGetPrice itemStruct) -> price of a single item
+(itmGetTypeData itemStruct)
+(itmGetType itemStruct) -> UNID
+(itmGetUseScreen itemStruct)
+(itmHasModifier itemStruct modifier)
+(itmIsDamaged itemStruct)
+(itmIsEnhanced itemStruct) -> Nil or enhancement counts
+(itmIsInstalled itemStruct)
+(itmIsKnown itemStruct)
+(itmMatches itemStruct criteria)
+(itmSetKnown {itemStruct | type})
+(itmSetReference itemStruct)
+(itmHasReference itemStruct)
+
+Miscellaneous functions
+-----------------------
+(rollDice count sides bonus)
+(itmAtCursor itemListCursor) -> itemStruct
+
+Ship functions
+--------------
+(shpAddArmorSpecialAbility ship armorSegment ability) -> True/Nil
+(shpAddEnergyField ship fieldUNID lifetime)
+(shpCancelOrders ship)
+(shpCanInstallDevice ship itemListCursor/itemStruct) ->
+		0 = OK
+		1 = Not a device
+		2 = No slots
+		3 = Already installed
+		4 = Shields already installed
+		5 = Drive already installed
+		6 = Missile launcher already installed
+
+(shpConsumeFuel ship fuel)
+(shpDamageArmor obj armorSegment damageType damage)
+(shpDecontaminate ship)
+(shpIsRadioactive ship)
+(shpGetArmorCount ship) -> number of armor segments
+(objGetArmorType obj armorSegment) -> CArmorClass *
+(objGetArmorDamage obj armorSegment) -> damage to armor segment
+(shpGetArmorMaxHitPoints obj armorSegment) -> damage to armor segment
+(shpGetClass ship) -> class UNID
+(shpGetCargoSpaceLeft ship) -> space left in Kg
+(shpGetDirection ship) -> angle
+(shpGetEngineCore ship) -> EngineCoreTypes
+(shpGetFuelNeeed ship itemStruct) -> items needed
+(shpGetFuelLeft ship) -> fuel left
+(shpGetItemCharges ship itemListCursor) -> charges
+(shpGetItemDeviceName ship itemStruct) -> device name of item (or -1)
+(shpGetShieldItemUNID ship) -> UNID (or Nil)
+(shpGetShieldDamage ship) -> damage to shields
+(shpGetShieldMaxHitPoints ship) -> max hp of shields
+(shpInstallArmor ship itemListCursor armorSegment)
+(shpInstallAutopilot ship)
+(shpInstallTargetingComputer ship)
+(shpInstallDevice ship itemListCursor)
+(objIsAbandoned obj) -> True/Nil
+(shpIsAutopilotInstalled ship)
+(shpIsTargetingComputerInstalled ship)
+(shpIsSRSEnhanced ship)
+(objIsDeviceSlotAvailable ship) -> True/Nil
+(objIsShip obj) -> True/Nil
+(objIsUnderAttack obj) -> True/Nil
+(shpEnhanceItem ship itemListCursor)
+(shpEnhanceSRS ship)
+(shpMakeBlind ship blindTime)
+(shpMakeRadioactive ship)
+(shpOrderAttack ship target) -> True/Nil
+(shpOrderDock ship destination) -> True/Nil
+(shpOrderEscort ship protect [formation]) -> True/Nil
+(shpOrderGate ship [gate]) -> True/Nil
+(shpOrderLoot ship station) -> True/Nil
+(shpOrderPatrol ship center dist) -> True/Nil
+(shpOrderWait ship waitTime)
+	wait time in seconds (real time)
+(shpRechargeItem ship itemListCursor charges)
+(shpRechargeShield ship hpToRecharge)
+(shpRefuelFromItem ship itemStruct) -> True/Nil
+(shpRemoveDevice ship itemListCursor)
+(shpSetEngineCore ship EngineCoreTypes)
+(objRepairArmor ship armorSegment [hpToRepair])
+
+SpaceObject functions
+---------------------
+(objAddItem obj itemStruct)
+(objAddRandomItems obj table count)
+(objCommunicate obj senderObj msg [obj] [data])
+(objEnumItems obj criteria item-cursor-var exp)
+(objGateTo obj node entrypoint [effectID])
+(objGetCargoSpaceLeft obj) -> space left in Kg
+(objGetDamageType obj) -> damage type
+(objGetData obj attrib) -> data
+(objGetDistance obj destObj) -> distance in light-seconds
+(objGetGlobalData obj attrib) -> data
+(objGetItems obj criteria) -> list of itemStructs
+(objGetName obj flags) -> Name of the object
+	flag 1 = capitalize
+	flag 2 = pluralize
+	flag 4 = prefix with 'the' or 'a'
+	flag 8 = prefix with count
+
+(objGetNearestStargate obj) -> obj
+(objGetObjRefData obj attrib) -> obj
+(objGetPos obj) -> vector
+(objGetStaticData obj attrib) -> data
+(objGetTarget obj) -> obj
+(objGetVisibleDamage obj) -> damage %
+(objIncData obj attrib increment)
+(objIsKnown obj)
+(objJumpeTo obj posVector)
+(objLowerShields obj)
+(objMakeParalyzed obj time)
+(objMoveTo obj posVector)
+(objProgramDamage obj hacker progName aiLevel code)
+(objRegisterForEvents target obj)
+(objRemoveItem obj itemStruct [count]) -> itemStruct
+(objSendMessage obj sender msg)
+(objSetData obj attrib data)
+(objSetGlobalData obj attrib data)
+(objSetKnown obj)
+(objSetName obj name)
+(objSetObjRefData obj attrib obj)
+(objUnregisterForEvents target obj)
+
+Station functions
+-----------------
+(staClearFireReconEvent station)
+(staClearReconned station)
+(staGetDockedShips station) -> list of docked ships
+(staGetGlobalData type attrib) -> data
+(staGetSubordinates station) -> list of subordinates (e.g., guardians)
+(staGetType station) -> UNID
+(staIsReconned station) -> True/Nil
+(staSetActive station)
+(staSetFireReconEvent station)
+(staSetGlobalData type attrib data)
+(staSetImageVariant station variant)
+(staSetInactive station)
+
+System functions
+----------------
+(sysAddEncounterEvent delay target encounterID gate)
+(sysAddEncounterEventAtDist delay target encounterID distance)
+(sysAddObjTimerEvent delay obj event)
+	delay in ticks
+(sysAddObjRecurringTimerEvent interval obj event)
+	interval in ticks
+(sysCreateEffect effectID anchor posVector) -> effect
+(sysCreateShip classID pos sovereignID [controller]) -> ship
+	pos is either a position vector or a gate object
+	controller 
+		""		= standard
+		"auton"	= auton controller
+		"fleet"	= fleet controller
+(sysCreateStation classID posVector) -> station
+(sysFindObject source filter) -> list of objects
+	G			Stargates only
+	s			Include ships
+	t			Include stations (including planets)
+	T			Include structure-scale stations
+	T:xyz;		Include stations with attribute 'xyz'
+
+	A			Active objects only (i.e., objects that can attack)
+	B:xyz;		Only objects with attribute 'xyz'
+	D:xyz;		Only objects with data 'xyz'
+	E			Enemy objects only
+	F			Friendly objects only
+	M			Manufactured objects only (i.e., no planets or asteroids)
+	N			Return only the nearest object to the source
+	N:nn;		Return only objects within nn light-seconds
+	O:escort;	Ships ordered to escort source
+	R:nn;		Return only objects greater than nn light-seconds away
+(sysGetName) -> name
+(sysGetObjectByName source name) -> obj
+(sysStopTime duration except)
+(sysVectorPolarOffset obj angle radius) -> vector
+		radius in light-seconds
+(sysVectorAdd vector vector) -> vector
+(sysVectorDivide vector scalar) -> vector
+(sysVectorMultiply vector scalar) -> vector
+(sysVectorSubtract vector vector) -> vector
+(unvGetTick) -> time
+
+Dock Screen functions
+---------------------
+(scrEnableAction screen action enabled)
+(scrExitDock screen)
+(scrGetCounter screen)
+(scrGetItem screen) => itemStruct
+(scrGetItemListCursor screen) => itemListCursor
+(scrRemoveItem screen count) => itemStruct
+(scrSetActionLabel screen action label)
+(scrSetCounter screen counter)
+(scrSetDesc screen description)
+(scrSetListFilter screen filter)
+(scrShowPane screen pane)
+(scrShowPane screen screen [pane])
+
+Player functions
+----------------
+(plyCharge player charge)
+(plyComposeString player string)
+(plyCredit player credit)
+(plyDestroyed player destroyed-text)
+(plyGetCredits player) -> Credits left
+(plyGetInsuranceClaims player) -> No of insurance claims
+(plyIncreaseDominaRel player change)
+(plyIncreaseOracusRel player change)
+(plyInsure player)
+(plyIsInsured player) -> True if insured
+(plyMessage player message)

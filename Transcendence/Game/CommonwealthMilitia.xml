@@ -1,0 +1,1567 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Jenna's Ronin Gunship	-->
+
+	<ShipClass UNID="&scRoninJenna;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Ronin/C"
+			type=				"gunship"
+			score=				"300"
+
+			mass=				"100"
+			cargoSpace=			"50"
+			thrust=				"300"
+			maneuver=			"4"
+			maxSpeed=			"20"
+
+			leavesWreck=		"50"
+
+			attributes=			"commonwealth"
+			
+			inherit=			"&baStdWingmanBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="225" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="135" span="90" armorID="&itCeralloyArmor;"/>
+			<ArmorSection start="45"  span="90" armorID="&itCeralloyArmor;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualParticleBeamWeapon;"/>
+			<Device deviceID="&itCyclotronDeflectorIV;"/>
+			<Device deviceID="&it25MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item count="3d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Names noArticle="true" personalName="true">Jenna</Names>
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+			
+		<StaticData>
+			<!-- This is an optional field. If present, the wingman
+				will leave the player beyond a certain point. -->
+			<MaxSystemLevel>7</MaxSystemLevel>
+		</StaticData>
+		
+		<Language>
+			<Text id="ArmorRepaired">			"\"Good as new!\""</Text>
+			<Text id="AttackTargetAck">			"\"I got it!\""</Text>
+			<Text id="CancelAttackAck">			"\"Roger, I'm inbound\""</Text>
+			<Text id="FormUpAck">				"\"Roger, I'm inbound\""</Text>
+			<Text id="IcantAttackFriends">		"\"Aren't they the good guys?\""</Text>
+			<Text id="IcantAttackMyself">		"\"Yeah, right!\""</Text>
+			<Text id="ImFarFromHome">			"\"Whoa, I'm pretty far from home!\""</Text>
+			<Text id="ImTooFarFromHome">		"\"I don't like being so far from home\""</Text>
+			<Text id="ImGoingHome">				"\"I can't follow you anymore; I'm sorry\""</Text>
+			<Text id="ImRepairingArmor">		"Jenna docks to repair her armor"</Text>
+			<Text id="MyArmorNeedsRepair">		"\"Can we go somewhere to repair my armor?\""</Text>
+			<Text id="NiceShooting">			"\"Not bad for an old-timer!\""</Text>
+			<Text id="NoTargetInRange">			"\"I think you're seeing things...\""</Text>
+			<Text id="Status100Percent">		"\"Ready when you are, old-timer\""</Text>
+			<Text id="StatusAttackingTarget">	"\"I'm a little busy right now\""</Text>
+			<Text id="StatusGoingHome">			"\"I'm sorry, my mind is made up: I'm going home\""</Text>
+			<Text id="StatusRepairingArmor">	"\"I'm just repairing my armor\""</Text>
+			<Text id="StatusWaiting">			"\"I'm waiting for you\""</Text>
+			<Text id="WaitAck">					"\"OK, but don't be gone too long\""</Text>
+			<Text id="WatchYourTargets">		"\"Hey, watch it!\""</Text>
+			<Text id="WingmanJoined">			"\"Ready for action, boss\""</Text>
+			<Text id="WingmanKilled">			"You have a sad feeling for a moment, then it passes"</Text>
+		</Language>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList status)
+					(setq status (typGetGlobalData &scRoninJenna; "status"))
+
+					(if status
+						(setq theList (list
+							(list
+								(switch
+									(eq status 'joined) "Joined by Jenna"
+									(eq status 'declined) "Declined Jenna's company"
+									(eq status 'destroyed) "Lost Jenna"
+									(eq status 'destroyedByPlayer) "Killed Jenna"
+									(eq status 'returnedHome) "Allowed Jenna to return home"
+									(cat "ERROR: Jenna status: " status)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</ShipClass>
+
+	<!-- Rama's Centurion-class Heavy Gunship -->
+
+	<ShipClass UNID="&scCenturionRama;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Centurion/X"
+			type=				"heavy gunship"
+			score=				"1550"
+
+			mass=				"250"
+			cargoSpace=			"50"
+			thrust=				"2000"
+			maneuver=			"3"
+			maxSpeed=			"22"
+
+			leavesWreck=		"50"
+
+			inherit=			"&baStdWingmanBase;"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itP120HexphaseArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itP120HexphaseArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itP120HexphaseArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itP120HexphaseArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itStarCannon;"/>
+			<Device deviceID="&itYoroiMX;"/>
+			<Device deviceID="&it150MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Names noArticle="true" personalName="true">Rama</Names>
+		
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-24" y="18"	z="0"/>
+			<NozzlePos x="-24" y="-18"	z="0"/>
+		</DriveImages>
+
+		<Language>
+			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>
+			<Text id="AttackTargetAck">			"\"Target acquired\""</Text>
+			<Text id="CancelAttackAck">			"\"Acknowledged\""</Text>
+			<Text id="FormUpAck">				"\"Acknowledged\""</Text>
+			<Text id="IcantAttackFriends">		"\"I won't kill innocents!\""</Text>
+			<Text id="IcantAttackMyself">		"\"Someday, perhaps...\""</Text>
+			<Text id="ImFarFromHome">			""</Text>
+			<Text id="ImTooFarFromHome">		""</Text>
+			<Text id="ImGoingHome">				""</Text>
+			<Text id="ImRepairingArmor">		"Rama docks to repair his armor"</Text>
+			<Text id="MyArmorNeedsRepair">		"\"My ship needs repairs\""</Text>
+			<Text id="NiceShooting">			""</Text>
+			<Text id="NoTargetInRange">			"\"No targets in sight\""</Text>
+			<Text id="Status100Percent">		"\"All systems normal\""</Text>
+			<Text id="StatusAttackingTarget">	"\"Engaging the enemy\""</Text>
+			<Text id="StatusGoingHome">			""</Text>
+			<Text id="StatusRepairingArmor">	"\"Repairing my ship\""</Text>
+			<Text id="StatusWaiting">			"\"Waiting as ordered\""</Text>
+			<Text id="WaitAck">					"\"Acknowledged\""</Text>
+			<Text id="WatchYourTargets">		""</Text>
+			<Text id="WingmanJoined">			"\"To hell with destiny!\""</Text>
+			<Text id="WingmanKilled">			"Rama has met his destiny"</Text>
+		</Language>
+		
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList status)
+					(setq status (typGetGlobalData &scCenturionRama; "status"))
+
+					(if status
+						(setq theList (list
+							(list
+								(switch
+									(eq status 'joined) "Joined by Rama"
+									(eq status 'declined) "Declined Rama's company"
+									(eq status 'destroyed) "Allowed Rama to meet his destiny"
+									(eq status 'destroyedByPlayer) "Killed Rama"
+									(eq status 'returnedHome) "Joined by Rama"
+									(cat "ERROR: Rama status: " status)
+									)
+								Nil
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</ShipClass>
+	
+<!-- ITEM TYPES -->
+
+	<ItemType UNID="&itMilitaryID;"
+			name=				"Commonwealth military identification chip"
+			level=				"4"
+			value=				"500"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownID;"
+			attributes=			"MilitaryID; ID; MinorItem"
+
+			description=		"This identification chip is used by the Commonwealth military to identify authorized military personnel."
+
+			sortName=			"identification chip, military"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+<!-- STATION TYPES -->
+
+	<!-- Commonwealth Fortress 
+	
+	GLOBAL DATA
+	
+	missionsAccepted:	Total missions accepted
+	missionsCompleted:	Total missions completed successfully
+	missionsFailed:		Total missions failed
+
+	EXTRA DATA
+
+	EndGate:		Mission ends at this gate
+	Mission:		Holds the mission data for the current mission
+	MissionStatus:	Status of the missions:
+						Nil					No mission in progress
+						"inprogress"		Mission is in progress
+						"success"			Mission completed successfully
+						"failure"			Mission failed
+	NextBarEncounter: Min tick when the next bar encounter is ready
+	ShipToDestroy:	Ship to destroy
+	StartGate:		Mission starts at this gate
+	Target:			Target for mission (either to destroy or defend)
+	
+	PLAYER SHIP DATA
+	
+	militiaRank:	An integer representing the player's rank in militia
+						0 = Civilian
+						1 = Lieutenant
+						2 = Major
+						3 = Colonel
+	militiaSuccess:	Number of successful missions
+	militiaFailure: Number of failed missions
+
+	-->
+
+	<StationType UNID="&stCommonwealthFortress;"
+			name=				"Commonwealth fortress"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itP120HexphaseArmor;"
+			hitPoints=			"450"
+			repairRate=			"3"
+			shipRepairRate=		"3"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, commonMilitary, fleetDelivery, friendly, human, majorStation, primary, populated"
+			levelFrequency=		"---cc ur--- ----- ----- -----"
+			locationCriteria=	"+planetary"
+			enemyExclusionRadius="75"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+
+		<Ships>
+			<Lookup count="2d3+1" table="&tbCommEliteDefenders;"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Lookup table="&tbCommEliteDefenders;"/>
+		</Reinforcements>
+
+		<Items>
+			<RandomItem count="2d4" 
+					criteria=		"w -Illegal; -Alien; -Specialty; -NotForSale"
+					level=			"5"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"w -Illegal; -Alien; -Specialty; -NotForSale"
+					level=			"6"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"s -Illegal; -Alien; -Specialty; -NotForSale"
+					level=			"6"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"s -Illegal; -Alien; -Specialty; -NotForSale"
+					level=			"6"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="2d4" 
+					criteria=		"a -Illegal; -Alien; -Specialty; -NotForSale"
+					level=			"6"
+					levelCurve=		"1"
+					/>
+
+			<Item				count="16d20"	item="&itKM500Missile;" />
+			<Item				count="8d20"	item="&itKM550Missile;" />
+			<Item				count="8d20"	item="&itXM900Missile;" />
+		</Items>
+
+		<DockingPorts>
+			<Port x="0"		y="100" />
+			<Port x="-80"	y="40" />
+			<Port x="80"	y="40" />
+			<Port x="-60"	y="-40" />
+			<Port x="60"	y="-40" />
+
+			<Port x="0"		y="-105" />
+			<Port x="-130"	y="-17" />
+			<Port x="130"	y="-17" />
+			<Port x="-70"	y="105" />
+			<Port x="70"	y="105" />
+		</DockingPorts>
+
+		<StaticData>
+			<Missions0>
+				(
+					("mission0a"
+						; Code to describe mission
+						(lambda Nil
+							(block (gateList)
+								(setq gStart Nil)
+
+								; Get the list of gates in the system
+								(setq gateList (sysFindObject gSource "G -uncharted;"))
+
+								; Make sure there are at least 2 gates
+								(if (geq (count gateList) 2)
+									(block Nil
+										(setq gStart (item gateList 0))
+										(setq gEnd (item gateList 1))
+
+										; The two gates better be at least 50 light-seconds
+										; away from each other
+										(if (ls (objGetDistance gStart gEnd) 50)
+											(setq gStart Nil)
+											)
+										)
+									)
+
+								; If we have a destination, then compose briefing
+								(if gStart
+									(cat "\"Your mission is to patrol the orbital lanes that access the major stargates. Your patrol will take you in a circuit through the system that passes each stargate and returns back here. Your orders are to destroy any enemy ships in the lanes. Understood?\"")
+									Nil
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (waypoint)
+								; Remember where were supposed to go
+								(objSetObjRefData gSource "StartGate" gStart)
+								(objSetObjRefData gSource "EndGate" gEnd)
+
+								; First waypoint is the nav beacon
+								(setq waypoint (objGetObjRefData gStart "NavBeacon"))
+
+								; Set the target in the player ship's computer
+								(shpOrderEscort gPlayerShip waypoint)
+
+								; Prepare the station to be reconned
+								(staClearReconned waypoint)
+								(staSetFireReconEvent waypoint)
+								(objRegisterForEvents gSource waypoint)
+
+								; Create some marauders at the waypoint and send them
+								; towards the player
+								(if (leq (random 1 100) 60)
+									(sysAddEncounterEvent 0 gPlayerShip &etMarauderAmbush2; waypoint)
+									)
+
+								; Remember which waypoint we want
+								(objSetData gSource "Waypoint" 1)
+								)
+							)
+						)
+					)
+			</Missions0>
+
+			<Missions1>
+				(
+					("mission1a"
+						; Code to describe mission
+						(lambda Nil
+							(block (gateList)
+								(setq gStart Nil)
+								
+								; Get the list of gates in the system
+								(setq gateList (sysFindObject gSource "G -uncharted;"))
+
+								; If there are a least 2 gates, figure out which should
+								; be start and end.
+								(if (geq (count gateList) 2)
+									(block Nil
+										(setq gStart (item gateList 0))
+										(setq gEnd (item gateList 1))
+
+										; The nearest gate is the first gate
+										(if (ls (objGetDistance gSource gEnd) (objGetDistance gSource gStart))
+											(block (swap)
+												(setq swap gStart)
+												(setq gStart gEnd)
+												(setq gEnd swap)
+												)
+											)
+
+										; The two gates better be at least 150 light-seconds
+										; away from each other
+										(if	(ls (objGetDistance gStart gEnd) 150)
+											(setq gStart Nil)
+											)
+										)
+									)
+									
+								; The enemy that we must intercept is random
+
+								(if gStart
+									(block (roll)
+										(setq roll (random 1 100))
+										(switch
+											(leq roll 50)
+												(block Nil
+													(objSetData gSource "Enemy" 'marauders)
+													(cat "\"We have received information that a marauder convoy will be entering the system at the " (objGetName gStart) ". Your mission is to destroy the convoy before it leaves the system.\"")
+													)
+
+											(block Nil		
+												(objSetData gSource "Enemy" 'slavers)
+												(cat "\"We have received information that a slaver convoy will be entering the system at the " (objGetName gStart) ". Your mission is to destroy the convoy before it leaves the system.\"")
+												)
+											)
+										)
+									Nil
+									)
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (timer travelTime)
+								(objSetObjRefData gSource "StartGate" gStart)
+								(objSetObjRefData gSource "EndGate" gEnd)
+								
+								; Compute how long it will take for the player to get to the first gate
+								(setq travelTime (sysCalcTravelTime (objGetDistance gSource gStart) (shpGetMaxSpeed gPlayerShip)))
+
+								(setq timer (add (max travelTime 600) (random 0 100)))
+								(sysAddObjTimerEvent timer gSource "OnTimerConvoyAppears")
+
+								(shpOrderEscort gPlayerShip gStart)
+								)
+							)
+						)
+						
+					("mission1b"
+						; Code to describe mission
+						(lambda Nil
+							(block (allEnemyStations)
+								(setq allEnemyStations (sysFindObject gSource "TAE +populated; L:4-5; -outlawMiners; -penitents;"))
+									
+								; If we've found an enemy station, then send player to kill it
+								(setq gStart (random allEnemyStations))
+								
+								(if gStart
+									(cat
+										"\"" (objGetName gStart 0x05) " in the system has been harrassing traffic in the area. "
+										"We want you to take it out. Clear?\""
+										)
+									Nil
+									)
+								)
+							)
+							
+						; Code to initiate mission
+						(lambda Nil
+							(block Nil
+								; Remember the target
+								(objSetObjRefData gSource "Target" gStart)
+								(objRegisterForEvents gSource gStart)
+								
+								; Point the player
+								(shpCancelOrders gPlayerShip)
+								(shpOrder gPlayerShip 'attack gStart)
+								)
+							)
+						)
+					)
+			</Missions1>
+
+			<Missions2>
+				(
+					("mission2a"
+						; Code to describe mission
+						(lambda Nil
+							(block Nil
+								"We're receiving a distress signal from a super-freighter at the edge of the system. Check it out, and if necessary, escort the freighter back. We'll feed the coordinates into your computer. What are standing around for? Get moving!"
+								)
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (pos ship timer vec1)
+								; unit vector from origin to station
+								(setq vec1 (sysVectorDivide (objGetPos gSource) (objGetDistance gSource)))
+
+								; position of freighter
+								(setq pos (sysVectorAdd (objGetPos gSource) (sysVectorMultiply vec1 (random 450 500))))
+
+								; Create the freighter with orders to dock at fortress
+								(setq ship (sysCreateShip &scScarabFreighter; pos &svCommonwealth;))
+								(objSetData ship "noPiracyCheck" True)
+								(shpOrderDock ship gSource)
+								(shpOrderWait ship (random 10 60))
+								(shpOrderGate ship)
+
+								; Remember this ship
+								(objSetObjRefData gSource "Target" ship)
+
+								; register so we know when the transport is destroyed
+								(objRegisterForEvents gSource ship)
+
+								; Point the player to the transport
+								(shpCancelOrders gPlayerShip)
+								(shpOrderEscort gPlayerShip ship)
+								(objSetIdentified ship)
+
+								; Create an enemy ship that will attack the freighter
+								(for i 1 (random 2 3)
+									(block (enemy)
+										(setq enemy (sysCreateShip &scViking-II; (sysVectorPolarOffset ship (random 0 359) 300) &svMarauders;))
+										(shpOrderAttack enemy ship)
+										)
+									)
+
+								; On timer, more enemies appear
+								(sysAddEncounterEventAtDist 
+									(add 800 (random 0 600)) 
+									ship 
+									&etMarauderAmbush1; 
+									(random 120 200)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(add 1200 (random 0 500)) 
+									gPlayerShip 
+									&etMarauderAmbush2; 
+									(random 120 200)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(add 1800 (random 0 100)) 
+									gPlayerShip 
+									&etMarauderAmbush2; 
+									(random 120 200)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(add 1900 (random 0 100)) 
+									ship
+									&etMarauderAmbush2; 
+									(random 120 200)
+									)
+								)
+							)
+						)
+					)
+			</Missions2>
+
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			8		100		)
+					)
+			</NPCService>
+
+			<Rumors>
+				(
+					"A man with a prosthetic arm sits next to you: \"I've been flying for the militia for years, but I'd much rather be helping the Fleet. No one's seen them in a long time. They must be at the Ares Homeworld by now.\""
+					"A man and a woman sit next to you. The woman starts a conversation with you: \"We're students from St. Katharine's Star! It's so exciting to be here where all the action is! We're writing a doctoral thesis on the role of minority neo-humans on reductive militia policy. Wish us luck!\""
+					"An older pilot sits next to you: \"Don't underestimate the slavers! We've been fighting them for years and they just keep advancing their technology. There are rumors that they've developed a new archcannon powered by their longzhu spheres.\""
+					"A woman sits next to you: \"My husband is in the Commonwealth Fleet and I haven't seen him for years. Sometimes I get messages from him, but it's never good news.\""
+					"A young man wearing trendy clothes talks with you: \"I think that girl in the flight suit likes me. What do you think?\""
+					"A well-dressed woman sits next to you: \"You're heading to the galactic what? I don't know&#x97;sounds like brainwashing to me.\""
+					"A short-haired woman talks to you: \"My cousin's best friend says that the CSC Europa got blown up by the Ares. They should pull back the Fleet and have them fight the slavers! You know what I mean? What's the point?\""
+					"A short, round man sits next to you: \"You're going to the Core? Elegant! Maybe you'll get to meet the aliens.\""
+					"A dark-skinned woman talks with you: \"My best friend went to the Core; it was two years ago, I think. A year later they found her wreckage in the Sanctuary system; she left me a message, but I've never been able to read it.\""
+					"A tall woman talks to you: \"I'm doing research on the Iocrym. It is curious, don't you think, that they haven't returned? A lot of ignorant people think they are preparing to invade, which is ridiculous. They wouldn't travel thousands of light-years just to kill us. Why bother?\""
+					"A young woman sits next to you: \"Why does Domina compel you to go to the Core? I suppose you won't find out until you get there. Still, it's nice to have a purpose in life.\""
+					)
+			</Rumors>
+
+		</StaticData>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList rank)
+					(setq rank (objGetData gPlayerShip "militiaRank"))
+					
+					(if (gr rank 0)
+						(setq theList (list
+							(list
+								"Commonwealth militia rank"
+								(switch
+									(eq rank -1) "Blacklisted"
+									(eq rank 1) "Lieutenant"
+									(eq rank 2) "Major"
+									(eq rank 3) "Colonel"
+									(cat "ERROR: Militia rank: " rank)
+									) 
+								)
+								
+							(list
+								"Commonwealth militia missions"
+								(intMissionAchievementString (typGetGlobalData &stCommonwealthFortress; "missionsCompleted") (typGetGlobalData &stCommonwealthFortress; "missionsFailed"))
+								"missions &amp; activities"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnCreate>
+				(block (gate gateList count)
+					; Get the list of gates in the system
+					(setq gateList (sysFindObject gSource "G -uncharted;"))
+
+					; Place nav beacons between us and the stargates in this system
+					(setq count 0)
+					(enum gateList gate
+						(block (beacon)
+							(setq beacon
+								(sysCreateStation &stNavBeacon;
+									(sysVectorAdd 
+										(objGetPos gSource)
+										(sysVectorDivide 
+											(sysVectorSubtract 
+												(objGetPos gate) 
+												(objGetPos gSource)
+												)
+											2
+											)
+										)
+									)
+								)
+
+							; Name the nav beacons
+							(if (ls count 5)
+								(objSetName beacon
+									(cat "NavBeacon " (item '('Alpha 'Beta 'Gamma 'Delta 'Epsilon) count))
+									)
+								)
+
+							; Remember which NavBeacon goes with each gate
+							(objSetObjRefData gate "NavBeacon" beacon)
+
+							(setq count (add count 1))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							; If the player was destroyed, stop the mission
+							(eq aObjDestroyed gPlayerShip)
+								(block Nil
+									(objSetData gSource "MissionStatus" "failure")
+									(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
+									(plyMessage gPlayer "Mission failed")
+									(shpCancelOrders gPlayerShip)
+									)
+
+							(eq missionID "mission1a")
+								(block (theShip)
+									(setq theShip (objGetObjRefData gSource "ShipToDestroy"))
+
+									; If the ship has been destroyed, then we succeeded
+									(if (eq aObjDestroyed theShip)
+										(block Nil
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
+											(plyMessage gPlayer "Mission complete!")
+											)
+										)
+									)
+									
+							(eq missionID "mission1b")
+								; If the target has been destroyed, then we succeeded
+								(if (eq aObjDestroyed (objGetObjRefData gSource "Target"))
+									(block Nil
+										(objSetData gSource "MissionStatus" "success")
+										(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
+										(plyMessage gPlayer "Mission complete!")
+										(shpCancelOrders gPlayerShip)
+										)
+									)
+							
+							(eq missionID "mission2a")
+								(block (theShip)
+									(setq theShip (objGetObjRefData gSource "Target"))
+
+									; If the freighter was destroyed, we fail
+									(if (eq aObjDestroyed theShip)
+										(block Nil
+											(objSetData gSource "MissionStatus" "failure")
+											(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
+											(plyMessage gPlayer "Mission failed")
+											)
+										)
+									)
+							)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(eq missionID "mission2a")
+								(if (eq aObjDocked (objGetObjRefData gSource "Target"))
+									(block Nil
+										(objSetData gSource "MissionStatus" "success")
+										(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
+										(plyMessage gPlayer "Mission complete!")
+										(shpCancelOrders gPlayerShip)
+										)
+									)
+							)
+						)
+					)
+			</OnObjDocked>
+
+			<OnObjEnteredGate>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(eq missionID "mission1a")
+								(block (theShip)
+									(setq theShip (objGetObjRefData gSource "ShipToDestroy"))
+
+									; If the ship managed to gate out then the mission has failed
+									(if (eq aObj theShip)
+										(block Nil
+											(objSetData gSource "MissionStatus" "failure")
+											(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
+											(plyMessage gPlayer "Mission failed")
+											)
+										)
+									)
+							)
+						)
+					)
+			</OnObjEnteredGate>
+
+			<OnObjReconned>
+				(if (eq (objGetData gSource "MissionStatus") "inprogress")
+					(block (missionID)
+						(setq missionID (objGetData gSource "MissionID"))
+						(switch
+							(eq missionID "mission0a")
+								(block (waypoint nextWaypoint)
+									; Unregister
+									(objUnregisterForEvents gSource aObj)
+									(shpCancelOrders gPlayerShip)
+
+									; Next waypoint
+									(setq waypoint (objGetData gSource "Waypoint"))
+									(switch
+										(eq waypoint 1)
+											(setq nextWaypoint (objGetObjRefData gSource "StartGate"))
+
+										(eq waypoint 2)
+											(setq nextWaypoint (objGetObjRefData gSource "EndGate"))
+
+										(eq waypoint 3)
+											(setq nextWaypoint (objGetObjRefData (objGetObjRefData gSource "EndGate") "NavBeacon"))
+
+										(eq waypoint 4)
+											(setq nextWaypoint gSource)
+
+										(setq nextWaypoint Nil)
+										)
+
+									(if nextWaypoint
+										; If we're not done, then prepare the next encounter
+										(block Nil
+											; Set the target in the player ship's computer
+											(shpOrderEscort gPlayerShip nextWaypoint)
+
+											; Prepare the station to be reconned
+											(staClearReconned nextWaypoint)
+											(staSetFireReconEvent nextWaypoint)
+											(objRegisterForEvents gSource nextWaypoint)
+
+											; Create some marauders at the waypoint and send them
+											; towards the player
+											(if (leq (random 1 100) 60)
+												(sysAddEncounterEvent 0 gPlayerShip &etMarauderAmbush1; nextWaypoint)
+												)
+
+											; Remember which waypoint we want
+											(objIncData gSource "Waypoint")
+											)
+
+										; Otherwise, mission is done
+										(block Nil
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
+											(plyMessage gPlayer "Mission complete!")
+											)
+										)
+									)
+							)
+						)
+					)
+			</OnObjReconned>
+
+			<OnTimerConvoyAppears>
+				(block (ship)
+					(switch
+						(eq (objGetData gSource "Enemy") 'marauders)
+							(block Nil
+								; create the main ship that will go from one stargate to the other
+								(setq ship (sysCreateShip &scDrake; (objGetObjRefData gSource "StartGate") &svMarauders;))
+								(shpOrderGate ship (objGetObjRefData gSource "EndGate"))
+
+								; create the escorts
+								(for i 1 (random 3 6)
+									(block (escort)
+										(setq escort (sysCreateShip &scViking-II; (objGetObjRefData gSource "StartGate") &svMarauders;))
+										(shpOrderEscort escort ship)
+										)
+									)
+								)
+
+						(block Nil
+							; create the transport that will go from one stargate to the other
+							(setq ship (sysCreateShip &scSungTransport; (objGetObjRefData gSource "StartGate") &svSung;))
+							(shpOrderGate ship (objGetObjRefData gSource "EndGate"))
+							(objAddItem ship (itmCreate &itSlaveCoffin; (random 10 20)))
+
+							; create the escorts
+							(for i 1 (random 6 9)
+								(block (escort)
+									(setq escort (sysCreateShip &scWindSlaver; (objGetObjRefData gSource "StartGate") &svSung;))
+									(shpOrderEscort escort ship)
+									)
+								)
+							)
+						)
+
+					; register so we know when the main ship is destroyed
+					(objRegisterForEvents gSource ship)
+					(objSetObjRefData gSource "ShipToDestroy" ship)
+
+					; orders
+					(shpCancelOrders gPlayerShip)
+					(shpOrderAttack gPlayerShip ship)
+					(objSetIdentified ship)
+					)
+			</OnTimerConvoyAppears>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(block (missionStatus)
+						(setq missionStatus (objGetData gSource "MissionStatus"))
+						(switch
+							(eq missionStatus "inprogress")
+								"MissionInProgress"
+
+							(eq missionStatus "failure")
+								"MissionFailure"
+
+							(eq missionStatus "success")
+								"MissionSuccess"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (desc playerRank)
+								; Make sure playerRank variable is initialized
+								(setq playerRank (milInit))
+
+								; Set the greeting based on the player's rank
+								(setq desc "You are in the main hall of a Commonwealth Militia Fortress.")
+
+								(switch
+									(eq playerRank 1)
+										(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests."))
+
+									(eq playerRank 2)
+										(setq desc (cat desc " Squadron captains rush through the hall on various missions; several stop to say hello to you. You feel like you belong."))
+
+									(eq playerRank 3)
+										(setq desc (cat desc " Squadron captains rush through the hall on various missions, each one stops to salute you as you pass."))
+
+									(setq desc (cat desc " Squadron captains rush through the hall reading mission briefings and weapons manifests. You feel out of place here."))
+									)
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Command Center" default="1" key="C">
+								(if (milCanEnterCC)
+									(scrShowPane gScreen "CommandCenter")
+									(scrShowPane gScreen "AccessDenied")
+									)
+							</Action>
+
+							<Action name="Armory" key="A">
+								(if (gr (objGetData gPlayerShip "militiaRank") 0)
+									(scrShowPane gScreen "Armory")
+									(scrShowPane gScreen "AccessDenied2")
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Officer's Club" key="O">
+								(if (gr (objGetData gPlayerShip "militiaRank") 0)
+									(scrShowPane gScreen "OfficersClub")
+									(scrShowPane gScreen "AccessDenied3")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<AccessDenied>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Two guards flank the door to the Command Center. One of them checks your ID against a computer list: \"Sorry, %sir%, only experienced captains are allowed inside.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</AccessDenied>
+
+					<AccessDenied2>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Two guards flank the door to the Armory. One of them checks your ID against a computer list: \"Sorry, %sir%, only officers are allowed in the armory.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</AccessDenied2>
+
+					<AccessDenied3>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Two guards flank the door to the Officer's Club. One of them checks your ID against a computer list: \"Sorry, %sir%, only officers are allowed in the club.\"")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</AccessDenied3>
+
+					<Armory desc="You are in the station's armory shop. You may buy weapons and armor to equip your ship.">
+						<Actions>
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									(lambda (thisItem)
+										(block (rank)
+											(setq rank (objGetData gPlayerShip "militiaRank"))
+											(switch
+												(or (itmIsDamaged thisItem) (itmIsInstalled thisItem))
+													Nil
+
+												(itmHasModifier thisItem 'Illegal)
+													Nil
+
+												; Some items only available to Majors
+												(or (eq (itmGetType thisItem) &itXM900Missile;)
+														(eq (itmGetType thisItem) &itStarCannon;)
+														)
+													(if (gr rank 1)
+														(itmGetPrice thisItem 'credit)
+														Nil
+														)
+
+												; Other items are available at a discount depending on level
+												(eq rank 1)
+													(divide (multiply (itmGetPrice thisItem 'credit) 90) 100)
+
+												(eq rank 2)
+													(divide (multiply (itmGetPrice thisItem 'credit) 75) 100)
+
+												(eq rank 3)
+													(divide (multiply (itmGetPrice thisItem 'credit) 55) 100)
+
+												; item not available
+												Nil
+												)
+											)
+										)
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</Armory>
+
+					<CommandCenter
+							desc="You are in the command center surrounded by wall maps and scanner displays. The commanding officer of the fortress looks up from his charts and asks, &quot;Are you looking for a mission, captain?&quot;">
+
+						<Actions>
+							<Action name="&quot;Yes sir, I'm ready.&quot;" default="1" key="Y">
+								(block (playerRank)
+									(setq playerRank (objGetData gPlayerShip "militiaRank"))
+									(if (eq playerRank -1)
+										(scrShowPane gScreen "TooManyFailures")
+										(block Nil
+											(setq gPrevScreen "Main")
+											(setq gPrevPane "Default")
+											(setq gMissionTitle Nil)
+											(setq gMissionListName (cat "Missions" (objGetData gPlayerShip "militiaRank")))
+											(setq gMissionNoneText "\"Sorry, there are no missions currently available.\"")
+											(setq gMissionAcceptText "\"Good luck, captain!\"")
+											(setq gMissionDeclineText "\"Why don't you make yourself useful and get us some tea or something.\"")
+											(scrShowScreen gScreen "&dsMission;")
+											)
+										)
+									)
+							</Action>
+
+							<Action name="&quot;No sir, I'm just looking.&quot;" cancel="1" key="N">
+								<ShowPane pane="GetOut"/>
+							</Action>
+						</Actions>
+					</CommandCenter>
+
+					<GetOut
+							desc="&quot;Why don't you make yourself useful and get us some tea or something.&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</GetOut>
+
+					<MissionFailure
+							desc="&quot;You screwed that mission all the way to Sol and back. You better hit the sims, pilot!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (success failure)
+									(objSetData gSource "MissionStatus" Nil)
+
+									(setq success (objGetData gPlayerShip "militiaSuccess"))
+									(setq failure (add (objGetData gPlayerShip "militiaFailure") 1))
+									(objSetData gPlayerShip "militiaFailure" failure)
+
+									; If the player ever ends up with 3 more failures than
+									; successes then he is booted.
+									(if (geq failure (add success 3))
+										(objSetData gPlayerShip "militiaRank" -1)
+										)
+
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MissionFailure>
+
+					<MissionInProgress
+							desc="&quot;What is your major malfunction!? Get back out there and complete your mission!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionInProgress>
+
+					<MissionSuccess
+							desc="&quot;Good work, captain! That was an outstanding mission.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (promoted)
+									(objSetData gSource "MissionStatus" Nil)
+									
+									; Reset the bar encounter after a successful mission
+									(objSetData gSource "NextBarEncounter" Nil)
+
+									; If we're promoted, show the promotion screen. Otherwise,
+									; show default.
+									(if (milMissionSuccess)
+										(milShowPromotionScreen "Main")
+										(scrShowPane gScreen "Default")
+										)
+									)
+							</Action>
+						</Actions>
+					</MissionSuccess>
+
+					<TooManyFailures
+							desc="&quot;How about getting us a cup of tea or something? That's probably a mission you could handle.&quot;">
+
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</TooManyFailures>
+
+					<DockServices
+							desc=	"Your ship is docked.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 8)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install device" key="D" >
+								(block Nil
+									(setq gTechLevel 7)
+									(setq gTechModifier Nil)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsInstallDevice;")
+									)
+							</Action>
+
+							<Action name="Remove device" key="V" >
+								(block Nil
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRemoveDevice;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="N">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+					<OfficersClub
+							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">
+
+						<Actions>
+							<Action name="Sit at the bar" key="S" default="1">
+								(if (geq (plyGetCredits gPlayer) 5)
+									(block Nil
+										(plyCharge gPlayer 5)
+										(scrShowPane gScreen "BarEncounter")
+										)
+									(scrShowPane gScreen "NoMoney")
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</OfficersClub>
+
+					<BarEncounter>
+						<OnPaneInit>
+							(block (rank)
+								(setq rank (objGetData gPlayerShip "militiaRank"))
+								(setq gResult Nil)
+
+								(switch
+									; If the player is black-listed, then she is not welcome
+									(eq rank -1)
+										(scrSetDesc gScreen "You spend 5 credits on drinks, but everyone avoids you. You feel out of place here.")
+
+									; Make sure enough time passes between encounters
+									(and (objGetData gSource "NextBarEncounter")
+											(ls (unvGetTick) (objGetData gSource "NextBarEncounter")))
+										(scrSetDesc gScreen "You spend 5 credits on drinks, but there aren't too many people here that you want to talk to.")
+
+									; If the player is a major, there is a chance of a henchman
+									(and (eq rank 2) (leq (random 1 100) 60) (not (typGetGlobalData &scRoninJenna; "status")))
+										(block Nil
+											(scrSetDesc gScreen "A young woman in a flight-suit and Commonwealth insignia sits next to you: \"I've seen you in action out there&#x97;you're not too bad for an old-timer.\"")
+											(setq gResult "jenna")
+											)
+
+									; If the player is a colonel, then another chance for a henchman
+									(and (eq rank 3) (leq (random 1 100) 80) (not (typGetGlobalData &scCenturionRama; "status")))
+										(block Nil
+											(scrSetDesc gScreen "You talk to Rama, a silver-haired pilot who seems to be wearing blaster armor under his flight-suit. You trade stories about flying and fighting, but when you mention your journey to the Core, he grows quiet and stares off into space.")
+											(setq gResult "rama")
+											)
+
+									; Otherwise, we get rumors
+									(block Nil
+										(scrSetDesc gScreen (random (objGetStaticData gSource "Rumors")))
+										(setq gResult "rumor")
+										)
+									)
+
+								; Set the time for the next encounter
+								(if gResult
+									(objSetData gSource "NextBarEncounter" (add (unvGetTick) (random 1500 2000)))
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(switch
+									(eq gResult "jenna")
+										(scrShowPane gScreen "Jenna")
+
+									(eq gResult "rama")
+										(scrShowPane gScreen "Rama")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</BarEncounter>
+
+					<Jenna
+							desc="&quot;I'm a pretty good pilot myself. What do you think about you and me taking on the bad guys together?&quot;">
+
+						<Actions>
+							<Action name="&quot;OK, you can come along.&quot;" default="1" key="O">
+								<ShowPane pane="JennaOK"/>
+							</Action>
+
+							<Action name="&quot;Sorry, kid, I travel alone.&quot;" cancel="1" key="S">
+								<ShowPane pane="JennaSorry"/>
+							</Action>
+						</Actions>
+					</Jenna>
+
+					<JennaOK
+							desc="&quot;Awesome! You won't regret it, I promise!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (ship)
+									; Create the ship
+									(setq ship (sysCreateShip &scRoninJenna; gSource &svCommonwealth;))
+									(objFireEvent ship "OrderJoinPlayer")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</JennaOK>
+
+					<JennaSorry
+							desc="&quot;Yeah, well, I didn't think it would work out either.&quot; She leaves you and starts to talk to another pilot at the bar.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Can't encounter Jenna again
+									(typSetGlobalData &scRoninJenna; "status" 'declined)
+									
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</JennaSorry>
+
+					<Rama
+							desc="Rama talks about his ship instead: &quot;I've made a lot of modifications to her over the years. You should see her in a fight: fast and tight as a lightship, but heavily armed. She's saved my life a hundred times.&quot;">
+
+						<Actions>
+							<Action name="&quot;Why don't you travel with me to the Core?&quot;" default="1" key="C">
+								<ShowPane pane="RamaOK"/>
+							</Action>
+
+							<Action name="&quot;Well, nice talking with you. Bye.&quot;" cancel="1" key="B">
+								<ShowPane pane="RamaSorry"/>
+							</Action>
+						</Actions>
+					</Rama>
+
+					<RamaOK
+							desc="Rama pauses for a long time, and when he speaks it is in a whisper. &quot;When I became a man, I went to see a monk about my future. He told me that I was destined to die on a journey to the Core.&quot; And then, Rama laughs and dispatches the rest of his drink. &quot;But I no longer fear my destiny. I will go with you!&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (ship)
+									; Create the ship
+									(setq ship (sysCreateShip &scCenturionRama; gSource &svCommonwealth;))
+									(objFireEvent ship "OrderJoinPlayer")
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</RamaOK>
+
+					<RamaSorry
+							desc="As you get up to leave, Rama grabs your arm and says, &quot;Perhaps we will see each other again.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									; Can't encounter Rama again
+									(typSetGlobalData &scCenturionRama; "status" 'declined)
+
+									(scrShowPane gScreen "OfficersClub")
+									)
+							</Action>
+						</Actions>
+					</RamaSorry>
+
+					<NoMoney
+							desc=	"You sit at the bar, but you don't even have enough money to buy a drink. You feel out of place.">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="OfficersClub"/>
+							</Action>
+						</Actions>
+
+					</NoMoney>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+	</StationType>
+	
+<!-- DOCK SCREENS -->
+
+	<!-- Militia Promotion
+	
+	gPrevScreen: Must be set to the name/UNID of the screen to
+			navigate to when done.
+	gPrevPane: Must be set to the name of the pane to navigate
+			to when done.
+	
+	-->
+
+	<DockScreen UNID="&dsMilitiaPromotion;">
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (rank)
+						(setq rank (objGetData gPlayerShip "militiaRank"))
+						(switch
+							(eq rank 1)
+								(scrSetDesc gScreen 
+									"\"Your success on this mission has brought you great respect. "
+									"It is my privilege to bestow upon you the rank of lieutenant "
+									"in service to the Commonwealth Militia.\"\n\n"
+									"General Powell hands you a military ID chip."
+									)
+
+							(eq rank 2)
+								(scrSetDesc gScreen 
+									"\"Your skills on this mission have brought you great admiration. "
+									"It is my honor to present you with the Commonwealth Medal of Distinction "
+									"and to promote you to the rank of major. Congratulations!\""
+									)
+
+							(eq rank 3)
+								(scrSetDesc gScreen 
+									"\"Your bravery has brought great honor to you and to the Militia. "
+									"It is my honor to present you with the Commonwealth Medal of Honor "
+									"and to promote you to the rank of colonel. Congratulations!\""
+									)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block (rank)
+							(setq rank (objGetData gPlayerShip "militiaRank"))
+							(switch
+								(eq rank 1)
+									(block Nil
+										(objAddItem gPlayerShip (itmCreate &itMilitaryID; 1))
+										(itmSetKnown &itMilitaryID;)
+										)
+
+								(eq rank 2)
+									(objAddItem gPlayerShip (itmCreate &itMedalOfDistinction; 1))
+
+								(eq rank 3)
+									(objAddItem gPlayerShip (itmCreate &itMedalOfHonor; 1))
+								)
+
+							(scrShowScreen gScreen gPrevScreen gPrevPane)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+<!-- GLOBALS -->
+
+	<Globals>
+		(block Nil
+			(setq milCanEnterCC (lambda ()
+				(or
+					(gr (objGetData gPlayerShip "militiaRank") 0)
+					(gr (typGetGlobalData &stBattleArena; "arenaSkill") 200)
+					(gr (typGetGlobalData &stKorolovShipping; "xp") 0)
+					(objGetItems gPlayerShip "*+MilitaryID")
+					)
+				))
+				
+			(setq milInit (lambda ()
+				(block (playerRank)
+					(setq playerRank (objGetData gPlayerShip "militiaRank"))
+					(if (not playerRank)
+						(block Nil
+							(setq playerRank 0)
+							(objSetData gPlayerShip "militiaRank" playerRank)
+							(objSetData gPlayerShip "militiaSuccess" 0)
+							(objSetData gPlayerShip "militiaFailure" 0)
+							)
+						)
+					playerRank
+					)
+				))
+				
+			(setq milMissionSuccess (lambda ()
+				(block (success failure)
+					(setq success (objIncData gPlayerShip "militiaSuccess" 1))
+					(setq failure (objGetData gPlayerShip "militiaFailure"))
+
+					; Return True if we're promoted to the next rank
+					
+					(setq rank (objGetData gPlayerShip "militiaRank"))
+					(setq promoted Nil)
+					(switch
+						(or (not rank) (eq rank 0))
+							; Need one more successes than failures to become
+							; an apprentice.
+							(if (geq (subtract success failure) 1)
+								(setq promoted True)
+								)
+						(eq rank 1)
+							; Need at least three successes to be a journeyman
+							; and two more successes than failures
+							(if (and (geq success 3) (geq (subtract success failure) 2))
+								(setq promoted True)
+								)
+						(eq rank 2)
+							; Need at least six successes to be a master
+							; and four more successes than failures
+							(if (and (geq success 6) (geq (subtract success failure) 4))
+								(setq promoted True)
+								)
+						)
+					
+					(if promoted
+						(objIncData gPlayerShip "militiaRank" 1)
+						)
+							
+					promoted
+					)
+				))
+				
+			(setq milShowPromotionScreen (lambda (returnScreen)
+				(block Nil
+					; Set the return screen
+					(setq gPrevScreen (item returnScreen 0))
+					(setq gPrevPane (item returnScreen 1))
+
+					; Show the screen					
+					(scrShowScreen gScreen &dsMilitiaPromotion;)
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

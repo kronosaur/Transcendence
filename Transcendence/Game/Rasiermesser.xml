@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Segment of Dvalin Armor -->
+
+	<ItemType UNID="&itDvalinArmor;"
+			name=				"[segment(s) of ]Dvalin armor"
+			level=				"7"
+			value=				"6000"
+			frequency=			"notrandom"
+			mass=				"4000"
+			attributes=			"MinorItem; Rasiermesser; NotForSale"
+
+			description=		"Dvalin's nano-sintering process can create armor that is stronger than hexphase."
+
+			sortName=			"Dvalin armor"
+			>
+
+		<Image imageID="&rsItemsRasiermesser4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"200"
+				hpBonus=	"  +0,  +0,+100, +0, +50,  +0"
+
+				repairCostAdj=	"150"
+				/>
+
+	</ItemType>
+
+	<!-- Dvalin Ion9 cannon -->
+
+	<ItemType UNID="&itDvalinIon9Cannon;"
+			name=				"Dvalin Ion9 cannon"
+			level=				"8"
+			value=				"150000"
+			mass=				"5000"
+			frequency=			"notrandom"
+			attributes=			"MajorItem; EnergyWeapon; Rasiermesser; NotForSale"
+
+			description=		"This is an experimental ion cannon created by Rasiermesser's chief scientist."
+			>
+
+		<Image imageID="&rsItemsRasiermesser4;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"particles"
+
+				damage=				"ion:40"
+				fireRate=			"15"
+				missileSpeed=		"100"
+				lifetime=			"30"
+				powerUse=			"1200"
+
+				particleCount=		"1d11+44"
+				particleSpreadAngle="5"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Particle
+						style=			"line"
+						primaryColor=	"0x80, 0xc0, 0xff"
+						secondaryColor=	"0x00, 0x80, 0xff"
+						/>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Arms Dealer, Rasiermesser -->
+
+	<StationType UNID="&stArmsDealerRasiermesser;"
+			name=				"Rasiermesser Arms &amp; Armor"
+			sovereign=			"&svCorporate;"
+			dockScreen=			"&dsArmsDealerSpecial;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itGusokuArmor;"
+			hitPoints=			"250"
+			repairRate=			"3"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, populated"
+			levelFrequency=		"-rurv ----- ----- ----- -----"
+			locationCriteria=	"+planetary,-asteroids"
+
+			noArticle=			"true"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="256" imageY="384" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Lookup count="2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<Devices>
+			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<RandomItem count="1d12" 
+					criteria=		"w +Rasiermesser; -NotForSale;"
+					levelFrequency=	"-rucu r"
+					enhanced=		"10"
+					enhancement=	"=(intRasiermesserWeaponEnhancement)"
+					/>
+
+			<RandomItem count="2d12" 
+					criteria=		"a +Rasiermesser; -NotForSale;"
+					levelFrequency=	"-rucu r"
+					enhanced=		"10"
+					enhancement=	"=(intRasiermesserArmorEnhancement)"
+					/>
+		</Items>
+
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="m +Rasiermesser; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="800"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+		</Trade>
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnDestroy>
+				(intCorporateOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<StaticData>
+			<LongName>"a Rasiermesser arms dealer"</LongName>
+		</StaticData>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="0"		y="-70" />
+			<Port x="50"	y="50" />
+			<Port x="50"	y="-50" />
+			<Port x="70"	y="0" />
+			<Port x="-70"	y="0" />
+			<Port x="-50"	y="50" />
+			<Port x="-50"	y="-50" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Arms Dealer, Rasiermesser Factory 
+
+	EXTRA DATA
+
+	Dvalin:			True if Dvalin is at this station.
+	offered:		True if player offered an item this session
+	giftXP:			XP at last gift (from Dvalin)
+	XP:				Experience points (increases as the player donates)
+
+	GLOBAL DATA
+
+	DvalinSystem:	NodeID of system where Dvalin can be found (or Nil if he
+					has not yet been created).
+
+	-->
+
+	<StationType UNID="&stRasiermesserFactory;"
+			name=				"Rasiermesser manufacturing plant"
+			sovereign=			"&svCorporate;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsRasiermesserFactoryBkgnd;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itGusokuArmor;"
+			hitPoints=			"700"
+			repairRate=			"3"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, majorStation, populated"
+			levelFrequency=		"----- rur-- ----- ----- -----"
+			unique=				"inSystem"
+			locationCriteria=	"+planetary,-asteroids"
+			enemyExclusionRadius="75"
+
+			definiteArticle=	"true"
+			>
+
+		<Image imageID="&rsRasiermesserFactory;" imageX="0" imageY="0" imageWidth="192" imageHeight="256"/>
+
+		<Ships>
+			<Lookup count="2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<Devices>
+			<Device deviceID="&itAkan30Cannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<RandomItem count="1d12"
+					criteria=		"w +Rasiermesser; -NotForSale;"
+					levelFrequency=	"---ru cur"
+					enhanced=		"20"
+					enhancement=	"=(intRasiermesserWeaponEnhancement)"
+					/>
+
+			<RandomItem count="1d12"
+					criteria=		"a +Rasiermesser; -NotForSale;"
+					levelFrequency=	"---ru cur"
+					enhanced=		"20"
+					enhancement=	"=(intRasiermesserArmorEnhancement)"
+					/>
+
+			<RandomItem count="1d12"
+					criteria=		"w +Rasiermesser; -NotForSale;"
+					levelFrequency=	"----- rucur"
+					enhanced=		"10"
+					enhancement=	"=(intRasiermesserWeaponEnhancement)"
+					/>
+
+			<RandomItem count="1d12"
+					criteria=		"a +Rasiermesser; -NotForSale;"
+					levelFrequency=	"----- rucur"
+					enhanced=		"10"
+					enhancement=	"=(intRasiermesserArmorEnhancement)"
+					/>
+
+			<Item chance="95" count="4"			item="&itV300PoweredArmor;" />
+		</Items>
+
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Rasiermesser; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="1200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+		</Trade>
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			9		100		)
+					)
+			</NPCService>
+		</StaticData>
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateIndustrialRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnCreate>
+				(if (not (objGetGlobalData gSource "DvalinSystem"))
+					(block Nil
+						(objSetGlobalData gSource "DvalinSystem" (sysGetNode))
+						(objSetData gSource "Dvalin" True)
+						)
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(intCorporateOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+
+				<OnScreenInit>
+					(block Nil
+						(if (scrIsFirstOnInit gScreen)
+							(objSetData gSource "offered" Nil)
+							)
+						)
+				</OnScreenInit>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Welcome to Rasiermesser! We are the leading manufacturer of innovative weapon systems in Human Space.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Research Lab" default="1" key="L">
+								(if (objGetData gSource "Dvalin" )
+									(scrShowScreen gScreen "ResearchLab")
+									(scrShowScreen gScreen "SecondaryLab")
+									)
+							</Action>
+
+							<Action name="Buy items" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									Nil						; obsolete
+									
+									'(	"w"					; install weapons
+										8					; of level 8 (and below)
+										Nil					; no special tech modifiers
+										True				; check for military ID
+										0)					; install cost margin
+									)
+							</Action>
+
+							<Action name="Repair items" key="R">
+								(block Nil
+									(setq gPrevScreen "Main")
+									(setq gMargin 250)
+									(setq gShowCriteria "*~aD +Rasiermesser;")
+									(scrShowScreen gScreen "&dsRepairItem;")
+									)
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 9)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install weapon" key="W" >
+								(block Nil
+									(setq gTechLevel 8)
+									(setq gTechModifier Nil)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsInstallWeapon;")
+									)
+							</Action>
+
+							<Action name="Remove weapon" key="V" >
+								(scrShowScreen gScreen "&dsRemoveWeapon;")
+							</Action>
+
+							<Action name="Done" cancel="1" key="N">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+				</Panes>
+			</Main>
+
+			<ResearchLab>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (xp desc)
+								; Initialize
+								(if (not (objGetData gSource "XP"))
+									(objSetData gSource "XP" 0)
+									)
+								(setq xp (objGetData gSource "XP"))
+
+								; Description
+								(switch
+									(ls xp 50)
+										(setq desc (cat "The lab is filled with racks of equipment; researchers are testing various new weapons here.\n\n"
+											"Sitting by the corner, a small stocky man mumbles to himself as he pours through dozens of screen of information. "
+											"His name is Dvalin, the chief scientist for the Rasiermesser Corporation."
+											))
+
+									(ls xp 250)
+										(setq desc (cat "The center of the lab has a massive testing area; a segment of armor on a static frame is being subjected to intense energies.\n\n"
+											"Dvalin walks over to you and points to the test: \"Dat is my new nano-sintered armor. It will be twice as strong as hexphase, ya? It will be done soon!\""
+											))
+
+									(ls xp 500)
+										(setq desc (cat "One side of the lab has a static frame holding a complex weapon; scientists and engineers work on it under Dvalin's direction.\n\n"
+											"Dvalin walks over to you: \"It is my new project, ya? An ion weapon as powerful as a howitzer!\""
+											))
+
+									(setq desc (cat "The center of the lab has a massive testing area; a dangerous-looking weapon attached to a static frame burns a hole in a sample of blast plate.\n\n"
+										"Dvalin walks over to you and points at the test: \"Vat do you think? Impressive, ya? Much better than Akan!"
+										))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Offer item" default="1" key="O">
+								(scrShowScreen gScreen "OfferItem")
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ResearchLab>
+
+			<OfferItem
+				type=				"itemPicker"
+				backgroundID=		"&rsItemListScreen;"
+				>
+
+				<ListOptions
+					dataFrom=	"player"
+					list=		"aswU +NotForSale; -Rasiermesser; F:rv-;"
+					/>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block Nil
+								(setq gItem (scrGetItem gScreen))
+								(if gItem
+									(scrSetDesc gScreen (cat "Offer " (itmGetName gItem 0x0004) "."))
+									(block Nil
+										(scrSetDesc gScreen "Dvalin is not interested in any of the items in your cargo hold.")
+										(scrEnableAction gScreen 0 Nil)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Offer item" default="1" key="O">
+								(block (haveDamaged haveUndamaged gain haveCount)
+
+									; See if we've already got the item that the player donated
+									(setq haveCount 0)
+									(enum (objGetItems gSource "aswU +NotForSale; F:rv-;") theItem
+										(if (eq (itmGetType theItem) (itmGetType gItem))
+											(block Nil
+												(setq haveCount (add haveCount (itmGetCount gItem)))
+												(if (itmIsDamaged theItem)
+													(setq haveDamaged True)
+													(setq haveUndamaged True)
+													)
+												)
+											)
+										)
+
+									; Figure out how valuable this item is to Dvalin
+									(setq gResult True)
+									(switch
+										(and (not haveDamaged) (not haveUndamaged))
+											(if (itmIsDamaged gItem)
+												(block Nil
+													(setq gain (multiply 5 (itmGetLevel gItem)))
+													(setq gTitle (cat "Dvalin is impressed: \"Gods! " (itmGetName gItem 0x0005) "! A pity it is not intact, ya?\""))
+													)
+												(block Nil
+													(setq gain (multiply 10 (itmGetLevel gItem)))
+													(setq gTitle (cat "Dvalin is ecstatic: \"Gods! I have not seen " (itmGetName gItem 0x0004) " before! It is in excellent condition, ya?\""))
+													)
+												)
+
+										(and (not haveUndamaged) (not (itmIsDamaged gItem)))
+											(block Nil
+												(setq gain (multiply 7 (itmGetLevel gItem)))
+												(setq gTitle (cat "Dvalin is very pleased: \"At last! An undamaged " (itmGetName gItem 0x0000) "! It is in excellent condition, ya?\""))
+												)
+
+										(gr haveCount 5)
+											(block Nil
+												(setq gain 0)
+												(setq gTitle (cat "Dvalin is uninterested: \"Another one, ya? We will use it for balast, perhaps.\""))
+												(setq gResult Nil)
+												)
+
+										(or (not haveDamaged) (not (itmIsDamaged gItem)))
+											(block Nil
+												(setq gain (multiply 2 (itmGetLevel gItem)))
+												(setq gTitle (cat "Dvalin is pleased: \"Good work! This " (itmGetName gItem 0x0000) " will be analyzed with the others.\""))
+												)
+
+										(block Nil
+											(setq gain (multiply 1 (itmGetLevel gItem)))
+											(setq gTitle (cat "Dvalin is not very interested: \"Another one, ya? Put it over there; we will analyze it.\""))
+											)
+										)
+
+									; Increase XP
+									(objIncData gSource "XP" gain)
+
+									; Transfer the item
+									(objRemoveItem gPlayerShip gItem 1)
+									(objAddItem gSource gItem 1)
+									(objSetData gSource "offered" True)
+
+									; Done
+									(scrShowScreen gScreen "Reward")
+									)
+							</Action>
+
+							<Action name="Cancel" cancel="1" key="C">
+								(scrShowScreen gScreen "ResearchLab")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</OfferItem>
+
+			<Reward>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen gTitle)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block (minXP xp roll)
+									; We double to xp required after each gift
+									(setq xp (objGetData gSource "XP"))
+									(setq minXP (multiply (objGetData gSource "giftXP") 2))
+									(if (ls minXP 150)
+										(setq minXP 150)
+										)
+
+									; Figure out what kind of gift to give
+									(setq roll (random 1 100))
+									(switch
+										(or (not gResult) (ls xp minXP))
+											(setq gItem Nil)
+
+										(geq xp 2400)
+											(setq gItem Nil)
+
+										(geq xp 1200)
+											(block Nil
+												(setq gItem 
+													(itmSetEnhanced 
+														(itmCreate &itDvalinIon9Cannon; 1)
+														(random (list 0x0108 0x0109 0x010a))
+														)
+													)
+												)
+
+										(geq xp 600)
+											(block Nil
+												(setq gItem (itmCreate &itDvalinArmor; 4))
+												)
+
+										(geq xp 300)
+											(switch
+												(leq roll 60)
+													(setq gItem (itmSetEnhanced (itmCreate &itAkan600Turret; 1) 0x0105))
+
+												(leq roll 90)
+													(setq gItem (itmSetEnhanced (itmCreate &itAkan600Turret; 1) 0x0107))
+
+												(setq gItem (itmSetEnhanced (itmCreate &itAkan600Turret; 1) 0x1003))
+												)
+
+										(geq xp 150)
+											(switch
+												(leq roll 60)
+													(setq gItem (itmSetEnhanced (itmCreate &itAdvancedCeralloyArmor; 4) 0x010a))
+
+												(leq roll 90)
+													(setq gItem (itmSetEnhanced (itmCreate &itAdvancedCeralloyArmor; 4) 0x0349))
+
+												(setq gItem (itmSetEnhanced (itmCreate &itAdvancedCeralloyArmor; 4) 0x0200))
+												)
+
+										(setq gItem Nil)
+										)
+
+									; Give the gift
+									(if gItem
+										(block Nil
+											(objAddItem gPlayerShip gItem)
+											(objSetData gSource "giftXP" minXP)
+											(scrShowPane gScreen "Gift")
+											)
+										(scrShowScreen gScreen "ResearchLab")
+										)
+									)
+							</Action>
+						</Actions>
+					</Default>
+
+					<Gift>
+						<OnPaneInit>
+							(block Nil
+								(scrSetDesc gScreen (cat "Dvalin thanks you for helping his research:\n\n"
+									"\"Danke for your aid! Our research advances because of you. Please, accept "
+									(itmGetName gItem 0x040) ". "
+									(if (gr (itmGetCount gItem) 1)
+										"I made them specially for you!\""
+										"It has special enhancements, ya?\""
+										)
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Gift>
+				</Panes>
+			</Reward>
+
+			<SecondaryLab>
+				<Panes>
+					<Default
+						desc=	"The lab is filled with racks of equipment and testing structures. A small number of researchers are testing the quality and reliability of various items."
+						>
+						<Actions>
+							<Action name="Leave" default="1" cancel="1" key="L">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</SecondaryLab>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="107"	y="49" />
+			<Port x="112"	y="-1" />
+			<Port x="91"	y="-50" />
+			<Port x="42"	y="-85" />
+			<Port x="-25"	y="-90" />
+			<Port x="-76"	y="-65" />
+			<Port x="-105"	y="-21" />
+			<Port x="-111"	y="21" />
+		</DockingPorts>
+
+	</StationType>
+
+	<Globals>
+		(block Nil
+			(setq intRasiermesserArmorEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0103 0x0905 0x0915 0x0925 0x0935))
+				))
+
+			(setq intRasiermesserWeaponEnhancement (lambda Nil
+				(random (list 0x0101 0x0102 0x0102 0x0102 0x0103 0x0103 0x0104 0x0f02 0x1002))
+				))
+			)
+	</Globals>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsRasiermesserFactory;" bitmap="Resources\RasiermesserFactory.jpg" bitmask="Resources\RasiermesserFactoryMask.bmp"  loadOnUse="true"/>
+	
+	<Image UNID="&rsRasiermesserFactoryBkgnd;" bitmap="Resources\RasiermesserFactoryScreen.jpg" loadOnUse="true" />
+
+</TranscendenceModule>

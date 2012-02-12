@@ -1,0 +1,112 @@
+TransData v1.8
+Copyright (c) 2001-2010 by George Moromisato. All Rights Reserved.
+
+Loading...done.
+level	category	frequency	shortName	balanceDamage	power	damage	range
+1	Weapon	C	laser cannon	90	1.0	90	60
+1	Weapon	UC	Centauri recoilless	90	1.0	90	18
+1	Launcher	UC	DM600 disposable missile rack	59	0.2	168	96
+1	Weapon	UC	recoilless cannon	90	1.0	101	48
+1	Weapon	R	light recoilless cannon	90	1.0	108	32
+2	Weapon	C	Bolide laser blaster	169	2.0	126	60
+2	Weapon	C	heavy recoilless cannon	169	2.0	135	48
+2	Weapon	UC	dual laser cannon	169	2.0	180	60
+2	Weapon	UC	fast-fire laser cannon	169	3.0	150	60
+2	Weapon	UC	TK10 Trident cannon	169	2.0	203	32
+2	Launcher	R	DM1500 disposable missile rack	90	0.2	168	96
+2	Weapon	R	mining laser	169	4.0	150	30
+3	Weapon	C	DK10 Arbalest cannon	354	4.0	270	48
+3	Launcher	C	NAMI missile launcher	150	1.0	528	108
+3	Weapon	C	turbolaser cannon	354	5.0	225	60
+3	Weapon	UC	AK15 Partisan cannon	354	5.0	225	48
+3	Weapon	UC	dual recoilless cannon	354	2.0	203	48
+3	Weapon	UC	Rasiermesser SmartCannon	354	1.0	225	60
+3	Weapon	R	blinder cannon	83	5.0	248	60
+3	Weapon	R	CLAW cannon	354	10.0	360	30
+3	Weapon	R	heavy CLAW cannon	354	10.0	450	20
+3	Weapon	R	laser cannon array	354	5.0	169	60
+3	Weapon	R	Moskva 11 light turret	150	3.0	101	9
+3	Weapon	R	omnidirectional laser cannon	354	3.0	56	60
+3	Weapon	R	Urak mass driver	354	2.0	252	30
+4	Weapon	C	particle beam weapon	203	15.0	198	80
+4	Weapon	C	slam cannon	203	10.0	189	80
+4	Weapon	UC	dual turbolaser cannon	695	10.0	450	60
+4	Launcher	UC	MAG launcher	203	2.0	378	48
+4	Weapon	UC	omnidirectional turbolaser cannon	695	7.0	169	60
+4	Weapon	UC	PK25 Morning Star cannon	695	10.0	563	48
+4	Weapon	R	actinide waste cannon	203	6.0	216	24
+4	Weapon	R	advanced Urak mass driver	203	2.0	390	9
+4	Weapon	R	AK505 Ballista cannon	695	10.0	493	60
+4	Weapon	R	Dwarg xiphon cannon	203	12.0	189	50
+4	Weapon	R	Flenser relativistic cannon	695	10.0	405	90
+4	Weapon	R	Moskva 21 dual cannon	203	25.0	203	32
+4	Weapon	R	Penitent cannon	81	20.0	35	36
+4	Weapon	R	RK15 Partisan turret	695	5.0	225	48
+5	Weapon	C	Akan 30 cannon	405	4.0	702	120
+5	Weapon	C	dual particle beam weapon	405	30.0	396	80
+5	Launcher	C	Makayev launcher	405	2.0	630	72
+5	Weapon	C	Shuriken neutron blaster	405	30.0	300	60
+5	Weapon	UC	heavy slam cannon	405	20.0	315	80
+5	Weapon	UC	lancer cannon	405	20.0	394	120
+5	Weapon	UC	mark I howitzer	405	10.0	293	120
+5	Weapon	UC	Moskva 33 repeater	405	25.0	405	32
+5	Weapon	R	dual Flenser cannon	1439	20.0	810	90
+5	Weapon	R	Dwarg cnidocyst cannon	216	2.0	315	180
+5	Weapon	R	EMP cannon	216	20.0	252	60
+5	Weapon	R	omnidirectional particle cannon	405	20.0	124	80
+5	Weapon	R	x-ray laser cannon	1439	15.0	900	60
+5	Weapon	VR	sunflare cannon	405	20.0	324	80
+5	Weapon	VR	Urak howitzer	405	12.0	260	90
+6	Weapon	C	mark III howitzer	810	15.0	468	120
+6	Weapon	C	TeV 9 blaster	810	30.0	405	80
+6	Weapon	UC	Akan 600 turret	810	6.0	439	120
+6	Weapon	UC	Dragonfly missile system	810	6.0	504	120
+6	Weapon	R	Dwarg behemoth cannon	342	25.0	351	80
+6	Weapon	R	Nandao bolt cannon	810	6.0	720	120
+6	Weapon	R	plasma torch	191	30.0	264	24
+6	Weapon	NR	PM6 Slicer cannon	810	35.0	660	60
+7	Weapon	C	Katana star cannon	473	75.0	390	120
+7	Weapon	C	thermo cannon	473	5.0	936	120
+7	Weapon	C	tritium cannon	473	50.0	468	48
+7	Weapon	UC	Ares lightning cannon	473	50.0	360	60
+7	Weapon	UC	dual TeV 9 blaster	1621	60.0	810	80
+7	Weapon	UC	kiloton cannon	473	10.0	2376	120
+7	Weapon	UC	mark V howitzer	473	30.0	390	120
+7	Launcher	UC	NAMI mine launcher	473	3.0	3420	960
+7	Weapon	R	Hanzo blaster	1621	60.0	810	60
+7	Weapon	R	ion disruptor	473	80.0	315	60
+7	Launcher	R	NM900 external missile pod	473	0.5	900	96
+7	Weapon	R	omnidirectional TeV 9 blaster	1621	40.0	405	80
+7	Weapon	R	Xenophobe ion lancer	473	65.0	619	120
+8	Weapon	C	Fusionfire howitzer	911	100.0	540	120
+8	Weapon	C	ion blaster	911	150.0	630	60
+8	Weapon	UC	Ares micronuke cannon	911	20.0	59	216
+8	Weapon	UC	ion flame cannon	911	100.0	551	40
+8	Weapon	UC	omnidirectional thermo cannon	911	8.0	585	120
+8	Launcher	UC	Rasiermesser launcher	911	5.0	585	168
+8	Weapon	UC	TM7 multitarget cannon	911	5.0	675	9
+8	Launcher	R	Ares launcher	911	20.0	117	288
+8	Weapon	VR	Ares lightning turret	911	100.0	1440	80
+8	Weapon	VR	Hecates cannon	911	100.0	540	120
+8	Weapon	NR	Dvalin Ion9 cannon	911	120.0	900	60
+9	Weapon	C	heavy ion blaster	1772	250.0	882	60
+9	Weapon	UC	advanced tritium cannon	1772	200.0	1800	48
+9	Weapon	UC	Ares positron cannon	748	200.0	405	96
+9	Launcher	UC	NAMI heavy launcher	1772	10.0	1053	12
+9	Weapon	R	Kytryn blaster	748	200.0	439	64
+9	Weapon	R	omnidirectional ion blaster	1772	120.0	394	60
+9	Weapon	VR	Gaian demolition cannon	1772	350.0	468	60
+9	Weapon	NR	Ferian plasma cannon	748	300.0	600	48
+9	Weapon	NR	Qianlong archcannon	417	10.0	585	90
+10	Weapon	R	IM90 multitarget blaster	3550	300.0	1181	60
+10	Launcher	R	Kytryn launcher	1035	20.0	3159	288
+10	Weapon	R	plasma cannon	1035	300.0	585	48
+10	Weapon	R	positron lancer	1035	350.0	810	61
+10	Weapon	VR	Ares plasma archcannon	1035	300.0	351	78
+10	Weapon	VR	Iocrym Fracture cannon	1035	300.0	2250	19
+10	Weapon	VR	Iocrym repeller	1035	300.0	936	13
+10	Weapon	NR	Lamplighter archcannon	673	200.0	878	60
+10	Weapon	NR	Project Lamplighter prototype	673	300.0	585	48
+12	Weapon	R	Iocrym Avalanche cannon	3949	600.0	4500	19
+13	Weapon	VR	Quantumsphere disintegrator	2273	800.0	194	108
+

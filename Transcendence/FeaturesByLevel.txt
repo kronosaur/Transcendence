@@ -1,0 +1,243 @@
+FEATURES BY LEVEL
+-----------------
+
+LEVEL I
+-------------------------------------------------------------------------------
+Enemies				[x] Charon pirates (primary)
+					[x] Centauri raiders
+					[x] Freeworlds anarchists
+
+Enemy Abilities		[x] Normal damage
+
+Friendlies			[x] armor dealer
+					[x] Korolov shipping
+
+Goals				[x] class II deflector
+					[x] fast-fire laser cannon
+					[x] TK10 Trident cannon
+
+New System Type		[x] Standard
+
+Special System		[x] Eridani System
+
+Notes				Commonwealth
+					Augmented Humans
+
+LEVEL II
+-------------------------------------------------------------------------------
+Enemies				[x] Charon pirates (primary)
+					[x] Outlaws
+					[x] Unlicensed miners
+
+Enemy Abilities		[x] Missiles
+
+Friendlies			[x] arms dealer
+					[x] fuel depot
+					[x] ice farm
+					[x] merchant prince hotel
+					[x] salvager nomad
+					[x] tinker gathering
+
+Goals				[x] carbon fiber shell
+					[x] AK15 Partisan cannon
+					[x] turbolaser cannon
+					[x] NAMI missile launcher
+
+New System Type		[ ] Asteroid system
+
+Special System		[x] Rigel Aurelius System
+
+Notes				Commonwealth
+					Augmented Humans; Luddites
+
+LEVEL III
+-------------------------------------------------------------------------------
+Enemies				[x] Charon pirates (primary)
+					[ ] Heliotropes
+					[ ] Sapiens Extremists (terrorists)
+
+Enemy Abilities		[ ] Blindness
+
+Friendlies			[x] commonwealth dry dock
+					[x] sisters of domina
+					[x] corporate enclave
+					[x] black market station
+
+Goals				[x] plasteel plate
+					[x] class III deflector
+					[x] particle beam weapon
+					[x] slam cannon
+
+New System Type		[ ] Red dwarf (ice)
+
+Primary Enemy		[x] Charon pirates
+
+Special System		[ ] Humbolt (Charon pirate homeworld)
+
+Notes				Commonwealth
+					Augmented Humans; Luddites; Pure Humans
+
+LEVEL IV
+-------------------------------------------------------------------------------
+Enemies				[ ] Sung slavers (primary)
+					[x] Death Drugs cartel
+					[x] marauders
+
+Enemy Abilities		[x] Radiation
+
+Friendlies			[x] Clavius insurance
+					[x] commonwealth fortress
+
+Goals				[x] advanced reactive armor
+					[x] lancer cannon
+					[x] mark I howitzer
+					[x] 100MW reactor
+
+New System Type		[ ] Blue star (desert)
+
+Special System		[ ] St. Katharine's Star System
+
+Notes				Ungoverned Territories
+					Augmented Humans; Luddites; Pure Humans; AIs
+					Sung slavers are an aristocratic culture that depend on
+						various servant races, including zoanthropes.
+						Sung slavers are experts in the control of ships and
+						stations.
+
+LEVEL V
+-------------------------------------------------------------------------------
+Enemies				[ ] Sung slavers (primary)
+					[x] Order of Penitence
+
+Enemy Abilities		[ ] Ion cannon (paralysis)
+
+Friendlies			[x] Thor's wondrous devices
+					[ ] (auton center)
+
+Goals				[x] Duralloy armor
+					[x] Trenton field generator
+					[x] star cannon
+					[x] mark III howitzer
+					[x] military ID
+
+New System Type		[ ] Nebulae
+
+Special System		[ ] Edo (Cathedral of Domina)
+
+Notes				Ungoverned Territories
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples
+
+LEVEL VI
+-------------------------------------------------------------------------------
+Enemies				[ ] Sung slavers (primary)
+					[ ] Xenophobes
+
+Enemy Abilities		[ ] Computer attack (reboot, control, lower shields)
+
+Friendlies			[ ] (ringer's collective)
+					[ ] (assassin club)
+
+Goals				[x] Gusoku armor
+					[ ] (device)
+					[x] Yoroi MX shields
+					[ ] (ion weapon)
+					[ ] (thermo weapon)
+
+New System Type		[ ] Red giant (volcanic)
+
+Special System		[ ] Jiang's Star (Sung Slaver Palace)
+
+Notes				Ungoverned Territories
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples;
+					Zoanthropes
+
+LEVEL VII
+-------------------------------------------------------------------------------
+Enemies				[ ] Ares Orthodoxy (primary)
+					[ ] rogue fleet
+
+Enemy Abilities		[ ] Device damage
+
+Friendlies			[ ] (fleet)
+					[ ] (friendly)
+
+Goals				[x] carbide carapace
+					[ ] (device)
+					[ ] (shields)
+					[ ] (ion weapon)
+					[ ] (thermo weapon)
+
+New System Type		[ ] Smashed (radioactive)
+
+Special System		[ ] Zheling (warfront)
+
+Notes				Warfront
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples;
+					Zoanthropes; Enhanced Humans
+
+LEVEL VIII
+-------------------------------------------------------------------------------
+Enemies				[ ] Ares Orthodoxy (primary)
+					[ ] Machine Intelligence
+
+Enemy Abilities		[ ] Parasite (kills player unless removed)
+
+Friendlies			[ ] (friendly)
+					[ ] (friendly)
+
+Goals				[ ] (armor)
+					[ ] (device)
+					[ ] (shields)
+					[ ] ion disintegrator
+					[ ] (thermo weapon)
+
+Special System		[ ] Eta Ceti (Temple of Oracus)
+
+Notes				Warfront
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples;
+					Zoanthropes; Enhanced Humans; Neo-Humans
+
+LEVEL IX
+-------------------------------------------------------------------------------
+Enemies				[ ] Ares Orthodoxy (primary)
+					[ ] Terraformers
+
+Enemy Abilities		[ ] Disintegration
+
+Friendlies			[ ] (friendly)
+					[ ] (friendly)
+
+Goals				[x] diamond-lattice armor
+					[ ] (device)
+					[x] Lazarus shield generator
+					[x] positron beam weapon
+					[ ] plasma cannon
+					[x] 1GW reactor
+
+Special System		[ ] Ares Prime
+
+Notes				Warfront
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples;
+					Enhanced Humans; Zoanthropes; Neo-Humans
+
+LEVEL X
+-------------------------------------------------------------------------------
+Enemies				[ ] Iocrym (primary)
+					[ ] Alien Parasites
+
+Enemy Abilities		[ ] ???
+
+Friendlies			[ ] (friendly)
+					[ ] (friendly)
+
+Goals				[ ] (armor)
+					[ ] (device)
+					[ ] (shields)
+					[ ] (positron weapon)
+					[ ] (plasma weapon)
+
+Special System		[x] Heretic System
+
+Notes				Alien
+					Augmented Humans; Luddites; Pure Humans; AIs; Simples;
+					Enhanced Humans; Zoanthropes; Neo-Humans;

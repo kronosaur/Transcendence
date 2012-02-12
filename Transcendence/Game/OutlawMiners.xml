@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Borer-class Gunship -->
+
+	<ShipClass UNID="&scBorer;"
+			manufacturer=		"United African States"
+			class=				"Borer"
+			type=				"gunship"
+			score=				"25"
+
+			mass=				"50"
+			cargoSpace=			"25"
+			thrust=				"100"
+			maneuver=			"12"
+			maxSpeed=			"10"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMiningLaser;"/>
+		</Devices>
+
+		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Events>
+			<OnCreate>
+				(block (baseOre maxLootValue)
+					; There is a chance that we have some small amount of ore
+					
+					(setq maxLootValue (random 50 200))
+					(switch
+						; 50% chance of fuel rods instead of ore.
+						(leq (random 1 100) 50)
+							(objAddItem gSource (itmCreate &itHelium3FuelRod; (random 1 6)))
+							
+						; If we have a base and it has ore then we have some of
+						; that in our cargo.
+						(and aBaseObj (setq baseOre (random (objGetItems aBaseObj "t +Ore"))))
+							(objAddItemByValue gSource baseOre maxLootValue 'credit)
+
+						; Otherwise we ore appropriate to the system
+						(objAddItemByValue gSource (itmCreate (sysGetRandomOreType) 1) maxLootValue 'credit)
+						)
+					)
+			</OnCreate>
+		</Events>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Borer II-class Gunship -->
+
+	<ShipClass UNID="&scBorer-II;"
+			manufacturer=		"United African States"
+			class=				"Borer II"
+			type=				"gunship"
+			score=				"85"
+
+			mass=				"60"
+			cargoSpace=			"25"
+			thrust=				"250"
+			maneuver=			"6"
+			maxSpeed=			"15"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMiningLaser;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-11"  y="0"	z="16"/>
+			<NozzlePos x="-11"  y="0"	z="-16"/>
+			<NozzlePos x="-11"  y="16"	z="0"/>
+			<NozzlePos x="-11"  y="-16"	z="0"/>
+		</DriveImages>
+
+		<Events>
+			<OnCreate>
+				(block (baseOre maxLootValue)
+					; There is a chance that we have some small amount of ore
+					
+					(setq maxLootValue (random 100 500))
+					(switch
+						; 20% chance of fuel rods instead of ore.
+						(leq (random 1 100) 20)
+							(objAddItem gSource (itmCreate &itHelium3FuelRod; (random 1 8)))
+
+						; If we have a base and it has ore then we have some of
+						; that in our cargo.
+						(and aBaseObj (setq baseOre (random (objGetItems aBaseObj "t +Ore"))))
+							(objAddItemByValue gSource baseOre maxLootValue 'credit)
+								
+						; Otherwise we ore appropriate to the system
+						(objAddItemByValue gSource (itmCreate (sysGetRandomOreType) 1) maxLootValue 'credit)
+						)
+						
+					; Chance of fuel rods in addition
+					(if (leq (random 1 100) 50)
+						(objAddItem gSource (itmCreate &itHelium3FuelRod; (random 1 4)))
+						)
+					)
+			</OnCreate>
+		</Events>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Hammerhead-class Gunship -->
+
+	<ShipClass UNID="&scHammerhead;"
+			manufacturer=		"Earth Industries"
+			class=				"Hammerhead"
+			type=				"gunship"
+			score=				"35"
+
+			mass=				"30"
+			cargoSpace=			"10"
+			thrust=				"120"
+			maneuver=			"2"
+			maxSpeed=			"17"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"50"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-36" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Hammerhead II-class Gunship -->
+
+	<ShipClass UNID="&scHammerhead-II;"
+			manufacturer=		"Earth Industries"
+			class=				"Hammerhead II"
+			type=				"gunship"
+			score=				"165"
+
+			mass=				"30"
+			cargoSpace=			"10"
+			thrust=				"200"
+			maneuver=			"2"
+			maxSpeed=			"16"
+
+			leavesWreck=		"25"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itTitaniumPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itTitaniumPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-36" y="-2"/>
+			<NozzlePos x="-36" y="2"/>
+		</DriveImages>
+
+	</ShipClass>
+	
+<!-- STATION TYPES -->
+
+	<!-- Asteroid Mine, Titanium Ore -->
+
+	<StationType UNID="&stAsteroidMineTitanium;"
+			name=				"outlaw titanium mine"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itCeramicPlate;"
+			hitPoints=			"50"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			levelFrequency=		"ucr-- ----- ----- ----- -----"
+			locationCriteria=	"++asteroids,--frost,--ice"
+			>
+
+		<Names noArticle="true">Asteroid T%1%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Group chance="40">
+					<Ship			count="1d3"	class="&scBorer;"		orders="guard"/>
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d3"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d3"	class="&scHammerhead;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scBorer;"		orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d2"	class="&scBorer;"		orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Satellites>
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Table>
+					<Station chance="50" type="&stSmallAsteroid;"/>
+					<Station chance="50" type="&stOreSmallAsteroid;"/>
+				</Table>
+			</Orbitals>
+		</Satellites>
+
+		<Items>
+			<Item count="2d6"	item="&itTitaniumOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables3;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Palladium Ore -->
+
+	<StationType UNID="&stAsteroidMinePalladium;"
+			name=				"outlaw palladium mine"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyCeramicPlate;"
+			hitPoints=			"80"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			levelFrequency=		"-ucr- ----- ----- ----- -----"
+			locationCriteria=	"++asteroids,--frost,--ice"
+			>
+
+		<Names noArticle="true">Asteroid L%1%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="25">
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Satellites>
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Table>
+					<Station chance="40" type="&stSmallAsteroid;"/>
+					<Station chance="60" type="&stOreSmallAsteroid;"/>
+				</Table>
+			</Orbitals>
+		</Satellites>
+
+		<Items>
+			<Item count="2d6"	item="&itPalladiumOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables4;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Ceralloy Ore -->
+
+	<StationType UNID="&stAsteroidMineCeralloy;"
+			name=				"outlaw ceralloy mine"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"120"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			levelFrequency=		"--uur ----- ----- ----- -----"
+			locationCriteria=	"++asteroids,--frost,--ice"
+			>
+
+		<Names noArticle="true">Asteroid C%1%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="35">
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Satellites>
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Table>
+					<Station chance="30" type="&stSmallAsteroid;"/>
+					<Station chance="70" type="&stOreSmallAsteroid;"/>
+				</Table>
+			</Orbitals>
+		</Satellites>
+
+		<Items>
+			<Item count="3d6"	item="&itCeralloyOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Duranium Ore -->
+
+	<StationType UNID="&stAsteroidMineDuralloy;"
+			name=				"outlaw duranium mine"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			levelFrequency=		"---uc r---- ----- ----- -----"
+			locationCriteria=	"++asteroids,--frost,--ice"
+			>
+
+		<Names noArticle="true">Asteroid D%1%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="25">
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Satellites>
+			<Orbitals distance="8" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Table>
+					<Station chance="20" type="&stSmallAsteroid;"/>
+					<Station chance="80" type="&stOreSmallAsteroid;"/>
+				</Table>
+			</Orbitals>
+		</Satellites>
+
+		<Items>
+			<Item count="3d8"	item="&itDuralloyOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Pteracnium Ore -->
+
+	<StationType UNID="&stAsteroidMinePteracnium;"
+			name=				"outlaw pteracnium mine"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itCeralloyArmor;"
+			hitPoints=			"150"
+			explosionType=		"&vtBlastExplosion4;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			levelFrequency=		"----u ur--- ----- ----- -----"
+			locationCriteria=	"++asteroids,--frost,--ice"
+			>
+
+		<Names noArticle="true">Asteroid P%1%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="35">
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Satellites>
+			<Orbitals distance="8" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="135">
+				<Station type="&stOutlawTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="315">
+				<Station type="&stOutlawTurret;" imageVariant="3"/>
+			</Orbitals>
+
+			<Orbitals count="1d4" distance="2d8+6" angle="random">
+				<Table>
+					<Station chance="10" type="&stSmallAsteroid;"/>
+					<Station chance="90" type="&stOreSmallAsteroid;"/>
+				</Table>
+			</Orbitals>
+		</Satellites>
+
+		<Items>
+			<Item count="2d6"	item="&itPteracniumOre;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Outlaw Turret -->
+
+	<StationType UNID="&stOutlawTurret;"
+			name=				"Outlaw defense turret"
+			sovereign=			"&svSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"2000"
+			armorID=			"&itCeralloyArmor;"
+			hitPoints=			"90"
+			structuralHitPoints="25"
+			fireRateAdj=		"40"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="448" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="490" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="532" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="574" imageWidth="42" imageHeight="42"/>
+		</ImageVariants>
+
+		<Devices>
+			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
+		</Devices>
+
+		<DockingPorts>
+			<Port x="0"		y="24" />
+			<Port x="0"		y="-24" />
+			<Port x="24"	y="0" />
+			<Port x="-24"	y="0" />
+		</DockingPorts>
+
+	</StationType>
+	
+<!-- MISCELLANEOUS -->
+
+	<ShipTable unid="&tbOutlawMinerEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="ucu-- -----" count="1"	 class="&scBorer;" eventHandler="&evOutlawMinerBehavior;">
+				<Escorts>
+					<Ship chance="80"		   count="1d2"	 class="&scHammerhead;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="-ucu- -----" count="1"	 class="&scBorer;" eventHandler="&evOutlawMinerBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="60"	   count="1d4"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="10"	   count="2"	 class="&scBorer;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="--ucu -----" count="1"	 class="&scBorer-II;" eventHandler="&evOutlawMinerBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="60"	   count="1d4"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="10"	   count="2"	 class="&scBorer;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="---uc u----" count="1"	 class="&scBorer-II;" eventHandler="&evOutlawMinerBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="20"	   count="1d6"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="30"	   count="1d3"	 class="&scBorer;" orders="escort"/>
+						<Ship chance="40"	   count="1d3"	 class="&scHammerhead-II;" orders="escort"/>
+						<Ship chance="10"	   count="1"	 class="&scBorer-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+		
+			<Ship levelFrequency="----u cu---" count="1"	 class="&scBorer-II;" eventHandler="&evOutlawMinerBehavior;">
+				<Escorts>
+					<Table>
+						<Ship chance="10"	   count="1d8"	 class="&scHammerhead;" orders="escort"/>
+						<Ship chance="20"	   count="1d4+1" class="&scBorer;" orders="escort"/>
+						<Ship chance="45"	   count="1d4+1" class="&scHammerhead-II;" orders="escort"/>
+						<Ship chance="25"	   count="1d3"	 class="&scBorer-II;" orders="escort"/>
+					</Table>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="ruuuu ur---" count="1"	class="&scT31ArmedTransport;" eventHandler="&evStdConvoyEncounterBehavior;">
+				<Items>
+					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
+					<Lookup					count="1d2"  table="&tbStoneAsteroidOre;"/>
+				</Items>
+
+				<Escorts>
+					<Ship					   count="1d4+1"	class="&scHammerhead-II;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+	<!-- Outlaw Miner Behavior
+	
+		USAGE NOTES
+		
+		This is for random encounters in which the player runs into
+		an outlaw miner. The miner tries to defend the area around asteroids
+		
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								'onCourse				= Ship on straight course
+								'backToBase				= Heading back to base
+								'patrolling				= Orbiting base
+								'leavingSystem			= Leaving
+								
+		homeObj:			Ship's base asteroid (may be Nil)
+		
+	-->
+
+	<ShipClass UNID="&evOutlawMinerBehavior;"
+			class=				"(zone encounter behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<GetCreatePos>
+				(if aTargetObj
+					(intComputeRandomEncounterPos aTargetObj)
+					)
+			</GetCreatePos>
+
+			<OnBehavior>
+				(block (behavior)
+					(setq behavior (objGetData gSource "0804000B_behavior"))
+					(switch
+						; If we see any enemy ships and we're inside our patrol zone
+						; then attack. Otherwise, change course and head back to base.
+
+						(eq behavior 'onCourse)
+							(block (theEnemy theBase baseDist)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(switch
+
+										; Attack
+										(and (setq theBase (objGetObjRefData gSource "0804000B_homeObj"))
+												(leq (setq baseDist (objGetDistance gSource theBase)) 100)
+												)
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'patrol theBase 100)
+												(objSetData gSource "0804000B_behavior" 'patrolling)
+												)
+
+										; Back to base
+										theBase
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'holdCourse
+													(sysVectorSubtract (objGetPos theBase) (objGetPos gSource))
+													(subtract baseDist 100)
+													)
+												(objSetData gSource "0804000B_behavior" 'backToBase)
+												)
+
+										; Leave the system
+										(block Nil
+											(shpCancelOrders gSource)
+											(shpOrder gSource 'gate)
+											(objSetData gSource "0804000B_behavior" 'leavingSystem)
+											)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreateOrders>
+				(block (theCourse homeBase)
+					(if (not aTargetObj)
+						(setq aTargeObj gPlayerShip)
+						)
+
+					; Find our nearest asteroid
+					(setq homeBase (sysFindObject gSource "tN +asteroid;"))
+					(if (not homeBase)
+						(setq homeBase aBaseObj)
+						)
+					(objSetObjRefData gSource "0804000B_homeObj" homeBase)
+
+					; Move towards the player's path
+					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
+					(shpOrder gSource 'holdCourse theCourse 300)
+
+					; Register a timer so that we can look for enemies
+					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+					(objSetData gSource "0804000B_behavior" 'onCourse)
+					)
+			</OnCreateOrders>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "0804000B_behavior"))
+					(switch
+						; If we're done with this order, then we never encountered
+						; the player, so we're done, head for a stargate
+						; Note: we might encounter the player en route
+						(eq behavior 'onCourse)
+							(shpOrder gSource 'gate)
+							
+						; If we're done attacking, then we're done
+						(eq behavior 'attackingEnemy)
+							(block Nil
+								(shpOrder gSource 'gate)
+								(objSetData gSource "0804000B_behavior" 'onCourse)
+								)
+
+						(eq behavior 'backToBase)
+							(block Nil
+								(shpOrder gSource 'patrol (objGetObjRefData gSource "0804000B_homeObj") 100)
+								(objSetData gSource "0804000B_behavior" 'patrolling)
+								)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+	
+</TranscendenceModule>

@@ -1,0 +1,1018 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Captured Borer-class gunship
+
+	EXTRA DATA
+
+	status:				Current ship status:
+							Nil						= no mission yet
+							'captured				= wait until freed
+							'rescueInProgress		= player arrived
+							'free					= done
+	-->
+
+	<ShipClass UNID="&scBorerCaptured;"
+			manufacturer=		"United African States"
+			class=				"Borer"
+			type=				"gunship"
+			score=				"25"
+
+			mass=				"50"
+			cargoSpace=			"25"
+			thrust=				"100"
+			maneuver=			"12"
+			maxSpeed=			"10"
+
+			leavesWreck=		"50"
+
+			attributes=			""
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMiningLaser;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					(sysAddObjRecurringTimerEvent 61 gSource "OnTimer")
+					)
+			</OnCreate>
+
+			<OnTimer>
+				(block (status)
+					(setq status (objGetData gSource "status"))
+					(switch
+						(eq status 'captured)
+							; If the player is in range, then rescue attempt has started
+							(if (leq (objGetDistance gSource gPlayerShip) 50)
+								(block Nil
+									(objSetData gSource "status" 'rescueInProgress)
+									(objSendMessage gPlayerShip gSource
+										(random
+											'(
+												"Mayday mayday mayday! We're under attack!"
+												"Over here! Help us, please!"
+												"Hostiles in the area! Approach with caution!"
+												"Mayday mayday mayday! Hostiles in the area!"
+												)
+											)
+										)
+									)
+								)
+						)
+					)
+			</OnTimer>
+
+			<OrderSetCaptured>
+				(block Nil
+					(objSetData gSource "status" 'captured)
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'wait)
+					)
+			</OrderSetCaptured>
+
+			<OrderSetFree>
+				(block (dest)
+					(objSetData gSource "status" 'free)
+
+					; Thanks to player
+					(objSendMessage gPlayerShip gSource
+						(random
+							'(
+								"You're my savior! I owe you one, buddy."
+								"Kacking Centaurians! Can you believe this? Thanks for taking care of them for us!"
+								"We're OK! Thanks for blasting the Centaurians!"
+								"Nice shooting! Those bastards got what was coming to them!"
+								)
+							)
+						)
+
+					; Back to mining colony
+					(setq dest (sysFindObject gSource "TN +commonwealth; +mining; +populated;"))
+					(if (not dest)
+						(setq dest (sysFindObject gSource "TN +commonwealth; +populated;"))
+						)
+
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'wait Nil (random 2 4))
+					(if dest
+						(block Nil
+							(shpOrder gSource 'dock dest)
+							(shpOrder gSource 'wait Nil (random 6 12))
+							)
+						)
+
+					; Then gate
+					(shpOrder gSource 'gate)
+					)
+			</OrderSetFree>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Mining Colony
+
+	GLOBAL DATA
+
+	totalMissionCount:	Total number of missions that the player has requested.
+	missionsCompleted:	Total successful missions
+	missionsFailed:		Total failed missions
+
+	EXTRA DATA
+
+	lastMissionTime:	Tick on which mission was given to player (Nil if never)
+	
+	missionCount:		Number of missions that this station has given out
+
+	missionID:			Mission identifier:
+							'DestroyIllegalMiners	= destroy target{n} from 1 to targetCount
+							'SaveMiningShip			= destroy Centauri warlords that captured a mining ship
+
+	missionFee:			Fee for completing mission
+	missionStatus:		Status of mission:
+							Nil						= no mission in progress
+							'inprogress				= mission in progress
+							'success				= mission accomplished
+							'failure				= mission failed
+
+	target{n}:			Target to destroy
+	targetCount:		Number of targets
+
+	targetAsteroid:		Target asteroid
+	targetItem:			Target item to retrieve
+	targetMiner:		Target mining ship
+
+	-->
+
+	<StationType UNID="&stMiningColony;"
+			name=				"Commonwealth mining colony"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"100"
+			repairRate=			"1"
+			fireRateAdj=		"60"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, human, mining, populated"
+			levelFrequency=		"ccur- ----- ----- ----- -----"
+			locationCriteria=	"+asteroids,--frost,--ice"
+
+			noArticle=			"true"
+			>
+
+		<Names noArticle="true">Amundsen Mining Colony; Benin %1%0%0; Clementine Mining Association; Duralloy Dreams;
+				EI Mining Colony %1%0; Freetown Mining; St. George's Colony; %1%0%0%0 Hades;
+				Ibadan Mining; Jasper Mining; Kiloton Mining; Lusaka Mining Colony;
+				Metals &amp; Ores Mining; New Johannesburg; Omdurman Mining; Port Harcourt;
+				Qadarif Minerals; Ryad Mining Colony; %1%0%0%0 Sangre; Tangiers Metals;
+				UN%0%0%0 Mining Colony; St. Victoria's Colony; %1%0%0%0 Welkom; X%0%0%0 Mining Colony;
+				Yafran Colony; Zagazig Minerals</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="128" imageWidth="128" imageHeight="128"/>
+			<Image			imageID="&rsStations1;" imageX="512" imageY="256" imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Items>
+			<RandomItem 
+					criteria=		"* +Ore; -NotForSale;"
+					level=			"1"
+					levelCurve=		"2"
+					/>
+			<Table>
+				<Item chance="30"	count="8d12"	item="&itTitaniumOre;" />
+				<Item chance="20"	count="8d12"	item="&itPlasteelOre;" />
+				<Item chance="20"	count="5d12"	item="&itPalladiumOre;" />
+				<Item chance="15"	count="5d12"	item="&itCeralloyOre;" />
+				<Item chance="10"	count="3d12"	item="&itXenotiteOre;" />
+				<Item chance="5"	count="3d12"	item="&itDuralloyOre;" />
+			</Table>
+		</Items>
+
+		<Trade currency="credit" max="10000" replenish="500">
+			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="90"/>
+		</Trade>
+
+		<Ships>
+			<Lookup count="1" table="&tbCommDefenders;"/>
+			<Lookup count="1d2" table="&tbCommPrivateCrafts;"/>
+			<Ship count="1d2+1" class="&scBorer;" orders="gateOnThreat"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Lookup chance="50" table="&tbCommDefenders;"/>
+				<Lookup chance="10" table="&tbCommPrivateCrafts;"/>
+				<Ship chance="40" class="&scBorer;" orders="gateOnThreat"/>
+			</Table>
+		</Reinforcements>
+
+		<StaticData>
+			<NPCService>
+				(	;	service					level	margin
+					(	'repairArmor			5		100		)
+					)
+			</NPCService>
+
+			<Rumors>
+				(
+					"\"It's calm now, but I've been hearing a lot of military chatter lately.\""
+					"\"Most people don't care where their metals come from, but let me tell you: plasteel doesn't grow in greenhouses! We have to struggle to mine enough for everyone.\""
+					"\"Charon pirates have always been a problem here. They're getting stronger every year. One of these days we're going to have to do something about them.\""
+					"\"The Korolov folks are good people; they're a little uptight about schedules and they're big on pomp and medals, but we get along pretty well.\""
+					"\"We've had a lot of trouble with the warlords. They come through in gangs and shoot up the place; they take what they need and then leave.\""
+					"\"So you're going to the Core, huh? Good luck with that! I've known a lot of people heading towards the Core. My best friend's wife left about a year ago. Can't say that anyone's ever returned, though.\""
+					"\"I don't know much about weapons; not as much as you do, anyway. But I know a lot of people who favor the AK15 Partisan. Of course, if you can get your hands on a slam cannon, you're styling.\""
+					"\"Heavy metal armor is the best, in my opinion. Ceramic is nice for my dishes, but it will do kack-all against a slam cannon. Ithalium is the best; orthosteel is pretty awesome too. Duralloy lasts almost forever, though.\""
+					"\"Have you ever been to the Outer Realm? Out beyond the Sung Slavers, where the Ringers live? It's miner heaven, I bet. I'd like to go out there some day. Just me and a souped-up Borer. The Ferians are there too; I hear they've got mining techniques like you've never seen.\""
+					"\"It's not too dangerous from Eridani to St. Kat's. Mostly just pirates to worry about. But deeper in the Ungoverned Territories there are dangers that you cannot imagine. Slavers will jump you out in deep space and boost your body for their slave farms.\""
+					"\"The Charon pirates are nasty, but you can handle their gunships. Stay away from their frigates, though.\""
+					"\"When a Charon frigate is out hunting you'd best get away. They'll take you down fast without so much as a warning.\""
+					"\"Titanium ore is as common as suit-rash. Palladium and plasteel are kack too. If you want a good payday, find an asteroid with cerallox or helium regolith.\""
+					"\"Every chump with a mining laser thinks he can mine. But if you want to be a serious miner you need a miner's cargo hold.\""
+					"\"Volcanic asteroids are the best for mining. I once found 30 tons of ithalium ore on one! Kept me in vodka and cunnu for a couple of years!\""
+					"\"Ice asteroids are filthy with cerallox. Lots of palladium and plasteel too, though, so they're not always worth the effort.\""
+					)
+			</Rumors>
+		</StaticData>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList)
+					(if (gr (typGetGlobalData &stMiningColony; "totalMissionCount") 0)
+						(setq theList (list
+							(list
+								"Mining colony missions"
+								(intMissionAchievementString (typGetGlobalData &stMiningColony; "missionsCompleted") (typGetGlobalData &stMiningColony; "missionsFailed"))
+								"missions &amp; activities"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnContractGenerate>
+				(intGenerateMiningRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(block (missionID)
+					(setq missionID (objGetData gSource "missionID"))
+					(if (eq (objGetData gSource "missionStatus") 'inProgress)
+						(switch
+							(eq missionID 'DestroyIllegalMiners)
+								(if (mneAllTargetsDestroyed gSource aObjDestroyed)
+									(block Nil
+										(objSetData gSource "missionStatus" 'success)
+										(typIncGlobalData &stMiningColony; "missionsCompleted")
+										(shpCancelOrders gPlayerShip)
+										(shpOrder gPlayerShip 'dock gSource)
+										(plyMessage gPlayer "Mission complete!")
+										)
+									)
+
+							(eq missionID 'SaveMiningShip)
+								(switch
+									(eq aObjDestroyed (objGetObjRefData gSource "targetMiner"))
+										(block Nil
+											(objSetData gSource "missionStatus" 'failure)
+											(typIncGlobalData &stMiningColony; "missionsFailed")
+											(shpCancelOrders gPlayerShip)
+											(plyMessage gPlayer "Mission failed!")
+											)
+
+									(if (mneAllTargetsDestroyed gSource aObjDestroyed)
+										(block (theMiner)
+											(objFireEvent (objGetObjRefData gSource "targetMiner") "OrderSetFree")
+
+											(objSetData gSource "missionStatus" 'success)
+											(typIncGlobalData &stMiningColony; "missionsCompleted")
+											(shpCancelOrders gPlayerShip)
+											(shpOrder gPlayerShip 'dock gSource)
+											(plyMessage gPlayer "Mission complete!")
+											)
+										)
+									)
+							)
+						)
+					)
+			</OnObjDestroyed>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(block (missionStatus missionID)
+						(setq missionStatus (objGetData gSource "missionStatus"))
+						(setq missionID (objGetData gSource "missionID"))
+
+						(switch
+							; If no mission, then normal screen
+							(not missionStatus)
+								"Default"
+
+							; See if player has destroyed illegal miners
+							(eq missionID 'DestroyIllegalMiners)
+								(if (eq missionStatus 'success)
+									"MissionDestroyIllegalMinersSuccess"
+									"MissionDestroyIllegalMinersFailure"
+									)
+
+							; Save miner mission
+							(eq missionID 'SaveMiningShip)
+								(switch
+									(eq missionStatus 'success)
+										"MissionSaveMiningShipSuccess"
+									(eq missionStatus 'failure)
+										"MissionSaveMiningShipFailure"
+									"MissionSaveMiningShipInProgress"
+									)
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default
+							desc=	"You are in the docking bay of a mining colony.">
+
+						<Actions>
+							<Action name="Meeting Hall" key="M" default="1">
+								(block (lastMissionTime missionInterval)
+									; Figure out the last time that this station gave out a mission
+									(setq lastMissionTime (objGetData gSource "lastMissionTime"))
+
+									; Time between missions (5400-8990 or 3-5 real minutes)
+									(setq missionInterval (add 5400 (multiply (objGetDestiny gSource) 10)))
+
+									(switch
+										; We don't give out infinite missions
+										(geq (objGetData gSource "missionCount") (add 1 (modulo (objGetDestiny gSource) 3)))
+											(setq gMission 'Rumors)
+										
+										; If the player has never gotten a mining mission, then give out
+										; a mission to save a mining ship.
+										(and (not lastMissionTime)
+												(not (typGetGlobalData &stMiningColony; "totalMissionCount")))
+											(setq gMission 'SaveMiningShip)
+											;(setq gMission 'DestroyIllegalMiners)
+
+										; If we've never given out a mission or if its been enough
+										; time since the last mission, then give out a new mission
+										(or (not lastMissionTime)
+												(ls (add lastMissionTime missionInterval) (unvGetTick)))
+											(setq gMission 
+												(random 
+													'(
+														'Rumors
+														'DestroyIllegalMiners
+														'DestroyIllegalMiners
+														'DestroyIllegalMiners
+														'DestroyIllegalMiners
+														'DestroyIllegalMiners
+														'DestroyIllegalMiners
+														'SaveMiningShip
+														'SaveMiningShip
+														'SaveMiningShip
+														)
+													)
+												)
+
+										; Otherwise, we just get rumors
+										(setq gMission 'Rumors)
+										)
+
+									; Go to the appropriate screen
+									(if (eq gMission 'Rumors)
+										(scrShowPane gScreen "Rumors")
+										(scrShowPane gScreen "MissionIntro")
+										)
+									)
+							</Action>
+
+							<Action name="Commodities Exchange" key="C">
+								<ShowPane pane="CommoditiesExchange"/>
+							</Action>
+
+							<Action name="Dock Services" key="D">
+								<ShowPane pane="DockServices"/>
+							</Action>
+
+							<Action name="Undock" key="U" cancel="1">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<CommoditiesExchange>
+
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</CommoditiesExchange>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A" >
+								(block Nil
+									(setq gTechLevel 5)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID True)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install mining laser" key="M">
+								(block Nil
+									(setq gItem (itmCreate &itMiningLaser; 1))
+									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
+									(setq gCheckMilitaryID True)
+									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+									)
+							</Action>
+
+							<Action name="Upgrade cargo hold" key="C">
+								(block Nil
+									(setq gItem (itmCreate &itMinersCargoHold; 1))
+									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
+									(setq gCheckMilitaryID True)
+									(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+
+					</DockServices>
+
+					<MissionIntro>
+						<OnPaneInit>
+							(block (introText missionText totalMissionCount)
+								(setq totalMissionCount (typGetGlobalData &stMiningColony; "totalMissionCount"))
+
+								(setq introText
+									(switch
+										(not totalMissionCount)
+											"The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands on a platform in the center, surrounded by comms equipment and visual displays. "
+
+										(random
+											'(
+												"The colony supervisor stands at the center plugged in to his consoles and display. "
+												"The colony supervisor stands at his station, surveying the status on his displays. "
+												"The colony supervisor stands at the center, his hands conducting the consoles and displays. "
+												)
+											)
+										)
+									)
+
+								(setq missionText
+									(switch
+										(not totalMissionCount)
+											(cat "\"Welcome to " (objGetName gSource 0) "! I saw your ship on my displays; she looks like she's armed for combat. How about taking on a mission for us? We could use the help, and there would be payment.\"")
+
+										(random
+											(list
+												"\"Welcome, %name%! We have another mission for you, if you are interested.\""
+												(cat "\"Welcome to " (objGetName gSource 0) "! If you're looking for work, I might be able to set you up with something.\"")
+												"\"Welcome, %name%! Are you interested in flying a mission for us? There would be payment, of course.\""
+												)
+											)
+										)
+									)
+
+								(scrSetDesc gScreen (cat
+									introText
+									"He turns his attention towards you as you approach:\n\n"
+									missionText
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									; Set mission time
+									(objSetData gSource "lastMissionTime" (unvGetTick))
+
+									; Go to actual mission
+									(scrShowPane gScreen (cat "Mission" gMission))
+									)
+							</Action>
+						</Actions>
+					</MissionIntro>
+
+					<MissionDestroyIllegalMiners>
+						<OnPaneInit>
+							(block (asteroidList)
+								(setq gTarget Nil)
+
+								; Find an appropriate asteroid
+								(setq asteroidList (sysFindObject gSource "t +asteroid;"))
+								(setq i 0)
+								(if asteroidList
+									(loop (and (not gTarget) (ls i 20))
+										(block (candidate)
+											(setq candidate (random asteroidList))
+											(if (not (sysFindObject candidate "T +populated; N:60;"))
+												(setq gTarget candidate)
+												)
+
+											(setq i (add i 1))
+											)
+										)
+									)
+
+								; If we could not find an appropriate asteroid, then we create one
+								(if (not gTarget)
+									(block (centerStar farthestPlanet meanDist dist)
+
+										; Find the most distant planet
+										(setq centerStar (sysFindObject gSource "tN +star;"))
+										(if (not centerStar) (setq centerStar gSource))
+										(setq farthestPlanet (sysFindObject centerStar "tR +planet;"))
+
+										; Pick a random distance beyond the farthest planet
+										(if farthestPlanet
+											(setq meanDist (sysVectorDistance (objGetPos farthestPlanet)))
+											(setq meanDist (random 600 900))
+											)
+
+										(setq dist (add meanDist (random -60 60)))
+
+										; Create an asteroid at this distance
+										(setq gTarget
+											(sysCreateStation
+												&stLargeAsteroid;
+												(sysVectorRandom Nil dist 60 "t")
+												)
+											)
+										)
+									)
+
+								; If the asteroid does not have a name, name it now
+								(if (or (eq (objGetName gTarget 0) "")
+										(eq (subset (objGetName gTarget 0) 0 1) "(")
+										)
+									(objSetName gTarget (cat "Asteroid " (random 10000 99999)))
+									)
+
+								; Fee is based on system level
+								(setq gReward (add 150 (multiply 150 (min (sysGetLevel) 4))))
+
+								; Compose text
+								(scrSetDesc gScreen (cat
+									"\"Outlaw miners have staked an illegal claim to "
+									(objGetName gTarget 0)
+									" in this system. We want you to go out there and terminate their claim."
+									" We'll pay you " gReward " credits if you succeed.\n\n"
+									"\"Do we have a deal?\""
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Accept" key="A" default="1">
+								(block (targetCount)
+									; Target asteroid
+									(objSetObjRefData gSource "targetAsteroid" gTarget)
+
+									; Number of illegal miners is based on system level
+									(setq targetCount
+										(item
+											(list
+												Nil
+												(random 1 2)
+												(random 2 3)
+												(random 3 5)
+												(random 5 7)
+												)
+											(min (sysGetLevel) 4)
+											)
+										)
+
+									; Place illegal miners
+									(objSetData gSource "targetCount" targetCount)
+									(for i 1 targetCount
+										(block (theShip theClass)
+											(if (leq (sysGetLevel) 2)
+												(setq theClass (random '(&scBorer; &scBorer; &scHammerhead;)))
+												(setq theClass (random '(&scBorer; &scBorer; &scHammerhead; &scHammerhead-II; &scBorer-II;)))
+												)
+											(setq theShip (sysCreateShip theClass (objGetPos gTarget) &svSettlers;))
+											(shpOrder theShip 'guard gTarget)
+
+											(objSetObjRefData gSource (cat "target" i) theShip)
+											(objRegisterForEvents gSource theShip)
+											)
+										)
+
+									; Order the player
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock gTarget)
+
+									; Set mission status
+									(objSetData gSource "missionID" 'DestroyIllegalMiners)
+									(objSetData gSource "missionStatus" 'inProgress)
+									(objSetData gSource "missionFee" gReward)
+									(objIncData gSource "missionCount" 1)
+									(setq totalMissionCount (typGetGlobalData &stMiningColony; "totalMissionCount"))
+									(if (not totalMissionCount) (setq totalMissionCount 0))
+									(typSetGlobalData &stMiningColony; "totalMissionCount" (add totalMissionCount 1))
+
+									(scrShowPane gScreen "MissionDestroyIllegalMinersAccept")
+									)
+							</Action>
+
+							<Action name="Decline" key="D" cancel="1">
+								(scrShowPane gScreen "MissionDecline")
+							</Action>
+						</Actions>
+					</MissionDestroyIllegalMiners>
+
+					<MissionDestroyIllegalMinersAccept>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"\"We're agreed then. We'll program the asteroid's location into your ship's computer. Just follow your directional indicator and you'll get there. Good luck!\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionDestroyIllegalMinersAccept>
+
+					<MissionDestroyIllegalMinersSuccess>
+						<OnPaneInit>
+							(block (fee)
+								(objSetData gSource "missionID" Nil)
+								(objSetData gSource "missionStatus" Nil)
+								(shpCancelOrders gPlayerShip)
+								
+								(setq fee (objGetData gSource "missionFee"))
+								(intMissionRewardPayment fee)
+
+								(scrSetDesc gScreen
+									(cat "\"Great work! Illegal miners are just taking good jobs away from Commonwealth citizens. We've deposited " fee " credits to your account.\"")
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionDestroyIllegalMinersSuccess>
+
+					<MissionDestroyIllegalMinersFailure>
+						<OnPaneInit>
+							(block Nil
+								(scrSetDesc gScreen
+									"\"What's wrong? Are those illegals too tough for you? Get back out there and finish the job!\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock (objGetObjRefData gSource "targetAsteroid"))
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</MissionDestroyIllegalMinersFailure>
+
+					<MissionSaveMiningShip>
+						<OnPaneInit>
+							(block Nil
+								; Fee is based on system level
+								(setq gReward (add 100 (multiply 100 (min (sysGetLevel) 4))))
+
+								; Compose text
+								(scrSetDesc gScreen (cat
+									"\"Centauri warlords have captured one of our mining ships in this system."
+									" We want you to go out there and destroy the raiders that have captured the ship."
+									" We'll pay you " gReward " credits if you succeed.\n\n"
+									"\"Do we have a deal?\""
+									))
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Accept" key="A" default="1">
+								(block (centerPos asteroidList targetCount)
+									(setq centerPos Nil)
+
+									; Find a random asteroid
+									(setq asteroidList (sysFindObject gSource "t +asteroid;"))
+									(setq i 0)
+									(if asteroidList
+										(loop (and (not centerPos) (ls i 20))
+											(block (candidate)
+												(setq candidate (random asteroidList))
+												(if (not (sysFindObject candidate "T +populated; N:60;"))
+													(setq centerPos (objGetPos candidate))
+													)
+
+												(setq i (add i 1))
+												)
+											)
+										)
+
+									; If we could not find an asteroid, pick a random location
+									(if (not centerPos)
+										(setq centerPos (sysVectorRandom gSource (random 180 300) 60 "T +populated;"))
+										)
+
+									; Create the captured mining ship
+									(setq gTarget
+										(sysCreateShip
+											&scBorerCaptured;
+											(sysVectorRandom centerPos (random 15 30) 15 "T")
+											&svCommonwealth;
+											)
+										)
+									(objFireEvent gTarget "OrderSetCaptured")
+									(objSetObjRefData gSource "targetMiner" gTarget)
+									(objRegisterForEvents gSource gTarget)
+
+									; Number of warlords is based on system level
+									(setq targetCount
+										(item
+											(list
+												Nil
+												(random 2 3)
+												(random 3 4)
+												(random 4 6)
+												(random 6 8)
+												)
+											(min (sysGetLevel) 4)
+											)
+										)
+
+									; Place warlords
+									(objSetData gSource "targetCount" targetCount)
+									(for i 1 targetCount
+										(block (theShip theClass)
+											(if (leq (sysGetLevel) 2)
+												(setq theClass &scCentauriRaider;)
+												(setq theClass (random '(&scCentauriRaider; &scCentauriRaider; &scCentauriHeavyRaider;)))
+												)
+											(setq theShip (sysCreateShip theClass (objGetPos gTarget) &svCentauriWarlords;))
+											(shpOrder theShip 'patrol gTarget 5)
+
+											(objSetObjRefData gSource (cat "target" i) theShip)
+											(objRegisterForEvents gSource theShip)
+											)
+										)
+
+									; Order the player
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock gTarget)
+									(objSetIdentified gTarget)
+
+									; Set mission status
+									(objSetData gSource "missionID" 'SaveMiningShip)
+									(objSetData gSource "missionStatus" 'inProgress)
+									(objSetData gSource "missionFee" gReward)
+									(objIncData gSource "missionCount" 1)
+									(setq totalMissionCount (typGetGlobalData &stMiningColony; "totalMissionCount"))
+									(if (not totalMissionCount) (setq totalMissionCount 0))
+									(typSetGlobalData &stMiningColony; "totalMissionCount" (add totalMissionCount 1))
+
+									(scrShowPane gScreen "MissionSaveMiningShipAccept")
+									)
+							</Action>
+
+							<Action name="Decline" key="D" cancel="1">
+								(scrShowPane gScreen "MissionDecline")
+							</Action>
+						</Actions>
+					</MissionSaveMiningShip>
+
+					<MissionSaveMiningShipAccept>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"\"We're agreed then. We'll program the miner's location into your ship's computer. Just follow your directional indicator and you'll get there. Good luck!\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionSaveMiningShipAccept>
+
+					<MissionSaveMiningShipSuccess>
+						<OnPaneInit>
+							(block (fee)
+								(objSetData gSource "missionID" Nil)
+								(objSetData gSource "missionStatus" Nil)
+								(shpCancelOrders gPlayerShip)
+								
+								(setq fee (objGetData gSource "missionFee"))
+								(intMissionRewardPayment fee)
+
+								(scrSetDesc gScreen
+									(cat "\"Great work! Maybe the warlords will think twice before attacking us again. We've deposited " fee " credits to your account.\"")
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionSaveMiningShipSuccess>
+
+					<MissionSaveMiningShipInProgress>
+						<OnPaneInit>
+							(block Nil
+								(scrSetDesc gScreen
+									"\"What's wrong? Are those warlords too tough for you? Get back out there and finish the job!\""
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock (objGetObjRefData gSource "targetMiner"))
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</MissionSaveMiningShipInProgress>
+
+					<MissionSaveMiningShipFailure>
+						<OnPaneInit>
+							(block (fee)
+								(objSetData gSource "missionID" Nil)
+								(objSetData gSource "missionStatus" Nil)
+
+								(scrSetDesc gScreen
+									(cat "\"You've let us all down! We thought you could handle a few warlords; I guess we were wrong.\"")
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionSaveMiningShipFailure>
+
+					<MissionDecline>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionDecline>
+
+					<Rumors>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								(cat "The colony supervisor is working at his station. The comms channels are quiet and he stops to chat:\n\n"
+									(intRandomMessage gSource "Rumors")
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</Rumors>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<Globals>
+		(block Nil
+			(setq mneAllTargetsDestroyed (lambda (sourceObj excludeObj)
+				(block (allDestroyed)
+					(setq allDestroyed True)
+					(for i 1 (objGetData sourceObj "targetCount")
+						(block (theTarget)
+							(setq theTarget (objGetObjRefData sourceObj (cat "target" i)))
+							(if (and theTarget (not (eq theTarget excludeObj)))
+								(setq allDestroyed Nil)
+								)
+							)
+						)
+					allDestroyed
+					)
+				))
+
+			)
+	</Globals>
+
+</TranscendenceModule>

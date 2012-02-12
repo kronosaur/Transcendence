@@ -1,0 +1,165 @@
+level	name	driveImage	entity	shiptable	unid
+1	Centauri raider	Image	scCentauriRaider		0x08020042
+1	Borer-class gunship	none	scBorerCaptured		0x00103006
+1	Borer-class gunship	none	scBorer		0x08040003
+1	Corsair-class gunship	Image	scCorsair		0x00163001
+1	Tenhove-class sentinel	none	scTenhoveSentinel		0x00003005
+1	light IAV	Image	scIAVLightG1		0x00143001
+1	Borer-class gunship	none	scBorerG1		0x00143002
+1	Hammerhead-class gunship	Image	scHammerhead		0x08040005
+1	Hornet-class battlepod	Image	scHornet		0x08040045
+1	(auton base class)	none	baStdAutonBase		0x00003013
+1	(charon buster base class)	none	baCharonBuster		0x0015300c
+1	(commonwealth traffic behavior)	none	evCommTrafficBehavior		0x0010300c
+1	(convoy encounter behavior)	none	evStdConvoyEncounterBehavior		0x00003015
+1	(CSC base class)	none	baCSCBase		0x001a3008
+1	(patrol encounter behavior)	none	evStdPatrolEncounterBehavior		0x00003014
+1	(St Katharine's traffic behavior)	none	evStKatsTrafficBehavior		0x0010300d
+1	(wingman base class)	none	baStdWingmanBase		0x00003012
+1	(zone encounter behavior)	none	evStdZoneEncounterBehavior		0x00003016
+1	(zone encounter behavior)	none	evOutlawMinerBehavior		0x0804000a
+1	Zulu-class gunship	Image	scZulu		0x08030004
+2	Himal interceptor	Image	scHimalInterceptor		0x08030101
+2	medium IAV	Image	scIAVMediumG2		0x00143003
+2	Ronin/A-class gunship	none	scRoninA		0x00003002
+2	Earthzone-class armed shuttle	none	scEarthzone		0x08040044
+2	Zulu II-class gunship	Image	scZulu-II		0x08030007
+2	Earthzone-class armed shuttle	none	scEarthzoneG2		0x00143008
+2	Ronin/A-class gunship	none	scRoninG1		0x00143004
+2	330M mule auton	none	scMuleAuton		0x0000300b
+2	Borer II-class gunship	Image	scBorer-II		0x08040004
+2	EI100-class freighter	none	scEI100		0x00003001
+2	Centauri heavy raider	Image	scCentauriHeavyRaider		0x08020046
+2	EI100-class freighter	none	scEI100G1		0x00143009
+2	Sapphire-class yacht	Image	scSapphireYacht		0x00003008
+2	Sapphire-class yacht	Image	scSapphirePlayer		0x00003801
+2	Viking-class gunship	none	scViking		0x00163002
+2	Antares I-class freighter	none	scAntaresI		0x00153002
+3	EI500-class freighter	Image	scEI500		0x00003010
+3	EI500-class freighter	Image	scEI100XPlayer		0x00003802
+3	Oromo-class gunship	Image	scOromo		0x08030006
+3	Corsair II-class gunship	Image	scCorsair-II		0x00163003
+3	AutoSentinel®	none	scAutoSentinel		0x0000300a
+3	light IAV	Image	scIAVLight		0x00103008
+3	T31-class armed transport	none	scT31ArmedTransport		0x00003009
+3	Antares II-class freighter	none	scAntaresII		0x00153003
+3	Centauri command ship	none	scCentauriCommandShip		0x08020043
+3	EI200-class freighter	none	scEI200		0x00153005
+3	EI200-class freighter	none	scEI200CharonBuster		0x0015300d
+3	Ronin/B-class gunship	none	scRoninB		0x00003003
+3	Urak sentinel	none	scUrakSentinel		0x08030144
+3	Arco Vaughn	Image	scArcoVaughnHeavyRaider		0x0802004b
+3	EI500-class freighter	Image	scEI500G2		0x00143012
+3	Hammerhead II-class gunship	Image	scHammerhead-II		0x08040006
+3	Ronin/A-class gunship	none	scRoninG2		0x00143005
+3	Sotho-class gunship	Image	scSotho		0x08030005
+3	heavy IAV	Image	scIAVHeavyG2		0x0014300b
+3	Plague-class gunship	none	scPlague		0x08010002
+3	Sapphire-class yacht	Image	scSapphireG2		0x0014300e
+3	medium IAV	Image	scIAVMedium		0x00103009
+4	EI100-class freighter	none	scEI100G2		0x0014300a
+4	Heliotrope gunship	Image	scHeliotropeGunship		0x08010042
+4	Revelations-class missileship	none	scRevelations		0x08010003
+4	Wolfen-class gunship	Image	scWolfen		0x00003011
+4	Wolfen-class gunship	Image	scWolfenPlayer		0x00003803
+4	Sapphire-class yacht	Image	scSapphireG3		0x0014300f
+4	Wind slaver	Image	scWindSlaver		0x00193002
+4	200A defender auton	none	sc200ADefenderAuton		0x00003017
+4	300D defender auton	none	sc300DDefenderAuton		0x0000300c
+4	Viking II-class gunship	none	scViking-II		0x08030045
+4	Zoanthrope raider	Image	scDwargRaider		0x08020143
+4	EI100/M-class missileship	none	scEI100M		0x00003006
+4	Salvager Nomad	none	scSalvagerNomad		0x000f1001
+4	Jenna	none	scRoninJenna		0x00103007
+4	Ronin/B-class gunship	none	scRoninG3		0x00143006
+4	Ronin/C-class gunship	none	scRoninC		0x00003004
+4	Ronin/C-class gunship	none	scRoninCharonBuster		0x0015300a
+4	Marauder raid platform	none	scMarauderRaidPlatform		0x08030046
+4	Meth enforcer	Image	scMethEnforcer		0x08020001
+4	T31-class armed transport	none	scT31G3		0x0014300d
+4	Heliotrope destroyer	none	scHeliotropeDestroyer		0x08010043
+4	Ferian miner	none	scFerianMiner		0x08040101
+4	EI200-class freighter	none	scEI200G3		0x00143011
+4	Repentant-class gunship	Image	scRepentant		0x08030082
+4	Sapphire-class yacht	Image	scSapphireG4		0x00143010
+4	T55-class armed transport	none	scT55ArmedTransport		0x08030008
+4	Drake-class missileship	none	scDrake		0x08030044
+5	Wolfen-class gunship	Image	scWolfenG4		0x00143018
+5	Antares V-class superfreighter	none	scAntaresV		0x00153004
+5	Ronin/C-class gunship	none	scRoninG4		0x00143007
+5	1M battle auton	none	sc1MBattleAuton		0x0000300d
+5	310A aegis auton	none	sc310AAegisAuton		0x0000300f
+5	1M/i battle auton	none	sc1MiBattleAuton		0x0000300e
+5	Xenophobe fighter	Image	scXenophobeFighter		0x08010082
+5	Scarab-class superfreighter	none	scScarabFreighter		0x00103002
+5	Sung transport	none	scSungTransport		0x00193001
+5	Barbary-class gunship	Image	scBarbary		0x08030047
+5	Ranx gunship	Image	scRanxGunship		0x080400c2
+5	Steel slaver	none	scSteelSlaver		0x00193003
+5	heavy IAV	Image	scIAVHeavyG3		0x0014300c
+5	EI7000-class freighter	none	scEI7000		0x00153006
+5	Charon frigate	none	scCharonFrigateRaider		0x00163004
+5	EI500-class freighter	Image	scEI500G4		0x00143013
+5	Atonement-class heavy gunship	Image	scAtonement		0x08030083
+5	Wolfen-class gunship	Image	scWolfenG5		0x00143019
+5	heavy IAV	Image	scIAVHeavy		0x0010300a
+5	Manticore-class heavy gunship	Image	scManticoreG4		0x00143015
+6	pirate ship Kronosaurus	none	scCharonFrigateKronosaurus		0x00163005
+6	Britannia-class heavy gunship	Image	scBritannia		0x001a3007
+6	Centurion-class heavy gunship	Image	scCenturion		0x00103001
+6	Centurion-class heavy gunship	Image	scCenturionG5		0x0014301b
+6	Molotok bounty hunter	Image	scMolotok		0x00173001
+6	Urak destroyer	none	scUrakDestroyer		0x08030145
+6	Huygens Explorer	none	scHuygensExplorer		0x001c3005
+6	Mikeno-class destroyer	none	scMikeno		0x00003007
+6	Volkov	Image	scWolfenVolkov		0x00153009
+6	EI500-class freighter	Image	scEI500G5		0x00143014
+6	Dwarg master	Image	scDwargMaster		0x08020144
+6	Ares sentry	none	scAresCannon		0x001b3002
+6	Sandstorm-class gunship	Image	scSandstorm		0x001b3001
+6	Manticore-class heavy gunship	Image	scManticoreG5		0x00143016
+6	Wolfen-class gunship	Image	scWolfenG6		0x0014301a
+6	Kobol gunship	Image	scKobolGunshipOmniTeV9		0x08020082
+7	Zoanthrope behemoth	none	scDwargBehemoth		0x08020145
+7	Earth Slaver	none	scEarthSlaver		0x00193004
+7	Centurion-class heavy gunship	Image	scCenturionG6		0x0014301c
+7	Aurochs-class mine layer	none	scRogueMineLayer		0x080300c2
+7	Xenophobe defender	none	scXenophobeDefender		0x08010083
+7	Kobol gunship	Image	scKobolGunshipDualTeV9		0x08020081
+7	Luminous drone	none	scLuminousDrone		0x080200c1
+7	Hurin-class destroyer	none	scHurinDestroyer		0x08020101
+7	Aurochs-class transport	none	scAurochs		0x00103005
+7	Earth Slaver	none	scCarrierEarthSlaver		0x00193006
+7	Polar-class freighter	none	scPolar		0x001b3003
+7	Manticore-class heavy gunship	Image	scManticoreG6		0x00143017
+7	Tripoli-class destroyer	none	scTripoli		0x08030043
+7	Centurion/X-class heavy gunship	Image	scCenturionX		0x00103004
+7	Manticore-class heavy gunship	Image	scManticore		0x0010300b
+7	Ranx dreadnought	none	scRanxDreadnought		0x080400c3
+7	Kobol gunship	Image	scKobolGunshipMissiles		0x08020083
+8	freighter Forking Paths	Image	scEI500JuanCarlos		0x001a3006
+8	Tundra-class heavy gunship	Image	scTundra		0x001b3004
+8	The Slicer	Image	scTheSlicerManticore		0x0014301d
+8	Rama	Image	scCenturionRama		0x00103003
+8	Polar II-class freighter	none	scPolar2		0x001b3009
+8	Ventari destroyer	none	scVentariCruiser		0x080100c1
+8	Cometfall-class missileship	none	scCometfall		0x001b3005
+9	Chasm-class heavy gunship	Image	scChasm		0x001b3006
+9	Dragon Slaver	none	scDragonSlaver		0x00193005
+9	Deimos-class destroyer	none	scDeimos		0x001b3007
+9	Ferian warrior	none	scFerianWarrior		0x08040102
+9	Corporate cruiser	none	scCorporateCruiser		0x00153001
+9	Kate Morgental	none	scKateMorgentalCruiser		0x0015300b
+9	Svalbard Explorer	none	scSvalbardExplorer		0x001c3002
+9	Commonwealth Star Carrier	none	scCSCHospital		0x001a3001
+9	Commonwealth Star Carrier	none	scCSCTaskForce		0x001a3002
+9	Gaian processor	none	scGaianProcessor		0x08040141
+10	Xenophobe worldship	none	scXenophobeWorldship		0x08010084
+10	Aquila-class cruiser	none	scAquilaCruiser		0x001a3003
+10	Commonwealth Star Carrier	none	scCSCAntarctica		0x001a3005
+10	Iocrym sentinel	none	scIocrymSentinel		0x001c3004
+10	Phobos-class dreadnought	none	scPhobos		0x001b3008
+11	Commonwealth Star Carrier	none	scCSCTerra		0x001a3004
+12	Xenophobe ark	none	scXenophobeArk		0x08010085
+13	Iocrym command ship	none	scIocrymCommandShip		0x001c3001
+

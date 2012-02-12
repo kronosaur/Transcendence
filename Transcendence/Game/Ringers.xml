@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Ringers Collective -->
+
+	<StationType UNID="&stRingersCollective;"
+			name=				"Ringers collective"
+			sovereign=			"&svRingers;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDiamondLatticeArmor;"
+			hitPoints=			"850"
+			repairRate=			"10"
+			fireRateAdj=		"10"
+			explosionType=		"&vtPlasmaExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
+			levelFrequency=		"----- rcurv ----- ----- -----"
+			locationCriteria=	"+ringedGiant; -innerSystem; -void"
+			enemyExclusionRadius="50"
+			>
+
+		<Image			imageID="&rsStations6;" imageX="0" imageY="256" imageWidth="160" imageHeight="192"/>
+
+		<Ships>
+			<Lookup count="1" table="&tbCommEliteDefenders;"/>
+			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
+			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
+		</Ships>
+
+		<Devices>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
+		</Devices>
+
+		<Items>
+			<RandomItem count="1d12" 
+					criteria=		"* +Meds; -Illegal; -NotForSale;"
+					level=			"6"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"w -NotForSale;"
+					level=			"8"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"d~w -NotForSale;"
+					level=			"7"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="1d8" 
+					criteria=		"a -NotForSale;"
+					level=			"9"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="1d4" 
+					criteria=		"u -NotForSale;"
+					level=			"7"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="2d12" 
+					criteria=		"f -NotForSale;"
+					level=			"7"
+					levelCurve=		"2"
+					/>
+
+			<Item				count="4d12"	item="&itEuropanIceMoss;" />
+			<Item				count="1d12"	item="&itEuropanIceVodka;" />
+
+			<Item chance="25"	count="1"		item="&itGemOfDespair;" />
+			<Item chance="25"	count="1"		item="&itGemOfContrition;" />
+
+			<Item chance="50"	count="1"		item="&itPlasmaTorch;" />
+		</Items>
+		
+		<Trade currency="rin" max="100000" replenish="5000">
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
+			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
+			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+		</Trade>
+
+		<Reinforcements minShips="3">
+			<Table>
+				<Lookup chance="20" table="&tbCommDefenders;"/>
+				<Lookup chance="60" table="&tbCommPrivateCrafts;"/>
+				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
+			</Table>
+		</Reinforcements>
+
+		<Events>
+			<OnDestroy>
+				(intRingerOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are docked at a Ringers Collective. Ringer neo-humans float through the vast volume of the station, perfectly adapted to zero-gravity and space.">
+
+						<Actions>
+							<Action name="Exchange" default="1" key="E">
+								(if (gr (objGetBalance gPlayerShip 'rin) 0)
+									(scrShowPane gScreen "Exchange")
+									(scrShowPane gScreen "ExchangeIntro")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<Exchange
+							desc=	"The central structure of the Ringers Collective is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
+
+						<Actions>
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+					</Exchange>
+
+					<ExchangeIntro
+							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(scrShowPane gScreen "Exchange")
+							</Action>
+
+						</Actions>
+					</ExchangeIntro>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="66"	y="94" />
+			<Port x="-66"	y="94" />
+			<Port x="107"	y="30" />
+			<Port x="-107"	y="30" />
+			<Port x="86"	y="-34" />
+			<Port x="-86"	y="-34" />
+			<Port x="39"	y="-72" />
+			<Port x="-39"	y="-72" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Ringer Shipyard -->
+
+	<StationType UNID="&stRingerShipyard;"
+			name=				"Ringer shipyard"
+			sovereign=			"&svRingers;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDiamondLatticeArmor;"
+			hitPoints=			"850"
+			repairRate=			"10"
+			fireRateAdj=		"10"
+			explosionType=		"&vtPlasmaExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
+			levelFrequency=		"----- -ruur ----- ----- -----"
+			locationCriteria=	"+ringedGiant; -innerSystem; -void"
+			enemyExclusionRadius="100"
+			>
+
+		<Image			imageID="&rsStations7;" imageX="0" imageY="1024" imageWidth="256" imageHeight="256"/>
+
+		<Ships>
+			<Lookup count="1d2" table="&tbCommEliteDefenders;"/>
+			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
+			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
+		</Ships>
+
+		<Devices>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
+		</Devices>
+
+		<Items>
+			<RandomItem count="1d4" 
+					criteria=		"w -NotForSale;"
+					level=			"8"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="1d8" 
+					criteria=		"d~w -NotForSale;"
+					level=			"7"
+					levelCurve=		"2"
+					/>
+
+			<RandomItem count="1d8" 
+					criteria=		"a -NotForSale;"
+					level=			"9"
+					levelCurve=		"1"
+					/>
+
+			<RandomItem count="4d12" 
+					criteria=		"f -NotForSale;"
+					level=			"7"
+					levelCurve=		"2"
+					/>
+
+			<Item				count="1"		item="&itPlasmaTorch;" />
+		</Items>
+
+		<Trade currency="rin" max="100000" replenish="5000">
+			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
+			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
+			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+		</Trade>
+
+		<Reinforcements minShips="3">
+			<Table>
+				<Lookup chance="20" table="&tbCommDefenders;"/>
+				<Lookup chance="60" table="&tbCommPrivateCrafts;"/>
+				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
+			</Table>
+		</Reinforcements>
+
+		<Events>
+			<OnDestroy>
+				(intRingerOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are docked at a Ringer Shipyard. Ringer neo-humans float through the vast volume of the station, perfectly adapted to zero-gravity and space.">
+
+						<Actions>
+							<Action name="Exchange" default="1" key="E">
+								(if (gr (objGetBalance gPlayerShip 'rin) 0)
+									(scrShowPane gScreen "Exchange")
+									(scrShowPane gScreen "ExchangeIntro")
+									)
+							</Action>
+
+							<Action name="Dock Services" default="1" key="D">
+								(if (gr (objGetBalance gPlayerShip 'rin) 0)
+									(scrShowPane gScreen "DockServices")
+									(scrShowPane gScreen "DockServicesGreeter")
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+					</Default>
+
+					<Exchange
+							desc=	"The central structure of the Ringer Shipyard is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
+
+						<Actions>
+							<Action name="Buy items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+					</Exchange>
+
+					<DockServices
+							desc=	"You are at the docking services terminal.">
+
+						<Actions>
+							<Action name="Refuel" key="R">
+								(block Nil
+									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 85) (&itXenotiteFuelRod; 95) (&itHeliumAssembly; 100)))
+									(scrShowScreen gScreen "&dsRefuel;")
+									)
+							</Action>
+
+							<Action name="Repair or replace armor" key="A">
+								(block Nil
+									(setq gTechLevel 12)
+									(setq gArmorSegment 0)
+									(setq gCheckMilitaryID Nil)
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRepairArmor;")
+									)
+							</Action>
+
+							<Action name="Install device" key="D">
+								(block Nil
+									(setq gTechLevel 10)
+									(setq gTechModifier Nil)
+									(setq gCheckMilitaryID Nil)
+									(setq gMargin (lambda (theItem)
+										(switch
+											; Weapons cost 200% to install
+											(itmMatches theItem "w")
+												(multiply 2 (itmGetInstallCost theItem 'rin))
+											
+											; All others at 100% of cost
+											(itmGetInstallCost theItem 'rin)
+											)
+										))
+									(scrShowScreen gScreen "&dsInstallDevice;")
+									)
+							</Action>
+
+							<Action name="Remove device" key="V">
+								(block Nil
+									(setq gMargin 100)
+									(scrShowScreen gScreen "&dsRemoveDevice;")
+									)
+							</Action>
+
+							<Action name="Upgrade reactor" key="P">
+								(block (maxPower)
+									(setq gPrevScreen "Main")
+									(setq gPrevPane "DockServices")
+									(setq gCheckMilitaryID Nil)
+
+									; Figure out what reactor to upgrade to
+									(setq maxPower (objGetMaxPower gPlayerShip))
+
+									(switch
+										(ls maxPower 2500)
+											(block Nil
+												(setq gCost 12000)
+												(setq gItem (itmCreate &it250MWReactor; 1))
+												)
+
+										(ls maxPower 5000)
+											(block Nil
+												(setq gCost 20000)
+												(setq gItem (itmCreate &it500MWReactor; 1))
+												)
+
+										(ls maxPower 10000)
+											(block Nil
+												(setq gCost 40000)
+												(setq gItem (itmCreate &it1GWReactor; 1))
+												)
+
+										(setq gItem Nil)
+										)
+
+									; Install screen
+									(if gItem
+										(scrShowScreen gScreen "&dsInstallSpecificDevice;")
+										(scrShowPane gScreen "NoReactorUpgrade")
+										)
+									)
+							</Action>
+
+							<Action name="Done" key="N" cancel="1">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</DockServices>
+
+					<ExchangeIntro
+							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(scrShowPane gScreen "Exchange")
+							</Action>
+
+						</Actions>
+					</ExchangeIntro>
+
+					<DockServicesGreeter
+							desc=	"As you enter the shipyard, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth money.&quot;">
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(scrShowPane gScreen "DockServices")
+							</Action>
+
+						</Actions>
+					</DockServicesGreeter>
+
+					<NoReactorUpgrade
+							desc=	"The technology required to upgrade your reactor is not available at this station.">
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								<ShowPane pane="DockServices"/>
+							</Action>
+						</Actions>
+					</NoReactorUpgrade>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="128" />
+			<Port x="90"	y="100" />
+			<Port x="-90"	y="100" />
+			<Port x="140"	y="30" />
+			<Port x="-140"	y="30" />
+			<Port x="140"	y="-70" />
+			<Port x="-140"	y="-70" />
+			<Port x="58"	y="-138" />
+			<Port x="-58"	y="-138" />
+		</DockingPorts>
+
+	</StationType>
+
+<!-- LEVEL X ITEMS -->
+
+	<!-- Positron lancer -->
+
+	<ItemType UNID="&itPositronLancer;"
+			name=				"positron lancer"
+			level=				"10"
+			value=				"350000"
+			mass=				"2500"
+			frequency=			"rare"
+			attributes=			"EnergyWeapon; Military; MajorItem; Ringers"
+
+			description=		"This Ringer weapon fires a steady stream of high-energy positrons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				repeating=			"4"
+				damage=				"positron:2d8"
+				fireRate=			"20"
+				missileSpeed=		"90"
+				lifetime=			"34"
+				interaction=		"0"
+				powerUse=			"3500"
+
+				sound=				"&snLaserCannon;"
+				>
+
+			<Effect>
+				<Shape
+						directional=		"true"
+						scaleLength=		"72" 
+						scaleWidth=			"6"
+
+						scaleLengthInc=		"3" 
+
+						color=				"0xf0, 0xff, 0x00"
+						opacity=			"140"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-35"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-35"	y="-50"/>
+				</Shape>
+
+				<Shape
+						directional=		"true"
+						scaleLength=		"72" 
+						scaleWidth=			"4"
+
+						scaleLengthInc=		"3" 
+
+						color=				"0xf0, 0xff, 0x00"
+						opacity=			"255"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-35"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-35"	y="-50"/>
+				</Shape>
+
+				<Shape
+						directional=		"true"
+						scaleLength=		"64" 
+						scaleWidth=			"3"
+
+						scaleLengthInc=		"3" 
+
+						color=				"0xff, 0xff, 0xff"
+						opacity=			"255"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-25"	y="50"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-25"	y="-50"/>
+				</Shape>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+<!-- GLOBALS -->
+
+	<Globals>
+		(block Nil
+			(setq intRingerCrime (lambda (severity description)
+				(if (gr severity (int (objGetData gPlayerShip "ringerCrimeSeverity")))
+					(block Nil
+						(objSetData gPlayerShip "ringerCrimeSeverity" severity)
+						(objSetData gPlayerShip "ringerCrime" description)
+						)
+					)
+				))
+
+			(setq intRingerOnDestroy (lambda Nil
+				(block Nil
+					; Destroy items on the station
+					(intDestroyItems gSource)
+
+					; Ringer crime
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(intRingerCrime 3 (cat "the destruction of " (objGetName gSource 4)))
+						)
+					)
+				))
+			)
+	</Globals>
+
+	<!-- Ringer Imprison -->
+
+	<DockScreen UNID="&dsRingerImprison;"	nestedScreen="true">
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "As you enter the station you are surrounded by warrior ringers. A ringer dressed in blue approaches you: \"For " (objGetData gPlayerShip "ringerCrime") " you will be made safe in frozen confinement.\"" ))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block Nil
+							(plyDestroyed gPlayer (cat "was cryofrozen by the Ringers for " (objGetData gPlayerShip "ringerCrime")))
+							(scrExitScreen gScreen 'forceUndock)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+	
+<!-- RINGERS -->
+
+	<Sovereign UNID="&svRingers;"
+			name="Ringers"
+			alignment="constructive chaos"
+			>
+
+		<Events>
+			<GetGlobalDockScreen>
+				(switch
+					; This only applies to ringer stations
+					(not (objMatches gSource Nil "sTAV +ringers;"))
+						Nil
+						
+					; If the player has deviated socially, she is frozen
+					(geq (int (objGetData gPlayerShip "ringerCrimeSeverity")) 2)
+						(list &dsRingerImprison; 8)
+
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</Sovereign>
+
+	<EconomyType UNID="&ecRinEconomy;"
+			id=				"rin" 
+			currency=		"rin|rin"
+			conversion=		"500"
+			/>
+
+</TranscendenceModule>

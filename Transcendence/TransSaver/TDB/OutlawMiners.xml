@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Mining Laser -->
+
+	<ItemType UNID="&itMiningLaser;"
+			name=				"mining laser"
+			level=				"2"
+			value=				"550"
+			mass=				"2000"
+			frequency=			"rare"
+			modifiers=			"EnergyWeapon; MajorItem; Specialty"
+			showReference=		"true"
+
+			description=		"This powerful laser is generally used for asteroid mining."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				repeating=			"4"
+				damage=				"laser:1d4; mining3"
+				fireRate=			"30"
+				lifetime=			"15"
+				powerUse=			"30"
+
+				beamType=			"laser"
+				primaryColor=		"0x5f, 0xf1, 0x2a"
+				secondaryColor=		"0x00, 0xff, 0x00"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Borer-class Gunship -->
+
+	<ShipClass UNID="&scBorer;"
+			manufacturer=		"United African States"
+			class=				"Borer"
+			type=				"gunship"
+			score=				"25"
+
+			mass=				"50"
+			cargoSpace=			"25"
+			thrust=				"100"
+			maneuver=			"12"
+			maxSpeed=			"10"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMiningLaser;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Borer II-class Gunship -->
+
+	<ShipClass UNID="&scBorer-II;"
+			manufacturer=		"United African States"
+			class=				"Borer II"
+			type=				"gunship"
+			score=				"85"
+
+			mass=				"60"
+			cargoSpace=			"25"
+			thrust=				"250"
+			maneuver=			"6"
+			maxSpeed=			"15"
+
+			leavesWreck=		"50"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itMiningLaser;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-26"  y="0"	exclusion="65504" />
+			<NozzlePos x="-40"  y="0"/>
+			<NozzlePos x="-34"  y="15"/>
+			<NozzlePos x="-34"  y="-15"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Hammerhead-class Gunship -->
+
+	<ShipClass UNID="&scHammerhead;"
+			manufacturer=		"Earth Industries"
+			class=				"Hammerhead"
+			type=				"gunship"
+			score=				"35"
+
+			mass=				"30"
+			cargoSpace=			"10"
+			thrust=				"120"
+			maneuver=			"2"
+			maxSpeed=			"17"
+
+			leavesWreck=		"20"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"50"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-36" y="0"/>
+		</DriveImages>
+
+	</ShipClass>
+
+	<!-- Hammerhead II-class Gunship -->
+
+	<ShipClass UNID="&scHammerhead-II;"
+			manufacturer=		"Earth Industries"
+			class=				"Hammerhead II"
+			type=				"gunship"
+			score=				"165"
+
+			mass=				"30"
+			cargoSpace=			"10"
+			thrust=				"200"
+			maneuver=			"2"
+			maxSpeed=			"16"
+
+			leavesWreck=		"25"
+
+			attributes=			"genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itTitaniumPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itTitaniumPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-36" y="-2"/>
+			<NozzlePos x="-36" y="2"/>
+		</DriveImages>
+
+	</ShipClass>
+	
+<!-- MISCELLANEOUS -->
+
+	<!-- Outlaw Miner Behavior
+	
+		USAGE NOTES
+		
+		This is for random encounters in which the player runs into
+		an outlaw miner. The miner tries to defend the area around asteroids
+		
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								'onCourse				= Ship on straight course
+								'backToBase				= Heading back to base
+								'patrolling				= Orbiting base
+								'leavingSystem			= Leaving
+								
+		homeObj:			Ship's base asteroid (may be Nil)
+		
+	-->
+
+	<ShipClass UNID="&evOutlawMinerBehavior;"
+			class=				"(zone encounter behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<GetCreatePos>
+				(if aTargetObj
+					(intComputeRandomEncounterPos aTargetObj)
+					)
+			</GetCreatePos>
+
+			<OnBehavior>
+				(block (behavior)
+					(setq behavior (objGetData gSource "0804000B_behavior"))
+					(switch
+						; If we see any enemy ships and we're inside our patrol zone
+						; then attack. Otherwise, change course and head back to base.
+
+						(eq behavior 'onCourse)
+							(block (theEnemy theBase baseDist)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(switch
+
+										; Attack
+										(and (setq theBase (objGetObjRefData gSource "0804000B_homeObj"))
+												(leq (setq baseDist (objGetDistance gSource theBase)) 100)
+												)
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'patrol theBase 100)
+												(objSetData gSource "0804000B_behavior" 'patrolling)
+												)
+
+										; Back to base
+										theBase
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'holdCourse
+													(sysVectorSubtract (objGetPos theBase) (objGetPos gSource))
+													(subtract baseDist 100)
+													)
+												(objSetData gSource "0804000B_behavior" 'backToBase)
+												)
+
+										; Leave the system
+										(block Nil
+											(shpCancelOrders gSource)
+											(shpOrder gSource 'gate)
+											(objSetData gSource "0804000B_behavior" 'leavingSystem)
+											)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreateOrders>
+				(block (theCourse homeBase)
+					(if (not aTargetObj)
+						(setq aTargeObj gPlayerShip)
+						)
+
+					; Find our nearest asteroid
+					(setq homeBase (sysFindObject gSource "tN +asteroid;"))
+					(if (not homeBase)
+						(setq homeBase aBaseObj)
+						)
+					(objSetObjRefData gSource "0804000B_homeObj" homeBase)
+
+					; Move towards the player's path
+					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
+					(shpOrder gSource 'holdCourse theCourse 300)
+
+					; Register a timer so that we can look for enemies
+					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+					(objSetData gSource "0804000B_behavior" 'onCourse)
+					)
+			</OnCreateOrders>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "0804000B_behavior"))
+					(switch
+						; If we're done with this order, then we never encountered
+						; the player, so we're done, head for a stargate
+						; Note: we might encounter the player en route
+						(eq behavior 'onCourse)
+							(shpOrder gSource 'gate)
+							
+						; If we're done attacking, then we're done
+						(eq behavior 'attackingEnemy)
+							(block Nil
+								(shpOrder gSource 'gate)
+								(objSetData gSource "0804000B_behavior" 'onCourse)
+								)
+
+						(eq behavior 'backToBase)
+							(block Nil
+								(shpOrder gSource 'patrol (objGetObjRefData gSource "0804000B_homeObj") 100)
+								(objSetData gSource "0804000B_behavior" 'patrolling)
+								)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+	
+</TranscendenceModule>

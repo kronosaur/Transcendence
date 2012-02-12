@@ -1,0 +1,295 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svBlackMarket;"
+			name="Black Market"
+			alignment="neutral"
+			>
+	</Sovereign>
+	
+<!-- SHIP CLASSES -->
+
+	<!-- Molotok-class Heavy Gunship -->
+
+	<ShipClass UNID="&scMolotok;"
+			manufacturer=		""
+			class=				"Molotok bounty hunter"
+			type=				""
+
+			mass=				"200"
+			cargoSpace=			"50"
+			thrust=				"1000"
+			maneuver=			"4"
+			maxSpeed=			"22"
+
+			leavesWreck=		"50"
+
+			attributes=			"blackMarket,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itCeralloyArmor;" />
+			<ArmorSection start="225" span="90" armorID="&itCeralloyArmor;" />
+			<ArmorSection start="135" span="90" armorID="&itCeralloyArmor;" />
+			<ArmorSection start="45"  span="90" armorID="&itCeralloyArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDragonflyMissileSystem;"/>
+			<Device deviceID="&itMAGLauncher;" secondaryWeapon="true" minFireArc="330" maxFireArc="30" posAngle="0" posRadius="16"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			</Devices>
+
+		<Items>
+			<Item count="20d6" item="&itDragonflyCartridge;"/>
+			<Item count="20d6" item="&it800HexageneMAG;"/>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips2;" imageX="640" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+			<NozzlePos x="-42" y="5"/>
+			<NozzlePos x="-42" y="-5"/>
+			</DriveImages>
+
+		</ShipClass>
+		
+<!-- ITEM TYPES -->
+
+	<!-- Black Market Container -->
+
+	<ItemType UNID="&itBlackMarketContainer;"
+			name=				"sealed container with black markings"
+			level=				"5"
+			value=				"6500"
+			frequency=			"notrandom"
+			mass=				"1000"
+			modifiers=			"Illegal; SealedContainer"
+
+			description=		"This is a sealed container generally used by the Sindikat to move illegal items around from system to system."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Identification Chip, Black Market -->
+
+	<ItemType UNID="&itBlackMarketID;"
+			name=				"black market identification chip"
+			level=				"2"
+			value=				"250"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownID;"
+			modifiers=			"BlackMarketID; ID; Illegal; MinorItem"
+
+			description=		"This identification chip is used by pirates and other outlaws to identify each other in the black market. Only people who have this chip can trade in the black market."
+
+			sortName=			"identification chip, black market"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+	
+<!-- STATION TYPES -->
+
+	<Globals>
+		(block Nil
+			(setq intBlackMarketBuyPrice (lambda (thisItem)
+				(block (cost)
+					(setq cost (itmGetPrice thisItem))
+
+					(switch
+						; We don't sell items that are damaged or installed
+						(or (itmIsDamaged thisItem) (itmIsInstalled thisItem))
+							Nil
+
+						; Military items are priced depending on level
+						(itmHasModifier thisItem 'Military)
+							(if (ls (objGetData gPlayerShip "blackMarketLevel") 4)
+								(multiply cost 2)
+								(divide (multiply cost 125) 100)
+								)
+
+						; Illegal items cost 10% more
+						(itmHasModifier thisItem 'Illegal)
+							(divide (multiply cost 110) 100)
+
+						; Other items at cost
+						cost
+						)
+					)
+				))
+
+			(setq intBlackMarketSellPrice (lambda (thisItem)
+				(block (cost)
+					(setq cost (itmGetPrice thisItem))
+					(switch
+						(or (itmIsDamaged thisItem) (itmIsInstalled thisItem))
+							Nil
+
+						(itmHasModifier thisItem 'ID)
+							Nil
+
+						(itmHasModifier thisItem 'Military)
+							(divide (multiply cost 90) 100)
+
+						(itmHasModifier thisItem 'Illegal)
+							(divide (multiply cost 85) 100)
+
+						Nil
+						)
+					)
+				))
+
+			(setq intBlackMarketPromotion (lambda Nil
+				; Returns level that the player is promoted to (or Nil)
+
+				(block (xp newLevel)
+					(setq xp (objGetData gPlayerShip "blackMarketXP"))
+					(switch
+						(geq xp 10000)
+							(setq newLevel 6)
+
+						(geq xp 3000)
+							(setq newLevel 5)
+
+						(geq xp 1500)
+							(setq newLevel 4)
+
+						(geq xp 600)
+							(setq newLevel 3)
+
+						(geq xp 200)
+							(setq newLevel 2)
+
+						(setq newLevel 1)
+						)
+
+					; Return if different from current level
+					(if (eq (objGetData gPlayerShip "blackMarketLevel") newLevel)
+						Nil
+						newLevel
+						)
+					)
+				))
+
+			(setq intBlackMarketOnDestroy (lambda (cost)
+				(block Nil
+					; Destroy items on the station
+					(intDestroyItems gSource)
+
+					; Player is tracked
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(block Nil
+							(objIncData gPlayerShip "blackMarketCrimeCost" cost)
+							(if (objGetData gPlayerShip "blackMarketCrime")
+								(objSetData gPlayerShip "blackMarketCrime" "multiple offenses against the Sindikat")
+								(objSetData gPlayerShip "blackMarketCrime" (cat "the destruction of " (objGetName gSource 4)))
+								)
+							)
+						)
+					)
+				))
+
+			(setq intBlackMarketOnInit (lambda (prevScreen)
+				(block Nil
+					(setq gPrevScreen prevScreen)
+
+					; Initialize all variables that we need
+					(if (not (objGetData gPlayerShip "blackMarketXP"))
+						(block Nil
+							(objSetData gPlayerShip "blackMarketXP" 0)
+							(objSetData gPlayerShip "blackMarketLevel" 1)
+							(objSetData gPlayerShip "blackMarketWeapon" 2)
+							(objSetData gPlayerShip "blackMarketShields" 1)
+							)
+						)
+
+					; Docking
+					(switch
+						; If the ship is radioactive then refuse dock
+						(shpIsRadioactive gPlayerShip)
+							(scrShowScreen gScreen "&dsRefuseContamination;")
+
+						; If there is a bounty on the player, then the player
+						; has to repay the debt.
+						(objGetData gPlayerShip "blackMarketCrimeCost")
+							(scrShowScreen gScreen "&dsBlackMarketPayDebt;")
+
+						; If the player is on a mission but lost the cargo then
+						; she's in trouble
+						(and (eq (objGetData gPlayerShip "blackMarketMission") "StK")
+							(not (objGetItems gPlayerShip "*U +SealedContainer;"))
+							)
+							(block Nil
+								(objIncData gPlayerShip "blackMarketCrimeCost" 50000)
+								(objSetData gPlayerShip "blackMarketCrime" "losing valuable cargo")
+								(objSetData gPlayerShip "blackMarketMission" Nil)
+								(scrShowScreen gScreen "&dsBlackMarketPayDebt;")
+								)
+
+						; If the player does not have a black market ID, then
+						; refuse dock
+						(not (objGetItems gPlayerShip "*+BlackMarketID"))
+							(scrShowScreen gScreen "&dsBlackMarketRefuseDock;")
+
+						; See if the player is promoted
+						(and (scrIsFirstOnInit gScreen) (intBlackMarketPromotion))
+							(scrShowScreen gScreen "&dsBlackMarketPromotion;")
+						)
+					)
+				))
+			)
+	</Globals>
+
+<!-- TABLES -->
+
+	<!-- Black Market ships -->
+
+	<ShipTable unid="&tbBlackMarketShips;">
+		<LevelTable>
+			<Ship levelFrequency="ccccc ccccc" count="1" class="&scMolotok;" orders="guard"/>
+			<Ship levelFrequency="ccur- -----" count="1" class="&scZulu-II;" orders="guard"/>
+			<Ship levelFrequency="uccur -----" count="1" class="&scOromo;" orders="guard"/>
+			<Ship levelFrequency="uuucc cur--" count="1" class="&scWolfen;" orders="guard"/>
+			<Ship levelFrequency="-rrcc crr--" count="1" class="&scIAVMedium;" orders="guard"/>
+			<Ship levelFrequency="-uucc ccuu-" count="1" class="&scRoninC;" orders="guard"/>
+			<Ship levelFrequency="--ruu ucccc" count="1" class="&scIAVHeavy;" orders="guard"/>
+			<Ship levelFrequency="--ruc cuuuu" count="1" class="&scManticore;" orders="guard"/>
+			
+			<Ship levelFrequency="cccuu urrrr" count="1" class="&scEI500;" orders="gateOnThreat"/>
+			<Ship levelFrequency="uuuuu rvvvv" count="1" class="&scT31ArmedTransport;" orders="gateOnThreat">
+				<Items>
+					<Item					count="8d20" item="&itSmartCannonShell;"/>
+					<Lookup	chance="50"		count="1d3-1" table="&trIllegalItems2;"/>
+					<Table chance="50">
+						<Lookup chance="40" count="1" table="&trConsumables2;"/>
+						<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+						<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+					</Table>
+				</Items>
+			</Ship>
+			<Ship levelFrequency="rrruu uuuuu" count="1" class="&scT55ArmedTransport;" orders="gateOnThreat">
+				<Items>
+					<Lookup	chance="80"		count="1d2+1" table="&trIllegalItems2;"/>
+					<Table>
+						<Lookup chance="75" count="1" table="&trConsumables4;"/>
+						<Lookup chance="15" count="1" table="&trMinorItem4;"/>
+						<Lookup chance="10" count="1" table="&trMajorItem4;"/>
+					</Table>
+				</Items>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+</TranscendenceModule>

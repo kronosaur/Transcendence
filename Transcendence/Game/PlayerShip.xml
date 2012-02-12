@@ -1,0 +1,844 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Player Ship: Sapphire-class Yacht -->
+
+	<ShipClass UNID="&scSapphirePlayer;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Sapphire"
+			type=				"yacht"
+			score=				"95"
+
+			mass=				"30"
+			reactorPower=		"150"
+			fuelCapacity=		"37500"
+			cargoSpace=			"50"
+			thrust=				"150"
+			rotationCount=		"40"
+			maneuver=			"2"
+			maxSpeed=			"20"
+
+			maxArmor=			"6000"
+			maxCargoSpace=		"150"
+			maxDevices=			"8"
+
+			leavesWreck=		"30"
+			
+			attributes=			""
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
+			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<Image imageID="&rsSapphireYacht;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+			<NozzlePos x="-28" y="-4"/>
+			<NozzlePos x="-28" y="5"/>
+		</DriveImages>
+
+		<PlayerSettings
+			desc=				"The versatile Sapphire yacht strikes a good balance between a gunship and a freighter."
+			largeImage=			"&rsZubrinLarge;"
+			initialClass=		"true"
+			startingCredits=	"10d100+1000"
+			>
+
+			<ArmorDisplay>
+				<ArmorSection name="forward"
+						imageID="&rsZubrinArmor;" 
+						imageX="0" imageY="0" imageWidth="52" imageHeight="29"
+						destX="42" destY="15" hpX="55" hpY="14"
+						nameY="8" nameBreakWidth="200" nameDestX="0" nameDestY="10" />
+
+				<ArmorSection name="starboard"
+						imageID="&rsZubrinArmor;" 
+						imageX="52" imageY="0" imageWidth="22" imageHeight="59"
+						destX="92" destY="45" hpX="95" hpY="60"
+						nameY="30" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="port"
+						imageID="&rsZubrinArmor;" 
+						imageX="142" imageY="0" imageWidth="22" imageHeight="59"
+						destX="22" destY="45" hpX="15" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						imageID="&rsZubrinArmor;" 
+						imageX="74" imageY="0" imageWidth="68" imageHeight="14"
+						destX="34" destY="103" hpX="55" hpY="105"
+						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+			</ArmorDisplay>
+
+			<ShieldDisplay>
+				<Image imageID="&rsZubrinShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			</ShieldDisplay>
+
+			<ReactorDisplay>
+				<Image imageID="&rsZubrinReactor;" 
+						imageX="0" imageY="0" imageWidth="256" imageHeight="60"/>
+
+				<PowerLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="60" imageWidth="202" imageHeight="14"
+						destX="54" destY="9"/>
+
+				<FuelLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="74" imageWidth="194" imageHeight="14"
+						destX="54" destY="37"/>
+
+				<FuelLowLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="88" imageWidth="194" imageHeight="14"/>
+
+				<ReactorText x="62" y="22" width="154" height="14"/>
+				<PowerLevelText x="62" y="0" width="154" height="9"/>
+				<FuelLevelText x="62" y="51" width="154" height="9"/>
+			</ReactorDisplay>
+
+		</PlayerSettings>
+
+	</ShipClass>
+
+	<!-- Player Ship: EI500 Freighter -->
+
+	<ShipClass UNID="&scEI100XPlayer;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+			score=				"105"
+
+			mass=				"250"
+			reactorPower=		"250"
+			fuelCapacity=		"60000"
+			cargoSpace=			"200"
+			thrust=				"200"
+			rotationCount=		"40"
+			maneuver=			"4"
+			maxSpeed=			"18"
+
+			maxArmor=			"20000"
+			maxCargoSpace=		"200"
+			maxDevices=			"9"
+			maxWeapons=			"2"
+
+			leavesWreck=		"75"
+			
+			attributes=			""
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="3,4" />
+			<ArmorSection start="45"  span="90" armorID="&itHeavyTitaniumPlate;" areaSet="7,13" />
+			<ArmorSection start="135" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="1,6" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itOmniLaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="6d6" item="&itHelium3FuelRod;"/>
+			<Item count="2d4+2" item="&itLargeArmorPatch;"/>
+			<Table>
+				<Item chance="40" count="4" item="&itAblativeArmorCoating;"/>
+				<Item chance="40" count="4" item="&itReactiveArmorCoating;"/>
+				<Item chance="20" count="4" item="&itRegeneratingNanos;"/>
+			</Table>
+			<Table>
+				<Item chance="40" count="1" item="&itEnhanceSRSROM;"/>
+				<Item chance="40" count="1" item="&itTargetingComputerROM;"/>
+				<Item chance="20" count="1" item="&itEnhanceShieldsROM;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsEI500Freighter;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-24" y="-16"	z="0"/>
+			<NozzlePos x="-24" y="16"	z="0"/>
+		</DriveImages>
+
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+		<PlayerSettings
+			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Seven open slots for devices give you lots of upgrade flexibility."
+			largeImage=			"&rsEI100XLarge;"
+			initialClass=		"true"
+			>
+
+			<ArmorDisplay>
+				<ArmorSection name="forward"
+						imageID="&rsEI100XArmor;" 
+						imageX="0" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="32" hpX="55" hpY="27"
+						nameY="8" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="starboard"
+						imageID="&rsEI100XArmor;" 
+						imageX="90" imageY="0" imageWidth="9" imageHeight="56"
+						destX="104" destY="41" hpX="98" hpY="60"
+						nameY="30" nameBreakWidth="275" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="port"
+						imageID="&rsEI100XArmor;" 
+						imageX="189" imageY="0" imageWidth="9" imageHeight="56"
+						destX="23" destY="41" hpX="12" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						imageID="&rsEI100XArmor;" 
+						imageX="99" imageY="0" imageWidth="90" imageHeight="9"
+						destX="23" destY="97" hpX="55" hpY="97"
+						nameY="74" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+			</ArmorDisplay>
+
+			<ShieldDisplay>
+				<Image imageID="&rsEI100XShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			</ShieldDisplay>
+
+			<ReactorDisplay>
+				<Image imageID="&rsZubrinReactor;" 
+						imageX="0" imageY="0" imageWidth="256" imageHeight="60"/>
+
+				<PowerLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="60" imageWidth="202" imageHeight="14"
+						destX="54" destY="9"/>
+
+				<FuelLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="74" imageWidth="194" imageHeight="14"
+						destX="54" destY="37"/>
+
+				<FuelLowLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="88" imageWidth="194" imageHeight="14"/>
+
+				<ReactorText x="62" y="22" width="154" height="14"/>
+				<PowerLevelText x="62" y="0" width="154" height="9"/>
+				<FuelLevelText x="62" y="51" width="154" height="9"/>
+			</ReactorDisplay>
+
+		</PlayerSettings>
+
+	</ShipClass>
+
+	<!-- Player Ship: Wolfen-class Gunship -->
+
+	<ShipClass UNID="&scWolfenPlayer;"
+			manufacturer=		""
+			class=				"Wolfen"
+			type=				"gunship"
+			score=				"225"
+
+			mass=				"30"
+			reactorPower=		"100"
+			fuelCapacity=		"25000"
+			cargoSpace=			"35"
+			thrust=				"300"
+			rotationCount=		"40"
+			maneuver=			"2"
+			maxSpeed=			"25"
+
+			maxArmor=			"10000"
+			maxCargoSpace=		"100"
+			maxDevices=			"8"
+			maxNonWeapons=		"4"
+
+			leavesWreck=		"20"
+			
+			attributes=			""
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itDualLaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itHullPlateIonizer;"/>
+		</Devices>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+			<Item count="4d6" item="&itKM100Missile;"/>
+		</Items>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+		<Image imageID="&rsWolfenGunship;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-18" y="-9" z="0"/>
+			<NozzlePos x="-18" y="0"  z="-5"/>
+			<NozzlePos x="-18" y="9"  z="0"/>
+		</DriveImages>
+
+		<PlayerSettings
+			desc=				"Fast and deadly, the Wolfen is designed for combat. Though limited in cargo capacity, it has lots of room for more weapons."
+			largeImage=			"&rsWolfenLarge;"
+			initialClass=		"true"
+			>
+
+			<ArmorDisplay>
+				<ArmorSection name="forward"
+						imageID="&rsWolfenArmor;" 
+						imageX="0" imageY="0" imageWidth="52" imageHeight="15"
+						destX="42" destY="19" hpX="55" hpY="18"
+						nameY="8" nameBreakWidth="200" nameDestX="0" nameDestY="10" />
+
+				<ArmorSection name="starboard"
+						imageID="&rsWolfenArmor;" 
+						imageX="75" imageY="0" imageWidth="23" imageHeight="69"
+						destX="94" destY="34" hpX="97" hpY="60"
+						nameY="30" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+
+				<ArmorSection name="port"
+						imageID="&rsWolfenArmor;" 
+						imageX="52" imageY="0" imageWidth="23" imageHeight="69"
+						destX="19" destY="34" hpX="13" hpY="60"
+						nameY="52" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
+
+				<ArmorSection name="aft"
+						imageID="&rsWolfenArmor;" 
+						imageX="0" imageY="75" imageWidth="52" imageHeight="16"
+						destX="42" destY="103" hpX="55" hpY="107"
+						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
+			</ArmorDisplay>
+
+			<ShieldDisplay>
+				<Image imageID="&rsWolfenShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			</ShieldDisplay>
+
+			<ReactorDisplay>
+				<Image imageID="&rsZubrinReactor;" 
+						imageX="0" imageY="0" imageWidth="256" imageHeight="60"/>
+
+				<PowerLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="60" imageWidth="202" imageHeight="14"
+						destX="54" destY="9"/>
+
+				<FuelLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="74" imageWidth="194" imageHeight="14"
+						destX="54" destY="37"/>
+
+				<FuelLowLevelImage imageID="&rsZubrinReactor;"
+						imageX="0" imageY="88" imageWidth="194" imageHeight="14"/>
+
+				<ReactorText x="62" y="22" width="154" height="14"/>
+				<PowerLevelText x="62" y="0" width="154" height="9"/>
+				<FuelLevelText x="62" y="51" width="154" height="9"/>
+			</ReactorDisplay>
+
+		</PlayerSettings>
+
+	</ShipClass>
+
+	<!-- Player ship's interior -->
+
+	<DockScreen UNID="&dsShipInterior;"
+			name=				"Ship's Interior"
+			backgroundID=		"&rsShipInterior;"
+			>
+
+		<Panes>
+			<Default
+					desc=	"You are inside the main compartment of your ship. A hatch in front of you opens into the cargo hold. To the side there is a small ladder that leads to the reactor and the ship's engines.">
+
+				<Actions>
+					<Action name="Ship configuration" key="S">
+						(scrShowScreen gScreen "&dsShipConfig;")
+					</Action>
+
+					<Action name="View cargo hold" key="V" >
+						(block Nil
+							(setq gDest Nil)
+							(scrShowScreen gScreen "&dsCargoHold;")
+							)
+					</Action>
+
+					<Action name="Refuel engines" key="R" >
+						<Navigate screen="&dsManualRefuel;"/>
+					</Action>
+
+					<Action name="Back to cockpit" cancel="1" key="B">
+						<Exit/>
+					</Action>
+
+				</Actions>
+
+			</Default>
+
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Player ship configuration -->
+
+	<DockScreen UNID="&dsShipConfig;"
+			name=				"Ship's Configuration"
+			desc=				"Ship Configuration"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*I"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"You are viewing the ship's configuration.">
+
+				<OnPaneInit>
+					(block (thisItem desc)
+						(setq thisItem (scrGetItem gScreen))
+
+						(if thisItem
+							(block (theCategory)
+								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem)) "\n\n"))
+
+								; Describe the item installation
+								(setq desc (cat desc (objGetInstalledItemDesc gPlayerShip thisItem) "."))
+								
+								; Display
+								(scrSetDesc gScreen desc)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Done" cancel="1" key="D">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+
+				</Actions>
+
+			</Default>
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Player ship's cargo hold -->
+
+	<DockScreen UNID="&dsCargoHold;"
+			name=				"Ship's Cargo Hold"
+			desc=				"Interior of Ship"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*U"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"You are in your ship's cargo hold.">
+
+				<OnPaneInit>
+					(block (thisItem desc)
+						(setq thisItem (scrGetItem gScreen))
+						(switch
+							(not thisItem)
+								(setq gMaxCount 0)
+
+							(itmIsInstalled thisItem)
+								(setq gMaxCount 0)
+
+							(setq gMaxCount (itmGetCount thisItem))
+							)
+
+						(if thisItem
+							(block Nil
+								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
+								(if (gr gMaxCount 1)
+									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
+									)
+								(scrSetDesc gScreen desc)
+								)
+							)
+
+						; Enable/disable actions
+						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Jettison this item" key="J" >
+						(switch
+							(gr gMaxCount 1)
+								(scrShowPane gScreen "JettisonQuantity")
+
+							(eq gMaxCount 1)
+								(block (itemsToJettison)
+									; Create cargo crate
+									(if (not gDest)
+										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										)
+
+									; Dump items
+									(setq itemsToJettison (scrRemoveItem gScreen 1))
+									(intJettisonItem gDest itemsToJettison)
+									(scrShowPane gScreen "Default")
+									)
+							)
+					</Action>
+
+					<Action name="Done" cancel="1" key="D">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+
+				</Actions>
+
+			</Default>
+
+			<JettisonQuantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "How many items do you wish to jettison?"))
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Jettison" default="1" key="J">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								(block (itemsToJettison)
+									; Create cargo crate
+									(if (not gDest)
+										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
+										)
+
+									; Dump items
+									(setq itemsToJettison (scrRemoveItem gScreen count))
+									(intJettisonItem gDest itemsToJettison)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<ShowPane pane="Default"/>
+					</Action>
+
+				</Actions>
+
+			</JettisonQuantity>
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Refuel ship screen -->
+
+	<DockScreen UNID="&dsManualRefuel;"
+			name=				"Ship's Cargo Hold"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"f"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"Pick an item to use as fuel.">
+
+				<OnPaneInit>
+					(block (thisItem curEngine)
+						(setq thisItem (scrGetItem gScreen))
+						(setq gMaxCount 0)
+						(switch
+							(not thisItem)
+								(scrSetDesc gScreen "You do not have any items that can be used as fuel.")
+
+							(not (shpIsFuelCompatible gPlayerShip thisItem))
+								(scrSetDesc gScreen "You cannot use this kind of fuel in your ship's reactor.")
+
+							(setq gMaxCount (itmGetCount thisItem))
+							)
+
+						; Enable/disable actions
+						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Refuel" default="1" key="R">
+						(block Nil
+							; No need to show help about refueling
+							(plyEnableMessage gPlayer 'refuelHint Nil)
+
+							; Handle refuel
+							(switch
+								; If this item requires confirmation, show pane
+								(itmHasModifier (scrGetItem gScreen) 'ConfirmRefuel)
+									(scrShowPane gScreen "ConfirmRefuel")
+
+								; If there are more than one item, get count
+								(gr gMaxCount 1)
+									(scrShowPane gScreen "RefuelQuantity")
+
+								(eq gMaxCount 0)
+									Nil
+
+								; Refuel from a single item
+								(block (itemsToUse)
+									(setq itemsToUse (scrRemoveItem gScreen 1))
+
+									(plyRedirectMessage gPlayer True)
+									(shpRefuelFromItem gPlayerShip itemsToUse)
+									(plyRedirectMessage gPlayer Nil)
+
+									(if (plyGetRedirectMessage gPlayer)
+										(scrShowPane gScreen "RefuelMessage")
+										(scrShowScreen gScreen "&dsShipInterior;")
+										)
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+
+				</Actions>
+
+			</Default>
+
+			<ConfirmRefuel>
+				<OnPaneInit>
+					(scrSetDesc gScreen 
+						(cat "Are you sure you want to use " 
+							(itmGetName (scrGetItem gScreen) 0x04)
+							" for fuel?"
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Yes" key="Y">
+						(switch
+							(gr gMaxCount 1)
+								(scrShowPane gScreen "RefuelQuantity")
+
+							(eq gMaxCount 0)
+								(scrShowPane gScreen "Default")
+
+							(block (itemsToUse)
+								(setq itemsToUse (scrRemoveItem gScreen 1))
+
+								(plyRedirectMessage gPlayer True)
+								(shpRefuelFromItem gPlayerShip itemsToUse)
+								(plyRedirectMessage gPlayer Nil)
+
+								(if (plyGetRedirectMessage gPlayer)
+									(scrShowPane gScreen "RefuelMessage")
+									(scrShowScreen gScreen "&dsShipInterior;")
+									)
+								)
+							)
+					</Action>
+
+					<Action name="No" key="N" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</ConfirmRefuel>
+
+			<RefuelMessage>
+				<OnPaneInit>
+					(scrSetDesc gScreen (plyGetRedirectMessage gPlayer))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+				</Actions>
+			</RefuelMessage>
+
+			<RefuelQuantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block (thisItem maxNeeded)
+						(setq thisItem (scrGetItem gScreen))
+						(setq maxNeeded (shpGetFuelNeeded gPlayerShip thisItem))
+						(if (ls maxNeeded gMaxCount)
+							(setq gMaxCount maxNeeded)
+							)
+						(scrSetDesc gScreen (cat "How many " (itmGetName thisItem 2) " do you wish to use?"))
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Refuel" default="1" key="R">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								(block (itemsToUse)
+									(setq itemsToUse (scrRemoveItem gScreen count))
+
+									(plyRedirectMessage gPlayer True)
+									(shpRefuelFromItem gPlayerShip itemsToUse)
+									(plyRedirectMessage gPlayer Nil)
+
+									(if (plyGetRedirectMessage gPlayer)
+										(scrShowPane gScreen "RefuelMessage")
+										(scrShowScreen gScreen "&dsShipInterior;")
+										)
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+
+				</Actions>
+
+			</RefuelQuantity>
+
+			<RefuelMessage>
+				<OnPaneInit>
+					(scrSetDesc gScreen (plyGetRedirectMessage gPlayer))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						<Navigate screen="&dsShipInterior;"/>
+					</Action>
+				</Actions>
+			</RefuelMessage>
+
+		</Panes>
+
+	</DockScreen>
+	
+
+<!-- PLAYER SOVEREIGN
+
+	GLOBAL DATA
+	
+	missionRewards:		Total amount of credits earned in missions
+
+-->
+
+	<Sovereign UNID="&svPlayer;"
+			name="independent"
+			alignment="constructive chaos"
+			>
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList missionRewards)
+				
+					; Current player money
+
+					(setq theList
+						(map (filter (typFind "$") theEcon (gr (objGetBalance gPlayerShip theEcon) 0)) theEcon
+							(list (cat "Money (" (fmtCurrency theEcon True) ")") (objGetBalance gPlayerShip theEcon))
+							)
+						)					
+					
+					; Money earned on missions
+					
+					(if (setq missionRewards (typGetGlobalData &svPlayer; "missionRewards"))
+						(setq theList (append theList (list
+							(list "Money earned on missions" missionRewards "missions &amp; activities")
+							)))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</Sovereign>
+
+<!-- GLOBAL FUNCTIONS -->
+
+	<Globals>
+		(block Nil
+			(setq intMissionRewardPayment (lambda (theReward)
+				(block Nil
+					(plyCredit gPlayer theReward)
+					(typIncGlobalData &svPlayer; "missionRewards" theReward)
+					)
+				))
+			)
+	</Globals>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsEI500Freighter;"	bitmap="Resources\ShipsEI500Freighter.jpg" bitmask="Resources\ShipsEI500FreighterMask.bmp" />
+	<Image UNID="&rsEI100XArmor;"		bitmap="Resources\ArmorHUD_EI100X.bmp" />
+	<Image UNID="&rsEI100XLarge;"		bitmap="Resources\EI100XLarge.jpg"	bitmask="Resources\EI100XLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsEI100XShields;"		bitmap="Resources\ShieldsHUD_EI100X.bmp" />
+
+	<Image UNID="&rsWolfenGunship;"		bitmap="Resources\ShipsWolfenGunship.jpg" bitmask="Resources\ShipsWolfenGunshipMask.bmp" />
+	<Image UNID="&rsWolfenArmor;"		bitmap="Resources\ArmorHUD_Wolfen.bmp" />
+	<Image UNID="&rsWolfenLarge;"		bitmap="Resources\WolfenLarge.jpg"	bitmask="Resources\WolfenLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsWolfenShields;"		bitmap="Resources\ShieldsHUD_Wolfen.bmp" />
+
+	<Image UNID="&rsSapphireYacht;"		bitmap="Resources\ShipsSapphireYacht.jpg" bitmask="Resources\ShipsSapphireYachtMask.bmp" />
+	<Image UNID="&rsZubrinArmor;"		bitmap="Resources\ArmorHUD.bmp" />
+	<Image UNID="&rsZubrinLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsZubrinLRS;"			bitmap="Resources\LargeHUD.jpg"		/>
+	<Image UNID="&rsZubrinLRSBorder;"	bitmask="Resources\LRSBorderMask.bmp"/>
+	<Image UNID="&rsZubrinReactor;"		bitmap="Resources\ReactorDisplay.jpg"	bitmask="Resources\ReactorDisplayMask.bmp"/>
+	<Image UNID="&rsZubrinShields;"		bitmap="Resources\ShieldsHUD.bmp" />
+	<Image UNID="&rsZubrinTargeting;"	bitmap="Resources\WeaponsHUD.bmp"		/>
+	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.bmp"/>
+	<Image UNID="&rsZubrinDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
+
+	<Image UNID="&rsSRSSnow;"			bitmap="Resources\ScreenSnow.jpg"/>
+
+</TranscendenceModule>

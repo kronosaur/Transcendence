@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<DirectXFont>
+	<Font output="Header.dxfn"				typeface="Convection"		size="22" />
+	<Font output="HeaderBold.dxfn"			typeface="Convection"		size="22"	bold="true" />
+	<Font output="SubTitle.dxfn"			typeface="Convection"		size="29" />
+	<Font output="SubTitleBold.dxfn"		typeface="Convection"		size="29"	bold="true" />
+	<Font output="SubTitleHeavyBold.dxfn"	typeface="Convection"		size="32"	bold="true" />
+	<Font output="Title.dxfn"				typeface="Convection"		size="60" />
+	<Font output="LogoTitle.dxfn"			typeface="BlueIslandStd"	size="60" />
+</DirectXFont>

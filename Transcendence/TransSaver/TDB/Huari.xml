@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Huari Empire
+
+	GLOBAL DATA
+
+	status:				Status of player with respect to Huari
+							Nil						= normal (enemy)
+							'friend					= Huari are friendly and player can do missions
+							'tualiIntro				= Give player the symbiote
+							'tuali					= Player has the symbiote
+							'tualiDeclined			= Player declined the symbiote
+							'defender				= Player is a defender of the Huari
+							'loser					= Player has failed too many missions
+							'templeDestroyed		= Huari temple has been destroyed
+
+	huariDestroyed:		Number of Huari stations destroyed by the player
+	sungDestroyed:		Number of Sung stations destroyed by the player
+
+	missionCount:		Total number of missions requested by the player
+	missionsFailed:		Total number of mission failed
+
+	visitedTemple:		True if player visited the temple in Huaramarca
+	xp:					Total xp accumulated by the player
+
+	-->
+
+	<Sovereign UNID="&svHuariEmpire;"
+			name="Huari Empire"
+			alignment="destructive order"
+			>
+		<Relationships>
+			<Relationship sovereign="&svSung;" disposition="enemy" mutual="true"/>
+		</Relationships>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList theStatus)
+					(setq theStatus (typGetGlobalData &svHuariEmpire; "status"))
+					
+					(if theStatus
+						(setq theList (list
+							(list 
+								(switch
+									(eq theStatus 'templeDestroyed) "Failed to defend the Huari"
+									(eq theStatus 'loser) "Disappointed the Huari"
+									(eq theStatus 'defender) "Became Defender of the Huari"
+									(typGetGlobalData &svHuariEmpire; "visitedTemple") "Visited the Huari temple in Huaramarca"
+									(eq theStatus 'tualiIntro) "Befriended the Huari"
+									(eq theStatus 'tuali) "Invited by the Huari to visit Huaramarca"
+									(eq theStatus 'tualiDeclined) "Declined invitation to visit Huaramarca"
+									(eq theStatus 'friend) "Befriended the Huari"
+									(cat "ERROR: Huari status: " theStatus)
+									) 
+								Nil 
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</Sovereign>
+
+	<!-- Hurin Destroyer -->
+
+	<ShipClass UNID="&scHurinDestroyer;"
+			manufacturer=		"Huari"
+			class=				"Hurin"
+			type=				"destroyer"
+			score=				"1020"
+
+			mass=				"5000"
+			cargoSpace=			"1000"
+			thrust=				"3500"
+			maneuver=			"12"
+			maxSpeed=			"8"
+
+			explosionType=		"&vtBlastExplosion1;"
+			leavesWreck=		"95"
+
+			attributes=			"genericClass, huari"
+			>
+
+		<Armor>
+			<ArmorSection start="345" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
+			<ArmorSection start="315" span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
+			<ArmorSection start="285" span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
+			<ArmorSection start="255" span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
+			<ArmorSection start="225" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
+			<ArmorSection start="195" span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
+			<ArmorSection start="165" span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
+			<ArmorSection start="135" span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
+			<ArmorSection start="105" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
+			<ArmorSection start="75"  span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
+			<ArmorSection start="45"  span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
+			<ArmorSection start="15"  span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="67" posRadius="32" minFireArc="0" maxFireArc="200" />
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="35" posRadius="46" minFireArc="0" maxFireArc="170" />
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="25" posRadius="53" minFireArc="300" maxFireArc="170" />
+
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="293" posRadius="32" minFireArc="160" maxFireArc="0" />
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="325" posRadius="46" minFireArc="190" maxFireArc="0" />
+			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="335" posRadius="53" minFireArc="190" maxFireArc="60" />
+
+			<Device deviceID="&itSuperconductingShields;"/>
+			<Device deviceID="&it250MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d12"	item="&itPteracniumFuelRod;"/>
+			<Item count="5d10" item="&itSuperconductingCoil;"/>
+		</Items>
+
+		<Image imageID="&rsMediumShips4;" imageX="640" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			combatStyle=		"standOff"
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"5"
+			/>
+
+		<Events>
+			<OnDestroy>
+				(huaHuariDestroyed gSource aOrderGiver)
+			</OnDestroy>
+		</Events>
+
+	</ShipClass>
+
+	<Globals>
+		(block Nil
+			(setq huaCheckExperience (lambda (xp)
+				(if (gr xp 325)
+					(block Nil
+						(typSetGlobalData &svHuariEmpire; "status" 'tualiIntro)
+						True
+						)
+					Nil
+					)
+				))
+
+			(setq huaHuariDestroyed (lambda (theObj theDestroyer)
+				(if (and gPlayerShip (eq theDestroyer gPlayerShip))
+					(block (status)
+						(typIncGlobalData &svHuariEmpire; "huariDestroyed")
+						(setq status (typGetGlobalData &svHuariEmpire; "status"))
+
+						(if status
+							(block Nil
+								(typSetGlobalData &svHuariEmpire; "status" Nil)
+								(sovSetDisposition &svHuariEmpire; &svPlayer; 'enemy)
+								(sovSetDisposition &svPlayer; &svHuariEmpire; 'enemy)
+								)
+							)
+						)
+					)
+				))
+
+			(setq huaIsGateToHuaramarca (lambda (nodeID gateID nodesChecked)
+				(block (destNode)
+					(setq destNode (sysGetStargateDestinationNode nodeID gateID))
+					(if (eq destNode "Huaramarca")
+						True
+
+						(block (stargates)
+							(setq nodesChecked (append nodesChecked (list nodeID)))
+							(setq stargates (filter (sysGetStargates destNode) theGate
+								(not (find nodesChecked (sysGetStargateDestinationNode destNode theGate)))
+								))
+
+							(if stargates
+								(filter stargates theGate (huaIsGateToHuaramarca destNode theGate nodesChecked))
+								Nil
+								)
+							)
+						)
+					)
+				))
+
+			(setq huaSungDestroyed (lambda (theObj theDestroyer)
+				(if (and gPlayerShip (eq theDestroyer gPlayerShip))
+					(block (sungDestroyed)
+						(setq sungDestroyed
+							(typIncGlobalData &svHuariEmpire; "sungDestroyed")
+							)
+
+						(if (geq sungDestroyed 6)
+							(block (status huariDestroyed)
+								(setq status (typGetGlobalData &svHuariEmpire; "status"))
+								(setq huariDestroyed (typGetGlobalData &svHuariEmpire; "huariDestroyed"))
+
+								(if (and (not status) (not huariDestroyed))
+									(block Nil
+										(typSetGlobalData &svHuariEmpire; "status" 'friend)
+										(sovSetDisposition &svHuariEmpire; &svPlayer; 'friend)
+										(sovSetDisposition &svPlayer; &svHuariEmpire; 'friend)
+										)
+									)
+								)
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+
+<!-- RESOURCES -->
+
+</TranscendenceModule>

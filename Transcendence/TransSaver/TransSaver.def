@@ -1,0 +1,9 @@
+NAME			"TransSaver.scr"
+
+HEAPSIZE		1024
+STACKSIZE		4096
+
+EXPORTS
+				ScreenSaverProc
+				ScreenSaverConfigureDialog
+				

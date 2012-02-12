@@ -1,0 +1,81 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STBrowser", "STBrowser.vcproj", "{840263F8-C932-4533-9F54-818AB0702D94}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{D52D8A0E-FD89-44D9-903D-624AAD7E7155} = {D52D8A0E-FD89-44D9-903D-624AAD7E7155}
+		{750E1539-8E63-4B52-B58A-EF88610C55AD} = {750E1539-8E63-4B52-B58A-EF88610C55AD}
+		{696AFBF6-CA1A-4302-B9EF-01BDBC483280} = {696AFBF6-CA1A-4302-B9EF-01BDBC483280}
+		{86CE5721-1967-49B7-9EED-3A014171DAF1} = {86CE5721-1967-49B7-9EED-3A014171DAF1}
+		{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E} = {ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kernel", "..\Alchemy\Kernel\Kernel.vcproj", "{86CE5721-1967-49B7-9EED-3A014171DAF1}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Graphics", "..\Alchemy\Graphics\Graphics.vcproj", "{D52D8A0E-FD89-44D9-903D-624AAD7E7155}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntelJPEGUtil", "..\IntelJPEGUtil\IntelJPEGUtil.vcproj", "{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXUtil", "..\DirectXUtil\DirectXUtil.vcproj", "{696AFBF6-CA1A-4302-B9EF-01BDBC483280}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HIUtil", "..\HIUtil\HIUtil.vcproj", "{750E1539-8E63-4B52-B58A-EF88610C55AD}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{840263F8-C932-4533-9F54-818AB0702D94}.Debug|Win32.ActiveCfg = Debug|Win32
+		{840263F8-C932-4533-9F54-818AB0702D94}.Debug|Win32.Build.0 = Debug|Win32
+		{840263F8-C932-4533-9F54-818AB0702D94}.Release|Win32.ActiveCfg = Release|Win32
+		{840263F8-C932-4533-9F54-818AB0702D94}.Release|Win32.Build.0 = Release|Win32
+		{86CE5721-1967-49B7-9EED-3A014171DAF1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{86CE5721-1967-49B7-9EED-3A014171DAF1}.Debug|Win32.Build.0 = Debug|Win32
+		{86CE5721-1967-49B7-9EED-3A014171DAF1}.Release|Win32.ActiveCfg = Release|Win32
+		{86CE5721-1967-49B7-9EED-3A014171DAF1}.Release|Win32.Build.0 = Release|Win32
+		{D52D8A0E-FD89-44D9-903D-624AAD7E7155}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D52D8A0E-FD89-44D9-903D-624AAD7E7155}.Debug|Win32.Build.0 = Debug|Win32
+		{D52D8A0E-FD89-44D9-903D-624AAD7E7155}.Release|Win32.ActiveCfg = Release|Win32
+		{D52D8A0E-FD89-44D9-903D-624AAD7E7155}.Release|Win32.Build.0 = Release|Win32
+		{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}.Debug|Win32.Build.0 = Debug|Win32
+		{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}.Release|Win32.ActiveCfg = Release|Win32
+		{ECAC7E19-ACBC-4C3C-B89A-7BC7049B6F2E}.Release|Win32.Build.0 = Release|Win32
+		{696AFBF6-CA1A-4302-B9EF-01BDBC483280}.Debug|Win32.ActiveCfg = Debug|Win32
+		{696AFBF6-CA1A-4302-B9EF-01BDBC483280}.Debug|Win32.Build.0 = Debug|Win32
+		{696AFBF6-CA1A-4302-B9EF-01BDBC483280}.Release|Win32.ActiveCfg = Release|Win32
+		{696AFBF6-CA1A-4302-B9EF-01BDBC483280}.Release|Win32.Build.0 = Release|Win32
+		{750E1539-8E63-4B52-B58A-EF88610C55AD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{750E1539-8E63-4B52-B58A-EF88610C55AD}.Debug|Win32.Build.0 = Debug|Win32
+		{750E1539-8E63-4B52-B58A-EF88610C55AD}.Release|Win32.ActiveCfg = Release|Win32
+		{750E1539-8E63-4B52-B58A-EF88610C55AD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
