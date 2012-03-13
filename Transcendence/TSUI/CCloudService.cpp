@@ -46,11 +46,11 @@ void CCloudService::CleanUp (void)
 	m_Services.DeleteAll();
 	}
 
-CString CCloudService::GetUsername (void)
+CString CCloudService::GetDefaultUsername (void)
 
-//	GetUsername
+//	GetDefaultUsername
 //
-//	Returns the username
+//	Returns the username (not necessarily signed in).
 
 	{
 	int i;
@@ -67,6 +67,19 @@ CString CCloudService::GetUsername (void)
 			}
 
 	return NULL_STR;
+	}
+
+CString CCloudService::GetUsername (void)
+
+//	GetUsername
+//
+//	Returns the signed in username (or NULL_STR if no one is signed in).
+
+	{
+	if (HasCapability(ICIService::getUserProfile))
+		return GetDefaultUsername();
+	else
+		return NULL_STR;
 	}
 
 bool CCloudService::HasCapability (DWORD dwCapability)
@@ -111,35 +124,40 @@ ALERROR CCloudService::InitFromXML (CHumanInterface &HI, CXMLElement *pDesc, boo
 
 	{
 	ALERROR error;
+	int i;
 
 	ASSERT(m_Services.GetCount() == 0);
+
+	//	Get the list of default services
+
+	CHexarcServiceFactory HexarcService;
+	CXelerusServiceFactory XelerusService;
+
+	TArray<ICIServiceFactory *> AllServices;
+	AllServices.Insert(&HexarcService);
+	AllServices.Insert(&XelerusService);
 
 	//	If we don't have any settings, then we use defaults and save out
 
 	bool bModified = (pDesc == NULL);
 	*retbModified = bModified;
 
-	//	Add the services to our list, starting with Hexarc
+	//	Initialize all services
 
-	ICIService *pService = new CHexarcService(HI);
-	if (error = pService->InitFromXML((pDesc ? pDesc->GetContentElementByTag(pService->GetTag()) : NULL), &bModified))
-		return error;
+	for (i = 0; i < AllServices.GetCount(); i++)
+		{
+		ICIService *pService = AllServices[i]->Create(HI);
+		if (pService)
+			{
+			if (error = pService->InitFromXML((pDesc ? pDesc->GetContentElementByTag(pService->GetTag()) : NULL), &bModified))
+				return error;
 
-	if (bModified)
-		*retbModified = true;
+			if (bModified)
+				*retbModified = true;
 
-	m_Services.Insert(pService);
-
-	//	Xelerus
-
-	pService = new CXelerus;
-	if (error = pService->InitFromXML((pDesc ? pDesc->GetContentElementByTag(pService->GetTag()) : NULL), &bModified))
-		return error;
-
-	if (bModified)
-		*retbModified = true;
-
-	m_Services.Insert(pService);
+			m_Services.Insert(pService);
+			}
+		}
 
 	//	Done
 
@@ -179,7 +197,7 @@ bool CCloudService::IsModified (void)
 	return false;
 	}
 
-ALERROR CCloudService::PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, CString *retsResult)
+ALERROR CCloudService::PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult)
 
 //	PostGameRecord
 //
@@ -193,7 +211,7 @@ ALERROR CCloudService::PostGameRecord (ITaskProcessor *pProcessor, const CGameRe
 			{
 			//	For now we only support posting stats to a single service
 
-			return m_Services[i]->PostGameRecord(pProcessor, Record, retsResult);
+			return m_Services[i]->PostGameRecord(pProcessor, Record, Stats, retsResult);
 			}
 
 	return NOERROR;
@@ -239,7 +257,7 @@ ALERROR CCloudService::ReadProfile (ITaskProcessor *pProcessor, CUserProfile *re
 	return NOERROR;
 	}
 
-ALERROR CCloudService::RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult)
+ALERROR CCloudService::RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, const CString &sEmail, bool bAutoSignIn, CString *retsResult)
 
 //	RegisterUser
 //
@@ -252,13 +270,13 @@ ALERROR CCloudService::RegisterUser (ITaskProcessor *pProcessor, const CString &
 		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::registerUser))
 			{
 			//	Only one service can register a user
-			return m_Services[i]->RegisterUser(pProcessor, sUsername, sPassword, retsResult);
+			return m_Services[i]->RegisterUser(pProcessor, sUsername, sPassword, sEmail, bAutoSignIn, retsResult);
 			}
 
 	return NOERROR;
 	}
 
-ALERROR CCloudService::SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult)
+ALERROR CCloudService::SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult)
 
 //	SignInUser
 //
@@ -271,7 +289,7 @@ ALERROR CCloudService::SignInUser (ITaskProcessor *pProcessor, const CString &sU
 		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::loginUser))
 			{
 			//	Only one service can sign in at a user
-			return m_Services[i]->SignInUser(pProcessor, sUsername, sPassword, retsResult);
+			return m_Services[i]->SignInUser(pProcessor, sUsername, sPassword, bAutoSignIn, retsResult);
 			}
 
 	return NOERROR;
