@@ -76,13 +76,14 @@ ALERROR CRadiusDamage::Create (CSystem *pSystem,
 
 	//	Create a painter instance
 
-	if (pDesc->m_pEffect)
+	CEffectCreator *pEffect;
+	if (pEffect = pDesc->GetEffect())
 		{
-		pArea->m_pPainter = pDesc->m_pEffect->CreatePainter();
+		pArea->m_pPainter = pEffect->CreatePainter();
 
 		//	The lifetime of the object is based on the painter
 
-		pArea->m_iLifeLeft = Max(pDesc->m_pEffect->GetLifetime(), pArea->m_iLifeLeft);
+		pArea->m_iLifeLeft = Max(pEffect->GetLifetime(), pArea->m_iLifeLeft);
 
 		//	The radius is also adjusted
 
@@ -217,7 +218,7 @@ void CRadiusDamage::OnReadFromStream (SLoadCtx &Ctx)
 
 	//	Load painter
 
-	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->m_pEffect);
+	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->GetEffect());
 	}
 
 void CRadiusDamage::OnSystemLoaded (void)

@@ -348,3 +348,25 @@ CXMLElement *CXMLElement::OrphanCopy (void)
 	return pCopy;
 	}
 
+ALERROR CXMLElement::SetAttribute (const CString &sName, const CString &sValue)
+
+//	SetAttribute
+//
+//	Sets an attribute on the element.
+
+	{
+	ALERROR error;
+	CString *pValue;
+
+	pValue = new CString(sValue);
+	if (pValue == NULL)
+		return ERR_MEMORY;
+
+	if (error = m_Attributes.ReplaceEntry(sName, pValue, TRUE, NULL))
+		{
+		delete pValue;
+		return error;
+		}
+
+	return NOERROR;
+	}

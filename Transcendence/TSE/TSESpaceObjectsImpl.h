@@ -409,7 +409,6 @@ class CMissile : public CSpaceObject
 
 		int ComputeVaporTrail (void);
 		void CreateFragments (const CVector &vPos);
-		void CreateHitEffect (const CVector &vPos, int iRotation);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
 		int m_iBonus;							//	Bonus damage
@@ -955,6 +954,7 @@ class CShip : public CSpaceObject
 		virtual CInstalledArmor *FindArmor (const CItem &Item);
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CInstalledDevice *FindDevice (const CItem &Item);
+		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader);
 		virtual AbilityStatus GetAbility (Abilities iAbility);
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID);
 		virtual CSpaceObject *GetBase (void) const;
@@ -975,7 +975,6 @@ class CShip : public CSpaceObject
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pClass->GetGlobalData(sAttribute); }
 		virtual const CObjectImageArray &GetImage (void) { return m_pClass->GetImage(); }
 		virtual CString GetInstallationPhrase (const CItem &Item) const;
-		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader);
 		virtual int GetLastFireTime (void) const { return m_iLastFireTime; }
 		virtual int GetLevel (void) const { return m_pClass->GetLevel(); }
 		virtual Metric GetMass (void);
@@ -992,6 +991,7 @@ class CShip : public CSpaceObject
 		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return m_EnergyFields.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return CSystem::layerShips; }
 		virtual int GetPerception (void);
+		virtual ICCItem *GetProperty (const CString &sName);
 		virtual int GetRotation (void) const { return AlignToRotationAngle(m_iRotation); }
 		virtual ScaleTypes GetScale (void) const { return scaleShip; }
 		virtual int GetScore (void) { return m_pClass->GetScore(); }
@@ -1018,6 +1018,7 @@ class CShip : public CSpaceObject
 		virtual bool IsRadioactive (void) { return (m_fRadioactive ? true : false); }
 		virtual bool IsSuspended (void) const { return m_fManualSuspended; }
 		virtual bool IsTimeStopImmune (void) { return m_pClass->IsTimeStopImmune(); }
+		virtual bool IsVirtual (void) const { return m_pClass->IsVirtual(); }
 		virtual void LoadImages (void) { m_pClass->LoadImages(); }
 		virtual void MarkImages (void) { m_pClass->MarkImages(); }
 		virtual bool ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const CVector &vObj2Pos);
@@ -1066,6 +1067,7 @@ class CShip : public CSpaceObject
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_EnergyFields.SetData(dwID, sAttribute, sData); }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { m_EnergyFields.SetPos(this, dwID, vPos); }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_EnergyFields.SetRotation(dwID, iRotation); }
+		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
 		virtual void Suspend (void) { m_fManualSuspended = true; SetCannotBeHit(); }
 		virtual void Undock (CSpaceObject *pObj);
@@ -1104,6 +1106,7 @@ class CShip : public CSpaceObject
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
+		bool FindInstalledDeviceSlot (const CItem &Item, int *retiDev = NULL);
 		int FindNextDevice (int iStart, ItemCategories Category, int iDir = 1);
 		int FindRandomDevice (bool bEnabledOnly = false);
 		void FinishCreation (SShipGeneratorCtx *pCtx = NULL);
@@ -1317,13 +1320,14 @@ class CStation : public CSpaceObject
 		virtual bool HasMapLabel (void);
 		virtual bool ImageInObject (const CVector &vObjPos, const CObjectImageArray &Image, int iTick, int iRotation, const CVector &vImagePos);
 		virtual bool IsAbandoned (void) const { return ((m_iHitPoints == 0) && !m_pType->IsImmutable()); }
+		virtual bool IsActiveStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
 		virtual bool IsBackgroundObj (void) { return m_pType->IsBackgroundObject(); }
 		virtual bool IsKnown (void) { return m_fKnown; }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
 		virtual bool IsRadioactive (void) { return (m_fRadioactive ? true : false); }
-		virtual bool IsStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
+		virtual bool IsStargate (void) const { return !m_sStargateDestNode.IsBlank(); }
 		virtual bool IsTimeStopImmune (void) { return m_pType->IsTimeStopImmune(); }
 		virtual bool IsVirtual (void) const { return m_pType->IsVirtual(); }
 		virtual bool IsWreck (void) const { return (m_dwWreckUNID != 0); }
@@ -1360,7 +1364,7 @@ class CStation : public CSpaceObject
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_Overlays.SetRotation(dwID, iRotation); }
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
 		virtual void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);
-		virtual bool SupportsGating (void) { return IsStargate(); }
+		virtual bool SupportsGating (void) { return IsActiveStargate(); }
 		virtual void Undock (CSpaceObject *pObj);
 		virtual void UnregisterObjectForEvents (CSpaceObject *pObj) { m_RegisteredObjects.Remove(pObj); }
 

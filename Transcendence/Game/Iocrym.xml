@@ -80,9 +80,7 @@
 					</Effect>
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Quantumsphere Shell -->
@@ -366,9 +364,7 @@
 						secondaryColor=		"0xff, 0x65, 0x21"
 						/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL IX ITEMS -->

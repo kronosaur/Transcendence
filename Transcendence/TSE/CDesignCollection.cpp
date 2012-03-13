@@ -16,6 +16,8 @@
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define VERSION_ATTRIB							CONSTLIT("version")
 
+#define GET_TYPE_SOURCE_EVENT					CONSTLIT("GetTypeSource")
+
 static char *CACHED_EVENTS[CDesignCollection::evtCount] =
 	{
 		"GetGlobalAchievements",
@@ -29,8 +31,8 @@ static char *CACHED_EVENTS[CDesignCollection::evtCount] =
 	};
 
 CDesignCollection::CDesignCollection (void) :
-		m_pAdventureDesc(NULL),
-		m_dwNextAnonymousUNID(0xf0000001)
+		m_Base(true),	//	m_Base owns its types and will free them at the end
+		m_pAdventureDesc(NULL)
 
 //	CDesignCollection construtor
 
@@ -51,7 +53,126 @@ CDesignCollection::~CDesignCollection (void)
 	for (i = 0; i < evtCount; i++)
 		delete m_EventsCache[i];
 
-	RemoveAll();
+	CleanUp();
+	}
+
+ALERROR CDesignCollection::AddDynamicType (SExtensionDesc *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError)
+
+//	AddDynamicType
+//
+//	Adds a dynamic type at runtime
+
+	{
+	ALERROR error;
+
+	//	If we're pass game-create, the UNID must not already exist
+
+	if (!bNewGame && FindEntry(dwUNID))
+		{
+		if (retsError)
+			*retsError = strPatternSubst(CONSTLIT("Type already exists: %x"), dwUNID);
+		return ERR_FAIL;
+		}
+
+	//	Add it to the dynamics table
+
+	CDesignType *pType;
+	if (error = m_DynamicTypes.DefineType(pExtension, dwUNID, sSource, &pType, retsError))
+		return error;
+
+	//	Make sure that the type can be created at this point.
+	//	For example, we can't create SystemMap types after the game has started.
+
+	switch (pType->GetType())
+		{
+		case designAdventureDesc:
+		case designGlobals:
+		case designImage:
+		case designSound:
+		case designEconomyType:
+		case designTemplateType:
+			{
+			m_DynamicTypes.Delete(dwUNID);
+			if (retsError)
+				*retsError = CONSTLIT("Dynamic design type not supported.");
+			return ERR_FAIL;
+			}
+
+		case designSystemType:
+		case designSystemTable:
+		case designSystemMap:
+			{
+			if (!bNewGame)
+				{
+				m_DynamicTypes.Delete(dwUNID);
+				if (retsError)
+					*retsError = CONSTLIT("Dynamic design type not supported after new game created.");
+				return ERR_FAIL;
+				}
+			}
+		}
+
+	//	Since we've already bound, we need to simulate that here (although we
+	//	[obviously] don't allow existing types to bind to dynamic types).
+	//
+	//	We start by adding the type to the AllTypes list
+
+	m_AllTypes.AddOrReplaceEntry(pType);
+
+	//	If this is new game time, then it means that we are inside of BindDesign. In
+	//	that case, we don't do anything more (since BindDesign will take care of
+	//	it).
+
+	if (!bNewGame)
+		{
+		//	Next we add it to the specific type tables
+
+		m_ByType[pType->GetType()].AddEntry(pType);
+
+		//	Bind
+
+		SDesignLoadCtx Ctx;
+		Ctx.pExtension = pExtension;
+		Ctx.bNewGame = bNewGame;
+
+		if (error = pType->PrepareBindDesign(Ctx))
+			{
+			m_AllTypes.Delete(dwUNID);
+			m_ByType[pType->GetType()].Delete(dwUNID);
+			m_DynamicTypes.Delete(dwUNID);
+			if (retsError)
+				*retsError = Ctx.sError;
+			return error;
+			}
+
+		if (error = pType->BindDesign(Ctx))
+			{
+			m_AllTypes.Delete(dwUNID);
+			m_ByType[pType->GetType()].Delete(dwUNID);
+			m_DynamicTypes.Delete(dwUNID);
+			if (retsError)
+				*retsError = Ctx.sError;
+			return error;
+			}
+
+		//	Cache some global events
+
+		CacheGlobalEvents(pType);
+
+		//	Done binding
+
+		if (error = pType->FinishBindDesign(Ctx))
+			{
+			m_AllTypes.Delete(dwUNID);
+			m_ByType[pType->GetType()].Delete(dwUNID);
+			m_DynamicTypes.Delete(dwUNID);
+			if (retsError)
+				*retsError = Ctx.sError;
+			return error;
+			}
+		}
+
+	return NOERROR;
 	}
 
 ALERROR CDesignCollection::AddEntry (SDesignLoadCtx &Ctx, CDesignType *pEntry)
@@ -126,7 +247,7 @@ ALERROR CDesignCollection::AddExtension (SDesignLoadCtx &Ctx, EExtensionTypes iT
 	ASSERT(dwUNID != 0);
 
 	bool bAdded;
-	SExtensionDesc **pSlot = m_Extensions.Insert(dwUNID, &bAdded);
+	SExtensionDesc **pSlot = m_Extensions.SetAt(dwUNID, &bAdded);
 	if (!bAdded)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("Duplicate extension: %x"), dwUNID);
@@ -188,7 +309,7 @@ ALERROR CDesignCollection::BeginLoadAdventure (SDesignLoadCtx &Ctx, SExtensionDe
 	return NOERROR;
 	}
 
-ALERROR CDesignCollection::BeginLoadAdventureDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bDefaultResource)
+ALERROR CDesignCollection::BeginLoadAdventureDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bDefaultResource, CExternalEntityTable *pEntities)
 
 //	BeginLoadAdventureDesc
 //
@@ -206,6 +327,7 @@ ALERROR CDesignCollection::BeginLoadAdventureDesc (SDesignLoadCtx &Ctx, CXMLElem
 	pEntry->iType = extAdventure;
 	pEntry->bEnabled = false;
 	pEntry->bLoaded = false;
+	pEntry->SetEntities(pEntities);
 
 	//	Set context
 
@@ -215,7 +337,7 @@ ALERROR CDesignCollection::BeginLoadAdventureDesc (SDesignLoadCtx &Ctx, CXMLElem
 	return NOERROR;
 	}
 
-ALERROR CDesignCollection::BeginLoadExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CDesignCollection::BeginLoadExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CExternalEntityTable *pEntities)
 
 //	BeginLoadExtension
 //
@@ -233,6 +355,7 @@ ALERROR CDesignCollection::BeginLoadExtension (SDesignLoadCtx &Ctx, CXMLElement 
 	pEntry->iType = extExtension;
 	pEntry->bEnabled = true;
 	pEntry->bLoaded = true;
+	pEntry->SetEntities(pEntities);
 
 	//	Set context
 
@@ -250,16 +373,16 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 
 	{
 	ALERROR error;
-	int i, j, k;
+	int i, j;
 
 	//	Unbind everything
 
 	for (i = 0; i < m_AllTypes.GetCount(); i++)
 		m_AllTypes.GetEntry(i)->UnbindDesign();
+	m_AllTypes.DeleteAll();
 
 	//	Reset the bind tables
 
-	m_AllTypes.RemoveAll();
 	for (i = 0; i < designCount; i++)
 		m_ByType[i].DeleteAll();
 
@@ -340,6 +463,26 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 			}
 		}
 
+	//	If this is a new game, then create all the Template types
+
+	if (Ctx.bNewGame)
+		{
+		m_DynamicUNIDs.DeleteAll();
+		m_DynamicTypes.DeleteAll();
+
+		if (error = FireOnGlobalTypesInit(Ctx))
+			return error;
+
+		if (error = CreateTemplateTypes(Ctx))
+			return error;
+		}
+
+	//	Add all the dynamic types. These came either from the saved game file or
+	//	from the Template types above.
+
+	for (i = 0; i < m_DynamicTypes.GetCount(); i++)
+		m_AllTypes.AddOrReplaceEntry(m_DynamicTypes.GetType(i));
+
 	//	Initialize the byType lists
 
 	for (i = 0; i < m_AllTypes.GetCount(); i++)
@@ -371,7 +514,7 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		const CString &sName = pEcon->GetSID();
 
 		bool bUnique;
-		CEconomyType **ppDest = m_EconomyIndex.Insert(sName, &bUnique);
+		CEconomyType **ppDest = m_EconomyIndex.SetAt(sName, &bUnique);
 		if (!bUnique)
 			return pEcon->ComposeLoadError(Ctx, CONSTLIT("Currency ID must be unique"));
 
@@ -399,18 +542,10 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		if (error = pEntry->BindDesign(Ctx))
 			return error;
 
-		//	Cache some global events
+		//	Cache some global events. We keep track of the global events for
+		//	all types so that we can access them faster.
 
-		const CEventHandler &Events = pEntry->GetEventHandlers();
-		for (j = 0; j < Events.GetCount(); j++)
-			{
-			ICCItem *pCode;
-			CString sEvent = Events.GetEvent(j, &pCode);
-
-			for (k = 0; k < evtCount; k++)
-				if (m_EventsCache[k]->Insert(pEntry, sEvent, pCode))
-					break;
-			}
+		CacheGlobalEvents(pEntry);
 		}
 
 	//	Finish binding. This pass is used by design elements
@@ -424,6 +559,76 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		}
 
 	return NOERROR;
+	}
+
+void CDesignCollection::CacheGlobalEvents (CDesignType *pType)
+
+//	CacheGlobalEvents
+//
+//	Caches global events for the given type
+
+	{
+	int i, j;
+
+	const CEventHandler *pEvents;
+	TSortMap<CString, SEventHandlerDesc> FullEvents;
+	pType->GetEventHandlers(&pEvents, &FullEvents);
+	if (pEvents)
+		{
+		SEventHandlerDesc Event;
+		Event.pExtension = pType->GetExtension();
+
+		for (i = 0; i < pEvents->GetCount(); i++)
+			{
+			CString sEvent = pEvents->GetEvent(i, &Event.pCode);
+
+			for (j = 0; j < evtCount; j++)
+				if (m_EventsCache[j]->Insert(pType, sEvent, Event))
+					break;
+			}
+		}
+	else
+		{
+		for (i = 0; i < FullEvents.GetCount(); i++)
+			{
+			CString sEvent = FullEvents.GetKey(i);
+			const SEventHandlerDesc &Event = FullEvents[i];
+
+			for (j = 0; j < evtCount; j++)
+				if (m_EventsCache[j]->Insert(pType, sEvent, Event))
+					break;
+			}
+		}
+	}
+
+void CDesignCollection::CleanUp (void)
+
+//	CleanUp
+//
+//	Free all entries so that we don't hold on to any resources.
+
+	{
+	int i;
+
+	//	Some classes need to clean up global data
+	//	(But we need to do this before we destroy the types)
+
+	CStationType::Reinit();
+
+	//	Delete the base types
+
+	m_Base.DeleteAll();
+
+	//	Delete all extensions
+
+	for (i = 0; i < GetExtensionCount(); i++)
+		{
+		SExtensionDesc *pEntry = GetExtension(i);
+		pEntry->Table.DeleteAll();
+		delete pEntry;
+		}
+
+	m_Extensions.DeleteAll();
 	}
 
 void CDesignCollection::ClearImageMarks (void)
@@ -442,7 +647,78 @@ void CDesignCollection::ClearImageMarks (void)
 		}
 	}
 
-CAdventureDesc *CDesignCollection::FindAdventureForExtension (DWORD dwUNID)
+ALERROR CDesignCollection::CreateTemplateTypes (SDesignLoadCtx &Ctx)
+
+//	CreateTemplateTypes
+//
+//	This is called inside of BindDesign to create all template types
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Create an appropriate context for running code
+
+	CCodeChainCtx CCCtx;
+
+	//	Loop over all active types looking for templates.
+	//	NOTE: We cannot use the type-specific arrays because they have not been
+	//	set up yet (remember that we are inside of BindDesign).
+
+	for (i = 0; i < m_AllTypes.GetCount(); i++)
+		{
+		CDesignType *pTemplate = m_AllTypes.GetEntry(i);
+		if (pTemplate->GetType() != designTemplateType)
+			continue;
+
+		//	Get the function to generate the type source
+
+		CString sSource;
+		SEventHandlerDesc Event;
+		if (pTemplate->FindEventHandler(GET_TYPE_SOURCE_EVENT, &Event))
+			{
+			ICCItem *pResult = CCCtx.Run(Event);
+			if (pResult->IsError())
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("GetTypeSource (%x): %s"), pTemplate->GetUNID(), pResult->GetStringValue());
+				return ERR_FAIL;
+				}
+			else if (pResult->IsNil())
+				sSource = NULL_STR;
+			else
+				sSource = pResult->GetStringValue();
+
+			CCCtx.Discard(pResult);
+			}
+
+		//	Define the type
+
+		if (!sSource.IsBlank())
+			{
+			if (error = AddDynamicType(pTemplate->GetExtension(), pTemplate->GetUNID(), sSource, true, &Ctx.sError))
+				return error;
+			}
+		}
+
+	return NOERROR;
+	}
+
+CAdventureDesc *CDesignCollection::FindAdventureDesc (DWORD dwUNID) const
+
+//	FindAdventureDesc
+//
+//	Returns an adventure desc given either an adventure desc type UNID or an
+//	extension UNID.
+
+	{
+	CAdventureDesc *pDesc = CAdventureDesc::AsType(FindEntry(dwUNID));
+	if (pDesc)
+		return pDesc;
+
+	return FindAdventureForExtension(dwUNID);
+	}
+
+CAdventureDesc *CDesignCollection::FindAdventureForExtension (DWORD dwUNID) const
 
 //	FindAdventureForExtension
 //
@@ -466,7 +742,7 @@ CAdventureDesc *CDesignCollection::FindAdventureForExtension (DWORD dwUNID)
 	return NULL;
 	}
 
-SExtensionDesc *CDesignCollection::FindExtension (DWORD dwUNID)
+SExtensionDesc *CDesignCollection::FindExtension (DWORD dwUNID) const
 
 //	FindExtension
 //
@@ -477,7 +753,7 @@ SExtensionDesc *CDesignCollection::FindExtension (DWORD dwUNID)
 	return (pFind ? *pFind : NULL);
 	}
 
-CXMLElement *CDesignCollection::FindSystemFragment (const CString &sName) const
+CXMLElement *CDesignCollection::FindSystemFragment (const CString &sName, CSystemTable **retpTable) const
 
 //	FindSystemFragment
 //
@@ -493,7 +769,12 @@ CXMLElement *CDesignCollection::FindSystemFragment (const CString &sName) const
 			{
 			CXMLElement *pFragment = pTable->FindElement(sName);
 			if (pFragment)
+				{
+				if (retpTable)
+					*retpTable = pTable;
+
 				return pFragment;
+				}
 			}
 		}
 
@@ -511,8 +792,7 @@ void CDesignCollection::FireGetGlobalAchievements (CGameStats &Stats)
 
 	for (i = 0; i < m_EventsCache[evtGetGlobalAchievements]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtGetGlobalAchievements]->GetEntry(i, &pCode);
+		CDesignType *pType = m_EventsCache[evtGetGlobalAchievements]->GetEntry(i);
 
 		pType->FireGetGlobalAchievements(Stats);
 		}
@@ -533,12 +813,12 @@ bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *re
 
 	for (i = 0; i < m_EventsCache[evtGetGlobalDockScreen]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtGetGlobalDockScreen]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtGetGlobalDockScreen]->GetEntry(i, &Event);
 
 		int iPriority;
 		CString sScreen;
-		if (pType->FireGetGlobalDockScreen(pCode, pObj, &sScreen, &iPriority)
+		if (pType->FireGetGlobalDockScreen(Event, pObj, &sScreen, &iPriority)
 				&& iPriority > iBestPriority)
 			{
 			iBestPriority = iPriority;
@@ -575,10 +855,10 @@ void CDesignCollection::FireOnGlobalObjDestroyed (SDestroyCtx &Ctx)
 
 	for (i = 0; i < m_EventsCache[evtOnGlobalObjDestroyed]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtOnGlobalObjDestroyed]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalObjDestroyed]->GetEntry(i, &Event);
 
-		pType->FireOnGlobalObjDestroyed(pCode, Ctx);
+		pType->FireOnGlobalObjDestroyed(Event, Ctx);
 		}
 	}
 
@@ -601,10 +881,10 @@ void CDesignCollection::FireOnGlobalPaneInit (void *pScreen, CDesignType *pRoot,
 
 	for (i = 0; i < m_EventsCache[evtOnGlobalDockPaneInit]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtOnGlobalDockPaneInit]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalDockPaneInit]->GetEntry(i, &Event);
 
-		if (pType->FireOnGlobalDockPaneInit(pCode,
+		if (pType->FireOnGlobalDockPaneInit(Event,
 				pScreen,
 				dwRootUNID,
 				sScreenUNID,
@@ -682,6 +962,26 @@ void CDesignCollection::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCt
 		}
 	}
 
+ALERROR CDesignCollection::FireOnGlobalTypesInit (SDesignLoadCtx &Ctx)
+
+//	FireOnGlobalTypesInit
+//
+//	Give each type a chance to create dynamic types before we bind.
+
+	{
+	ALERROR error;
+	int i;
+
+	for (i = 0; i < m_AllTypes.GetCount(); i++)
+		{
+		CDesignType *pType = m_AllTypes.GetEntry(i);
+		if (error = pType->FireOnGlobalTypesInit(Ctx))
+			return error;
+		}
+
+	return NOERROR;
+	}
+
 void CDesignCollection::FireOnGlobalUniverseCreated (void)
 
 //	FireOnGlobalUniverseCreated
@@ -694,10 +994,10 @@ void CDesignCollection::FireOnGlobalUniverseCreated (void)
 	CString sError;
 	for (i = 0; i < m_EventsCache[evtOnGlobalUniverseCreated]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseCreated]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseCreated]->GetEntry(i, &Event);
 
-		pType->FireOnGlobalUniverseCreated(pCode);
+		pType->FireOnGlobalUniverseCreated(Event);
 		}
 	}
 
@@ -713,10 +1013,10 @@ void CDesignCollection::FireOnGlobalUniverseLoad (void)
 	CString sError;
 	for (i = 0; i < m_EventsCache[evtOnGlobalUniverseLoad]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseLoad]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseLoad]->GetEntry(i, &Event);
 
-		pType->FireOnGlobalUniverseLoad(pCode);
+		pType->FireOnGlobalUniverseLoad(Event);
 		}
 	}
 
@@ -732,11 +1032,30 @@ void CDesignCollection::FireOnGlobalUniverseSave (void)
 	CString sError;
 	for (i = 0; i < m_EventsCache[evtOnGlobalUniverseSave]->GetCount(); i++)
 		{
-		ICCItem *pCode;
-		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseSave]->GetEntry(i, &pCode);
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseSave]->GetEntry(i, &Event);
 
-		pType->FireOnGlobalUniverseSave(pCode);
+		pType->FireOnGlobalUniverseSave(Event);
 		}
+	}
+
+DWORD CDesignCollection::GetDynamicUNID (const CString &sName)
+
+//	GetDynamicUNID
+//
+//	Returns an UNID for the given unique name.
+
+	{
+	//	First look in the table to see if the UNID already exists.
+
+	DWORD dwAtom = m_DynamicUNIDs.atom_Find(sName);
+	if (dwAtom == NULL_ATOM)
+		m_DynamicUNIDs.atom_Insert(sName, &dwAtom);
+
+	if (dwAtom >= 0x10000000)
+		return 0;
+
+	return 0xf0000000 + dwAtom;
 	}
 
 void CDesignCollection::GetEnabledExtensions (TArray<DWORD> *retExtensionList)
@@ -841,6 +1160,22 @@ bool CDesignCollection::IsExtensionCompatibleWithAdventure (SExtensionDesc *pExt
 	return false;
 	}
 
+bool CDesignCollection::IsRegisteredGame (void)
+
+//	IsRegisteredGame
+//
+//	Returns TRUE if all enabled extensions are registered.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		if (m_Extensions[i]->bEnabled && !m_Extensions[i]->bRegistered)
+			return false;
+
+	return true;
+	}
+
 ALERROR CDesignCollection::LoadAdventureDescMainRes (SDesignLoadCtx &Ctx, CAdventureDesc *pAdventure)
 
 //	LoadAdventureDescMainRes
@@ -884,18 +1219,8 @@ ALERROR CDesignCollection::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDe
 	ALERROR error;
 	CDesignType *pEntry;
 
-	try
-		{
-		if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
-			return error;
-		}
-	catch (...)
-		{
-		char szBuffer[1024];
-		wsprintf(szBuffer, "Crash loading: %x", pDesc->GetAttributeInteger(CONSTLIT("UNID")));
-		Ctx.sError = CString(szBuffer);
-		return ERR_FAIL;
-		}
+	if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
+		return error;
 
 	if (error = AddEntry(Ctx, pEntry))
 		{
@@ -942,16 +1267,8 @@ ALERROR CDesignCollection::LoadEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 		{
 		CDesignType *pEntry;
 
-		try
-			{
-			if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
-				return error;
-			}
-		catch (...)
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Crash loading: %x"), pDesc->GetAttributeInteger(CONSTLIT("UNID")));
-			return ERR_FAIL;
-			}
+		if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
+			return error;
 
 		if (error = AddEntry(Ctx, pEntry))
 			{
@@ -1070,6 +1387,33 @@ ALERROR CDesignCollection::LoadExtensionDesc (SDesignLoadCtx &Ctx, CXMLElement *
 	return NOERROR;
 	}
 
+void CDesignCollection::ReadDynamicTypes (SUniverseLoadCtx &Ctx)
+
+//	ReadDynamicTypes
+	
+	{
+	int i;
+
+	m_DynamicTypes.ReadFromStream(Ctx);
+
+	//	Read dynamic UNIDs
+
+	m_DynamicUNIDs.DeleteAll();
+
+	DWORD dwCount;
+	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
+
+	for (i = 0; i < (int)dwCount; i++)
+		{
+		CString sName;
+		sName.ReadFromStream(Ctx.pStream);
+
+		DWORD dwAtom;
+		m_DynamicUNIDs.atom_Insert(sName, &dwAtom);
+		ASSERT(dwAtom == (DWORD)i);
+		}
+	}
+
 void CDesignCollection::Reinit (void)
 
 //	Reinit
@@ -1098,36 +1442,6 @@ void CDesignCollection::Reinit (void)
 		CDesignType *pType = GetEntry(i);
 		pType->Reinit();
 		}
-	}
-
-void CDesignCollection::RemoveAll (void)
-
-//	RemoveAll
-//
-//	Remove all entries
-
-	{
-	int i;
-
-	//	Some classes need to clean up global data
-	//	(But we need to do this before we destroy the types)
-
-	CStationType::Reinit();
-
-	//	Delete the base types
-
-	m_Base.DeleteAll();
-
-	//	Delete all extensions
-
-	for (i = 0; i < GetExtensionCount(); i++)
-		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		pEntry->Table.DeleteAll();
-		delete pEntry;
-		}
-
-	m_Extensions.DeleteAll();
 	}
 
 void CDesignCollection::SelectAdventure (CAdventureDesc *pAdventure)
@@ -1247,6 +1561,26 @@ void CDesignCollection::SweepImages (void)
 		}
 	}
 
+void CDesignCollection::WriteDynamicTypes (IWriteStream *pStream)
+
+//	WriteDynamicTypes
+//
+//	Write dynamic types to the game file
+	
+	{
+	int i;
+
+	m_DynamicTypes.WriteToStream(pStream);
+
+	//	Now write any dynamic UNIDs
+
+	DWORD dwCount = m_DynamicUNIDs.GetCount();
+	pStream->Write((char *)&dwCount, sizeof(DWORD));
+
+	for (i = 0; i < (int)dwCount; i++)
+		m_DynamicUNIDs.atom_GetKey((DWORD)i).WriteToStream(pStream);
+	}
+
 //	CDesignTable --------------------------------------------------------------
 
 ALERROR CDesignTable::AddEntry (CDesignType *pEntry)
@@ -1268,7 +1602,7 @@ ALERROR CDesignTable::AddOrReplaceEntry (CDesignType *pEntry, CDesignType **retp
 
 	{
 	bool bAdded;
-	CDesignType **pSlot = m_Table.Insert(pEntry->GetUNID(), &bAdded);
+	CDesignType **pSlot = m_Table.SetAt(pEntry->GetUNID(), &bAdded);
 
 	if (retpOldEntry)
 		*retpOldEntry = (!bAdded ? *pSlot : NULL);
@@ -1287,8 +1621,11 @@ void CDesignTable::DeleteAll (void)
 	{
 	int i;
 
-	for (i = 0; i < GetCount(); i++)
-		delete GetEntry(i);
+	if (m_bFreeTypes)
+		{
+		for (i = 0; i < GetCount(); i++)
+			delete GetEntry(i);
+		}
 
 	m_Table.DeleteAll();
 	}
@@ -1304,3 +1641,36 @@ CDesignType *CDesignTable::FindByUNID (DWORD dwUNID) const
 	return (pObj ? *pObj : NULL);
 	}
 
+void CDesignTable::Delete (DWORD dwUNID)
+
+//	Delete
+//
+//	Delete by UNID
+
+	{
+	int iIndex;
+	if (m_Table.FindPos(dwUNID, &iIndex))
+		{
+		if (m_bFreeTypes)
+			delete m_Table[iIndex];
+
+		m_Table.Delete(iIndex);
+		}
+	}
+
+void CDesignList::Delete (DWORD dwUNID)
+
+//	Delete
+//
+//	Deletes the entry by UNID
+
+	{
+	int i;
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i]->GetUNID() == dwUNID)
+			{
+			m_List.Delete(i);
+			break;
+			}
+	}

@@ -5,87 +5,87 @@
 
 #include "stdafx.h"
 
-const int BUTTON_CORNER_RADIUS =			8;
-const int BUTTON_BORDER_WIDTH =				3;
+const int BUTTON_CORNER_RADIUS =				8;
+const int BUTTON_BORDER_WIDTH =					3;
 
-const int CHECKBOX_BORDER_WIDTH =			1;
-const int CHECKBOX_HEIGHT =					18;
-const int CHECKBOX_LINE_PADDING =			3;
-const int CHECKBOX_WIDTH =					18;
+const int CHECKBOX_BORDER_WIDTH =				1;
+const int CHECKBOX_HEIGHT =						18;
+const int CHECKBOX_LINE_PADDING =				3;
+const int CHECKBOX_WIDTH =						18;
 
-const int DLG_APPEAR_TIME =					5;
-const int DLG_BORDER_WIDTH =				3;
-const int DLG_CORNER_RADIUS =				20;
-const int DLG_PADDING_BOTTOM =				20;
-const int DLG_PADDING_LEFT =				20;
-const int DLG_PADDING_RIGHT =				20;
-const int DLG_PADDING_TOP =					20;
-const int DLG_TITLE_HEIGHT =				42;
+const int DLG_APPEAR_TIME =						5;
+const int DLG_BORDER_WIDTH =					3;
+const int DLG_CORNER_RADIUS =					20;
+const int DLG_PADDING_BOTTOM =					20;
+const int DLG_PADDING_LEFT =					20;
+const int DLG_PADDING_RIGHT =					20;
+const int DLG_PADDING_TOP =						20;
+const int DLG_TITLE_HEIGHT =					42;
 
-const int IMAGE_BUTTON_BORDER_WIDTH =		1;
-const int IMAGE_BUTTON_IMAGE_PADDING_TOP =	4;
-const int IMAGE_BUTTON_HEIGHT =				96;
-const int IMAGE_BUTTON_WIDTH =				96;
+const int IMAGE_BUTTON_BORDER_WIDTH =			1;
+const int IMAGE_BUTTON_IMAGE_PADDING_TOP =		4;
+const int IMAGE_BUTTON_HEIGHT =					96;
+const int IMAGE_BUTTON_WIDTH =					96;
 
-const int LINK_HEIGHT =						20;
-const int LINK_SPACING_X =					4;
-const int LINK_CORNER_RADIUS =				3;
+const int LINK_HEIGHT =							20;
+const int LINK_SPACING_X =						4;
+const int LINK_CORNER_RADIUS =					3;
 
-const int MSG_BORDER_WIDTH =				1;
-const int MSG_CORNER_RADIUS =				20;
-const int MSG_PADDING_LEFT =				20;
-const int MSG_PADDING_RIGHT =				20;
-const int MSG_PADDING_TOP =					20;
-const int MSG_PANE_HEIGHT =					200;
-const int MSG_PANE_WIDTH =					400;
+const int MSG_BORDER_WIDTH =					1;
+const int MSG_CORNER_RADIUS =					20;
+const int MSG_PADDING_LEFT =					20;
+const int MSG_PADDING_RIGHT =					20;
+const int MSG_PADDING_TOP =						20;
+const int MSG_PANE_HEIGHT =						200;
+const int MSG_PANE_WIDTH =						400;
 
-const int RING_SPACING =					2;
-const int RING_SIZE =						10;
-const int RING_SIZE_INC =					2;
-const int RING_MIN_RATE =					2;
-const int RING_MAX_RATE =					6;
-const int RING_MIN_RADIUS =					20;
-const int RING_COUNT =						4;
+const int RING_SPACING =						2;
+const int RING_SIZE =							10;
+const int RING_SIZE_INC =						2;
+const int RING_MIN_RATE =						2;
+const int RING_MAX_RATE =						6;
+const int RING_MIN_RADIUS =						20;
+const int RING_COUNT =							4;
 
-const int SMALL_BUTTON_CORNER_RADIUS =		4;
+const int SMALL_BUTTON_CORNER_RADIUS =			4;
 
-const int SMALL_IMAGE_BUTTON_BORDER_WIDTH =	1;
-const int SMALL_IMAGE_BUTTON_HEIGHT =		48;
-const int SMALL_IMAGE_BUTTON_WIDTH =		48;
+const int SMALL_IMAGE_BUTTON_BORDER_WIDTH =		1;
+const int SMALL_IMAGE_BUTTON_HEIGHT =			48;
+const int SMALL_IMAGE_BUTTON_WIDTH =			48;
 
-#define PROP_COLOR							CONSTLIT("color")
-#define PROP_FILL_TYPE						CONSTLIT("fillType")
-#define PROP_FONT							CONSTLIT("font")
-#define PROP_LINE_COLOR						CONSTLIT("lineColor")
-#define PROP_LINE_PADDING					CONSTLIT("linePadding")
-#define PROP_LINE_TYPE						CONSTLIT("lineType")
-#define PROP_LINE_WIDTH						CONSTLIT("lineWidth")
-#define PROP_LL_RADIUS						CONSTLIT("llRadius")
-#define PROP_LR_RADIUS						CONSTLIT("lrRadius")
-#define PROP_OPACITY						CONSTLIT("opacity")
-#define PROP_POSITION						CONSTLIT("position")
-#define PROP_SCALE							CONSTLIT("scale")
-#define PROP_TEXT							CONSTLIT("text")
-#define PROP_TEXT_ALIGN_HORZ				CONSTLIT("textAlignHorz")
-#define PROP_TEXT_ALIGN_VERT				CONSTLIT("textAlignVert")
-#define PROP_UL_RADIUS						CONSTLIT("ulRadius")
-#define PROP_UR_RADIUS						CONSTLIT("urRadius")
+#define PROP_COLOR								CONSTLIT("color")
+#define PROP_FILL_TYPE							CONSTLIT("fillType")
+#define PROP_FONT								CONSTLIT("font")
+#define PROP_LINE_COLOR							CONSTLIT("lineColor")
+#define PROP_LINE_PADDING						CONSTLIT("linePadding")
+#define PROP_LINE_TYPE							CONSTLIT("lineType")
+#define PROP_LINE_WIDTH							CONSTLIT("lineWidth")
+#define PROP_LL_RADIUS							CONSTLIT("llRadius")
+#define PROP_LR_RADIUS							CONSTLIT("lrRadius")
+#define PROP_OPACITY							CONSTLIT("opacity")
+#define PROP_POSITION							CONSTLIT("position")
+#define PROP_SCALE								CONSTLIT("scale")
+#define PROP_TEXT								CONSTLIT("text")
+#define PROP_TEXT_ALIGN_HORZ					CONSTLIT("textAlignHorz")
+#define PROP_TEXT_ALIGN_VERT					CONSTLIT("textAlignVert")
+#define PROP_UL_RADIUS							CONSTLIT("ulRadius")
+#define PROP_UR_RADIUS							CONSTLIT("urRadius")
 
-#define ALIGN_CENTER						CONSTLIT("center")
+#define ALIGN_CENTER							CONSTLIT("center")
 
-#define STYLE_CHECK							CONSTLIT("check")
-#define STYLE_DISABLED						CONSTLIT("disabled")
-#define STYLE_DOWN							CONSTLIT("down")
-#define STYLE_FRAME							CONSTLIT("frame")
-#define STYLE_FRAME_FOCUS					CONSTLIT("frameFocus")
-#define STYLE_FRAME_DISABLED				CONSTLIT("frameDisabled")
-#define STYLE_HOVER							CONSTLIT("hover")
-#define STYLE_IMAGE							CONSTLIT("image")
-#define STYLE_NORMAL						CONSTLIT("normal")
-#define STYLE_TEXT							CONSTLIT("text")
+#define STYLE_CHECK								CONSTLIT("check")
+#define STYLE_DISABLED							CONSTLIT("disabled")
+#define STYLE_DOWN								CONSTLIT("down")
+#define STYLE_FRAME								CONSTLIT("frame")
+#define STYLE_FRAME_FOCUS						CONSTLIT("frameFocus")
+#define STYLE_FRAME_DISABLED					CONSTLIT("frameDisabled")
+#define STYLE_HOVER								CONSTLIT("hover")
+#define STYLE_IMAGE								CONSTLIT("image")
+#define STYLE_NORMAL							CONSTLIT("normal")
+#define STYLE_TEXT								CONSTLIT("text")
 
-#define FILL_TYPE_NONE						CONSTLIT("none")
-#define LINE_TYPE_SOLID						CONSTLIT("solid")
+#define FILL_TYPE_NONE							CONSTLIT("none")
+#define LINE_TYPE_SOLID							CONSTLIT("solid")
 
 void CVisualPalette::CreateButton (CAniSequencer *pContainer,
 								   const CString &sID,

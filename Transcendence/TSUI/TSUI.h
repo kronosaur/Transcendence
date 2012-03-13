@@ -122,15 +122,41 @@ class IHISession : public IHICommand, private IAniCommand
 		void HILButtonDown (int x, int y, DWORD dwFlags);
 		void HILButtonUp (int x, int y, DWORD dwFlags);
 		void HIMouseMove (int x, int y, DWORD dwFlags);
+		void HIMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
 		inline void HIMove (int x, int y) { OnMove(x, y); }
 		void HIPaint (CG16bitImage &Screen);
 		inline void HIReportHardCrash (CString *retsMessage) { OnReportHardCrash(retsMessage); }
 		inline void HISize (int cxWidth, int cyHeight);
-		inline void HIUpdate (void) { OnUpdate(); }
+		inline void HIUpdate (bool bTopMost) { OnUpdate(bTopMost); }
 
 		inline bool IsCursorShown (void) const { return !m_bNoCursor; }
 		inline bool IsTransparent (void) const { return m_bTransparent; }
 		void RegisterPerformanceEvent (IAnimatron *pAni, const CString &sEvent, const CString &sCmd);
+
+		//	Reanimator interface
+		inline void AddPerformance (IAnimatron *pAni, const CString &sID) { m_Reanimator.AddPerformance(pAni, sID); }
+		inline void DeleteElement (const CString &sID) { m_Reanimator.DeleteElement(sID); }
+		inline IAnimatron *GetElement (const CString &sID) { return m_Reanimator.GetElement(sID); }
+		inline IAnimatron *GetPerformance (const CString &sID, int *retiFrame = NULL) { return m_Reanimator.GetPerformance(sID, retiFrame); }
+		inline bool GetPropertyBool (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyBool(sID, sProp); }
+		inline WORD GetPropertyColor (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyColor(sID, sProp); }
+		inline int GetPropertyInteger (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyInteger(sID, sProp); }
+		inline Metric GetPropertyMetric (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyMetric(sID, sProp); }
+		inline DWORD GetPropertyOpacity (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyOpacity(sID, sProp); }
+		inline CString GetPropertyString (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyString(sID, sProp); }
+		inline CVector GetPropertyVector (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyVector(sID, sProp); }
+		bool IsElementEnabled (const CString &sID);
+		inline void SetInputFocus (const CString &sID) { IAnimatron *pFocus = GetElement(sID); if (pFocus) m_Reanimator.SetInputFocus(pFocus); }
+		inline void SetPropertyBool (const CString &sID, const CString &sProp, bool bValue) { m_Reanimator.SetPropertyBool(sID, sProp, bValue); }
+		inline void SetPropertyColor (const CString &sID, const CString &sProp, WORD wValue) { m_Reanimator.SetPropertyColor(sID, sProp, wValue); }
+		inline void SetPropertyInteger (const CString &sID, const CString &sProp, int iValue) { m_Reanimator.SetPropertyInteger(sID, sProp, iValue); }
+		inline void SetPropertyMetric (const CString &sID, const CString &sProp, Metric rValue) { m_Reanimator.SetPropertyMetric(sID, sProp, rValue); }
+		inline void SetPropertyOpacity (const CString &sID, const CString &sProp, DWORD dwValue) { m_Reanimator.SetPropertyOpacity(sID, sProp, dwValue); }
+		inline void SetPropertyString (const CString &sID, const CString &sProp, const CString &sValue) { m_Reanimator.SetPropertyString(sID, sProp, sValue); }
+		inline void SetPropertyVector (const CString &sID, const CString &sProp, const CVector &vValue) { m_Reanimator.SetPropertyVector(sID, sProp, vValue); }
+		inline void StartPerformance (const CString &sID, DWORD dwFlags = 0) { m_Reanimator.StartPerformance(sID, dwFlags); }
+		void StartPerformance (IAnimatron *pAni, const CString &sID, DWORD dwFlags = 0);
+		inline void StopPerformance (const CString &sID) { m_Reanimator.StopPerformance(sID); }
 
 	protected:
 		struct SPerformanceEvent
@@ -147,38 +173,16 @@ class IHISession : public IHICommand, private IAniCommand
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags) { }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { }
 		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { }
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags) { }
 		virtual void OnMove (int x, int y) { }
 		virtual void OnReportHardCrash (CString *retsMessage) { }
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid) { }
 		virtual void OnSize (int cxWidth, int cyHeight) { }
-		virtual void OnUpdate (void) { }
+		virtual void OnUpdate (bool bTopMost) { }
 
-		inline void SetNoCursor (bool bNoCursor = true) { if (bNoCursor != m_bNoCursor) { m_bNoCursor = bNoCursor; ::ShowCursor(IsCursorShown()); } }
+		bool HandlePageScrollKeyDown (const CString &sScroller, int iVirtKey, DWORD dwKeyData);
+		inline void SetNoCursor (bool bNoCursor = true) { if (bNoCursor != m_bNoCursor) { m_bNoCursor = bNoCursor; } }
 		inline void SetTransparent (bool bTransparent = true) { m_bTransparent = bTransparent; }
-
-		//	Reanimator interface
-		inline void AddPerformance (IAnimatron *pAni, const CString &sID) { m_Reanimator.AddPerformance(pAni, sID); }
-		inline void DeleteElement (const CString &sID) { m_Reanimator.DeleteElement(sID); }
-		inline IAnimatron *GetElement (const CString &sID) { return m_Reanimator.GetElement(sID); }
-		inline IAnimatron *GetPerformance (const CString &sID, int *retiFrame = NULL) { return m_Reanimator.GetPerformance(sID, retiFrame); }
-		inline bool GetPropertyBool (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyBool(sID, sProp); }
-		inline WORD GetPropertyColor (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyColor(sID, sProp); }
-		inline int GetPropertyInteger (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyInteger(sID, sProp); }
-		inline Metric GetPropertyMetric (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyMetric(sID, sProp); }
-		inline DWORD GetPropertyOpacity (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyOpacity(sID, sProp); }
-		inline CString GetPropertyString (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyString(sID, sProp); }
-		inline CVector GetPropertyVector (const CString &sID, const CString &sProp) { return m_Reanimator.GetPropertyVector(sID, sProp); }
-		inline void SetInputFocus (const CString &sID) { IAnimatron *pFocus = GetElement(sID); if (pFocus) m_Reanimator.SetInputFocus(pFocus); }
-		inline void SetPropertyBool (const CString &sID, const CString &sProp, bool bValue) { m_Reanimator.SetPropertyBool(sID, sProp, bValue); }
-		inline void SetPropertyColor (const CString &sID, const CString &sProp, WORD wValue) { m_Reanimator.SetPropertyColor(sID, sProp, wValue); }
-		inline void SetPropertyInteger (const CString &sID, const CString &sProp, int iValue) { m_Reanimator.SetPropertyInteger(sID, sProp, iValue); }
-		inline void SetPropertyMetric (const CString &sID, const CString &sProp, Metric rValue) { m_Reanimator.SetPropertyMetric(sID, sProp, rValue); }
-		inline void SetPropertyOpacity (const CString &sID, const CString &sProp, DWORD dwValue) { m_Reanimator.SetPropertyOpacity(sID, sProp, dwValue); }
-		inline void SetPropertyString (const CString &sID, const CString &sProp, const CString &sValue) { m_Reanimator.SetPropertyString(sID, sProp, sValue); }
-		inline void SetPropertyVector (const CString &sID, const CString &sProp, const CVector &vValue) { m_Reanimator.SetPropertyVector(sID, sProp, vValue); }
-		inline void StartPerformance (const CString &sID, DWORD dwFlags = 0) { m_Reanimator.StartPerformance(sID, dwFlags); }
-		void StartPerformance (IAnimatron *pAni, const CString &sID, DWORD dwFlags = 0);
-		inline void StopPerformance (const CString &sID) { m_Reanimator.StopPerformance(sID); }
 
 	private:
 		//	IAniCommand virtuals
@@ -313,6 +317,13 @@ class CTimerRegistry
 //	NOTE: The color and font numbers must match the order of the initializing
 //	table in CVisualPalette. DO NOT rely on these numbers or save them anywhere.
 
+enum EMetrics
+	{
+	metricsInputErrorMsgMarginHorz =		64,		//	Distance between anchor object and edge of message box
+	metricsInputErrorMsgHeight =			80,		//	Height of input error message box
+	metricsInputErrorMsgWidth =				300,	//	Width of input error message box
+	};
+
 enum EColorPalette
 	{
 	colorUnknown =					0,
@@ -416,6 +427,9 @@ class CVisualPalette : public IFontTable
 			//	CreateLink
 			OPTION_LINK_MEDIUM_FONT =			0x00000001,
 			OPTION_LINK_SUB_TITLE_FONT =		0x00000002,
+
+			//	Session
+			OPTION_SESSION_DLG_BACKGROUND =		0x000000001,
 			};
 
 		CVisualPalette (void) { }
@@ -436,7 +450,7 @@ class CVisualPalette : public IFontTable
 		//	Draw functions
 
 		void DrawDamageTypeIcon (CG16bitImage &Screen, int x, int y, DamageTypes iDamageType) const;
-		void DrawSessionBackground (CG16bitImage &Screen, const CG16bitImage &Background, RECT *retrcCenter = NULL) const;
+		void DrawSessionBackground (CG16bitImage &Screen, const CG16bitImage &Background, DWORD dwFlags, RECT *retrcCenter = NULL) const;
 
 		//	Reanimator objects
 
@@ -576,6 +590,7 @@ class CHumanInterface
 		CReanimator &GetReanimator (void);
 		inline CG16bitImage &GetScreen (void) { return m_ScreenMgr.GetScreen(); }
 		inline CScreenMgr &GetScreenMgr (void) { return m_ScreenMgr; }
+		inline IHISession *GetSession (void) { return m_pCurSession; }
 		inline CSoundMgr &GetSoundMgr (void) { return m_SoundMgr; }
 		inline const CVisualPalette &GetVisuals (void) { return m_Visuals; }
 		inline void HICommand (const CString &sCmd, void *pData = NULL) { m_pController->HICommand(sCmd, pData); }
@@ -610,6 +625,7 @@ class CHumanInterface
 		LONG WMLButtonDown (int x, int y, DWORD dwFlags);
 		LONG WMLButtonUp (int x, int y, DWORD dwFlags);
 		LONG WMMouseMove (int x, int y, DWORD dwFlags);
+		LONG WMMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
 		LONG WMMove (int x, int y);
 		LONG WMSize (int cxWidth, int cyHeight, int iSize);
 		LONG WMTimer (DWORD dwID);

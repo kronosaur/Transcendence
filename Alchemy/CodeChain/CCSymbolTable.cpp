@@ -12,7 +12,8 @@ static CObjectClass<CCSymbolTable>g_Class(OBJID_CCSYMBOLTABLE, NULL);
 CCSymbolTable::CCSymbolTable (void) : ICCList(&g_Class),
 		m_Symbols(FALSE, FALSE),
 		m_pParent(NULL),
-		m_bLocalFrame(FALSE)
+		m_bLocalFrame(FALSE),
+		m_pDefineHook(NULL)
 
 //	SymbolTable constructor
 
@@ -46,6 +47,14 @@ ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntr
 	ALERROR error;
 	ICCItem *pPrevEntry = NULL;
 
+	//	Transform the value, if necessary
+
+	ICCItem *pTransformed;
+	if (m_pDefineHook)
+		pTransformed = m_pDefineHook->Transform(*pCC, pEntry);
+	else
+		pTransformed = pEntry->Reference();
+
 	//	If this is the global symbol table (no parent) then we add the entry
 	//	regardless of whether it already exists or not.
 
@@ -53,7 +62,7 @@ ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntr
 		{
 		CObject *pOldEntry;
 
-		if (m_Symbols.ReplaceEntry(pKey->GetStringValue(), pEntry->Reference(), TRUE, &pOldEntry) != NOERROR)
+		if (m_Symbols.ReplaceEntry(pKey->GetStringValue(), pTransformed, TRUE, &pOldEntry) != NOERROR)
 			return pCC->CreateMemoryError();
 
 		//	If we have a previous entry, decrement its refcount since we're
@@ -69,11 +78,12 @@ ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntr
 		{
 		CObject *pOldEntry;
 
-		error = m_Symbols.ReplaceEntry(pKey->GetStringValue(), pEntry->Reference(), FALSE, &pOldEntry);
+		error = m_Symbols.ReplaceEntry(pKey->GetStringValue(), pTransformed, FALSE, &pOldEntry);
 		if (error == ERR_NOTFOUND)
 			{
-			pEntry->Discard(pCC);
-			return m_pParent->AddEntry(pCC, pKey, pEntry);
+			ICCItem *pResult = m_pParent->AddEntry(pCC, pKey, pTransformed);
+			pTransformed->Discard(pCC);
+			return pResult;
 			}
 		else if (error != NOERROR)
 			return pCC->CreateMemoryError();
@@ -411,6 +421,7 @@ void CCSymbolTable::Reset (void)
 	m_Symbols.RemoveAll();
 	m_pParent = NULL;
 	m_bLocalFrame = FALSE;
+	m_pDefineHook = NULL;
 	}
 
 ICCItem *CCSymbolTable::SimpleLookup (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound, int *retiOffset)

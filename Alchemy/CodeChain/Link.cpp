@@ -138,6 +138,10 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 		CCSymbolTable *pTable = dynamic_cast<CCSymbolTable *>(pNew);
 
+		//	Always literal
+
+		pTable->SetQuoted();
+
 		//	Keep reading until we find the end
 
 		pPos++;
@@ -359,26 +363,36 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 				&& *pPos != ';')
         	pPos++;
 
-		//	Create a string from the portion
+		//	If we did not advance, then we clearly hit an error
 
-		sIdentifier = strSubString(sString, iOffset + (pStartString - pStart), (pPos - pStartString));
+		if (pStartString == pPos)
+			pResult = CreateError(strPatternSubst(CONSTLIT("Unexpected character: %s"), CString(pPos, 1)));
 
-		//	Check to see if this is a reserved identifier
+		//	Otherwise, get the identifier
 
-		if (strCompareAbsolute(sIdentifier, CONSTLIT("Nil")) == 0)
-			pResult = CreateNil();
-		else if (strCompareAbsolute(sIdentifier, CONSTLIT("True")) == 0)
-			pResult = CreateTrue();
 		else
 			{
-			//	If this is an integer, create an integer; otherwise
-			//	create a string
+			//	Create a string from the portion
 
-			iInt = strToInt(sIdentifier, 0, &bNotInteger);
-			if (bNotInteger)
-				pResult = CreateString(sIdentifier);
+			sIdentifier = strSubString(sString, iOffset + (pStartString - pStart), (pPos - pStartString));
+
+			//	Check to see if this is a reserved identifier
+
+			if (strCompareAbsolute(sIdentifier, CONSTLIT("Nil")) == 0)
+				pResult = CreateNil();
+			else if (strCompareAbsolute(sIdentifier, CONSTLIT("True")) == 0)
+				pResult = CreateTrue();
 			else
-				pResult = CreateInteger(iInt);
+				{
+				//	If this is an integer, create an integer; otherwise
+				//	create a string
+
+				iInt = strToInt(sIdentifier, 0, &bNotInteger);
+				if (bNotInteger)
+					pResult = CreateString(sIdentifier);
+				else
+					pResult = CreateInteger(iInt);
+				}
 			}
 		}
 

@@ -14,10 +14,11 @@ CEffectSequencerCreator::~CEffectSequencerCreator (void)
 	}
 
 ALERROR CEffectSequencerCreator::CreateEffect (CSystem *pSystem,
-							  CSpaceObject *pAnchor,
-							  const CVector &vPos,
-							  const CVector &vVel,
-							  int iRotation)
+											   CSpaceObject *pAnchor,
+											   const CVector &vPos,
+											   const CVector &vVel,
+											   int iRotation,
+											   int iVariant)
 
 //	CreateEffect
 //
@@ -112,7 +113,7 @@ void CEffectSequencerCreator::MarkImages (void)
 		m_Timeline[i].pCreator->MarkImages();
 	}
 
-ALERROR CEffectSequencerCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CEffectSequencerCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //
@@ -126,11 +127,12 @@ ALERROR CEffectSequencerCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXM
 	for (i = 0; i < pDesc->GetContentElementCount(); i++)
 		{
 		CXMLElement *pCreatorDesc = pDesc->GetContentElement(i);
+		CString sSubUNID = strPatternSubst(CONSTLIT("%s/%d"), sUNID, i);
 
 		//	Load the creator
 
 		SEntry *pEntry = m_Timeline.Insert();
-		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pCreatorDesc, &pEntry->pCreator))
+		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pCreatorDesc, sSubUNID, &pEntry->pCreator))
 			return error;
 
 		//	Set the time

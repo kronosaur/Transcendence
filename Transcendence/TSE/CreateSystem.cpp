@@ -2096,34 +2096,47 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		COrbit NewOrbit;
 		const COrbit *pOrbitDesc = ComputeOffsetOrbit(pObj, OrbitDesc, &NewOrbit);
 
-		//	Find the appropriate table
+		//	Keep track of the current extension, because we may change it below
 
-		CXMLElement *pTable = NULL;
+		SExtensionDesc *pOldExtension = pCtx->pExtension;
+
+		//	Find the appropriate table. First we look in the local table:
+
+		CXMLElement *pTableDesc = NULL;
 		CString sTable = pObj->GetAttribute(TABLE_ATTRIB);
 		if (pCtx->pLocalTables)
-			pTable = pCtx->pLocalTables->GetContentElementByTag(sTable);
+			pTableDesc = pCtx->pLocalTables->GetContentElementByTag(sTable);
 
-		if (pTable == NULL)
+		//	If not found, we look in all global tables
+
+		if (pTableDesc == NULL)
 			{
-			pTable = g_pUniverse->FindSystemFragment(sTable);
-			if (pTable == NULL)
+			CSystemTable *pTable;
+			pTableDesc = g_pUniverse->FindSystemFragment(sTable, &pTable);
+			if (pTableDesc == NULL)
 				{
 				pCtx->sError = strPatternSubst(CONSTLIT("Unable to find table in <Lookup>: %s"), sTable);
 				return ERR_FAIL;
 				}
+
+			//	Set the extension
+
+			pCtx->pExtension = pTable->GetExtension();
 			}
 
 		//	Create all the objects
 
-		for (int i = 0; i < pTable->GetContentElementCount(); i++)
+		for (int i = 0; i < pTableDesc->GetContentElementCount(); i++)
 			{
-			CXMLElement *pResult = pTable->GetContentElement(i);
+			CXMLElement *pResult = pTableDesc->GetContentElement(i);
 
 			//	Recurse
 
 			if (error = CreateSystemObject(pCtx, pResult, *pOrbitDesc))
 				return error;
 			}
+
+		pCtx->pExtension = pOldExtension;
 		}
 	else if (strEquals(sTag, ORBITALS_TAG))
 		{
@@ -2858,6 +2871,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Create the group
 
 	SSystemCreateCtx Ctx;
+	Ctx.pExtension = pType->GetExtension();
 	Ctx.pTopologyNode = pTopology;
 	Ctx.pSystem = pSystem;
 	Ctx.pLocalTables = pTables;
@@ -3168,12 +3182,22 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 	CXMLElement *pSatellites = pType->GetSatellitesDesc();
 	if (pSatellites && bCreateSatellites)
 		{
+		//	Set the extension to be where the stationType came from. NOTE: This
+		//	works only because the satellite descriptor cannot be inherited.
+		//	(If it were, then we would need to get the extension that the
+		//	satellite desc came from).
+
+		SExtensionDesc *pOldExtension = pCtx->pExtension;
+		pCtx->pExtension = pType->GetExtension();
+
 		for (int i = 0; i < pSatellites->GetContentElementCount(); i++)
 			{
 			CXMLElement *pSatDesc = pSatellites->GetContentElement(i);
 			if (error = CreateSystemObject(pCtx, pSatDesc, OrbitDesc))
 				return error;
 			}
+
+		pCtx->pExtension = pOldExtension;
 		}
 
 	pCtx->pStation = pSavedStation;
@@ -3335,7 +3359,7 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 
 	CXMLElement *pOnCreate = pDesc->GetContentElementByTag(ON_CREATE_EVENT);
 	if (pOnCreate)
-		pCtx->Events.AddDeferredEvent(pStation, pOnCreate);
+		pCtx->Events.AddDeferredEvent(pStation, pCtx->pExtension, pOnCreate);
 
 	//	Done
 

@@ -1319,7 +1319,7 @@
 										(setq gateMission True)
 										)
 									(block Nil
-										(setq dest (random (sysFindObject gSource "TAF +populated; -occupation;")))
+										(setq dest (random (sysFindObject gSource "TAF +populated; -occupation; -uncharted;")))
 										(setq gateMission Nil)
 										)
 									)
@@ -1520,7 +1520,7 @@
 								(setq minDist (item '(250 250 400 500 600) playerLevel))
 
 								; Get the list of all stations that we might visit
-								(setq destList (sysFindObject gSource "TAF +populated; -occupation;"))
+								(setq destList (sysFindObject gSource "TAF +populated; -occupation; -uncharted;"))
 
 								; Add the stargates (we add it twice so that they have 
 								; more chances to be chosen).

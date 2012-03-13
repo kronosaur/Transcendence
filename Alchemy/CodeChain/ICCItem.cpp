@@ -210,3 +210,10 @@ ICCItem *ICCItem::Unstream (CCodeChain *pCC, IReadStream *pStream)
 
 	return UnstreamItem(pCC, pStream);
 	}
+
+//	IItemTransform -------------------------------------------------------------
+
+ICCItem *IItemTransform::Transform (CCodeChain &CC, ICCItem *pItem)
+	{
+	return pItem->Reference();
+	}

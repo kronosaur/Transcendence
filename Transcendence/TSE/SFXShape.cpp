@@ -66,7 +66,7 @@ IEffectPainter *CShapeEffectCreator::CreatePainter (void)
 	return new CShapeEffectPainter(this);
 	}
 
-ALERROR CShapeEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CShapeEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

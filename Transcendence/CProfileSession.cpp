@@ -9,7 +9,6 @@
 #define CMD_CLOSE_SESSION						CONSTLIT("cmdCloseSession")
 #define CMD_READ_COMPLETE						CONSTLIT("cmdReadComplete")
 
-#define ID_SCROLL_ANIMATION						CONSTLIT("aniScroll")
 #define ID_CTRL_TITLE							CONSTLIT("ctrlTitle")
 #define ID_CTRL_WAIT							CONSTLIT("ctrlWait")
 #define ID_MESSAGE								CONSTLIT("idMessage")
@@ -161,28 +160,8 @@ void CProfileSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			m_HI.ClosePopupSession();
 			break;
 
-		case VK_DOWN:
-			Scroll(scroll, 50);
-			break;
-
-		case VK_UP:
-			Scroll(scroll, -50);
-			break;
-
-		case VK_NEXT:
-			Scroll(scroll, 512);
-			break;
-
-		case VK_PRIOR:
-			Scroll(scroll, -512);
-			break;
-
-		case VK_END:
-			Scroll(scrollToEnd);
-			break;
-
-		case VK_HOME:
-			Scroll(scrollToHome);
+		default:
+			HandlePageScrollKeyDown(ID_PROFILE, iVirtKey, dwKeyData);
 			break;
 		}
 	}
@@ -209,7 +188,7 @@ void CProfileSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), &rcCenter);
+	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CProfileSession::OnReportHardCrash (CString *retsMessage)
@@ -222,64 +201,11 @@ void CProfileSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CProfileSession\r\n");
 	}
 
-void CProfileSession::OnUpdate (void)
+void CProfileSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //
 //	Update
 
 	{
-	}
-
-void CProfileSession::Scroll (ScrollTypes iScroll, int iScrollDist)
-
-//	Scroll
-//
-//	Scrolls the appropriate distance
-
-	{
-	int iFrame;
-	IAnimatron *pList = GetPerformance(ID_PROFILE, &iFrame);
-	if (pList)
-		{
-		int iScrollPos = (int)pList->GetPropertyMetric(PROP_SCROLL_POS);
-		int iMaxScrollPos = (int)pList->GetPropertyMetric(PROP_MAX_SCROLL_POS);
-
-		int iNewPos;
-		switch (iScroll)
-			{
-			case scrollToEnd:
-				iNewPos = iMaxScrollPos;
-				break;
-
-			case scrollToHome:
-				iNewPos = 0;
-				break;
-
-			case scroll:
-				iNewPos = Max(0, Min(iMaxScrollPos, iScrollPos + iScrollDist));
-				break;
-
-			default:
-				iNewPos = iScrollPos;
-			}
-
-		if (iNewPos != iScrollPos)
-			ScrollTo(pList, iFrame, iScrollPos, iNewPos);
-		}
-	}
-
-void CProfileSession::ScrollTo (IAnimatron *pList, int iStartFrame, int iOriginalPos, int iPos)
-
-//	ScrollTo
-//
-//	Scroll to the given position
-
-	{
-	pList->RemoveAnimation(ID_SCROLL_ANIMATION);
-
-	CLinearAnimator *pAni = new CLinearAnimator;
-	pAni->SetParams(CAniProperty((Metric)iOriginalPos), CAniProperty((Metric)iPos), 5);
-
-	pList->AnimateProperty(PROP_SCROLL_POS, pAni, iStartFrame, ID_SCROLL_ANIMATION, true);
 	}

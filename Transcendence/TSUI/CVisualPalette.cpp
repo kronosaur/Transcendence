@@ -168,7 +168,7 @@ void CVisualPalette::DrawDamageTypeIcon (CG16bitImage &Screen, int x, int y, Dam
 			y);
 	}
 
-void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitImage &Background, RECT *retrcCenter) const
+void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitImage &Background, DWORD dwFlags, RECT *retrcCenter) const
 
 //	DrawSessionBackground
 //
@@ -178,6 +178,11 @@ void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitI
 	int cxScreen = Screen.GetWidth();
 	int cyScreen = Screen.GetHeight();
 
+	//	Get some metrics
+
+	RECT rcCenter;
+	RECT rcFull;
+	GetWidescreenRect(Screen, &rcCenter, &rcFull);
 	WORD wBackgroundColor = GetColor(colorAreaDeep);
 	WORD wLineColor = GetColor(colorLineFrame);
 
@@ -212,7 +217,17 @@ void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitI
 				rcBackgroundDest.top);
 		}
 	else
-		Screen.Fill(0, 0, cxScreen, cyScreen, wBackgroundColor);
+		{
+		if (dwFlags & OPTION_SESSION_DLG_BACKGROUND)
+			{
+			Screen.Fill(rcFull.left, 0, RectWidth(rcFull), rcFull.top, wBackgroundColor);
+			Screen.Fill(rcFull.left, rcFull.bottom, RectWidth(rcFull), cyScreen - rcFull.bottom, wBackgroundColor);
+
+			Screen.Fill(rcFull.left, rcFull.top, RectWidth(rcFull), RectHeight(rcFull), GetColor(colorAreaDialog));
+			}
+		else
+			Screen.Fill(0, 0, cxScreen, cyScreen, wBackgroundColor);
+		}
 
 	//	Paint the frame
 
@@ -220,9 +235,10 @@ void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitI
 	Screen.FillLine(0, yLine - 1, cxScreen, wLineColor);
 	Screen.FillLine(0, yLine + WIDESCREEN_HEIGHT, cxScreen, wLineColor);
 
-	//	Return the center rect
+	//	Done
 
-	GetWidescreenRect(Screen, retrcCenter, NULL);
+	if (retrcCenter)
+		*retrcCenter = rcCenter;
 	}
 
 const CG16bitFont &CVisualPalette::GetFont (const CString &sName, bool *retFound) const

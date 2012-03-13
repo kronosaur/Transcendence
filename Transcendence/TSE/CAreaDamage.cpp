@@ -75,9 +75,10 @@ ALERROR CAreaDamage::Create (CSystem *pSystem,
 
 	//	Create a painter instance
 
-	if (pDesc->m_pEffect)
+	CEffectCreator *pEffect;
+	if (pEffect = pDesc->GetEffect())
 		{
-		pArea->m_pPainter = pDesc->m_pEffect->CreatePainter();
+		pArea->m_pPainter = pEffect->CreatePainter();
 
 		//	Set the expansion speed appropriately
 
@@ -207,7 +208,7 @@ void CAreaDamage::OnReadFromStream (SLoadCtx &Ctx)
 
 	//	Load painter
 
-	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->m_pEffect);
+	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->GetEffect());
 
 	//	Previous versions stored an m_Hit array
 

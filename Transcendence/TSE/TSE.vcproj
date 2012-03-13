@@ -117,6 +117,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\Includes,..\..\Includes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
@@ -794,6 +795,10 @@
 					RelativePath=".\SFXText.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\SFXVariants.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="DesignTypes"
@@ -812,6 +817,10 @@
 				</File>
 				<File
 					RelativePath=".\CDockScreenType.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDynamicDesignTable.cpp"
 					>
 				</File>
 				<File
@@ -996,6 +1005,10 @@
 				</File>
 				<File
 					RelativePath=".\CDamageSource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDeviceStorage.cpp"
 					>
 				</File>
 				<File
@@ -1861,6 +1874,10 @@
 				</File>
 				<File
 					RelativePath=".\CCUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CFunctionContextWrapper.cpp"
 					>
 				</File>
 			</Filter>

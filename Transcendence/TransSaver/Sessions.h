@@ -13,7 +13,7 @@ class CLoadingSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnSize (int cxWidth, int cyHeight);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		CTransSaverModel &m_Model;
@@ -36,7 +36,7 @@ class CBattlesSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnSize (int cxWidth, int cyHeight);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		enum Flags

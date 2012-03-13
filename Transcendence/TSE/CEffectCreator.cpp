@@ -48,10 +48,11 @@ ALERROR CEffectCreator::CreateBeamEffect (SDesignLoadCtx &Ctx, CXMLElement *pDes
 	//	Create the effect
 
 	CEffectCreator *pCreator = new CBeamEffectCreator;
+	pCreator->m_sUNID = sUNID;
 
 	//	Type-specific creation
 
-	if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc))
+	if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc, sUNID))
 		return error;
 
 	//	Done
@@ -65,7 +66,8 @@ ALERROR CEffectCreator::CreateEffect (CSystem *pSystem,
 									  CSpaceObject *pAnchor,
 									  const CVector &vPos,
 									  const CVector &vVel,
-									  int iRotation)
+									  int iRotation,
+									  int iVariant)
 
 //	CreateEffect
 //
@@ -134,6 +136,8 @@ ALERROR CEffectCreator::CreateFromTag (const CString &sTag, CEffectCreator **ret
 		pCreator = new CTextEffectCreator;
 	else if (strEquals(sTag, CEllipseEffectCreator::GetClassTag()))
 		pCreator = new CEllipseEffectCreator;
+	else if (strEquals(sTag, CEffectVariantCreator::GetClassTag()))
+		pCreator = new CEffectVariantCreator;
 	else
 		return ERR_FAIL;
 
@@ -155,6 +159,18 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 	ALERROR error;
 	CEffectCreator *pCreator;
 
+	//	Basic info
+
+	CString sEffectUNID = sUNID;
+	if (sEffectUNID.IsBlank())
+		{
+		DWORD dwUNID = pDesc->GetAttributeInteger(UNID_ATTRIB);
+		if (dwUNID)
+			sEffectUNID = strFromInt(dwUNID, FALSE);
+		else
+			sEffectUNID = STR_NO_UNID;
+		}
+
 	//	Create the effect based on the child tag
 
 	if (pDesc->GetContentElementCount() == 0)
@@ -164,7 +180,7 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 		}
 	else if (pDesc->GetContentElementCount() == 1)
 		{
-		if (error = CreateSimpleFromXML(Ctx, pDesc->GetContentElement(0), &pCreator))
+		if (error = CreateSimpleFromXML(Ctx, pDesc->GetContentElement(0), sEffectUNID, &pCreator))
 			return error;
 		}
 	else
@@ -173,22 +189,12 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 		if (pCreator == NULL)
 			return ERR_MEMORY;
 
+		pCreator->m_sUNID = sEffectUNID;
+
 		//	Type-specific creation
 
-		if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc))
+		if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc, sEffectUNID))
 			return error;
-		}
-
-	//	Basic info
-
-	pCreator->m_sUNID = sUNID;
-	if (sUNID.IsBlank())
-		{
-		DWORD dwUNID = pDesc->GetAttributeInteger(UNID_ATTRIB);
-		if (dwUNID)
-			pCreator->m_sUNID = strFromInt(dwUNID, FALSE);
-		else
-			pCreator->m_sUNID = STR_NO_UNID;
 		}
 
 	//	Sound Effect (resolved later)
@@ -203,7 +209,7 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 	return NOERROR;
 	}
 
-ALERROR CEffectCreator::CreateSimpleFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEffectCreator **retpCreator)
+ALERROR CEffectCreator::CreateSimpleFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, CEffectCreator **retpCreator)
 
 //	CreateSimpleFromXML
 //
@@ -224,9 +230,11 @@ ALERROR CEffectCreator::CreateSimpleFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 	if (pCreator == NULL)
 		return ERR_MEMORY;
 
+	pCreator->m_sUNID = sUNID;
+
 	//	Type-specific creation
 
-	if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc))
+	if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc, sUNID))
 		return error;
 
 	//	Done
@@ -440,6 +448,7 @@ CEffectCreator *CEffectCreator::FindEffectCreator (const CString &sUNID)
 	//	{unid}
 	//
 	//	"12345"					= Effect UNID 12345
+	//	"12345/0"				= Effect UNID 12345; variant 0
 	//	"12345/d:h"				= Effect UNID 12345; damage; hit effect
 	//
 	//	For overlays:
@@ -529,9 +538,9 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	ASSERT(pEffect);
 
 	if (pEffect->GetContentElementCount() == 1)
-		error = OnEffectCreateFromXML(Ctx, pEffect->GetContentElement(0));
+		error = OnEffectCreateFromXML(Ctx, pEffect->GetContentElement(0), m_sUNID);
 	else
-		error = OnEffectCreateFromXML(Ctx, pEffect);
+		error = OnEffectCreateFromXML(Ctx, pEffect, m_sUNID);
 
 	if (error)
 		return error;
@@ -565,21 +574,32 @@ CEffectCreator *CEffectCreator::OnFindEffectCreator (const CString &sUNID)
 	if (*pPos == '\0')
 		return this;
 
-	//	Otherwise, we expect an effect in our damage descriptor
-
-	if (m_pDamage == NULL)
-		return NULL;
-
-	//	Skip over damage selector
-
 	if (*pPos++ != '/')
 		return NULL;
-	if (*pPos++ != 'd')
+
+	//	Damage selector?
+
+	if (*pPos == 'd')
+		{
+		pPos++;
+
+		if (m_pDamage == NULL)
+			return NULL;
+
+		return m_pDamage->FindEffectCreator(CString(pPos));
+		}
+
+	//	Sub effect
+
+	int iSubEffect = strParseInt(pPos, -1, 0, &pPos);
+	if (iSubEffect == -1)
 		return NULL;
 
-	//	Done
+	CEffectCreator *pSubEffect = GetSubEffect(iSubEffect);
+	if (pSubEffect == NULL)
+		return NULL;
 
-	return m_pDamage->FindEffectCreator(CString(pPos));
+	return pSubEffect->FindEffectCreatorInType(CString(pPos));
 	}
 
 void CEffectCreator::PlaySound (CSpaceObject *pSource)

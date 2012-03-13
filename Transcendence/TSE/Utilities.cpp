@@ -68,6 +68,10 @@
 #define SCALE_LIGHT_SECOND					CONSTLIT("light-second")
 #define SCALE_PIXEL							CONSTLIT("pixel")
 
+#define STORAGE_DEVICE						CONSTLIT("local")
+#define STORAGE_SERVICE_EXTENSION			CONSTLIT("serviceExtension")
+#define STORAGE_SERVICE_USER				CONSTLIT("serviceUser")
+
 static Metric g_RangeIndex[RANGE_INDEX_COUNT] =
 	{
 	(500.0 * LIGHT_SECOND),
@@ -1766,65 +1770,67 @@ ALERROR LoadDamageAdj (CXMLElement *pDesc, int *pDefAdj, int *retiAdj)
 
 	if (pDesc->FindAttribute(HP_BONUS_ATTRIB, &sValue))
 		{
-		char *pPos = sValue.GetASCIIZPointer();
-		int iDamage = 0;
+		//	We expect a list of percent adjustments
 
-		while (iDamage < damageCount)
+		TArray<CString> DamageAdj;
+		if (error = ParseDamageTypeList(sValue, &DamageAdj))
+			return error;
+
+		//	Apply damage adj
+
+		for (i = 0; i < damageCount; i++)
 			{
-			if (*pPos != '\0')
+			//	An omitted value means default
+
+			if (DamageAdj[i].IsBlank())
+				retiAdj[i] = pDefAdj[i];
+
+			//	A star means no damage
+
+			else if (*DamageAdj[i].GetASCIIZPointer() == '*')
+				retiAdj[i] = 0;
+
+			//	Otherwise, adjust
+
+			else
 				{
-				//	Skip whitespace
+				bool bNull;
+				int iValue;
+				iValue = strToInt(DamageAdj[i], 0, &bNull);
+				if (bNull)
+					return ERR_FAIL;
 
-				while (*pPos == ' ')
-					pPos++;
-
-				//	A star means no damage
-
-				if (*pPos == '*' || pDefAdj[iDamage] <= 0)
-					retiAdj[iDamage] = 0;
-
-				//	Otherwise, expect a number
-
+				if (iValue == 0)
+					retiAdj[i] = pDefAdj[i];
 				else
 					{
-					bool bNull;
-					int iValue;
-					iValue = strParseInt(pPos, 0, &pPos, &bNull);
-					if (bNull)
-						return ERR_FAIL;
-
-					int iInc = iValue + (10000 / pDefAdj[iDamage]) - 100;
+					int iInc = iValue + (10000 / pDefAdj[i]) - 100;
 					if (iInc > -100)
-						retiAdj[iDamage] = 10000 / (100 + iInc);
+						retiAdj[i] = 10000 / (100 + iInc);
 					else
-						retiAdj[iDamage] = 10000000;
+						retiAdj[i] = 10000000;
 					}
-
-				//	Skip until separator
-
-				while (*pPos != ',' && *pPos != ';' && *pPos != '\0')
-					pPos++;
-
-				if (*pPos != '\0')
-					pPos++;
 				}
-			else
-				retiAdj[iDamage] = pDefAdj[iDamage];
-
-			iDamage++;
 			}
 		}
 	else if (pDesc->FindAttribute(DAMAGE_ADJ_ATTRIB, &sValue))
 		{
-		CIntArray DamageAdj;
-		if (error = ParseAttributeIntegerList(sValue, &DamageAdj))
+		//	We expect a list of damageAdj percent values, either with a damageType
+		//	label or ordered by damageType.
+
+		TArray<CString> DamageAdj;
+		if (error = ParseDamageTypeList(sValue, &DamageAdj))
 			return error;
 
+		//	Apply damage adj
+
 		for (i = 0; i < damageCount; i++)
-			if (i < DamageAdj.GetCount())
-				retiAdj[i] = DamageAdj.GetElement(i);
+			{
+			if (DamageAdj[i].IsBlank())
+				retiAdj[i] = pDefAdj[i];
 			else
-				retiAdj[i] = 100;
+				retiAdj[i] = strToInt(DamageAdj[i], 0);
+			}
 		}
 	else
 		{
@@ -2163,6 +2169,60 @@ CString ParseCriteriaParam (char **ioPos, bool bExpectColon, bool *retbBinaryPar
 	return CString(pStart, pPos - pStart);
 	}
 
+ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList)
+
+//	ParseDamageTypeList
+//
+//	Parses a list of strings, each string corresponding to a damageType.
+//	The list is either positional (each string in the list represents a 
+//	damageType by position) or explicit (each string is a key/value pair with
+//	the key being a damageType).
+//
+//	On return we guarantee the retList has all damageTypes. Any NULL_STR
+//	values means that the string for that damageType was not specified.
+
+	{
+	int i;
+
+	//	Initialize
+
+	retList->DeleteAll();
+	retList->InsertEmpty(damageCount);
+
+	//	Parse
+
+	TArray<CString> DamageAdj;
+	ParseStringList(sList, PSL_FLAG_ALLOW_WHITESPACE, &DamageAdj);
+
+	//	Now parse each element
+
+	int iCount = Min(DamageAdj.GetCount(), (int)damageCount);
+	for (i = 0; i < iCount; i++)
+		{
+		CString sDamageType;
+		CString sAdj;
+
+		ParseKeyValuePair(DamageAdj[i], 0, &sDamageType, &sAdj);
+
+		//	If we have an explicitly specified damage type, then use that.
+		//	Otherwise we rely on the position of the adjustment.
+		//	NOTE: We should not mix and match the two methods.
+
+		if (!sDamageType.IsBlank())
+			{
+			DamageTypes iType = LoadDamageTypeFromXML(sDamageType);
+			if (iType == damageError || iType == damageGeneric)
+				return ERR_FAIL;
+
+			retList->GetAt(iType) = sAdj;
+			}
+		else
+			retList->GetAt(i) = sAdj;
+		}
+
+	return NOERROR;
+	}
+
 GenomeTypes ParseGenomeID (const CString &sText)
 
 //	ParseGenomeID
@@ -2177,6 +2237,81 @@ GenomeTypes ParseGenomeID (const CString &sText)
 			return (GenomeTypes)i;
 
 	return genomeUnknown;
+	}
+
+void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue)
+
+//	ParseKeyValuePair
+//
+//	Parses a string of the form:
+//
+//	{key} : {value}
+//
+//	And returns the two parts. We trim leading and trailing whitespace from both
+//	the key and the value.
+//
+//	NOTE: If we don't find a colon separator, we return what we found as the value.
+
+	{
+	bool bFoundSeparator = false;
+	char *pPos = sString.GetASCIIZPointer();
+
+	//	Skip whitespace
+
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	//	Key
+
+	char *pStart = pPos;
+	while (*pPos != '\0' && *pPos != ':' && !strIsWhitespace(pPos))
+		pPos++;
+
+	//	Get the key
+
+	CString sKey = CString(pStart, (int)(pPos - pStart));
+
+	//	Skip whitespace
+
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	//	Skip colon
+
+	if (*pPos == ':')
+		{
+		pPos++;
+
+		while (strIsWhitespace(pPos))
+			pPos++;
+
+		bFoundSeparator = true;
+		}
+
+	//	Parse value
+
+	pStart = pPos;
+	while (*pPos != '\0' && !strIsWhitespace(pPos))
+		pPos++;
+
+	CString sValue = CString(pStart, (int)(pPos - pStart));
+
+	//	If we never found a separator and the value is empty, then return the
+	//	string as the value.
+
+	if (!bFoundSeparator && sValue.GetLength() == 0)
+		{
+		sValue = sKey;
+		sKey = NULL_STR;
+		}
+
+	//	Return what we found
+
+	if (retsKey)
+		*retsKey = sKey;
+
+	if (retsValue)
+		*retsValue = sValue;
 	}
 
 CString ParseNounForm (const CString &sNoun, DWORD dwNounFlags, bool bPluralize, bool bShortName)
@@ -2349,13 +2484,42 @@ CString ParseNounForm (const CString &sNoun, DWORD dwNounFlags, bool bPluralize,
 	return sDest;
 	}
 
+EStorageScopes ParseStorageScopeID (const CString &sID)
+
+//	ParseStorageScopeID
+//
+//	Parses a storage scope identifier
+
+	{
+	if (strEquals(sID, STORAGE_DEVICE))
+		return storeDevice;
+	else if (strEquals(sID, STORAGE_SERVICE_EXTENSION))
+		return storeServiceExtension;
+	else if (strEquals(sID, STORAGE_SERVICE_USER))
+		return storeServiceUser;
+	else
+		return storeUnknown;
+	}
+
 void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retList)
 
 //	ParseStringList
 //
-//	Splits a string into a list of strings
+//	Splits a string into a list of strings.
+//
+//	By default we accept a list of strings separated by either:
+//
+//	;
+//	,
+//	(whitespace)
+//
+//	If PSL_FLAG_ALLOW_WHITESPACE is set, then we allow strings to have embedded
+//	whitespace (we do not use it as a terminator) but we still trim leading
+//	and trailing whitespace from each string.
 
 	{
+	bool bWhitespaceDelimiter = ((dwFlags & PSL_FLAG_ALLOW_WHITESPACE) ? false : true);
+
 	char *pPos = sList.GetASCIIZPointer();
 	while (*pPos != '\0')
 		{
@@ -2367,13 +2531,26 @@ void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retL
 		//	Skip until delimiter
 
 		char *pStart = pPos;
-		while (*pPos != '\0' && *pPos != ';' && *pPos != ',' && !strIsWhitespace(pPos))
+		while (*pPos != '\0' && *pPos != ';' && *pPos != ',' && (!bWhitespaceDelimiter || !strIsWhitespace(pPos)))
 			pPos++;
 
 		//	Insert modifier
 
 		if (pPos != pStart)
-			retList->Insert(CString(pStart, pPos - pStart));
+			{
+			char *pEnd = pPos;
+
+			//	If whitespace is not a delimiter, then trim whitespace from the
+			//	end of the element.
+
+			if (!bWhitespaceDelimiter)
+				{
+				while (pEnd - 1 > pStart && strIsWhitespace(pEnd - 1))
+					pEnd--;
+				}
+
+			retList->Insert(CString(pStart, pEnd - pStart));
+			}
 
 		//	Next
 

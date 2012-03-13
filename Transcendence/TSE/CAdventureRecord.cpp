@@ -51,7 +51,7 @@ CString CAdventureRecord::GetAdventureName (void) const
 //	Get the name of the adventure
 
 	{
-	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureDesc(m_dwAdventure);
+	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureForExtension(m_dwAdventure);
 	return (pAdventure ? pAdventure->GetName() : strPatternSubst(CONSTLIT("Adventure %x"), m_dwAdventure));
 	}
 

@@ -17,6 +17,7 @@ enum TokenTypes
 	tkSimpleTagClose,			//	/>
 	tkEquals,					//	=
 	tkQuote,					//	"
+	tkSingleQuote,				//	'
 	tkText,						//	plain text
 	tkDeclOpen,					//	<!
 	tkBracketOpen,				//	[
@@ -74,6 +75,8 @@ struct ParserCtx
 
 		bool m_bParseRootTag;
 		CString m_sRootTag;
+
+		TokenTypes iAttribQuote;
 
 		CString sError;
 	};
@@ -279,12 +282,18 @@ ALERROR ParseElement (ParserCtx *pCtx, CXMLElement **retpElement)
 
 			//	Expect a quote
 
-			if (ParseToken(pCtx) != tkQuote)
+			ParseToken(pCtx);
+			if (pCtx->iToken != tkQuote && pCtx->iToken != tkSingleQuote)
 				{
-				pCtx->sError = LITERAL("attribute value expected");
+				pCtx->sError = LITERAL("attribute value must be quoted");
 				delete pElement;
 				return ERR_FAIL;
 				}
+
+			//	Remember what kind of qoute we used so that we can match it
+			//	(and so we ignore the other kind inside it).
+
+			pCtx->iAttribQuote = pCtx->iToken;
 
 			//	Expect the value 
 
@@ -299,10 +308,10 @@ ALERROR ParseElement (ParserCtx *pCtx, CXMLElement **retpElement)
 
 			//	Now expect an end-quote
 
-			if (pCtx->iToken != tkQuote)
+			if (pCtx->iToken != pCtx->iAttribQuote)
 				{
 				if (pCtx->iToken != tkError || pCtx->sError.IsBlank())
-					pCtx->sError = LITERAL("invalid attribute value");
+					pCtx->sError = LITERAL("mismatched attribute quote");
 				delete pElement;
 				return ERR_FAIL;
 				}
@@ -572,6 +581,8 @@ ALERROR ParsePrologue (ParserCtx *pCtx)
 				return ERR_FAIL;
 				}
 
+			pCtx->iAttribQuote = tkQuote;
+
 			//	Get the path or URL
 
 			if (ParseToken(pCtx, AttributeState) != tkText)
@@ -584,7 +595,7 @@ ALERROR ParsePrologue (ParserCtx *pCtx)
 
 			//	End quote
 
-			if (ParseToken(pCtx) != tkQuote)
+			if (ParseToken(pCtx) != pCtx->iAttribQuote)
 				{
 				pCtx->sError = LITERAL("DOCTYPE: \" expected");
 				return ERR_FAIL;
@@ -703,6 +714,11 @@ TokenTypes ParseToken (ParserCtx *pCtx, StateTypes iInitialState)
 						bDone = true;
 						break;
 
+					case '\'':
+						pCtx->iToken = tkSingleQuote;
+						bDone = true;
+						break;
+
 					default:
 						iState = IdentifierState;
 						pStartRun = pCtx->pPos;
@@ -803,11 +819,6 @@ TokenTypes ParseToken (ParserCtx *pCtx, StateTypes iInitialState)
 				{
 				switch (chChar)
 					{
-					case '"':
-						pCtx->iToken = tkQuote;
-						bDone = true;
-						break;
-
 					case '&':
 						iState = EntityState;
 						iSavedState = AttributeTextState;
@@ -816,10 +827,20 @@ TokenTypes ParseToken (ParserCtx *pCtx, StateTypes iInitialState)
 						break;
 
 					default:
-						iState = AttributeTextState;
-						pStartRun = pCtx->pPos;
-						pCtx->sToken = CString("");
-						break;
+						if ((chChar == '"' && pCtx->iAttribQuote == tkQuote)
+								|| (chChar == '\'' && pCtx->iAttribQuote == tkSingleQuote))
+							{
+							pCtx->iToken = pCtx->iAttribQuote;
+							bDone = true;
+							break;
+							}
+						else
+							{
+							iState = AttributeTextState;
+							pStartRun = pCtx->pPos;
+							pCtx->sToken = CString("");
+							break;
+							}
 					}
 
 				break;
@@ -1057,13 +1078,6 @@ TokenTypes ParseToken (ParserCtx *pCtx, StateTypes iInitialState)
 				{
 				switch (chChar)
 					{
-					case '"':
-						pCtx->iToken = tkText;
-						pCtx->sToken.Append(CString(pStartRun, pCtx->pPos - pStartRun));
-						pCtx->pPos--;
-						bDone = true;
-						break;
-
 					//	Handle embeded entities
 
 					case '&':
@@ -1072,6 +1086,19 @@ TokenTypes ParseToken (ParserCtx *pCtx, StateTypes iInitialState)
 						iSavedState = AttributeTextState;
 						iState = EntityState;
 						break;
+
+					default:
+						{
+						if ((chChar == '"' && pCtx->iAttribQuote == tkQuote)
+								|| (chChar == '\'' && pCtx->iAttribQuote == tkSingleQuote))
+							{
+							pCtx->iToken = tkText;
+							pCtx->sToken.Append(CString(pStartRun, pCtx->pPos - pStartRun));
+							pCtx->pPos--;
+							bDone = true;
+							break;
+							}
+						}
 					}
 
 				break;

@@ -25,7 +25,7 @@ void CPlasmaSphereEffectCreator::GetRect (RECT *retRect) const
 	retRect->bottom = iRadius;
 	}
 
-ALERROR CPlasmaSphereEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CPlasmaSphereEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

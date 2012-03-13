@@ -51,8 +51,9 @@ const int MAJOR_PADDING_TOP =					20;
 const int SELECTION_BORDER_WIDTH =				1;
 const int SELECTION_CORNER_RADIUS =				8;
 
-CListSaveFilesTask::CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, int cxWidth) : IHITask(HI), 
+CListSaveFilesTask::CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, const CString &sUsername, int cxWidth) : IHITask(HI), 
 		m_sFolder(sFolder),
+		m_sUsername(sUsername),
 		m_cxWidth(cxWidth),
 		m_pList(NULL)
 
@@ -181,37 +182,40 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 	if (pClass)
 		{
 		const CObjectImageArray &ObjImage = pClass->GetImage();
-		RECT rcRect = ObjImage.GetImageRect();
-		CG16bitImage &Image = ObjImage.GetImage();
-		int cxImage = RectWidth(rcRect);
-		int cyImage = RectHeight(rcRect);
+		if (!ObjImage.IsEmpty())
+			{
+			RECT rcRect = ObjImage.GetImageRect();
+			CG16bitImage &Image = ObjImage.GetImage();
+			int cxImage = RectWidth(rcRect);
+			int cyImage = RectHeight(rcRect);
 
-		int cxNewWidth = Min(SHIP_IMAGE_WIDTH, cxImage);
-		int cyNewHeight = cxNewWidth;
+			int cxNewWidth = Min(SHIP_IMAGE_WIDTH, cxImage);
+			int cyNewHeight = cxNewWidth;
 
-		CG16bitImage *pNewImage = new CG16bitImage;
-		pNewImage->CreateFromImageTransformed(Image, 
-				rcRect.left, 
-				rcRect.top, 
-				cxImage,
-				cyImage,
-				(Metric)cxNewWidth / cxImage,
-				(Metric)cyNewHeight / cyImage,
-				0.0);
+			CG16bitImage *pNewImage = new CG16bitImage;
+			pNewImage->CreateFromImageTransformed(Image, 
+					rcRect.left, 
+					rcRect.top, 
+					cxImage,
+					cyImage,
+					(Metric)cxNewWidth / cxImage,
+					(Metric)cyNewHeight / cyImage,
+					0.0);
 
-		//	Position
+			//	Position
 
-		int xImage = x + m_cxWidth - SHIP_IMAGE_WIDTH + (SHIP_IMAGE_WIDTH - cxNewWidth) / 2;
-		int yImage = (SHIP_IMAGE_HEIGHT - cyNewHeight) / 2;
+			int xImage = x + m_cxWidth - SHIP_IMAGE_WIDTH + (SHIP_IMAGE_WIDTH - cxNewWidth) / 2;
+			int yImage = (SHIP_IMAGE_HEIGHT - cyNewHeight) / 2;
 
-		//	New image frame
+			//	New image frame
 
-		IAnimatron *pImageFrame = new CAniRect;
-		pImageFrame->SetPropertyVector(PROP_POSITION, CVector(xImage, yImage));
-		pImageFrame->SetPropertyVector(PROP_SCALE, CVector(cxNewWidth, cyNewHeight));
-		pImageFrame->SetFillMethod(new CAniImageFill(pNewImage, true));
+			IAnimatron *pImageFrame = new CAniRect;
+			pImageFrame->SetPropertyVector(PROP_POSITION, CVector(xImage, yImage));
+			pImageFrame->SetPropertyVector(PROP_SCALE, CVector(cxNewWidth, cyNewHeight));
+			pImageFrame->SetFillMethod(new CAniImageFill(pNewImage, true));
 
-		pRoot->AddTrack(pImageFrame, 0);
+			pRoot->AddTrack(pImageFrame, 0);
+			}
 		}
 
 	//	Extra information
@@ -222,13 +226,21 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 	CString sModifiedTime = LocalTime.Format("%d %B %Y %I:%M %p");
 	CString sFilename = pathGetFilename(GameFile.GetFilespec());
 
+	CString sGameType;
+	if (GameFile.IsRegistered())
+		sGameType = CONSTLIT("Registered");
+	else if (GameFile.IsDebug())
+		sGameType = CONSTLIT("Debug");
+	else
+		sGameType = CONSTLIT("Unregistered");
+
 	CString sExtra;
 	if (!sEpitaph.IsBlank())
-		sExtra = strPatternSubst(CONSTLIT("Score %d — %s\n%s — %s"), iScore, sEpitaph, sModifiedTime, sFilename);
+		sExtra = strPatternSubst(CONSTLIT("Score %d — %s\n%s — %s — %s"), iScore, sEpitaph, sGameType, sModifiedTime, sFilename);
 	else if (iScore > 0)
-		sExtra = strPatternSubst(CONSTLIT("Score %d\n%s — %s"), iScore, sModifiedTime, sFilename);
+		sExtra = strPatternSubst(CONSTLIT("Score %d\n%s — %s — %s"), iScore, sGameType, sModifiedTime, sFilename);
 	else
-		sExtra = strPatternSubst(CONSTLIT("%s — %s"), sModifiedTime, sFilename);
+		sExtra = strPatternSubst(CONSTLIT("%s — %s — %s"), sGameType, sModifiedTime, sFilename);
 
 	pDesc = new CAniText;
 	pDesc->SetPropertyVector(PROP_POSITION, CVector(xText, y));
@@ -322,6 +334,12 @@ ALERROR CListSaveFilesTask::OnExecute (ITaskProcessor *pProcessor, CString *rets
 		//	(this can happen in the first system).
 
 		if (!GameFile.IsUniverseValid())
+			continue;
+
+		//	If we're signed in, then we only show games for the given user
+		//	(or unregistered games).
+
+		if (GameFile.IsRegistered() && !strEquals(GameFile.GetUsername(), m_sUsername))
 			continue;
 
 		//	Generate a record for the file

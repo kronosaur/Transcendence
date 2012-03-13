@@ -1409,13 +1409,29 @@
 									)
 								)
 								
+							; If the probability table is empty, then it means 
+							; that there is no ore in the system. Instead we
+							; enumerate all types and generate probabilities
+							; based on the frequency of the ore at this level.
+							
+							(if (eq (count tempTable) 0)
+								(enum (itmGetTypes "t +Ore;") theOreType
+									(block (freq)
+										(setq freq (itmGetFrequency theOreType (sysGetLevel)))
+										(if (gr freq 0)
+											(setItem tempTable theOreType (itmGetFrequency theOreType (sysGetLevel)))
+											)
+										)
+									)
+								)
+							
 							; Add the total probability
 							
 							(setq totalProb 0)
 							(enum tempTable theEntry
 								(setq totalProb (add totalProb (item theEntry 1)))
 								)
-							
+								
 							; Generate a probability table
 								
 							(setq oreTable 

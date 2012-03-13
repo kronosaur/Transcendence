@@ -356,7 +356,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 		if (pObj
 				&& pObj != pTo
-				&& (pObj->IsStargate()
+				&& (pObj->IsActiveStargate()
 					|| pObj->IsMarker()
 					|| (pObj->GetCategory() == CSpaceObject::catStation
 						&& pObj->GetScale() == scaleStructure

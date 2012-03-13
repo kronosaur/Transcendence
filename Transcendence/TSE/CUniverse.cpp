@@ -42,11 +42,19 @@
 //	11: 1.07
 //		m_Registered in CDesignType
 //
+//	12: 1.08
+//		CDynamicDesignTable in CUniverse
+//
+//	13: 1.08
+//		Flags in CUniverse
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
 
 const DWORD UNIVERSE_VERSION_MARKER =					0xffffffff;
+
+const DWORD UNID_FIRST_DEFAULT_EFFECT =					0x00000010;
 
 CUniverse *g_pUniverse = NULL;
 Metric g_KlicksPerPixel = KLICKS_PER_PIXEL;
@@ -54,6 +62,9 @@ Metric g_TimeScale = TIME_SCALE;
 Metric g_SecondsPerUpdate =	g_TimeScale / g_TicksPerSecond;
 
 static CObjectClass<CUniverse>g_Class(OBJID_CUNIVERSE, NULL);
+
+CEffectCreator *g_DefaultHitEffect[damageCount];
+bool g_bDefaultHitEffectsInit = false;
 
 #ifdef DEBUG_PROGRAMSTATE
 ProgramStates g_iProgramState = psUnknown;
@@ -72,6 +83,7 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_Sounds(FALSE, TRUE),
 		m_LevelEncounterTables(TRUE),
 
+		m_bRegistered(false),
 		m_iTick(0),
 		m_pAdventure(NULL),
 		m_pPOV(NULL),
@@ -117,7 +129,7 @@ CUniverse::~CUniverse (void)
 
 	//	Free up various arrays whose cleanup requires m_CC
 
-	m_Design.RemoveAll();
+	m_Design.CleanUp();
 
 	g_pUniverse = NULL;
 	}
@@ -392,6 +404,20 @@ CObject *CUniverse::FindByUNID (CIDTable &Table, DWORD dwUNID)
 		return NULL;
 	}
 
+CEffectCreator *CUniverse::FindDefaultHitEffect (DamageTypes iDamage)
+
+//	FindDefaultHitEffect
+//
+//	Returns the default hit effect for the given damage type
+
+	{
+	if (iDamage < damageLaser || iDamage >= damageCount)
+		return FindEffectType(g_HitEffectUNID);
+
+	InitDefaultHitEffects();
+	return g_DefaultHitEffect[iDamage];
+	}
+
 CDeviceClass *CUniverse::FindDeviceClass (DWORD dwUNID)
 
 //	FindDeviceClass
@@ -544,6 +570,38 @@ void CUniverse::GenerateGameStats (CGameStats &Stats)
 		}
 	}
 
+void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
+
+//	GetCurrentAdventureExtensions
+//
+//	Returns the list of extensions enabled for the current adventure.
+//	[Does not include any extensions that the adventure itself included.]
+
+	{
+	int i;
+
+	retList->DeleteAll();
+	for (i = 0; i < m_Design.GetExtensionCount(); i++)
+		{
+		SExtensionDesc *pExtension = m_Design.GetExtension(i);
+		if (pExtension->bEnabled)
+			{
+			//	Do not include the actual adventure
+
+			if (pExtension->iType == extAdventure)
+				NULL;
+
+			//	Do not include extensions that are explicitly included by the
+			//	adventure;
+
+			//	Include other extensions
+
+			else
+				retList->Insert(pExtension->dwUNID);
+			}
+		}
+	}
+
 CTimeSpan CUniverse::GetElapsedGameTime (void)
 
 //	GetElapsedGameTime
@@ -552,6 +610,23 @@ CTimeSpan CUniverse::GetElapsedGameTime (void)
 
 	{
 	return m_Time.GetElapsedTimeAt(m_iTick);
+	}
+
+CString CUniverse::GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib)
+
+//	GetExtensionData
+//
+//	Returns data storage for the given extension
+
+	{
+	switch (iScope)
+		{
+		case storeDevice:
+			return m_DeviceStorage.GetData(dwExtension, sAttrib);
+
+		default:
+			return NULL_STR;
+		}
 	}
 
 CTopologyNode *CUniverse::GetFirstTopologyNode (void)
@@ -716,6 +791,28 @@ DWORD CUniverse::GetSoundUNID (int iChannel)
 	return INVALID_UNID;
 	}
 
+void CUniverse::InitDefaultHitEffects (void)
+
+//	InitDefaultHitEffects
+//
+//	Initializes the default hit effects array
+
+	{
+	int i;
+
+	if (!g_bDefaultHitEffectsInit)
+		{
+		for (i = 0; i < damageCount; i++)
+			{
+			g_DefaultHitEffect[i] = FindEffectType(UNID_FIRST_DEFAULT_EFFECT + i);
+			if (g_DefaultHitEffect[i] == NULL)
+				g_DefaultHitEffect[i] = FindEffectType(g_HitEffectUNID);
+			}
+
+		g_bDefaultHitEffectsInit = true;
+		}
+	}
+
 ALERROR CUniverse::InitGame (CString *retsError)
 
 //	InitGame
@@ -795,14 +892,7 @@ bool CUniverse::IsStatsPostingEnabled (void)
 //	FALSE otherwise.
 
 	{
-	//	Never post if we are in debug mode
-
-	if (InDebugMode())
-		return false;
-
-	//	LATER: Only post for registered adventures
-
-	return true;
+	return m_bRegistered;
 	}
 
 ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, DWORD *retdwPlayerID, CString *retsError)
@@ -816,11 +906,16 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	DWORD		system version
 //	DWORD		m_iTick
 //
+//	DWORD		flags
 //	DWORD		m_dwNextID
+//
+//	CGameTimeKeeper
 //
 //	DWORD		No of enabled extensions
 //	DWORD			extension UNID
 //	DWORD		Adventure UNID
+//
+//	CDynamicDesignTable
 //
 //	DWORD		ID of POV system (0xffffffff if none)
 //	DWORD		index of POV (0xffffffff if none)
@@ -874,6 +969,15 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		m_iTick = (int)dwLoad;
 		}
 
+	//	Flags
+
+	if (Ctx.dwVersion >= 13)
+		pStream->Read((char *)&dwLoad, sizeof(DWORD));
+	else
+		dwLoad = 0;
+
+	m_bRegistered = ((dwLoad & 0x00000001) ? true : false);
+
 	//	Load basic data
 
 	pStream->Read((char *)&m_dwNextID, sizeof(DWORD));
@@ -900,7 +1004,12 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 	else
 		dwLoad = DEFAULT_ADVENTURE_UNID;
 
-	//	Select the proper adventure and extensions and bind design
+	//	CDynamicDesignTable
+
+	if (Ctx.dwVersion >= 12)
+		m_Design.ReadDynamicTypes(Ctx);
+
+	//	Select the proper adventure and extensions and bind design.
 
 	CString sError;
 	if (InitAdventure(dwLoad, (Ctx.dwVersion >= 8 ? &ExtensionList : NULL), &sError) != NOERROR)
@@ -1147,6 +1256,9 @@ ALERROR CUniverse::Reinit (void)
 	m_StarSystems.RemoveAll();
 	m_dwNextID = 1;
 
+	//	NOTE: We don't reinitialize m_bDebugMode or m_bRegistered because those
+	//	are set before Reinit (and thus we would overwrite them).
+
 	//	Reinitialize some global classes
 
 	CCompositeImageDesc::Reinit();
@@ -1154,6 +1266,7 @@ ALERROR CUniverse::Reinit (void)
 	//	Reinitialize types
 
 	m_Design.Reinit();
+	g_bDefaultHitEffectsInit = false;
 
 	//	Clear the topology nodes
 
@@ -1180,12 +1293,15 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	DWORD		universe version
 //	DWORD		system version
 //	DWORD		m_iTick
+//	DWORD		flags
 //	DWORD		m_dwNextID
 //	CGameTimeKeeper m_Time
 //
 //	DWORD		No of enabled extensions
 //	DWORD			extension UNID
 //	DWORD		Adventure UNID
+//
+//	CDynamicDesignTable
 //
 //	DWORD		ID of POV system (0xffffffff if none)
 //	DWORD		index of POV (0xffffffff if none)
@@ -1215,6 +1331,11 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	//	Write basic data
 
 	pStream->Write((char *)&m_iTick, sizeof(DWORD));
+
+	dwSave = 0;
+	dwSave |= (m_bRegistered ? 0x00000001 : 0);
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	pStream->Write((char *)&m_dwNextID, sizeof(DWORD));
 	m_Time.WriteToStream(pStream);
 
@@ -1230,6 +1351,10 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 
 	dwSave = m_pAdventure->GetUNID();
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+	//	CDynamicDesignTable
+
+	m_Design.WriteDynamicTypes(pStream);
 
 	//	Write the ID of POV system
 
@@ -1296,6 +1421,23 @@ void CUniverse::SetCurrentSystem (CSystem *pSystem)
 		g_KlicksPerPixel = KLICKS_PER_PIXEL;
 		g_TimeScale = TIME_SCALE;
 		g_SecondsPerUpdate = g_TimeScale / g_TicksPerSecond;
+		}
+	}
+
+bool CUniverse::SetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib, const CString &sData)
+
+//	SetExtensionData
+//
+//	Sets data for the extension
+
+	{
+	switch (iScope)
+		{
+		case storeDevice:
+			return m_DeviceStorage.SetData(dwExtension, sAttrib, sData);
+
+		default:
+			return false;
 		}
 	}
 
@@ -1483,4 +1625,46 @@ void CUniverse::UpdateExtended (void)
 	//	Update the system 
 
 	pSystem->UpdateExtended(TotalTime);
+	}
+
+CString CUniverse::ValidatePlayerName (const CString &sName)
+
+//	ValidatePlayerName
+//
+//	Generates a valid name from the given user input
+
+	{
+	//	Trim leading and trailing whitespace
+
+	CString sNewName = strTrimWhitespace(sName);
+
+	//	Remove escape characters and symbols
+
+	char *pPos = sNewName.GetASCIIZPointer();
+	while (*pPos != '\0')
+		{
+		switch (*pPos)
+			{
+			case '/':
+			case '%':
+				*pPos = '_';
+				break;
+
+			default:
+				if (strIsASCIIControl(pPos))
+					*pPos = '_';
+				break;
+			}
+
+		pPos++;
+		}
+
+	//	Make sure it is not blank
+
+	if (sNewName.IsBlank())
+		return CONSTLIT("Shofixti");
+
+	//	Done
+
+	return sNewName;
 	}

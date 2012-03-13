@@ -42,7 +42,7 @@ int CFormulaText::EvalAsInteger (CSpaceObject *pSource, CString *retsPrefix, CSt
 		//	Link and evaluate the code
 
 		ICCItem *pExp = Ctx.Link(m_sText, 1, NULL);
-		ICCItem *pResult = Ctx.Run(pExp);
+		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 		Ctx.Discard(pExp);
 
 		//	Check for and return error

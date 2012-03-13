@@ -125,7 +125,7 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	//	We need to make sure the CProfileSession does not exit until all
 	//	background tasks are completed (or cancelled).
 
-	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureDesc(Record.GetAdventureUNID());
+	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureForExtension(Record.GetAdventureUNID());
 	CString sAdventureTitle = (pAdventure ? pAdventure->GetName() : strPatternSubst(CONSTLIT("Adventure %x"), Record.GetAdventureUNID()));
 
 	//	Start with a sequencer

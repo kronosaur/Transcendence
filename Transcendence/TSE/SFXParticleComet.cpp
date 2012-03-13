@@ -150,7 +150,7 @@ void CParticleCometEffectCreator::GetRect (RECT *retRect) const
 	retRect->bottom = 100;
 	}
 
-ALERROR CParticleCometEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CParticleCometEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

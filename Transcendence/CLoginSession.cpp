@@ -63,6 +63,7 @@ const int INPUT_ERROR_TIME =					(30 * 10);
 #define ID_CTRL_REGISTER						CONSTLIT("ctrlRegister")
 #define ID_CTRL_PASSWORD_RESET					CONSTLIT("ctrlPasswordReset")
 #define ID_CTRL_EMAIL							CONSTLIT("ctrlEmail")
+#define ID_CTRL_WAIT							CONSTLIT("ctrlWait")
 
 #define CMD_ALL_TASKS_DONE						CONSTLIT("cmdAllTasksDone")
 #define CMD_CANCEL								CONSTLIT("cmdCancel")
@@ -79,6 +80,7 @@ const int INPUT_ERROR_TIME =					(30 * 10);
 
 #define EVENT_ON_CLICK							CONSTLIT("onClick")
 
+#define PROP_CHECKED							CONSTLIT("checked")
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_ENABLED							CONSTLIT("enabled")
 #define PROP_FONT								CONSTLIT("font")
@@ -92,7 +94,8 @@ const int INPUT_ERROR_TIME =					(30 * 10);
 CLoginSession::CLoginSession (CHumanInterface &HI, CCloudService &Service, const CString &sCommand) : IHISession(HI), 
 		m_Service(Service),
 		m_sCommand(sCommand),
-		m_iCurrent(dlgNone)
+		m_iCurrent(dlgNone),
+		m_bBlankEmailWarning(false)
 
 //	CLoginSession constructor
 
@@ -136,17 +139,21 @@ void CLoginSession::CmdRegister (void)
 //	Handle register command
 
 	{
+	CUIHelper Helper(m_HI);
+
 	//	Get the fields
 
 	CString sUsername = GetPropertyString(ID_CTRL_USERNAME, PROP_TEXT);
 	CString sPassword = GetPropertyString(ID_CTRL_PASSWORD, PROP_TEXT);
 	CString sPasswordConfirm = GetPropertyString(ID_CTRL_PASSWORD_CONFIRM, PROP_TEXT);
+	CString sEmail = GetPropertyString(ID_CTRL_EMAIL, PROP_TEXT);
+	bool bAutoSignIn = GetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_CHECKED);
 
 	//	Get the text for the username. If blank, then we have an error.
 
 	if (sUsername.IsBlank())
 		{
-		ShowInputErrorBox(CONSTLIT("Invalid username"), CONSTLIT("You must have a username to register."));
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Username Missing"), CONSTLIT("You must have a username to register."));
 		return;
 		}
 
@@ -154,13 +161,31 @@ void CLoginSession::CmdRegister (void)
 
 	else if (!strEquals(sPassword, sPasswordConfirm))
 		{
-		ShowInputErrorBox(CONSTLIT("Invalid password"), CONSTLIT("The password you entered does not match the confirmation password."));
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Password Does Not Match"), CONSTLIT("The password you entered does not match the confirmation password."));
+		return;
+		}
+
+	//	Validate password complexity
+
+	CString sError;
+	if (!CHexarc::ValidatePasswordComplexity(sPassword, &sError))
+		{
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Password Is Too Easy"), sError);
+		return;
+		}
+
+	//	If email is blank, explain why we need it
+
+	if (!m_bBlankEmailWarning && sEmail.IsBlank())
+		{
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Email Address Is Optional, but..."), CONSTLIT("If you provide your email address we will be able to reset your password if you request it."));
+		m_bBlankEmailWarning = true;
 		return;
 		}
 
 	//	Register the name
 
-	m_HI.AddBackgroundTask(new CRegisterUserTask(m_HI, m_Service, sUsername, sPassword), this, CMD_REGISTER_COMPLETE);
+	m_HI.AddBackgroundTask(new CRegisterUserTask(m_HI, m_Service, sUsername, sPassword, sEmail, bAutoSignIn), this, CMD_REGISTER_COMPLETE);
 
 	//	Disable controls
 
@@ -168,6 +193,10 @@ void CLoginSession::CmdRegister (void)
 	SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, false);
 	SetPropertyBool(ID_CTRL_PASSWORD_CONFIRM, PROP_ENABLED, false);
 	SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_EMAIL, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_ENABLED, false);
+	SetPropertyBool(CMD_SWITCH_TO_LOGIN, PROP_ENABLED, false);
+	SetPropertyBool(CMD_TOS, PROP_ENABLED, false);
 	}
 
 void CLoginSession::CmdRegisterComplete (CRegisterUserTask *pTask)
@@ -180,7 +209,8 @@ void CLoginSession::CmdRegisterComplete (CRegisterUserTask *pTask)
 	CString sError;
 	if (pTask->GetResult(&sError) != NOERROR)
 		{
-		ShowInputErrorBox(CONSTLIT("Cannot Register"), sError);
+		CUIHelper Helper(m_HI);
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Unable to Register"), sError);
 
 		//	Re-enable buttons so user can continue;
 
@@ -188,6 +218,10 @@ void CLoginSession::CmdRegisterComplete (CRegisterUserTask *pTask)
 		SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, true);
 		SetPropertyBool(ID_CTRL_PASSWORD_CONFIRM, PROP_ENABLED, true);
 		SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_EMAIL, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_ENABLED, true);
+		SetPropertyBool(CMD_SWITCH_TO_LOGIN, PROP_ENABLED, true);
+		SetPropertyBool(CMD_TOS, PROP_ENABLED, true);
 
 		return;
 		}
@@ -204,28 +238,34 @@ void CLoginSession::CmdSignIn (void)
 //	Sign in the user
 
 	{
+	CUIHelper Helper(m_HI);
+
 	//	Get the fields
 
 	CString sUsername = GetPropertyString(ID_CTRL_USERNAME, PROP_TEXT);
 	CString sPassword = GetPropertyString(ID_CTRL_PASSWORD, PROP_TEXT);
+	bool bAutoSignIn = GetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_CHECKED);
 
 	//	Get the text for the username. If blank, then we have an error.
 
 	if (sUsername.IsBlank())
 		{
-		ShowInputErrorBox(CONSTLIT("Invalid username"), CONSTLIT("You must have a username to sign in."));
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Username Missing"), CONSTLIT("You must have a username to sign in."));
 		return;
 		}
 
 	//	Register the name
 
-	m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, sUsername, sPassword), this, CMD_SIGN_IN_COMPLETE);
+	m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, sUsername, sPassword, bAutoSignIn), this, CMD_SIGN_IN_COMPLETE);
 
 	//	Disable controls
 
 	SetPropertyBool(ID_CTRL_USERNAME, PROP_ENABLED, false);
 	SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, false);
 	SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_REGISTER, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_PASSWORD_RESET, PROP_ENABLED, false);
 	}
 
 void CLoginSession::CmdSignInComplete (CSignInUserTask *pTask)
@@ -238,13 +278,17 @@ void CLoginSession::CmdSignInComplete (CSignInUserTask *pTask)
 	CString sError;
 	if (pTask->GetResult(&sError) != NOERROR)
 		{
-		ShowInputErrorBox(CONSTLIT("Cannot Sign In"), sError);
+		CUIHelper Helper(m_HI);
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Unable to Sign In"), sError);
 
 		//	Re-enable buttons so user can continue;
 
 		SetPropertyBool(ID_CTRL_USERNAME, PROP_ENABLED, true);
 		SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, true);
 		SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_AUTO_SIGN_IN, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_REGISTER, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_PASSWORD_RESET, PROP_ENABLED, true);
 
 		return;
 		}
@@ -355,7 +399,8 @@ void CLoginSession::CreateDlgRegister (const CVisualPalette &VI, IAnimatron **re
 
 	//	Auto sign in checkbox
 
-	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Remember my password"), NULL, &cyHeight);
+	IAnimatron *pControl;
+	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
 	y += cyHeight + DLG_SPACING_Y;
 
 	//	Some extra space
@@ -390,10 +435,10 @@ void CLoginSession::CreateDlgRegister (const CVisualPalette &VI, IAnimatron **re
 
 	//	Error messages are to the left of the button
 
-	m_rcInputError.right = rcDlg.left + xButtons - INPUT_ERROR_MARGIN_RIGHT;
-	m_rcInputError.left = m_rcInputError.right - INPUT_ERROR_WIDTH;
+	m_rcInputError.left = rcDlg.left + xButtons - metricsInputErrorMsgMarginHorz - metricsInputErrorMsgWidth;
 	m_rcInputError.top = rcDlg.top + yButtons;
-	m_rcInputError.bottom = m_rcInputError.top + INPUT_ERROR_HEIGHT;
+	m_rcInputError.right = m_rcInputError.left + metricsInputErrorMsgWidth;
+	m_rcInputError.bottom = m_rcInputError.top + metricsInputErrorMsgHeight;
 
 	//	Done
 
@@ -433,7 +478,7 @@ void CLoginSession::CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retp
 	int cyHeight;
 	IAnimatron *pControl;
 	VI.CreateEditControl(pContainer, ID_CTRL_USERNAME, 0, y, RectWidth(rcDlg), 0, CONSTLIT("Username:"), &pControl, &cyHeight);
-	pControl->SetPropertyString(PROP_TEXT, m_Service.GetUsername());
+	pControl->SetPropertyString(PROP_TEXT, m_Service.GetDefaultUsername());
 	y += cyHeight + DLG_SPACING_Y;
 
 	//	Add a password field
@@ -443,8 +488,10 @@ void CLoginSession::CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retp
 
 	//	Auto sign in checkbox
 
-	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Remember my password"), NULL, &cyHeight);
+	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
 	y += cyHeight + DLG_SPACING_Y;
+	if (m_Service.HasCapability(ICIService::autoLoginUser))
+		pControl->SetPropertyBool(PROP_CHECKED, true);
 
 	//	Some extra space
 
@@ -478,10 +525,10 @@ void CLoginSession::CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retp
 
 	//	Error messages are to the left of the button
 
-	m_rcInputError.right = rcDlg.left + xButtons - INPUT_ERROR_MARGIN_RIGHT;
-	m_rcInputError.left = m_rcInputError.right - INPUT_ERROR_WIDTH;
+	m_rcInputError.left = rcDlg.left + xButtons - metricsInputErrorMsgMarginHorz - metricsInputErrorMsgWidth;
 	m_rcInputError.top = rcDlg.top + yButtons;
-	m_rcInputError.bottom = m_rcInputError.top + INPUT_ERROR_HEIGHT;
+	m_rcInputError.right = m_rcInputError.left + metricsInputErrorMsgWidth;
+	m_rcInputError.bottom = m_rcInputError.top + metricsInputErrorMsgHeight;
 
 	//	Done
 
@@ -505,7 +552,10 @@ ALERROR CLoginSession::OnCommand (const CString &sCmd, void *pData)
 
 	{
 	if (strEquals(sCmd, CMD_ALL_TASKS_DONE))
+		{
+		StopPerformance(ID_CTRL_WAIT);
 		ShowInitialDlg();
+		}
 
 	else if (strEquals(sCmd, CMD_CANCEL))
 		CmdCancel();
@@ -549,6 +599,9 @@ ALERROR CLoginSession::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_PASSWORD_RESET))
 		CmdPasswordReset();
 
+	else if (strEquals(sCmd, CMD_TOS))
+		sysOpenURL(CONSTLIT("http://www.kronosaur.com/legal/TermsofService.html"));
+
 	return NOERROR;
 	}
 
@@ -568,7 +621,16 @@ ALERROR CLoginSession::OnInit (CString *retsError)
 
 	if (m_HI.RegisterOnAllBackgroundTasksComplete(this))
 		{
-		StartPerformance(ID_DLG_MESSAGE);
+		const CVisualPalette &VI = m_HI.GetVisuals();
+		RECT rcRect;
+		VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+
+		//	Create a wait animation
+
+		IAnimatron *pAni;
+		VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcRect, &pAni);
+		StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
 		return NOERROR;
 		}
 	
@@ -633,7 +695,7 @@ void CLoginSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CLoginSession\r\n");
 	}
 
-void CLoginSession::OnUpdate (void)
+void CLoginSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //
@@ -665,7 +727,7 @@ void CLoginSession::ShowInitialDlg (void)
 		m_iCurrent = dlgSignIn;
 		StartPerformance(pDlg, ID_DLG_SIGN_IN, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
-		if (!m_Service.GetUsername().IsBlank())
+		if (!m_Service.GetDefaultUsername().IsBlank())
 			SetInputFocus(ID_CTRL_PASSWORD);
 		}
 
@@ -684,68 +746,3 @@ void CLoginSession::ShowInitialDlg (void)
 		;
 	}
 
-void CLoginSession::ShowInputErrorBox (const CString &sTitle, const CString &sDesc)
-
-//	ShowInputErrorBox
-//
-//	Show an input error message
-
-	{
-	const CVisualPalette &VI = m_HI.GetVisuals();
-
-	//	Start with a sequencer as a parent of everything
-
-	CAniSequencer *pMsg;
-	CAniSequencer::Create(CVector(m_rcInputError.left, m_rcInputError.top), &pMsg);
-
-	//	Add a rectangle as a background
-
-	IAnimatron *pRect;
-	CAniRect::Create(CVector(), 
-			CVector(RectWidth(m_rcInputError), RectHeight(m_rcInputError)),
-			VI.GetColor(colorAreaWarningMsg),
-			255,
-			&pRect);
-	pMsg->AddTrack(pRect, 0);
-
-	int x = INPUT_ERROR_PADDING_LEFT;
-	int cxWidth = RectWidth(m_rcInputError) - (INPUT_ERROR_PADDING_LEFT + INPUT_ERROR_PADDING_RIGHT);
-	int y = INPUT_ERROR_PADDING_TOP;
-	int yEnd = RectHeight(m_rcInputError) - INPUT_ERROR_PADDING_BOTTOM;
-
-	//	Title text
-
-	IAnimatron *pTitle = new CAniText;
-	const CG16bitFont &TitleFont = VI.GetFont(fontHeader);
-	pTitle->SetPropertyVector(PROP_POSITION, CVector(x, y));
-	pTitle->SetPropertyVector(PROP_SCALE, CVector(cxWidth, TitleFont.GetHeight()));
-	((CAniText *)pTitle)->SetPropertyFont(PROP_FONT, &TitleFont);
-	pTitle->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextWarningMsg));
-	pTitle->SetPropertyString(PROP_TEXT, sTitle);
-	pMsg->AddTrack(pTitle, 0);
-
-	y += TitleFont.GetHeight();
-
-	//	Description
-
-	IAnimatron *pDesc = new CAniText;
-	const CG16bitFont &DescFont = VI.GetFont(fontLarge);
-	pDesc->SetPropertyVector(PROP_POSITION, CVector(x, y));
-	pDesc->SetPropertyVector(PROP_SCALE, CVector(cxWidth, yEnd - y));
-	((CAniText *)pDesc)->SetPropertyFont(PROP_FONT, &DescFont);
-	pDesc->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextWarningMsg));
-	pDesc->SetPropertyString(PROP_TEXT, sDesc);
-	pMsg->AddTrack(pDesc, 0);
-
-	//	Fade after some time
-
-	pMsg->AnimateLinearFade(INPUT_ERROR_TIME, 5, 30);
-
-	//	If we already have an input error box, delete it
-
-	StopPerformance(ID_DLG_INPUT_ERROR);
-
-	//	Start a new one
-
-	StartPerformance(pMsg, ID_DLG_INPUT_ERROR, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
-	}

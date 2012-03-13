@@ -421,13 +421,7 @@ EDamageResults CParticleEffect::OnDamage (SDamageCtx &Ctx)
 	{
 	//	Create hit effect
 
-	CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_HitEffectUNID);
-	if (pEffect)
-		pEffect->CreateEffect(GetSystem(),
-				this,
-				Ctx.vHitPos,
-				GetVel(),
-				0);
+	Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
 
 	return damagePassthrough;
 	}

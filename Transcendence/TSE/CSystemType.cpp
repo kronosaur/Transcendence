@@ -7,7 +7,11 @@
 #define TABLES_TAG								CONSTLIT("Tables")
 
 #define ON_CREATE_EVENT							CONSTLIT("OnCreate")
-#define ON_OBJ_JUMP_POS_ADJ_EVENT				CONSTLIT("OnObjJumpPosAdj")
+
+static char *CACHED_EVENTS[CSystemType::evtCount] =
+	{
+		"OnObjJumpPosAdj",
+	};
 
 CSystemType::CSystemType (void) : 
 		m_pDesc(NULL)
@@ -33,13 +37,13 @@ ALERROR CSystemType::FireOnCreate (SSystemCreateCtx &SysCreateCtx, CString *rets
 //	Fire OnCreate event
 
 	{
-	ICCItem *pCode;
-	if (FindEventHandler(ON_CREATE_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(ON_CREATE_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 		Ctx.SetSystemCreateCtx(&SysCreateCtx);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			{
 			if (retsError)
@@ -61,14 +65,15 @@ bool CSystemType::FireOnObjJumpPosAdj (CSpaceObject *pObj, CVector *iovPos)
 //	Returns TRUE if the event adjusted the position
 
 	{
-	if (m_pOnObjJumpPosAdjEvent)
+	SEventHandlerDesc Event;
+	if (FindEventHandlerSystemType(evtOnObjJumpPosAdj, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pObj);
 		Ctx.DefineVector(CONSTLIT("aJumpPos"), *iovPos);
 
-		ICCItem *pResult = Ctx.Run(m_pOnObjJumpPosAdjEvent);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		if (pResult->IsError())
 			{
@@ -101,10 +106,11 @@ ALERROR CSystemType::FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCIt
 
 //	FireSystemCreateCode
 //
-//	Runs a bit of code at system create time
+//	Runs a bit of code at system create time.
 
 	{
 	CCodeChainCtx Ctx;
+	Ctx.SetExtension(GetExtension());	//	This code always comes from the SystemType (never inherited).
 	Ctx.SetSystemCreateCtx(&SysCreateCtx);
 
 	ICCItem *pResult = Ctx.Run(pCode);
@@ -136,7 +142,7 @@ ALERROR CSystemType::OnBindDesign (SDesignLoadCtx &Ctx)
 //	Bind design
 
 	{
-	m_pOnObjJumpPosAdjEvent = GetEventHandler(ON_OBJ_JUMP_POS_ADJ_EVENT);
+	InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	return NOERROR;
 	}

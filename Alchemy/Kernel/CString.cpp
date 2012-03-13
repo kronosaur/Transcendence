@@ -914,96 +914,6 @@ int strCompareAbsolute (const CString &sString1, const CString &sString2)
 		return 0;
 	}
 
-CString strConvert (const CString &sText, DWORD dwFromCP, DWORD dwToCP)
-
-//	strConvert
-//
-//	Convert from one codepage to another by using double-byte unicode as an
-//	intermediary.
-
-	{
-	//	Edge-conditions
-
-	if (sText.IsBlank())
-		return NULL_STR;
-	else if (dwFromCP == dwToCP)
-		return sText;
-
-	//	Optimistically allocate a buffer of some size
-
-	CString sUnicode;
-	int iAllocChars = sText.GetLength();
-	sUnicode.GetWritePointer(iAllocChars * 2);
-
-	//	Convert
-
-	int iResult = ::MultiByteToWideChar(dwFromCP, 0, sText.GetASCIIZPointer(), sText.GetLength(), (LPWSTR)sUnicode.GetASCIIZPointer(), iAllocChars);
-	if (iResult == 0)
-		{
-		//	If we need a bigger buffer, reallocate
-
-		if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-			{
-			//	Figure out how many characters we need
-
-			iAllocChars = ::MultiByteToWideChar(dwFromCP, 0, sText.GetASCIIZPointer(), sText.GetLength(), NULL, 0);
-			sUnicode.GetWritePointer(iAllocChars * 2);
-
-			//	Convert again
-
-			iResult = ::MultiByteToWideChar(dwFromCP, 0, sText.GetASCIIZPointer(), sText.GetLength(), (LPWSTR)sUnicode.GetASCIIZPointer(), iAllocChars);
-			}
-
-		//	If we're still in error, then we fail
-
-		if (iResult == 0)
-			return CONSTLIT("{unable to convert to Unicode}");
-		}
-
-	//	The result is the number of characters
-
-	int iUnicodeChars = iResult;
-
-	//	Allocate a result buffer
-
-	CString sResult;
-	iAllocChars = sText.GetLength() + 10;
-	sResult.GetWritePointer(iAllocChars);
-
-	//	Now convert to destination code page
-
-	iResult = ::WideCharToMultiByte(dwToCP, 0, (LPCWSTR)sUnicode.GetASCIIZPointer(), iUnicodeChars, sResult.GetASCIIZPointer(), iAllocChars, NULL, NULL);
-	if (iResult == 0)
-		{
-		//	If we need a bigger buffer, reallocate
-
-		if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-			{
-			//	Figure out how many characters we need
-
-			iAllocChars = ::WideCharToMultiByte(dwToCP, 0, (LPCWSTR)sUnicode.GetASCIIZPointer(), iUnicodeChars, NULL, 0, NULL, NULL);
-			sResult.GetWritePointer(iAllocChars);
-
-			//	Convert again
-
-			iResult = ::WideCharToMultiByte(dwToCP, 0, (LPCWSTR)sUnicode.GetASCIIZPointer(), iUnicodeChars, sResult.GetASCIIZPointer(), iAllocChars, NULL, NULL);
-			}
-
-		//	If we're still in error, then we fail
-
-		if (iResult == 0)
-			return CONSTLIT("{unable to convert to ANSI}");
-		}
-
-	//	The result is the number of characters
-
-	sResult.Truncate(iResult);
-	
-	//	Done
-
-	return sResult;
-	}
-
 ALERROR strDelimitEx (const CString &sString, 
 					  char cDelim, 
 					  DWORD dwFlags,
@@ -1212,43 +1122,6 @@ CString strDelimitGet (const CString &sString, char cDelim, DWORD dwFlags, int i
 		}
 	else
 		return NULL_STR;
-	}
-
-CString strEncodeUTF8Char (DWORD dwCodePoint)
-
-//	strEncodeUTF8Char
-//
-//	Encodes a Unicode character into a UTF8 string
-
-	{
-	BYTE szBuffer[4];
-
-	if (dwCodePoint <= 0x007f)
-		{
-		szBuffer[0] = (BYTE)dwCodePoint;
-		return CString((char *)szBuffer, 1);
-		}
-	else if (dwCodePoint <= 0x07ff)
-		{
-		szBuffer[0] = (BYTE)(0xc0 | ((dwCodePoint & 0x0700) >> 6) | ((dwCodePoint & 0x00ff) >> 6));
-		szBuffer[1] = (BYTE)(0x80 | ((dwCodePoint & 0x003f)));
-		return CString((char *)szBuffer, 2);
-		}
-	else if (dwCodePoint <= 0xffff)
-		{
-		szBuffer[0] = (BYTE)(0xe0 | ((dwCodePoint & 0xf000) >> 12));
-		szBuffer[1] = (BYTE)(0x80 | ((dwCodePoint & 0x0f00) >> 6) | ((dwCodePoint & 0x00c0) >> 6));
-		szBuffer[2] = (BYTE)(0x80 | ((dwCodePoint & 0x003f)));
-		return CString ((char *)szBuffer, 3);
-		}
-	else
-		{
-		szBuffer[0] = (BYTE)(0xf0 | ((dwCodePoint & 0x1c0000) >> 18));
-		szBuffer[1] = (BYTE)(0x80 | ((dwCodePoint & 0x030000) >> 12) | ((dwCodePoint & 0xf000) >> 12));
-		szBuffer[2] = (BYTE)(0x80 | ((dwCodePoint & 0x0f00) >> 6) | ((dwCodePoint & 0x00c0) >> 6));
-		szBuffer[3] = (BYTE)(0x80 | ((dwCodePoint & 0x003f)));
-		return CString ((char *)szBuffer, 4);
-		}
 	}
 
 bool strEquals (const CString &sString1, const CString &sString2)
@@ -1706,6 +1579,23 @@ bool strIsASCIISymbol (char *pPos)
 		}
 	}
 
+bool strIsInt (const CString &sValue, DWORD dwFlags, int *retiValue)
+
+//	strIsInt
+//
+//	Returns true if this is an integer value.
+
+	{
+	char *pPos = sValue.GetASCIIZPointer();
+	char *pPosEnd;
+	bool bError;
+	int iValue = strParseInt(pPos, 0, dwFlags, &pPosEnd, &bError);
+	if (retiValue)
+		*retiValue = iValue;
+
+	return (!bError && (int)(pPosEnd - pPos) == sValue.GetLength());
+	}
+
 bool strNeedsEscapeCodes (const CString &sString)
 	{
 	char *pPos = sString.GetPointer();
@@ -1735,7 +1625,7 @@ CString strLoadFromRes (HINSTANCE hInst, int iResID)
 	return sString;
 	}
 
-int strParseInt (char *pStart, int iNullResult, char **retpEnd, bool *retbNullValue)
+int strParseInt (char *pStart, int iNullResult, DWORD dwFlags, char **retpEnd, bool *retbNullValue)
 
 //	strParseInt
 //
@@ -1750,6 +1640,8 @@ int strParseInt (char *pStart, int iNullResult, char **retpEnd, bool *retbNullVa
 	BOOL bFoundNumber;
 	BOOL bHex;
 	int iInt;
+
+	bool bExpectSeparators = ((dwFlags & PARSE_THOUSAND_SEPARATOR) ? true : false);
 
 	//	Preset
 
@@ -1837,6 +1729,9 @@ int strParseInt (char *pStart, int iNullResult, char **retpEnd, bool *retbNullVa
 			iInt = 10 * iInt + (*pPos - '0');
 			pPos++;
 			bFoundNumber = TRUE;
+
+			if (bExpectSeparators && *pPos == ',')
+				pPos++;
 			}
 		}
 

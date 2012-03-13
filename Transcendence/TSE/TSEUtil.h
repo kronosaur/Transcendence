@@ -162,7 +162,7 @@ inline void DebugStopTimer (char *szTiming) { }
 
 const DWORD EXTENSION_VERSION =							3;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						11;
+const DWORD UNIVERSE_SAVE_VERSION =						13;
 const DWORD SYSTEM_SAVE_VERSION =						75;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
@@ -298,6 +298,7 @@ class CAttributeDataBlock
 
 		void CleanUp (void);
 		void Copy (const CAttributeDataBlock &Copy);
+		bool IsXMLText (const CString &sData) const;
 
 		CSymbolTable *m_pData;					//	Opaque string data
 		SObjRefEntry *m_pObjRefData;			//	Custom pointers to CSpaceObject *
@@ -322,6 +323,12 @@ class CCurrencyBlock
 			};
 
 		TSortMap<DWORD, SEntry> m_Block;
+	};
+
+struct SEventHandlerDesc
+	{
+	SExtensionDesc *pExtension;
+	ICCItem *pCode;
 	};
 
 class CEventHandler
@@ -349,20 +356,20 @@ class CGlobalEventCache
 
 		inline void DeleteAll (void) { m_Cache.DeleteAll(); }
 		inline int GetCount (void) const { return m_Cache.GetCount(); }
-		inline CDesignType *GetEntry (int iIndex, ICCItem **retpCode = NULL) const
+		inline CDesignType *GetEntry (int iIndex, SEventHandlerDesc *retEvent = NULL) const
 			{
-			if (retpCode)
-				*retpCode = m_Cache[iIndex].pCode;
+			if (retEvent)
+				*retEvent = m_Cache[iIndex].Event;
 
 			return m_Cache[iIndex].pType;
 			}
-		bool Insert (CDesignType *pType, const CString &sEvent, ICCItem *pCode);
+		bool Insert (CDesignType *pType, const CString &sEvent, const SEventHandlerDesc &Event);
 
 	private:
 		struct SEntry
 			{
 			CDesignType *pType;
-			ICCItem *pCode;
+			SEventHandlerDesc Event;
 			};
 
 		CString m_sEvent;
@@ -514,6 +521,7 @@ class CSpaceObjectList
 		void RemoveAll (void);
 		void SetAllocSize (int iNewCount);
 		inline void SetObj (int iIndex, CSpaceObject *pObj) { m_pList[iIndex+1] = pObj; }
+		void Subtract (const CSpaceObjectList &List);
 		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 	private:
@@ -938,6 +946,7 @@ enum ECodeChainEvents
 	eventGetTradePrice =				4,
 	eventDoEvent =						5,
 	eventObjFireEvent =					6,
+	eventOnGlobalTypesInit =			7,
 	};
 
 class CCodeChainCtx
@@ -961,18 +970,22 @@ class CCodeChainCtx
 		void DefineVector (const CString &sVar, const CVector &vVector);
 		inline CG16bitImage *GetCanvas (void) const { return m_pCanvas; }
 		inline ECodeChainEvents GetEvent (void) const { return m_iEvent; }
+		inline SExtensionDesc *GetExtension (void) const { return m_pExtension; }
 		inline CItemType *GetItemType (void) const { return m_pItemType; }
 		inline CDesignType *GetScreensRoot (void) const { return m_pScreensRoot; }
 		inline SSystemCreateCtx *GetSystemCreateCtx (void) const { return m_pSysCreateCtx; }
 		inline ICCItem *Link (const CString &sString, int iOffset, int *retiLinked) { return m_CC.Link(sString, iOffset, retiLinked); }
 		void RestoreVars (void);
 		ICCItem *Run (ICCItem *pCode);
+		ICCItem *Run (const SEventHandlerDesc &Event);
 		ICCItem *RunLambda (ICCItem *pCode);
 		void SaveAndDefineSourceVar (CSpaceObject *pSource);
 		void SaveItemVar (void);
 		void SaveSourceVar (void);
 		inline void SetCanvas (CG16bitImage *pCanvas) { m_pCanvas = pCanvas; }
 		inline void SetEvent (ECodeChainEvents iEvent) { m_iEvent = iEvent; }
+		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
+		void SetGlobalDefineWrapper (SExtensionDesc *pExtension);
 		inline void SetItemType (CItemType *pType) { m_pItemType = pType; }
 		inline void SetScreen (void *pScreen) { m_pScreen = pScreen; }
 		inline void SetScreensRoot (CDesignType *pRoot) { m_pScreensRoot = pRoot; }
@@ -991,10 +1004,58 @@ class CCodeChainCtx
 		CItemType *m_pItemType;				//	Used for item events (may be NULL)
 		CDesignType *m_pScreensRoot;		//	Used to resolve local screens (may be NULL)
 		SSystemCreateCtx *m_pSysCreateCtx;	//	Used during system create (may be NULL)
+		SExtensionDesc *m_pExtension;		//	Extension that defined this code
 
 		//	Saved variables
 		ICCItem *m_pOldSource;
 		ICCItem *m_pOldItem;
+
+		bool m_bRestoreGlobalDefineHook;
+		IItemTransform *m_pOldGlobalDefineHook;
+	};
+
+class CFunctionContextWrapper : public ICCAtom
+	{
+	public:
+		CFunctionContextWrapper (ICCItem *pFunction);
+
+		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
+
+		//	ICCItem virtuals
+		virtual ICCItem *Clone (CCodeChain *pCC);
+		virtual ICCItem *Execute (CEvalContext *pCtx, ICCItem *pArgs);
+		virtual CString GetHelp (void) { return NULL_STR; }
+		virtual CString GetStringValue (void) { return m_pFunction->GetStringValue(); }
+		virtual ValueTypes GetValueType (void) { return Function; }
+		virtual BOOL IsIdentifier (void) { return FALSE; }
+		virtual BOOL IsFunction (void) { return TRUE; }
+		virtual BOOL IsPrimitive (void) { return FALSE; }
+		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0) { return m_pFunction->Print(pCC, dwFlags); }
+		virtual void Reset (void) { }
+
+	protected:
+		//	ICCItem virtuals
+		virtual void DestroyItem (CCodeChain *pCC);
+		virtual ICCItem *StreamItem (CCodeChain *pCC, IWriteStream *pStream);
+		virtual ICCItem *UnstreamItem (CCodeChain *pCC, IReadStream *pStream);
+
+	private:
+		ICCItem *m_pFunction;
+		SExtensionDesc *m_pExtension;
+	};
+
+class CAddFunctionContextWrapper : public IItemTransform
+	{
+	public:
+		CAddFunctionContextWrapper (void) : m_pExtension(NULL) { }
+
+		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
+
+		//	IItemTransform
+		virtual ICCItem *Transform (CCodeChain &CC, ICCItem *pItem);
+
+	private:
+		SExtensionDesc *m_pExtension;
 	};
 
 //	CZoneGrid ------------------------------------------------------------------
@@ -1178,8 +1239,29 @@ class CHexarc
 		static bool CreateCredentials (const CString &sUsername, const CString &sPassword, CString *retsValue);
 		static bool HasSpecialAeonChars (const CString &sValue);
 		static bool IsError (const CJSONValue &Value, CString *retsError = NULL, CString *retsDesc = NULL);
-		static bool Sign (const CJSONValue &Value, const CIntegerIP &SecretKey, CDigest *retDigest);
 		static void WriteAsAeon (const CJSONValue &Value, IWriteStream &Stream);
+		static bool ValidatePasswordComplexity (const CString &sPassword, CString *retsResult = NULL);
+	};
+
+//	Local device storage class -------------------------------------------------
+
+class CDeviceStorage
+	{
+	public:
+		CDeviceStorage (void) : m_bModified(false) { }
+
+		const CString &GetData (DWORD dwExtension, const CString &sAttrib) const;
+		bool FindData (DWORD dwExtension, const CString &sAttrib, CString *retsData = NULL) const;
+		ALERROR Load (const CString &sFilespec, CString *retsError = NULL);
+		ALERROR Save (const CString &sFilespec);
+		bool SetData (DWORD dwExtension, const CString &sAttrib, const CString &sData);
+
+	private:
+		CString MakeKey (DWORD dwExtension, const CString &sAttrib) const;
+		bool ValidateAndMakeKey (DWORD dwExtension, const CString &sAttrib, CString *retsKey = NULL) const;
+
+		TSortMap<CString, CString> m_Storage;
+		bool m_bModified;
 	};
 
 //	Miscellaneous utility functions
@@ -1188,6 +1270,11 @@ CString AppendModifiers (const CString &sModifierList1, const CString &sModifier
 int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);
+
+ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList);
+void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue);
+
+const DWORD PSL_FLAG_ALLOW_WHITESPACE =		0x00000001;
 void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retList);
 inline void ParseAttributes (const CString &sAttribs, TArray<CString> *retAttribs) { ParseStringList(sAttribs, 0, retAttribs); }
 

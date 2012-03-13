@@ -126,7 +126,7 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 			return g_pHI->WMKeyDown((int)wParam, lParam);
 
 		case WM_KEYUP:
-			return g_pHI->WMKeyUp((int)wParam, lParam);
+			return (g_pHI ? g_pHI->WMKeyUp((int)wParam, lParam) : 0);
 
 		case WM_LBUTTONDBLCLK:
 			return g_pHI->WMLButtonDblClick((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);
@@ -135,10 +135,13 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 			return g_pHI->WMLButtonDown((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);
 
 		case WM_LBUTTONUP:
-			return g_pHI->WMLButtonUp((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);
+			return (g_pHI ? g_pHI->WMLButtonUp((int)LOWORD(lParam), (int)HIWORD(lParam), wParam) : 0);
 
 		case WM_MOUSEMOVE:
 			return g_pHI->WMMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);
+
+		case WM_MOUSEWHEEL:
+			return g_pHI->WMMouseWheel((int)(short)HIWORD(wParam), (int)LOWORD(lParam), (int)HIWORD(lParam), (DWORD)LOWORD(wParam));
 
 		case WM_MOVE:
 			return g_pHI->WMMove((int)LOWORD(lParam), (int)HIWORD(lParam));

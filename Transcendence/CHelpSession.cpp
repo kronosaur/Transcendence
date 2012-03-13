@@ -137,7 +137,7 @@ void CHelpSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_HelpImage, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_HelpImage, 0, &rcCenter);
 
 	//	Paint help page
 
@@ -295,7 +295,7 @@ void CHelpSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CHelpSession\r\n");
 	}
 
-void CHelpSession::OnUpdate (void)
+void CHelpSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

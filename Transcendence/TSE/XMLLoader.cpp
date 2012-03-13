@@ -43,6 +43,7 @@
 
 #define FILE_TYPE_XML						CONSTLIT("xml")
 #define FILE_TYPE_TDB						CONSTLIT("tdb")
+#define STORAGE_FILESPEC					CONSTLIT("Storage.xml")
 
 static char g_ShipClassTag[] = "ShipClasses";
 static char g_StationTypesTag[] = "StationTypes";
@@ -105,7 +106,7 @@ ALERROR CUniverse::Init (CResourceDb &Resources, CString *retsError, DWORD dwFla
 		kernelDebugLogMessage("Using external resource files");
 
 	CXMLElement *pGameFile;
-	if (error = Resources.LoadGameFile(&pGameFile, retsError))
+	if (error = Resources.LoadGameFile(&pGameFile, NULL, retsError, &m_Design.GetBaseEntities()))
 		return error;
 
 	SDesignLoadCtx Ctx;
@@ -113,6 +114,7 @@ ALERROR CUniverse::Init (CResourceDb &Resources, CString *retsError, DWORD dwFla
 	Ctx.pResDb = &Resources;
 	Ctx.bNoResources = ((dwFlags & flagNoResources) ? true : false);
 	Ctx.bNoVersionCheck = ((dwFlags & flagNoVersionCheck) ? true : false);
+	Ctx.bNewGame = ((dwFlags & flagNewGame) ? true : false);
 
 	//	Remember the resource Db for deferred loads
 
@@ -128,6 +130,11 @@ ALERROR CUniverse::Init (CResourceDb &Resources, CString *retsError, DWORD dwFla
 	if (!m_sResourceDb.IsBlank())
 		if (error = InitExtensions(Ctx, m_sResourceDb))
 			goto Fail;
+
+	//	Load local device storage
+
+	if (error = InitDeviceStorage(Ctx))
+		goto Fail;
 
 	//	Done loading design elements
 
@@ -158,25 +165,24 @@ ALERROR CUniverse::InitAdventure (DWORD dwAdventureUNID, TArray<DWORD> *pExtensi
 	ALERROR error;
 	bool bBindNeeded;
 
-	//	Get the adventure
+	//	Get the adventure (dwAdventureUNID may be an adventure desc or an extension UNID)
 
 	CAdventureDesc *pAdventure = FindAdventureDesc(dwAdventureUNID);
 	if (pAdventure == NULL)
 		{
-		//	See if this is an adventure extension
-
-		pAdventure = m_Design.FindAdventureForExtension(dwAdventureUNID);
-		if (pAdventure == NULL)
-			{
-			*retsError = strPatternSubst(CONSTLIT("Unable to find adventure desc: %x"), dwAdventureUNID);
-			return ERR_FAIL;
-			}
+		*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %x"), dwAdventureUNID);
+		return ERR_FAIL;
 		}
 
 	//	Figure out which extensions need to be enabled.
 
 	if (error = m_Design.SelectExtensions(pAdventure, pExtensionList, &bBindNeeded, retsError))
 		return error;
+
+	//	If we have dynamic types, then we always need to bind
+
+	if (m_Design.HasDynamicTypes())
+		bBindNeeded = true;
 
 	//	If we're not yet bound to this extension, then bind
 
@@ -189,14 +195,12 @@ ALERROR CUniverse::InitAdventure (DWORD dwAdventureUNID, TArray<DWORD> *pExtensi
 		if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY))
 			return error;
 
-		if (error = Resources.LoadEntities(retsError))
-			return error;
-
 		SDesignLoadCtx Ctx;
 		Ctx.sResDb = m_sResourceDb;
 		Ctx.pResDb = &Resources;
 		Ctx.bNoResources = ((dwFlags & flagNoResources) ? true : false);
 		Ctx.bNoVersionCheck = ((dwFlags & flagNoVersionCheck) ? true : false);
+		Ctx.bNewGame = ((dwFlags & flagNewGame) ? true : false);
 
 		//	If we have an adventure then load it and select it
 
@@ -227,6 +231,22 @@ ALERROR CUniverse::InitAdventure (DWORD dwAdventureUNID, TArray<DWORD> *pExtensi
 	//	Set the current adventure
 
 	SetCurrentAdventureDesc(pAdventure);
+
+	return NOERROR;
+	}
+
+ALERROR CUniverse::InitDeviceStorage (SDesignLoadCtx &Ctx)
+
+//	InitDeviceStorage
+//
+//	Initializes cross-game local storage
+
+	{
+	ALERROR error;
+
+	CString sFilespec = pathAddComponent(pathGetPath(m_sResourceDb), STORAGE_FILESPEC);
+	if (error = m_DeviceStorage.Load(sFilespec, &Ctx.sError))
+		return error;
 
 	return NOERROR;
 	}
@@ -603,7 +623,7 @@ ALERROR CUniverse::LoadDesignElement (SDesignLoadCtx &Ctx, CXMLElement *pElement
 			{
 			//	Add to design collection
 
-			if (error = m_Design.BeginLoadAdventureDesc(Ctx, pElement, true))
+			if (error = m_Design.BeginLoadAdventureDesc(Ctx, pElement, true, NULL))
 				return error;
 
 			//	Load the design elements
@@ -645,6 +665,14 @@ ALERROR CUniverse::LoadGlobals (SDesignLoadCtx &Ctx, CXMLElement *pElement)
 	{
 	CCodeChainCtx CCCtx;
 
+	//	Add a hook so that all lambda expressions defined in this global block
+	//	are wrapped with something that sets the extension UNID to the context.
+
+	if (Ctx.pExtension && Ctx.pExtension->dwUNID)
+		CCCtx.SetGlobalDefineWrapper(Ctx.pExtension);
+
+	//	Parse and run the code (which will likely define a bunch of functions)
+
 	ICCItem *pCode = CCCtx.Link(pElement->GetContentText(0), 0, NULL);
 	ICCItem *pResult = CCCtx.Run(pCode);
 	if (pResult->IsError())
@@ -654,6 +682,7 @@ ALERROR CUniverse::LoadGlobals (SDesignLoadCtx &Ctx, CXMLElement *pElement)
 		}
 
 	CCCtx.Discard(pResult);
+	CCCtx.Discard(pCode);
 
 	return NOERROR;
 	}
@@ -782,3 +811,25 @@ ALERROR CUniverse::LoadSound (SDesignLoadCtx &Ctx, CXMLElement *pElement)
 
 	return NOERROR;
 	}
+
+ALERROR CUniverse::SaveDeviceStorage (void)
+
+//	SaveDeviceStorage
+//
+//	Saves the cross-game device storage file.
+
+	{
+	ALERROR error;
+
+	//	If blank, then we never initialized
+
+	if (m_sResourceDb.IsBlank())
+		return NOERROR;
+
+	CString sFilespec = pathAddComponent(pathGetPath(m_sResourceDb), STORAGE_FILESPEC);
+	if (error = m_DeviceStorage.Save(sFilespec))
+		return error;
+
+	return NOERROR;
+	}
+

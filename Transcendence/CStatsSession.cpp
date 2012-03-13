@@ -197,7 +197,7 @@ void CStatsSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_BackgroundImage, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_BackgroundImage, 0, &rcCenter);
 
 	//	Paint some help text
 
@@ -234,7 +234,7 @@ void CStatsSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CStatsSession\r\n");
 	}
 
-void CStatsSession::OnUpdate (void)
+void CStatsSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 

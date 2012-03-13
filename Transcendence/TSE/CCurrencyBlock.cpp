@@ -48,7 +48,7 @@ CurrencyValue CCurrencyBlock::IncCredits (DWORD dwEconomyUNID, CurrencyValue iIn
 		dwEconomyUNID = DEFAULT_ECONOMY_UNID;
 
 	bool bInserted;
-	SEntry *pEntry = m_Block.Insert(dwEconomyUNID, &bInserted);
+	SEntry *pEntry = m_Block.SetAt(dwEconomyUNID, &bInserted);
 	if (bInserted)
 		pEntry->iValue = 0;
 

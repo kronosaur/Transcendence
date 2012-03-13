@@ -36,6 +36,8 @@
 		</Armor>
 
 		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
 			<Device deviceID="&itRecoillessCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
@@ -116,7 +118,7 @@
 			</ReactorDisplay>
 
 		</PlayerSettings>
-
+		
 	</ShipClass>
 
 	<!-- Player Ship: EI500 Freighter -->
@@ -154,6 +156,8 @@
 		</Armor>
 
 		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
 			<Device deviceID="&itOmniLaserCannon;"/>
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
@@ -282,6 +286,8 @@
 		</Armor>
 
 		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
 			<Device deviceID="&itDualLaserCannon;"/>
 			<Device deviceID="&itNAMIMissileLauncher;"/>
 			<Device deviceID="&itHullPlateIonizer;"/>

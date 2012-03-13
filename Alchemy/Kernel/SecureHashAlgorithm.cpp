@@ -423,3 +423,82 @@ CDigest::CDigest (BYTE *pBytes) : CIntegerIP(digestLength)
 	while (pA < pAEnd)
 		*pA++ = *pB++;
 	}
+
+void cryptoCreateMAC (IReadBlock &Data, const CIntegerIP &Key, CIntegerIP *retMAC)
+
+//	cryptoCreateMAC
+//
+//	Creates a message authentication code for the given data
+//
+//	See: http://en.wikipedia.org/wiki/HMAC
+//	See: http://tools.ietf.org/html/rfc2104
+
+	{
+	int i;
+
+	//	First we need to convert the key to one suitable for the MAC. If the key
+	//	is shorter than the blocksize (64) then we pad it with 0s. Otherwise, if
+	//	it is longer, we hash it and pad it with 0s.
+
+	BYTE MACKey[SHS_DATASIZE];
+
+	if (Key.GetLength() > SHS_DATASIZE)
+		{
+		SHA_CTX ctx;
+		SHAInit(&ctx);
+		SHAUpdate(&ctx, (BYTE *)Key.GetBytes(), Key.GetLength());
+		SHAFinal((BYTE *)MACKey, &ctx);
+
+		BYTE *pDest = MACKey + SHS_DIGESTSIZE;
+		BYTE *pDestEnd = MACKey + SHS_DATASIZE;
+		while (pDest < pDestEnd)
+			*pDest++ = 0;
+		}
+	else
+		{
+		BYTE *pSrc = (BYTE *)Key.GetBytes();
+		BYTE *pSrcEnd = pSrc + Key.GetLength();
+		BYTE *pDest = MACKey;
+		BYTE *pDestEnd = pDest + SHS_DATASIZE;
+
+		while (pSrc < pSrcEnd)
+			*pDest++ = *pSrc++;
+
+		while (pDest < pDestEnd)
+			*pDest++ = 0;
+		}
+
+	//	Generate inner and outer padding
+
+	BYTE InnerPad[SHS_DATASIZE];
+	BYTE OuterPad[SHS_DATASIZE];
+	for (i = 0; i < SHS_DATASIZE; i++)
+		{
+		InnerPad[i] = 0x36 ^ MACKey[i];
+		OuterPad[i] = 0x5c ^ MACKey[i];
+		}
+
+	//	Hash inner
+
+	DIGEST InnerDigest;
+
+	SHA_CTX ctx;
+	SHAInit(&ctx);
+	SHAUpdate(&ctx, InnerPad, SHS_DATASIZE);
+	SHAUpdate(&ctx, (BYTE *)Data.GetPointer(0), Data.GetLength());
+	SHAFinal((BYTE *)InnerDigest, &ctx);
+
+	//	Hash outer
+
+	DIGEST MAC;
+
+	SHAInit(&ctx);
+	SHAUpdate(&ctx, OuterPad, SHS_DATASIZE);
+	SHAUpdate(&ctx, InnerDigest, SHS_DIGESTSIZE);
+	SHAFinal((BYTE *)MAC, &ctx);
+
+	//	Return
+
+	*retMAC = CIntegerIP(sizeof(MAC), MAC);
+	}
+

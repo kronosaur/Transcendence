@@ -26,7 +26,7 @@ void CLanguageDataBlock::AddEntry (const CString &sID, const CString &sText)
 
 	{
 	bool bIsNew;
-	SEntry *pEntry = m_Data.Insert(sID, &bIsNew);
+	SEntry *pEntry = m_Data.SetAt(sID, &bIsNew);
 
 	//	If not new then we need to free the code block
 
@@ -90,7 +90,7 @@ ALERROR CLanguageDataBlock::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 			//	Add an entry
 
 			bool bIsNew;
-			SEntry *pEntry = m_Data.Insert(sID, &bIsNew);
+			SEntry *pEntry = m_Data.SetAt(sID, &bIsNew);
 			if (!bIsNew)
 				{
 				Ctx.sError = strPatternSubst(CONSTLIT("Duplicate <Language> element: %s"), sID);
@@ -120,7 +120,7 @@ ALERROR CLanguageDataBlock::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 			//	Add an entry
 
 			bool bIsNew;
-			SEntry *pEntry = m_Data.Insert(sID, &bIsNew);
+			SEntry *pEntry = m_Data.SetAt(sID, &bIsNew);
 			if (!bIsNew)
 				{
 				Ctx.sError = strPatternSubst(CONSTLIT("Duplicate <Language> element: %s"), sID);
@@ -201,7 +201,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CStr
 	Ctx.SaveAndDefineSourceVar(pObj);
 	Ctx.DefineString(CONSTLIT("aTextID"), sID);
 	
-	ICCItem *pResult = Ctx.Run(pEntry->pCode);
+	ICCItem *pResult = Ctx.Run(pEntry->pCode);	//	LATER:Event
 	*retsText = pResult->GetStringValue();
 	Ctx.Discard(pResult);
 

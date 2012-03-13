@@ -22,9 +22,11 @@
 #define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
+#define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
+#define HEXARC_TEST_SWITCH					CONSTLIT("hexarcTest")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
 #define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
@@ -79,7 +81,7 @@ int main (int argc, char *argv[ ], char *envp[ ])
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); 
 #endif
 
-	if (!kernelInit())
+	if (!kernelInit(KERNEL_FLAG_INTERNETS))
 		{
 		printf("ERROR: Unable to initialize Alchemy kernel.\n");
 		return 1;
@@ -119,8 +121,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	if (bLogo)
 		{
-		printf("TransData v2.41\n");
-		printf("Copyright (c) 2001-2011 by George Moromisato. All Rights Reserved.\n\n");
+		printf("TransData v2.5\n");
+		printf("Copyright (c) 2001-2012 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 		}
 
 	if (pCmdLine->GetAttributeBool(NOARGS)
@@ -179,7 +181,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	//	See if we need to load images
 
 	DWORD dwInitFlags = 0;
-	if (pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
+	if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH)
+			|| pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
 			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH))
@@ -190,6 +193,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	//	We don't need a version check
 
 	dwInitFlags |= flagNoVersionCheck;
+
+	//	We're not loading the game
+
+	dwInitFlags |= flagNewGame;
 
 	//	Open the universe
 
@@ -255,6 +262,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		Run(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIELD_TEST_SWITCH))
 		GenerateShieldStats(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH))
+		GenerateEffectImage(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH))
 		GenerateShipImage(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH))
@@ -293,6 +302,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		PerformanceTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
 		RunEncounterSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
+		HexarcTest(Universe, pCmdLine);
 	else
 		GenerateStats(Universe, pCmdLine);
 
@@ -351,27 +362,94 @@ void MarkItemsKnown (CUniverse &Universe)
 
 void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
+	ALERROR error;
 	CCodeChain &CC = g_pUniverse->GetCC();
-	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
 
-	ICCItem *pCode = CC.Link(sCommand, 0);
-	if (pCode->IsError())
+	//	Prepare the universe
+
+	CTopologyNode *pNode = g_pUniverse->GetFirstTopologyNode();
+	if (pNode == NULL)
 		{
-		printf("ERROR: %s\n", pCode->GetStringValue().GetASCIIZPointer());
-		pCode->Discard(&CC);
+		printf("ERROR: No topology node found.\n");
 		return;
 		}
 
-	//	Execute
+	CSystem *pSystem;
+	if (error = g_pUniverse->CreateStarSystem(pNode, &pSystem))
+		{
+		printf("ERROR: Unable to create star system.\n");
+		return;
+		}
 
-	ICCItem *pResult = CC.TopLevel(pCode, NULL);
+	//	Set the POV
 
-	//	Output result
+	CSpaceObject *pPOV = pSystem->GetObject(0);
+	g_pUniverse->SetPOV(pPOV);
+	pSystem->SetPOVLRS(pPOV);
 
-	printf("%s\n", CC.Unlink(pResult).GetASCIIZPointer());
+	//	Prepare system
 
-	//	Done
+	g_pUniverse->UpdateExtended();
+	g_pUniverse->GarbageCollectLibraryBitmaps();
+	g_pUniverse->LoadLibraryBitmaps();
 
-	pResult->Discard(&CC);
-	pCode->Discard(&CC);
+	//	If we have a command, invoke it
+
+	CString sCommand = pCmdLine->GetAttribute(RUN_SWITCH);
+	if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
+		{
+		CCodeChainCtx Ctx;
+		ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
+		ICCItem *pResult = Ctx.Run(pCode);
+
+		CString sOutput;
+		if (pResult->IsIdentifier())
+			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
+		else
+			sOutput = CC.Unlink(pResult);
+
+		Ctx.Discard(pResult);
+		Ctx.Discard(pCode);
+
+		//	Output result
+
+		printf("%s\n", sOutput.GetASCIIZPointer());
+		}
+
+	//	Otherwise, we enter a command loop
+
+	else
+		{
+		while (true)
+			{
+			char szBuffer[1024];
+			printf(": ");
+			gets_s(szBuffer, sizeof(szBuffer)-1);
+			CString sCommand(szBuffer);
+
+			if (strEquals(sCommand, CONSTLIT("quit")))
+				break;
+			else if (sCommand.IsBlank())
+				NULL;
+			else
+				{
+				CCodeChainCtx Ctx;
+				ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
+				ICCItem *pResult = Ctx.Run(pCode);
+
+				CString sOutput;
+				if (pResult->IsIdentifier())
+					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
+				else
+					sOutput = CC.Unlink(pResult);
+
+				Ctx.Discard(pResult);
+				Ctx.Discard(pCode);
+
+				//	Output result
+
+				printf("%s\n", sOutput.GetASCIIZPointer());
+				}
+			}
+		}
 	}

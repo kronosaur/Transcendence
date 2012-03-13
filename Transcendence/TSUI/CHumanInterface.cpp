@@ -163,6 +163,9 @@ void CHumanInterface::ClosePopupSession (void)
 
 	if (m_pCurSession)
 		{
+		if (m_pCurSession->IsCursorShown())
+			::ShowCursor(false);
+
 		//	Remove the session from any background tasks and timers
 
 		m_Background.ListenerDestroyed(m_pCurSession);
@@ -194,11 +197,6 @@ void CHumanInterface::ClosePopupSession (void)
 	//	Recompute paint order
 
 	CalcBackgroundSessions();
-
-	//	See if we need to show the cursor
-
-	if (m_pCurSession)
-		::ShowCursor(m_pCurSession->IsCursorShown());
 	}
 
 bool CHumanInterface::Create (void)
@@ -438,7 +436,8 @@ ALERROR CHumanInterface::OpenPopupSession (IHISession *pSession, CString *retsEr
 
 	//	Show the cursor
 
-	::ShowCursor(pSession->IsCursorShown());
+	if (m_pCurSession->IsCursorShown())
+		::ShowCursor(true);
 
 	return NOERROR;
 	}
@@ -512,6 +511,9 @@ ALERROR CHumanInterface::ShowSession (IHISession *pSession, CString *retsError)
 
 		if (m_pCurSession)
 			{
+			if (m_pCurSession->IsCursorShown())
+				::ShowCursor(false);
+
 			m_pCurSession->HICleanUp();
 			delete m_pCurSession;
 			}
@@ -525,7 +527,8 @@ ALERROR CHumanInterface::ShowSession (IHISession *pSession, CString *retsError)
 
 			//	Show the cursor
 
-			::ShowCursor(m_pCurSession->IsCursorShown());
+			if (m_pCurSession->IsCursorShown())
+				::ShowCursor(true);
 			}
 		}
 
@@ -609,6 +612,12 @@ ALERROR CHumanInterface::WMCreate (HMODULE hModule, HWND hWnd, char *pszCommandL
 
 	ASSERT(pController);
 	m_pController = pController;
+
+	//	Always start with a hidden cursor. Sessions will show it if necessary.
+	//	(Remember that the Windows cursor is refcounted. Each call to 
+	//	ShowCursor(true) must be paired with a ShowCursor(false).
+
+	::ShowCursor(false);
 
 	//	Boot the controller
 
@@ -810,6 +819,24 @@ LONG CHumanInterface::WMMouseMove (int x, int y, DWORD dwFlags)
 
 		m_ScreenMgr.ClientToScreen(x, y, &xLocal, &yLocal);
 		m_pCurSession->HIMouseMove(xLocal, yLocal, dwFlags);
+		}
+
+	return 0;
+	}
+
+LONG CHumanInterface::WMMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	WMMouseWheel
+//
+//	Handle WM_MOUSEWHEEL message
+
+	{
+	if (m_pCurSession)
+		{
+		int xLocal, yLocal;
+
+		m_ScreenMgr.ClientToScreen(x, y, &xLocal, &yLocal);
+		m_pCurSession->HIMouseWheel(iDelta, xLocal, yLocal, dwFlags);
 		}
 
 	return 0;

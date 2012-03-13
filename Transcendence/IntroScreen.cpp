@@ -845,15 +845,21 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	//	Profile
 
-	VI.CreateImageButton(pRoot, CMD_SHOW_PROFILE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageProfileIcon), CONSTLIT("Records"), 0, &pButton);
-	pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_PROFILE);
+	if (Service.HasCapability(ICIService::userProfile))
+		{
+		VI.CreateImageButton(pRoot, CMD_SHOW_PROFILE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageProfileIcon), CONSTLIT("Records"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_PROFILE);
 
-	x -= (BUTTON_WIDTH + PADDING_LEFT);
+		x -= (BUTTON_WIDTH + PADDING_LEFT);
+		}
 
 	//	Mod Exchange
 
-	VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Exchange"), 0, &pButton);
-	pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_MOD_EXCHANGE);
+	if (Service.HasCapability(ICIService::modExchange))
+		{
+		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Exchange"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_MOD_EXCHANGE);
+		}
 
 	//	Done
 
@@ -1924,16 +1930,22 @@ void CTranscendenceWnd::SetAccountControls (void)
 
 	//	Get the account state
 
+	bool bEnabled = Service.HasCapability(ICIService::loginUser);
 	bool bSignedIn = Service.HasCapability(ICIService::getUserProfile);
-
 
 	CString sUsername;
 	CString sStatus;
 	WORD wUsernameColor;
-	if (bSignedIn)
+	if (!bEnabled)
+		{
+		sUsername = CONSTLIT("Offline");
+		sStatus = CONSTLIT("Transcendence Multiverse disabled");
+		wUsernameColor = VI.GetColor(colorTextDialogLabel);
+		}
+	else if (bSignedIn)
 		{
 		sUsername = Service.GetUsername();
-		sStatus = CONSTLIT("Signed in to Transcendence Multiverse");
+		sStatus = CONSTLIT("Signed in to the Transcendence Multiverse");
 		wUsernameColor = VI.GetColor(colorTextDialogInput);
 		}
 	else if (Service.HasCapability(ICIService::cachedUser))
@@ -1990,7 +2002,7 @@ void CTranscendenceWnd::SetAccountControls (void)
 	//	Create a hot spot over the entire text region (so that the user can 
 	//	click on the username to sign in).
 
-	if (!bSignedIn)
+	if (bEnabled && !bSignedIn)
 		{
 		IAnimatron *pButton;
 		VI.CreateHiddenButton(pRoot, CMD_ACCOUNT,

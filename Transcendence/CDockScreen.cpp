@@ -123,7 +123,6 @@ CDockScreen::CDockScreen (void) : CObject(NULL),
 		m_pUniv(NULL),
 		m_pPlayer(NULL),
 		m_pLocation(NULL),
-		m_pLocalScreens(NULL),
 		m_pDesc(NULL),
 		m_pScreen(NULL),
 		m_bFirstOnInit(true),
@@ -786,7 +785,7 @@ bool CDockScreen::EvalBool (const CString &sCode)
 	char *pPos = sCode.GetPointer();
 	ICCItem *pExp = Ctx.Link(sCode, 1, NULL);
 
-	ICCItem *pResult = Ctx.Run(pExp);
+	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 	Ctx.Discard(pExp);
 
 	if (pResult->IsError())
@@ -841,7 +840,7 @@ CSpaceObject *CDockScreen::EvalListSource (const CString &sString)
 
 		ICCItem *pExp = Ctx.Link(sString, 1, NULL);
 
-		ICCItem *pResult = Ctx.Run(pExp);
+		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 		Ctx.Discard(pExp);
 
 		if (pResult->IsError())
@@ -899,7 +898,7 @@ CString CDockScreen::EvalString (const CString &sString, bool bPlain, bool *retb
 
 		ICCItem *pExp = Ctx.Link(sString, (bPlain ? 0 : 1), NULL);
 
-		ICCItem *pResult = Ctx.Run(pExp);
+		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 		Ctx.Discard(pExp);
 
 		if (pResult->IsError())
@@ -1144,7 +1143,7 @@ ALERROR CDockScreen::InitCustomList (void)
 	CCodeChainCtx Ctx;
 	Ctx.SetScreen(this);
 
-	ICCItem *pResult = Ctx.Run(pExp);
+	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 	Ctx.Discard(pExp);
 
 	if (pResult->IsError())
@@ -1387,7 +1386,7 @@ ALERROR CDockScreen::InitItemList (void)
 ALERROR CDockScreen::InitScreen (HWND hWnd, 
 								 RECT &rcRect, 
 								 CSpaceObject *pLocation, 
-								 CXMLElement *pLocalScreens,
+								 SExtensionDesc *pExtension,
 								 CXMLElement *pDesc, 
 								 const CString &sPane,
 								 CString *retsPane,
@@ -1409,8 +1408,8 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Init some variables
 
 	m_pLocation = pLocation;
-	m_pLocalScreens = pLocalScreens;
 	m_pPlayer = g_pTrans->GetPlayer();
+	m_pExtension = pExtension;
 	m_pDesc = pDesc;
 	m_pUniv = g_pUniverse;
 
@@ -1593,7 +1592,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
 
-					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);
+					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
 					//	If we have an error, report it
 
@@ -1636,7 +1635,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 
 					pCanvas->Fill(0, 0, pCanvas->GetWidth(), pCanvas->GetHeight(), 0);
 
-					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);
+					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
 					//	If we have an error, report it
 
@@ -1668,7 +1667,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
 
-					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);
+					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
 					//	If we have an error, report it
 
@@ -1709,7 +1708,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
 
-					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);
+					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
 					//	The result is the text for the control
 
@@ -1882,7 +1881,7 @@ void CDockScreen::ShowPane (const CString &sName)
 	//	Initialize list of actions
 
 	CString sError;
-	if (m_CurrentActions.InitFromXML(m_pCurrentPane->GetContentElementByTag(ACTIONS_TAG), &sError) != NOERROR)
+	if (m_CurrentActions.InitFromXML(m_pExtension, m_pCurrentPane->GetContentElementByTag(ACTIONS_TAG), &sError) != NOERROR)
 		{
 		sError = strPatternSubst(CONSTLIT("Pane %s: %s"), sName, sError);
 		if (m_pCurrentPane)

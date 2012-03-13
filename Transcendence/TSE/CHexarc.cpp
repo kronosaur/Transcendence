@@ -8,6 +8,8 @@
 #define TYPE_AEON_ERROR							CONSTLIT("AEON2011:hexeError:v1")
 #define TYPE_AEON_IPINTEGER						CONSTLIT("AEON2011:ipInteger:v1")
 
+#define ERR_PASSWORD_MUST_BE_LONGER				CONSTLIT("Passwords must be at least 6 characters.")
+
 bool CHexarc::ConvertIPIntegerToString (const CJSONValue &Value, CString *retsValue)
 
 //	ConvertIPIntegerToString
@@ -172,7 +174,7 @@ bool CHexarc::CreateCredentials (const CString &sUsername, const CString &sPassw
 //	Creates credentials for signing in to Hexarc
 
 	{
-	return CHexarc::ConvertToJSON(CDigest(CBufferReadBlock(strPatternSubst(CONSTLIT("%s:TRANSCENDENCE:%s"), strToLower(sUsername), sPassword))), retValue);
+	return CHexarc::ConvertToJSON(CDigest(CBufferReadBlock(strPatternSubst(CONSTLIT("%s:HEXARC01:%s"), strToLower(sUsername), sPassword))), retValue);
 	}
 
 bool CHexarc::CreateCredentials (const CString &sUsername, const CString &sPassword, CString *retsValue)
@@ -182,7 +184,7 @@ bool CHexarc::CreateCredentials (const CString &sUsername, const CString &sPassw
 //	Creates credentials for signing in to Hexarc
 
 	{
-	CDigest PasswordHash(CBufferReadBlock(strPatternSubst("%s:TRANSCENDENCE:%s", sUsername, sPassword)));
+	CDigest PasswordHash(CBufferReadBlock(strPatternSubst("%s:HEXARC01:%s", strToLower(sUsername), sPassword)));
 	*retsValue = CString((char *)PasswordHash.GetBytes(), PasswordHash.GetLength());
 	return true;
 	}
@@ -268,30 +270,19 @@ bool CHexarc::IsError (const CJSONValue &Value, CString *retsError, CString *ret
 	return true;
 	}
 
-bool CHexarc::Sign (const CJSONValue &Value, const CIntegerIP &SecretKey, CDigest *retDigest)
+bool CHexarc::ValidatePasswordComplexity (const CString &sPassword, CString *retsResult)
 
-//	Sign
+//	ValidatePasswordComplexity
 //
-//	Signs the given JSON value
+//	Make sure that the password is complex enough.
 
 	{
-	CMemoryWriteStream Document(8192);
-	if (Document.Create() != NOERROR)
+	if (sPassword.GetLength() < 6)
+		{
+		if (retsResult)
+			*retsResult = ERR_PASSWORD_MUST_BE_LONGER;
 		return false;
-
-	//	Serialize the JSON value in AEON format
-
-	WriteAsAeon(Value, Document);
-
-	//	Append the secret key
-
-	Document.Write((char *)SecretKey.GetBytes(), SecretKey.GetLength());
-
-	//	Generate a digest
-
-	retDigest->TakeHandoff(CDigest(CBufferReadBlock(CString(Document.GetPointer(), Document.GetLength(), true))));
-
-	//	Done
+		}
 
 	return true;
 	}
@@ -318,7 +309,7 @@ void CHexarc::WriteAsAeon (const CJSONValue &Value, IWriteStream &Stream)
 				if (bQuote)
 					Stream.Write("\"", 1);
 
-				CJSONValue::SerializeString(&Stream, sValue);
+				CJSONValue::SerializeString(&Stream, strANSIToUTF8(sValue));
 
 				if (bQuote)
 					Stream.Write("\"", 1);
@@ -336,6 +327,7 @@ void CHexarc::WriteAsAeon (const CJSONValue &Value, IWriteStream &Stream)
 				sValue = strFromInt(iInt);
 			else
 				sValue = strFromDouble(rValue);
+			Stream.Write(sValue.GetASCIIZPointer(), sValue.GetLength());
 			break;
 			}
 

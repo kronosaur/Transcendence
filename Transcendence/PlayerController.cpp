@@ -272,6 +272,15 @@ void CPlayerShipController::Dock (void)
 		return;
 		}
 
+	//	See if the player ship allows us to dock with this station
+
+	CString sError;
+	if (!m_pShip->FireCanDockAsPlayer(pStation, &sError))
+		{
+		m_pTrans->DisplayMessage(sError);
+		return;
+		}
+
 	//	Otherwise, request docking
 
 	if (!pStation->RequestDock(m_pShip))

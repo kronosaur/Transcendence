@@ -145,7 +145,7 @@ void CTimedEncounterEvent::DoEvent (CSystem *pSystem)
 			Ctx.vPos = m_pTarget->GetPos() + ::PolarToVector(mathRandom(0, 359), m_rDistance);
 		Ctx.PosSpread = DiceRange(3, 1, 2);
 		}
-	else if (m_pGate && m_pGate->IsStargate())
+	else if (m_pGate && m_pGate->IsActiveStargate())
 		Ctx.pGate = m_pGate;
 	else if (m_pGate)
 		{

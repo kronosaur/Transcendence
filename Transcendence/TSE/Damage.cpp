@@ -157,23 +157,6 @@ DamageTypes LoadDamageTypeFromXML (const CString &sAttrib)
 	return damageError;
 	}
 
-void LoadDamageAdjFromXML (const CString &sAttrib, int *pAdjTable)
-
-//	LoadDamageAdjFromXML
-//
-//	Loads a list of damage adjustments into the array. The array must
-//	be allocated to damageCount.
-
-	{
-	char *pPos = sAttrib.GetASCIIZPointer();
-	for (int i = 0; i < damageCount; i++)
-		{
-		pAdjTable[i] = strParseInt(pPos, 0, &pPos, NULL);
-		if (*pPos != '\0')
-			pPos++;
-		}
-	}
-
 void DamageDesc::SetDamage (int iDamage)
 
 //	SetDamage

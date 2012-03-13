@@ -42,6 +42,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\Include,..\Includes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
@@ -627,6 +628,10 @@
 				</File>
 				<File
 					RelativePath=".\CReanimator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\IAnimatron.cpp"
 					>
 				</File>
 				<File

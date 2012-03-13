@@ -172,6 +172,7 @@
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/TransData.pdb"
 				SubSystem="1"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -216,11 +217,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CImageGrid.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Compile.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\CSimViewer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Effects.cpp"
 				>
 			</File>
 			<File
@@ -237,6 +246,10 @@
 			</File>
 			<File
 				RelativePath=".\Help.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hexarc.cpp"
 				>
 			</File>
 			<File

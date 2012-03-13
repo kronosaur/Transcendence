@@ -63,7 +63,7 @@ void CStarburstEffectCreator::CreateDiamondSpike (int iAngle, int iLength, int i
 	Poly[3].y = -(int)vPos.GetY();
 	}
 
-ALERROR CStarburstEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CStarburstEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

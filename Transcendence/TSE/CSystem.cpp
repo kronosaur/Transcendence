@@ -321,7 +321,6 @@ void SetLabelRight (SLabelEntry &Entry, int cyChar);
 CSystem::CSystem (void) : CObject(&g_Class),
 		m_iTick(0),
 		m_AllObjects(TRUE),
-		m_NamedObjects(FALSE, FALSE),
 		m_iTimeStopped(0),
 		m_rKlicksPerPixel(KLICKS_PER_PIXEL),
 		m_rTimeScale(TIME_SCALE),
@@ -342,7 +341,6 @@ CSystem::CSystem (CUniverse *pUniv, CTopologyNode *pTopology) : CObject(&g_Class
 		m_iTick(0),
 		m_pTopology(pTopology),
 		m_AllObjects(TRUE),
-		m_NamedObjects(FALSE, FALSE),
 		m_pEnvironment(NULL),
 		m_iTimeStopped(0),
 		m_rKlicksPerPixel(KLICKS_PER_PIXEL),
@@ -1170,7 +1168,7 @@ ALERROR CSystem::CreateRandomEncounter (IShipGenerator *pTable,
 
 	//	Figure out where the encounter will come from
 
-	if (pGate && pGate->IsStargate())
+	if (pGate && pGate->IsActiveStargate())
 		Ctx.pGate = pGate;
 	else if (pGate)
 		{
@@ -1833,6 +1831,26 @@ CSpaceObject *CSystem::FindObject (DWORD dwID)
 	return NULL;
 	}
 
+bool CSystem::FindObjectName (CSpaceObject *pObj, CString *retsName)
+
+//	FindObjectName
+//
+//	Finds the name of the given object (if it has one)
+
+	{
+	int i;
+
+	for (i = 0; i < m_NamedObjects.GetCount(); i++)
+		if (m_NamedObjects[i] == pObj)
+			{
+			if (retsName)
+				*retsName = m_NamedObjects.GetKey(i);
+			return true;
+			}
+
+	return false;
+	}
+
 bool CSystem::FindRandomLocation (const CAttributeCriteria &Criteria, DWORD dwFlags, CStationType *pStationToPlace, int *retiLocID)
 
 //	FindRandomLocation
@@ -2050,12 +2068,13 @@ CSpaceObject *CSystem::GetNamedObject (const CString &sName)
 //	Returns the object by name
 
 	{
-	CSpaceObject *pPoint;
+	CSpaceObject **pPoint;
 
-	if (m_NamedObjects.Lookup(sName, (CObject **)&pPoint) == NOERROR)
-		return pPoint;
-	else
+	pPoint = m_NamedObjects.GetAt(sName);
+	if (pPoint == NULL)
 		return NULL;
+
+	return *pPoint;
 	}
 
 CNavigationPath *CSystem::GetNavPath (CSovereign *pSovereign, CSpaceObject *pStart, CSpaceObject *pEnd)
@@ -2385,7 +2404,8 @@ void CSystem::NameObject (const CString &sName, CSpaceObject *pObj)
 //	Name an object
 
 	{
-	m_NamedObjects.AddEntry(sName, pObj);
+	m_NamedObjects.Insert(sName, pObj);
+	pObj->SetNamed();
 	}
 
 CVector CSystem::OnJumpPosAdj (CSpaceObject *pObj, const CVector &vPos)
@@ -3707,7 +3727,7 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 
 	for (i = 0; i < (int)dwCount; i++)
 		{
-		CSpaceObject *pObj = (CSpaceObject *)m_NamedObjects.GetValue(i);
+		CSpaceObject *pObj = m_NamedObjects[i];
 		m_NamedObjects.GetKey(i).WriteToStream(pStream);
 		WriteObjRefToStream(pObj, pStream);
 		}
@@ -3837,6 +3857,27 @@ ALERROR CSystem::StargateCreated (CSpaceObject *pGate, const CString &sStargateI
 	return NOERROR;
 	}
 
+void CSystem::StopTime (const CSpaceObjectList &Targets, int iDuration)
+
+//	StopTime
+//
+//	Stops time for all targets
+
+	{
+	if (IsTimeStopped() || iDuration == 0)
+		return;
+
+	for (int i = 0; i < Targets.GetCount(); i++)
+		{
+		CSpaceObject *pObj = Targets.GetObj(i);
+
+		if (pObj && !pObj->IsTimeStopImmune())
+			pObj->StopTime();
+		}
+
+	m_iTimeStopped = iDuration;
+	}
+
 void CSystem::StopTimeForAll (int iDuration, CSpaceObject *pExcept)
 
 //	StopTimeForAll
@@ -3909,6 +3950,20 @@ void CSystem::TransferObjEventsOut (CSpaceObject *pObj, CTimedEventList &ObjEven
 		}
 	}
 
+void CSystem::UnnameObject (CSpaceObject *pObj)
+
+//	UnnameObject
+//
+//	Remove the name for the object
+
+	{
+	int i;
+
+	for (i = 0; i < m_NamedObjects.GetCount(); i++)
+		if (m_NamedObjects[i] == pObj)
+			m_NamedObjects.Delete(i);
+	}
+
 void CSystem::UnregisterEventHandler (CSpaceObject *pObj)
 
 //	UnregisterEventHandler
@@ -3947,7 +4002,14 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	so that callers can examine it).
 
 	for (i = 0; i < m_DeletedObjects.GetCount(); i++)
-		delete m_DeletedObjects.GetObj(i);
+		{
+		CSpaceObject *pObj = m_DeletedObjects.GetObj(i);
+		if (pObj->IsNamed())
+			{
+			}
+
+		delete pObj;
+		}
 	m_DeletedObjects.RemoveAll();
 
 	//	Fire timed events

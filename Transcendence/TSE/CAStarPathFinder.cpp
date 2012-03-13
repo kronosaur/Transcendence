@@ -309,7 +309,7 @@ int CAStarPathFinder::FindPath (const CVector &vStart, const CVector &vEnd, CVec
 					m_iCallsToIsPathClear, 
 					m_iOpenListCount, 
 					m_iClosedListCount);
-			::OutputDebugStr(szBuffer);
+			::OutputDebugString(szBuffer);
 #endif
 
 			return OptimizePath(vEnd, pCurrent, retPathList);
@@ -473,7 +473,7 @@ int CAStarPathFinder::OptimizePath (const CVector &vEnd, SNode *pFinal, CVector 
 #ifdef DEBUG_ASTAR_PERF
 	char szBuffer[1024];
 	wsprintf(szBuffer, "OptimizePath time: %d ms\n", ::GetTickCount() - dwStartTime);
-	::OutputDebugStr(szBuffer);
+	::OutputDebugString(szBuffer);
 #endif
 
 	*retPathList = pPathList;

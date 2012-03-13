@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceRender>
+	<Render
+			width="128"
+			height="128"
+			>
+		<Effect>
+			<Image imageID="&rsExplosionsAG128;"
+					imageX="0"
+					imageY="0"
+					imageWidth="128"
+					imageHeight="128"
+					imageFrameCount="16"
+					imageTicksPerFrame="2"/>
+			<Flare
+					style=			"fadingBlast"
+					radius=			"170"
+					primaryColor=	"0xff, 0xff, 0xf0"
+					lifetime=		"8"
+					/>
+		</Effect>
+	</Render>
+</TranscendenceRender>

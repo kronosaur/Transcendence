@@ -577,6 +577,12 @@ ALERROR CStationType::OnBindDesign (SDesignLoadCtx &Ctx)
 			&& (!m_fBeacon)
 			&& (!m_fShipEncounter);
 
+	//	Any object that's static and the size of a planet or larger is immutable
+	//	by default.
+
+	if (m_fStatic && (m_iScale == scaleStar || m_iScale == scaleWorld))
+		m_fImmutable = true;
+
 	return NOERROR;
 
 Fail:
@@ -962,7 +968,7 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_sStargateDestEntryPoint = pDesc->GetAttribute(DEST_ENTRY_POINT_ATTRIB);
 	m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB));
 
-	m_fHasOnObjDockedEvent = FindEventHandler(CONSTLIT("OnObjDocked"), NULL);
+	m_fHasOnObjDockedEvent = FindEventHandler(CONSTLIT("OnObjDocked"));
 
 	//	Done
 

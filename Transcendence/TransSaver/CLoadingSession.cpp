@@ -134,7 +134,7 @@ void CLoadingSession::OnSize (int cxWidth, int cyHeight)
 	m_rcStargate.bottom = m_rcStargate.top + STARGATE_HEIGHT;
 	}
 
-void CLoadingSession::OnUpdate (void)
+void CLoadingSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

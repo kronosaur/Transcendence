@@ -1,6 +1,8 @@
 //	SFXParticleCloud.cpp
 //
 //	Particle Cloud SFX
+//
+//	LATER: <SmokeTrail> should just be a style of this effect.
 
 #include "PreComp.h"
 
@@ -11,13 +13,17 @@
 #define NEW_PARTICLES_ATTRIB					CONSTLIT("emitRate")
 #define EMIT_SPEED_ATTRIB						CONSTLIT("emitSpeed")
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
-#define MAX_RADIUS_ATTRIB						CONSTLIT("maxRadius")
 #define PARTICLE_COUNT_ATTRIB					CONSTLIT("particleCount")
 #define PARTICLE_LIFETIME_ATTRIB				CONSTLIT("particleLifetime")
-#define RING_RADIUS_ATTRIB						CONSTLIT("ringRadius")
+#define RADIUS_ATTRIB							CONSTLIT("radius")
 #define RING_WIDTH_ATTRIB						CONSTLIT("ringWidth")
+#define STYLE_ATTRIB							CONSTLIT("style")
 #define VISCOSITY_ATTRIB						CONSTLIT("viscosity")
 #define WAKE_POTENTIAL_ATTRIB					CONSTLIT("wakePotential")
+
+#define STYLE_CLOUD								CONSTLIT("cloud")
+#define STYLE_RING								CONSTLIT("ring")
+#define STYLE_SPLASH							CONSTLIT("splash")
 
 const int DEFAULT_PARTICLE_COUNT =				20;
 const int DEFAULT_PARTICLE_LIFETIME =			10;
@@ -91,7 +97,7 @@ Metric CParticleCloudEffectCreator::GetEmitSpeed (void) const
 	return (m_InitSpeed.Roll() * LIGHT_SPEED / 100.0f);
 	}
 
-ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //
@@ -99,6 +105,19 @@ ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 
 	{
 	ALERROR error;
+
+	CString sStyle = pDesc->GetAttribute(STYLE_ATTRIB);
+	if (strEquals(sStyle, STYLE_RING))
+		m_iStyle = styleRing;
+	else if (strEquals(sStyle, STYLE_SPLASH))
+		m_iStyle = styleSplash;
+	else if (strEquals(sStyle, STYLE_CLOUD) || sStyle.IsBlank())
+		m_iStyle = styleCloud;
+	else
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Unknown <ParticleCloud> style: %s"), sStyle);
+		return ERR_FAIL;
+		}
 
 	if (error = m_Lifetime.LoadFromXML(pDesc->GetAttribute(LIFETIME_ATTRIB), -1))
 		return error;
@@ -120,21 +139,33 @@ ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 	m_iViscosity = pDesc->GetAttributeIntegerBounded(VISCOSITY_ATTRIB, 0, 100, 0);
 	m_iWakePotential = pDesc->GetAttributeIntegerBounded(WAKE_POTENTIAL_ATTRIB, 0, 100, 0);
 
-	//	Size
+	//	Size and shape
 
-	int iRingRadius = pDesc->GetAttributeIntegerBounded(RING_RADIUS_ATTRIB, 0, -1, 0);
-	if (iRingRadius > 0)
+	switch (m_iStyle)
 		{
-		m_rRingRadius = iRingRadius * g_KlicksPerPixel;
-		Metric rRingWidth = pDesc->GetAttributeIntegerBounded(RING_WIDTH_ATTRIB, 0, -1, 1) * g_KlicksPerPixel;
-		m_rMaxRadius = m_rRingRadius + rRingWidth / 2.0f;
-		m_rMinRadius = Max((Metric)0.0f, (Metric)(m_rRingRadius - rRingWidth / 2.0f));
-		}
-	else
-		{
-		m_rRingRadius = 0.0;
-		m_rMaxRadius = pDesc->GetAttributeIntegerBounded(MAX_RADIUS_ATTRIB, 0, -1, 0) * g_KlicksPerPixel;
-		m_rMinRadius = 0.0;
+		case styleCloud:
+			{
+			m_rRingRadius = 0.0;
+			m_rMaxRadius = pDesc->GetAttributeIntegerBounded(RADIUS_ATTRIB, 0, -1, 64) * g_KlicksPerPixel;
+			m_rMinRadius = 0.0;
+			break;
+			}
+
+		case styleRing:
+			{
+			m_rRingRadius = pDesc->GetAttributeIntegerBounded(RADIUS_ATTRIB, 1, -1, 64) * g_KlicksPerPixel;
+			Metric rRingWidth = pDesc->GetAttributeIntegerBounded(RING_WIDTH_ATTRIB, 0, -1, 1) * g_KlicksPerPixel;
+			m_rMaxRadius = m_rRingRadius + rRingWidth / 2.0f;
+			m_rMinRadius = Max((Metric)0.0f, (Metric)(m_rRingRadius - rRingWidth / 2.0f));
+			break;
+			}
+
+		default:
+			{
+			m_rRingRadius = 0.0;
+			m_rMaxRadius = g_InfiniteDistance;
+			m_rMinRadius = 0.0;
+			}
 		}
 
 	//	If both initial and new particles are 0, then set better defaults
@@ -258,7 +289,8 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 
 			//	Generate a random velocity
 
-			CVector vVel = ::PolarToVector(mathRandom(0, 359), mathRandom(5, 25) * LIGHT_SPEED / 1000.0f);
+			int iRotation = mathRandom(0, 359);
+			CVector vVel = ::PolarToVector(iRotation, mathRandom(5, 25) * LIGHT_SPEED / 1000.0f);
 
 			//	Lifetime
 
@@ -266,7 +298,7 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 
 			//	Add the particle
 
-			m_Particles.AddParticle(vPos, vVel, iLifeLeft, -1, iDestiny);
+			m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation, iDestiny);
 			}
 		}
 	else
@@ -281,7 +313,8 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 
 			//	Generate a random velocity
 
-			CVector vVel = ::PolarToVector(mathRandom(0, 359), mathRandom(5, 25) * LIGHT_SPEED / 1000.0f);
+			int iRotation = mathRandom(0, 359);
+			CVector vVel = ::PolarToVector(iRotation, mathRandom(5, 25) * LIGHT_SPEED / 1000.0f);
 
 			//	Lifetime
 
@@ -289,7 +322,7 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 
 			//	Add the particle
 
-			m_Particles.AddParticle(vPos, vVel, iLifeLeft);
+			m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation);
 			}
 		}
 	}
@@ -311,7 +344,8 @@ void CParticleCloudPainter::CreateNewParticles (int iCount)
 
 		//	Generate a random velocity
 
-		CVector vVel = ::PolarToVector(mathRandom(0, 359), mathRandom(5, 25) * LIGHT_SPEED / 1000.0f);
+		int iRotation = mathRandom(0, 359);
+		CVector vVel = ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed());
 
 		//	Lifetime
 
@@ -319,7 +353,7 @@ void CParticleCloudPainter::CreateNewParticles (int iCount)
 
 		//	Add the particle
 
-		m_Particles.AddParticle(vPos, vVel, iLifeLeft);
+		m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation);
 		}
 	}
 

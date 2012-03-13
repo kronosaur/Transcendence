@@ -22,14 +22,14 @@ ALERROR CSpaceEnvironmentType::FireOnUpdate (CSpaceObject *pObj, CString *retsEr
 //	Fire OnUpdate event (once per 15 ticks)
 
 	{
-	ICCItem *pCode;
-	if (FindEventHandler(ON_OBJ_UPDATE_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(ON_OBJ_UPDATE_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		Ctx.DefineSpaceObject(CONSTLIT("aObj"), pObj);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			{
 			if (retsError)

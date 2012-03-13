@@ -779,7 +779,7 @@ class CDockScreenActions
 			specialPrevKey,
 			};
 
-		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, ICCItem *pCode, int *retiAction);
+		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, SExtensionDesc *pExtension, ICCItem *pCode, int *retiAction);
 		void CleanUp (void);
 		void CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
@@ -794,7 +794,7 @@ class CDockScreenActions
 		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
 		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
 		int GetVisibleCount (void) const;
-		ALERROR InitFromXML (CXMLElement *pActions, CString *retsError);
+		ALERROR InitFromXML (SExtensionDesc *pExtension, CXMLElement *pActions, CString *retsError);
 		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
 		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
@@ -806,7 +806,7 @@ class CDockScreenActions
 		void SetVisible (int iAction, bool bVisible = true);
 
 	private:
-		void ExecuteCode (CDockScreen *pScreen, const CString &sID, ICCItem *pCode);
+		void ExecuteCode (CDockScreen *pScreen, const CString &sID, SExtensionDesc *pExtension, ICCItem *pCode);
 
 		struct SActionDesc
 			{
@@ -815,6 +815,7 @@ class CDockScreenActions
 			CString sKey;			//	Accelerator key
 			CGButtonArea *pButton;	//	Pointer to button area
 
+			SExtensionDesc *pExtension;	//	Source of the code
 			CXMLElement *pCmd;		//	Special commands (e.g., <Exit/>
 			CString sCode;			//	Code
 			ICCItem *pCode;			//	Code (owned by us)
@@ -842,13 +843,12 @@ class CDockScreen : public CObject,
 		void ExecuteCancelAction (void);
 		inline CDockScreenActions &GetActions (void) { return m_CurrentActions; }
 		inline CSpaceObject *GetLocation (void) { return m_pLocation; }
-		inline CXMLElement *GetLocalScreens (void) { return m_pLocalScreens; }
 		void HandleChar (char chChar);
 		void HandleKeyDown (int iVirtKey);
 		ALERROR InitScreen (HWND hWnd, 
 							RECT &rcRect, 
 							CSpaceObject *pLocation, 
-							CXMLElement *pLocalScreens,
+							SExtensionDesc *pExtension,
 							CXMLElement *pDesc, 
 							const CString &sPane,
 							CString *retsPane,
@@ -942,7 +942,7 @@ class CDockScreen : public CObject,
 		CUniverse *m_pUniv;
 		CPlayerShipController *m_pPlayer;
 		CSpaceObject *m_pLocation;
-		CXMLElement *m_pLocalScreens;
+		SExtensionDesc *m_pExtension;
 		CXMLElement *m_pDesc;
 		AGScreen *m_pScreen;
 		bool m_bFirstOnInit;
@@ -2115,7 +2115,7 @@ class CTranscendenceModel
 		ALERROR InitAdventure (DWORD dwAdventure, CString *retsError);
 		ALERROR StartNewGame (const CString &sUsername, const SNewGameSettings &NewGame, CString *retsError);
 		ALERROR StartNewGameBackground (CString *retsError = NULL);
-		ALERROR StartGame (void);
+		ALERROR StartGame (bool bNewGame);
 
 		ALERROR GetGameStats (CGameStats *retStats);
 
@@ -2200,7 +2200,7 @@ class CTranscendenceModel
 		ALERROR LoadPlayerDefaults (CString *retsError = NULL);
 		ALERROR LoadUniverse (CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
-		ALERROR SaveGameStats (bool bGameOver = false);
+		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
 
 		CHumanInterface &m_HI;
@@ -2218,6 +2218,7 @@ class CTranscendenceModel
 		CPlayerShipController *m_pPlayer;
 
 		CGameRecord m_GameRecord;					//	Most recent game record
+		CGameStats m_GameStats;						//	Most recent game stats
 		CHighScoreList m_HighScoreList;
 		int m_iLastHighScore;						//	Index to last high-score
 

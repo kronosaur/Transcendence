@@ -243,6 +243,21 @@ bool CAttributeDataBlock::IsEqual (const CAttributeDataBlock &Src)
 	return (pDest == NULL && pSrc == NULL);
 	}
 
+bool CAttributeDataBlock::IsXMLText (const CString &sData) const
+
+//	IsXMLText
+//
+//	Returns TRUE if the given data value is an XML source stream.
+
+	{
+	char *pPos = sData.GetASCIIZPointer();
+
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	return (*pPos == '<');
+	}
+
 void CAttributeDataBlock::LoadObjReferences (CSystem *pSystem)
 
 //	LoadObjReferences
@@ -412,7 +427,15 @@ void CAttributeDataBlock::SetFromXML (CXMLElement *pData)
 
 			sData = pItem->GetAttribute(DATA_ATTRIB);
 			if (sData.IsBlank())
+				{
 				sData = pItem->GetContentText(0);
+
+				//	If this item begins with '<' then we quote it (and escape it) so that it
+				//	can be a TLisp string.
+
+				if (IsXMLText(sData))
+					sData = CCString::Print(sData);
+				}
 
 			SetData(pItem->GetTag(), sData);
 			}

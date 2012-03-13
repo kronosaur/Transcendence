@@ -49,6 +49,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\Includes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
@@ -89,6 +90,7 @@
 				GenerateMapFile="true"
 				MapFileName="Transcendence.map"
 				SubSystem="2"
+				LinkTimeCodeGeneration="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -356,6 +358,10 @@
 				Name="Sessions"
 				>
 				<File
+					RelativePath=".\CAdventureIntroSession.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\CChangePasswordSession.cpp"
 					>
 				</File>
@@ -401,6 +407,10 @@
 				</File>
 				<File
 					RelativePath=".\CTextCrawlSession.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CWaitSession.cpp"
 					>
 				</File>
 				<File
@@ -1035,6 +1045,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Game\StdEffects.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\Game\StdExplosions.xml"
 				>
 			</File>
@@ -1139,6 +1153,10 @@
 				</File>
 				<File
 					RelativePath=".\Game\Extensions\DebugShips.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\EffectsTest.xml"
 					>
 				</File>
 				<File
@@ -1280,11 +1298,23 @@
 			>
 		</File>
 		<File
+			RelativePath="..\README"
+			>
+		</File>
+		<File
 			RelativePath="Documents\Schedule.txt"
 			>
 		</File>
 		<File
 			RelativePath="Documents\Stations.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\Game\Resources\UIIcons.jpg"
+			>
+		</File>
+		<File
+			RelativePath=".\Game\Resources\UIIconsMask.bmp"
 			>
 		</File>
 		<File

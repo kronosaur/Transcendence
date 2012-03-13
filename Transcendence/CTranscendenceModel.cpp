@@ -348,6 +348,8 @@ ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 //	Player has closed the app and we need to save
 
 	{
+	ALERROR error;
+
 	switch (m_iState)
 		{
 		case stateInGame:
@@ -370,19 +372,38 @@ ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 
 			//	Otherwise, save the game
 
-			return EndGameSave(retsError);
+			if (error = EndGameSave(retsError))
+				return error;
+
+			break;
 			}
 
 		case statePlayerInResurrect:
+			{
 			EndGameDestroyed();
-			return EndGameSave(retsError);
+
+			if (error = EndGameSave(retsError))
+				return error;
+
+			break;
+			}
 
 		case statePlayerDestroyed:
-			return EndGameDestroyed();
+			{
+			if (error = EndGameDestroyed())
+				return error;
+
+			break;
+			}
 
 		//	LATER: Handle the case were we close while in a stargate
 		//	or while resurrecting.
 		}
+
+	//	Tell the universe to save local storage
+
+	if (error = m_Universe.SaveDeviceStorage())
+		return error;
 
 	return NOERROR;
 	}
@@ -440,7 +461,8 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 		{
 		//	Generate stats and save to file
 
-		if (error = SaveGameStats(true))
+		GenerateGameStats(&m_GameStats, true);
+		if (error = SaveGameStats(m_GameStats, true))
 			return error;
 
 		//	Clean up (deleting the ship also deletes its controller)
@@ -534,7 +556,8 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 
 	//	Generate stats and save to file
 
-	if (error = SaveGameStats(true))
+	GenerateGameStats(&m_GameStats, true);
+	if (error = SaveGameStats(m_GameStats, true))
 		return error;
 
 	//	Clean up
@@ -831,14 +854,12 @@ ALERROR CTranscendenceModel::GetGameStats (CGameStats *retStats)
 	//	If we're in the middle of a game, then generate the stats now
 
 	if (m_iState == stateInGame)
-		{
 		GenerateGameStats(retStats);
-		}
 
-	//	Otherwise, we can't get them
+	//	Otherwise, return the most recent stats
 
 	else
-		return ERR_FAIL;
+		*retStats = m_GameStats;
 
 	return NOERROR;
 	}
@@ -913,7 +934,8 @@ ALERROR CTranscendenceModel::InitAdventure (DWORD dwAdventure, CString *retsErro
 //	Initializes the adventure in preparation for creating a new game.
 
 	{
-	return m_Universe.InitAdventure(dwAdventure, NULL, retsError);
+	m_Universe.Reinit();
+	return m_Universe.InitAdventure(dwAdventure, NULL, retsError, flagNewGame);
 	}
 
 bool CTranscendenceModel::IsGalacticMapAvailable (CString *retsError)
@@ -970,6 +992,8 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sFilespec, CString *retsEr
 
 	{
 	ALERROR error;
+
+	m_Universe.Reinit();
 
 	//	Old game
 
@@ -1079,11 +1103,9 @@ ALERROR CTranscendenceModel::LoadPlayerDefaults (CString *retsError)
 //	This can only be called after the universe and high-score lists are loaded
 
 	{
-	//	Load default player name
+	//	Load default player name (OK if this is NULL)
 
 	CString sPlayerName = m_HighScoreList.GetMostRecentPlayerName();
-	if (sPlayerName.IsBlank())
-		sPlayerName = sysGetUserName();
 	SetPlayerName(sPlayerName);
 
 	//	Default genome
@@ -1569,7 +1591,11 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 
 	m_GameRecord.SetUsername(m_GameFile.GetUsername());
 	m_GameRecord.SetGameID(m_GameFile.GetGameID());
-	m_GameRecord.SetAdventureUNID(pAdventure->GetUNID());
+	m_GameRecord.SetAdventureUNID(pAdventure->GetExtensionUNID());
+
+	TArray<DWORD> Extensions;
+	m_Universe.GetCurrentAdventureExtensions(&Extensions);
+	m_GameRecord.SetExtensions(Extensions);
 
 	m_GameRecord.SetPlayerName(m_pPlayer->GetPlayerName());
 	m_GameRecord.SetPlayerGenome(m_pPlayer->GetPlayerGenome());
@@ -1630,7 +1656,8 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 
 	//	Generate and save game stats
 
-	if (error = SaveGameStats())
+	GenerateGameStats(&m_GameStats, false);
+	if (error = SaveGameStats(m_GameStats))
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Error saving game stats to game file");
@@ -1707,29 +1734,10 @@ const CString &CTranscendenceModel::SetPlayerName (const CString &sName)
 
 	{
 	m_sPlayerName = sName;
-
-	//	Strip out any invalid characters. In particular, we don't like back-slash
-	//	and % because they are escape characters
-
-	char *pPos = m_sPlayerName.GetASCIIZPointer();
-	while (*pPos != '\0')
-		{
-		if (*pPos < ' ' || *pPos == '\\' || *pPos == '%')
-			*pPos = ' ';
-
-		pPos++;
-		}
-
-	m_sPlayerName = strTrimWhitespace(m_sPlayerName);
-	if (m_sPlayerName.IsBlank())
-		m_sPlayerName = CONSTLIT("Shofixti");
-
-	//	Return the actual name
-
 	return m_sPlayerName;
 	}
 
-ALERROR CTranscendenceModel::SaveGameStats (bool bGameOver)
+ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver)
 
 //	SaveGameStats
 //
@@ -1738,8 +1746,6 @@ ALERROR CTranscendenceModel::SaveGameStats (bool bGameOver)
 	{
 	ALERROR error;
 
-	CGameStats Stats;
-	GenerateGameStats(&Stats, bGameOver);
 	if (error = m_GameFile.SaveGameStats(Stats))
 		return error;
 
@@ -1815,6 +1821,11 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			return ERR_FAIL;
 		}
 
+	//	The extension that the screen comes from is determined by where the root
+	//	comes from.
+
+	SExtensionDesc *pExtension = pRoot->GetExtension();
+
 	//	If the root is a screen then use that
 
 	CXMLElement *pScreen;
@@ -1868,7 +1879,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	if (error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
 			pFrame->pLocation,
-			pLocalScreens,
+			pExtension,
 			pScreen,
 			sPane,
 			&sNewPane,
@@ -1957,7 +1968,7 @@ void CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 		}
 	}
 
-ALERROR CTranscendenceModel::StartGame (void)
+ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 
 //	StartGame
 //
@@ -1991,6 +2002,11 @@ ALERROR CTranscendenceModel::StartGame (void)
 
 	m_iState = stateInGame;
 
+	//	If this is a new game, save it so that we can go back to the start.
+
+	if (bNewGame)
+		SaveGame(CGameFile::FLAG_CHECKPOINT);
+
 	return NOERROR;
 	}
 
@@ -2008,6 +2024,12 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 
 	CString sFilename = m_GameFile.GenerateFilename(NewGame.sPlayerName);
 	m_GameFile.Create(sFilename, sUsername);
+
+	//	If we're signed in and if the adventure/extension combination is
+	//	registered, then we have a registered game.
+
+	if (!sUsername.IsBlank() && !m_Universe.InDebugMode() && m_Universe.GetDesignCollection().IsRegisteredGame())
+		m_Universe.SetRegistered(true);
 
 	//	Create a controller for the player's ship (this is owned
 	//	by the ship once we pass it to CreateShip)

@@ -20,6 +20,11 @@
 
 #define GET_OVERLAY_TYPE_EVENT					CONSTLIT("GetOverlayType")
 
+static char *CACHED_EVENTS[CDeviceClass::evtCount] =
+	{
+		"GetOverlayType",
+	};
+
 //	CDeviceClass
 
 ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
@@ -34,7 +39,7 @@ ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 	if (error = m_pOverlayType.Bind(Ctx))
 		return error;
 
-	m_pGetOverlayType = m_pItemType->GetEventHandler(GET_OVERLAY_TYPE_EVENT);
+	m_pItemType->InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	return OnDesignLoadComplete(Ctx);
 	}
@@ -46,28 +51,32 @@ CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 //	Fire GetOverlayType event
 
 	{
-	ASSERT(m_pGetOverlayType);
+	SEventHandlerDesc Event;
+	if (FindEventHandlerDeviceClass(evtGetOverlayType, &Event))
+		{
+		//	Setup arguments
 
-	//	Setup arguments
+		CCodeChainCtx Ctx;
+		Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
+		Ctx.SaveItemVar();
+		Ctx.DefineItem(ItemCtx);
 
-	CCodeChainCtx Ctx;
-	Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(ItemCtx);
+		ICCItem *pResult = Ctx.Run(Event);
 
-	ICCItem *pResult = Ctx.Run(m_pGetOverlayType);
+		DWORD dwUNID = 0;
+		if (pResult->IsError())
+			ItemCtx.GetSource()->ReportEventError(GET_OVERLAY_TYPE_EVENT, pResult);
+		else if (!pResult->IsNil())
+			dwUNID = pResult->GetIntegerValue();
 
-	DWORD dwUNID = 0;
-	if (pResult->IsError())
-		ItemCtx.GetSource()->ReportEventError(GET_OVERLAY_TYPE_EVENT, pResult);
-	else if (!pResult->IsNil())
-		dwUNID = pResult->GetIntegerValue();
+		Ctx.Discard(pResult);
 
-	Ctx.Discard(pResult);
+		//	Done
 
-	//	Done
-
-	return CEnergyFieldType::AsType(g_pUniverse->FindDesignType(dwUNID));
+		return CEnergyFieldType::AsType(g_pUniverse->FindDesignType(dwUNID));
+		}
+	else
+		return GetOverlayType();
 	}
 
 void CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType)
@@ -227,10 +236,7 @@ void CInstalledDevice::FinishInstall (CSpaceObject *pSource)
 	//	If necessary create an overlay for this device
 
 	CEnergyFieldType *pOverlayType;
-	if (m_pClass->HasGetOverlayTypeEvent())
-		pOverlayType = m_pClass->FireGetOverlayType(CItemCtx(pSource, this));
-	else
-		pOverlayType = m_pClass->GetOverlayType();
+	pOverlayType = m_pClass->FireGetOverlayType(CItemCtx(pSource, this));
 
 	//	Add it
 
@@ -496,6 +502,11 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&m_dwTargetID, sizeof(DWORD));
 
 	Ctx.pStream->Read((char *)&m_dwData, sizeof(DWORD));
+
+	//	In 1.08 we changed how we store alternating and repeating counters.
+
+	if (Ctx.dwVersion < 75 && m_pClass && m_pClass->AsWeaponClass())
+		m_dwData = (m_dwData & 0xFFFF0000);
 
 	//	Flags
 

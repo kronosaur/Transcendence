@@ -81,6 +81,15 @@ static char g_DescriptionAttrib[] = "description";
 static char g_FirstPluralAttrib[] = "firstPlural";
 static char g_RandomDamagedAttrib[] = "randomDamaged";
 
+static char *CACHED_EVENTS[CItemType::evtCount] =
+	{
+		"GetName",
+		"GetTradePrice",
+		"OnInstall",
+		"OnEnabled",
+		"OnRefuel",
+	};
+
 CItemType::CItemType (void) : 
 		m_dwSpare(0),
 		m_pUseCode(NULL),
@@ -429,6 +438,36 @@ const CString &CItemType::GetDesc (void) const
 	return m_sDescription; 
 	}
 
+int CItemType::GetFrequencyByLevel (int iLevel)
+
+//	GetFrequencyByLevel
+//
+//	Returns the frequency of the item at the given system level.
+
+	{
+	int iFrequency = GetFrequency();
+	int iItemLevel = GetLevel();
+	int iDiff = Absolute(iItemLevel - iLevel);
+
+	switch (iDiff)
+		{
+		case 0:
+			return iFrequency;
+
+		case 1:
+			return iFrequency * ftUncommon / ftCommon;
+
+		case 2:
+			return iFrequency * ftRare / ftCommon;
+
+		case 3:
+			return iFrequency * ftVeryRare / ftCommon;
+
+		default:
+			return 0;
+		}
+	}
+
 int CItemType::GetInstallCost (void) const
 
 //	GetInstallCost
@@ -687,10 +726,7 @@ ALERROR CItemType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	//	Cache some events
 
-	m_pGetNameEvent = GetEventHandler(GET_NAME_EVENT);
-	m_pGetTradePriceEvent = GetEventHandler(GET_TRADE_PRICE_EVENT);
-	m_pOnEnabledEvent = GetEventHandler(ON_ENABLED_EVENT);
-	m_pOnInstallEvent = GetEventHandler(ON_INSTALL_EVENT);
+	InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	//	Resolve some pointers
 

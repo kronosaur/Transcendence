@@ -102,6 +102,7 @@ class CHTTPClientSession
 
 		EInetsErrors Connect (const CString &sHost, const CString &sPort = NULL_STR);
 		EInetsErrors Disconnect (void);
+		inline const CString &GetHost (void) { return m_sHost; }
 		inline DWORD GetTicksSinceLastActivity (void) { return (m_dwLastActivity == 0 ? 0xffffffff : (::GetTickCount() - m_dwLastActivity)); }
 		bool IsConnected (void);
 		EInetsErrors Send (const CHTTPMessage &Request, CHTTPMessage *retResponse);

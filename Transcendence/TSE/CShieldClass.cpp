@@ -118,6 +118,13 @@ static SStdStats STD_STATS[MAX_ITEM_LEVEL] =
 		{	20000,	6700,	-8400,	80000, },
 	};
 
+static char *CACHED_EVENTS[CShieldClass::evtCount] =
+	{
+		"GetMaxHP",
+		"OnShieldDamage",
+		"OnShieldDown",
+	};
+
 inline SStdStats *GetStdStats (int iLevel)
 	{
 	if (iLevel >= 1 && iLevel <= MAX_ITEM_LEVEL)
@@ -223,8 +230,7 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 	if (Ctx.pDesc->FireOnDamageShields(Ctx, pDevice->GetDeviceSlot()))
 		return (Ctx.iDamage == 0);
 
-	if (m_pOnShieldDamage)
-		FireOnShieldDamage(CItemCtx(pShip, pDevice), Ctx);
+	FireOnShieldDamage(CItemCtx(pShip, pDevice), Ctx);
 
 	//	If we reflect, then create the reflection
 
@@ -393,7 +399,7 @@ void CShieldClass::CalcMinMaxHP (CItemCtx &Ctx, int iCharges, int iArmorSegs, in
 
 	//	If we're installed, fire the custom event to get max HPs
 
-	if (m_pGetMaxHP && Ctx.GetSource() && Ctx.GetDevice())
+	if (Ctx.GetSource() && Ctx.GetDevice())
 		iMax = FireGetMaxHP(Ctx.GetDevice(), Ctx.GetSource(), iMax);
 
 	//	Mods
@@ -683,24 +689,27 @@ int CShieldClass::FireGetMaxHP (CInstalledDevice *pDevice, CSpaceObject *pSource
 //	Fire GetMaxHP event
 
 	{
-	ASSERT(m_pGetMaxHP);
-	ASSERT(pSource);
-	ASSERT(pDevice);
+	SEventHandlerDesc Event;
+	if (FindEventHandlerShieldClass(evtGetMaxHP, &Event))
+		{
+		ASSERT(pSource);
+		ASSERT(pDevice);
 
-	CCodeChainCtx Ctx;
+		CCodeChainCtx Ctx;
 
-	Ctx.SaveAndDefineSourceVar(pSource);
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
-	Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
+		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveItemVar();
+		Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
+		Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
 
-	ICCItem *pResult = Ctx.Run(m_pGetMaxHP);
-	if (pResult->IsError())
-		pSource->ReportEventError(GET_MAX_HP_EVENT, pResult);
-	else if (!pResult->IsNil())
-		iMaxHP = Max(0, pResult->GetIntegerValue());
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			pSource->ReportEventError(GET_MAX_HP_EVENT, pResult);
+		else if (!pResult->IsNil())
+			iMaxHP = Max(0, pResult->GetIntegerValue());
 
-	Ctx.Discard(pResult);
+		Ctx.Discard(pResult);
+		}
 
 	return iMaxHP;
 	}
@@ -712,92 +721,94 @@ void CShieldClass::FireOnShieldDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 //	Fire OnShieldDamage
 
 	{
-	ASSERT(m_pOnShieldDamage);
-
-	//	Setup arguments
-
-	CCodeChainCtx CCCtx;
-	CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-	CCCtx.SaveItemVar();
-	CCCtx.DefineItem(ItemCtx);
-
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
-	CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
-	CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
-
-	CCCtx.DefineInteger(CONSTLIT("aShieldHP"), Ctx.iHPLeft);
-	CCCtx.DefineInteger(CONSTLIT("aShieldDamageHP"), Ctx.iShieldDamage);
-	CCCtx.DefineInteger(CONSTLIT("aArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
-	if (Ctx.bReflect)
+	SEventHandlerDesc Event;
+	if (FindEventHandlerShieldClass(evtOnShieldDamage, &Event))
 		{
-		CCCtx.DefineString(CONSTLIT("aShieldReflect"), STR_SHIELD_REFLECT);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iOriginalShieldDamage);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iOriginalAbsorb);
-		}
-	else
-		{
-		CCCtx.DefineNil(CONSTLIT("aShieldReflect"));
-		CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iShieldDamage);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
-		}
+		//	Setup arguments
 
-	ICCItem *pResult = CCCtx.Run(m_pOnShieldDamage);
+		CCodeChainCtx CCCtx;
+		CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
+		CCCtx.SaveItemVar();
+		CCCtx.DefineItem(ItemCtx);
 
-	//	If we return Nil, then nothing
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
+		CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
+		CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
 
-	if (pResult->IsNil())
-		NULL;
-
-	//	If we return a list, then modify variables
-
-	else if (pResult->IsList())
-		{
-		//	A single value means we modified the damage to armor
-
-		if (pResult->GetCount() == 1)
+		CCCtx.DefineInteger(CONSTLIT("aShieldHP"), Ctx.iHPLeft);
+		CCCtx.DefineInteger(CONSTLIT("aShieldDamageHP"), Ctx.iShieldDamage);
+		CCCtx.DefineInteger(CONSTLIT("aArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
+		if (Ctx.bReflect)
 			{
-			if (strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT))
-				{
-				Ctx.bReflect = true;
-				Ctx.iAbsorb = Ctx.iDamage;
-				Ctx.iShieldDamage = 0;
-				}
-			else
-				{
-				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
-				if (Ctx.bReflect)
-					{
-					Ctx.bReflect = false;
-					Ctx.iAbsorb = Ctx.iOriginalAbsorb;
-					}
-				}
+			CCCtx.DefineString(CONSTLIT("aShieldReflect"), STR_SHIELD_REFLECT);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iOriginalShieldDamage);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iOriginalAbsorb);
 			}
-
-		//	Two values mean we modified both damage to armor and shield damage
-
-		else if (pResult->GetCount() == 2)
-			{
-			Ctx.bReflect = false;
-			Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
-			Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(1)->GetIntegerValue()));
-			}
-
-		//	Otherwise, we deal with reflection
-
 		else
 			{
-			Ctx.bReflect = strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT);
-			Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(1)->GetIntegerValue(), Ctx.iHPLeft));
-			Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(2)->GetIntegerValue()));
+			CCCtx.DefineNil(CONSTLIT("aShieldReflect"));
+			CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iShieldDamage);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
 			}
-		}
 
-	CCCtx.Discard(pResult);
+		ICCItem *pResult = CCCtx.Run(Event);
+
+		//	If we return Nil, then nothing
+
+		if (pResult->IsNil())
+			NULL;
+
+		//	If we return a list, then modify variables
+
+		else if (pResult->IsList())
+			{
+			//	A single value means we modified the damage to armor
+
+			if (pResult->GetCount() == 1)
+				{
+				if (strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT))
+					{
+					Ctx.bReflect = true;
+					Ctx.iAbsorb = Ctx.iDamage;
+					Ctx.iShieldDamage = 0;
+					}
+				else
+					{
+					Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
+					if (Ctx.bReflect)
+						{
+						Ctx.bReflect = false;
+						Ctx.iAbsorb = Ctx.iOriginalAbsorb;
+						}
+					}
+				}
+
+			//	Two values mean we modified both damage to armor and shield damage
+
+			else if (pResult->GetCount() == 2)
+				{
+				Ctx.bReflect = false;
+				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
+				Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(1)->GetIntegerValue()));
+				}
+
+			//	Otherwise, we deal with reflection
+
+			else
+				{
+				Ctx.bReflect = strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT);
+				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(1)->GetIntegerValue(), Ctx.iHPLeft));
+				Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(2)->GetIntegerValue()));
+				}
+			}
+
+		CCCtx.Discard(pResult);
+		}
 	}
 
 void CShieldClass::FireOnShieldDown (CInstalledDevice *pDevice, CSpaceObject *pSource)
@@ -807,18 +818,20 @@ void CShieldClass::FireOnShieldDown (CInstalledDevice *pDevice, CSpaceObject *pS
 //	Fire OnShieldDown event
 
 	{
-	ASSERT(m_pOnShieldDown);
+	SEventHandlerDesc Event;
+	if (FindEventHandlerShieldClass(evtOnShieldDown, &Event))
+		{
+		CCodeChainCtx Ctx;
 
-	CCodeChainCtx Ctx;
+		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveItemVar();
+		Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
 
-	Ctx.SaveAndDefineSourceVar(pSource);
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
-
-	ICCItem *pResult = Ctx.Run(m_pOnShieldDown);
-	if (pResult->IsError())
-		pSource->ReportEventError(ON_SHIELD_DOWN_EVENT, pResult);
-	Ctx.Discard(pResult);
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			pSource->ReportEventError(ON_SHIELD_DOWN_EVENT, pResult);
+		Ctx.Discard(pResult);
+		}
 	}
 
 int CShieldClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage) const
@@ -896,8 +909,7 @@ int CShieldClass::GetMaxHP (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 	//	Fire event
 
-	if (m_pGetMaxHP)
-		iMax = FireGetMaxHP(pDevice, pSource, iMax);
+	iMax = FireGetMaxHP(pDevice, pSource, iMax);
 
 	//	Adjust based on enhancements
 
@@ -1119,9 +1131,7 @@ ALERROR CShieldClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	//	Load events
 
 	CItemType *pType = GetItemType();
-	m_pOnShieldDamage = pType->GetEventHandler(ON_SHIELD_DAMAGE_EVENT);
-	m_pOnShieldDown = pType->GetEventHandler(ON_SHIELD_DOWN_EVENT);
-	m_pGetMaxHP = pType->GetEventHandler(GET_MAX_HP_EVENT);
+	pType->InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	//	Hit effect
 
@@ -1258,7 +1268,7 @@ void CShieldClass::SetDepleted (CInstalledDevice *pDevice, CSpaceObject *pSource
 	//	don't want something like the Invincible deflector to disable the ship
 	//	if the shield is not enabled)
 
-	if (m_pOnShieldDown && pDevice->IsEnabled())
+	if (pDevice->IsEnabled())
 		FireOnShieldDown(pDevice, pSource);
 	}
 

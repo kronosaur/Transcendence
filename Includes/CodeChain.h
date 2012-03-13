@@ -62,6 +62,16 @@ const DWORD PRFLAG_NO_QUOTES =						0x00000001;
 const DWORD	PRFLAG_ENCODE_FOR_DISPLAY =				0x00000002;
 const DWORD PRFLAG_FORCE_QUOTES =					0x00000004;
 
+//	Some helper classes
+
+class IItemTransform
+	{
+	public:
+		virtual ~IItemTransform (void) { }
+
+		virtual ICCItem *Transform (CCodeChain &CC, ICCItem *pItem);
+	};
+
 //	An item is a generic element of a list. This is the basic unit of
 //	CodeChain.
 
@@ -132,6 +142,7 @@ class ICCItem : public CObject
 		virtual BOOL IsFunction (void) = 0;
 		virtual BOOL IsIdentifier (void) = 0;
 		virtual BOOL IsInteger (void) = 0;
+		virtual bool IsLambdaFunction (void) { return false; }
 		virtual BOOL IsNil (void) = 0;
 		virtual BOOL IsPrimitive (void) { return FALSE; }
 		virtual BOOL IsSymbolTable (void) { return FALSE; }
@@ -152,12 +163,14 @@ class ICCItem : public CObject
 		virtual void AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry) { ASSERT(FALSE); }
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey) { return -1; }
 		virtual int FindValue (ICCItem *pValue) { return -1; }
+		virtual IItemTransform *GetDefineHook (void) { return NULL; }
 		virtual ICCItem *GetParent (void) { return NULL; }
 		virtual BOOL IsLocalFrame (void) { return FALSE; }
 		virtual ICCItem *ListSymbols (CCodeChain *pCC) { return NotASymbolTable(pCC); }
 		virtual ICCItem *Lookup (CCodeChain *pCC, ICCItem *pKey) { return NotASymbolTable(pCC); }
 		virtual ICCItem *LookupByOffset (CCodeChain *pCC, int iOffset) { return NotASymbolTable(pCC); }
 		virtual ICCItem *LookupEx (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound) { return NotASymbolTable(pCC); }
+		virtual void SetDefineHook (IItemTransform *pHook) { }
 		virtual void SetParent (ICCItem *pParent) { ASSERT(FALSE); }
 		virtual void SetLocalFrame (void) { ASSERT(FALSE); }
 		virtual ICCItem *SimpleLookup (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound, int *retiOffset) { return NotASymbolTable(pCC); }
@@ -399,6 +412,7 @@ class CCLambda : public ICCAtom
 		virtual ValueTypes GetValueType (void) { return Function; }
 		virtual BOOL IsIdentifier (void) { return FALSE; }
 		virtual BOOL IsFunction (void) { return TRUE; }
+		virtual bool IsLambdaFunction (void) { return true; }
 		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0);
 		virtual void Reset (void);
 
@@ -575,11 +589,13 @@ class CCSymbolTable : public ICCList
 		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry);
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey);
 		virtual int FindValue (ICCItem *pValue);
+		virtual IItemTransform *GetDefineHook (void) { return m_pDefineHook; }
 		virtual ICCItem *GetParent (void) { return m_pParent; }
 		virtual ICCItem *ListSymbols (CCodeChain *pCC);
 		virtual ICCItem *Lookup (CCodeChain *pCC, ICCItem *pKey);
 		virtual ICCItem *LookupByOffset (CCodeChain *pCC, int iOffset);
 		virtual ICCItem *LookupEx (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound);
+		virtual void SetDefineHook (IItemTransform *pHook) { m_pDefineHook = pHook; }
 		virtual void SetLocalFrame (void) { m_bLocalFrame = TRUE; }
 		virtual void SetParent (ICCItem *pParent) { m_pParent = pParent->Reference(); }
 		virtual ICCItem *SimpleLookup (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound, int *retiOffset);
@@ -593,6 +609,8 @@ class CCSymbolTable : public ICCList
 		CSymbolTable m_Symbols;
 		ICCItem *m_pParent;
 		BOOL m_bLocalFrame;
+
+		IItemTransform *m_pDefineHook;
 	};
 
 //	Item pools
@@ -707,10 +725,12 @@ class CCodeChain : public CObject
 		ALERROR DefineGlobalInteger (const CString &sVar, int iValue);
 		ALERROR DefineGlobalString (const CString &sVar, const CString &sValue);
 		ICCItem *EvaluateArgs (CEvalContext *pCtx, ICCItem *pArgs, const CString &sArgValidation);
+		IItemTransform *GetGlobalDefineHook (void) const { return m_pGlobalSymbols->GetDefineHook(); }
 		ICCItem *ListGlobals (void);
 		ICCItem *LookupFunction (CEvalContext *pCtx, ICCItem *pName);
 		ICCItem *PoolUsage (void);
 		ALERROR RegisterPrimitive (PRIMITIVEPROCDEF *pDef);
+		inline void SetGlobalDefineHook (IItemTransform *pHook) { m_pGlobalSymbols->SetDefineHook(pHook); }
 
 		//	Miscellaneous
 
@@ -728,9 +748,7 @@ class CCodeChain : public CObject
 		CCItemPool<CCAtomTable> m_AtomTablePool;
 		CCItemPool<CCSymbolTable> m_SymbolTablePool;
 		CCItemPool<CCLambda> m_LambdaPool;
-
 		CConsPool m_ConsPool;
-
 		ICCItem *m_pNil;
 		ICCItem *m_pTrue;
 		CCString m_sMemoryError;

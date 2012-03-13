@@ -51,6 +51,8 @@ const int INDEX_COUNT =						11;
 const int INDEX_SELECTION =					12;
 #define PROP_SELECTION						CONSTLIT("selection")
 
+#define EVENT_ON_DOUBLE_CLICK				CONSTLIT("onDoubleClick")
+
 #define PROP_SELECTION_ID					CONSTLIT("selectionID")
 
 #define STYLE_SELECTION						CONSTLIT("selection")
@@ -188,6 +190,74 @@ void CAniListBox::GetFocusElements (TArray<IAnimatron *> *retList)
 	retList->Insert(this); 
 	}
 
+int CAniListBox::GetRowAtPos (int x, int y)
+
+//	GetRowAtPos
+//
+//	Returns the entry at the given position (or -1 if none).
+//
+//	x,y are absolute coordinates.
+
+	{
+	int i;
+
+	//	Convert to relative coords
+
+	CVector vPos = m_Properties[INDEX_POSITION].GetVector();
+	x -= (int)vPos.GetX();
+	y -= (int)vPos.GetY();
+
+	//	Look for an entry
+
+	for (i = 0; i < m_Entries.GetCount(); i++)
+		{
+		RECT rcRect;
+		if (GetRowRect(i, &rcRect)
+				&& x >= rcRect.left && x < rcRect.right && y >= rcRect.top && y < rcRect.bottom)
+			return i;
+		}
+
+	return -1;
+	}
+
+bool CAniListBox::GetRowRect (int iRow, RECT *retrcRect)
+
+//	GetRowRect
+//
+//	Returns the rect for the given row. Returns TRUE if the row is inside the
+//	viewport. The rect is relative to the listbox at the current scroll
+//	position.
+
+	{
+	CVector vSize = m_Properties[INDEX_SCALE].GetVector();
+	int cyViewport = (int)m_pScroller->GetPropertyMetric(PROP_VIEWPORT_HEIGHT);
+
+	//	Figure out where the selection should paint
+
+	RECT rcSelection = m_Entries[iRow].rcRect;
+	int cxSel = RectWidth(rcSelection);
+	int cySel = RectHeight(rcSelection);
+	CVector vEntryPos = m_Entries[iRow].pAni->GetPropertyVector(PROP_POSITION);
+
+	cxSel = Max(cxSel, (int)vSize.GetX());
+
+	int yOffset = (int)m_pScroller->GetPropertyMetric(PROP_SCROLL_POS);
+	int xPadding = 8;
+	int yPadding = 8;
+
+	rcSelection.left = (int)vEntryPos.GetX() - xPadding;
+	rcSelection.right = rcSelection.left + cxSel + 2 * xPadding;
+	rcSelection.top = (int)vEntryPos.GetY() - yOffset - yPadding;
+	rcSelection.bottom = rcSelection.top + cySel + 2 * yPadding;
+
+	if (retrcRect)
+		*retrcRect = rcSelection;
+
+	//	Are we in the viewport?
+
+	return (rcSelection.bottom > 0 && rcSelection.top < cyViewport);
+	}
+
 bool CAniListBox::HandleChar (char chChar, DWORD dwKeyData)
 
 //	HandleChar
@@ -219,21 +289,175 @@ bool CAniListBox::HandleKeyDown (int iVirtKey, DWORD dwKeyData)
 	//	PROP_COUNT is dynamic, so we have to do the full call.
 	int iCount = GetPropertyInteger(PROP_COUNT);
 
+	//	Entries per page
+	int iRowsPerPage = 5;
+
 	switch (iVirtKey)
 		{
-		case VK_UP:
-			if (iSelection > 0)
-				Select(iSelection - 1);
-			return true;
-
 		case VK_DOWN:
 			if (iSelection + 1 < iCount)
 				Select(iSelection + 1);
 			return true;
 
+		case VK_END:
+			if (iSelection != (iCount - 1))
+				Select(iCount - 1);
+			return true;
+
+		case VK_HOME:
+			if (iSelection != 0)
+				Select(0);
+			return true;
+
+		case VK_NEXT:
+			{
+			int iNewSel = Min(iSelection + iRowsPerPage, iCount - 1);
+			if (iNewSel != iSelection)
+				Select(iNewSel);
+			return true;
+			}
+
+		case VK_PRIOR:
+			{
+			int iNewSel = Max(iSelection - iRowsPerPage, 0);
+			if (iNewSel != iSelection)
+				Select(iNewSel);
+			return true;
+			}
+
+		case VK_UP:
+			if (iSelection > 0)
+				Select(iSelection - 1);
+			return true;
+
 		default:
 			return false;
 		}
+	}
+
+void CAniListBox::HandleLButtonDblClick (int x, int y, DWORD dwFlags, bool *retbCapture, bool *retbFocus)
+
+//	HandleLButtonDblClick
+//
+//	LButton double click
+
+	{
+	if (!m_Properties[INDEX_ENABLED].GetBool())
+		{
+		*retbCapture = false;
+		*retbFocus = false;
+		return;
+		}
+
+	*retbFocus = true;
+	*retbCapture = true;
+
+	int iCurSelection = m_Properties[INDEX_SELECTION].GetInteger();
+	int iSel = GetRowAtPos(x, y);
+	if (iSel != -1 && iSel == iCurSelection)
+		{
+		//	We don't set the focus or capture because raising the event might
+		//	destroy us.
+
+		*retbFocus = false;
+		*retbCapture = false;
+
+		//	Raise event
+
+		RaiseEvent(EVENT_ON_DOUBLE_CLICK);
+		}
+	}
+
+void CAniListBox::HandleLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture, bool *retbFocus)
+
+//	HandleLButtonDown
+//
+//	LButton down
+
+	{
+	if (!m_Properties[INDEX_ENABLED].GetBool())
+		{
+		*retbCapture = false;
+		*retbFocus = false;
+		return;
+		}
+
+	*retbFocus = true;
+	*retbCapture = true;
+
+	//	See if we hit one of the rows
+
+	int iCurSelection = m_Properties[INDEX_SELECTION].GetInteger();
+	int iNewSel = GetRowAtPos(x, y);
+
+	if (iNewSel != -1 && iNewSel != iCurSelection)
+		Select(iNewSel);
+	}
+
+void CAniListBox::HandleLButtonUp (int x, int y, DWORD dwFlags)
+
+//	HandleLButtonUp
+//
+//	LButton up
+
+	{
+	}
+
+bool CAniListBox::HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	HandleMouseWheel
+//
+//	Mouse scrolling
+
+	{
+	if (!m_Properties[INDEX_ENABLED].GetBool())
+		return false;
+
+	int iSelection = m_Properties[INDEX_SELECTION].GetInteger();
+
+	//	PROP_COUNT is dynamic, so we have to do the full call.
+	int iCount = GetPropertyInteger(PROP_COUNT);
+
+	//	Entries per page
+
+	int iChange = (-iDelta / 60);
+	if (iChange == 0)
+		iChange = -Sign(iDelta);
+
+	//	Scroll
+
+	int iNewSel = Max(0, Min(iSelection + iChange, iCount - 1));
+	if (iNewSel != iSelection)
+		Select(iNewSel);
+
+	return true;
+	}
+
+IAnimatron *CAniListBox::HitTest (const CXForm &ToDest, int x, int y)
+
+//	HitTest
+//
+//	Returns the element if x,y is in our bounds
+
+	{
+	//	Position and size
+
+	CVector vPos = ToDest.Transform(m_Properties[INDEX_POSITION].GetVector());
+	CVector vSize = m_Properties[INDEX_SCALE].GetVector();
+	int cyViewport = (int)m_pScroller->GetPropertyMetric(PROP_VIEWPORT_HEIGHT);
+
+	RECT rcRect;
+	rcRect.left = (int)vPos.GetX();
+	rcRect.top = (int)vPos.GetY();
+	rcRect.right = (int)(vPos.GetX() + vSize.GetX());
+	rcRect.bottom = (int)(vPos.GetY() + cyViewport);
+
+	//	See if we're in the rect
+
+	if (x >= rcRect.left && x < rcRect.right && y >= rcRect.top && y < rcRect.bottom)
+		return this;
+	else
+		return NULL;
 	}
 
 int CAniListBox::MapStyleName (const CString &sComponent) const
@@ -273,10 +497,8 @@ void CAniListBox::Paint (SAniPaintCtx &Ctx)
 
 	{
 	CVector vPos = m_Properties[INDEX_POSITION].GetVector();
-	CVector vSize = m_Properties[INDEX_SCALE].GetVector();
 	bool bEnabled = m_Properties[INDEX_ENABLED].GetBool();
 	int cyViewport = (int)m_pScroller->GetPropertyMetric(PROP_VIEWPORT_HEIGHT);
-	int cxMinWidth = (int)vSize.GetX();
 
 	//	Paint the contents
 
@@ -285,21 +507,8 @@ void CAniListBox::Paint (SAniPaintCtx &Ctx)
 		{
 		//	Figure out where the selection should paint
 
-		RECT rcSelection = m_Entries[iSelection].rcRect;
-		int cxSel = RectWidth(rcSelection);
-		int cySel = RectHeight(rcSelection);
-		CVector vEntryPos = m_Entries[iSelection].pAni->GetPropertyVector(PROP_POSITION);
-
-		cxSel = Max(cxSel, cxMinWidth);
-
-		int yOffset = (int)m_pScroller->GetPropertyMetric(PROP_SCROLL_POS);
-		int xPadding = 8;
-		int yPadding = 8;
-
-		rcSelection.left = (int)vEntryPos.GetX() - xPadding;
-		rcSelection.right = rcSelection.left + cxSel + 2 * xPadding;
-		rcSelection.top = (int)vEntryPos.GetY() - yOffset - yPadding;
-		rcSelection.bottom = rcSelection.top + cySel + 2 * yPadding;
+		RECT rcSelection;
+		GetRowRect(iSelection, &rcSelection);
 
 		//	Create a transform for the selection
 

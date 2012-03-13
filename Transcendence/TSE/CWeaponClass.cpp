@@ -128,6 +128,11 @@ static SStdWeaponStats STD_WEAPON_STATS[MAX_ITEM_LEVEL] =
 		{	2343,	80000,	250,	40, },
 	};
 
+static char *CACHED_EVENTS[CWeaponClass::evtCount] =
+	{
+		"OnFireWeapon",
+	};
+
 inline SStdWeaponStats *GetStdWeaponStats (int iLevel)
 	{
 	if (iLevel >= 1 && iLevel <= MAX_ITEM_LEVEL)
@@ -208,7 +213,7 @@ bool CWeaponClass::Activate (CInstalledDevice *pDevice,
 	//	to Activate (since it happens on the same tick)
 
 	if (pShot->m_iContinuous > 0)
-		SetContinuousFire(pDevice, -1);
+		SetContinuousFire(pDevice, CONTINUOUS_START);
 
 	//	Player-specific code
 
@@ -297,7 +302,7 @@ int CWeaponClass::CalcBalance (int iVariant)
 	return iBalance;
 	}
 
-int CWeaponClass::CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPos, int *ShotDir)
+int CWeaponClass::CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPos, int *ShotDir, bool bSetAlternating)
 
 //	CalcConfiguration
 //
@@ -375,7 +380,8 @@ int CWeaponClass::CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, 
 				ShotPos[0] = vSource + (iPolarity ? Perp : -Perp);
 				ShotDir[0] = iFireAngle;
 
-				SetAlternatingPos(pDevice, (iPolarity + 1) % 2);
+				if (bSetAlternating)
+					SetAlternatingPos(pDevice, (iPolarity + 1) % 2);
 				}
 
 			//	Otherwise, return all shots
@@ -467,7 +473,8 @@ int CWeaponClass::CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, 
 
 				//	Next shot in sequence
 
-				SetAlternatingPos(pDevice, (iShot + 1) % m_iConfigCount);
+				if (bSetAlternating)
+					SetAlternatingPos(pDevice, (iShot + 1) % m_iConfigCount);
 				}
 			else
 				{
@@ -967,7 +974,7 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 		CCodeChain &CC = g_pUniverse->GetCC();
 		CVector ShotPos[MAX_SHOT_COUNT];
 		int ShotDir[MAX_SHOT_COUNT];
-		int iShotCount = CalcConfiguration(CItemCtx(), pShot, 0, ShotPos, ShotDir);
+		int iShotCount = CalcConfiguration(CItemCtx(), pShot, 0, ShotPos, ShotDir, false);
 
 		CMemoryWriteStream Output(5000);
 		if (Output.Create() != NOERROR)
@@ -1050,43 +1057,49 @@ CWeaponClass::EOnFireWeaponResults CWeaponClass::FireOnFireWeapon (CItemCtx &Ite
 //	shotFired (or True) = consume power and ammo normally
 
 	{
-	CCodeChainCtx Ctx;
-	EOnFireWeaponResults iResult;
-
-	Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(ItemCtx);
-	Ctx.DefineInteger(CONSTLIT("aFireAngle"), iFireAngle);
-	Ctx.DefineVector(CONSTLIT("aFirePos"), vSource);
-	Ctx.DefineInteger(CONSTLIT("aFireRepeat"), iRepeatingCount);
-	Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
-	Ctx.DefineInteger(CONSTLIT("aWeaponBonus"), ItemCtx.GetDevice()->GetBonus());
-	Ctx.DefineItemType(CONSTLIT("aWeaponType"), pShot->GetWeaponType());
-
-	ICCItem *pResult = Ctx.Run(m_pOnFireWeapon);
-	if (pResult->IsError())
-		ItemCtx.GetSource()->ReportEventError(ON_FIRE_WEAPON_EVENT, pResult);
-
-	if (pResult->IsNil())
-		iResult = resDefault;
-	else
+	SEventHandlerDesc Event;
+	if (FindEventHandlerWeaponClass(evtOnFireWeapon, &Event))
 		{
-		CString sValue = pResult->GetStringValue();
-		if (strEquals(sValue, CONSTLIT("shotFired")))
-			return resShotFired;
-		else if (strEquals(sValue, CONSTLIT("noShot")))
-			return resNoShot;
-		else if (strEquals(sValue, CONSTLIT("default")))
-			return resDefault;
+		CCodeChainCtx Ctx;
+		EOnFireWeaponResults iResult;
+
+		Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
+		Ctx.SaveItemVar();
+		Ctx.DefineItem(ItemCtx);
+		Ctx.DefineInteger(CONSTLIT("aFireAngle"), iFireAngle);
+		Ctx.DefineVector(CONSTLIT("aFirePos"), vSource);
+		Ctx.DefineInteger(CONSTLIT("aFireRepeat"), iRepeatingCount);
+		Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
+		Ctx.DefineInteger(CONSTLIT("aWeaponBonus"), ItemCtx.GetDevice()->GetBonus());
+		Ctx.DefineItemType(CONSTLIT("aWeaponType"), pShot->GetWeaponType());
+
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			ItemCtx.GetSource()->ReportEventError(ON_FIRE_WEAPON_EVENT, pResult);
+
+		if (pResult->IsNil())
+			iResult = resDefault;
 		else
-			return resShotFired;
+			{
+			CString sValue = pResult->GetStringValue();
+			if (strEquals(sValue, CONSTLIT("shotFired")))
+				return resShotFired;
+			else if (strEquals(sValue, CONSTLIT("noShot")))
+				return resNoShot;
+			else if (strEquals(sValue, CONSTLIT("default")))
+				return resDefault;
+			else
+				return resShotFired;
+			}
+
+		Ctx.Discard(pResult);
+
+		//	Done
+
+		return iResult;
 		}
-
-	Ctx.Discard(pResult);
-
-	//	Done
-
-	return iResult;
+	else
+		return resDefault;
 	}
 
 bool CWeaponClass::FireWeapon (CInstalledDevice *pDevice, 
@@ -1281,7 +1294,7 @@ bool CWeaponClass::FireWeapon (CInstalledDevice *pDevice,
 
 	CVector ShotPos[MAX_SHOT_COUNT];
 	int ShotDir[MAX_SHOT_COUNT];
-	int iShotCount = CalcConfiguration(CItemCtx(pSource, pDevice), pShot, iFireAngle, ShotPos, ShotDir);
+	int iShotCount = CalcConfiguration(CItemCtx(pSource, pDevice), pShot, iFireAngle, ShotPos, ShotDir, (iRepeatingCount == pShot->m_iContinuous));
 
 	//	If we're independently targeted, then compute targets for the remaining shots
 
@@ -1347,11 +1360,12 @@ bool CWeaponClass::FireWeapon (CInstalledDevice *pDevice,
 
 	//	Create barrel flash effect
 
-	if (!bFireSuppressed && pShot->m_pFireEffect)
+	CEffectCreator *pFireEffect;
+	if (!bFireSuppressed && (pFireEffect = pShot->GetFireEffect()))
 		{
 		for (i = 0; i < iShotCount; i++)
 			{
-			IEffectPainter *pPainter = pShot->m_pFireEffect->CreatePainter();
+			IEffectPainter *pPainter = pFireEffect->CreatePainter();
 
 			pSource->AddEffect(pPainter, ShotPos[i], 0, ShotDir[i]);
 			}
@@ -1370,15 +1384,12 @@ bool CWeaponClass::FireWeapon (CInstalledDevice *pDevice,
 			//	Otherwise, we create weapon fire
 
 			EOnFireWeaponResults iResult;
-			if (m_pOnFireWeapon)
-				iResult = FireOnFireWeapon(CItemCtx(pSource, pDevice), 
-						pShot, 
-						ShotPos[i], 
-						pTarget,
-						ShotDir[i], 
-						iRepeatingCount);
-			else
-				iResult = resDefault;
+			iResult = FireOnFireWeapon(CItemCtx(pSource, pDevice), 
+					pShot, 
+					ShotPos[i], 
+					pTarget,
+					ShotDir[i], 
+					iRepeatingCount);
 
 			//	Did we destroy the source?
 
@@ -1588,21 +1599,12 @@ int CWeaponClass::GetCounter (CInstalledDevice *pDevice, CSpaceObject *pSource, 
 
 int CWeaponClass::GetAlternatingPos (CInstalledDevice *pDevice)
 	{
-	if (m_Configuration == ctDualAlternating
-			|| m_bConfigAlternating)
-		return (int)(short)LOWORD(pDevice->GetData());
-	else
-		return 0;
+	return (int)(DWORD)HIBYTE(LOWORD(pDevice->GetData()));
 	}
 
-int CWeaponClass::GetContinuousFire (CInstalledDevice *pDevice) 
+DWORD CWeaponClass::GetContinuousFire (CInstalledDevice *pDevice) 
 	{
-	if (!m_bCharges 
-			&& m_Configuration != ctDualAlternating
-			&& !m_bConfigAlternating)
-		return (int)(short)LOWORD(pDevice->GetData());
-	else
-		return 0;
+	return (int)(DWORD)LOBYTE(LOWORD(pDevice->GetData()));
 	}
 
 int CWeaponClass::GetCurrentVariant (CInstalledDevice *pDevice)
@@ -2430,7 +2432,7 @@ ALERROR CWeaponClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 	//	Events
 
-	m_pOnFireWeapon = GetItemType()->GetEventHandler(ON_FIRE_WEAPON_EVENT);
+	GetItemType()->InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	//	Shots
 
@@ -2539,17 +2541,17 @@ void CWeaponClass::SetAlternatingPos (CInstalledDevice *pDevice, int iAlternatin
 //	Sets the alternating position
 
 	{
-	pDevice->SetData((pDevice->GetData() & 0xFFFF0000) | (WORD)(short)iAlternatingPos);
+	pDevice->SetData((pDevice->GetData() & 0xFFFF00FF) | (((DWORD)iAlternatingPos & 0xFF) << 8));
 	}
 
-void CWeaponClass::SetContinuousFire (CInstalledDevice *pDevice, int iContinuous)
+void CWeaponClass::SetContinuousFire (CInstalledDevice *pDevice, DWORD dwContinuous)
 
 //	SetContinuousFire
 //
 //	Sets the continuous fire counter for the device
 
 	{
-	pDevice->SetData((pDevice->GetData() & 0xFFFF0000) | (WORD)(short)iContinuous);
+	pDevice->SetData((pDevice->GetData() & 0xFFFFFF00) | (dwContinuous & 0xFF));
 	}
 
 void CWeaponClass::SetCurrentVariant (CInstalledDevice *pDevice, int iVariant)
@@ -2605,8 +2607,8 @@ void CWeaponClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, int
 
 	//	See if we continue to fire
 
-	int iContinuous = GetContinuousFire(pDevice);
-	if (iContinuous == -1)
+	DWORD dwContinuous = GetContinuousFire(pDevice);
+	if (dwContinuous == CONTINUOUS_START)
 		{
 		//	-1 is used to skip the first update cycle
 		//	(which happens on the same tick as Activate)
@@ -2614,7 +2616,7 @@ void CWeaponClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, int
 		CWeaponFireDesc *pShot = GetSelectedShotData(Ctx);
 		SetContinuousFire(pDevice, (pShot ? pShot->m_iContinuous : 0));
 		}
-	else if (iContinuous > 0)
+	else if (dwContinuous > 0)
 		{
 		CWeaponFireDesc *pShot = GetSelectedShotData(Ctx);
 		if (pShot)
@@ -2625,7 +2627,7 @@ void CWeaponClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, int
 					pShot, 
 					pSource, 
 					NULL, 
-					1 + pShot->m_iContinuous - iContinuous,
+					1 + pShot->m_iContinuous - dwContinuous,
 					&bSourceDestroyed,
 					retbConsumedItems);
 
@@ -2637,8 +2639,8 @@ void CWeaponClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, int
 				}
 			}
 
-		iContinuous--;
-		SetContinuousFire(pDevice, iContinuous);
+		dwContinuous--;
+		SetContinuousFire(pDevice, dwContinuous);
 		}
 	}
 

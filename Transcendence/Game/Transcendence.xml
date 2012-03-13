@@ -14,7 +14,24 @@
 	<!ENTITY ssEarthSpaceDesert2		"0x0000000A">
 	<!ENTITY tbBasicSystemParts			"0x0000000B">
 	<!ENTITY tbHumanSystemParts			"0x0000000C">
-
+	
+	<!ENTITY efLaserHitDefault			"0x00000010">
+	<!ENTITY efKineticHitDefault		"0x00000011">
+	<!ENTITY efParticleHitDefault		"0x00000012">
+	<!ENTITY efBlastHitDefault			"0x00000013">
+	<!ENTITY efIonHitDefault			"0x00000014">
+	<!ENTITY efThermoHitDefault			"0x00000015">
+	<!ENTITY efPositronHitDefault		"0x00000016">
+	<!ENTITY efPlasmaHitDefault			"0x00000017">
+	<!ENTITY efAntiMatterHitDefault		"0x00000018">
+	<!ENTITY efNanoHitDefault			"0x00000019">
+	<!ENTITY efGravitonHitDefault		"0x0000001A">
+	<!ENTITY efSingularityHitDefault	"0x0000001B">
+	<!ENTITY efDarkAcidHitDefault		"0x0000001C">
+	<!ENTITY efDarkSteelHitDefault		"0x0000001D">
+	<!ENTITY efDarkLightningHitDefault	"0x0000001E">
+	<!ENTITY efDarkFireHitDefault		"0x0000001F">
+	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
 	<!ENTITY svIndependent				"0x00001003">
@@ -666,6 +683,8 @@
 	<!ENTITY efGemOfSacrifice			"0x0000900D">
 	<!ENTITY efLargeStationDamage		"0x0000900E">
 	<!ENTITY efMediumStationDamage		"0x0000900F">
+	<!ENTITY efGreenLaserHitEffect		"0x00009010">
+	<!ENTITY efXRayLaserHitEffect		"0x00009011">
 	
 	<!ENTITY sfSustain					"0x00009101">
 	<!ENTITY sfStrengthen				"0x00009102">
@@ -1608,8 +1627,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000701"
-		minVersion=						"0x01000701"
+		version=						"0x01000800"
+		minVersion=						"0x01000800"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2824,7 +2843,7 @@
 								(setq desc Nil)
 								(setq i 0)
 
-								(loop (and (not desc) (ls i 3))
+								(loop (and (not desc) (ls i 5))
 									(block Nil
 										(setq gMission (item missionList (modulo (add time i) (count missionList))))
 
@@ -7549,6 +7568,7 @@
 		<Module filename="StdArmor.xml"/>
 		<Module filename="StdAutons.xml"/>
 		<Module filename="StdDevices.xml"/>
+		<Module filename="StdEffects.xml"/>
 		<Module filename="StdExplosions.xml"/>
 		<Module filename="StdShields.xml"/>
 		<Module filename="StdWeapons.xml"/>

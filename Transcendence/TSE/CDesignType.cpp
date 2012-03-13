@@ -29,6 +29,7 @@
 #define SYSTEM_MAP_TAG							CONSTLIT("SystemMap")
 #define SYSTEM_FRAGMENT_TABLE_TAG				CONSTLIT("SystemPartTable")
 #define SYSTEM_TYPE_TAG							CONSTLIT("SystemType")
+#define TEMPLATE_TYPE_TAG						CONSTLIT("TemplateType")
 
 #define ATTRIBUTES_ATTRIB						CONSTLIT("attributes")
 #define INHERIT_ATTRIB							CONSTLIT("inherit")
@@ -54,8 +55,9 @@
 
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
-#define FIELD_VERSION							CONSTLIT("version")
+#define FIELD_EXTENSION_UNID					CONSTLIT("extensionUNID")
 #define FIELD_UNID								CONSTLIT("unid")
+#define FIELD_VERSION							CONSTLIT("version")
 
 static char DESIGN_CHAR[designCount] =
 	{
@@ -82,10 +84,12 @@ static char DESIGN_CHAR[designCount] =
 		'w',
 
 		'$',
+		'_',
 	};
 
 static char *CACHED_EVENTS[CDesignType::evtCount] =
 	{
+		"OnGlobalTypesInit",
 		"OnObjDestroyed",
 		"OnSystemObjAttacked",
 		"OnSystemWeaponFire",
@@ -128,8 +132,12 @@ ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
 	if (m_pInheritFrom)
 		{
 		for (i = 0; i < evtCount; i++)
-			if (m_EventsCache[i] == NULL)
-				m_EventsCache[i] = m_pInheritFrom->GetInheritedCachedEvent((ECachedHandlers)i);
+			if (m_EventsCache[i].pCode == NULL)
+				{
+				SEventHandlerDesc *pInherit = m_pInheritFrom->GetInheritedCachedEvent((ECachedHandlers)i);
+				if (pInherit)
+					m_EventsCache[i] = *pInherit;
+				}
 
 		//	Update the language block with data from our ancestors
 
@@ -159,94 +167,104 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 //	Creates a design type from an XML element
 
 	{
-	ALERROR error;
-	CDesignType *pType = NULL;
-
-	if (strEquals(pDesc->GetTag(), ITEM_TYPE_TAG))
-		pType = new CItemType;
-	else if (strEquals(pDesc->GetTag(), ITEM_TABLE_TAG))
-		pType = new CItemTable;
-	else if (strEquals(pDesc->GetTag(), SHIP_CLASS_TAG))
-		pType = new CShipClass;
-	else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
-		pType = new CEnergyFieldType;
-	else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
-		pType = new CEnergyFieldType;
-	else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
-		pType = new CSystemType;
-	else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))
-		pType = new CStationType;
-	else if (strEquals(pDesc->GetTag(), SOVEREIGN_TAG))
-		pType = new CSovereign;
-	else if (strEquals(pDesc->GetTag(), DOCK_SCREEN_TAG))
-		pType = new CDockScreenType;
-	else if (strEquals(pDesc->GetTag(), POWER_TAG))
-		pType = new CPower;
-	else if (strEquals(pDesc->GetTag(), SPACE_ENVIRONMENT_TYPE_TAG))
-		pType = new CSpaceEnvironmentType;
-	else if (strEquals(pDesc->GetTag(), ENCOUNTER_TABLE_TAG))
-		pType = new CShipTable;
-	else if (strEquals(pDesc->GetTag(), SHIP_TABLE_TAG))
-		pType = new CShipTable;
-	else if (strEquals(pDesc->GetTag(), SYSTEM_FRAGMENT_TABLE_TAG))
-		pType = new CSystemTable;
-	else if (strEquals(pDesc->GetTag(), SYSTEM_MAP_TAG))
-		pType = new CSystemMap;
-	else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
-		pType = new CObjectImage;
-	else if (strEquals(pDesc->GetTag(), ECONOMY_TYPE_TAG))
-		pType = new CEconomyType;
-	else if (strEquals(pDesc->GetTag(), ADVENTURE_DESC_TAG))
+	try
 		{
-		//	Only valid if we are inside an Adventure
+		ALERROR error;
+		CDesignType *pType = NULL;
 
-		if (Ctx.pExtension != NULL && Ctx.pExtension->iType != extAdventure)
+		if (strEquals(pDesc->GetTag(), ITEM_TYPE_TAG))
+			pType = new CItemType;
+		else if (strEquals(pDesc->GetTag(), ITEM_TABLE_TAG))
+			pType = new CItemTable;
+		else if (strEquals(pDesc->GetTag(), SHIP_CLASS_TAG))
+			pType = new CShipClass;
+		else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
+			pType = new CEnergyFieldType;
+		else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
+			pType = new CEnergyFieldType;
+		else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
+			pType = new CSystemType;
+		else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))
+			pType = new CStationType;
+		else if (strEquals(pDesc->GetTag(), SOVEREIGN_TAG))
+			pType = new CSovereign;
+		else if (strEquals(pDesc->GetTag(), DOCK_SCREEN_TAG))
+			pType = new CDockScreenType;
+		else if (strEquals(pDesc->GetTag(), POWER_TAG))
+			pType = new CPower;
+		else if (strEquals(pDesc->GetTag(), SPACE_ENVIRONMENT_TYPE_TAG))
+			pType = new CSpaceEnvironmentType;
+		else if (strEquals(pDesc->GetTag(), ENCOUNTER_TABLE_TAG))
+			pType = new CShipTable;
+		else if (strEquals(pDesc->GetTag(), SHIP_TABLE_TAG))
+			pType = new CShipTable;
+		else if (strEquals(pDesc->GetTag(), SYSTEM_FRAGMENT_TABLE_TAG))
+			pType = new CSystemTable;
+		else if (strEquals(pDesc->GetTag(), SYSTEM_MAP_TAG))
+			pType = new CSystemMap;
+		else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
+			pType = new CObjectImage;
+		else if (strEquals(pDesc->GetTag(), ECONOMY_TYPE_TAG))
+			pType = new CEconomyType;
+		else if (strEquals(pDesc->GetTag(), TEMPLATE_TYPE_TAG))
+			pType = new CTemplateType;
+		else if (strEquals(pDesc->GetTag(), ADVENTURE_DESC_TAG))
 			{
-			Ctx.sError = CONSTLIT("<AdventureDesc> element is only valid for Adventures");
+			//	Only valid if we are inside an Adventure
+
+			if (Ctx.pExtension != NULL && Ctx.pExtension->iType != extAdventure)
+				{
+				Ctx.sError = CONSTLIT("<AdventureDesc> element is only valid for Adventures");
+				return ERR_FAIL;
+				}
+
+			pType = new CAdventureDesc;
+			}
+		else if (strEquals(pDesc->GetTag(), EFFECT_TAG))
+			{
+			//	This is an old-style CEffectCreator for compatibility
+
+			if (error = CEffectCreator::CreateFromXML(Ctx, pDesc, NULL_STR, (CEffectCreator **)&pType))
+				return error;
+
+			//	Load UNID
+
+			pType->m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
+			if (!pDesc->FindAttribute(ATTRIBUTES_ATTRIB, &pType->m_sAttributes))
+				pType->m_sAttributes = pDesc->GetAttribute(MODIFIERS_ATTRIB);
+
+			if (retpType)
+				*retpType = pType;
+
+			//	We skip the normal initialization for backwards compatibility
+
+			return NOERROR;
+			}
+		else if (strEquals(pDesc->GetTag(), EFFECT_TYPE_TAG))
+			{
+			//	This is a full effect type. The actual class depends on the content
+
+			if (error = CEffectCreator::CreateTypeFromXML(Ctx, pDesc, (CEffectCreator **)&pType))
+				return error;
+			}
+		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown design element: <%s>"), pDesc->GetTag());
 			return ERR_FAIL;
 			}
-
-		pType = new CAdventureDesc;
-		}
-	else if (strEquals(pDesc->GetTag(), EFFECT_TAG))
-		{
-		//	This is an old-style CEffectCreator for compatibility
-
-		if (error = CEffectCreator::CreateFromXML(Ctx, pDesc, NULL_STR, (CEffectCreator **)&pType))
-			return error;
-
-		//	Load UNID
-
-		pType->m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
-		if (!pDesc->FindAttribute(ATTRIBUTES_ATTRIB, &pType->m_sAttributes))
-			pType->m_sAttributes = pDesc->GetAttribute(MODIFIERS_ATTRIB);
 
 		if (retpType)
 			*retpType = pType;
 
-		//	We skip the normal initialization for backwards compatibility
+		//	Initialize
 
-		return NOERROR;
+		return pType->InitFromXML(Ctx, pDesc);
 		}
-	else if (strEquals(pDesc->GetTag(), EFFECT_TYPE_TAG))
+	catch (...)
 		{
-		//	This is a full effect type. The actual class depends on the content
-
-		if (error = CEffectCreator::CreateTypeFromXML(Ctx, pDesc, (CEffectCreator **)&pType))
-			return error;
-		}
-	else
-		{
-		Ctx.sError = strPatternSubst(CONSTLIT("Unknown design element: <%s>"), pDesc->GetTag());
+		Ctx.sError = strPatternSubst(CONSTLIT("Crash loading: %x"), pDesc->GetAttributeInteger(CONSTLIT("UNID")));
 		return ERR_FAIL;
 		}
-
-	if (retpType)
-		*retpType = pType;
-
-	//	Initialize
-
-	return pType->InitFromXML(Ctx, pDesc);
 	}
 
 bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
@@ -262,13 +280,15 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
 	else if (strEquals(sField, FIELD_UNID))
 		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
+	else if (strEquals(sField, FIELD_EXTENSION_UNID))
+		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->dwUNID : 0));
 	else
 		return false;
 
 	return true;
 	}
 
-bool CDesignType::FindEventHandler (const CString &sEvent, ICCItem **retpCode) const
+bool CDesignType::FindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent) const
 
 //	FindEventHandler
 //
@@ -277,13 +297,22 @@ bool CDesignType::FindEventHandler (const CString &sEvent, ICCItem **retpCode) c
 	{
 	//	If we have it, great
 
-	if (m_Events.FindEvent(sEvent, retpCode))
+	ICCItem *pCode;
+	if (m_Events.FindEvent(sEvent, &pCode))
+		{
+		if (retEvent)
+			{
+			retEvent->pExtension = m_pExtension;
+			retEvent->pCode = pCode;
+			}
+
 		return true;
+		}
 
 	//	Otherwise, see if we inherit
 
 	if (m_pInheritFrom)
-		return m_pInheritFrom->FindEventHandler(sEvent, retpCode);
+		return m_pInheritFrom->FindEventHandler(sEvent, retEvent);
 
 	//	Otherwise, nothing
 
@@ -315,12 +344,12 @@ void CDesignType::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEven
 	{
 	CCodeChainCtx Ctx;
 
-	ICCItem *pCode;
-	if (FindEventHandler(sEvent, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(sEvent, &Event))
 		{
 		Ctx.SetEvent(iEvent);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(sEvent, pResult);
 
@@ -345,16 +374,16 @@ bool CDesignType::FireGetCreatePos (CSpaceObject *pBase, CSpaceObject *pTarget, 
 //	Fire GetCreatePos event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(GET_CREATE_POS_EVENT, &pCode))
+	if (FindEventHandler(GET_CREATE_POS_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		Ctx.DefineSpaceObject(CONSTLIT("aBaseObj"), pBase);
 		Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(GET_CREATE_POS_EVENT, pResult);
 
@@ -390,14 +419,14 @@ void CDesignType::FireGetGlobalAchievements (CGameStats &Stats)
 	{
 	int i;
 
-	ICCItem *pCode;
-	if (FindEventHandler(GET_GLOBAL_ACHIEVEMENTS_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(GET_GLOBAL_ACHIEVEMENTS_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(GET_GLOBAL_ACHIEVEMENTS_EVENT, pResult);
 		else if (pResult->IsNil())
@@ -443,7 +472,7 @@ void CDesignType::FireGetGlobalAchievements (CGameStats &Stats)
 		}
 	}
 
-bool CDesignType::FireGetGlobalDockScreen (ICCItem *pCode, CSpaceObject *pObj, CString *retsScreen, int *retiPriority)
+bool CDesignType::FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpaceObject *pObj, CString *retsScreen, int *retiPriority)
 
 //	FireGetGlobalDockScreen
 //
@@ -451,8 +480,6 @@ bool CDesignType::FireGetGlobalDockScreen (ICCItem *pCode, CSpaceObject *pObj, C
 //	dock screen.
 
 	{
-	ASSERT(pCode);
-
 	//	Set up
 
 	CCodeChainCtx Ctx;
@@ -460,7 +487,7 @@ bool CDesignType::FireGetGlobalDockScreen (ICCItem *pCode, CSpaceObject *pObj, C
 
 	//	Run
 
-	ICCItem *pResult = Ctx.Run(pCode);
+	ICCItem *pResult = Ctx.Run(Event);
 
 	bool bResult;
 
@@ -508,14 +535,14 @@ int CDesignType::FireGetGlobalResurrectPotential (void)
 	{
 	int iResult = 0;
 
-	ICCItem *pCode;
-	if (FindEventHandler(GET_GLOBAL_RESURRECT_POTENTIAL_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(GET_GLOBAL_RESURRECT_POTENTIAL_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(GET_GLOBAL_RESURRECT_POTENTIAL_EVENT, pResult);
 		else
@@ -536,12 +563,12 @@ void CDesignType::FireObjCustomEvent (const CString &sEvent, CSpaceObject *pObj,
 	{
 	CCodeChainCtx Ctx;
 
-	ICCItem *pCode;
-	if (FindEventHandler(sEvent, &pCode))
+	SEventHandlerDesc Event;
+	if (FindEventHandler(sEvent, &Event))
 		{
 		Ctx.SaveAndDefineSourceVar(pObj);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pObj->ReportEventError(sEvent, pResult);
 
@@ -559,20 +586,17 @@ void CDesignType::FireObjCustomEvent (const CString &sEvent, CSpaceObject *pObj,
 		}
 	}
 
-ALERROR CDesignType::FireOnGlobalDockPaneInit (ICCItem *pCode, void *pScreen, DWORD dwScreenUNID, const CString &sScreen, const CString &sPane, CString *retsError)
+ALERROR CDesignType::FireOnGlobalDockPaneInit (const SEventHandlerDesc &Event, void *pScreen, DWORD dwScreenUNID, const CString &sScreen, const CString &sPane, CString *retsError)
 
 //	FireOnGlobalDockPaneInit
 //
 //	Dock pane initialized
 
 	{
-	if (pCode == NULL)
-		if (!FindEventHandler(ON_GLOBAL_DOCK_PANE_INIT_EVENT, &pCode))
-			return NOERROR;
+	CCodeChainCtx Ctx;
 
 	//	Set up
 
-	CCodeChainCtx Ctx;
 	Ctx.SetScreen(pScreen);
 	Ctx.DefineInteger(CONSTLIT("aScreenUNID"), dwScreenUNID);
 	Ctx.DefineString(CONSTLIT("aScreen"), sScreen);
@@ -580,7 +604,7 @@ ALERROR CDesignType::FireOnGlobalDockPaneInit (ICCItem *pCode, void *pScreen, DW
 
 	//	Run
 
-	ICCItem *pResult = Ctx.Run(pCode);
+	ICCItem *pResult = Ctx.Run(Event);
 	if (pResult->IsError())
 		ReportEventError(ON_GLOBAL_DOCK_PANE_INIT_EVENT, pResult);
 
@@ -590,7 +614,7 @@ ALERROR CDesignType::FireOnGlobalDockPaneInit (ICCItem *pCode, void *pScreen, DW
 	return NOERROR;
 	}
 
-void CDesignType::FireOnGlobalObjDestroyed (ICCItem *pCode, SDestroyCtx &Ctx)
+void CDesignType::FireOnGlobalObjDestroyed (const SEventHandlerDesc &Event, SDestroyCtx &Ctx)
 
 //	FireOnGlobalObjDestroyed
 //
@@ -607,7 +631,7 @@ void CDesignType::FireOnGlobalObjDestroyed (ICCItem *pCode, SDestroyCtx &Ctx)
 
 	//	Run code
 
-	ICCItem *pResult = CCCtx.Run(pCode);
+	ICCItem *pResult = CCCtx.Run(Event);
 	if (pResult->IsError())
 		ReportEventError(ON_GLOBAL_OBJ_DESTROYED_EVENT, pResult);
 
@@ -621,9 +645,9 @@ ALERROR CDesignType::FireOnGlobalPlayerChangedShips (CSpaceObject *pOldShip, CSt
 //	Player changed ships
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -631,7 +655,7 @@ ALERROR CDesignType::FireOnGlobalPlayerChangedShips (CSpaceObject *pOldShip, CSt
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT, pResult);
 
@@ -648,15 +672,15 @@ ALERROR CDesignType::FireOnGlobalPlayerEnteredSystem (CString *retsError)
 //	Player entered the system
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_PLAYER_ENTERED_SYSTEM_EVENT, pResult);
 
@@ -673,15 +697,15 @@ ALERROR CDesignType::FireOnGlobalPlayerLeftSystem (CString *retsError)
 //	Player left the system
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_PLAYER_LEFT_SYSTEM_EVENT, pResult);
 
@@ -698,15 +722,15 @@ ALERROR CDesignType::FireOnGlobalResurrect (CString *retsError)
 //	Resurrection code invoked
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_RESURRECT_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_RESURRECT_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_RESURRECT_EVENT, pResult);
 
@@ -723,16 +747,16 @@ ALERROR CDesignType::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCtx, 
 //	Fire event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_SYSTEM_CREATED_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_SYSTEM_CREATED_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 		Ctx.SetSystemCreateCtx(&SysCreateCtx);
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_SYSTEM_CREATED_EVENT, pResult);
 
@@ -749,15 +773,15 @@ ALERROR CDesignType::FireOnGlobalTopologyCreated (CString *retsError)
 //	Fire event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GLOBAL_TOPOLOGY_CREATED_EVENT, &pCode))
+	if (FindEventHandler(ON_GLOBAL_TOPOLOGY_CREATED_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_GLOBAL_TOPOLOGY_CREATED_EVENT, pResult);
 
@@ -767,7 +791,34 @@ ALERROR CDesignType::FireOnGlobalTopologyCreated (CString *retsError)
 	return NOERROR;
 	}
 
-ALERROR CDesignType::FireOnGlobalUniverseCreated (ICCItem *pCode)
+ALERROR CDesignType::FireOnGlobalTypesInit (SDesignLoadCtx &Ctx)
+
+//	FireOnGlobalTypesInit
+//
+//	Give this type a chance to create dynamic types.
+
+	{
+	SEventHandlerDesc Event;
+
+	if (FindEventHandler(evtOnGlobalTypesInit, &Event))
+		{
+		CCodeChainCtx CCCtx;
+		CCCtx.SetEvent(eventOnGlobalTypesInit);
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("OnGlobalTypesInit (%x): %s"), GetUNID(), pResult->GetStringValue());
+			return ERR_FAIL;
+			}
+
+		CCCtx.Discard(pResult);
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CDesignType::FireOnGlobalUniverseCreated (const SEventHandlerDesc &Event)
 
 //	FireOnGlobalUniverseCreated
 //
@@ -778,7 +829,7 @@ ALERROR CDesignType::FireOnGlobalUniverseCreated (ICCItem *pCode)
 
 	//	Run code
 
-	ICCItem *pResult = Ctx.Run(pCode);
+	ICCItem *pResult = Ctx.Run(Event);
 	if (pResult->IsError())
 		ReportEventError(ON_GLOBAL_UNIVERSE_CREATED_EVENT, pResult);
 
@@ -788,7 +839,7 @@ ALERROR CDesignType::FireOnGlobalUniverseCreated (ICCItem *pCode)
 	return NOERROR;
 	}
 
-ALERROR CDesignType::FireOnGlobalUniverseLoad (ICCItem *pCode)
+ALERROR CDesignType::FireOnGlobalUniverseLoad (const SEventHandlerDesc &Event)
 
 //	FireOnGlobalUniverseCreated
 //
@@ -799,7 +850,7 @@ ALERROR CDesignType::FireOnGlobalUniverseLoad (ICCItem *pCode)
 
 	//	Run code
 
-	ICCItem *pResult = Ctx.Run(pCode);
+	ICCItem *pResult = Ctx.Run(Event);
 	if (pResult->IsError())
 		ReportEventError(ON_GLOBAL_UNIVERSE_LOAD_EVENT, pResult);
 
@@ -809,7 +860,7 @@ ALERROR CDesignType::FireOnGlobalUniverseLoad (ICCItem *pCode)
 	return NOERROR;
 	}
 
-ALERROR CDesignType::FireOnGlobalUniverseSave (ICCItem *pCode)
+ALERROR CDesignType::FireOnGlobalUniverseSave (const SEventHandlerDesc &Event)
 
 //	FireOnGlobalUniverseSave
 //
@@ -820,7 +871,7 @@ ALERROR CDesignType::FireOnGlobalUniverseSave (ICCItem *pCode)
 
 	//	Run code
 
-	ICCItem *pResult = Ctx.Run(pCode);
+	ICCItem *pResult = Ctx.Run(Event);
 	if (pResult->IsError())
 		ReportEventError(ON_GLOBAL_UNIVERSE_SAVE_EVENT, pResult);
 
@@ -837,15 +888,15 @@ void CDesignType::FireOnRandomEncounter (CSpaceObject *pObj)
 //	Fire OnRandomEncounter event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_RANDOM_ENCOUNTER_EVENT, &pCode))
+	if (FindEventHandler(ON_RANDOM_ENCOUNTER_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pObj);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_RANDOM_ENCOUNTER_EVENT, pResult);
 
@@ -860,27 +911,66 @@ ICCItem *CDesignType::GetEventHandler (const CString &sEvent) const
 //	Returns an event handler (or NULL)
 
 	{
-	ICCItem *pCode;
-	if (FindEventHandler(sEvent, &pCode))
-		return pCode;
+	SEventHandlerDesc Event;
+	if (FindEventHandler(sEvent, &Event))
+		return Event.pCode;
 	else
 		return NULL;
 	}
 
-const CEventHandler &CDesignType::GetEventHandlers (void)
+void CDesignType::AddUniqueHandlers (TSortMap<CString, SEventHandlerDesc> *retInheritedHandlers)
+
+//	AddUniqueHandlers
+//
+//	Adds this type's handlers to the given array (as long as they are not 
+//	already there).
+
+	{
+	int i;
+
+	for (i = 0; i < m_Events.GetCount(); i++)
+		{
+		ICCItem *pCode;
+		const CString &sEvent = m_Events.GetEvent(i, &pCode);
+
+		if (!retInheritedHandlers->Find(sEvent))
+			{
+			SEventHandlerDesc *pDesc = retInheritedHandlers->Insert(sEvent);
+			pDesc->pExtension = m_pExtension;
+			pDesc->pCode = pCode;
+			}
+		}
+
+	//	Add base classes
+
+	if (m_pInheritFrom)
+		m_pInheritFrom->AddUniqueHandlers(retInheritedHandlers);
+	}
+
+void CDesignType::GetEventHandlers (const CEventHandler **retpHandlers, TSortMap<CString, SEventHandlerDesc> *retInheritedHandlers)
 
 //	GetEventHandlers
 //
-//	Returns the event handler set
+//	If this type has base classes, then it returns a list of events in the 
+//	retInheritedHandlers array. Otherwise, retInheritedHandlers is undefined and
+//	retpHandlers points to a CEventHandler object with all handlers
+//	(which are all defined by the type).
 
 	{
-	if (!m_Events.IsEmpty())
-		return m_Events;
+	//	If we don't inherit from anything, then we are the only ones who define
+	//	events.
 
-	if (m_pInheritFrom)
-		return m_pInheritFrom->GetEventHandlers();
+	if (m_pInheritFrom == NULL)
+		{
+		*retpHandlers = &m_Events;
+		return;
+		}
 
-	return m_Events;
+	//	Otherwise, we need to build the array of handlers.
+
+	*retpHandlers = NULL;
+	retInheritedHandlers->DeleteAll();
+	AddUniqueHandlers(retInheritedHandlers);
 	}
 
 CXMLElement *CDesignType::GetScreen (const CString &sUNID)
@@ -957,9 +1047,29 @@ void CDesignType::InitCachedEvents (void)
 			{
 			if (strEquals(sEvent, CString(CACHED_EVENTS[j], -1, true)))
 				{
-				m_EventsCache[j] = pCode;
+				m_EventsCache[j].pExtension = m_pExtension;
+				m_EventsCache[j].pCode = pCode;
 				break;
 				}
+			}
+		}
+	}
+
+void CDesignType::InitCachedEvents (int iCount, char **pszEvents, SEventHandlerDesc *retEvents)
+
+//	InitCachedEvents
+//
+//	Initializes events cached by subclassess.
+
+	{
+	int i;
+
+	for (i = 0; i < iCount; i++)
+		{
+		if (!FindEventHandler(CString(pszEvents[i], -1, true), &retEvents[i]))
+			{
+			retEvents[i].pExtension = NULL;
+			retEvents[i].pCode = NULL;
 			}
 		}
 	}
@@ -983,8 +1093,9 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		return ERR_FAIL;
 		}
 
-	//	Version
+	//	Extension information
 
+	m_pExtension = Ctx.pExtension;
 	m_dwVersion = (Ctx.pExtension ? Ctx.pExtension->dwVersion : EXTENSION_VERSION);
 
 	//	Inheritance
@@ -1587,6 +1698,10 @@ ALERROR CDesignTypeCriteria::ParseCriteria (const CString &sCriteria, CDesignTyp
 
 			case charNameGenerator:
 				retCriteria->m_dwTypeSet |= (1 << designNameGenerator);
+				break;
+
+			case charTemplateType:
+				//	We don't support enumerating template types
 				break;
 
 			case 'V':

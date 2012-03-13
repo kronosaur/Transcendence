@@ -56,6 +56,27 @@ CString CreateDataFieldFromItemList (const TArray<CItem> &List)
 	return CString(Output.GetPointer(), Output.GetLength());
 	}
 
+CString CreateDataFromItem (CCodeChain &CC, ICCItem *pItem)
+
+//	CreateDataFromItem
+//
+//	Encodes the item in a string suitable for storage.
+//	(Use Link to reverse).
+
+	{
+	//	Set quoted before we unlink
+	//	Note: This might be a hack...it probably makes more sense to mark
+	//	all function return values as 'quoted'
+
+	bool bOldQuoted = (pItem->IsQuoted() ? true : false);
+	pItem->SetQuoted();
+	CString sData = CC.Unlink(pItem);
+	if (!bOldQuoted)
+		pItem->ClearQuoted();
+
+	return sData;
+	}
+
 CItem CreateItemFromList (CCodeChain &CC, ICCItem *pList)
 
 //	CreateItemFromList
@@ -631,10 +652,11 @@ CWeaponFireDesc *GetWeaponFireDescArg (ICCItem *pArg)
 	int i;
 	DWORD dwWeaponUNID;
 	DWORD dwVariantUNID;
+
 	//	If the argument is a list, then we get the weapon UNID and the variant
 	//	from the list.
 
-	if (pArg->IsList())
+	if (pArg->IsList() && pArg->GetCount() >= 2)
 		{
 		dwWeaponUNID = (DWORD)pArg->GetElement(0)->GetIntegerValue();
 		dwVariantUNID = (DWORD)pArg->GetElement(1)->GetIntegerValue();
@@ -662,7 +684,7 @@ CWeaponFireDesc *GetWeaponFireDescArg (ICCItem *pArg)
 		if (pClass == NULL)
 			return NULL;
 
-		CWeaponClass *pWeapon = dynamic_cast<CWeaponClass *>(pClass);
+		CWeaponClass *pWeapon = pClass->AsWeaponClass();
 		if (pWeapon == NULL)
 			return NULL;
 
@@ -709,7 +731,7 @@ CWeaponFireDesc *GetWeaponFireDescArg (ICCItem *pArg)
 		return NULL;
 		}
 
-	//	Otheriwe, nothing
+	//	Otherwise, nothing
 
 	else
 		return NULL;

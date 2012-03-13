@@ -940,7 +940,8 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 			if (pArgs->GetCount() > 2)
 				{
 				for (int i = 1; i < pArgs->GetCount(); i++)
-					sText.Append(pArgs->GetElement(i)->GetStringValue());
+					if (!pArgs->GetElement(i)->IsNil())
+						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
 				sText = pPlayer->GetTrans()->ComposePlayerNameString(sText);
 				}
@@ -1090,6 +1091,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_ADD_ACTION:
 			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+
 			//	Only if valid
 
 			if (!pScreen->IsValid())
@@ -1133,7 +1136,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Add the action
 
 			int iAction;
-			if (Actions.AddAction(sID, iPos, sLabel, pCode, &iAction) != NOERROR)
+			if (Actions.AddAction(sID, iPos, sLabel, pCtx->GetExtension(), pCode, &iAction) != NOERROR)
 				return pCC->CreateError(CONSTLIT("Unable to add action"), pArgs->GetElement(1));
 
 			//	Set key and special
@@ -1161,7 +1164,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				CString sText;
 
 				for (i = 1; i < pArgs->GetCount(); i++)
-					sText.Append(pArgs->GetElement(i)->GetStringValue());
+					if (!pArgs->GetElement(i)->IsNil())
+						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
 				pScreen->SetDescription(sText);
 				}
@@ -1225,7 +1229,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				CString sText;
 
 				for (i = 2; i < pArgs->GetCount(); i++)
-					sText.Append(pArgs->GetElement(i)->GetStringValue());
+					if (!pArgs->GetElement(i)->IsNil())
+						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
 				error = pScreen->SetDisplayText(sID, sText);
 				}

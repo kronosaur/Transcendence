@@ -218,6 +218,17 @@ class IAniLineMethod
 		virtual void Line (SAniPaintCtx &Ctx, int xFrom, int yFrom, int xTo, int yTo) { }
 	};
 
+//	Miscellaneous classes ------------------------------------------------------
+
+enum EScrollTypes
+	{
+	scrollNone,
+
+	scrollRelative,
+	scrollToEnd,
+	scrollToHome,
+	};
+
 //	The Reanimator -------------------------------------------------------------
 
 class IAnimatron
@@ -225,10 +236,7 @@ class IAnimatron
 	public:
 		virtual ~IAnimatron (void) { }
 
-		void AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut);
-		void AnimateLinearRotation (int iStartAngle, Metric rRate, int iDuration);
 		inline void AnimateProperty (const CString &sName, IPropertyAnimator *pAnimator, int iStartFrame = 0, const CString &sID = NULL_STR, bool bStartNow = false) { m_Properties.AddAnimator(sName, pAnimator, iStartFrame, sID, bStartNow); }
-		void AnimatePropertyLinear (const CString &sID, const CString &sName, const CAniProperty &Start, const CAniProperty &End, int iDuration, bool bStartNow = false);
 		inline bool FindAnimation (const CString &sID, IPropertyAnimator **retpAnimator) { return m_Properties.FindAnimator(sID, retpAnimator); }
 		inline void RemoveAnimation (const CString &sID) { m_Properties.DeleteAnimator(sID); }
 
@@ -272,6 +280,7 @@ class IAnimatron
 		virtual void HandleMouseEnter (void) { }
 		virtual void HandleMouseLeave (void) { }
 		virtual void HandleMouseMove (int x, int y, DWORD dwFlags) { }
+		virtual bool HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags) { return false; }
 		virtual IAnimatron *HitTest (const CXForm &ToDest, int x, int y) { return NULL; }
 		virtual void KillFocus (void) { }
 		virtual void Paint (SAniPaintCtx &Ctx) { }
@@ -288,6 +297,12 @@ class IAnimatron
 		virtual IAnimatron *GetStyle (const CString &sComponent) const { return NULL; }
 		virtual void SetStyle (const CString &sComponent, IAnimatron *pImpl) { }
 
+		//	Helper functions
+		void AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut);
+		void AnimateLinearRotation (int iStartAngle, Metric rRate, int iDuration);
+		void AnimatePropertyLinear (const CString &sID, const CString &sName, const CAniProperty &Start, const CAniProperty &End, int iDuration, bool bStartNow = false);
+		void Scroll (EScrollTypes iScroll, int iScrollDist = 0);
+
 	protected:
 		virtual bool FindDynamicPropertyBool (const CString &sName, bool *retbValue) const { return false; }
 		virtual bool FindDynamicPropertyColor (const CString &sName, WORD *retwValue) const { return false; }
@@ -295,6 +310,9 @@ class IAnimatron
 		virtual bool FindDynamicPropertyMetric (const CString &sName, Metric *retrValue) const { return false; }
 		virtual bool FindDynamicPropertyString (const CString &sName, CString *retsValue) const { return false; }
 		virtual void OnPropertyChanged (const CString &sName) { }
+
+		//	Helper function
+		void ScrollTo (int iOriginalPos, int iPos);
 
 		CString m_sID;
 		CAniPropertySet m_Properties;
@@ -354,6 +372,7 @@ class CReanimator
 		bool HandleLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture);
 		bool HandleLButtonUp (int x, int y, DWORD dwFlags);
 		bool HandleMouseMove (int x, int y, DWORD dwFlags);
+		bool HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
 		bool PaintFrame (CG16bitImage &Dest);
 
 	private:
@@ -722,6 +741,11 @@ class CAniListBox : public CAniControl
 		virtual void GoToStart (void) { return m_pScroller->GoToStart(); }
 		virtual bool HandleChar (char chChar, DWORD dwKeyData);
 		virtual bool HandleKeyDown (int iVirtKey, DWORD dwKeyData);
+		virtual void HandleLButtonDblClick (int x, int y, DWORD dwFlags, bool *retbCapture, bool *retbFocus);
+		virtual void HandleLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture, bool *retbFocus);
+		virtual void HandleLButtonUp (int x, int y, DWORD dwFlags);
+		virtual bool HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
+		virtual IAnimatron *HitTest (const CXForm &ToDest, int x, int y);
 		virtual void KillFocus (void) { m_bFocus = false; }
 		virtual void Paint (SAniPaintCtx &Ctx);
 		virtual void SetFocus (void) { m_bFocus = true; }
@@ -749,6 +773,8 @@ class CAniListBox : public CAniControl
 			RECT rcRect;
 			};
 
+		int GetRowAtPos (int x, int y);
+		bool GetRowRect (int iRow, RECT *retrcRect);
 		void Select (int iEntry);
 
 		CAniVScroller *m_pScroller;

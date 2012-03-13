@@ -400,6 +400,9 @@
 							Nil					= holding position and available for missions
 							'defendingCritical	= CSC is being attack by powerful enemy
 							'moving				= CSC is moving to a new position
+							
+	disableDefense:		If TRUE, then we don't deploy defenders (we use this when we want to
+						let the player handle it).
 
 	squadron:			Entries for each ship in the CSC's squadron.
 							Each entry in the squadron is a list:
@@ -412,7 +415,7 @@
 	
 	targetObj:			Target to destroy. If the CSC is in 'defendingCritical mode, then this
 						is the capital ship that is attacking it.
-	
+						
 	-->
 
 	<ShipClass UNID="&baCSCBase;"
@@ -444,10 +447,13 @@
 
 						(block (attackerList highValueEnemies)
 							(switch
-							
 								; If we don't have anyone attacking us, then there is
 								; nothing to do.
 								(not (setq attackerList (sysFindObject gSource "sAEPX")))
+									Nil
+									
+								; If we're not supposed to attack, then don't
+								(objGetData gSource "disableDefense")
 									Nil
 									
 								; If any of the attackers are level 9 or higher, then we need
@@ -720,6 +726,21 @@
 
 		<StaticData>
 			<!--
+
+			MISSIONS
+			
+			Each Fleet rank has a set of missions. Successfully completing a mission
+			awards the player Fleet XP according to the rank. (Note that these are 
+			target values; some missions give variable awards.)
+			
+			1.	Civilian			 100 xp (50% of next rank)
+			2.	Privateer			 150 xp (38% of next rank)
+			3.	Master Sargeant		 250 xp (28% of next rank)
+			4.	Fleet Lieutenant	 500 xp (33% of next rank)
+			5.	Fleet Commander		1750 xp	(25% of next rank)
+			
+			DATA FORMAT
+			
 			The first code block must return a string describing the
 			mission (or Nil, if a mission could not be found).
 
@@ -732,13 +753,19 @@
 
 			The third code block returns a string describing the success of
 			the mission (or Nil, if the mission is in progress)
+			
 			-->
 
-			<!-- Level 1 Missions -->
+			<!-- Level 1 Missions (Civilian) -->
 
 			<Missions1>
 				(
 					; Recon mission
+					;
+					; OBJECTIVE: Player must recon a major Ares station in the system
+					; REQUIREMENTS: Major Ares station must exist in the system.
+					; COMBAT: None
+					
 					("mission1a"
 						; Code to describe mission
 						(lambda Nil
@@ -811,6 +838,11 @@
 						)
 
 					; Fleet Delivery mission
+					;
+					; OBJECTIVE: Player must deliver supplies to station in system.
+					; REQUIREMENTS: A major Commonwealth station must exist in the system.
+					; COMBAT: None
+					
 					("mission1b"
 						; Code to describe mission
 						(lambda Nil
@@ -929,6 +961,11 @@
 						)
 
 					; Juan Carlos mission
+					;
+					; OBJECTIVE: Player must retrieve a data ROM from Juan Carlos
+					; REQUIREMENTS: None
+					; UNIQUE: Yes
+					
 					("mission1c"
 						; Code to describe mission
 						(lambda Nil
@@ -994,6 +1031,10 @@
 						)
 
 					; Intercept Ares patrol
+					;
+					; OBJECTIVE: Player must intercept Ares patrol heading for CSC.
+					; REQUIREMENTS: None.
+					
 					("mission1d"
 						; Code to describe mission
 						(lambda Nil
@@ -1060,9 +1101,15 @@
 					)
 			</Missions1>
 
+			<!-- Level 2 Missions (Privateer) -->
+			
 			<Missions2>
 				(
 					; Destroy Ares freighter
+					;
+					; OBJECTIVES: Intercept and destroy an enemy freighter.
+					; REQUIREMENTS: Ares station must exist more than 300 light-seconds from any one stargate.
+					
 					("mission2a"
 						; Code to describe mission
 						(lambda Nil
@@ -1157,6 +1204,10 @@
 						)
 
 					; Defend superfreighter
+					;
+					; OBJECTIVES: Player must escort a superfreighter
+					; REQUIREMENTS: At least one stargate must be more than 300 light-seconds away.
+					
 					("mission2b"
 						; Code to describe mission
 						(lambda Nil
@@ -1234,8 +1285,16 @@
 					)
 			</Missions2>
 
+			<!-- Level 3 Missions (Master Sargeant) -->
+			
 			<MissionRescueScientists>
 				(
+					; Rescue scientists
+					;
+					; OBJECTIVES: Rescue scientists who defected.
+					; REQUIREMENTS: None.
+					; UNIQUE: Yes
+					
 					("mission3rescue"
 						; Code to describe mission
 						(lambda Nil
@@ -1309,6 +1368,10 @@
 			<Missions3>
 				(
 					; Defend supply ship
+					;
+					; OBJECTIVES: Escort supply ship back to CSC.
+					; REQUIREMENTS: At least one stargate must be more than 400 light-seconds away.
+					
 					("mission3a"
 						; Code to describe mission
 						(lambda Nil
@@ -1365,40 +1428,34 @@
 						)
 
 					; Defend Refugee Convoy
+					;
+					; OBJECTIVES: Defend a convoy of transports
+					; REQUIREMENTS: Two gates must be at least 150 light-seconds apart
+					
 					("mission3b"
 						; Code to describe mission
 						(lambda Nil
 							(block (gateList)
-								(setq gStart Nil)
-
-								; Get the list of gates in the system
-								(setq gateList (sysFindObject gSource "G -uncharted;"))
-
-								; Make sure there are at least 2 gates
-								(if (geq (count gateList) 2)
-									(block Nil
-										(setq gStart (item gateList 0))
-										(setq gEnd (item gateList 1))
-
-										; The two gates better be at least 150 light-seconds
-										; away from each other
-										(if (ls (objGetDistance gStart gEnd) 150)
-											(setq gStart Nil)
-											)
-										)
-									)
-
+								; We are heading towards St Kats
+								(setq gEnd (intGetGateToSystem gSource "SK"))
+								
+								; Get the other stargate (the farthest stargate
+								; from the end).
+								(setq gStart (sysFindObject gEnd "GR -uncharted;"))
+								
 								; Describe mission
 								(switch
-									; If system is not configured correctly
-									(not gStart)
-										(block Nil
-											(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
-											Nil
-											)
-
-									; Otherwise
-									(cat "\"A refugee convoy is passing through the system. Your mission is to lead a small squadron and escort the convoy safely through the system. Any questions?\"")
+								
+									; Make sure we have two stargates and they are at least 150
+									; light-seconds from each other.
+									(and gStart gEnd (geq (objGetDistance gStart gEnd) 150))
+										(cat "\"A refugee convoy is passing through the system. Your mission is to lead a small squadron and escort the convoy safely through the system. Any questions?\"")
+										
+									; Otherwise, no mission
+									(block Nil
+										(setq gMissionNoneText "\"Sorry, there are no missions available for you.\"")
+										Nil
+										)
 									)
 								)
 							)
@@ -1447,19 +1504,163 @@
 								)
 							)
 						)
+						
+					; Intercept Ares attack
+					;
+					; OBJECTIVE: Player must intercept an Ares fleet heading for the CSC.
+					; REQUIREMENTS: None.
+					
+					("mission3c"
+						; Code to describe mission
+						(lambda Nil
+							"\"There's an Ares squadron heading our way. Your mission is to intercept and destroy it. Understood?\""
+							)
+
+						; Code to initiate mission
+						(lambda Nil
+							(block (roll enemyFleet startPos)
+							
+								; Randomly generate the enemy fleet
+								
+								(setq roll (random 1 100))
+								(switch
+									(leq roll 25)
+										; 16 Sandstorms
+										(setq enemyFleet '(&scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+										
+									(leq roll 50)
+										; A Deimos plus 8 Sandstorms
+										(setq enemyFleet '(&scDeimos; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm; &scSandstorm;))
+									
+									(leq roll 75)
+										; 3 Cometfalls
+										(setq enemyFleet '(&scCometfall; &scCometfall; &scCometfall;))
+									
+									(leq roll 100)
+										; 8 Chasms
+										(setq enemyFleet '(&scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm; &scChasm;))
+									)
+									
+								; Create the enemy squadron
+								
+								(setq startPos (sysVectorRandom gSource (random 250 400) 60))
+								(setq i 0)
+								(enum enemyFleet theEnemyClass
+									(block (theShip)
+										(setq theShip
+											(sysCreateShip 
+												theEnemyClass 
+												(sysVectorPolarOffset startPos (random 0 359) (random 1 6))
+												&svAres;
+												)
+											)
+											
+										; Order to attack CSC
+										(shpOrder theShip 'attack gSource)
+										
+										; Remember the ship
+										(objSetObjRefData gSource (cat "Target" i) theShip)
+										(objRegisterForEvents gSource theShip)
+										
+										(setq i (add i 1))
+										)
+									)
+
+								(objSetData gSource "Targets" enemyFleet)
+								(objSetData gSource "TargetsLeft" (count enemyFleet))
+								(objSetData gSource "TargetsKilledByPlayer" 0)
+								
+								; Set the target
+								
+								(shpCancelOrders gPlayerShip)
+								(shpOrderAttack gPlayerShip (objGetObjRefData gSource "Target0"))
+								
+								; We let the player handle this (we don't scramble our own defenses)
+								(objSetData gSource "disableDefense" True)
+								)
+							)
+
+						; Code on successful mission
+						(lambda Nil
+							(block (killedByPlayer)
+							
+								; Compute the percent of targets killed by the player
+								(setq killedByPlayer (divide (multiply 100 (objGetData gSource "TargetsKilledByPlayer")) (count (objGetData gSource "Targets"))))
+								
+								(switch
+									(leq killedByPlayer 10)
+										(scrSetDesc gScreen "\"What were you doing out there? Dancing? Next time try to hit the targets with your guns; that's what they're there for!\"")
+									
+									(leq killedByPlayer 25)
+										(block Nil
+											(scrSetDesc gScreen "\"Those ships gave you a tough time. You're going to need to up your dogfighting skills!\"")
+											(objIncData gPlayerShip "fleetXP" 50)
+											)
+											
+									(leq killedByPlayer 50)
+										(block Nil
+											(scrSetDesc gScreen "\"That was a hard battle, but you managed to kill quite a few targets. Well done.\"")
+											(objIncData gPlayerShip "fleetXP" 100)
+											)
+										
+									(leq killedByPlayer 80)
+										(block Nil
+											(scrSetDesc gScreen "\"Outstanding, pilot! That's the way to do it!\"")
+											(objIncData gPlayerShip "fleetXP" 200)
+											)
+											
+									(block Nil
+										(scrSetDesc gScreen "\"I haven't seen flying like that in years! You've made this ship proud!\"")
+										(objIncData gPlayerShip "fleetXP" 300)
+										)
+									)
+									
+								; Re-enable defense
+								(objSetData gSource "disableDefense" Nil)
+								)
+							)
+
+						; Code on failure
+						(lambda Nil
+							(scrSetDesc gScreen "\"You screwed that mission all the way to Sol and back. You better hit the sims, pilot!\"")
+							)
+						)
 					)
 			</Missions3>
 
+			<!-- Level 4 Missions (Fleet Lieutenant) -->
+			
 			<Missions4>
 				(
 					; Destroy Ares station
+					;
+					; OBJECTIVES: Player must destroy a major Ares station.
+					; REQUIREMENTS: None.
+					
 					("mission4a"
 						; Code to describe mission
 						(lambda Nil
 							(block Nil
 								; Pick a random Ares station in the system
 								(setq gTarget (random (sysFindObject gSource "AT +ares; +majorStation")))
-
+								
+								; If no such station exists, then create one deep in the outer system.
+								; NOTE: It is OK that this has side effects as long as the station that
+								; we create is a major Ares station (so subsequent calls will find it).
+								
+								(if (not gTarget)
+									(block (stationPos stationType)
+										; Pick a random station type
+										(setq stationType &stAresCommune;)
+										
+										; Pick a random point for the station to be
+										(setq stationPos (sysVectorRandom Nil (random 960 1500) 150))
+										
+										; Create the station
+										(setq gTarget (sysCreateStation stationType stationPos))
+										)
+									)
+								
 								; Compose description
 								(if gTarget
 									(cat "\"This mission is straight from Admiral Decker himself. We want you to lead a flight of Britannias to destroy " (objGetName gTarget 4) " in this system. Any questions?\"")
@@ -1512,6 +1713,10 @@
 						)
 
 					; Destroy Ares convoy
+					;
+					; OBJECTIVES: Player must destroy an Ares convoy.
+					; REQUIREMENTS: Two stargates must be at least 200 light-seconds away from each other
+					
 					("mission4b"
 						; Code to describe mission
 						(lambda Nil
@@ -1637,9 +1842,15 @@
 					)
 			</Missions4>
 
+			<!-- Level 5 Missions (Fleet Commander) -->
+			
 			<Missions5>
 				(
 					; Destroy Target
+					;
+					; OBJECTIVES: Destroy a target.
+					; REQUIREMENTS: None.
+					
 					("mission5a"
 						; Code to describe mission
 						(lambda Nil
@@ -1822,6 +2033,9 @@
 
 									; Disperse wingmen
 									(intFleetDisperseWingmen gSource 10)
+									
+									; Re-enable defense, if necessary
+									(objSetData gSource "disableDefense" Nil)
 									)
 									
 							(and (eq missionID "mission1a") (eq aObjDestroyed (objGetObjRefData gSource "Target")))
@@ -1933,6 +2147,40 @@
 											(objSetData gSource "MissionStatus" "failure")
 											(typIncGlobalData &scCSCTaskForce; "missionsFailed")
 											(shpCancelOrders gPlayerShip)
+											)
+										)
+									)
+
+							(eq missionID "mission3c")
+								(block (targetSet)
+									(for i 0 (subtract (count (objGetData gSource "Targets")) 1)
+										(if (eq aObjDestroyed (objGetObjRefData gSource (cat "Target" i)))
+											(block Nil
+												(objIncData gSource "TargetsLeft" -1)
+												(if (eq aOrderGiver gPlayerShip)
+													(objIncData gSource "TargetsKilledByPlayer" 1)
+													)
+												)
+											(if (and (not targetSet) (objGetObjRefData gSource (cat "Target" i)))
+												(block Nil
+													(shpCancelOrders gPlayerShip)
+													(shpOrderAttack gPlayerShip (objGetObjRefData gSource (cat "Target" i)))
+													(objSetIdentified (objGetObjRefData gSource (cat "Target" i)))
+													(setq targetSet True)
+													)
+												)
+											)
+										)
+
+									(if (eq (objGetData gSource "TargetsLeft") 0)
+										(block Nil
+											(plyMessage gPlayer "Mission complete!")
+											(objSetData gSource "MissionStatus" "success")
+											(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+											)
+										(if (eq (objGetData gSource "TargetsLeft") 1)
+											(plyMessage gPlayer "1 target left!")
+											(plyMessage gPlayer (objGetData gSource "TargetsLeft") " targets left")
 											)
 										)
 									)
@@ -2142,29 +2390,37 @@
 
 										(eq shipClass &scEI100;)
 											(objIncData gSource "FreightersEscaped")
+											
+										(setq shipClass Nil)
 										)
-
-									; Unregister so that we don't get called again at OnObjDestroyed
-									(if (not (eq aObj gPlayerShip))
-										(objUnregisterForEvents gSource aObj)
-										)
-
-									; If all ships are accounted for, then the mission is
-									; successful.
-
-									(if (eq (add
-												(add (objGetData gSource "SuperfreightersDestroyed") 
-													(objGetData gSource "FreightersDestroyed"))
-												(add (objGetData gSource "SuperfreightersEscaped")
-													(objGetData gSource "FreightersEscaped"))
-												)
-											11)
+										
+									; If it's not one of the ships that we were expecting, then
+									; don't do anything.
+									
+									(if shipClass
 										(block Nil
-											(plyMessage gPlayer "Mission complete!")
-											(objSetData gSource "MissionStatus" "success")
-											(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
-											(objUnregisterForEvents gSource gPlayerShip)
-											(shpCancelOrders gPlayerShip)
+
+											; Unregister so that we don't get called again at OnObjDestroyed
+											(if (not (eq aObj gPlayerShip))
+												(objUnregisterForEvents gSource aObj)
+												)
+
+											; If all ships are accounted for, then the mission is
+											; successful.
+
+											(if (eq (add (objGetData gSource "SuperfreightersDestroyed") 
+														(objGetData gSource "FreightersDestroyed")
+														(objGetData gSource "SuperfreightersEscaped")
+														(objGetData gSource "FreightersEscaped"))
+													11)
+												(block Nil
+													(plyMessage gPlayer "Mission complete!")
+													(objSetData gSource "MissionStatus" "success")
+													(typIncGlobalData &scCSCTaskForce; "missionsCompleted")
+													(objUnregisterForEvents gSource gPlayerShip)
+													(shpCancelOrders gPlayerShip)
+													)
+												)
 											)
 										)
 									)

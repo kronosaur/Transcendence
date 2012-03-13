@@ -36,7 +36,7 @@ class CItemDataAnimatron : public IAnimatron
 class CListSaveFilesTask : public IHITask
 	{
 	public:
-		CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, int cxWidth);
+		CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, const CString &sUsername, int cxWidth);
 		~CListSaveFilesTask (void);
 
 		inline IAnimatron *GetListHandoff (void) { IAnimatron *pResult = m_pList; m_pList = NULL; return pResult; }
@@ -48,6 +48,7 @@ class CListSaveFilesTask : public IHITask
 		void CreateFileEntry (CGameFile &GameFile, const CTimeDate &ModifiedTime, int yStart, IAnimatron **retpEntry, int *retcyHeight);
 
 		CString m_sFolder;
+		CString m_sUsername;
 		int m_cxWidth;
 
 		CAniListBox *m_pList;
@@ -81,10 +82,11 @@ class CUIHelper
 		enum EOptions
 			{
 			//	CreateClassInfo???
-			OPTION_ITEM_RIGHT_ALIGN =		0x00000001,
+			OPTION_ITEM_RIGHT_ALIGN =			0x00000001,
 
 			//	CreateSessionTitle
-			OPTION_SESSION_OK_BUTTON =		0x00000001,
+			OPTION_SESSION_OK_BUTTON =			0x00000001,
+			OPTION_SESSION_NO_CANCEL_BUTTON =	0x00000002,
 			};
 
 		CUIHelper (CHumanInterface &HI) : m_HI(HI) { }
@@ -95,10 +97,28 @@ class CUIHelper
 		void CreateClassInfoDrive (CShipClass *pClass, const CDeviceDescList &Devices, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
 		void CreateClassInfoItem (const CItem &Item, int x, int y, int cxWidth, DWORD dwOptions, const CString &sExtraDesc, int *retcyHeight, IAnimatron **retpInfo) const;
 		void CreateClassInfoReactor (CShipClass *pClass, const CDeviceDescList &Devices, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
+		void CreateInputErrorMessage (IHISession *pSession, const RECT &rcRect, const CString &sTitle, CString &sDesc, IAnimatron **retpMsg = NULL) const;
 		void CreateSessionTitle (IHISession *pSession, CCloudService &Service, const CString &sTitle, DWORD dwOptions, IAnimatron **retpControl) const;
 
 	private:
 		void CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString &sText, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
 
 		CHumanInterface &m_HI;
+	};
+
+class CInputErrorMessageController : public IAnimatron, public IAniCommand
+	{
+	public:
+		CInputErrorMessageController (IHISession *pSession) : m_pSession(pSession) { }
+
+		//	IAnimatron virtuals
+		virtual void GetSpacingRect (RECT *retrcRect) { retrcRect->left = 0; retrcRect->right = 0; retrcRect->top = 0; retrcRect->bottom = 0; }
+		virtual void Paint (SAniPaintCtx &Ctx) { }
+
+	protected:
+		//	IAniCommand virtuals
+		virtual void OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData);
+
+	private:
+		IHISession *m_pSession;
 	};

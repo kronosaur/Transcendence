@@ -65,7 +65,7 @@ void CMoltenBoltEffectCreator::GetRect (RECT *retRect) const
 	retRect->bottom = 256;
 	}
 
-ALERROR CMoltenBoltEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CMoltenBoltEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

@@ -886,24 +886,6 @@ bool CBaseShipAI::IsPlayerOrPlayerFollower (CSpaceObject *pObj, int iRecursions)
 	return false;
 	}
 
-bool CBaseShipAI::IsTargetBlacklisted (CSpaceObject *pTarget)
-
-//	IsTargetBlacklisted
-//
-//	Returns TRUE if pTarget has been blacklisted (even though it is a friend)
-
-	{
-	switch (GetCurrentOrder())
-		{
-		case IShipController::orderGuard:
-		case IShipController::orderPatrol:
-			return GetCurrentOrderTarget()->IsAngryAt(pTarget);
-
-		default:
-			return false;
-		}
-	}
-
 void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 
 //	OnAttacked

@@ -14,6 +14,13 @@ const int ICON_CORNER_RADIUS =					8;
 const int ICON_HEIGHT =							96;
 const int ICON_WIDTH =							96;
 
+const int INPUT_ERROR_CORNER_RADIUS =			8;
+const int INPUT_ERROR_PADDING_BOTTOM =			10;
+const int INPUT_ERROR_PADDING_LEFT =			10;
+const int INPUT_ERROR_PADDING_RIGHT =			10;
+const int INPUT_ERROR_PADDING_TOP =				10;
+const int INPUT_ERROR_TIME =					(30 * 10);
+
 const int PADDING_LEFT =						20;
 
 #define ALIGN_RIGHT								CONSTLIT("right")
@@ -22,6 +29,8 @@ const int PADDING_LEFT =						20;
 #define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 
 #define EVENT_ON_CLICK							CONSTLIT("onClick")
+
+#define ID_DLG_INPUT_ERROR						CONSTLIT("uiHelperInputErrorMsg")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FILL_TYPE							CONSTLIT("fillType")
@@ -40,6 +49,124 @@ const int PADDING_LEFT =						20;
 #define PROP_TEXT_ALIGN_VERT					CONSTLIT("textAlignVert")
 #define PROP_UL_RADIUS							CONSTLIT("ulRadius")
 #define PROP_UR_RADIUS							CONSTLIT("urRadius")
+
+#define STYLE_CHECK								CONSTLIT("check")
+#define STYLE_DISABLED							CONSTLIT("disabled")
+#define STYLE_DOWN								CONSTLIT("down")
+#define STYLE_FRAME								CONSTLIT("frame")
+#define STYLE_FRAME_FOCUS						CONSTLIT("frameFocus")
+#define STYLE_FRAME_DISABLED					CONSTLIT("frameDisabled")
+#define STYLE_HOVER								CONSTLIT("hover")
+#define STYLE_IMAGE								CONSTLIT("image")
+#define STYLE_NORMAL							CONSTLIT("normal")
+#define STYLE_TEXT								CONSTLIT("text")
+
+void CUIHelper::CreateInputErrorMessage (IHISession *pSession, const RECT &rcRect, const CString &sTitle, CString &sDesc, IAnimatron **retpMsg) const
+
+//	CreateInputErrorMessage
+//
+//	Creates an input error message box
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &TitleFont = VI.GetFont(fontLargeBold);
+	const CG16bitFont &DescFont = VI.GetFont(fontMedium);
+
+	//	Start with a sequencer as a parent of everything
+
+	CAniSequencer *pMsg;
+	CAniSequencer::Create(CVector(rcRect.left, rcRect.top), &pMsg);
+
+	//	Create a controller to handle dismissing the message
+
+	CInputErrorMessageController *pController = new CInputErrorMessageController(pSession);
+	pMsg->AddTrack(pController, 0);
+
+	//	Add a button to handle a click
+
+	CAniButton *pButton = new CAniButton;
+	pButton->SetPropertyVector(PROP_POSITION, CVector(0, 0));
+	pButton->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
+	pButton->SetStyle(STYLE_DOWN, NULL);
+	pButton->SetStyle(STYLE_HOVER, NULL);
+	pButton->SetStyle(STYLE_NORMAL, NULL);
+	pButton->SetStyle(STYLE_DISABLED, NULL);
+	pButton->SetStyle(STYLE_TEXT, NULL);
+	pButton->AddListener(EVENT_ON_CLICK, pController);
+
+	pMsg->AddTrack(pButton, 0);
+
+	//	Figure out where the text goes
+
+	int x = INPUT_ERROR_PADDING_LEFT;
+	int cxWidth = RectWidth(rcRect) - (INPUT_ERROR_PADDING_LEFT + INPUT_ERROR_PADDING_RIGHT);
+	int y = INPUT_ERROR_PADDING_TOP;
+	int yEnd = RectHeight(rcRect) - INPUT_ERROR_PADDING_BOTTOM;
+	int cxText = 0;
+
+	//	Title text
+
+	IAnimatron *pTitle = new CAniText;
+	pTitle->SetPropertyVector(PROP_POSITION, CVector(x, y));
+	pTitle->SetPropertyVector(PROP_SCALE, CVector(cxWidth, TitleFont.GetHeight()));
+	((CAniText *)pTitle)->SetPropertyFont(PROP_FONT, &TitleFont);
+	pTitle->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextWarningMsg));
+	pTitle->SetPropertyString(PROP_TEXT, sTitle);
+
+	y += TitleFont.GetHeight();
+	cxText += TitleFont.GetHeight();
+
+	//	Description
+
+	IAnimatron *pDesc = new CAniText;
+	pDesc->SetPropertyVector(PROP_POSITION, CVector(x, y));
+	pDesc->SetPropertyVector(PROP_SCALE, CVector(cxWidth, 1000));
+	((CAniText *)pDesc)->SetPropertyFont(PROP_FONT, &DescFont);
+	pDesc->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextWarningMsg));
+	pDesc->SetPropertyString(PROP_TEXT, sDesc);
+
+	RECT rcDesc;
+	pDesc->GetSpacingRect(&rcDesc);
+	cxText += RectHeight(rcDesc);
+
+	//	Now that we know the height of the text, add a rectangle as a background
+
+	int cxFrame = Max(RectHeight(rcRect), cxText + INPUT_ERROR_PADDING_TOP + INPUT_ERROR_PADDING_BOTTOM);
+
+	IAnimatron *pRect = new CAniRoundedRect;
+	pRect->SetPropertyVector(PROP_POSITION, CVector());
+	pRect->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), cxFrame));
+	pRect->SetPropertyColor(PROP_COLOR, VI.GetColor(colorAreaWarningMsg));
+	pRect->SetPropertyOpacity(PROP_OPACITY, 255);
+	pRect->SetPropertyInteger(PROP_UL_RADIUS, INPUT_ERROR_CORNER_RADIUS);
+	pRect->SetPropertyInteger(PROP_UR_RADIUS, INPUT_ERROR_CORNER_RADIUS);
+	pRect->SetPropertyInteger(PROP_LL_RADIUS, INPUT_ERROR_CORNER_RADIUS);
+	pRect->SetPropertyInteger(PROP_LR_RADIUS, INPUT_ERROR_CORNER_RADIUS);
+
+	pMsg->AddTrack(pRect, 0);
+
+	//	Add title and desc
+
+	pMsg->AddTrack(pTitle, 0);
+	pMsg->AddTrack(pDesc, 0);
+
+	//	Fade after some time
+
+	pMsg->AnimateLinearFade(INPUT_ERROR_TIME, 5, 30);
+
+	//	If we already have an input error box, delete it
+
+	pSession->StopPerformance(ID_DLG_INPUT_ERROR);
+
+	//	Start a new one
+
+	pSession->StartPerformance(pMsg, ID_DLG_INPUT_ERROR, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+	//	Done
+
+	if (retpMsg)
+		*retpMsg = pMsg;
+	}
 
 void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service, const CString &sTitle, DWORD dwOptions, IAnimatron **retpControl) const
 
@@ -121,16 +248,19 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service
 	int yBottomBar = TITLE_BAR_HEIGHT + RectHeight(rcRect);
 
 	//	Add a close button.
-	//
-	//	If we have an OK button, then the label is Cancel.
 
-	CString sCloseLabel = ((dwOptions & OPTION_SESSION_OK_BUTTON) ? CONSTLIT("Cancel") : CONSTLIT("Close"));
-	const CG16bitImage &CloseIcon = VI.GetImage(imageCloseIcon);
+	if (!(dwOptions & OPTION_SESSION_NO_CANCEL_BUTTON))
+		{
+		//	If we have an OK button, then the label is Cancel.
 
-	IAnimatron *pCloseButton;
-	VI.CreateImageButton(pRoot, CMD_CLOSE_SESSION, RectWidth(rcRect) - BUTTON_WIDTH, yBottomBar + (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &CloseIcon, sCloseLabel, 0, &pCloseButton);
+		CString sCloseLabel = ((dwOptions & OPTION_SESSION_OK_BUTTON) ? CONSTLIT("Cancel") : CONSTLIT("Close"));
+		const CG16bitImage &CloseIcon = VI.GetImage(imageCloseIcon);
 
-	pSession->RegisterPerformanceEvent(pCloseButton, EVENT_ON_CLICK, CMD_CLOSE_SESSION);
+		IAnimatron *pCloseButton;
+		VI.CreateImageButton(pRoot, CMD_CLOSE_SESSION, RectWidth(rcRect) - BUTTON_WIDTH, yBottomBar + (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &CloseIcon, sCloseLabel, 0, &pCloseButton);
+
+		pSession->RegisterPerformanceEvent(pCloseButton, EVENT_ON_CLICK, CMD_CLOSE_SESSION);
+		}
 
 	//	Add an OK button, if necessary
 
@@ -147,4 +277,14 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service
 	//	Done
 
 	*retpControl = pRoot;
+	}
+
+void CInputErrorMessageController::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)
+
+//	OnAniCommand
+//
+//	Handles a command
+
+	{
+	m_pSession->StopPerformance(ID_DLG_INPUT_ERROR);
 	}

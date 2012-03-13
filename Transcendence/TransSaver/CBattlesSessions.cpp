@@ -592,7 +592,7 @@ void CBattlesSession::OnSize (int cxWidth, int cyHeight)
 	{
 	}
 
-void CBattlesSession::OnUpdate (void)
+void CBattlesSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

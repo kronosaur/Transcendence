@@ -823,7 +823,7 @@ void CNFA::DebugDump (void)
 
 		char szBuffer[1024];
 		wsprintf(szBuffer, "STATE: %d\n", pState->iID);
-		::OutputDebugStr(szBuffer);
+		::OutputDebugString(szBuffer);
 
 		for (j = 0; j < pState->Transitions.GetCount(); j++)
 			{
@@ -867,7 +867,7 @@ void CNFA::DebugDump (void)
 				}
 
 			wsprintf(szBuffer, "   -> %d (%s)\n", pState->Transitions[j].pNewState->iID, pType);
-			::OutputDebugStr(szBuffer);
+			::OutputDebugString(szBuffer);
 			}
 		}
 	}

@@ -37,7 +37,7 @@ void CEllipseEffectCreator::GetRect (RECT *retRect) const
 	{
 	}
 
-ALERROR CEllipseEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CEllipseEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

@@ -215,8 +215,8 @@ void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent
 //	Fires a custom event
 
 	{
-	ICCItem *pCode;
-	if (m_pType->FindEventHandler(sEvent, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(sEvent, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -227,7 +227,7 @@ void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent
 
 		//	Execute
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		//	Done
 
@@ -247,8 +247,8 @@ void CEnergyField::FireOnCreate (CSpaceObject *pSource)
 //	Fire OnCreate event
 
 	{
-	ICCItem *pCode;
-	if (m_pType->FindEventHandler(ON_CREATE_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(ON_CREATE_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -259,7 +259,7 @@ void CEnergyField::FireOnCreate (CSpaceObject *pSource)
 
 		//	Execute
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		//	Done
 
@@ -277,8 +277,8 @@ bool CEnergyField::FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 //	Fire OnDamage event
 
 	{
-	ICCItem *pCode;
-	if (m_pType->FindEventHandler(ON_DAMAGE_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(ON_DAMAGE_EVENT, &Event))
 		{
 		CCodeChainCtx CCCtx;
 
@@ -297,7 +297,7 @@ bool CEnergyField::FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 		//	Execute
 
-		ICCItem *pResult = CCCtx.Run(pCode);
+		ICCItem *pResult = CCCtx.Run(Event);
 
 		//	Check for error
 
@@ -329,8 +329,8 @@ void CEnergyField::FireOnDestroy (CSpaceObject *pSource)
 //	Fire OnDestroy event
 
 	{
-	ICCItem *pCode;
-	if (m_pType->FindEventHandler(ON_DESTROY_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(ON_DESTROY_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -341,7 +341,7 @@ void CEnergyField::FireOnDestroy (CSpaceObject *pSource)
 
 		//	Execute
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		//	Done
 
@@ -359,8 +359,8 @@ void CEnergyField::FireOnUpdate (CSpaceObject *pSource)
 //	Fire OnUpdate event (once per 15 ticks)
 
 	{
-	ICCItem *pCode;
-	if (m_pType->FindEventHandler(ON_UPDATE_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(ON_UPDATE_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -371,7 +371,7 @@ void CEnergyField::FireOnUpdate (CSpaceObject *pSource)
 
 		//	Execute
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		//	Done
 

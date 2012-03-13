@@ -15,8 +15,11 @@ CCodeChainCtx::CCodeChainCtx (void) :
 		m_pItemType(NULL),
 		m_pScreensRoot(NULL),
 		m_pSysCreateCtx(NULL),
+		m_pExtension(NULL),
 		m_pOldSource(NULL),
-		m_pOldItem (NULL)
+		m_pOldItem (NULL),
+		m_bRestoreGlobalDefineHook(false),
+		m_pOldGlobalDefineHook(NULL)
 
 //	CCodeChainCtx constructor
 
@@ -29,6 +32,13 @@ CCodeChainCtx::~CCodeChainCtx (void)
 
 	{
 	RestoreVars();
+
+	if (m_bRestoreGlobalDefineHook)
+		{
+		IItemTransform *pHook = m_CC.GetGlobalDefineHook();
+		m_CC.SetGlobalDefineHook(m_pOldGlobalDefineHook);
+		delete pHook;
+		}
 	}
 
 CSpaceObject *CCodeChainCtx::AsSpaceObject (ICCItem *pItem)
@@ -196,6 +206,23 @@ ICCItem *CCodeChainCtx::Run (ICCItem *pCode)
 	return m_CC.TopLevel(pCode, this);
 	}
 
+ICCItem *CCodeChainCtx::Run (const SEventHandlerDesc &Event)
+
+//	Run
+//
+//	Runs the given event and returns a result. (Which must be discarded by the
+//	caller).
+
+	{
+	SExtensionDesc *pOldExtension = m_pExtension;
+	m_pExtension = Event.pExtension;
+
+	ICCItem *pResult = Run(Event.pCode);
+
+	m_pExtension = pOldExtension;
+	return pResult;
+	}
+
 ICCItem *CCodeChainCtx::RunLambda (ICCItem *pCode)
 
 //	RunLambda
@@ -246,4 +273,25 @@ void CCodeChainCtx::SaveSourceVar (void)
 	{
 	if (m_pOldSource == NULL)
 		m_pOldSource = m_CC.LookupGlobal(STR_G_SOURCE, this);
+	}
+
+void CCodeChainCtx::SetGlobalDefineWrapper (SExtensionDesc *pExtension)
+
+//	SetGlobalDefineWrapper
+//
+//	Sets a global define hook so that every global function that is defined gets
+//	wrapper with an item that provides context.
+
+	{
+	if (!m_bRestoreGlobalDefineHook)
+		{
+		m_pOldGlobalDefineHook = m_CC.GetGlobalDefineHook();
+
+		CAddFunctionContextWrapper *pHook = new CAddFunctionContextWrapper;
+		pHook->SetExtension(pExtension);
+
+		m_CC.SetGlobalDefineHook(pHook);
+
+		m_bRestoreGlobalDefineHook = true;
+		}
 	}

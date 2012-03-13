@@ -23,7 +23,9 @@
 CResourceDb::CResourceDb (const CString &sFilespec, CResourceDb *pMainDb, bool bExtension) : 
 		m_sFilespec(sFilespec),
 		m_pResourceMap(NULL),
-		m_iVersion(TDB_VERSION)
+		m_iVersion(TDB_VERSION),
+		m_pEntities(NULL),
+		m_bFreeEntities(false)
 
 //	CResourceDb constructor
 //
@@ -150,12 +152,6 @@ CResourceDb::CResourceDb (const CString &sFilespec, CResourceDb *pMainDb, bool b
 
 		m_pMainDb = NULL;
 		}
-
-	//	If we have a main db then this is the parent of the entities
-	//	that we're loading.
-
-	if (m_pMainDb)
-		m_Entities.SetParent(&m_pMainDb->m_Entities);
 	}
 
 CResourceDb::~CResourceDb (void)
@@ -165,6 +161,8 @@ CResourceDb::~CResourceDb (void)
 	{
 	if (m_pDb)
 		delete m_pDb;
+
+	SetEntities(NULL);
 	}
 
 ALERROR CResourceDb::ExtractMain (CString *retsData)
@@ -320,6 +318,9 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 	{
 	ALERROR error;
 
+	CExternalEntityTable *pEntities = new CExternalEntityTable;
+	SetEntities(pEntities, true);
+
 	if (m_pMainDb == NULL)
 		{
 		if (m_bGameFileInDb && m_pDb)
@@ -338,7 +339,7 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 			CBufferReadBlock GameFile(sGameFile);
 
 			CString sError;
-			if (error = CXMLElement::ParseEntityTable(&GameFile, &m_Entities, &sError))
+			if (error = CXMLElement::ParseEntityTable(&GameFile, m_pEntities, &sError))
 				{
 				*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
 				return error;
@@ -351,7 +352,7 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 			CFileReadBlock DataFile(pathAddComponent(m_sRoot, m_sGameFile));
 			CString sError;
 
-			if (error = CXMLElement::ParseEntityTable(&DataFile, &m_Entities, &sError))
+			if (error = CXMLElement::ParseEntityTable(&DataFile, m_pEntities, &sError))
 				{
 				*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
 				return error;
@@ -360,12 +361,12 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 		}
 
 	if (retEntities)
-		*retEntities = &m_Entities;
+		*retEntities = m_pEntities;
 
 	return NOERROR;
 	}
 
-ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CString *retsError)
+ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CExternalEntityTable *pEntities, CString *retsError, CExternalEntityTable *ioEntityTable)
 
 //	LoadGameFile
 //
@@ -390,7 +391,7 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CString *retsError)
 		CBufferReadBlock GameFile(sGameFile);
 		CString sError;
 
-		if (error = CXMLElement::ParseXML(&GameFile, &m_Entities, retpData, &sError, &m_Entities))
+		if (error = CXMLElement::ParseXML(&GameFile, pEntities, retpData, &sError, ioEntityTable))
 			{
 			if (error == ERR_NOTFOUND)
 				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
@@ -406,7 +407,7 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CString *retsError)
 		CFileReadBlock DataFile(pathAddComponent(m_sRoot, m_sGameFile));
 		CString sError;
 
-		if (error = CXMLElement::ParseXML(&DataFile, &m_Entities, retpData, &sError, &m_Entities))
+		if (error = CXMLElement::ParseXML(&DataFile, pEntities, retpData, &sError, ioEntityTable))
 			{
 			if (error == ERR_NOTFOUND)
 				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
@@ -415,6 +416,18 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CString *retsError)
 			return error;
 			}
 		}
+
+	//	Remember our entity table so that future calls (e.g., LoadModule) can 
+	//	get access to them.
+	//
+	//	If we're supposed to return one, then use that one, since it contains
+	//	entities that we declared in this file. Otherwise, we just use the one
+	//	that was passed in.
+
+	if (ioEntityTable)
+		SetEntities(ioEntityTable);
+	else if (pEntities)
+		SetEntities(pEntities);
 
 	return NOERROR;
 	}
@@ -550,7 +563,7 @@ ALERROR CResourceDb::LoadModule (const CString &sFolder, const CString &sFilenam
 
 		CBufferReadBlock GameFile(sGameFile);
 		CString sError;
-		TRY(CXMLElement::ParseXML(&GameFile, &m_Entities, retpData, &sError));
+		TRY(CXMLElement::ParseXML(&GameFile, m_pEntities, retpData, &sError));
 		if (error)
 			{
 			*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
@@ -563,7 +576,7 @@ ALERROR CResourceDb::LoadModule (const CString &sFolder, const CString &sFilenam
 
 		CFileReadBlock DataFile(pathAddComponent(m_sRoot, pathAddComponent(sFolder, sFilename)));
 		CString sError;
-		if (error = CXMLElement::ParseXML(&DataFile, &m_Entities, retpData, &sError))
+		if (error = CXMLElement::ParseXML(&DataFile, m_pEntities, retpData, &sError))
 			{
 			if (error == ERR_NOTFOUND)
 				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), DataFile.GetFilename());
@@ -716,4 +729,18 @@ ALERROR CResourceDb::OpenDb (void)
 		}
 
 	return NOERROR;
+	}
+
+void CResourceDb::SetEntities (CExternalEntityTable *pEntities, bool bFree)
+
+//	SetEntities
+//
+//	Sets the entities parameter
+
+	{
+	if (m_pEntities && m_bFreeEntities)
+		delete m_pEntities;
+
+	m_pEntities = pEntities;
+	m_bFreeEntities = bFree;
 	}

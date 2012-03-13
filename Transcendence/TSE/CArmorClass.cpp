@@ -100,9 +100,14 @@ static SStdStats STD_STATS[MAX_ITEM_LEVEL] =
 		{	20000,	800000000,	14300,	160000000,	8000, },
 	};
 
+static char *CACHED_EVENTS[CArmorClass::evtCount] =
+	{
+		"GetMaxHP",
+		"OnArmorDamage",
+	};
+
 CArmorClass::CArmorClass (void) : CObject(&g_Class),
-		m_pItemType(NULL),
-		m_pOnArmorDamage(NULL)
+		m_pItemType(NULL)
 
 //	CArmorClass constructor
 
@@ -234,12 +239,9 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 
 	//	If the armor has custom code to deal with damage, handle it here.
 
-	if (m_pOnArmorDamage)
-		{
-		FireOnArmorDamage(ItemCtx, Ctx);
-		if (pSource->IsDestroyed())
-			return damageDestroyed;
-		}
+	FireOnArmorDamage(ItemCtx, Ctx);
+	if (pSource->IsDestroyed())
+		return damageDestroyed;
 
 	//	If this armor section reflects this kind of damage then
 	//	send the damage on
@@ -297,6 +299,11 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 	if (Ctx.bDeviceDisrupt)
 		pSource->OnHitByDeviceDisruptDamage(Ctx.iDisruptTime);
 
+	//	Create a hit effect. (Many weapons show an effect even if no damage was
+	//	done.)
+
+	Ctx.pDesc->CreateHitEffect(pSource->GetSystem(), Ctx);
+
 	//	If no damage has reached us, then we're done
 
 	if (Ctx.iDamage == 0 && !bCustomDamage)
@@ -310,19 +317,6 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 		pSource->FireOnDamage(Ctx);
 		if (pSource->IsDestroyed())
 			return damageDestroyed;
-		}
-
-	//	Create a hit effect
-
-	if (Ctx.pDesc->m_pHitEffect == NULL)
-		{
-		CEffectCreator *pHitEffect = g_pUniverse->FindEffectType(g_HitEffectUNID);
-		if (pHitEffect)
-			pHitEffect->CreateEffect(pSource->GetSystem(),
-					NULL,
-					Ctx.vHitPos,
-					pSource->GetVel(),
-					Ctx.iDirection);
 		}
 
 	//	Take damage
@@ -766,25 +760,27 @@ int CArmorClass::FireGetMaxHP (CItemCtx &ItemCtx, int iMaxHP) const
 //	Fire GetMaxHP event
 
 	{
-	ASSERT(m_pGetMaxHP);
+	SEventHandlerDesc Event;
+	if (FindEventHandlerArmorClass(evtGetMaxHP, &Event))
+		{
+		//	Setup arguments
 
-	//	Setup arguments
+		CCodeChainCtx Ctx;
+		Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
+		Ctx.SaveItemVar();
+		Ctx.DefineItem(ItemCtx);
 
-	CCodeChainCtx Ctx;
-	Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(ItemCtx);
+		Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
 
-	Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
+		ICCItem *pResult = Ctx.Run(Event);
 
-	ICCItem *pResult = Ctx.Run(m_pGetMaxHP);
+		if (pResult->IsError())
+			ItemCtx.GetSource()->ReportEventError(GET_MAX_HP_EVENT, pResult);
+		else if (!pResult->IsNil())
+			iMaxHP = Max(0, pResult->GetIntegerValue());
 
-	if (pResult->IsError())
-		ItemCtx.GetSource()->ReportEventError(GET_MAX_HP_EVENT, pResult);
-	else if (!pResult->IsNil())
-		iMaxHP = Max(0, pResult->GetIntegerValue());
-
-	Ctx.Discard(pResult);
+		Ctx.Discard(pResult);
+		}
 
 	return iMaxHP;
 	}
@@ -796,45 +792,47 @@ void CArmorClass::FireOnArmorDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 //	Fires OnArmorDamage event
 
 	{
-	ASSERT(m_pOnArmorDamage);
+	SEventHandlerDesc Event;
+	if (FindEventHandlerArmorClass(evtOnArmorDamage, &Event))
+		{
+		//	Setup arguments
 
-	//	Setup arguments
+		CCodeChainCtx CCCtx;
+		CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
+		CCCtx.SaveItemVar();
+		CCCtx.DefineItem(ItemCtx);
 
-	CCodeChainCtx CCCtx;
-	CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-	CCCtx.SaveItemVar();
-	CCCtx.DefineItem(ItemCtx);
+		CCCtx.DefineInteger(CONSTLIT("aArmorHP"), Ctx.iHPLeft);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
+		CCCtx.DefineDamageEffects(CONSTLIT("aDamageEffects"), Ctx);
+		CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
+		CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
 
-	CCCtx.DefineInteger(CONSTLIT("aArmorHP"), Ctx.iHPLeft);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
-	CCCtx.DefineDamageEffects(CONSTLIT("aDamageEffects"), Ctx);
-	CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
-	CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
+		ICCItem *pResult = CCCtx.Run(Event);
 
-	ICCItem *pResult = CCCtx.Run(m_pOnArmorDamage);
+		//	If we return Nil, then nothing
 
-	//	If we return Nil, then nothing
+		if (pResult->IsNil())
+			NULL;
 
-	if (pResult->IsNil())
-		NULL;
+		//	If we return an integer, then this is the damage that armor should take
 
-	//	If we return an integer, then this is the damage that armor should take
+		else if (pResult->IsInteger())
+			Ctx.iDamage = pResult->GetIntegerValue();
 
-	else if (pResult->IsInteger())
-		Ctx.iDamage = pResult->GetIntegerValue();
+		//	If we return a list, then we it to be a DamageEffects list (modifications to
+		//	aDamageEffects)
 
-	//	If we return a list, then we it to be a DamageEffects list (modifications to
-	//	aDamageEffects)
+		else if (pResult->IsList())
+			LoadDamageEffectsFromItem(pResult, Ctx);
 
-	else if (pResult->IsList())
-		LoadDamageEffectsFromItem(pResult, Ctx);
-
-	CCCtx.Discard(pResult);
+		CCCtx.Discard(pResult);
+		}
 	}
 
 int CArmorClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
@@ -865,8 +863,7 @@ int CArmorClass::GetMaxHP (CItemCtx &ItemCtx)
 
 	//	Fire event to compute HP, if necessary
 
-	if (m_pGetMaxHP)
-		iHP = FireGetMaxHP(ItemCtx, iHP);
+	iHP = FireGetMaxHP(ItemCtx, iHP);
 
 	//	Add mods
 
@@ -1204,9 +1201,10 @@ ALERROR CArmorClass::OnBindDesign (SDesignLoadCtx &Ctx)
 //	Called on Bind
 
 	{
+	//	Cache some events
+
 	CItemType *pType = GetItemType();
-	m_pGetMaxHP = pType->GetEventHandler(GET_MAX_HP_EVENT);
-	m_pOnArmorDamage = pType->GetEventHandler(ON_ARMOR_DAMAGE_EVENT);
+	pType->InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	return NOERROR;
 	}

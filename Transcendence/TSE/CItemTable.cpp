@@ -1132,7 +1132,7 @@ void CRandomEnhancementGenerator::EnhanceItem (CItem &Item)
 
 		//	Execute the code
 
-		ICCItem *pResult = Ctx.Run(m_pCode);
+		ICCItem *pResult = Ctx.Run(m_pCode);	//	LATER:Event
 
 		//	If we have an error, report it
 

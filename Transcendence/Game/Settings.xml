@@ -46,8 +46,8 @@
 
 	<Services>
 		<Hexarc enabled="true"
-			username="Loki"
-			host="localhost:8080"
+			username="Saint Leibowitz"
+			host="transcendence.hierosteel.com"
 			rootURL="/api/"
 			/>
 		<Xelerus enabled="false"/>

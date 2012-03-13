@@ -82,7 +82,7 @@ Metric CSmokeTrailEffectCreator::GetEmitSpeed (void) const
 	return (m_InitSpeed.Roll() * LIGHT_SPEED / 100.0f);
 	}
 
-ALERROR CSmokeTrailEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CSmokeTrailEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

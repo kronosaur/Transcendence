@@ -226,6 +226,39 @@ void CSpaceObjectList::SetCountAndAllocation (int iCount, int iAllocation)
 	m_pList[0] = (CSpaceObject *)MAKELONG((WORD)(DWORD)iCount, (WORD)(DWORD)iAllocation);
 	}
 
+void CSpaceObjectList::Subtract (const CSpaceObjectList &List)
+
+//	Subtract
+//
+//	Removes all objects in List from the current list
+
+	{
+	int i;
+
+	//	Mark all current objects
+
+	int iCount = GetCount();
+	for (i = 0; i < iCount; i++)
+		GetObj(i)->SetMarked(true);
+
+	//	Clear marks on all objects to remove
+
+	for (i = 0; i < List.GetCount(); i++)
+		List.GetObj(i)->SetMarked(false);
+
+	//	Create a new list with the remaining objects
+
+	CSpaceObject **pOldList = m_pList;
+	m_pList = NULL;
+
+	for (i = 0; i < iCount; i++)
+		if (pOldList[i + 1]->IsMarked())
+			FastAdd(pOldList[i + 1]);
+
+	if (pOldList)
+		delete [] pOldList;
+	}
+
 void CSpaceObjectList::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
 
 //	WriteToStream

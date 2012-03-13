@@ -54,6 +54,22 @@ class StationInfo : public CObject
 		int iTempCount;								//	Temp count for a specific system instance
 	};
 
+class CImageGrid
+	{
+	public:
+		void Create (int iCount, int cxCellWidth, int cyCellHeight);
+		void GetCellCenter (int iIndex, int *retx, int *rety);
+		inline CG16bitImage &GetImage (void) { return m_Image; }
+
+	private:
+		CG16bitImage m_Image;
+		int m_iCount;
+		int m_iCellColumns;
+		int m_iCellRows;
+		int m_cxCellWidth;
+		int m_cyCellHeight;
+	};
+
 class CSimViewer
 	{
 	public:
@@ -90,6 +106,7 @@ void DoRandomNumberTest (void);
 void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
@@ -111,6 +128,7 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine);
+void HexarcTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void Run (CUniverse &Universe, CXMLElement *pCmdLine);
 void RunEncounterSim (CUniverse &Universe, CXMLElement *pCmdLine);

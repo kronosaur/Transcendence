@@ -35,6 +35,8 @@ class ICIService
 			postGameStats =				0x00000010,	//	We can post game states
 			registerUser =				0x00000020, //	We have the ability to register (always TRUE for Hexarc)
 			postGameRecord =			0x00000040,	//	We can post a game record
+			userProfile =				0x00000080,	//	We can show user records (TRUE even if not signed in)
+			modExchange =				0x00000100,	//	We can show mod exchange (TRUE even if not signed in)
 			};
 
 		ICIService (void) : m_bEnabled(false), m_bModified(false) { }
@@ -48,13 +50,13 @@ class ICIService
 		virtual CString GetUsername (void) { return NULL_STR; }
 		virtual bool HasCapability (DWORD dwCapability) { return false; }
 		virtual ALERROR Housekeeping (ITaskProcessor *pProcessor) { return NOERROR; }
-		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified) { return NOERROR; }
+		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified) { *retbModified = false; return NOERROR; }
 		virtual ALERROR InitPrivateData (void) { return NOERROR; }
-		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR ReadProfile (ITaskProcessor *pProcessor, CUserProfile *retProfile, CString *retsResult = NULL) { return NOERROR; }
-		virtual ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL) { return NOERROR; }
-		virtual ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, const CString &sEmail, bool bAutoSignIn, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL) { return NOERROR; }
 		virtual ALERROR WriteAsXML (IWriteStream *pOutput) { return NOERROR; }
 		virtual ALERROR WritePrivateData (void) { return NOERROR; }
@@ -66,12 +68,19 @@ class ICIService
 		bool m_bModified;
 	};
 
+class ICIServiceFactory
+	{
+	public:
+		virtual ICIService *Create (CHumanInterface &HI) { return NULL; }
+	};
+
 class CCloudService
 	{
 	public:
 		~CCloudService (void);
 
 		void CleanUp (void);
+		CString GetDefaultUsername (void);
 		CString GetUsername (void);
 		bool HasCapability (DWORD dwCapability);
 		ALERROR InitFromXML (CHumanInterface &HI, CXMLElement *pDesc, bool *retbModified);
@@ -83,77 +92,27 @@ class CCloudService
 
 		ALERROR ChangePassword (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sOldPassword, const CString &sNewPassword, CString *retsResult = NULL);
 		ALERROR Housekeeping (ITaskProcessor *pProcessor);
-		ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, CString *retsResult = NULL);
+		ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL);
 		ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
 		ALERROR ReadProfile (ITaskProcessor *pProcessor, CUserProfile *retProfile, CString *retsResult = NULL);
-		ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL);
-		ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL);
+		ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, const CString &sEmail, bool bAutoSignIn, CString *retsResult = NULL);
+		ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult = NULL);
 		ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL);
 
 	private:
 		TArray<ICIService *> m_Services;
 	};
 
-//	Service Implementations
+//	Default Services -----------------------------------------------------------
 
-class CHexarcService : public ICIService
+class CHexarcServiceFactory : public ICIServiceFactory
 	{
 	public:
-		CHexarcService (CHumanInterface &HI) : m_HI(HI) { }
-
-		virtual ALERROR ChangePassword (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sOldPassword, const CString &sNewPassword, CString *retsResult = NULL);
-		virtual CString GetTag (void);
-		virtual CString GetUsername (void) { return m_sUsername; }
-		virtual bool HasCapability (DWORD dwCapability);
-		virtual ALERROR Housekeeping (ITaskProcessor *pProcessor);
-		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified);
-		virtual ALERROR InitPrivateData (void);
-		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, CString *retsResult = NULL);
-		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
-		virtual ALERROR ReadProfile (ITaskProcessor *pProcessor, CUserProfile *retProfile, CString *retsResult = NULL);
-		virtual ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL);
-		virtual ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, CString *retsResult = NULL);
-		virtual ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL);
-		virtual ALERROR WriteAsXML (IWriteStream *pOutput);
-		virtual ALERROR WritePrivateData (void);
-
-	private:
-		bool Connect (CString *retsResult);
-		CString GetClientVersion (void) const;
-		CString GetHostspec (void) const { return (m_sPort.IsBlank() ? m_sHost : strPatternSubst("%s:%s", m_sHost, m_sPort)); }
-		bool GetJSONResponse (CHTTPMessage &Response, CJSONValue *retValue, CString *retsError);
-		void InitRequest (const CString &sMethod, const CString &sFunction, CHTTPMessage *retMessage);
-		bool IsLoggedIn (void) { return !m_UserToken.IsNull(); }
-		bool HasCachedUsername (void) { return !m_sUsername.IsBlank(); }
-		bool HasCachedCredentials (void) { return !m_Credentials.IsNull(); }
-		bool ServerCommand (const CString &sMethod, const CString &sFunc, CJSONValue &Payload, CJSONValue *retResult);
-
-		CHumanInterface &m_HI;
-		CString m_sHost;
-		CString m_sPort;
-		CString m_sRootURL;
-
-		CString m_sClientID;						//	Unique clientID
-		CString m_sUsername;						//	Username
-		CJSONValue m_Credentials;					//	Saved service password (not the user password)
-		CJSONValue m_UserToken;						//	Obtained after register/login
-
-		bool m_bActualRequired;						//	Require actual username password
-		CJSONValue m_Challenge;						//	Challenge
-
-		CHTTPClientSession m_Session;				//	Connection
+		virtual ICIService *Create (CHumanInterface &HI);
 	};
 
-class CXelerus : public ICIService
+class CXelerusServiceFactory : public ICIServiceFactory
 	{
 	public:
-		virtual CString GetTag (void);
-		virtual bool HasCapability (DWORD dwCapability) { return (dwCapability == ICIService::postGameStats); }
-		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified);
-		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
-		virtual ALERROR WriteAsXML (IWriteStream *pOutput);
-
-	private:
-		CString m_sHost;
-		CString m_sPostStatsURL;
+		virtual ICIService *Create (CHumanInterface &HI);
 	};

@@ -27,7 +27,7 @@
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
 
-ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, ICCItem *pCode, int *retiAction)
+ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, SExtensionDesc *pExtension, ICCItem *pCode, int *retiAction)
 
 //	AddAction
 //
@@ -46,6 +46,7 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 	pAction->sID = sID;
 	pAction->sLabel = sLabel;
 	pAction->pButton = NULL;
+	pAction->pExtension = pExtension;
 	pAction->pCmd = NULL;
 	pAction->pCode = pCode->Reference();
 
@@ -163,7 +164,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 
 	else if (pAction->pCode)
 		{
-		ExecuteCode(pScreen, pAction->sID, pAction->pCode);
+		ExecuteCode(pScreen, pAction->sID, pAction->pExtension, pAction->pCode);
 		}
 
 	//	Otherwise, if we have unlinked code, execute that
@@ -176,7 +177,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 
 		//	Execute
 
-		ExecuteCode(pScreen, pAction->sID, pExp);
+		ExecuteCode(pScreen, pAction->sID, pAction->pExtension, pExp);
 
 		//	Done
 
@@ -184,7 +185,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 		}
 	}
 
-void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, ICCItem *pCode)
+void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, SExtensionDesc *pExtension, ICCItem *pCode)
 
 //	ExecuteCode
 //
@@ -192,6 +193,7 @@ void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, 
 
 	{
 	CCodeChainCtx Ctx;
+	Ctx.SetExtension(pExtension);
 	Ctx.DefineString(CONSTLIT("aActionID"), sID);
 	Ctx.SetScreen(pScreen);
 
@@ -336,7 +338,7 @@ int CDockScreenActions::GetVisibleCount (void) const
 	return iCount;
 	}
 
-ALERROR CDockScreenActions::InitFromXML (CXMLElement *pActions, CString *retsError)
+ALERROR CDockScreenActions::InitFromXML (SExtensionDesc *pExtension, CXMLElement *pActions, CString *retsError)
 
 //	InitFromXML
 //
@@ -376,6 +378,7 @@ ALERROR CDockScreenActions::InitFromXML (CXMLElement *pActions, CString *retsErr
 
 		//	Action
 
+		pAction->pExtension = pExtension;
 		if (pActionDesc->GetContentElementCount() > 0)
 			{
 			pAction->pCmd = pActionDesc->GetContentElement(0);

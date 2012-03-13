@@ -44,6 +44,10 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
+#define PROPERTY_SELECTED_LAUNCHER				CONSTLIT("selectedLauncher")
+#define PROPERTY_SELECTED_MISSILE				CONSTLIT("selectedMissile")
+#define PROPERTY_SELECTED_WEAPON				CONSTLIT("selectedWeapon")
+
 const WORD RGB_MAP_LABEL =						CG16bitImage::RGBValue(255, 217, 128);
 
 const Metric MAX_AUTO_TARGET_DISTANCE =			(LIGHT_SECOND * 30.0);
@@ -541,7 +545,7 @@ bool CShip::CanAttack (void) const
 //	do damage (perhaps because it has no weapons) we still mark it as CanAttack.
 
 	{
-	return !IsInactive();
+	return (!IsInactive() && !IsVirtual());
 	}
 
 CShip::InstallArmorStatus CShip::CanInstallArmor (const CItem &Item) const
@@ -1223,6 +1227,60 @@ CurrencyValue CShip::GetBalance (DWORD dwEconomyUNID)
 		return 0;
 	}
 
+ICCItem *CShip::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
+		{
+		CInstalledDevice *pLauncher = GetNamedDevice(devMissileWeapon);
+		if (pLauncher == NULL)
+			return CC.CreateNil();
+
+		CItemType *pType;
+		pLauncher->GetSelectedVariantInfo(this, NULL, NULL, &pType);
+		if (pType == NULL)
+			return CC.CreateNil();
+
+		if (pType->IsMissile())
+			{
+			CItemListManipulator ItemList(GetItemList());
+			CItem theItem(pType, 1);
+			if (!ItemList.SetCursorAtItem(theItem))
+				return CC.CreateNil();
+
+			return CreateListFromItem(CC, ItemList.GetItemAtCursor());
+			}
+
+		//	Sometimes a launcher has no ammo (e.g., a disposable missile
+		//	launcher). In that case we return the launcher itself.
+
+		else
+			{
+			CItem theItem = GetNamedDeviceItem(devMissileWeapon);
+			if (theItem.GetType() == NULL)
+				return CC.CreateNil();
+
+			return CreateListFromItem(CC, theItem);
+			}
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_WEAPON))
+		{
+		CItem theItem = GetNamedDeviceItem(devPrimaryWeapon);
+		if (theItem.GetType() == NULL)
+			return CC.CreateNil();
+
+		return CreateListFromItem(CC, theItem);
+		}
+	else
+		return CSpaceObject::GetProperty(sName);
+	}
+
 int CShip::DamageArmor (int iSect, DamageDesc &Damage)
 
 //	DamageArmor
@@ -1671,6 +1729,27 @@ int CShip::FindFreeDeviceSlot (void)
 	m_iDeviceCount = iNewDeviceCount;
 
 	return GetDeviceCount() - 1;
+	}
+
+bool CShip::FindInstalledDeviceSlot (const CItem &Item, int *retiDev)
+
+//	FindInstalledDeviceSlot
+//
+//	Finds the device slot for the given item.
+//	Returns FALSE if the item is not a device installed on this ship.
+
+	{
+	if (Item.GetType() == NULL || !Item.IsInstalled() || !Item.GetType()->IsDevice())
+		return false;
+
+	CItemListManipulator ShipItems(GetItemList());
+	if (!ShipItems.SetCursorAtItem(Item))
+		return false;
+
+	if (retiDev)
+		*retiDev = Item.GetInstalled();
+
+	return true;
 	}
 
 int CShip::FindNextDevice (int iStart, ItemCategories Category, int iDir)
@@ -2807,7 +2886,8 @@ void CShip::ObjectDestroyedHook (const SDestroyCtx &Ctx)
 			Place(m_pExitGate->GetPos());
 
 		m_iExitGateTimer = 0;
-		ClearCannotBeHit();
+		if (!IsVirtual())
+			ClearCannotBeHit();
 		FireOnEnteredSystem(m_pExitGate);
 		m_pExitGate = NULL;
 		}
@@ -3939,7 +4019,8 @@ void CShip::OnUpdate (Metric rSecondsPerTick)
 				if (m_pExitGate && m_pExitGate->IsMobile())
 					Place(m_pExitGate->GetPos());
 
-				ClearCannotBeHit();
+				if (!IsVirtual())
+					ClearCannotBeHit();
 				FireOnEnteredSystem(m_pExitGate);
 				m_pExitGate = NULL;
 				}
@@ -4877,9 +4958,8 @@ void CShip::Refuel (const CItem &Fuel)
 
 	//	Invoke refueling code
 
-	ICCItem *pCode;
-	if (pFuelType->HasOnRefuelCode() 
-			&& (pCode = pFuelType->GetOnRefuelCode()))
+	SEventHandlerDesc Event;
+	if (pFuelType->FindEventHandlerItemType(CItemType::evtOnRefuel, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -4889,7 +4969,7 @@ void CShip::Refuel (const CItem &Fuel)
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(Fuel);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			SendMessage(NULL, pResult->GetStringValue());
 
@@ -5412,7 +5492,7 @@ void CShip::SetOrdersFromGenerator (SShipGeneratorCtx &Ctx)
 		CCCtx.DefineSpaceObject(CONSTLIT("aBaseObj"), Ctx.pBase);
 		CCCtx.DefineSpaceObject(CONSTLIT("aTargetObj"), Ctx.pTarget);
 
-		ICCItem *pResult = CCCtx.Run(Ctx.pOnCreate);
+		ICCItem *pResult = CCCtx.Run(Ctx.pOnCreate);	//	LATER:Event
 		if (pResult->IsError())
 			ReportEventError(CONSTLIT("local OnCreate"), pResult);
 		CCCtx.Discard(pResult);
@@ -5554,6 +5634,82 @@ void CShip::SetOrdersFromGenerator (SShipGeneratorCtx &Ctx)
 		if (bIsSubordinate && Ctx.pBase && !Ctx.pBase->IsEnemy(this))
 			Ctx.pBase->AddSubordinate(this);
 		}
+	}
+
+bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Sets an object property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		CInstalledDevice *pLauncher = GetNamedDevice(devMissileWeapon);
+		if (pLauncher == NULL)
+			{
+			*retsError = CONSTLIT("No launcher installed.");
+			return false;
+			}
+
+		CItem Item = CreateItemFromList(CC, pValue);
+		CItemListManipulator ShipItems(GetItemList());
+		if (!ShipItems.SetCursorAtItem(Item))
+			{
+			*retsError = CONSTLIT("Item is not on ship.");
+			return false;
+			}
+
+		//	If the item is the same as the launcher then it means that the
+		//	launcher has no ammo. In this case, we succeed.
+
+		if (Item.GetType() == pLauncher->GetItem()->GetType())
+			return true;
+
+		//	Otherwise we figure out what ammo variant this is.
+
+		int iVariant = pLauncher->GetClass()->GetAmmoVariant(Item.GetType());
+		if (iVariant == -1)
+			{
+			*retsError = CONSTLIT("Item is not compatible with launcher.");
+			return false;
+			}
+
+		SelectWeapon(m_NamedDevices[devMissileWeapon], iVariant);
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_WEAPON))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		int iDev;
+		if (!FindInstalledDeviceSlot(CreateItemFromList(CC, pValue), &iDev))
+			{
+			*retsError = CONSTLIT("Item is not an installed device on ship.");
+			return false;
+			}
+
+		if (m_Devices[iDev].GetCategory() != itemcatWeapon)
+			{
+			*retsError = CONSTLIT("Item is not a weapon.");
+			return false;
+			}
+
+		SelectWeapon(iDev, 0);
+		return true;
+		}
+	else
+		return CSpaceObject::SetProperty(sName, pValue, retsError);
 	}
 
 bool CShip::ShieldsAbsorbFire (CInstalledDevice *pWeapon)

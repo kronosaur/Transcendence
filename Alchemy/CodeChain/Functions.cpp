@@ -516,7 +516,8 @@ ICCItem *fnCat (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 	//	Append each of the items
 
 	for (i = 0; i < pArgs->GetCount(); i++)
-		sResult.Append(pArgs->GetElement(i)->GetStringValue());
+		if (!pArgs->GetElement(i)->IsNil())
+			sResult.Append(pArgs->GetElement(i)->GetStringValue());
 
 	pResult = pCC->CreateString(sResult);
 
@@ -2350,6 +2351,40 @@ ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_MATH_ABSOLUTE:
 			return pCC->CreateInteger(Absolute(pArgs->GetElement(0)->GetIntegerValue()));
 
+		case FN_MATH_MODULUS:
+			{
+			int iArg = 0;
+
+			bool bClock = false;
+			if (pArgs->GetElement(iArg)->IsIdentifier())
+				{
+				if (strEquals(pArgs->GetElement(iArg)->GetStringValue(), CONSTLIT("degrees")))
+					bClock = true;
+				else
+					return pCC->CreateError(CONSTLIT("Unknown option"), pArgs->GetElement(iArg));
+
+				iArg++;
+				}
+
+			int iOp1 = (pArgs->GetCount() > iArg ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
+			int iOp2 = (pArgs->GetCount() > iArg ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
+
+			if (iOp2 == 0)
+				return pCC->CreateError(CONSTLIT("Division by zero"), pArgs);
+
+			if (bClock)
+				{
+				int iResult = iOp1 % iOp2;
+
+				if (iResult < 0)
+					return pCC->CreateInteger(iOp2 + iResult);
+				else
+					return pCC->CreateInteger(iResult);
+				}
+			else
+				return pCC->CreateInteger(iOp1 % iOp2);
+			}
+
 		case FN_MATH_SQRT:
 			{
 			int iValue = pArgs->GetElement(0)->GetIntegerValue();
@@ -2406,13 +2441,6 @@ ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 		case FN_MATH_DIVIDE:
 			if (iOp2 != 0)
 				iResult = iOp1 / iOp2;
-			else
-				return pCC->CreateError(CONSTLIT("Division by zero"), pArguments);
-			break;
-
-		case FN_MATH_MODULUS:
-			if (iOp2 != 0)
-				iResult = iOp1 % iOp2;
 			else
 				return pCC->CreateError(CONSTLIT("Division by zero"), pArguments);
 			break;
@@ -2938,65 +2966,96 @@ ICCItem *fnSubset (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		}
 	}
 
-ICCItem *fnSubst (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
+ICCItem *fnSubst (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 
 //	fnSubst
 //
 //	Substitutes string parameters
 //
 //	(subst string arg1 arg2 ... argn)
+//	(subst string struct)
 
 	{
 	CCodeChain *pCC = pCtx->pCC;
-	ICCItem *pArgs;
-
-	//	Evaluate the arguments and validate them
-
-	pArgs = pCC->EvaluateArgs(pCtx, pArguments, CONSTLIT("s*"));
-	if (pArgs->IsError())
-		return pArgs;
 
 	CString sPattern = pArgs->GetElement(0)->GetStringValue();
+	char *pPos = sPattern.GetASCIIZPointer();
+
+	ICCItem *pStruct = ((pArgs->GetCount() > 1) ? pArgs->GetElement(1) : NULL);
+
+	//	Output buffer
+
+	CMemoryWriteStream Stream(0);
+	if (Stream.Create() != NOERROR)
+		return pCC->CreateError(CONSTLIT("Out of memory"));
 
 	//	Do the substitution
 
-	char szResult[4096];
-	char *pPos = sPattern.GetASCIIZPointer();
-	char *pDest = szResult;
-	char *pEndDest = szResult + sizeof(szResult) - 1;
-
-	while (*pPos != '\0' && pDest < pEndDest)
+	while (*pPos != '\0')
 		{
 		if (*pPos == '%')
 			{
 			pPos++;
 
-			int iArg = strParseInt(pPos, 0, &pPos);
-			if (iArg > 0)
+			//	If this is another % then it is an escape
+
+			if (*pPos == '%')
+				Stream.Write(pPos++, 1);
+
+			//	See if we have an integer. If we do, then we look for the nth
+			//	argument.
+
+			else if (strIsDigit(pPos))
 				{
-				CString sParam = pArgs->GetElement(iArg)->GetStringValue();
-				char *pParam = sParam.GetASCIIZPointer();
+				int iArg = strParseInt(pPos, 0, &pPos);
+				if (iArg > 0 && iArg < pArgs->GetCount())
+					{
+					CString sParam = pArgs->GetElement(iArg)->GetStringValue();
+					Stream.Write(sParam.GetASCIIZPointer(), sParam.GetLength());
+					}
 
-				while (*pParam != '\0' && pDest < pEndDest)
-					*pDest++ = *pParam++;
-
-				pPos++;
+				if (*pPos == '%')
+					pPos++;
 				}
+
+			//	Else if this is a string, then we expect this to be a key that
+			//	we use to look up a value in a struct
+
 			else
 				{
+				char *pStart = pPos;
+				while (*pPos != '%' && *pPos != '\0')
+					pPos++;
+
+				CString sKey(pStart, (int)(pPos - pStart));
+
+				if (!sKey.IsBlank() && pStruct)
+					{
+					ICCItem *pKey = pCC->CreateString(sKey);
+
+					BOOL bFound;
+					ICCItem *pResult = pStruct->LookupEx(pCC, pKey, &bFound);
+					pKey->Discard(pCC);
+					if (bFound)
+						{
+						CString sParam = pResult->GetStringValue();
+						Stream.Write(sParam.GetASCIIZPointer(), sParam.GetLength());
+						}
+
+					pResult->Discard(pCC);
+					}
+
 				if (*pPos == '%')
-					*pDest++ = *pPos++;
+					pPos++;
 				}
 			}
 		else
-			*pDest++ = *pPos++;
+			Stream.Write(pPos++, 1);
 		}
 
 	//	Done
 
-	*pDest = '\0';
-	pArgs->Discard(pCC);
-	return pCC->CreateString(CString(szResult));
+	return pCC->CreateString(CString(Stream.GetPointer(), Stream.GetLength()));
 	}
 
 ICCItem *fnSwitch (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)

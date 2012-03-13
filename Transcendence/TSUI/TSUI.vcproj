@@ -106,6 +106,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\Includes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				ExceptionHandling="2"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"

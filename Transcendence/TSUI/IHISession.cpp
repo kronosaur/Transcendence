@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 
+#define PROP_ENABLED							CONSTLIT("enabled")
+
 IHISession::IHISession (CHumanInterface &HI) : IHICommand(HI),
 		m_bNoCursor(false),
 		m_bTransparent(false)
@@ -43,7 +45,7 @@ void IHISession::DefaultOnAnimate (CG16bitImage &Screen, bool bTopMost)
 	//	Update
 
 	m_HI.BeginSessionUpdate();
-	HIUpdate();
+	HIUpdate(bTopMost);
 	m_HI.EndSessionUpdate(bTopMost);
 
 	//	If we've got animations, then we need to invalidate
@@ -51,6 +53,68 @@ void IHISession::DefaultOnAnimate (CG16bitImage &Screen, bool bTopMost)
 
 	if (bHasAnimation)
 		HIInvalidate();
+	}
+
+bool IHISession::HandlePageScrollKeyDown (const CString &sScroller, int iVirtKey, DWORD dwKeyData)
+
+//	HandlePageScrollKeyDown
+//
+//	Handle keyboard interface for scrolling a simple page.
+
+	{
+	EScrollTypes iScroll;
+	int iScrollDist;
+
+	switch (iVirtKey)
+		{
+		case VK_DOWN:
+			iScroll = scrollRelative;
+			iScrollDist = 50;
+			break;
+
+		case VK_UP:
+			iScroll = scrollRelative;
+			iScrollDist = -50;
+			break;
+
+		case VK_NEXT:
+			iScroll = scrollRelative;
+			iScrollDist = 512;
+			break;
+
+		case VK_PRIOR:
+			iScroll = scrollRelative;
+			iScrollDist = -512;
+			break;
+
+		case VK_END:
+			iScroll = scrollToEnd;
+			iScrollDist = 0;
+			break;
+
+		case VK_HOME:
+			iScroll = scrollToHome;
+			iScrollDist = 0;
+			break;
+
+		default:
+			iScroll = scrollNone;
+			iScrollDist = 0;
+			break;
+		}
+
+	//	Scroll
+
+	if (iScroll != scrollNone)
+		{
+		IAnimatron *pList = GetPerformance(sScroller);
+		if (pList)
+			pList->Scroll(iScroll, iScrollDist);
+
+		return true;
+		}
+	else
+		return false;
 	}
 
 void IHISession::HIChar (char chChar, DWORD dwKeyData)
@@ -173,6 +237,21 @@ void IHISession::HIMouseMove (int x, int y, DWORD dwFlags)
 	OnMouseMove(x, y, dwFlags);
 	}
 
+void IHISession::HIMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	HIMouseWheel
+//
+//	Handle mouse wheel
+
+	{
+	//	See if the animator will handle it
+
+	if (m_Reanimator.HandleMouseWheel(iDelta, x, y, dwFlags))
+		return;
+
+	OnMouseWheel(iDelta, x, y, dwFlags);
+	}
+
 void IHISession::HIPaint (CG16bitImage &Screen)
 
 //	HIPaint
@@ -196,6 +275,20 @@ void IHISession::HIPaint (CG16bitImage &Screen)
 		m_HI.GetScreenMgr().Validate();
 		Screen.ResetClipRect();
 		}
+	}
+
+bool IHISession::IsElementEnabled (const CString &sID)
+
+//	IsElementEnabled
+//
+//	Returns TRUE if the given element exists and is enabled
+
+	{
+	IAnimatron *pAni = GetElement(sID);
+	if (pAni == NULL)
+		return false;
+
+	return pAni->GetPropertyBool(PROP_ENABLED);
 	}
 
 void IHISession::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)

@@ -8,6 +8,7 @@ RELEASE
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (CGameFile.cpp)
 [ ] Build for release mode
+[ ] Sign executables (signall.bat)
 [ ] Build tdb
 [ ] Test with tdb
 
@@ -30,6 +31,7 @@ NEW APPLICATION (UI)
 [ ] Properties - All Configurations - Linker/Input: Additional Dependencies = "dxguid.lib version.lib vfw32.lib winmm.lib dsound.lib ddraw.lib odbc32.lib odbccp32.lib ws2_32.lib"
 [ ] Properties - Debug - C++/Code Generation: Runtime Library = "Multithreaded Debug (/MTd)"
 [ ] Properties - Release - C++/Code Generation: Runtime Library = "Multithreaded (/MT)"
+[ ] Properties - Release - C++/Optimization: Whole Program Optimization = "/GL"
 [ ] Add Kernel as a dependency
 [ ] Add Graphics as a dependency
 [ ] Add DirectXUtil as a dependency

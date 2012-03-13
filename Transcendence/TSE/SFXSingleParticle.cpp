@@ -50,7 +50,7 @@ IEffectPainter *CSingleParticleEffectCreator::CreatePainter (void)
 	return new CSingleParticlePainter(this);
 	}
 
-ALERROR CSingleParticleEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CSingleParticleEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

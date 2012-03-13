@@ -59,7 +59,7 @@ void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine)
 		for (j = 0; j < Attribs.GetCount(); j++)
 			{
 			bool bNew;
-			SAttribData *pData = Table.Insert(Attribs[j], &bNew);
+			SAttribData *pData = Table.SetAt(Attribs[j], &bNew);
 			if (bNew)
 				{
 				pData->sAttrib = Attribs[j];

@@ -122,9 +122,9 @@ void CAdventureDesc::FireOnGameEnd (const CGameRecord &Game, const SBasicGameSta
 //	Fire OnGameEnd event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GAME_END_EVENT, &pCode))
+	if (FindEventHandler(ON_GAME_END_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -147,7 +147,7 @@ void CAdventureDesc::FireOnGameEnd (const CGameRecord &Game, const SBasicGameSta
 
 		//	Invoke
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			kernelDebugLogMessage("OnGameEnd error: %s", pResult->GetStringValue().GetASCIIZPointer());
 		Ctx.Discard(pResult);
@@ -161,15 +161,15 @@ void CAdventureDesc::FireOnGameStart (void)
 //	Fire OnGameStart event
 
 	{
-	ICCItem *pCode;
+	SEventHandlerDesc Event;
 
-	if (FindEventHandler(ON_GAME_START_EVENT, &pCode))
+	if (FindEventHandler(ON_GAME_START_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
 		//	Run code
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			kernelDebugLogMessage("OnGameStart error: %s", pResult->GetStringValue().GetASCIIZPointer());
 		Ctx.Discard(pResult);

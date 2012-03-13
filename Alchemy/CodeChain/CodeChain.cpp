@@ -447,6 +447,9 @@ ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 		return pItem->Reference();
 
 	//	If this item is quoted, then return an unquoted item
+	//
+	//	HACK: We clone the item so that when we try to modify a literal list we
+	//	mody a copy instead of the original.
 
 	if (pItem->IsQuoted())
 		{

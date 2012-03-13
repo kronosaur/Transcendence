@@ -11,6 +11,20 @@
 #define HOST_ATTRIB								CONSTLIT("host")
 #define POST_STATS_URL_ATTRIB					CONSTLIT("postStatsURL")
 
+class CXelerus : public ICIService
+	{
+	public:
+		virtual CString GetTag (void);
+		virtual bool HasCapability (DWORD dwCapability) { return (dwCapability == ICIService::postGameStats); }
+		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified);
+		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
+		virtual ALERROR WriteAsXML (IWriteStream *pOutput);
+
+	private:
+		CString m_sHost;
+		CString m_sPostStatsURL;
+	};
+
 CString CXelerus::GetTag (void)
 
 //	GetTag
@@ -138,3 +152,11 @@ ALERROR CXelerus::WriteAsXML (IWriteStream *pOutput)
 
 	return NOERROR;
 	}
+
+//	CXelerusServiceFactory -----------------------------------------------------
+
+ICIService *CXelerusServiceFactory::Create (CHumanInterface &HI)
+	{
+	return new CXelerus;
+	}
+

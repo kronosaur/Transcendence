@@ -43,6 +43,12 @@ void CAniPropertySet::AddAnimator (const CString &sProperty, IPropertyAnimator *
 //	AddAnimator
 //
 //	Adds an animator to the set
+//
+//	LATER: bStartNow is a HACK to add new animators in the middle of a 
+//	performance. Right now it causes an animator's iFrame to start at 0 when the
+//	animator is added. This works only if we use GoToNextFrame; it will not work
+//	with GoToFrame or GoToStart. To fix this we would have to set a flag in the
+//	entry and wait for the next GoToNextFrame to store the current frame number.
 
 	{
 	int i;

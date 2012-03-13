@@ -43,6 +43,25 @@ bool sysIsBigEndian (void)
 	return ((*(unsigned short *) ("#S") >> 8) == '#');
 	}
 
+bool sysOpenURL (const CString &sURL)
+
+//	sysOpenURL
+//
+//	Launches the default browser to the given URL.
+
+	{
+	HINSTANCE hResult = ::ShellExecute(NULL, "open", sURL.GetASCIIZPointer(), NULL, NULL, SW_SHOWNORMAL);
+	if ((DWORD)hResult <= 32)
+		{
+		//	Errors are <= 32.
+		return false;
+		}
+
+	//	Done
+
+	return true;
+	}
+
 #define mix(a,b,c) \
 	{ \
 	a -= b; a -= c; a ^= (c>>13); \

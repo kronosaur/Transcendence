@@ -57,6 +57,7 @@ void CPower::Invoke (CSpaceObject *pSource, CSpaceObject *pTarget, CString *rets
 	{
 	CCodeChainCtx Ctx;
 
+	Ctx.SetExtension(GetExtension());
 	Ctx.SaveAndDefineSourceVar(pSource);
 	Ctx.DefineSpaceObject(CONSTLIT("gTarget"), pTarget);
 
@@ -84,6 +85,7 @@ void CPower::InvokeByPlayer (CSpaceObject *pSource, CSpaceObject *pTarget, CStri
 	if (retsError)
 		*retsError = NULL_STR;
 
+	Ctx.SetExtension(GetExtension());
 	Ctx.SaveAndDefineSourceVar(pSource);
 	Ctx.DefineSpaceObject(CONSTLIT("gTarget"), pTarget);
 
@@ -121,7 +123,7 @@ void CPower::InvokeByPlayer (CSpaceObject *pSource, CSpaceObject *pTarget, CStri
 	pCode = GetCode();
 	if (pCode)
 		{
-		pResult = Ctx.Run(GetCode());
+		pResult = Ctx.Run(pCode);
 		if (pResult->IsError())
 			{
 			if (retsError)
@@ -203,6 +205,7 @@ bool CPower::OnDestroyCheck (CSpaceObject *pSource, DestructionTypes iCause, con
 
 		//	Set up parameters
 
+		Ctx.SetExtension(GetExtension());
 		CSpaceObject *pAttacker = Attacker.GetObj();
 		Ctx.SaveAndDefineSourceVar(pSource);
 		Ctx.DefineSpaceObject(STR_A_DESTROYER, pAttacker);
@@ -232,6 +235,7 @@ bool CPower::OnShow (CSpaceObject *pSource, CSpaceObject *pTarget, CString *rets
 		{
 		CCodeChainCtx Ctx;
 
+		Ctx.SetExtension(GetExtension());
 		Ctx.SaveAndDefineSourceVar(pSource);
 		Ctx.DefineSpaceObject(CONSTLIT("gTarget"), pTarget);
 

@@ -245,7 +245,17 @@ class CRepairerClass : public CDeviceClass
 class CShieldClass : public CDeviceClass
 	{
 	public:
+		enum ECachedHandlers
+			{
+			evtGetMaxHP					= 0,
+			evtOnShieldDamage			= 1,
+			evtOnShieldDown				= 2,
+
+			evtCount					= 3,
+			};
+
 		static ALERROR CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType, CDeviceClass **retpShield);
+		inline bool FindEventHandlerShieldClass (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 
 		//	CDeviceClass virtuals
 
@@ -324,9 +334,7 @@ class CShieldClass : public CDeviceClass
 		int m_iExtraPowerPerCharge;				//	Extra power use for each point of charge (1/10 megawatt)
 		int m_iExtraRegenPerCharge;				//	Extra regen per 10 points of charge
 
-		ICCItem *m_pOnShieldDamage;				//	Code to execute when shield is hit (may be NULL)
-		ICCItem *m_pOnShieldDown;				//	Code to execute when shields go down (may be NULL)
-		ICCItem *m_pGetMaxHP;					//	Code to compute max hit points (may be NULL)
+		SEventHandlerDesc m_CachedEvents[evtCount];		//	Cached events
 
 		CEffectCreatorRef m_pHitEffect;			//	Effect when shield is hit
 	};
@@ -357,9 +365,17 @@ class CSolarDeviceClass : public CDeviceClass
 class CWeaponClass : public CDeviceClass
 	{
 	public:
+		enum ECachedHandlers
+			{
+			evtOnFireWeapon				= 0,
+
+			evtCount					= 1,
+			};
+
 		static ALERROR CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType, CDeviceClass **retpWeapon);
 		virtual ~CWeaponClass (void);
 
+		inline bool FindEventHandlerWeaponClass (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 		CWeaponFireDesc *GetSelectedShotData (CItemCtx &Ctx);
 		inline int GetVariantCount (void) { return m_iShotVariants; }
 		inline CWeaponFireDesc *GetVariant (int iIndex) { return &m_pShotData[iIndex]; }
@@ -441,10 +457,15 @@ class CWeaponClass : public CDeviceClass
 			resShotFired,
 			};
 
+		enum Constants
+			{
+			CONTINUOUS_START = 0xff,
+			};
+
 		CWeaponClass (void);
 
 		int CalcBalance (int iVariant);
-		int CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPosOffset, int *ShotDir);
+		int CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPosOffset, int *ShotDir, bool bSetAlternating);
 		int CalcConfigurationMultiplier (CWeaponFireDesc *pShot = NULL) const;
 		Metric CalcDamagePerShot (CWeaponFireDesc *pShot) const;
 		int CalcFireAngle (CItemCtx &ItemCtx, Metric rSpeed, CSpaceObject *pTarget, bool *retbOutOfArc);
@@ -470,10 +491,10 @@ class CWeaponClass : public CDeviceClass
 		bool VariantIsValid (CSpaceObject *pSource, CInstalledDevice *pDevice, CWeaponFireDesc &ShotData);
 
 		int GetAlternatingPos (CInstalledDevice *pDevice);
-		int GetContinuousFire (CInstalledDevice *pDevice);
+		DWORD GetContinuousFire (CInstalledDevice *pDevice);
 		int GetCurrentVariant (CInstalledDevice *pDevice);
 		void SetAlternatingPos (CInstalledDevice *pDevice, int iAlternatingPos);
-		void SetContinuousFire (CInstalledDevice *pDevice, int iContinuous);
+		void SetContinuousFire (CInstalledDevice *pDevice, DWORD dwContinuous);
 		void SetCurrentVariant (CInstalledDevice *pDevice, int iVariant);
 
 		int m_iFireRate;						//	Ticks between shots
@@ -505,7 +526,7 @@ class CWeaponClass : public CDeviceClass
 		int m_iCounterUpdate;					//	Inc/dec value per update
 		int m_iCounterActivate;					//	Inc/dec value per shot
 
-		ICCItem *m_pOnFireWeapon;				//	Code to execute weapon fire (may be NULL)
+		SEventHandlerDesc m_CachedEvents[evtCount];	//	Cached events
 
 	friend CObjectClass<CWeaponClass>;
 	};

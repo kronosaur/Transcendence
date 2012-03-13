@@ -56,9 +56,12 @@
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
+#define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
-#define CMD_GAME_START							CONSTLIT("gameStart")
+#define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
+#define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
 
+#define CMD_MODEL_ADVENTURE_INIT_DONE			CONSTLIT("modelAdventureInitDone")
 #define CMD_MODEL_INIT_DONE						CONSTLIT("modelInitDone")
 #define CMD_MODEL_NEW_GAME_CREATED				CONSTLIT("modelNewGameCreated")
 
@@ -70,6 +73,7 @@
 
 #define CMD_UI_BACK_TO_INTRO					CONSTLIT("uiBackToIntro")
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
+#define CMD_UI_EXIT								CONSTLIT("uiExit")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
@@ -87,6 +91,7 @@
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
 #define ERR_CANT_SHOW_MOD_EXCHANGE				CONSTLIT("Unable to show Mod Exchange screen")
 #define ERR_CONTACT_KP							CONSTLIT("Contact Kronosaur Productions")
+#define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
 
 const DWORD SERVICE_HOUSEKEEPING_INTERVAL =		1000 * 60; 
@@ -232,8 +237,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
-			m_HI.ShowHardCrashSession(CONSTLIT("Transcendence"), sError);
+			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_LOAD_ERROR, sError, CMD_UI_EXIT));
 			return NOERROR;
 			}
 
@@ -253,7 +257,39 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		DWORD dwAdventure = (DWORD)pData;
 
-		if (error = m_Model.InitAdventure(dwAdventure, &sError))
+		//	Get some information about the adventure before we kick off the 
+		//	thread (we don't want to touch m_Universe while a background thread
+		//	is accessing it).
+
+		CString sAdventureName;
+		CAdventureDesc *pAdventure = g_pUniverse->FindAdventureDesc(dwAdventure);
+		if (pAdventure)
+			{
+			sAdventureName = pAdventure->GetName();
+			}
+		else
+			{
+			sAdventureName = CONSTLIT("Unknown Adventure");
+			}
+
+		//	Kick-off background thread to initialize the adventure
+
+		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, dwAdventure), this, CMD_MODEL_ADVENTURE_INIT_DONE);
+
+		//	Show transition session while we load
+
+		m_HI.ShowSession(new CAdventureIntroSession(m_HI, m_Service, sAdventureName));
+		}
+
+	//	Adventure init done
+
+	else if (strEquals(sCmd, CMD_MODEL_ADVENTURE_INIT_DONE))
+		{
+		CInitAdventureTask *pTask = (CInitAdventureTask *)pData;
+
+		//	Check for error
+
+		if (pTask->GetResult(&sError))
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
@@ -266,7 +302,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		Defaults.iPlayerGenome = m_Model.GetDefaultPlayerGenome();
 		Defaults.dwPlayerShip = m_Model.GetDefaultPlayerShipClass();
 
-		if (error = m_HI.OpenPopupSession(new CNewGameSession(m_HI, m_Service, Defaults), &sError))
+		//	If the player name is NULL then we come up with a better idea
+
+		if (Defaults.sPlayerName.IsBlank())
+			Defaults.sPlayerName = m_Service.GetDefaultUsername();
+
+		if (Defaults.sPlayerName.IsBlank())
+			Defaults.sPlayerName = ::sysGetUserName();
+
+		Defaults.sPlayerName = CUniverse::ValidatePlayerName(Defaults.sPlayerName);
+
+		//	New game screen
+
+		if (error = m_HI.ShowSession(new CNewGameSession(m_HI, m_Service, Defaults), &sError))
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
@@ -279,6 +327,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
+		m_HI.ShowSession(new CLegacySession(m_HI));
 		g_pTrans->StartIntro(CTranscendenceWnd::isBlank);
 		m_iState = stateIntro;
 		}
@@ -311,6 +360,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start the prologue
 
+		m_HI.ShowSession(new CLegacySession(m_HI));
 		g_pTrans->StartProlog();
 		}
 
@@ -349,21 +399,37 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		CString *pFilespec = (CString *)pData;
 
-		//	Load the game
-
-		if (error = m_Model.LoadGame(*pFilespec, &sError))
-			{
-			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_NULL));
-			return NOERROR;
-			}
-
 		//	Done with intro
 
 		ASSERT(m_iState == stateIntro);
 		g_pTrans->StopIntro();
 
+		//	Kick-off background thread to load the game
+
+		m_HI.AddBackgroundTask(new CLoadGameTask(m_HI, m_Model, *pFilespec), this, CMD_GAME_LOAD_DONE);
+
+		//	Show transition session while we load
+
+		m_HI.ShowSession(new CWaitSession(m_HI, m_Service, CONSTLIT("Loading Game")));
+		}
+
+		//	Background load of game is done
+
+	else if (strEquals(sCmd, CMD_GAME_LOAD_DONE))
+		{
+		CLoadGameTask *pTask = (CLoadGameTask *)pData;
+
+		//	Check for error
+
+		if (pTask->GetResult(&sError))
+			{
+			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
+			return NOERROR;
+			}
+
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
+		m_HI.ShowSession(new CLegacySession(m_HI));
 		g_pTrans->StartGame();
 		}
 
@@ -405,9 +471,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Start the game
 
-	else if (strEquals(sCmd, CMD_GAME_START))
+	else if (strEquals(sCmd, CMD_GAME_START_EXISTING))
 		{
-		m_Model.StartGame();
+		m_Model.StartGame(false);
+		m_iState = stateInGame;
+		}
+	else if (strEquals(sCmd, CMD_GAME_START_NEW))
+		{
+		m_Model.StartGame(true);
 		m_iState = stateInGame;
 		}
 
@@ -440,18 +511,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SESSION_EPILOGUE_DONE))
 		{
+		//	Get stats
+
+		CGameStats Stats;
+		m_Model.GetGameStats(&Stats);
+
 		//	Publish game record
 
 		if (m_Service.HasCapability(ICIService::postGameRecord)
 				&& g_pUniverse->IsStatsPostingEnabled())
 			{
-			m_HI.AddBackgroundTask(new CPostRecordTask(m_HI, m_Service, m_Model.GetGameRecord()));
+			m_HI.AddBackgroundTask(new CPostRecordTask(m_HI, m_Service, m_Model.GetGameRecord(), Stats));
 			}
 
 		//	Show stats
-
-		CGameStats Stats;
-		m_Model.GetGameStats(&Stats);
 
 		if (Stats.GetCount() > 0)
 			{
@@ -638,6 +711,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CONTACT_KP, ERR_RESET_PASSWORD_DESC, CMD_NULL));
 		}
 
+	//	Exit
+
+	else if (strEquals(sCmd, CMD_UI_EXIT))
+		{
+		//	LATER: This should be an m_HI method
+		::SendMessage(m_HI.GetHWND(), WM_CLOSE, 0, 0);
+		}
+
 	return NOERROR;
 	}
 
@@ -687,6 +768,11 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Add a timer so that services can do some background processing.
 
 	m_HI.AddTimer(SERVICE_HOUSEKEEPING_INTERVAL, this, CMD_SERVICE_HOUSEKEEPING);
+
+	//	If we can sign in automatically, do so now.
+
+	if (m_Service.HasCapability(ICIService::autoLoginUser))
+		m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
 
 	//	Show the loading screen
 

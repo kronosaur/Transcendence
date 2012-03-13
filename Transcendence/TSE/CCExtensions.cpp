@@ -55,7 +55,7 @@ ICCItem *fnFormat (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_ITEM_INSTALL_COST		22
 #define FN_ITEM_ACTUAL_PRICE		23
 #define FN_ITEM_MAX_APPEARING		24
-#define FN_ITEM_FREQUENCY			25
+#define FN_ITEM_INSTALL_POS			25
 #define FN_ITEM_IMAGE_DESC			26
 #define FN_ITEM_DAMAGE_TYPE			27
 #define FN_ITEM_TYPES				28
@@ -65,7 +65,6 @@ ICCItem *fnFormat (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_ITEM_SET_GLOBAL_DATA		32
 #define FN_ITEM_AVERAGE_APPEARING	33
 #define FN_ITEM_ADD_ENHANCEMENT		34
-#define FN_ITEM_INSTALL_POS			35
 
 ICCItem *fnItemGetTypes (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -73,6 +72,7 @@ ICCItem *fnItemSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_ITEM_TYPE_SET_KNOWN		1
 #define FN_ITEM_DEFAULT_CURRENCY	2
+#define FN_ITEM_FREQUENCY			3
 
 ICCItem *fnItemTypeGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnItemTypeSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -192,10 +192,15 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_SET_ABILITY			100
 #define FN_OBJ_HAS_ABILITY			101
 #define FN_OBJ_TRANSLATE			102
+#define FN_OBJ_GET_STARGATE_ID		103
+#define FN_OBJ_SET_PROPERTY			104
+#define FN_OBJ_GET_PROPERTY			105
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
 #define NAMED_ITEM_SELECTED_MISSILE		CONSTLIT("selectedMissile")
+
+#define DEVICE_FIRE_ARC_OMNI			CONSTLIT("omnidirectional")
 
 ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -398,13 +403,19 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_GET_DATA_FIELD		5
 #define FN_DESIGN_FIRE_EVENT			6
 #define FN_DESIGN_HAS_ATTRIBUTE			7
+#define FN_DESIGN_CREATE				8
+#define FN_DESIGN_DYNAMIC_UNID			9
 
+ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignFind (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_UNIVERSE_TICK				0
 #define FN_UNIVERSE_UNID				1
 #define FN_UNIVERSE_REAL_DATE			2
+#define FN_UNIVERSE_EXTENSION_UNID		3
+#define FN_UNIVERSE_GET_EXTENSION_DATA	4
+#define FN_UNIVERSE_SET_EXTENSION_DATA	5
 
 ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -525,12 +536,12 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"vs",	0,	},
 
 		{	"itmGetDefaultCurrency",		fnItemTypeGet,	FN_ITEM_DEFAULT_CURRENCY,
-			"(itmGetDefaultCurrency item) -> currency",
+			"(itmGetDefaultCurrency item|type) -> currency",
 			"v",	0,	},
 
-		{	"itmGetFrequency",				fnItemGet,		FN_ITEM_FREQUENCY,
-			"(itmGetFrequency item) -> frequency",
-			"v",	0,	},
+		{	"itmGetFrequency",				fnItemTypeGet,		FN_ITEM_FREQUENCY,
+			"(itmGetFrequency item|type [level]) -> frequency",
+			"v*",	0,	},
 
 		{	"itmGetGlobalData",				fnItemGet,		FN_ITEM_GET_GLOBAL_DATA,
 			"(itmGetGlobalData item attrib) -> data",
@@ -661,7 +672,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v*",	0, },
 
 		{	"fmtNoun",						fnFormat,		FN_NAME,
-			"(fmtNoun name nameFlags count formatFlags) -> string\n\n",
+			"(fmtNoun name nameFlags count formatFlags) -> string",
 			"siii",	0, },
 
 		{	"rollDice",						fnRollDice,		0,
@@ -816,6 +827,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"shpGetShieldMaxHitPoints",		fnShipGetOld,		FN_SHIP_SHIELD_MAX_HP,
 			"(shpGetShieldMaxHitPoints ship) -> max hp of shields",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objGetStargateID",				fnObjGet,			FN_OBJ_GET_STARGATE_ID,
+			"(objGetStargateID obj) -> gateID",
+			"i",	0,	},
 
 		{	"shpInstallArmor",				fnShipSetOld,		FN_SHIP_INSTALL_ARMOR,
 			"(shpInstallArmor ship item armorSegment)",
@@ -977,7 +992,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"options\n\n"
 			
-			"   'noMessage",
+			"   'noMessage\n",
 
 			"iss*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -1054,7 +1069,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"   'damaged\n"
 			"   'notInstalled\n"
-			"   'ready",
+			"   'ready\n",
 
 			"is",	0,	},
 
@@ -1099,7 +1114,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	0,	},
 
 		{	"objGetDevicePos",				fnObjGet,		FN_OBJ_DEVICE_POS,
-			"(objGetDevicePos obj deviceItem) -> (angle radius)",
+			"(objGetDevicePos obj deviceItem) -> (angle radius [z])",
 			"iv",	0,	},
 
 		{	"objGetDisposition",			fnObjGet,		FN_OBJ_GET_DISPOSITION,
@@ -1198,6 +1213,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objGetPos",					fnObjGetOld,		FN_OBJ_POSITION,
 			"(objGetPos obj) -> vector",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objGetProperty",				fnObjGet,		FN_OBJ_GET_PROPERTY,
+			"(objGetProperty obj prop) -> value",
+			"is",	0,	},
 
 		{	"objGetSellPrice",				fnObjGet,		FN_OBJ_GET_SELL_PRICE,	
 			"(objGetSellPrice obj item) -> price",
@@ -1349,11 +1368,15 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetDeviceFireArc",			fnObjSet,		FN_OBJ_DEVICE_FIRE_ARC,
-			"(objSetDeviceFireArc obj deviceItem minFireArc maxFireArc) -> True/Nil",
+			"(objSetDeviceFireArc obj deviceItem minFireArc maxFireArc) -> True/Nil\n"
+			"(objSetDeviceFireArc obj deviceItem (minFireArc maxFireArc)) -> True/Nil\n"
+			"(objSetDeviceFireArc obj deviceItem 'omnidirectional) -> True/Nil\n"
+			"(objSetDeviceFireArc obj deviceItem nil) -> True/Nil",
 			"ivv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetDevicePos",				fnObjSet,		FN_OBJ_DEVICE_POS,
-			"(objSetDevicePos obj deviceItem angle radius) -> True/Nil",
+			"(objSetDevicePos obj deviceItem angle radius [z]) -> True/Nil\n"
+			"(objSetDevicePos obj deviceItem (angle radius [z])) -> True/Nil",
 			"ivv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetEventHandler",			fnObjSet,		FN_OBJ_SET_EVENT_HANDLER,
@@ -1403,6 +1426,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objSetPos",					fnObjSet,		FN_OBJ_POSITION,
 			"(objSetPos obj vector)",
 			"iv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objSetProperty",				fnObjSet,		FN_OBJ_SET_PROPERTY,
+			"(objSetProperty obj prop data) -> True/Nil",
+			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetShowAsDestination",			fnObjSet,		FN_OBJ_SET_AS_DESTINATION,
 			"(objSetShowAsDestination obj [show dist/bearing] [autoclear])",
@@ -1711,8 +1738,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysStopTime",					fnSystemMisc,	FN_SYS_STOP_TIME,
-			"(sysStopTime duration except) -> True/Nil",
-			"ii",	PPFLAG_SIDEEFFECTS,	},
+			"(sysStopTime duration except) -> True/Nil\n"
+			"(sysStopTime targetList duration) -> True/Nil",
+			"vv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysVectorAdd",					fnSystemVectorMath,		FN_VECTOR_ADD,	
 			"(sysVectorAdd vector vector) -> vector",
@@ -1762,6 +1790,14 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	Design Type functions
 		//	---------------------
+
+		{	"typCreate",					fnDesignCreate,		FN_DESIGN_CREATE,
+			"(typCreate unid XML) -> True/Nil",
+			"is",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"typDynamicUNID",				fnDesignCreate,		FN_DESIGN_DYNAMIC_UNID,
+			"(typDynamicUNID uniqueName) -> UNID",
+			"s",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typFind",						fnDesignFind,		0,
 			"(typFind criteria) -> list of UNIDs",
@@ -1850,6 +1886,14 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	Universe functions
 		//	----------------
 
+		{	"unvGetCurrentExtensionUNID",	fnUniverseGet,	FN_UNIVERSE_EXTENSION_UNID,
+			"(unvGetCurrentExtensionUNID) -> UNID",
+			NULL,	0,	},
+
+		{	"unvGetExtensionData",			fnUniverseGet,	FN_UNIVERSE_GET_EXTENSION_DATA,
+			"(unvGetExtensionData scope attrib) -> data",
+			"ss",	0,	},
+
 		{	"unvGetRealDate",				fnUniverseGet,	FN_UNIVERSE_REAL_DATE,
 			"(unvGetRealDate) -> (year month day) GMT",
 			NULL,	0,	},
@@ -1857,6 +1901,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"unvGetTick",					fnUniverseGet,	FN_UNIVERSE_TICK,
 			"(unvGetTick) -> time",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"unvSetExtensionData",			fnUniverseGet,	FN_UNIVERSE_SET_EXTENSION_DATA,
+			"(unvSetExtensionData scope attrib data) -> True/Nil\n\n"
+
+			"scope\n\n"
+
+			"   'local\n"
+			"   'serviceExtension\n"
+			"   'serviceUser\n",
+
+			"ssv",	0,	},
 
 		{	"unvUNID",						fnUniverseGet,	FN_UNIVERSE_UNID,
 			"(unvUNID string) -> (unid 'itemtype name) or (unid 'shipclass name)",
@@ -2224,6 +2279,56 @@ ICCItem *fnDesignFind (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	return pResult;
 	}
 
+ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnDesignCreate
+//
+//	(typCreate unid XML)
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	//	Implement
+
+	switch (dwData)
+		{
+		case FN_DESIGN_CREATE:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+
+			DWORD dwUNID = pArgs->GetElement(0)->GetIntegerValue();
+
+			//	Add it
+
+			CString sError;
+			if (g_pUniverse->AddDynamicType(pCtx->GetExtension(), 
+					dwUNID, 
+					pArgs->GetElement(1)->GetStringValue(), 
+					((pCtx->GetEvent() == eventOnGlobalTypesInit) ? true : false),
+					&sError) != NOERROR)
+				return pCC->CreateError(sError);
+
+			//	Done
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_DESIGN_DYNAMIC_UNID:
+			{
+			CString sName = pArgs->GetElement(0)->GetStringValue();
+			if (sName.IsBlank())
+				return pCC->CreateError(CONSTLIT("Invalid dynamic name"), pArgs->GetElement(0));
+
+			DWORD dwUNID = g_pUniverse->GetDesignCollection().GetDynamicUNID(sName);
+			return pCC->CreateInteger((int)dwUNID);
+			}
+
+		default:
+			ASSERT(false);
+			return pCC->CreateNil();
+		}
+	}
+
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 //	fnDesignGet
@@ -2305,14 +2410,7 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (sAttrib.IsBlank())
 				return pCC->CreateNil();
 
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
-
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 			pType->SetGlobalData(sAttrib, sData);
 			return pCC->CreateTrue();
 			}
@@ -2674,14 +2772,7 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				break;
 				}
 
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
-
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 			pType->SetGlobalData(sAttrib, sData);
 			pResult = pCC->CreateTrue();
 			break;
@@ -2709,10 +2800,6 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				}
 			break;
 			}
-
-		case FN_ITEM_FREQUENCY:
-			pResult = pCC->CreateInteger(pType->GetFrequency());
-			break;
 
 		case FN_ITEM_DAMAGED:
 			pResult = pCC->CreateBool(Item.IsDamaged());
@@ -2916,16 +3003,7 @@ ICCItem *fnItemSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_ITEM_DATA:
 			{
-			//	Set quoted before we unlink
-			//	Note: This might be a hack...it probably makes more sense to mark
-			//	all function return values as 'quoted'
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
-
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 			int iCount = (pArgs->GetCount() > 3 ? Max(0, pArgs->GetElement(3)->GetIntegerValue()) : 1);
 
 			pItemList->SetDataAtCursor(pArgs->GetElement(1)->GetStringValue(), sData, iCount);
@@ -2964,6 +3042,12 @@ ICCItem *fnItemTypeGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		case FN_ITEM_DEFAULT_CURRENCY:
 			return pCC->CreateInteger(pType->GetCurrencyType()->GetUNID());
+
+		case FN_ITEM_FREQUENCY:
+			if (pArgs->GetCount() > 1)
+				return pCC->CreateInteger(pType->GetFrequencyByLevel(pArgs->GetElement(1)->GetIntegerValue()));
+			else
+				return pCC->CreateInteger(pType->GetFrequency());
 
 		default:
 			ASSERT(FALSE);
@@ -3189,15 +3273,7 @@ ICCItem *fnObjData (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 					}
 				}
 #endif
-			//	Set quoted before we unlink
-			//	Note: This might be a hack...it probably makes more sense to mark
-			//	all function return values as 'quoted'
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 
 			//	For backwards compatibility we reroute rin to the proper place
 
@@ -3218,14 +3294,7 @@ ICCItem *fnObjData (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 		case FN_OBJ_SET_GLOBAL_DATA:
 			{
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
-
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 			pObj->SetGlobalData(sAttrib, sData);
 			pResult = pCC->CreateTrue();
 			pArgs->Discard(pCC);
@@ -3893,17 +3962,6 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			EDamageResults result = pObj->Damage(Ctx);
 
-			//	Create the hit effect
-
-			if (result != damageAbsorbedByShields && pDesc->m_pHitEffect)
-				{
-				pDesc->m_pHitEffect->CreateEffect(pSystem,
-						(!pObj->IsDestroyed() ? pObj : NULL),
-						vHitPos,
-						CVector(),
-						Ctx.iDirection);
-				}
-
 			//	Create fragments
 
 			if (pDesc->HasFragments() && pSystem)
@@ -3944,25 +4002,33 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pDevice == NULL)
 				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
 
-			//	Create a list
+			//	If the device slot is omnidirectional then we just return that
 
-			ICCItem *pResult = pCC->CreateLinkedList();
-			if (pResult->IsError())
+			if (pDevice->IsOmniDirectional())
+				return pCC->CreateString(DEVICE_FIRE_ARC_OMNI);
+
+			//	If no fire arc, return nil
+
+			else if (pDevice->GetMinFireArc() == 0 && pDevice->GetMaxFireArc() == 0)
+				return pCC->CreateNil();
+
+			//	Otherwise we return a list with the fire arc
+
+			else
+				{
+				//	Create a list
+
+				ICCItem *pResult = pCC->CreateLinkedList();
+				if (pResult->IsError())
+					return pResult;
+
+				CCLinkedList *pList = (CCLinkedList *)pResult;
+
+				pList->AppendIntegerValue(pCC, pDevice->GetMinFireArc());
+				pList->AppendIntegerValue(pCC, pDevice->GetMaxFireArc());
+
 				return pResult;
-
-			CCLinkedList *pList = (CCLinkedList *)pResult;
-
-			ICCItem *pItem = pCC->CreateInteger(pDevice->GetMinFireArc());
-			pList->Append(pCC, pItem, NULL);
-			pItem->Discard(pCC);
-
-			pItem = pCC->CreateInteger(pDevice->GetMaxFireArc());
-			pList->Append(pCC, pItem, NULL);
-			pItem->Discard(pCC);
-
-			//	Done
-
-			return pResult;
+				}
 			}
 
 		case FN_OBJ_DEVICE_POS:
@@ -3981,13 +4047,12 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			CCLinkedList *pList = (CCLinkedList *)pResult;
 
-			ICCItem *pItem = pCC->CreateInteger(pDevice->GetPosAngle());
-			pList->Append(pCC, pItem, NULL);
-			pItem->Discard(pCC);
+			//	List contains angle, radius, and optional z
 
-			pItem = pCC->CreateInteger(pDevice->GetPosRadius());
-			pList->Append(pCC, pItem, NULL);
-			pItem->Discard(pCC);
+			pList->AppendIntegerValue(pCC, pDevice->GetPosAngle());
+			pList->AppendIntegerValue(pCC, pDevice->GetPosRadius());
+			if (pDevice->GetPosZ() != 0)
+				pList->AppendIntegerValue(pCC, pDevice->GetPosZ());
 
 			//	Done
 
@@ -4202,6 +4267,9 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 			}
 
+		case FN_OBJ_GET_PROPERTY:
+			return pObj->GetProperty(pArgs->GetElement(1)->GetStringValue());
+
 		case FN_OBJ_GET_SELL_PRICE:
 			{
 			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
@@ -4222,6 +4290,22 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateInteger(iValue);
 			else
 				return pCC->CreateNil();
+			}
+
+		case FN_OBJ_GET_STARGATE_ID:
+			{
+			if (!pObj->IsStargate())
+				return pCC->CreateNil();
+
+			CSystem *pSystem = pObj->GetSystem();
+			if (pSystem == NULL)
+				return pCC->CreateNil();
+
+			CString sGateID;
+			if (!pSystem->FindObjectName(pObj, &sGateID))
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sGateID);
 			}
 
 		case FN_OBJ_IDENTIFIED:
@@ -4326,14 +4410,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
 			CString sAttrib = pArgs->GetElement(2)->GetStringValue();
-
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(3)->IsQuoted();
-			pArgs->GetElement(3)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(3));
-			if (!bOldQuoted)
-				pArgs->GetElement(3)->ClearQuoted();
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(3));
 
 			pObj->SetOverlayData(dwID, sAttrib, sData);
 			return pCC->CreateTrue();
@@ -4836,7 +4913,12 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pDevice == NULL)
 				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
 
-			//	Get the parameters
+			//	Get the parameters. We accept any of the following args:
+			//
+			//	*	Two integers reprenting minArc and maxArc
+			//	*	A single list of two integers, minArc and maxArc
+			//	*	The special value 'omnidirectional
+			//	*	Nil (meaning no fire arc and not omnidirectional)
 
 			int iMinFireArc;
 			int iMaxFireArc;
@@ -4844,18 +4926,30 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				{
 				iMinFireArc = pArgs->GetElement(2)->GetIntegerValue();
 				iMaxFireArc = pArgs->GetElement(3)->GetIntegerValue();
+
+				pDevice->SetOmniDirectional(false);
+				pDevice->SetFireArc(iMinFireArc % 360, iMaxFireArc % 360);
+				}
+			else if (pArgs->GetElement(2)->IsNil())
+				{
+				pDevice->SetOmniDirectional(false);
+				pDevice->SetFireArc(0, 0);
+				}
+			else if (strEquals(pArgs->GetElement(2)->GetStringValue(), DEVICE_FIRE_ARC_OMNI))
+				{
+				pDevice->SetOmniDirectional(true);
+				pDevice->SetFireArc(0, 0);
 				}
 			else if (pArgs->GetElement(2)->IsList() && pArgs->GetElement(2)->GetCount() >= 2)
 				{
 				iMinFireArc = pArgs->GetElement(2)->GetElement(0)->GetIntegerValue();
 				iMaxFireArc = pArgs->GetElement(2)->GetElement(1)->GetIntegerValue();
+
+				pDevice->SetOmniDirectional(false);
+				pDevice->SetFireArc(iMinFireArc % 360, iMaxFireArc % 360);
 				}
 			else
 				return pCC->CreateError(CONSTLIT("Invalid fire arc"), pArgs->GetElement(2));
-
-			//	Set it
-
-			pDevice->SetFireArc(iMinFireArc % 360, iMaxFireArc % 360);
 
 			//	Done
 
@@ -4870,19 +4964,28 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pDevice == NULL)
 				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
 
-			//	Get the parameters
+			//	Get the parameters. We accept either angle/radius/z as parameters
+			//	to the function or a single list parameter with angle/radius/z.
+			//	(The latter is compatible with the return of objGetDevicePos.)
 
 			int iPosAngle;
 			int iPosRadius;
+			int iZ = 0;
 			if (pArgs->GetCount() > 3)
 				{
 				iPosAngle = pArgs->GetElement(2)->GetIntegerValue();
 				iPosRadius = pArgs->GetElement(3)->GetIntegerValue();
+
+				if (pArgs->GetCount() > 4)
+					iZ = pArgs->GetElement(4)->GetIntegerValue();
 				}
 			else if (pArgs->GetElement(2)->IsList() && pArgs->GetElement(2)->GetCount() >= 2)
 				{
 				iPosAngle = pArgs->GetElement(2)->GetElement(0)->GetIntegerValue();
 				iPosRadius = pArgs->GetElement(2)->GetElement(1)->GetIntegerValue();
+
+				if (pArgs->GetElement(2)->GetCount() >= 3)
+					iZ = pArgs->GetElement(2)->GetElement(2)->GetIntegerValue();
 				}
 			else
 				return pCC->CreateError(CONSTLIT("Invalid angle and radius"), pArgs->GetElement(2));
@@ -4891,6 +4994,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			pDevice->SetPosAngle(iPosAngle);
 			pDevice->SetPosRadius(iPosRadius);
+			pDevice->SetPosZ(iZ);
 
 			//	Done
 
@@ -5142,16 +5246,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the attribute
 
 			CString sAttrib = pArgs->GetElement(2)->GetStringValue();
-
-			//	Set quoted before we unlink
-			//	Note: This might be a hack...it probably makes more sense to mark
-			//	all function return values as 'quoted'
-
-			BOOL bOldQuoted = pArgs->GetElement(3)->IsQuoted();
-			pArgs->GetElement(3)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(3));
-			if (!bOldQuoted)
-				pArgs->GetElement(3)->ClearQuoted();
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(3));
 
 			int iCount = (pArgs->GetCount() > 4 ? Max(0, pArgs->GetElement(4)->GetIntegerValue()) : 1);
 
@@ -5187,6 +5282,20 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pObj->SetOverride(pType);
 				}
 			return pCC->CreateTrue();
+
+		case FN_OBJ_SET_PROPERTY:
+			{
+			CString sError;
+			if (!pObj->SetProperty(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2), &sError))
+				{
+				if (sError.IsBlank())
+					return pCC->CreateError(CONSTLIT("Invalid property"), pArgs->GetElement(1));
+				else
+					return pCC->CreateError(sError);
+				}
+
+			return pCC->CreateTrue();
+			}
 
 		case FN_OBJ_SET_TRADE_DESC:
 			{
@@ -5731,14 +5840,7 @@ ICCItem *fnShipClass (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SHIP_SET_GLOBAL_DATA:
 			{
 			CString sAttrib = pArgs->GetElement(1)->GetStringValue();
-
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 
 			pClass->SetGlobalData(sAttrib, sData);
 			pResult = pCC->CreateTrue();
@@ -7282,14 +7384,7 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_STATION_SET_GLOBAL_DATA:
 			{
 			CString sAttrib = pArgs->GetElement(1)->GetStringValue();
-
-			//	Set quoted before we unlink
-
-			BOOL bOldQuoted = pArgs->GetElement(2)->IsQuoted();
-			pArgs->GetElement(2)->SetQuoted();
-			CString sData = pCC->Unlink(pArgs->GetElement(2));
-			if (!bOldQuoted)
-				pArgs->GetElement(2)->ClearQuoted();
+			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 
 			pType->SetGlobalData(sAttrib, sData);
 			pResult = pCC->CreateTrue();
@@ -7546,7 +7641,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			CWeaponFireDesc *pDesc = GetWeaponFireDescArg(pArgs->GetElement(0));
 			if (pDesc == NULL)
-				return pCC->CreateNil();
+				return pCC->CreateError(CONSTLIT("Unable to find specified weapon"));
 
 			CDamageSource Source = GetDamageSourceArg(*pCC, pArgs->GetElement(1));
 			CVector vPos;
@@ -7635,7 +7730,7 @@ ICCItem *fnSystemCreateEffect (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwD
 
 //	fnSystemCreateEffect
 //
-//	(sysCreateEffect effectID anchor pos [rotation])
+//	(sysCreateEffect effectID anchor pos [rotation] [variant])
 
 	{
 	ALERROR error;
@@ -7649,6 +7744,7 @@ ICCItem *fnSystemCreateEffect (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwD
 	CVector vPos;
 	GetPosOrObject(pEvalCtx, pArgs->GetElement(2), &vPos);
 	int iRotation = (pArgs->GetCount() > 3 ? pArgs->GetElement(3)->GetIntegerValue() : 0);
+	int iVariant = (pArgs->GetCount() > 4 ? pArgs->GetElement(4)->GetIntegerValue() : 0);
 
 	//	Validate
 
@@ -7666,7 +7762,8 @@ ICCItem *fnSystemCreateEffect (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwD
 			pAnchor,
 			vPos,
 			NullVector,
-			iRotation))
+			iRotation,
+			iVariant))
 		return pCC->CreateError(CONSTLIT("Error creating effect"), pCC->CreateInteger(error));
 
 	//	Done
@@ -8226,18 +8323,7 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->Link(pNode->GetData(sAttrib), 0, NULL);
 			else
 				{
-				CString sData;
-
-				//	Set quoted before we unlink
-				//	Note: This might be a hack...it probably makes more sense to mark
-				//	all function return values as 'quoted'
-
-				BOOL bOldQuoted = pArgs->GetElement(iArg)->IsQuoted();
-				pArgs->GetElement(iArg)->SetQuoted();
-				sData = pCC->Unlink(pArgs->GetElement(iArg));
-				if (!bOldQuoted)
-					pArgs->GetElement(iArg)->ClearQuoted();
-
+				CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(iArg));
 				pNode->SetData(sAttrib, sData);
 				return pCC->CreateTrue();
 				}
@@ -8563,6 +8649,7 @@ ICCItem *fnSystemMisc (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
+	int i;
 
 	//	Get the current system
 
@@ -8585,17 +8672,41 @@ ICCItem *fnSystemMisc (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SYS_STOP_TIME:
 			{
-			//	Get the arguments
+			//	If the first argument is a list, then we have a target list
 
-			int iDuration = (pArgs->GetElement(0)->IsNil() ? -1 : pArgs->GetElement(0)->GetIntegerValue());
-			CSpaceObject *pExcept = CreateObjFromItem(*pCC, pArgs->GetElement(1));
-			if (pExcept == NULL)
-				return pCC->CreateNil();
+			if (pArgs->GetElement(0)->IsList())
+				{
+				CSpaceObjectList TargetList;
+				for (i = 0; i < pArgs->GetElement(0)->GetCount(); i++)
+					{
+					CSpaceObject *pObj = CreateObjFromItem(*pCC, pArgs->GetElement(0)->GetElement(i));
+					if (pObj)
+						TargetList.Add(pObj);
+					}
 
-			//	Compute
+				if (TargetList.GetCount() == 0)
+					return pCC->CreateNil();
 
-			pSystem->StopTimeForAll(iDuration, pExcept);
-			return pCC->CreateTrue();
+				int iDuration = (pArgs->GetElement(1)->IsNil() ? -1 : pArgs->GetElement(1)->GetIntegerValue());
+
+				pSystem->StopTime(TargetList, iDuration);
+				return pCC->CreateTrue();
+				}
+
+			//	Otherwise, we have a duration and exception
+
+			else
+				{
+				int iDuration = (pArgs->GetElement(0)->IsNil() ? -1 : pArgs->GetElement(0)->GetIntegerValue());
+				CSpaceObject *pExcept = CreateObjFromItem(*pCC, pArgs->GetElement(1));
+				if (pExcept == NULL)
+					return pCC->CreateNil();
+
+				//	Compute
+
+				pSystem->StopTimeForAll(iDuration, pExcept);
+				return pCC->CreateTrue();
+				}
 			}
 
 		default:
@@ -8878,6 +8989,38 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_UNIVERSE_GET_EXTENSION_DATA:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			SExtensionDesc *pExtension = pCtx->GetExtension();
+			if (pExtension == NULL || pExtension->dwUNID == 0)
+				return pCC->CreateError(CONSTLIT("Extension UNID undefined in this context"));
+
+			EStorageScopes iScope = ParseStorageScopeID(pArgs->GetElement(0)->GetStringValue());
+			if (iScope == storeUnknown)
+				return pCC->CreateError(CONSTLIT("Unknown storage scope"), pArgs->GetElement(0));
+			else if (iScope == storeServiceExtension || iScope == storeServiceUser)
+				return pCC->CreateError(CONSTLIT("Service scope not yet implemented"), pArgs->GetElement(0));
+
+			CString sData = g_pUniverse->GetExtensionData(iScope, pExtension->dwUNID, pArgs->GetElement(1)->GetStringValue());
+			if (sData.IsBlank())
+				return pCC->CreateNil();
+
+			//	Result
+
+			return pCC->Link(sData, 0, NULL);
+			}
+
+		case FN_UNIVERSE_EXTENSION_UNID:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			SExtensionDesc *pExtension = pCtx->GetExtension();
+			if (pExtension == NULL)
+				return pCC->CreateNil();
+
+			return pCC->CreateInteger(pExtension->dwUNID);
+			}
+
 		case FN_UNIVERSE_REAL_DATE:
 			{
 			CTimeDate Date(CTimeDate::Today);
@@ -8900,6 +9043,27 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			pList->Append(pCC, pValue, NULL);
 			pValue->Discard(pCC);
 			break;
+			}
+
+		case FN_UNIVERSE_SET_EXTENSION_DATA:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			SExtensionDesc *pExtension = pCtx->GetExtension();
+			if (pExtension == NULL || pExtension->dwUNID == 0)
+				return pCC->CreateError(CONSTLIT("Extension UNID undefined in this context"));
+
+			EStorageScopes iScope = ParseStorageScopeID(pArgs->GetElement(0)->GetStringValue());
+			if (iScope == storeUnknown)
+				return pCC->CreateError(CONSTLIT("Unknown storage scope"), pArgs->GetElement(0));
+			else if (iScope == storeServiceExtension || iScope == storeServiceUser)
+				return pCC->CreateError(CONSTLIT("Service scope not yet implemented"), pArgs->GetElement(0));
+
+			if (!g_pUniverse->SetExtensionData(iScope, pExtension->dwUNID, pArgs->GetElement(1)->GetStringValue(), CreateDataFromItem(*pCC, pArgs->GetElement(2))))
+				return pCC->CreateError(CONSTLIT("Unable to store data"), pArgs->GetElement(1));
+
+			//	Result
+
+			return pCC->CreateTrue();
 			}
 
 		case FN_UNIVERSE_TICK:

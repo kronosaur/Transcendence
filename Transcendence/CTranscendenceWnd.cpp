@@ -534,21 +534,6 @@ void CTranscendenceWnd::DoCommand (DWORD dwCmd)
 		{
 		case CMD_CONTINUE_OLD_GAME:
 			{
-#if 0
-			ALERROR error;
-			CString sError;
-			StopIntro();
-			if (error = m_pTC->GetModel().LoadGame(m_pTC->GetModel().GetDefaultPlayerName(), &sError))
-				{
-				StartIntro(isBlank);
-				ShowErrorMessage(sError);
-				break;
-				}
-
-			kernelDebugLogMessage("Loaded game file version: %x", m_pTC->GetModel().GetGameFile().GetCreateVersion());
-
-			StartGame();
-#endif
 			g_pHI->HICommand(CONSTLIT("gameSelectSaveFile"));
 			break;
 			}
@@ -1121,7 +1106,10 @@ ALERROR CTranscendenceWnd::StartGame (bool bNewGame)
 
 	//	Start the game. This ends up calling CTranscendenceModel::StartGame
 
-	g_pHI->HICommand(CONSTLIT("gameStart"));
+	if (bNewGame)
+		g_pHI->HICommand(CONSTLIT("gameStartNew"));
+	else
+		g_pHI->HICommand(CONSTLIT("gameStartExisting"));
 
 	return NOERROR;
 	}
@@ -1457,10 +1445,6 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	m_DebugConsole.Output(m_sCopyright);
 	m_DebugConsole.Output(NULL_STR);
 
-	//	Hide the cursor
-
-	ShowCursor(false);
-
 	return 0;
 
 Fail:
@@ -1520,18 +1504,22 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						CString sInput = m_DebugConsole.GetInput();
 						if (!sInput.IsBlank())
 							{
+							CCodeChain &CC = g_pUniverse->GetCC();
+
 							m_DebugConsole.InputEnter();
 
-							CCodeChain &CC = g_pUniverse->GetCC();
-							ICCItem *pCode = CC.Link(sInput, 0, NULL);
-							ICCItem *pResult = CC.TopLevel(pCode, &g_pUniverse);
+							CCodeChainCtx Ctx;
+							ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
+							ICCItem *pResult = Ctx.Run(pCode);
+
 							CString sOutput;
 							if (pResult->IsIdentifier())
 								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
 							else
 								sOutput = CC.Unlink(pResult);
-							pResult->Discard(&CC);
-							pCode->Discard(&CC);
+
+							Ctx.Discard(pResult);
+							Ctx.Discard(pCode);
 
 							m_DebugConsole.Output(sOutput);
 							}
@@ -1929,7 +1917,8 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 				case CGameKeys::keyShowConsole:
 					{
-					if (m_pTC->GetOptionBoolean(CGameSettings::debugMode))
+					if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
+							&& !g_pUniverse->IsRegistered())
 						m_bDebugConsole = !m_bDebugConsole;
 					break;
 					}

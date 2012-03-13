@@ -254,7 +254,7 @@ void CPlayerGameStats::GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlay
 				CString sLine = (sEnhancement.IsBlank() ? sItemName : strPatternSubst(CONSTLIT("%s [%s]"), sItemName, sEnhancement));
 
 				bool bInserted;
-				CItem *pEntry = InstalledItems.Insert(sLine, &bInserted);
+				CItem *pEntry = InstalledItems.SetAt(sLine, &bInserted);
 				if (bInserted)
 					{
 					*pEntry = Item;

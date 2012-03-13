@@ -62,8 +62,8 @@ APPICON                 ICON                    "Transcendence.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,7,1
- PRODUCTVERSION 1,0,7,1
+ FILEVERSION 1,0,8,0
+ PRODUCTVERSION 1,0,8,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -80,12 +80,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Neurohack"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1, 0, 7, 1"
+            VALUE "FileVersion", "1, 0, 8, 0"
             VALUE "InternalName", "Transcendence"
-            VALUE "LegalCopyright", "Copyright © 2003-2011 George Moromisato. All Rights Reserved."
+            VALUE "LegalCopyright", "Copyright © 2003-2012 Kronosaur Productions, LLC. All Rights Reserved."
+            VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.07a"
+            VALUE "ProductVersion", "1.08"
         END
     END
     BLOCK "VarFileInfo"
@@ -107,9 +108,8 @@ IDR_ICON_DISPLAY_IMAGE  JPEG                    "Game\\Resources\\IconDisplay.jp
 IDR_HELP_BACKGROUND     JPEG                    "Game\\Resources\\Help Screen.jpg"
 IDR_SELECT_SHIP_IMAGE   JPEG                    "Game\\Resources\\SelectShipIcons.jpg"
 IDR_GAME_STATS_SCREEN   JPEG                    "Game\\Resources\\Game Stats Screen.jpg"
-
 JPEG_DAMAGE_TYPE_ICONS  JPEG                    "Game\\Resources\\DamageTypes.jpg"
-JPEG_UI_ICONS			JPEG					"Game\\Resources\\UIIcons.jpg"
+JPEG_UI_ICONS           JPEG                    "Game\\Resources\\UIIcons.jpg"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -117,9 +117,8 @@ JPEG_UI_ICONS			JPEG					"Game\\Resources\\UIIcons.jpg"
 //
 
 IDR_STARGATE_MASK       BITMAP                  "Game\\Resources\\StargateMask.BMP"
-
-BMP_DAMAGE_TYPE_ICONS_MASK BITMAP               "Game\\Resources\\DamageTypesMask.bmp"
-BMP_UI_ICONS_MASK		BITMAP					"Game\\Resources\\UIIconsMask.bmp"
+BMP_DAMAGE_TYPE_ICONS_MASK BITMAP                  "Game\\Resources\\DamageTypesMask.bmp"
+BMP_UI_ICONS_MASK       BITMAP                  "Game\\Resources\\UIIconsMask.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

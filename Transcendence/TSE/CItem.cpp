@@ -246,8 +246,8 @@ bool CItem::FireCanBeInstalled (CSpaceObject *pSource, CString *retsError) const
 //	CanBeInstalled event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(CAN_BE_INSTALLED_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(CAN_BE_INSTALLED_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -255,7 +255,7 @@ bool CItem::FireCanBeInstalled (CSpaceObject *pSource, CString *retsError) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		bool bCanBeInstalled;
 		if (pResult->IsError())
@@ -287,8 +287,8 @@ bool CItem::FireCanBeUninstalled (CSpaceObject *pSource, CString *retsError) con
 //	CanBeInstalled event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(CAN_BE_UNINSTALLED_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(CAN_BE_UNINSTALLED_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -296,7 +296,7 @@ bool CItem::FireCanBeUninstalled (CSpaceObject *pSource, CString *retsError) con
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 
 		bool bCanBeUninstalled;
 		if (pResult->IsError())
@@ -328,8 +328,8 @@ void CItem::FireOnAddedAsEnhancement (CSpaceObject *pSource, const CItem &ItemEn
 //	OnAddedAsEnhancement event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(ON_ADDED_AS_ENHANCEMENT_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(ON_ADDED_AS_ENHANCEMENT_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -338,7 +338,7 @@ void CItem::FireOnAddedAsEnhancement (CSpaceObject *pSource, const CItem &ItemEn
 		Ctx.DefineItem(ItemEnhanced);
 		Ctx.DefineInteger(CONSTLIT("aResult"), (int)iStatus);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnAddedAsEnhancement"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -352,8 +352,8 @@ void CItem::FireOnDisabled (CSpaceObject *pSource) const
 //	OnDisabled event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(ON_DISABLED_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(ON_DISABLED_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -361,7 +361,7 @@ void CItem::FireOnDisabled (CSpaceObject *pSource) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnDisabled"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -375,8 +375,8 @@ void CItem::FireOnEnabled (CSpaceObject *pSource) const
 //	OnEnabled event
 
 	{
-	ICCItem *pCode = m_pItemType->GetOnEnabledCode();
-	if (pCode)
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtOnEnabled, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -384,7 +384,7 @@ void CItem::FireOnEnabled (CSpaceObject *pSource) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnEnabled"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -398,8 +398,8 @@ void CItem::FireOnInstall (CSpaceObject *pSource) const
 //	OnInstall event
 
 	{
-	ICCItem *pCode = m_pItemType->GetOnInstallCode();
-	if (pCode)
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtOnInstall, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -407,7 +407,7 @@ void CItem::FireOnInstall (CSpaceObject *pSource) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnInstall"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -421,8 +421,9 @@ void CItem::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) c
 //	OnObjDestroyed event
 
 	{
-	ICCItem *pCode = m_pItemType->FindEventHandler(CDesignType::evtOnObjDestroyed);
-	if (pCode)
+	SEventHandlerDesc Event;
+
+	if (m_pItemType->FindEventHandler(CDesignType::evtOnObjDestroyed, &Event))
 		{
 		CCodeChainCtx CCCtx;
 
@@ -435,7 +436,7 @@ void CItem::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) c
 		CCCtx.DefineSpaceObject(CONSTLIT("aWreckObj"), Ctx.pWreck);
 		CCCtx.DefineString(CONSTLIT("aDestroyReason"), GetDestructionName(Ctx.iCause));
 
-		ICCItem *pResult = CCCtx.Run(pCode);
+		ICCItem *pResult = CCCtx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnObjDestroyed"), m_pItemType->GetUNID()), pResult);
 		CCCtx.Discard(pResult);
@@ -449,8 +450,8 @@ bool CItem::FireOnReactorOverload (CSpaceObject *pSource) const
 //	OnReactorOverload event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(ON_REACTOR_OVERLOAD_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(ON_REACTOR_OVERLOAD_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 		bool bHandled = false;
@@ -459,7 +460,7 @@ bool CItem::FireOnReactorOverload (CSpaceObject *pSource) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnReactorOverload"), m_pItemType->GetUNID()), pResult);
 		else
@@ -479,8 +480,8 @@ void CItem::FireOnRemovedAsEnhancement (CSpaceObject *pSource, const CItem &Item
 //	OnRemovedAsEnhancement event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(ON_REMOVED_AS_ENHANCEMENT_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(ON_REMOVED_AS_ENHANCEMENT_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -488,7 +489,7 @@ void CItem::FireOnRemovedAsEnhancement (CSpaceObject *pSource, const CItem &Item
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(ItemEnhanced);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnRemovedAsEnhancement"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -502,8 +503,8 @@ void CItem::FireOnUninstall (CSpaceObject *pSource) const
 //	OnUninstall event
 
 	{
-	ICCItem *pCode;
-	if (m_pItemType->FindEventHandler(ON_UNINSTALL_EVENT, &pCode))
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandler(ON_UNINSTALL_EVENT, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -511,7 +512,7 @@ void CItem::FireOnUninstall (CSpaceObject *pSource) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnUninstall"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
@@ -586,8 +587,8 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 
 	//	If we have code, call it to generate the name
 
-	ICCItem *pCode;
-	if (pCode = m_pItemType->GetNameCode())
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtGetName, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -597,7 +598,7 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 		Ctx.SaveItemVar();
 		Ctx.DefineItem(*this);
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			{
 			sName = pResult->GetStringValue();
@@ -748,8 +749,8 @@ int CItem::GetTradePrice (CSpaceObject *pObj, bool bActual) const
 //	items to compute a different value based on other factor
 
 	{
-	ICCItem *pCode;
-	if (pCode = m_pItemType->GetTradePriceCode())
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtGetTradePrice, &Event))
 		{
 		CCodeChainCtx Ctx;
 
@@ -760,7 +761,7 @@ int CItem::GetTradePrice (CSpaceObject *pObj, bool bActual) const
 		Ctx.DefineItem(*this);
 		Ctx.DefineString(CONSTLIT("aPriceType"), (bActual ? CONSTLIT("actual") : CONSTLIT("normal")));
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pObj->ReportEventError(strPatternSubst(CONSTLIT("Item %x GetTradePrice"), m_pItemType->GetUNID()), pResult);
 		int iPrice = pResult->GetIntegerValue();

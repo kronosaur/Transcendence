@@ -22,6 +22,33 @@ CItemEventDispatcher::~CItemEventDispatcher (void)
 	RemoveAll();
 	}
 
+void CItemEventDispatcher::AddEntry (const CString &sEvent, EItemEventDispatchTypes iType, const SEventHandlerDesc &Event, const CItem &Item, DWORD dwEnhancementID)
+
+//	AddEntry
+//
+//	Adds an entry
+
+	{
+	ECodeChainEvents iEvent;
+
+	if (strEquals(sEvent, ON_AI_UPDATE_EVENT))
+		iEvent = eventOnAIUpdate;
+	else if (strEquals(sEvent, ON_UPDATE_EVENT))
+		iEvent = eventOnUpdate;
+	else
+		iEvent = eventNone;
+
+	if (iEvent != eventNone)
+		{
+		SEntry *pEntry = AddEntry();
+		pEntry->iType = iType;
+		pEntry->iEvent = iEvent;
+		pEntry->Event = Event;
+		pEntry->theItem = Item;
+		pEntry->dwEnhancementID = dwEnhancementID;
+		}
+	}
+
 CItemEventDispatcher::SEntry *CItemEventDispatcher::AddEntry (void)
 
 //	AddEntry
@@ -53,29 +80,26 @@ void CItemEventDispatcher::Init (CSpaceObject *pSource)
 
 		//	Add entries for update events: OnAIUpdate and OnUpdate
 
-		const CEventHandler &Handlers = Item.GetType()->GetEventHandlers();
-		for (i = 0; i < Handlers.GetCount(); i++)
+		const CEventHandler *pEvents;
+		TSortMap<CString, SEventHandlerDesc> FullEvents;
+		Item.GetType()->GetEventHandlers(&pEvents, &FullEvents);
+
+		if (pEvents)
 			{
-			ECodeChainEvents iEvent;
+			SEventHandlerDesc Event;
+			Event.pExtension = Item.GetType()->GetExtension();
 
-			ICCItem *pCode;
-			CString sEvent = Handlers.GetEvent(i, &pCode);
-			if (strEquals(sEvent, ON_AI_UPDATE_EVENT))
-				iEvent = eventOnAIUpdate;
-			else if (strEquals(sEvent, ON_UPDATE_EVENT))
-				iEvent = eventOnUpdate;
-			else
-				iEvent = eventNone;
-
-			if (iEvent != eventNone)
+			for (i = 0; i < pEvents->GetCount(); i++)
 				{
-				SEntry *pEntry = AddEntry();
-				pEntry->iType = dispatchFireEvent;
-				pEntry->iEvent = iEvent;
-				pEntry->pCode = pCode;
-				pEntry->theItem = Item;
-				pEntry->dwEnhancementID = OBJID_NULL;
+				CString sEvent = pEvents->GetEvent(i, &Event.pCode);
+
+				AddEntry(sEvent, dispatchFireEvent, Event, Item, OBJID_NULL);
 				}
+			}
+		else
+			{
+			for (i = 0; i < FullEvents.GetCount(); i++)
+				AddEntry(FullEvents.GetKey(i), dispatchFireEvent, FullEvents[i], Item, OBJID_NULL);
 			}
 
 		//	If this item has mods, see if we need to call any mods
@@ -92,7 +116,8 @@ void CItemEventDispatcher::Init (CSpaceObject *pSource)
 				SEntry *pEntry = AddEntry();
 				pEntry->iType = dispatchCheckEnhancementLifetime;
 				pEntry->iEvent = eventNone;
-				pEntry->pCode = NULL;
+				pEntry->Event.pExtension = NULL;
+				pEntry->Event.pCode = NULL;
 				pEntry->theItem = Item;
 				pEntry->dwEnhancementID = Item.GetMods().GetID();
 				}
@@ -132,7 +157,7 @@ void CItemEventDispatcher::FireEventFull (CSpaceObject *pSource, ECodeChainEvent
 
 			//	Run code
 
-			ICCItem *pResult = Ctx.Run(pEntry->pCode);
+			ICCItem *pResult = Ctx.Run(pEntry->Event);
 			if (pResult->IsError())
 				pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x Event"), pEntry->theItem.GetType()->GetUNID()), pResult);
 			Ctx.Discard(pResult);
@@ -176,7 +201,7 @@ void CItemEventDispatcher::FireUpdateEventsFull (CSpaceObject *pSource)
 
 			//	Run code
 
-			ICCItem *pResult = Ctx.Run(pEntry->pCode);
+			ICCItem *pResult = Ctx.Run(pEntry->Event);
 			if (pResult->IsError())
 				pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x Event"), pEntry->theItem.GetType()->GetUNID()), pResult);
 			Ctx.Discard(pResult);

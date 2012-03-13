@@ -337,7 +337,7 @@
 			attributes=			"EI; EnergyWeapon; MajorItem"
 			showReference=		"true"
 
-			description=		"The fast-fire laser cannon uses enhanced capacitors and can reach a fire rate triple that of the ubiquitous laser."
+			description=		"The fast-fire laser cannon uses enhanced capacitors and can reach a fire rate double that of the ubiquitous laser."
 
 			sortName=			"laser cannon, fast-fire"
 			>
@@ -452,9 +452,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL III -->
@@ -496,9 +494,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Laser Array -->
@@ -964,7 +960,6 @@
 						/>
 			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Rasiermesser SmartCannon -->
@@ -1012,12 +1007,9 @@
 								secondaryColor=		"0x8f, 0xa9, 0xb2"
 								/>
 					</Effect>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Dual Recoilless Cannon -->
@@ -1059,9 +1051,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Turbolaser Cannon -->
@@ -1087,6 +1077,7 @@
 				lifetime=			"30"
 				powerUse=			"60"
 
+				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
@@ -1177,18 +1168,6 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 
 	</ItemType>
@@ -1229,20 +1208,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- MAG Launcher -->
@@ -1721,9 +1687,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Slam Cannon -->
@@ -1790,6 +1754,7 @@
 				lifetime=			"30"
 				powerUse=			"140"
 
+				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
@@ -1829,6 +1794,7 @@
 				lifetime=			"30"
 				powerUse=			"70"
 
+				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
@@ -1886,18 +1852,6 @@
 								secondaryColor=		"0xc0, 0xc2, 0x85"
 								/>
 					</Effect>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -1945,20 +1899,7 @@
 						secondaryColor=		"0x8f, 0xa9, 0xb2"
 						/>
 			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Ion Cannon -->
@@ -2495,6 +2436,7 @@
 				lifetime=			"30"
 				powerUse=			"300"
 
+				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
 			<Effect>
@@ -2554,18 +2496,6 @@
 								secondaryColor=		"0xc0, 0xc2, 0x85"
 								/>
 					</Effect>
-
-					<HitEffect
-							sound="&snArmorHit1;"
-							>
-						<Image imageID="&rsExplosionsAG48;"
-								imageX="0"
-								imageY="0"
-								imageWidth="48"
-								imageHeight="48"
-								imageFrameCount="16"
-								imageTicksPerFrame="2"/>
-					</HitEffect>
 				</Missile>
 			</Missiles>
 
@@ -2725,7 +2655,6 @@
 						/>
 			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- TeV 9 Blaster -->
@@ -4064,20 +3993,7 @@
 			<Effect>
 				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
 			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG48;"
-						imageX="0"
-						imageY="0"
-						imageWidth="48"
-						imageHeight="48"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Advanced Tritium Cannon -->
@@ -4229,12 +4145,9 @@
 							<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
 						</Effect>
 					</Fragment>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Plasma Cannon -->

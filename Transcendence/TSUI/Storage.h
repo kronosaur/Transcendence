@@ -33,15 +33,17 @@ class CGameFile
 		inline int GetScore (void) const { return (int)m_Header.dwScore; }
 		CString GetSystemName (void) const;
 		inline CString GetUsername (void) { return CString(m_Header.szUsername); }
+		inline bool IsDebug (void) const { return ((m_Header.dwFlags & GAME_FLAG_DEBUG) ? true : false); }
 		inline bool IsGameResurrect (void) { return ((m_Header.dwFlags & GAME_FLAG_RESURRECT) ? true : false); }
 		inline bool IsOpen (void) const { return (m_pFile != NULL); }
+		inline bool IsRegistered (void) const { return ((m_Header.dwFlags & GAME_FLAG_REGISTERED) ? true : false); }
 		inline bool IsUniverseValid (void) { return (m_Header.dwUniverse != INVALID_ENTRY); }
 		ALERROR Open (const CString &sFilename);
 
 		ALERROR LoadGameStats (CGameStats *retStats);
 		ALERROR LoadSystem (DWORD dwUNID, CSystem **retpSystem, DWORD dwObjID = OBJID_NULL, CSpaceObject **retpObj = NULL, CSpaceObject *pPlayerShip = NULL);
 		ALERROR LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *retdwPlayerID, CString *retsError);
-		ALERROR SaveGameStats (CGameStats &Stats);
+		ALERROR SaveGameStats (const CGameStats &Stats);
 		ALERROR SaveSystem (DWORD dwUNID, CSystem *pSystem, DWORD dwFlags = 0);
 		ALERROR SaveUniverse (CUniverse &Univ, DWORD dwFlags);
 		ALERROR SetGameResurrect (void);
@@ -53,6 +55,7 @@ class CGameFile
 			GAME_FLAG_RESURRECT =					0x00000001,	//	If we load game when flag is set, then it counts as resurrect
 			GAME_FLAG_DEBUG =						0x00000002,	//	This is a debug game
 			GAME_FLAG_IN_STARGATE =					0x00000004,	//	We are in the middle of entering a stargate
+			GAME_FLAG_REGISTERED =					0x00000008,	//	This is a registered game
 			};
 
 		enum Consts
@@ -100,9 +103,10 @@ class CGameFile
 			DWORD dwCreateVersion;			//	Product version that created this save file
 			DWORD dwPartialSave;			//	System entry that was partially saved (while entering a gate)
 
+			//	New in SGameHeader 9
 			char szUsername[USERNAME_MAX];	//	Username (may be NULL if not a regulation game)
 			char szGameID[GAME_ID_MAX];		//	GameID (may be NULL if not a regulation game)
-			DWORD dwAdventure;				//	UNID of adventure
+			DWORD dwAdventure;				//	UNID of adventure (extension)
 			char szPlayerName[PLAYER_NAME_MAX];
 			DWORD dwGenome;					//	Player genome
 			DWORD dwPlayerShip;				//	UNID of player ship

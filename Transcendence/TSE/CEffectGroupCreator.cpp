@@ -340,7 +340,8 @@ ALERROR CEffectGroupCreator::CreateEffect (CSystem *pSystem,
 										   CSpaceObject *pAnchor,
 										   const CVector &vPos,
 										   const CVector &vVel,
-										   int iRotation)
+										   int iRotation,
+										   int iVariant)
 
 //	CreateEffect
 //
@@ -351,7 +352,7 @@ ALERROR CEffectGroupCreator::CreateEffect (CSystem *pSystem,
 
 	for (int i = 0; i < m_iCount; i++)
 		{
-		if (error = m_pCreators[i]->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation))
+		if (error = m_pCreators[i]->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation, iVariant))
 			return error;
 		}
 
@@ -413,7 +414,7 @@ void CEffectGroupCreator::MarkImages (void)
 		m_pCreators[i]->MarkImages();
 	}
 
-ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //
@@ -435,8 +436,10 @@ ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEle
 
 	for (i = 0; i < m_iCount; i++)
 		{
+		CString sSubUNID = strPatternSubst(CONSTLIT("%s/%d"), sUNID, i);
+
 		CXMLElement *pCreatorDesc = pDesc->GetContentElement(i);
-		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pCreatorDesc, &m_pCreators[i]))
+		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pCreatorDesc, sSubUNID, &m_pCreators[i]))
 			return error;
 		}
 

@@ -27,13 +27,14 @@ class CJSONValue
 		CJSONValue (void) : m_iType(typeNull), m_pValue(NULL) { }
 		CJSONValue (Types iType);
 		CJSONValue (const CJSONValue &Source);
-		CJSONValue (const CString &sValue);
+		CJSONValue (const CString &sValue, bool bToUTF8 = false);
 		CJSONValue (int iValue);
 		CJSONValue (double rValue);
 		~CJSONValue (void);
 
 		CJSONValue &operator= (const CJSONValue &Source);
 
+		CString AsCP1252 (void) const;
 		inline double AsDouble (void) const { return (m_iType == typeNumber ? *(double *)m_pValue : 0.0); }
 		inline int AsInt32 (void) const { return (m_iType == typeNumber ? (int)*(double *)m_pValue : 0); }
 		inline CString AsString (void) const { return (m_iType == typeString ? CString::INTMakeString(m_pValue) : NULL_STR); }

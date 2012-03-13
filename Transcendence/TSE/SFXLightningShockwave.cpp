@@ -44,7 +44,7 @@ IEffectPainter *CLightningShockwaveEffectCreator::CreatePainter (void)
 	return new CLightningShockwavePainter(this);
 	}
 
-ALERROR CLightningShockwaveEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CLightningShockwaveEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

@@ -239,6 +239,8 @@ template <class KEY, class VALUE> class TMap : public CMapBase
 			}
 	};
 
+const DWORD NULL_ATOM = 0xffffffff;
+
 template <class KEY, class VALUE> class TSortMap
 	{
 	public:
@@ -246,68 +248,53 @@ template <class KEY, class VALUE> class TSortMap
 
 		inline VALUE &operator [] (int iIndex) const { return GetValue(iIndex); }
 
+		TSortMap<KEY, VALUE> &operator= (const TSortMap<KEY, VALUE> &Obj)
+			{
+			m_iOrder = Obj.m_iOrder;
+			m_Index = Obj.m_Index;
+			m_Array = Obj.m_Array;
+			m_Free = Obj.m_Free;
+			return *this;
+			}
+
+		void Delete (int iIndex)
+			{
+			ASSERT(iIndex >= 0 && iIndex < m_Index.GetCount());
+			int iPos = m_Index[iIndex];
+			m_Index.Delete(iIndex);
+
+			//	Add the array slot to free list (we can't delete it
+			//	because it would move the indices of other entries)
+
+			m_Array[iPos].theValue = VALUE();
+			m_Free.Insert(iPos);
+			}
+
 		void DeleteAll (void)
 			{
 			m_Index.DeleteAll();
 			m_Array.DeleteAll();
+			m_Free.DeleteAll();
 			}
 
-		VALUE *GetAt (const KEY &key) const
+		void DeleteAt (const KEY &key)
+			{
+			int iPos;
+			if (FindPos(key, &iPos))
+				Delete(iPos);
+			}
+
+		bool Find (const KEY &key, VALUE *retpValue = NULL) const
 			{
 			int iPos;
 			if (!FindPos(key, &iPos))
-				return NULL;
+				return false;
 
-			return &m_Array[m_Index[iPos]].theValue;
+			if (retpValue)
+				*retpValue = GetValue(iPos);
+
+			return true;
 			}
-
-		int GetCount (void) const
-			{
-			return m_Index.GetCount();
-			}
-
-		const KEY &GetKey (int iIndex) const
-			{
-			return m_Array[m_Index[iIndex]].theKey;
-			}
-
-		VALUE &GetValue (int iIndex) const
-			{
-			return m_Array[m_Index[iIndex]].theValue;
-			}
-
-		VALUE *Insert (const KEY &newKey, bool *retbInserted = NULL)
-			{
-			int iPos;
-			if (FindPos(newKey, &iPos))
-				{
-				if (retbInserted)
-					*retbInserted = false;
-				return &m_Array[m_Index[iPos]].theValue;
-				}
-
-			m_Index.Insert(m_Array.GetCount(), iPos);
-			SEntry *pEntry = m_Array.Insert();
-			pEntry->theKey = newKey;
-
-			if (retbInserted)
-				*retbInserted = true;
-
-			return &pEntry->theValue;
-			}
-
-		void Insert (const KEY &newKey, const VALUE &newValue)
-			{
-			VALUE *pNewValue = Insert(newKey);
-			*pNewValue = newValue;
-			}
-
-	private:
-		struct SEntry
-			{
-			KEY theKey;
-			VALUE theValue;
-			};
 
 		bool FindPos (const KEY &key, int *retiPos = NULL) const
 			{
@@ -347,9 +334,170 @@ template <class KEY, class VALUE> class TSortMap
 			return false;
 			}
 
+		VALUE *GetAt (const KEY &key) const
+			{
+			int iPos;
+			if (!FindPos(key, &iPos))
+				return NULL;
+
+			return &m_Array[m_Index[iPos]].theValue;
+			}
+
+		int GetCount (void) const
+			{
+			return m_Index.GetCount();
+			}
+
+		const KEY &GetKey (int iIndex) const
+			{
+			return m_Array[m_Index[iIndex]].theKey;
+			}
+
+		VALUE &GetValue (int iIndex) const
+			{
+			return m_Array[m_Index[iIndex]].theValue;
+			}
+
+		VALUE *Insert (const KEY &newKey)
+			{
+			return atom_Insert(newKey);
+			}
+
+		void Insert (const KEY &newKey, const VALUE &newValue)
+			{
+			VALUE *pNewValue = atom_Insert(newKey);
+			*pNewValue = newValue;
+			}
+
+		VALUE *SetAt (const KEY &key, bool *retbInserted = NULL)
+			{
+			int iIndex;
+
+			if (FindPos(key, &iIndex))
+				{
+				if (retbInserted)
+					*retbInserted = false;
+
+				return &m_Array[m_Index[iIndex]].theValue;
+				}
+			else
+				{
+				int iPos;
+				SEntry *pEntry = InsertEntry(&iPos);
+
+				//	Do it
+
+				m_Index.Insert(iPos, iIndex);
+				pEntry->theKey = key;
+
+				if (retbInserted)
+					*retbInserted = true;
+
+				return &pEntry->theValue;
+				}
+			}
+
+		void SetAt (const KEY &key, const VALUE &value, bool *retbInserted = NULL)
+			{
+			VALUE *pValue = SetAt(key, retbInserted);
+			*pValue = value;
+			}
+
+		//	Atom helper functions
+
+		void atom_Delete (DWORD dwAtom)
+			{
+			int i;
+
+			//	Look for the array position in the index and delete it.
+
+			for (i = 0; i < m_Index.GetCount(); i++)
+				if (m_Index[i] == (int)dwAtom)
+					{
+					m_Index.Delete(i);
+					break;
+					}
+
+			//	Add the array slot to the free list
+
+			m_Array[dwAtom].theValue = VALUE();
+			m_Free.Insert(dwAtom);
+			}
+
+		DWORD atom_Find (const KEY &key)
+			{
+			int iPos;
+			if (!FindPos(key, &iPos))
+				return NULL_ATOM;
+
+			return (DWORD)m_Index[iPos];
+			}
+
+		DWORD atom_GetFromPos (int iPos) const
+			{
+			return m_Index[iPos];
+			}
+
+		const KEY &atom_GetKey (DWORD dwAtom) const
+			{
+			return m_Array[dwAtom].theKey;
+			}
+
+		VALUE &atom_GetValue (DWORD dwAtom) const
+			{
+			return m_Array[dwAtom].theValue;
+			}
+
+		VALUE *atom_Insert (const KEY &newKey, DWORD *retdwAtom = NULL)
+			{
+			//	Find index insertion position
+
+			int iIndex;
+			FindPos(newKey, &iIndex);
+
+			//	Find where to insert it in the array
+
+			int iPos;
+			SEntry *pEntry = InsertEntry(&iPos);
+
+			//	Do it
+
+			if (retdwAtom)
+				*retdwAtom = (DWORD)iPos;
+
+			m_Index.Insert(iPos, iIndex);
+			pEntry->theKey = newKey;
+			return &pEntry->theValue;
+			}
+
+	private:
+		struct SEntry
+			{
+			KEY theKey;
+			VALUE theValue;
+			};
+
+		SEntry *InsertEntry (int *retiPos)
+			{
+			SEntry *pEntry;
+			if (m_Free.GetCount() == 0)
+				{
+				*retiPos = m_Array.GetCount();
+				pEntry = m_Array.Insert();
+				}
+			else
+				{
+				*retiPos = m_Free[m_Free.GetCount() - 1];
+				pEntry = &m_Array[*retiPos];
+				m_Free.Delete(m_Free.GetCount() - 1);
+				}
+			return pEntry;
+			}
+
 		ESortOptions m_iOrder;
 		TArray<int> m_Index;
 		TArray<SEntry> m_Array;
+		TArray<int> m_Free;
 	};
 
 //	Simple map classes

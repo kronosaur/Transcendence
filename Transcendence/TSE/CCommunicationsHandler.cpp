@@ -26,11 +26,11 @@ CCommunicationsHandler::~CCommunicationsHandler (void)
 	{
 	for (int i = 0; i < GetCount(); i++)
 		{
-		if (m_Messages[i].pCode)
-			m_Messages[i].pCode->Discard(&g_pUniverse->GetCC());
+		if (m_Messages[i].InvokeEvent.pCode)
+			m_Messages[i].InvokeEvent.pCode->Discard(&g_pUniverse->GetCC());
 
-		if (m_Messages[i].pOnShow)
-			m_Messages[i].pOnShow->Discard(&g_pUniverse->GetCC());
+		if (m_Messages[i].OnShowEvent.pCode)
+			m_Messages[i].OnShowEvent.pCode->Discard(&g_pUniverse->GetCC());
 		}
 	}
 
@@ -105,16 +105,22 @@ ALERROR CCommunicationsHandler::InitFromXML (CXMLElement *pDesc, CString *retsEr
 
 		if (pMessage->GetContentElementCount() == 0)
 			{
-			m_Messages[i].pCode = g_pUniverse->GetCC().Link(pMessage->GetContentText(0), 0, NULL);
-			m_Messages[i].pOnShow = NULL;
+			m_Messages[i].InvokeEvent.pExtension = NULL;
+			m_Messages[i].InvokeEvent.pCode = g_pUniverse->GetCC().Link(pMessage->GetContentText(0), 0, NULL);
+
+			m_Messages[i].OnShowEvent.pExtension = NULL;
+			m_Messages[i].OnShowEvent.pCode = NULL;
 			}
 
 		//	If we've got sub elements, then load the different code blocks
 
 		else
 			{
-			m_Messages[i].pCode = NULL;
-			m_Messages[i].pOnShow = NULL;
+			m_Messages[i].InvokeEvent.pExtension = NULL;
+			m_Messages[i].InvokeEvent.pCode = NULL;
+
+			m_Messages[i].OnShowEvent.pExtension = NULL;
+			m_Messages[i].OnShowEvent.pCode = NULL;
 
 			for (j = 0; j < pMessage->GetContentElementCount(); j++)
 				{
@@ -123,9 +129,15 @@ ALERROR CCommunicationsHandler::InitFromXML (CXMLElement *pDesc, CString *retsEr
 				//	OnShow
 
 				if (strEquals(pItem->GetTag(), ON_SHOW_TAG))
-					m_Messages[i].pOnShow = g_pUniverse->GetCC().Link(pItem->GetContentText(0), 0, NULL);
+					{
+					m_Messages[i].OnShowEvent.pExtension = NULL;
+					m_Messages[i].OnShowEvent.pCode = g_pUniverse->GetCC().Link(pItem->GetContentText(0), 0, NULL);
+					}
 				else if (strEquals(pItem->GetTag(), INVOKE_TAG) || strEquals(pItem->GetTag(), CODE_TAG))
-					m_Messages[i].pCode = g_pUniverse->GetCC().Link(pItem->GetContentText(0), 0, NULL);
+					{
+					m_Messages[i].InvokeEvent.pExtension = NULL;
+					m_Messages[i].InvokeEvent.pCode = g_pUniverse->GetCC().Link(pItem->GetContentText(0), 0, NULL);
+					}
 				else
 					{
 					*retsError = strPatternSubst(CONSTLIT("Unknown element: <%s>"), pItem->GetTag());
@@ -136,15 +148,15 @@ ALERROR CCommunicationsHandler::InitFromXML (CXMLElement *pDesc, CString *retsEr
 
 		//	Deal with error
 
-		if (m_Messages[i].pCode && m_Messages[i].pCode->IsError())
+		if (m_Messages[i].InvokeEvent.pCode && m_Messages[i].InvokeEvent.pCode->IsError())
 			sError = strPatternSubst(CONSTLIT("Communications: %s <Invoke>: %s"),
 					m_Messages[i].sMessage,
-					m_Messages[i].pCode->GetStringValue());
+					m_Messages[i].InvokeEvent.pCode->GetStringValue());
 
-		else if (m_Messages[i].pOnShow && m_Messages[i].pOnShow->IsError())
+		else if (m_Messages[i].OnShowEvent.pCode && m_Messages[i].OnShowEvent.pCode->IsError())
 			sError = strPatternSubst(CONSTLIT("Communications: %s <OnShow>: %s"),
 					m_Messages[i].sMessage,
-					m_Messages[i].pOnShow->GetStringValue());
+					m_Messages[i].OnShowEvent.pCode->GetStringValue());
 		}
 
 	//	Done
@@ -173,8 +185,14 @@ void CCommunicationsHandler::Merge (CCommunicationsHandler &New)
 
 			pMsg->sMessage = New.m_Messages[i].sMessage;
 			pMsg->sShortcut = New.m_Messages[i].sShortcut;
-			pMsg->pCode = (New.m_Messages[i].pCode ? New.m_Messages[i].pCode->Reference() : NULL);
-			pMsg->pOnShow = (New.m_Messages[i].pOnShow ? New.m_Messages[i].pOnShow->Reference() : NULL);
+
+			pMsg->InvokeEvent = New.m_Messages[i].InvokeEvent;
+			if (pMsg->InvokeEvent.pCode)
+				pMsg->InvokeEvent.pCode->Reference();
+
+			pMsg->OnShowEvent = New.m_Messages[i].OnShowEvent;
+			if (pMsg->OnShowEvent.pCode)
+				pMsg->OnShowEvent.pCode->Reference();
 			}
 		}
 	}

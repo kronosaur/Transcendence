@@ -4,7 +4,7 @@
 
 #include "PreComp.h"
 
-void CSystemCreateEvents::AddDeferredEvent (CSpaceObject *pObj, CXMLElement *pEventCode)
+void CSystemCreateEvents::AddDeferredEvent (CSpaceObject *pObj, SExtensionDesc *pExtension, CXMLElement *pEventCode)
 
 //	AddDeferredEvent
 //
@@ -13,6 +13,7 @@ void CSystemCreateEvents::AddDeferredEvent (CSpaceObject *pObj, CXMLElement *pEv
 	{
 	SEventDesc *pEvent = m_Events.Insert();
 	pEvent->pObj = pObj;
+	pEvent->pExtension = pExtension;
 	pEvent->pEventCode = pEventCode;
 	}
 
@@ -44,6 +45,7 @@ ALERROR CSystemCreateEvents::FireDeferredEvent (const CString &sEvent, CString *
 
 			//	Execute
 
+			Ctx.SetExtension(m_Events[i].pExtension);
 			Ctx.SaveAndDefineSourceVar(m_Events[i].pObj);
 
 			ICCItem *pResult = Ctx.Run(pCode);

@@ -13,7 +13,7 @@
 #define PRIMARY_COLOR_ATTRIB					(CONSTLIT("primaryColor"))
 #define SECONDARY_COLOR_ATTRIB					(CONSTLIT("secondaryColor"))
 
-ALERROR CImageAndTailEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CImageAndTailEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

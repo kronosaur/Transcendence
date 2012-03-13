@@ -5,6 +5,10 @@
 #ifndef INCL_KERNEL
 #define INCL_KERNEL
 
+#ifndef _WIN32_WINNT		// Allow use of features specific to Windows XP or later.                   
+#define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
+#endif						
+
 #define _CRT_RAND_S
 #include <stdlib.h>
 #include <Windows.h>
@@ -1008,6 +1012,24 @@ class CMemoryWriteStream : public CObject, public IWriteStream
 		char *m_pBlock;
 	};
 
+class CMemoryReadBlockWrapper : public IReadBlock
+	{
+	public:
+		CMemoryReadBlockWrapper (CMemoryWriteStream &Stream) : 
+				m_pPointer(Stream.GetPointer()),
+				m_iLength(Stream.GetLength())
+			{ }
+
+		virtual ALERROR Close (void) { return NOERROR; }
+		virtual ALERROR Open (void) { return NOERROR; }
+		virtual int GetLength (void) { return m_iLength; }
+		virtual char *GetPointer (int iOffset, int iLength = -1) { return m_pPointer + iOffset; }
+
+	private:
+		char *m_pPointer;
+		int m_iLength;
+	};
+
 //	CMemoryReadStream. This object is used to read variable length data
 
 class CMemoryReadStream : public CObject, public IReadStream
@@ -1348,6 +1370,7 @@ CString strCapitalize (const CString &sString, int iOffset = 0);
 CString strCapitalizeWords (const CString &sString);
 CString strCEscapeCodes (const CString &sString);
 CString strEncodeUTF8Char (DWORD dwCodePoint);
+CString strEncodeW1252ToUTF8Char (char chChar);
 bool strEquals (const CString &sString1, const CString &sString2);
 int strFind (const CString &sString, const CString &sStringToFind);
 
@@ -1368,12 +1391,17 @@ inline bool strIsASCIIAlpha (char *pPos) { return (*pPos >= 'a' && *pPos <= 'z')
 inline bool strIsASCIIControl (char *pPos) { return ((BYTE)*pPos <= (BYTE)0x1f) || *pPos == 0x7f; }
 bool strIsASCIISymbol (char *pPos);
 inline bool strIsDigit (char *pPos) { return (*pPos >= '0' && *pPos <= '9'); }
+bool strIsInt (const CString &sValue, DWORD dwFlags = 0, int *retiValue = NULL);
 inline bool strIsWhitespace (char *pPos) { return *pPos == ' ' || *pPos == '\t' || *pPos == '\n' || *pPos == '\r'; }
 CString strLoadFromRes (HINSTANCE hInst, int iResID);
 inline char strLowerCaseAbsolute (char chChar) { return g_LowerCaseAbsoluteTable[(BYTE)chChar]; }
 bool strNeedsEscapeCodes (const CString &sString);
-int strParseInt (char *pStart, int iNullResult, char **retpEnd = NULL, bool *retbNullValue = NULL);
+
+#define PARSE_THOUSAND_SEPARATOR				0x00000001
+int strParseInt (char *pStart, int iNullResult, DWORD dwFlags, char **retpEnd = NULL, bool *retbNullValue = NULL);
+inline int strParseInt (char *pStart, int iNullResult, char **retpEnd = NULL, bool *retbNullValue = NULL) { return strParseInt(pStart, iNullResult, 0, retpEnd, retbNullValue); }
 int strParseIntOfBase (char *pStart, int iBase, int iNullResult, char **retpEnd = NULL, bool *retbNullValue = NULL);
+
 void strParseWhitespace (char *pPos, char **retpPos);
 CString strPattern (const CString &sPattern, LPVOID *pArgs);
 CString strPatternSubst (CString sLine, ...);
@@ -1467,6 +1495,7 @@ DWORD sysGetAPIFlags (void);
 int sysGetProcessorCount (void);
 CString sysGetUserName (void);
 bool sysIsBigEndian (void);
+bool sysOpenURL (const CString &sURL);
 
 //	Utility functions (Utilities.cpp)
 

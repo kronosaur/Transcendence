@@ -4,7 +4,7 @@
 
 #include "PreComp.h"
 
-bool CGlobalEventCache::Insert (CDesignType *pType, const CString &sEvent, ICCItem *pCode)
+bool CGlobalEventCache::Insert (CDesignType *pType, const CString &sEvent, const SEventHandlerDesc &Event)
 
 //	Insert
 //
@@ -30,7 +30,7 @@ bool CGlobalEventCache::Insert (CDesignType *pType, const CString &sEvent, ICCIt
 
 	SEntry *pNew = m_Cache.Insert();
 	pNew->pType = pType;
-	pNew->pCode = pCode;
+	pNew->Event = Event;
 	return true;
 	}
 

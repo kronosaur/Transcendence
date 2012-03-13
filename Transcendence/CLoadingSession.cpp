@@ -77,7 +77,7 @@ void CLoadingSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_TitleImage, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_TitleImage, 0, &rcCenter);
 
 	//	Paint copyright text
 
@@ -120,11 +120,14 @@ void CLoadingSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CLoadingSession\r\n");
 	}
 
-void CLoadingSession::OnUpdate (void)
+void CLoadingSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 
 	{
-	m_iTick++;
-	HIInvalidate(m_rcStargate);
+	if (bTopMost)
+		{
+		m_iTick++;
+		HIInvalidate(m_rcStargate);
+		}
 	}

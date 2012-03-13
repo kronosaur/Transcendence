@@ -1277,6 +1277,26 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 	return true;
 	}
 
+void CShipClass::GenerateDevices (int iLevel, CDeviceDescList &Devices)
+
+//	GenerateDevices
+//
+//	Generate a list of devices
+	
+	{
+	Devices.RemoveAll();
+
+	if (m_pDevices)
+		{
+		SDeviceGenerateCtx Ctx;
+		Ctx.iLevel = iLevel;
+		Ctx.pRoot = m_pDevices;
+		Ctx.pResult = &Devices;
+
+		m_pDevices->AddDevices(Ctx);
+		}
+	}
+
 CString CShipClass::GenerateShipName (DWORD *retdwFlags)
 
 //	GenerateShipName

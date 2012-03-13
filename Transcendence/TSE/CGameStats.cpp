@@ -92,7 +92,89 @@ ALERROR CGameStats::LoadFromStream (IReadStream *pStream)
 	return NOERROR;
 	}
 
-ALERROR CGameStats::SaveToStream (IWriteStream *pStream)
+void CGameStats::ParseSortKey (const CString &sSortKey, CString *retsSection, CString *retsSectionSortKey) const
+
+//	ParseSortKey
+//
+//	Separates sSortKey into a section and section sort key.
+
+	{
+	char *pPos = sSortKey.GetASCIIZPointer();
+
+	char *pStart = pPos;
+	while (*pPos != '/' && *pPos != '\0')
+		pPos++;
+
+	if (retsSection)
+		*retsSection = CString(pStart, (int)(pPos - pStart));
+
+	//	key
+
+	if (*pPos == '/')
+		pPos++;
+
+	if (retsSectionSortKey)
+		*retsSectionSortKey = CString(pPos);
+	}
+
+void CGameStats::SaveToJSON (CJSONValue *retOutput) const
+
+//	SaveToJSON
+//
+//	Save as a JSON object. The output is an array of stats. Each stat is an 
+//	array with the following elements:
+//
+//	1.	Name of stat
+//	2.	Value of stat (or nulll)
+//	3.	Section (or null)
+//	4.	Sort key (or null)
+
+	{
+	int i;
+
+	*retOutput = CJSONValue(CJSONValue::typeArray);
+
+	for (i = 0; i < m_Stats.GetCount(); i++)
+		{
+		CJSONValue Stat(CJSONValue::typeArray);
+
+		//	Add the stats name
+
+		Stat.InsertHandoff(CJSONValue(m_Stats[i].sStatName));
+
+		//	Parse the value
+
+		int iValue;
+		if (m_Stats[i].sStatValue.IsBlank())
+			Stat.Insert(CJSONValue(CJSONValue::typeNull));
+		else if (strIsInt(m_Stats[i].sStatValue, PARSE_THOUSAND_SEPARATOR, &iValue))
+			Stat.InsertHandoff(CJSONValue(iValue));
+		else
+			Stat.InsertHandoff(CJSONValue(m_Stats[i].sStatValue));
+
+		//	Split the section out of the sort key
+
+		CString sSection;
+		CString sSectionSortKey;
+		ParseSortKey(m_Stats[i].sSortKey, &sSection, &sSectionSortKey);
+
+		if (sSection.IsBlank())
+			Stat.Insert(CJSONValue(CJSONValue::typeNull));
+		else
+			Stat.InsertHandoff(CJSONValue(sSection));
+
+		//	Add the sort key
+
+		if (!strEquals(sSectionSortKey, m_Stats[i].sStatName))
+			Stat.InsertHandoff(CJSONValue(sSectionSortKey));
+
+		//	Append to large array
+
+		retOutput->InsertHandoff(Stat);
+		}
+	}
+
+ALERROR CGameStats::SaveToStream (IWriteStream *pStream) const
 
 //	SaveToStream
 //

@@ -1682,18 +1682,9 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 		//	(Unless we're explicitly targeting the friend)
 
 		if (pOrderGiver && m_pShip->IsFriend(pOrderGiver) 
-				&& pAttacker != m_pTarget 
 				&& pOrderGiver != m_pTarget
-				&& !IsTargetBlacklisted(pAttacker))
+				&& !IsAngryAt(pAttacker))
 			{
-			//	We deal with the order giver instead of the attacker because we want to get
-			//	at the root problem (the player instead of her autons)
-			//
-			//	Also, we ignore damage from automated weapons
-
-			if (!Damage.IsAutomatedWeapon())
-				HandleFriendlyFire(pOrderGiver);
-
 			//	Leave if necessary
 
 			switch (GetCurrentOrder())

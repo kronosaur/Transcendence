@@ -71,7 +71,7 @@ void CImageEffectCreator::GetRect (RECT *retRect) const
 	*retRect = Image.GetImageRect();
 	}
 
-ALERROR CImageEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CImageEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

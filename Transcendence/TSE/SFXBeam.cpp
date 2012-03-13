@@ -366,7 +366,7 @@ void CBeamEffectCreator::GetRect (RECT *retRect) const
 	retRect->bottom = iSize;
 	}
 
-ALERROR CBeamEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CBeamEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

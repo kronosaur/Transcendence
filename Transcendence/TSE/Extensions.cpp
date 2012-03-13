@@ -160,8 +160,12 @@ ALERROR CUniverse::InitExtensionsFolder (SDesignLoadCtx &Ctx, const CString &sPa
 		//	Parse the XML file into a structure
 
 		CXMLElement *pRoot;
-		if (error = ExtDb.LoadGameFile(&pRoot, &Ctx.sError))
+		CExternalEntityTable *pEntities = new CExternalEntityTable;
+		pEntities->SetParent(&m_Design.GetBaseEntities());
+
+		if (error = ExtDb.LoadGameFile(&pRoot, pEntities, &Ctx.sError, pEntities))
 			{
+			delete pEntities;
 			Ctx.sError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), sExtensionRoot, Ctx.sError);
 			return ERR_FAIL;
 			}
@@ -178,10 +182,13 @@ ALERROR CUniverse::InitExtensionsFolder (SDesignLoadCtx &Ctx, const CString &sPa
 			{
 			kernelDebugLogMessage("Loading extension: %s", sExtensionRoot.GetASCIIZPointer());
 
-			//	Add to design collection
+			//	Add to design collection (takes ownership of pEntities, if successful)
 
-			if (error = m_Design.BeginLoadExtension(Ctx, pRoot))
+			if (error = m_Design.BeginLoadExtension(Ctx, pRoot, pEntities))
+				{
+				delete pEntities;
 				return error;
+				}
 
 			//	Load the design elements
 
@@ -199,10 +206,13 @@ ALERROR CUniverse::InitExtensionsFolder (SDesignLoadCtx &Ctx, const CString &sPa
 			{
 			kernelDebugLogMessage("Loading adventure desc: %s", sExtensionRoot.GetASCIIZPointer());
 
-			//	Add to design collection
+			//	Add to design collection (takes owenership of pEntities, if successful)
 
-			if (error = m_Design.BeginLoadAdventureDesc(Ctx, pRoot, false))
+			if (error = m_Design.BeginLoadAdventureDesc(Ctx, pRoot, false, pEntities))
+				{
+				delete pEntities;
 				return error;
+				}
 
 			//	Load the design elements
 
@@ -215,6 +225,8 @@ ALERROR CUniverse::InitExtensionsFolder (SDesignLoadCtx &Ctx, const CString &sPa
 			}
 		else
 			{
+			delete pEntities;
+
 			if (!strEquals(pRoot->GetTag(), sDOCTYPERootTag))
 				Ctx.sError = strPatternSubst(CONSTLIT("%s: DOCTYPE (%s) does not match root element (%s)"),
 						sExtensionRoot,
@@ -285,7 +297,7 @@ ALERROR CUniverse::LoadAdventure (SDesignLoadCtx &Ctx, CAdventureDesc *pAdventur
 		//	Parse the XML file into a structure
 
 		CXMLElement *pRoot;
-		if (error = ExtDb.LoadGameFile(&pRoot, &Ctx.sError))
+		if (error = ExtDb.LoadGameFile(&pRoot, pExtension->GetEntities(), &Ctx.sError))
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), sFilespec, Ctx.sError);
 			return ERR_FAIL;
@@ -327,6 +339,10 @@ ALERROR CUniverse::LoadAdventure (SDesignLoadCtx &Ctx, CAdventureDesc *pAdventur
 	else
 		{
 		int i;
+
+		//	Set the base entities (since this is a default module)
+
+		Ctx.pResDb->SetEntities(&m_Design.GetBaseEntities());
 
 		//	Add to design collection
 

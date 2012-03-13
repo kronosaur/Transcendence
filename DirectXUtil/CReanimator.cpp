@@ -431,6 +431,19 @@ bool CReanimator::HandleMouseMove (int x, int y, DWORD dwFlags)
 	return bHandled;
 	}
 
+bool CReanimator::HandleMouseWheel (int iDelta, int x, int y, DWORD dwFlags)
+
+//	HandleMouseWheel
+//
+//	Mouse wheel
+
+	{
+	if (m_pInputFocus == NULL)
+		return false;
+
+	return m_pInputFocus->HandleMouseWheel(iDelta, x, y, dwFlags);
+	}
+
 IAnimatron *CReanimator::HitTest (int x, int y)
 
 //	HitTest
@@ -701,40 +714,3 @@ void CReanimator::StopAll (void)
 	m_iFastPlayCounter = -1;
 	}
 
-//	IAnimatron -----------------------------------------------------------------
-
-void IAnimatron::AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut)
-
-//	AnimateLinearFade
-//
-//	Utility function to set animatron to fade in opacity
-
-	{
-	CLinearFade *pFader = new CLinearFade;
-	pFader->SetParams(iDuration, iFadeIn, iFadeOut);
-	AnimateProperty(CONSTLIT("opacity"), pFader);
-	}
-
-void IAnimatron::AnimateLinearRotation (int iStartAngle, Metric rRate, int iDuration)
-
-//	AnimateLinearRotation
-//
-//	Rotates the animatron
-
-	{
-	CLinearRotation *pRotation = new CLinearRotation;
-	pRotation->SetParams(iStartAngle, rRate, iDuration);
-	AnimateProperty(CONSTLIT("rotation"), pRotation);
-	}
-
-void IAnimatron::AnimatePropertyLinear (const CString &sID, const CString &sName, const CAniProperty &Start, const CAniProperty &End, int iDuration, bool bStartNow)
-
-//	AnimatePropertyLinear
-//
-//	Animates the given property
-
-	{
-	CLinearAnimator *pAnimator = new CLinearAnimator;
-	pAnimator->SetParams(Start, End, iDuration);
-	AnimateProperty(sName, pAnimator, 0, sID, bStartNow);
-	}

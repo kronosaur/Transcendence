@@ -72,6 +72,7 @@ class CXMLElement : public CObject
 		inline CXMLElement *GetParentElement (void) const { return m_pParent; }
 		inline const CString &GetTag (void) const { return m_sTag; }
 		CXMLElement *OrphanCopy (void);
+		ALERROR SetAttribute (const CString &sName, const CString &sValue);
 
 		static CString MakeAttribute (const CString &sText) { return strToXMLText(sText); }
 
@@ -89,6 +90,7 @@ class CExternalEntityTable : public IXMLParserController
 	{
 	public:
 		CExternalEntityTable (void);
+
 		void AddTable (CSymbolTable &Table);
 		inline int GetCount (void) { return m_Entities.GetCount(); }
 		void GetEntity (int iIndex, CString *retsEntity, CString *retsValue);
@@ -97,7 +99,7 @@ class CExternalEntityTable : public IXMLParserController
 		virtual void SetParent (IXMLParserController *pParent) { m_pParent = pParent; }
 
 	private:
-		CSymbolTable m_Entities;
+		TSortMap<CString, CString> m_Entities;
 		IXMLParserController *m_pParent;
 	};
 

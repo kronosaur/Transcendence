@@ -4,36 +4,38 @@
 
 #include "PreComp.h"
 
-#define GROUP_TAG								CONSTLIT("Group")
-#define TABLE_TAG								CONSTLIT("Table")
-#define ITEM_TAG								CONSTLIT("Item")
-#define ITEMS_TAG								CONSTLIT("Items")
-#define NULL_TAG								CONSTLIT("Null")
 #define DEVICE_TAG								CONSTLIT("Device")
 #define DEVICES_TAG								CONSTLIT("Devices")
+#define DEVICE_SLOT_TAG							CONSTLIT("DeviceSlot")
+#define GROUP_TAG								CONSTLIT("Group")
+#define ITEM_TAG								CONSTLIT("Item")
+#define ITEMS_TAG								CONSTLIT("Items")
 #define LEVEL_TABLE_TAG							CONSTLIT("LevelTable")
+#define NULL_TAG								CONSTLIT("Null")
+#define TABLE_TAG								CONSTLIT("Table")
 
-#define UNID_ATTRIB								CONSTLIT("unid")
-#define ITEM_ATTRIB								CONSTLIT("item")
-#define COUNT_ATTRIB							CONSTLIT("count")
-#define TABLE_ATTRIB							CONSTLIT("table")
-#define CHANCE_ATTRIB							CONSTLIT("chance")
-#define CRITERIA_ATTRIB							CONSTLIT("criteria")
-#define LEVEL_ATTRIB							CONSTLIT("level")
-#define LEVEL_CURVE_ATTRIB						CONSTLIT("levelCurve")
-#define DAMAGED_ATTRIB							CONSTLIT("damaged")
 #define CATEGORIES_ATTRIB						CONSTLIT("categories")
-#define LEVEL_FREQUENCY_ATTRIB					CONSTLIT("levelFrequency")
+#define CHANCE_ATTRIB							CONSTLIT("chance")
+#define COUNT_ATTRIB							CONSTLIT("count")
+#define CRITERIA_ATTRIB							CONSTLIT("criteria")
+#define DAMAGED_ATTRIB							CONSTLIT("damaged")
+#define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
 #define ENHANCED_ATTRIB							CONSTLIT("enhanced")
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
-#define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
+#define ITEM_ATTRIB								CONSTLIT("item")
+#define LEVEL_ATTRIB							CONSTLIT("level")
+#define LEVEL_CURVE_ATTRIB						CONSTLIT("levelCurve")
+#define LEVEL_FREQUENCY_ATTRIB					CONSTLIT("levelFrequency")
+#define MAX_COUNT_ATTRIB						CONSTLIT("maxCount")
+#define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
+#define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
 #define OMNIDIRECTIONAL_ATTRIB					CONSTLIT("omnidirectional")
 #define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
 #define POS_RADIUS_ATTRIB						CONSTLIT("posRadius")
 #define POS_Z_ATTRIB							CONSTLIT("posZ")
-#define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
-#define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
 #define SECONDARY_WEAPON_ATTRIB					CONSTLIT("secondaryWeapon")
+#define TABLE_ATTRIB							CONSTLIT("table")
+#define UNID_ATTRIB								CONSTLIT("unid")
 
 #define STR_G_ITEM								CONSTLIT("gItem")
 
@@ -47,7 +49,7 @@ class CSingleDevice : public IDeviceGenerator
 		CSingleDevice (void) : m_pExtraItems(NULL) { }
 		~CSingleDevice (void);
 
-		virtual void AddDevices (int iLevel, CDeviceDescList &Result);
+		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
@@ -66,6 +68,8 @@ class CSingleDevice : public IDeviceGenerator
 		bool m_bOmnidirectional;
 		int m_iMinFireArc;
 		int m_iMaxFireArc;
+		bool m_bDefaultFireArc;
+
 		bool m_bSecondary;
 
 		IItemGenerator *m_pExtraItems;
@@ -75,7 +79,7 @@ class CLevelTableOfDeviceGenerators : public IDeviceGenerator
 	{
 	public:
 		virtual ~CLevelTableOfDeviceGenerators (void);
-		virtual void AddDevices (int iLevel, CDeviceDescList &Result);
+		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -99,7 +103,7 @@ class CTableOfDeviceGenerators : public IDeviceGenerator
 	{
 	public:
 		virtual ~CTableOfDeviceGenerators (void);
-		virtual void AddDevices (int iLevel, CDeviceDescList &Result);
+		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -121,11 +125,13 @@ class CGroupOfDeviceGenerators : public IDeviceGenerator
 	{
 	public:
 		virtual ~CGroupOfDeviceGenerators (void);
-		virtual void AddDevices (int iLevel, CDeviceDescList &Result);
+		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
-		virtual int GetGeneratorCount (void) { return m_iTableCount; }
+		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+		virtual bool FindDefaultDesc (const CItem &Item, SDeviceDesc *retDesc);
 
 	private:
 		struct SEntry
@@ -134,10 +140,19 @@ class CGroupOfDeviceGenerators : public IDeviceGenerator
 			int iChance;
 			};
 
+		struct SSlotDesc
+			{
+			CItemCriteria Criteria;
+			SDeviceDesc DefaultDesc;
+			int iMaxCount;
+			};
+
+		SSlotDesc *FindSlotDesc (const CItem &Item);
+
 		DiceRange m_Count;
 
-		int m_iTableCount;
-		SEntry *m_Table;
+		TArray<SEntry> m_Table;
+		TArray<SSlotDesc> m_SlotDesc;
 	};
 
 ALERROR IDeviceGenerator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, IDeviceGenerator **retpGenerator)
@@ -189,7 +204,7 @@ CSingleDevice::~CSingleDevice (void)
 		delete m_pExtraItems;
 	}
 
-void CSingleDevice::AddDevices (int iLevel, CDeviceDescList &Result)
+void CSingleDevice::AddDevices (SDeviceGenerateCtx &Ctx)
 
 //	AddDevices
 //
@@ -213,32 +228,44 @@ void CSingleDevice::AddDevices (int iLevel, CDeviceDescList &Result)
 		else
 			m_Enhanced.EnhanceItem(Desc.Item);
 
-		//	If this is a weapon and we have a default position,
-		//	then place the weapon at the front of the ship.
+		//	Find the default settings for the device slot for this device
 
-		if (m_bDefaultPos 
-				&& (m_pItemType->GetCategory() == itemcatWeapon
-					|| m_pItemType->GetCategory() == itemcatLauncher))
-			{
-			Desc.iPosAngle = 0;
-			Desc.iPosRadius = 20;
-			Desc.iPosZ = 0;
-			Desc.b3DPosition = false;
-			}
+		SDeviceDesc SlotDesc;
+		bool bUseSlotDesc = (Ctx.pRoot ? Ctx.pRoot->FindDefaultDesc(Desc.Item, &SlotDesc) : false);
 
-		//	Otherwise, just set values
+		//	Set the device position appropriately, either from the <Device> element,
+		//	from the slot descriptor at the root, or from defaults.
 
-		else
+		if (!m_bDefaultPos)
 			{
 			Desc.iPosAngle = m_iPosAngle;
 			Desc.iPosRadius = m_iPosRadius;
 			Desc.iPosZ = m_iPosZ;
 			Desc.b3DPosition = m_b3DPosition;
 			}
+		else if (bUseSlotDesc)
+			{
+			Desc.iPosAngle = SlotDesc.iPosAngle;
+			Desc.iPosRadius = SlotDesc.iPosRadius;
+			Desc.iPosZ = SlotDesc.iPosZ;
+			Desc.b3DPosition = SlotDesc.b3DPosition;
+			}
 
-		Desc.bOmnidirectional = m_bOmnidirectional;
-		Desc.iMinFireArc = m_iMinFireArc;
-		Desc.iMaxFireArc = m_iMaxFireArc;
+		//	Set the device fire arc appropriately.
+
+		if (!m_bDefaultFireArc)
+			{
+			Desc.bOmnidirectional = m_bOmnidirectional;
+			Desc.iMinFireArc = m_iMinFireArc;
+			Desc.iMaxFireArc = m_iMaxFireArc;
+			}
+		else if (bUseSlotDesc)
+			{
+			Desc.bOmnidirectional = SlotDesc.bOmnidirectional;
+			Desc.iMinFireArc = SlotDesc.iMinFireArc;
+			Desc.iMaxFireArc = SlotDesc.iMaxFireArc;
+			}
+
 		Desc.bSecondary = m_bSecondary;
 
 		//	Add extra items
@@ -246,15 +273,15 @@ void CSingleDevice::AddDevices (int iLevel, CDeviceDescList &Result)
 		if (m_pExtraItems)
 			{
 			CItemListManipulator ItemList(Desc.ExtraItems);
-			SItemAddCtx Ctx(ItemList);
-			Ctx.iLevel = iLevel;
+			SItemAddCtx ItemCtx(ItemList);
+			ItemCtx.iLevel = Ctx.iLevel;
 
-			m_pExtraItems->AddItems(Ctx);
+			m_pExtraItems->AddItems(ItemCtx);
 			}
 
 		//	Done
 		
-		Result.AddDeviceDesc(Desc);
+		Ctx.pResult->AddDeviceDesc(Desc);
 		}
 	}
 
@@ -295,7 +322,7 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (error = m_Enhanced.InitFromXML(Ctx, pDesc))
 		return error;
 
-	//	Load device desc attributes
+	//	Load device position attributes
 
 	if (pDesc->FindAttributeInteger(POS_Z_ATTRIB, &m_iPosZ))
 		{
@@ -320,9 +347,28 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_bDefaultPos = true;
 		}
 
-	m_bOmnidirectional = pDesc->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
-	m_iMinFireArc = pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
-	m_iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+	//	Load fire arc attributes
+
+	if (pDesc->FindAttributeInteger(MIN_FIRE_ARC_ATTRIB, &m_iMinFireArc))
+		{
+		m_bOmnidirectional = false;
+		m_iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+		m_bDefaultFireArc = false;
+		}
+	else if (pDesc->FindAttributeBool(OMNIDIRECTIONAL_ATTRIB, &m_bOmnidirectional))
+		{
+		m_iMinFireArc = 0;
+		m_iMaxFireArc = 0;
+		m_bDefaultFireArc = false;
+		}
+	else
+		{
+		m_bOmnidirectional = false;
+		m_iMinFireArc = 0;
+		m_iMaxFireArc = 0;
+		m_bDefaultFireArc = true;
+		}
+
 	m_bSecondary = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
 
 	//	Load extra items
@@ -379,7 +425,7 @@ CTableOfDeviceGenerators::~CTableOfDeviceGenerators (void)
 			delete m_Table[i].pDevice;
 	}
 
-void CTableOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Result)
+void CTableOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 
 //	AddDevices
 //
@@ -399,7 +445,7 @@ void CTableOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Result)
 
 			if (iRoll <= 0)
 				{
-				m_Table[i].pDevice->AddDevices(iLevel, Result);
+				m_Table[i].pDevice->AddDevices(Ctx);
 				break;
 				}
 			}
@@ -473,7 +519,7 @@ CLevelTableOfDeviceGenerators::~CLevelTableOfDeviceGenerators (void)
 			delete m_Table[i].pDevice;
 	}
 
-void CLevelTableOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Result)
+void CLevelTableOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 
 //	AddDevices
 //
@@ -484,16 +530,16 @@ void CLevelTableOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Res
 
 	//	Compute probabilities
 
-	if (iLevel != m_iComputedLevel)
+	if (Ctx.iLevel != m_iComputedLevel)
 		{
 		m_iTotalChance = 0;
 		for (i = 0; i < m_Table.GetCount(); i++)
 			{
-			m_Table[i].iChance = GetFrequencyByLevel(m_Table[i].sLevelFrequency, iLevel);
+			m_Table[i].iChance = GetFrequencyByLevel(m_Table[i].sLevelFrequency, Ctx.iLevel);
 			m_iTotalChance += m_Table[i].iChance;
 			}
 
-		m_iComputedLevel = iLevel;
+		m_iComputedLevel = Ctx.iLevel;
 		}
 
 	//	Generate
@@ -512,7 +558,7 @@ void CLevelTableOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Res
 
 				if (iRoll <= 0)
 					{
-					m_Table[j].pDevice->AddDevices(iLevel, Result);
+					m_Table[j].pDevice->AddDevices(Ctx);
 					break;
 					}
 				}
@@ -578,17 +624,12 @@ CGroupOfDeviceGenerators::~CGroupOfDeviceGenerators (void)
 	{
 	int i;
 
-	if (m_Table)
-		{
-		for (i = 0; i < m_iTableCount; i++)
-			if (m_Table[i].pDevice)
-				delete m_Table[i].pDevice;
-
-		delete [] m_Table;
-		}
+	for (i = 0; i < m_Table.GetCount(); i++)
+		if (m_Table[i].pDevice)
+			delete m_Table[i].pDevice;
 	}
 
-void CGroupOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Result)
+void CGroupOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 
 //	AddDevices
 //
@@ -600,12 +641,61 @@ void CGroupOfDeviceGenerators::AddDevices (int iLevel, CDeviceDescList &Result)
 	int iCount = m_Count.Roll();
 	for (j = 0; j < iCount; j++)
 		{
-		for (i = 0; i < m_iTableCount; i++)
+		for (i = 0; i < m_Table.GetCount(); i++)
 			{
 			if (mathRandom(1, 100) <= m_Table[i].iChance)
-				m_Table[i].pDevice->AddDevices(iLevel, Result);
+				m_Table[i].pDevice->AddDevices(Ctx);
 			}
 		}
+	}
+
+bool CGroupOfDeviceGenerators::FindDefaultDesc (const CItem &Item, SDeviceDesc *retDesc)
+
+//	FindDefaultDesc
+//
+//	Looks for a slot descriptor that matches the given item and returns it.
+
+	{
+	//	See if the item fits into one of the slots that we've defined. If so, 
+	//	then we take the descriptor from the slot.
+
+	SSlotDesc *pSlotDesc = FindSlotDesc(Item);
+	if (pSlotDesc)
+		{
+		*retDesc = pSlotDesc->DefaultDesc;
+		return true;
+		}
+
+	//	Otherwise we go with default (we assume that retDesc is already 
+	//	initialized to default values).
+	//
+	//	For backwards compatibility, however, we place all weapons 20 pixels
+	//	forward.
+
+	ItemCategories iCategory = Item.GetType()->GetCategory();
+	if (iCategory == itemcatWeapon || iCategory == itemcatLauncher)
+		retDesc->iPosRadius = 20;
+
+	//	Done
+
+	return true;
+	}
+
+CGroupOfDeviceGenerators::SSlotDesc *CGroupOfDeviceGenerators::FindSlotDesc (const CItem &Item)
+
+//	FindSlotDesc
+//
+//	Returns the first slot descriptor that matches the item. If none of the
+//	descriptors match, we return NULL.
+
+	{
+	int i;
+
+	for (i = 0; i < m_SlotDesc.GetCount(); i++)
+		if (Item.MatchesCriteria(m_SlotDesc[i].Criteria))
+			return &m_SlotDesc[i];
+
+	return NULL;
 	}
 
 ALERROR CGroupOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -622,26 +712,38 @@ ALERROR CGroupOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 	if (m_Count.IsEmpty())
 		m_Count.SetConstant(1);
 
-	m_iTableCount = pDesc->GetContentElementCount();
-	if (m_iTableCount > 0)
+	//	Load either a <DeviceSlot> element or another device generator.
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
 		{
-		m_Table = new SEntry [m_iTableCount];
-		utlMemSet(m_Table, sizeof(SEntry) * m_iTableCount, 0);
+		CXMLElement *pEntry = pDesc->GetContentElement(i);
 
-		for (i = 0; i < m_iTableCount; i++)
+		if (strEquals(pEntry->GetTag(), DEVICE_SLOT_TAG))
 			{
-			CXMLElement *pEntry = pDesc->GetContentElement(i);
-			
-			m_Table[i].iChance = pEntry->GetAttributeInteger(CHANCE_ATTRIB);
-			if (m_Table[i].iChance == 0)
-				m_Table[i].iChance = 100;
+			SSlotDesc *pSlotDesc = m_SlotDesc.Insert();
 
-			if (error = IDeviceGenerator::CreateFromXML(Ctx, pEntry, &m_Table[i].pDevice))
+			CItem::ParseCriteria(pEntry->GetAttribute(CRITERIA_ATTRIB), &pSlotDesc->Criteria);
+
+			pSlotDesc->DefaultDesc.iPosAngle = pEntry->GetAttributeInteger(POS_ANGLE_ATTRIB);
+			pSlotDesc->DefaultDesc.iPosRadius = pEntry->GetAttributeInteger(POS_RADIUS_ATTRIB);
+			pSlotDesc->DefaultDesc.iPosZ = pEntry->GetAttributeInteger(POS_Z_ATTRIB);
+			pSlotDesc->DefaultDesc.b3DPosition = (pSlotDesc->DefaultDesc.iPosZ != 0);
+
+			pSlotDesc->DefaultDesc.bOmnidirectional = pEntry->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
+			pSlotDesc->DefaultDesc.iMinFireArc = pEntry->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
+			pSlotDesc->DefaultDesc.iMaxFireArc = pEntry->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+
+			pSlotDesc->iMaxCount = pEntry->GetAttributeIntegerBounded(MAX_COUNT_ATTRIB, 0, -1, -1);
+			}
+		else
+			{
+			SEntry *pTableEntry = m_Table.Insert();
+
+			pTableEntry->iChance = pEntry->GetAttributeIntegerBounded(CHANCE_ATTRIB, 0, -1, 100);
+			if (error = IDeviceGenerator::CreateFromXML(Ctx, pEntry, &pTableEntry->pDevice))
 				return error;
 			}
 		}
-	else
-		m_Table = NULL;
 
 	return NOERROR;
 	}
@@ -656,11 +758,9 @@ ALERROR CGroupOfDeviceGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	int i;
 	ALERROR error;
 
-	for (i = 0; i < m_iTableCount; i++)
-		{
+	for (i = 0; i < m_Table.GetCount(); i++)
 		if (error = m_Table[i].pDevice->OnDesignLoadComplete(Ctx))
 			return error;
-		}
 
 	return NOERROR;
 	}

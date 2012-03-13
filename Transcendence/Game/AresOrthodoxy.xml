@@ -27,9 +27,8 @@
 
 		<Armor
 				hitPoints=	"60"
-				hpBonus=	"  +0,  +0, +50, -25"
+				hpBonus=	"particle:+50; blast:-25"
 				/>
-
 	</ItemType>
 
 	<!-- Cydonian shields -->
@@ -525,7 +524,6 @@
 						imageTicksPerFrame="2"/>
 			</HitEffect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Ares Warhammer nuke -->
@@ -640,18 +638,6 @@
 						secondaryColor=		"0xff, 0xb3, 0x27"
 						/>
 			</Effect>
-
-			<HitEffect
-					sound="&snArmorHit1;"
-					>
-				<Image imageID="&rsExplosionsAG96;" 
-						imageX="0" 
-						imageY="0" 
-						imageWidth="96" 
-						imageHeight="96"
-						imageFrameCount="16"
-						imageTicksPerFrame="2"/>
-			</HitEffect>
 		</Weapon>
 	</ItemType>
 

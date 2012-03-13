@@ -274,7 +274,7 @@ void CGalacticMapSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CGalacticMapSession\r\n");
 	}
 
-void CGalacticMapSession::OnUpdate (void)
+void CGalacticMapSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

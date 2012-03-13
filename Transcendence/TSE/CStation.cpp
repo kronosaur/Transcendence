@@ -1408,23 +1408,15 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 				}
 		}
 
-	//	Create hit effect
-
-	if (Ctx.pDesc->m_pHitEffect == NULL)
-		{
-		CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_HitEffectUNID);
-		if (pEffect)
-			pEffect->CreateEffect(GetSystem(),
-					this,
-					Ctx.vHitPos,
-					GetVel(),
-					0);
-		}
-
 	//	If we're immutable, then nothing else happens.
 
 	if (m_pType->IsImmutable())
+		{
+		Ctx.iDamage = 0;
+		Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
+
 		return damageNoDamage;
+		}
 
 	//	We go through a different path if we're already abandoned
 	//	(i.e., there is no life on the station)
@@ -1470,6 +1462,10 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 			Ctx.iDamage = Max(1, Ctx.Damage.GetMassDestructionAdj() * Ctx.iDamage / 100);
 		else
 			Ctx.iDamage = 0;
+
+		//	Hit effect
+
+		Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
 
 		//	Give events a chance to change the damage
 
@@ -1587,17 +1583,24 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 	//	Adjust the damage for the armor
 
 	Ctx.iDamage = m_pArmorClass->CalcAdjustedDamage(NULL, Ctx.Damage, Ctx.iDamage);
-	if (Ctx.iDamage == 0)
-		return damageNoDamage;
 
 	//	If we're a multi-hull object then we adjust for mass destruction
 	//	effects (non-mass destruction weapons don't hurt us very much)
 
-	if (m_pType->IsMultiHull())
+	if (Ctx.iDamage > 0 && m_pType->IsMultiHull())
 		{
 		int iWMD = Ctx.Damage.GetMassDestructionAdj();
 		Ctx.iDamage = Max(1, iWMD * Ctx.iDamage / 100);
 		}
+
+	//	Hit effect
+
+	Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
+
+	//	If no damage, we're done
+
+	if (Ctx.iDamage == 0)
+		return damageNoDamage;
 
 	//	Give events a chance to change the damage
 
@@ -2106,13 +2109,16 @@ void CStation::OnObjLeaveGate (CSpaceObject *pObj)
 	{
 	//	Create gating effect
 
-	CEffectCreator *pEffect = m_pType->GetGateEffect();
-	if (pEffect)
-		pEffect->CreateEffect(GetSystem(),
-				NULL,
-				GetPos(),
-				GetVel(),
-				0);
+	if (!pObj->IsVirtual())
+		{
+		CEffectCreator *pEffect = m_pType->GetGateEffect();
+		if (pEffect)
+			pEffect->CreateEffect(GetSystem(),
+					NULL,
+					GetPos(),
+					GetVel(),
+					0);
+		}
 	}
 
 void CStation::OnPlayerObj (CSpaceObject *pPlayer)
@@ -2653,7 +2659,7 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 		WORD wColor = GetSymbolColor();
 		if (m_Scale == scaleStructure && m_rMass > 100000.0)
 			{
-			if (IsStargate())
+			if (IsActiveStargate())
 				{
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
@@ -2712,7 +2718,7 @@ void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 
 		if (m_Scale == scaleStructure && m_rMass > 100000.0)
 			{
-			if (IsStargate())
+			if (IsActiveStargate())
 				{
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
@@ -2908,13 +2914,16 @@ bool CStation::RequestGate (CSpaceObject *pObj)
 	{
 	//	Create gating effect
 
-	CEffectCreator *pEffect = m_pType->GetGateEffect();
-	if (pEffect)
-		pEffect->CreateEffect(GetSystem(),
-				NULL,
-				GetPos(),
-				GetVel(),
-				0);
+	if (!pObj->IsVirtual())
+		{
+		CEffectCreator *pEffect = m_pType->GetGateEffect();
+		if (pEffect)
+			pEffect->CreateEffect(GetSystem(),
+					NULL,
+					GetPos(),
+					GetVel(),
+					0);
+		}
 
 	//	Get the destination node for this gate
 	//	(If pNode == NULL then it means that we are gating to nowhere;

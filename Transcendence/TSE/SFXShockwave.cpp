@@ -119,7 +119,7 @@ IEffectPainter *CShockwaveEffectCreator::CreatePainter (void)
 	return new CShockwavePainter(this);
 	}
 
-ALERROR CShockwaveEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CShockwaveEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

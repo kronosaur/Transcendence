@@ -10,7 +10,8 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 												   CSpaceObject *pAnchor,
 												   const CVector &vPos,
 												   const CVector &vVel,
-												   int iRotation)
+												   int iRotation,
+												   int iVariant)
 
 //	CreateEffect
 //
@@ -42,7 +43,7 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 	return NOERROR;
 	}
 
-ALERROR CImageFractureEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CImageFractureEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

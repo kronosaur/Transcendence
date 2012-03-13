@@ -81,8 +81,9 @@ ALERROR CParticleDamage::Create (CSystem *pSystem,
 
 	//	Painter
 
-	if (pDesc->m_pEffect)
-		pParticles->m_pPainter = pDesc->m_pEffect->CreatePainter();
+	CEffectCreator *pEffect;
+	if (pEffect = pDesc->GetEffect())
+		pParticles->m_pPainter = pEffect->CreatePainter();
 
 	//	Remember the sovereign of the source (in case the source is destroyed)
 
@@ -338,7 +339,7 @@ void CParticleDamage::OnReadFromStream (SLoadCtx &Ctx)
 
 		//	Load painter
 
-		m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->m_pEffect);
+		m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->GetEffect());
 
 		m_Particles.ReadFromStream(Ctx);
 		}

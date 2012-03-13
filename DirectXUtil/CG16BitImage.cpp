@@ -1935,19 +1935,26 @@ WORD CG16bitImage::FadeColor (WORD wStart, WORD wEnd, int iFade)
 //	100 = wEnd
 
 	{
-	int sTemp = (DWORD)wStart;
-	int dTemp = (DWORD)wEnd;
+	if (iFade <= 0)
+		return wStart;
+	else if (iFade >= 100)
+		return wEnd;
+	else
+		{
+		int sTemp = (DWORD)wStart;
+		int dTemp = (DWORD)wEnd;
 
-	int sb = sTemp & 0x1f;
-	int db = dTemp & 0x1f;
-	int sg = (sTemp >> 5) & 0x3f;
-	int dg = (dTemp >> 5) & 0x3f;
-	int sr = (sTemp >> 11) & 0x1f;
-	int dr = (dTemp >> 11) & 0x1f;
+		int sb = sTemp & 0x1f;
+		int db = dTemp & 0x1f;
+		int sg = (sTemp >> 5) & 0x3f;
+		int dg = (dTemp >> 5) & 0x3f;
+		int sr = (sTemp >> 11) & 0x1f;
+		int dr = (dTemp >> 11) & 0x1f;
 
-	return (WORD)(sb + ((db - sb) * iFade / 100))
-			| (((WORD)(sg + ((dg - sg) * iFade / 100))) << 5)
-			| (((WORD)(sr + ((dr - sr) * iFade / 100))) << 11);
+		return (WORD)(sb + ((db - sb) * iFade / 100))
+				| (((WORD)(sg + ((dg - sg) * iFade / 100))) << 5)
+				| (((WORD)(sr + ((dr - sr) * iFade / 100))) << 11);
+		}
 	}
 
 void CG16bitImage::Fill (int x, int y, int cxWidth, int cyHeight, WORD wColor)

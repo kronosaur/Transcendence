@@ -3,6 +3,25 @@
 //	Transcendence session classes
 //	Copyright (c) 2010 by Kronosaur Productions, LLC. All Rights Reserved.
 
+class CAdventureIntroSession : public IHISession
+	{
+	public:
+		CAdventureIntroSession (CHumanInterface &HI, CCloudService &Service, const CString &sAdventureName);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
+		virtual ALERROR OnInit (CString *retsError);
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
+		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnReportHardCrash (CString *retsMessage);
+
+	private:
+		void CmdDone (void);
+
+		CCloudService &m_Service;
+		CString m_sAdventureName;
+	};
+
 class CChangePasswordSession : public IHISession
 	{
 	public:
@@ -17,10 +36,12 @@ class CChangePasswordSession : public IHISession
 
 	private:
 		void CmdCancel (void);
+		void CmdChangeComplete (CChangePasswordTask *pTask);
 		void CmdOK (void);
 		void CreateDlg (IAnimatron **retpDlg);
 
 		CCloudService &m_Service;
+		RECT m_rcInputError;
 	};
 
 class CGalacticMapSession : public IHISession
@@ -35,7 +56,7 @@ class CGalacticMapSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		int GetScale (int iScaleIndex);
@@ -71,7 +92,7 @@ class CHelpSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		CG16bitImage m_HelpImage;
@@ -84,10 +105,11 @@ class CLegacySession : public IHISession
 		CLegacySession (CHumanInterface &HI) : IHISession(HI) { }
 
 		//	IHISession virtuals
+		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
+		virtual ALERROR OnInit (CString *retsError) { SetNoCursor(true); return NOERROR; }
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
-		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
 		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
@@ -109,7 +131,7 @@ class CLoadingSession : public IHISession
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		CG16bitImage m_TitleImage;
@@ -132,7 +154,7 @@ class CLoginSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		enum Dialogs
@@ -153,7 +175,6 @@ class CLoginSession : public IHISession
 		void CreateDlgMessage (const CVisualPalette &VI, const RECT &rcRect, IAnimatron **retpAni);
 		void CreateDlgRegister (const CVisualPalette &VI, IAnimatron **retpAni);
 		void CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retpAni);
-		void ShowInputErrorBox (const CString &sTitle, const CString &sDesc);
 		void ShowInitialDlg (void);
 
 		CCloudService &m_Service;
@@ -162,6 +183,7 @@ class CLoginSession : public IHISession
 
 		Dialogs m_iCurrent;					//	Current dialog shown
 		RECT m_rcInputError;
+		bool m_bBlankEmailWarning;			//	If TRUE we already warned about a blank email.
 	};
 
 class CMessageSession : public IHISession
@@ -237,7 +259,7 @@ class CNewGameSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		void AddClassInfo (CShipClass *pClass, const CDeviceDescList &Devices, const CItem &Item, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpAni);
@@ -298,7 +320,7 @@ class CProfileSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		enum Panes
@@ -308,18 +330,9 @@ class CProfileSession : public IHISession
 			paneAccolades,
 			};
 
-		enum ScrollTypes
-			{
-			scroll,
-			scrollToEnd,
-			scrollToHome,
-			};
-
 		void CreateRecordList (const CVisualPalette &VI, const RECT &rcRect, IAnimatron **retpAni);
 		void CmdReadComplete (CReadProfileTask *pTask);
 		void GetPaneRect (RECT *retrcRect);
-		void Scroll (ScrollTypes iScroll, int iScrollDist = 0);
-		void ScrollTo (IAnimatron *pList, int iStartFrame, int iOriginalPos, int iPos);
 
 		CCloudService &m_Service;
 
@@ -345,7 +358,7 @@ class CStatsSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		void CreateCopyAnimation (const RECT &rcRect, int iDuration, IAnimatron **retpAni);
@@ -374,7 +387,7 @@ class CTextCrawlSession : public IHISession
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
 		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
 		virtual void OnReportHardCrash (CString *retsMessage);
-		virtual void OnUpdate (void);
+		virtual void OnUpdate (bool bTopMost);
 
 	private:
 		void CreateCrawlAnimation (const CString &sText, const RECT &rcRect, IAnimatron **retpAni);
@@ -383,3 +396,21 @@ class CTextCrawlSession : public IHISession
 		CString m_sText;
 		CString m_sCmdDone;
 	};
+
+class CWaitSession : public IHISession
+	{
+	public:
+		CWaitSession (CHumanInterface &HI, CCloudService &Service, const CString &sTitle);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
+		virtual ALERROR OnInit (CString *retsError);
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
+		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnReportHardCrash (CString *retsMessage);
+
+	private:
+		CCloudService &m_Service;
+		CString m_sTitle;
+	};
+

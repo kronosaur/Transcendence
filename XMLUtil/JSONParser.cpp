@@ -142,7 +142,9 @@ void CJSONValue::SerializeString (IWriteStream *pOutput, const CString &sText)
 
 //	SerializeString
 //
-//	Serializes a UTF8 string to JSON (excluding the surrounding quotes).
+//	Serializes a utf8 string to JSON (excluding the surrounding quotes). If
+//	bToUTF8 is TRUE, then we assume that the input string is a Windows Western
+//	(CP1252) string and we convert it to utf8.
 
 	{
 	char *pPos = sText.GetASCIIZPointer();
@@ -538,7 +540,7 @@ CJSONParser::ETokens CJSONParser::ParseString (CJSONValue *retValue)
 
 	//	Done
 
-	retValue->TakeHandoff(CJSONValue(CString(Stream.GetPointer(), Stream.GetLength())));
+	retValue->TakeHandoff(CJSONValue(strUTF8ToANSI(CString(Stream.GetPointer(), Stream.GetLength()))));
 	return tkValue;
 	}
 

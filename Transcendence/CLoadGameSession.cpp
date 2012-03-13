@@ -16,6 +16,8 @@
 #define ERR_TITLE								CONSTLIT("Unable to list files")
 #define ERR_DESC								CONSTLIT("Unable to retrive a list of save files: %s")
 
+#define EVENT_ON_DOUBLE_CLICK					CONSTLIT("onDoubleClick")
+
 #define ID_CTRL_TITLE							CONSTLIT("ctrlTitle")
 #define ID_CTRL_WAIT							CONSTLIT("ctrlWait")
 #define ID_MESSAGE								CONSTLIT("idMessage")
@@ -123,6 +125,7 @@ void CLoadGameSession::CmdReadComplete (CListSaveFilesTask *pTask)
 	pList->SetPropertyVector(PROP_POSITION, CVector(rcRect.left + (RectWidth(rcRect) - RectWidth(rcList)) / 2, rcRect.top));
 	pList->SetPropertyVector(PROP_SCALE, CVector(SAVE_ENTRY_WIDTH, RectHeight(rcRect)));
 	pList->SetPropertyMetric(PROP_VIEWPORT_HEIGHT, (Metric)RectHeight(rcRect));
+	RegisterPerformanceEvent(pList, EVENT_ON_DOUBLE_CLICK, CMD_OK_SESSION);
 
 	StartPerformance(pList, ID_LIST, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 	}
@@ -162,7 +165,7 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, sFolder, SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
+	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, sFolder, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
 
 	//	Create the title
 
@@ -211,12 +214,7 @@ void CLoadGameSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), &rcCenter);
-
-	RECT rcFull = rcCenter;
-	rcFull.left = 0;
-	rcFull.right = Screen.GetWidth();
-	Screen.Fill(rcFull.left, rcFull.top, RectWidth(rcFull), RectHeight(rcFull), VI.GetColor(colorAreaDialog));
+	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CLoadGameSession::OnReportHardCrash (CString *retsMessage)

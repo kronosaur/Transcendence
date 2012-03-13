@@ -121,9 +121,9 @@ ALERROR CTextCrawlSession::OnInit (CString *retsError)
 
 	RECT rcRect;
 	rcRect.top = rcCenter.top + (RectHeight(rcCenter) - TEXT_CRAWL_HEIGHT) / 2;
-	rcRect.left = rcCenter.left + TEXT_CRAWL_X;
+	rcRect.left = rcCenter.left + (RectWidth(rcCenter) / 2);
 	rcRect.bottom = rcRect.top + TEXT_CRAWL_HEIGHT;
-	rcRect.right = rcCenter.right - TEXT_CRAWL_RIGHT_MARGIN;
+	rcRect.right = rcRect.left + TEXT_CRAWL_WIDTH;
 
 	//	Create the text animation
 
@@ -175,7 +175,7 @@ void CTextCrawlSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_Image, &rcCenter);
+	VI.DrawSessionBackground(Screen, m_Image, 0, &rcCenter);
 	}
 
 void CTextCrawlSession::OnReportHardCrash (CString *retsMessage)
@@ -188,7 +188,7 @@ void CTextCrawlSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CTextCrawlSession\r\n");
 	}
 
-void CTextCrawlSession::OnUpdate (void)
+void CTextCrawlSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

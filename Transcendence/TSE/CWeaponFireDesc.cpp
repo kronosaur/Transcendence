@@ -75,12 +75,17 @@
 
 #define STR_SHIELD_REFLECT				CONSTLIT("reflect")
 
+static char *CACHED_EVENTS[CWeaponFireDesc::evtCount] =
+	{
+		"OnDamageArmor",
+		"OnDamageOverlay",
+		"OnDamageShields",
+		"OnFragment",
+	};
+
 CWeaponFireDesc::CWeaponFireDesc (void) : 
-		m_pEnhanced(NULL),
-		m_pOnDamageOverlay(NULL),
-		m_pOnDamageShields(NULL),
-		m_pOnDamageArmor(NULL),
-		m_pOnFragment(NULL)
+		m_pExtension(NULL),
+		m_pEnhanced(NULL)
 
 //	CWeaponFireDesc constructor
 
@@ -137,6 +142,37 @@ CWeaponFireDesc::~CWeaponFireDesc (void)
 		delete m_pEnhanced;
 	}
 
+void CWeaponFireDesc::CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx)
+
+//	CreateHitEffect
+//
+//	Creates an effect when the weapon hits an object
+
+	{
+	//	See if this weapon has a hit effect
+
+	CEffectCreator *pHitEffect = m_pHitEffect;
+
+	//	If not, compute a default hit effect depending on the weapon damage type
+
+	if (pHitEffect == NULL)
+		pHitEffect = g_pUniverse->FindDefaultHitEffect(m_Damage.GetDamageType());
+
+	//	If we could not come up with a hit effect then we're done.
+
+	if (pHitEffect == NULL)
+		return;
+
+	//	Create the effect
+
+	pHitEffect->CreateEffect(pSystem,
+			((DamageCtx.pObj && !DamageCtx.pObj->IsDestroyed()) ? DamageCtx.pObj : NULL),
+			DamageCtx.vHitPos,
+			(DamageCtx.pObj ? DamageCtx.pObj->GetVel() : CVector()),
+			DamageCtx.iDirection,
+			DamageCtx.iDamage);
+	}
+
 CEffectCreator *CWeaponFireDesc::FindEffectCreator (const CString &sUNID)
 
 //	FindEffectCreator
@@ -175,6 +211,42 @@ CEffectCreator *CWeaponFireDesc::FindEffectCreator (const CString &sUNID)
 		}
 	else
 		return NULL;
+	}
+
+bool CWeaponFireDesc::FindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent) const
+
+//	FindEventHandler
+//
+//	Returns an event handler (if found)
+
+	{
+	//	Look for an event handler at the weapon fire level
+
+	ICCItem *pCode;
+	if (m_Events.FindEvent(sEvent, &pCode))
+		{
+		if (retEvent)
+			{
+			retEvent->pExtension = m_pExtension;
+			retEvent->pCode = pCode;
+			}
+
+		return true;
+		}
+
+	//	Then look for an event handler at the item level
+
+	CItemType *pDevice;
+	CItemType *pAmmo = GetWeaponType(&pDevice);
+	if (pAmmo && pAmmo->FindEventHandler(sEvent, retEvent))
+		return true;
+
+	if (pDevice && pAmmo != pDevice && pDevice->FindEventHandler(sEvent, retEvent))
+		return true;
+
+	//	Otherwise, we have no event
+
+	return false;
 	}
 
 CWeaponFireDesc *CWeaponFireDesc::FindWeaponFireDesc (const CString &sUNID, char **retpPos)
@@ -331,45 +403,48 @@ bool CWeaponFireDesc::FireOnDamageArmor (SDamageCtx &Ctx)
 //	Fire OnDamageArmor event. Returns TRUE if we should skip further armor damage
 
 	{
-	if (m_pOnDamageArmor == NULL)
-		return false;
-
-	//	Setup arguments
-
-	CCodeChainCtx CCCtx;
-
-	CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
-	CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
-	CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
-	CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
-
-	ICCItem *pResult = CCCtx.Run(m_pOnDamageArmor);
-	if (pResult->IsError())
-		Ctx.pObj->ReportEventError(ON_DAMAGE_ARMOR_EVENT, pResult);
-
-	//	If we return Nil, then we continue processing
-
-	bool bResult;
-	if (pResult->IsNil())
-		bResult = false;
-
-	//	Otherwise, the result is the damage left
-
-	else
+	SEventHandlerDesc Event;
+	if (FindEventHandler(evtOnDamageArmor, &Event))
 		{
-		Ctx.iDamage = pResult->GetIntegerValue();
-		bResult = true;
+		//	Setup arguments
+
+		CCodeChainCtx CCCtx;
+
+		CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
+		CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
+		CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			Ctx.pObj->ReportEventError(ON_DAMAGE_ARMOR_EVENT, pResult);
+
+		//	If we return Nil, then we continue processing
+
+		bool bResult;
+		if (pResult->IsNil())
+			bResult = false;
+
+		//	Otherwise, the result is the damage left
+
+		else
+			{
+			Ctx.iDamage = pResult->GetIntegerValue();
+			bResult = true;
+			}
+
+		CCCtx.Discard(pResult);
+
+		return bResult;
 		}
-
-	CCCtx.Discard(pResult);
-
-	return bResult;
+	else
+		return false;
 	}
 
 bool CWeaponFireDesc::FireOnDamageOverlay (SDamageCtx &Ctx, CEnergyField *pOverlay)
@@ -379,45 +454,48 @@ bool CWeaponFireDesc::FireOnDamageOverlay (SDamageCtx &Ctx, CEnergyField *pOverl
 //	Fire OnDamageOverlay event. Returns TRUE if we should skip further overlay damage
 
 	{
-	if (m_pOnDamageOverlay == NULL)
-		return false;
-
-	//	Setup arguments
-
-	CCodeChainCtx CCCtx;
-
-	CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
-	CCCtx.DefineInteger(CONSTLIT("aOverlayID"), pOverlay->GetID());
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
-	CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
-	CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
-
-	ICCItem *pResult = CCCtx.Run(m_pOnDamageOverlay);
-	if (pResult->IsError())
-		Ctx.pObj->ReportEventError(ON_DAMAGE_OVERLAY_EVENT, pResult);
-
-	//	If we return Nil, then we continue processing
-
-	bool bResult;
-	if (pResult->IsNil())
-		bResult = false;
-
-	//	Otherwise, the result is the damage left
-
-	else
+	SEventHandlerDesc Event;
+	if (FindEventHandler(evtOnDamageOverlay, &Event))
 		{
-		Ctx.iDamage = pResult->GetIntegerValue();
-		bResult = true;
+		//	Setup arguments
+
+		CCodeChainCtx CCCtx;
+
+		CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
+		CCCtx.DefineInteger(CONSTLIT("aOverlayID"), pOverlay->GetID());
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
+		CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
+		CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			Ctx.pObj->ReportEventError(ON_DAMAGE_OVERLAY_EVENT, pResult);
+
+		//	If we return Nil, then we continue processing
+
+		bool bResult;
+		if (pResult->IsNil())
+			bResult = false;
+
+		//	Otherwise, the result is the damage left
+
+		else
+			{
+			Ctx.iDamage = pResult->GetIntegerValue();
+			bResult = true;
+			}
+
+		CCCtx.Discard(pResult);
+
+		return bResult;
 		}
-
-	CCCtx.Discard(pResult);
-
-	return bResult;
+	else
+		return false;
 	}
 
 bool CWeaponFireDesc::FireOnDamageShields (SDamageCtx &Ctx, int iDevice)
@@ -427,131 +505,134 @@ bool CWeaponFireDesc::FireOnDamageShields (SDamageCtx &Ctx, int iDevice)
 //	Fire OnDamageShields event. Returns TRUE if we should skip further shields damage
 
 	{
-	if (m_pOnDamageShields == NULL)
-		return false;
-
-	//	Setup arguments
-
-	CCodeChainCtx CCCtx;
-
-	CItemListManipulator ItemList(Ctx.pObj->GetItemList());
-	CShip *pShip = Ctx.pObj->AsShip();
-	if (pShip)
-		pShip->SetCursorAtDevice(ItemList, iDevice);
-
-	CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
-	CCCtx.DefineInteger(CONSTLIT("aDevice"), iDevice);
-	CCCtx.DefineItem(CONSTLIT("aDeviceItem"), ItemList.GetItemAtCursor());
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
-	CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
-	CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
-
-	CCCtx.DefineInteger(CONSTLIT("aShieldHP"), Ctx.iHPLeft);
-	CCCtx.DefineInteger(CONSTLIT("aShieldDamageHP"), Ctx.iShieldDamage);
-	CCCtx.DefineInteger(CONSTLIT("aArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
-	if (Ctx.bReflect)
+	SEventHandlerDesc Event;
+	if (FindEventHandler(evtOnDamageShields, &Event))
 		{
-		CCCtx.DefineString(CONSTLIT("aShieldReflect"), STR_SHIELD_REFLECT);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iOriginalShieldDamage);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iOriginalAbsorb);
-		}
-	else
-		{
-		CCCtx.DefineNil(CONSTLIT("aShieldReflect"));
-		CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iShieldDamage);
-		CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
-		}
+		//	Setup arguments
 
-	ICCItem *pResult = CCCtx.Run(m_pOnDamageShields);
+		CCodeChainCtx CCCtx;
 
-	//	If we return Nil, then we continue processing
+		CItemListManipulator ItemList(Ctx.pObj->GetItemList());
+		CShip *pShip = Ctx.pObj->AsShip();
+		if (pShip)
+			pShip->SetCursorAtDevice(ItemList, iDevice);
 
-	bool bResult;
-	if (pResult->IsNil())
-		bResult = false;
+		CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
+		CCCtx.DefineInteger(CONSTLIT("aDevice"), iDevice);
+		CCCtx.DefineItem(CONSTLIT("aDeviceItem"), ItemList.GetItemAtCursor());
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), Ctx.vHitPos);
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), Ctx.iDirection);
+		CCCtx.DefineInteger(CONSTLIT("aDamageHP"), Ctx.iDamage);
+		CCCtx.DefineString(CONSTLIT("aDamageType"), GetDamageShortName(Ctx.Damage.GetDamageType()));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), Ctx.pDesc->GetWeaponType());
 
-	//	If this is an integer, we pass damage to armor
-
-	else if (pResult->IsInteger())
-		{
-		Ctx.iDamage = pResult->GetIntegerValue();
-		bResult = true;
-		}
-
-	//	If we return a list, then modify variables
-
-	else if (pResult->IsList())
-		{
-		//	A single value means we modified the damage to armor
-
-		if (pResult->GetCount() == 1)
+		CCCtx.DefineInteger(CONSTLIT("aShieldHP"), Ctx.iHPLeft);
+		CCCtx.DefineInteger(CONSTLIT("aShieldDamageHP"), Ctx.iShieldDamage);
+		CCCtx.DefineInteger(CONSTLIT("aArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
+		if (Ctx.bReflect)
 			{
-			if (strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT))
+			CCCtx.DefineString(CONSTLIT("aShieldReflect"), STR_SHIELD_REFLECT);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iOriginalShieldDamage);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iOriginalAbsorb);
+			}
+		else
+			{
+			CCCtx.DefineNil(CONSTLIT("aShieldReflect"));
+			CCCtx.DefineInteger(CONSTLIT("aOriginalShieldDamageHP"), Ctx.iShieldDamage);
+			CCCtx.DefineInteger(CONSTLIT("aOriginalArmorDamageHP"), Ctx.iDamage - Ctx.iAbsorb);
+			}
+
+		ICCItem *pResult = CCCtx.Run(Event);
+
+		//	If we return Nil, then we continue processing
+
+		bool bResult;
+		if (pResult->IsNil())
+			bResult = false;
+
+		//	If this is an integer, we pass damage to armor
+
+		else if (pResult->IsInteger())
+			{
+			Ctx.iDamage = pResult->GetIntegerValue();
+			bResult = true;
+			}
+
+		//	If we return a list, then modify variables
+
+		else if (pResult->IsList())
+			{
+			//	A single value means we modified the damage to armor
+
+			if (pResult->GetCount() == 1)
 				{
-				Ctx.bReflect = true;
-				Ctx.iAbsorb = Ctx.iDamage;
-				Ctx.iShieldDamage = 0;
-				}
-			else
-				{
-				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
-				if (Ctx.bReflect)
+				if (strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT))
 					{
-					Ctx.bReflect = false;
-					Ctx.iAbsorb = Ctx.iOriginalAbsorb;
+					Ctx.bReflect = true;
+					Ctx.iAbsorb = Ctx.iDamage;
+					Ctx.iShieldDamage = 0;
+					}
+				else
+					{
+					Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
+					if (Ctx.bReflect)
+						{
+						Ctx.bReflect = false;
+						Ctx.iAbsorb = Ctx.iOriginalAbsorb;
+						}
 					}
 				}
+
+			//	Two values mean we modified both damage to armor and shield damage
+
+			else if (pResult->GetCount() == 2)
+				{
+				Ctx.bReflect = false;
+				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
+				Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(1)->GetIntegerValue()));
+				}
+
+			//	Otherwise, we deal with reflection
+
+			else
+				{
+				Ctx.bReflect = strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT);
+				Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(1)->GetIntegerValue(), Ctx.iHPLeft));
+				Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(2)->GetIntegerValue()));
+				}
+
+			//	Proceed with processing
+
+			bResult = false;
 			}
 
-		//	Two values mean we modified both damage to armor and shield damage
+		//	If this is the string "reflect" then we reflect
 
-		else if (pResult->GetCount() == 2)
+		else if (strEquals(pResult->GetStringValue(), STR_SHIELD_REFLECT))
 			{
-			Ctx.bReflect = false;
-			Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(0)->GetIntegerValue(), Ctx.iHPLeft));
-			Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(1)->GetIntegerValue()));
+			Ctx.bReflect = true;
+			Ctx.iAbsorb = Ctx.iDamage;
+			Ctx.iShieldDamage = 0;
+			bResult = false;
 			}
 
-		//	Otherwise, we deal with reflection
+		//	Otherwise, error
 
 		else
 			{
-			Ctx.bReflect = strEquals(pResult->GetElement(0)->GetStringValue(), STR_SHIELD_REFLECT);
-			Ctx.iShieldDamage = Max(0, Min(pResult->GetElement(1)->GetIntegerValue(), Ctx.iHPLeft));
-			Ctx.iAbsorb = Max(0, Ctx.iDamage - Max(0, pResult->GetElement(2)->GetIntegerValue()));
+			Ctx.pObj->ReportEventError(ON_DAMAGE_OVERLAY_EVENT, pResult);
+			bResult = true;
 			}
 
-		//	Proceed with processing
+		CCCtx.Discard(pResult);
 
-		bResult = false;
+		return bResult;
 		}
-
-	//	If this is the string "reflect" then we reflect
-
-	else if (strEquals(pResult->GetStringValue(), STR_SHIELD_REFLECT))
-		{
-		Ctx.bReflect = true;
-		Ctx.iAbsorb = Ctx.iDamage;
-		Ctx.iShieldDamage = 0;
-		bResult = false;
-		}
-
-	//	Otherwise, error
-
 	else
-		{
-		Ctx.pObj->ReportEventError(ON_DAMAGE_OVERLAY_EVENT, pResult);
-		bResult = true;
-		}
-
-	CCCtx.Discard(pResult);
-
-	return bResult;
+		return false;
 	}
 
 bool CWeaponFireDesc::FireOnFragment (const CDamageSource &Source, CSpaceObject *pShot, const CVector &vHitPos, CSpaceObject *pNearestObj, CSpaceObject *pTarget)
@@ -562,73 +643,47 @@ bool CWeaponFireDesc::FireOnFragment (const CDamageSource &Source, CSpaceObject 
 //	fragmentation event.
 
 	{
-	if (m_pOnFragment == NULL)
-		return false;
+	SEventHandlerDesc Event;
+	if (FindEventHandler(evtOnFragment, &Event))
+		{
+		//	Setup arguments
 
-	//	Setup arguments
+		CCodeChainCtx CCCtx;
 
-	CCodeChainCtx CCCtx;
+		CCCtx.SaveAndDefineSourceVar(pShot);
+		CCCtx.DefineSpaceObject(CONSTLIT("aNearestObj"), pNearestObj);
+		CCCtx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
+		CCCtx.DefineVector(CONSTLIT("aHitPos"), vHitPos);
+		CCCtx.DefineInteger(CONSTLIT("aHitDir"), (pShot ? pShot->GetRotation() : 0));
+		CCCtx.DefineItemType(CONSTLIT("aWeaponType"), GetWeaponType());
+		CCCtx.DefineString(CONSTLIT("aWeaponFragment"), m_sUNID);
 
-	CCCtx.SaveAndDefineSourceVar(pShot);
-	CCCtx.DefineSpaceObject(CONSTLIT("aNearestObj"), pNearestObj);
-	CCCtx.DefineSpaceObject(CONSTLIT("aTargetObj"), pTarget);
-	CCCtx.DefineVector(CONSTLIT("aHitPos"), vHitPos);
-	CCCtx.DefineInteger(CONSTLIT("aHitDir"), (pShot ? pShot->GetRotation() : 0));
-	CCCtx.DefineItemType(CONSTLIT("aWeaponType"), GetWeaponType());
-	CCCtx.DefineString(CONSTLIT("aWeaponFragment"), m_sUNID);
+		CSpaceObject *pAttacker = Source.GetObj();
+		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), pShot);
+		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), pAttacker);
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (pAttacker ? pAttacker->GetOrderGiver(Source.GetCause()) : NULL));
 
-	CSpaceObject *pAttacker = Source.GetObj();
-	CCCtx.DefineSpaceObject(CONSTLIT("aCause"), pShot);
-	CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), pAttacker);
-	CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (pAttacker ? pAttacker->GetOrderGiver(Source.GetCause()) : NULL));
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			pShot->ReportEventError(ON_FRAGMENT_EVENT, pResult);
 
-	ICCItem *pResult = CCCtx.Run(m_pOnFragment);
-	if (pResult->IsError())
-		pShot->ReportEventError(ON_FRAGMENT_EVENT, pResult);
+		//	If we return Nil, then we continue processing
 
-	//	If we return Nil, then we continue processing
+		bool bResult;
+		if (pResult->IsNil())
+			bResult = false;
 
-	bool bResult;
-	if (pResult->IsNil())
-		bResult = false;
+		//	Otherwise, we skip fragmentation
 
-	//	Otherwise, we skip fragmentation
+		else
+			bResult = true;
 
+		CCCtx.Discard(pResult);
+
+		return bResult;
+		}
 	else
-		bResult = true;
-
-	CCCtx.Discard(pResult);
-
-	return bResult;
-	}
-
-ICCItem *CWeaponFireDesc::GetEventHandler (const CString &sEvent) const
-
-//	GetEventHandler
-//
-//	Returns an event handler (or NULL)
-
-	{
-	ICCItem *pCode;
-
-	//	Look for an event handler at the weapon fire level
-
-	if (m_Events.FindEvent(sEvent, &pCode))
-		return pCode;
-
-	//	Then look for an event handler at the item level
-
-	CItemType *pDevice;
-	CItemType *pAmmo = GetWeaponType(&pDevice);
-	if (pAmmo && pAmmo->FindEventHandler(sEvent, &pCode))
-		return pCode;
-
-	if (pDevice && pAmmo != pDevice && pDevice->FindEventHandler(sEvent, &pCode))
-		return pCode;
-
-	//	Otherwise, we have no event
-
-	return NULL;
+		return false;
 	}
 
 Metric CWeaponFireDesc::GetInitialSpeed (void) const
@@ -801,6 +856,7 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 	ALERROR error;
 	int i;
 
+	m_pExtension = Ctx.pExtension;
 	m_fVariableInitialSpeed = false;
 	m_bFragment = false;
 
@@ -1253,6 +1309,7 @@ ALERROR CWeaponFireDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 	{
 	ALERROR error;
+	int i;
 
 	if (error = m_Image.OnDesignLoadComplete(Ctx))
 		return error;
@@ -1278,14 +1335,18 @@ ALERROR CWeaponFireDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 	//	Load some events for efficiency
 
-	m_pOnDamageOverlay = GetEventHandler(ON_DAMAGE_OVERLAY_EVENT);
-	m_pOnDamageShields = GetEventHandler(ON_DAMAGE_SHIELDS_EVENT);
-	m_pOnDamageArmor = GetEventHandler(ON_DAMAGE_ARMOR_EVENT);
-	m_pOnFragment = GetEventHandler(ON_FRAGMENT_EVENT);
+	for (i = 0; i < evtCount; i++)
+		{
+		if (!FindEventHandler(CString(CACHED_EVENTS[i], -1, true), &m_CachedEvents[i]))
+			{
+			m_CachedEvents[i].pExtension = NULL;
+			m_CachedEvents[i].pCode = NULL;
+			}
+		}
 
 	//	If we have an OnFragment event, then we enable proximity blast
 
-	if (m_pOnFragment)
+	if (HasOnFragmentEvent())
 		m_bProximityBlast = true;
 
 	//	Fragment

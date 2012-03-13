@@ -212,7 +212,7 @@ bool CAniTextInput::HandleChar (char chChar, DWORD dwKeyData)
 
 	//	If this is a text character, then add it to the input
 
-	else if (strIsAlphaNumeric(&chChar) || chChar == ' ')
+	else if (strIsAlphaNumeric(&chChar) || chChar == ' ' || strIsASCIISymbol(&chChar))
 		{
 		CString sText = m_Properties[INDEX_TEXT].GetString();
 		sText.Append(CString(&chChar, 1));

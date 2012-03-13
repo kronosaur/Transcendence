@@ -7,7 +7,6 @@
 #include "XMLUtil.h"
 
 CExternalEntityTable::CExternalEntityTable (void) :
-		m_Entities(TRUE, FALSE),
 		m_pParent(NULL)
 
 //	CExternalEntityTable constructor
@@ -25,10 +24,7 @@ void CExternalEntityTable::AddTable (CSymbolTable &Table)
 	int i;
 
 	for (i = 0; i < Table.GetCount(); i++)
-		{
-		CString *pNewValue = new CString(*(CString *)Table.GetValue(i));
-		m_Entities.AddEntry(Table.GetKey(i), pNewValue);
-		}
+		m_Entities.Insert(Table.GetKey(i), *(CString *)Table.GetValue(i));
 	}
 
 void CExternalEntityTable::GetEntity (int iIndex, CString *retsEntity, CString *retsValue)
@@ -39,7 +35,7 @@ void CExternalEntityTable::GetEntity (int iIndex, CString *retsEntity, CString *
 
 	{
 	*retsEntity = m_Entities.GetKey(iIndex);
-	*retsValue = *(CString *)m_Entities.GetValue(iIndex);
+	*retsValue = m_Entities[iIndex];
 	}
 
 CString CExternalEntityTable::ResolveExternalEntity (const CString &sName, bool *retbFound)
@@ -49,11 +45,12 @@ CString CExternalEntityTable::ResolveExternalEntity (const CString &sName, bool 
 //	Resolves the entity
 
 	{
-	CString *pValue;
-	if (m_Entities.Lookup(sName, (CObject **)&pValue) == NOERROR)
+	CString sValue;
+
+	if (m_Entities.Find(sName, &sValue))
 		{
 		if (retbFound) *retbFound = true;
-		return *pValue;
+		return sValue;
 		}
 
 	//	If not found, then try the parent
@@ -64,5 +61,6 @@ CString CExternalEntityTable::ResolveExternalEntity (const CString &sName, bool 
 	//	Otherwise, not found
 
 	if (retbFound) *retbFound = false;
+
 	return sName;
 	}

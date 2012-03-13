@@ -53,7 +53,7 @@ IEffectPainter *CTextEffectCreator::CreatePainter (void)
 	return pPainter;
 	}
 
-ALERROR CTextEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CTextEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

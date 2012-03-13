@@ -56,13 +56,56 @@ CJSONValue::CJSONValue (const CJSONValue &Source)
 	Copy(Source);
 	}
 
-CJSONValue::CJSONValue (const CString &sValue)
+CJSONValue::CJSONValue (const CString &sValue, bool bToUTF8)
 
 //	CJSONValue constructor
 
 	{
 	m_iType = typeString;
-	m_pValue = CString::INTGetStorage(sValue);
+
+	if (bToUTF8)
+		{
+		//	See if there are any characters that we need to encode.
+
+		char *pPos = sValue.GetASCIIZPointer();
+		char *pPosEnd = pPos + sValue.GetLength();
+		while (pPos < pPosEnd && (BYTE)*pPos < 0x80)
+			pPos++;
+
+		//	If we don't have to encode anything, just copy
+
+		if (pPos == pPosEnd)
+			m_pValue = CString::INTGetStorage(sValue);
+		else
+			{
+			//	Otherwise, we encode
+
+			CMemoryWriteStream Output;
+			if (Output.Create() != NOERROR)
+				m_pValue = CString::INTGetStorage(CONSTLIT("Out of memory"));
+			else
+				{
+				pPos = sValue.GetASCIIZPointer();
+				pPosEnd = pPos + sValue.GetLength();
+				while (pPos < pPosEnd)
+					{
+					if ((BYTE)*pPos < 0x80)
+						Output.Write(pPos, 1);
+					else
+						{
+						CString sUTF8 = strEncodeW1252ToUTF8Char(*pPos);
+						Output.Write(sUTF8.GetASCIIZPointer(), sUTF8.GetLength());
+						}
+
+					pPos++;
+					}
+
+				m_pValue = CString::INTGetStorage(CString(Output.GetPointer(), Output.GetLength()));
+				}
+			}
+		}
+	else
+		m_pValue = CString::INTGetStorage(sValue);
 	}
 
 CJSONValue::CJSONValue (double rValue)
@@ -99,6 +142,242 @@ CJSONValue &CJSONValue::operator= (const CJSONValue &Source)
 	CleanUp();
 	Copy(Source);
 	return *this;
+	}
+
+CString CJSONValue::AsCP1252 (void) const
+
+//	AsCP1252
+//
+//	Converts to (Windows Western) CP1252 string
+
+	{
+	if (m_iType != typeString)
+		return NULL_STR;
+
+	//	Do a first pass and see if we have any high-bit characters
+
+	CString sValue = AsString();
+	char *pPos = sValue.GetASCIIZPointer();
+	char *pPosEnd = pPos + sValue.GetLength();
+	while (pPos < pPosEnd && (BYTE)*pPos < 0x80)
+		pPos++;
+
+	if (pPos == pPosEnd)
+		return sValue;
+
+	//	Convert
+
+	CMemoryWriteStream Output;
+	if (Output.Create() != NOERROR)
+		return CONSTLIT("Out of memory");
+	else
+		{
+		pPos = sValue.GetASCIIZPointer();
+		pPosEnd = pPos + sValue.GetLength();
+		while (pPos < pPosEnd)
+			{
+			if ((BYTE)*pPos == 0xc2)
+				{
+				pPos++;
+				Output.Write(pPos, 1);
+				}
+			else if ((BYTE)*pPos == 0xc3)
+				{
+				pPos++;
+				BYTE byCode = ((BYTE)*pPos) | 0x40;
+				Output.Write((char *)&byCode, 1);
+				}
+			else if ((BYTE)*pPos == 0xc5)
+				{
+				pPos++;
+				BYTE byCode;
+				switch ((BYTE)*pPos)
+					{
+					case 0xa0:
+						byCode = 0x8a;
+						break;
+
+					case 0x92:
+						byCode = 0x8c;
+						break;
+
+					case 0x93:
+						byCode = 0x9c;
+						break;
+
+					case 0xa1:
+						byCode = 0x9a;
+						break;
+
+					case 0xb8:
+						byCode = 0x9f;
+						break;
+
+					case 0xbd:
+						byCode = 0x8e;
+						break;
+
+					case 0xbe:
+						byCode = 0x9e;
+						break;
+
+					default:
+						byCode = 0x20;
+					}
+
+				Output.Write((char *)&byCode, 1);
+				}
+			else if ((BYTE)*pPos == 0xc6)
+				{
+				pPos++;
+				BYTE byCode;
+				switch ((BYTE)*pPos)
+					{
+					case 0x92:
+						byCode = 0x83;
+						break;
+
+					default:
+						byCode = 0x20;
+					}
+
+				Output.Write((char *)&byCode, 1);
+				}
+			else if ((BYTE)*pPos == 0xcb)
+				{
+				pPos++;
+				BYTE byCode;
+				switch ((BYTE)*pPos)
+					{
+					case 0x86:
+						byCode = 0x88;
+						break;
+
+					case 0x9c:
+						byCode = 0x98;
+						break;
+
+					default:
+						byCode = 0x20;
+					}
+
+				Output.Write((char *)&byCode, 1);
+				}
+			else if ((BYTE)*pPos == 0xe2)
+				{
+				pPos++;
+				BYTE byCode;
+				if ((BYTE)*pPos == 0x80)
+					{
+					pPos++;
+					switch ((BYTE)*pPos)
+						{
+						case 0x93:
+							byCode = 0x96;
+							break;
+
+						case 0x94:
+							byCode = 0x97;
+							break;
+
+						case 0x98:
+							byCode = 0x91;
+							break;
+
+						case 0x99:
+							byCode = 0x92;
+							break;
+
+						case 0x9a:
+							byCode = 0x82;
+							break;
+
+						case 0x9c:
+							byCode = 0x93;
+							break;
+
+						case 0x9d:
+							byCode = 0x94;
+							break;
+
+						case 0x9e:
+							byCode = 0x84;
+							break;
+
+						case 0xa0:
+							byCode = 0x86;
+							break;
+
+						case 0xa1:
+							byCode = 0x87;
+							break;
+
+						case 0xa2:
+							byCode = 0x95;
+							break;
+
+						case 0xa6:
+							byCode = 0x85;
+							break;
+
+						case 0xb0:
+							byCode = 0x89;
+							break;
+
+						case 0xb9:
+							byCode = 0x8b;
+							break;
+
+						case 0xba:
+							byCode = 0x9b;
+							break;
+
+						default:
+							byCode = 0x20;
+						}
+					}
+				else if ((BYTE)*pPos == 0x82)
+					{
+					pPos++;
+					switch ((BYTE)*pPos)
+						{
+						case 0xac:
+							byCode = 0x80;
+							break;
+
+						default:
+							byCode = 0x20;
+						}
+					}
+				else if ((BYTE)*pPos == 0x84)
+					{
+					pPos++;
+					switch ((BYTE)*pPos)
+						{
+						case 0xa2:
+							byCode = 0x99;
+							break;
+
+						default:
+							byCode = 0x20;
+						}
+					}
+				else
+					{
+					pPos++;
+					byCode = 0x20;
+					}
+
+				Output.Write((char *)&byCode, 1);
+				}
+			else
+				Output.Write(pPos, 1);
+
+			pPos++;
+			}
+
+		return CString(Output.GetPointer(), Output.GetLength());
+		}
 	}
 
 void CJSONValue::CleanUp (void)

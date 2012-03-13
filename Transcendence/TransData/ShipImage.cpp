@@ -1,4 +1,4 @@
-//	ShipTable.cpp
+//	ShipImage.cpp
 //
 //	Generate basic stats about ship classes
 
@@ -12,22 +12,6 @@
 
 const int X_MARGIN = 50;
 const int Y_MARGIN = 50;
-
-class CImageGrid
-	{
-	public:
-		void Create (int iCount, int cxCellWidth, int cyCellHeight);
-		void GetCellCenter (int iIndex, int *retx, int *rety);
-		inline CG16bitImage &GetImage (void) { return m_Image; }
-
-	private:
-		CG16bitImage m_Image;
-		int m_iCount;
-		int m_iCellColumns;
-		int m_iCellRows;
-		int m_cxCellWidth;
-		int m_cyCellHeight;
-	};
 
 void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -129,44 +113,3 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	OutputImage(Output.GetImage(), sFilespec);
 	}
 
-//	CImageGrid -----------------------------------------------------------------
-
-void CImageGrid::Create (int iCount, int cxCellWidth, int cyCellHeight)
-
-//	Create
-//
-//	Create the grid
-
-	{
-	ASSERT(iCount > 0);
-
-	m_iCount = iCount;
-	m_cxCellWidth = cxCellWidth;
-	m_cyCellHeight = cyCellHeight;
-
-	//	Make a square out of all the images.
-
-	m_iCellColumns = mathSqrt(iCount) + 1;
-	m_iCellRows = AlignUp(iCount, m_iCellColumns) / m_iCellColumns;
-
-	//	Compute the size of the image
-
-	int cxWidth = m_iCellColumns * cxCellWidth;
-	int cyHeight = m_iCellRows * cyCellHeight;
-
-	m_Image.CreateBlank(cxWidth, cyHeight, false);
-	}
-
-void CImageGrid::GetCellCenter (int iIndex, int *retx, int *rety)
-
-//	GetCellCenter
-//
-//	Return the coordinates of the center of the given cell.
-
-	{
-	int iRow = iIndex / m_iCellColumns;
-	int iCol = iIndex % m_iCellColumns;
-
-	*retx = (iCol * m_cxCellWidth) + m_cxCellWidth / 2;
-	*rety = (iRow * m_cyCellHeight) + m_cyCellHeight / 2;
-	}

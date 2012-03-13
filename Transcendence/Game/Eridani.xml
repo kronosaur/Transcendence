@@ -1025,8 +1025,9 @@
 							</Orbitals>
 
 							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
-								<Station type="&stCentauriOccupation;"/>
+								<Station type="&stCSCAmericaEncounter;"/>
 								<!--
+								<Station type="&stCentauriOccupation;"/>
 								<LevelTable>
 									<Station levelFrequency="c----" type="&stWondrousDevices;"/>
 									<Station levelFrequency="-----" type="&stInsuranceCompany;"/>
@@ -1037,7 +1038,6 @@
 								<Station type="&stAgriculturalStation;" />
 								<Station type="&stCorporateTradingPost;" />
 								<Station type="&stCSCArcticaEncounter;"/>
-								<Station type="&stCSCAmericaEncounter;"/>
 								<Station type="&stRingerShipyard;"/>
 								<Station type="&stGaianProcessorEncounter;" />
 								<Station type="&stFerianColony;" />

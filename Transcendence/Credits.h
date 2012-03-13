@@ -87,6 +87,7 @@ static char *FEEDBACK[] =
 	"Ihlosi",
 
 	"Eric James",
+	"jimj316",
 
 	"Kamikaze",
 	"Hatsuya Kanzaki",

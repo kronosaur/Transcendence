@@ -147,9 +147,9 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 			"(min x1 x2 ... xn) -> z",
 			"v*",	0,	},
 
-		{	"modulo",			fnMathOld,			FN_MATH_MODULUS,
-			"(modulo x y) -> z",
-			NULL,	0,	},
+		{	"modulo",			fnMath,			FN_MATH_MODULUS,
+			"(modulo ['degrees] x y) -> z",
+			"*",	0,	},
 
 		{	"multiply",			fnMathList,			FN_MATH_MULTIPLY,
 			"(multiply x1 x2 ... xn) -> z",
@@ -220,7 +220,7 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 
 		{	"subst",			fnSubst,		0,
 			"(subst string arg1 arg2 ... argn) -> string",
-			NULL,	PPFLAG_SIDEEFFECTS,	},
+			"s*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"subtract",			fnMathOld,			FN_MATH_SUBTRACT,
 			"(subtract x y) -> z",

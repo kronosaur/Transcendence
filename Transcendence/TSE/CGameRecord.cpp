@@ -17,12 +17,14 @@
 #define ADVENTURE_NAME_ATTRIB				CONSTLIT("adventureName")
 
 #define FIELD_ADVENTURE						CONSTLIT("adventure")
+#define FIELD_ADVENTURE_ID					CONSTLIT("adventureID")
 #define FIELD_CHARACTER_GENOME				CONSTLIT("characterGenome")
 #define FIELD_CHARACTER_NAME				CONSTLIT("characterName")
 #define FIELD_DEBUG							CONSTLIT("debug")
 #define FIELD_DURATION						CONSTLIT("duration")
 #define FIELD_END_GAME						CONSTLIT("endGame")
 #define FIELD_EPITAPH						CONSTLIT("epitaph")
+#define FIELD_EXTENSIONS					CONSTLIT("extensions")
 #define FIELD_GAME_ID						CONSTLIT("gameID")
 #define FIELD_RESURRECT_COUNT				CONSTLIT("resurrectCount")
 #define FIELD_SCORE							CONSTLIT("score")
@@ -43,6 +45,30 @@ CGameRecord::CGameRecord (void) :
 //	CGameRecord constructor
 
 	{
+	}
+
+CString CGameRecord::GetAdventureID (void) const
+
+//	GetAdventureID
+//
+//	Returns a unique string for the adventure and all included extensions.
+
+	{
+	int i;
+	CMemoryWriteStream Buffer;
+	if (Buffer.Create() != NOERROR)
+		return NULL_STR;
+
+	CString sUNID = strPatternSubst(CONSTLIT("%08x"), m_dwAdventure);
+	Buffer.Write(sUNID.GetASCIIZPointer(), sUNID.GetLength());
+
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		{
+		sUNID = strPatternSubst(CONSTLIT("-%08x"), m_Extensions[i]);
+		Buffer.Write(sUNID.GetASCIIZPointer(), sUNID.GetLength());
+		}
+
+	return CString(Buffer.GetPointer(), Buffer.GetLength());
 	}
 
 CString CGameRecord::GetDescription (DWORD dwParts) const
@@ -184,9 +210,17 @@ ALERROR CGameRecord::InitFromJSON (const CJSONValue &Value)
 //	Initializes from a JSON structure.
 
 	{
+	int i;
+
 	m_sUsername = Value.GetElement(FIELD_USERNAME).AsString();
 	m_sGameID = Value.GetElement(FIELD_GAME_ID).AsString();
 	m_dwAdventure = (DWORD)Value.GetElement(FIELD_ADVENTURE).AsInt32();
+
+	const CJSONValue &Extensions = Value.GetElement(FIELD_EXTENSIONS);
+	m_Extensions.DeleteAll();
+	m_Extensions.InsertEmpty(Extensions.GetCount());
+	for (i = 0; i < Extensions.GetCount(); i++)
+		m_Extensions[i] = Extensions.GetElement(i).AsInt32();
 
 	m_sName = Value.GetElement(FIELD_CHARACTER_NAME).AsString();
 	m_iGenome = ParseGenomeID(Value.GetElement(FIELD_CHARACTER_GENOME).AsString());
@@ -261,11 +295,19 @@ void CGameRecord::SaveToJSON (CJSONValue *retOutput) const
 //	Save a record to a JSON value
 
 	{
+	int i;
+
 	*retOutput = CJSONValue(CJSONValue::typeObject);
 
 	retOutput->InsertHandoff(FIELD_USERNAME, CJSONValue(m_sUsername));
 	retOutput->InsertHandoff(FIELD_GAME_ID, CJSONValue(m_sGameID));
 	retOutput->InsertHandoff(FIELD_ADVENTURE, CJSONValue((int)m_dwAdventure));
+	retOutput->InsertHandoff(FIELD_ADVENTURE_ID, CJSONValue(GetAdventureID()));
+
+	CJSONValue Extensions(CJSONValue::typeArray);
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		Extensions.Insert(CJSONValue((int)m_Extensions[i]));
+	retOutput->InsertHandoff(FIELD_EXTENSIONS, Extensions);
 
 	retOutput->InsertHandoff(FIELD_CHARACTER_NAME, CJSONValue(m_sName));
 	retOutput->InsertHandoff(FIELD_CHARACTER_GENOME, CJSONValue(GetGenomeID(m_iGenome)));

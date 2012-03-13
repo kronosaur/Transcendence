@@ -15,7 +15,8 @@ ALERROR CParticleExplosionEffectCreator::CreateEffect (CSystem *pSystem,
 													   CSpaceObject *pAnchor,
 													   const CVector &vPos,
 													   const CVector &vVel,
-													   int iRotation)
+													   int iRotation,
+													   int iVariant)
 
 //	CreateEffect
 //
@@ -46,7 +47,7 @@ ALERROR CParticleExplosionEffectCreator::CreateEffect (CSystem *pSystem,
 	return NOERROR;
 	}
 
-ALERROR CParticleExplosionEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CParticleExplosionEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //

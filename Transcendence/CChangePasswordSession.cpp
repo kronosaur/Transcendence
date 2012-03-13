@@ -14,6 +14,7 @@ const int DEFAULT_BUTTON_HEIGHT =				64;
 const int DEFAULT_BUTTON_WIDTH =				96;
 
 #define CMD_CANCEL								CONSTLIT("cmdCancel")
+#define CMD_CHANGE_COMPLETE						CONSTLIT("cmdChangeComplete")
 #define CMD_OK									CONSTLIT("cmdOK")
 
 #define EVENT_ON_CLICK							CONSTLIT("onClick")
@@ -26,6 +27,7 @@ const int DEFAULT_BUTTON_WIDTH =				96;
 #define ID_DLG_MESSAGE							CONSTLIT("dlgMessage")
 
 #define PROP_COLOR								CONSTLIT("color")
+#define PROP_ENABLED							CONSTLIT("enabled")
 #define PROP_FONT								CONSTLIT("font")
 #define PROP_POSITION							CONSTLIT("position")
 #define PROP_SCALE								CONSTLIT("scale")
@@ -47,6 +49,80 @@ void CChangePasswordSession::CmdCancel (void)
 
 	{
 	m_HI.ClosePopupSession();
+	}
+
+void CChangePasswordSession::CmdChangeComplete (CChangePasswordTask *pTask)
+
+//	CmdChangeComplete
+//
+//	RPC call has returned
+
+	{
+	CString sError;
+	if (pTask->GetResult(&sError) != NOERROR)
+		{
+		CUIHelper Helper(m_HI);
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Unable to Change Password"), sError);
+
+		//	Re-enable buttons so user can continue;
+
+		SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_PASSWORD_NEW, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_PASSWORD_CONFIRM, PROP_ENABLED, true);
+		SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, true);
+
+		return;
+		}
+
+	m_HI.ClosePopupSession();
+	}
+
+void CChangePasswordSession::CmdOK (void)
+
+//	CmdOK
+//
+//	Submit password change request
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	CUIHelper Helper(m_HI);
+
+	if (!IsElementEnabled(ID_CTRL_MAIN_ACTION))
+		return;
+
+	//	Get the fields
+
+	CString sOldPassword = GetPropertyString(ID_CTRL_PASSWORD, PROP_TEXT);
+	CString sNewPassword = GetPropertyString(ID_CTRL_PASSWORD_NEW, PROP_TEXT);
+	CString sConfirmPassword = GetPropertyString(ID_CTRL_PASSWORD_CONFIRM, PROP_TEXT);
+
+	//	Make sure passwords match
+
+	if (!strEquals(sNewPassword, sConfirmPassword))
+		{
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("New Password Does Not Match"), CONSTLIT("The new password you entered does not match the confirmation password."));
+		return;
+		}
+
+	//	Validate password complexity
+
+	CString sError;
+	if (!CHexarc::ValidatePasswordComplexity(sNewPassword, &sError))
+		{
+		Helper.CreateInputErrorMessage(this, m_rcInputError, CONSTLIT("Password Is Too Easy"), sError);
+		return;
+		}
+
+	//	Register the name
+
+	m_HI.AddBackgroundTask(new CChangePasswordTask(m_HI, m_Service, m_Service.GetUsername(), sOldPassword, sNewPassword), this, CMD_CHANGE_COMPLETE);
+
+	//	Disable controls
+
+	SetPropertyBool(ID_CTRL_PASSWORD, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_PASSWORD_NEW, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_PASSWORD_CONFIRM, PROP_ENABLED, false);
+	SetPropertyBool(ID_CTRL_MAIN_ACTION, PROP_ENABLED, false);
 	}
 
 void CChangePasswordSession::CreateDlg (IAnimatron **retpDlg)
@@ -109,6 +185,13 @@ void CChangePasswordSession::CreateDlg (IAnimatron **retpDlg)
 	VI.CreateButton(pContainer, ID_CTRL_CANCEL_ACTION, x, yButtons, DEFAULT_BUTTON_WIDTH, DEFAULT_BUTTON_HEIGHT, 0, CONSTLIT("Cancel"), &pButton);
 	RegisterPerformanceEvent(pButton, EVENT_ON_CLICK, CMD_CANCEL);
 
+	//	Figure out where to show an error message
+
+	m_rcInputError.left = rcDlg.left + xButtons - metricsInputErrorMsgMarginHorz - metricsInputErrorMsgWidth;
+	m_rcInputError.top = rcDlg.top + yButtons;
+	m_rcInputError.right = m_rcInputError.left + metricsInputErrorMsgWidth;
+	m_rcInputError.bottom = m_rcInputError.top + metricsInputErrorMsgHeight;
+
 	//	Done
 
 	*retpDlg = pDlg;
@@ -123,6 +206,10 @@ ALERROR CChangePasswordSession::OnCommand (const CString &sCmd, void *pData)
 	{
 	if (strEquals(sCmd, CMD_CANCEL))
 		CmdCancel();
+	else if (strEquals(sCmd, CMD_OK))
+		CmdOK();
+	else if (strEquals(sCmd, CMD_CHANGE_COMPLETE))
+		CmdChangeComplete((CChangePasswordTask *)pData);
 
 	return NOERROR;
 	}
@@ -163,6 +250,7 @@ void CChangePasswordSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 			break;
 
 		case VK_RETURN:
+			CmdOK();
 			break;
 		}
 	}

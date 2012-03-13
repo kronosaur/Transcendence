@@ -115,6 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="..\..\Includes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="true"
@@ -830,6 +831,10 @@
 			</File>
 			<File
 				RelativePath=".\UI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Unicode.cpp"
 				>
 			</File>
 			<File

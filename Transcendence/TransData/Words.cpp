@@ -46,7 +46,7 @@ void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine)
 		}
 
 	CXMLElement *pGameFile;
-	if (error = Resources.LoadGameFile(&pGameFile, &sError))
+	if (error = Resources.LoadGameFile(&pGameFile, NULL, &sError))
 		{
 		printf("%s\n", sError.GetASCIIZPointer());
 		return;

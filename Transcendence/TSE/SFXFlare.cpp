@@ -4,10 +4,11 @@
 
 #include "PreComp.h"
 
-#define STYLE_ATTRIB							CONSTLIT("style")
-#define RADIUS_ATTRIB							CONSTLIT("radius")
-#define PRIMARY_COLOR_ATTRIB					(CONSTLIT("primaryColor"))
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
+#define PRIMARY_COLOR_ATTRIB					CONSTLIT("primaryColor")
+#define RADIUS_ATTRIB							CONSTLIT("radius")
+#define SECONDARY_COLOR_ATTRIB					CONSTLIT("secondaryColor")
+#define STYLE_ATTRIB							CONSTLIT("style")
 
 #define STYLE_FADING_BLAST						CONSTLIT("fadingBlast")
 
@@ -81,7 +82,7 @@ IEffectPainter *CFlareEffectCreator::CreatePainter (void)
 	return new CFlarePainter(this);
 	}
 
-ALERROR CFlareEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CFlareEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
 //
@@ -97,6 +98,12 @@ ALERROR CFlareEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEle
 	m_iRadius = pDesc->GetAttributeIntegerBounded(RADIUS_ATTRIB, 0, -1, 100);
 	m_iLifetime = pDesc->GetAttributeIntegerBounded(LIFETIME_ATTRIB, 0, -1, 1);
 	m_wPrimaryColor = ::LoadRGBColor(pDesc->GetAttribute(PRIMARY_COLOR_ATTRIB));
+
+	CString sAttrib;
+	if (pDesc->FindAttribute(SECONDARY_COLOR_ATTRIB, &sAttrib))
+		m_wSecondaryColor = ::LoadRGBColor(sAttrib);
+	else
+		m_wSecondaryColor = m_wPrimaryColor;
 
 	return NOERROR;
 	}
@@ -154,20 +161,33 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 
 	{
 	int i;
-	WORD wPrimaryColor = m_pCreator->GetPrimaryColor();
-	ASSERT(m_pCreator->GetLifetime() > 0);
+	
+	//	Safety checks
+
+	int iTotalLifetime = m_pCreator->GetLifetime();
+	if (iTotalLifetime <= 0)
+		return;
 
 	switch (m_pCreator->GetStyle())
 		{
 		case CFlareEffectCreator::styleFadingBlast:
 			{
+
 			//	Radius shrinks proportionally each tick
 
 			int iRadius;
 			if (m_iTick < m_pCreator->GetLifetime())
-				iRadius = (int)(m_pCreator->GetRadius() * ((Metric)(m_pCreator->GetLifetime() - m_iTick) / (Metric)m_pCreator->GetLifetime()));
+				iRadius = (int)(m_pCreator->GetRadius() * ((Metric)(m_pCreator->GetLifetime() - m_iTick) / (Metric)iTotalLifetime));
 			else
 				iRadius = 0;
+
+			//	Color moves from primary to secondary
+
+			WORD wColor;
+			if (m_pCreator->GetPrimaryColor() != m_pCreator->GetSecondaryColor())
+				wColor = CG16bitImage::FadeColor(m_pCreator->GetPrimaryColor(), m_pCreator->GetSecondaryColor(), 100 * m_iTick / iTotalLifetime);
+			else
+				wColor = m_pCreator->GetPrimaryColor();
 
 			//	Paint
 
@@ -183,18 +203,8 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 
 					CG16bitRegion Region;
 					Region.CreateFromSimplePolygon(4, Spike);
-					Region.FillTrans(Dest, x, y, wPrimaryColor, 128);
+					Region.FillTrans(Dest, x, y, wColor, MAIN_SPIKE_OPACITY);
 					}
-
-				//	Paint central glow
-
-#if 0
-				DrawAlphaGradientCircle(Dest,
-						x,
-						y,
-						iRadius / 8,
-						wPrimaryColor);
-#endif
 
 				//	Paint the extended glow
 
@@ -202,7 +212,7 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 						x,
 						y,
 						iRadius,
-						wPrimaryColor);
+						wColor);
 				}
 
 			break;

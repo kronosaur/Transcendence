@@ -459,6 +459,10 @@ ALERROR CGameFile::LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *r
 		return error;
 		}
 
+	//	Set debug (we need to do this before we load)
+
+	Univ.SetDebugMode((m_Header.dwFlags & GAME_FLAG_DEBUG) ? true : false);
+
 	//	Load the universe from the stream
 
 	if (error = Univ.LoadFromStream(&Stream, retdwSystemID, retdwPlayerID, retsError))
@@ -466,10 +470,6 @@ ALERROR CGameFile::LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *r
 		Stream.Close();
 		return error;
 		}
-
-	//	Set debug
-
-	Univ.SetDebugMode((m_Header.dwFlags & GAME_FLAG_DEBUG) ? true : false);
 
 	//	Done
 
@@ -578,7 +578,7 @@ ALERROR CGameFile::SaveGameHeader (SGameHeader &Header)
 	return NOERROR;
 	}
 
-ALERROR CGameFile::SaveGameStats (CGameStats &Stats)
+ALERROR CGameFile::SaveGameStats (const CGameStats &Stats)
 
 //	SaveGameStats
 //
@@ -831,7 +831,7 @@ ALERROR CGameFile::SaveUniverse (CUniverse &Univ, DWORD dwFlags)
 
 	if (m_Header.dwAdventure == 0)
 		{
-		m_Header.dwAdventure = Univ.GetCurrentAdventureDesc()->GetUNID();
+		m_Header.dwAdventure = Univ.GetCurrentAdventureDesc()->GetExtensionUNID();
 
 		if (pPlayerController)
 			{
@@ -863,6 +863,11 @@ ALERROR CGameFile::SaveUniverse (CUniverse &Univ, DWORD dwFlags)
 	dwNewFlags &= ~GAME_FLAG_RESURRECT;
 	if (dwFlags & FLAG_CHECKPOINT)
 		dwNewFlags |= GAME_FLAG_RESURRECT;
+
+	//	Set the registered flag
+
+	if (Univ.IsRegistered())
+		dwNewFlags |= GAME_FLAG_REGISTERED;
 
 	//	Set the debug flag
 

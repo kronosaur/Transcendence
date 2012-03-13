@@ -1,35 +1,53 @@
 CHANGE LIST FOR 1.08
 -------------------------------------------------------------------------------
 
+ARC: DYNAMIC TYPES
+
+[x] Added typCreate
+[x] Added typGetDynamicUNID
+[x] Added <TemplateType>
+[x] subst takes a struct as table of replaceable parameters.
+
 ARC: PLAYER 1
 
+[x] High scores should only show one score per player
 [x] "Offline" when no one is signed in.
-[ ] Change password dialog box.
+[x] Change password dialog box.
 [x] Initialize login screen with username (set focus on password).
 [x] Click on an edit control to change focus.
 [x] "Forgot my password" -> contact transcendence@kronosaur.com
-[ ] Implement "Remember my password" -> "Sign in automatically"
-[ ] Implement "Terms of Service"
-[ ] In registration, do not allow null passwords.
-[ ] Add debug to load game entries.
-[ ] Game posting should be signed (and signature should be verified by server).
+[x] Implement "Remember my password" -> "Sign in automatically"
+[x] Implement "Remember my password" in registration dlg.
+[x] Handle time-out in auto sign in.
+[x] In registration (and change password), do not allow null passwords.
 [x] Disable F2 in intro screen.
-[ ] Sanitize usernames in registration (do not allow leading/trailing spaces).
-[ ] Load game screen: If signed in, do not show save files for other users.
-[ ] Sign in needs to be case-insensitive (but preserve case).
-[ ] New game screen scrolling.
+[x] Sign in needs to be case-insensitive (but preserve case).
+[x] Verify authToken when posting a game record (and other things).
+[x] Implement "Terms of Service"
+[x] Game posting should be signed (and signature should be verified by server).
+[x] Post game stats also
+[x] Include extensions used; do not post games with unregistered extensions.
+[x] Store email address in user record at create-time.
+[x] Disable UI appropriately if no Hexarc service.
+[x] Add debug to load game entries.
+[x] Sanitize usernames in registration (e.g., do not allow leading/trailing spaces).
+[x] Load game screen: If signed in, do not show save files for other users.
+[x] Save all games at creation time.
+[x] Separate CHexarcService so we don't have to publish source code
+[x] CAniListBox click to select entry.
+[x] Scroll wheel for CAniListBox
+[x] Home/End/PgUp/PgDn for CAniListBox
+[x] Wait screen for loading game.
+[x] New game screen scrolling.
+[x] Epilogue text scroll is too wide.
+
 [ ] New game screen: click on name to edit.
 [ ] New game screen: click on genome name to switch.
 [ ] Load game screen: Add delete (send to recycle bin)
 [ ] Load game screen: Add command to view stats.
-[ ] Load game screen: Ship image and name do not work if type not in default resources (e.g., Vault of the Galaxy does not work).
-[ ] Scroll wheel for CAniListBox
-[ ] Home/End/PgUp/PgDn for CAniListBox
-[ ] Change graphic for list selection.
-[ ] Epilogue text scroll is too wide.
-[ ] Save all games at creation time.
+[ ] Change graphic for list selection (perhaps turn it into brackets selecting an entry, to match edit field focus).
 [ ] IAniFillMethod should honor opacity property
-[ ] CAniListBox click to select entry.
+[ ] Load game screen: Ship image and name do not work if type not in default resources (e.g., Vault of the Galaxy does not work).
 
 ARC: HOMO EXSILIUM I
 
@@ -115,13 +133,30 @@ BUGS
 [x] Fixed bad error path in <Items>. [Thanks to Shrike]
 [x] Fixed a bug in achievements in Professor Dall's mission. [Thanks to jimj316]
 [x] Fixed a memory leak in CreateScanLinesFromPolygon.
+[x] Fixed bug with literal structs. [Thanks to giantcabbage] http://neurohack.com/transcendence/forums/viewtopic.php?f=5&t=4866&p=44854#p44854
+[ ] Show registered game status in stats
+[ ] Button in intro screen should align with center rect.
 
 CREDITS
+
+[x] jimj316
 
 EXTENSIONS
 
 [x] Variable row-height for items.
 [x] <PlayerSettings> may be inherited from base class.
+[x] Added <CanDockAsPlayer> event on player ships.
+[x] Added optional level parameter to itmGetFrequency
+[x] Added optional param to modulo
+[x] Added unvGetExtensionData and unvSetExtensionData
+[x] objGetDevicePos and objSetDevicePos handle z-pos also
+[x] objGetDeviceFireArc and objSetDeviceFireArc take 'omnidirection as parameter
+[x] Added <DeviceSlot> element for <Devices>
+[x] Added objGetProperty and objSetProperty
+[x] 'selectedWeapon and 'selectedMissile are properties.
+[x] Added <Variants> for effects
+[x] Added <ParticleCloud> effect
+[ ] <DeviceSlot> should handle device maximums also.
 [ ] levelFrequency for items
 
 FRAMEWORK
@@ -141,11 +176,6 @@ GAME BALANCE
 [ ] CSCs should give ammo after each mission.
 [ ] Dry dock should sell ammo.
 
-SERVICE
-
-[ ] Separate name and genome from account name. At the beginning of the game, while choosing a ship,
-	allow the player to also choose a name and genome.
-
 SETTINGS
 
 [ ] Command line args to launch a save game file or create a new one. [Thanks to Lokasenna]
@@ -153,6 +183,7 @@ SETTINGS
 
 USABILITY
 
+[x] Wait screens for new game and load game (during Bind)
 [ ] Too easy to invoke Shatter (because it is 'I'). [Thanks to PM]
 [ ] 'D' should not cancel docking.
 [ ] Final gate should have visual/sound effects. [Thanks to fossaman]

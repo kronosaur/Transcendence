@@ -136,10 +136,6 @@ void CNewGameSession::CmdCancel (void)
 
 	CHumanInterface &HI(m_HI);
 
-	//	Done with registration
-
-	m_HI.ClosePopupSession();
-
 	//	New game
 
 	HI.HICommand(CMD_BACK_TO_INTRO);
@@ -174,7 +170,7 @@ void CNewGameSession::CmdEditName (void)
 		IAnimatron *pEdit;
 		if (m_pRoot->FindElement(ID_PLAYER_NAME_FIELD, &pEdit))
 			{
-			m_Settings.sPlayerName = pEdit->GetPropertyString(PROP_TEXT);
+			m_Settings.sPlayerName = CUniverse::ValidatePlayerName(pEdit->GetPropertyString(PROP_TEXT));
 
 			DeleteElement(ID_PLAYER_NAME_FIELD);
 			}
@@ -273,10 +269,6 @@ void CNewGameSession::CmdOK (void)
 	//	will be gone.
 
 	CHumanInterface &HI(m_HI);
-
-	//	Done with registration
-
-	m_HI.ClosePopupSession();
 
 	//	New game
 
@@ -626,6 +618,10 @@ void CNewGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		case VK_RIGHT:
 			CmdNextShipClass();
 			break;
+
+		default:
+			HandlePageScrollKeyDown(ID_SETTINGS, iVirtKey, dwKeyData);
+			break;
 		}
 	}
 
@@ -636,9 +632,6 @@ void CNewGameSession::OnLButtonDown (int x, int y, DWORD dwFlags)
 //	LButtonDown
 
 	{
-	//	Done
-
-//	m_HI.ClosePopupSession();
 	}
 
 void CNewGameSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
@@ -651,12 +644,7 @@ void CNewGameSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
 	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, CG16bitImage(), &rcCenter);
-
-	RECT rcFull = rcCenter;
-	rcFull.left = 0;
-	rcFull.right = Screen.GetWidth();
-	Screen.Fill(rcFull.left, rcFull.top, RectWidth(rcFull), RectHeight(rcFull), VI.GetColor(colorAreaDialog));
+	VI.DrawSessionBackground(Screen, CG16bitImage(), CVisualPalette::OPTION_SESSION_DLG_BACKGROUND, &rcCenter);
 	}
 
 void CNewGameSession::OnReportHardCrash (CString *retsMessage)
@@ -669,7 +657,7 @@ void CNewGameSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CNewGameSession\r\n");
 	}
 
-void CNewGameSession::OnUpdate (void)
+void CNewGameSession::OnUpdate (bool bTopMost)
 
 //	OnUpdate
 //

@@ -117,6 +117,7 @@ EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &s
 	//	Success!
 
 	m_iStatus = connected;
+	m_sHost = sHost;
 	m_bConnected = true;
 	m_iLastError = inetsOK;
 	m_dwLastActivity = ::GetTickCount();
