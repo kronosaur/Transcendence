@@ -52,6 +52,7 @@ NullPoint/*
 S1/*
 STBrowser/*
 test.bat
+Transcendence/Debug/*
 Transcendence/Documents/*
 Transcendence/Game/*.txt
 Transcendence/Game/DebugExtensions/*
@@ -68,6 +69,7 @@ Transcendence/Game/Test*.tl
 Transcendence/Game/Transcendence.tdb
 Transcendence/OldTopology.xml
 Transcendence/RegisteredExtensions.txt
+Transcendence/Release/*
 Transcendence/TransSaver/Debug/*
 Transcendence/TransSaver/Release/*
 Transcendence/TSUI/CHexarcService.cpp
