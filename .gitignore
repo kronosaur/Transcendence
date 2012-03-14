@@ -8,6 +8,7 @@
 *.idb
 *.ilk
 *.lib
+!IntelJPEGUtil/ijl15l.lib
 *.log
 *.map
 *.ncb
@@ -21,6 +22,7 @@
 *.res
 *.sav
 *.scc
+*.suo
 *.tmp
 *.user
 *.xls
@@ -34,6 +36,11 @@ Metamorph/*
 NullPoint/*
 S1/*
 STBrowser/*
-Transcendence/Game/Extensions/*
 Transcendence/Documents/*
+Transcendence/Game/Extensions/*
+Transcendence/Game/Settings.xml
+Transcendence/TransSaver/Debug/*
+Transcendence/TransSaver/Release/*
 Transcendence/TSUI/CHexarcService.cpp
+Transcendence/TSUI/CHexarcServiceStub.cpp
+
