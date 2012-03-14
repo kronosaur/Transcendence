@@ -1,9 +1,0 @@
-REGISTERED EXTENSIONS
----------------------
-
-A001xxxx	Assigned to Gannon
-
-A101xxxx	SapphireDebugIII
-A102xxxx	SapphireDebugVI
-A103xxxx	SapphireDebugVIII
-A104xxxx	SapphireDebugX
