@@ -1264,6 +1264,14 @@
 				RelativePath="Transcendence.rc"
 				>
 			</File>
+			<File
+				RelativePath=".\Game\Resources\UIIcons.jpg"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\Resources\UIIconsMask.bmp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Data Files"
@@ -1273,58 +1281,58 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="Documents\Brainstorming.txt"
+		<Filter
+			Name="Notes and Documents"
 			>
-		</File>
-		<File
-			RelativePath="Documents\Bugs.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\Checklist.txt"
-			>
-		</File>
-		<File
-			RelativePath="Documents\Features.txt"
-			>
-		</File>
-		<File
-			RelativePath="FunctionReference.txt"
-			>
-		</File>
-		<File
-			RelativePath="Documents\MediaNotes.txt"
-			>
-		</File>
-		<File
-			RelativePath="..\README"
-			>
-		</File>
-		<File
-			RelativePath="Documents\Schedule.txt"
-			>
-		</File>
-		<File
-			RelativePath="Documents\Stations.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\Game\Resources\UIIcons.jpg"
-			>
-		</File>
-		<File
-			RelativePath=".\Game\Resources\UIIconsMask.bmp"
-			>
-		</File>
-		<File
-			RelativePath=".\Worklist (Completed).txt"
-			>
-		</File>
-		<File
-			RelativePath="Worklist.txt"
-			>
-		</File>
+			<File
+				RelativePath="..\.gitignore"
+				>
+			</File>
+			<File
+				RelativePath="Documents\Brainstorming.txt"
+				>
+			</File>
+			<File
+				RelativePath="Documents\Bugs.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\Checklist.txt"
+				>
+			</File>
+			<File
+				RelativePath="Documents\Features.txt"
+				>
+			</File>
+			<File
+				RelativePath="FunctionReference.txt"
+				>
+			</File>
+			<File
+				RelativePath="Documents\MediaNotes.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\README"
+				>
+			</File>
+			<File
+				RelativePath="Documents\Schedule.txt"
+				>
+			</File>
+			<File
+				RelativePath="Documents\Stations.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\Worklist (Completed).txt"
+				>
+			</File>
+			<File
+				RelativePath="Worklist.txt"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
