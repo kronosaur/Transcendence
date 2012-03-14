@@ -53,6 +53,7 @@ S1/*
 STBrowser/*
 test.bat
 Transcendence/Documents/*
+Transcendence/Game/*.txt
 Transcendence/Game/DebugExtensions/*
 Transcendence/Game/EffectsTest.xml
 Transcendence/Game/ErebienNames.dat
@@ -64,6 +65,7 @@ Transcendence/Game/Spanish.dic
 Transcendence/Game/Storage.xml
 Transcendence/Game/TestExtension/*
 Transcendence/Game/Test*.tl
+Transcendence/Game/Transcendence.tdb
 Transcendence/OldTopology.xml
 Transcendence/RegisteredExtensions.txt
 Transcendence/TransSaver/Debug/*
