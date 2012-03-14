@@ -4,18 +4,22 @@ Copyright (c) 2012 by Kronosaur Productions, LLC.
 transcendence@kronosaur.com
 http://www.neurohack.com/transcendence/forums
 
-Permission to use, copy, modify, and/or distribute this software in source code or
-compiled form is hereby granted, provided that you adhere to the following terms:
+This package contains the source code for building the Transcendence.exe client,
+which is used to run any Transcendence adventure, including "Domina & Oracus".
 
-1. The above copyright notice and this license must appear in all copies.
-2. You may not use this code for commercial purposes without written permission.
-3. "Transcendence" is a trademark of Kronosaur Productions, LLC and must not be
-   used without written permission.
+BUILD INSTRUCTIONS
 
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH 
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND 
-FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, 
-INDIRECT,OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS 
-OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER 
-TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF 
-THIS SOFTWARE.
+Use Microsoft Visual Studio 2005 or later. You may need to install the DirectX
+SDK (although the latest versions of MVS include it).
+
+For security reasons the source code does not include certain files to 
+communicate with the Hexarc arcology (the cloud service). The code will compile
+without it, however, as long as you add CHexarcServiceStub.cpp to the build.
+
+In Visual Studio, find the CHexarcServiceStub.cpp file in the TSUI project under
+the CloudInterface folder. Bring up the Properties page for the file and under
+General properties set "Exclude from Build" to "No".
+
+LICENSE
+
+Please see the LICENSE file in the root directory.
