@@ -1456,6 +1456,7 @@ void CSpaceObject::FireOnAttacked (SDamageCtx &Ctx)
 		CCodeChainCtx CCCtx;
 
 		CCCtx.SaveAndDefineSourceVar(this);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
 		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
 		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));
@@ -2139,6 +2140,7 @@ void CSpaceObject::FireOnSystemObjAttacked (SDamageCtx &Ctx)
 		CCodeChainCtx CCCtx;
 
 		CCCtx.SaveAndDefineSourceVar(this);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineSpaceObject(CONSTLIT("aObjAttacked"), Ctx.pObj);
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
 		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());

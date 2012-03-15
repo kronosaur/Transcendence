@@ -409,27 +409,23 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 
 	if (!bInCreate)
 		{
-		//	By default weapons are placed at the front of the ship;
-		//	Other devices are in the center
+		//	Desc is initialized to defaults even if FindDeviceSlotDesc fails.
 
-		if (m_pItem->GetType()->GetCategory() == itemcatWeapon
-				|| m_pItem->GetType()->GetCategory() == itemcatLauncher)
-			{
-			m_iPosAngle = 0;
-			m_iPosRadius = 20;
-			m_iPosZ = 0;
-			m_f3DPosition = false;
-			}
-		else
-			{
-			m_iPosAngle = 0;
-			m_iPosRadius = 0;
-			m_iPosZ = 0;
-			m_f3DPosition = false;
-			}
+		SDeviceDesc Desc;
+		pObj->FindDeviceSlotDesc(Item, &Desc);
 
-		m_iMinFireArc = 0;
-		m_iMaxFireArc = 0;
+		//	Set the device slot properties
+
+		m_iPosAngle = Desc.iPosAngle;
+		m_iPosRadius = Desc.iPosRadius;
+		m_iPosZ = Desc.iPosZ;
+		m_f3DPosition = Desc.b3DPosition;
+
+		m_fOmniDirectional = Desc.bOmnidirectional;
+		m_iMinFireArc = Desc.iMinFireArc;
+		m_iMaxFireArc = Desc.iMaxFireArc;
+
+		m_fSecondaryWeapon = Desc.bSecondary;
 		}
 
 	//	Event (when creating a ship we wait until the

@@ -954,6 +954,7 @@ class CShip : public CSpaceObject
 		virtual CInstalledArmor *FindArmor (const CItem &Item);
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CInstalledDevice *FindDevice (const CItem &Item);
+		virtual bool FindDeviceSlotDesc (const CItem &Item, SDeviceDesc *retDesc) { return m_pClass->FindDeviceSlotDesc(Item, retDesc); }
 		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader);
 		virtual AbilityStatus GetAbility (Abilities iAbility);
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID);

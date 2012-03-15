@@ -34,7 +34,17 @@ bool fileGetFileList (const CString &sRoot, const CString &sPath, const CString 
 
 	HANDLE hFind = ::FindFirstFile(sFilespec.GetASCIIZPointer(), &FileInfo);
 	if (hFind == INVALID_HANDLE_VALUE)
-		return false;
+		{
+		//	If ERROR_FILE_NOT_FOUND then there are no files that match
+
+		if (::GetLastError() == ERROR_FILE_NOT_FOUND)
+			return true;
+
+		//	Otherwise this is an error of some sort
+
+		else
+			return false;
+		}
 
 	bool bDirectoriesOnly = ((dwFlags & FFL_FLAG_DIRECTORIES_ONLY) ? true : false);
 

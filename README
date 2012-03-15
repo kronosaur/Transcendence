@@ -12,6 +12,9 @@ BUILD INSTRUCTIONS
 Use Microsoft Visual Studio 2005 or later. You may need to install the DirectX
 SDK (although the latest versions of MVS include it).
 
+Select the Transcendence project as the StartUp project and build. The
+executables will be placed in the Transcendence/Game directory.
+
 For security reasons the source code does not include certain files to 
 communicate with the Hexarc arcology (the cloud service). The code will compile
 without it, however, as long as you add CHexarcServiceStub.cpp to the build.

@@ -563,6 +563,8 @@ class CCSymbolTable : public ICCList
 	public:
 		CCSymbolTable (void);
 
+		inline CString GetKey (int iIndex) { return m_Symbols.GetKey(iIndex); }
+
 		//	ICCItem virtuals
 
 		virtual ICCItem *Clone (CCodeChain *pCC);
@@ -737,6 +739,7 @@ class CCodeChain : public CObject
 		bool HasIdentifier (ICCItem *pCode, const CString &sIdentifier);
 
 	private:
+		ICCItem *EvalLiteralStruct (CEvalContext *pCtx, ICCItem *pItem);
 		ICCItem *Lookup (CEvalContext *pCtx, ICCItem *pItem);
 		ALERROR LoadDefinitions (IReadBlock *pBlock);
 		char *SkipWhiteSpace (char *pPos);

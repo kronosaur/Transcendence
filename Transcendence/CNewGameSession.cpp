@@ -765,8 +765,7 @@ void CNewGameSession::SetShipClass (CShipClass *pClass, int x, int y, int cxWidt
 
 	//	Ship class image
 
-	const CG16bitImage *pImage = g_pUniverse->GetLibraryBitmap(pPlayerSettings->GetLargeImage());
-	SetShipClassImage(pImage, x, y + yOffset, cxWidth);
+	SetShipClassImage(pClass, x, y + yOffset, cxWidth);
 
 	//	Delete previous info
 
@@ -898,23 +897,27 @@ void CNewGameSession::SetShipClassDesc (const CString &sDesc, int x, int y, int 
 	m_pRoot->AddLine(pDesc);
 	}
 
-void CNewGameSession::SetShipClassImage (const CG16bitImage *pImage, int x, int y, int cxWidth)
+void CNewGameSession::SetShipClassImage (CShipClass *pClass, int x, int y, int cxWidth)
 
 //	SetShipClassImage
 //
 //	Sets the current ship class image
 
 	{
+	const CPlayerSettings *pPlayerSettings = pClass->GetPlayerSettings();
+	const CG16bitImage *pImage = g_pUniverse->GetLibraryBitmap(pPlayerSettings->GetLargeImage());
+
 	//	Delete the previous one
 
 	DeleteElement(ID_SHIP_CLASS_IMAGE);
 
 	//	Add the new one, if we've got one.
 
+	const CG16bitImage *pImageToUse = NULL;
+	bool bFree = false;
+
 	if (pImage && !pImage->IsEmpty())
 		{
-		bool bFree = false;
-
 		//	If this image is not the right size, then create a resized version
 		//	that is.
 
@@ -931,25 +934,53 @@ void CNewGameSession::SetShipClassImage (const CG16bitImage *pImage, int x, int 
 			CG16bitImage *pNewImage = new CG16bitImage;
 			pNewImage->CreateFromImageTransformed(*pImage, 0, 0, pImage->GetWidth(), pImage->GetHeight(), (Metric)cxNewWidth / pImage->GetWidth(), (Metric)cyNewHeight / pImage->GetHeight(), 0.0);
 
-			pImage = pNewImage;
+			pImageToUse = pNewImage;
 			bFree = true;
 			}
-
-		//	Position
-
-		int xImage = x + (cxWidth - pImage->GetWidth()) / 2;
-		int yImage = y + (SHIP_IMAGE_HEIGHT - pImage->GetHeight()) / 2;
-
-		//	New image frame
-
-		IAnimatron *pImageFrame = new CAniRect;
-		pImageFrame->SetID(ID_SHIP_CLASS_IMAGE);
-		pImageFrame->SetPropertyVector(PROP_POSITION, CVector(xImage, yImage));
-		pImageFrame->SetPropertyVector(PROP_SCALE, CVector(pImage->GetWidth(), pImage->GetHeight()));
-		pImageFrame->SetFillMethod(new CAniImageFill(pImage, bFree));
-
-		m_pRoot->AddLine(pImageFrame);
+		else
+			{
+			pImageToUse = pImage;
+			bFree = false;
+			}
 		}
+
+	//	If we don't have an image then ask the class to paint it
+
+	else
+		{
+		CG16bitImage *pNewImage = new CG16bitImage;
+		pNewImage->CreateBlank(SHIP_IMAGE_WIDTH, SHIP_IMAGE_HEIGHT, false);
+
+
+		ViewportTransform Trans;
+		pClass->Paint(*pNewImage, 
+				SHIP_IMAGE_WIDTH / 2, 
+				SHIP_IMAGE_HEIGHT / 2, 
+				Trans, 
+				0, 
+				0,
+				false,
+				false
+				);
+
+		pImageToUse = pNewImage;
+		bFree = true;
+		}
+
+	//	Position
+
+	int xImage = x + (cxWidth - pImageToUse->GetWidth()) / 2;
+	int yImage = y + (SHIP_IMAGE_HEIGHT - pImageToUse->GetHeight()) / 2;
+
+	//	New image frame
+
+	IAnimatron *pImageFrame = new CAniRect;
+	pImageFrame->SetID(ID_SHIP_CLASS_IMAGE);
+	pImageFrame->SetPropertyVector(PROP_POSITION, CVector(xImage, yImage));
+	pImageFrame->SetPropertyVector(PROP_SCALE, CVector(pImageToUse->GetWidth(), pImageToUse->GetHeight()));
+	pImageFrame->SetFillMethod(new CAniImageFill(pImageToUse, bFree));
+
+	m_pRoot->AddLine(pImageFrame);
 	}
 
 void CNewGameSession::SetShipClassName (const CString &sName, int x, int y, int cxWidth)

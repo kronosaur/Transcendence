@@ -13,8 +13,7 @@ const int BUTTON_LABEL_Y =					64;
 const int BUTTON_DESCRIPTION_Y =			90;
 
 const int BUTTON_SPACING_X =				8;
-const int LEFT_SPACING_X =					100;
-const int RIGHT_SPACING_X =					100;
+const int EXTRA_SPACING_X =					10;
 
 CButtonBarDisplay::CButtonBarDisplay (void)
 
@@ -48,24 +47,33 @@ void CButtonBarDisplay::ComputeButtonRects (void)
 	{
 	int iCount = m_pButtons->GetCount();
 
+	//	Same as CVisualPalette::GetWidescreenRect
+
+	int cxCenter = Min(RectWidth(m_rcRect) - (2 * 10), 1280);
+	RECT rcCenter = m_rcRect;
+	rcCenter.left = m_rcRect.left + (RectWidth(m_rcRect) - cxCenter) / 2;
+	rcCenter.right = rcCenter.left + cxCenter;
+
 	//	Align centered buttons
 
 	int cxTotalWidth = ComputeButtonWidth(CButtonBarData::alignCenter);
-	int x = m_rcRect.left + (RectWidth(m_rcRect) - cxTotalWidth) / 2;
-	int y = m_rcRect.top;
+	int x = rcCenter.left + (RectWidth(rcCenter) - cxTotalWidth) / 2;
+	int y = rcCenter.top;
 	ComputeButtonRects(CButtonBarData::alignCenter, x, y);
 
 	//	Align left buttons
+	//	(We need extra space because the labels extend beyond the size of the
+	//	buttons).
 
-	x = m_rcRect.left + LEFT_SPACING_X;
-	y = m_rcRect.top;
+	x = rcCenter.left + EXTRA_SPACING_X;
+	y = rcCenter.top;
 	ComputeButtonRects(CButtonBarData::alignLeft, x, y);
 
 	//	Align right buttons
 
 	cxTotalWidth = ComputeButtonWidth(CButtonBarData::alignRight);
-	x = m_rcRect.right - (cxTotalWidth + RIGHT_SPACING_X);
-	y = m_rcRect.top;
+	x = rcCenter.right - (cxTotalWidth + EXTRA_SPACING_X);
+	y = rcCenter.top;
 	ComputeButtonRects(CButtonBarData::alignRight, x, y);
 	}
 

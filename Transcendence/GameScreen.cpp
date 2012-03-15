@@ -606,13 +606,11 @@ void CTranscendenceWnd::PaintMainScreenBorder (void)
 		{
 		int cxMainScreen = RectWidth(m_rcMainScreen);
 		int cyMainScreen = RectHeight(m_rcMainScreen);
-		int cxLeftRight = (g_cxScreen - cxMainScreen) / 2;
-		int cyTopBottom = (g_cyScreen - cyMainScreen) / 2;
 
-		TheScreen.Fill(0, 0, g_cxScreen, cyTopBottom, BAR_COLOR);
-		TheScreen.Fill(0, g_cyScreen - cyTopBottom, g_cxScreen, cyTopBottom, BAR_COLOR);
-		TheScreen.Fill(0, cyTopBottom, cxLeftRight, cyMainScreen, BAR_COLOR);
-		TheScreen.Fill(g_cxScreen - cxLeftRight, cyTopBottom, cxLeftRight, cyMainScreen, BAR_COLOR);
+		TheScreen.Fill(0, 0, g_cxScreen, m_rcMainScreen.top, BAR_COLOR);
+		TheScreen.Fill(0, m_rcMainScreen.bottom, g_cxScreen, g_cyScreen - m_rcMainScreen.bottom, BAR_COLOR);
+		TheScreen.Fill(0, m_rcMainScreen.top, m_rcMainScreen.left, cyMainScreen, BAR_COLOR);
+		TheScreen.Fill(m_rcMainScreen.right, m_rcMainScreen.top, g_cxScreen - m_rcMainScreen.right, cyMainScreen, BAR_COLOR);
 		}
 	}
 

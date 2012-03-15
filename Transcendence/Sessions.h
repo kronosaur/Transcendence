@@ -277,7 +277,7 @@ class CNewGameSession : public IHISession
 		void SetPlayerName (const CString &sName, int x, int y, int cxWidth);
 		void SetShipClass (CShipClass *pClass, int x, int y, int cxWidth);
 		void SetShipClassDesc (const CString &sDesc, int x, int y, int cxWidth);
-		void SetShipClassImage (const CG16bitImage *pImage, int x, int y, int cxWidth);
+		void SetShipClassImage (CShipClass *pClass, int x, int y, int cxWidth);
 		void SetShipClassName (const CString &sName, int x, int y, int cxWidth);
 
 		CCloudService &m_Service;

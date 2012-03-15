@@ -46,12 +46,27 @@ class CInitModelTask : public IHITask
 class CLoadGameTask : public IHITask
 	{
 	public:
-		CLoadGameTask (CHumanInterface &HI, CTranscendenceModel &Model, const CString &sFilespec) : IHITask(HI), m_Model(Model), m_sFilespec(sFilespec) { }
+		CLoadGameTask (CHumanInterface &HI, CTranscendenceModel &Model, const CString &sUsername, const CString &sFilespec) : IHITask(HI), m_Model(Model), m_sUsername(sUsername), m_sFilespec(sFilespec) { }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.LoadGame(m_sFilespec, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.LoadGame(m_sUsername, m_sFilespec, retsResult); }
 
 	private:
+		CTranscendenceModel &m_Model;
+		CString m_sUsername;
+		CString m_sFilespec;
+	};
+
+class CLoadGameWithSignInTask : public IHITask
+	{
+	public:
+		CLoadGameWithSignInTask (CHumanInterface &HI, CCloudService &Service, CTranscendenceModel &Model, const CString &sFilespec) : IHITask(HI), m_Service(Service), m_Model(Model), m_sFilespec(sFilespec) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult);
+
+	private:
+		CCloudService &m_Service;
 		CTranscendenceModel &m_Model;
 		CString m_sFilespec;
 	};

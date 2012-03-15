@@ -18,6 +18,8 @@ enum ParseCmdState
 	stateParam,
 	stateParamStart,
 	stateParamQuoted,
+	stateArg,
+	stateArgQuoted,
 	stateDone,
 	};
 
@@ -82,9 +84,15 @@ ALERROR CreateXMLElementFromCommandLine (int argc, char *argv[], CXMLElement **r
 						pPos++;
 					else if (*pPos == '\0')
 						iState = stateDone;
+					else if (*pPos == '\"')
+						{
+						pPos++;
+						iState = stateArgQuoted;
+						pStart = pPos;
+						}
 					else
 						{
-						iState = stateParam;
+						iState = stateArg;
 						pStart = pPos;
 						}
 					break;
@@ -169,6 +177,43 @@ ALERROR CreateXMLElementFromCommandLine (int argc, char *argv[], CXMLElement **r
 						pStart = pPos;
 						iState = stateParam;
 						}
+					break;
+					}
+
+				case stateArg:
+					{
+					if (*pPos == ' ' || *pPos == '\0')
+						{
+						pCmdLine->AppendContent(CString(pStart, (pPos - pStart)));
+
+						CXMLElement *pBR = new CXMLElement(CONSTLIT("BR"), NULL);
+						pCmdLine->AppendSubElement(pBR);
+
+						bNoArgs = false;
+						iState = stateStart;
+						}
+					else
+						pPos++;
+					break;
+					}
+
+				case stateArgQuoted:
+					{
+					if (*pPos == '\"' || *pPos == '\0')
+						{
+						pCmdLine->AppendContent(CString(pStart, (pPos - pStart)));
+
+						CXMLElement *pBR = new CXMLElement(CONSTLIT("BR"), NULL);
+						pCmdLine->AppendSubElement(pBR);
+
+						if (*pPos == '\"')
+							pPos++;
+
+						bNoArgs = false;
+						iState = stateStart;
+						}
+					else
+						pPos++;
 					break;
 					}
 

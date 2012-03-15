@@ -3007,15 +3007,21 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	{
 	int i;
 
-	//	We don't yet know what section got hit
-
-	Ctx.iSectHit = -1;
-
 	//	Roll for damage
 
 	Ctx.iDamage = Ctx.Damage.RollDamage();
 	if (Ctx.iDamage == 0)
 		return damageNoDamage;
+
+	//	Map the direction that we got hit from to a ship-relative
+	//	direction (i.e., adjust for the ship's rotation)
+
+	int iHitAngle = (Ctx.iDirection + 360 - m_iRotation) % 360;
+
+	//	Figure out which section of armor got hit
+
+	Ctx.iSectHit = m_pClass->GetHullSectionAtAngle(iHitAngle);
+	CInstalledArmor *pArmor = GetArmorSection(Ctx.iSectHit);
 
 	//	Tell our controller that someone hit us
 
@@ -3065,21 +3071,11 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 			return damageAbsorbedByShields;
 		}
 
-	//	Map the direction that we got hit from to a ship-relative
-	//	direction (i.e., adjust for the ship's rotation)
-
-	int iHitAngle = (Ctx.iDirection + 360 - m_iRotation) % 360;
-
 	//	Damage any devices that are outside the hull (e.g., Patch Spiders)
 
 	for (i = 0; i < GetDeviceCount(); i++)
 		if (!m_Devices[i].IsEmpty() && m_Devices[i].IsExternal())
 			DamageExternalDevice(i, Ctx);
-
-	//	Figure out which section of armor got hit
-
-	Ctx.iSectHit = m_pClass->GetHullSectionAtAngle(iHitAngle);
-	CInstalledArmor *pArmor = GetArmorSection(Ctx.iSectHit);
 
 	//	Let the armor handle it
 

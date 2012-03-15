@@ -803,6 +803,7 @@ void CArmorClass::FireOnArmorDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 		CCCtx.DefineItem(ItemCtx);
 
 		CCCtx.DefineInteger(CONSTLIT("aArmorHP"), Ctx.iHPLeft);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
 		CCCtx.DefineDamageEffects(CONSTLIT("aDamageEffects"), Ctx);

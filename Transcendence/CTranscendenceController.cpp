@@ -241,6 +241,26 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return NOERROR;
 			}
 
+		//	If we need to open a save file, then put up a waiting screen.
+
+		const CString &sSaveFile = m_Settings.GetInitialSaveFile();
+		if (!sSaveFile.IsBlank())
+			{
+			//	Kick-off background thread to load the game
+
+			m_HI.AddBackgroundTask(new CLoadGameWithSignInTask(m_HI, m_Service, m_Model, sSaveFile), this, CMD_GAME_LOAD_DONE);
+
+			//	Show transition session while we load
+
+			m_HI.ShowSession(new CWaitSession(m_HI, m_Service, CONSTLIT("Loading Game")));
+			return NOERROR;
+			}
+
+		//	If we can sign in automatically, do so now.
+
+		if (m_Service.HasCapability(ICIService::autoLoginUser))
+			m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
+
 		//	Legacy CTranscendenceWnd takes over
 
 		m_HI.ShowSession(new CLegacySession(m_HI));
@@ -406,7 +426,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Kick-off background thread to load the game
 
-		m_HI.AddBackgroundTask(new CLoadGameTask(m_HI, m_Model, *pFilespec), this, CMD_GAME_LOAD_DONE);
+		m_HI.AddBackgroundTask(new CLoadGameTask(m_HI, m_Model, m_Service.GetUsername(), *pFilespec), this, CMD_GAME_LOAD_DONE);
 
 		//	Show transition session while we load
 
@@ -768,11 +788,6 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Add a timer so that services can do some background processing.
 
 	m_HI.AddTimer(SERVICE_HOUSEKEEPING_INTERVAL, this, CMD_SERVICE_HOUSEKEEPING);
-
-	//	If we can sign in automatically, do so now.
-
-	if (m_Service.HasCapability(ICIService::autoLoginUser))
-		m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
 
 	//	Show the loading screen
 

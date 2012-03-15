@@ -3197,6 +3197,7 @@ class CShipClass : public CDesignType
 		void CreateEmptyWreck (CSystem *pSystem, CShip *pShip, const CVector &vPos, const CVector &vVel, CSovereign *pSovereign, CStation **retpWreck);
 		void CreateExplosion (CShip *pShip, CSpaceObject *pWreck = NULL);
 		void CreateWreck (CShip *pShip, CSpaceObject **retpWreck = NULL);
+		inline bool FindDeviceSlotDesc (const CItem &Item, SDeviceDesc *retDesc) { return (m_pDevices ? m_pDevices->FindDefaultDesc(Item, retDesc) : false); }
 		void GenerateDevices (int iLevel, CDeviceDescList &Devices);
 		CString GenerateShipName (DWORD *retdwFlags);
 		inline const CAISettings &GetAISettings (void) { return m_AISettings; }

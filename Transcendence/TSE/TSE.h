@@ -2186,6 +2186,7 @@ class CSpaceObject : public CObject
 		virtual void DisableDevice (CInstalledDevice *pDevice) { }
 		virtual CInstalledArmor *FindArmor (const CItem &Item) { return NULL; }
 		virtual CInstalledDevice *FindDevice (const CItem &Item) { return NULL; }
+		virtual bool FindDeviceSlotDesc (const CItem &Item, SDeviceDesc *retDesc) { return false; }
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID) { return 0; }
 		virtual int GetBuyPrice (const CItem &Item, int *retiBuyPrice = NULL) { return -1; }
 		virtual Metric GetCargoSpaceLeft (void) { return 1000000.0; }
@@ -2193,9 +2194,9 @@ class CSpaceObject : public CObject
 		virtual int GetCyberDefenseLevel (void) { return 1; }
 		virtual DamageTypes GetDamageType (void) { return damageGeneric; }
 		virtual CEconomyType *GetDefaultEconomy (void);
+		virtual DWORD GetDefaultEconomyUNID (void) { return DEFAULT_ECONOMY_UNID; }
 		virtual CInstalledDevice *GetDevice (int iDev) const { return NULL; }
 		virtual int GetDeviceCount (void) const { return 0; }
-		virtual DWORD GetDefaultEconomyUNID (void) { return DEFAULT_ECONOMY_UNID; }
 		virtual CSpaceObject *GetDockedObj (void) { return NULL; }
 		virtual int GetDockingPortCount (void) { return 0; }
 		virtual CStationType *GetEncounterInfo (void) { return NULL; }

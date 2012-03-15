@@ -1627,8 +1627,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000800"
-		minVersion=						"0x01000800"
+		version=						"0x01000801"
+		minVersion=						"0x01000801"
 		>
 
 <!-- TRANSCENDENCE ************************************************************

@@ -2061,6 +2061,7 @@ class CGameSettings
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
 
 		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
+		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) { return m_Options[iOption].iValue; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_KeyMap; }
 		inline const CString &GetString (int iOption) { return m_Options[iOption].sValue; }
@@ -2092,6 +2093,8 @@ class CGameSettings
 		IExtraSettingsHandler *m_pExtra;	//	Additional settings handler
 		SOption m_Options[OPTIONS_COUNT];	//	Options
 		CGameKeys m_KeyMap;					//	Key map
+
+		CString m_sSaveFile;				//	Optional save file to open on game start
 
 		bool m_bModified;					//	If TRUE, we need to save out settings
 	};
@@ -2162,7 +2165,7 @@ class CTranscendenceModel
 		inline const CString &GetVersion (void) { return m_Version.sProductVersion; }
 		ALERROR Init (void);
 		ALERROR InitBackground (CString *retsError = NULL);
-		ALERROR LoadGame (const CString &sPlayerName, CString *retsError);
+		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_dwCrawlImage = dwImage; }
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }

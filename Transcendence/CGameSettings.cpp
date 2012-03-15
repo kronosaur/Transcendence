@@ -228,6 +228,11 @@ ALERROR CGameSettings::ParseCommandLine (char *pszCmdLine)
 			SetValueBoolean(g_CommandLineData[i].iOption, bValue);
 		}
 
+	//	If we have an arg then use it as the save file name
+
+	if (pCmdLine->GetContentElementCount() > 0)
+		m_sSaveFile = pCmdLine->GetContentText(0);
+
 	//	Done
 
 	delete pCmdLine;

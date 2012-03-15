@@ -264,10 +264,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\CDeviceTable.cpp"
-				>
-			</File>
-			<File
 				RelativePath="CDockingPorts.cpp"
 				>
 				<FileConfiguration
@@ -1283,6 +1279,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\CDeviceTable.cpp"
+					>
 				</File>
 				<File
 					RelativePath="CDriveClass.cpp"

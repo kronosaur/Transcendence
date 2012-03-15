@@ -286,6 +286,7 @@ bool CEnergyField::FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 		CCCtx.SaveAndDefineSourceVar(pSource);
 		CCCtx.DefineInteger(CONSTLIT("aOverlayID"), m_dwID);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
 		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
 		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Attacker.GetCause()) : NULL));

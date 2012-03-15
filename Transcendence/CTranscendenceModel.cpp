@@ -984,7 +984,7 @@ ALERROR CTranscendenceModel::LoadHighScoreList (CString *retsError)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::LoadGame (const CString &sFilespec, CString *retsError)
+ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError)
 
 //	LoadGame
 //
@@ -1001,6 +1001,16 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sFilespec, CString *retsEr
 		{
 		*retsError = strPatternSubst(CONSTLIT("Unable to open save file: %s"), sFilespec);
 		return error;
+		}
+
+	//	If this is a registered game and we're not signed in with that player
+	//	then we can't continue.
+
+	if (m_GameFile.IsRegistered() && !strEquals(m_GameFile.GetUsername(), sSignedInUsername))
+		{
+		*retsError = strPatternSubst(CONSTLIT("Save file %s may only be opened by %s."), sFilespec, m_GameFile.GetUsername());
+		m_GameFile.Close();
+		return ERR_FAIL;
 		}
 
 	//	Load the universe

@@ -447,15 +447,24 @@ ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 		return pItem->Reference();
 
 	//	If this item is quoted, then return an unquoted item
-	//
-	//	HACK: We clone the item so that when we try to modify a literal list we
-	//	mody a copy instead of the original.
 
 	if (pItem->IsQuoted())
 		{
-		ICCItem *pResult = pItem->Clone(this);
-		pResult->ClearQuoted();
-		return pResult;
+		//	If this is a literal symbol table then we need to evaluate its 
+		//	values.
+
+		if (pItem->IsSymbolTable())
+			return EvalLiteralStruct(pEvalCtx, pItem);
+
+		//	HACK: We clone the item so that when we try to modify a literal list we
+		//	mody a copy instead of the original.
+
+		else
+			{
+			ICCItem *pResult = pItem->Clone(this);
+			pResult->ClearQuoted();
+			return pResult;
+			}
 		}
 
 	//	Evaluate differently depending on whether or not
@@ -463,14 +472,13 @@ ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 	//	the value or look up the atom in a symbol table. If the item
 	//	is a list, try to evaluate as a function
 
-	if (!pItem->IsExpression())
-		{
-		if (pItem->IsIdentifier())
-			return Lookup(pEvalCtx, pItem);
-		else
-			return pItem->Reference();
-		}
-	else
+	else if (pItem->IsIdentifier())
+		return Lookup(pEvalCtx, pItem);
+
+	//	If this is an expression (a list with multiple terms) then we
+	//	try to evaluate it.
+
+	else if (pItem->IsExpression())
 		{
 		ICCItem *pFunctionName;
 		ICCItem *pFunction;
@@ -543,6 +551,60 @@ ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 		pArgs->Discard(this);
 		return pResult;
 		}
+	
+	//	Anything else is a literal so we return it.
+
+	else
+		return pItem->Reference();
+
+	}
+
+ICCItem *CCodeChain::EvalLiteralStruct (CEvalContext *pCtx, ICCItem *pItem)
+
+//	EvalLiteralStruct
+//
+//	Evalues the values in a structure and returns a structure
+//	(or an error).
+
+	{
+	int i;
+
+	CCSymbolTable *pTable = dynamic_cast<CCSymbolTable *>(pItem);
+	if (pTable == NULL)
+		return CreateError(CONSTLIT("Not a structure"), pItem);
+
+	ICCItem *pNew = CreateSymbolTable();
+	if (pNew->IsError())
+		return pNew;
+
+	CCSymbolTable *pNewTable = dynamic_cast<CCSymbolTable *>(pNew);
+
+	//	Loop over all key/value pairs
+
+	for (i = 0; i < pTable->GetCount(); i++)
+		{
+		CString sKey = pTable->GetKey(i);
+		ICCItem *pValue = pTable->GetElement(i);
+
+		ICCItem *pNewKey = CreateString(sKey);
+		ICCItem *pNewValue = (pValue ? Eval(pCtx, pValue) : CreateNil());
+
+		ICCItem *pResult = pNewTable->AddEntry(this, pNewKey, pNewValue);
+		pNewKey->Discard(this);
+		pNewValue->Discard(this);
+
+		if (pResult->IsError())
+			{
+			pNewTable->Discard(this);
+			return pResult;
+			}
+
+		pResult->Discard(this);
+		}
+
+	//	Done
+
+	return pNewTable;
 	}
 
 ICCItem *CCodeChain::EvaluateArgs (CEvalContext *pCtx, ICCItem *pArgs, const CString &sArgValidation)

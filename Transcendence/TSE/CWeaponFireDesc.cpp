@@ -462,6 +462,7 @@ bool CWeaponFireDesc::FireOnDamageOverlay (SDamageCtx &Ctx, CEnergyField *pOverl
 		CCodeChainCtx CCCtx;
 
 		CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineInteger(CONSTLIT("aOverlayID"), pOverlay->GetID());
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
 		CCCtx.DefineSpaceObject(CONSTLIT("aAttacker"), Ctx.Attacker.GetObj());
@@ -518,6 +519,7 @@ bool CWeaponFireDesc::FireOnDamageShields (SDamageCtx &Ctx, int iDevice)
 			pShip->SetCursorAtDevice(ItemList, iDevice);
 
 		CCCtx.SaveAndDefineSourceVar(Ctx.pObj);
+		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineInteger(CONSTLIT("aDevice"), iDevice);
 		CCCtx.DefineItem(CONSTLIT("aDeviceItem"), ItemList.GetItemAtCursor());
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);

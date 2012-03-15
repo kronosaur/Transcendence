@@ -59,8 +59,16 @@ void CLoadGameSession::CmdOK (void)
 //	Load the selected saved game
 
 	{
+	//	Get the list of files. If there is no list then it is because there are
+	//	no save files.
+
 	IAnimatron *pList = GetElement(ID_LIST);
+	if (pList == NULL)
+		return CmdCancel();
+
 	CString sFilename = pList->GetPropertyString(PROP_SELECTION_ID);
+	if (sFilename.IsBlank())
+		return CmdCancel();
 	
 	//	Remember some variables because after we close the session this object
 	//	will be gone.

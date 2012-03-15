@@ -249,6 +249,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\CLoadGameWithSignInTask.cpp"
+				>
+			</File>
+			<File
 				RelativePath="CodeChainExtensions.cpp"
 				>
 				<FileConfiguration
@@ -1306,6 +1310,10 @@
 			</File>
 			<File
 				RelativePath="FunctionReference.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\LICENSE"
 				>
 			</File>
 			<File
