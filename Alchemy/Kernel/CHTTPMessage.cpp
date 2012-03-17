@@ -230,12 +230,17 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 					//	Append the remainder of the buffer to the body
 
 					if (iLength > 0)
+						{
 						m_sBody.Append(CString(pPos, iLength, true));
+						pPos += iLength;
+						}
 
 					//	If we hit the end, then we're done
 
 					if (iLength == iRemaining)
 						m_iState = stateDone;
+
+					//	Otherwise exit the look and get more data
 					}
 
 				//	Otherwise, we are done

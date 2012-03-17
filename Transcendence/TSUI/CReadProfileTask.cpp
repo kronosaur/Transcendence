@@ -28,10 +28,11 @@ const int ICON_AREA_WIDTH =						154;
 const int PADDING_LEFT =						8;
 const int PADDING_RIGHT =						8;
 const int PADDING_TOP =							8;
+const int PADDING_BOTTOM =						16;
 const int MAJOR_PADDING_BOTTOM =				20;
 const int MAJOR_PADDING_TOP =					20;
 const int TITLE_BAR_HEIGHT =					24;
-const int SCORE_AREA_WIDTH =					280;
+const int SCORE_AREA_WIDTH =					320;
 
 const int MAX_HIGH_SCORES =						10;
 
@@ -114,6 +115,9 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 		}
 
 	cyHeight = Max(cyHeight, TITLE_BAR_HEIGHT + ICON_AREA_HEIGHT);
+
+	int cyHighScoresHeight = TITLE_BAR_HEIGHT + PADDING_TOP + MediumBoldFont.GetHeight() + MAX_HIGH_SCORES * HeaderFont.GetHeight() + PADDING_BOTTOM;
+	cyHeight = Max(cyHeight, cyHighScoresHeight);
 
 	//	Get the adventure desc.
 	//
@@ -236,7 +240,7 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 
 			//	Username who holds the record + score
 
-			CString sScoreAndUser = strPatternSubst(CONSTLIT("%d %s"), GameRecord.GetScore(), GameRecord.GetUsername());
+			CString sScoreAndUser = strPatternSubst(CONSTLIT("%s %s"), strFormatInteger(GameRecord.GetScore(), -1, FORMAT_THOUSAND_SEPARATOR), GameRecord.GetUsername());
 
 			IAnimatron *pName = new CAniText;
 			pName->SetPropertyVector(PROP_POSITION, CVector(x, y));
@@ -285,7 +289,7 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	pRoot->AddTrack(pTitle, 0);
 	y += MediumBoldFont.GetHeight();
 
-	int cxScore = PADDING_LEFT + HeaderFont.GetAverageWidth() * 8;
+	int cxScore = PADDING_LEFT + HeaderFont.GetAverageWidth() * 10;
 	int xName = x + cxScore + PADDING_RIGHT;
 
 	//	Add all the high scores
@@ -303,7 +307,7 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 		pScore->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogInput));
 		pScore->SetPropertyFont(PROP_FONT, &HeaderFont);
 		pScore->SetPropertyString(PROP_TEXT_ALIGN_HORZ, ALIGN_RIGHT);
-		pScore->SetPropertyString(PROP_TEXT, strFromInt(GameRecord.GetScore()));
+		pScore->SetPropertyString(PROP_TEXT, strFormatInteger(GameRecord.GetScore(), -1, FORMAT_THOUSAND_SEPARATOR));
 
 		pRoot->AddTrack(pScore, 0);
 

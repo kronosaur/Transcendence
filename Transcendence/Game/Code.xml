@@ -742,12 +742,8 @@
 				(block (lootedItems)
 					(setq lootedItems (objGetItems theSource criteria))
 					(enum lootedItems theItem
-						(block (itemMass fitCount)
-							(setq itemMass (itmGetMass theItem))
-							(setq fitCount (divide (objGetCargoSpaceLeft theDest) itemMass))
-							(if (gr fitCount (itmGetCount theItem))
-								(setq fitCount (itmGetCount theItem))
-								)
+						(block (fitCount)
+							(setq fitCount (objGetFitCount theDest theItem))
 							(if (gr fitCount 0)
 								(block Nil
 									(objRemoveItem theSource theItem fitCount)
@@ -1152,6 +1148,24 @@
 								(objAddItem theObj theItem 1)
 								)
 							)
+						)
+					)
+				))
+				
+			(setq objGetFitCount (lambda (theObj theItem)
+			
+			; objGetFitCount returns the number of the given item that will fit
+			; in the cargo space of the given object, but never more than the
+			; specified number of items.
+			
+				(block (itemMass)
+				
+					(setq itemMass (itmGetMass theItem))
+					
+					(if (eq itemMass 0)
+						(itmGetCount theItem)
+						
+						(min (divide (objGetCargoSpaceLeft theObj) itemMass) (itmGetCount theItem))
 						)
 					)
 				))

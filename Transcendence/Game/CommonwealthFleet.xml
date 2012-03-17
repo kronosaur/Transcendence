@@ -891,11 +891,8 @@
 								; Pick a random item
 								(setq neededItem (random '(&itGradeAGrains; &itWaterIce; &itMedicalSupplies; &itSalmonite;)))
 
-								; Figure out how many barrels of grain we can take
-								(setq count (divide (objGetCargoSpaceLeft gPlayerShip) (itmGetMass (itmCreate neededItem 1))))
-								(if (eq count 0)
-									(setq count 1)
-									)
+								; Figure out how many barrels of grain we can take (must be at least 1)
+								(setq count (max 1 (objGetFitCount gPlayerShip (itmCreate neededItem 100000))))
 
 								; Add the items to the player ship (and remember)
 								(objAddItem gPlayerShip (itmCreate neededItem count))

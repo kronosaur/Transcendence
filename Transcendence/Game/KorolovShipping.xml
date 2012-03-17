@@ -3118,7 +3118,8 @@
 			(setq korFillFreighter (lambda (freighterObj pricePerContainer)
 				(block (container fitCount)
 					(setq container (itmSetCharges (itmCreate &itKorolovShippingContainer; 1) (divide pricePerContainer 25)))
-					(setq fitCount (divide (objGetCargoSpaceLeft freighterObj) (itmGetMass container)))
+					(setq fitCount (objGetFitCount freighterObj (itmSetCount container 100000)))
+					
 					(objAddItem freighterObj container fitCount)
 
 					; Return the total value of the cargo

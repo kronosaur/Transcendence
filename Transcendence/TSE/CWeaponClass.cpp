@@ -708,10 +708,18 @@ bool CWeaponClass::CanRotate (CItemCtx &Ctx)
 //	Returns TRUE if the weapon is either omnidirectional or directional
 
 	{
+	//	If the weapon is natively on a turret
+
 	if (m_bOmnidirectional || (m_iMinFireArc != m_iMaxFireArc))
 		return true;
+
+	//	If the device slot is a turret
+
 	else if (Ctx.GetDevice() && (Ctx.GetDevice()->IsOmniDirectional() || Ctx.GetDevice()->IsDirectional()))
 		return true;
+
+	//	Fixed weapon
+
 	else
 		return false;
 	}
@@ -2180,37 +2188,60 @@ bool CWeaponClass::IsDirectional (CInstalledDevice *pDevice, int *retiMinFireArc
 //	Returns TRUE if the weapon can turn but is not omni
 
 	{
-	//	The device slot overrides the weapon. If the device slot is directional, then
-	//	the weapon is directional. If the device slot is omni directional, then the
-	//	weapon is omnidirectional.
+	//	If the weapon is omnidirectional then we don't need directional 
+	//	calculations.
+
+	if (m_bOmnidirectional || (pDevice && pDevice->IsOmniDirectional()))
+		return false;
+
+	//	If we have a device, combine the fire arcs of device slot and weapon
 
 	if (pDevice)
 		{
+		//	If the device is directional then we always take the fire arc from
+		//	the device slot.
+
 		if (pDevice->IsDirectional())
 			{
 			if (retiMinFireArc)
 				*retiMinFireArc = pDevice->GetMinFireArc();
 			if (retiMaxFireArc)
 				*retiMaxFireArc = pDevice->GetMaxFireArc();
+
 			return true;
 			}
-		else if (pDevice->IsOmniDirectional())
-			return false;
-		else
+
+		//	Otherwise, see if the weapon is directional.
+
+		else if (m_iMinFireArc != m_iMaxFireArc)
 			{
+			//	If the device points in a specific direction then we offset the
+			//	weapon's fire arc.
+
+			int iDeviceSlotOffset = pDevice->GetMinFireArc();
+
 			if (retiMinFireArc)
-				*retiMinFireArc = m_iMinFireArc;
+				*retiMinFireArc = (m_iMinFireArc + iDeviceSlotOffset) % 360;
 			if (retiMaxFireArc)
-				*retiMaxFireArc = m_iMaxFireArc;
-			return (m_iMinFireArc != m_iMaxFireArc);
+				*retiMaxFireArc = (m_iMaxFireArc + iDeviceSlotOffset) % 360;
+
+			return true;
 			}
+
+		//	Otherwise, we are not directional
+
+		else
+			return false;
 		}
 	else
 		{
+		//	Otherwise, just check the weapon
+
 		if (retiMinFireArc)
 			*retiMinFireArc = m_iMinFireArc;
 		if (retiMaxFireArc)
 			*retiMaxFireArc = m_iMaxFireArc;
+
 		return (m_iMinFireArc != m_iMaxFireArc);
 		}
 	}
@@ -2222,15 +2253,14 @@ bool CWeaponClass::IsOmniDirectional (CInstalledDevice *pDevice)
 //	Returns TRUE if the weapon is omnidirectional (not limited)
 
 	{
-	//	The device slot overrides the weapon. If the device slot is directional, then
+	//	The device slot improves the weapon. If the device slot is directional, then
 	//	the weapon is directional. If the device slot is omni directional, then the
 	//	weapon is omnidirectional.
 
-	if (pDevice)
-		return ((pDevice->IsOmniDirectional() || (m_bOmnidirectional && (m_iMinFireArc == m_iMaxFireArc)))
-				&& !pDevice->IsDirectional());
-	else
-		return (m_bOmnidirectional && (m_iMinFireArc == m_iMaxFireArc));
+	if (pDevice && pDevice->IsOmniDirectional())
+		return true;
+
+	return m_bOmnidirectional;
 	}
 
 bool CWeaponClass::IsVariantSelected (CSpaceObject *pSource, CInstalledDevice *pDevice)

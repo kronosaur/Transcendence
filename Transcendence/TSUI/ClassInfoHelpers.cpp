@@ -96,7 +96,7 @@ void CUIHelper::CreateClassInfoCargo (CShipClass *pClass, const CDeviceDescList 
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogLabel)),
 			strFromInt(iCargoSpace, TRUE),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogInput)),
-			(pCargoExtension ? strPatternSubst(CONSTLIT("ton %s"), pCargoExtension->GetItemType()->GetNounPhrase(nounActual)) : CONSTLIT("ton cargo hold")),
+			(pCargoExtension ? strPatternSubst(CONSTLIT("ton %s"), CTextBlock::Escape(pCargoExtension->GetItemType()->GetNounPhrase(nounActual))) : CONSTLIT("ton cargo hold")),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogLabel)),
 			(iCargoSpace < pClass->GetMaxCargoSpace() ? strPatternSubst(CONSTLIT("optional expansion up to %d tons"), pClass->GetMaxCargoSpace()) : CONSTLIT("cargo space cannot be expanded")));
 
@@ -456,9 +456,9 @@ void CUIHelper::CreateClassInfoReactor (CShipClass *pClass, const CDeviceDescLis
 
 	CString sText = strPatternSubst(CONSTLIT("{/rtf {/f:LargeBold;/c:%d; %s} {/f:MediumBold;/c:%d; %s}}"),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogLabel)),
-			ReactorPower2String(pReactorDesc->iMaxPower),
+			CTextBlock::Escape(ReactorPower2String(pReactorDesc->iMaxPower)),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogInput)),
-			(pReactor ? pReactor->GetItemType()->GetNounPhrase() : strPatternSubst(CONSTLIT("%s reactor"), pClass->GetShortName())));
+			(pReactor ? CTextBlock::Escape(pReactor->GetItemType()->GetNounPhrase()) : strPatternSubst(CONSTLIT("%s reactor"), CTextBlock::Escape(pClass->GetShortName()))));
 
 	CreateClassInfoSpecialItem(pItemIcon, sText, x, y, cxWidth, dwOptions, retcyHeight, retpInfo);
 	}

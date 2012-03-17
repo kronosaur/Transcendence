@@ -1627,8 +1627,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000801"
-		minVersion=						"0x01000801"
+		version=						"0x01000802"
+		minVersion=						"0x01000802"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2953,11 +2953,10 @@
 						(setq thisItem (scrGetItem gScreen))
 
 						(if thisItem
-							(block (fitCount itemMass)
-								(setq itemMass (itmGetMass thisItem))
-								(setq fitCount (divide (objGetCargoSpaceLeft gSource) itemMass))
+							(block (availCount fitCount)
 								(setq availCount (itmGetCount thisItem))
-								(setq gMaxCount (if (gr fitCount availCount) availCount fitCount))
+								(setq fitCount (objGetFitCount gSource thisItem))
+								(setq gMaxCount (min availCount fitCount))
 
 								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
 								(if (gr gMaxCount 1)
@@ -3163,10 +3162,10 @@
 									(setq affordCount (divide (objGetBalance gPlayerShip currencyUsed) gCost))
 									(setq affordCount 0)
 									)
-								(setq gMaxCount (if (gr affordCount availCount) availCount affordCount))
 
-								(setq fitCount (divide (objGetCargoSpaceLeft gPlayerShip) (itmGetMass thisItem)))
-								(setq gMaxCount (if (gr gMaxCount fitCount) fitCount gMaxCount))
+								(setq fitCount (objGetFitCount gPlayerShip thisItem))
+								
+								(setq gMaxCount (min availCount affordCount fitCount))
 
 								; Set the price and description
 								(setq desc (cat "Unit price: " (if (eq gCost 0) "N/A" (fmtCurrency currencyUsed gCost))))
@@ -3655,11 +3654,11 @@
 					(block (thisItem)
 						(setq thisItem (scrGetItem gScreen))
 						(if thisItem
-							(block (affordCount availCount desc itemMass)
-								(setq itemMass (itmGetMass thisItem))
+							(block (fitCount availCount desc)
 								(setq availCount (itmGetCount thisItem))
-								(setq affordCount (divide (objGetCargoSpaceLeft gPlayerShip) itemMass))
-								(setq gMaxCount (if (gr affordCount availCount) availCount affordCount))
+								(setq fitCount (objGetFitCount gPlayerShip thisItem))
+								
+								(setq gMaxCount (min availCount fitCount))
 
 								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
 								(if (gr gMaxCount 1)
@@ -3673,8 +3672,8 @@
 										(setq desc (cat desc "You do not have enough space to carry " (itmGetName thisItem 4) "."))
 									(eq gMaxCount 1)
 										(setq desc (cat desc "You have enough room to carry one " (itmGetName thisItem 0) "."))
-									(gr availCount affordCount)
-										(setq desc (cat desc "You have enough room to carry only " affordCount " " (itmGetName thisItem 2) "."))
+									(gr availCount fitCount)
+										(setq desc (cat desc "You have enough room to carry only " fitCount " " (itmGetName thisItem 2) "."))
 									(setq desc (cat desc "You have enough room to carry all " (itmGetName thisItem 8) "."))
 									)
 

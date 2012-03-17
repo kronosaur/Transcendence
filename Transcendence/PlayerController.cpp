@@ -1271,8 +1271,10 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 
 	if (m_pStation == Ctx.pObj || Ctx.pObj->IsPlayerDocked())
 		{
-		g_pTrans->GetModel().ExitScreenSession(true);
-		ASSERT(m_pStation == NULL);
+		if (Ctx.pObj->IsPlayerDocked())
+			g_pTrans->GetModel().ExitScreenSession(true);
+
+		m_pStation = NULL;
 		}
 
 	//	Clear out some variables

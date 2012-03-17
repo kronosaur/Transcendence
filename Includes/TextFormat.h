@@ -89,6 +89,8 @@ class CTextBlock
 		inline int GetFormattedSpanCount (void) const { return m_Formatted.GetCount(); }
 		bool InitFromRTF (const CString &RTF, const IFontTable &FontTable, const SBlockFormatDesc &BlockFormat, CString *retsError = NULL);
 
+		static CString Escape (const CString &sText);
+
 	private:
 		struct STextSpan
 			{

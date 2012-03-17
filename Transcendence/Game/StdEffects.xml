@@ -16,8 +16,7 @@
 	
 -->
 
-	<Effect UNID="&efLaserHitDefault;"
-			sound="&snArmorHit1;">
+	<Effect UNID="&efLaserHitDefault;">
 		<Variants>
 			<Effect maxValue="0">
 				<Flare
@@ -703,8 +702,7 @@
 	
 -->
 
-	<Effect UNID="&efGreenLaserHitEffect;"
-			sound="&snArmorHit1;">
+	<Effect UNID="&efGreenLaserHitEffect;">
 		<Variants>
 			<Effect maxValue="0">
 				<Flare
@@ -761,8 +759,7 @@
 		</Variants>
 	</Effect>
 
-	<Effect UNID="&efXRayLaserHitEffect;"
-			sound="&snArmorHit1;">
+	<Effect UNID="&efXRayLaserHitEffect;">
 		<Variants>
 			<Effect maxValue="0">
 				<Flare

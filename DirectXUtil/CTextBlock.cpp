@@ -75,6 +75,78 @@ void CTextBlock::AddTextSpan (const CString &sText, const STextFormat &Format, b
 	pSpan->bEoP = bEoP;
 	}
 
+CString CTextBlock::Escape (const CString &sText)
+
+//	Escape
+//
+//	Escapes all reserved characters in sText
+
+	{
+	char *pPos = sText.GetASCIIZPointer();
+	char *pEndPos = pPos + sText.GetLength();
+
+	CString sResult;
+	char *pDest = NULL;
+
+	char *pStart = pPos;
+	while (pPos < pEndPos)
+		{
+		switch (*pPos)
+			{
+			case '\\':
+			case '/':
+			case '{':
+			case '}':
+				{
+				//	If necessary, allocate a resulting buffer (note that we can
+				//	never be larger than twice the length of the original string).
+
+				if (pDest == NULL)
+					pDest = sResult.GetWritePointer(sText.GetLength() * 2);
+
+				//	Write out the string up to now
+
+				char *pSrc = pStart;
+				while (pSrc < pPos)
+					*pDest++ = *pSrc++;
+
+				//	Write out an escaped version of the character
+
+				*pDest++ = '\\';
+				*pDest++ = *pPos;
+
+				pStart = pPos + 1;
+				break;
+				}
+			}
+
+		pPos++;
+		}
+
+	//	If necessary write the remaining string
+
+	if (pDest)
+		{
+		char *pSrc = pStart;
+		while (pSrc < pEndPos)
+			*pDest++ = *pSrc++;
+
+		//	Truncate
+
+		sResult.Truncate((int)(pDest - sResult.GetPointer()));
+
+		//	Done
+
+		return sResult;
+		}
+
+	//	If we didn't need to escape anything then we just return the original
+	//	string.
+
+	else
+		return sText;
+	}
+
 void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 
 //	Format

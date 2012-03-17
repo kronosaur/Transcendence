@@ -57,10 +57,7 @@
 									(setq affordCount (divide rins gCost))
 									(setq affordCount 0)
 									)
-								(setq gMaxCount (if (gr affordCount availCount) availCount affordCount))
-
-								(setq fitCount (divide (objGetCargoSpaceLeft gPlayerShip) (itmGetMass thisItem)))
-								(setq gMaxCount (if (gr gMaxCount fitCount) fitCount gMaxCount))
+								(setq gMaxCount (min availCount affordCount (objGetFitCount gPlayerShip thisItem)))
 
 								; Set the price and description
 								(setq desc (cat "Balance: " rins " rin"))
