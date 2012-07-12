@@ -97,6 +97,7 @@ class CIntroShipController : public CObject, public IShipController
 		inline void SetShip (CShip *pShip) { m_pShip = pShip; }
 
 		virtual void Behavior (void) { m_pDelegate->Behavior(); }
+		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
 		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
 		virtual ManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
 		virtual bool GetThrust (void) { return m_pDelegate->GetThrust(); }
@@ -109,6 +110,7 @@ class CIntroShipController : public CObject, public IShipController
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return m_pDelegate->GetEscortPrincipal(); }
 		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(bNoAutoTarget); }
+		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
 
 		virtual void AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, dwData, bAddBefore); }
 		virtual void CancelAllOrders (void) { m_pDelegate->CancelAllOrders(); }
@@ -394,6 +396,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
 		virtual bool GetDeviceActivate (void);
 		virtual int GetFireDelay (void) { return (int)((5.0 / STD_SECONDS_PER_UPDATE) + 0.5); }
+		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		virtual bool IsPlayer (void) const { return true; }
 		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip);
 		virtual void SetManeuver (IShipController::ManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
@@ -779,7 +782,7 @@ class CDockScreenActions
 			specialPrevKey,
 			};
 
-		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, SExtensionDesc *pExtension, ICCItem *pCode, int *retiAction);
+		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
 		void CleanUp (void);
 		void CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
@@ -794,7 +797,7 @@ class CDockScreenActions
 		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
 		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
 		int GetVisibleCount (void) const;
-		ALERROR InitFromXML (SExtensionDesc *pExtension, CXMLElement *pActions, CString *retsError);
+		ALERROR InitFromXML (CExtension *pExtension, CXMLElement *pActions, CString *retsError);
 		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
 		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
@@ -806,7 +809,7 @@ class CDockScreenActions
 		void SetVisible (int iAction, bool bVisible = true);
 
 	private:
-		void ExecuteCode (CDockScreen *pScreen, const CString &sID, SExtensionDesc *pExtension, ICCItem *pCode);
+		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
 
 		struct SActionDesc
 			{
@@ -815,7 +818,8 @@ class CDockScreenActions
 			CString sKey;			//	Accelerator key
 			CGButtonArea *pButton;	//	Pointer to button area
 
-			SExtensionDesc *pExtension;	//	Source of the code
+			CExtension *pExtension;	//	Source of the code
+
 			CXMLElement *pCmd;		//	Special commands (e.g., <Exit/>
 			CString sCode;			//	Code
 			ICCItem *pCode;			//	Code (owned by us)
@@ -848,7 +852,7 @@ class CDockScreen : public CObject,
 		ALERROR InitScreen (HWND hWnd, 
 							RECT &rcRect, 
 							CSpaceObject *pLocation, 
-							SExtensionDesc *pExtension,
+							CExtension *pExtension,
 							CXMLElement *pDesc, 
 							const CString &sPane,
 							CString *retsPane,
@@ -866,6 +870,7 @@ class CDockScreen : public CObject,
 		int GetCounter (void);
 		const CItem &GetCurrentItem (void);
 		ICCItem *GetCurrentListEntry (void);
+		const CString &GetDescription (void);
 		CG16bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
 		CString GetTextInput (void);
@@ -942,7 +947,7 @@ class CDockScreen : public CObject,
 		CUniverse *m_pUniv;
 		CPlayerShipController *m_pPlayer;
 		CSpaceObject *m_pLocation;
-		SExtensionDesc *m_pExtension;
+		CExtension *m_pExtension;
 		CXMLElement *m_pDesc;
 		AGScreen *m_pScreen;
 		bool m_bFirstOnInit;
@@ -987,6 +992,7 @@ class CArmorDisplay
 		CArmorDisplay (void);
 		~CArmorDisplay (void);
 
+		void CleanUp (void);
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CPlayerShipController *pPlayer, const RECT &rcRect);
 		void Paint (CG16bitImage &Dest);
@@ -1004,7 +1010,6 @@ class CArmorDisplay
 			WORD wColor;
 			};
 
-		void CleanUp (void);
 
 		CUniverse *m_pUniverse;
 		CPlayerShipController *m_pPlayer;
@@ -1014,6 +1019,8 @@ class CArmorDisplay
 		const SFontTable *m_pFonts;
 		int m_iSelection;
 		TArray<STextPaint> m_Text;
+
+		IEffectPainter *m_pShieldPainter;
 	};
 
 #define MAX_SCORES			100
@@ -1399,6 +1406,7 @@ class CAdventureDescDisplay
 		~CAdventureDescDisplay (void);
 
 		void CleanUp (void);
+		inline CExtension *GetAdventure (void) { return (m_iCurrentIndex == -1 ? NULL : m_AdventureList[m_iCurrentIndex]); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		ALERROR Init (CTranscendenceWnd *pTrans, const RECT &rcRect);
 		inline void Invalidate (void) { m_bInvalid = true; }
@@ -1412,6 +1420,7 @@ class CAdventureDescDisplay
 		void PaintBuffer (void);
 
 		CTranscendenceWnd *m_pTrans;
+		TArray<CExtension *> m_AdventureList;
 		int m_iCurrentIndex;
 
 		bool m_bInvalid;
@@ -1549,7 +1558,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void DebugConsoleOutput (const CString &sOutput);
 		void DisplayMessage (CString sMessage);
 		void DoCommand (DWORD dwCmd);
-		inline DWORD GetAdventure (void);
 		inline const CString &GetCrashInfo (void) { return m_sCrashInfo; }
 		inline bool GetDebugGame (void);
 		inline const SFontTable &GetFonts (void) { return m_Fonts; }
@@ -1559,6 +1567,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline CPlayerShipController *GetPlayer (void);
 		inline int GetSoundVolumeOption (void);
 		inline DWORD GetPlayerShip (void);
+		inline CReanimator &GetReanimator (void) { return m_Reanimator; }
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
 		void HideDockScreen (void);
@@ -1575,7 +1584,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 							    const CString &sDestEntryPoint);
 		void RedirectDisplayMessage (bool bRedirect = true);
 		void SelectArmor (int iSeg);
-		inline void SetAdventure (DWORD dwAdventure);
+		inline void SetAdventure (CExtension *pAdventure) { m_pAdventureSelected = pAdventure; }
 		CXMLElement *SetCurrentLocalScreens (CXMLElement *pLocalScreens);
 		void SetSoundVolumeOption (int iVolume);
 		void ShowDockScreen (bool bShow = true);
@@ -1667,7 +1676,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		int GetHighScoresPos (void);
 		DWORD GetIntroShipClass (void) { return m_dwIntroShipClass; }
 		void DestroyIntroShips (void);
-		void OnAccountChanged (void);
+		void OnAccountChanged (const CMultiverseModel &Multiverse);
 		void OnCommandIntro (const CString &sCmd, void *pData);
 		void OnDblClickIntro (int x, int y, DWORD dwFlags);
 		void OnCharIntro (char chChar, DWORD dwKeyData);
@@ -1677,7 +1686,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void OnMouseMoveIntro (int x, int y, DWORD dwFlags);
 		void PaintOverwriteGameDlg (void);
 		void PaintDlgButton (const RECT &rcRect, const CString &sText);
-		void SetAccountControls (void);
+		void SetAccountControls (const CMultiverseModel &Multiverse);
 		void SetDebugOption (void);
 		void SetHighScoresNext (void);
 		void SetHighScoresPos (int iPos);
@@ -1701,7 +1710,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void AnimateCrawlScreen (void);
 		void AnimateProlog (bool bTopMost);
 		void GetCrawlAnimationRect (RECT *retrcRect);
-		void InitCrawlBackground (DWORD dwImage);
 		ALERROR InitCrawlScreen (void);
 		void PaintCrawlBackground (void);
 		ALERROR StartProlog (void);
@@ -1712,6 +1720,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void OnKeyDownHelp (int iVirtKey, DWORD dwKeyData);
 		void PaintHelpScreen (void);
 
+		void CleanUpDisplays (void);
 		void ClearDebugLines (void);
 		void ComputeScreenSize (void);
 		void EnterStargate (void);
@@ -1829,6 +1838,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 		//	Select adventure screen
 		CAdventureDescDisplay m_AdventureDescDisplay;
+		CExtension *m_pAdventureSelected;
 
 		//	Crawl screen
 		CG16bitImage *m_pCrawlImage;
@@ -2149,10 +2159,9 @@ class CTranscendenceModel
 		int AddHighScore (const CGameRecord &Score);
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
-		inline DWORD GetCrawlImage (void) const { return m_dwCrawlImage; }
+		inline CG16bitImage *GetCrawlImage (void) const { return m_pCrawlImage; }
 		inline const CString &GetCrawlText (void) const { return m_sCrawlText; }
 		inline bool GetDebugMode (void) const { return m_bDebugMode; }
-		inline DWORD GetDefaultAdventure (void) { return m_dwAdventure; }
 		inline GenomeTypes GetDefaultPlayerGenome (void) const { return m_iPlayerGenome; }
 		inline const CString &GetDefaultPlayerName (void) const { return m_sPlayerName; }
 		inline DWORD GetDefaultPlayerShipClass (void) { return m_dwPlayerShip; }
@@ -2167,10 +2176,9 @@ class CTranscendenceModel
 		ALERROR InitBackground (CString *retsError = NULL);
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
-		inline void SetCrawlImage (DWORD dwImage) { m_dwCrawlImage = dwImage; }
+		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
-		inline void SetDefaultAdventure (DWORD dwAdventure) { m_dwAdventure = dwAdventure; }
 		inline void SetDefaultPlayerShipClass (DWORD dwClass) { m_dwPlayerShip = dwClass; }
 		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
 		inline void SetNoSound (bool bNoSound = true) { m_bNoSound = bNoSound; }
@@ -2226,7 +2234,6 @@ class CTranscendenceModel
 		int m_iLastHighScore;						//	Index to last high-score
 
 		GenomeTypes m_iPlayerGenome;				//	Default player genome
-		DWORD m_dwAdventure;						//	Default adventure
 		DWORD m_dwPlayerShip;						//	Default player ship
 
 		//	Docking state
@@ -2238,7 +2245,7 @@ class CTranscendenceModel
 		//	Temporaries
 		CDesignType *m_pResurrectType;				//	DesignType that will handle resurrect (or NULL)
 		CString m_sEpitaph;							//	Epitaph
-		DWORD m_dwCrawlImage;						//	For epilogue/prologue
+		CG16bitImage *m_pCrawlImage;				//	For epilogue/prologue
 		CString m_sCrawlText;						//	For epilogue/prologue
 
 		//	Stargate temporaries
@@ -2263,7 +2270,8 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 				m_Model(HI) { }
 
 		inline const CGameKeys &GetKeyMap (void) const { return m_Settings.GetKeyMap(); }
-		CTranscendenceModel &GetModel (void) { return m_Model; }
+		inline CTranscendenceModel &GetModel (void) { return m_Model; }
+		inline CMultiverseModel &GetMultiverse (void) { return m_Multiverse; }
 		inline bool GetOptionBoolean (int iOption) { return m_Settings.GetBoolean(iOption); }
 		inline int GetOptionInteger (int iOption) { return m_Settings.GetInteger(iOption); }
 		inline CCloudService &GetService (void) { return m_Service; }
@@ -2294,10 +2302,16 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateEndGameStats,
 			};
 
+		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
+		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+
 		States m_iState;
-		CGameSettings m_Settings;
-		CCloudService m_Service;
 		CTranscendenceModel m_Model;
+
+		CCloudService m_Service;
+		CMultiverseModel m_Multiverse;
+
+		CGameSettings m_Settings;
 	};
 
 //	Utility functions
@@ -2335,11 +2349,6 @@ inline CString CTranscendenceWnd::ComposePlayerNameString (const CString &sStrin
 	return ::ComposePlayerNameString(sString, g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome(), pArgs);
 	}
 
-inline DWORD CTranscendenceWnd::GetAdventure (void)
-	{
-	return m_pTC->GetModel().GetDefaultAdventure(); 
-	}
-
 inline bool CTranscendenceWnd::GetDebugGame (void) 
 	{
 	return m_pTC->GetModel().GetDebugMode(); 
@@ -2373,11 +2382,6 @@ inline DWORD CTranscendenceWnd::GetPlayerShip (void)
 inline int CTranscendenceWnd::GetSoundVolumeOption (void)
 	{
 	return m_pTC->GetOptionInteger(CGameSettings::soundVolume);
-	}
-
-inline void CTranscendenceWnd::SetAdventure (DWORD dwAdventure)
-	{
-	m_pTC->GetModel().SetDefaultAdventure(dwAdventure);
 	}
 
 #include "BackgroundTasks.h"

@@ -544,19 +544,22 @@ void GetImageDescFromList (CCodeChain &CC, ICCItem *pList, CG16bitImage **retpBi
 	retrcRect->bottom = retrcRect->top + pList->GetElement(4)->GetIntegerValue();
 	}
 
-CItem GetItemArg (CCodeChain &CC, ICCItem *pArg)
+CItem GetItemFromArg (CCodeChain &CC, ICCItem *pArg)
 
-//	GetItemArg
+//	GetItemFromArg
 //
-//	Arg can be an item list cursor or an item
+//	Arg can be an UNID or an item
 
 	{
 	if (pArg->IsList())
 		return CreateItemFromList(CC, pArg);
 	else if (pArg->IsInteger())
 		{
-		CItemListManipulator *pItemList = (CItemListManipulator *)pArg->GetIntegerValue();
-		return pItemList->GetItemAtCursor();
+		CItemType *pType = g_pUniverse->FindItemType(pArg->GetIntegerValue());
+		if (pType == NULL)
+			return CItem();
+
+		return CItem(pType, 1);
 		}
 	else
 		return CItem();

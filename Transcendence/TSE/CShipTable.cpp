@@ -35,6 +35,7 @@ class CLevelTableOfShipGenerators : public IShipGenerator
 	{
 	public:
 		virtual ~CLevelTableOfShipGenerators (void);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -57,6 +58,7 @@ class CLevelTableOfShipGenerators : public IShipGenerator
 class CLookupShipTable : public IShipGenerator
 	{
 	public:
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -75,6 +77,7 @@ class CSingleShip : public IShipGenerator
 	public:
 		CSingleShip (void);
 		virtual ~CSingleShip (void);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -111,6 +114,7 @@ class CTableOfShipGenerators : public IShipGenerator
 	public:
 		CTableOfShipGenerators (void) : m_iTotalChance(0) { }
 		virtual ~CTableOfShipGenerators (void);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -133,6 +137,7 @@ class CGroupOfShipGenerators : public IShipGenerator
 	public:
 		CGroupOfShipGenerators (void) : m_Table(NULL) { }
 		virtual ~CGroupOfShipGenerators (void);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
@@ -291,6 +296,20 @@ CLevelTableOfShipGenerators::~CLevelTableOfShipGenerators (void)
 			delete m_Table[i].pEntry;
 	}
 
+void CLevelTableOfShipGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by the table
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		if (m_Table[i].pEntry)
+			m_Table[i].pEntry->AddTypesUsed(retTypesUsed);
+	}
+
 void CLevelTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 
 //	CreateShips
@@ -409,6 +428,17 @@ ALERROR CLevelTableOfShipGenerators::ValidateForRandomEncounter (void)
 
 //	CLookupShipTable ----------------------------------------------------------
 
+void CLookupShipTable::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by the table
+
+	{
+	if (m_pTable)
+		m_pTable->AddTypesUsed(retTypesUsed);
+	}
+
 void CLookupShipTable::CreateShips (SShipCreateCtx &Ctx)
 
 //	CreateShip
@@ -434,11 +464,15 @@ ALERROR CLookupShipTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 //	Load from XML
 
 	{
+	ALERROR error;
+
 	m_Count.LoadFromXML(pDesc->GetAttribute(COUNT_ATTRIB));
 	if (m_Count.IsEmpty())
 		m_Count.SetConstant(1);
 
-	m_pTable.LoadUNID(Ctx, pDesc->GetAttribute(TABLE_ATTRIB));
+	if (error = m_pTable.LoadUNID(Ctx, pDesc->GetAttribute(TABLE_ATTRIB)))
+		return error;
+
 	if (m_pTable.GetUNID() == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<Lookup> element missing table attribute."));
@@ -488,6 +522,22 @@ CSingleShip::~CSingleShip (void)
 
 	if (m_pOnCreate)
 		m_pOnCreate->Discard(&g_pUniverse->GetCC());
+	}
+
+void CSingleShip::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by the table
+
+	{
+	retTypesUsed->SetAt(m_pShipClass->GetUNID(), true);
+
+	if (m_pItems)
+		m_pItems->AddTypesUsed(retTypesUsed);
+
+	if (m_pEscorts)
+		m_pEscorts->AddTypesUsed(retTypesUsed);
 	}
 
 void CSingleShip::CreateShip (SShipCreateCtx &Ctx,
@@ -555,7 +605,7 @@ void CSingleShip::CreateShip (SShipCreateCtx &Ctx,
 	IShipController *pController = ::CreateShipController(m_sController);
 	if (pController == NULL)
 		{
-		kernelDebugLogMessage("Cannot create ship %x; invalid controller: %s", dwClass, m_sController.GetASCIIZPointer());
+		kernelDebugLogMessage("Cannot create ship %x; invalid controller: %s", dwClass, m_sController);
 		if (retpShip)
 			*retpShip = NULL;
 		return;
@@ -727,9 +777,14 @@ ALERROR CSingleShip::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Load references to other design elements
 
-	m_pShipClass.LoadUNID(Ctx, pDesc->GetAttribute(CLASS_ATTRIB));
-	m_pSovereign.LoadUNID(Ctx, pDesc->GetAttribute(SOVEREIGN_ATTRIB));
-	m_pOverride.LoadUNID(Ctx, pDesc->GetAttribute(EVENT_HANDLER_ATTRIB));
+	if (error = m_pShipClass.LoadUNID(Ctx, pDesc->GetAttribute(CLASS_ATTRIB)))
+		return error;
+
+	if (error = m_pSovereign.LoadUNID(Ctx, pDesc->GetAttribute(SOVEREIGN_ATTRIB)))
+		return error;
+
+	if (error = m_pOverride.LoadUNID(Ctx, pDesc->GetAttribute(EVENT_HANDLER_ATTRIB)))
+		return error;
 
 	//	Load OnCreate code
 
@@ -852,6 +907,20 @@ CTableOfShipGenerators::~CTableOfShipGenerators (void)
 			delete m_Table[i].pEntry;
 	}
 
+void CTableOfShipGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by the table
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		if (m_Table[i].pEntry)
+			m_Table[i].pEntry->AddTypesUsed(retTypesUsed);
+	}
+
 void CTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 
 //	CreateShips
@@ -969,6 +1038,20 @@ CGroupOfShipGenerators::~CGroupOfShipGenerators (void)
 
 		delete [] m_Table;
 		}
+	}
+
+void CGroupOfShipGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by the table
+
+	{
+	int i;
+
+	for (i = 0; i < m_iTableCount; i++)
+		if (m_Table[i].pEntry)
+			m_Table[i].pEntry->AddTypesUsed(retTypesUsed);
 	}
 
 void CGroupOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)

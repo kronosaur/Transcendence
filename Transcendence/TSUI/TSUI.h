@@ -44,7 +44,7 @@ class IHICommand
 		virtual ~IHICommand (void) { }
 
 		inline void HICleanUp (void) { OnCleanUp(); }
-		inline void HICommand (const CString &sCmd, void *pData = NULL) { OnCommand(sCmd, pData); }
+		inline ALERROR HICommand (const CString &sCmd, void *pData = NULL) { return OnCommand(sCmd, pData); }
 		inline CString HIGetPropertyString (const CString &sProperty) { return OnGetPropertyString(sProperty); }
 		ALERROR HIInit (CString *retsError) { return OnInit(retsError); }
 		inline void HISetProperty (const CString &sProperty, const CString &sValue) { OnSetProperty(sProperty, sValue); }
@@ -113,7 +113,7 @@ class IHISession : public IHICommand, private IAniCommand
 
 		inline void HIAnimate (CG16bitImage &Screen, bool bTopMost) { OnAnimate(Screen, bTopMost); }
 		void HIChar (char chChar, DWORD dwKeyData);
-		inline CReanimator &HIGetReanimator (void) { return m_Reanimator; }
+		inline CReanimator &HIGetReanimator (void) { return GetReanimator(); }
 		inline void HIInvalidate (const RECT &rcRect);
 		inline void HIInvalidate (void);
 		void HIKeyDown (int iVirtKey, DWORD dwKeyData);
@@ -165,6 +165,7 @@ class IHISession : public IHICommand, private IAniCommand
 			CString sEvent;
 			};
 
+		virtual CReanimator &GetReanimator (void) { return m_Reanimator; }
 		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { DefaultOnAnimate(Screen, bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { }
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { }
@@ -191,7 +192,7 @@ class IHISession : public IHICommand, private IAniCommand
 		void DefaultOnAnimate (CG16bitImage &Screen, bool bTopMost);
 
 		bool m_bNoCursor;						//	If TRUE, we hide the cursor when we show the session.
-		bool m_bTransparent;					//	If TRUE, session below this one show through.
+		bool m_bTransparent;					//	If TRUE, session below this one shows through.
 		CReanimator m_Reanimator;
 	};
 
@@ -221,7 +222,7 @@ class CBackgroundProcessor : public ITaskProcessor
 		void AddTask (IHITask *pTask, IHICommand *pListener = NULL, const CString &sCmd = NULL_STR);
 		void CleanUp (void);
 		ALERROR GetLastResult (CString *retsResult);
-		int GetProgress (CString *retsActivity);
+		int GetProgress (CString *retsActivity = NULL);
 		ALERROR Init (HWND hWnd);
 		void ListenerDestroyed (IHICommand *pListener);
 		void OnTaskComplete (LPARAM pData);
@@ -592,8 +593,9 @@ class CHumanInterface
 		inline CScreenMgr &GetScreenMgr (void) { return m_ScreenMgr; }
 		inline IHISession *GetSession (void) { return m_pCurSession; }
 		inline CSoundMgr &GetSoundMgr (void) { return m_SoundMgr; }
+		IHISession *GetTopSession (bool bNonTransparentOnly = true);
 		inline const CVisualPalette &GetVisuals (void) { return m_Visuals; }
-		inline void HICommand (const CString &sCmd, void *pData = NULL) { m_pController->HICommand(sCmd, pData); }
+		inline ALERROR HICommand (const CString &sCmd, void *pData = NULL) { return m_pController->HICommand(sCmd, pData); }
 		void HIPostCommand (const CString &sCmd, void *pData = NULL);
 		ALERROR InitCodeChainPrimitives (CCodeChain &CC);
 		inline bool IsWindowedMode (void) const { return m_Options.m_bWindowedMode; }
@@ -675,7 +677,6 @@ extern CHumanInterface *g_pHI;
 
 #include "CloudInterface.h"
 #include "Painters.h"
-#include "Storage.h"
 #include "UIHelpers.h"
 
 //	Inlines

@@ -35,7 +35,7 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (iSystemSample == 0)
 		iSystemSample = DEFAULT_SYSTEM_SAMPLE;
 
-	int iSystemUpdateTime = 100;
+	int iSystemUpdateTime = 1000;
 
 	//	Generate systems for multiple games
 
@@ -67,7 +67,6 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			Universe.UpdateExtended();
 			Universe.GarbageCollectLibraryBitmaps();
-			Universe.LoadLibraryBitmaps();
 
 			//	Update for a while
 

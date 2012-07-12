@@ -69,7 +69,7 @@ ALERROR CDynamicDesignTable::Compile (SEntry *pEntry, CDesignType **retpType, CS
 	return NOERROR;
 	}
 
-ALERROR CDynamicDesignTable::DefineType (SExtensionDesc *pExtension, DWORD dwUNID, const CString &sSource, CDesignType **retpType, CString *retsError)
+ALERROR CDynamicDesignTable::DefineType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, CDesignType **retpType, CString *retsError)
 
 //	DefineType
 //
@@ -140,7 +140,10 @@ void CDynamicDesignTable::ReadFromStream (SUniverseLoadCtx &Ctx)
 
 		DWORD dwExtension;
 		Ctx.pStream->Read((char *)&dwExtension, sizeof(DWORD));
-		pEntry->pExtension = g_pUniverse->FindExtensionDesc(dwExtension);
+
+		if (!g_pUniverse->FindExtension(dwExtension, 0, CExtension::folderUnknown, &pEntry->pExtension))
+			//	LATER: Need to return error
+			pEntry->pExtension = NULL;
 
 		pEntry->sSource.ReadFromStream(Ctx.pStream);
 
@@ -177,7 +180,7 @@ void CDynamicDesignTable::WriteToStream (IWriteStream *pStream)
 
 		pStream->Write((char *)&pEntry->dwUNID, sizeof(DWORD));
 
-		dwSave = (pEntry->pExtension ? pEntry->pExtension->dwUNID : 0);
+		dwSave = (pEntry->pExtension ? pEntry->pExtension->GetUNID() : 0);
 		pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 		pEntry->sSource.WriteToStream(pStream);

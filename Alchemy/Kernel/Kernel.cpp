@@ -6,6 +6,7 @@
 #include "KernelObjID.h"
 
 #include <process.h>
+#include "eh.h"
 
 long g_iGlobalInit = 0;
 DWORD g_dwAPIFlags = 0;
@@ -24,6 +25,7 @@ struct THREADCTX
 
 void InitAPIFlags (void);
 DWORD WINAPI kernelThreadProc (LPVOID pData);
+void kernelHandleWin32Exception (unsigned code, EXCEPTION_POINTERS* info);
 
 BOOL kernelInit (DWORD dwFlags)
 
@@ -69,6 +71,10 @@ BOOL kernelInit (DWORD dwFlags)
 			::WSAStartup(MAKEWORD(1,1), &wsaData);
 			}
 		}
+
+	//	Install a Win32 exception handler
+
+	_set_se_translator(kernelHandleWin32Exception);
 
 	//	Initialize random number generator. This is
 	//	done for each thread because we link with the multi-threaded
@@ -172,6 +178,19 @@ void kernelClearDebugLog (void)
 	kernelSetDebugLog(NULL);
 	}
 
+CString kernelGetSessionDebugLog (void)
+
+//	kernetGetSessionDebugLog
+//
+//	Returns all of the logged entries since the start of the session.
+
+	{
+	if (g_pDebugLog == NULL)
+		return NULL_STR;
+
+	return g_pDebugLog->GetSessionLog();
+	}
+
 ALERROR kernelSetDebugLog (const CString &sFilespec, bool bAppend)
 
 //	kernelSetDebugLog
@@ -224,6 +243,10 @@ ALERROR kernelSetDebugLog (CTextFileLog *pLog, bool bAppend, bool bFreeLog)
 
 		pLog->LogOutput(ILOG_FLAG_TIMEDATE, "--------------------------------------------------------------------------------");
 		pLog->LogOutput(ILOG_FLAG_TIMEDATE, "Start logging session");
+
+		//	Skip the above marker when getting the session content
+
+		pLog->SetSessionStart();
 		}
 
 	LeaveCriticalSection(&g_csKernel);
@@ -242,26 +265,12 @@ void kernelDebugLogMessage (char *pszLine, ...)
 
 	if (g_pDebugLog)
 		{
-		char *pArgs;
+		CString sParsedLine;
 
-		char szBuffer[4096];
-		char *pBuffer = szBuffer;
+		char *pArgs = (char *)&pszLine + sizeof(pszLine);
+		sParsedLine = strPattern(CString(pszLine, ::strlen(pszLine), TRUE), (void **)pArgs);
 
-		int iLen = ::strlen(pszLine);
-		char *pAllocBuffer = NULL;
-		if (iLen >= sizeof(szBuffer))
-			{
-			pAllocBuffer = new char [iLen * 2];
-			pBuffer = pAllocBuffer;
-			}
-
-		pArgs = (char *)&pszLine + sizeof(pszLine);
-		wvsprintf(pBuffer, pszLine, pArgs);
-
-		g_pDebugLog->LogOutput(ILOG_FLAG_TIMEDATE, pBuffer);
-
-		if (pAllocBuffer)
-			delete pAllocBuffer;
+		g_pDebugLog->LogOutput(ILOG_FLAG_TIMEDATE, sParsedLine);
 		}
 
 	LeaveCriticalSection(&g_csKernel);
@@ -308,7 +317,8 @@ DWORD WINAPI kernelThreadProc (LPVOID pData)
 	MemFree(pCtx);
 
 	kernelInit();
-	DWORD dwResult = pfStart(pUserData);
+	DWORD dwResult = 0;
+	dwResult = pfStart(pUserData);
 	kernelCleanUp();
 
 	return dwResult;
@@ -316,3 +326,8 @@ DWORD WINAPI kernelThreadProc (LPVOID pData)
 
 DWORD sysGetVersion (void)
 	{ return 0x00060002; }
+
+void kernelHandleWin32Exception (unsigned code, EXCEPTION_POINTERS* info)
+	{
+	throw CException(ERR_WIN32_EXCEPTION);
+	}

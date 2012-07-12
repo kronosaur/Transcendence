@@ -112,6 +112,16 @@ bool CAutoDefenseClass::GetReferenceDamageType (CItemCtx &Ctx, int iVariant, Dam
 		return false;
 	}
 
+void CAutoDefenseClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds types used by this class
+
+	{
+	retTypesUsed->SetAt(m_pWeapon.GetUNID(), true);
+	}
+
 void CAutoDefenseClass::Update (CInstalledDevice *pDevice, 
 								CSpaceObject *pSource, 
 								int iTick,
@@ -244,13 +254,15 @@ ALERROR CAutoDefenseClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 //	Load the class
 
 	{
+	ALERROR error;
 	CAutoDefenseClass *pDevice;
 
 	pDevice = new CAutoDefenseClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	int iFireRate = pDesc->GetAttributeInteger(FIRE_RATE_ATTRIB);
 	if (iFireRate == 0)
@@ -259,7 +271,8 @@ ALERROR CAutoDefenseClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 		iFireRate = 15;
 
 	pDevice->m_iRechargeTicks = (int)((iFireRate / STD_SECONDS_PER_UPDATE) + 0.5);
-	pDevice->m_pWeapon.LoadUNID(Ctx, pDesc->GetAttribute(WEAPON_ATTRIB));
+	if (error = pDevice->m_pWeapon.LoadUNID(Ctx, pDesc->GetAttribute(WEAPON_ATTRIB)))
+		return error;
 
 	//	Targeting. If we have a targetCriteria attribute then we use
 	//	this to pick a target

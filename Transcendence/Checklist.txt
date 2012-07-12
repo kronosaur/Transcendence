@@ -2,15 +2,18 @@ RELEASE
 -------------------------------------------------------------------------------
 
 [ ] Set version number in resource file
+[ ] Set version number in TransData and TransCompiler, if necessary
 [ ] Make sure new version is accepted by extensions (Utilities.cpp, LoadExtensionVersion)
 [ ] Make sure version number is set properly in Transcendence.xml
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (CGameFile.cpp)
-[ ] Build for release mode
+[ ] Build all for release mode
+[ ] Build tdb with /digest
+[ ] Add digest to CExtensionCollection.cpp
+[ ] Rebuild
 [ ] Sign executables (signall.bat)
-[ ] Build tdb
-[ ] Test with tdb
+[ ] Test with tdb (/useTDB)
 
 [ ] Label source safe
 [ ] Archive release

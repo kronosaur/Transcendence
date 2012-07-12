@@ -53,6 +53,8 @@ CG16bitImage *CObjectImage::CreateCopy (CString *retsError)
 //	CreateCopy
 //
 //	Creates a copy of the image. Caller must manually free the image when done.
+//
+//	NOTE: This is safe to call even if we have not bound.
 
 	{
 	//	If we have the image, the we need to make a copy
@@ -68,15 +70,7 @@ CG16bitImage *CObjectImage::CreateCopy (CString *retsError)
 
 	//	Otherwise, we load a copy
 
-	CResourceDb ResDb(m_sResourceDb, NULL, !strEquals(m_sResourceDb, g_pUniverse->GetResourceDb()));
-	if (ResDb.Open(DFOPEN_FLAG_READ_ONLY) != NOERROR)
-		{
-		if (retsError)
-			*retsError = strPatternSubst(CONSTLIT("Unable to open resource db: '%s'"), m_sResourceDb);
-		return NULL;
-		}
-
-	CG16bitImage *pResult = GetImage(ResDb, retsError);
+	CG16bitImage *pResult = GetImage(0, retsError);
 	m_pBitmap = NULL;	//	Clear out because we don't keep a copy
 
 	return pResult;
@@ -107,32 +101,42 @@ ALERROR CObjectImage::Exists (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
-CG16bitImage *CObjectImage::GetImage (CString *retsError)
+CG16bitImage *CObjectImage::GetImage (const CString &sLoadReason, CString *retsError)
 
 //	GetImage
 //
 //	Returns the image
 
 	{
-	//	If we have the image, we're done
+	try
+		{
+		//	If we have the image, we're done
 
-	if (m_pBitmap)
-		return m_pBitmap;
+		if (m_pBitmap)
+			return m_pBitmap;
 
-	//	Open the database
+		//	Open the database
 
-	CResourceDb ResDb(m_sResourceDb, NULL, !strEquals(m_sResourceDb, g_pUniverse->GetResourceDb()));
-	if (ResDb.Open(DFOPEN_FLAG_READ_ONLY) != NOERROR)
+		CResourceDb ResDb(m_sResourceDb, !strEquals(m_sResourceDb, g_pUniverse->GetResourceDb()));
+		if (ResDb.Open(DFOPEN_FLAG_READ_ONLY) != NOERROR)
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Unable to open resource db: '%s'"), m_sResourceDb);
+			return NULL;
+			}
+
+		return GetImage(ResDb, sLoadReason, retsError);
+		}
+	catch (...)
 		{
 		if (retsError)
-			*retsError = strPatternSubst(CONSTLIT("Unable to open resource db: '%s'"), m_sResourceDb);
+			*retsError = strPatternSubst(CONSTLIT("Crash loading resource db: %s"), m_sResourceDb);
+
 		return NULL;
 		}
-
-	return GetImage(ResDb, retsError);
 	}
 
-CG16bitImage *CObjectImage::GetImage (CResourceDb &ResDb, CString *retsError)
+CG16bitImage *CObjectImage::GetImage (CResourceDb &ResDb, const CString &sLoadReason, CString *retsError)
 
 //	GetImage
 //
@@ -145,6 +149,12 @@ CG16bitImage *CObjectImage::GetImage (CResourceDb &ResDb, CString *retsError)
 
 	if (m_pBitmap)
 		return m_pBitmap;
+
+	//	If necessary we log that we had to load an image (we generally do this
+	//	to debug issues with loading images in the middle of play).
+
+	if (g_pUniverse->InDebugMode() && g_pUniverse->LogImageLoad())
+		kernelDebugLogMessage("Loading image %s for %s.", m_sBitmap, sLoadReason);
 
 	//	Load the images
 
@@ -236,7 +246,7 @@ ALERROR CObjectImage::Lock (SDesignLoadCtx &Ctx)
 	//	assume that Ctx has the proper resource database. Thus
 	//	we have to open it ourselves.
 
-	CG16bitImage *pImage = GetImage(&Ctx.sError);
+	CG16bitImage *pImage = GetImage(0, &Ctx.sError);
 	if (pImage == NULL)
 		return ERR_FAIL;
 

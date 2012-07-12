@@ -21,7 +21,7 @@
 #define REFLECT_ATTRIB							CONSTLIT("reflect")
 #define REGEN_ATTRIB							CONSTLIT("regen")
 #define REGEN_HP_ATTRIB							CONSTLIT("regenHP")
-#define REGEN_ADJ_PER_CHARGE_ATTRIB				CONSTLIT("regenHPBonusPer10Charge")
+#define REGEN_ADJ_PER_CHARGE_ATTRIB				CONSTLIT("regenHPBonusPerCharge")
 #define REGEN_TIME_ATTRIB						CONSTLIT("regenTime")
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
 
@@ -332,7 +332,7 @@ int CShieldClass::CalcBalance (void)
 	//	Compute the regen HP for each 180 ticks
 	//	+1 for each 1% above standard rate
 
-	int iRegen = (m_iRegenRate > 0 ? (m_iRegenHP * 180 / m_iRegenRate) : 0);
+	int iRegen = (int)m_Regen.GetHPPer180();
 	iDiff = (iRegen - pStd->iRegen);
 	if (iDiff > 0)
 		iBalance += iDiff * 100 / pStd->iHP;
@@ -437,7 +437,7 @@ int CShieldClass::CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSourc
 	//	If we're regenerating shields, then we consume more power
 	//	otherwise, we only consume half power
 
-	if (m_iRegenHP > 0 && pDevice->IsRegenerating())
+	if ((!m_Regen.IsEmpty() || m_iExtraRegenPerCharge > 0) && pDevice->IsRegenerating())
 		iPower += m_iPowerUse;
 	else
 		iPower += m_iIdlePowerUse;
@@ -470,7 +470,8 @@ ALERROR CShieldClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 	if (pShield == NULL)
 		return ERR_MEMORY;
 
-	pShield->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pShield->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	pShield->m_iHitPoints = pDesc->GetAttributeInteger(HIT_POINTS_ATTRIB);
 	pShield->m_iArmorShield = pDesc->GetAttributeInteger(ARMOR_SHIELD_ATTRIB);
@@ -483,47 +484,26 @@ ALERROR CShieldClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 
 	//	Load regen value
 
-	int iRegen;
-	if (pDesc->FindAttributeInteger(REGEN_ATTRIB, &iRegen))
+	CString sRegen;
+	if (pDesc->FindAttribute(REGEN_ATTRIB, &sRegen))
 		{
-		//	Regen specified in hp per 180 ticks. We need to convert that to RegenHP and RegenRate
-		
-		if ((iRegen % 12) == 0)
-			pShield->m_iRegenRate = 15;
-		else if ((iRegen % 10) == 0)
-			pShield->m_iRegenRate = 18;
-		else if ((iRegen % 9) == 0)
-			pShield->m_iRegenRate = 20;
-		else if ((iRegen % 6) == 0)
-			pShield->m_iRegenRate = 30;
-		else if ((iRegen % 5) == 0)
-			pShield->m_iRegenRate = 36;
-		else if ((iRegen % 4) == 0)
-			pShield->m_iRegenRate = 45;
-		else if ((iRegen % 3) == 0)
-			pShield->m_iRegenRate = 60;
-		else
-			pShield->m_iRegenRate = 90;
-
-		pShield->m_iRegenHP = iRegen * pShield->m_iRegenRate / 180;
+		if (error = pShield->m_Regen.InitFromRegenString(Ctx, sRegen))
+			return error;
 
 		int iDepletion;
 		if (pDesc->FindAttributeInteger(DEPLETION_DELAY_ATTRIB, &iDepletion))
-			pShield->m_iDepletionDelay = iDepletion / pShield->m_iRegenRate;
+			pShield->m_iDepletionTicks = Max(1, iDepletion);
 		else
-			pShield->m_iDepletionDelay = 360 / pShield->m_iRegenRate;
+			pShield->m_iDepletionTicks = 360;
 		}
 	else
 		{
-		pShield->m_iRegenHP = pDesc->GetAttributeInteger(REGEN_HP_ATTRIB);
-		pShield->m_iRegenRate = (int)((pDesc->GetAttributeInteger(REGEN_TIME_ATTRIB) / STD_SECONDS_PER_UPDATE) + 0.5);
-		pShield->m_iDepletionDelay = pDesc->GetAttributeInteger(DEPLETION_DELAY_ATTRIB);
+		int iRegenTime = pDesc->GetAttributeInteger(REGEN_TIME_ATTRIB);
 
-		if (pShield->m_iRegenRate == 0)
-			{
-			pShield->m_iRegenRate = 15;
-			pShield->m_iRegenHP = 0;
-			}
+		if (error = pShield->m_Regen.InitFromRegenTimeAndHP(Ctx, iRegenTime, pDesc->GetAttributeInteger(REGEN_HP_ATTRIB)))
+			return error;
+
+		pShield->m_iDepletionTicks = pDesc->GetAttributeInteger(DEPLETION_DELAY_ATTRIB) * iRegenTime;
 		}
 
 	//	Load damage adjustment
@@ -605,12 +585,7 @@ bool CShieldClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt(::CalcEffectiveHP(GetLevel(), iHP, iHPbyDamageType));
 		}
 	else if (strEquals(sField, FIELD_REGEN))
-		{
-		if (m_iRegenRate == 0)
-			*retsValue = CONSTLIT("0");
-		else
-			*retsValue = strFromInt(m_iRegenHP * 180 / m_iRegenRate, TRUE);
-		}
+		*retsValue = strFromInt((int)m_Regen.GetHPPer180(), TRUE);
 	else if (strEquals(sField, FIELD_ADJUSTED_HP))
 		{
 		int iHP;
@@ -953,7 +928,6 @@ CString CShieldClass::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags)
 	int i;
 
 	CString sReference;
-	CString sRegeneration;
 	const CItemEnhancement &Mods = Ctx.GetMods();
 
 	//	Compute the strength string
@@ -963,22 +937,9 @@ CString CShieldClass::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags)
 
 	//	Compute the regeneration
 
-	if (m_iRegenHP > 0)
-		{
-		int iRate = (int)((10.0 * g_TicksPerSecond * m_iRegenHP / m_iRegenRate) + 0.5);
-		if (iRate == 0)
-			sRegeneration = CONSTLIT("<0.1 hp/sec");
-		else if ((iRate % 10) == 0)
-			sRegeneration = strPatternSubst(CONSTLIT("%d hp/sec"), iRate / 10);
-		else
-			sRegeneration = strPatternSubst(CONSTLIT("%d.%d hp/sec"), iRate / 10, iRate % 10);
-		}
-	else
-		sRegeneration = CONSTLIT("none");
-
 	sReference = strPatternSubst("%s — regen @ %s", 
 			GetReferencePower(Ctx),
-			sRegeneration);
+			m_Regen.GetReferenceRate(CONSTLIT("hp/sec")));
 
 	//	Reflection
 
@@ -1174,6 +1135,16 @@ CEffectCreator *CShieldClass::OnFindEffectCreator (const CString &sUNID)
 		}
 	}
 
+void CShieldClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds types used by this class
+
+	{
+	retTypesUsed->SetAt(m_pHitEffect.GetUNID(), true);
+	}
+
 void CShieldClass::OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList)
 
 //	OnInstall
@@ -1189,17 +1160,6 @@ void CShieldClass::OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, 
 
 	if (pSource->IsPlayer())
 		GetItemType()->SetKnown();
-	}
-
-void CShieldClass::OnLoadImages (void)
-
-//	OnLoadImages
-//
-//	Loads images used by shield
-
-	{
-	if (m_pHitEffect)
-		m_pHitEffect->LoadImages();
 	}
 
 void CShieldClass::OnMarkImages (void)
@@ -1238,7 +1198,7 @@ bool CShieldClass::RequiresItems (void)
 	//	Need to explicitly list superconducting coils as a required
 	//	item for these shields to function
 #else
-	return (m_iRegenHP == 0);
+	return m_Regen.IsEmpty();
 #endif
 	}
 
@@ -1263,7 +1223,7 @@ void CShieldClass::SetDepleted (CInstalledDevice *pDevice, CSpaceObject *pSource
 //	Makes shields depleted
 
 	{
-	pDevice->SetData((DWORD)(-m_iDepletionDelay));
+	pDevice->SetData((DWORD)(-m_iDepletionTicks));
 
 	//	Fire event (We don't fire the event if we're disabled because we
 	//	don't want something like the Invincible deflector to disable the ship
@@ -1290,77 +1250,82 @@ void CShieldClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, int
 //	Updates the shield
 
 	{
-	//	Regen
+	//	Initialize to not regenerating
 
-	if ((iTick % m_iRegenRate) == 0)
+	pDevice->SetRegenerating(false);
+
+	//	If we're not enabled then we drop shields
+
+	if (!pDevice->IsEnabled())
 		{
-		pDevice->SetRegenerating(false);
-
-		if (!pDevice->IsEnabled())
+		if (GetHPLeft(pDevice, 0))
 			{
 			//	Note: We don't call SetDepleted because we don't want to fire the OnShieldDown
 			//	event. If necessary, we should add an OnDeviceDisabled event.
 
 			SetHPLeft(pDevice, 0);
 			pSource->OnComponentChanged(comShields);
-			return;
 			}
 
-		//	If we're damaged, then there is a chance that we might be depleted
+		return;
+		}
 
-		if (pDevice->IsDamaged() || pDevice->IsDisrupted())
+	//	If we're damaged, then there is a chance that we might be depleted
+
+	if (pDevice->IsDamaged() || pDevice->IsDisrupted())
+		{
+		if ((iTick % 10) == 0 && mathRandom(1, 100) <= 5)
 			{
-			if (mathRandom(1, 100) <= 5)
-				{
-				Deplete(pDevice, pSource);
-				pSource->OnDeviceStatus(pDevice, failShieldFailure);
-				}
+			Deplete(pDevice, pSource);
+			pSource->OnDeviceStatus(pDevice, failShieldFailure);
 			}
+		}
 
-		//	Regenerate, if we do that sort of thing
+	//	If we regenerate then do so now.
 
-		if (m_iRegenHP > 0)
+	if (!m_Regen.IsEmpty())
+		{
+		//	If we're depleted, then we don't increase
+		//	HP (but we still set the regenerating flag
+		//	because we will consume power)
+
+		if (UpdateDepleted(pDevice))
+			pDevice->SetRegenerating(true);
+
+		//	Otherwise, see if need to regenerate
+
+		else
 			{
-			//	If we're depleted, then we don't increase
-			//	HP (but we still set the regenerating flag
-			//	because we will consume power)
+			int iMaxHP = GetMaxHP(pDevice, pSource);
+			int iHPLeft = GetHPLeft(pDevice, pSource);
 
-			if (UpdateDepleted(pDevice))
-				pDevice->SetRegenerating(true);
-
-			//	Otherwise, see if need to regenerate
-
-			else
+			if (iHPLeft != iMaxHP)
 				{
-				int iMaxHP = GetMaxHP(pDevice, pSource);
-				int iHPLeft = GetHPLeft(pDevice, pSource);
+				int iRegenHP = m_Regen.GetRegen(iTick);
 
-				if (iHPLeft != iMaxHP)
+				//	Figure out how much to regen
+
+				if (m_iExtraRegenPerCharge && ((iTick % 30) == 0))
 					{
-					//	Figure out how much to regen
+					int iCharges = pDevice->GetCharges(pSource);
+					int iExtra180 = (m_iExtraRegenPerCharge * iCharges);
+					int iExtra30 = iExtra180 / 6;
+					int iExtraRemainder = iExtra180 % 6;
 
-					int iRegenHP = m_iRegenHP;
-					if (m_iExtraRegenPerCharge)
-						{
-						int iCharges = pDevice->GetCharges(pSource);
-						int iExtra = (m_iExtraRegenPerCharge * iCharges) / 10;
-						int iRemainder = (m_iExtraRegenPerCharge * iCharges) % 10;
-
-						iRegenHP += iExtra;
-						if (mathRandom(1, 10) <= iRemainder)
-							iRegenHP += 1;
-						}
-
-					//	Regen
-
-					SetHPLeft(pDevice, min(iMaxHP, iHPLeft + iRegenHP));
-					pSource->OnComponentChanged(comShields);
-
-					//	Remember that we regenerated this turn (so that we can
-					//	consume power)
-
-					pDevice->SetRegenerating(true);
+					iRegenHP += iExtra30;
+					if (mathRandom(1, 6) <= iExtraRemainder)
+						iRegenHP += 1;
 					}
+
+				//	Regen
+
+				SetHPLeft(pDevice, min(iMaxHP, iHPLeft + iRegenHP));
+				pSource->OnComponentChanged(comShields);
+
+				//	Remember that we regenerated this turn (so that we can
+				//	consume power)
+
+				pDevice->SetRegenerating(true);
 				}
 			}
 		}

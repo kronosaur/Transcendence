@@ -696,21 +696,21 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 
 	for (i = 0; i < g_pUniverse->GetExtensionDescCount(); i++)
 		{
-		const SExtensionDesc *pExt = g_pUniverse->GetExtensionDesc(i);
-		if (!pExt->sName.IsBlank() && pExt->Credits.GetCount() > 0)
+		const CExtension *pExt = g_pUniverse->GetExtensionDesc(i);
+		if (!pExt->GetName().IsBlank() && pExt->GetCredits().GetCount() > 0)
 			{
 			//	See if we already have an extension with the same credits
 
 			SExtCredit *pFound = NULL;
 			for (j = 0; j < ExtCredit.GetCount() && pFound == NULL; j++)
 				{
-				if (ExtCredit[j].Credits.GetCount() == pExt->Credits.GetCount())
+				if (ExtCredit[j].Credits.GetCount() == pExt->GetCredits().GetCount())
 					{
 					int k;
 
 					bool bSame = true;
-					for (k = 0; k < pExt->Credits.GetCount() && bSame; k++)
-						if (!strEquals(ExtCredit[j].Credits[k], pExt->Credits[k]))
+					for (k = 0; k < pExt->GetCredits().GetCount() && bSame; k++)
+						if (!strEquals(ExtCredit[j].Credits[k], pExt->GetCredits()[k]))
 							bSame = false;
 
 					if (bSame)
@@ -727,11 +727,11 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 
 				bool bDuplicate = false;
 				for (j = 0; j < pFound->Extensions.GetCount() && !bDuplicate; j++)
-					if (strEquals(pFound->Extensions[j], pExt->sName))
+					if (strEquals(pFound->Extensions[j], pExt->GetName()))
 						bDuplicate = true;
 
 				if (!bDuplicate)
-					pFound->Extensions.Insert(strToLower(pExt->sName));
+					pFound->Extensions.Insert(strToLower(pExt->GetName()));
 				}
 
 			//	Otherwise, add the new entry
@@ -739,8 +739,8 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 			else
 				{
 				SExtCredit *pNew = ExtCredit.Insert();
-				pNew->Extensions.Insert(strToLower(pExt->sName));
-				pNew->Credits = pExt->Credits;
+				pNew->Extensions.Insert(strToLower(pExt->GetName()));
+				pNew->Credits = pExt->GetCredits();
 				}
 			}
 		}
@@ -915,9 +915,12 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 
 	//	Create the ships
 
+	g_pUniverse->SetLogImageLoad(false);
+
 	for (i = 0; i < iCount; i++)
 		{
 		CShip *pShip;
+
 		if (error = pSystem->CreateShip(pShipClass->GetUNID(),
 				NULL,
 				NULL,
@@ -928,7 +931,10 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 				NULL,
 				NULL,
 				&pShip))
+			{
+			g_pUniverse->SetLogImageLoad(true);
 			return error;
+			}
 
 		//	Override the controller
 
@@ -939,6 +945,8 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 
 		*retpShip = pShip;
 		}
+
+	g_pUniverse->SetLogImageLoad(true);
 
 	return NOERROR;
 	}
@@ -1317,7 +1325,7 @@ int CTranscendenceWnd::GetHighScoresPos (void)
 	return -1;
 	}
 
-void CTranscendenceWnd::OnAccountChanged (void)
+void CTranscendenceWnd::OnAccountChanged (const CMultiverseModel &Multiverse)
 
 //	OnAccountChanged
 //
@@ -1327,7 +1335,7 @@ void CTranscendenceWnd::OnAccountChanged (void)
 	switch (m_State)
 		{
 		case gsIntro:
-			SetAccountControls();
+			SetAccountControls(Multiverse);
 			break;
 		}
 	}
@@ -1916,7 +1924,7 @@ void CTranscendenceWnd::PaintOverwriteGameDlg (void)
 	PaintDlgButton(m_rcOverwriteGameCancel, STR_CANCEL);
 	}
 
-void CTranscendenceWnd::SetAccountControls (void)
+void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 
 //	SetAccountControls
 //
@@ -1926,39 +1934,41 @@ void CTranscendenceWnd::SetAccountControls (void)
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
-	CCloudService &Service = m_pTC->GetService();
 
 	//	Get the account state
 
-	bool bEnabled = Service.HasCapability(ICIService::loginUser);
-	bool bSignedIn = Service.HasCapability(ICIService::getUserProfile);
-
 	CString sUsername;
+	CMultiverseModel::EOnlineStates iState = Multiverse.GetOnlineState(&sUsername);
+
 	CString sStatus;
 	WORD wUsernameColor;
-	if (!bEnabled)
+	switch (iState)
 		{
-		sUsername = CONSTLIT("Offline");
-		sStatus = CONSTLIT("Transcendence Multiverse disabled");
-		wUsernameColor = VI.GetColor(colorTextDialogLabel);
-		}
-	else if (bSignedIn)
-		{
-		sUsername = Service.GetUsername();
-		sStatus = CONSTLIT("Signed in to the Transcendence Multiverse");
-		wUsernameColor = VI.GetColor(colorTextDialogInput);
-		}
-	else if (Service.HasCapability(ICIService::cachedUser))
-		{
-		sUsername = CONSTLIT("Offline");
-		sStatus = CONSTLIT("Click to sign in");
-		wUsernameColor = VI.GetColor(colorTextDialogLabel);
-		}
-	else
-		{
-		sUsername = CONSTLIT("Offline");
-		sStatus = CONSTLIT("Click to register a new account");
-		wUsernameColor = VI.GetColor(colorTextDialogLabel);
+		case CMultiverseModel::stateDisabled:
+			sUsername = CONSTLIT("Offline");
+			sStatus = CONSTLIT("Multiverse disabled");
+			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			break;
+
+		case CMultiverseModel::stateNoUser:
+			sUsername = CONSTLIT("Offline");
+			sStatus = CONSTLIT("Click to register a new account");
+			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			break;
+
+		case CMultiverseModel::stateOffline:
+			sUsername = CONSTLIT("Offline");
+			sStatus = CONSTLIT("Click to sign in");
+			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			break;
+
+		case CMultiverseModel::stateOnline:
+			sStatus = CONSTLIT("Signed in to the Multiverse");
+			wUsernameColor = VI.GetColor(colorTextDialogInput);
+			break;
+
+		default:
+			ASSERT(false);
 		}
 
 	//	Metrics
@@ -2002,7 +2012,7 @@ void CTranscendenceWnd::SetAccountControls (void)
 	//	Create a hot spot over the entire text region (so that the user can 
 	//	click on the username to sign in).
 
-	if (bEnabled && !bSignedIn)
+	if (iState == CMultiverseModel::stateNoUser || iState == CMultiverseModel::stateOffline)
 		{
 		IAnimatron *pButton;
 		VI.CreateHiddenButton(pRoot, CMD_ACCOUNT,
@@ -2041,7 +2051,7 @@ void CTranscendenceWnd::SetAccountControls (void)
 
 	//	If the user is signed in, add buttons to edit account and sign out.
 
-	if (bSignedIn)
+	if (iState == CMultiverseModel::stateOnline)
 		{
 		int x = ICON_WIDTH + PADDING_LEFT;
 
@@ -2539,7 +2549,7 @@ ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
 
 	SetMusicOption();
 	SetDebugOption();
-	SetAccountControls();
+	SetAccountControls(m_pTC->GetMultiverse());
 
 	//	Start
 

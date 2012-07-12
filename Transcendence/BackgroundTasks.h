@@ -43,6 +43,31 @@ class CInitModelTask : public IHITask
 		CTranscendenceModel &m_Model;
 	};
 
+class CLoadExtensionTask : public IHITask
+	{
+	public:
+		CLoadExtensionTask (CHumanInterface &HI, const CString &sFilespec) : IHITask(HI), m_sFilespec(sFilespec) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
+			{
+			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), new CString(strPatternSubst(CONSTLIT("Loading %s..."), pathGetFilename(m_sFilespec))));
+
+			ALERROR error = g_pUniverse->LoadNewExtension(m_sFilespec, retsResult);
+			if (error)
+				{
+				m_HI.HIPostCommand(CONSTLIT("serviceError"), new CString(*retsResult));
+				return ERR_FAIL;
+				}
+
+			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), NULL);
+			return NOERROR;
+			}
+
+	private:
+		CString m_sFilespec;
+	};
+
 class CLoadGameTask : public IHITask
 	{
 	public:
@@ -71,6 +96,32 @@ class CLoadGameWithSignInTask : public IHITask
 		CString m_sFilespec;
 	};
 
+class CLoadUserCollectionTask : public IHITask
+	{
+	public:
+		CLoadUserCollectionTask (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse) : IHITask(HI), m_Service(Service), m_Multiverse(Multiverse) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); }
+
+	private:
+		CCloudService &m_Service;
+		CMultiverseModel &m_Multiverse;
+	};
+
+class CPostCrashReportTask : public IHITask
+	{
+	public:
+		CPostCrashReportTask (CHumanInterface &HI, CCloudService &Service, const CString &sCrash) : IHITask(HI), m_Service(Service), m_sCrash(sCrash) { }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.PostCrashReport(pProcessor, m_sCrash, retsResult); }
+
+	private:
+		CCloudService &m_Service;
+		CString m_sCrash;
+	};
+
 class CPostRecordTask : public IHITask
 	{
 	public:
@@ -85,17 +136,16 @@ class CPostRecordTask : public IHITask
 		CGameStats m_Stats;
 	};
 
-class CPostStatsTask : public IHITask
+class CProcessDownloadsTask : public IHITask
 	{
 	public:
-		CPostStatsTask (CHumanInterface &HI, CCloudService &Service, const CGameStats &Stats) : IHITask(HI), m_Service(Service), m_Stats(Stats) { }
+		CProcessDownloadsTask (CHumanInterface &HI, CCloudService &Service) : IHITask(HI), m_Service(Service) { }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.PostGameStats(pProcessor, m_Stats, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.ProcessDownloads(pProcessor, retsResult); }
 
 	private:
 		CCloudService &m_Service;
-		CGameStats m_Stats;
 	};
 
 class CRegisterUserTask : public IHITask

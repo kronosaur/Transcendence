@@ -10,7 +10,7 @@
 			name=				"DM600 disposable missile rack"
 			level=				"1"
 			value=				"360"
-			mass=				"1000"
+			mass=				"200"
 			frequency=			"uncommon"
 			attributes=			"Disposable; MajorItem; NAMI"
 
@@ -32,6 +32,7 @@
 				lifetime=			"120"
 				powerUse=			"2"
 				charges=			"true"
+				massBonusPerCharge=	"50" 
 
 				directional=		"true"
 				missileSpeed=		"40"
@@ -231,7 +232,7 @@
 			name=				"DM1500 disposable missile rack"
 			level=				"2"
 			value=				"1000"
-			mass=				"1200"
+			mass=				"200"
 			frequency=			"rare"
 			attributes=			"Disposable; MajorItem; NAMI"
 
@@ -253,6 +254,7 @@
 				lifetime=			"120"
 				powerUse=			"2"
 				charges=			"true"
+				massBonusPerCharge=	"60" 
 
 				directional=		"true"
 				missileSpeed=		"40"
@@ -1983,7 +1985,7 @@
 	<ItemType UNID="&itMakayevLauncher;"
 			name=				"Makayev launcher"
 			level=				"5"
-			value=				"1000"
+			value=				"5000"
 			mass=				"1000"
 			frequency=			"common"
 			attributes=			"MajorItem; Makayev"

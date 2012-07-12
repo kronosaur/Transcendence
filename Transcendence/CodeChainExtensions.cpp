@@ -64,7 +64,8 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_ADD_ACTION			14
 #define FN_SCR_EXIT_SCREEN			15
 
-ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
+ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -120,19 +121,23 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(scrExitScreen screen ['forceUndock])",
 			"i*",	PPFLAG_SIDEEFFECTS, },
 
-		{	"scrGetCounter",				fnScrGet,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
+		{	"scrGetCounter",				fnScrGetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetCounter screen)
 
-		{	"scrGetInputText",				fnScrGet,		FN_SCR_INPUT_TEXT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
+		{	"scrGetDesc",					fnScrGet,		FN_SCR_DESC,
+			"(scrGetDesc screen)",
+			"i",	0,	},
+
+		{	"scrGetInputText",				fnScrGetOld,		FN_SCR_INPUT_TEXT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrGetInputText screen) => string
 
 		{	"scrGetItem",					fnScrItem,		FN_SCR_GET_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrGetItem screen) => item
 
-		{	"scrGetListEntry",				fnScrGet,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
+		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetListEntry screen) -> entry
 
-		{	"scrIsFirstOnInit",				fnScrGet,		FN_SCR_IS_FIRST_ON_INIT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
+		{	"scrIsFirstOnInit",				fnScrGetOld,		FN_SCR_IS_FIRST_ON_INIT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrIsFirstOnInit screen) => True/Nil
 
 		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
@@ -974,9 +979,43 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 	return pResult;
 	}
 
-ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
+ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 //	fnScrGet
+//
+//	Sets screen data
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	//	Convert the first argument into a dock screen object
+
+	CDockScreen *pScreen = GetDockScreenArg(pArgs->GetElement(0));
+	if (pScreen == NULL)
+		return pCC->CreateError(CONSTLIT("Screen expected"), pArgs->GetElement(0));
+
+	//	Do the appropriate command
+
+	switch (dwData)
+		{
+		case FN_SCR_DESC:
+			{
+			const CString &sDesc = pScreen->GetDescription();
+			if (sDesc.IsBlank())
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sDesc);
+			}
+
+		default:
+			ASSERT(false);
+			return pCC->CreateNil();
+		}
+	}
+
+ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
+
+//	fnScrGetOld
 //
 //	Sets screen data
 //

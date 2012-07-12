@@ -98,7 +98,7 @@ void CFractureEffect::InitParticleArray (void)
 
 	//	Get the source image and metrics
 
-	CG16bitImage &Source = m_Image.GetImage();
+	CG16bitImage &Source = m_Image.GetImage(NULL_STR);
 	int xCenter, yCenter;
 	RECT rcSource = m_Image.GetImageRect(m_iImageTick, m_iImageRotation, &xCenter, &yCenter);
 
@@ -190,7 +190,7 @@ void CFractureEffect::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 		{
 		//	Get the source image and metrics
 
-		CG16bitImage &Source = m_Image.GetImage();
+		CG16bitImage &Source = m_Image.GetImage(NULL_STR);
 		//int xCenter, yCenter;
 		//RECT rcSource = m_Image.GetImageRect(m_iImageTick, m_iImageRotation, &xCenter, &yCenter);
 

@@ -94,7 +94,7 @@ bool CPlayerShipController::AreAllDevicesEnabled (void)
 	for (i = 0; i < m_pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = m_pShip->GetDevice(i);
-		if (pDevice && !pDevice->IsEmpty() && pDevice->CanBeDisabled())
+		if (pDevice && !pDevice->IsEmpty() && pDevice->CanBeDisabled(CItemCtx(m_pShip, pDevice)))
 			{
 			if (!pDevice->IsEnabled())
 				return false;
@@ -311,7 +311,7 @@ void CPlayerShipController::EnableAllDevices (bool bEnable)
 	for (i = 0; i < m_pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = m_pShip->GetDevice(i);
-		if (pDevice && !pDevice->IsEmpty() && pDevice->CanBeDisabled() && pDevice->IsEnabled() != bEnable)
+		if (pDevice && !pDevice->IsEmpty() && pDevice->CanBeDisabled(CItemCtx(m_pShip, pDevice)) && pDevice->IsEnabled() != bEnable)
 			{
 			m_pShip->EnableDevice(i, bEnable);
 
@@ -480,6 +480,60 @@ DWORD CPlayerShipController::GetCommsStatus (void)
 		}
 
 	return dwStatus;
+	}
+
+void CPlayerShipController::GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
+
+//	GetNearestTargets
+//
+//	Returns a list of nearest targets
+
+	{
+	int i;
+	CInstalledDevice *pDevice = ItemCtx.GetDevice();
+	CDeviceClass *pWeapon = ItemCtx.GetDeviceClass();
+
+	//	Get targets, if necessary
+
+	if (TargetingCtx.bRecalcTargets)
+		{
+		TargetingCtx.Targets.DeleteAll();
+
+		//	The principal target is always first.
+
+		CSpaceObject *pMainTarget = GetTarget(true);
+		if (pMainTarget)
+			TargetingCtx.Targets.Insert(pMainTarget);
+
+		//	Get other targets
+
+		int iMaxTargets = 10;
+		m_pShip->GetNearestVisibleEnemies(iMaxTargets,
+				MAX_AUTO_TARGET_DISTANCE,
+				&TargetingCtx.Targets,
+				pMainTarget,
+				FLAG_INCLUDE_NON_AGGRESSORS | FLAG_INCLUDE_STATIONS);
+
+		TargetingCtx.bRecalcTargets = false;
+		}
+
+	//	Now find a target for the given weapon.
+
+	for (i = 0; i < TargetingCtx.Targets.GetCount(); i++)
+		{
+		int iFireAngle;
+		if (pWeapon->IsWeaponAligned(m_pShip, pDevice, TargetingCtx.Targets[i], NULL, &iFireAngle))
+			{
+			*retpTarget = TargetingCtx.Targets[i];
+			*retiFireSolution = iFireAngle;
+			return;
+			}
+		}
+
+	//	If we get this far then no target found
+
+	*retpTarget = NULL;
+	*retiFireSolution = -1;
 	}
 
 bool CPlayerShipController::HasCommsTarget (void)
@@ -703,16 +757,22 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 	//	First ask the sender to translate the message
 
 	CString sID = GetMessageID(iMessage);
-	if (!sID.IsBlank())
-		bHandled = pSender->Translate(sID, &sMessage);
+
+	if (pSender)
+		{
+		if (!sID.IsBlank())
+			bHandled = pSender->Translate(sID, &sMessage);
+		else
+			bHandled = false;
+
+		//	If the sender did not handle it and if it is an older version, then use
+		//	the now deprecated <OnTranslateMessage>
+
+		if (!bHandled && pSender->GetVersion() < 3)
+			bHandled = pSender->FireOnTranslateMessage(sID, &sMessage);
+		}
 	else
 		bHandled = false;
-
-	//	If the sender did not handle it and if it is an older version, then use
-	//	the now deprecated <OnTranslateMessage>
-
-	if (!bHandled && pSender->GetVersion() < 3)
-		bHandled = pSender->FireOnTranslateMessage(sID, &sMessage);
 
 	//	If we got no translation, then see if we can ask the sovereign
 	//	to translate
@@ -1128,7 +1188,7 @@ bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
 		CItem &Item = List.GetItem(i);
 		CInstalledDevice *pDevice = m_pShip->FindDevice(Item);
 
-		if (pDevice && pDevice->CanBeDisabled())
+		if (pDevice && pDevice->CanBeDisabled(CItemCtx(m_pShip, pDevice)))
 			{
 			if (iDeviceIndex == 0)
 				{
@@ -1555,6 +1615,9 @@ void CPlayerShipController::SetFireMain (bool bFire)
 //	Fire main weapon
 
 	{
+	m_pShip->SetWeaponTriggered(devPrimaryWeapon, bFire);
+
+#if 0
 	int i;
 
 	//	Get the primary weapon
@@ -1584,6 +1647,7 @@ void CPlayerShipController::SetFireMain (bool bFire)
 				pDevice->SetFireAngle(-1);
 			}
 		}
+#endif
 	}
 
 void CPlayerShipController::SetFireMissile (bool bFire)
@@ -1593,6 +1657,9 @@ void CPlayerShipController::SetFireMissile (bool bFire)
 //	Fire launcher weapon
 
 	{
+	m_pShip->SetWeaponTriggered(devMissileWeapon, bFire);
+
+#if 0
 	int i;
 
 	//	Get the primary weapon
@@ -1622,6 +1689,7 @@ void CPlayerShipController::SetFireMissile (bool bFire)
 				pDevice->SetFireAngle(-1);
 			}
 		}
+#endif
 	}
 
 void CPlayerShipController::SetTarget (CSpaceObject *pTarget)
@@ -1827,12 +1895,6 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 
 	pOldShip->TrackFuel(false);
 
-	//	Free the new ship's controller
-
-	IShipController *pNewShipController = pNewShip->GetController();
-	if (pNewShipController)
-		delete pNewShipController;
-	
 	//	Now set this controller to drive the new ship. gPlayer and gPlayerShip
 	//	will be set inside of SetPlayer.
 

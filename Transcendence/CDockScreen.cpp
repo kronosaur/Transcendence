@@ -731,6 +731,19 @@ ICCItem *CDockScreen::GetCurrentListEntry (void)
 	return m_pItemListControl->GetEntryAtCursor();
 	}
 
+const CString &CDockScreen::GetDescription (void)
+
+//	GetDescription
+//
+//	Returns the screen description.
+
+	{
+	if (m_pFrameDesc == NULL)
+		return NULL_STR;
+
+	return m_pFrameDesc->GetText();
+	}
+
 CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
 
 //	GetDisplayCanvas
@@ -791,7 +804,7 @@ bool CDockScreen::EvalBool (const CString &sCode)
 	if (pResult->IsError())
 		{
 		SetDescription(pResult->GetStringValue());
-		kernelDebugLogMessage(pResult->GetStringValue().GetASCIIZPointer());
+		kernelDebugLogMessage(pResult->GetStringValue());
 		}
 
 	bool bResult = !pResult->IsNil();
@@ -848,7 +861,7 @@ CSpaceObject *CDockScreen::EvalListSource (const CString &sString)
 			CString sError = pResult->GetStringValue();
 
 			SetDescription(sError);
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 
 			Ctx.Discard(pResult);
 			return NULL;
@@ -906,7 +919,7 @@ CString CDockScreen::EvalString (const CString &sString, bool bPlain, bool *retb
 			CString sError = pResult->GetStringValue();
 
 			SetDescription(sError);
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 			if (retbError)
 				*retbError = true;
 			}
@@ -1151,7 +1164,7 @@ ALERROR CDockScreen::InitCustomList (void)
 		CString sError = pResult->GetStringValue();
 
 		SetDescription(sError);
-		kernelDebugLogMessage(sError.GetASCIIZPointer());
+		kernelDebugLogMessage(sError);
 
 		return NOERROR;
 		}
@@ -1386,7 +1399,7 @@ ALERROR CDockScreen::InitItemList (void)
 ALERROR CDockScreen::InitScreen (HWND hWnd, 
 								 RECT &rcRect, 
 								 CSpaceObject *pLocation, 
-								 SExtensionDesc *pExtension,
+								 CExtension *pExtension,
 								 CXMLElement *pDesc, 
 								 const CString &sPane,
 								 CString *retsPane,
@@ -1600,7 +1613,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue().GetASCIIZPointer());
+							kernelDebugLogMessage(pResult->GetStringValue());
 							}
 						Ctx.Discard(pResult);
 						break;
@@ -1643,7 +1656,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue().GetASCIIZPointer());
+							kernelDebugLogMessage(pResult->GetStringValue());
 							}
 
 						Ctx.Discard(pResult);
@@ -1675,7 +1688,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue().GetASCIIZPointer());
+							kernelDebugLogMessage(pResult->GetStringValue());
 							}
 
 						Ctx.Discard(pResult);
@@ -1720,7 +1733,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 						{
 						if (!bAnimateOnly)
 							{
-							kernelDebugLogMessage(pResult->GetStringValue().GetASCIIZPointer());
+							kernelDebugLogMessage(pResult->GetStringValue());
 							}
 						}
 
@@ -1856,7 +1869,7 @@ void CDockScreen::ShowPane (const CString &sName)
 		CString sError = strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName);
 		if (m_pCurrentPane)
 			SetDescription(sError);
-		kernelDebugLogMessage(sError.GetASCIIZPointer());
+		kernelDebugLogMessage(sError);
 		return;
 		}
 
@@ -1886,7 +1899,7 @@ void CDockScreen::ShowPane (const CString &sName)
 		sError = strPatternSubst(CONSTLIT("Pane %s: %s"), sName, sError);
 		if (m_pCurrentPane)
 			SetDescription(sError);
-		kernelDebugLogMessage(sError.GetASCIIZPointer());
+		kernelDebugLogMessage(sError);
 		return;
 		}
 

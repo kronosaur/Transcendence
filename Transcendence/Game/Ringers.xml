@@ -79,8 +79,11 @@
 			<Item				count="4d12"	item="&itEuropanIceMoss;" />
 			<Item				count="1d12"	item="&itEuropanIceVodka;" />
 
-			<Item chance="25"	count="1"		item="&itGemOfDespair;" />
-			<Item chance="25"	count="1"		item="&itGemOfContrition;" />
+			<Table>
+				<Null chance="57"/>
+				<RandomItem chance="37" count="1"	criteria="u +HaloGem;"	levelFrequency="----- -ccur"/>
+				<RandomItem chance="6"	count="2"	criteria="u +HaloGem;"	levelFrequency="----- -ccur"/>
+			</Table>
 
 			<Item chance="50"	count="1"		item="&itPlasmaTorch;" />
 		</Items>

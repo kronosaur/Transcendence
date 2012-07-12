@@ -48,9 +48,19 @@
 //	13: 1.08
 //		Flags in CUniverse
 //
+//	14: 1.08c
+//		dwRelease for extensions
+//		Save extension UNID instead of adventureDesc UNID
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
+
+struct SExtensionSaveDesc
+	{
+	DWORD dwUNID;
+	DWORD dwRelease;
+	};
 
 const DWORD UNIVERSE_VERSION_MARKER =					0xffffffff;
 
@@ -82,9 +92,10 @@ static CUniverse::IHost g_DefaultHost;
 CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_Sounds(FALSE, TRUE),
 		m_LevelEncounterTables(TRUE),
+		m_bBasicInit(false),
 
 		m_bRegistered(false),
-		m_iTick(0),
+		m_iTick(1),
 		m_pAdventure(NULL),
 		m_pPOV(NULL),
 		m_pPlayer(NULL),
@@ -96,7 +107,8 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 
 		m_pHost(&g_DefaultHost),
 		m_bDebugMode(false),
-		m_bNoSound(false)
+		m_bNoSound(false),
+		m_iLogImageLoad(0)
 
 //	CUniverse constructor
 
@@ -132,6 +144,30 @@ CUniverse::~CUniverse (void)
 	m_Design.CleanUp();
 
 	g_pUniverse = NULL;
+	}
+
+void CUniverse::AddSound (DWORD dwUNID, int iChannel)
+
+//	AddSound
+//
+//	Adds a sound to the design
+
+	{
+	if (m_pSoundMgr == NULL)
+		return;
+
+	//	If this UNID is already in the list, then delete it
+
+	int iOldChannel = FindSound(dwUNID);
+	if (iOldChannel != -1)
+		{
+		m_pSoundMgr->Delete(iOldChannel);
+		m_Sounds.RemoveEntry(iOldChannel, NULL);
+		}
+
+	//	Add the new one
+
+	m_Sounds.AddEntry((int)dwUNID, (CObject *)iChannel);
 	}
 
 ALERROR CUniverse::AddStarSystem (CTopologyNode *pTopology, CSystem *pSystem)
@@ -247,7 +283,7 @@ ALERROR CUniverse::CreateStarSystem (const CString &sNodeID, CSystem **retpSyste
 	CString sFirstNode = sNodeID;
 	if (sFirstNode.IsBlank())
 		{
-		sFirstNode = m_Design.GetTopologyDesc()->GetFirstNodeID();
+		sFirstNode = m_Design.GetStartingNodeID();
 
 		if (sFirstNode.IsBlank())
 			{
@@ -302,7 +338,12 @@ ALERROR CUniverse::CreateStarSystem (CTopologyNode *pTopology, CSystem **retpSys
 	//	Create the system
 
 	CString sError;
-	if (error = CSystem::CreateFromXML(this, pSystemType, pTopology, &pSystem, &sError, pStats))
+
+	SetLogImageLoad(false);
+	error = CSystem::CreateFromXML(this, pSystemType, pTopology, &pSystem, &sError, pStats);
+	SetLogImageLoad(true);
+
+	if (error)
 		{
 		if (retsError)
 			*retsError = strPatternSubst(CONSTLIT("Cannot create system %s: %s"), pTopology->GetID(), sError);
@@ -527,15 +568,9 @@ void CUniverse::GarbageCollectLibraryBitmaps (void)
 //	Garbage-collects any unused bitmaps
 
 	{
-	//	Mark all bitmaps currently in use
-
-	m_Design.ClearImageMarks();
-	if (m_pCurrentSystem)
-		m_pCurrentSystem->MarkImages();
-
-	//	Sweep
-
-	m_Design.SweepImages();
+	ClearLibraryBitmapMarks();
+	MarkLibraryBitmaps();
+	SweepLibraryBitmaps();
 	}
 
 void CUniverse::GenerateGameStats (CGameStats &Stats)
@@ -555,19 +590,27 @@ void CUniverse::GenerateGameStats (CGameStats &Stats)
 
 	for (i = 0; i < m_Design.GetExtensionCount(); i++)
 		{
-		SExtensionDesc *pExtension = m_Design.GetExtension(i);
-		if (pExtension->bEnabled)
-			{
-			CString sName = pExtension->sName;
-			if (sName.IsBlank())
-				sName = strPatternSubst(CONSTLIT("Extension %x"), pExtension->dwUNID);
+		CExtension *pExtension = m_Design.GetExtension(i);
 
-			if (pExtension->iType == extAdventure)
+		if (pExtension->GetType() != extBase)
+			{
+			CString sName = pExtension->GetName();
+
+			if (pExtension->GetType() == extAdventure)
 				Stats.Insert(CONSTLIT("Adventure"), sName);
 			else
 				Stats.Insert(sName, NULL_STR, CONSTLIT("extensions"));
 			}
 		}
+
+	//	Add registration status
+
+	if (IsRegistered())
+		Stats.Insert(CONSTLIT("Game"), CONSTLIT("Registered"));
+	else if (InDebugMode())
+		Stats.Insert(CONSTLIT("Game"), CONSTLIT("Debug"));
+	else
+		Stats.Insert(CONSTLIT("Game"), CONSTLIT("Unregistered"));
 	}
 
 void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
@@ -583,22 +626,23 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 	retList->DeleteAll();
 	for (i = 0; i < m_Design.GetExtensionCount(); i++)
 		{
-		SExtensionDesc *pExtension = m_Design.GetExtension(i);
-		if (pExtension->bEnabled)
-			{
-			//	Do not include the actual adventure
+		CExtension *pExtension = m_Design.GetExtension(i);
 
-			if (pExtension->iType == extAdventure)
-				NULL;
+		//	Do not include the actual adventure
 
-			//	Do not include extensions that are explicitly included by the
-			//	adventure;
+		if (pExtension->GetType() == extAdventure || pExtension->GetType() == extBase)
+			NULL;
 
-			//	Include other extensions
+		//	Do not include extensions that are explicitly included by the
+		//	adventure;
 
-			else
-				retList->Insert(pExtension->dwUNID);
-			}
+		else if (pExtension->GetType() == extLibrary)
+			NULL;
+
+		//	Include other extensions
+
+		else
+			retList->Insert(pExtension->GetUNID());
 		}
 	}
 
@@ -651,7 +695,7 @@ CTopologyNode *CUniverse::GetFirstTopologyNode (void)
 		sNodeID = pAdventure->GetStartingNodeID();
 
 	if (sNodeID.IsBlank())
-		sNodeID = m_Design.GetTopologyDesc()->GetFirstNodeID();
+		sNodeID = m_Design.GetStartingNodeID();
 
 	return FindTopologyNode(sNodeID);
 	}
@@ -791,6 +835,132 @@ DWORD CUniverse::GetSoundUNID (int iChannel)
 	return INVALID_UNID;
 	}
 
+ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
+
+//	Init
+//
+//	Initialize the universe according to the given settings. After this the
+//	universe is fully loaded and bound.
+//
+//	This may be called (almost) at any time to change initialization parameters
+//	(e.g., to change adventures or simply to reload the extensions directory.)
+
+	{
+	ALERROR error;
+
+	//	Boot up
+
+	if (!m_bBasicInit)
+		{
+		//	Initialize CodeChain
+
+		if (error = InitCodeChain())
+			{
+			*retsError = CONSTLIT("Unable to initialize CodeChain.");
+			return error;
+			}
+
+		//	Load local device storage
+
+		if (error = InitDeviceStorage(retsError))
+			return error;
+
+		m_bBasicInit = true;
+		}
+
+	//	Initialize some stuff
+
+	m_bDebugMode = Ctx.bDebugMode;
+
+	//	We only load adventure desc (no need to load the whole thing)
+
+	DWORD dwFlags = CExtensionCollection::FLAG_DESC_ONLY;
+
+	//	Debug mode
+
+	if (m_bDebugMode)
+		dwFlags |= CExtensionCollection::FLAG_DEBUG_MODE;
+
+	//	If requested we don't load resources
+
+	if (Ctx.bNoResources)
+		dwFlags |= CExtensionCollection::FLAG_NO_RESOURCES;
+
+	//	Load everything
+
+	if (error = m_Extensions.Load(Ctx.sFilespec, dwFlags, retsError))
+		return error;
+
+	//	Figure out the adventure to bind to.
+
+	if (Ctx.pAdventure == NULL && Ctx.dwAdventure)
+		{
+		//	Look for the adventure by UNID.
+
+		DWORD dwFindFlags = dwFlags | CExtensionCollection::FLAG_ADVENTURE_ONLY;
+
+		if (!m_Extensions.FindBestExtension(Ctx.dwAdventure, 0, dwFindFlags, &Ctx.pAdventure))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %08x."), Ctx.dwAdventure);
+			return ERR_FAIL;
+			}
+		}
+
+	//	If necessary figure out which extensions to add
+
+	if (Ctx.bDefaultExtensions)
+		{
+		if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
+				dwFlags, 
+				&Ctx.Extensions, 
+				retsError))
+			return error;
+		}
+
+	//	Get the bind order
+
+	TArray<CExtension *> BindOrder;
+	if (error = m_Extensions.ComputeBindOrder(Ctx.pAdventure,
+			Ctx.Extensions,
+			dwFlags, 
+			&BindOrder,
+			retsError))
+		return error;
+
+	//	Reinitialize. This clears out previous game state.
+
+	if (error = Reinit())
+		{
+		*retsError = CONSTLIT("Unable to reinit.");
+		return error;
+		}
+
+	//	Bind
+	//
+	//	We don't need to log image load
+
+	SetLogImageLoad(false);
+	error = m_Design.BindDesign(BindOrder, !Ctx.bInLoadGame, retsError);
+	SetLogImageLoad(true);
+
+	if (error)
+		return error;
+
+	//	Now that we've bound we can delete any previous extensions
+
+	m_Extensions.FreeDeleted();
+
+	//	Init encounter tables
+
+	InitLevelEncounterTables();
+
+	//	Set the current adventure
+
+	SetCurrentAdventureDesc(Ctx.pAdventure->GetAdventureDesc());
+
+	return NOERROR;
+	}
+
 void CUniverse::InitDefaultHitEffects (void)
 
 //	InitDefaultHitEffects
@@ -817,17 +987,11 @@ ALERROR CUniverse::InitGame (CString *retsError)
 
 //	InitGame
 //
-//	Initializes a game instance, including the topology
+//	Initializes a game instance, including the topology. We assume that the
+//	universe is loaded and bound.
 
 	{
 	ALERROR error;
-
-	if (error = Reinit())
-		{
-		if (retsError)
-			*retsError = CONSTLIT("Unable to initialize universe.");
-		return ERR_FAIL;
-		}
 
 	//	Initialize the topology. This is the point at which the topology is created
 
@@ -912,8 +1076,9 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	CGameTimeKeeper
 //
 //	DWORD		No of enabled extensions
-//	DWORD			extension UNID
-//	DWORD		Adventure UNID
+//	SExtensionSaveDesc for each
+//
+//	SExtensionSaveDesc for adventure
 //
 //	CDynamicDesignTable
 //
@@ -928,6 +1093,10 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	DWORD		No of types
 //	DWORD		type: UNID
 //	Type-specific data
+//
+//	NOTE: The debug mode flag is stored in the game file header. Callers must 
+//	set the universe to debug mode from the game file header flag before calling
+//	this function.
 	
 	{
 	int i;
@@ -987,32 +1156,105 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 	if (Ctx.dwVersion >= 7)
 		m_Time.ReadFromStream(pStream);
 
+	//	Prepare a universe initialization context
+	//	NOTE: Caller has set debug mode based on game file header flag.
+
+	CString sError;
+	CUniverse::SInitDesc InitCtx;
+	InitCtx.bDebugMode = g_pUniverse->InDebugMode();
+	InitCtx.bInLoadGame = true;
+
 	//	Load list of extensions used in this game
 
-	TArray<DWORD> ExtensionList;
-	if (Ctx.dwVersion >= 8)
+	TArray<SExtensionSaveDesc> ExtensionList;
+	if (Ctx.dwVersion >= 14)
 		{
 		pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		ExtensionList.InsertEmpty(dwLoad);
-		pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(DWORD));
+		pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(SExtensionSaveDesc));
+		}
+	else if (Ctx.dwVersion >= 8)
+		{
+		TArray<DWORD> CompatibleExtensionList;
+
+		pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		CompatibleExtensionList.InsertEmpty(dwLoad);
+		pStream->Read((char *)&CompatibleExtensionList[0], dwLoad * sizeof(DWORD));
+
+		ExtensionList.InsertEmpty(CompatibleExtensionList.GetCount());
+		for (i = 0; i < CompatibleExtensionList.GetCount(); i++)
+			{
+			ExtensionList[i].dwUNID = CompatibleExtensionList[i];
+			ExtensionList[i].dwRelease = 0;
+			}
 		}
 
-	//	Load adventure UNID
+	//	Get the actual extensions
 
-	if (Ctx.dwVersion >= 2)
+	for (i = 0; i < ExtensionList.GetCount(); i++)
+		{
+		CExtension *pExtension;
+
+		if (!m_Extensions.FindBestExtension(ExtensionList[i].dwUNID,
+				ExtensionList[i].dwRelease,
+				(g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+				&pExtension))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find extension: %08x"), ExtensionList[i]);
+			return ERR_FAIL;
+			}
+
+		InitCtx.Extensions.Insert(pExtension);
+		}
+
+	//	Load adventure extension
+
+	if (Ctx.dwVersion >= 14)
+		{
+		SExtensionSaveDesc Desc;
+		pStream->Read((char *)&Desc, sizeof(SExtensionSaveDesc));
+
+		if (!m_Extensions.FindBestExtension(Desc.dwUNID,
+				Desc.dwRelease,
+				CExtensionCollection::FLAG_ADVENTURE_ONLY | (g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+				&InitCtx.pAdventure))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %08x"), Desc.dwUNID);
+			return ERR_FAIL;
+			}
+		}
+	else if (Ctx.dwVersion >= 2)
+		{
 		pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	else
-		dwLoad = DEFAULT_ADVENTURE_UNID;
 
-	//	CDynamicDesignTable
+		if (!m_Extensions.FindAdventureFromDesc(dwLoad, 
+				(g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+				&InitCtx.pAdventure))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %08x"), dwLoad);
+			return ERR_FAIL;
+			}
+		}
+	else
+		{
+		if (!m_Extensions.FindBestExtension(DEFAULT_ADVENTURE_EXTENSION_UNID, 
+				0,
+				(g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+				&InitCtx.pAdventure))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find default adventure: %08x"), DEFAULT_ADVENTURE_EXTENSION_UNID);
+			return ERR_FAIL;
+			}
+		}
+
+	//	CDynamicDesignTable. Need to load this before we initialize.
 
 	if (Ctx.dwVersion >= 12)
 		m_Design.ReadDynamicTypes(Ctx);
 
 	//	Select the proper adventure and extensions and bind design.
 
-	CString sError;
-	if (InitAdventure(dwLoad, (Ctx.dwVersion >= 8 ? &ExtensionList : NULL), &sError) != NOERROR)
+	if (Init(InitCtx, &sError) != NOERROR)
 		{
 		*retsError = strPatternSubst(CONSTLIT("Unable to load universe: %s"), sError);
 		return ERR_FAIL;
@@ -1068,7 +1310,15 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 				return ERR_FAIL;
 				}
 
-			pType->ReadFromStream(Ctx);
+			try
+				{
+				pType->ReadFromStream(Ctx);
+				}
+			catch (...)
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unable to read design type: %x"), pType->GetUNID());
+				return ERR_FAIL;
+				}
 			}
 		}
 
@@ -1135,17 +1385,6 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		}
 
 	return NOERROR;
-	}
-
-void CUniverse::LoadLibraryBitmaps (void)
-
-//	LoadLibraryBitmaps
-//
-//	Make sure the bitmaps that we need are loaded
-
-	{
-	if (m_pCurrentSystem)
-		m_pCurrentSystem->LoadImages();
 	}
 
 void CUniverse::PaintObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pObj)
@@ -1247,9 +1486,13 @@ ALERROR CUniverse::Reinit (void)
 //	Reinitializes the universe
 
 	{
+	//	We start at tick 1 because sometimes we need to start with some things
+	//	in the past.
+
+	m_iTick = 1;
+
 	//	Clear some basic variables
 
-	m_iTick = 0;
 	m_Time.DeleteAll();
 	m_pPOV = NULL;
 	SetCurrentSystem(NULL);
@@ -1298,8 +1541,9 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	CGameTimeKeeper m_Time
 //
 //	DWORD		No of enabled extensions
-//	DWORD			extension UNID
-//	DWORD		Adventure UNID
+//	SExtensionSaveDesc for each
+//
+//	SExtensionSaveDesc for adventure
 //
 //	CDynamicDesignTable
 //
@@ -1340,17 +1584,31 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	m_Time.WriteToStream(pStream);
 
 	//	Extensions
+	//
+	//	NOTE: We don't save libraries because those will be automatically loaded
+	//	based on adventure and extensions.
 
-	TArray<DWORD> ExtensionList;
+	TArray<CExtension *> ExtensionList;
 	m_Design.GetEnabledExtensions(&ExtensionList);
 	dwSave = ExtensionList.GetCount();
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
-	pStream->Write((char *)&ExtensionList[0], dwSave * sizeof(DWORD));
+
+	for (i = 0; i < ExtensionList.GetCount(); i++)
+		{
+		SExtensionSaveDesc Desc;
+
+		Desc.dwUNID = ExtensionList[i]->GetUNID();
+		Desc.dwRelease = ExtensionList[i]->GetRelease();
+
+		pStream->Write((char *)&Desc, sizeof(SExtensionSaveDesc));
+		}
 
 	//	Adventure UNID
 
-	dwSave = m_pAdventure->GetUNID();
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	SExtensionSaveDesc Desc;
+	Desc.dwUNID = m_pAdventure->GetExtension()->GetUNID();
+	Desc.dwRelease = m_pAdventure->GetExtension()->GetRelease();
+	pStream->Write((char *)&Desc, sizeof(SExtensionSaveDesc));
 
 	//	CDynamicDesignTable
 
@@ -1536,7 +1794,7 @@ void CUniverse::StartGame (bool bNewGame)
 	{
 	//	Load images necessary for the system
 
-	LoadLibraryBitmaps();
+	MarkLibraryBitmaps();
 
 	//	Fire some events
 

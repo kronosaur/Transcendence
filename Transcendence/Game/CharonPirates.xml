@@ -2,11 +2,6 @@
 
 <TranscendenceModule>
 
-	<Sovereign UNID="&svPirates;"
-			name="Charon Pirates"
-			alignment="destructive order"
-			/>
-
 	<!-- Charon Pirate Map ROM -->
 
 	<ItemType UNID="&itCharonPirateMapROM;"
@@ -1513,7 +1508,7 @@
 
 	</StationType>
 
-<!-- Miscellaneous Resources -->
+<!-- SHIP ENCOUNTER TABLES ================================================ -->
 
 	<EncounterTable UNID="&etPirateAmbush1;">
 		<Ship class="&scCorsair;"	count="1d3" orders="attack"	sovereign="&svPirates;"/>
@@ -1568,6 +1563,29 @@
 			</Group>
 		</Table>
 	</EncounterTable>
+
+	<EncounterTable UNID="&etMarauderAmbush1;">
+		<Table>
+			<Ship chance="60" count="1d3+1"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			<Group chance="40">
+				<Ship         count="1d3"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+				<Ship         count="1"		class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			</Group>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etMarauderAmbush2;">
+		<Table>
+			<Ship chance="40" count="2d3"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			<Group chance="30">
+				<Ship         count="1d4+1"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+				<Ship         count="1"		class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			</Group>
+			<Ship chance="30" count="2"	class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+		</Table>
+	</EncounterTable>
+
+<!-- GLOBALS ------------------------------------------------------------------>
 
 	<Globals>
 		(block Nil

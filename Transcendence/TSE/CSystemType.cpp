@@ -77,7 +77,7 @@ bool CSystemType::FireOnObjJumpPosAdj (CSpaceObject *pObj, CVector *iovPos)
 
 		if (pResult->IsError())
 			{
-			kernelDebugLogMessage("System OnObjJumpPosAdj: %s", pResult->GetStringValue().GetASCIIZPointer());
+			kernelDebugLogMessage("System OnObjJumpPosAdj: %s", pResult->GetStringValue());
 			Ctx.Discard(pResult);
 			return false;
 			}

@@ -92,13 +92,15 @@ ALERROR CCyberDeckClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 //	Load the class
 
 	{
+	ALERROR error;
 	CCyberDeckClass *pDevice;
 
 	pDevice = new CCyberDeckClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	pDevice->m_iRange = pDesc->GetAttributeInteger(RANGE_ATTRIB);
 	pDevice->m_iAttackChance = pDesc->GetAttributeInteger(ATTACK_CHANCE_ATTRIB);

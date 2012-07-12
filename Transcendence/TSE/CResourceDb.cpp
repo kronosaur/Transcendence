@@ -20,7 +20,7 @@
 #define FILE_TYPE_TDB							CONSTLIT("tdb")
 #define RESOURCES_FOLDER						CONSTLIT("Resources")
 
-CResourceDb::CResourceDb (const CString &sFilespec, CResourceDb *pMainDb, bool bExtension) : 
+CResourceDb::CResourceDb (const CString &sFilespec, bool bExtension) : 
 		m_sFilespec(sFilespec),
 		m_pResourceMap(NULL),
 		m_iVersion(TDB_VERSION),
@@ -38,119 +38,82 @@ CResourceDb::CResourceDb (const CString &sFilespec, CResourceDb *pMainDb, bool b
 //	Look for resource files in the Extensions folder.
 
 	{
+	//	If this is a resource path, then we look in the resources.
+
 	char *pszResID;
 	if (pathIsResourcePath(sFilespec, &pszResID))
 		{
 		m_pDb = new CDataFile(m_sFilespec);
 		m_bGameFileInDb = true;
 		m_bResourcesInDb = true;
-		m_pMainDb = pMainDb;
 		}
-	else if (pMainDb || bExtension)
-		{
-		//	We assume this is an extension
 
-		CString sTDB = sFilespec;
-		sTDB.Append(CONSTLIT("."));
-		sTDB.Append(FILE_TYPE_TDB);
+	//	Otherwise we look in a file.
 
-		if (pathExists(sTDB))
-			{
-			m_pDb = new CDataFile(sTDB);
-
-			m_sRoot = pathGetPath(sTDB);
-			m_sGameFile = pathGetFilename(sTDB);
-			m_bGameFileInDb = true;
-			m_bResourcesInDb = true;
-			}
-		else
-			{
-			CString sXML = sFilespec;
-			sXML.Append(CONSTLIT("."));
-			sXML.Append(FILE_TYPE_XML);
-
-			m_pDb = NULL;
-
-			m_sRoot = pathGetPath(sFilespec);
-			m_sGameFile = pathGetFilename(sXML);
-			m_bGameFileInDb = false;
-			m_bResourcesInDb = false;
-			}
-
-		m_pMainDb = pMainDb;
-		}
 	else
 		{
-		CString sType = pathGetExtension(sFilespec);
+		//	If we don't have an extension then we look for an XML file and a
+		//	TDB file (in that order).
+
+		CString sType = pathGetExtension(m_sFilespec);
 		if (sType.IsBlank())
 			{
-			CString sXML = sFilespec;
-			sXML.Append(CONSTLIT("."));
-			sXML.Append(FILE_TYPE_XML);
+			//	Look for the XML file
 
-			//	If Transcendence.xml exists, then use the file and load
-			//	the resources from the same location.
-
-			if (pathExists(sXML))
+			CString sTry = strPatternSubst(CONSTLIT("%s.xml"), m_sFilespec);
+			if (pathExists(sTry))
 				{
-				m_sRoot = pathGetPath(sXML);
-				m_sGameFile = pathGetFilename(sXML);
-				m_bGameFileInDb = false;
-
-				//	If a resources path exists, then use the resources in the
-				//	folder. Otherwise, use resources in the tdb
-
-				CString sResourcesPath = pathAddComponent(m_sRoot, RESOURCES_FOLDER);
-				if (pathExists(sResourcesPath))
-					{
-					m_pDb = NULL;
-					m_bResourcesInDb = false;
-					}
-
-				//	Otherwise, use the tdb file
-
-				else
-					{
-					CString sTDB = sFilespec;
-					sTDB.Append(CONSTLIT("."));
-					sTDB.Append(FILE_TYPE_TDB);
-					m_pDb = new CDataFile(sTDB);
-					m_bResourcesInDb = true;
-					}
+				m_sFilespec = sTry;
+				sType = FILE_TYPE_XML;
 				}
 
-			//	Otherwise, use the .tdb file for both
+			//	Otherwise, assume TDB
 
 			else
 				{
-				CString sTDB = sFilespec;
-				sTDB.Append(CONSTLIT("."));
-				sTDB.Append(FILE_TYPE_TDB);
-				m_pDb = new CDataFile(sTDB);
-
-				m_bGameFileInDb = true;
-				m_bResourcesInDb = true;
+				m_sFilespec = strPatternSubst(CONSTLIT("%s.tdb"), m_sFilespec);
+				sType = FILE_TYPE_TDB;
 				}
 			}
-		else if (strEquals(sType, FILE_TYPE_XML))
-			{
-			m_sRoot = pathGetPath(sFilespec);
-			m_sGameFile = pathGetFilename(sFilespec);
-			m_pDb = NULL;
 
+		//	Keep track of the main file
+
+		m_sRoot = pathGetPath(m_sFilespec);
+		m_sGameFile = pathGetFilename(m_sFilespec);
+
+		//	Are we an XML file?
+
+		if (strEquals(sType, FILE_TYPE_XML))
+			{
 			m_bGameFileInDb = false;
-			m_bResourcesInDb = false;
+
+			//	If we're the main XML file and the resource path does not exist,
+			//	then use the TDB file for resources.
+
+			if (!bExtension && !pathExists(pathAddComponent(m_sRoot, RESOURCES_FOLDER)))
+				{
+				m_pDb = new CDataFile(strPatternSubst(CONSTLIT("%s.tdb"), pathStripExtension(m_sFilespec)));
+				m_bResourcesInDb = true;
+				}
+
+			//	Otherwise, just get the resource the normal way
+
+			else
+				{
+				m_pDb = NULL;
+				m_bResourcesInDb = false;
+				}
 			}
+
+		//	Otherwise, load the TDB file
+
 		else
 			{
-			m_pDb = new CDataFile(sFilespec);
+			m_pDb = new CDataFile(m_sFilespec);
+
 			m_bGameFileInDb = true;
 			m_bResourcesInDb = true;
 			}
-
-		//	This is the main file
-
-		m_pMainDb = NULL;
 		}
 	}
 
@@ -162,7 +125,21 @@ CResourceDb::~CResourceDb (void)
 	if (m_pDb)
 		delete m_pDb;
 
+	if (m_pResourceMap)
+		delete m_pResourceMap;
+
 	SetEntities(NULL);
+	}
+
+void CResourceDb::ComputeFileDigest (CIntegerIP *retDigest)
+
+//	ComputeFileDigest
+//
+//	Compute a digest for our file.
+
+	{
+	if (fileCreateDigest(m_sFilespec, retDigest) != NOERROR)
+		*retDigest = CIntegerIP();
 	}
 
 ALERROR CResourceDb::ExtractMain (CString *retsData)
@@ -321,52 +298,103 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 	CExternalEntityTable *pEntities = new CExternalEntityTable;
 	SetEntities(pEntities, true);
 
-	if (m_pMainDb == NULL)
+	if (m_bGameFileInDb && m_pDb)
 		{
-		if (m_bGameFileInDb && m_pDb)
+		ASSERT(m_pResourceMap);
+
+		CString sGameFile;
+		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
 			{
-			ASSERT(m_pResourceMap);
-
-			CString sGameFile;
-			if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
-				{
-				*retsError = strPatternSubst(CONSTLIT("%s is corrupt"), m_sGameFile);
-				return error;
-				}
-
-			//	Parse the XML file from the buffer
-
-			CBufferReadBlock GameFile(sGameFile);
-
-			CString sError;
-			if (error = CXMLElement::ParseEntityTable(&GameFile, m_pEntities, &sError))
-				{
-				*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
-				return error;
-				}
+			*retsError = strPatternSubst(CONSTLIT("%s is corrupt"), m_sGameFile);
+			return error;
 			}
-		else
+
+		//	Parse the XML file from the buffer
+
+		CBufferReadBlock GameFile(sGameFile);
+
+		CString sError;
+		if (error = CXMLElement::ParseEntityTable(&GameFile, pEntities, &sError))
 			{
-			//	Parse the XML file on disk
+			*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
+			return error;
+			}
+		}
+	else
+		{
+		//	Parse the XML file on disk
 
-			CFileReadBlock DataFile(pathAddComponent(m_sRoot, m_sGameFile));
-			CString sError;
+		CFileReadBlock DataFile(pathAddComponent(m_sRoot, m_sGameFile));
+		CString sError;
 
-			if (error = CXMLElement::ParseEntityTable(&DataFile, m_pEntities, &sError))
-				{
-				*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
-				return error;
-				}
+		if (error = CXMLElement::ParseEntityTable(&DataFile, pEntities, &sError))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to parse %s: %s"), m_sGameFile, sError);
+			return error;
 			}
 		}
 
 	if (retEntities)
-		*retEntities = m_pEntities;
+		*retEntities = pEntities;
 
 	return NOERROR;
 	}
 
-ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, CExternalEntityTable *pEntities, CString *retsError, CExternalEntityTable *ioEntityTable)
+ALERROR CResourceDb::LoadGameFileStub (CXMLElement **retpData, CExternalEntityTable *ioEntityTable, CString *retsError)
+
+//	LoadGameFileStub
+//
+//	Loads the entities and the root element (without and sub elements).
+
+	{
+	ALERROR error;
+
+	if (m_bGameFileInDb && m_pDb)
+		{
+		ASSERT(m_pResourceMap);
+
+		CString sGameFile;
+		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
+			{
+			*retsError = strPatternSubst(CONSTLIT("%s is corrupt"), m_sGameFile);
+			return error;
+			}
+
+		//	Parse the XML file from the buffer
+
+		CBufferReadBlock GameFile(sGameFile);
+		CString sError;
+
+		if (error = CXMLElement::ParseRootElement(&GameFile, retpData, ioEntityTable, &sError))
+			{
+			if (error == ERR_NOTFOUND)
+				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
+			else
+				*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+			return error;
+			}
+		}
+	else
+		{
+		//	Parse the XML file on disk
+
+		CFileReadBlock DataFile(pathAddComponent(m_sRoot, m_sGameFile));
+		CString sError;
+
+		if (error = CXMLElement::ParseRootElement(&DataFile, retpData, ioEntityTable, &sError))
+			{
+			if (error == ERR_NOTFOUND)
+				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
+			else
+				*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+			return error;
+			}
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, IXMLParserController *pEntities, CString *retsError, CExternalEntityTable *ioEntityTable)
 
 //	LoadGameFile
 //
@@ -441,82 +469,90 @@ ALERROR CResourceDb::LoadImage (const CString &sFolder, const CString &sFilename
 	{
 	ALERROR error;
 
-	if (m_bResourcesInDb && m_pDb)
+	try
 		{
-		ASSERT(m_pResourceMap);
-
-		CString sFilespec;
-		if (m_iVersion >= 11 && !sFolder.IsBlank())
-			sFilespec = pathAddComponent(sFolder, sFilename);
-		else
-			sFilespec = sFilename;
-
-		//	Look-up the resource in the map
-
-		int iEntry;
-		if (error = m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry))
-			return error;
-
-		CString sData;
-		if (error = m_pDb->ReadEntry(iEntry, &sData))
-			return error;
-
-		CString sType = pathGetExtension(sFilespec);
-		if (strEquals(sType, CONSTLIT("jpg")))
+		if (m_bResourcesInDb && m_pDb)
 			{
-			if (error = JPEGLoadFromMemory(sData.GetASCIIZPointer(),
-					sData.GetLength(),
-					JPEG_LFR_DIB,
-					NULL,
-					rethImage))
-				{
-				kernelDebugLogMessage("Unable to load JPEG resource '%s'", sFilename.GetASCIIZPointer());
-				return error;
-				}
+			ASSERT(m_pResourceMap);
 
-			if (retiImageType)
-				*retiImageType = bitmapRGB;
+			CString sFilespec;
+			if (m_iVersion >= 11 && !sFolder.IsBlank())
+				sFilespec = pathAddComponent(sFolder, sFilename);
+			else
+				sFilespec = sFilename;
+
+			//	Look-up the resource in the map
+
+			int iEntry;
+			if (error = m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry))
+				return error;
+
+			CString sData;
+			if (error = m_pDb->ReadEntry(iEntry, &sData))
+				return error;
+
+			CString sType = pathGetExtension(sFilespec);
+			if (strEquals(sType, CONSTLIT("jpg")))
+				{
+				if (error = JPEGLoadFromMemory(sData.GetASCIIZPointer(),
+						sData.GetLength(),
+						JPEG_LFR_DIB,
+						NULL,
+						rethImage))
+					{
+					kernelDebugLogMessage("Unable to load JPEG resource '%s'", sFilename);
+					return error;
+					}
+
+				if (retiImageType)
+					*retiImageType = bitmapRGB;
+				}
+			else
+				{
+				CBufferReadBlock Data(sData);
+
+				if (error = dibLoadFromBlock(Data, rethImage, retiImageType))
+					{
+					kernelDebugLogMessage("Unable to load DIB resource '%s'", sFilename);
+					return error;
+					}
+				}
 			}
 		else
 			{
-			CBufferReadBlock Data(sData);
+			CString sFilespec = pathAddComponent(m_sRoot, sFolder);
+			sFilespec = pathAddComponent(sFilespec, sFilename);
 
-			if (error = dibLoadFromBlock(Data, rethImage, retiImageType))
+			CString sType = pathGetExtension(sFilespec);
+			if (strEquals(sType, CONSTLIT("jpg")))
 				{
-				kernelDebugLogMessage("Unable to load DIB resource '%s'", sFilename.GetASCIIZPointer());
-				return error;
+				//	Load the JPEG file
+
+				if (error = JPEGLoadFromFile(sFilespec, JPEG_LFR_DIB, NULL, rethImage))
+					{
+					kernelDebugLogMessage("Unable to load JPEG file '%s'", sFilename);
+					return error;
+					}
+
+				if (retiImageType)
+					*retiImageType = bitmapRGB;
+				}
+			else
+				{
+				//	Load bitmap
+
+				if (error = dibLoadFromFile(sFilespec, rethImage, retiImageType))
+					{
+					kernelDebugLogMessage("Unable to load DIB file '%s'", sFilename);
+					return error;
+					}
 				}
 			}
 		}
-	else
+	catch (...)
 		{
-		CString sFilespec = pathAddComponent(m_sRoot, sFolder);
-		sFilespec = pathAddComponent(sFilespec, sFilename);
-
-		CString sType = pathGetExtension(sFilespec);
-		if (strEquals(sType, CONSTLIT("jpg")))
-			{
-			//	Load the JPEG file
-
-			if (error = JPEGLoadFromFile(sFilespec, JPEG_LFR_DIB, NULL, rethImage))
-				{
-				kernelDebugLogMessage("Unable to load JPEG file '%s'", sFilename.GetASCIIZPointer());
-				return error;
-				}
-
-			if (retiImageType)
-				*retiImageType = bitmapRGB;
-			}
-		else
-			{
-			//	Load bitmap
-
-			if (error = dibLoadFromFile(sFilespec, rethImage, retiImageType))
-				{
-				kernelDebugLogMessage("Unable to load DIB file '%s'", sFilename.GetASCIIZPointer());
-				return error;
-				}
-			}
+		kernelDebugLogMessage("Crash loading image from resource db: %s.", sFilename);
+		return ERR_FAIL;
 		}
 
 	return NOERROR;
@@ -731,7 +767,7 @@ ALERROR CResourceDb::OpenDb (void)
 	return NOERROR;
 	}
 
-void CResourceDb::SetEntities (CExternalEntityTable *pEntities, bool bFree)
+void CResourceDb::SetEntities (IXMLParserController *pEntities, bool bFree)
 
 //	SetEntities
 //

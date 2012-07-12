@@ -42,7 +42,11 @@ ALERROR CTransSaverModel::LoadUniverse (CString *retsError)
 
 	//	Load
 
-	if (error = m_Universe.Init(pathGetResourcePath("DEFAULTDB"), retsError, flagNoVersionCheck))
+	CUniverse::SInitDesc Ctx;
+	Ctx.sFilespec = pathGetResourcePath("DEFAULTDB");
+	Ctx.bDefaultExtensions = true;
+
+	if (error = m_Universe.Init(Ctx, retsError))
 		return error;
 
 	return NOERROR;

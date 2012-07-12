@@ -27,6 +27,9 @@ class CAutoDefenseClass : public CDeviceClass
 							 bool *retbSourceDestroyed,
 							 bool *retbConsumedItems = NULL);
 
+	protected:
+		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
+
 	private:
 		enum TargetingSystemTypes
 			{
@@ -54,7 +57,7 @@ class CCargoSpaceClass : public CDeviceClass
 		//	CDeviceClass virtuals
 
 		virtual bool CanBeDamaged (void) { return false; }
-		virtual bool CanBeDisabled (void) { return false; }
+		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual ItemCategories GetCategory (void) { return itemcatCargoHold; }
 		virtual int GetCargoSpace (void) { return m_iCargoSpace; }
@@ -113,7 +116,6 @@ class CDriveClass : public CDeviceClass
 
 		//	CDeviceClass virtuals
 
-		virtual bool CanBeDisabled (void) { return true; }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual ItemCategories GetCategory (void) { return itemcatDrive; }
 		virtual const DriveDesc *GetDriveDesc (CInstalledDevice *pDevice = NULL, CSpaceObject *pSource = NULL);
@@ -199,9 +201,12 @@ class CReactorClass : public CDeviceClass
 	public:
 		static ALERROR CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType, CDeviceClass **retpDevice);
 
+		static ALERROR InitReactorDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc, ReactorDesc *retDesc, bool bShipClass = false);
+		static bool FindDataField (const ReactorDesc &Desc, const CString &sField, CString *retsValue);
+
 		//	CDeviceClass virtuals
 
-		virtual bool CanBeDisabled (void) { return false; }
+		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual ItemCategories GetCategory (void) { return itemcatReactor; }
 		virtual const ReactorDesc *GetReactorDesc (CInstalledDevice *pDevice = NULL, CSpaceObject *pSource = NULL);
@@ -214,8 +219,6 @@ class CReactorClass : public CDeviceClass
 		ReactorDesc m_Desc;
 		ReactorDesc m_DamagedDesc;
 		ReactorDesc m_EnhancedDesc;
-
-		CItemCriteria m_FuelCriteria;
 	};
 
 class CRepairerClass : public CDeviceClass
@@ -294,7 +297,7 @@ class CShieldClass : public CDeviceClass
 
 
 	protected:
-		virtual void OnLoadImages (void);
+		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void OnMarkImages (void);
 
 	private:
@@ -321,9 +324,8 @@ class CShieldClass : public CDeviceClass
 		int m_iAbsorbAdj[damageCount];			//	Absorbtion adjustments
 		int m_iDamageAdjLevel;					//	Level to use for intrinsic damage adj
 		int m_iDamageAdj[damageCount];			//	Adjustments for damage type
-		int m_iRegenRate;						//	Ticks between regen
-		int m_iRegenHP;							//	HP regenerated each cycle
-		int m_iDepletionDelay;					//	Ticks to recover from full depletion
+		CRegenDesc m_Regen;						//	Regeneration rate
+		int m_iDepletionTicks;					//	Ticks to recover from full depletion
 		int m_iPowerUse;						//	Power used during regeneration (1/10 megawatt)
 		int m_iIdlePowerUse;					//	Power used to maintain shields
 		DamageTypeSet m_WeaponSuppress;			//	Types of weapons suppressed
@@ -332,7 +334,7 @@ class CShieldClass : public CDeviceClass
 		int m_iMaxCharges;						//	Max charges
 		int m_iExtraHPPerCharge;				//	Extra HP for each point of charge
 		int m_iExtraPowerPerCharge;				//	Extra power use for each point of charge (1/10 megawatt)
-		int m_iExtraRegenPerCharge;				//	Extra regen per 10 points of charge
+		int m_iExtraRegenPerCharge;				//	Extra regen/180 ticks per point of charge
 
 		SEventHandlerDesc m_CachedEvents[evtCount];		//	Cached events
 
@@ -346,7 +348,7 @@ class CSolarDeviceClass : public CDeviceClass
 
 		//	CDeviceClass virtuals
 
-		virtual bool CanBeDisabled (void) { return false; }
+		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
 		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
 		virtual void Update (CInstalledDevice *pDevice, 
 							 CSpaceObject *pSource, 
@@ -406,7 +408,7 @@ class CWeaponClass : public CDeviceClass
 		virtual bool FindDataField (int iVariant, const CString &sField, CString *retsValue);
 		virtual const DamageDesc *GetDamageDesc (CItemCtx &Ctx);
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1);
-		virtual DWORD GetLinkedFireOptions (CItemCtx &Ctx) { return m_dwLinkedFireOptions; }
+		virtual DWORD GetLinkedFireOptions (CItemCtx &Ctx);
 		virtual Metric GetMaxEffectiveRange (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget);
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
@@ -428,7 +430,9 @@ class CWeaponClass : public CDeviceClass
 		virtual bool ValidateSelectedVariant (CSpaceObject *pSource, CInstalledDevice *pDevice);
 
 	protected:
+		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID);
+		virtual void OnMarkImages (void);
 
 	private:
 		enum ConfigurationTypes
@@ -506,7 +510,6 @@ class CWeaponClass : public CDeviceClass
 
 		bool m_bLauncher;						//	Generic missile launcher
 		bool m_bOmnidirectional;				//	Omnidirectional
-		bool m_bCharges;						//	TRUE if weapon has charges
 		bool m_bMIRV;							//	Each shot seeks an independent target
 		int m_iMinFireArc;						//	Min angle of fire arc (degrees)
 		int m_iMaxFireArc;						//	Max angle of fire arc (degrees)
@@ -520,6 +523,8 @@ class CWeaponClass : public CDeviceClass
 		SConfigDesc *m_pConfig;					//	Custom configuration (may be NULL)
 		int m_iConfigAimTolerance;				//	Aim tolerance
 		bool m_bConfigAlternating;				//	Fire each shot in turn
+
+		bool m_bCharges;						//	TRUE if weapon has charges instead of ammo
 
 		CounterTypes m_Counter;					//	Counter type
 		int m_iCounterUpdateRate;				//	Ticks to update counter

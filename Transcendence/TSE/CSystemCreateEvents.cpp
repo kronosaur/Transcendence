@@ -4,7 +4,7 @@
 
 #include "PreComp.h"
 
-void CSystemCreateEvents::AddDeferredEvent (CSpaceObject *pObj, SExtensionDesc *pExtension, CXMLElement *pEventCode)
+void CSystemCreateEvents::AddDeferredEvent (CSpaceObject *pObj, CExtension *pExtension, CXMLElement *pEventCode)
 
 //	AddDeferredEvent
 //

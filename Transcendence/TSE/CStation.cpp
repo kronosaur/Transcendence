@@ -772,7 +772,7 @@ ALERROR CStation::CreateMapImage (void)
 	if (Image.IsEmpty())
 		return NOERROR;
 
-	CG16bitImage &BmpImage = Image.GetImage();
+	CG16bitImage &BmpImage = Image.GetImage(strFromInt(m_pType->GetUNID()));
 	const RECT &rcImage = Image.GetImageRect();
 
 	if (error = m_MapImage.CreateBlank(RectWidth(rcImage) / g_iMapScale,
@@ -1549,40 +1549,45 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 			}
 		}
 
-	//	Create an item context
+	//	Armor effects
 
-	CItem ArmorItem(m_pArmorClass->GetItemType(), 1);
-	CItemCtx ItemCtx(&ArmorItem, this);
-
-	//	If this armor section reflects this kind of damage then
-	//	send the damage on
-
-	if (m_pArmorClass->IsReflective(ItemCtx, Ctx.Damage) && Ctx.pCause)
+	if (m_pArmorClass)
 		{
-		Ctx.pCause->CreateReflection(Ctx.vHitPos, (Ctx.iDirection + 120 + mathRandom(0, 120)) % 360);
-		return damageNoDamage;
+		//	Create an item context
+
+		CItem ArmorItem(m_pArmorClass->GetItemType(), 1);
+		CItemCtx ItemCtx(&ArmorItem, this);
+
+		//	If this armor section reflects this kind of damage then
+		//	send the damage on
+
+		if (m_pArmorClass->IsReflective(ItemCtx, Ctx.Damage) && Ctx.pCause)
+			{
+			Ctx.pCause->CreateReflection(Ctx.vHitPos, (Ctx.iDirection + 120 + mathRandom(0, 120)) % 360);
+			return damageNoDamage;
+			}
+
+		//	If this is a paralysis attack then no damage
+
+		int iEMP = Ctx.Damage.GetEMPDamage();
+		if (iEMP)
+			Ctx.iDamage = 0;
+
+		//	If this is blinding attack then no damage
+
+		int iBlinding = Ctx.Damage.GetBlindingDamage();
+		if (iBlinding)
+			Ctx.iDamage = 0;
+
+		//	If this is device damage, then damage is decreased
+
+		if (Ctx.Damage.GetDeviceDamage() || Ctx.Damage.GetDeviceDisruptDamage())
+			Ctx.iDamage = Ctx.iDamage / 2;
+
+		//	Adjust the damage for the armor
+
+		Ctx.iDamage = m_pArmorClass->CalcAdjustedDamage(NULL, Ctx.Damage, Ctx.iDamage);
 		}
-
-	//	If this is a paralysis attack then no damage
-
-	int iEMP = Ctx.Damage.GetEMPDamage();
-	if (iEMP)
-		Ctx.iDamage = 0;
-
-	//	If this is blinding attack then no damage
-
-	int iBlinding = Ctx.Damage.GetBlindingDamage();
-	if (iBlinding)
-		Ctx.iDamage = 0;
-
-	//	If this is device damage, then damage is decreased
-
-	if (Ctx.Damage.GetDeviceDamage() || Ctx.Damage.GetDeviceDisruptDamage())
-		Ctx.iDamage = Ctx.iDamage / 2;
-
-	//	Adjust the damage for the armor
-
-	Ctx.iDamage = m_pArmorClass->CalcAdjustedDamage(NULL, Ctx.Damage, Ctx.iDamage);
 
 	//	If we're a multi-hull object then we adjust for mass destruction
 	//	effects (non-mass destruction weapons don't hurt us very much)

@@ -68,6 +68,8 @@
 			>
 
 			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_Sapphire;" imageWidth="136" imageHeight="136"/>
+				
 				<ArmorSection name="forward"
 						imageID="&rsZubrinArmor;" 
 						imageX="0" imageY="0" imageWidth="52" imageHeight="29"
@@ -93,8 +95,7 @@
 						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
 			</ArmorDisplay>
 
-			<ShieldDisplay>
-				<Image imageID="&rsZubrinShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			<ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
 			</ShieldDisplay>
 
 			<ReactorDisplay>
@@ -198,6 +199,8 @@
 			>
 
 			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_EI500;" imageWidth="136" imageHeight="136"/>
+				
 				<ArmorSection name="forward"
 						imageID="&rsEI100XArmor;" 
 						imageX="0" imageY="0" imageWidth="90" imageHeight="9"
@@ -223,8 +226,7 @@
 						nameY="74" nameBreakWidth="200" nameDestX="0" nameDestY="8" />
 			</ArmorDisplay>
 
-			<ShieldDisplay>
-				<Image imageID="&rsEI100XShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			<ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
 			</ShieldDisplay>
 
 			<ReactorDisplay>
@@ -320,6 +322,8 @@
 			>
 
 			<ArmorDisplay>
+				<ShipImage imageID="&rsArmorHUDShip_Wolfen;" imageWidth="136" imageHeight="136"/>
+				
 				<ArmorSection name="forward"
 						imageID="&rsWolfenArmor;" 
 						imageX="0" imageY="0" imageWidth="52" imageHeight="15"
@@ -345,8 +349,7 @@
 						nameY="74" nameBreakWidth="360" nameDestX="12" nameDestY="0" />
 			</ArmorDisplay>
 
-			<ShieldDisplay>
-				<Image imageID="&rsWolfenShields;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			<ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
 			</ShieldDisplay>
 
 			<ReactorDisplay>
@@ -373,442 +376,6 @@
 
 	</ShipClass>
 
-	<!-- Player ship's interior -->
-
-	<DockScreen UNID="&dsShipInterior;"
-			name=				"Ship's Interior"
-			backgroundID=		"&rsShipInterior;"
-			>
-
-		<Panes>
-			<Default
-					desc=	"You are inside the main compartment of your ship. A hatch in front of you opens into the cargo hold. To the side there is a small ladder that leads to the reactor and the ship's engines.">
-
-				<Actions>
-					<Action name="Ship configuration" key="S">
-						(scrShowScreen gScreen "&dsShipConfig;")
-					</Action>
-
-					<Action name="View cargo hold" key="V" >
-						(block Nil
-							(setq gDest Nil)
-							(scrShowScreen gScreen "&dsCargoHold;")
-							)
-					</Action>
-
-					<Action name="Refuel engines" key="R" >
-						<Navigate screen="&dsManualRefuel;"/>
-					</Action>
-
-					<Action name="Back to cockpit" cancel="1" key="B">
-						<Exit/>
-					</Action>
-
-				</Actions>
-
-			</Default>
-
-		</Panes>
-
-	</DockScreen>
-
-	<!-- Player ship configuration -->
-
-	<DockScreen UNID="&dsShipConfig;"
-			name=				"Ship's Configuration"
-			desc=				"Ship Configuration"
-			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"*I"
-			/>
-
-		<Panes>
-			<Default
-					desc=	"You are viewing the ship's configuration.">
-
-				<OnPaneInit>
-					(block (thisItem desc)
-						(setq thisItem (scrGetItem gScreen))
-
-						(if thisItem
-							(block (theCategory)
-								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem)) "\n\n"))
-
-								; Describe the item installation
-								(setq desc (cat desc (objGetInstalledItemDesc gPlayerShip thisItem) "."))
-								
-								; Display
-								(scrSetDesc gScreen desc)
-								)
-							)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Done" cancel="1" key="D">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-
-				</Actions>
-
-			</Default>
-		</Panes>
-
-	</DockScreen>
-
-	<!-- Player ship's cargo hold -->
-
-	<DockScreen UNID="&dsCargoHold;"
-			name=				"Ship's Cargo Hold"
-			desc=				"Interior of Ship"
-			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"*U"
-			/>
-
-		<Panes>
-			<Default
-					desc=	"You are in your ship's cargo hold.">
-
-				<OnPaneInit>
-					(block (thisItem desc)
-						(setq thisItem (scrGetItem gScreen))
-						(switch
-							(not thisItem)
-								(setq gMaxCount 0)
-
-							(itmIsInstalled thisItem)
-								(setq gMaxCount 0)
-
-							(setq gMaxCount (itmGetCount thisItem))
-							)
-
-						(if thisItem
-							(block Nil
-								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
-								(if (gr gMaxCount 1)
-									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
-									)
-								(scrSetDesc gScreen desc)
-								)
-							)
-
-						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Jettison this item" key="J" >
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "JettisonQuantity")
-
-							(eq gMaxCount 1)
-								(block (itemsToJettison)
-									; Create cargo crate
-									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
-										)
-
-									; Dump items
-									(setq itemsToJettison (scrRemoveItem gScreen 1))
-									(intJettisonItem gDest itemsToJettison)
-									(scrShowPane gScreen "Default")
-									)
-							)
-					</Action>
-
-					<Action name="Done" cancel="1" key="D">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-
-				</Actions>
-
-			</Default>
-
-			<JettisonQuantity
-					showCounter=	"true">
-
-				<OnPaneInit>
-					(block Nil
-						(scrSetDesc gScreen (cat "How many items do you wish to jettison?"))
-						(scrSetCounter gScreen gMaxCount)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Jettison" default="1" key="J">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
-								(block (itemsToJettison)
-									; Create cargo crate
-									(if (not gDest)
-										(setq gDest (sysCreateStation &stCargoCrate; (sysVectorPolarOffset gPlayerShip 0 0)))
-										)
-
-									; Dump items
-									(setq itemsToJettison (scrRemoveItem gScreen count))
-									(intJettisonItem gDest itemsToJettison)
-									(scrShowPane gScreen "Default")
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
-						<ShowPane pane="Default"/>
-					</Action>
-
-				</Actions>
-
-			</JettisonQuantity>
-		</Panes>
-
-	</DockScreen>
-
-	<!-- Refuel ship screen -->
-
-	<DockScreen UNID="&dsManualRefuel;"
-			name=				"Ship's Cargo Hold"
-			type=				"itemPicker"
-			backgroundID=		"&rsItemListScreen;"
-			>
-
-		<ListOptions
-			dataFrom=	"player"
-			list=		"f"
-			/>
-
-		<Panes>
-			<Default
-					desc=	"Pick an item to use as fuel.">
-
-				<OnPaneInit>
-					(block (thisItem curEngine)
-						(setq thisItem (scrGetItem gScreen))
-						(setq gMaxCount 0)
-						(switch
-							(not thisItem)
-								(scrSetDesc gScreen "You do not have any items that can be used as fuel.")
-
-							(not (shpIsFuelCompatible gPlayerShip thisItem))
-								(scrSetDesc gScreen "You cannot use this kind of fuel in your ship's reactor.")
-
-							(setq gMaxCount (itmGetCount thisItem))
-							)
-
-						; Enable/disable actions
-						(scrEnableAction gScreen 0 (gr gMaxCount 0))
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Refuel" default="1" key="R">
-						(block Nil
-							; No need to show help about refueling
-							(plyEnableMessage gPlayer 'refuelHint Nil)
-
-							; Handle refuel
-							(switch
-								; If this item requires confirmation, show pane
-								(itmHasModifier (scrGetItem gScreen) 'ConfirmRefuel)
-									(scrShowPane gScreen "ConfirmRefuel")
-
-								; If there are more than one item, get count
-								(gr gMaxCount 1)
-									(scrShowPane gScreen "RefuelQuantity")
-
-								(eq gMaxCount 0)
-									Nil
-
-								; Refuel from a single item
-								(block (itemsToUse)
-									(setq itemsToUse (scrRemoveItem gScreen 1))
-
-									(plyRedirectMessage gPlayer True)
-									(shpRefuelFromItem gPlayerShip itemsToUse)
-									(plyRedirectMessage gPlayer Nil)
-
-									(if (plyGetRedirectMessage gPlayer)
-										(scrShowPane gScreen "RefuelMessage")
-										(scrShowScreen gScreen "&dsShipInterior;")
-										)
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-
-				</Actions>
-
-			</Default>
-
-			<ConfirmRefuel>
-				<OnPaneInit>
-					(scrSetDesc gScreen 
-						(cat "Are you sure you want to use " 
-							(itmGetName (scrGetItem gScreen) 0x04)
-							" for fuel?"
-							)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Yes" key="Y">
-						(switch
-							(gr gMaxCount 1)
-								(scrShowPane gScreen "RefuelQuantity")
-
-							(eq gMaxCount 0)
-								(scrShowPane gScreen "Default")
-
-							(block (itemsToUse)
-								(setq itemsToUse (scrRemoveItem gScreen 1))
-
-								(plyRedirectMessage gPlayer True)
-								(shpRefuelFromItem gPlayerShip itemsToUse)
-								(plyRedirectMessage gPlayer Nil)
-
-								(if (plyGetRedirectMessage gPlayer)
-									(scrShowPane gScreen "RefuelMessage")
-									(scrShowScreen gScreen "&dsShipInterior;")
-									)
-								)
-							)
-					</Action>
-
-					<Action name="No" key="N" cancel="1">
-						(scrShowPane gScreen "Default")
-					</Action>
-				</Actions>
-			</ConfirmRefuel>
-
-			<RefuelMessage>
-				<OnPaneInit>
-					(scrSetDesc gScreen (plyGetRedirectMessage gPlayer))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-				</Actions>
-			</RefuelMessage>
-
-			<RefuelQuantity
-					showCounter=	"true">
-
-				<OnPaneInit>
-					(block (thisItem maxNeeded)
-						(setq thisItem (scrGetItem gScreen))
-						(setq maxNeeded (shpGetFuelNeeded gPlayerShip thisItem))
-						(if (ls maxNeeded gMaxCount)
-							(setq gMaxCount maxNeeded)
-							)
-						(scrSetDesc gScreen (cat "How many " (itmGetName thisItem 2) " do you wish to use?"))
-						(scrSetCounter gScreen gMaxCount)
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Refuel" default="1" key="R">
-						(block (count)
-							(setq count (scrGetCounter gScreen))
-							(if (gr count gMaxCount)
-								(scrSetCounter gScreen gMaxCount)
-								(block (itemsToUse)
-									(setq itemsToUse (scrRemoveItem gScreen count))
-
-									(plyRedirectMessage gPlayer True)
-									(shpRefuelFromItem gPlayerShip itemsToUse)
-									(plyRedirectMessage gPlayer Nil)
-
-									(if (plyGetRedirectMessage gPlayer)
-										(scrShowPane gScreen "RefuelMessage")
-										(scrShowScreen gScreen "&dsShipInterior;")
-										)
-									)
-								)
-							)
-					</Action>
-
-					<Action name="Cancel" cancel="1" key="C">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-
-				</Actions>
-
-			</RefuelQuantity>
-
-			<RefuelMessage>
-				<OnPaneInit>
-					(scrSetDesc gScreen (plyGetRedirectMessage gPlayer))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
-						<Navigate screen="&dsShipInterior;"/>
-					</Action>
-				</Actions>
-			</RefuelMessage>
-
-		</Panes>
-
-	</DockScreen>
-	
-
-<!-- PLAYER SOVEREIGN
-
-	GLOBAL DATA
-	
-	missionRewards:		Total amount of credits earned in missions
-
--->
-
-	<Sovereign UNID="&svPlayer;"
-			name="independent"
-			alignment="constructive chaos"
-			>
-		<Events>
-			<GetGlobalAchievements>
-				(block (theList missionRewards)
-				
-					; Current player money
-
-					(setq theList
-						(map (filter (typFind "$") theEcon (gr (objGetBalance gPlayerShip theEcon) 0)) theEcon
-							(list (cat "Money (" (fmtCurrency theEcon True) ")") (objGetBalance gPlayerShip theEcon))
-							)
-						)					
-					
-					; Money earned on missions
-					
-					(if (setq missionRewards (typGetGlobalData &svPlayer; "missionRewards"))
-						(setq theList (append theList (list
-							(list "Money earned on missions" missionRewards "missions &amp; activities")
-							)))
-						)
-						
-					theList
-					)
-			</GetGlobalAchievements>
-		</Events>
-	</Sovereign>
-
 <!-- GLOBAL FUNCTIONS -->
 
 	<Globals>
@@ -824,27 +391,14 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsEI500Freighter;"	bitmap="Resources\ShipsEI500Freighter.jpg" bitmask="Resources\ShipsEI500FreighterMask.bmp" />
 	<Image UNID="&rsEI100XArmor;"		bitmap="Resources\ArmorHUD_EI100X.bmp" />
 	<Image UNID="&rsEI100XLarge;"		bitmap="Resources\EI100XLarge.jpg"	bitmask="Resources\EI100XLargeMask.bmp" 	loadOnUse="true" />
-	<Image UNID="&rsEI100XShields;"		bitmap="Resources\ShieldsHUD_EI100X.bmp" />
 
-	<Image UNID="&rsWolfenGunship;"		bitmap="Resources\ShipsWolfenGunship.jpg" bitmask="Resources\ShipsWolfenGunshipMask.bmp" />
 	<Image UNID="&rsWolfenArmor;"		bitmap="Resources\ArmorHUD_Wolfen.bmp" />
 	<Image UNID="&rsWolfenLarge;"		bitmap="Resources\WolfenLarge.jpg"	bitmask="Resources\WolfenLargeMask.bmp" 	loadOnUse="true" />
-	<Image UNID="&rsWolfenShields;"		bitmap="Resources\ShieldsHUD_Wolfen.bmp" />
-
-	<Image UNID="&rsSapphireYacht;"		bitmap="Resources\ShipsSapphireYacht.jpg" bitmask="Resources\ShipsSapphireYachtMask.bmp" />
-	<Image UNID="&rsZubrinArmor;"		bitmap="Resources\ArmorHUD.bmp" />
-	<Image UNID="&rsZubrinLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />
-	<Image UNID="&rsZubrinLRS;"			bitmap="Resources\LargeHUD.jpg"		/>
-	<Image UNID="&rsZubrinLRSBorder;"	bitmask="Resources\LRSBorderMask.bmp"/>
-	<Image UNID="&rsZubrinReactor;"		bitmap="Resources\ReactorDisplay.jpg"	bitmask="Resources\ReactorDisplayMask.bmp"/>
-	<Image UNID="&rsZubrinShields;"		bitmap="Resources\ShieldsHUD.bmp" />
-	<Image UNID="&rsZubrinTargeting;"	bitmap="Resources\WeaponsHUD.bmp"		/>
-	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.bmp"/>
-	<Image UNID="&rsZubrinDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
-
-	<Image UNID="&rsSRSSnow;"			bitmap="Resources\ScreenSnow.jpg"/>
+	
+	<Image UNID="&rsArmorHUDShip_EI500;"	bitmap="Resources\ArmorHUDShip_EI500.jpg" />
+	<Image UNID="&rsArmorHUDShip_Sapphire;"	bitmap="Resources\ArmorHUDShip_Sapphire.jpg" />
+	<Image UNID="&rsArmorHUDShip_Wolfen;"	bitmap="Resources\ArmorHUDShip_Wolfen.jpg" />
 
 </TranscendenceModule>

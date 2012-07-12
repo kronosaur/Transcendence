@@ -56,6 +56,8 @@ const int RADIATION_IMMUNE_LEVEL =				7;
 const int EMP_IMMUNE_LEVEL =					9;
 const int DEVICE_DAMAGE_IMMUNE_LEVEL =			11;
 
+const int TICKS_PER_UPDATE =					10;
+
 struct SStdStats
 	{
 	int iHP;									//	HP for std armor at this level
@@ -335,6 +337,15 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 	return damageArmorHit;
 	}
 
+void CArmorClass::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this class
+
+	{
+	}
+
 int CArmorClass::CalcAdjustedDamage (CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) 
 
 //	CalcAdjustedDamage
@@ -477,7 +488,7 @@ int CArmorClass::CalcBalance (void)
 
 	//	Mass
 
-	int iMass = m_pItemType->GetMassKg();
+	int iMass = CItem(m_pItemType, 1).GetMassKg();
 	if (iMass > 0)
 		{
 		int iDiff = (iMass - STD_STATS[iLevel - 1].iMass);
@@ -571,10 +582,10 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 
 	//	Regen & Decay
 
-	if (error = pArmor->m_Regen.InitFromXML(Ctx, pDesc, REGEN_ATTRIB, REPAIR_RATE_ATTRIB, NULL_STR))
+	if (error = pArmor->m_Regen.InitFromXML(Ctx, pDesc, REGEN_ATTRIB, REPAIR_RATE_ATTRIB, NULL_STR, TICKS_PER_UPDATE))
 		return error;
 
-	if (error = pArmor->m_Decay.InitFromXML(Ctx, pDesc, DECAY_ATTRIB, DECAY_RATE_ATTRIB, NULL_STR))
+	if (error = pArmor->m_Decay.InitFromXML(Ctx, pDesc, DECAY_ATTRIB, DECAY_RATE_ATTRIB, NULL_STR, TICKS_PER_UPDATE))
 		return error;
 
 	//	Install cost based on level
@@ -1246,7 +1257,7 @@ void CArmorClass::Update (CInstalledArmor *pArmor, CSpaceObject *pObj, int iTick
 
 			//	Compute the HP that we regenerate this cycle
 
-			int iHP = Min(iHPNeeded, pRegen->GetRegen(iTick));
+			int iHP = Min(iHPNeeded, pRegen->GetRegen(iTick, TICKS_PER_UPDATE));
 
 			//	If this is photo-repair armor then adjust the cycle
 			//	based on how far away we are from the sun.
@@ -1289,7 +1300,7 @@ void CArmorClass::Update (CInstalledArmor *pArmor, CSpaceObject *pObj, int iTick
 
 		//	Compute the HP that we decay this cycle
 
-		int iHP = Min(pArmor->GetHitPoints(), pDecay->GetRegen(iTick));
+		int iHP = Min(pArmor->GetHitPoints(), pDecay->GetRegen(iTick, TICKS_PER_UPDATE));
 
 		//	Decrement
 

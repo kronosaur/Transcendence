@@ -581,38 +581,8 @@
 
 	</SystemMap>
 
-	<!-- SPECIAL SYSTEMS -->
-	
-	<SystemMap UNID="&smElysium;">
-		<Uses UNID="&smHumanSpace;"/>
-
-		<RootNode ID="Elysium"/>
-	
-		<Node ID="Elysium">
-			<System
-					UNID=				"&ssElysium;"
-					name=				"Elysium"
-					level=				"5"
-					/>
-
-			<Stargates>
-				<Stargate name="SE" to="SE:Outbound"/>
-				<Stargate name="C3" to="C3:Outbound"/>
-				<Stargate name="SK" to="SK:Outbound"/>
-				<Stargate name="C6" to="C6:Outbound"/>
-				<Stargate name="C8" to="C8:Outbound"/>
-				<Stargate name="A1" to="A1:Outbound"/>
-				<Stargate name="EC" to="EC:Outbound"/>
-				<Stargate name="PJ" to="PJ:Outbound"/>
-				<Stargate name="A6" to="A6:Outbound"/>
-				<Stargate name="G2" to="G2:Inbound"/>
-			</Stargates>
-		</Node>
-		
-	</SystemMap>
-
 <!-- RESOURCES -->
 
-	<Image UNID="&rsHumanSpace;"			bitmap="Resources\HumanSpace.jpg"			loadOnUse="true" />
+	<Image UNID="&rsProlog1;"			bitmap="Resources\Prolog1.jpg"				loadOnUse="true" />
 
 </TranscendenceModule>

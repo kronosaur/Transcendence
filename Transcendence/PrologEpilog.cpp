@@ -63,7 +63,7 @@ void CTranscendenceWnd::AnimateProlog (bool bTopMost)
 		if (!m_sBackgroundError.IsBlank())
 			{
 			CString sError = strPatternSubst(CONSTLIT("Unable to begin new game: %s"), m_sBackgroundError);
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 
 			StartIntro(isBlank);
 
@@ -92,24 +92,11 @@ void CTranscendenceWnd::GetCrawlAnimationRect (RECT *retrcRect)
 	retrcRect->right = m_rcMainScreen.right - TEXT_CRAWL_RIGHT_MARGIN;
 	}
 
-void CTranscendenceWnd::InitCrawlBackground (DWORD dwImage)
-
-//	InitCrawlBackground
-//
-//	Loads the appropriate image
-
-	{
-	if (dwImage)
-		m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage);
-	else
-		m_pCrawlImage = NULL;
-	}
-
 ALERROR CTranscendenceWnd::InitCrawlScreen (void)
 
 //	InitCrawlScreen
 //
-//	Initializes the crawl screen. Assumes that m_dwCrawlImage and
+//	Initializes the crawl screen. Assumes that m_pCrawlImage and
 //	m_sCrawlText have been initialized.
 
 	{
@@ -117,7 +104,7 @@ ALERROR CTranscendenceWnd::InitCrawlScreen (void)
 
 	//	Set the image
 
-	InitCrawlBackground(m_pTC->GetModel().GetCrawlImage());
+	m_pCrawlImage = m_pTC->GetModel().GetCrawlImage();
 
 	//	Set the text
 
@@ -230,7 +217,11 @@ ALERROR CTranscendenceWnd::StartProlog (void)
 
 	//	Init the crawl screen
 
-	if (error = InitCrawlScreen())
+	g_pUniverse->SetLogImageLoad(false);
+	error = InitCrawlScreen();
+	g_pUniverse->SetLogImageLoad(true);
+
+	if (error)
 		return error;
 
 	//	If we've got a prolog screen then we wait for the player to

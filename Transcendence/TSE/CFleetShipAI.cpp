@@ -694,6 +694,24 @@ void CFleetShipAI::OnDockedEvent (CSpaceObject *pObj)
 	SetState(stateNone);
 	}
 
+CSpaceObject *CFleetShipAI::OnGetBase (void) const
+
+//	OnGetBase
+//
+//	Returns the base for this ship.
+
+	{
+	switch (GetCurrentOrder())
+		{
+		case IShipController::orderPatrol:
+		case IShipController::orderGuard:
+			return GetCurrentOrderTarget();
+
+		default:
+			return NULL;
+		}
+	}
+
 void CFleetShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 
 //	OnObjDestroyedNotify
@@ -723,7 +741,8 @@ void CFleetShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 
 				int iAvengeChance = (pLeaderTarget ? 40 : 100);
 				CSpaceObject *pAttacker = Ctx.Attacker.GetObj();
-				if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) 
+				if (pAttacker
+						&& Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) 
 						&& pAttacker != pLeaderTarget
 						&& mathRandom(1, 100) <= iAvengeChance)
 					AddOrder(IShipController::orderDestroyTarget, pAttacker, 0);

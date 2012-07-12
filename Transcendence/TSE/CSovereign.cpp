@@ -398,6 +398,29 @@ void CSovereign::InitRelationships (void)
 		}
 	}
 
+void CSovereign::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Add types used by the sovereign.
+
+	{
+	int i;
+
+	//	We only add explicit relationships
+
+	if (m_pInitialRelationships)
+		{
+		for (i = 0; i < m_pInitialRelationships->GetContentElementCount(); i++)
+			{
+			CXMLElement *pRelDesc = m_pInitialRelationships->GetContentElement(i);
+			CSovereign *pTarget = g_pUniverse->FindSovereign(pRelDesc->GetAttributeInteger(SOVEREIGN_ATTRIB));
+			if (pTarget)
+				retTypesUsed->SetAt(pTarget->GetUNID(), true);
+			}
+		}
+	}
+
 ALERROR CSovereign::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign

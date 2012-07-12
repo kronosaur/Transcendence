@@ -93,6 +93,17 @@ int CEnergyFieldType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *p
 	return m_iBonusAdj[iType];
 	}
 
+void CEnergyFieldType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Add types used to the list.
+
+	{
+	//	LATER: m_pEffect and m_pHitEffect are always local; we should allow
+	//	them to be an design type.
+	}
+
 ALERROR CEnergyFieldType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign

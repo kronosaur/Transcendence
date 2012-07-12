@@ -1440,314 +1440,322 @@ ALERROR CG16bitImage::CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask, DWORD
 	{
 	ALERROR error;
 
-	int iRGBRowSizeBytes = 0;
-	int iAlphaRowSize = 0;
-	DWORD *pRGB = NULL;
-	DWORD *pAlpha = NULL;
-
-	//	Figure out the width and height of the bitmap first
-
-	int cxWidth;
-	int cyHeight;
-	void *pBase;
-	int iStride;
-
-	if (hBitmap)
+	try
 		{
-		if (error = dibGetInfo(hBitmap, &cxWidth, &cyHeight, &pBase, &iStride))
-			goto Fail;
-		}
+		int iRGBRowSizeBytes = 0;
+		int iAlphaRowSize = 0;
+		DWORD *pRGB = NULL;
+		DWORD *pAlpha = NULL;
 
-	//	Now load the alpha channel (if any). We do this first because we
-	//	may need to pre-multiply the RGB values by the alpha later
+		//	Figure out the width and height of the bitmap first
 
-	if (hBitmask && dibIs16bit(hBitmask))
-		{
-		int x, y;
-		WORD *pSource;
-		BYTE *pDest;
+		int cxWidth;
+		int cyHeight;
 		void *pBase;
 		int iStride;
-		int cxAlphaWidth, cyAlphaHeight;
 
-		if (error = dibGetInfo(hBitmask, &cxAlphaWidth, &cyAlphaHeight, &pBase, &iStride))
-			goto Fail;
-
-		//	If we only have a mask then initialize the width and height appropriately
-
-		if (hBitmap == NULL)
+		if (hBitmap)
 			{
-			cxWidth = cxAlphaWidth;
-			cyHeight = cyAlphaHeight;
+			if (error = dibGetInfo(hBitmap, &cxWidth, &cyHeight, &pBase, &iStride))
+				goto Fail;
 			}
 
-		//	Allocate a buffer to hold the alpha mask
+		//	Now load the alpha channel (if any). We do this first because we
+		//	may need to pre-multiply the RGB values by the alpha later
 
-		iAlphaRowSize = AlignUp(cxWidth, sizeof(DWORD)) / sizeof(DWORD);
-		pAlpha = (DWORD *)MemAlloc(cyHeight * iAlphaRowSize * sizeof(DWORD));
-		if (pAlpha == NULL)
+		if (hBitmask && dibIs16bit(hBitmask))
 			{
-			error = ERR_MEMORY;
-			goto Fail;
-			}
+			int x, y;
+			WORD *pSource;
+			BYTE *pDest;
+			void *pBase;
+			int iStride;
+			int cxAlphaWidth, cyAlphaHeight;
 
-		//	Copy the bits
+			if (error = dibGetInfo(hBitmask, &cxAlphaWidth, &cyAlphaHeight, &pBase, &iStride))
+				goto Fail;
 
-		if (dwFlags & cfbDesaturateAlpha)
-			{
-			for (y = 0; y < cyHeight; y++)
+			//	If we only have a mask then initialize the width and height appropriately
+
+			if (hBitmap == NULL)
 				{
-				pSource = (WORD *)((char *)pBase + iStride * y);
-				pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
+				cxWidth = cxAlphaWidth;
+				cyHeight = cyAlphaHeight;
+				}
 
-				if (y < cyAlphaHeight)
+			//	Allocate a buffer to hold the alpha mask
+
+			iAlphaRowSize = AlignUp(cxWidth, sizeof(DWORD)) / sizeof(DWORD);
+			pAlpha = (DWORD *)MemAlloc(cyHeight * iAlphaRowSize * sizeof(DWORD));
+			if (pAlpha == NULL)
+				{
+				error = ERR_MEMORY;
+				goto Fail;
+				}
+
+			//	Copy the bits
+
+			if (dwFlags & cfbDesaturateAlpha)
+				{
+				for (y = 0; y < cyHeight; y++)
 					{
-					for (x = 0; x < cxWidth; x++)
-						{
-						if (x >= cxAlphaWidth || *pSource == 0)
-							*pDest = 0x00;
-						else if (*pSource == 0xffff)
-							*pDest = 0xff;
-						else
-							{
-							DWORD dwSource = *pSource;
-							DWORD dwBlue = (((dwSource & 0x001f) << 8) / 31);
-							DWORD dwGreen = (((dwSource & 0x07e0) << 3) / 63);
-							DWORD dwRed = (((dwSource & 0xf800) >> 3) / 31);
+					pSource = (WORD *)((char *)pBase + iStride * y);
+					pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
 
-							DWORD dwMaxColor, dwMinColor;
-							if (dwBlue > dwGreen)
-								{
-								if (dwRed > dwBlue)
-									{
-									dwMaxColor = dwRed;
-									dwMinColor = dwGreen;
-									}
-								else
-									{
-									dwMaxColor = dwBlue;
-									dwMinColor = (dwRed > dwGreen ? dwGreen : dwRed);
-									}
-								}
+					if (y < cyAlphaHeight)
+						{
+						for (x = 0; x < cxWidth; x++)
+							{
+							if (x >= cxAlphaWidth || *pSource == 0)
+								*pDest = 0x00;
+							else if (*pSource == 0xffff)
+								*pDest = 0xff;
 							else
 								{
-								if (dwRed > dwGreen)
+								DWORD dwSource = *pSource;
+								DWORD dwBlue = (((dwSource & 0x001f) << 8) / 31);
+								DWORD dwGreen = (((dwSource & 0x07e0) << 3) / 63);
+								DWORD dwRed = (((dwSource & 0xf800) >> 3) / 31);
+
+								DWORD dwMaxColor, dwMinColor;
+								if (dwBlue > dwGreen)
 									{
-									dwMaxColor = dwRed;
-									dwMinColor = dwBlue;
+									if (dwRed > dwBlue)
+										{
+										dwMaxColor = dwRed;
+										dwMinColor = dwGreen;
+										}
+									else
+										{
+										dwMaxColor = dwBlue;
+										dwMinColor = (dwRed > dwGreen ? dwGreen : dwRed);
+										}
 									}
 								else
 									{
-									dwMaxColor = dwGreen;
-									dwMinColor = (dwRed > dwBlue ? dwBlue : dwRed);
+									if (dwRed > dwGreen)
+										{
+										dwMaxColor = dwRed;
+										dwMinColor = dwBlue;
+										}
+									else
+										{
+										dwMaxColor = dwGreen;
+										dwMinColor = (dwRed > dwBlue ? dwBlue : dwRed);
+										}
 									}
+
+								*pDest = (BYTE)((dwMaxColor + dwMinColor) / 2);
 								}
 
-							*pDest = (BYTE)((dwMaxColor + dwMinColor) / 2);
+							pDest++;
+							pSource++;
+							}
+						}
+					else
+						{
+						for (x = 0; x < cxWidth; x++)
+							*pDest++ = 0;
+						}
+					}
+				}
+			else
+				{
+				for (y = 0; y < cyHeight; y++)
+					{
+					pSource = (WORD *)((char *)pBase + iStride * y);
+					pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
+
+					if (y < cyAlphaHeight)
+						{
+						for (x = 0; x < cxWidth; x++)
+							{
+							if (x >= cxAlphaWidth || *pSource == 0)
+								*pDest = 0x00;
+							else if (*pSource == 0xffff)
+								*pDest = 0xff;
+							else
+								//	Take the green channel and convert to 0-255
+								*pDest = (BYTE)(((*pSource & 0x07e0) << 3) / 63);
+
+							pDest++;
+							pSource++;
+							}
+						}
+					else
+						{
+						for (x = 0; x < cxWidth; x++)
+							*pDest++ = 0;
+						}
+					}
+				}
+			}
+
+		//	Now we get the bits of the bitmap. This section will initialize
+		//	cxWidth, cyHeight, iRGBRowSize, and pRGB.
+		//
+		//	If this is a DIBSECTION of the correct format then we access
+		//	the bits directly.
+
+		if (hBitmap)
+			{
+			BITMAP bm;
+
+			//	Allocate our own buffer
+
+			iRGBRowSizeBytes = AlignUp(Absolute(iStride), sizeof(DWORD));
+			pRGB = (DWORD *)MemAlloc(cyHeight * iRGBRowSizeBytes);
+			if (pRGB == NULL)
+				{
+				error = ERR_MEMORY;
+				goto Fail;
+				}
+
+			if (dibIs16bit(hBitmap))
+				{
+				//	Copy bits
+
+				if (!(dwFlags & cfbPreMultAlpha) && pAlpha)
+					{
+					int x, y;
+					BYTE *pAlphaRow = (BYTE *)pAlpha;
+					WORD *pSourceRow = (WORD *)pBase;
+					WORD *pDestRow = (WORD *)pRGB;
+					for (y = 0; y < cyHeight; y++)
+						{
+						BYTE *pAlphaPos = pAlphaRow;
+						WORD *pSourcePos = pSourceRow;
+						WORD *pDestPos = pDestRow;
+						for (x = 0; x < cxWidth; x++)
+							{
+							WORD wBlue = (WORD)IntMult(GetBlueValue(*pSourcePos), *pAlphaPos);
+							WORD wGreen = (WORD)IntMult(GetGreenValue(*pSourcePos), *pAlphaPos);
+							WORD wRed = (WORD)IntMult(GetRedValue(*pSourcePos), *pAlphaPos);
+
+							*pDestPos = wBlue | (wGreen << 5) | (wRed << 11);
+
+							pAlphaPos++;
+							pSourcePos++;
+							pDestPos++;
 							}
 
-						pDest++;
-						pSource++;
+						pAlphaRow += iAlphaRowSize * sizeof(DWORD);
+						pSourceRow += iStride / sizeof(WORD);
+						pDestRow += iRGBRowSizeBytes / sizeof(WORD);
 						}
 					}
 				else
 					{
-					for (x = 0; x < cxWidth; x++)
-						*pDest++ = 0;
-					}
-				}
-			}
-		else
-			{
-			for (y = 0; y < cyHeight; y++)
-				{
-				pSource = (WORD *)((char *)pBase + iStride * y);
-				pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
-
-				if (y < cyAlphaHeight)
-					{
-					for (x = 0; x < cxWidth; x++)
+					int i;
+					char *pSource = (char *)pBase;
+					char *pDest = (char *)pRGB;
+					for (i = 0; i < cyHeight; i++)
 						{
-						if (x >= cxAlphaWidth || *pSource == 0)
-							*pDest = 0x00;
-						else if (*pSource == 0xffff)
-							*pDest = 0xff;
-						else
-							//	Take the green channel and convert to 0-255
-							*pDest = (BYTE)(((*pSource & 0x07e0) << 3) / 63);
+						utlMemCopy(pSource, pDest, sizeof(WORD) * cxWidth);
+						pSource += iStride;
+						pDest += iRGBRowSizeBytes;
+						}
+					}
+				}
+			else if (dibIs24bit(hBitmap))
+				{
+				//	Copy bits
 
-						pDest++;
-						pSource++;
+				if (!(dwFlags & cfbPreMultAlpha) && pAlpha)
+					{
+					int x, y;
+					BYTE *pAlphaRow = (BYTE *)pAlpha;
+					BYTE *pSourceRow = (BYTE *)pBase;
+					WORD *pDestRow = (WORD *)pRGB;
+					for (y = 0; y < cyHeight; y++)
+						{
+						BYTE *pAlphaPos = pAlphaRow;
+						BYTE *pSourcePos = pSourceRow;
+						WORD *pDestPos = pDestRow;
+						for (x = 0; x < cxWidth; x++)
+							{
+							WORD wBlue = (WORD)IntMult((*pSourcePos++) >> 3, *pAlphaPos);
+							WORD wGreen = (WORD)IntMult((*pSourcePos++) >> 2, *pAlphaPos);
+							WORD wRed = (WORD)IntMult((*pSourcePos++) >> 3, *pAlphaPos);
+
+							*pDestPos = wBlue | (wGreen << 5) | (wRed << 11);
+
+							pAlphaPos++;
+							pDestPos++;
+							}
+
+						pAlphaRow += iAlphaRowSize * sizeof(DWORD);
+						pSourceRow += iStride;
+						pDestRow += iRGBRowSizeBytes / sizeof(WORD);
 						}
 					}
 				else
 					{
-					for (x = 0; x < cxWidth; x++)
-						*pDest++ = 0;
+					int x, y;
+					BYTE *pSourceRow = (BYTE *)pBase;
+					WORD *pDestRow = (WORD *)pRGB;
+					for (y = 0; y < cyHeight; y++)
+						{
+						BYTE *pSourcePos = pSourceRow;
+						WORD *pDestPos = pDestRow;
+						for (x = 0; x < cxWidth; x++)
+							{
+							DWORD dwBlue = ((DWORD)*pSourcePos++) >> 3;
+							DWORD dwGreen = ((DWORD)*pSourcePos++) >> 2;
+							DWORD dwRed = ((DWORD)*pSourcePos++) >> 3;
+
+							*pDestPos = (WORD)(dwBlue | (dwGreen << 5) | (dwRed << 11));
+
+							pDestPos++;
+							}
+
+						pSourceRow += iStride;
+						pDestRow += iRGBRowSizeBytes / sizeof(WORD);
+						}
 					}
 				}
+
+			//	Otherwise we get the bits using GetDIBits
+
+			else if (GetObject(hBitmap, sizeof(bm), &bm) == sizeof(bm))
+				{
+	#ifndef LATER
+				ASSERT(FALSE);
+	#endif
+				}
+			else
+				return ERR_FAIL;
 			}
+
+		//	Free the old data and assign the new
+
+		DeleteData();
+		m_cxWidth = cxWidth;
+		m_cyHeight = cyHeight;
+		ResetClipRect();
+		m_iRGBRowSize = iRGBRowSizeBytes / sizeof(DWORD);
+		m_iAlphaRowSize = iAlphaRowSize;
+		m_pRGB = pRGB;
+		m_pAlpha = pAlpha;
+		m_bHasMask = (pAlpha ? true : false);
+
+		return NOERROR;
+
+	Fail:
+
+		if (pRGB)
+			MemFree(pRGB);
+
+		if (pAlpha)
+			MemFree(pAlpha);
+
+		return error;
 		}
-
-	//	Now we get the bits of the bitmap. This section will initialize
-	//	cxWidth, cyHeight, iRGBRowSize, and pRGB.
-	//
-	//	If this is a DIBSECTION of the correct format then we access
-	//	the bits directly.
-
-	if (hBitmap)
+	catch (...)
 		{
-		BITMAP bm;
-
-		//	Allocate our own buffer
-
-		iRGBRowSizeBytes = AlignUp(Absolute(iStride), sizeof(DWORD));
-		pRGB = (DWORD *)MemAlloc(cyHeight * iRGBRowSizeBytes);
-		if (pRGB == NULL)
-			{
-			error = ERR_MEMORY;
-			goto Fail;
-			}
-
-		if (dibIs16bit(hBitmap))
-			{
-			//	Copy bits
-
-			if (!(dwFlags & cfbPreMultAlpha) && pAlpha)
-				{
-				int x, y;
-				BYTE *pAlphaRow = (BYTE *)pAlpha;
-				WORD *pSourceRow = (WORD *)pBase;
-				WORD *pDestRow = (WORD *)pRGB;
-				for (y = 0; y < cyHeight; y++)
-					{
-					BYTE *pAlphaPos = pAlphaRow;
-					WORD *pSourcePos = pSourceRow;
-					WORD *pDestPos = pDestRow;
-					for (x = 0; x < cxWidth; x++)
-						{
-						WORD wBlue = (WORD)IntMult(GetBlueValue(*pSourcePos), *pAlphaPos);
-						WORD wGreen = (WORD)IntMult(GetGreenValue(*pSourcePos), *pAlphaPos);
-						WORD wRed = (WORD)IntMult(GetRedValue(*pSourcePos), *pAlphaPos);
-
-						*pDestPos = wBlue | (wGreen << 5) | (wRed << 11);
-
-						pAlphaPos++;
-						pSourcePos++;
-						pDestPos++;
-						}
-
-					pAlphaRow += iAlphaRowSize * sizeof(DWORD);
-					pSourceRow += iStride / sizeof(WORD);
-					pDestRow += iRGBRowSizeBytes / sizeof(WORD);
-					}
-				}
-			else
-				{
-				int i;
-				char *pSource = (char *)pBase;
-				char *pDest = (char *)pRGB;
-				for (i = 0; i < cyHeight; i++)
-					{
-					utlMemCopy(pSource, pDest, sizeof(WORD) * cxWidth);
-					pSource += iStride;
-					pDest += iRGBRowSizeBytes;
-					}
-				}
-			}
-		else if (dibIs24bit(hBitmap))
-			{
-			//	Copy bits
-
-			if (!(dwFlags & cfbPreMultAlpha) && pAlpha)
-				{
-				int x, y;
-				BYTE *pAlphaRow = (BYTE *)pAlpha;
-				BYTE *pSourceRow = (BYTE *)pBase;
-				WORD *pDestRow = (WORD *)pRGB;
-				for (y = 0; y < cyHeight; y++)
-					{
-					BYTE *pAlphaPos = pAlphaRow;
-					BYTE *pSourcePos = pSourceRow;
-					WORD *pDestPos = pDestRow;
-					for (x = 0; x < cxWidth; x++)
-						{
-						WORD wBlue = (WORD)IntMult((*pSourcePos++) >> 3, *pAlphaPos);
-						WORD wGreen = (WORD)IntMult((*pSourcePos++) >> 2, *pAlphaPos);
-						WORD wRed = (WORD)IntMult((*pSourcePos++) >> 3, *pAlphaPos);
-
-						*pDestPos = wBlue | (wGreen << 5) | (wRed << 11);
-
-						pAlphaPos++;
-						pDestPos++;
-						}
-
-					pAlphaRow += iAlphaRowSize * sizeof(DWORD);
-					pSourceRow += iStride;
-					pDestRow += iRGBRowSizeBytes / sizeof(WORD);
-					}
-				}
-			else
-				{
-				int x, y;
-				BYTE *pSourceRow = (BYTE *)pBase;
-				WORD *pDestRow = (WORD *)pRGB;
-				for (y = 0; y < cyHeight; y++)
-					{
-					BYTE *pSourcePos = pSourceRow;
-					WORD *pDestPos = pDestRow;
-					for (x = 0; x < cxWidth; x++)
-						{
-						DWORD dwBlue = ((DWORD)*pSourcePos++) >> 3;
-						DWORD dwGreen = ((DWORD)*pSourcePos++) >> 2;
-						DWORD dwRed = ((DWORD)*pSourcePos++) >> 3;
-
-						*pDestPos = (WORD)(dwBlue | (dwGreen << 5) | (dwRed << 11));
-
-						pDestPos++;
-						}
-
-					pSourceRow += iStride;
-					pDestRow += iRGBRowSizeBytes / sizeof(WORD);
-					}
-				}
-			}
-
-		//	Otherwise we get the bits using GetDIBits
-
-		else if (GetObject(hBitmap, sizeof(bm), &bm) == sizeof(bm))
-			{
-#ifndef LATER
-			ASSERT(FALSE);
-#endif
-			}
-		else
-			return ERR_FAIL;
+		::kernelDebugLogMessage("Crash in CG16bitImage::CreateFromBitmap.");
+		return ERR_FAIL;
 		}
-
-	//	Free the old data and assign the new
-
-	DeleteData();
-	m_cxWidth = cxWidth;
-	m_cyHeight = cyHeight;
-	ResetClipRect();
-	m_iRGBRowSize = iRGBRowSizeBytes / sizeof(DWORD);
-	m_iAlphaRowSize = iAlphaRowSize;
-	m_pRGB = pRGB;
-	m_pAlpha = pAlpha;
-	m_bHasMask = (pAlpha ? true : false);
-
-	return NOERROR;
-
-Fail:
-
-	if (pRGB)
-		MemFree(pRGB);
-
-	if (pAlpha)
-		MemFree(pAlpha);
-
-	return error;
 	}
 
 ALERROR CG16bitImage::CreateFromImage (const CG16bitImage &Image)
@@ -2990,32 +2998,39 @@ void CG16bitImage::SetTransparentColor (WORD wColor)
 //	uses the mask to fill in the color on the image itself
 
 	{
-	if (m_pAlpha && m_pRGB)
+	try
 		{
-		for (int y = 0; y < m_cyHeight; y++)
+		if (m_pAlpha && m_pRGB)
 			{
-			BYTE *pSource = (BYTE *)(m_pAlpha + m_iAlphaRowSize * y);
-			WORD *pDest = (WORD *)(m_pRGB + m_iRGBRowSize * y);
+			for (int y = 0; y < m_cyHeight; y++)
+				{
+				BYTE *pSource = (BYTE *)(m_pAlpha + m_iAlphaRowSize * y);
+				WORD *pDest = (WORD *)(m_pRGB + m_iRGBRowSize * y);
 
-			for (int x = 0; x < m_cxWidth; x++)
-				if (pSource[x] == 0)
-					pDest[x] = wColor;
-				else if (pDest[x] == wColor)
-					pDest[x] = 0x0001;		//	Almost black
+				for (int x = 0; x < m_cxWidth; x++)
+					if (pSource[x] == 0)
+						pDest[x] = wColor;
+					else if (pDest[x] == wColor)
+						pDest[x] = 0x0001;		//	Almost black
+				}
+
+			//	Free the mask since we don't need it anymore
+
+			MemFree(m_pAlpha);
+			m_pAlpha = NULL;
+
+			//	The semantic of m_bHasMask is that callers should use
+			//	ColorTransBlt instead of Blt.
+
+			m_bHasMask = true;
 			}
 
-		//	Free the mask since we don't need it anymore
-
-		MemFree(m_pAlpha);
-		m_pAlpha = NULL;
-
-		//	The semantic of m_bHasMask is that callers should use
-		//	ColorTransBlt instead of Blt.
-
-		m_bHasMask = true;
+		m_wBackColor = wColor;
 		}
-
-	m_wBackColor = wColor;
+	catch (...)
+		{
+		kernelDebugLogMessage("Crash in CG16bitImage::SetTransparentColor.");
+		}
 	}
 
 void CG16bitImage::SwapBuffers (CG16bitImage &Other)

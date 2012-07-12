@@ -867,6 +867,7 @@ class CGTextArea : public AGArea
 	public:
 		CGTextArea (void);
 
+		inline const CString &GetText (void) { return m_sText; }
 		inline void SetColor (WORD wColor) { m_Color = wColor; }
 		inline void SetCursor (int iLine, int iCol = 0) { m_iCursorLine = iLine; m_iCursorPos = iCol; }
 		inline void SetEditable (bool bEditable = true) { m_bEditable = bEditable; }
@@ -874,7 +875,6 @@ class CGTextArea : public AGArea
 		inline void SetLineSpacing (int cySpacing) { m_cyLineSpacing = cySpacing; m_cxJustifyWidth = 0; }
 		inline void SetStyles (DWORD dwStyles) { m_dwStyles = dwStyles; m_cxJustifyWidth = 0; }
 		inline void SetText (const CString &sText) { m_sText = sText; m_cxJustifyWidth = 0; Invalidate(); }
-		inline const CString &GetText (void) { return m_sText; }
 
 		//	AGArea virtuals
 		virtual int Justify (const RECT &rcRect);
@@ -1081,6 +1081,7 @@ class CSoundMgr
 		ALERROR Init (HWND hWnd);
 		void CleanUp (void);
 
+		void Delete (int iChannel);
 		ALERROR LoadWaveFile (const CString &sFilename, int *retiChannel);
 		ALERROR LoadWaveFromBuffer (IReadBlock &Data, int *retiChannel);
 		void Play (int iChannel, int iVolume, int iPan);
@@ -1103,12 +1104,13 @@ class CSoundMgr
 
 		void AddMusicFolder (const CString &sFolder, TArray<CString> *retCatalog);
 		int AllocChannel (void);
-		inline SChannel *GetChannel (int iChannel) { return (SChannel *)m_Channels.GetElement(iChannel); }
+		void CleanUpChannel (SChannel &Channel);
+		inline SChannel *GetChannel (int iChannel) { return &m_Channels[iChannel]; }
 		inline int GetChannelCount (void) { return m_Channels.GetCount(); }
 		ALERROR LoadWaveFile (HMMIO hFile, int *retiChannel);
 
 		LPDIRECTSOUND m_pDS;
-		CIntArray m_Channels;
+		TArray<SChannel> m_Channels;
 		HWND m_hMusic;
 
 		int m_iSoundVolume;

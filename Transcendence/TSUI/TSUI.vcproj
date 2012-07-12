@@ -216,13 +216,6 @@
 				<File
 					RelativePath=".\CHexarcService.cpp"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\CHexarcServiceStub.cpp"
@@ -273,14 +266,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="Storage"
-				>
-				<File
-					RelativePath=".\CGameFile.cpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -297,10 +282,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Storage.h"
 				>
 			</File>
 			<File

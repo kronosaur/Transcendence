@@ -563,7 +563,15 @@ CString CBaseShipAI::DebugCrashInfo (void)
 //	Returns debug crash info
 
 	{
-	return OnDebugCrashInfo();
+	//	If we have an order module then let it dump its data.
+
+	if (m_pOrderModule)
+		return m_pOrderModule->DebugCrashInfo();
+
+	//	Otherwise, let our descendant output
+
+	else
+		return OnDebugCrashInfo();
 	}
 
 void CBaseShipAI::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -740,6 +748,76 @@ CSpaceObject *CBaseShipAI::GetEscortPrincipal (void) const
 		default:
 			return NULL;
 		}
+	}
+
+void CBaseShipAI::GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
+
+//	GetNearestTargets
+//
+//	Returns a list of nearest targets
+
+	{
+	int i;
+	CInstalledDevice *pDevice = ItemCtx.GetDevice();
+	CDeviceClass *pWeapon = ItemCtx.GetDeviceClass();
+
+	//	Get targets, if necessary
+
+	if (TargetingCtx.bRecalcTargets)
+		{
+		TargetingCtx.Targets.DeleteAll();
+
+		//	If we are aggressive, then include ships that haven't fired 
+		//	their weapons recently
+
+		DWORD dwFlags = 0;
+		if (m_AICtx.IsAggressor())
+			dwFlags |= FLAG_INCLUDE_NON_AGGRESSORS;
+
+		//	First build a list of the nearest enemy ships within
+		//	range of the ship.
+
+		m_pShip->GetNearestVisibleEnemies(MAX_TARGETS,
+				m_AICtx.GetBestWeaponRange(),
+				&TargetingCtx.Targets,
+				GetBase(),
+				dwFlags);
+
+		//	If we've got a target, add it to the list. Sometimes this will be 
+		//	a duplicate, but that's OK.
+
+		CSpaceObject *pTarget = GetTarget(true);
+		if (pTarget)
+			TargetingCtx.Targets.Insert(pTarget);
+
+		TargetingCtx.bRecalcTargets = false;
+		}
+
+	//	Now find a target for the given weapon.
+
+	Metric rMaxRange = pDevice->GetClass()->GetMaxEffectiveRange(m_pShip, pDevice, NULL);
+	Metric rMaxRange2 = rMaxRange * rMaxRange;
+	for (i = 0; i < TargetingCtx.Targets.GetCount(); i++)
+		{
+		int iFireAngle;
+		CSpaceObject *pTarget = TargetingCtx.Targets[i];
+		Metric rDist2 = (pTarget->GetPos() - m_pShip->GetPos()).Length2();
+
+		if (rDist2 < rMaxRange2 
+				&& pDevice->GetWeaponEffectiveness(m_pShip, pTarget) >= 0
+				&& pDevice->IsWeaponAligned(m_pShip, pTarget, NULL, &iFireAngle)
+				&& m_AICtx.CheckForFriendsInLineOfFire(m_pShip, pDevice, pTarget, iFireAngle, rMaxRange))
+			{
+			*retpTarget = pTarget;
+			*retiFireSolution = iFireAngle;
+			return;
+			}
+		}
+
+	//	If we get this far then no target found
+
+	*retpTarget = NULL;
+	*retiFireSolution = -1;
 	}
 
 CSpaceObject *CBaseShipAI::GetOrderGiver (void)

@@ -348,7 +348,7 @@ DWORD WINAPI CBackgroundProcessor::Thread (LPVOID pData)
 			if (pTask)
 				{
 				pThis->m_bExecuting = true;
-				pThis->SetProgress(CONSTLIT("Running"), -1);
+				pThis->SetProgress(CONSTLIT("Running"), 0);
 
 				CString sResult;
 				ALERROR error = pTask->HIExecute(pThis, &sResult);

@@ -144,7 +144,7 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 			int iOption = FindOptionData(pItem->GetAttribute(NAME_ATTRIB));
 			if (iOption == -1)
 				{
-				kernelDebugLogMessage("Unknown option: %s", pItem->GetAttribute(NAME_ATTRIB).GetASCIIZPointer());
+				kernelDebugLogMessage("Unknown option: %s", pItem->GetAttribute(NAME_ATTRIB));
 				continue;
 				}
 

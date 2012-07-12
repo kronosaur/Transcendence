@@ -9,11 +9,12 @@
 #define PRIMARY_COLOR_ATTRIB			CONSTLIT("primaryColor")
 #define SECONDARY_COLOR_ATTRIB			CONSTLIT("secondaryColor")
 
+#define BEAM_TYPE_HEAVY_BLASTER			CONSTLIT("heavyblaster")
 #define BEAM_TYPE_LASER					CONSTLIT("laser")
 #define BEAM_TYPE_LIGHTNING				CONSTLIT("lightning")
-#define BEAM_TYPE_HEAVY_BLASTER			CONSTLIT("heavyblaster")
-#define BEAM_TYPE_STAR_BLASTER			CONSTLIT("starblaster")
+#define BEAM_TYPE_LIGHTNING_BOLT		CONSTLIT("lightningBolt")
 #define BEAM_TYPE_PARTICLE				CONSTLIT("particle")
+#define BEAM_TYPE_STAR_BLASTER			CONSTLIT("starblaster")
 
 #define BEAM_TYPE_GREEN_PARTICLE		CONSTLIT("greenparticle")
 #define BEAM_TYPE_BLUE_PARTICLE			CONSTLIT("blueparticle")
@@ -21,6 +22,54 @@
 #define BEAM_TYPE_GREEN_LIGHTNING		CONSTLIT("greenlightning")
 
 const int LIGHTNING_POINT_COUNT	= 16;			//	Must be a power of 2
+
+void CBeamEffectCreator::CreateLightningGlow (SLineDesc &Line, int iPointCount, CVector *pPoints, int iSize, CG16bitRegion *retRegion)
+
+//	CreateLightningGlow
+//
+//	Creates a polygon region in the shape of th lightning.
+
+	{
+	int i;
+
+	//	Compute a perpendicular line (the line width)
+
+	CVector vLine(Line.xTo - Line.xFrom, Line.yTo - Line.yFrom);
+	CVector vHalfPerp = (iSize * vLine.Perpendicular().Normal()) / 2.0;
+
+	//	Generate polygon points.
+
+	SPoint *pPolygon = new SPoint [iPointCount * 2];
+	SPoint *pPoint = pPolygon;
+	
+	//	First add all the points on one side
+
+	for (i = 0; i < iPointCount; i++)
+		{
+		pPoint->x = (int)(pPoints[i].GetX() + vHalfPerp.GetX());
+		pPoint->y = (int)(pPoints[i].GetY() + vHalfPerp.GetY());
+
+		pPoint++;
+		}
+
+	//	Now add the points on the other side (backwards)
+
+	for (i = iPointCount - 1; i >= 0; i--)
+		{
+		pPoint->x = (int)(pPoints[i].GetX() - vHalfPerp.GetX());
+		pPoint->y = (int)(pPoints[i].GetY() - vHalfPerp.GetY());
+
+		pPoint++;
+		}
+
+	//	Convert to region
+
+	retRegion->CreateFromPolygon(iPointCount * 2, pPolygon);
+
+	//	Done
+
+	delete [] pPolygon;
+	}
 
 void CBeamEffectCreator::DrawBeam (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx)
 
@@ -45,6 +94,10 @@ void CBeamEffectCreator::DrawBeam (CG16bitImage &Dest, SLineDesc &Line, SViewpor
 
 		case beamLightning:
 			DrawBeamLightning(Dest, Line, Ctx);
+			break;
+
+		case beamLightningBolt:
+			DrawBeamLightningBolt(Dest, Line, Ctx);
 			break;
 
 		case beamParticle:
@@ -276,6 +329,177 @@ void CBeamEffectCreator::DrawBeamLightning (CG16bitImage &Dest, SLineDesc &Line,
 					0.3);
 	}
 
+void CBeamEffectCreator::DrawBeamLightningBolt (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx)
+
+//	DrawBeamLightningBolt
+//
+//	Draws the appropriate beam
+
+	{
+	int i;
+
+	//	Compute a set of points for the lightning
+
+	int iPointCount = LIGHTNING_POINT_COUNT;
+	CVector *pPoints = new CVector [iPointCount];
+	pPoints[0] = CVector(Line.xFrom, Line.yFrom);
+	pPoints[iPointCount - 1] = CVector(Line.xTo, Line.yTo);
+
+	ComputeLightningPoints(iPointCount, pPoints, 0.3);
+
+	//	Draw based on intensity
+
+	switch (m_iIntensity)
+		{
+		//	Draw nothing
+
+		case 0:
+			break;
+
+		//	At intensity 1 or 2 just draw a lightning line with the primary color
+
+		case 1:
+		case 2:
+			{
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						m_iIntensity,
+						m_wPrimaryColor);
+				}
+			break;
+			}
+
+		//	At intensity 3 or 4 draw secondary color around primary.
+
+		case 3:
+		case 4:
+			{
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						m_iIntensity,
+						m_wSecondaryColor);
+				}
+
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						m_iIntensity - 2,
+						m_wPrimaryColor);
+				}
+			break;
+			}
+
+		//	At intensity 5-10 we draw a glow around the beam
+
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+		case 10:
+			{
+			//	Create a polygon for the glow shaped like a wide version of the
+			//	lightning bolt.
+
+			CG16bitRegion GlowRegion;
+			CreateLightningGlow(Line, iPointCount, pPoints, m_iIntensity, &GlowRegion);
+
+			//	Paint the glow
+
+			GlowRegion.FillTrans(Dest, 0, 0, m_wSecondaryColor, 128);
+
+			//	Paint the main bolt
+
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						4,
+						m_wSecondaryColor);
+				}
+
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						2,
+						m_wPrimaryColor);
+				}
+
+			break;
+			}
+
+		//	For even larger beams we do a double glow
+
+		default:
+			{
+			//	Create a polygon for the glow shaped like a wide version of the
+			//	lightning bolt.
+
+			CG16bitRegion GlowRegion1;
+			CreateLightningGlow(Line, iPointCount, pPoints, m_iIntensity, &GlowRegion1);
+
+			CG16bitRegion GlowRegion2;
+			CreateLightningGlow(Line, iPointCount, pPoints, 10, &GlowRegion2);
+
+			//	Paint the glow
+
+			GlowRegion1.FillTrans(Dest, 0, 0, m_wSecondaryColor, 48);
+			GlowRegion2.FillTrans(Dest, 0, 0, m_wSecondaryColor, 96);
+
+			//	Paint the main bolt
+
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						4,
+						m_wSecondaryColor);
+				}
+
+			for (i = 0; i < iPointCount-1; i++)
+				{
+				const CVector &vFrom = pPoints[i];
+				const CVector &vTo = pPoints[i + 1];
+
+				Dest.DrawLine((int)vFrom.GetX(), (int)vFrom.GetY(),
+						(int)vTo.GetX(), (int)vTo.GetY(),
+						2,
+						m_wPrimaryColor);
+				}
+
+			break;
+			}
+		}
+
+	//	Done
+
+	delete [] pPoints;
+	}
+
 void CBeamEffectCreator::DrawBeamParticle (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx)
 
 //	DrawBeamParticle
@@ -429,7 +653,11 @@ void CBeamEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewportPaint
 
 	{
 	SLineDesc Line;
-	Metric rLength = LIGHT_SPEED * g_SecondsPerUpdate / g_KlicksPerPixel;
+
+	//	NOTE: We add 1.0 to make the ends of multiple beam objects overlap.
+	//	(Because round-off tends to lose a pixel.)
+
+	Metric rLength = 1.0 + (LIGHT_SPEED * g_SecondsPerUpdate / g_KlicksPerPixel);
 	CVector vFrom = PolarToVector(Ctx.iRotation, -rLength);
 
 	Line.xFrom = x + (int)(vFrom.GetX() + 0.5);
@@ -469,6 +697,8 @@ BeamTypes CBeamEffectCreator::ParseBeamType (const CString &sValue)
 		return beamLaser;
 	else if (strEquals(sValue, BEAM_TYPE_LIGHTNING))
 		return beamLightning;
+	else if (strEquals(sValue, BEAM_TYPE_LIGHTNING_BOLT))
+		return beamLightningBolt;
 	else if (strEquals(sValue, BEAM_TYPE_HEAVY_BLASTER))
 		return beamHeavyBlaster;
 	else if (strEquals(sValue, BEAM_TYPE_GREEN_PARTICLE))

@@ -107,7 +107,7 @@ ALERROR CEventHandler::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		//	If this is an old extension, then make sure the code is not using the
 		//	gStation variable, because we no longer support it
 
-		if (Ctx.pExtension && Ctx.pExtension->dwVersion < 2)
+		if (Ctx.pExtension && Ctx.pExtension->GetAPIVersion() < 2)
 			{
 			if (g_pUniverse->GetCC().HasIdentifier(pCode, CONSTLIT("gStation")))
 				{

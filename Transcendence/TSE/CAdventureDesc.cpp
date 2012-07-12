@@ -21,85 +21,6 @@
 
 #define ERR_STARTING_SHIP_CRITERIA				CONSTLIT("Unable to parse startingShipCriteria")
 
-void CAdventureDesc::CreateIcon (int cxWidth, int cyHeight, CG16bitImage **retpIcon)
-
-//	CreateIcon
-//
-//	Creates a cover icon for the adventure. The caller is responsible for
-//	freeing the result.
-
-	{
-	//	Load the image
-
-	CG16bitImage *pBackground = g_pUniverse->GetLibraryBitmap(GetBackgroundUNID());
-	if (pBackground == NULL || pBackground->GetWidth() == 0 || pBackground->GetHeight() == 0)
-		{
-		int cxSize = Min(cxWidth, cyHeight);
-		*retpIcon = new CG16bitImage;
-		(*retpIcon)->CreateBlank(cxSize, cxSize, false);
-		return;
-		}
-
-	//	Figure out the dimensions of the icon based on the image size and the
-	//	desired output.
-	//
-	//	If the background is larger than the icon size then we need to scale it.
-
-	CG16bitImage *pIcon;
-	if (pBackground->GetWidth() > cxWidth || pBackground->GetHeight() > cyHeight)
-		{
-		Metric rScale = (Metric)cxWidth / pBackground->GetWidth();
-		if (rScale * pBackground->GetHeight() > (Metric)cyHeight)
-			rScale = (Metric)cyHeight / pBackground->GetHeight();
-
-		int cxDest = (int)(rScale * pBackground->GetWidth());
-		int cyDest = (int)(rScale * pBackground->GetHeight());
-
-		//	Create the icon
-
-		pIcon = new CG16bitImage;
-		pIcon->CreateBlank(cxDest, cyDest, false);
-
-		//	Scale
-
-		DrawBltTransformed(*pIcon,
-				cxDest / 2,
-				cyDest / 2,
-				rScale,
-				rScale,
-				0.0,
-				*pBackground,
-				0,
-				0,
-				pBackground->GetWidth(),
-				pBackground->GetHeight());
-		}
-
-	//	Otherwise we center the image on the icon
-
-	else
-		{
-		//	Create the icon
-
-		pIcon = new CG16bitImage;
-		pIcon->CreateBlank(cxWidth, cyHeight, false);
-
-		//	Blt
-
-		pIcon->Blt(0,
-				0,
-				pBackground->GetWidth(),
-				pBackground->GetHeight(),
-				*pBackground,
-				(cxWidth - pBackground->GetWidth()) / 2,
-				(cyHeight - pBackground->GetHeight()) / 2);
-		}
-
-	//	Done
-
-	*retpIcon = pIcon;
-	}
-
 bool CAdventureDesc::FindDataField (const CString &sField, CString *retsValue)
 
 //	FindDataField
@@ -149,7 +70,7 @@ void CAdventureDesc::FireOnGameEnd (const CGameRecord &Game, const SBasicGameSta
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
-			kernelDebugLogMessage("OnGameEnd error: %s", pResult->GetStringValue().GetASCIIZPointer());
+			kernelDebugLogMessage("OnGameEnd error: %s", pResult->GetStringValue());
 		Ctx.Discard(pResult);
 		}
 	}
@@ -171,7 +92,7 @@ void CAdventureDesc::FireOnGameStart (void)
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
-			kernelDebugLogMessage("OnGameStart error: %s", pResult->GetStringValue().GetASCIIZPointer());
+			kernelDebugLogMessage("OnGameStart error: %s", pResult->GetStringValue());
 		Ctx.Discard(pResult);
 		}
 	}
@@ -239,14 +160,15 @@ ALERROR CAdventureDesc::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 
 	else
 		{
-		m_dwExtensionUNID = Ctx.pExtension->dwUNID;
+		m_dwExtensionUNID = Ctx.pExtension->GetUNID();
 		m_fInDefaultResource = false;
 		}
 
 	//	Load the name, etc
 
 	m_sName = pDesc->GetAttribute(NAME_ATTRIB);
-	m_dwBackgroundUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(BACKGROUND_ID_ATTRIB));
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(BACKGROUND_ID_ATTRIB), &m_dwBackgroundUNID))
+		return error;
 
 	//	Starting ship criteria
 
@@ -271,10 +193,18 @@ ALERROR CAdventureDesc::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 
 	m_fIsCurrentAdventure = false;
 
-	//	If the extension doesn't have a name, then we can set it
+	//	If we don't have a name, then get it from the extension
 
-	if (Ctx.pExtension && strFind(Ctx.pExtension->sName, CONSTLIT("Extension")) == 0)
-		Ctx.pExtension->sName = m_sName;
+	if (m_sName.IsBlank())
+		{
+		if (Ctx.pExtension)
+			m_sName = Ctx.pExtension->GetName();
+		}
+
+	//	Otherwise, if the extension doesn't have a name, then we can set it
+
+	else if (Ctx.pExtension && strFind(Ctx.pExtension->GetName(), CONSTLIT("Extension")) == 0)
+		Ctx.pExtension->SetName(m_sName);
 
 	return NOERROR;
 	}

@@ -92,10 +92,6 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 	CAniSequencer *pRoot = new CAniSequencer;
 	pRoot->SetPropertyVector(PROP_POSITION, CVector(0, yStart));
 
-	//	Get the adventure
-
-	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureDesc(GameFile.GetAdventure());
-
 	//	Add the character name and current star system
 
 	CString sHeading = strPatternSubst(CONSTLIT("%s — %s"), GameFile.GetPlayerName(), GameFile.GetSystemName());
@@ -143,8 +139,10 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 
 	//	Adventure info
 
+	CExtension *pAdventure = NULL;
 	bool bHasAdventureIcon = false;
-	if (pAdventure)
+
+	if (g_pUniverse->FindExtension(GameFile.GetAdventure(), 0, CExtension::folderUnknown, &pAdventure))
 		{
 		//	Adventure icon
 
@@ -185,7 +183,7 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 		if (!ObjImage.IsEmpty())
 			{
 			RECT rcRect = ObjImage.GetImageRect();
-			CG16bitImage &Image = ObjImage.GetImage();
+			CG16bitImage &Image = ObjImage.GetImage(NULL_STR);
 			int cxImage = RectWidth(rcRect);
 			int cyImage = RectHeight(rcRect);
 
@@ -317,6 +315,10 @@ ALERROR CListSaveFilesTask::OnExecute (ITaskProcessor *pProcessor, CString *rets
 	pStyle->SetPropertyInteger(PROP_LR_RADIUS, SELECTION_CORNER_RADIUS);
 	m_pList->SetStyle(STYLE_SELECTION, pStyle);
 
+	//	No need to log image load
+
+	g_pUniverse->SetLogImageLoad(false);
+
 	//	Loop over all files and add them to the scroller
 
 	int y = MAJOR_PADDING_TOP;
@@ -355,6 +357,8 @@ ALERROR CListSaveFilesTask::OnExecute (ITaskProcessor *pProcessor, CString *rets
 
 		GameFile.Close();
 		}
+
+	g_pUniverse->SetLogImageLoad(true);
 
 	//	Done
 

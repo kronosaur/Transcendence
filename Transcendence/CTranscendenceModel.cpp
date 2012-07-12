@@ -120,10 +120,9 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bNoSound(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
-		m_dwCrawlImage(0),
+		m_pCrawlImage(NULL),
 		m_iLastHighScore(-1),
 		m_iPlayerGenome(genomeUnknown),
-		m_dwAdventure(INVALID_UNID),
 		m_dwPlayerShip(INVALID_UNID),
 		m_pDock(NULL),
 		m_pDestNode(NULL)
@@ -317,7 +316,7 @@ void CTranscendenceModel::CalcStartingPos (CShipClass *pStartingShip, CString *r
 
 	if (sNodeID.IsBlank() || sPos.IsBlank())
 		{
-		sNodeID = m_Universe.GetDesignCollection().GetTopologyDesc()->GetFirstNodeID();
+		sNodeID = m_Universe.GetDesignCollection().GetStartingNodeID();
 		CTopologyNode *pNode = m_Universe.FindTopologyNode(sNodeID);
 		if (pNode && pNode->GetStargateCount() > 0)
 			sPos = pNode->GetStargate(0);
@@ -434,7 +433,7 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 			if (m_pResurrectType->FireOnGlobalResurrect(&sError) != NOERROR)
 				{
 				g_pTrans->DisplayMessage(sError);
-				kernelDebugLogMessage(sError.GetASCIIZPointer());
+				kernelDebugLogMessage(sError);
 				}
 			}
 
@@ -529,8 +528,6 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 
 	{
 	ALERROR error;
-
-	ASSERT(m_iState == statePlayerInGateOldSystem);
 
 	//	Bonus for escaping Human Space
 
@@ -934,8 +931,12 @@ ALERROR CTranscendenceModel::InitAdventure (DWORD dwAdventure, CString *retsErro
 //	Initializes the adventure in preparation for creating a new game.
 
 	{
-	m_Universe.Reinit();
-	return m_Universe.InitAdventure(dwAdventure, NULL, retsError, flagNewGame);
+	CUniverse::SInitDesc Ctx;
+	Ctx.bDebugMode = g_pUniverse->InDebugMode();
+	Ctx.dwAdventure = dwAdventure;
+	Ctx.bDefaultExtensions = true;
+
+	return m_Universe.Init(Ctx, retsError);
 	}
 
 bool CTranscendenceModel::IsGalacticMapAvailable (CString *retsError)
@@ -1028,10 +1029,10 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 	CShip *pPlayerShip;
 	if (error = m_GameFile.LoadSystem(dwSystemID, 
 			&pSystem, 
+			retsError,
 			dwPlayerID, 
 			(CSpaceObject **)&pPlayerShip))
 		{
-		*retsError = strPatternSubst(CONSTLIT("Unable to load system"));
 		m_GameFile.Close();
 		return error;
 		}
@@ -1125,10 +1126,6 @@ ALERROR CTranscendenceModel::LoadPlayerDefaults (CString *retsError)
 		iPlayerGenome = (mathRandom(1, 2) == 2 ? genomeHumanMale : genomeHumanFemale);
 	SetPlayerGenome((GenomeTypes)iPlayerGenome);
 
-	//	Default adventure
-
-	m_dwAdventure = 0;
-
 	//	Default ship class
 
 	m_dwPlayerShip = CalcDefaultPlayerShipClass();
@@ -1157,18 +1154,17 @@ ALERROR CTranscendenceModel::LoadUniverse (CString *retsError)
 	m_Universe.SetSoundMgr(&m_HI.GetSoundMgr());
 	m_Universe.SetHost(g_pTrans);
 
-	//	Figure out what to load. If no extension is supplied, we check for an XML
-	//	file first. Otherwise, we load the .tdb
-
-	CString sGameFile;
-	if (m_bForceTDB)
-		sGameFile = CONSTLIT("Transcendence.tdb");
-	else
-		sGameFile = CONSTLIT("Transcendence");
-
 	//	Load the Transcendence Data Definition file that describes the universe.
 
-	if (error = m_Universe.Init(TransPath(sGameFile), retsError))
+	CUniverse::SInitDesc Ctx;
+	Ctx.bDebugMode = m_bDebugMode;
+	Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
+	Ctx.bDefaultExtensions = true;
+
+	if (m_bForceTDB)
+		Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+
+	if (error = m_Universe.Init(Ctx, retsError))
 		return error;
 
 	//	Initialize TSUI CodeChain primitives
@@ -1304,7 +1300,7 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 
 		CString sError = strPatternSubst(CONSTLIT("[%s]: Unable to show dock screen"), m_pDock->GetType()->GetTypeName());
 		g_pTrans->DisplayMessage(sError);
-		::kernelDebugLogMessage(sError.GetASCIIZPointer());
+		::kernelDebugLogMessage(sError);
 		return;
 		}
 	}
@@ -1470,6 +1466,11 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		return;
 		}
 
+	//	Clear all marks so that we only mark the new entries that we're about to
+	//	load or create.
+
+	m_Universe.ClearLibraryBitmapMarks();
+
 	//	Get the player ship
 
 	CShip *pShip = m_pPlayer->GetShip();
@@ -1495,8 +1496,8 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 				{
 				SetProgramError(sError);
 				//g_pTrans->DisplayMessage(sError);
-				//kernelDebugLogMessage(sError.GetASCIIZPointer());
-				throw CException(1);
+				//kernelDebugLogMessage(sError);
+				throw CException(ERR_FAIL);
 				}
 			}
 
@@ -1504,11 +1505,14 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 		else
 			{
-			if (m_GameFile.LoadSystem(dwSystemID, &pNewSystem, OBJID_NULL, NULL, pShip) != NOERROR)
+			CString sError;
+			if (m_GameFile.LoadSystem(dwSystemID, &pNewSystem, &sError, OBJID_NULL, NULL, pShip) != NOERROR)
 				{
-				g_pTrans->DisplayMessage(CONSTLIT("ERROR: Unable to load system"));
-				kernelDebugLogMessage("Error loading system: %s (%x)", m_pDestNode->GetSystemName().GetASCIIZPointer(), dwSystemID);
-				throw CException(1);
+				sError = strPatternSubst(CONSTLIT("%s [%s (%x)]"), sError, m_pDestNode->GetSystemName(), dwSystemID);
+
+				g_pTrans->DisplayMessage(sError);
+				kernelDebugLogMessage(sError);
+				throw CException(ERR_FAIL);
 				}
 			}
 		}
@@ -1519,8 +1523,8 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	CSpaceObject *pStart = pNewSystem->GetNamedObject(m_sDestEntryPoint);
 	if (pStart == NULL)
 		{
-		kernelDebugLogMessage("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint.GetASCIIZPointer());
-		throw CException(1);
+		kernelDebugLogMessage("Unable to find destination stargate %s in destination system.", m_sDestEntryPoint);
+		throw CException(ERR_FAIL);
 		}
 
 	m_Universe.SetPOV(pStart);
@@ -1553,10 +1557,8 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	//	Garbage-collect images and load those for the new system
 
 	SetProgramState(psStargateGarbageCollecting);
-	m_Universe.GarbageCollectLibraryBitmaps();
-
-	SetProgramState(psStargateLoadingBitmaps);
-	m_Universe.LoadLibraryBitmaps();
+	m_Universe.MarkLibraryBitmaps();
+	m_Universe.SweepLibraryBitmaps();
 
 	//	Set the time that we stopped updating the system
 
@@ -1570,7 +1572,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	SetProgramState(psStargateSavingSystem);
 	if (m_GameFile.SaveSystem(m_pOldSystem->GetID(), m_pOldSystem, CGameFile::FLAG_ENTER_GATE) != NOERROR)
-		kernelDebugLogMessage("Error saving system '%s' to game file", m_pOldSystem->GetName().GetASCIIZPointer());
+		kernelDebugLogMessage("Error saving system '%s' to game file", m_pOldSystem->GetName());
 
 	//	Remove the old system
 
@@ -1617,6 +1619,7 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 	m_GameRecord.SetEndGameEpitaph(sEpitaph);
 	m_GameRecord.SetPlayTime(m_Universe.StopGameTime());
 
+	m_GameRecord.SetRegistered(m_Universe.IsRegistered());
 	m_GameRecord.SetDebug(m_Universe.InDebugMode());
 
 	//	Pass in the score before end game adjustment
@@ -1635,7 +1638,10 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 
 	SetCrawlImage(0);
 	SetCrawlText(NULL_STR);
+
+	g_pUniverse->SetLogImageLoad(false);
 	pAdventure->FireOnGameEnd(m_GameRecord, BasicStats);
+	g_pUniverse->SetLogImageLoad(true);
 
 	//	Update the score in case it was changed inside OnGameEnd
 
@@ -1643,7 +1649,7 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 
 	//	Add to high score if this is the default adventure
 
-	if (pAdventure->GetUNID() == DEFAULT_ADVENTURE_UNID)
+	if (pAdventure->GetExtensionUNID() == DEFAULT_ADVENTURE_EXTENSION_UNID)
 		m_iLastHighScore = AddHighScore(m_GameRecord);
 	else
 		m_iLastHighScore = -1;
@@ -1682,7 +1688,7 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 		{
 		if (retsError)
 			*retsError = strPatternSubst(CONSTLIT("Error saving system '%s' to game file"), pSystem->GetName());
-		kernelDebugLogMessage("Error saving system '%s' to game file", pSystem->GetName().GetASCIIZPointer());
+		kernelDebugLogMessage("Error saving system '%s' to game file", pSystem->GetName());
 		return error;
 		}
 
@@ -1834,7 +1840,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	//	The extension that the screen comes from is determined by where the root
 	//	comes from.
 
-	SExtensionDesc *pExtension = pRoot->GetExtension();
+	CExtension *pExtension = pRoot->GetExtension();
 
 	//	If the root is a screen then use that
 
@@ -1886,14 +1892,19 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	//	return NULL_STR.
 
 	CString sNewPane;
-	if (error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
+
+	g_pUniverse->SetLogImageLoad(false);
+	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
 			pFrame->pLocation,
 			pExtension,
 			pScreen,
 			sPane,
 			&sNewPane,
-			&g_pTrans->m_pCurrentScreen))
+			&g_pTrans->m_pCurrentScreen);
+	g_pUniverse->SetLogImageLoad(true);
+
+	if (error)
 		{
 		//	Undo
 
@@ -1973,7 +1984,7 @@ void CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 		{
 		CString sError = strPatternSubst(CONSTLIT("[%s]: Unable to show screen %s"), pRoot->GetTypeName(), sScreen);
 		g_pTrans->DisplayMessage(sError);
-		::kernelDebugLogMessage(sError.GetASCIIZPointer());
+		::kernelDebugLogMessage(sError);
 		return;
 		}
 	}
@@ -1998,6 +2009,11 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 	//	Tell the controller that we're starting
 
 	m_pPlayer->OnStartGame();
+
+	//	Clear out m_pCrawImage since the call to StartGame is going to clobber
+	//	it (when it sweeps unused images).
+
+	m_pCrawlImage = NULL;
 
 	//	Tell the universe to start the game
 
@@ -2075,9 +2091,12 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	CAdventureDesc *pAdventure = m_Universe.GetCurrentAdventureDesc();
 	ASSERT(pAdventure);
 
-	m_dwCrawlImage = 0;
+	m_pCrawlImage = NULL;
 	m_sCrawlText = NULL_STR;
+
+	g_pUniverse->SetLogImageLoad(false);
 	pAdventure->FireOnGameStart();
+	g_pUniverse->SetLogImageLoad(true);
 
 	//	The remainder of new game start happens in the background thread
 	//	in StartNewGamebackground
@@ -2091,7 +2110,10 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 
 //	StartNewGameBackground
 //
-//	Starts a new game
+//	Starts a new game.
+//
+//	NOTE: We need to be very careful about what we do in the main thread while
+//	this is running.
 
 	{
 	ALERROR error;
@@ -2139,7 +2161,9 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 	//	Create the player's ship
 
 	CShip *pPlayerShip;
-	if (error = pSystem->CreateShip(m_pPlayer->GetStartingShipClass(),
+
+	g_pUniverse->SetLogImageLoad(false);
+	error = pSystem->CreateShip(m_pPlayer->GetStartingShipClass(),
 			m_pPlayer,
 			NULL,
 			m_Universe.FindSovereign(g_PlayerSovereignUNID),
@@ -2148,7 +2172,10 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 			90,
 			NULL,
 			NULL,
-			&pPlayerShip))
+			&pPlayerShip);
+	g_pUniverse->SetLogImageLoad(true);
+
+	if (error)
 		{
 		*retsError = CONSTLIT("Unable to create player ship");
 		ResetPlayer();

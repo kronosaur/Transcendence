@@ -193,6 +193,7 @@ class IOrderModule
 		inline void BehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { OnBehaviorStart(pShip, Ctx, pOrderTarget, dwOrderData); }
 		DWORD Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		static IOrderModule *Create (IShipController::OrderTypes iOrder);
+		CString DebugCrashInfo (void);
 		inline CSpaceObject *GetBase (void) { return OnGetBase(); }
 		inline IShipController::OrderTypes GetOrder (void) { return OnGetOrder(); }
 		inline CSpaceObject *GetTarget (void) { return OnGetTarget(); }
@@ -208,6 +209,7 @@ class IOrderModule
 		virtual void OnAttacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage) { }
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx) = 0;
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { }
+		virtual CString OnDebugCrashInfo (void) { return NULL_STR; }
 		virtual CSpaceObject *OnGetBase (void) { return NULL; }
 		virtual IShipController::OrderTypes OnGetOrder (void) = 0;
 		virtual CSpaceObject *OnGetTarget (void) { return NULL; }
@@ -242,6 +244,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual bool GetStopThrust (void) { return false; }
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
 		virtual bool GetThrust (void) { return m_AICtx.GetThrust(m_pShip); }
+		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		virtual bool IsAngryAt (CSpaceObject *pObj) const;
 		virtual bool IsPlayerWingman (void) const { return (m_fIsPlayerWingman ? true : false); }
 		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage);
@@ -542,6 +545,7 @@ class CFleetShipAI : public CBaseShipAI
 	protected:
 		//	CBaseShipAI overrides
 		virtual void OnDockedEvent (CSpaceObject *pObj);
+		virtual CSpaceObject *OnGetBase (void) const;
 		virtual void OnObjDestroyedNotify (const SDestroyCtx &Ctx);
 		virtual void OnOrderChanged (void);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);

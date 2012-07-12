@@ -346,7 +346,7 @@ void CShockwavePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 		{
 		case CShockwaveEffectCreator::styleImage:
 			{
-			CG16bitImage &Image = m_pCreator->GetImage().GetImage();
+			CG16bitImage &Image = m_pCreator->GetImage().GetImage(m_pCreator->GetUNIDString());
 			RECT rcImage = m_pCreator->GetImage().GetImageRect();
 
 			DrawBltCircle(Dest, 

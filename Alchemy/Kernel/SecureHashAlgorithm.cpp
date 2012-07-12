@@ -424,6 +424,11 @@ CDigest::CDigest (BYTE *pBytes) : CIntegerIP(digestLength)
 		*pA++ = *pB++;
 	}
 
+void cryptoCreateDigest (IReadBlock &Data, CIntegerIP *retDigest)
+	{
+	*retDigest = CDigest(Data);
+	}
+
 void cryptoCreateMAC (IReadBlock &Data, const CIntegerIP &Key, CIntegerIP *retMAC)
 
 //	cryptoCreateMAC
@@ -502,3 +507,17 @@ void cryptoCreateMAC (IReadBlock &Data, const CIntegerIP &Key, CIntegerIP *retMA
 	*retMAC = CIntegerIP(sizeof(MAC), MAC);
 	}
 
+ALERROR fileCreateDigest (const CString &sFilespec, CIntegerIP *retDigest)
+	{
+	ALERROR error;
+
+	CFileReadBlock File(sFilespec);
+	if (error = File.Open())
+		return error;
+
+	cryptoCreateDigest(File, retDigest);
+
+	File.Close();
+
+	return NOERROR;
+	}

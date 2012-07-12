@@ -104,6 +104,7 @@ void CAttributeDataBlock::Copy (const CAttributeDataBlock &Copy)
 			pDest->pNext = pNew;
 
 		pDest = pNew;
+		pSrcNext = pSrcNext->pNext;
 		}
 	}
 

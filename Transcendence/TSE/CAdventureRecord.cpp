@@ -51,8 +51,12 @@ CString CAdventureRecord::GetAdventureName (void) const
 //	Get the name of the adventure
 
 	{
-	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureForExtension(m_dwAdventure);
-	return (pAdventure ? pAdventure->GetName() : strPatternSubst(CONSTLIT("Adventure %x"), m_dwAdventure));
+	CExtension *pAdventure;
+
+	if (!g_pUniverse->FindExtension(m_dwAdventure, 0, CExtension::folderUnknown, &pAdventure))
+		return strPatternSubst(CONSTLIT("Adventure %x"), m_dwAdventure);
+
+	return pAdventure->GetName();
 	}
 
 CGameRecord &CAdventureRecord::GetRecordAt (DWORD dwID)

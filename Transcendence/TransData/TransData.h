@@ -127,6 +127,8 @@ void GenerateStdShieldTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateTypeDependencies (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateTypeIslands (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine);
 void HexarcTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);

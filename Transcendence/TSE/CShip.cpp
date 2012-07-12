@@ -342,136 +342,66 @@ void CShip::CalcDeviceBonus (void)
 		m_pController->OnStatsChanged();
 	}
 
-bool CShip::CalcDeviceTarget (CItemCtx &Ctx, CSpaceObject **retpTarget, bool *iobLinkedFireTargetSet)
+bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
 
 //	CalcDeviceTarget
 //
-//	Compute the target for this weapon. For the primary weapons
-//	and missile launcher, the controller keeps track of the target.
-//	For secondary weapons it is up to the AI controller to set the
-//	fire angle properly. For tracking weapons, the AI sets a target
-//	on the device and Activate() pulls it out when needed.
+//	Compute the target for this weapon.
+//
+//	retpTarget is either a valid target or NULL, which means that the weapon has
+//	no target (should fire straight).
+//
+//	retiFireSolution is either an angle or -1. If -1, it means either that the
+//	weapon has no target (and should fire straight) or that we did not compute
+//	a fire solution.
+//
+//	We return TRUE if we should fire and FALSE otherwise (automatic weapons
+//	don't always fire if they have no target).
 
 	{
-	int i, j;
-	DWORD dwLinkedFireOptions;
-	CInstalledDevice *pDevice = Ctx.GetDevice();
-	CDeviceClass *pWeapon = Ctx.GetDeviceClass();
+	CInstalledDevice *pDevice = ItemCtx.GetDevice();
+
+	//	For primary weapons, the target is the controller target.
+	//	[Note: IsSecondaryWeapon returns TRUE for linked fire options.]
 
 	if (!pDevice->IsSecondaryWeapon())
 		{
-		pDevice->SetFireAngle(-1);
 		*retpTarget = m_pController->GetTarget();
+		*retiFireSolution = -1;
+		return true;
 		}
 
-	//	If this is a linked-fire device (which is always treated as a
-	//	secondary weapon) and if we are the player, then we need to
-	//	compute a target.
-
-	else if ((dwLinkedFireOptions = pWeapon->GetLinkedFireOptions(Ctx)) && IsPlayer())
-		{
-		//	If we haven't yet computed the target for linked fire weapons
-		//	then we need to do that in one pass.
-
-		if (!(*iobLinkedFireTargetSet))
-			{
-			TArray<CSpaceObject *> Targets;
-			bool bTargetsInitialized = false;
-
-			//	Loop over all linked fire weapons and set the proper fire angle
-			//	and target.
-
-			for (i = 0; i < GetDeviceCount(); i++)
-				{
-				CInstalledDevice *pDevice = GetDevice(i);
-				CDeviceClass *pWeapon = pDevice->GetClass();
-				CItemCtx Ctx(this, pDevice);
-				DWORD dwLinkedFireOptions;
-
-				if (pDevice->IsTriggered() 
-						&& pDevice->IsReady() 
-						&& (dwLinkedFireOptions = pWeapon->GetLinkedFireOptions(Ctx)))
-					{
-					//	If the weapon can rotate or if we only fire at enemies
-					//	in range then we need to compute a list of enemies.
-
-					if (pWeapon->CanRotate(Ctx) || (dwLinkedFireOptions & CDeviceClass::lkfEnemyInRange))
-						{
-						//	Generate a list of all targets in range of the player ship
-
-						if (!bTargetsInitialized)
-							{
-							CSpaceObject *pMainTarget = m_pController->GetTarget(true);
-							if (pMainTarget)
-								Targets.Insert(pMainTarget);
-
-							int iMaxTargets = 10;
-							GetNearestVisibleEnemies(iMaxTargets,
-									MAX_AUTO_TARGET_DISTANCE,
-									&Targets,
-									pMainTarget,
-									FLAG_INCLUDE_NON_AGGRESSORS | FLAG_INCLUDE_STATIONS);
-
-							bTargetsInitialized = true;
-							}
-
-						//	Find a target in range of the weapon
-
-						bool bTargetFound = false;
-						for (j = 0; j < Targets.GetCount(); j++)
-							{
-							int iFireAngle;
-							if (pWeapon->IsWeaponAligned(this, pDevice, Targets[j], NULL, &iFireAngle))
-								{
-								pDevice->SetFireAngle(iFireAngle);
-								pDevice->SetTarget(Targets[j]);
-								bTargetFound = true;
-								}
-							}
-
-						//	If we did not find a target then set it
-
-						if (!bTargetFound)
-							{
-							pDevice->SetFireAngle(-1);
-							pDevice->SetTarget(NULL);
-							}
-						}
-
-					//	Otherwise we just use the primary target
-
-					else
-						{
-						pDevice->SetFireAngle(-1);
-						pDevice->SetTarget(m_pController->GetTarget());
-						}
-					}
-				}
-
-			*iobLinkedFireTargetSet = true;
-			}
-
-		//	If we don't have a target and we only fire if we've got a target,
-		//	then we return FALSE, meaning that we don't fire.
-
-		if ((dwLinkedFireOptions & CDeviceClass::lkfEnemyInRange) && pDevice->GetFireAngle() == -1)
-			return false;
-
-		//	Since the fire angle and target have been set on the device we don't
-		//	need to return a target (just like secondary devices)
-
-		*retpTarget = NULL;
-		}
-	
-	//	Otherwise, we don't have a target (secondary weapons have
-	//	their fire angle and target stored on the device itself).
+	//	Otherwise this is a linked fire weapon or a secondary weapon.
 
 	else
-		*retpTarget = NULL;
+		{
+		CDeviceClass *pWeapon = ItemCtx.GetDeviceClass();
 
-	//	Done
+		//	Get the actual options.
 
-	return true;
+		DWORD dwLinkedFireOptions = pWeapon->GetLinkedFireOptions(ItemCtx);
+
+		//	If our options is "fire always" then our target is always the same
+		//	as the primary target.
+
+		if (dwLinkedFireOptions & CDeviceClass::lkfAlways)
+			{
+			*retpTarget = m_pController->GetTarget();
+			*retiFireSolution = -1;
+			return true;
+			}
+
+		//	Otherwise, we need let our controller find a target for this weapon.
+
+		else
+			{
+			m_pController->GetWeaponTarget(Ctx, ItemCtx, retpTarget, retiFireSolution);
+
+			//	We only fire if we have a target
+
+			return (*retpTarget != NULL);
+			}
+		}
 	}
 
 int CShip::CalcMaxCargoSpace (void) const
@@ -558,7 +488,7 @@ CShip::InstallArmorStatus CShip::CanInstallArmor (const CItem &Item) const
 	//	See if the armor is too heavy
 
 	int iMaxArmor = m_pClass->GetMaxArmorMass();
-	if (iMaxArmor && Item.GetType()->GetMassKg() > iMaxArmor)
+	if (iMaxArmor && Item.GetMassKg() > iMaxArmor)
 		return insArmorTooHeavy;
 
 	return insArmorOK;
@@ -732,7 +662,7 @@ CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
 			//	Compute how much cargo space we need to be able to hold
 
 			OnComponentChanged(comCargo);
-			Metric rCargoSpace = m_rCargoMass + Item.GetType()->GetMass();
+			Metric rCargoSpace = GetCargoMass() + Item.GetMass();
 
 			//	If this is larger than the ship class max, then we cannot remove
 
@@ -901,6 +831,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fIdentified = false;
 	pShip->m_fManualSuspended = false;
 	pShip->m_fGalacticMap = false;
+	pShip->m_fRecalcItemMass = true;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -1227,6 +1158,38 @@ CurrencyValue CShip::GetBalance (DWORD dwEconomyUNID)
 		return 0;
 	}
 
+Metric CShip::GetCargoMass (void)
+
+//	GetCargoMass
+//
+//	Returns the total mass of all items in cargo (in metric tons).
+
+	{
+	if (m_fRecalcItemMass)
+		{
+		m_rItemMass = CalculateItemMass(&m_rCargoMass);
+		m_fRecalcItemMass = false;
+		}
+
+	return m_rCargoMass;
+	}
+
+Metric CShip::GetItemMass (void)
+
+//	GetItemMass
+//
+//	Returns the total mass of all items (in metric tons).
+
+	{
+	if (m_fRecalcItemMass)
+		{
+		m_rItemMass = CalculateItemMass(&m_rCargoMass);
+		m_fRecalcItemMass = false;
+		}
+
+	return m_rItemMass;
+	}
+
 ICCItem *CShip::GetProperty (const CString &sName)
 
 //	GetProperty
@@ -1236,7 +1199,15 @@ ICCItem *CShip::GetProperty (const CString &sName)
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
+	if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
+		{
+		CItem theItem = GetNamedDeviceItem(devMissileWeapon);
+		if (theItem.GetType() == NULL)
+			return CC.CreateNil();
+
+		return CreateListFromItem(CC, theItem);
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
 		{
 		CInstalledDevice *pLauncher = GetNamedDevice(devMissileWeapon);
 		if (pLauncher == NULL)
@@ -1915,10 +1886,7 @@ Metric CShip::GetCargoSpaceLeft (void)
 
 	//	Compute space left
 
-	if (m_rCargoMass > rCargoSpace)
-		return 0.0;
-	else
-		return (rCargoSpace - m_rCargoMass);
+	return Max(0.0, rCargoSpace - GetCargoMass());
 	}
 
 ItemCategories CShip::GetCategoryForNamedDevice (DeviceNames iDev)
@@ -2119,7 +2087,7 @@ int CShip::GetManeuverDelay (void)
 	if (m_fTrackMass)
 		{
 		Metric rManeuver = m_pClass->GetManeuverability();
-		Metric rExtraMass = (m_rItemMass - (Metric)m_pClass->GetHullMass()) * MANEUVER_MASS_FACTOR;
+		Metric rExtraMass = (GetItemMass() - (Metric)m_pClass->GetHullMass()) * MANEUVER_MASS_FACTOR;
 		if (m_pClass->GetHullMass() > 0 && rExtraMass > 0.0)
 			rManeuver = Min(MAX_MANEUVER_DELAY, rManeuver * (1.0f + (rExtraMass / (Metric)m_pClass->GetHullMass())));
 
@@ -2146,7 +2114,7 @@ Metric CShip::GetMass (void)
 //	Returns the mass of the object in metric tons
 
 	{
-	return m_pClass->GetHullMass() + m_rItemMass;
+	return m_pClass->GetHullMass() + GetItemMass();
 	}
 
 int CShip::GetMaxFuel (void)
@@ -2693,16 +2661,16 @@ bool CShip::IsFuelCompatible (const CItem &Item)
 	if (pReactor)
 		return pReactor->IsFuelCompatible(CItemCtx(this, pReactor), Item);
 
-	//	If we have no reactor, we determine this ourselves
+	//	If we have no installed reactor, we determine this ourselves
 
-	if (m_pReactorDesc->iMinFuelLevel != -1)
+	if (m_pReactorDesc->pFuelCriteria)
+		return Item.MatchesCriteria(*m_pReactorDesc->pFuelCriteria);
+	else
 		{
 		int iLevel = Item.GetType()->GetLevel();
 		return (iLevel >= m_pReactorDesc->iMinFuelLevel 
 				&& iLevel <= m_pReactorDesc->iMaxFuelLevel);
 		}
-	else
-		return false;
 	}
 
 bool CShip::IsPlayer (void) const
@@ -2844,6 +2812,28 @@ void CShip::MakeRadioactive (void)
 		}
 	}
 
+void CShip::MarkImages (void)
+
+//	MarkImages
+//
+//	Mark images that are in use.
+	
+	{
+	int i;
+
+	//	Mark images, but do not mark default class devices (since we mark them
+	//	ourselves).
+
+	m_pClass->MarkImages(false);
+
+	//	Mark all the installed items that we have (this will load things like
+	//	shield and missile effects).
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		if (!m_Devices[i].IsEmpty())
+			m_Devices[i].GetClass()->MarkImages();
+	}
+
 void CShip::ObjectDestroyedHook (const SDestroyCtx &Ctx)
 
 //	ObjectDestroyedHook
@@ -2953,7 +2943,7 @@ void CShip::OnComponentChanged (ObjectComponentTypes iComponent)
 			{
 			//	Calculate new mass
 
-			m_rItemMass = CalculateItemMass(&m_rCargoMass);
+			m_fRecalcItemMass = true;
 
 			//	If one of our weapons doesn't have a variant selected, then
 			//	try to select it now (if we just got some new ammo, this will
@@ -3021,7 +3011,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	//	Figure out which section of armor got hit
 
 	Ctx.iSectHit = m_pClass->GetHullSectionAtAngle(iHitAngle);
-	CInstalledArmor *pArmor = GetArmorSection(Ctx.iSectHit);
+	CInstalledArmor *pArmor = (Ctx.iSectHit != -1 ? GetArmorSection(Ctx.iSectHit) : NULL);
 
 	//	Tell our controller that someone hit us
 
@@ -3079,7 +3069,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 	//	Let the armor handle it
 
-	EDamageResults iResult = pArmor->AbsorbDamage(this, Ctx);
+	EDamageResults iResult = (pArmor ? pArmor->AbsorbDamage(this, Ctx) : damageArmorHit);
 	if (iResult != damageArmorHit)
 		return iResult;
 
@@ -3099,8 +3089,8 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 		{
 		//	Figure out which areas of the ship got affected
 
-		CShipClass::HullSection *pSect = m_pClass->GetHullSection(Ctx.iSectHit);
-		DWORD dwDamage = pSect->dwAreaSet;
+		CShipClass::HullSection *pSect = (Ctx.iSectHit != -1 ? m_pClass->GetHullSection(Ctx.iSectHit) : NULL);
+		DWORD dwDamage = (pSect ? pSect->dwAreaSet : CShipClass::sectCritical);
 
 		//	If this is a non-critical hit, then there is still a random
 		//	chance that it will destroy the ship
@@ -3428,12 +3418,14 @@ void CShip::OnItemEnhanced (CItemListManipulator &ItemList)
 //	The item at the cursor has been enhanced
 
 	{
-	CItemType *pType = ItemList.GetItemAtCursor().GetType();
-
 	//	Deal with installed items
 
 	if (ItemList.GetItemAtCursor().IsInstalled())
 		{
+		//	Update item mass in case the mass of this item changed
+
+		m_fRecalcItemMass = true;
+
 		//	Update UI
 
 		CalcArmorBonus();
@@ -3795,7 +3787,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fTrackFuel =				((dwLoad & 0x00000040) ? true : false);
 	m_fHasSecondaryWeapons =	((dwLoad & 0x00000080) ? true : false);
 	m_fSRSEnhanced =			((dwLoad & 0x00000100) ? true : false);
-	//	0x00000200 retired
+	m_fRecalcItemMass =			((dwLoad & 0x00000200) ? true : false);
 	m_fKnown =					((dwLoad & 0x00000400) ? true : false);
 	m_fHiddenByNebula =			((dwLoad & 0x00000800) ? true : false);
 	m_fTrackMass =				((dwLoad & 0x00001000) ? true : false);
@@ -4044,7 +4036,7 @@ void CShip::OnUpdate (Metric rSecondsPerTick)
 
 		if (m_iDisarmedTimer == 0)
 			{
-			bool bLinkedFireTargetSet = false;
+			STargetingCtx TargetingCtx;
 
 			for (i = 0; i < GetDeviceCount(); i++)
 				{
@@ -4058,8 +4050,15 @@ void CShip::OnUpdate (Metric rSecondsPerTick)
 					//	Compute the target for this weapon.
 
 					CSpaceObject *pTarget;
-					if (!CalcDeviceTarget(DeviceCtx, &pTarget, &bLinkedFireTargetSet))
+					int iFireAngle;
+					if (!CalcDeviceTarget(TargetingCtx, DeviceCtx, &pTarget, &iFireAngle))
 						continue;
+
+					//	Set the target on the device. We need to do this for 
+					//	repeating weapons.
+
+					pDevice->SetFireAngle(iFireAngle);
+					pDevice->SetTarget(pTarget);
 
 					//	Fire
 
@@ -4248,7 +4247,7 @@ void CShip::OnUpdate (Metric rSecondsPerTick)
 							{
 							if (!m_Devices[i].IsEmpty() 
 									&& m_Devices[i].IsEnabled()
-									&& m_Devices[i].CanBeDisabled())
+									&& m_Devices[i].CanBeDisabled(CItemCtx(this, &m_Devices[i])))
 								{
 								EnableDevice(i, false);
 								}
@@ -4507,7 +4506,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fTrackFuel ?			0x00000040 : 0);
 	dwSave |= (m_fHasSecondaryWeapons ?	0x00000080 : 0);
 	dwSave |= (m_fSRSEnhanced ?			0x00000100 : 0);
-	//	0x00000200 retired
+	dwSave |= (m_fRecalcItemMass ?		0x00000200 : 0);
 	dwSave |= (m_fKnown ?				0x00000400 : 0);
 	dwSave |= (m_fHiddenByNebula ?		0x00000800 : 0);
 	dwSave |= (m_fTrackMass ?			0x00001000 : 0);
@@ -4815,7 +4814,7 @@ void CShip::ReactorOverload (void)
 			{
 			if (!m_Devices[i].IsEmpty() 
 					&& m_Devices[i].IsEnabled()
-					&& m_Devices[i].CanBeDisabled())
+					&& m_Devices[i].CanBeDisabled(CItemCtx(this, &m_Devices[i])))
 				{
 				SetCursorAtDevice(ItemList, i);
 
@@ -4917,7 +4916,6 @@ void CShip::RechargeItem (CItemListManipulator &ItemList, int iCharges)
 		{
 		int iDevSlot = Item.GetInstalled();
 		CInstalledDevice *pDevice = &m_Devices[iDevSlot];
-		pDevice->SetChargesCache(iNewCharges);
 
 		CalcDeviceBonus();
 		}
@@ -5655,7 +5653,7 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 			return false;
 			}
 
-		CItem Item = CreateItemFromList(CC, pValue);
+		CItem Item = GetItemFromArg(CC, pValue);
 		CItemListManipulator ShipItems(GetItemList());
 		if (!ShipItems.SetCursorAtItem(Item))
 			{
@@ -5689,7 +5687,7 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 			return true;
 
 		int iDev;
-		if (!FindInstalledDeviceSlot(CreateItemFromList(CC, pValue), &iDev))
+		if (!FindInstalledDeviceSlot(GetItemFromArg(CC, pValue), &iDev))
 			{
 			*retsError = CONSTLIT("Item is not an installed device on ship.");
 			return false;
@@ -5706,6 +5704,50 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 		}
 	else
 		return CSpaceObject::SetProperty(sName, pValue, retsError);
+	}
+
+void CShip::SetWeaponTriggered (DeviceNames iDev, bool bTriggered)
+
+//	SetWeaponTriggered
+//
+//	Sets the trigger on the given device on or off. We also trigger any
+//	associated linked-fire devices.
+
+	{
+	CInstalledDevice *pPrimaryDevice = GetNamedDevice(iDev);
+	if (pPrimaryDevice == NULL)
+		return;
+
+	SetWeaponTriggered(pPrimaryDevice, bTriggered);
+	}
+
+void CShip::SetWeaponTriggered (CInstalledDevice *pWeapon, bool bTriggered)
+
+//	SetWeaponTriggered
+//
+//	Sets the trigger on the given device on or off. We also trigger any
+//	associated linked-fire devices.
+
+	{
+	int i;
+
+	ItemCategories iCat = pWeapon->GetCategory();
+
+	//	Loop over all devices and activate the appropriate ones
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		CItemCtx Ctx(this, pDevice);
+
+		//	If this is the primary device, or if it is a device that
+		//	is linked to the primary device, then activate it.
+
+		if (!pDevice->IsEmpty()
+				&& (pDevice == pWeapon 
+					|| (pDevice->IsLinkedFire(Ctx, iCat))))
+			pDevice->SetTriggered(bTriggered);
+		}
 	}
 
 bool CShip::ShieldsAbsorbFire (CInstalledDevice *pWeapon)

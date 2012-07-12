@@ -64,6 +64,7 @@ ALERROR CRepairerClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 //	Creates from an XML element
 
 	{
+	ALERROR error;
 	int i;
 	CRepairerClass *pDevice;
 
@@ -71,7 +72,8 @@ ALERROR CRepairerClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	pDevice->m_iPowerUse = pDesc->GetAttributeInteger(POWER_USE_ATTRIB);
 
@@ -97,9 +99,9 @@ ALERROR CRepairerClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 		{
 		CRegenDesc *pRegen = pDevice->m_Repair.Insert();
 		if (bRegen)
-			pRegen->InitFromRegenString(Ctx, List[i]);
+			pRegen->InitFromRegenString(Ctx, List[i], REPAIR_CYCLE_TIME);
 		else
-			pRegen->InitFromRepairRateString(Ctx, List[i]);
+			pRegen->InitFromRepairRateString(Ctx, List[i], REPAIR_CYCLE_TIME);
 		}
 
 	//	Done
@@ -140,7 +142,7 @@ void CRepairerClass::Update (CInstalledDevice *pDevice, CSpaceObject *pSource, i
 					if (iArmorTech - 1 < m_Repair.GetCount())
 						{
 						int iHP;
-						if (iHP = m_Repair[iArmorTech - 1].GetRegen(iTick))
+						if (iHP = m_Repair[iArmorTech - 1].GetRegen(iTick, REPAIR_CYCLE_TIME))
 							pShip->RepairArmor(i, iHP);
 						}
 					}

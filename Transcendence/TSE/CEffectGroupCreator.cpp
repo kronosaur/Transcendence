@@ -392,28 +392,6 @@ int CEffectGroupCreator::GetLifetime (void)
 	return iTotalLifetime;
 	}
 
-void CEffectGroupCreator::LoadImages (void)
-
-//	LoadImages
-//
-//	Load images used by this effect
-
-	{
-	for (int i = 0; i < m_iCount; i++)
-		m_pCreators[i]->LoadImages();
-	}
-
-void CEffectGroupCreator::MarkImages (void)
-
-//	MarkImages
-//
-//	Mark images used by this effect
-
-	{
-	for (int i = 0; i < m_iCount; i++)
-		m_pCreators[i]->MarkImages();
-	}
-
 ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
@@ -471,6 +449,17 @@ ALERROR CEffectGroupCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 			return error;
 
 	return NOERROR;
+	}
+
+void CEffectGroupCreator::OnMarkImages (void)
+
+//	MarkImages
+//
+//	Mark images used by this effect
+
+	{
+	for (int i = 0; i < m_iCount; i++)
+		m_pCreators[i]->MarkImages();
 	}
 
 void CEffectGroupCreator::SetLifetime (int iLifetime)

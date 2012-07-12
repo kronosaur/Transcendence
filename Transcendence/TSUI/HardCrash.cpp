@@ -39,8 +39,16 @@ void CHardCrashSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		{
 		case VK_RETURN:
 		case VK_ESCAPE:
+			{
+			//	Wait until background task finishes
+
+			int iCount = 0;
+			while (iCount++ < 50 && m_HI.GetBackgroundProcessor().GetProgress() != -1)
+				::Sleep(100);
+
 			m_HI.Shutdown(HIShutdownByHardCrash);
 			break;
+			}
 		}
 	}
 

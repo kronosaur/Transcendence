@@ -79,7 +79,7 @@ void CDockingPorts::DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj)
 		}
 	else
 		{
-		kernelDebugLogMessage("Warning: Unable to find docking port at %s", pOwner->GetName().GetASCIIZPointer());
+		kernelDebugLogMessage("Warning: Unable to find docking port at %s", pOwner->GetName());
 		}
 	}
 

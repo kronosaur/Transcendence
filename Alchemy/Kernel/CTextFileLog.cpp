@@ -8,7 +8,8 @@
 static CObjectClass<CTextFileLog>g_Class(OBJID_CTEXTFILELOG, NULL);
 
 CTextFileLog::CTextFileLog (void) : CObject(&g_Class),
-		m_hFile(NULL)
+		m_hFile(NULL),
+		m_dwSessionStart(0)
 
 //	CTextFileLog constructor
 
@@ -58,7 +59,7 @@ ALERROR CTextFileLog::Create (BOOL bAppend)
 	ASSERT(m_hFile == NULL);
 
 	m_hFile = CreateFile(m_sFilename.GetASCIIZPointer(),
-			GENERIC_WRITE,
+			GENERIC_READ | GENERIC_WRITE,
 			FILE_SHARE_READ,
 			NULL,
 			OPEN_ALWAYS,
@@ -76,7 +77,7 @@ ALERROR CTextFileLog::Create (BOOL bAppend)
 	if (bAppend)
 		{
 		LONG lFileHigh = 0;
-		SetFilePointer(m_hFile, 0, &lFileHigh, FILE_END);
+		m_dwSessionStart = ::SetFilePointer(m_hFile, 0, &lFileHigh, FILE_END);
 		}
 
 	//	Otherwise, truncate the file
@@ -85,9 +86,94 @@ ALERROR CTextFileLog::Create (BOOL bAppend)
 		{
 		SetFilePointer(m_hFile, 0, NULL, FILE_BEGIN);
 		SetEndOfFile(m_hFile);
+		m_dwSessionStart = 0;
 		}
 
 	return NOERROR;
+	}
+
+CString CTextFileLog::GetSessionLog (void)
+
+//	GetSessionLog
+//
+//	Returns all output since the start of the session.
+
+	{
+	ASSERT(m_hFile);
+
+	//	Figure out the current position of the file pointer
+
+	DWORD dwCurPos = ::SetFilePointer(m_hFile, 0, NULL, FILE_CURRENT);
+	if (dwCurPos == INVALID_SET_FILE_POINTER)
+		return CONSTLIT("ERROR: Unable to seek in kernel debug log.");
+
+	//	Set the file pointer to the start of the session
+
+	if (::SetFilePointer(m_hFile, m_dwSessionStart, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+		return CONSTLIT("ERROR: Unable to seek in kernel debug log.");
+
+	//	Make sure the file log is not too big
+
+	DWORD dwLogSize = dwCurPos - m_dwSessionStart;
+	if (dwCurPos < m_dwSessionStart || dwLogSize > 1000000)
+		return CONSTLIT("ERROR: Kernel debug log is too big.");
+
+	//	Allocate an appropriate string
+
+	CString sLog;
+	char *pLog = sLog.GetWritePointer(dwLogSize);
+
+	//	Read from the file
+
+	DWORD dwRead;
+	if (!::ReadFile(m_hFile, pLog, dwLogSize, &dwRead, NULL))
+		return CONSTLIT("ERROR: Unable to read kernel debug log.");
+
+	//	Restore position
+
+	::SetFilePointer(m_hFile, 0, NULL, FILE_END);
+
+	return sLog;
+	}
+
+void CTextFileLog::LogOutput (DWORD dwFlags, const CString &sLine)
+
+//	LogOutput
+//
+//	Output a line to the log
+
+	{
+	DWORD dwWritten;
+
+	ASSERT(m_hFile);
+
+	//	Write the time date
+
+	if (dwFlags & ILOG_FLAG_TIMEDATE)
+		{
+		char szBuffer[1024];
+		SYSTEMTIME time;
+
+		GetLocalTime(&time);
+		int iLen = wsprintf(szBuffer, "%02d/%02d/%04d %02d:%02d:%02d\t",
+				time.wMonth,
+				time.wDay,
+				time.wYear,
+				time.wHour,
+				time.wMinute,
+				time.wSecond);
+
+		WriteFile(m_hFile, szBuffer, iLen, &dwWritten, NULL);
+		}
+
+	//	Write out the line
+
+	WriteFile(m_hFile, sLine.GetASCIIZPointer(), sLine.GetLength(), &dwWritten, NULL);
+	WriteFile(m_hFile, "\r\n", 2, &dwWritten, NULL);
+
+	//	Flush now because we don't want to lose any info if we crash
+
+	FlushFileBuffers(m_hFile);
 	}
 
 void CTextFileLog::LogOutput (DWORD dwFlags, char *pszLine, ...)
@@ -97,43 +183,12 @@ void CTextFileLog::LogOutput (DWORD dwFlags, char *pszLine, ...)
 //	Output a line to the log
 
 	{
-	char *pArgs;
-	char szBuffer[1024];
-	char szLine[1024];
-	int iLen;
-	DWORD dwWritten;
+	CString sParsedLine;
 
-	ASSERT(m_hFile);
+	char *pArgs = (char *)&pszLine + sizeof(pszLine);
+	sParsedLine = strPattern(CString(pszLine, ::strlen(pszLine), TRUE), (void **)pArgs);
 
-	pArgs = (char *)&pszLine + sizeof(pszLine);
-	wvsprintf(szLine, pszLine, pArgs);
-
-	//	Append time date
-
-	if (dwFlags & ILOG_FLAG_TIMEDATE)
-		{
-		SYSTEMTIME time;
-
-		GetLocalTime(&time);
-		iLen = wsprintf(szBuffer, "%02d/%02d/%04d %02d:%02d:%02d\t%s\r\n",
-				time.wMonth,
-				time.wDay,
-				time.wYear,
-				time.wHour,
-				time.wMinute,
-				time.wSecond,
-				szLine);
-		}
-	else
-		iLen = wsprintf(szBuffer, "%s\r\n", szLine);
-
-	//	Write out the line
-
-	WriteFile(m_hFile, szBuffer, iLen, &dwWritten, NULL);
-
-	//	Flush now because we don't want to lose any info if we crash
-
-	FlushFileBuffers(m_hFile);
+	LogOutput(dwFlags, sParsedLine);
 	}
 
 void CTextFileLog::SetFilename (const CString &sFilename)
@@ -145,4 +200,20 @@ void CTextFileLog::SetFilename (const CString &sFilename)
 	{
 	ASSERT(m_hFile == NULL);
 	m_sFilename = sFilename;
+	}
+
+void CTextFileLog::SetSessionStart (void)
+
+//	SetSessionStart
+//
+//	Sets the start of the session at the current position of the log.
+
+	{
+	ASSERT(m_hFile);
+
+	DWORD dwCurPos = ::SetFilePointer(m_hFile, 0, NULL, FILE_CURRENT);
+	if (dwCurPos == INVALID_SET_FILE_POINTER)
+		return;
+
+	m_dwSessionStart = dwCurPos;
 	}

@@ -468,7 +468,7 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 	if (m_pType == NULL)
 		{
 		kernelDebugLogMessage("Unable to find overlay type: %x", dwLoad);
-		throw CException(1);
+		throw CException(ERR_FAIL);
 		}
 
 	if (Ctx.dwVersion >= 38)

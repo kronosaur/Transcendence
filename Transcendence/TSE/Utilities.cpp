@@ -222,6 +222,16 @@ static SGenomeData g_Genome[] =
 
 #define GENOME_COUNT				(sizeof(g_Genome) / sizeof(g_Genome[0]))
 
+static char *LOAD_STATE_STRINGS[] =
+	{
+	"Unknown",
+	"Loading object",
+	"Loading object data",
+	"Loading object effects",
+	"Loading object subclass",
+	"Loading effect",
+	};
+
 static char *TITLE_CAP_EXCEPTIONS[] =
 	{
 	"a",
@@ -1467,6 +1477,16 @@ CString GetItemCategoryName (ItemCategories iCategory)
 		}
 	}
 
+CString GetLoadStateString (ELoadStates iState)
+
+//	GetLoadStateString
+//
+//	Returns the load state string.
+
+	{
+	return CString(LOAD_STATE_STRINGS[iState]);
+	}
+
 CString GetMessageID (MessageTypes iMessage)
 
 //	GetMessageID
@@ -1934,26 +1954,56 @@ COLORREF LoadCOLORREF (const CString &sString)
 	return RGB(iRed, iGreen, iBlue);
 	}
 
-DWORD LoadUNID (SDesignLoadCtx &Ctx, const CString &sString)
+ALERROR LoadUNID (SDesignLoadCtx &Ctx, const CString &sString, DWORD *retdwUNID)
 
 //	LoadUNID
 //
-//	Returns an UNID either relative (@xxx) or absolute
+//	Loads the given UNID
 
 	{
-	if (Ctx.pExtension)
+	char *pPos = sString.GetASCIIZPointer();
+
+	//	A blank string just means NULL.
+
+	if (*pPos == '\0')
 		{
-		char *pPos = sString.GetASCIIZPointer();
-		if (*pPos == '@')
-			{
-			WORD wLow = LOWORD(Ctx.pExtension->dwUNID) + (WORD)strParseIntOfBase(pPos+1, 16, 0, NULL, NULL);
-			return MAKELONG(wLow, HIWORD(Ctx.pExtension->dwUNID));
-			}
-		else
-			return strToInt(sString, 0, NULL);
+		*retdwUNID = 0;
+		return NOERROR;
 		}
+
+	//	An @ prefix means that we are relative to the extension
+
+	else if (*pPos == '@')
+		{
+		//	Must have an extension in this case
+
+		if (Ctx.pExtension == NULL)
+			{
+			Ctx.sError = CONSTLIT("Cannot have relative UNID outside of an extension.");
+			return ERR_FAIL;
+			}
+
+		WORD wLow = LOWORD(Ctx.pExtension->GetUNID()) + (WORD)strParseIntOfBase(pPos+1, 16, 0, NULL, NULL);
+		*retdwUNID = MAKELONG(wLow, HIWORD(Ctx.pExtension->GetUNID()));
+		return NOERROR;
+		}
+
+	//	Otherwise we expect a number
+
 	else
-		return strToInt(sString, 0, NULL);
+		{
+		*retdwUNID = strToInt(sString, 0);
+
+		//	Must be a valid non-zero number
+
+		if (*retdwUNID == 0)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid UNID: %s."), sString);
+			return ERR_FAIL;
+			}
+
+		return NOERROR;
+		}
 	}
 
 int NLCompare (TArray<CString> &Input, TArray<CString> &Pattern)

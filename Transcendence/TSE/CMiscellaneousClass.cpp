@@ -54,13 +54,16 @@ ALERROR CMiscellaneousClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 //	Load the class
 
 	{
+	ALERROR error;
 	CMiscellaneousClass *pDevice;
 
 	pDevice = new CMiscellaneousClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
+
 	pDevice->m_iPowerRating = pDesc->GetAttributeInteger(POWER_RATING_ATTRIB);
 	pDevice->m_iPowerUse = pDesc->GetAttributeInteger(POWER_USE_ATTRIB);
 	pDevice->m_iPowerToActivate = pDesc->GetAttributeInteger(POWER_TO_ACTIVATE_ATTRIB);

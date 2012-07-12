@@ -18,6 +18,7 @@ class CAttackOrder : public IOrderModule
 		virtual bool IsTarget (int iObj) { return (iObj == objTarget); }
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData);
+		virtual CString OnDebugCrashInfo (void);
 		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderDestroyTarget; }
 		virtual CSpaceObject *OnGetTarget (void) { return m_Objs[objTarget]; }
 		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj);
@@ -57,6 +58,7 @@ class CAttackStationOrder : public IOrderModule
 		virtual void OnAttacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage);
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData);
+		virtual CString OnDebugCrashInfo (void);
 		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderAttackStation; }
 		virtual CSpaceObject *OnGetTarget (void) { return m_Objs[objTarget]; }
 		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj);

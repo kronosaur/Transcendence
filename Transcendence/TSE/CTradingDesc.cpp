@@ -117,7 +117,7 @@ int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SCo
 		return -1;
 	else
 		{
-		kernelDebugLogMessage("Unknown priceAdj prefix: %s", sPrefix.GetASCIIZPointer());
+		kernelDebugLogMessage("Unknown priceAdj prefix: %s", sPrefix);
 		return -1;
 		}
 
@@ -167,7 +167,8 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 
 			//	Item
 
-			pCommodity->pItemType.LoadUNID(Ctx, pLine->GetAttribute(ITEM_ATTRIB));
+			if (error = pCommodity->pItemType.LoadUNID(Ctx, pLine->GetAttribute(ITEM_ATTRIB)))
+				return error;
 
 			//	Other
 

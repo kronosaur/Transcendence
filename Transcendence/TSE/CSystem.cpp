@@ -238,6 +238,11 @@
 //	75: 1.08
 //		Added m_pOrderModule to CBaseShipAI
 //
+//	76: 1.08c
+//		Added m_iState to CAttackOrder
+//		Added m_iState to CAttackStationOrder
+//		Added m_iState to CGuardOrder
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -816,6 +821,7 @@ void CSystem::ConvertSpaceEnvironmentToUNIDs (CTileMap &Pointers, CTileMap **ret
 ALERROR CSystem::CreateFromStream (CUniverse *pUniv, 
 								   IReadStream *pStream, 
 								   CSystem **retpSystem,
+								   CString *retsError,
 								   DWORD dwObjID,
 								   CSpaceObject **retpObj,
 								   CSpaceObject *pPlayerShip)
@@ -872,7 +878,10 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 
 	Ctx.pSystem = new CSystem(pUniv, NULL);
 	if (Ctx.pSystem == NULL)
+		{
+		*retsError = CONSTLIT("Out of memory.");
 		return ERR_MEMORY;
+		}
 
 	//	Load some misc info
 
@@ -945,7 +954,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 			}
 		catch (...)
 			{
-			kernelDebugLogMessage("Error loading object");
+			*retsError = CSpaceObject::DebugLoadError(Ctx);
 			return ERR_FAIL;
 			}
 
@@ -996,22 +1005,22 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 
 	if (Ctx.ForwardReferences.GetCount() > 0)
 		{
-		kernelDebugLogMessage("Save file error: %d undefined object reference(s)", Ctx.ForwardReferences.GetCount());
+		*retsError = strPatternSubst(CONSTLIT("%d undefined object reference%p:"), Ctx.ForwardReferences.GetCount());
 
 		for (i = 0; i < Ctx.ForwardReferences.GetCount(); i++)
 			{
 			DWORD dwID = Ctx.ForwardReferences.GetKey(i);
 			CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(i);
-			kernelDebugLogMessage("Reference: %d", dwID);
+			retsError->Append(strPatternSubst(CONSTLIT("\r\nReference: %d"), dwID));
 
 			for (int j = 0; j < pList->GetCount(); j++)
 				{
 				CSpaceObject **pAddr = (CSpaceObject **)pList->GetElement(j);
-				kernelDebugLogMessage("Address: %x", (DWORD)pAddr);
+				retsError->Append(strPatternSubst(CONSTLIT("\r\nAddress: %x"), (DWORD)pAddr));
 				}
 			}
 
-		ASSERT(false);
+		return ERR_FAIL;
 		}
 
 	//	Load named objects table
@@ -1026,8 +1035,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 		CSpaceObject *pObj;
 		if (Ctx.ObjMap.Lookup(dwLoad, (CObject **)&pObj) != NOERROR)
 			{
-			ASSERT(false);
-			kernelDebugLogMessage("Save file error: Unable to find named object: %s [%x]", sName.GetASCIIZPointer(), dwLoad);
+			*retsError = strPatternSubst(CONSTLIT("Save file error: Unable to find named object: %s [%x]"), sName, dwLoad);
 			return ERR_FAIL;
 			}
 
@@ -1051,7 +1059,11 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 		{
 		CTileMap *pEnv;
 		if (error = CTileMap::CreateFromStream(Ctx.pStream, &pEnv))
+			{
+			*retsError = CONSTLIT("Unable to load environment map.");
 			return error;
+			}
+
 		ConvertSpaceEnvironmentToPointers(*pEnv, &Ctx.pSystem->m_pEnvironment);
 		delete pEnv;
 		}
@@ -1082,7 +1094,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 		{
 		if (Ctx.ObjMap.Lookup(dwObjID, (CObject **)retpObj) != NOERROR)
 			{
-			kernelDebugLogMessage("Save file error: Unable to find POV object: %x", dwObjID);
+			*retsError = strPatternSubst(CONSTLIT("Unable to find POV object: %x"), dwObjID);
 
 			//	Look for the player object
 
@@ -1100,12 +1112,9 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 				}
 
 			if (!bFound)
-				{
-				kernelDebugLogMessage("Save file error: Unable to find player ship");
-				return ERR_FAIL;
-				}
+				retsError->Append(CONSTLIT("\r\nUnable to find player ship."));
 
-			return NOERROR;
+			return ERR_FAIL;
 			}
 		}
 
@@ -1274,7 +1283,7 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 	//	Load images, if necessary
 
 	if (!IsCreationInProgress())
-		(*retpShip)->LoadImages();
+		(*retpShip)->MarkImages();
 
 	//	Create escorts, if necessary
 
@@ -1544,7 +1553,7 @@ ALERROR CSystem::CreateStation (CStationType *pType,
 	//	Fire deferred OnCreate
 
 	if (error = Ctx.Events.FireDeferredEvent(ON_CREATE_EVENT, &Ctx.sError))
-		kernelDebugLogMessage("Deferred OnCreate: %s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Deferred OnCreate: %s", Ctx.sError);
 
 	//	Recompute encounter table
 
@@ -2358,27 +2367,6 @@ bool CSystem::IsStationInSystem (CStationType *pType)
 	return false;
 	}
 
-void CSystem::LoadImages (void)
-
-//	LoadImages
-//
-//	Load images for use
-
-	{
-	int i;
-
-	for (i = 0; i < GetObjectCount(); i++)
-		{
-		CSpaceObject *pObj = GetObject(i);
-
-		if (pObj)
-			{
-			SetProgramState(psLoadingImages, pObj);
-			pObj->LoadImages();
-			}
-		}
-	}
-
 void CSystem::MarkImages (void)
 
 //	MarkImages
@@ -2388,6 +2376,10 @@ void CSystem::MarkImages (void)
 	{
 	int i;
 
+	g_pUniverse->SetLogImageLoad(false);
+
+	//	Mark images for all objects that currently exist in the system.
+
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
@@ -2395,6 +2387,12 @@ void CSystem::MarkImages (void)
 		if (pObj)
 			pObj->MarkImages();
 		}
+
+	//	Give all types a chance to mark images
+
+	
+
+	g_pUniverse->SetLogImageLoad(true);
 	}
 
 void CSystem::NameObject (const CString &sName, CSpaceObject *pObj)
@@ -2798,11 +2796,15 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		//	Paint the object in the viewport
 
+		SetProgramState(psPaintingSRS, pObj);
+
 		Ctx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
 				Ctx);
+
+		SetProgramState(psPaintingSRS);
 		}
 
 	//	Paint any space environment
@@ -2850,11 +2852,15 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 				//	Paint the object in the viewport
 
+				SetProgramState(psPaintingSRS, pObj);
+
 				Ctx.pObj = pObj;
 				pObj->Paint(Dest, 
 						x,
 						y,
 						Ctx);
+
+				SetProgramState(psPaintingSRS);
 				}
 
 			//	Clear destination, if necessary
@@ -2886,11 +2892,15 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		//	Paint the object in the viewport
 
+		SetProgramState(psPaintingSRS, pObj);
+
 		Ctx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
 				Ctx);
+
+		SetProgramState(psPaintingSRS);
 		}
 
 	//	Paint all the enhanced display markers
@@ -3554,7 +3564,7 @@ void CSystem::RemoveObject (SDestroyCtx &Ctx)
 			CString sObj = CONSTLIT("ERROR: Destroying barrier during move.\r\n");
 
 			ReportCrashObj(&sObj, Ctx.pObj);
-			kernelDebugLogMessage(sObj.GetASCIIZPointer());
+			kernelDebugLogMessage(sObj);
 
 #ifdef DEBUG
 			DebugBreak();
@@ -3714,7 +3724,7 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 				{
 				CString sError = CONSTLIT("Unable to save object:\r\n");
 				ReportCrashObj(&sError, pObj);
-				kernelDebugLogMessage(sError.GetASCIIZPointer());
+				kernelDebugLogMessage(sError);
 				return ERR_FAIL;
 				}
 			}
@@ -4324,13 +4334,13 @@ void CSystem::WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream, CS
 			CString sError;
 			ReportCrashObj(&sError, pObj);
 			kernelDebugLogMessage("Object being referenced:");
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 
 			if (pReferrer)
 				{
 				ReportCrashObj(&sError, pReferrer);
 				kernelDebugLogMessage("Referring object:");
-				kernelDebugLogMessage(sError.GetASCIIZPointer());
+				kernelDebugLogMessage(sError);
 				}
 			}
 

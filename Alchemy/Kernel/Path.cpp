@@ -20,6 +20,19 @@
 void FreePIDL (LPITEMIDLIST pidl);
 CString GetVersionString (char *pData, WORD *pLangInfo, const CString &sString);
 
+bool fileDelete (const CString &sFilespec)
+
+//	fileDelete
+//
+//	Delete the file permanently from disk.
+
+	{
+	if (!::DeleteFile(sFilespec.GetASCIIZPointer()))
+		return false;
+
+	return true;
+	}
+
 bool fileGetFileList (const CString &sRoot, const CString &sPath, const CString &sSearch, DWORD dwFlags, TArray<CString> *retFiles)
 
 //	fileGetFileList
@@ -207,6 +220,19 @@ ALERROR fileGetVersionInfo (const CString &sFilename, SFileVersionInfo *retInfo)
 	retInfo->sProductVersion = GetVersionString(pData, pLangInfo, STR_PRODUCT_VERSION);
 
 	return NOERROR;
+	}
+
+bool fileMove (const CString &sSourceFilespec, const CString &sDestFilespec)
+
+//	fileMove
+//
+//	Moves a file
+
+	{
+	if (!::MoveFile(sSourceFilespec.GetASCIIZPointer(), sDestFilespec.GetASCIIZPointer()))
+		return false;
+
+	return true;
 	}
 
 CString pathAddComponent (const CString &sPath, const CString &sComponent)

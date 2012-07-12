@@ -110,6 +110,17 @@ void CTranscendenceWnd::Autopilot (bool bTurnOn)
 		}
 	}
 
+void CTranscendenceWnd::CleanUpDisplays (void)
+
+//	CleanUpDisplays
+//
+//	We clean up displays because some may hold on to pointers that will get
+//	destroyed.
+
+	{
+	m_ArmorDisplay.CleanUp();
+	}
+
 void CTranscendenceWnd::DisplayMessage (CString sMessage)
 
 //	DisplayMessage
@@ -991,6 +1002,7 @@ void CTranscendenceWnd::ShowDockScreen (bool bShow)
 
 		//	New state
 
+		g_pUniverse->SetLogImageLoad(false);
 		m_State = gsDocked;
 		}
 	else if (m_State == gsDocked)
@@ -1005,6 +1017,7 @@ void CTranscendenceWnd::ShowDockScreen (bool bShow)
 
 		//	New state
 
+		g_pUniverse->SetLogImageLoad(true);
 		m_State = gsInGame;
 
 		//	Clean up
@@ -1039,8 +1052,9 @@ void CTranscendenceWnd::ShowEnableDisablePicker (void)
 			CItem &Item = List.GetItem(i);
 			CItemType *pType = Item.GetType();
 			CInstalledDevice *pDevice = pShip->FindDevice(Item);
+			CItemCtx ItemCtx(&Item, pShip, pDevice);
 
-			if (pDevice && pDevice->CanBeDisabled())
+			if (pDevice && pDevice->CanBeDisabled(ItemCtx))
 				{
 				//	Name of item
 

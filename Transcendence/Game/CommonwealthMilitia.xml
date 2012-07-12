@@ -216,25 +216,6 @@
 		</Events>
 	</ShipClass>
 	
-<!-- ITEM TYPES -->
-
-	<ItemType UNID="&itMilitaryID;"
-			name=				"Commonwealth military identification chip"
-			level=				"4"
-			value=				"500"
-			mass=				"1"
-			frequency=			"veryrare"
-			unknownType=		"&itUnknownID;"
-			attributes=			"MilitaryID; ID; MinorItem"
-
-			description=		"This identification chip is used by the Commonwealth military to identify authorized military personnel."
-
-			sortName=			"identification chip, military"
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-
 <!-- STATION TYPES -->
 
 	<!-- Commonwealth Fortress 

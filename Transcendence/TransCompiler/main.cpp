@@ -2,7 +2,7 @@
 //
 //	This program is used to compile Transcendence game and resource files
 //
-//	Copyright (c) 2003 by George Moromisato. All Rights Reserved.
+//	Copyright (c) 2003-2012 by Kronosaur Productions, LLC. All Rights Reserved.
 //
 //	The output file has a default entry with the following format:
 //
@@ -17,7 +17,9 @@
 #include <windows.h>
 #include <ddraw.h>
 #include "Alchemy.h"
+#include "Crypto.h"
 #include "XMLUtil.h"
+#include "TDB.h"
 
 #define TDB_SIGNATURE							'TRDB'
 #define TDB_VERSION								11
@@ -25,15 +27,22 @@
 #define NOARGS									CONSTLIT("noArgs")
 #define SWITCH_HELP								CONSTLIT("help")
 
+#define ATTRIB_DIGEST							CONSTLIT("digest")
+#define ATTRIB_DUMP								CONSTLIT("dump")
+#define ATTRIB_ENTITIES							CONSTLIT("entities")
 #define ATTRIB_INPUT							CONSTLIT("input")
 #define ATTRIB_OUTPUT							CONSTLIT("output")
 
+#define EXTENSION_TDB							CONSTLIT("tdb")
+
 #define TAG_IMAGES								CONSTLIT("Images")
 #define TAG_SOUNDS								CONSTLIT("Sounds")
+#define TAG_MODULE								CONSTLIT("Module")
 #define TAG_MODULES								CONSTLIT("Modules")
 #define TAG_IMAGE								CONSTLIT("Image")
 #define TAG_SOUND								CONSTLIT("Sound")
 #define TAG_TRANSCENDENCE_ADVENTURE				CONSTLIT("TranscendenceAdventure")
+#define TAG_TRANSCENDENCE_LIBRARY				CONSTLIT("TranscendenceLibrary")
 
 #define ATTRIB_FOLDER							CONSTLIT("folder")
 #define ATTRIB_BITMAP							CONSTLIT("bitmap")
@@ -47,10 +56,13 @@ struct SCompilerCtx
 			iErrorCount(0) 
 		{ }
 
+	CString sRootPath;
 	CSymbolTable Resources;
 	int iErrorCount;
 	};
 
+void DumpTDB (const CString &sFilespec);
+ALERROR ReadEntities (const CString &sFilespec, CExternalEntityTable **retpEntityTable);
 ALERROR ParseGameFile (SCompilerCtx &Ctx, const CString &sFilename, CXMLElement **retpData);
 ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, CDataFile &Out, int *retiGameFile);
 ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out);
@@ -82,14 +94,18 @@ void TransCompiler (CXMLElement *pCmdLine)
 
 	{
 	ALERROR error;
+	int i;
 
-	printf("TransCompiler v1.01\n");
-	printf("Copyright (c) 2003-2011 by George Moromisato. All Rights Reserved.\n\n");
+	printf("TransCompiler v1.02\n");
+	printf("Copyright (c) 2003-2012 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 
 	if (pCmdLine->GetAttributeBool(NOARGS) || pCmdLine->GetAttributeBool(SWITCH_HELP))
 		{
 		printf("  /input:{input filespec}\n");
 		printf("  /output:{output filespec}\n");
+		printf(" [/digest]\n");
+		printf(" [/dump]\n");
+		printf(" [/entities:{entity filespec}]\n");
 		printf("\n");
 		return;
 		}
@@ -106,53 +122,200 @@ void TransCompiler (CXMLElement *pCmdLine)
 	//	Figure out the output filespec
 
 	CString sOutputFilespec = pCmdLine->GetAttribute(ATTRIB_OUTPUT);
-	if (sOutputFilespec.IsBlank())
-		sOutputFilespec = CONSTLIT("Transcendence.tdb");
+	if (sOutputFilespec.IsBlank() && !sInputFilespec.IsBlank())
+		sOutputFilespec = strPatternSubst(CONSTLIT("%s.tdb"), pathStripExtension(pathGetFilename(sInputFilespec)));
 
-	//	Create the output file
+	//	Optional entities file.
 
-	if (error = CDataFile::Create(sOutputFilespec, 4096, 0))
+	CString sEntitiesFilespec = pCmdLine->GetAttribute(ATTRIB_ENTITIES);
+	if (sEntitiesFilespec.IsBlank() && !strEquals(pathGetFilename(sInputFilespec), CONSTLIT("Transcendence.xml")))
+		sEntitiesFilespec = CONSTLIT("Transcendence.tdb");
+
+	//	If we just want to dump an existing TDB then we do that
+
+	if (pCmdLine->GetAttributeBool(ATTRIB_DUMP) || strEquals(pathGetExtension(sInputFilespec), EXTENSION_TDB))
 		{
-		printf("error : Unable to create '%s'\n", sOutputFilespec.GetASCIIZPointer());
+		DumpTDB(sInputFilespec);
+		}
+
+	//	Otherwise we are creating a new TDB
+
+	else
+		{
+		//	Create the output file
+
+		if (error = CDataFile::Create(sOutputFilespec, 4096, 0))
+			{
+			printf("error : Unable to create '%s'\n", sOutputFilespec.GetASCIIZPointer());
+			return;
+			}
+
+		CDataFile Out(sOutputFilespec);
+		if (error = Out.Open())
+			{
+			printf("error : Unable to open '%s'\n", sOutputFilespec.GetASCIIZPointer());
+			return;
+			}
+
+		//	Entities
+
+		CExternalEntityTable *pEntities = NULL;
+		if (!sEntitiesFilespec.IsBlank())
+			{
+			if (error = ReadEntities(sEntitiesFilespec, &pEntities))
+				{
+				printf("error : Unable to read entities file '%s'\n", sEntitiesFilespec.GetASCIIZPointer());
+				return;
+				}
+			}
+
+		//	Prepare a symbol table to hold all the resource files
+
+		SCompilerCtx Ctx;
+
+		//	Get the path of the input
+
+		Ctx.sRootPath = pathGetPath(sInputFilespec);
+		sInputFilespec = pathGetFilename(sInputFilespec);
+
+		//	Write out the main module and recurse
+
+		int iGameFile;
+		if (error = WriteModule(Ctx, sInputFilespec, NULL_STR, pEntities, Out, &iGameFile))
+			goto Done;
+
+		//	Write out the header
+
+		if (error = WriteHeader(Ctx, iGameFile, Out))
+			goto Done;
+
+		//	Done with the file
+
+		Out.Close();
+
+		//	If necessary create a digest
+
+		if (pCmdLine->GetAttributeBool(ATTRIB_DIGEST))
+			{
+			CIntegerIP Digest;
+
+			if (fileCreateDigest(sOutputFilespec, &Digest) != NOERROR)
+				{
+				Ctx.iErrorCount++;
+				printf("error : Unable to create digest for '%s'\n", sOutputFilespec.GetASCIIZPointer());
+				goto Done;
+				}
+
+			//	Output C++ style constant
+
+			printf("\nstatic BYTE g_Digest[] =\n\t{");
+
+			BYTE *pDigest = Digest.GetBytes();
+			for (i = 0; i < Digest.GetLength(); i++)
+				{
+				if ((i % 10) == 0)
+					printf("\n\t");
+
+				printf("%3d, ", (DWORD)pDigest[i]);
+				}
+			
+			printf("\n\t};\n");
+			}
+
+	Done:
+
+		printf("\n");
+		printf("%s - %d error%s\n", sOutputFilespec.GetASCIIZPointer(), Ctx.iErrorCount, (Ctx.iErrorCount == 1 ? "" : "s"));
+		}
+	}
+
+void DumpTDB (const CString &sFilespec)
+	{
+	int i;
+
+	//	Open the TDB
+
+	CTDBFile TDBFile;
+	if (TDBFile.Open(sFilespec, CTDBFile::FLAG_READ_ONLY) != NOERROR)
+		{
+		printf("error : Unable to open '%s'\n", sFilespec.GetASCIIZPointer());
 		return;
 		}
 
-	CDataFile Out(sOutputFilespec);
-	if (error = Out.Open())
-		{
-		printf("error : Unable to open '%s'\n", sOutputFilespec.GetASCIIZPointer());
-		return;
-		}
+	//	Dump out all the resources
 
-	//	Prepare a symbol table to hold all the resource files
+	for (i = 0; i < TDBFile.GetResourceCount(); i++)
+		printf("%s\n", TDBFile.GetResourceName(i).GetASCIIZPointer());
+	}
 
-	SCompilerCtx Ctx;
+ALERROR ReadEntities (const CString &sFilespec, CExternalEntityTable **retpEntityTable)
+	{
+	ALERROR error;
 
-	//	Write out the main module and recurse
+	//	Open the data file.
+
+	CDataFile EntitiesTDB(sFilespec);
+	if (error = EntitiesTDB.Open(DFOPEN_FLAG_READ_ONLY))
+		return error;
+
+	//	Open
+
+	CString sData;
+	if (error = EntitiesTDB.ReadEntry(EntitiesTDB.GetDefaultEntry(), &sData))
+		return error;
+
+	CMemoryReadStream Stream(sData.GetASCIIZPointer(), sData.GetLength());
+	if (error = Stream.Open())
+		return error;
+
+	//	Check the signature
+
+	DWORD dwLoad;
+	Stream.Read((char *)&dwLoad, sizeof(DWORD));
+	if (dwLoad != TDB_SIGNATURE)
+		return ERR_FAIL;
+
+	//	Check the version
+
+	Stream.Read((char *)&dwLoad, sizeof(DWORD));
+	if (dwLoad > TDB_VERSION)
+		return ERR_FAIL;
+
+	//	Read the game file
 
 	int iGameFile;
-	if (error = WriteModule(Ctx, sInputFilespec, NULL_STR, NULL, Out, &iGameFile))
-		goto Done;
+	Stream.Read((char *)&iGameFile, sizeof(DWORD));
 
-	//	Write out the header
+	//	Load the main entry
 
-	if (error = WriteHeader(Ctx, iGameFile, Out))
-		goto Done;
+	CString sGameFile;
+	if (error = EntitiesTDB.ReadEntry(iGameFile, &sGameFile))
+		return error;
+
+	//	Allocate entities
+
+	CExternalEntityTable *pEntities = new CExternalEntityTable;
+
+	//	Parse the XML file from the buffer
+
+	CBufferReadBlock GameFile(sGameFile);
+
+	CString sError;
+	if (error = CXMLElement::ParseEntityTable(&GameFile, pEntities, &sError))
+		return error;
 
 	//	Done
 
-Done:
+	*retpEntityTable = pEntities;
 
-	Out.Close();
-	printf("\n");
-	printf("%s - %d error%s\n", sOutputFilespec.GetASCIIZPointer(), Ctx.iErrorCount, (Ctx.iErrorCount == 1 ? "" : "s")); 
+	return NOERROR;
 	}
 
 ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, CDataFile &Out, int *retiGameFile)
 	{
 	ALERROR error;
 
-	CFileReadBlock theFile(sFilespec);
+	CFileReadBlock theFile(pathAddComponent(Ctx.sRootPath, sFilespec));
 	if (error = theFile.Open())
 		{
 		printf("error : Unable to open '%s'\n", sFilespec.GetASCIIZPointer());
@@ -243,42 +406,30 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 					 int *retiModuleEntry)
 	{
 	ALERROR error;
+	int i;
 
 	//	Parse the file
 
 	CXMLElement *pModule;
 	CExternalEntityTable EntityTable;
+	CFileReadBlock DataFile(pathAddComponent(Ctx.sRootPath, sFilename));
+	CString sError;
+
+	printf("Parsing %s...", sFilename.GetASCIIZPointer());
+	if (error = CXMLElement::ParseXML(&DataFile, pEntityTable, &pModule, &sError, &EntityTable))
+		{
+		printf("\nerror : %s\n", sError.GetASCIIZPointer());
+		Ctx.iErrorCount++;
+		return error;
+		}
+
+	//	Chain entity tables (so that any modules that we load get the benefit).
+
 	if (pEntityTable)
-		{
-		CFileReadBlock DataFile(sFilename);
-		CString sError;
+		EntityTable.SetParent(pEntityTable);
 
-		printf("Parsing %s...", sFilename.GetASCIIZPointer());
-		if (error = CXMLElement::ParseXML(&DataFile, pEntityTable, &pModule, &sError))
-			{
-			printf("\nerror : %s\n", sError.GetASCIIZPointer());
-			Ctx.iErrorCount++;
-			return error;
-			}
-
-		printf("done.\n");
-		}
-	else
-		{
-		CFileReadBlock DataFile(sFilename);
-		CString sError;
-
-		printf("Parsing %s...", sFilename.GetASCIIZPointer());
-		if (error = CXMLElement::ParseXML(&DataFile, &pModule, &sError, &EntityTable))
-			{
-			printf("\nerror : %s\n", sError.GetASCIIZPointer());
-			Ctx.iErrorCount++;
-			return error;
-			}
-
-		pEntityTable = &EntityTable;
-		printf("done.\n");
-		}
+	pEntityTable = &EntityTable;
+	printf("done.\n");
 
 	//	Write the module itself
 
@@ -309,11 +460,27 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 
 	//	The root module may have a TranscendenceAdventure tag with modules in it
 
-	CXMLElement *pAdventure = pModule->GetContentElementByTag(TAG_TRANSCENDENCE_ADVENTURE);
-	if (pAdventure)
+	for (i = 0; i < pModule->GetContentElementCount(); i++)
 		{
-		if (error = WriteSubModules(Ctx, pAdventure, sFolder, pEntityTable, Out))
-			return error;
+		CXMLElement *pItem = pModule->GetContentElement(i);
+
+		if (strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_ADVENTURE) || strEquals(pItem->GetTag(), TAG_TRANSCENDENCE_LIBRARY))
+			{
+			//	Store all the image resources
+
+			if (error = WriteModuleImages(Ctx, pItem, sFolder, Out))
+				return error;
+
+			//	Store all the sound resources
+
+			if (error = WriteModuleSounds(Ctx, pItem, sFolder, Out))
+				return error;
+
+			//	Modules
+
+			if (error = WriteSubModules(Ctx, pItem, sFolder, pEntityTable, Out))
+				return error;
+			}
 		}
 
 	//	Done
@@ -330,15 +497,25 @@ ALERROR WriteSubModules (SCompilerCtx &Ctx,
 						 CExternalEntityTable *pEntityTable,
 						 CDataFile &Out)
 	{
-	int i;
+	int i, j;
 
-	CXMLElement *pModules = pModule->GetContentElementByTag(TAG_MODULES);
-	if (pModules)
+	for (i = 0; i < pModule->GetContentElementCount(); i++)
 		{
-		for (i = 0; i < pModules->GetContentElementCount(); i++)
-			{
-			CXMLElement *pItem = pModules->GetContentElement(i);
+		CXMLElement *pItem = pModule->GetContentElement(i);
 
+		if (strEquals(pItem->GetTag(), TAG_MODULES))
+			{
+			for (j = 0; j < pItem->GetContentElementCount(); j++)
+				{
+				CXMLElement *pDesc = pItem->GetContentElement(j);
+
+				CString sFilename = pDesc->GetAttribute(ATTRIB_FILENAME);
+				if (WriteModule(Ctx, sFilename, sFolder, pEntityTable, Out, NULL) != NOERROR)
+					continue;
+				}
+			}
+		else if (strEquals(pItem->GetTag(), TAG_MODULE))
+			{
 			CString sFilename = pItem->GetAttribute(ATTRIB_FILENAME);
 			if (WriteModule(Ctx, sFilename, sFolder, pEntityTable, Out, NULL) != NOERROR)
 				continue;
@@ -415,7 +592,7 @@ ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CStrin
 	ALERROR error;
 	CString sFilespec = pathAddComponent(sFolder, sFilename);
 
-	CFileReadBlock theFile(sFilespec);
+	CFileReadBlock theFile(pathAddComponent(Ctx.sRootPath, sFilespec));
 	if (error = theFile.Open())
 		{
 		printf("error : Unable to open '%s'\n", sFilespec.GetASCIIZPointer());

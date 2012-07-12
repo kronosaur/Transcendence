@@ -54,7 +54,7 @@
 			name=				"NM900 external missile pod"
 			level=				"7"
 			value=				"2000"
-			mass=				"1300"
+			mass=				"1000"
 			frequency=			"rare"
 			attributes=			"Disposable; MajorItem; Military; NAMI; Specialty"
 
@@ -72,6 +72,7 @@
 				fireRate=			"30"
 				powerUse=			"5"
 				charges=			"true"
+				massBonusPerCharge=	"100" 
 
 				deviceSlots=		"0"
 				external=			"true"

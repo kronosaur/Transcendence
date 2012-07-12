@@ -5,6 +5,9 @@
 
 #include "stdafx.h"
 
+#define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
+#define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
+
 CCloudService::~CCloudService (void)
 
 //	CCloudService destructor
@@ -76,7 +79,7 @@ CString CCloudService::GetUsername (void)
 //	Returns the signed in username (or NULL_STR if no one is signed in).
 
 	{
-	if (HasCapability(ICIService::getUserProfile))
+	if (HasCapability(ICIService::canGetUserProfile))
 		return GetDefaultUsername();
 	else
 		return NULL_STR;
@@ -197,6 +200,46 @@ bool CCloudService::IsModified (void)
 	return false;
 	}
 
+ALERROR CCloudService::LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult)
+
+//	LoadUserCollection
+//
+//	Loads the user collection from the cloud
+
+	{
+	int i;
+
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canLoadUserCollection))
+			{
+			//	For now we only support a single service
+
+			return m_Services[i]->LoadUserCollection(pProcessor, Multiverse, retsResult);
+			}
+
+	return NOERROR;
+	}
+
+ALERROR CCloudService::PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult)
+
+//	PostCrashReport
+//
+//	Posts a crash report to the cloud
+
+	{
+	int i;
+
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canPostCrashReport))
+			{
+			//	For now we only support a single service
+
+			return m_Services[i]->PostCrashReport(pProcessor, sCrash, retsResult);
+			}
+
+	return NOERROR;
+	}
+
 ALERROR CCloudService::PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult)
 
 //	PostGameRecord
@@ -204,34 +247,43 @@ ALERROR CCloudService::PostGameRecord (ITaskProcessor *pProcessor, const CGameRe
 //	Posts the game record to the cloud
 
 	{
+	ALERROR error;
 	int i;
 
-	for (i = 0; i < m_Services.GetCount(); i++)
-		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::postGameRecord))
-			{
-			//	For now we only support posting stats to a single service
+	ALERROR firstError = NOERROR;
 
-			return m_Services[i]->PostGameRecord(pProcessor, Record, Stats, retsResult);
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canPostGameRecord))
+			{
+			CString sError;
+			if (error = m_Services[i]->PostGameRecord(pProcessor, Record, Stats, &sError))
+				{
+				if (firstError == NOERROR)
+					{
+					firstError = error;
+					*retsResult = sError;
+					}
+				}
 			}
 
-	return NOERROR;
+	return firstError;
 	}
 
-ALERROR CCloudService::PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult)
+ALERROR CCloudService::ProcessDownloads (ITaskProcessor *pProcessor, CString *retsResult)
 
-//	PostGameStats
+//	ProcessDownloads
 //
-//	Posts the game stats to the cloud
+//	Gives the service a chance to process downloads
 
 	{
 	int i;
 
 	for (i = 0; i < m_Services.GetCount(); i++)
-		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::postGameStats))
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canDownloadExtension))
 			{
 			//	For now we only support posting stats to a single service
 
-			return m_Services[i]->PostGameStats(pProcessor, Stats, retsResult);
+			return m_Services[i]->ProcessDownloads(pProcessor, retsResult);
 			}
 
 	return NOERROR;
@@ -247,7 +299,7 @@ ALERROR CCloudService::ReadProfile (ITaskProcessor *pProcessor, CUserProfile *re
 	int i;
 
 	for (i = 0; i < m_Services.GetCount(); i++)
-		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::getUserProfile))
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canGetUserProfile))
 			{
 			//	For now we only support posting stats to a single service
 
@@ -271,6 +323,25 @@ ALERROR CCloudService::RegisterUser (ITaskProcessor *pProcessor, const CString &
 			{
 			//	Only one service can register a user
 			return m_Services[i]->RegisterUser(pProcessor, sUsername, sPassword, sEmail, bAutoSignIn, retsResult);
+			}
+
+	return NOERROR;
+	}
+
+ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const CString &sFilespec)
+
+//	RequestExtensionDownload
+//
+//	Download an extension file.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canDownloadExtension))
+			{
+			//	Only one service can register a user
+			return m_Services[i]->RequestExtensionDownload(sFilePath, sFilespec);
 			}
 
 	return NOERROR;
@@ -305,7 +376,7 @@ ALERROR CCloudService::SignOutUser (ITaskProcessor *pProcessor, CString *retsRes
 	int i;
 
 	for (i = 0; i < m_Services.GetCount(); i++)
-		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::getUserProfile))
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canGetUserProfile))
 			{
 			//	Only one service can sign in at a user
 			return m_Services[i]->SignOutUser(pProcessor, retsResult);
@@ -361,5 +432,29 @@ ALERROR CCloudService::WritePrivateData (void)
 			return error;
 
 	return NOERROR;
+	}
+
+//	ICIService -----------------------------------------------------------------
+
+void ICIService::SendServiceError (const CString &sStatus)
+
+//	SendServiceError
+//
+//	Sends current status to the controller.
+
+	{
+	CString *pData = new CString(sStatus);
+	m_HI.HIPostCommand(CMD_SERVICE_ERROR, pData);
+	}
+
+void ICIService::SendServiceStatus (const CString &sStatus)
+
+//	SendServiceStatus
+//
+//	Sends current status to the controller.
+
+	{
+	CString *pData = new CString(sStatus);
+	m_HI.HIPostCommand(CMD_SERVICE_STATUS, pData);
 	}
 

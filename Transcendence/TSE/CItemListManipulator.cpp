@@ -541,6 +541,27 @@ void CItemListManipulator::SetInstalledAtCursor (int iInstalled)
 	MoveItemTo(NewItem, OldItem);
 	}
 
+bool CItemListManipulator::SetPropertyAtCursor (const CString &sName, ICCItem *pValue, int iCount, CString *retsError)
+
+//	SetPropertyAtCursor
+//
+//	Sets the property
+
+	{
+	ASSERT(m_iCursor != -1);
+	CItem &OldItem = m_ItemList.GetItem(m_ViewMap.GetElement(m_iCursor));
+	CItem NewItem = m_ItemList.GetItem(m_ViewMap.GetElement(m_iCursor));
+	if (iCount != -1)
+		NewItem.SetCount(Max(0, Min(iCount, OldItem.GetCount())));
+
+	if (!NewItem.SetProperty(sName, pValue, retsError))
+		return false;
+
+	MoveItemTo(NewItem, OldItem);
+
+	return true;
+	}
+
 void CItemListManipulator::TransferAtCursor (int iCount, CItemList &DestList)
 
 //	TransferAtCursor

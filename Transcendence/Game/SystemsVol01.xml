@@ -2,6 +2,70 @@
 
 <TranscendenceModule>
 
+<!-- STAR SYSTEMS =============================================================
+
+	STANDARD LABELS
+
+	innerSystem			within 360 light-seconds of star
+	lifeZone			between 360 and 620 light-seconds of star
+	nearStations		within 30 light-seconds of any station (not debris)
+	outerSystem			beyond 620 light-seconds of star
+
+	asteroids			among asteroids
+	asteroidbelt		among asteroid belt around star
+	cratered			in orbit around cratered planet/moon
+	desert				in orbit around desert planet/moon
+	earthlike			in orbit around earthlike planet/moon
+	frost				among frost asteroids
+	gasgiant			near gas-giant planet
+	ice					among ice asteroids
+	methanegiant		near methane-giant planet
+	moon				in orbit around large moon
+	nebulae				in a nebula
+	ocean				in orbit around ocean planet/moon
+	planet				in orbit around primary planet
+	planetary			in orbit around planet or large moon
+	poisonous			in orbit around poisonous planet/moon
+	radioactive			in orbit around radioactive planet/moon
+	ringedgiant			near ringed-giant planet
+	trojan				at trojan (or antitrojan) point
+	volcanic			in orbit around volcanic planet/moon
+
+	LABEL HIERARCHY
+
+	asteroids
+		asteroidbelt
+		comet
+		frost
+		ice
+
+	planetary
+		moon
+			cratered
+			desert
+			earthlike
+			ocean
+			poisonous
+			radioactive
+			volcanic
+		planet
+			cratered
+			desert
+			earthlike
+			frost
+			gasgiant
+			methanegiant
+			ocean
+			poisonous
+			radioactive
+			ringedgiant
+			volcanic
+
+	trojan
+	void
+
+-->
+
 <!-- SYSTEM PARTS -->
 
 	<SystemPartTable unid="&tbBasicSystemParts;">
@@ -1547,4 +1611,6 @@
 		</SystemGroup>
 	</SystemType>
 
+	<Image UNID="&rsHumanSpace;"			bitmap="Resources\HumanSpace.jpg"			loadOnUse="true" />
+	
 </TranscendenceModule>

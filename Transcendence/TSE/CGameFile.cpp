@@ -3,7 +3,7 @@
 //	CGameFile class
 //	Copyright (c) 2012 by Kronosaur Productions, LLC. All Rights Reserved.
 
-#include "stdafx.h"
+#include "PreComp.h"
 
 #define MIN_GAME_FILE_VERSION					5
 #define GAME_FILE_VERSION						8
@@ -30,6 +30,27 @@ CGameFile::~CGameFile (void)
 		}
 	}
 
+ALERROR CGameFile::ClearRegistered (void)
+
+//	ClearRegistered
+//
+//	Clears the registered bit.
+
+	{
+	ALERROR error;
+
+	ASSERT(m_pFile);
+
+	m_Header.dwFlags &= ~GAME_FLAG_REGISTERED;
+
+	//	Save the header
+
+	if (error = SaveGameHeader(m_Header))
+		return error;
+
+	return NOERROR;
+	}
+
 void CGameFile::Close (void)
 
 //	Close
@@ -47,6 +68,21 @@ void CGameFile::Close (void)
 		delete m_pFile;
 		m_pFile = NULL;
 		}
+	}
+
+ALERROR CGameFile::ComposeLoadError (const CString &sError, CString *retsError)
+
+//	ComposeLoadError
+//
+//	Compose error on load.
+
+	{
+	if (m_pFile)
+		*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_pFile->GetFilename(), sError);
+	else
+		*retsError = sError;
+
+	return ERR_FAIL;
 	}
 
 ALERROR CGameFile::Create (const CString &sFilename, const CString &sUsername)
@@ -263,6 +299,7 @@ ALERROR CGameFile::LoadGameStats (CGameStats *retStats)
 
 ALERROR CGameFile::LoadSystem (DWORD dwUNID, 
 							   CSystem **retpSystem, 
+							   CString *retsError,
 							   DWORD dwObjID,
 							   CSpaceObject **retpObj,
 							   CSpaceObject *pPlayerShip)
@@ -281,10 +318,7 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 
 	DWORD dwEntry;
 	if (m_SystemMap.Lookup(dwUNID, (CObject **)&dwEntry) != NOERROR)
-		{
-		kernelDebugLogMessage("Unable to find system ID: %x", dwUNID);
-		return ERR_FAIL;
-		}
+		return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to find system ID: %x"), dwUNID), retsError);
 
 	//	If the IN_STARGATE flag is set then it means that we crashed after we saved
 	//	the system but before we could save the new system.
@@ -297,10 +331,7 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 
 		TArray<CDataFile::SVersionInfo> History;
 		if (error = m_pFile->ReadHistory(dwEntry, &History))
-			{
-			kernelDebugLogMessage("Unable to read entry history: %x", dwEntry);
-			return error;
-			}
+			return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to read entry history: %x"), dwEntry), retsError);
 
 		//	If we have a previous version, delete the current one and clear the
 		//	flag.
@@ -308,19 +339,13 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 		if (History.GetCount() > 1)
 			{
 			if (error = m_pFile->DeleteEntry(dwEntry))
-				{
-				kernelDebugLogMessage("Unable to delete entry: %x", dwEntry);
-				return error;
-				}
+				return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to delete entry: %x"), dwEntry), retsError);
 
 			//	Clear the flag now that we have recovered
 
 			m_Header.dwFlags &= ~GAME_FLAG_IN_STARGATE;
 			if (error = SaveGameHeader(m_Header))
-				{
-				kernelDebugLogMessage("Unable to save header");
-				return error;
-				}
+				return ComposeLoadError(CONSTLIT("Unable to save header"), retsError);
 			}
 		}
 
@@ -328,32 +353,31 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 
 	CString sData;
 	if (error = m_pFile->ReadEntry(dwEntry, &sData))
-		{
-		kernelDebugLogMessage("Unable to read system data entry: %x", dwEntry);
-		return error;
-		}
+		return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to read system data entry: %x"), dwEntry), retsError);
 
 	//	Convert to a stream
 
 	CMemoryReadStream Stream(sData.GetPointer(), sData.GetLength());
 	if (error = Stream.Open())
-		{
-		kernelDebugLogMessage("Unable to open data stream for system entry: %x", dwEntry);
-		return error;
-		}
+		return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to open data stream for system entry: %x"), dwEntry), retsError);
 
 	//	Load the system from the stream
 
-	if (error = CSystem::CreateFromStream(g_pUniverse, 
+	CString sError;
+	g_pUniverse->SetLogImageLoad(false);
+	error = CSystem::CreateFromStream(g_pUniverse, 
 			&Stream, 
 			retpSystem,
+			&sError,
 			dwObjID,
 			retpObj,
-			pPlayerShip))
+			pPlayerShip);
+	g_pUniverse->SetLogImageLoad(true);
+
+	if (error)
 		{
 		Stream.Close();
-		kernelDebugLogMessage("Unable to load system: %x", dwEntry);
-		return error;
+		return ComposeLoadError(strPatternSubst(CONSTLIT("System %x: %s"), dwEntry, sError), retsError);
 		}
 
 	//	Tell the universe
@@ -362,14 +386,13 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 		{
 		delete *retpSystem;
 		Stream.Close();
-		kernelDebugLogMessage("Unable to add system to topology: %x", dwEntry);
-		return error;
+		return ComposeLoadError(strPatternSubst(CONSTLIT("Unable to add system to topology: %x"), dwEntry), retsError);
 		}
 
 	//	Done
 
 	if (error = Stream.Close())
-		return error;
+		return ComposeLoadError(CONSTLIT("Unable to close stream."), retsError);
 
 	return NOERROR;
 	}

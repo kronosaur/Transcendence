@@ -33,7 +33,10 @@ ALERROR CExplorerModel::LoadUniverse (CString *retsError)
 
 	//	Load
 
-	if (error = m_Universe.Init(CONSTLIT("Transcendence"), retsError, flagNoVersionCheck))
+	CUniverse::SInitDesc Ctx;
+	Ctx.bDefaultExtensions = true;
+
+	if (error = m_Universe.Init(Ctx, retsError))
 		return error;
 
 	return NOERROR;

@@ -47,6 +47,7 @@ class CCompositeEntry : public IImageEntry
 		CCompositeEntry (void) : m_pImageCache(NULL) { }
 		virtual ~CCompositeEntry (void);
 
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { retTypesUsed->SetAt(m_Image.GetBitmapUNID(), true); }
 		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
 		virtual int GetMaxLifetime (void) const;
 		virtual int GetVariantCount (void) { return 1; }
@@ -54,7 +55,6 @@ class CCompositeEntry : public IImageEntry
 		virtual void InitSelector (CCompositeImageSelector *retSelector);
 		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
 		virtual bool IsConstant (void);
-		virtual void LoadImage (void);
 		virtual void MarkImage (void);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
@@ -68,12 +68,12 @@ class CCompositeEntry : public IImageEntry
 class CImageEntry : public IImageEntry
 	{
 	public:
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { retTypesUsed->SetAt(m_Image.GetBitmapUNID(), true); }
 		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage) { *retImage = m_Image; }
 		virtual int GetMaxLifetime (void) const { return m_Image.GetFrameCount() * m_Image.GetTicksPerFrame(); }
 		virtual int GetVariantCount (void) { return 1; }
 		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
 		virtual bool IsConstant (void) { return true; }
-		virtual void LoadImage (void) { m_Image.LoadImage(); }
 		virtual void MarkImage (void) { m_Image.MarkImage(); }
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx) { return m_Image.OnDesignLoadComplete(Ctx); }
 
@@ -86,6 +86,7 @@ class CTableEntry : public IImageEntry
 	public:
 		virtual ~CTableEntry (void);
 
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
 		virtual int GetMaxLifetime (void) const;
 		virtual int GetVariantCount (void) { return m_Table.GetCount(); }
@@ -93,7 +94,6 @@ class CTableEntry : public IImageEntry
 		virtual void InitSelector (CCompositeImageSelector *retSelector);
 		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
 		virtual bool IsConstant (void) { return (m_Table.GetCount() == 0 || ((m_Table.GetCount() == 1) && m_Table[0].pImage->IsConstant())); }
-		virtual void LoadImage (void);
 		virtual void MarkImage (void);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
@@ -369,29 +369,6 @@ void CCompositeImageDesc::InitSelector (CCompositeImageSelector *retSelector)
 	m_pRoot->InitSelector(retSelector);
 	}
 
-void CCompositeImageDesc::LoadImage (void)
-
-//	LoadImage
-//
-//	Loads all images
-
-	{
-	if (m_pRoot == NULL)
-		return;
-
-	m_pRoot->LoadImage();
-	}
-
-void CCompositeImageDesc::LoadImage (const CCompositeImageSelector &Selector)
-
-//	LoadImage
-//
-//	Loads the image
-
-	{
-	GetImage(Selector).LoadImage();
-	}
-
 void CCompositeImageDesc::MarkImage (void)
 
 //	MarkImage
@@ -405,14 +382,14 @@ void CCompositeImageDesc::MarkImage (void)
 	m_pRoot->MarkImage();
 	}
 
-void CCompositeImageDesc::MarkImage (const CCompositeImageSelector &Selector)
+void CCompositeImageDesc::MarkImage (const CCompositeImageSelector &Selector, DWORD dwModifiers)
 
 //	MarkImage
 //
 //	Marks the image in use
 
 	{
-	GetImage(Selector).MarkImage();
+	GetImage(Selector, dwModifiers).MarkImage();
 	}
 
 ALERROR CCompositeImageDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
@@ -715,19 +692,6 @@ bool CCompositeEntry::IsConstant (void)
 	return true;
 	}
 
-void CCompositeEntry::LoadImage (void)
-
-//	LoadImage
-//
-//	Load all images
-
-	{
-	int i;
-
-	for (i = 0; i < m_Layers.GetCount(); i++)
-		m_Layers[i]->LoadImage();
-	}
-
 void CCompositeEntry::MarkImage (void)
 
 //	MarkImage
@@ -792,6 +756,19 @@ CTableEntry::~CTableEntry (void)
 
 	for (i = 0; i < m_Table.GetCount(); i++)
 		delete m_Table[i].pImage;
+	}
+
+void CTableEntry::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Add types used by this entry
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pImage->AddTypesUsed(retTypesUsed);
 	}
 
 void CTableEntry::GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage)
@@ -900,19 +877,6 @@ void CTableEntry::InitSelector (int iVariant, CCompositeImageSelector *retSelect
 
 	{
 	retSelector->AddVariant(GetID(), iVariant);
-	}
-
-void CTableEntry::LoadImage (void)
-
-//	LoadImage
-//
-//	Load all images
-
-	{
-	int i;
-
-	for (i = 0; i < m_Table.GetCount(); i++)
-		m_Table[i].pImage->LoadImage();
 	}
 
 void CTableEntry::MarkImage (void)

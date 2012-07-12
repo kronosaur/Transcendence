@@ -244,6 +244,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /shipimages           Generates images of ship classes.\n");
 		printf("  /shiptable            Ship class information.\n");
 		printf("  /simtables            Generate tables for sim counts.\n");
+		if (bDebug)
+			printf("  /smoketest            Tests the game.\n");
 		printf("  /snapshot             Generates a snapshot of the given object.\n");
 		printf("  /stationfrequency     Table of station types by level.\n");
 		printf("  /stats                Shows a list of basic stats.\n");
@@ -252,6 +254,10 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");
+		if (bDebug)
+			printf("  /typeDependencies     Show a list of all types and their dependencies.\n");
+		if (bDebug)
+			printf("  /typeIslands          Show groups of types that depend on each other.\n");
 		if (bDebug)
 			printf("  /wordlist             Lists all unique words.\n");
 		}

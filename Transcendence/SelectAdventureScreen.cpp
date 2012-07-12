@@ -57,6 +57,8 @@ void CTranscendenceWnd::OnDblClickSelectAdventure (int x, int y, DWORD dwFlags)
 //	Handle double-click
 
 	{
+	SetAdventure(m_AdventureDescDisplay.GetAdventure());
+
 	if (m_ButtonBarDisplay.OnLButtonDoubleClick(x, y))
 		return;
 	}
@@ -81,6 +83,7 @@ void CTranscendenceWnd::OnKeyDownSelectAdventure (int iVirtKey, DWORD dwKeyData)
 			break;
 
 		case VK_RETURN:
+			SetAdventure(m_AdventureDescDisplay.GetAdventure());
 			DoCommand(CMD_SELECT_ADVENTURE);
 			break;
 		}
@@ -93,6 +96,8 @@ void CTranscendenceWnd::OnLButtonDownSelectAdventure (int x, int y, DWORD dwFlag
 //	Handle OnLButtonDown
 
 	{
+	SetAdventure(m_AdventureDescDisplay.GetAdventure());
+
 	if (m_ButtonBarDisplay.OnLButtonDown(x, y))
 		return;
 	}

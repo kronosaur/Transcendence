@@ -261,10 +261,16 @@ Metric CShipClass::CalcMass (const CDeviceDescList &Devices)
 	Metric rMass = GetHullMass();
 
 	for (i = 0; i < GetHullSectionCount(); i++)
-		rMass += GetHullSection(i)->pArmor->GetMass();
+		{
+		CItem Item(GetHullSection(i)->pArmor->GetItemType(), 1);
+		rMass += Item.GetMass();
+		}
 
 	for (i = 0; i < Devices.GetCount(); i++)
-		rMass += Devices.GetDeviceClass(i)->GetMass();
+		{
+		CItem Item(Devices.GetDeviceClass(i)->GetItemType(), 1);
+		rMass += Item.GetMass();
+		}
 
 	return rMass;
 	}
@@ -354,7 +360,6 @@ int CShipClass::ComputeDeviceLevel (const SDeviceDesc &Device)
 
 	if (pDevice->GetCategory() == itemcatLauncher)
 		{
-		//int iLevel = pDevice->GetItemType()->GetLevel();
 		int iLevel = 0;
 
 		//	Look for the highest missile level and use that as the
@@ -904,7 +909,9 @@ void CShipClass::CreateWreckImage (void)
 //	Creates a wreck image randomly
 
 	{
-	ASSERT(!m_Image.IsEmpty());
+	if (m_Image.IsEmpty())
+		return;
+
 	int cxWidth = RectWidth(m_Image.GetImageRect());
 	int cyHeight = RectHeight(m_Image.GetImageRect());
 
@@ -924,7 +931,7 @@ void CShipClass::CreateWreckImage (void)
 
 		//	Get the image
 
-		g_pDamageBitmap = pDamageImage->GetImage();
+		g_pDamageBitmap = pDamageImage->GetImage(strFromInt(GetUNID()));
 		if (g_pDamageBitmap == NULL)
 			return;
 		}
@@ -1256,14 +1263,6 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 
 		*retsValue = CreateDataFieldFromItemList(Items);
 		}
-	else if (strEquals(sField, FIELD_FUEL_CAPACITY))
-		*retsValue = strFromInt(m_ReactorDesc.iMaxFuel / FUEL_UNITS_PER_STD_ROD);
-	else if (strEquals(sField, FIELD_FUEL_CRITERIA))
-		*retsValue = strPatternSubst(CONSTLIT("f L:%d-%d;"), m_ReactorDesc.iMinFuelLevel, m_ReactorDesc.iMaxFuelLevel);
-	else if (strEquals(sField, FIELD_FUEL_EFFICIENCY))
-		*retsValue = strFromInt(m_ReactorDesc.iPowerPerFuelUnit);
-	else if (strEquals(sField, FIELD_POWER))
-		*retsValue = strFromInt(m_ReactorDesc.iMaxPower * 100);
 	else if (strEquals(sField, FIELD_DRIVE_IMAGE))
 		{
 		if (m_Exhaust.GetCount() == 0)
@@ -1271,6 +1270,8 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		else
 			*retsValue = CONSTLIT("Image");
 		}
+	else if (CReactorClass::FindDataField(m_ReactorDesc, sField, retsValue))
+		return true;
 	else
 		return CDesignType::FindDataField(sField, retsValue);
 
@@ -1659,30 +1660,69 @@ void CShipClass::InstallEquipment (CShip *pShip)
 		}
 	}
 
-void CShipClass::LoadImages (void)
-
-//	LoadImages
-//
-//	Loads images used by the ship
-
-	{
-	m_Image.LoadImage();
-
-	if (m_pExplosionType)
-		m_pExplosionType->LoadImages();
-	}
-
-void CShipClass::MarkImages (void)
+void CShipClass::MarkImages (bool bMarkDevices)
 
 //	MarkImages
 //
 //	Marks images used by the ship
 
 	{
+	int i;
+
 	m_Image.MarkImage();
 
 	if (m_pExplosionType)
 		m_pExplosionType->MarkImages();
+
+	//	If necessary mark images for all our installed devices
+
+	if (bMarkDevices)
+		{
+		for (i = 0; i < m_AverageDevices.GetCount(); i++)
+			{
+			CDeviceClass *pDevice = m_AverageDevices.GetDeviceClass(i);
+			pDevice->MarkImages();
+			}
+		}
+
+	//	Wreck images
+
+	if (m_WreckImage.IsEmpty())
+		CreateWreckImage();
+	}
+
+void CShipClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds types used by the class
+
+	{
+	int i;
+
+	retTypesUsed->SetAt(m_pWreckType.GetUNID(), true);
+
+	for (i = 0; i < GetHullSectionCount(); i++)
+		retTypesUsed->SetAt(GetHullSection(i)->pArmor->GetItemType()->GetUNID(), true);
+
+	if (m_pDevices)
+		m_pDevices->AddTypesUsed(retTypesUsed);
+
+	if (m_pPlayerSettings)
+		m_pPlayerSettings->AddTypesUsed(retTypesUsed);
+
+	if (m_pItems)
+		m_pItems->AddTypesUsed(retTypesUsed);
+
+	if (m_pEscorts)
+		m_pEscorts->AddTypesUsed(retTypesUsed);
+
+	retTypesUsed->SetAt(strToInt(m_pDefaultScreen.GetUNID(), 0), true);
+	retTypesUsed->SetAt(m_dwDefaultBkgnd, true);
+	retTypesUsed->SetAt(m_Image.GetBitmapUNID(), true);
+	retTypesUsed->SetAt(m_WreckImage.GetBitmapUNID(), true);
+	retTypesUsed->SetAt(m_pExplosionType.GetUNID(), true);
+	retTypesUsed->SetAt(m_ExhaustImage.GetBitmapUNID(), true);
 	}
 
 ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
@@ -1705,8 +1745,18 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 		goto Fail;
 
 	for (i = 0; i < GetHullSectionCount(); i++)
+		{
 		if (error = GetHullSection(i)->pArmor.Bind(Ctx))
 			goto Fail;
+
+		//	Must have armor
+
+		if (GetHullSection(i)->pArmor == NULL)
+			{
+			Ctx.sError = CONSTLIT("ArmorSection must specify valid armor.");
+			goto Fail;
+			}
+		}
 
 	if (error = m_pExplosionType.Bind(Ctx))
 		goto Fail;
@@ -1723,15 +1773,6 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 		{
 		m_pPlayerSettings = pBasePlayerSettings;
 		m_fInheritedPlayerSettings = true;
-		}
-
-	//	If we don't have player settings but we have a base class then get the
-	//	player settings from the base class
-
-	else if (pBasePlayerSettings = GetPlayerSettingsInherited())
-		{
-		m_pPlayerSettings = new CPlayerSettings;
-		*m_pPlayerSettings = *pBasePlayerSettings;
 		}
 
 	//	AI Settings
@@ -1764,9 +1805,6 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	if (error = m_pWreckType.Bind(Ctx))
 		goto Fail;
-
-	if (!m_Image.IsEmpty() && !Ctx.bNoResources)
-		CreateWreckImage();
 
 	//	Generate an average set of devices
 
@@ -1854,17 +1892,8 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_DriveDesc.iPowerUse = DEFAULT_POWER_USE;
 	m_DriveDesc.fInertialess = pDesc->GetAttributeBool(INERTIALESS_DRIVE_ATTRIB);
 
-	m_ReactorDesc.iMaxPower = pDesc->GetAttributeInteger(REACTOR_POWER_ATTRIB);
-	if (m_ReactorDesc.iMaxPower == 0)
-		m_ReactorDesc.iMaxPower = 100;
-	m_ReactorDesc.iMaxFuel = pDesc->GetAttributeInteger(MAX_REACTOR_FUEL_ATTRIB);
-	if (m_ReactorDesc.iMaxFuel == 0)
-		m_ReactorDesc.iMaxFuel = m_ReactorDesc.iMaxPower * 250;
-	m_ReactorDesc.iMinFuelLevel = 1;
-	m_ReactorDesc.iMaxFuelLevel = 3;
-	m_ReactorDesc.iPowerPerFuelUnit = g_MWPerFuelUnit;
-	m_ReactorDesc.fDamaged = false;
-	m_ReactorDesc.fEnhanced = false;
+	if (error = CReactorClass::InitReactorDesc(Ctx, pDesc, &m_ReactorDesc, true))
+		return error;
 
 	m_iCyberDefenseLevel = Max(1, pDesc->GetAttributeInteger(CYBER_DEFENSE_LEVEL_ATTRIB));
 
@@ -1882,7 +1911,10 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 			Section.iStartAt = pSectionDesc->GetAttributeInteger(CONSTLIT(g_StartAttrib));
 			Section.iSpan = pSectionDesc->GetAttributeInteger(CONSTLIT(g_SpanAttrib));
-			Section.pArmor.LoadUNID(Ctx, pSectionDesc->GetAttribute(ARMOR_ID_ATTRIB));
+
+			if (error = Section.pArmor.LoadUNID(Ctx, pSectionDesc->GetAttribute(ARMOR_ID_ATTRIB)))
+				return error;
+
 			Section.dwAreaSet = ParseNonCritical(pSectionDesc->GetAttribute(NON_CRITICAL_ATTRIB));
 
 			if (error = Section.Enhanced.InitFromXML(Ctx, pSectionDesc))
@@ -2027,7 +2059,8 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 		//	Background screens
 
-		m_dwDefaultBkgnd = LoadUNID(Ctx, pDesc->GetAttribute(DEFAULT_BACKGROUND_ID_ATTRIB));
+		if (error = LoadUNID(Ctx, pDesc->GetAttribute(DEFAULT_BACKGROUND_ID_ATTRIB), &m_dwDefaultBkgnd))
+			return error;
 
 		m_fHasDockingPorts = true;
 		}
@@ -2051,7 +2084,9 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Miscellaneous
 
 	m_iLeavesWreck = pDesc->GetAttributeInteger(LEAVES_WRECK_ATTRIB);
-	m_pWreckType.LoadUNID(Ctx, pDesc->GetAttribute(WRECK_TYPE_ATTRIB));
+	if (error = m_pWreckType.LoadUNID(Ctx, pDesc->GetAttribute(WRECK_TYPE_ATTRIB)))
+		return error;
+
 	m_fRadioactiveWreck = pDesc->GetAttributeBool(RADIOACTIVE_WRECK_ATTRIB);
 	m_iStructuralHP = pDesc->GetAttributeIntegerBounded(STRUCTURAL_HIT_POINTS_ATTRIB, 0, -1, -1);
 	if (m_iStructuralHP == -1)
@@ -2059,7 +2094,8 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Explosion
 
-	m_pExplosionType.LoadUNID(Ctx, pDesc->GetAttribute(EXPLOSION_TYPE_ATTRIB));
+	if (error = m_pExplosionType.LoadUNID(Ctx, pDesc->GetAttribute(EXPLOSION_TYPE_ATTRIB)))
+		return error;
 
 	//	Load player settings
 
@@ -2074,6 +2110,39 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Done
 
 	return NOERROR;
+	}
+
+CEffectCreator *CShipClass::OnFindEffectCreator (const CString &sUNID)
+
+//	OnFindEffectCreator
+//
+//	Find the effect creator. sUNID is the remainder after the item type UNID has been removed
+//
+//	{unid}:p:s		Player settings shield effect
+//	      ^
+
+	{
+	//	We start after the class UNID
+
+	char *pPos = sUNID.GetASCIIZPointer();
+	if (*pPos != ':')
+		return NULL;
+	
+	pPos++;
+
+	//	Figure out what
+
+	switch (*pPos)
+		{
+		case 'p':
+			if (m_pPlayerSettings == NULL)
+				return NULL;
+
+			return m_pPlayerSettings->FindEffectCreator(CString(pPos + 1));
+
+		default:
+			return NULL;
+		}
 	}
 
 bool CShipClass::OnHasSpecialAttribute (const CString &sAttrib) const

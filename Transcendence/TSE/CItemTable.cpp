@@ -46,6 +46,7 @@ class CSingleItem : public IItemGenerator
 	{
 	public:
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual CItemType *GetItemType (int iIndex) { return m_pItemType; }
 		virtual int GetItemTypeCount (void) { return 1; }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -62,6 +63,7 @@ class CLookup : public IItemGenerator
 	{
 	public:
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IItemGenerator *GetGenerator (int iIndex) { return m_pTable->GetGenerator(); }
 		virtual int GetGeneratorCount (void) { return ((m_pTable && m_pTable->GetGenerator()) ? 1 : 0); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -76,6 +78,7 @@ class CTableOfGenerators : public IItemGenerator
 	public:
 		virtual ~CTableOfGenerators (void);
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IItemGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pItem; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -98,6 +101,7 @@ class CLevelTableOfItemGenerators : public IItemGenerator
 	public:
 		virtual ~CLevelTableOfItemGenerators (void);
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IItemGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pEntry; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -122,6 +126,7 @@ class CGroupOfGenerators : public IItemGenerator
 	public:
 		virtual ~CGroupOfGenerators (void);
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IItemGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pItem; }
 		virtual int GetGeneratorCount (void) { return m_iCount; }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -148,6 +153,7 @@ class CRandomItems : public IItemGenerator
 
 		virtual ~CRandomItems (void);
 		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual CItemType *GetItemType (int iIndex) { return m_Table[iIndex].pType; }
 		virtual int GetItemTypeCount (void) { return m_iCount; }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -244,6 +250,17 @@ CItemTable::~CItemTable (void)
 		delete m_pGenerator;
 	}
 
+void CItemTable::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds types used by this table
+
+	{
+	if (m_pGenerator)
+		m_pGenerator->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CItemTable::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	OnCreateFromXML
@@ -312,6 +329,16 @@ void CSingleItem::AddItems (SItemAddCtx &Ctx)
 	Ctx.ItemList.AddItem(NewItem);
 	}
 
+void CSingleItem::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	retTypesUsed->SetAt(m_pItemType.GetUNID(), true);
+	}
+
 ALERROR CSingleItem::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -320,7 +347,10 @@ ALERROR CSingleItem::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	{
 	ALERROR error;
-	m_pItemType.LoadUNID(Ctx, pDesc->GetAttribute(ITEM_ATTRIB));
+
+	if (error = m_pItemType.LoadUNID(Ctx, pDesc->GetAttribute(ITEM_ATTRIB)))
+		return error;
+
 	m_iDamaged = pDesc->GetAttributeInteger(DAMAGED_ATTRIB);
 	m_bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
 
@@ -424,6 +454,19 @@ void CLevelTableOfItemGenerators::AddItems (SItemAddCtx &Ctx)
 		}
 	}
 
+void CLevelTableOfItemGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pEntry->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CLevelTableOfItemGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -485,6 +528,16 @@ void CLookup::AddItems (SItemAddCtx &Ctx)
 	m_pTable->AddItems(Ctx);
 	}
 
+void CLookup::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	m_pTable->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CLookup::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -492,7 +545,11 @@ ALERROR CLookup::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 //	Load from XML
 
 	{
-	m_pTable.LoadUNID(Ctx, pDesc->GetAttribute(TABLE_ATTRIB));
+	ALERROR error;
+
+	if (error = m_pTable.LoadUNID(Ctx, pDesc->GetAttribute(TABLE_ATTRIB)))
+		return error;
+
 	if (m_pTable.GetUNID() == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<Lookup> element missing table attribute."));
@@ -554,6 +611,19 @@ void CTableOfGenerators::AddItems (SItemAddCtx &Ctx)
 			break;
 			}
 		}
+	}
+
+void CTableOfGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pItem->AddTypesUsed(retTypesUsed);
 	}
 
 ALERROR CTableOfGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -657,6 +727,19 @@ void CGroupOfGenerators::AddItems (SItemAddCtx &Ctx)
 				m_Table[i].pItem->AddItems(Ctx);
 			}
 		}
+	}
+
+void CGroupOfGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	int i;
+
+	for (i = 0; i < m_iCount; i++)
+		m_Table[i].pItem->AddTypesUsed(retTypesUsed);
 	}
 
 ALERROR CGroupOfGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -786,6 +869,17 @@ void CRandomItems::AddItems (SItemAddCtx &Ctx)
 			break;
 			}
 		}
+	}
+
+void CRandomItems::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	//	Since random items tables don't explicitly refer to a type
+	//	(they do it by criteria) we don't need to add them.
 	}
 
 ALERROR CRandomItems::Create (const CItemCriteria &Crit, 
@@ -1140,7 +1234,7 @@ void CRandomEnhancementGenerator::EnhanceItem (CItem &Item)
 		if (pResult->IsError())
 			{
 			CString sError = strPatternSubst(CONSTLIT("Generate Enhancement: %s"), pResult->GetStringValue());
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 			dwMods = 0;
 			}
 

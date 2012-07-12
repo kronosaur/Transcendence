@@ -277,6 +277,38 @@ CReanimator &CHumanInterface::GetReanimator (void)
 		return g_DefaultReanimator;
 	}
 
+IHISession *CHumanInterface::GetTopSession (bool bNonTransparentOnly)
+
+//	GetTopSession
+//
+//	Returns the top-most session.
+
+	{
+	int i;
+
+	//	If we allow transparent sessions then just return the top-most session
+
+	if (!bNonTransparentOnly || (m_pCurSession == NULL) || !m_pCurSession->IsTransparent())
+		return m_pCurSession;
+
+	//	Otherwise, look for the session
+
+	else
+		{
+		for (i = m_SavedSessions.GetCount() - 1; i >= 0; i--)
+			{
+			//	If this session is fully opaque, then we're done. 
+
+			if (!m_SavedSessions[i]->IsTransparent())
+				return m_SavedSessions[i];
+			}
+
+		//	Otherwise, not found
+
+		return NULL;
+		}
+	}
+
 void CHumanInterface::HardCrash (const CString &sProgramState)
 
 //	HardCrash
@@ -299,14 +331,20 @@ void CHumanInterface::HardCrash (const CString &sProgramState)
 			"Unable to continue due to program error.\r\n\r\n"
 			"program state: %s\r\n"
 			"%s"
-			"\r\n\r\nPlease contact transcendence@neurohack.com with a copy of Debug.log and your save file. "
+			"\r\n\r\nPlease contact transcendence@kronosaur.com with a copy of Debug.log and your save file. "
 			"We are sorry for the inconvenience.\r\n"),
 			sProgramState,
 			sSessionMessage
 			);
 
-	kernelDebugLogMessage(sMessage.GetASCIIZPointer());
+	kernelDebugLogMessage(sMessage);
 	ShowHardCrashSession(CONSTLIT("Transcendence System Crash"), sMessage);
+
+	//	Ask the controller to post a crash report
+
+	CString *pCrashReport = new CString(::kernelGetSessionDebugLog());
+	if (HICommand(CONSTLIT("cmdPostCrashReport"), pCrashReport) == ERR_NOTFOUND)
+		delete pCrashReport;
 	}
 
 void CHumanInterface::HIPostCommand (const CString &sCmd, void *pData)
@@ -677,7 +715,7 @@ ALERROR CHumanInterface::WMCreate (HMODULE hModule, HWND hWnd, char *pszCommandL
 
 Fail:
 
-	::kernelDebugLogMessage(sError.GetASCIIZPointer());
+	::kernelDebugLogMessage(sError);
 	::MessageBox(NULL, sError.GetASCIIZPointer(), "Transcendence", MB_OK);
 
 	return ERR_FAIL;

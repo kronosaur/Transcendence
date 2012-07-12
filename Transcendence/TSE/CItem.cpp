@@ -19,6 +19,11 @@
 #define ON_REMOVED_AS_ENHANCEMENT_EVENT			CONSTLIT("OnRemovedAsEnhancement")
 #define ON_UNINSTALL_EVENT						CONSTLIT("OnUninstall")
 
+#define PROPERTY_CHARGES						CONSTLIT("charges")
+#define PROPERTY_DAMAGED						CONSTLIT("damaged")
+#define PROPERTY_DISRUPTED						CONSTLIT("disrupted")
+#define PROPERTY_INC_CHARGES					CONSTLIT("incCharges")
+
 #define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
@@ -574,6 +579,16 @@ CString CItem::GetEnhancedDesc (CSpaceObject *pInstalled) const
 		return NULL_STR;
 	}
 
+int CItem::GetMassKg (void) const
+
+//	GetMass
+//
+//	Returns the mass of a single unit of the item type.
+
+	{
+	return m_pItemType->GetMassKg(CItemCtx(*this));
+	}
+
 CString CItem::GetNounPhrase (DWORD dwFlags) const
 
 //	GetNounPhrase
@@ -637,6 +652,28 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 	//	Compose phrase
 
 	return ComposeNounPhrase(sName, (int)m_dwCount, sModifier, dwNounFlags, dwFlags);
+	}
+
+ICCItem *CItem::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns an item property. Caller must free ICCItem.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_CHARGES))
+		return CC.CreateInteger(GetCharges());
+
+	else if (strEquals(sName, PROPERTY_DAMAGED))
+		return CC.CreateBool(IsDamaged());
+
+	else if (strEquals(sName, PROPERTY_DISRUPTED))
+		return CC.CreateBool(IsDisrupted());
+
+	else
+		return CC.CreateNil();
 	}
 
 CString CItem::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags) const
@@ -1187,13 +1224,13 @@ bool CItem::MatchesCriteria (const CItemCriteria &Criteria) const
 
 	//	Check for mass modifiers
 
-	if (Criteria.iEqualToMass != -1 && m_pItemType->GetMassKg() != Criteria.iEqualToMass)
+	if (Criteria.iEqualToMass != -1 && GetMassKg() != Criteria.iEqualToMass)
 		return false;
 
-	if (Criteria.iGreaterThanMass != -1 && m_pItemType->GetMassKg() <= Criteria.iGreaterThanMass)
+	if (Criteria.iGreaterThanMass != -1 && GetMassKg() <= Criteria.iGreaterThanMass)
 		return false;
 
-	if (Criteria.iLessThanMass != -1 && m_pItemType->GetMassKg() >= Criteria.iLessThanMass)
+	if (Criteria.iLessThanMass != -1 && GetMassKg() >= Criteria.iLessThanMass)
 		return false;
 
 	//	Otherwise, we match completely
@@ -1978,13 +2015,77 @@ void CItem::SetDisrupted (DWORD dwDuration)
 	{
 	Extra();
 
-	//	Disruption time is cumulative
+	if (m_pExtra->m_dwDisruptedTime == INFINITE_TICK)
+		;
+	else if (dwDuration == INFINITE_TICK)
+		m_pExtra->m_dwDisruptedTime = INFINITE_TICK;
+	else
+		{
+		//	Disruption time is cumulative
 
-	DWORD dwNow = (DWORD)g_pUniverse->GetTicks();
-	if (m_pExtra->m_dwDisruptedTime <= dwNow)
-		m_pExtra->m_dwDisruptedTime = dwNow + dwDuration;
-	else if (m_pExtra->m_dwDisruptedTime != INFINITE_TICK)
-		m_pExtra->m_dwDisruptedTime += dwDuration;
+		DWORD dwNow = (DWORD)g_pUniverse->GetTicks();
+		if (m_pExtra->m_dwDisruptedTime <= dwNow)
+			m_pExtra->m_dwDisruptedTime = dwNow + dwDuration;
+		else
+			m_pExtra->m_dwDisruptedTime += dwDuration;
+		}
+	}
+
+bool CItem::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Sets item property. If we cannot set the property we return an error. If
+//	retsError is blank then we cannot set the property because the value is Nil.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_CHARGES))
+		{
+		if (pValue == NULL || pValue->IsNil())
+			{
+			*retsError = NULL_STR;
+			return false;
+			}
+			
+		SetCharges(pValue->GetIntegerValue());
+		}
+	else if (strEquals(sName, PROPERTY_DAMAGED))
+		SetDamaged((pValue == NULL) || !pValue->IsNil());
+
+	else if (strEquals(sName, PROPERTY_DISRUPTED))
+		{
+		if (pValue == NULL)
+			SetDisrupted(INFINITE_TICK);
+		else if (pValue->IsNil())
+			ClearDisrupted();
+		else if (pValue->IsInteger())
+			SetDisrupted(pValue->GetIntegerValue());
+		else
+			SetDisrupted(INFINITE_TICK);
+		}
+
+	else if (strEquals(sName, PROPERTY_INC_CHARGES))
+		{
+		if (pValue == NULL)
+			SetCharges(GetCharges() + 1);
+		else if (pValue->IsNil())
+			{
+			*retsError = NULL_STR;
+			return false;
+			}
+		else
+			SetCharges(Max(0, GetCharges() + pValue->GetIntegerValue()));
+		}
+
+	else
+		{
+		*retsError = strPatternSubst(CONSTLIT("Unknown item property: %s."), sName);
+		return false;
+		}
+
+	return true;
 	}
 
 ICCItem *CItem::WriteToCCItem (CCodeChain &CC) const

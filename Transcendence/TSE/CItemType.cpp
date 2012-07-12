@@ -239,7 +239,7 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_MASS))
 		{
-		*retsValue = strFromInt(GetMassKg(), FALSE);
+		*retsValue = strFromInt(CItem(this, 1).GetMassKg(), FALSE);
 		return true;
 		}
 	else if (strEquals(sField, FIELD_SHORT_NAME))
@@ -483,6 +483,19 @@ int CItemType::GetInstallCost (void) const
 		return -1;
 	}
 
+int CItemType::GetMassKg (CItemCtx &Ctx) const
+
+//	GetMassKg
+//
+//	Returns the mass of the item in kilograms
+
+	{
+	if (m_iExtraMassPerCharge)
+		return m_iMass + (Ctx.GetItem().GetCharges() * m_iExtraMassPerCharge);
+	else
+		return m_iMass;
+	}
+
 CString CItemType::GetName (DWORD *retdwFlags, bool bActualName) const
 
 //	GetName
@@ -708,6 +721,24 @@ bool CItemType::IsMissile (void) const
 	return HasAttribute(STR_MISSILE);
 	}
 
+void CItemType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds to the list of types used by this type.
+
+	{
+	retTypesUsed->SetAt(m_Image.GetBitmapUNID(), true);
+	retTypesUsed->SetAt(m_pUnknownType.GetUNID(), true);
+	retTypesUsed->SetAt(strToInt(m_pUseScreen.GetUNID(), 0), true);
+
+	if (m_pArmor)
+		m_pArmor->AddTypesUsed(retTypesUsed);
+
+	if (m_pDevice)
+		m_pDevice->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CItemType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign
@@ -790,7 +821,9 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Get the unknown type info
 
-	m_pUnknownType.LoadUNID(Ctx, pDesc->GetAttribute(UNKNOWN_TYPE_ATTRIB));
+	if (error = m_pUnknownType.LoadUNID(Ctx, pDesc->GetAttribute(UNKNOWN_TYPE_ATTRIB)))
+		return error;
+
 	m_fKnown = (m_pUnknownType.GetUNID() == 0);
 
 	//	Get the reference info
@@ -810,6 +843,10 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (m_fInstanceData = pDesc->FindAttribute(INSTANCE_DATA_ATTRIB, &sInstData))
 		m_InitDataValue.LoadFromXML(sInstData);
 	m_fValueCharges = pDesc->GetAttributeBool(VALUE_CHARGES_ATTRIB);
+
+	//	Item weighs more with charges. [This is set by CWeaponClass currently.]
+
+	m_iExtraMassPerCharge = 0;
 
 	//	Flags
 
@@ -954,7 +991,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				return ComposeError(m_sName, CONSTLIT("Unable to load reactor descriptor"), &Ctx.sError);
 			}
 		else
-			kernelDebugLogMessage("Unknown sub-element for ItemType: %s", pSubDesc->GetTag().GetASCIIZPointer());
+			kernelDebugLogMessage("Unknown sub-element for ItemType: %s", pSubDesc->GetTag());
 		}
 
 	//	Done

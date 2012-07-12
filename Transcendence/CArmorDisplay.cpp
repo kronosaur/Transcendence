@@ -42,7 +42,8 @@
 
 CArmorDisplay::CArmorDisplay (void) : m_pUniverse(NULL),
 		m_pPlayer(NULL),
-		m_iSelection(-1)
+		m_iSelection(-1),
+		m_pShieldPainter(NULL)
 
 //	CArmorDisplay constructor
 
@@ -64,6 +65,11 @@ void CArmorDisplay::CleanUp (void)
 //	Delete relevant stuff
 
 	{
+	if (m_pShieldPainter)
+		{
+		m_pShieldPainter->Delete();
+		m_pShieldPainter = NULL;
+		}
 	}
 
 ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
@@ -158,20 +164,39 @@ void CArmorDisplay::Update (void)
 	if (pShield)
 		pShield->GetStatus(pShip, &iHP, &iMaxHP);
 
-	//	Draw shields
+	//	Draw the base ship image, if we have it
 
-	int iWhole = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 100);
-	int iIndex = (100 - iWhole) / 20;
+	const SArmorImageDesc &ArmorDesc = pSettings->GetArmorDesc();
+	if (!ArmorDesc.ShipImage.IsEmpty())
+		{
+		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
+
+		m_Buffer.Blt(rcShip.left, 
+				rcShip.top, 
+				RectWidth(rcShip), 
+				RectHeight(rcShip), 
+				ArmorDesc.ShipImage.GetImage(NULL_STR), 
+				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShip)) / 2),
+				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShip)) / 2);
+		}
+
+	//	Draw the old-style shields
 
 	const SShieldImageDesc &ShieldDesc = pSettings->GetShieldDesc();
-	const RECT &rcShield = ShieldDesc.Image.GetImageRect();
-	m_Buffer.Blt(rcShield.left, 
-			rcShield.top + (RectHeight(rcShield) * iIndex), 
-			RectWidth(rcShield), 
-			RectHeight(rcShield), 
-			ShieldDesc.Image.GetImage(), 
-			DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShield)) / 2),
-			(SHIELD_IMAGE_HEIGHT - RectHeight(rcShield)) / 2);
+	if (!ShieldDesc.pShieldEffect)
+		{
+		int iWhole = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 100);
+		int iIndex = (100 - iWhole) / 20;
+
+		const RECT &rcShield = ShieldDesc.Image.GetImageRect();
+		m_Buffer.Blt(rcShield.left, 
+				rcShield.top + (RectHeight(rcShield) * iIndex), 
+				RectWidth(rcShield), 
+				RectHeight(rcShield), 
+				ShieldDesc.Image.GetImage(NULL_STR), 
+				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShield)) / 2),
+				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShield)) / 2);
+		}
 
 	m_Buffer.Fill(0, 0, DESCRIPTION_WIDTH, DISPLAY_HEIGHT, CG16bitImage::RGBValue(0,0,0));
 
@@ -256,7 +281,7 @@ void CArmorDisplay::Update (void)
 	int iArmorCount = Min(pShip->GetArmorSectionCount(), pSettings->GetArmorDescCount());
 	for (i = 0; i < iArmorCount; i++)
 		{
-		const SArmorImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
 
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 		int iMaxHP = pArmor->GetMaxHP(pShip);
@@ -271,7 +296,7 @@ void CArmorDisplay::Update (void)
 					RectWidth(rcImage),
 					RectHeight(rcImage),
 					255,
-					pImage->Image.GetImage(),
+					pImage->Image.GetImage(NULL_STR),
 					DESCRIPTION_WIDTH + pImage->xDest,
 					pImage->yDest);
 			}
@@ -304,11 +329,30 @@ void CArmorDisplay::Update (void)
 				sHP);
 		}
 
+	//	Draw the new style shields on top
+
+	if (ShieldDesc.pShieldEffect)
+		{
+		int x = DESCRIPTION_WIDTH + SHIELD_IMAGE_WIDTH / 2;
+		int y = SHIELD_IMAGE_HEIGHT / 2;
+
+		SViewportPaintCtx Ctx;
+		Ctx.iTick = g_pUniverse->GetTicks();
+		Ctx.iVariant = (iMaxHP > 0 ? (iHP * 100) / iMaxHP : 0);
+		Ctx.iDestiny = pShip->GetDestiny();
+		Ctx.iRotation = 90;
+
+		if (m_pShieldPainter == NULL)
+			m_pShieldPainter = ShieldDesc.pShieldEffect->CreatePainter();
+
+		m_pShieldPainter->Paint(m_Buffer, x, y, Ctx);
+		}
+
 	//	Draw armor names
 
 	for (i = 0; i < iArmorCount; i++)
 		{
-		const SArmorImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 
 		//	Paint the armor name line

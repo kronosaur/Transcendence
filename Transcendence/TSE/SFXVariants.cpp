@@ -7,6 +7,21 @@
 
 #define MAX_VALUE_ATTRIB						CONSTLIT("maxValue")
 
+class CEffectVariantPainter : public IEffectPainter
+	{
+	public:
+		CEffectVariantPainter (CEffectVariantCreator *pCreator);
+		~CEffectVariantPainter (void);
+
+		//	IEffectPainter virtuals
+		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
+		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+
+	private:
+		CEffectVariantCreator *m_pCreator;
+		TArray<IEffectPainter *> m_Cache;
+	};
+
 CEffectVariantCreator::CEffectVariantCreator (void)
 
 //	CEffectVariantCreator constructor
@@ -25,7 +40,7 @@ CEffectVariantCreator::~CEffectVariantCreator (void)
 		delete m_Effects[i].pEffect;
 	}
 
-CEffectVariantCreator::SEntry *CEffectVariantCreator::ChooseVariant (int iVariantValue)
+CEffectVariantCreator::SEntry *CEffectVariantCreator::ChooseVariant (int iVariantValue, int *retiIndex)
 
 //	ChooseVariant
 //
@@ -40,10 +55,17 @@ CEffectVariantCreator::SEntry *CEffectVariantCreator::ChooseVariant (int iVarian
 		//	the variant	value, then we choose this effect.
 
 		if (iVariantValue <= m_Effects[i].iMaxValue)
+			{
+			if (retiIndex)
+				*retiIndex = i;
 			return &m_Effects[i];
+			}
 		}
 
 	//	If we get this far then we choose the last effect as a default
+
+	if (retiIndex)
+		*retiIndex = m_Effects.GetCount() - 1;
 
 	return &m_Effects[m_Effects.GetCount() - 1];
 	}
@@ -70,9 +92,7 @@ IEffectPainter *CEffectVariantCreator::CreatePainter (void)
 //	Creates a painter
 
 	{
-	//	For now we don't know how to handle this...
-	ASSERT(false);
-	return NULL;
+	return new CEffectVariantPainter(this);
 	}
 
 int CEffectVariantCreator::GetLifetime (void)
@@ -96,28 +116,6 @@ int CEffectVariantCreator::GetLifetime (void)
 		}
 
 	return iTotalLifetime;
-	}
-
-void CEffectVariantCreator::LoadImages (void)
-
-//	LoadImages
-//
-//	Load images used by this effect
-
-	{
-	for (int i = 0; i < m_Effects.GetCount(); i++)
-		m_Effects[i].pEffect->LoadImages();
-	}
-
-void CEffectVariantCreator::MarkImages (void)
-
-//	MarkImages
-//
-//	Mark images used by this effect
-
-	{
-	for (int i = 0; i < m_Effects.GetCount(); i++)
-		m_Effects[i].pEffect->MarkImages();
 	}
 
 ALERROR CEffectVariantCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
@@ -171,6 +169,17 @@ ALERROR CEffectVariantCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
+void CEffectVariantCreator::OnMarkImages (void)
+
+//	OnMarkImages
+//
+//	Mark images used by this effect
+
+	{
+	for (int i = 0; i < m_Effects.GetCount(); i++)
+		m_Effects[i].pEffect->MarkImages();
+	}
+
 void CEffectVariantCreator::SetLifetime (int iLifetime)
 
 //	SetLifetime
@@ -193,3 +202,49 @@ void CEffectVariantCreator::SetVariants (int iVariants)
 		m_Effects[i].pEffect->SetVariants(iVariants);
 	}
 
+//	CEffectVariantPainter object -----------------------------------------------
+
+CEffectVariantPainter::CEffectVariantPainter (CEffectVariantCreator *pCreator) : m_pCreator(pCreator)
+
+//	CEffectVariantPainter constructor
+	
+	{
+	int i;
+
+	m_Cache.InsertEmpty(pCreator->GetVariantCount());
+	for (i = 0; i < m_Cache.GetCount(); i++)
+		m_Cache[i] = NULL;
+	}
+
+CEffectVariantPainter::~CEffectVariantPainter (void)
+
+//	CEffectVariantPainter destructor
+
+	{
+	int i;
+
+	for (i = 0; i < m_Cache.GetCount(); i++)
+		if (m_Cache[i])
+			m_Cache[i]->Delete();
+	}
+
+void CEffectVariantPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	Paint
+//
+//	Paint the effect
+
+	{
+	//	Find the appropriate effect
+
+	int iIndex = m_pCreator->GetVariantCreatorIndex(Ctx.iVariant);
+	if (m_Cache[iIndex] == NULL)
+		{
+		CEffectCreator *pCreator = m_pCreator->GetVariantCreator(iIndex);
+		m_Cache[iIndex] = pCreator->CreatePainter();
+		}
+
+	//	Paint
+
+	m_Cache[iIndex]->Paint(Dest, x, y, Ctx);
+	}

@@ -28,13 +28,16 @@ ALERROR CDriveClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 //	Creates from an XML element
 
 	{
+	ALERROR error;
 	CDriveClass *pDrive;
 
 	pDrive = new CDriveClass;
 	if (pDrive == NULL)
 		return ERR_MEMORY;
 
-	pDrive->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDrive->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
+
 	pDrive->m_DriveDesc.dwUNID = pDrive->GetUNID();
 	pDrive->m_DriveDesc.rMaxSpeed = (double)pDesc->GetAttributeInteger(MAX_SPEED_ATTRIB) * LIGHT_SPEED / 100;
 	pDrive->m_DriveDesc.iThrust = pDesc->GetAttributeInteger(THRUST_ATTRIB);

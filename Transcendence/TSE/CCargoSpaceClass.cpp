@@ -19,13 +19,16 @@ ALERROR CCargoSpaceClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 //	Creates from an XML element
 
 	{
+	ALERROR error;
 	CCargoSpaceClass *pDevice;
 
 	pDevice = new CCargoSpaceClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
+
 	pDevice->m_iCargoSpace = pDesc->GetAttributeInteger(CARGO_SPACE_ATTRIB);
 
 	//	Done

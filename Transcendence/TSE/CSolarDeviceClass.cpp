@@ -23,13 +23,15 @@ ALERROR CSolarDeviceClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 //	Load device data from XML
 
 	{
+	ALERROR error;
 	CSolarDeviceClass *pDevice;
 
 	pDevice = new CSolarDeviceClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	pDevice->m_iRefuel = pDesc->GetAttributeInteger(REFUEL_ATTRIB);
 

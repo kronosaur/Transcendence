@@ -59,7 +59,8 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bNextWeaponKey(false),
 		m_bNextMissileKey(false),
 		m_bPrevWeaponKey(false),
-		m_bPrevMissileKey(false)
+		m_bPrevMissileKey(false),
+		m_pAdventureSelected(NULL)
 
 //	CTranscendence constructor
 
@@ -553,15 +554,7 @@ void CTranscendenceWnd::DoCommand (DWORD dwCmd)
 
 			StopIntro();
 
-			//	If we have more than one adventure, then select an adventure
-
-			ASSERT(g_pUniverse->GetAdventureDescCount() > 0);
-			SetAdventure(g_pUniverse->GetAdventureDesc(0)->GetUNID());
-
-			if (g_pUniverse->GetAdventureDescCount() > 1)
-				StartSelectAdventure();
-			else
-				DoCommand(CMD_LOAD_ADVENTURE);
+			StartSelectAdventure();
 			break;
 			}
 
@@ -588,7 +581,7 @@ void CTranscendenceWnd::DoCommand (DWORD dwCmd)
 			break;
 
 		case CMD_LOAD_ADVENTURE:
-			g_pHI->HICommand(CONSTLIT("gameAdventure"), (void *)GetAdventure());
+			g_pHI->HICommand(CONSTLIT("gameAdventure"), (void *)m_pAdventureSelected);
 			break;
 
 		case CMD_QUIT_GAME:
@@ -847,6 +840,7 @@ void CTranscendenceWnd::ReportCrash (void)
 
 		case psPaintingSRS:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting SRS\r\n"));
+			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdating:
@@ -1025,7 +1019,7 @@ void CTranscendenceWnd::ReportCrash (void)
 		}
 #endif
 
-	throw CException(1);
+	throw CException(ERR_FAIL);
 	}
 
 void CTranscendenceWnd::ReportCrashEvent (CString *retsMessage)
@@ -1052,7 +1046,7 @@ void CTranscendenceWnd::ShowErrorMessage (const CString &sError)
 //	Shows an error message box
 
 	{
-	::kernelDebugLogMessage(sError.GetASCIIZPointer());
+	::kernelDebugLogMessage(sError);
 
 	::MessageBox(m_hWnd, 
 			sError.GetASCIIZPointer(), 
@@ -1325,7 +1319,7 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 	fileGetVersionInfo(NULL_STR, &VerInfo);
 	m_sVersion = strPatternSubst(CONSTLIT("%s %s"), VerInfo.sProductName, VerInfo.sProductVersion);
 	m_sCopyright = VerInfo.sCopyright;
-	kernelDebugLogMessage(m_sVersion.GetASCIIZPointer());
+	kernelDebugLogMessage(m_sVersion);
 	}
 
 	//	Load preferences
@@ -1386,10 +1380,10 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 
 	if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
 		{
-		kernelDebugLogMessage("Small typeface: %s", m_Fonts.Small.GetTypeface().GetASCIIZPointer());
-		kernelDebugLogMessage("Medium typeface: %s", m_Fonts.Large.GetTypeface().GetASCIIZPointer());
-		kernelDebugLogMessage("Large typeface: %s", m_Fonts.Header.GetTypeface().GetASCIIZPointer());
-		kernelDebugLogMessage("Console typeface: %s", m_Fonts.Console.GetTypeface().GetASCIIZPointer());
+		kernelDebugLogMessage("Small typeface: %s", m_Fonts.Small.GetTypeface());
+		kernelDebugLogMessage("Medium typeface: %s", m_Fonts.Large.GetTypeface());
+		kernelDebugLogMessage("Large typeface: %s", m_Fonts.Header.GetTypeface());
+		kernelDebugLogMessage("Console typeface: %s", m_Fonts.Console.GetTypeface());
 		}
 
 	//	Set colors

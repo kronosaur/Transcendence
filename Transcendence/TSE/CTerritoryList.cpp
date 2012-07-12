@@ -52,7 +52,7 @@ bool CTerritoryList::HasAttribute (const CVector &vPos, const CString &sAttrib)
 				CString sError;
 				CAttributeCriteria Criteria;
 				if (Criteria.Parse(sCriteria, 0, &sError) != NOERROR)
-					kernelDebugLogMessage("Error parsing territory: %s", sError.GetASCIIZPointer());
+					kernelDebugLogMessage("Error parsing territory: %s", sError);
 
 				//	Loop over all elements of the criteria
 

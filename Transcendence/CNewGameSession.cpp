@@ -748,6 +748,8 @@ void CNewGameSession::SetShipClass (CShipClass *pClass, int x, int y, int cxWidt
 	{
 	int i;
 
+	g_pUniverse->SetLogImageLoad(false);
+
 	const CPlayerSettings *pPlayerSettings = pClass->GetPlayerSettings();
 
 	const CVisualPalette &VI = m_HI.GetVisuals();
@@ -862,6 +864,8 @@ void CNewGameSession::SetShipClass (CShipClass *pClass, int x, int y, int cxWidt
 		}
 
 	m_pRoot->AddLine(pClassInfo);
+
+	g_pUniverse->SetLogImageLoad(true);
 	}
 
 void CNewGameSession::SetShipClassDesc (const CString &sDesc, int x, int y, int cxWidth)

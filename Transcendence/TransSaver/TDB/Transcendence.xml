@@ -1609,7 +1609,7 @@
 	D		Domain. This can be one of the following:
 
 			0-9	Reserved for Transcendence
-			A-C	Registered extensions (contact transcendence@neurohack.com)
+			A-C	Registered extensions (contact transcendence@kronosaur.com)
 			D	Unregistered extensions (pick a random module ID)
 			E	Unregistered extensions (pick a random module ID)
 			F	Reserved (do not use)

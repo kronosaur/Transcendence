@@ -198,8 +198,7 @@ CString strPattern (const CString &sPattern, LPVOID *pArgs)
 
 	//	Convert the stream to a string
 
-	CString sResult(Stream.GetPointer(), Stream.GetLength());
-	return sResult;
+	return CString(Stream.GetPointer(), Stream.GetLength());
 	}
 
 CString strPatternSubst (CString sLine, ...)

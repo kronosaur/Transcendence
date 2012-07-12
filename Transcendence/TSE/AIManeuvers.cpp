@@ -850,6 +850,16 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 
 	if (pShip->HasSecondaryWeapons())
 		{
+		for (i = 0; i < pShip->GetDeviceCount(); i++)
+			{
+			CInstalledDevice *pDevice = pShip->GetDevice(i);
+			if (!pDevice->IsEmpty() && pDevice->IsSecondaryWeapon() && pDevice->IsReady())
+				pDevice->SetTriggered(true);
+			}
+		}
+
+#if 0
+
 		//	Fire
 
 		TArray<CSpaceObject *> Targets;
@@ -913,6 +923,7 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 				}
 			}
 		}
+#endif
 	}
 
 void CAIBehaviorCtx::ImplementFireWeapon (CShip *pShip, DeviceNames iDev)
@@ -936,10 +947,7 @@ void CAIBehaviorCtx::ImplementFireWeapon (CShip *pShip, DeviceNames iDev)
 		{
 		int iFireAngle = pWeapon->GetDefaultFireAngle(pShip);
 		if (CheckForFriendsInLineOfFire(pShip, pWeapon, NULL, iFireAngle, DEFAULT_DIST_CHECK))
-			{
-			pWeapon->SetTriggered(true);
-			pWeapon->SetFireAngle(iFireAngle);
-			}
+			pShip->SetWeaponTriggered(pWeapon);
 		}
 	}
 
@@ -1075,7 +1083,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 				if (CheckForFriendsInLineOfFire(pShip, pWeapon, pTarget, iFireAngle, DEFAULT_DIST_CHECK))
 					{
 					if (!bDoNotShoot)
-						pWeapon->SetTriggered(true);
+						pShip->SetWeaponTriggered(pWeapon);
 					DEBUG_COMBAT_OUTPUT("FireOnTarget: Fire primary!");
 					}
 				else
@@ -1086,7 +1094,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 				if (CheckForFriendsInLineOfFire(pShip, pWeapon, pTarget, iFireAngle, DEFAULT_DIST_CHECK))
 					{
 					if (!bDoNotShoot)
-						pWeapon->SetTriggered(true);
+						pShip->SetWeaponTriggered(pWeapon);
 					DEBUG_COMBAT_OUTPUT("FireOnTarget: Fire missile!");
 					}
 				else

@@ -1025,7 +1025,7 @@ ALERROR CreateObjectAtRandomLocation (SSystemCreateCtx *pCtx, CXMLElement *pDesc
 
 #ifdef DEBUG_STATION_EXCLUSION_ZONE
 		::kernelDebugLogMessage("CreateObjectAtRandomLocation: Created %s",
-				pDesc->GetContentElement(i % iChildCount)->GetTag().GetASCIIZPointer());
+				pDesc->GetContentElement(i % iChildCount)->GetTag());
 #endif
 		}
 
@@ -1637,14 +1637,14 @@ ALERROR CreateShipsForStation (CSpaceObject *pStation, CXMLElement *pShips)
 	if (error = IShipGenerator::CreateFromXMLAsGroup(Ctx, pShips, &pGenerator))
 		{
 		ASSERT(false);
-		kernelDebugLogMessage("Unable to load ship generator: %s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Unable to load ship generator: %s", Ctx.sError);
 		return error;
 		}
 
 	if (error = pGenerator->OnDesignLoadComplete(Ctx))
 		{
 		ASSERT(false);
-		kernelDebugLogMessage("Unable to load ship generator: %s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Unable to load ship generator: %s", Ctx.sError);
 		return error;
 		}
 
@@ -2098,7 +2098,7 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 
 		//	Keep track of the current extension, because we may change it below
 
-		SExtensionDesc *pOldExtension = pCtx->pExtension;
+		CExtension *pOldExtension = pCtx->pExtension;
 
 		//	Find the appropriate table. First we look in the local table:
 
@@ -2883,7 +2883,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 		{
 		if (retsError)
 			*retsError = Ctx.sError;
-		kernelDebugLogMessage("Unable to create system: %s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Unable to create system: %s", Ctx.sError);
 #ifdef DEBUG
 		::OutputDebugString(Ctx.sError.GetASCIIZPointer());
 		::OutputDebugString("\n");
@@ -2894,7 +2894,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Invoke OnCreate event
 
 	if (error = pType->FireOnCreate(Ctx, &Ctx.sError))
-		kernelDebugLogMessage("%s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("%s", Ctx.sError);
 
 	//	Now invoke OnGlobalSystemCreated
 
@@ -2929,7 +2929,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Fire any deferred OnCreate events
 
 	if (error = Ctx.Events.FireDeferredEvent(ON_CREATE_EVENT, &Ctx.sError))
-		kernelDebugLogMessage("Deferred OnCreate: %s", Ctx.sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Deferred OnCreate: %s", Ctx.sError);
 
 	//	Make sure this system has all the stargates that it needs
 
@@ -2937,7 +2937,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 		if (pSystem->GetNamedObject(pTopology->GetStargate(i)) == NULL)
 			{
 			//	Log, but for backwards compatibility with <1.1 extensions continue running.
-			kernelDebugLogMessage("Unable to find required stargate: %s", pTopology->GetStargate(i).GetASCIIZPointer());
+			kernelDebugLogMessage("Unable to find required stargate: %s", pTopology->GetStargate(i));
 			}
 
 	//	Done
@@ -3187,7 +3187,7 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 		//	(If it were, then we would need to get the extension that the
 		//	satellite desc came from).
 
-		SExtensionDesc *pOldExtension = pCtx->pExtension;
+		CExtension *pOldExtension = pCtx->pExtension;
 		pCtx->pExtension = pType->GetExtension();
 
 		for (int i = 0; i < pSatellites->GetContentElementCount(); i++)
@@ -3214,7 +3214,7 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 	//	Load images, if necessary
 
 	if (!IsCreationInProgress())
-		pStation->LoadImages();
+		pStation->MarkImages();
 
 	//	Done
 

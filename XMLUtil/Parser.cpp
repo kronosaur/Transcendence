@@ -73,6 +73,7 @@ struct ParserCtx
 		CString sToken;
 		int iLine;
 
+		bool m_bParseRootElement;
 		bool m_bParseRootTag;
 		CString m_sRootTag;
 
@@ -90,6 +91,7 @@ ParserCtx::ParserCtx (IReadBlock *pStream, IXMLParserController *pController) :
 	pElement = NULL;
 	iToken = tkEOF;
 	iLine = 1;
+	m_bParseRootElement = false;
 	m_bParseRootTag = false;
 
 	m_pParentCtx = NULL;
@@ -104,6 +106,7 @@ ParserCtx::ParserCtx (ParserCtx *pParentCtx, const CString &sString) :
 	pElement = NULL;
 	iToken = tkEOF;
 	iLine = 1;
+	m_bParseRootElement = false;
 	m_bParseRootTag = false;
 
 	m_pParentCtx = pParentCtx;
@@ -340,10 +343,20 @@ ALERROR ParseElement (ParserCtx *pCtx, CXMLElement **retpElement)
 			}
 		}
 
+	//	Give our controller a chance to deal with an element
+	//	(We use this in Transcendence to parse the <Library> element, which
+	//	contains external entities).
+	//
+	//	NOTE: We only worry about top-level elements (i.e., elements immediately
+	//	under the root).
+
+	if (pCtx->m_pController && pCtx->pElement && pCtx->pElement->GetParentElement() == NULL)
+		pCtx->m_pController->OnOpenTag(pElement);
+
 	//	If we don't have an empty element then keep parsing until
 	//	we find a close tag
 
-	if (pCtx->iToken == tkTagClose)
+	if (!pCtx->m_bParseRootElement && pCtx->iToken == tkTagClose)
 		{
 		CXMLElement *pParentElement;
 
@@ -1302,6 +1315,63 @@ ALERROR CXMLElement::ParseEntityTable (IReadBlock *pStream, CExternalEntityTable
 	//	Parse the prologue
 
 	if (error = ParsePrologue(&Ctx))
+		goto Fail;
+
+	//	Done
+
+	pStream->Close();
+	if (retEntityTable)
+		retEntityTable->AddTable(Ctx.EntityTable);
+
+	return NOERROR;
+
+Fail:
+
+	pStream->Close();
+	*retsError = strPatternSubst(LITERAL("Line(%d): %s"), Ctx.iLine, Ctx.sError);
+	return error;
+	}
+
+ALERROR CXMLElement::ParseRootElement (IReadBlock *pStream, CXMLElement **retpRoot, CExternalEntityTable *retEntityTable, CString *retsError)
+
+//	ParseRootElement
+//
+//	Parses the entity definitions and the root element (but not the contents
+//	of the root element).
+
+	{
+	ALERROR error;
+
+	//	Open the stream
+
+	if (error = pStream->Open())
+		{
+		*retsError = CONSTLIT("unable to open XML stream");
+		return error;
+		}
+
+	//	Initialize context
+
+	ParserCtx Ctx(pStream, NULL);
+
+	//	Parse the prologue
+
+	if (error = ParsePrologue(&Ctx))
+		goto Fail;
+
+	//	Next token must be an element open tag
+
+	if (Ctx.iToken != tkTagOpen)
+		{
+		error = ERR_FAIL;
+		Ctx.sError = LITERAL("root element expected");
+		goto Fail;
+		}
+
+	//	Parse the root element
+
+	Ctx.m_bParseRootElement = true;
+	if (error = ParseElement(&Ctx, retpRoot))
 		goto Fail;
 
 	//	Done

@@ -194,7 +194,7 @@ void CObjectImageArray::CopyFrom (const CObjectImageArray &Source)
 	if (m_dwBitmapUNID || Source.m_pImage == NULL)
 		m_pImage = Source.m_pImage;
 	else
-		m_pImage = new CObjectImage(Source.m_pImage->GetImage());
+		m_pImage = new CObjectImage(Source.m_pImage->GetImage(NULL_STR));
 	m_rcImage = Source.m_rcImage;
 	m_iFrameCount = Source.m_iFrameCount;
 	m_iRotationCount = Source.m_iRotationCount;
@@ -224,7 +224,7 @@ void CObjectImageArray::CopyImage (CG16bitImage &Dest, int x, int y, int iFrame,
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return;
 
@@ -265,7 +265,7 @@ void CObjectImageArray::GenerateGlowImage (int iRotation) const
 	if (m_pImage == NULL)
 		return;
 
-	CG16bitImage *pSource = m_pImage->GetImage();
+	CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 	if (pSource == NULL)
 		return;
 
@@ -387,7 +387,7 @@ void CObjectImageArray::GenerateScaledImages (int iRotation, int cxWidth, int cy
 	rcSrc.right = rcSrc.left + RectWidth(m_rcImage);
 	rcSrc.bottom = rcSrc.top + RectHeight(m_rcImage);
 
-	CG16bitImage *pSource = m_pImage->GetImage();
+	CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 	if (pSource == NULL)
 		return;
 
@@ -540,8 +540,8 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 
 	//	Images
 
-	CG16bitImage *pSrc1 = m_pImage->GetImage();
-	CG16bitImage *pSrc2 = Image2.m_pImage->GetImage();
+	CG16bitImage *pSrc1 = m_pImage->GetImage(NULL_STR);
+	CG16bitImage *pSrc2 = Image2.m_pImage->GetImage(NULL_STR);
 	if (pSrc1 == NULL || pSrc2 == NULL)
 		return false;
 
@@ -687,6 +687,8 @@ ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 //	Create from XML description
 
 	{
+	ALERROR error;
+
 	//	Initialize basic info
 
 	m_rcImage.left = pDesc->GetAttributeInteger(CONSTLIT(g_ImageXAttrib));
@@ -723,24 +725,15 @@ ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 
 	//	Get the image from the universe
 
-	m_dwBitmapUNID = LoadUNID(Ctx, pDesc->GetAttribute(CONSTLIT(g_ImageIDAttrib)));
+	if (error = LoadUNID(Ctx, pDesc->GetAttribute(CONSTLIT(g_ImageIDAttrib)), &m_dwBitmapUNID))
+		return error;
+
 	if (bResolveNow)
 		m_pImage = g_pUniverse->FindLibraryImage(m_dwBitmapUNID);
 	else
 		m_pImage = NULL;
 
 	return NOERROR;
-	}
-
-void CObjectImageArray::LoadImage (void)
-
-//	LoadImage
-//
-//	Make sure that the image is loaded
-
-	{
-	if (m_pImage)
-		m_pImage->GetImage();
 	}
 
 void CObjectImageArray::MarkImage (void)
@@ -789,7 +782,7 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return;
 
@@ -835,7 +828,7 @@ void CObjectImageArray::PaintImageGrayed (CG16bitImage &Dest, int x, int y, int 
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return;
 
@@ -869,7 +862,7 @@ void CObjectImageArray::PaintImageUL (CG16bitImage &Dest, int x, int y, int iTic
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return;
 
@@ -962,7 +955,7 @@ void CObjectImageArray::PaintRotatedImage (CG16bitImage &Dest,
 	if (m_pImage == NULL)
 		return;
 
-	CG16bitImage *pSource = m_pImage->GetImage();
+	CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 	if (pSource == NULL)
 		return;
 
@@ -1040,7 +1033,7 @@ void CObjectImageArray::PaintSilhoutte (CG16bitImage &Dest,
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return;
 
@@ -1073,7 +1066,7 @@ bool CObjectImageArray::PointInImage (int x, int y, int iTick, int iRotation) co
 	{
 	if (m_pImage)
 		{
-		CG16bitImage *pSource = m_pImage->GetImage();
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
 		if (pSource == NULL)
 			return false;
 
@@ -1147,7 +1140,7 @@ void CObjectImageArray::PointInImageInit (SPointInObjectCtx &Ctx, int iTick, int
 	{
 	if (m_pImage)
 		{
-		Ctx.pImage = m_pImage->GetImage();
+		Ctx.pImage = m_pImage->GetImage(NULL_STR);
 		if (Ctx.pImage == NULL)
 			return;
 

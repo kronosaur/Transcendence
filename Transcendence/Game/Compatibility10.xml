@@ -1390,4 +1390,9 @@
 			)
 	</Globals>
 
+
+	<Image UNID="&rsEI100XShields;"		bitmap="Resources\ShieldsHUD_EI100X.bmp" />
+	<Image UNID="&rsWolfenShields;"		bitmap="Resources\ShieldsHUD_Wolfen.bmp" />
+	<Image UNID="&rsZubrinShields;"		bitmap="Resources\ShieldsHUD.bmp" />
+	
 </TranscendenceModule>

@@ -1,0 +1,1166 @@
+//	CExtension.cpp
+//
+//	CExtension class
+//	Copyright (c) 2012 by Kronosaur Productions, LLC. All Rights Reserved.
+//
+//	API VERSION HISTORY
+//
+//	 0: Unknown version
+//
+//	 1: 95-0.96b
+//		Original Extensions
+//
+//	 2: 0.97
+//		Changed gStation to gSource
+//
+//	 3: 1.1
+//		<SmokeTrail>: emitSpeed fixed (used in klicks per tick instead of per second)
+//
+//	See: LoadExtensionVersion in Utilities.cpp
+
+#include "PreComp.h"
+
+#define ADVENTURE_DESC_TAG						CONSTLIT("AdventureDesc")
+#define GLOBALS_TAG								CONSTLIT("Globals")
+#define IMAGE_TAG								CONSTLIT("Image")
+#define IMAGES_TAG								CONSTLIT("Images")
+#define LIBRARY_TAG								CONSTLIT("Library")
+#define MODULE_TAG								CONSTLIT("Module")
+#define MODULES_TAG								CONSTLIT("Modules")
+#define SOUND_TAG								CONSTLIT("Sound")
+#define SOUNDS_TAG								CONSTLIT("Sounds")
+#define STAR_SYSTEM_TOPOLOGY_TAG				CONSTLIT("StarSystemTopology")
+#define SYSTEM_TOPOLOGY_TAG						CONSTLIT("SystemTopology")
+#define SYSTEM_TYPES_TAG						CONSTLIT("SystemTypes")
+#define TABLES_TAG								CONSTLIT("Tables")
+#define TRANSCENDENCE_ADVENTURE_TAG				CONSTLIT("TranscendenceAdventure")
+#define TRANSCENDENCE_EXTENSION_TAG				CONSTLIT("TranscendenceExtension")
+#define TRANSCENDENCE_LIBRARY_TAG				CONSTLIT("TranscendenceLibrary")
+#define TRANSCENDENCE_MODULE_TAG				CONSTLIT("TranscendenceModule")
+
+#define API_VERSION_ATTRIB						CONSTLIT("apiVersion")
+#define CREDITS_ATTRIB							CONSTLIT("credits")
+#define DEBUG_ONLY_ATTRIB						CONSTLIT("debugOnly")
+#define EXTENDS_ATTRIB							CONSTLIT("extends")
+#define FILENAME_ATTRIB							CONSTLIT("filename")
+#define FOLDER_ATTRIB							CONSTLIT("folder")
+#define NAME_ATTRIB								CONSTLIT("name")
+#define RELEASE_ATTRIB							CONSTLIT("release")
+#define UNID_ATTRIB								CONSTLIT("UNID")
+#define VERSION_ATTRIB							CONSTLIT("version")
+
+#define FILESPEC_TDB_EXTENSION					CONSTLIT("tdb")
+
+CExtension::CExtension (void) :
+		m_dwUNID(0),
+		m_iType(extUnknown),
+		m_iLoadState(loadNone),
+		m_iFolderType(folderUnknown),
+		m_dwAPIVersion(0),
+		m_pEntities(NULL),
+		m_dwRelease(0),
+		m_pCoverImage(NULL),
+		m_pAdventureDesc(NULL),
+		m_bMarked(false),
+		m_bDebugOnly(false),
+		m_bRegistered(false),
+		m_bVerified(false)
+
+//	CExtension constructor
+
+	{
+	}
+
+CExtension::~CExtension (void)
+
+//	CExtension destructor
+
+	{
+	if (m_pEntities)
+		delete m_pEntities;
+
+	SweepImages();
+	}
+
+bool CExtension::CanExtend (CExtension *pAdventure) const
+
+//	CanExtend
+//
+//	Returns TRUE if this extension can extend the given adventure.
+
+	{
+	ASSERT(pAdventure);
+
+	//	Only extensions can extend
+
+	if (m_iType != extExtension)
+		return false;
+
+	//	If our extend list is empty then we extend everything.
+
+	if (m_Extends.GetCount() == 0)
+		return true;
+
+	//	Otherwise, see if this adventure is in the list.
+
+	return m_Extends.Find(pAdventure->GetUNID());
+	}
+
+ALERROR CExtension::ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError)
+
+//	ComposeLoadError
+//
+//	Adds the filename to the load error.
+
+	{
+	if (Ctx.sErrorFilespec)
+		*retsError = strPatternSubst(CONSTLIT("%s: %s"), Ctx.sErrorFilespec, Ctx.sError);
+	else
+		*retsError = Ctx.sError;
+
+	return ERR_FAIL;
+	}
+
+ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CExternalEntityTable *pEntities, TArray<CExtension *> *retExtensions)
+
+//	CreateBaseFile
+//
+//	Loads a new extension from the base file.
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Create an extension object
+
+	CExtension *pExtension = new CExtension;
+	pExtension->m_sFilespec = Ctx.sResDb;
+	pExtension->m_dwUNID = 0;	//	Base is the only extension with 0 UNID.
+	pExtension->m_iType = extBase;
+	pExtension->m_iLoadState = loadEntities;
+	pExtension->m_iFolderType = folderBase;
+	pExtension->m_pEntities = pEntities;
+	pExtension->m_ModifiedTime = fileGetModifiedTime(Ctx.sResDb);
+	pExtension->m_bRegistered = true;
+
+	//	We return the base extension
+
+	retExtensions->Insert(pExtension);
+
+	//	Set up context
+
+	Ctx.pExtension = pExtension;
+
+	//	Load the Main XML file
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		//	<Images>
+
+		if (strEquals(pItem->GetTag(), IMAGES_TAG))
+			error = pExtension->LoadImagesElement(Ctx, pItem);
+
+		//	<Sounds>
+
+		else if (strEquals(pItem->GetTag(), SOUNDS_TAG))
+			error = pExtension->LoadSoundsElement(Ctx, pItem);
+
+		//	<SystemTypes>
+
+		else if (strEquals(pItem->GetTag(), SYSTEM_TYPES_TAG))
+			error = pExtension->LoadSystemTypesElement(Ctx, pItem);
+
+		//	<TranscendenceAdventure>
+
+		else if (strEquals(pItem->GetTag(), TRANSCENDENCE_ADVENTURE_TAG)
+				|| strEquals(pItem->GetTag(), TRANSCENDENCE_LIBRARY_TAG))
+			{
+			//	Load an embedded adventure
+
+			//	Get the entities from the base file
+
+			CExternalEntityTable *pAdvEntities = new CExternalEntityTable;
+			pAdvEntities->SetParent(pEntities);
+
+			//	Create a load context
+
+			SDesignLoadCtx AdvCtx;
+			AdvCtx.sResDb = Ctx.sResDb;
+			AdvCtx.pResDb = Ctx.pResDb;
+			AdvCtx.bNoResources = Ctx.bNoResources;
+			AdvCtx.bNoVersionCheck = true;	//	Obsolete now
+			//	No need to set bBindAsNewGame because it is only useful during Bind.
+			//	AdvCtx.bBindAsNewGame = Ctx.bBindAsNewGame;
+
+			//	We always load in full because we don't know how to load later.
+			AdvCtx.bLoadAdventureDesc = false;
+
+			//	Load the extension
+
+			CExtension *pAdvExtension;
+			error = CExtension::CreateExtension(AdvCtx, pItem, CExtension::folderBase, pAdvEntities, &pAdvExtension);
+
+			//	If this worked, add to list of extensions
+
+			if (error == NOERROR)
+				retExtensions->Insert(pAdvExtension);
+
+			//	Otherwise, clean up
+
+			else
+				{
+				Ctx.sError = AdvCtx.sError;
+				delete pAdvEntities;
+				}
+			}
+
+		//	Other types
+
+		else
+			error = pExtension->LoadDesignElement(Ctx, pItem);
+
+		//	Check for error
+
+		if (error)
+			{
+			pExtension->m_pEntities = NULL;	//	Let our parent clean up
+			delete pExtension;
+			return error;
+			}
+		}
+
+	//	Restore
+
+	Ctx.pExtension = NULL;
+
+	//	Done
+
+	pExtension->m_iLoadState = loadComplete;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::CreateExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, CExtension **retpExtension)
+
+//	CreateExtension
+//
+//	Loads the given extension or adventure. We take ownership of pEntities.
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Create an extension object
+
+	CExtension *pExtension;
+	if (error = CreateExtensionFromRoot(Ctx.sResDb, pDesc, iFolder, pEntities, &pExtension, &Ctx.sError))
+		return error;
+
+	//	Set up context
+
+	Ctx.pExtension = pExtension;
+
+	//	Load all the design elements
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (error = pExtension->LoadDesignElement(Ctx, pItem))
+			{
+			pExtension->m_pEntities = NULL;	//	Let our parent clean up.
+			delete pExtension;
+			return error;
+			}
+		}
+
+	//	If this is an adventure and we have no adventure descriptor then we
+	//	fail.
+
+	if (pExtension->m_iType == extAdventure && pExtension->m_pAdventureDesc == NULL)
+		{
+		pExtension->m_pEntities = NULL;	//	Let our parent clean up.
+		delete pExtension;
+		Ctx.sError = CONSTLIT("Adventure must have an AdventureDesc type.");
+		return ERR_FAIL;
+		}
+
+	//	If we get this far and we have no libraries, then include the 
+	//	compatibility library.
+
+	if (pExtension->GetLibraryCount() == 0 && pExtension->GetFolderType() != folderBase)
+		{
+		SLibraryDesc *pLibrary = pExtension->m_Libraries.Insert();
+		pLibrary->dwUNID = DEFAULT_COMPATIBILITY_LIBRARY_UNID;
+		pLibrary->dwRelease = 1;
+		}
+
+	//	Restore
+
+	Ctx.pExtension = NULL;
+
+	//	Done
+
+	pExtension->m_iLoadState = (Ctx.bLoadAdventureDesc ? loadAdventureDesc : loadComplete);
+	*retpExtension = pExtension;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, CExtension **retpExtension, CString *retsError)
+
+//	CreateExtension
+//
+//	Loads the given extension or adventure. We take ownership of pEntities.
+
+	{
+	int i;
+
+	//	Create an extension object
+
+	CExtension *pExtension = new CExtension;
+	pExtension->m_sFilespec = sFilespec;
+	pExtension->m_dwUNID = pDesc->GetAttributeInteger(UNID_ATTRIB);
+	if (pExtension->m_dwUNID == 0)
+		{
+		delete pExtension;
+		*retsError = CONSTLIT("Invalid UNID.");
+		return ERR_FAIL;
+		}
+
+	if (strEquals(pDesc->GetTag(), TRANSCENDENCE_ADVENTURE_TAG))
+		pExtension->m_iType = extAdventure;
+	else if (strEquals(pDesc->GetTag(), TRANSCENDENCE_LIBRARY_TAG))
+		pExtension->m_iType = extLibrary;
+	else if (strEquals(pDesc->GetTag(), TRANSCENDENCE_EXTENSION_TAG))
+		pExtension->m_iType = extExtension;
+	else
+		{
+		delete pExtension;
+		*retsError = strPatternSubst(CONSTLIT("Unknown root element: %s"), pDesc->GetTag());
+		return ERR_FAIL;
+		}
+	
+	pExtension->m_iLoadState = loadEntities;
+	pExtension->m_iFolderType = iFolder;
+	pExtension->m_pEntities = pEntities;
+	pExtension->m_ModifiedTime = fileGetModifiedTime(sFilespec);
+	pExtension->m_bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
+	pExtension->m_bRegistered = IsRegisteredUNID(pExtension->m_dwUNID);
+
+	//	API version
+
+	pExtension->m_dwAPIVersion = ::LoadExtensionVersion(pDesc->GetAttribute(API_VERSION_ATTRIB));
+	if (pExtension->m_dwAPIVersion == 0)
+		pExtension->m_dwAPIVersion = ::LoadExtensionVersion(pDesc->GetAttribute(VERSION_ATTRIB));
+
+	if (pExtension->m_dwAPIVersion == 0)
+		{
+		pExtension->m_pEntities = NULL;	//	Let our parent clean up.
+		delete pExtension;
+		*retsError = strPatternSubst(CONSTLIT("Unable to load extension: incompatible version: %s"), pDesc->GetAttribute(VERSION_ATTRIB));
+		return ERR_FAIL;
+		}
+
+	//	Release
+
+	pExtension->m_dwRelease = pDesc->GetAttributeInteger(RELEASE_ATTRIB);
+
+	//	Registered extensions default to release 1.
+
+	if (pExtension->m_dwRelease == 0 && iFolder == folderCollection)
+		pExtension->m_dwRelease = 1;
+
+	//	Name
+
+	pExtension->m_sName = pDesc->GetAttribute(NAME_ATTRIB);
+	if (pExtension->m_sName.IsBlank())
+		pExtension->m_sName = strPatternSubst(CONSTLIT("Extension %x"), pExtension->m_dwUNID);
+
+	//	Load credits (we parse them into a string array)
+
+	CString sCredits = pDesc->GetAttribute(CREDITS_ATTRIB);
+	if (!sCredits.IsBlank())
+		strDelimitEx(sCredits, ';', DELIMIT_TRIM_WHITESPACE, 0, &pExtension->m_Credits);
+
+	//	Load extends attrib
+
+	CString sExtends = pDesc->GetAttribute(EXTENDS_ATTRIB);
+	if (!sExtends.IsBlank())
+		{
+		TArray<CString> Extends;
+		strDelimitEx(sExtends, ';', DELIMIT_TRIM_WHITESPACE, 0, &Extends);
+		for (i = 0; i < Extends.GetCount(); i++)
+			{
+			DWORD dwUNID = strToInt(Extends[i], INVALID_UNID);
+			if (dwUNID != INVALID_UNID)
+				pExtension->m_Extends.Insert(dwUNID);
+			}
+		}
+
+	//	Done
+
+	*retpExtension = pExtension;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::CreateExtensionStub (const CString &sFilespec, EFolderTypes iFolder, CExtension **retpExtension, CString *retsError)
+
+//	CreateExtensionStub
+//
+//	Loads enough of the given file to get the entities and the root element.
+
+	{
+	ALERROR error;
+
+	//	Open up the file
+
+	CResourceDb Resources(sFilespec, true);
+	if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY))
+		{
+		*retsError = strPatternSubst(CONSTLIT("Unable to load %s."), sFilespec);
+		return error;
+		}
+
+	//	Create a object to receive all the entities
+
+	CExternalEntityTable *pEntities = new CExternalEntityTable;
+
+	//	Load the main XML file and get the entities
+
+	CXMLElement *pGameFile;
+	if (error = Resources.LoadGameFileStub(&pGameFile, pEntities, retsError))
+		{
+		delete pEntities;
+		return error;
+		}
+
+	//	Create the extension
+	//
+	//	If sucessful then pExtension takes ownership of	pEntities.
+
+	CExtension *pExtension;
+	error = CreateExtensionFromRoot(sFilespec, pGameFile, iFolder, pEntities, &pExtension, retsError);
+
+	//	Clean up
+
+	delete pGameFile;
+
+	//	Error
+
+	if (error)
+		{
+		delete pEntities;
+		return error;
+		}
+
+	//	Done
+
+	*retpExtension = pExtension;
+
+	return NOERROR;
+	}
+
+void CExtension::CreateIcon (int cxWidth, int cyHeight, CG16bitImage **retpIcon) const
+
+//	CreateIcon
+//
+//	Creates a cover icon for the adventure. The caller is responsible for
+//	freeing the result.
+
+	{
+	//	Load the image
+
+	CG16bitImage *pBackground = GetCoverImage();
+	if (pBackground == NULL || pBackground->GetWidth() == 0 || pBackground->GetHeight() == 0)
+		{
+		int cxSize = Min(cxWidth, cyHeight);
+		*retpIcon = new CG16bitImage;
+		(*retpIcon)->CreateBlank(cxSize, cxSize, false);
+		return;
+		}
+
+	//	Figure out the dimensions of the icon based on the image size and the
+	//	desired output.
+	//
+	//	If the background is larger than the icon size then we need to scale it.
+
+	CG16bitImage *pIcon;
+	if (pBackground->GetWidth() > cxWidth || pBackground->GetHeight() > cyHeight)
+		{
+		Metric rScale = (Metric)cxWidth / pBackground->GetWidth();
+		if (rScale * pBackground->GetHeight() > (Metric)cyHeight)
+			rScale = (Metric)cyHeight / pBackground->GetHeight();
+
+		int cxDest = (int)(rScale * pBackground->GetWidth());
+		int cyDest = (int)(rScale * pBackground->GetHeight());
+
+		//	Create the icon
+
+		pIcon = new CG16bitImage;
+		pIcon->CreateBlank(cxDest, cyDest, false);
+
+		//	Scale
+
+		DrawBltTransformed(*pIcon,
+				cxDest / 2,
+				cyDest / 2,
+				rScale,
+				rScale,
+				0.0,
+				*pBackground,
+				0,
+				0,
+				pBackground->GetWidth(),
+				pBackground->GetHeight());
+		}
+
+	//	Otherwise we center the image on the icon
+
+	else
+		{
+		//	Create the icon
+
+		pIcon = new CG16bitImage;
+		pIcon->CreateBlank(cxWidth, cyHeight, false);
+
+		//	Blt
+
+		pIcon->Blt(0,
+				0,
+				pBackground->GetWidth(),
+				pBackground->GetHeight(),
+				*pBackground,
+				(cxWidth - pBackground->GetWidth()) / 2,
+				(cyHeight - pBackground->GetHeight()) / 2);
+		}
+
+	//	Done
+
+	*retpIcon = pIcon;
+	}
+
+CG16bitImage *CExtension::GetCoverImage (void) const
+
+//	GetCoverImage
+//
+//	Returns the cover image (or NULL if none). The caller does NOT need to free
+//	the image. However, the caller should not user the image past a SweepImages
+//	call.
+
+	{
+	if (m_pCoverImage)
+		return m_pCoverImage;
+
+	//	Must have adventure desc
+
+	if (m_pAdventureDesc == NULL)
+		return NULL;
+
+	//	Find the image object
+
+	CObjectImage *pObjImage = CObjectImage::AsType(m_DesignTypes.FindByUNID(m_pAdventureDesc->GetBackgroundUNID()));
+	if (pObjImage == NULL)
+		return NULL;
+
+	//	Load the image
+
+	g_pUniverse->SetLogImageLoad(false);
+	m_pCoverImage = pObjImage->CreateCopy();
+	g_pUniverse->SetLogImageLoad(true);
+
+	//	Done
+
+	return m_pCoverImage;
+	}
+
+ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, CString *retsError)
+
+//	Load
+//
+//	Makes sure that the extension is fully loaded.
+
+	{
+	ALERROR error;
+	int i;
+
+	switch (m_iLoadState)
+		{
+		case loadNone:
+			{
+			*retsError = CONSTLIT("Unable to load.");
+			return ERR_FAIL;
+			}
+
+		case loadEntities:
+		case loadAdventureDesc:
+			{
+			if (iDesiredState == loadNone || iDesiredState == loadEntities)
+				return NOERROR;
+			else if (iDesiredState == loadAdventureDesc && m_iLoadState == loadAdventureDesc)
+				return NOERROR;
+
+			//	Open the file
+
+			CResourceDb ExtDb(m_sFilespec, true);
+			if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY))
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sFilespec);
+				return ERR_FAIL;
+				}
+
+			//	Setup
+
+			SDesignLoadCtx Ctx;
+			Ctx.sResDb = m_sFilespec;
+			Ctx.pResDb = &ExtDb;
+			Ctx.bNoVersionCheck = true;	//	Obsolete now
+			Ctx.bNoResources = bNoResources;
+			Ctx.bLoadAdventureDesc = (iDesiredState == loadAdventureDesc && m_iType == extAdventure);
+			Ctx.sErrorFilespec = m_sFilespec;
+
+			//	Parse the XML file into a structure
+
+			CXMLElement *pRoot;
+			if (error = ExtDb.LoadGameFile(&pRoot, pResolver, retsError))
+				{
+				*retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
+				return ERR_FAIL;
+				}
+
+			//	Set up context
+
+			Ctx.pExtension = this;
+
+			//	Load all the design elements
+
+			for (i = 0; i < pRoot->GetContentElementCount(); i++)
+				{
+				CXMLElement *pItem = pRoot->GetContentElement(i);
+
+				if (error = LoadDesignElement(Ctx, pItem))
+					{
+					delete pRoot;
+					return ComposeLoadError(Ctx, retsError);
+					}
+				}
+
+			//	Restore
+
+			Ctx.pExtension = NULL;
+
+			//	Done
+
+			m_iLoadState = (m_iType == extAdventure ? iDesiredState : loadComplete);
+			delete pRoot;
+
+			//	If this is a registered extension then compute a digest for the
+			//	file (so that we can compare against the cloud's digest).
+
+			if (m_iLoadState == loadComplete && GetFolderType() == folderCollection && IsRegistered())
+				{
+				CIntegerIP Digest;
+				if (error = fileCreateDigest(m_sFilespec, &Digest))
+					{
+					*retsError = strPatternSubst(CONSTLIT("Unable to compute digest for: %s."), m_sFilespec);
+					return error;
+					}
+
+				SetDigest(Digest);
+				}
+
+			//	If we get this far and we have no libraries, then include the 
+			//	compatibility library.
+
+			if (m_iLoadState == loadComplete && GetLibraryCount() == 0 && GetFolderType() != folderBase)
+				{
+				SLibraryDesc *pLibrary = m_Libraries.Insert();
+				pLibrary->dwUNID = DEFAULT_COMPATIBILITY_LIBRARY_UNID;
+				pLibrary->dwRelease = 1;
+				}
+
+			//	Debug output
+
+			switch (m_iType)
+				{
+				case extAdventure:
+					if (m_iLoadState == loadAdventureDesc)
+						kernelDebugLogMessage("Loaded adventure desc: %s", m_sFilespec);
+					else
+						kernelDebugLogMessage("Loaded adventure: %s", m_sFilespec);
+					break;
+
+				case extExtension:
+					kernelDebugLogMessage("Loaded extension: %s", m_sFilespec);
+					break;
+
+				case extLibrary:
+					kernelDebugLogMessage("Loaded library: %s", m_sFilespec);
+					break;
+				}
+
+			return NOERROR;
+			}
+
+		case loadComplete:
+			return NOERROR;
+
+		default:
+			ASSERT(false);
+			return ERR_FAIL;
+		}
+	}
+
+ALERROR CExtension::LoadDesignElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadDesignElement
+//
+//	Loads the element appropriately.
+
+	{
+	ALERROR error;
+
+	//	<Image>
+
+	if (strEquals(pDesc->GetTag(), IMAGE_TAG))
+		{
+		//	If we've already loaded adventure descriptors, and we're loading the
+		//	main file, then we ignore images (since we already loaded them).
+
+		if (m_iLoadState == loadAdventureDesc && !Ctx.bLoadModule)
+			return NOERROR;
+
+		//	Otherwise, load it
+
+		return LoadDesignType(Ctx, pDesc);
+		}
+
+	//	<AdventureDesc>
+
+	else if (strEquals(pDesc->GetTag(), ADVENTURE_DESC_TAG))
+		{
+		//	If we've already loaded adventure descs, then we're done
+
+		if (m_iLoadState == loadAdventureDesc)
+			return NOERROR;
+
+		//	Must be an adventure extension
+
+		if (m_iType != extAdventure)
+			{
+			Ctx.sError = CONSTLIT("Only adventures may have an AdventureDesc type.");
+			return ERR_FAIL;
+			}
+
+		//	Can't have more than one
+
+		if (m_pAdventureDesc != NULL)
+			{
+			Ctx.sError = CONSTLIT("Cannot not have more than one AdventureDesc.");
+			return ERR_FAIL;
+			}
+
+		//	Load it
+
+		CDesignType *pType;
+		if (error = LoadDesignType(Ctx, pDesc, &pType))
+			return error;
+
+		//	Remember the adventure
+
+		m_pAdventureDesc = CAdventureDesc::AsType(pType);
+		if (m_pAdventureDesc == NULL)
+			{
+			Ctx.sError = CONSTLIT("Invalid AdventureDesc.");
+			return ERR_FAIL;
+			}
+
+		return NOERROR;
+		}
+
+	//	If we're only loading adventure descs, then we don't care about other
+	//	types.
+
+	else if (Ctx.bLoadAdventureDesc)
+		return NOERROR;
+	
+	//	Standard design element
+
+	else
+		return LoadDesignType(Ctx, pDesc);
+	}
+
+ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType)
+
+//	LoadDesignType
+//
+//	Loads a standard design type
+
+	{
+	ALERROR error;
+	CDesignType *pType = NULL;
+
+	//	Load topology
+
+	if (strEquals(pDesc->GetTag(), STAR_SYSTEM_TOPOLOGY_TAG)
+			|| strEquals(pDesc->GetTag(), SYSTEM_TOPOLOGY_TAG))
+		{
+		if (error = m_Topology.LoadFromXML(Ctx, pDesc, NULL_STR))
+			return error;
+		}
+
+	//	<Sound>
+
+	else if (strEquals(pDesc->GetTag(), SOUND_TAG))
+		return LoadSoundElement(Ctx, pDesc);
+
+	//	<Globals>
+
+	else if (strEquals(pDesc->GetTag(), GLOBALS_TAG))
+		return LoadGlobalsElement(Ctx, pDesc);
+
+	//	<Library>
+
+	else if (strEquals(pDesc->GetTag(), LIBRARY_TAG))
+		return LoadLibraryElement(Ctx, pDesc);
+
+	//	<Module>
+
+	else if (strEquals(pDesc->GetTag(), MODULE_TAG))
+		return LoadModuleElement(Ctx, pDesc);
+
+	//	<Modules>
+
+	else if (strEquals(pDesc->GetTag(), MODULES_TAG))
+		return LoadModulesElement(Ctx, pDesc);
+
+	//	Load standard design elements
+
+	else
+		{
+		if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pType))
+			return error;
+
+		DWORD dwUNID = pType->GetUNID();
+
+		//	Add to our list
+
+		if (error = m_DesignTypes.AddEntry(pType))
+			{
+			if (m_DesignTypes.FindByUNID(dwUNID))
+				Ctx.sError = strPatternSubst(CONSTLIT("Duplicate UNID: %x"), dwUNID);
+			else
+				Ctx.sError = strPatternSubst(CONSTLIT("Error adding design entry UNID: %x"), dwUNID);
+			return error;
+			}
+		}
+
+	//	Done
+
+	if (retpType)
+		*retpType = pType;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadGlobalsElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadGlobalsElement
+//
+//	Loads <Globals>
+
+	{
+	CCodeChainCtx CCCtx;
+
+	//	Add a hook so that all lambda expressions defined in this global block
+	//	are wrapped with something that sets the extension UNID to the context.
+
+	if (m_iType != extBase)
+		CCCtx.SetGlobalDefineWrapper(this);
+
+	//	Parse and run the code (which will likely define a bunch of functions)
+
+	ICCItem *pCode = CCCtx.Link(pDesc->GetContentText(0), 0, NULL);
+	ICCItem *pResult = CCCtx.Run(pCode);
+	if (pResult->IsError())
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Globals: %s"), pResult->GetStringValue());
+		return ERR_FAIL;
+		}
+
+	CCCtx.Discard(pResult);
+	CCCtx.Discard(pCode);
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadImagesElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadImagesElement
+//
+//	Loads <Images> element
+//	(For backwards compatibility)
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Figure out if we've got a special folder for the images
+
+	Ctx.sFolder = pDesc->GetAttribute(FOLDER_ATTRIB);
+
+	//	Load all images
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (error = LoadDesignType(Ctx, pItem))
+			return error;
+		}
+
+	//	Restore folder
+
+	Ctx.sFolder = NULL_STR;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadLibraryElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadLibraryElement
+//
+//	Loads <Library>
+
+	{
+	ALERROR error;
+
+	SLibraryDesc *pLibrary = m_Libraries.Insert();
+
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &pLibrary->dwUNID))
+		return error;
+
+	pLibrary->dwRelease = pDesc->GetAttributeInteger(RELEASE_ATTRIB);
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadModuleContent (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadModulesContent
+//
+//	Loads <Module> content
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Load all the design elements
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (error = LoadDesignElement(Ctx, pItem))
+			return error;
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadModuleElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadModuleElement
+//
+//	Loads <Module>
+
+	{
+	ALERROR error;
+
+	CString sFilename = pDesc->GetAttribute(FILENAME_ATTRIB);
+
+	//	Load the module XML
+
+	CXMLElement *pModuleXML;
+	if (error = Ctx.pResDb->LoadModule(NULL_STR, sFilename, &pModuleXML, &Ctx.sError))
+		{
+		if (error == ERR_NOTFOUND)
+			Ctx.sError = strPatternSubst(CONSTLIT("%s: %s"), Ctx.pResDb->GetFilespec(), Ctx.sError);
+		return error;
+		}
+
+	if (!strEquals(pModuleXML->GetTag(), TRANSCENDENCE_MODULE_TAG))
+		{
+		delete pModuleXML;
+		Ctx.sError = strPatternSubst(CONSTLIT("Module must have <TranscendenceModule> root element: %s"), sFilename);
+		return ERR_FAIL;
+		}
+
+	//	We are loading a module
+
+	bool bOldLoadModule = Ctx.bLoadModule;
+	CString sOldErrorFilespec = Ctx.sErrorFilespec;
+	Ctx.bLoadModule = true;
+	if (strEquals(pathGetExtension(sOldErrorFilespec), FILESPEC_TDB_EXTENSION))
+		Ctx.sErrorFilespec = strPatternSubst(CONSTLIT("%s#%s"), sOldErrorFilespec, sFilename);
+	else
+		Ctx.sErrorFilespec = sFilename;
+
+	//	Process each design element in the module
+
+	if (error = LoadModuleContent(Ctx, pModuleXML))
+		return error;
+
+	//	Clean up
+
+	Ctx.sErrorFilespec = sOldErrorFilespec;
+	Ctx.bLoadModule = bOldLoadModule;
+	delete pModuleXML;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadModulesElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadModulesElement
+//
+//	Loads <Modules>
+
+	{
+	ALERROR error;
+	int i;
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pModule = pDesc->GetContentElement(i);
+
+		if (error = LoadModuleElement(Ctx, pModule))
+			return error;
+		}
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadSoundElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadSoundElement
+//
+//	Loads <Sound> element
+
+	{
+	ALERROR error;
+
+	if (Ctx.bNoResources || g_pUniverse->GetSoundMgr() == NULL)
+		return NOERROR;
+
+	DWORD dwUNID;
+	if (error = LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &dwUNID))
+		return error;
+
+	CString sFilename = pDesc->GetAttribute(FILENAME_ATTRIB);
+
+	//	Load the sound
+
+	int iChannel;
+	if (error = Ctx.pResDb->LoadSound(*g_pUniverse->GetSoundMgr(), Ctx.sFolder, sFilename, &iChannel))
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Unable to load sound: %s"), sFilename);
+		return error;
+		}
+
+	g_pUniverse->AddSound(dwUNID, iChannel);
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadSoundsElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadSoundsElement
+//
+//	Loads <Sounds> element
+//	(For backwards compatibility)
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Nothing to do if we don't want sound resources
+
+	if (Ctx.bNoResources || g_pUniverse->GetSoundMgr() == NULL)
+		return NOERROR;
+
+	//	Figure out if we've got a special folder for the resources
+
+	Ctx.sFolder = pDesc->GetAttribute(FOLDER_ATTRIB);
+
+	//	Loop over all sound resources
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (error = LoadSoundElement(Ctx, pItem))
+			return error;
+		}
+
+	//	Restore folder
+
+	Ctx.sFolder = NULL_STR;
+
+	return NOERROR;
+	}
+
+ALERROR CExtension::LoadSystemTypesElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadSystemTypesElement
+//
+//	Loads <SystemTypes> element
+//	(For backwards compatibility)
+
+	{
+	ALERROR error;
+	int i;
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pDesc->GetContentElement(i);
+
+		if (strEquals(pItem->GetTag(), TABLES_TAG))
+			{
+			CSystemTable *pTable = new CSystemTable;
+			pTable->InitFromXML(Ctx, pItem);
+			if (pTable->GetUNID() == 0)
+				pTable->SetUNID(DEFAULT_SYSTEM_TABLE_UNID);
+
+			if (error = m_DesignTypes.AddEntry(pTable))
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("Error adding system table: %x"), pTable->GetUNID());
+				return error;
+				}
+			}
+		else
+			{
+			if (error = LoadDesignType(Ctx, pItem))
+				return error;
+			}
+		}
+
+	return NOERROR;
+	}
+
+void CExtension::SweepImages (void)
+
+//	SweepImages
+//
+//	Deletes images to save space.
+
+	{
+	if (m_pCoverImage)
+		{
+		delete m_pCoverImage;
+		m_pCoverImage = NULL;
+		}
+	}

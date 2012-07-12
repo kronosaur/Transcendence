@@ -65,9 +65,12 @@ ALERROR CAdventureDescDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRe
 	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false))
 		return error;
 
+	//	Get the list of adventures
+
+	g_pUniverse->GetAllAdventures(&m_AdventureList);
+
 	//	Start at the first adventure available
 
-	ASSERT(g_pUniverse->GetAdventureDescCount() > 0);
 	m_iCurrentIndex = 0;
 
 	//	Init
@@ -129,7 +132,7 @@ void CAdventureDescDisplay::PaintBuffer (void)
 //	Paint off-screen buffer
 
 	{
-	CAdventureDesc *pAdventure = g_pUniverse->GetAdventureDesc(m_iCurrentIndex);
+	CExtension *pAdventure = m_AdventureList[m_iCurrentIndex];
 	RECT rcFull;
 	rcFull.left = 0;
 	rcFull.top = 0;
@@ -147,11 +150,9 @@ void CAdventureDescDisplay::PaintBuffer (void)
 
 	//	Paint the background image
 
-	DWORD dwBackground = pAdventure->GetBackgroundUNID();
-	if (dwBackground)
+	CG16bitImage *pBackground = pAdventure->GetCoverImage();
+	if (pBackground)
 		{
-		CG16bitImage *pBackground = g_pUniverse->GetLibraryBitmap(dwBackground);
-
 		RECT rcImage;
 		rcImage.left = (RectWidth(rcFull) - pBackground->GetWidth()) / 2;
 		rcImage.right = rcImage.left + pBackground->GetWidth();
@@ -204,6 +205,16 @@ void CAdventureDescDisplay::PaintBuffer (void)
 			pAdventure->GetDesc(),
 			0,
 			CG16bitFont::AlignCenter);
+
+	//	Paint the filespec
+
+	rcRect.top = rcRect.bottom - m_pFonts->Medium.GetHeight();
+	m_pFonts->Medium.DrawText(m_Buffer,
+			rcRect,
+			m_pFonts->wHelpColor,
+			pAdventure->GetFilespec(),
+			0,
+			CG16bitFont::AlignCenter);
 	}
 
 void CAdventureDescDisplay::SelectNext (void)
@@ -213,8 +224,7 @@ void CAdventureDescDisplay::SelectNext (void)
 //	Select the next ship
 
 	{
-	m_iCurrentIndex = (m_iCurrentIndex + 1) % g_pUniverse->GetAdventureDescCount();
-	m_pTrans->SetAdventure(g_pUniverse->GetAdventureDesc(m_iCurrentIndex)->GetUNID());
+	m_iCurrentIndex = (m_iCurrentIndex + 1) % m_AdventureList.GetCount();
 	m_bInvalid = true;
 	}
 
@@ -225,9 +235,7 @@ void CAdventureDescDisplay::SelectPrev (void)
 //	Select the previous ship
 
 	{
-	int iCount = g_pUniverse->GetAdventureDescCount();
-	m_iCurrentIndex = (m_iCurrentIndex + iCount - 1) % iCount;
-	m_pTrans->SetAdventure(g_pUniverse->GetAdventureDesc(m_iCurrentIndex)->GetUNID());
+	m_iCurrentIndex = (m_iCurrentIndex + m_AdventureList.GetCount() - 1) % m_AdventureList.GetCount();
 	m_bInvalid = true;
 	}
 

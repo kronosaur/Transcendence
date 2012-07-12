@@ -135,26 +135,34 @@ extern CUniverse *g_pUniverse;
 #include "TSEDesign.h"
 #endif
 
+#include "TSEStorage.h"
+
+#ifndef INCL_TSE_MULTIVERSE
+#include "TSEMultiverse.h"
+#endif
+
 //	CResourceDb
 
 class CResourceDb
 	{
 	public:
-		CResourceDb (const CString &sDefFilespec, CResourceDb *pMainDb = NULL, bool bExtension = false);
+		CResourceDb (const CString &sDefFilespec, bool bExtension = false);
 		~CResourceDb (void);
 
+		void ComputeFileDigest (CIntegerIP *retDigest);
 		const CString &GetFilespec (void) const { return m_sFilespec; }
 		CString GetRootTag (void);
 		bool ImageExists (const CString &sFolder, const CString &sFilename);
 		bool IsUsingExternalGameFile (void) const { return !m_bGameFileInDb; }
 		bool IsUsingExternalResources (void) const { return !m_bResourcesInDb; }
 		ALERROR LoadEntities (CString *retsError, CExternalEntityTable **retEntities = NULL);
-		ALERROR LoadGameFile (CXMLElement **retpData, CExternalEntityTable *pEntities, CString *retsError, CExternalEntityTable *ioEntityTable = NULL);
+		ALERROR LoadGameFile (CXMLElement **retpData, IXMLParserController *pEntities, CString *retsError, CExternalEntityTable *ioEntityTable = NULL);
+		ALERROR LoadGameFileStub (CXMLElement **retpData, CExternalEntityTable *ioEntityTable, CString *retsError);
 		ALERROR LoadImage (const CString &sFolder, const CString &sFilename, HBITMAP *rethImage, EBitmapTypes *retiImageType = NULL);
 		ALERROR LoadModule (const CString &sFolder, const CString &sFilename, CXMLElement **retpData, CString *retsError);
 		ALERROR LoadSound (CSoundMgr &SoundMgr, const CString &sFolder, const CString &sFilename, int *retiChannel);
 		ALERROR Open (DWORD dwFlags = 0);
-		void SetEntities (CExternalEntityTable *pEntities, bool bFree = false);
+		void SetEntities (IXMLParserController *pEntities, bool bFree = false);
 
 		CString GetResourceFilespec (int iIndex);
 		int GetResourceCount (void);
@@ -179,9 +187,8 @@ class CResourceDb
 		CSymbolTable *m_pResourceMap;
 		int m_iGameFile;
 
-		CExternalEntityTable *m_pEntities;			//	Entities to use in parsing
+		IXMLParserController *m_pEntities;			//	Entities to use in parsing
 		bool m_bFreeEntities;						//	If TRUE, we own m_pEntities;
-		CResourceDb *m_pMainDb;						//	Main file db (only if loading extension)
 	};
 
 class CAStarPathFinder
@@ -247,6 +254,7 @@ class CAStarPathFinder
 
 //	Paint Utilities
 
+void ComputeLightningPoints (int iCount, CVector *pPoints, Metric rChaos);
 void CreateBlasterShape (int iAngle, int iLength, int iWidth, SPoint *Poly);
 void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType);
 void DrawLightning (CG16bitImage &Dest,
@@ -316,6 +324,7 @@ class CWeaponFireDesc
 		CWeaponFireDesc (const CWeaponFireDesc &Desc);
 		~CWeaponFireDesc (void);
 
+		void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		inline bool CanAutoTarget (void) const { return m_bAutoTarget; }
 		inline bool CanHitFriends (void) const { return !m_bNoFriendlyFire; }
 		void CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx);
@@ -336,7 +345,7 @@ class CWeaponFireDesc
 		inline CEffectCreator *GetEffect (void) const { return m_pEffect; }
 		inline ICCItem *GetEventHandler (const CString &sEvent) const { SEventHandlerDesc Event; if (!FindEventHandler(sEvent, &Event)) return NULL; return Event.pCode; }
 		inline Metric GetExpansionSpeed (void) const { return (m_ExpansionSpeed.Roll() * LIGHT_SPEED / 100.0); }
-		inline SExtensionDesc *GetExtension (void) const { return m_pExtension; }
+		inline CExtension *GetExtension (void) const { return m_pExtension; }
 		inline CEffectCreator *GetFireEffect (void) const { return m_pFireEffect; }
 		inline CEffectCreator *GetHitEffect (void) const { return m_pHitEffect; }
 		inline int GetInitialDelay (void) const { return m_InitialDelay.Roll(); }
@@ -375,7 +384,6 @@ class CWeaponFireDesc
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, bool bDamageOnly = false);
 		inline bool IsTracking (void) { return m_iManeuverability != 0; }
 		inline bool IsTrackingTime (int iTick) { return (m_iManeuverability > 0 && (iTick % m_iManeuverability) == 0); }
-		void LoadImages (void);
 		void MarkImages (void);
 		ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		ALERROR OverrideDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -421,7 +429,7 @@ class CWeaponFireDesc
 		DWORD m_dwSpare:31;
 
 	private:
-		SExtensionDesc *m_pExtension;		//	Extension that defines the weaponfiredesc
+		CExtension *m_pExtension;			//	Extension that defines the weaponfiredesc
 
 		//	Basic properties
 		Metric m_rMissileSpeed;				//	Speed of missile
@@ -684,14 +692,14 @@ class CSystemCreateStats
 class CSystemCreateEvents
 	{
 	public:
-		void AddDeferredEvent (CSpaceObject *pObj, SExtensionDesc *pExtension, CXMLElement *pEventCode);
+		void AddDeferredEvent (CSpaceObject *pObj, CExtension *pExtension, CXMLElement *pEventCode);
 		ALERROR FireDeferredEvent (const CString &sEvent, CString *retsError);
 
 	private:
 		struct SEventDesc
 			{
 			CSpaceObject *pObj;
-			SExtensionDesc *pExtension;
+			CExtension *pExtension;
 			CXMLElement *pEventCode;
 			};
 
@@ -721,7 +729,7 @@ struct SSystemCreateCtx
 	CSystem *pSystem;						//	System that we're creating
 	CXMLElement *pLocalTables;				//	Lookup tables
 
-	SExtensionDesc *pExtension;				//	Extension from which the current desc came
+	CExtension *pExtension;					//	Extension from which the current desc came
 
 	CSystemCreateStats *pStats;				//	System creation stats (may be NULL)
 	CSystemCreateEvents Events;				//	System deferred events
@@ -910,6 +918,7 @@ class CSystem : public CObject
 		static ALERROR CreateFromStream (CUniverse *pUniv, 
 										 IReadStream *pStream, 
 										 CSystem **retpSystem,
+										 CString *retsError,
 										 DWORD dwObjID = OBJID_NULL,
 										 CSpaceObject **retpObj = NULL,
 										 CSpaceObject *pPlayerShip = NULL);
@@ -1038,7 +1047,6 @@ class CSystem : public CObject
 		inline bool IsCreationInProgress (void) const { return (m_fInCreate ? true : false); }
 		bool IsStationInSystem (CStationType *pType);
 		inline bool IsTimeStopped (void) { return (m_iTimeStopped != 0); }
-		void LoadImages (void);
 		void MarkImages (void);
 		void NameObject (const CString &sName, CSpaceObject *pObj);
 		CVector OnJumpPosAdj (CSpaceObject *pObj, const CVector &vPos);
@@ -1889,6 +1897,7 @@ class CSpaceObject : public CObject
 		EDamageResults Damage (SDamageCtx &Ctx);
 		static CString DebugDescribe (CSpaceObject *pObj);
 		inline bool DebugIsValid (void) { return (DWORD)m_pSystem != 0xdddddddd; }
+		static CString DebugLoadError (SLoadCtx &Ctx);
 		inline const CVector &DeltaV (const CVector &vDelta) { m_vVel = m_vVel + vDelta; return m_vVel; }
 		void Destroy (DestructionTypes iCause, const CDamageSource &Attacker, CSpaceObject **retpWreck = NULL);
 		void EnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
@@ -2108,9 +2117,11 @@ class CSpaceObject : public CObject
 		inline CItemList &GetItemList (void) { return m_ItemList; }
 		bool HasFuelItem (void);
 		void RemoveItemEnhancement (const CItem &itemToEnhance, DWORD dwID, bool bExpiredOnly = false);
+		void RepairItem (CItemListManipulator &ItemList);
 		void SetCursorAtArmor (CItemListManipulator &ItemList, CInstalledArmor *pArmor);
 		void SetCursorAtDevice (CItemListManipulator &ItemList, CInstalledDevice *pDevice);
 		void SetCursorAtRandomItem (CItemListManipulator &ItemList, const CItemCriteria &Crit);
+		bool SetItemProperty (const CItem &Item, const CString &sName, ICCItem *pValue, int iCount, CItem *retItem, CString *retsError);
 		bool Translate (const CString &sID, CString *retsText);
 		void UseItem (CItem &Item, CString *retsError = NULL);
 
@@ -2158,7 +2169,6 @@ class CSpaceObject : public CObject
 		virtual bool IsMarker (void) { return false; }
 		virtual bool IsVirtual (void) const { return false; }
 		virtual bool IsWreck (void) const { return false; }
-		virtual void LoadImages (void) { }
 		virtual void MarkImages (void) { }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip) { }
 		virtual void OnSystemCreated (void) { }
@@ -2353,7 +2363,7 @@ class CSpaceObject : public CObject
 
 		//	Helper functions
 		void AddEffect (IEffectPainter *pPainter, int xOffset, int yOffset, int iTick = 0, int iRotation = 0);
-		Metric CalculateItemMass (Metric *retrCargoMass);
+		Metric CalculateItemMass (Metric *retrCargoMass = NULL);
 		bool CanFireOnObjHelper (CSpaceObject *pObj);
 		inline void ClearCannotBeHit (void) { m_fCannotBeHit = false; }
 		inline void ClearInDamageCode (void) { m_fInDamage = false; }
@@ -2542,16 +2552,49 @@ class CUniverse : public CObject
 				virtual const CG16bitFont *GetFont (const CString &sFont) { return NULL; }
 			};
 
+		struct SInitDesc
+			{
+			SInitDesc (void) :
+					sFilespec(CONSTLIT("Transcendence")),
+					bInLoadGame(false),
+					bNoResources(false),
+					bNoReload(false),
+					bDebugMode(false),
+					bDefaultExtensions(false),
+					pAdventure(NULL),
+					dwAdventure(0)
+				{ }
+
+			CString sFilespec;				//	Filespec of main XML file.
+
+			//	Options
+
+			bool bInLoadGame;				//	We're loading a game, which means don't reset dynamic types
+			bool bNoResources;				//	If TRUE, do not bother loaded images
+			bool bNoReload;					//	If TRUE, do not reload extensions
+			bool bDebugMode;				//	Initialize in debug mode
+			bool bDefaultExtensions;		//	If TRUE, we include all appropriate extensions
+
+			//	Adventure to bind to (choose one, in order)
+
+			CExtension *pAdventure;			//	If not NULL, bind to this adventure
+			DWORD dwAdventure;				//	It not 0, bind to this adventure
+			CString sAdventureFilespec;		//	If not empty, bind to this adventure
+
+			//	Extension list
+
+			TArray<CExtension *> Extensions;
+			};
+
 		CUniverse (void);
 		virtual ~CUniverse (void);
 
-		ALERROR Init (const CString &sFilespec, CString *retsError, DWORD dwFlags = 0);
-		ALERROR Init (CResourceDb &Resources, CString *retsError, DWORD dwFlags = 0);
-		ALERROR InitAdventure (DWORD dwAdventureUNID, TArray<DWORD> *pExtensionList, CString *retsError, DWORD dwFlags = 0);
+		ALERROR Init (SInitDesc &Ctx, CString *retsError);
 		ALERROR InitGame (CString *retsError);
 		void StartGame (bool bNewGame);
 
-		inline ALERROR AddDynamicType (SExtensionDesc *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError) { return m_Design.AddDynamicType(pExtension, dwUNID, sSource, bNewGame, retsError); }
+		inline ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError) { return m_Design.AddDynamicType(pExtension, dwUNID, sSource, bNewGame, retsError); }
+		void AddSound (DWORD dwUNID, int iChannel);
 		inline void AddTimeDiscontinuity (const CTimeSpan &Duration) { m_Time.AddDiscontinuity(m_iTick++, Duration); }
 		ALERROR AddStarSystem (CTopologyNode *pTopology, CSystem *pSystem);
 		ALERROR CreateEmptyStarSystem (CSystem **retpSystem);
@@ -2574,6 +2617,7 @@ class CUniverse : public CObject
 		inline void FireOnGlobalUniverseSave (void) { m_Design.FireOnGlobalUniverseSave(); }
 		void FlushStarSystem (CTopologyNode *pTopology);
 		void GenerateGameStats (CGameStats &Stats);
+		inline void GetAllAdventures (TArray<CExtension *> *retList) { CString sError; m_Extensions.ComputeAvailableAdventures((m_bDebugMode ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retList, &sError); }
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CTimeSpan GetElapsedGameTime (void);
@@ -2590,7 +2634,8 @@ class CUniverse : public CObject
 		inline bool IsRegistered (void) { return m_bRegistered; }
 		bool IsStatsPostingEnabled (void);
 		ALERROR LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, DWORD *retdwPlayerID, CString *retsError);
-		inline bool NoImages (void) { return m_bNoImages; }
+		inline ALERROR LoadNewExtension (const CString &sFilespec, CString *retsError) { return m_Extensions.LoadNewExtension(sFilespec, retsError); }
+		inline bool LogImageLoad (void) const { return (m_iLogImageLoad == 0); }
 		void PlaySound (CSpaceObject *pSource, int iChannel);
 		ALERROR Reinit (void);
 		ALERROR SaveDeviceStorage (void);
@@ -2602,14 +2647,12 @@ class CUniverse : public CObject
 		void SetPOV (CSpaceObject *pPOV);
 		void SetPlayer (CSpaceObject *pPlayer);
 		inline void SetRegistered (bool bRegistered = true) { m_bRegistered = bRegistered; }
+		inline void SetRegisteredExtensions (const CMultiverseCollection &Catalog, TArray<CMultiverseCatalogEntry *> *retNotFound) { m_Extensions.SetRegisteredExtensions(Catalog, retNotFound); }
 		inline void SetSound (bool bSound = true) { m_bNoSound = !bSound; }
 		inline void SetSoundMgr (CSoundMgr *pSoundMgr) { m_pSoundMgr = pSoundMgr; }
 		void StartGameTime (void);
 		CTimeSpan StopGameTime (void);
 		static CString ValidatePlayerName (const CString &sName);
-
-		inline CAdventureDesc *FindAdventureDesc (DWORD dwUNID) { return m_Design.FindAdventureDesc(dwUNID); }
-		inline CAdventureDesc *FindAdventureForExtension (DWORD dwUNID) { return m_Design.FindAdventureForExtension(dwUNID); }
 		inline CDesignType *FindDesignType (DWORD dwUNID) { return m_Design.FindEntry(dwUNID); }
 		CArmorClass *FindArmor (DWORD dwUNID);
 		CEffectCreator *FindDefaultHitEffect (DamageTypes iDamage);
@@ -2617,7 +2660,7 @@ class CUniverse : public CObject
 		inline CEffectCreator *FindEffectType (DWORD dwUNID) { return CEffectCreator::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CEconomyType *FindEconomyType (const CString &sName) { return m_Design.FindEconomyType(sName); }
 		inline CShipTable *FindEncounterTable (DWORD dwUNID) { return CShipTable::AsType(m_Design.FindEntry(dwUNID)); }
-		inline SExtensionDesc *FindExtensionDesc (DWORD dwUNID) { return m_Design.FindExtension(dwUNID); }
+		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension::EFolderTypes iFolder, CExtension **retpExtension = NULL) { return m_Extensions.FindExtension(dwUNID, dwRelease, iFolder, retpExtension); }
 		inline CItemTable *FindItemTable (DWORD dwUNID) { return CItemTable::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CItemType *FindItemType (DWORD dwUNID) { return CItemType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CPower *FindPower (DWORD dwUNID) { return CPower::AsType(m_Design.FindEntry(dwUNID)); }
@@ -2643,19 +2686,19 @@ class CUniverse : public CObject
 		CSovereign *GetPlayerSovereign (void) const;
 		inline int GetTicks (void) { return m_iTick; }
 
+		inline void ClearLibraryBitmapMarks (void) { m_Design.ClearImageMarks(); }
 		void GarbageCollectLibraryBitmaps (void);
 		inline CObjectImage *FindLibraryImage (DWORD dwUNID) { return CObjectImage::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID) { return m_Design.GetImage(dwUNID); }
 		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, true); }
-		void LoadLibraryBitmaps (void);
+		inline void MarkLibraryBitmaps (void) { if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
 		inline void ReleaseLibraryBitmap (CG16bitImage *pBitmap) { }
+		inline void SweepLibraryBitmaps (void) { m_Extensions.SweepImages(); m_Design.SweepImages(); }
 
-		inline CAdventureDesc *GetAdventureDesc (int iIndex) { return (CAdventureDesc *)m_Design.GetEntry(designAdventureDesc, iIndex); }
-		inline int GetAdventureDescCount (void) { return m_Design.GetCount(designAdventureDesc); }
 		inline CDesignCollection &GetDesignCollection (void) { return m_Design; }
 		inline CDesignType *GetDesignType (int iIndex) { return m_Design.GetEntry(iIndex); }
 		inline int GetDesignTypeCount (void) { return m_Design.GetCount(); }
-		inline const SExtensionDesc *GetExtensionDesc (int iIndex) { return m_Design.GetExtension(iIndex); }
+		inline const CExtension *GetExtensionDesc (int iIndex) { return m_Design.GetExtension(iIndex); }
 		inline int GetExtensionDescCount (void) { return m_Design.GetExtensionCount(); }
 		inline CItemType *GetItemType (int iIndex) { return (CItemType *)m_Design.GetEntry(designItemType, iIndex); }
 		inline int GetItemTypeCount (void) { return m_Design.GetCount(designItemType); }
@@ -2679,6 +2722,7 @@ class CUniverse : public CObject
 		void PaintPOVMap (CG16bitImage &Dest, const RECT &rcView, Metric rMapScale);
 		void PaintObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pObj);
 		void PaintObjectMap (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pObj);
+		inline void SetLogImageLoad (bool bLog = true) { CSmartLock Lock(m_cs); m_iLogImageLoad += (bLog ? -1 : +1); }
 		void Update (Metric rSecondsPerTick, bool bForceEventFiring = false);
 		void UpdateExtended (void);
 
@@ -2702,42 +2746,27 @@ class CUniverse : public CObject
 			STransSystemObject *pNext;
 			};
 
-		ALERROR BindDesign (SDesignLoadCtx &Ctx);
 		CObject *FindByUNID (CIDTable &Table, DWORD dwUNID);
 		IShipController *GetPlayerController (void) const;
+		ALERROR InitCodeChain (void);
 		ALERROR InitCodeChainPrimitives (void);
 		void InitDefaultHitEffects (void);
-		ALERROR InitDeviceStorage (SDesignLoadCtx &Ctx);
-		ALERROR InitExtensions (SDesignLoadCtx &Ctx, const CString &sFilespec);
-		ALERROR InitExtensionsFolder (SDesignLoadCtx &Ctx, const CString &sPath);
-		ALERROR InitImages (SDesignLoadCtx &Ctx, CXMLElement *pImages, CResourceDb &Resources);
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx,
-							 CXMLElement *pElement, 
-							 CResourceDb &Resources);
+		ALERROR InitDeviceStorage (CString *retsError);
 		ALERROR InitLevelEncounterTables (void);
-		ALERROR InitSounds (SDesignLoadCtx &Ctx, CXMLElement *pSounds, CResourceDb &Resources);
-		ALERROR InitStarSystemTypes (SDesignLoadCtx &Ctx, CXMLElement *pElement);
 		ALERROR InitTopology (CString *retsError);
-		ALERROR LoadAdventure (SDesignLoadCtx &Ctx, CAdventureDesc *pAdventure);
-		ALERROR LoadDesignElement (SDesignLoadCtx &Ctx, CXMLElement *pElement);
-		ALERROR LoadEncounterTable (SDesignLoadCtx &Ctx, CXMLElement *pElement);
-		ALERROR LoadExtension (SDesignLoadCtx &Ctx, CXMLElement *pExtension);
-		ALERROR LoadGlobals (SDesignLoadCtx &Ctx, CXMLElement *pElement);
-		ALERROR LoadModule (SDesignLoadCtx &Ctx, CXMLElement *pModule);
-		ALERROR LoadModules (SDesignLoadCtx &Ctx, CXMLElement *pModules);
-		ALERROR LoadSound (SDesignLoadCtx &Ctx, CXMLElement *pElement);
 		inline void SetCurrentAdventureDesc (CAdventureDesc *pAdventure) { m_pAdventure = pAdventure; }
 
 		//	Design data
 
+		CExtensionCollection m_Extensions;		//	Loaded extensions
 		CDesignCollection m_Design;				//	Design collection
 		CDeviceStorage m_DeviceStorage;			//	Local cross-game storage
 
 		CString m_sResourceDb;					//	Resource database
 
-		//CImageLibrary m_BitmapLibrary;			//	Cached bitmaps
 		CIDTable m_Sounds;						//	Array of sound channels (int)
 		CObjectArray m_LevelEncounterTables;	//	Array of SLevelEncounter arrays
+		bool m_bBasicInit;						//	TRUE if we've initialized CodeChain, etc.
 
 		//	Game instance data
 
@@ -2755,6 +2784,7 @@ class CUniverse : public CObject
 
 		//	Support structures
 
+		CCriticalSection m_cs;
 		IHost *m_pHost;
 		CCodeChain m_CC;
 		CSoundMgr *m_pSoundMgr;
@@ -2763,9 +2793,9 @@ class CUniverse : public CObject
 
 		//	Debugging structures
 
-		bool m_bNoImages;
 		bool m_bDebugMode;
 		bool m_bNoSound;
+		int m_iLogImageLoad;					//	If >0 we disable image load logging
 	};
 
 //	String-Constant Helpers
@@ -2838,7 +2868,7 @@ CEconomyType *GetEconomyTypeFromItem (CCodeChain &CC, ICCItem *pItem);
 CEconomyType *GetEconomyTypeFromString (const CString &sCurrency);
 ALERROR GetEconomyUNIDOrDefault (CCodeChain &CC, ICCItem *pItem, DWORD *retdwUNID);
 void GetImageDescFromList (CCodeChain &CC, ICCItem *pList, CG16bitImage **retpBitmap, RECT *retrcRect);
-CItem GetItemArg (CCodeChain &CC, ICCItem *pArg);
+CItem GetItemFromArg (CCodeChain &CC, ICCItem *pArg);
 CItemType *GetItemTypeFromArg (CCodeChain &CC, ICCItem *pArg);
 bool GetPosOrObject (CEvalContext *pEvalCtx, ICCItem *pArg, CVector *retvPos, CSpaceObject **retpObj = NULL, int *retiLocID = NULL);
 CWeaponFireDesc *GetWeaponFireDescArg (ICCItem *pArg);

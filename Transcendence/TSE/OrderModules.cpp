@@ -87,6 +87,27 @@ IOrderModule *IOrderModule::Create (IShipController::OrderTypes iOrder)
 		}
 	}
 
+CString IOrderModule::DebugCrashInfo (void)
+
+//	DebugCrashInfo
+//
+//	Output debug info
+
+	{
+	int i;
+
+	CString sResult;
+
+	sResult.Append(CONSTLIT("IOrderModule\r\n"));
+
+	for (i = 0; i < m_iObjCount; i++)
+		sResult.Append(strPatternSubst(CONSTLIT("m_Objs[%d]: %s\r\n"), i, CSpaceObject::DebugDescribe(m_Objs[i])));
+
+	sResult.Append(OnDebugCrashInfo());
+
+	return sResult;
+	}
+
 void IOrderModule::ObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx)
 
 //	ObjDestroyed
@@ -102,7 +123,7 @@ void IOrderModule::ObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx)
 			//	If this object is a target, and a friendly ship destroyed it, then
 			//	thank the object who helped.
 
-			if (IsTarget(i) && Ctx.Attacker.IsCausedByFriendOf(pShip))
+			if (IsTarget(i) && Ctx.Attacker.IsCausedByFriendOf(pShip) && Ctx.Attacker.GetObj())
 				pShip->Communicate(Ctx.Attacker.GetObj(), msgNiceShooting);
 
 			//	Let our derrived class handle it
@@ -297,6 +318,22 @@ void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObj
 		m_iCountdown = -1;
 	}
 
+CString CAttackOrder::OnDebugCrashInfo (void)
+
+//	OnDebugCrashInfo
+//
+//	Output crash information
+
+	{
+	CString sResult;
+
+	sResult.Append(CONSTLIT("CAttackOrder\r\n"));
+	sResult.Append(strPatternSubst(CONSTLIT("m_State: %d\r\n"), m_iState));
+	sResult.Append(strPatternSubst(CONSTLIT("m_iCountdown: %d\r\n"), m_iCountdown));
+
+	return sResult;
+	}
+
 void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj)
 
 //	OnObjDestroyed
@@ -321,6 +358,25 @@ void CAttackOrder::OnReadFromStream (SLoadCtx &Ctx)
 //	Load data from saved game
 
 	{
+	DWORD dwLoad;
+
+	//	Because of a bug, old versions did not save m_iState
+
+	if (Ctx.dwVersion >= 76)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		m_iState = (States)dwLoad;
+		}
+	else
+		{
+		if (m_Objs[objAvoid])
+			m_iState = stateAvoidingEnemyStation;
+		else
+			m_iState = stateAttackingTargetAndAvoiding;
+		}
+
+	//	Read the rest
+
 	Ctx.pStream->Read((char *)&m_iCountdown, sizeof(DWORD));
 	}
 
@@ -331,6 +387,11 @@ void CAttackOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
 //	Write data to saved game
 
 	{
+	DWORD dwSave;
+
+	dwSave = (DWORD)m_iState;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	pStream->Write((char *)&m_iCountdown, sizeof(DWORD));
 	}
 
@@ -454,6 +515,22 @@ void CAttackStationOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CS
 		m_iCountdown = -1;
 	}
 
+CString CAttackStationOrder::OnDebugCrashInfo (void)
+
+//	OnDebugCrashInfo
+//
+//	Output crash information
+
+	{
+	CString sResult;
+
+	sResult.Append(CONSTLIT("CAttackStationOrder\r\n"));
+	sResult.Append(strPatternSubst(CONSTLIT("m_State: %d\r\n"), m_iState));
+	sResult.Append(strPatternSubst(CONSTLIT("m_iCountdown: %d\r\n"), m_iCountdown));
+
+	return sResult;
+	}
+
 void CAttackStationOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj)
 
 //	OnObjDestroyed
@@ -474,6 +551,25 @@ void CAttackStationOrder::OnReadFromStream (SLoadCtx &Ctx)
 //	Load data from saved game
 
 	{
+	DWORD dwLoad;
+
+	//	Because of a bug, old versions did not save m_iState
+
+	if (Ctx.dwVersion >= 76)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		m_iState = (States)dwLoad;
+		}
+	else
+		{
+		if (m_Objs[objDefender])
+			m_iState = stateAttackingDefender;
+		else
+			m_iState = stateAttackingTarget;
+		}
+
+	//	Read the rest
+
 	Ctx.pStream->Read((char *)&m_iCountdown, sizeof(DWORD));
 	}
 
@@ -484,6 +580,11 @@ void CAttackStationOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStre
 //	Write data to saved game
 
 	{
+	DWORD dwSave;
+
+	dwSave = (DWORD)m_iState;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	pStream->Write((char *)&m_iCountdown, sizeof(DWORD));
 	}
 
@@ -535,6 +636,11 @@ void CGuardOrder::OnReadFromStream (SLoadCtx &Ctx)
 //	Load from stream
 
 	{
+	DWORD dwLoad;
+
+	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+	m_iState = (States)dwLoad;
+
 	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pBase);
 	}
 
@@ -545,5 +651,10 @@ void CGuardOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
 //	Save to stream
 
 	{
+	DWORD dwSave;
+
+	dwSave = (DWORD)m_iState;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	pSystem->WriteObjRefToStream(m_pBase, pStream);
 	}

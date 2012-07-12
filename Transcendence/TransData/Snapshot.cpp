@@ -77,7 +77,6 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			Universe.UpdateExtended();
 			Universe.GarbageCollectLibraryBitmaps();
-			Universe.LoadLibraryBitmaps();
 
 			//	Update for a while
 

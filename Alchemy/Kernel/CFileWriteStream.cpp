@@ -83,6 +83,41 @@ ALERROR CFileWriteStream::Create (void)
 	return NOERROR;
 	}
 
+ALERROR CFileWriteStream::Open (void)
+
+//	Open
+//
+//	Opens up an existing file for writing.
+
+	{
+	ASSERT(m_hFile == NULL);
+
+	m_hFile = CreateFile(m_sFilename.GetASCIIZPointer(),
+			GENERIC_WRITE,
+			0,
+			NULL,
+			OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+	if (m_hFile == INVALID_HANDLE_VALUE)
+		{
+		m_hFile = NULL;
+		return ERR_FAIL;
+		}
+
+	//	Seek to the end of the file
+
+	DWORD dwPos = ::SetFilePointer(m_hFile, 0, NULL, FILE_END);
+	if (dwPos == INVALID_SET_FILE_POINTER)
+		{
+		::CloseHandle(m_hFile);
+		m_hFile = NULL;
+		return ERR_FAIL;
+		}
+
+	return NOERROR;
+	}
+
 ALERROR CFileWriteStream::Write (char *pData, int iLength, int *retiBytesWritten)
 
 //	Write

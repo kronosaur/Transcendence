@@ -8,7 +8,7 @@
 class CDesignType;
 class CEconomyType;
 class CItemCtx;
-struct SExtensionDesc;
+class CExtension;
 struct SDesignLoadCtx;
 struct SDamageCtx;
 struct SSystemCreateCtx;
@@ -162,8 +162,8 @@ inline void DebugStopTimer (char *szTiming) { }
 
 const DWORD EXTENSION_VERSION =							3;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						13;
-const DWORD SYSTEM_SAVE_VERSION =						75;		//	See: CSystem.cpp
+const DWORD UNIVERSE_SAVE_VERSION =						14;
+const DWORD SYSTEM_SAVE_VERSION =						76;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -173,10 +173,27 @@ struct SUniverseLoadCtx
 	IReadStream *pStream;				//	Stream to load from
 	};
 
+enum ELoadStates
+	{
+	loadStateUnknown,					//	Unknown load state
+	loadStateObject,					//	Inside CSpaceObect::CreateFromStream
+	loadStateObjData,					//	Loading obj opaque data
+	loadStateObjEffects,				//	Loading the list of effects
+	loadStateObjSubClass,				//	Load sub-class specific data
+	loadStateEffect,					//	Loading an effect
+
+	//	Make sure you add to the table in Utilities.cpp when adding new 
+	//	entries to this enum.
+	};
+
 struct SLoadCtx
 	{
-	SLoadCtx (void) : ObjMap(FALSE, TRUE),
-		ForwardReferences(TRUE, FALSE) { }
+	SLoadCtx (void) : 
+			ObjMap(FALSE, TRUE),
+			ForwardReferences(TRUE, FALSE),
+			iLoadState(loadStateUnknown),
+			dwObjClassID(0)
+		{ }
 
 	DWORD dwVersion;					//	See CSystem.cpp for version history
 
@@ -186,6 +203,12 @@ struct SLoadCtx
 	CIDTable ObjMap;					//	Map of ID to objects.
 	CIDTable ForwardReferences;			//	Map of ID to CIntArray of addresses
 										//		that need CSpaceObject pointer
+
+	//	Diagnostics
+
+	ELoadStates iLoadState;				//	Current load state
+	DWORD dwObjClassID;					//	ClassID that we're trying to load
+	CString sEffectUNID;				//	UNID of effect we're loading
 	};
 
 //	Utility classes
@@ -327,7 +350,7 @@ class CCurrencyBlock
 
 struct SEventHandlerDesc
 	{
-	SExtensionDesc *pExtension;
+	CExtension *pExtension;
 	ICCItem *pCode;
 	};
 
@@ -917,17 +940,21 @@ class CRegenDesc
 		CRegenDesc (int iHPPerEra);
 
 		void Add (const CRegenDesc &Desc);
-		int GetHPPerEra (void);
-		int GetRegen (int iTick);
+		double GetHPPer180 (int iTicksPerCycle = 1) const;
+		int GetHPPerEra (void) const;
+		CString GetReferenceRate (const CString &sUnits, int iTicksPerCycle = 1) const;
+		int GetRegen (int iTick, int iTicksPerCycle = 1);
 		void Init (int iHPPerEra);
-		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen);
-		ALERROR InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate);
+		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle = 1);
+		ALERROR InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime, int iRegenHP, int iTicksPerCycle = 1);
+		ALERROR InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate, int iTicksPerCycle = 1);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, 
 							 CXMLElement *pDesc, 
 							 const CString &sRegenAttrib, 
 							 const CString &sRegenRate,
-							 const CString &sRegenHP);
-		inline bool IsEmpty (void) { return m_bEmpty; }
+							 const CString &sRegenHP,
+							 int iTicksPerCycle = 1);
+		inline bool IsEmpty (void) const { return m_bEmpty; }
 
 	private:
 		bool m_bEmpty;
@@ -970,7 +997,7 @@ class CCodeChainCtx
 		void DefineVector (const CString &sVar, const CVector &vVector);
 		inline CG16bitImage *GetCanvas (void) const { return m_pCanvas; }
 		inline ECodeChainEvents GetEvent (void) const { return m_iEvent; }
-		inline SExtensionDesc *GetExtension (void) const { return m_pExtension; }
+		inline CExtension *GetExtension (void) const { return m_pExtension; }
 		inline CItemType *GetItemType (void) const { return m_pItemType; }
 		inline CDesignType *GetScreensRoot (void) const { return m_pScreensRoot; }
 		inline SSystemCreateCtx *GetSystemCreateCtx (void) const { return m_pSysCreateCtx; }
@@ -984,8 +1011,8 @@ class CCodeChainCtx
 		void SaveSourceVar (void);
 		inline void SetCanvas (CG16bitImage *pCanvas) { m_pCanvas = pCanvas; }
 		inline void SetEvent (ECodeChainEvents iEvent) { m_iEvent = iEvent; }
-		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
-		void SetGlobalDefineWrapper (SExtensionDesc *pExtension);
+		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
+		void SetGlobalDefineWrapper (CExtension *pExtension);
 		inline void SetItemType (CItemType *pType) { m_pItemType = pType; }
 		inline void SetScreen (void *pScreen) { m_pScreen = pScreen; }
 		inline void SetScreensRoot (CDesignType *pRoot) { m_pScreensRoot = pRoot; }
@@ -1004,7 +1031,7 @@ class CCodeChainCtx
 		CItemType *m_pItemType;				//	Used for item events (may be NULL)
 		CDesignType *m_pScreensRoot;		//	Used to resolve local screens (may be NULL)
 		SSystemCreateCtx *m_pSysCreateCtx;	//	Used during system create (may be NULL)
-		SExtensionDesc *m_pExtension;		//	Extension that defined this code
+		CExtension *m_pExtension;			//	Extension that defined this code
 
 		//	Saved variables
 		ICCItem *m_pOldSource;
@@ -1019,7 +1046,7 @@ class CFunctionContextWrapper : public ICCAtom
 	public:
 		CFunctionContextWrapper (ICCItem *pFunction);
 
-		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
+		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
 
 		//	ICCItem virtuals
 		virtual ICCItem *Clone (CCodeChain *pCC);
@@ -1041,7 +1068,7 @@ class CFunctionContextWrapper : public ICCAtom
 
 	private:
 		ICCItem *m_pFunction;
-		SExtensionDesc *m_pExtension;
+		CExtension *m_pExtension;
 	};
 
 class CAddFunctionContextWrapper : public IItemTransform
@@ -1049,13 +1076,13 @@ class CAddFunctionContextWrapper : public IItemTransform
 	public:
 		CAddFunctionContextWrapper (void) : m_pExtension(NULL) { }
 
-		inline void SetExtension (SExtensionDesc *pExtension) { m_pExtension = pExtension; }
+		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
 
 		//	IItemTransform
 		virtual ICCItem *Transform (CCodeChain &CC, ICCItem *pItem);
 
 	private:
-		SExtensionDesc *m_pExtension;
+		CExtension *m_pExtension;
 	};
 
 //	CZoneGrid ------------------------------------------------------------------
@@ -1226,23 +1253,6 @@ class C3DConversion
 		TArray<SEntry> m_Cache;
 	};
 
-//	CHexarc --------------------------------------------------------------------
-
-class CHexarc
-	{
-	public:
-		static bool ConvertIPIntegerToString (const CJSONValue &Value, CString *retsValue);
-		static bool ConvertToDigest (const CJSONValue &Value, CDigest *retDigest);
-		static bool ConvertToIntegerIP (const CJSONValue &Value, CIntegerIP *retValue);
-		static bool ConvertToJSON (const CIntegerIP &Value, CJSONValue *retValue);
-		static bool CreateCredentials (const CString &sUsername, const CString &sPassword, CJSONValue *retValue);
-		static bool CreateCredentials (const CString &sUsername, const CString &sPassword, CString *retsValue);
-		static bool HasSpecialAeonChars (const CString &sValue);
-		static bool IsError (const CJSONValue &Value, CString *retsError = NULL, CString *retsDesc = NULL);
-		static void WriteAsAeon (const CJSONValue &Value, IWriteStream &Stream);
-		static bool ValidatePasswordComplexity (const CString &sPassword, CString *retsResult = NULL);
-	};
-
 //	Local device storage class -------------------------------------------------
 
 class CDeviceStorage
@@ -1268,8 +1278,10 @@ class CDeviceStorage
 
 CString AppendModifiers (const CString &sModifierList1, const CString &sModifierList2);
 int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
+CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);
+inline bool IsRegisteredUNID (DWORD dwUNID) { return ((dwUNID & 0xF0000000) != 0xD0000000) && ((dwUNID & 0xF0000000) != 0xE0000000); }
 
 ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList);
 void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue);

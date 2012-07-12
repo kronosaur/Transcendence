@@ -119,13 +119,13 @@ void CReactorDisplay::Update (void)
 	bool bBlink;
 	if (iFuelLevel < 15)
 		{
-		pFuelImage = &ReactorDesc.FuelLowLevelImage.GetImage();
+		pFuelImage = &ReactorDesc.FuelLowLevelImage.GetImage(NULL_STR);
 		rcSrcRect = ReactorDesc.FuelLowLevelImage.GetImageRect();
 		bBlink = true;
 		}
 	else
 		{
-		pFuelImage = &ReactorDesc.FuelLevelImage.GetImage();
+		pFuelImage = &ReactorDesc.FuelLevelImage.GetImage(NULL_STR);
 		rcSrcRect = ReactorDesc.FuelLevelImage.GetImageRect();
 		bBlink = false;
 		}
@@ -181,7 +181,7 @@ void CReactorDisplay::Update (void)
 
 	if (!bBlink || ((m_iOverloading % 2) == 1))
 		{
-		CG16bitImage *pPowerImage = &ReactorDesc.PowerLevelImage.GetImage();
+		CG16bitImage *pPowerImage = &ReactorDesc.PowerLevelImage.GetImage(NULL_STR);
 		rcSrcRect = ReactorDesc.PowerLevelImage.GetImageRect();
 		int cxPowerLevel = RectWidth(rcSrcRect) * iPowerLevel / 120;
 		m_Buffer.ColorTransBlt(rcSrcRect.left,

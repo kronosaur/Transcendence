@@ -105,6 +105,7 @@ class CLegacySession : public IHISession
 		CLegacySession (CHumanInterface &HI) : IHISession(HI) { }
 
 		//	IHISession virtuals
+		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
 		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
 		virtual ALERROR OnInit (CString *retsError) { SetNoCursor(true); return NOERROR; }

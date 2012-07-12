@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- PLAYER SOVEREIGN
+
+	GLOBAL DATA
+	
+	missionRewards:		Total amount of credits earned in missions
+
+-->
+
+	<Sovereign UNID="&svPlayer;"
+			name="independent"
+			alignment="constructive chaos"
+			>
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList missionRewards)
+				
+					; Current player money
+
+					(setq theList
+						(map (filter (typFind "$") theEcon (gr (objGetBalance gPlayerShip theEcon) 0)) theEcon
+							(list (cat "Money (" (fmtCurrency theEcon True) ")") (objGetBalance gPlayerShip theEcon))
+							)
+						)					
+					
+					; Money earned on missions
+					
+					(if (setq missionRewards (typGetGlobalData &svPlayer; "missionRewards"))
+						(setq theList (append theList (list
+							(list "Money earned on missions" missionRewards "missions &amp; activities")
+							)))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</Sovereign>
+
+	<!-- CONSTRUCTIVE CHAOS -->
+
+	<Sovereign UNID="&svIndependent;"
+			name="independent merchant"
+			alignment="constructive chaos"
+			/>
+
+	<Sovereign UNID="&svFriendlyAuton;"
+			name="auton"
+			alignment="constructive chaos"
+			>
+		<Language>
+			<Text id="WatchYourTargets">""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+	</Sovereign>
+
+	<Sovereign UNID="&svDefectiveAuton;"
+			name="auton"
+			alignment="constructive chaos"
+			>
+		<Language>
+			<Text id="WatchYourTargets">""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+		
+		<Relationships>
+			<Relationship sovereign="&svPlayer;" disposition="enemy" mutual="true"/>
+		</Relationships>
+	</Sovereign>
+
+	<!-- CONSTRUCTIVE ORDER -->
+
+	<!-- NEUTRAL -->
+
+	<Sovereign UNID="&svIndependentTrader;"
+			name="independent merchant"
+			alignment="neutral"
+			/>
+
+	<!-- DESTRUCTIVE ORDER -->
+
+	<Sovereign UNID="&svDestructiveOrder;"
+			name="(destructive order)"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svPirates;"
+			name="Charon Pirates"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svCult;"
+			name="Cult"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svOutlaw;"
+			name="Outlaws"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svSettlers;"
+			name="Settlers"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svGaianTerraformers;"
+			name="Gaian Terraformers"
+			alignment="destructive order"
+			/>
+
+	<!-- DESTRUCTIVE CHAOS -->
+
+	<Sovereign UNID="&svDestructiveChaos;"
+			name="(destructive chaos)"
+			alignment="destructive chaos"
+			/>
+
+	<Sovereign UNID="&svAnarchists;"
+			name="Anarchists"
+			alignment="destructive chaos"
+			/>
+
+</TranscendenceModule>

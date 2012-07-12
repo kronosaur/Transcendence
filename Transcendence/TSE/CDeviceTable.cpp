@@ -26,6 +26,7 @@
 #define LEVEL_ATTRIB							CONSTLIT("level")
 #define LEVEL_CURVE_ATTRIB						CONSTLIT("levelCurve")
 #define LEVEL_FREQUENCY_ATTRIB					CONSTLIT("levelFrequency")
+#define LINKED_FIRE_ATTRIB						CONSTLIT("linkedFire")
 #define MAX_COUNT_ATTRIB						CONSTLIT("maxCount")
 #define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
 #define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
@@ -50,6 +51,7 @@ class CSingleDevice : public IDeviceGenerator
 		~CSingleDevice (void);
 
 		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
@@ -70,6 +72,9 @@ class CSingleDevice : public IDeviceGenerator
 		int m_iMaxFireArc;
 		bool m_bDefaultFireArc;
 
+		DWORD m_dwLinkedFireOptions;
+		bool m_bDefaultLinkedFire;
+
 		bool m_bSecondary;
 
 		IItemGenerator *m_pExtraItems;
@@ -80,6 +85,7 @@ class CLevelTableOfDeviceGenerators : public IDeviceGenerator
 	public:
 		virtual ~CLevelTableOfDeviceGenerators (void);
 		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -104,6 +110,7 @@ class CTableOfDeviceGenerators : public IDeviceGenerator
 	public:
 		virtual ~CTableOfDeviceGenerators (void);
 		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -126,6 +133,7 @@ class CGroupOfDeviceGenerators : public IDeviceGenerator
 	public:
 		virtual ~CGroupOfDeviceGenerators (void);
 		virtual void AddDevices (SDeviceGenerateCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual IDeviceGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pDevice; }
 		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -189,6 +197,32 @@ ALERROR IDeviceGenerator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 		}
 
 	*retpGenerator = pGenerator;
+
+	return NOERROR;
+	}
+
+ALERROR IDeviceGenerator::InitDeviceDescFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, SDeviceDesc *retDesc)
+
+//	InitDeviceDescFromXML
+//
+//	Loads a device desc from XML.
+
+	{
+	ALERROR error;
+
+	retDesc->iPosAngle = pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB);
+	retDesc->iPosRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
+	if (!(retDesc->b3DPosition = pDesc->FindAttributeInteger(POS_Z_ATTRIB, &retDesc->iPosZ)))
+		retDesc->iPosZ = 0;
+
+	retDesc->bOmnidirectional = pDesc->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
+	retDesc->iMinFireArc = pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
+	retDesc->iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+
+	if (error = CDeviceClass::ParseLinkedFireOptions(Ctx, pDesc->GetAttribute(LINKED_FIRE_ATTRIB), &retDesc->dwLinkedFireOptions))
+		return error;
+
+	retDesc->bSecondary = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
 
 	return NOERROR;
 	}
@@ -266,6 +300,15 @@ void CSingleDevice::AddDevices (SDeviceGenerateCtx &Ctx)
 			Desc.iMaxFireArc = SlotDesc.iMaxFireArc;
 			}
 
+		//	Set linked fire
+
+		if (!m_bDefaultLinkedFire)
+			Desc.dwLinkedFireOptions = m_dwLinkedFireOptions;
+		else if (bUseSlotDesc)
+			Desc.dwLinkedFireOptions = SlotDesc.dwLinkedFireOptions;
+		else
+			Desc.dwLinkedFireOptions = 0;
+
 		Desc.bSecondary = m_bSecondary;
 
 		//	Add extra items
@@ -285,6 +328,20 @@ void CSingleDevice::AddDevices (SDeviceGenerateCtx &Ctx)
 		}
 	}
 
+void CSingleDevice::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds list of types used.
+
+	{
+	if (m_pItemType)
+		retTypesUsed->SetAt(m_pItemType->GetUNID(), true);
+
+	if (m_pExtraItems)
+		m_pExtraItems->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -300,7 +357,9 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (sUNID.IsBlank())
 		sUNID = pDesc->GetAttribute(ITEM_ATTRIB);
 
-	m_pItemType.LoadUNID(Ctx, sUNID);
+	if (error = m_pItemType.LoadUNID(Ctx, sUNID))
+		return error;
+
 	if (m_pItemType.GetUNID() == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<%s> element missing item attribute."), pDesc->GetTag());
@@ -367,6 +426,22 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_iMinFireArc = 0;
 		m_iMaxFireArc = 0;
 		m_bDefaultFireArc = true;
+		}
+
+	//	Linked fire options
+
+	CString sLinkedFire;
+	if (pDesc->FindAttribute(LINKED_FIRE_ATTRIB, &sLinkedFire))
+		{
+		if (error = CDeviceClass::ParseLinkedFireOptions(Ctx, sLinkedFire, &m_dwLinkedFireOptions))
+			return error;
+
+		m_bDefaultLinkedFire = false;
+		}
+	else
+		{
+		m_dwLinkedFireOptions = 0;
+		m_bDefaultLinkedFire = true;
 		}
 
 	m_bSecondary = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
@@ -452,6 +527,19 @@ void CTableOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 		}
 	}
 
+void CTableOfDeviceGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds list of types used.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pDevice->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CTableOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -479,7 +567,10 @@ ALERROR CTableOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 			m_iTotalChance += m_Table[i].iChance;
 
 			if (error = IDeviceGenerator::CreateFromXML(Ctx, pEntry, &m_Table[i].pDevice))
+				{
+				m_Table[i].pDevice = NULL;
 				return error;
+				}
 			}
 		}
 
@@ -566,6 +657,19 @@ void CLevelTableOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 		}
 	}
 
+void CLevelTableOfDeviceGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds list of types used.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pDevice->AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CLevelTableOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -588,7 +692,10 @@ ALERROR CLevelTableOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLEle
 		pNewEntry->sLevelFrequency = pEntry->GetAttribute(LEVEL_FREQUENCY_ATTRIB);
 
 		if (error = IDeviceGenerator::CreateFromXML(Ctx, pEntry, &pNewEntry->pDevice))
+			{
+			pNewEntry->pDevice = NULL;
 			return error;
+			}
 		}
 
 	m_iComputedLevel = -1;
@@ -647,6 +754,19 @@ void CGroupOfDeviceGenerators::AddDevices (SDeviceGenerateCtx &Ctx)
 				m_Table[i].pDevice->AddDevices(Ctx);
 			}
 		}
+	}
+
+void CGroupOfDeviceGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds list of types used.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pDevice->AddTypesUsed(retTypesUsed);
 	}
 
 bool CGroupOfDeviceGenerators::FindDefaultDesc (const CItem &Item, SDeviceDesc *retDesc)
@@ -724,14 +844,8 @@ ALERROR CGroupOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 
 			CItem::ParseCriteria(pEntry->GetAttribute(CRITERIA_ATTRIB), &pSlotDesc->Criteria);
 
-			pSlotDesc->DefaultDesc.iPosAngle = pEntry->GetAttributeInteger(POS_ANGLE_ATTRIB);
-			pSlotDesc->DefaultDesc.iPosRadius = pEntry->GetAttributeInteger(POS_RADIUS_ATTRIB);
-			pSlotDesc->DefaultDesc.iPosZ = pEntry->GetAttributeInteger(POS_Z_ATTRIB);
-			pSlotDesc->DefaultDesc.b3DPosition = (pSlotDesc->DefaultDesc.iPosZ != 0);
-
-			pSlotDesc->DefaultDesc.bOmnidirectional = pEntry->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
-			pSlotDesc->DefaultDesc.iMinFireArc = pEntry->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
-			pSlotDesc->DefaultDesc.iMaxFireArc = pEntry->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+			if (error = IDeviceGenerator::InitDeviceDescFromXML(Ctx, pEntry, &pSlotDesc->DefaultDesc))
+				return error;
 
 			pSlotDesc->iMaxCount = pEntry->GetAttributeIntegerBounded(MAX_COUNT_ATTRIB, 0, -1, -1);
 			}
@@ -741,7 +855,10 @@ ALERROR CGroupOfDeviceGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 
 			pTableEntry->iChance = pEntry->GetAttributeIntegerBounded(CHANCE_ATTRIB, 0, -1, 100);
 			if (error = IDeviceGenerator::CreateFromXML(Ctx, pEntry, &pTableEntry->pDevice))
+				{
+				pTableEntry->pDevice = NULL;
 				return error;
+				}
 			}
 		}
 

@@ -14,10 +14,12 @@
 class CXelerus : public ICIService
 	{
 	public:
+		CXelerus (CHumanInterface &HI) : ICIService(HI) { }
+
 		virtual CString GetTag (void);
-		virtual bool HasCapability (DWORD dwCapability) { return (dwCapability == ICIService::postGameStats); }
+		virtual bool HasCapability (DWORD dwCapability) { return (dwCapability == ICIService::canPostGameRecord); }
 		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified);
-		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
+		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL);
 		virtual ALERROR WriteAsXML (IWriteStream *pOutput);
 
 	private:
@@ -63,7 +65,7 @@ ALERROR CXelerus::InitFromXML (CXMLElement *pDesc, bool *retbModified)
 	return NOERROR;
 	}
 
-ALERROR CXelerus::PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult)
+ALERROR CXelerus::PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult)
 
 //	PostGameStats
 //
@@ -72,20 +74,29 @@ ALERROR CXelerus::PostGameStats (ITaskProcessor *pProcessor, const CGameStats &S
 	{
 	EInetsErrors iError;
 
-	pProcessor->SetProgress(CONSTLIT("Posting game statistics to Xelerus..."));
+	//	Do not bother posting if we're in debug mode (or have a score of 0)
+
+	if (Record.GetScore() == 0 || Record.IsDebug())
+		return NOERROR;
+
+	//	Post
+
+	SendServiceStatus(strPatternSubst(CONSTLIT("Posting game statistics to %s..."), m_sHost));
 
 	//	Generate a stats text buffer
 
 	CMemoryWriteStream StatsBuffer;
 	if (StatsBuffer.Create() != NOERROR)
 		{
-		*retsResult = CONSTLIT("Unable to post stats to Xelerus: Out of memory.");
+		*retsResult = CONSTLIT("Unable to post stats: Out of memory.");
+		SendServiceError(*retsResult);
 		return inetsOutOfMemory;
 		}
 
 	if (Stats.WriteAsText(&StatsBuffer) != NOERROR)
 		{
-		*retsResult = CONSTLIT("Unable to post stats to Xelerus: Out of memory.");
+		*retsResult = CONSTLIT("Unable to post stats: Cannot write stats to buffer.");
+		SendServiceError(*retsResult);
 		return inetsOutOfMemory;
 		}
 
@@ -117,6 +128,7 @@ ALERROR CXelerus::PostGameStats (ITaskProcessor *pProcessor, const CGameStats &S
 			*retsResult = strPatternSubst(CONSTLIT("Unable to find http://%s."), m_sHost);
 		else
 			*retsResult = strPatternSubst(CONSTLIT("Unable to connect to http://%s."), m_sHost);
+		SendServiceError(*retsResult);
 		return ERR_FAIL;
 		}
 
@@ -126,13 +138,14 @@ ALERROR CXelerus::PostGameStats (ITaskProcessor *pProcessor, const CGameStats &S
 	if (iError = Session.Send(Request, &Response))
 		{
 		*retsResult = strPatternSubst(CONSTLIT("Unable to upload to http://%s/%s."), m_sHost, m_sPostStatsURL);
+		SendServiceError(*retsResult);
 		return ERR_FAIL;
 		}
 
 	//	Done
 
 	Session.Disconnect();
-	*retsResult = CONSTLIT("Game statistics posted to Xelerus.");
+	SendServiceError(strPatternSubst(CONSTLIT("Game statistics posted to %s."), m_sHost));
 	return NOERROR;
 	}
 
@@ -145,8 +158,16 @@ ALERROR CXelerus::WriteAsXML (IWriteStream *pOutput)
 	{
 	ALERROR error;
 
-	CString sData = strPatternSubst(CONSTLIT("\t\t<Xelerus enabled=\"%s\"/>\r\n"), 
-			(IsEnabled() ? CONSTLIT("true") : CONSTLIT("false")));
+	CString sData = strPatternSubst(CONSTLIT(
+				"\t\t<Xelerus enabled=\"%s\"\r\n"
+				"\t\t\thost=\"%s\"\r\n"
+				"\t\t\tpostStatsURL=\"%s\"\r\n"
+				"\t\t\t/>\r\n"
+				), 
+			(IsEnabled() ? CONSTLIT("true") : CONSTLIT("false")),
+			m_sHost,
+			m_sPostStatsURL
+			);
 	if (error = pOutput->Write(sData.GetPointer(), sData.GetLength(), NULL))
 		return error;
 
@@ -157,6 +178,5 @@ ALERROR CXelerus::WriteAsXML (IWriteStream *pOutput)
 
 ICIService *CXelerusServiceFactory::Create (CHumanInterface &HI)
 	{
-	return new CXelerus;
+	return new CXelerus(HI);
 	}
-

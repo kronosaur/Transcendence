@@ -257,7 +257,7 @@ ALERROR CGameRecord::InitFromXML (CXMLElement *pDesc)
 	m_bDebugGame = (pDesc->GetAttributeInteger(DEBUG_ATTRIB) ? true : false);
 	m_dwAdventure = pDesc->GetAttributeInteger(ADVENTURE_ATTRIB);
 	if (m_dwAdventure == 0)
-		m_dwAdventure = DEFAULT_ADVENTURE_UNID;
+		m_dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
 	if (!CTimeSpan::Parse(pDesc->GetAttribute(TIME_ATTRIB), &m_Duration))
 		m_Duration = CTimeSpan();
 	m_iScore = pDesc->GetAttributeInteger(SCORE_ATTRIB);

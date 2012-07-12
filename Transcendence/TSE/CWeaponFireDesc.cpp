@@ -142,6 +142,32 @@ CWeaponFireDesc::~CWeaponFireDesc (void)
 		delete m_pEnhanced;
 	}
 
+void CWeaponFireDesc::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this class
+
+	{
+	retTypesUsed->SetAt(m_pAmmoType.GetUNID(), true);
+	retTypesUsed->SetAt(m_Image.GetBitmapUNID(), true);
+	retTypesUsed->SetAt(m_ExhaustImage.GetBitmapUNID(), true);
+	if (m_pEnhanced)
+		m_pEnhanced->AddTypesUsed(retTypesUsed);
+
+	retTypesUsed->SetAt(m_pEffect.GetUNID(), true);
+	retTypesUsed->SetAt(m_pHitEffect.GetUNID(), true);
+	retTypesUsed->SetAt(m_pFireEffect.GetUNID(), true);
+
+	SFragmentDesc *pNext = m_pFirstFragment;
+	while (pNext)
+		{
+		pNext->pDesc->AddTypesUsed(retTypesUsed);
+
+		pNext = pNext->pNext;
+		}
+	}
+
 void CWeaponFireDesc::CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx)
 
 //	CreateHitEffect
@@ -1085,7 +1111,8 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 	//	We initialize this with the UNID, and later resolve the reference
 	//	during OnDesignLoadComplete
 
-	m_pAmmoType.LoadUNID(Ctx, pDesc->GetAttribute(AMMO_ID_ATTRIB));
+	if (error = m_pAmmoType.LoadUNID(Ctx, pDesc->GetAttribute(AMMO_ID_ATTRIB)))
+		return error;
 
 	//	Maneuverability
 
@@ -1238,7 +1265,10 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 
 	//	Sound
 
-	DWORD dwSoundID = LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB));
+	DWORD dwSoundID;
+	if (error = LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB), &dwSoundID))
+		return error;
+
 	if (dwSoundID)
 		m_iFireSound = g_pUniverse->FindSound(dwSoundID);
 	else
@@ -1267,23 +1297,6 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 		m_pEnhanced = NULL;
 
 	return NOERROR;
-	}
-
-void CWeaponFireDesc::LoadImages (void)
-
-//	LoadImages
-//
-//	Loads images used by weapon
-
-	{
-	if (m_pEffect)
-		m_pEffect->LoadImages();
-
-	if (m_pHitEffect)
-		m_pHitEffect->LoadImages();
-
-	if (m_pFireEffect)
-		m_pFireEffect->LoadImages();
 	}
 
 void CWeaponFireDesc::MarkImages (void)

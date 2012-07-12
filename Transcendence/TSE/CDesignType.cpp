@@ -40,6 +40,7 @@
 #define GET_GLOBAL_ACHIEVEMENTS_EVENT			CONSTLIT("GetGlobalAchievements")
 #define GET_GLOBAL_DOCK_SCREEN_EVENT			CONSTLIT("GetGlobalDockScreen")
 #define GET_GLOBAL_RESURRECT_POTENTIAL_EVENT	CONSTLIT("GetGlobalResurrectPotential")
+#define ON_GLOBAL_MARK_IMAGES_EVENT				CONSTLIT("OnGlobalMarkImages")
 #define ON_GLOBAL_OBJ_DESTROYED_EVENT			CONSTLIT("OnGlobalObjDestroyed")
 #define ON_GLOBAL_DOCK_PANE_INIT_EVENT			CONSTLIT("OnGlobalPaneInit")
 #define ON_GLOBAL_PLAYER_CHANGED_SHIPS_EVENT	CONSTLIT("OnGlobalPlayerChangedShips")
@@ -87,6 +88,34 @@ static char DESIGN_CHAR[designCount] =
 		'_',
 	};
 
+static char *DESIGN_CLASS_NAME[designCount] =
+	{
+		"ItemType",
+		"ItemTable",
+		"ShipClass",
+		"OverlayType",
+		"SystemType",
+		"StationType",
+		"Sovereign",
+		"DockScreen",
+		"EffectType",
+		"Power",
+
+		"SpaceEnvironment",
+		"ShipTable",
+		"AdventureDesc",
+		"Globals",
+		"Image",
+		"Sound",
+		"SystemNode",
+		"SystemTable",
+		"SystemMap",
+		"NameGenerator",
+
+		"EconomyType",
+		"TemplateType",
+	};
+
 static char *CACHED_EVENTS[CDesignType::evtCount] =
 	{
 		"OnGlobalTypesInit",
@@ -115,6 +144,19 @@ CDesignType::~CDesignType (void)
 	{
 	if (m_pLocalScreens)
 		delete m_pLocalScreens;
+	}
+
+void CDesignType::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this type to the list
+
+	{
+	if (m_dwInheritFrom)
+		retTypesUsed->SetAt(m_dwInheritFrom, true);
+
+	OnAddTypesUsed(retTypesUsed);
 	}
 
 ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
@@ -212,7 +254,7 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			{
 			//	Only valid if we are inside an Adventure
 
-			if (Ctx.pExtension != NULL && Ctx.pExtension->iType != extAdventure)
+			if (Ctx.pExtension != NULL && Ctx.pExtension->GetType() != extAdventure)
 				{
 				Ctx.sError = CONSTLIT("<AdventureDesc> element is only valid for Adventures");
 				return ERR_FAIL;
@@ -229,7 +271,9 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 
 			//	Load UNID
 
-			pType->m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
+			if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &pType->m_dwUNID))
+				return error;
+
 			if (!pDesc->FindAttribute(ATTRIBUTES_ATTRIB, &pType->m_sAttributes))
 				pType->m_sAttributes = pDesc->GetAttribute(MODIFIERS_ATTRIB);
 
@@ -281,7 +325,7 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 	else if (strEquals(sField, FIELD_UNID))
 		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
 	else if (strEquals(sField, FIELD_EXTENSION_UNID))
-		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->dwUNID : 0));
+		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->GetUNID() : 0));
 	else
 		return false;
 
@@ -612,6 +656,24 @@ ALERROR CDesignType::FireOnGlobalDockPaneInit (const SEventHandlerDesc &Event, v
 
 	Ctx.Discard(pResult);
 	return NOERROR;
+	}
+
+void CDesignType::FireOnGlobalMarkImages (const SEventHandlerDesc &Event)
+
+//	FireOnGlobalMarkImages
+//
+//	Fires OnGlobalMarkImages
+
+	{
+	CCodeChainCtx CCCtx;
+
+	//	Run code
+
+	ICCItem *pResult = CCCtx.Run(Event);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_MARK_IMAGES_EVENT, pResult);
+
+	CCCtx.Discard(pResult);
 	}
 
 void CDesignType::FireOnGlobalObjDestroyed (const SEventHandlerDesc &Event, SDestroyCtx &Ctx)
@@ -1013,6 +1075,16 @@ CString CDesignType::GetTypeChar (DesignTypes iType)
 	return CString(&DESIGN_CHAR[iType], 1);
 	}
 
+CString CDesignType::GetTypeClassName (void) const
+
+//	GetTypeClassName
+//
+//	Returns the class name of the type
+
+	{
+	return CString(DESIGN_CLASS_NAME[GetType()]);
+	}
+
 bool CDesignType::HasSpecialAttribute (const CString &sAttrib) const
 
 //	HasSpecialAttribute
@@ -1086,7 +1158,9 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Load UNID
 
-	m_dwUNID = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB));
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &m_dwUNID))
+		return error;
+
 	if (m_dwUNID == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<%s> must have a valid UNID."), pDesc->GetTag());
@@ -1096,11 +1170,13 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Extension information
 
 	m_pExtension = Ctx.pExtension;
-	m_dwVersion = (Ctx.pExtension ? Ctx.pExtension->dwVersion : EXTENSION_VERSION);
+	m_dwVersion = (Ctx.pExtension ? Ctx.pExtension->GetAPIVersion() : EXTENSION_VERSION);
 
 	//	Inheritance
 
-	m_dwInheritFrom = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB));
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB), &m_dwInheritFrom))
+		return error;
+
 	m_pInheritFrom = NULL;
 
 	//	Load attributes
@@ -1258,24 +1334,15 @@ ALERROR CDesignType::PrepareBindDesign (SDesignLoadCtx &Ctx)
 		{
 		m_pInheritFrom = g_pUniverse->FindDesignType(m_dwInheritFrom);
 		if (m_pInheritFrom == NULL)
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Unknown inherit design type: %x"), m_dwInheritFrom);
-			return ERR_FAIL;
-			}
+			return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unknown inherit design type: %x"), m_dwInheritFrom));
 
 		if (m_pInheritFrom->GetType() != GetType())
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Cannot inherit from a different type"));
-			return ERR_FAIL;
-			}
+			return ComposeLoadError(Ctx, CONSTLIT("Cannot inherit from a different type."));
 
 		//	Make sure we are not in an inheritance loop
 
 		if (InSelfReference(this))
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Cannot inherit from self"));
-			return ERR_FAIL;
-			}
+			return ComposeLoadError(Ctx, CONSTLIT("Cannot inherit from self"));
 		}
 
 	//	Done
@@ -1339,7 +1406,7 @@ void CDesignType::ReportEventError (const CString &sEvent, ICCItem *pError)
 	if (pPlayer)
 		pPlayer->SendMessage(NULL, sError);
 
-	kernelDebugLogMessage(sError.GetASCIIZPointer());
+	kernelDebugLogMessage(sError);
 	}
 
 void CDesignType::WriteToStream (IWriteStream *pStream)
@@ -1504,6 +1571,26 @@ CEffectCreatorRef::~CEffectCreatorRef (void)
 		delete m_pType;
 	}
 
+CEffectCreatorRef &CEffectCreatorRef::operator= (const CEffectCreatorRef &Source)
+
+//	CEffectCreatorRef operator=
+
+	{
+	//	Free our current type, if necessary
+
+	if (m_bDelete && m_pType)
+		delete m_pType;
+
+	m_dwUNID = Source.m_dwUNID;
+
+	//	We make a reference
+
+	m_pType = Source.m_pType;
+	m_bDelete = false;
+
+	return *this;
+	}
+
 ALERROR CEffectCreatorRef::Bind (SDesignLoadCtx &Ctx)
 	{
 	if (m_dwUNID)
@@ -1550,7 +1637,8 @@ ALERROR CEffectCreatorRef::LoadEffect (SDesignLoadCtx &Ctx, const CString &sUNID
 			return error;
 		}
 	else
-		LoadUNID(Ctx, sAttrib);
+		if (error = LoadUNID(Ctx, sAttrib))
+			return error;
 
 	return NOERROR;
 	}

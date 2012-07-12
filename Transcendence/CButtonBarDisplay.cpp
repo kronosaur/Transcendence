@@ -12,7 +12,7 @@ const int BUTTON_HEIGHT =					80;
 const int BUTTON_LABEL_Y =					64;
 const int BUTTON_DESCRIPTION_Y =			90;
 
-const int BUTTON_SPACING_X =				8;
+const int BUTTON_SPACING_X =				30;
 const int EXTRA_SPACING_X =					10;
 
 CButtonBarDisplay::CButtonBarDisplay (void)

@@ -27,7 +27,7 @@
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
 
-ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, SExtensionDesc *pExtension, ICCItem *pCode, int *retiAction)
+ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction)
 
 //	AddAction
 //
@@ -148,7 +148,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 				{
 				CString sError = strPatternSubst(CONSTLIT("Unable to show screen: %s"), sScreen);
 				pScreen->SetDescription(sError);
-				::kernelDebugLogMessage(sError.GetASCIIZPointer());
+				::kernelDebugLogMessage(sError);
 				return;
 				}
 			}
@@ -185,7 +185,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 		}
 	}
 
-void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, SExtensionDesc *pExtension, ICCItem *pCode)
+void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode)
 
 //	ExecuteCode
 //
@@ -204,7 +204,7 @@ void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, 
 		CString sError = pResult->GetStringValue();
 
 		pScreen->SetDescription(sError);
-		::kernelDebugLogMessage(sError.GetASCIIZPointer());
+		::kernelDebugLogMessage(sError);
 		}
 
 	Ctx.Discard(pResult);
@@ -338,7 +338,7 @@ int CDockScreenActions::GetVisibleCount (void) const
 	return iCount;
 	}
 
-ALERROR CDockScreenActions::InitFromXML (SExtensionDesc *pExtension, CXMLElement *pActions, CString *retsError)
+ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pActions, CString *retsError)
 
 //	InitFromXML
 //

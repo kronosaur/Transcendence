@@ -226,19 +226,10 @@ ALERROR CTopologyDescTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 		if (error = LoadNodeFromXML(Ctx, pNode, sUNID, &pNodeDesc))
 			return error;
 		
-		//	If this is a root node, add it to our list. We add root nodes
-		//	in the order that we find them.
+		//	If this is a root node remember that we added it
 
 		if (pNodeDesc->IsRootNode())
-			{
-			m_RootNodes.Insert(pNodeDesc);
 			bRootAdded = true;
-
-			//	Remember the first root node
-
-			if (m_sFirstNode.IsBlank())
-				m_sFirstNode = pNodeDesc->GetID();
-			}
 
 		//	Keep track of the first node in case we find no other root node
 		//	(We only consider Nodes, skipping NodeTables and Fragments)
@@ -279,6 +270,18 @@ ALERROR CTopologyDescTable::LoadNodeFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 	CTopologyDesc *pNodeDesc = new CTopologyDesc;
 	if (error = pNodeDesc->LoadFromXML(Ctx, pNode, sParentUNID))
 		return error;
+
+	//	If this is a root node, add it to our list
+
+	if (pNodeDesc->IsRootNode())
+		{
+		m_RootNodes.Insert(pNodeDesc);
+
+		//	Remember the first root node
+
+		if (m_sFirstNode.IsBlank())
+			m_sFirstNode = pNodeDesc->GetID();
+		}
 
 	//	Get the ID
 

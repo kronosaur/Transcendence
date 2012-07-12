@@ -115,7 +115,6 @@ const DWORD DEFAULT_ECONOMY_UNID =			0x00001017;	//	ecCreditEconomy
 const DWORD g_ShipWreckUNID =				0x00002001;	//	stShipwreck
 
 const DWORD PLAYER_EI500_FREIGHTER_UNID =	0x00003802;	//	scEI100XPlayer
-const DWORD g_DebugHenchmenShipUNID =		0x00103001;	//	scCenturion
 
 const DWORD TRITIUM_PROPULSION_UPGRADE_UNID = 0x0000404B;	//	Tritium propulsion upgrade
 const DWORD CARGO_HOLD_EXPANSION_UNID =		0x00004079;	//	Cargo hold expansion
@@ -133,10 +132,7 @@ const DWORD g_StationDestroyedUNID =		0x00009009;	//	efStationExplosion
 const DWORD LARGE_STATION_DAMAGE_UNID =		0x0000900E;	//	efLargeStationDamage
 const DWORD MEDIUM_STATION_DAMAGE_UNID =	0x0000900F;	//	efMediumStationDamage
 
-const DWORD DEFAULT_ADVENTURE_UNID =		0x00009301;	//	adPart1Desc (only for compatibility)
-
 const DWORD DEFAULT_SHIP_SCREEN_UNID =		0x0000A001;	//	dsShipInterior
-const DWORD g_unidShipInterior =			0x0000A001;	//	dsShipInterior
 
 const DWORD g_DamageImageUNID =				0x0000F001;	//	rsMediumDamage
 const DWORD SHIP_INTERIOR_IMAGE_UNID =		0x0000F002;	//	rsShipInterior
@@ -149,6 +145,13 @@ const DWORD DEFAULT_DOCK_SCREEN_MASK_UNID =	0x0000F014;	//	Default dock screen m
 const DWORD g_ShipExplosionParticlesUNID =	0x0000F114;	//	rsDebris1
 const DWORD g_ShipExplosionSoundUNID =		0x0000F204;	//	snShipExplosion1
 const DWORD g_StationExplosionSoundUNID =	0x0000F205;	//	snStationExplosion1
+
+#ifdef DEBUG_HENCHMAN
+const DWORD g_DebugHenchmenShipUNID =		0x00103001;	//	scCenturion
+#endif
+
+const DWORD DEFAULT_ADVENTURE_EXTENSION_UNID =		0x00200000;
+const DWORD DEFAULT_COMPATIBILITY_LIBRARY_UNID =	0x00700000;
 
 //	Object IDs
 

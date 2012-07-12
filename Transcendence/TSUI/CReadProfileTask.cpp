@@ -119,6 +119,8 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	int cyHighScoresHeight = TITLE_BAR_HEIGHT + PADDING_TOP + MediumBoldFont.GetHeight() + MAX_HIGH_SCORES * HeaderFont.GetHeight() + PADDING_BOTTOM;
 	cyHeight = Max(cyHeight, cyHighScoresHeight);
 
+	int cyBody = cyHeight - TITLE_BAR_HEIGHT;
+
 	//	Get the adventure desc.
 	//
 	//	NOTE: The Universe structures are not thread-safe, but we can guarantee
@@ -129,8 +131,20 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	//	We need to make sure the CProfileSession does not exit until all
 	//	background tasks are completed (or cancelled).
 
-	CAdventureDesc *pAdventure = g_pUniverse->FindAdventureForExtension(Record.GetAdventureUNID());
-	CString sAdventureTitle = (pAdventure ? pAdventure->GetName() : strPatternSubst(CONSTLIT("Adventure %x"), Record.GetAdventureUNID()));
+	CExtension *pAdventure;
+	CString sAdventureTitle;
+	CG16bitImage *pIcon;
+	if (g_pUniverse->FindExtension(Record.GetAdventureUNID(), 0, CExtension::folderUnknown, &pAdventure))
+		{
+		sAdventureTitle = pAdventure->GetName();
+		pAdventure->CreateIcon(ICON_AREA_WIDTH, cyBody, &pIcon);
+		}
+	else
+		{
+		pAdventure = NULL;
+		sAdventureTitle = strPatternSubst(CONSTLIT("Adventure %x"), Record.GetAdventureUNID());
+		pIcon = NULL;
+		}
 
 	//	Start with a sequencer
 
@@ -161,8 +175,6 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 
 	//	Create the background body
 
-	int cyBody = cyHeight - TITLE_BAR_HEIGHT;
-	
 	IAnimatron *pIconArea = new CAniRect;
 	pIconArea->SetPropertyVector(PROP_POSITION, CVector(0, TITLE_BAR_HEIGHT));
 	pIconArea->SetPropertyVector(PROP_SCALE, CVector(ICON_AREA_WIDTH, cyBody));
@@ -186,12 +198,6 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	pRoot->AddTrack(pScoreArea, 0);
 
 	//	Adventure icon
-
-	CG16bitImage *pIcon;
-	if (pAdventure)
-		pAdventure->CreateIcon(ICON_AREA_WIDTH, cyBody, &pIcon);
-	else
-		pIcon = NULL;
 
 	if (pIcon)
 		{

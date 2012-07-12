@@ -88,7 +88,7 @@ ICCItem *CCPrimitive::Execute (CEvalContext *pCtx, ICCItem *pArgs)
 
 		CString sError = strPatternSubst(CONSTLIT("Exception in %s; arg = %s"), m_sName, sArgs);
 		pResult = pCtx->pCC->CreateError(sError, pEvalArgs);
-		kernelDebugLogMessage(sError.GetASCIIZPointer());
+		kernelDebugLogMessage(sError);
 		}
 
 	//	Done

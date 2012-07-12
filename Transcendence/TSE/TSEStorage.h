@@ -18,6 +18,7 @@ class CGameFile
 		CGameFile (void);
 		~CGameFile (void);
 
+		ALERROR ClearRegistered (void);
 		void Close (void);
 		ALERROR Create (const CString &sFilename, const CString &sUsername);
 		static CString GenerateFilename (const CString &sName);
@@ -41,7 +42,7 @@ class CGameFile
 		ALERROR Open (const CString &sFilename);
 
 		ALERROR LoadGameStats (CGameStats *retStats);
-		ALERROR LoadSystem (DWORD dwUNID, CSystem **retpSystem, DWORD dwObjID = OBJID_NULL, CSpaceObject **retpObj = NULL, CSpaceObject *pPlayerShip = NULL);
+		ALERROR LoadSystem (DWORD dwUNID, CSystem **retpSystem, CString *retsError, DWORD dwObjID = OBJID_NULL, CSpaceObject **retpObj = NULL, CSpaceObject *pPlayerShip = NULL);
 		ALERROR LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *retdwPlayerID, CString *retsError);
 		ALERROR SaveGameStats (const CGameStats &Stats);
 		ALERROR SaveSystem (DWORD dwUNID, CSystem *pSystem, DWORD dwFlags = 0);
@@ -114,6 +115,7 @@ class CGameFile
 			char szEpitaph[EPITAPH_MAX];	//	Epitaph (if dead)
 			};
 
+		ALERROR ComposeLoadError (const CString &sError, CString *retsError);
 		ALERROR LoadGameHeader (SGameHeader *retHeader);
 		void LoadSystemMapFromStream (DWORD dwVersion, const CString &sStream);
 		ALERROR SaveGameHeader (SGameHeader &Header);

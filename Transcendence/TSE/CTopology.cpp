@@ -882,7 +882,7 @@ ALERROR CTopology::AddStargate (STopologyCreateCtx &Ctx, CTopologyNode *pNode, b
 				{
 				//	A duplicate name is not an error--just a warning
 				CString sWarning = strPatternSubst(CONSTLIT("Topology %s: Duplicate stargate name: %s."), pNode->GetID(), sGateName);
-				::kernelDebugLogMessage(sWarning.GetASCIIZPointer());
+				::kernelDebugLogMessage(sWarning);
 				}
 			}
 
@@ -925,7 +925,7 @@ ALERROR CTopology::AddStargate (STopologyCreateCtx &Ctx, CTopologyNode *pNode, b
 		//	A duplicate name is not an error--just a warning
 
 		CString sWarning = strPatternSubst(CONSTLIT("Topology %s: Duplicate stargate name: %s."), pNode->GetID(), sGateName);
-		::kernelDebugLogMessage(sWarning.GetASCIIZPointer());
+		::kernelDebugLogMessage(sWarning);
 		}
 
 	return NOERROR;
@@ -1609,13 +1609,12 @@ ALERROR CUniverse::InitTopology (CString *retsError)
 
 	for (i = 0; i < m_Design.GetExtensionCount(); i++)
 		{
-		SExtensionDesc *pExtension = m_Design.GetExtension(i);
-		if (pExtension->bEnabled 
-				&& pExtension->Topology.GetRootNodeCount() > 0
-				&& pExtension->iType != extAdventure)
+		CExtension *pExtension = m_Design.GetExtension(i);
+		if (pExtension->GetTopology().GetRootNodeCount() > 0
+				&& pExtension->GetType() != extAdventure)
 			{
 			STopologyCreateCtx Ctx;
-			Ctx.pTopologyTable = &pExtension->Topology;
+			Ctx.pTopologyTable = &pExtension->GetTopology();
 
 			if (error = m_Topology.AddTopology(Ctx))
 				{

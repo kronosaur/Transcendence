@@ -47,7 +47,7 @@ ICCItem *CFunctionContextWrapper::Execute (CEvalContext *pCtx, ICCItem *pArgs)
 	//	Set some context before we execute
 
 	CCodeChainCtx *pTransCtx = (CCodeChainCtx *)pCtx->pExternalCtx;
-	SExtensionDesc *pOldExtension = pTransCtx->GetExtension();
+	CExtension *pOldExtension = pTransCtx->GetExtension();
 	pTransCtx->SetExtension(m_pExtension);
 
 	//	Execute

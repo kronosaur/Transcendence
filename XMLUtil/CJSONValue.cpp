@@ -465,6 +465,9 @@ int CJSONValue::GetCount (void) const
 	{
 	switch (m_iType)
 		{
+		case typeNull:
+			return 0;
+
 		case typeArray:
 			{
 			ArrayType *pArray = (ArrayType *)m_pValue;

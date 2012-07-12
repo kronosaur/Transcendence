@@ -60,6 +60,9 @@ typedef DWORD ALERROR;
 #define ERR_NOTFOUND							5	//	Entry not found
 #define ERR_FILEOPEN							6	//	Unable to open file
 #define ERR_CLASSNOTFOUND						7	//	Constructor for class not found
+#define ERR_OUTOFDATE							8	//	Not latest version
+#define ERR_MORE								9	//	More needed
+#define ERR_WIN32_EXCEPTION						10	//	Win32 exception
 
 #define ERR_MODULE						0x00010000	//	First module error message (see GlobalErr.h)
 #define ERR_APPL						0x01000000	//	First application error message
@@ -72,10 +75,10 @@ inline ALERROR ErrorCode (ALERROR error) { return error & ~ERR_FLAG_DISPLAYED; }
 class CException
 	{
 	public:
-		CException (int iCode) : m_iCode(iCode) { }
+		CException (ALERROR error) : m_error(error) { }
 
 	private:
-		int m_iCode;
+		int m_error;
 	};
 
 //	Miscellaneous macros
@@ -604,6 +607,7 @@ class CString : public CObject
 
 		CString (const CString &pString);
 		CString &operator= (const CString &pString);
+		inline operator LPSTR () const { return GetASCIIZPointer(); }
 
 		char *GetASCIIZPointer (void) const;
 		ALERROR Append (const CString &sString);
@@ -1060,6 +1064,8 @@ class CFileWriteStream : public CObject, public IWriteStream
 		CFileWriteStream (const CString &sFilename, BOOL bUnique = FALSE);
 		virtual ~CFileWriteStream (void);
 
+		ALERROR Open (void);
+
 		//	IWriteStream virtuals
 
 		virtual ALERROR Close (void);
@@ -1289,6 +1295,7 @@ class ILog
 		virtual ALERROR Close (void) = 0;
 		virtual ALERROR Create (BOOL bAppend) = 0;
 		virtual void LogOutput (DWORD dwFlags, char *pszLine, ...) = 0;
+		virtual void LogOutput (DWORD dwFlags, const CString &sLine) = 0;
 	};
 
 class CTextFileLog : public CObject, public ILog
@@ -1296,7 +1303,10 @@ class CTextFileLog : public CObject, public ILog
 	public:
 		CTextFileLog (void);
 		CTextFileLog (const CString &sFilename);
+
+		CString GetSessionLog (void);
 		void SetFilename (const CString &sFilename);
+		void SetSessionStart (void);
 		virtual ~CTextFileLog (void);
 
 		//	ILog virtuals
@@ -1304,10 +1314,13 @@ class CTextFileLog : public CObject, public ILog
 		virtual ALERROR Close (void);
 		virtual ALERROR Create (BOOL bAppend);
 		virtual void LogOutput (DWORD dwFlags, char *pszLine, ...);
+		virtual void LogOutput (DWORD dwFlags, const CString &sLine);
 
 	private:
 		HANDLE m_hFile;
 		CString m_sFilename;
+
+		DWORD m_dwSessionStart;				//	Offset to file at start of session
 	};
 
 //	Registry classes
@@ -1340,6 +1353,7 @@ extern char g_LowerCaseAbsoluteTable[256];
 void kernelCleanUp (void);
 void kernelClearDebugLog (void);
 void kernelDebugLogMessage (char *pszLine, ...);
+CString kernelGetSessionDebugLog (void);
 
 #define KERNEL_FLAG_INTERNETS					0x00000001
 BOOL kernelInit (DWORD dwFlags = 0);
@@ -1438,13 +1452,17 @@ struct SFileVersionInfo
 	ULONG64 dwProductVersion;
 	};
 
+bool fileDelete (const CString &sFilespec);
+
 const DWORD FFL_FLAG_DIRECTORIES_ONLY =		0x00000001;
 const DWORD FFL_FLAG_RELATIVE_FILESPEC =	0x00000002;
 const DWORD FFL_FLAG_RECURSIVE =			0x00000004;
 bool fileGetFileList (const CString &sRoot, const CString &sPath, const CString &sSearch, DWORD dwFlags, TArray<CString> *retFiles);
+
 CTimeDate fileGetModifiedTime (const CString &sFilespec);
 DWORD fileGetProductVersion (void);
 ALERROR fileGetVersionInfo (const CString &sFilename, SFileVersionInfo *retInfo);
+bool fileMove (const CString &sSourceFilespec, const CString &sDestFilespec);
 
 CString pathAddComponent (const CString &sPath, const CString &sComponent);
 CString pathAddExtensionIfNecessary (const CString &sPath, const CString &sExtension);
@@ -1542,5 +1560,15 @@ template<class KEY> int KeyCompare (const KEY &Key1, const KEY &Key2)
 	else
 		return 0;
 	}
+
+//	The following macro "NoEmptyFile()" can be put into a file 
+//	in order suppress the MS Visual C++ Linker warning 4221 
+// 
+//	warning LNK4221: no public symbols found; archive member will be inaccessible 
+// 
+//	Thanks to: http://stackoverflow.com/users/14904/adisak
+//	See: http://stackoverflow.com/questions/1822887/what-is-the-best-way-to-eliminate-ms-visual-c-linker-warning-warning-lnk422
+ 
+#define NoEmptyFile()   namespace { char NoEmptyFileDummy##__LINE__; } 
 
 #endif

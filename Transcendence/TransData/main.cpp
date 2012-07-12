@@ -49,8 +49,13 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
+#define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
+#define TYPE_ISLANDS_SWITCH					CONSTLIT("typeIslands")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
 #define WORD_LIST_SWITCH					CONSTLIT("wordlist")
+
+#define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
+#define GAME_FILE_SWITCH					CONSTLIT("gameFile")
 
 class CHost : public CUniverse::IHost
 	{
@@ -121,7 +126,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	if (bLogo)
 		{
-		printf("TransData v2.5\n");
+		printf("TransData v2.6\n");
 		printf("Copyright (c) 2001-2012 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 		}
 
@@ -171,12 +176,34 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		::kernelSetDebugLog(NULL);
 		return;
 		}
+	else if (pCmdLine->GetAttributeBool(CLEAR_REGISTERED_SWITCH))
+		{
+		const CString sSaveFile = pCmdLine->GetAttribute(GAME_FILE_SWITCH);
+		
+		CGameFile Game;
+		if (error = Game.Open(sSaveFile))
+			{
+			printf("ERROR: Can't open %s.\n", (char *)sSaveFile);
+			::kernelSetDebugLog(NULL);
+			return;
+			}
+
+		if (error = Game.ClearRegistered())
+			{
+			printf("ERROR: Unable to clear registered bit.\n");
+			::kernelSetDebugLog(NULL);
+			return;
+			}
+
+		::kernelSetDebugLog(NULL);
+		return;
+		}
 
 	//	Figure out what adventure we need
 
 	DWORD dwAdventureUNID;
 	if (!pCmdLine->FindAttributeInteger(ADVENTURE_SWITCH, (int *)&dwAdventureUNID))
-		dwAdventureUNID = DEFAULT_ADVENTURE_UNID;
+		dwAdventureUNID = DEFAULT_ADVENTURE_EXTENSION_UNID;
 
 	//	See if we need to load images
 
@@ -207,17 +234,14 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	CUniverse Universe;
 	Universe.SetHost(&Host);
 	CString sError;
-	if (error = Universe.Init(sDataFile, &sError, dwInitFlags))
-		{
-		printf("\n%s\n", sError.GetASCIIZPointer());
-		::kernelSetDebugLog(NULL);
-		return;
-		}
 
-	if (pCmdLine->GetAttributeBool(DEBUG_SWITCH))
-		Universe.SetDebugMode();
+	CUniverse::SInitDesc Ctx;
+	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
+	Ctx.dwAdventure = dwAdventureUNID;
+	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
+	Ctx.bDefaultExtensions = true;
 
-	if (error = Universe.InitAdventure(dwAdventureUNID, NULL, &sError, dwInitFlags))
+	if (error = Universe.Init(Ctx, &sError))
 		{
 		printf("\n%s\n", sError.GetASCIIZPointer());
 		::kernelSetDebugLog(NULL);
@@ -302,6 +326,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		PerformanceTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
 		RunEncounterSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TYPE_DEPENDENCIES_SWITCH))
+		GenerateTypeDependencies(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TYPE_ISLANDS_SWITCH))
+		GenerateTypeIslands(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
 		HexarcTest(Universe, pCmdLine);
 	else
@@ -391,7 +419,6 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	g_pUniverse->UpdateExtended();
 	g_pUniverse->GarbageCollectLibraryBitmaps();
-	g_pUniverse->LoadLibraryBitmaps();
 
 	//	If we have a command, invoke it
 

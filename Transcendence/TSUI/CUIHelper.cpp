@@ -209,7 +209,7 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service
 
 	CString sUsername;
 	WORD wUsernameColor;
-	if (Service.HasCapability(ICIService::getUserProfile))
+	if (Service.HasCapability(ICIService::canGetUserProfile))
 		{
 		sUsername = Service.GetUsername();
 		wUsernameColor = VI.GetColor(colorTextDialogInput);

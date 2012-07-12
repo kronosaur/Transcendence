@@ -88,6 +88,11 @@ void CParticleArray::AddParticle (const CVector &vPos, const CVector &vVel, int 
 	if (m_iCount == 0)
 		return;
 
+	//	Infinite loop without this.
+
+	if (m_iLastAdded == -1)
+		m_iLastAdded = m_iCount - 1;
+
 	//	Look for an open slot
 
 	int iSlot = (m_iLastAdded + 1) % m_iCount;

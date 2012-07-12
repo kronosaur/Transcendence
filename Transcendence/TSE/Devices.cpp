@@ -20,12 +20,28 @@
 
 #define GET_OVERLAY_TYPE_EVENT					CONSTLIT("GetOverlayType")
 
+#define LINKED_FIRE_ALWAYS						CONSTLIT("always")
+#define LINKED_FIRE_ENEMY						CONSTLIT("whenInFireArc")
+#define LINKED_FIRE_TARGET						CONSTLIT("targetInRange")
+
 static char *CACHED_EVENTS[CDeviceClass::evtCount] =
 	{
 		"GetOverlayType",
 	};
 
 //	CDeviceClass
+
+void CDeviceClass::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this class.
+
+	{
+	retTypesUsed->SetAt(m_pOverlayType.GetUNID(), true);
+
+	OnAddTypesUsed(retTypesUsed);
+	}
 
 ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 
@@ -79,13 +95,15 @@ CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 		return GetOverlayType();
 	}
 
-void CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType)
+ALERROR CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType)
 
 //	InitDeviceFromXML
 //
 //	Initializes the device class base
 
 	{
+	ALERROR error;
+
 	m_pItemType = pType;
 
 	//	Number of slots that the device takes up (if the attribute is missing
@@ -99,11 +117,14 @@ void CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, C
 
 	//	Overlay
 
-	m_pOverlayType.LoadUNID(Ctx, pDesc->GetAttribute(OVERLAY_TYPE_ATTRIB));
+	if (error = m_pOverlayType.LoadUNID(Ctx, pDesc->GetAttribute(OVERLAY_TYPE_ATTRIB)))
+		return error;
 
 	//	Is this device external?
 
 	m_fExternal = pDesc->GetAttributeBool(EXTERNAL_ATTRIB);
+
+	return NOERROR;
 	}
 
 bool CDeviceClass::FindAmmoDataField (CItemType *pItem, const CString &sField, CString *retsValue)
@@ -130,6 +151,30 @@ bool CDeviceClass::FindAmmoDataField (CItemType *pItem, const CString &sField, C
 		}
 
 	return false;
+	}
+
+CString CDeviceClass::GetLinkedFireOptionString (DWORD dwOptions)
+
+//	GetLinkedFireOptionString
+//
+//	Returns the string representing the given (single) option
+
+	{
+	switch ((LinkedFireOptions)dwOptions)
+		{
+		case lkfAlways:
+			return LINKED_FIRE_ALWAYS;
+
+		case lkfTargetInRange:
+			return LINKED_FIRE_TARGET;
+
+		case lkfEnemyInRange:
+			return LINKED_FIRE_ENEMY;
+
+		default:
+			ASSERT(false);
+			return NULL_STR;
+		}
 	}
 
 CString CDeviceClass::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags)
@@ -176,6 +221,34 @@ CString CDeviceClass::GetReferencePower (CItemCtx &Ctx)
 		return strPatternSubst(CONSTLIT("%d.%d %s"), iMW, iMWDecimal, sUnit);
 	}
 
+ALERROR CDeviceClass::ParseLinkedFireOptions (SDesignLoadCtx &Ctx, const CString &sDesc, DWORD *retdwOptions)
+
+//	ParseLinkedFireOptions
+//
+//	Parses a linked-fire options string.
+
+	{
+	DWORD dwOptions = 0;
+
+	if (sDesc.IsBlank())
+		;
+	else if (strEquals(sDesc, LINKED_FIRE_ALWAYS))
+		dwOptions |= CDeviceClass::lkfAlways;
+	else if (strEquals(sDesc, LINKED_FIRE_TARGET))
+		dwOptions |= CDeviceClass::lkfTargetInRange;
+	else if (strEquals(sDesc, LINKED_FIRE_ENEMY))
+		dwOptions |= CDeviceClass::lkfEnemyInRange;
+	else
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Invalid linkedFire option: %s"), sDesc);
+		return ERR_FAIL;
+		}
+
+	*retdwOptions = dwOptions;
+
+	return NOERROR;
+	}
+
 //	CInstalledDevice class
 
 CInstalledDevice::CInstalledDevice (void) : 
@@ -193,14 +266,17 @@ CInstalledDevice::CInstalledDevice (void) :
 		m_iFireAngle(0),
 		m_iBonus(0),
 		m_iTemperature(0),
-		m_iCharges(0),
 		m_iActivateDelayAdj(100),
 
 		m_fOmniDirectional(false),
 		m_fSecondaryWeapon(false),
 		m_fTriggered(false),
 		m_fLastActivateSuccessful(false),
-		m_f3DPosition(false)
+		m_f3DPosition(false),
+
+		m_fLinkedFireAlways(false),
+		m_fLinkedFireTarget(false),
+		m_fLinkedFireEnemy(false)
 	{
 	}
 
@@ -292,6 +368,25 @@ CString CInstalledDevice::GetEnhancedDesc (CSpaceObject *pSource, const CItem *p
 		return NULL_STR;
 	}
 
+DWORD CInstalledDevice::GetLinkedFireOptions (void) const
+
+//	GetLinkedFireOptions
+//
+//	Returns linked-fire options for the device slot.
+
+	{
+	if (m_fLinkedFireAlways)
+		return CDeviceClass::lkfAlways;
+	else if (m_fLinkedFireTarget)
+		return CDeviceClass::lkfTargetInRange;
+	else if (m_fLinkedFireEnemy)
+		return CDeviceClass::lkfEnemyInRange;
+	else if (m_fSecondaryWeapon)
+		return CDeviceClass::lkfEnemyInRange;
+	else
+		return 0;
+	}
+
 CVector CInstalledDevice::GetPos (CSpaceObject *pSource)
 
 //	GetPos
@@ -326,36 +421,38 @@ void CInstalledDevice::InitFromDesc (const SDeviceDesc &Desc)
 
 	{
 	m_fOmniDirectional = Desc.bOmnidirectional;
-	m_fSecondaryWeapon = Desc.bSecondary;
-	m_f3DPosition = Desc.b3DPosition;
+	m_iMinFireArc = Desc.iMinFireArc;
+	m_iMaxFireArc = Desc.iMaxFireArc;
 
 	m_iPosAngle = Desc.iPosAngle;
 	m_iPosRadius = Desc.iPosRadius;
+	m_f3DPosition = Desc.b3DPosition;
 	m_iPosZ = Desc.iPosZ;
-	m_iMinFireArc = Desc.iMinFireArc;
-	m_iMaxFireArc = Desc.iMaxFireArc;
+
+	SetLinkedFireOptions(Desc.dwLinkedFireOptions);
+
+	m_fSecondaryWeapon = Desc.bSecondary;
 	}
 
-void CInstalledDevice::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CInstalledDevice::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	InitFromXML
 //
 //	Initializes each device slot from an XML structure
 
 	{
-	m_fOmniDirectional = pDesc->GetAttributeBool(OMNIDIRECTIONAL_ATTRIB);
-	m_fSecondaryWeapon = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
+	ALERROR error;
 
-	m_iPosAngle = pDesc->GetAttributeInteger(POS_ANGLE_ATTRIB);
-	m_iPosRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
-	m_iMinFireArc = pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
-	m_iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
+	if (error = m_pClass.LoadUNID(Ctx, pDesc->GetAttribute(DEVICE_ID_ATTRIB)))
+		return error;
 
-	int iPosZ;
-	if (m_f3DPosition = pDesc->FindAttributeInteger(POS_Z_ATTRIB, &iPosZ))
-		m_iPosZ = iPosZ;
+	SDeviceDesc DeviceDesc;
+	if (error = IDeviceGenerator::InitDeviceDescFromXML(Ctx, pDesc, &DeviceDesc))
+		return error;
 
-	m_pClass.LoadUNID(Ctx, pDesc->GetAttribute(DEVICE_ID_ATTRIB));
+	InitFromDesc(DeviceDesc);
+
+	return NOERROR;
 	}
 
 void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemList, int iDeviceSlot, bool bInCreate)
@@ -379,11 +476,6 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 	m_fTriggered = false;
 	m_fRegenerating = false;
 	m_fLastActivateSuccessful = false;
-
-	//	Cache data from the item in the device structure
-	//	so that we don't have to lookup the item.
-
-	m_iCharges = Item.GetCharges();
 
 	//	Call the class
 
@@ -425,6 +517,8 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 		m_iMinFireArc = Desc.iMinFireArc;
 		m_iMaxFireArc = Desc.iMaxFireArc;
 
+		SetLinkedFireOptions(Desc.dwLinkedFireOptions);
+
 		m_fSecondaryWeapon = Desc.bSecondary;
 		}
 
@@ -445,8 +539,8 @@ bool CInstalledDevice::IsLinkedFire (CItemCtx &Ctx, ItemCategories iTriggerCat) 
 	DWORD dwOptions = GetClass()->GetLinkedFireOptions(Ctx);
 	if (dwOptions == 0)
 		return false;
-
-	return (GetClass()->GetCategory() == iTriggerCat);
+	else
+		return (GetClass()->GetCategory() == iTriggerCat);
 	}
 
 ALERROR CInstalledDevice::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
@@ -477,7 +571,7 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = m_iBonus; hi = m_iTemperature
-//	DWORD		device: low = m_iCharges; hi = m_iDeviceSlot
+//	DWORD		device: low = (spare); hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelayAdj
 //	DWORD		device: flags
 
@@ -509,17 +603,21 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iPosAngle = (int)LOWORD(dwLoad);
 	m_iPosRadius = (int)HIWORD(dwLoad);
+
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iMinFireArc = (int)LOWORD(dwLoad);
 	m_iMaxFireArc = (int)HIWORD(dwLoad);
+
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iTimeUntilReady = (int)LOWORD(dwLoad);
 	m_iFireAngle = (int)HIWORD(dwLoad);
+
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iBonus = (int)LOWORD(dwLoad);
 	m_iTemperature = (int)HIWORD(dwLoad);
+
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_iCharges = (int)LOWORD(dwLoad);
+	//	LOWORD(dwLoad) unused
 
 	if (Ctx.dwVersion >= 29)
 		m_iDeviceSlot = (int)HIWORD(dwLoad);
@@ -559,6 +657,10 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 	m_fTriggered =			((dwLoad & 0x00000200) ? true : false);
 	m_fRegenerating =		((dwLoad & 0x00000400) ? true : false);
 	m_fLastActivateSuccessful = ((dwLoad & 0x00000800) ? true : false);
+
+	m_fLinkedFireAlways =	((dwLoad & 0x00001000) ? true : false);
+	m_fLinkedFireTarget =	((dwLoad & 0x00002000) ? true : false);
+	m_fLinkedFireEnemy =	((dwLoad & 0x00004000) ? true : false);
 
 	m_fExternal = m_pClass->IsExternal();
 
@@ -606,6 +708,24 @@ int CInstalledDevice::IncCharges (CSpaceObject *pSource, int iChange)
 	pShip->RechargeItem(ItemList, iChange);
 
 	return ItemList.GetItemAtCursor().GetCharges();
+	}
+
+void CInstalledDevice::SetLinkedFireOptions (DWORD dwOptions)
+
+//	SetLinkedFireOptions
+//
+//	Sets linked fire options
+
+	{
+	m_fLinkedFireAlways = false;
+	m_fLinkedFireTarget = false;
+	m_fLinkedFireEnemy = false;
+	if (dwOptions & CDeviceClass::lkfAlways)
+		m_fLinkedFireAlways = true;
+	else if (dwOptions & CDeviceClass::lkfTargetInRange)
+		m_fLinkedFireTarget = true;
+	else if (dwOptions & CDeviceClass::lkfEnemyInRange)
+		m_fLinkedFireEnemy = true;
 	}
 
 void CInstalledDevice::Uninstall (CSpaceObject *pObj, CItemListManipulator &ItemList)
@@ -708,7 +828,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = m_iBonus; hi = m_iTemperature
-//	DWORD		device: low = m_iCharges; hi = m_iDeviceSlot
+//	DWORD		device: low = unused; hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelayAdj; hi = m_iPosZ
 //	DWORD		device: flags
 
@@ -725,14 +845,19 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 
 	dwSave = MAKELONG(m_iPosAngle, m_iPosRadius);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	
 	dwSave = MAKELONG(m_iMinFireArc, m_iMaxFireArc);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	
 	dwSave = MAKELONG(m_iTimeUntilReady, m_iFireAngle);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	
 	dwSave = MAKELONG(m_iBonus, m_iTemperature);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
-	dwSave = MAKELONG(m_iCharges, m_iDeviceSlot);
+
+	dwSave = MAKELONG(0, m_iDeviceSlot);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	dwSave = MAKELONG(m_iActivateDelayAdj, m_iPosZ);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
@@ -749,5 +874,8 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fTriggered ?			0x00000200 : 0);
 	dwSave |= (m_fRegenerating ?		0x00000400 : 0);
 	dwSave |= (m_fLastActivateSuccessful ? 0x00000800 : 0);
+	dwSave |= (m_fLinkedFireAlways ?	0x00001000 : 0);
+	dwSave |= (m_fLinkedFireTarget ?	0x00002000 : 0);
+	dwSave |= (m_fLinkedFireEnemy ?		0x00004000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

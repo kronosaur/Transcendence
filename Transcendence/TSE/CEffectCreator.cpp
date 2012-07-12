@@ -328,7 +328,7 @@ IEffectPainter *CEffectCreator::CreatePainterFromStream (SLoadCtx &Ctx, bool bNu
 		if (pCreator == NULL)
 			{
 			if (!sUNID.IsBlank())
-				kernelDebugLogMessage("Invalid painter creator: %s", sUNID.GetASCIIZPointer());
+				kernelDebugLogMessage("Invalid painter creator: %s", sUNID);
 			return NULL;
 			}
 		}
@@ -357,6 +357,10 @@ IEffectPainter *CEffectCreator::CreatePainterFromStream (SLoadCtx &Ctx, bool bNu
 
 	//	Let the creator create the object
 
+	ELoadStates iOldLoadState = Ctx.iLoadState;
+	Ctx.iLoadState = loadStateEffect;
+	Ctx.sEffectUNID = pCreator->GetUNIDString();
+
 	IEffectPainter *pPainter = pCreator->CreatePainter();
 
 	//	Load it
@@ -365,6 +369,7 @@ IEffectPainter *CEffectCreator::CreatePainterFromStream (SLoadCtx &Ctx, bool bNu
 
 	//	Done
 
+	Ctx.iLoadState = iOldLoadState;
 	return pPainter;
 	}
 
@@ -713,7 +718,7 @@ ALERROR IEffectPainter::ValidateClass (SLoadCtx &Ctx, const CString &sOriginalCl
 				CEffectCreator *pOriginalCreator;
 				if (CEffectCreator::CreateFromTag(sClass, &pOriginalCreator) != NOERROR)
 					{
-					kernelDebugLogMessage("Unable to find original effect creator: %s", sClass.GetASCIIZPointer());
+					kernelDebugLogMessage("Unable to find original effect creator: %s", sClass);
 					return ERR_FAIL;
 					}
 

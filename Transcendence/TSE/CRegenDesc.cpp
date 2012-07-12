@@ -7,9 +7,8 @@
 #define DECAY_RATE_ATTRIB						CONSTLIT("decayRate")
 #define REPAIR_RATE_ATTRIB						CONSTLIT("repairRate")
 
-const int TICKS_PER_CYCLE =						10;
 const int CYCLES_PER_ERA =						360;
-const int STANDARD_REGEN_PERIOD =				180;
+const int STANDARD_REGEN_PERIOD =				180;	//	In ticks
 
 CRegenDesc::CRegenDesc (int iHPPerEra)
 
@@ -35,7 +34,17 @@ void CRegenDesc::Add (const CRegenDesc &Desc)
 	m_bEmpty = (m_iHPPerCycle == 0 && m_iHPPerEraRemainder == 0);
 	}
 
-int CRegenDesc::GetHPPerEra (void)
+double CRegenDesc::GetHPPer180 (int iTicksPerCycle) const
+
+//	GetHPPer180
+//
+//	Returns the number of HP per 180 ticks
+
+	{
+	return 180.0 * GetHPPerEra() / (CYCLES_PER_ERA * iTicksPerCycle);
+	}
+
+int CRegenDesc::GetHPPerEra (void) const
 
 //	GetHPPerEra
 //
@@ -45,7 +54,36 @@ int CRegenDesc::GetHPPerEra (void)
 	return (m_iHPPerCycle * CYCLES_PER_ERA) + m_iHPPerEraRemainder;
 	}
 
-int CRegenDesc::GetRegen (int iTick)
+CString CRegenDesc::GetReferenceRate (const CString &sUnits, int iTicksPerCycle) const
+
+//	GetReferenceRate
+//
+//	Returns a rate in the following forms:
+//
+//	<0.1 hp/sec
+//	1.0 hp/sec
+//	none
+//
+//	(Where sUnits = "hp/sec")
+
+	{
+	if (IsEmpty())
+		return CONSTLIT("none");
+	else
+		{
+		double rSecondsPerEra = CYCLES_PER_ERA * iTicksPerCycle / g_TicksPerSecond;
+		int iRate10 = (int)(10.0 * GetHPPerEra() / rSecondsPerEra);
+
+		if (iRate10 == 0)
+			return strPatternSubst(CONSTLIT("<0.1 %s"), sUnits);
+		else if ((iRate10 % 10) == 0)
+			return strPatternSubst(CONSTLIT("%d %s"), iRate10 / 10, sUnits);
+		else
+			return strPatternSubst(CONSTLIT("%d.%d %s"), iRate10 / 10, iRate10 % 10, sUnits);
+		}
+	}
+
+int CRegenDesc::GetRegen (int iTick, int iTicksPerCycle)
 
 //	GetRegen
 //
@@ -56,7 +94,7 @@ int CRegenDesc::GetRegen (int iTick)
 	if (m_bEmpty)
 		return 0;
 
-	int iCycleNo = (iTick / TICKS_PER_CYCLE) % CYCLES_PER_ERA;
+	int iCycleNo = (iTick / iTicksPerCycle) % CYCLES_PER_ERA;
 
 	if (m_iHPPerEraRemainder)
 		{
@@ -90,7 +128,7 @@ void CRegenDesc::Init (int iHPPerEra)
 	m_bEmpty = (m_iHPPerCycle == 0 && m_iHPPerEraRemainder == 0);
 	}
 
-ALERROR CRegenDesc::InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen)
+ALERROR CRegenDesc::InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle)
 
 //	InitFromRegenString
 //
@@ -98,13 +136,13 @@ ALERROR CRegenDesc::InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRe
 
 	{
 	Metric rRegen = strToDouble(sRegen, 0.0);
-	int iHPPerEra = (int)((rRegen * (CYCLES_PER_ERA * TICKS_PER_CYCLE) / STANDARD_REGEN_PERIOD) + 0.5);
+	int iHPPerEra = (int)((rRegen * (CYCLES_PER_ERA * iTicksPerCycle) / STANDARD_REGEN_PERIOD) + 0.5);
 	Init(iHPPerEra);
 
 	return NOERROR;
 	}
 
-ALERROR CRegenDesc::InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate)
+ALERROR CRegenDesc::InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate, int iTicksPerCycle)
 
 //	InitFromRepairRateString
 //
@@ -119,10 +157,40 @@ ALERROR CRegenDesc::InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString
 		}
 
 	int iRegenHP = 1;
-	int iPeriodsPerEra = (CYCLES_PER_ERA * TICKS_PER_CYCLE) / iRegenRate;
-	int iPeriodsRemainder = (CYCLES_PER_ERA * TICKS_PER_CYCLE) % iRegenRate;
+	int iPeriodsPerEra = (CYCLES_PER_ERA * iTicksPerCycle) / iRegenRate;
+	int iPeriodsRemainder = (CYCLES_PER_ERA * iTicksPerCycle) % iRegenRate;
 
 	int iHPPerEra = iPeriodsPerEra * iRegenHP + (iPeriodsRemainder * iRegenHP / iRegenRate);
+	Init(iHPPerEra);
+
+	return NOERROR;
+	}
+
+ALERROR CRegenDesc::InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime, int iRegenHP, int iTicksPerCycle)
+
+//	InitFromRegenTimeAndHP
+//
+//	iRegenTime is the time between regen events (in game seconds)
+//	iRegenHP is the number of HP regenerated per event.
+
+	{
+	if (iRegenTime < 0 || iRegenHP < 0)
+		{
+		Ctx.sError = CONSTLIT("RegenTime and RegenHP cannot be less than 0.");
+		return ERR_FAIL;
+		}
+	else if (iRegenTime == 0 || iRegenHP == 0)
+		{
+		Init(0);
+		return NOERROR;
+		}
+
+	int iTicksPerEra = CYCLES_PER_ERA * iTicksPerCycle;
+	int iTicksPerEvent10 = (int)(10 * iRegenTime / STD_SECONDS_PER_UPDATE);
+
+	double rEventsPerEra = 10.0 * iTicksPerEra / iTicksPerEvent10;
+	int iHPPerEra = (int)(rEventsPerEra * iRegenHP);
+
 	Init(iHPPerEra);
 
 	return NOERROR;
@@ -132,7 +200,8 @@ ALERROR CRegenDesc::InitFromXML (SDesignLoadCtx &Ctx,
 								 CXMLElement *pDesc, 
 								 const CString &sRegenAttrib, 
 								 const CString &sRegenRate,
-								 const CString &sRegenHP)
+								 const CString &sRegenHP,
+								 int iTicksPerCycle)
 
 //	InitFromXML
 //
@@ -148,7 +217,7 @@ ALERROR CRegenDesc::InitFromXML (SDesignLoadCtx &Ctx,
 		{
 		Metric rRegen = strToDouble(sRegen, 0.0);
 
-		iHPPerEra = (int)((rRegen * (CYCLES_PER_ERA * TICKS_PER_CYCLE) / STANDARD_REGEN_PERIOD) + 0.5);
+		iHPPerEra = (int)((rRegen * (CYCLES_PER_ERA * iTicksPerCycle) / STANDARD_REGEN_PERIOD) + 0.5);
 		}
 	else if (!sRegenRate.IsBlank())
 		{
@@ -161,8 +230,8 @@ ALERROR CRegenDesc::InitFromXML (SDesignLoadCtx &Ctx,
 
 		int iRegenHP = (sRegenHP.IsBlank() ? 1 : pDesc->GetAttributeIntegerBounded(sRegenHP, 0, -1, 0));
 
-		int iPeriodsPerEra = (CYCLES_PER_ERA * TICKS_PER_CYCLE) / iRegenRate;
-		int iPeriodsRemainder = (CYCLES_PER_ERA * TICKS_PER_CYCLE) % iRegenRate;
+		int iPeriodsPerEra = (CYCLES_PER_ERA * iTicksPerCycle) / iRegenRate;
+		int iPeriodsRemainder = (CYCLES_PER_ERA * iTicksPerCycle) % iRegenRate;
 
 		iHPPerEra = iPeriodsPerEra * iRegenHP + (iPeriodsRemainder * iRegenHP / iRegenRate);
 		}

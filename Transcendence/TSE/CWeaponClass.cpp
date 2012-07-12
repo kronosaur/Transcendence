@@ -22,6 +22,7 @@
 #define IDLE_POWER_USE_ATTRIB			CONSTLIT("idlePowerUse")
 #define LAUNCHER_ATTRIB					CONSTLIT("launcher")
 #define LINKED_FIRE_ATTRIB				CONSTLIT("linkedFire")
+#define MASS_BONUS_PER_CHARGE_ATTRIB	CONSTLIT("massBonusPerCharge")
 #define MAX_FIRE_ARC_ATTRIB				CONSTLIT("maxFireArc")
 #define MIN_FIRE_ARC_ATTRIB				CONSTLIT("minFireArc")
 #define MULTI_TARGET_ATTRIB				CONSTLIT("multiTarget")
@@ -39,10 +40,6 @@
 
 #define COUNTER_TYPE_TEMPERATURE		CONSTLIT("temperature")
 #define COUNTER_TYPE_CAPACITOR			CONSTLIT("capacitor")
-
-#define LINKED_FIRE_ALWAYS				CONSTLIT("always")
-#define LINKED_FIRE_ENEMY				CONSTLIT("whenInFireArc")
-#define LINKED_FIRE_TARGET				CONSTLIT("targetInRange")
 
 #define ON_FIRE_WEAPON_EVENT			CONSTLIT("OnFireWeapon")
 
@@ -625,7 +622,15 @@ int CWeaponClass::CalcFireAngle (CItemCtx &ItemCtx, Metric rSpeed, CSpaceObject 
 			else
 				{
 				if (iFireAngle < iMin && iFireAngle > iMax)
-					iFireAngle = iMin;
+					{
+					int iToMax = iFireAngle - iMax;
+					int iToMin = iMin - iFireAngle;
+
+					if (iToMax > iToMin)
+						iFireAngle = iMin;
+					else
+						iFireAngle = iMax;
+					}
 				}
 			}
 
@@ -637,7 +642,7 @@ int CWeaponClass::CalcFireAngle (CItemCtx &ItemCtx, Metric rSpeed, CSpaceObject 
 		return iFireAngle;
 		}
 	else
-		return (pSource->GetRotation() + pDevice->GetRotation() + AngleMiddle(m_iMinFireArc, m_iMaxFireArc)) % 360;
+		return GetDefaultFireAngle(pDevice, pSource);
 	}
 
 int CWeaponClass::CalcFireSolution (CInstalledDevice *pDevice, CSpaceObject *pSource, CSpaceObject *pTarget)
@@ -739,14 +744,14 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 	if (pWeapon == NULL)
 		return ERR_MEMORY;
 
-	pWeapon->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pWeapon->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	pWeapon->m_iFireRateSecs = pDesc->GetAttributeInteger(CONSTLIT(g_FireRateAttrib));
 	pWeapon->m_iFireRate = (int)((pWeapon->m_iFireRateSecs / STD_SECONDS_PER_UPDATE) + 0.5);
 	pWeapon->m_iPowerUse = pDesc->GetAttributeIntegerBounded(POWER_USE_ATTRIB, 0, -1, 0);
 	pWeapon->m_iIdlePowerUse = pDesc->GetAttributeIntegerBounded(IDLE_POWER_USE_ATTRIB, 0, -1, pWeapon->m_iPowerUse / 10);
 	pWeapon->m_iRecoil = pDesc->GetAttributeInteger(RECOIL_ATTRIB);
-	pWeapon->m_bCharges = pDesc->GetAttributeBool(CHARGES_ATTRIB);
 	pWeapon->m_iFailureChance = pDesc->GetAttributeInteger(FAILURE_CHANCE_ATTRIB);
 	pWeapon->m_iMinFireArc = pDesc->GetAttributeInteger(MIN_FIRE_ARC_ATTRIB);
 	pWeapon->m_iMaxFireArc = pDesc->GetAttributeInteger(MAX_FIRE_ARC_ATTRIB);
@@ -794,6 +799,11 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 			pWeapon->m_Configuration = ctSingle;
 		}
 
+	//	Charges
+
+	pWeapon->m_bCharges = pDesc->GetAttributeBool(CHARGES_ATTRIB);
+	pType->SetExtraMassPerCharge(pDesc->GetAttributeIntegerBounded(MASS_BONUS_PER_CHARGE_ATTRIB, 0, -1, 0));
+
 	//	Counter
 
 	sConfig = pDesc->GetAttribute(COUNTER_ATTRIB);
@@ -835,22 +845,14 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 
 	//	Linked fire options
 
-	pWeapon->m_dwLinkedFireOptions = 0;
 	CString sLinkedFire;
 	if (pDesc->FindAttribute(LINKED_FIRE_ATTRIB, &sLinkedFire))
 		{
-		if (strEquals(sLinkedFire, LINKED_FIRE_ALWAYS))
-			pWeapon->m_dwLinkedFireOptions |= lkfAlways;
-		else if (strEquals(sLinkedFire, LINKED_FIRE_TARGET))
-			pWeapon->m_dwLinkedFireOptions |= lkfTargetInRange;
-		else if (strEquals(sLinkedFire, LINKED_FIRE_ENEMY))
-			pWeapon->m_dwLinkedFireOptions |= lkfEnemyInRange;
-		else
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Invalid linkedFire option: %s"), sLinkedFire);
-			return ERR_FAIL;
-			}
+		if (error = ParseLinkedFireOptions(Ctx, sLinkedFire, &pWeapon->m_dwLinkedFireOptions))
+			return error;
 		}
+	else
+		pWeapon->m_dwLinkedFireOptions = 0;
 
 	//	Flags
 
@@ -1710,6 +1712,24 @@ Metric CWeaponClass::GetMaxEffectiveRange (CSpaceObject *pSource, CInstalledDevi
 		}
 	}
 
+DWORD CWeaponClass::GetLinkedFireOptions (CItemCtx &Ctx)
+
+//	GetLinkedFireOptions
+//
+//	Returns linked fire options for the weapon
+	
+	{
+	//	If the device has linked fire, then honor that.
+
+	DWORD dwOptions;
+	if (Ctx.GetDevice() && (dwOptions = Ctx.GetDevice()->GetLinkedFireOptions()))
+		return dwOptions;
+
+	//	Otherwise, take native linked fire setting from weapon.
+
+	return m_dwLinkedFireOptions; 
+	}
+
 int CWeaponClass::GetPowerRating (CItemCtx &Ctx)
 
 //	GetPowerRating
@@ -2451,6 +2471,19 @@ bool CWeaponClass::IsWeaponAligned (CSpaceObject *pShip,
 		return false;
 	}
 
+void CWeaponClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Adds types used by this class
+
+	{
+	int i;
+
+	for (i = 0; i < m_iShotVariants; i++)
+		m_pShotData[i].AddTypesUsed(retTypesUsed);
+	}
+
 ALERROR CWeaponClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 //	OnDesignLoadComplete
@@ -2498,6 +2531,19 @@ CEffectCreator *CWeaponClass::OnFindEffectCreator (const CString &sUNID)
 
 	CWeaponFireDesc *pDesc = GetVariant(iOrdinal);
 	return pDesc->FindEffectCreator(CString(pPos));
+	}
+
+void CWeaponClass::OnMarkImages (void)
+
+//	OnMarkImages
+//
+//	Load all images that we need
+
+	{
+	int i;
+
+	for (i = 0; i < m_iShotVariants; i++)
+		m_pShotData[i].MarkImages();
 	}
 
 bool CWeaponClass::RequiresItems (void)

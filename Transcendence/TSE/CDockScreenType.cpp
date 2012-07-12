@@ -201,8 +201,8 @@ void CDockScreenTypeRef::LoadUNID (SDesignLoadCtx &Ctx, const CString &sUNID)
 		char *pPos = sUNID.GetASCIIZPointer();
 		if (*pPos == '@')
 			{
-			WORD wLow = LOWORD(Ctx.pExtension->dwUNID) + (WORD)strParseIntOfBase(pPos+1, 16, 0);
-			m_sUNID = strFromInt(MAKELONG(wLow, HIWORD(Ctx.pExtension->dwUNID)));
+			WORD wLow = LOWORD(Ctx.pExtension->GetUNID()) + (WORD)strParseIntOfBase(pPos+1, 16, 0);
+			m_sUNID = strFromInt(MAKELONG(wLow, HIWORD(Ctx.pExtension->GetUNID())));
 			}
 		else
 			m_sUNID = sUNID;

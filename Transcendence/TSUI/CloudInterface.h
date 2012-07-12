@@ -30,16 +30,18 @@ class ICIService
 			{
 			autoLoginUser =				0x00000001,	//	Implies that we have cached username and credentials
 			cachedUser =				0x00000002,	//	We know the username, but may not have credentials
-			getUserProfile =			0x00000004,	//	Implies that we are signed in (we have an authToken)
+			canGetUserProfile =			0x00000004,	//	Implies that we are signed in (we have an authToken)
 			loginUser =					0x00000008,	//	We have the ability to sign in (always TRUE for Hexarc)
-			postGameStats =				0x00000010,	//	We can post game states
-			registerUser =				0x00000020, //	We have the ability to register (always TRUE for Hexarc)
-			postGameRecord =			0x00000040,	//	We can post a game record
-			userProfile =				0x00000080,	//	We can show user records (TRUE even if not signed in)
-			modExchange =				0x00000100,	//	We can show mod exchange (TRUE even if not signed in)
+			registerUser =				0x00000010, //	We have the ability to register (always TRUE for Hexarc)
+			canPostGameRecord =			0x00000020,	//	We can post a game record
+			userProfile =				0x00000040,	//	We can show user records (TRUE even if not signed in)
+			modExchange =				0x00000080,	//	We can show mod exchange (TRUE even if not signed in)
+			canLoadUserCollection =		0x00000100,	//	We can retrieve the user's collection
+			canDownloadExtension =		0x00000200,	//	We can download an extension from the multiverse
+			canPostCrashReport =		0x00000400,	//	We can post a crash report
 			};
 
-		ICIService (void) : m_bEnabled(false), m_bModified(false) { }
+		ICIService (CHumanInterface &HI) : m_HI(HI), m_bEnabled(false), m_bModified(false) { }
 
 		inline bool IsEnabled (void) { return m_bEnabled; }
 		inline bool IsModified (void) { return m_bModified; }
@@ -52,18 +54,24 @@ class ICIService
 		virtual ALERROR Housekeeping (ITaskProcessor *pProcessor) { return NOERROR; }
 		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified) { *retbModified = false; return NOERROR; }
 		virtual ALERROR InitPrivateData (void) { return NOERROR; }
+		virtual ALERROR LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL) { return NOERROR; }
-		virtual ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR ProcessDownloads (ITaskProcessor *pProcessor, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR ReadProfile (ITaskProcessor *pProcessor, CUserProfile *retProfile, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, const CString &sEmail, bool bAutoSignIn, CString *retsResult = NULL) { return NOERROR; }
+		virtual ALERROR RequestExtensionDownload (const CString &sFilePath, const CString &sFilespec) { return NOERROR; }
 		virtual ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL) { return NOERROR; }
 		virtual ALERROR WriteAsXML (IWriteStream *pOutput) { return NOERROR; }
 		virtual ALERROR WritePrivateData (void) { return NOERROR; }
 
 	protected:
+		void SendServiceError (const CString &sStatus);
+		void SendServiceStatus (const CString &sStatus);
 		inline void SetModified (bool bValue = true) { m_bModified = bValue; }
 
+		CHumanInterface &m_HI;
 		bool m_bEnabled;
 		bool m_bModified;
 	};
@@ -92,10 +100,13 @@ class CCloudService
 
 		ALERROR ChangePassword (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sOldPassword, const CString &sNewPassword, CString *retsResult = NULL);
 		ALERROR Housekeeping (ITaskProcessor *pProcessor);
+		ALERROR LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult = NULL);
+		ALERROR PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult = NULL);
 		ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL);
-		ALERROR PostGameStats (ITaskProcessor *pProcessor, const CGameStats &Stats, CString *retsResult = NULL);
+		ALERROR ProcessDownloads (ITaskProcessor *pProcessor, CString *retsResult = NULL);
 		ALERROR ReadProfile (ITaskProcessor *pProcessor, CUserProfile *retProfile, CString *retsResult = NULL);
 		ALERROR RegisterUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, const CString &sEmail, bool bAutoSignIn, CString *retsResult = NULL);
+		ALERROR RequestExtensionDownload (const CString &sFilePath, const CString &sFilespec);
 		ALERROR SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult = NULL);
 		ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL);
 
@@ -116,3 +127,4 @@ class CXelerusServiceFactory : public ICIServiceFactory
 	public:
 		virtual ICIService *Create (CHumanInterface &HI);
 	};
+

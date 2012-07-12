@@ -69,6 +69,9 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 
 #define ORDER_DOCKED							CONSTLIT("docked")
 
+#define PROPERTY_DAMAGED						CONSTLIT("damaged")
+
+#define SPECIAL_DATA							CONSTLIT("data:")
 #define SPECIAL_IS_PLAYER_CLASS					CONSTLIT("isPlayerClass:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
@@ -414,7 +417,8 @@ Metric CSpaceObject::CalculateItemMass (Metric *retrCargoMass)
 	while (Items.MoveCursorForward())
 		{
 		const CItem &Item = Items.GetItemAtCursor();
-		Metric rMass = Item.GetType()->GetMass() * Item.GetCount();
+
+		Metric rMass = Item.GetMass() * Item.GetCount();
 
 		//	All items count towards item mass
 
@@ -599,11 +603,18 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 //	DWORD		iRotation
 
 	{
+	ELoadStates iOldLoadState = Ctx.iLoadState;
+
 	//	Create the object
 
 	DWORD dwLoad;
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	CSpaceObject *pObj = dynamic_cast<CSpaceObject *>(CObjectClassFactory::Create((OBJCLASSID)dwLoad));
+
+	//	Remember the type of object that we're loading (in case of crash)
+
+	Ctx.iLoadState = loadStateObject;
+	Ctx.dwObjClassID = dwLoad;
 
 	//	Load the index. This will not be the final index (because the
 	//	index will change relative to the new system). But this is the
@@ -688,7 +699,9 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 
 	//	Load opaque data
 
+	Ctx.iLoadState = loadStateObjData;
 	pObj->m_Data.ReadFromStream(Ctx);
+	Ctx.iLoadState = loadStateObject;
 
 	//	Load additional data
 
@@ -702,6 +715,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 
 	//	Load the effect list
 
+	Ctx.iLoadState = loadStateObjEffects;
 	IEffectPainter *pEffect = CEffectCreator::CreatePainterFromStream(Ctx);
 	while (pEffect)
 		{
@@ -721,11 +735,13 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 
 	//	Let the subclass read its part
 
+	Ctx.iLoadState = loadStateObjSubClass;
 	pObj->OnReadFromStream(Ctx);
 
 	//	Done
 
 	*retpObj = pObj;
+	Ctx.iLoadState = iOldLoadState;
 	}
 
 ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, int iLevel)
@@ -772,7 +788,7 @@ ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, int iLevel)
 		{
 		CString sError = strPatternSubst(CONSTLIT("ERROR: Unable to create random items: %s\r\n"), Ctx.sError);
 		ReportCrashObj(&sError, this);
-		kernelDebugLogMessage(sError.GetASCIIZPointer());
+		kernelDebugLogMessage(sError);
 		ASSERT(false);
 		return error;
 		}
@@ -833,6 +849,8 @@ void CSpaceObject::DamageItem (CItemListManipulator &ItemList)
 
 	{
 	const CItem &Item = ItemList.GetItemAtCursor();
+	if (Item.IsDamaged())
+		return;
 
 	//	Figure out the current mods on this item
 
@@ -877,6 +895,32 @@ CString CSpaceObject::DebugDescribe (CSpaceObject *pObj)
 		}
 
 	return strPatternSubst(CONSTLIT("%x [invalid]"), (DWORD)pObj);
+	}
+
+CString CSpaceObject::DebugLoadError (SLoadCtx &Ctx)
+
+//	DebugLoadError
+//
+//	Compose error message from loading.
+
+	{
+	CString sLine = strPatternSubst(CONSTLIT(
+			"Unable to load object.\r\n"
+			"State: %s\r\n"
+			"ObjectClassID: %x\r\n"),
+
+			GetLoadStateString(Ctx.iLoadState),
+			Ctx.dwObjClassID);
+
+	//	If we're loading an effect, output that
+
+	if (Ctx.iLoadState == loadStateEffect)
+		sLine.Append(strPatternSubst(CONSTLIT(
+			"EffectUNID: %s\r\n"),
+
+			Ctx.sEffectUNID));
+
+	return sLine;
 	}
 
 void CSpaceObject::Destroy (DestructionTypes iCause, const CDamageSource &Attacker, CSpaceObject **retpWreck)
@@ -2416,7 +2460,7 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen)
 		if (pScreen)
 			return pScreen;
 		else
-			::kernelDebugLogMessage("Unable to resolve screen: %s", sScreen.GetASCIIZPointer());
+			::kernelDebugLogMessage("Unable to resolve screen: %s", sScreen);
 		}
 
 	//	Otherwise, we return the default screen associated witht the object
@@ -2586,7 +2630,10 @@ int CSpaceObject::GetNearestVisibleEnemies (int iMaxEnemies,
 
 //	GetNearestVisibleEnemies
 //
-//	Returns a list of the nearest n enemies visible to this object
+//	Returns a list of the nearest n enemies visible to this object. The targets
+//	are added in ascending order of distance.
+//
+//	NOTE: We append to the list because callers may have added their own.
 
 	{
 	int i;
@@ -2918,11 +2965,19 @@ bool CSpaceObject::HasSpecialAttribute (const CString &sAttrib) const
 //	base class if they do not handle the attribute.
 
 	{
-	CDesignType *pType = GetType();
-	if (pType == NULL)
-		return false;
+	if (strStartsWith(sAttrib, SPECIAL_DATA))
+		{
+		CString sDataField = strSubString(sAttrib, SPECIAL_DATA.GetLength());
+		return !(GetData(sDataField).IsBlank());
+		}
+	else
+		{
+		CDesignType *pType = GetType();
+		if (pType == NULL)
+			return false;
 
-	return pType->HasSpecialAttribute(sAttrib);
+		return pType->HasSpecialAttribute(sAttrib);
+		}
 	}
 
 CSpaceObject *CSpaceObject::HitTest (const CVector &vStart, 
@@ -4325,7 +4380,7 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 					{
 					retCriteria->iOrder = ::GetOrderType(sAttrib);
 					if (retCriteria->iOrder == IShipController::orderNone)
-						::kernelDebugLogMessage("Invalid sysFindObject order: %s", sAttrib.GetASCIIZPointer());
+						::kernelDebugLogMessage("Invalid sysFindObject order: %s", sAttrib);
 					}
 				break;
 				}
@@ -4571,6 +4626,25 @@ void CSpaceObject::RemoveItemEnhancement (const CItem &itemToEnhance, DWORD dwID
 		}
 	}
 
+void CSpaceObject::RepairItem (CItemListManipulator &ItemList)
+
+//	RepairItem
+//
+//	Repairs the selected item
+
+	{
+	const CItem &Item = ItemList.GetItemAtCursor();
+
+	if (Item.IsDamaged())
+		{
+		ItemList.SetDamagedAtCursor(false);
+
+		//	Raise event
+
+		ItemEnhancementModified(ItemList);
+		}
+	}
+
 void CSpaceObject::ReportEventError (const CString &sEvent, ICCItem *pError)
 
 //	ReportEventError
@@ -4583,7 +4657,7 @@ void CSpaceObject::ReportEventError (const CString &sEvent, ICCItem *pError)
 	if (pPlayer)
 		pPlayer->SendMessage(this, sError);
 
-	kernelDebugLogMessage(sError.GetASCIIZPointer());
+	kernelDebugLogMessage(sError);
 	}
 
 bool CSpaceObject::RequestGate (CSpaceObject *pObj)
@@ -4714,6 +4788,55 @@ void CSpaceObject::SetDataInteger (const CString &sAttrib, int iValue)
 	pValue->Discard(&CC);
 
 	SetData(sAttrib, sData);
+	}
+
+bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICCItem *pValue, int iCount, CItem *retItem, CString *retsError)
+
+//	SetItemProperty
+//
+//	Sets the item property.
+
+	{
+	//	Select the item
+
+	CItemListManipulator ItemList(GetItemList());
+	if (!ItemList.SetCursorAtItem(Item))
+		{
+		*retsError = CONSTLIT("Item not found on object.");
+		return false;
+		}
+
+	//	We handle damage differently because we may need to remove enhancements,
+	//	etc.
+
+	if (strEquals(sName, PROPERTY_DAMAGED))
+		{
+		if (pValue && pValue->IsNil())
+			RepairItem(ItemList);
+		else
+			DamageItem(ItemList);
+		}
+
+	//	Otherwise, just set the property
+
+	else
+		{
+		//	Set the data
+
+		if (!ItemList.SetPropertyAtCursor(sName, pValue, iCount, retsError))
+			return false;
+
+		//	Update the object
+
+		ItemEnhancementModified(ItemList);
+		}
+
+	//	Done
+
+	if (retItem)
+		*retItem = ItemList.GetItemAtCursor();
+
+	return true;
 	}
 
 void CSpaceObject::SetOverride (CDesignType *pOverride)

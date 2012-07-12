@@ -441,7 +441,7 @@ void CFerianShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				{
 				//	Avenge the base
 
-				if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip))
+				if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) && Ctx.Attacker.GetObj())
 					AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), 0);
 				else if (m_State == stateAttackingThreat)
 					AddOrder(IShipController::orderDestroyTarget, m_pTarget, 0);

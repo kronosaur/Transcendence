@@ -339,7 +339,7 @@ void CUIHelper::CreateClassInfoItem (const CItem &Item, int x, int y, int cxWidt
 	if (!Image.IsEmpty())
 		{
 		CG16bitImage *pIcon = new CG16bitImage;
-		pIcon->CreateFromImageTransformed(Image.GetImage(), 
+		pIcon->CreateFromImageTransformed(Image.GetImage(pType->GetName(0)), 
 				rcImage.left, 
 				rcImage.top, 
 				RectWidth(rcImage), 
@@ -498,7 +498,7 @@ void CUIHelper::CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString 
 		if (!Image.IsEmpty())
 			{
 			CG16bitImage *pIcon = new CG16bitImage;
-			pIcon->CreateFromImageTransformed(Image.GetImage(), 
+			pIcon->CreateFromImageTransformed(Image.GetImage(pItemIcon->GetName(0)), 
 					rcImage.left, 
 					rcImage.top, 
 					RectWidth(rcImage), 

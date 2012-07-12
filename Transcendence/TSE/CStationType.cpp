@@ -4,22 +4,24 @@
 
 #include "PreComp.h"
 
-#define REINFORCEMENTS_TAG						CONSTLIT("Reinforcements")
-#define SATELLITES_TAG							CONSTLIT("Satellites")
-#define IMAGE_TAG								CONSTLIT("Image")
-#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
-#define EVENTS_TAG								CONSTLIT("Events")
-#define ENCOUNTERS_TAG							CONSTLIT("Encounters")
+#define ANIMATIONS_TAG							CONSTLIT("Animations")
+#define COMPOSITE_TAG							CONSTLIT("ImageComposite")
 #define CONSTRUCTION_TAG						CONSTLIT("Construction")
 #define DEVICES_TAG								CONSTLIT("Devices")
-#define ANIMATIONS_TAG							CONSTLIT("Animations")
 #define DOCKING_PORTS_TAG						CONSTLIT("DockingPorts")
-#define ITEMS_TAG								CONSTLIT("Items")
-#define TRADE_TAG								CONSTLIT("Trade")
-#define COMPOSITE_TAG							CONSTLIT("ImageComposite")
+#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
+#define ENCOUNTERS_TAG							CONSTLIT("Encounters")
+#define EVENTS_TAG								CONSTLIT("Events")
+#define IMAGE_TAG								CONSTLIT("Image")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
-#define SHIPS_TAG								CONSTLIT("Ships")
+#define ITEMS_TAG								CONSTLIT("Items")
 #define NAMES_TAG								CONSTLIT("Names")
+#define REINFORCEMENTS_TAG						CONSTLIT("Reinforcements")
+#define SATELLITES_TAG							CONSTLIT("Satellites")
+#define SHIPS_TAG								CONSTLIT("Ships")
+#define STATION_TAG								CONSTLIT("Station")
+#define TRADE_TAG								CONSTLIT("Trade")
+
 
 #define ABANDONED_SCREEN_ATTRIB					CONSTLIT("abandonedScreen")
 #define ALERT_WHEN_ATTACKED_ATTRIB				CONSTLIT("alertWhenAttacked")
@@ -77,6 +79,7 @@
 #define STEALTH_ATTRIB							CONSTLIT("stealth")
 #define STRUCTURAL_HIT_POINTS_ATTRIB			CONSTLIT("structuralHitPoints")
 #define TIME_STOP_IMMUNE_ATTRIB					CONSTLIT("timeStopImmune")
+#define TYPE_ATTRIB								CONSTLIT("type")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define UNIQUE_ATTRIB							CONSTLIT("unique")
 #define VIRTUAL_ATTRIB							CONSTLIT("virtual")
@@ -171,6 +174,22 @@ CStationType::~CStationType (void)
 
 	if (m_pTrade)
 		delete m_pTrade;
+	}
+
+void CStationType::AddTypesUsedByXML (CXMLElement *pElement, TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsedByXML
+//
+//	Add type used by the <Station> XML element (recursively)
+
+	{
+	int i;
+
+	if (strEquals(pElement->GetTag(), STATION_TAG))
+		retTypesUsed->SetAt(pElement->GetAttributeInteger(TYPE_ATTRIB), true);
+
+	for (i = 0; i < pElement->GetContentElementCount(); i++)
+		AddTypesUsedByXML(pElement->GetContentElement(i), retTypesUsed);
 	}
 
 bool CStationType::CanBeEncountered (CSystem *pSystem)
@@ -408,27 +427,6 @@ CString CStationType::GetNounPhrase (DWORD dwFlags)
 	return ::ComposeNounPhrase(sName, 1, NULL_STR, dwNameFlags, dwFlags);
 	}
 
-void CStationType::LoadImages (const CCompositeImageSelector &Selector)
-
-//	LoadImages
-//
-//	Loads images used by the station
-
-	{
-	m_Image.LoadImage(Selector);
-
-	if (m_pExplosionType)
-		m_pExplosionType->LoadImages();
-
-	if (m_pEjectaType)
-		m_pEjectaType->LoadImages();
-
-	//	Cache the destroyed station image, if necessary
-
-	if (HasWreckImage())
-		m_Image.GetImage(Selector, CCompositeImageDesc::modStationDamage);
-	}
-
 void CStationType::MarkImages (const CCompositeImageSelector &Selector)
 
 //	MarkImages
@@ -438,11 +436,77 @@ void CStationType::MarkImages (const CCompositeImageSelector &Selector)
 	{
 	m_Image.MarkImage(Selector);
 
+	//	Cache the destroyed station image, if necessary
+
+	if (HasWreckImage())
+		m_Image.MarkImage(Selector, CCompositeImageDesc::modStationDamage);
+
+	//	Explosions and other effects
+
 	if (m_pExplosionType)
 		m_pExplosionType->MarkImages();
 
 	if (m_pEjectaType)
 		m_pEjectaType->MarkImages();
+
+	if (m_pGateEffect)
+		m_pGateEffect->MarkImages();
+	}
+
+void CStationType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	OnAddTypesUsed
+//
+//	Add design types used by this station type
+
+	{
+	int i;
+
+	retTypesUsed->SetAt(m_pSovereign.GetUNID(), true);
+	retTypesUsed->SetAt(m_pArmor.GetUNID(), true);
+
+	for (i = 0; i < m_iDevicesCount; i++)
+		{
+		CItem *pItem = m_Devices[i].GetItem();
+		if (pItem)
+			retTypesUsed->SetAt(pItem->GetType()->GetUNID(), true);
+		}
+
+	if (m_pItems)
+		m_pItems->AddTypesUsed(retTypesUsed);
+
+	m_Image.AddTypesUsed(retTypesUsed);
+
+	for (i = 0; i < m_ShipWrecks.GetCount(); i++)
+		retTypesUsed->SetAt(m_ShipWrecks.GetElement(i), true);
+
+	for (i = 0; i < m_iAnimationsCount; i++)
+		retTypesUsed->SetAt(m_pAnimations[i].m_Image.GetBitmapUNID(), true);
+
+	retTypesUsed->SetAt(strToInt(m_pFirstDockScreen.GetUNID(), 0), true);
+	retTypesUsed->SetAt(strToInt(m_pAbandonedDockScreen.GetUNID(), 0), true);
+	retTypesUsed->SetAt(m_dwDefaultBkgnd, true);
+
+	if (m_pSatellitesDesc)
+		AddTypesUsedByXML(m_pSatellitesDesc, retTypesUsed);
+
+	if (m_pInitialShips)
+		m_pInitialShips->AddTypesUsed(retTypesUsed);
+
+	if (m_pReinforcements)
+		m_pReinforcements->AddTypesUsed(retTypesUsed);
+
+	if (m_pEncounters)
+		m_pEncounters->AddTypesUsed(retTypesUsed);
+
+	if (m_pConstruction)
+		m_pConstruction->AddTypesUsed(retTypesUsed);
+
+	retTypesUsed->SetAt(m_pExplosionType.GetUNID(), true);
+	retTypesUsed->SetAt(m_pEjectaType.GetUNID(), true);
+	retTypesUsed->SetAt(m_pBarrierEffect.GetUNID(), true);
+	retTypesUsed->SetAt(m_pControllingSovereign.GetUNID(), true);
+	retTypesUsed->SetAt(m_pGateEffect.GetUNID(), true);
 	}
 
 ALERROR CStationType::OnBindDesign (SDesignLoadCtx &Ctx)
@@ -604,8 +668,12 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Initialize basic info
 
 	m_iLevel = pDesc->GetAttributeInteger(LEVEL_ATTRIB);
-	m_pSovereign.LoadUNID(Ctx, pDesc->GetAttribute(SOVEREIGN_ATTRIB));
-	m_pControllingSovereign.LoadUNID(Ctx, pDesc->GetAttribute(CONTROLLING_SOVEREIGN_ATTRIB));
+	if (error = m_pSovereign.LoadUNID(Ctx, pDesc->GetAttribute(SOVEREIGN_ATTRIB)))
+		return error;
+
+	if (error = m_pControllingSovereign.LoadUNID(Ctx, pDesc->GetAttribute(CONTROLLING_SOVEREIGN_ATTRIB)))
+		return error;
+
 	m_fVirtual = pDesc->GetAttributeBool(VIRTUAL_ATTRIB);
 	m_iRepairRate = pDesc->GetAttributeInteger(REPAIR_RATE_ATTRIB);
 	m_fMobile = pDesc->GetAttributeBool(MOBILE_ATTRIB);
@@ -682,7 +750,9 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Get hit points and max hit points
 
-	m_pArmor.LoadUNID(Ctx, pDesc->GetAttribute(ARMOR_ID_ATTRIB));
+	if (error = m_pArmor.LoadUNID(Ctx, pDesc->GetAttribute(ARMOR_ID_ATTRIB)))
+		return error;
+
 	m_iHitPoints = pDesc->GetAttributeIntegerBounded(HIT_POINTS_ATTRIB, 0, -1, -1);
 	m_iMaxHitPoints = pDesc->GetAttributeIntegerBounded(MAX_HIT_POINTS_ATTRIB, 0, -1, -1);
 
@@ -871,7 +941,8 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Background screens
 
-	m_dwDefaultBkgnd = LoadUNID(Ctx, pDesc->GetAttribute(DEFAULT_BACKGROUND_ID_ATTRIB));
+	if (error = LoadUNID(Ctx, pDesc->GetAttribute(DEFAULT_BACKGROUND_ID_ATTRIB), &m_dwDefaultBkgnd))
+		return error;
 	
 	//	Load initial ships
 
@@ -946,11 +1017,14 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Explosion
 
-	m_pExplosionType.LoadUNID(Ctx, pDesc->GetAttribute(EXPLOSION_TYPE_ATTRIB));
+	if (error = m_pExplosionType.LoadUNID(Ctx, pDesc->GetAttribute(EXPLOSION_TYPE_ATTRIB)))
+		return error;
 
 	//	Ejecta
 
-	m_pEjectaType.LoadUNID(Ctx, pDesc->GetAttribute(EJECTA_TYPE_ATTRIB));
+	if (error = m_pEjectaType.LoadUNID(Ctx, pDesc->GetAttribute(EJECTA_TYPE_ATTRIB)))
+		return error;
+
 	if (m_pEjectaType.GetUNID())
 		{
 		m_iEjectaAdj = pDesc->GetAttributeInteger(EJECTA_ADJ_ATTRIB);
@@ -962,11 +1036,14 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Miscellaneous
 
-	m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB));
+	if (error = m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB)))
+		return error;
 
 	m_sStargateDestNode = pDesc->GetAttribute(DEST_NODE_ATTRIB);
 	m_sStargateDestEntryPoint = pDesc->GetAttribute(DEST_ENTRY_POINT_ATTRIB);
-	m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB));
+
+	if (error = m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB)))
+		return error;
 
 	m_fHasOnObjDockedEvent = FindEventHandler(CONSTLIT("OnObjDocked"));
 
@@ -983,6 +1060,24 @@ ALERROR CStationType::OnFinishBindDesign (SDesignLoadCtx &Ctx)
 
 	{
 	return NOERROR;
+	}
+
+void CStationType::OnMarkImages (void)
+
+//	OnMarkImages
+//
+//	Mark images in use.
+
+	{
+	//	Since we are generally loading images for this type, we need to create
+	//	a default image selector
+
+	CCompositeImageSelector Selector;
+	SetImageSelector(NULL, &Selector);
+
+	//	Mark
+
+	MarkImages(Selector);
 	}
 
 void CStationType::OnReadFromStream (SUniverseLoadCtx &Ctx)

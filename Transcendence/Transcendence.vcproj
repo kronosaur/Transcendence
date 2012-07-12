@@ -1049,6 +1049,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Game\StdDockScreens.xml"
+				>
+			</File>
+			<File
 				RelativePath=".\Game\StdEffects.xml"
 				>
 			</File>
@@ -1058,6 +1062,10 @@
 			</File>
 			<File
 				RelativePath=".\Game\StdShields.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\StdSovereigns.xml"
 				>
 			</File>
 			<File
@@ -1082,10 +1090,6 @@
 			</File>
 			<File
 				RelativePath=".\Game\Tinkers.xml"
-				>
-			</File>
-			<File
-				RelativePath="Game\Transcendence.xml"
 				>
 			</File>
 			<File
@@ -1136,6 +1140,10 @@
 				Name="Part I"
 				>
 				<File
+					RelativePath=".\Game\Elysium.xml"
+					>
+				</File>
+				<File
 					RelativePath=".\Game\Huari.xml"
 					>
 				</File>
@@ -1173,6 +1181,38 @@
 				</File>
 				<File
 					RelativePath=".\Game\Extensions\WeaponsSample\WeaponsSample.xml"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Book of the Augur"
+				>
+				<File
+					RelativePath=".\Game\Extensions\Book of the Augur\BookOfTheAugur.xml"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Ancient Races Library"
+				>
+			</Filter>
+			<Filter
+				Name="Human Space Library"
+				>
+			</Filter>
+			<Filter
+				Name="Core Types"
+				>
+				<File
+					RelativePath=".\Game\CoreEffects.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\CoreTypes.xml"
+					>
+				</File>
+				<File
+					RelativePath="Game\Transcendence.xml"
 					>
 				</File>
 			</Filter>

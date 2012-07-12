@@ -716,7 +716,7 @@ void CLoginSession::ShowInitialDlg (void)
 
 	//	If we're already signed in then just show status
 
-	if (m_Service.HasCapability(ICIService::getUserProfile))
+	if (m_Service.HasCapability(ICIService::canGetUserProfile))
 		;
 
 	//	Otherwise, if we have a username

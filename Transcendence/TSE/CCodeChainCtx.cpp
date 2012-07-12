@@ -214,7 +214,7 @@ ICCItem *CCodeChainCtx::Run (const SEventHandlerDesc &Event)
 //	caller).
 
 	{
-	SExtensionDesc *pOldExtension = m_pExtension;
+	CExtension *pOldExtension = m_pExtension;
 	m_pExtension = Event.pExtension;
 
 	ICCItem *pResult = Run(Event.pCode);
@@ -275,7 +275,7 @@ void CCodeChainCtx::SaveSourceVar (void)
 		m_pOldSource = m_CC.LookupGlobal(STR_G_SOURCE, this);
 	}
 
-void CCodeChainCtx::SetGlobalDefineWrapper (SExtensionDesc *pExtension)
+void CCodeChainCtx::SetGlobalDefineWrapper (CExtension *pExtension)
 
 //	SetGlobalDefineWrapper
 //

@@ -79,12 +79,22 @@ int CSoundMgr::AllocChannel (void)
 //	uninitialized).
 
 	{
+	int i;
+
 	ASSERT(m_pDS);
 
-	int iChannel;
-	SChannel *pChannel = new SChannel;
-	m_Channels.AppendElement((int)pChannel, &iChannel);
-	return iChannel;
+	//	Look for an empty channel
+
+	for (i = 0; i < m_Channels.GetCount(); i++)
+		if (m_Channels[i].pBuffer == NULL)
+			return i;
+
+	//	Otherwise, allocate a new one
+
+	int iIndex = m_Channels.GetCount();
+	m_Channels.Insert();
+
+	return iIndex;
 	}
 
 bool CSoundMgr::CanPlayMusic (const CString &sFilename)
@@ -119,26 +129,16 @@ void CSoundMgr::CleanUp (void)
 //	Clean up sound manager
 
 	{
+	int i;
+
 	if (m_pDS)
 		{
 		//	Stop and delete all buffers
 
-		for (int i = 0; i < GetChannelCount(); i++)
-			{
-			SChannel *pChannel = GetChannel(i);
-			while (pChannel)
-				{
-				pChannel->pBuffer->Stop();
-				pChannel->pBuffer->Release();
+		for (i = 0; i < GetChannelCount(); i++)
+			CleanUpChannel(m_Channels[i]);
 
-				SChannel *pDelete = pChannel;
-				pChannel = pChannel->pNext;
-				delete pDelete;
-				}
-
-			}
-
-		m_Channels.RemoveAll();
+		m_Channels.DeleteAll();
 
 		//	Kill the DirectSound object
 
@@ -148,6 +148,46 @@ void CSoundMgr::CleanUp (void)
 
 	if (m_hMusic)
 		::DestroyWindow(m_hMusic);
+	}
+
+void CSoundMgr::CleanUpChannel (SChannel &Channel)
+
+//	CleanUpChannel
+//
+//	Clean up the given channel
+
+	{
+	if (Channel.pBuffer)
+		{
+		Channel.pBuffer->Stop();
+		Channel.pBuffer->Release();
+		Channel.pBuffer = NULL;
+
+		//	Clean up duplicate bufferse
+
+		SChannel *pNext = Channel.pNext;
+		while (pNext)
+			{
+			pNext->pBuffer->Stop();
+			pNext->pBuffer->Release();
+
+			SChannel *pDelete = pNext;
+			pNext = pNext->pNext;
+			delete pDelete;
+			}
+
+		Channel.pNext = NULL;
+		}
+	}
+
+void CSoundMgr::Delete (int iChannel)
+
+//	Delete
+//
+//	Deletes the given channel
+
+	{
+	CleanUpChannel(m_Channels[iChannel]);
 	}
 
 void CSoundMgr::GetMusicCatalog (const CString &sMusicFolder, TArray<CString> *retCatalog)
@@ -431,6 +471,8 @@ void CSoundMgr::Play (int iChannel, int iVolume, int iPan)
 		return;
 
 	SChannel *pChannel = GetChannel(iChannel);
+	if (pChannel->pBuffer == NULL)
+		return;
 
 	//	If the buffer is lost, then we need to restore it
 

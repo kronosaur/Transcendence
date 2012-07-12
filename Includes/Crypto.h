@@ -24,7 +24,9 @@ class CDigest : public CIntegerIP
 			};
 	};
 
+void cryptoCreateDigest (IReadBlock &Data, CIntegerIP *retDigest);
 void cryptoCreateMAC (IReadBlock &Data, const CIntegerIP &Key, CIntegerIP *retMAC);
 void cryptoRandom (int iCount, CIntegerIP *retx);
+ALERROR fileCreateDigest (const CString &sFilespec, CIntegerIP *retDigest);
 
 #endif

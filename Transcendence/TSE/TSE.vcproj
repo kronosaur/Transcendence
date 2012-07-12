@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TSEMultiverse.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TSEOrderModuleImpl.h"
 				>
 			</File>
@@ -212,6 +216,10 @@
 			</File>
 			<File
 				RelativePath=".\TSESpaceObjectsImpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TSEStorage.h"
 				>
 			</File>
 			<File
@@ -293,6 +301,10 @@
 			</File>
 			<File
 				RelativePath=".\CEnergyFieldList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGameFile.cpp"
 				>
 			</File>
 			<File
@@ -431,10 +443,6 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Extensions.cpp"
-				>
 			</File>
 			<File
 				RelativePath="XMLLoader.cpp"
@@ -808,6 +816,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CDesignTable.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\CDesignType.cpp"
 					>
 				</File>
@@ -821,6 +833,14 @@
 				</File>
 				<File
 					RelativePath=".\CEconomyType.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CExtension.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CExtensionCollection.cpp"
 					>
 				</File>
 				<File
@@ -1021,10 +1041,6 @@
 				</File>
 				<File
 					RelativePath=".\CGlobalEventCache.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CHexarc.cpp"
 					>
 				</File>
 				<File
@@ -2167,6 +2183,38 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="Multiverse"
+				>
+				<File
+					RelativePath=".\CHexarc.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CHexarcDownloader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CHexarcSession.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMultiverseCatalogEntry.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMultiverseCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMultiverseFileRef.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMultiverseModel.cpp"
+					>
 				</File>
 			</Filter>
 		</Filter>

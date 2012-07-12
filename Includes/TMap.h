@@ -369,6 +369,95 @@ template <class KEY, class VALUE> class TSortMap
 			*pNewValue = newValue;
 			}
 
+		void InsertSorted (const KEY &newKey, const VALUE &newValue, int iPos = -1)
+			{
+			//	Find where to insert it in the array
+
+			int iInsertPos;
+			SEntry *pEntry = InsertEntry(&iInsertPos);
+
+			//	Insert in the index
+
+			m_Index.Insert(iInsertPos, iPos);
+			pEntry->theKey = newKey;
+			pEntry->theValue = newValue;
+			}
+
+		void Merge (const TSortMap<KEY, VALUE> &Src, TArray<VALUE> *retReplaced = NULL)
+			{
+			//	For now this only works if we have the same sort order
+
+			if (m_iOrder != Src.m_iOrder)
+				{
+				ASSERT(false);
+				return;
+				}
+
+			//	Set up
+
+			int iSrcPos = 0;
+			int iDestPos = 0;
+
+			//	Merge
+
+			while (iSrcPos < Src.m_Index.GetCount())
+				{
+				//	If we're at the end of the destination then just insert
+
+				if (iDestPos == m_Index.GetCount())
+					{
+					InsertSorted(Src.GetKey(iSrcPos), Src.GetValue(iSrcPos));
+
+					//	Advance
+
+					iDestPos++;
+					iSrcPos++;
+					}
+
+				//	Otherwise, see if we need to insert or replace
+
+				else
+					{
+					int iCompare = m_iOrder * KeyCompare(Src.GetKey(iSrcPos), GetKey(iDestPos));
+
+					//	If the same key then we replace
+
+					if (iCompare == 0)
+						{
+						//	Return replaced values
+
+						if (retReplaced)
+							retReplaced->Insert(GetValue(iDestPos));
+
+						GetValue(iDestPos) = Src.GetValue(iSrcPos);
+
+						//	Advance
+
+						iDestPos++;
+						iSrcPos++;
+						}
+
+					//	If the source is less than dest then we insert at this
+					//	position.
+
+					else if (iCompare == 1)
+						{
+						InsertSorted(Src.GetKey(iSrcPos), Src.GetValue(iSrcPos), iDestPos);
+
+						//	Advance
+
+						iDestPos++;
+						iSrcPos++;
+						}
+
+					//	Otherwise, go to the next destination slot
+
+					else
+						iDestPos++;
+					}
+				}
+			}
+
 		VALUE *SetAt (const KEY &key, bool *retbInserted = NULL)
 			{
 			int iIndex;

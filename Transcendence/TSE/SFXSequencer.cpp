@@ -91,28 +91,6 @@ CEffectSequencerCreator::TimeTypes CEffectSequencerCreator::GetTime (int iIndex,
 		return timeNow;
 	}
 
-void CEffectSequencerCreator::LoadImages (void)
-
-//	LoadImages
-//
-//	Load images used by this effect
-
-	{
-	for (int i = 0; i < m_Timeline.GetCount(); i++)
-		m_Timeline[i].pCreator->LoadImages();
-	}
-
-void CEffectSequencerCreator::MarkImages (void)
-
-//	MarkImages
-//
-//	Mark images used by this effect
-
-	{
-	for (int i = 0; i < m_Timeline.GetCount(); i++)
-		m_Timeline[i].pCreator->MarkImages();
-	}
-
 ALERROR CEffectSequencerCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
 
 //	OnEffectCreateFromXML
@@ -160,3 +138,15 @@ ALERROR CEffectSequencerCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 
 	return NOERROR;
 	}
+
+void CEffectSequencerCreator::OnMarkImages (void)
+
+//	MarkImages
+//
+//	Mark images used by this effect
+
+	{
+	for (int i = 0; i < m_Timeline.GetCount(); i++)
+		m_Timeline[i].pCreator->MarkImages();
+	}
+

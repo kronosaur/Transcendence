@@ -1308,6 +1308,11 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			ICCItem *pList = pArgs->GetElement(0);
 
+			//	If index is nil then we always return nil
+
+			if (pArgs->GetElement(1)->IsNil())
+				return pCC->CreateNil();
+
 			//	Handle symbol tables differently
 
 			if (pList->IsSymbolTable())
@@ -1338,6 +1343,11 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SET_ITEM:
 			{
 			ICCItem *pList = pArgs->GetElement(0);
+
+			//	If index is nil then we always return nil
+
+			if (pArgs->GetElement(1)->IsNil())
+				return pCC->CreateNil();
 
 			if (pList->IsSymbolTable())
 				{
@@ -1607,19 +1617,30 @@ ICCItem *fnLinkedList (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 		{
 		case FN_LINKEDLIST_REMOVE:
 			{
-			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+			//	If the index is nil then we don't do anything (but we still 
+			//	return the untouched list).
 
-			//	Make sure we're in range
+			if (pArgs->GetElement(1)->IsNil())
+				pResult = pLinkedList;
 
-			if (iIndex < 0 || iIndex >= pLinkedList->GetCount())
-				{
-				pLinkedList->Discard(pCC);
-				pResult = pCC->CreateError(CONSTLIT("Index out of range"), pArgs->GetElement(1));
-				}
+			//	Otherwise, we expect an integer
+
 			else
 				{
-				pLinkedList->RemoveElement(pCC, iIndex);
-				pResult = pLinkedList;
+				int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+
+				//	Make sure we're in range
+
+				if (iIndex < 0 || iIndex >= pLinkedList->GetCount())
+					{
+					pLinkedList->Discard(pCC);
+					pResult = pCC->CreateError(CONSTLIT("Index out of range"), pArgs->GetElement(1));
+					}
+				else
+					{
+					pLinkedList->RemoveElement(pCC, iIndex);
+					pResult = pLinkedList;
+					}
 				}
 
 			break;
@@ -1646,20 +1667,31 @@ ICCItem *fnLinkedList (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 		case FN_LINKEDLIST_REPLACE:
 			{
-			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
-			ICCItem *pItem = pArgs->GetElement(2);
+			//	If the index is nil then we do nothing and just return the 
+			//	unmodified list.
 
-			//	Make sure we're in range
+			if (pArgs->GetElement(1)->IsNil())
+				pResult = pLinkedList;
 
-			if (iIndex < 0 || iIndex >= pLinkedList->GetCount())
-				{
-				pLinkedList->Discard(pCC);
-				pResult = pCC->CreateError(CONSTLIT("Index out of range"), pArgs->GetElement(1));
-				}
+			//	Otherwise, we expect an integer
+
 			else
 				{
-				pLinkedList->ReplaceElement(pCC, iIndex, pItem);
-				pResult = pLinkedList;
+				int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+				ICCItem *pItem = pArgs->GetElement(2);
+
+				//	Make sure we're in range
+
+				if (iIndex < 0 || iIndex >= pLinkedList->GetCount())
+					{
+					pLinkedList->Discard(pCC);
+					pResult = pCC->CreateError(CONSTLIT("Index out of range"), pArgs->GetElement(1));
+					}
+				else
+					{
+					pLinkedList->ReplaceElement(pCC, iIndex, pItem);
+					pResult = pLinkedList;
+					}
 				}
 
 			break;

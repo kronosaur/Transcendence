@@ -869,6 +869,8 @@ class CShip : public CSpaceObject
 		DeviceNames SelectWeapon (int iDev, int iVariant);
 		void SetCursorAtDevice (CItemListManipulator &ItemList, int iDev);
 		void SetCursorAtNamedDevice (CItemListManipulator &ItemList, DeviceNames iDev);
+		void SetWeaponTriggered (DeviceNames iDev, bool bTriggered = true);
+		void SetWeaponTriggered (CInstalledDevice *pWeapon, bool bTriggered = true);
 		CInstalledDevice *GetNamedDevice (DeviceNames iDev);
 		CDeviceClass *GetNamedDeviceClass (DeviceNames iDev);
 		CString GetReactorName (void);
@@ -1020,8 +1022,7 @@ class CShip : public CSpaceObject
 		virtual bool IsSuspended (void) const { return m_fManualSuspended; }
 		virtual bool IsTimeStopImmune (void) { return m_pClass->IsTimeStopImmune(); }
 		virtual bool IsVirtual (void) const { return m_pClass->IsVirtual(); }
-		virtual void LoadImages (void) { m_pClass->LoadImages(); }
-		virtual void MarkImages (void) { m_pClass->MarkImages(); }
+		virtual void MarkImages (void);
 		virtual bool ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const CVector &vObj2Pos);
 		virtual void OnBounce (CSpaceObject *pBarrierObj, const CVector &vPos);
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent);
@@ -1103,7 +1104,7 @@ class CShip : public CSpaceObject
 		void CalcArmorBonus (void);
 		int CalcMaxCargoSpace (void) const;
 		void CalcDeviceBonus (void);
-		bool CalcDeviceTarget (CItemCtx &Ctx, CSpaceObject **retpTarget, bool *iobLinkedFireTargetSet);
+		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
@@ -1111,7 +1112,9 @@ class CShip : public CSpaceObject
 		int FindNextDevice (int iStart, ItemCategories Category, int iDir = 1);
 		int FindRandomDevice (bool bEnabledOnly = false);
 		void FinishCreation (SShipGeneratorCtx *pCtx = NULL);
+		Metric GetCargoMass (void);
 		ItemCategories GetCategoryForNamedDevice (DeviceNames iDev);
+		Metric GetItemMass (void);
 		void ReactorOverload (void);
 		bool ShieldsAbsorbFire (CInstalledDevice *pWeapon);
 		void SetDriveDesc (const DriveDesc *pDesc);
@@ -1176,6 +1179,7 @@ class CShip : public CSpaceObject
 		DWORD m_fHasTargetingComputer:1;		//	TRUE if ship has targeting computer
 		DWORD m_fTrackFuel:1;					//	TRUE if ship keeps track of fuel (only player ship does)
 		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has multiple weapons
+
 		DWORD m_fSRSEnhanced:1;					//	TRUE if ship's SRS is enhanced
 		DWORD m_fDeviceDisrupted:1;				//	TRUE if at least one device is disrupted
 		DWORD m_fKnown:1;						//	TRUE if we know about this ship
@@ -1184,7 +1188,9 @@ class CShip : public CSpaceObject
 		DWORD m_fIdentified:1;					//	TRUE if player can see ship class, etc.
 		DWORD m_fManualSuspended:1;				//	TRUE if ship is suspended
 		DWORD m_fGalacticMap:1;					//	TRUE if ship has galactic map installed
-		DWORD m_dwSpare:17;
+
+		DWORD m_fRecalcItemMass:1;				//	TRUE if we need to recalculate m_rImageMass
+		DWORD m_dwSpare:15;
 
 	friend CObjectClass<CShip>;
 	};
@@ -1332,7 +1338,6 @@ class CStation : public CSpaceObject
 		virtual bool IsTimeStopImmune (void) { return m_pType->IsTimeStopImmune(); }
 		virtual bool IsVirtual (void) const { return m_pType->IsVirtual(); }
 		virtual bool IsWreck (void) const { return (m_dwWreckUNID != 0); }
-		virtual void LoadImages (void) { m_pType->LoadImages(m_ImageSelector); }
 		virtual void MakeRadioactive (void) { m_fRadioactive = true; }
 		virtual void MarkImages (void) { m_pType->MarkImages(m_ImageSelector); }
 		virtual bool ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const CVector &vObj2Pos);

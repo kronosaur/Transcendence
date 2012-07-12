@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- SPECIAL SYSTEMS -->
+	
+	<SystemMap UNID="&smElysium;">
+		<Uses UNID="&smHumanSpace;"/>
+
+		<RootNode ID="Elysium"/>
+	
+		<Node ID="Elysium">
+			<System
+					UNID=				"&ssElysium;"
+					name=				"Elysium"
+					level=				"5"
+					/>
+
+			<Stargates>
+				<Stargate name="SE" to="SE:Outbound"/>
+				<Stargate name="C3" to="C3:Outbound"/>
+				<Stargate name="SK" to="SK:Outbound"/>
+				<Stargate name="C6" to="C6:Outbound"/>
+				<Stargate name="C8" to="C8:Outbound"/>
+				<Stargate name="A1" to="A1:Outbound"/>
+				<Stargate name="EC" to="EC:Outbound"/>
+				<Stargate name="PJ" to="PJ:Outbound"/>
+				<Stargate name="A6" to="A6:Outbound"/>
+				<Stargate name="G2" to="G2:Inbound"/>
+			</Stargates>
+		</Node>
+		
+	</SystemMap>
+	
+	<!-- Elysium -->
+
+	<SystemType UNID="&ssElysium;" noRandomEncounters="true">
+
+		<SystemGroup>
+
+			<!-- Star -->
+
+			<Station type="&stA-TypeStar;" name="Elysium"/>
+
+			<!-- Stargates -->
+
+			<Orbitals distance="3" scale="light-minute" angle="equidistant">
+				<Stargate objName="SE" type="&stMajellenStargate;"/>
+				<Stargate objName="C3" type="&stMajellenStargate;"/>
+				<Stargate objName="SK" type="&stMajellenStargate;"/>
+				<Stargate objName="C6" type="&stMajellenStargate;"/>
+				<Stargate objName="C8" type="&stMajellenStargate;"/>
+				<Stargate objName="A1" type="&stMajellenStargate;"/>
+				<Stargate objName="EC" type="&stMajellenStargate;"/>
+				<Stargate objName="PJ" type="&stMajellenStargate;"/>
+				<Stargate objName="A6" type="&stMajellenStargate;"/>
+				<Stargate objName="G2" type="&stMajellenStargate;"/>
+			</Orbitals>
+
+			<!-- Asteroid Belt -->
+
+			<Orbitals distance="5" scale="light-minute" angle="random">
+				<Group>
+					<Siblings count="500" distribution="4d40-82">
+						<Lookup table="AsteroidSmall"/>
+					</Siblings>
+
+					<Siblings count="50" distribution="4d20-42">
+						<Lookup table="AsteroidMedium"/>
+					</Siblings>
+
+					<!--
+					<Siblings count="1d6+6" distribution="4d40-82">
+						<Label attributes="asteroids,asteroidbelt"/>
+					</Siblings>
+					-->
+
+				</Group>
+			</Orbitals>
+
+			<!-- Grom.e -->
+
+			<Orbitals distance="7" scale="light-minute" angle="random">
+				<Group>
+					<Station type="&stHydrogenGasGiant;" 
+							name="GromE" 
+							showOrbit="true"
+							/>
+
+					<Orbitals distance="20" angle="equidistant">
+						<Station type="&stTanRuDorem;" />
+
+						<Marker objName="Start"/>
+					</Orbitals>
+				</Group>
+			</Orbitals>
+
+		</SystemGroup>
+	</SystemType>
+	
+<!-- ITEM TYPES -->
+
+	<!-- Gem of Despair -->
+
+	<ItemType UNID="&itGemOfDespair;"
+			name=				"gem(s) of despair"
+			level=				"7"
+			value=				"2000"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownHaloGem;"
+			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
+
+			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="576" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block Nil
+				; Gate to Elysium
+				(objSendMessage gSource Nil "\"May you find your path among the stargates...\"")
+				(objGateTo gSource "Elysium" "Start" &efStargateOut;)
+
+				; Remove the item from the player's list
+				(objRemoveItem gSource gItem 1)
+
+				; Identify the item
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+
+	</ItemType>
+
+</TranscendenceModule>

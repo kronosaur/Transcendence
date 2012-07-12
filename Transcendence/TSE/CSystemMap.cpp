@@ -250,7 +250,8 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	m_sName = pDesc->GetAttribute(NAME_ATTRIB);
 	m_dwBackgroundImage = pDesc->GetAttributeInteger(BACKGROUND_IMAGE_ATTRIB);
-	m_pPrimaryMap.LoadUNID(Ctx, pDesc->GetAttribute(PRIMARY_MAP_ATTRIB));
+	if (error = m_pPrimaryMap.LoadUNID(Ctx, pDesc->GetAttribute(PRIMARY_MAP_ATTRIB)))
+		return error;
 
 	//	If we have a primary map, then add it to the Uses list.
 
@@ -297,7 +298,9 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pItem->GetTag(), USES_TAG))
 			{
 			CSystemMapRef *pRef = m_Uses.Insert();
-			pRef->LoadUNID(Ctx, pItem->GetAttribute(UNID_ATTRIB));
+
+			if (error = pRef->LoadUNID(Ctx, pItem->GetAttribute(UNID_ATTRIB)))
+				return error;
 			}
 		else
 			{

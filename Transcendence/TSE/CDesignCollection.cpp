@@ -4,7 +4,6 @@
 
 #include "PreComp.h"
 
-#define MODULES_TAG								CONSTLIT("Modules")
 #define STAR_SYSTEM_TOPOLOGY_TAG				CONSTLIT("StarSystemTopology")
 #define SYSTEM_TOPOLOGY_TAG						CONSTLIT("SystemTopology")
 
@@ -23,9 +22,10 @@ static char *CACHED_EVENTS[CDesignCollection::evtCount] =
 		"GetGlobalAchievements",
 		"GetGlobalDockScreen",
 		"OnGlobalPaneInit",
+		"OnGlobalMarkImages",
 		"OnGlobalObjDestroyed",
-		"OnGlobalUniverseCreated",
 
+		"OnGlobalUniverseCreated",
 		"OnGlobalUniverseLoad",
 		"OnGlobalUniverseSave",
 	};
@@ -56,7 +56,7 @@ CDesignCollection::~CDesignCollection (void)
 	CleanUp();
 	}
 
-ALERROR CDesignCollection::AddDynamicType (SExtensionDesc *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError)
+ALERROR CDesignCollection::AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError)
 
 //	AddDynamicType
 //
@@ -65,7 +65,7 @@ ALERROR CDesignCollection::AddDynamicType (SExtensionDesc *pExtension, DWORD dwU
 	{
 	ALERROR error;
 
-	//	If we're pass game-create, the UNID must not already exist
+	//	If we're past game-create, the UNID must not already exist
 
 	if (!bNewGame && FindEntry(dwUNID))
 		{
@@ -133,7 +133,7 @@ ALERROR CDesignCollection::AddDynamicType (SExtensionDesc *pExtension, DWORD dwU
 
 		SDesignLoadCtx Ctx;
 		Ctx.pExtension = pExtension;
-		Ctx.bNewGame = bNewGame;
+		Ctx.bBindAsNewGame = false;
 
 		if (error = pType->PrepareBindDesign(Ctx))
 			{
@@ -175,205 +175,16 @@ ALERROR CDesignCollection::AddDynamicType (SExtensionDesc *pExtension, DWORD dwU
 	return NOERROR;
 	}
 
-ALERROR CDesignCollection::AddEntry (SDesignLoadCtx &Ctx, CDesignType *pEntry)
-
-//	AddEntry
-//
-//	Adds an entry to the collection
-
-	{
-	ALERROR error;
-
-	DWORD dwUNID = pEntry->GetUNID();
-
-	//	If this is an extension, then add to the appropriate extension
-
-	CDesignTable *pTable = NULL;
-	if (Ctx.pExtension)
-		{
-		pTable = &Ctx.pExtension->Table;
-
-		//	If the UNID of the entry does not belong to the extension, then make sure it
-		//	overrides a valid base entry
-
-		if (!Ctx.pExtension->bRegistered
-				&& (dwUNID & UNID_DOMAIN_AND_MODULE_MASK) != (Ctx.pExtension->dwUNID & UNID_DOMAIN_AND_MODULE_MASK))
-			{
-			//	Cannot override AdventureDesc
-
-			if (pEntry->GetType() == designAdventureDesc)
-				{
-				Ctx.sError = CONSTLIT("<AdventureDesc> UNID must be part of extension.");
-				return ERR_FAIL;
-				}
-
-			//	Make sure we override a base type
-
-			else if (m_Base.FindByUNID(dwUNID) == NULL)
-				{
-				Ctx.sError = strPatternSubst(CONSTLIT("Invalid UNID: %x [does not match extension UNID or override base type]"), dwUNID);
-				return ERR_FAIL;
-				}
-			}
-		}
-
-	//	Otherwise, add to the base design types
-
-	else
-		pTable = &m_Base;
-
-	//	Add
-
-	if (error = pTable->AddEntry(pEntry))
-		{
-		if (pTable->FindByUNID(dwUNID))
-			Ctx.sError = strPatternSubst(CONSTLIT("Duplicate UNID: %x"), dwUNID);
-		else
-			Ctx.sError = strPatternSubst(CONSTLIT("Error adding design entry UNID: %x"), dwUNID);
-		return error;
-		}
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::AddExtension (SDesignLoadCtx &Ctx, EExtensionTypes iType, DWORD dwUNID, bool bDefaultResource, SExtensionDesc **retpExtension)
-
-//	AddExtension
-//
-//	Adds an extension entry
-
-	{
-	ASSERT(!Ctx.sResDb.IsBlank());
-	ASSERT(dwUNID != 0);
-
-	bool bAdded;
-	SExtensionDesc **pSlot = m_Extensions.SetAt(dwUNID, &bAdded);
-	if (!bAdded)
-		{
-		Ctx.sError = strPatternSubst(CONSTLIT("Duplicate extension: %x"), dwUNID);
-		return ERR_FAIL;
-		}
-
-	SExtensionDesc *pEntry = new SExtensionDesc;
-	*pSlot = pEntry;
-
-	pEntry->sResDb = Ctx.sResDb;
-	pEntry->dwUNID = dwUNID;
-	pEntry->iType = iType;
-	pEntry->bDefaultResource = bDefaultResource;
-
-	//	Defaults
-	pEntry->dwVersion = EXTENSION_VERSION;	//	Latest version
-	pEntry->bRegistered = false;
-	pEntry->bEnabled = false;
-	pEntry->bLoaded = false;
-	pEntry->bDebugOnly = false;
-
-	//	Done
-
-	*retpExtension = pEntry;
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::AddSystemTable (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
-
-//	AddSystemTable
-//
-//	Add a system table as a design element
-//	(We need this for backwards compatibility)
-
-	{
-	CSystemTable *pTable = new CSystemTable;
-	pTable->InitFromXML(Ctx, pDesc);
-	if (pTable->GetUNID() == 0)
-		pTable->SetUNID(DEFAULT_SYSTEM_TABLE_UNID);
-
-	return AddEntry(Ctx, pTable);
-	}
-
-ALERROR CDesignCollection::BeginLoadAdventure (SDesignLoadCtx &Ctx, SExtensionDesc *pExtension)
-
-//	BeginLoadAdventure
-//
-//	Begin loading an adventure (not just the desc)
-
-	{
-	ASSERT(pExtension);
-
-	pExtension->bLoaded = true;
-
-	//	Set context
-
-	Ctx.pExtension = pExtension;
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::BeginLoadAdventureDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bDefaultResource, CExternalEntityTable *pEntities)
-
-//	BeginLoadAdventureDesc
-//
-//	Adds a new adventure extension to our internal list and sets Ctx.pExtension
-
-	{
-	ALERROR error;
-	SExtensionDesc *pEntry;
-
-	//	Load the structure
-
-	if (error = LoadExtensionDesc(Ctx, pDesc, bDefaultResource, &pEntry))
-		return error;
-
-	pEntry->iType = extAdventure;
-	pEntry->bEnabled = false;
-	pEntry->bLoaded = false;
-	pEntry->SetEntities(pEntities);
-
-	//	Set context
-
-	Ctx.pExtension = pEntry;
-	Ctx.bLoadAdventureDesc = true;
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::BeginLoadExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CExternalEntityTable *pEntities)
-
-//	BeginLoadExtension
-//
-//	Adds a new extension to our internal list and sets Ctx.pExtension
-
-	{
-	ALERROR error;
-	SExtensionDesc *pEntry;
-
-	//	Load the structure
-
-	if (error = LoadExtensionDesc(Ctx, pDesc, false, &pEntry))
-		return error;
-
-	pEntry->iType = extExtension;
-	pEntry->bEnabled = true;
-	pEntry->bLoaded = true;
-	pEntry->SetEntities(pEntities);
-
-	//	Set context
-
-	Ctx.pExtension = pEntry;
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
+ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, CString *retsError)
 
 //	BindDesign
 //
-//	Bind the design collection so that design types point the appropriate
-//	pointers by UNID
+//	Binds the design collection to the set of design types in the given list of
+//	extensions.
 
 	{
 	ALERROR error;
-	int i, j;
+	int i;
 
 	//	Unbind everything
 
@@ -386,95 +197,69 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 	for (i = 0; i < designCount; i++)
 		m_ByType[i].DeleteAll();
 
-	//	We start with all the base types
+	//	Reset
 
-	for (i = 0; i < m_Base.GetCount(); i++)
-		m_AllTypes.AddEntry(m_Base.GetEntry(i));
-
-	//	Start with base topology
-
-	m_pTopology = &m_BaseTopology;
+	m_pTopology = NULL;
 	m_pAdventureExtension = NULL;
 
-	//	Now add all enabled extensions
+	//	Loop over the bind list in order and add appropriate types to m_AllTypes
+	//	(The order guarantees that the proper types override)
 
-	for (i = 0; i < GetExtensionCount(); i++)
+	for (i = 0; i < BindOrder.GetCount(); i++)
 		{
-		SExtensionDesc *pExtension = GetExtension(i);
+		CExtension *pExtension = BindOrder[i];
+		const CDesignTable &Types = pExtension->GetDesignTypes();
 
-		if (pExtension->bEnabled)
+#ifdef DEBUG
+		::OutputDebugString(strPatternSubst(CONSTLIT("EXTENSION %s\n"), pExtension->GetName()));
+		for (int j = 0; j < Types.GetCount(); j++)
 			{
-			//	Add design elements in extension
-
-			for (j = 0; j < pExtension->Table.GetCount(); j++)
-				{
-				CDesignType *pEntry = pExtension->Table.GetEntry(j);
-				m_AllTypes.AddOrReplaceEntry(pEntry);
-				}
-
-			//	Handle adventure extensions
-
-			if (pExtension->iType == extAdventure)
-				{
-				//	Keep track of extension
-
-				m_pAdventureExtension = pExtension;
-
-				//	Add topology
-
-				m_pTopology = &pExtension->Topology;
-				}
+			::OutputDebugString(strPatternSubst(CONSTLIT("%08x: %s\n"), Types.GetEntry(j)->GetUNID(), Types.GetEntry(j)->GetTypeName()));
 			}
-		else
+#endif
+
+		//	Add the types
+
+		m_AllTypes.Merge(Types);
+
+		//	If this is the adventure, then remember it
+
+		if (pExtension->GetType() == extAdventure)
 			{
-			if (pExtension->iType == extAdventure)
-				{
-				DWORD dwCoverImage = 0;
-
-				//	Adventure desc elements are added even if not enabled
-
-				for (j = 0; j < pExtension->Table.GetCount(); j++)
-					{
-					CDesignType *pEntry = pExtension->Table.GetEntry(j);
-					if (pEntry->GetType() == designAdventureDesc)
-						{
-						m_AllTypes.AddOrReplaceEntry(pEntry);
-
-						//	Get the cover image used by the adventure, because
-						//	we need to load that too.
-
-						CAdventureDesc *pDesc = CAdventureDesc::AsType(pEntry);
-						dwCoverImage = pDesc->GetBackgroundUNID();
-						}
-					}
-
-				//	Make sure we load the cover image
-
-				if (dwCoverImage)
-					{
-					for (j = 0; j < pExtension->Table.GetCount(); j++)
-						{
-						CDesignType *pEntry = pExtension->Table.GetEntry(j);
-						if (pEntry->GetUNID() == dwCoverImage)
-							m_AllTypes.AddOrReplaceEntry(pEntry);
-						}
-					}
-				}
+			m_pAdventureExtension = pExtension;
+			m_pAdventureDesc = pExtension->GetAdventureDesc();
 			}
+
+		//	If this is an adventure or the base extension then take the 
+		//	topology.
+
+		if (pExtension->GetType() == extAdventure || pExtension->GetType() == extBase)
+			m_pTopology = &pExtension->GetTopology();
 		}
+
+	//	Create a design load context
+
+	SDesignLoadCtx Ctx;
+	Ctx.bBindAsNewGame = bNewGame;
 
 	//	If this is a new game, then create all the Template types
 
-	if (Ctx.bNewGame)
+	if (bNewGame)
 		{
 		m_DynamicUNIDs.DeleteAll();
 		m_DynamicTypes.DeleteAll();
 
 		if (error = FireOnGlobalTypesInit(Ctx))
+			{
+			*retsError = Ctx.sError;
 			return error;
+			}
 
 		if (error = CreateTemplateTypes(Ctx))
+			{
+			*retsError = Ctx.sError;
 			return error;
+			}
 		}
 
 	//	Add all the dynamic types. These came either from the saved game file or
@@ -516,7 +301,11 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		bool bUnique;
 		CEconomyType **ppDest = m_EconomyIndex.SetAt(sName, &bUnique);
 		if (!bUnique)
-			return pEcon->ComposeLoadError(Ctx, CONSTLIT("Currency ID must be unique"));
+			{
+			pEcon->ComposeLoadError(Ctx, CONSTLIT("Currency ID must be unique"));
+			*retsError = Ctx.sError;
+			return ERR_FAIL;
+			}
 
 		*ppDest = pEcon;
 		}
@@ -528,7 +317,10 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		{
 		CDesignType *pEntry = m_AllTypes.GetEntry(i);
 		if (error = pEntry->PrepareBindDesign(Ctx))
+			{
+			*retsError = Ctx.sError;
 			return error;
+			}
 		}
 
 	//	Now call Bind on all active design entries
@@ -540,7 +332,10 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		{
 		CDesignType *pEntry = m_AllTypes.GetEntry(i);
 		if (error = pEntry->BindDesign(Ctx))
+			{
+			*retsError = Ctx.sError;
 			return error;
+			}
 
 		//	Cache some global events. We keep track of the global events for
 		//	all types so that we can access them faster.
@@ -555,8 +350,15 @@ ALERROR CDesignCollection::BindDesign (SDesignLoadCtx &Ctx)
 		{
 		CDesignType *pEntry = m_AllTypes.GetEntry(i);
 		if (error = pEntry->FinishBindDesign(Ctx))
+			{
+			*retsError = Ctx.sError;
 			return error;
+			}
 		}
+
+	//	Remember what we bound
+
+	m_BoundExtensions = BindOrder;
 
 	return NOERROR;
 	}
@@ -608,27 +410,10 @@ void CDesignCollection::CleanUp (void)
 //	Free all entries so that we don't hold on to any resources.
 
 	{
-	int i;
-
 	//	Some classes need to clean up global data
 	//	(But we need to do this before we destroy the types)
 
 	CStationType::Reinit();
-
-	//	Delete the base types
-
-	m_Base.DeleteAll();
-
-	//	Delete all extensions
-
-	for (i = 0; i < GetExtensionCount(); i++)
-		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		pEntry->Table.DeleteAll();
-		delete pEntry;
-		}
-
-	m_Extensions.DeleteAll();
 	}
 
 void CDesignCollection::ClearImageMarks (void)
@@ -703,54 +488,20 @@ ALERROR CDesignCollection::CreateTemplateTypes (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
-CAdventureDesc *CDesignCollection::FindAdventureDesc (DWORD dwUNID) const
-
-//	FindAdventureDesc
-//
-//	Returns an adventure desc given either an adventure desc type UNID or an
-//	extension UNID.
-
-	{
-	CAdventureDesc *pDesc = CAdventureDesc::AsType(FindEntry(dwUNID));
-	if (pDesc)
-		return pDesc;
-
-	return FindAdventureForExtension(dwUNID);
-	}
-
-CAdventureDesc *CDesignCollection::FindAdventureForExtension (DWORD dwUNID) const
-
-//	FindAdventureForExtension
-//
-//	Returns the adventure desc that belongs to the given extension.
-//	(Or NULL if not found).
-
-	{
-	int i;
-
-	SExtensionDesc *pExtension = FindExtension(dwUNID);
-	if (pExtension == NULL || pExtension->iType != extAdventure)
-		return NULL;
-
-	for (i = 0; i < pExtension->Table.GetCount(); i++)
-		{
-		CDesignType *pType = pExtension->Table.GetEntry(i);
-		if (pType->GetType() ==	designAdventureDesc)
-			return CAdventureDesc::AsType(pType);
-		}
-
-	return NULL;
-	}
-
-SExtensionDesc *CDesignCollection::FindExtension (DWORD dwUNID) const
+CExtension *CDesignCollection::FindExtension (DWORD dwUNID) const
 
 //	FindExtension
 //
 //	Find the entry for the given extension
 
 	{
-	SExtensionDesc **pFind = m_Extensions.GetAt(dwUNID);
-	return (pFind ? *pFind : NULL);
+	int i;
+
+	for (i = 0; i < m_BoundExtensions.GetCount(); i++)
+		if (m_BoundExtensions[i]->GetUNID() == dwUNID)
+			return m_BoundExtensions[i];
+
+	return NULL;
 	}
 
 CXMLElement *CDesignCollection::FindSystemFragment (const CString &sName, CSystemTable **retpTable) const
@@ -842,6 +593,26 @@ bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *re
 	return true;
 	}
 
+void CDesignCollection::FireOnGlobalMarkImages (void)
+
+//	FireOnGlobalMarkImages
+//
+//	Allows types to mark images
+
+	{
+	int i;
+
+	//	Fire all events
+
+	for (i = 0; i < m_EventsCache[evtOnGlobalMarkImages]->GetCount(); i++)
+		{
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalMarkImages]->GetEntry(i, &Event);
+
+		pType->FireOnGlobalMarkImages(Event);
+		}
+	}
+
 void CDesignCollection::FireOnGlobalObjDestroyed (SDestroyCtx &Ctx)
 
 //	FireOnGlobalObjDestroyed
@@ -890,7 +661,7 @@ void CDesignCollection::FireOnGlobalPaneInit (void *pScreen, CDesignType *pRoot,
 				sScreenUNID,
 				sPane,
 				&sError) != NOERROR)
-			kernelDebugLogMessage("%s", sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 		}
 	}
 
@@ -907,7 +678,7 @@ void CDesignCollection::FireOnGlobalPlayerChangedShips (CSpaceObject *pOldShip)
 	for (i = 0; i < GetCount(); i++)
 		{
 		if (GetEntry(i)->FireOnGlobalPlayerChangedShips(pOldShip, &sError) != NOERROR)
-			kernelDebugLogMessage("%s", sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 		}
 	}
 
@@ -924,7 +695,7 @@ void CDesignCollection::FireOnGlobalPlayerEnteredSystem (void)
 	for (i = 0; i < GetCount(); i++)
 		{
 		if (GetEntry(i)->FireOnGlobalPlayerEnteredSystem(&sError) != NOERROR)
-			kernelDebugLogMessage("%s", sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 		}
 	}
 
@@ -941,7 +712,7 @@ void CDesignCollection::FireOnGlobalPlayerLeftSystem (void)
 	for (i = 0; i < GetCount(); i++)
 		{
 		if (GetEntry(i)->FireOnGlobalPlayerLeftSystem(&sError) != NOERROR)
-			kernelDebugLogMessage("%s", sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 		}
 	}
 
@@ -958,7 +729,7 @@ void CDesignCollection::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCt
 	for (i = 0; i < GetCount(); i++)
 		{
 		if (GetEntry(i)->FireOnGlobalSystemCreated(SysCreateCtx, &sError) != NOERROR)
-			kernelDebugLogMessage("%s", sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 		}
 	}
 
@@ -1058,7 +829,7 @@ DWORD CDesignCollection::GetDynamicUNID (const CString &sName)
 	return 0xf0000000 + dwAtom;
 	}
 
-void CDesignCollection::GetEnabledExtensions (TArray<DWORD> *retExtensionList)
+void CDesignCollection::GetEnabledExtensions (TArray<CExtension *> *retExtensionList)
 
 //	GetEnabledExtensions
 //
@@ -1071,9 +842,9 @@ void CDesignCollection::GetEnabledExtensions (TArray<DWORD> *retExtensionList)
 
 	for (i = 0; i < GetExtensionCount(); i++)
 		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		if (pEntry->iType == extExtension && pEntry->bEnabled)
-			retExtensionList->Insert(pEntry->dwUNID);
+		CExtension *pEntry = GetExtension(i);
+		if (pEntry->GetType() == extExtension)
+			retExtensionList->Insert(pEntry);
 		}
 	}
 
@@ -1095,7 +866,42 @@ CG16bitImage *CDesignCollection::GetImage (DWORD dwUNID, bool bCopy)
 	if (bCopy)
 		return pImage->CreateCopy();
 	else
-		return pImage->GetImage();
+		{
+		CString sError;
+		CG16bitImage *pRawImage = pImage->GetImage(strFromInt(dwUNID), &sError);
+
+		if (pRawImage == NULL)
+			kernelDebugLogMessage(sError);
+
+		return pRawImage;
+		}
+	}
+
+CString CDesignCollection::GetStartingNodeID (void)
+
+//	GetStartingNodeID
+//
+//	Gets the default starting node ID (if the player ship does not define it).
+
+	{
+	int i;
+
+	if (!m_pTopology->GetFirstNodeID().IsBlank())
+		return m_pTopology->GetFirstNodeID();
+
+	//	See if any map defines a starting node ID
+
+	for (i = 0; i < GetCount(designSystemMap); i++)
+		{
+		CSystemMap *pMap = CSystemMap::AsType(GetEntry(designSystemMap, i));
+
+		if (!pMap->GetStartingNodeID().IsBlank())
+			return pMap->GetStartingNodeID(); 
+		}
+
+	//	Not found
+
+	return NULL_STR;
 	}
 
 bool CDesignCollection::IsAdventureExtensionBound (DWORD dwUNID)
@@ -1106,58 +912,9 @@ bool CDesignCollection::IsAdventureExtensionBound (DWORD dwUNID)
 
 	{
 	if (m_pAdventureExtension)
-		return (m_pAdventureExtension->dwUNID == dwUNID);
+		return (m_pAdventureExtension->GetUNID() == dwUNID);
 	else
 		return (dwUNID == 0);
-	}
-
-bool CDesignCollection::IsAdventureExtensionLoaded (DWORD dwUNID)
-
-//	IsAdventureExtensionLoaded
-//
-//	Returns TRUE if adventure extension is loaded
-
-	{
-	//	0 = no extension
-	if (dwUNID == 0)
-		return true;
-
-	SExtensionDesc *pExt = FindExtension(dwUNID);
-	if (pExt == NULL)
-		{
-		ASSERT(false);
-		return false;
-		}
-
-	ASSERT(pExt->iType == extAdventure);
-	return pExt->bLoaded;
-	}
-
-bool CDesignCollection::IsExtensionCompatibleWithAdventure (SExtensionDesc *pExtension, CAdventureDesc *pAdventure)
-
-//	IsExtensionCompatibleWithAdventure
-//
-//	Returns TRUE if the given extension works with the given adventure
-//	(Some extensions are marked to only work with particular adventures).
-
-	{
-	int i;
-
-	//	Some extensions don't care
-
-	if (pExtension->Extends.GetCount() == 0)
-		return true;
-
-	//	Otherwise, see if the adventure is explicitly listed
-
-	DWORD dwAdventureUNID = pAdventure->GetExtensionUNID();
-	for (i = 0; i < pExtension->Extends.GetCount(); i++)
-		if (pExtension->Extends[i] == dwAdventureUNID)
-			return true;
-
-	//	Otherwise, not compatible
-
-	return false;
 	}
 
 bool CDesignCollection::IsRegisteredGame (void)
@@ -1169,222 +926,11 @@ bool CDesignCollection::IsRegisteredGame (void)
 	{
 	int i;
 
-	for (i = 0; i < m_Extensions.GetCount(); i++)
-		if (m_Extensions[i]->bEnabled && !m_Extensions[i]->bRegistered)
+	for (i = 0; i < m_BoundExtensions.GetCount(); i++)
+		if (!m_BoundExtensions[i]->IsRegistrationVerified())
 			return false;
 
 	return true;
-	}
-
-ALERROR CDesignCollection::LoadAdventureDescMainRes (SDesignLoadCtx &Ctx, CAdventureDesc *pAdventure)
-
-//	LoadAdventureDescMainRes
-//
-//	Loads an adventure desc from the main resource file.
-//	Adds a new adventure extension to our internal list and sets Ctx.pExtension
-
-	{
-	ALERROR error;
-
-	//	Do nothing if the adventure doesn't have an extension UNID. This happens in backwards-compatibility
-	//	cases when people have replaced Transcendence.xml
-
-	if (pAdventure->GetExtensionUNID() == 0)
-		return NOERROR;
-
-	//	Create an extension descriptor for this adventure
-
-	SExtensionDesc *pEntry;
-	if (error = AddExtension(Ctx, extAdventure, pAdventure->GetExtensionUNID(), true, &pEntry))
-		return error;
-
-	pEntry->bRegistered = true;				//	Since it is included in main resources, it counts as registered
-
-	//	Load name
-
-	pEntry->sName = pAdventure->GetName();
-	if (pEntry->sName.IsBlank())
-		pEntry->sName = strPatternSubst(CONSTLIT("Extension %x"), pAdventure->GetExtensionUNID());
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
-
-//	LoadDesignType
-//
-//	Loads a standard design type
-
-	{
-	ALERROR error;
-	CDesignType *pEntry;
-
-	if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
-		return error;
-
-	if (error = AddEntry(Ctx, pEntry))
-		{
-		delete pEntry;
-		return error;
-		}
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::LoadEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType)
-
-//	LoadEntryFromXML
-//
-//	Load an entry into the collection
-
-	{
-	ALERROR error;
-
-	//	Load topology
-
-	if (strEquals(pDesc->GetTag(), STAR_SYSTEM_TOPOLOGY_TAG)
-			|| strEquals(pDesc->GetTag(), SYSTEM_TOPOLOGY_TAG))
-		{
-		if (Ctx.pExtension)
-			//	If we're in an extension (Adventure) then load into the extension
-			error = Ctx.pExtension->Topology.LoadFromXML(Ctx, pDesc, NULL_STR);
-		else
-			//	Otherwise, load into the base game
-			error = m_BaseTopology.LoadFromXML(Ctx, pDesc, NULL_STR);
-
-		if (error)
-			return error;
-
-		//	There is no type for topologies
-
-		if (retpType)
-			*retpType = NULL;
-		}
-
-	//	Load standard design elements
-
-	else
-		{
-		CDesignType *pEntry;
-
-		if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pEntry))
-			return error;
-
-		if (error = AddEntry(Ctx, pEntry))
-			{
-			delete pEntry;
-			return error;
-			}
-
-		if (retpType)
-			*retpType = pEntry;
-		}
-
-	return NOERROR;
-	}
-
-ALERROR CDesignCollection::LoadExtensionDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bDefaultResource, SExtensionDesc **retpExtension)
-
-//	LoadExtensionDesc
-//
-//	Loads a new extension descriptor
-
-	{
-	ALERROR error;
-	int i;
-
-	//	Load version
-
-	DWORD dwVersion = ::LoadExtensionVersion(pDesc->GetAttribute(VERSION_ATTRIB));
-	if (dwVersion == 0)
-		{
-		Ctx.sError = strPatternSubst(CONSTLIT("Unable to load extension: incompatible version: %s"), pDesc->GetAttribute(VERSION_ATTRIB));
-		return ERR_FAIL;
-		}
-
-	//	Load UNID
-
-	DWORD dwUNID = pDesc->GetAttributeInteger(UNID_ATTRIB);
-
-	//	See if this is registered
-	//	LATER: For now, this is hard-coded
-
-	bool bIsRegistered = (dwUNID == 0x00300000) 
-			|| (dwUNID == 0x00200000)
-			|| ((dwUNID & 0xF0000000) == 0xA0000000);
-
-	//	Make sure that unregistered extensions are in the correct ranage
-
-	if (!bIsRegistered)
-		{
-		DWORD dwDomain = (dwUNID & 0xF0000000);
-		if (dwDomain < 0xA0000000 || dwDomain > 0xEFFFFFFF)
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Invalid extension UNID: %x"), dwUNID);
-			return ERR_FAIL;
-			}
-		}
-
-	//	Create structure
-
-	SExtensionDesc *pEntry;
-	if (error = AddExtension(Ctx, extExtension, dwUNID, bDefaultResource, &pEntry))
-		return error;
-
-	pEntry->dwVersion = dwVersion;
-	pEntry->bRegistered = bIsRegistered;
-	pEntry->bEnabled = true;
-	pEntry->bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
-
-	//	Load name
-
-	pEntry->sName = pDesc->GetAttribute(NAME_ATTRIB);
-	if (pEntry->sName.IsBlank())
-		pEntry->sName = strPatternSubst(CONSTLIT("Extension %x"), dwUNID);
-
-	//	Load credits (we parse them into a string array)
-
-	CString sCredits = pDesc->GetAttribute(CREDITS_ATTRIB);
-	if (!sCredits.IsBlank())
-		strDelimitEx(sCredits, ';', DELIMIT_TRIM_WHITESPACE, 0, &pEntry->Credits);
-
-	//	Load extends attrib
-
-	CString sExtends = pDesc->GetAttribute(EXTENDS_ATTRIB);
-	if (!sExtends.IsBlank())
-		{
-		TArray<CString> Extends;
-		strDelimitEx(sExtends, ';', DELIMIT_TRIM_WHITESPACE, 0, &Extends);
-		for (i = 0; i < Extends.GetCount(); i++)
-			{
-			DWORD dwUNID = strToInt(Extends[i], INVALID_UNID);
-			if (dwUNID != INVALID_UNID)
-				pEntry->Extends.Insert(dwUNID);
-			}
-		}
-
-	//	If we're an extension in the default resource, load modules
-
-	if (bDefaultResource)
-		{
-		CXMLElement *pModules = pDesc->GetContentElementByTag(MODULES_TAG);
-		if (pModules)
-			{
-			for (i = 0; i < pModules->GetContentElementCount(); i++)
-				{
-				CXMLElement *pModule = pModules->GetContentElement(i);
-				CString sModule = pModule->GetAttribute(FILENAME_ATTRIB);
-				if (!sModule.IsBlank())
-					pEntry->Modules.Insert(sModule);
-				}
-			}
-		}
-
-	//	Done
-
-	*retpExtension = pEntry;
-
-	return NOERROR;
 	}
 
 void CDesignCollection::ReadDynamicTypes (SUniverseLoadCtx &Ctx)
@@ -1444,107 +990,6 @@ void CDesignCollection::Reinit (void)
 		}
 	}
 
-void CDesignCollection::SelectAdventure (CAdventureDesc *pAdventure)
-
-//	SelectAdventure
-//
-//	Enable the given adventure and disable all other adventures
-
-	{
-	int i;
-
-	m_pAdventureDesc = pAdventure;
-	DWORD dwUNID = pAdventure->GetExtensionUNID();
-
-	for (i = 0; i < GetExtensionCount(); i++)
-		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		if (pEntry->iType == extAdventure)
-			pEntry->bEnabled = (pEntry->dwUNID == dwUNID);
-		}
-	}
-
-ALERROR CDesignCollection::SelectExtensions (CAdventureDesc *pAdventure, TArray<DWORD> *pExtensionList, bool *retbBindNeeded, CString *retsError)
-
-//	SelectExtensions
-//
-//	Enables all extensions in pExtensionList and disables all others
-//	(if pExtensionList == NULL then we enable all extensions).
-//
-//	Returns an error if an extension on the list could not be found.
-
-	{
-	int i;
-	bool bBindNeeded = false;
-
-	TArray<bool> OldState;
-	OldState.InsertEmpty(GetExtensionCount());
-
-	//	Disable all extensions
-
-	for (i = 0; i < GetExtensionCount(); i++)
-		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		if (pEntry->iType == extExtension)
-			{
-			OldState[i] = pEntry->bEnabled;
-			pEntry->bEnabled = false;
-			}
-		}
-
-	//	Enable all extensions in the list
-
-	if (pExtensionList)
-		{
-		for (i = 0; i < pExtensionList->GetCount(); i++)
-			{
-			SExtensionDesc *pEntry = FindExtension(pExtensionList->GetAt(i));
-			if (pEntry == NULL || pEntry->iType == extAdventure)
-				{
-				if (retsError)
-					*retsError = strPatternSubst(CONSTLIT("Unable to find extension: %x"), pExtensionList->GetAt(i));
-				return ERR_NOTFOUND;
-				}
-
-			if (pEntry->iType == extExtension
-					&& IsExtensionCompatibleWithAdventure(pEntry, pAdventure))
-				pEntry->bEnabled = true;
-			}
-		}
-	else
-		{
-		//	Enable all extensions
-
-		for (i = 0; i < GetExtensionCount(); i++)
-			{
-			SExtensionDesc *pEntry = GetExtension(i);
-			if (pEntry->iType == extExtension 
-					&& IsExtensionCompatibleWithAdventure(pEntry, pAdventure)
-					&& (!pEntry->bDebugOnly || g_pUniverse->InDebugMode()))
-				pEntry->bEnabled = true;
-			}
-		}
-
-	//	See if we made any changes
-
-	for (i = 0; i < GetExtensionCount(); i++)
-		{
-		SExtensionDesc *pEntry = GetExtension(i);
-		if (pEntry->iType == extExtension && pEntry->bEnabled != OldState[i])
-			{
-			bBindNeeded = true;
-			break;
-			}
-		}
-
-	//	Done
-
-	if (retbBindNeeded)
-		*retbBindNeeded = bBindNeeded;
-
-	return NOERROR;
-	}
-
 void CDesignCollection::SweepImages (void)
 
 //	SweepImages
@@ -1581,82 +1026,7 @@ void CDesignCollection::WriteDynamicTypes (IWriteStream *pStream)
 		m_DynamicUNIDs.atom_GetKey((DWORD)i).WriteToStream(pStream);
 	}
 
-//	CDesignTable --------------------------------------------------------------
-
-ALERROR CDesignTable::AddEntry (CDesignType *pEntry)
-
-//	AddEntry
-//
-//	Adds an entry to the table
-
-	{
-	m_Table.Insert(pEntry->GetUNID(), pEntry);
-	return NOERROR;
-	}
-
-ALERROR CDesignTable::AddOrReplaceEntry (CDesignType *pEntry, CDesignType **retpOldEntry)
-
-//	AddOrReplaceEntry
-//
-//	Adds or replaces an entry
-
-	{
-	bool bAdded;
-	CDesignType **pSlot = m_Table.SetAt(pEntry->GetUNID(), &bAdded);
-
-	if (retpOldEntry)
-		*retpOldEntry = (!bAdded ? *pSlot : NULL);
-
-	*pSlot = pEntry;
-
-	return NOERROR;
-	}
-
-void CDesignTable::DeleteAll (void)
-
-//	DeleteAll
-//
-//	Removes all entries and deletes the object that they point to
-
-	{
-	int i;
-
-	if (m_bFreeTypes)
-		{
-		for (i = 0; i < GetCount(); i++)
-			delete GetEntry(i);
-		}
-
-	m_Table.DeleteAll();
-	}
-
-CDesignType *CDesignTable::FindByUNID (DWORD dwUNID) const
-
-//	FindByUNID
-//
-//	Returns a pointer to the given entry or NULL
-
-	{
-	CDesignType **pObj = m_Table.GetAt(dwUNID);
-	return (pObj ? *pObj : NULL);
-	}
-
-void CDesignTable::Delete (DWORD dwUNID)
-
-//	Delete
-//
-//	Delete by UNID
-
-	{
-	int iIndex;
-	if (m_Table.FindPos(dwUNID, &iIndex))
-		{
-		if (m_bFreeTypes)
-			delete m_Table[iIndex];
-
-		m_Table.Delete(iIndex);
-		}
-	}
+//	CDesignList ----------------------------------------------------------------
 
 void CDesignList::Delete (DWORD dwUNID)
 

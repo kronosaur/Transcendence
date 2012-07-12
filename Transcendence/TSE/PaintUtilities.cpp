@@ -80,6 +80,49 @@ void ComputeLightningPoints (int iCount, Metric *pxPoint, Metric *pyPoint, Metri
 		ComputeLightningPoints(iCount - iMiddle, pxPoint + iMiddle, pyPoint + iMiddle, rChaos);
 	}
 
+void ComputeLightningPoints (int iCount, CVector *pPoints, Metric rChaos)
+
+//	ComputeLightningPoints
+//
+//	Computes points for lightning using a simple fractal algorithm. We assume
+//	that pxPoint[0],pyPoint[0] is the starting point and pxPoint[iCount-1],pyPoint[iCount-1]
+//	is the ending point.
+
+	{
+	ASSERT(iCount > 2);
+
+	//	Line
+
+	CVector vLine = (pPoints[iCount - 1] - pPoints[0]);
+
+	//	Half the line
+
+	CVector vLineHalf = vLine / 2.0;
+
+	//	Perpendicular half-line
+
+	CVector vDelta = vLineHalf.Perpendicular();
+
+	//	Center point
+
+	CVector vCenter = pPoints[0] + vLineHalf;
+
+	//	Perturb the line
+
+	Metric rOffset = (mathRandom(-100, 100) / 100.0) * rChaos;
+
+	int iMiddle = iCount / 2;
+	pPoints[iMiddle] = vCenter + vDelta * rOffset;
+
+	//	Recurse
+
+	if (iMiddle > 1)
+		ComputeLightningPoints(iMiddle+1, pPoints, rChaos);
+
+	if (iCount - iMiddle > 2)
+		ComputeLightningPoints(iCount - iMiddle, pPoints + iMiddle, rChaos);
+	}
+
 void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType)
 
 //	DrawItemTypeIcon
@@ -97,7 +140,7 @@ void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType)
 				RectWidth(rcImage),
 				RectHeight(rcImage),
 				255,
-				Image.GetImage(),
+				Image.GetImage(NULL_STR),
 				x,
 				y);
 		}

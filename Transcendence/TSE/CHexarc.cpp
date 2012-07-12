@@ -5,6 +5,7 @@
 
 #include "PreComp.h"
 
+#define TYPE_AEON_BINARY						CONSTLIT("AEON2011:binary:v1")
 #define TYPE_AEON_ERROR							CONSTLIT("AEON2011:hexeError:v1")
 #define TYPE_AEON_IPINTEGER						CONSTLIT("AEON2011:ipInteger:v1")
 
@@ -189,6 +190,31 @@ bool CHexarc::CreateCredentials (const CString &sUsername, const CString &sPassw
 	return true;
 	}
 
+CString CHexarc::GetFilenameFromFilePath (const CString &sFilePath)
+
+//	GetFilenameFromFilePath
+//
+//	Parses a Multiverse filePath and returns the filename.
+
+	{
+	char *pPosStart = sFilePath.GetASCIIZPointer();
+	char *pPos = pPosStart + sFilePath.GetLength() - 1;
+
+	//	Back up until we see the first slash.
+
+	while (pPos >= pPosStart && *pPos != '/')
+		pPos--;
+
+	//	Found
+
+	if (*pPos == '/')
+		return CString(pPos + 1);
+
+	//	Never found slash; return entire string
+
+	return sFilePath;
+	}
+
 bool CHexarc::HasSpecialAeonChars (const CString &sValue)
 
 //	HasSpecialAeonChars
@@ -228,6 +254,49 @@ bool CHexarc::HasSpecialAeonChars (const CString &sValue)
 		}
 
 	return false;
+	}
+
+bool CHexarc::IsBinary (const CJSONValue &Value, CString *retsData)
+
+//	IsBinary
+//
+//	Returns TRUE if the JSON value is a binary value (and optionally returns
+//	it).
+
+	{
+	if (!strEquals(Value.GetElement(0).AsString(), TYPE_AEON_BINARY))
+		return false;
+
+	if (retsData == NULL)
+		return true;
+
+	const CString &sEncoded = Value.GetElement(1).AsString();
+	CMemoryReadStream Stream(sEncoded.GetASCIIZPointer(), sEncoded.GetLength());
+	if (Stream.Open() != NOERROR)
+		return false;
+
+	CBase64Decoder Decoder(&Stream);
+	if (Decoder.Open() != NOERROR)
+		return false;
+
+	//	Read the length
+
+	DWORD dwLength;
+	Decoder.Read((char *)&dwLength, sizeof(DWORD));
+	if (dwLength == 0)
+		{
+		*retsData = NULL_STR;
+		return true;
+		}
+
+	//	Read the buffer
+
+	char *pPos = retsData->GetWritePointer(dwLength);
+	Decoder.Read(pPos, dwLength);
+
+	//	Done
+
+	return true;
 	}
 
 bool CHexarc::IsError (const CJSONValue &Value, CString *retsError, CString *retsDesc)

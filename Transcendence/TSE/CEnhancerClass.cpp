@@ -40,13 +40,15 @@ ALERROR CEnhancerClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 //	Load device data from XML
 
 	{
+	ALERROR error;
 	CEnhancerClass *pDevice;
 
 	pDevice = new CEnhancerClass;
 	if (pDevice == NULL)
 		return ERR_MEMORY;
 
-	pDevice->InitDeviceFromXML(Ctx, pDesc, pType);
+	if (error = pDevice->InitDeviceFromXML(Ctx, pDesc, pType))
+		return error;
 
 	//	The old style is to have an array of damage adj; the new way is to just
 	//	have a single damage adj and a criteria

@@ -20,10 +20,14 @@
 #define INCL_XMLUTIL
 
 class CExternalEntityTable;
+class CXMLElement;
 
 class IXMLParserController
 	{
 	public:
+		virtual ~IXMLParserController (void) { }
+
+		virtual void OnOpenTag (CXMLElement *pElement) { }
 		virtual CString ResolveExternalEntity (const CString &sName, bool *retbFound = NULL) = 0;
 	};
 
@@ -47,6 +51,7 @@ class CXMLElement : public CObject
 								 CString *retsError,
 								 CExternalEntityTable *retEntityTable = NULL);
 		static ALERROR ParseEntityTable (IReadBlock *pStream, CExternalEntityTable *retEntityTable, CString *retsError);
+		static ALERROR ParseRootElement (IReadBlock *pStream, CXMLElement **retpRoot, CExternalEntityTable *retEntityTable, CString *retsError);
 		static ALERROR ParseRootTag (IReadBlock *pStream, CString *retsTag);
 
 		ALERROR AddAttribute (const CString &sAttribute, const CString &sValue);

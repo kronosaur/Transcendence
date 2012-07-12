@@ -50,6 +50,8 @@
 
 #define CMD_NULL								CONSTLIT("null")
 
+#define CMD_POST_CRASH_REPORT					CONSTLIT("cmdPostCrashReport")
+
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
 #define CMD_GAME_END_DESTROYED					CONSTLIT("gameEndDestroyed")
@@ -66,7 +68,12 @@
 #define CMD_MODEL_NEW_GAME_CREATED				CONSTLIT("modelNewGameCreated")
 
 #define CMD_SERVICE_ACCOUNT_CHANGED				CONSTLIT("serviceAccountChanged")
+#define CMD_SERVICE_COLLECTION_LOADED			CONSTLIT("serviceCollectionLoaded")
+#define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
+#define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
+#define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
+#define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
 
 #define CMD_SESSION_STATS_DONE					CONSTLIT("sessionStatsDone")
 #define CMD_SESSION_EPILOGUE_DONE				CONSTLIT("sessionEpilogueDone")
@@ -84,8 +91,20 @@
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 
+#define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Downloads")
+
+#define ID_MULTIVERSE_STATUS_SEQ				CONSTLIT("idMultiverseStatusSeq")
+#define ID_MULTIVERSE_STATUS_TEXT				CONSTLIT("idMultiverseStatusText")
+
 #define DEBUG_LOG_FILENAME						CONSTLIT("Debug.log")
 #define SETTINGS_FILENAME						CONSTLIT("Settings.xml")
+
+#define PROP_COLOR								CONSTLIT("color")
+#define PROP_FONT								CONSTLIT("font")
+#define PROP_OPACITY							CONSTLIT("opacity")
+#define PROP_POSITION							CONSTLIT("position")
+#define PROP_SCALE								CONSTLIT("scale")
+#define PROP_TEXT								CONSTLIT("text")
 
 #define ERR_CANT_LOAD_GAME						CONSTLIT("Unable to load game")
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
@@ -94,7 +113,82 @@
 #define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
 
-const DWORD SERVICE_HOUSEKEEPING_INTERVAL =		1000 * 60; 
+const DWORD SERVICE_HOUSEKEEPING_INTERVAL =		1000 * 60;
+
+void CTranscendenceController::DisplayMultiverseStatus (const CString &sStatus, bool bError)
+
+//	DisplayMultiverseStatus
+//
+//	Displays a line of status on the current session (if appropriate). If 
+//	sStatus is NULL then we clear the status.
+
+	{
+	//	We don't display status in all states
+
+	switch (m_iState)
+		{
+		case stateIntro:
+		case stateEndGameStats:
+			break;
+
+		default:
+			return;
+		}
+
+	//	Get a hold of the Reanimator object
+
+	IHISession *pSession = m_HI.GetTopSession();
+	if (pSession == NULL)
+		return;
+
+	CReanimator &Reanimator = pSession->HIGetReanimator();
+
+	//	Prepare some visuals
+
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
+
+	//	Get the appropriate performance
+
+	IAnimatron *pAni = Reanimator.GetPerformance(ID_MULTIVERSE_STATUS_SEQ);
+	if (pAni == NULL)
+		{
+		//	Start by creating a sequencer to use as a container
+
+		const int TOP_SPACING = 8;
+
+		RECT rcRect;
+		VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+
+		CAniSequencer *pRoot;
+		CAniSequencer::Create(CVector(rcRect.left, rcRect.bottom - (MediumFont.GetHeight() + TOP_SPACING)), &pRoot);
+
+		Reanimator.AddPerformance(pRoot, ID_MULTIVERSE_STATUS_SEQ);
+		Reanimator.StartPerformance(ID_MULTIVERSE_STATUS_SEQ);
+
+		pAni = pRoot;
+
+		//	Now create a text element
+
+		IAnimatron *pStatus = new CAniText;
+		pStatus->SetID(ID_MULTIVERSE_STATUS_TEXT);
+		pStatus->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
+		pStatus->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogLabel));
+		pStatus->SetPropertyFont(PROP_FONT, &MediumFont);
+
+		pRoot->AddTrack(pStatus, 0);
+		}
+
+	//	Find the appropriate control
+
+	IAnimatron *pStatus;
+	if (!pAni->FindElement(ID_MULTIVERSE_STATUS_TEXT, &pStatus))
+		return;
+
+	//	Set the text element
+
+	pStatus->SetPropertyString(PROP_TEXT, sStatus);
+	}
 
 ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Options)
 
@@ -125,7 +219,7 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 
 		//	Report to Debug.log but otherwise continue
 
-		kernelDebugLogMessage("Error loading %s: %s", SETTINGS_FILENAME.GetASCIIZPointer(), sError.GetASCIIZPointer());
+		kernelDebugLogMessage("Error loading %s: %s", SETTINGS_FILENAME, sError);
 		}
 
 	//	Allow the command line to override some options
@@ -269,32 +363,25 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		g_pTrans->StartIntro(CTranscendenceWnd::isOpeningTitles);
 		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		}
 
 	//	New game started; adventure selected
 
 	else if (strEquals(sCmd, CMD_GAME_ADVENTURE))
 		{
-		DWORD dwAdventure = (DWORD)pData;
-
-		//	Get some information about the adventure before we kick off the 
-		//	thread (we don't want to touch m_Universe while a background thread
-		//	is accessing it).
-
-		CString sAdventureName;
-		CAdventureDesc *pAdventure = g_pUniverse->FindAdventureDesc(dwAdventure);
-		if (pAdventure)
+		CExtension *pAdventure = (CExtension *)pData;
+		if (pAdventure == NULL)
 			{
-			sAdventureName = pAdventure->GetName();
+			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, CONSTLIT("Unknown adventure"), CMD_UI_BACK_TO_INTRO));
+			return NOERROR;
 			}
-		else
-			{
-			sAdventureName = CONSTLIT("Unknown Adventure");
-			}
+
+		CString sAdventureName = pAdventure->GetName();
 
 		//	Kick-off background thread to initialize the adventure
 
-		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, dwAdventure), this, CMD_MODEL_ADVENTURE_INIT_DONE);
+		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, pAdventure->GetUNID()), this, CMD_MODEL_ADVENTURE_INIT_DONE);
 
 		//	Show transition session while we load
 
@@ -350,6 +437,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_HI.ShowSession(new CLegacySession(m_HI));
 		g_pTrans->StartIntro(CTranscendenceWnd::isBlank);
 		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		}
 
 	//	New game
@@ -363,7 +451,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (error = m_Model.StartNewGame(m_Service.GetUsername(), *pNewGame, &sError))
 			{
 			sError = strPatternSubst(CONSTLIT("Unable to begin new game: %s"), sError);
-			kernelDebugLogMessage(sError.GetASCIIZPointer());
+			kernelDebugLogMessage(sError);
 
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
@@ -443,6 +531,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
+			kernelDebugLogMessage(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -464,7 +553,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (bResurrected)
 			g_pTrans->m_State = CTranscendenceWnd::gsInGame;
 		else
+			{
+			//	Clean up game state
+
+			g_pTrans->CleanUpDisplays();
+
+			//	Epilogue
+
 			HICommand(CMD_UI_START_EPILOGUE);
+			}
 		}
 
 	//	Save and exit
@@ -474,11 +571,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (error = m_Model.EndGameSave(&sError))
 			g_pTrans->DisplayMessage(sError);
 
+		//	Clean up game state
+
+		g_pTrans->CleanUpDisplays();
+
 		//	Back to intro screen
 
 		m_HI.ShowSession(new CLegacySession(m_HI));
 		g_pTrans->StartIntro(CTranscendenceWnd::isShipStats);
 		m_iState = stateIntro;
+		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		}
 
 	//	Player has entered final stargate and the game is over
@@ -486,6 +588,13 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_ENTER_FINAL_STARGATE))
 		{
 		m_Model.EndGameStargate();
+
+		//	Clean up game state
+
+		g_pTrans->CleanUpDisplays();
+
+		//	Epilogue
+
 		HICommand(CMD_UI_START_EPILOGUE);
 		}
 
@@ -513,7 +622,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	If we have no crawl image, then go straight to intro
 
-		CG16bitImage *pCrawlImage = g_pUniverse->GetLibraryBitmap(m_Model.GetCrawlImage());
+		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
 		const CString &sCrawlText = m_Model.GetCrawlText();
 		if (pCrawlImage == NULL)
 			{
@@ -536,29 +645,22 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CGameStats Stats;
 		m_Model.GetGameStats(&Stats);
 
-		//	Publish game record
+		//	Publish game record. We always post and allow the service 
+		//	implementation to decide whether to post or not (based on whether
+		//	the game is registered).
 
-		if (m_Service.HasCapability(ICIService::postGameRecord)
-				&& g_pUniverse->IsStatsPostingEnabled())
+		DWORD dwFlags = 0;
+		if (m_Service.HasCapability(ICIService::canPostGameRecord))
 			{
 			m_HI.AddBackgroundTask(new CPostRecordTask(m_HI, m_Service, m_Model.GetGameRecord(), Stats));
+
+			dwFlags |= CStatsSession::SHOW_TASK_PROGRESS;
 			}
 
 		//	Show stats
 
 		if (Stats.GetCount() > 0)
 			{
-			DWORD dwFlags = 0;
-
-			//	Post stats to service (in the background)
-			//	The tasks takes a copy of the stats
-			if (m_Service.HasCapability(ICIService::postGameStats) 
-					&& g_pUniverse->IsStatsPostingEnabled())
-				{
-				m_HI.AddBackgroundTask(new CPostStatsTask(m_HI, m_Service, Stats));
-				dwFlags |= CStatsSession::SHOW_TASK_PROGRESS;
-				}
-
 			//	The session takes handoff of the stats
 			m_HI.ShowSession(new CStatsSession(m_HI, Stats, dwFlags));
 			m_iState = stateEndGameStats;
@@ -568,6 +670,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			m_HI.ShowSession(new CLegacySession(m_HI));
 			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
 			m_iState = stateIntro;
+			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			}
 		}
 
@@ -583,6 +686,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			m_HI.ShowSession(new CLegacySession(m_HI));
 			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
 			m_iState = stateIntro;
+			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			}
 
 		//	Otherwise, we're in a popup that we can dismiss
@@ -663,7 +767,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		//	If we're not logged in, log in first.
 
-		if (!m_Service.HasCapability(ICIService::getUserProfile))
+		if (!m_Service.HasCapability(ICIService::canGetUserProfile))
 			{
 			//	We pass the uiShowProfile command to the login session. On
 			//	success, it will fire the command.
@@ -705,7 +809,103 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_ACCOUNT_CHANGED))
 		{
-		g_pTrans->OnAccountChanged();
+		//	Modify Multiverse state
+
+		if (m_Service.HasCapability(ICIService::canGetUserProfile))
+			m_Multiverse.OnUserSignedIn(m_Service.GetUsername());
+		else
+			m_Multiverse.OnUserSignedOut();
+
+		//	If we're signed in then we should load the user's collection from
+		//	the service.
+
+		if (m_Multiverse.IsLoadCollectionNeeded() && m_Service.HasCapability(ICIService::canLoadUserCollection))
+			{
+			//	Start a task to load the collection (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), this, CMD_SERVICE_COLLECTION_LOADED);
+			}
+
+		//	Now change the UI
+
+		g_pTrans->OnAccountChanged(m_Multiverse);
+		}
+
+	//	Collection has been loaded
+
+	else if (strEquals(sCmd, CMD_SERVICE_COLLECTION_LOADED))
+		{
+		//	Set registration status
+
+		CMultiverseCollection Collection;
+		if (m_Multiverse.GetCollection(&Collection) != NOERROR)
+			return NOERROR;
+
+		TArray<CMultiverseCatalogEntry *> Download;
+		g_pUniverse->SetRegisteredExtensions(Collection, &Download);
+
+		//	Request download. If a request was made then begin a background
+		//	task to process the download.
+
+		if (RequestCatalogDownload(Download))
+			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		}
+
+	//	Service status
+
+	else if (strEquals(sCmd, CMD_SERVICE_ERROR))
+		{
+		CString *pState = (CString *)pData;
+
+		if (pState)
+			{
+			m_Multiverse.SetServiceStatus(*pState);
+			DisplayMultiverseStatus(*pState, true);
+			delete pState;
+			}
+		else
+			{
+			m_Multiverse.SetServiceStatus(NULL_STR);
+			DisplayMultiverseStatus(NULL_STR, true);
+			}
+		}
+
+	//	Need to continue downloading
+
+	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_IN_PROGRESS))
+		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+
+	//	Extension file downloaded
+
+	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_DOWNLOADED))
+		{
+		//	Add a task to load the newly downloaded extension
+
+		CString *pFilespec = (CString *)pData;
+		m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pFilespec));
+		delete pFilespec;
+
+		//	Continue downloading
+
+		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		}
+
+	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
+		{
+		CString *pState = (CString *)pData;
+
+		if (pState)
+			{
+			m_Multiverse.SetServiceStatus(*pState);
+			DisplayMultiverseStatus(*pState);
+			delete pState;
+			}
+		else
+			{
+			m_Multiverse.SetServiceStatus(NULL_STR);
+			DisplayMultiverseStatus(NULL_STR);
+			}
 		}
 
 	//	Sign out
@@ -738,6 +938,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	LATER: This should be an m_HI method
 		::SendMessage(m_HI.GetHWND(), WM_CLOSE, 0, 0);
 		}
+
+	//	Crash report
+
+	else if (strEquals(sCmd, CMD_POST_CRASH_REPORT))
+		{
+		CString *pCrashReport = (CString *)pData;
+		m_HI.AddBackgroundTask(new CPostCrashReportTask(m_HI, m_Service, *pCrashReport));
+		delete pCrashReport;
+		}
+
+	//	Else we did not handle it
+
+	else
+		return ERR_NOTFOUND;
 
 	return NOERROR;
 	}
@@ -784,6 +998,13 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	if (error = m_Service.InitPrivateData())
 		return error;
+
+	//	Initialize the Multiverse model based on current service states.
+
+	if (!m_Service.HasCapability(ICIService::loginUser))
+		m_Multiverse.SetDisabled();
+	else if (m_Service.HasCapability(ICIService::cachedUser))
+		m_Multiverse.SetUsername(m_Service.GetUsername());
 
 	//	Add a timer so that services can do some background processing.
 
@@ -868,6 +1089,49 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 		m_Model.SaveHighScoreList();
 		m_Settings.Save(SETTINGS_FILENAME);
 		}
+	}
+
+bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads)
+
+//	RequestCatalogDownload
+//
+//	Initiates a request to download file. We return TRUE if we made the request.
+//	FALSE otherwise.
+
+	{
+	int i;
+
+	//	If nothing to do then we're done.
+
+	if (Downloads.GetCount() == 0)
+		return false;
+
+	//	Make sure that we have the Downloads folder
+
+	if (!pathExists(FILESPEC_DOWNLOADS_FOLDER))
+		pathCreate(FILESPEC_DOWNLOADS_FOLDER);
+
+	//	If we have to download extensions, do it now.
+
+	for (i = 0; i < Downloads.GetCount(); i++)
+		{
+		//	Get the name of the filePath of the file to download
+
+		const CString &sFilePath = Downloads[i]->GetTDBFileRef().GetFilePath();
+
+		//	Generate a path to download to
+
+		CString sFilespec = pathAddComponent(FILESPEC_DOWNLOADS_FOLDER, CHexarc::GetFilenameFromFilePath(sFilePath));
+
+		//	Request a download. (We can do this synchronously because it
+		//	doesn't take long and the call is thread-safe).
+
+		m_Service.RequestExtensionDownload(sFilePath, sFilespec);
+		}
+
+	//	Done
+
+	return true;
 	}
 
 void CTranscendenceController::SetOptionBoolean (int iOption, bool bValue)

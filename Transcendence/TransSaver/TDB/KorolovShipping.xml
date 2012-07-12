@@ -71,17 +71,17 @@
 
 		<Armor>
 			<ArmorSection start="345" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="315" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="285" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="255" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="225" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="315" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="285" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
 			<ArmorSection start="195" span="30" armorID="&itHeavyTitaniumPlate;" />
 			<ArmorSection start="165" span="30" armorID="&itHeavyTitaniumPlate;" />
 			<ArmorSection start="135" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="105" span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="75"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="45"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
-			<ArmorSection start="15"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritial="general"/>
+			<ArmorSection start="105" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
+			<ArmorSection start="15"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
 		</Armor>
 
 		<Devices>
@@ -153,17 +153,17 @@
 
 		<Armor>
 			<ArmorSection start="345" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="315" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="285" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="255" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="225" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="315" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="285" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="255" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="225" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
 			<ArmorSection start="195" span="30" armorID="&itLightPlasteelPlate;" />
 			<ArmorSection start="165" span="30" armorID="&itLightPlasteelPlate;" />
 			<ArmorSection start="135" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="105" span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="75"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="45"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
-			<ArmorSection start="15"  span="30" armorID="&itLightPlasteelPlate;" nonCritial="general"/>
+			<ArmorSection start="105" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="75"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="45"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+			<ArmorSection start="15"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
 		</Armor>
 
 		<Devices>

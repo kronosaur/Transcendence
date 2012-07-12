@@ -2044,6 +2044,7 @@ CSpaceObject *CStandardShipAI::OnGetBase (void) const
 		{
 		case IShipController::orderDock:
 		case IShipController::orderGuard:
+		case IShipController::orderOrbit:
 		case IShipController::orderPatrol:
 			return GetCurrentOrderTarget();
 
@@ -2137,7 +2138,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				{
 				//	If a friend destroyed our target then thank them
 
-				if (Ctx.Attacker.IsCausedByFriendOf(m_pShip))
+				if (Ctx.Attacker.IsCausedByFriendOf(m_pShip) && Ctx.Attacker.GetObj())
 					m_pShip->Communicate(Ctx.Attacker.GetObj(), msgNiceShooting);
 
 				SetState(stateNone);
@@ -2184,7 +2185,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 					{
 					CancelCurrentOrder();
 
-					if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip))
+					if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) && Ctx.Attacker.GetObj())
 						AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), 0);
 					else
 						AddOrder(IShipController::orderAttackNearestEnemy, NULL, 0);
