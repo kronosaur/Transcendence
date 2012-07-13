@@ -846,6 +846,14 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 
 		DWORD dwUNID = pType->GetUNID();
 
+		//	Can't use the reserved range
+
+		if (IsReservedUNID(dwUNID))
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Cannot use reserved UNID: %x"), dwUNID);
+			return ERR_FAIL;
+			}
+
 		//	Add to our list
 
 		if (error = m_DesignTypes.AddEntry(pType))

@@ -62,6 +62,13 @@ int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitRe
 
 	SEdgeState *EdgeTableBuffer = new SEdgeState [iVertexCount];
 	BuildGlobalEdgeTable(iVertexCount, pVertexList, EdgeTableBuffer);
+	if (g_pGET == NULL)
+		{
+		delete [] EdgeTableBuffer;
+		delete [] g_pRuns;
+		g_pRuns = NULL;
+		return 0;
+		}
 
 	//	Active Edge Table is empty
 

@@ -31,15 +31,20 @@ ALERROR CDynamicDesignTable::Compile (SEntry *pEntry, CDesignType **retpType, CS
 	{
 	ALERROR error;
 
+	//	Create an entity resolver
+
+	CEntityResolverList Resolver;
+	if (pEntry->pExtension)
+		g_pUniverse->InitEntityResolver(pEntry->pExtension, &Resolver);
+
 	//	Parse the XML
 
-	CExternalEntityTable *pEntities = (pEntry->pExtension ? pEntry->pExtension->GetEntities() : NULL);
 	CXMLElement *pDesc;
 	CBufferReadBlock Source(pEntry->sSource);
 
 	//	Parse
 
-	if (error = CXMLElement::ParseXML(&Source, pEntities, &pDesc, retsError))
+	if (error = CXMLElement::ParseXML(&Source, &Resolver, &pDesc, retsError))
 		return error;
 
 	//	Set the UNID properly
@@ -138,10 +143,18 @@ void CDynamicDesignTable::ReadFromStream (SUniverseLoadCtx &Ctx)
 		SEntry *pEntry = m_Table.Insert(dwUNID);
 		pEntry->dwUNID = dwUNID;
 
-		DWORD dwExtension;
-		Ctx.pStream->Read((char *)&dwExtension, sizeof(DWORD));
+		DWORD dwExtensionUNID;
+		Ctx.pStream->Read((char *)&dwExtensionUNID, sizeof(DWORD));
 
-		if (!g_pUniverse->FindExtension(dwExtension, 0, CExtension::folderUnknown, &pEntry->pExtension))
+		DWORD dwRelease;
+		if (Ctx.dwVersion >= 15)
+			Ctx.pStream->Read((char *)&dwRelease, sizeof(DWORD));
+		else
+			dwRelease = 0;
+
+		//	Load the extension
+
+		if (!g_pUniverse->FindExtension(dwExtensionUNID, dwRelease, &pEntry->pExtension))
 			//	LATER: Need to return error
 			pEntry->pExtension = NULL;
 
@@ -167,6 +180,7 @@ void CDynamicDesignTable::WriteToStream (IWriteStream *pStream)
 //	for each type
 //	DWORD		Type UNID
 //	DWORD		Extension UNID
+//	DWORD		Extension release
 //	CString		XML Source
 
 	{
@@ -181,6 +195,9 @@ void CDynamicDesignTable::WriteToStream (IWriteStream *pStream)
 		pStream->Write((char *)&pEntry->dwUNID, sizeof(DWORD));
 
 		dwSave = (pEntry->pExtension ? pEntry->pExtension->GetUNID() : 0);
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+		dwSave = (pEntry->pExtension ? pEntry->pExtension->GetRelease() : 0);
 		pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 		pEntry->sSource.WriteToStream(pStream);

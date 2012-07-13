@@ -147,7 +147,10 @@ void CSoundMgr::CleanUp (void)
 		}
 
 	if (m_hMusic)
+		{
 		::DestroyWindow(m_hMusic);
+		m_hMusic = NULL;
+		}
 	}
 
 void CSoundMgr::CleanUpChannel (SChannel &Channel)

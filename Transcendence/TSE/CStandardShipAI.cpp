@@ -886,6 +886,8 @@ void CStandardShipAI::OnBehavior (void)
 
 			if (m_pShip->IsDestinyTime(30))
 				{
+				DEBUG_AI_TRY
+				
 				CSpaceObject *pPrincipal = GetCurrentOrderTarget();
 				CSpaceObject *pTarget = CalcEnemyShipInRange(pPrincipal, PATROL_SENSOR_RANGE, m_pDest);
 				if (pTarget)
@@ -895,6 +897,8 @@ void CStandardShipAI::OnBehavior (void)
 					ASSERT(m_pTarget->DebugIsValid() && m_pTarget->NotifyOthersWhenDestroyed());
 					DEBUG_COMBAT_OUTPUT("Patrol: Attack target");
 					}
+
+				DEBUG_AI_CATCH
 				}
 
 			break;
@@ -2377,13 +2381,15 @@ bool EnemyStationsAtBearing (CSpaceObject *pShip, int iBearing, Metric rRange)
 //	any enemies within an rRange radius of that point, we return TRUE.
 
 	{
+	DEBUG_AI_TRY
+
 	int i;
 
 	//	Get the sovereign
 
 	CSovereign *pSovereign = pShip->GetSovereign();
 	if (pSovereign == NULL || pShip->GetSystem() == NULL)
-		return NULL;
+		return false;
 
 	//	Get the list of enemy objects
 
@@ -2408,6 +2414,8 @@ bool EnemyStationsAtBearing (CSpaceObject *pShip, int iBearing, Metric rRange)
 				return true;
 			}
 		}
+
+	DEBUG_AI_CATCH
 
 	return false;
 	}

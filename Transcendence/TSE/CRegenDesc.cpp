@@ -94,28 +94,55 @@ int CRegenDesc::GetRegen (int iTick, int iTicksPerCycle)
 	if (m_bEmpty)
 		return 0;
 
-	int iCycleNo = (iTick / iTicksPerCycle) % CYCLES_PER_ERA;
+	//	In normal mode we trickle out HPs evenly over time.
 
-	if (m_iHPPerEraRemainder)
+	if (m_iCyclesPerBurst == 1)
 		{
-		//	Remaining HP are spread out across the entire era.
+		int iCycleNo = (iTick / iTicksPerCycle) % CYCLES_PER_ERA;
 
-		int iRemainderPeriod = CYCLES_PER_ERA / m_iHPPerEraRemainder;
-		if ((iCycleNo % iRemainderPeriod) != 0)
-			return m_iHPPerCycle;
+		if (m_iHPPerEraRemainder)
+			{
+			//	Remaining HP are spread out across the entire era.
 
-		int iLastCycle = iRemainderPeriod * (m_iHPPerEraRemainder - 1);
+			int iRemainderPeriod = CYCLES_PER_ERA / m_iHPPerEraRemainder;
+			if ((iCycleNo % iRemainderPeriod) != 0)
+				return m_iHPPerCycle;
 
-		if (iCycleNo > iLastCycle)
-			return m_iHPPerCycle;
-		
-		return m_iHPPerCycle + 1;
+			int iLastCycle = iRemainderPeriod * (m_iHPPerEraRemainder - 1);
+
+			if (iCycleNo > iLastCycle)
+				return m_iHPPerCycle;
+			
+			return m_iHPPerCycle + 1;
+			}
+
+		return m_iHPPerCycle;
 		}
 
-	return m_iHPPerCycle;
+	//	In burst mode, we regen HPs once per burst (but it all evens out to the
+	//	same amount in the end).
+
+	else
+		{
+		//	Compute the time between bursts as a percent of an era (e.g., 0.5
+		//	means the time between bursts is 1/2 an era).
+
+		Metric rBurstTime = (Metric)m_iCyclesPerBurst / CYCLES_PER_ERA;
+
+		//	Compute the number of HP that we gain on each burst.
+
+		int iHPPerBurst = (int)((GetHPPerEra() * rBurstTime) + 0.5);
+
+		//	See if it is time to burst
+
+		if (((iTick / iTicksPerCycle) % m_iCyclesPerBurst) == 0)
+			return iHPPerBurst;
+		else
+			return 0;
+		}
 	}
 
-void CRegenDesc::Init (int iHPPerEra)
+void CRegenDesc::Init (int iHPPerEra, int iCyclesPerBurst)
 
 //	Init
 //
@@ -124,6 +151,7 @@ void CRegenDesc::Init (int iHPPerEra)
 	{
 	m_iHPPerCycle = iHPPerEra / CYCLES_PER_ERA;
 	m_iHPPerEraRemainder = iHPPerEra % CYCLES_PER_ERA;
+	m_iCyclesPerBurst = iCyclesPerBurst;
 
 	m_bEmpty = (m_iHPPerCycle == 0 && m_iHPPerEraRemainder == 0);
 	}
@@ -191,7 +219,7 @@ ALERROR CRegenDesc::InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime,
 	double rEventsPerEra = 10.0 * iTicksPerEra / iTicksPerEvent10;
 	int iHPPerEra = (int)(rEventsPerEra * iRegenHP);
 
-	Init(iHPPerEra);
+	Init(iHPPerEra, Max(1, (int)(iRegenTime / STD_SECONDS_PER_UPDATE) / iTicksPerCycle));
 
 	return NOERROR;
 	}

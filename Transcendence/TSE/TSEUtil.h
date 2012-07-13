@@ -162,7 +162,7 @@ inline void DebugStopTimer (char *szTiming) { }
 
 const DWORD EXTENSION_VERSION =							3;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						14;
+const DWORD UNIVERSE_SAVE_VERSION =						15;
 const DWORD SYSTEM_SAVE_VERSION =						76;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
@@ -944,7 +944,7 @@ class CRegenDesc
 		int GetHPPerEra (void) const;
 		CString GetReferenceRate (const CString &sUnits, int iTicksPerCycle = 1) const;
 		int GetRegen (int iTick, int iTicksPerCycle = 1);
-		void Init (int iHPPerEra);
+		void Init (int iHPPerEra, int iCyclesPerBurst = 1);
 		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime, int iRegenHP, int iTicksPerCycle = 1);
 		ALERROR InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate, int iTicksPerCycle = 1);
@@ -957,9 +957,12 @@ class CRegenDesc
 		inline bool IsEmpty (void) const { return m_bEmpty; }
 
 	private:
-		bool m_bEmpty;
-		int m_iHPPerCycle;
-		int m_iHPPerEraRemainder;
+		int m_iHPPerCycle;					//	HP gained per cycle
+		int m_iHPPerEraRemainder;			//	Extra HP to gain per era (1 era = 360 cycles)
+
+		int m_iCyclesPerBurst;				//	Regen in bursts; each burst is this many cycles
+
+		bool m_bEmpty;						//	If TRUE, no regen
 	};
 
 //	CodeChain context
@@ -1282,6 +1285,7 @@ CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);
 inline bool IsRegisteredUNID (DWORD dwUNID) { return ((dwUNID & 0xF0000000) != 0xD0000000) && ((dwUNID & 0xF0000000) != 0xE0000000); }
+inline bool IsReservedUNID (DWORD dwUNID) { return ((dwUNID & 0xF0000000) == 0xF0000000); }
 
 ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList);
 void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue);

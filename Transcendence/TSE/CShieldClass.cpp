@@ -503,7 +503,11 @@ ALERROR CShieldClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 		if (error = pShield->m_Regen.InitFromRegenTimeAndHP(Ctx, iRegenTime, pDesc->GetAttributeInteger(REGEN_HP_ATTRIB)))
 			return error;
 
-		pShield->m_iDepletionTicks = pDesc->GetAttributeInteger(DEPLETION_DELAY_ATTRIB) * iRegenTime;
+		int iDepletion;
+		if (pDesc->FindAttributeInteger(DEPLETION_DELAY_ATTRIB, &iDepletion))
+			pShield->m_iDepletionTicks = Max(1, iDepletion * iRegenTime);
+		else
+			pShield->m_iDepletionTicks = 360;
 		}
 
 	//	Load damage adjustment

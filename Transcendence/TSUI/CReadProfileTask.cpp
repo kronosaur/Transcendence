@@ -134,7 +134,7 @@ void CReadProfileTask::CreateAdventureRecordDisplay (CAdventureRecord &Record, i
 	CExtension *pAdventure;
 	CString sAdventureTitle;
 	CG16bitImage *pIcon;
-	if (g_pUniverse->FindExtension(Record.GetAdventureUNID(), 0, CExtension::folderUnknown, &pAdventure))
+	if (g_pUniverse->FindExtension(Record.GetAdventureUNID(), 0, &pAdventure))
 		{
 		sAdventureTitle = pAdventure->GetName();
 		pAdventure->CreateIcon(ICON_AREA_WIDTH, cyBody, &pIcon);

@@ -75,6 +75,11 @@
 //	of a crash.
 #define DEBUG_PROGRAMSTATE
 
+//	Debugging help
+
+#define DEBUG_AI_TRY			try {
+#define DEBUG_AI_CATCH		} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
+
 //	If ITEM_REFERENCE is defined, then the player doesn't see the
 //	stats for an item until they install it (or get reference info)
 //#define ITEM_REFERENCE
@@ -2630,6 +2635,7 @@ class CUniverse : public CObject
 		inline CSoundMgr *GetSoundMgr (void) { return m_pSoundMgr; }
 		DWORD GetSoundUNID (int iChannel);
 		inline bool InDebugMode (void) { return m_bDebugMode; }
+		inline void InitEntityResolver (CExtension *pExtension, CEntityResolverList *retResolver) { m_Extensions.InitEntityResolver(pExtension, (InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retResolver); }
 		bool IsGlobalResurrectPending (CDesignType **retpType);
 		inline bool IsRegistered (void) { return m_bRegistered; }
 		bool IsStatsPostingEnabled (void);
@@ -2660,7 +2666,7 @@ class CUniverse : public CObject
 		inline CEffectCreator *FindEffectType (DWORD dwUNID) { return CEffectCreator::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CEconomyType *FindEconomyType (const CString &sName) { return m_Design.FindEconomyType(sName); }
 		inline CShipTable *FindEncounterTable (DWORD dwUNID) { return CShipTable::AsType(m_Design.FindEntry(dwUNID)); }
-		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension::EFolderTypes iFolder, CExtension **retpExtension = NULL) { return m_Extensions.FindExtension(dwUNID, dwRelease, iFolder, retpExtension); }
+		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension **retpExtension = NULL) { return m_Extensions.FindBestExtension(dwUNID, dwRelease, (InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retpExtension); }
 		inline CItemTable *FindItemTable (DWORD dwUNID) { return CItemTable::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CItemType *FindItemType (DWORD dwUNID) { return CItemType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CPower *FindPower (DWORD dwUNID) { return CPower::AsType(m_Design.FindEntry(dwUNID)); }
@@ -2668,7 +2674,7 @@ class CUniverse : public CObject
 		inline CShipClass *FindShipClass (DWORD dwUNID) { return CShipClass::AsType(m_Design.FindEntry(dwUNID)); }
 		CShipClass *FindShipClassByName (const CString &sName);
 		inline CEnergyFieldType *FindShipEnergyFieldType (DWORD dwUNID) { return CEnergyFieldType::AsType(m_Design.FindEntry(dwUNID)); }
-		inline int FindSound (DWORD dwUNID) { return (int)FindByUNID(m_Sounds, dwUNID); }
+		inline int FindSound (DWORD dwUNID) { CObject *pObj; if (!FindByUNID(m_Sounds, dwUNID, &pObj)) return -1; return (int)pObj; }
 		inline CSovereign *FindSovereign (DWORD dwUNID) const { return CSovereign::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CSpaceEnvironmentType *FindSpaceEnvironment (DWORD dwUNID) { return CSpaceEnvironmentType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CStationType *FindStationType (DWORD dwUNID) { return CStationType::AsType(m_Design.FindEntry(dwUNID)); }
@@ -2746,6 +2752,7 @@ class CUniverse : public CObject
 			STransSystemObject *pNext;
 			};
 
+		bool FindByUNID (CIDTable &Table, DWORD dwUNID, CObject **retpObj = NULL);
 		CObject *FindByUNID (CIDTable &Table, DWORD dwUNID);
 		IShipController *GetPlayerController (void) const;
 		ALERROR InitCodeChain (void);

@@ -142,7 +142,7 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 	CExtension *pAdventure = NULL;
 	bool bHasAdventureIcon = false;
 
-	if (g_pUniverse->FindExtension(GameFile.GetAdventure(), 0, CExtension::folderUnknown, &pAdventure))
+	if (g_pUniverse->FindExtension(GameFile.GetAdventure(), 0, &pAdventure))
 		{
 		//	Adventure icon
 

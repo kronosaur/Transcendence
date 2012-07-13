@@ -53,7 +53,7 @@ CString CAdventureRecord::GetAdventureName (void) const
 	{
 	CExtension *pAdventure;
 
-	if (!g_pUniverse->FindExtension(m_dwAdventure, 0, CExtension::folderUnknown, &pAdventure))
+	if (!g_pUniverse->FindExtension(m_dwAdventure, 0, &pAdventure))
 		return strPatternSubst(CONSTLIT("Adventure %x"), m_dwAdventure);
 
 	return pAdventure->GetName();

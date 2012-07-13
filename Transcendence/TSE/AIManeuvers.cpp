@@ -248,6 +248,8 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 //	should only be used while in a state that does not need m_pTarget.
 
 	{
+	DEBUG_AI_TRY
+
 	if (pShip->IsDestinyTime(19))
 		(*iopTarget) = pShip->GetNearestVisibleEnemy(rMaxRange, false, pExcludeObj);
 
@@ -271,6 +273,8 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 		if (GetBestWeapon() == NULL)
 			(*iopTarget) = NULL;
 		}
+
+	DEBUG_AI_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementAttackTarget (CShip *pShip, CSpaceObject *pTarget, bool bMaintainCourse, bool bDoNotShoot)
@@ -842,6 +846,8 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 //	Attacks any targets in the area with secondary weapons
 
 	{
+	DEBUG_AI_TRY
+
 	int i;
 
 	//	If this ship has secondary weapons that also fire at will
@@ -858,72 +864,7 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 			}
 		}
 
-#if 0
-
-		//	Fire
-
-		TArray<CSpaceObject *> Targets;
-		int iCount = 0;
-
-		//	If we are aggressive, then include ships that haven't fired 
-		//	their weapons recently
-
-		DWORD dwFlags = 0;
-		if (IsAggressor())
-			dwFlags |= FLAG_INCLUDE_NON_AGGRESSORS;
-
-		//	First build a list of the nearest enemy ships within
-		//	range of the ship.
-
-		iCount += pShip->GetNearestVisibleEnemies(MAX_TARGETS,
-				m_rBestWeaponRange,
-				&Targets,
-				pExcludeObj,
-				dwFlags);
-
-		//	If we've got a target, add it to the list. Sometimes this will be 
-		//	a duplicate, but that's OK.
-
-		if (pTarget)
-			{
-			Targets.Insert(pTarget);
-			iCount++;
-			}
-
-		//	If we've got enemy ships, see if any weapons are in range
-
-		if (iCount > 0)
-			{
-			for (i = 0; i < pShip->GetDeviceCount(); i++)
-				{
-				CInstalledDevice *pDevice = pShip->GetDevice(i);
-				if (!pDevice->IsEmpty() && pDevice->IsSecondaryWeapon() && pDevice->IsReady())
-					{
-					Metric rMaxRange = pDevice->GetClass()->GetMaxEffectiveRange(pShip, pDevice, NULL);
-					Metric rMaxRange2 = rMaxRange * rMaxRange;
-
-					for (int j = 0; j < iCount; j++)
-						{
-						int iFireAngle;
-						CSpaceObject *pTarget = Targets[j];
-						Metric rDist2 = (pTarget->GetPos() - pShip->GetPos()).Length2();
-
-						if (rDist2 < rMaxRange2 
-								&& pDevice->GetWeaponEffectiveness(pShip, pTarget) >=0
-								&& pDevice->IsWeaponAligned(pShip, pTarget, NULL, &iFireAngle)
-								&& CheckForFriendsInLineOfFire(pShip, pDevice, pTarget, iFireAngle, rMaxRange))
-							{
-							pDevice->SetTriggered(true);
-							pDevice->SetFireAngle(iFireAngle);
-							pDevice->SetTarget(pTarget);
-							break;
-							}
-						}
-					}
-				}
-			}
-		}
-#endif
+	DEBUG_AI_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementFireWeapon (CShip *pShip, DeviceNames iDev)
@@ -1502,6 +1443,8 @@ void CAIBehaviorCtx::ImplementSpiralIn (CShip *pShip, const CVector &vTarget)
 //	Spiral in towards the target
 
 	{
+	DEBUG_AI_TRY
+
 	//	Curve inward
 
 	CVector vInterceptPoint = CalcManeuverSpiralIn(pShip, vTarget);
@@ -1510,6 +1453,8 @@ void CAIBehaviorCtx::ImplementSpiralIn (CShip *pShip, const CVector &vTarget)
 
 	int iDirectionToFace = VectorToPolar(vInterceptPoint, NULL);
 	ImplementManeuver(pShip, iDirectionToFace, true);
+
+	DEBUG_AI_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, int iTrajectory)
@@ -1519,6 +1464,8 @@ void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, i
 //	Spiral out away from the target
 
 	{
+	DEBUG_AI_TRY
+
 	//	Curve out
 
 	CVector vInterceptPoint = CalcManeuverSpiralOut(pShip, vTarget, iTrajectory);
@@ -1527,6 +1474,8 @@ void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, i
 
 	int iDirectionToFace = VectorToPolar(vInterceptPoint, NULL);
 	ImplementManeuver(pShip, iDirectionToFace, true);
+
+	DEBUG_AI_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementStop (CShip *pShip)

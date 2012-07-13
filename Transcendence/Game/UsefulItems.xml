@@ -895,6 +895,131 @@
 		</Names>
 
 	</ItemType>
+	
+<!-- HALO GEMS -->
+
+	<!-- Gem of Despair -->
+
+	<ItemType UNID="&itGemOfDespair;"
+			name=				"gem(s) of despair"
+			level=				"7"
+			value=				"2000"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownHaloGem;"
+			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
+
+			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="576" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(if (find (sysGetNodes) "Elysium")
+				(block Nil
+					; Gate to Elysium
+					(objSendMessage gSource Nil "\"May you find your path among the stargates...\"")
+					(objGateTo gSource "Elysium" "Start" &efStargateOut;)
+
+					; Remove the item from the player's list
+					(objRemoveItem gSource gItem 1)
+
+					; Identify the item
+					(itmSetKnown gItem)
+					)
+					
+				; Elysium not found
+				(objSendMessage gSource Nil "The gem flickers for a moment but then fades without effect.")
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Gem of Contrition -->
+
+	<ItemType UNID="&itGemOfContrition;"
+			name=				"gem(s) of contrition"
+			level=				"8"
+			value=				"5000"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownHaloGem;"
+			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
+
+			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="576" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="C">
+			(block Nil
+				; Stop time
+				(objSendMessage gSource Nil "\"Use this time to right your wrongs...\"")
+				(sysStopTime 500 gSource)
+
+				; Remove the item from the player's list
+				(objRemoveItem gSource gItem 1)
+
+				; Identify the item
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+
+	</ItemType>
+
+	<!-- Gem of Sacrificce -->
+
+	<ItemType UNID="&itGemOfSacrifice;"
+			name=				"gem(s) of sacrifice"
+			level=				"12"
+			value=				"10000"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownHaloGem;"
+			attributes=			"HaloGem; MinorItem; CannotOrder"
+
+			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="576" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="F">
+			(block (sacrificeEffect)
+				; Function to lower shields and armor
+				(setq sacrificeEffect (lambda (theObj)
+					(block Nil
+						(objDepleteShields theObj)
+
+						(for i 0 (subtract (shpGetArmorCount theObj) 1)
+							(if (leq (itmGetLevel (shpGetArmor theObj i)) 12)
+								(block (theDamage)
+									(setq theDamage (divide (multiply (shpGetArmorMaxHitPoints theObj i) (random 96 99)) 100))
+									(shpDamageArmor theObj i 12 theDamage)
+									)
+								)
+							)
+
+						(sysCreateEffect &efGemOfSacrifice; theObj (objGetPos theObj))
+						)
+					))
+
+				; All ships in range have their shields lowered
+				(objSendMessage gSource Nil "\"May your sacrifice prove true...\"")
+				(enum (sysFindObject gSource "sN:30;") theObj
+					(sacrificeEffect theObj)
+					)
+
+				; Invoker also gets effect
+				(sacrificeEffect gSource)
+
+				; Remove the item from the player's list
+				(objRemoveItem gSource gItem 1)
+
+				; Identify the item
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+
+	</ItemType>
 
 <!-- Miscellaneous ROMS -->
 

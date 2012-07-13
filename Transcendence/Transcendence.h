@@ -2063,9 +2063,10 @@ class CGameSettings
 			debugGame,						//	Game instance in debug mode
 			noDebugLog,						//	Do not write out a debug log
 			debugVideo,						//	Write out video information
+			noCrashPost,					//	Do not post crash log to Multiverse
 
 			//	Constants
-			OPTIONS_COUNT = 16,
+			OPTIONS_COUNT = 17,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

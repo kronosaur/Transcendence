@@ -85,7 +85,6 @@ const DWORD INFINITE_TICK =					0xffffffff;	//	Highest tick
 
 const int MAX_TECH_LEVEL =				25;
 
-const DWORD UNID_DOMAIN_AND_MODULE_MASK =	0xffff0000;
 
 //	Event Timers
 

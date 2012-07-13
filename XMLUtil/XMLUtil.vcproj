@@ -170,6 +170,10 @@
 			Filter="cpp"
 			>
 			<File
+				RelativePath=".\CEntityResolverList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CExternalEntityTable.cpp"
 				>
 			</File>

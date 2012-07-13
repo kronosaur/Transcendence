@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-	229, 186, 177, 229,  37, 188, 152, 197, 131,  55,
-	 60, 142,   4,  87, 160, 246,  81, 189,   9,  84,
+    238, 203, 192, 102, 176, 222,  69, 200, 179, 206,
+    106, 148,  48, 188, 228, 203, 253, 142,  56,  52,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -750,6 +750,37 @@ void CExtensionCollection::FreeDeleted (void)
 		delete m_Deleted[i];
 
 	m_Deleted.DeleteAll();
+	}
+
+void CExtensionCollection::InitEntityResolver (CExtension *pExtension, DWORD dwFlags, CEntityResolverList *retResolver)
+
+//	InitEntityResolver
+//
+//	Initializes an entity resolver for the given extension.
+
+	{
+	int i;
+
+	//	Base extension is always added first
+
+	retResolver->AddResolver(m_pBase->GetEntities());
+
+	//	Next we add any libraries used by the extension
+
+	for (i = 0; i < pExtension->GetLibraryCount(); i++)
+		{
+		const CExtension::SLibraryDesc &LibraryDesc = pExtension->GetLibrary(i);
+
+		CExtension *pLibrary;
+		if (!FindBestExtension(LibraryDesc.dwUNID, LibraryDesc.dwRelease, dwFlags, &pLibrary))
+			continue;
+
+		retResolver->AddResolver(pLibrary->GetEntities());
+		}
+
+	//	Finally, add entities defined in the extension
+
+	retResolver->AddResolver(pExtension->GetEntities());
 	}
 
 ALERROR CExtensionCollection::Load (const CString &sFilespec, DWORD dwFlags, CString *retsError)

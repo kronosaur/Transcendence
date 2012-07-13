@@ -108,6 +108,20 @@ class CExternalEntityTable : public IXMLParserController
 		IXMLParserController *m_pParent;
 	};
 
+class CEntityResolverList : public IXMLParserController
+	{
+	public:
+		CEntityResolverList (void) { }
+
+		inline void AddResolver (IXMLParserController *pResolver) { m_Resolvers.Insert(pResolver); }
+
+		//	IXMLParserController virtuals
+		virtual CString ResolveExternalEntity (const CString &sName, bool *retbFound = NULL);
+
+	private:
+		TArray<IXMLParserController *> m_Resolvers;
+	};
+
 //	Some utilities
 
 ALERROR CreateXMLElementFromCommandLine (int argc, char *argv[], CXMLElement **retpElement);

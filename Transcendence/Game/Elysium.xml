@@ -98,38 +98,4 @@
 		</SystemGroup>
 	</SystemType>
 	
-<!-- ITEM TYPES -->
-
-	<!-- Gem of Despair -->
-
-	<ItemType UNID="&itGemOfDespair;"
-			name=				"gem(s) of despair"
-			level=				"7"
-			value=				"2000"
-			mass=				"1"
-			frequency=			"veryrare"
-			unknownType=		"&itUnknownHaloGem;"
-			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
-
-			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="576" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(block Nil
-				; Gate to Elysium
-				(objSendMessage gSource Nil "\"May you find your path among the stargates...\"")
-				(objGateTo gSource "Elysium" "Start" &efStargateOut;)
-
-				; Remove the item from the player's list
-				(objRemoveItem gSource gItem 1)
-
-				; Identify the item
-				(itmSetKnown gItem)
-				)
-		</Invoke>
-
-	</ItemType>
-
 </TranscendenceModule>

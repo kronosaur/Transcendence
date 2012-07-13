@@ -943,9 +943,12 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_POST_CRASH_REPORT))
 		{
-		CString *pCrashReport = (CString *)pData;
-		m_HI.AddBackgroundTask(new CPostCrashReportTask(m_HI, m_Service, *pCrashReport));
-		delete pCrashReport;
+		if (!m_Settings.GetBoolean(CGameSettings::noCrashPost))
+			{
+			CString *pCrashReport = (CString *)pData;
+			m_HI.AddBackgroundTask(new CPostCrashReportTask(m_HI, m_Service, *pCrashReport));
+			delete pCrashReport;
+			}
 		}
 
 	//	Else we did not handle it

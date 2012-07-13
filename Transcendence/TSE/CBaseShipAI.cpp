@@ -236,6 +236,8 @@ CSpaceObject *CBaseShipAI::CalcEnemyShipInRange (CSpaceObject *pCenter, Metric r
 //	are found.
 
 	{
+	DEBUG_AI_TRY
+
 	int i;
 	Metric rMaxRange2 = rRange * rRange;
 
@@ -294,6 +296,8 @@ CSpaceObject *CBaseShipAI::CalcEnemyShipInRange (CSpaceObject *pCenter, Metric r
 				return pObj;
 			}
 		}
+
+	DEBUG_AI_CATCH
 
 	return NULL;
 	}
@@ -1732,6 +1736,8 @@ void CBaseShipAI::UseItemsBehavior (void)
 //	Use various items appropriately
 
 	{
+	DEBUG_AI_TRY
+
 	if (m_pShip->IsDestinyTime(ITEM_ON_AI_UPDATE_CYCLE, ITEM_ON_AI_UPDATE_OFFSET))
 		m_pShip->FireOnItemAIUpdate();
 
@@ -1754,6 +1760,8 @@ void CBaseShipAI::UseItemsBehavior (void)
 				}
 			}
 		}
+
+	DEBUG_AI_CATCH
 	}
 
 void CBaseShipAI::WriteToStream (IWriteStream *pStream)

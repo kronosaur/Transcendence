@@ -52,6 +52,9 @@
 //		dwRelease for extensions
 //		Save extension UNID instead of adventureDesc UNID
 //
+//	15: 1.08d
+//		dwRelease in CDynamicDesignTable
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
@@ -428,6 +431,26 @@ CArmorClass *CUniverse::FindArmor (DWORD dwUNID)
 		return NULL;
 
 	return pType->GetArmorClass();
+	}
+
+bool CUniverse::FindByUNID (CIDTable &Table, DWORD dwUNID, CObject **retpObj)
+
+//	FindByUNID
+//
+//	Returns an object by UNID from the appropriate table
+
+	{
+	CObject *pObj;
+
+	if (Table.Lookup((int)dwUNID, &pObj) == NOERROR)
+		{
+		if (retpObj)
+			*retpObj = pObj;
+
+		return true;
+		}
+	else
+		return false;
 	}
 
 CObject *CUniverse::FindByUNID (CIDTable &Table, DWORD dwUNID)
