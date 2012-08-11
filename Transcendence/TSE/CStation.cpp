@@ -775,20 +775,15 @@ ALERROR CStation::CreateMapImage (void)
 	CG16bitImage &BmpImage = Image.GetImage(strFromInt(m_pType->GetUNID()));
 	const RECT &rcImage = Image.GetImageRect();
 
-	if (error = m_MapImage.CreateBlank(RectWidth(rcImage) / g_iMapScale,
-			RectHeight(rcImage) / g_iMapScale,
-			false))
-		return error;
-
-	m_MapImage.GaussianScaledBlt(
+	if (error = m_MapImage.CreateFromImageTransformed(BmpImage,
 			rcImage.left,
 			rcImage.top + RectHeight(rcImage) * iRotation,
 			RectWidth(rcImage),
 			RectHeight(rcImage),
-			BmpImage,
-			0, 0,
-			m_MapImage.GetWidth(),
-			m_MapImage.GetHeight());
+			1.0 / g_iMapScale,
+			1.0 / g_iMapScale,
+			0.0))
+		return error;
 
 	return NOERROR;
 	}

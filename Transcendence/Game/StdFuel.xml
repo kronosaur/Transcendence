@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- LEVEL 1 -->
+
+	<!-- itHelium3FuelRod -->
+
+	<ItemType UNID="&itHelium3FuelRod;"
+			name=				"helium&#xb3; fuel rod"
+			level=				"1"
+			value=				"25"
+			mass=				"100"
+			frequency=			"common"
+			numberAppearing=	"3d6"
+			attributes=			"Consumable; Fuel"
+
+			data=				"2500"
+
+			description=		"This standard He&#xb3; fuel rod fits most starship reactors."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+	
+<!-- LEVEL 4 -->
+	
+	<!-- itHeliumAssembly -->
+
+	<ItemType UNID="&itHeliumAssembly;"
+			name=				"helium&#xb3; reactor assembly| helium&#xb3; reactor assemblies"
+			level=				"4"
+			value=				"75"
+			mass=				"150"
+			frequency=			"common"
+			numberAppearing=	"3d6"
+			attributes=			"Consumable; Fuel; 100MW"
+
+			data=				"10000"
+
+			description=		"This is an enriched bundle of He&#xb3; fuel rods. Though more efficient than individual fuel rods, only reactors 50 megawatts and larger can accommodate them."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+	
+<!-- LEVEL 5 -->
+	
+	<!-- Xenotite Fuel Rod -->
+
+	<ItemType UNID="&itXenotiteFuelRod;"
+			name=				"xenotite fuel rod"
+			level=				"5"
+			value=				"160"
+			mass=				"200"
+			frequency=			"common"
+			numberAppearing=	"3d6"
+			attributes=			"Consumable; Fuel"
+
+			data=				"20000"
+			description=		"Starship reactors larger than 100MW need a denser fuel than helium. Highly-enriched xenotite, an exotic antimatter mineral, is a common alternative."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+<!-- LEVEL 7 -->
+
+	<!-- Pteracnium Fuel Rod -->
+
+	<ItemType UNID="&itPteracniumFuelRod;"
+			name=				"pteracnium fuel rod"
+			level=				"7"
+			value=				"300"
+			mass=				"200"
+			frequency=			"common"
+			numberAppearing=	"3d6"
+			attributes=			"Consumable; Fuel"
+
+			data=				"50000"
+			description=		"Pteracnium is a stable transuranic compound of immense energy density. Refined and packaged as fuel rods this compound is ideal for gigawatt-class reactors."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+<!-- LEVEL 9 -->
+
+	<!-- Hadron-vacuum fuel cell -->
+
+	<ItemType UNID="&itHadronVacuumFuelCell;"
+			name=				"hadron-vacuum fuel cell"
+			level=				"9"
+			value=				"2000"
+			mass=				"200"
+			frequency=			"common"
+			numberAppearing=	"3d6"
+			attributes=			"Consumable; Fuel; ZeroPoint"
+
+			data=				"250000"
+			description=		"These zero-point fuel cells are designed to refuel the 1GW Hyperion reactor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+
+</TranscendenceModule>

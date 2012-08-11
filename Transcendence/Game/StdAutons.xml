@@ -760,24 +760,4 @@
 
 	</ItemType>
 	
-	<!-- Unknown Auton -->
-
-	<ItemType UNID="&itUnknownAuton;"
-			name=				"unknown auton"
-			virtual=			"true"
-			level=				"3"
-			value=				"2500"
-			attributes=			"unknown"
-
-			description=		"This is an autonomous defense bot of some kind. Unfortunately, you cannot tell anything about its nature until you use it."
-			>
-
-		<Names>auton(s) with strange markings; auton(s) with yellow markings;
-			auton(s) with red markings; auton(s) with engraved markings;
-			auton(s) with blue markings; auton(s) with no markings;
-			auton(s) with green markings; auton(s) with raised markings;
-			auton(s) with numeral markings; auton(s) with geometric markings
-		</Names>
-	</ItemType>
-
 </TranscendenceModule>

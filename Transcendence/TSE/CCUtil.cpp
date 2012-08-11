@@ -565,6 +565,42 @@ CItem GetItemFromArg (CCodeChain &CC, ICCItem *pArg)
 		return CItem();
 	}
 
+bool GetLinkedFireOptions (ICCItem *pArg, DWORD *retdwOptions, CString *retsError)
+
+//	GetLinkedFireOptions
+//
+//	Parses a list of linked fire options
+
+	{
+	int i;
+
+	DWORD dwOptions = 0;
+
+	if (pArg && !pArg->IsNil())
+		{
+		SDesignLoadCtx LoadCtx;
+
+		DWORD dwOption;
+		for (i = 0; i < pArg->GetCount(); i++)
+			{
+			ICCItem *pOption = pArg->GetElement(i);
+
+			if (CDeviceClass::ParseLinkedFireOptions(LoadCtx, pOption->GetStringValue(), &dwOption) != NOERROR)
+				{
+				*retsError = LoadCtx.sError;
+				return false;
+				}
+
+			dwOptions |= dwOption;
+			}
+		}
+
+	//	Done
+
+	*retdwOptions = dwOptions;
+	return true;
+	}
+
 bool GetPosOrObject (CEvalContext *pEvalCtx, 
 					 ICCItem *pArg, 
 					 CVector *retvPos, 

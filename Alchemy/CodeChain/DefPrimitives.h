@@ -89,6 +89,12 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 			"(for var from to exp)",
 			NULL,	0,	},
 
+		{	"help",				fnHelp,			0,
+			"(help) -> all functions\n"
+			"(help partial-name) -> all functions starting with name\n"
+			"(help function-name) -> help on function",
+			"*",	0,	},
+
 		{	"if",				fnIf,			0,						"",		NULL,	0,	},
 		{	"int",				fnItemInfo,		FN_ITEMINFO_ASINT,		"",		NULL,	0,	},
 		{	"isatom",			fnItemInfo,		FN_ITEMINFO_ISATOM,		"",		NULL,	0,	},
@@ -97,8 +103,12 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 		{	"isfunction",		fnItemInfo,		FN_ITEMINFO_ISFUNCTION,	"",		NULL,	0,	},
 		{	"isprimitive",		fnItemInfo,		FN_ITEMINFO_ISPRIMITIVE,"",		NULL,	0,	},
 
+		{	"@",				fnItem,			FN_ITEM,
+			"(@ list index)",
+			"vv",	0,	},
+
 		{	"item",				fnItem,			FN_ITEM,
-			"(item list index)",
+			"DEPRECATED: Alias of @",
 			"vv",	0,	},
 
 		{	"lambda",			fnLambda,		0,						"",		NULL,	0,	},
@@ -189,9 +199,15 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 
 		{	"set",				fnSet,			FN_SET_SET,				"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 
+		{	"set@",				fnItem,			FN_SET_ITEM,
+			"(set@ list-var index value) -> list\n"
+			"(set@ struct-var key value) -> struct\n"
+			"(set@ struct-var struct) -> merged structs",
+			"uv*",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"setItem",			fnItem,			FN_SET_ITEM,
-			"(setItem list|struct index value) -> value",
-			"vvv",	PPFLAG_SIDEEFFECTS,	},
+			"DEPRECATED: Alias of set@",
+			"uvv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"setq",				fnSet,			FN_SET_SETQ,			"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		{	"shuffle",			fnShuffle,		0,

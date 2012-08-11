@@ -8,12 +8,17 @@ ALERROR CDesignTable::AddEntry (CDesignType *pEntry)
 
 //	AddEntry
 //
-//	Adds an entry to the table
+//	Adds an entry to the table. Returns ERR_OUTOFROOM if we already have an
+//	entry with that UNID.
 
 	{
 	ASSERT(pEntry);
 
-	m_Table.Insert(pEntry->GetUNID(), pEntry);
+	bool bNew;
+	m_Table.SetAt(pEntry->GetUNID(), pEntry, &bNew);
+	if (!bNew)
+		return ERR_OUTOFROOM;
+
 	return NOERROR;
 	}
 

@@ -321,7 +321,15 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 
 	{
 	if (strEquals(sField, FIELD_VERSION))
-		*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
+		{
+		//	Starting in version 12 we start numbering api versions independently 
+		//	of release version.
+
+		if (m_dwVersion >= 12)
+			*retsValue = strFromInt(m_dwVersion);
+		else
+			*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
+		}
 	else if (strEquals(sField, FIELD_UNID))
 		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
 	else if (strEquals(sField, FIELD_EXTENSION_UNID))

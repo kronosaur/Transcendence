@@ -969,7 +969,7 @@ void CShipClass::CreateWreckImage (void)
 		}
 
 	if (!m_Image.HasAlpha())
-		m_WreckBitmap.SetTransparentColor(0x0000);
+		m_WreckBitmap.SetTransparentColor();
 
 	//	Initialize an image
 
@@ -1037,7 +1037,7 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		{
 		DriveDesc Desc;
 		GetDriveDesc(&Desc);
-		*retsValue = strFromInt((int)((100.0 * Desc.rMaxSpeed / LIGHT_SPEED) + 0.5), FALSE);
+		*retsValue = strFromInt((int)((100.0 * Desc.rMaxSpeed / LIGHT_SPEED) + 0.5));
 		}
 	else if (strEquals(sField, FIELD_NAME))
 		*retsValue = GetNounPhrase(0x00);

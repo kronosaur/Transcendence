@@ -53,13 +53,14 @@
 	<ItemType UNID="&itNM900MissilePod;"
 			name=				"NM900 external missile pod"
 			level=				"7"
-			value=				"2000"
+			value=				"200"
 			mass=				"1000"
 			frequency=			"rare"
 			attributes=			"Disposable; MajorItem; Military; NAMI; Specialty"
 
 			charges=			"36"
-			valueCharges=		"true"
+			massBonusPerCharge=	"100" 
+			valueBonusPerCharge="50"
 
 			description=		"This external pod is loaded with thirty-six XM900 nuclear missiles and can be installed without the aid of a station."
 			>
@@ -72,7 +73,6 @@
 				fireRate=			"30"
 				powerUse=			"5"
 				charges=			"true"
-				massBonusPerCharge=	"100" 
 
 				deviceSlots=		"0"
 				external=			"true"
@@ -83,7 +83,6 @@
 				lifetime=			"120"
 				maneuverability=	"2"
 
-				directional=		"true"
 				sound=				"&snMissileLauncher;"
 
 				vaporTrailLength=	"16"
@@ -93,7 +92,7 @@
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles2;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+				<Image imageID="&rsStdMissile1;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="40"/>
 			</Effect>						
 
 			<HitEffect

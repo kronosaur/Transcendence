@@ -46,6 +46,7 @@ struct SEffectRender
 
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
+	CString sError;
 	int i, j;
 
 	//	Input file
@@ -66,13 +67,12 @@ void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Load a resource file so that we can create a design load context
 
 	CResourceDb Resources(CONSTLIT("Transcendence"));
-	if (Resources.Open(DFOPEN_FLAG_READ_ONLY) != NOERROR)
+	if (Resources.Open(DFOPEN_FLAG_READ_ONLY, &sError) != NOERROR)
 		{
-		printf("Unable to open Transcendence.tdb");
+		printf("%s\n", (LPSTR)sError);
 		return;
 		}
 
-	CString sError;
 	CExternalEntityTable *pEntities;
 	if (Resources.LoadEntities(&sError, &pEntities) != NOERROR)
 		{

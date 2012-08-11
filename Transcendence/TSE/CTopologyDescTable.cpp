@@ -204,7 +204,7 @@ void CTopologyDescTable::InitIDMap (void)
 		}
 	}
 
-ALERROR CTopologyDescTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, bool bAddFirstAsRoot)
+ALERROR CTopologyDescTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CSystemMap *pMap, const CString &sUNID, bool bAddFirstAsRoot)
 
 //	LoadFromXML
 //
@@ -223,7 +223,7 @@ ALERROR CTopologyDescTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 		//	Create a new node desc
 
 		CTopologyDesc *pNodeDesc;
-		if (error = LoadNodeFromXML(Ctx, pNode, sUNID, &pNodeDesc))
+		if (error = LoadNodeFromXML(Ctx, pNode, pMap, sUNID, &pNodeDesc))
 			return error;
 		
 		//	If this is a root node remember that we added it
@@ -253,7 +253,7 @@ ALERROR CTopologyDescTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	return NOERROR;
 	}
 
-ALERROR CTopologyDescTable::LoadNodeFromXML (SDesignLoadCtx &Ctx, CXMLElement *pNode, const CString &sParentUNID, CTopologyDesc **retpNode)
+ALERROR CTopologyDescTable::LoadNodeFromXML (SDesignLoadCtx &Ctx, CXMLElement *pNode, CSystemMap *pMap, const CString &sParentUNID, CTopologyDesc **retpNode)
 
 //	LoadNodeFromXML
 //
@@ -268,7 +268,7 @@ ALERROR CTopologyDescTable::LoadNodeFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 	//	Create a new node desc
 
 	CTopologyDesc *pNodeDesc = new CTopologyDesc;
-	if (error = pNodeDesc->LoadFromXML(Ctx, pNode, sParentUNID))
+	if (error = pNodeDesc->LoadFromXML(Ctx, pNode, pMap, sParentUNID))
 		return error;
 
 	//	If this is a root node, add it to our list

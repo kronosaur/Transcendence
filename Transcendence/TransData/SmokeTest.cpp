@@ -29,6 +29,7 @@ void DoRandomNumberTest (void)
 void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
+	CString sError;
 	int i, j;
 
 	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
@@ -51,9 +52,9 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Create the system
 
 			CSystem *pSystem;
-			if (error = Universe.CreateStarSystem(pNode, &pSystem))
+			if (error = Universe.CreateStarSystem(pNode, &pSystem, &sError))
 				{
-				printf("ERROR: Unable to create star system.\n");
+				printf("ERROR: Unable to create star system: %s.\n", (LPSTR)sError);
 				return;
 				}
 

@@ -185,7 +185,7 @@ void CTargetDisplay::PaintDeviceStatus (CShip *pShip, DeviceNames iDev, int x, i
 
 		if (iAmmoLeft != -1)
 			{
-			CString sAmmo = strFromInt(iAmmoLeft, false);
+			CString sAmmo = strFromInt(iAmmoLeft);
 			m_pFonts->LargeBold.DrawText(m_Buffer,
 					x,
 					y,

@@ -241,6 +241,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual ManeuverTypes GetManeuver (void) { return m_AICtx.GetManeuver(); }
 		virtual CSpaceObject *GetOrderGiver (void);
 		virtual bool GetReverseThrust (void) { return false; }
+		virtual CSpaceObject *GetShip (void) { return m_pShip; }
 		virtual bool GetStopThrust (void) { return false; }
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
 		virtual bool GetThrust (void) { return m_AICtx.GetThrust(m_pShip); }

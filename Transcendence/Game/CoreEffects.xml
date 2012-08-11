@@ -695,49 +695,19 @@
 		</Variants>
 	</Effect>
 	
-<!-- SHIELD HUD EFFECT =========================================================
+<!-- RESOURCES =================================================================
 
-	This effect is used to paint the shield level on the HUD. The variant value
-	is the shield level (as a percent).
-	
-	A player ship class must specify a shield HUD effect:
-	
-	<PlayerSettings ...>
-	   <ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
-	      ...
-	   </ShieldDisplay>
-	</PlayerSettings>
+	These resources are used by these effects.
 	
 -->
 
-	<Effect UNID="&efShieldHUDDefault;">
-		<Variants>
-			<Effect maxValue="0">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="680" imageWidth="136" imageHeight="136"/>
-			</Effect>
-			
-			<Effect maxValue="24">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="544" imageWidth="136" imageHeight="136"/>
-			</Effect>
-			
-			<Effect maxValue="49">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="408" imageWidth="136" imageHeight="136"/>
-			</Effect>
-			
-			<Effect maxValue="74">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="272" imageWidth="136" imageHeight="136"/>
-			</Effect>
-			
-			<Effect maxValue="99">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="136" imageWidth="136" imageHeight="136"/>
-			</Effect>
-			
-			<Effect maxValue="100">
-				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
-			</Effect>
-		</Variants>
-	</Effect>
+	<Image UNID="&rsExplosionsAG48;"	bitmap="Resources\Explosions-AG48.jpg"	bitmask="Resources\Explosions-AG48Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsExplosionsAG96;"	bitmap="Resources\Explosions-AG96.jpg"	bitmask="Resources\Explosions-AG96Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMediumExplosions;" bitmap="Resources\MediumExplosions.jpg" bitmask="Resources\MediumExplosionsMask.bmp"/>
+	<Image UNID="&rsMediumHit;"		bitmap="Resources\MediumHit.jpg"		bitmask="Resources\MediumHitMask.bmp"/>
 	
-	<Image UNID="&rsShieldHUDDefault;"	bitmap="Resources\ShieldsHUDDefault.jpg" bitmask="Resources\ShieldsHUDDefaultMask.bmp" />
+	<Sound UNID="&snLaserCannon;"		filename="Resources\LaserFire1.wav"/>
+	<Sound UNID="&snRecoillessCannon;"	filename="Resources\CannonFire1.wav"/>
+	<Sound UNID="&snArmorHit1;"			filename="Resources\ArmorHit1.wav"/>
 
 </TranscendenceModule>

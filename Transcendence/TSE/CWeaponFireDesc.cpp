@@ -937,6 +937,10 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 	m_iSplashChance = pDesc->GetAttributeIntegerBounded(PARTICLE_SPLASH_CHANCE_ATTRIB, 0, 100, 0);
 	m_iMissChance = pDesc->GetAttributeIntegerBounded(PARTICLE_MISS_CHANCE_ATTRIB, 0, 100, 0);
 
+	//	Initialize some variables not used by all types
+
+	m_iHitPoints = 0;
+
 	//	Load specific properties
 
 	CString sValue = pDesc->GetAttribute(FIRE_TYPE_ATTRIB);

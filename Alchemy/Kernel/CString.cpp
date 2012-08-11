@@ -1296,7 +1296,7 @@ CString strFromDouble (double rValue)
 	return sResult;
 	}
 
-CString strFromInt (int iInteger, BOOL bSigned)
+CString strFromInt (int iInteger, bool bSigned)
 
 //	CStringFromInt
 //

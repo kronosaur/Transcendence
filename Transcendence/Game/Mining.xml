@@ -2,69 +2,6 @@
 
 <TranscendenceModule>
 
-	<!-- Mining Laser -->
-
-	<ItemType UNID="&itMiningLaser;"
-			name=				"mining laser"
-			level=				"2"
-			value=				"550"
-			mass=				"2000"
-			frequency=			"rare"
-			attributes=			"EnergyWeapon; MajorItem; Specialty"
-			showReference=		"true"
-
-			description=		"This powerful laser is generally used for asteroid mining."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"beam"
-
-				repeating=			"4"
-				damage=				"laser:1d4; mining3"
-				fireRate=			"30"
-				lifetime=			"15"
-				powerUse=			"30"
-
-				hitEffect=			"&efGreenLaserHitEffect;" 
-				sound=				"&snLaserCannon;"
-				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
-		</Weapon>
-
-	</ItemType>
-
-	<!-- Miner's Cargo Hold -->
-
-	<ItemType UNID="&itMinersCargoHold;"
-			name=				"miners's cargo hold"
-			level=				"3"
-			value=				"1500"
-			mass=				"1250"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; MinersHold"
-
-			description=		"Designed for mining ships, this cargo hold has grapples to bring ore on board."
-
-			sortName=			"cargo hold, miners"
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
-
-		<CargoHoldDevice
-				cargoSpace=		"80"
-				/>
-
-	</ItemType>
-
 	<!-- Mined Ore -->
 
 	<StationType UNID="&stMinedOre;"

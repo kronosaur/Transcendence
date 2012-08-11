@@ -16,8 +16,6 @@
 #define DEBUG_CONSOLE_WIDTH					512
 #define DEBUG_CONSOLE_HEIGHT				600
 
-#define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
-
 //#define REGISTRY_COMPANY_NAME				CONSTLIT("Neurohack")
 //#define REGISTRY_PRODUCT_NAME				CONSTLIT("Transcendence")
 //#define REGISTRY_MUSIC_OPTION				CONSTLIT("Music")
@@ -1508,7 +1506,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 							CString sOutput;
 							if (pResult->IsIdentifier())
-								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
+								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 							else
 								sOutput = CC.Unlink(pResult);
 

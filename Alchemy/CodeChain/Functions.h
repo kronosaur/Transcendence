@@ -73,6 +73,7 @@ ICCItem *fnForLoop (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnIf (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnItemInfo (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
+ICCItem *fnHelp (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnLambda (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnList (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnLink (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);

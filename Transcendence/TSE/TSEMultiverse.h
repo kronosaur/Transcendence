@@ -138,6 +138,7 @@ class CHexarcSession
 		bool Connect (CString *retsError);
 		bool GetJSONResponse (CHTTPMessage &Response, CJSONValue *retValue, CString *retsError);
 		void InitRequest (const CString &sMethod, const CString &sFunction, CHTTPMessage *retMessage);
+		ALERROR ServerCommand (const CHTTPMessage &Request, CJSONValue *retResult);
 
 		CString m_sHost;
 		CString m_sPort;

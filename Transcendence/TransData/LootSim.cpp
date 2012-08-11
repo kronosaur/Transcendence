@@ -114,7 +114,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 							if (!Item.IsInstalled() && !Item.IsDamaged())
 								{
-								CString sKey = strFromInt(Item.GetType()->GetUNID(), FALSE);
+								CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
 
 								//	Find the item type in the table
 
@@ -179,6 +179,9 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	printf("Level\tSystem\tItem\tCount\tValue\n");
 
+	CItem NULL_ITEM;
+	CItemCtx ItemCtx(NULL_ITEM);
+
 	for (i = 0; i < AllSystems.GetCount(); i++)
 		{
 		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
@@ -192,7 +195,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 					pSystemEntry->sName.GetASCIIZPointer(),
 					pEntry->pType->GetDataField(FIELD_NAME).GetASCIIZPointer(),
 					(double)pEntry->iTotalCount / (double)iSystemSample,
-					(double)pEntry->pType->GetValue(true) * pEntry->iTotalCount / (double)iSystemSample);
+					(double)pEntry->pType->GetValue(ItemCtx, true) * pEntry->iTotalCount / (double)iSystemSample);
 			}
 		}
 	}

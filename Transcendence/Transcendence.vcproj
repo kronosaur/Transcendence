@@ -909,23 +909,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\BattleArena.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\BattleArenaGladiators.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\BlackMarket.xml"
 				>
 			</File>
 			<File
 				RelativePath=".\Game\CentauriWarlords.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\CharonFortress.xml"
 				>
 			</File>
 			<File
@@ -981,10 +969,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\Eridani.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\Heretic.xml"
 				>
 			</File>
@@ -1001,19 +985,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\Mining.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\MiscItems.xml"
 				>
 			</File>
 			<File
 				RelativePath=".\Game\OutlawMiners.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\PlayerShip.xml"
 				>
 			</File>
 			<File
@@ -1037,10 +1013,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\StdArmor.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\StdAutons.xml"
 				>
 			</File>
@@ -1053,15 +1025,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\StdEffects.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\StdExplosions.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\StdShields.xml"
 				>
 			</File>
 			<File
@@ -1069,19 +1033,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Game\StdWeapons.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\StKatharines.xml"
-				>
-			</File>
-			<File
 				RelativePath=".\Game\SungSlavers.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\SystemsVol01.xml"
 				>
 			</File>
 			<File
@@ -1098,10 +1050,6 @@
 			</File>
 			<File
 				RelativePath=".\Game\UsefulItems.xml"
-				>
-			</File>
-			<File
-				RelativePath=".\Game\Worlds.xml"
 				>
 			</File>
 			<Filter
@@ -1145,6 +1093,10 @@
 				</File>
 				<File
 					RelativePath=".\Game\Huari.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\PlayerShips.xml"
 					>
 				</File>
 				<File
@@ -1199,6 +1151,66 @@
 			<Filter
 				Name="Human Space Library"
 				>
+				<File
+					RelativePath=".\Game\BattleArena.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\BattleArenaGladiators.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\CharonFortress.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\Eridani.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\HumanSpaceMap.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdArmor.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdEffects.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdFuel.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdPlayerShips.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdShields.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdSystems.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdTypes.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdUnknownItems.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StdWeapons.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StKatharines.xml"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Core Types"
@@ -1213,6 +1225,54 @@
 				</File>
 				<File
 					RelativePath="Game\Transcendence.xml"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Chronicles of Human Space"
+				>
+				<File
+					RelativePath=".\Game\Extensions\Chronicles of Human Space\ChroniclesOfHumanSpace.xml"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="RPG Library"
+				>
+				<File
+					RelativePath=".\Game\HUD.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\RPGPlayer.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\RPGShipScreens.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\RPGTypes.xml"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Universe Library"
+				>
+				<File
+					RelativePath=".\Game\Mining.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\StarSystems.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\UniverseEffects.xml"
+					>
+				</File>
+				<File
+					RelativePath=".\Game\Worlds.xml"
 					>
 				</File>
 			</Filter>

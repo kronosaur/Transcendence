@@ -113,7 +113,8 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 			{
 			CString sAttrib = pCmdLine->GetAttributeName(i);
 
-			if (!strEquals(sAttrib, CONSTLIT("itemtable"))
+			if (!strEquals(sAttrib, CONSTLIT("adventure"))
+					&& !strEquals(sAttrib, CONSTLIT("itemtable"))
 					&& !strEquals(sAttrib, CONSTLIT("criteria"))
 					&& !strEquals(sAttrib, CONSTLIT("nologo")))
 				{
@@ -175,7 +176,7 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 					{
 					double rCount = 0.0;
 
-					CString sKey = strFromInt(pType->GetUNID(), FALSE);
+					CString sKey = strFromInt(pType->GetUNID(), false);
 					EntryInfo *pEntry;
 					if (TotalCount.Lookup(sKey, (CObject **)&pEntry) == NOERROR)
 						rCount = pEntry->rTotalCount;

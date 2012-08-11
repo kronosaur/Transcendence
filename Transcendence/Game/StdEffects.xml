@@ -2,6 +2,49 @@
 
 <TranscendenceModule>
 
+<!-- COMMON DRIVE EFFECT =======================================================
+
+-->
+
+	<Image UNID="&rsDriveExhaust;"		bitmap="Resources\DriveExhaust.jpg"	bitmask="Resources\DriveExhaustMask.bmp"/>
+	<Image UNID="&rsDriveExhaust2;"		bitmap="Resources\DriveExhaust2.jpg" bitmask="Resources\DriveExhaust2Mask.bmp"/>
+
+<!-- COMMON EXPLOSION EFFECTS ==================================================
+
+-->
+
+	<Effect UNID="&efFragmentationExplosion;"
+			sound="&snArmorHit1;">
+		<Image imageID="&rsMediumExplosions;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="64" 
+				imageHeight="64"
+				imageFrameCount="16"
+				imageTicksPerFrame="2"/>
+	</Effect>
+	
+	<Effect UNID="&efFusionExplosion1;"
+			sound="&snArmorHit1;">
+		<Image imageID="&rsExplosionsAG256;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="256" 
+				imageHeight="256"
+				imageFrameCount="16"
+				imageTicksPerFrame="2"/>
+	</Effect>
+
+	<Image UNID="&rsExplosionsAG256;"	bitmap="Resources\Explosions-AG256.jpg"	bitmask="Resources\Explosions-AG256Mask.bmp" loadOnUse="true"/>
+	
+<!-- COMMON FIRE EFFECTS =======================================================
+
+-->
+	
+	<Effect UNID="&efMediumCannonFlash;">
+		<Polyflash/>
+	</Effect>
+
 <!-- COMMON HIT EFFECTS ========================================================
 
 	These hit effects are used by more than one weapon. They are alternate
@@ -122,5 +165,23 @@
 			</Effect>
 		</Variants>
 	</Effect>
+	
+<!-- COMMON SHIELD EFFECTS =====================================================
 
+-->
+	
+	<Effect UNID="&efShieldHit1;"
+			sound="&snShieldHit1;"
+			>
+		<Image imageID="&rsShieldHit;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="32" 
+				imageHeight="32"
+				imageFrameCount="12"
+				imageTicksPerFrame="1"/>
+	</Effect>
+
+	<Image UNID="&rsShieldHit;"		bitmap="Resources\ShieldHit.jpg" bitmask="Resources\ShieldHitMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

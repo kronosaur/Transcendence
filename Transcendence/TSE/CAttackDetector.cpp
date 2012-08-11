@@ -4,7 +4,6 @@
 
 #include "PreComp.h"
 
-
 CAttackDetector::CAttackDetector (void) : m_iCounter(0), m_iLastHit(0)
 
 //	CAttackDetector constructor

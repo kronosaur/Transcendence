@@ -384,7 +384,7 @@ void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 						if (!Item.IsInstalled() && !Item.IsDamaged())
 							{
-							CString sKey = strFromInt(Item.GetType()->GetUNID(), FALSE);
+							CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
 
 							//	Find the item type in the table
 

@@ -32,6 +32,7 @@ ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 //	fnAppend
 //
 //	Appends two or more elements together
+//	(append a b [...]) -> lists are concatenated
 
 	{
 	int i, j;
@@ -51,8 +52,18 @@ ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		ICCItem *pItem = pArgs->GetElement(i);
 
-		for (j = 0; j < pItem->GetCount(); j++)
-			pList->Append(pCC, pItem->GetElement(j), NULL);
+		//	If the item is a symbol table, then treat it like an atom
+
+		if (pItem->IsSymbolTable())
+			pList->Append(pCC, pItem, NULL);
+
+		//	Otherwise, add each of the elements
+
+		else
+			{
+			for (j = 0; j < pItem->GetCount(); j++)
+				pList->Append(pCC, pItem->GetElement(j), NULL);
+			}
 		}
 
 	//	Done
@@ -1239,6 +1250,116 @@ ICCItem *fnForLoop (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 	return pResult;
 	}
 
+void OutputFunctionName (CMemoryWriteStream &Output, const CString &sHelp)
+	{
+	char *pPos = sHelp.GetASCIIZPointer();
+
+	//	Only until we reach the body of the help. We expect the body of the
+	//	help to be separated by two newlines.
+
+	char *pStart = pPos;
+	while (*pPos != '\0')
+		{
+		if (pPos[0] == '\n' && pPos[1] == '\n')
+			break;
+
+		pPos++;
+		}
+
+	//	Output
+
+	Output.Write(pStart, (int)(pPos - pStart));
+	}
+
+ICCItem *fnHelp (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnHelp
+//
+//	(help)
+
+	{
+	CCodeChain *pCC = pCtx->pCC;
+	int i;
+
+	//	Prepare some output
+
+	CMemoryWriteStream Output;
+	if (Output.Create() != NOERROR)
+		return pCC->CreateError(CONSTLIT("Out of memory."));
+
+	//	If no parameters, then we show some help on help
+
+	if (pArgs->GetCount() == 0)
+		{
+		CString sHelp = CONSTLIT("(help) -> this help\n(help '*) -> all functions\n(help 'partial-string) -> all functions starting with partial-string\n(help 'function-name) -> help on function-name\n");
+		Output.Write(sHelp.GetASCIIZPointer(), sHelp.GetLength());
+		}
+
+	//	If parameter is * then show all functions
+
+	else if (strEquals(pArgs->GetElement(0)->GetStringValue(), CONSTLIT("*")))
+		{
+		ICCItem *pGlobals = pCC->GetGlobals();
+		for (i = 0; i < pGlobals->GetCount(); i++)
+			{
+			ICCItem *pItem = pGlobals->GetElement(i);
+			if (pItem->IsFunction())
+				{
+				CString sHelp = pItem->GetHelp();
+
+				//	If blank or deprecated, skip
+
+				if (!sHelp.IsBlank() && !strStartsWith(sHelp, CONSTLIT("DEPRECATED")))
+					{
+					OutputFunctionName(Output, sHelp);
+					Output.Write("\n", 1);
+					}
+				}
+			}
+		}
+
+	//	Otherwise, look for the function
+
+	else
+		{
+		CString sPartial = pArgs->GetElement(0)->GetStringValue();
+		TArray<CString> Help;
+
+		//	Compile a list of all functions that match
+
+		CCSymbolTable *pGlobals = (CCSymbolTable *)pCC->GetGlobals();
+		for (i = 0; i < pGlobals->GetCount(); i++)
+			{
+			ICCItem *pItem = pGlobals->GetElement(i);
+
+			if (pItem->IsFunction() && strStartsWith(pGlobals->GetKey(i), sPartial))
+				{
+				CString sHelp = pItem->GetHelp();
+
+				if (!sHelp.IsBlank() && !strStartsWith(sHelp, CONSTLIT("DEPRECATED")))
+					Help.Insert(sHelp);
+				}
+			}
+
+		//	Output
+
+		if (Help.GetCount() == 1)
+			Output.Write(Help[0].GetASCIIZPointer(), Help[0].GetLength());
+		else
+			{
+			for (i = 0; i < Help.GetCount(); i++)
+				{
+				OutputFunctionName(Output, Help[i]);
+				Output.Write("\n", 1);
+				}
+			}
+		}
+
+	//	Done
+
+	return pCC->CreateString(CString(Output.GetPointer(), Output.GetLength()));
+	}
+
 ICCItem *fnIf (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 //	fnIf
@@ -1297,10 +1418,12 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 //
 //	Returns nth entry in a list (0-based)
 //
-//	(item list nth) -> item
+//	(@ list nth) -> item
+//	(set@ list|struct index value) -> value
 
 	{
 	CCodeChain *pCC = pCtx->pCC;
+	int i;
 
 	switch (dwData)
 		{
@@ -1342,28 +1465,81 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SET_ITEM:
 			{
-			ICCItem *pList = pArgs->GetElement(0);
+			//	We evaluate the target. We either end up with an array or a
+			//	structure.
 
-			//	If index is nil then we always return nil
+			ICCItem *pTarget = pCC->Eval(pCtx, pArgs->GetElement(0));
+
+			//	If index is nil then we always return the target (nothing to do)
 
 			if (pArgs->GetElement(1)->IsNil())
-				return pCC->CreateNil();
+				return pTarget;
 
-			if (pList->IsSymbolTable())
+			//	Figure out the data type of the key, because we sometimes need
+			//	to use that to figure out what to do.
+
+			bool bUseArray = (pArgs->GetElement(1)->IsInteger() ? true : false);
+
+			//	If the target is a valid array, then set the item there.
+
+			if (pTarget->GetClass()->GetObjID() == OBJID_CCLINKEDLIST)
+				bUseArray = true;
+
+			//	If the target is a valid structure, then set the item there.
+
+			else if (pTarget->IsSymbolTable())
+				bUseArray = false;
+
+			//	If we have an error or nil, then we need to create a new array
+			//	or structure
+
+			else if (pTarget->IsError() || pTarget->IsNil())
 				{
-				ICCItem *pKey = pArgs->GetElement(1);
-				ICCItem *pValue = pArgs->GetElement(2);
+				pTarget->Discard(pCC);
 
-				ICCItem *pError = pList->AddEntry(pCC, pKey, pValue);
-				if (pError->IsError())
-					return pError;
+				if (bUseArray)
+					{
+					pTarget = pCC->CreateLinkedList();
+					if (pTarget->IsError())
+						return pTarget;
+					}
+				else
+					{
+					pTarget = pCC->CreateSymbolTable();
+					if (pTarget->IsError())
+						return pTarget;
+					}
 
-				pError->Discard(pCC);
-				return pValue->Reference();
+				//	If the first arg is a variable, bind it now
+
+				if (pArgs->GetElement(0)->IsIdentifier())
+					{
+					ICCItem *pError;
+					if (HelperSetq(pCtx, pArgs->GetElement(0), pTarget, &pError) != NOERROR)
+						{
+						pTarget->Discard(pCC);
+						return pError;
+						}
+					}
 				}
-			else if (pList->GetClass()->GetObjID() == OBJID_CCLINKEDLIST)
+			else
 				{
-				CCLinkedList *pLinkedList = (CCLinkedList *)pList;
+				pTarget->Discard(pCC);
+				return pCC->CreateError(CONSTLIT("List or struct expected"));
+				}
+
+			//	If bUseArray then pTarget is a list; Otherwise, pTarget is a
+			//	structure. In either case, we already have a reference on it.
+
+			if (bUseArray)
+				{
+				CCLinkedList *pLinkedList = (CCLinkedList *)pTarget;
+
+				if (pArgs->GetCount() < 3)
+					{
+					pTarget->Discard(pCC);
+					return pCC->CreateError(CONSTLIT("Not enough parameters for set@. Value expected."));
+					}
 
 				int iIndex = pArgs->GetElement(1)->GetIntegerValue();
 				ICCItem *pItem = pArgs->GetElement(2);
@@ -1371,13 +1547,71 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 				//	Make sure we're in range
 
 				if (iIndex < 0 || iIndex >= pLinkedList->GetCount())
+					{
+					pTarget->Discard(pCC);
 					return pCC->CreateError(CONSTLIT("Index out of range"), pArgs->GetElement(1));
+					}
 
 				pLinkedList->ReplaceElement(pCC, iIndex, pItem);
-				return pItem->Reference();
+				return pTarget;
 				}
+
+			//	If we have a structure instead of a key, then we merge with the
+			//	target.
+
+			else if (pArgs->GetElement(1)->IsSymbolTable())
+				{
+				CCSymbolTable *pTable = (CCSymbolTable *)pArgs->GetElement(1);
+
+				for (i = 0; i < pTable->GetCount(); i++)
+					{
+					ICCItem *pKey = pCC->CreateString(pTable->GetKey(i));
+					ICCItem *pItem = pTable->GetElement(i);
+
+					ICCItem *pError = pTarget->AddEntry(pCC, pKey, pItem);
+					pKey->Discard(pCC);
+					if (pError->IsError())
+						{
+						pTarget->Discard(pCC);
+						return pError;
+						}
+
+					pError->Discard(pCC);
+					}
+
+				return pTarget;
+				}
+			
+			//	Set the structure item
+
 			else
-				return pCC->CreateError(CONSTLIT("List or struct expected"), pList);
+				{
+				ICCItem *pKey = pArgs->GetElement(1);
+				ICCItem *pValue = pArgs->GetElement(2);
+
+				//	If pValue is nil then we remove the item from the structure
+
+				if (pValue->IsNil())
+					{
+					pTarget->DeleteEntry(pCC, pKey);
+					}
+
+				//	Otherwise, add it
+
+				else
+					{
+					ICCItem *pError = pTarget->AddEntry(pCC, pKey, pValue);
+					if (pError->IsError())
+						{
+						pTarget->Discard(pCC);
+						return pError;
+						}
+
+					pError->Discard(pCC);
+					}
+
+				return pTarget;
+				}
 			}
 
 		default:

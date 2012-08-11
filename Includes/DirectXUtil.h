@@ -33,6 +33,11 @@
 const int MAX_COORD =			1000000;
 const int MIN_COORD =			-1000000;
 
+//	We pick a color that is unlikely to be confused
+//	(e.g., black is very common, so we can't use that).
+
+const WORD DEFAULT_TRANSPARENT_COLOR = 0xfc1f;
+
 typedef double RealPixelChannel;
 
 class CG16bitFont;
@@ -155,7 +160,7 @@ class CG16bitImage : public CObject
 		inline void Destroy (void) { DeleteData(); }
 		void DiscardSurface (void);
 		void SetBlending (WORD wAlpha);
-		void SetTransparentColor (WORD wColor);
+		void SetTransparentColor (WORD wColor = DEFAULT_TRANSPARENT_COLOR);
 
 		void Blt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest);
 		void BltGray (int xSrc, int ySrc, int cxWidth, int cyHeight, int iAlpha, const CG16bitImage &Source, int xDest, int yDest);
@@ -197,7 +202,6 @@ class CG16bitImage : public CObject
 		void FillTrans (int x, int y, int cxWidth, int cyHeight, WORD wColor, DWORD byOpacity);
 		void FillTransGray (int x, int y, int cxWidth, int cyHeight, WORD wColor, DWORD byOpacity);
 		void FillTransRGB (int x, int y, int cxWidth, int cyHeight, COLORREF rgbValue, int iAlpha);
-		void GaussianScaledBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, CG16bitImage &Source, int xDest, int yDest, int cxDestWidth, int cyDestHeight);
 		inline BYTE *GetAlphaRow (int iRow) const { return (BYTE *)(m_pAlpha + (iRow * m_iAlphaRowSize)); }
 		inline BYTE *GetAlphaValue (int x, int y) const { return ((BYTE *)(m_pAlpha + y * m_iAlphaRowSize)) + x; }
 		inline WORD GetBackColor (void) const { return m_wBackColor; }
@@ -281,6 +285,7 @@ class CG16bitImage : public CObject
 		inline bool InClipY (int y) const { return (y >= m_rcClip.top && y < m_rcClip.bottom); }
 		void InitBMI (BITMAPINFO **retpbi);
 		inline DWORD LowPixelFromRGB (COLORREF rgb) const { return PixelFromRGB(rgb); }
+		inline WORD MakePixel (WORD wRed, WORD wGreen, WORD wBlue) { return (wRed << 11) | (wGreen << 5) | (wBlue); }
 		inline void SetLowPixel (DWORD *pPos, DWORD dwValue) { *pPos = ((*pPos) & 0xFFFF0000) | dwValue; }
 		inline void SetHighPixel (DWORD *pPos, DWORD dwValue) { *pPos = ((*pPos) & 0xFFFF) | dwValue; }
 		void SetRealPixel (Metric rX, Metric rY, const RealPixel &Value, bool bNotBlack = false);

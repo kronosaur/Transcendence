@@ -162,6 +162,33 @@ extern Metric g_KlicksPerPixel;
 extern Metric g_TimeScale;
 extern Metric g_SecondsPerUpdate;
 
+//	Damage Types ---------------------------------------------------------------
+
+enum DamageTypes
+	{
+	damageError			= -100,					//	invalid damage
+	damageGeneric		= -1,					//	generic damage
+
+	damageLaser			= 0,					//	standard lasers
+	damageKinetic		= 1,					//	mass drivers
+	damageParticle		= 2,					//	charged particle beam
+	damageBlast			= 3,					//	chemical explosives
+	damageIonRadiation	= 4,					//	ionizing radiation
+	damageThermonuclear	= 5,					//	hydrogen bomb
+	damagePositron		= 6,					//	anti-matter charged particles
+	damagePlasma		= 7,					//	fusion weapons
+	damageAntiMatter	= 8,					//	anti-matter torpedo
+	damageNano			= 9,					//	nano-machines
+	damageGravitonBeam	= 10,					//	graviton beam
+	damageSingularity	= 11,					//	spacetime weapons
+	damageDarkAcid		= 12,					//	exotics
+	damageDarkSteel		= 13,					//	exotics
+	damageDarkLightning	= 14,					//	exotics
+	damageDarkFire		= 15,					//	exotics
+
+	damageCount			= 16
+	};
+
 //	Utility types
 
 enum NounFlags

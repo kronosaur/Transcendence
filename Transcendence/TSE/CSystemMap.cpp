@@ -5,12 +5,14 @@
 #include "PreComp.h"
 
 #define DEFINE_ZONE_TAG						CONSTLIT("DefineZone")
+#define NODE_TAG							CONSTLIT("Node")
 #define RANDOM_TOPOLOGY_TAG					CONSTLIT("RandomTopology")
 #define ROOT_NODE_TAG						CONSTLIT("RootNode")
 #define STARGATE_TAG						CONSTLIT("Stargate")
 #define STARGATES_TAG						CONSTLIT("Stargates")
 #define SYSTEM_DISTRIBUTION_TAG				CONSTLIT("SystemTypes")
 #define SYSTEM_TOPOLOGY_TAG					CONSTLIT("SystemTopology")
+#define TOPOLOGY_CREATOR_TAG				CONSTLIT("TopologyCreator")
 #define TOPOLOGY_PROCESSOR_TAG				CONSTLIT("TopologyProcessor")
 #define USES_TAG							CONSTLIT("Uses")
 
@@ -42,6 +44,9 @@ CSystemMap::~CSystemMap (void)
 
 	{
 	int i;
+
+	for (i = 0; i < m_Creators.GetCount(); i++)
+		delete m_Creators[i];
 
 	for (i = 0; i < m_Processors.GetCount(); i++)
 		delete m_Processors[i];
@@ -99,13 +104,30 @@ ALERROR CSystemMap::AddFixedTopology (CTopology &Topology, CString *retsError)
 			return error;
 		}
 
-	//	First we add all the fixed topology nodes
+	//	Iterate over all creators and execute them
 
 	CTopologyNodeList NodesAdded;
 	STopologyCreateCtx Ctx;
-	Ctx.pMap = this;
-	Ctx.pTopologyTable = &m_FixedTopology;
+	Ctx.pMap = GetDisplayMap();
 	Ctx.pNodesAdded = &NodesAdded;
+
+	//	We need to include any maps that we use.
+
+	Ctx.Tables.Insert(&m_FixedTopology);
+	for (i = 0; i < m_Uses.GetCount(); i++)
+		Ctx.Tables.Insert(&m_Uses[i]->m_FixedTopology);
+
+	for (i = 0; i < m_Creators.GetCount(); i++)
+		{
+		if (error = ExecuteCreator(Ctx, Topology, m_Creators[i]))
+			{
+			*retsError = strPatternSubst(CONSTLIT("SystemMap (%x): %s"), GetUNID(), Ctx.sError);
+			return error;
+			}
+		}
+
+	//	Add any additional nodes marked as "root" (this is here only for backwards compatibility)
+	//	NOTE: This call only worries about the first table (Ctx.Tables[0])
 
 	if (error = Topology.AddTopology(Ctx))
 		{
@@ -189,6 +211,53 @@ CG16bitImage *CSystemMap::CreateBackgroundImage (void)
 #endif
 
 	return pImage;
+	}
+
+ALERROR CSystemMap::ExecuteCreator (STopologyCreateCtx &Ctx, CTopology &Topology, CXMLElement *pCreator)
+
+//	ExecuteCreator
+//
+//	Runs a specific creator
+
+	{
+	ALERROR error;
+	int i;
+
+	//	If this is a root node tag then we add it and all its connections.
+
+	if (strEquals(pCreator->GetTag(), ROOT_NODE_TAG))
+		{
+		if (error = Topology.AddTopologyNode(Ctx, pCreator->GetAttribute(ID_ATTRIB)))
+			return error;
+		}
+
+	//	Otherwise we process the creator element
+
+	else
+		{
+		for (i = 0; i < pCreator->GetContentElementCount(); i++)
+			{
+			CXMLElement *pDirective = pCreator->GetContentElement(i);
+
+			if (strEquals(pDirective->GetTag(), NODE_TAG))
+				{
+				if (error = Topology.AddTopologyNode(Ctx, pDirective->GetAttribute(ID_ATTRIB)))
+					return error;
+				}
+			else if (strEquals(pDirective->GetTag(), STARGATE_TAG) || strEquals(pDirective->GetTag(), STARGATES_TAG))
+				{
+				if (error = Topology.AddStargateFromXML(Ctx, pDirective))
+					return error;
+				}
+			else
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("Unknown TopologyCreator directive: %s."), pDirective->GetTag());
+				return ERR_FAIL;
+				}
+			}
+		}
+
+	return NOERROR;
 	}
 
 void CSystemMap::GetBackgroundImageSize (int *retcx, int *retcy)
@@ -278,7 +347,15 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		{
 		CXMLElement *pItem = pDesc->GetContentElement(i);
 
-		if (strEquals(pItem->GetTag(), TOPOLOGY_PROCESSOR_TAG))
+		if (strEquals(pItem->GetTag(), TOPOLOGY_CREATOR_TAG)
+				|| strEquals(pItem->GetTag(), ROOT_NODE_TAG))
+			{
+			m_Creators.Insert(pItem->OrphanCopy());
+
+			if (strEquals(pItem->GetTag(), ROOT_NODE_TAG))
+				RootNodes.Insert(pItem->GetAttribute(ID_ATTRIB));
+			}
+		else if (strEquals(pItem->GetTag(), TOPOLOGY_PROCESSOR_TAG))
 			{
 			ITopologyProcessor *pNewProc;
 			CString sProcessorUNID = strPatternSubst(CONSTLIT("%d:p%d"), GetUNID(), m_Processors.GetCount());
@@ -290,11 +367,9 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			}
 		else if (strEquals(pItem->GetTag(), SYSTEM_TOPOLOGY_TAG))
 			{
-			if (error = m_FixedTopology.LoadFromXML(Ctx, pItem, sUNID, true))
+			if (error = m_FixedTopology.LoadFromXML(Ctx, pItem, this, sUNID, true))
 				return error;
 			}
-		else if (strEquals(pItem->GetTag(), ROOT_NODE_TAG))
-			RootNodes.Insert(pItem->GetAttribute(ID_ATTRIB));
 		else if (strEquals(pItem->GetTag(), USES_TAG))
 			{
 			CSystemMapRef *pRef = m_Uses.Insert();
@@ -306,12 +381,16 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			{
 			//	If it's none of the above, see if it is a node descriptor
 
-			if (error = m_FixedTopology.LoadNodeFromXML(Ctx, pItem, sUNID))
+			if (error = m_FixedTopology.LoadNodeFromXML(Ctx, pItem, this, sUNID))
 				return error;
 			}
 		}
 
-	//	Mark all the root nodes
+	//	Mark all the root nodes.
+	//
+	//	We need to do this for backwards compatibility because the old technique
+	//	of having a root node with [Prev] for a stargate requires this. This was
+	//	used by Huaramarca.
 
 	for (i = 0; i < RootNodes.GetCount(); i++)
 		if (error = m_FixedTopology.AddRootNode(Ctx, RootNodes[i]))

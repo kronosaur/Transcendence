@@ -94,7 +94,7 @@ void CUIHelper::CreateClassInfoCargo (CShipClass *pClass, const CDeviceDescList 
 
 	CString sText = strPatternSubst(CONSTLIT("{/rtf {/f:LargeBold;/c:%d; %s} {/f:MediumBold;/c:%d; %s}\n{/f:Medium;/c:%d; %s}}"),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogLabel)),
-			strFromInt(iCargoSpace, TRUE),
+			strFromInt(iCargoSpace),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogInput)),
 			(pCargoExtension ? strPatternSubst(CONSTLIT("ton %s"), CTextBlock::Escape(pCargoExtension->GetItemType()->GetNounPhrase(nounActual))) : CONSTLIT("ton cargo hold")),
 			CG16bitImage::RGBFromPixel(VI.GetColor(colorTextDialogLabel)),

@@ -33,7 +33,7 @@ void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		printf("%d\t%s\t%d\t%d\t%d\t", 
 				pItem->GetLevel(), 
 				sName.GetASCIIZPointer(), 
-				pItem->GetValue(), 
+				Item.GetValue(true), 
 				Item.GetMassKg(),
 				iHP);
 

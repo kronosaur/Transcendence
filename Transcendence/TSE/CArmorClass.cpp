@@ -3,7 +3,6 @@
 //	CArmorClass class
 
 #include "PreComp.h"
-#include "ArmorClassConstants.h"
 
 #define INSTALL_COST_ATTRIB						CONSTLIT("installCost")
 #define PHOTO_REPAIR_ATTRIB						CONSTLIT("photoRepair")
@@ -444,17 +443,20 @@ int CArmorClass::CalcBalance (void)
 	int iBalanceAdj = 0;
 	for (i = 0; i < damageCount; i++)
 		{
-		int iStdAdj = STD_ARMOR_DAMAGE_ADJ[iLevel - 1][i];
-		if (iStdAdj != m_iDamageAdj[i])
+		int iStdAdj;
+		int iDamageAdj;
+		m_DamageAdj.GetAdjAndDefault((DamageTypes)i, &iDamageAdj, &iStdAdj);
+
+		if (iStdAdj != iDamageAdj)
 			{
-			if (m_iDamageAdj[i] > 0)
+			if (iDamageAdj > 0)
 				{
-				int iBonus = (int)((100.0 * (iStdAdj - m_iDamageAdj[i]) / m_iDamageAdj[i]) + 0.5);
+				int iBonus = (int)((100.0 * (iStdAdj - iDamageAdj) / iDamageAdj) + 0.5);
 
 				if (iBonus > 0)
 					iBalanceAdj += iBonus / 4;
 				else
-					iBalanceAdj -= ((int)((100.0 * m_iDamageAdj[i] / iStdAdj) + 0.5) - 100) / 4;
+					iBalanceAdj -= ((int)((100.0 * iDamageAdj / iStdAdj) + 0.5) - 100) / 4;
 				}
 			else if (iStdAdj > 0)
 				{
@@ -605,7 +607,7 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 	//	Load the new damage adjustment structure
 
 	pArmor->m_iDamageAdjLevel = pDesc->GetAttributeIntegerBounded(DAMAGE_ADJ_LEVEL_ATTRIB, 1, MAX_ITEM_LEVEL, iLevel);
-	if (error = LoadDamageAdj(pDesc, STD_ARMOR_DAMAGE_ADJ[pArmor->m_iDamageAdjLevel - 1], pArmor->m_iDamageAdj))
+	if (error = pArmor->m_DamageAdj.InitFromXML(Ctx, pDesc))
 		return error;
 
 	//	Blind-immune
@@ -704,7 +706,7 @@ bool CArmorClass::FindDataField (const CString &sField, CString *retsValue)
 			if (i > 0)
 				retsValue->Append(CONSTLIT("\t"));
 
-			retsValue->Append(strFromInt(m_iDamageAdj[i]));
+			retsValue->Append(strFromInt(m_DamageAdj.GetAdj((DamageTypes)i)));
 			}
 		}
 	else if (strEquals(sField, FIELD_HP_BONUS))
@@ -713,30 +715,14 @@ bool CArmorClass::FindDataField (const CString &sField, CString *retsValue)
 
 		for (i = 0; i < damageCount; i++)
 			{
-			if (!sResult.IsBlank())
+			if (i > 0)
 				sResult.Append(CONSTLIT(", "));
 
-			int iStdAdj = STD_ARMOR_DAMAGE_ADJ[m_pItemType->GetLevel() - 1][i];
-			if (m_iDamageAdj[i] > 0)
-				{
-				int iBonus = (int)((100.0 * (iStdAdj - m_iDamageAdj[i]) / m_iDamageAdj[i]) + 0.5);
-
-				//	Prettify. Because of rounding-error, sometimes a bonus of +25 or -25 comes out as
-				//	+24 or -24. This is because we store a damage adjustment not the bonus.
-
-				if (((iBonus + 1) % 25) == 0)
-					iBonus++;
-				else if (((iBonus - 1) % 25) == 0)
-					iBonus--;
-				else if (iBonus == 48)
-					iBonus = 50;
-
-				sResult.Append(strPatternSubst(CONSTLIT("%3d"), iBonus));
-				}
-			else if (iStdAdj > 0)
+			int iBonus = m_DamageAdj.GetHPBonus((DamageTypes)i);
+			if (iBonus == -100)
 				sResult.Append(CONSTLIT("***"));
 			else
-				sResult.Append(CONSTLIT("  0"));
+				sResult.Append(strPatternSubst(CONSTLIT("%3d"), iBonus));
 			}
 
 		*retsValue = sResult;
@@ -1120,10 +1106,7 @@ int CArmorClass::GetStdDamageAdj (int iLevel, DamageTypes iDamage)
 
 	{
 	ASSERT(iLevel >= 1 && iLevel <= MAX_ITEM_LEVEL);
-	if (iDamage == damageGeneric)
-		return 100;
-
-	return STD_ARMOR_DAMAGE_ADJ[iLevel - 1][iDamage];
+	return g_pUniverse->GetArmorDamageAdj(iLevel)->GetAdj(iDamage);
 	}
 
 int CArmorClass::GetStdEffectiveHP (int iLevel)
@@ -1138,7 +1121,7 @@ int CArmorClass::GetStdEffectiveHP (int iLevel)
 
 	int iHPbyDamageType[damageCount];
 	for (i = 0; i < damageCount; i++)
-		iHPbyDamageType[i] = CalcHPDamageAdj(STD_STATS[iLevel - 1].iHP, STD_ARMOR_DAMAGE_ADJ[iLevel - 1][i]);
+		iHPbyDamageType[i] = CalcHPDamageAdj(STD_STATS[iLevel - 1].iHP, g_pUniverse->GetArmorDamageAdj(iLevel)->GetAdj((DamageTypes)i));
 
 	return ::CalcEffectiveHP(iLevel, STD_STATS[iLevel - 1].iHP, iHPbyDamageType);
 	}
@@ -1213,6 +1196,13 @@ ALERROR CArmorClass::OnBindDesign (SDesignLoadCtx &Ctx)
 //	Called on Bind
 
 	{
+	ALERROR error;
+
+	//	Compute armor damage adjustments
+
+	if (error = m_DamageAdj.Bind(Ctx, g_pUniverse->GetArmorDamageAdj(m_iDamageAdjLevel)))
+		return error;
+
 	//	Cache some events
 
 	CItemType *pType = GetItemType();

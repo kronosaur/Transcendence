@@ -161,6 +161,7 @@ class ICCItem : public CObject
 
 		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry) { return NotASymbolTable(pCC); }
 		virtual void AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry) { ASSERT(FALSE); }
+		virtual void DeleteEntry (CCodeChain *pCC, ICCItem *pKey) { }
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey) { return -1; }
 		virtual int FindValue (ICCItem *pValue) { return -1; }
 		virtual IItemTransform *GetDefineHook (void) { return NULL; }
@@ -245,7 +246,7 @@ class CCInteger : public ICCInteger
 
 		virtual ICCItem *Clone (CCodeChain *pCC);
 		virtual int GetIntegerValue (void) { return m_iValue; }
-		virtual CString GetStringValue (void) { return strFromInt(m_iValue, TRUE); }
+		virtual CString GetStringValue (void) { return strFromInt(m_iValue); }
 		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0);
 		virtual void Reset (void);
 
@@ -589,6 +590,7 @@ class CCSymbolTable : public ICCList
 
 		virtual void AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry);
 		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry);
+		virtual void DeleteEntry (CCodeChain *pCC, ICCItem *pKey);
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey);
 		virtual int FindValue (ICCItem *pValue);
 		virtual IItemTransform *GetDefineHook (void) { return m_pDefineHook; }
@@ -728,6 +730,7 @@ class CCodeChain : public CObject
 		ALERROR DefineGlobalString (const CString &sVar, const CString &sValue);
 		ICCItem *EvaluateArgs (CEvalContext *pCtx, ICCItem *pArgs, const CString &sArgValidation);
 		IItemTransform *GetGlobalDefineHook (void) const { return m_pGlobalSymbols->GetDefineHook(); }
+		inline ICCItem *GetGlobals (void) { return m_pGlobalSymbols; }
 		ICCItem *ListGlobals (void);
 		ICCItem *LookupFunction (CEvalContext *pCtx, ICCItem *pName);
 		ICCItem *PoolUsage (void);

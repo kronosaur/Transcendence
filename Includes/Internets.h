@@ -39,6 +39,7 @@ class CHTTPMessage
 		inline const CString &GetBodyBuffer (void) const { if (m_pBody) return m_pBody->GetMediaBuffer(); else return NULL_STR; }
 		inline DWORD GetStatusCode (void) const { return m_dwStatusCode; }
 		inline const CString &GetStatusMsg (void) const { return m_sStatusMsg; }
+		inline const CString &GetURL (void) const { return m_sURL; }
 		ALERROR InitFromBuffer (const CString &sBuffer, bool bNoBody = false);
 		ALERROR InitRequest (const CString &sMethod, const CString &sURL);
 		ALERROR InitResponse (DWORD dwStatusCode, const CString &sStatusMsg);

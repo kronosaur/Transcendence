@@ -251,12 +251,11 @@
 				lifetime=			"50"
 				powerUse=			"120"
 
-				directional=		"true"
 				sound=				"&snRecoillessCannon;"
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="0" imageTicksPerFrame="0"/>
+				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 			</Effect>
 
 		</Weapon>

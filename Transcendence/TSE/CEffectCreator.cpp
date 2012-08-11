@@ -166,7 +166,7 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 		{
 		DWORD dwUNID = pDesc->GetAttributeInteger(UNID_ATTRIB);
 		if (dwUNID)
-			sEffectUNID = strFromInt(dwUNID, FALSE);
+			sEffectUNID = strFromInt(dwUNID, false);
 		else
 			sEffectUNID = STR_NO_UNID;
 		}
@@ -422,7 +422,7 @@ CString IEffectPainter::ReadUNID (SLoadCtx &Ctx)
 		{
 		DWORD dwUNID;
 		Ctx.pStream->Read((char *)&dwUNID, sizeof(DWORD));
-		sUNID = strFromInt(dwUNID, FALSE);
+		sUNID = strFromInt(dwUNID, false);
 		}
 
 	return sUNID;
@@ -531,7 +531,7 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 
 	//	Basic info
 
-	m_sUNID = strFromInt(GetUNID(), FALSE);
+	m_sUNID = strFromInt(GetUNID(), false);
 	m_dwSoundUNID = pDesc->GetAttributeInteger(SOUND_ATTRIB);
 	m_iSound = -1;
 

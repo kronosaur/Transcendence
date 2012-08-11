@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-    238, 203, 192, 102, 176, 222,  69, 200, 179, 206,
-    106, 148,  48, 188, 228, 203, 253, 142,  56,  52,
+	 83, 225,  48,  82, 182,  31, 252,  13,  98,  56,
+	212, 231, 143,  98,   8, 148, 121, 147, 211, 192,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -549,11 +549,8 @@ ALERROR CExtensionCollection::ComputeFilesToLoad (const CString &sFilespec, CExt
 		//	Open the file
 
 		CResourceDb ExtDb(sFilepath, true);
-		if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY))
-			{
-			*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), sFilepath);
+		if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY, retsError))
 			return error;
-			}
 
 		//	If this is a module, then skip it
 
@@ -860,11 +857,8 @@ ALERROR CExtensionCollection::LoadBaseFile (const CString &sFilespec, DWORD dwFl
 	//	Open up the file
 
 	CResourceDb Resources(sFilespec);
-	if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY))
-		{
-		*retsError = strPatternSubst(CONSTLIT("Unable to load %s."), sFilespec);
+	if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY, retsError))
 		return error;
-		}
 
 	//	Log whether or not we're using the XML or TDB files.
 

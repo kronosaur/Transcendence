@@ -45,6 +45,7 @@
 #define FILENAME_ATTRIB							CONSTLIT("filename")
 #define FOLDER_ATTRIB							CONSTLIT("folder")
 #define NAME_ATTRIB								CONSTLIT("name")
+#define PRIVATE_ATTRIB							CONSTLIT("private")
 #define RELEASE_ATTRIB							CONSTLIT("release")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define VERSION_ATTRIB							CONSTLIT("version")
@@ -142,6 +143,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 	pExtension->m_pEntities = pEntities;
 	pExtension->m_ModifiedTime = fileGetModifiedTime(Ctx.sResDb);
 	pExtension->m_bRegistered = true;
+	pExtension->m_bPrivate = true;
 
 	//	We return the base extension
 
@@ -349,18 +351,28 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 	pExtension->m_ModifiedTime = fileGetModifiedTime(sFilespec);
 	pExtension->m_bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
 	pExtension->m_bRegistered = IsRegisteredUNID(pExtension->m_dwUNID);
+	pExtension->m_bPrivate = pDesc->GetAttributeBool(PRIVATE_ATTRIB);
 
 	//	API version
 
-	pExtension->m_dwAPIVersion = ::LoadExtensionVersion(pDesc->GetAttribute(API_VERSION_ATTRIB));
-	if (pExtension->m_dwAPIVersion == 0)
-		pExtension->m_dwAPIVersion = ::LoadExtensionVersion(pDesc->GetAttribute(VERSION_ATTRIB));
+	CString sAPIVersion;
+	if (pDesc->FindAttribute(API_VERSION_ATTRIB, &sAPIVersion))
+		{
+		pExtension->m_dwAPIVersion = (DWORD)strToInt(sAPIVersion, 0);
+		if (pExtension->m_dwAPIVersion < 12)
+			pExtension->m_dwAPIVersion = 0;
+		}
+	else
+		{
+		sAPIVersion = pDesc->GetAttribute(VERSION_ATTRIB);
+		pExtension->m_dwAPIVersion = ::LoadExtensionVersion(sAPIVersion);
+		}
 
 	if (pExtension->m_dwAPIVersion == 0)
 		{
 		pExtension->m_pEntities = NULL;	//	Let our parent clean up.
 		delete pExtension;
-		*retsError = strPatternSubst(CONSTLIT("Unable to load extension: incompatible version: %s"), pDesc->GetAttribute(VERSION_ATTRIB));
+		*retsError = strPatternSubst(CONSTLIT("Unable to load extension: incompatible version: %s"), sAPIVersion);
 		return ERR_FAIL;
 		}
 
@@ -419,11 +431,8 @@ ALERROR CExtension::CreateExtensionStub (const CString &sFilespec, EFolderTypes 
 	//	Open up the file
 
 	CResourceDb Resources(sFilespec, true);
-	if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY))
-		{
-		*retsError = strPatternSubst(CONSTLIT("Unable to load %s."), sFilespec);
+	if (error = Resources.Open(DFOPEN_FLAG_READ_ONLY, retsError))
 		return error;
-		}
 
 	//	Create a object to receive all the entities
 
@@ -606,11 +615,8 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 			//	Open the file
 
 			CResourceDb ExtDb(m_sFilespec, true);
-			if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY))
-				{
-				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sFilespec);
+			if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY, retsError))
 				return ERR_FAIL;
-				}
 
 			//	Setup
 
@@ -808,7 +814,7 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 	if (strEquals(pDesc->GetTag(), STAR_SYSTEM_TOPOLOGY_TAG)
 			|| strEquals(pDesc->GetTag(), SYSTEM_TOPOLOGY_TAG))
 		{
-		if (error = m_Topology.LoadFromXML(Ctx, pDesc, NULL_STR))
+		if (error = m_Topology.LoadFromXML(Ctx, pDesc, NULL, NULL_STR))
 			return error;
 		}
 
@@ -858,7 +864,7 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 
 		if (error = m_DesignTypes.AddEntry(pType))
 			{
-			if (m_DesignTypes.FindByUNID(dwUNID))
+			if (error == ERR_OUTOFROOM)
 				Ctx.sError = strPatternSubst(CONSTLIT("Duplicate UNID: %x"), dwUNID);
 			else
 				Ctx.sError = strPatternSubst(CONSTLIT("Error adding design entry UNID: %x"), dwUNID);

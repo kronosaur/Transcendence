@@ -4,65 +4,71 @@
 
 #include "PreComp.h"
 
-#define MISSILES_TAG					CONSTLIT("Missiles")
-#define CONFIGURATION_TAG				CONSTLIT("Configuration")
+#define MISSILES_TAG							CONSTLIT("Missiles")
+#define CONFIGURATION_TAG						CONSTLIT("Configuration")
 
-#define AIM_TOLERANCE_ATTRIB			CONSTLIT("aimTolerance")
-#define ALTERNATING_ATTRIB				CONSTLIT("alternating")
-#define ANGLE_ATTRIB					CONSTLIT("angle")
-#define CHARGES_ATTRIB					CONSTLIT("charges")
-#define CONFIGURATION_ATTRIB			CONSTLIT("configuration")
-#define COOLING_RATE_ATTRIB				CONSTLIT("coolingRate")
-#define COUNTER_ATTRIB					CONSTLIT("counter")
-#define COUNTER_ACTIVATE_ATTRIB			CONSTLIT("counterActivate")
-#define COUNTER_UPDATE_ATTRIB			CONSTLIT("counterUpdate")
-#define COUNTER_UPDATE_RATE_ATTRIB		CONSTLIT("counterUpdateRate")
-#define FAILURE_CHANCE_ATTRIB			CONSTLIT("failureChance")
-#define HEATING_ATTRIB					CONSTLIT("heating")
-#define IDLE_POWER_USE_ATTRIB			CONSTLIT("idlePowerUse")
-#define LAUNCHER_ATTRIB					CONSTLIT("launcher")
-#define LINKED_FIRE_ATTRIB				CONSTLIT("linkedFire")
-#define MASS_BONUS_PER_CHARGE_ATTRIB	CONSTLIT("massBonusPerCharge")
-#define MAX_FIRE_ARC_ATTRIB				CONSTLIT("maxFireArc")
-#define MIN_FIRE_ARC_ATTRIB				CONSTLIT("minFireArc")
-#define MULTI_TARGET_ATTRIB				CONSTLIT("multiTarget")
-#define POS_ANGLE_ATTRIB				CONSTLIT("posAngle")
-#define POS_RADIUS_ATTRIB				CONSTLIT("posRadius")
-#define POWER_USE_ATTRIB				CONSTLIT("powerUse")
-#define RECOIL_ATTRIB					CONSTLIT("recoil")
+#define AIM_TOLERANCE_ATTRIB					CONSTLIT("aimTolerance")
+#define ALTERNATING_ATTRIB						CONSTLIT("alternating")
+#define ANGLE_ATTRIB							CONSTLIT("angle")
+#define CHARGES_ATTRIB							CONSTLIT("charges")
+#define CONFIGURATION_ATTRIB					CONSTLIT("configuration")
+#define COOLING_RATE_ATTRIB						CONSTLIT("coolingRate")
+#define COUNTER_ATTRIB							CONSTLIT("counter")
+#define COUNTER_ACTIVATE_ATTRIB					CONSTLIT("counterActivate")
+#define COUNTER_UPDATE_ATTRIB					CONSTLIT("counterUpdate")
+#define COUNTER_UPDATE_RATE_ATTRIB				CONSTLIT("counterUpdateRate")
+#define FAILURE_CHANCE_ATTRIB					CONSTLIT("failureChance")
+#define HEATING_ATTRIB							CONSTLIT("heating")
+#define IDLE_POWER_USE_ATTRIB					CONSTLIT("idlePowerUse")
+#define LAUNCHER_ATTRIB							CONSTLIT("launcher")
+#define LINKED_FIRE_ATTRIB						CONSTLIT("linkedFire")
+#define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
+#define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
+#define MULTI_TARGET_ATTRIB						CONSTLIT("multiTarget")
+#define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
+#define POS_RADIUS_ATTRIB						CONSTLIT("posRadius")
+#define POWER_USE_ATTRIB						CONSTLIT("powerUse")
+#define RECOIL_ATTRIB							CONSTLIT("recoil")
 
-#define CONFIG_TYPE_DUAL				CONSTLIT("dual")
-#define CONFIG_TYPE_WALL				CONSTLIT("wall")
-#define CONFIG_TYPE_SPREAD2				CONSTLIT("spread2")
-#define CONFIG_TYPE_SPREAD3				CONSTLIT("spread3")
-#define CONFIG_TYPE_SPREAD5				CONSTLIT("spread5")
-#define CONFIG_TYPE_DUAL_ALTERNATING	CONSTLIT("alternating")
+#define CONFIG_TYPE_DUAL						CONSTLIT("dual")
+#define CONFIG_TYPE_WALL						CONSTLIT("wall")
+#define CONFIG_TYPE_SPREAD2						CONSTLIT("spread2")
+#define CONFIG_TYPE_SPREAD3						CONSTLIT("spread3")
+#define CONFIG_TYPE_SPREAD5						CONSTLIT("spread5")
+#define CONFIG_TYPE_DUAL_ALTERNATING			CONSTLIT("alternating")
 
-#define COUNTER_TYPE_TEMPERATURE		CONSTLIT("temperature")
-#define COUNTER_TYPE_CAPACITOR			CONSTLIT("capacitor")
+#define COUNTER_TYPE_TEMPERATURE				CONSTLIT("temperature")
+#define COUNTER_TYPE_CAPACITOR					CONSTLIT("capacitor")
 
-#define ON_FIRE_WEAPON_EVENT			CONSTLIT("OnFireWeapon")
+#define ON_FIRE_WEAPON_EVENT					CONSTLIT("OnFireWeapon")
 
-#define FIELD_AMMO_TYPE					CONSTLIT("ammoType")
-#define FIELD_AVERAGE_DAMAGE			CONSTLIT("averageDamage")	//	Average damage (1000x hp)
-#define FIELD_BALANCE					CONSTLIT("balance")
-#define FIELD_BALANCE_DAMAGE			CONSTLIT("balanceDamage")
-#define FIELD_CONFIGURATION				CONSTLIT("configuration")
-#define FIELD_DAMAGE_180				CONSTLIT("damage")			//	HP damage per 180 ticks
-#define FIELD_DAMAGE_TYPE				CONSTLIT("damageType")
-#define FIELD_IS_ALTERNATING			CONSTLIT("isAlternating")
-#define FIELD_MAX_DAMAGE				CONSTLIT("maxDamage")
-#define FIELD_MIN_DAMAGE				CONSTLIT("minDamage")
-#define FIELD_FIRE_DELAY				CONSTLIT("fireDelay")		//	Delay (ticks)
-#define FIELD_FIRE_RATE					CONSTLIT("fireRate")
-#define FIELD_POWER						CONSTLIT("power")
-#define FIELD_POWER_PER_SHOT			CONSTLIT("powerPerShot")	//	Power used per shot (1000x Megawatt minutes)
-#define FIELD_RANGE						CONSTLIT("range")
-#define FIELD_RECOIL					CONSTLIT("recoil")
-#define FIELD_REPEAT_COUNT				CONSTLIT("repeatCount")
-#define FIELD_SOUND						CONSTLIT("sound")
-#define FIELD_SPEED						CONSTLIT("speed")
-#define FIELD_VARIANT_COUNT				CONSTLIT("variantCount")
+#define FIELD_AMMO_TYPE							CONSTLIT("ammoType")
+#define FIELD_AVERAGE_DAMAGE					CONSTLIT("averageDamage")	//	Average damage (1000x hp)
+#define FIELD_BALANCE							CONSTLIT("balance")
+#define FIELD_BALANCE_DAMAGE					CONSTLIT("balanceDamage")
+#define FIELD_CONFIGURATION						CONSTLIT("configuration")
+#define FIELD_DAMAGE_180						CONSTLIT("damage")			//	HP damage per 180 ticks
+#define FIELD_DAMAGE_TYPE						CONSTLIT("damageType")
+#define FIELD_HP								CONSTLIT("hp")
+#define FIELD_IS_ALTERNATING					CONSTLIT("isAlternating")
+#define FIELD_MAX_DAMAGE						CONSTLIT("maxDamage")
+#define FIELD_MIN_DAMAGE						CONSTLIT("minDamage")
+#define FIELD_FIRE_DELAY						CONSTLIT("fireDelay")		//	Delay (ticks)
+#define FIELD_FIRE_RATE							CONSTLIT("fireRate")
+#define FIELD_POWER								CONSTLIT("power")
+#define FIELD_POWER_PER_SHOT					CONSTLIT("powerPerShot")	//	Power used per shot (1000x Megawatt minutes)
+#define FIELD_RANGE								CONSTLIT("range")
+#define FIELD_RECOIL							CONSTLIT("recoil")
+#define FIELD_REPEAT_COUNT						CONSTLIT("repeatCount")
+#define FIELD_SOUND								CONSTLIT("sound")
+#define FIELD_SPEED								CONSTLIT("speed")
+#define FIELD_VARIANT_COUNT						CONSTLIT("variantCount")
+
+#define PROPERTY_DAMAGED						CONSTLIT("damaged")
+#define PROPERTY_FIRE_ARC						CONSTLIT("fireArc")
+#define PROPERTY_LINKED_FIRE_OPTIONS			CONSTLIT("linkedFireOptions")
+#define PROPERTY_OMNIDIRECTIONAL				CONSTLIT("omnidirectional")
+#define PROPERTY_SECONDARY						CONSTLIT("secondary")
 
 static CObjectClass<CWeaponClass>g_Class(OBJID_CWEAPONCLASS, NULL);
 
@@ -802,8 +808,7 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 	//	Charges
 
 	pWeapon->m_bCharges = pDesc->GetAttributeBool(CHARGES_ATTRIB);
-	pType->SetExtraMassPerCharge(pDesc->GetAttributeIntegerBounded(MASS_BONUS_PER_CHARGE_ATTRIB, 0, -1, 0));
-
+	
 	//	Counter
 
 	sConfig = pDesc->GetAttribute(COUNTER_ATTRIB);
@@ -926,18 +931,20 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 		CItemType *pAmmoType = pShot->GetAmmoType();
 		*retsValue = (pAmmoType ? strFromInt(pAmmoType->GetUNID()) : NULL_STR);
 		}
+	else if (strEquals(sField, FIELD_HP))
+		*retsValue = strFromInt(pShot->GetHitPoints());
 	else if (strEquals(sField, FIELD_MIN_DAMAGE))
-		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMinDamage(), FALSE);
+		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMinDamage());
 	else if (strEquals(sField, FIELD_MAX_DAMAGE))
-		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMaxDamage(), FALSE);
+		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMaxDamage());
 	else if (strEquals(sField, FIELD_DAMAGE_TYPE))
-		*retsValue = strFromInt(pShot->m_Damage.GetDamageType(), FALSE);
+		*retsValue = strFromInt(pShot->m_Damage.GetDamageType());
 	else if (strEquals(sField, FIELD_FIRE_DELAY))
-		*retsValue = strFromInt(m_iFireRate, FALSE);
+		*retsValue = strFromInt(m_iFireRate);
 	else if (strEquals(sField, FIELD_FIRE_RATE))
 		{
 		if (m_iFireRate)
-			*retsValue = strFromInt(1000 / m_iFireRate, FALSE);
+			*retsValue = strFromInt(1000 / m_iFireRate);
 		else
 			return false;
 		}
@@ -966,7 +973,7 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 	else if (strEquals(sField, FIELD_POWER))
 		*retsValue = strFromInt(m_iPowerUse * 100);
 	else if (strEquals(sField, FIELD_POWER_PER_SHOT))
-		*retsValue = strFromInt((int)(((m_iFireRate * m_iPowerUse * STD_SECONDS_PER_UPDATE * 1000) / 600.0) + 0.5), FALSE);
+		*retsValue = strFromInt((int)(((m_iFireRate * m_iPowerUse * STD_SECONDS_PER_UPDATE * 1000) / 600.0) + 0.5));
 	else if (strEquals(sField, FIELD_BALANCE))
 		*retsValue = strFromInt(CalcBalance(iVariant));
 	else if (strEquals(sField, FIELD_RANGE))
@@ -1002,7 +1009,7 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 			Output.Write(sItem.GetASCIIZPointer(), sItem.GetLength());
 			Output.Write(" ", 1);
 
-			sItem = strFromInt(ShotDir[i], false);
+			sItem = strFromInt(ShotDir[i]);
 			Output.Write(sItem.GetASCIIZPointer(), sItem.GetLength());
 			Output.Write(") ", 2);
 
@@ -1676,6 +1683,93 @@ int CWeaponClass::GetDefaultFireAngle (CInstalledDevice *pDevice, CSpaceObject *
 		return (pSource->GetRotation() + pDevice->GetRotation() + AngleMiddle(m_iMinFireArc, m_iMaxFireArc)) % 360;
 	else
 		return AngleMiddle(m_iMinFireArc, m_iMaxFireArc);
+	}
+
+ICCItem *CWeaponClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
+
+//	GetItemProperty
+//
+//	Returns the item property. Subclasses should call this if they do not
+//	understand the property.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_FIRE_ARC))
+		{
+		CInstalledDevice *pDevice = Ctx.GetDevice();	//	May be NULL
+		int iMinFireArc;
+		int iMaxFireArc;
+
+		//	Omnidirectional
+
+		if (IsOmniDirectional(pDevice))
+			return CC.CreateString(PROPERTY_OMNIDIRECTIONAL);
+
+		//	Fire arc
+
+		else if (IsDirectional(pDevice, &iMinFireArc, &iMaxFireArc))
+			{
+			//	Create a list
+
+			ICCItem *pResult = CC.CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+
+			pList->AppendIntegerValue(&CC, iMinFireArc);
+			pList->AppendIntegerValue(&CC, iMaxFireArc);
+
+			return pResult;
+			}
+
+		//	Otherwise, see if we are pointing in a particular direction
+
+		else
+			{
+			int iFacingAngle = AngleMod((pDevice ? pDevice->GetRotation() : 0) + AngleMiddle(m_iMinFireArc, m_iMaxFireArc));
+			if (iFacingAngle == 0)
+				return CC.CreateNil();
+			else
+				return CC.CreateInteger(iFacingAngle);
+			}
+		}
+
+	else if (strEquals(sName, PROPERTY_LINKED_FIRE_OPTIONS))
+		{
+		//	Get the options from the device
+
+		DWORD dwOptions = GetLinkedFireOptions(Ctx);
+		if (dwOptions == 0)
+			return CC.CreateNil();
+
+		//	Create a list
+
+		ICCItem *pResult = CC.CreateLinkedList();
+		if (pResult->IsError())
+			return pResult;
+
+		CCLinkedList *pList = (CCLinkedList *)pResult;
+
+		//	Add options
+
+		if (dwOptions & CDeviceClass::lkfAlways)
+			pList->AppendStringValue(&CC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfAlways));
+		else if (dwOptions & CDeviceClass::lkfTargetInRange)
+			pList->AppendStringValue(&CC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfTargetInRange));
+		else if (dwOptions & CDeviceClass::lkfEnemyInRange)
+			pList->AppendStringValue(&CC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfEnemyInRange));
+
+		//	Done
+
+		return pResult;
+		}
+
+	//	Otherwise, just get the property from the base class
+
+	else
+		return CDeviceClass::GetItemProperty(Ctx, sName);
 	}
 
 Metric CWeaponClass::GetMaxEffectiveRange (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget)

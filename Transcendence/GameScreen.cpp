@@ -328,7 +328,13 @@ void CTranscendenceWnd::DoUseItemCommand (DWORD dwData)
 
 		CString sScreen;
 		CDesignType *pRoot = pType->GetUseScreen(&sScreen);
-		GetModel().ShowShipScreen(pType, pRoot, sScreen, NULL_STR);
+		CString sError;
+		if (!GetModel().ShowShipScreen(pType, pRoot, sScreen, NULL_STR, &sError))
+			{
+			g_pTrans->DisplayMessage(sError);
+			::kernelDebugLogMessage(sError);
+			return;
+			}
 
 		pShip->OnComponentChanged(comCargo);
 		}
@@ -1184,7 +1190,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 			CString sCount;
 			if (Item.GetCount() > 1)
-				sCount = strFromInt(Item.GetCount(), false);
+				sCount = strFromInt(Item.GetCount());
 
 			//	Show the key only if the item is identified
 

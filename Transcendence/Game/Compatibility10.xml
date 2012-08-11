@@ -1390,6 +1390,95 @@
 			)
 	</Globals>
 
+<!-- LEVEL XI -->
+
+	<!-- Segment of Neutronium Plate -->
+
+	<ItemType UNID="&itNeutroniumPlate;"
+			name=				"[segment(s) of ]neutronium armor"
+			level=				"11"
+			value=				"100000"
+			mass=				"15000"
+			attributes=			"MinorItem; Specialty; Military"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"Forged in the heart of a neutron star, neutronium is massive, nearly indestructible, and impossible to repair."
+
+			sortName=			"neutronium armor, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"1000"
+
+				repairTech=	"21"
+
+				disintegrationImmune="true"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL XII -->
+
+<!-- LEVEL XV -->
+
+	<!-- Segment of Dark Matter Plate -->
+
+	<ItemType UNID="&itDarkMatterPlate;"
+			name=				"[segment(s) of ]dark matter armor"
+			level=				"15"
+			value=				"2000000"
+			mass=				"5000"
+			attributes=			"Alien; MinorItem"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"Very little is known about this exotic form of dark-matter. It is impervious to most low-level forms of energy and yet light enough to protect a small ship."
+
+			sortName=			"dark matter armor, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"900"
+				radiationImmune="true"
+				disintegrationImmune="true"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL XXI -->
+
+	<!-- Segment of Hierosteel Plate -->
+
+	<ItemType UNID="&itHierosteelPlate;"
+			name=				"[segment(s) of ]hierosteel armor"
+			level=				"21"
+			value=				"20000000"
+			mass=				"5000"
+			attributes=			"Alien; MinorItem"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"Forged by the ancient Hierodules, this miraculous material can withstand all but the most brutal forms of energy."
+
+			sortName=			"hierosteel armor, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"4000"
+				radiationImmune="true"
+				disintegrationImmune="true"
+				/>
+
+	</ItemType>
+
+<!-- RESOURCE -->
 
 	<Image UNID="&rsEI100XShields;"		bitmap="Resources\ShieldsHUD_EI100X.bmp" />
 	<Image UNID="&rsWolfenShields;"		bitmap="Resources\ShieldsHUD_Wolfen.bmp" />

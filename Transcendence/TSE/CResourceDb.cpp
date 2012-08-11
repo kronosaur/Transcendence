@@ -673,7 +673,7 @@ ALERROR CResourceDb::LoadSound (CSoundMgr &SoundMgr, const CString &sFolder, con
 	return NOERROR;
 	}
 
-ALERROR CResourceDb::Open (DWORD dwFlags)
+ALERROR CResourceDb::Open (DWORD dwFlags, CString *retsError)
 
 //	Open
 //
@@ -692,16 +692,28 @@ ALERROR CResourceDb::Open (DWORD dwFlags)
 		if (pathIsResourcePath(m_sFilespec, &pszResID))
 			{
 			if (error = m_pDb->OpenFromResource(NULL, pszResID))
+				{
+				if (retsError)
+					*retsError = strPatternSubst(CONSTLIT("Unable to load resource path: %s."), m_sFilespec);
 				return error;
+				}
 			}
 		else
 			{
 			if (error = m_pDb->Open(dwFlags))
+				{
+				if (retsError)
+					*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s."), m_sFilespec);
 				return error;
+				}
 			}
 
 		if (error = OpenDb())
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid or corrupt resource database: %s."), m_sFilespec);
 			return error;
+			}
 		}
 
 	return NOERROR;

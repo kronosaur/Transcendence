@@ -73,7 +73,7 @@ void GenerateShieldStats (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (pWeapon->GetCategory() != itemcatWeapon)
 			continue;
 
-		CString sLevel = (pWeapon->GetLevel() < 10 ? strPatternSubst(CONSTLIT("0%d"), pWeapon->GetLevel()) : strFromInt(pWeapon->GetLevel(), FALSE));
+		CString sLevel = (pWeapon->GetLevel() < 10 ? strPatternSubst(CONSTLIT("0%d"), pWeapon->GetLevel()) : strFromInt(pWeapon->GetLevel()));
 		CString sSortName = strPatternSubst(CONSTLIT("%s%s"), sLevel, pWeapon->GetNounPhrase());
 		List.AddEntry(sSortName, (CObject *)pWeapon);
 		}

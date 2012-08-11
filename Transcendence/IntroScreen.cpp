@@ -878,16 +878,18 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 
 	//	Figure out the class
 
+	int iTimeOut = 100;
 	CShipClass *pShipClass;
 	if (dwClass == 0
 			|| (pShipClass = g_pUniverse->FindShipClass(dwClass)) == NULL)
 		{
 		do
 			pShipClass = g_pUniverse->GetShipClass(mathRandom(0, g_pUniverse->GetShipClassCount()-1));
-		while (pShipClass->GetScore() > 1000 
-				|| pShipClass->IsPlayerShip()
-				|| pShipClass->IsVirtual()
-				|| !pShipClass->HasAttribute(ATTRIB_GENERIC_SHIP_CLASS));
+		while (iTimeOut-- > 0
+				&&	(pShipClass->GetScore() > 1000 
+					|| pShipClass->IsPlayerShip()
+					|| pShipClass->IsVirtual()
+					|| !pShipClass->HasAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
 		}
 
 	//	Normally we create a single ship, but sometimes we create lots

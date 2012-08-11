@@ -162,7 +162,7 @@ void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadi
 	{
 	int i;
 
-	ASSERT(iScale > 0 && iRadius > 0);
+	ASSERT(iScale > 0);
 
 	if (!IsEmpty())
 		return;
@@ -193,8 +193,6 @@ void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius
 
 	{
 	int i;
-
-	ASSERT(iRadius > 0);
 
 	if (!IsEmpty())
 		return;

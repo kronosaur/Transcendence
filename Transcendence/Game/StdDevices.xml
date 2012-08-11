@@ -83,6 +83,30 @@
 
 <!-- LEVEL III -->
 
+	<!-- Miner's Cargo Hold -->
+
+	<ItemType UNID="&itMinersCargoHold;"
+			name=				"miners's cargo hold"
+			level=				"3"
+			value=				"1500"
+			mass=				"1250"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"MajorItem; MinersHold"
+
+			description=		"Designed for mining ships, this cargo hold has grapples to bring ore on board."
+
+			sortName=			"cargo hold, miners"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<CargoHoldDevice
+				cargoSpace=		"80"
+				/>
+
+	</ItemType>
+
 	<!-- Nova-25 reactor -->
 
 	<ItemType UNID="&it25MWReactor;"

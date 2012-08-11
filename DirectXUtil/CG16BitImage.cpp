@@ -1117,6 +1117,8 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 
 	else if (Source.IsTransparent())
 		{
+		WORD wBackColor = Source.m_wBackColor;
+
 		while (pSrcRow < pSrcRowEnd)
 			{
 			WORD *pSrcPos = pSrcRow;
@@ -1124,7 +1126,7 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 			WORD *pDestPos = pDestRow;
 
 			while (pSrcPos < pSrcPosEnd)
-				if (*pSrcPos == m_wBackColor)
+				if (*pSrcPos == wBackColor)
 					{
 					pDestPos++;
 					pSrcPos++;
@@ -1150,6 +1152,8 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 
 	else
 		{
+		WORD wBackColor = Source.m_wBackColor;
+
 		if (dwOpacity == 255)
 			{
 			while (pSrcRow < pSrcRowEnd)
@@ -1159,7 +1163,7 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 				WORD *pDestPos = pDestRow;
 
 				while (pSrcPos < pSrcPosEnd)
-					if (*pSrcPos == m_wBackColor)
+					if (*pSrcPos == wBackColor)
 						{
 						pDestPos++;
 						pSrcPos++;
@@ -1180,7 +1184,7 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 				WORD *pDestPos = pDestRow;
 
 				while (pSrcPos < pSrcPosEnd)
-					if (*pSrcPos == m_wBackColor)
+					if (*pSrcPos == wBackColor)
 						{
 						pDestPos++;
 						pSrcPos++;
@@ -1262,6 +1266,8 @@ void CG16bitImage::CopyAlpha (int xSrc, int ySrc, int cxWidth, int cyHeight, con
 
 	else if (m_pAlpha)
 		{
+		WORD wBackColor = Source.m_wBackColor;
+
 		WORD *pSrcRow = Source.GetPixel(Source.GetRowStart(ySrc), xSrc);
 		WORD *pSrcRowEnd = Source.GetPixel(Source.GetRowStart(ySrc + cyHeight), xSrc);
 		BYTE *pDestRow = GetAlphaValue(xDest, yDest);
@@ -1274,7 +1280,7 @@ void CG16bitImage::CopyAlpha (int xSrc, int ySrc, int cxWidth, int cyHeight, con
 
 			while (pPos < pPosEnd)
 				{
-				if (*pPos++ == m_wBackColor)
+				if (*pPos++ == wBackColor)
 					*pDest++ = 0x00;
 				else
 					*pDest++ = 0xff;
@@ -1846,6 +1852,7 @@ ALERROR CG16bitImage::CreateFromImageTransformed (const CG16bitImage &Source,
 	//	Create the destination image
 
 	CreateBlank(RectWidth(rcDest), RectHeight(rcDest), Source.HasAlpha());
+	m_wBackColor = Source.m_wBackColor;
 
 	//	Copy
 
@@ -2608,107 +2615,6 @@ CG16bitImage::RealPixel CG16bitImage::GetRealPixel (const RECT &rcRange, Metric 
 		}
 	}
 
-void CG16bitImage::GaussianScaledBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, CG16bitImage &Source, int xDest, int yDest, int cxDestWidth, int cyDestHeight)
-
-//	GaussianScaledBlt
-//
-//	Blt the image to half scale using a Gaussian filter
-
-	{
-	Metric rSampleRadius = 2.0;
-
-	//	Do some basic bounds checking
-
-	if (cxWidth <= 0 || cyHeight <= 0 || cxDestWidth <= 0 || cyDestHeight <= 0)
-		return;
-
-	//	Source range
-
-	RECT rcRange;
-	rcRange.left = xSrc;
-	rcRange.top = ySrc;
-	rcRange.right = xSrc + cxWidth;
-	rcRange.bottom = ySrc + cyHeight;
-
-	//	Figure out the start and end of the destination rect relative
-	//	to xDest, yDest.
-
-	int xStart = -min(xDest, 0);
-	int yStart = -min(yDest, 0);
-	int xEnd = min(cxDestWidth, m_cxWidth - xDest);
-	int yEnd = min(cyDestHeight, m_cyHeight - yDest);
-
-	//	Blow out of here if we've got nothing to blt
-
-	if (xEnd - xStart <= 0 || yEnd - yStart <= 0)
-		return;
-
-	//	Figure out how big a destination pixel would be in the source
-
-	Metric rPixelWidth = (Metric)cxWidth / (Metric)cxDestWidth;
-	Metric rPixelHeight = (Metric)cyHeight / (Metric)cyDestHeight;
-
-	//	Figure out the sample radius
-
-	Metric rSampleX;
-	if (rPixelWidth > 1.0)
-		rSampleX = rPixelWidth / rSampleRadius;
-	else
-		rSampleX = 1.0f / (rSampleRadius * rPixelWidth);
-
-	Metric rSampleY;
-	if (rPixelHeight > 1.0)
-		rSampleY = rPixelHeight / rSampleRadius;
-	else
-		rSampleY = 1.0f / (rSampleRadius * rPixelHeight);
-
-	//	Set up the filter
-
-	const int iFilterSize = 3;
-	RealPixelChannel rFilter[3][3];
-	rFilter[0][0] = 0.027777778f;
-	rFilter[0][1] = 0.111111111f;
-	rFilter[0][2] = 0.027777778f;
-	rFilter[1][0] = 0.111111111f;
-	rFilter[1][1] = 0.444444444f;
-	rFilter[1][2] = 0.111111111f;
-	rFilter[2][0] = 0.027777778f;
-	rFilter[2][1] = 0.111111111f;
-	rFilter[2][2] = 0.027777778f;
-
-	//	Loop over every destination pixel
-
-	for (int y = yStart; y < yEnd; y++)
-		for (int x = xStart; x < xEnd; x++)
-			{
-			RealPixel Value = { 0.0, 0.0, 0.0 };
-
-			//	Map this pixel to the source
-
-			Metric rX = xSrc + ((Metric)x + 0.5f) * rPixelWidth;
-			Metric rY = ySrc + ((Metric)y + 0.5f) * rPixelHeight;
-
-			//	Figure out the value for the destination pixel
-			//	based on the source pixel (and surroundings)
-
-			int iBlackCount = 0;
-			for (int x1 = 0; x1 < 3; x1++)
-				for (int y1 = 0; y1 < 3; y1++)
-					{
-					bool bBlack;
-					RealPixel Test = Source.GetRealPixel(rcRange, rX + (x1 - 1) * rSampleX, rY + (y1 - 1) * rSampleY, &bBlack);
-					if (bBlack)
-						iBlackCount++;
-
-					Value.rRed += Test.rRed * rFilter[x1][y1];
-					Value.rGreen += Test.rGreen * rFilter[x1][y1];
-					Value.rBlue += Test.rBlue * rFilter[x1][y1];
-					}
-
-			SetRealPixel((Metric)(xDest + x), (Metric)(yDest + y), Value, (iBlackCount <= 4));
-			}
-	}
-
 void CG16bitImage::InitBMI (BITMAPINFO **retpbi)
 
 //	InitBMP
@@ -3000,6 +2906,21 @@ void CG16bitImage::SetTransparentColor (WORD wColor)
 	{
 	try
 		{
+		//	Generate a pixel that is NOT the transparent color.
+
+		WORD wRed = GetRedValue(wColor);
+		WORD wGreen = GetGreenValue(wColor);
+		WORD wBlue = GetBlueValue(wColor);
+
+		if (wGreen < 63)
+			wGreen++;
+		else
+			wGreen--;
+
+		WORD wReplaceColor = MakePixel(wRed, wGreen, wBlue);
+
+		//	Modify
+
 		if (m_pAlpha && m_pRGB)
 			{
 			for (int y = 0; y < m_cyHeight; y++)
@@ -3011,7 +2932,7 @@ void CG16bitImage::SetTransparentColor (WORD wColor)
 					if (pSource[x] == 0)
 						pDest[x] = wColor;
 					else if (pDest[x] == wColor)
-						pDest[x] = 0x0001;		//	Almost black
+						pDest[x] = wReplaceColor;
 				}
 
 			//	Free the mask since we don't need it anymore

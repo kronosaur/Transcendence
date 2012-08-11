@@ -1512,7 +1512,7 @@ bool CShip::FindDataField (const CString &sField, CString *retsValue)
 	if (strEquals(sField, FIELD_CARGO_SPACE))
 		*retsValue = strFromInt(CalcMaxCargoSpace());
 	else if (strEquals(sField, FIELD_MAX_SPEED))
-		*retsValue = strFromInt((int)((100.0 * m_rMaxSpeed / LIGHT_SPEED) + 0.5), FALSE);
+		*retsValue = strFromInt((int)((100.0 * m_rMaxSpeed / LIGHT_SPEED) + 0.5), false);
 	else if (strEquals(sField, FIELD_NAME))
 		{
 		DWORD dwFlags;
@@ -5714,11 +5714,26 @@ void CShip::SetWeaponTriggered (DeviceNames iDev, bool bTriggered)
 //	associated linked-fire devices.
 
 	{
-	CInstalledDevice *pPrimaryDevice = GetNamedDevice(iDev);
-	if (pPrimaryDevice == NULL)
-		return;
+	int i;
 
-	SetWeaponTriggered(pPrimaryDevice, bTriggered);
+	CInstalledDevice *pPrimaryDevice = GetNamedDevice(iDev);	//	OK if NULL.
+	ItemCategories iCat = (iDev == devMissileWeapon ? itemcatLauncher : itemcatWeapon);
+
+	//	Loop over all devices and activate the appropriate ones
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		CItemCtx Ctx(this, pDevice);
+
+		//	If this is the primary device, or if it is a device that
+		//	is linked to the primary device, then activate it.
+
+		if (!pDevice->IsEmpty()
+				&& (pDevice == pPrimaryDevice
+					|| (pDevice->IsLinkedFire(Ctx, iCat))))
+			pDevice->SetTriggered(bTriggered);
+		}
 	}
 
 void CShip::SetWeaponTriggered (CInstalledDevice *pWeapon, bool bTriggered)

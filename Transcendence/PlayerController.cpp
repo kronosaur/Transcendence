@@ -1616,38 +1616,6 @@ void CPlayerShipController::SetFireMain (bool bFire)
 
 	{
 	m_pShip->SetWeaponTriggered(devPrimaryWeapon, bFire);
-
-#if 0
-	int i;
-
-	//	Get the primary weapon
-
-	CInstalledDevice *pPrimaryDevice = m_pShip->GetNamedDevice(devPrimaryWeapon);
-
-	//	Loop over all devices and activate the appropriate ones
-
-	for (i = 0; i < m_pShip->GetDeviceCount(); i++)
-		{
-		CInstalledDevice *pDevice = m_pShip->GetDevice(i);
-		CItemCtx Ctx(m_pShip, pDevice);
-
-		//	If this is the primary device, or if it is a device that
-		//	is linked to the primary device, then activate it.
-
-		if (!pDevice->IsEmpty()
-				&& (pDevice == pPrimaryDevice 
-					|| (pDevice->IsLinkedFire(Ctx, itemcatWeapon))))
-			{
-			pDevice->SetTriggered(bFire);
-
-			//	If we don't have a target, set our fire angle to fire straight ahead
-			//	we need this for omni-directional weapons
-
-			if (bFire && m_pTarget == NULL)
-				pDevice->SetFireAngle(-1);
-			}
-		}
-#endif
 	}
 
 void CPlayerShipController::SetFireMissile (bool bFire)
@@ -1658,38 +1626,6 @@ void CPlayerShipController::SetFireMissile (bool bFire)
 
 	{
 	m_pShip->SetWeaponTriggered(devMissileWeapon, bFire);
-
-#if 0
-	int i;
-
-	//	Get the primary weapon
-
-	CInstalledDevice *pLauncherDevice = m_pShip->GetNamedDevice(devMissileWeapon);
-
-	//	Loop over all devices and activate the appropriate ones
-
-	for (i = 0; i < m_pShip->GetDeviceCount(); i++)
-		{
-		CInstalledDevice *pDevice = m_pShip->GetDevice(i);
-		CItemCtx Ctx(m_pShip, pDevice);
-
-		//	If this is the launcher device, or if it is a device that
-		//	is linked to the launcher device, then activate it.
-
-		if (!pDevice->IsEmpty()
-				&& (pDevice == pLauncherDevice
-					|| (pDevice->IsLinkedFire(Ctx, itemcatLauncher))))
-			{
-			pDevice->SetTriggered(bFire);
-
-			//	If we don't have a target, set our fire angle to fire straight ahead
-			//	we need this for omni-directional weapons
-
-			if (bFire && m_pTarget == NULL)
-				pDevice->SetFireAngle(-1);
-			}
-		}
-#endif
 	}
 
 void CPlayerShipController::SetTarget (CSpaceObject *pTarget)

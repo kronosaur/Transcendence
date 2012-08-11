@@ -714,10 +714,10 @@ void CLoginSession::ShowInitialDlg (void)
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	IAnimatron *pDlg;
 
-	//	If we're already signed in then just show status
+	//	If we're already signed in then we're done.
 
 	if (m_Service.HasCapability(ICIService::canGetUserProfile))
-		;
+		CmdCancel();
 
 	//	Otherwise, if we have a username
 
@@ -743,6 +743,6 @@ void CLoginSession::ShowInitialDlg (void)
 	//	Otherwise, cannot sign in
 
 	else
-		;
+		CmdCancel();
 	}
 

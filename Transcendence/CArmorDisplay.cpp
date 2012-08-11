@@ -43,6 +43,7 @@
 CArmorDisplay::CArmorDisplay (void) : m_pUniverse(NULL),
 		m_pPlayer(NULL),
 		m_iSelection(-1),
+		m_dwCachedShipID(0),
 		m_pShieldPainter(NULL)
 
 //	CArmorDisplay constructor
@@ -70,6 +71,8 @@ void CArmorDisplay::CleanUp (void)
 		m_pShieldPainter->Delete();
 		m_pShieldPainter = NULL;
 		}
+
+	m_pPlayer = NULL;
 	}
 
 ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
@@ -92,7 +95,7 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 	if (error = m_Buffer.CreateBlank(DISPLAY_WIDTH, DISPLAY_HEIGHT, false))
 		return error;
 
-	m_Buffer.SetTransparentColor(CG16bitImage::RGBValue(0,0,0));
+	m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}
@@ -150,11 +153,28 @@ void CArmorDisplay::Update (void)
 
 	{
 	int i;
+
+	if (m_pPlayer == NULL)
+		return;
+
 	CShip *pShip = m_pPlayer->GetShip();
 	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
 	CItemListManipulator ItemList(pShip->GetItemList());
 	const CG16bitFont &SmallFont = m_pPlayer->GetTrans()->GetFonts().Small;
 	m_Text.DeleteAll();
+
+	//	If we've changed ships then we need to delete the painters
+
+	if (m_dwCachedShipID != pShip->GetID())
+		{
+		if (m_pShieldPainter)
+			{
+			m_pShieldPainter->Delete();
+			m_pShieldPainter = NULL;
+			}
+
+		m_dwCachedShipID = pShip->GetID();
+		}
 
 	//	Figure out the status of the shields
 
@@ -208,7 +228,7 @@ void CArmorDisplay::Update (void)
 				SHIELD_HP_DISPLAY_HEIGHT,
 				SHIELD_HP_DISPLAY_BACK_COLOR);
 		
-		CString sHP = strFromInt(iHP, true);
+		CString sHP = strFromInt(iHP);
 		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
 		m_pFonts->Medium.DrawText(m_Buffer,
 				SHIELD_HP_DISPLAY_X + (SHIELD_HP_DISPLAY_WIDTH - cxWidth) / 2,
@@ -242,15 +262,6 @@ void CArmorDisplay::Update (void)
 		pPaint->y = SHIELD_HP_DISPLAY_Y;
 		pPaint->pFont = &m_pFonts->Medium;
 		pPaint->wColor = wColor;
-
-#if 0
-		m_Buffer.Fill(0, SHIELD_HP_DISPLAY_Y + 1, cxWidth + 6, cyHeight - 1, RGB_NAME_BACKGROUND);
-		m_pFonts->Medium.DrawText(m_Buffer,
-				0,
-				SHIELD_HP_DISPLAY_Y,
-				wColor,
-				sShieldName);
-#endif
 
 		//	Paint the modifiers
 
@@ -320,7 +331,7 @@ void CArmorDisplay::Update (void)
 					HP_DISPLAY_BACK_COLOR);
 			}
 
-		CString sHP = strFromInt(pArmor->GetHitPoints(), true);
+		CString sHP = strFromInt(pArmor->GetHitPoints());
 		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
 		m_pFonts->Medium.DrawText(m_Buffer,
 				DESCRIPTION_WIDTH + pImage->xHP + (HP_DISPLAY_WIDTH - cxWidth) / 2,
@@ -378,22 +389,7 @@ void CArmorDisplay::Update (void)
 					cy,
 					CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128));
 			}
-#if 0
-		else
-			{
-			m_Buffer.Fill(0, 
-					pImage->yName, 
-					cx, 
-					cy,
-					RGB_NAME_BACKGROUND);
-			}
 
-		m_pFonts->Medium.DrawText(m_Buffer,
-				2,
-				pImage->yName,
-				m_pFonts->wTitleColor,
-				sName);
-#endif
 		STextPaint *pPaint = m_Text.Insert();
 		pPaint->sText = sName;
 		pPaint->x = 2;

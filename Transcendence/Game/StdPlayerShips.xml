@@ -2,63 +2,14 @@
 
 <TranscendenceModule>
 
-	<!-- Player Ship: Sapphire-class Yacht -->
+	<!-- Player Ship: Sapphire-class Yacht Base Class -->
 
-	<ShipClass UNID="&scSapphirePlayer;"
-			manufacturer=		"Zubrin Systems"
-			class=				"Sapphire"
-			type=				"yacht"
-			score=				"95"
-
-			mass=				"30"
-			reactorPower=		"150"
-			fuelCapacity=		"37500"
-			cargoSpace=			"50"
-			thrust=				"150"
-			rotationCount=		"40"
-			maneuver=			"2"
-			maxSpeed=			"20"
-
-			maxArmor=			"6000"
-			maxCargoSpace=		"150"
-			maxDevices=			"8"
-
-			leavesWreck=		"30"
+	<ShipClass UNID="&scPlayerSapphireBase;"
+			class=				"(player Sapphire base class)"
+			virtual=			"true" 
 			
-			attributes=			""
+			attributes=			"baseClass" 
 			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
-		</Armor>
-
-		<Devices>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
-			
-			<Device deviceID="&itRecoillessCannon;"/>
-			<Device deviceID="&itClass1Deflector;"/>
-		</Devices>
-
-		<Items>
-			<Item count="4d6" item="&itHelium3FuelRod;"/>
-		</Items>
-
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-
-		<Image imageID="&rsSapphireYacht;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-28" y="-4"/>
-			<NozzlePos x="-28" y="5"/>
-		</DriveImages>
 
 		<PlayerSettings
 			desc=				"The versatile Sapphire yacht strikes a good balance between a gunship and a freighter."
@@ -117,80 +68,18 @@
 				<PowerLevelText x="62" y="0" width="154" height="9"/>
 				<FuelLevelText x="62" y="51" width="154" height="9"/>
 			</ReactorDisplay>
-
 		</PlayerSettings>
 		
 	</ShipClass>
 
-	<!-- Player Ship: EI500 Freighter -->
+	<!-- Player Ship: EI500 Freighter Base Class -->
 
-	<ShipClass UNID="&scEI100XPlayer;"
-			manufacturer=		"Earth Industries"
-			class=				"EI500"
-			type=				"freighter"
-			score=				"105"
-
-			mass=				"250"
-			reactorPower=		"250"
-			fuelCapacity=		"60000"
-			cargoSpace=			"200"
-			thrust=				"200"
-			rotationCount=		"40"
-			maneuver=			"4"
-			maxSpeed=			"18"
-
-			maxArmor=			"20000"
-			maxCargoSpace=		"200"
-			maxDevices=			"9"
-			maxWeapons=			"2"
-
-			leavesWreck=		"75"
+	<ShipClass UNID="&scPlayerEI500Base;"
+			class=				"(player EI500 base class)"
+			virtual=			"true" 
 			
-			attributes=			""
+			attributes=			"baseClass" 
 			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itHeavyTitaniumPlate;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="1,6" />
-		</Armor>
-
-		<Devices>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
-			
-			<Device deviceID="&itOmniLaserCannon;"/>
-			<Device deviceID="&itClass1Deflector;"/>
-		</Devices>
-
-		<Items>
-			<Item count="6d6" item="&itHelium3FuelRod;"/>
-			<Item count="2d4+2" item="&itLargeArmorPatch;"/>
-			<Table>
-				<Item chance="40" count="4" item="&itAblativeArmorCoating;"/>
-				<Item chance="40" count="4" item="&itReactiveArmorCoating;"/>
-				<Item chance="20" count="4" item="&itRegeneratingNanos;"/>
-			</Table>
-			<Table>
-				<Item chance="40" count="1" item="&itEnhanceSRSROM;"/>
-				<Item chance="40" count="1" item="&itTargetingComputerROM;"/>
-				<Item chance="20" count="1" item="&itEnhanceShieldsROM;"/>
-			</Table>
-		</Items>
-
-		<Image imageID="&rsEI500Freighter;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="-16"	z="0"/>
-			<NozzlePos x="-24" y="16"	z="0"/>
-		</DriveImages>
-
-		<AISettings
-			fireRateAdj=		"120"
-			fireAccuracy=		"85"
-			perception=			"4"
-			/>
 
 		<PlayerSettings
 			desc=				"The EI500 is slow and ungraceful, but its omnidirectional laser can hit even the fastest gunships. Seven open slots for devices give you lots of upgrade flexibility."
@@ -253,67 +142,14 @@
 
 	</ShipClass>
 
-	<!-- Player Ship: Wolfen-class Gunship -->
+	<!-- Player Ship: Wolfen-class Gunship Base Class -->
 
-	<ShipClass UNID="&scWolfenPlayer;"
-			manufacturer=		""
-			class=				"Wolfen"
-			type=				"gunship"
-			score=				"225"
-
-			mass=				"30"
-			reactorPower=		"100"
-			fuelCapacity=		"25000"
-			cargoSpace=			"35"
-			thrust=				"300"
-			rotationCount=		"40"
-			maneuver=			"2"
-			maxSpeed=			"25"
-
-			maxArmor=			"10000"
-			maxCargoSpace=		"100"
-			maxDevices=			"8"
-			maxNonWeapons=		"4"
-
-			leavesWreck=		"20"
+	<ShipClass UNID="&scPlayerWolfenBase;"
+			class=				"(player Wolfen base class)"
+			virtual=			"true" 
 			
-			attributes=			""
+			attributes=			"baseClass" 
 			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
-		</Armor>
-
-		<Devices>
-			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
-			
-			<Device deviceID="&itDualLaserCannon;"/>
-			<Device deviceID="&itNAMIMissileLauncher;"/>
-			<Device deviceID="&itHullPlateIonizer;"/>
-		</Devices>
-
-		<Items>
-			<Item count="4d6" item="&itHelium3FuelRod;"/>
-			<Item count="4d6" item="&itKM100Missile;"/>
-		</Items>
-
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-
-		<Image imageID="&rsWolfenGunship;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust2;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-18" y="-9" z="0"/>
-			<NozzlePos x="-18" y="0"  z="-5"/>
-			<NozzlePos x="-18" y="9"  z="0"/>
-		</DriveImages>
 
 		<PlayerSettings
 			desc=				"Fast and deadly, the Wolfen is designed for combat. Though limited in cargo capacity, it has lots of room for more weapons."
@@ -376,29 +212,23 @@
 
 	</ShipClass>
 
-<!-- GLOBAL FUNCTIONS -->
-
-	<Globals>
-		(block Nil
-			(setq intMissionRewardPayment (lambda (theReward)
-				(block Nil
-					(plyCredit gPlayer theReward)
-					(typIncGlobalData &svPlayer; "missionRewards" theReward)
-					)
-				))
-			)
-	</Globals>
-
 <!-- RESOURCES -->
 
 	<Image UNID="&rsEI100XArmor;"		bitmap="Resources\ArmorHUD_EI100X.bmp" />
+	<Image UNID="&rsArmorHUDShip_EI500;"	bitmap="Resources\ArmorHUDShip_EI500.jpg" />
 	<Image UNID="&rsEI100XLarge;"		bitmap="Resources\EI100XLarge.jpg"	bitmask="Resources\EI100XLargeMask.bmp" 	loadOnUse="true" />
 
 	<Image UNID="&rsWolfenArmor;"		bitmap="Resources\ArmorHUD_Wolfen.bmp" />
+	<Image UNID="&rsArmorHUDShip_Wolfen;"	bitmap="Resources\ArmorHUDShip_Wolfen.jpg" />
 	<Image UNID="&rsWolfenLarge;"		bitmap="Resources\WolfenLarge.jpg"	bitmask="Resources\WolfenLargeMask.bmp" 	loadOnUse="true" />
 	
-	<Image UNID="&rsArmorHUDShip_EI500;"	bitmap="Resources\ArmorHUDShip_EI500.jpg" />
+	<Image UNID="&rsZubrinArmor;"		bitmap="Resources\ArmorHUD.bmp" />
 	<Image UNID="&rsArmorHUDShip_Sapphire;"	bitmap="Resources\ArmorHUDShip_Sapphire.jpg" />
-	<Image UNID="&rsArmorHUDShip_Wolfen;"	bitmap="Resources\ArmorHUDShip_Wolfen.jpg" />
-
+	<Image UNID="&rsZubrinLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />
+	<Image UNID="&rsZubrinReactor;"		bitmap="Resources\ReactorDisplay.jpg"	bitmask="Resources\ReactorDisplayMask.bmp"/>
+	
+	<Image UNID="&rsSapphireYacht;"		bitmap="Resources\ShipsSapphireYacht.jpg" bitmask="Resources\ShipsSapphireYachtMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWolfenGunship;"		bitmap="Resources\ShipsWolfenGunship.jpg" bitmask="Resources\ShipsWolfenGunshipMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI500Freighter;"	bitmap="Resources\ShipsEI500Freighter.jpg" bitmask="Resources\ShipsEI500FreighterMask.bmp" loadOnUse="true"/>
+	
 </TranscendenceModule>

@@ -654,7 +654,7 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 	return ComposeNounPhrase(sName, (int)m_dwCount, sModifier, dwNounFlags, dwFlags);
 	}
 
-ICCItem *CItem::GetProperty (const CString &sName)
+ICCItem *CItem::GetProperty (CItemCtx &Ctx, const CString &sName) const
 
 //	GetProperty
 //
@@ -673,7 +673,18 @@ ICCItem *CItem::GetProperty (const CString &sName)
 		return CC.CreateBool(IsDisrupted());
 
 	else
-		return CC.CreateNil();
+		{
+		//	If this is a device, then pass it on
+
+		CDeviceClass *pDevice;
+		if (pDevice = GetType()->GetDeviceClass())
+			return pDevice->GetItemProperty(Ctx, sName);
+
+		//	Otherwise, nothing
+
+		else
+			return CC.CreateNil();
+		}
 	}
 
 CString CItem::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags) const
@@ -819,7 +830,11 @@ int CItem::GetValue (bool bActual) const
 //	account damage, enhancements, and charges.
 
 	{
-	int iValue = m_pItemType->GetValue(bActual);
+	CItemCtx Ctx(*this);
+
+	//	Compute value (this includes charges)
+
+	int iValue = m_pItemType->GetValue(Ctx, bActual);
 
 	//	Adjust value based on enhancements
 
@@ -843,16 +858,6 @@ int CItem::GetValue (bool bActual) const
 
 	if (IsDamaged())
 		iValue = iValue * 20 / 100;
-
-	//	If the item has charges, decrease value proportional to the
-	//	number of charges that have been used up.
-
-	if (m_pItemType->AreChargesValued())
-		{
-		int iMaxCharges = m_pItemType->GetMaxCharges();
-		if (!IsInstalled() && iMaxCharges > 0)
-			iValue = (iValue * (1 + GetCharges())) / (1 + iMaxCharges);
-		}
 
 	return iValue;
 	}
@@ -2031,7 +2036,7 @@ void CItem::SetDisrupted (DWORD dwDuration)
 		}
 	}
 
-bool CItem::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+bool CItem::SetProperty (CItemCtx &Ctx, const CString &sName, ICCItem *pValue, CString *retsError)
 
 //	SetProperty
 //
@@ -2081,8 +2086,19 @@ bool CItem::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 
 	else
 		{
-		*retsError = strPatternSubst(CONSTLIT("Unknown item property: %s."), sName);
-		return false;
+		//	If this is a device, then pass it on
+
+		CDeviceClass *pDevice;
+		if (pDevice = GetType()->GetDeviceClass())
+			return pDevice->SetItemProperty(Ctx, sName, pValue, retsError);
+
+		//	Otherwise, nothing
+
+		else
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unknown item property: %s."), sName);
+			return false;
+			}
 		}
 
 	return true;

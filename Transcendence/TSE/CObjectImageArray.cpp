@@ -372,37 +372,34 @@ void CObjectImageArray::GenerateScaledImages (int iRotation, int cxWidth, int cy
 	//	If the image for this rotation has already been initialized, then
 	//	we're done
 
-	if (m_pScaledImages[iRotation].HasRGB())
+	else if (m_pScaledImages[iRotation].HasRGB())
 		return;
-
-	//	Otherwise we need to create the scaled image
-
-	m_pScaledImages[iRotation].CreateBlank(cxWidth, cyHeight, false);
 
 	//	Get the extent of the source image
 
+	int cxSrcWidth = RectWidth(m_rcImage);
+	int cySrcHeight = RectHeight(m_rcImage);
+
 	RECT rcSrc;
 	rcSrc.left = ComputeSourceX(0);
-	rcSrc.top = m_rcImage.top + (iRotation * RectHeight(m_rcImage));
-	rcSrc.right = rcSrc.left + RectWidth(m_rcImage);
-	rcSrc.bottom = rcSrc.top + RectHeight(m_rcImage);
+	rcSrc.top = m_rcImage.top + (iRotation * cySrcHeight);
+	rcSrc.right = rcSrc.left + cxSrcWidth;
+	rcSrc.bottom = rcSrc.top + cySrcHeight;
 
 	CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
-	if (pSource == NULL)
+	if (pSource == NULL || cxSrcWidth == 0 || cySrcHeight == 0)
 		return;
 
-	//	Scale the image
+	//	Scale
 
-	m_pScaledImages[iRotation].GaussianScaledBlt(
-			rcSrc.left, rcSrc.top,
-			RectWidth(rcSrc),
-			RectHeight(rcSrc),
-			*pSource,
-			0, 0,
-			cxWidth,
-			cyHeight);
-
-	m_pScaledImages[iRotation].SetTransparentColor(0);
+	m_pScaledImages[iRotation].CreateFromImageTransformed(*pSource,
+			rcSrc.left,
+			rcSrc.top,
+			cxSrcWidth,
+			cySrcHeight,
+			(Metric)cxWidth / (Metric)cxSrcWidth,
+			(Metric)cyHeight / (Metric)cySrcHeight,
+			0.0);
 	}
 
 CString CObjectImageArray::GetFilename (void) const

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- LEVEL 1 -->
+
+	<ItemType UNID="&itUnknownID;"
+			name=				"unmarked identification chip"
+			virtual=			"true"
+			value=				"200"
+			level=				"1"
+			attributes=			"unknown"
+
+			description=		"These etched holographic chips are impossible to duplicate and often used for currency or identification."
+			>
+
+	</ItemType>
+
+<!-- LEVEL 2 -->
+
+	<ItemType UNID="&itUnknownEnhancer2;"
+			name=				"unknown device"
+			virtual=			"true"
+			level=				"2"
+			value=				"1000"
+
+			description=		"This is a starship device of some kind. Unfortunately, its exact properties cannot be determined."
+
+			attributes=			"unknown"
+			>
+
+		<Names>device(s) labeled "Asgard Systems"; bolted device(s);
+			device(s) labeled "Cenobite Labs"; dimorphous device(s); device(s) labeled "Eschaton Labs";
+			ferrous-cased device(s); device(s) labeled "Gigaton Labs"; hermetically-sealed device(s);
+			device(s) labeled "I88"; jury-rigged device(s); device(s) labeled "K2"; laser-etched device(s); 
+			device(s) labeled "Monster Labs"; nitrogen-cooled device(s); device(s) labeled "Oxygen Only!";
+			platinum-cased device(s); device(s) labeled "Q"; rhomboid-shaped device(s);
+			device(s) labeled "Singer-Kent Labs"; titanium-cased device(s); device(s) labeled "Unit 7";
+			vented device(s); device(s) labeled "Wurlington Labs"
+		</Names>
+
+	</ItemType>
+	
+<!-- LEVEL 3 -->
+	
+	<!-- Unknown Auton -->
+
+	<ItemType UNID="&itUnknownAuton;"
+			name=				"unknown auton"
+			virtual=			"true"
+			level=				"3"
+			value=				"2500"
+			attributes=			"unknown"
+
+			description=		"This is an autonomous defense bot of some kind. Unfortunately, you cannot tell anything about its nature until you use it."
+			>
+
+		<Names>auton(s) with strange markings; auton(s) with yellow markings;
+			auton(s) with red markings; auton(s) with engraved markings;
+			auton(s) with blue markings; auton(s) with no markings;
+			auton(s) with green markings; auton(s) with raised markings;
+			auton(s) with numeral markings; auton(s) with geometric markings
+		</Names>
+	</ItemType>
+
+<!-- LEVEL 5 -->
+
+	<ItemType UNID="&itUnknownMnemonicCube;"
+			name=				"mnemonic cube(s)"
+			virtual=			"true"
+			level=				"5"
+			value=				"1500"
+			attributes=			"unknown"
+
+			description=		"These quantum-optical storage systems contain sophisticated programs and data. The programs require a quantum CPU to execute."
+			>
+
+		<Names>mnemonic cube(s) labeled "137";
+			mnemonic cube(s) labeled "Anthrax1.1";	mnemonic cube(s) labeled "Betamux";
+			mnemonic cube(s) labeled "cancer man"; mnemonic cube(s) labeled "d1.0/7";
+			mnemonic cube(s) labeled "Epsilon System Software"; mnemonic cube(s) labeled "Fahrenheit";
+			mnemonic cube(s) labeled "pwd: gmx10492"; mnemonic cube(s) labeled "halocline exeter";
+			mnemonic cube(s) labeled "increment0"; mnemonic cube(s) labeled "Jasmine3";
+			mnemonic cube(s) labeled "KandyKlown2.1"; mnemonic cube(s) labeled "corrupted";
+			mnemonic cube(s) labeled "&#xa9;2416 Heisenmachines, rce";
+			mnemonic cube(s) labeled "nethack/VR 5.0"; mnemonic cube(s) labeled "O2";
+			mnemonic cube(s) labeled "Carmen Owlglass"; mnemonic cube(s) labeled "quantum compression 10-1";
+			mnemonic cube(s) labeled "Lotus Notes R9"; mnemonic cube(s) labeled "SatanSurfer0.4";
+			mnemonic cube(s) with no label
+		</Names>
+
+	</ItemType>
+
+	<ItemType UNID="&itUnknownEnhancer5;"
+			name=				"unknown device"
+			virtual=			"true"
+			level=				"5"
+			value=				"10000"
+
+			description=		"This is a starship device of some kind. Unfortunately, its exact properties cannot be determined."
+
+			attributes=			"unknown"
+			>
+
+		<Names>aluminum-cased device(s); device(s) labeled "Baryon 175"; corrugated device(s); device(s) labeled "Danger!"; 
+			electrostatic device(s); device(s) labeled "F151"; glass-enclosed device(s); device(s) labeled "Hadron 55";
+			indigo-colored device(s); device(s) labeled "J20"; device(s) labeled "Lab Use Only"; metal-cased device(s);
+			device(s) labeled "N404"; octagon-shaped device(s); device(s) labeled "Pendragon Labs"; device(s) labeled "Rental Unit";
+			steel-cased device(s); device(s) labeled "T101"; ultra-thin device(s); device(s) labeled "V2"; water-cooled device(s);
+			device(s) labeled "X2"
+		</Names>
+
+	</ItemType>
+
+<!-- LEVEL 7 -->
+
+	<ItemType UNID="&itUnknownAlienDevice;"
+			name=				"unknown alien device"
+			virtual=			"true"
+			level=				"7"
+			value=				"100000"
+
+			description=		"This is an alien device of unknown origin. It has been recently altered to interface with a starship's systems, but its function and purpose are unknown."
+
+			attributes=			"unknown"
+			>
+
+		<Names>arcane alien device; beryllium alien device; crystalline alien device; 
+			diamond alien device; ebenous alien device; fuligin alien device;
+			glaucous alien device; heamatic alien device; inchoate alien device;
+			jecoral alien device; keratinous alien device; ligulate alien device;
+			micro-engraved alien device; nettled alien device; obsidian alien device;
+			pteracnium alien device; quinary alien device; refulgent alien device;
+			sulcate alien device; tungsten alien device; ultraviolet alien device;
+			vectored alien device; whorled alien device; xanthic alien device;
+			yttrium alien device; zoetic alien device
+		</Names>
+
+	</ItemType>
+	
+<!-- LEVEL 8 -->
+
+	<ItemType UNID="&itUnknownHaloGem;"
+			name=				"halo gem"
+			virtual=			"true"
+			level=				"8"
+			value=				"1000"
+			attributes=			"unknown"
+
+			description=		"The Halo Races created these gems to help them contemplate, but the dark-energies embedded within are also useful to humans. Unfortunately, you have no knowledge of the gem's nature or purpose."
+			>
+
+		<Names>glowing ruby halo gem;
+			golden halo gem;
+			violet halo gem;
+			silver halo gem;
+			fading amber halo gem;
+			clear halo gem;
+			deep blue halo gem;
+			black halo gem
+		</Names>
+
+	</ItemType>
+
+	<ItemType UNID="&itUnknownEnhancer8;"
+			name=				"unknown device"
+			virtual=			"true"
+			level=				"8"
+			value=				"60000"
+
+			description=		"This is a starship device of some kind. Unfortunately, its exact properties cannot be determined."
+
+			attributes=			"unknown"
+			>
+
+		<Names>device(s) labeled "Antares"; borium-cased device(s); crenellated device(s); device(s) labeled "Dalek1";
+			enamel-cased device(s); device(s) labeled "Failed"; device(s) labeled "Gremlin"; helical-shaped device(s);
+			iridium-cased device(s); device(s) labeled "Jan-09"; device(s) labeled "XKCD"; lanthanide-cased device(s);
+			mirror-cased device(s); device(s) labeled "No. 3"; oxygen-cooled device(s); pentagon-shaped device(s);
+			device(s) labeled "Questal"; rust-colored device(s); device(s) labeled "SAFE"; sodium-cooled device(s);
+			tetrahedron-shaped device(s); device(s) labeled "U235"; wire-wrapped device(s)
+		</Names>
+
+	</ItemType>
+
+<!-- LEVEL 10 -->
+
+	<ItemType UNID="&itUnknownHyperglyph;"
+			name=				"alien hyperglyph rod"
+			virtual=			"true"
+			value=				"1000"
+			level=				"10"
+			attributes=			"unknown"
+
+			description=		"This is an alien rod roughly two meters long, its surface microengraved with cryptic symbols. It is probably a form of information storage or perhaps a sophisticated computer."
+			>
+
+	</ItemType>
+
+	<ItemType UNID="&itUnknownAlienDevice10;"
+			name=				"unknown alien device"
+			virtual=			"true"
+			level=				"10"
+			value=				"400000"
+
+			description=		"This is an alien device of unknown origin. It has been recently altered to interface with a starship's systems, but its function and purpose are unknown."
+
+			attributes=			"unknown"
+			>
+
+		<Names>aurous alien device; brachiated alien device; cacogenous alien device;
+			dendrolic alien device; effulgent alien device; farraginous alien device;
+			graunching alien device; hyperborean alien device; incarnadine alien device;
+			jade-colored alien device; ketonic alien device; lenticular alien device;
+			megatherial alien device; neoteric alien device; obvolute alien device;
+			plangent alien device; quadrilateral alien device; rutilant alien device;
+			saprogenic alien device; tessellated alien device; unguinous alien device;
+			vermicular alien device; writhen alien device; xoric alien device;
+			yortonic alien device; zemotic alien device
+		</Names>
+
+	</ItemType>
+	
+</TranscendenceModule>

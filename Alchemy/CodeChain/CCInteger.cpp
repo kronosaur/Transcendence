@@ -77,7 +77,7 @@ CString CCInteger::Print (CCodeChain *pCC, DWORD dwFlags)
 	//	Otherwise, just print the integer value
 
 	else
-		return strFromInt(m_iValue, TRUE);
+		return strFromInt(m_iValue);
 	}
 
 void CCInteger::Reset (void)

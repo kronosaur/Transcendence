@@ -173,7 +173,7 @@ void CCompositeImageDesc::ApplyModifiers (DWORD dwModifiers, CObjectImageArray *
 		//	Flatten mask
 
 		if (!retImage->HasAlpha())
-			pDest->SetTransparentColor(0);
+			pDest->SetTransparentColor();
 
 		//	Replace the image
 
@@ -563,7 +563,7 @@ void CCompositeEntry::GetImage (const CCompositeImageSelector &Selector, CObject
 
 	CG16bitImage *pComp = new CG16bitImage;
 	pComp->CreateBlank(cxWidth, cyHeight, false);
-	pComp->SetTransparentColor(0);
+	pComp->SetTransparentColor();
 
 	int xCenter = cxWidth / 2;
 	int yCenter = cyHeight / 2;

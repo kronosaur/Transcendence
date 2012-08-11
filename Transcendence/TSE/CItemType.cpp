@@ -4,75 +4,77 @@
 
 #include "PreComp.h"
 
-#define NAMES_TAG					CONSTLIT("Names")
-#define IMAGE_TAG					CONSTLIT("Image")
-#define COCKPIT_USE_TAG				CONSTLIT("Invoke")
-#define ARMOR_TAG					CONSTLIT("Armor")
-#define WEAPON_CLASS_TAG			CONSTLIT("Weapon")
-#define SHIELD_CLASS_TAG			CONSTLIT("Shields")
-#define DRIVE_CLASS_TAG				CONSTLIT("DriveDevice")
-#define CARGO_HOLD_CLASS_TAG		CONSTLIT("CargoHoldDevice")
-#define REPAIRER_CLASS_TAG			CONSTLIT("RepairerDevice")
-#define SOLAR_DEVICE_CLASS_TAG		CONSTLIT("SolarDevice")
-#define ENHANCER_CLASS_TAG			CONSTLIT("EnhancerDevice")
-#define CYBER_DECK_CLASS_TAG		CONSTLIT("CyberDeckDevice")
-#define AUTO_DEFENSE_CLASS_TAG		CONSTLIT("AutoDefenseDevice")
-#define MISCELLANEOUS_CLASS_TAG		CONSTLIT("MiscellaneousDevice")
-#define EVENTS_TAG					CONSTLIT("Events")
-#define REACTOR_CLASS_TAG			CONSTLIT("ReactorDevice")
-#define DOCK_SCREENS_TAG			CONSTLIT("DockScreens")
-#define STATIC_DATA_TAG				CONSTLIT("StaticData")
-#define GLOBAL_DATA_TAG				CONSTLIT("GlobalData")
+#define NAMES_TAG								CONSTLIT("Names")
+#define IMAGE_TAG								CONSTLIT("Image")
+#define COCKPIT_USE_TAG							CONSTLIT("Invoke")
+#define ARMOR_TAG								CONSTLIT("Armor")
+#define WEAPON_CLASS_TAG						CONSTLIT("Weapon")
+#define SHIELD_CLASS_TAG						CONSTLIT("Shields")
+#define DRIVE_CLASS_TAG							CONSTLIT("DriveDevice")
+#define CARGO_HOLD_CLASS_TAG					CONSTLIT("CargoHoldDevice")
+#define REPAIRER_CLASS_TAG						CONSTLIT("RepairerDevice")
+#define SOLAR_DEVICE_CLASS_TAG					CONSTLIT("SolarDevice")
+#define ENHANCER_CLASS_TAG						CONSTLIT("EnhancerDevice")
+#define CYBER_DECK_CLASS_TAG					CONSTLIT("CyberDeckDevice")
+#define AUTO_DEFENSE_CLASS_TAG					CONSTLIT("AutoDefenseDevice")
+#define MISCELLANEOUS_CLASS_TAG					CONSTLIT("MiscellaneousDevice")
+#define EVENTS_TAG								CONSTLIT("Events")
+#define REACTOR_CLASS_TAG						CONSTLIT("ReactorDevice")
+#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
+#define STATIC_DATA_TAG							CONSTLIT("StaticData")
+#define GLOBAL_DATA_TAG							CONSTLIT("GlobalData")
 
-#define UNID_ATTRIB					CONSTLIT("UNID")
-#define DATA_ATTRIB					CONSTLIT("data")
-#define USE_SCREEN_ATTRIB			CONSTLIT("useScreen")
-#define UNKNOWN_TYPE_ATTRIB			CONSTLIT("unknownType")
-#define LEVEL_ATTRIB				CONSTLIT("level")
-#define SORT_NAME_ATTRIB			CONSTLIT("sortName")
-#define FREQUENCY_ATTRIB			CONSTLIT("frequency")
-#define NUMBER_APPEARING_ATTRIB		CONSTLIT("numberAppearing")
-#define ES_PLURAL_ATTRIB			CONSTLIT("esPlural")
-#define PLURAL_NAME_ATTRIB			CONSTLIT("pluralName")
-#define SHOW_REFERENCE_ATTRIB		CONSTLIT("showReference")
-#define SECOND_PLURAL_ATTRIB		CONSTLIT("secondPlural")
-#define INSTANCE_DATA_ATTRIB		CONSTLIT("charges")
-#define REVERSE_ARTICLE_ATTRIB		CONSTLIT("reverseArticle")
-#define VIRTUAL_ATTRIB				CONSTLIT("virtual")
-#define KEY_ATTRIB					CONSTLIT("key")
-#define INSTALLED_ONLY_ATTRIB		CONSTLIT("installedOnly")
-#define VALUE_CHARGES_ATTRIB		CONSTLIT("valueCharges")
-#define UNINSTALLED_ONLY_ATTRIB		CONSTLIT("uninstalledOnly")
-#define USE_KEY_ATTRIB				CONSTLIT("useKey")
-#define USE_INSTALLED_ONLY_ATTRIB	CONSTLIT("useInstalledOnly")
-#define USE_UNINSTALLED_ONLY_ATTRIB	CONSTLIT("useUninstalledOnly")
-#define ENHANCEMENT_ATTRIB			CONSTLIT("enhancement")
-#define VALUE_ATTRIB				CONSTLIT("value")
+#define INSTANCE_DATA_ATTRIB					CONSTLIT("charges")
+#define DATA_ATTRIB								CONSTLIT("data")
+#define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
+#define ES_PLURAL_ATTRIB						CONSTLIT("esPlural")
+#define FREQUENCY_ATTRIB						CONSTLIT("frequency")
+#define INSTALLED_ONLY_ATTRIB					CONSTLIT("installedOnly")
+#define KEY_ATTRIB								CONSTLIT("key")
+#define LEVEL_ATTRIB							CONSTLIT("level")
+#define MASS_BONUS_PER_CHARGE_ATTRIB			CONSTLIT("massBonusPerCharge")
+#define NUMBER_APPEARING_ATTRIB					CONSTLIT("numberAppearing")
+#define PLURAL_NAME_ATTRIB						CONSTLIT("pluralName")
+#define REVERSE_ARTICLE_ATTRIB					CONSTLIT("reverseArticle")
+#define SECOND_PLURAL_ATTRIB					CONSTLIT("secondPlural")
+#define SHOW_REFERENCE_ATTRIB					CONSTLIT("showReference")
+#define SORT_NAME_ATTRIB						CONSTLIT("sortName")
+#define UNID_ATTRIB								CONSTLIT("UNID")
+#define UNINSTALLED_ONLY_ATTRIB					CONSTLIT("uninstalledOnly")
+#define UNKNOWN_TYPE_ATTRIB						CONSTLIT("unknownType")
+#define USE_INSTALLED_ONLY_ATTRIB				CONSTLIT("useInstalledOnly")
+#define USE_KEY_ATTRIB							CONSTLIT("useKey")
+#define USE_SCREEN_ATTRIB						CONSTLIT("useScreen")
+#define USE_UNINSTALLED_ONLY_ATTRIB				CONSTLIT("useUninstalledOnly")
+#define VALUE_ATTRIB							CONSTLIT("value")
+#define VALUE_BONUS_PER_CHARGE_ATTRIB			CONSTLIT("valueBonusPerCharge")
+#define VALUE_CHARGES_ATTRIB					CONSTLIT("valueCharges")
+#define VIRTUAL_ATTRIB							CONSTLIT("virtual")
 
-#define GET_NAME_EVENT				CONSTLIT("GetName")
-#define GET_TRADE_PRICE_EVENT		CONSTLIT("GetTradePrice")
-#define ON_ENABLED_EVENT			CONSTLIT("OnEnabled")
-#define ON_INSTALL_EVENT			CONSTLIT("OnInstall")
-#define ON_REFUEL_TAG				CONSTLIT("OnRefuel")
+#define GET_NAME_EVENT							CONSTLIT("GetName")
+#define GET_TRADE_PRICE_EVENT					CONSTLIT("GetTradePrice")
+#define ON_ENABLED_EVENT						CONSTLIT("OnEnabled")
+#define ON_INSTALL_EVENT						CONSTLIT("OnInstall")
+#define ON_REFUEL_TAG							CONSTLIT("OnRefuel")
 
-#define STR_FUEL					CONSTLIT("Fuel")
-#define STR_MISSILE					CONSTLIT("Missile")
+#define STR_FUEL								CONSTLIT("Fuel")
+#define STR_MISSILE								CONSTLIT("Missile")
 
-#define FIELD_AVERAGE_COUNT			CONSTLIT("averageCount")
-#define FIELD_CATEGORY				CONSTLIT("category")
-#define FIELD_COST					CONSTLIT("cost")
-#define FIELD_DESCRIPTION			CONSTLIT("description")
-#define FIELD_DEVICE_SLOTS			CONSTLIT("deviceSlots")
-#define FIELD_FREQUENCY				CONSTLIT("frequency")
-#define FIELD_FUEL_CAPACITY			CONSTLIT("fuelCapacity")
-#define FIELD_IMAGE_DESC			CONSTLIT("imageDesc")
-#define FIELD_INSTALL_COST			CONSTLIT("installCost")
-#define FIELD_LEVEL					CONSTLIT("level")
-#define FIELD_MASS					CONSTLIT("mass")
-#define FIELD_NAME					CONSTLIT("name")
-#define FIELD_REFERENCE				CONSTLIT("reference")
-#define FIELD_SHORT_NAME			CONSTLIT("shortName")
-#define FIELD_UNKNOWN_TYPE			CONSTLIT("unknownType")
+#define FIELD_AVERAGE_COUNT						CONSTLIT("averageCount")
+#define FIELD_CATEGORY							CONSTLIT("category")
+#define FIELD_COST								CONSTLIT("cost")
+#define FIELD_DESCRIPTION						CONSTLIT("description")
+#define FIELD_DEVICE_SLOTS						CONSTLIT("deviceSlots")
+#define FIELD_FREQUENCY							CONSTLIT("frequency")
+#define FIELD_FUEL_CAPACITY						CONSTLIT("fuelCapacity")
+#define FIELD_IMAGE_DESC						CONSTLIT("imageDesc")
+#define FIELD_INSTALL_COST						CONSTLIT("installCost")
+#define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_MASS								CONSTLIT("mass")
+#define FIELD_NAME								CONSTLIT("name")
+#define FIELD_REFERENCE							CONSTLIT("reference")
+#define FIELD_SHORT_NAME						CONSTLIT("shortName")
+#define FIELD_UNKNOWN_TYPE						CONSTLIT("unknownType")
 
 static char g_NameAttrib[] = "name";
 static char g_ObjectAttrib[] = "object";
@@ -138,7 +140,7 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 
 	if (strEquals(sField, FIELD_LEVEL))
 		{
-		*retsValue = strFromInt(GetLevel(), FALSE);
+		*retsValue = strFromInt(GetLevel());
 		return true;
 		}
 	else if (strEquals(sField, FIELD_CATEGORY))
@@ -239,7 +241,7 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_MASS))
 		{
-		*retsValue = strFromInt(CItem(this, 1).GetMassKg(), FALSE);
+		*retsValue = strFromInt(CItem(this, 1).GetMassKg());
 		return true;
 		}
 	else if (strEquals(sField, FIELD_SHORT_NAME))
@@ -282,7 +284,8 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_COST))
 		{
-		*retsValue = strFromInt(GetValue(), TRUE);
+		CItemCtx Ctx;
+		*retsValue = strFromInt(GetValue(Ctx));
 		return true;
 		}
 	else if (strEquals(sField, FIELD_INSTALL_COST))
@@ -291,12 +294,12 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		if (iCost == -1)
 			*retsValue = NULL_STR;
 		else
-			*retsValue = strFromInt(iCost, TRUE);
+			*retsValue = strFromInt(iCost);
 		return true;
 		}
 	else if (strEquals(sField, FIELD_AVERAGE_COUNT))
 		{
-		*retsValue = strFromInt(m_NumberAppearing.GetAveValue(), TRUE);
+		*retsValue = strFromInt(m_NumberAppearing.GetAveValue());
 		return true;
 		}
 	else if (strEquals(sField, FIELD_DESCRIPTION))
@@ -491,7 +494,12 @@ int CItemType::GetMassKg (CItemCtx &Ctx) const
 
 	{
 	if (m_iExtraMassPerCharge)
-		return m_iMass + (Ctx.GetItem().GetCharges() * m_iExtraMassPerCharge);
+		{
+		if (Ctx.IsItemNull())
+			return m_iMass + (m_InitDataValue.GetAveValue() * m_iExtraMassPerCharge);
+		else
+			return m_iMass + (Ctx.GetItem().GetCharges() * m_iExtraMassPerCharge);
+		}
 	else
 		return m_iMass;
 	}
@@ -612,17 +620,46 @@ CString CItemType::GetUnknownName (int iIndex, DWORD *retdwFlags)
 	return GetName(retdwFlags);
 	}
 
-int CItemType::GetValue (bool bActual) const
+int CItemType::GetValue (CItemCtx &Ctx, bool bActual) const
 
 //	GetValue
 //
 //	Returns the value of the item in its currency
 
 	{
-	if (!IsKnown() && !bActual)
-		return m_pUnknownType->GetValue();
+	//	NOTE: We have got that guaranteed m_pUnknownType is non-NULL if IsKnown is FALSE.
 
-	return (int)m_iValue.GetValue();
+	if (!IsKnown() && !bActual)
+		return m_pUnknownType->GetValue(Ctx);
+
+	//	Value in the item's currency.
+
+	int iValue = (int)m_iValue.GetValue();
+
+	//	If we need to account for charges, then do it
+
+	if (m_iExtraValuePerCharge != 0)
+		{
+		if (Ctx.IsItemNull())
+			return Max(0, iValue + (m_InitDataValue.GetAveValue() * m_iExtraValuePerCharge));
+		else
+			return Max(0, iValue + (Ctx.GetItem().GetCharges() * m_iExtraValuePerCharge));
+		}
+
+	else if (m_fValueCharges && !Ctx.IsItemNull())
+		{
+		int iMaxCharges = GetMaxCharges();
+
+		if (iMaxCharges > 0)
+			return (iValue * (1 + Ctx.GetItem().GetCharges())) / (1 + iMaxCharges);
+		else
+			return iValue;
+		}
+
+	//	Otherwise, just the fixed price
+
+	else
+		return iValue;
 	}
 
 void CItemType::InitRandomNames (void)
@@ -764,6 +801,8 @@ ALERROR CItemType::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_pUnknownType.Bind(Ctx))
 		return error;
 
+	//	Others
+
 	if (error = m_pUseScreen.Bind(Ctx, GetLocalScreens()))
 		return error;
 
@@ -837,16 +876,15 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_sData = pDesc->GetAttribute(DATA_ATTRIB);
 	m_dwModCode = pDesc->GetAttributeInteger(ENHANCEMENT_ATTRIB);
 
-	//	Initial data value
+	//	Handle charges
 
 	CString sInstData;
 	if (m_fInstanceData = pDesc->FindAttribute(INSTANCE_DATA_ATTRIB, &sInstData))
 		m_InitDataValue.LoadFromXML(sInstData);
+
+	m_iExtraMassPerCharge = pDesc->GetAttributeIntegerBounded(MASS_BONUS_PER_CHARGE_ATTRIB, 0, -1, 0);
+	m_iExtraValuePerCharge = pDesc->GetAttributeInteger(VALUE_BONUS_PER_CHARGE_ATTRIB);	//	May be negative
 	m_fValueCharges = pDesc->GetAttributeBool(VALUE_CHARGES_ATTRIB);
-
-	//	Item weighs more with charges. [This is set by CWeaponClass currently.]
-
-	m_iExtraMassPerCharge = 0;
 
 	//	Flags
 

@@ -2355,9 +2355,9 @@
 				<System UNID="&ssHuaramarca;"/>
 			</System>
 
-			<StarGates>
-				<StarGate Name="Inbound"  DestID="[Prev]"/>
-			</StarGates>
+			<Stargates>
+				<Stargate Name="Inbound"  DestID="[Prev]"/>
+			</Stargates>
 		</Node>
 	</SystemMap>
 

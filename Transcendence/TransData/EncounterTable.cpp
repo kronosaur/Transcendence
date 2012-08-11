@@ -167,7 +167,7 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 					{
 					double rCount = 0.0;
 
-					CString sKey = strFromInt(pType->GetUNID(), FALSE);
+					CString sKey = strFromInt(pType->GetUNID(), false);
 					EntryInfo *pEntry;
 					if (TotalCount.Lookup(sKey, (CObject **)&pEntry) == NOERROR)
 						rCount = pEntry->rTotalCount;

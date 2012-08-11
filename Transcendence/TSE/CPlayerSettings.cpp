@@ -288,7 +288,7 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 
 	CString sShipScreenUNID = pDesc->GetAttribute(SHIP_SCREEN_ATTRIB);
 	if (sShipScreenUNID.IsBlank())
-		sShipScreenUNID = strFromInt(DEFAULT_SHIP_SCREEN_UNID, FALSE);
+		sShipScreenUNID = strFromInt(DEFAULT_SHIP_SCREEN_UNID, false);
 	m_pShipScreen.LoadUNID(Ctx, sShipScreenUNID);
 
 	//	Load the armor display data

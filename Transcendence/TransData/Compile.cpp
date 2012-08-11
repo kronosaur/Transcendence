@@ -15,15 +15,16 @@ ALERROR ExtractFile (const CString &sDest, const CString &sData);
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
+	CString sError;
 
 	//	Open the TDB file
 
 	CString sDb = CONSTLIT("Transcendence.tdb");
 
 	CResourceDb Resources(sDb);
-	if (error = Resources.Open())
+	if (error = Resources.Open(0, &sError))
 		{
-		printf("Unable to open data file: %s\n", sDb.GetASCIIZPointer());
+		printf("%s\n", (LPSTR)sError);
 		return;
 		}
 

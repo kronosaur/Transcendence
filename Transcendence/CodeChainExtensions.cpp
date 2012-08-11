@@ -1438,7 +1438,9 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		//	Sometimes the local screens root is set in the context. For example, if we're
 		//	executing code from an item, the item type is set as the local screens root.
 
-		g_pTrans->GetModel().ShowShipScreen(pCtx->GetScreensRoot(), NULL, sScreen, sPane);
+		CString sError;
+		if (!g_pTrans->GetModel().ShowShipScreen(pCtx->GetScreensRoot(), NULL, sScreen, sPane, &sError))
+			return pCC->CreateError(sError);
 		}
 
 	//	Otherwise, call the current screen

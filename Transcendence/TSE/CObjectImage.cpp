@@ -118,12 +118,8 @@ CG16bitImage *CObjectImage::GetImage (const CString &sLoadReason, CString *retsE
 		//	Open the database
 
 		CResourceDb ResDb(m_sResourceDb, !strEquals(m_sResourceDb, g_pUniverse->GetResourceDb()));
-		if (ResDb.Open(DFOPEN_FLAG_READ_ONLY) != NOERROR)
-			{
-			if (retsError)
-				*retsError = strPatternSubst(CONSTLIT("Unable to open resource db: '%s'"), m_sResourceDb);
+		if (ResDb.Open(DFOPEN_FLAG_READ_ONLY, retsError) != NOERROR)
 			return NULL;
-			}
 
 		return GetImage(ResDb, sLoadReason, retsError);
 		}
@@ -226,7 +222,7 @@ CG16bitImage *CObjectImage::GetImage (CResourceDb &ResDb, const CString &sLoadRe
 	//	If we have a monochrom mask, then we assume black is the background color
 
 	else if (iMaskType == bitmapMonochrome)
-		m_pBitmap->SetTransparentColor(0);
+		m_pBitmap->SetTransparentColor();
 
 	//	Convert to sprite
 

@@ -13,6 +13,7 @@ typedef double Metric;
 
 //	Angles
 
+inline int AngleMod (int iAngle) { if (iAngle >= 0) return (iAngle % 360); else return 360 - (-iAngle % 360); }
 inline int AngleMiddle (int iLowAngle, int iHighAngle)
 //	Returns the angle in between the two given angles. If iLowAngle > iHighAngle then
 //	we wrap around through 0

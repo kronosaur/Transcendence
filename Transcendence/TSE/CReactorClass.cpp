@@ -84,7 +84,7 @@ bool CReactorClass::FindDataField (const ReactorDesc &Desc, const CString &sFiel
 
 	{
 	if (strEquals(sField, FIELD_POWER))
-		*retsValue = strFromInt(Desc.iMaxPower * 100, TRUE);
+		*retsValue = strFromInt(Desc.iMaxPower * 100);
 	else if (strEquals(sField, FIELD_FUEL_CRITERIA))
 		{
 		if (Desc.pFuelCriteria)

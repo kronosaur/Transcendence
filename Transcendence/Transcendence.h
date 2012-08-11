@@ -1020,7 +1020,8 @@ class CArmorDisplay
 		int m_iSelection;
 		TArray<STextPaint> m_Text;
 
-		IEffectPainter *m_pShieldPainter;
+		DWORD m_dwCachedShipID;				//	Cached painters for this ship ID.
+		IEffectPainter *m_pShieldPainter;	//	Caches shield painter
 	};
 
 #define MAX_SCORES			100
@@ -2128,6 +2129,7 @@ class CTranscendenceModel
 
 		ALERROR InitAdventure (DWORD dwAdventure, CString *retsError);
 		ALERROR StartNewGame (const CString &sUsername, const SNewGameSettings &NewGame, CString *retsError);
+		void StartNewGameAbort (void);
 		ALERROR StartNewGameBackground (CString *retsError = NULL);
 		ALERROR StartGame (bool bNewGame);
 
@@ -2154,7 +2156,7 @@ class CTranscendenceModel
 		ALERROR ShowPane (const CString &sPane);
 		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, bool bReturn = false);
 		void ShowShipScreen (void);
-		void ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane);
+		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, CString *retsError);
 		void UseItem (CItem &Item);
 
 		int AddHighScore (const CGameRecord &Score);

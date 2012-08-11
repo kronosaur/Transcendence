@@ -482,7 +482,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
-			m_Model.GetGameFile().Close();
+			m_Model.StartNewGameAbort();
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}

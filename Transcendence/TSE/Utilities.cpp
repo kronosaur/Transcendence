@@ -427,7 +427,7 @@ CString DiceRange::SaveToXML (void) const
 			return strPatternSubst("%dd%d", m_iCount, m_iFaces);
 		}
 	else
-		return strFromInt(m_iBonus, TRUE);
+		return strFromInt(m_iBonus);
 	}
 
 void DiceRange::Scale (Metric rScale)
@@ -1062,6 +1062,13 @@ IShipController *CreateShipController (const CString &sAI)
 	}
 
 DWORD ExtensionVersionToInteger (DWORD dwVersion)
+
+//	ExtensionVersionToInteger
+//
+//	NOTE: Prior to version 12 we tied version numbers to releases.
+//	This function is no longer used, since we return api version number 
+//	directly.
+
 	{
 	switch (dwVersion)
 		{
@@ -1080,7 +1087,6 @@ DWORD ExtensionVersionToInteger (DWORD dwVersion)
 
 		//	Must handle all cases
 		default:
-			ASSERT(false);
 			return 0;
 		}
 	}
@@ -1777,101 +1783,16 @@ ALERROR LoadDamageAdj (CXMLElement *pItem, const CString &sAttrib, int *retiAdj,
 	return NOERROR;
 	}
 
-ALERROR LoadDamageAdj (CXMLElement *pDesc, int *pDefAdj, int *retiAdj)
-
-//	LoadDamageAdj
-//
-//	Loads either the damageAdj or the hpBonus attributes into a damage adjument array
-
-	{
-	ALERROR error;
-	int i;
-	CString sValue;
-
-	if (pDesc->FindAttribute(HP_BONUS_ATTRIB, &sValue))
-		{
-		//	We expect a list of percent adjustments
-
-		TArray<CString> DamageAdj;
-		if (error = ParseDamageTypeList(sValue, &DamageAdj))
-			return error;
-
-		//	Apply damage adj
-
-		for (i = 0; i < damageCount; i++)
-			{
-			//	An omitted value means default
-
-			if (DamageAdj[i].IsBlank())
-				retiAdj[i] = pDefAdj[i];
-
-			//	A star means no damage
-
-			else if (*DamageAdj[i].GetASCIIZPointer() == '*')
-				retiAdj[i] = 0;
-
-			//	Otherwise, adjust
-
-			else
-				{
-				bool bNull;
-				int iValue;
-				iValue = strToInt(DamageAdj[i], 0, &bNull);
-				if (bNull)
-					return ERR_FAIL;
-
-				if (iValue == 0)
-					retiAdj[i] = pDefAdj[i];
-				else
-					{
-					int iInc = iValue + (10000 / pDefAdj[i]) - 100;
-					if (iInc > -100)
-						retiAdj[i] = 10000 / (100 + iInc);
-					else
-						retiAdj[i] = 10000000;
-					}
-				}
-			}
-		}
-	else if (pDesc->FindAttribute(DAMAGE_ADJ_ATTRIB, &sValue))
-		{
-		//	We expect a list of damageAdj percent values, either with a damageType
-		//	label or ordered by damageType.
-
-		TArray<CString> DamageAdj;
-		if (error = ParseDamageTypeList(sValue, &DamageAdj))
-			return error;
-
-		//	Apply damage adj
-
-		for (i = 0; i < damageCount; i++)
-			{
-			if (DamageAdj[i].IsBlank())
-				retiAdj[i] = pDefAdj[i];
-			else
-				retiAdj[i] = strToInt(DamageAdj[i], 0);
-			}
-		}
-	else
-		{
-		for (i = 0; i < damageCount; i++)
-			retiAdj[i] = pDefAdj[i];
-		}
-
-	return NOERROR;
-	}
-
 DWORD LoadExtensionVersion (const CString &sVersion)
 
 //	LoadExtensionVersion
 //
 //	Returns the extension version (or 0 if this is an unrecognized extension)
+//	NOTE: This is only used for old-style extension versions.
 
 	{
 	if (strEquals(sVersion, VERSION_110))
-		//	Latest version, currently 3.
-		//	See: TSEUtil.h for definition.
-		return EXTENSION_VERSION;
+		return 3;
 	else if (strEquals(sVersion, VERSION_097)
 			|| strEquals(sVersion, VERSION_097A)
 			|| strEquals(sVersion, VERSION_098)

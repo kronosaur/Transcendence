@@ -160,9 +160,9 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD EXTENSION_VERSION =							3;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD EXTENSION_VERSION =							12;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						15;
+const DWORD UNIVERSE_SAVE_VERSION =						16;
 const DWORD SYSTEM_SAVE_VERSION =						76;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
@@ -484,6 +484,43 @@ class CDamageSource
 		CSpaceObject *m_pSecondarySource;
 	};
 
+class CDamageAdjDesc
+	{
+	public:
+		CDamageAdjDesc (void) : m_pDefault(NULL)
+			{ }
+
+		ALERROR Bind (SDesignLoadCtx &Ctx, const CDamageAdjDesc *pDefault);
+		inline int GetAdj (DamageTypes iDamageType) const { return (iDamageType == damageGeneric ? 100 : m_iDamageAdj[iDamageType]); }
+		void GetAdjAndDefault (DamageTypes iDamageType, int *retiAdj, int *retiDefault) const;
+		int GetHPBonus (DamageTypes iDamageType) const;
+		ALERROR InitFromArray (int *pTable);
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bIsDefault = false);
+
+	private:
+		enum EAdjustmentTypes
+			{
+			adjDefault,							//	Use default table
+			adjAbsolute,						//	dwAdjValue is an absolute adjustment
+			adjRelative,						//	dwAdjValue is a relative percent of default
+			};
+
+		struct SAdjDesc
+			{
+			DWORD dwAdjType:16;					//	Type of adjustment
+			DWORD dwAdjValue:16;				//	Adjustment value
+			};
+
+		void Compute (const CDamageAdjDesc *pDefault);
+		ALERROR InitFromDamageAdj (SDesignLoadCtx &Ctx, const CString &sAttrib, bool bNoDefault);
+		ALERROR InitFromHPBonus (SDesignLoadCtx &Ctx, const CString &sAttrib);
+
+		SAdjDesc m_Desc[damageCount];			//	Descriptor for computing adjustment
+		int m_iDamageAdj[damageCount];			//	Computed adjustment for type
+
+		const CDamageAdjDesc *m_pDefault;		//	Default table
+	};
+
 class CRandomEntryResults
 	{
 	public:
@@ -511,6 +548,7 @@ class CRandomEntryGenerator
 
 		static ALERROR Generate (CXMLElement *pElement, CRandomEntryResults &Results);
 		static ALERROR GenerateAsGroup (CXMLElement *pElement, CRandomEntryResults &Results);
+		static ALERROR GenerateAsTable (CXMLElement *pElement, CRandomEntryResults &Results);
 		static ALERROR LoadFromXML (CXMLElement *pElement, CRandomEntryGenerator **retpGenerator);
 		static ALERROR LoadFromXMLAsGroup (CXMLElement *pElement, CRandomEntryGenerator **retpGenerator);
 

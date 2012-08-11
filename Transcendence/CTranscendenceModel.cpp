@@ -1026,21 +1026,36 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 	//	Load the POV system
 
 	CSystem *pSystem;
-	CShip *pPlayerShip;
+	CSpaceObject *pPlayerObj;
 	if (error = m_GameFile.LoadSystem(dwSystemID, 
 			&pSystem, 
 			retsError,
 			dwPlayerID, 
-			(CSpaceObject **)&pPlayerShip))
+			&pPlayerObj))
 		{
 		m_GameFile.Close();
 		return error;
+		}
+
+	CShip *pPlayerShip = pPlayerObj->AsShip();
+	if (pPlayerShip == NULL)
+		{
+		*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
+		m_GameFile.Close();
+		return ERR_FAIL;
 		}
 
 	//	Set the player ship
 
 	ASSERT(m_pPlayer == NULL);
 	m_pPlayer = dynamic_cast<CPlayerShipController *>(pPlayerShip->GetController());
+	if (m_pPlayer == NULL)
+		{
+		*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
+		m_GameFile.Close();
+		return ERR_FAIL;
+		}
+
 	m_pPlayer->SetTrans(g_pTrans);
 
 	//	If we didn't save the player name then it means that we have an older
@@ -1314,6 +1329,11 @@ void CTranscendenceModel::OnPlayerEnteredGate (CTopologyNode *pDestNode, const C
 
 	{
 	ASSERT(m_iState == stateInGame);
+
+	//	Undock, if necessary
+
+	if (InScreenSession())
+		ExitScreenSession(true);
 
 	//	Remember some state
 
@@ -1940,6 +1960,8 @@ void CTranscendenceModel::ShowShipScreen (void)
 //	Show the ship screen specified in CPlayerSettings
 
 	{
+	//	Make sure we have a ship.
+
 	CShip *pShip = m_pPlayer->GetShip();
 	if (pShip == NULL)
 		return;
@@ -1951,12 +1973,18 @@ void CTranscendenceModel::ShowShipScreen (void)
 	CString sScreen;
 	CDesignType *pRoot = pSettings->GetShipScreen().GetDockScreen(pShip->GetClass(), &sScreen);
 
-	ShowShipScreen(NULL, pRoot, sScreen, NULL_STR);
+	CString sError;
+	if (!ShowShipScreen(NULL, pRoot, sScreen, NULL_STR, &sError))
+		{
+		g_pTrans->DisplayMessage(sError);
+		::kernelDebugLogMessage(sError);
+		return;
+		}
 
 	pShip->OnComponentChanged(comCargo);
 	}
 
-void CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane)
+bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, CString *retsError)
 
 //	ShowShipScreen
 //
@@ -1966,10 +1994,21 @@ void CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 //	if necessary.
 
 	{
-	ASSERT(pRoot);
+	//	If we're not in the middle of a game, then we fail (this can happen if
+	//	we try to bring up a dock screen while in the middle of gating).
+
+	if (m_iState != stateInGame)
+		{
+		*retsError = CONSTLIT("Unable to display screen while not in system.");
+		return false;
+		}
+
 	CShip *pShip = m_pPlayer->GetShip();
 	if (pShip == NULL)
-		return;
+		{
+		*retsError = CONSTLIT("Unable to find player ship.");
+		return false;
+		}
 
 	//	If the default root is passed in, use that. Otherwise, we pull local
 	//	screens from the ship class.
@@ -1982,11 +2021,11 @@ void CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 
 	if (EnterScreenSession(pShip, pRoot, sScreen, sPane) != NOERROR)
 		{
-		CString sError = strPatternSubst(CONSTLIT("[%s]: Unable to show screen %s"), pRoot->GetTypeName(), sScreen);
-		g_pTrans->DisplayMessage(sError);
-		::kernelDebugLogMessage(sError);
-		return;
+		*retsError = strPatternSubst(CONSTLIT("[%s]: Unable to show screen %s"), pRoot->GetTypeName(), sScreen);
+		return false;
 		}
+
+	return true;
 	}
 
 ALERROR CTranscendenceModel::StartGame (bool bNewGame)
@@ -2106,6 +2145,22 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	return NOERROR;
 	}
 
+void CTranscendenceModel::StartNewGameAbort (void)
+
+//	StartNewGameAbort
+//
+//	Handle error after StartNewGame.
+
+	{
+	if (m_pPlayer)
+		{
+		delete m_pPlayer;
+		m_pPlayer = NULL;
+		}
+
+	m_GameFile.Close();
+	}
+
 ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 
 //	StartNewGameBackground
@@ -2129,6 +2184,12 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 	//	Figure out the ship class that we want
 
 	CShipClass *pStartingShip = m_Universe.FindShipClass(m_pPlayer->GetStartingShipClass());
+	if (pStartingShip == NULL)
+		{
+		*retsError = strPatternSubst(CONSTLIT("Unable to find player ship class: %x."), m_pPlayer->GetStartingShipClass());
+		return ERR_FAIL;
+		}
+
 	const CPlayerSettings *pPlayerSettings = pStartingShip->GetPlayerSettings();
 	if (pPlayerSettings == NULL)
 		{

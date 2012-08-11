@@ -9,12 +9,14 @@
 #define FRAGMENT_TAG							CONSTLIT("Fragment")
 #define LINE_TAG								CONSTLIT("Line")
 #define NETWORK_TAG								CONSTLIT("Network")
+#define NODE_TAG								CONSTLIT("Node")
 #define NODES_TAG								CONSTLIT("Nodes")
 #define NODE_TABLE_TAG							CONSTLIT("NodeTable")
 #define NODE_TEMPLATE_TAG						CONSTLIT("NodeTemplate")
 #define SYSTEM_TAG								CONSTLIT("System")
 #define STARGATE_TAG							CONSTLIT("Stargate")
 #define STARGATES_TAG							CONSTLIT("Stargates")
+#define STARGATE_TABLE_TAG						CONSTLIT("StargateTable")
 
 #define ATTRIBUTES_ATTRIB						CONSTLIT("attributes")
 #define CHANCE_ATTRIB							CONSTLIT("chance")
@@ -239,7 +241,7 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 
 	{
 	ALERROR error;
-	int i,j;
+	int i;
 
 	CXMLElement *pNodeXML = pNode->GetDesc();
 	CString sID = pNode->GetID();
@@ -252,6 +254,7 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 
 	CTopologyNode *pNewNode;
 	if (error = AddTopologyNode(Ctx, 
+			pNode->GetMap(),
 			ExpandNodeID(Ctx, sID), 
 			xPos, yPos, 
 			pNode->GetAttributes(), 
@@ -266,41 +269,14 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 		{
 		CXMLElement *pItem = pNodeXML->GetContentElement(i);
 
-		//	If this is a <Stargates> tag or a <Stargate> tag with content
-		//	elements, then treat it as a group.
+		//	If <Stargates> or <Stargate> then add
 
-		if ((strEquals(pItem->GetTag(), STARGATES_TAG) || strEquals(pItem->GetTag(), STARGATE_TAG))
-				&& pItem->GetContentElementCount() > 0)
+		if (strEquals(pItem->GetTag(), STARGATES_TAG) || strEquals(pItem->GetTag(), STARGATE_TAG))
 			{
-			CRandomEntryResults StarGates;
-			if (error = CRandomEntryGenerator::GenerateAsGroup(pItem, StarGates))
+			if (error = AddStargateFromXML(Ctx, pItem, pNewNode, bIsRootNode))
 				{
-				Ctx.sError = strPatternSubst(CONSTLIT("Topology %s: Unable to generate random stargate table"), sID);
+				Ctx.sError = strPatternSubst(CONSTLIT("Node %s: %s"), pNode->GetID(), Ctx.sError);
 				return error;
-				}
-
-			for (j = 0; j < StarGates.GetCount(); j++)
-				{
-				CXMLElement *pGate = StarGates.GetResult(j);
-
-				//	This will add the stargate and recurse into AddTopologyDesc
-				//	(if necessary).
-
-				if (error = AddStargate(Ctx, pNewNode, bIsRootNode, pGate))
-					return error;
-				}
-			}
-
-		//	If we have a single <Stargate> tag, then just add a single stargate
-
-		else if (strEquals(pItem->GetTag(), STARGATE_TAG))
-			{
-			int iChance = pItem->GetAttributeIntegerBounded(CHANCE_ATTRIB, 0, 100, 100);
-
-			if (iChance == 100 || mathRandom(1, 100) <= iChance)
-				{
-				if (error = AddStargate(Ctx, pNewNode, bIsRootNode, pItem))
-					return error;
 				}
 			}
 
@@ -311,6 +287,60 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 
 	if (retpNewNode)
 		*retpNewNode = pNewNode;
+
+	return NOERROR;
+	}
+
+ALERROR CTopology::AddNodeGroup (STopologyCreateCtx &Ctx, CTopologyDesc *pTable, CTopologyNode **retpNewNode)
+
+//	AddNodeGroup
+//
+//	Adds a node listed here
+
+	{
+	ALERROR error;
+	int i;
+
+	CXMLElement *pTableXML = pTable->GetDesc();
+
+	//	Loop over all items
+
+	for (i = 0; i < pTableXML->GetContentElementCount(); i++)
+		{
+		CXMLElement *pEntry = pTableXML->GetContentElement(i);
+
+		//	Is this a stargate reference?
+
+		if (strEquals(pEntry->GetTag(), STARGATE_TAG) 
+				|| strEquals(pEntry->GetTag(), STARGATES_TAG)
+				|| strEquals(pEntry->GetTag(), STARGATE_TABLE_TAG))
+			{
+			if (error = AddStargateFromXML(Ctx, pEntry))
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("%s: %s"), pTable->GetID(), Ctx.sError);
+				return error;
+				}
+			}
+
+		//	Is this a node reference?
+
+		else if (strEquals(pEntry->GetTag(), NODE_TAG))
+			{
+			if (error = AddTopologyNode(Ctx, pEntry->GetAttribute(ID_ATTRIB)))
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("%s: %s"), pTable->GetID(), Ctx.sError);
+				return error;
+				}
+			}
+
+		//	Otherwise, we don't know what this is
+
+		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("%s: Unknown NodeGroup directive: %s."), pTable->GetID(), pEntry->GetTag());
+			return ERR_FAIL;
+			}
+		}
 
 	return NOERROR;
 	}
@@ -651,6 +681,7 @@ ALERROR CTopology::AddRandomRegion (STopologyCreateCtx &Ctx,
 
 		CTopologyNode *pNode;
 		if (error = AddTopologyNode(Ctx, 
+				pDesc->GetMap(),
 				sNodeID, 
 				x, y, 
 				NULL_STR, 
@@ -782,6 +813,74 @@ ALERROR CTopology::AddRandomRegion (STopologyCreateCtx &Ctx,
 	return NOERROR;
 	}
 
+ALERROR CTopology::AddStargateFromXML (STopologyCreateCtx &Ctx, CXMLElement *pDesc, CTopologyNode *pNode, bool bRootNode)
+
+//	AddStargateFromXML
+//
+//	Adds a stargate a defined by a XML descriptor (which may also be a group of stargates)
+
+	{
+	ALERROR error;
+	int i;
+
+	//	If this is a <Stargates> tag or a <Stargate> tag with content
+	//	elements, then treat it as a group.
+
+	if (pDesc->GetContentElementCount() > 0)
+		{
+		CRandomEntryResults StarGates;
+		if (strEquals(pDesc->GetTag(), STARGATE_TABLE_TAG))
+			{
+			if (error = CRandomEntryGenerator::GenerateAsTable(pDesc, StarGates))
+				{
+				Ctx.sError = CONSTLIT("Unable to generate random stargate table");
+				return error;
+				}
+			}
+		else
+			{
+			if (error = CRandomEntryGenerator::GenerateAsGroup(pDesc, StarGates))
+				{
+				Ctx.sError = CONSTLIT("Unable to generate random stargate table");
+				return error;
+				}
+			}
+
+		for (i = 0; i < StarGates.GetCount(); i++)
+			{
+			CXMLElement *pGate = StarGates.GetResult(i);
+
+			//	This will add the stargate and recurse into AddTopologyDesc
+			//	(if necessary).
+
+			if (error = AddStargate(Ctx, pNode, bRootNode, pGate))
+				return error;
+			}
+		}
+
+	//	If we have a single <Stargate> tag, then just add a single stargate
+
+	else if (strEquals(pDesc->GetTag(), STARGATE_TAG))
+		{
+		int iChance = pDesc->GetAttributeIntegerBounded(CHANCE_ATTRIB, 0, 100, 100);
+
+		if (iChance == 100 || mathRandom(1, 100) <= iChance)
+			{
+			if (error = AddStargate(Ctx, pNode, bRootNode, pDesc))
+				return error;
+			}
+		}
+	else
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Unknown stargate directive: %s"), pDesc->GetTag());
+		return ERR_FAIL;
+		}
+
+	//	Done
+
+	return NOERROR;
+	}
+
 ALERROR CTopology::AddStargate (STopologyCreateCtx &Ctx, CTopologyNode *pNode, bool bRootNode, CXMLElement *pGateDesc)
 
 //	AddStargate
@@ -815,15 +914,22 @@ ALERROR CTopology::AddStargate (STopologyCreateCtx &Ctx, CTopologyNode *pNode, b
 		CTopologyNode::ParseStargateString(pGateDesc->GetAttribute(TO_ATTRIB), &sDest, &sDestEntryPoint);
 		bOneWay = pGateDesc->GetAttributeBool(ONE_WAY_ATTRIB);
 
-		//	Find the source node
-
-		CString sFullSource = ExpandNodeID(Ctx, sSource);
-		pNode = FindTopologyNode(sFullSource);
-		if (pNode == NULL)
+		if (sSource.IsBlank())
 			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Unable to find node: %s."), sFullSource);
+			Ctx.sError = CONSTLIT("Missing from= attribute in <Stargate> directive.");
 			return ERR_FAIL;
 			}
+
+		if (sDest.IsBlank())
+			{
+			Ctx.sError = CONSTLIT("Missing to= attribute in <Stargate> directive.");
+			return ERR_FAIL;
+			}
+
+		//	Find the source node
+
+		if (error = GetOrAddTopologyNode(Ctx, sSource, NULL, pGateDesc, &pNode))
+			return error;
 		}
 	else
 		{
@@ -941,11 +1047,17 @@ ALERROR CTopology::AddTopology (STopologyCreateCtx &Ctx)
 	ALERROR error;
 	int i;
 
+	//	We only worry about the first table.
+
+	CTopologyDescTable *pTable = (Ctx.Tables.GetCount() > 0 ? Ctx.Tables[0] : NULL);
+	if (pTable == NULL)
+		return NOERROR;
+
 	//	Add topology starting at each root node.
 
-	for (i = 0; i < Ctx.pTopologyTable->GetRootNodeCount(); i++)
+	for (i = 0; i < pTable->GetRootNodeCount(); i++)
 		{
-		CTopologyDesc *pNodeDesc = Ctx.pTopologyTable->GetRootNodeDesc(i);
+		CTopologyDesc *pNodeDesc = pTable->GetRootNodeDesc(i);
 
 		//	Make sure this root node hasn't already been added. If it has, it
 		//	just means that we've linked from one topology to the root node of
@@ -1000,6 +1112,11 @@ ALERROR CTopology::AddTopologyDesc (STopologyCreateCtx &Ctx, CTopologyDesc *pNod
 		return NOERROR;
 		}
 
+	//	If this is a NodeGrou, then redirect
+
+	else if (pNode->GetType() == ndNodeGroup)
+		return AddNodeGroup(Ctx, pNode, retpNewNode);
+
 	//	If this is a NodeTable, then redirect
 
 	else if (pNode->GetType() == ndNodeTable)
@@ -1047,7 +1164,20 @@ ALERROR CTopology::AddTopologyNode (const CString &sID, CTopologyNode *pNode)
 	return NOERROR;
 	}
 
+ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx, const CString &sNodeID, CTopologyNode **retpNewNode)
+
+//	AddTopologyNode
+//
+//	Adds a topology node by ID or returns the node if it already exists.
+//
+//	NOTE: In some cases this function can return NOERROR and a NULL node.
+
+	{
+	return GetOrAddTopologyNode(Ctx, sNodeID, NULL, NULL, retpNewNode);
+	}
+
 ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx,
+									CSystemMap *pMap,
 									const CString &sID,
 									int x,
 									int y,
@@ -1137,6 +1267,20 @@ CString CTopology::ExpandNodeID (STopologyCreateCtx &Ctx, const CString &sID)
 		return sID;
 	}
 
+CTopologyDesc *FindNodeInContext (STopologyCreateCtx &Ctx, const CString &sNodeID)
+	{
+	int i;
+
+	for (i = 0; i < Ctx.Tables.GetCount(); i++)
+		{
+		CTopologyDesc *pNode = Ctx.Tables[i]->FindTopologyDesc(sNodeID);
+		if (pNode)
+			return pNode;
+		}
+
+	return NULL;
+	}
+
 ALERROR CTopology::FindTopologyDesc (STopologyCreateCtx &Ctx, const CString &sNodeID, CTopologyDesc **retpNode, NodeTypes *retiNodeType)
 
 //	FindTopologyDesc
@@ -1163,7 +1307,7 @@ ALERROR CTopology::FindTopologyDesc (STopologyCreateCtx &Ctx, const CString &sNo
 	//	Otherwise, look for the destination node in our topology.
 	//	If we found it, add it (recursively).
 
-	else if (pDestNode = Ctx.pTopologyTable->FindTopologyDesc(sNodeID))
+	else if (pDestNode = FindNodeInContext(Ctx, sNodeID))
 		{
 		*retpNode = pDestNode;
 		if (retiNodeType)
@@ -1340,7 +1484,11 @@ int CTopology::GetDistance (CTopologyNode *pSource, const CString &sDestID, int 
 	return iNewBestDist;
 	}
 
-ALERROR CTopology::GetOrAddTopologyNode (STopologyCreateCtx &Ctx, const CString &sID, CTopologyNode *pPrevNode, CXMLElement *pGateDesc, CTopologyNode **retpNode)
+ALERROR CTopology::GetOrAddTopologyNode (STopologyCreateCtx &Ctx, 
+										 const CString &sID, 
+										 CTopologyNode *pPrevNode, 
+										 CXMLElement *pGateDesc, 
+										 CTopologyNode **retpNode)
 
 //	GetOrAddTopologyNode
 //
@@ -1585,7 +1733,7 @@ ALERROR CUniverse::InitTopology (CString *retsError)
 	if (pTopology)
 		{
 		STopologyCreateCtx Ctx;
-		Ctx.pTopologyTable = pTopology;
+		Ctx.Tables.Insert(pTopology);
 
 		if (error = m_Topology.AddTopology(Ctx))
 			{
@@ -1614,7 +1762,7 @@ ALERROR CUniverse::InitTopology (CString *retsError)
 				&& pExtension->GetType() != extAdventure)
 			{
 			STopologyCreateCtx Ctx;
-			Ctx.pTopologyTable = &pExtension->GetTopology();
+			Ctx.Tables.Insert(&pExtension->GetTopology());
 
 			if (error = m_Topology.AddTopology(Ctx))
 				{

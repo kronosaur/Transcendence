@@ -9,6 +9,7 @@
 #define MAP_EFFECT_TAG							CONSTLIT("MapEffect")
 #define NETWORK_TAG								CONSTLIT("Network")
 #define NODE_TAG								CONSTLIT("Node")
+#define NODE_GROUP_TAG							CONSTLIT("NodeGroup")
 #define NODES_TAG								CONSTLIT("Nodes")
 #define NODE_TABLE_TAG							CONSTLIT("NodeTable")
 #define RANDOM_TAG								CONSTLIT("Random")
@@ -185,7 +186,7 @@ bool CTopologyDesc::IsEndGameNode (CString *retsEpitaph, CString *retsReason) co
 		return false;
 	}
 
-ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, const CString &sParentUNID)
+ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, CSystemMap *pMap, const CString &sParentUNID)
 
 //	LoadFromXML
 //
@@ -193,6 +194,8 @@ ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, 
 
 	{
 	ALERROR error;
+
+	m_pMap = pMap;
 
 	//	Keep a copy of the full node descriptor (because we are too lazy to turn
 	//	it into a structure).
@@ -207,6 +210,8 @@ ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, 
 
 	if (strEquals(pXMLDesc->GetTag(), NODE_TAG))
 		m_iType = ndNode;
+	else if (strEquals(pXMLDesc->GetTag(), NODE_GROUP_TAG))
+		m_iType = ndNodeGroup;
 	else if (strEquals(pXMLDesc->GetTag(), NODE_TABLE_TAG))
 		m_iType = ndNodeTable;
 	else if (strEquals(pXMLDesc->GetTag(), FRAGMENT_TAG))
@@ -261,7 +266,7 @@ ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, 
 		case ndFragment:
 			{
 			m_pDescList = new CTopologyDescTable;
-			if (error = m_pDescList->LoadFromXML(Ctx, pXMLDesc, sUNID, true))
+			if (error = m_pDescList->LoadFromXML(Ctx, pXMLDesc, pMap, sUNID, true))
 				return error;
 
 			break;
@@ -273,7 +278,7 @@ ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, 
 			if (pNodeList)
 				{
 				m_pDescList = new CTopologyDescTable;
-				if (error = m_pDescList->LoadFromXML(Ctx, pNodeList, sUNID))
+				if (error = m_pDescList->LoadFromXML(Ctx, pNodeList, pMap, sUNID))
 					return error;
 
 				//	After we've loaded the list, we can clear the ID map because
@@ -291,7 +296,7 @@ ALERROR CTopologyDesc::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pXMLDesc, 
 			if (pNodeList)
 				{
 				m_pDescList = new CTopologyDescTable;
-				if (error = m_pDescList->LoadFromXML(Ctx, pNodeList, sUNID))
+				if (error = m_pDescList->LoadFromXML(Ctx, pNodeList, pMap, sUNID))
 					return error;
 				}
 

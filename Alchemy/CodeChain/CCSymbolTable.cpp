@@ -36,6 +36,30 @@ void CCSymbolTable::AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry)
 	((ICCItem *)pOldEntry)->Discard(pCC);
 	}
 
+void CCSymbolTable::DeleteEntry (CCodeChain *pCC, ICCItem *pKey)
+
+//	DeleteEntry
+//
+//	Deletes the entry
+
+	{
+	CObject *pOldEntry;
+
+	if (m_Symbols.RemoveEntry(pKey->GetStringValue(), &pOldEntry) != NOERROR)
+		{
+		//	We get an error is the key was not found. This is OK.
+		return;
+		}
+
+	//	If we have a previous entry, decrement its refcount since we're
+	//	throwing it away
+
+	ICCItem *pPrevEntry = (ICCItem *)pOldEntry;
+	pPrevEntry->Discard(pCC);
+
+	SetModified();
+	}
+
 ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry)
 
 //	AddEntry

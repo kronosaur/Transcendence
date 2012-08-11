@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- PLAYER SOVEREIGN ==========================================================
+
+	GLOBAL DATA
+	
+	missionRewards:		Total amount of credits earned in missions
+
+-->
+
+	<Sovereign UNID="&svPlayer;"
+			name="independent"
+			alignment="constructive chaos"
+			>
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList missionRewards)
+				
+					; Current player money
+
+					(setq theList
+						(map (filter (typFind "$") theEcon (gr (objGetBalance gPlayerShip theEcon) 0)) theEcon
+							(list (cat "Money (" (fmtCurrency theEcon True) ")") (objGetBalance gPlayerShip theEcon))
+							)
+						)					
+					
+					; Money earned on missions
+					
+					(if (setq missionRewards (typGetGlobalData &svPlayer; "missionRewards"))
+						(setq theList (append theList (list
+							(list "Money earned on missions" missionRewards "missions &amp; activities")
+							)))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+		</Events>
+	</Sovereign>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq intMissionRewardPayment (lambda (theReward)
+				(block Nil
+					(plyCredit gPlayer theReward)
+					(typIncGlobalData &svPlayer; "missionRewards" theReward)
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

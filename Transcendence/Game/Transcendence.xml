@@ -35,6 +35,8 @@
 	<!ENTITY efShieldHUDDefault			"0x00000020">
 	<!ENTITY rsShieldHUDDefault			"0x00000021">
 	
+	<!ENTITY rsMikeno					"0x00000030">
+	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
 	<!ENTITY svIndependent				"0x00001003">
@@ -869,6 +871,27 @@
 	<!ENTITY snShieldHit1				"0x0000F206">
 	<!ENTITY snMissileLauncher			"0x0000F207">
 	<!ENTITY snStargate					"0x0000F208">
+	
+	<!-- RPG LIBRARY 0001 -->
+	
+	<!ENTITY unidRPGLibrary				"0x00010000">
+	
+	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
+	
+	<!ENTITY unidUniverseLibrary		"0x00020000">
+	
+	<!-- RESERVED 0003 -->
+	<!-- RESERVED 0004 -->
+	<!-- RESERVED 0005 -->
+	<!-- RESERVED 0006 -->
+	<!-- RESERVED 0007 -->
+	<!-- RESERVED 0008 -->
+	<!-- RESERVED 0009 -->
+	<!-- RESERVED 000A -->
+	<!-- RESERVED 000B -->
+	<!-- RESERVED 000C -->
+	<!-- RESERVED 000D -->
+	<!-- RESERVED 000E -->
 
 	<!-- DEBRIS 000F -->
 
@@ -884,13 +907,16 @@
 	<!ENTITY stSalvagerEncounter		"0x000F1000">
 	<!ENTITY scSalvagerNomad			"0x000F1001">
 
-	<!-- COMMONWEALTH 0010 -->
+	<!-- HUMAN SPACE LIBRARY 0010 -->
 
 	<!ENTITY unidHumanSpaceLibrary		"0x00100000">
 	
 	<!ENTITY ssStartonEridani			"0x00100001">
 	<!ENTITY ssStKatharine				"0x00100002">
-
+	<!ENTITY scPlayerSapphireBase		"0x00100003">
+	<!ENTITY scPlayerEI500Base			"0x00100004">
+	<!ENTITY scPlayerWolfenBase			"0x00100005">
+	
 	<!ENTITY stStartonEridani			"0x00102001">
 	<!ENTITY stCommonwealthSettlement	"0x00102002">
 	<!ENTITY stMiningColony				"0x00102003">
@@ -982,6 +1008,10 @@
 	<!ENTITY rsIocrymMonumentScreen		"0x0010F00A">
 	<!ENTITY rsDallSphere				"0x0010F00B">
 
+	<!-- RESERVED 0011 -->
+	<!-- RESERVED 0012 -->
+	<!-- RESERVED 0013 -->
+	
 	<!-- BATTLE ARENA 0014 -->
 
 	<!ENTITY ssBattleArena				"0x00140001">
@@ -1401,6 +1431,23 @@
 	
 	<!ENTITY unidCompatibilityLibrary	"0x00700000">
 	
+	<!-- 0080-008F RESERVED -->
+	<!-- 0090-009F RESERVED -->
+	<!-- 00A0-00AF RESERVED -->
+	<!-- 00B0-00BF RESERVED -->
+	<!-- 00C0-00CF RESERVED -->
+	<!-- 00D0-00DF RESERVED -->
+	<!-- 00E0-00EF RESERVED -->
+	<!-- 00F0-00FF RESERVED -->
+	
+	<!-- 0100 - 01ff RESERVED FOR DEBUG/TUTORIAL EXTENSIONS -->
+	<!-- 0200 - 02ff UNASSIGNED -->
+	<!-- 0300 - 03ff UNASSIGNED -->
+	<!-- 0400 - 04ff UNASSIGNED -->
+	<!-- 0500 - 05ff UNASSIGNED -->
+	<!-- 0600 - 06ff UNASSIGNED -->
+	<!-- 0700 - 07ff UNASSIGNED -->
+	
 	<!-- MISCELLANEOUS FIRE ENCOUNTERS 0801 -->
 
 	<!ENTITY stTerroristCamp			"0x08010000">
@@ -1610,6 +1657,7 @@
 	<!ENTITY smHumanSpace				"0x00200001">
 	<!ENTITY rsHumanSpace				"0x00200002">
 	<!ENTITY smElysium					"0x00200003">
+	<!ENTITY unidPartISystemMap			"0x00200004">
 	
 	<!-- DOMINA 0020 1xxx -->
 	
@@ -1638,8 +1686,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000804"
-		minVersion=						"0x01000804"
+		version=						"0x01000805"
+		minVersion=						"0x01000805"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -1825,40 +1873,67 @@
 <!-- CORE TYPES ============================================================ -->
 
 	<Module filename="CoreEffects.xml"/>
-	
-	<Module filename="Code.xml"/>
 	<Module filename="CoreTypes.xml"/>
-	<Module filename="MiscItems.xml"/>
-	<Module filename="Mining.xml"/>
-	<Module filename="StdArmor.xml"/>
-	<Module filename="StdAutons.xml"/>
-	<Module filename="StdDevices.xml"/>
-	<Module filename="StdDockScreens.xml"/>
-	<Module filename="StdEffects.xml"/>
-	<Module filename="StdExplosions.xml"/>
-	<Module filename="StdShields.xml"/>
-	<Module filename="StdSovereigns.xml"/>
-	<Module filename="StdWeapons.xml"/>
-	<Module filename="SystemsVol01.xml"/>
-	<Module filename="UsefulItems.xml"/>
-	<Module filename="Worlds.xml"/>
 	
 <!-- CORE LIBRARIES ======================================================== -->
+
+	<TranscendenceLibrary
+			UNID=				"&unidRPGLibrary;"
+			name=				"Transcendence RPG"
+			release=			"1"
+			apiVersion=			"12"
+			private=			"true"
+			>
+			
+		<Module filename="HUD.xml"/>
+		<Module filename="RPGPlayer.xml"/>
+		<Module filename="RPGShipScreens.xml"/>
+		<Module filename="RPGTypes.xml"/>
+	</TranscendenceLibrary>
+	
+	<TranscendenceLibrary
+			UNID=				"&unidUniverseLibrary;"
+			name=				"Transcendence Universe"
+			release=			"1"
+			apiVersion=			"12"
+			private=			"true"
+			>
+		
+		<Module filename="Mining.xml"/>
+		<Module filename="StarSystems.xml"/>
+		<Module filename="UniverseEffects.xml"/>
+		<Module filename="Worlds.xml"/>
+	</TranscendenceLibrary>
 
 	<TranscendenceLibrary
 			UNID=				"&unidHumanSpaceLibrary;"
 			name=				"Human Space"
 			release=			"1"
-			apiVersion=			"1.1"
+			apiVersion=			"12"
 			>
 			
+		<Library unid="&unidUniverseLibrary;"/>
+		
+		<Module filename="HumanSpaceMap.xml"/>
+		
+		<!-- These modules implement specific system. We need to make these more
+			generic and move the adventure-specific behavior to Part I -->
+		
 		<Module filename="Antarctica.xml"/>
-		<Module filename="AresOrthodoxy.xml"/>
 		<Module filename="BattleArena.xml"/>
 		<Module filename="BattleArenaGladiators.xml"/>
+		<Module filename="CharonFortress.xml"/>
+		<Module filename="Eridani.xml"/>
+		<Module filename="Heretic.xml"/>
+		<Module filename="PointJuno.xml"/>
+		<Module filename="StKatharines.xml"/>
+		
+		<!-- These modules implement encounters. They should be clean, for the
+			most part. -->
+		
+		<Module filename="AresOrthodoxy.xml"/>
 		<Module filename="BlackMarket.xml"/>
 		<Module filename="CentauriWarlords.xml"/>
-		<Module filename="CharonFortress.xml"/>
 		<Module filename="CharonPirates.xml"/>
 		<Module filename="Commonwealth.xml"/>
 		<Module filename="CommonwealthAgricultural.xml"/>
@@ -1867,39 +1942,60 @@
 		<Module filename="CommonwealthMilitia.xml"/>
 		<Module filename="CommonwealthMining.xml"/>
 		<Module filename="CorporateHierarchy.xml"/>
-		<Module filename="Domina.xml"/>
 		<Module filename="DwargRaiders.xml"/>
 		<Module filename="EncountersVol01.xml"/>
-		<Module filename="Eridani.xml"/>
-		<Module filename="Heretic.xml"/>
 		<Module filename="Iocrym.xml"/>
 		<Module filename="KorolovShipping.xml"/>
 		<Module filename="Luminous.xml"/>
 		<Module filename="OutlawMiners.xml"/>
-		<Module filename="PlayerShip.xml"/>
-		<Module filename="PointJuno.xml"/>
 		<Module filename="Rasiermesser.xml"/>
 		<Module filename="Ringers.xml"/>
 		<Module filename="RogueFleet.xml"/>
 		<Module filename="SistersOfDomina.xml"/>
-		<Module filename="StKatharines.xml"/>
 		<Module filename="SungSlavers.xml"/>
 		<Module filename="Teratons.xml"/>
 		<Module filename="Tinkers.xml"/>
 		<Module filename="UrakWarlords.xml"/>
+		
+		<!-- These modules implement items. They should be clean, for the most
+			part. -->
+		
+		<Module filename="MiscItems.xml"/>
+		<Module filename="StdArmor.xml"/>
+		<Module filename="StdAutons.xml"/>
+		<Module filename="StdDevices.xml"/>
+		<Module filename="StdEffects.xml"/>
+		<Module filename="StdExplosions.xml"/>
+		<Module filename="StdFuel.xml"/>
+		<Module filename="StdPlayerShips.xml"/>
+		<Module filename="StdShields.xml"/>
+		<Module filename="StdSovereigns.xml"/>
+		<Module filename="StdSystems.xml"/>
+		<Module filename="StdUnknownItems.xml"/>
+		<Module filename="StdWeapons.xml"/>
+		<Module filename="UsefulItems.xml"/>
+		
+		<!-- These modules have a combination of types. Some should be in the
+			adventure; others should be core types. -->
+		
+		<Module filename="Code.xml"/>
+		<Module filename="Domina.xml"/>
+		<Module filename="StdDockScreens.xml"/>
+		<Module filename="StdTypes.xml"/>
 	</TranscendenceLibrary>
 
 	<TranscendenceLibrary
 			UNID=				"&unidCompatibilityLibrary;"
 			name=				"Transcendence Compatibility Library" 
 			release=			"1" 
-			apiVersion=			"1.1"
+			apiVersion=			"12"
 			>
 			
+		<Library unid="&unidRPGLibrary;"/>
 		<Library unid="&unidHumanSpaceLibrary;"/>
 		
 		<Module filename="Compatibility10.xml"/>
-		
+		<Module filename="PlayerShips.xml"/>
 	</TranscendenceLibrary>
 
 <!-- DEFAULT ADVENTURE ===================================================== -->
@@ -1908,18 +2004,20 @@
 			UNID=				"&unidStarsOfThePilgrim;"
 			name=				"Domina &amp; Oracus I: The Stars of the Pilgrim"
 			release=			"1" 
-			apiVersion=			"1.1"
+			apiVersion=			"12"
 			>
 
-		<Library unid="&unidCompatibilityLibrary;"/>
-		
+		<Library unid="&unidRPGLibrary;"/>
+		<Library unid="&unidHumanSpaceLibrary;"/>
+
 		<AdventureDesc
 				unid=			"&adPart1Desc;"
 				backgroundID=	"&rsPart1Cover;"
 				
-				startingShipCriteria="* -notInPartI"
-				startingSystem=	"SE"
-				startingPos=	"Start"
+				startingShipCriteria=	"* +00200000_PlayerShip;"
+				include10StartingShips=	"true" 
+				startingSystem=			"SE"
+				startingPos=			"Start"
 				>
 			<Events>
 				<GetGlobalAchievements>
@@ -1991,11 +2089,9 @@
 		
 		<Module filename="Elysium.xml"/>
 		<Module filename="Huari.xml"/>
+		<Module filename="PlayerShips.xml"/>
 		<Module filename="StarsOfThePilgrim.xml"/>
 		
 	</TranscendenceAdventure>
 		
-<!-- Modules ============================================================== -->
-
-
 </TranscendenceUniverse>

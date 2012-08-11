@@ -55,6 +55,9 @@
 //	15: 1.08d
 //		dwRelease in CDynamicDesignTable
 //
+//	16: Fixed a corruption bug.
+//		Versions 15 and 14 are marked are corrrupt
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
@@ -615,7 +618,7 @@ void CUniverse::GenerateGameStats (CGameStats &Stats)
 		{
 		CExtension *pExtension = m_Design.GetExtension(i);
 
-		if (pExtension->GetType() != extBase)
+		if (!pExtension->IsHidden())
 			{
 			CString sName = pExtension->GetName();
 
@@ -634,6 +637,32 @@ void CUniverse::GenerateGameStats (CGameStats &Stats)
 		Stats.Insert(CONSTLIT("Game"), CONSTLIT("Debug"));
 	else
 		Stats.Insert(CONSTLIT("Game"), CONSTLIT("Unregistered"));
+	}
+
+const CDamageAdjDesc *CUniverse::GetArmorDamageAdj (int iLevel) const
+
+//	GetArmorDamageAdj
+//
+//	Returns the armor damage adj table
+
+	{
+	if (m_pAdventure)
+		return m_pAdventure->GetArmorDamageAdj(iLevel);
+	else
+		return CAdventureDesc::GetDefaultArmorDamageAdj(iLevel);
+	}
+
+const CDamageAdjDesc *CUniverse::GetShieldDamageAdj (int iLevel) const
+
+//	GetShieldDamageAdj
+//
+//	Returns the shield damage table
+
+	{
+	if (m_pAdventure)
+		return m_pAdventure->GetShieldDamageAdj(iLevel);
+	else
+		return CAdventureDesc::GetDefaultShieldDamageAdj(iLevel);
 	}
 
 void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
@@ -950,13 +979,23 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 			retsError))
 		return error;
 
-	//	Reinitialize. This clears out previous game state.
+	//	Reinitialize. This clears out previous game state, but only if we
+	//	are creating a new game.
 
-	if (error = Reinit())
+	if (!Ctx.bInLoadGame)
 		{
-		*retsError = CONSTLIT("Unable to reinit.");
-		return error;
+		if (error = Reinit())
+			{
+			*retsError = CONSTLIT("Unable to reinit.");
+			return error;
+			}
 		}
+
+	//	Set the current adventure (we need to do this before BindDesign, since
+	//	we need the current adventure to get the shield and armor damage adj
+	//	tables.
+
+	SetCurrentAdventureDesc(Ctx.pAdventure->GetAdventureDesc());
 
 	//	Bind
 	//
@@ -976,10 +1015,6 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 	//	Init encounter tables
 
 	InitLevelEncounterTables();
-
-	//	Set the current adventure
-
-	SetCurrentAdventureDesc(Ctx.pAdventure->GetAdventureDesc());
 
 	return NOERROR;
 	}
@@ -1159,6 +1194,14 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		Ctx.dwVersion = 0;
 		Ctx.dwSystemVersion = 57;
 		m_iTick = (int)dwLoad;
+		}
+
+	//	Version 14 and 15 are corrupt.
+
+	if (Ctx.dwVersion == 14 || Ctx.dwVersion == 15)
+		{
+		*retsError = CONSTLIT("The save file cannot be loaded due to a subtle corruption bug in 1.08c and 1.08d. I apologize for the problem.");
+		return ERR_FAIL;
 		}
 
 	//	Flags
@@ -1648,7 +1691,12 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 
 	dwSave = OBJID_NULL;
 	if (m_pPOV && m_pPOV->GetSystem())
+		{
 		m_pPOV->GetSystem()->WriteObjRefToStream(m_pPOV, pStream);
+
+		if (!m_pPOV->IsPlayer())
+			kernelDebugLogMessage("ERROR: Saving without player ship.");
+		}
 
 	//	Calculate the amount of time that we've been playing the game
 

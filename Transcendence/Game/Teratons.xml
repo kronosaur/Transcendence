@@ -2,6 +2,118 @@
 
 <TranscendenceModule>
 
+	<!-- Kytryn Blaster -->
+
+	<ItemType UNID="&itKytrynBlaster;"
+			name=				"Kytryn blaster"
+			level=				"9"
+			value=				"250000"
+			mass=				"3000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"15"
+
+				type=				"missile"
+				missileSpeed=		"40"
+				hitPoints=			"15"
+
+				lifetime=			"80"
+				damage=				"plasma:5d12; WMD5"
+				powerUse=			"2000"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Launcher -->
+
+	<ItemType UNID="&itKytrynLauncher;"
+			name=				"Kytryn launcher"
+			level=				"10"
+			value=				"350000"
+			mass=				"5000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This Teraton weapon launches a Kytryn plasma pod warhead, which blossoms into a shell of plasma energy."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				launcher=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itKytrynPlasmaSeed;"
+						type=			"missile"
+						lifetime=		"480"
+						damage=			"plasma:3d12; WMD5"
+						missileSpeed=	"30"
+						hitPoints=		"20"
+
+						failsafe=		"6"
+
+						hitEffect=		"&efFragmentationExplosion;"
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							count=			"36"
+							type=			"missile"
+
+							damage=			"plasma:3d12; WMD5"
+							missileSpeed=	"20"
+							lifetime=		"30"
+							>
+
+						<Effect>
+							<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+						</Effect>
+					</Fragment>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Plasma Seed -->
+
+	<ItemType UNID="&itKytrynPlasmaSeed;"
+			name=				"Kytryn plasma pod"
+			level=				"12"
+			value=				"1500"
+			mass=				"300"
+			attributes=			"Consumable; Alien; Missile; Teraton"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6"
+
+			description=		"These alien warheads are launched by the Kytryn launcher."
+
+			sortName=			"Kytryn.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
 	<!-- Teraton Nest Base
 	
 	All Teraton nests are derived from this type

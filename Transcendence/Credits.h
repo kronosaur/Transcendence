@@ -165,6 +165,7 @@ static char *FEEDBACK[] =
 	"Silentdances",
 	"6cef",
 	"SJ",
+	"Peter F. Slattery",
 	"Speaker for Treecats",
 	"SpeedOfSquid",
 	"Sponge & SpongeJr",

@@ -167,6 +167,29 @@ ALERROR CRandomEntryGenerator::GenerateAsGroup (CXMLElement *pElement, CRandomEn
 	return NOERROR;
 	}
 
+ALERROR CRandomEntryGenerator::GenerateAsTable (CXMLElement *pElement, CRandomEntryResults &Results)
+
+//	GenerateAsTable
+//
+//	Generate a list of elements given a group generator table
+
+	{
+	ALERROR error;
+
+	//	Load the table
+
+	CRandomEntryGenerator *pTable;
+	if (error = CTable::LoadFromXML(pElement, &pTable))
+		return error;
+
+	//	Generate the entries
+
+	pTable->Generate(Results);
+	delete pTable;
+
+	return NOERROR;
+	}
+
 ALERROR CRandomEntryGenerator::LoadFromXML (CXMLElement *pElement, CRandomEntryGenerator **retpGenerator)
 
 //	LoadFromXML

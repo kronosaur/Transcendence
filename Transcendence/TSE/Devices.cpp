@@ -24,6 +24,13 @@
 #define LINKED_FIRE_ENEMY						CONSTLIT("whenInFireArc")
 #define LINKED_FIRE_TARGET						CONSTLIT("targetInRange")
 
+#define PROPERTY_ENABLED						CONSTLIT("enabled")
+#define PROPERTY_FIRE_ARC						CONSTLIT("fireArc")
+#define PROPERTY_LINKED_FIRE_OPTIONS			CONSTLIT("linkedFireOptions")
+#define PROPERTY_OMNIDIRECTIONAL				CONSTLIT("omnidirectional")
+#define PROPERTY_POS							CONSTLIT("pos")
+#define PROPERTY_SECONDARY						CONSTLIT("secondary")
+
 static char *CACHED_EVENTS[CDeviceClass::evtCount] =
 	{
 		"GetOverlayType",
@@ -153,6 +160,56 @@ bool CDeviceClass::FindAmmoDataField (CItemType *pItem, const CString &sField, C
 	return false;
 	}
 
+ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
+
+//	GetItemProperty
+//
+//	Returns the item property. Subclasses should call this if they do not
+//	understand the property.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	Get the device
+
+	CInstalledDevice *pDevice = Ctx.GetDevice();
+	if (pDevice == NULL)
+		return CC.CreateNil();
+
+	//	Get the property
+
+	if (strEquals(sName, PROPERTY_ENABLED))
+		return CC.CreateBool(pDevice->IsEnabled());
+
+	else if (strEquals(sName, PROPERTY_POS))
+		{
+		//	Create a list
+
+		ICCItem *pResult = CC.CreateLinkedList();
+		if (pResult->IsError())
+			return pResult;
+
+		CCLinkedList *pList = (CCLinkedList *)pResult;
+
+		//	List contains angle, radius, and optional z
+
+		pList->AppendIntegerValue(&CC, pDevice->GetPosAngle());
+		pList->AppendIntegerValue(&CC, pDevice->GetPosRadius());
+		if (pDevice->GetPosZ() != 0)
+			pList->AppendIntegerValue(&CC, pDevice->GetPosZ());
+
+		//	Done
+
+		return pResult;
+		}
+
+	else if (strEquals(sName, PROPERTY_SECONDARY))
+		return CC.CreateBool(pDevice->IsSecondaryWeapon());
+
+	else
+		return CC.CreateNil();
+	}
+
 CString CDeviceClass::GetLinkedFireOptionString (DWORD dwOptions)
 
 //	GetLinkedFireOptionString
@@ -247,6 +304,140 @@ ALERROR CDeviceClass::ParseLinkedFireOptions (SDesignLoadCtx &Ctx, const CString
 	*retdwOptions = dwOptions;
 
 	return NOERROR;
+	}
+
+bool CDeviceClass::SetItemProperty (CItemCtx &Ctx, const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetItemProperty
+//
+//	Sets a device property. Subclasses should call this if they do not 
+//	understand the property.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	Get the installed device. We need this to set anything.
+
+	CInstalledDevice *pDevice = Ctx.GetDevice();
+	if (pDevice == NULL)
+		{
+		*retsError = CONSTLIT("Item is not an installed device on object.");
+		return false;
+		}
+
+	//	Figure out what to set
+
+	if (strEquals(sName, PROPERTY_FIRE_ARC))
+		{
+		//	A value of nil means no fire arc (and no omni)
+
+		if (pValue == NULL || pValue->IsNil())
+			{
+			pDevice->SetOmniDirectional(false);
+			pDevice->SetFireArc(0, 0);
+			}
+
+		//	A value of "omnidirectional" counts
+
+		else if (strEquals(pValue->GetStringValue(), PROPERTY_OMNIDIRECTIONAL))
+			{
+			pDevice->SetOmniDirectional(true);
+			pDevice->SetFireArc(0, 0);
+			}
+
+		//	A single value means that we just point in a direction
+
+		else if (pValue->GetCount() == 1)
+			{
+			int iMinFireArc = AngleMod(pValue->GetElement(0)->GetIntegerValue());
+			pDevice->SetOmniDirectional(false);
+			pDevice->SetFireArc(iMinFireArc, iMinFireArc);
+			}
+
+		//	Otherwise we expect a list with two elements
+
+		else if (pValue->GetCount() >= 2)
+			{
+			int iMinFireArc = AngleMod(pValue->GetElement(0)->GetIntegerValue());
+			int iMaxFireArc = AngleMod(pValue->GetElement(1)->GetIntegerValue());
+			pDevice->SetOmniDirectional(false);
+			pDevice->SetFireArc(iMinFireArc, iMaxFireArc);
+			}
+
+		//	Invalid
+
+		else
+			{
+			*retsError = CONSTLIT("Invalid fireArc parameter.");
+			return false;
+			}
+		}
+
+	else if (strEquals(sName, PROPERTY_LINKED_FIRE_OPTIONS))
+		{
+		//	Parse the options
+
+		DWORD dwOptions;
+		if (!::GetLinkedFireOptions(pValue, &dwOptions, retsError))
+			return false;
+
+		//	Set
+
+		pDevice->SetLinkedFireOptions(dwOptions);
+		}
+
+	else if (strEquals(sName, PROPERTY_POS))
+		{
+		//	Get the parameters. We accept a single list parameter with angle/radius/z.
+		//	(The latter is compatible with the return of objGetDevicePos.)
+
+		int iPosAngle;
+		int iPosRadius;
+		int iZ;
+		if (pValue == NULL || pValue->IsNil())
+			{
+			iPosAngle = 0;
+			iPosRadius = 0;
+			iZ = 0;
+			}
+		else if (pValue->GetCount() >= 2)
+			{
+			iPosAngle = pValue->GetElement(0)->GetIntegerValue();
+			iPosRadius = pValue->GetElement(1)->GetIntegerValue();
+
+			if (pValue->GetCount() >= 3)
+				iZ = pValue->GetElement(2)->GetIntegerValue();
+			else
+				iZ = 0;
+			}
+		else
+			{
+			*retsError = CONSTLIT("Invalid angle and radius");
+			return false;
+			}
+
+		//	Set it
+
+		pDevice->SetPosAngle(iPosAngle);
+		pDevice->SetPosRadius(iPosRadius);
+		pDevice->SetPosZ(iZ);
+		}
+
+	else if (strEquals(sName, PROPERTY_SECONDARY))
+		{
+		if (pValue == NULL || !pValue->IsNil())
+			pDevice->SetSecondary(true);
+		else
+			pDevice->SetSecondary(false);
+		}
+
+	else
+		{
+		*retsError = strPatternSubst(CONSTLIT("Unknown item property: %s."), sName);
+		return false;
+		}
+
+	return true;
 	}
 
 //	CInstalledDevice class

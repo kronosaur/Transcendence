@@ -431,6 +431,10 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="TransData.h"
 				>
 			</File>
@@ -439,6 +443,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath=".\TransData.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

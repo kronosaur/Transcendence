@@ -12,6 +12,45 @@
 		</Language>
 	</Sovereign>
 
+	<!-- Ion Blaster -->
+
+	<ItemType UNID="&itIonBlaster;"
+			name=				"ion blaster"
+			level=				"8"
+			value=				"95000"
+			mass=				"4000"
+			frequency=			"common"
+			attributes=			"EI; EnergyWeapon; Military; MajorItem; Specialty"
+
+			description=		"The ion blaster is used by Luminous for its drones."
+
+			sortName=			"ion blaster"
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:5d6; WMD1"
+				fireRate=			"10"
+				lifetime=			"30"
+				powerUse=			"1000"
+
+				sound=				"&snLaserCannon;"
+				>
+			<Effect>
+				<Beam
+						beamType=			"lightning"
+						primaryColor=		"0xff, 0xc7, 0xa0"
+						secondaryColor=		"0xff, 0x95, 0x00"
+						intensity=			"8"
+						/>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
 	<!-- Luminous Drone -->
 
 	<ShipClass UNID="&scLuminousDrone;"

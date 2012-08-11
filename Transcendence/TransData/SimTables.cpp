@@ -95,7 +95,7 @@ void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 					CStationType *pType;
 					if (pType = pObj->GetEncounterInfo())
 						{
-						CString sKey = strFromInt(pType->GetUNID(), FALSE);
+						CString sKey = strFromInt(pType->GetUNID(), false);
 
 						//	See if we have this type in the table
 
@@ -123,7 +123,7 @@ void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 
 						if (!Item.IsInstalled() && !Item.IsDamaged())
 							{
-							CString sKey = strFromInt(Item.GetType()->GetUNID(), FALSE);
+							CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
 
 							//	Find the item type in the table
 
@@ -185,7 +185,7 @@ ALERROR OutputEncounterTable (CSymbolTable &AllSystems, int iSystemSample)
 			{
 			StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
 
-			CString sKey = strFromInt(pEntry->pType->GetUNID(), FALSE);
+			CString sKey = strFromInt(pEntry->pType->GetUNID(), false);
 
 			StationInfo *pDestEntry;
 			if (error = AllStations.Lookup(sKey, (CObject **)&pDestEntry))
@@ -239,7 +239,7 @@ ALERROR OutputItemTable (CSymbolTable &AllSystems, int iSystemSample)
 			{
 			ItemInfo *pEntry = (ItemInfo *)pSystemEntry->Items.GetValue(j);
 
-			CString sKey = strFromInt(pEntry->pType->GetUNID(), FALSE);
+			CString sKey = strFromInt(pEntry->pType->GetUNID(), false);
 
 			ItemInfo *pDestEntry;
 			if (error = AllItems.Lookup(sKey, (CObject **)&pDestEntry))
@@ -313,7 +313,7 @@ ALERROR LoadTotalCount (const CString &sFilename, CSymbolTable &TotalCount)
 
 		//	Add the entry
 
-		CString sKey = strFromInt(dwUNID, FALSE);
+		CString sKey = strFromInt(dwUNID, false);
 		EntryInfo *pEntry = new EntryInfo;
 		pEntry->dwUNID = dwUNID;
 		pEntry->rTotalCount = (double)iCount / 1000.0;

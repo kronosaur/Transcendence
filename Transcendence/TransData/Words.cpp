@@ -39,9 +39,9 @@ void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine)
 	//	Open the XML file
 
 	CResourceDb Resources(sDataFile);
-	if (error = Resources.Open())
+	if (error = Resources.Open(0, &sError))
 		{
-		printf("Unable to initialize data file.\n");
+		printf("%s\n", (LPSTR)sError);
 		return;
 		}
 

@@ -175,10 +175,6 @@
 			Filter="h"
 			>
 			<File
-				RelativePath=".\ArmorClassConstants.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Geometry.h"
 				>
 			</File>
@@ -1017,6 +1013,10 @@
 				</File>
 				<File
 					RelativePath=".\CCurrencyBlock.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CDamageAdjDesc.cpp"
 					>
 				</File>
 				<File

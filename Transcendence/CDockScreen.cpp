@@ -1784,7 +1784,7 @@ void CDockScreen::SetCounter (int iCount)
 	{
 	if (m_pCounter)
 		{
-		CString sText = strFromInt(iCount, false);
+		CString sText = strFromInt(iCount);
 		m_pCounter->SetText(sText);
 		m_bReplaceCounter = true;
 		}

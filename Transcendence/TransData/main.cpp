@@ -124,10 +124,27 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	ALERROR error;
 	bool bLogo = !pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
 
+	//	Welcome message
+
 	if (bLogo)
 		{
-		printf("TransData v2.6\n");
-		printf("Copyright (c) 2001-2012 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
+		SFileVersionInfo VersionInfo;
+		if (fileGetVersionInfo(NULL_STR, &VersionInfo) != NOERROR)
+			{
+			printf("ERROR: Unable to get version info.\n");
+			return;
+			}
+
+		if (pCmdLine->FindAttribute(RUN_SWITCH))
+			{
+			printf("TLisp Shell %s\n", (LPSTR)VersionInfo.sProductVersion);
+			printf("%s\n\n", (LPSTR)VersionInfo.sCopyright);
+			}
+		else
+			{
+			printf("TransData %s\n", (LPSTR)VersionInfo.sProductVersion);
+			printf("%s\n\n", (LPSTR)VersionInfo.sCopyright);
+			}
 		}
 
 	if (pCmdLine->GetAttributeBool(NOARGS)
@@ -349,9 +366,9 @@ void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable)
 	//	Open the XML file
 
 	CResourceDb Resources(sDataFile);
-	if (error = Resources.Open())
+	if (error = Resources.Open(0, &sError))
 		{
-		printf("Unable to initialize data file.\n");
+		printf("%s\n", (LPSTR)sError);
 		return;
 		}
 
@@ -431,7 +448,7 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		CString sOutput;
 		if (pResult->IsIdentifier())
-			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
+			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 		else
 			sOutput = CC.Unlink(pResult);
 
@@ -447,6 +464,13 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	else
 		{
+		//	Welcome
+
+		printf("(help) for function help.\n");
+		printf("\\q to quit.\n\n");
+
+		//	Loop
+
 		while (true)
 			{
 			char szBuffer[1024];
@@ -454,10 +478,32 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 			gets_s(szBuffer, sizeof(szBuffer)-1);
 			CString sCommand(szBuffer);
 
-			if (strEquals(sCommand, CONSTLIT("quit")))
-				break;
+			//	Escape codes
+
+			if (*sCommand.GetASCIIZPointer() == '\\')
+				{
+				//	Quit command
+
+				if (strStartsWith(sCommand, CONSTLIT("\\q")))
+					break;
+				else if (strStartsWith(sCommand, CONSTLIT("\\?"))
+						|| strStartsWith(sCommand, CONSTLIT("\\h")))
+					{
+					printf("TLisp Shell\n\n");
+					printf("\\h      Show this help\n");
+					printf("\\q      Quit\n");
+
+					printf("\n(help) for function help.\n");
+					}
+				}
+
+			//	Null command
+
 			else if (sCommand.IsBlank())
 				NULL;
+
+			//	Command
+
 			else
 				{
 				CCodeChainCtx Ctx;
@@ -466,7 +512,7 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				CString sOutput;
 				if (pResult->IsIdentifier())
-					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES);
+					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 				else
 					sOutput = CC.Unlink(pResult);
 

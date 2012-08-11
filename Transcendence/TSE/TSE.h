@@ -166,7 +166,7 @@ class CResourceDb
 		ALERROR LoadImage (const CString &sFolder, const CString &sFilename, HBITMAP *rethImage, EBitmapTypes *retiImageType = NULL);
 		ALERROR LoadModule (const CString &sFolder, const CString &sFilename, CXMLElement **retpData, CString *retsError);
 		ALERROR LoadSound (CSoundMgr &SoundMgr, const CString &sFolder, const CString &sFilename, int *retiChannel);
-		ALERROR Open (DWORD dwFlags = 0);
+		ALERROR Open (DWORD dwFlags, CString *retsError);
 		void SetEntities (IXMLParserController *pEntities, bool bFree = false);
 
 		CString GetResourceFilespec (int iIndex);
@@ -457,7 +457,7 @@ class CWeaponFireDesc
 		WORD m_wSpare;
 
 		//	Missile stuff (m_iFireType == ftMissile)
-		int m_iHitPoints;					//	HP before disipating (0 = destroyed by any hit)
+		int m_iHitPoints;					//	HP before dissipating (0 = destroyed by any hit)
 		int m_iInteraction;					//	Interaction opacity (0-100)
 		int m_iManeuverability;				//	Tracking maneuverability (0 = none)
 		int m_iManeuverRate;				//	Angle turned at each maneuverability point
@@ -1307,8 +1307,10 @@ class CTopology
 		CTopology (void);
 		~CTopology (void);
 
+		ALERROR AddStargateFromXML (STopologyCreateCtx &Ctx, CXMLElement *pDesc, CTopologyNode *pNode = NULL, bool bRootNode = false);
 		ALERROR AddTopology (STopologyCreateCtx &Ctx);
 		ALERROR AddTopologyDesc (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopologyNode **retpNewNode = NULL);
+		ALERROR AddTopologyNode (STopologyCreateCtx &Ctx, const CString &sNodeID, CTopologyNode **retpNewNode = NULL);
 		void DeleteAll (void);
 		CTopologyNode *FindTopologyNode (const CString &sID);
 		int GetDistance (const CString &sSourceID, const CString &sDestID);
@@ -1329,6 +1331,7 @@ class CTopology
 		ALERROR AddFragment (STopologyCreateCtx &Ctx, CTopologyDesc *pFragment, CTopologyNode **retpNewNode);
 		ALERROR AddNetwork (STopologyCreateCtx &Ctx, CTopologyDesc *pNetwork, CTopologyNode **retpNewNode);
 		ALERROR AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopologyNode **retpNewNode);
+		ALERROR AddNodeGroup (STopologyCreateCtx &Ctx, CTopologyDesc *pTable, CTopologyNode **retpNewNode);
 		ALERROR AddNodeTable (STopologyCreateCtx &Ctx, CTopologyDesc *pTable, CTopologyNode **retpNewNode);
 
 		ALERROR AddRandom (STopologyCreateCtx &Ctx, CTopologyDesc *pDesc, CTopologyNode **retpNewNode);
@@ -1337,6 +1340,7 @@ class CTopology
 
 		ALERROR AddStargate (STopologyCreateCtx &Ctx, CTopologyNode *pNode, bool bRootNode, CXMLElement *pGateDesc);
 		ALERROR AddTopologyNode (STopologyCreateCtx &Ctx,
+								 CSystemMap *pMap,
 								 const CString &sID,
 								 int x,
 								 int y,
@@ -1907,6 +1911,7 @@ class CSpaceObject : public CObject
 		void Destroy (DestructionTypes iCause, const CDamageSource &Attacker, CSpaceObject **retpWreck = NULL);
 		void EnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		int FindCommsMessage (const CString &sName);
+		bool FindDevice (const CItem &Item, CInstalledDevice **retpDevice, CString *retsError);
 		bool FindEventHandler (const CString &sEntryPoint, SEventHandlerDesc *retEvent = NULL);
 		bool FindEventHandler (CDesignType::ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL);
 		bool FireCanDockAsPlayer (CSpaceObject *pDockTarget, CString *retsError);
@@ -2120,6 +2125,7 @@ class CSpaceObject : public CObject
 		EnhanceItemStatus EnhanceItem (CItemListManipulator &ItemList, const CItemEnhancement &Mods, DWORD *retdwID = NULL);
 		CItem GetItemForDevice (CInstalledDevice *pDevice);
 		inline CItemList &GetItemList (void) { return m_ItemList; }
+		ICCItem *GetItemProperty (const CItem &Item, const CString &sName);
 		bool HasFuelItem (void);
 		void RemoveItemEnhancement (const CItem &itemToEnhance, DWORD dwID, bool bExpiredOnly = false);
 		void RepairItem (CItemListManipulator &ItemList);
@@ -2623,6 +2629,7 @@ class CUniverse : public CObject
 		void FlushStarSystem (CTopologyNode *pTopology);
 		void GenerateGameStats (CGameStats &Stats);
 		inline void GetAllAdventures (TArray<CExtension *> *retList) { CString sError; m_Extensions.ComputeAvailableAdventures((m_bDebugMode ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retList, &sError); }
+		const CDamageAdjDesc *GetArmorDamageAdj (int iLevel) const;
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CTimeSpan GetElapsedGameTime (void);
@@ -2632,6 +2639,7 @@ class CUniverse : public CObject
 		inline IHost *GetHost (void) const { return m_pHost; }
 		void GetRandomLevelEncounter (int iLevel, CDesignType **retpType, IShipGenerator **retpTable, CSovereign **retpBaseSovereign);
 		inline CString GetResourceDb (void) { return m_sResourceDb; }
+		const CDamageAdjDesc *GetShieldDamageAdj (int iLevel) const;
 		inline CSoundMgr *GetSoundMgr (void) { return m_pSoundMgr; }
 		DWORD GetSoundUNID (int iChannel);
 		inline bool InDebugMode (void) { return m_bDebugMode; }
@@ -2877,6 +2885,7 @@ ALERROR GetEconomyUNIDOrDefault (CCodeChain &CC, ICCItem *pItem, DWORD *retdwUNI
 void GetImageDescFromList (CCodeChain &CC, ICCItem *pList, CG16bitImage **retpBitmap, RECT *retrcRect);
 CItem GetItemFromArg (CCodeChain &CC, ICCItem *pArg);
 CItemType *GetItemTypeFromArg (CCodeChain &CC, ICCItem *pArg);
+bool GetLinkedFireOptions (ICCItem *pArg, DWORD *retdwOptions, CString *retsError);
 bool GetPosOrObject (CEvalContext *pEvalCtx, ICCItem *pArg, CVector *retvPos, CSpaceObject **retpObj = NULL, int *retiLocID = NULL);
 CWeaponFireDesc *GetWeaponFireDescArg (ICCItem *pArg);
 ALERROR LoadCodeBlock (const CString &sCode, ICCItem **retpCode, CString *retsError = NULL);

@@ -1668,6 +1668,7 @@
 				damage=				"thermo:12d12; WMD7"
 				fireRate=			"60"
 				lifetime=			"30"
+				hitPoints=			"20"
 				powerUse=			"3500"
 				charges=			"true"
 
@@ -5215,7 +5216,7 @@
 							desc=	"The cargo container is empty.">
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5280,7 +5281,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5292,7 +5293,7 @@
 							desc="You open the cargo doors and see that a family of refugees is living inside. They are somewhat annoyed at being disturbed.">
 
 						<Actions>
-							<Action name="Undock" cancel="1" key="U">
+							<Action name="Undock" default="1" cancel="1" key="U">
 								<Exit/>
 							</Action>
 						</Actions>
@@ -5304,7 +5305,7 @@
 							desc="This appears to be a makeshift base for a group of pirates. You see several enemy ships appear on your screen...">
 
 						<Actions>
-							<Action name="Continue" cancel="1" key="C">
+							<Action name="Continue" default="1" cancel="1" key="C">
 								(block Nil
 									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 50)
 									(scrExitDock gScreen)

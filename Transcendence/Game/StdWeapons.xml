@@ -9,13 +9,14 @@
 	<ItemType UNID="&itDisposableLauncher;"
 			name=				"DM600 disposable missile rack"
 			level=				"1"
-			value=				"360"
+			value=				"40"
 			mass=				"200"
 			frequency=			"uncommon"
 			attributes=			"Disposable; MajorItem; NAMI"
 
 			charges=			"16"
-			valueCharges=		"true"
+			massBonusPerCharge=	"50" 
+			valueBonusPerCharge="20"
 
 			description=		"This disposable weapon system is loaded with sixteen KM100 missiles. The weapon can be installed and uninstalled without the aid of a station."
 			>
@@ -32,9 +33,7 @@
 				lifetime=			"120"
 				powerUse=			"2"
 				charges=			"true"
-				massBonusPerCharge=	"50" 
 
-				directional=		"true"
 				missileSpeed=		"40"
 				sound=				"&snMissileLauncher;"
 
@@ -231,13 +230,14 @@
 	<ItemType UNID="&itDM1500MissileRack;"
 			name=				"DM1500 disposable missile rack"
 			level=				"2"
-			value=				"1000"
+			value=				"40"
 			mass=				"200"
 			frequency=			"rare"
 			attributes=			"Disposable; MajorItem; NAMI"
 
 			charges=			"16"
-			valueCharges=		"true"
+			massBonusPerCharge=	"60" 
+			valueBonusPerCharge="60"
 
 			description=		"The DM1500 is loaded with sixteen KM500 tracking missiles. This weapon can be installed and uninstalled without the aid of a station."
 			>
@@ -254,9 +254,7 @@
 				lifetime=			"120"
 				powerUse=			"2"
 				charges=			"true"
-				massBonusPerCharge=	"60" 
 
-				directional=		"true"
 				missileSpeed=		"40"
 				maneuverability=	"2"
 				sound=				"&snMissileLauncher;"
@@ -407,6 +405,45 @@
 						/>
 			</Effect>
 
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Mining Laser -->
+
+	<ItemType UNID="&itMiningLaser;"
+			name=				"mining laser"
+			level=				"2"
+			value=				"550"
+			mass=				"2000"
+			frequency=			"rare"
+			attributes=			"EnergyWeapon; MajorItem; Specialty"
+			showReference=		"true"
+
+			description=		"This powerful laser is generally used for asteroid mining."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				repeating=			"4"
+				damage=				"laser:1d4; mining3"
+				fireRate=			"30"
+				lifetime=			"15"
+				powerUse=			"30"
+
+				hitEffect=			"&efGreenLaserHitEffect;" 
+				sound=				"&snLaserCannon;"
+				>
+			<Effect>
+				<Beam
+						beamType=			"laser"
+						primaryColor=		"0x5f, 0xf1, 0x2a"
+						secondaryColor=		"0x00, 0xff, 0x00"
+						/>
+			</Effect>
 		</Weapon>
 
 	</ItemType>
@@ -654,7 +691,6 @@
 						missileSpeed=	"45"
 						hitPoints=		"10"
 
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -712,7 +748,6 @@
 						damage=			"blast:4d6; momentum4; WMD5"
 						missileSpeed=	"45"
 						hitPoints=		"10"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -743,7 +778,6 @@
 						damage=			"blast:10d6; momentum4; WMD6"
 						missileSpeed=	"45"
 						hitPoints=		"15"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -775,7 +809,6 @@
 						missileSpeed=	"40"
 						hitPoints=		"10"
 						maneuverability="2"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -807,7 +840,6 @@
 						missileSpeed=	"40"
 						hitPoints=		"15"
 						maneuverability="2"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -838,7 +870,6 @@
 						damage=			"blast:5d6; radiation1; momentum4; WMD4"
 						missileSpeed=	"45"
 						hitPoints=		"10"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -873,7 +904,6 @@
 
 						maneuverability="2"
 
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="16"
 						vaporTrailWidth="110"
@@ -1156,6 +1186,7 @@
 				fireRate=			"45"
 				missileSpeed=		"45"
 				interaction=		"90"
+				hitPoints=			"5"
 				lifetime=			"67"
 				powerUse=			"160"
 
@@ -1718,12 +1749,11 @@
 				lifetime=			"80"
 				powerUse=			"100"
 
-				directional=		"true"
 				sound=				"&snRecoillessCannon;"
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="0" imageTicksPerFrame="0"/>
+				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 			</Effect>
 
 		</Weapon>
@@ -1841,7 +1871,6 @@
 						lifetime=		"120"
 						hitPoints=		"4"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -1889,7 +1918,6 @@
 				interaction=		"20"
 				powerUse=			"300"
 
-				directional=		"true"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -2010,7 +2038,6 @@
 						missileSpeed=	"60"
 						hitPoints=		"5"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						vaporTrailLength="8"
 						vaporTrailWidth="110"
@@ -2031,7 +2058,6 @@
 						missileSpeed=	"60"
 						hitPoints=		"5"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						vaporTrailLength="8"
 						vaporTrailWidth="110"
@@ -2063,7 +2089,6 @@
 						missileSpeed=	"60"
 						hitPoints=		"5"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						vaporTrailLength="8"
 						vaporTrailWidth="110"
@@ -2095,7 +2120,6 @@
 						missileSpeed=	"60"
 						hitPoints=		"5"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						vaporTrailLength="8"
 						vaporTrailWidth="110"
@@ -2158,7 +2182,6 @@
 				powerUse=			"200"
 				recoil=				"2"
 
-				directional=		"true"
 				fireEffect=			"&efMediumCannonFlash;"
 				sound=				"&snRecoillessCannon;"
 				>
@@ -2388,12 +2411,11 @@
 				hitPoints=			"5"
 				powerUse=			"200"
 
-				directional=		"true"
 				sound=				"&snRecoillessCannon;"
 				>
 
 			<Effect>
-				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="0" imageTicksPerFrame="0"/>
+				<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 			</Effect>
 
 			<HitEffect
@@ -2485,7 +2507,6 @@
 						lifetime=		"120"
 						hitPoints=		"4"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						>
 
@@ -2534,12 +2555,11 @@
 						damage=			"blast:4d6; momentum2; WMD4"
 						missileSpeed=	"50"
 						hitPoints=		"3"
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						>
 
 					<Effect>
-						<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="0" imageTicksPerFrame="0"/>
+						<Image imageID="&rsMissiles3;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 					</Effect>
 
 					<HitEffect
@@ -2588,7 +2608,6 @@
 				powerUse=			"300"
 				recoil=				"2"
 
-				directional=		"true"
 				fireEffect=			"&efMediumCannonFlash;"
 				sound=				"&snRecoillessCannon;"
 				>
@@ -2903,7 +2922,6 @@
 				powerUse=			"400"
 				recoil=				"2"
 
-				directional=		"true"
 				fireEffect=			"&efMediumCannonFlash;"
 				sound=				"&snRecoillessCannon;"
 				>
@@ -3176,12 +3194,11 @@
 						hitPoints=		"10"
 						lifetime=		"100"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						>
 
 					<Effect>
-						<Image imageID="&rsMissiles2;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+						<Image imageID="&rsMissiles2;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<HitEffect
@@ -3224,6 +3241,7 @@
 				damage=				"thermo:4d12; momentum2; WMD4"
 				fireRate=			"20"
 				missileSpeed=		"40"
+				hitPoints=			"5"
 				lifetime=			"60"
 				powerUse=			"500"
 
@@ -3315,45 +3333,6 @@
 
 	</ItemType>
 
-	<!-- Ion Blaster -->
-
-	<ItemType UNID="&itIonBlaster;"
-			name=				"ion blaster"
-			level=				"8"
-			value=				"95000"
-			mass=				"4000"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem; Specialty"
-
-			description=		"The ion blaster is used by Luminous for its drones."
-
-			sortName=			"ion blaster"
-			>
-
-		<Image imageID="&rsItemsEI3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"beam"
-
-				damage=				"ion:5d6; WMD1"
-				fireRate=			"10"
-				lifetime=			"30"
-				powerUse=			"1000"
-
-				sound=				"&snLaserCannon;"
-				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xff, 0xc7, 0xa0"
-						secondaryColor=		"0xff, 0x95, 0x00"
-						intensity=			"8"
-						/>
-			</Effect>
-		</Weapon>
-
-	</ItemType>
-
 	<!-- Ion Flame Cannon -->
 
 	<ItemType UNID="&itIonFlameCannon;"
@@ -3430,7 +3409,6 @@
 						damage=			"thermo:4d12; momentum3; WMD7"
 						missileSpeed=	"70"
 						hitPoints=		"20"
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
 						vaporTrailWidth="150"
@@ -3461,7 +3439,6 @@
 						damage=			"thermo:4d12; momentum3; WMD7"
 						missileSpeed=	"65"
 						hitPoints=		"20"
-						directional=	"true"
 						maneuverability="2"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
@@ -3524,12 +3501,11 @@
 						lifetime=		"100"
 						hitPoints=		"10"
 
-						directional=	"true"
 						sound=			"&snRecoillessCannon;"
 						>
 
 					<Effect>
-						<Image imageID="&rsMissiles2;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+						<Image imageID="&rsMissiles2;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<HitEffect
@@ -3581,7 +3557,6 @@
 
 						failsafe=		"5"
 
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
 						vaporTrailWidth="150"
@@ -3590,7 +3565,7 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsWeapons8DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" />
+						<Image imageID="&rsWeapons8DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<HitEffect 
@@ -3616,12 +3591,10 @@
 
 							multiTarget=		"true"
 							autoAcquireTarget=	"true"
-
-							directional=		"true"
 							>
 
 						<Effect>
-							<Image imageID="&rsMissiles3;" imageX="48" imageY="0" imageWidth="16" imageHeight="16" />
+							<Image imageID="&rsMissiles3;" imageX="48" imageY="0" imageWidth="16" imageHeight="16" rotationCount="20"/>
 						</Effect>
 
 						<HitEffect
@@ -3717,7 +3690,6 @@
 
 						failsafe=		"5"
 
-						directional=	"true"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
 						vaporTrailWidth="150"
@@ -3726,7 +3698,7 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" />
+						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<HitEffect 
@@ -3753,7 +3725,6 @@
 							autoAcquireTarget=	"true"
 							maneuverability=	"2"
 
-							directional=		"true"
 							vaporTrailLength="16"
 							vaporTrailWidth="110"
 							vaporTrailWidthInc="5"
@@ -3786,7 +3757,6 @@
 						missileSpeed=	"55"
 						hitPoints=		"40"
 
-						directional=	"true"
 						hitEffect=		"&efFusionExplosion1;"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
@@ -3796,7 +3766,7 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" />
+						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<Fragment 
@@ -3855,7 +3825,6 @@
 						missileSpeed=	"55"
 						hitPoints=		"40"
 
-						directional=	"true"
 						hitEffect=		"&efFusionExplosion1;"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="24"
@@ -3865,7 +3834,7 @@
 						>
 
 					<Effect>
-						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" />
+						<Image imageID="&rsWeapons9DB32;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 					</Effect>
 
 					<Fragment 
@@ -3963,41 +3932,6 @@
 
 	</ItemType>
 
-	<!-- Kytryn Blaster -->
-
-	<ItemType UNID="&itKytrynBlaster;"
-			name=				"Kytryn blaster"
-			level=				"9"
-			value=				"250000"
-			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"Alien; MajorItem; Military; Teraton"
-			unknownType=		"&itUnknownAlienDevice10;"
-
-			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				fireRate=			"15"
-
-				type=				"missile"
-				missileSpeed=		"40"
-				hitPoints=			"15"
-
-				lifetime=			"80"
-				damage=				"plasma:5d12; WMD5"
-				powerUse=			"2000"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<Effect>
-				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-			</Effect>
-		</Weapon>
-	</ItemType>
-
 	<!-- Advanced Tritium Cannon -->
 
 	<ItemType UNID="&itAdvancedTritiumCannon;"
@@ -4022,6 +3956,7 @@
 				damage=				"thermo:4d12+4; momentum2; WMD4"
 				fireRate=			"5"
 				missileSpeed=		"40"
+				hitPoints=			"5"
 				lifetime=			"60"
 				powerUse=			"2000"
 
@@ -4094,64 +4029,6 @@
 
 	</ItemType>
 
-	<!-- Kytryn Launcher -->
-
-	<ItemType UNID="&itKytrynLauncher;"
-			name=				"Kytryn launcher"
-			level=				"10"
-			value=				"350000"
-			mass=				"5000"
-			frequency=			"rare"
-			attributes=			"Alien; MajorItem; Military; Teraton"
-			unknownType=		"&itUnknownAlienDevice10;"
-
-			description=		"This Teraton weapon launches a Kytryn plasma pod warhead, which blossoms into a shell of plasma energy."
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				fireRate=			"40"
-				powerUse=			"200"
-				launcher=			"true"
-				>
-
-			<Missiles>
-				<Missile ammoID="&itKytrynPlasmaSeed;"
-						type=			"missile"
-						lifetime=		"480"
-						damage=			"plasma:3d12; WMD5"
-						missileSpeed=	"30"
-						hitPoints=		"20"
-
-						failsafe=		"6"
-
-						hitEffect=		"&efFragmentationExplosion;"
-						sound=			"&snMissileLauncher;"
-						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
-
-					<Fragment 
-							count=			"36"
-							type=			"missile"
-
-							damage=			"plasma:3d12; WMD5"
-							missileSpeed=	"20"
-							lifetime=		"30"
-							>
-
-						<Effect>
-							<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
-						</Effect>
-					</Fragment>
-				</Missile>
-			</Missiles>
-		</Weapon>
-	</ItemType>
-
 	<!-- Plasma Cannon -->
 
 	<ItemType UNID="&itPlasmaCannon;"
@@ -4205,11 +4082,7 @@
 
 	</ItemType>
 
-<!-- LEVEL XII -->
-
-<!-- LEVEL XIII -->
-
-	<!-- AMMUNITION & MISSILES -->
+<!-- AMMUNITION & MISSILES -->
 
 	<!-- Missiles for NAMI Launcher -->
 
@@ -4822,25 +4695,6 @@
 		<Image imageID="&rsItemsTaikon1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
-	<!-- Kytryn Plasma Seed -->
-
-	<ItemType UNID="&itKytrynPlasmaSeed;"
-			name=				"Kytryn plasma pod"
-			level=				"12"
-			value=				"1500"
-			mass=				"300"
-			attributes=			"Consumable; Alien; Missile; Teraton"
-			frequency=			"uncommon"
-			numberAppearing=	"1d6"
-
-			description=		"These alien warheads are launched by the Kytryn launcher."
-
-			sortName=			"Kytryn.10"
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-
 	<!-- Resources -->
 
 	<Image UNID="&rsItemsBushido1;"			bitmap="Resources\ItemsBushido1.jpg" bitmask="Resources\ItemsBushido1Mask.bmp" loadOnUse="true"/>
@@ -4866,6 +4720,17 @@
 
 	<Image UNID="&rsItemsTaikon1;"			bitmap="Resources\ItemsTaikon1.jpg" bitmask="Resources\ItemsTaikon1Mask.bmp" loadOnUse="true"/>
 	
+	<Image UNID="&rsMissiles2;"				bitmap="Resources\Missiles2.jpg" bitmask="Resources\Missiles2Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMissiles3;"				bitmap="Resources\Missiles3.jpg" bitmask="Resources\Missiles3Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMissiles4;"				bitmap="Resources\Missiles4.jpg" bitmask="Resources\Missiles4Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMissiles6;"				bitmap="Resources\Missiles6.jpg" bitmask="Resources\Missiles6Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsStdMissile1;"			bitmap="Resources\StdMissile1.jpg" bitmask="Resources\StdMissile1Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWeapons8DB32;"			bitmap="Resources\Weapons-8-DB32.jpg" bitmask="Resources\Weapons-8-DB32Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWeapons9DB32;"		bitmap="Resources\Weapons-9-DB32.jpg"		bitmask="Resources\Weapons-9-DB32Mask.bmp"	/>
 
+	<Image UNID="&rsExplosionsAG128;"		bitmap="Resources\Explosions-AG128.jpg"	bitmask="Resources\Explosions-AG128Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsExplosion2AG128;"		bitmap="Resources\Explosion-2-AG128.jpg" bitmask="Resources\Explosion-2-AG128Mask.bmp" loadOnUse="true"/>
+	
+	<Image UNID="&rsDebris1;"				bitmap="Resources\Debris1.bmp" />
+	
 </TranscendenceModule>

@@ -64,7 +64,7 @@ ALERROR CReactorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRec
 	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false))
 		return error;
 
-	m_Buffer.SetTransparentColor(CG16bitImage::RGBValue(0,0,0));
+	m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}

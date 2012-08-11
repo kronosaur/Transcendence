@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- SHIELD HUD EFFECT =========================================================
+
+	This effect is used to paint the shield level on the HUD. The variant value
+	is the shield level (as a percent).
+	
+	A player ship class must specify a shield HUD effect:
+	
+	<PlayerSettings ...>
+	   <ShieldDisplay shieldLevelEffect="&efShieldHUDDefault;">
+	      ...
+	   </ShieldDisplay>
+	</PlayerSettings>
+	
+-->
+
+	<Effect UNID="&efShieldHUDDefault;">
+		<Variants>
+			<Effect maxValue="0">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="680" imageWidth="136" imageHeight="136"/>
+			</Effect>
+			
+			<Effect maxValue="24">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="544" imageWidth="136" imageHeight="136"/>
+			</Effect>
+			
+			<Effect maxValue="49">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="408" imageWidth="136" imageHeight="136"/>
+			</Effect>
+			
+			<Effect maxValue="74">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="272" imageWidth="136" imageHeight="136"/>
+			</Effect>
+			
+			<Effect maxValue="99">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="136" imageWidth="136" imageHeight="136"/>
+			</Effect>
+			
+			<Effect maxValue="100">
+				<Image imageID="&rsShieldHUDDefault;" imageX="0" imageY="0" imageWidth="136" imageHeight="136"/>
+			</Effect>
+		</Variants>
+	</Effect>
+	
+	<Image UNID="&rsShieldHUDDefault;"	bitmap="Resources\ShieldsHUDDefault.jpg" bitmask="Resources\ShieldsHUDDefaultMask.bmp" />
+
+</TranscendenceModule>

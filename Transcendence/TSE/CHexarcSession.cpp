@@ -231,16 +231,17 @@ void CHexarcSession::InitRequest (const CString &sMethod, const CString &sFuncti
 	retMessage->AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
 	}
 
-ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sFunc, CJSONValue &Payload, CJSONValue *retResult)
+ALERROR CHexarcSession::ServerCommand (const CHTTPMessage &Request, CJSONValue *retResult)
 
 //	ServerCommand
 //
-//	Sends a command to the server and gets back a result. We assume that we are
-//	connected.
-//
-//	NOTE: We clobber the Payload.
+//	Sends a command to the server and gets back a result.
 
 	{
+	//	If we're currently connected (or think we are) do a reconnect on failure.
+
+	bool bReconnectOnFailure = m_Session.IsConnected();
+
 	//	Make sure we're connected
 
 	CString sError;
@@ -250,21 +251,28 @@ ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sF
 		return ERR_FAIL;
 		}
 
-	//	Now issue the connect command
-
-	CHTTPMessage Request;
-	InitRequest(sMethod, sFunc, &Request);
-	Request.SetBody(new CJSONMessage(Payload));
-
 	//	Send the request and wait for response
 
 	EInetsErrors iError;
 	CHTTPMessage Response;
 	if (iError = m_Session.Send(Request, &Response))
 		{
-		*retResult = CJSONValue(ERR_CANNOT_SEND);
-		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: Unable to send command to server."), sFunc));
-		return ERR_FAIL;
+		//	Reconnect, if necessary
+
+		if (bReconnectOnFailure)
+			{
+			m_Session.Disconnect();
+			return ServerCommand(Request, retResult);
+			}
+
+		//	Otherwise, error
+
+		else
+			{
+			*retResult = CJSONValue(ERR_CANNOT_SEND);
+			kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: Unable to send command to server."), Request.GetURL()));
+			return ERR_FAIL;
+			}
 		}
 
 	//	If we get an error, return
@@ -272,7 +280,7 @@ ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sF
 	if (Response.GetStatusCode() != 200)
 		{
 		*retResult = CJSONValue(Response.GetStatusMsg());
-		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: %s."), sFunc, Response.GetStatusMsg()));
+		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: %s."), Request.GetURL(), Response.GetStatusMsg()));
 		return ERR_FAIL;
 		}
 
@@ -282,7 +290,7 @@ ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sF
 		{
 		sError = strPatternSubst(ERR_INVALID_JSON, GetHostspec(), sError);
 		*retResult = CJSONValue(sError);
-		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: %s"), sFunc, sError));
+		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: %s"), Request.GetURL(), sError));
 		return ERR_FAIL;
 		}
 
@@ -293,7 +301,7 @@ ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sF
 	if (CHexarc::IsError(*retResult, &sErrorCode, &sErrorDesc))
 		{
 		*retResult = CJSONValue(sErrorDesc);
-		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: Server returned error: %s"), sFunc, sErrorDesc));
+		kernelDebugLogMessage(strPatternSubst(CONSTLIT("%s: Server returned error: %s"), Request.GetURL(), sErrorDesc));
 
 		//	If this is Error.outOfDate then we return a different error code
 
@@ -306,6 +314,27 @@ ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sF
 	//	Done
 
 	return NOERROR;
+	}
+
+ALERROR CHexarcSession::ServerCommand (const CString &sMethod, const CString &sFunc, CJSONValue &Payload, CJSONValue *retResult)
+
+//	ServerCommand
+//
+//	Sends a command to the server and gets back a result. We assume that we are
+//	connected.
+//
+//	NOTE: We clobber the Payload.
+
+	{
+	//	Create the message
+
+	CHTTPMessage Request;
+	InitRequest(sMethod, sFunc, &Request);
+	Request.SetBody(new CJSONMessage(Payload));
+
+	//	Send
+
+	return ServerCommand(Request, retResult);
 	}
 
 void CHexarcSession::SetServer (const CString &sHost, const CString &sPort, const CString &sRootURL)

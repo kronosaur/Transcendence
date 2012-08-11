@@ -299,7 +299,6 @@
 				powerUse=			"150"
 				recoil=				"2"
 
-				directional=		"true"
 				fireEffect=			"&efMediumCannonFlash;"
 				hitEffect=			"&efFragmentationExplosion;"
 				sound=				"&snRecoillessCannon;"

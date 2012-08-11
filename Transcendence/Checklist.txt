@@ -15,8 +15,9 @@ RELEASE
 [ ] Sign executables (signall.bat)
 [ ] Test with tdb (/useTDB)
 
-[ ] Label source safe
-[ ] Archive release
+[ ] GIT GUI: Stage changes and commit
+[ ] GIT Bash: cd documents/dev
+[ ] GIT Bash: git push origin master
 
 [ ] Update version history
 [ ] Post build on web site

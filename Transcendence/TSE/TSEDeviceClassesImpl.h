@@ -323,7 +323,7 @@ class CShieldClass : public CDeviceClass
 												//		10 HP of average armor
 		int m_iAbsorbAdj[damageCount];			//	Absorbtion adjustments
 		int m_iDamageAdjLevel;					//	Level to use for intrinsic damage adj
-		int m_iDamageAdj[damageCount];			//	Adjustments for damage type
+		CDamageAdjDesc m_DamageAdj;				//	Adjustments for damage type
 		CRegenDesc m_Regen;						//	Regeneration rate
 		int m_iDepletionTicks;					//	Ticks to recover from full depletion
 		int m_iPowerUse;						//	Power used during regeneration (1/10 megawatt)
@@ -408,6 +408,7 @@ class CWeaponClass : public CDeviceClass
 		virtual bool FindDataField (int iVariant, const CString &sField, CString *retsValue);
 		virtual const DamageDesc *GetDamageDesc (CItemCtx &Ctx);
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1);
+		virtual ICCItem *GetItemProperty (CItemCtx &Ctx, const CString &sName);
 		virtual DWORD GetLinkedFireOptions (CItemCtx &Ctx);
 		virtual Metric GetMaxEffectiveRange (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget);
 		virtual int GetPowerRating (CItemCtx &Ctx);

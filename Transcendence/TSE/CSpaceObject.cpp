@@ -70,6 +70,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 #define ORDER_DOCKED							CONSTLIT("docked")
 
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
+#define PROPERTY_ENABLED						CONSTLIT("enabled")
 
 #define SPECIAL_DATA							CONSTLIT("data:")
 #define SPECIAL_IS_PLAYER_CLASS					CONSTLIT("isPlayerClass:")
@@ -1172,6 +1173,26 @@ int CSpaceObject::FindCommsMessage (const CString &sName)
 		return -1;
 
 	return pHandler->FindMessage(sName);
+	}
+
+bool CSpaceObject::FindDevice (const CItem &Item, CInstalledDevice **retpDevice, CString *retsError)
+
+//	FindDevice
+//
+//	Looks for the device of the item; returns an error if not found.
+
+	{
+	CInstalledDevice *pDevice = FindDevice(Item);
+	if (pDevice == NULL)
+		{
+		*retsError = CONSTLIT("Item is not an installed device on object.");
+		return false;
+		}
+
+	if (retpDevice)
+		*retpDevice = pDevice;
+
+	return true;
 	}
 
 bool CSpaceObject::FindEventHandler (const CString &sEntryPoint, SEventHandlerDesc *retEvent)
@@ -2489,6 +2510,27 @@ CItem CSpaceObject::GetItemForDevice (CInstalledDevice *pDevice)
 	CItemListManipulator ItemList(GetItemList());
 	SetCursorAtDevice(ItemList, pDevice);
 	return ItemList.GetItemAtCursor();
+	}
+
+ICCItem *CSpaceObject::GetItemProperty (const CItem &Item, const CString &sName)
+
+//	GetItemProperty
+//
+//	Returns an item property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	//	Select the item (to make sure that it is part of the object)
+
+	CItemListManipulator ItemList(GetItemList());
+	if (!ItemList.SetCursorAtItem(Item))
+		return CC.CreateError(CONSTLIT("Item not found on object."));
+
+	//	Return the property
+
+	CItemCtx Ctx(&Item, this);
+	return Item.GetProperty(Ctx, sName);
 	}
 
 CSpaceObject *CSpaceObject::GetNearestEnemy (Metric rMaxRange, bool bIncludeStations)
@@ -4795,9 +4837,11 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 //	SetItemProperty
 //
 //	Sets the item property.
+//
+//	NOTE: pValue may be NULL.
 
 	{
-	//	Select the item
+	//	Select the item to make sure it exists on this object.
 
 	CItemListManipulator ItemList(GetItemList());
 	if (!ItemList.SetCursorAtItem(Item))
@@ -4806,10 +4850,30 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 		return false;
 		}
 
+	//	Enabling/disabling needs special handling
+
+	if (strEquals(sName, PROPERTY_ENABLED))
+		{
+		CShip *pShip = AsShip();
+		if (pShip == NULL)
+			{
+			*retsError = CONSTLIT("Property not supported.");
+			return false;
+			}
+
+		if (!ItemList.GetItemAtCursor().IsInstalled())
+			{
+			*retsError = CONSTLIT("Device is not installed on object.");
+			return false;
+			}
+
+		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), (pValue == NULL || !pValue->IsNil()));
+		}
+
 	//	We handle damage differently because we may need to remove enhancements,
 	//	etc.
 
-	if (strEquals(sName, PROPERTY_DAMAGED))
+	else if (strEquals(sName, PROPERTY_DAMAGED))
 		{
 		if (pValue && pValue->IsNil())
 			RepairItem(ItemList);
@@ -4817,13 +4881,14 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 			DamageItem(ItemList);
 		}
 
-	//	Otherwise, just set the property
+	//	Otherwise, just set the property, but pass enough context (this object)
+	//	so that it can find the appropriate device.
 
 	else
 		{
 		//	Set the data
 
-		if (!ItemList.SetPropertyAtCursor(sName, pValue, iCount, retsError))
+		if (!ItemList.SetPropertyAtCursor(this, sName, pValue, iCount, retsError))
 			return false;
 
 		//	Update the object

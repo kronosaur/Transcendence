@@ -75,9 +75,9 @@ bool CDriveClass::FindDataField (const CString &sField, CString *retsValue)
 
 	{
 	if (strEquals(sField, FIELD_MAX_SPEED))
-		*retsValue = strFromInt((int)((100.0 * m_DriveDesc.rMaxSpeed / LIGHT_SPEED) + 0.5), FALSE);
+		*retsValue = strFromInt((int)((100.0 * m_DriveDesc.rMaxSpeed / LIGHT_SPEED) + 0.5));
 	else if (strEquals(sField, FIELD_THRUST))
-		*retsValue = strFromInt(m_DriveDesc.iThrust, FALSE);
+		*retsValue = strFromInt(m_DriveDesc.iThrust);
 	else if (strEquals(sField, FIELD_POWER))
 		*retsValue = strFromInt(m_DriveDesc.iPowerUse * 100);
 	else

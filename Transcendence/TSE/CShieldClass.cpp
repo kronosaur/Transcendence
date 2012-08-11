@@ -50,40 +50,6 @@ struct SStdStats
 
 #define MAX_REFLECTION_CHANCE		95
 
-static int g_StdDamageAdj[MAX_ITEM_LEVEL][damageCount] =
-	{
-		//	lsr knt par blt  ion thr pos pls  am  nan grv sng  dac dst dlg dfr
-		{	100,100,100,100, 100,100,160,160, 225,225,300,300, 375,375,500,500 },
-		{	 95, 95,100,100, 100,100,140,140, 200,200,275,275, 350,350,450,450 },
-		{	 90, 90,100,100, 100,100,120,120, 180,180,250,250, 325,325,400,400 },
-		{	 85, 85,100,100, 100,100,100,100, 160,160,225,225, 300,300,375,375 },
-		{	 80, 80, 95, 95, 100,100,100,100, 140,140,200,200, 275,275,350,350 },
-
-		{	 75, 75, 90, 90, 100,100,100,100, 120,120,180,180, 250,250,325,325 },
-		{	 70, 70, 85, 85, 100,100,100,100, 100,100,160,160, 225,225,300,300 },
-		{	 65, 65, 80, 80,  95, 95,100,100, 100,100,140,140, 200,200,275,275 },
-		{	 60, 60, 75, 75,  90, 90,100,100, 100,100,120,120, 180,180,250,250 },
-		{	 55, 55, 70, 70,  85, 85,100,100, 100,100,100,100, 160,160,225,225 },
-
-		{	 50, 50, 65, 65,  80, 80, 95, 95, 100,100,100,100, 140,140,200,200 },
-		{	 40, 40, 60, 60,  75, 75, 90, 90, 100,100,100,100, 120,120,180,180 },
-		{	 30, 30, 55, 55,  70, 70, 85, 85, 100,100,100,100, 100,100,160,160 },
-		{	 20, 20, 50, 50,  65, 65, 80, 80,  95, 95,100,100, 100,100,140,140 },
-		{	 10, 10, 40, 40,  60, 60, 75, 75,  90, 90,100,100, 100,100,120,120 },
-
-		{	  0,  0, 30, 30,  55, 55, 70, 70,  85, 85,100,100, 100,100,100,100 },
-		{	  0,  0, 20, 20,  50, 50, 65, 65,  80, 80, 95, 95, 100,100,100,100 },
-		{	  0,  0, 10, 10,  40, 40, 60, 60,  75, 75, 90, 90, 100,100,100,100 },
-		{	  0,  0,  0,  0,  30, 30, 55, 55,  70, 70, 85, 85, 100,100,100,100 },
-		{	  0,  0,  0,  0,  20, 20, 50, 50,  65, 65, 80, 80,  95, 95,100,100 },
-
-		{	  0,  0,  0,  0,  10, 10, 40, 40,  60, 60, 75, 75,  90, 90,100,100 },
-		{	  0,  0,  0,  0,   0,  0, 30, 30,  55, 55, 70, 70,  85, 85,100,100 },
-		{	  0,  0,  0,  0,   0,  0, 20, 20,  50, 50, 65, 65,  80, 80, 95, 95 },
-		{	  0,  0,  0,  0,   0,  0, 10, 10,  40, 40, 60, 60,  75, 75, 90, 90 },
-		{	  0,  0,  0,  0,   0,  0,  0,  0,  30, 30, 55, 55,  70, 70, 85, 85 },
-	};
-
 static SStdStats STD_STATS[MAX_ITEM_LEVEL] =
 	{
 		//	HP		Regen	Cost	Power
@@ -346,17 +312,20 @@ int CShieldClass::CalcBalance (void)
 	int iBalanceAdj = 0;
 	for (i = 0; i < damageCount; i++)
 		{
-		int iStdAdj = g_StdDamageAdj[GetLevel() - 1][i];
-		if (iStdAdj != m_iDamageAdj[i])
+		int iStdAdj;
+		int iDamageAdj;
+		m_DamageAdj.GetAdjAndDefault((DamageTypes)i, &iDamageAdj, &iStdAdj);
+
+		if (iStdAdj != iDamageAdj)
 			{
-			if (m_iDamageAdj[i] > 0)
+			if (iDamageAdj > 0)
 				{
-				int iBonus = (int)((100.0 * (iStdAdj - m_iDamageAdj[i]) / m_iDamageAdj[i]) + 0.5);
+				int iBonus = (int)((100.0 * (iStdAdj - iDamageAdj) / iDamageAdj) + 0.5);
 
 				if (iBonus > 0)
 					iBalanceAdj += iBonus / 4;
 				else
-					iBalanceAdj -= ((int)((100.0 * m_iDamageAdj[i] / iStdAdj) + 0.5) - 100) / 4;
+					iBalanceAdj -= ((int)((100.0 * iDamageAdj / iStdAdj) + 0.5) - 100) / 4;
 				}
 			else if (iStdAdj > 0)
 				{
@@ -513,7 +482,7 @@ ALERROR CShieldClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 	//	Load damage adjustment
 
 	pShield->m_iDamageAdjLevel = pDesc->GetAttributeIntegerBounded(DAMAGE_ADJ_LEVEL_ATTRIB, 1, MAX_ITEM_LEVEL, pType->GetLevel());
-	if (error = LoadDamageAdj(pDesc, g_StdDamageAdj[pShield->m_iDamageAdjLevel - 1], pShield->m_iDamageAdj))
+	if (error = pShield->m_DamageAdj.InitFromXML(Ctx, pDesc))
 		return error;
 
 	//	Load absorb adjustment; if attribute not found, assume 100% for everything
@@ -580,7 +549,7 @@ bool CShieldClass::FindDataField (const CString &sField, CString *retsValue)
 	int i;
 
 	if (strEquals(sField, FIELD_HP))
-		*retsValue = strFromInt(m_iHitPoints, TRUE);
+		*retsValue = strFromInt(m_iHitPoints);
 	else if (strEquals(sField, FIELD_EFFECTIVE_HP))
 		{
 		int iHP;
@@ -589,7 +558,7 @@ bool CShieldClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt(::CalcEffectiveHP(GetLevel(), iHP, iHPbyDamageType));
 		}
 	else if (strEquals(sField, FIELD_REGEN))
-		*retsValue = strFromInt((int)m_Regen.GetHPPer180(), TRUE);
+		*retsValue = strFromInt((int)m_Regen.GetHPPer180());
 	else if (strEquals(sField, FIELD_ADJUSTED_HP))
 		{
 		int iHP;
@@ -614,41 +583,25 @@ bool CShieldClass::FindDataField (const CString &sField, CString *retsValue)
 			if (i > 0)
 				retsValue->Append(CONSTLIT("\t"));
 
-			retsValue->Append(strFromInt(m_iDamageAdj[i]));
+			retsValue->Append(strFromInt(m_DamageAdj.GetAdj((DamageTypes)i)));
 			}
 		}
 	else if (strEquals(sField, FIELD_POWER))
-		*retsValue = strFromInt(m_iPowerUse * 100, TRUE);
+		*retsValue = strFromInt(m_iPowerUse * 100);
 	else if (strEquals(sField, FIELD_HP_BONUS))
 		{
 		CString sResult;
 
 		for (i = 0; i < damageCount; i++)
 			{
-			if (!sResult.IsBlank())
+			if (i > 0)
 				sResult.Append(CONSTLIT(", "));
 
-			int iStdAdj = g_StdDamageAdj[GetLevel() - 1][i];
-			if (m_iDamageAdj[i] > 0)
-				{
-				int iBonus = (int)((100.0 * (iStdAdj - m_iDamageAdj[i]) / m_iDamageAdj[i]) + 0.5);
-
-				//	Prettify. Because of rounding-error, sometimes a bonus of +25 or -25 comes out as
-				//	+24 or -24. This is because we store a damage adjustment not the bonus.
-
-				if (((iBonus + 1) % 25) == 0)
-					iBonus++;
-				else if (((iBonus - 1) % 25) == 0)
-					iBonus--;
-				else if (iBonus == 48)
-					iBonus = 50;
-
-				sResult.Append(strPatternSubst(CONSTLIT("%3d"), iBonus));
-				}
-			else if (iStdAdj > 0)
+			int iBonus = m_DamageAdj.GetHPBonus((DamageTypes)i);
+			if (iBonus == -100)
 				sResult.Append(CONSTLIT("***"));
 			else
-				sResult.Append(CONSTLIT("  0"));
+				sResult.Append(strPatternSubst(CONSTLIT("%3d"), iBonus));
 			}
 
 		*retsValue = sResult;
@@ -823,7 +776,7 @@ int CShieldClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
 	{
 	//	The adjustment varies by shield class
 
-	int iAdj = (Damage.GetDamageType() == damageGeneric ? 100 : m_iDamageAdj[Damage.GetDamageType()]);
+	int iAdj = m_DamageAdj.GetAdj(Damage.GetDamageType());
 
 	//	Adjust based on the type of damage
 
@@ -1028,7 +981,7 @@ int CShieldClass::GetStdEffectiveHP (int iLevel)
 		{
 		int iHPbyDamageType[damageCount];
 		for (i = 0; i < damageCount; i++)
-			iHPbyDamageType[i] = CalcHPDamageAdj(STD_STATS[iLevel - 1].iHP, g_StdDamageAdj[iLevel - 1][i]);
+			iHPbyDamageType[i] = CalcHPDamageAdj(STD_STATS[iLevel - 1].iHP, g_pUniverse->GetShieldDamageAdj(iLevel)->GetAdj((DamageTypes)i));
 
 		return ::CalcEffectiveHP(iLevel, STD_STATS[iLevel - 1].iHP, iHPbyDamageType);
 		}
@@ -1093,6 +1046,11 @@ ALERROR CShieldClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 	{
 	ALERROR error;
+
+	//	Compute shield damage adjustments
+
+	if (error = m_DamageAdj.Bind(Ctx, g_pUniverse->GetShieldDamageAdj(m_iDamageAdjLevel)))
+		return error;
 
 	//	Load events
 

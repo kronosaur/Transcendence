@@ -200,6 +200,7 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS	106
 #define FN_OBJ_ARMOR_CRITICALITY	107
 #define FN_OBJ_SET_ITEM_PROPERTY	108
+#define FN_OBJ_GET_ITEM_PROPERTY	109
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -1118,18 +1119,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objGetDestiny obj) -> 0-359",
 			NULL,	0,	},
 
-		{	"objGetDeviceFireArc",			fnObjGet,		FN_OBJ_DEVICE_FIRE_ARC,
-			"(objGetDeviceFireArc obj deviceItem) -> (minArc maxArc)",
-			"iv",	0,	},
-
-		{	"objGetDeviceLinkedFireOptions",	fnObjGet,		FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS,
-			"(objGetDeviceLinkedFireOptions obj deviceItem) -> list of options",
-			"iv",	0,	},
-
-		{	"objGetDevicePos",				fnObjGet,		FN_OBJ_DEVICE_POS,
-			"(objGetDevicePos obj deviceItem) -> (angle radius [z])",
-			"iv",	0,	},
-
 		{	"objGetDisposition",			fnObjGet,		FN_OBJ_GET_DISPOSITION,
 			"(objGetDisposition obj targetObj) -> disposition of obj towards targetObj",
 			"ii",	0,	},
@@ -1153,6 +1142,22 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objGetInstalledItemDesc",		fnObjGetOld,		FN_OBJ_INSTALLED_ITEM_DESC,
 			"(objGetInstalledItemDesc obj item) -> 'installed as forward armor'",
 			NULL,	0,	},
+
+		{	"objGetItemProperty",			fnObjGet,		FN_OBJ_GET_ITEM_PROPERTY,
+			"(objGetItemProperty obj item property) -> value\n\n"
+			
+			"property\n\n"
+
+			"   'charges\n"
+			"   'damaged\n"
+			"   'disrupted\n"
+			"   'enabled\n"
+			"   'fireArc\n"
+			"   'linkedFireOptions\n"
+			"   'pos\n"
+			"   'secondary\n",
+
+			"ivs",	0,	},
 
 		{	"objGetItems",					fnObjItem,		FN_OBJ_ENUM_ITEMS,
 			"(objGetItems obj criteria) -> list of items",
@@ -1299,10 +1304,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objIsAngryAt obj targetObj) -> True/Nil",
 			"ii",	0,	},
 
-		{	"objIsDeviceEnabled",			fnObjGet,		FN_OBJ_IS_DEVICE_ENABLED,
-			"(objIsDeviceEnabled obj deviceItem) -> True/Nil",
-			"iv",	0,	},
-
 		{	"objIsDockedAt",				fnObjGet,		FN_OBJ_DOCKED_AT,
 			"(objIsDockedAt obj stationObj) -> True/Nil",
 			"ii",	0,	},
@@ -1383,22 +1384,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objSetDeviceActivationDelay obj deviceItem [delay]) -> True/Nil",
 			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"objSetDeviceFireArc",			fnObjSet,		FN_OBJ_DEVICE_FIRE_ARC,
-			"(objSetDeviceFireArc obj deviceItem minFireArc maxFireArc) -> True/Nil\n"
-			"(objSetDeviceFireArc obj deviceItem (minFireArc maxFireArc)) -> True/Nil\n"
-			"(objSetDeviceFireArc obj deviceItem 'omnidirectional) -> True/Nil\n"
-			"(objSetDeviceFireArc obj deviceItem nil) -> True/Nil",
-			"ivv*",	PPFLAG_SIDEEFFECTS,	},
-
-		{	"objSetDeviceLinkedFireOptions",	fnObjSet,		FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS,
-			"(objSetDeviceLinkedFireOptions obj deviceItem options) -> True/Nil\n",
-			"ivv",	PPFLAG_SIDEEFFECTS,	},
-
-		{	"objSetDevicePos",				fnObjSet,		FN_OBJ_DEVICE_POS,
-			"(objSetDevicePos obj deviceItem angle radius [z]) -> True/Nil\n"
-			"(objSetDevicePos obj deviceItem (angle radius [z])) -> True/Nil",
-			"ivv*",	PPFLAG_SIDEEFFECTS,	},
-
 		{	"objSetEventHandler",			fnObjSet,		FN_OBJ_SET_EVENT_HANDLER,
 			"(objSetEventHandler obj unid) -> True/Nil",
 			"ii",	PPFLAG_SIDEEFFECTS,	},
@@ -1419,7 +1404,12 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'charges charges\n"
 			"   'damaged [True|Nil]\n"
 			"   'disrupted [True|Nil|ticks]\n"
-			"   'incCharges charges\n",
+			"   'enabled [True|Nil]\n"
+			"   'fireArc Nil|(min max)|'omnidirectional\n"
+			"   'incCharges charges\n"
+			"   'linkedFireOptions list-of-options\n"
+			"   'pos (angle radius [z])\n"
+			"   'secondary [True|Nil]\n",
 
 			"ivs*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -1752,7 +1742,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"s*",	0,	},
 
 		{	"sysIsKnown",					fnSystemGet,	FN_SYS_IS_KNOWN,
-			"(sysIsKNown [nodeID]) -> True/Nil",
+			"(sysIsKnown [nodeID]) -> True/Nil",
 			"*",	0,	},
 
 		{	"sysPlaySound",					fnSystemCreate,	FN_SYS_PLAY_SOUND,
@@ -1957,6 +1947,34 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
+
+		{	"objIsDeviceEnabled",			fnObjGet,		FN_OBJ_IS_DEVICE_ENABLED,
+			"DEPRECATED: Use objGetItemProperty instead.",
+			"iv",	0,	},
+
+		{	"objSetDevicePos",				fnObjSet,		FN_OBJ_DEVICE_POS,
+			"DEPRECATED: Use objSetItemProperty instead.",
+			"ivv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objGetDevicePos",				fnObjGet,		FN_OBJ_DEVICE_POS,
+			"DEPRECATED: Use objGetItemProperty instead.",
+			"iv",	0,	},
+
+		{	"objGetDeviceFireArc",			fnObjGet,		FN_OBJ_DEVICE_FIRE_ARC,
+			"DEPRECATED: Use objGetItemProperty instead.",
+			"iv",	0,	},
+
+		{	"objGetDeviceLinkedFireOptions",	fnObjGet,		FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS,
+			"DEPRECATED: Use objGetItemProperty instead.",
+			"iv",	0,	},
+
+		{	"objSetDeviceFireArc",			fnObjSet,		FN_OBJ_DEVICE_FIRE_ARC,
+			"DEPRECATED: Use objSetItemProperty instead.",
+			"ivv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objSetDeviceLinkedFireOptions",	fnObjSet,		FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS,
+			"DEPRECATED: Use objSetItemProperty instead.",
+			"ivv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"itmAtCursor",					fnItemList,		0,
 			"DEPRECATED",
@@ -2921,7 +2939,10 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			}
 
 		case FN_ITEM_PROPERTY:
-			return Item.GetProperty(pArgs->GetElement(1)->GetStringValue());
+			{
+			CItemCtx ItemCtx(&Item);
+			return Item.GetProperty(ItemCtx, pArgs->GetElement(1)->GetStringValue());
+			}
 
 		case FN_ITEM_DAMAGED:
 			pResult = pCC->CreateBool(Item.IsDamaged());
@@ -3113,7 +3134,8 @@ ICCItem *fnItemSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_ITEM_PROPERTY:
 			{
 			CString sError;
-			if (!Item.SetProperty(pArgs->GetElement(1)->GetStringValue(), (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL), &sError))
+			CItemCtx ItemCtx(&Item);
+			if (!Item.SetProperty(ItemCtx, pArgs->GetElement(1)->GetStringValue(), (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL), &sError))
 				{
 				if (sError.IsBlank())
 					return pCC->CreateNil();
@@ -4088,7 +4110,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			Ctx.pObj = pObj;
 			Ctx.pDesc = pDesc;
 			Ctx.Damage = pDesc->m_Damage;
-			Ctx.iDirection = (iDir + 360 + mathRandom(0, 30) - 15) % 360;
+			Ctx.iDirection = AngleMod(iDir + mathRandom(0, 30) - 15);
 			Ctx.vHitPos = vHitPos;
 			Ctx.Attacker = GetDamageSourceArg(*pCC, pArgs->GetElement(2));
 			Ctx.pCause = Ctx.Attacker.GetObj();
@@ -4129,104 +4151,20 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_DEVICE_FIRE_ARC:
 			{
-			//	Get the device
-
-			CInstalledDevice *pDevice = GetDeviceFromItem(*pCC, pObj, pArgs->GetElement(1));
-			if (pDevice == NULL)
-				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
-
-			//	If the device slot is omnidirectional then we just return that
-
-			if (pDevice->IsOmniDirectional())
-				return pCC->CreateString(DEVICE_FIRE_ARC_OMNI);
-
-			//	If no fire arc, return nil
-
-			else if (pDevice->GetMinFireArc() == 0 && pDevice->GetMaxFireArc() == 0)
-				return pCC->CreateNil();
-
-			//	Otherwise we return a list with the fire arc
-
-			else
-				{
-				//	Create a list
-
-				ICCItem *pResult = pCC->CreateLinkedList();
-				if (pResult->IsError())
-					return pResult;
-
-				CCLinkedList *pList = (CCLinkedList *)pResult;
-
-				pList->AppendIntegerValue(pCC, pDevice->GetMinFireArc());
-				pList->AppendIntegerValue(pCC, pDevice->GetMaxFireArc());
-
-				return pResult;
-				}
+			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			return pObj->GetItemProperty(Item, CONSTLIT("fireArc"));
 			}
 
 		case FN_OBJ_DEVICE_LINKED_FIRE_OPTIONS:
 			{
-			//	Get the device
-
-			CInstalledDevice *pDevice = GetDeviceFromItem(*pCC, pObj, pArgs->GetElement(1));
-			if (pDevice == NULL || pDevice->GetClass() == NULL)
-				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
-
-			//	Get the options from the device
-
-			CItemCtx ItemCtx(pObj, pDevice);
-			DWORD dwOptions = pDevice->GetClass()->GetLinkedFireOptions(ItemCtx);
-			if (dwOptions == 0)
-				return pCC->CreateNil();
-
-			//	Create a list
-
-			ICCItem *pResult = pCC->CreateLinkedList();
-			if (pResult->IsError())
-				return pResult;
-
-			CCLinkedList *pList = (CCLinkedList *)pResult;
-
-			//	Add options
-
-			if (dwOptions & CDeviceClass::lkfAlways)
-				pList->AppendStringValue(pCC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfAlways));
-			else if (dwOptions & CDeviceClass::lkfTargetInRange)
-				pList->AppendStringValue(pCC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfTargetInRange));
-			else if (dwOptions & CDeviceClass::lkfEnemyInRange)
-				pList->AppendStringValue(pCC, CDeviceClass::GetLinkedFireOptionString(CDeviceClass::lkfEnemyInRange));
-
-			//	Done
-
-			return pResult;
+			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			return pObj->GetItemProperty(Item, CONSTLIT("linkedFireOptions"));
 			}
 
 		case FN_OBJ_DEVICE_POS:
 			{
-			//	Get the device
-
-			CInstalledDevice *pDevice = GetDeviceFromItem(*pCC, pObj, pArgs->GetElement(1));
-			if (pDevice == NULL)
-				return pCC->CreateError(CONSTLIT("Item is not an installed device on object"), pArgs->GetElement(1));
-
-			//	Create a list
-
-			ICCItem *pResult = pCC->CreateLinkedList();
-			if (pResult->IsError())
-				return pResult;
-
-			CCLinkedList *pList = (CCLinkedList *)pResult;
-
-			//	List contains angle, radius, and optional z
-
-			pList->AppendIntegerValue(pCC, pDevice->GetPosAngle());
-			pList->AppendIntegerValue(pCC, pDevice->GetPosRadius());
-			if (pDevice->GetPosZ() != 0)
-				pList->AppendIntegerValue(pCC, pDevice->GetPosZ());
-
-			//	Done
-
-			return pResult;
+			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			return pObj->GetItemProperty(Item, CONSTLIT("pos"));
 			}
 
 		case FN_OBJ_DOCKED_AT:
@@ -4298,6 +4236,23 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_GET_ID:
 			return pCC->CreateInteger(pObj->GetID());
+
+		case FN_OBJ_GET_ITEM_PROPERTY:
+			{
+			//	Get the item
+
+			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			if (Item.GetType() == NULL)
+				return pCC->CreateNil();
+
+			//	Get the property
+
+			CString sProperty = pArgs->GetElement(2)->GetStringValue();
+
+			//	Get it
+
+			return pObj->GetItemProperty(Item, sProperty);
+			}
 
 		case FN_OBJ_GET_NAMED_ITEM:
 			{
@@ -4879,7 +4834,6 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
 	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
-	int i;
 
 	//	Get the object
 
@@ -4986,7 +4940,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				Metric rRadius;
 				int iDirection = VectorToPolar(vPos - pObj->GetPos(), &rRadius);
 				int iRotationOrigin = (pField->RotatesWithShip() ? pObj->GetRotation() : 0);
-				iPosAngle = (iDirection + 360 - iRotationOrigin) % 360;
+				iPosAngle = AngleMod(iDirection - iRotationOrigin);
 				iPosRadius = (int)(rRadius / g_KlicksPerPixel);
 
 				//	Rotation
@@ -5096,11 +5050,11 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int iMaxFireArc;
 			if (pArgs->GetCount() > 3)
 				{
-				iMinFireArc = pArgs->GetElement(2)->GetIntegerValue();
-				iMaxFireArc = pArgs->GetElement(3)->GetIntegerValue();
+				iMinFireArc = AngleMod(pArgs->GetElement(2)->GetIntegerValue());
+				iMaxFireArc = AngleMod(pArgs->GetElement(3)->GetIntegerValue());
 
 				pDevice->SetOmniDirectional(false);
-				pDevice->SetFireArc(iMinFireArc % 360, iMaxFireArc % 360);
+				pDevice->SetFireArc(iMinFireArc, iMaxFireArc);
 				}
 			else if (pArgs->GetElement(2)->IsNil())
 				{
@@ -5114,11 +5068,11 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				}
 			else if (pArgs->GetElement(2)->IsList() && pArgs->GetElement(2)->GetCount() >= 2)
 				{
-				iMinFireArc = pArgs->GetElement(2)->GetElement(0)->GetIntegerValue();
-				iMaxFireArc = pArgs->GetElement(2)->GetElement(1)->GetIntegerValue();
+				iMinFireArc = AngleMod(pArgs->GetElement(2)->GetElement(0)->GetIntegerValue());
+				iMaxFireArc = AngleMod(pArgs->GetElement(2)->GetElement(1)->GetIntegerValue());
 
 				pDevice->SetOmniDirectional(false);
-				pDevice->SetFireArc(iMinFireArc % 360, iMaxFireArc % 360);
+				pDevice->SetFireArc(iMinFireArc, iMaxFireArc);
 				}
 			else
 				return pCC->CreateError(CONSTLIT("Invalid fire arc"), pArgs->GetElement(2));
@@ -5139,26 +5093,9 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Parse the options
 
 			DWORD dwOptions;
-			if (pArgs->GetCount() < 3 ||pArgs->GetElement(2)->IsNil())
-				dwOptions = 0;
-			else
-				{
-				dwOptions = 0;
-
-				SDesignLoadCtx LoadCtx;
-				LoadCtx.pExtension = pCtx->GetExtension();
-
-				DWORD dwOption;
-				for (i = 0; i < pArgs->GetElement(2)->GetCount(); i++)
-					{
-					ICCItem *pOption = pArgs->GetElement(2)->GetElement(i);
-
-					if (CDeviceClass::ParseLinkedFireOptions(LoadCtx, pOption->GetStringValue(), &dwOption) != NOERROR)
-						return pCC->CreateError(LoadCtx.sError, pOption);
-
-					dwOptions |= dwOption;
-					}
-				}
+			CString sError;
+			if (!GetLinkedFireOptions(pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL, &dwOptions, &sError))
+				return pCC->CreateError(sError, pArgs->GetElement(2));
 
 			//	Set
 
@@ -7895,7 +7832,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 					iDir = 0;
 				}
 			else
-				iDir = Max(0, pArgs->GetElement(3)->GetIntegerValue()) % 360;
+				iDir = AngleMod(pArgs->GetElement(3)->GetIntegerValue());
 
 			//	Create the weapon shot
 

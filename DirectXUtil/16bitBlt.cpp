@@ -24,6 +24,14 @@
 	Metric kc = xf * (1.0 - yf);								\
 	Metric kd = xf * yf;										\
 																\
+	if (a != DEFAULT_TRANSPARENT_COLOR || b != DEFAULT_TRANSPARENT_COLOR || c != DEFAULT_TRANSPARENT_COLOR || d != DEFAULT_TRANSPARENT_COLOR) \
+		{														\
+		if (a == DEFAULT_TRANSPARENT_COLOR) a = 0;				\
+		if (b == DEFAULT_TRANSPARENT_COLOR) b = 0;				\
+		if (c == DEFAULT_TRANSPARENT_COLOR) c = 0;				\
+		if (d == DEFAULT_TRANSPARENT_COLOR) d = 0;				\
+		}														\
+																\
 	DWORD red = (DWORD)(ka * CG16bitImage::RedValue(a)			\
 			+ kb * CG16bitImage::RedValue(b)					\
 			+ kc * CG16bitImage::RedValue(c)					\
