@@ -102,6 +102,7 @@ static char *FEEDBACK[] =
 	"TheLastBrunnenG",
 	"Chuck Lindgren",
 	"lootnplunder",
+	"LordSutekh",
 	"Lypos",
 
 	"Magnus",

@@ -916,6 +916,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath=".\CSoundRef.cpp"
+					>
+				</File>
+				<File
 					RelativePath="CSovereign.cpp"
 					>
 					<FileConfiguration

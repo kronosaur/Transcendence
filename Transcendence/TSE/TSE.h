@@ -333,6 +333,7 @@ class CWeaponFireDesc
 		inline bool CanAutoTarget (void) const { return m_bAutoTarget; }
 		inline bool CanHitFriends (void) const { return !m_bNoFriendlyFire; }
 		void CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx);
+		bool FindDataField (const CString &sField, CString *retsValue);
 		CEffectCreator *FindEffectCreator (const CString &sUNID);
 		bool FindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent = NULL) const;
 		inline bool FindEventHandler (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
@@ -384,7 +385,6 @@ class CWeaponFireDesc
 		inline bool HasEvents (void) const { return !m_Events.IsEmpty(); }
 		inline bool HasFragments (void) const { return m_pFirstFragment != NULL; }
 		inline bool HasOnFragmentEvent (void) const { return m_CachedEvents[evtOnFragment].pCode != NULL; }
-
 		void InitFromDamage (DamageDesc &Damage);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, bool bDamageOnly = false);
 		inline bool IsTracking (void) { return m_iManeuverability != 0; }
@@ -392,6 +392,7 @@ class CWeaponFireDesc
 		void MarkImages (void);
 		ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		ALERROR OverrideDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		inline void PlayFireSound (CSpaceObject *pSource) { m_FireSound.PlaySound(pSource); }
 		inline bool ProximityBlast (void) const { return m_bProximityBlast; }
 
 	public:
@@ -409,7 +410,6 @@ class CWeaponFireDesc
 		DamageDesc m_Damage;				//	Damage per shot
 		Metric m_rMaxEffectiveRange;		//	Max effective range of weapon
 		int m_iContinuous;					//	repeat for this number of frames
-		int m_iFireSound;					//	Sound when weapon is fired (-1 == no sound)
 
 		//	Missile stuff (m_iFireType == ftMissile)
 		CObjectImageArray m_Image;			//	Image for missile
@@ -455,6 +455,7 @@ class CWeaponFireDesc
 		int m_iVaporTrailWidthInc;			//	Width increment in 100ths of a pixel
 		WORD m_wVaporTrailColor;			//	Color of vapor trail
 		WORD m_wSpare;
+		CSoundRef m_FireSound;				//	Sound when weapon is fired
 
 		//	Missile stuff (m_iFireType == ftMissile)
 		int m_iHitPoints;					//	HP before dissipating (0 = destroyed by any hit)

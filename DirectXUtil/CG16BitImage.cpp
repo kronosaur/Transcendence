@@ -1334,7 +1334,7 @@ ALERROR CG16bitImage::CopyToClipboard (void)
 	return NOERROR;
 	}
 
-ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask)
+ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor)
 
 //	CreateBlank
 //
@@ -1357,8 +1357,6 @@ ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask)
 		goto Fail;
 		}
 
-	ZeroMemory(pRGB, cyHeight * iRGBRowSizeBytes);
-
 	//	Allocate alpha mask
 
 	if (bAlphaMask)
@@ -1379,6 +1377,11 @@ ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask)
 	m_pRGB = pRGB;
 	m_pAlpha = pAlpha;
 	m_bHasMask = bAlphaMask;
+
+	if (wInitColor == 0)
+		::ZeroMemory(m_pRGB, cyHeight * iRGBRowSizeBytes);
+	else
+		Fill(0, 0, cxWidth, cyHeight, wInitColor);
 
 	return NOERROR;
 
@@ -1851,7 +1854,7 @@ ALERROR CG16bitImage::CreateFromImageTransformed (const CG16bitImage &Source,
 
 	//	Create the destination image
 
-	CreateBlank(RectWidth(rcDest), RectHeight(rcDest), Source.HasAlpha());
+	CreateBlank(RectWidth(rcDest), RectHeight(rcDest), Source.HasAlpha(), Source.m_wBackColor);
 	m_wBackColor = Source.m_wBackColor;
 
 	//	Copy

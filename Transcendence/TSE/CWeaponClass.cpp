@@ -60,7 +60,6 @@
 #define FIELD_RANGE								CONSTLIT("range")
 #define FIELD_RECOIL							CONSTLIT("recoil")
 #define FIELD_REPEAT_COUNT						CONSTLIT("repeatCount")
-#define FIELD_SOUND								CONSTLIT("sound")
 #define FIELD_SPEED								CONSTLIT("speed")
 #define FIELD_VARIANT_COUNT						CONSTLIT("variantCount")
 
@@ -1023,10 +1022,8 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 		}
 	else if (strEquals(sField, FIELD_IS_ALTERNATING))
 		*retsValue = ((m_Configuration == ctDualAlternating || m_bConfigAlternating) ? CString("True") : NULL_STR);
-	else if (strEquals(sField, FIELD_SOUND))
-		*retsValue = (pShot->m_iFireSound != -1 ? strFromInt(g_pUniverse->GetSoundUNID(pShot->m_iFireSound), false) : NULL_STR);
 	else
-		return false;
+		return pShot->FindDataField(sField, retsValue);
 
 	return true;
 	}
@@ -1501,8 +1498,8 @@ bool CWeaponClass::FireWeapon (CInstalledDevice *pDevice,
 
 	//	Sound effect
 
-	if (!bFireSuppressed && pShot->m_iFireSound != -1)
-		g_pUniverse->PlaySound(pSource, pShot->m_iFireSound);
+	if (!bFireSuppressed)
+		pShot->PlayFireSound(pSource);
 
 	//	Recoil
 

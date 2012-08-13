@@ -24,7 +24,6 @@ RELEASE
 [ ] Redirect older .zip files to new version
 [ ] Post source on web site
 
-
 NEW APPLICATION (UI)
 -------------------------------------------------------------------------------
 

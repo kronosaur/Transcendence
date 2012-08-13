@@ -4,76 +4,78 @@
 
 #include "PreComp.h"
 
-#define FRAGMENT_TAG					CONSTLIT("Fragment")
-#define ENHANCED_TAG					CONSTLIT("Enhanced")
-#define IMAGE_TAG						CONSTLIT("Image")
-#define MISSILE_EXHAUST_TAG				CONSTLIT("Exhaust")
-#define EFFECT_TAG						CONSTLIT("Effect")
-#define HIT_EFFECT_TAG					CONSTLIT("HitEffect")
-#define FIRE_EFFECT_TAG					CONSTLIT("FireEffect")
-#define DAMAGE_TAG						CONSTLIT("Damage")
-#define EVENTS_TAG						CONSTLIT("Events")
+#define FRAGMENT_TAG							CONSTLIT("Fragment")
+#define ENHANCED_TAG							CONSTLIT("Enhanced")
+#define IMAGE_TAG								CONSTLIT("Image")
+#define MISSILE_EXHAUST_TAG						CONSTLIT("Exhaust")
+#define EFFECT_TAG								CONSTLIT("Effect")
+#define HIT_EFFECT_TAG							CONSTLIT("HitEffect")
+#define FIRE_EFFECT_TAG							CONSTLIT("FireEffect")
+#define DAMAGE_TAG								CONSTLIT("Damage")
+#define EVENTS_TAG								CONSTLIT("Events")
 
-#define ACCELERATION_FACTOR_ATTRIB		CONSTLIT("accelerationFactor")
-#define AMMO_ID_ATTRIB					CONSTLIT("ammoID")
-#define AREA_DAMAGE_DENSITY_ATTRIB		CONSTLIT("areaDamageDensity")
-#define AUTO_TARGET_ATTRIB				CONSTLIT("autoAcquireTarget")
-#define CAN_HIT_SOURCE_ATTRIB			CONSTLIT("canHitSource")
-#define COUNT_ATTRIB					CONSTLIT("count")
-#define EXHAUST_RATE_ATTRIB				CONSTLIT("creationRate")
-#define DAMAGE_ATTRIB					CONSTLIT("damage")
-#define DIRECTIONAL_ATTRIB				CONSTLIT("directional")
-#define EXHAUST_DRAG_ATTRIB				CONSTLIT("drag")
-#define EFFECT_ATTRIB					CONSTLIT("effect")
-#define EXPANSION_SPEED_ATTRIB			CONSTLIT("expansionSpeed")
-#define FAILSAFE_ATTRIB					CONSTLIT("failsafe")
-#define FIRE_EFFECT_ATTRIB				CONSTLIT("fireEffect")
-#define FRAGMENT_COUNT_ATTRIB			CONSTLIT("fragmentCount")
-#define FRAGMENT_TARGET_ATTRIB			CONSTLIT("fragmentTarget")
-#define HIT_EFFECT_ATTRIB				CONSTLIT("hitEffect")
-#define HIT_POINTS_ATTRIB				CONSTLIT("hitPoints")
-#define INITIAL_DELAY_ATTRIB			CONSTLIT("initialDelay")
-#define INTERACTION_ATTRIB				CONSTLIT("interaction")
-#define EXHAUST_LIFETIME_ATTRIB			CONSTLIT("lifetime")
-#define LIFETIME_ATTRIB					CONSTLIT("lifetime")
-#define MANEUVERABILITY_ATTRIB			CONSTLIT("maneuverability")
-#define MANEUVER_RATE_ATTRIB			CONSTLIT("maneuverRate")
-#define MAX_MISSILE_SPEED_ATTRIB		CONSTLIT("maxMissileSpeed")
-#define MAX_RADIUS_ATTRIB				CONSTLIT("maxRadius")
-#define MIN_RADIUS_ATTRIB				CONSTLIT("minRadius")
-#define MISSILE_SPEED_ATTRIB			CONSTLIT("missileSpeed")
-#define MULTI_TARGET_ATTRIB				CONSTLIT("multiTarget")
-#define NO_FRIENDLY_FIRE_ATTRIB			CONSTLIT("noFriendlyFire")
-#define PARTICLE_COUNT_ATTRIB			CONSTLIT("particleCount")
-#define PARTICLE_EMIT_TIME_ATTRIB		CONSTLIT("particleEmitTime")
-#define PARTICLE_MISS_CHANCE_ATTRIB		CONSTLIT("particleMissChance")
-#define PARTICLE_SPLASH_CHANCE_ATTRIB	CONSTLIT("particleSplashChance")
-#define PARTICLE_SPREAD_ANGLE_ATTRIB	CONSTLIT("particleSpreadAngle")
-#define PARTICLE_SPREAD_WIDTH_ATTRIB	CONSTLIT("particleSpreadWidth")
-#define PASSTHROUGH_ATTRIB				CONSTLIT("passthrough")
-#define BEAM_CONTINUOUS_ATTRIB			CONSTLIT("repeating")
-#define SOUND_ATTRIB					CONSTLIT("sound")
-#define STEALTH_ATTRIB					CONSTLIT("stealth")
-#define TRAIL_ATTRIB					CONSTLIT("trail")
-#define FIRE_TYPE_ATTRIB				CONSTLIT("type")
-#define VAPOR_TRAIL_ATTRIB				CONSTLIT("vaporTrail")
-#define VAPOR_TRAIL_COLOR_ATTRIB		CONSTLIT("vaporTrailColor")
-#define VAPOR_TRAIL_LENGTH_ATTRIB		CONSTLIT("vaporTrailLength")
-#define VAPOR_TRAIL_WIDTH_ATTRIB		CONSTLIT("vaporTrailWidth")
-#define VAPOR_TRAIL_WIDTH_INC_ATTRIB	CONSTLIT("vaporTrailWidthInc")
+#define ACCELERATION_FACTOR_ATTRIB				CONSTLIT("accelerationFactor")
+#define AMMO_ID_ATTRIB							CONSTLIT("ammoID")
+#define AREA_DAMAGE_DENSITY_ATTRIB				CONSTLIT("areaDamageDensity")
+#define AUTO_TARGET_ATTRIB						CONSTLIT("autoAcquireTarget")
+#define CAN_HIT_SOURCE_ATTRIB					CONSTLIT("canHitSource")
+#define COUNT_ATTRIB							CONSTLIT("count")
+#define EXHAUST_RATE_ATTRIB						CONSTLIT("creationRate")
+#define DAMAGE_ATTRIB							CONSTLIT("damage")
+#define DIRECTIONAL_ATTRIB						CONSTLIT("directional")
+#define EXHAUST_DRAG_ATTRIB						CONSTLIT("drag")
+#define EFFECT_ATTRIB							CONSTLIT("effect")
+#define EXPANSION_SPEED_ATTRIB					CONSTLIT("expansionSpeed")
+#define FAILSAFE_ATTRIB							CONSTLIT("failsafe")
+#define FIRE_EFFECT_ATTRIB						CONSTLIT("fireEffect")
+#define FRAGMENT_COUNT_ATTRIB					CONSTLIT("fragmentCount")
+#define FRAGMENT_TARGET_ATTRIB					CONSTLIT("fragmentTarget")
+#define HIT_EFFECT_ATTRIB						CONSTLIT("hitEffect")
+#define HIT_POINTS_ATTRIB						CONSTLIT("hitPoints")
+#define INITIAL_DELAY_ATTRIB					CONSTLIT("initialDelay")
+#define INTERACTION_ATTRIB						CONSTLIT("interaction")
+#define EXHAUST_LIFETIME_ATTRIB					CONSTLIT("lifetime")
+#define LIFETIME_ATTRIB							CONSTLIT("lifetime")
+#define MANEUVERABILITY_ATTRIB					CONSTLIT("maneuverability")
+#define MANEUVER_RATE_ATTRIB					CONSTLIT("maneuverRate")
+#define MAX_MISSILE_SPEED_ATTRIB				CONSTLIT("maxMissileSpeed")
+#define MAX_RADIUS_ATTRIB						CONSTLIT("maxRadius")
+#define MIN_RADIUS_ATTRIB						CONSTLIT("minRadius")
+#define MISSILE_SPEED_ATTRIB					CONSTLIT("missileSpeed")
+#define MULTI_TARGET_ATTRIB						CONSTLIT("multiTarget")
+#define NO_FRIENDLY_FIRE_ATTRIB					CONSTLIT("noFriendlyFire")
+#define PARTICLE_COUNT_ATTRIB					CONSTLIT("particleCount")
+#define PARTICLE_EMIT_TIME_ATTRIB				CONSTLIT("particleEmitTime")
+#define PARTICLE_MISS_CHANCE_ATTRIB				CONSTLIT("particleMissChance")
+#define PARTICLE_SPLASH_CHANCE_ATTRIB			CONSTLIT("particleSplashChance")
+#define PARTICLE_SPREAD_ANGLE_ATTRIB			CONSTLIT("particleSpreadAngle")
+#define PARTICLE_SPREAD_WIDTH_ATTRIB			CONSTLIT("particleSpreadWidth")
+#define PASSTHROUGH_ATTRIB						CONSTLIT("passthrough")
+#define BEAM_CONTINUOUS_ATTRIB					CONSTLIT("repeating")
+#define SOUND_ATTRIB							CONSTLIT("sound")
+#define STEALTH_ATTRIB							CONSTLIT("stealth")
+#define TRAIL_ATTRIB							CONSTLIT("trail")
+#define FIRE_TYPE_ATTRIB						CONSTLIT("type")
+#define VAPOR_TRAIL_ATTRIB						CONSTLIT("vaporTrail")
+#define VAPOR_TRAIL_COLOR_ATTRIB				CONSTLIT("vaporTrailColor")
+#define VAPOR_TRAIL_LENGTH_ATTRIB				CONSTLIT("vaporTrailLength")
+#define VAPOR_TRAIL_WIDTH_ATTRIB				CONSTLIT("vaporTrailWidth")
+#define VAPOR_TRAIL_WIDTH_INC_ATTRIB			CONSTLIT("vaporTrailWidthInc")
 
-#define FIRE_TYPE_BEAM					CONSTLIT("beam")
-#define FIRE_TYPE_MISSILE				CONSTLIT("missile")
-#define FIRE_TYPE_AREA					CONSTLIT("area")
-#define FIRE_TYPE_PARTICLES				CONSTLIT("particles")
-#define FIRE_TYPE_RADIUS				CONSTLIT("radius")
+#define FIELD_SOUND								CONSTLIT("sound")
 
-#define ON_DAMAGE_OVERLAY_EVENT			CONSTLIT("OnDamageOverlay")
-#define ON_DAMAGE_SHIELDS_EVENT			CONSTLIT("OnDamageShields")
-#define ON_DAMAGE_ARMOR_EVENT			CONSTLIT("OnDamageArmor")
-#define ON_FRAGMENT_EVENT				CONSTLIT("OnFragment")
+#define FIRE_TYPE_BEAM							CONSTLIT("beam")
+#define FIRE_TYPE_MISSILE						CONSTLIT("missile")
+#define FIRE_TYPE_AREA							CONSTLIT("area")
+#define FIRE_TYPE_PARTICLES						CONSTLIT("particles")
+#define FIRE_TYPE_RADIUS						CONSTLIT("radius")
 
-#define STR_SHIELD_REFLECT				CONSTLIT("reflect")
+#define ON_DAMAGE_OVERLAY_EVENT					CONSTLIT("OnDamageOverlay")
+#define ON_DAMAGE_SHIELDS_EVENT					CONSTLIT("OnDamageShields")
+#define ON_DAMAGE_ARMOR_EVENT					CONSTLIT("OnDamageArmor")
+#define ON_FRAGMENT_EVENT						CONSTLIT("OnFragment")
+
+#define STR_SHIELD_REFLECT						CONSTLIT("reflect")
 
 static char *CACHED_EVENTS[CWeaponFireDesc::evtCount] =
 	{
@@ -197,6 +199,21 @@ void CWeaponFireDesc::CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx)
 			(DamageCtx.pObj ? DamageCtx.pObj->GetVel() : CVector()),
 			DamageCtx.iDirection,
 			DamageCtx.iDamage);
+	}
+
+bool CWeaponFireDesc::FindDataField (const CString &sField, CString *retsValue)
+
+//	FindDataField
+//
+//	Returns data field for a weapon fire descriptor
+
+	{
+	if (strEquals(sField, FIELD_SOUND))
+		*retsValue = (m_FireSound.GetSound() != -1 ? strFromInt(m_FireSound.GetUNID(), false) : NULL_STR);
+	else
+		return false;
+
+	return true;
 	}
 
 CEffectCreator *CWeaponFireDesc::FindEffectCreator (const CString &sUNID)
@@ -867,7 +884,7 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 
 	//	Sound
 
-	m_iFireSound = -1;
+	m_FireSound = CSoundRef();
 
 	//	Enhanced
 
@@ -1269,14 +1286,8 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 
 	//	Sound
 
-	DWORD dwSoundID;
-	if (error = LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB), &dwSoundID))
+	if (error = m_FireSound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
 		return error;
-
-	if (dwSoundID)
-		m_iFireSound = g_pUniverse->FindSound(dwSoundID);
-	else
-		m_iFireSound = -1;
 
 	//	Events
 
@@ -1346,6 +1357,9 @@ ALERROR CWeaponFireDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		return error;
 
 	if (error = m_pFireEffect.Bind(Ctx))
+		return error;
+
+	if (error = m_FireSound.Bind(Ctx))
 		return error;
 
 	if (m_pEnhanced)

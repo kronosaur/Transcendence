@@ -199,8 +199,8 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 
 	//	Sound Effect (resolved later)
 
-	pCreator->m_dwSoundUNID = pDesc->GetAttributeInteger(SOUND_ATTRIB);
-	pCreator->m_iSound = -1;
+	if (error = pCreator->m_Sound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
+		return error;
 	
 	//	Done
 
@@ -506,10 +506,8 @@ ALERROR CEffectCreator::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	//	Load sounds
 
-	if (m_dwSoundUNID)
-		m_iSound = g_pUniverse->FindSound(m_dwSoundUNID);
-	else
-		m_iSound = -1;
+	if (error = m_Sound.Bind(Ctx))
+		return error;
 
 	//	Load our descendants
 
@@ -532,8 +530,9 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	//	Basic info
 
 	m_sUNID = strFromInt(GetUNID(), false);
-	m_dwSoundUNID = pDesc->GetAttributeInteger(SOUND_ATTRIB);
-	m_iSound = -1;
+
+	if (error = m_Sound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
+		return error;
 
 	//	Allow our subclass to initialize based on the effect
 	//	(We know we have one because we couldn't have gotten this far
@@ -614,8 +613,7 @@ void CEffectCreator::PlaySound (CSpaceObject *pSource)
 //	Play the sound effect
 
 	{
-	if (m_iSound != -1)
-		g_pUniverse->PlaySound(pSource, m_iSound);
+	m_Sound.PlaySound(pSource);
 	}
 
 void CEffectCreator::WritePainterToStream (IWriteStream *pStream, IEffectPainter *pPainter)

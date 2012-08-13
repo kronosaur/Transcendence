@@ -144,7 +144,7 @@ class CG16bitImage : public CObject
 								 int *cxDest, int *cyDest);
 		void AssociateSurface (LPDIRECTDRAW7 pDD);
 		void ConvertToSprite (void);
-		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask);
+		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight, BYTE byOpacity);
 		ALERROR CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask = NULL, DWORD dwFlags = 0);

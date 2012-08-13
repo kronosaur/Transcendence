@@ -214,7 +214,7 @@ void CopyBltTransformed (CG16bitImage &Dest,
 				int ySrcPos = (int)vSrcPos.GetY();
 
 				if (xSrcPos >= xSrc && xSrcPos + 1 < xSrcEnd
-						&& ySrcPos >= ySrc && ySrcPos + 1< ySrcEnd)
+						&& ySrcPos >= ySrc && ySrcPos + 1 < ySrcEnd)
 					{
 					WORD *pSrcPos = Src.GetPixel(Src.GetRowStart(ySrcPos), xSrcPos);
 					BYTE byAlpha = *Src.GetAlphaValue(xSrcPos, ySrcPos);
@@ -265,7 +265,7 @@ void CopyBltTransformed (CG16bitImage &Dest,
 				int ySrcPos = (int)vSrcPos.GetY();
 
 				if (xSrcPos >= xSrc && xSrcPos + 1 < xSrcEnd
-						&& ySrcPos >= ySrc && ySrcPos + 1< ySrcEnd)
+						&& ySrcPos >= ySrc && ySrcPos + 1 < ySrcEnd)
 					{
 					WORD *pSrcPos = Src.GetPixel(Src.GetRowStart(ySrcPos), xSrcPos);
 					INTERPOLATE(pSrcPos, iRowHeight, vSrcPos, xSrcPos, ySrcPos, *pDestPos);

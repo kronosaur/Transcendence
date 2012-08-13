@@ -269,6 +269,8 @@ void CObjectImageArray::GenerateGlowImage (int iRotation) const
 	if (pSource == NULL)
 		return;
 
+	WORD wBackColor = pSource->GetBackColor();
+
 	//	Allocate the array of images (if not already allocated)
 
 	if (m_pGlowImages == NULL)
@@ -314,7 +316,7 @@ void CObjectImageArray::GenerateGlowImage (int iRotation) const
 
 			WORD wValue;
 			if ((xSrc >= rcSrc.left && xSrc < rcSrc.right && ySrc >= rcSrc.top && ySrc < rcSrc.bottom)
-					&& ((wValue = *(pSource->GetRowStart(ySrc) + xSrc)) != 0x0000))
+					&& ((wValue = *(pSource->GetRowStart(ySrc) + xSrc)) != wBackColor))
 				{
 				DWORD dwGray = (CG16bitImage::RedValue(wValue)
 						+ CG16bitImage::GreenValue(wValue)
@@ -337,7 +339,7 @@ void CObjectImageArray::GenerateGlowImage (int iRotation) const
 				int iTotal = 0;
 				for (int i = yStart; i < yEnd; i++)
 					for (int j = xStart; j < xEnd; j++)
-						if (*(pSource->GetRowStart(ySrc + g_FilterOffset[i]) + xSrc + g_FilterOffset[j]) != 0x0000)
+						if (*(pSource->GetRowStart(ySrc + g_FilterOffset[i]) + xSrc + g_FilterOffset[j]) != wBackColor)
 							iTotal += g_Filter[i][j];
 
 				int iValue = (512 * iTotal / FIXED_POINT);

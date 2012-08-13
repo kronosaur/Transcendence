@@ -788,6 +788,25 @@ class CCompositeImageDesc
 		mutable TArray<SCacheEntry> m_Cache;
 	};
 
+//	Sounds
+
+class CSoundRef
+	{
+	public:
+		CSoundRef (void) : m_dwUNID(0), m_iSound(-1)
+			{ }
+
+		ALERROR Bind (SDesignLoadCtx &Ctx);
+		DWORD GetUNID (void) const { return m_dwUNID; }
+		int GetSound (void) const { return m_iSound; }
+		ALERROR LoadUNID (SDesignLoadCtx &Ctx, const CString &sAttrib);
+		void PlaySound (CSpaceObject *pSource);
+
+	private:
+		DWORD m_dwUNID;
+		int m_iSound;
+	};
+
 //	Damage
 
 enum BeamTypes
@@ -3483,7 +3502,7 @@ class CShipClass : public CDesignType
 class CEffectCreator : public CDesignType
 	{
 	public:
-		CEffectCreator (void) : m_iSound(-1), m_pDamage(NULL) { }
+		CEffectCreator (void) : m_pDamage(NULL) { }
 		virtual ~CEffectCreator (void);
 
 		static ALERROR CreateBeamEffect (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, CEffectCreator **retpCreator);
@@ -3497,7 +3516,6 @@ class CEffectCreator : public CDesignType
 		static void WritePainterToStream (IWriteStream *pStream, IEffectPainter *pPainter);
 
 		inline CWeaponFireDesc *GetDamageDesc (void) { return m_pDamage; }
-		inline int GetSound (void) { return m_iSound; }
 		inline const CString &GetUNIDString (void) { return m_sUNID; }
 		bool IsValidUNID (void);
 		void PlaySound (CSpaceObject *pSource = NULL);
@@ -3534,9 +3552,7 @@ class CEffectCreator : public CDesignType
 
 	private:
 		CString m_sUNID;
-
-		DWORD m_dwSoundUNID;
-		int m_iSound;
+		CSoundRef m_Sound;
 
 		CWeaponFireDesc *m_pDamage;
 	};

@@ -940,6 +940,21 @@ void CDesignCollection::ReadDynamicTypes (SUniverseLoadCtx &Ctx)
 	{
 	int i;
 
+	//	We need to unbind because there may be some dynamic types from a previous
+	//	game that we're about to delete.
+	//
+	//	This HACK is caused by the fact that Universe::Init is also calling 
+	//	BindDesign but ReadDynamicTypes must be called before Init.
+	//
+	//	A better way to fix this is to load the dynamic types into a separate
+	//	structure and pass them into Init to be added then.
+
+	for (i = 0; i < m_AllTypes.GetCount(); i++)
+		m_AllTypes.GetEntry(i)->UnbindDesign();
+	m_AllTypes.DeleteAll();
+
+	//	Read them
+
 	m_DynamicTypes.ReadFromStream(Ctx);
 
 	//	Read dynamic UNIDs
