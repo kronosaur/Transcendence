@@ -9,6 +9,7 @@
 *.ilk
 *.lib
 !IntelJPEGUtil/ijl15l.lib
+*.lastbuildstate
 *.log
 *.map
 *.ncb
@@ -24,6 +25,7 @@
 *.scc
 *.suo
 *.tmp
+*.tlog
 *.user
 *.xls
 *.xlsx
@@ -34,6 +36,8 @@ Alchemy/TerraFirma
 BackupExclude.txt
 BuildLog.htm
 calcimage/*
+CCShell/Debug/*
+CCShell/Release/*
 ChamberlainToLeibowitz.bat
 ChamberlainToMazian.bat
 copyFromSeverian.bat
@@ -41,6 +45,8 @@ copyToArchives.bat
 copyToMazian.bat
 copyToUSB.bat
 DirectXBench/*
+DirectXFont/Debug/*
+DirectXFont/Release/*
 Grail/*
 HI/*
 HIUtil/*
@@ -69,12 +75,23 @@ Transcendence/Game/Spanish.dic
 Transcendence/Game/Storage.xml
 Transcendence/Game/TestExtension/*
 Transcendence/Game/Test*.tl
+Transcendence/ipch/*
 Transcendence/OldTopology.xml
 Transcendence/RegisteredExtensions.txt
 Transcendence/Release/*
+Transcendence/TransCompiler/Debug/*
+Transcendence/TransCompiler/Release/*
+Transcendence/TransData/Debug/*
+Transcendence/TransData/Release/*
+Transcendence/TransExec/Debug/*
+Transcendence/TransExec/Release/*
+Transcendence/TransExplorer/Debug/*
+Transcendence/TransExplorer/Release/*
 Transcendence/TransSaver/Debug/*
 Transcendence/TransSaver/Release/*
 Transcendence/TSUI/CHexarcService.cpp
+Transcendence/UpgradeLog.XML
 Transcendence/Worklist.txt
 Transcendence/Worklist (Completed).txt
+Transcendence/_UpgradeReport_Files/*
 WikiData/*

@@ -17,7 +17,7 @@
 #define SYMBOL_CLOSEBRACE				'}'		//	Close structure
 #define SYMBOL_COLON					':'		//	Key/value separator
 
-ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
+ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked, int *ioiCurLine)
 
 //	Link
 //
@@ -28,13 +28,14 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 	char *pStart;
 	char *pPos;
 	ICCItem *pResult = NULL;
+	int iCurLine = (ioiCurLine ? *ioiCurLine : 1);
 
 	pStart = sString.GetPointer() + iOffset;
 	pPos = pStart;
 
 	//	Skip any whitespace
 
-	pPos = SkipWhiteSpace(pPos);
+	pPos = SkipWhiteSpace(pPos, &iCurLine);
 
 	//	If we've reached the end, then we have
 	//	nothing
@@ -50,7 +51,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 		pPos++;
 
-		pResult = Link(sString, iOffset + (pPos - pStart), &iLinked);
+		pResult = Link(sString, iOffset + (pPos - pStart), &iLinked, &iCurLine);
 		if (pResult->IsError())
 			return pResult;
 
@@ -77,7 +78,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 		//	If the list is empty, then there's nothing to do
 
-		pPos = SkipWhiteSpace(pPos);
+		pPos = SkipWhiteSpace(pPos, &iCurLine);
 		if (*pPos == SYMBOL_CLOSEPAREN)
 			{
 			pList->Discard(this);
@@ -94,7 +95,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 				ICCItem *pItem;
 				int iLinked;
 
-				pItem = Link(sString, iOffset + (pPos - pStart), &iLinked);
+				pItem = Link(sString, iOffset + (pPos - pStart), &iLinked, &iCurLine);
 				if (pItem->IsError())
 					return pItem;
 
@@ -109,7 +110,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 				//	Skip whitespace
 
-				pPos = SkipWhiteSpace(pPos);
+				pPos = SkipWhiteSpace(pPos, &iCurLine);
 				}
 
 			//	If we have a close paren then we're done; Otherwise we've
@@ -123,7 +124,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 			else
 				{
 				pList->Discard(this);
-				pResult = CreateError(LITERAL("Mismatched open parenthesis"));
+				pResult = CreateParseError(iCurLine, CONSTLIT("Mismatched open parenthesis"));
 				}
 			}
 		}
@@ -148,7 +149,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 		//	If the list is empty, then there's nothing to do
 
-		pPos = SkipWhiteSpace(pPos);
+		pPos = SkipWhiteSpace(pPos, &iCurLine);
 		if (*pPos == SYMBOL_CLOSEBRACE)
 			{
 			pResult = pTable;
@@ -166,7 +167,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 				ICCItem *pKey;
 				int iLinked;
 
-				pKey = Link(sString, iOffset + (pPos - pStart), &iLinked);
+				pKey = Link(sString, iOffset + (pPos - pStart), &iLinked, &iCurLine);
 				if (pKey->IsError())
 					{
 					pTable->Discard(this);
@@ -176,12 +177,12 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 				//	Move the position and read a colon
 
 				pPos += iLinked;
-				pPos = SkipWhiteSpace(pPos);
+				pPos = SkipWhiteSpace(pPos, &iCurLine);
 				if (*pPos != SYMBOL_COLON)
 					{
 					pKey->Discard(this);
 					pTable->Discard(this);
-					return CreateError(CONSTLIT("Struct value not found."));
+					return CreateParseError(iCurLine, CONSTLIT("Struct value not found."));
 					}
 
 				pPos++;
@@ -190,7 +191,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 
 				ICCItem *pValue;
 
-				pValue = Link(sString, iOffset + (pPos - pStart), &iLinked);
+				pValue = Link(sString, iOffset + (pPos - pStart), &iLinked, &iCurLine);
 				if (pValue->IsError())
 					{
 					pKey->Discard(this);
@@ -216,7 +217,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 				//	Skip whitespace because otherwise we won't know whether we
 				//	hit the end brace.
 
-				pPos = SkipWhiteSpace(pPos);
+				pPos = SkipWhiteSpace(pPos, &iCurLine);
 				}
 
 			//	If we have a close paren then we're done; Otherwise we've
@@ -230,7 +231,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 			else
 				{
 				pTable->Discard(this);
-				pResult = CreateError(LITERAL("Mismatched open brace"));
+				pResult = CreateParseError(iCurLine, CONSTLIT("Mismatched open brace"));
 				}
 			}
 		}
@@ -330,13 +331,23 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 			pPos++;
 			}
 		else
-			pResult = CreateError(LITERAL("Mismatched quote"));
+			pResult = CreateParseError(iCurLine, CONSTLIT("Mismatched quote"));
 		}
 
 	//	If this is a close paren, then it is an error
 
 	else if (*pPos == SYMBOL_CLOSEPAREN)
-		pResult = CreateError(LITERAL("Mismatched close parenthesis"));
+		pResult = CreateParseError(iCurLine, CONSTLIT("Mismatched close parenthesis"));
+
+	//	If this is a close brace, then it is an error
+
+	else if (*pPos == SYMBOL_CLOSEBRACE)
+		pResult = CreateParseError(iCurLine, CONSTLIT("Mismatched close brace"));
+
+	//	Colons cannot appear alone
+
+	else if (*pPos == SYMBOL_COLON)
+		pResult = CreateParseError(iCurLine, CONSTLIT("':' character must appear inside quotes or in a struct definition."));
 
 	//	Otherwise this is an string of some sort
 
@@ -366,7 +377,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 		//	If we did not advance, then we clearly hit an error
 
 		if (pStartString == pPos)
-			pResult = CreateError(strPatternSubst(CONSTLIT("Unexpected character: %s"), CString(pPos, 1)));
+			pResult = CreateParseError(iCurLine, strPatternSubst(CONSTLIT("Unexpected character: %s"), CString(pPos, 1)));
 
 		//	Otherwise, get the identifier
 
@@ -402,10 +413,23 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked)
 	if (retiLinked)
 		*retiLinked = (pPos - pStart);
 
+	if (ioiCurLine)
+		*ioiCurLine = iCurLine;
+
 	return pResult;
 	}
 
-char *CCodeChain::SkipWhiteSpace (char *pPos)
+ICCItem *CCodeChain::CreateParseError (int iLine, const CString &sError)
+
+//	CreateParseError
+//
+//	Utility for creating a parse error
+
+	{
+	return CreateError(strPatternSubst(CONSTLIT("Line %d: %s"), iLine, sError));
+	}
+
+char *CCodeChain::SkipWhiteSpace (char *pPos, int *ioiLine)
 
 //	SkipWhiteSpace
 //
@@ -424,8 +448,14 @@ char *CCodeChain::SkipWhiteSpace (char *pPos)
             bDone = TRUE;
         else if (bInComment)
             {
-        	if (*pPos == '\n' || *pPos == '\r')
+			if (*pPos == '\n')
+				{
+				*ioiLine += 1;
+				bInComment = FALSE;
+				}
+        	else if (*pPos == '\r')
                 bInComment = FALSE;
+
             pPos++;
         	}
         else
@@ -435,7 +465,12 @@ char *CCodeChain::SkipWhiteSpace (char *pPos)
                 bInComment = TRUE;
                 pPos++;
             	}
-            else if (*pPos == ' ' || *pPos == '\n' || *pPos == '\r' || *pPos == '\t')
+			else if (*pPos == '\n')
+				{
+				*ioiLine += 1;
+				pPos++;
+				}
+            else if (*pPos == ' ' || *pPos == '\r' || *pPos == '\t')
                 pPos++;
             else
                 bDone = TRUE;

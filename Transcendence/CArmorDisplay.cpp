@@ -92,7 +92,7 @@ ALERROR CArmorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect)
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(DISPLAY_WIDTH, DISPLAY_HEIGHT, false))
+	if (error = m_Buffer.CreateBlank(DISPLAY_WIDTH, DISPLAY_HEIGHT, false, DEFAULT_TRANSPARENT_COLOR))
 		return error;
 
 	m_Buffer.SetTransparentColor();
@@ -157,6 +157,7 @@ void CArmorDisplay::Update (void)
 	if (m_pPlayer == NULL)
 		return;
 
+
 	CShip *pShip = m_pPlayer->GetShip();
 	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
 	CItemListManipulator ItemList(pShip->GetItemList());
@@ -176,6 +177,10 @@ void CArmorDisplay::Update (void)
 		m_dwCachedShipID = pShip->GetID();
 		}
 
+	//	Erase everything
+
+	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+
 	//	Figure out the status of the shields
 
 	int iHP = 0;
@@ -191,10 +196,11 @@ void CArmorDisplay::Update (void)
 		{
 		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
 
-		m_Buffer.Blt(rcShip.left, 
+		m_Buffer.ColorTransBlt(rcShip.left, 
 				rcShip.top, 
 				RectWidth(rcShip), 
 				RectHeight(rcShip), 
+				255,
 				ArmorDesc.ShipImage.GetImage(NULL_STR), 
 				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShip)) / 2),
 				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShip)) / 2);
@@ -209,16 +215,15 @@ void CArmorDisplay::Update (void)
 		int iIndex = (100 - iWhole) / 20;
 
 		const RECT &rcShield = ShieldDesc.Image.GetImageRect();
-		m_Buffer.Blt(rcShield.left, 
+		m_Buffer.ColorTransBlt(rcShield.left, 
 				rcShield.top + (RectHeight(rcShield) * iIndex), 
 				RectWidth(rcShield), 
 				RectHeight(rcShield), 
+				255,
 				ShieldDesc.Image.GetImage(NULL_STR), 
 				DESCRIPTION_WIDTH + ((SHIELD_IMAGE_WIDTH - RectWidth(rcShield)) / 2),
 				(SHIELD_IMAGE_HEIGHT - RectHeight(rcShield)) / 2);
 		}
-
-	m_Buffer.Fill(0, 0, DESCRIPTION_WIDTH, DISPLAY_HEIGHT, CG16bitImage::RGBValue(0,0,0));
 
 	if (pShield)
 		{

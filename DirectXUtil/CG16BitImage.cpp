@@ -419,6 +419,8 @@ void CG16bitImage::BltGray (int xSrc, int ySrc, int cxWidth, int cyHeight, int i
 
 	else
 		{
+		WORD wSrcBackColor = Source.GetBackColor();
+
 		if (iAlpha == 255)
 			{
 			while (pSrcRow < pSrcRowEnd)
@@ -428,7 +430,7 @@ void CG16bitImage::BltGray (int xSrc, int ySrc, int cxWidth, int cyHeight, int i
 				WORD *pDestPos = pDestRow;
 
 				while (pSrcPos < pSrcPosEnd)
-					if (*pSrcPos == m_wBackColor)
+					if (*pSrcPos == wSrcBackColor)
 						{
 						pDestPos++;
 						pSrcPos++;
@@ -460,7 +462,7 @@ void CG16bitImage::BltGray (int xSrc, int ySrc, int cxWidth, int cyHeight, int i
 				WORD *pDestPos = pDestRow;
 
 				while (pSrcPos < pSrcPosEnd)
-					if (*pSrcPos == m_wBackColor)
+					if (*pSrcPos == wSrcBackColor)
 						{
 						pDestPos++;
 						pSrcPos++;
@@ -560,6 +562,8 @@ void CG16bitImage::BltLighten (int xSrc, int ySrc, int cxWidth, int cyHeight, in
 
 	else if (Source.IsTransparent())
 		{
+		WORD wSrcBackColor = Source.GetBackColor();
+
 		while (pSrcRow < pSrcRowEnd)
 			{
 			WORD *pSrcPos = pSrcRow;
@@ -567,7 +571,7 @@ void CG16bitImage::BltLighten (int xSrc, int ySrc, int cxWidth, int cyHeight, in
 			WORD *pDestPos = pDestRow;
 
 			while (pSrcPos < pSrcPosEnd)
-				if (*pSrcPos == m_wBackColor)
+				if (*pSrcPos == wSrcBackColor)
 					{
 					pDestPos++;
 					pSrcPos++;
@@ -599,6 +603,8 @@ void CG16bitImage::BltLighten (int xSrc, int ySrc, int cxWidth, int cyHeight, in
 
 	else
 		{
+		WORD wSrcBackColor = Source.GetBackColor();
+
 		while (pSrcRow < pSrcRowEnd)
 			{
 			WORD *pSrcPos = pSrcRow;
@@ -606,7 +612,7 @@ void CG16bitImage::BltLighten (int xSrc, int ySrc, int cxWidth, int cyHeight, in
 			WORD *pDestPos = pDestRow;
 
 			while (pSrcPos < pSrcPosEnd)
-				if (*pSrcPos == m_wBackColor)
+				if (*pSrcPos == wSrcBackColor)
 					{
 					pDestPos++;
 					pSrcPos++;

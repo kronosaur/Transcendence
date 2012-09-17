@@ -865,10 +865,21 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 		if (error = m_DesignTypes.AddEntry(pType))
 			{
 			if (error == ERR_OUTOFROOM)
-				Ctx.sError = strPatternSubst(CONSTLIT("Duplicate UNID: %x"), dwUNID);
+				{
+				//	For backwards compatibility with earlier versions, we 
+				//	disable this message.
+
+				if (Ctx.GetAPIVersion() >= 12)
+					{
+					Ctx.sError = strPatternSubst(CONSTLIT("Duplicate UNID: %x"), dwUNID);
+					return error;
+					}
+				}
 			else
+				{
 				Ctx.sError = strPatternSubst(CONSTLIT("Error adding design entry UNID: %x"), dwUNID);
-			return error;
+				return error;
+				}
 			}
 		}
 

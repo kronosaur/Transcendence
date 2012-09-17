@@ -1157,7 +1157,7 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 		//	ftArea has no backwards compatibility issues (passthrough is only
 		//	supported for 1.1 and above).
 
-		if (m_iPassthrough == 0 && m_iFireType != ftArea)
+		if (m_iPassthrough == 0 && m_iFireType != ftArea && Ctx.GetAPIVersion() < 3)
 			m_iPassthrough = 50;
 		}
 	else

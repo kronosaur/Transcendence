@@ -331,6 +331,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
+			kernelDebugLogMessage(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_LOAD_ERROR, sError, CMD_UI_EXIT));
 			return NOERROR;
 			}
@@ -398,6 +399,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pTask->GetResult(&sError))
 			{
+			kernelDebugLogMessage(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -423,6 +425,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (error = m_HI.ShowSession(new CNewGameSession(m_HI, m_Service, Defaults), &sError))
 			{
+			kernelDebugLogMessage(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -483,6 +486,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (pTask->GetResult(&sError))
 			{
 			m_Model.StartNewGameAbort();
+			kernelDebugLogMessage(sError);
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
@@ -706,12 +710,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			g_pTrans->DisplayMessage(sError);
 			return NOERROR;
 			}
-
-		//	Get the current node
-
-		CTopologyNode *pNode = g_pUniverse->GetCurrentTopologyNode();
-		if (pNode == NULL || pNode->GetDisplayPos() == NULL)
-			return NOERROR;
 
 		//	Show the map session
 

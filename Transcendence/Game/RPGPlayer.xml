@@ -40,19 +40,4 @@
 		</Events>
 	</Sovereign>
 
-<!-- GLOBAL FUNCTIONS ==========================================================
-
--->
-
-	<Globals>
-		(block Nil
-			(setq intMissionRewardPayment (lambda (theReward)
-				(block Nil
-					(plyCredit gPlayer theReward)
-					(typIncGlobalData &svPlayer; "missionRewards" theReward)
-					)
-				))
-			)
-	</Globals>
-
 </TranscendenceModule>

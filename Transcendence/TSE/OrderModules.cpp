@@ -40,14 +40,14 @@ IOrderModule::~IOrderModule (void)
 	{
 	}
 
-void IOrderModule::Attacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage)
+void IOrderModule::Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
 
 //	Attacked
 //
 //	Handle an attack from another object
 
 	{
-	OnAttacked(pShip, pAttacker, Damage);
+	OnAttacked(pShip, Ctx, pAttacker, Damage);
 	}
 
 DWORD IOrderModule::Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
@@ -397,7 +397,7 @@ void CAttackOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
 
 //	CAttackStationOrder --------------------------------------------------------
 
-void CAttackStationOrder::OnAttacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage)
+void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
 
 //	OnAttacked
 //
@@ -413,7 +413,7 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CSpaceObject *pAttacker, con
 
 			//	If we have secondary weapons, then we keep attacking the
 			//	station and let the secondaries deal with any defenders
-			&& !pShip->HasSecondaryWeapons()
+			&& !Ctx.HasSecondaryWeapons()
 
 			//	Don't bother with any ship that is not a friend of the
 			//	station (we assume that this was just a stray shot)

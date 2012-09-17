@@ -305,6 +305,11 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				m_ArmorDisplay.Paint(TheScreen);
 				m_TargetDisplay.Paint(TheScreen);
 
+				//	Debug console
+
+				if (m_bDebugConsole)
+					m_DebugConsole.Paint(TheScreen);
+
 				//	We don't paint the LRS because the player doesn't need it and
 				//	because it overwrites the credits/cargo space display
 				//PaintLRS();
@@ -339,7 +344,15 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 					rcRect = m_rcLRS;
 					::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
 					m_pCurrentScreen->Invalidate(rcRect);
+
+					if (m_bDebugConsole)
+						{
+						rcRect = m_DebugConsole.GetRect();
+						::OffsetRect(&rcRect, -m_rcMainScreen.left, -m_rcMainScreen.top);
+						m_pCurrentScreen->Invalidate(rcRect);
+						}
 					}
+
 				break;
 				}
 
@@ -1261,8 +1274,22 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 			}
 
 		case gsDocked:
+			{
+			//	Handle debug console
+
+			if (m_bDebugConsole)
+				{
+				if (chChar >= ' ')
+					{
+					CString sKey = CString(&chChar, 1);
+					m_DebugConsole.Input(sKey);
+					}
+				return 0;
+				}
+
 			m_CurrentDock.HandleChar(chChar);
 			break;
+			}
 		}
 
 	return 0;
@@ -1972,20 +1999,85 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 			break;
 
 		case gsDocked:
-			switch (iVirtKey)
-				{
-				case VK_F1:
-					g_pHI->HICommand(CONSTLIT("uiShowHelp"));
-					break;
+			{
+			//	Deal with console
 
-				case VK_F2:
-					g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
+			if (m_bDebugConsole)
+				{
+				switch (iVirtKey)
+					{
+					case VK_BACK:
+						m_DebugConsole.InputBackspace();
+						break;
+
+					case VK_ESCAPE:
+						m_bDebugConsole = false;
+						break;
+
+					case VK_RETURN:
+						{
+						CString sInput = m_DebugConsole.GetInput();
+						if (!sInput.IsBlank())
+							{
+							CCodeChain &CC = g_pUniverse->GetCC();
+
+							m_DebugConsole.InputEnter();
+
+							CCodeChainCtx Ctx;
+							ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
+							ICCItem *pResult = Ctx.Run(pCode);
+
+							CString sOutput;
+							if (pResult->IsIdentifier())
+								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+							else
+								sOutput = CC.Unlink(pResult);
+
+							Ctx.Discard(pResult);
+							Ctx.Discard(pCode);
+
+							m_DebugConsole.Output(sOutput);
+							}
+						break;
+						}
+
+					case VK_UP:
+						m_DebugConsole.InputLastLine();
+						break;
+					}
+
+				return 0;
+				}
+
+			CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+			switch (iCommand)
+				{
+				case CGameKeys::keyShowConsole:
+					{
+					if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
+							&& !g_pUniverse->IsRegistered())
+						m_bDebugConsole = !m_bDebugConsole;
 					break;
+					}
 
 				default:
-					m_CurrentDock.HandleKeyDown(iVirtKey);
+					switch (iVirtKey)
+						{
+						case VK_F1:
+							g_pHI->HICommand(CONSTLIT("uiShowHelp"));
+							break;
+
+						case VK_F2:
+							g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
+							break;
+
+						default:
+							m_CurrentDock.HandleKeyDown(iVirtKey);
+						}
+					break;
 				}
 			break;
+			}
 		}
 
 	return 0;

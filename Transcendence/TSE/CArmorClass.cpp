@@ -16,6 +16,7 @@
 #define SHIELD_INTERFERENCE_ATTRIB				CONSTLIT("shieldInterference")
 #define COMPOSITION_ATTRIB						CONSTLIT("composition")
 #define DISINTEGRATION_IMMUNE_ATTRIB			CONSTLIT("disintegrationImmune")
+#define SHATTER_IMMUNE_ATTRIB					CONSTLIT("shatterImmune")
 #define EMP_DAMAGE_ADJ_ATTRIB					CONSTLIT("EMPDamageAdj")
 #define BLINDING_DAMAGE_ADJ_ATTRIB				CONSTLIT("blindingDamageAdj")
 #define DEVICE_DAMAGE_ADJ_ATTRIB				CONSTLIT("deviceDamageAdj")
@@ -39,6 +40,14 @@
 #define FIELD_HP_BONUS							CONSTLIT("hpBonus")
 #define FIELD_REPAIR_COST						CONSTLIT("repairCost")
 #define FIELD_INSTALL_COST						CONSTLIT("installCost")
+
+#define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
+#define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
+#define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
+#define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
+#define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
+#define PROPERTY_SHATTER_IMMUNE					CONSTLIT("shatterImmune")
 
 static CObjectClass<CArmorClass>g_Class(OBJID_CARMORCLASS, NULL);
 
@@ -643,6 +652,7 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 	pArmor->m_fDisintegrationImmune = pDesc->GetAttributeBool(DISINTEGRATION_IMMUNE_ATTRIB);
 	pArmor->m_fPhotoRecharge = pDesc->GetAttributeBool(PHOTO_RECHARGE_ATTRIB);
 	pArmor->m_fShieldInterference = pDesc->GetAttributeBool(SHIELD_INTERFERENCE_ATTRIB);
+	pArmor->m_fShatterImmune = pDesc->GetAttributeBool(SHATTER_IMMUNE_ATTRIB);
 
 	pArmor->m_iStealth = pDesc->GetAttributeInteger(STEALTH_ATTRIB);
 	if (pArmor->m_iStealth == 0)
@@ -848,6 +858,40 @@ int CArmorClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
 		return iDamageAdj;
 	}
 
+ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
+
+//	GetItemProperty
+//
+//	Returns armor property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
+		return CC.CreateBool(IsBlindingDamageImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE))
+		return CC.CreateBool(IsDeviceDamageImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
+		return CC.CreateBool(IsDeviceDamageImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_DISINTEGRATION_IMMUNE))
+		return CC.CreateBool(IsDisintegrationImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
+		return CC.CreateBool(IsEMPDamageImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_RADIATION_IMMUNE))
+		return CC.CreateBool(IsRadiationImmune(Ctx.GetArmor()));
+
+	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
+		return CC.CreateBool(IsShatterImmune(Ctx));
+
+	else
+		return CC.CreateNil();
+	}
+
 int CArmorClass::GetMaxHP (CItemCtx &ItemCtx)
 
 //	GetMaxHP
@@ -1008,6 +1052,11 @@ CString CArmorClass::GetReference (CItemCtx &Ctx, int iVariant)
 
 	if (m_fDisintegrationImmune || Mods.IsDisintegrationImmune())
 		AppendReferenceString(&sReference, CONSTLIT("disintegrate-immune"));
+
+	//	Shatter
+
+	if (IsShatterImmune(Ctx))
+		AppendReferenceString(&sReference, CONSTLIT("shatter-immune"));
 
 	//	Shield interference
 
@@ -1187,6 +1236,16 @@ bool CArmorClass::IsReflective (CItemCtx &ItemCtx, const DamageDesc &Damage)
 		}
 	else
 		return false;
+	}
+
+bool CArmorClass::IsShatterImmune (CItemCtx &ItemCtx)
+
+//	IsShatterImmune
+//
+//	Returns TRUE if armor is shatter immune
+
+	{
+	return (m_fShatterImmune || (ItemCtx.GetMods().IsShatterImmune()));
 	}
 
 ALERROR CArmorClass::OnBindDesign (SDesignLoadCtx &Ctx)

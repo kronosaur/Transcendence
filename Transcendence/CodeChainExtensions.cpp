@@ -63,6 +63,8 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_SET_DISPLAY_TEXT		13
 #define FN_SCR_ADD_ACTION			14
 #define FN_SCR_EXIT_SCREEN			15
+#define FN_SCR_DATA					16
+#define FN_SCR_REFRESH_SCREEN		17
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -124,6 +126,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrGetCounter",				fnScrGetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetCounter screen)
 
+		{	"scrGetData",					fnScrGet,		FN_SCR_DATA,
+			"(scrGetData screen attrib) -> data",
+			"is",	0,	},
+
 		{	"scrGetDesc",					fnScrGet,		FN_SCR_DESC,
 			"(scrGetDesc screen)",
 			"i",	0,	},
@@ -140,6 +146,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrIsFirstOnInit",				fnScrGetOld,		FN_SCR_IS_FIRST_ON_INIT,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrIsFirstOnInit screen) => True/Nil
 
+		{	"scrRefreshScreen",				fnScrSet,		FN_SCR_REFRESH_SCREEN,
+			"(scrRefreshScreen screen)",
+			"i",	PPFLAG_SIDEEFFECTS, },
+
 		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrRemoveItem screen count) => item
 
@@ -149,6 +159,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetCounter screen counter)
+
+		{	"scrSetData",					fnScrSet,		FN_SCR_DATA,
+			"(scrSetData screen attrib data)",
+			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDesc",					fnScrSet,		FN_SCR_DESC,
 			"(scrSetDesc screen text [text...])",
@@ -172,7 +186,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	(scrShowPane screen pane)
 
 		{	"scrShowScreen",				fnScrShowScreen,	0,
-			"(scrShowScreen screenGlobal screen [pane])",
+			"(scrShowScreen screenGlobal screen [pane] [data])",
 			"vv*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	Player functions
@@ -998,6 +1012,14 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_SCR_DATA:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			return g_pTrans->GetModel().GetScreenData(pArgs->GetElement(1)->GetStringValue());
+			}
+
 		case FN_SCR_DESC:
 			{
 			const CString &sDesc = pScreen->GetDescription();
@@ -1189,6 +1211,15 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_SCR_DATA:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			g_pTrans->GetModel().SetScreenData(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2));
+			return pCC->CreateTrue();
+			}
+
 		case FN_SCR_DESC:
 			{
 			//	Only if valid
@@ -1253,6 +1284,15 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			g_pTrans->GetModel().ExitScreenSession(bForceUndock);
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_REFRESH_SCREEN:
+			{
+			if (!g_pTrans->GetModel().InScreenSession())
+				return pCC->CreateNil();
+
+			g_pTrans->GetModel().RefreshScreenSession();
 			return pCC->CreateTrue();
 			}
 
@@ -1419,6 +1459,7 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 //	fnScrShowScreen
 //
 //	Shows the given screen
+//	(scrShowScreen gScreen screen [pane] [data])
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
@@ -1428,7 +1469,20 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	CDockScreen *pScreen = GetDockScreenArg(pArgs->GetElement(0));
 	CString sScreen = pArgs->GetElement(1)->GetStringValue();
-	CString sPane = ((pArgs->GetCount() > 2 && !pArgs->GetElement(2)->IsNil()) ? pArgs->GetElement(2)->GetStringValue() : NULL_STR);
+	CString sPane;
+	ICCItem *pData = NULL;
+	if (pArgs->GetCount() >= 4)
+		{
+		sPane = pArgs->GetElement(2)->GetStringValue();
+		pData = pArgs->GetElement(3);
+		}
+	else if (pArgs->GetCount() >= 3)
+		{
+		if (pArgs->GetElement(2)->IsIdentifier())
+			sPane = pArgs->GetElement(2)->GetStringValue();
+		else
+			pData = pArgs->GetElement(2);
+		}
 
 	//	If we're not currently docked, then bring up a screen with the player ship as
 	//	the location.
@@ -1439,7 +1493,7 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		//	executing code from an item, the item type is set as the local screens root.
 
 		CString sError;
-		if (!g_pTrans->GetModel().ShowShipScreen(pCtx->GetScreensRoot(), NULL, sScreen, sPane, &sError))
+		if (!g_pTrans->GetModel().ShowShipScreen(pCtx->GetScreensRoot(), NULL, sScreen, sPane, pData, &sError))
 			return pCC->CreateError(sError);
 		}
 
@@ -1450,8 +1504,9 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		if (pScreen == NULL)
 			return pCC->CreateError(CONSTLIT("Screen expected"), pArgs->GetElement(0));
 
-		if (g_pTrans->GetModel().ShowScreen(NULL, sScreen, sPane) != NOERROR)
-			return pCC->CreateError(CONSTLIT("Unable to show screen"), pArgs->GetElement(1));
+		CString sError;
+		if (g_pTrans->GetModel().ShowScreen(NULL, sScreen, sPane, pData, &sError) != NOERROR)
+			return pCC->CreateError(sError, pArgs->GetElement(1));
 		}
 
 	//	Done

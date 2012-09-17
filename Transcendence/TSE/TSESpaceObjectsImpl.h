@@ -856,7 +856,7 @@ class CShip : public CSpaceObject
 		int GetItemDeviceName (const CItem &Item) const;
 		CItem GetNamedDeviceItem (DeviceNames iDev);
 		bool HasNamedDevice (DeviceNames iDev) const;
-		inline bool HasSecondaryWeapons (void) { return m_fHasSecondaryWeapons; }
+//		inline bool HasSecondaryWeapons (void) { return m_fHasSecondaryWeapons; }
 		void InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot = -1);
 		bool IsDeviceSlotAvailable (void);
 		void ReadyFirstWeapon (void);
@@ -999,6 +999,7 @@ class CShip : public CSpaceObject
 		virtual ScaleTypes GetScale (void) const { return scaleShip; }
 		virtual int GetScore (void) { return m_pClass->GetScore(); }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pClass->GetScreen(sName); }
+		virtual int GetSellPrice (const CItem &Item, bool bNoInventoryCheck = false);
 		virtual int GetShieldLevel (void);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual int GetStealth (void) const;
@@ -1035,8 +1036,7 @@ class CShip : public CSpaceObject
 		virtual void OnHitByDeviceDisruptDamage (DWORD dwDuration);
 		virtual void OnHitByRadioactiveDamage (SDamageCtx &Ctx);
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
-		virtual void OnNewSystem (void);
-		virtual bool OnObjJumpPosAdj (CSpaceObject *pPos, CVector *iovPos);
+		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip);
 		virtual void OnPlayerObj (CSpaceObject *pPlayer);
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
@@ -1053,7 +1053,6 @@ class CShip : public CSpaceObject
 		virtual void ProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
 		virtual void Refuel (int iFuel);
 		virtual void Refuel (const CItem &Fuel);
-		virtual void RegisterObjectForEvents (CSpaceObject *pObj) { m_RegisteredObjects.Add(pObj); }
 		virtual void RemoveOverlay (DWORD dwID) { m_EnergyFields.RemoveField(this, dwID); }
 		virtual void RepairDamage (int iHitPoints);
 		virtual bool RequestDock (CSpaceObject *pObj);
@@ -1073,7 +1072,6 @@ class CShip : public CSpaceObject
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
 		virtual void Suspend (void) { m_fManualSuspended = true; SetCannotBeHit(); }
 		virtual void Undock (CSpaceObject *pObj);
-		virtual void UnregisterObjectForEvents (CSpaceObject *pObj) { m_RegisteredObjects.Remove(pObj); }
 		virtual void UpdateArmorItems (void);
 		virtual void UpdateDockingManeuver(const CVector &vDest, const CVector &vDestVel, int iDestFacing);
 
@@ -1087,10 +1085,7 @@ class CShip : public CSpaceObject
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual CSpaceObject *OnGetOrderGiver (void);
-		virtual void OnObjDocked (CSpaceObject *pObj, CSpaceObject *pDockTarget);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
-		virtual void OnObjJumped (CSpaceObject *pObj);
-		virtual void OnObjReconned (CSpaceObject *pObj);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnUpdate (Metric rSecondsPerTick);
@@ -1138,7 +1133,6 @@ class CShip : public CSpaceObject
 		const ReactorDesc *m_pReactorDesc;		//	Reactor descriptor
 		CEnergyFieldList m_EnergyFields;		//	List of energy fields
 		CDockingPorts m_DockingPorts;			//	Docking ports (optionally)
-		CSpaceObjectList m_RegisteredObjects;	//	Objects that we fire events for
 		CStationType *m_pEncounterInfo;			//	Pointer back to encounter type (generally NULL)
 
 		int m_iFireDelay:16;					//	Ticks until next fire
@@ -1178,9 +1172,8 @@ class CShip : public CSpaceObject
 		DWORD m_fHalfSpeed:1;					//	TRUE if ship is at half speed
 		DWORD m_fHasTargetingComputer:1;		//	TRUE if ship has targeting computer
 		DWORD m_fTrackFuel:1;					//	TRUE if ship keeps track of fuel (only player ship does)
-		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has multiple weapons
-
 		DWORD m_fSRSEnhanced:1;					//	TRUE if ship's SRS is enhanced
+		
 		DWORD m_fDeviceDisrupted:1;				//	TRUE if at least one device is disrupted
 		DWORD m_fKnown:1;						//	TRUE if we know about this ship
 		DWORD m_fHiddenByNebula:1;				//	TRUE if ship is hidden by nebula
@@ -1188,9 +1181,9 @@ class CShip : public CSpaceObject
 		DWORD m_fIdentified:1;					//	TRUE if player can see ship class, etc.
 		DWORD m_fManualSuspended:1;				//	TRUE if ship is suspended
 		DWORD m_fGalacticMap:1;					//	TRUE if ship has galactic map installed
-
 		DWORD m_fRecalcItemMass:1;				//	TRUE if we need to recalculate m_rImageMass
-		DWORD m_dwSpare:15;
+		
+		DWORD m_dwSpare:16;
 
 	friend CObjectClass<CShip>;
 	};
@@ -1312,10 +1305,11 @@ class CStation : public CSpaceObject
 		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return m_Overlays.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void);
 		virtual Metric GetParallaxDist (void) { return m_pType->GetParallaxDist(); }
+		virtual ICCItem *GetProperty (const CString &sName);
 		virtual IShipGenerator *GetRandomEncounterTable (int *retiFrequency = NULL) const;
 		virtual ScaleTypes GetScale (void) const { return m_Scale; }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pType->GetScreen(sName); }
-		virtual int GetSellPrice (const CItem &Item);
+		virtual int GetSellPrice (const CItem &Item, bool bNoInventoryCheck = false);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual COLORREF GetSpaceColor (void) { return m_pType->GetSpaceColor(); }
 		virtual CString GetStargateID (void) const;
@@ -1326,7 +1320,7 @@ class CStation : public CSpaceObject
 		virtual bool HasAttribute (const CString &sAttribute) const;
 		virtual bool HasMapLabel (void);
 		virtual bool ImageInObject (const CVector &vObjPos, const CObjectImageArray &Image, int iTick, int iRotation, const CVector &vImagePos);
-		virtual bool IsAbandoned (void) const { return ((m_iHitPoints == 0) && !m_pType->IsImmutable()); }
+		virtual bool IsAbandoned (void) const { return (m_iHitPoints == 0 && !IsImmutable()); }
 		virtual bool IsActiveStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
 		virtual bool IsBackgroundObj (void) { return m_pType->IsBackgroundObject(); }
@@ -1343,8 +1337,6 @@ class CStation : public CSpaceObject
 		virtual bool ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const CVector &vObj2Pos);
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnObjBounce (CSpaceObject *pObj, const CVector &vPos);
-		virtual void OnObjDocked (CSpaceObject *pObj, CSpaceObject *pDockTarget);
-		virtual bool OnObjJumpPosAdj (CSpaceObject *pPos, CVector *iovPos);
 		virtual void OnObjLeaveGate (CSpaceObject *pObj);
 		virtual void OnPlayerObj (CSpaceObject *pPlayer);
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
@@ -1355,7 +1347,6 @@ class CStation : public CSpaceObject
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx);
-		virtual void RegisterObjectForEvents (CSpaceObject *pObj) { m_RegisteredObjects.Add(pObj); }
 		virtual void RemoveOverlay (DWORD dwID) { m_Overlays.RemoveField(this, dwID); }
 		virtual bool RemoveSubordinate (CSpaceObject *pSubordinate);
 		virtual bool RequestDock (CSpaceObject *pObj);
@@ -1368,11 +1359,11 @@ class CStation : public CSpaceObject
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_Overlays.SetData(dwID, sAttribute, sData); }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { m_Overlays.SetPos(this, dwID, vPos); }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_Overlays.SetRotation(dwID, iRotation); }
+		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
 		virtual void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);
 		virtual bool SupportsGating (void) { return IsActiveStargate(); }
 		virtual void Undock (CSpaceObject *pObj);
-		virtual void UnregisterObjectForEvents (CSpaceObject *pObj) { m_RegisteredObjects.Remove(pObj); }
 
 	protected:
 
@@ -1383,8 +1374,6 @@ class CStation : public CSpaceObject
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
-		virtual void OnObjJumped (CSpaceObject *pObj);
-		virtual void OnObjReconned (CSpaceObject *pObj);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnUpdate (Metric rSecondsPerTick);
@@ -1411,8 +1400,10 @@ class CStation : public CSpaceObject
 		void FriendlyFire (CSpaceObject *pAttacker);
 		const CObjectImageArray &GetImage (int *retiTick, int *retiRotation);
 		bool IsBlacklisted (CSpaceObject *pObj);
+		inline bool IsImmutable (void) const { return m_fImmutable; }
 		void RaiseAlert (CSpaceObject *pTarget);
 		void SetAngry (void);
+		inline bool ShowWreckImage (void) { return (IsAbandoned() && m_iMaxHitPoints > 0); }
 		void UpdateAttacking (int iTick);
 		void UpdateReinforcements (int iTick);
 
@@ -1434,6 +1425,7 @@ class CStation : public CSpaceObject
 
 		CArmorClass *m_pArmorClass;				//	Armor class
 		int m_iHitPoints;						//	Total hit points (0 = station abandoned)
+		int m_iMaxHitPoints;					//	Max hit points (0 = station cannot be abandoned)
 		int m_iStructuralHP;					//	Structural hp (0 = station cannot be destroyed)
 		int m_iMaxStructuralHP;					//	Max structural hp
 
@@ -1444,7 +1436,6 @@ class CStation : public CSpaceObject
 		CSpaceObject *m_pTarget;				//	Target to hit (by our weapons)
 		CSpaceObject *m_pBase;					//	If we're a subordinate, this points to our base
 		CSpaceObjectList m_Subordinates;		//	List of subordinates
-		CSpaceObjectList m_RegisteredObjects;	//	Objects that we fire events for
 		CSpaceObjectList m_Targets;				//	Targets to destroy (by our ships)
 
 		CAttackDetector m_Blacklist;			//	Player blacklisted
@@ -1462,7 +1453,17 @@ class CStation : public CSpaceObject
 		DWORD m_fRadioactive:1;					//	TRUE if radioactive
 		DWORD m_fReconned:1;					//	TRUE if reconned by player
 		DWORD m_fFireReconEvent:1;				//	If TRUE, fire OnReconned
-		DWORD m_dwSpare:23;
+
+		DWORD m_fImmutable:1;					//	If TRUE, station is immutable
+		DWORD m_fSpare2:1;
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:16;
 
 		//	Wreck image
 		DWORD m_dwWreckUNID;					//	UNID of wreck class (0 if none)

@@ -18,6 +18,7 @@ static char *FEEDBACK[] =
 	"Aeonic",
 	"Amariithynar",
 	"Anakey",
+	"Androgeos",
 	"Barják András",
 	"Aniki",
 	"Apemant",
@@ -180,6 +181,7 @@ static char *FEEDBACK[] =
 	"Teslin K. R.",
 	"trouver",
 
+	"Vachtra",
 	"Vastin",
 	"Viperion",
 

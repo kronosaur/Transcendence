@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- GLOBALS ===================================================================
+
+	PREFIXES
+	
+	int			Internal functions (may change from version to version)
+	math		General math functions
+	obj			General object functions
+	scr			General functions relating to dock screens
+	str			General string functions
+	sys			General functions relating to star systems
+	
+============================================================================ -->
+
+	<Globals>
+		(block Nil
+			; Internal functions -----------------------------------------------
+
+			(setq intArmorRepairAll (lambda (theShip repairTech alwaysRepair)
+				(block (repaired noDamage tooMuchDamage noTech)
+					(setq repaired Nil)
+					(setq noDamage True)
+					(setq tooMuchDamage Nil)
+					(setq noTech Nil)
+					(objEnumItems theShip "aI" theItem
+						(block (armorSeg type damage maxHP)
+							(setq armorSeg (itmGetArmorInstalledLocation theItem))
+							(setq type (objGetArmorType theShip armorSeg))
+							(setq damage (objGetArmorDamage theShip armorSeg))
+							(if (gr damage 0) (setq noDamage Nil))
+							(setq maxHP (shpGetArmorMaxHitPoints theShip armorSeg))
+
+							(switch
+								; No need to repair if no damage
+								(eq damage 0)
+									Nil
+
+								; If armor needs higher tech to repair, we can't do anything
+								(gr (armGetRepairTech type) repairTech)
+									(setq noTech True)
+
+								; Can't repair if damage is too much
+								(and (not alwaysRepair) 
+										(ls (subtract maxHP damage) (divide maxHP 4)))
+									(setq tooMuchDamage True)
+
+								; Repair
+								(block Nil
+									(objRepairArmor theShip armorSeg)
+									(setq repaired True)
+									)
+								)
+							)
+						)
+
+					(switch
+						repaired
+							"repaired"
+
+						noDamage
+							"noDamage"
+
+						noTech
+							"noTech"
+
+						tooMuchDamage
+							"tooMuchDamage"
+
+						"noRepair"
+						)
+					)
+				))
+
+			(setq intAutoInstall (lambda (theSource theItem)
+				(if (itmIsInstalled theItem)
+
+					; Uninstall item
+					(block Nil
+						(switch
+							(gr (itmGetMass theItem) (objGetCargoSpaceLeft theSource))
+								(objSendMessage theSource Nil "No room in cargo hold to uninstall")
+
+							(block Nil
+								(shpRemoveDevice theSource theItem)
+								(objSendMessage theSource Nil (cat (itmGetName theItem 1) " uninstalled"))
+								)
+							)
+						)
+
+					; Install item
+					(block (result)
+						(setq result (shpCanInstallDevice theSource theItem))
+
+						(switch
+							(eq result 0)
+								(block Nil
+									(shpInstallDevice theSource theItem)
+									(objSendMessage theSource Nil (cat (itmGetName theItem 1) " installed"))
+									)
+
+							(eq result 2)
+								(objSendMessage theSource Nil "Ship cannot support another device")
+
+							(eq result 6)
+								(objSendMessage theSource Nil "Ship already has a missile launcher")
+
+							(eq result 7)
+								(objSendMessage theSource Nil "Reactor upgrade required")
+
+							(objSendMessage theSource Nil (cat (itmGetName theItem 1) " cannot be installed"))
+							)
+						)
+					)
+				))
+
+			(setq intCalcExplosionType (lambda (theObj)
+				(block (totalExplosivePower)
+
+					; Compute the explosive power of the items based on level and mass
+					(setq totalExplosivePower 0)
+
+					(objEnumItems theObj "*" theItem
+						(block Nil
+							(switch
+								(or (itmMatches theItem "mf") (itmMatches theItem "* +Explosive;"))
+									(block (level)
+										; Missiles count for +1 level
+										(setq level (itmGetLevel theItem))
+										(if (or (itmMatches theItem "m") (itmHasAttribute theItem "Explosive"))
+											(setq level (add level 1))
+											)
+
+										; Explosive power = level^2 * sqrt(mass-in-tons)
+										; We compute mass in 10,000th of a tons and divide later (we divide by sqrt(10,000) or 100)
+
+										(setq totalExplosivePower
+											(add totalExplosivePower (multiply (power level 2) (sqrt (multiply 10 (itmGetMass theItem) (itmGetCount theItem)))))
+											)
+										)
+								)
+							)
+						)
+
+					; Convert to tons and tweak
+					(setq totalExplosivePower (divide totalExplosivePower 100))
+					(setq totalExplosivePower (divide (multiply 150 totalExplosivePower) 100))
+
+					; Convert to explosion type
+					(switch
+						(geq totalExplosivePower 2750)
+							&vtPlasmaExplosion2;
+
+						(geq totalExplosivePower 2200)
+							&vtPlasmaExplosion1;
+
+						(geq totalExplosivePower 1730)
+							&vtThermoExplosion4;
+
+						(geq totalExplosivePower 1330)
+							&vtThermoExplosion3;
+
+						(geq totalExplosivePower 1000)
+							&vtThermoExplosion2;
+
+						(geq totalExplosivePower 730)
+							&vtThermoExplosion1;
+
+						(geq totalExplosivePower 510)
+							&vtBlastExplosion4;
+
+						(geq totalExplosivePower 345)
+							&vtBlastExplosion3;
+
+						(geq totalExplosivePower 215)
+							&vtBlastExplosion2;
+
+						(geq totalExplosivePower 125)
+							&vtBlastExplosion1;
+
+						(geq totalExplosivePower 65)
+							&vtKineticExplosion4;
+
+						(geq totalExplosivePower 25)
+							&vtKineticExplosion3;
+
+						(geq totalExplosivePower 10)
+							&vtKineticExplosion2;
+
+						(geq totalExplosivePower 5)
+							&vtKineticExplosion1;
+
+						Nil
+						)
+					)
+				))
+				
+			(setq intContainerGetExplosionType (lambda (theObj)
+				(switch
+					; If we were not destroyed by an internal explosion, then none is necessary
+					(not (objGetData theObj "DestroyedByExplosion"))
+						Nil
+
+					; If the player planted the explosives, then return the appropriate damage cause.
+					; Returning "playerCreatedExplosion" means that the damage will be blamed on the player
+					; when calling (objGetOrderGiver)
+
+					(objGetData theObj "PlayerExplosives")
+						(list (intCalcExplosionType theObj) 0 'playerCreatedExplosion)
+
+					; Otherwise, this is an internal explosion (return the UNID of the explosion)
+					(intCalcExplosionType theObj)
+					)
+				))
+
+			(setq intDeviceRepairAll (lambda (theObj)
+
+			; intDeviceRepairAll repairs all installed devices. Repairs normal
+			; damage and disruptions.
+
+				(block (allDevices)
+
+					; First, make sure none of the devices are disrupted
+
+					(enum (objGetItems theObj "dI") theDevice
+						(if (objGetItemProperty theObj theDevice 'disrupted)
+							(objSetItemProperty theObj theDevice 'disrupted Nil)
+							)
+						)
+
+					; Next, repair all damaged devices
+
+					(enum (objGetItems theObj "dID") theDevice
+						(objSetItemProperty theObj theDevice 'damaged Nil)
+						)
+					)
+				))
+
+			(setq intIsGateToSystem (lambda (nodeID gateID destSystem nodesChecked)
+				(block (destNode)
+					(setq destNode (sysGetStargateDestinationNode nodeID gateID))
+					(if (eq destNode destSystem)
+						True
+
+						(block (stargates)
+							(setq nodesChecked (append nodesChecked (list nodeID)))
+							(setq stargates (filter (sysGetStargates destNode) theGate
+								(not (find nodesChecked (sysGetStargateDestinationNode destNode theGate)))
+								))
+
+							(if stargates
+								(filter stargates theGate (intIsGateToSystem destNode theGate destSystem nodesChecked))
+								Nil
+								)
+							)
+						)
+					)
+				))
+				
+			; Math functions ---------------------------------------------------
+			
+			(setq mathProbTableLookup (lambda (probTable)
+			
+			; probTable is a table of probabilities of the following format:
+			;
+			; ( (totalProbability Nil)
+			;   ([prob 0] [value 0])
+			;	...
+			;	([prob n] [value n])
+			;	)
+			;
+			; The function returns a random value in the table in proportion to
+			; its probability.
+			
+				(block (theRoll theEntry theProb)
+					(setq theRoll (random 1 (item (item probTable 0) 0)))
+					(setq theEntry 1)
+					(loop (and (setq theProb (item (item probTable theEntry) 0))
+							(gr theRoll theProb)
+							)
+						(block Nil
+							(setq theRoll (subtract theRoll theProb))
+							(setq theEntry (add theEntry 1))
+							)
+						)
+						
+					(item (item probTable theEntry) 1)
+					)
+				))
+				
+			; Object functions -------------------------------------------------
+			
+			(setq objAddItemByValue (lambda (theObj theItem theValue theCurrency)
+				(block Nil
+					(setq itemPrice (itmGetPrice theItem theCurrency))
+					
+					(switch
+						(eq itemPrice 0)
+							(objAddItem theObj theItem theValue)
+							
+						(gr itemPrice theValue)
+							(if (leq (random 1 itemPrice) theValue)
+								(objAddItem theObj theItem 1)
+								)
+								
+						(block Nil
+							(objAddItem theObj theItem (divide theValue itemPrice))
+							(if (leq (random 1 itemPrice) (modulo theValue itemPrice))
+								(objAddItem theObj theItem 1)
+								)
+							)
+						)
+					)
+				))
+				
+			(setq objGetFitCount (lambda (theObj theItem)
+			
+			; objGetFitCount returns the number of the given item that will fit
+			; in the cargo space of the given object, but never more than the
+			; specified number of items.
+			
+				(block (itemMass)
+				
+					(setq itemMass (itmGetMass theItem))
+					
+					(if (eq itemMass 0)
+						(itmGetCount theItem)
+						
+						(min (divide (objGetCargoSpaceLeft theObj) itemMass) (itmGetCount theItem))
+						)
+					)
+				))
+				
+			; String functions -------------------------------------------------
+				
+			(setq strMassString (lambda (mass)
+			
+			; Returns a string for the mass with appropriate units. The mass
+			; argument is in kilograms. This function returns strings of the
+			; following forms:
+			;
+			; n Kg
+			; n.m tons
+			; ------------------------------------------------------------------
+			
+				(block Nil
+					(switch
+						(eq mass 1)
+							"1 Kg"
+
+						(ls mass 1000)
+							(cat mass " Kg")
+
+						(block (tons remainder)
+							(setq tons (divide mass 1000))
+							(setq remainder (divide (add (subtract mass (multiply tons 1000)) 50) 100))
+							(if (eq remainder 10)
+								(block Nil
+									(setq tons (add tons 1))
+									(setq remainder 0)
+									)
+								)
+							(cat tons "." remainder " tons")
+							)
+						)
+					)
+				))
+				
+			(setq strNumber (lambda (theValue)
+			
+			; If the number is small (less than 30) we spell out the number in
+			; English. Otherwise we just use arabic numerals.
+			; ------------------------------------------------------------------
+
+				(switch
+					(ls theValue 0)
+						theValue
+
+					(leq theValue 20)
+						(item 
+							'("zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten"
+								"eleven" "twelve" "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" "eighteen" "nineteen" "twenty")
+							theValue
+							)
+
+					(ls theValue 30)
+						(cat "twenty-" (strNumber (subtract theValue 20)))
+
+					theValue
+					)
+				))
+			)
+	</Globals>
+</TranscendenceModule>

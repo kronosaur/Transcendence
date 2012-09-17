@@ -175,7 +175,7 @@ ALERROR CDesignCollection::AddDynamicType (CExtension *pExtension, DWORD dwUNID,
 	return NOERROR;
 	}
 
-ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, CString *retsError)
+ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, bool bNoResources, CString *retsError)
 
 //	BindDesign
 //
@@ -210,7 +210,7 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 		CExtension *pExtension = BindOrder[i];
 		const CDesignTable &Types = pExtension->GetDesignTypes();
 
-#ifdef DEBUG
+#ifdef DEBUG_BIND
 		::OutputDebugString(strPatternSubst(CONSTLIT("EXTENSION %s\n"), pExtension->GetName()));
 		for (int j = 0; j < Types.GetCount(); j++)
 			{
@@ -241,6 +241,7 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 
 	SDesignLoadCtx Ctx;
 	Ctx.bBindAsNewGame = bNewGame;
+	Ctx.bNoResources = bNoResources;
 
 	//	If this is a new game, then create all the Template types
 
@@ -549,16 +550,20 @@ void CDesignCollection::FireGetGlobalAchievements (CGameStats &Stats)
 		}
 	}
 
-bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *retsScreen, int *retiPriority)
+bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *retsScreen, ICCItem **retpData, int *retiPriority)
 
 //	FireGetGlobalDockScreen
 //
-//	Allows types to override the dock screen for an object
+//	Allows types to override the dock screen for an object.
+//	NOTE: If we return TRUE, callers must discard *retpData.
 
 	{
 	int i;
+	CCodeChain &CC = g_pUniverse->GetCC();
+
 	int iBestPriority = -1;
 	CString sBestScreen;
+	ICCItem *pBestData = NULL;
 
 	//	Loop over all types and get the highest priority screen
 
@@ -569,11 +574,24 @@ bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *re
 
 		int iPriority;
 		CString sScreen;
-		if (pType->FireGetGlobalDockScreen(Event, pObj, &sScreen, &iPriority)
-				&& iPriority > iBestPriority)
+		ICCItem *pData;
+		if (pType->FireGetGlobalDockScreen(Event, pObj, &sScreen, &pData, &iPriority))
 			{
-			iBestPriority = iPriority;
-			sBestScreen = sScreen;
+			if (iPriority > iBestPriority)
+				{
+				iBestPriority = iPriority;
+				sBestScreen = sScreen;
+
+				if (pBestData)
+					pBestData->Discard(&CC);
+
+				pBestData = pData;
+				}
+			else
+				{
+				if (pData)
+					pData->Discard(&CC);
+				}
 			}
 		}
 
@@ -589,6 +607,14 @@ bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *re
 
 	if (retiPriority)
 		*retiPriority = iBestPriority;
+
+	if (retpData)
+		*retpData = pBestData;
+	else
+		{
+		if (pBestData)
+			pBestData->Discard(&CC);
+		}
 
 	return true;
 	}

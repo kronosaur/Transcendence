@@ -27,6 +27,8 @@ CAIBehaviorCtx::CAIBehaviorCtx (void) :
 		m_fImmobile(false),
 		m_fWaitForShieldsToRegen(false),
 		m_fSuperconductingShields(false),
+		m_fHasMultipleWeapons(false),
+		m_fHasSecondaryWeapons(false),
 		m_fRecalcBestWeapon(true)
 
 //	CAIBehaviorCtx constructor
@@ -116,16 +118,20 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 
 	{
 	int i;
-	Metric rBestRange = g_InfiniteDistance;
-	bool bHasSecondaryWeapons = false;
 
 	if (m_fRecalcBestWeapon)
 		{
 		ASSERT(pShip);
 
+		m_rMaxWeaponRange = 0.0;
+
+		Metric rBestRange = g_InfiniteDistance;
 		int iBestWeapon = -1;
 		int iBestWeaponVariant = 0;
 		int iBestScore = 0;
+		int iPrimaryCount = 0;
+		int iBestNonLauncherLevel = 0;
+		bool bHasSecondaryWeapons = false;
 
 		//	Loop over all devices to find the best weapon
 
@@ -133,8 +139,14 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 			{
 			CInstalledDevice *pWeapon = pShip->GetDevice(i);
 
-			if (pWeapon->IsEmpty())
+			//	If this weapon is not working, then skip it
+
+			if (pWeapon->IsEmpty() || pWeapon->IsDamaged() || pWeapon->IsDisrupted() || !pWeapon->IsEnabled())
 				continue;
+
+			//	If this is a secondary weapon, remember that we have some and 
+			//	keep track of the best range.
+
 			else if (pWeapon->IsSecondaryWeapon())
 				{
 				//	Remember the range in case we end up with no good weapons and we need to set 
@@ -148,60 +160,78 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 				continue;
 				}
 
-			//	Compute score
+			//	Otherwise, this is a primary weapon or launcher
 
-			switch (pWeapon->GetCategory())
+			else
 				{
-				case itemcatWeapon:
+				//	Compute score
+
+				switch (pWeapon->GetCategory())
 					{
-					int iScore = CalcWeaponScore(pShip, pTarget, pWeapon, rTargetDist2);
-					if (iScore > iBestScore)
+					case itemcatWeapon:
 						{
-						iBestWeapon = i;
-						iBestWeaponVariant = 0;
-						iBestScore = iScore;
-						}
-
-					break;
-					}
-
-				case itemcatLauncher:
-					{
-					int iCount = pShip->GetMissileCount();
-					if (iCount > 0)
-						{
-						pShip->ReadyFirstMissile();
-
-						for (int j = 0; j < iCount; j++)
+						int iScore = CalcWeaponScore(pShip, pTarget, pWeapon, rTargetDist2);
+						if (iScore > iBestScore)
 							{
-							int iScore = CalcWeaponScore(pShip, pTarget, pWeapon, rTargetDist2);
-
-							//	If we only score 1 and we've got secondary weapons, then don't
-							//	bother with this missile (we don't want to waste it)
-
-							if (iScore == 1 && pShip->HasSecondaryWeapons())
-								{
-								iScore = 0;
-
-								//	Remember the range in case we end up with no good weapons and we need to set 
-								//	a course towards the target.
-
-								Metric rRange = pWeapon->GetClass()->GetMaxEffectiveRange(pShip, pWeapon, pTarget);
-								if (rRange < rBestRange)
-									rBestRange = rRange;
-								}
-
-							if (iScore > iBestScore)
-								{
-								iBestWeapon = i;
-								iBestWeaponVariant = j;
-								iBestScore = iScore;
-								}
-
-							pShip->ReadyNextMissile();
+							iBestWeapon = i;
+							iBestWeaponVariant = 0;
+							iBestScore = iScore;
 							}
+
+						Metric rMaxRange = pWeapon->GetMaxEffectiveRange(pShip);
+						if (rMaxRange > m_rMaxWeaponRange)
+							m_rMaxWeaponRange = rMaxRange;
+
+						if (pWeapon->GetClass()->GetLevel() > iBestNonLauncherLevel)
+							iBestNonLauncherLevel = pWeapon->GetClass()->GetLevel();
+
+						iPrimaryCount++;
+						break;
 						}
-					break;
+
+					case itemcatLauncher:
+						{
+						int iCount = pShip->GetMissileCount();
+						if (iCount > 0)
+							{
+							pShip->ReadyFirstMissile();
+
+							for (int j = 0; j < iCount; j++)
+								{
+								int iScore = CalcWeaponScore(pShip, pTarget, pWeapon, rTargetDist2);
+
+								//	If we only score 1 and we've got secondary weapons, then don't
+								//	bother with this missile (we don't want to waste it)
+
+								if (iScore == 1 && HasSecondaryWeapons())
+									{
+									iScore = 0;
+
+									//	Remember the range in case we end up with no good weapons and we need to set 
+									//	a course towards the target.
+
+									Metric rRange = pWeapon->GetClass()->GetMaxEffectiveRange(pShip, pWeapon, pTarget);
+									if (rRange < rBestRange)
+										rBestRange = rRange;
+
+									if (rRange > m_rMaxWeaponRange)
+										m_rMaxWeaponRange = rRange;
+									}
+
+								if (iScore > iBestScore)
+									{
+									iBestWeapon = i;
+									iBestWeaponVariant = j;
+									iBestScore = iScore;
+									}
+
+								pShip->ReadyNextMissile();
+								}
+
+							iPrimaryCount++;
+							}
+						break;
+						}
 					}
 				}
 			}
@@ -232,6 +262,12 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 			else
 				m_rBestWeaponRange = 60.0 * LIGHT_SECOND;
 			}
+
+		//	Set some invariants
+
+		m_fHasSecondaryWeapons = bHasSecondaryWeapons;
+		m_iBestNonLauncherWeaponLevel = iBestNonLauncherLevel;
+		m_fHasMultipleWeapons = (iPrimaryCount > 1);
 
 		//	Done
 
@@ -273,15 +309,14 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	m_pShields = NULL;
 	m_fSuperconductingShields = false;
-	m_rMaxWeaponRange = 0.0;
 	m_iBestNonLauncherWeaponLevel = 0;
-	int iPrimaryCount = 0;
+	m_fHasSecondaryWeapons = false;
 
 	for (i = 0; i < pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
 
-		if (pDevice->IsEmpty())
+		if (pDevice->IsEmpty() || pDevice->IsDamaged() || pDevice->IsDisrupted() || !pDevice->IsEnabled())
 			continue;
 
 		switch (pDevice->GetCategory())
@@ -297,20 +332,11 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 					m_iBestNonLauncherWeaponLevel = pDevice->GetClass()->GetLevel();
 					}
 
-				//	Get the max range that any (primary) weapon has
+				//	Secondary
 
-				if (!pDevice->IsSecondaryWeapon())
-					{
-					Metric rMaxRange = pDevice->GetMaxEffectiveRange(pShip);
-					if (rMaxRange > m_rMaxWeaponRange)
-						m_rMaxWeaponRange = rMaxRange;
-					}
+				if (pDevice->IsSecondaryWeapon())
+					m_fHasSecondaryWeapons = true;
 
-				//	Count the number of weapons that we can switch to (including
-				//	launchers)
-
-				if (!pDevice->IsSecondaryWeapon())
-					iPrimaryCount++;
 				break;
 				}
 
@@ -324,7 +350,6 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	//	Flags
 
-	m_fHasMultipleWeapons = (iPrimaryCount > 1);
 	m_fThrustThroughTurn = ((pShip->GetDestiny() % 100) < 50);
 	m_fAvoidExplodingStations = (rAimRange > MIN_STATION_TARGET_DIST);
 

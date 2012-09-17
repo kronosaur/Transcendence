@@ -766,6 +766,26 @@ void CGItemListArea::SetList (CSpaceObject *pSource)
 	Invalidate();
 	}
 
+void CGItemListArea::SetList (CItemList &ItemList)
+
+//	SetList
+//
+//	Set list of items
+
+	{
+	CleanUp();
+
+	//	Create a new data source
+
+	m_pListData = new CItemListWrapper(ItemList);
+	m_iType = listItem;
+
+	//	Done
+
+	InitRowDesc();
+	Invalidate();
+	}
+
 void CGItemListArea::SetList (CCodeChain &CC, ICCItem *pList)
 
 //	SetList
@@ -818,6 +838,15 @@ void CGItemListArea::Update (void)
 CItemListWrapper::CItemListWrapper (CSpaceObject *pSource) :
 		m_pSource(pSource),
 		m_ItemList(pSource->GetItemList())
+
+//	CItemListWrapper constructor
+
+	{
+	}
+
+CItemListWrapper::CItemListWrapper (CItemList &ItemList) :
+		m_pSource(NULL),
+		m_ItemList(ItemList)
 
 //	CItemListWrapper constructor
 
@@ -956,3 +985,4 @@ void CListWrapper::PaintImageAtCursor (CG16bitImage &Dest, int x, int y)
 			x,
 			y);
 	}
+

@@ -71,6 +71,7 @@ class CFormulaText
 //	[ ] Increment designCount
 //	[ ] Add a char??? entry
 //	[ ] Add entry to DESIGN_CHAR in CDesignType (make sure it matches the char??? entry)
+//	[ ] Add entry to DESIGN_CLASS_NAME in CDesignType
 //	[ ] Add case to CDesignTypeCriteria::ParseCriteria (if type should be enumerable)
 
 enum DesignTypes
@@ -92,7 +93,7 @@ enum DesignTypes
 	designGlobals =						13,
 	designImage =						14,
 	designSound =						15,
-	designSystemNode =					16,
+	designMissionType =					16,
 	designSystemTable =					17,
 	designSystemMap =					18,
 	designNameGenerator =				19,
@@ -115,7 +116,7 @@ enum DesignTypes
 	charItemType =						'i',
 
 	charImage =							'm',
-	charSystemNode =					'n',
+	charMissionType =					'n',
 	charPower =							'p',
 	charSystemTable =					'q',
 	charShipClass =						's',
@@ -203,7 +204,7 @@ class CDesignType
 		void FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent = eventNone, ICCItem **retpResult = NULL);
 		bool FireGetCreatePos (CSpaceObject *pBase, CSpaceObject *pTarget, CSpaceObject **retpGate, CVector *retvPos);
 		void FireGetGlobalAchievements (CGameStats &Stats);
-		bool FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpaceObject *pObj, CString *retsScreen, int *retiPriority);
+		bool FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpaceObject *pObj, CString *retsScreen, ICCItem **retpData, int *retiPriority);
 		int FireGetGlobalResurrectPotential (void);
 		void FireObjCustomEvent (const CString &sEvent, CSpaceObject *pObj, ICCItem **retpResult);
 		ALERROR FireOnGlobalDockPaneInit (const SEventHandlerDesc &Event, void *pScreen, DWORD dwScreenUNID, const CString &sScreen, const CString &sPane, CString *retsError);
@@ -242,6 +243,7 @@ class CDesignType
 		inline void MarkImages (void) { OnMarkImages(); }
 		inline void SetGlobalData (const CString &sAttrib, const CString &sData) { m_GlobalData.SetData(sAttrib, sData); }
 		inline void SetUNID (DWORD dwUNID) { m_dwUNID = dwUNID; }
+		inline bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) { return m_Language.Translate(pObj, sID, retpResult); }
 		inline bool TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText) { return m_Language.Translate(pObj, sID, retsText); }
 
 		static CString GetTypeChar (DesignTypes iType);
@@ -1286,6 +1288,7 @@ class CItemEnhancement
 		inline bool IsRegenerating (void) const { return ((GetType() == etRegenerate) && !IsDisadvantage()); }
 		inline bool IsReflective (void) const { return ((GetType() == etReflect) && !IsDisadvantage()); }
 		bool IsReflective (const DamageDesc &Damage, int *retiReflectChance = NULL) const;
+		inline bool IsShatterImmune (void) const { return ((GetType() == etSpecialDamage) && GetLevel2() == specialShatter && !IsDisadvantage()); }
 		inline bool IsShieldInterfering (void) const { return ((GetType() == etImmunityIonEffects) && IsDisadvantage()); }
 		void ReadFromStream (DWORD dwVersion, IReadStream *pStream);
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -1627,6 +1630,7 @@ class CArmorClass : public CObject
 		inline CItemType *GetItemType (void) { return m_pItemType; }
 		inline CString GetName (void);
 		inline int GetInstallCost (void) { return m_iInstallCost; }
+		ICCItem *GetItemProperty (CItemCtx &Ctx, const CString &sName);
 		int GetMaxHP (CItemCtx &ItemCtx);
 		CString GetReference (CItemCtx &Ctx, int iVariant = -1);
 		bool GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pInstalled, int *retiHP, int *retArray);
@@ -1641,6 +1645,7 @@ class CArmorClass : public CObject
 		inline bool IsEMPDamageImmune (CInstalledArmor *pArmor) { return (m_iEMPDamageAdj == 0) || ((pArmor && pArmor->GetMods().IsEMPImmune())); }
 		inline bool IsRadiationImmune (CInstalledArmor *pArmor = NULL) { return (m_fRadiationImmune || (pArmor && pArmor->GetMods().IsRadiationImmune())); }
 		bool IsReflective (CItemCtx &ItemCtx, const DamageDesc &Damage);
+		bool IsShatterImmune (CItemCtx &ItemCtx);
 		inline bool IsShieldInterfering (CInstalledArmor *pArmor) { return (m_fShieldInterference || (pArmor && pArmor->GetMods().IsShieldInterfering())); }
 		ALERROR OnBindDesign (SDesignLoadCtx &Ctx);
 		void Update (CInstalledArmor *pArmor, CSpaceObject *pObj, int iTick, bool *retbModified);
@@ -1680,7 +1685,11 @@ class CArmorClass : public CObject
 		DWORD m_fPhotoRecharge:1;				//	TRUE if refuels when near a star
 		DWORD m_fShieldInterference:1;			//	TRUE if armor interferes with shields
 		DWORD m_fDisintegrationImmune:1;		//	TRUE if immune to disintegration
-		DWORD m_fSpare:27;
+		DWORD m_fShatterImmune:1;				//	TRUE if immune to shatter
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
 
 		CItemType *m_pItemType;					//	Item for this armor
 
@@ -2382,7 +2391,7 @@ class IShipController
 		virtual void OnItemUninstalled (const CItem &Item) { }
 		virtual void OnLifeSupportWarning (int iSecondsLeft) { }
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg) { }
-		virtual void OnNewSystem (void) { }
+		virtual void OnNewSystem (CSystem *pSystem) { }
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip) { }
@@ -2735,7 +2744,7 @@ class CTopologyDesc
 		inline CSystemMap *GetMap (void) const { return m_pMap; }
 		inline CEffectCreator *GetMapEffect (void) const { return m_pMapEffect; }
 		inline const CString &GetID (void) const { return m_sID; }
-		void GetPos (int *retx, int *rety);
+		bool GetPos (int *retx, int *rety);
 		CXMLElement *GetSystem (void);
 		inline CTopologyDesc *GetTopologyDesc (int iIndex);
 		inline int GetTopologyDescCount (void);
@@ -3023,6 +3032,7 @@ class CItemCtx
 
 		ICCItem *CreateItemVariable (CCodeChain &CC);
 		CInstalledArmor *GetArmor (void);
+		CArmorClass *GetArmorClass (void);
 		CInstalledDevice *GetDevice (void);
 		CDeviceClass *GetDeviceClass (void);
 		const CItem &GetItem (void);
@@ -3330,7 +3340,7 @@ class CShipClass : public CDesignType
 		void InstallEquipment (CShip *pShip);
 		inline bool IsDebugOnly (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsDebugOnly()); }
 		inline bool IsPlayerShip (void) { return (m_pPlayerSettings != NULL); }
-		inline bool IsShownAtNewGame (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsInitialClass()); }
+		inline bool IsShownAtNewGame (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsInitialClass() && !IsVirtual()); }
 		inline bool IsTimeStopImmune (void) { return (m_fTimeStopImmune ? true : false); }
 		void MarkImages (bool bMarkDevices);
 		void Paint (CG16bitImage &Dest, 
@@ -4144,6 +4154,53 @@ class CShipTable : public CDesignType
 		IShipGenerator *m_pGenerator;
 	};
 
+//	Missions ------------------------------------------------------------------
+
+class CMissionType : public CDesignType
+	{
+	public:
+		inline const CString &GetName (void) const { return m_sName; }
+		inline bool FailureWhenOwnerDestroyed (void) const { return !m_fNoFailureOnOwnerDestroyed; }
+
+		//	CDesignType overrides
+
+		static CMissionType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designMissionType) ? (CMissionType *)pType : NULL); }
+		virtual bool FindDataField (const CString &sField, CString *retsValue);
+		virtual DesignTypes GetType (void) const { return designMissionType; }
+
+	protected:
+		//	CDesignType overrides
+
+		virtual ALERROR OnBindDesign (SDesignLoadCtx &Ctx);
+		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+
+	private:
+		//	Basic properties
+
+		CString m_sName;					//	Internal name
+
+		//	Mission creation
+
+		CString m_sLevelFrequency;			//	String array of frequency distribution by level
+		int m_iMaxAcceptCount;				//	Limit to number of times mission has been accepted by player
+											//		(-1 if no limit)
+		int m_iAccepted;					//	Number of times player has accepted this mission type
+		DiceRange m_Expiration;				//	Mission expires after this amount
+											//		of time if not accepted.
+
+		DWORD m_fExpires:1;					//	If TRUE, mission expires unless
+											//		accepted by m_Expiration time.
+		DWORD m_fNoFailureOnOwnerDestroyed:1;	//	If TRUE, mission does not fail when owner destroyed
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
+	};
+
 //	Adventures and Extensions -------------------------------------------------
 
 class CAdventureDesc : public CDesignType
@@ -4826,6 +4883,8 @@ struct SDesignLoadCtx
 			bLoadModule(false)
 		{ }
 
+	inline DWORD GetAPIVersion (void) const { return (pExtension ? pExtension->GetAPIVersion() : EXTENSION_VERSION); }
+
 	//	Context
 	CString sResDb;							//	ResourceDb filespec
 	CResourceDb *pResDb;					//	Open ResourceDb object
@@ -4865,7 +4924,7 @@ class CDesignCollection
 		~CDesignCollection (void);
 
 		ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError);
-		ALERROR BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, CString *retsError);
+		ALERROR BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, bool bNoResources, CString *retsError);
 		void CleanUp (void);
 		void ClearImageMarks (void);
 		inline CEconomyType *FindEconomyType (const CString &sID) { CEconomyType **ppType = m_EconomyIndex.GetAt(sID); return (ppType ? *ppType : NULL); }
@@ -4873,7 +4932,7 @@ class CDesignCollection
 		CExtension *FindExtension (DWORD dwUNID) const;
 		CXMLElement *FindSystemFragment (const CString &sName, CSystemTable **retpTable = NULL) const;
 		void FireGetGlobalAchievements (CGameStats &Stats);
-		bool FireGetGlobalDockScreen (CSpaceObject *pObj, CString *retsScreen, int *retiPriority = NULL);
+		bool FireGetGlobalDockScreen (CSpaceObject *pObj, CString *retsScreen, ICCItem **retpData, int *retiPriority = NULL);
 		void FireOnGlobalMarkImages (void);
 		void FireOnGlobalObjDestroyed (SDestroyCtx &Ctx);
 		void FireOnGlobalPaneInit (void *pScreen, CDesignType *pRoot, const CString &sScreen, const CString &sPane);

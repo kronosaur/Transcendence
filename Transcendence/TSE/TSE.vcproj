@@ -840,6 +840,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CMissionType.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\CNameGenerator.cpp"
 					>
 				</File>
@@ -2011,6 +2015,10 @@
 							PreprocessorDefinitions=""
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\CMission.cpp"
+					>
 				</File>
 				<File
 					RelativePath="CParticleDamage.cpp"

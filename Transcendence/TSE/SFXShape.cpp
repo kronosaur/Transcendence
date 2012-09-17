@@ -171,7 +171,7 @@ void CShapeEffectPainter::CacheShapeRegion (int iAngle, int iLength, int iWidth)
 
 //	CacheShapeRegion
 //
-//	Insures that the cache has the proper region
+//	Ensures that the cache has the proper region
 
 	{
 	if (iAngle != m_iCachedRotation

@@ -422,7 +422,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
 		virtual void OnLifeSupportWarning (int iSecondsLeft);
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg);
-		virtual void OnNewSystem (void);
+		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
 		virtual void OnRadiationWarning (int iSecondsLeft);
@@ -578,8 +578,9 @@ class CItemListWrapper : public IListData
 	{
 	public:
 		CItemListWrapper (CSpaceObject *pSource);
+		CItemListWrapper (CItemList &ItemList);
 
-		virtual void DeleteAtCursor (int iCount) { m_ItemList.DeleteAtCursor(iCount); m_pSource->InvalidateItemListAddRemove(); }
+		virtual void DeleteAtCursor (int iCount) { m_ItemList.DeleteAtCursor(iCount); if (m_pSource) m_pSource->InvalidateItemListAddRemove(); }
 		virtual int GetCount (void) { return m_ItemList.GetCount(); }
 		virtual int GetCursor (void) { return m_ItemList.GetCursor(); }
 		virtual const CItem &GetItemAtCursor (void) { return m_ItemList.GetItemAtCursor(); }
@@ -646,6 +647,7 @@ class CGItemListArea : public AGArea
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 		void SetList (CCodeChain &CC, ICCItem *pList);
 		void SetList (CSpaceObject *pSource);
+		void SetList (CItemList &ItemList);
 		inline void SetRowHeight (int cyHeight) { m_cyRow = Max(1, cyHeight); }
 		inline void SetUIRes (const CUIResources *pUIRes) { m_pUIRes = pUIRes; }
 
@@ -782,6 +784,9 @@ class CDockScreenActions
 			specialPrevKey,
 			};
 
+		CDockScreenActions (void) : m_pData(NULL) { }
+		~CDockScreenActions (void);
+
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
 		void CleanUp (void);
 		void CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame);
@@ -797,7 +802,7 @@ class CDockScreenActions
 		inline const CString &GetKey (int iAction) const { return m_Actions[iAction].sKey; }
 		inline const CString &GetLabel (int iAction) const { return m_Actions[iAction].sLabel; }
 		int GetVisibleCount (void) const;
-		ALERROR InitFromXML (CExtension *pExtension, CXMLElement *pActions, CString *retsError);
+		ALERROR InitFromXML (CExtension *pExtension, CXMLElement *pActions, ICCItem *pData, CString *retsError);
 		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
 		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
@@ -834,6 +839,7 @@ class CDockScreenActions
 			};
 
 		TArray<SActionDesc> m_Actions;
+		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
 	};
 
 class CDockScreen : public CObject,
@@ -855,6 +861,7 @@ class CDockScreen : public CObject,
 							CExtension *pExtension,
 							CXMLElement *pDesc, 
 							const CString &sPane,
+							ICCItem *pData,
 							CString *retsPane,
 							AGScreen **retpScreen);
 		inline bool InOnInit (void) { return m_bInOnInit; }
@@ -921,14 +928,17 @@ class CDockScreen : public CObject,
 		ALERROR CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect);
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
+		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
 		CSpaceObject *EvalListSource (const CString &sString);
-		CString EvalString (const CString &sString, bool bPlain = false, bool *retbError = NULL);
+		CString EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, bool *retbError = NULL);
 		SDisplayControl *FindDisplayControl (const CString &sID);
+		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
 		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
-		ALERROR InitCustomList (void);
+		ALERROR InitCustomItemList (ICCItem *pData);
+		ALERROR InitCustomList (ICCItem *pData);
 		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
 		ALERROR InitFonts (void);
-		ALERROR InitItemList (void);
+		ALERROR InitItemList (ICCItem *pData);
 		void SelectNextItem (bool *retbMore = NULL);
 		void SelectPrevItem (void);
 		void ShowDisplay (bool bAnimateOnly = false);
@@ -962,6 +972,7 @@ class CDockScreen : public CObject,
 		//	Item list variables
 		CGItemListArea *m_pItemListControl;
 		CItemCriteria m_ItemCriteria;
+		CItemList m_CustomItems;
 
 		//	Display controls
 		TArray<SDisplayControl> m_Controls;
@@ -984,6 +995,42 @@ class CDockScreen : public CObject,
 		CGTextArea *m_pFrameDesc;
 		bool m_bInShowPane;
 		bool m_bNoListNavigation;
+	};
+
+struct SDockFrame
+	{
+	SDockFrame (void) :
+			pLocation(NULL),
+			pRoot(NULL),
+			pInitialData(NULL),
+			pStoredData(NULL)
+		{ }
+
+	CSpaceObject *pLocation;				//	Current location
+	CDesignType *pRoot;						//	Either a screen or a type with screens
+	CString sScreen;						//	Screen name (UNID or name)
+	CString sPane;							//	Current pane
+	ICCItem *pInitialData;					//	Data for the screen
+	ICCItem *pStoredData;					//	Read-write data
+	};
+
+class CDockScreenStack
+	{
+	public:
+		void DeleteAll (void);
+		void DiscardOldFrame (SDockFrame &OldFrame);
+		ICCItem *GetData (const CString &sAttrib);
+		inline int GetCount (void) const { return m_Stack.GetCount(); }
+		const SDockFrame &GetCurrent (void) const;
+		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
+		void Push (const SDockFrame &Frame);
+		void Pop (void);
+		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
+		void SetCurrentPane (const CString &sPane);
+		void SetData (const CString &sAttrib, ICCItem *pData);
+
+	private:
+		TArray<SDockFrame> m_Stack;
 	};
 
 class CArmorDisplay
@@ -2113,14 +2160,6 @@ class CGameSettings
 
 //	Transcendence data model class --------------------------------------------
 
-struct SDockFrame
-	{
-	CSpaceObject *pLocation;				//	Current location
-	CDesignType *pRoot;						//	Either a screen or a type with screens
-	CString sScreen;						//	Screen name (UNID or name)
-	CString sPane;							//	Current pane
-	};
-
 class CTranscendenceModel
 	{
 	public:
@@ -2141,22 +2180,25 @@ class CTranscendenceModel
 		void OnPlayerEnteredGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		void OnPlayerExitedGate (void);
 		void OnPlayerTraveledThroughGate (void);
+		inline ICCItem *GetScreenData (const CString &sAttrib) { return m_DockFrames.GetData(sAttrib); }
 		ALERROR EndGameClose (CString *retsError = NULL);
 		ALERROR EndGameDestroyed (bool *retbResurrected = NULL);
 		ALERROR EndGameSave (CString *retsError = NULL);
 		ALERROR EndGameStargate (void);
-		ALERROR EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane);
+		ALERROR EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData);
 		void ExitScreenSession (bool bForceUndock = false);
-		bool FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen = NULL);
+		bool FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen = NULL, ICCItem **retpData = NULL);
 		inline int GetLastHighScore (void) { return m_iLastHighScore; }
-		void GetScreenSession (CSpaceObject **retpObj, CDesignType **retpRoot = NULL, CString *retsScreen = NULL, CString *retsPane = NULL);
-		inline bool InScreenSession (void) { return (m_DockFrames.GetCount() > 0); }
+		void GetScreenSession (SDockFrame *retFrame);
+		inline bool InScreenSession (void) { return !m_DockFrames.IsEmpty(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
 		void RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped);
+		void RefreshScreenSession (void);
+		inline void SetScreenData (const CString &sAttrib, ICCItem *pData) { m_DockFrames.SetData(sAttrib, pData); }
 		ALERROR ShowPane (const CString &sPane);
-		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, bool bReturn = false);
+		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn = false);
 		void ShowShipScreen (void);
-		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, CString *retsError);
+		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError);
 		void UseItem (CItem &Item);
 
 		int AddHighScore (const CGameRecord &Score);
@@ -2242,7 +2284,7 @@ class CTranscendenceModel
 		//	Docking state
 		CSpaceObject *m_pDock;						//	Object we are docked with (NULL if we're not docked with anything)
 		CDesignType *m_pDefaultScreensRoot;			//	Default root to look for local screens
-		TArray<SDockFrame> m_DockFrames;			//	Stack of dock screens
+		CDockScreenStack m_DockFrames;				//	Stack of dock screens
 		TArray<CXMLElement *> m_ScreensInited;		//	List of screens that have called OnInit this session
 
 		//	Temporaries

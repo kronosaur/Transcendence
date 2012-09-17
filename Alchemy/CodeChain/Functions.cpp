@@ -373,6 +373,15 @@ ICCItem *fnBlock (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 		pLocalSymbols->SetLocalFrame();
 
+		//	Setup the context
+
+		if (pCtx->pLocalSymbols)
+			pLocalSymbols->SetParent(pCtx->pLocalSymbols);
+		else
+			pLocalSymbols->SetParent(pCtx->pLexicalSymbols);
+		pOldSymbols = pCtx->pLocalSymbols;
+		pCtx->pLocalSymbols = pLocalSymbols;
+
 		//	Loop over each item and associate it
 
 		for (i = 0; i < pLocals->GetCount(); i++)
@@ -390,6 +399,20 @@ ICCItem *fnBlock (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 				{
 				pVar = pLocal->GetElement(0);
 				pValue = pCC->Eval(pCtx, pLocal->GetElement(1));
+
+				//	If we get an error evaluating, return it
+
+				if (pValue->IsError())
+					{
+					//	Clean up
+
+					pCtx->pLocalSymbols = pOldSymbols;
+					pLocalSymbols->Discard(pCC);
+
+					//	Done
+
+					return pValue;
+					}
 				}
 
 			//	Otherwise, we expect an identifier (which we initialize to Nil)
@@ -404,10 +427,11 @@ ICCItem *fnBlock (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 			if (pVar->IsIdentifier())
 				{
-				pItem = pLocalSymbols->AddEntry(pCC, pVar, pValue);
+				pItem = pLocalSymbols->AddEntry(pCC, pVar, pValue, true);
 				pValue->Discard(pCC);
 				if (pItem->IsError())
 					{
+					pCtx->pLocalSymbols = pOldSymbols;
 					pLocalSymbols->Discard(pCC);
 					return pItem;
 					}
@@ -416,14 +440,6 @@ ICCItem *fnBlock (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 				}
 			}
 
-		//	Setup the context
-
-		if (pCtx->pLocalSymbols)
-			pLocalSymbols->SetParent(pCtx->pLocalSymbols);
-		else
-			pLocalSymbols->SetParent(pCtx->pLexicalSymbols);
-		pOldSymbols = pCtx->pLocalSymbols;
-		pCtx->pLocalSymbols = pLocalSymbols;
 		}
 	else
 		{
@@ -638,7 +654,7 @@ ICCItem *fnEnum (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 		return pLocalSymbols;
 		}
 
-	//	Associate the enumaration variable
+	//	Associate the enumeration variable
 
 	pError = pLocalSymbols->AddEntry(pCC, pVar, pCC->CreateNil());
 	if (pError->IsError())
@@ -2605,6 +2621,7 @@ ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 //
 //	Simple integer arithmetic
 //
+//	(modulo ['degrees] int1 int2)
 //	(sqrt int1)
 
 	{
@@ -2622,7 +2639,7 @@ ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 			int iArg = 0;
 
 			bool bClock = false;
-			if (pArgs->GetElement(iArg)->IsIdentifier())
+			if (pArgs->GetCount() > 0 && pArgs->GetElement(iArg)->IsIdentifier())
 				{
 				if (strEquals(pArgs->GetElement(iArg)->GetStringValue(), CONSTLIT("degrees")))
 					bClock = true;
@@ -2632,8 +2649,11 @@ ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 				iArg++;
 				}
 
-			int iOp1 = (pArgs->GetCount() > iArg ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
-			int iOp2 = (pArgs->GetCount() > iArg ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
+			if (pArgs->GetCount() < (iArg + 2))
+				return pCC->CreateError(CONSTLIT("Insufficient arguments"), pArgs);
+
+			int iOp1 = pArgs->GetElement(iArg++)->GetIntegerValue();
+			int iOp2 = pArgs->GetElement(iArg++)->GetIntegerValue();
 
 			if (iOp2 == 0)
 				return pCC->CreateError(CONSTLIT("Division by zero"), pArgs);
@@ -2673,7 +2693,6 @@ ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 //	Simple integer arithmetic
 //
 //	(divide int1 int2)
-//	(modulo int1 int2)
 //	(subtract int1 int2)
 
 	{
@@ -3306,6 +3325,15 @@ ICCItem *fnSubst (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 						{
 						CString sParam = pResult->GetStringValue();
 						Stream.Write(sParam.GetASCIIZPointer(), sParam.GetLength());
+						}
+					else
+						{
+						//	If not found, write out the original parameter (with
+						//	% delimiters) so that other functions can handle them.
+
+						Stream.Write("%", 1);
+						Stream.Write(sKey.GetASCIIZPointer(), sKey.GetLength());
+						Stream.Write("%", 1);
 						}
 
 					pResult->Discard(pCC);

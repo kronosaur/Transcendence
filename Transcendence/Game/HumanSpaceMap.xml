@@ -65,7 +65,8 @@
 				</Group>
 				<Stargate chance="50" from="A3:Outbound" to="PJ:Inbound"/>
 			</StargateTable>
-			<Stargate from="PJ:Outbound"	to="A6:Inbound"/>
+			<Stargate from="PJ:Outbound"	to="A5:Inbound"/>
+			<Stargate from="A5:Outbound"	to="A6:Inbound"/>
 			<Stargate from="A6:Outbound"	to="A7:Inbound"/>
 			<Stargate from="A7:Outbound"	to="G1:Inbound"/>
 			<Stargate from="G1:Outbound"	to="G2:Inbound"/>

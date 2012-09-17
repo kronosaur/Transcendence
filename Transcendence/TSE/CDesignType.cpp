@@ -17,6 +17,7 @@
 #define ITEM_TABLE_TAG							CONSTLIT("ItemTable")
 #define ITEM_TYPE_TAG							CONSTLIT("ItemType")
 #define LANGUAGE_TAG							CONSTLIT("Language")
+#define MISSION_TYPE_TAG						CONSTLIT("MissionType")
 #define OVERLAY_TYPE_TAG						CONSTLIT("OverlayType")
 #define POWER_TAG								CONSTLIT("Power")
 #define SHIP_CLASS_TAG							CONSTLIT("ShipClass")
@@ -107,7 +108,7 @@ static char *DESIGN_CLASS_NAME[designCount] =
 		"Globals",
 		"Image",
 		"Sound",
-		"SystemNode",
+		"MissionType",
 		"SystemTable",
 		"SystemMap",
 		"NameGenerator",
@@ -222,6 +223,8 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			pType = new CShipClass;
 		else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
 			pType = new CEnergyFieldType;
+		else if (strEquals(pDesc->GetTag(), MISSION_TYPE_TAG))
+			pType = new CMissionType;
 		else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
 			pType = new CEnergyFieldType;
 		else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
@@ -524,12 +527,15 @@ void CDesignType::FireGetGlobalAchievements (CGameStats &Stats)
 		}
 	}
 
-bool CDesignType::FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpaceObject *pObj, CString *retsScreen, int *retiPriority)
+bool CDesignType::FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpaceObject *pObj, CString *retsScreen, ICCItem **retpData, int *retiPriority)
 
 //	FireGetGlobalDockScreen
 //
 //	Asks a type to see if it wants to override an object's
 //	dock screen.
+//
+//	NOTE: If we return TRUE and *retpData is non-NULL then the caller is responsible 
+//	for discarding data.
 
 	{
 	//	Set up
@@ -559,13 +565,23 @@ bool CDesignType::FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpac
 	else if (pResult->IsList() && pResult->GetCount() >= 2)
 		{
 		*retsScreen = pResult->GetElement(0)->GetStringValue();
-		*retiPriority = pResult->GetElement(1)->GetIntegerValue();
+		if (pResult->GetCount() >= 3)
+			{
+			*retpData = pResult->GetElement(1)->Reference();
+			*retiPriority = pResult->GetElement(2)->GetIntegerValue();
+			}
+		else
+			{
+			*retpData = NULL;
+			*retiPriority = pResult->GetElement(1)->GetIntegerValue();
+			}
 		bResult = true;
 		}
 	else if (pResult->GetCount() > 0)
 		{
 		*retsScreen = pResult->GetElement(0)->GetStringValue();
 		*retiPriority = 0;
+		*retpData = NULL;
 		bResult = true;
 		}
 	else
@@ -1178,7 +1194,7 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Extension information
 
 	m_pExtension = Ctx.pExtension;
-	m_dwVersion = (Ctx.pExtension ? Ctx.pExtension->GetAPIVersion() : EXTENSION_VERSION);
+	m_dwVersion = Ctx.GetAPIVersion();
 
 	//	Inheritance
 
@@ -1756,8 +1772,8 @@ ALERROR CDesignTypeCriteria::ParseCriteria (const CString &sCriteria, CDesignTyp
 				retCriteria->m_dwTypeSet |= (1 << designImage);
 				break;
 
-			case charSystemNode:
-				retCriteria->m_dwTypeSet |= (1 << designSystemNode);
+			case charMissionType:
+				retCriteria->m_dwTypeSet |= (1 << designMissionType);
 				break;
 
 			case charPower:

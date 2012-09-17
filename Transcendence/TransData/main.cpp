@@ -42,7 +42,7 @@
 #define SMOKE_TEST_SWITCH					CONSTLIT("smoketest")
 #define SNAPSHOT_SWITCH						CONSTLIT("snapshot")
 #define STATION_FREQUENCY_SWITCH			CONSTLIT("stationfrequency")
-#define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationplacesim")
+#define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationSeparationSim")
 #define STATS_SWITCH						CONSTLIT("stats")
 #define STD_ARMOR_SWITCH					CONSTLIT("stdarmor")
 #define STD_SHIELD_SWITCH					CONSTLIT("stdshield")

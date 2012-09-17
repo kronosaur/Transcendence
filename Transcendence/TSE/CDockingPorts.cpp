@@ -485,7 +485,7 @@ void CDockingPorts::UpdateAll (CSpaceObject *pOwner)
 //	UpdateAll 
 
 	{
-	int i, j;
+	int i;
 
 	for (i = 0; i < m_iPortCount; i++)
 		{
@@ -526,23 +526,20 @@ void CDockingPorts::UpdateAll (CSpaceObject *pOwner)
 				//	(We do this because sometimes we want to handle stuff
 				//	in OnObjDocked before we show the player a dock screen)
 
-				if (pOwner && pOwner->HasOnObjDockedEvent() && pOwner != pShip)
-					pOwner->OnObjDocked(pShip, pOwner);
+				if (pOwner 
+						&& pOwner->HasOnObjDockedEvent() 
+						&& pOwner != pShip
+						&& !pOwner->IsDestroyed()
+						&& pShip->IsSubscribedToEvents(pOwner))
+					pOwner->FireOnObjDocked(pShip, pOwner);
 
 				//	Dock
 
 				pShip->OnDocked(pOwner);
 
-				//	Tell all objects in the system that a ship has docked
+				//	Notify other subscribers
 
-				CSystem *pSystem = pShip->GetSystem();
-				for (j = 0; j < pSystem->GetObjectCount(); j++)
-					{
-					CSpaceObject *pObj = pSystem->GetObject(j);
-
-					if (pObj && pObj->HasOnObjDockedEvent() && pObj != pShip && pObj != pOwner)
-						pObj->OnObjDocked(pShip, pOwner);
-					}
+				pShip->NotifyOnObjDocked(pOwner);
 				}
 
 			//	Otherwise accelerate the ship towards the docking port

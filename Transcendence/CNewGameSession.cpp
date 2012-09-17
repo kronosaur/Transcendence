@@ -541,7 +541,7 @@ ALERROR CNewGameSession::OnInit (CString *retsError)
 		return ERR_FAIL;
 		}
 
-	//	Find the default ship class in the list
+	//	Find the default ship class in the list (it's OK if we don't find it).
 
 	m_iCurShipClass = 0;
 	for (i = 0; i < m_ShipClasses.GetCount(); i++)

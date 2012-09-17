@@ -1000,7 +1000,7 @@ void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 	//	Notify our order module (or derrived class if we're doing it old-style)
 
 	if (m_pOrderModule)
-		m_pOrderModule->Attacked(m_pShip, pAttacker, Damage);
+		m_pOrderModule->Attacked(m_pShip, m_AICtx, pAttacker, Damage);
 	else
 		OnAttackedNotify(pAttacker, Damage);
 
@@ -1059,7 +1059,7 @@ void CBaseShipAI::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEnt
 		m_pShip->SetDestroyInGate();
 	}
 
-void CBaseShipAI::OnNewSystem (void)
+void CBaseShipAI::OnNewSystem (CSystem *pSystem)
 
 //	OnNewSystem
 //
@@ -1067,7 +1067,6 @@ void CBaseShipAI::OnNewSystem (void)
 
 	{
 	int i;
-	CSystem *pNewSystem = m_pShip->GetSystem();
 
 	//	Reset the nav path (because it was for the last system)
 
@@ -1087,7 +1086,7 @@ void CBaseShipAI::OnNewSystem (void)
 		{
 		OrderEntry *pOrder = (OrderEntry *)m_Orders.GetStruct(i);
 		if (pOrder->pTarget 
-				&& pOrder->pTarget->GetSystem() != pNewSystem
+				&& pOrder->pTarget->GetSystem() != pSystem
 				&& !pOrder->pTarget->IsPlayer())
 			{
 			//	Remove the order

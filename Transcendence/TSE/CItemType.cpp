@@ -1162,6 +1162,32 @@ CInstalledArmor *CItemCtx::GetArmor (void)
 	return NULL;
 	}
 
+CArmorClass *CItemCtx::GetArmorClass (void)
+
+//	GetArmorClass
+//
+//	Returns the armor class
+
+	{
+	//	Get it from the installed device
+
+	if (m_pArmor)
+		return m_pArmor->GetClass();
+
+	//	Otherwise, get it from the item
+
+	if (m_pItem)
+		{
+		CItemType *pType = m_pItem->GetType();
+		if (pType)
+			return pType->GetArmorClass();
+		}
+
+	//	Couldn't get it
+
+	return NULL;
+	}
+
 CInstalledDevice *CItemCtx::GetDevice (void)
 
 //	GetDevice

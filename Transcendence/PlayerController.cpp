@@ -1288,7 +1288,7 @@ void CPlayerShipController::OnMessage (CSpaceObject *pSender, const CString &sMs
 	m_pTrans->DisplayMessage(sMsg);
 	}
 
-void CPlayerShipController::OnNewSystem (void)
+void CPlayerShipController::OnNewSystem (CSystem *pSystem)
 
 //	OnNewSystem
 //

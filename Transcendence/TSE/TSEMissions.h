@@ -1,0 +1,176 @@
+//	TSEMissions.h
+//
+//	CMission implementation
+//	Copyright (c) 2012 by Kronosaur Productions, LLC. All Rights Reserved.
+
+#ifndef INCL_TSE_MISSIONS
+#define INCL_TSE_MISSIONS
+
+class CMission : public CSpaceObject
+	{
+	public:
+		enum EStatus
+			{
+			statusOpen,						//	Mission is open, ready for acceptance
+			statusClosed,					//	Mission started without player
+			statusAccepted,					//	Mission accepted by player
+			statusPlayerSuccess,			//	Player completed mission
+			statusPlayerFailure,			//	Player failed mission
+			statusSuccess,					//	Mission succeeded without player
+			statusFailure,					//	Mission failed without player
+			};
+
+		struct SCriteria
+			{
+			SCriteria (void) :
+					bIncludeOpen(false),
+					bIncludeUnavailable(false),
+					bIncludeActive(false),
+					bIncludeRecorded(false),
+					bOnlySourceOwner(false)
+				{ }
+
+			bool bIncludeOpen;					//	Include open missions
+			bool bIncludeUnavailable;			//	Include unavailable missions
+			bool bIncludeActive;				//	Include active missions
+			bool bIncludeRecorded;				//	Include recorded missions
+
+			bool bOnlySourceOwner;				//	Source must be owner
+
+			TArray<CString> AttribsRequired;	//	Required attributes
+			TArray<CString> AttribsNotAllowed;	//	Exclude objects with these attributes
+			TArray<CString> SpecialRequired;	//	Special required attributes
+			TArray<CString> SpecialNotAllowed;	//	Special excluding attributes
+			};
+
+		static ALERROR Create (CMissionType *pType,
+							   CSpaceObject *pOwner,
+							   ICCItem *pCreateData,
+							   CMission **retpMission,
+							   CString *retsError);
+		void FireCustomEvent (const CString &sEvent);
+		inline bool IsActive (void) const { return (m_iStatus == statusAccepted || (!m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure))); }
+		inline bool IsClosed (void) const { return (!IsActive() && IsCompleted()); }
+		inline bool IsCompleted (void) const { return (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure || m_iStatus == statusSuccess || m_iStatus == statusFailure); }
+		inline bool IsCompletedNonPlayer (void) const { return (m_iStatus == statusSuccess || m_iStatus == statusFailure); }
+		inline bool IsFailure (void) const { return (m_iStatus == statusFailure || m_iStatus == statusPlayerFailure); }
+		inline bool IsRecorded (void) const { return (m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure)); }
+		inline bool IsSuccess (void) const { return (m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
+		inline bool IsUnavailable (void) const { return (m_iStatus == statusClosed || m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
+		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
+		void OnPlayerEnteredSystem (void);
+		bool Reward (ICCItem *pData);
+		bool SetAccepted (void);
+		bool SetDeclined (void);
+		bool SetFailure (ICCItem *pData);
+		bool SetPlayerTarget (void);
+		bool SetSuccess (ICCItem *pData);
+		bool SetUnavailable (void);
+
+		static bool ParseCriteria (const CString &sCriteria, SCriteria *retCriteria);
+
+		//	CSpaceObject virtuals
+
+		virtual CMission *AsMission (void) { return this; }
+		virtual CString GetName (DWORD *retdwFlags = NULL) { if (retdwFlags) *retdwFlags = 0; return m_pType->GetName(); }
+		virtual ICCItem *GetProperty (const CString &sName);
+		virtual CDesignType *GetType (void) const { return m_pType; }
+		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
+		virtual void OnNewSystem (CSystem *pSystem);
+		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
+
+	protected:
+		//	CSpaceObject virtuals
+
+		virtual CString GetObjClassName (void) { return CONSTLIT("CMission"); }
+		virtual void OnDestroyed (SDestroyCtx &Ctx);
+		virtual void OnObjDestroyedNotify (SDestroyCtx &Ctx);
+		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnWriteToStream (IWriteStream *pStream);
+
+	private:
+		enum ECompletedReasons
+			{
+			completeSuccess,
+			completeFailure,
+			completeDestroyed,
+			};
+
+		CMission (void);
+
+		void CloseMission (void);
+		void CompleteMission (ECompletedReasons iReason);
+		void FireOnAccepted (void);
+		void FireOnDeclined (void);
+		void FireOnReward (ICCItem *pData);
+		void FireOnSetPlayerTarget (const CString &sReason);
+		void FireOnStart (void);
+		void FireOnStop (const CString &sReason, ICCItem *pData);
+
+		CMissionType *m_pType;				//	Mission type
+		EStatus m_iStatus;					//	Current mission status
+		CGlobalSpaceObject m_pOwner;		//	Mission owner (may be NULL)
+		CString m_sNodeID;					//	NodeID of owner
+
+		DWORD m_fIntroShown:1;				//	TRUE if player has seen intro
+		DWORD m_fDeclined:1;				//	TRUE if player has declined at least once
+		DWORD m_fDebriefed:1;				//	TRUE if player has been debriefed
+		DWORD m_fInOnCreate:1;				//	TRUE if we're inside OnCreate
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+		DWORD m_dwSpare:24;
+
+	friend CObjectClass<CMission>;
+	};
+
+class CMissionList
+	{
+	public:
+		CMissionList (bool bFree = false) : m_bFree(bFree)
+			{ }
+
+		~CMissionList (void) { DeleteAll(); }
+
+		void Delete (int iIndex);
+		void Delete (CMission *pMission);
+		void DeleteAll (void);
+		inline int GetCount (void) const { return m_List.GetCount(); }
+		inline CMission *GetMission (int iIndex) const { return m_List[iIndex]; }
+		CMission *GetMissionByID (DWORD dwID) const;
+		void Insert (CMission *pMission);
+		ALERROR ReadFromStream (SLoadCtx &Ctx, CString *retsError);
+		ALERROR WriteToStream (IWriteStream *pStream, CString *retsError);
+
+	private:
+		TArray<CMission *> m_List;
+		bool m_bFree;						//	If TRUE, free missions when removed
+	};
+
+class CTimedMissionEvent : public CTimedEvent
+	{
+	public:
+		CTimedMissionEvent (void) { }	//	Used only for loading
+		CTimedMissionEvent (int iTick,
+							int iInterval,
+							CMission *pMission,
+							const CString &sEvent);
+
+		virtual CString DebugCrashInfo (void);
+		virtual void DoEvent (DWORD dwTick, CSystem *pSystem);
+		virtual CString GetEventHandlerName (void) { return m_sEvent; }
+		virtual CSpaceObject *GetEventHandlerObj (void) { return m_pMission; }
+
+	protected:
+		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnWriteClassToStream (IWriteStream *pStream);
+		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream);
+
+	private:
+		int m_iInterval;			//	0 = not recurring
+		CMission *m_pMission;
+		CString m_sEvent;
+	};
+
+#endif

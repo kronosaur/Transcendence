@@ -950,7 +950,7 @@
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, primary, populated"
 			levelFrequency=		"---uu cu--- ----- ----- -----"
 			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="60"
 			>
 
 		<Names noArticle="true">Anvil Station; Brimstone Station; Cerberus Station;
@@ -1176,6 +1176,10 @@
 			>
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
+
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+		</Trade>
 
 		<Ships>
 			<Lookup count="1d3" table="&tbCommDefenders;"/>
@@ -1446,31 +1450,259 @@
 		</DockingPorts>
 
 	</StationType>
+	
+	<!-- Mission: Destroy Threat to Commonwealth Habitat
+	
+	EXTRA DATA
+	
+	reward:				Reward (in credits) for completing mission
+	targetID:			Id of station to destroy
+	targetType:			One of:
+							'centauriWarlords
+							'miscEnegy
+
+	-->
+	
+	<MissionType UNID="&msDestroyThreatToSlums;"
+			name=				"Destroy Threat to Commonwealth Habitat"
+			scope=				"system"
+
+			attributes=			"commonwealth, commonwealthHabitat"
+			>
+		<Events>
+			<OnCreate>
+				; Called when mission object is created. This adds the mission
+				; to the list of available missions, but it does not necessarily
+				; start the mission.
+				;
+				; The script may call msnDestroy to abort creation of the mission.
+				;
+				; gSource is mission object
+				; gData is arbitrary data passed in to msnCreate
+				; aOwnerObj is the object that created the mission (or nil)
+				
+				(block (enemyStations)
+				
+					(switch
+					
+						; Get a list of enemy stations in the region. If we cannot find any
+						; suitable targets then we don't have a mission.
+						
+						(not (setq enemyStations (sysFindObject aOwnerObj "TAE +populated; -uncharted; N:450;")))
+							(msnDestroy gSource)
+							
+						; Otherwise we can create a mission
+						
+						(block (targetObj)
+						
+							; Pick a random enemy station to destroy
+							(setq targetObj (seededRandom (objGetDestiny aOwnerObj) enemyStations))
+							
+							; Remember it
+							(msnSetData gSource 'targetID (objGetID targetObj))
+							
+							; Register for events so we know when the target is destroyed
+							(msnRegisterForEvents gSource targetObj)
+
+							; Remember the type of enemy
+							(switch
+								(objHasAttribute targetObj "centauriWarlords")
+									(msnSetData gSource 'targetType 'centauriWarlords)
+									
+								(msnSetData gSource 'targetType 'miscEnemy)
+								)
+								
+							; Compute reward
+							(msnSetData gSource 'reward (add 200 (multiply (objGetLevel targetObj) 100)))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				; Called if the player accepts the mission. The mission is 
+				; already running (OnStarted has been called).
+				;
+				; gSource is mission object
+
+			</OnAccepted>
+			
+			<OnDeclined>
+				; Called if the player rejects the mission. The mission is already
+				; running (OnStarted has been called).
+				;
+				; gSource is mission object.
+
+			</OnDeclined>
+
+			<OnStarted>
+				; Called when the mission starts. This is called if the mission
+				; starts running (either because the player accepted or some other
+				; reason).
+				;
+				; gSource is mission object.
+
+			</OnStarted>
+			
+			<OnSetPlayerTarget>
+				; Called to refresh the player's target. Always called right after
+				; the player accepts the mission. May be called at other times
+				; (e.g., after the player returns to the system).
+				;
+				; gSource is mission object
+				; aReason is:
+				;		'accepted: Mission has been accepted
+				;		'debriefed: Player has been debriefed
+				;		'failure: Mission failed
+				;		'inProgress: Player visited station while mission in progress
+				;		'newSystem: Player is in a new system
+				;		'success: Mission completed successfully
+				
+				(block (targetObj)
+					(switch
+						; If we just got debriefed then we clear our targets.
+
+						(eq aReason 'debriefed)
+							(shpCancelOrders gPlayerShip)
+
+						; If the mission is complete, then we point towards the 
+						; owner station.
+
+						(msnGetProperty gSource 'isCompleted)
+							(if (setq targetObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock targetObj)
+									)
+								)
+
+						; Otherwise, we point towards the target
+
+						(if (setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+							(block Nil
+								(shpCancelOrders gPlayerShip)
+								(shpOrder gPlayerShip 'attack targetObj)
+								)
+							)
+						)
+					)
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnCompleted>
+				; Called when the mission ends (generally because msnSuccess or
+				; msnFailure were called).
+				;
+				; gSource is mission object
+				; gData is arbitrary data passed in to msnSuccess or msnFailure
+				; aReason is:
+				;		'failure: Mission failed
+				;		'success: Mission completed successfully
+				
+			</OnCompleted>
+			
+			<OnReward>
+				; Called by msnReward, generally during debrief.
+				;
+				; gSource is mission object
+				; gData is data passed to msnReward
+
+				(intMissionRewardPayment (msnGetData gSource 'reward))
+			</OnReward>
+			
+			<OnDestroy>
+				; Called when mission object is destroyed (after mission ends)
+				;
+				; gSource is mission object
+				;
+				; NOTE: No need to unregister for events because we automatically
+				; unregister when the mission is complete.
+
+			</OnDestroy>
+		</Events>
+		
+		<Language>
+			<Text id="Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat "Destroy " (objGetName targetObj 0x04) ".")
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"The station master stands at his console. Managers and supervisors swarm around him dealing with various crises. "
+					"He turns his attention towards you:\n\n"
+					"\"We could use your help, %brother%. "
+					"You've got a ship with a good punch and we got something that needs punching. We'll pay you, of course.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(switch
+						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
+							(cat
+								"\"A band of Centauri warlords has been harrassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
+								"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
+								)
+							
+						(cat
+							"\"" (objGetName targetObj 0x05) " nearby has been attacking us recently. We want you to destroy them! "
+							"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
+							)
+						)
+					)
+			</Text>
+			<Text id="AcceptReply">
+				"\"Thank you! I knew we could count on you. We'll program the target into your ship's computer. Just follow the arrow on your screen and you'll get there. Good luck!\""
+			</Text>
+			<Text id="DeclineReply">
+				"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
+			</Text>
+			<Text id="InProgress">
+				"\"What's wrong? You said you could handle this mission! Get back out there and finish the job!\""
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					(switch
+						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
+							"\"Great work! Maybe the warlords will think twice before attacking us again."
+
+						"\"Great work! Now we can live in peace. "
+						)
+					" We've deposited " (msnGetData gSource 'reward) " credits to your account.\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="AlreadyDebriefed">
+				"\"Welcome back! Thanks for the great work last time.\""
+			</Text>
+			<Text id="Unavailable">
+				"\"Sorry, there are no missions available.\""
+			</Text>
+		</Language>
+	</MissionType>
 
 	<!-- Commonwealth Slums
 
 	GLOBAL DATA
 
 	lastMissionTime:	Tick on which mission was given to player (Nil if never)
-	missionInProgress:	True if a mission is in progress (on some station)
 	totalMissionCount:	Total number of missions that the player has requested
 	missionsCompleted:	Total number of successful missions
 	missionsFailed:		Total number of failures
-
-	EXTRA DATA
-
-	missionID:			Mission
-							'centauriWarlords		= attack Centauri warlords base
-							'miscEnemy				= attack an enemy base
-
-	missionStatus:		Status of mission:
-							Nil						= no mission in progress
-							'inprogress				= mission in progress
-							'success				= mission accomplished
-							'failure				= mission failed
-
-	missionFee:			Reward on mission success
-	target:				Station to destroy
 
 	-->
 
@@ -1581,11 +1813,11 @@
 		<Events>
 			<GetGlobalAchievements>
 				(block (theList)
-					(if (gr (typGetGlobalData &stCommonwealthSlums; "totalMissionCount") 0)
+					(if (gr (typGetGlobalData &stCommonwealthSlums; 'totalMissionCount) 0)
 						(setq theList (list
 							(list
 								"Commonwealth habitat missions"
-								(intMissionAchievementString (typGetGlobalData &stCommonwealthSlums; "missionsCompleted") (typGetGlobalData &stCommonwealthSlums; "missionsFailed"))
+								(intMissionAchievementString (typGetGlobalData &stCommonwealthSlums; 'missionsCompleted) (typGetGlobalData &stCommonwealthSlums; 'missionsFailed))
 								"missions &amp; activities"
 								)
 							))
@@ -1605,42 +1837,22 @@
 				(intCommonwealthOnDestroy)
 			</OnDestroy>
 
-			<OnObjDestroyed>
-				(switch
-					(and (eq aObjDestroyed (objGetObjRefData gSource "target"))
-							(eq (objGetData gSource "missionStatus") 'inprogress))
-						(block Nil
-							(objSetData gSource "missionStatus" 'success)
-							(typIncGlobalData &stCommonwealthSlums; "missionsCompleted")
-							(objUnregisterForEvents gSource aObjDestroyed)
-							(shpCancelOrders gPlayerShip)
-							(shpOrder gPlayerShip 'dock gSource)
-							(plyMessage gPlayer "Mission complete!")
-							)
+			<OnMissionAccepted>
+				(typIncGlobalData &stCommonwealthSlums; 'totalMissionCount)
+			</OnMissionAccepted>
+
+			<OnMissionCompleted>
+				(if (msnGetProperty aMissionObj 'isActive)
+					(if (eq aReason 'success)
+						(typIncGlobalData &stCommonwealthSlums; 'missionsCompleted)
+						(typIncGlobalData &stCommonwealthSlums; 'missionsFailed)
+						)
 					)
-			</OnObjDestroyed>
+			</OnMissionCompleted>
 		</Events>
 
 		<DockScreens>
 			<Main>
-				<InitialPane>
-					(block (missionStatus)
-						(setq missionStatus (objGetData gSource "missionStatus"))
-
-						(switch
-							; If no mission, then normal screen
-							(not missionStatus)
-								"Default"
-
-							; See if player has destroyed target
-							(eq missionStatus 'success)
-								"MissionSuccess"
-
-							"MissionInProgress"
-							)
-						)
-				</InitialPane>
-
 				<Panes>
 					<Default>
 
@@ -1654,17 +1866,27 @@
 
 						<Actions>
 							<Action name="Meeting Hall" key="M" default="1">
-								(block (lastMissionTime missionInterval enemyStations)
+								(block (lastMissionTime missionInterval theMission)
 									; Figure out the last time that a habitat gave out a mission
 									(setq lastMissionTime (objGetGlobalData gSource "lastMissionTime"))
 
 									; Time between missions (5400-8990 or 3-5 real minutes)
 									(setq missionInterval (add 5400 (multiply (objGetDestiny gSource) 10)))
 
-									; Construct a list of all enemy stations within a certain radius
-									(setq enemyStations (sysFindObject gSource "TAE +populated; -uncharted; N:450;"))
-
 									(switch
+										; If we have an active mission, then show it
+										(setq theMission (@ (msnFind gSource "aS") 0))
+											(scrShowScreen gScreen &dsRPGMission;
+												{
+												missionObj: theMission
+												})
+
+										; If the player has an active mission from some other station, then
+										; no new mission
+
+										(msnFind Nil "a +commonwealthHabitat;")
+											(scrShowPane gScreen "Rumors")
+
 										; If its not time for a new mission, then rumors
 										(and lastMissionTime
 												(gr (add lastMissionTime missionInterval) (unvGetTick)))
@@ -1674,25 +1896,20 @@
 										(geq (objGetGlobalData gSource "totalMissionCount") 6)
 											(scrShowPane gScreen "Rumors")
 
-										; If there are no valid missions available, then nothing
-										(not enemyStations)
-											(scrShowPane gScreen "Rumors")
-
-										; Give out a mission
-										(block (target)
-											(setq target (seededRandom (objGetDestiny gSource) enemyStations))
-											(objSetObjRefData gSource "target" target)
-
-											; Remember the nature of the target
-											(switch
-												(objHasAttribute target "centauriWarlords")
-													(objSetData gSource "missionID" 'centauriWarlords)
-
-												(objSetData gSource "missionID" 'miscEnemy)
+										; If we have an open mission or if we can create a mission then
+										; show it.
+										(or (setq theMission (@ (msnFind gSource "oS") 0))
+												(setq theMission (msnCreate (typFind "n +commonwealthHabitat;") gSource)))
+											(block Nil
+												(objSetGlobalData gSource "lastMissionTime" (unvGetTick))
+												(scrShowScreen gScreen &dsRPGMission;
+													{
+													missionObj: theMission
+													})
 												)
 
-											(scrShowPane gScreen "MissionIntro")
-											)
+										; Otherwise, just rumors
+										(scrShowPane gScreen "Rumors")
 										)
 									)
 							</Action>
@@ -1704,179 +1921,6 @@
 						</Actions>
 
 					</Default>
-
-					<MissionIntro>
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"The station master stands at his console. Managers and supervisors swarm around him dealing with various crises. "
-								"He turns his attention towards you:\n\n"
-								"\"We could use your help, %brother%. "
-								"You've got a ship with a good punch and we got something that needs punching. We'll pay you, of course.\""
-								))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block Nil
-									; Set mission time
-									(objSetGlobalData gSource "lastMissionTime" (unvGetTick))
-
-									; Go to actual mission
-									(scrShowPane gScreen "Mission")
-									)
-							</Action>
-						</Actions>
-					</MissionIntro>
-
-					<Mission>
-						<OnPaneInit>
-							(block (desc missionID)
-								(setq missionID (objGetData gSource "missionID"))
-								(setq gTarget (objGetObjRefData gSource "target"))
-
-								; Compute reward
-								(setq gReward (add 200 (multiply (objGetLevel gTarget) 100)))
-
-								; Compose message
-								(switch
-									(eq missionID 'centauriWarlords)
-										(setq desc (cat
-											"\"A band of Centauri warlords has been harrassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
-											"If you succeed we'll pay you " gReward " credits. Will you help us?\""
-											))
-
-									(setq desc (cat
-										"\"" (objGetName gTarget 0x05) " nearby has been attacking us recently. We want you to destroy them! "
-										"If you succeed we'll pay you " gReward " credits. Will you help us?\""
-										))
-									)
-
-								(scrSetDesc gScreen desc)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Accept" key="A" default="1">
-								(block (targetCount totalMissionCount)
-									; Target 
-									(objRegisterForEvents gSource gTarget)
-
-									; Order the player
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'attack gTarget)
-
-									; Set mission status
-									(objSetData gSource "missionStatus" 'inProgress)
-									(objSetGlobalData gSource "missionInProgress" True)
-									(objSetData gSource "missionFee" gReward)
-
-									; Keep track of total mission count
-									(setq totalMissionCount (objGetGlobalData gSource "totalMissionCount"))
-									(if (not totalMissionCount) (setq totalMissionCount 0))
-									(objSetGlobalData gSource "totalMissionCount" (add totalMissionCount 1))
-
-									(scrShowPane gScreen "MissionAccept")
-									)
-							</Action>
-
-							<Action name="Decline" key="D" cancel="1">
-								(scrShowPane gScreen "MissionDecline")
-							</Action>
-						</Actions>
-					</Mission>
-
-					<MissionAccept>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Thank you! I knew we could count on you. We'll program the target into your ship's computer. Just follow the arrow on your screen and you'll get there. Good luck!\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								<Exit/>
-							</Action>
-						</Actions>
-					</MissionAccept>
-
-					<MissionSuccess>
-						<OnPaneInit>
-							(block (desc fee missionID)
-								(setq missionID (objGetData gSource "missionID"))
-
-								(objSetData gSource "missionStatus" Nil)
-								(objSetGlobalData gSource "missionInProgress" Nil)
-								(shpCancelOrders gPlayerShip)
-								
-								(setq fee (objGetData gSource "missionFee"))
-								(intMissionRewardPayment fee)
-
-								(switch
-									(eq missionID 'centauriWarlords)
-										(setq desc (cat 
-											"\"Great work! Maybe the warlords will think twice before attacking us again."
-											))
-
-									(setq desc (cat
-										"\"Great work! Now we can live in peace. "
-										))
-									)
-
-								(scrSetDesc gScreen (cat
-									desc
-									" We've deposited " fee " credits to your account.\""
-									))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionSuccess>
-
-					<MissionDecline>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"\"Ah, Hell! What are you doing here then? Stop wasting my time!\""
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(scrShowPane gScreen "Default")
-							</Action>
-						</Actions>
-					</MissionDecline>
-
-					<MissionInProgress>
-						<OnPaneInit>
-							(block (missionID)
-								(setq missionID (objGetData gSource "missionID"))
-
-								(switch
-									(eq missionID 'centauriWarlords)
-										(scrSetDesc gScreen
-											"\"What's wrong? Are those warlords too tough for you? Get back out there and finish the job!\""
-											)
-									(scrSetDesc gScreen
-										"\"What's wrong? You said you could handle this mission! Get back out there and finish the job!\""
-										)
-									)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								(block Nil
-									(shpCancelOrders gPlayerShip)
-									(shpOrder gPlayerShip 'dock (objGetObjRefData gSource "target"))
-									(scrExitDock gScreen)
-									)
-							</Action>
-						</Actions>
-					</MissionInProgress>
 
 					<Rumors>
 						<OnPaneInit>
@@ -2144,6 +2188,7 @@
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, populated"
 			levelFrequency=		"----- -ucr- ----- ----- -----"
 			locationCriteria=	"+planetary"
+			enemyExclusionRadius="50"
 			>
 
 		<Names noArticle="true">Commonwealth Settlement %1%0%0%0</Names>
@@ -3412,40 +3457,13 @@
 					</Action>
 
 					<Action name="Upgrade reactor" key="P" >
-						(block (maxPower)
-							(setq gCheckMilitaryID True)
-
-							; Figure out what reactor to upgrade to
-							(setq maxPower (objGetMaxPower gPlayerShip))
-
-							(switch
-								(ls maxPower 250)
-									(block Nil
-										(setq gCost 3000)
-										(setq gItem (itmCreate &it25MWReactor; 1))
-										)
-
-								(ls maxPower 500)
-									(block Nil
-										(setq gCost 5500)
-										(setq gItem (itmCreate &it50MWReactor; 1))
-										)
-
-								(ls maxPower 1000)
-									(block Nil
-										(setq gCost 10000)
-										(setq gItem (itmCreate &it100MWReactor; 1))
-										)
-
-								(setq gItem Nil)
-								)
-
-							; Install screen
-							(if gItem
-								(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-								(scrShowPane gScreen "NoReactorUpgrade")
-								)
-							)
+						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
+							{
+							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
+							priceAdj: Nil
+							checkMilitaryID: True
+							noItemsText: "The technology required to upgrade your reactor is not available at this station."
+							})
 					</Action>
 
 					<Action name="Undock" cancel="1" key="U">
@@ -3455,17 +3473,6 @@
 				</Actions>
 
 			</Default>
-
-			<NoReactorUpgrade
-					desc=	"The technology required to upgrade your reactor is not available at this station.">
-
-				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
-						<ShowPane pane="Default"/>
-					</Action>
-				</Actions>
-			</NoReactorUpgrade>
-
 		</Panes>
 
 	</DockScreen>

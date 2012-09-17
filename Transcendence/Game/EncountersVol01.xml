@@ -1425,6 +1425,7 @@
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, human, populated"
 			levelFrequency=		"rcuv- ----- ----- ----- -----"
 			locationCriteria=	"+asteroids,-asteroidbelt"
+			enemyExclusionRadius="50"
 			>
 
 		<ImageVariants>
@@ -5464,6 +5465,7 @@
 			attributes=			"enemy, envEarth, envAvoidsAir"
 			levelFrequency=		"-ruuv ----- ----- ----- -----"
 			locationCriteria=	"--planetary"
+			enemyExclusionRadius="80"
 			>
 
 		<ImageVariants>

@@ -4,6 +4,7 @@
 
 #include "PreComp.h"
 
+#define STR_G_DATA								CONSTLIT("gData")
 #define STR_G_ITEM								CONSTLIT("gItem")
 #define STR_G_SOURCE							CONSTLIT("gSource")
 
@@ -16,6 +17,7 @@ CCodeChainCtx::CCodeChainCtx (void) :
 		m_pScreensRoot(NULL),
 		m_pSysCreateCtx(NULL),
 		m_pExtension(NULL),
+		m_pOldData(NULL),
 		m_pOldSource(NULL),
 		m_pOldItem (NULL),
 		m_bRestoreGlobalDefineHook(false),
@@ -193,6 +195,13 @@ void CCodeChainCtx::RestoreVars (void)
 		m_pOldSource->Discard(&m_CC);
 		m_pOldSource = NULL;
 		}
+
+	if (m_pOldData)
+		{
+		m_CC.DefineGlobal(STR_G_DATA, m_pOldData);
+		m_pOldData->Discard(&m_CC);
+		m_pOldData = NULL;
+		}
 	}
 
 ICCItem *CCodeChainCtx::Run (ICCItem *pCode)
@@ -238,6 +247,22 @@ ICCItem *CCodeChainCtx::RunLambda (ICCItem *pCode)
 		return m_CC.Apply(pCode, m_CC.CreateNil(), this);
 	else
 		return m_CC.TopLevel(pCode, this);
+	}
+
+void CCodeChainCtx::SaveAndDefineDataVar (ICCItem *pData)
+
+//	SaveAndDefineDataVar
+//
+//	Saves and defines gData
+
+	{
+	if (m_pOldData == NULL)
+		m_pOldData = m_CC.LookupGlobal(STR_G_DATA, this);
+
+	if (pData)
+		DefineVar(STR_G_DATA, pData);
+	else
+		DefineNil(STR_G_DATA);
 	}
 
 void CCodeChainCtx::SaveAndDefineSourceVar (CSpaceObject *pSource)

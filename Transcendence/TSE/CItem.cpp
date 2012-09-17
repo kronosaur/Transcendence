@@ -674,11 +674,18 @@ ICCItem *CItem::GetProperty (CItemCtx &Ctx, const CString &sName) const
 
 	else
 		{
+		CDeviceClass *pDevice;
+		CArmorClass *pArmor;
+
 		//	If this is a device, then pass it on
 
-		CDeviceClass *pDevice;
 		if (pDevice = GetType()->GetDeviceClass())
 			return pDevice->GetItemProperty(Ctx, sName);
+
+		//	If this is armor, then pass it on
+
+		else if (pArmor = GetType()->GetArmorClass())
+			return pArmor->GetItemProperty(Ctx, sName);
 
 		//	Otherwise, nothing
 

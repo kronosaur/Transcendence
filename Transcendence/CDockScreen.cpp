@@ -95,8 +95,9 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define VCENTER_ATTRIB				CONSTLIT("vcenter")
 #define WIDTH_ATTRIB				CONSTLIT("width")
 
-#define SCREEN_TYPE_ITEM_PICKER		CONSTLIT("itemPicker")
 #define SCREEN_TYPE_CUSTOM_PICKER	CONSTLIT("customPicker")
+#define SCREEN_TYPE_CUSTOM_ITEM_PICKER	CONSTLIT("customItemPicker")
+#define SCREEN_TYPE_ITEM_PICKER		CONSTLIT("itemPicker")
 
 #define ALIGN_CENTER				CONSTLIT("center")
 #define ALIGN_RIGHT					CONSTLIT("right")
@@ -433,7 +434,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 		if (sBackgroundID.IsBlank() || strEquals(sBackgroundID, CONSTLIT("none")))
 			iType = backgroundNone;
 
-		//	If the ID is "object" then we should the object
+		//	If the ID is "object" then we should ask the object
 
 		else if (strEquals(sBackgroundID, CONSTLIT("object")))
 			iType = backgroundObj;
@@ -496,13 +497,64 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 
 	else if (iType == backgroundObj)
 		{
-		SViewportPaintCtx Ctx;
-		Ctx.fNoSelection = true;
-		Ctx.pObj = m_pLocation;
-		m_pLocation->Paint(*m_pBackgroundImage,
-				BACKGROUND_FOCUS_X,
-				BACKGROUND_FOCUS_Y,
-				Ctx);
+		//	If this is the player ship then we draw a large image
+
+		CShip *pShip = m_pLocation->AsShip();
+		CShipClass *pClass = (pShip ? pShip->GetClass() : NULL);
+		const CPlayerSettings *pPlayer = (pClass ? pClass->GetPlayerSettings() : NULL);
+		const CG16bitImage *pLargeImage = (pPlayer ? g_pUniverse->GetLibraryBitmap(pPlayer->GetLargeImage()) : NULL);
+
+		if (pLargeImage && !pLargeImage->IsEmpty())
+			{
+			if (pLargeImage->GetHeight() < g_cyBackground)
+				{
+				m_pBackgroundImage->ColorTransBlt(0,
+						0,
+						pLargeImage->GetWidth(),
+						pLargeImage->GetHeight(),
+						255,
+						*pLargeImage,
+						BACKGROUND_FOCUS_X - (pLargeImage->GetWidth() / 2),
+						BACKGROUND_FOCUS_Y - (pLargeImage->GetHeight() / 2));
+				}
+			else
+				{
+				Metric rScale = g_cyBackground / pLargeImage->GetHeight();
+				CG16bitImage *pNewImage = new CG16bitImage;
+				pNewImage->CreateFromImageTransformed(*pLargeImage,
+						0,
+						0,
+						pLargeImage->GetWidth(),
+						pLargeImage->GetHeight(),
+						rScale,
+						rScale,
+						0.0);
+
+				m_pBackgroundImage->ColorTransBlt(0,
+						0,
+						pNewImage->GetWidth(),
+						pNewImage->GetHeight(),
+						255,
+						*pLargeImage,
+						BACKGROUND_FOCUS_X - (pNewImage->GetWidth() / 2),
+						BACKGROUND_FOCUS_Y - (pNewImage->GetHeight() / 2));
+
+				delete pNewImage;
+				}
+			}
+
+		//	Otherwise we draw the object
+
+		else
+			{
+			SViewportPaintCtx Ctx;
+			Ctx.fNoSelection = true;
+			Ctx.pObj = m_pLocation;
+			m_pLocation->Paint(*m_pBackgroundImage,
+					BACKGROUND_FOCUS_X,
+					BACKGROUND_FOCUS_Y,
+					Ctx);
+			}
 		}
 
 	//	If we have an image with a mask, just blt the masked image
@@ -817,19 +869,50 @@ CString CDockScreen::EvalInitialPane (void)
 
 //	EvalInitialPane
 //
+//	Invokes <InitialPane>
+
+	{
+	SDockFrame CurFrame;
+	g_pTrans->GetModel().GetScreenSession(&CurFrame);
+	return EvalInitialPane(CurFrame.pLocation, CurFrame.pInitialData);
+	}
+
+CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
+
+//	EvalInitialPane
+//
 //	Invokes <InitialPane> code and returns the result (or "Default")
 
 	{
 	CXMLElement *pInitialPane = m_pDesc->GetContentElementByTag(INITIAL_PANE_TAG);
 	if (pInitialPane)
 		{
+		CString sPane;
 		CString sCode = pInitialPane->GetContentText(0);
-		bool bError;
-		CString sPane = EvalString(sCode, true, &bError);
-		if (bError)
-			return NULL_STR;
+
+		//	Execute
+
+		CCodeChainCtx Ctx;
+		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveAndDefineDataVar(pData);
+
+		ICCItem *pExp = Ctx.Link(sCode, 0, NULL);
+
+		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
+		Ctx.Discard(pExp);
+
+		if (pResult->IsError())
+			{
+			CString sError = pResult->GetStringValue();
+			::kernelDebugLogMessage(sError);
+			SetDescription(sError);
+			}
 		else
-			return sPane;
+			sPane = pResult->GetStringValue();
+
+		Ctx.Discard(pResult);
+		return sPane;
 		}
 	else
 		return CONSTLIT("Default");
@@ -890,7 +973,7 @@ CSpaceObject *CDockScreen::EvalListSource (const CString &sString)
 		return m_pLocation;
 	}
 
-CString CDockScreen::EvalString (const CString &sString, bool bPlain, bool *retbError)
+CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, bool *retbError)
 
 //	EvalString
 //
@@ -908,6 +991,7 @@ CString CDockScreen::EvalString (const CString &sString, bool bPlain, bool *retb
 		{
 		CCodeChainCtx Ctx;
 		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pExp = Ctx.Link(sString, (bPlain ? 0 : 1), NULL);
 
@@ -953,6 +1037,57 @@ CDockScreen::SDisplayControl *CDockScreen::FindDisplayControl (const CString &sI
 		}
 
 	return NULL;
+	}
+
+ALERROR CDockScreen::FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError)
+
+//	FireOnScreenInit
+//
+//	Fire screen OnScreenInit
+
+	{
+	//	We accept either OnScreenInit or OnInit
+
+	CXMLElement *pOnInit = m_pDesc->GetContentElementByTag(ON_SCREEN_INIT_TAG);
+	if (pOnInit == NULL)
+		pOnInit = m_pDesc->GetContentElementByTag(ON_INIT_TAG);
+
+	//	See if we have it
+
+	if (pOnInit)
+		{
+		m_bInOnInit = true;
+
+		CString sCode = pOnInit->GetContentText(0);
+
+		//	Execute
+
+		CCodeChainCtx Ctx;
+		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveAndDefineDataVar(pData);
+
+		ICCItem *pExp = Ctx.Link(sCode, 0, NULL);
+
+		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
+		Ctx.Discard(pExp);
+
+		if (pResult->IsError())
+			{
+			*retsError = pResult->GetStringValue();
+
+			Ctx.Discard(pResult);
+			m_bInOnInit = false;
+			return ERR_FAIL;
+			}
+
+		Ctx.Discard(pResult);
+		m_bInOnInit = false;
+		}
+
+	m_bFirstOnInit = false;
+
+	return NOERROR;
 	}
 
 void CDockScreen::HandleChar (char chChar)
@@ -1110,6 +1245,7 @@ ALERROR CDockScreen::InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pSt
 //	InitCodeChain
 //
 //	Initializes CodeChain language
+//	LATER: We should define variables inside of Eval...
 
 	{
 	CCodeChain &CC = m_pUniv->GetCC();
@@ -1122,7 +1258,77 @@ ALERROR CDockScreen::InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pSt
 	return NOERROR;
 	}
 
-ALERROR CDockScreen::InitCustomList (void)
+ALERROR CDockScreen::InitCustomItemList (ICCItem *pData)
+
+//	InitCustomItemList
+//
+//	Initializes the item list for this screen
+
+	{
+	int i;
+
+	//	Get the list element
+
+	CXMLElement *pListData = m_pDesc->GetContentElementByTag(LIST_TAG);
+	if (pListData == NULL)
+		return ERR_FAIL;
+
+	//	Get the list to show
+
+	CCodeChain &CC = m_pUniv->GetCC();
+	ICCItem *pExp = CC.Link(pListData->GetContentText(0), 0, NULL);
+
+	//	Evaluate the function
+
+	CCodeChainCtx Ctx;
+	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineDataVar(pData);
+
+	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
+	Ctx.Discard(pExp);
+
+	if (pResult->IsError())
+		{
+		CString sError = pResult->GetStringValue();
+
+		SetDescription(sError);
+		kernelDebugLogMessage(sError);
+
+		return NOERROR;
+		}
+
+	//	We expect a list of item structures. Load them into an item list
+
+	m_CustomItems.DeleteAll();
+	for (i = 0; i < pResult->GetCount(); i++)
+		{
+		ICCItem *pItem = pResult->GetElement(i);
+
+		CItem NewItem = CreateItemFromList(CC, pItem);
+		if (NewItem.GetType() != NULL)
+			m_CustomItems.AddItem(NewItem);
+		}
+
+	//	Done with result
+
+	Ctx.Discard(pResult);
+
+	//	Make sure items are sorted
+
+	m_CustomItems.SortItems();
+
+	//	Set the list control
+
+	m_pItemListControl->SetList(m_CustomItems);
+
+	//	Position the cursor on the next relevant item
+
+	SelectNextItem();
+
+	return NOERROR;
+	}
+
+ALERROR CDockScreen::InitCustomList (ICCItem *pData)
 
 //	InitCustomList
 //
@@ -1141,7 +1347,7 @@ ALERROR CDockScreen::InitCustomList (void)
 	if (pListData->FindAttribute(ROW_HEIGHT_ATTRIB, &sRowHeight))
 		{
 		bool bError;
-		int cyRow = strToInt(EvalString(sRowHeight, false, &bError), -1);
+		int cyRow = strToInt(EvalString(sRowHeight, pData, false, &bError), -1);
 		if (!bError && cyRow > 0)
 			m_pItemListControl->SetRowHeight(cyRow);
 		}
@@ -1155,6 +1361,7 @@ ALERROR CDockScreen::InitCustomList (void)
 
 	CCodeChainCtx Ctx;
 	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineDataVar(pData);
 
 	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
 	Ctx.Discard(pExp);
@@ -1340,7 +1547,7 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 	*retrcRect = rcRect;
 	}
 
-ALERROR CDockScreen::InitItemList (void)
+ALERROR CDockScreen::InitItemList (ICCItem *pData)
 
 //	InitItemList
 //
@@ -1368,7 +1575,7 @@ ALERROR CDockScreen::InitItemList (void)
 
 	//	Initialize flags that control what items we will show
 
-	CItem::ParseCriteria(EvalString(pOptions->GetAttribute(LIST_ATTRIB)), &m_ItemCriteria);
+	CItem::ParseCriteria(EvalString(pOptions->GetAttribute(LIST_ATTRIB), pData), &m_ItemCriteria);
 	m_pItemListControl->SetFilter(m_ItemCriteria);
 
 	//	If we have content, then eval the function (note that this might
@@ -1376,7 +1583,7 @@ ALERROR CDockScreen::InitItemList (void)
 
 	CString sCode = pOptions->GetContentText(0);
 	if (!sCode.IsBlank())
-		EvalString(sCode, true);
+		EvalString(sCode, pData, true);
 
 	//	Position the cursor on the next relevant item
 
@@ -1402,6 +1609,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 								 CExtension *pExtension,
 								 CXMLElement *pDesc, 
 								 const CString &sPane,
+								 ICCItem *pData,
 								 CString *retsPane,
 								 AGScreen **retpScreen)
 
@@ -1431,35 +1639,25 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	if (error = InitCodeChain(g_pTrans, m_pLocation))
 		return error;
 
-	//	Give the screen a chance to re-direct
+	//	Call OnScreenInit
 
-	CXMLElement *pOnInit = m_pDesc->GetContentElementByTag(ON_SCREEN_INIT_TAG);
-	if (pOnInit == NULL)
-		pOnInit = m_pDesc->GetContentElementByTag(ON_INIT_TAG);
-
-	if (pOnInit)
+	CString sError;
+	if (error = FireOnScreenInit(m_pLocation, pData, &sError))
 		{
-		m_bInOnInit = true;
-
-		CString sCode = pOnInit->GetContentText(0);
-		EvalString(sCode, true);
-
-		m_bInOnInit = false;
-		m_bFirstOnInit = false;
-
-		//	If we've already got a screen set up then we don't need to
-		//	continue (OnInit has navigated to a different screen).
-
-		if (m_pScreen)
-			{
-			if (retsPane)
-				*retsPane = NULL_STR;
-
-			return NOERROR;
-			}
+		kernelDebugLogMessage(sError);
+		//	We do not fail because otherwise the screen would be invalid.
 		}
 
-	m_bFirstOnInit = false;
+	//	If we've already got a screen set up then we don't need to
+	//	continue (OnScreenInit has navigated to a different screen).
+
+	if (m_pScreen)
+		{
+		if (retsPane)
+			*retsPane = NULL_STR;
+
+		return NOERROR;
+		}
 
 	//	Create a new screen
 
@@ -1492,7 +1690,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 		//	Create an item list manipulator for the items of this object
 
-		if (error = InitItemList())
+		if (error = InitItemList(pData))
 			return error;
 		}
 	else if (strEquals(sType, SCREEN_TYPE_CUSTOM_PICKER))
@@ -1502,7 +1700,17 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 		//	Create an item list manipulator for the items of this object
 
-		if (error = InitCustomList())
+		if (error = InitCustomList(pData))
+			return error;
+		}
+	else if (strEquals(sType, SCREEN_TYPE_CUSTOM_ITEM_PICKER))
+		{
+		if (error = CreateItemPickerControl(m_pDesc, m_pScreen, rcScreen))
+			return error;
+
+		//	Create an item list manipulator for the items of this object
+
+		if (error = InitCustomItemList(pData))
 			return error;
 		}
 
@@ -1530,7 +1738,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		}
 	else
 		{
-		CString sPane = EvalInitialPane();
+		CString sPane = EvalInitialPane(m_pLocation, pData);
 
 		//	If evaluation fails due to an error, then show default
 
@@ -1580,7 +1788,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 	if (m_pDisplayInitialize)
 		{
 		CString sCode = m_pDisplayInitialize->GetContentText(0);
-		EvalString(sCode, true);
+		EvalString(sCode, NULL, true);
 		}
 
 	//	Set controls
@@ -1891,10 +2099,16 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	m_pCurrentPane = pNewPane;
 
+	//	Get the current frame data
+
+	SDockFrame CurFrame;
+	g_pTrans->GetModel().GetScreenSession(&CurFrame);
+	ICCItem *pData = CurFrame.pInitialData;
+
 	//	Initialize list of actions
 
 	CString sError;
-	if (m_CurrentActions.InitFromXML(m_pExtension, m_pCurrentPane->GetContentElementByTag(ACTIONS_TAG), &sError) != NOERROR)
+	if (m_CurrentActions.InitFromXML(m_pExtension, m_pCurrentPane->GetContentElementByTag(ACTIONS_TAG), pData, &sError) != NOERROR)
 		{
 		sError = strPatternSubst(CONSTLIT("Pane %s: %s"), sName, sError);
 		if (m_pCurrentPane)
@@ -1951,7 +2165,7 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Create the description
 
-	CString sDesc = EvalString(m_pCurrentPane->GetAttribute(CONSTLIT(g_DescAttrib)));
+	CString sDesc = EvalString(m_pCurrentPane->GetAttribute(CONSTLIT(g_DescAttrib)), pData);
 	m_pFrameDesc = new CGTextArea;
 	m_pFrameDesc->SetText(sDesc);
 	m_pFrameDesc->SetFont(&m_pFonts->Large);
@@ -2016,7 +2230,7 @@ void CDockScreen::ShowPane (const CString &sName)
 	if (pInit)
 		{
 		CString sCode = pInit->GetContentText(0);
-		EvalString(sCode, true);
+		EvalString(sCode, pData, true);
 		}
 
 	//	We might have called exit inside OnPaneInit. If so, we exit
@@ -2026,10 +2240,7 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Allow other design types to override the pane
 
-	CDesignType *pRoot;
-	CString sScreen;
-	g_pTrans->GetModel().GetScreenSession(NULL, &pRoot, &sScreen);
-	g_pUniverse->FireOnGlobalPaneInit(this, pRoot, sScreen, sName);
+	g_pUniverse->FireOnGlobalPaneInit(this, CurFrame.pRoot, CurFrame.sScreen, sName);
 
 	//	Check to see if the description is too large for the area. If so, then
 	//	we shift everything down.

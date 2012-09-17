@@ -678,62 +678,22 @@
 							</Action>
 
 							<Action name="Upgrade reactor" key="P" >
-								(block (maxPower)
-									(setq gCheckMilitaryID Nil)
-
-									; Figure out what reactor to upgrade to
-									(setq maxPower (objGetMaxPower gPlayerShip))
-
-									(switch
-										(ls maxPower 1000)
-											(block Nil
-												(setq gCost 10000)
-												(setq gItem (itmCreate &it100MWReactor; 1))
-												)
-
-										(ls maxPower 1500)
-											(block Nil
-												(setq gCost 20000)
-												(setq gItem (itmCreate &it150MWReactor; 1))
-												)
-
-										(ls maxPower 2500)
-											(block Nil
-												(setq gCost 60000)
-												(setq gItem (itmCreate &it250MWReactor; 1))
-												)
-
-										(setq gItem Nil)
-										)
-
-									; Install screen
-									(if gItem
-										(scrShowScreen gScreen "&dsInstallSpecificDevice;")
-										(scrShowPane gScreen "NoReactorUpgrade")
-										)
-									)
+								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
+									{
+									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
+									priceAdj: 100
+									checkMilitaryID: Nil
+									noItemsText: "The technology required to upgrade your reactor is not available at this station."
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="N">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
 
 					</DockServices>
-
-					<NoReactorUpgrade
-							desc=	"The technology required to upgrade your reactor is not available at this station.">
-
-						<Actions>
-							<Action name="Continue" key="C" default="1" cancel="1">
-								<ShowPane pane="DockServices"/>
-							</Action>
-						</Actions>
-					</NoReactorUpgrade>
-
 				</Panes>
-
 			</Main>
 
 		</DockScreens>

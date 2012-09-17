@@ -24,30 +24,33 @@
 	Metric kc = xf * (1.0 - yf);								\
 	Metric kd = xf * yf;										\
 																\
-	if (a != DEFAULT_TRANSPARENT_COLOR || b != DEFAULT_TRANSPARENT_COLOR || c != DEFAULT_TRANSPARENT_COLOR || d != DEFAULT_TRANSPARENT_COLOR) \
+	int iBackCount = 0;											\
+	if (a == DEFAULT_TRANSPARENT_COLOR)	{ a = 0; iBackCount++; }	\
+	if (b == DEFAULT_TRANSPARENT_COLOR)	{ b = 0; iBackCount++; }	\
+	if (c == DEFAULT_TRANSPARENT_COLOR)	{ c = 0; iBackCount++; }	\
+	if (d == DEFAULT_TRANSPARENT_COLOR)	{ d = 0; iBackCount++; }	\
+																\
+	if (iBackCount == 4)										\
+		(result) = DEFAULT_TRANSPARENT_COLOR;					\
+	else														\
 		{														\
-		if (a == DEFAULT_TRANSPARENT_COLOR) a = 0;				\
-		if (b == DEFAULT_TRANSPARENT_COLOR) b = 0;				\
-		if (c == DEFAULT_TRANSPARENT_COLOR) c = 0;				\
-		if (d == DEFAULT_TRANSPARENT_COLOR) d = 0;				\
+		DWORD red = (DWORD)(ka * CG16bitImage::RedValue(a)		\
+				+ kb * CG16bitImage::RedValue(b)				\
+				+ kc * CG16bitImage::RedValue(c)				\
+				+ kd * CG16bitImage::RedValue(d));				\
+																\
+		DWORD green = (DWORD)(ka * CG16bitImage::GreenValue(a)	\
+				+ kb * CG16bitImage::GreenValue(b)				\
+				+ kc * CG16bitImage::GreenValue(c)				\
+				+ kd * CG16bitImage::GreenValue(d));			\
+																\
+		DWORD blue = (DWORD)(ka * CG16bitImage::BlueValue(a)	\
+				+ kb * CG16bitImage::BlueValue(b)				\
+				+ kc * CG16bitImage::BlueValue(c)				\
+				+ kd * CG16bitImage::BlueValue(d));				\
+																\
+		(result) = CG16bitImage::RGBValue((WORD)red, (WORD)green, (WORD)blue);		\
 		}														\
-																\
-	DWORD red = (DWORD)(ka * CG16bitImage::RedValue(a)			\
-			+ kb * CG16bitImage::RedValue(b)					\
-			+ kc * CG16bitImage::RedValue(c)					\
-			+ kd * CG16bitImage::RedValue(d));					\
-																\
-	DWORD green = (DWORD)(ka * CG16bitImage::GreenValue(a)		\
-			+ kb * CG16bitImage::GreenValue(b)					\
-			+ kc * CG16bitImage::GreenValue(c)					\
-			+ kd * CG16bitImage::GreenValue(d));				\
-																\
-	DWORD blue = (DWORD)(ka * CG16bitImage::BlueValue(a)		\
-			+ kb * CG16bitImage::BlueValue(b)					\
-			+ kc * CG16bitImage::BlueValue(c)					\
-			+ kd * CG16bitImage::BlueValue(d));					\
-																\
-	(result) = CG16bitImage::RGBValue((WORD)red, (WORD)green, (WORD)blue);		\
 	}
 
 #define INTERPOLATE_ALPHA(pos,alphaInv,lineInc,XYFloat,xInt,yInt,result)		\

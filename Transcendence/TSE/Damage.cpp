@@ -370,7 +370,7 @@ ALERROR DamageDesc::LoadTermFromXML (SDesignLoadCtx &Ctx, const CString &sType, 
 			//	For versions prior to 1.1 we used a different calculation for
 			//	shield level (because we only allocated 3 bits for this value
 
-			if (Ctx.pExtension && Ctx.pExtension->GetAPIVersion() < 3)
+			if (Ctx.GetAPIVersion() < 3)
 				m_ShieldDamage = 1 + ((m_ShieldDamage * m_ShieldDamage) / 2);
 			}
 		else if (strEquals(sType, SPECIAL_DAMAGE_WORMHOLE))

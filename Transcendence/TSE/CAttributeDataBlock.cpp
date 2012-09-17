@@ -297,6 +297,22 @@ void CAttributeDataBlock::OnObjDestroyed (CSpaceObject *pObj)
 		}
 	}
 
+void CAttributeDataBlock::OnSystemChanged (CSystem *pSystem)
+
+//	OnSystemChanged
+//
+//	We are now in a different system, so we need to clear out any pointers that
+//	we might have to old system objects.
+
+	{
+	SObjRefEntry *pEntry = m_pObjRefData;
+	while (pEntry)
+		{
+		pEntry->pObj = NULL;
+		pEntry = pEntry->pNext;
+		}
+	}
+
 void CAttributeDataBlock::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream

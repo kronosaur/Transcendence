@@ -353,6 +353,24 @@ ICCItem *fnItemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnItemCreateByName (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnItemCreateRandom (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
+#define FN_MISSION_CREATE				0
+#define FN_MISSION_FIND					1
+#define FN_MISSION_GET_PROPERTY			2
+#define FN_MISSION_CLOSED				3
+#define FN_MISSION_SUCCESS				4
+#define FN_MISSION_FAILURE				5
+#define FN_MISSION_ACCEPTED				6
+#define FN_MISSION_REWARD				7
+#define FN_MISSION_DECLINED				8
+#define FN_MISSION_SET_PLAYER_TARGET	9
+#define FN_MISSION_ADD_TIMER			10
+#define FN_MISSION_ADD_RECURRING_TIMER	11
+#define FN_MISSION_CANCEL_TIMER			12
+
+ICCItem *fnMission (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnMissionGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+
 #define FN_ADD_ENCOUNTER_FROM_GATE		0
 #define FN_ADD_ENCOUNTER_FROM_DIST		1
 
@@ -388,6 +406,7 @@ ICCItem *fnSystemAddStationTimerEvent (CEvalContext *pEvalCtx, ICCItem *pArgs, D
 #define FN_SYS_TOPOLOGY_DISTANCE		19
 #define FN_SYS_SET_KNOWN				20
 #define FN_SYS_IS_KNOWN					21
+#define FN_SYS_STARGATE_DESTINATION		22
 
 ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -464,10 +483,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(armGetHitPoints type) -> Hit points of armor",
 			"v",	0,	},
 
-		{	"armIsRadiationImmune",			fnArmGet,		FN_ARM_IS_RADIATION_IMMUNE,
-			"(armIsRadiationImmune type) -> True/Nil",
-			"v",	0,	},
-
 		{	"armGetRepairCost",				fnArmGet,		FN_ARM_REPAIRCOST,
 			"(armGetRepairCost type) -> Cost to repair 1 hit point",
 			"v",	0,	},
@@ -507,7 +522,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"itmGetActualPrice",			fnItemGet,		FN_ITEM_ACTUAL_PRICE,
-			"(itmGetActualPrice item) -> actual price of a single item",
+			"(itmGetActualPrice item|type) -> actual price of a single item",
 			"v",	0,	},
 
 		{	"itmGetArmorInstalledLocation",	fnItemGet,		FN_ITEM_ARMOR_INSTALLED_LOCATION,
@@ -519,11 +534,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmGetAverageAppearing",			fnItemGet,		FN_ITEM_AVERAGE_APPEARING,
-			"(itmGetAverageAppearing item) -> average number that appear randomly",
+			"(itmGetAverageAppearing item|type) -> average number that appear randomly",
 			"v",	0,	},
 
 		{	"itmGetCategory",				fnItemGet,		FN_ITEM_CATEGORY,
-			"(itmGetCategory item) -> item category",
+			"(itmGetCategory item|type) -> item category",
 			"v",	0,	},
 
 		{	"itmGetCount",					fnItemGet,		FN_ITEM_COUNT,
@@ -531,7 +546,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmGetDamageType",				fnItemGet,		FN_ITEM_DAMAGE_TYPE,
-			"(itmGetDamageType item) -> damage type",
+			"(itmGetDamageType item|type) -> damage type",
 			"v",	0,	},
 
 		{	"itmGetData",					fnItemGet,		FN_ITEM_DATA,
@@ -547,11 +562,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v*",	0,	},
 
 		{	"itmGetImageDesc",				fnItemGet,		FN_ITEM_IMAGE_DESC,
-			"(itmGetImageDesc item) -> imageDesc",
+			"(itmGetImageDesc item|type) -> imageDesc",
 			"v",	0,	},
 
 		{	"itmGetInstallCost",			fnItemGet,		FN_ITEM_INSTALL_COST,
-			"(itmGetInstallCost item [currency]) -> cost",
+			"(itmGetInstallCost item|type [currency]) -> cost",
 			"v*",	0,	},
 
 		{	"itmGetInstallPos",				fnItemGet,		FN_ITEM_INSTALL_POS,
@@ -559,19 +574,19 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmGetLevel",					fnItemGet,		FN_ITEM_LEVEL,
-			"(itmGetLevel item) -> level",
+			"(itmGetLevel item|type) -> level",
 			"v",	0,	},
 
 		{	"itmGetMass",					fnItemGet,		FN_ITEM_MASS,
-			"(itmGetMass item) -> mass of single item in Kg",
+			"(itmGetMass item|type) -> mass of single item in Kg",
 			"v",	0,	},
 
 		{	"itmGetMaxAppearing",			fnItemGet,		FN_ITEM_MAX_APPEARING,
-			"(itmGetMaxAppearing item) -> max number that appear randomly",
+			"(itmGetMaxAppearing item|type) -> max number that appear randomly",
 			"v",	0,	},
 
 		{	"itmGetName",					fnItemGet,		FN_ITEM_NAME,
-			"(itmGetName item flags)",
+			"(itmGetName item|type flags)",
 		//		flag 0x001 (1) = capitalize
 		//		flag 0x002 (2) = pluralize
 		//		flag 0x004 (4) = prefix with 'the' or 'a'
@@ -584,17 +599,24 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"vi",	0,	},
 
 		{	"itmGetPrice",					fnItemGet,		FN_ITEM_PRICE,
-			"(itmGetPrice item [currency]) -> price of a single item",
+			"(itmGetPrice item|type [currency]) -> price of a single item",
 			"v*",	0,	},
 
 		{	"itmGetProperty",				fnItemGet,		FN_ITEM_PROPERTY,
-			"(itmGetProperty item property) -> value\n\n"
+			"(itmGetProperty item|type property) -> value\n\n"
 			
 			"property\n\n"
 			
+			"   'blindingImmune\n"
 			"   'charges\n"
 			"   'damaged\n"
-			"   'disrupted\n",
+			"   'deviceDamageImmune\n"
+			"   'deviceDisruptImmune\n"
+			"   'disintegrationImmune\n"
+			"   'disrupted\n"
+			"   'EMPImmune\n"
+			"   'radiationImmune\n"
+			"   'shatterImmune\n",
 
 			"vs",	0,	},
 
@@ -607,7 +629,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmGetTypeData",				fnItemGet,		FN_ITEM_GET_TYPE_DATA,
-			"(itmGetTypeData item attrib) -> data",
+			"(itmGetTypeData item|type attrib) -> data",
 			"v*",	0,	},
 
 		{	"itmGetTypes",				fnItemGetTypes,			0,
@@ -615,15 +637,15 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"s",	0,	},
 
 		{	"itmGetUseScreen",				fnItemGet,		FN_ITEM_USE_SCREEN,
-			"(itmGetUseScreen item)",
+			"(itmGetUseScreen item|type)",
 			"v",	0,	},
 
 		{	"itmHasAttribute",				fnItemGet,		FN_ITEM_HAS_MODIFIER,
-			"(itmHasAttribute item attrib) -> True/Nil",
+			"(itmHasAttribute item|type attrib) -> True/Nil",
 			"vs",	0,	},
 
 		{	"itmHasReference",				fnItemGet,		FN_ITEM_REFERENCE,
-			"(itmHasReference item)",
+			"(itmHasReference item|type)",
 			"v",	0,	},
 
 		{	"itmIsEnhanced",				fnItemGet,		FN_ITEM_ENHANCED,
@@ -635,11 +657,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmIsKnown",					fnItemGet,		FN_ITEM_KNOWN,
-			"(itmIsKnown item)",
+			"(itmIsKnown item|type)",
 			"v",	0,	},
 
 		{	"itmMatches",					fnItemGet,		FN_ITEM_MATCHES,
-			"(itmMatches item criteria)",
+			"(itmMatches item|type criteria)",
 			"vs",	0,	},
 
 		{	"itmSetCount",					fnItemSet,		FN_ITEM_COUNT,
@@ -852,10 +874,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"shpInstallDevice",				fnShipSetOld,		FN_SHIP_INSTALL_DEVICE,
 			"(shpInstallDevice ship item)",
-			NULL,	PPFLAG_SIDEEFFECTS,	},
-
-		{	"objIsAbandoned",				fnObjGetOld,		FN_OBJ_IS_ABANDONED,
-			"(objIsAbandoned obj) -> True/Nil",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"shpIsBlind",					fnShipGetOld,		FN_SHIP_BLINDNESS,
@@ -1148,14 +1166,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"property\n\n"
 
-			"   'charges\n"
-			"   'damaged\n"
-			"   'disrupted\n"
 			"   'enabled\n"
 			"   'fireArc\n"
 			"   'linkedFireOptions\n"
 			"   'pos\n"
-			"   'secondary\n",
+			"   'secondary\n"
+			"\n"
+			"All properties for itmGetProperty are also valid.\n",
 
 			"ivs",	0,	},
 
@@ -1231,17 +1248,33 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objGetProperty",				fnObjGet,		FN_OBJ_GET_PROPERTY,
 			"(objGetProperty obj property) -> value\n\n"
 			
-			"property\n\n"
+			"property (ships)\n\n"
 			
+			"   'blindingImmune\n"
+			"   'deviceDamageImmune\n"
+			"   'deviceDisruptImmune\n"
+			"   'disintegrationImmune\n"
+			"   'EMPImmune\n"
+			"   'radiationImmune\n"
 			"   'selectedLauncher\n"
 			"   'selectedMissile\n"
-			"   'selectedWeapon\n",
+			"   'selectedWeapon\n"
+			"   'shatterImmune\n"
+			"\n"
+			"property (stations)\n\n"
+
+			"   'abandoned\n"
+			"   'hp\n"
+			"   'immutable\n"
+			"   'maxHP\n"
+			"   'maxStructuralHP\n"
+			"   'structuralHP\n",
 
 			"is",	0,	},
 
 		{	"objGetSellPrice",				fnObjGet,		FN_OBJ_GET_SELL_PRICE,	
-			"(objGetSellPrice obj item) -> price",
-			"il",		PPFLAG_SIDEEFFECTS,	},
+			"(objGetSellPrice obj item ['noInventoryCheck]) -> price",
+			"il*",		PPFLAG_SIDEEFFECTS,	},
 
 		{	"objGetShieldLevel",			fnObjGetOld,		FN_OBJ_SHIELD_LEVEL,
 			"(objGetShieldLevel obj) -> 0-100% (or -1 for no shields)",
@@ -1444,10 +1477,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objSetProperty",				fnObjSet,		FN_OBJ_SET_PROPERTY,
 			"(objSetProperty obj property value) -> True/Nil\n\n"
 			
-			"property\n\n"
+			"property (ships)\n\n"
 
 			"   'selectedMissile type|item\n"
-			"   'selectedWeapon type|item\n",
+			"   'selectedWeapon type|item\n"
+			"\n"
+			"property (stations)\n\n"
+
+			"   'hp hitPoints\n"
+			"   'immutable True|Nil\n"
+			"   'maxHP hitPoints\n"
+			"   'maxStructuralHP hitPoints\n"
+			"   'structuralHP hitPoints\n",
 
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
@@ -1506,14 +1547,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(staGetImageVariant station) -> variant",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
-		{	"staGetMaxStructuralHP",		fnStationGet,		FN_STATION_MAX_STRUCTURAL_HP,
-			"(staGetMaxStructuralHP station) -> hp",
-			"i",	0,	},
-
-		{	"staGetStructuralHP",			fnStationGetOld,	FN_STATION_STRUCTURAL_HP,
-			"(staGetStructuralHP station) -> hp",
-			NULL,	PPFLAG_SIDEEFFECTS,	},
-
 		{	"staGetSubordinates",			fnStationGetOld,	FN_STATION_GET_SUBORDINATES,
 			"(staGetSubordinates station) -> list of subordinates (e.g., guardians)",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
@@ -1542,9 +1575,129 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(staSetShowMapLabel station True/Nil)",
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"staSetStructuralHP",			fnStationSetOld,	FN_STATION_STRUCTURAL_HP,
-			"(staSetStructuralHP station hp)",
+		//	Mission functions
+		//	-----------------
+
+		{	"msnAccept",					fnMissionSet,		FN_MISSION_ACCEPTED,
+			"(msnAccept missionObj)",
+			"i",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnAddTimerEvent",				fnMissionSet,		FN_MISSION_ADD_TIMER,
+			"(msnAddTimerEvent missionObj delay event)",
+			"iis",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnAddRecurringTimerEvent",	fnMissionSet,		FN_MISSION_ADD_RECURRING_TIMER,	
+			"(msnAddRecurringTimerEvent missionObj interval event)",
+		//		interval in ticks
+			"iis",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnCancelTimerEvent",				fnMissionSet,	FN_MISSION_CANCEL_TIMER,
+			"(msnCancelTimerEvent missionObj event) -> True/Nil",
+			"is",	0,	},
+
+		{	"msnCreate",					fnMission,			FN_MISSION_CREATE,
+			"(msnCreate unid owner [data]) -> missionObj|Nil\n"
+			"(msnCreate unid-list owner [data]) -> missionObj|Nil\n",
+			"vi*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnDecline",					fnMissionSet,		FN_MISSION_DECLINED,
+			"(msnDecline missionObj)",
+			"i",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnDestroy",					fnObjSet,			FN_OBJ_DESTROY,
+			"(msnDestroy missionObj) -> True/Nil",
+			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnFailure",				fnMissionSet,		FN_MISSION_FAILURE,
+			"(msnFailure missionObj [data])",
+			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnFind",						fnMission,			FN_MISSION_FIND,
+			"(msnFind [source] criteria) -> list of missionObjs\n\n"
+			
+			"criteria\n\n"
+			
+			"   *                  Include all missions states\n"
+			"   a                  Include active player missions\n"
+			"   o                  Include open missions\n"
+			"   r                  Include already debriefed missions\n"
+			"   u                  Include unavailable missions\n"
+			"   S                  Only missions owned by source\n"
+			"   +/-{attrib}        Require/exclude missions with given attribute\n"
+			"   +/-ownerID:{id}    Require/exclude missions with given owner\n"
+			"   +/-unid:{unid}     Require/exclude missions of given unid\n",
+			"*s",	0,	},
+
+		{	"msnGetData",					fnObjData,		FN_OBJ_GETDATA,
+			"(msnGetData missionObj attrib) -> data",
+			NULL,	0,	},
+
+		{	"msnGetObjRefData",				fnObjData,		FN_OBJ_GET_OBJREF_DATA,
+			"(msnGetObjRefData missionObj attrib) -> obj",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnGetProperty",				fnObjGet,		FN_OBJ_GET_PROPERTY,
+			"(msnGetProperty missionObj property) -> value\n\n"
+			
+			"property\n\n"
+			
+			"   'isActive          Is an active player mission\n"
+			"   'isCompleted       Is a completed mission (player or non-player)\n"
+			"   'isDebriefed       Player has been debriefed\n"
+			"   'isDeclined        Player has declined mission\n"
+			"   'isFailure         Mission has failed\n"
+			"   'isIntroShown      Player has been shown intro text\n"
+			"   'isOpen            Mission is available to player\n"
+			"   'isSuccess         Mission has succeeded\n"
+			"   'isUnavailable     Mission is unavailable to player\n"
+			"   'nodeID            ID of the mission's owner system\n"
+			"   'ownerID           ID of the mission's owner object\n"
+			"   'unid              Mission type UNID\n",
+
+			"is",	0,	},
+
+		{	"msnRegisterForEvents",			fnObjSetOld,		FN_OBJ_REGISTER_EVENTS,
+			"(msnRegisterForEvents missionObj obj)",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnReward",				fnMissionSet,		FN_MISSION_REWARD,
+			"(msnReward missionObj [data])",
+			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSetData",					fnObjData,		FN_OBJ_SETDATA,
+			"(msnSetData missionObj attrib data)",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSetObjRefData",				fnObjData,		FN_OBJ_SET_OBJREF_DATA,
+			"(msnSetObjRefData missionObj attrib obj)",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSetPlayerTarget",			fnMissionSet,		FN_MISSION_SET_PLAYER_TARGET,
+			"(msnSetPlayerTarget missionObj)",
+			"i",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSetProperty",				fnObjSet,		FN_OBJ_SET_PROPERTY,
+			"(msnSetProperty obj property value) -> True/Nil\n\n"
+			
+			"property\n\n"
+
+			"   'isDebriefed True|Nil\n"
+			"   'isDeclined True|Nil\n"
+			"   'isIntroShown True|Nil\n",
+
+			"isv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSetUnavailable",			fnMissionSet,		FN_MISSION_CLOSED,
+			"(msnSetUnavailable missionObj)",
+			"i",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnSuccess",				fnMissionSet,		FN_MISSION_SUCCESS,
+			"(msnSuccess missionObj [data])",
+			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"msnTranslate",					fnObjGet,		FN_OBJ_TRANSLATE,
+			"(msnTranslate missionObj textID [default]) -> text (or Nil)",
+			"iv*",	0,	},
 
 		//	System functions
 		//	----------------
@@ -1721,6 +1874,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(sysGetObjectByName [source] name) -> obj",
 			"*s",	0,	},
 
+		{	"sysGetStargateDestination",	fnSystemGet,	FN_SYS_STARGATE_DESTINATION,
+			"(sysGetStargateDestination [nodeID] gateID) -> (nodeID gateID)",
+			"s*",	0,	},
+
 		{	"sysGetStargateDestinationNode",	fnSystemGet,	FN_SYS_STARGATE_DESTINATION_NODE,
 			"(sysGetStargateDestinationNode [nodeID] gateID) -> nodeID",
 			"s*",	0,	},
@@ -1824,28 +1981,31 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"s",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typFind",						fnDesignFind,		0,
-			"(typFind criteria) -> list of UNIDs",
-			//		$			Economy types
-			//		a			Adventure descs
-			//		b			Item tables
-			//		c			Effect types
-			//		d			Dock screens
-			//		e			Space environment types
-			//		f			Overlay types
-			//		g			Globals
-			//		h			Ship tables
-			//		i			Item types
-			//		m			Images
-			//		n			System nodes
-			//		p			Power types
-			//		q			System tables
-			//		s			Ship classes
-			//		t			Station types
-			//		u			Sounds
-			//		v			Sovereigns
-			//		w			Name generators
-			//		y			System types
-			//		z			System maps
+			"(typFind criteria) -> list of UNIDs\n\n"
+
+			"criteria\n\n"
+			
+			"   a                  AdventureDesc\n"
+			"   b                  ItemTable\n"
+			"   c                  EffectType\n"
+			"   d                  DockScreen\n"
+			"   e                  SpaceEnvironmenType\n"
+			"   f                  OverlayType\n"
+			"   h                  ShipTable\n"
+			"   i                  ItemType\n"
+			"   m                  Image\n"
+			"   n                  MissionType\n"
+			"   p                  Power\n"
+			"   q                  SystemTable\n"
+			"   s                  ShipClass\n"
+			"   t                  StationType\n"
+			"   u                  Sound\n"
+			"   v                  Sovereign\n"
+			"   y                  SystemType\n"
+			"   z                  SystemMap\n"
+			"   $                  EconomyType\n"
+			"   +/-{attrib}        Require/exclude types with given attribute\n",
+
 			"s",	0,	},
 
 		{	"typFireObjEvent",					fnDesignGet,		FN_DESIGN_FIRE_EVENT,
@@ -1947,6 +2107,26 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
+
+		{	"armIsRadiationImmune",			fnArmGet,		FN_ARM_IS_RADIATION_IMMUNE,
+			"DEPRECATED: Use itmGetProperty instead.",
+			"v",	0,	},
+
+		{	"objIsAbandoned",				fnObjGetOld,		FN_OBJ_IS_ABANDONED,
+			"DEPRECATED: Use objGetProperty instead.",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"staGetMaxStructuralHP",		fnStationGet,		FN_STATION_MAX_STRUCTURAL_HP,
+			"DEPRECATED: Use objGetProperty instead.",
+			"i",	0,	},
+
+		{	"staGetStructuralHP",			fnStationGetOld,	FN_STATION_STRUCTURAL_HP,
+			"DEPRECATED: Use objGetProperty instead.",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
+
+		{	"staSetStructuralHP",			fnStationSetOld,	FN_STATION_STRUCTURAL_HP,
+			"DEPRECATED: Use objSetProperty instead.",
+			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objIsDeviceEnabled",			fnObjGet,		FN_OBJ_IS_DEVICE_ENABLED,
 			"DEPRECATED: Use objGetItemProperty instead.",
@@ -2320,6 +2500,11 @@ ICCItem *fnDebug (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_DEBUG_LOG:
 			{
 			CString sResult;
+
+			//	Only in debug mode
+
+			if (!g_pUniverse->InDebugMode())
+				return pCC->CreateNil();
 
 			//	Append each of the arguments together
 
@@ -4398,6 +4583,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_GET_SELL_PRICE:
 			{
 			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
+			bool bNoInventoryCheck = (pArgs->GetCount() >= 3 && !pArgs->GetElement(2)->IsNil());
 
 			int iValue;
 
@@ -4409,7 +4595,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the value from the station that is selling
 
 			else
-				iValue = pObj->GetSellPrice(Item);
+				iValue = pObj->GetSellPrice(Item, bNoInventoryCheck);
 
 			if (iValue > 0)
 				return pCC->CreateInteger(iValue);
@@ -4571,8 +4757,8 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_TRANSLATE:
 			{
-			CString sText;
-			if (!pObj->Translate(pArgs->GetElement(1)->GetStringValue(), &sText))
+			ICCItem *pResult;
+			if (!pObj->Translate(pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
 				{
 				if (pArgs->GetCount() > 2)
 					return pArgs->GetElement(2)->Reference();
@@ -4580,7 +4766,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 					return pCC->CreateNil();
 				}
 
-			return pCC->CreateString(sText);
+			return pResult;
 			}
 
 		case FN_OBJ_VELOCITY:
@@ -5671,7 +5857,7 @@ ICCItem *fnObjSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 			if (pObj2)
 				{
-				pObj->RegisterObjectForEvents(pObj2);
+				pObj2->AddEventSubscriber(pObj);
 				pResult = pCC->CreateTrue();
 				}
 			else
@@ -5705,7 +5891,7 @@ ICCItem *fnObjSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 			CSpaceObject *pObj2 = CreateObjFromItem(*pCC, pArgs->GetElement(1));
 			pArgs->Discard(pCC);
 
-			pObj->UnregisterObjectForEvents(pObj2);
+			pObj2->RemoveEventSubscriber(pObj);
 			pResult = pCC->CreateTrue();
 			break;
 			}
@@ -5901,6 +6087,225 @@ ICCItem *fnProgramDamage (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwD
 
 	pArgs->Discard(pCC);
 	return pCC->CreateTrue();
+	}
+
+ICCItem *fnMission (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnMission
+//
+//	(msnCreate unid owner [data])
+
+	{
+	ALERROR error;
+	int i;
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	switch (dwData)
+		{
+		case FN_MISSION_CREATE:
+			{
+			//	Get the list of mission types
+
+			TArray<CMissionType *> Missions;
+			ICCItem *pList = pArgs->GetElement(0);
+			for (i = 0; i < pList->GetCount(); i++)
+				{
+				CMissionType *pType = g_pUniverse->FindMissionType((DWORD)pList->GetElement(i)->GetIntegerValue());
+				if (pType == NULL)
+					return pCC->CreateError(strPatternSubst(CONSTLIT("Unknown mission type: %x."), pList->GetElement(i)->GetIntegerValue()), pList->GetElement(i));
+
+				Missions.Insert(pType);
+				}
+
+			Missions.Shuffle();
+
+			//	Get arguments
+
+			CSpaceObject *pOwner = CreateObjFromItem(*pCC, pArgs->GetElement(1));
+			ICCItem *pData = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL);
+
+			//	Create the mission
+
+			CString sError;
+			CMission *pMission;
+			if (error = g_pUniverse->CreateRandomMission(Missions, pOwner, pData, &pMission, &sError))
+				{
+				//	ERR_NOTFOUND means that conditions do not allow for the
+				//	mission to be created. This is not technically an error; it
+				//	just means that the caller must do something else.
+
+				if (error = ERR_NOTFOUND)
+					return pCC->CreateNil();
+
+				//	Otherwise, we report an error
+
+				else
+					return pCC->CreateError(sError);
+				}
+
+			//	Return the mission object
+
+			return pCC->CreateInteger((int)pMission);
+			}
+
+		case FN_MISSION_FIND:
+			{
+			//	Get arguments
+
+			CSpaceObject *pSource;
+			CString sCriteria;
+			if (pArgs->GetCount() >= 2)
+				{
+				pSource = CreateObjFromItem(*pCC, pArgs->GetElement(0));
+				sCriteria = pArgs->GetElement(1)->GetStringValue();
+				}
+			else
+				{
+				pSource = NULL;
+				sCriteria = pArgs->GetElement(0)->GetStringValue();
+				}
+
+			//	Parse criteria
+
+			CMission::SCriteria Criteria;
+			if (!CMission::ParseCriteria(sCriteria, &Criteria))
+				return pCC->CreateError(CONSTLIT("Unable to parse criteria"), pArgs->GetElement(1));
+
+			//	Get list of missions
+
+			TArray<CMission *> List;
+			g_pUniverse->GetMissions(pSource, Criteria, &List);
+			if (List.GetCount() == 0)
+				return pCC->CreateNil();
+
+			//	Create a list to return
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+			for (i = 0; i < List.GetCount(); i++)
+				pList->AppendIntegerValue(pCC, (int)List[i]);
+
+			//	Done
+
+			return pResult;
+			}
+
+		default:
+			ASSERT(false);
+			return NULL;
+		}
+	}
+
+ICCItem *fnMissionGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnMissionGet
+//
+//
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	//	Do the appropriate command
+
+	switch (dwData)
+		{
+		case FN_MISSION_GET_PROPERTY:
+			{
+			}
+
+		default:
+			ASSERT(false);
+			return NULL;
+		}
+	}
+
+ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnMissionSet
+//
+//	(msnSetAccepted missionObj)
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+
+	//	Get the mission object
+
+	CSpaceObject *pObj = CreateObjFromItem(*pCC, pArgs->GetElement(0));
+	if (pObj == NULL)
+		return pCC->CreateError(CONSTLIT("Invalid object"), pArgs->GetElement(0));
+
+	CMission *pMission = pObj->AsMission();
+	if (pMission == NULL)
+		return pCC->CreateError(CONSTLIT("Invalid mission object"), pArgs->GetElement(0));
+
+	//	Do the appropriate command
+
+	switch (dwData)
+		{
+		case FN_MISSION_ACCEPTED:
+			return pCC->CreateBool(pMission->SetAccepted());
+
+		case FN_MISSION_ADD_TIMER:
+		case FN_MISSION_ADD_RECURRING_TIMER:
+			{
+			int iTime = pArgs->GetElement(1)->GetIntegerValue();
+			if (iTime < 0 || (iTime == 0 && dwData == FN_MISSION_ADD_RECURRING_TIMER))
+				return pCC->CreateError(CONSTLIT("Invalid recurring time"), pArgs->GetElement(1));
+
+			CString sEvent = pArgs->GetElement(2)->GetStringValue();
+
+			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+			if (pSystem == NULL)
+				return StdErrorNoSystem(*pCC);
+
+			CTimedEvent *pEvent;
+			if (dwData == FN_MISSION_ADD_TIMER)
+				pEvent = new CTimedMissionEvent(
+						g_pUniverse->GetTicks() + iTime,
+						0,
+						pMission,
+						sEvent);
+			else
+				pEvent = new CTimedMissionEvent(
+						g_pUniverse->GetTicks() + mathRandom(0, iTime),
+						iTime,
+						pMission,
+						sEvent);
+
+			g_pUniverse->AddEvent(pEvent);
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_MISSION_CANCEL_TIMER:
+			return pCC->CreateBool(g_pUniverse->CancelEvent(pMission, pArgs->GetElement(1)->GetStringValue(), pCtx->GetEvent() == eventDoEvent));
+
+		case FN_MISSION_CLOSED:
+			return pCC->CreateBool(pMission->SetUnavailable());
+
+		case FN_MISSION_DECLINED:
+			return pCC->CreateBool(pMission->SetDeclined());
+			
+		case FN_MISSION_FAILURE:
+			return pCC->CreateBool(pMission->SetFailure((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
+
+		case FN_MISSION_REWARD:
+			return pCC->CreateBool(pMission->Reward((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
+
+		case FN_MISSION_SET_PLAYER_TARGET:
+			return pCC->CreateBool(pMission->SetPlayerTarget());
+			
+		case FN_MISSION_SUCCESS:
+			return pCC->CreateBool(pMission->SetSuccess((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
+			
+		default:
+			ASSERT(false);
+			return NULL;
+		}
 	}
 
 ICCItem *fnResourceGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
@@ -8620,6 +9025,43 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pList->Append(pCC, pValue, NULL);
 				pValue->Discard(pCC);
 				}
+
+			return pResult;
+			}
+
+		case FN_SYS_STARGATE_DESTINATION:
+			{
+			CString sGateID;
+			CTopologyNode *pNode;
+			if (pArgs->GetCount() == 2)
+				{
+				pNode = g_pUniverse->FindTopologyNode(pArgs->GetElement(0)->GetStringValue());
+				sGateID = pArgs->GetElement(1)->GetStringValue();
+				}
+			else
+				{
+				pNode = g_pUniverse->GetCurrentSystem()->GetTopology();
+				sGateID = pArgs->GetElement(0)->GetStringValue();
+				}
+
+			if (pNode == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid nodeID"), pArgs->GetElement(0));
+
+			CString sDestNode;
+			CString sDestEntryPoint;
+			pNode->FindStargate(sGateID, &sDestNode, &sDestEntryPoint);
+
+			//	Create a list
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+			pList->AppendStringValue(pCC, sDestNode);
+			pList->AppendStringValue(pCC, sDestEntryPoint);
+
+			//	Done
 
 			return pResult;
 			}

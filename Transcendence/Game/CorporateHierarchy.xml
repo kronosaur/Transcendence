@@ -2203,6 +2203,7 @@
 
 					; Repair the ship
 					(intArmorRepairAll gPlayerShip 25 'alwaysRepair)
+					(intDeviceRepairAll gPlayerShip)
 					(shpRechargeShield gPlayerShip 1000)
 					(shpRefuelFromItem gPlayerShip (itmCreate &itHelium3FuelRod; (shpGetFuelNeeded gPlayerShip (itmCreate &itHelium3FuelRod; 1))))
 					(objChangeEquipmentStatus gPlayerShip 'SRS 'repair)

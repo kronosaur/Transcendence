@@ -168,31 +168,38 @@ void CLanguageDataBlock::MergeFrom (const CLanguageDataBlock &Source)
 		}
 	}
 
-bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const
+CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText) const
 
 //	Translate
 //
-//	Translates to text. If not found, returns FALSE.
+//	Translates an entry to either a string or an array of strings.
 
 	{
+	int i;
+
 	//	If we can't find this ID then we can't translate
 
 	SEntry *pEntry = m_Data.GetAt(sID);
 	if (pEntry == NULL)
-		return false;
+		return resultNotFound;
 
 	//	If we don't want the text back then all we need to do is return that we
 	//	have the text.
 
-	if (retsText == NULL)
-		return true;
+	if (retText == NULL && retsText == NULL)
+		return resultFound;
 
 	//	If we don't need to run code then we just return the string.
 
 	if (pEntry->pCode == NULL)
 		{
-		*retsText = pEntry->sText;
-		return true;
+		if (retsText)
+			{
+			*retsText = pEntry->sText;
+			return resultString;
+			}
+		else
+			return resultFound;
 		}
 
 	//	Otherwise we have to run some code
@@ -202,8 +209,161 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CStr
 	Ctx.DefineString(CONSTLIT("aTextID"), sID);
 	
 	ICCItem *pResult = Ctx.Run(pEntry->pCode);	//	LATER:Event
-	*retsText = pResult->GetStringValue();
+	ETranslateResult iResult;
+
+	//	Nil
+
+	if (pResult->IsNil())
+		iResult = resultNotFound;
+
+	//	List of strings
+
+	else if (pResult->GetCount() > 1)
+		{
+		if (retText)
+			{
+			retText->DeleteAll();
+
+			retText->InsertEmpty(pResult->GetCount());
+			for (i = 0; i < pResult->GetCount(); i++)
+				retText->GetAt(i) = pResult->GetElement(i)->GetStringValue();
+
+			iResult = resultArray;
+			}
+		else
+			iResult = resultFound;
+		}
+
+	//	String
+
+	else
+		{
+		if (retsText)
+			{
+			*retsText = pResult->GetStringValue();
+			iResult = resultString;
+			}
+		else
+			iResult = resultFound;
+		}
+
+	//	Done
+
 	Ctx.Discard(pResult);
 
+	return iResult;
+	}
+
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) const
+
+//	Translate
+//
+//	Translates to an item. The caller is responsible for discarding.
+
+	{
+	//	If we can't find this ID then we can't translate
+
+	SEntry *pEntry = m_Data.GetAt(sID);
+	if (pEntry == NULL)
+		return false;
+
+	//	If we don't need to run code then we just return the string.
+
+	if (pEntry->pCode == NULL)
+		{
+		*retpResult = g_pUniverse->GetCC().CreateString(pEntry->sText);
+		return true;
+		}
+
+	//	Otherwise we have to run some code
+
+	CCodeChainCtx Ctx;
+	Ctx.SaveAndDefineSourceVar(pObj);
+	Ctx.DefineString(CONSTLIT("aTextID"), sID);
+	
+	*retpResult = Ctx.Run(pEntry->pCode);	//	LATER:Event
+
 	return true;
+	}
+
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const
+
+//	Translate
+//
+//	Translates to an array of text. If not found, return FALSE.
+
+	{
+	CString sText;
+
+	ETranslateResult iResult = Translate(pObj, sID, retText, &sText);
+
+	switch (iResult)
+		{
+		case resultNotFound:
+			return false;
+
+		case resultFound:
+			//	This only happens if the caller passed in NULL for retText.
+			//	It means that we don't need the result.
+			return true;
+
+		case resultArray:
+			return true;
+
+		case resultString:
+			{
+			if (retText)
+				{
+				retText->DeleteAll();
+				retText->Insert(sText);
+				}
+			return true;
+			}
+
+		default:
+			ASSERT(false);
+			return false;
+		}
+	}
+
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const
+
+//	Translate
+//
+//	Translates to text. If not found, returns FALSE.
+
+	{
+	TArray<CString> List;
+
+	ETranslateResult iResult = Translate(pObj, sID, &List, retsText);
+
+	switch (iResult)
+		{
+		case resultNotFound:
+			return false;
+
+		case resultFound:
+			//	This only happens if the caller passed in NULL for retsText.
+			//	It means that we don't need the result.
+			return true;
+
+		case resultArray:
+			{
+			if (List.GetCount() > 0)
+				{
+				if (retsText)
+					*retsText = List[0];
+				return true;
+				}
+			else
+				return false;
+			}
+
+		case resultString:
+			return true;
+
+		default:
+			ASSERT(false);
+			return false;
+		}
 	}

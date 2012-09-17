@@ -95,7 +95,7 @@ ALERROR CSmokeTrailEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CX
 	//	as half its actual value. If this is loading from a previous version,
 	//	we divide by two.
 
-	bool bEmitSpeedFix = (Ctx.pExtension && Ctx.pExtension->GetAPIVersion() < 3);
+	bool bEmitSpeedFix = (Ctx.GetAPIVersion() < 3);
 
 	//	Load some stuff
 

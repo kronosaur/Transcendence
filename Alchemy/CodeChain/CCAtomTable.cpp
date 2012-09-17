@@ -16,7 +16,7 @@ CCAtomTable::CCAtomTable (void) : ICCAtom(&g_Class)
 	{
 	}
 
-ICCItem *CCAtomTable::AddEntry (CCodeChain *pCC, ICCItem *pAtom, ICCItem *pEntry)
+ICCItem *CCAtomTable::AddEntry (CCodeChain *pCC, ICCItem *pAtom, ICCItem *pEntry, bool bForceLocalAdd)
 
 //	AddEntry
 //

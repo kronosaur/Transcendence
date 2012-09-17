@@ -1425,6 +1425,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
+			enemyExclusionRadius="40"
 			>
 
 		<Names noArticle="true">Commonwealth Settlement %1%0%0%0</Names>

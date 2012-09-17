@@ -9,6 +9,7 @@
 //#define DEBUG_STRESS_TEST
 //#define DEBUG_STATION_TABLES
 //#define DEBUG_STATION_PLACEMENT
+//#define DEBUG_STATION_SEPARATION
 #endif
 
 #define ADD_ATTRIBUTE_TAG				CONSTLIT("AddAttribute")
@@ -538,12 +539,12 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 
 	//	Pick a random entry in the table
 
-	int iRoll = mathRandom(0, iTotal - 1);
+	int iRoll = mathRandom(1, iTotal);
 	int iPos = 0;
 
 	//	Get the position
 
-	while (pProbTable[iPos] <= iRoll)
+	while (pProbTable[iPos] < iRoll)
 		iRoll -= pProbTable[iPos++];
 
 	//	Found it
@@ -1087,7 +1088,7 @@ ALERROR CreateOrbitals (SSystemCreateCtx *pCtx,
 
 	//	Calculate the number of objects
 
-	int i;
+	int i, j;
 
 	//	Create an array of position vectors for the objects
 
@@ -1215,53 +1216,144 @@ ALERROR CreateOrbitals (SSystemCreateCtx *pCtx,
 		//	points.
 
 		bool bConfigurationOK = true;
-		int iTries = 10;
-		do
+		Metric rExclusionRadius = iExclusionRadius * LIGHT_SECOND;
+		Metric rExclusionRadius2 = rExclusionRadius * rExclusionRadius;
+
+		//	For random angles we try a slightly different algorithm
+
+		if (strEquals(sAngle, RANDOM_ANGLE))
 			{
-			if (error = GenerateAngles(pCtx, sAngle, iCount, rAngle))
-				return error;
-
-			//	If any of the positions overlap, then the configuration is not OK
-
-			if (iExclusionRadius != 0)
+			for (i = 0; i < iCount; i++)
 				{
-				Metric rRadius = iExclusionRadius * LIGHT_SECOND;
-				bConfigurationOK = true;
-				for (i = 0; i < iCount; i++)
-					{
-					COrbit NewOrbit(OrbitDesc.GetObjectPos(),
-							rDistance[i],
-							rEccentricity[i],
-							rRotation[i],
-							rAngle[i]);
+				bool bAngleOK = true;
+				int iTries = 20;
 
-					if (!IsExclusionZoneClear(pCtx, NewOrbit.GetObjectPos(), rRadius))
+				do
+					{
+					rAngle[i] = mathDegreesToRadians(mathRandom(0,3599) / 10.0);
+					bAngleOK = true;
+
+					if (iExclusionRadius != 0)
 						{
-						bConfigurationOK = false;
-						break;
+						COrbit NewOrbit(OrbitDesc.GetObjectPos(),
+								rDistance[i],
+								rEccentricity[i],
+								rRotation[i],
+								rAngle[i]);
+
+						if (!IsExclusionZoneClear(pCtx, NewOrbit.GetObjectPos(), rExclusionRadius))
+							bAngleOK = false;
+
+						//	Make none we are not near any other point that we 
+						//	just generated.
+
+						if (bAngleOK)
+							{
+							for (j = 0; j < i; j++)
+								{
+								COrbit OtherOrbit(OrbitDesc.GetObjectPos(),
+										rDistance[j],
+										rEccentricity[j],
+										rRotation[j],
+										rAngle[j]);
+
+								CVector vDist = OtherOrbit.GetObjectPos() - NewOrbit.GetObjectPos();
+								if (vDist.Length2() < rExclusionRadius2)
+									{
+									bAngleOK = false;
+									break;
+									}
+								}
+							}
+						}
+					else if (bNoOverlap)
+						{
+						COrbit NewOrbit(OrbitDesc.GetObjectPos(),
+								rDistance[i],
+								rEccentricity[i],
+								rRotation[i],
+								rAngle[i]);
+
+						if (CheckForOverlap(pCtx, NewOrbit.GetObjectPos()))
+							bAngleOK = false;
 						}
 					}
-				}
-			else if (bNoOverlap)
-				{
-				bConfigurationOK = true;
-				for (i = 0; i < iCount; i++)
-					{
-					COrbit NewOrbit(OrbitDesc.GetObjectPos(),
-							rDistance[i],
-							rEccentricity[i],
-							rRotation[i],
-							rAngle[i]);
+				while (!bAngleOK && --iTries > 0);
 
-					if (CheckForOverlap(pCtx, NewOrbit.GetObjectPos()))
-						{
-						bConfigurationOK = false;
-						break;
-						}
-					}
+				//	If one of the angles is not OK then the configuration is not OK
+
+				if (!bAngleOK)
+					bConfigurationOK = false;
 				}
 			}
-		while (!bConfigurationOK && --iTries > 0);
+
+		//	Otherwise, keep generating a complete set of angles until we find
+		//	something that fits
+
+		else
+			{
+			int iTries = 10;
+
+			do
+				{
+				if (error = GenerateAngles(pCtx, sAngle, iCount, rAngle))
+					return error;
+
+				//	If any of the positions overlap, then the configuration is not OK
+
+				if (iExclusionRadius != 0)
+					{
+					bConfigurationOK = true;
+					for (i = 0; i < iCount; i++)
+						{
+						COrbit NewOrbit(OrbitDesc.GetObjectPos(),
+								rDistance[i],
+								rEccentricity[i],
+								rRotation[i],
+								rAngle[i]);
+
+						if (!IsExclusionZoneClear(pCtx, NewOrbit.GetObjectPos(), rExclusionRadius))
+							{
+							bConfigurationOK = false;
+							break;
+							}
+						}
+					}
+				else if (bNoOverlap)
+					{
+					bConfigurationOK = true;
+					for (i = 0; i < iCount; i++)
+						{
+						COrbit NewOrbit(OrbitDesc.GetObjectPos(),
+								rDistance[i],
+								rEccentricity[i],
+								rRotation[i],
+								rAngle[i]);
+
+						if (CheckForOverlap(pCtx, NewOrbit.GetObjectPos()))
+							{
+							bConfigurationOK = false;
+							break;
+							}
+						}
+					}
+				}
+			while (!bConfigurationOK && --iTries > 0);
+			}
+
+		//	Log error
+
+#ifdef DEBUG_STATION_SEPARATION
+		if (!bConfigurationOK)
+			{
+			if (iExclusionRadius != 0)
+				kernelDebugLogMessage("<Orbitals>: Unable to find clear exclusion zone: %d ls radius.", iExclusionRadius);
+			else if (bNoOverlap)
+				kernelDebugLogMessage("<Orbitals>: Unable to find non-overlapping configuration.");
+			else
+				kernelDebugLogMessage("<Orbitals>: Unable to find valid configuration.");
+			}
+#endif
 
 		//	Create each object
 
@@ -3123,6 +3215,36 @@ ALERROR CSystem::CreateStationInt (CStationType *pType,
 			return error;
 			}
 		}
+
+#ifdef DEBUG_STATION_SEPARATION
+	if (pStation->CanAttack())
+		{
+		//	Count to see how many enemy stations are in range
+
+		for (int k = 0; k < GetObjectCount(); k++)
+			{
+			CSpaceObject *pEnemy = GetObject(k);
+			if (pEnemy
+					&& pEnemy->GetCategory() == CSpaceObject::catStation
+					&& pEnemy->CanAttack()
+					&& (pEnemy->IsEnemy(pStation) || pStation->IsEnemy(pEnemy)))
+				{
+				Metric rDist = pStation->GetDistance(pEnemy);
+				int iLSDist = (int)((rDist / LIGHT_SECOND) + 0.5);
+				if (iLSDist < 30)
+					{
+					::kernelDebugLogMessage("%s: %s (%x) and %s (%x) within %d ls.",
+							GetName(),
+							pStation->GetName(),
+							pStation->GetID(),
+							pEnemy->GetName(),
+							pEnemy->GetID(),
+							iLSDist);
+					}
+				}
+			}
+		}
+#endif
 
 	//	Done
 

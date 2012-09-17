@@ -6,7 +6,7 @@
 
 #define ALLOC_GRANULARITY				64
 
-CSpaceObjectList::CSpaceObjectList (void) : m_pList(NULL)
+CSpaceObjectList::CSpaceObjectList (void)
 
 //	CSpaceObjectList constructor
 
@@ -18,7 +18,6 @@ CSpaceObjectList::~CSpaceObjectList (void)
 //	CSpaceObjectList destructor
 
 	{
-	CleanUp();
 	}
 
 void CSpaceObjectList::Add (CSpaceObject *pObj, int *retiIndex)
@@ -35,87 +34,6 @@ void CSpaceObjectList::Add (CSpaceObject *pObj, int *retiIndex)
 	FastAdd(pObj, retiIndex);
 	}
 
-void CSpaceObjectList::FastAdd (CSpaceObject *pObj, int *retiIndex)
-
-//	FastAdd
-//
-//	Adds the object without checking to see if it is already
-//	in the list.
-
-	{
-	int iAlloc = GetAllocation();
-	int iCount = GetCount();
-
-	if (iAlloc <= iCount)
-		{
-		iAlloc += ALLOC_GRANULARITY;
-		CSpaceObject **pNewList = new CSpaceObject * [iAlloc + 1];
-
-		if (m_pList)
-			{
-			for (int i = 1; i <= iCount; i++)
-				pNewList[i] = m_pList[i];
-
-			delete [] m_pList;
-			}
-
-		m_pList = pNewList;
-		}
-
-	if (retiIndex)
-		*retiIndex = iCount;
-
-	m_pList[++iCount] = pObj;
-	SetCountAndAllocation(iCount, iAlloc);
-	}
-
-bool CSpaceObjectList::FindObj (CSpaceObject *pObj, int *retiIndex) const
-
-//	FindObj
-//
-//	Find the object in the list
-
-	{
-	int iCount = GetCount();
-
-	for (int i = 0; i < iCount; i++)
-		if (m_pList[i+1] == pObj)
-			{
-			if (retiIndex)
-				*retiIndex = i;
-
-			return true;
-			}
-
-	return false;
-	}
-
-int CSpaceObjectList::GetAllocation (void) const
-
-//	GetAllocation
-//
-//	Get allocation size (in elements)
-
-	{
-	if (m_pList)
-		return (int)HIWORD(((DWORD)m_pList[0]));
-	else
-		return 0;
-	}
-
-int CSpaceObjectList::GetCount (void) const
-
-//	GetCount
-//
-//	Returns the number of objects in the list
-
-	{
-	if (m_pList)
-		return (int)LOWORD(((DWORD)m_pList[0]));
-	else
-		return 0;
-	}
-
 void CSpaceObjectList::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream
@@ -123,107 +41,49 @@ void CSpaceObjectList::ReadFromStream (SLoadCtx &Ctx)
 //	Read the list from a stream
 
 	{
-	ASSERT(m_pList == NULL);
+	ASSERT(m_List.GetCount() == 0);
 
 	DWORD dwCount;
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
 	if (dwCount)
 		{
-		int iAlloc = AlignUp(dwCount, ALLOC_GRANULARITY);
-		m_pList = new CSpaceObject * [iAlloc + 1];
+		m_List.InsertEmpty(dwCount);
 
 		for (int i = 0; i < (int)dwCount; i++)
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pList[i + 1]);
-
-		SetCountAndAllocation(dwCount, iAlloc);
+			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_List[i]);
 		}
-	}
-
-void CSpaceObjectList::Remove (int iIndex)
-
-//	Remove
-//
-//	Remove the object
-
-	{
-	int iCount = GetCount();
-	ASSERT(iCount > 0);
-
-	for (int i = iIndex + 1; i < iCount; i++)
-		m_pList[i] = m_pList[i+1];
-
-	iCount--;
-	SetCountAndAllocation(iCount, GetAllocation());
 	}
 
 bool CSpaceObjectList::Remove (CSpaceObject *pObj)
 
 //	Remove
 //
-//	Remove the object
+//	Remove the object. Returns TRUE if we removed the object.
 
 	{
-	int iCount = GetCount();
-
-	for (int i = 0; i < iCount; i++)
-		if (m_pList[i+1] == pObj)
-			{
-			Remove(i);
-			return true;
-			}
+	int iIndex;
+	if (FindObj(pObj, &iIndex))
+		{
+		Remove(iIndex);
+		return true;
+		}
 
 	return false;
-	}
-
-void CSpaceObjectList::RemoveAll (void)
-
-//	RemoveAll
-//
-//	Remove all objects
-
-	{
-	if (m_pList)
-		SetCountAndAllocation(0, GetAllocation());
 	}
 
 void CSpaceObjectList::SetAllocSize (int iNewCount)
 
 //	SetAllocSize
 //
-//	Sets the allocation size to hold at least the given number of objects
+//	Sets the size of the buffer in preparation for adding objects.
+//	NOTE that this also empties the list.
 
 	{
-	int iAlloc = GetAllocation();
-	int iCount = GetCount();
+	int iNeeded = (iNewCount - m_List.GetCount());
+	if (iNeeded > 0)
+		m_List.InsertEmpty(iNeeded);
 
-	if (iAlloc < iNewCount)
-		{
-		iAlloc = AlignUp(iNewCount, ALLOC_GRANULARITY);
-		CSpaceObject **pNewList = new CSpaceObject * [iAlloc + 1];
-
-		if (m_pList)
-			{
-			for (int i = 1; i <= iCount; i++)
-				pNewList[i] = m_pList[i];
-
-			delete [] m_pList;
-			}
-
-		m_pList = pNewList;
-
-		SetCountAndAllocation(iCount, iAlloc);
-		}
-	}
-
-void CSpaceObjectList::SetCountAndAllocation (int iCount, int iAllocation)
-
-//	SetCountAndAllocation
-//
-//	Set the count and allocation (which we store in the first element)
-
-	{
-	ASSERT(m_pList);
-	m_pList[0] = (CSpaceObject *)MAKELONG((WORD)(DWORD)iCount, (WORD)(DWORD)iAllocation);
+	m_List.DeleteAll();
 	}
 
 void CSpaceObjectList::Subtract (const CSpaceObjectList &List)
@@ -248,15 +108,12 @@ void CSpaceObjectList::Subtract (const CSpaceObjectList &List)
 
 	//	Create a new list with the remaining objects
 
-	CSpaceObject **pOldList = m_pList;
-	m_pList = NULL;
-
+	TArray<CSpaceObject *> NewList;
 	for (i = 0; i < iCount; i++)
-		if (pOldList[i + 1]->IsMarked())
-			FastAdd(pOldList[i + 1]);
+		if (GetObj(i)->IsMarked())
+			NewList.Insert(GetObj(i));
 
-	if (pOldList)
-		delete [] pOldList;
+	m_List.TakeHandoff(NewList);
 	}
 
 void CSpaceObjectList::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
@@ -270,5 +127,5 @@ void CSpaceObjectList::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
 	pStream->Write((char *)&iCount, sizeof(int));
 
 	for (int i = 0; i < iCount; i++)
-		pSystem->WriteObjRefToStream(m_pList[i+1], pStream);
+		pSystem->WriteObjRefToStream(m_List[i], pStream);
 	}

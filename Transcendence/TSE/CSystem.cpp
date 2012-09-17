@@ -243,6 +243,10 @@
 //		Added m_iState to CAttackStationOrder
 //		Added m_iState to CGuardOrder
 //
+//	77: 1.08g
+//		Added m_SubscribedObjs to CSpaceObject
+//		Added m_iMaxHitPoints to CStation
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -588,23 +592,7 @@ void CSystem::CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bo
 //	Cancel event by name
 
 	{
-	int i;
-
-	for (i = 0; i < GetTimedEventCount(); i++)
-		{
-		CTimedEvent *pEvent = GetTimedEvent(i);
-		if (pEvent->GetEventHandlerObj() == pSource 
-				&& strEquals(pEvent->GetEventHandlerName(), sEvent))
-			{
-			if (bInDoEvent)
-				pEvent->SetDestroyed();
-			else
-				{
-				m_TimedEvents.RemoveEvent(i);
-				i--;
-				}
-			}
-		}
+	m_TimedEvents.CancelEvent(pSource, sEvent, bInDoEvent);
 	}
 
 void CSystem::CancelTimedEvent (CDesignType *pSource, const CString &sEvent, bool bInDoEvent)
@@ -767,7 +755,9 @@ void CSystem::ComputeStars (void)
 		{
 		CSpaceObject *pObj = GetObject(i);
 
-		if (pObj && pObj->GetScale() == scaleStar)
+		if (pObj 
+				&& pObj->GetScale() == scaleStar
+				&& !pObj->IsDestroyed())
 			m_Stars.Add(pObj);
 		}
 	}
@@ -846,6 +836,11 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 //	DWORD		Number of CNavigationPath
 //	CNavigationPath
 //
+//	CEventHandlers
+//
+//	DWORD		Number of mission objects
+//	CSpaceObject
+//
 //	DWORD		Number of objects
 //	CSpaceObject
 //
@@ -873,6 +868,14 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	SLoadCtx Ctx;
 	Ctx.dwVersion = 0;	//	Default to 0
 	Ctx.pStream = pStream;
+
+	//	Add all missions to the map so that they can be resolved
+
+	for (i = 0; i < pUniv->GetMissionCount(); i++)
+		{
+		CMission *pMission = pUniv->GetMission(i);
+		Ctx.ObjMap.AddEntry(pMission->GetID(), pMission);
+		}
 
 	//	Create the new star system
 
@@ -983,6 +986,25 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 		pObj->AddToSystem(Ctx.pSystem);
 		}
 
+	//	If we have old style registrations then we need to convert to subscriptions
+
+	if (Ctx.dwVersion < 77)
+		{
+		for (i = 0; i < Ctx.pSystem->GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = Ctx.pSystem->GetObject(i);
+			if (pObj)
+				{
+				TArray<CSpaceObject *> *pList = Ctx.Subscribed.GetAt(pObj->GetID());
+				if (pList)
+					{
+					for (int j = 0; j < pList->GetCount(); j++)
+						pObj->AddEventSubscriber(pList->GetAt(j));
+					}
+				}
+			}
+		}
+
 	//	If there are still references to the player, resolve them now.
 	//	[This happens because of a bug in 1.0 RC1]
 
@@ -1044,13 +1066,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 
 	//	Load all timed events
 
-	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
-	for (i = 0; i < (int)dwCount; i++)
-		{
-		CTimedEvent *pEvent;
-		CTimedEvent::CreateFromStream(Ctx, &pEvent);
-		Ctx.pSystem->AddTimedEvent(pEvent);
-		}
+	Ctx.pSystem->m_TimedEvents.ReadFromStream(Ctx);
 
 	//	Load environment map
 
@@ -2414,63 +2430,13 @@ CVector CSystem::OnJumpPosAdj (CSpaceObject *pObj, const CVector &vPos)
 //	other objects in the system and see if the coords need to be adjusted
 
 	{
-	int i;
-	int iTries = 20;
+	//	See if the system wants to change jump coordinates
+
 	CVector vNewPos = vPos;
-	bool bSystemChecked = false;
-	bool bObjsChecked = false;
+	if (m_pType->FireOnObjJumpPosAdj(pObj, &vNewPos))
+		return vNewPos;
 
-	do
-		{
-		//	See if the system wants to change jump coordinates
-
-		if (!bSystemChecked)
-			{
-			if (m_pType->FireOnObjJumpPosAdj(pObj, &vNewPos))
-				bObjsChecked = false;
-
-			bSystemChecked = true;
-			}
-
-		//	See if any objects want to change the jump coordinates
-
-		if (!bObjsChecked)
-			{
-			int iEnd = GetObjectCount();
-
-			do
-				{
-				int iNewEnd = -1;
-
-				for (i = 0; i < iEnd; i++)
-					{
-					CSpaceObject *pAdjObj = GetObject(i);
-
-					if (pAdjObj 
-							&& pAdjObj != pObj 
-							&& pAdjObj->OnObjJumpPosAdj(pObj, &vNewPos))
-						{
-						//	If we adjust the coordinates, then we start looping again
-						//	but we end just before the object that changed the coords
-
-						iNewEnd = i;
-
-						//	We need to recheck the system
-
-						bSystemChecked = false;
-						}
-					}
-
-				iEnd = iNewEnd;
-				}
-			while (iTries-- > 0 && iEnd != -1);
-
-			bObjsChecked = true;
-			}
-		}
-	while (iTries-- > 0 && (!bSystemChecked || !bObjsChecked));
-
-	return vNewPos;
+	return vPos;
 	}
 
 void CSystem::PaintDestinationMarker (CG16bitImage &Dest, int x, int y, CSpaceObject *pObj, CSpaceObject *pCenter)
@@ -3489,6 +3455,10 @@ void CSystem::RemoveObject (SDestroyCtx &Ctx)
 		{
 		DEBUG_SAVE_PROGRAMSTATE;
 
+		//	Notify subscribers
+
+		Ctx.pObj->NotifyOnObjDestroyed(Ctx);
+
 		//	Notify other objects in the system
 
 		for (i = 0; i < GetObjectCount(); i++)
@@ -3530,7 +3500,7 @@ void CSystem::RemoveObject (SDestroyCtx &Ctx)
 		{
 		//	If this was not the player, then set back to the player
 
-		if (Ctx.pObj != g_pUniverse->GetPlayer() && g_pUniverse->GetPlayer())
+		if (Ctx.pObj != g_pUniverse->GetPlayer() && g_pUniverse->GetPlayer() && !g_pUniverse->GetPlayer()->IsDestroyed())
 			g_pUniverse->SetPOV(g_pUniverse->GetPlayer());
 
 		//	Otherwise, set to a marker
@@ -3553,6 +3523,11 @@ void CSystem::RemoveObject (SDestroyCtx &Ctx)
 
 	if (Ctx.pObj->HasRandomEncounters())
 		m_fEncounterTableValid = false;
+
+	//	If this was a star then recalc the list of stars
+
+	if (Ctx.pObj->GetScale() == scaleStar)
+		ComputeStars();
 
 	//	Debug code to see if we ever delete a barrier in the middle of move
 
@@ -3643,6 +3618,11 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 //
 //	DWORD		Number of CNavigationPath
 //	CNavigationPath
+//
+//	CEventHandlers
+//
+//	DWORD		Number of mission objects
+//	CSpaceObject
 //
 //	DWORD		Number of objects
 //	CSpaceObject
@@ -3744,14 +3724,7 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 
 	//	Save timed events
 
-	dwCount = m_TimedEvents.GetCount();
-	pStream->Write((char *)&dwCount, sizeof(DWORD));
-
-	for (i = 0; i < (int)dwCount; i++)
-		{
-		CTimedEvent *pEvent = GetTimedEvent(i);
-		pEvent->WriteToStream(this, pStream);
-		}
+	m_TimedEvents.WriteToStream(this, pStream);
 
 	//	Save environment maps
 
@@ -4029,30 +4002,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	SetProgramState(psUpdatingEvents);
 	if (!IsTimeStopped() && (g_pUniverse->GetPlayer() || bForceEventFiring))
-		{
-		for (i = 0; i < GetTimedEventCount(); i++)
-			{
-			CTimedEvent *pEvent = GetTimedEvent(i);
-			SetProgramEvent(pEvent);
-
-			if (!pEvent->IsDestroyed() && pEvent->GetTick() <= m_iTick)
-				pEvent->DoEvent(this);
-			}
-
-		//	Delete events that were destroyed
-
-		for (i = 0; i < GetTimedEventCount(); i++)
-			{
-			CTimedEvent *pEvent = GetTimedEvent(i);
-			if (pEvent->IsDestroyed())
-				{
-				m_TimedEvents.RemoveEvent(i);
-				i--;
-				}
-			}
-		}
-
-	SetProgramEvent(NULL);
+		m_TimedEvents.Update(m_iTick, this);
 
 	//	Add all objects to the grid so that we can do faster
 	//	hit tests
@@ -4098,7 +4048,6 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	DebugStartTimer();
 
-	m_BarrierObjects.RemoveAll();
 	m_BarrierObjects.SetAllocSize(GetObjectCount());
 
 	//	Make a list of all barrier objects

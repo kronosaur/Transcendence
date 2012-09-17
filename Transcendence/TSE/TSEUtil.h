@@ -162,8 +162,8 @@ inline void DebugStopTimer (char *szTiming) { }
 
 const DWORD EXTENSION_VERSION =							12;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						16;
-const DWORD SYSTEM_SAVE_VERSION =						76;		//	See: CSystem.cpp
+const DWORD UNIVERSE_SAVE_VERSION =						17;
+const DWORD SYSTEM_SAVE_VERSION =						77;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -189,6 +189,9 @@ enum ELoadStates
 struct SLoadCtx
 	{
 	SLoadCtx (void) : 
+			dwVersion(SYSTEM_SAVE_VERSION),
+			pStream(NULL),
+			pSystem(NULL),
 			ObjMap(FALSE, TRUE),
 			ForwardReferences(TRUE, FALSE),
 			iLoadState(loadStateUnknown),
@@ -203,6 +206,11 @@ struct SLoadCtx
 	CIDTable ObjMap;					//	Map of ID to objects.
 	CIDTable ForwardReferences;			//	Map of ID to CIntArray of addresses
 										//		that need CSpaceObject pointer
+
+	//	For backwards compatibility we keep track of the list of objects
+	//	that want a subscription to the given ObjID.
+
+	TSortMap<DWORD, TArray<CSpaceObject *>> Subscribed;
 
 	//	Diagnostics
 
@@ -302,6 +310,7 @@ class CAttributeDataBlock
 		bool IsEqual (const CAttributeDataBlock &Src);
 		void LoadObjReferences (CSystem *pSystem);
 		void OnObjDestroyed (CSpaceObject *pObj);
+		void OnSystemChanged (CSystem *pSystem);
 		void ReadFromStream (SLoadCtx &Ctx);
 		void ReadFromStream (IReadStream *pStream);
 		void SetData (const CString &sAttrib, const CString &sData);
@@ -408,14 +417,27 @@ class CLanguageDataBlock
 		void DeleteAll (void);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		void MergeFrom (const CLanguageDataBlock &Source);
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const;
 		bool Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const;
 
 	private:
+		enum ETranslateResult
+			{
+			resultArray,
+			resultString,
+
+			resultFound,
+			resultNotFound,
+			};
+
 		struct SEntry
 			{
 			CString sText;
 			ICCItem *pCode;
 			};
+
+		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText) const;
 
 		TSortMap<CString, SEntry> m_Data;
 	};
@@ -570,26 +592,23 @@ class CSpaceObjectList
 		~CSpaceObjectList (void);
 
 		void Add (CSpaceObject *pObj, int *retiIndex = NULL);
-		inline void CleanUp (void) { if (m_pList) { delete [] m_pList; m_pList = NULL; } }
-		void FastAdd (CSpaceObject *pObj, int *retiIndex = NULL);
-		bool FindObj (CSpaceObject *pObj, int *retiIndex = NULL) const;
-		int GetCount (void) const;
-		inline CSpaceObject *GetObj (int iIndex) const { return m_pList[iIndex+1]; }
-		inline bool IsEmpty (void) const { return (m_pList == NULL) || ((int)LOWORD(((DWORD)m_pList[0])) == 0); }
+		inline void CleanUp (void) { m_List.DeleteAll(); }
+		inline void FastAdd (CSpaceObject *pObj, int *retiIndex = NULL) { if (retiIndex) *retiIndex = m_List.GetCount(); m_List.Insert(pObj); }
+		inline bool FindObj (CSpaceObject *pObj, int *retiIndex = NULL) const { return m_List.Find(pObj, retiIndex); }
+		inline int GetCount (void) const { return m_List.GetCount(); }
+		inline CSpaceObject *GetObj (int iIndex) const { return m_List[iIndex]; }
+		inline bool IsEmpty (void) const { return (m_List.GetCount() == 0); }
 		void ReadFromStream (SLoadCtx &Ctx);
-		void Remove (int iIndex);
+		inline void Remove (int iIndex) { m_List.Delete(iIndex); }
 		bool Remove (CSpaceObject *pObj);
-		void RemoveAll (void);
+		inline void RemoveAll (void) { m_List.DeleteAll(); }
 		void SetAllocSize (int iNewCount);
-		inline void SetObj (int iIndex, CSpaceObject *pObj) { m_pList[iIndex+1] = pObj; }
+		inline void SetObj (int iIndex, CSpaceObject *pObj) { m_List[iIndex] = pObj; }
 		void Subtract (const CSpaceObjectList &List);
 		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 	private:
-		int GetAllocation (void) const;
-		void SetCountAndAllocation (int iCount, int iAllocation);
-
-		CSpaceObject **m_pList;
+		TArray<CSpaceObject *> m_List;
 	};
 
 class CSpaceObjectTable
@@ -742,6 +761,7 @@ class CSpaceObjectGrid
 		CSpaceObject *EnumGetNext (SSpaceObjectGridEnumerator &i);
 		inline CSpaceObject *EnumGetNextFast (SSpaceObjectGridEnumerator &i)
 			{
+			ASSERT(i.iIndex >= 0);
 			CSpaceObject *pCurObj = i.pList->GetObj(i.iIndex++);
 			if (i.iIndex >= i.iListCount)
 				EnumGetNextList(i);
@@ -793,24 +813,26 @@ class CTimedEvent
 	public:
 		enum Classes
 			{
+			//	NOTE: These values are stored in the save file
 			cTimedEncounterEvent,
 			cTimedCustomEvent,
 			cTimedRecurringEvent,
 			cTimedTypeEvent,
+			cTimedMissionEvent,
 			};
 
-		CTimedEvent (int iTick) : m_iTick(iTick), m_bDestroyed(false) { }
+		CTimedEvent (DWORD dwTick) : m_dwTick(dwTick), m_bDestroyed(false) { }
 		virtual ~CTimedEvent (void) { }
 		static void CreateFromStream (SLoadCtx &Ctx, CTimedEvent **retpEvent);
 
-		inline int GetTick (void) { return m_iTick; }
+		inline DWORD GetTick (void) { return m_dwTick; }
 		inline bool IsDestroyed (void) { return m_bDestroyed; }
 		inline void SetDestroyed (void) { m_bDestroyed = true; }
-		inline void SetTick (int iTick) { m_iTick = iTick; }
+		inline void SetTick (DWORD dwTick) { m_dwTick = dwTick; }
 		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 		virtual CString DebugCrashInfo (void) { return NULL_STR; }
-		virtual void DoEvent (CSystem *pSystem) = 0;
+		virtual void DoEvent (DWORD dwTick, CSystem *pSystem) = 0;
 		virtual CString GetEventHandlerName (void) { return NULL_STR; }
 		virtual CSpaceObject *GetEventHandlerObj (void) { return NULL; }
 		virtual CDesignType *GetEventHandlerType (void) { return NULL; }
@@ -825,7 +847,7 @@ class CTimedEvent
 		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream) = 0;
 
 	private:
-		int m_iTick;
+		DWORD m_dwTick;
 		bool m_bDestroyed;
 	};
 
@@ -835,10 +857,16 @@ class CTimedEventList
 		~CTimedEventList (void);
 
 		inline void AddEvent (CTimedEvent *pEvent) { m_List.Insert(pEvent); }
+		bool CancelEvent (CSpaceObject *pObj, bool bInDoEvent);
+		bool CancelEvent (CSpaceObject *pObj, const CString &sEvent, bool bInDoEvent);
+		void DeleteAll (void);
 		inline int GetCount (void) const { return m_List.GetCount(); }
 		inline CTimedEvent *GetEvent (int iIndex) const { return m_List[iIndex]; }
 		inline void MoveEvent (int iIndex, CTimedEventList &Dest) { Dest.AddEvent(m_List[iIndex]); m_List.Delete(iIndex); }
+		void ReadFromStream (SLoadCtx &Ctx);
 		inline void RemoveEvent (int iIndex) { delete m_List[iIndex]; m_List.Delete(iIndex); }
+		void Update (DWORD dwTick, CSystem *pSystem);
+		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 	private:
 		TArray<CTimedEvent *> m_List;
@@ -1035,6 +1063,7 @@ class CCodeChainCtx
 		void DefineSource (CSpaceObject *pSource);
 		void DefineSpaceObject (const CString &sVar, CSpaceObject *pObj);
 		inline void DefineString (const CString &sVar, const CString &sValue) { m_CC.DefineGlobalString(sVar, sValue); }
+		inline void DefineVar (const CString &sVar, ICCItem *pValue) { m_CC.DefineGlobal(sVar, pValue); }
 		void DefineVector (const CString &sVar, const CVector &vVector);
 		inline CG16bitImage *GetCanvas (void) const { return m_pCanvas; }
 		inline ECodeChainEvents GetEvent (void) const { return m_iEvent; }
@@ -1047,6 +1076,7 @@ class CCodeChainCtx
 		ICCItem *Run (ICCItem *pCode);
 		ICCItem *Run (const SEventHandlerDesc &Event);
 		ICCItem *RunLambda (ICCItem *pCode);
+		void SaveAndDefineDataVar (ICCItem *pData);
 		void SaveAndDefineSourceVar (CSpaceObject *pSource);
 		void SaveItemVar (void);
 		void SaveSourceVar (void);
@@ -1075,6 +1105,7 @@ class CCodeChainCtx
 		CExtension *m_pExtension;			//	Extension that defined this code
 
 		//	Saved variables
+		ICCItem *m_pOldData;
 		ICCItem *m_pOldSource;
 		ICCItem *m_pOldItem;
 

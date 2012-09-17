@@ -248,7 +248,17 @@ void CUIHelper::CreateClassInfoDrive (CShipClass *pClass, const CDeviceDescList 
 
 	//	Add speed box
 
-	CString sSpeedNumber = strPatternSubst(CONSTLIT(".%02dc"), (int)((100.0 * rMaxSpeed / LIGHT_SECOND) + 0.5));
+	CString sSpeedNumber;
+	if (rMaxSpeed < LIGHT_SECOND)
+		sSpeedNumber = strPatternSubst(CONSTLIT(".%02dc"), (int)((100.0 * rMaxSpeed / LIGHT_SECOND) + 0.5));
+	else
+		{
+		int iTotal = (int)((100.0 * rMaxSpeed / LIGHT_SECOND) + 0.5);
+		int iFTL = iTotal / 100;
+		int iFrac = iTotal % 100;
+		sSpeedNumber = strPatternSubst(CONSTLIT("%d.%02dc"), iFTL, iFrac);
+		}
+
 	CString sSpeedHeader = (pDrive ? pDrive->GetItemType()->GetNounPhrase(nounActual) : CONSTLIT("main drive"));
 
 	//	Add thrust/mass ratio

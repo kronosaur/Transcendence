@@ -58,6 +58,9 @@
 //	16: Fixed a corruption bug.
 //		Versions 15 and 14 are marked are corrrupt
 //
+//	17: 1.08g
+//		Added missions
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
@@ -67,6 +70,8 @@ struct SExtensionSaveDesc
 	DWORD dwUNID;
 	DWORD dwRelease;
 	};
+
+#define STR_G_PLAYER_SHIP					CONSTLIT("gPlayerShip")
 
 const DWORD UNIVERSE_VERSION_MARKER =					0xffffffff;
 
@@ -108,6 +113,7 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_pCurrentSystem(NULL),
 		m_StarSystems(TRUE, FALSE),
 		m_dwNextID(1),
+		m_AllMissions(true),
 
 		m_pSoundMgr(NULL),
 
@@ -149,7 +155,18 @@ CUniverse::~CUniverse (void)
 
 	m_Design.CleanUp();
 
+
 	g_pUniverse = NULL;
+	}
+
+void CUniverse::AddEvent (CTimedEvent *pEvent)
+
+//	AddEvent
+//
+//	Adds a new event
+
+	{
+	m_Events.AddEvent(pEvent);
 	}
 
 void CUniverse::AddSound (DWORD dwUNID, int iChannel)
@@ -239,6 +256,34 @@ ALERROR CUniverse::CreateEmptyStarSystem (CSystem **retpSystem)
 	return NOERROR;
 	}
 
+ALERROR CUniverse::CreateMission (CMissionType *pType, CSpaceObject *pOwner, ICCItem *pCreateData, CMission **retpMission, CString *retsError)
+
+//	CreateMission
+//
+//	Creates a new mission. Returns ERR_NOTFOUND if the mission could not be
+//	created because conditions do not allow it.
+
+	{
+	ALERROR error;
+
+	//	Create the mission object
+
+	CMission *pMission;
+	if (error = CMission::Create(pType, pOwner, pCreateData, &pMission, retsError))
+		return error;
+
+	//	Add the mission 
+
+	m_AllMissions.Insert(pMission);
+
+	//	Done
+
+	if (retpMission)
+		*retpMission = pMission;
+
+	return NOERROR;
+	}
+
 ALERROR CUniverse::CreateRandomItem (const CItemCriteria &Crit, 
 									 const CString &sLevelFrequency,
 									 CItem *retItem)
@@ -273,6 +318,43 @@ ALERROR CUniverse::CreateRandomItem (const CItemCriteria &Crit,
 
 	*retItem = Items.GetItemAtCursor();
 	return NOERROR;
+	}
+
+ALERROR CUniverse::CreateRandomMission (const TArray<CMissionType *> &Types, CSpaceObject *pOwner, ICCItem *pCreateData, CMission **retpMission, CString *retsError)
+
+//	CreateRandomMission
+//
+//	Creates a random mission out of the given list of types. Returns 
+//	ERR_NOTFOUND if the mission could not be created because conditions do not 
+//	allow it.
+//
+//	We assume that Types has been shuffled.
+
+	{
+	ALERROR error;
+	int i;
+
+	//	Loop until we create a valid mission (we assume that Types has been 
+	//	shuffled).
+
+	for (i = 0; i < Types.GetCount(); i++)
+		{
+		//	Create a random mission. If successfull, return.
+
+		if (error = CreateMission(Types[i], pOwner, pCreateData, retpMission, retsError))
+			{
+			if (error == ERR_NOTFOUND)
+				continue;
+			else
+				return error;
+			}
+
+		return NOERROR;
+		}
+
+	//	If no mission was created, then done
+
+	return ERR_NOTFOUND;
 	}
 
 ALERROR CUniverse::CreateStarSystem (const CString &sNodeID, CSystem **retpSystem, CString *retsError, CSystemCreateStats *pStats)
@@ -399,6 +481,16 @@ void CUniverse::DebugOutput (char *pszLine, ...)
 
 	m_pHost->DebugOutput(CString(szBuffer));
 #endif
+	}
+
+void CUniverse::DeleteAllMissions (void)
+
+//	DeleteAllMissions
+//
+//	Deletes all missions.
+
+	{
+	m_AllMissions.DeleteAll();
 	}
 
 void CUniverse::DestroySystem (CSystem *pSystem)
@@ -650,6 +742,24 @@ const CDamageAdjDesc *CUniverse::GetArmorDamageAdj (int iLevel) const
 		return m_pAdventure->GetArmorDamageAdj(iLevel);
 	else
 		return CAdventureDesc::GetDefaultArmorDamageAdj(iLevel);
+	}
+
+void CUniverse::GetMissions (CSpaceObject *pSource, const CMission::SCriteria &Criteria, TArray<CMission *> *retList)
+
+//	GetMissions
+//
+//	Returns a list of missions that match the given criteria
+
+	{
+	int i;
+
+	retList->DeleteAll();
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+		if (pMission->MatchesCriteria(pSource, Criteria))
+			retList->Insert(pMission);
+		}
 	}
 
 const CDamageAdjDesc *CUniverse::GetShieldDamageAdj (int iLevel) const
@@ -1002,7 +1112,7 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 	//	We don't need to log image load
 
 	SetLogImageLoad(false);
-	error = m_Design.BindDesign(BindOrder, !Ctx.bInLoadGame, retsError);
+	error = m_Design.BindDesign(BindOrder, !Ctx.bInLoadGame, Ctx.bNoResources, retsError);
 	SetLogImageLoad(true);
 
 	if (error)
@@ -1057,6 +1167,26 @@ ALERROR CUniverse::InitGame (CString *retsError)
 		return error;
 
 	return NOERROR;
+	}
+
+void CUniverse::NotifyMissionsOfNewSystem (CSystem *pSystem)
+
+//	NotifyMissionsOfNewSystem
+//
+//	We're showing a new system, so missions need to handle it.
+
+	{
+	int i;
+
+	//	Loop over all missions and update
+
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+
+		if (!pMission->IsDestroyed())
+			pMission->OnNewSystem(pSystem);
+		}
 	}
 
 bool CUniverse::IsGlobalResurrectPending (CDesignType **retpType)
@@ -1143,6 +1273,11 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	DWORD		ID of POV system (0xffffffff if none)
 //	DWORD		index of POV (0xffffffff if none)
 //	CTimeSpan	time that we've spent playing the game
+//
+//	DWORD		No of missions
+//	CMission	Mission
+//
+//	CTimedEventList	m_Events
 //
 //	DWORD		No of topology nodes
 //	CString		node: Node ID
@@ -1335,6 +1470,20 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 	Time.ReadFromStream(pStream);
 	CTimeDate Now(CTimeDate::Now);
 	m_StartTime = timeSubtractTime(Now, Time);
+
+	//	Global missions and events
+
+	if (Ctx.dwVersion >= 17)
+		{
+		SLoadCtx ObjCtx;
+		ObjCtx.dwVersion = Ctx.dwSystemVersion;
+		ObjCtx.pStream = pStream;
+
+		if (m_AllMissions.ReadFromStream(ObjCtx, retsError) != NOERROR)
+			return ERR_FAIL;
+
+		m_Events.ReadFromStream(ObjCtx);
+		}
 
 	//	Load item type data (we only do this for previous versions)
 
@@ -1545,6 +1694,60 @@ void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
 		}
 	}
 
+void CUniverse::PutPlayerInSystem (CShip *pPlayerShip, const CVector &vPos, CTimedEventList &SavedEvents)
+
+//	PutPlayerInSystem
+//
+//	Player is placed in the current system.
+
+	{
+	int i;
+
+	ASSERT(m_pCurrentSystem);
+	ASSERT(pPlayerShip->GetSystem() == NULL);
+
+	//	Clear the time-stop flag if necessary
+
+	if (pPlayerShip->IsTimeStopped())
+		pPlayerShip->RestartTime();
+
+	//	Place the player in the new system
+
+	pPlayerShip->Place(vPos);
+	pPlayerShip->AddToSystem(m_pCurrentSystem);
+	pPlayerShip->OnNewSystem(m_pCurrentSystem);
+
+	//	Restore timer events
+
+	m_pCurrentSystem->TransferObjEventsIn(pPlayerShip, SavedEvents);
+
+	//	Set globals
+
+	m_CC.DefineGlobalInteger(STR_G_PLAYER_SHIP, (int)pPlayerShip);
+
+	//	POV
+
+	SetPOV(pPlayerShip);
+
+	//	Fire global event
+
+	FireOnGlobalPlayerEnteredSystem();
+
+	//	Tell all objects that the player has entered the system. This calls
+	//	OnPlayerObj for all objects in the system.
+
+	m_pCurrentSystem->PlayerEntered(pPlayerShip);
+
+	//	Tell all missions that the player has entered the system
+
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+		if (pMission->IsActive())
+			pMission->OnPlayerEnteredSystem();
+		}
+	}
+
 ALERROR CUniverse::Reinit (void)
 
 //	Reinit
@@ -1571,6 +1774,14 @@ ALERROR CUniverse::Reinit (void)
 	//	Reinitialize some global classes
 
 	CCompositeImageDesc::Reinit();
+
+	//	Clean up global missions
+
+	DeleteAllMissions();
+
+	//	Delete all events
+
+	m_Events.DeleteAll();
 
 	//	Reinitialize types
 
@@ -1617,6 +1828,11 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	DWORD		index of POV (0xffffffff if none)
 //	DWORD		milliseconds that we've spent playing the game
 //
+//	DWORD		No of missions
+//	CMission	Mission
+//
+//	CTimedEventList	m_Events
+//
 //	DWORD		No of topology nodes
 //	CString		node: Node ID
 //	DWORD		node: ID of system instance (0xffffffff if not yet created)
@@ -1628,6 +1844,7 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	{
 	int i;
 	DWORD dwSave;
+	CString sError;
 
 	//	Write out version
 
@@ -1703,6 +1920,16 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	CTimeSpan GameLength = StopGameTime();
 	GameLength.WriteToStream(pStream);
 
+	//	Save out the global mission data
+
+	if (m_AllMissions.WriteToStream(pStream, &sError) != NOERROR)
+		return ERR_FAIL;
+
+	//	Save out event data. Note that we save this after the missions because
+	//	events may refer to missions.
+
+	m_Events.WriteToStream(m_pCurrentSystem, pStream);
+
 	//	Save out topology node data
 
 	DWORD dwCount = GetTopologyNodeCount();
@@ -1737,6 +1964,7 @@ void CUniverse::SetCurrentSystem (CSystem *pSystem)
 //	Sets the current system
 
 	{
+	CSystem *pOldSystem = m_pCurrentSystem;
 	m_pCurrentSystem = pSystem;
 
 	if (pSystem)
@@ -1751,6 +1979,11 @@ void CUniverse::SetCurrentSystem (CSystem *pSystem)
 		g_TimeScale = TIME_SCALE;
 		g_SecondsPerUpdate = g_TimeScale / g_TicksPerSecond;
 		}
+
+	//	Initialize mission cache
+
+	if (pOldSystem != m_pCurrentSystem)
+		NotifyMissionsOfNewSystem(m_pCurrentSystem);
 	}
 
 bool CUniverse::SetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib, const CString &sData)
@@ -1781,6 +2014,54 @@ void CUniverse::SetHost (IHost *pHost)
 		m_pHost = &g_DefaultHost;
 	else
 		m_pHost = pHost;
+	}
+
+void CUniverse::SetNewSystem (CSystem *pSystem, CShip *pPlayerShip, CSpaceObject *pPOV)
+
+//	SetNewSystem
+//
+//	Shows the new system before the player appears.
+
+	{
+	int i;
+
+	//	Before we set the POV, delete any old missions
+
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+
+		//	If this is a completed non-player mission, then we delete it.
+
+		if (pMission->IsCompletedNonPlayer() || pMission->IsDestroyed())
+			{
+			m_AllMissions.Delete(i);
+			i--;
+			}
+		}
+
+	//	Set the new system
+
+	SetPOV(pPOV);
+
+	//	Add a discontinuity to reflect the amount of time spent
+	//	in the stargate
+
+	AddTimeDiscontinuity(CTimeSpan(0, mathRandom(0, (SECONDS_PER_DAY - 1) * 1000)));
+
+	//	Time passes
+
+	SetProgramState(psStargateUpdateExtended);
+	UpdateExtended();
+
+	//	Gate effect
+
+	pPOV->OnObjLeaveGate(pPlayerShip);
+
+	//	Clear the POVLRS flag for all objects (so that we don't get the
+	//	"Enemy Ships Detected" message when entering a system
+
+	pSystem->SetPOVLRS(pPOV);
 	}
 
 void CUniverse::SetPlayer (CSpaceObject *pPlayer)
@@ -1926,8 +2207,16 @@ void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 //	Update the system of the current point of view
 
 	{
+	//	Update system
+
 	if (m_pPOV)
 		m_pPOV->GetSystem()->Update(rSecondsPerTick, bForceEventFiring);
+
+	//	Fire timed events
+
+	m_Events.Update(m_iTick, m_pCurrentSystem);
+
+	//	Next
 
 	m_iTick++;
 	}

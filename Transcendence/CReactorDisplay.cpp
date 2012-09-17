@@ -61,7 +61,7 @@ ALERROR CReactorDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRec
 
 	//	Create the off-screen buffer
 
-	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false))
+	if (error = m_Buffer.CreateBlank(RectWidth(rcRect), RectHeight(rcRect), false, DEFAULT_TRANSPARENT_COLOR))
 		return error;
 
 	m_Buffer.SetTransparentColor();
@@ -149,7 +149,7 @@ void CReactorDisplay::Update (void)
 			yOffset + ReactorDesc.rcFuelLevelText.top,
 			RectWidth(ReactorDesc.rcFuelLevelText),
 			RectHeight(ReactorDesc.rcFuelLevelText),
-			CG16bitImage::RGBValue(0, 0, 0));
+			DEFAULT_TRANSPARENT_COLOR);
 
 	CString sFuelLevel = strPatternSubst(CONSTLIT("fuel"));
 	int cxWidth = m_pFonts->Small.MeasureText(sFuelLevel);
@@ -200,7 +200,7 @@ void CReactorDisplay::Update (void)
 			yOffset + ReactorDesc.rcPowerLevelText.top,
 			RectWidth(ReactorDesc.rcPowerLevelText),
 			RectHeight(ReactorDesc.rcPowerLevelText),
-			CG16bitImage::RGBValue(0, 0, 0));
+			DEFAULT_TRANSPARENT_COLOR);
 
 	CString sPowerLevel = strPatternSubst(CONSTLIT("power usage"));
 	int cyHeight;

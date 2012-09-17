@@ -323,7 +323,6 @@ void CSovereign::InitEnemyObjectList (CSystem *pSystem)
 
 	if (m_pEnemyObjectsSystem != pSystem)
 		{
-		m_EnemyObjects.RemoveAll();
 		m_EnemyObjects.SetAllocSize(pSystem->GetObjectCount());
 
 		for (i = 0; i < pSystem->GetObjectCount(); i++)

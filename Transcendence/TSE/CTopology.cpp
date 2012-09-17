@@ -248,7 +248,7 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 	bool bIsRootNode = pNode->IsRootNode();
 
 	int xPos, yPos;
-	pNode->GetPos(&xPos, &yPos);
+	bool bHasPos = pNode->GetPos(&xPos, &yPos);
 
 	//	Create a topology node and add it to the universe list
 
@@ -256,6 +256,7 @@ ALERROR CTopology::AddNode (STopologyCreateCtx &Ctx, CTopologyDesc *pNode, CTopo
 	if (error = AddTopologyNode(Ctx, 
 			pNode->GetMap(),
 			ExpandNodeID(Ctx, sID), 
+			!bHasPos,
 			xPos, yPos, 
 			pNode->GetAttributes(), 
 			pNode->GetSystem(), 
@@ -683,6 +684,7 @@ ALERROR CTopology::AddRandomRegion (STopologyCreateCtx &Ctx,
 		if (error = AddTopologyNode(Ctx, 
 				pDesc->GetMap(),
 				sNodeID, 
+				false,
 				x, y, 
 				NULL_STR, 
 				NULL, 
@@ -1179,6 +1181,7 @@ ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx, const CString &sNod
 ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx,
 									CSystemMap *pMap,
 									const CString &sID,
+									bool bNoMap,
 									int x,
 									int y,
 									const CString &sAttribs,
@@ -1193,9 +1196,11 @@ ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx,
 	{
 	ALERROR error;
 
+	CSystemMap *pDestMap = (bNoMap ? NULL : Ctx.pMap);
+
 	//	Create a topology node and add it to the universe list
 
-	CTopologyNode *pNewNode = new CTopologyNode(sID, 0, Ctx.pMap);
+	CTopologyNode *pNewNode = new CTopologyNode(sID, 0, pDestMap);
 	AddTopologyNode(sID, pNewNode);
 	if (Ctx.pNodesAdded)
 		Ctx.pNodesAdded->Insert(pNewNode);
@@ -1224,8 +1229,8 @@ ALERROR CTopology::AddTopologyNode (STopologyCreateCtx &Ctx,
 
 	//	Add effect associated with node
 
-	if (Ctx.pMap && pEffect)
-		Ctx.pMap->AddAnnotation(pEffect, xPos, yPos, iRotation);
+	if (pDestMap && pEffect)
+		pDestMap->AddAnnotation(pEffect, xPos, yPos, iRotation);
 
 	//	Done
 

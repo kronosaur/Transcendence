@@ -35,6 +35,7 @@ NEW APPLICATION (UI)
 [ ] Properties - Debug - C++/Code Generation: Runtime Library = "Multithreaded Debug (/MTd)"
 [ ] Properties - Release - C++/Code Generation: Runtime Library = "Multithreaded (/MT)"
 [ ] Properties - Release - C++/Optimization: Whole Program Optimization = "/GL"
+[ ] For new libraries: Properties - Release - Librarian - General: Link Time Code Generation = "Yes (/LTCG)"
 [ ] Add Kernel as a dependency
 [ ] Add Graphics as a dependency
 [ ] Add DirectXUtil as a dependency

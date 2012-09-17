@@ -875,6 +875,9 @@
 	<!-- RPG LIBRARY 0001 -->
 	
 	<!ENTITY unidRPGLibrary				"0x00010000">
+
+	<!ENTITY dsRPGMission				"0x00010010">
+	<!ENTITY dsRPGInstallDeviceFromList	"0x00010011">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -916,6 +919,10 @@
 	<!ENTITY scPlayerSapphireBase		"0x00100003">
 	<!ENTITY scPlayerEI500Base			"0x00100004">
 	<!ENTITY scPlayerWolfenBase			"0x00100005">
+	
+	<!-- COMMONWEALTH 0010 -->
+	
+	<!ENTITY msDestroyThreatToSlums		"0x00101000">
 	
 	<!ENTITY stStartonEridani			"0x00102001">
 	<!ENTITY stCommonwealthSettlement	"0x00102002">
@@ -1686,8 +1693,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000805"
-		minVersion=						"0x01000805"
+		version=						"0x01000807"
+		minVersion=						"0x01000807"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -1872,6 +1879,7 @@
 
 <!-- CORE TYPES ============================================================ -->
 
+	<Module filename="CoreCode.xml"/>
 	<Module filename="CoreEffects.xml"/>
 	<Module filename="CoreTypes.xml"/>
 	
@@ -1886,6 +1894,9 @@
 			>
 			
 		<Module filename="HUD.xml"/>
+		<Module filename="RPGCode.xml"/>
+		<Module filename="RPGDockScreens.xml"/>
+		<Module filename="RPGMissions.xml"/>
 		<Module filename="RPGPlayer.xml"/>
 		<Module filename="RPGShipScreens.xml"/>
 		<Module filename="RPGTypes.xml"/>

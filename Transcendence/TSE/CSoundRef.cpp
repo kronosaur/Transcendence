@@ -11,10 +11,16 @@ ALERROR CSoundRef::Bind (SDesignLoadCtx &Ctx)
 //	Binds the design (looking up the actual sound file)
 
 	{
+	if (Ctx.bNoResources || g_pUniverse->GetSoundMgr() == NULL)
+		{
+		m_iSound = -1;
+		return NOERROR;
+		}
+
 	if (m_dwUNID)
 		{
 		m_iSound = g_pUniverse->FindSound(m_dwUNID);
-		if (m_iSound == -1)
+		if (m_iSound == -1 && Ctx.GetAPIVersion() >= 12)
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Unable to find sound: %x."), m_dwUNID);
 			return ERR_FAIL;

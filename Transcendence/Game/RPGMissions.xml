@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- MISSION SCREEN ============================================================
+
+	Invoke as follows:
+
+	(scrShowScreen gScreen &dsRPGMission;
+		{
+		missionObj:	mission-object
+		})
+
+-->
+
+	<DockScreen UNID="&dsRPGMission;"
+			nestedScreen=		"true"
+			>
+		<OnScreenInit>
+			(block Nil
+				; Store the mission object in screen data
+				(scrSetData gScreen 'missionObj (@ gData 'missionObj))
+				)
+		</OnScreenInit>
+
+		<InitialPane>
+			(block (
+				(missionObj (scrGetData gScreen 'missionObj))
+				)
+
+				(switch
+					; If mission is available and player has not previously been
+					; briefed, then start with intro...
+
+					(msnGetProperty missionObj 'isOpen)
+						(if (msnGetProperty missionObj 'isIntroShown)
+							"Briefing"
+							"Intro"
+							)
+
+					; If this is an active mission, then handle it
+
+					(msnGetProperty missionObj 'isActive)
+						(switch
+							(msnGetProperty missionObj 'isSuccess)
+								"Success"
+
+							(msnGetProperty missionObj 'isFailure)
+								"Failure"
+
+							"InProgress"
+							)
+
+					; If we've already been debriefed
+
+					(msnGetProperty missionObj 'isDebriefed)
+						"AlreadyDebriefed"
+
+					; Otherwise, this is not a player mission
+
+					"Unavailable"
+					)
+				)
+		</InitialPane>
+
+		<Panes>
+			<Intro>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(missionText (msnTranslate missionObj 'Intro))
+						(pageCount (if (isatom missionText) 1 (count missionText)))
+						(pageNo (scrGetData gScreen 'curPage))
+						)
+
+						; Start at the beginning if we have no page number
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+						(scrSetDesc gScreen (@ missionText pageNo))
+
+						; Next page
+						(setq pageNo (add pageNo 1))
+						(if (eq pageNo pageCount)
+							(scrSetData gSCreen 'curPage nil)
+							(scrSetData gScreen 'curPage pageNo)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(if (scrGetData gScreen 'curPage)
+
+								; If more pages, then continue
+								(scrShowPane gScreen "Intro")
+
+								; Otherwise, intro is done
+								(block nil
+									(msnSetProperty missionObj 'isIntroShown True)
+									(scrRefreshScreen gScreen)
+									)
+								)
+							)
+					</Action>
+				</Actions>
+			</Intro>
+
+			<Briefing>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(missionText (msnTranslate missionObj 'Briefing))
+						(pageCount (if (isatom missionText) 1 (count missionText)))
+						(pageNo (scrGetData gScreen 'curPage))
+						)
+
+						; Start at the beginning if we have no page number
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+						(scrSetDesc gScreen (@ missionText pageNo))
+
+						; Next page
+						(setq pageNo (add pageNo 1))
+						(if (eq pageNo pageCount)
+
+							; We're at the end of the briefing; ask the player
+							; to accept or decline.
+							(block nil
+								(scrShowAction gScreen 'continue nil)
+								(scrShowAction gScreen 'accept true)
+								(scrShowAction gScreen 'decline true)
+
+								(scrSetData gSCreen 'curPage nil)
+								)
+
+							; Continue to the next page of the briefing
+							(block nil
+								(scrShowAction gScreen 'continue true)
+								(scrShowAction gScreen 'accept nil)
+								(scrShowAction gScreen 'decline nil)
+
+								(scrSetData gScreen 'curPage pageNo)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+						(scrShowPane gScreen "Briefing")
+					</Action>
+
+					<Action id="accept" name="Accept" key="A" default="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnAccept missionObj)
+							(scrShowPane gScreen "ReplyAccept")
+							)
+					</Action>
+
+					<Action id="decline" name="Decline" key="D" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnDecline missionObj)
+							(scrShowPane gScreen "ReplyDecline")
+							)
+					</Action>
+				</Actions>
+			</Briefing>
+
+			<ReplyAccept>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'AcceptReply))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</ReplyAccept>
+
+			<ReplyDecline>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(declineText (msnTranslate missionObj 'DeclineReply))
+						)
+
+						(scrSetDesc gScreen declineText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</ReplyDecline>
+
+			<InProgress>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'InProgress))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnSetPlayerTarget missionObj)
+							(scrExitScreen gScreen 'forceUndock)
+							)
+					</Action>
+				</Actions>
+			</InProgress>
+
+			<Success>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'SuccessDebrief))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnReward missionObj)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Success>
+
+			<Failure>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'FailureDebrief))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnSetProperty missionObj 'isDebriefed True)
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Failure>
+
+			<AlreadyDebriefed>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'AlreadyDebriefed "\"Welcome back! Thanks for the great work last time.\""))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</AlreadyDebriefed>
+
+			<Unavailable>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'Unavailable "\"Sorry, there are no missions available.\""))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Unavailable>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				(block (missionObj)
+					(switch
+						; Find any mission that is completed and not yet debriefed
+
+						(setq missionObj (@ (filter (msnFind gSource "aS") theMission (msnGetProperty theMission 'isCompleted)) 0))
+							(list &dsRPGMission; { missionObj: missionObj } 4)
+
+						; Otherwise, nothing
+
+						Nil
+						)
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</DockScreen>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq intMissionAchievementString (lambda (missionsCompleted missionsFailed)
+				(if (eq (int missionsFailed) 0)
+					(int missionsCompleted)
+					(cat missionsCompleted " (" missionsFailed " failed)")
+					)
+				))
+
+			(setq intMissionRewardPayment (lambda (theReward)
+				(block Nil
+					(plyCredit gPlayer theReward)
+					(typIncGlobalData &svPlayer; "missionRewards" theReward)
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

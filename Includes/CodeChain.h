@@ -159,7 +159,7 @@ class ICCItem : public CObject
 
 		//	Symbol/Atom table functions
 
-		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry) { return NotASymbolTable(pCC); }
+		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry, bool bForceLocalAdd = false) { return NotASymbolTable(pCC); }
 		virtual void AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry) { ASSERT(FALSE); }
 		virtual void DeleteEntry (CCodeChain *pCC, ICCItem *pKey) { }
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey) { return -1; }
@@ -543,7 +543,7 @@ class CCAtomTable : public ICCAtom
 		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0);
 		virtual void Reset (void);
 
-		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pAtom, ICCItem *pEntry);
+		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pAtom, ICCItem *pEntry, bool bForceLocalAdd = false);
 		virtual ICCItem *ListSymbols (CCodeChain *pCC);
 		virtual ICCItem *Lookup (CCodeChain *pCC, ICCItem *pAtom);
 		virtual ICCItem *LookupEx (CCodeChain *pCC, ICCItem *pAtom, BOOL *retbFound);
@@ -589,7 +589,7 @@ class CCSymbolTable : public ICCList
 		//	Symbols
 
 		virtual void AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry);
-		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry);
+		virtual ICCItem *AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry, bool bForceLocalAdd = false);
 		virtual void DeleteEntry (CCodeChain *pCC, ICCItem *pKey);
 		virtual int FindOffset (CCodeChain *pCC, ICCItem *pKey);
 		virtual int FindValue (ICCItem *pValue);
@@ -716,7 +716,7 @@ class CCodeChain : public CObject
 		inline ICCItem *GetNil (void) { return m_pNil; }
 		inline ICCItem *GetTrue (void) { return m_pTrue; }
 		ICCItem *Eval (CEvalContext *pEvalCtx, ICCItem *pItem);
-		ICCItem *Link (const CString &sString, int iOffset, int *retiLinked = NULL);
+		ICCItem *Link (const CString &sString, int iOffset, int *retiLinked = NULL, int *ioiCurLine = NULL);
 		ICCItem *LoadApp (HMODULE hModule, char *pszRes);
 		ICCItem *LoadInitFile (const CString &sFilename);
 		ICCItem *LookupGlobal (const CString &sGlobal, LPVOID pExternalCtx);
@@ -742,10 +742,11 @@ class CCodeChain : public CObject
 		bool HasIdentifier (ICCItem *pCode, const CString &sIdentifier);
 
 	private:
+		ICCItem *CreateParseError (int iLine, const CString &sError);
 		ICCItem *EvalLiteralStruct (CEvalContext *pCtx, ICCItem *pItem);
 		ICCItem *Lookup (CEvalContext *pCtx, ICCItem *pItem);
 		ALERROR LoadDefinitions (IReadBlock *pBlock);
-		char *SkipWhiteSpace (char *pPos);
+		char *SkipWhiteSpace (char *pPos, int *ioiLine);
 
 		CCItemPool<CCInteger> m_IntegerPool;
 		CCItemPool<CCString> m_StringPool;

@@ -478,6 +478,7 @@
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
 			levelFrequency=		"---uc r---- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
+			enemyExclusionRadius="40"
 			>
 
 		<Names noArticle="true">Asteroid D%1%0%0%0</Names>
@@ -561,6 +562,7 @@
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
 			levelFrequency=		"----u ur--- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
+			enemyExclusionRadius="40"
 			>
 
 		<Names noArticle="true">Asteroid P%1%0%0%0</Names>

@@ -138,7 +138,7 @@ CString CTopologyDesc::GetAttributes (void)
 	return m_pDesc->GetAttribute(ATTRIBUTES_ATTRIB);
 	}
 
-void CTopologyDesc::GetPos (int *retx, int *rety)
+bool CTopologyDesc::GetPos (int *retx, int *rety)
 
 //	GetPos
 //
@@ -147,11 +147,25 @@ void CTopologyDesc::GetPos (int *retx, int *rety)
 	{
 	CString sCoords;
 	if (m_pDesc->FindAttribute(POS_ATTRIB, &sCoords))
+		{
 		CTopologyNode::ParsePosition(sCoords, retx, rety);
+		return true;
+		}
 	else
 		{
-		*retx = m_pDesc->GetAttributeInteger(X_ATTRIB);
-		*rety = m_pDesc->GetAttributeInteger(Y_ATTRIB);
+		bool bOK = false;
+
+		if (m_pDesc->FindAttributeInteger(X_ATTRIB, retx))
+			bOK = true;
+		else
+			*retx = 0;
+
+		if (m_pDesc->FindAttributeInteger(Y_ATTRIB, rety))
+			bOK = true;
+		else
+			*rety = 0;
+
+		return bOK;
 		}
 	}
 

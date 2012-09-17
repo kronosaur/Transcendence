@@ -358,10 +358,10 @@ ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
 			//	If we have dock screens up, keep hitting the cancel action
 			//	until we're done.
 
-			while (m_DockFrames.GetCount() > 0 && iMaxLoops-- > 0)
+			while (!m_DockFrames.IsEmpty() && iMaxLoops-- > 0)
 				g_pTrans->m_CurrentDock.ExecuteCancelAction();
 
-			if (m_DockFrames.GetCount() > 0)
+			if (!m_DockFrames.IsEmpty())
 				ExitScreenSession(true);
 
 			//	If we're dead after this, then recurse
@@ -573,7 +573,7 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane)
+ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData)
 
 //	EnterScreenSession
 //
@@ -587,7 +587,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	ALERROR error;
 	ASSERT(pLocation);
 
-	bool bFirstFrame = (m_DockFrames.GetCount() == 0);
+	bool bFirstFrame = m_DockFrames.IsEmpty();
 
 	//	Mark the object so that it knows that the player is docked with it.
 	//	We need this so that the object can tell us if its items change.
@@ -604,11 +604,13 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//	Note that pRoot might be NULL and sScreen might be [DefaultScreen] at
 	//	this point.
 
-	SDockFrame *pFrame = m_DockFrames.Insert();
-	pFrame->pLocation = pLocation;
-	pFrame->pRoot = pRoot;
-	pFrame->sScreen = sScreen;
-	pFrame->sPane = sPane;
+	SDockFrame NewFrame;
+	NewFrame.pLocation = pLocation;
+	NewFrame.pRoot = pRoot;
+	NewFrame.sScreen = sScreen;
+	NewFrame.sPane = sPane;
+	NewFrame.pInitialData = pData;
+	m_DockFrames.Push(NewFrame);
 
 	//	From this point forward we are considered in a screen session.
 	//	[We use this to determine whether a call to scrShowScreen switches
@@ -616,11 +618,12 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//
 	//	Initialize the current screen object
 
-	if (error = ShowScreen(pRoot, sScreen, sPane))
+	CString sError;
+	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError))
 		{
 		//	Undo
 
-		m_DockFrames.Delete(m_DockFrames.GetCount() - 1);
+		m_DockFrames.Pop();
 
 		if (!bOldPlayerDocked)
 			pLocation->ClearPlayerDocked();
@@ -630,7 +633,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 
 	//	If we don't have any frames then we called exit from inside of ShowScreen
 
-	if (m_DockFrames.GetCount() == 0)
+	if (m_DockFrames.IsEmpty())
 		return NOERROR;
 
 	//	Switch state
@@ -648,7 +651,7 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 //	Exits docking
 
 	{
-	ASSERT(m_DockFrames.GetCount() > 0);
+	ASSERT(!m_DockFrames.IsEmpty());
 
 	//	If we have another frame, then switch back to that screen
 
@@ -656,23 +659,26 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 		{
 		//	Remove the current frame
 
-		m_DockFrames.Delete(m_DockFrames.GetCount() - 1);
+		m_DockFrames.Pop();
 
 		//	Switch
 		//	bReturn = true (on ShowScreen) so that we don't restack a
 		//	nested screen that we are returning to.
 
-		SDockFrame *pFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
-		ShowScreen(pFrame->pRoot, pFrame->sScreen, pFrame->sPane, true);
+		CString sError;
+		const SDockFrame &Frame = m_DockFrames.GetCurrent();
+		ShowScreen(Frame.pRoot, Frame.sScreen, Frame.sPane, Frame.pInitialData, &sError, true);
 		}
 
 	//	Otherwise, exit
 
 	else
 		{
+		const SDockFrame &Frame = m_DockFrames.GetCurrent();
+
 		//	Unmark the object
 
-		m_DockFrames[0].pLocation->ClearPlayerDocked();
+		Frame.pLocation->ClearPlayerDocked();
 
 		//	If we're docked with something (came from OnPlayerDocked)
 		//	then we need to undock
@@ -693,13 +699,16 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 		}
 	}
 
-bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen)
+bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen, ICCItem **retpData)
 
 //	FindScreenRoot
 //
-//	Finds the appropriate root given a string name
+//	Finds the appropriate root given a string name.
+//	NOTE: If we return TRUE, caller must discard *retpData.
 
 	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
 	//	If the screen is an UNID, then expect a stand-alone screen
 
 	bool bNotANumber;
@@ -716,6 +725,9 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 		if (retsScreen)
 			*retsScreen = sScreen;
 
+		if (retpData)
+			*retpData = NULL;
+
 		return true;
 		}
 
@@ -725,20 +737,30 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 	else if (strEquals(sScreen, DEFAULT_SCREEN_NAME))
 		{
 		CString sScreenActual;
+		ICCItem *pData;
 
-		ASSERT(m_DockFrames.GetCount() > 0);
-		SDockFrame *pFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
-		ASSERT(pFrame->pLocation);
+		ASSERT(!m_DockFrames.IsEmpty());
+		const SDockFrame &Frame = m_DockFrames.GetCurrent();
+		ASSERT(Frame.pLocation);
 
-		CDesignType *pRoot = pFrame->pLocation->GetFirstDockScreen(&sScreenActual);
+		CDesignType *pRoot = Frame.pLocation->GetFirstDockScreen(&sScreenActual, &pData);
 		if (pRoot == NULL)
+			{
+			if (pData)
+				pData->Discard(&CC);
 			return false;
+			}
 
 		if (retpRoot)
 			*retpRoot = pRoot;
 
 		if (retsScreen)
 			*retsScreen = sScreenActual;
+
+		if (retpData)
+			*retpData = pData;
+		else
+			pData->Discard(&CC);
 
 		return true;
 		}
@@ -753,6 +775,9 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 		if (retsScreen)
 			*retsScreen = sScreen;
 
+		if (retpData)
+			*retpData = NULL;
+
 		return true;
 		}
 
@@ -765,6 +790,9 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 
 		if (retsScreen)
 			*retsScreen = sScreen;
+
+		if (retpData)
+			*retpData = NULL;
 
 		return true;
 		}
@@ -861,27 +889,15 @@ ALERROR CTranscendenceModel::GetGameStats (CGameStats *retStats)
 	return NOERROR;
 	}
 
-void CTranscendenceModel::GetScreenSession (CSpaceObject **retpObj, CDesignType **retpRoot, CString *retsScreen, CString *retsPane)
+void CTranscendenceModel::GetScreenSession (SDockFrame *retFrame)
 
 //	GetScreenSession
 //
 //	Returns info about the current screen session
 
 	{
-	ASSERT(m_DockFrames.GetCount() > 0);
-	SDockFrame *pFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
-
-	if (retpObj)
-		*retpObj = pFrame->pLocation;
-
-	if (retpRoot)
-		*retpRoot = pFrame->pRoot;
-
-	if (retsScreen)
-		*retsScreen = pFrame->sScreen;
-
-	if (retsPane)
-		*retsPane = pFrame->sPane;
+	ASSERT(!m_DockFrames.IsEmpty());
+	*retFrame = m_DockFrames.GetCurrent();
 	}
 
 ALERROR CTranscendenceModel::Init (void)
@@ -957,6 +973,25 @@ bool CTranscendenceModel::IsGalacticMapAvailable (CString *retsError)
 		{
 		if (retsError)
 			*retsError = CONSTLIT("No galactic map installed");
+
+		return false;
+		}
+
+	//	See if a map is available for this node
+
+	CTopologyNode *pNode = g_pUniverse->GetCurrentTopologyNode();
+	if (pNode == NULL)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("You are in the Twilight Zone");
+
+		return false;
+		}
+		
+	if (pNode->GetDisplayPos() == NULL)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("No galactic map available for your location.");
 
 		return false;
 		}
@@ -1308,7 +1343,7 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 
 	//	Show screen
 
-	if (EnterScreenSession(m_pDock, NULL, DEFAULT_SCREEN_NAME, CString()) != NOERROR)
+	if (EnterScreenSession(m_pDock, NULL, DEFAULT_SCREEN_NAME, CString(), NULL) != NOERROR)
 		{
 		m_pPlayer->Undock();
 		m_pDock = NULL;
@@ -1406,41 +1441,13 @@ void CTranscendenceModel::OnPlayerExitedGate (void)
 	CSpaceObject *pStargate = m_Universe.GetPOV();
 	CSystem *pNewSystem = pStargate->GetSystem();
 
-	//	Clear the time-stop flag if necessary
+	//	Add the player to the system
 
-	if (pShip->IsTimeStopped())
-		pShip->RestartTime();
-
-	//	Place the player in the new system
-
-	pShip->Place(pStargate->GetPos());
-	pShip->AddToSystem(pNewSystem);
-	pShip->OnNewSystem();
-
-	//	Restore timer events
-
-	pNewSystem->TransferObjEventsIn(pShip, m_TimerEvents);
-
-	//	Set globals
-
-	CCodeChain &CC = m_Universe.GetCC();
-	CC.DefineGlobalInteger(STR_G_PLAYER_SHIP, (int)pShip);
+	m_Universe.PutPlayerInSystem(pShip, pStargate->GetPos(), m_TimerEvents);
 
 	//	Welcome message
 
 	g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Welcome to the %s system!"), pNewSystem->GetName()));
-
-	//	POV
-
-	m_Universe.SetPOV(pShip);
-
-	//	Fire global event
-
-	m_Universe.FireOnGlobalPlayerEnteredSystem();
-
-	//	Tell all objects that the player has entered the system
-
-	pNewSystem->PlayerEntered(pShip);
 
 	//	Update our stats, etc.
 
@@ -1547,26 +1554,9 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		throw CException(ERR_FAIL);
 		}
 
-	m_Universe.SetPOV(pStart);
+	//	Set the new system
 
-	//	Add a discontinuity to reflect the amount of time spent
-	//	in the stargate
-
-	m_Universe.AddTimeDiscontinuity(CTimeSpan(0, mathRandom(0, (SECONDS_PER_DAY - 1) * 1000)));
-
-	//	Time passes
-
-	SetProgramState(psStargateUpdateExtended);
-	m_Universe.UpdateExtended();
-
-	//	Gate effect
-
-	pStart->OnObjLeaveGate(pShip);
-
-	//	Clear the POVLRS flag for all objects (so that we don't get the
-	//	"Enemy Ships Detected" message when entering a system
-
-	pNewSystem->SetPOVLRS(pStart);
+	m_Universe.SetNewSystem(pNewSystem, pShip, pStart);
 
 	//	Move any henchmen through the stargate (note: we do this here because
 	//	we need to remove the henchmen out of the old system before we save).
@@ -1673,6 +1663,28 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 		m_iLastHighScore = AddHighScore(m_GameRecord);
 	else
 		m_iLastHighScore = -1;
+	}
+
+void CTranscendenceModel::RefreshScreenSession (void)
+
+//	RefreshScreenSession
+//
+//	Refreshes the current screen (running through OnScreenInit again).
+
+	{
+	ASSERT(!m_DockFrames.IsEmpty());
+
+	//	Reload the screen (without stacking)
+
+	//	bReturn = true (on ShowScreen) so that we don't restack a
+	//	nested screen that we are returning to.
+	//
+	//	NOTE: We do not pass the current pane in because we want the screen to
+	//	recalculate it (via InitialPane).
+
+	const SDockFrame &Frame = m_DockFrames.GetCurrent();
+	CString sError;
+	ShowScreen(Frame.pRoot, Frame.sScreen, NULL_STR, Frame.pInitialData, &sError, true);
 	}
 
 ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
@@ -1815,12 +1827,11 @@ ALERROR CTranscendenceModel::ShowPane (const CString &sPane)
 //	Shows the given pane
 
 	{
-	ASSERT(m_DockFrames.GetCount() > 0);
-	SDockFrame *pFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
+	ASSERT(!m_DockFrames.IsEmpty());
 
 	//	Update the frame
 
-	pFrame->sPane = sPane;
+	m_DockFrames.SetCurrentPane(sPane);
 
 	//	Show it
 
@@ -1831,7 +1842,7 @@ ALERROR CTranscendenceModel::ShowPane (const CString &sPane)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, bool bReturn)
+ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn)
 
 //	ShowScreen
 //
@@ -1842,19 +1853,30 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	{
 	ALERROR error;
+	CCodeChain &CC = m_Universe.GetCC();
 
-	ASSERT(m_DockFrames.GetCount() > 0);
+	ASSERT(!m_DockFrames.IsEmpty());
 
 	//	If pRoot is NULL, then we have to look it up based on sScreen (and the local
 	//	screens root)
 
+	ICCItem *pDefaultData = NULL;
 	CString sScreenActual;
 	if (pRoot)
 		sScreenActual = sScreen;
 	else
 		{
-		if (!FindScreenRoot(sScreen, &pRoot, &sScreenActual))
+		if (!FindScreenRoot(sScreen, &pRoot, &sScreenActual, &pDefaultData))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find global screen: %s"), sScreen);
 			return ERR_FAIL;
+			}
+
+		if (pDefaultData && pData == NULL)
+			pData = pDefaultData;
+
+		//	NOTE: We have to discard pDefaultData regardless of whether we use 
+		//	it or not.
 		}
 
 	//	The extension that the screen comes from is determined by where the root
@@ -1872,37 +1894,42 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		{
 		pLocalScreens = pRoot->GetLocalScreens();
 		if (pLocalScreens == NULL)
+			{
+			if (pDefaultData)
+				pDefaultData->Discard(&CC);
+			*retsError = CONSTLIT("No local screens");
 			return ERR_FAIL;
+			}
 
 		pScreen = pLocalScreens->GetContentElementByTag(sScreenActual);
 		if (pScreen == NULL)
+			{
+			if (pDefaultData)
+				pDefaultData->Discard(&CC);
+			*retsError = strPatternSubst(CONSTLIT("Unable to find local screen: %s"), sScreenActual);
 			return ERR_FAIL;
+			}
 		}
+
+	//	Compose the new frame
+
+	const SDockFrame &CurFrame = m_DockFrames.GetCurrent();
+
+	SDockFrame NewFrame;
+	NewFrame.pLocation = CurFrame.pLocation;
+	NewFrame.pRoot = pRoot;
+	NewFrame.sScreen = sScreenActual;
+	NewFrame.sPane = sPane;
+	NewFrame.pInitialData = pData;
 
 	//	Some screens pop us into a new frame
 
 	bool bNewFrame;
-	SDockFrame *pFrame;
+	SDockFrame OldFrame;
 	if (bNewFrame = (!bReturn && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
-		{
-		SDockFrame *pCurFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
-		pFrame = m_DockFrames.Insert();
-
-		pFrame->pLocation = pCurFrame->pLocation;
-		pFrame->pRoot = NULL;
-		}
+		m_DockFrames.Push(NewFrame);
 	else
-		pFrame = &m_DockFrames[m_DockFrames.GetCount() - 1];
-
-	//	Update the frame
-
-	CDesignType *pOldRoot = pFrame->pRoot;
-	CString sOldScreen = pFrame->sScreen;
-	CString sOldPane = pFrame->sPane;
-
-	pFrame->pRoot = pRoot;
-	pFrame->sScreen = sScreenActual;
-	pFrame->sPane = sPane;
+		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
 
 	//	Show the screen
 	//
@@ -1916,39 +1943,56 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	g_pUniverse->SetLogImageLoad(false);
 	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
-			pFrame->pLocation,
+			NewFrame.pLocation,
 			pExtension,
 			pScreen,
 			sPane,
+			pData,
 			&sNewPane,
 			&g_pTrans->m_pCurrentScreen);
 	g_pUniverse->SetLogImageLoad(true);
+
+	//	We no longer need pDefaultData. Anyone who needed it took out a 
+	//	reference.
+
+	if (pDefaultData)
+		{
+		pDefaultData->Discard(&CC);
+		pDefaultData = NULL;
+		}
+
+	//	Handle errors
 
 	if (error)
 		{
 		//	Undo
 
 		if (bNewFrame)
-			m_DockFrames.Delete(m_DockFrames.GetCount() - 1);
+			m_DockFrames.Pop();
 		else
 			{
-			pFrame->pRoot = pOldRoot;
-			pFrame->sScreen = sOldScreen;
-			pFrame->sPane = sOldPane;
+			m_DockFrames.SetCurrent(OldFrame);
+			m_DockFrames.DiscardOldFrame(OldFrame);
 			}
 
+		*retsError = CONSTLIT("InitScreen failed.");
 		return error;
 		}
 
+	//	Clean up the old frames (which may contain a CodeChain item)
+
+	if (!bNewFrame)
+		m_DockFrames.DiscardOldFrame(OldFrame);
+
 	//	If no frames then we exited inside of InitScreen
 
-	if (m_DockFrames.GetCount() == 0)
+	if (m_DockFrames.IsEmpty())
 		return NOERROR;
 
 	//	Update frame
 
 	if (!sNewPane.IsBlank())
-		pFrame->sPane = sNewPane;
+		m_DockFrames.SetCurrentPane(sNewPane);
 
 	return NOERROR;
 	}
@@ -1974,7 +2018,7 @@ void CTranscendenceModel::ShowShipScreen (void)
 	CDesignType *pRoot = pSettings->GetShipScreen().GetDockScreen(pShip->GetClass(), &sScreen);
 
 	CString sError;
-	if (!ShowShipScreen(NULL, pRoot, sScreen, NULL_STR, &sError))
+	if (!ShowShipScreen(NULL, pRoot, sScreen, NULL_STR, NULL, &sError))
 		{
 		g_pTrans->DisplayMessage(sError);
 		::kernelDebugLogMessage(sError);
@@ -1984,7 +2028,7 @@ void CTranscendenceModel::ShowShipScreen (void)
 	pShip->OnComponentChanged(comCargo);
 	}
 
-bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, CString *retsError)
+bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError)
 
 //	ShowShipScreen
 //
@@ -2019,7 +2063,7 @@ bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 
 	//	Show screen
 
-	if (EnterScreenSession(pShip, pRoot, sScreen, sPane) != NOERROR)
+	if (EnterScreenSession(pShip, pRoot, sScreen, sPane, pData) != NOERROR)
 		{
 		*retsError = strPatternSubst(CONSTLIT("[%s]: Unable to show screen %s"), pRoot->GetTypeName(), sScreen);
 		return false;
@@ -2426,7 +2470,7 @@ void CTranscendenceModel::TransferGateFollowers (CSystem *pOldSystem, CSystem *p
 	//	OnNewSystem may refer to objects in the old system.
 
 	for (i = 0; i < GateFollowerObjs.GetCount(); i++)
-		GateFollowerObjs[i]->OnNewSystem();
+		GateFollowerObjs[i]->OnNewSystem(pSystem);
 
 	//	Done
 

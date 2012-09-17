@@ -44,9 +44,16 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
+#define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
+#define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
+#define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
+#define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
+#define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
 #define PROPERTY_SELECTED_LAUNCHER				CONSTLIT("selectedLauncher")
 #define PROPERTY_SELECTED_MISSILE				CONSTLIT("selectedMissile")
 #define PROPERTY_SELECTED_WEAPON				CONSTLIT("selectedWeapon")
+#define PROPERTY_SHATTER_IMMUNE					CONSTLIT("shatterImmune")
 
 const WORD RGB_MAP_LABEL =						CG16bitImage::RGBValue(255, 217, 128);
 
@@ -823,7 +830,6 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fDestroyInGate = false;
 	pShip->m_fHalfSpeed = false;
 	pShip->m_fHasTargetingComputer = false;
-	pShip->m_fHasSecondaryWeapons = false;
 	pShip->m_fSRSEnhanced = false;
 	pShip->m_fDeviceDisrupted = false;
 	pShip->m_fKnown = false;
@@ -893,7 +899,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		ItemCategories Category = pShip->m_Devices[i].GetCategory();
 		if (pShip->m_Devices[i].IsSecondaryWeapon())
-			pShip->m_fHasSecondaryWeapons = true;
+			;
 		else if (pShip->m_NamedDevices[devPrimaryWeapon] == -1
 				&& Category == itemcatWeapon)
 			pShip->m_NamedDevices[devPrimaryWeapon] = i;
@@ -1197,9 +1203,65 @@ ICCItem *CShip::GetProperty (const CString &sName)
 //	Returns a property
 
 	{
+	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
+	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsBlindingDamageImmune(pSection))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE) || strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsDeviceDamageImmune(pSection))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_DISINTEGRATION_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsDisintegrationImmune(pSection))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsEMPDamageImmune(pSection))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_RADIATION_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsRadiationImmune(pSection))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
 		{
 		CItem theItem = GetNamedDeviceItem(devMissileWeapon);
 		if (theItem.GetType() == NULL)
@@ -1247,6 +1309,17 @@ ICCItem *CShip::GetProperty (const CString &sName)
 			return CC.CreateNil();
 
 		return CreateListFromItem(CC, theItem);
+		}
+	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CItemCtx Ctx(this, GetArmorSection(i));
+			if (!Ctx.GetArmorClass()->IsShatterImmune(Ctx))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
 		}
 	else
 		return CSpaceObject::GetProperty(sName);
@@ -1799,7 +1872,14 @@ void CShip::FinishCreation (SShipGeneratorCtx *pCtx)
 	{
 	//	Fire OnCreate
 
-	FireOnCreate(pCtx);
+	CSpaceObject::SOnCreate OnCreate;
+	if (pCtx)
+		{
+		OnCreate.pBaseObj = pCtx->pBase;
+		OnCreate.pTargetObj = pCtx->pTarget;
+		}
+
+	FireOnCreate(OnCreate);
 
 	//	Set the orders from the generator
 
@@ -2266,6 +2346,19 @@ CString CShip::GetReactorName (void)
 		return pReactor->GetClass()->GetItemType()->GetNounPhrase();
 	else
 		return strPatternSubst(CONSTLIT("%s reactor"), m_pClass->GetShortName());
+	}
+
+int CShip::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
+
+//	GetSellPrice
+//
+//	Returns the price at which the ship will sell the given
+//	item. Returns 0 if the ship cannot or will not sell the
+//	item.
+
+	{
+	CEconomyType *pDefaultEconomy = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
+	return (int)pDefaultEconomy->Exchange(Item.GetCurrencyType(), Item.GetTradePrice(this));
 	}
 
 int CShip::GetShieldLevel (void)
@@ -2841,17 +2934,6 @@ void CShip::ObjectDestroyedHook (const SDestroyCtx &Ctx)
 //	If another object got destroyed, we do something
 
 	{
-	//	If this object is registered, call the events
-
-	int i;
-	if (!m_RegisteredObjects.IsEmpty()
-			&& m_RegisteredObjects.FindObj(Ctx.pObj, &i))
-		{
-		m_RegisteredObjects.Remove(i);
-
-		FireOnObjDestroyed(Ctx);
-		}
-
 	//	Give the controller a chance to handle it
 
 	m_pController->OnObjDestroyed(Ctx);
@@ -3450,26 +3532,14 @@ void CShip::OnMove (const CVector &vOldPos, Metric rSeconds)
 		m_DockingPorts.MoveAll(this);
 	}
 
-void CShip::OnNewSystem (void)
+void CShip::OnNewSystem (CSystem *pSystem)
 
 //	OnNewSystem
 //
 //	Ship has moved from one system to another
 
 	{
-	m_pController->OnNewSystem();
-	}
-
-void CShip::OnObjDocked (CSpaceObject *pObj, CSpaceObject *pDockTarget)
-
-//	OnObjDocked
-//
-//	The given object has docked
-	
-	{
-	if (!m_RegisteredObjects.IsEmpty()
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjDocked(pObj, pDockTarget);
+	m_pController->OnNewSystem(pSystem);
 	}
 
 void CShip::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
@@ -3482,57 +3552,6 @@ void CShip::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, cons
 	//	Let the controller handle it
 
 	m_pController->OnObjEnteredGate(pObj, pDestNode, sDestEntryPoint, pStargate);
-
-	//	Fire events
-
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjEnteredGate(pObj, pDestNode, sDestEntryPoint, pStargate);
-	}
-
-void CShip::OnObjJumped (CSpaceObject *pObj)
-
-//	OnObjJumped
-//
-//	This is called when another object jumps within the system
-
-	{
-	//	Fire events
-
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjJumped(pObj);
-	}
-
-bool CShip::OnObjJumpPosAdj (CSpaceObject *pObj, CVector *iovPos)
-
-//	OnObjJumpPosAdj
-//
-//	This is called when another object jumps within the system.
-//	We return TRUE if we adjusted the jump destination coordinates
-
-	{
-	//	Fire events
-
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		return FireOnObjJumpPosAdj(pObj, iovPos);
-
-	return false;
-	}
-
-void CShip::OnObjReconned (CSpaceObject *pObj)
-
-//	OnObjReconned
-//
-//	This is called when another object has been reconned
-
-	{
-	//	Fire events
-
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjReconned(pObj);
 	}
 
 void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -3785,7 +3804,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fHalfSpeed =				((dwLoad & 0x00000010) ? true : false);
 	m_fHasTargetingComputer =	((dwLoad & 0x00000020) ? true : false);
 	m_fTrackFuel =				((dwLoad & 0x00000040) ? true : false);
-	m_fHasSecondaryWeapons =	((dwLoad & 0x00000080) ? true : false);
+	//	0x00000080 unused at version 77
 	m_fSRSEnhanced =			((dwLoad & 0x00000100) ? true : false);
 	m_fRecalcItemMass =			((dwLoad & 0x00000200) ? true : false);
 	m_fKnown =					((dwLoad & 0x00000400) ? true : false);
@@ -3872,7 +3891,25 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	//	Docking ports and registered objects
 
 	m_DockingPorts.ReadFromStream(this, Ctx);
-	m_RegisteredObjects.ReadFromStream(Ctx);
+
+	//	Registered objects / subscriptions
+
+	if (Ctx.dwVersion < 77)
+		{
+		DWORD dwCount;
+		Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
+		if (dwCount)
+			{
+			for (i = 0; i < (int)dwCount; i++)
+				{
+				DWORD dwObjID;
+				Ctx.pStream->Read((char *)&dwObjID, sizeof(DWORD));
+
+				TArray<CSpaceObject *> *pList = Ctx.Subscribed.SetAt(dwObjID);
+				pList->Insert(this);
+				}
+			}
+		}
 
 	//	Encounter UNID
 
@@ -3917,17 +3954,6 @@ void CShip::OnStationDestroyed (const SDestroyCtx &Ctx)
 
 	{
 	m_pController->OnStationDestroyed(Ctx);
-
-	//	Fire events
-
-	int i;
-	if (!m_RegisteredObjects.IsEmpty()
-			&& m_RegisteredObjects.FindObj(Ctx.pObj, &i))
-		{
-		m_RegisteredObjects.Remove(i);
-
-		FireOnObjDestroyed(Ctx);
-		}
 	}
 
 void CShip::OnSystemCreated (void)
@@ -4504,7 +4530,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fHalfSpeed ?			0x00000010 : 0);
 	dwSave |= (m_fHasTargetingComputer ? 0x00000020 : 0);
 	dwSave |= (m_fTrackFuel ?			0x00000040 : 0);
-	dwSave |= (m_fHasSecondaryWeapons ?	0x00000080 : 0);
+	//	0x00000080 unused at version 77
 	dwSave |= (m_fSRSEnhanced ?			0x00000100 : 0);
 	dwSave |= (m_fRecalcItemMass ?		0x00000200 : 0);
 	dwSave |= (m_fKnown ?				0x00000400 : 0);
@@ -4553,10 +4579,9 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 
 	m_EnergyFields.WriteToStream(pStream);
 
-	//	Docking ports and registered objects
+	//	Docking ports
 
 	m_DockingPorts.WriteToStream(this, pStream);
-	m_RegisteredObjects.WriteToStream(GetSystem(), pStream);
 
 	//	Encounter info
 

@@ -23,6 +23,13 @@
 #define SHIPWRECK_UNID_ATTRIB			CONSTLIT("shipwreckID")
 #define NAME_ATTRIB						CONSTLIT("name")
 
+#define PROPERTY_ABANDONED				CONSTLIT("abandoned")
+#define PROPERTY_HP						CONSTLIT("hp")
+#define PROPERTY_IMMUTABLE				CONSTLIT("immutable")
+#define PROPERTY_MAX_HP					CONSTLIT("maxHP")
+#define PROPERTY_MAX_STRUCTURAL_HP		CONSTLIT("maxStructuralHP")
+#define PROPERTY_STRUCTURAL_HP			CONSTLIT("structuralHP")
+
 #define STR_TRUE						CONSTLIT("True")
 
 const int TRADE_UPDATE_FREQUENCY =		1801;			//	Interval for checking trade
@@ -576,7 +583,9 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Load hit points and armor information
 
+	pStation->m_fImmutable = pType->IsImmutable();
 	pStation->m_iHitPoints = pType->GetInitialHitPoints();
+	pStation->m_iMaxHitPoints = pType->GetMaxHitPoints();
 	pStation->m_pArmorClass = pType->GetArmorClass();
 	pStation->m_iMaxStructuralHP = pType->GetMaxStructuralHitPoints();
 	pStation->m_iStructuralHP = pType->GetStructuralHitPoints();
@@ -1108,7 +1117,7 @@ const CObjectImageArray &CStation::GetImage (int *retiTick, int *retiRotation)
 	//	Modifiers (such as station damage)
 
 	DWORD dwModifiers = 0;
-	if (m_pType->HasWreckImage() && IsAbandoned())
+	if (ShowWreckImage())
 		dwModifiers |= CCompositeImageDesc::modStationDamage;
 
 	//	Image
@@ -1170,6 +1179,36 @@ CSystem::LayerEnum CStation::GetPaintLayer (void)
 		}
 	}
 
+ICCItem *CStation::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_ABANDONED))
+		return CC.CreateBool(IsAbandoned());
+
+	else if (strEquals(sName, PROPERTY_HP))
+		return CC.CreateInteger(m_iHitPoints);
+
+	else if (strEquals(sName, PROPERTY_IMMUTABLE))
+		return CC.CreateBool(IsImmutable());
+
+	else if (strEquals(sName, PROPERTY_MAX_HP))
+		return CC.CreateInteger(m_iMaxHitPoints);
+
+	else if (strEquals(sName, PROPERTY_MAX_STRUCTURAL_HP))
+		return CC.CreateInteger(m_iMaxStructuralHP);
+
+	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
+		return CC.CreateInteger(m_iStructuralHP);
+
+	else
+		return CSpaceObject::GetProperty(sName);
+	}
 
 IShipGenerator *CStation::GetRandomEncounterTable (int *retiFrequency) const
 
@@ -1186,7 +1225,7 @@ IShipGenerator *CStation::GetRandomEncounterTable (int *retiFrequency) const
 	return m_pType->GetEncountersTable();
 	}
 
-int CStation::GetSellPrice (const CItem &Item)
+int CStation::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
 
 //	GetSellPrice
 //
@@ -1195,12 +1234,16 @@ int CStation::GetSellPrice (const CItem &Item)
 //	item.
 
 	{
+	bool bHasTradeDirective = false;
 	int iPrice = -1;
 
 	//	See if we have an override price
 
 	if (m_pTrade)
+		{
 		m_pTrade->Sells(this, Item, &iPrice);
+		bHasTradeDirective = true;
+		}
 
 	//	See if our type has a price
 
@@ -1213,19 +1256,32 @@ int CStation::GetSellPrice (const CItem &Item)
 
 			if (m_pTrade && iPrice != -1)
 				iPrice = (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
+
+			bHasTradeDirective = true;
 			}
 		}
 
-	//	If we don't have a price, then we don't sell any
+	//	If we have Trade directives and they specify no price, then we can't
+	//	sell any.
 
 	if (iPrice == -1)
-		return 0;
+		{
+		if (bHasTradeDirective)
+			return 0;
+
+		//	Otherwise, get the price from the item itself
+
+		iPrice = (int)GetDefaultEconomy()->Exchange(Item.GetCurrencyType(), Item.GetTradePrice(this));
+		}
 
 	//	If we don't have any of the item, then we don't sell any
 
-	CItemListManipulator ItemList(GetItemList());
-	if (!ItemList.SetCursorAtItem(Item))
-		return 0;
+	if (!bNoInventoryCheck)
+		{
+		CItemListManipulator ItemList(GetItemList());
+		if (!ItemList.SetCursorAtItem(Item))
+			return 0;
+		}
 
 	//	Return the price
 
@@ -1270,7 +1326,7 @@ int CStation::GetVisibleDamage (void)
 		}
 	else
 		{
-		iMaxHP = m_pType->GetMaxHitPoints();
+		iMaxHP = m_iMaxHitPoints;
 		iHP = m_iHitPoints;
 		}
 
@@ -1405,7 +1461,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 	//	If we're immutable, then nothing else happens.
 
-	if (m_pType->IsImmutable())
+	if (IsImmutable())
 		{
 		Ctx.iDamage = 0;
 		Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
@@ -1666,6 +1722,8 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 		//	Tell all objects that we've been destroyed
 
+		NotifyOnObjDestroyed(DestroyCtx);
+
 		for (int i = 0; i < GetSystem()->GetObjectCount(); i++)
 			{
 			CSpaceObject *pObj = GetSystem()->GetObject(i);
@@ -1799,19 +1857,6 @@ void CStation::ObjectDestroyedHook (const SDestroyCtx &Ctx)
 			RaiseAlert(pOrderGiver);
 
 		SetAngry();
-		}
-
-	//	If this object is registered, call the events
-
-	if (m_RegisteredObjects.FindObj(Ctx.pObj))
-		{
-		FireOnObjDestroyed(Ctx);
-
-		//	Note: FireOnObjDestroyed might have unregistered the object
-		//	so we cannot make any assumptions about whether the object
-		//	is in the list or not.
-
-		m_RegisteredObjects.Remove(Ctx.pObj);
 		}
 	}
 
@@ -2030,18 +2075,6 @@ void CStation::OnObjBounce (CSpaceObject *pObj, const CVector &vPos)
 				0);
 	}
 
-void CStation::OnObjDocked (CSpaceObject *pObj, CSpaceObject *pDockTarget)
-
-//	OnObjDocked
-//
-//	The given object has docked with the station
-	
-	{
-	if (!m_RegisteredObjects.IsEmpty()
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjDocked(pObj, pDockTarget);
-	}
-
 void CStation::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
 
 //	OnObjEnteredGate
@@ -2053,51 +2086,6 @@ void CStation::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, c
 
 	if (pObj->IsPlayer())
 		FireOnPlayerLeftSystem(pObj, pDestNode, sDestEntryPoint, pStargate);
-
-	//	Fire events
-
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjEnteredGate(pObj, pDestNode, sDestEntryPoint, pStargate);
-	}
-
-void CStation::OnObjJumped (CSpaceObject *pObj)
-
-//	OnObjJumped
-//
-//	This is called when another object has jumped in the system
-
-	{
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjJumped(pObj);
-	}
-
-bool CStation::OnObjJumpPosAdj (CSpaceObject *pObj, CVector *iovPos)
-
-//	OnObjJumpPosAdj
-//
-//	This is called when another object jumps within the system.
-//	We return TRUE if we adjusted the jump destination coordinates
-
-	{
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		return FireOnObjJumpPosAdj(pObj, iovPos);
-
-	return false;
-	}
-
-void CStation::OnObjReconned (CSpaceObject *pObj)
-
-//	OnObjReconned
-//
-//	This is called when another object has been reconned
-
-	{
-	if (!m_RegisteredObjects.IsEmpty() 
-			&& m_RegisteredObjects.FindObj(pObj))
-		FireOnObjReconned(pObj);
 	}
 
 void CStation::OnObjLeaveGate (CSpaceObject *pObj)
@@ -2152,6 +2140,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 //	CString		m_sStargateDestEntryPoint
 //	DWORD		armor class UNID, 0xffffffff if no armor
 //	DWORD		m_iHitPoints
+//	DWORD		m_iMaxHitPoints
 //	DWORD		m_iStructuralHP
 //	DWORD		m_iMaxStructuralHP
 //
@@ -2271,6 +2260,10 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 		m_pArmorClass = g_pUniverse->FindArmor(dwLoad);
 
 	Ctx.pStream->Read((char *)&m_iHitPoints, sizeof(DWORD));
+	if (Ctx.dwVersion >= 77)
+		Ctx.pStream->Read((char *)&m_iMaxHitPoints, sizeof(DWORD));
+	else
+		m_iMaxHitPoints = m_pType->GetMaxHitPoints();
 	Ctx.pStream->Read((char *)&m_iStructuralHP, sizeof(DWORD));
 	if (Ctx.dwVersion >= 31)
 		Ctx.pStream->Read((char *)&m_iMaxStructuralHP, sizeof(DWORD));
@@ -2291,9 +2284,24 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	if (Ctx.dwVersion >= 56)
 		m_Overlays.ReadFromStream(Ctx, this);
 
-	//	Registered objects
+	//	Registered objects / subscriptions
 
-	m_RegisteredObjects.ReadFromStream(Ctx);
+	if (Ctx.dwVersion < 77)
+		{
+		DWORD dwCount;
+		Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
+		if (dwCount)
+			{
+			for (i = 0; i < (int)dwCount; i++)
+				{
+				DWORD dwObjID;
+				Ctx.pStream->Read((char *)&dwObjID, sizeof(DWORD));
+
+				TArray<CSpaceObject *> *pList = Ctx.Subscribed.SetAt(dwObjID);
+				pList->Insert(this);
+				}
+			}
+		}
 
 	//	Docking ports
 
@@ -2413,6 +2421,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	m_fReconned =		((dwLoad & 0x00000080) ? true : false);
 	m_fFireReconEvent =	((dwLoad & 0x00000100) ? true : false);
 	bool fNoArticle =	((dwLoad & 0x00000200) ? true : false);
+	m_fImmutable =		((dwLoad & 0x00000400) ? true : false);
 
 	//	Init name flags
 
@@ -2425,6 +2434,11 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 		else
 			m_dwNameFlags = m_pType->GetNameFlags();
 		}
+
+	//	Previous versions did not store m_fImmutable
+
+	if (Ctx.dwVersion < 77)
+		m_fImmutable = m_pType->IsImmutable();
 
 	//	If this is a world or a star, create a small image
 
@@ -2443,14 +2457,6 @@ void CStation::OnStationDestroyed (const SDestroyCtx &Ctx)
 //	Station in the system has been destroyed
 
 	{
-	int i;
-	if (!m_RegisteredObjects.IsEmpty()
-			&& m_RegisteredObjects.FindObj(Ctx.pObj, &i))
-		{
-		m_RegisteredObjects.Remove(i);
-
-		FireOnObjDestroyed(Ctx);
-		}
 	}
 
 void CStation::OnSystemCreated (void)
@@ -2485,7 +2491,9 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 //	CString		m_sStargateDestEntryPoint
 //	DWORD		armor class UNID, 0xffffffff if no armor
 //	DWORD		m_iHitPoints
-//	DWORD		m_iStructualHP
+//	DWORD		m_iMaxHitPoints
+//	DWORD		m_iStructuralHP
+//	DWORD		m_iMaxStructuralHP
 //
 //	DWORD		device: class UNID
 //	DWORD		device: m_dwData
@@ -2560,6 +2568,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	pStream->Write((char *)&m_iHitPoints, sizeof(DWORD));
+	pStream->Write((char *)&m_iMaxHitPoints, sizeof(DWORD));
 	pStream->Write((char *)&m_iStructuralHP, sizeof(DWORD));
 	pStream->Write((char *)&m_iMaxStructuralHP, sizeof(DWORD));
 
@@ -2570,8 +2579,6 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 		m_pDevices[i].WriteToStream(pStream);
 
 	m_Overlays.WriteToStream(pStream);
-
-	m_RegisteredObjects.WriteToStream(GetSystem(), pStream);
 
 	m_DockingPorts.WriteToStream(this, pStream);
 
@@ -2617,16 +2624,17 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_dwWreckUNID, sizeof(DWORD));
 
 	dwSave = 0;
-	dwSave |= (m_fArmed ?		0x00000001 : 0);
-	dwSave |= (m_fKnown ?		0x00000002 : 0);
-	dwSave |= (m_fNoMapLabel ?	0x00000004 : 0);
-	dwSave |= (m_fRadioactive ?	0x00000008 : 0);
+	dwSave |= (m_fArmed ?				0x00000001 : 0);
+	dwSave |= (m_fKnown ?				0x00000002 : 0);
+	dwSave |= (m_fNoMapLabel ?			0x00000004 : 0);
+	dwSave |= (m_fRadioactive ?			0x00000008 : 0);
 	//	0x00000010 retired
-	dwSave |= (m_fActive ?		0x00000020 : 0);
-	dwSave |= (m_fNoReinforcements ? 0x00000040 : 0);
-	dwSave |= (m_fReconned ?	0x00000080 : 0);
-	dwSave |= (m_fFireReconEvent ? 0x00000100 : 0);
+	dwSave |= (m_fActive ?				0x00000020 : 0);
+	dwSave |= (m_fNoReinforcements ?	0x00000040 : 0);
+	dwSave |= (m_fReconned ?			0x00000080 : 0);
+	dwSave |= (m_fFireReconEvent ?		0x00000100 : 0);
 	//	0x00000200 retired
+	dwSave |= (m_fImmutable ?			0x00000400 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -2664,7 +2672,7 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
 				}
-			else if (!IsAbandoned() || m_pType->IsImmutable())
+			else if (!IsAbandoned() || IsImmutable())
 				{
 				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
@@ -2723,7 +2731,7 @@ void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
 				}
-			else if (!IsAbandoned() || m_pType->IsImmutable())
+			else if (!IsAbandoned() || IsImmutable())
 				{
 				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
 				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
@@ -3298,6 +3306,66 @@ void CStation::OnUpdateExtended (const CTimeSpan &ExtraTime)
 		}
 	}
 
+bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Sets a station property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_HP))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		m_iHitPoints = Min(Max(0, pValue->GetIntegerValue()), m_iMaxHitPoints);
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_IMMUTABLE))
+		{
+		m_fImmutable = !pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_MAX_HP))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		m_iMaxHitPoints = Max(0, pValue->GetIntegerValue());
+		m_iHitPoints = Min(m_iHitPoints, m_iMaxHitPoints);
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_MAX_STRUCTURAL_HP))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		m_iMaxStructuralHP = Max(0, pValue->GetIntegerValue());
+		m_iStructuralHP = Min(m_iStructuralHP, m_iMaxStructuralHP);
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
+		{
+		//	Nil means that we don't want to make a change
+
+		if (pValue->IsNil())
+			return true;
+
+		m_iStructuralHP = Min(Max(0, pValue->GetIntegerValue()), m_iMaxStructuralHP);
+		return true;
+		}
+	else
+		return CSpaceObject::SetProperty(sName, pValue, retsError);
+	}
+
 void CStation::UpdateAttacking (int iTick)
 
 //	UpdateAttacking
@@ -3409,8 +3477,8 @@ void CStation::UpdateReinforcements (int iTick)
 		{
 		//	Repair damage to station
 
-		if (m_pType->GetRepairRate() > 0 && m_iHitPoints < m_pType->GetMaxHitPoints())
-			m_iHitPoints = min(m_pType->GetMaxHitPoints(), m_iHitPoints + m_pType->GetRepairRate());
+		if (m_pType->GetRepairRate() > 0 && m_iHitPoints < m_iMaxHitPoints)
+			m_iHitPoints = Min(m_iMaxHitPoints, m_iHitPoints + m_pType->GetRepairRate());
 
 		//	Repair damage to ships
 

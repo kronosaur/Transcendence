@@ -120,11 +120,24 @@ void GenerateStationPlaceSim (CUniverse &Universe, CXMLElement *pCmdLine)
 								&& pEnemy->CanAttack()
 								&& (pEnemy->IsEnemy(pObj) || pObj->IsEnemy(pEnemy)))
 							{
-							int iDist = DistToBucketIndex(pObj->GetDistance(pEnemy));
+							Metric rDist = pObj->GetDistance(pEnemy);
+							int iDist = DistToBucketIndex(rDist);
 							if (iDist != -1)
 								{
 								ASSERT(iDist < DIST_BUCKET_COUNT && iDist >= 0);
 								pSystemEntry->iEnemies[iDist]++;
+
+								int iLSDist = (int)((rDist / LIGHT_SECOND) + 0.5);
+								if (iLSDist < 30)
+									{
+									printf("%s: %s (%x) and %s (%x) within %d ls\n",
+											pSystem->GetName().GetASCIIZPointer(),
+											pObj->GetName().GetASCIIZPointer(),
+											pObj->GetID(),
+											pEnemy->GetName().GetASCIIZPointer(),
+											pEnemy->GetID(),
+											iLSDist);
+									}
 								}
 							}
 						}

@@ -28,6 +28,7 @@
 #define SIM_TABLES_SWITCH					CONSTLIT("simTables")
 #define SNAPSHOT_SWITCH						CONSTLIT("snapshot")
 #define STATION_FREQUENCY_SWITCH			CONSTLIT("stationfrequency")
+#define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationSeparationSim")
 #define STATS_SWITCH						CONSTLIT("stats")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
@@ -47,7 +48,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      /attackers:xxx        Criteria specifying attacking ships.\n");
-		printf("      /unid:n               UNID of encounter to sim.\n");
+		printf("      /defender:xxx         Encounter criteria.\n");
 		printf("\n");
 		printf("      [/count]              Number of runs per attacker.\n");
 		printf("      [/viewer]             Open viewer to watch the battle.\n");
@@ -204,6 +205,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
 		}
+	else if (pCmdLine->GetAttributeBool(STATION_PLACE_SIM_SWITCH))
+		{
+		printf("  /stationSeparationSim Generate enemy station separation statistics.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/count:n]            n iterations.\n");
+		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		{
 		printf("  /systemlabels         Generate counts for all labels.\n");
@@ -248,6 +255,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 			printf("  /smoketest            Tests the game.\n");
 		printf("  /snapshot             Generates a snapshot of the given object.\n");
 		printf("  /stationfrequency     Table of station types by level.\n");
+		if (bDebug)
+			printf("  /stationSeparationSim Generate enemy station separation statistics.\n");
 		printf("  /stats                Shows a list of basic stats.\n");
 		printf("  /stdarmor             Shows stats about standard armors.\n");
 		printf("  /stdshield            Shows stats about standard shields.\n");

@@ -27,6 +27,14 @@
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
 
+CDockScreenActions::~CDockScreenActions (void)
+
+//	CDockScreenActions destructor
+
+	{
+	CleanUp();
+	}
+
 ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction)
 
 //	AddAction
@@ -82,6 +90,12 @@ void CDockScreenActions::CleanUp (void)
 		}
 
 	m_Actions.DeleteAll();
+
+	if (m_pData)
+		{
+		m_pData->Discard(&g_pUniverse->GetCC());
+		m_pData = NULL;
+		}
 	}
 
 void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame)
@@ -144,9 +158,9 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 			CString sScreen = pAction->pCmd->GetAttribute(SCREEN_ATTRIB);
 			CString sPane = pAction->pCmd->GetAttribute(PANE_ATTRIB);
 
-			if (g_pTrans->GetModel().ShowScreen(NULL, sScreen, sPane) != NOERROR)
+			CString sError;
+			if (g_pTrans->GetModel().ShowScreen(NULL, sScreen, sPane, NULL, &sError) != NOERROR)
 				{
-				CString sError = strPatternSubst(CONSTLIT("Unable to show screen: %s"), sScreen);
 				pScreen->SetDescription(sError);
 				::kernelDebugLogMessage(sError);
 				return;
@@ -194,6 +208,7 @@ void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, 
 	{
 	CCodeChainCtx Ctx;
 	Ctx.SetExtension(pExtension);
+	Ctx.SaveAndDefineDataVar(m_pData);
 	Ctx.DefineString(CONSTLIT("aActionID"), sID);
 	Ctx.SetScreen(pScreen);
 
@@ -338,7 +353,7 @@ int CDockScreenActions::GetVisibleCount (void) const
 	return iCount;
 	}
 
-ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pActions, CString *retsError)
+ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pActions, ICCItem *pData, CString *retsError)
 
 //	InitFromXML
 //
@@ -350,6 +365,10 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 	//	Clean up current actions
 
 	CleanUp();
+
+	//	Remember the data pointer
+
+	m_pData = (pData ? pData->Reference() : NULL);
 
 	//	If no actions, that's OK
 

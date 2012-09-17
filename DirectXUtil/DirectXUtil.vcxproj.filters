@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{f4d5b9f9-75bf-427a-80df-0d8425f11c1d}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ca8dae74-938b-45f1-9863-a7d95d969293}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Reanimator">
+      <UniqueIdentifier>{96a74604-99ec-41ad-b187-bd17e695a496}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\TextFormat">
+      <UniqueIdentifier>{cf6f59d2-d06c-498b-83d3-12f30ae857e3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Includes\DirectXUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\Reanimator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\TextFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="16bitBlt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="16bitDrawCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="16bitImageDrawing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="8bitDrawCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="8bitImageDrawing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="8bitNoise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AGArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AGScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CBresenhamIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CFrameRateCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitFont.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16BitImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitRealRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGButtonArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGFrameArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGImageArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CGTextArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CNoiseGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CScreenMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectDraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Noise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Polygon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonSimple.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniButton.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniControl.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniImageFill.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniListBox.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniPolygon.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniProperty.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniPropertySet.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniRect.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniRichText.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniRoundedRect.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniSequencer.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniShape.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniSolidFill.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniSolidLine.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniText.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniTextInput.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CAniVScroller.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CLinearAnimator.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CListScroller.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CReanimator.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="IAnimatron.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyAnimators.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
+    <ClCompile Include="CTextBlock.cpp">
+      <Filter>Source Files\TextFormat</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

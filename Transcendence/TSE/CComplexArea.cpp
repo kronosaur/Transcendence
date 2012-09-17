@@ -144,7 +144,7 @@ bool CComplexArea::GeneratePointsInArea (int iCount, int iMinSeparation, CIntGra
 
 //	GeneratePointsInArea
 //
-//	Generates a set of points inside the area. Optionally insures that each point
+//	Generates a set of points inside the area. Optionally ensures that each point
 //	has a minimum separation from the others.
 //
 //	The array is always filled with the proper number of points, but if FALSE is returned,
@@ -181,7 +181,7 @@ bool CComplexArea::GeneratePointsInArea (int iCount, int iMinSeparation, TArray<
 
 //	GeneratePointsInArea
 //
-//	Generates a set of points inside the area. Optionally insures that each point
+//	Generates a set of points inside the area. Optionally ensures that each point
 //	has a minimum separation from the others.
 //
 //	The array is always filled with the proper number of points, but if FALSE is returned,

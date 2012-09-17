@@ -1,0 +1,643 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a5886e23-7951-4063-971e-5e26f7d07e50}</UniqueIdentifier>
+      <Extensions>*.cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Sessions">
+      <UniqueIdentifier>{db4f9821-9571-4acb-9aba-882832eb95d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Displays">
+      <UniqueIdentifier>{ecdba8b0-a522-4e4c-82c4-d2d4b2946bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animations">
+      <UniqueIdentifier>{63c5d2a2-d8e2-4197-bf29-64671eeee6d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{53c353e0-e355-49af-9a6e-b762d37cf656}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dock Screens">
+      <UniqueIdentifier>{fe19ade8-756f-4200-9b2c-386eac61f06d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Player">
+      <UniqueIdentifier>{89c9e3f2-25ef-41a8-906e-de4e61c407d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{c94e9a25-546a-4e85-b87d-018322444002}</UniqueIdentifier>
+      <Extensions>*.h</Extensions>
+    </Filter>
+    <Filter Include="XML Files">
+      <UniqueIdentifier>{4090b469-f68b-4d31-ba68-cbd239aaad68}</UniqueIdentifier>
+      <Extensions>*.xml</Extensions>
+    </Filter>
+    <Filter Include="XML Files\Part II">
+      <UniqueIdentifier>{90d51754-90ee-4a39-8a93-df4e6bd7b08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Part I">
+      <UniqueIdentifier>{8b80bb20-7114-471c-b795-047f0d424078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Debug">
+      <UniqueIdentifier>{bccd41a6-0228-4147-9051-4719c0e817cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Book of the Augur">
+      <UniqueIdentifier>{4a00beeb-8659-4180-bcc0-26d8b149cf91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Ancient Races Library">
+      <UniqueIdentifier>{180a92c9-615e-446f-ae84-5328bab7eed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Human Space Library">
+      <UniqueIdentifier>{592c4d0c-7dd2-4d65-b534-c418e532b0ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Core Types">
+      <UniqueIdentifier>{b33fa05c-333d-4b53-89fc-f2e0bb219092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Chronicles of Human Space">
+      <UniqueIdentifier>{506754e9-0630-4a91-9eb1-8252c0eda7d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\RPG Library">
+      <UniqueIdentifier>{1c893044-25c0-4012-8935-11302af2a957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Universe Library">
+      <UniqueIdentifier>{5b0f99cb-248d-47d9-8cb2-2cc77e33fea8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{e907d0cc-f231-4f78-baaa-977a771506a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{0567e67e-e955-4d9e-a836-06a119def88f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Notes and Documents">
+      <UniqueIdentifier>{64f46807-8cf9-4d33-9bb2-b2543826e0a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CIntroShipController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CLoadGameWithSignInTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeChainExtensions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTranscendenceController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTranscendenceModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTranscendenceWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWndProc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CAdventureIntroSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CChangePasswordSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CGalacticMapSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CHelpSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CLoadGameSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CLoadingSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CLoginSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CMessageSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CModExchangeSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CNewGameSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CProfileSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CStatsSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CTextCrawlSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CWaitSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScreen.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroScreen.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="PrologEpilog.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectAdventureScreen.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CAdventureDescDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CArmorDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CButtonBarDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CCommandLineDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CDeviceCounterDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CGDrawArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CGItemListArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CGNeurohackArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CMenuDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CMessageDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CPickerDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CReactorDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CTargetDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CTextCrawlDisplay.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatsAnimation.cpp">
+      <Filter>Source Files\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="CButtonBarData.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameKeys.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameSettings.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CHighScoreList.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CMenuData.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CUIResources.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOutput.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreen.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenActions.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerGameStats.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CUIMessageController.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenStack.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BackgroundTasks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Credits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PreComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sessions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transcendence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Game\Antarctica.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\AresOrthodoxy.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\BlackMarket.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CentauriWarlords.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CharonPirates.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Code.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Commonwealth.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CommonwealthAgricultural.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CommonwealthFleet.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CommonwealthMetropolis.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CommonwealthMilitia.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CommonwealthMining.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Compatibility10.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\CorporateHierarchy.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Domina.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\DwargRaiders.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\EncountersVol01.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Heretic.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Iocrym.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\KorolovShipping.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Luminous.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\MiscItems.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\OutlawMiners.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\PointJuno.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Rasiermesser.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Ringers.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\RogueFleet.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\SistersOfDomina.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\StdAutons.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\StdDevices.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\StdDockScreens.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\StdExplosions.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\StdSovereigns.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\SungSlavers.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Teratons.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Tinkers.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\UrakWarlords.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\UsefulItems.xml">
+      <Filter>XML Files</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\EncountersVol02.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\EncountersVol02Erebien.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\GammaCrucis.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\Mourner.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\StdMechanistItems.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\SystemsVol02.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Extensions\PartII\VaultOfTheGalaxy.xml">
+      <Filter>XML Files\Part II</Filter>
+    </None>
+    <None Include="Game\Elysium.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\Huari.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\PlayerShips.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\StarsOfThePilgrim.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\Extensions\AdventureSample.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\DebugCode.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\DebugShips.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\EffectsTest.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\PerformanceTest.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\ShipChangeSample.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\WeaponsSample\WeaponsSample.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\Book of the Augur\BookOfTheAugur.xml">
+      <Filter>XML Files\Book of the Augur</Filter>
+    </None>
+    <None Include="Game\BattleArena.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\BattleArenaGladiators.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\CharonFortress.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\Eridani.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\HumanSpaceMap.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdArmor.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdEffects.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdFuel.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdPlayerShips.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdShields.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdSystems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdTypes.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdUnknownItems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StdWeapons.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\StKatharines.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\CoreEffects.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </None>
+    <None Include="Game\CoreTypes.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </None>
+    <None Include="Game\Transcendence.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </None>
+    <None Include="Game\Extensions\Chronicles of Human Space\ChroniclesOfHumanSpace.xml">
+      <Filter>XML Files\Chronicles of Human Space</Filter>
+    </None>
+    <None Include="Game\HUD.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGPlayer.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGShipScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGTypes.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Mining.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\StarSystems.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\UniverseEffects.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Worlds.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Resources\DamageTypes.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\DamageTypesMask.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\FontRes.xml">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Game Stats Screen.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\GameButtonIcons.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\GameOver.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\GameOverEscape.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Header.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\HeaderBold.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Help Screen.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\IconDisplay.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\LogoTitle.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\SelectShipIcons.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Stargate.JPG">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\StargateMask.BMP">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\SubTitle.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\SubTitleBold.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\SubTitleHeavyBold.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Title.dxfn">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\Title.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Transcendence.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\UIIcons.jpg">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\Resources\UIIconsMask.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="Game\ErebienNames.dat">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="..\.gitignore">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\Brainstorming.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\Bugs.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Checklist.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\Features.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="FunctionReference.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="..\LICENSE">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\MediaNotes.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="..\README">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\Schedule.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Documents\Stations.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Worklist (Completed).txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Worklist.txt">
+      <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Game\RPGMissions.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\CoreCode.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </None>
+    <None Include="Game\RPGDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGCode.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Transcendence.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

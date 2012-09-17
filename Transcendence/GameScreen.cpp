@@ -329,7 +329,7 @@ void CTranscendenceWnd::DoUseItemCommand (DWORD dwData)
 		CString sScreen;
 		CDesignType *pRoot = pType->GetUseScreen(&sScreen);
 		CString sError;
-		if (!GetModel().ShowShipScreen(pType, pRoot, sScreen, NULL_STR, &sError))
+		if (!GetModel().ShowShipScreen(pType, pRoot, sScreen, NULL_STR, NULL, &sError))
 			{
 			g_pTrans->DisplayMessage(sError);
 			::kernelDebugLogMessage(sError);
@@ -430,8 +430,10 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 
 	//	Create a bitmap for the LRS
 
-	if (error = m_LRS.CreateBlank(g_LRSWidth, g_LRSHeight, false))
+	if (error = m_LRS.CreateBlank(g_LRSWidth, g_LRSHeight, false, DEFAULT_TRANSPARENT_COLOR))
 		return error;
+
+	m_LRS.SetTransparentColor(DEFAULT_TRANSPARENT_COLOR);
 
 	if (m_bTransparencyEffects)
 		m_LRS.SetBlending(200);
@@ -592,7 +594,7 @@ void CTranscendenceWnd::PaintLRS (void)
 				g_LRSWidth,
 				g_LRSHeight,
 				*m_pLRSBorder,
-				0,
+				DEFAULT_TRANSPARENT_COLOR,
 				0,
 				0);
 		}

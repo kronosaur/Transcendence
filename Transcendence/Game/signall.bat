@@ -1,1 +1,1 @@
-@"c:\Program Files (x86)\Microsoft Visual Studio 8\SDK\v2.0\Bin\signtool.exe" sign /f "\\mazian\core\Kronosaur\Keys\Kronosaur Productions Code Signing.pfx" /p %1 /t http://timestamp.comodoca.com/authenticode /v "Transcendence.exe" "TransData.exe" "TransCompiler.exe"
+@"signtool.exe" sign /f "\\mazian\core\Kronosaur\Keys\Kronosaur Productions Code Signing.pfx" /p %1 /t http://timestamp.comodoca.com/authenticode /v "Transcendence.exe" "TransData.exe" "TransCompiler.exe"

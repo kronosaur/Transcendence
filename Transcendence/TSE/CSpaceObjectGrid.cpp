@@ -110,7 +110,8 @@ void CSpaceObjectGrid::EnumStart (SSpaceObjectGridEnumerator &i, const CVector &
 
 	//	Generate a list of all grid cells to traverse
 
-	i.pGridIndexList = new CSpaceObjectList * [(xEnd - xStart + 1) * (yEnd - yStart + 1)];
+	int iMaxSize = (xEnd - xStart + 1) * (yEnd - yStart + 1);
+	i.pGridIndexList = new CSpaceObjectList * [iMaxSize];
 	i.iGridIndexCount = 0;
 	bool bOuterAdded = (m_Outer.GetCount() == 0);
 
@@ -150,6 +151,7 @@ void CSpaceObjectGrid::EnumStart (SSpaceObjectGridEnumerator &i, const CVector &
 
 	//	Initialize
 
+	ASSERT(i.iGridIndexCount <= iMaxSize);
 	i.bMore = (i.iGridIndexCount > 0);
 
 	//	Set the initial list
@@ -187,6 +189,8 @@ CSpaceObject *CSpaceObjectGrid::EnumGetNext (SSpaceObjectGridEnumerator &i)
 		i.iIndex++;
 		if (i.iIndex < i.iListCount)
 			{
+			ASSERT(i.iIndex >= 0);
+
 			i.pObj = i.pList->GetObj(i.iIndex);
 			if (!i.pObj->IsDestroyed() 
 					&& (!i.bCheckBox || i.pObj->InBox(i.vUR, i.vLL)))
@@ -197,6 +201,8 @@ CSpaceObject *CSpaceObjectGrid::EnumGetNext (SSpaceObjectGridEnumerator &i)
 			i.iGridIndex++;
 			if (i.iGridIndex < i.iGridIndexCount)
 				{
+				ASSERT(i.iGridIndex >= 0);
+
 				i.pList = i.pGridIndexList[i.iGridIndex];
 				i.iListCount = i.pList->GetCount();
 				i.iIndex = -1;
@@ -229,6 +235,8 @@ CSpaceObject *CSpaceObjectGrid::EnumGetNextInBoxPoint (SSpaceObjectGridEnumerato
 		i.iIndex++;
 		if (i.iIndex < i.iListCount)
 			{
+			ASSERT(i.iIndex >= 0);
+
 			i.pObj = i.pList->GetObj(i.iIndex);
 			if (!i.pObj->IsDestroyed() && i.pObj->InBoxPoint(i.vUR, i.vLL))
 				return pCurrentObj;
@@ -238,6 +246,8 @@ CSpaceObject *CSpaceObjectGrid::EnumGetNextInBoxPoint (SSpaceObjectGridEnumerato
 			i.iGridIndex++;
 			if (i.iGridIndex < i.iGridIndexCount)
 				{
+				ASSERT(i.iGridIndex >= 0);
+
 				i.pList = i.pGridIndexList[i.iGridIndex];
 				i.iListCount = i.pList->GetCount();
 				i.iIndex = -1;

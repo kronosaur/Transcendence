@@ -55,7 +55,7 @@ class CAttackStationOrder : public IOrderModule
 		virtual bool IsAttacking (void) { return true; }
 		virtual bool IsTarget (CSpaceObject *pObj) { return ((pObj == m_Objs[objTarget]) || (pObj == m_Objs[objDefender])); }
 		virtual bool IsTarget (int iObj) { return true; }
-		virtual void OnAttacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage);
+		virtual void OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage);
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData);
 		virtual CString OnDebugCrashInfo (void);

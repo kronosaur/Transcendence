@@ -65,6 +65,7 @@ class CAIBehaviorCtx
 		inline bool GetThrust (CShip *pShip) const { return m_ShipControls.GetThrust(pShip); }
 		inline int GetThrustDir (void) const { return m_ShipControls.GetThrustDir(); }
 		inline bool HasMultipleWeapons (void) const { return m_fHasMultipleWeapons; }
+		inline bool HasSecondaryWeapons (void) const { return m_fHasSecondaryWeapons; }
 		inline bool HasSuperconductingShields (void) const { return m_fSuperconductingShields; }
 		inline bool IsAggressor (void) const { return m_AISettings.IsAggressor(); }
 		inline bool IsBeingAttacked (int iTick, int iThreshold = 150) const { return (iTick - m_iLastAttack) > iThreshold; }
@@ -169,15 +170,17 @@ class CAIBehaviorCtx
 		int m_iMaxTurnCount;					//	Max ticks turning in the same direction
 		Metric m_rMaxWeaponRange;				//	Range of longest range primary weapon
 		int m_iBestNonLauncherWeaponLevel;		//	Level of best non-launcher weapon
+
 		DWORD m_fImmobile:1;					//	TRUE if ship does not move
 		DWORD m_fSuperconductingShields:1;		//	TRUE if ship has superconducting shields
 		DWORD m_fHasMultipleWeapons:1;			//	TRUE if ship has more than 1 primary
 		DWORD m_fThrustThroughTurn:1;			//	TRUE if ship thrusts through a turn
 		DWORD m_fAvoidExplodingStations:1;		//	TRUE if ship avoids exploding stations
 		DWORD m_fRecalcBestWeapon:1;			//	TRUE if we need to recalc best weapon
-		DWORD m_dwSpare2:26;
+		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has secondary weapons
+		DWORD m_fSpare8:1;
 
-
+		DWORD m_dwSpare:24;
 	};
 
 const int MAX_OBJS =	4;
@@ -188,7 +191,7 @@ class IOrderModule
 		IOrderModule (int iObjCount);
 		virtual ~IOrderModule (void);
 
-		void Attacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage);
+		void Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage);
 		inline void Behavior (CShip *pShip, CAIBehaviorCtx &Ctx) { OnBehavior(pShip, Ctx); }
 		inline void BehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { OnBehaviorStart(pShip, Ctx, pOrderTarget, dwOrderData); }
 		DWORD Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
@@ -206,7 +209,7 @@ class IOrderModule
 		virtual bool IsAttacking (void) { return false; }
 		virtual bool IsTarget (int iObj) { return false; }
 		virtual bool IsTarget (CSpaceObject *pObj) { return false; }
-		virtual void OnAttacked (CShip *pShip, CSpaceObject *pAttacker, const DamageDesc &Damage) { }
+		virtual void OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage) { }
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx) = 0;
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { }
 		virtual CString OnDebugCrashInfo (void) { return NULL_STR; }
@@ -252,7 +255,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		virtual void OnDocked (CSpaceObject *pObj);
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
-		virtual void OnNewSystem (void);
+		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnWeaponStatusChanged (void) { m_AICtx.ClearBestWeapon(); }
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);

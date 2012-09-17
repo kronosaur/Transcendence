@@ -6,7 +6,6 @@
 
 	<DockScreen UNID="&dsShipInterior;"
 			name=				"Ship's Interior"
-			backgroundID=		"&rsShipInterior;"
 			>
 
 		<Panes>

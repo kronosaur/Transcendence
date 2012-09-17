@@ -11,7 +11,7 @@ void CTimedEvent::CreateFromStream (SLoadCtx &Ctx, CTimedEvent **retpEvent)
 //	Creates a timed event from a stream
 //
 //	DWORD			class
-//	DWORD			m_iTick
+//	DWORD			m_dwTick
 //	DWORD			flags
 
 	{
@@ -37,11 +37,15 @@ void CTimedEvent::CreateFromStream (SLoadCtx &Ctx, CTimedEvent **retpEvent)
 		case cTimedTypeEvent:
 			pEvent = new CTimedTypeEvent;
 			break;
+
+		case cTimedMissionEvent:
+			pEvent = new CTimedMissionEvent;
+			break;
 		}
 
 	//	Load stuff
 
-	Ctx.pStream->Read((char *)&pEvent->m_iTick, sizeof(DWORD));
+	Ctx.pStream->Read((char *)&pEvent->m_dwTick, sizeof(DWORD));
 
 	//	Load flags
 
@@ -70,13 +74,13 @@ void CTimedEvent::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
 //	Writes the event to a stream
 //
 //	DWORD		class
-//	DWORD		m_iTick
+//	DWORD		m_dwTick
 //	DWORD		flags
 //	Subclass data
 
 	{
 	OnWriteClassToStream(pStream);
-	pStream->Write((char *)&m_iTick, sizeof(DWORD));
+	pStream->Write((char *)&m_dwTick, sizeof(DWORD));
 
 	//	Flags
 
@@ -118,7 +122,7 @@ CString CTimedEncounterEvent::DebugCrashInfo (void)
 	return sResult;
 	}
 
-void CTimedEncounterEvent::DoEvent (CSystem *pSystem)
+void CTimedEncounterEvent::DoEvent (DWORD dwTick, CSystem *pSystem)
 
 //	DoEvent
 //
@@ -243,7 +247,7 @@ CString CTimedCustomEvent::DebugCrashInfo (void)
 	return sResult;
 	}
 
-void CTimedCustomEvent::DoEvent (CSystem *pSystem)
+void CTimedCustomEvent::DoEvent (DWORD dwTick, CSystem *pSystem)
 
 //	DoEvent
 //
@@ -340,7 +344,7 @@ CString CTimedRecurringEvent::DebugCrashInfo (void)
 	return sResult;
 	}
 
-void CTimedRecurringEvent::DoEvent (CSystem *pSystem)
+void CTimedRecurringEvent::DoEvent (DWORD dwTick, CSystem *pSystem)
 
 //	DoEvent
 //
@@ -350,7 +354,7 @@ void CTimedRecurringEvent::DoEvent (CSystem *pSystem)
 	if (m_pObj)
 		m_pObj->FireCustomEvent(m_sEvent, eventDoEvent);
 
-	SetTick(pSystem->GetTick() + m_iInterval);
+	SetTick(dwTick + m_iInterval);
 	}
 
 bool CTimedRecurringEvent::OnObjChangedSystems (CSpaceObject *pObj)
@@ -412,19 +416,6 @@ void CTimedRecurringEvent::OnWriteToStream (CSystem *pSystem, IWriteStream *pStr
 	pStream->Write((char *)&m_iInterval, sizeof(DWORD));
 	}
 
-//	CTimedEventList -----------------------------------------------------------
-
-CTimedEventList::~CTimedEventList (void)
-
-//	CTimedEvent destructor
-
-	{
-	int i;
-
-	for (i = 0; i < m_List.GetCount(); i++)
-		delete m_List[i];
-	}
-
 //	CTimedTypeEvent ------------------------------------------------------------
 
 CTimedTypeEvent::CTimedTypeEvent (int iTick,
@@ -456,7 +447,7 @@ CString CTimedTypeEvent::DebugCrashInfo (void)
 	return sResult;
 	}
 
-void CTimedTypeEvent::DoEvent (CSystem *pSystem)
+void CTimedTypeEvent::DoEvent (DWORD dwTick, CSystem *pSystem)
 
 //	DoEvent
 //
@@ -467,7 +458,7 @@ void CTimedTypeEvent::DoEvent (CSystem *pSystem)
 		m_pType->FireCustomEvent(m_sEvent, eventDoEvent);
 
 	if (m_iInterval)
-		SetTick(pSystem->GetTick() + m_iInterval);
+		SetTick(dwTick + m_iInterval);
 	else
 		SetDestroyed();
 	}

@@ -4,7 +4,6 @@
 
 #include "PreComp.h"
 
-
 #define MAX_DELTA								(2.0 * g_KlicksPerPixel)
 #define MAX_DELTA2								(MAX_DELTA * MAX_DELTA)
 #define MAX_DELTA_VEL							(g_KlicksPerPixel / 2.0)
@@ -59,6 +58,8 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 #define ON_ORDER_CHANGED_EVENT					CONSTLIT("OnOrderChanged")
 #define ON_ORDERS_COMPLETED_EVENT				CONSTLIT("OnOrdersCompleted")
 #define ON_OVERRIDE_INIT_EVENT					CONSTLIT("OnEventHandlerInit")
+#define ON_MISSION_ACCEPTED_EVENT				CONSTLIT("OnMissionAccepted")
+#define ON_MISSION_COMPLETED_EVENT				CONSTLIT("OnMissionCompleted")
 #define ON_PLAYER_ENTERED_SYSTEM_EVENT			CONSTLIT("OnPlayerEnteredSystem")
 #define ON_PLAYER_LEFT_SYSTEM_EVENT				CONSTLIT("OnPlayerLeftSystem")
 #define ON_RANDOM_ENCOUNTER_EVENT				CONSTLIT("OnRandomEncounter")
@@ -714,6 +715,11 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 			pObj->m_vOldPos = pObj->m_vPos - (pObj->m_vVel * g_SecondsPerUpdate);
 		}
 
+	//	Subscriptions
+
+	if (Ctx.dwVersion >= 77)
+		pObj->m_SubscribedObjs.ReadFromStream(Ctx);
+
 	//	Load the effect list
 
 	Ctx.iLoadState = loadStateObjEffects;
@@ -1144,6 +1150,15 @@ void CSpaceObject::EnterGate (CTopologyNode *pDestNode, const CString &sDestEntr
 	if (pDestNode && pDestNode->GetSystem() == m_pSystem)
 		return;
 
+	//	Notify subscribers
+
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
+		{
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+		if (!pObj->IsDestroyed())
+			pObj->FireOnObjEnteredGate(this, pDestNode, sDestEntryPoint, pStargate);
+		}
+
 	//	Tell all listeners that this object entered a stargate
 
 	for (i = 0; i < m_pSystem->GetObjectCount(); i++)
@@ -1570,10 +1585,10 @@ void CSpaceObject::FireOnCreate (void)
 //	Fire OnCreate event
 
 	{
-	FireOnCreate((SShipGeneratorCtx *)NULL);
+	FireOnCreate(SOnCreate());
 	}
 
-void CSpaceObject::FireOnCreate (SShipGeneratorCtx *pShipCtx)
+void CSpaceObject::FireOnCreate (const SOnCreate &OnCreate)
 
 //	FireOnCreate
 //
@@ -1588,8 +1603,10 @@ void CSpaceObject::FireOnCreate (SShipGeneratorCtx *pShipCtx)
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(this);
-		Ctx.DefineSpaceObject(CONSTLIT("aBaseObj"), (pShipCtx ? pShipCtx->pBase : NULL));
-		Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), (pShipCtx ? pShipCtx->pTarget : NULL));
+		Ctx.SaveAndDefineDataVar(OnCreate.pData);
+		Ctx.DefineSpaceObject(CONSTLIT("aBaseObj"), OnCreate.pBaseObj);
+		Ctx.DefineSpaceObject(CONSTLIT("aOwnerObj"), OnCreate.pOwnerObj);
+		Ctx.DefineSpaceObject(CONSTLIT("aTargetObj"), OnCreate.pTargetObj);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -1889,6 +1906,53 @@ void CSpaceObject::FireOnMining (const SDamageCtx &Ctx)
 		ICCItem *pResult = CCCtx.Run(Event);
 		if (pResult->IsError())
 			ReportEventError(ON_MINING_EVENT, pResult);
+		CCCtx.Discard(pResult);
+		}
+	}
+
+void CSpaceObject::FireOnMissionAccepted (CMission *pMission)
+
+//	FireOnMissionAccepted
+//
+//	Fire <OnMissionAccepted> event
+
+	{
+	SEventHandlerDesc Event;
+
+	if (FindEventHandler(ON_MISSION_ACCEPTED_EVENT, &Event))
+		{
+		CCodeChainCtx CCCtx;
+
+		CCCtx.SaveAndDefineSourceVar(this);
+		CCCtx.DefineSpaceObject(CONSTLIT("aMissionObj"), pMission);
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			ReportEventError(ON_MISSION_ACCEPTED_EVENT, pResult);
+		CCCtx.Discard(pResult);
+		}
+	}
+
+void CSpaceObject::FireOnMissionCompleted (CMission *pMission, const CString &sReason)
+
+//	FireOnMissionCompleted
+//
+//	Fire <OnMissionCompleted> event
+
+	{
+	SEventHandlerDesc Event;
+
+	if (FindEventHandler(ON_MISSION_COMPLETED_EVENT, &Event))
+		{
+		CCodeChainCtx CCCtx;
+
+		CCCtx.SaveAndDefineSourceVar(this);
+		CCCtx.DefineSpaceObject(CONSTLIT("aMissionObj"), pMission);
+		CCCtx.DefineString(CONSTLIT("aReason"), sReason);
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			ReportEventError(ON_MISSION_COMPLETED_EVENT, pResult);
 		CCCtx.Discard(pResult);
 		}
 	}
@@ -2446,19 +2510,24 @@ CSovereign::Disposition CSpaceObject::GetDispositionTowards (CSpaceObject *pObj)
 		return CSovereign::dispFriend;
 	}
 
-CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen)
+CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **retpData)
 
 //	GetFirstDockScreen
 //
 //	Returns the dock screen to show when the player docks with
 //	this object.
+//
+//	NOTE: Caller must discard *retpData.
 
 	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
 	//	First see if any global types override this
 
 	CString sScreen;
 	int iPriority;
-	if (!g_pUniverse->GetDesignCollection().FireGetGlobalDockScreen(this, &sScreen, &iPriority))
+	ICCItem *pData = NULL;
+	if (!g_pUniverse->GetDesignCollection().FireGetGlobalDockScreen(this, &sScreen, &pData, &iPriority))
 		iPriority = -1;
 
 	//	Next see if we have an event that handles this
@@ -2470,6 +2539,12 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen)
 		{
 		sScreen = sCustomScreen;
 		iPriority = iCustomPriority;
+
+		if (pData)
+			{
+			pData->Discard(&CC);
+			pData = NULL;
+			}
 		}
 
 	//	If an event has overridden the dock screen, then resolve
@@ -2479,12 +2554,36 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen)
 		{
 		CDesignType *pScreen = CDockScreenType::ResolveScreen(GetType(), sScreen, retsScreen);
 		if (pScreen)
+			{
+			if (retpData)
+				*retpData = pData;
+			else
+				{
+				if (pData)
+					{
+					pData->Discard(&CC);
+					pData = NULL;
+					}
+				}
+
 			return pScreen;
+			}
 		else
+			{
 			::kernelDebugLogMessage("Unable to resolve screen: %s", sScreen);
+
+			if (pData)
+				{
+				pData->Discard(&CC);
+				pData = NULL;
+				}
+			}
 		}
 
-	//	Otherwise, we return the default screen associated witht the object
+	//	Otherwise, we return the default screen associated with the object
+
+	if (retpData)
+		*retpData = NULL;
 
 	return GetDefaultDockScreen(retsScreen);
 	}
@@ -3058,7 +3157,7 @@ CSpaceObject *CSpaceObject::HitTest (const CVector &vStart,
 	//	the beam hit them.
 
 	int j, k;
-	while (GetSystem()->EnumObjectsInBoxHasMore(i))
+	while (GetSystem()->EnumObjectsInBoxHasMore(i) && iShortListCount < iMaxList)
 		{
 		CSpaceObject *pObj = GetSystem()->EnumObjectsInBoxGetNext(i);
 
@@ -3082,11 +3181,6 @@ CSpaceObject *CSpaceObject::HitTest (const CVector &vStart,
 				pShortList[iShortListCount++] = pObj;
 			}
 		}
-
-	//	If this happens then we somehow found more objects that
-	//	we expected in the short list.
-
-	ASSERT(iShortListCount < iMaxList);
 
 	//	Step the object from the start to the current position to see
 	//	if it hit any of the objects in the short list.
@@ -3670,14 +3764,13 @@ void CSpaceObject::Jump (const CVector &vPos)
 	if (pShip)
 		pShip->SetInGate(NULL, 0);
 
-	//	Tell others that this object has jumped
+	//	Notify subscribers
 
-	for (i = 0; i < m_pSystem->GetObjectCount(); i++)
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
 		{
-		CSpaceObject *pObj = m_pSystem->GetObject(i);
-
-		if (pObj && pObj != this)
-			pObj->OnObjJumped(this);
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+		if (!pObj->IsDestroyed())
+			pObj->FireOnObjJumped(this);
 		}
 	}
 
@@ -4108,6 +4201,48 @@ void CSpaceObject::Move (const CSpaceObjectList &Barriers, Metric rSeconds)
 	OnMove(m_vOldPos, rSeconds);
 	}
 
+void CSpaceObject::NotifyOnObjDestroyed (SDestroyCtx &Ctx)
+
+//	NotifyOnObjDestroyed
+//
+//	Notify subscribers OnObjDestroyed
+
+	{
+	int i;
+
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
+		{
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+		if (!pObj->IsDestroyed())
+			pObj->OnObjDestroyedNotify(Ctx);
+		}
+	}
+
+void CSpaceObject::NotifyOnObjDocked (CSpaceObject *pDockTarget)
+
+//	NotifyOnObjDocked
+//
+//	Notify subscribers OnObjDocked
+
+	{
+	int i;
+
+	//	Notify all other subscribers
+
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
+		{
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+
+		//	NOTE: We do not notify the dock target because it got notified
+		//	separately.
+
+		if (!pObj->IsDestroyed() 
+				&& pObj != pDockTarget 
+				&& pObj->HasOnObjDockedEvent())
+			pObj->FireOnObjDocked(this, pDockTarget);
+		}
+	}
+
 void CSpaceObject::OnObjDestroyed (const SDestroyCtx &Ctx)
 
 //	OnObjDestroyed
@@ -4125,6 +4260,10 @@ void CSpaceObject::OnObjDestroyed (const SDestroyCtx &Ctx)
 	//	NULL-out any references to the object
 
 	m_Data.OnObjDestroyed(Ctx.pObj);
+
+	//	Remove the object if it had a subscription to us
+
+	m_SubscribedObjs.Remove(Ctx.pObj);
 	}
 
 void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -4571,12 +4710,11 @@ void CSpaceObject::Reconned (void)
 	{
 	int i;
 
-	for (i = 0; i < m_pSystem->GetObjectCount(); i++)
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
 		{
-		CSpaceObject *pObj = m_pSystem->GetObject(i);
-
-		if (pObj)
-			pObj->OnObjReconned(this);
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+		if (!pObj->IsDestroyed())
+			pObj->FireOnObjReconned(this);
 		}
 	}
 
@@ -4616,6 +4754,33 @@ void CSpaceObject::Remove (DestructionTypes iCause, const CDamageSource &Attacke
 		pSystem->RemoveObject(Ctx);
 
 		m_iIndex = -1;
+		}
+	}
+
+void CSpaceObject::RemoveAllEventSubscriptions (CSystem *pSystem, TArray<DWORD> *retRemoved)
+
+//	RemoveAllEventSubscriptions
+//
+//	Removes all of this object's subscriptions to other objects. Optionally
+//	returns an array of object IDs that we subscribed to.
+
+	{
+	int i;
+
+	if (retRemoved)
+		retRemoved->DeleteAll();
+
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		if (pObj && pObj != this)
+			{
+			if (pObj->m_SubscribedObjs.Remove(this))
+				{
+				if (retRemoved)
+					retRemoved->Insert(pObj->GetID());
+				}
+			}
 		}
 	}
 
@@ -4943,6 +5108,65 @@ bool CSpaceObject::SetProperty (const CString &sName, ICCItem *pValue, CString *
 	return false;
 	}
 
+bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
+
+//	Translate
+//
+//	Translate a message by ID. The caller is responsible for discarding the 
+//	result.
+
+	{
+	int i;
+
+	//	First we ask the type
+
+	CDesignType *pType = GetType();
+	if (pType)
+		{
+		if (pType->Translate(this, sID, retpResult))
+			return true;
+
+		//	For backwards compatibility we check in static data if necessary.
+
+		if (pType->GetVersion() < 3)
+			{
+			CString sData = pType->GetStaticData(CONSTLIT("Language"));
+			if (!sData.IsBlank())
+				{
+				CCodeChainCtx Ctx;
+
+				ICCItem *pData = Ctx.Link(sData, 0, NULL);
+
+				for (i = 0; i < pData->GetCount(); i++)
+					{
+					ICCItem *pEntry = pData->GetElement(i);
+					if (pEntry->GetCount() == 2 && strEquals(sID, pEntry->GetElement(0)->GetStringValue()))
+						{
+						*retpResult = Ctx.Run(pEntry->GetElement(1));	//	LATER:Event
+						Ctx.Discard(pData);
+						return true;
+						}
+					}
+
+				Ctx.Discard(pData);
+				}
+			}
+		}
+
+	//	Otherwise, see if the sovereign has it
+
+	CSovereign *pSovereign = GetSovereign();
+	if (pSovereign)
+		{
+		if (pSovereign->Translate(this, sID, retpResult))
+			return true;
+		}
+
+	//	Otherwise, we can't find it.
+
+	return false;
+	}
+
 bool CSpaceObject::Translate (const CString &sID, CString *retsText)
 
 //	Translate
@@ -5158,6 +5382,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 //	DWORD		flags
 //	CAttributeDataBlock	m_Data
 //	CVector		m_vOldPos (only if m_fCannotMove = false)
+//	CSpaceObjectList m_SubscribedObjs
 //
 //	For each effect:
 //	IEffectPainter (0 == no more)
@@ -5235,6 +5460,10 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 
 	if (!m_fCannotMove)
 		pStream->Write((char *)&m_vOldPos, sizeof(CVector));
+
+	//	Subscriptions
+
+	m_SubscribedObjs.WriteToStream(m_pSystem, pStream);
 
 	//	Write out the effect list
 

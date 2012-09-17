@@ -60,7 +60,7 @@ void CCSymbolTable::DeleteEntry (CCodeChain *pCC, ICCItem *pKey)
 	SetModified();
 	}
 
-ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry)
+ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry, bool bForceLocalAdd)
 
 //	AddEntry
 //
@@ -82,7 +82,7 @@ ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntr
 	//	If this is the global symbol table (no parent) then we add the entry
 	//	regardless of whether it already exists or not.
 
-	if (m_pParent == NULL)
+	if (m_pParent == NULL || bForceLocalAdd)
 		{
 		CObject *pOldEntry;
 

@@ -854,7 +854,7 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 	//	(note that we don't turn this on normally because it is relatively
 	//	expensive)
 
-	if (pShip->HasSecondaryWeapons())
+	if (HasSecondaryWeapons())
 		{
 		for (i = 0; i < pShip->GetDeviceCount(); i++)
 			{
