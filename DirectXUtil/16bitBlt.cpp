@@ -235,6 +235,8 @@ void CopyBltTransformed (CG16bitImage &Dest,
 						*pDestAlpha = byAlpha;
 						}
 					}
+				else
+					*pDestAlpha = 0;
 
 				//	Next
 

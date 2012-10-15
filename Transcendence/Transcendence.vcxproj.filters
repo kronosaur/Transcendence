@@ -147,12 +147,6 @@
     <ClCompile Include="PrologEpilog.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
-    <ClCompile Include="SelectAdventureScreen.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
-    <ClCompile Include="CAdventureDescDisplay.cpp">
-      <Filter>Source Files\Displays</Filter>
-    </ClCompile>
     <ClCompile Include="CArmorDisplay.cpp">
       <Filter>Source Files\Displays</Filter>
     </ClCompile>
@@ -236,6 +230,12 @@
     </ClCompile>
     <ClCompile Include="CDockScreenStack.cpp">
       <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CChooseAdventureSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="CExtensionListMap.cpp">
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -633,6 +633,9 @@
     </None>
     <None Include="Game\RPGCode.xml">
       <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Stargates.xml">
+      <Filter>XML Files\Universe Library</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

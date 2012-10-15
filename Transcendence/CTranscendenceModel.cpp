@@ -940,7 +940,7 @@ ALERROR CTranscendenceModel::InitBackground (CString *retsError)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::InitAdventure (DWORD dwAdventure, CString *retsError)
+ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, CString *retsError)
 
 //	InitAdventure
 //
@@ -949,8 +949,8 @@ ALERROR CTranscendenceModel::InitAdventure (DWORD dwAdventure, CString *retsErro
 	{
 	CUniverse::SInitDesc Ctx;
 	Ctx.bDebugMode = g_pUniverse->InDebugMode();
-	Ctx.dwAdventure = dwAdventure;
-	Ctx.bDefaultExtensions = true;
+	Ctx.dwAdventure = Settings.pAdventure->GetUNID();
+	Ctx.Extensions = Settings.Extensions;
 
 	return m_Universe.Init(Ctx, retsError);
 	}

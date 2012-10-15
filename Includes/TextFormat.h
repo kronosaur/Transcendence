@@ -13,6 +13,7 @@ struct STextFormatDesc
 	{
 	STextFormatDesc (void) :
 			sTypeface(CONSTLIT("Default")),
+			pFont(NULL),
 			iFontSize(10),
 			bBold(false),
 			bItalic(false),
@@ -21,29 +22,13 @@ struct STextFormatDesc
 		{ }
 
 	CString sTypeface;					//	Typeface (use IFontTable to look up)
+	const CG16bitFont *pFont;			//	pFont (Use instead of sTypeface, if not NULL)
 	int iFontSize;						//	Font size in points
 	bool bBold;							//	Bold
 	bool bItalic;						//	Italic
 
 	WORD wColor;						//	16-bit color
 	DWORD dwOpacity;					//	8-bit alpha value
-	};
-
-struct SBlockFormatDesc
-	{
-	SBlockFormatDesc (void) :
-			iHorzAlign(alignLeft),
-			iVertAlign(alignTop),
-			cxWidth(-1),
-			cyHeight(-1)
-
-		{ }
-
-	AlignmentStyles iHorzAlign;
-	AlignmentStyles iVertAlign;
-
-	int cxWidth;						//	Width of block (in pixels). -1 = no fixed width.
-	int cyHeight;						//	Height of block (in pixels). -1 = no fixed height.
 	};
 
 class IFontTable
@@ -61,9 +46,34 @@ class IFontTable
 
 struct STextFormat
 	{
+	STextFormat (void) :
+			pFont(NULL),
+			wColor(0),
+			dwOpacity(255)
+		{ }
+
 	const CG16bitFont *pFont;
 	WORD wColor;
 	DWORD dwOpacity;
+	};
+
+struct SBlockFormatDesc
+	{
+	SBlockFormatDesc (void) :
+			iHorzAlign(alignLeft),
+			iVertAlign(alignTop),
+			cxWidth(-1),
+			cyHeight(-1)
+
+		{ }
+
+	AlignmentStyles iHorzAlign;
+	AlignmentStyles iVertAlign;
+
+	STextFormat DefaultFormat;			//	Default format
+
+	int cxWidth;						//	Width of block (in pixels). -1 = no fixed width.
+	int cyHeight;						//	Height of block (in pixels). -1 = no fixed height.
 	};
 
 struct SFormattedTextSpan
@@ -90,6 +100,7 @@ class CTextBlock
 		bool InitFromRTF (const CString &RTF, const IFontTable &FontTable, const SBlockFormatDesc &BlockFormat, CString *retsError = NULL);
 
 		static CString Escape (const CString &sText);
+		static CString LoadAsRichText (const CString &sText);
 
 	private:
 		struct STextSpan

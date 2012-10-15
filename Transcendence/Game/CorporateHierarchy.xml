@@ -1436,12 +1436,10 @@
 							</Action>
 
 							<Action name="Repair items" key="R">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gMargin 250)
-									(setq gShowCriteria "*~aD +Makayev;")
-									(scrShowScreen gScreen "&dsRepairItem;")
-									)
+								(scrShowScreen gScreen "&dsRPGRepairItem;" {
+									criteria: "*~aD +Makayev;"
+									priceAdj: 65
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">

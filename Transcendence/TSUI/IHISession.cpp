@@ -117,6 +117,25 @@ bool IHISession::HandlePageScrollKeyDown (const CString &sScroller, int iVirtKey
 		return false;
 	}
 
+bool IHISession::HandlePageScrollMouseWheel (const CString &sScroller, int iDelta)
+
+//	HandlePageScrollMouseWheel
+//
+//	Handle mouse wheel
+
+	{
+	if (iDelta != 0)
+		{
+		IAnimatron *pList = GetPerformance(sScroller);
+		if (pList)
+			pList->Scroll(scrollRelative, -iDelta);
+
+		return true;
+		}
+	else
+		return false;
+	}
+
 void IHISession::HIChar (char chChar, DWORD dwKeyData)
 
 //	HIChar

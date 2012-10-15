@@ -69,6 +69,7 @@ static SFontInitTable FONT_TABLE[] =
 		{	CONSTDEF("Unknown"),			NULL,	NULL,				0,		false, false },
 		
 		{	CONSTDEF("Small"),				NULL,	"Tahoma",			10,		false, false },
+		{	CONSTDEF("SmallBold"),			NULL,	"Tahoma",			11,		true, false },
 		{	CONSTDEF("Medium"),				NULL,	"Tahoma",			13,		false, false },
 		{	CONSTDEF("MediumBold"),			NULL,	"Tahoma",			13,		true, false },
 		{	CONSTDEF("MediumHeavyBold"),	NULL,	"Lucida Sans",		14,		true, false },

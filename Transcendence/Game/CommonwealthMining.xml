@@ -619,7 +619,7 @@
 										; Create an asteroid at this distance
 										(setq gTarget
 											(sysCreateStation
-												&stLargeAsteroid;
+												&stMediumAsteroid;
 												(sysVectorRandom Nil dist 60 "t")
 												)
 											)

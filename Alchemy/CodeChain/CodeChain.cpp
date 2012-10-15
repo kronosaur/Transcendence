@@ -833,15 +833,6 @@ ICCItem *CCodeChain::EvaluateArgs (CEvalContext *pCtx, ICCItem *pArgs, const CSt
 
 		if (*pValidation != '*')
 			pValidation++;
-
-		//	If we're at '*' and we have no more varargs, then advance
-#if 0
-		if (*pValidation == '*')
-			{
-			if (iVarArgs-- == 0)
-				pValidation++;
-			}
-#endif
 		}
 
 	//	Make sure we have enough arguments

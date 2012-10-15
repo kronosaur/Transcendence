@@ -263,6 +263,10 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 				m_rBestWeaponRange = 60.0 * LIGHT_SECOND;
 			}
 
+		//	Adjust by AI settings
+
+		m_rBestWeaponRange = m_rBestWeaponRange * m_AISettings.GetFireRangeAdj() * 0.01;
+
 		//	Set some invariants
 
 		m_fHasSecondaryWeapons = bHasSecondaryWeapons;

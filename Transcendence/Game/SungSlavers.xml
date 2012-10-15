@@ -1483,8 +1483,7 @@
 						(block Nil
 							(objSetData gSlaver "sungState" "coffins")
 							(objAddItem gSource (itmCreate &itSlaveCoffin; (random 1 12)))
-							(setq gPrevScreen "&dsSungSlaveQuarters;")
-							(scrShowScreen gScreen "&dsLoot;")
+							(scrShowScreen gScreen &dsRPGLoot;)
 							)
 					</Action>
 				</Actions>

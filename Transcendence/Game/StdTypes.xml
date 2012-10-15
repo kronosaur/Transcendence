@@ -36,30 +36,6 @@
 				imageTicksPerFrame="1"/>
 	</Effect>
 
-	<Effect UNID="&efStargateIn;"
-			sound="&snStargate;"
-			>
-		<Image imageID="&rsLargeExplosions;" 
-				imageX="0" 
-				imageY="128" 
-				imageWidth="128" 
-				imageHeight="128"
-				imageFrameCount="16"
-				imageTicksPerFrame="2"/>
-	</Effect>
-
-	<Effect UNID="&efStargateOut;"
-			sound="&snStargate;"
-			>
-		<Image imageID="&rsLargeExplosions;" 
-				imageX="0" 
-				imageY="128" 
-				imageWidth="128" 
-				imageHeight="128"
-				imageFrameCount="16"
-				imageTicksPerFrame="2"/>
-	</Effect>
-
 	<Effect UNID="&efBattleArenaWallHit;">
 		<Image imageID="&rsShieldHit;" 
 				imageX="0" 
@@ -172,7 +148,6 @@
 	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
 	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
 	<Sound UNID="&snMissileLauncher;"		filename="Resources\MissileLaunch1.wav"/>
-	<Sound UNID="&snStargate;"				filename="Resources\Stargate.wav"/>
 
 <!-- ITEM TABLES ==============================================================
 
@@ -2370,47 +2345,6 @@
 
 	<!-- SPECIAL STATIONS -->
 
-	<!-- Stargate -->
-
-	<StationType UNID="&stStargate;"
-			name=				"(stargate)"
-			sovereign=			"&svIndependent;"
-			dockScreen=			"Main"
-			dockingPorts=		"4"
-
-			multiHull=			"true"
-			immutable=			"true"
-
-			attributes=			"stargate"
-			
-			gateEffect=			"&efStargateOut;"
-			definiteArticle=	"true"
-			>
-		<Image imageID="&rsStargate;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="12" imageTicksPerFrame="3"/>
-
-		<DockScreens>
-
-			<Main>
-
-				<Panes>
-					<Default
-							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
-
-						<Actions>
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-				</Panes>
-			</Main>
-
-		</DockScreens>
-
-	</StationType>
-
 	<!-- Majellen Stargate -->
 
 	<StationType UNID="&stMajellenStargate;"
@@ -2520,43 +2454,6 @@
 
 	</StationType>
 
-	<!-- NavSign -->
-
-	<StationType UNID="&stNavSign;"
-			name=				"(navigational beacon)"
-			sovereign=			"&svIndependent;"
-			dockScreen=			"&dsNavSign;"
-			abandonedScreen=	"&dsAbandonedNavSign;"
-			noMapLabel=			"true"
-
-			mass=				"5000"
-			armorID=			"&itLightTitaniumPlate;"
-			hitPoints=			"10"
-
-			sign=				"true"
-			>
-
-		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>
-
-		<DockingPorts>
-			<Port x="-80"		y="0" />
-		</DockingPorts>
-	</StationType>
-
-	<!-- Stargate beacon -->
-
-	<StationType UNID="&stStargateBeacon;"
-			name=				"(stargate beacon)"
-			sovereign=			"&svIndependent;"
-			noMapLabel=			"true"
-			immutable=			"true"
-			mass=				"5000"
-			>
-
-		<Image imageID="&rsStations1;" imageX="128" imageY="668" imageWidth="28" imageHeight="28"/>
-
-	</StationType>
-	
 	<!-- Debug Depot (Obsolete) -->
 	
 	<StationType UNID="&stDebugDepot;"

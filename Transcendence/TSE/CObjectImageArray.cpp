@@ -586,7 +586,8 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 		WORD *pRow = pSrc1->GetRowStart(rcRectInt.top) + rcRectInt.left;
 		WORD *pRowEnd = pSrc1->GetRowStart(rcRectInt.bottom) + rcRectInt.left;
 		WORD *pRow2 = pSrc2->GetRowStart(rcRectInt2.top) + rcRectInt2.left;
-		WORD wBackColor = pSrc1->GetBackColor();
+		WORD wBackColor1 = pSrc1->GetBackColor();
+		WORD wBackColor2 = pSrc2->GetBackColor();
 
 		int cxWidthInt = RectWidth(rcRectInt);
 		while (pRow < pRowEnd)
@@ -597,7 +598,7 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 
 			while (pPos < pEnd)
 				{
-				if (*pPos != wBackColor && *pPos2 != wBackColor)
+				if (*pPos != wBackColor1 && *pPos2 != wBackColor2)
 					return true;
 
 				pPos++;
@@ -609,10 +610,76 @@ bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y,
 			}
 		}
 
-	//	Don't know how to handle this case
+	//	If src1 has a mask and src2 does not
+
+	else if (pSrc1->HasAlpha() && !pSrc2->HasAlpha())
+		{
+		//	Now iterate over the intersection area and see if there
+		//	are any pixels in common.
+
+		BYTE *pRow = pSrc1->GetAlphaRow(rcRectInt.top) + rcRectInt.left;
+		BYTE *pRowEnd = pSrc1->GetAlphaRow(rcRectInt.bottom) + rcRectInt.left;
+		WORD *pRow2 = pSrc2->GetRowStart(rcRectInt2.top) + rcRectInt2.left;
+		WORD wBackColor2 = pSrc2->GetBackColor();
+
+		int cxWidthInt = RectWidth(rcRectInt);
+		while (pRow < pRowEnd)
+			{
+			BYTE *pPos = pRow;
+			BYTE *pEnd = pPos + cxWidthInt;
+			WORD *pPos2 = pRow2;
+
+			while (pPos < pEnd)
+				{
+				if (*pPos && *pPos2 != wBackColor2)
+					return true;
+
+				pPos++;
+				pPos2++;
+				}
+
+			pRow = pSrc1->NextAlphaRow(pRow);
+			pRow2 = pSrc2->NextRow(pRow2);
+			}
+		}
+
+	//	If src1 has no mask and src2 does
+
+	else if (!pSrc1->HasAlpha() && pSrc2->HasAlpha())
+		{
+		//	Now iterate over the intersection area and see if there
+		//	are any pixels in common.
+
+		WORD *pRow = pSrc1->GetRowStart(rcRectInt.top) + rcRectInt.left;
+		WORD *pRowEnd = pSrc1->GetRowStart(rcRectInt.bottom) + rcRectInt.left;
+		BYTE *pRow2 = pSrc2->GetAlphaRow(rcRectInt2.top) + rcRectInt2.left;
+		WORD wBackColor1 = pSrc1->GetBackColor();
+
+		int cxWidthInt = RectWidth(rcRectInt);
+		while (pRow < pRowEnd)
+			{
+			WORD *pPos = pRow;
+			WORD *pEnd = pPos + cxWidthInt;
+			BYTE *pPos2 = pRow2;
+
+			while (pPos < pEnd)
+				{
+				if (*pPos != wBackColor1 && *pPos2)
+					return true;
+
+				pPos++;
+				pPos2++;
+				}
+
+			pRow = pSrc1->NextRow(pRow);
+			pRow2 = pSrc2->NextAlphaRow(pRow2);
+			}
+		}
+
+	//	Can't happen
 
 	else
-		return true;
+		return false;
 
 	//	If we get this far then we did not intersect
 

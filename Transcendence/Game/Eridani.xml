@@ -845,8 +845,9 @@
 							<Lookup table="StargateOutbound"/>
 
 							<Orbitals distance="8" angle="0">
-								<Station type="&stNavSign;" name="Travel Advisory">
+								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
+										<Sign>"Travel\nAdvisory"</Sign>
 										<Info>
 											"Pirate activity reported in systems between Eridani and St. Katharine's Star. Please use caution. Make sure you have current star maps and avoid travel to non-Commonwealth stations."
 										</Info>
@@ -1025,8 +1026,9 @@
 							</Orbitals>
 
 							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
-								<Station type="&stCSCAmericaEncounter;"/>
+								<Station type="&stRasiermesserFactory;"/>
 								<!--
+								<Station type="&stCSCAmericaEncounter;"/>
 								<Station type="&stCentauriOccupation;"/>
 								<LevelTable>
 									<Station levelFrequency="c----" type="&stWondrousDevices;"/>

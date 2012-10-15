@@ -57,8 +57,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bNextWeaponKey(false),
 		m_bNextMissileKey(false),
 		m_bPrevWeaponKey(false),
-		m_bPrevMissileKey(false),
-		m_pAdventureSelected(NULL)
+		m_bPrevMissileKey(false)
 
 //	CTranscendence constructor
 
@@ -86,10 +85,6 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 			{
 			case gsIntro:
 				AnimateIntro(bTopMost);
-				break;
-
-			case gsSelectAdventure:
-				AnimateSelectAdventure(bTopMost);
 				break;
 
 			case gsProlog:
@@ -545,54 +540,11 @@ void CTranscendenceWnd::DoCommand (DWORD dwCmd)
 	switch (dwCmd)
 		{
 		case CMD_CONTINUE_OLD_GAME:
-			{
 			g_pHI->HICommand(CONSTLIT("gameSelectSaveFile"));
 			break;
-			}
 
 		case CMD_START_NEW_GAME:
-			{
-			//	If we have a saved game and the player tries to create a new
-			//	one, warn first that they will lose the other one.
-
-			if (m_bSavedGame)
-				{
-				m_bOverwriteGameDlg = true;
-				break;
-				}
-
-			//	Start select a ship to use
-
-			StopIntro();
-
-			StartSelectAdventure();
-			break;
-			}
-
-		case CMD_SELECT_ADVENTURE:
-			{
-			StopSelectAdventure();
-			DoCommand(CMD_LOAD_ADVENTURE);
-			break;
-			}
-
-		case CMD_SELECT_ADVENTURE_CANCEL:
-			{
-			StopSelectAdventure();
-			StartIntro(isShipStats);
-			break;
-			}
-
-		case CMD_NEXT_ADVENTURE:
-			m_AdventureDescDisplay.SelectNext();
-			break;
-
-		case CMD_PREV_ADVENTURE:
-			m_AdventureDescDisplay.SelectPrev();
-			break;
-
-		case CMD_LOAD_ADVENTURE:
-			g_pHI->HICommand(CONSTLIT("gameAdventure"), (void *)m_pAdventureSelected);
+			g_pHI->HICommand(CONSTLIT("gameSelectAdventure"));
 			break;
 
 		case CMD_QUIT_GAME:
@@ -1017,10 +969,6 @@ void CTranscendenceWnd::ReportCrash (void)
 			m_sCrashInfo.Append(CONSTLIT("game state: intro\r\n"));
 			break;
 
-		case gsSelectAdventure:
-			m_sCrashInfo.Append(CONSTLIT("game state: select adventure\r\n"));
-			break;
-
 		case gsProlog:
 			m_sCrashInfo.Append(CONSTLIT("game state: prolog\r\n"));
 			break;
@@ -1256,10 +1204,6 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 
 		case gsIntro:
 			OnCharIntro(chChar, dwKeyData);
-			break;
-
-		case gsSelectAdventure:
-			OnCharSelectAdventure(chChar, dwKeyData);
 			break;
 
 		case gsDestroyed:
@@ -1990,10 +1934,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 			OnKeyDownIntro(iVirtKey, dwKeyData);
 			break;
 
-		case gsSelectAdventure:
-			OnKeyDownSelectAdventure(iVirtKey, dwKeyData);
-			break;
-
 		case gsProlog:
 			m_bContinue = true;
 			break;
@@ -2173,10 +2113,6 @@ LONG CTranscendenceWnd::WMLButtonDblClick (int x, int y, DWORD dwFlags)
 			OnDblClickIntro(x, y, dwFlags);
 			break;
 
-		case gsSelectAdventure:
-			OnDblClickSelectAdventure(x, y, dwFlags);
-			break;
-
 		case gsDocked:
 			m_pCurrentScreen->LButtonDown(x, y);
 			break;
@@ -2196,10 +2132,6 @@ LONG CTranscendenceWnd::WMLButtonDown (int x, int y, DWORD dwFlags)
 		{
 		case gsIntro:
 			OnLButtonDownIntro(x, y, dwFlags);
-			break;
-
-		case gsSelectAdventure:
-			OnLButtonDownSelectAdventure(x, y, dwFlags);
 			break;
 
 		case gsProlog:
@@ -2246,10 +2178,6 @@ LONG CTranscendenceWnd::WMMouseMove (int x, int y, DWORD dwFlags)
 		{
 		case gsIntro:
 			OnMouseMoveIntro(x, y, dwFlags);
-			break;
-
-		case gsSelectAdventure:
-			OnMouseMoveSelectAdventure(x, y, dwFlags);
 			break;
 
 		case gsDocked:

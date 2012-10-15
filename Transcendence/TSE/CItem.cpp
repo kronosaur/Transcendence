@@ -368,7 +368,7 @@ void CItem::FireOnDisabled (CSpaceObject *pSource) const
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
-			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnDisabled"), m_pItemType->GetUNID()), pResult);
+			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnDisable"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
 		}
 	}
@@ -391,7 +391,7 @@ void CItem::FireOnEnabled (CSpaceObject *pSource) const
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
-			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnEnabled"), m_pItemType->GetUNID()), pResult);
+			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnEnable"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
 		}
 	}

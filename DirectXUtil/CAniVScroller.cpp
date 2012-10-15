@@ -397,8 +397,12 @@ IAnimatron *CAniVScroller::HitTest (const CXForm &ToDest, int x, int y)
 
 		//	Are we in the viewport?
 
+		RECT rcLine;
+		pList->pAni->GetSpacingRect(&rcLine);
+		Metric cyLine = (Metric)RectHeight(rcLine);
+
 		Metric yLinePos = pList->pAni->GetPropertyVector(PROP_POSITION).GetY() - yScrollPos;
-		if (yLinePos < 0.0 || yLinePos >= cyViewport)
+		if (yLinePos + cyLine < 0.0 || yLinePos >= cyViewport)
 			continue;
 
 		//	Hit test

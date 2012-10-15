@@ -25,23 +25,21 @@
 		</StargateOutbound>
 
 		<HumanSpaceStargates>
-			<RandomLocation locationCriteria="++outerSystem; -asteroids; -gasGiant">
-				<Lookup table="StargateInbound"/>
-			</RandomLocation>
-
-			<RandomLocation locationCriteria="++innerSystem; -asteroids; -gasGiant">
-				<Lookup table="StargateOutbound"/>
-			</RandomLocation>
+			<Code>
+				(trnCreateAllStargates {
+					corewardLocationCriteria: "++innerSystem; -asteroids; -gasGiant"
+					edgewardLocationCriteria: "++outerSystem; -asteroids; -gasGiant"
+					})
+			</Code>
 		</HumanSpaceStargates>
 
 		<HumanSpaceStargatesNoVoid>
-			<RandomLocation locationCriteria="++outerSystem; -asteroids; -gasGiant; !void">
-				<Lookup table="StargateInbound"/>
-			</RandomLocation>
-
-			<RandomLocation locationCriteria="++innerSystem; -asteroids; -gasGiant; !void">
-				<Lookup table="StargateOutbound"/>
-			</RandomLocation>
+			<Code>
+				(trnCreateAllStargates {
+					corewardLocationCriteria: "++innerSystem; -asteroids; -gasGiant; !void"
+					edgewardLocationCriteria: "++outerSystem; -asteroids; -gasGiant; !void"
+					})
+			</Code>
 		</HumanSpaceStargatesNoVoid>
 
 	</SystemPartTable>

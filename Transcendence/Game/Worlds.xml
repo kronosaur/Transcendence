@@ -168,7 +168,11 @@
 
 	</StationType>
 
-	<!-- Large Asteroid -->
+	<!-- Large Asteroid
+
+		LATER: Need a different image (a non-spherical asteroid image)
+
+	 -->
 
 	<StationType UNID="&stLargeAsteroid;"
 		name=				"(asteroid)"
@@ -256,7 +260,11 @@
 
 	</StationType>
 
-	<!-- Small Ice Asteroid -->
+	<!-- Small Ice Asteroid
+	
+		LATER: Need an appropriate image.
+	 
+	 -->
 
 	<StationType UNID="&stSmallIceAsteroid;"
 		name=				"(asteroid)"
@@ -282,7 +290,11 @@
 
 	</StationType>
 
-	<!-- Large Ice Asteroid -->
+	<!-- Large Ice Asteroid
+	
+		LATER: Need an appropriate image.
+
+	 -->
 
 	<StationType UNID="&stLargeIceAsteroid;"
 		name=				"(asteroid)"
@@ -436,7 +448,7 @@
 	<!-- Planetoid -->
 
 	<StationType UNID="&stPlanetoid;"
-		name=				"(asteroid)"
+		name=				"(planetoid)"
 		scale=				"world"
 		sovereign=			"&svIndependent;"
 

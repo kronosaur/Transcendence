@@ -406,6 +406,15 @@ void DrawGlowRing (CG16bitImage &Dest,
 				   int iRingThickness,
 				   WORD *wColorRamp,
 				   DWORD *byOpacityRamp);
+void DrawGradientRectHorz (CG16bitImage &Dest,
+		int xDest,
+		int yDest,
+		int cxDest,
+		int cyDest,
+		WORD wStartColor,
+		WORD wEndColor,
+		DWORD dwStartOpacity,
+		DWORD dwEndOpacity);
 void DrawRectDotted (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, WORD wColor);
 void DrawDottedLine (CG16bitImage &Dest, int x1, int y1, int x2, int y2, WORD wColor);
 

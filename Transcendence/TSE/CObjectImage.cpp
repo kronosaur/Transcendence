@@ -12,6 +12,8 @@
 #define NO_PM_ATTRIB						CONSTLIT("noPM")
 #define SPRITE_ATTRIB						CONSTLIT("sprite")
 
+#define FIELD_IMAGE_DESC					CONSTLIT("imageDesc")
+
 CObjectImage::CObjectImage (void) : 
 		m_pBitmap(NULL)
 
@@ -70,7 +72,7 @@ CG16bitImage *CObjectImage::CreateCopy (CString *retsError)
 
 	//	Otherwise, we load a copy
 
-	CG16bitImage *pResult = GetImage(0, retsError);
+	CG16bitImage *pResult = GetImage(NULL_STR, retsError);
 	m_pBitmap = NULL;	//	Clear out because we don't keep a copy
 
 	return pResult;
@@ -99,6 +101,33 @@ ALERROR CObjectImage::Exists (SDesignLoadCtx &Ctx)
 		}
 
 	return NOERROR;
+	}
+
+bool CObjectImage::FindDataField (const CString &sField, CString *retsValue)
+
+//	FindDataField
+//
+//	Returns data about the image
+
+	{
+	if (strEquals(sField, FIELD_IMAGE_DESC))
+		{
+		CG16bitImage *pImage = GetImage(CONSTLIT("data field"));
+		if (pImage == NULL)
+			{
+			*retsValue = NULL_STR;
+			return true;
+			}
+
+		*retsValue = strPatternSubst(CONSTLIT("=(0x%x 0 0 %d %d)"),
+				GetUNID(),
+				pImage->GetWidth(),
+				pImage->GetHeight());
+		}
+	else
+		return false;
+
+	return true;
 	}
 
 CG16bitImage *CObjectImage::GetImage (const CString &sLoadReason, CString *retsError)
@@ -242,7 +271,7 @@ ALERROR CObjectImage::Lock (SDesignLoadCtx &Ctx)
 	//	assume that Ctx has the proper resource database. Thus
 	//	we have to open it ourselves.
 
-	CG16bitImage *pImage = GetImage(0, &Ctx.sError);
+	CG16bitImage *pImage = GetImage(NULL_STR, &Ctx.sError);
 	if (pImage == NULL)
 		return ERR_FAIL;
 

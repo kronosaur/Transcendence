@@ -38,8 +38,9 @@
 #define FIELD_EFFECTIVE_HP						CONSTLIT("effectiveHP")
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_HP_BONUS							CONSTLIT("hpBonus")
-#define FIELD_REPAIR_COST						CONSTLIT("repairCost")
 #define FIELD_INSTALL_COST						CONSTLIT("installCost")
+#define FIELD_REPAIR_COST						CONSTLIT("repairCost")
+#define FIELD_SHIELD_INTERFERENCE				CONSTLIT("shieldInterference")
 
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
 #define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
@@ -738,22 +739,16 @@ bool CArmorClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = sResult;
 		}
 	else if (strEquals(sField, FIELD_REPAIR_COST))
-#if 0
-		{
-		int iBalance = 0;
-		int iLevel = m_pItemType->GetLevel();
-		int iDiff = STD_STATS[iLevel - 1].iRepairCost - m_iRepairCost;
-		if (iDiff < 0)
-			iBalance += 5 * iDiff / STD_STATS[iLevel - 1].iRepairCost;
-		else if (iDiff > 0)
-			iBalance += 10 * iDiff / STD_STATS[iLevel - 1].iRepairCost;
-
-		*retsValue = strFromInt(5 * iBalance);
-		}
-#endif
 		*retsValue = strFromInt(m_iRepairCost);
 	else if (strEquals(sField, FIELD_INSTALL_COST))
 		*retsValue = strFromInt(m_iInstallCost);
+	else if (strEquals(sField, FIELD_SHIELD_INTERFERENCE))
+		{
+		if (m_fShieldInterference)
+			*retsValue = CONSTLIT("True");
+		else
+			*retsValue = NULL_STR;
+		}
 	else
 		return false;
 

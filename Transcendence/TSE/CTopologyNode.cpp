@@ -35,6 +35,10 @@
 
 #define PREV_DEST								CONSTLIT("[Prev]")
 
+#define PROPERTY_LEVEL							CONSTLIT("level")
+#define PROPERTY_NAME							CONSTLIT("name")
+#define PROPERTY_POS							CONSTLIT("pos")
+
 //	CTopologyNode class --------------------------------------------------------
 
 CTopologyNode::CTopologyNode (const CString &sID, DWORD SystemUNID, CSystemMap *pMap) : m_sID(sID),
@@ -403,6 +407,75 @@ CTopologyNode *CTopologyNode::GetGateDest (const CString &sName, CString *retsEn
 		pDesc->pDestNode = g_pUniverse->FindTopologyNode(pDesc->sDestNode);
 
 	return pDesc->pDestNode;
+	}
+
+ICCItem *CTopologyNode::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Get topology node property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_LEVEL))
+		return CC.CreateInteger(GetLevel());
+	else if (strEquals(sName, PROPERTY_NAME))
+		return CC.CreateString(GetSystemName());
+	else if (strEquals(sName, PROPERTY_POS))
+		{
+		//	If no map, then no position
+
+		if (m_pMap == NULL)
+			return CC.CreateNil();
+
+		//	Create a list
+
+		ICCItem *pResult = CC.CreateLinkedList();
+		if (pResult->IsError())
+			return pResult;
+
+		CCLinkedList *pList = (CCLinkedList *)pResult;
+
+		pList->AppendIntegerValue(&CC, m_xPos);
+		pList->AppendIntegerValue(&CC, m_yPos);
+
+		return pResult;
+		}
+	else
+		return CC.CreateNil();
+	}
+
+bool CTopologyNode::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Set topology node property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_POS))
+		{
+		if (m_pMap == NULL)
+			{
+			*retsError = CONSTLIT("Node is not on a system map and cannot be positioned.");
+			return false;
+			}
+
+		if (pValue->GetCount() < 2)
+			{
+			*retsError = CONSTLIT("Invalid node coordinate.");
+			return false;
+			}
+
+		m_xPos = pValue->GetElement(0)->GetIntegerValue();
+		m_yPos = pValue->GetElement(1)->GetIntegerValue();
+
+		return true;
+		}
+	else
+		return false;
 	}
 
 CString CTopologyNode::GetStargate (int iIndex)

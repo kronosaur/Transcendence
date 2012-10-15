@@ -125,6 +125,19 @@ CString GetDamageShortName (DamageTypes iType)
 		return CString(g_pszShortDamageName[iType]);
 	}
 
+CString GetDamageType (DamageTypes iType)
+
+//	GetDamageType
+//
+//	Returns the damage type string
+
+	{
+	if (iType == damageGeneric)
+		return CONSTLIT("generic");
+	else
+		return CString(g_pszDamageTypes[iType]);
+	}
+
 DamageTypes LoadDamageTypeFromXML (const CString &sAttrib)
 
 //	LoadDamageTypeFromXML
@@ -653,23 +666,30 @@ ALERROR DamageTypeSet::InitFromXML (const CString &sAttrib)
 //	Initialize set from semi-comma separated list
 
 	{
-	ALERROR error;
 	int i;
+
+	//	Blank means empty
 
 	if (sAttrib.IsBlank())
 		return NOERROR;
 
+	//	"*" means all damage
+
+	if (strEquals(sAttrib, CONSTLIT("*")))
+		{
+		for (i = 0; i < damageCount; i++)
+			Add(i);
+		return NOERROR;
+		}
+
+	//	Load each damage type
+
 	TArray<CString> ArraySet;
-	if (error = strDelimit(sAttrib,
-			';',
-			0,
-			&ArraySet))
-		return error;
+	ParseStringList(sAttrib, 0, &ArraySet);
 
 	for (i = 0; i < ArraySet.GetCount(); i++)
 		{
-		CString sType = strTrimWhitespace(ArraySet[i]);
-		int iType = LoadDamageTypeFromXML(sType);
+		int iType = LoadDamageTypeFromXML(ArraySet[i]);
 		if (iType == damageError || iType == damageGeneric)
 			return ERR_FAIL;
 

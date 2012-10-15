@@ -5,8 +5,9 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define OPTION_TAG								CONSTLIT("Option")
+#define EXTENSIONS_TAG							CONSTLIT("Extensions")
 #define KEY_MAP_TAG								CONSTLIT("KeyMap")
+#define OPTION_TAG								CONSTLIT("Option")
 
 #define NAME_ATTRIB								CONSTLIT("name")
 #define VALUE_ATTRIB							CONSTLIT("value")
@@ -156,6 +157,11 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 			if (error = m_KeyMap.ReadFromXML(pItem))
 				return error;
 			}
+		else if (strEquals(pItem->GetTag(), EXTENSIONS_TAG))
+			{
+			if (error = m_Extensions.ReadFromXML(pItem))
+				return error;
+			}
 		else if (m_pExtra)
 			{
 			bool bModified;
@@ -291,6 +297,14 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 		return error;
 
 	if (error = m_KeyMap.WriteAsXML(&DataFile))
+		return error;
+
+	//	Write the extensions list
+
+	if (error = DataFile.Write("\r\n", 2))
+		return error;
+
+	if (error = m_Extensions.WriteAsXML(&DataFile))
 		return error;
 
 	//	Write additional settings

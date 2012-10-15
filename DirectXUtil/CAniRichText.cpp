@@ -32,6 +32,12 @@ const int INDEX_TEXT_ALIGN_HORZ =			5;
 const int INDEX_TEXT_ALIGN_VERT =			6;
 #define PROP_TEXT_ALIGN_VERT				CONSTLIT("textAlignVert")
 
+const int INDEX_COLOR =						7;
+#define PROP_COLOR							CONSTLIT("color")
+
+const int INDEX_FONT =						8;
+#define PROP_FONT							CONSTLIT("font")
+
 #define ALIGN_BOTTOM						CONSTLIT("bottom")
 #define ALIGN_CENTER						CONSTLIT("center")
 #define ALIGN_LEFT							CONSTLIT("left")
@@ -52,6 +58,8 @@ CAniRichText::CAniRichText (const IFontTable &FontTable) :
 	m_Properties.SetString(PROP_TEXT, NULL_STR);
 	m_Properties.SetString(PROP_TEXT_ALIGN_HORZ, ALIGN_LEFT);
 	m_Properties.SetString(PROP_TEXT_ALIGN_VERT, ALIGN_TOP);
+	m_Properties.SetColor(PROP_COLOR, 0xffff);
+	m_Properties.SetFont(PROP_FONT, NULL);
 	}
 
 void CAniRichText::Format (int cxWidth, int cyHeight)
@@ -83,6 +91,9 @@ void CAniRichText::Format (int cxWidth, int cyHeight)
 			BlockFormat.iVertAlign = alignBottom;
 		else
 			BlockFormat.iVertAlign = alignTop;
+
+		BlockFormat.DefaultFormat.wColor = m_Properties[INDEX_COLOR].GetColor();
+		BlockFormat.DefaultFormat.pFont = m_Properties[INDEX_FONT].GetFont();
 
 		m_Text.InitFromRTF(m_Properties[INDEX_TEXT].GetString(), m_FontTable, BlockFormat);
 

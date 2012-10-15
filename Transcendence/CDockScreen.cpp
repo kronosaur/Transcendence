@@ -519,7 +519,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 				}
 			else
 				{
-				Metric rScale = g_cyBackground / pLargeImage->GetHeight();
+				Metric rScale = (Metric)g_cyBackground / pLargeImage->GetHeight();
 				CG16bitImage *pNewImage = new CG16bitImage;
 				pNewImage->CreateFromImageTransformed(*pLargeImage,
 						0,
@@ -535,7 +535,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 						pNewImage->GetWidth(),
 						pNewImage->GetHeight(),
 						255,
-						*pLargeImage,
+						*pNewImage,
 						BACKGROUND_FOCUS_X - (pNewImage->GetWidth() / 2),
 						BACKGROUND_FOCUS_Y - (pNewImage->GetHeight() / 2));
 

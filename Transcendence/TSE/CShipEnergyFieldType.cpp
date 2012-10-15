@@ -16,6 +16,8 @@
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
 
+#define FIELD_WEAPON_SUPPRESS					CONSTLIT("weaponSuppress")
+
 #define ON_UPDATE_EVENT							CONSTLIT("OnUpdate")
 
 #define SUPPRESS_ALL							CONSTLIT("*")
@@ -53,6 +55,43 @@ bool CEnergyFieldType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
 		return true;
 	else
 		return false;
+	}
+
+bool CEnergyFieldType::FindDataField (const CString &sField, CString *retsValue)
+
+//	FindDataField
+//
+//	Returns meta-data
+
+	{
+	int i;
+
+	if (strEquals(sField, FIELD_WEAPON_SUPPRESS))
+		{
+		if (m_WeaponSuppress.IsEmpty())
+			*retsValue = NULL_STR;
+		else
+			{
+			*retsValue = CONSTLIT("=(");
+
+			bool bNeedSeparator = false;
+			for (i = 0; i < damageCount; i++)
+				if (m_WeaponSuppress.InSet(i))
+					{
+					if (bNeedSeparator)
+						retsValue->Append(CONSTLIT(" "));
+
+					retsValue->Append(::GetDamageType((DamageTypes)i));
+					bNeedSeparator = true;
+					}
+
+			retsValue->Append(CONSTLIT(")"));
+			}
+		}
+	else
+		return CDesignType::FindDataField(sField, retsValue);
+
+	return true;
 	}
 
 int CEnergyFieldType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
@@ -132,7 +171,6 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 	{
 	ALERROR error;
-	int i;
 
 	//	Effect
 
@@ -191,36 +229,10 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 	//	Load the weapon suppress
 
-	CString sSuppress = pDesc->GetAttribute(WEAPON_SUPPRESS_ATTRIB);
-	if (strEquals(sSuppress, SUPPRESS_ALL))
+	if (error = m_WeaponSuppress.InitFromXML(pDesc->GetAttribute(WEAPON_SUPPRESS_ATTRIB)))
 		{
-		for (i = 0; i < damageCount; i++)
-			m_WeaponSuppress.Add(i);
-		}
-	else
-		{
-		TArray<CString> WeaponSuppress;
-		if (error = strDelimit(sSuppress,
-				';',
-				0,
-				&WeaponSuppress))
-			{
-			Ctx.sError = strPatternSubst(CONSTLIT("energy field %x: Unable to load weapon suppress attribute"), GetUNID());
-			return error;
-			}
-
-		for (i = 0; i < WeaponSuppress.GetCount(); i++)
-			{
-			CString sType = strTrimWhitespace(WeaponSuppress[i]);
-			int iType = LoadDamageTypeFromXML(sType);
-			if (iType == damageError)
-				{
-				Ctx.sError = strPatternSubst(CONSTLIT("energy field %x: Unable to load weapon suppress attribute"), GetUNID());
-				return ERR_FAIL;
-				}
-
-			m_WeaponSuppress.Add(iType);
-			}
+		Ctx.sError = CONSTLIT("Unable to load weapon suppress attribute");
+		return error;
 		}
 
 	//	Keep track of the events that we have

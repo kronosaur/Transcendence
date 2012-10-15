@@ -247,6 +247,9 @@
 //		Added m_SubscribedObjs to CSpaceObject
 //		Added m_iMaxHitPoints to CStation
 //
+//	78: 1.08h
+//		Fixed a bug in m_SubscribedObjs.
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -1020,6 +1023,19 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 				}
 
 			Ctx.ForwardReferences.RemoveEntry(pPlayerShip->GetID(), NULL);
+			}
+		}
+
+	//	If we on version 77 then try to recover from a bug which caused 
+	//	invalid objects in the m_SubscribedObjs array.
+
+	if (Ctx.dwVersion == 77 && Ctx.ForwardReferences.GetCount() > 0)
+		{
+		for (i = 0; i < Ctx.pSystem->GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = Ctx.pSystem->GetObject(i);
+			if (pObj)
+				pObj->FixVersion77Bug(Ctx);
 			}
 		}
 

@@ -2534,8 +2534,9 @@
 							<Orbitals count="2" distance="12" angle="equidistant">
 								<Station type="&stCommonwealthDryDock;" name="Rigel Dry Dock" noArticle="true"/>
 
-								<Station type="&stNavSign;" name="Death or Glory Awaits">
+								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
+										<Sign>"Death or\nGlory Awaits"</Sign>
 										<Info>
 											"Welcome, Traveler! You have just arrived at Rigel Aurelius, the universe's most famous tourist destination. Millions of us, from all star systems, have come to shed the constraints of our regimented life and trust to the luck of the Games. Join us at Battle Arena Maximus!"
 										</Info>
@@ -2632,8 +2633,9 @@
 					<Trojan>
 						<Station type="&stBattleArena;" yOffset="-320"   xOffset="-1024" />
 
-						<Station type="&stNavSign;"			yOffset="-320"	   xOffset="-1280" name="Welcome, Gladiator!">
+						<Station type="&stCommonwealthNavSign;"			yOffset="-320"	   xOffset="-1280" name="Welcome, Gladiator!">
 							<InitialData>
+								<Sign>"Welcome,\nGladiator!"</Sign>
 								<Info>
 									"Welcome to Battle Arena Maximus! Please enter through the gates and dock at the main station for registration information."
 								</Info>

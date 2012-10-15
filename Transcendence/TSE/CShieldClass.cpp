@@ -30,13 +30,14 @@
 #define ON_SHIELD_DOWN_EVENT					CONSTLIT("OnShieldDown")
 
 #define FIELD_ADJUSTED_HP						CONSTLIT("adjustedHP")
+#define FIELD_BALANCE							CONSTLIT("balance")
+#define FIELD_DAMAGE_ADJ						CONSTLIT("damageAdj")
 #define FIELD_EFFECTIVE_HP						CONSTLIT("effectiveHP")
 #define FIELD_HP								CONSTLIT("hp")
-#define FIELD_REGEN								CONSTLIT("regen")
-#define FIELD_DAMAGE_ADJ						CONSTLIT("damageAdj")
-#define FIELD_POWER								CONSTLIT("power")
 #define FIELD_HP_BONUS							CONSTLIT("hpBonus")
-#define FIELD_BALANCE							CONSTLIT("balance")
+#define FIELD_POWER								CONSTLIT("power")
+#define FIELD_REGEN								CONSTLIT("regen")
+#define FIELD_WEAPON_SUPPRESS					CONSTLIT("weaponSuppress")
 
 #define STR_SHIELD_REFLECT						CONSTLIT("reflect")
 
@@ -506,12 +507,18 @@ ALERROR CShieldClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 	//	Load the weapon suppress
 
 	if (error = pShield->m_WeaponSuppress.InitFromXML(pDesc->GetAttribute(WEAPON_SUPPRESS_ATTRIB)))
+		{
+		Ctx.sError = CONSTLIT("Unable to load weapon suppress attribute");
 		return error;
+		}
 
 	//	Load reflection
 
 	if (error = pShield->m_Reflective.InitFromXML(pDesc->GetAttribute(REFLECT_ATTRIB)))
+		{
+		Ctx.sError = CONSTLIT("Unable to load reflective attribute");
 		return error;
+		}
 
 	//	Effects
 
@@ -608,6 +615,28 @@ bool CShieldClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_BALANCE))
 		*retsValue = strFromInt(CalcBalance());
+	else if (strEquals(sField, FIELD_WEAPON_SUPPRESS))
+		{
+		if (m_WeaponSuppress.IsEmpty())
+			*retsValue = NULL_STR;
+		else
+			{
+			*retsValue = CONSTLIT("=(");
+
+			bool bNeedSeparator = false;
+			for (i = 0; i < damageCount; i++)
+				if (m_WeaponSuppress.InSet(i))
+					{
+					if (bNeedSeparator)
+						retsValue->Append(CONSTLIT(" "));
+
+					retsValue->Append(::GetDamageType((DamageTypes)i));
+					bNeedSeparator = true;
+					}
+
+			retsValue->Append(CONSTLIT(")"));
+			}
+		}
 	else
 		return false;
 

@@ -324,12 +324,10 @@
 							</Action>
 
 							<Action name="Repair items" key="R">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(setq gMargin 250)
-									(setq gShowCriteria "*~aD +Rasiermesser;")
-									(scrShowScreen gScreen "&dsRepairItem;")
-									)
+								(scrShowScreen gScreen "&dsRPGRepairItem;" {
+									criteria: "*~aD +Rasiermesser;"
+									priceAdj: 65
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">

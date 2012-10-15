@@ -59,6 +59,7 @@
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
+#define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
 #define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
 #define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
@@ -108,6 +109,7 @@
 
 #define ERR_CANT_LOAD_GAME						CONSTLIT("Unable to load game")
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
+#define ERR_CANT_SHOW_ADVENTURES				CONSTLIT("Unable to show list of adventures")
 #define ERR_CANT_SHOW_MOD_EXCHANGE				CONSTLIT("Unable to show Mod Exchange screen")
 #define ERR_CONTACT_KP							CONSTLIT("Contact Kronosaur Productions")
 #define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
@@ -367,22 +369,40 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		}
 
+	//	Bring up screen to choose an adventure
+
+	else if (strEquals(sCmd, CMD_GAME_SELECT_ADVENTURE))
+		{
+		if (error = m_HI.OpenPopupSession(new CChooseAdventureSession(m_HI, m_Service, m_Settings)))
+			{
+			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_ADVENTURES, NULL_STR, CMD_NULL));
+			return NOERROR;
+			}
+		}
+
 	//	New game started; adventure selected
 
 	else if (strEquals(sCmd, CMD_GAME_ADVENTURE))
 		{
-		CExtension *pAdventure = (CExtension *)pData;
-		if (pAdventure == NULL)
+		SAdventureSettings *pNewAdventure = (SAdventureSettings *)pData;
+		if (pNewAdventure == NULL || pNewAdventure->pAdventure == NULL)
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, CONSTLIT("Unknown adventure"), CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
 
-		CString sAdventureName = pAdventure->GetName();
+		//	Done with intro
+
+		ASSERT(m_iState == stateIntro);
+		g_pTrans->StopIntro();
+
+		//	Remember the adventure name
+
+		CString sAdventureName = pNewAdventure->pAdventure->GetName();
 
 		//	Kick-off background thread to initialize the adventure
 
-		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, pAdventure->GetUNID()), this, CMD_MODEL_ADVENTURE_INIT_DONE);
+		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, *pNewAdventure), this, CMD_MODEL_ADVENTURE_INIT_DONE);
 
 		//	Show transition session while we load
 

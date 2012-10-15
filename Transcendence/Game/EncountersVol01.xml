@@ -584,17 +584,11 @@
 
 						<Actions>
 							<Action name="Loot" key="L" default="1" >
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedStation;")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Jettison" key="J">
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedStation;")
-									(scrShowScreen gScreen "&dsJettison;")
-									)
+								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -5198,10 +5192,7 @@
 
 						<Actions>
 							<Action name="Loot" default="1" key="L">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -5244,10 +5235,7 @@
 
 						<Actions>
 							<Action name="Loot" default="1" key="L">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">

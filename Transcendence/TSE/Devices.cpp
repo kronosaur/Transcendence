@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 #define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
+#define DEVICE_SLOT_CATEGORY_ATTRIB				CONSTLIT("deviceSlotCategory")
 #define DEVICE_SLOTS_ATTRIB						CONSTLIT("deviceSlots")
 #define EXTERNAL_ATTRIB							CONSTLIT("external")
 #define ITEM_ID_ATTRIB							CONSTLIT("itemID")
@@ -122,6 +123,42 @@ ALERROR CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	else
 		m_iSlots = 1;
 
+	//	Slot type
+
+	CString sSlotType;
+	if (pDesc->FindAttribute(DEVICE_SLOT_CATEGORY_ATTRIB, &sSlotType))
+		{
+		if (!CItemType::ParseItemCategory(sSlotType, &m_iSlotCategory))
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid deviceSlotCategory: %s."), sSlotType);
+			return ERR_FAIL;
+			}
+
+		//	Make sure it is a valid device
+
+		switch (m_iSlotCategory)
+			{
+			//	OK
+			case itemcatCargoHold:
+			case itemcatDrive:
+			case itemcatLauncher:
+			case itemcatMiscDevice:
+			case itemcatReactor:
+			case itemcatShields:
+			case itemcatWeapon:
+				break;
+
+			default:
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("Not a valid device category: %s."), sSlotType);
+				return ERR_FAIL;
+				}
+			}
+		}
+	else
+		//	itemcatNone means use the actual item category
+		m_iSlotCategory = itemcatNone;
+
 	//	Overlay
 
 	if (error = m_pOverlayType.LoadUNID(Ctx, pDesc->GetAttribute(OVERLAY_TYPE_ATTRIB)))
@@ -158,6 +195,39 @@ bool CDeviceClass::FindAmmoDataField (CItemType *pItem, const CString &sField, C
 		}
 
 	return false;
+	}
+
+ItemCategories CDeviceClass::GetItemCategory (DeviceNames iDev)
+
+//	GetItemCategory
+//
+//	Gets the item category that corresponds to this device name.
+
+	{
+	switch (iDev)
+		{
+		case devPrimaryWeapon:
+			return itemcatWeapon;
+
+		case devMissileWeapon:
+			return itemcatLauncher;
+
+		case devShields:
+			return itemcatShields;
+
+		case devDrive:
+			return itemcatDrive;
+
+		case devCargo:
+			return itemcatCargoHold;
+
+		case devReactor:
+			return itemcatReactor;
+
+		default:
+			ASSERT(false);
+			return itemcatNone;
+		}
 	}
 
 ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)

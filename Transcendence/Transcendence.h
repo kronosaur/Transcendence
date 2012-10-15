@@ -150,6 +150,12 @@ struct SNewGameSettings
 	DWORD dwPlayerShip;							//	Starting ship class
 	};
 
+struct SAdventureSettings
+	{
+	CExtension *pAdventure;						//	Adventure to create
+	TArray<CExtension *> Extensions;			//	List of extensions
+	};
+
 class CPlayerGameStats
 	{
 	public:
@@ -1447,36 +1453,6 @@ class CReactorDisplay
 		int m_iOverloading;
 	};
 
-class CAdventureDescDisplay
-	{
-	public:
-		CAdventureDescDisplay (void);
-		~CAdventureDescDisplay (void);
-
-		void CleanUp (void);
-		inline CExtension *GetAdventure (void) { return (m_iCurrentIndex == -1 ? NULL : m_AdventureList[m_iCurrentIndex]); }
-		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CTranscendenceWnd *pTrans, const RECT &rcRect);
-		inline void Invalidate (void) { m_bInvalid = true; }
-		bool OnKeyDown (int iVirtKey);
-		void Paint (CG16bitImage &Dest);
-		void SelectNext (void);
-		void SelectPrev (void);
-		void Update (void);
-
-	private:
-		void PaintBuffer (void);
-
-		CTranscendenceWnd *m_pTrans;
-		TArray<CExtension *> m_AdventureList;
-		int m_iCurrentIndex;
-
-		bool m_bInvalid;
-		RECT m_rcRect;
-		CG16bitImage m_Buffer;
-		const SFontTable *m_pFonts;
-	};
-
 class CCommandLineDisplay
 	{
 	public:
@@ -1583,8 +1559,8 @@ class CUIResources
 
 #define CMD_SELECT_ADVENTURE				201
 #define CMD_SELECT_ADVENTURE_CANCEL			202
-#define CMD_NEXT_ADVENTURE					203
-#define CMD_PREV_ADVENTURE					204
+#define CMD_NEXT_ADVENTURE_OLD				203
+#define CMD_PREV_ADVENTURE_OLD				204
 
 #define CMD_LOAD_ADVENTURE					301
 
@@ -1632,7 +1608,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 							    const CString &sDestEntryPoint);
 		void RedirectDisplayMessage (bool bRedirect = true);
 		void SelectArmor (int iSeg);
-		inline void SetAdventure (CExtension *pAdventure) { m_pAdventureSelected = pAdventure; }
 		CXMLElement *SetCurrentLocalScreens (CXMLElement *pLocalScreens);
 		void SetSoundVolumeOption (int iVolume);
 		void ShowDockScreen (bool bShow = true);
@@ -1657,7 +1632,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			{
 			gsNone,
 			gsIntro,
-			gsSelectAdventure,
 			gsProlog,
 			gsInGame,
 			gsDocked,
@@ -1745,15 +1719,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		ALERROR StartIntro (IntroState iState = isHighScores);
 		void StopAnimations (void);
 		void StopIntro (void);
-
-		ALERROR StartSelectAdventure (void);
-		void AnimateSelectAdventure (bool bTopMost);
-		void OnCharSelectAdventure (char chChar, DWORD dwKeyData);
-		void OnDblClickSelectAdventure (int x, int y, DWORD dwFlags);
-		void OnKeyDownSelectAdventure (int iVirtKey, DWORD dwKeyData);
-		void OnLButtonDownSelectAdventure (int x, int y, DWORD dwFlags);
-		void OnMouseMoveSelectAdventure (int x, int y, DWORD dwFlags);
-		void StopSelectAdventure (void);
 
 		void AnimateCrawlScreen (void);
 		void AnimateProlog (bool bTopMost);
@@ -1883,10 +1848,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		int *m_pHighScorePos;
 		int m_iHighScoreSelection;
 		CString m_sCommand;
-
-		//	Select adventure screen
-		CAdventureDescDisplay m_AdventureDescDisplay;
-		CExtension *m_pAdventureSelected;
 
 		//	Crawl screen
 		CG16bitImage *m_pCrawlImage;
@@ -2074,6 +2035,28 @@ class CGameKeys
 		Keys m_iMap[256];
 	};
 
+//	Extension List Options ----------------------------------------------------
+
+class CExtensionListMap
+	{
+	public:
+		void GetList (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList);
+		void SetList (DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List);
+		ALERROR ReadFromXML (CXMLElement *pDesc);
+		ALERROR WriteAsXML (IWriteStream *pOutput);
+
+	private:
+		struct SEntry
+			{
+			TArray<DWORD> List;
+			TArray<DWORD> DebugList;
+			};
+
+		ALERROR WriteList (IWriteStream *pOutput, DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List);
+
+		TSortMap<DWORD, SEntry> m_Map;
+	};
+
 //	Game settings class -------------------------------------------------------
 
 class IExtraSettingsHandler
@@ -2120,6 +2103,7 @@ class CGameSettings
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
 
 		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
+		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) { return m_Options[iOption].iValue; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_KeyMap; }
@@ -2128,6 +2112,7 @@ class CGameSettings
 		ALERROR ParseCommandLine (char *pszCmdLine);
 		ALERROR Save (const CString &sFilespec);
 		inline void SetBoolean (int iOption, bool bValue, bool bModifySettings = true) { SetValueBoolean(iOption, bValue, bModifySettings); if (bModifySettings) m_bModified = true; }
+		inline void SetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, const TArray<DWORD> &List) { m_Extensions.SetList(dwAdventure, bDebugMode, List); m_bModified = true; }
 		inline void SetInteger (int iOption, int iValue, bool bModifySettings = true) { SetValueInteger(iOption, iValue, bModifySettings); if (bModifySettings) m_bModified = true; }
 		inline void SetModified (void) { m_bModified = true; }
 		inline void SetSettingsHandler (IExtraSettingsHandler *pExtra) { m_pExtra = pExtra; }
@@ -2152,6 +2137,7 @@ class CGameSettings
 		IExtraSettingsHandler *m_pExtra;	//	Additional settings handler
 		SOption m_Options[OPTIONS_COUNT];	//	Options
 		CGameKeys m_KeyMap;					//	Key map
+		CExtensionListMap m_Extensions;		//	Default extensions
 
 		CString m_sSaveFile;				//	Optional save file to open on game start
 
@@ -2166,7 +2152,7 @@ class CTranscendenceModel
 		CTranscendenceModel (CHumanInterface &HI);
 		~CTranscendenceModel (void) { }
 
-		ALERROR InitAdventure (DWORD dwAdventure, CString *retsError);
+		ALERROR InitAdventure (const SAdventureSettings &Settings, CString *retsError);
 		ALERROR StartNewGame (const CString &sUsername, const SNewGameSettings &NewGame, CString *retsError);
 		void StartNewGameAbort (void);
 		ALERROR StartNewGameBackground (CString *retsError = NULL);

@@ -991,7 +991,7 @@ void CNewGameSession::SetShipClassName (const CString &sName, int x, int y, int 
 
 //	SetShipClassName
 //
-//	Sets the current ship class anem
+//	Sets the current ship class name
 
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();

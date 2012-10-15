@@ -267,6 +267,7 @@ class IAnimatron
 		virtual void GetContentRect (RECT *retrcRect) { GetSpacingRect(retrcRect); }
 		virtual int GetDuration (void) { return m_Properties.GetDuration(); }
 		virtual void GetFocusElements (TArray<IAnimatron *> *retList) { }
+		inline int GetSpacingHeight (void) { RECT rcRect; GetSpacingRect(&rcRect); return RectHeight(rcRect); }
 		virtual void GetSpacingRect (RECT *retrcRect) { retrcRect->left = 0; retrcRect->top = 0; retrcRect->right = 0; retrcRect->bottom = 0; }
 		virtual void GoToFrame (int iFrame) { m_Properties.GoToFrame(iFrame); }
 		virtual void GoToNextFrame (int iFrame) { m_Properties.GoToNextFrame(iFrame); }

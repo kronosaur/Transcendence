@@ -182,6 +182,7 @@ class IHISession : public IHICommand, private IAniCommand
 		virtual void OnUpdate (bool bTopMost) { }
 
 		bool HandlePageScrollKeyDown (const CString &sScroller, int iVirtKey, DWORD dwKeyData);
+		bool HandlePageScrollMouseWheel (const CString &sScroller, int iDelta);
 		inline void SetNoCursor (bool bNoCursor = true) { if (bNoCursor != m_bNoCursor) { m_bNoCursor = bNoCursor; } }
 		inline void SetTransparent (bool bTransparent = true) { m_bTransparent = bTransparent; }
 
@@ -361,23 +362,24 @@ enum EFontScale
 	fontUnknown =					0,
 
 	fontSmall =						1,	//	10 pixels
-	fontMedium =					2,	//	13 pixels
-	fontMediumBold =				3,	//	13 pixels bold
-	fontMediumHeavyBold =			4,	//	14 pixels bold
-	fontLarge =						5,	//	16 pixels
-	fontLargeBold =					6,	//	16 pixels bold
-	fontHeader =					7,	//	19 pixels
-	fontHeaderBold =				8,	//	19 pixels bold
-	fontSubTitle =					9,	//	26 pixels
-	fontSubTitleBold =				10,	//	26 pixels bold
-	fontSubTitleHeavyBold =			11,	//	28 pixels bold
-	fontTitle =						12,	//	56 pixels
+	fontSmallBold =					2,	//	11 pixels bold
+	fontMedium =					3,	//	13 pixels
+	fontMediumBold =				4,	//	13 pixels bold
+	fontMediumHeavyBold =			5,	//	14 pixels bold
+	fontLarge =						6,	//	16 pixels
+	fontLargeBold =					7,	//	16 pixels bold
+	fontHeader =					8,	//	19 pixels
+	fontHeaderBold =				9,	//	19 pixels bold
+	fontSubTitle =					10,	//	26 pixels
+	fontSubTitleBold =				11,	//	26 pixels bold
+	fontSubTitleHeavyBold =			12,	//	28 pixels bold
+	fontTitle =						13,	//	56 pixels
 
-	fontLogoTitle =					13,	//	60 pixels Blue Island
+	fontLogoTitle =					14,	//	60 pixels Blue Island
 
-	fontConsoleMediumHeavy =		14,	//	14 pixels
+	fontConsoleMediumHeavy =		15,	//	14 pixels
 
-	fontCount =						15,
+	fontCount =						16,
 	};
 
 enum EImageLibrary
@@ -421,6 +423,9 @@ class CVisualPalette : public IFontTable
 			{
 			//	CreateButton
 			OPTION_BUTTON_DEFAULT =				0x00000001,
+
+			//	CreateCheckbox
+			OPTION_CHECKBOX_LARGE_FONT =		0x00000001,
 
 			//	CreateEditControl
 			OPTION_EDIT_PASSWORD =				0x00000001,
@@ -469,6 +474,7 @@ class CVisualPalette : public IFontTable
 							 int x,
 							 int y,
 							 int cxWidth,
+							 DWORD dwOptions,
 							 const CString &sLabel,
 							 IAnimatron **retpControl,
 							 int *retcyHeight) const;

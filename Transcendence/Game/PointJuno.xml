@@ -1083,17 +1083,11 @@
 
 						<Actions>
 							<Action name="Loot" key="L" default="1" >
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedStation;")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Jettison" key="J">
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedStation;")
-									(scrShowScreen gScreen "&dsJettison;")
-									)
+								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
 							<Action name="Leave" cancel="1" key="L">
@@ -1275,7 +1269,7 @@
 					</Orbitals>
 
 					<Orbitals distance="18-24" angle="random">
-						<Station type="&stLargeAsteroid;"/>
+						<Station type="&stPlanetoid;"/>
 					</Orbitals>
 
 				</Group>

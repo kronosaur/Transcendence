@@ -1794,13 +1794,13 @@ ALERROR CG16bitImage::CreateFromImage (const CG16bitImage &Image)
 
 	if (Image.m_pRGB)
 		{
-		m_pRGB = new DWORD [m_iRGBRowSize * m_cyHeight];
+		m_pRGB = (DWORD *)MemAlloc(m_iRGBRowSize * m_cyHeight * sizeof(DWORD));
 		utlMemCopy((char *)Image.m_pRGB, (char *)m_pRGB, m_iRGBRowSize * m_cyHeight * sizeof(DWORD));
 		}
 
 	if (Image.m_pAlpha)
 		{
-		m_pAlpha = new DWORD [m_iAlphaRowSize * m_cyHeight];
+		m_pAlpha = (DWORD *)MemAlloc(m_iAlphaRowSize * m_cyHeight * sizeof(DWORD));
 		utlMemCopy((char *)Image.m_pAlpha, (char *)m_pAlpha, m_iAlphaRowSize * m_cyHeight * sizeof(DWORD));
 		}
 

@@ -47,7 +47,6 @@
 #define HP_X_ATTRIB								CONSTLIT("hpX")
 #define HP_Y_ATTRIB								CONSTLIT("hpY")
 #define INERTIALESS_DRIVE_ATTRIB				CONSTLIT("inertialessDrive")
-#define INITIAL_CLASS_ATTRIB					CONSTLIT("initialClass")
 #define LARGE_IMAGE_ATTRIB						CONSTLIT("largeImage")
 #define LEAVES_WRECK_ATTRIB						CONSTLIT("leavesWreck")
 #define MAX_ARMOR_ATTRIB						CONSTLIT("maxArmor")

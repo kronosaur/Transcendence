@@ -942,22 +942,15 @@ CDeviceClass *CDeviceDescList::GetNamedDevice (DeviceNames iDev) const
 
 	{
 	int i;
+	ItemCategories iCatToFind = CDeviceClass::GetItemCategory(iDev);
 
 	for (i = 0; i < m_iCount; i++)
 		{
 		CDeviceClass *pDevice = GetDeviceClass(i);
 
-		if (iDev == devPrimaryWeapon && pDevice->GetCategory() == itemcatWeapon)
-			return pDevice;
-		else if (iDev == devMissileWeapon && pDevice->GetCategory() == itemcatLauncher)
-			return pDevice;
-		else if (iDev == devShields && pDevice->GetCategory() == itemcatShields)
-			return pDevice;
-		else if (iDev == devDrive && pDevice->GetCategory() == itemcatDrive)
-			return pDevice;
-		else if (iDev == devCargo && pDevice->GetCategory() == itemcatCargoHold)
-			return pDevice;
-		else if (iDev == devReactor && pDevice->GetCategory() == itemcatReactor)
+		//	See if this is the category that we want to find
+
+		if (pDevice->GetSlotCategory() == iCatToFind)
 			return pDevice;
 		}
 

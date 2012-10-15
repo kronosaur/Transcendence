@@ -521,6 +521,8 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 	if (pDevice == NULL)
 		return insNotADevice;
 
+	ItemCategories iCategory = pDevice->GetSlotCategory();
+
 	//	See if the ship's engine core is powerful enough
 
 	if (GetMaxPower() > 0
@@ -529,7 +531,7 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 
 	//	If this is a reactor, then see if the ship class can support it
 
-	if (pDevice->GetCategory() == itemcatReactor
+	if (iCategory == itemcatReactor
 			&& m_pClass->GetMaxReactorPower() > 0
 			&& pDevice->GetReactorDesc()->iMaxPower > m_pClass->GetMaxReactorPower())
 		return insReactorMaxPower;
@@ -543,7 +545,7 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 
 	DeviceNames iNamedDevice;
 	InstallDeviceStatus iAlreadyInstalledError;
-	switch (pDevice->GetCategory())
+	switch (iCategory)
 		{
 		case itemcatLauncher:
 			iNamedDevice = devMissileWeapon;
@@ -604,7 +606,7 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 				int iSlots = pDevice->GetClass()->GetSlotsRequired();
 				iAll += iSlots;
 
-				if (pDevice->GetCategory() == itemcatWeapon || pDevice->GetCategory() == itemcatLauncher)
+				if (pDevice->GetSlotCategory() == itemcatWeapon || pDevice->GetSlotCategory() == itemcatLauncher)
 					iWeapons += iSlots;
 				else
 					iNonWeapons += iSlots;
@@ -618,14 +620,14 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 
 		//	See if we have exceeded the maximum number of weapons
 
-		if ((pDevice->GetCategory() == itemcatWeapon || pDevice->GetCategory() == itemcatLauncher)
+		if ((iCategory == itemcatWeapon || iCategory == itemcatLauncher)
 				&& m_pClass->GetMaxWeapons() < m_pClass->GetMaxDevices()
 				&& iWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxWeapons())
 			return insNoWeaponSlots;
 
 		//	See if we have exceeded the maximum number of non-weapons
 
-		if ((pDevice->GetCategory() != itemcatWeapon && pDevice->GetCategory() != itemcatLauncher)
+		if ((iCategory != itemcatWeapon && iCategory != itemcatLauncher)
 				&& m_pClass->GetMaxNonWeapons() < m_pClass->GetMaxDevices()
 				&& iNonWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxNonWeapons())
 			return insNoGeneralSlots;
@@ -662,7 +664,7 @@ CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
 
 	//	Check for special device cases
 
-	switch (pDevice->GetCategory())
+	switch (pDevice->GetSlotCategory())
 		{
 		case itemcatCargoHold:
 			{
@@ -897,7 +899,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		//	Assign to named devices
 
-		ItemCategories Category = pShip->m_Devices[i].GetCategory();
+		ItemCategories Category = pShip->m_Devices[i].GetSlotCategory();
 		if (pShip->m_Devices[i].IsSecondaryWeapon())
 			;
 		else if (pShip->m_NamedDevices[devPrimaryWeapon] == -1
@@ -2089,7 +2091,7 @@ CString CShip::GetInstallationPhrase (const CItem &Item) const
 	{
 	if (Item.IsInstalled())
 		{
-		switch (Item.GetType()->GetCategory())
+		switch (Item.GetType()->GetSlotCategory())
 			{
 			case itemcatArmor:
 				{
@@ -2598,7 +2600,7 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 
 	//	If necessary, remove previous item in named slot
 
-	DeviceNames iNamedSlot = GetDeviceNameForCategory(pNewDevice->GetCategory());
+	DeviceNames iNamedSlot = GetDeviceNameForCategory(pNewDevice->GetSlotCategory());
 	if (iDeviceSlot == -1 
 			&& iNamedSlot != devNone && iNamedSlot != devPrimaryWeapon
 			&& HasNamedDevice(iNamedSlot))
@@ -2639,21 +2641,9 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 
 	pDevice->Install(this, ItemList, iDeviceSlot);
 
-	//	Note: we don't automatically SetKnown just because
-	//	we installed the item
-
-#if 0
-	if (IsPlayer())
-		{
-		const CItem &Item = ItemList.GetItemAtCursor();
-		Item.GetType()->SetKnown();
-		Item.GetType()->SetShowReference();
-		}
-#endif
-
 	//	Adjust the named devices
 
-	switch (pDevice->GetCategory())
+	switch (pDevice->GetSlotCategory())
 		{
 		case itemcatWeapon:
 			if (!pDevice->IsSecondaryWeapon())
@@ -5026,7 +5016,7 @@ ALERROR CShip::RemoveItemAsDevice (CItemListManipulator &ItemList)
 
 	int iDevSlot = Item.GetInstalled();
 	CInstalledDevice *pDevice = &m_Devices[iDevSlot];
-	ItemCategories DevCat = pDevice->GetCategory();
+	ItemCategories DevCat = pDevice->GetSlotCategory();
 
 	//	Clear the device
 

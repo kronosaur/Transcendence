@@ -502,6 +502,19 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 	m_iPaintHit = 0;
 	}
 
+bool CEnergyField::SetEffectProperty (const CString &sProperty, ICCItem *pValue)
+
+//	SetEffectProperty
+//
+//	Sets a property on the effect
+
+	{
+	if (m_pPainter)
+		return m_pPainter->SetProperty(sProperty, pValue);
+
+	return false;
+	}
+
 void CEnergyField::SetPos (CSpaceObject *pSource, const CVector &vPos)
 
 //	SetPos

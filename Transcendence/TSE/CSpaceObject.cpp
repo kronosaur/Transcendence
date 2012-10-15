@@ -2375,6 +2375,65 @@ bool CSpaceObject::FireOnTranslateMessage (const CString &sMessage, CString *ret
 	return bHandled;
 	}
 
+void CSpaceObject::FixVersion77Bug (SLoadCtx &Ctx)
+
+//	FixVersion77Bug
+//
+//	In version 77 we would sometimes get duplicate entries in the 
+//	m_SubscribedObjs array. Unfortunately, at destroy-time we would only remove
+//	one of the entries. This left old entries in the list, which could not be
+//	resolved at load time.
+//
+//	This code removes any old entries that could not be resolved.
+
+	{
+	int i, j, k;
+
+	//	Loop over all subscribed objects
+
+	TArray<CSpaceObject *> &RawList = m_SubscribedObjs.GetRawList();
+	for (i = 0; i < RawList.GetCount(); i++)
+		{
+		CSpaceObject **pAddr = &RawList[i];
+
+		//	See if this entry is unresolved
+
+		bool bFound = false;
+		for (j = 0; j < Ctx.ForwardReferences.GetCount(); j++)
+			{
+			DWORD dwID = (DWORD)Ctx.ForwardReferences.GetKey(j);
+			CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(j);
+			for (k = 0; k < pList->GetCount(); k++)
+				{
+				CSpaceObject **pUnresolvedAddr = (CSpaceObject **)pList->GetElement(k);
+				if (pUnresolvedAddr == pAddr)
+					{
+					pList->RemoveElement(k);
+					k--;
+
+					bFound = true;
+					}
+				}
+
+			//	Delete the reference, if needed
+
+			if (pList->GetCount() == 0)
+				{
+				Ctx.ForwardReferences.RemoveEntry(dwID, NULL);
+				j--;
+				}
+			}
+
+		//	If we found this as an unresolved reference, delete it.
+
+		if (bFound)
+			{
+			RawList.Delete(i);
+			i--;
+			}
+		}
+	}
+
 void CSpaceObject::GetBoundingRect (CVector *retvUR, CVector *retvLL)
 
 //	GetBoundingRect

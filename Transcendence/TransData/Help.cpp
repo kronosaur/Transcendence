@@ -107,10 +107,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/reference]          reference column.\n");
 		printf("      [/regen]              regeneration (in HP per 180 ticks).\n");
 		printf("      [/repairCost]         cost to repair 1 hp of damage.\n");
+		printf("      [/shieldInterference] True if armor prevents shield use.\n");
 		printf("      [/thrust]             thrust (in giganewtons).\n");
 		printf("      [/totalCount]         total number appearing per game.\n");
 		printf("      [/unid]               unid of item type.\n");
 		printf("      [/variantCount]       number of weapon variants.\n");
+		printf("      [/weaponSuppress]     shield prevents firing these damage types.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(PERF_TEST_SWITCH))
 		{

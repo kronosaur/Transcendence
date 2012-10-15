@@ -20,10 +20,10 @@
 			>
 
 		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="560" imageY="512" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsStations1;" imageX="560" imageY="536" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsStations1;" imageX="560" imageY="560" imageWidth="24" imageHeight="24" />
-			<Image			imageID="&rsStations1;" imageX="560" imageY="584" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="0" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="24" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="48" imageWidth="24" imageHeight="24" />
+			<Image			imageID="&rsOreSmall;" imageX="48" imageY="72" imageWidth="24" imageHeight="24" />
 		</ImageVariants>
 
 		<DockingPorts>
@@ -385,10 +385,7 @@
 					<Action name="Bring aboard" key="B" default="1" >
 						(block Nil
 							(if (objGetItems gPlayerShip "*I +MinersHold;")
-								(block Nil
-									(setq gPrevScreen "&dsMinedOre;")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 								(scrShowPane gScreen "NoMinersHold")
 								)
 							)
@@ -425,8 +422,7 @@
 								)
 
 							; Loot
-							(setq gPrevScreen "&dsMinedOre;")
-							(scrShowScreen gScreen "&dsLoot;")
+							(scrShowScreen gScreen &dsRPGLoot;)
 							)
 					</Action>
 
@@ -517,6 +513,7 @@
 	
 <!-- RESOURCES -->
 
+	<Image UNID="&rsOreSmall;" bitmap="Resources\OreSmall.jpg" bitmask="Resources\OreSmallMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsMinedOreBkgnd;" bitmap="Resources\MinedOreScreen.jpg" loadOnUse="true" />
 
 </TranscendenceModule>

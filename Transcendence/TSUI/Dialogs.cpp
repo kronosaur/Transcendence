@@ -189,6 +189,7 @@ void CVisualPalette::CreateCheckbox (CAniSequencer *pContainer,
 									 int x,
 									 int y,
 									 int cxWidth,
+									 DWORD dwOptions,
 									 const CString &sLabel,
 									 IAnimatron **retpControl,
 									 int *retcyHeight) const
@@ -198,6 +199,19 @@ void CVisualPalette::CreateCheckbox (CAniSequencer *pContainer,
 //	Creates a checkbox control
 
 	{
+	const CG16bitFont *pLabelFont;
+	WORD wLabelColor;
+	if (dwOptions & OPTION_CHECKBOX_LARGE_FONT)
+		{
+		pLabelFont = &GetFont(fontLarge);
+		wLabelColor = GetColor(colorTextDialogInput);
+		}
+	else
+		{
+		pLabelFont = &GetFont(fontMedium);
+		wLabelColor = GetColor(colorTextDialogLabel);
+		}
+
 	CAniButton *pButton = new CAniButton(CAniButton::typeCheckbox);
 	pButton->SetID(sID);
 	pButton->SetPropertyVector(CONSTLIT("position"), CVector(x, y));
@@ -247,8 +261,8 @@ void CVisualPalette::CreateCheckbox (CAniSequencer *pContainer,
 	pButton->SetStyle(STYLE_DISABLED, pStyle);
 
 	pStyle = new CAniText;
-	pStyle->SetPropertyColor(PROP_COLOR, GetColor(colorTextDialogLabel));
-	pStyle->SetPropertyFont(PROP_FONT, &GetFont(fontMedium));
+	pStyle->SetPropertyColor(PROP_COLOR, wLabelColor);
+	pStyle->SetPropertyFont(PROP_FONT, pLabelFont);
 	pStyle->SetPropertyString(PROP_TEXT_ALIGN_VERT, CONSTLIT("center"));
 	pButton->SetStyle(STYLE_TEXT, pStyle);
 
@@ -260,6 +274,12 @@ void CVisualPalette::CreateCheckbox (CAniSequencer *pContainer,
 	pStyle->SetPropertyString(PROP_TEXT_ALIGN_VERT, CONSTLIT("center"));
 	pButton->SetStyle(STYLE_CHECK, pStyle);
 
+	//	Get the height of the button
+
+	int cyHeight = pButton->GetSpacingHeight();
+	if (cyHeight > CHECKBOX_HEIGHT)
+		pButton->SetPropertyVector(CONSTLIT("position"), CVector(x, y + ((cyHeight - CHECKBOX_HEIGHT) / 2)));
+
 	//	Add
 
 	if (pContainer)
@@ -268,7 +288,7 @@ void CVisualPalette::CreateCheckbox (CAniSequencer *pContainer,
 	//	Height
 
 	if (retcyHeight)
-		*retcyHeight = CHECKBOX_HEIGHT;
+		*retcyHeight = cyHeight;
 
 	//	Done
 

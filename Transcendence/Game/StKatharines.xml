@@ -2202,10 +2202,7 @@
 
 						<Actions>
 							<Action name="Loot" key="L" default="1" >
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2276,17 +2273,11 @@
 
 						<Actions>
 							<Action name="Loot" key="L" default="1" >
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Jettison" key="J">
-								(block Nil
-									(setq gPrevScreen "Main")
-									(scrShowScreen gScreen "&dsJettison;")
-									)
+								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2431,8 +2422,9 @@
 							<Lookup table="StargateOutbound"/>
 							
 							<Siblings radiusInc="8">
-								<Station type="&stNavSign;" name="Travel Warning!">
+								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
+										<Sign>"Travel\nWarning!"</Sign>
 										<Info>
 											"WARNING! Systems beyond St. Katharine's Star are not controlled by the Commonwealth. By entering this stargate you agree to hold the Commonwealth Transport System immune to liability in the event of injury, involuntary servitude, or death."
 										</Info>
@@ -2610,8 +2602,9 @@
 							<Lookup table="StargateInbound"/>
 							
 							<Siblings radiusInc="8">
-								<Station type="&stNavSign;" name="Welcome!">
+								<Station type="&stCommonwealthNavSign;">
 									<InitialData>
+										<Sign>"Welcome!"</Sign>
 										<Info>
 											"Welcome to St. Katharine's Star, capital of the Commonwealth and metropolitan jewel of Human Space."
 										</Info>

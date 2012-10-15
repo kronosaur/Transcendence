@@ -899,6 +899,8 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 
 	if (pWeapon->m_iShotVariants > 1)
 		pWeapon->m_bLauncher = true;
+	else if (pWeapon->GetDefinedSlotCategory() == itemcatLauncher)
+		pWeapon->m_bLauncher = true;
 	else
 		pWeapon->m_bLauncher = pDesc->GetAttributeBool(LAUNCHER_ATTRIB);
 
@@ -1573,7 +1575,7 @@ int CWeaponClass::GetAmmoVariant (const CItemType *pItem) const
 	return -1;
 	}
 
-ItemCategories CWeaponClass::GetCategory (void)
+ItemCategories CWeaponClass::GetCategory (void) const
 
 //	GetCategory
 //

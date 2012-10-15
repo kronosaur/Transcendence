@@ -167,40 +167,120 @@ void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 	STextSpan LeftOver;
 
 	int y = 0;
+	int iSpanPos = 0;
+	int cxLeft = BlockFormat.cxWidth;
+	bool bLineEnd = false;
+	bool bLineStart = true;
 
 	while (pSpan)
 		{
-		//	Add what we've got to the line
+		//	Build up a string with as much of the span as we can fit.
 
-		if (!pSpan->sText.IsBlank())
-			Line.Insert(*pSpan);
+		CString sOutput;
+		char *pOutStart = sOutput.GetWritePointer(pSpan->sText.GetLength());
+		char *pOut = pOutStart;
+
+		char *pPos = pSpan->sText.GetASCIIZPointer() + iSpanPos;
+		char *pPosEnd = pSpan->sText.GetASCIIZPointer() + pSpan->sText.GetLength();
+
+		while (pPos < pPosEnd && !bLineEnd)
+			{
+			//	Find the next word
+
+			char *pStart = pPos;
+			while (pPos < pPosEnd && *pPos != ' ' && *pPos != '-')
+				pPos++;
+
+			//	Measure the length of the word
+
+			int cxWord = pSpan->Format.pFont->MeasureText(CString(pStart, (int)(pPos - pStart), TRUE));
+
+			//	If the word fits, add it to the output
+
+			if (cxWord <= cxLeft || bLineStart)
+				{
+				//	Add the separator
+
+				if (pPos < pPosEnd)
+					{
+					cxWord += pSpan->Format.pFont->MeasureText(CString(pPos, 1, TRUE));
+					pPos++;
+					}
+
+				char *pSrc = pStart;
+				while (pSrc < pPos)
+					*pOut++ = *pSrc++;
+
+				cxLeft -= cxWord;
+				bLineStart = false;
+
+				//	Are we at the end of the span?
+
+				if (pPos == pPosEnd)
+					{
+					sOutput.Truncate((int)(pOut - pOutStart));
+					bLineEnd = false;
+					}
+				}
+
+			//	Otherwise, we're done with the line
+
+			else
+				{
+				bLineEnd = true;
+				sOutput.Truncate((int)(pOut - pOutStart));
+				iSpanPos += sOutput.GetLength();
+				}
+			}
+
+		//	At this point:
+		//
+		//	sOutput is the part of the span that we should add to the line.
+		//	bLineEnd is TRUE if we should end the line in the middle of the span.
+		//		(If FALSE then sOutput is the entire span).
+		//	iSpanPos is the offset into the span where we should continue adding
+		//		(Only valid if bLineEnd is TRUE).
+
+		if (!sOutput.IsBlank())
+			{
+			STextSpan *pNewSpan = Line.Insert();
+			pNewSpan->bEoP = (!bLineEnd && pSpan->bEoP);
+			pNewSpan->Format = pSpan->Format;
+			pNewSpan->sText = sOutput;
+			}
 
 		//	If we've hit the end of the line, then we output everything we've
 		//	got in the line to the formatted buffer.
 
-		if (pSpan->bEoP || (pSpan + 1) == pSpanEnd)
+		if (bLineEnd || pSpan->bEoP || (pSpan + 1) == pSpanEnd)
 			{
 			//	Compute metrics for each span and the line as a whole.
 
 			int cyLineAscent = 0;
 			int cxLine = 0;
 			int cyLine = 0;
-			for (i = 0; i < Line.GetCount(); i++)
+
+			if (Line.GetCount() == 0)
+				cyLine = pSpan->Format.pFont->GetHeight();
+			else
 				{
-				//	Compute the max ascent of the line.
+				for (i = 0; i < Line.GetCount(); i++)
+					{
+					//	Compute the max ascent of the line.
 
-				int cyAscent = Line[i].Format.pFont->GetAscent();
-				if (cyAscent > cyLineAscent)
-					cyLineAscent = cyAscent;
+					int cyAscent = Line[i].Format.pFont->GetAscent();
+					if (cyAscent > cyLineAscent)
+						cyLineAscent = cyAscent;
 
-				//	Compute the width of each span, the total width of the line
-				//	and the max height of the line.
+					//	Compute the width of each span, the total width of the line
+					//	and the max height of the line.
 
-				int cyHeight;
-				Line[i].cx = Line[i].Format.pFont->MeasureText(Line[i].sText, &cyHeight);
-				cxLine += Line[i].cx;
-				if (cyHeight > cyLine)
-					cyLine = cyHeight;
+					int cyHeight;
+					Line[i].cx = Line[i].Format.pFont->MeasureText(Line[i].sText, &cyHeight);
+					cxLine += Line[i].cx;
+					if (cyHeight > cyLine)
+						cyLine = cyHeight;
+					}
 				}
 
 			//	Compute to horz position of the line (based on block alignment)
@@ -237,13 +317,23 @@ void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 
 			y += cyLine;
 			Line.DeleteAll();
+
+			cxLeft = BlockFormat.cxWidth;
 			}
 
-		//	Next
+		//	Next span
 
-		pSpan++;
-		if (pSpan >= pSpanEnd)
-			pSpan = NULL;
+		if (!bLineEnd)
+			{
+			pSpan++;
+			if (pSpan >= pSpanEnd)
+				pSpan = NULL;
+
+			iSpanPos = 0;
+			}
+
+		bLineEnd = false;
+		bLineStart = true;
 		}
 	}
 
@@ -298,6 +388,10 @@ bool CTextBlock::InitFromRTF (const CString &RTF, const IFontTable &FontTable, c
 	CRTFParser Parser(RTF, FontTable, this);
 
 	STextFormatDesc Desc;
+	Desc.pFont = BlockFormat.DefaultFormat.pFont;
+	Desc.wColor = BlockFormat.DefaultFormat.wColor;
+	Desc.dwOpacity = BlockFormat.DefaultFormat.dwOpacity;
+
 	CString sError;
 	bool bSuccess = Parser.ParseBlock(Desc, &sError);
 
@@ -325,6 +419,24 @@ bool CTextBlock::InitFromRTF (const CString &RTF, const IFontTable &FontTable, c
 	return bSuccess;
 	}
 
+CString CTextBlock::LoadAsRichText (const CString &sText)
+
+//	LoadAsRichText
+//
+//	Takes either a RTF string (with "{\rtf...") or a plain string and returns
+//	a valid RTF string.
+
+	{
+	//	If this is already an RTF string, just return it.
+
+	if (strStartsWith(sText, CONSTLIT("{\\rtf")) || strStartsWith(sText, CONSTLIT("{/rtf")))
+		return sText;
+
+	//	Otherwise, escape the string
+
+	return strPatternSubst(CONSTLIT("{\\rtf %s}"), Escape(sText));
+	}
+
 //	CRTFParser -----------------------------------------------------------------
 
 CRTFParser::CRTFParser (const CString &sInput, const IFontTable &FontTable, CTextBlock *pOutput) :
@@ -346,7 +458,7 @@ void CRTFParser::AddSpan (const CString &sText, const STextFormatDesc &Desc, boo
 	{
 	STextFormat Format;
 
-	Format.pFont = m_FontTable.GetFont(Desc);
+	Format.pFont = (Desc.pFont ? Desc.pFont : m_FontTable.GetFont(Desc));
 	Format.wColor = Desc.wColor;
 	Format.dwOpacity = Desc.dwOpacity;
 
@@ -411,7 +523,10 @@ bool CRTFParser::ParseBlock (const STextFormatDesc &InitFormat, CString *retsErr
 					Format.wColor = CG16bitImage::RGBValue(GetRValue(dwRGB), GetGValue(dwRGB), GetBValue(dwRGB));
 					}
 				else if (strEquals(sCode, CODE_TYPEFACE))
+					{
 					Format.sTypeface = sParam;
+					Format.pFont = NULL;
+					}
 				else if (strEquals(sCode, CODE_ITALIC))
 					Format.bItalic = true;
 				else if (strEquals(sCode, CODE_RTF))

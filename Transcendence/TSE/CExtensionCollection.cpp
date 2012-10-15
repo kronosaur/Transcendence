@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-	175, 165,  43, 222, 164,  20, 186, 190, 158, 150,
-	 36, 220, 130,   4,  57, 207, 104, 110, 113, 171,
+	251,  65, 222, 249,  23, 162,  82,  97, 209, 237,
+	 41,  73, 121,  22, 155,   6,  70,  95,  17,  30,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -1139,7 +1139,7 @@ void CLibraryResolver::OnOpenTag (CXMLElement *pElement)
 		//	the entity).
 
 		CExtension *pLibrary;
-		if (m_Extensions.FindBestExtension(dwUNID, dwRelease, (m_Extensions.LoadedInDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), &pLibrary))
+		if (!m_Extensions.FindBestExtension(dwUNID, dwRelease, (m_Extensions.LoadedInDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), &pLibrary))
 			return;
 
 		//	Is this a library?

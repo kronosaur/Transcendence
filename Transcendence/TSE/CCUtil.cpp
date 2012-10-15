@@ -225,6 +225,13 @@ ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue)
 	else if (*sValue.GetASCIIZPointer() == '=')
 		return CC.Link(sValue, 1, NULL);
 
+	//	Handle some special constants
+
+	else if (strEquals(sValue, CONSTLIT("true")))
+		return CC.CreateTrue();
+	else if (strEquals(sValue, CONSTLIT("nil")) || strEquals(sValue, CONSTLIT("false")))
+		return CC.CreateNil();
+
 	//	Otherwise, see if it is a string or an integer
 
 	else

@@ -140,7 +140,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CChooseAdventureSession.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
+    <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CIntroShipController.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -210,8 +212,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="PrologEpilog.cpp" />
-    <ClCompile Include="SelectAdventureScreen.cpp" />
-    <ClCompile Include="CAdventureDescDisplay.cpp" />
     <ClCompile Include="CArmorDisplay.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -362,10 +362,14 @@
     <None Include="Game\CommonwealthFleet.xml" />
     <None Include="Game\CommonwealthMetropolis.xml" />
     <None Include="Game\CommonwealthMilitia.xml" />
-    <None Include="Game\CommonwealthMining.xml" />
+    <None Include="Game\CommonwealthMining.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Compatibility10.xml" />
     <None Include="Game\CoreCode.xml" />
-    <None Include="Game\CorporateHierarchy.xml" />
+    <None Include="Game\CorporateHierarchy.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Domina.xml" />
     <None Include="Game\DwargRaiders.xml" />
     <None Include="Game\EncountersVol01.xml" />
@@ -373,12 +377,18 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Iocrym.xml" />
-    <None Include="Game\KorolovShipping.xml" />
+    <None Include="Game\KorolovShipping.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Luminous.xml" />
     <None Include="Game\MiscItems.xml" />
     <None Include="Game\OutlawMiners.xml" />
-    <None Include="Game\PointJuno.xml" />
-    <None Include="Game\Rasiermesser.xml" />
+    <None Include="Game\PointJuno.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Rasiermesser.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Ringers.xml" />
     <None Include="Game\RogueFleet.xml" />
     <None Include="Game\RPGCode.xml">
@@ -390,7 +400,10 @@
     <None Include="Game\RPGMissions.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\SistersOfDomina.xml" />
+    <None Include="Game\SistersOfDomina.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Stargates.xml" />
     <None Include="Game\StdAutons.xml" />
     <None Include="Game\StdDevices.xml" />
     <None Include="Game\StdDockScreens.xml">
@@ -435,15 +448,21 @@
     </None>
     <None Include="Game\BattleArenaGladiators.xml" />
     <None Include="Game\CharonFortress.xml" />
-    <None Include="Game\Eridani.xml" />
+    <None Include="Game\Eridani.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\HumanSpaceMap.xml" />
     <None Include="Game\StdArmor.xml" />
     <None Include="Game\StdEffects.xml" />
     <None Include="Game\StdFuel.xml" />
-    <None Include="Game\StdPlayerShips.xml" />
+    <None Include="Game\StdPlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdShields.xml" />
     <None Include="Game\StdSystems.xml" />
-    <None Include="Game\StdTypes.xml" />
+    <None Include="Game\StdTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdUnknownItems.xml" />
     <None Include="Game\StdWeapons.xml" />
     <None Include="Game\StKatharines.xml" />

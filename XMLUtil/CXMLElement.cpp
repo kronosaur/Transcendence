@@ -195,7 +195,7 @@ bool CXMLElement::FindAttributeBool (const CString &sName, bool *retbValue)
 	if (m_Attributes.Lookup(sName, (CObject **)&pValue) == NOERROR)
 		{
 		if (retbValue)
-			*retbValue = strEquals(*pValue, CONSTLIT("true")) || strEquals(*pValue, CONSTLIT("1"));
+			*retbValue = IsBoolTrueValue(*pValue);
 		return true;
 		}
 	else
@@ -247,7 +247,7 @@ bool CXMLElement::GetAttributeBool (const CString &sName)
 	CString *pValue;
 
 	if (m_Attributes.Lookup(sName, (CObject **)&pValue) == NOERROR)
-		return strEquals(*pValue, CONSTLIT("true")) || strEquals(*pValue, CONSTLIT("1"));
+		return IsBoolTrueValue(*pValue);
 	else
 		return false;
 	}

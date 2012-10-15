@@ -488,6 +488,11 @@ EDamageResults CMissile::OnDamage (SDamageCtx &Ctx)
 
 	Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
 
+	//	Check for passthrough. If we pass through then we don't take any damage.
+
+	if (mathRandom(1, 100) <= m_pDesc->GetPassthrough())
+		return damageArmorHit;
+
 	//	Take damage
 
 	if (Ctx.iDamage < m_iHitPoints)
@@ -606,7 +611,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		Ctx.iRotation = m_iRotation;
 		Ctx.iDestiny = GetDestiny();
 
-		if (!m_fDestroyed && m_pHit == NULL)
+		if (!m_fDestroyed && (m_pHit == NULL || m_pDesc->GetPassthrough() > 0))
 			m_pPainter->Paint(Dest, x, y, Ctx);
 		else if (m_pHit)
 			m_pPainter->PaintHit(Dest, x, y, m_vHitPos, Ctx);
@@ -1004,15 +1009,8 @@ void CMissile::OnUpdate (Metric rSecondsPerTick)
 				//	Set the missile to destroy itself after a hit
 
 				else if (m_pDesc->GetPassthrough() == 0
-						|| result == damageNoDamage 
-						|| result == damageAbsorbedByShields
 						|| mathRandom(1, 100) > m_pDesc->GetPassthrough())
 					bDestroy = true;
-
-#if 0
-				if (result != damageAbsorbedByShields)
-					CreateHitEffect(m_vHitPos, Ctx.iDirection);
-#endif
 				}
 			}
 

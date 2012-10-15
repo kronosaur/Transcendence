@@ -400,7 +400,7 @@ void CLoginSession::CreateDlgRegister (const CVisualPalette &VI, IAnimatron **re
 	//	Auto sign in checkbox
 
 	IAnimatron *pControl;
-	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
+	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), 0, CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
 	y += cyHeight + DLG_SPACING_Y;
 
 	//	Some extra space
@@ -488,7 +488,7 @@ void CLoginSession::CreateDlgSignIn (const CVisualPalette &VI, IAnimatron **retp
 
 	//	Auto sign in checkbox
 
-	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
+	VI.CreateCheckbox(pContainer, ID_CTRL_AUTO_SIGN_IN, 0, y, RectWidth(rcDlg), 0, CONSTLIT("Sign in automatically"), &pControl, &cyHeight);
 	y += cyHeight + DLG_SPACING_Y;
 	if (m_Service.HasCapability(ICIService::autoLoginUser))
 		pControl->SetPropertyBool(PROP_CHECKED, true);

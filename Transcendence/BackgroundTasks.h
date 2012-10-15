@@ -21,14 +21,14 @@ class CChangePasswordTask : public IHITask
 class CInitAdventureTask : public IHITask
 	{
 	public:
-		CInitAdventureTask (CHumanInterface &HI, CTranscendenceModel &Model, DWORD dwAdventure) : IHITask(HI), m_Model(Model), m_dwAdventure(dwAdventure) { }
+		CInitAdventureTask (CHumanInterface &HI, CTranscendenceModel &Model, const SAdventureSettings &Settings) : IHITask(HI), m_Model(Model), m_Settings(Settings) { }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitAdventure(m_dwAdventure, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitAdventure(m_Settings, retsResult); }
 
 	private:
 		CTranscendenceModel &m_Model;
-		DWORD m_dwAdventure;
+		SAdventureSettings m_Settings;
 	};
 
 class CInitModelTask : public IHITask

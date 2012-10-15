@@ -52,6 +52,11 @@
 
 #define FILESPEC_TDB_EXTENSION					CONSTLIT("tdb")
 
+//	The center of an adventure cover image is at this position relative to the
+//	right edge of the image.
+
+const int RIGHT_COVER_OFFSET =					256 + 160;
+
 CExtension::CExtension (void) :
 		m_dwUNID(0),
 		m_iType(extUnknown),
@@ -500,31 +505,45 @@ void CExtension::CreateIcon (int cxWidth, int cyHeight, CG16bitImage **retpIcon)
 	CG16bitImage *pIcon;
 	if (pBackground->GetWidth() > cxWidth || pBackground->GetHeight() > cyHeight)
 		{
-		Metric rScale = (Metric)cxWidth / pBackground->GetWidth();
-		if (rScale * pBackground->GetHeight() > (Metric)cyHeight)
+		int xSrc, ySrc, cxSrc, cySrc;
+		Metric rScale;
+
+		//	If we have a widescreen cover image and we want a portrait or
+		//	square icon, then we zoom in on the key part of the cover.
+
+		if (pBackground->GetWidth() > 2 * pBackground->GetHeight())
+			{
 			rScale = (Metric)cyHeight / pBackground->GetHeight();
 
-		int cxDest = (int)(rScale * pBackground->GetWidth());
-		int cyDest = (int)(rScale * pBackground->GetHeight());
+			cxSrc = (int)(cxWidth / rScale);
+			xSrc = Min(pBackground->GetWidth() - cxSrc, pBackground->GetWidth() - (RIGHT_COVER_OFFSET + (cxSrc / 2)));
+
+			ySrc = 0;
+			cySrc = pBackground->GetHeight();
+			}
+		else
+			{
+			rScale = (Metric)cxWidth / pBackground->GetWidth();
+			if (rScale * pBackground->GetHeight() > (Metric)cyHeight)
+				rScale = (Metric)cyHeight / pBackground->GetHeight();
+
+			xSrc = 0;
+			ySrc = 0;
+			cxSrc = pBackground->GetWidth();
+			cySrc = pBackground->GetHeight();
+			}
 
 		//	Create the icon
 
 		pIcon = new CG16bitImage;
-		pIcon->CreateBlank(cxDest, cyDest, false);
-
-		//	Scale
-
-		DrawBltTransformed(*pIcon,
-				cxDest / 2,
-				cyDest / 2,
+		pIcon->CreateFromImageTransformed(*pBackground,
+				xSrc,
+				ySrc,
+				cxSrc,
+				cySrc,
 				rScale,
 				rScale,
-				0.0,
-				*pBackground,
-				0,
-				0,
-				pBackground->GetWidth(),
-				pBackground->GetHeight());
+				0.0);
 		}
 
 	//	Otherwise we center the image on the icon

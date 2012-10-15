@@ -23,6 +23,8 @@ ICCItem *fnEnvironmentGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 #define FN_DEBUG_OUTPUT				1
 #define FN_DEBUG_LOG				2
+#define FN_PRINT					3
+#define FN_PRINT_TO					4
 
 ICCItem *fnDebug (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -201,6 +203,7 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_ARMOR_CRITICALITY	107
 #define FN_OBJ_SET_ITEM_PROPERTY	108
 #define FN_OBJ_GET_ITEM_PROPERTY	109
+#define FN_OBJ_SET_OVERLAY_EFFECT_PROPERTY	110
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -407,6 +410,8 @@ ICCItem *fnSystemAddStationTimerEvent (CEvalContext *pEvalCtx, ICCItem *pArgs, D
 #define FN_SYS_SET_KNOWN				20
 #define FN_SYS_IS_KNOWN					21
 #define FN_SYS_STARGATE_DESTINATION		22
+#define FN_SYS_GET_PROPERTY				23
+#define FN_SYS_SET_PROPERTY				24
 
 ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -458,6 +463,7 @@ ICCItem *fnResourceGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_VECTOR_ANGLE					6
 #define FN_VECTOR_SPEED					7
 #define FN_VECTOR_POLAR_VELOCITY		8
+#define FN_VECTOR_PIXEL_OFFSET			9
 
 ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -494,13 +500,27 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	Debug functions
 		//	---------------
 
-		{	"dbgOutput",					fnDebug,		FN_DEBUG_OUTPUT,
-			"(dbgOutput string [string]*)",
+		{	"dbgLog",						fnDebug,		FN_DEBUG_LOG,
+			"(dbgLog [string]*)",
 			"*",	PPFLAG_SIDEEFFECTS,	},
 
-		{	"dbgLog",						fnDebug,		FN_DEBUG_LOG,
-			"(dbgLog string [string]*)",
+		{	"dbgOutput",					fnDebug,		FN_DEBUG_OUTPUT,
+			"(dbgOutput [string]*)",
 			"*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"print",						fnDebug,		FN_PRINT,
+			"(print [string]*)",
+			"*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"printTo",						fnDebug,		FN_PRINT_TO,
+			"(printTo output [string]*)\n\n"
+			
+			"output is one or more of:\n\n"
+
+			"   'console\n"
+			"   'log\n",
+
+			"v*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	Item functions
 		//	--------------
@@ -1462,6 +1482,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objSetOverlayData obj overlayID attrib data)",
 			"iisv",	PPFLAG_SIDEEFFECTS,	},
 
+		{	"objSetOverlayEffectProperty",			fnObjGet,		FN_OBJ_SET_OVERLAY_EFFECT_PROPERTY,
+			"(objSetOverlayEffectProperty obj overlayID property value)",
+			"iisv",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"objSetOverlayPos",			fnObjGet,		FN_OBJ_SET_OVERLAY_POSITION,
 			"(objSetOverlayPos obj overlayID pos)",
 			"iiv",	PPFLAG_SIDEEFFECTS,	},
@@ -1874,6 +1898,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(sysGetObjectByName [source] name) -> obj",
 			"*s",	0,	},
 
+		{	"sysGetProperty",	fnSystemGet,	FN_SYS_GET_PROPERTY,
+			"(sysGetProperty [nodeID] property) -> value\n\n"
+			
+			"property:\n\n"
+			
+			"   'level             The level of the system\n"
+			"   'name              The name of the system\n"
+			"   'pos               Node position on map (x y)\n",
+
+			"*s",	0,	},
+
 		{	"sysGetStargateDestination",	fnSystemGet,	FN_SYS_STARGATE_DESTINATION,
 			"(sysGetStargateDestination [nodeID] gateID) -> (nodeID gateID)",
 			"s*",	0,	},
@@ -1914,6 +1949,15 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(sysSetKNown [nodeID] [True/Nil]) -> True/Nil",
 			"*",	PPFLAG_SIDEEFFECTS,	},
 
+		{	"sysSetProperty",	fnSystemGet,	FN_SYS_SET_PROPERTY,
+			"(sysSetProperty [nodeID] property value) -> True/Nil\n\n"
+			
+			"property:\n\n"
+			
+			"   'pos               Node position on map (x y)\n",
+
+			"*sv",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"sysStartTime",					fnSystemMisc,	FN_SYS_START_TIME,
 			"(sysStartTime) -> True/Nil",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
@@ -1942,6 +1986,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"sysVectorMultiply",			fnSystemVectorMath,		FN_VECTOR_MULTIPLY,
 			"(sysVectorMultiply vector scalar) -> vector",
 			"vi",	0,	},
+
+		{	"sysVectorPixelOffset",			fnSystemVectorMath,		FN_VECTOR_PIXEL_OFFSET,
+			"(sysVectorPixelOffset center x y) -> vector",
+		//			center is either Nil, an object, or a vector
+			"vii",	0,	},
 
 		{	"sysVectorPolarOffset",			fnSystemVectorOffset,	0,
 			"(sysVectorPolarOffset center angle radius) -> vector",
@@ -2498,17 +2547,66 @@ ICCItem *fnDebug (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		case FN_DEBUG_OUTPUT:
 		case FN_DEBUG_LOG:
+		case FN_PRINT:
+		case FN_PRINT_TO:
 			{
-			CString sResult;
+			const DWORD OUTPUT_CONSOLE	= 0x00000001;
+			const DWORD OUTPUT_LOG		= 0x00000002;
 
 			//	Only in debug mode
 
-			if (!g_pUniverse->InDebugMode())
+			if ((dwData == FN_DEBUG_OUTPUT || dwData == FN_DEBUG_LOG)
+					&& !g_pUniverse->InDebugMode())
 				return pCC->CreateNil();
+
+			//	Figure out where to output and when to start parsing for text 
+			//	to output.
+
+			DWORD dwOutput;
+			int iStart;
+			if (dwData == FN_DEBUG_OUTPUT || dwData == FN_PRINT)
+				{
+				dwOutput = OUTPUT_CONSOLE;
+				iStart = 0;
+				}
+			else if (dwData == FN_DEBUG_LOG)
+				{
+				dwOutput = OUTPUT_LOG;
+				iStart = 0;
+				}
+			else if (dwData == FN_PRINT_TO)
+				{
+				//	First argument is output options
+
+				dwOutput = 0;
+				ICCItem *pOptions = pArgs->GetElement(0);
+				for (i = 0; i < pOptions->GetCount(); i++)
+					{
+					CString sOutput = pOptions->GetElement(i)->GetStringValue();
+					if (strEquals(sOutput, CONSTLIT("console")))
+						dwOutput |= OUTPUT_CONSOLE;
+					else if (strEquals(sOutput, CONSTLIT("log")))
+						dwOutput |= OUTPUT_LOG;
+					else
+						return pCC->CreateError(CONSTLIT("Invalid output option"), pOptions->GetElement(i));
+					}
+
+				iStart = 1;
+				}
+			else
+				{
+				ASSERT(false);
+				return pCC->CreateNil();
+				}
+
+			//	Figure out what to return
+
+			bool bReturnString = (dwData == FN_DEBUG_LOG);
 
 			//	Append each of the arguments together
 
-			for (i = 0; i < pArgs->GetCount(); i++)
+			CString sResult;
+			for (i = iStart; i < pArgs->GetCount(); i++)
 				{
 				if (pArgs->GetElement(i)->IsList() && !pArgs->GetElement(i)->IsSymbolTable())
 					sResult.Append(pCC->Unlink(pArgs->GetElement(i)));
@@ -2518,16 +2616,18 @@ ICCItem *fnDebug (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Output to console or log
 
-			if (dwData == FN_DEBUG_OUTPUT)
-				{
+			if (dwOutput & OUTPUT_CONSOLE)
 				g_pUniverse->GetHost()->ConsoleOutput(sResult);
-				return pCC->CreateTrue();
-				}
-			else
-				{
+
+			if (dwOutput & OUTPUT_LOG)
 				kernelDebugLogMessage(sResult);
+
+			//	Result
+
+			if (bReturnString)
 				return pCC->CreateString(sResult);
-				}
+			else
+				return pCC->CreateTrue();
 			}
 
 		default:
@@ -4725,6 +4825,15 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			pObj->SetOverlayData(dwID, sAttrib, sData);
 			return pCC->CreateTrue();
+			}
+
+		case FN_OBJ_SET_OVERLAY_EFFECT_PROPERTY:
+			{
+			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
+			CString sAttrib = pArgs->GetElement(2)->GetStringValue();
+			ICCItem *pValue = pArgs->GetElement(3);
+
+			return pCC->CreateBool(pObj->SetOverlayEffectProperty(dwID, sAttrib, pValue));
 			}
 
 		case FN_OBJ_SET_OVERLAY_POSITION:
@@ -8808,6 +8917,74 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateInteger(VectorToPolar(vInterceptPoint));
 			}
 
+		case FN_SYS_GET_PROPERTY:
+			{
+			CTopologyNode *pNode;
+			int iArg = 0;
+
+			//	If we have more than one arg, then the first arg is
+			//	the node ID.
+
+			if (pArgs->GetCount() == 1)
+				{
+				CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+				if (pSystem == NULL)
+					return StdErrorNoSystem(*pCC);
+
+				pNode = pSystem->GetTopology();
+				}
+			else
+				pNode = g_pUniverse->FindTopologyNode(pArgs->GetElement(iArg++)->GetStringValue());
+
+			if (pNode == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid nodeID"), pArgs->GetElement(0));
+
+			CString sProperty = pArgs->GetElement(iArg++)->GetStringValue();
+
+			//	Get the property
+
+			return pNode->GetProperty(sProperty);
+			}
+
+		case FN_SYS_SET_PROPERTY:
+			{
+			CTopologyNode *pNode;
+			int iArg = 0;
+
+			//	If we have more than two args, then the first arg is
+			//	the node ID.
+
+			if (pArgs->GetCount() <= 2)
+				{
+				CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+				if (pSystem == NULL)
+					return StdErrorNoSystem(*pCC);
+
+				pNode = pSystem->GetTopology();
+				}
+			else
+				pNode = g_pUniverse->FindTopologyNode(pArgs->GetElement(iArg++)->GetStringValue());
+
+			if (pNode == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid nodeID"), pArgs->GetElement(0));
+
+			CString sProperty = pArgs->GetElement(iArg++)->GetStringValue();
+			ICCItem *pValue = pArgs->GetElement(iArg++);
+
+			//	Set the property
+
+			CString sError;
+			if (!pNode->SetProperty(sProperty, pValue, &sError))
+				{
+				if (sError.IsBlank())
+					return pCC->CreateError(strPatternSubst(CONSTLIT("Invalid property: %s"), sProperty));
+				else
+					return pCC->CreateError(sError);
+				}
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_SYS_GET_TRAVEL_DISTANCE:
 			{
 			Metric rSpeed;
@@ -9362,6 +9539,23 @@ ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 			int iFactor = pArgs->GetElement(1)->GetIntegerValue();
 
 			return CreateListFromVector(*pCC, vPos1 * (Metric)iFactor);
+			}
+
+		case FN_VECTOR_PIXEL_OFFSET:
+			{
+			//	Get the center
+
+			CVector vCenter;
+			GetPosOrObject(pEvalCtx, pArgs->GetElement(0), &vCenter);
+
+			//	Get the offset
+
+			int xOffset = pArgs->GetElement(1)->GetIntegerValue();
+			int yOffset = pArgs->GetElement(2)->GetIntegerValue();
+
+			//	Return the vector
+
+			return CreateListFromVector(*pCC, vCenter + CVector(xOffset * g_KlicksPerPixel, yOffset * g_KlicksPerPixel));
 			}
 
 		case FN_VECTOR_RANDOM:

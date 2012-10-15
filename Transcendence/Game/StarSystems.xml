@@ -1214,4 +1214,107 @@
 		
 	</SystemPartTable>
 
+<!-- CODE ======================================================================
+
+	Helper methods for use in system creation.
+
+-->
+
+	<Globals>
+		(block Nil
+
+			(setq trnCreateAllStargates (lambda (options)
+
+				; The options parameter may have the following fields
+				;
+				;	beaconType:					The StationType of the beacons
+				;									surrounding the stargate. The
+				;									default is stStargateBeacon.
+				;	corewardLocationCriteria:	The location criteria for coreward
+				;									stargates. The default is:
+				;									"++innerSystem; -asteroids; -gasGiant"
+				;	corewardNode:				Node in topology that is closest to
+				;									galactic center. Stargates leading
+				;									to this node will look slightly
+				;									different. The default is to look
+				;									at the "defaultCorewardNode" static data in
+				;									the adventure descriptor. If that is
+				;									Nil also, all stargates are edgeward.
+				;	edgewardLocationCriteria:	The location criteria for edgeward
+				;									stargates. The default is:
+				;									"++outerSystem; -asteroids; -gasGiant"
+				;	stargateType:				The StationType to use. The default is
+				;									stStargate.
+
+				(block (allStargates corewardGate beaconType corewardLocationCriteria
+						corewardNode edgewardLocationCriteria stargateType)
+
+					; Get all options
+
+					(setq beaconType (if (@ options 'beaconType) (@ options 'beaconType) &stStargateBeacon;))
+					(setq corewardLocationCriteria (if (@ options 'corewardLocationCriteria) (@ options 'corewardLocationCriteria) "++innerSystem; -asteroids; -gasGiant"))
+					(setq corewardNode (if (@ options 'corewardNode) (@ options 'corewardNode) (typGetStaticData (@ (typFind "a") 0) 'defaultCorewardNode)))
+					(setq edgewardLocationCriteria (if (@ options 'edgewardLocationCriteria) (@ options 'edgewardLocationCriteria) "++outerSystem; -asteroids; -gasGiant"))
+					(setq stargateType (if (@ options 'stargateType) (@ options 'stargateType) &stStargate;))
+
+					; Find the gate that has the shortest path to the Core
+					(setq allStargates (sysGetStargates))
+					(setq corewardGate
+						(if corewardNode
+							(map allStargates '(reduceMin original) theGate
+								(sysGetTopologyDistance (sysGetStargateDestinationNode theGate) corewardNode)
+								)
+							Nil
+							)
+						)
+						
+					; Enumerate all the stargates that this system should have.
+					; Create those that are needed.
+					
+					(enum allStargates theGate
+						(if (not (sysGetObjectByName theGate))
+							(block (gateObj beacon1Pos beacon2Pos locationCriteria)
+							
+								; The coreward gate is usually in the inner system.
+								; The others are in the outer system.
+								(setq locationCriteria (if (eq theGate corewardGate)
+									(list 'location corewardLocationCriteria)
+									(list 'location edgewardLocationCriteria)
+									))
+
+								; Create the stargate
+								(setq gateObj (sysCreateStargate
+									stargateType
+									locationCriteria
+									theGate
+									))
+									
+								; If we could not create the gate, it is probably because we did not
+								; have enough locations. This should never happen, but just in case we
+								; handle it here.
+								
+								(if (not gateObj)
+									(setq gateObj (sysCreateStargate stargateType (sysVectorRandom Nil 120 10) theGate))
+									)
+									
+								; The position of the beacons depends on whether the gate leads
+								; to the core or not.
+								
+								(setq beacon1Pos (sysVectorPolarOffset gateObj 270 6))
+								(if (eq theGate corewardGate)
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 90 6))
+									(setq beacon2Pos (sysVectorPolarOffset gateObj 0 6))
+									)
+									
+								; Create beacons
+								(sysCreateStation beaconType beacon1Pos)
+								(sysCreateStation beaconType beacon2Pos)
+								)
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+
 </TranscendenceModule>

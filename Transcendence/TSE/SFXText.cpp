@@ -4,10 +4,15 @@
 
 #include "PreComp.h"
 
+#define ALIGN_ATTRIB							CONSTLIT("align")
 #define FONT_ATTRIB								CONSTLIT("font")
 #define OPACITY_ATTRIB							CONSTLIT("opacity")
 #define PRIMARY_COLOR_ATTRIB					CONSTLIT("primaryColor")
 #define TEXT_ATTRIB								CONSTLIT("text")
+
+#define ALIGN_CENTER							CONSTLIT("center")
+#define ALIGN_RIGHT								CONSTLIT("right")
+#define ALIGN_LEFT								CONSTLIT("left")
 
 class CTextPainter : public IEffectPainter
 	{
@@ -21,6 +26,8 @@ class CTextPainter : public IEffectPainter
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool SetParamString (const CString &sParam, const CString &sValue);
+		virtual bool SetProperty (const CString &sProperty, ICCItem *pValue);
 
 	protected:
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
@@ -70,8 +77,22 @@ ALERROR CTextEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElem
 		}
 
 	m_wPrimaryColor = ::LoadRGBColor(pDesc->GetAttribute(PRIMARY_COLOR_ATTRIB));
-	m_dwAlignment = CG16bitFont::AlignCenter;
 	m_byOpacity = pDesc->GetAttributeIntegerBounded(OPACITY_ATTRIB, 0, 255, 255);
+
+	//	Alignment
+
+	CString sAlign;
+	if (pDesc->FindAttribute(ALIGN_ATTRIB, &sAlign))
+		{
+		if (strEquals(sAlign, ALIGN_LEFT))
+			m_dwAlignment = 0;
+		else if (strEquals(sAlign, ALIGN_RIGHT))
+			m_dwAlignment = CG16bitFont::AlignRight;
+		else
+			m_dwAlignment = CG16bitFont::AlignCenter;
+		}
+	else
+		m_dwAlignment = CG16bitFont::AlignCenter;
 
 	return NOERROR;
 	}
@@ -214,6 +235,36 @@ bool CTextPainter::PointInImage (int x, int y, int iTick, int iVariant) const
 	return (x >= rcRect.left && x < rcRect.right && y >= rcRect.top && y < rcRect.bottom);
 	}
 
+bool CTextPainter::SetParamString (const CString &sParam, const CString &sValue)
+
+//	SetParamString
+//
+//	Sets parameters
+
+	{
+	if (strEquals(sParam, TEXT_ATTRIB))
+		SetText(sValue);
+	else
+		return false;
+
+	return true;
+	}
+
+bool CTextPainter::SetProperty (const CString &sProperty, ICCItem *pValue)
+
+//	SetProperty
+//
+//	Sets a property
+
+	{
+	if (strEquals(sProperty, TEXT_ATTRIB))
+		SetText(pValue->GetStringValue());
+	else
+		return false;
+
+	return true;
+	}
+
 void CTextPainter::SetText (const CString &sText)
 
 //	SetText
@@ -224,4 +275,3 @@ void CTextPainter::SetText (const CString &sText)
 	m_sText = sText;
 	MeasureText();
 	}
-

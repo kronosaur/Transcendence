@@ -1982,7 +1982,7 @@
 			frequency=			"rare"
 			attributes=			"MinorItem"
 
-			description=		"Ion power capicitors are used to increase the destructive power of ion weapons."
+			description=		"Ion power capacitors are used to increase the destructive power of ion weapons."
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="576" imageWidth="96" imageHeight="96"/>

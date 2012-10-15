@@ -60,8 +60,8 @@ APPICON                 ICON                    "Transcendence.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,8,7
- PRODUCTVERSION 1,0,8,7
+ FILEVERSION 1,0,8,9
+ PRODUCTVERSION 1,0,8,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -78,13 +78,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.0.8.7"
+            VALUE "FileVersion", "1.0.8.9"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2012 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.08g"
+            VALUE "ProductVersion", "1.08i"
         END
     END
     BLOCK "VarFileInfo"

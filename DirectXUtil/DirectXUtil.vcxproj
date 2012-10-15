@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClCompile Include="16bitBlt.cpp" />
     <ClCompile Include="16bitDrawCircle.cpp" />
+    <ClCompile Include="16bitDrawGradient.cpp" />
     <ClCompile Include="16bitImageDrawing.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>

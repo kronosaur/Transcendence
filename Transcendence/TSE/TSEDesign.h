@@ -27,6 +27,8 @@ const int MAX_ITEM_LEVEL =				25;	//	Max level for items
 
 enum ItemCategories
 	{
+	itemcatNone =			0xffffffff,
+
 	itemcatMisc =			0x00000001,		//	General item with no object UNID
 	itemcatArmor =			0x00000002,		//	Armor items
 	itemcatWeapon =			0x00000004,		//	Primary weapons
@@ -565,6 +567,7 @@ class CObjectImage : public CDesignType
 
 		//	CDesignType overrides
 		static CObjectImage *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designImage) ? (CObjectImage *)pType : NULL); }
+		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual DesignTypes GetType (void) const { return designImage; }
 
 	protected:
@@ -1025,6 +1028,7 @@ class DamageTypeSet
 		ALERROR InitFromXML (const CString &sAttrib);
 		void Add (int iType) { if (iType > damageGeneric) m_dwSet |= (1 << iType); }
 		bool InSet (int iType) { return (iType <= damageGeneric ? false : ((m_dwSet & (1 << iType)) ? true : false)); }
+		inline bool IsEmpty (void) const { return (m_dwSet == 0); }
 		void Remove (int iType) { if (iType > damageGeneric) m_dwSet &= ~(1 << iType); }
 
 	private:
@@ -1757,6 +1761,7 @@ class CDeviceClass : public CObject
 		inline CString GetName (void);
 		inline CEnergyFieldType *GetOverlayType (void) const { return m_pOverlayType; }
 		CString GetReferencePower (CItemCtx &Ctx);
+		inline ItemCategories GetSlotCategory (void) const { return (m_iSlotCategory == itemcatNone ? GetCategory() : m_iSlotCategory); }
 		inline int GetSlotsRequired (void) { return m_iSlots; }
 		inline DWORD GetUNID (void);
 		inline void MarkImages (void) { OnMarkImages(); }
@@ -1781,7 +1786,7 @@ class CDeviceClass : public CObject
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource) { return 0; }
 		virtual int GetAmmoVariant (const CItemType *pItem) const { return -1; }
 		virtual int GetCargoSpace (void) { return 0; }
-		virtual ItemCategories GetCategory (void) = 0;
+		virtual ItemCategories GetCategory (void) const = 0;
 		virtual int GetCounter (CInstalledDevice *pDevice, CSpaceObject *pSource, CounterTypes *retiType = NULL) { return 0; }
 		virtual const DamageDesc *GetDamageDesc (CItemCtx &Ctx) { return NULL; }
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1) { return damageGeneric; }
@@ -1827,10 +1832,12 @@ class CDeviceClass : public CObject
 		virtual bool ValidateSelectedVariant (CSpaceObject *pSource, CInstalledDevice *pDevice) { return false; }
 
 		static bool FindAmmoDataField (CItemType *pItem, const CString &sField, CString *retsValue);
+		static ItemCategories GetItemCategory (DeviceNames iDev);
 		static CString GetLinkedFireOptionString (DWORD dwOptions);
 		static ALERROR ParseLinkedFireOptions (SDesignLoadCtx &Ctx, const CString &sDesc, DWORD *retdwOptions);
 
 	protected:
+		inline ItemCategories GetDefinedSlotCategory (void) { return m_iSlotCategory; }
 		ALERROR InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType);
 
 		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { }
@@ -1841,6 +1848,7 @@ class CDeviceClass : public CObject
 	private:
 		CItemType *m_pItemType;					//	Item for device
 		int m_iSlots;							//	Number of device slots required
+		ItemCategories m_iSlotCategory;			//	Count as this category (for device slot purposes)
 
 		COverlayTypeRef m_pOverlayType;			//	Associated overlay (may be NULL)
 
@@ -2138,6 +2146,7 @@ class CPlayerSettings
 		inline bool HasAutopilot (void) const { return (m_fAutopilot ? true : false); }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc);
 		inline bool IsDebugOnly (void) const { return (m_fDebug ? true : false); }
+		inline bool IsIncludedInAllAdventures (void) const { return (m_fIncludeInAllAdventures ? true : false); }
 		inline bool IsInitialClass (void) const { return (m_fInitialClass ? true : false); }
 
 		const SArmorImageDesc *GetArmorImageDescRaw (void) const { return (m_fHasArmorDesc ? &m_ArmorDesc : NULL); }
@@ -2176,7 +2185,10 @@ class CPlayerSettings
 		DWORD m_fHasArmorDesc:1;					//	TRUE if m_pArmorDesc initialized
 		DWORD m_fHasReactorDesc:1;					//	TRUE if m_ReactorDesc initialized
 		DWORD m_fHasShieldDesc:1;					//	TRUE if m_ShieldDesc initialized
-		DWORD m_dwSpare:26;
+		DWORD m_fIncludeInAllAdventures:1;			//	TRUE if we should always include this ship
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
 	};
 
 enum AICombatStyles
@@ -2556,6 +2568,8 @@ class IEffectPainter
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx) { }
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const { return false; }
 		virtual void SetParamMetric (const CString &sParam, Metric rValue) { }
+		virtual bool SetParamString (const CString &sParam, const CString &sValue) { return false; }
+		virtual bool SetProperty (const CString &sProperty, ICCItem *pValue) { return false; }
 		virtual void SetPos (const CVector &vPos) { }
 		virtual void SetVariants (int iVariants) { }
 
@@ -2623,6 +2637,7 @@ class CTopologyNode
 		inline const CString &GetID (void) { return m_sID; }
 		CTopologyNode *GetGateDest (const CString &sName, CString *retsEntryPoint = NULL);
 		inline int GetLevel (void) { return m_iLevel; }
+		ICCItem *GetProperty (const CString &sName);
 		inline int GetStargateCount (void) { return m_NamedGates.GetCount(); }
 		CString GetStargate (int iIndex);
 		CTopologyNode *GetStargateDest (int iIndex, CString *retsEntryPoint = NULL);
@@ -2652,6 +2667,7 @@ class CTopologyNode
 		inline void SetMarked (bool bValue = true) { m_bMarked = bValue; }
 		inline void SetName (const CString &sName) { m_sName = sName; }
 		inline void SetPos (int xPos, int yPos) { m_xPos = xPos; m_yPos = yPos; }
+		bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		void SetStargateDest (const CString &sName, const CString &sDestNode, const CString &sEntryPoint);
 		inline void SetSystem (CSystem *pSystem) { m_pSystem = pSystem; }
 		inline void SetSystemID (DWORD dwID) { m_dwID = dwID; }
@@ -3100,6 +3116,7 @@ class CItemType : public CDesignType
 		CString GetName (DWORD *retdwFlags, bool bActualName = false) const;
 		CString GetNounPhrase (DWORD dwFlags = 0) const;
 		CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0) const;
+		ItemCategories GetSlotCategory (void) const;
 		CString GetSortName (void) const;
 		inline CItemType *GetUnknownType (void) { return m_pUnknownType; }
 		inline ICCItem *GetUseCode (void) const { return m_pUseCode; }
@@ -3129,6 +3146,9 @@ class CItemType : public CDesignType
 		virtual int GetLevel (void) const { return m_iLevel; }
 		virtual DesignTypes GetType (void) const { return designItemType; }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
+
+		static CString GetItemCategory (ItemCategories iCategory);
+		static bool ParseItemCategory (const CString &sCategory, ItemCategories *retCategory = NULL);
 
 	protected:
 		//	CDesignType overrides
@@ -3339,6 +3359,7 @@ class CShipClass : public CDesignType
 		inline bool HasShipName (void) const { return !m_sShipNames.IsBlank(); }
 		void InstallEquipment (CShip *pShip);
 		inline bool IsDebugOnly (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsDebugOnly()); }
+		inline bool IsIncludedInAllAdventures (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsIncludedInAllAdventures()); }
 		inline bool IsPlayerShip (void) { return (m_pPlayerSettings != NULL); }
 		inline bool IsShownAtNewGame (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsInitialClass() && !IsVirtual()); }
 		inline bool IsTimeStopImmune (void) { return (m_fTimeStopImmune ? true : false); }
@@ -3586,6 +3607,7 @@ class CEnergyFieldType : public CDesignType
 
 		//	CDesignType overrides
 		static CEnergyFieldType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designEnergyFieldType) ? (CEnergyFieldType *)pType : NULL); }
+		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual DesignTypes GetType (void) const { return designEnergyFieldType; }
 
 	protected:
@@ -4210,7 +4232,7 @@ class CAdventureDesc : public CDesignType
 		void FireOnGameStart (void);
 		inline const CDamageAdjDesc *GetArmorDamageAdj (int iLevel) const { return &m_ArmorDamageAdj[iLevel - 1]; }
 		inline DWORD GetBackgroundUNID (void) { return m_dwBackgroundUNID; }
-		inline const CString &GetDesc (void) { return m_sDesc; }
+		CString GetDesc (void);
 		inline DWORD GetExtensionUNID (void) { return m_dwExtensionUNID; }
 		inline const CString &GetName (void) { return m_sName; }
 		inline const CDamageAdjDesc *GetShieldDamageAdj (int iLevel) const { return &m_ShieldDamageAdj[iLevel - 1]; }
@@ -4247,7 +4269,6 @@ class CAdventureDesc : public CDesignType
 
 		CString m_sName;						//	Name of adventure
 		DWORD m_dwBackgroundUNID;				//	Background image to use for choice screen
-		CString m_sDesc;						//	Description of adventure
 		CString m_sWelcomeMessage;				//	Equivalent of "Welcome to Transcendence!"
 
 		CDesignTypeCriteria m_StartingShips;	//	Starting ship criteria
@@ -4529,7 +4550,7 @@ class CInstalledDevice
 		inline bool CanRotate (CItemCtx &Ctx) { return m_pClass->CanRotate(Ctx); }
 		inline void Deplete (CSpaceObject *pSource) { m_pClass->Deplete(this, pSource); }
 		int GetActivateDelay (CSpaceObject *pSource);
-		inline ItemCategories GetCategory (void) { return m_pClass->GetCategory(); }
+		inline ItemCategories GetCategory (void) const { return m_pClass->GetCategory(); }
 		inline int GetCounter (CSpaceObject *pSource, CDeviceClass::CounterTypes *retiCounter = NULL) { return m_pClass->GetCounter(this, pSource, retiCounter); }
 		inline const DamageDesc *GetDamageDesc (CItemCtx &Ctx) { return m_pClass->GetDamageDesc(Ctx); }
 		inline int GetDamageType (int iVariant = -1) { return m_pClass->GetDamageType(this, iVariant); }
@@ -4546,6 +4567,7 @@ class CInstalledDevice
 											int *retiAmmoLeft,
 											CItemType **retpType = NULL)
 			{ m_pClass->GetSelectedVariantInfo(pSource, this, retsLabel, retiAmmoLeft, retpType); }
+		inline ItemCategories GetSlotCategory (void) const { return m_pClass->GetSlotCategory(); }
 		inline void GetStatus (CShip *pShip, int *retiStatus, int *retiMaxStatus) { m_pClass->GetStatus(this, pShip, retiStatus, retiMaxStatus); }
 		inline CSpaceObject *GetTarget (CSpaceObject *pSource) const;
 		inline int GetValidVariantCount (CSpaceObject *pSource) { return m_pClass->GetValidVariantCount(pSource, this); }
@@ -4707,7 +4729,7 @@ class CExtension
 		inline DWORD GetAPIVersion (void) const { return m_dwAPIVersion; }
 		CG16bitImage *GetCoverImage (void) const;
 		inline const TArray<CString> &GetCredits (void) const { return m_Credits; }
-		inline const CString &GetDesc (void) const { return (m_pAdventureDesc ? m_pAdventureDesc->GetDesc() : NULL_STR); }
+		inline CString GetDesc (void) { return (m_pAdventureDesc ? m_pAdventureDesc->GetDesc() : NULL_STR); }
 		inline const CDesignTable &GetDesignTypes (void) { return m_DesignTypes; }
 		inline CExternalEntityTable *GetEntities (void) { return m_pEntities; }
 		inline const CString &GetFilespec (void) const { return m_sFilespec; }
@@ -5000,6 +5022,7 @@ CString GenerateRandomName (const CString &sList, const CString &sSubst);
 CString GenerateRandomNameFromTemplate (const CString &sName, const CString &sSubst = NULL_STR);
 CString GetDamageName (DamageTypes iType);
 CString GetDamageShortName (DamageTypes iType);
+CString GetDamageType (DamageTypes iType);
 int GetDiceCountFromAttribute(const CString &sValue);
 int GetFrequency (const CString &sValue);
 int GetFrequencyByLevel (const CString &sLevelFrequency, int iLevel);

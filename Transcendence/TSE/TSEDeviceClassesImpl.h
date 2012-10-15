@@ -14,7 +14,7 @@ class CAutoDefenseClass : public CDeviceClass
 
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
+		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1);
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
@@ -59,7 +59,7 @@ class CCargoSpaceClass : public CDeviceClass
 		virtual bool CanBeDamaged (void) { return false; }
 		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual ItemCategories GetCategory (void) { return itemcatCargoHold; }
+		virtual ItemCategories GetCategory (void) const { return itemcatCargoHold; }
 		virtual int GetCargoSpace (void) { return m_iCargoSpace; }
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
 
@@ -83,7 +83,7 @@ class CCyberDeckClass : public CDeviceClass
 							   bool *retbConsumedItems = NULL);
 		virtual bool CanHitFriends (void) { return false; }
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource) { return 30; }
-		virtual ItemCategories GetCategory (void) { return itemcatWeapon; }
+		virtual ItemCategories GetCategory (void) const { return itemcatWeapon; }
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1) { return damageGeneric; }
 		virtual Metric GetMaxEffectiveRange (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
@@ -117,7 +117,7 @@ class CDriveClass : public CDeviceClass
 		//	CDeviceClass virtuals
 
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual ItemCategories GetCategory (void) { return itemcatDrive; }
+		virtual ItemCategories GetCategory (void) const { return itemcatDrive; }
 		virtual const DriveDesc *GetDriveDesc (CInstalledDevice *pDevice = NULL, CSpaceObject *pSource = NULL);
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
@@ -138,7 +138,7 @@ class CEnhancerClass : public CDeviceClass
 		//	CDeviceClass virtuals
 
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
+		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual bool GetDeviceEnhancementDesc (CInstalledDevice *pDevice, CSpaceObject *pSource, CInstalledDevice *pWeapon, SDeviceEnhancementDesc *retDesc);
 		virtual int GetPowerRating (CItemCtx &Ctx) { return m_iPowerUse; }
 
@@ -169,7 +169,7 @@ class CMiscellaneousClass : public CDeviceClass
 
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
+		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual int GetCounter (CInstalledDevice *pDevice, CSpaceObject *pSource, CounterTypes *retiType = NULL);
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual bool ShowActivationDelayCounter (CSpaceObject *pSource, CInstalledDevice *pDevice);
@@ -208,7 +208,7 @@ class CReactorClass : public CDeviceClass
 
 		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual ItemCategories GetCategory (void) { return itemcatReactor; }
+		virtual ItemCategories GetCategory (void) const { return itemcatReactor; }
 		virtual const ReactorDesc *GetReactorDesc (CInstalledDevice *pDevice = NULL, CSpaceObject *pSource = NULL);
 		virtual bool IsFuelCompatible (CItemCtx &Ctx, const CItem &FuelItem);
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
@@ -229,7 +229,7 @@ class CRepairerClass : public CDeviceClass
 		//	CDeviceClass virtuals
 
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
+		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual int GetPowerRating (CItemCtx &Ctx) { return 2 * m_iPowerUse; }
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
 		virtual void Update (CInstalledDevice *pDevice, 
@@ -272,7 +272,7 @@ class CShieldClass : public CDeviceClass
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual void Deplete (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual ItemCategories GetCategory (void) { return itemcatShields; }
+		virtual ItemCategories GetCategory (void) const { return itemcatShields; }
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
 		virtual bool GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pInstalled, int *retiHP, int *retArray) const;
@@ -349,7 +349,7 @@ class CSolarDeviceClass : public CDeviceClass
 		//	CDeviceClass virtuals
 
 		virtual bool CanBeDisabled (CItemCtx &Ctx) { return false; }
-		virtual ItemCategories GetCategory (void) { return itemcatMiscDevice; }
+		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual void Update (CInstalledDevice *pDevice, 
 							 CSpaceObject *pSource, 
 							 int iTick,
@@ -395,7 +395,7 @@ class CWeaponClass : public CDeviceClass
 		virtual bool CanRotate (CItemCtx &Ctx);
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual int GetAmmoVariant (const CItemType *pItem) const;
-		virtual ItemCategories GetCategory (void);
+		virtual ItemCategories GetCategory (void) const;
 		virtual int GetCounter (CInstalledDevice *pDevice, CSpaceObject *pSource, CounterTypes *retiType = NULL);
 		virtual int GetDefaultFireAngle (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual void Update (CInstalledDevice *pDevice, 

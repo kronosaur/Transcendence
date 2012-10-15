@@ -878,10 +878,17 @@
 
 	<!ENTITY dsRPGMission				"0x00010010">
 	<!ENTITY dsRPGInstallDeviceFromList	"0x00010011">
+	<!ENTITY dsRPGLoot					"0x00010012">
+	<!ENTITY dsRPGJettison				"0x00010013">
+	<!ENTITY dsRPGRepairItem			"0x00010014">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
 	<!ENTITY unidUniverseLibrary		"0x00020000">
+
+	<!ENTITY rsOreSmall					"0x00020010">
+	<!ENTITY rsStdStargate				"0x00020011">
+	<!ENTITY rsStargateEffects			"0x00020012">
 	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
@@ -959,6 +966,8 @@
 	<!ENTITY baStKatsArcologyBase		"0x00102021">
 	<!ENTITY stDallMissionWreck			"0x00102022">
 	<!ENTITY stDallSphere				"0x00102023">
+	<!ENTITY stCommonwealthNavSign		"0x00102024">
+	<!ENTITY ovNavSignText				"0x00102025">
 
 	<!ENTITY scCenturion				"0x00103001">
 	<!ENTITY scScarabFreighter			"0x00103002">
@@ -1693,8 +1702,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000807"
-		minVersion=						"0x01000807"
+		version=						"0x01000808"
+		minVersion=						"0x01000808"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -1911,6 +1920,7 @@
 			>
 		
 		<Module filename="Mining.xml"/>
+		<Module filename="Stargates.xml"/>
 		<Module filename="StarSystems.xml"/>
 		<Module filename="UniverseEffects.xml"/>
 		<Module filename="Worlds.xml"/>
@@ -2030,6 +2040,21 @@
 				startingSystem=			"SE"
 				startingPos=			"Start"
 				>
+
+			<Language>
+				<Text id="description">
+					(cat
+						"{/rtf Called by Domina to journey to the Galactic Core, you leave the safe environs "
+						"of your home system and explore the farthest reaches of Human Space./n/n"
+
+						"But dangers stalk your passage and even Domina's protection is no guarantee, for none "
+						"who have been called have yet returned./n/n"
+
+						"Will your pilgrimage be more successful?}"
+						)
+				</Text>
+			</Language>
+
 			<Events>
 				<GetGlobalAchievements>
 					(intGetGlobalAchievements)
@@ -2094,6 +2119,16 @@
 						)
 				</OnGameEnd>
 			</Events>
+
+			<StaticData>
+				<!--
+					This is needed by trnCreateAllStargates (which is used by all 
+					standard systems) to figure out which node is closest to the
+					Galactic Core. This allows us to create inbound vs. outbound
+					stargates.
+					-->
+				<defaultCorewardNode>"G2"</defaultCorewardNode>
+			</StaticData>
 		</AdventureDesc>
 		
 		<Image UNID="&rsPart1Cover;"			bitmap="Resources\Part1Cover.jpg"			loadOnUse="true" />

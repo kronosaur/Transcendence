@@ -108,9 +108,34 @@ void CAniButton::GetSpacingRect (RECT *retrcRect)
 //	Returns the size of the element
 
 	{
-	IAnimatron *pStyle = GetStyle(styleNormal);
-	if (pStyle)
-		pStyle->GetSpacingRect(retrcRect);
+	if (m_iType == typeCheckbox)
+		{
+		IAnimatron *pStyle = GetStyle(styleNormal);
+		IAnimatron *pTextStyle = GetStyle(styleText);
+		if (pStyle && pTextStyle)
+			{
+			RECT rcButton;
+			pStyle->GetSpacingRect(&rcButton);
+
+			CVector vSize = m_Properties[INDEX_SCALE].GetVector();
+			pTextStyle->SetPropertyVector(PROP_SCALE, CVector(vSize.GetX() - (RectWidth(rcButton) + CHECKBOX_SPACING_X), RectHeight(rcButton)));
+			pTextStyle->SetPropertyString(PROP_TEXT, m_Properties[INDEX_TEXT].GetString());
+
+			RECT rcText;
+			pTextStyle->GetSpacingRect(&rcText);
+
+			retrcRect->left = 0;
+			retrcRect->top = 0;
+			retrcRect->right = RectWidth(rcButton) + CHECKBOX_SPACING_X + RectWidth(rcText);
+			retrcRect->bottom = Max(RectHeight(rcButton), RectHeight(rcText));
+			}
+		}
+	else
+		{
+		IAnimatron *pStyle = GetStyle(styleNormal);
+		if (pStyle)
+			pStyle->GetSpacingRect(retrcRect);
+		}
 	}
 
 void CAniButton::HandleLButtonDblClick (int x, int y, DWORD dwFlags, bool *retbCapture, bool *retbFocus)
@@ -305,7 +330,7 @@ void CAniButton::Paint (SAniPaintCtx &Ctx)
 			{
 			xText = (int)vPos.GetX() + CHECKBOX_SPACING_X + RectWidth(rcContent);
 			yText = (int)vPos.GetY();
-			cxText = (int)vSize.GetX();
+			cxText = (int)vSize.GetX() - (CHECKBOX_SPACING_X + RectWidth(rcContent));
 			cyText = (int)vSize.GetY();
 			}
 		else if (m_iType == typeLink)

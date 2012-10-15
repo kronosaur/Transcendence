@@ -11,6 +11,7 @@
 
 #define ADVENTURE_UNID_ATTRIB					CONSTLIT("adventureUNID")
 #define BACKGROUND_ID_ATTRIB					CONSTLIT("backgroundID")
+#define DESC_ATTRIB								CONSTLIT("desc")
 #define INCLUDE_10_STARTING_CLASSES_ATTRIB		CONSTLIT("include10StartingShips")
 #define LEVEL_ATTRIB							CONSTLIT("level")
 #define NAME_ATTRIB								CONSTLIT("name")
@@ -23,6 +24,8 @@
 #define ON_GAME_END_EVENT						CONSTLIT("OnGameEnd")
 
 #define FIELD_NAME								CONSTLIT("name")
+
+#define LANGUAGE_DESCRIPTION					CONSTLIT("description")
 
 #define ERR_STARTING_SHIP_CRITERIA				CONSTLIT("Unable to parse startingShipCriteria")
 
@@ -196,6 +199,20 @@ const CDamageAdjDesc *CAdventureDesc::GetDefaultShieldDamageAdj (int iLevel)
 	return &g_ShieldDamageAdj[iLevel - 1];
 	}
 
+CString CAdventureDesc::GetDesc (void)
+
+//	GetDesc
+//
+//	Returns a description for the adventure
+
+	{
+	CString sText;
+	if (TranslateText(NULL, LANGUAGE_DESCRIPTION, &sText))
+		return CTextBlock::LoadAsRichText(sText);
+	else
+		return CONSTLIT("{/rtf }");
+	}
+
 ALERROR CAdventureDesc::GetStartingShipClasses (TSortMap<CString, CShipClass *> *retClasses, CString *retsError)
 
 //	GetStartingShipClasses
@@ -266,7 +283,7 @@ bool CAdventureDesc::IsValidStartingClass (CShipClass *pClass)
 			return true;
 		}
 
-	return pClass->MatchesCriteria(m_StartingShips);
+	return (pClass->IsIncludedInAllAdventures() || pClass->MatchesCriteria(m_StartingShips));
 	}
 
 ALERROR CAdventureDesc::OnBindDesign (SDesignLoadCtx &Ctx)

@@ -44,6 +44,45 @@ class CChangePasswordSession : public IHISession
 		RECT m_rcInputError;
 	};
 
+class CChooseAdventureSession : public IHISession
+	{
+	public:
+		CChooseAdventureSession (CHumanInterface &HI, CCloudService &Service, CGameSettings &Settings);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
+		virtual ALERROR OnInit (CString *retsError);
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
+		virtual void OnMouseWheel (int iDelta, int x, int y, DWORD dwFlags);
+		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnReportHardCrash (CString *retsMessage);
+
+	private:
+		void CmdCancel (void);
+		void CmdNextAdventure (void);
+		void CmdOK (void);
+		void CmdPrevAdventure (void);
+		void CreateAdventureDesc (CExtension *pAdventure);
+		void SetBackgroundImage (CExtension *pAdventure);
+		void SetAdventureDesc (CExtension *pAdventure);
+		void SetAdventureStatus (CExtension *pAdventure, int yPos);
+		void SetAdventureTitle (CExtension *pAdventure, int *rety);
+		void SetExtensions (CExtension *pAdventure, int yPos);
+
+		CCloudService &m_Service;
+		CGameSettings &m_Settings;
+		TArray<CExtension *> m_AdventureList;
+		TArray<CExtension *> m_ExtensionList;
+		int m_iSelection;
+
+		CAniVScroller *m_pRoot;
+		CG16bitImage *m_pBackground;
+
+		RECT m_rcPane;
+		RECT m_rcBackground;
+		int m_yBottomSection;
+	};
+
 class CGalacticMapSession : public IHISession
 	{
 	public:
@@ -187,6 +226,26 @@ class CLoginSession : public IHISession
 		bool m_bBlankEmailWarning;			//	If TRUE we already warned about a blank email.
 	};
 
+class CLoadGameSession : public IHISession
+	{
+	public:
+		CLoadGameSession (CHumanInterface &HI, CCloudService &Service);
+
+		//	IHISession virtuals
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
+		virtual ALERROR OnInit (CString *retsError);
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
+		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
+		virtual void OnReportHardCrash (CString *retsMessage);
+
+	private:
+		void CmdCancel (void);
+		void CmdOK (void);
+		void CmdReadComplete (CListSaveFilesTask *pTask);
+
+		CCloudService &m_Service;
+	};
+
 class CMessageSession : public IHISession
 	{
 	public:
@@ -207,26 +266,6 @@ class CMessageSession : public IHISession
 		CString m_sMessage;
 
 		CString m_sCommand;					//	Command to issue after successful login.
-	};
-
-class CLoadGameSession : public IHISession
-	{
-	public:
-		CLoadGameSession (CHumanInterface &HI, CCloudService &Service);
-
-		//	IHISession virtuals
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
-		virtual ALERROR OnInit (CString *retsError);
-		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
-		virtual void OnPaint (CG16bitImage &Screen, const RECT &rcInvalid);
-		virtual void OnReportHardCrash (CString *retsMessage);
-
-	private:
-		void CmdCancel (void);
-		void CmdOK (void);
-		void CmdReadComplete (CListSaveFilesTask *pTask);
-
-		CCloudService &m_Service;
 	};
 
 class CModExchangeSession : public IHISession

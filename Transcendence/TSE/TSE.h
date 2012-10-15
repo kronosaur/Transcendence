@@ -1623,6 +1623,7 @@ class CEnergyField
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
 		inline void SetDevice (int iDev) { m_iDevice = iDev; }
+		bool SetEffectProperty (const CString &sProperty, ICCItem *pValue);
 		inline void SetNext (CEnergyField *pNext) { m_pNext = pNext; }
 		void SetPos (CSpaceObject *pSource, const CVector &vPos);
 		inline void SetRotation (int iRotation) { m_iRotation = iRotation; }
@@ -1682,6 +1683,7 @@ class CEnergyFieldList
 		void ReadFromStream (SLoadCtx &Ctx, CSpaceObject *pSource);
 		void RemoveField (CSpaceObject *pSource, DWORD dwID);
 		void SetData (DWORD dwID, const CString &sAttrib, const CString &sData);
+		bool SetEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue);
 		void SetPos (CSpaceObject *pSource, DWORD dwID, const CVector &vPos);
 		void SetRotation (DWORD dwID, int iRotation);
 		void Update (CSpaceObject *pSource, bool *retbModified);
@@ -1897,7 +1899,7 @@ class CSpaceObject : public CObject
 		void Accelerate (const CVector &vPush, Metric rSeconds);
 		void AccelerateStop (Metric rPush, Metric rSeconds);
 		void AddEffect (IEffectPainter *pPainter, const CVector &vPos, int iTick = 0, int iRotation = 0);
-		inline void AddEventSubscriber (CSpaceObject *pObj) { m_SubscribedObjs.FastAdd(pObj); }
+		inline void AddEventSubscriber (CSpaceObject *pObj) { m_SubscribedObjs.Add(pObj); }
 		ALERROR AddToSystem (CSystem *pSystem);
 		inline bool Blocks (CSpaceObject *pObj) { return (m_fIsBarrier && CanBlock(pObj)); }
 		inline bool BlocksShips (void) { return (m_fIsBarrier && CanBlockShips()); }
@@ -1972,6 +1974,7 @@ class CSpaceObject : public CObject
 		void FireOnSystemObjDestroyed (SDestroyCtx &Ctx);
 		void FireOnSystemWeaponFire (CSpaceObject *pShot, CSpaceObject *pSource, DWORD dwItemUNID);
 		bool FireOnTranslateMessage (const CString &sMessage, CString *retsMessage);
+		void FixVersion77Bug (SLoadCtx &Ctx);
 		inline void FreezeControls (void) { m_iControlsFrozen++; }
 		void GetBoundingRect (CVector *retvUR, CVector *retvLL);
 		inline CVector GetBoundsDiag (void) { return CVector(m_rBoundsX, m_rBoundsY); }
@@ -2302,6 +2305,7 @@ class CSpaceObject : public CObject
 		virtual void SetIdentified (bool bIdentified = true) { }
 		virtual void SetMapLabelPos (int x, int y) { }
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { }
+		virtual bool SetOverlayEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue) { return false; }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { }
 		virtual void UpdateArmorItems (void) { }
@@ -2698,6 +2702,7 @@ class CUniverse : public CObject
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CTimeSpan GetElapsedGameTime (void);
+		inline CExtensionCollection &GetExtensionCollection (void) { return m_Extensions; }
 		CString GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib);
 		CTopologyNode *GetFirstTopologyNode (void);
 		inline const CG16bitFont *GetFont (const CString &sFont) { return m_pHost->GetFont(sFont); }

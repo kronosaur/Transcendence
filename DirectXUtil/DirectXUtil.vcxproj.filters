@@ -179,5 +179,8 @@
     <ClCompile Include="CTextBlock.cpp">
       <Filter>Source Files\TextFormat</Filter>
     </ClCompile>
+    <ClCompile Include="16bitDrawGradient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

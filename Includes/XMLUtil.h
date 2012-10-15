@@ -80,6 +80,7 @@ class CXMLElement : public CObject
 		ALERROR SetAttribute (const CString &sName, const CString &sValue);
 
 		static CString MakeAttribute (const CString &sText) { return strToXMLText(sText); }
+		static bool IsBoolTrueValue (const CString &sValue) { return (strEquals(sValue, CONSTLIT("true")) || strEquals(sValue, CONSTLIT("1"))); }
 
 	private:
 		void CleanUp (void);

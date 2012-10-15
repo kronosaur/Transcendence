@@ -9,22 +9,6 @@
 #include <math.h>
 #include <stdio.h>
 
-#if 0
-	//	Fractal sum
-	//	snoise from -1.0 to 1.0
-
-	float value = 0;
-	for (f = MINFREQ; f < MAXFREQ; f *= 2)
-		value += snoise(Q * f) / f;
-	return value;
-
-	//	Turbulence
-	float value = 0;
-	for (f = MINFREQ; f < MAXFREQ; f *= 2)
-		value += abs(snoise(Q * f)) / f;
-	return value;
-#endif
-
 void DrawNebulosity8bit (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iScale, BYTE byMin, BYTE byMax)
 
 //	DrawNebulosity8bit

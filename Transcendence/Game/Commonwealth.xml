@@ -2375,6 +2375,75 @@
 
 	</StationType>
 
+	<!-- NavSign
+
+		INITIAL DATA
+
+		At create time we expect the following data to be initialized:
+
+		Info:	A full description revealed if the player docks
+		Sign:	The text of the sign.
+	
+	 -->
+
+	<StationType UNID="&stCommonwealthNavSign;"
+			name=				"(navigational beacon)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsNavSign;"
+			abandonedScreen=	"&dsAbandonedNavSign;"
+			noMapLabel=			"true"
+
+			mass=				"5000"
+			armorID=			"&itLightTitaniumPlate;"
+			hitPoints=			"10"
+			>
+
+		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>
+
+		<DockingPorts>
+			<Port x="-80"		y="0" />
+		</DockingPorts>
+
+		<Events>
+			<OnCreate>
+				(block (theID xOffset yOffset)
+
+					; These offsets control the position of the text relative to
+					; the center of the sign (Cartessian coordinates)
+
+					(setq xOffset 6)
+					(setq yOffset 19)
+
+					; Create an effect for the sign.
+
+					(setq theID 
+						(objAddOverlay gSource &ovNavSignText; (sysVectorPixelOffset gSource xOffset yOffset) 0)
+						)
+
+					; Set the text of the sign
+
+					(objSetOverlayEffectProperty gSource theID 'text (objGetData gSource "Sign"))
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				; Remove all overlays
+				(enum (objGetOverlays gSource) theID
+					(objRemoveOverlay gSource theID)
+					)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
+	<OverlayType UNID="&ovNavSignText;">
+		<Effect>
+			<Text text="Nav Sign"
+					font="SmallBold"
+					primaryColor="0xc4, 0xdf, 0x9b"
+					/>
+		</Effect>
+	</OverlayType>
+
 	<Globals>
 		(block Nil
 			(setq comSealedContainerHack (lambda ()

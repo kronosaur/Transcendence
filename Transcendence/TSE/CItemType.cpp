@@ -53,12 +53,25 @@
 
 #define GET_NAME_EVENT							CONSTLIT("GetName")
 #define GET_TRADE_PRICE_EVENT					CONSTLIT("GetTradePrice")
-#define ON_ENABLED_EVENT						CONSTLIT("OnEnabled")
+#define ON_ENABLED_EVENT						CONSTLIT("OnEnable")
 #define ON_INSTALL_EVENT						CONSTLIT("OnInstall")
 #define ON_REFUEL_TAG							CONSTLIT("OnRefuel")
 
 #define STR_FUEL								CONSTLIT("Fuel")
 #define STR_MISSILE								CONSTLIT("Missile")
+
+#define CATEGORY_AMMO							CONSTLIT("ammo")
+#define CATEGORY_ARMOR							CONSTLIT("armor")
+#define CATEGORY_CARGO_HOLD						CONSTLIT("cargoHold")
+#define CATEGORY_DRIVE							CONSTLIT("drive")
+#define CATEGORY_FUEL							CONSTLIT("fuelItem")
+#define CATEGORY_LAUNCHER						CONSTLIT("launcher")
+#define CATEGORY_MISC_DEVICE					CONSTLIT("miscDevice")
+#define CATEGORY_MISC_ITEM						CONSTLIT("miscItem")
+#define CATEGORY_REACTOR						CONSTLIT("reactor")
+#define CATEGORY_SHIELDS						CONSTLIT("shields")
+#define CATEGORY_USABLE_ITEM					CONSTLIT("usableItem")
+#define CATEGORY_WEAPON							CONSTLIT("weapon")
 
 #define FIELD_AVERAGE_COUNT						CONSTLIT("averageCount")
 #define FIELD_CATEGORY							CONSTLIT("category")
@@ -74,6 +87,7 @@
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_REFERENCE							CONSTLIT("reference")
 #define FIELD_SHORT_NAME						CONSTLIT("shortName")
+#define FIELD_SLOT_CATEGORY						CONSTLIT("slotCategory")
 #define FIELD_UNKNOWN_TYPE						CONSTLIT("unknownType")
 
 static char g_NameAttrib[] = "name";
@@ -88,7 +102,7 @@ static char *CACHED_EVENTS[CItemType::evtCount] =
 		"GetName",
 		"GetTradePrice",
 		"OnInstall",
-		"OnEnabled",
+		"OnEnable",
 		"OnRefuel",
 	};
 
@@ -145,61 +159,12 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_CATEGORY))
 		{
-		switch (GetCategory())
-			{
-			case itemcatArmor:
-				*retsValue = CONSTLIT("Armor");
-				break;
-
-			case itemcatCargoHold:
-				*retsValue = CONSTLIT("CargoHold");
-				break;
-
-			case itemcatDrive:
-				*retsValue = CONSTLIT("Device");
-				break;
-
-			case itemcatFuel:
-				*retsValue = CONSTLIT("Fuel");
-				break;
-
-			case itemcatLauncher:
-				*retsValue = CONSTLIT("Launcher");
-				break;
-
-			case itemcatMisc:
-				*retsValue = CONSTLIT("Misc");
-				break;
-
-			case itemcatMissile:
-				*retsValue = CONSTLIT("Missile");
-				break;
-
-			case itemcatMiscDevice:
-				*retsValue = CONSTLIT("Device");
-				break;
-
-			case itemcatReactor:
-				*retsValue = CONSTLIT("Reactor");
-				break;
-
-			case itemcatShields:
-				*retsValue = CONSTLIT("Shield");
-				break;
-
-			case itemcatUseful:
-				*retsValue = CONSTLIT("Useful");
-				break;
-
-			case itemcatWeapon:
-				*retsValue = CONSTLIT("Weapon");
-				break;
-
-			default:
-				*retsValue = CONSTLIT("Unknown");
-				break;
-			}
-
+		*retsValue = GetItemCategory(GetCategory());
+		return true;
+		}
+	else if (strEquals(sField, FIELD_SLOT_CATEGORY))
+		{
+		*retsValue = GetItemCategory(GetSlotCategory());
 		return true;
 		}
 	else if (strEquals(sField, FIELD_FREQUENCY))
@@ -486,6 +451,57 @@ int CItemType::GetInstallCost (void) const
 		return -1;
 	}
 
+CString CItemType::GetItemCategory (ItemCategories iCategory)
+
+//	GetItemCategory
+//
+//	Returns the identifier for an item category
+
+	{
+	switch (iCategory)
+		{
+		case itemcatArmor:
+			return CATEGORY_ARMOR;
+
+		case itemcatCargoHold:
+			return CATEGORY_CARGO_HOLD;
+
+		case itemcatDrive:
+			return CATEGORY_DRIVE;
+
+		case itemcatFuel:
+			return CATEGORY_FUEL;
+
+		case itemcatLauncher:
+			return CATEGORY_LAUNCHER;
+
+		case itemcatMisc:
+			return CATEGORY_MISC_ITEM;
+
+		case itemcatMissile:
+			return CATEGORY_AMMO;
+
+		case itemcatMiscDevice:
+			return CATEGORY_MISC_DEVICE;
+
+		case itemcatReactor:
+			return CATEGORY_REACTOR;
+
+		case itemcatShields:
+			return CATEGORY_SHIELDS;
+
+		case itemcatUseful:
+			return CATEGORY_USABLE_ITEM;
+
+		case itemcatWeapon:
+			return CATEGORY_WEAPON;
+
+		default:
+			ASSERT(false);
+			return CONSTLIT("unknown");
+		}
+	}
+
 int CItemType::GetMassKg (CItemCtx &Ctx) const
 
 //	GetMassKg
@@ -605,6 +621,20 @@ CString CItemType::GetSortName (void) const
 		return m_sUnknownName;
 	else
 		return m_sSortName;
+	}
+
+ItemCategories CItemType::GetSlotCategory (void) const
+
+//	GetSlotCategory
+//
+//	Returns the slot category for device install purposes
+	
+	{
+	CDeviceClass *pDevice = GetDeviceClass();
+	if (pDevice)
+		return pDevice->GetSlotCategory();
+
+	return GetCategory();
 	}
 
 CString CItemType::GetUnknownName (int iIndex, DWORD *retdwFlags)
@@ -1117,6 +1147,48 @@ void CItemType::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	m_sUnknownName.WriteToStream(pStream);
+	}
+
+bool CItemType::ParseItemCategory (const CString &sCategory, ItemCategories *retCategory)
+
+//	ParseItemCategory
+//
+//	Parses an item category
+
+	{
+	ItemCategories iCat;
+
+	if (strEquals(sCategory, CATEGORY_AMMO))
+		iCat = itemcatMissile;
+	else if (strEquals(sCategory, CATEGORY_ARMOR))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_CARGO_HOLD))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_DRIVE))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_FUEL))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_LAUNCHER))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_MISC_DEVICE))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_MISC_ITEM))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_REACTOR))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_SHIELDS))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_USABLE_ITEM))
+		iCat = itemcatArmor;
+	else if (strEquals(sCategory, CATEGORY_WEAPON))
+		iCat = itemcatArmor;
+	else
+		return false;
+
+	if (retCategory)
+		*retCategory = iCat;
+
+	return true;
 	}
 
 //	CItemCtx -------------------------------------------------------------------

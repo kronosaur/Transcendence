@@ -163,7 +163,7 @@ inline void DebugStopTimer (char *szTiming) { }
 const DWORD EXTENSION_VERSION =							12;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						17;
-const DWORD SYSTEM_SAVE_VERSION =						77;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						78;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -597,6 +597,7 @@ class CSpaceObjectList
 		inline bool FindObj (CSpaceObject *pObj, int *retiIndex = NULL) const { return m_List.Find(pObj, retiIndex); }
 		inline int GetCount (void) const { return m_List.GetCount(); }
 		inline CSpaceObject *GetObj (int iIndex) const { return m_List[iIndex]; }
+		inline TArray<CSpaceObject *> &GetRawList (void) { return m_List; }
 		inline bool IsEmpty (void) const { return (m_List.GetCount() == 0); }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void Remove (int iIndex) { m_List.Delete(iIndex); }

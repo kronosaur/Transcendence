@@ -2785,17 +2785,11 @@
 
 						<Actions>
 							<Action name="Loot" key="L" default="1" >
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedShip;")
-									(scrShowScreen gScreen "&dsLoot;")
-									)
+								(scrShowScreen gScreen &dsRPGLoot;)
 							</Action>
 
 							<Action name="Jettison" key="J">
-								(block Nil
-									(setq gPrevScreen "&dsAbandonedShip;")
-									(scrShowScreen gScreen "&dsJettison;")
-									)
+								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">

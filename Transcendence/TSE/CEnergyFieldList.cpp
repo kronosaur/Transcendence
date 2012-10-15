@@ -363,6 +363,25 @@ void CEnergyFieldList::SetData (DWORD dwID, const CString &sAttrib, const CStrin
 		}
 	}
 
+bool CEnergyFieldList::SetEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue)
+
+//	SetEffectProperty
+//
+//	Sets a property on the effect
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (pField->GetID() == dwID && !pField->IsDestroyed())
+			return pField->SetEffectProperty(sProperty, pValue);
+
+		pField = pField->GetNext();
+		}
+
+	return false;
+	}
+
 void CEnergyFieldList::SetPos (CSpaceObject *pSource, DWORD dwID, const CVector &vPos)
 
 //	SetPosition
