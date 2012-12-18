@@ -18,6 +18,9 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 	ALERROR error;
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
+	RECT rcCenter;
+	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+
 	//	Load a JPEG of the background image
 
 	HBITMAP hDIB;
@@ -54,6 +57,10 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 	if (error)
 		return error;
 
+	//	Figure out position of copyright text.
+
+	m_cyCopyright = Y_COPYRIGHT_TEXT - (Max(0, m_TitleImage.GetHeight() - RectHeight(rcCenter)) / 2);
+
 	//	Figure out the position of the stargate animation
 
 	int cxScreen = g_pHI->GetScreen().GetWidth();
@@ -61,8 +68,17 @@ ALERROR CLoadingSession::OnInit (CString *retsError)
 
 	m_rcStargate.left = (cxScreen - STARGATE_WIDTH) / 2;
 	m_rcStargate.right = m_rcStargate.left + STARGATE_WIDTH;
-	m_rcStargate.top = cyScreen - ((cyScreen - m_TitleImage.GetHeight()) / 2) - STARGATE_HEIGHT / 2;
-	m_rcStargate.bottom = m_rcStargate.top + STARGATE_HEIGHT;
+
+	if (RectHeight(rcCenter) >= 512)
+		{
+		m_rcStargate.top = rcCenter.bottom - (STARGATE_HEIGHT / 2);
+		m_rcStargate.bottom = m_rcStargate.top + STARGATE_HEIGHT;
+		}
+	else
+		{
+		m_rcStargate.bottom = cyScreen;
+		m_rcStargate.top = m_rcStargate.bottom - STARGATE_HEIGHT;
+		}
 
 	return NOERROR;
 	}
@@ -84,7 +100,7 @@ void CLoadingSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	int cxWidth = MediumHeavyBoldFont.MeasureText(m_sCopyright);
 	MediumHeavyBoldFont.DrawText(Screen,
 			(Screen.GetWidth() - cxWidth) / 2,
-			rcCenter.top + Y_COPYRIGHT_TEXT,
+			rcCenter.top + m_cyCopyright,
 			VI.GetColor(colorTextHighlight),
 			m_sCopyright);
 

@@ -230,7 +230,7 @@ void CAreaDamage::OnSystemLoaded (void)
 	{
 	}
 
-void CAreaDamage::OnUpdate (Metric rSecondsPerTick)
+void CAreaDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //
@@ -255,21 +255,21 @@ void CAreaDamage::OnUpdate (Metric rSecondsPerTick)
 
 	//	Set up context block for particle array update
 
-	SEffectUpdateCtx Ctx;
-	Ctx.pSystem = GetSystem();
-	Ctx.pObj = this;
+	SEffectUpdateCtx EffectCtx;
+	EffectCtx.pSystem = GetSystem();
+	EffectCtx.pObj = this;
 
-	Ctx.pDamageDesc = m_pDesc;
-	Ctx.iDamageBonus = m_iBonus;
-	Ctx.iCause = m_iCause;
-	Ctx.bAutomatedWeapon = IsAutomatedWeapon();
-	Ctx.Attacker = m_Source;
+	EffectCtx.pDamageDesc = m_pDesc;
+	EffectCtx.iDamageBonus = m_iBonus;
+	EffectCtx.iCause = m_iCause;
+	EffectCtx.bAutomatedWeapon = IsAutomatedWeapon();
+	EffectCtx.Attacker = m_Source;
 
-	m_pPainter->OnUpdate(Ctx);
+	m_pPainter->OnUpdate(EffectCtx);
 
 	//	Destroy
 
-	if (Ctx.bDestroy || --m_iLifeLeft <= 0)
+	if (EffectCtx.bDestroy || --m_iLifeLeft <= 0)
 		Destroy(removedFromSystem, CDamageSource());
 	}
 

@@ -567,7 +567,7 @@
 			<GetGlobalDockScreen>
 				(switch
 					; This only applies to ringer stations
-					(not (objMatches gSource Nil "sTAV +ringers;"))
+					(not (objMatches gSource Nil "sTAV +ringers; +populated;"))
 						Nil
 						
 					; If the player has deviated socially, she is frozen

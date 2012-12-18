@@ -245,7 +245,7 @@ void CFractureEffect::OnReadFromStream (SLoadCtx &Ctx)
 	m_iLifeTime = 0;
 	}
 
-void CFractureEffect::OnUpdate (Metric rSecondsPerTick)
+void CFractureEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //

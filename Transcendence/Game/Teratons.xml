@@ -330,7 +330,7 @@
 	<!-- Teraton Factory -->
 
 	<StationType UNID="&stTeratonFactory;"
-			name=				"Teraton factory"
+			name=				"Teraton fabricator"
 			sovereign=			"&svIndependentTrader;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -396,42 +396,71 @@
 					("f"					Nil		Nil		Nil		0		"+l"	0		Nil			Nil)
 					("a"					Nil		1		Nil		"+l"	-1		0		Nil			Nil)
 					("* +Meds;"				Nil		Nil		Nil		0		0		"-l"	Nil			Nil)
-					("w &lt;8"				"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l+1")
-					("w &lt;8"				"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"w"			"l")
-					("w &lt;8"				Nil		Nil		Nil		"+l"	"+l"	-1		Nil			Nil)
-					("w &lt;11"				"+2l"	"+2l"	5		"-2l"	"-2l"	-5		"w"			"l+1")
-					("w &lt;11"				"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l")
-					("w &lt;11"				Nil		Nil		Nil		"+l"	"+l"	"-l"	Nil			Nil)
-					("s &lt;8"				"+l"	"+l"	1		"-l"	"-l"	-1		"s"			"l+1")
-					("s &lt;8"				"+l"	"+l"	Nil		"-l"	"-l"	0		"s"			"l")
-					("s &lt;8"				Nil		Nil		Nil		"+l"	"+l"	-1		Nil			Nil)
-					("s &lt;11"				"+l"	"+l"	5		"-l"	"-l"	-5		"s"			"l+1")
-					("s &lt;11"				"+l"	"+l"	1		"-l"	"-l"	-1		"s"			"l")
-					("s &lt;11"				Nil		Nil		Nil		"+l"	"+l"	"-l"	Nil			Nil)
-					("vr &lt;8"				"+l"	"+2l"	1		"-l"	"-2l"	-1		"vr"		"l+1")
-					("vr &lt;8"				"+l"	"+2l"	Nil		"-l"	"-2l"	0		"vr"		"l")
-					("vr &lt;8"				Nil		Nil		Nil		"+l"	"+l"	0		Nil			Nil)
-					("vr &lt;11"			"+l"	"+2l"	5		"-l"	"-2l"	-5		"vr"		"l+1")
-					("vr &lt;11"			"+l"	"+2l"	1		"-l"	"-2l"	-1		"vr"		"l")
-					("vr &lt;11"			Nil		Nil		Nil		"+l"	"+l"	0		Nil			Nil)
-					("d~swvr &lt;8"			"+l"	"+l"	1		"-l"	"-l"	-1		"d~swvr"	"l+1")
-					("d~swvr &lt;8"			"+l"	"+l"	Nil		"-l"	"-l"	0		"d~swvr"	"l")
-					("d~swvr &lt;8"			Nil		Nil		Nil		"+l"	"+l"	0		Nil			Nil)
-					("d~swvr &lt;11"		"+l"	"+l"	5		"-l"	"-l"	-5		"d~swvr"	"l+1")
-					("d~swvr &lt;11"		"+l"	"+l"	1		"-l"	"-l"	-1		"d~swvr"	"l")
-					("d~swvr &lt;11"		Nil		Nil		Nil		"+l"	"+l"	0		Nil			Nil)
+
+					("wD L:2-7;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l")
+					("wD L:2-7;"			"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"w"			"l-1")
+					("w L:2-7;"				"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l+1")
+					("w L:2-7;"				"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"w"			"l")
+					("wD L:8-10;"			"+2l"	"+2l"	5		"-2l"	"-2l"	-5		"w"			"l-1")
+					("wD L:8-10;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l-2")
+					("w L:8-10;"			"+2l"	"+2l"	5		"-2l"	"-2l"	-5		"w"			"l")
+					("w L:8-10;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l-1")
+
+					("sD L:2-7;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l")
+					("sD L:2-7;"			"+l"	"+l"	Nil		"-l"	"-l"	0		"s"			"l-1")
+					("s L:2-7;"				"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l+1")
+					("s L:2-7;"				"+l"	"+l"	Nil		"-l"	"-l"	0		"s"			"l")
+					("sD L:8-10;"			"+l"	"+l"	5		"-l"	"-l"	-5		"s"			"l-1")
+					("sD L:8-10;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l-2")
+					("s L:8-10;"			"+l"	"+l"	5		"-l"	"-l"	-5		"s"			"l")
+					("s L:8-10;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l-1")
+
+					("vrD L:2-7;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l")
+					("vrD L:2-7;"			"+l"	"+2l"	Nil		"-l"	"-2l"	0		"vr"		"l-1")
+					("vr L:2-7;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l+1")
+					("vr L:2-7;"			"+l"	"+2l"	Nil		"-l"	"-2l"	0		"vr"		"l")
+					("vrD L:8-10;"			"+l"	"+2l"	5		"-l"	"-2l"	-5		"vr"		"l-1")
+					("vrD L:8-10;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l-2")
+					("vr L:8-10;"			"+l"	"+2l"	5		"-l"	"-2l"	-5		"vr"		"l")
+					("vr L:8-10;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l-1")
+
+					("d~swvrD L:2-7;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l")
+					("d~swvrD L:2-7;"		"+l"	"+l"	Nil		"-l"	"-l"	0		"d~swvr"	"l-1")
+					("d~swvr L:2-7;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l+1")
+					("d~swvr L:2-7;"		"+l"	"+l"	Nil		"-l"	"-l"	0		"d~swvr"	"l")
+					("d~swvrD L:8-10;"		"+l"	"+l"	5		"-l"	"-l"	-5		"d~swvr"	"l-1")
+					("d~swvrD L:8-10;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l-2")
+					("d~swvr L:8-10;"		"+l"	"+l"	5		"-l"	"-l"	-5		"d~swvr"	"l")
+					("d~swvr L:8-10;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l-1")
+
+					("d"					Nil		Nil		Nil		"+l"	"+l"	"-l"	Nil			Nil)
+
 					("m &lt;11"				"+l"	"+l"	Nil		"-l"	"-l"	0		"replicate"	Nil)
 					("m &lt;16"				"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"replicate"	Nil)
+
 					(Nil					Nil		Nil		Nil		0		0		0		Nil			Nil)
 					)
 			</FactoryTable>
 		</StaticData>
 
-		<InitialData>
-			<energy>0</energy>
-			<material>0</material>
-			<disposition>0</disposition>
-		</InitialData>
+		<Events>
+			<OnCreate>
+				(block (allFoods)
+					; Set energy, material, and disposition randomly
+					(objSetData gSource "disposition" (random -1 1))
+					(objSetData gSource "energy" (random -2 2))
+					(objSetData gSource "material" (random -2 2))
+
+					; The "bias" of the creature alters its tells
+					(objSetData gSource "bias" (random -2 2))
+
+					; Make a list of the creature's food preferences
+					(setq allFoods (shuffle (itmGetTypes "* +Food; +Lux; -UNID:&itRingerAmbrosia;; -UNID:&itRingerSpice;;")))
+					(objSetData gSource "love" (subset allFoods 0 2))
+					(objSetData gSource "hate" (subset allFoods 2 4))
+					)
+			</OnCreate>
+		</Events>
 
 		<DockScreens>
 			<Main>
@@ -484,23 +513,47 @@
 
 				<Panes>
 					<Default>
-
 						<OnPaneInit>
-							(block (disposition)
-								(setq disposition (objGetData gSource "disposition"))
+							(block (disposition energy material)
+								(setq disposition (add (objGetData gSource "disposition") (objGetData gSource "bias")))
+								(setq energy (objGetData gSource "energy"))
+								(setq material (objGetData gSource "material"))
 								(scrSetDesc gScreen
 									(cat "You are in the vast central chamber of the Teraton nest. A large pit in the center of the cavern is inhabited by a mass of tentacles, cilia, and grotesque organs.\n\n"
 										(switch
-											(ls disposition 0)
-												"The organic mass appears restless and angry."
-
-											(geq disposition 5)
+											(geq disposition 7)
 												"The organic mass purrs with contentment."
 
 											(geq disposition 2)
 												"The organic mass appears calm."
 
-											""
+											(geq disposition 0)
+												"The organic mass appears wary."
+
+											(ls disposition -7)
+												"The organic mass flails its tentacles in rage."
+
+											"The organic mass appears restless and angry."
+											)
+
+										(switch
+											(leq energy 0)
+												" It has 0 energy points"
+
+											(eq energy 1)
+												" It has 1 energy point"
+
+											(cat " It has " energy " energy points")
+											)
+
+										(switch
+											(leq material 0)
+												" and 0 material points."
+
+											(eq material 1)
+												" and 1 material point."
+
+											(cat " and " material " material points.")
 											)
 										)
 									)
@@ -541,7 +594,7 @@
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								(block Nil
-									(plyDestroyed gPlayer "was killed by an angry Teraton fabricator")
+									(plyDestroyed gPlayer "was eaten by an angry Teraton fabricator")
 									(scrExitScreen gScreen 'forceUndock)
 									)
 							</Action>
@@ -587,9 +640,26 @@
 									(setq material (objGetData gSource "material"))
 									(setq disposition (objGetData gSource "disposition"))
 
+									(switch
+										; If this is the creature's favorite food, then we have a special entry
+										; +5 disposition
+
+										(find (objGetData gSource "love") (itmGetType gItem))
+											(setq entry (list Nil Nil Nil Nil 0 0 +5 Nil Nil))
+
+										; If this is the creature's least favorite food, then we have a special
+										; entry: -5 to -8 disposition.
+
+										(find (objGetData gSource "hate") (itmGetType gItem))
+											(setq entry (list Nil Nil Nil Nil 0 0 (random -8 -5) Nil Nil))
+
+										; Otherwise, look for the item in the table
+
+										(setq entry Nil)
+										)
+
 									; Look for the entry in the table
 									(setq table (objGetStaticData gSource "FactoryTable"))
-									(setq entry Nil)
 									(enumwhile table (not entry) thisEntry
 										(switch
 											; Skip if not enough material
@@ -666,9 +736,9 @@
 													(setq gResult "Tentacles reach out to accept your offering and the organic mass tentatively swallows it.\n\nWith a roar of anger, the organic mass spews a thick mist of bile. You are covered in a slimy broth of chemicals.")
 
 												(or (gr incMaterial 0) (gr incEnergy 0))
-													(setq gResult "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladers gurgle as they process the material you have fed them.")
+													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladers gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
 
-												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste, they crush it and discard it through one of the many tunnels along the wall of the pit.")
+												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste they discard it through one of the many tunnels along the wall of the pit.")
 												)
 
 											; DEBUG

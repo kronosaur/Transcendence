@@ -1245,6 +1245,9 @@
 				;									"++outerSystem; -asteroids; -gasGiant"
 				;	stargateType:				The StationType to use. The default is
 				;									stStargate.
+				;
+				; NOTE: If you add the "noAutoGateCreate" attribute to a system then this
+				; function will not create a gate to that system.
 
 				(block (allStargates corewardGate beaconType corewardLocationCriteria
 						corewardNode edgewardLocationCriteria stargateType)
@@ -1272,7 +1275,10 @@
 					; Create those that are needed.
 					
 					(enum allStargates theGate
-						(if (not (sysGetObjectByName theGate))
+						(if (and
+								(not (sysGetObjectByName theGate))
+								(not (sysHasAttribute (sysGetStargateDestinationNode theGate) 'noAutoGateCreate))
+								)
 							(block (gateObj beacon1Pos beacon2Pos locationCriteria)
 							
 								; The coreward gate is usually in the inner system.

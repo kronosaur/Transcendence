@@ -2693,7 +2693,6 @@
 			name=				"wreck of Helena Volkov's EI500 freighter"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
-			dockingPorts=		"4"
 			scale=				"ship"
 			noMapIcon=			"true"
 
@@ -2856,6 +2855,12 @@
 				</Panes>
 			</Main>
 		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 	
 <!-- BASE CLASSES -->

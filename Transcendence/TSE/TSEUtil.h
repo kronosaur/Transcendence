@@ -163,7 +163,7 @@ inline void DebugStopTimer (char *szTiming) { }
 const DWORD EXTENSION_VERSION =							12;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						17;
-const DWORD SYSTEM_SAVE_VERSION =						78;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						81;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -217,6 +217,23 @@ struct SLoadCtx
 	ELoadStates iLoadState;				//	Current load state
 	DWORD dwObjClassID;					//	ClassID that we're trying to load
 	CString sEffectUNID;				//	UNID of effect we're loading
+	};
+
+struct SUpdateCtx
+	{
+	SUpdateCtx (void) :
+			pSystem(NULL),
+			pDockingObj(NULL)
+		{ }
+
+	CSystem *pSystem;					//	Current system
+
+	//	Used to compute nearest docking port to player
+
+	CSpaceObject *pDockingObj;			//	If non-null, nearest object to dock with
+	int iDockingPort;					//	Nearest docking port
+	CVector vDockingPort;				//	Position of docking port (absolute)
+	Metric rDockingPortDist2;			//	Distance from player to docking port
 	};
 
 //	Utility classes
@@ -480,7 +497,7 @@ class CDamageSource
 		bool IsCausedByFriendOf (CSpaceObject *pObj) const;
 		bool IsCausedByNonFriendOf (CSpaceObject *pObj) const;
 		inline bool IsCausedByPlayer (void) const { return ((m_dwFlags & FLAG_IS_PLAYER_CAUSED) ? true : false); }
-		inline bool IsEmpty (void) { return (m_pSource == NULL); }
+		inline bool IsEmpty (void) const { return (GetObj() == NULL); }
 		inline bool IsPlayer (void) const { return ((m_dwFlags & FLAG_IS_PLAYER) ? true : false); }
 		void OnObjDestroyed (CSpaceObject *pObjDestroyed);
 		void ReadFromStream (SLoadCtx &Ctx);

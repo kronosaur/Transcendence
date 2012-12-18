@@ -7,8 +7,10 @@
 #include "Transcendence.h"
 
 #define CMD_CLOSE_SESSION						CONSTLIT("cmdCloseSession")
+#define CMD_DELETE_FILE							CONSTLIT("cmdDeleteFile")
 #define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_READ_COMPLETE						CONSTLIT("cmdReadComplete")
+
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 
 #define ERR_NO_ENTRIES							CONSTLIT("No save files")
@@ -25,6 +27,7 @@
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_COUNT								CONSTLIT("count")
+#define PROP_ENABLED							CONSTLIT("enabled")
 #define PROP_FONT								CONSTLIT("font")
 #define PROP_POSITION							CONSTLIT("position")
 #define PROP_SCALE								CONSTLIT("scale")
@@ -50,6 +53,36 @@ void CLoadGameSession::CmdCancel (void)
 
 	{
 	m_HI.ClosePopupSession();
+	}
+
+void CLoadGameSession::CmdDeleteFile (void)
+
+//	CmdDeleteFile
+//
+//	Send file to recycle bin
+
+	{
+	//	Get the filename to delete.
+
+	IAnimatron *pList = GetElement(ID_LIST);
+	if (pList == NULL)
+		return;
+
+	CString sFilename = pList->GetPropertyString(PROP_SELECTION_ID);
+	if (sFilename.IsBlank())
+		return;
+
+	//	Delete the file
+
+	if (!fileDelete(sFilename, true))
+		{
+		m_HI.OpenPopupSession(new CMessageSession(m_HI, CONSTLIT("Unable to Recycle"), strPatternSubst(CONSTLIT("Unable to send file to recycle bin: %s"), sFilename)));
+		return;
+		}
+
+	//	Remove from list
+
+	pList->DeleteElement(sFilename);
 	}
 
 void CLoadGameSession::CmdOK (void)
@@ -125,6 +158,10 @@ void CLoadGameSession::CmdReadComplete (CListSaveFilesTask *pTask)
 		return;
 		}
 
+	//	Enable the delete menu item
+
+	SetPropertyBool(CMD_DELETE_FILE, PROP_ENABLED, true);
+
 	//	Show the profile
 
 	RECT rcList;
@@ -151,6 +188,8 @@ ALERROR CLoadGameSession::OnCommand (const CString &sCmd, void *pData)
 		CmdReadComplete((CListSaveFilesTask *)pData);
 	else if (strEquals(sCmd, CMD_OK_SESSION))
 		CmdOK();
+	else if (strEquals(sCmd, CMD_DELETE_FILE))
+		CmdDeleteFile();
 
 	return NOERROR;
 	}
@@ -175,12 +214,21 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 
 	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, sFolder, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
 
-	//	Create the title
+	//	Create the title and menu
 
 	CUIHelper Helper(m_HI);
+	TArray<CUIHelper::SMenuEntry> Menu;
+	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_DELETE_FILE;
+	pEntry->sLabel = CONSTLIT("Send game to recycle bin");
+
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Load Game"), CUIHelper::OPTION_SESSION_OK_BUTTON, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Load Game"), &Menu, CUIHelper::OPTION_SESSION_OK_BUTTON, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+	//	Disable the delete file button. We enable it again after we load.
+
+	SetPropertyBool(CMD_DELETE_FILE, PROP_ENABLED, false);
 
 	//	Create a wait animation
 

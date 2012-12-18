@@ -168,7 +168,7 @@ static char *g_pszDestructionCauses[] =
 
 #define DESTRUCTION_CAUSES_COUNT	(sizeof(g_pszDestructionCauses) / sizeof(g_pszDestructionCauses[0]))
 
-static char *g_pszDamageResults[] =
+static char *g_pszDamageResults[damageResultCount] =
 	{
 	"noDamage",
 	"absorbedByShields",
@@ -178,9 +178,8 @@ static char *g_pszDamageResults[] =
 	"passthrough",
 	"passthroughDestroyed",
 	"destroyedAbandoned",
+	"noDamageNoPassthrough",
 	};
-
-#define DAMAGE_RESULTS_COUNT		(sizeof(g_pszDamageResults) / sizeof(g_pszDamageResults[0]))
 
 static char *g_pszMessageID[] =
 	{
@@ -1196,7 +1195,7 @@ CString GetDamageResultsName (EDamageResults iResult)
 //	Returns the name of the damage result
 
 	{
-	if (iResult < DAMAGE_RESULTS_COUNT)
+	if (iResult < damageResultCount)
 		return CString(g_pszDamageResults[iResult]);
 	else
 		{

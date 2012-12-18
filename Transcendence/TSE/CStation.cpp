@@ -523,6 +523,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_iDestroyedAnimation = 0;
 	pStation->m_fKnown = false;
 	pStation->m_fReconned = false;
+	pStation->m_fExplored = false;
 	pStation->m_fFireReconEvent = false;
 	pStation->m_fNoMapLabel = false;
 	pStation->m_fActive = pType->IsActive();
@@ -1141,7 +1142,7 @@ CString CStation::GetName (DWORD *retdwFlags)
 	return m_sName;
 	}
 
-CVector CStation::GetNearestDockVector (CSpaceObject *pRequestingObj)
+int CStation::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort)
 
 //	GetNearestDockVector
 //
@@ -1149,9 +1150,12 @@ CVector CStation::GetNearestDockVector (CSpaceObject *pRequestingObj)
 //	dock position
 
 	{
-	CVector vDistance;
-	m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj, &vDistance);
-	return vDistance;
+	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
+
+	if (retvPort)
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+
+	return iPort;
 	}
 
 CSystem::LayerEnum CStation::GetPaintLayer (void)
@@ -1397,6 +1401,26 @@ bool CStation::IsBlacklisted (CSpaceObject *pObj)
 	return (pObj->IsPlayer() && m_Blacklist.IsBlacklisted());
 	}
 
+EDamageResults CStation::GetPassthroughDefault (void)
+
+//	GetPassthroughDefault
+//
+//	Returns the default damage result when hit by passthrough
+
+	{
+	if (IsImmutable())
+		return damageNoDamageNoPassthrough;
+	else if (IsAbandoned())
+		{
+		if (m_iStructuralHP > 0)
+			return damageStructuralHit;
+		else
+			return damageNoDamageNoPassthrough;
+		}
+	else
+		return damageArmorHit;
+	}
+
 EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 //	Damage
@@ -1414,7 +1438,12 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 	Ctx.iDamage = Ctx.Damage.RollDamage();
 	if (Ctx.iDamage == 0)
-		return damageNoDamage;
+		{
+		if (IsImmutable())
+			return damageNoDamageNoPassthrough;
+		else
+			return damageNoDamage;
+		}
 
 	//	OnAttacked event
 
@@ -1430,7 +1459,12 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 		if (IsDestroyed())
 			return damageDestroyed;
 		else if (Ctx.iDamage == 0)
-			return damageNoDamage;
+			{
+			if (IsImmutable())
+				return damageNoDamageNoPassthrough;
+			else
+				return damageNoDamage;
+			}
 		}
 
 	//	If this is a momentum attack then we are pushed
@@ -1466,7 +1500,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 		Ctx.iDamage = 0;
 		Ctx.pDesc->CreateHitEffect(GetSystem(), Ctx);
 
-		return damageNoDamage;
+		return damageNoDamageNoPassthrough;
 		}
 
 	//	We go through a different path if we're already abandoned
@@ -1474,7 +1508,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 	if (IsAbandoned())
 		{
-		EDamageResults iResult = damageNoDamage;
+		EDamageResults iResult = damageNoDamageNoPassthrough;
 
 		//	If this is a paralysis attack then no damage
 
@@ -1928,6 +1962,41 @@ DWORD CStation::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSp
 
 		default:
 			return resNoAnswer;
+		}
+	}
+
+void CStation::OnComponentChanged (ObjectComponentTypes iComponent)
+
+//	OnComponentChanged
+//
+//	Some part of the object has changed
+
+	{
+	int i;
+
+	switch (iComponent)
+		{
+		case comCargo:
+			{
+			if (m_pDevices)
+				{
+				for (i = 0; i < maxDevices; i++)
+					{
+					CInstalledDevice *pDevice = &m_pDevices[i];
+					if (pDevice->IsEmpty())
+						continue;
+
+					//	If one of our weapons doesn't have a variant selected, then
+					//	try to select it now (if we just got some new ammo, this will
+					//	select the ammo)
+
+					if (!pDevice->IsVariantSelected(this))
+						pDevice->SelectFirstVariant(this);
+					}
+				}
+
+			break;
+			}
 		}
 	}
 
@@ -2422,6 +2491,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	m_fFireReconEvent =	((dwLoad & 0x00000100) ? true : false);
 	bool fNoArticle =	((dwLoad & 0x00000200) ? true : false);
 	m_fImmutable =		((dwLoad & 0x00000400) ? true : false);
+	m_fExplored =		((dwLoad & 0x00000800) ? true : false);
 
 	//	Init name flags
 
@@ -2467,6 +2537,158 @@ void CStation::OnSystemCreated (void)
 
 	{
 	FinishCreation();
+	}
+
+void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
+
+//	OnUpdate
+//
+//	Update
+
+	{
+	int i;
+	int iTick = GetSystem()->GetTick() + GetDestiny();
+
+	//	Basic update
+
+	UpdateAttacking(iTick);
+	m_DockingPorts.UpdateAll(Ctx, this);
+	UpdateReinforcements(iTick);
+
+	//	Trade
+
+	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0
+			 && !IsAbandoned())
+		{
+		if (m_pTrade)
+			{
+			m_pTrade->OnUpdate(this);
+
+			if (!IsPlayerDocked())
+				m_pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
+			}
+
+		CTradingDesc *pTrade = m_pType->GetTradingDesc();
+		if (pTrade)
+			{
+			//	If we have a trade desc override, then don't update. [Otherwise
+			//	we will replenish currency at double the rate.]
+
+			if (m_pTrade == NULL)
+				pTrade->OnUpdate(this);
+
+			//	But we still need to refresh inventory, since the base 
+			//	may contain items not in the override.
+			//
+			//	LATER: Note that this doesn't handle the case where we try
+			//	to override a specific item. The fix is to add the concept
+			//	of overriding directly into the class.
+
+			if (!IsPlayerDocked())
+				pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
+			}
+		}
+
+	//	Update each device
+
+	if (m_pDevices)
+		{
+		bool bSourceDestroyed = false;
+		for (i = 0; i < maxDevices; i++)
+			{
+			m_pDevices[i].Update(this, iTick, &bSourceDestroyed);
+			if (bSourceDestroyed)
+				return;
+			}
+		}
+
+	//	Update destroy animation
+
+	if (m_iDestroyedAnimation)
+		{
+		int iTick, iRotation;
+		const CObjectImageArray &Image = GetImage(&iTick, &iRotation);
+		int cxWidth = RectWidth(Image.GetImageRect());
+
+		CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_StationDestroyedUNID);
+		if (pEffect)
+			{
+			for (int i = 0; i < mathRandom(1, 3); i++)
+				{
+				CVector vPos = GetPos() 
+						+ PolarToVector(mathRandom(0, 359), g_KlicksPerPixel * mathRandom(1, cxWidth / 3));
+
+				pEffect->CreateEffect(GetSystem(),
+						this,
+						vPos,
+						GetVel(),
+						0);
+				}
+			}
+
+		m_iDestroyedAnimation--;
+		}
+
+	//	If we're moving, slow down
+
+	if (IsMobile() && !GetVel().IsNull())
+		{
+		//	If we're moving really slowly, force to 0. We do this so that we can optimize calculations
+		//	and not have to compute wreck movement down to infinitesimal distances.
+
+		if (GetVel().Length2() < g_MinSpeed2)
+			SetVel(NullVector);
+		else
+			SetVel(CVector(GetVel().GetX() * g_SpaceDragFactor, GetVel().GetY() * g_SpaceDragFactor));
+		}
+
+	//	Overlays
+
+	if (!m_Overlays.IsEmpty())
+		{
+		bool bModified;
+		m_Overlays.Update(this, &bModified);
+		if (CSpaceObject::IsDestroyedInUpdate())
+			return;
+		else if (bModified)
+			{
+#if 0
+			bWeaponStatusChanged = true;
+			bArmorStatusChanged = true;
+			bCalcDeviceBonus = true;
+#endif
+			}
+		}
+	}
+
+void CStation::OnUpdateExtended (const CTimeSpan &ExtraTime)
+
+//	OnUpdateExtended
+//
+//	Update after an extended period of time
+
+	{
+	//	Refresh inventory, if necessary
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if ((pTrade || m_pTrade) && ExtraTime.Days() > 0 && !IsAbandoned())
+		{
+		//	Compute the percent of the inventory that need to refresh
+
+		int iRefreshPercent;
+		if (ExtraTime.Days() >= DAYS_TO_REFRESH_INVENTORY)
+			iRefreshPercent = 100;
+		else
+			iRefreshPercent = 100 * ExtraTime.Days() / DAYS_TO_REFRESH_INVENTORY;
+
+		//	Do it
+
+		if (m_pTrade)
+			m_pTrade->RefreshInventory(this, iRefreshPercent);
+
+		if (pTrade)
+			pTrade->RefreshInventory(this, iRefreshPercent);
+		}
 	}
 
 void CStation::OnWriteToStream (IWriteStream *pStream)
@@ -2635,6 +2857,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fFireReconEvent ?		0x00000100 : 0);
 	//	0x00000200 retired
 	dwSave |= (m_fImmutable ?			0x00000400 : 0);
+	dwSave |= (m_fExplored ?			0x00000800 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -2684,9 +2907,16 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				}
 			}
 		else
-			Dest.DrawDot(x, y, 
-					wColor, 
-					CG16bitImage::markerSmallRound);
+			{
+			if (!m_pType->ShowsMapIcon() && m_fExplored)
+				Dest.DrawDot(x, y, 
+						CG16bitImage::RGBValue(128, 128, 128), 
+						CG16bitImage::markerTinyCircle);
+			else
+				Dest.DrawDot(x, y, 
+						wColor, 
+						CG16bitImage::markerTinyCircle);
+			}
 		}
 	}
 
@@ -2872,7 +3102,7 @@ bool CStation::RemoveSubordinate (CSpaceObject *pSubordinate)
 	return m_Subordinates.Remove(pSubordinate);
 	}
 
-bool CStation::RequestDock (CSpaceObject *pObj)
+bool CStation::RequestDock (CSpaceObject *pObj, int iPort)
 
 //	RequestDock
 //
@@ -2910,7 +3140,7 @@ bool CStation::RequestDock (CSpaceObject *pObj)
 
 	//	Get the nearest free port
 
-	return m_DockingPorts.RequestDock(this, pObj);
+	return m_DockingPorts.RequestDock(this, pObj, iPort);
 	}
 
 bool CStation::RequestGate (CSpaceObject *pObj)
@@ -2968,6 +3198,26 @@ void CStation::SetEventFlags (void)
 	SetHasOnObjDockedEvent(FindEventHandler(CONSTLIT("OnObjDocked")));
 	SetHasOnAttackedEvent(FindEventHandler(CONSTLIT("OnAttacked")));
 	SetHasOnDamageEvent(FindEventHandler(CONSTLIT("OnDamage")));
+	}
+
+void CStation::SetFlotsamImage (CItemType *pItemType)
+
+//	SetFlotsamImage
+//
+//	Sets the image for the station
+
+	{
+	m_ImageSelector.DeleteAll();
+	m_ImageSelector.AddFlotsam(DEFAULT_SELECTOR_ID, pItemType);
+
+	//	Set bounds
+
+	//	We don't care about iTick or iRotation because 
+	//	the image rect dimensions won't change
+	const CObjectImageArray &Image = GetImage(NULL, NULL);
+
+	const RECT &rcImage = Image.GetImageRect();
+	SetBounds(rcImage);
 	}
 
 int CStation::GetImageVariant (void)
@@ -3135,177 +3385,6 @@ void CStation::SetWreckParams (CShipClass *pWreckClass, CShip *pShip)
 	m_dwWreckUNID = pWreckClass->GetUNID();
 	}
 
-void CStation::Undock (CSpaceObject *pObj)
-
-//	Undock
-//
-//	Undocks from the station
-
-	{
-	m_DockingPorts.Undock(this, pObj);
-
-	//	If we're set to destroy when empty AND we're empty
-	//	AND no one else is docked, then destroy the station
-
-	if (m_pType->IsDestroyWhenEmpty() 
-			&& GetItemList().GetCount() == 0
-			&& m_DockingPorts.GetPortsInUseCount(this) == 0)
-		{
-		Destroy(removedFromSystem, CDamageSource());
-		}
-	}
-
-void CStation::OnUpdate (Metric rSecondsPerTick)
-
-//	OnUpdate
-//
-//	Update
-
-	{
-	int i;
-	int iTick = GetSystem()->GetTick() + GetDestiny();
-
-	//	Basic update
-
-	UpdateAttacking(iTick);
-	m_DockingPorts.UpdateAll(this);
-	UpdateReinforcements(iTick);
-
-	//	Trade
-
-	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0)
-		{
-		if (m_pTrade)
-			{
-			m_pTrade->OnUpdate(this);
-
-			if (!IsPlayerDocked())
-				m_pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			//	If we have a trade desc override, then don't update. [Otherwise
-			//	we will replenish currency at double the rate.]
-
-			if (m_pTrade == NULL)
-				pTrade->OnUpdate(this);
-
-			//	But we still need to refresh inventory, since the base 
-			//	may contain items not in the override.
-			//
-			//	LATER: Note that this doesn't handle the case where we try
-			//	to override a specific item. The fix is to add the concept
-			//	of overriding directly into the class.
-
-			if (!IsPlayerDocked())
-				pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-		}
-
-	//	Update each device
-
-	if (m_pDevices)
-		{
-		bool bSourceDestroyed = false;
-		for (i = 0; i < maxDevices; i++)
-			{
-			m_pDevices[i].Update(this, iTick, &bSourceDestroyed);
-			if (bSourceDestroyed)
-				return;
-			}
-		}
-
-	//	Update destroy animation
-
-	if (m_iDestroyedAnimation)
-		{
-		int iTick, iRotation;
-		const CObjectImageArray &Image = GetImage(&iTick, &iRotation);
-		int cxWidth = RectWidth(Image.GetImageRect());
-
-		CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_StationDestroyedUNID);
-		if (pEffect)
-			{
-			for (int i = 0; i < mathRandom(1, 3); i++)
-				{
-				CVector vPos = GetPos() 
-						+ PolarToVector(mathRandom(0, 359), g_KlicksPerPixel * mathRandom(1, cxWidth / 3));
-
-				pEffect->CreateEffect(GetSystem(),
-						this,
-						vPos,
-						GetVel(),
-						0);
-				}
-			}
-
-		m_iDestroyedAnimation--;
-		}
-
-	//	If we're moving, slow down
-
-	if (IsMobile() && !GetVel().IsNull())
-		{
-		//	If we're moving really slowly, force to 0. We do this so that we can optimize calculations
-		//	and not have to compute wreck movement down to infinitesimal distances.
-
-		if (GetVel().Length2() < g_MinSpeed2)
-			SetVel(NullVector);
-		else
-			SetVel(CVector(GetVel().GetX() * g_SpaceDragFactor, GetVel().GetY() * g_SpaceDragFactor));
-		}
-
-	//	Overlays
-
-	if (!m_Overlays.IsEmpty())
-		{
-		bool bModified;
-		m_Overlays.Update(this, &bModified);
-		if (CSpaceObject::IsDestroyedInUpdate())
-			return;
-		else if (bModified)
-			{
-#if 0
-			bWeaponStatusChanged = true;
-			bArmorStatusChanged = true;
-			bCalcDeviceBonus = true;
-#endif
-			}
-		}
-	}
-
-void CStation::OnUpdateExtended (const CTimeSpan &ExtraTime)
-
-//	OnUpdateExtended
-//
-//	Update after an extended period of time
-
-	{
-	//	Refresh inventory, if necessary
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if ((pTrade || m_pTrade) && ExtraTime.Days() > 0)
-		{
-		//	Compute the percent of the inventory that need to refresh
-
-		int iRefreshPercent;
-		if (ExtraTime.Days() >= DAYS_TO_REFRESH_INVENTORY)
-			iRefreshPercent = 100;
-		else
-			iRefreshPercent = 100 * ExtraTime.Days() / DAYS_TO_REFRESH_INVENTORY;
-
-		//	Do it
-
-		if (m_pTrade)
-			m_pTrade->RefreshInventory(this, iRefreshPercent);
-
-		if (pTrade)
-			pTrade->RefreshInventory(this, iRefreshPercent);
-		}
-	}
-
 bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
 
 //	SetProperty
@@ -3366,6 +3445,26 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 		return CSpaceObject::SetProperty(sName, pValue, retsError);
 	}
 
+void CStation::Undock (CSpaceObject *pObj)
+
+//	Undock
+//
+//	Undocks from the station
+
+	{
+	m_DockingPorts.Undock(this, pObj);
+
+	//	If we're set to destroy when empty AND we're empty
+	//	AND no one else is docked, then destroy the station
+
+	if (m_pType->IsDestroyWhenEmpty() 
+			&& GetItemList().GetCount() == 0
+			&& m_DockingPorts.GetPortsInUseCount(this) == 0)
+		{
+		Destroy(removedFromSystem, CDamageSource());
+		}
+	}
+
 void CStation::UpdateAttacking (int iTick)
 
 //	UpdateAttacking
@@ -3373,6 +3472,8 @@ void CStation::UpdateAttacking (int iTick)
 //	Station attacks any enemies in range
 
 	{
+	DEBUG_TRY
+
 	int i;
 	
 	//	Update blacklist counter
@@ -3457,6 +3558,8 @@ void CStation::UpdateAttacking (int iTick)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CStation::UpdateReinforcements (int iTick)
@@ -3466,6 +3569,8 @@ void CStation::UpdateReinforcements (int iTick)
 //	Check to see if it is time to send reinforcements to the station
 
 	{
+	DEBUG_TRY
+
 	//	Nothing to do if we're abandoned
 
 	if (IsAbandoned())
@@ -3593,4 +3698,6 @@ void CStation::UpdateReinforcements (int iTick)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}

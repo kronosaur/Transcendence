@@ -378,7 +378,9 @@
 								(setq waypoint (objGetObjRefData gStart "NavBeacon"))
 
 								; Set the target in the player ship's computer
+								(shpCancelOrders gPlayerShip)
 								(shpOrderEscort gPlayerShip waypoint)
+								(objRegisterForEvents gSource gPlayerShip)
 
 								; Prepare the station to be reconned
 								(staClearReconned waypoint)
@@ -469,7 +471,9 @@
 								(setq timer (add (max travelTime 600) (random 0 100)))
 								(sysAddObjTimerEvent timer gSource "OnTimerConvoyAppears")
 
+								(shpCancelOrders gPlayerShip)
 								(shpOrderEscort gPlayerShip gStart)
+								(objRegisterForEvents gSource gPlayerShip)
 								)
 							)
 						)
@@ -503,6 +507,7 @@
 								; Point the player
 								(shpCancelOrders gPlayerShip)
 								(shpOrder gPlayerShip 'attack gStart)
+								(objRegisterForEvents gSource gPlayerShip)
 								)
 							)
 						)
@@ -544,6 +549,7 @@
 								; Point the player to the transport
 								(shpCancelOrders gPlayerShip)
 								(shpOrderEscort gPlayerShip ship)
+								(objRegisterForEvents gSource gPlayerShip)
 								(objSetIdentified ship)
 
 								; Create an enemy ship that will attack the freighter
@@ -691,13 +697,14 @@
 					(block (missionID)
 						(setq missionID (objGetData gSource "MissionID"))
 						(switch
-							; If the player was destroyed, stop the mission
+							; If the player was destroyed (or gated out), stop the mission
 							(eq aObjDestroyed gPlayerShip)
 								(block Nil
 									(objSetData gSource "MissionStatus" "failure")
 									(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
 									(plyMessage gPlayer "Mission failed")
 									(shpCancelOrders gPlayerShip)
+									(objUnregisterForEvents gSource gPlayerShip)
 									)
 
 							(eq missionID "mission1a")
@@ -710,6 +717,7 @@
 											(objSetData gSource "MissionStatus" "success")
 											(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
 											(plyMessage gPlayer "Mission complete!")
+											(objUnregisterForEvents gSource gPlayerShip)
 											)
 										)
 									)
@@ -722,6 +730,7 @@
 										(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
 										(plyMessage gPlayer "Mission complete!")
 										(shpCancelOrders gPlayerShip)
+										(objUnregisterForEvents gSource gPlayerShip)
 										)
 									)
 							
@@ -735,6 +744,7 @@
 											(objSetData gSource "MissionStatus" "failure")
 											(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
 											(plyMessage gPlayer "Mission failed")
+											(objUnregisterForEvents gSource gPlayerShip)
 											)
 										)
 									)
@@ -755,6 +765,7 @@
 										(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
 										(plyMessage gPlayer "Mission complete!")
 										(shpCancelOrders gPlayerShip)
+										(objUnregisterForEvents gSource gPlayerShip)
 										)
 									)
 							)
@@ -777,6 +788,7 @@
 											(objSetData gSource "MissionStatus" "failure")
 											(typIncGlobalData &stCommonwealthFortress; "missionsFailed")
 											(plyMessage gPlayer "Mission failed")
+											(objUnregisterForEvents gSource gPlayerShip)
 											)
 										)
 									)
@@ -840,6 +852,8 @@
 											(objSetData gSource "MissionStatus" "success")
 											(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
 											(plyMessage gPlayer "Mission complete!")
+											(shpCancelOrders gPlayerShip)
+											(objUnregisterForEvents gSource gPlayerShip)
 											)
 										)
 									)

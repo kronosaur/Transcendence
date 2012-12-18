@@ -89,6 +89,7 @@
 #define FIELD_SHORT_NAME						CONSTLIT("shortName")
 #define FIELD_SLOT_CATEGORY						CONSTLIT("slotCategory")
 #define FIELD_UNKNOWN_TYPE						CONSTLIT("unknownType")
+#define FIELD_USE_KEY							CONSTLIT("useKey")
 
 static char g_NameAttrib[] = "name";
 static char g_ObjectAttrib[] = "object";
@@ -96,6 +97,8 @@ static char g_MassAttrib[] = "mass";
 static char g_DescriptionAttrib[] = "description";
 static char g_FirstPluralAttrib[] = "firstPlural";
 static char g_RandomDamagedAttrib[] = "randomDamaged";
+
+const int FLOTSAM_IMAGE_WIDTH =					32;
 
 static char *CACHED_EVENTS[CItemType::evtCount] =
 	{
@@ -105,6 +108,8 @@ static char *CACHED_EVENTS[CItemType::evtCount] =
 		"OnEnable",
 		"OnRefuel",
 	};
+
+static CStationType *g_pFlotsamStationType = NULL;
 
 CItemType::CItemType (void) : 
 		m_dwSpare(0),
@@ -141,6 +146,76 @@ ALERROR CItemType::ComposeError (const CString &sName, const CString &sError, CS
 	{
 	*retsError = strPatternSubst("%s: %s", sName, sError);
 	return ERR_FAIL;
+	}
+
+void CItemType::CreateEmptyFlotsam (CSystem *pSystem, 
+									const CVector &vPos, 
+									const CVector &vVel, 
+									CSovereign *pSovereign, 
+									CStation **retpFlotsam)
+
+//	CreateEmptyFlotsam
+//
+//	Creates an empty flotsam station
+
+	{
+	CStation *pFlotsam;
+	CStation::CreateFromType(pSystem,
+			GetFlotsamStationType(),
+			vPos,
+			vVel,
+			NULL,
+			&pFlotsam);
+
+	//	Set properties
+
+	pFlotsam->SetSovereign(pSovereign);
+	pFlotsam->SetFlotsamImage(this);
+
+	DWORD dwFlags;
+	CString sName = GetName(&dwFlags);
+	pFlotsam->SetName(sName, dwFlags);
+
+	//	Done
+
+	if (retpFlotsam)
+		*retpFlotsam = pFlotsam;
+	}
+
+void CItemType::CreateFlotsamImage (void)
+
+//	CreateFlotsamImage
+//
+//	Creates a 32x32 image used when the item is floating in space.
+
+	{
+	if (m_Image.IsEmpty())
+		return;
+
+	RECT rcImage = m_Image.GetImageRect();
+	int cxWidth = RectWidth(rcImage);
+	int cyHeight = RectHeight(rcImage);
+
+	//	Create a resized version of the image
+
+	Metric rScale = (Metric)FLOTSAM_IMAGE_WIDTH / (Metric)cxWidth;
+	m_FlotsamBitmap.CreateFromImageTransformed(m_Image.GetImage(CONSTLIT("Flotsam image")),
+			rcImage.left,
+			rcImage.top,
+			cxWidth,
+			cyHeight,
+			rScale,
+			rScale,
+			0.0);
+
+	//	Initialize an image
+
+	RECT rcRect;
+	rcRect.left = 0;
+	rcRect.top = 0;
+	rcRect.right = m_FlotsamBitmap.GetWidth();
+	rcRect.bottom = m_FlotsamBitmap.GetHeight();
+	m_FlotsamImage.Init(&m_FlotsamBitmap, rcRect, 0, 0, false);
 	}
 
 bool CItemType::FindDataField (const CString &sField, CString *retsValue)
@@ -294,6 +369,11 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = (m_pUnknownType ? strPatternSubst(CONSTLIT("0x%x"), m_pUnknownType->GetUNID()) : NULL_STR);
 		return true;
 		}
+	else if (strEquals(sField, FIELD_USE_KEY))
+		{
+		*retsValue = m_sUseKey;
+		return true;
+		}
 
 	//	Otherwise, see if the device class knows
 
@@ -404,6 +484,19 @@ const CString &CItemType::GetDesc (void) const
 		return m_pUnknownType->GetDesc();
 
 	return m_sDescription; 
+	}
+
+CStationType *CItemType::GetFlotsamStationType (void)
+
+//	GetFlotsamStationType
+//
+//	Returns the station type to use for flotsam
+
+	{
+	if (g_pFlotsamStationType == NULL)
+		g_pFlotsamStationType = g_pUniverse->FindStationType(FLOTSAM_UNID);
+
+	return g_pFlotsamStationType;
 	}
 
 int CItemType::GetFrequencyByLevel (int iLevel)
@@ -1121,6 +1214,8 @@ void CItemType::OnReinit (void)
 //	Reinitialize when the game starts again
 
 	{
+	g_pFlotsamStationType = NULL;
+
 	if (GetUnknownType())
 		m_fKnown = false;
 
@@ -1163,25 +1258,25 @@ bool CItemType::ParseItemCategory (const CString &sCategory, ItemCategories *ret
 	else if (strEquals(sCategory, CATEGORY_ARMOR))
 		iCat = itemcatArmor;
 	else if (strEquals(sCategory, CATEGORY_CARGO_HOLD))
-		iCat = itemcatArmor;
+		iCat = itemcatCargoHold;
 	else if (strEquals(sCategory, CATEGORY_DRIVE))
-		iCat = itemcatArmor;
+		iCat = itemcatDrive;
 	else if (strEquals(sCategory, CATEGORY_FUEL))
-		iCat = itemcatArmor;
+		iCat = itemcatFuel;
 	else if (strEquals(sCategory, CATEGORY_LAUNCHER))
-		iCat = itemcatArmor;
+		iCat = itemcatLauncher;
 	else if (strEquals(sCategory, CATEGORY_MISC_DEVICE))
-		iCat = itemcatArmor;
+		iCat = itemcatMiscDevice;
 	else if (strEquals(sCategory, CATEGORY_MISC_ITEM))
-		iCat = itemcatArmor;
+		iCat = itemcatMisc;
 	else if (strEquals(sCategory, CATEGORY_REACTOR))
-		iCat = itemcatArmor;
+		iCat = itemcatReactor;
 	else if (strEquals(sCategory, CATEGORY_SHIELDS))
-		iCat = itemcatArmor;
+		iCat = itemcatShields;
 	else if (strEquals(sCategory, CATEGORY_USABLE_ITEM))
-		iCat = itemcatArmor;
+		iCat = itemcatUseful;
 	else if (strEquals(sCategory, CATEGORY_WEAPON))
-		iCat = itemcatArmor;
+		iCat = itemcatWeapon;
 	else
 		return false;
 

@@ -90,7 +90,7 @@
 								(switch
 									(eq status 'defended) "Defended Point Juno"
 									(eq status 'destroyed) "Failed to defend Point Juno"
-									(eq status 'desrroyedByPlayer) "Destroyed Point Juno"
+									(eq status 'destroyedByPlayer) "Destroyed Point Juno"
 									(cat "ERROR: Point Juno status: " status)
 									) 
 								Nil
@@ -1153,7 +1153,6 @@
 			name=				"(Centurion wreck)"
 			sovereign=			"&svCommonwealthFleet;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -1189,6 +1188,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Sandstorm wreck -->
@@ -1197,7 +1201,6 @@
 			name=				"(Sandstorm wreck)"
 			sovereign=			"&svAres;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -1232,6 +1235,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Point Juno System -->

@@ -2402,7 +2402,7 @@ ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
 
 	//	Use widescreen topology
 
-	int cyBarHeight = (g_cyScreen - INTRO_DISPLAY_HEIGHT) / 2;
+	int cyBarHeight = Max(128, (g_cyScreen - INTRO_DISPLAY_HEIGHT) / 2);
 	m_rcIntroTop.top = 0;
 	m_rcIntroTop.left = 0;
 	m_rcIntroTop.bottom = cyBarHeight;

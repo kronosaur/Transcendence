@@ -2171,6 +2171,52 @@ void CG16bitImage::FillColumn (int x, int y, int cyHeight, WORD wColor)
 		}
 	}
 
+void CG16bitImage::FillColumnTrans (int x, int y, int cyHeight, WORD wColor, DWORD byOpacity)
+
+//	FillColumnTrans
+//
+//	Fills a single column of pixels
+
+	{
+	int yEnd = y + cyHeight;
+
+	//	Make sure this row is in range
+
+	if (x < m_rcClip.left || x >= m_rcClip.right
+			|| yEnd <= m_rcClip.top || y >= m_rcClip.bottom)
+		return;
+
+	int yStart = max(y, m_rcClip.top);
+	yEnd = min(yEnd, m_rcClip.bottom);
+
+	//	Set up
+
+	BYTE *pAlpha5 = g_Alpha5[byOpacity];
+	BYTE *pAlpha6 = g_Alpha6[byOpacity];
+	BYTE *pAlpha5Inv = g_Alpha5[255 - byOpacity];
+	BYTE *pAlpha6Inv = g_Alpha6[255 - byOpacity];
+	DWORD sTemp = wColor;
+
+	//	Get the pointers
+
+	WORD *pPos = GetRowStart(yStart) + x;
+	WORD *pPosEnd = GetRowStart(yEnd) + x;
+
+	//	Do it
+
+	while (pPos < pPosEnd)
+		{
+		DWORD dTemp = *pPos;
+
+		DWORD dwRedResult = pAlpha5Inv[(dTemp & 0xf800) >> 11] + pAlpha5[(sTemp & 0xf800) >> 11];
+		DWORD dwGreenResult = pAlpha6Inv[(dTemp & 0x7e0) >> 5] + pAlpha6[(sTemp & 0x7e0) >> 5];
+		DWORD dwBlueResult = pAlpha5Inv[(dTemp & 0x1f)] + pAlpha5[(sTemp & 0x1f)];
+
+		*pPos = (WORD)((dwRedResult << 11) | (dwGreenResult << 5) | (dwBlueResult));
+		pPos = NextRow(pPos);
+		}
+	}
+
 void CG16bitImage::FillLine (int x, int y, int cxWidth, WORD wColor)
 
 //	FillLine

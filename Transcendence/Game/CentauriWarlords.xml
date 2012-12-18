@@ -769,13 +769,15 @@
 										)
 									)
 								)
-					</OnPaneInit>
+						</OnPaneInit>
 
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
 								(block Nil
 									(objSetData gSource "Liberated" True)
-									(scrShowScreen gScreen &dsRPGLoot;)
+									(scrShowScreen gScreen &dsRPGLoot; {
+										nextScreen: "Main"
+										})
 									)
 							</Action>
 

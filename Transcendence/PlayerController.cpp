@@ -17,13 +17,19 @@ static DATADESCSTRUCT g_DataDesc[] =
 		{ DATADESC_OPCODE_STOP,	0,	0 } };
 static CObjectClass<CPlayerShipController>g_Class(OBJID_CPLAYERSHIPCONTROLLER, g_DataDesc);
 
-const Metric MAX_IN_COMBAT_RANGE =				(LIGHT_SECOND * 30.0);
+const Metric MAX_IN_COMBAT_RANGE =				LIGHT_SECOND * 30.0;
 const int UPDATE_HELP_TIME =					31;
-const Metric MAX_AUTO_TARGET_DISTANCE =			(LIGHT_SECOND * 30.0);
+const Metric MAX_AUTO_TARGET_DISTANCE =			LIGHT_SECOND * 30.0;
+const Metric MAX_DOCK_DISTANCE =				KLICKS_PER_PIXEL * 256.0;
+const Metric MAX_DOCK_DISTANCE2 =				MAX_DOCK_DISTANCE * MAX_DOCK_DISTANCE;
+const Metric MIN_PORT_ANIMATION_DIST =			KLICKS_PER_PIXEL * 2;
+const Metric MIN_PORT_ANIMATION_DIST2 =			MIN_PORT_ANIMATION_DIST * MIN_PORT_ANIMATION_DIST;
 
-#define MAX_DOCK_DISTANCE						(g_KlicksPerPixel * 256.0)
 #define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 64.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
+
+#define SETTING_ENABLED							CONSTLIT("enabled")
+#define SETTING_TRUE							CONSTLIT("true")
 
 CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_pTrans(NULL),
@@ -31,8 +37,6 @@ CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_bThrust(false),
 		m_bActivate(false),
 		m_bStopThrust(false),
-		m_iAutoTargetTick(0),
-		m_pAutoTarget(NULL),
 		m_pStation(NULL),
 		m_pTarget(NULL),
 		m_pDestination(NULL),
@@ -40,7 +44,12 @@ CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_iLastHelpTick(0),
 		m_iLastHelpUseTick(0),
 		m_iLastHelpFireMissileTick(0),
-		m_bMapHUD(false)
+		m_bMapHUD(false),
+		m_bDockPortIndicators(true),
+		m_pAutoDock(NULL),
+		m_iAutoDockPort(0),
+		m_pAutoTarget(NULL),
+		m_iAutoTargetTick(0)
 
 //	CPlayerShipController constructor
 
@@ -231,7 +240,7 @@ void CPlayerShipController::Dock (void)
 //	Docks the ship with the nearest station
 
 	{
-	//	If we're already in the middle of docking, cancel...
+	//	If we're already in the middle of docking, then cancel docking
 
 	if (m_pStation)
 		{
@@ -241,32 +250,20 @@ void CPlayerShipController::Dock (void)
 		return;
 		}
 
-	CSystem *pSystem = m_pShip->GetSystem();
-	CSpaceObject *pStation = NULL;
-	Metric rMaxDist2 = MAX_DOCK_DISTANCE * MAX_DOCK_DISTANCE;
+	//	Figure out what to dock with. If we have a port to dock with, choose
+	//	that. Otherwise, we look for any station with a docking port (even one
+	//	that we can't dock with).
 
-	//	See if the targeted object supports docking
-
-	if (m_pTarget 
-			&& m_pTarget != m_pShip 
-			&& m_pTarget->SupportsDocking()
-			&& (!m_pShip->IsEnemy(m_pTarget) || m_pTarget->IsAbandoned()))
+	int iDockPort;
+	CSpaceObject *pStation;
+	if (m_pAutoDock)
 		{
-		CVector vDist = m_pTarget->GetPos() - m_pShip->GetPos();
-		Metric rDist2 = vDist.Length2();
-
-		if (rDist2 < rMaxDist2)
-			pStation = m_pTarget;
+		pStation = m_pAutoDock;
+		iDockPort = m_iAutoDockPort;
 		}
-
-	//	Find the station closest to the ship
-
-	if (pStation == NULL)
-		pStation = FindDockTarget();
-
-	//	If we did not find a station then we're done
-
-	if (pStation == NULL)
+	else if (pStation = FindDockTarget())
+		iDockPort = -1;
+	else
 		{
 		m_pTrans->DisplayMessage(CONSTLIT("No stations in range"));
 		return;
@@ -281,9 +278,9 @@ void CPlayerShipController::Dock (void)
 		return;
 		}
 
-	//	Otherwise, request docking
+	//	Request docking
 
-	if (!pStation->RequestDock(m_pShip))
+	if (!pStation->RequestDock(m_pShip, iDockPort))
 		return;
 
 	//	Station has agreed to allow dock...
@@ -353,13 +350,16 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 				//	If the station is inside the dock distance, check
 				//	to see how close we are to a docking position.
 
-				CVector vDockPos = pObj->GetNearestDockVector(m_pShip);
-				Metric rDockDist2 = vDockPos.Length2();
-
-				if (rDockDist2 < rBestDist)
+				CVector vDockPos;
+				if (pObj->GetNearestDockPort(m_pShip, &vDockPos) != -1)
 					{
-					rBestDist = rDockDist2;
-					pStation = pObj;
+					Metric rDockDist2 = (vDockPos - m_pShip->GetPos()).Length2();
+
+					if (rDockDist2 < rBestDist)
+						{
+						rBestDist = rDockDist2;
+						pStation = pObj;
+						}
 					}
 				}
 			}
@@ -584,6 +584,19 @@ bool CPlayerShipController::HasFleet (void)
 		}
 
 	return false;
+	}
+
+void CPlayerShipController::Init (CTranscendenceWnd *pTrans)
+
+//	Init
+//
+//	Initialize object before we play.
+
+	{
+	m_pTrans = pTrans;
+
+	m_bDockPortIndicators = (strEquals(pTrans->GetSettings().GetString(CGameSettings::dockPortIndicator), SETTING_ENABLED)
+			|| strEquals(pTrans->GetSettings().GetString(CGameSettings::dockPortIndicator), SETTING_TRUE));
 	}
 
 void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdate)
@@ -875,14 +888,7 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 	{
 	//	Clear various variables
 
-	if (m_pTarget)
-		{
-		SetTarget(NULL);
-		m_pTrans->UpdateWeaponStatus();
-		}
-
-	if (m_pDestination)
-		SetDestination(NULL);
+	Reset();
 
 	//	Reset everything else
 
@@ -1014,14 +1020,7 @@ void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString
 	//	Clear our targeting computer (otherwise, we crash since we archive ships
 	//	in the old system)
 
-	if (m_pTarget)
-		{
-		SetTarget(NULL);
-		m_pTrans->UpdateWeaponStatus();
-		}
-
-	if (m_pDestination)
-		SetDestination(NULL);
+	Reset();
 
 	//	Reset help
 
@@ -1045,6 +1044,47 @@ void CPlayerShipController::OnLifeSupportWarning (int iSecondsLeft)
 		m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Life support failure in %d seconds"), iSecondsLeft));
 	else if (iSecondsLeft == 1)
 		m_pTrans->DisplayMessage(CONSTLIT("Life support failure in 1 second"));
+	}
+
+void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx)
+
+//	OnPaintSRSEnhancements
+//
+//	Paint SRS enhancements.
+
+	{
+	//	Paint the docking target, if necessary
+
+	if (m_bDockPortIndicators
+			&& m_pAutoDock 
+			&& m_pShip
+			&& !m_pShip->IsDestroyed()
+			&& (m_vAutoDockPort - m_pShip->GetPos()).Length2() > MIN_PORT_ANIMATION_DIST2)
+		{
+		int x, y;
+		Ctx.XForm.Transform(m_vAutoDockPort, &x, &y);
+
+		int iSpeed = 3;
+		int iRange = 10;
+		int iMin = 3;
+		WORD wColor = m_pAutoDock->GetSymbolColor();
+
+		int iPos = (iRange - 1) - ((g_pUniverse->GetTicks() / iSpeed) % iRange);
+		int iSize = iMin + iPos;
+		DWORD dwOpacity = 255 - (iPos * 20);
+
+		//	Draw animating brackets
+
+		Dest.FillColumnTrans(x - iSize, y - iSize, iPos + 1, wColor, dwOpacity);
+		Dest.FillColumnTrans(x + iSize - 1, y - iSize, iPos + 1, wColor, dwOpacity);
+		Dest.FillColumnTrans(x - iSize, y + iMin - 1, iPos + 1, wColor, dwOpacity);
+		Dest.FillColumnTrans(x + iSize - 1, y + iMin - 1, iPos + 1, wColor, dwOpacity);
+
+		Dest.FillLineTrans(x - iSize + 1, y - iSize, iPos, wColor, dwOpacity);
+		Dest.FillLineTrans(x - iSize + 1, y + iSize - 1, iPos, wColor, dwOpacity);
+		Dest.FillLineTrans(x + 2, y - iSize, iPos, wColor, dwOpacity);
+		Dest.FillLineTrans(x + 2, y + iSize - 1, iPos, wColor, dwOpacity);
+		}
 	}
 
 void CPlayerShipController::OnRadiationWarning (int iSecondsLeft)
@@ -1349,6 +1389,9 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 	if (m_pDestination == Ctx.pObj)
 		m_pDestination = NULL;
 
+	if (m_pAutoDock == Ctx.pObj)
+		m_pAutoDock = NULL;
+
 	//	Clear out the target list
 
 	m_TargetList.Remove(Ctx.pObj);
@@ -1369,6 +1412,48 @@ void CPlayerShipController::OnProgramDamage (CSpaceObject *pHacker, const Progra
 		pHacker->Highlight(CG16bitImage::RGBValue(0, 255, 0));
 
 	m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Cyberattack detected: %s"), Program.sProgramName));
+	}
+
+void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
+
+//	OnUpdatePlayer
+//
+//	This is called every tick after all other objects have been updated.
+
+	{
+	//	If we're already in the middle of docking then we don't change anything.
+
+	if (m_pStation)
+		NULL;
+
+	//	We calculate the best port to dock with at this moment. We start by 
+	//	seeing if the player has targeted a friendly station:
+
+	else if (m_pTarget 
+			&& m_pTarget != m_pShip 
+			&& m_pTarget->SupportsDocking()
+			&& (!m_pShip->IsEnemy(m_pTarget) || m_pTarget->IsAbandoned())
+			&& (m_pTarget->GetPos() - m_pShip->GetPos()).Length2() < MAX_DOCK_DISTANCE2)
+		{
+		m_pAutoDock = m_pTarget;
+		m_iAutoDockPort = m_pTarget->GetNearestDockPort(m_pShip, &m_vAutoDockPort);
+		if (m_iAutoDockPort == -1)
+			m_pAutoDock = NULL;
+		}
+
+	//	Otherwise, if we are close to a port then we use that.
+
+	else if (Ctx.pDockingObj && !Ctx.pDockingObj->IsDestroyed())
+		{
+		m_pAutoDock = Ctx.pDockingObj;
+		m_iAutoDockPort = Ctx.iDockingPort;
+		m_vAutoDockPort = Ctx.vDockingPort;
+		}
+
+	//	Otherwise, nothing to dock with
+
+	else
+		m_pAutoDock = NULL;
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)
@@ -1564,6 +1649,31 @@ void CPlayerShipController::ReadyNextWeapon (int iDir)
 		else
 			m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Disabled %s selected"), pNewWeapon->GetName()));
 		}
+	}
+
+void CPlayerShipController::Reset (void)
+
+//	Reset
+//
+//	Resets the ship (used when changing systems, etc.)
+
+	{
+	//	Clear target
+
+	if (m_pTarget)
+		{
+		SetTarget(NULL);
+		m_pTrans->UpdateWeaponStatus();
+		}
+
+	//	Clear destination
+
+	if (m_pDestination)
+		SetDestination(NULL);
+
+	//	Create autodock
+
+	m_pAutoDock = NULL;
 	}
 
 void CPlayerShipController::SelectNearestTarget (void)
@@ -1854,6 +1964,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 
 	SetTarget(NULL);
 	SetDestination(NULL);
+	m_pAutoDock = NULL;
 	m_iManeuver = IShipController::NoRotation;
 	m_bThrust = false;
 	m_bStopThrust = false;
@@ -1948,7 +2059,7 @@ void CPlayerShipController::UpdateHelp (int iTick)
 		{
 		if (!bEnemiesInRange
 				&& !m_pTrans->InMap()
-				&& FindDockTarget())
+				&& m_pAutoDock)
 			{
 			m_pTrans->DisplayMessage(CONSTLIT("(press [D] to dock with stations and wrecks)"));
 			m_iLastHelpTick = iTick;

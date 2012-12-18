@@ -521,7 +521,8 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 	if (pDevice == NULL)
 		return insNotADevice;
 
-	ItemCategories iCategory = pDevice->GetSlotCategory();
+	ItemCategories iCategory = pDevice->GetCategory();
+	ItemCategories iSlotCategory = pDevice->GetSlotCategory();
 
 	//	See if the ship's engine core is powerful enough
 
@@ -620,14 +621,14 @@ CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bRep
 
 		//	See if we have exceeded the maximum number of weapons
 
-		if ((iCategory == itemcatWeapon || iCategory == itemcatLauncher)
+		if ((iSlotCategory == itemcatWeapon || iSlotCategory == itemcatLauncher)
 				&& m_pClass->GetMaxWeapons() < m_pClass->GetMaxDevices()
 				&& iWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxWeapons())
 			return insNoWeaponSlots;
 
 		//	See if we have exceeded the maximum number of non-weapons
 
-		if ((iCategory != itemcatWeapon && iCategory != itemcatLauncher)
+		if ((iSlotCategory != itemcatWeapon && iSlotCategory != itemcatLauncher)
 				&& m_pClass->GetMaxNonWeapons() < m_pClass->GetMaxDevices()
 				&& iNonWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxNonWeapons())
 			return insNoGeneralSlots;
@@ -664,7 +665,7 @@ CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
 
 	//	Check for special device cases
 
-	switch (pDevice->GetSlotCategory())
+	switch (pDevice->GetCategory())
 		{
 		case itemcatCargoHold:
 			{
@@ -899,7 +900,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		//	Assign to named devices
 
-		ItemCategories Category = pShip->m_Devices[i].GetSlotCategory();
+		ItemCategories Category = pShip->m_Devices[i].GetCategory();
 		if (pShip->m_Devices[i].IsSecondaryWeapon())
 			;
 		else if (pShip->m_NamedDevices[devPrimaryWeapon] == -1
@@ -2290,7 +2291,7 @@ CItem CShip::GetNamedDeviceItem (DeviceNames iDev)
 		}
 	}
 
-CVector CShip::GetNearestDockVector (CSpaceObject *pRequestingObj)
+int CShip::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort)
 
 //	GetNearestDockVector
 //
@@ -2298,9 +2299,12 @@ CVector CShip::GetNearestDockVector (CSpaceObject *pRequestingObj)
 //	dock position
 
 	{
-	CVector vDistance;
-	m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj, &vDistance);
-	return vDistance;
+	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
+
+	if (retvPort)
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+
+	return iPort;
 	}
 
 int CShip::GetPerception (void)
@@ -2600,7 +2604,7 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 
 	//	If necessary, remove previous item in named slot
 
-	DeviceNames iNamedSlot = GetDeviceNameForCategory(pNewDevice->GetSlotCategory());
+	DeviceNames iNamedSlot = GetDeviceNameForCategory(pNewDevice->GetCategory());
 	if (iDeviceSlot == -1 
 			&& iNamedSlot != devNone && iNamedSlot != devPrimaryWeapon
 			&& HasNamedDevice(iNamedSlot))
@@ -2643,7 +2647,7 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 
 	//	Adjust the named devices
 
-	switch (pDevice->GetSlotCategory())
+	switch (pDevice->GetCategory())
 		{
 		case itemcatWeapon:
 			if (!pDevice->IsSecondaryWeapon())
@@ -3966,7 +3970,7 @@ void CShip::OnSystemLoaded (void)
 	m_pController->OnSystemLoaded(); 
 	}
 
-void CShip::OnUpdate (Metric rSecondsPerTick)
+void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //
@@ -4036,7 +4040,7 @@ void CShip::OnUpdate (Metric rSecondsPerTick)
 	//	Allow docking
 
 	if (m_pClass->HasDockingPorts())
-		m_DockingPorts.UpdateAll(this);
+		m_DockingPorts.UpdateAll(Ctx, this);
 
 	//	Initialize
 
@@ -5016,7 +5020,7 @@ ALERROR CShip::RemoveItemAsDevice (CItemListManipulator &ItemList)
 
 	int iDevSlot = Item.GetInstalled();
 	CInstalledDevice *pDevice = &m_Devices[iDevSlot];
-	ItemCategories DevCat = pDevice->GetSlotCategory();
+	ItemCategories DevCat = pDevice->GetCategory();
 
 	//	Clear the device
 
@@ -5131,7 +5135,7 @@ void CShip::RepairDamage (int iHitPoints)
 		m_pController->OnArmorRepaired(-1);
 	}
 
-bool CShip::RequestDock (CSpaceObject *pObj)
+bool CShip::RequestDock (CSpaceObject *pObj, int iPort)
 
 //	RequestDock
 //
@@ -5158,7 +5162,7 @@ bool CShip::RequestDock (CSpaceObject *pObj)
 
 	//	Get the nearest free port
 
-	return m_DockingPorts.RequestDock(this, pObj);
+	return m_DockingPorts.RequestDock(this, pObj, iPort);
 	}
 
 void CShip::RevertOrientationChange (void)

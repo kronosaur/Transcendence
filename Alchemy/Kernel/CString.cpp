@@ -2172,6 +2172,40 @@ double strToDouble (const CString &sString, double rFailResult, bool *retbFailed
 		return rValue;
 	}
 
+CString strToFilename (const CString &sString)
+
+//	strToFilename
+//
+//	Replaces any characters in the given string that are not valid in a filename.
+//
+//	NOTE: We do not guarantee a 1-1 mapping between string and valid
+//	filename; nor do we guarantee reverse mapping.
+
+	{
+	CString sResult;
+	char *pSrc = sString.GetASCIIZPointer();
+	char *pDest = sResult.GetWritePointer(sString.GetLength());
+
+	while (*pSrc != '\0')
+		{
+		//	Make sure we only have valid characters
+
+		if ((*pSrc >= 'A' && *pSrc <= 'Z')
+				|| (*pSrc >= 'a' && *pSrc <= 'z')
+				|| (*pSrc >= '0' && *pSrc <= '9'))
+			*pDest = *pSrc;
+		else if (*pSrc == ' ')
+			*pDest = '_';
+		else
+			*pDest = '+';
+
+		pSrc++;
+		pDest++;
+		}
+
+	return sResult;
+	}
+
 int strToInt (const CString &sString, int iFailResult, bool *retbFailed)
 
 //	CStringToInt

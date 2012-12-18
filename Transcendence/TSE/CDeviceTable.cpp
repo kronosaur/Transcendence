@@ -950,7 +950,7 @@ CDeviceClass *CDeviceDescList::GetNamedDevice (DeviceNames iDev) const
 
 		//	See if this is the category that we want to find
 
-		if (pDevice->GetSlotCategory() == iCatToFind)
+		if (pDevice->GetCategory() == iCatToFind)
 			return pDevice;
 		}
 

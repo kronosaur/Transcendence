@@ -230,7 +230,7 @@ void CRadiusDamage::OnSystemLoaded (void)
 	{
 	}
 
-void CRadiusDamage::OnUpdate (Metric rSecondsPerTick)
+void CRadiusDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //

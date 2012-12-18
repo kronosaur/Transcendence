@@ -1028,8 +1028,11 @@
 							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
 								<Station type="&stRasiermesserFactory;"/>
 								<!--
-								<Station type="&stCSCAmericaEncounter;"/>
+								<Station type="&stTeratonFactory;"/>
+								<Station type="&stCommonwealthFortress;"/>
+								<Station type="&stSungSlaveCamp;"/>
 								<Station type="&stCentauriOccupation;"/>
+								<Station type="&stCSCAmericaEncounter;"/>
 								<LevelTable>
 									<Station levelFrequency="c----" type="&stWondrousDevices;"/>
 									<Station levelFrequency="-----" type="&stInsuranceCompany;"/>

@@ -1426,6 +1426,7 @@ bool strStartsWith (const CString &sString, const CString &sStringToFind);
 CString strSubString (const CString &sString, int iOffset, int iLength = -1);
 CString strTitleCapitalize (const CString &sString, char **pExceptions = NULL, int iExceptionsCount = 0);
 double strToDouble (const CString &sString, double rFailResult, bool *retbFailed = NULL);
+CString strToFilename (const CString &sString);
 int strToInt (const CString &sString, int iFailResult, bool *retbFailed = NULL);
 CString strToLower (const CString &sString);
 CString strToUpper (const CString &sString);
@@ -1453,7 +1454,7 @@ struct SFileVersionInfo
 	ULONG64 dwProductVersion;
 	};
 
-bool fileDelete (const CString &sFilespec);
+bool fileDelete (const CString &sFilespec, bool bRecycle = false);
 
 const DWORD FFL_FLAG_DIRECTORIES_ONLY =		0x00000001;
 const DWORD FFL_FLAG_RELATIVE_FILESPEC =	0x00000002;
@@ -1475,9 +1476,11 @@ CString pathGetFilename (const CString &sPath);
 CString pathGetPath (const CString &sPath);
 CString pathGetResourcePath (char *pszResID);
 CString pathGetSpecialFolder (ESpecialFolders iFolder);
-CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool bNoCheck = false);
+bool pathIsAbsolute (const CString &sPath);
 inline bool pathIsPathSeparator (char *pPos) { return (*pPos == '\\' || *pPos == '/'); }
 bool pathIsResourcePath (const CString &sPath, char **retpszResID);
+CString pathMakeAbsolute (const CString &sPath, const CString &sRoot = NULL_STR);
+CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool bNoCheck = false);
 CString pathStripExtension (const CString &sPath);
 bool pathValidateFilename (const CString &sFilename, CString *retsValidFilename = NULL);
 
@@ -1534,6 +1537,7 @@ void uiGetCenteredWindowRect (int cxWidth,
 							  bool bClip = true);
 inline bool uiIsControlDown (void) { return (::GetAsyncKeyState(VK_CONTROL) & 0x8000) ? true : false; }
 inline bool uiIsKeyDown (int iVirtKey) { return ((::GetAsyncKeyState(iVirtKey) & 0x8000) ? true : false); }
+inline bool uiIsKeyRepeat (DWORD dwKeyData) { return ((dwKeyData & 0x40000000) ? true : false); }
 inline bool uiIsShiftDown (void) { return (::GetAsyncKeyState(VK_SHIFT) & 0x8000) ? true : false; }
 
 //	Note: This cannot be an inline because it will fail if the inline is

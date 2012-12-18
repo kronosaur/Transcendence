@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
-
 	<Globals>
 		(block Nil
 
@@ -298,6 +297,48 @@
 						price: totalCost
 						desc: desc
 						}
+					)
+				))
+
+			(setq rpgRestorePlayer (lambda ()
+
+			; Repairs and restores the player's ship and places it at a random, safe
+			; position in the system.
+
+				(block (portObj newPos)
+
+					; Find the nearest friendly station in the system
+					(setq portObj (sysFindObject gPlayerShip "TAFN +populated; -occupation;"))
+					(if (not portObj)
+						(enumwhile (sysFindObject gPlayerShip "tF") (not portObj) theObj
+							(if (not (sysFindObject theObj "sTEN:75"))
+								(setq portObj theObj)
+								)
+							)
+						)
+					(if (not portObj)
+						(setq portObj (sysFindObject gPlayerShip "tFN"))
+						)
+
+					; Pick a random position
+					(setq newPos (sysVectorRandom portObj (random 30 40) 10 "t"))
+
+					; Place the ship there
+					(objMoveTo gPlayerShip newPos)
+
+					; Repair the ship
+					(intArmorRepairAll gPlayerShip 25 'alwaysRepair)
+					(intDeviceRepairAll gPlayerShip)
+					(shpRechargeShield gPlayerShip 1000)
+					(shpRefuelFromItem gPlayerShip (itmCreate &itHelium3FuelRod; (shpGetFuelNeeded gPlayerShip (itmCreate &itHelium3FuelRod; 1))))
+					(objChangeEquipmentStatus gPlayerShip 'SRS 'repair)
+					(objFixParalysis gPlayerShip)
+					(shpDecontaminate gPlayerShip)
+					
+					; Remove any overlays that shouldn't be there (e.g., pteravores)
+					(enum (objGetOverlays gPlayerShip) theOverlay
+						(objFireOverlayEvent gPlayerShip theOverlay "OnInsuranceClaim")
+						)
 					)
 				))
 			)

@@ -2350,7 +2350,7 @@
 			<System 
 					name=			"Huaramarca"
 					level=			"6"
-					attributes=		"huari"
+					attributes=		"huari, noAutoGateCreate"
 					>
 				<System UNID="&ssHuaramarca;"/>
 			</System>

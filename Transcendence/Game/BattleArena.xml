@@ -2417,15 +2417,15 @@
 		<Tables>
 			<ArmsQuarterStation>
 				<Table>
-					<Station chance="40" type="&stArmorDealer;" noMapLabel="true">
+					<Station chance="35" type="&stArmorDealer;" noMapLabel="true">
 						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
 					</Station>
 
-					<Station chance="45" type="&stArmsDealer;" noMapLabel="true">
+					<Station chance="40" type="&stArmsDealer;" noMapLabel="true">
 						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
 					</Station>
 
-					<Station chance="15" type="&stArmsDealerMakayev;" noMapLabel="true">
+					<Station chance="25" type="&stArmsDealerMakayev;" noMapLabel="true">
 						<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 140)</OnCreate>
 					</Station>
 				</Table>
@@ -2763,7 +2763,9 @@
 
 						<!-- Arms Quarter -->
 						<Offset scale="pixel"				yOffset="0"		 xOffset="-1280">
-							<Lookup table="ArmsQuarterStation"/>
+							<Station type="&stArmorDealer;" noMapLabel="true">
+								<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+							</Station>
 						</Offset>
 
 						<Offset scale="pixel"				yOffset="256"	 xOffset="-1024">
@@ -2775,7 +2777,9 @@
 						</Offset>
 
 						<Offset scale="pixel"				yOffset="512"	 xOffset="-1280">
-							<Lookup table="ArmsQuarterStation"/>
+							<Station type="&stArmsDealer;" noMapLabel="true">
+								<OnCreate>(objAddSellOrder gSource "*NU -Illegal; -ID; -NotForSale;" 130)</OnCreate>
+							</Station>
 						</Offset>
 
 						<!-- Middle Quarter -->

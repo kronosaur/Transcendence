@@ -29,6 +29,7 @@
 #define POS_RADIUS_ATTRIB						CONSTLIT("posRadius")
 #define POWER_USE_ATTRIB						CONSTLIT("powerUse")
 #define RECOIL_ATTRIB							CONSTLIT("recoil")
+#define REPORT_AMMO_ATTRIB						CONSTLIT("reportAmmo")
 
 #define CONFIG_TYPE_DUAL						CONSTLIT("dual")
 #define CONFIG_TYPE_WALL						CONSTLIT("wall")
@@ -229,7 +230,7 @@ bool CWeaponClass::Activate (CInstalledDevice *pDevice,
 			CItem WeaponItem(GetItemType(), 1);
 			pShip->GetController()->OnItemFired(WeaponItem);
 
-			if (m_bLauncher && pShot->m_pAmmoType)
+			if ((m_bLauncher || m_bReportAmmo) && pShot->m_pAmmoType)
 				{
 				CItem AmmoItem(pShot->m_pAmmoType, 1);
 				pShip->GetController()->OnItemFired(AmmoItem);
@@ -903,6 +904,8 @@ ALERROR CWeaponClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CI
 		pWeapon->m_bLauncher = true;
 	else
 		pWeapon->m_bLauncher = pDesc->GetAttributeBool(LAUNCHER_ATTRIB);
+
+	pWeapon->m_bReportAmmo = pDesc->GetAttributeBool(REPORT_AMMO_ATTRIB);
 
 	//	Done
 

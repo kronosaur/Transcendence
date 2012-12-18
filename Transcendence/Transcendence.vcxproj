@@ -348,7 +348,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Antarctica.xml" />
-    <None Include="Game\AresOrthodoxy.xml" />
+    <None Include="Game\AresOrthodoxy.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\BlackMarket.xml" />
     <None Include="Game\CentauriWarlords.xml" />
     <None Include="Game\CharonPirates.xml" />
@@ -371,17 +373,23 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Domina.xml" />
-    <None Include="Game\DwargRaiders.xml" />
-    <None Include="Game\EncountersVol01.xml" />
+    <None Include="Game\DwargRaiders.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\EncountersVol01.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Heretic.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Game\HSCompatibility.xml" />
     <None Include="Game\Iocrym.xml" />
     <None Include="Game\KorolovShipping.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Luminous.xml" />
     <None Include="Game\MiscItems.xml" />
+    <None Include="Game\Neurohack.xml" />
     <None Include="Game\OutlawMiners.xml" />
     <None Include="Game\PointJuno.xml">
       <SubType>Designer</SubType>
@@ -389,11 +397,17 @@
     <None Include="Game\Rasiermesser.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Ringers.xml" />
+    <None Include="Game\Readme.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Game\Ringers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\RogueFleet.xml" />
     <None Include="Game\RPGCode.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Game\RPGCompatibility.xml" />
     <None Include="Game\RPGDockScreens.xml">
       <SubType>Designer</SubType>
     </None>
@@ -459,13 +473,17 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\StdShields.xml" />
-    <None Include="Game\StdSystems.xml" />
+    <None Include="Game\StdSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdTypes.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\StdUnknownItems.xml" />
     <None Include="Game\StdWeapons.xml" />
-    <None Include="Game\StKatharines.xml" />
+    <None Include="Game\StKatharines.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CoreEffects.xml">
       <SubType>Designer</SubType>
     </None>

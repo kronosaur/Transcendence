@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- COMPATIBILITY TYPES =======================================================
+
+	This module contains types that have been DEPRECATED and superceded by 
+	newer types.
+
+							SYSTEM
+	OLD TYPE				VERSION		NEW TYPE
+
+	stNavSign				78			stCommonwealthNavSign
+
+	-->
+
+	<StationType UNID="&stNavSign;"
+			name=				"(navigational beacon)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsNavSign;"
+			abandonedScreen=	"&dsAbandonedNavSign;"
+			noMapLabel=			"true"
+
+			mass=				"5000"
+			armorID=			"&itLightTitaniumPlate;"
+			hitPoints=			"10"
+
+			sign=				"true"
+			>
+
+		<Image imageID="&rsStations1;" imageX="0" imageY="668" imageWidth="128" imageHeight="64"/>
+
+		<DockingPorts>
+			<Port x="-80"		y="0" />
+		</DockingPorts>
+	</StationType>
+
+</TranscendenceModule>

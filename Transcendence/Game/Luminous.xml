@@ -216,7 +216,7 @@
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
 
-		<Invoke key="5">
+		<Invoke key="R">
 			(switch
 				; If we don't have a quantum CPU
 				(not (objGetItems gSource "*I+QuantumCPU"))

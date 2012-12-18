@@ -6,8 +6,8 @@
 #include "Transcendence.h"
 #include "XMLUtil.h"
 
-#define MAIN_SCREEN_WIDTH					1024
-#define MAIN_SCREEN_HEIGHT					768
+#define MAIN_SCREEN_WIDTH					1280
+#define MAIN_SCREEN_HEIGHT					1280
 
 #define TEXT_CRAWL_X						512
 #define TEXT_CRAWL_HEIGHT					320
@@ -15,11 +15,6 @@
 
 #define DEBUG_CONSOLE_WIDTH					512
 #define DEBUG_CONSOLE_HEIGHT				600
-
-//#define REGISTRY_COMPANY_NAME				CONSTLIT("Neurohack")
-//#define REGISTRY_PRODUCT_NAME				CONSTLIT("Transcendence")
-//#define REGISTRY_MUSIC_OPTION				CONSTLIT("Music")
-//#define REGISTRY_SOUND_VOLUME_OPTION		CONSTLIT("SoundVolume")
 
 #define STR_G_TRANS							CONSTLIT("gTrans")
 #define STR_G_PLAYER						CONSTLIT("gPlayer")
@@ -54,6 +49,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bRedirectDisplayMessage(false),
 		m_pCrawlImage(NULL),
 		m_chKeyDown('\0'),
+		m_bDockKeyDown(false),
 		m_bNextWeaponKey(false),
 		m_bNextMissileKey(false),
 		m_bPrevWeaponKey(false),
@@ -1074,6 +1070,8 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 //	Handle WM_CHAR
 
 	{
+	bool bKeyRepeat = uiIsKeyRepeat(dwKeyData);
+
 	//	If we already processed the keydown, then skip it
 
 	if (m_chKeyDown 
@@ -1124,7 +1122,7 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 				//	Ignore repeat keys (because otherwise we might accidentally
 				//	select a menu item from keeping a key pressed too long).
 
-				if (IsRepeatingKey(dwKeyData))
+				if (bKeyRepeat)
 					return 0;
 
 				//	Find the menu item and invoke
@@ -1230,6 +1228,15 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 					}
 				return 0;
 				}
+
+			//	Ignore if this is a repeat of the dock key.
+
+			if (bKeyRepeat && m_bDockKeyDown)
+				return 0;
+			else
+				m_bDockKeyDown = false;
+
+			//	Handle it.
 
 			m_CurrentDock.HandleChar(chChar);
 			break;
@@ -1441,88 +1448,67 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 //	Handle WM_KEYDOWN
 
 	{
+	bool bKeyRepeat = uiIsKeyRepeat(dwKeyData);
+
 	switch (m_State)
 		{
 		case gsInGame:
 			{
+			//	If no player, then nothing to do
+
 			if (GetPlayer() == NULL)
-				return 0;
+				NULL;
 
 			//	Deal with console
 
-			if (m_bDebugConsole)
+			else if (m_bDebugConsole)
 				{
-				switch (iVirtKey)
-					{
-					case VK_BACK:
-						m_DebugConsole.InputBackspace();
-						break;
-
-					case VK_ESCAPE:
-						m_bDebugConsole = false;
-						break;
-
-					case VK_RETURN:
-						{
-						CString sInput = m_DebugConsole.GetInput();
-						if (!sInput.IsBlank())
-							{
-							CCodeChain &CC = g_pUniverse->GetCC();
-
-							m_DebugConsole.InputEnter();
-
-							CCodeChainCtx Ctx;
-							ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
-							ICCItem *pResult = Ctx.Run(pCode);
-
-							CString sOutput;
-							if (pResult->IsIdentifier())
-								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-							else
-								sOutput = CC.Unlink(pResult);
-
-							Ctx.Discard(pResult);
-							Ctx.Discard(pCode);
-
-							m_DebugConsole.Output(sOutput);
-							}
-						break;
-						}
-
-					case VK_UP:
-						m_DebugConsole.InputLastLine();
-						break;
-					}
-
-				return 0;
+				if (iVirtKey == VK_ESCAPE)
+					m_bDebugConsole = false;
+				else
+					m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
 				}
 
 			//	If we're paused, then check for unpause key
 
-			if (m_bPaused)
+			else if (m_bPaused)
 				{
 				if ((iVirtKey < 'A' || iVirtKey > 'Z') && iVirtKey != VK_SPACE && iVirtKey != VK_F9)
 					{
 					m_bPaused = false;
 					DisplayMessage(CONSTLIT("Game continues"));
-					return 0;
 					}
-				else if (iVirtKey == VK_F9)
-					//	Passthrough so that we can invoke the debug console
-					;
+
+				//	We allow access to the debug console
+
 				else
-					return 0;
+					{
+					CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+					if (iCommand == CGameKeys::keyShowConsole 
+							&& m_pTC->GetOptionBoolean(CGameSettings::debugMode)
+							&& !g_pUniverse->IsRegistered())
+						m_bDebugConsole = !m_bDebugConsole;
+					}
 				}
 
-			//	Handle menu
+			//	Handle menu, if it is up
 
-			if (m_CurrentMenu != menuNone
-					&& ((iVirtKey >= 'A' && iVirtKey <= 'Z') || (iVirtKey >= '0' && iVirtKey <= '9')))
-				return 0;
+			else if (m_CurrentMenu != menuNone)
+				{
+				if (iVirtKey == VK_ESCAPE)
+					m_CurrentMenu = menuNone;
+				else
+					{
+					CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+					if ((iCommand == CGameKeys::keyInvokePower && m_CurrentMenu == menuInvoke)
+							|| (iCommand == CGameKeys::keyCommunications && m_CurrentMenu == menuCommsTarget))
+						m_CurrentMenu = menuNone;
+					}
+				}
 
 			//	Handle picker
 
-			if (m_CurrentPicker != pickNone)
+			else if (m_CurrentPicker != pickNone)
 				{
 				if (iVirtKey == VK_RETURN)
 					{
@@ -1537,396 +1523,396 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							DoEnableDisableItemCommand(m_MenuData.GetItemData(m_PickerDisplay.GetSelection()));
 							break;
 						}
-
-					return 0;
 					}
 				else if (iVirtKey == VK_LEFT)
-					{
 					m_PickerDisplay.SelectPrev();
-					return 0;
-					}
+
 				else if (iVirtKey == VK_RIGHT)
-					{
 					m_PickerDisplay.SelectNext();
-					return 0;
-					}
-				else if ((iVirtKey >= 'A' && iVirtKey <= 'Z') || (iVirtKey >= '0' && iVirtKey <= '9'))
-					return 0;
-				}
 
-			//	If the map is up
-
-			if (m_bShowingMap)
-				{
-				switch (iVirtKey)
-					{
-					case 'H':
-						GetPlayer()->SetMapHUD(!GetPlayer()->IsMapHUDActive());
-						return 0;
-
-					case VK_SUBTRACT:
-					case VK_OEM_MINUS:
-						if (m_iMapScale < (MAP_SCALE_COUNT - 1))
-							{
-							m_iMapScale++;
-							m_iMapZoomEffect = 100;
-							}
-						return 0;
-
-					case VK_ADD:
-					case VK_OEM_PLUS:
-						if (m_iMapScale > 0)
-							{
-							m_iMapScale--;
-							m_iMapZoomEffect = -100;
-							}
-						return 0;
-					}
-				}
-
-			//	Escape
-
-			if (iVirtKey == VK_ESCAPE)
-				{
-				if (m_CurrentPicker != pickNone)
+				else if (iVirtKey == VK_ESCAPE)
 					m_CurrentPicker = pickNone;
-				else if (m_CurrentMenu != menuNone)
-					m_CurrentMenu = menuNone;
-				else if (m_bShowingMap)
-					m_bShowingMap = false;
-				else if (m_bAutopilot)
-					Autopilot(false);
-				else if (m_CurrentMenu == menuNone)
-					ShowGameMenu();
-				else if (m_bDebugConsole)
-					m_bDebugConsole = false;
-				return 0;
+
+				else
+					{
+					CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+					if ((iCommand == CGameKeys::keyEnableDevice && m_CurrentPicker == pickEnableDisableItem)
+							|| (iCommand == CGameKeys::keyUseItem && m_CurrentPicker == pickUsableItem))
+						m_CurrentPicker = pickNone;
+					}
 				}
 
-			//	Other commands
+			//	Otherwise we're in normal game mode
 
-			CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
-			switch (iCommand)
+			else
 				{
-				case CGameKeys::keyAutopilot:
-					Autopilot(!m_bAutopilot);
-					GetPlayer()->SetUIMessageEnabled(uimsgAutopilotHint, false);
-					m_chKeyDown = iVirtKey;
-					break;
+				//	If showing the map, then we need to handle some keys
 
-				case CGameKeys::keyEnableDevice:
-					if (!GetPlayer()->DockingInProgress() 
-							&& !GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						ShowEnableDisablePicker();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyCommunications:
-					if (!GetPlayer()->DockingInProgress()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						GetPlayer()->SetUIMessageEnabled(uimsgCommsHint, false);
-						ShowCommsTargetMenu();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyDock:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						GetPlayer()->Dock();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyTargetNextFriendly:
-					GetPlayer()->SelectNextFriendly(1);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyTargetPrevFriendly:
-					GetPlayer()->SelectNextFriendly(-1);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyEnterGate:
-					if (!GetPlayer()->DockingInProgress()
-							&& !GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						GetPlayer()->Gate();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyInvokePower:
-					if (!GetPlayer()->DockingInProgress()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						ShowInvokeMenu();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyShowMap:
-					if (m_bShowingMap)
-						Autopilot(false);
-					m_bShowingMap = !m_bShowingMap;
-					GetPlayer()->SetUIMessageEnabled(uimsgMapHint, false);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyShowGalacticMap:
-					g_pHI->HICommand(CONSTLIT("uiShowGalacticMap"));
-					GetPlayer()->SetUIMessageEnabled(uimsgGalacticMapHint, false);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyPause:
+				if (m_bShowingMap)
 					{
-					m_bPaused = true;
-					if (GetPlayer())
+					switch (iVirtKey)
 						{
-						GetPlayer()->SetThrust(false);
-						GetPlayer()->SetManeuver(IShipController::NoRotation);
-						GetPlayer()->SetFireMain(false);
-						GetPlayer()->SetFireMissile(false);
+						case 'H':
+							GetPlayer()->SetMapHUD(!GetPlayer()->IsMapHUDActive());
+							break;
+
+						case VK_SUBTRACT:
+						case VK_OEM_MINUS:
+							if (m_iMapScale < (MAP_SCALE_COUNT - 1))
+								{
+								m_iMapScale++;
+								m_iMapZoomEffect = 100;
+								}
+							break;
+
+						case VK_ADD:
+						case VK_OEM_PLUS:
+							if (m_iMapScale > 0)
+								{
+								m_iMapScale--;
+								m_iMapZoomEffect = -100;
+								}
+							break;
 						}
-					DisplayMessage(CONSTLIT("Game paused"));
-					m_chKeyDown = iVirtKey;
-					break;
+
+					//	Fall through because normal commands are available with the map
 					}
 
-				case CGameKeys::keySquadronCommands:
-					if (!GetPlayer()->DockingInProgress()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						ShowCommsSquadronMenu();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
+				//	See if this is a command
 
-				case CGameKeys::keyClearTarget:
-					GetPlayer()->SetTarget(NULL);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyShipStatus:
-					if (!GetPlayer()->DockingInProgress())
-						GetModel().ShowShipScreen();
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyTargetNextEnemy:
-					GetPlayer()->SelectNextTarget(1);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyTargetPrevEnemy:
-					GetPlayer()->SelectNextTarget(-1);
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyUseItem:
-					if (!GetPlayer()->DockingInProgress()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						ShowUsePicker();
-						}
-					m_chKeyDown = iVirtKey;
-					break;
-
-				case CGameKeys::keyNextWeapon:
-					if (GetPlayer() && !m_bNextWeaponKey)
-						{
-						Autopilot(false);
-						GetPlayer()->SetFireMain(false);
-						GetPlayer()->ReadyNextWeapon(1);
-						UpdateWeaponStatus();
+				CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+				switch (iCommand)
+					{
+					case CGameKeys::keyAutopilot:
+						Autopilot(!m_bAutopilot);
+						GetPlayer()->SetUIMessageEnabled(uimsgAutopilotHint, false);
 						m_chKeyDown = iVirtKey;
-						m_bNextWeaponKey = true;
-						}
-					break;
+						break;
 
-				case CGameKeys::keyPrevWeapon:
-					if (GetPlayer() && !m_bPrevWeaponKey)
-						{
-						Autopilot(false);
-						GetPlayer()->SetFireMain(false);
-						GetPlayer()->ReadyNextWeapon(-1);
-						UpdateWeaponStatus();
+					case CGameKeys::keyEnableDevice:
+						if (!GetPlayer()->DockingInProgress() 
+								&& !GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							ShowEnableDisablePicker();
+							}
 						m_chKeyDown = iVirtKey;
-						m_bPrevWeaponKey = true;
-						}
-					break;
+						break;
 
-				case CGameKeys::keyThrustForward:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
+					case CGameKeys::keyCommunications:
+						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetUIMessageEnabled(uimsgCommsHint, false);
+							ShowCommsTargetMenu();
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyDock:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped()
+								&& !bKeyRepeat)
+							{
+							Autopilot(false);
+							GetPlayer()->Dock();
+							m_bDockKeyDown = true;
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyTargetNextFriendly:
+						GetPlayer()->SelectNextFriendly(1);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyTargetPrevFriendly:
+						GetPlayer()->SelectNextFriendly(-1);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyEnterGate:
+						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->Gate();
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyInvokePower:
+						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							ShowInvokeMenu();
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyShowMap:
+						if (m_bShowingMap)
+							Autopilot(false);
+						m_bShowingMap = !m_bShowingMap;
+						GetPlayer()->SetUIMessageEnabled(uimsgMapHint, false);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyShowGalacticMap:
+						g_pHI->HICommand(CONSTLIT("uiShowGalacticMap"));
+						GetPlayer()->SetUIMessageEnabled(uimsgGalacticMapHint, false);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyPause:
 						{
-						Autopilot(false);
-						GetPlayer()->SetThrust(true);
+						m_bPaused = true;
+						if (GetPlayer())
+							{
+							GetPlayer()->SetThrust(false);
+							GetPlayer()->SetManeuver(IShipController::NoRotation);
+							GetPlayer()->SetFireMain(false);
+							GetPlayer()->SetFireMissile(false);
+							}
+						DisplayMessage(CONSTLIT("Game paused"));
+						m_chKeyDown = iVirtKey;
+						break;
 						}
-					break;
 
-				case CGameKeys::keyRotateLeft:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
+					case CGameKeys::keySquadronCommands:
+						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							ShowCommsSquadronMenu();
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyClearTarget:
+						GetPlayer()->SetTarget(NULL);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyShipStatus:
+						if (!GetPlayer()->DockingInProgress())
+							GetModel().ShowShipScreen();
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyTargetNextEnemy:
+						GetPlayer()->SelectNextTarget(1);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyTargetPrevEnemy:
+						GetPlayer()->SelectNextTarget(-1);
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyUseItem:
+						if (!GetPlayer()->DockingInProgress()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							ShowUsePicker();
+							}
+						m_chKeyDown = iVirtKey;
+						break;
+
+					case CGameKeys::keyNextWeapon:
+						if (GetPlayer() && !m_bNextWeaponKey)
+							{
+							Autopilot(false);
+							GetPlayer()->SetFireMain(false);
+							GetPlayer()->ReadyNextWeapon(1);
+							UpdateWeaponStatus();
+							m_chKeyDown = iVirtKey;
+							m_bNextWeaponKey = true;
+							}
+						break;
+
+					case CGameKeys::keyPrevWeapon:
+						if (GetPlayer() && !m_bPrevWeaponKey)
+							{
+							Autopilot(false);
+							GetPlayer()->SetFireMain(false);
+							GetPlayer()->ReadyNextWeapon(-1);
+							UpdateWeaponStatus();
+							m_chKeyDown = iVirtKey;
+							m_bPrevWeaponKey = true;
+							}
+						break;
+
+					case CGameKeys::keyThrustForward:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetThrust(true);
+							}
+						break;
+
+					case CGameKeys::keyRotateLeft:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetManeuver(IShipController::RotateLeft);
+							}
+						break;
+
+					case CGameKeys::keyRotateRight:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetManeuver(IShipController::RotateRight);
+							}
+						break;
+
+					case CGameKeys::keyStop:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetStopThrust(true);
+							}
+						break;
+
+					case CGameKeys::keyFireWeapon:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetFireMain(true);
+							}
+						break;
+
+					case CGameKeys::keyFireMissile:
+						if (!GetPlayer()->GetShip()->IsOutOfFuel()
+								&& !GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							Autopilot(false);
+							GetPlayer()->SetFireMissile(true);
+							GetPlayer()->SetUIMessageEnabled(uimsgFireMissileHint, false);
+							}
+						break;
+
+					case CGameKeys::keyNextMissile:
+						if (!m_bNextMissileKey)
+							{
+							Autopilot(false);
+							GetPlayer()->ReadyNextMissile(1);
+							UpdateWeaponStatus();
+							GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
+							m_bNextMissileKey = true;
+							}
+						break;
+
+					case CGameKeys::keyPrevMissile:
+						if (!m_bPrevMissileKey)
+							{
+							Autopilot(false);
+							GetPlayer()->ReadyNextMissile(-1);
+							UpdateWeaponStatus();
+							GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
+							m_bPrevMissileKey = true;
+							}
+						break;
+
+					case CGameKeys::keyShowHelp:
+						g_pHI->HICommand(CONSTLIT("uiShowHelp"));
+						break;
+
+					case CGameKeys::keyShowGameStats:
+						g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
+						break;
+
+					case CGameKeys::keyVolumeDown:
 						{
-						Autopilot(false);
-						GetPlayer()->SetManeuver(IShipController::RotateLeft);
+						int iVolume = GetSoundVolumeOption();
+						if (--iVolume >= 0)
+							{
+							SetSoundVolumeOption(iVolume);
+							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+							}
+						break;
 						}
-					break;
 
-				case CGameKeys::keyRotateRight:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
+					case CGameKeys::keyVolumeUp:
 						{
-						Autopilot(false);
-						GetPlayer()->SetManeuver(IShipController::RotateRight);
+						int iVolume = GetSoundVolumeOption();
+						if (++iVolume <= 10)
+							{
+							SetSoundVolumeOption(iVolume);
+							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+							}
+						break;
 						}
-					break;
 
-				case CGameKeys::keyStop:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
+					case CGameKeys::keyShowConsole:
 						{
-						Autopilot(false);
-						GetPlayer()->SetStopThrust(true);
+						if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
+								&& !g_pUniverse->IsRegistered())
+							m_bDebugConsole = !m_bDebugConsole;
+						break;
 						}
-					break;
 
-				case CGameKeys::keyFireWeapon:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						GetPlayer()->SetFireMain(true);
-						}
-					break;
-
-				case CGameKeys::keyFireMissile:
-					if (!GetPlayer()->GetShip()->IsOutOfFuel()
-							&& !GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						Autopilot(false);
-						GetPlayer()->SetFireMissile(true);
-						GetPlayer()->SetUIMessageEnabled(uimsgFireMissileHint, false);
-						}
-					break;
-
-				case CGameKeys::keyNextMissile:
-					if (!m_bNextMissileKey)
-						{
-						Autopilot(false);
-						GetPlayer()->ReadyNextMissile(1);
-						UpdateWeaponStatus();
-						GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
-						m_bNextMissileKey = true;
-						}
-					break;
-
-				case CGameKeys::keyPrevMissile:
-					if (!m_bPrevMissileKey)
-						{
-						Autopilot(false);
-						GetPlayer()->ReadyNextMissile(-1);
-						UpdateWeaponStatus();
-						GetPlayer()->SetUIMessageEnabled(uimsgSwitchMissileHint, false);
-						m_bPrevMissileKey = true;
-						}
-					break;
-
-				case CGameKeys::keyShowHelp:
-					g_pHI->HICommand(CONSTLIT("uiShowHelp"));
-					break;
-
-				case CGameKeys::keyShowGameStats:
-					g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
-					break;
-
-				case CGameKeys::keyVolumeDown:
-					{
-					int iVolume = GetSoundVolumeOption();
-					if (--iVolume >= 0)
-						{
-						SetSoundVolumeOption(iVolume);
-						DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-						}
-					break;
-					}
-
-				case CGameKeys::keyVolumeUp:
-					{
-					int iVolume = GetSoundVolumeOption();
-					if (++iVolume <= 10)
-						{
-						SetSoundVolumeOption(iVolume);
-						DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-						}
-					break;
-					}
-
-				case CGameKeys::keyShowConsole:
-					{
-					if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
-							&& !g_pUniverse->IsRegistered())
-						m_bDebugConsole = !m_bDebugConsole;
-					break;
-					}
-
-				case CGameKeys::keyEnableAllDevices:
-					if (!GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
-						GetPlayer()->EnableAllDevices(true);
-						}
-					break;
-
-				case CGameKeys::keyDisableAllDevices:
-					if (!GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
-						GetPlayer()->EnableAllDevices(false);
-						}
-					break;
-
-				case CGameKeys::keyEnableAllDevicesToggle:
-					if (!GetPlayer()->GetShip()->IsTimeStopped())
-						{
-						GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
-						GetPlayer()->EnableAllDevices(!GetPlayer()->AreAllDevicesEnabled());
-						}
-					break;
-
-				default:
-					{
-					if (iCommand >= CGameKeys::keyEnableDeviceToggle00 
-							&& iCommand <= CGameKeys::keyEnableDeviceToggle31)
-						{
+					case CGameKeys::keyEnableAllDevices:
 						if (!GetPlayer()->GetShip()->IsTimeStopped())
 							{
-							int iDevice = (iCommand - CGameKeys::keyEnableDeviceToggle00);
-
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
-							GetPlayer()->ToggleEnableDevice(iDevice);
+							GetPlayer()->EnableAllDevices(true);
 							}
+						break;
+
+					case CGameKeys::keyDisableAllDevices:
+						if (!GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
+							GetPlayer()->EnableAllDevices(false);
+							}
+						break;
+
+					case CGameKeys::keyEnableAllDevicesToggle:
+						if (!GetPlayer()->GetShip()->IsTimeStopped())
+							{
+							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
+							GetPlayer()->EnableAllDevices(!GetPlayer()->AreAllDevicesEnabled());
+							}
+						break;
+
+					default:
+						{
+						if (iCommand >= CGameKeys::keyEnableDeviceToggle00 
+								&& iCommand <= CGameKeys::keyEnableDeviceToggle31)
+							{
+							if (!GetPlayer()->GetShip()->IsTimeStopped())
+								{
+								int iDevice = (iCommand - CGameKeys::keyEnableDeviceToggle00);
+
+								GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
+								GetPlayer()->ToggleEnableDevice(iDevice);
+								}
+							}
+						else if (iVirtKey == VK_ESCAPE)
+							{
+							if (m_bShowingMap)
+								m_bShowingMap = false;
+							else if (m_bAutopilot)
+								Autopilot(false);
+							else
+								ShowGameMenu();
+							}
+						break;
 						}
-					break;
 					}
 				}
-
 			break;
 			}
 
@@ -1944,78 +1930,49 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			if (m_bDebugConsole)
 				{
-				switch (iVirtKey)
+				if (iVirtKey == VK_ESCAPE)
+					m_bDebugConsole = false;
+				else
+					m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+				}
+
+			//	Other commands
+
+			else
+				{
+				CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+				switch (iCommand)
 					{
-					case VK_BACK:
-						m_DebugConsole.InputBackspace();
-						break;
-
-					case VK_ESCAPE:
-						m_bDebugConsole = false;
-						break;
-
-					case VK_RETURN:
+					case CGameKeys::keyShowConsole:
 						{
-						CString sInput = m_DebugConsole.GetInput();
-						if (!sInput.IsBlank())
+						if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
+								&& !g_pUniverse->IsRegistered())
+							m_bDebugConsole = !m_bDebugConsole;
+						break;
+						}
+
+					default:
+						switch (iVirtKey)
 							{
-							CCodeChain &CC = g_pUniverse->GetCC();
+							case VK_F1:
+								g_pHI->HICommand(CONSTLIT("uiShowHelp"));
+								break;
 
-							m_DebugConsole.InputEnter();
+							case VK_F2:
+								g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
+								break;
 
-							CCodeChainCtx Ctx;
-							ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
-							ICCItem *pResult = Ctx.Run(pCode);
+							default:
+								{
+								//	Let the dock screen handle it.
 
-							CString sOutput;
-							if (pResult->IsIdentifier())
-								sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
-							else
-								sOutput = CC.Unlink(pResult);
-
-							Ctx.Discard(pResult);
-							Ctx.Discard(pCode);
-
-							m_DebugConsole.Output(sOutput);
+								m_CurrentDock.HandleKeyDown(iVirtKey);
+								}
 							}
 						break;
-						}
-
-					case VK_UP:
-						m_DebugConsole.InputLastLine();
-						break;
 					}
-
-				return 0;
 				}
 
-			CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
-			switch (iCommand)
-				{
-				case CGameKeys::keyShowConsole:
-					{
-					if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
-							&& !g_pUniverse->IsRegistered())
-						m_bDebugConsole = !m_bDebugConsole;
-					break;
-					}
-
-				default:
-					switch (iVirtKey)
-						{
-						case VK_F1:
-							g_pHI->HICommand(CONSTLIT("uiShowHelp"));
-							break;
-
-						case VK_F2:
-							g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
-							break;
-
-						default:
-							m_CurrentDock.HandleKeyDown(iVirtKey);
-						}
-					break;
-				}
 			break;
 			}
 		}
@@ -2038,59 +1995,66 @@ LONG CTranscendenceWnd::WMKeyUp (int iVirtKey, DWORD dwKeyData)
 			{
 			if (m_CurrentMenu != menuNone
 					&& iVirtKey >= 'A' && iVirtKey < 'Z')
-				return 0;
+				NULL;
 
-			if (m_bDebugConsole)
-				return 0;
+			else if (m_bDebugConsole)
+				NULL;
 
-			CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
-			switch (iCommand)
+			else
 				{
-				case CGameKeys::keyThrustForward:
-					if (GetPlayer())
-						GetPlayer()->SetThrust(false);
-					break;
+				CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
+				switch (iCommand)
+					{
+					case CGameKeys::keyThrustForward:
+						if (GetPlayer())
+							GetPlayer()->SetThrust(false);
+						break;
 
-				case CGameKeys::keyRotateLeft:
-					if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateLeft)
-						GetPlayer()->SetManeuver(IShipController::NoRotation);
-					break;
+					case CGameKeys::keyRotateLeft:
+						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateLeft)
+							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						break;
 
-				case CGameKeys::keyRotateRight:
-					if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateRight)
-						GetPlayer()->SetManeuver(IShipController::NoRotation);
-					break;
+					case CGameKeys::keyRotateRight:
+						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateRight)
+							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						break;
 
-				case CGameKeys::keyStop:
-					if (GetPlayer())
-						GetPlayer()->SetStopThrust(false);
-					break;
+					case CGameKeys::keyStop:
+						if (GetPlayer())
+							GetPlayer()->SetStopThrust(false);
+						break;
 
-				case CGameKeys::keyFireWeapon:
-					if (GetPlayer())
-						GetPlayer()->SetFireMain(false);
-					break;
+					case CGameKeys::keyFireWeapon:
+						if (GetPlayer())
+							GetPlayer()->SetFireMain(false);
+						break;
 
-				case CGameKeys::keyFireMissile:
-					if (GetPlayer())
-						GetPlayer()->SetFireMissile(false);
-					break;
+					case CGameKeys::keyFireMissile:
+						if (GetPlayer())
+							GetPlayer()->SetFireMissile(false);
+						break;
 
-				case CGameKeys::keyNextWeapon:
-					m_bNextWeaponKey = false;
-					break;
+					case CGameKeys::keyNextWeapon:
+						m_bNextWeaponKey = false;
+						break;
 
-				case CGameKeys::keyNextMissile:
-					m_bNextMissileKey = false;
-					break;
+					case CGameKeys::keyNextMissile:
+						m_bNextMissileKey = false;
+						break;
 
-				case CGameKeys::keyPrevWeapon:
-					m_bPrevWeaponKey = false;
-					break;
+					case CGameKeys::keyPrevWeapon:
+						m_bPrevWeaponKey = false;
+						break;
 
-				case CGameKeys::keyPrevMissile:
-					m_bPrevMissileKey = false;
-					break;
+					case CGameKeys::keyPrevMissile:
+						m_bPrevMissileKey = false;
+						break;
+
+					case CGameKeys::keyDock:
+						m_bDockKeyDown = false;
+						break;
+					}
 				}
 
 			break;

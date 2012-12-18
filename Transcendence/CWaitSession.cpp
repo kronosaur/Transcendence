@@ -52,7 +52,7 @@ ALERROR CWaitSession::OnInit (CString *retsError)
 
 	CUIHelper Helper(m_HI);
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, m_sTitle, CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, m_sTitle, NULL, CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	//	Create a wait animation

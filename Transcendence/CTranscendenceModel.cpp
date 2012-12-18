@@ -122,8 +122,6 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
 		m_iLastHighScore(-1),
-		m_iPlayerGenome(genomeUnknown),
-		m_dwPlayerShip(INVALID_UNID),
 		m_pDock(NULL),
 		m_pDestNode(NULL)
 
@@ -142,38 +140,6 @@ int CTranscendenceModel::AddHighScore (const CGameRecord &Score)
 	int iPos = m_HighScoreList.AddEntry(Score);
 	SaveHighScoreList();
 	return iPos;
-	}
-
-DWORD CTranscendenceModel::CalcDefaultPlayerShipClass (void)
-
-//	CalcDefaultPlayerShipClass
-//
-//	Returns the default player ship class
-
-	{
-	//	Return the freighter (if it exists)
-
-	if (m_Universe.FindShipClass(PLAYER_EI500_FREIGHTER_UNID))
-		return PLAYER_EI500_FREIGHTER_UNID;
-
-	//	Otherwise, return the first ship available to the player
-
-	else
-		{
-		int i;
-
-		//	Returns the first ship available to the player
-
-		for (i = 0; i < m_Universe.GetShipClassCount(); i++)
-			{
-			CShipClass *pClass = m_Universe.GetShipClass(i);
-			if (pClass->IsShownAtNewGame())
-				return pClass->GetUNID();
-			}
-
-		ASSERT(false);
-		return 0;
-		}
 	}
 
 CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
@@ -548,7 +514,7 @@ ALERROR CTranscendenceModel::EndGameStargate (void)
 	//	We need to define gPlayerShip so that game stats 
 	//	are generated properly. (It gets cleared out in CTranscendenceWnd::PlayerEnteredGate)
 
-	CCodeChain &CC = g_pUniverse->GetCC();
+	CCodeChain &CC = m_Universe.GetCC();
 	CC.DefineGlobal(CONSTLIT("gPlayerShip"), CC.CreateInteger((int)m_pPlayer->GetShip()));
 
 	//	Generate stats and save to file
@@ -707,7 +673,7 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 //	NOTE: If we return TRUE, caller must discard *retpData.
 
 	{
-	CCodeChain &CC = g_pUniverse->GetCC();
+	CCodeChain &CC = m_Universe.GetCC();
 
 	//	If the screen is an UNID, then expect a stand-alone screen
 
@@ -715,7 +681,7 @@ bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **
 	DWORD dwUNID = (DWORD)strToInt(sScreen, 0, &bNotANumber);
 	if (!bNotANumber)
 		{
-		CDesignType *pRoot = g_pUniverse->FindSharedDockScreen(dwUNID);
+		CDesignType *pRoot = m_Universe.FindSharedDockScreen(dwUNID);
 		if (pRoot == NULL)
 			return false;
 
@@ -932,11 +898,6 @@ ALERROR CTranscendenceModel::InitBackground (CString *retsError)
 	if (error = LoadHighScoreList(retsError))
 		return error;
 
-	//	Load player defaults
-
-	if (error = LoadPlayerDefaults(retsError))
-		return error;
-
 	return NOERROR;
 	}
 
@@ -948,7 +909,7 @@ ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, 
 
 	{
 	CUniverse::SInitDesc Ctx;
-	Ctx.bDebugMode = g_pUniverse->InDebugMode();
+	Ctx.bDebugMode = m_Universe.InDebugMode();
 	Ctx.dwAdventure = Settings.pAdventure->GetUNID();
 	Ctx.Extensions = Settings.Extensions;
 
@@ -979,7 +940,7 @@ bool CTranscendenceModel::IsGalacticMapAvailable (CString *retsError)
 
 	//	See if a map is available for this node
 
-	CTopologyNode *pNode = g_pUniverse->GetCurrentTopologyNode();
+	CTopologyNode *pNode = m_Universe.GetCurrentTopologyNode();
 	if (pNode == NULL)
 		{
 		if (retsError)
@@ -1052,7 +1013,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 	//	Load the universe
 
 	DWORD dwSystemID, dwPlayerID;
-	if (error = m_GameFile.LoadUniverse(*g_pUniverse, &dwSystemID, &dwPlayerID, retsError))
+	if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
 		{
 		m_GameFile.Close();
 		return error;
@@ -1091,7 +1052,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 		return ERR_FAIL;
 		}
 
-	m_pPlayer->SetTrans(g_pTrans);
+	m_pPlayer->Init(g_pTrans);
 
 	//	If we didn't save the player name then it means that we have an older
 	//	version.
@@ -1153,39 +1114,6 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	//	Done
 
 	GameFile.Close();
-	return NOERROR;
-	}
-
-ALERROR CTranscendenceModel::LoadPlayerDefaults (CString *retsError)
-
-//	LoadPlayerDefaults
-//
-//	Loads the defaults for player name, etc.
-//	This can only be called after the universe and high-score lists are loaded
-
-	{
-	//	Load default player name (OK if this is NULL)
-
-	CString sPlayerName = m_HighScoreList.GetMostRecentPlayerName();
-	SetPlayerName(sPlayerName);
-
-	//	Default genome
-
-	int iPlayerGenome = m_HighScoreList.GetMostRecentPlayerGenome();
-	if (iPlayerGenome == genomeUnknown)
-		iPlayerGenome = (mathRandom(1, 2) == 2 ? genomeHumanMale : genomeHumanFemale);
-	SetPlayerGenome((GenomeTypes)iPlayerGenome);
-
-	//	Default ship class
-
-	m_dwPlayerShip = CalcDefaultPlayerShipClass();
-	if (m_dwPlayerShip == 0)
-		{
-		if (retsError)
-			*retsError = CONSTLIT("No valid player ship class");
-		return ERR_FAIL;
-		}
-
 	return NOERROR;
 	}
 
@@ -1649,9 +1577,9 @@ void CTranscendenceModel::RecordFinalScore (const CString &sEpitaph, const CStri
 	SetCrawlImage(0);
 	SetCrawlText(NULL_STR);
 
-	g_pUniverse->SetLogImageLoad(false);
+	m_Universe.SetLogImageLoad(false);
 	pAdventure->FireOnGameEnd(m_GameRecord, BasicStats);
-	g_pUniverse->SetLogImageLoad(true);
+	m_Universe.SetLogImageLoad(true);
 
 	//	Update the score in case it was changed inside OnGameEnd
 
@@ -1746,11 +1674,6 @@ ALERROR CTranscendenceModel::SaveHighScoreList (CString *retsError)
 	{
 	ALERROR error;
 
-	//	Set the default player name and genome
-
-	m_HighScoreList.SetMostRecentPlayerName(m_sPlayerName);
-	m_HighScoreList.SetMostRecentPlayerGenome(m_iPlayerGenome);
-
 	//	Save
 
 	if (error = m_HighScoreList.Save(HIGH_SCORES_FILENAME))
@@ -1772,17 +1695,6 @@ void CTranscendenceModel::SetDebugMode (bool bDebugMode)
 	{
 	m_bDebugMode = bDebugMode;
 	m_Universe.SetDebugMode(bDebugMode);
-	}
-
-const CString &CTranscendenceModel::SetPlayerName (const CString &sName)
-
-//	SetPlayerName
-//
-//	Sets the player's name
-
-	{
-	m_sPlayerName = sName;
-	return m_sPlayerName;
 	}
 
 ALERROR CTranscendenceModel::SaveGameStats (const CGameStats &Stats, bool bGameOver)
@@ -1940,7 +1852,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	CString sNewPane;
 
-	g_pUniverse->SetLogImageLoad(false);
+	m_Universe.SetLogImageLoad(false);
 	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
 			NewFrame.pLocation,
@@ -1950,7 +1862,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 			pData,
 			&sNewPane,
 			&g_pTrans->m_pCurrentScreen);
-	g_pUniverse->SetLogImageLoad(true);
+	m_Universe.SetLogImageLoad(true);
 
 	//	We no longer need pDefaultData. Anyone who needed it took out a 
 	//	reference.
@@ -2148,12 +2060,12 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	if (m_pPlayer == NULL)
 		{
 		*retsError = CONSTLIT("Unable to create CPlayerShipController");
-		g_pUniverse->Reinit();
+		m_Universe.Reinit();
 		m_GameFile.Close();
 		return ERR_MEMORY;
 		}
 
-	m_pPlayer->SetTrans(g_pTrans);
+	m_pPlayer->Init(g_pTrans);
 	m_pPlayer->SetName(NewGame.sPlayerName);
 	m_pPlayer->SetGenome(NewGame.iPlayerGenome);
 	m_pPlayer->SetStartingShipClass(NewGame.dwPlayerShip);
@@ -2162,7 +2074,7 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	//	We need this because script may want to reference gPlayer
 	//	to get genome information.
 	//
-	//	The rest of the variables will be set in g_pUniverse->SetPlayer
+	//	The rest of the variables will be set in m_Universe.SetPlayer
 
 	CCodeChain &CC = m_Universe.GetCC();
 	CC.DefineGlobal(CONSTLIT("gPlayer"), CC.CreateInteger((int)m_pPlayer));
@@ -2177,9 +2089,9 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	m_pCrawlImage = NULL;
 	m_sCrawlText = NULL_STR;
 
-	g_pUniverse->SetLogImageLoad(false);
+	m_Universe.SetLogImageLoad(false);
 	pAdventure->FireOnGameStart();
-	g_pUniverse->SetLogImageLoad(true);
+	m_Universe.SetLogImageLoad(true);
 
 	//	The remainder of new game start happens in the background thread
 	//	in StartNewGamebackground
@@ -2267,7 +2179,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 
 	CShip *pPlayerShip;
 
-	g_pUniverse->SetLogImageLoad(false);
+	m_Universe.SetLogImageLoad(false);
 	error = pSystem->CreateShip(m_pPlayer->GetStartingShipClass(),
 			m_pPlayer,
 			NULL,
@@ -2278,7 +2190,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 			NULL,
 			NULL,
 			&pPlayerShip);
-	g_pUniverse->SetLogImageLoad(true);
+	m_Universe.SetLogImageLoad(true);
 
 	if (error)
 		{
@@ -2314,9 +2226,9 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 #ifdef DEBUG_ALL_ITEMS
 	if (m_bDebugMode)
 		{
-		for (int i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
+		for (int i = 0; i < m_Universe.GetItemTypeCount(); i++)
 			{
-			CItemType *pType = g_pUniverse->GetItemType(i);
+			CItemType *pType = m_Universe.GetItemType(i);
 
 			//	Do not count unknown items
 
@@ -2350,7 +2262,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 			if (error = pSystem->CreateShip(g_DebugHenchmenShipUNID,
 						pController,
 						NULL,
-						g_pUniverse->FindSovereign(g_PlayerSovereignUNID),
+						m_Universe.FindSovereign(g_PlayerSovereignUNID),
 						vStartPos + PolarToVector(0, g_KlicksPerPixel * 100.0),
 						NullVector,
 						0,

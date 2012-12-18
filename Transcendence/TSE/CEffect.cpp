@@ -183,7 +183,7 @@ void CEffect::OnReadFromStream (SLoadCtx &Ctx)
 		m_iRotation = 0;
 	}
 
-void CEffect::OnUpdate (Metric rSecondsPerTick)
+void CEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //

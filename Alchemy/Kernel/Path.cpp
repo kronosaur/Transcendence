@@ -20,15 +20,39 @@
 void FreePIDL (LPITEMIDLIST pidl);
 CString GetVersionString (char *pData, WORD *pLangInfo, const CString &sString);
 
-bool fileDelete (const CString &sFilespec)
+bool fileDelete (const CString &sFilespec, bool bRecycle)
 
 //	fileDelete
 //
 //	Delete the file permanently from disk.
+//	NOTE: Path must be absolute.
 
 	{
-	if (!::DeleteFile(sFilespec.GetASCIIZPointer()))
-		return false;
+	//	If we're recycling, send to recycle bin
+
+	if (bRecycle)
+		{
+		SHFILEOPSTRUCT FileOp;
+		::ZeroMemory(&FileOp, sizeof(FileOp));
+		FileOp.hwnd = NULL;
+		FileOp.wFunc = FO_DELETE;
+
+		CString sFrom = strPatternSubst(CONSTLIT("%s\0"), pathMakeAbsolute(sFilespec));
+		FileOp.pFrom = sFrom.GetASCIIZPointer();
+		FileOp.pTo = NULL;
+		FileOp.fFlags = FOF_ALLOWUNDO | FOF_NO_UI;
+
+		int iResult = ::SHFileOperation(&FileOp);
+		return (iResult == 0 && !FileOp.fAnyOperationsAborted);
+		}
+
+	//	Otherwise, just delete
+
+	else
+		{
+		if (!::DeleteFile(sFilespec.GetASCIIZPointer()))
+			return false;
+		}
 
 	return true;
 	}
@@ -518,6 +542,37 @@ CString pathGetSpecialFolder (ESpecialFolders iFolder)
 	return sPath;
 	}
 
+bool pathIsAbsolute (const CString &sPath)
+
+//	pathIsAbsolute
+//
+//	Returns TRUE if the path is absolute
+
+	{
+	char *pPos = sPath.GetASCIIZPointer();
+
+	//	A double back-slash means this is an absolute network path
+
+	if (*pPos == '\\')
+		{
+		pPos++;
+		return (*pPos == '\\');
+		}
+
+	//	A drive letter means this is absolute
+
+	else if ((*pPos >= 'a' && *pPos <= 'z') || (*pPos >= 'A' && *pPos <= 'Z'))
+		{
+		pPos++;
+		return (*pPos == ':');
+		}
+
+	//	Otherwise, relative
+
+	else
+		return false;
+	}
+
 bool pathIsResourcePath (const CString &sPath, char **retpszResID)
 
 //	pathIsResourcePath
@@ -539,6 +594,31 @@ bool pathIsResourcePath (const CString &sPath, char **retpszResID)
 		}
 	else
 		return false;
+	}
+
+CString pathMakeAbsolute (const CString &sPath, const CString &sRoot)
+
+//	pathMakeAbsolute
+//
+//	Converts a relative path to an absolute path. If the path is already 
+//	absolute then we return it unchanged.
+//
+//	If sRoot is empty then we use the current directory.
+
+	{
+	CString sResult;
+
+	DWORD dwResult = ::GetFullPathName(sPath.GetASCIIZPointer(),
+			MAX_PATH,
+			sResult.GetWritePointer(MAX_PATH),
+			NULL);
+	if (dwResult == 0)
+		return NULL_STR;
+	else if (dwResult > MAX_PATH)
+		return NULL_STR;
+	
+	sResult.Truncate(dwResult);
+	return sResult;
 	}
 
 CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool bNoCheck)

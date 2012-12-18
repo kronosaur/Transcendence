@@ -250,6 +250,15 @@
 //	78: 1.08h
 //		Fixed a bug in m_SubscribedObjs.
 //
+//	79: 1.08k
+//		Fixed another bug in m_SubscribedObjs.
+//
+//	80: 1.08l
+//		Fixed another(!) bug in m_SubscribedObjs.
+//
+//	81: 1.1
+//		m_iMaxDist to CDockingPorts
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -811,6 +820,39 @@ void CSystem::ConvertSpaceEnvironmentToUNIDs (CTileMap &Pointers, CTileMap **ret
 		}
 	}
 
+ALERROR CSystem::CreateFlotsam (const CItem &Item, 
+								const CVector &vPos, 
+								const CVector &vVel, 
+								CSovereign *pSovereign, 
+								CStation **retpFlotsam)
+
+//	CreateFlotsam
+//
+//	Creates a floating item
+
+	{
+	CItemType *pItemType = Item.GetType();
+	if (pItemType == NULL)
+		return ERR_FAIL;
+
+	//	Create the station
+
+	CStation *pFlotsam;
+	pItemType->CreateEmptyFlotsam(this, vPos, vVel, pSovereign, &pFlotsam);
+
+	//	Add the items to the station
+
+	CItemListManipulator ItemList(pFlotsam->GetItemList());
+	ItemList.AddItem(Item);
+
+	//	Done
+
+	if (retpFlotsam)
+		*retpFlotsam = pFlotsam;
+
+	return NOERROR;
+	}
+
 ALERROR CSystem::CreateFromStream (CUniverse *pUniv, 
 								   IReadStream *pStream, 
 								   CSystem **retpSystem,
@@ -1026,10 +1068,10 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 			}
 		}
 
-	//	If we on version 77 then try to recover from a bug which caused 
-	//	invalid objects in the m_SubscribedObjs array.
+	//	If we on version 79 or prior we try to fix up a bug in the subscribed
+	//	objects code.
 
-	if (Ctx.dwVersion == 77 && Ctx.ForwardReferences.GetCount() > 0)
+	if (Ctx.dwVersion < 80)
 		{
 		for (i = 0; i < Ctx.pSystem->GetObjectCount(); i++)
 			{
@@ -2767,24 +2809,24 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		//	Compute the transform
 
-		SViewportPaintCtx Ctx;
-		Ctx.wSpaceColor = Ctx.wSpaceColor;
-		Ctx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		SViewportPaintCtx LocalCtx;
+		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
+		LocalCtx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
 
 		//	Figure out the position of the object in pixels
 
 		int x, y;
-		Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
+		LocalCtx.XForm.Transform(pObj->GetPos(), &x, &y);
 
 		//	Paint the object in the viewport
 
 		SetProgramState(psPaintingSRS, pObj);
 
-		Ctx.pObj = pObj;
+		LocalCtx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
-				Ctx);
+				LocalCtx);
 
 		SetProgramState(psPaintingSRS);
 		}
@@ -2863,24 +2905,24 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		//	Compute the transform
 
-		SViewportPaintCtx Ctx;
-		Ctx.wSpaceColor = Ctx.wSpaceColor;
-		Ctx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		SViewportPaintCtx LocalCtx;
+		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
+		LocalCtx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
 
 		//	Figure out the position of the object in pixels
 
 		int x, y;
-		Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
+		LocalCtx.XForm.Transform(pObj->GetPos(), &x, &y);
 
 		//	Paint the object in the viewport
 
 		SetProgramState(psPaintingSRS, pObj);
 
-		Ctx.pObj = pObj;
+		LocalCtx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
-				Ctx);
+				LocalCtx);
 
 		SetProgramState(psPaintingSRS);
 		}
@@ -2944,6 +2986,12 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 					wColor);
 			}
 		}
+
+	//	Let the POV paint any other enhanced displays
+
+	pCenter->PaintSRSEnhancements(Dest, Ctx);
+
+	//	Done
 
 	Dest.ResetClipRect();
 	}
@@ -3996,6 +4044,11 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	int iMoveObj = 0;
 #endif
 
+	//	Set up context
+
+	SUpdateCtx Ctx;
+	Ctx.pSystem = this;
+
 	//	Delete all objects in the deleted list (we do this at the
 	//	beginning because we want to keep the list after the update
 	//	so that callers can examine it).
@@ -4048,7 +4101,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 			//	Update the objects
 
 			SetProgramState(psUpdatingObj, pObj);
-			pObj->Update();
+			pObj->Update(Ctx);
 
 			//	NOTE: pObj may have been destroyed after
 			//	Update(). Do not use the pointer.
@@ -4114,6 +4167,16 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	if (IsTimeStopped())
 		if (m_iTimeStopped > 0 && --m_iTimeStopped == 0)
 			RestartTime();
+
+	//	Give the player ship a chance to do something with data that we've
+	//	accumulated during update. For example, we use this to set the nearest
+	//	docking port.
+
+	CSpaceObject *pPlayer = GetPlayer();
+	if (pPlayer && !pPlayer->IsDestroyed())
+		pPlayer->UpdatePlayer(Ctx);
+
+	//	Perf output
 
 #ifdef DEBUG_PERFORMANCE
 	{
@@ -4289,10 +4352,17 @@ void CSystem::WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream, CS
 	DWORD dwSave = OBJID_NULL;
 	if (pObj)
 		{
+		dwSave = pObj->GetID();
+		ASSERT(dwSave != 0xDDDDDDDD);
+
 		//	Make sure we save references to objects in the current system.
 		//	This will help to track a bug in gating objects.
+		//
+		//	If the object has no system then it means that it is not tied to
+		//	a particular system.
 
-		if (pObj->GetSystem() != this)
+		CSystem *pObjSystem = pObj->GetSystem();
+		if (pObjSystem && pObjSystem != this)
 			{
 			kernelDebugLogMessage("Save file error: Saving reference to object in another system");
 
@@ -4307,10 +4377,9 @@ void CSystem::WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream, CS
 				kernelDebugLogMessage("Referring object:");
 				kernelDebugLogMessage(sError);
 				}
-			}
 
-		dwSave = pObj->GetID();
-		ASSERT(dwSave != 0xDDDDDDDD);
+			dwSave = OBJID_NULL;
+			}
 		}
 
 	pStream->Write((char *)&dwSave, sizeof(DWORD));

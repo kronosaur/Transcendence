@@ -23,7 +23,7 @@
 			name="Charon Pirates"
 			alignment="destructive order"
 			/>
-			
+
 <!-- SHIP CLASSES ==============================================================
 
 	We need some default classes just for the intro. [In case an adventure 
@@ -184,6 +184,41 @@
 			/>
 
 	</ShipClass>
+
+<!-- STATION TYPES =============================================================
+
+	These station types are referred to by the engine itself. Adventures are
+	free to override them, but they must exist.
+
+-->
+
+	<!-- Flotsam -->
+
+	<StationType UNID="&stFlotsam;"
+			name=				"(flotsam)"
+			sovereign=			"&svIndependent;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"1"
+			immutable=			"true"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+	</StationType>
+
+	<!-- Shipwreck -->
+
+	<StationType UNID="&stShipwreck;"
+			name=				"(shipwreck)"
+			sovereign=			"&svIndependent;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			attributes=			"shipwreck"
+			>
+	</StationType>
 
 <!-- RESOURCES =================================================================
 

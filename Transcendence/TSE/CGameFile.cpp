@@ -180,9 +180,11 @@ CString CGameFile::GenerateFilename (const CString &sName)
 	{
 	CString sFilespec;
 
+	//	Generate a random filename
+
 	do
 		{
-		sFilespec = strPatternSubst(CONSTLIT("%s-%04d.sav"), sName, mathRandom(1, 9999));
+		sFilespec = strPatternSubst(CONSTLIT("%s-%04d.sav"), strToFilename(sName), mathRandom(1, 9999));
 		pathValidateFilename(sFilespec, &sFilespec);
 		}
 	while (pathExists(sFilespec));
@@ -485,6 +487,7 @@ ALERROR CGameFile::LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *r
 	//	Set debug (we need to do this before we load)
 
 	Univ.SetDebugMode((m_Header.dwFlags & GAME_FLAG_DEBUG) ? true : false);
+	Univ.SetResurrectMode(IsGameResurrect());
 
 	//	Load the universe from the stream
 

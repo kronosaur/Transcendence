@@ -162,6 +162,52 @@ void CCommandLineDisplay::InputLastLine (void)
 		}
 	}
 
+void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
+
+//	OnKeyDown
+//
+//	Handle WM_KEYDOWN
+
+	{
+	switch (iVirtKey)
+		{
+		case VK_BACK:
+			InputBackspace();
+			break;
+
+		case VK_RETURN:
+			{
+			CString sInput = GetInput();
+			if (!sInput.IsBlank())
+				{
+				CCodeChain &CC = g_pUniverse->GetCC();
+
+				InputEnter();
+
+				CCodeChainCtx Ctx;
+				ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
+				ICCItem *pResult = Ctx.Run(pCode);
+
+				CString sOutput;
+				if (pResult->IsIdentifier())
+					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+				else
+					sOutput = CC.Unlink(pResult);
+
+				Ctx.Discard(pResult);
+				Ctx.Discard(pCode);
+
+				Output(sOutput);
+				}
+			break;
+			}
+
+		case VK_UP:
+			InputLastLine();
+			break;
+		}
+	}
+
 void CCommandLineDisplay::Output (const CString &sOutput, WORD wColor)
 
 //	Output

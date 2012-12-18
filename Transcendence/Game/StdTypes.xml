@@ -1974,12 +1974,11 @@
 			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
 		</ImageVariants>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -2003,12 +2002,11 @@
 			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
 		</ImageVariants>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -2032,12 +2030,11 @@
 			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
 		</ImageVariants>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -2075,13 +2072,68 @@
 			</OnDamage>
 		</Events>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
+	</StationType>
+
+	<!-- Flotsam -->
+
+	<StationType UNID="&stFlotsam;"
+			name=				"(flotsam)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"1"
+			immutable=			"true"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (
+								(theItem (item (objGetItems gSource "*") 0))
+								)
+
+								(if theItem
+									(scrSetDesc gScreen "You find " (itmGetName theItem 0x08) " floating in space.")
+
+									(block Nil
+										(scrSetDesc gScreen "The item is secure aboard your ship.")
+										(scrEnableAction gScreen 0 Nil)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Loot" key="L" default="1" >
+								(scrShowScreen gScreen &dsRPGLoot;)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Shipwreck -->
@@ -2090,7 +2142,6 @@
 			name=				"(shipwreck)"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -2111,6 +2162,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Shipwreck 1 -->
@@ -2119,7 +2175,6 @@
 			name=				"(shipwreck I)"
 			sovereign=			"&svPirates;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -2152,6 +2207,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Shipwreck 2 -->
@@ -2160,7 +2220,6 @@
 			name=				"(shipwreck II)"
 			sovereign=			"&svPirates;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -2196,6 +2255,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Shipwreck 3 -->
@@ -2204,7 +2268,6 @@
 			name=				"(shipwreck III)"
 			sovereign=			"&svPirates;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -2243,6 +2306,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Shipwreck, Radioactive -->
@@ -2251,7 +2319,6 @@
 			name=				"(radioactive shipwreck)"
 			sovereign=			"&svPirates;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 			scale=				"ship"
 			mobile=				"true"
 			noMapIcon=			"true"
@@ -2293,6 +2360,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Tan Ru Dorem -->
@@ -2438,7 +2510,9 @@
 
 		<Names noArticle="true">NavBeacon %s-%0%0%0</Names>
 
-		<DockingPorts>
+		<DockingPorts
+				maxDist=		"3"
+				>
 			<Port x="0"		y="24" />
 			<Port x="0"		y="-24" />
 			<Port x="24"	y="0" />
@@ -2460,7 +2534,6 @@
 			name=				"(debug depot)"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"Main"
-			dockingPorts=		"4"
 			scale=				"ship"
 			noMapIcon=			"true"
 			>
@@ -2480,6 +2553,12 @@
 				</Panes>
 			</Main>
 		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 </TranscendenceModule>

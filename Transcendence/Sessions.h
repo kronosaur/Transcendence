@@ -62,6 +62,7 @@ class CChooseAdventureSession : public IHISession
 		void CmdNextAdventure (void);
 		void CmdOK (void);
 		void CmdPrevAdventure (void);
+		void CmdSelectExtensions (bool bSelect);
 		void CreateAdventureDesc (CExtension *pAdventure);
 		void SetBackgroundImage (CExtension *pAdventure);
 		void SetAdventureDesc (CExtension *pAdventure);
@@ -179,6 +180,7 @@ class CLoadingSession : public IHISession
 		CString m_sCopyright;
 		int m_iTick;
 		RECT m_rcStargate;
+		int m_cyCopyright;
 	};
 
 class CLoginSession : public IHISession
@@ -240,6 +242,7 @@ class CLoadGameSession : public IHISession
 
 	private:
 		void CmdCancel (void);
+		void CmdDeleteFile (void);
 		void CmdOK (void);
 		void CmdReadComplete (CListSaveFilesTask *pTask);
 

@@ -42,7 +42,7 @@
 #define CMD_CONFIRM							110
 #define CMD_CANCEL							111
 
-#define MAX_COMMS_OBJECTS					25
+#define MAX_COMMS_OBJECTS					24
 
 #define STR_INSTALLED						CONSTLIT(" (installed)")
 #define STR_DISABLED						CONSTLIT(" (disabled)")
@@ -868,6 +868,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 		m_MenuData.SetTitle(CONSTLIT("Communications"));
 		m_MenuData.RemoveAll();
 
+		char chCommsKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyCommunications);
+
 		//	First add all the objects that are following the player
 
 		CSystem *pSystem = pShip->GetSystem();
@@ -883,11 +885,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					if ('A' + m_MenuData.GetCount() == SQUADRON_LETTER)
-						m_MenuData.AddMenuItem(SQUADRON_KEY, SQUADRON_LABEL, 0, 0);
-
-					char chKey = 'A' + m_MenuData.GetCount();
-					m_MenuData.AddMenuItem(CString(&chKey, 1),
+					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
+					m_MenuData.AddMenuItem(sKey,
 							pObj->GetName(),
 							0,
 							(DWORD)pObj);
@@ -909,11 +908,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					if ('A' + m_MenuData.GetCount() == SQUADRON_LETTER)
-						m_MenuData.AddMenuItem(SQUADRON_KEY, SQUADRON_LABEL, 0, 0);
-
-					char chKey = 'A' + m_MenuData.GetCount();
-					m_MenuData.AddMenuItem(CString(&chKey, 1),
+					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
+					m_MenuData.AddMenuItem(sKey,
 							pObj->GetName(),
 							0,
 							(DWORD)pObj);
@@ -923,8 +919,7 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 
 		//	Add the squadron option, if necessary
 
-		if ((m_MenuData.GetCount() > 1 || GetPlayer()->HasFleet())
-				&& ('A' + m_MenuData.GetCount() <= SQUADRON_LETTER))
+		if (m_MenuData.GetCount() > 1 || GetPlayer()->HasFleet())
 			m_MenuData.AddMenuItem(SQUADRON_KEY, SQUADRON_LABEL, 0, 0);
 
 		//	Done
@@ -956,6 +951,9 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 		m_MenuData.SetTitle(CONSTLIT("Invoke Powers"));
 		m_MenuData.RemoveAll();
 
+		bool bUseLetters = m_pTC->GetOptionBoolean(CGameSettings::allowInvokeLetterHotKeys);
+		char chInvokeKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyInvokePower);
+
 		//	Add the powers
 
 		for (i = 0; i < g_pUniverse->GetPowerCount(); i++)
@@ -965,8 +963,20 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 			CString sError;
 			if (pPower->OnShow(GetPlayer()->GetShip(), NULL, &sError))
 				{
+				CString sKey = pPower->GetInvokeKey();
+
+				//	If we're not using letters, then convert to a number
+
+				if (!bUseLetters && !sKey.IsBlank())
+					{
+					char chLetter = *sKey.GetASCIIZPointer();
+					sKey = CMenuDisplay::GetHotKeyFromOrdinal(chLetter - 'A', chInvokeKey);
+					}
+
+				//	Add the menu
+
 				m_MenuData.AddMenuItem(
-						pPower->GetInvokeKey(),
+						sKey,
 						pPower->GetName(),
 						CMenuData::FLAG_SORT_BY_KEY,
 						(DWORD)pPower);
@@ -1146,6 +1156,8 @@ void CTranscendenceWnd::ShowUsePicker (void)
 
 	if (GetPlayer())
 		{
+		char chUseKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyUseItem);
+
 		//	Fill the menu with all usable items
 
 		m_MenuData.RemoveAll();
@@ -1165,7 +1177,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 					&& (!pType->IsUsableOnlyIfInstalled() || Item.IsInstalled())
 					&& (!pType->IsUsableOnlyIfUninstalled() || !Item.IsInstalled()))
 				{
-				bool bHasUseKey = (pType->IsKnown() && !pType->GetUseKey().IsBlank());
+				bool bHasUseKey = (pType->IsKnown() && !pType->GetUseKey().IsBlank() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey));
 
 				//	Any items without use keys sort first (so that they are easier
 				//	to access).
@@ -1197,7 +1209,7 @@ void CTranscendenceWnd::ShowUsePicker (void)
 			//	Show the key only if the item is identified
 
 			CString sKey;
-			if (pType->IsKnown())
+			if (pType->IsKnown() && (*pType->GetUseKey().GetASCIIZPointer() != chUseKey))
 				sKey = pType->GetUseKey();
 
 			//	Name of item

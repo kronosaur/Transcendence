@@ -63,7 +63,7 @@ ALERROR CDisintegrationEffect::Create (CSystem *pSystem,
 	pEffect->m_iTick = 0;
 
 	ASSERT(pEffect->m_iMaskTick == 0);
-	ASSERT(pEffect->m_iMaskRotation < 20 && pEffect->m_iMaskRotation >= 0);
+	ASSERT(pEffect->m_iMaskRotation < pEffect->m_MaskImage.GetRotationCount() && pEffect->m_iMaskRotation >= 0);
 
 	//	Create the particles
 
@@ -218,7 +218,7 @@ void CDisintegrationEffect::OnReadFromStream (SLoadCtx &Ctx)
 		}
 	}
 
-void CDisintegrationEffect::OnUpdate (Metric rSecondsPerTick)
+void CDisintegrationEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //

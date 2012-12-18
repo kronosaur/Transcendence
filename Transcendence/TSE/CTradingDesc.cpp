@@ -317,6 +317,8 @@ void CTradingDesc::OnUpdate (CSpaceObject *pObj)
 //	Station updates (call roughly every 1800 ticks)
 
 	{
+	DEBUG_TRY
+
 	if (m_iMaxCurrency && m_iReplenishCurrency)
 		{
 		int iBalance = (int)pObj->GetBalance(m_pCurrency->GetUNID());
@@ -325,6 +327,8 @@ void CTradingDesc::OnUpdate (CSpaceObject *pObj)
 		if (iBalance < iMaxCurrency)
 			pObj->CreditMoney(m_pCurrency->GetUNID(), m_iReplenishCurrency);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CTradingDesc::ReadFromStream (SLoadCtx &Ctx)
@@ -416,6 +420,8 @@ void CTradingDesc::RefreshInventory (CSpaceObject *pObj, int iPercent)
 //	adjustment factor.
 
 	{
+	DEBUG_TRY
+
 	int i, j;
 	bool bCargoChanged = false;
 
@@ -451,6 +457,8 @@ void CTradingDesc::RefreshInventory (CSpaceObject *pObj, int iPercent)
 
 	if (bCargoChanged)
 		pObj->ItemsModified();
+
+	DEBUG_CATCH
 	}
 
 bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, int *retiPrice)

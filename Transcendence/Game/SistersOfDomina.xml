@@ -115,6 +115,8 @@
 					(&itSlaveCoffin;		-1		100		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
 					(&itCashCardGold;		500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
 					(&itCashCardPlatinum;	500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
+					("ad +Illegal;"			0		0		"We shall dispose of this equipment for your own good. Do not give in to its corrupting influence.")
+					("*+ID;"				0		0		"We thank you for your good intentions, but this kind of item is useless to us.")
 					("*+HaloGem;"			-1		200		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
 					("*+Meds;"				500		0		"We thank you for your sacrifice. Seek us when you are in need of healing.")
 					("*+Illegal;"			0		0		"We shall dispose of this poison so that it may do no harm. Cleanse yourself of its influence.")

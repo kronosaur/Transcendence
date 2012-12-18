@@ -9,8 +9,7 @@
 #define LAST_PLAYER_GENOME_ATTRIB			CONSTLIT("lastPlayerGenome")
 
 CHighScoreList::CHighScoreList (void) : m_bModified(false),
-		m_iCount(0),
-		m_iMostRecentPlayerGenome(genomeUnknown)
+		m_iCount(0)
 
 //	CHighScoreList constructor
 
@@ -36,11 +35,6 @@ ALERROR CHighScoreList::Load (const CString &sFilename)
 	if (error = CXMLElement::ParseXML(&DataFile, &pData, &sError))
 		//	Means we can't find it or is corrupt...
 		return NOERROR;
-
-	//	Get the most recent player name
-
-	m_sMostRecentPlayerName = pData->GetAttribute(LAST_PLAYER_NAME_ATTRIB);
-	m_iMostRecentPlayerGenome = CGameRecord::LoadGenome(pData->GetAttribute(LAST_PLAYER_GENOME_ATTRIB));
 
 	//	Fill the structures
 
@@ -79,9 +73,7 @@ ALERROR CHighScoreList::Save (const CString &sFilename)
 
 		//	Write the XML header
 
-		CString sData = strPatternSubst(CONSTLIT("<?xml version=\"1.0\"?>\r\n\r\n<TranscendenceHighScores lastPlayerName=\"%s\" lastPlayerGenome=\"%d\">\r\n\r\n"),
-				m_sMostRecentPlayerName,
-				m_iMostRecentPlayerGenome);
+		CString sData = strPatternSubst(CONSTLIT("<?xml version=\"1.0\"?>\r\n\r\n<TranscendenceHighScores>\r\n\r\n"));
 		if (error = DataFile.Write(sData.GetPointer(), sData.GetLength(), NULL))
 			return error;
 
@@ -152,38 +144,6 @@ int CHighScoreList::AddEntry (const CGameRecord &NewEntry)
 
 	m_List[i] = ModifiedEntry;
 
-	//	Player name
-
-	m_sMostRecentPlayerName = ModifiedEntry.GetPlayerName();
-	m_iMostRecentPlayerGenome = ModifiedEntry.GetPlayerGenome();
-
 	return i;
 	}
 
-void CHighScoreList::SetMostRecentPlayerName (const CString &sName)
-
-//	SetMostRecentPlayerName
-//
-//	Set the player name
-
-	{
-	if (!strEquals(sName, m_sMostRecentPlayerName))
-		{
-		m_sMostRecentPlayerName = sName;
-		m_bModified = true;
-		}
-	}
-
-void CHighScoreList::SetMostRecentPlayerGenome (int iGenome) 
-
-//	SetMostRecentPlayerGenome
-//
-//	Set the player genome
-
-	{
-	if (iGenome != m_iMostRecentPlayerGenome)
-		{
-		m_iMostRecentPlayerGenome = iGenome;
-		m_bModified = true;
-		}
-	}

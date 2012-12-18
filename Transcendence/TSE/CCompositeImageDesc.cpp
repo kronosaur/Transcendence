@@ -218,14 +218,26 @@ CObjectImageArray &CCompositeImageDesc::GetImage (const CCompositeImageSelector 
 //	Returns the image
 
 	{
+	CCompositeImageSelector::ETypes iType = Selector.GetType(DEFAULT_SELECTOR_ID);
+
 	//	If the selector has a wreck image, then we use that
 
-	if (Selector.HasShipwreckImage(DEFAULT_SELECTOR_ID))
+	if (iType == CCompositeImageSelector::typeShipClass)
 		{
 		if (retiRotation)
 			*retiRotation = Selector.GetVariant(DEFAULT_SELECTOR_ID);
 
 		return Selector.GetShipwreckImage(DEFAULT_SELECTOR_ID);
+		}
+
+	//	If the selector has an item image, then we use that
+
+	else if (iType == CCompositeImageSelector::typeItemType)
+		{
+		if (retiRotation)
+			*retiRotation = 0;
+
+		return Selector.GetFlotsamImage(DEFAULT_SELECTOR_ID);
 		}
 
 	//	Get the image from the root entry

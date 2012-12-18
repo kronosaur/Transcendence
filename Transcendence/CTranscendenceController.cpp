@@ -247,6 +247,11 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 			Options.m_cxScreenDesired = 1024;
 			Options.m_cyScreenDesired = 768;
 			}
+		else if (m_Settings.GetBoolean(CGameSettings::force600Res))
+			{
+			Options.m_cxScreenDesired = 1024;
+			Options.m_cyScreenDesired = 600;
+			}
 
 		//	Otherwise compute the window size based on the screen
 
@@ -427,9 +432,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Select the ship
 
 		SNewGameSettings Defaults;
-		Defaults.sPlayerName = m_Model.GetDefaultPlayerName();
-		Defaults.iPlayerGenome = m_Model.GetDefaultPlayerGenome();
-		Defaults.dwPlayerShip = m_Model.GetDefaultPlayerShipClass();
+		Defaults.sPlayerName = m_Settings.GetString(CGameSettings::playerName);
+		Defaults.iPlayerGenome = ParseGenomeID(m_Settings.GetString(CGameSettings::playerGenome));
+		Defaults.dwPlayerShip = (DWORD)m_Settings.GetInteger(CGameSettings::playerShipClass);
 
 		//	If the player name is NULL then we come up with a better idea
 
@@ -440,6 +445,11 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			Defaults.sPlayerName = ::sysGetUserName();
 
 		Defaults.sPlayerName = CUniverse::ValidatePlayerName(Defaults.sPlayerName);
+
+		//	Validate genome
+
+		if (Defaults.iPlayerGenome == genomeUnknown)
+			Defaults.iPlayerGenome = (mathRandom(1, 2) == 1 ? genomeHumanFemale : genomeHumanMale);
 
 		//	New game screen
 
@@ -479,6 +489,12 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_START_GAME, sError, CMD_UI_BACK_TO_INTRO));
 			return NOERROR;
 			}
+
+		//	Remember the player settings
+
+		m_Settings.SetString(CGameSettings::playerName, pNewGame->sPlayerName);
+		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
+		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
 
 		//	Report creation
 

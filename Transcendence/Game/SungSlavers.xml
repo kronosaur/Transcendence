@@ -1211,7 +1211,6 @@
 			sovereign=			"&svSung;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
-			dockingPorts=		"4"
 			noMapLabel=			"true"
 			fireRateAdj=		"40"
 			noFriendlyFire=		"true"
@@ -1230,6 +1229,11 @@
 			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
 		</Devices>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Sung Slave Quarters -->
@@ -1239,7 +1243,6 @@
 			sovereign=			"&svSungSlaves;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"
-			dockingPorts=		"4"
 			noMapLabel=			"true"
 
 			armorID=			"&itLightTitaniumPlate;"
@@ -1268,6 +1271,12 @@
 			<sungSlave>True</sungSlave>
 		</InitialData>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
 	</StationType>
 
 	<!-- Sung Slave Quarters -->
@@ -1277,7 +1286,6 @@
 			sovereign=			"&svSungSlaves;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsSungSlaveQuarters;"
-			dockingPorts=		"4"
 			noMapLabel=			"true"
 
 			armorID=			"&itLightTitaniumPlate;"
@@ -1306,6 +1314,12 @@
 		<InitialData>
 			<sungSlave>True</sungSlave>
 		</InitialData>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -1483,7 +1497,9 @@
 						(block Nil
 							(objSetData gSlaver "sungState" "coffins")
 							(objAddItem gSource (itmCreate &itSlaveCoffin; (random 1 12)))
-							(scrShowScreen gScreen &dsRPGLoot;)
+							(scrShowScreen gScreen &dsRPGLoot; {
+								nextScreen: &dsSungSlaveQuarters;
+								})
 							)
 					</Action>
 				</Actions>

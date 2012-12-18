@@ -8,13 +8,14 @@
 const int PICKER_ROW_HEIGHT	=	96;
 const int PICKER_ROW_COUNT =	4;
 
-const int g_cxDockScreen = 800;
 const int g_cyDockScreen = 400;
 const int g_cxBackground = 1024;
 const int g_cyBackground = 400;
 const int DESC_PANE_X =			600;
 const int BACKGROUND_FOCUS_X =	(DESC_PANE_X / 2);
 const int BACKGROUND_FOCUS_Y =	(g_cyBackground / 2);
+const int MAX_SCREEN_WIDTH =	1024;
+const int MAX_BACKGROUND_WIDTH =	1280;
 
 const int STATUS_BAR_HEIGHT	=	20;
 const int g_cyTitle =			72;
@@ -117,6 +118,8 @@ static char g_ScreenTypeAttrib[] = "type";
 static char g_DescAttrib[] = "desc";
 static char g_DataFromAttrib[] = "dataFrom";
 static char g_ShowCounterAttrib[] = "showCounter";
+
+#define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
 
 CDockScreen::CDockScreen (void) : CObject(NULL),
 		m_pTrans(NULL),
@@ -407,7 +410,7 @@ void CDockScreen::CleanUpScreen (void)
 	m_bInShowPane = false;
 	}
 
-ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
+ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRect, int xOffset)
 
 //	CreateBackgroundImage
 //
@@ -422,6 +425,8 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 
 	BackgroundTypes iType = backgroundNone;
 	DWORD dwBackgroundID = 0;
+	int cxBackground = RectWidth(rcRect);
+	int cyBackground = g_cyBackground;
 
 	//	Figure out which background to use
 
@@ -466,16 +471,16 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 
 	int cyExtra = 0;
 	if (pImage)
-		cyExtra = Max(pImage->GetHeight() - g_cyBackground, 0);
+		cyExtra = Max(pImage->GetHeight() - cyBackground, 0);
 
 	//	Create a new image for the background
 
 	m_pBackgroundImage = new CG16bitImage;
 	m_bFreeBackgroundImage = true;
-	m_pBackgroundImage->CreateBlank(g_cxBackground, g_cyBackground + cyExtra, false);
+	m_pBackgroundImage->CreateBlank(cxBackground, cyBackground + cyExtra, false);
 
 	if (cyExtra)
-		m_pBackgroundImage->Fill(0, g_cyBackground, g_cxBackground, cyExtra, 0);
+		m_pBackgroundImage->Fill(0, cyBackground, cxBackground, cyExtra, 0);
 
 	//	Load the dock screen background based on the ship class
 
@@ -486,7 +491,11 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 	//	Blt to background
 
 	if (pScreenImage)
-		m_pBackgroundImage->Blt(0, 0, g_cxBackground, g_cyBackground, *pScreenImage, 0, 0);
+		{
+		//	Right-align the image on the screen
+		int xOffset = cxBackground - pScreenImage->GetWidth();
+		m_pBackgroundImage->Blt(0, 0, pScreenImage->GetWidth(), pScreenImage->GetHeight(), *pScreenImage, xOffset, 0);
+		}
 
 	//	If not image, then we're done
 
@@ -506,7 +515,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 
 		if (pLargeImage && !pLargeImage->IsEmpty())
 			{
-			if (pLargeImage->GetHeight() < g_cyBackground)
+			if (pLargeImage->GetHeight() < cyBackground)
 				{
 				m_pBackgroundImage->ColorTransBlt(0,
 						0,
@@ -514,12 +523,12 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 						pLargeImage->GetHeight(),
 						255,
 						*pLargeImage,
-						BACKGROUND_FOCUS_X - (pLargeImage->GetWidth() / 2),
+						xOffset + BACKGROUND_FOCUS_X - (pLargeImage->GetWidth() / 2),
 						BACKGROUND_FOCUS_Y - (pLargeImage->GetHeight() / 2));
 				}
 			else
 				{
-				Metric rScale = (Metric)g_cyBackground / pLargeImage->GetHeight();
+				Metric rScale = (Metric)cyBackground / pLargeImage->GetHeight();
 				CG16bitImage *pNewImage = new CG16bitImage;
 				pNewImage->CreateFromImageTransformed(*pLargeImage,
 						0,
@@ -536,7 +545,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 						pNewImage->GetHeight(),
 						255,
 						*pNewImage,
-						BACKGROUND_FOCUS_X - (pNewImage->GetWidth() / 2),
+						xOffset + BACKGROUND_FOCUS_X - (pNewImage->GetWidth() / 2),
 						BACKGROUND_FOCUS_Y - (pNewImage->GetHeight() / 2));
 
 				delete pNewImage;
@@ -551,7 +560,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 			Ctx.fNoSelection = true;
 			Ctx.pObj = m_pLocation;
 			m_pLocation->Paint(*m_pBackgroundImage,
-					BACKGROUND_FOCUS_X,
+					xOffset + BACKGROUND_FOCUS_X,
 					BACKGROUND_FOCUS_Y,
 					Ctx);
 			}
@@ -560,17 +569,38 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc)
 	//	If we have an image with a mask, just blt the masked image
 
 	else if (pImage && pImage->HasMask())
-		m_pBackgroundImage->ColorTransBlt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, 0, 0);
+		m_pBackgroundImage->ColorTransBlt(0, 0, pImage->GetWidth(), pImage->GetHeight(), 255, *pImage, xOffset, 0);
 
-	//	If we have an image with no mask, then we need to create our own mask
+	//	If we have an image with no mask, then we need to create our own mask.
+	//	If the image is larger than the space, then it is flush right with 
+	//	the center line. Otherwise, it is flush left.
 
 	else if (pImage)
 		{
+		int cxAvail = (RectWidth(rcRect) / 2) + 88;
+		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
+
 		CG16bitImage *pScreenMask = m_pUniv->GetLibraryBitmap(dwScreenMaskUNID);
 		if (pScreenMask)
-			m_pBackgroundImage->BltWithMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, 0, 0);
+			{
+			//	Center the mask and align it with the position of pImage.
+			int xAlpha = Max(0, xImage + (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+
+			//	Generate a new bitmap containing the mask at the exact position of
+			//	the image we want to blt.
+
+			CG16bitImage Mask;
+			if (xAlpha != 0)
+				{
+				Mask.CreateBlankAlpha(pImage->GetWidth(), pImage->GetHeight());
+				Mask.CopyAlpha(xAlpha, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, 0, 0);
+				pScreenMask = &Mask;
+				}
+
+			m_pBackgroundImage->BltWithMask(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pScreenMask, *pImage, xImage, 0);
+			}
 		else
-			m_pBackgroundImage->Blt(0, 0, pImage->GetWidth(), pImage->GetHeight(), *pImage, 0, 0);
+			m_pBackgroundImage->Blt(xImage, 0, pImage->GetWidth(), pImage->GetHeight(), *pImage, 0, 0);
 		}
 
 	return NOERROR;
@@ -607,7 +637,7 @@ ALERROR CDockScreen::CreateItemPickerControl (CXMLElement *pDesc, AGScreen *pScr
 	return NOERROR;
 	}
 
-ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect)
+ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner)
 
 //	CreateTitleAndBackground
 //
@@ -616,8 +646,9 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	{
 	//	Generate a background image
 
-	CreateBackgroundImage(pDesc);
+	CreateBackgroundImage(pDesc, rcRect, rcInner.left - rcRect.left);
 	int cyBackgroundImage = (m_pBackgroundImage ? m_pBackgroundImage->GetHeight() : 512);
+	int cxBackgroundImage = RectWidth(rcRect);
 
 	//	Add the background
 
@@ -630,14 +661,14 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 		RECT rcImage;
 		rcImage.left = 0;
 		rcImage.top = 0;
-		rcImage.right = g_cxBackground;
+		rcImage.right = cxBackgroundImage;
 		rcImage.bottom = cyBackgroundImage;
 		pImage->SetImage(m_pBackgroundImage, rcImage);
 		}
 
-	rcBackArea.left = 0;
+	rcBackArea.left = rcRect.left;
 	rcBackArea.top = (RectHeight(rcRect) - g_cyDockScreen) / 2;
-	rcBackArea.right = rcBackArea.left + g_cxBackground;
+	rcBackArea.right = rcBackArea.left + cxBackgroundImage;
 	rcBackArea.bottom = rcBackArea.top + cyBackgroundImage;
 
 	if (pImage)
@@ -648,7 +679,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	pImage = new CGImageArea;
 	pImage->SetBackColor(m_pFonts->wAltBlueBackground);
 	RECT rcArea;
-	rcArea.left = 0;
+	rcArea.left = rcRect.left;
 	rcArea.top = rcBackArea.top - g_cyTitle;
 	rcArea.right = rcRect.right;
 	rcArea.bottom = rcBackArea.top - STATUS_BAR_HEIGHT;
@@ -656,7 +687,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 
 	pImage = new CGImageArea;
 	pImage->SetBackColor(CG16bitImage::DarkenPixel(m_pFonts->wAltBlueBackground, 200));
-	rcArea.left = 0;
+	rcArea.left = rcRect.left;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT;
 	rcArea.right = rcRect.right;
 	rcArea.bottom = rcBackArea.top;
@@ -675,7 +706,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	pText->SetFont(&m_pFonts->Title);
 	pText->SetColor(m_pFonts->wTitleColor);
 	pText->AddShadowEffect();
-	rcArea.left = 8;
+	rcArea.left = rcRect.left + 8;
 	rcArea.top = rcBackArea.top - g_cyTitle;
 	rcArea.right = rcRect.right;
 	rcArea.bottom = rcBackArea.top;
@@ -689,9 +720,9 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	m_pCredits->SetFont(&m_pFonts->MediumHeavyBold);
 	m_pCredits->SetColor(m_pFonts->wTitleColor);
 
-	rcArea.left = rcRect.right - g_cxStats;
+	rcArea.left = rcInner.right - g_cxStats;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
-	rcArea.right = rcRect.right;
+	rcArea.right = rcInner.right;
 	rcArea.bottom = rcArea.top + g_cyStats;
 	pScreen->AddArea(m_pCredits, rcArea, 0);
 
@@ -702,9 +733,9 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	pText->SetFont(&m_pFonts->MediumHeavyBold);
 	pText->SetColor(m_pFonts->wTitleColor);
 
-	rcArea.left = rcRect.right - g_cxCargoStats;
+	rcArea.left = rcInner.right - g_cxCargoStats;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
-	rcArea.right = rcRect.right;
+	rcArea.right = rcInner.right;
 	rcArea.bottom = rcArea.top + g_cyStats;
 	pScreen->AddArea(pText, rcArea, 0);
 
@@ -714,9 +745,9 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	m_pCargoSpace->SetFont(&m_pFonts->MediumHeavyBold);
 	m_pCargoSpace->SetColor(m_pFonts->wTitleColor);
 
-	rcArea.left = rcRect.right - g_cxCargoStats + g_cxCargoStatsLabel;
+	rcArea.left = rcInner.right - g_cxCargoStats + g_cxCargoStatsLabel;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
-	rcArea.right = rcRect.right;
+	rcArea.right = rcInner.right;
 	rcArea.bottom = rcArea.top + g_cyStats;
 	pScreen->AddArea(m_pCargoSpace, rcArea, 0);
 
@@ -1426,7 +1457,7 @@ ALERROR CDockScreen::InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, 
 	//	Compute the canvas rect for the controls (relative to pScreen)
 
 	RECT rcCanvas;
-	rcCanvas.left = 0;
+	rcCanvas.left = rcScreen.left;
 	rcCanvas.top = (RectHeight(rcScreen) - g_cyBackground) / 2;
 	rcCanvas.right = rcCanvas.left + DESC_PANE_X;
 	rcCanvas.bottom = rcCanvas.top + g_cyBackground;
@@ -1663,16 +1694,27 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	m_pScreen = new AGScreen(hWnd, rcRect);
 	m_pScreen->SetController(this);
+	m_pScreen->SetBackgroundColor(BAR_COLOR);
+
+	RECT rcBackground;
+	int cxBackground = Min(MAX_BACKGROUND_WIDTH, RectWidth(rcRect));
+	int cyBackground = RectHeight(rcRect);
+	rcBackground.left = (RectWidth(rcRect) - cxBackground) / 2;
+	rcBackground.top = 0;
+	rcBackground.right = rcBackground.left + cxBackground;
+	rcBackground.bottom = rcBackground.top + cyBackground;
 
 	RECT rcScreen;
-	rcScreen.left = 0;
+	int cxScreen = Min(MAX_SCREEN_WIDTH, RectWidth(rcRect));
+	int cyScreen = RectHeight(rcRect);
+	rcScreen.left = (RectWidth(rcRect) - cxScreen) / 2;
 	rcScreen.top = 0;
-	rcScreen.right = RectWidth(rcRect);
-	rcScreen.bottom = RectHeight(rcRect);
+	rcScreen.right = rcScreen.left + cxScreen;
+	rcScreen.bottom = rcScreen.top + cyScreen;
 
 	//	Creates the title and background controls
 
-	if (error = CreateTitleAndBackground(m_pDesc, m_pScreen, rcScreen))
+	if (error = CreateTitleAndBackground(m_pDesc, m_pScreen, rcBackground, rcScreen))
 		return error;
 
 	//	Get the list of panes for this screen

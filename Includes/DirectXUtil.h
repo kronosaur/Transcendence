@@ -94,6 +94,8 @@ class CG16bitImage : public CObject
 			markerSmallCross,
 			markerMediumCross,
 			markerSmallFilledSquare,
+			markerSmallCircle,
+			markerTinyCircle,
 			};
 
 		enum SurfaceTypes
@@ -195,6 +197,7 @@ class CG16bitImage : public CObject
 		void Fill (int x, int y, int cxWidth, int cyHeight, WORD wColor);
 		void FillRGB (int x, int y, int cxWidth, int cyHeight, COLORREF rgbValue);
 		void FillColumn (int x, int y, int cyHeight, WORD wColor);
+		void FillColumnTrans (int x, int y, int cyHeight, WORD wColor, DWORD byOpacity);
 		void FillLine (int x, int y, int cxWidth, WORD wColor);
 		void FillLineGray (int x, int y, int cxWidth, WORD wColor, DWORD byOpacity);
 		void FillLineTrans (int x, int y, int cxWidth, WORD wColor, DWORD byOpacity);
@@ -756,6 +759,7 @@ class AGScreen : public CObject, public IAreaContainer
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		inline IScreenController *GetController (void) { return m_pController; }
 		inline void Invalidate (const RECT &rcInvalid) { UnionRect(&m_rcInvalid, &rcInvalid, &m_rcInvalid); }
+		inline void SetBackgroundColor (WORD wColor) { m_wBackgroundColor = wColor; }
 		inline void SetController (IScreenController *pController) { m_pController = pController; }
 
 		//	IAreaContainer virtuals
@@ -786,6 +790,8 @@ class AGScreen : public CObject, public IAreaContainer
 
 		AGArea *m_pMouseCapture;				//	Area that has captured the mouse
 		AGArea *m_pMouseOver;					//	Area that the mouse is currently over
+
+		WORD m_wBackgroundColor;
 
 	friend CObjectClass<AGScreen>;
 	};

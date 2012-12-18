@@ -1046,7 +1046,9 @@ void CInstalledDevice::Update (CSpaceObject *pSource,
 							   bool *retbSourceDestroyed,
 							   bool *retbConsumedItems,
 							   bool *retbDisrupted)
-	{ 
+	{
+	DEBUG_TRY
+
 	if (!IsEmpty()) 
 		{
 		m_pClass->Update(this, pSource, iTick, retbSourceDestroyed, retbConsumedItems);
@@ -1074,6 +1076,8 @@ void CInstalledDevice::Update (CSpaceObject *pSource,
 				pSource->OnDeviceStatus(this, CDeviceClass::statusDisruptionRepaired);
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CInstalledDevice::WriteToStream (IWriteStream *pStream)

@@ -249,6 +249,7 @@ ALERROR CMissile::Create (CSystem *pSystem,
 	pMissile->m_fDestroyed = false;
 	pMissile->m_fReflection = false;
 	pMissile->m_fDetonate = false;
+	pMissile->m_fPassthrough = false;
 	pMissile->m_dwSpareFlags = 0;
 
 	//	Friendly fire
@@ -567,14 +568,26 @@ void CMissile::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Make sure we are not too close to the source when we trigger
 	//	a proximity blast.
 
-	if (m_pHit && m_iHitDir == -1 && !m_Source.IsEmpty())
+	CSpaceObject *pSource;
+	if (m_pHit && m_iHitDir == -1 && (pSource = m_Source.GetObj()))
 		{
-		CVector vDist = m_vHitPos - m_Source.GetObj()->GetPos();
+		CVector vDist = m_vHitPos - pSource->GetPos();
 		Metric rDist2 = vDist.Length2();
 
 		if (rDist2 < (rThreshold * rThreshold) / 4.0)
 			m_pHit = NULL;
 		}
+
+	//	See if we pass through
+
+	if (m_pHit 
+			&& m_iHitDir != -1 
+			&& m_pDesc->GetPassthrough() > 0
+			&& mathRandom(1, 100) <= m_pDesc->GetPassthrough()
+			&& m_pHit->GetPassthroughDefault() != damageNoDamageNoPassthrough)
+		m_fPassthrough = true;
+	else
+		m_fPassthrough = false;
 	}
 
 void CMissile::ObjectDestroyedHook (const SDestroyCtx &Ctx)
@@ -611,7 +624,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		Ctx.iRotation = m_iRotation;
 		Ctx.iDestiny = GetDestiny();
 
-		if (!m_fDestroyed && (m_pHit == NULL || m_pDesc->GetPassthrough() > 0))
+		if (!m_fDestroyed && (m_pHit == NULL || m_fPassthrough))
 			m_pPainter->Paint(Dest, x, y, Ctx);
 		else if (m_pHit)
 			m_pPainter->PaintHit(Dest, x, y, m_vHitPos, Ctx);
@@ -786,6 +799,7 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		m_fDestroyed =		((dwLoad & 0x00000001) ? true : false);
 		m_fReflection =		((dwLoad & 0x00000002) ? true : false);
 		m_fDetonate =		((dwLoad & 0x00000004) ? true : false);
+		m_fPassthrough =	((dwLoad & 0x00000008) ? true : false);
 
 		Ctx.pStream->Read((char *)&m_iSavedRotationsCount, sizeof(DWORD));
 		if (m_iSavedRotationsCount > 0)
@@ -798,7 +812,7 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		}
 	}
 
-void CMissile::OnUpdate (Metric rSecondsPerTick)
+void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //
@@ -982,20 +996,20 @@ void CMissile::OnUpdate (Metric rSecondsPerTick)
 
 			else if (m_iHitDir != -1)
 				{
-				SDamageCtx Ctx;
-				Ctx.pObj = m_pHit;
-				Ctx.pDesc = m_pDesc;
-				Ctx.Damage = m_pDesc->m_Damage;
-				Ctx.Damage.AddBonus(m_iBonus);
-				Ctx.Damage.SetCause(m_iCause);
+				SDamageCtx DamageCtx;
+				DamageCtx.pObj = m_pHit;
+				DamageCtx.pDesc = m_pDesc;
+				DamageCtx.Damage = m_pDesc->m_Damage;
+				DamageCtx.Damage.AddBonus(m_iBonus);
+				DamageCtx.Damage.SetCause(m_iCause);
 				if (IsAutomatedWeapon())
-					Ctx.Damage.SetAutomatedWeapon();
-				Ctx.iDirection = (m_iHitDir + 360 + mathRandom(0, 30) - 15) % 360;
-				Ctx.vHitPos = m_vHitPos;
-				Ctx.pCause = this;
-				Ctx.Attacker = m_Source;
+					DamageCtx.Damage.SetAutomatedWeapon();
+				DamageCtx.iDirection = (m_iHitDir + 360 + mathRandom(0, 30) - 15) % 360;
+				DamageCtx.vHitPos = m_vHitPos;
+				DamageCtx.pCause = this;
+				DamageCtx.Attacker = m_Source;
 
-				EDamageResults result = m_pHit->Damage(Ctx);
+				EDamageResults result = m_pHit->Damage(DamageCtx);
 
 				//	If we hit another missile (or some small object) there is a chance
 				//	that we continue
@@ -1006,10 +1020,10 @@ void CMissile::OnUpdate (Metric rSecondsPerTick)
 					bDestroy = (m_iHitPoints == 0);
 					}
 
-				//	Set the missile to destroy itself after a hit
+				//	Set the missile to destroy itself after a hit, if we did not
+				//	pass through
 
-				else if (m_pDesc->GetPassthrough() == 0
-						|| mathRandom(1, 100) > m_pDesc->GetPassthrough())
+				else if (!m_fPassthrough)
 					bDestroy = true;
 				}
 			}
@@ -1135,6 +1149,7 @@ void CMissile::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fDestroyed ?	0x00000001 : 0);
 	dwSave |= (m_fReflection ?	0x00000002 : 0);
 	dwSave |= (m_fDetonate ?	0x00000004 : 0);
+	dwSave |= (m_fPassthrough ? 0x00000008 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Saved rotations

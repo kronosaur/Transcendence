@@ -133,7 +133,7 @@ ALERROR CProfileSession::OnInit (CString *retsError)
 
 	CUIHelper Helper(m_HI);
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Scores & Records"), 0, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Scores & Records"), NULL, 0, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	//	Create a wait animation

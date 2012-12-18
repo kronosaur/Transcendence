@@ -297,6 +297,7 @@
 								)
 							(block Nil
 								(objSetData gSource "missionStatus" 'success)
+								(typIncGlobalData &stCommonwealthFortress; "missionsCompleted")
 								(plyMessage gPlayer "Mission complete!")
 								(shpCancelOrders gPlayerShip)
 								(objUnregisterForEvents gSource aObjDestroyed)
@@ -2214,12 +2215,11 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<StationType UNID="&stDallMissionWreck;"
@@ -2338,12 +2338,11 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="24" />
-			<Port x="0"		y="-24" />
-			<Port x="24"	y="0" />
-			<Port x="-24"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 <!-- St Katharine's Star System -->

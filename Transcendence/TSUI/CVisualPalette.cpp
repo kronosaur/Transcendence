@@ -13,6 +13,7 @@ const int SCREEN_BORDER_X =					10;
 const int WIDESCREEN_WIDTH =				1024;
 const int WIDESCREEN_WIDTH_MAX =			1280;
 const int WIDESCREEN_HEIGHT =				512;
+const int WIDESCREEN_HEIGHT_MAX =			512;
 
 struct SColorInitTable
 	{
@@ -186,13 +187,14 @@ void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitI
 	GetWidescreenRect(Screen, &rcCenter, &rcFull);
 	WORD wBackgroundColor = GetColor(colorAreaDeep);
 	WORD wLineColor = GetColor(colorLineFrame);
+	int cyCenter = RectHeight(rcCenter);
 
 	if (!Background.IsEmpty())
 		{
 		//	Compute the RECT of the background image
 
 		int cxBackground = Min(cxScreen, Background.GetWidth());
-		int cyBackground = Min(WIDESCREEN_HEIGHT, Background.GetHeight());
+		int cyBackground = Min(cyCenter, Background.GetHeight());
 
 		RECT rcBackgroundDest;
 		rcBackgroundDest.left = (cxScreen - cxBackground) / 2;
@@ -232,9 +234,9 @@ void CVisualPalette::DrawSessionBackground (CG16bitImage &Screen, const CG16bitI
 
 	//	Paint the frame
 
-	int yLine = (cyScreen - WIDESCREEN_HEIGHT) / 2;
+	int yLine = (cyScreen - cyCenter) / 2;
 	Screen.FillLine(0, yLine - 1, cxScreen, wLineColor);
-	Screen.FillLine(0, yLine + WIDESCREEN_HEIGHT, cxScreen, wLineColor);
+	Screen.FillLine(0, yLine + cyCenter, cxScreen, wLineColor);
 
 	//	Done
 
@@ -293,23 +295,24 @@ void CVisualPalette::GetWidescreenRect (CG16bitImage &Screen, RECT *retrcCenter,
 	//	Compute the size of the center pane
 
 	int cxCenter = Min(cxScreen - (2 * SCREEN_BORDER_X), WIDESCREEN_WIDTH_MAX);
+	int cyCenter = Min(cyScreen - 256, WIDESCREEN_HEIGHT_MAX);
 
 	//	Size the rects
 
 	if (retrcCenter)
 		{
 		retrcCenter->left = (cxScreen - cxCenter) / 2;
-		retrcCenter->top = (cyScreen - WIDESCREEN_HEIGHT) / 2;
+		retrcCenter->top = (cyScreen - cyCenter) / 2;
 		retrcCenter->right = retrcCenter->left + cxCenter;
-		retrcCenter->bottom = retrcCenter->top + WIDESCREEN_HEIGHT;
+		retrcCenter->bottom = retrcCenter->top + cyCenter;
 		}
 
 	if (retrcFull)
 		{
 		retrcFull->left = 0;
-		retrcFull->top = (cyScreen - WIDESCREEN_HEIGHT) / 2;
+		retrcFull->top = (cyScreen - cyCenter) / 2;
 		retrcFull->right = cxScreen;
-		retrcFull->bottom = retrcFull->top + WIDESCREEN_HEIGHT;
+		retrcFull->bottom = retrcFull->top + cyCenter;
 		}
 	}
 

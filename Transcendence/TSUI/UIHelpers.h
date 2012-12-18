@@ -89,6 +89,12 @@ class CUIHelper
 			OPTION_SESSION_NO_CANCEL_BUTTON =	0x00000002,
 			};
 
+		struct SMenuEntry
+			{
+			CString sLabel;
+			CString sCommand;
+			};
+
 		CUIHelper (CHumanInterface &HI) : m_HI(HI) { }
 
 		void CreateClassInfoArmor (CShipClass *pClass, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
@@ -98,7 +104,12 @@ class CUIHelper
 		void CreateClassInfoItem (const CItem &Item, int x, int y, int cxWidth, DWORD dwOptions, const CString &sExtraDesc, int *retcyHeight, IAnimatron **retpInfo) const;
 		void CreateClassInfoReactor (CShipClass *pClass, const CDeviceDescList &Devices, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
 		void CreateInputErrorMessage (IHISession *pSession, const RECT &rcRect, const CString &sTitle, CString &sDesc, IAnimatron **retpMsg = NULL) const;
-		void CreateSessionTitle (IHISession *pSession, CCloudService &Service, const CString &sTitle, DWORD dwOptions, IAnimatron **retpControl) const;
+		void CreateSessionTitle (IHISession *pSession, 
+								 CCloudService &Service, 
+								 const CString &sTitle, 
+								 const TArray<SMenuEntry> *pMenu,
+								 DWORD dwOptions, 
+								 IAnimatron **retpControl) const;
 
 	private:
 		void CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString &sText, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;

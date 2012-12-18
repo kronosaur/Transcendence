@@ -369,9 +369,19 @@ void CHexarc::WriteAsAeon (const CJSONValue &Value, IWriteStream &Stream)
 		{
 		case CJSONValue::typeString:
 			{
+			//	NOTE: When we convert an empty string to JSON it gets encoded 
+			//	as a JSON empty string (not as null). This means that when we
+			//	serialize, we serialize to an empty string.
+			//
+			//	At deserialize time, Hexarc will convert the empty string into
+			//	an empty string datum (not nil).
+			//
+			//	Thus if we're trying to write out an empty JSON string to
+			//	serialized AEON format, we need to write out an empty string.
+
 			CString sValue = Value.AsString();
 			if (sValue.IsBlank())
-				Stream.Write("nil", 3);
+				Stream.Write("\"\"", 2);
 			else
 				{
 				bool bQuote = HasSpecialAeonChars(sValue);

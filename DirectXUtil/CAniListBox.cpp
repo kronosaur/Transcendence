@@ -112,12 +112,37 @@ bool CAniListBox::DeleteElement (const CString &sID)
 //	Deletes the element by ID
 
 	{
-	int i;
+	int i, j;
 
 	for (i = 0; i < m_Entries.GetCount(); i++)
 		if (strEquals(m_Entries[i].pAni->GetID(), sID))
 			{
+			//	Compute the height by taking the difference in y value between
+			//	this entry and the next (we can't just take the height because there
+			//	might be spacing).
+
+			IAnimatron *pNext = (i + 1 < m_Entries.GetCount() ? m_Entries[i + 1].pAni : NULL);
+			int cyHeight = (pNext ? (int)pNext->GetPropertyVector(PROP_POSITION).GetY() - (int)m_Entries[i].pAni->GetPropertyVector(PROP_POSITION).GetY() : 0);
+
+			//	Move up all the entries below this one
+
+			for (j = i + 1; j < m_Entries.GetCount(); j++)
+				{
+				CVector vNewPos = m_Entries[j].pAni->GetPropertyVector(PROP_POSITION) + CVector(0, -cyHeight);
+				m_Entries[j].pAni->SetPropertyVector(PROP_POSITION, vNewPos);
+				}
+
+			//	Delete it
+
 			m_Entries.Delete(i);
+
+			//	Update the selection
+
+			int iSelection = m_Properties[INDEX_SELECTION].GetInteger();
+			if (iSelection >= m_Entries.GetCount())
+				iSelection = m_Entries.GetCount() - 1;
+
+			Select(iSelection);
 			break;
 			}
 
@@ -561,6 +586,8 @@ void CAniListBox::Select (int iEntry)
 
 	{
 	SetPropertyInteger(PROP_SELECTION, iEntry);
+	if (iEntry == -1)
+		return;
 
 	//	Scroll the viewport so that the selection is centered
 

@@ -285,6 +285,19 @@ void CSpaceObject::AddEffect (IEffectPainter *pPainter, int xOffset, int yOffset
 	m_pFirstEffect = pNewNode;
 	}
 
+void CSpaceObject::AddEventSubscriber (CSpaceObject *pObj)
+
+//	AddEventSubscriber
+//
+//	Adds an object that wants to subscribe to our events
+	
+	{
+	if (pObj 
+			&& !pObj->IsDestroyed()
+			&& pObj->NotifyOthersWhenDestroyed())
+		m_SubscribedObjs.Add(pObj); 
+	}
+
 EnhanceItemStatus CSpaceObject::AddItemEnhancement (const CItem &itemToEnhance, 
 													CItemType *pEnhancement, 
 													int iLifetime, 
@@ -2389,47 +2402,72 @@ void CSpaceObject::FixVersion77Bug (SLoadCtx &Ctx)
 	{
 	int i, j, k;
 
+	TArray<CSpaceObject *> &RawList = m_SubscribedObjs.GetRawList();
+
 	//	Loop over all subscribed objects
 
-	TArray<CSpaceObject *> &RawList = m_SubscribedObjs.GetRawList();
-	for (i = 0; i < RawList.GetCount(); i++)
+	if (Ctx.dwVersion == 77 && Ctx.ForwardReferences.GetCount() > 0)
 		{
-		CSpaceObject **pAddr = &RawList[i];
-
-		//	See if this entry is unresolved
-
-		bool bFound = false;
-		for (j = 0; j < Ctx.ForwardReferences.GetCount(); j++)
+		TArray<int> ToDelete;
+		for (i = 0; i < RawList.GetCount(); i++)
 			{
-			DWORD dwID = (DWORD)Ctx.ForwardReferences.GetKey(j);
-			CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(j);
-			for (k = 0; k < pList->GetCount(); k++)
-				{
-				CSpaceObject **pUnresolvedAddr = (CSpaceObject **)pList->GetElement(k);
-				if (pUnresolvedAddr == pAddr)
-					{
-					pList->RemoveElement(k);
-					k--;
+			CSpaceObject **pAddr = &RawList[i];
 
-					bFound = true;
+			//	See if this entry is unresolved
+
+			bool bFound = false;
+			for (j = 0; j < Ctx.ForwardReferences.GetCount(); j++)
+				{
+				DWORD dwID = (DWORD)Ctx.ForwardReferences.GetKey(j);
+				CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(j);
+				for (k = 0; k < pList->GetCount(); k++)
+					{
+					CSpaceObject **pUnresolvedAddr = (CSpaceObject **)pList->GetElement(k);
+					if (pUnresolvedAddr == pAddr)
+						{
+						pList->RemoveElement(k);
+						k--;
+
+						bFound = true;
+						}
+					}
+
+				//	Delete the reference, if needed
+
+				if (pList->GetCount() == 0)
+					{
+					Ctx.ForwardReferences.RemoveEntry(dwID, NULL);
+					j--;
 					}
 				}
 
-			//	Delete the reference, if needed
+			//	If we found this as an unresolved reference, delete it.
 
-			if (pList->GetCount() == 0)
-				{
-				Ctx.ForwardReferences.RemoveEntry(dwID, NULL);
-				j--;
-				}
+			if (bFound)
+				ToDelete.Insert(i - ToDelete.GetCount());
 			}
 
-		//	If we found this as an unresolved reference, delete it.
+		//	Delete appropriate entries
 
-		if (bFound)
+		for (i = 0; i < ToDelete.GetCount(); i++)
 			{
-			RawList.Delete(i);
-			i--;
+			ASSERT(ToDelete[i] < RawList.GetCount());
+			RawList.Delete(ToDelete[i]);
+			}
+		}
+
+	//	In versions before 80 we had a bug which caused us to save NULL 
+	//	objects. Remove them here.
+
+	if (Ctx.dwVersion < 80)
+		{
+		for (i = 0; i < RawList.GetCount(); i++)
+			{
+			if (RawList[i] == NULL)
+				{
+				RawList.Delete(i);
+				i--;
+				}
 			}
 		}
 	}
@@ -3128,11 +3166,11 @@ WORD CSpaceObject::GetSymbolColor (void)
 	else if (pPlayer == this)
 		return CG16bitImage::RGBValue(255, 255, 255);
 	else if (IsWreck())
-		return CG16bitImage::RGBValue(64, 128, 64);
+		return CG16bitImage::RGBValue(0, 192, 0);
 	else if (IsEnemy(pPlayer))
-		return CG16bitImage::RGBValue(255, 0, 0);
+		return CG16bitImage::RGBValue(255, 80, 80);
 	else if (GetCategory() == CSpaceObject::catShip)
-		return CG16bitImage::RGBValue(0, 255, 0);
+		return CG16bitImage::RGBValue(80, 255, 80);
 	else
 		return CG16bitImage::RGBValue(0, 192, 0);
 	}
@@ -4812,6 +4850,15 @@ void CSpaceObject::Remove (DestructionTypes iCause, const CDamageSource &Attacke
 
 		pSystem->RemoveObject(Ctx);
 
+		//	Delete all subscriptions. We are leaving the system, so we can't
+		//	hold on to pointers to the old system.
+		//
+		//	LATER: We need to deal with missions separately.
+
+		m_SubscribedObjs.RemoveAll();
+
+		//	Done
+
 		m_iIndex = -1;
 		}
 	}
@@ -5286,7 +5333,7 @@ bool CSpaceObject::Translate (const CString &sID, CString *retsText)
 	return false;
 	}
 
-void CSpaceObject::Update (void)
+void CSpaceObject::Update (SUpdateCtx &Ctx)
 
 //	Update
 //
@@ -5336,7 +5383,7 @@ void CSpaceObject::Update (void)
 
 	//	Update the specific object
 
-	OnUpdate(g_SecondsPerUpdate);
+	OnUpdate(Ctx, g_SecondsPerUpdate);
 
 	ClearInUpdateCode();
 	}

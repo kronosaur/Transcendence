@@ -14,6 +14,8 @@
 #define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_NEXT_ADVENTURE						CONSTLIT("cmdNextAdventure")
 #define CMD_PREV_ADVENTURE						CONSTLIT("cmdPrevAdventure")
+#define CMD_SELECT_ALL							CONSTLIT("cmdSelectAll")
+#define CMD_DESELECT_ALL						CONSTLIT("cmdDeselectAll")
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_BACK_TO_INTRO						CONSTLIT("uiBackToIntro")
 
@@ -119,7 +121,7 @@ void CChooseAdventureSession::CmdOK (void)
 	SAdventureSettings NewAdventure;
 	NewAdventure.pAdventure = m_AdventureList[m_iSelection];
 
-	//	Make a list of all adventures that are checked
+	//	Make a list of all extensions that are checked
 
 	TArray<DWORD> Defaults;
 	for (i = 0; i < m_ExtensionList.GetCount(); i++)
@@ -175,6 +177,19 @@ void CChooseAdventureSession::CmdPrevAdventure (void)
 		if (pNext)
 			pNext->SetPropertyBool(PROP_ENABLED, true);
 		}
+	}
+
+void CChooseAdventureSession::CmdSelectExtensions (bool bSelect)
+
+//	CmdSelectExtension
+//
+//	Select or deselect all extensions
+
+	{
+	int i;
+
+	for (i = 0; i < m_ExtensionList.GetCount(); i++)
+		SetPropertyBool(strPatternSubst(CONSTLIT("idExtension:%d"), i), PROP_CHECKED, bSelect);
 	}
 
 void CChooseAdventureSession::CreateAdventureDesc (CExtension *pAdventure)
@@ -246,6 +261,10 @@ ALERROR CChooseAdventureSession::OnCommand (const CString &sCmd, void *pData)
 		CmdOK();
 	else if (strEquals(sCmd, CMD_EXTENSIONS_CHANGED))
 		SetAdventureStatus(m_AdventureList[m_iSelection], m_yBottomSection);
+	else if (strEquals(sCmd, CMD_SELECT_ALL))
+		CmdSelectExtensions(true);
+	else if (strEquals(sCmd, CMD_DESELECT_ALL))
+		CmdSelectExtensions(false);
 
 	return NOERROR;
 	}
@@ -278,11 +297,22 @@ ALERROR CChooseAdventureSession::OnInit (CString *retsError)
 
 	m_iSelection = 0;
 
+	//	Set up a menu
+
+	TArray<CUIHelper::SMenuEntry> Menu;
+	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_SELECT_ALL;
+	pEntry->sLabel = CONSTLIT("Select all extensions");
+
+	pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_DESELECT_ALL;
+	pEntry->sLabel = CONSTLIT("Deselect all extensions");
+
 	//	Create the title
 
 	CUIHelper Helper(m_HI);
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("New Game"), CUIHelper::OPTION_SESSION_OK_BUTTON, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("New Game"), &Menu, CUIHelper::OPTION_SESSION_OK_BUTTON, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	//	Create a scroller to hold all the settings
@@ -405,6 +435,12 @@ void CChooseAdventureSession::SetAdventureDesc (CExtension *pAdventure)
 	//	Set registered game text
 
 	SetAdventureStatus(pAdventure, m_yBottomSection);
+
+	//	If we have no extensions then disable the menu items
+
+	bool bDisable = (m_ExtensionList.GetCount() == 0);
+	SetPropertyBool(CMD_SELECT_ALL, PROP_ENABLED, !bDisable);
+	SetPropertyBool(CMD_DESELECT_ALL, PROP_ENABLED, !bDisable);
 	}
 
 void CChooseAdventureSession::SetAdventureStatus (CExtension *pAdventure, int yPos)

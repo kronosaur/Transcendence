@@ -127,7 +127,7 @@ void CSequencerEffect::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_iTimeCursor, sizeof(DWORD));
 	}
 
-void CSequencerEffect::OnUpdate (Metric rSecondsPerTick)
+void CSequencerEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //

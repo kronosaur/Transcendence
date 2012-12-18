@@ -129,11 +129,17 @@ void CreateGameStatsAnimation (const CGameStats &GameStats,
 			if (i != 0)
 				yLine += SubTitleFont.GetHeight();
 
-			CAniText::Create(strToLower(sSection.IsBlank() ? sDefaultSectionName : sSection),
+			CString sSectionTitle;
+			if (sSection.IsBlank())
+				sSectionTitle = strToUpper(sDefaultSectionName);
+			else
+				sSectionTitle = strToLower(sSection);
+
+			CAniText::Create(sSectionTitle,
 					CVector(0.0, yLine),
 					&SubTitleFont,
 					CG16bitFont::AlignCenter,
-					wTextFadeColor,
+					(sSection.IsBlank() ? wTextHighlightColor : wTextFadeColor),
 					&pText);
 			pAni->AddLine(pText);
 

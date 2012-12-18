@@ -197,8 +197,6 @@ class IHISession : public IHICommand, private IAniCommand
 		CReanimator m_Reanimator;
 	};
 
-inline bool IsRepeatingKey (DWORD dwKeyData) { return ((dwKeyData & 0x40000000) ? true : false); }
-
 //	Keyboard Tracker ----------------------------------------------------------
 
 class CKeyboardTracker

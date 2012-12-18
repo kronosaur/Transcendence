@@ -106,6 +106,7 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_bBasicInit(false),
 
 		m_bRegistered(false),
+		m_bResurrectMode(false),
 		m_iTick(1),
 		m_pAdventure(NULL),
 		m_pPOV(NULL),
@@ -710,7 +711,7 @@ void CUniverse::GenerateGameStats (CGameStats &Stats)
 		{
 		CExtension *pExtension = m_Design.GetExtension(i);
 
-		if (!pExtension->IsHidden())
+		if (!pExtension->IsHidden() && pExtension->GetType() != extLibrary)
 			{
 			CString sName = pExtension->GetName();
 

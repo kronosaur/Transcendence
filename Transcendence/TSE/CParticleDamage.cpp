@@ -369,7 +369,7 @@ void CParticleDamage::OnReadFromStream (SLoadCtx &Ctx)
 		m_pTarget = NULL;
 	}
 
-void CParticleDamage::OnUpdate (Metric rSecondsPerTick)
+void CParticleDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 //	OnUpdate
 //
@@ -385,20 +385,20 @@ void CParticleDamage::OnUpdate (Metric rSecondsPerTick)
 
 	//	Set up context block for particle array update
 
-	SEffectUpdateCtx Ctx;
-	Ctx.pSystem = GetSystem();
-	Ctx.pObj = this;
+	SEffectUpdateCtx EffectCtx;
+	EffectCtx.pSystem = GetSystem();
+	EffectCtx.pObj = this;
 
-	Ctx.pDamageDesc = m_pDesc;
-	Ctx.iTotalParticleCount = m_iParticleCount;
-	Ctx.iDamageBonus = m_iBonus;
-	Ctx.iCause = m_iCause;
-	Ctx.bAutomatedWeapon = IsAutomatedWeapon();
-	Ctx.Attacker = m_Source;
+	EffectCtx.pDamageDesc = m_pDesc;
+	EffectCtx.iTotalParticleCount = m_iParticleCount;
+	EffectCtx.iDamageBonus = m_iBonus;
+	EffectCtx.iCause = m_iCause;
+	EffectCtx.bAutomatedWeapon = IsAutomatedWeapon();
+	EffectCtx.Attacker = m_Source;
 
 	//	Update (includes doing damage)
 
-	m_Particles.Update(Ctx);
+	m_Particles.Update(EffectCtx);
 
 	//	If we're tracking, change velocity to follow target
 

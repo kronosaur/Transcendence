@@ -92,12 +92,29 @@
 			frequency=			"notrandom"
 			numberAppearing=	"1"
 			unknownType=		"&itUnknownHyperglyph;"
-			attributes=			"Alien; HereticStargate; HyperglyphRod; MinorItem"
+			attributes=			"Alien; HereticStargate; HyperglyphRod; MinorItem; NotForSale"
 
 			description=		"This hyperglyph rod is used to program stargates."
 			>
 
 		<Image imageID="&rsHereticItems;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Events>
+			<OnObjDestroyed>
+				(if (eq gSource aObjDestroyed)
+				
+					; If our object gets destroyed and we don't end up on the
+					; resulting wreck, then we create our own object.
+					
+					(if (or (not aWreckObj) (not (objGetItems aWreckObj "* +unid:&itStargateControlRod;")))
+						(block (theObj)
+							(setq theObj (sysCreateFlotsam &itStargateControlRod; (objGetPos gSource) &svIndependent;))
+							(objIncVel theObj (sysVectorPolarVelocity (random 0 359) 5))
+							)
+						)
+					)
+			</OnObjDestroyed>
+		</Events>
 	</ItemType>
 
 <!-- LEVEL XII ITEMS -->
@@ -111,7 +128,7 @@
 			mass=				"10000"
 			frequency=			"notrandom"
 			numberAppearing=	"1"
-			attributes=			"Alien; IocrymCyberneticTower"
+			attributes=			"Alien; IocrymCyberneticTower; NotForSale"
 
 			description=		"This massive and beautiful crystalline tower is clearly part of a larger structure."
 			>
@@ -130,7 +147,7 @@
 			mass=				"50"
 			frequency=			"notrandom"
 			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"Consumable; Info;"
+			attributes=			"Consumable; Info; NotForSale"
 
 			description=		"This cube contains an infiltrator virus that will disable Iocrym sentinels within 50 light-seconds."
 			>
@@ -186,7 +203,7 @@
 			value=				"15000"
 			mass=				"2000"
 			frequency=			"notrandom"
-			attributes=			"MajorItem; MRADExperiment"
+			attributes=			"MajorItem; MRADExperiment; NotForSale"
 
 			charges=			"6"
 
@@ -4128,10 +4145,11 @@
 										)
 									(setq gNeurohackVirusLeft gNeurohackVirusMax)
 									(setq gNeurohackResult Nil)
-									(setq gPrevScreen "NeurohackComplete")
 									
 									(neuConsumeCharge)
-									(scrShowScreen gScreen &dsNeurohack;)
+									(scrShowScreen gScreen &dsNeurohack; {
+										nextScreen: "NeurohackComplete"
+										})
 									)
 							</Action>
 						</Actions>
@@ -4598,12 +4616,11 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="24" />
-			<Port x="0"		y="-24" />
-			<Port x="24"	y="0" />
-			<Port x="-24"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Heretic Stargate -->

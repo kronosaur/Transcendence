@@ -661,12 +661,11 @@
 			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
 		</Devices>
 
-		<DockingPorts>
-			<Port x="0"		y="24" />
-			<Port x="0"		y="-24" />
-			<Port x="24"	y="0" />
-			<Port x="-24"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 	

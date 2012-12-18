@@ -73,6 +73,7 @@
 	<!ENTITY stStargateBeacon			"0x0000200A">
 	<!ENTITY stMinedOre					"0x0000200B">
 	<!ENTITY stLogBuoy					"0x0000200C">
+	<!ENTITY stFlotsam					"0x0000200E">
 
 	<!ENTITY stO-TypeStar				"0x00002100">
 	<!ENTITY stA-TypeStar				"0x00002101">
@@ -1702,8 +1703,8 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x01000808"
-		minVersion=						"0x01000808"
+		version=						"0x0100080C"
+		minVersion=						"0x0100080C"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -1904,6 +1905,7 @@
 			
 		<Module filename="HUD.xml"/>
 		<Module filename="RPGCode.xml"/>
+		<Module filename="RPGCompatibility.xml"/>
 		<Module filename="RPGDockScreens.xml"/>
 		<Module filename="RPGMissions.xml"/>
 		<Module filename="RPGPlayer.xml"/>
@@ -1920,6 +1922,7 @@
 			>
 		
 		<Module filename="Mining.xml"/>
+		<Module filename="Neurohack.xml"/>
 		<Module filename="Stargates.xml"/>
 		<Module filename="StarSystems.xml"/>
 		<Module filename="UniverseEffects.xml"/>
@@ -1935,6 +1938,7 @@
 			
 		<Library unid="&unidUniverseLibrary;"/>
 		
+		<Module filename="HSCompatibility.xml"/>
 		<Module filename="HumanSpaceMap.xml"/>
 		
 		<!-- These modules implement specific system. We need to make these more

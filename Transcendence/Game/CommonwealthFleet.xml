@@ -1152,33 +1152,25 @@
 
 						; Code to initiate mission
 						(lambda Nil
-							(block (ship)
-								; create the transport
-								(setq ship (sysCreateShip &scPolar; gStart &svAres;))
-								(shpOrderDock ship gEnd)
-								(shpOrderGate ship)
+							(block (ship ETA)
 
-								; create the escorts
-								(for i 1 5
-									(block (escort)
-										(setq escort (sysCreateShip &scSandstorm; gStart &svAres;))
-										(shpOrderEscort escort ship)
+								; Remember the start point and the end station
+								(objSetObjRefData gSource "StartGate" gStart)
+								(objSetObjRefData gSource "EndObj" gEnd)
+								(objSetObjRefData gSource "Target" Nil)
+
+								; Create a timer for the creation of the freighter
+								(setq ETA 
+									(subtract 
+										(sysCalcTravelTime (objGetDistance gStart gSource) (shpGetMaxSpeed gPlayerShip))
+										(sysCalcTravelTime 100 (typGetDataField &scPolar; "maxSpeed"))
 										)
 									)
+								(sysAddObjTimerEvent ETA gSource "OnTimerFreighterAppears2A")
 
-								; Add some items to the transport
-								(objAddItem ship (itmCreate &itPteracniumOre; (random 10 30)))
-								(objAddRandomItems ship &trConsumables6; (random 1 4))
-								(objAddRandomItems ship &trMinorItem6; 1)
-
-								; register so we know when the main ship is destroyed
-								(objRegisterForEvents gSource ship)
-								(objSetObjRefData gSource "Target" ship)
-
-								; orders
+								; point the player to the stargate
 								(shpCancelOrders gPlayerShip)
-								(shpOrderAttack gPlayerShip ship)
-								(objSetIdentified ship)
+								(shpOrderDock gPlayerShip gStart)
 								(objRegisterForEvents gSource gPlayerShip)
 								)
 							)
@@ -2757,6 +2749,40 @@
 					(objSetIdentified (objGetObjRefData gSource "Target0"))
 					)
 			</OnTimerConvoyAppears4B>
+
+			<OnTimerFreighterAppears2A>
+				(block (ship startGate targetStation)
+					(setq startGate (objGetObjRefData gSource "StartGate"))
+					(setq targetStation (objGetObjRefData gSource "EndObj"))
+
+					; create the transport
+					(setq ship (sysCreateShip &scPolar; startGate &svAres;))
+					(shpOrderDock ship targetStation)
+					(shpOrderGate ship)
+
+					; create the escorts
+					(for i 1 5
+						(block (escort)
+							(setq escort (sysCreateShip &scSandstorm; startGate &svAres;))
+							(shpOrderEscort escort ship)
+							)
+						)
+
+					; Add some items to the transport
+					(objAddItem ship (itmCreate &itPteracniumOre; (random 10 30)))
+					(objAddRandomItems ship &trConsumables6; (random 1 4))
+					(objAddRandomItems ship &trMinorItem6; 1)
+
+					; register so we know when the main ship is destroyed
+					(objRegisterForEvents gSource ship)
+					(objSetObjRefData gSource "Target" ship)
+
+					; orders
+					(shpCancelOrders gPlayerShip)
+					(shpOrderAttack gPlayerShip ship)
+					(objSetIdentified ship)
+					)
+			</OnTimerFreighterAppears2A>
 
 			<OnTimerFreighterAppears2B>
 				(block (variant)

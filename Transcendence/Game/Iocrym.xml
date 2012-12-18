@@ -263,7 +263,7 @@
 			value=				"400000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Alien; EnergyWeapon; Military; MajorItem; NotForSale"
+			attributes=			"Alien; Military; MajorItem; NotForSale"
 			unknownType=		"&itUnknownAlienDevice10;"
 
 			description=		"This is a plasma weapon used by the Iocrym gunships."
@@ -331,7 +331,7 @@
 			value=				"400000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Alien; EnergyWeapon; Military; MajorItem; NotForSale"
+			attributes=			"Alien; Military; MajorItem; NotForSale"
 			unknownType=		"&itUnknownAlienDevice10;"
 
 			description=		"This is a short-range weapon used by Iocrym commandships to defend their perimeter."

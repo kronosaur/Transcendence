@@ -37,6 +37,20 @@
 					theList
 					)
 			</GetGlobalAchievements>
+
+			<OnGlobalUniverseLoad>
+				; If we're loading because of a resurrect, repair the ship
+
+				(if (eq aReason 'resurrect)
+					(block Nil
+						; Put the player in a safe place and repair the ship
+						(rpgRestorePlayer)
+
+						; Tell the player about the resurrection
+						(plyMessage gPlayer "You wake up somewhere else in an identical body...")
+						)
+					)
+			</OnGlobalUniverseLoad>
 		</Events>
 	</Sovereign>
 

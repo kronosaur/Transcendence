@@ -77,8 +77,8 @@
 
 //	Debugging help
 
-#define DEBUG_AI_TRY			try {
-#define DEBUG_AI_CATCH		} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
+#define DEBUG_TRY			try {
+#define DEBUG_CATCH			} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
 
 //	If ITEM_REFERENCE is defined, then the player doesn't see the
 //	stats for an item until they install it (or get reference info)
@@ -937,6 +937,7 @@ class CSystem : public CObject
 									  CSystemCreateStats *pStats = NULL);
 		virtual ~CSystem (void);
 
+		ALERROR CreateFlotsam (const CItem &Item, const CVector &vPos, const CVector &vVel, CSovereign *pSovereign, CStation **retpFlotsam);
 		ALERROR CreateMarker (CXMLElement *pDesc, const COrbit &oOrbit, CMarker **retpObj);
 		ALERROR CreateParticles (CXMLElement *pDesc, const COrbit &oOrbit, CParticleEffect **retpObj);
 		ALERROR CreateRandomEncounter (IShipGenerator *pTable, 
@@ -1477,7 +1478,7 @@ class CDockingPorts
 		~CDockingPorts (void);
 
 		void DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj);
-		int FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, CVector *retvDistance = NULL);
+		int FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, CVector *retvDistance = NULL, int *retiEmptyPortCount = NULL);
 		int FindRandomEmptyPort (CSpaceObject *pOwner);
 		inline int GetPortCount (CSpaceObject *pOwner) { return m_iPortCount; }
 		inline CSpaceObject *GetPortObj (CSpaceObject *pOwner, int iPort) { return m_pPort[iPort].pObj; }
@@ -1493,9 +1494,9 @@ class CDockingPorts
 		void OnObjDestroyed (CSpaceObject *pOwner, CSpaceObject *pObj, bool *retbDestroyed = NULL);
 		void ReadFromStream (CSpaceObject *pOwner, SLoadCtx &Ctx);
 		void RepairAll (CSpaceObject *pOwner, int iRepairRate);
-		bool RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj);
+		bool RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj, int iPort = -1);
 		void Undock (CSpaceObject *pOwner, CSpaceObject *pObj);
-		void UpdateAll (CSpaceObject *pOwner);
+		void UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner);
 		void WriteToStream (CSpaceObject *pOwner, IWriteStream *pStream);
 
 	private:
@@ -1517,9 +1518,11 @@ class CDockingPorts
 		bool IsDocked (CSpaceObject *pObj);
 		bool IsDockedOrDocking (CSpaceObject *pObj);
 		bool ShipsNearPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, const CVector &vPortPos);
+		void UpdateDockingManeuvers (CSpaceObject *pOwner, DockingPort &Port);
 
 		int m_iPortCount;						//	Number of docking ports
 		DockingPort *m_pPort;					//	Array of docking ports
+		int m_iMaxDist;							//	Max distance for docking (in light-seconds)
 	};
 
 //	Attack Detector
@@ -1899,7 +1902,7 @@ class CSpaceObject : public CObject
 		void Accelerate (const CVector &vPush, Metric rSeconds);
 		void AccelerateStop (Metric rPush, Metric rSeconds);
 		void AddEffect (IEffectPainter *pPainter, const CVector &vPos, int iTick = 0, int iRotation = 0);
-		inline void AddEventSubscriber (CSpaceObject *pObj) { m_SubscribedObjs.Add(pObj); }
+		void AddEventSubscriber (CSpaceObject *pObj);
 		ALERROR AddToSystem (CSystem *pSystem);
 		inline bool Blocks (CSpaceObject *pObj) { return (m_fIsBarrier && CanBlock(pObj)); }
 		inline bool BlocksShips (void) { return (m_fIsBarrier && CanBlockShips()); }
@@ -2082,6 +2085,7 @@ class CSpaceObject : public CObject
 			OnPaint(Dest, x, y, Ctx);
 			ClearPaintNeeded();
 			}
+		inline void PaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { OnPaintSRSEnhancements(Dest, Ctx); }
 		inline void Place (const CVector &vPos, const CVector &vVel = NullVector) { m_vPos = vPos; m_vOldPos = vPos; m_vVel = vVel; }
 		inline bool PosInBox (const CVector &vUR, const CVector &vLL) const
 			{ return (vUR.GetX() > m_vPos.GetX()) 
@@ -2128,8 +2132,9 @@ class CSpaceObject : public CObject
 		inline void StopTime (void) { m_fTimeStop = true; }
 		inline bool SupportsDocking (void) { return (GetDefaultDockScreen() != NULL && GetDockingPortCount() > 0); }
 		inline void UnfreezeControls (void) { m_iControlsFrozen--; }
-		void Update (void);
+		void Update (SUpdateCtx &Ctx);
 		inline void UpdateExtended (const CTimeSpan &ExtraTime) { OnUpdateExtended(ExtraTime); }
+		inline void UpdatePlayer (SUpdateCtx &Ctx) { OnUpdatePlayer(Ctx); }
 		void WriteToStream (IWriteStream *pStream);
 		inline void WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream) { GetSystem()->WriteObjRefToStream(pObj, pStream, this); }
 
@@ -2200,6 +2205,7 @@ class CSpaceObject : public CObject
 		virtual CString GetObjClassName (void) { return CONSTLIT("unknown"); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return CSystem::layerStations; }
 		virtual Metric GetParallaxDist (void) { return 0.0; }
+		virtual EDamageResults GetPassthroughDefault (void) { return damageNoDamage; }
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual ScaleTypes GetScale (void) const { return scaleFlotsam; }
 		virtual CSovereign *GetSovereign (void) const { return NULL; }
@@ -2208,6 +2214,7 @@ class CSpaceObject : public CObject
 		virtual bool HasAttribute (const CString &sAttribute) const { return false; }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
 		virtual bool IsBackgroundObj (void) { return false; }
+		virtual bool IsExplored (void) { return true; }
 		virtual bool IsKnown (void) { return true; }
 		virtual bool IsMarker (void) { return false; }
 		virtual bool IsVirtual (void) const { return false; }
@@ -2222,6 +2229,7 @@ class CSpaceObject : public CObject
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos) { return PointInObject(vObjPos, vPointPos); }
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx) { }
 		virtual bool SetAbility (Abilities iAbility, AbilityModifications iModification, int iDuration, DWORD dwOptions) { return false; }
+		virtual void SetExplored (bool bExplored = true) { }
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { }
 		virtual void SetKnown (bool bKnown = true) { }
 		virtual void SetName (const CString &sName, DWORD dwFlags = 0) { }
@@ -2248,6 +2256,7 @@ class CSpaceObject : public CObject
 		virtual DamageTypes GetDamageType (void) { return damageGeneric; }
 		virtual CEconomyType *GetDefaultEconomy (void);
 		virtual DWORD GetDefaultEconomyUNID (void) { return DEFAULT_ECONOMY_UNID; }
+		virtual CSpaceObject *GetDestination (void) const { return NULL; }
 		virtual CInstalledDevice *GetDevice (int iDev) const { return NULL; }
 		virtual int GetDeviceCount (void) const { return 0; }
 		virtual CSpaceObject *GetDockedObj (void) { return NULL; }
@@ -2324,10 +2333,10 @@ class CSpaceObject : public CObject
 		//	...for objects with docking ports
 		virtual DWORD GetDefaultBkgnd (void) { return 0; }
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL) { return NULL; }
-		virtual CVector GetNearestDockVector (CSpaceObject *pRequestingObj) { return CVector(g_InfiniteDistance, g_InfiniteDistance); }
+		virtual int GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort = NULL) { return -1; }
 		virtual CXMLElement *GetScreen (const CString &sName);
 		virtual void PlaceAtRandomDockPort (CSpaceObject *pObj) { }
-		virtual bool RequestDock (CSpaceObject *pObj) { return false; }
+		virtual bool RequestDock (CSpaceObject *pObj, int iPort = -1) { return false; }
 		virtual void Undock (CSpaceObject *pObj) { }
 
 		//	...for beams, missiles, etc.
@@ -2392,9 +2401,11 @@ class CSpaceObject : public CObject
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds) { }
 		virtual void OnObjDestroyedNotify (SDestroyCtx &Ctx) { FireOnObjDestroyed(Ctx); }
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { }
-		virtual void OnUpdate (Metric rSecondsPerTick) { }
+		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick) { }
 		virtual void OnUpdateExtended (const CTimeSpan &ExtraTime) { }
+		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) { }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
+		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { }
 		virtual void OnReadFromStream (SLoadCtx &Ctx) { }
 		virtual void OnWriteToStream (IWriteStream *pStream) { }
 		virtual bool OrientationChanged (void) { return false; }
@@ -2717,6 +2728,7 @@ class CUniverse : public CObject
 		DWORD GetSoundUNID (int iChannel);
 		inline bool InDebugMode (void) { return m_bDebugMode; }
 		inline void InitEntityResolver (CExtension *pExtension, CEntityResolverList *retResolver) { m_Extensions.InitEntityResolver(pExtension, (InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retResolver); }
+		inline bool InResurrectMode (void) { return m_bResurrectMode; }
 		bool IsGlobalResurrectPending (CDesignType **retpType);
 		inline bool IsRegistered (void) { return m_bRegistered; }
 		bool IsStatsPostingEnabled (void);
@@ -2737,6 +2749,7 @@ class CUniverse : public CObject
 		void SetPlayer (CSpaceObject *pPlayer);
 		inline void SetRegistered (bool bRegistered = true) { m_bRegistered = bRegistered; }
 		inline void SetRegisteredExtensions (const CMultiverseCollection &Catalog, TArray<CMultiverseCatalogEntry *> *retNotFound) { m_Extensions.SetRegisteredExtensions(Catalog, retNotFound); }
+		inline void SetResurrectMode (bool bResurrect = true) { m_bResurrectMode = bResurrect; }
 		inline void SetSound (bool bSound = true) { m_bNoSound = !bSound; }
 		inline void SetSoundMgr (CSoundMgr *pSoundMgr) { m_pSoundMgr = pSoundMgr; }
 		void StartGameTime (void);
@@ -2864,6 +2877,7 @@ class CUniverse : public CObject
 		//	Game instance data
 
 		bool m_bRegistered;						//	If TRUE, this is a registered game
+		bool m_bResurrectMode;					//	If TRUE, this session is a game resurrect
 		int m_iTick;							//	Ticks since beginning of time
 		CGameTimeKeeper m_Time;					//	Game time tracker
 		CAdventureDesc *m_pAdventure;			//	Current adventure

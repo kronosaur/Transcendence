@@ -625,6 +625,13 @@
 			>
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<00182001_Donation>
+				;			attd	rel		text
+				'(Nil		0		50		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
+			</00182001_Donation>
+		</StaticData>
 	</ItemType>
 
 	<!-- itHydrogenGas -->
@@ -1345,6 +1352,23 @@
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<00182001_Donation>
+				;				attd	rel
+				(list	Nil		0		0
+
+				;	text
+					(random (list
+						"We thank you for your donation, but we prefer the version in which Han shoots first."
+						"We thank you for your donation; these space operas should not distract you from your real mission."
+						"We thank you for your good intentions, but these works of fiction cannot help us."
+						"We thank you for your good intentions, but a tale about a quasi-religious order following a mysterious all-powerful force has no relevance to our mission."
+						"We thank you for your good intentions; may Domina be with you. Always."
+						))
+					)
+			</00182001_Donation>
+		</StaticData>
 	</ItemType>
 
 <!-- TTTTT -->

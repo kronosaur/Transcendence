@@ -52,6 +52,7 @@ static char *FEEDBACK[] =
 	"Darksider",
 	"Darth Saber",
 	"DarthGeek",
+	"Charles Davis",
 	"Demanther",
 	"dkedr",	//	d.kedrinski
 	"Drako Slyith",
@@ -92,6 +93,7 @@ static char *FEEDBACK[] =
 	"Eric James",
 	"jimj316",
 
+	"Wayne Ka'auamo",
 	"Kamikaze",
 	"Hatsuya Kanzaki",
 	"Karl",

@@ -7,21 +7,21 @@
 
 const Metric ATTACK_RANGE =				(20.0 * LIGHT_SECOND);
 const Metric CLOSE_RANGE =				(50.0 * LIGHT_SECOND);
-const Metric DEFAULT_DIST_CHECK =		(700.0 * g_KlicksPerPixel);
-const Metric DOCKING_APPROACH_DISTANCE = (200.0 * g_KlicksPerPixel);
+const Metric DEFAULT_DIST_CHECK =		(700.0 * KLICKS_PER_PIXEL);
+const Metric DOCKING_APPROACH_DISTANCE = (200.0 * KLICKS_PER_PIXEL);
 const Metric ESCORT_DISTANCE =			(6.0 * LIGHT_SECOND);
 const Metric HIT_NAV_POINT_DIST =		(8.0 * LIGHT_SECOND);
-const Metric MAX_DELTA =				(2.0 * g_KlicksPerPixel);
+const Metric MAX_DELTA =				(2.0 * KLICKS_PER_PIXEL);
 const Metric MAX_DELTA_VEL =			(g_KlicksPerPixel / 2.0);
-const Metric MAX_DISTANCE =				(400 * g_KlicksPerPixel);
+const Metric MAX_DISTANCE =				(400 * KLICKS_PER_PIXEL);
 const Metric MAX_DOCK_DISTANCE =		(15.0 * LIGHT_SECOND);
 const Metric MAX_ESCORT_DISTANCE =		(12.0 * LIGHT_SECOND);
-const Metric MAX_GATE_DISTANCE =		(32.0 * g_KlicksPerPixel);
-const Metric MAX_IN_FORMATION_DELTA	=	(2.0 * g_KlicksPerPixel);
+const Metric MAX_GATE_DISTANCE =		(32.0 * KLICKS_PER_PIXEL);
+const Metric MAX_IN_FORMATION_DELTA	=	(2.0 * KLICKS_PER_PIXEL);
 const Metric MAX_TARGET_OF_OPPORTUNITY_RANGE = (20.0 * LIGHT_SECOND);
 const int MAX_TARGETS =					10;
-const Metric MIN_FLYBY_SPEED =			(2.0 * g_KlicksPerPixel);
-const Metric MIN_POTENTIAL2 =			(g_KlicksPerPixel * g_KlicksPerPixel * 25.0);
+const Metric MIN_FLYBY_SPEED =			(2.0 * KLICKS_PER_PIXEL);
+const Metric MIN_POTENTIAL2 =			(KLICKS_PER_PIXEL* KLICKS_PER_PIXEL * 25.0);
 const Metric MIN_STATION_TARGET_DIST =	(10.0 * LIGHT_SECOND);
 const Metric MIN_TARGET_DIST =			(5.0 * LIGHT_SECOND);
 
@@ -248,7 +248,7 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 //	should only be used while in a state that does not need m_pTarget.
 
 	{
-	DEBUG_AI_TRY
+	DEBUG_TRY
 
 	if (pShip->IsDestinyTime(19))
 		(*iopTarget) = pShip->GetNearestVisibleEnemy(rMaxRange, false, pExcludeObj);
@@ -274,7 +274,7 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 			(*iopTarget) = NULL;
 		}
 
-	DEBUG_AI_CATCH
+	DEBUG_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementAttackTarget (CShip *pShip, CSpaceObject *pTarget, bool bMaintainCourse, bool bDoNotShoot)
@@ -846,7 +846,7 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 //	Attacks any targets in the area with secondary weapons
 
 	{
-	DEBUG_AI_TRY
+	DEBUG_TRY
 
 	int i;
 
@@ -864,7 +864,7 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 			}
 		}
 
-	DEBUG_AI_CATCH
+	DEBUG_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementFireWeapon (CShip *pShip, DeviceNames iDev)
@@ -1443,7 +1443,7 @@ void CAIBehaviorCtx::ImplementSpiralIn (CShip *pShip, const CVector &vTarget)
 //	Spiral in towards the target
 
 	{
-	DEBUG_AI_TRY
+	DEBUG_TRY
 
 	//	Curve inward
 
@@ -1454,7 +1454,7 @@ void CAIBehaviorCtx::ImplementSpiralIn (CShip *pShip, const CVector &vTarget)
 	int iDirectionToFace = VectorToPolar(vInterceptPoint, NULL);
 	ImplementManeuver(pShip, iDirectionToFace, true);
 
-	DEBUG_AI_CATCH
+	DEBUG_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, int iTrajectory)
@@ -1464,7 +1464,7 @@ void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, i
 //	Spiral out away from the target
 
 	{
-	DEBUG_AI_TRY
+	DEBUG_TRY
 
 	//	Curve out
 
@@ -1475,7 +1475,7 @@ void CAIBehaviorCtx::ImplementSpiralOut (CShip *pShip, const CVector &vTarget, i
 	int iDirectionToFace = VectorToPolar(vInterceptPoint, NULL);
 	ImplementManeuver(pShip, iDirectionToFace, true);
 
-	DEBUG_AI_CATCH
+	DEBUG_CATCH
 	}
 
 void CAIBehaviorCtx::ImplementStop (CShip *pShip)

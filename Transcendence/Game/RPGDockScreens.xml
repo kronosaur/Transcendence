@@ -238,6 +238,11 @@
 	This screen allows the player to loot items from the object that we're 
 	docked with.
 
+	gData uses the following fields:
+
+	nextScreen:			If specified, we navigate to the given screen when we're
+						done. This may also be a list consisting of a screen and
+						a pane.
 -->
 
 	<DockScreen UNID="&dsRPGLoot;"
@@ -307,7 +312,13 @@
 					</Action>
 
 					<Action name="Done" cancel="1" key="D">
-                        (scrExitScreen gScreen)
+						(block Nil
+							(scrExitScreen gScreen)
+
+							(if (@ gData 'nextScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
 					</Action>
 
 				</Actions>

@@ -886,7 +886,7 @@ void CStandardShipAI::OnBehavior (void)
 
 			if (m_pShip->IsDestinyTime(30))
 				{
-				DEBUG_AI_TRY
+				DEBUG_TRY
 				
 				CSpaceObject *pPrincipal = GetCurrentOrderTarget();
 				CSpaceObject *pTarget = CalcEnemyShipInRange(pPrincipal, PATROL_SENSOR_RANGE, m_pDest);
@@ -898,7 +898,7 @@ void CStandardShipAI::OnBehavior (void)
 					DEBUG_COMBAT_OUTPUT("Patrol: Attack target");
 					}
 
-				DEBUG_AI_CATCH
+				DEBUG_CATCH
 				}
 
 			break;
@@ -2381,7 +2381,7 @@ bool EnemyStationsAtBearing (CSpaceObject *pShip, int iBearing, Metric rRange)
 //	any enemies within an rRange radius of that point, we return TRUE.
 
 	{
-	DEBUG_AI_TRY
+	DEBUG_TRY
 
 	int i;
 
@@ -2415,7 +2415,7 @@ bool EnemyStationsAtBearing (CSpaceObject *pShip, int iBearing, Metric rRange)
 			}
 		}
 
-	DEBUG_AI_CATCH
+	DEBUG_CATCH
 
 	return false;
 	}

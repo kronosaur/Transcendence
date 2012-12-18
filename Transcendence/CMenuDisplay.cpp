@@ -50,6 +50,29 @@ void CMenuDisplay::ComputeMenuRect (RECT *retrcRect)
 	retrcRect->bottom = retrcRect->top + cyHeight;
 	}
 
+CString CMenuDisplay::GetHotKeyFromOrdinal (int iOrdinal, char chKeyToExclude)
+
+//	GetHotKeyFromOrdinal
+//
+//	Returns a hot key
+
+	{
+	char chChar;
+
+	int iExcludeOrdinal = (chKeyToExclude == '\0' ? 1000 : (chKeyToExclude - 'A') + 9);
+
+	if (iOrdinal >= 0 && iOrdinal <= 8)
+		chChar = '1' + iOrdinal;
+	else if (iOrdinal >= 9 && iOrdinal < iExcludeOrdinal)
+		chChar = 'A' + (iOrdinal - 9);
+	else if (iOrdinal >= iExcludeOrdinal)
+		chChar = chKeyToExclude + 1 + iOrdinal - iExcludeOrdinal;
+	else
+		return NULL_STR;
+
+	return CString(&chChar, 1);
+	}
+
 ALERROR CMenuDisplay::Init (CMenuData *pMenu, const RECT &rcRect)
 
 //	Init

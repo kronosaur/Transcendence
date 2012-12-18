@@ -113,6 +113,7 @@ const DWORD g_PirateSovereignUNID =			0x00001005;	//	svPirates
 const DWORD DEFAULT_ECONOMY_UNID =			0x00001017;	//	ecCreditEconomy
 
 const DWORD g_ShipWreckUNID =				0x00002001;	//	stShipwreck
+const DWORD FLOTSAM_UNID =					0x0000200E;	//	stFlotsam
 
 const DWORD PLAYER_EI500_FREIGHTER_UNID =	0x00003802;	//	scEI100XPlayer
 

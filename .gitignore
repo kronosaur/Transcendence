@@ -10,11 +10,13 @@
 *.lib
 !IntelJPEGUtil/ijl15l.lib
 *.lastbuildstate
+*.lastcodeanalysissucceeded
 *.log
 *.map
 *.ncb
 *.obj
 *.old
+*.opensdf
 *.opt
 *.pch
 *.pdb
@@ -32,6 +34,9 @@
 Alchemy/ALConsole
 Alchemy/ALGUI
 Alchemy/Aristotle
+Alchemy/CodeChain/Debug/*
+Alchemy/Graphics/Debug/*
+Alchemy/Kernel/Debug/*
 Alchemy/TerraFirma
 BackupExclude.txt
 BuildLog.htm
@@ -47,9 +52,11 @@ copyToUSB.bat
 DirectXBench/*
 DirectXFont/Debug/*
 DirectXFont/Release/*
+DirectXUtil/Debug/*
 Grail/*
 HI/*
 HIUtil/*
+IntelJPEGUtil/Debug/*
 JPEGUtil/*
 LL1/*
 MazianToChamberlain.bat
@@ -89,9 +96,12 @@ Transcendence/TransExplorer/Debug/*
 Transcendence/TransExplorer/Release/*
 Transcendence/TransSaver/Debug/*
 Transcendence/TransSaver/Release/*
+Transcendence/TSE/Debug/*
+Transcendence/TSUI/Debug/*
 Transcendence/TSUI/CHexarcService.cpp
 Transcendence/UpgradeLog.XML
 Transcendence/Worklist.txt
 Transcendence/Worklist (Completed).txt
 Transcendence/_UpgradeReport_Files/*
 WikiData/*
+XMLUtil/Debug/*

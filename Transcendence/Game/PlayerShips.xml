@@ -157,7 +157,7 @@
 			maneuver=			"2"
 			maxSpeed=			"25"
 
-			maxArmor=			"10000"
+			maxArmor=			"12000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"

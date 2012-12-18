@@ -17,6 +17,8 @@
 #define REGISTRY_MUSIC_OPTION					CONSTLIT("Music")
 #define REGISTRY_SOUND_VOLUME_OPTION			CONSTLIT("SoundVolume")
 
+#define OPTION_FLAG_HEX							0x00000001
+
 enum OptionTypes
 	{
 	optionBoolean,
@@ -41,30 +43,41 @@ struct SCommandLineData
 
 SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 	{
+		//	Game play options
+
+		{	"playerName",				optionString,	"",			0	},
+		{	"playerGenome",				optionString,	"",			0	},
+		{	"playerShipClass",			optionInteger,	"0",		OPTION_FLAG_HEX	},
+
+		{	"dockPortIndicator",		optionString,	"enabled",	0	},
+		{	"invokeLetterHotKeys",		optionBoolean,	"false",	0	},
+		{	"noAutoSave",				optionBoolean,	"false",	0	},
+
 		//	Extension options
-		{	"useTDB",				optionBoolean,	"false",	0	},
+		{	"useTDB",					optionBoolean,	"false",	0	},
 
 		//	Video options
-		{	"forceDirectX",			optionBoolean,	"false",	0	},
-		{	"forceNonDirectX",		optionBoolean,	"false",	0	},
-		{	"forceExclusive",		optionBoolean,	"false",	0	},
-		{	"forceNonExclusive",	optionBoolean,	"false",	0	},
-		{	"windowedMode",			optionBoolean,	"false",	0	},
-		{	"useBackgroundBlt",		optionBoolean,	"true",		0	},
-		{	"force1024",			optionBoolean,	"false",	0	},
+		{	"forceDirectX",				optionBoolean,	"false",	0	},
+		{	"forceNonDirectX",			optionBoolean,	"false",	0	},
+		{	"forceExclusive",			optionBoolean,	"false",	0	},
+		{	"forceNonExclusive",		optionBoolean,	"false",	0	},
+		{	"windowedMode",				optionBoolean,	"false",	0	},
+		{	"useBackgroundBlt",			optionBoolean,	"true",		0	},
+		{	"force1024",				optionBoolean,	"false",	0	},
+		{	"force600",					optionBoolean,	"false",	0	},
 
 		//	Sounds options
-		{	"noSound",				optionBoolean,	"false",	0	},
-		{	"noMusic",				optionBoolean,	"false",	0	},
-		{	"soundVolume",			optionInteger,	"7",		0	},
-		{	"musicPath",			optionString,	"",			0	},
+		{	"noSound",					optionBoolean,	"false",	0	},
+		{	"noMusic",					optionBoolean,	"false",	0	},
+		{	"soundVolume",				optionInteger,	"7",		0	},
+		{	"musicPath",				optionString,	"",			0	},
 
 		//	Debug options
-		{	"debugMode",			optionBoolean,	"false",	0	},
-		{	"debugGame",			optionBoolean,	"false",	0	},
-		{	"noDebugLog",			optionBoolean,	"false",	0	},
-		{	"debugVideo",			optionBoolean,	"false",	0	},
-		{	"noCrashPost",			optionBoolean,	"false",	0	},
+		{	"debugMode",				optionBoolean,	"false",	0	},
+		{	"debugGame",				optionBoolean,	"false",	0	},
+		{	"noDebugLog",				optionBoolean,	"false",	0	},
+		{	"debugVideo",				optionBoolean,	"false",	0	},
+		{	"noCrashPost",				optionBoolean,	"false",	0	},
 	};
 
 SCommandLineData g_CommandLineData[] =
@@ -76,6 +89,7 @@ SCommandLineData g_CommandLineData[] =
 		{	"nonExclusive",			CGameSettings::forceNonExclusive,	0 },
 		{	"windowed",				CGameSettings::windowedMode,		0 },
 		{	"1024",					CGameSettings::force1024Res,		0 },
+		{	"600",					CGameSettings::force600Res,			0 },
 		{	"nosound",				CGameSettings::noSound,				0 },
 		{	"debug",				CGameSettings::debugMode,			0 },
 		{	"debug",				CGameSettings::debugGame,			0 },
@@ -285,7 +299,7 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 
 		sData = strPatternSubst(CONSTLIT("\t<Option name=\"%s\"\tvalue=\"%s\"/>\r\n"),
 				CString(g_OptionData[i].pszName, -1, true),
-				m_Options[i].sSettingsValue);
+				strToXMLText(m_Options[i].sSettingsValue));
 
 		if (error = DataFile.Write(sData.GetPointer(), sData.GetLength(), NULL))
 			return error;
@@ -390,7 +404,28 @@ void CGameSettings::SetValueInteger (int iOption, int iValue, bool bSetSettings)
 	m_Options[iOption].iValue = iValue;
 
 	if (bSetSettings)
-		m_Options[iOption].sSettingsValue = strFromInt(iValue);
+		{
+		if (g_OptionData[iOption].dwFlags & OPTION_FLAG_HEX)
+			m_Options[iOption].sSettingsValue = strPatternSubst("0x%08x", iValue);
+		else
+			m_Options[iOption].sSettingsValue = strFromInt(iValue);
+		}
+	}
+
+void CGameSettings::SetValueString (int iOption, const CString &sValue, bool bSetSettings)
+
+//	SetValueInteger
+//
+//	Sets an integer value
+
+	{
+	if (g_OptionData[iOption].iType != optionString)
+		return;
+
+	m_Options[iOption].sValue = sValue;
+
+	if (bSetSettings)
+		m_Options[iOption].sSettingsValue = sValue;
 	}
 
 //	Utilities

@@ -335,6 +335,7 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_SYS_CREATE_SHIPWRECK			2
 #define FN_SYS_CREATE_ENCOUNTER			3
 #define FN_SYS_PLAY_SOUND				4
+#define FN_SYS_CREATE_FLOTSAM			5
 
 ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 
@@ -1785,6 +1786,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"sysCreateEncounter",			fnSystemCreate,		FN_SYS_CREATE_ENCOUNTER,
 			"(sysCreateEncounter unid) -> True/Nil",
 			"i",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"sysCreateFlotsam",			fnSystemCreate,		FN_SYS_CREATE_FLOTSAM,
+			"(sysCreateFlotsam item|unid pos sovereignID) -> obj",
+		//		pos is either a position vector or a gate object
+			"vvi",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateMarker",				fnSystemCreateMarker,	0,
 			"(sysCreateMarker name pos sovereignID) -> marker",
@@ -8269,6 +8275,36 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_SYS_CREATE_FLOTSAM:
+			{
+			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+			if (pSystem == NULL)
+				return StdErrorNoSystem(*pCC);
+
+			//	Get parameters
+
+			CItem Item = GetItemFromArg(*pCC, pArgs->GetElement(0));
+			if (Item.GetType() == NULL)
+				return pCC->CreateError(CONSTLIT("Unknown item type"), pArgs->GetElement(0));
+
+			CVector vPos;
+			GetPosOrObject(pEvalCtx, pArgs->GetElement(1), &vPos);
+
+			CSovereign *pSovereign = g_pUniverse->FindSovereign(pArgs->GetElement(2)->GetIntegerValue());
+			if (pSovereign == NULL)
+				return pCC->CreateError(CONSTLIT("Unknown sovereign type"), pArgs->GetElement(2));
+
+			//	Create
+
+			CStation *pFlotsam;
+			if (pSystem->CreateFlotsam(Item, vPos, CVector(), pSovereign, &pFlotsam) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Error creating flotsam"), pArgs->GetElement(0));
+
+			//	Done
+
+			return pCC->CreateInteger((int)pFlotsam);
+			}
+
 		case FN_SYS_CREATE_SHIPWRECK:
 			{
 			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
@@ -8279,7 +8315,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			CShipClass *pClass = g_pUniverse->FindShipClass(pArgs->GetElement(0)->GetIntegerValue());
 			if (pClass == NULL)
-				return pCC->CreateError(CONSTLIT("unknown ship class ID"), pArgs->GetElement(0));
+				return pCC->CreateError(CONSTLIT("Unknown ship class ID"), pArgs->GetElement(0));
 
 			CVector vPos;
 			GetPosOrObject(pEvalCtx, pArgs->GetElement(1), &vPos);

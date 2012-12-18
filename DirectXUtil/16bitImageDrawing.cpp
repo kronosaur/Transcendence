@@ -1028,6 +1028,46 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 			break;
 			}
 
+		case markerSmallCircle:
+			{
+			WORD wFade1 = BlendPixel(0, wColor, 192);
+			WORD wFade2 = BlendPixel(0, wColor, 128);
+
+			DrawPixel(x - 2, y, wColor);
+			DrawPixel(x + 2, y, wColor);
+			DrawPixel(x, y - 2, wColor);
+			DrawPixel(x, y + 2, wColor);
+
+			DrawPixel(x - 1, y - 1, wFade2);
+			DrawPixel(x - 1, y + 1, wFade2);
+			DrawPixel(x + 1, y - 1, wFade2);
+			DrawPixel(x + 1, y + 1, wFade2);
+
+			DrawPixel(x - 1, y - 2, wFade1);
+			DrawPixel(x + 1, y - 2, wFade1);
+			DrawPixel(x - 1, y + 2, wFade1);
+			DrawPixel(x + 1, y + 2, wFade1);
+			DrawPixel(x + 2, y - 1, wFade1);
+			DrawPixel(x + 2, y + 1, wFade1);
+			DrawPixel(x - 2, y - 1, wFade1);
+			DrawPixel(x - 2, y + 1, wFade1);
+			break;
+			}
+
+		case markerTinyCircle:
+			{
+			DrawPixel(x - 1, y, wColor);
+			DrawPixel(x - 1, y + 1, wColor);
+			DrawPixel(x + 2, y, wColor);
+			DrawPixel(x + 2, y + 1, wColor);
+
+			DrawPixel(x, y - 1, wColor);
+			DrawPixel(x, y + 2, wColor);
+			DrawPixel(x + 1, y - 1, wColor);
+			DrawPixel(x + 1, y + 2, wColor);
+			break;
+			}
+
 		case markerSmallSquare:
 			{
 			int yTop = y - SMALL_SQUARE_SIZE;

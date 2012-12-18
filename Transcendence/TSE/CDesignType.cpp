@@ -933,6 +933,10 @@ ALERROR CDesignType::FireOnGlobalUniverseLoad (const SEventHandlerDesc &Event)
 
 	{
 	CCodeChainCtx Ctx;
+	if (g_pUniverse->InResurrectMode())
+		Ctx.DefineString(CONSTLIT("aReason"), CONSTLIT("resurrect"));
+	else
+		Ctx.DefineNil(CONSTLIT("aReason"));
 
 	//	Run code
 

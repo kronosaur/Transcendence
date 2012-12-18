@@ -548,6 +548,28 @@ DWORD CGameKeys::GetKey (const CString &sKey) const
 	return INVALID_VIRT_KEY;
 	}
 
+char CGameKeys::GetKeyIfChar (Keys iCommand) const
+
+//	GetKeyIfChar
+//
+//	If the given command is bound to a character key, then return the character.
+//	Otherwise we return 0.
+
+	{
+	int i;
+
+	for (i = 0; i < 256; i++)
+		if (m_iMap[i] == iCommand)
+			{
+			if (i >= 'A' && i <= 'Z')
+				return (char)i;
+			else
+				return '\0';
+			}
+
+	return '\0';
+	}
+
 ALERROR CGameKeys::ReadFromXML (CXMLElement *pDesc)
 
 //	ReadFromXML

@@ -577,7 +577,6 @@
 
 		<DockScreens>
 			<Main>
-
 				<Panes>
 					<Default
 							desc=		"You are docked at the lifeless ruins of a destroyed station. A group of refugees, huddling in the cavernous bay, tell you that the station was destroyed by Xenophobes.">
@@ -1114,6 +1113,7 @@
 							; If our attack level is high, send out a warrior
 							(and (leq (random 6 40) (objGetData gSource "attackLevel"))
 									(setq theTarget (objGetObjRefData gSource "lastAttacker"))
+									(objMatches theTarget gSource "sTA")
 									(ls (objGetData gSource "totalWarriors") (divide (objGetData gSource "maxMiners") 3))
 									(ls (count (sysFindObject gSource "sH +ferianWarrior")) 3)
 									(leq (objGetDistance gSource theTarget) 150)
@@ -1782,7 +1782,6 @@
 			name=				"(Gaian processor)"
 			sovereign=			"&svIndependentTrader;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 
 			scale=				"ship"
 			mobile=				"true"
@@ -1820,6 +1819,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 <!-- Heliotropes ========================================================== -->
@@ -3668,7 +3672,6 @@
 			name=				"(outlaw convoy)"
 			sovereign=			"&svIndependentTrader;"
 			dockScreen=			"&dsAbandonedCrate;"
-			dockingPorts=		"4"
 
 			structuralHitPoints="20"
 			ejectaType=			"&vtWreckEjecta;"
@@ -3725,6 +3728,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 	<!-- Outlaw Base -->
@@ -4779,7 +4787,6 @@
 			name=				"(salvager)"
 			sovereign=			"&svIndependentTrader;"
 			dockScreen=			"&dsAbandonedShip;"
-			dockingPorts=		"4"
 
 			scale=				"ship"
 			mobile=				"true"
@@ -4817,6 +4824,11 @@
 			</OnDamage>
 		</Events>
 
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
 	</StationType>
 
 <!-- Sapiens ============================================================== -->
@@ -5149,8 +5161,13 @@
 									(switch
 										(ls roll 15)
 											(setq contents 1)	; 15% empty
+
 										(ls roll 45)
-											(setq contents 2)	; 30% random items
+											(block Nil			; 30% random items
+												(objAddRandomItems gSource &trCargoContainer; 1)
+												(setq contents 2)
+												)
+
 										(ls roll 55)
 											(setq contents 3)	; 10% acid
 										(ls roll 75)
@@ -5192,7 +5209,9 @@
 
 						<Actions>
 							<Action name="Loot" default="1" key="L">
-								(scrShowScreen gScreen &dsRPGLoot;)
+								(scrShowScreen gScreen &dsRPGLoot; {
+									nextScreen: "Main"
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -5219,8 +5238,6 @@
 					<Contents2>
 						<OnPaneInit>
 							(block (allItems itemCount)
-								(objAddRandomItems gSource &trCargoContainer; 1)
-
 								(setq allItems (objGetItems gSource "*"))
 								(setq itemCount (count allItems))
 								(switch
@@ -5235,7 +5252,9 @@
 
 						<Actions>
 							<Action name="Loot" default="1" key="L">
-								(scrShowScreen gScreen &dsRPGLoot;)
+								(scrShowScreen gScreen &dsRPGLoot; {
+									nextScreen: "Main"
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -5308,12 +5327,11 @@
 
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -5495,12 +5513,11 @@
 			</OnDamage>
 		</Events>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 		<Satellites>
 			<Orbitals count="1d4" distance="1d8+6" angle="random">
@@ -5567,12 +5584,11 @@
 			</OnDamage>
 		</Events>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 

@@ -11,6 +11,7 @@
 #include "TransData.h"
 
 #define ARMOR_TABLE_SWITCH					CONSTLIT("armortable")
+#define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
@@ -52,6 +53,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("\n");
 		printf("      [/count]              Number of runs per attacker.\n");
 		printf("      [/viewer]             Open viewer to watch the battle.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(CLEAR_REGISTERED_SWITCH))
+		{
+		printf("  /clearRegistered      Clears registered flag on game file.\n");
+		printf("       /gameFile:filename   Save file to clear.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
@@ -238,6 +244,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 	else
 		{
 		printf("  /attributelist        List of attributes used by types.\n");
+		if (bDebug)
+			printf("  /clearRegistered      Clears registered flag on game file.\n");
 		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
 		if (bDebug)
 			printf("  /itemsim              Simulation of items encountered.\n");

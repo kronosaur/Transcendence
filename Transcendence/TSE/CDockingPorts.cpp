@@ -4,27 +4,37 @@
 
 #include "PreComp.h"
 
-#define FINAL_DOCKING					(8.0 * g_KlicksPerPixel)
-#define FINAL_DOCKING2					(FINAL_DOCKING * FINAL_DOCKING)
+#define FINAL_DOCKING							(8.0 * g_KlicksPerPixel)
+#define FINAL_DOCKING2							(FINAL_DOCKING * FINAL_DOCKING)
 
-#define FINAL_APPROACH					(32.0 * g_KlicksPerPixel)
-#define FINAL_APPROACH2					(FINAL_APPROACH * FINAL_APPROACH)
+#define FINAL_APPROACH							(32.0 * g_KlicksPerPixel)
+#define FINAL_APPROACH2							(FINAL_APPROACH * FINAL_APPROACH)
 
-#define DOCKING_THRESHOLD				(4.0 * g_KlicksPerPixel)
-#define DOCKING_THRESHOLD2				(DOCKING_THRESHOLD * DOCKING_THRESHOLD)
+#define DOCKING_THRESHOLD						(4.0 * g_KlicksPerPixel)
+#define DOCKING_THRESHOLD2						(DOCKING_THRESHOLD * DOCKING_THRESHOLD)
 
-#define DOCKING_PORTS_TAG				CONSTLIT("DockingPorts")
-#define DOCKING_PORTS_ATTRIB			CONSTLIT("dockingPorts")
-#define X_ATTRIB						CONSTLIT("x")
-#define Y_ATTRIB						CONSTLIT("y")
-#define ROTATION_ATTRIB					CONSTLIT("rotation")
+#define DOCKING_PORTS_TAG						CONSTLIT("DockingPorts")
 
-#define MIN_PORT_DISTANCE				(8.0 * g_KlicksPerPixel)
-#define MIN_PORT_DISTANCE2				(MIN_PORT_DISTANCE * MIN_PORT_DISTANCE)
+#define DOCKING_PORTS_ATTRIB					CONSTLIT("dockingPorts")
+#define MAX_DIST_ATTRIB							CONSTLIT("maxDist")
+#define PORT_COUNT_ATTRIB						CONSTLIT("portCount")
+#define PORT_RADIUS_ATTRIB						CONSTLIT("portRadius")
+#define ROTATION_ATTRIB							CONSTLIT("rotation")
+#define X_ATTRIB								CONSTLIT("x")
+#define Y_ATTRIB								CONSTLIT("y")
+
+#define MIN_PORT_DISTANCE						(8.0 * g_KlicksPerPixel)
+#define MIN_PORT_DISTANCE2						(MIN_PORT_DISTANCE * MIN_PORT_DISTANCE)
+
+const int DEFAULT_PORT_POS_RADIUS =				64;
+const int DEFAULT_DOCK_DISTANCE_LS =			12;
+const Metric GATE_DIST =						KLICKS_PER_PIXEL * 64.0;
+const Metric GATE_DIST2 =						GATE_DIST * GATE_DIST;
 
 CDockingPorts::CDockingPorts (void) : 
 		m_iPortCount(0),
-		m_pPort(NULL)
+		m_pPort(NULL),
+		m_iMaxDist(DEFAULT_DOCK_DISTANCE_LS)
 
 //	CDockingPorts constructor
 
@@ -83,7 +93,7 @@ void CDockingPorts::DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj)
 		}
 	}
 
-int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, CVector *retvDistance)
+int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, CVector *retvDistance, int *retiEmptyPortCount)
 
 //	FindNearestEmptyPort
 //
@@ -91,6 +101,8 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 
 	{
 	int i;
+
+	int iEmptyPortCount = 0;
 
 	int iBestPort = -1;
 	Metric rBestDist2 = g_InfiniteDistance;
@@ -127,7 +139,14 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 				vBestDistance = vDistance;
 				iBestPort = i;
 				}
+
+			iEmptyPortCount++;
 			}
+
+	//	Return total number of empty ports
+
+	if (retiEmptyPortCount)
+		*retiEmptyPortCount = iEmptyPortCount;
 
 	//	If we've got a clear port, then return that
 
@@ -202,6 +221,8 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius)
 			m_pPort[i].iRotation = ((i * iAngle) + 180) % 360;
 			}
 		}
+
+	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
 	}
 
 void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
@@ -226,6 +247,8 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
 			m_pPort[i].iRotation = (VectorToPolar(pPos[i]) + 180) % 360;
 			}
 		}
+
+	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
 	}
 
 void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElement)
@@ -235,17 +258,25 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 //	InitPortsFromXML 
 
 	{
+	int i;
+
 	//	See if we've got a special element with docking port geometry
 
 	CXMLElement *pDockingPorts = pElement->GetContentElementByTag(DOCKING_PORTS_TAG);
 	if (pDockingPorts)
 		{
+		//	Initialize max dist
+
+		m_iMaxDist = pDockingPorts->GetAttributeIntegerBounded(MAX_DIST_ATTRIB, 1, -1, DEFAULT_DOCK_DISTANCE_LS);
+
+		//	If we have sub-elements then these are port definitions.
+
 		m_iPortCount = pDockingPorts->GetContentElementCount();
 		if (m_iPortCount > 0)
 			{
 			m_pPort = new DockingPort[m_iPortCount];
 
-			for (int i = 0; i < m_iPortCount; i++)
+			for (i = 0; i < m_iPortCount; i++)
 				{
 				CXMLElement *pPort = pDockingPorts->GetContentElement(i);
 				CVector vDockPos((pPort->GetAttributeInteger(X_ATTRIB) * g_KlicksPerPixel),
@@ -260,6 +291,33 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 				else
 					m_pPort[i].iRotation = (VectorToPolar(vDockPos) + 180) % 360;
 				}
+			}
+
+		//	Otherwise, we expect a port count and radius
+
+		else if ((m_iPortCount = pDockingPorts->GetAttributeIntegerBounded(PORT_COUNT_ATTRIB, 0, -1, 0)) > 0)
+			{
+			m_pPort = new DockingPort[m_iPortCount];
+			
+			int iRadius = pDockingPorts->GetAttributeIntegerBounded(PORT_RADIUS_ATTRIB, 0, -1, DEFAULT_PORT_POS_RADIUS);
+			Metric rRadius = g_KlicksPerPixel * iRadius;
+
+			int iAngle = 360 / m_iPortCount;
+			for (i = 0; i < m_iPortCount; i++)
+				{
+				m_pPort[i].iStatus = psEmpty;
+				m_pPort[i].pObj = NULL;
+				m_pPort[i].vPos = PolarToVector(i * iAngle, rRadius);
+				m_pPort[i].iRotation = ((i * iAngle) + 180) % 360;
+				}
+			}
+
+		//	Otherwise, no ports
+
+		else
+			{
+			m_iPortCount = 0;
+			m_pPort = NULL;
 			}
 		}
 
@@ -377,6 +435,11 @@ void CDockingPorts::ReadFromStream (CSpaceObject *pOwner, SLoadCtx &Ctx)
 				m_pPort[i].iRotation = (VectorToPolar(m_pPort[i].vPos) + 180) % 360;
 			}
 		}
+
+	if (Ctx.dwVersion >= 81)
+		Ctx.pStream->Read((char *)&m_iMaxDist, sizeof(DWORD));
+	else
+		m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
 	}
 
 void CDockingPorts::RepairAll (CSpaceObject *pOwner, int iRepairRate)
@@ -398,20 +461,49 @@ void CDockingPorts::RepairAll (CSpaceObject *pOwner, int iRepairRate)
 		}
 	}
 
-bool CDockingPorts::RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj)
+bool CDockingPorts::RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj, int iPort)
 
 //	RequestDock
 //
 //	RequestDock 
 
 	{
+	//	If the requested dock is full, then we fail.
+
+	if (iPort != -1 && m_pPort[iPort].iStatus != psEmpty)
+		{
+		pObj->SendMessage(pOwner, CONSTLIT("Docking port no longer available"));
+		return false;
+		}
+
 	//	Get the nearest free port
 
-	int iPort = FindNearestEmptyPort(pOwner, pObj);
+	int iEmptyPortsLeft;
+	if (iPort == -1)
+		iPort = FindNearestEmptyPort(pOwner, pObj, NULL, &iEmptyPortsLeft);
+	else
+		//	If the caller specifies a port then it must be the player, so we
+		//	don't worry about leaving an empty port.
+		iEmptyPortsLeft = 2;
 
 	//	If we could not find a free port then deny docking service
 
 	if (iPort == -1)
+		{
+		pObj->SendMessage(pOwner, CONSTLIT("No docking ports available"));
+		return false;
+		}
+
+	//	If the requester is not the player and there is only one port left, then
+	//	fail (we always reserve one port for the player).
+	//
+	//	[We also make an exception for any ship that the player is escorting.]
+
+	CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+	if (iEmptyPortsLeft < 2
+			&& pPlayer
+			&& pObj != pPlayer
+			&& pObj != pPlayer->GetDestination())
 		{
 		pObj->SendMessage(pOwner, CONSTLIT("No docking ports available"));
 		return false;
@@ -478,127 +570,206 @@ void CDockingPorts::Undock (CSpaceObject *pOwner, CSpaceObject *pObj)
 			}
 	}
 
-void CDockingPorts::UpdateAll (CSpaceObject *pOwner)
+void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 
 //	UpdateAll
 //
 //	UpdateAll 
 
 	{
+	DEBUG_TRY
+
 	int i;
+
+	CSpaceObject *pPlayer = Ctx.pSystem->GetPlayer();
+	Metric rDist2 = (pPlayer ? pPlayer->GetDistance2(pOwner) : 0.0);
+	Metric rMaxDist = m_iMaxDist * LIGHT_SECOND;
+	Metric rMaxDist2 = rMaxDist * rMaxDist;
+
+	//	If owner is destroyed then don't bother checking for nearest player
+	//	port.
+
+	if (pPlayer 
+			&& (pOwner->IsDestroyed() 
+				|| pOwner->IsInactive() 
+				|| pOwner == pPlayer
+				|| pPlayer->IsDestroyed()))
+		pPlayer = NULL;
+
+	//	Also, don't bother checking if the owner is an enemy of the player.
+
+	if (pPlayer && pPlayer->IsEnemy(pOwner) && !pOwner->IsAbandoned())
+		pPlayer = NULL;
+
+	//	Don't bother checking if the station is too far
+
+	if (pPlayer && rDist2 > rMaxDist2)
+		pPlayer = NULL;
+
+	//	If this is a stargate and we are at the center (just came through) 
+	//	then don't bother showing docking ports.
+
+	if (pPlayer && pOwner->IsStargate() && rDist2 < GATE_DIST2)
+		pPlayer = NULL;
+
+	//	Loop over all ports
 
 	for (i = 0; i < m_iPortCount; i++)
 		{
+		//	If a ship is docking with this port, then maneuver the ship towards
+		//	the docking port.
+
 		if (m_pPort[i].iStatus == psDocking)
+			UpdateDockingManeuvers(pOwner, m_pPort[i]);
+
+		//	Otherwise, if the port is open, see if this is the nearest port to
+		//	the current player position.
+
+		else if (m_pPort[i].iStatus == psEmpty)
 			{
-			CShip *pShip = m_pPort[i].pObj->AsShip();
-
-			ASSERT(pShip);
-			if (pShip == NULL)
-				continue;
-
-			CVector vDest = pOwner->GetPos() + m_pPort[i].vPos;
-			CVector vDestVel = pOwner->GetVel();
-
-			//	Figure out how far we are from where we want to be
-
-			CVector vDelta = vDest - pShip->GetPos();
-
-			//	Figure out if we're aligned
-
-			int iFinalRotation = pShip->AlignToRotationAngle(m_pPort[i].iRotation);
-
-			//	If the docking object is within the appropriate threshold 
-			//	of the port, then complete the docking sequence.
-
-			Metric rDelta2 = vDelta.Length2();
-			if (rDelta2 < DOCKING_THRESHOLD2 
-					&& (pShip == g_pUniverse->GetPlayer() || iFinalRotation == pShip->GetRotation()))
+			if (pPlayer)
 				{
-				pShip->Place(vDest);
-				pShip->UnfreezeControls();
-				IShipController *pController = pShip->GetController();
-				pController->SetManeuver(IShipController::NoRotation);
+				//	Compute the distance from the player to the port
 
-				m_pPort[i].iStatus = psInUse;
+				CVector vPortPos = pOwner->GetPos() + m_pPort[i].vPos;
+				Metric rDist2 = (vPortPos - pPlayer->GetPos()).Length2();
 
-				//	Tell the owner that somone has docked with it first
-				//	(We do this because sometimes we want to handle stuff
-				//	in OnObjDocked before we show the player a dock screen)
+				//	If this is a better port, then replace the existing 
+				//	solution.
 
-				if (pOwner 
-						&& pOwner->HasOnObjDockedEvent() 
-						&& pOwner != pShip
-						&& !pOwner->IsDestroyed()
-						&& pShip->IsSubscribedToEvents(pOwner))
-					pOwner->FireOnObjDocked(pShip, pOwner);
-
-				//	Dock
-
-				pShip->OnDocked(pOwner);
-
-				//	Notify other subscribers
-
-				pShip->NotifyOnObjDocked(pOwner);
-				}
-
-			//	Otherwise accelerate the ship towards the docking port
-
-			else
-				{
-				Metric rMaxSpeed = pShip->GetMaxSpeed();
-				Metric rMinSpeed = rMaxSpeed / 10.0;
-
-				//	We slow down as we get closer
-
-				Metric rSpeed;
-				if (rDelta2 < FINAL_DOCKING2)
-					rSpeed = rMinSpeed;
-				else if (rDelta2 < FINAL_APPROACH2)
+				if (Ctx.pDockingObj == NULL
+							|| rDist2 < Ctx.rDockingPortDist2)
 					{
-					Metric rSpeedRange = rMaxSpeed - rMinSpeed;
-					Metric rDelta = sqrt(rDelta2);
-					rSpeed = rMinSpeed + (rSpeedRange * (rDelta - FINAL_DOCKING) / (FINAL_APPROACH - FINAL_DOCKING));
+					Ctx.pDockingObj = pOwner;
+					Ctx.iDockingPort = i;
+					Ctx.rDockingPortDist2 = rDist2;
+					Ctx.vDockingPort = vPortPos;
 					}
-				else
-					rSpeed = rMaxSpeed;
-
-				//	Figure out the ideal velocity vector that we want to
-				//	be following.
-
-				CVector vIdealVel = vDelta.Normal() * rSpeed;
-
-				//	Calculate the delta v that we need
-
-				CVector vDeltaV = vIdealVel - pShip->GetVel();
-
-				//	Rotate
-
-				if (!pShip->IsPlayer())
-					{
-					IShipController *pController = pShip->GetController();
-
-					//	If we're close enough, align to rotation angle
-
-					if (rDelta2 < FINAL_APPROACH2)
-						pController->SetManeuver(CalcTurnManeuver(iFinalRotation, pShip->GetRotation(), pShip->GetRotationAngle()));
-
-					//	Otherwise, align along delta v
-
-					else
-						pController->SetManeuver(CalcTurnManeuver(VectorToPolar(vDeltaV), pShip->GetRotation(), pShip->GetRotationAngle()));
-
-					//	Don't let the AI thrust
-
-					pController->SetThrust(false);
-					}
-
-				//	Accelerate
-
-				pShip->Accelerate(vDeltaV * pShip->GetMass() / 10000.0, g_SecondsPerUpdate);
-				pShip->ClipSpeed(rSpeed);
 				}
 			}
+		}
+
+	DEBUG_CATCH
+	}
+
+void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, DockingPort &Port)
+
+//	UpdateDockingManeuvers
+//
+//	Updates the motion of a ship docking with a port
+
+	{
+	CShip *pShip = Port.pObj->AsShip();
+
+	ASSERT(pShip);
+	if (pShip == NULL)
+		return;
+
+	CVector vDest = pOwner->GetPos() + Port.vPos;
+	CVector vDestVel = pOwner->GetVel();
+
+	//	Figure out how far we are from where we want to be
+
+	CVector vDelta = vDest - pShip->GetPos();
+
+	//	Figure out if we're aligned
+
+	int iFinalRotation = pShip->AlignToRotationAngle(Port.iRotation);
+
+	//	If the docking object is within the appropriate threshold 
+	//	of the port, then complete the docking sequence.
+
+	Metric rDelta2 = vDelta.Length2();
+	if (rDelta2 < DOCKING_THRESHOLD2 
+			&& (pShip == g_pUniverse->GetPlayer() || iFinalRotation == pShip->GetRotation()))
+		{
+		pShip->Place(vDest);
+		pShip->UnfreezeControls();
+		IShipController *pController = pShip->GetController();
+		pController->SetManeuver(IShipController::NoRotation);
+
+		Port.iStatus = psInUse;
+
+		//	Tell the owner that somone has docked with it first
+		//	(We do this because sometimes we want to handle stuff
+		//	in OnObjDocked before we show the player a dock screen)
+
+		if (pOwner 
+				&& pOwner->HasOnObjDockedEvent() 
+				&& pOwner != pShip
+				&& !pOwner->IsDestroyed()
+				&& pShip->IsSubscribedToEvents(pOwner))
+			pOwner->FireOnObjDocked(pShip, pOwner);
+
+		//	Set the owner as "explored" (if the ship is the player)
+
+		if (pShip->IsPlayer())
+			pOwner->SetExplored();
+
+		//	Dock
+
+		pShip->OnDocked(pOwner);
+
+		//	Notify other subscribers
+
+		pShip->NotifyOnObjDocked(pOwner);
+		}
+
+	//	Otherwise accelerate the ship towards the docking port
+
+	else
+		{
+		Metric rMaxSpeed = pShip->GetMaxSpeed();
+		Metric rMinSpeed = rMaxSpeed / 10.0;
+
+		//	We slow down as we get closer
+
+		Metric rSpeed;
+		if (rDelta2 < FINAL_DOCKING2)
+			rSpeed = rMinSpeed;
+		else if (rDelta2 < FINAL_APPROACH2)
+			{
+			Metric rSpeedRange = rMaxSpeed - rMinSpeed;
+			Metric rDelta = sqrt(rDelta2);
+			rSpeed = rMinSpeed + (rSpeedRange * (rDelta - FINAL_DOCKING) / (FINAL_APPROACH - FINAL_DOCKING));
+			}
+		else
+			rSpeed = rMaxSpeed;
+
+		//	Figure out the ideal velocity vector that we want to
+		//	be following.
+
+		CVector vIdealVel = vDelta.Normal() * rSpeed;
+
+		//	Calculate the delta v that we need
+
+		CVector vDeltaV = vIdealVel - pShip->GetVel();
+
+		//	Rotate
+
+		if (!pShip->IsPlayer())
+			{
+			IShipController *pController = pShip->GetController();
+
+			//	If we're close enough, align to rotation angle
+
+			if (rDelta2 < FINAL_APPROACH2)
+				pController->SetManeuver(CalcTurnManeuver(iFinalRotation, pShip->GetRotation(), pShip->GetRotationAngle()));
+
+			//	Otherwise, align along delta v
+
+			else
+				pController->SetManeuver(CalcTurnManeuver(VectorToPolar(vDeltaV), pShip->GetRotation(), pShip->GetRotationAngle()));
+
+			//	Don't let the AI thrust
+
+			pController->SetThrust(false);
+			}
+
+		//	Accelerate
+
+		pShip->Accelerate(vDeltaV * pShip->GetMass() / 10000.0, g_SecondsPerUpdate);
+		pShip->ClipSpeed(rSpeed);
 		}
 	}
 
@@ -617,5 +788,7 @@ void CDockingPorts::WriteToStream (CSpaceObject *pOwner, IWriteStream *pStream)
 		pStream->Write((char *)&m_pPort[i].vPos, sizeof(CVector));
 		pStream->Write((char *)&m_pPort[i].iRotation, sizeof(DWORD));
 		}
+
+	pStream->Write((char *)&m_iMaxDist, sizeof(DWORD));
 	}
 

@@ -7,7 +7,7 @@ RELEASE
 [ ] Make sure version number is set properly in Transcendence.xml
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
-[ ] Increment saved game version, if necessary (CGameFile.cpp)
+[ ] Increment saved game version, if necessary (TSEUtil.h)
 [ ] Build all for release mode
 [ ] Build tdb with /digest
 [ ] Add digest to CExtensionCollection.cpp
@@ -52,3 +52,4 @@ NEW APPLICATION (UI)
 [ ] Add declaration of CTranscendenceController in application header
 [ ] Implement CTranscendenceController
 [ ] Add DXFN (DirectX fonts) to resource file
+

@@ -26,12 +26,11 @@
 			<Image			imageID="&rsOreSmall;" imageX="48" imageY="72" imageWidth="24" imageHeight="24" />
 		</ImageVariants>
 
-		<DockingPorts>
-			<Port x="0"		y="40" />
-			<Port x="0"		y="-40" />
-			<Port x="40"	y="0" />
-			<Port x="-40"	y="0" />
-		</DockingPorts>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
 
 	</StationType>
 
@@ -385,7 +384,9 @@
 					<Action name="Bring aboard" key="B" default="1" >
 						(block Nil
 							(if (objGetItems gPlayerShip "*I +MinersHold;")
-								(scrShowScreen gScreen &dsRPGLoot;)
+								(scrShowScreen gScreen &dsRPGLoot; {
+									nextScreen: &dsMinedOre;
+									})
 								(scrShowPane gScreen "NoMinersHold")
 								)
 							)
@@ -422,7 +423,9 @@
 								)
 
 							; Loot
-							(scrShowScreen gScreen &dsRPGLoot;)
+							(scrShowScreen gScreen &dsRPGLoot; {
+								nextScreen: &dsMinedOre;
+								})
 							)
 					</Action>
 

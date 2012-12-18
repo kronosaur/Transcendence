@@ -1468,20 +1468,42 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	//	Get the arguments
 
 	CDockScreen *pScreen = GetDockScreenArg(pArgs->GetElement(0));
-	CString sScreen = pArgs->GetElement(1)->GetStringValue();
+	CString sScreen;
 	CString sPane;
 	ICCItem *pData = NULL;
-	if (pArgs->GetCount() >= 4)
+
+	ICCItem *pScreenArg = pArgs->GetElement(1);
+	if (pScreenArg->GetCount() > 1)
 		{
-		sPane = pArgs->GetElement(2)->GetStringValue();
-		pData = pArgs->GetElement(3);
-		}
-	else if (pArgs->GetCount() >= 3)
-		{
-		if (pArgs->GetElement(2)->IsIdentifier())
-			sPane = pArgs->GetElement(2)->GetStringValue();
+		sScreen = pScreenArg->GetElement(0)->GetStringValue();
+		if (pScreenArg->GetCount() == 2)
+			{
+			if (pScreenArg->GetElement(1)->IsIdentifier())
+				sPane = pScreenArg->GetElement(1)->GetStringValue();
+			else
+				pData = pScreenArg->GetElement(1);
+			}
 		else
-			pData = pArgs->GetElement(2);
+			{
+			sPane = pScreenArg->GetElement(1)->GetStringValue();
+			pData = pScreenArg->GetElement(2);
+			}
+		}
+	else
+		{
+		sScreen = pScreenArg->GetStringValue();
+		if (pArgs->GetCount() >= 4)
+			{
+			sPane = pArgs->GetElement(2)->GetStringValue();
+			pData = pArgs->GetElement(3);
+			}
+		else if (pArgs->GetCount() >= 3)
+			{
+			if (pArgs->GetElement(2)->IsIdentifier())
+				sPane = pArgs->GetElement(2)->GetStringValue();
+			else
+				pData = pArgs->GetElement(2);
+			}
 		}
 
 	//	If we're not currently docked, then bring up a screen with the player ship as

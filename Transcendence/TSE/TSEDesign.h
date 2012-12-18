@@ -699,16 +699,29 @@ const DWORD DEFAULT_SELECTOR_ID = 0;
 class CCompositeImageSelector
 	{
 	public:
+		enum ETypes
+			{
+			typeNone,
+
+			typeVariant,
+			typeShipClass,
+			typeItemType,
+			};
+
 		CCompositeImageSelector (void) { }
 
 		bool operator== (const CCompositeImageSelector &Val) const;
 
+		void AddFlotsam (DWORD dwID, CItemType *pItemType);
 		void AddShipwreck (DWORD dwID, CShipClass *pWreckClass, int iVariant = -1);
 		void AddVariant (DWORD dwID, int iVariant);
 		inline void DeleteAll (void) { m_Sel.DeleteAll(); }
 		inline int GetCount (void) const { return m_Sel.GetCount(); }
+		CObjectImageArray &GetFlotsamImage (DWORD dwID = DEFAULT_SELECTOR_ID) const;
+		CItemType *GetFlotsamType (DWORD dwID = DEFAULT_SELECTOR_ID) const;
 		CShipClass *GetShipwreckClass (DWORD dwID = DEFAULT_SELECTOR_ID) const;
 		CObjectImageArray &GetShipwreckImage (DWORD dwID = DEFAULT_SELECTOR_ID) const;
+		ETypes GetType (DWORD dwID) const;
 		int GetVariant (DWORD dwID) const;
 		inline bool HasShipwreckImage (DWORD dwID = DEFAULT_SELECTOR_ID) const { return (GetShipwreckClass(dwID) != NULL); }
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -718,11 +731,12 @@ class CCompositeImageSelector
 		struct SEntry
 			{
 			DWORD dwID;
-			int iVariant;
-			DWORD dwExtra;
+			int iVariant;					//	If -1 and dwExtra != 0, then this is an ItemType
+			DWORD dwExtra;					//	Either 0 or a pointer to CItemType or CShipClass.
 			};
 
 		SEntry *FindEntry (DWORD dwID) const;
+		ETypes GetEntryType (const SEntry &Entry) const;
 
 		TArray<SEntry> m_Sel;
 	};
@@ -966,6 +980,9 @@ enum EDamageResults
 	damagePassthrough =				5,	//	When we hit another missile (or small obj) we pass through
 	damagePassthroughDestroyed =	6,	//	Target destroyed, but we pass through
 	damageDestroyedAbandoned =		7,	//	Station was abandoned, but object not destroyed
+	damageNoDamageNoPassthrough =	8,	//	No damage; stop any passthrough
+
+	damageResultCount =				9,
 	};
 
 struct SDamageCtx
@@ -1805,7 +1822,7 @@ class CDeviceClass : public CObject
 											 CInstalledDevice *pDevice,
 											 CString *retsLabel,
 											 int *retiAmmoLeft,
-											 CItemType **retpType = NULL) { }
+											 CItemType **retpType = NULL) { if (retsLabel) *retsLabel = NULL_STR; if (retiAmmoLeft) *retiAmmoLeft = -1; if (retpType) *retpType = NULL; }
 		virtual void GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus) { *retiStatus = 0; *retiMaxStatus = 0; }
 		virtual int GetValidVariantCount (CSpaceObject *pSource, CInstalledDevice *pDevice) { return 0; }
 		virtual int GetWeaponEffectiveness (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget) { return 0; }
@@ -2352,6 +2369,7 @@ class IShipController
 		virtual CSpaceObject *GetBase (void) const { return NULL; }
 		virtual int GetCombatPower (void) = 0;
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return NULL; }
+		virtual CSpaceObject *GetDestination (void) const { return NULL; }
 		virtual bool GetDeviceActivate (void) = 0;
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return NULL; }
 		virtual int GetFireDelay (void) { return 0; }
@@ -2388,10 +2406,12 @@ class IShipController
 
 		virtual void OnArmorRepaired (int iSection) { }
 		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage) { }
+		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) { }
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) { return resNoAnswer; }
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent) { }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { }
 		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnabled) { }
+		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent) { }
 		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker) { return true; }
 		virtual void OnDestroyed (SDestroyCtx &Ctx) { }
 		virtual void OnDocked (CSpaceObject *pObj) { }
@@ -2406,19 +2426,19 @@ class IShipController
 		virtual void OnNewSystem (CSystem *pSystem) { }
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { }
+		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip) { }
 		virtual void OnPlayerObj (CSpaceObject *pPlayer) { }
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) { }
-		virtual void OnStatsChanged (void) { }
-		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) { }
-		virtual void OnSystemLoaded (void) { }
 		virtual void OnRadiationWarning (int iSecondsLeft) { }
 		virtual void OnRadiationCleared (void) { }
 		virtual void OnReactorOverloadWarning (int iSeq) { }
+		virtual void OnStatsChanged (void) { }
+		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) { }
+		virtual void OnSystemLoaded (void) { }
+		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) { }
 		virtual void OnWeaponStatusChanged (void) { }
 		virtual void OnWreckCreated (CSpaceObject *pWreck) { }
-		virtual void OnBlindnessChanged (bool bBlind, bool bNoMessage = false) { }
-		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent) { }
 	};
 
 struct SShipGeneratorCtx
@@ -3094,6 +3114,7 @@ class CItemType : public CDesignType
 		inline bool AreChargesValued (void) const { return (m_fValueCharges ? true : false); }
 		inline void ClearKnown (void) { m_fKnown = false; }
 		inline void ClearShowReference (void) { m_fReference = false; }
+		void CreateEmptyFlotsam (CSystem *pSystem, const CVector &vPos, const CVector &vVel, CSovereign *pSovereign, CStation **retpFlotsam);
 		inline bool FindEventHandlerItemType (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 		int GetApparentLevel (void) const;
 		CDeviceClass *GetAmmoLauncher (int *retiVariant = NULL) const;
@@ -3104,6 +3125,7 @@ class CItemType : public CDesignType
 		inline const CString &GetData (void) const { return m_sData; }
 		const CString &GetDesc (void) const;
 		inline CDeviceClass *GetDeviceClass (void) const { return m_pDevice; }
+		inline CObjectImageArray &GetFlotsamImage (void) { if (m_FlotsamImage.IsEmpty()) CreateFlotsamImage(); return m_FlotsamImage; }
 		inline int GetFrequency (void) const { return m_Frequency; }
 		int GetFrequencyByLevel (int iLevel);
 		inline const CObjectImageArray &GetImage (void) { return m_Image; }
@@ -3162,6 +3184,8 @@ class CItemType : public CDesignType
 
 	private:
 		static ALERROR ComposeError (const CString &sName, const CString &sError, CString *retsError);
+		void CreateFlotsamImage (void);
+		CStationType *GetFlotsamStationType (void);
 		CString GetUnknownName (int iIndex, DWORD *retdwFlags = NULL);
 
 		CString m_sName;						//	Full name of item
@@ -3197,6 +3221,10 @@ class CItemType : public CDesignType
 
 		//	Devices
 		CDeviceClass *m_pDevice;				//	Device properties (may be NULL)
+
+		//	Flotsam
+		CG16bitImage m_FlotsamBitmap;			//	Image used for flotsam
+		CObjectImageArray m_FlotsamImage;		//	Image used for flotsam
 
 		DWORD m_fFirstPlural:1;					//	Pluralize first word
 		DWORD m_fSecondPlural:1;				//	Pluralize second word

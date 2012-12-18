@@ -168,7 +168,12 @@ void CUIHelper::CreateInputErrorMessage (IHISession *pSession, const RECT &rcRec
 		*retpMsg = pMsg;
 	}
 
-void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service, const CString &sTitle, DWORD dwOptions, IAnimatron **retpControl) const
+void CUIHelper::CreateSessionTitle (IHISession *pSession, 
+									CCloudService &Service, 
+									const CString &sTitle, 
+									const TArray<SMenuEntry> *pMenu,
+									DWORD dwOptions, 
+									IAnimatron **retpControl) const
 
 //	CreateSessionTitle
 //
@@ -180,6 +185,7 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service
 //	Close button
 
 	{
+	int i;
 	const CVisualPalette &VI = m_HI.GetVisuals();
 	const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
 
@@ -272,6 +278,28 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession, CCloudService &Service
 		VI.CreateImageButton(pRoot, CMD_OK_SESSION, (RectWidth(rcRect) - BUTTON_WIDTH) / 2, yBottomBar + (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &OKIcon, CONSTLIT("OK"), 0, &pOKButton);
 
 		pSession->RegisterPerformanceEvent(pOKButton, EVENT_ON_CLICK, CMD_OK_SESSION);
+		}
+
+	//	Add menu items, if necessary
+
+	if (pMenu)
+		{
+		//	Menu is to the left.
+
+		int xMenu = 0;
+		int yMenu = yBottomBar + (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2;
+
+		for (i = 0; i < pMenu->GetCount(); i++)
+			{
+			const SMenuEntry &Entry = pMenu->GetAt(i);
+
+			IAnimatron *pButton;
+			int cyHeight;
+			VI.CreateLink(pRoot, Entry.sCommand, xMenu, yMenu, Entry.sLabel, 0, &pButton, NULL, &cyHeight);
+			yMenu += cyHeight;
+
+			pSession->RegisterPerformanceEvent(pButton, EVENT_ON_CLICK, Entry.sCommand);
+			}
 		}
 
 	//	Done

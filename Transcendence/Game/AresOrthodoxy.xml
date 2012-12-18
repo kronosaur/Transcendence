@@ -421,6 +421,7 @@
 		<Weapon
 				fireRate=			"40"
 				powerUse=			"200"
+				reportAmmo=			"true"
 				>
 
 			<Missiles>
