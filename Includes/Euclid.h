@@ -208,9 +208,114 @@ class CIntegerIP
 	private:
 		void CleanUp (void);
 		void Copy (const CIntegerIP &Src);
-
+	
 		int m_iCount;						//	Number of bytes
 		BYTE *m_pNumber;					//	Array of bytes in big-endian order
+	};
+
+//	Statistics
+
+template <class VALUE> class TNumberSeries
+	{
+	public:
+		struct SHistogramPoint
+			{
+			int iValue;
+			int iCount;
+			double rPercent;
+			};
+
+#ifdef DEBUG
+		void DumpSeries (void) const
+			{
+			int i;
+
+			for (i = 0; i < m_Series.GetCount(); i++)
+				printf("%d ", (int)m_Series[i]);
+
+			printf("\n");
+			}
+#endif
+
+		void CalcHistogram (TArray<SHistogramPoint> *retHistogram) const
+			{
+			int i;
+
+			retHistogram->DeleteAll();
+
+			if (m_Series.GetCount() == 0)
+				return;
+
+			TSortMap<int, int> Counts;
+			for (i = 0; i < m_Series.GetCount(); i++)
+				{
+				bool bNew;
+				int *pCount = Counts.SetAt((int)m_Series[i], &bNew);
+				if (bNew)
+					*pCount = 1;
+				else
+					*pCount += 1;
+				}
+
+			for (i = 0; i < Counts.GetCount(); i++)
+				{
+				SHistogramPoint *pPoint = retHistogram->Insert();
+				pPoint->iValue = Counts.GetKey(i);
+				pPoint->iCount = Counts[i];
+				pPoint->rPercent = pPoint->iCount / (double)m_Series.GetCount();
+				}
+			}
+
+		inline VALUE GetMean (void) const { return (m_Series.GetCount() > 0 ? (m_Total / m_Series.GetCount()) : 0); }
+		inline VALUE GetMedian (void) const
+			{
+			int iCount = m_Series.GetCount();
+
+			if (iCount == 0)
+				return 0;
+			else if ((iCount % 2) == 1)
+				return m_Series[iCount / 2];
+			else
+				{
+				VALUE Low = m_Series[(iCount / 2) - 1];
+				VALUE Hi = m_Series[(iCount / 2)];
+				return (Low + Hi) / 2;
+				}
+			}
+
+		inline VALUE GetMax (void) const { return (m_Series.GetCount() > 0 ? m_Max : 0); }
+		inline VALUE GetMin (void) const { return (m_Series.GetCount() > 0 ? m_Min : 0); }
+
+		void Insert (VALUE Value)
+			{
+			//	Update min, max, and total
+
+			if (m_Series.GetCount() == 0)
+				{
+				m_Total = Value;
+				m_Min = Value;
+				m_Max = Value;
+				}
+			else
+				{
+				if (Value > m_Max)
+					m_Max = Value;
+				else if (Value < m_Min)
+					m_Min = Value;
+				
+				m_Total += Value;
+				}
+
+			//	Insert
+
+			m_Series.InsertSorted(Value);
+			}
+
+	private:
+		TArray<VALUE> m_Series;
+		VALUE m_Min;
+		VALUE m_Max;
+		VALUE m_Total;
 	};
 
 //	Functions

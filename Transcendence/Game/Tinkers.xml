@@ -19,7 +19,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"envEarth, envAvoidsAir, friendly, human, independent, majorStation, populated"
+			attributes=			"envEarth, envAvoidsAir, friendly, human, independent, majorStation, populated, tinkers"
 			levelFrequency=		"uccuu r---- ----- ----- -----"
 			locationCriteria=	"+asteroids,-asteroidbelt"
 			>

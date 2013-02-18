@@ -10,7 +10,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
 			type=				"freighter"
-			score=				"105"
 
 			mass=				"250"
 			cargoSpace=			"200"
@@ -225,7 +224,7 @@
 	<!-- Manticore-class Heavy Gunship -->
 
 	<ShipClass UNID="&scManticore;"
-			manufacturer=		""
+			manufacturer=		"Makayev-Energia"
 			class=				"Manticore"
 			type=				"heavy gunship"
 
@@ -319,7 +318,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/A"
 			type=				"gunship"
-			score=				"55"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -367,7 +365,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/B"
 			type=				"gunship"
-			score=				"155"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -422,7 +419,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
-			score=				"300"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -477,7 +473,6 @@
 			manufacturer=		"Zubrin Systems"
 			class=				"Sapphire"
 			type=				"yacht"
-			score=				"95"
 
 			mass=				"30"
 			cargoSpace=			"50"
@@ -528,7 +523,6 @@
 			manufacturer=		"NAMI"
 			class=				"Scarab"
 			type=				"superfreighter"
-			score=				"440"
 
 			mass=				"20000"
 			cargoSpace=			"15000"
@@ -610,10 +604,9 @@
 	<!-- Wolfen-class Gunship -->
 
 	<ShipClass UNID="&scWolfen;"
-			manufacturer=		""
+			manufacturer=		"Pacific Defense Corporation"
 			class=				"Wolfen"
 			type=				"gunship"
-			score=				"225"
 
 			mass=				"20"
 			cargoSpace=			"35"
@@ -1457,7 +1450,7 @@
 	targetID:			Id of station to destroy
 	targetType:			One of:
 							'centauriWarlords
-							'miscEnegy
+							'miscEnemy
 
 	-->
 	
@@ -1626,12 +1619,14 @@
 		</Events>
 		
 		<Language>
+			<Text id="Name">
+				"Destroy Threat to Commonwealth Habitat"
+			</Text>
 			<Text id="Summary">
-				(block (
-					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-					)
-
-					(cat "Destroy " (objGetName targetObj 0x04) ".")
+				(cat
+					"Your mission is to destroy " (objGetName (objGetObjByID (msnGetData gSource 'targetID)) 0x04) " in the " (sysGetName) " system.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: " (msnGetData gSource 'reward) " credits"
 					)
 			</Text>
 			<Text id="Intro">
@@ -2003,7 +1998,7 @@
 		</Ships>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Buy	criteria="*"					priceAdj="100"/>
+			<AcceptDonation	criteria="*"					priceAdj="100"/>
 		</Trade>
 
 		<StaticData>

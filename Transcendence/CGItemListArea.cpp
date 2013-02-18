@@ -885,7 +885,13 @@ CString CListWrapper::GetDescAtCursor (void)
 		{
 		ICCItem *pItem = m_pList->GetElement(m_iCursor);
 		if (DESC_INDEX < pItem->GetCount())
-			return pItem->GetElement(DESC_INDEX)->GetStringValue();
+			{
+			ICCItem *pDesc = pItem->GetElement(DESC_INDEX);
+			if (pDesc->IsNil())
+				return NULL_STR;
+
+			return pDesc->GetStringValue();
+			}
 		}
 
 	return NULL_STR;
@@ -916,7 +922,13 @@ CString CListWrapper::GetTitleAtCursor (void)
 		{
 		ICCItem *pItem = m_pList->GetElement(m_iCursor);
 		if (TITLE_INDEX < pItem->GetCount())
-			return pItem->GetElement(TITLE_INDEX)->GetStringValue();
+			{
+			ICCItem *pTitle = pItem->GetElement(TITLE_INDEX);
+			if (pTitle->IsNil())
+				return NULL_STR;
+
+			return pTitle->GetStringValue();
+			}
 		}
 
 	return NULL_STR;

@@ -1792,7 +1792,7 @@
 	<!-- Atonement-class Gunship -->
 
 	<ShipClass UNID="&scAtonement;"
-			manufacturer=		"United Africa States"
+			manufacturer=		"United African States"
 			class=				"Atonement"
 			type=				"heavy gunship"
 			score=				"545"
@@ -1845,7 +1845,7 @@
 	<!-- Repentant-class Gunship -->
 
 	<ShipClass UNID="&scRepentant;"
-			manufacturer=		"United Africa States"
+			manufacturer=		"United African States"
 			class=				"Repentant"
 			type=				"gunship"
 			score=				"340"

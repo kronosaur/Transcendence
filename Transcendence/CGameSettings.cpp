@@ -52,6 +52,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"dockPortIndicator",		optionString,	"enabled",	0	},
 		{	"invokeLetterHotKeys",		optionBoolean,	"false",	0	},
 		{	"noAutoSave",				optionBoolean,	"false",	0	},
+		{	"noFullCreate",				optionBoolean,	"false",	0	},
 
 		//	Extension options
 		{	"useTDB",					optionBoolean,	"false",	0	},

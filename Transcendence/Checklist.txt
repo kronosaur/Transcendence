@@ -3,8 +3,8 @@ RELEASE
 
 [ ] Set version number in resource file
 [ ] Set version number in TransData and TransCompiler, if necessary
-[ ] Make sure new version is accepted by extensions (Utilities.cpp, LoadExtensionVersion)
-[ ] Make sure version number is set properly in Transcendence.xml
+[ ] Set apiVersion number, if necessary (TSEUtil.h)
+[ ] Set apiVersion number in Transcendence.xml
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (TSEUtil.h)

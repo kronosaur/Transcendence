@@ -137,7 +137,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, primary, populated"
-			levelFrequency=		"---ru rv--- ----- ----- -----"
+			levelFrequency=		"---ru urv-- ----- ----- -----"
 			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>

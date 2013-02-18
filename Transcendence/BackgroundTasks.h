@@ -206,11 +206,12 @@ class CSignOutUserTask : public IHITask
 class CStartNewGameTask : public IHITask
 	{
 	public:
-		CStartNewGameTask (CHumanInterface &HI, CTranscendenceModel &Model) : IHITask(HI), m_Model(Model) { }
+		CStartNewGameTask (CHumanInterface &HI, CTranscendenceModel &Model, const SNewGameSettings &Settings) : IHITask(HI), m_Model(Model), m_NewGame(Settings) { }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.StartNewGameBackground(retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.StartNewGameBackground(m_NewGame, retsResult); }
 
 	private:
 		CTranscendenceModel &m_Model;
+		SNewGameSettings m_NewGame;
 	};

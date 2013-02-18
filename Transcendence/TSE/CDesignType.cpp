@@ -31,6 +31,7 @@
 #define SYSTEM_FRAGMENT_TABLE_TAG				CONSTLIT("SystemPartTable")
 #define SYSTEM_TYPE_TAG							CONSTLIT("SystemType")
 #define TEMPLATE_TYPE_TAG						CONSTLIT("TemplateType")
+#define TYPE_TAG								CONSTLIT("Type")
 
 #define ATTRIBUTES_ATTRIB						CONSTLIT("attributes")
 #define INHERIT_ATTRIB							CONSTLIT("inherit")
@@ -87,6 +88,7 @@ static char DESIGN_CHAR[designCount] =
 
 		'$',
 		'_',
+		'x',
 	};
 
 static char *DESIGN_CLASS_NAME[designCount] =
@@ -115,6 +117,7 @@ static char *DESIGN_CLASS_NAME[designCount] =
 
 		"EconomyType",
 		"TemplateType",
+		"Type",
 	};
 
 static char *CACHED_EVENTS[CDesignType::evtCount] =
@@ -253,6 +256,8 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			pType = new CEconomyType;
 		else if (strEquals(pDesc->GetTag(), TEMPLATE_TYPE_TAG))
 			pType = new CTemplateType;
+		else if (strEquals(pDesc->GetTag(), TYPE_TAG))
+			pType = new CGenericType;
 		else if (strEquals(pDesc->GetTag(), ADVENTURE_DESC_TAG))
 			{
 			//	Only valid if we are inside an Adventure
@@ -1437,6 +1442,82 @@ void CDesignType::ReportEventError (const CString &sEvent, ICCItem *pError)
 	kernelDebugLogMessage(sError);
 	}
 
+bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult)
+
+//	Translate
+//
+//	Translate from a <Language> block to a CodeChain item.
+//
+//	NOTE: Caller is responsible for discarding the result (if we return TRUE).
+	
+	{
+	if (m_Language.Translate(pObj, sID, retpResult))
+		return true;
+
+	//	Backwards compatible translate
+
+	return TranslateVersion2(pObj, sID, retpResult);
+	}
+
+bool CDesignType::TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText)
+
+//	Translate
+//
+//	Translate from a <Language> block to text.
+
+	{
+	if (m_Language.Translate(pObj, sID, retsText))
+		return true;
+
+	//	Backwards compatible translate
+
+	ICCItem *pItem;
+	if (!TranslateVersion2(pObj, sID, &pItem))
+		return false;
+
+	if (retsText)
+		*retsText = pItem->GetStringValue();
+
+	pItem->Discard(&g_pUniverse->GetCC());
+	return true;
+	}
+	
+bool CDesignType::TranslateVersion2 (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult)
+
+//	TranslateVersion2
+//
+//	Translates using the old apiVersion="2" method, which relied on static data.
+
+	{
+	int i;
+
+	if (GetVersion() > 2)
+		return false;
+
+	CString sData = GetStaticData(CONSTLIT("Language"));
+	if (!sData.IsBlank())
+		{
+		CCodeChainCtx Ctx;
+
+		ICCItem *pData = Ctx.Link(sData, 0, NULL);
+
+		for (i = 0; i < pData->GetCount(); i++)
+			{
+			ICCItem *pEntry = pData->GetElement(i);
+			if (pEntry->GetCount() == 2 && strEquals(sID, pEntry->GetElement(0)->GetStringValue()))
+				{
+				*retpResult = Ctx.Run(pEntry->GetElement(1));	//	LATER:Event
+				Ctx.Discard(pData);
+				return true;
+				}
+			}
+
+		Ctx.Discard(pData);
+		}
+
+	return false;
+	}
+
 void CDesignType::WriteToStream (IWriteStream *pStream)
 
 //	WriteToStream
@@ -1758,6 +1839,10 @@ ALERROR CDesignTypeCriteria::ParseCriteria (const CString &sCriteria, CDesignTyp
 
 			case charEnergyFieldType:
 				retCriteria->m_dwTypeSet |= (1 << designEnergyFieldType);
+				break;
+
+			case charGenericType:
+				retCriteria->m_dwTypeSet |= (1 << designGenericType);
 				break;
 
 			case charGlobals:

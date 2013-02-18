@@ -14,28 +14,29 @@
 
 				<Actions>
 					<Action name="Ship configuration" key="S">
-						(scrShowScreen gScreen "&dsShipConfig;")
+						(scrShowScreen gScreen &dsShipConfig;)
+					</Action>
+
+					<Action name="Missions" key="M">
+						(scrShowScreen gScreen &dsRPGMissionJournal;)
 					</Action>
 
 					<Action name="View cargo hold" key="V" >
 						(block Nil
 							(setq gDest Nil)
-							(scrShowScreen gScreen "&dsCargoHold;")
+							(scrShowScreen gScreen &dsCargoHold;)
 							)
 					</Action>
 
 					<Action name="Refuel engines" key="R" >
-						<Navigate screen="&dsManualRefuel;"/>
+						(scrShowScreen gScreen &dsManualRefuel;)
 					</Action>
 
 					<Action name="Back to cockpit" cancel="1" key="B">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
-
 		</Panes>
 
 	</DockScreen>
@@ -398,4 +399,66 @@
 
 	</DockScreen>
 	
+<!-- MISSION JOURNAL ===========================================================
+
+	This screen is designed to be opened from the Ship's interior screen. It
+	show the list of active missions for the player.
+
+-->
+
+	<DockScreen UNID="&dsRPGMissionJournal;"
+			type=				"customPicker"
+			backgroundID=		"&rsItemListScreen;"
+			nestedScreen=		"true"
+			>
+
+		<List
+			rowHeight="32"
+			>
+			(block (missionList)
+
+				; Make a list of active player missions entries. Each entry is a list
+				; with the following elements:
+				;
+				; 0.	The name of the mission
+				; 1.	Nil (this would normally be the icon)
+				; 2.	Nil (this would normally be a short description)
+				; 3.	The mission object
+				; 4.	The time the mission was accepted
+
+				(setq missionList (map (msnFind "a") theMission
+					(list (msnGetProperty theMission 'name) Nil Nil theMission (msnGetProperty theMission 'acceptedOn))
+					))
+
+				; Now sort by accepted time (later first)
+
+				(sort missionList 'descending 4)
+				)
+		</List>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (theEntry theMission)
+						(setq theEntry (scrGetListEntry gScreen))
+						(setq theMission (@ theEntry 3))
+
+						(switch
+							(not theEntry)
+								(scrSetDesc gScreen "You have no missions to complete.")
+
+							(scrSetDesc gScreen (msnGetProperty theMission 'summary))
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Done" key="D" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
 </TranscendenceModule>

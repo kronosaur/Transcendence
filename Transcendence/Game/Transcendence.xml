@@ -83,6 +83,8 @@
 	<!ENTITY stRedDwarfStar				"0x00002105">
 	<!ENTITY stBlueGiantStar			"0x00002106">
 	<!ENTITY stRedGiantStar				"0x00002107">
+	<!ENTITY stNebulaStar				"0x00002108">
+	<!ENTITY stK-TypeStar				"0x00002109">
 
 	<!ENTITY stSmallAsteroid			"0x00002200">
 	<!ENTITY stMediumAsteroid			"0x00002201">
@@ -882,6 +884,9 @@
 	<!ENTITY dsRPGLoot					"0x00010012">
 	<!ENTITY dsRPGJettison				"0x00010013">
 	<!ENTITY dsRPGRepairItem			"0x00010014">
+	<!ENTITY dsRPGRefuel				"0x00010015">
+	<!ENTITY dsRPGDeliveryMission		"0x00010016">
+	<!ENTITY dsRPGMissionJournal		"0x00010017">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -1261,6 +1266,7 @@
 	<!ENTITY stCenturionWreck			"0x001A200D">
 	<!ENTITY stSandstormWreck			"0x001A200E">
 	<!ENTITY stDantalionSettlement		"0x001A200F">
+	<!ENTITY stCSCTaskForceEncounter	"0x001A2010">
 
 	<!ENTITY scCSCHospital				"0x001A3001">
 	<!ENTITY scCSCTaskForce				"0x001A3002">
@@ -1675,6 +1681,7 @@
 	<!ENTITY rsHumanSpace				"0x00200002">
 	<!ENTITY smElysium					"0x00200003">
 	<!ENTITY unidPartISystemMap			"0x00200004">
+	<!ENTITY msReachGalacticCore		"0x00200005">
 	
 	<!-- DOMINA 0020 1xxx -->
 	
@@ -1703,8 +1710,7 @@
 	]>
 
 <TranscendenceUniverse
-		version=						"0x0100080C"
-		minVersion=						"0x0100080C"
+		apiVersion=						"13"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2060,10 +2066,6 @@
 			</Language>
 
 			<Events>
-				<GetGlobalAchievements>
-					(intGetGlobalAchievements)
-				</GetGlobalAchievements>
-				
 				<OnGameStart>
 					(block Nil
 						(gamSetCrawlImage &rsProlog1;)
@@ -2122,6 +2124,22 @@
 							)
 						)
 				</OnGameEnd>
+
+				<GetGlobalAchievements>
+					(intGetGlobalAchievements)
+				</GetGlobalAchievements>
+				
+				<OnGlobalUniverseCreated>
+					(block (theMission)
+
+						; Give the "Reach the Galactic Core" mission to the player
+
+						(setq theMission (msnCreate &msReachGalacticCore; Nil))
+						(if theMission
+							(msnAccept theMission)
+							)
+						)
+				</OnGlobalUniverseCreated>
 			</Events>
 
 			<StaticData>

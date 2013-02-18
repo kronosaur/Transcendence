@@ -79,7 +79,7 @@
 	<!-- Auton, AutoSentinel -->
 
 	<ShipClass UNID="&scAutoSentinel;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"AutoSentinel&#xae;"
 			type=				""
 			score=				"115"
@@ -118,7 +118,7 @@
 	<!-- Auton, 200A Defender Auton -->
 
 	<ShipClass UNID="&sc200ADefenderAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"200A defender auton"
 			type=				""
 			score=				"240"
@@ -171,7 +171,7 @@
 	<!-- Auton, 300D Defender Auton -->
 
 	<ShipClass UNID="&sc300DDefenderAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"300D defender auton"
 			type=				""
 			score=				"240"
@@ -224,7 +224,7 @@
 	<!-- Auton, 310A Aegis Auton -->
 
 	<ShipClass UNID="&sc310AAegisAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"310A aegis auton"
 			type=				""
 			score=				"390"
@@ -265,7 +265,7 @@
 	<!-- Auton, Mule Auton -->
 
 	<ShipClass UNID="&scMuleAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"330M mule auton"
 			type=				""
 			score=				"80"
@@ -343,7 +343,7 @@
 	<!-- Auton, 1M battle auton -->
 
 	<ShipClass UNID="&sc1MBattleAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"1M battle auton"
 			type=				""
 			score=				"385"
@@ -408,7 +408,7 @@
 	<!-- Auton, 1M/i battle auton -->
 
 	<ShipClass UNID="&sc1MiBattleAuton;"
-			manufacturer=		""
+			manufacturer=		"OmniDefense Systems"
 			class=				"1M/i battle auton"
 			type=				""
 			score=				"420"

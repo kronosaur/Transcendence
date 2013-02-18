@@ -157,7 +157,6 @@ void CArmorDisplay::Update (void)
 	if (m_pPlayer == NULL)
 		return;
 
-
 	CShip *pShip = m_pPlayer->GetShip();
 	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
 	CItemListManipulator ItemList(pShip->GetItemList());
@@ -270,23 +269,25 @@ void CArmorDisplay::Update (void)
 
 		//	Paint the modifiers
 
-		if (pShield->GetMods().IsNotEmpty())
+		if (pShield->GetMods().IsNotEmpty() || pShield->GetBonus() != 0)
 			{
 			pShip->SetCursorAtNamedDevice(ItemList, devShields);
 			CString sMods = pShield->GetEnhancedDesc(pShip, &ItemList.GetItemAtCursor());
 			if (!sMods.IsBlank())
 				{
+				bool bDisadvantage = (*(sMods.GetASCIIZPointer()) == '-');
+
 				int cx = SmallFont.MeasureText(sMods);
 				m_Buffer.Fill(SHIELD_HP_DISPLAY_X - cx - 8,
 						SHIELD_HP_DISPLAY_Y,
 						cx + 8,
 						SHIELD_HP_DISPLAY_HEIGHT,
-						ARMOR_ENHANCE_BACK_COLOR);
+						(bDisadvantage ? ARMOR_DAMAGED_BACK_COLOR : ARMOR_ENHANCE_BACK_COLOR));
 
 				SmallFont.DrawText(m_Buffer,
 						SHIELD_HP_DISPLAY_X - cx - 4,
 						SHIELD_HP_DISPLAY_Y + (SHIELD_HP_DISPLAY_HEIGHT - SmallFont.GetHeight()) / 2,
-						ARMOR_ENHANCE_TEXT_COLOR,
+						(bDisadvantage ? ARMOR_DAMAGED_TEXT_COLOR : ARMOR_ENHANCE_TEXT_COLOR),
 						sMods);
 				}
 			}
@@ -316,33 +317,6 @@ void CArmorDisplay::Update (void)
 					DESCRIPTION_WIDTH + pImage->xDest,
 					pImage->yDest);
 			}
-
-		//	Paint the HPs
-
-		if (i == m_iSelection)
-			{
-			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP - 1, 
-					pImage->yHP - 1, 
-					HP_DISPLAY_WIDTH + 2, 
-					HP_DISPLAY_HEIGHT + 2,
-					CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128));
-			}
-		else
-			{
-			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP, 
-					pImage->yHP, 
-					HP_DISPLAY_WIDTH, 
-					HP_DISPLAY_HEIGHT,
-					HP_DISPLAY_BACK_COLOR);
-			}
-
-		CString sHP = strFromInt(pArmor->GetHitPoints());
-		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
-		m_pFonts->Medium.DrawText(m_Buffer,
-				DESCRIPTION_WIDTH + pImage->xHP + (HP_DISPLAY_WIDTH - cxWidth) / 2,
-				pImage->yHP - 1,
-				m_pFonts->wTitleColor,
-				sHP);
 		}
 
 	//	Draw the new style shields on top
@@ -370,6 +344,33 @@ void CArmorDisplay::Update (void)
 		{
 		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
+
+		//	Paint the HPs
+
+		if (i == m_iSelection)
+			{
+			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP - 1, 
+					pImage->yHP - 1, 
+					HP_DISPLAY_WIDTH + 2, 
+					HP_DISPLAY_HEIGHT + 2,
+					CG16bitImage::DarkenPixel(m_pFonts->wSelectBackground, 128));
+			}
+		else
+			{
+			m_Buffer.Fill(DESCRIPTION_WIDTH + pImage->xHP, 
+					pImage->yHP, 
+					HP_DISPLAY_WIDTH, 
+					HP_DISPLAY_HEIGHT,
+					HP_DISPLAY_BACK_COLOR);
+			}
+
+		CString sHP = strFromInt(pArmor->GetHitPoints());
+		int cxWidth = m_pFonts->Medium.MeasureText(sHP, NULL);
+		m_pFonts->Medium.DrawText(m_Buffer,
+				DESCRIPTION_WIDTH + pImage->xHP + (HP_DISPLAY_WIDTH - cxWidth) / 2,
+				pImage->yHP - 1,
+				m_pFonts->wTitleColor,
+				sHP);
 
 		//	Paint the armor name line
 

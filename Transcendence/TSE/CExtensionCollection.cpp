@@ -26,25 +26,30 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-	 21,  28,  75,  37,  25,  80, 139, 140, 236,  41,
-	189,  24, 101, 153, 223, 170, 239, 196,  51, 146,
+	209, 165,  91, 183,  31,  61, 117, 161, 100,  38,
+	147,  20, 226, 197,  34,  31,  59,  20,  75,  44,
 	};
 
 class CLibraryResolver : public IXMLParserController
 	{
 	public:
-		CLibraryResolver (CExtensionCollection &Extensions) : m_Extensions(Extensions) { }
+		CLibraryResolver (CExtensionCollection &Extensions) : 
+				m_Extensions(Extensions),
+				m_bReportError(false)
+			{ }
 
 		inline void AddLibrary (CExtension *pLibrary) { m_Libraries.Insert(pLibrary); }
+		inline void ReportLibraryErrors (void) { m_bReportError = true; }
 
 		//	IXMLParserController virtuals
-		virtual void OnOpenTag (CXMLElement *pElement);
+		virtual ALERROR OnOpenTag (CXMLElement *pElement, CString *retsError);
 		virtual CString ResolveExternalEntity (const CString &sName, bool *retbFound = NULL);
 
 	private:
 		CExtensionCollection &m_Extensions;
 
 		TArray<CExtension *> m_Libraries;
+		bool m_bReportError;				//	If TRUE, we report errors if we fail to load a library
 	};
 
 CExtensionCollection::CExtensionCollection (void) :
@@ -162,6 +167,7 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 	CLibraryResolver Resolver(*this);
 	Resolver.AddLibrary(m_pBase);
 	Resolver.AddLibrary(pExtension);
+	Resolver.ReportLibraryErrors();
 
 	//	Make sure the extension is loaded completely.
 
@@ -179,8 +185,19 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 		CExtension *pLibrary;
 		if (!FindBestExtension(LibraryDesc.dwUNID, LibraryDesc.dwRelease, dwFlags, &pLibrary))
 			{
-			*retsError = strPatternSubst(CONSTLIT("Unable to find library: %08x"), LibraryDesc.dwUNID);
-			return ERR_FAIL;
+			//	If we can't find the library, disable the extension with the appropriate message,
+			//	but otherwise continue loading.
+
+			pExtension->SetDisabled(strPatternSubst(CONSTLIT("Cannot find library: %08x"), LibraryDesc.dwUNID));
+			continue;
+			}
+
+		//	If the library is disabled, then the extension is also disabled.
+
+		if (pLibrary->IsDisabled())
+			{
+			pExtension->SetDisabled(strPatternSubst(CONSTLIT("Required library disabled: %s (%08x)"), pLibrary->GetName(), pLibrary->GetUNID()));
+			continue;
 			}
 
 		//	Make sure it is a library
@@ -199,7 +216,8 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 
 	//	Finally add the extension itself.
 
-	retList->Insert(pExtension);
+	if (!pExtension->IsDisabled())
+		retList->Insert(pExtension);
 
 	//	Success.
 
@@ -1122,7 +1140,7 @@ void CExtensionCollection::SweepImages (void)
 
 //	CLibraryResolver -----------------------------------------------------------
 
-void CLibraryResolver::OnOpenTag (CXMLElement *pElement)
+ALERROR CLibraryResolver::OnOpenTag (CXMLElement *pElement, CString *retsError)
 
 //	OnOpenTag
 //
@@ -1140,22 +1158,33 @@ void CLibraryResolver::OnOpenTag (CXMLElement *pElement)
 
 		CExtension *pLibrary;
 		if (!m_Extensions.FindBestExtension(dwUNID, dwRelease, (m_Extensions.LoadedInDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), &pLibrary))
-			return;
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find library: %08x"), dwUNID);
+			return ERR_FAIL;
+			}
 
 		//	Is this a library?
 
 		if (pLibrary->GetType() != extLibrary)
-			return;
+			{
+			*retsError = strPatternSubst(CONSTLIT("Expected %s (%08x) to be a library"), pLibrary->GetName(), pLibrary->GetUNID());
+			return ERR_FAIL;
+			}
 
 		//	Must at least have stubs
 
 		if (pLibrary->GetLoadState() == CExtension::loadNone)
-			return;
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to find library: %08x"), dwUNID);
+			return ERR_FAIL;
+			}
 
 		//	Add it to our list so that we can use it to resolve entities.
 
 		AddLibrary(pLibrary);
 		}
+
+	return NOERROR;
 	}
 
 CString CLibraryResolver::ResolveExternalEntity (const CString &sName, bool *retbFound)

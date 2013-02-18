@@ -3,7 +3,7 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svAres;"
-			name="Ares Sect"
+			name="Ares Orthodoxy"
 			alignment="destructive order"
 			/>
 
@@ -645,7 +645,7 @@
 	<!-- Ares Cannon -->
 
 	<ShipClass UNID="&scAresCannon;"
-			manufacturer=		""
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Ares sentry"
 			type=				""
 			score=				"800"
@@ -687,7 +687,7 @@
 	<!-- Chasm Heavy Gunship -->
 
 	<ShipClass UNID="&scChasm;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Chasm"
 			type=				"heavy gunship"
 			score=				"1940"
@@ -738,7 +738,7 @@
 	<!-- Cometfall missileship -->
 
 	<ShipClass UNID="&scCometfall;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Cometfall"
 			type=				"missileship"
 			score=				"1730"
@@ -807,7 +807,7 @@
 	<!-- Deimos Destroyer -->
 
 	<ShipClass UNID="&scDeimos;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Deimos"
 			type=				"destroyer"
 			score=				"2135"
@@ -868,7 +868,7 @@
 	<!-- Polar-class Freighter -->
 
 	<ShipClass UNID="&scPolar;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Polar"
 			type=				"freighter"
 			score=				"1150"
@@ -882,7 +882,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			leavesWreck=		"100"
 
-			attributes=			"ares,genericClass"
+			attributes=			"ares, freighter, genericClass"
 			>
 
 		<Armor>
@@ -942,7 +942,7 @@
 	<!-- Polar-class Freighter -->
 
 	<ShipClass UNID="&scPolar2;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Polar II"
 			type=				"freighter"
 			score=				"1635"
@@ -956,7 +956,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			leavesWreck=		"100"
 
-			attributes=			"ares"
+			attributes=			"ares, freighter"
 			>
 
 		<Armor>
@@ -1017,7 +1017,7 @@
 	<!-- Sandstorm Gunship -->
 
 	<ShipClass UNID="&scSandstorm;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Sandstorm"
 			type=				"gunship"
 			score=				"805"
@@ -1067,7 +1067,7 @@
 	<!-- Tundra Gunship -->
 
 	<ShipClass UNID="&scTundra;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Tundra"
 			type=				"heavy gunship"
 			score=				"1445"
@@ -1120,7 +1120,7 @@
 	<!-- Phobos-class Dreadnought -->
 
 	<ShipClass UNID="&scPhobos;"
-			manufacturer=		"Ares Sect"
+			manufacturer=		"Ares Orthodoxy"
 			class=				"Phobos"
 			type=				"dreadnought"
 			score=				"3140"

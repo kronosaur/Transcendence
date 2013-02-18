@@ -145,6 +145,7 @@
     <ClCompile Include="CGlobalSpaceObject.cpp" />
     <ClCompile Include="CMissionList.cpp" />
     <ClCompile Include="CMoveCtx.cpp" />
+    <ClCompile Include="CObjectTracker.cpp" />
     <ClCompile Include="CParticleArray.cpp" />
     <ClCompile Include="CPlayerSettings.cpp" />
     <ClCompile Include="CRegenDesc.cpp" />
@@ -158,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="CShipTable.cpp" />
     <ClCompile Include="CShockwaveHitTest.cpp" />
+    <ClCompile Include="CEnvironmentGrid.cpp" />
+    <ClCompile Include="CStationEncounterCtx.cpp" />
+    <ClCompile Include="CStationEncounterDesc.cpp" />
     <ClCompile Include="CTimedEventList.cpp" />
     <ClCompile Include="CTimedMissionEvent.cpp" />
     <ClCompile Include="CTradingDesc.cpp" />

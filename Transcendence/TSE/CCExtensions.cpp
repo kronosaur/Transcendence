@@ -204,6 +204,7 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_SET_ITEM_PROPERTY	108
 #define FN_OBJ_GET_ITEM_PROPERTY	109
 #define FN_OBJ_SET_OVERLAY_EFFECT_PROPERTY	110
+#define FN_OBJ_GET_REFUEL_ITEM		111
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -437,6 +438,7 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_CREATE				8
 #define FN_DESIGN_DYNAMIC_UNID			9
 #define FN_DESIGN_MARK_IMAGES			10
+#define FN_DESIGN_TRANSLATE				11
 
 ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -448,12 +450,17 @@ ICCItem *fnDesignFind (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_UNIVERSE_EXTENSION_UNID		3
 #define FN_UNIVERSE_GET_EXTENSION_DATA	4
 #define FN_UNIVERSE_SET_EXTENSION_DATA	5
+#define FN_UNIVERSE_FIND_OBJ			6
 
 ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_RESOURCE_CREATE_IMAGE_DESC	1
 
 ICCItem *fnResourceGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+
+#define FN_SYS_ORBIT_POS				0
+
+ICCItem *fnSystemOrbit (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_VECTOR_ADD					0
 #define FN_VECTOR_SUBTRACT				1
@@ -476,6 +483,10 @@ ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 #define DISP_FRIEND						CONSTLIT("friend")
 
 ICCItem *fnSovereignSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+
+#define FIELD_ANGLE_OFFSET				CONSTLIT("angleOffset")
+#define FIELD_ARC_OFFSET				CONSTLIT("arcOffset")
+#define FIELD_RADIUS_OFFSET				CONSTLIT("radiusOffset")
 
 static PRIMITIVEPROCDEF g_Extensions[] =
 	{
@@ -1287,11 +1298,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'abandoned\n"
 			"   'hp\n"
 			"   'immutable\n"
+			"   'installDeviceMaxLevel\n"
 			"   'maxHP\n"
 			"   'maxStructuralHP\n"
+			"   'orbit\n"
+			"   'repairArmorMaxLevel\n"
 			"   'structuralHP\n",
 
 			"is",	0,	},
+
+		{	"objGetRefuelItemAndPrice",		fnObjGet,		FN_OBJ_GET_REFUEL_ITEM,	
+			"(objGetRefuelItemAndPrice obj objToRefuel) -> (item price)",
+			"ii",		0,	},
 
 		{	"objGetSellPrice",				fnObjGet,		FN_OBJ_GET_SELL_PRICE,	
 			"(objGetSellPrice obj item ['noInventoryCheck]) -> price",
@@ -1653,6 +1671,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   +/-unid:{unid}     Require/exclude missions of given unid\n",
 			"*s",	0,	},
 
+		{	"msnFireEvent",					fnObjSet,		FN_OBJ_FIRE_EVENT,
+			"(msnFireEvent missionObj event) -> result of event",
+			"is",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"msnGetData",					fnObjData,		FN_OBJ_GETDATA,
 			"(msnGetData missionObj attrib) -> data",
 			NULL,	0,	},
@@ -1666,6 +1688,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"property\n\n"
 			
+			"   'acceptedOn        Tick on which player accepted mission (or Nil)\n"
 			"   'isActive          Is an active player mission\n"
 			"   'isCompleted       Is a completed mission (player or non-player)\n"
 			"   'isDebriefed       Player has been debriefed\n"
@@ -1675,11 +1698,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'isOpen            Mission is available to player\n"
 			"   'isSuccess         Mission has succeeded\n"
 			"   'isUnavailable     Mission is unavailable to player\n"
+			"   'name              The name of the mission\n"
 			"   'nodeID            ID of the mission's owner system\n"
 			"   'ownerID           ID of the mission's owner object\n"
+			"   'summary           A summary description of the mission\n"
 			"   'unid              Mission type UNID\n",
 
 			"is",	0,	},
+
+		{	"msnGetStaticData",				fnObjData,		FN_OBJ_GET_STATIC_DATA,
+			"(msnGetStaticData missionObj attrib) -> data",
+			NULL,	0,	},
 
 		{	"msnRegisterForEvents",			fnObjSetOld,		FN_OBJ_REGISTER_EVENTS,
 			"(msnRegisterForEvents missionObj obj)",
@@ -1708,7 +1737,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"   'isDebriefed True|Nil\n"
 			"   'isDeclined True|Nil\n"
-			"   'isIntroShown True|Nil\n",
+			"   'isIntroShown True|Nil\n"
+			"   'name newName\n"
+			"   'summary newSummary\n",
 
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
@@ -1943,6 +1974,22 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(sysIsKnown [nodeID]) -> True/Nil",
 			"*",	0,	},
 
+		{	"sysOrbitPos",					fnSystemOrbit,	FN_SYS_ORBIT_POS,
+			"(sysOrbitPos orbit [options]) -> vector\n\n"
+			
+			"options:\n\n"
+			
+			"   'angleOffset:n              +/- n degrees along orbit arc\n"
+			"   'arcOffset:n                +/- n light-seconds along orbit arc\n"
+			"   'radiusOffset:n             +/- n light-seconds radius\n\n"
+			
+			"For arcOffset and radiusOffset, n may also be a list with the following"
+			"formats:\n\n"
+			
+			"   (list 'gaussian min max)\n",
+
+			"v*",	0,	},
+
 		{	"sysPlaySound",					fnSystemCreate,	FN_SYS_PLAY_SOUND,
 			"(sysPlaySound unid [sourceObj]) -> True/Nil",
 			"i*",	0,	},
@@ -2095,6 +2142,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(typSetData unid attrib data) -> True/Nil",
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
+		{	"typTranslate",				fnDesignGet,		FN_DESIGN_TRANSLATE,
+			"(typTranslate unid textID [default]) -> text (or Nil)",
+			"iv*",	0,	},
+
 		//	Economy function
 		//	----------------
 
@@ -2128,6 +2179,21 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	Universe functions
 		//	----------------
+
+		{	"unvFindObj",					fnUniverseGet,		FN_UNIVERSE_FIND_OBJ,
+			"(unvFindObj [nodeID] criteria) -> list of entries\n\n"
+
+			"criteria\n\n"
+			
+			"   s                  ShipClass\n"
+			"   t                  StationType\n"
+			"   +/-{attrib}        Require/exclude types with given attribute\n\n"
+			
+			"entry\n\n"
+			
+			"   ({objID} {type} {nodeID})\n",
+
+			"*s",	0,	},
 
 		{	"unvGetCurrentExtensionUNID",	fnUniverseGet,	FN_UNIVERSE_EXTENSION_UNID,
 			"(unvGetCurrentExtensionUNID) -> UNID",
@@ -2822,6 +2888,20 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sData = CreateDataFromItem(*pCC, pArgs->GetElement(2));
 			pType->SetGlobalData(sAttrib, sData);
 			return pCC->CreateTrue();
+			}
+
+		case FN_DESIGN_TRANSLATE:
+			{
+			ICCItem *pResult;
+			if (!pType->Translate(NULL, pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
+				{
+				if (pArgs->GetCount() > 2)
+					return pArgs->GetElement(2)->Reference();
+				else
+					return pCC->CreateNil();
+				}
+
+			return pResult;
 			}
 
 		default:
@@ -4499,7 +4579,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the value from the station that is buying
 
 			else
-				iValue = pObj->GetBuyPrice(Item);
+				iValue = pObj->GetBuyPrice(Item, 0);
 
 			if (iValue >= 0)
 				return pCC->CreateInteger(iValue);
@@ -4686,6 +4766,41 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_GET_PROPERTY:
 			return pObj->GetProperty(pArgs->GetElement(1)->GetStringValue());
 
+		case FN_OBJ_GET_REFUEL_ITEM:
+			{
+			CSpaceObject *pObjToRefuel = CreateObjFromItem(*pCC, pArgs->GetElement(1));
+			if (pObjToRefuel == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid object to refuel."));
+
+			CItemType *pFuelType;
+			int iPrice;
+			if (!pObj->GetRefuelItemAndPrice(pObjToRefuel, &pFuelType, &iPrice))
+				return pCC->CreateNil();
+
+			//	Create a linked list to return the two values
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+
+			//	Add the fuel item
+
+			ASSERT(pFuelType);
+			ICCItem *pFuelItem = CreateListFromItem(*pCC, CItem(pFuelType, 1));
+			pList->Append(pCC, pFuelItem);
+			pFuelItem->Discard(pCC);
+
+			//	Add the price
+
+			pList->AppendIntegerValue(pCC, iPrice);
+
+			//	Done
+
+			return pResult;
+			}
+
 		case FN_OBJ_GET_SELL_PRICE:
 			{
 			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
@@ -4701,7 +4816,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the value from the station that is selling
 
 			else
-				iValue = pObj->GetSellPrice(Item, bNoInventoryCheck);
+				iValue = pObj->GetSellPrice(Item, (bNoInventoryCheck ? CTradingDesc::FLAG_NO_INVENTORY_CHECK : 0));
 
 			if (iValue > 0)
 				return pCC->CreateInteger(iValue);
@@ -6212,16 +6327,16 @@ ICCItem *fnMission (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	{
 	ALERROR error;
-	int i;
+	int i, j;
 	CCodeChain *pCC = pEvalCtx->pCC;
 
 	switch (dwData)
 		{
 		case FN_MISSION_CREATE:
 			{
-			//	Get the list of mission types
+			//	Get the list of mission types, categorized by priority
 
-			TArray<CMissionType *> Missions;
+			TSortMap<int, TArray<CMissionType *>> MissionsByPriority(DescendingSort);
 			ICCItem *pList = pArgs->GetElement(0);
 			for (i = 0; i < pList->GetCount(); i++)
 				{
@@ -6229,10 +6344,27 @@ ICCItem *fnMission (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				if (pType == NULL)
 					return pCC->CreateError(strPatternSubst(CONSTLIT("Unknown mission type: %x."), pList->GetElement(i)->GetIntegerValue()), pList->GetElement(i));
 
-				Missions.Insert(pType);
+				//	Get the proper category
+
+				TArray<CMissionType *> *pCategory = MissionsByPriority.SetAt(pType->GetPriority());
+				pCategory->Insert(pType);
 				}
 
-			Missions.Shuffle();
+			//	Now generate a properly ordered list by priority (but randomized within
+			//	each priority).
+
+			TArray<CMissionType *> Missions;
+			for (i = 0; i < MissionsByPriority.GetCount(); i++)
+				{
+				//	Randomize this category
+
+				MissionsByPriority[i].Shuffle();
+
+				//	Add in order
+
+				for (j = 0; j < MissionsByPriority[i].GetCount(); j++)
+					Missions.Insert(MissionsByPriority[i][j]);
+				}
 
 			//	Get arguments
 
@@ -9524,6 +9656,83 @@ ICCItem *fnSystemMisc (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		}
 	}
 
+ICCItem *fnSystemOrbit (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnSystemOrbit
+//
+//	(sysOrbitPos orbit [options]) -> vector
+
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+
+	//	Get the orbit
+
+	COrbit OrbitDesc;
+	if (!CreateOrbitFromList(*pCC, pArgs->GetElement(0), &OrbitDesc))
+		return pCC->CreateError(CONSTLIT("Invalid orbit object"), pArgs->GetElement(0));
+
+	//	Process
+
+	switch (dwData)
+		{
+		case FN_SYS_ORBIT_POS:
+			{
+			//	Get options, if we have any
+
+			ICCItem *pOptions = (pArgs->GetCount() > 1 ? pArgs->GetElement(1) : NULL);
+
+			//	Optimize case where we have no options.
+
+			if (pOptions == NULL)
+				return CreateListFromVector(*pCC, OrbitDesc.GetObjectPos());
+
+			//	Get options
+
+			ICCItem *pAngleOffset = (pOptions ? pOptions->GetElement(FIELD_ANGLE_OFFSET) : NULL);
+			ICCItem *pArcOffset = (pOptions ? pOptions->GetElement(FIELD_ARC_OFFSET) : NULL);
+			ICCItem *pRadiusOffset = (pOptions ? pOptions->GetElement(FIELD_RADIUS_OFFSET) : NULL);
+
+			//	Compute an angle offset and a radius offset
+
+			Metric rRadiusOffset = 0.0;
+			Metric rAngleOffset = 0.0;
+
+			if (pRadiusOffset)
+				rRadiusOffset = CalcRandomMetric(*pCC, pRadiusOffset);
+
+			if (pAngleOffset)
+				rAngleOffset += mathDegreesToRadians(pAngleOffset->GetIntegerValue());
+
+			if (pArcOffset)
+				{
+				double rArcOffset = CalcRandomMetric(*pCC, pArcOffset);
+
+				//	Convert from linear to angular. NOTE: We use a circle 
+				//	instead of an ellipse because we're lazy.
+
+				Metric rCirc = (OrbitDesc.GetSemiMajorAxis() + rRadiusOffset);
+				rAngleOffset += (rCirc > 0.0 ? rArcOffset / rCirc : 0.0);
+				}
+
+			//	Adjust the orbit
+
+			COrbit NewOrbitDesc(OrbitDesc.GetFocus(),
+					Max(1.0, OrbitDesc.GetSemiMajorAxis() + rRadiusOffset),
+					OrbitDesc.GetEccentricity(),
+					OrbitDesc.GetRotation(),
+					OrbitDesc.GetObjectAngle() + rAngleOffset);
+
+			//	Done
+
+			return CreateListFromVector(*pCC, NewOrbitDesc.GetObjectPos());
+			}
+
+		default:
+			ASSERT(false);
+			return NULL;
+		}
+	}
+
 ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 //	fnSystemVectorMath
@@ -9815,6 +10024,70 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_UNIVERSE_EXTENSION_UNID:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			CExtension *pExtension = pCtx->GetExtension();
+			if (pExtension == NULL)
+				return pCC->CreateNil();
+
+			return pCC->CreateInteger(pExtension->GetUNID());
+			}
+
+		case FN_UNIVERSE_FIND_OBJ:
+			{
+			int iArg = 0;
+
+			//	If we have two args, then load the node ID
+
+			CString sNodeID;
+			if (pArgs->GetCount() > 1)
+				sNodeID = pArgs->GetElement(iArg++)->GetStringValue();
+
+			//	Parse the criteria
+
+			CDesignTypeCriteria Criteria;
+			if (CDesignTypeCriteria::ParseCriteria(pArgs->GetElement(iArg++)->GetStringValue(), &Criteria) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Invalid design type criteria"), pArgs->GetElement(0));
+
+			//	Get the list of entries
+
+			TArray<CObjectTracker::SObjEntry> Result;
+			if (!g_pUniverse->FindObjects(sNodeID, Criteria, &Result))
+				return pCC->CreateNil();
+
+			//	Create a list to hold the results
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+			for (i = 0; i < Result.GetCount(); i++)
+				{
+				//	Create a list for each entry
+
+				ICCItem *pEntry = pCC->CreateLinkedList();
+				if (pEntry->IsError())
+					{
+					pEntry->Discard(pCC);
+					continue;
+					}
+
+				CCLinkedList *pEntryList = (CCLinkedList *)pEntry;
+				pEntryList->AppendIntegerValue(pCC, Result[i].dwObjID);
+				pEntryList->AppendIntegerValue(pCC, Result[i].pType->GetUNID());
+				pEntryList->AppendStringValue(pCC, Result[i].pNode->GetID());
+
+				pList->Append(pCC, pEntry);
+				pEntry->Discard(pCC);
+				}
+
+			//	Done
+
+			return pResult;
+			}
+
 		case FN_UNIVERSE_GET_EXTENSION_DATA:
 			{
 			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
@@ -9835,16 +10108,6 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Result
 
 			return pCC->Link(sData, 0, NULL);
-			}
-
-		case FN_UNIVERSE_EXTENSION_UNID:
-			{
-			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
-			CExtension *pExtension = pCtx->GetExtension();
-			if (pExtension == NULL)
-				return pCC->CreateNil();
-
-			return pCC->CreateInteger(pExtension->GetUNID());
 			}
 
 		case FN_UNIVERSE_REAL_DATE:

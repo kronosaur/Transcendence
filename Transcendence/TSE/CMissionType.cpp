@@ -4,8 +4,12 @@
 
 #include "PreComp.h"
 
+#define EXPIRE_TIME_ATTRIB						CONSTLIT("expireTime")
+#define FAILURE_AFTER_OUT_OF_SYSTEM_ATTRIB		CONSTLIT("failureAfterOutOfSystem")
 #define NAME_ATTRIB								CONSTLIT("name")
+#define NO_DEBRIEF_ATTRIB						CONSTLIT("noDebrief")
 #define NO_FAILURE_ON_OWNER_DESTROYED_ATTRIB	CONSTLIT("noFailureOnOwnerDestroyed")
+#define PRIORITY_ATTRIB							CONSTLIT("priority")
 
 #define FIELD_NAME								CONSTLIT("name")
 
@@ -42,7 +46,11 @@ ALERROR CMissionType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	{
 	m_sName = pDesc->GetAttribute(NAME_ATTRIB);
+	m_iPriority = pDesc->GetAttributeIntegerBounded(PRIORITY_ATTRIB, 0, -1, 1);
+	m_iExpireTime = pDesc->GetAttributeIntegerBounded(EXPIRE_TIME_ATTRIB, 1, -1, -1);
+	m_iFailIfOutOfSystem = pDesc->GetAttributeIntegerBounded(FAILURE_AFTER_OUT_OF_SYSTEM_ATTRIB, 0, -1, -1);
 	m_fNoFailureOnOwnerDestroyed = pDesc->GetAttributeBool(NO_FAILURE_ON_OWNER_DESTROYED_ATTRIB);
+	m_fNoDebrief = pDesc->GetAttributeBool(NO_DEBRIEF_ATTRIB);
 
 	return NOERROR;
 	}

@@ -26,8 +26,11 @@
 #define PROPERTY_ABANDONED				CONSTLIT("abandoned")
 #define PROPERTY_HP						CONSTLIT("hp")
 #define PROPERTY_IMMUTABLE				CONSTLIT("immutable")
+#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL	CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_MAX_HP					CONSTLIT("maxHP")
 #define PROPERTY_MAX_STRUCTURAL_HP		CONSTLIT("maxStructuralHP")
+#define PROPERTY_ORBIT					CONSTLIT("orbit")
+#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL	CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_STRUCTURAL_HP			CONSTLIT("structuralHP")
 
 #define STR_TRUE						CONSTLIT("True")
@@ -724,7 +727,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	This type has now been encountered
 
-	pType->SetEncountered();
+	pType->SetEncountered(pSystem ? pSystem->GetLevel() : 0);
 
 	//	Fire events on devices
 
@@ -1017,7 +1020,7 @@ CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
 		return 0;
 	}
 
-int CStation::GetBuyPrice (const CItem &Item, int *retiMaxCount)
+int CStation::GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount)
 
 //	GetBuyPrice
 //
@@ -1034,7 +1037,7 @@ int CStation::GetBuyPrice (const CItem &Item, int *retiMaxCount)
 
 	if (m_pTrade)
 		{
-		if (m_pTrade->Buys(this, Item, &iPrice, retiMaxCount))
+		if (m_pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
 			return iPrice;
 		}
 
@@ -1043,7 +1046,7 @@ int CStation::GetBuyPrice (const CItem &Item, int *retiMaxCount)
 	CTradingDesc *pTrade = m_pType->GetTradingDesc();
 	if (pTrade)
 		{
-		if (pTrade->Buys(this, Item, &iPrice, retiMaxCount))
+		if (pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
 			{
 			if (m_pTrade)
 				return (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
@@ -1201,11 +1204,56 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_IMMUTABLE))
 		return CC.CreateBool(IsImmutable());
 
+	else if (strEquals(sName, PROPERTY_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+		if (m_pTrade)
+			{
+			int iLevel = m_pTrade->GetMaxLevelMatched(CTradingDesc::serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		CTradingDesc *pTrade = m_pType->GetTradingDesc();
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(CTradingDesc::serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
+
 	else if (strEquals(sName, PROPERTY_MAX_HP))
 		return CC.CreateInteger(m_iMaxHitPoints);
 
 	else if (strEquals(sName, PROPERTY_MAX_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iMaxStructuralHP);
+
+	else if (strEquals(sName, PROPERTY_ORBIT))
+		return (m_pMapOrbit ? CreateListFromOrbit(CC, *m_pMapOrbit) : CC.CreateNil());
+
+	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+		if (m_pTrade)
+			{
+			int iLevel = m_pTrade->GetMaxLevelMatched(CTradingDesc::serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		CTradingDesc *pTrade = m_pType->GetTradingDesc();
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(CTradingDesc::serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
 
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iStructuralHP);
@@ -1229,7 +1277,31 @@ IShipGenerator *CStation::GetRandomEncounterTable (int *retiFrequency) const
 	return m_pType->GetEncountersTable();
 	}
 
-int CStation::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
+bool CStation::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
+
+//	GetRefuelItemAndPrice
+//
+//	Returns the appropriate item to use for refueling (based on the trading
+//	directives).
+
+	{
+	//	See if we have an override
+
+	if (m_pTrade && m_pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, retpItemType, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if (pTrade && pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, retpItemType, retiPrice))
+		return true;
+
+	//	Otherwise, we do not refuel
+
+	return false;
+	}
+
+int CStation::GetSellPrice (const CItem &Item, DWORD dwFlags)
 
 //	GetSellPrice
 //
@@ -1245,7 +1317,7 @@ int CStation::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
 
 	if (m_pTrade)
 		{
-		m_pTrade->Sells(this, Item, &iPrice);
+		m_pTrade->Sells(this, Item, dwFlags, &iPrice);
 		bHasTradeDirective = true;
 		}
 
@@ -1256,7 +1328,7 @@ int CStation::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
 		CTradingDesc *pTrade = m_pType->GetTradingDesc();
 		if (pTrade)
 			{
-			pTrade->Sells(this, Item, &iPrice);
+			pTrade->Sells(this, Item, dwFlags, &iPrice);
 
 			if (m_pTrade && iPrice != -1)
 				iPrice = (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
@@ -1280,7 +1352,7 @@ int CStation::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
 
 	//	If we don't have any of the item, then we don't sell any
 
-	if (!bNoInventoryCheck)
+	if (!(dwFlags & CTradingDesc::FLAG_NO_INVENTORY_CHECK))
 		{
 		CItemListManipulator ItemList(GetItemList());
 		if (!ItemList.SetCursorAtItem(Item))
@@ -2937,11 +3009,18 @@ void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 
 	//	Draw the station
 
-	if (m_Scale == scaleWorld || m_Scale == scaleStar)
+	if (m_Scale == scaleWorld)
 		Dest.ColorTransBlt(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
 				m_MapImage,
 				x - (m_MapImage.GetWidth() / 2),
 				y - (m_MapImage.GetHeight() / 2));
+
+	else if (m_Scale == scaleStar)
+		Dest.BltLighten(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
+				m_MapImage,
+				x - (m_MapImage.GetWidth() / 2),
+				y - (m_MapImage.GetHeight() / 2));
+
 	else if (m_pType->ShowsMapIcon() && m_fKnown)
 		{
 		//	Figure out the color

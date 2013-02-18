@@ -256,7 +256,7 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	return sText;
 	}
 
-void CTranscendenceModel::CalcStartingPos (CShipClass *pStartingShip, CString *retsNodeID, CString *retsPos)
+void CTranscendenceModel::CalcStartingPos (CShipClass *pStartingShip, DWORD *retdwMap, CString *retsNodeID, CString *retsPos)
 
 //	CalcStartingPos
 //
@@ -266,19 +266,27 @@ void CTranscendenceModel::CalcStartingPos (CShipClass *pStartingShip, CString *r
 	//	See if the player ship specifies it.
 
 	const CPlayerSettings *pPlayerSettings = pStartingShip->GetPlayerSettings();
-	CString sNodeID = pPlayerSettings->GetStartNode();
-	CString sPos = pPlayerSettings->GetStartPos();
+	DWORD dwMap = pPlayerSettings->GetStartingMap();
+	CString sNodeID = pPlayerSettings->GetStartingNode();
+	CString sPos = pPlayerSettings->GetStartingPos();
 
 	//	If not, see if the adventure does
 
-	if (sNodeID.IsBlank() || sPos.IsBlank())
+	if (dwMap == 0 || sNodeID.IsBlank() || sPos.IsBlank())
 		{
 		CAdventureDesc *pAdventure = m_Universe.GetCurrentAdventureDesc();
-		sNodeID = pAdventure->GetStartingNodeID();
-		sPos = pAdventure->GetStartingPos();
+		if (dwMap == 0)
+			dwMap = pAdventure->GetStartingMapUNID();
+
+		if (sNodeID.IsBlank())
+			sNodeID = pAdventure->GetStartingNodeID();
+
+		if (sPos.IsBlank())
+			sPos = pAdventure->GetStartingPos();
 		}
 
 	//	If not, come up with a reasonable default
+	//	(It's OK if dwMap is 0.)
 
 	if (sNodeID.IsBlank() || sPos.IsBlank())
 		{
@@ -289,6 +297,9 @@ void CTranscendenceModel::CalcStartingPos (CShipClass *pStartingShip, CString *r
 		}
 
 	//	Done
+
+	if (retdwMap)
+		*retdwMap = dwMap;
 
 	if (retsNodeID)
 		*retsNodeID = sNodeID;
@@ -304,6 +315,82 @@ void CTranscendenceModel::CleanUp (void)
 //	Clean up the model
 
 	{
+	}
+
+ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSystem **retpStartingSystem, CString *retsError)
+
+//	CreateAllSystems
+//
+//	Create all systems for the game.
+
+	{
+	ALERROR error;
+	int i;
+	CString sError;
+
+	CTopologyNode *pStartingNode = NULL;
+
+	//	Loop over all topology nodes and create the system.
+	//	(Except for the starting system, which we create at the end.)
+
+	for (i = 0; i < m_Universe.GetTopologyNodeCount(); i++)
+		{
+		CTopologyNode *pNode = m_Universe.GetTopologyNode(i);
+
+		//	Do not try to create end game nodes
+
+		if (pNode->IsEndGame())
+			continue;
+
+		//	If this is the starting node, then skip it (we create it later).
+
+		if (strEquals(pNode->GetID(), sStartNode))
+			{
+			pStartingNode = pNode;
+			continue;
+			}
+
+		//	Otherwise, create this system
+
+		CSystem *pNewSystem;
+		if (error = m_Universe.CreateStarSystem(pNode, &pNewSystem, &sError))
+			{
+			kernelDebugLogMessage("Error creating system %s: %s", pNode->GetSystemName(), sError);
+			if (retsError)
+				*retsError = sError;
+			return error;
+			}
+
+		//	Save the system to disk
+
+		if (error = m_GameFile.SaveSystem(pNewSystem->GetID(), pNewSystem, 0))
+			{
+			kernelDebugLogMessage("Error saving system '%s' to game file", pNewSystem->GetName());
+			if (retsError)
+				*retsError = CONSTLIT("Unable to save system.");
+			return error;
+			}
+
+		//	Delete the system
+
+		m_Universe.FlushStarSystem(pNode);
+		}
+
+	//	Create the starting system
+
+	if (pStartingNode == NULL)
+		{
+		if (retsError)
+			*retsError = strPatternSubst(CONSTLIT("Unable to find starting system: %s"), sStartNode);
+		return ERR_FAIL;
+		}
+
+	if (error = m_Universe.CreateStarSystem(pStartingNode, retpStartingSystem, retsError))
+		return error;
+
+	//	Done
+
+	return NOERROR;
 	}
 
 ALERROR CTranscendenceModel::EndGameClose (CString *retsError)
@@ -2117,7 +2204,7 @@ void CTranscendenceModel::StartNewGameAbort (void)
 	m_GameFile.Close();
 	}
 
-ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
+ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &NewGame, CString *retsError)
 
 //	StartNewGameBackground
 //
@@ -2131,11 +2218,6 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 
 	ASSERT(m_iState == stateCreatingNewGame);
 	ASSERT(m_pPlayer);
-
-	//	Initialize topology, etc.
-
-	if (error = m_Universe.InitGame(retsError))
-		return error;
 
 	//	Figure out the ship class that we want
 
@@ -2153,20 +2235,34 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 		return ERR_FAIL;
 		}
 
+	DWORD dwStartMap;
 	CString sStartNode;
 	CString sStartPos;
-	CalcStartingPos(pStartingShip, &sStartNode, &sStartPos);
+	CalcStartingPos(pStartingShip, &dwStartMap, &sStartNode, &sStartPos);
+
+	//	Initialize topology, etc.
+
+	if (error = m_Universe.InitGame(dwStartMap, retsError))
+		return error;
 
 	//	Get the starting system
 
-	CSystem *pSystem;
-	if (error = m_Universe.CreateStarSystem(sStartNode, &pSystem, retsError))
-		return error;
+	CSystem *pStartingSystem;
+	if (NewGame.bFullCreate)
+		{
+		if (error = CreateAllSystems(sStartNode, &pStartingSystem, retsError))
+			return error;
+		}
+	else
+		{
+		if (error = m_Universe.CreateStarSystem(sStartNode, &pStartingSystem, retsError))
+			return error;
+		}
 
 	//	Figure out where in the system we want to start
 
 	CVector vStartPos;
-	CSpaceObject *pStart = pSystem->GetNamedObject(sStartPos);
+	CSpaceObject *pStart = pStartingSystem->GetNamedObject(sStartPos);
 	if (pStart)
 		vStartPos = pStart->GetPos();
 
@@ -2180,7 +2276,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 	CShip *pPlayerShip;
 
 	m_Universe.SetLogImageLoad(false);
-	error = pSystem->CreateShip(m_pPlayer->GetStartingShipClass(),
+	error = pStartingSystem->CreateShip(m_pPlayer->GetStartingShipClass(),
 			m_pPlayer,
 			NULL,
 			m_Universe.FindSovereign(g_PlayerSovereignUNID),
@@ -2259,7 +2355,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (CString *retsError)
 		for (int i = 0; i < 14; i++)
 			{
 			CFleetShipAI *pController = new CFleetShipAI;
-			if (error = pSystem->CreateShip(g_DebugHenchmenShipUNID,
+			if (error = pStartingSystem->CreateShip(g_DebugHenchmenShipUNID,
 						pController,
 						NULL,
 						m_Universe.FindSovereign(g_PlayerSovereignUNID),

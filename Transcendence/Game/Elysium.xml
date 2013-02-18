@@ -2,30 +2,8 @@
 
 <TranscendenceModule>
 
-	<!-- SPECIAL SYSTEMS -->
-	
 	<SystemMap UNID="&smElysium;">
-	
-		<Node ID="Elysium">
-			<System
-					UNID=				"&ssElysium;"
-					name=				"Elysium"
-					level=				"5"
-					/>
-
-			<Stargates>
-				<Stargate name="SE" to="SE:Outbound"/>
-				<Stargate name="C3" to="C3:Outbound"/>
-				<Stargate name="SK" to="SK:Outbound"/>
-				<Stargate name="C6" to="C6:Outbound"/>
-				<Stargate name="C8" to="C8:Outbound"/>
-				<Stargate name="A1" to="A1:Outbound"/>
-				<Stargate name="EC" to="EC:Outbound"/>
-				<Stargate name="PJ" to="PJ:Outbound"/>
-				<Stargate name="A6" to="A6:Outbound"/>
-				<Stargate name="G2" to="G2:Inbound"/>
-			</Stargates>
-		</Node>
+		<!-- For backwards compatibility only... -->
 	</SystemMap>
 	
 	<!-- Elysium -->
@@ -40,18 +18,39 @@
 
 			<!-- Stargates -->
 
-			<Orbitals distance="3" scale="light-minute" angle="equidistant">
-				<Stargate objName="SE" type="&stMajellenStargate;"/>
-				<Stargate objName="C3" type="&stMajellenStargate;"/>
-				<Stargate objName="SK" type="&stMajellenStargate;"/>
-				<Stargate objName="C6" type="&stMajellenStargate;"/>
-				<Stargate objName="C8" type="&stMajellenStargate;"/>
-				<Stargate objName="A1" type="&stMajellenStargate;"/>
-				<Stargate objName="EC" type="&stMajellenStargate;"/>
-				<Stargate objName="PJ" type="&stMajellenStargate;"/>
-				<Stargate objName="A6" type="&stMajellenStargate;"/>
-				<Stargate objName="G2" type="&stMajellenStargate;"/>
-			</Orbitals>
+			<Code>
+				(block (allStargates theGate)
+
+					; Make a list of all the gates that we need to create
+
+					(setq allStargates 
+						(map (sysGetStargates) 'excludeNil theGate
+							(if	(and (not (sysGetObjectByName theGate))
+									(not (sysHasAttribute (sysGetStargateDestinationNode theGate) 'noAutoGateCreate))
+									)
+								theGate
+								)
+							)
+						)
+
+					; We spread out all the gates in a ring at 3 light-minutes
+
+					(if allStargates
+						(block (angleInc theAngle theRadius)
+							(setq angleInc (divide 360 (count allStargates)))
+							(setq theAngle (random 0 359))
+							(setq theRadius 180)
+
+							(enum allStargates theGate
+								(block Nil
+									(sysCreateStargate &stMajellenStargate; (sysVectorPolarOffset Nil theAngle theRadius) theGate)
+									(setq theAngle (add theAngle angleInc))
+									)
+								)
+							)
+						)
+					)
+			</Code>
 
 			<!-- Asteroid Belt -->
 

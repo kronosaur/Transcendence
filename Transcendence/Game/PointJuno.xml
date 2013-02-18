@@ -1433,6 +1433,10 @@
 				</Group>
 			</Orbitals>
 
+			<!-- Create more stargates in case an extension added more links -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
 		</SystemGroup>
 	</SystemType>
 

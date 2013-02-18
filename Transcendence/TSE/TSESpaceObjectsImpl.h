@@ -1001,7 +1001,7 @@ class CShip : public CSpaceObject
 		virtual ScaleTypes GetScale (void) const { return scaleShip; }
 		virtual int GetScore (void) { return m_pClass->GetScore(); }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pClass->GetScreen(sName); }
-		virtual int GetSellPrice (const CItem &Item, bool bNoInventoryCheck = false);
+		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual int GetShieldLevel (void);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual int GetStealth (void) const;
@@ -1283,7 +1283,7 @@ class CStation : public CSpaceObject
 		virtual CString DebugCrashInfo (void);
 		virtual void Decontaminate (void) { m_fRadioactive = false; }
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID);
-		virtual int GetBuyPrice (const CItem &Item, int *retiMaxCount = NULL);
+		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL);
 		virtual Categories GetCategory (void) const { return catStation; }
 		virtual DWORD GetClassUNID (void) { return m_pType->GetUNID(); }
 		virtual DWORD GetDefaultBkgnd (void) { return m_pType->GetDefaultBkgnd(); }
@@ -1299,6 +1299,7 @@ class CStation : public CSpaceObject
 		virtual int GetLevel (void) const { return m_pType->GetLevel(); }
 		virtual const COrbit *GetMapOrbit (void) { return m_pMapOrbit; }
 		virtual Metric GetMass (void) { return m_rMass; }
+		virtual int GetMaxLightDistance (void) { return m_pType->GetMaxLightDistance(); }
 		virtual CString GetName (DWORD *retdwFlags = NULL);
 		virtual int GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CStation"); }
@@ -1314,9 +1315,10 @@ class CStation : public CSpaceObject
 		virtual EDamageResults GetPassthroughDefault (void);
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual IShipGenerator *GetRandomEncounterTable (int *retiFrequency = NULL) const;
+		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		virtual ScaleTypes GetScale (void) const { return m_Scale; }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pType->GetScreen(sName); }
-		virtual int GetSellPrice (const CItem &Item, bool bNoInventoryCheck = false);
+		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual COLORREF GetSpaceColor (void) { return m_pType->GetSpaceColor(); }
 		virtual CString GetStargateID (void) const;

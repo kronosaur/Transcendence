@@ -52,6 +52,7 @@ static char *FEEDBACK[] =
 	"Darksider",
 	"Darth Saber",
 	"DarthGeek",
+	"Datal",
 	"Charles Davis",
 	"Demanther",
 	"dkedr",	//	d.kedrinski

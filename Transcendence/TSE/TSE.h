@@ -124,6 +124,7 @@ class CWeaponFireDesc;
 class IEffectPainter;
 class IShipController;
 class IShipGenerator;
+struct SLocationCriteria;
 
 extern CUniverse *g_pUniverse;
 
@@ -502,6 +503,26 @@ class CWeaponFireDesc
 class CTradingDesc
 	{
 	public:
+		enum EServiceTypes
+			{
+			serviceNone =						0,
+
+			serviceBuy =						1,
+			serviceSell =						2,
+			serviceAcceptDonations =			3,
+			serviceRefuel =						4,
+			serviceRepairArmor =				5,
+			serviceReplaceArmor =				6,
+			serviceInstallDevice =				7,
+			serviceRemoveDevice =				8,
+			};
+
+		enum Flags
+			{
+			FLAG_NO_INVENTORY_CHECK =	0x00000001,	//	Do not check to see if item exists
+			FLAG_NO_DONATION =			0x00000002,	//	Do not return prices for donations
+			};
+
 		CTradingDesc (void);
 		~CTradingDesc (void);
 
@@ -509,12 +530,14 @@ class CTradingDesc
 			{ AddOrder(pType, sCriteria, iPriceAdj, FLAG_BUYS); }
 		inline void AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
 			{ AddOrder(pType, sCriteria, iPriceAdj, FLAG_SELLS); }
-		bool Buys (CSpaceObject *pObj, const CItem &Item, int *retiPrice = NULL, int *retiMaxCount = NULL);
+		bool Buys (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice = NULL, int *retiMaxCount = NULL);
 		int Charge (CSpaceObject *pObj, int iCharge);
 		inline CEconomyType *GetEconomyType (void) { return m_pCurrency; }
 		inline int GetMaxCurrency (void) { return m_iMaxCurrency; }
+		int GetMaxLevelMatched (EServiceTypes iService) const;
+		bool GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice) const;
 		inline int GetReplenishCurrency (void) { return m_iReplenishCurrency; }
-		bool Sells (CSpaceObject *pObj, const CItem &Item, int *retiPrice = NULL);
+		bool Sells (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice = NULL);
 		void SetEconomyType (CEconomyType *pCurrency) { m_pCurrency.Set(pCurrency); }
 		void SetMaxCurrency (int iMaxCurrency) { m_iMaxCurrency = iMaxCurrency; }
 		void SetReplenishCurrency (int iReplenishCurrency) { m_iReplenishCurrency = iReplenishCurrency; }
@@ -528,16 +551,22 @@ class CTradingDesc
 		void WriteToStream (IWriteStream *pStream);
 
 	private:
-		enum Flags
+		enum InternalFlags
 			{
-			FLAG_SELLS =			0x00000001,	//	TRUE if station sells this item type
-			FLAG_BUYS =				0x00000002,	//	TRUE if station buys this item type
-			FLAG_ACTUAL_PRICE =		0x00000004,	//	TRUE if we compute actual price
-			FLAG_INVENTORY_ADJ =	0x00000008,	//	TRUE if we adjust the inventory
+			FLAG_ACTUAL_PRICE =			0x00000004,	//	TRUE if we compute actual price
+			FLAG_INVENTORY_ADJ =		0x00000008,	//	TRUE if we adjust the inventory
+
+			//	DEPRECATED: We don't store these flags, but we require the values
+			//	for older versions.
+
+			FLAG_SELLS =				0x00000001,	//	TRUE if station sells this item type
+			FLAG_BUYS =					0x00000002,	//	TRUE if station buys this item type
+			FLAG_ACCEPTS_DONATIONS =	0x00000010,	//	TRUE if we accept donations
 			};
 
-		struct SCommodityDesc
+		struct SServiceDesc
 			{
+			EServiceTypes iService;				//	Type of service
 			CString sID;						//	ID of order
 
 			CItemTypeRef pItemType;				//	Item type
@@ -550,17 +579,19 @@ class CTradingDesc
 			};
 
 		void AddOrder (CItemType *pItemType, const CString &sCriteria, int iPriceAdj, DWORD dwFlags);
-		CString ComputeID (DWORD dwUNID, const CString &sCriteria, DWORD dwFlags);
+		CString ComputeID (EServiceTypes iService, DWORD dwUNID, const CString &sCriteria, DWORD dwFlags);
 		int ComputeMaxCurrency (CSpaceObject *pObj);
-		int ComputePrice (CSpaceObject *pObj, const CItem &Item, const SCommodityDesc &Commodity);
-		bool Matches (const CItem &Item, const SCommodityDesc &Commodity);
-		bool SetInventoryCount (CSpaceObject *pObj, SCommodityDesc &Desc, CItemType *pItemType);
+		int ComputePrice (CSpaceObject *pObj, const CItem &Item, const SServiceDesc &Commodity) const;
+		bool FindService (EServiceTypes iService, const CItem &Item, const SServiceDesc **retpDesc);
+		bool Matches (const CItem &Item, const SServiceDesc &Commodity);
+		void ReadServiceFromFlags (DWORD dwFlags, EServiceTypes *retiService, DWORD *retdwFlags);
+		bool SetInventoryCount (CSpaceObject *pObj, SServiceDesc &Desc, CItemType *pItemType);
 
 		CEconomyTypeRef m_pCurrency;
 		int m_iMaxCurrency;
 		int m_iReplenishCurrency;
 
-		TArray<SCommodityDesc> m_List;
+		TArray<SServiceDesc> m_List;
 	};
 
 //	Space environment
@@ -713,14 +744,16 @@ class CSystemCreateEvents
 		TArray<SEventDesc> m_Events;
 	};
 
-struct SLabelDesc
+struct SLocationCriteria
 	{
-	SLabelDesc (void) : 
-			bDelete(false) { }
+	SLocationCriteria (void) :
+			rMinDist(0.0),
+			rMaxDist(0.0)
+		{ }
 
-	COrbit OrbitDesc;
-	CString sAttributes;
-	bool bDelete;
+	CAttributeCriteria AttribCriteria;		//	Attribute criteria
+	Metric rMinDist;						//	Minimum distance from source
+	Metric rMaxDist;						//	Maximum distance from source
 	};
 
 struct SSystemCreateCtx
@@ -885,6 +918,33 @@ class CTerritoryList
 
 	private:
 		TArray<CTerritoryDef *> m_List;
+	};
+
+class CEnvironmentGrid
+	{
+	public:
+		enum EConstants
+			{
+			defaultSize =					16,		//	Each level is 16x16 tiles
+			defaultScale =					1,		//	Two levels (levels = scale + 1)
+			};
+
+		CEnvironmentGrid (void);
+
+		void GetNextTileType (STileMapEnumerator &i, int *retx, int *rety, CSpaceEnvironmentType **retpEnv = NULL) const;
+		CSpaceEnvironmentType *GetTileType (int xTile, int yTile);
+		inline bool HasMoreTiles (STileMapEnumerator &i) const { return m_Map.HasMore(i); }
+		void ReadFromStream (SLoadCtx &Ctx);
+		void SetTileType (int xTile, int yTile, CSpaceEnvironmentType *pEnv);
+		void WriteToStream (IWriteStream *pStream);
+
+	private:
+		void ConvertSpaceEnvironmentToPointers (CTileMap &UNIDs, CTileMap *retpPointers);
+		CSpaceEnvironmentType *GetSpaceEnvironmentFromTileDWORD (DWORD dwTile) const;
+		DWORD MakeTileDWORD (CSpaceEnvironmentType *pEnv);
+
+		CTileMap m_Map;
+		TSortMap<CSpaceEnvironmentType *, bool> m_EnvList;
 	};
 
 class CSystem : public CObject
@@ -1094,10 +1154,11 @@ class CSystem : public CObject
 		//	Locations & Territories
 		ALERROR AddTerritory (CTerritoryDef *pTerritory);
 		inline void BlockOverlappingLocations (void) { m_Locations.FillCloseLocations(); }
-		int CalcLocationWeight (int iLocID, const CAttributeCriteria &Criteria);
+		int CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &Criteria);
 		ALERROR CreateLocation (const CString &sID, const COrbit &Orbit, const CString &sAttributes, CLocationDef **retpLocation = NULL);
-		bool FindRandomLocation (const CAttributeCriteria &Criteria, DWORD dwFlags, CStationType *pStationToPlace, int *retiLocID);
+		bool FindRandomLocation (const SLocationCriteria &Criteria, DWORD dwFlags, const COrbit &CenterOrbitDesc, CStationType *pStationToPlace, int *retiLocID);
 		int GetEmptyLocationCount (void);
+		bool GetEmptyLocations (const SLocationCriteria &Criteria, const COrbit &CenterOrbitDesc, CStationType *pStationToPlace, TProbabilityTable<int> *retTable);
 		inline bool GetEmptyLocations (TArray<int> *retList) { return m_Locations.GetEmptyLocations(retList); }
 		inline CLocationDef *GetLocation (int iLocID) { return m_Locations.GetLocation(iLocID); }
 		inline int GetLocationCount (void) { return m_Locations.GetCount(); }
@@ -1122,8 +1183,6 @@ class CSystem : public CObject
 		void ComputeMapLabels (void);
 		void ComputeRandomEncounters (void);
 		void ComputeStars (void);
-		static void ConvertSpaceEnvironmentToPointers (CTileMap &UNIDs, CTileMap **retpPointers);
-		static void ConvertSpaceEnvironmentToUNIDs (CTileMap &Pointers, CTileMap **retpUNIDs);
 		ALERROR CreateStarField (int cxFieldWidth, int cyFieldHeight);
 		ALERROR CreateStationInt (CStationType *pType,
 								  const CVector &vPos,
@@ -1150,7 +1209,7 @@ class CSystem : public CObject
 		TSortMap<CString, CSpaceObject *> m_NamedObjects;			//	Indexed array of named objects (CSpaceObject *)
 
 		CTimedEventList m_TimedEvents;			//	Array of CTimedEvent
-		CTileMap *m_pEnvironment;				//	Nebulas, etc.
+		CEnvironmentGrid *m_pEnvironment;		//	Nebulas, etc.
 		CSystemEventHandlerNode m_EventHandlers;	//	List of system event handler
 		CNavigationPathNode m_NavPaths;			//	List of navigation paths
 		CLocationList m_Locations;				//	List of point locations
@@ -1903,7 +1962,7 @@ class CSpaceObject : public CObject
 		void AccelerateStop (Metric rPush, Metric rSeconds);
 		void AddEffect (IEffectPainter *pPainter, const CVector &vPos, int iTick = 0, int iRotation = 0);
 		void AddEventSubscriber (CSpaceObject *pObj);
-		ALERROR AddToSystem (CSystem *pSystem);
+		ALERROR AddToSystem (CSystem *pSystem, bool bInLoad = false);
 		inline bool Blocks (CSpaceObject *pObj) { return (m_fIsBarrier && CanBlock(pObj)); }
 		inline bool BlocksShips (void) { return (m_fIsBarrier && CanBlockShips()); }
 		inline bool CanBeControlled (void) { return m_iControlsFrozen == 0; }
@@ -2024,7 +2083,7 @@ class CSpaceObject : public CObject
 		inline CSystem *GetSystem (void) const { return m_pSystem; }
 		inline CUniverse *GetUniverse (void) const { return m_pSystem->GetUniverse(); }
 		inline const CVector &GetVel (void) const { return m_vVel; }
-		inline DWORD GetVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetVersion() : EXTENSION_VERSION); }
+		inline DWORD GetVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetVersion() : API_VERSION); }
 		inline bool HasInterSystemEvent (void) const { return (m_fHasInterSystemEvent ? true : false); }
 		inline bool HasNonLinearMove (void) const { return (m_fNonLinearMove ? true : false); }
 		inline bool HasOnAttackedEvent (void) const { return (m_fHasOnAttackedEvent ? true : false); }
@@ -2249,7 +2308,7 @@ class CSpaceObject : public CObject
 		virtual CInstalledDevice *FindDevice (const CItem &Item) { return NULL; }
 		virtual bool FindDeviceSlotDesc (const CItem &Item, SDeviceDesc *retDesc) { return false; }
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID) { return 0; }
-		virtual int GetBuyPrice (const CItem &Item, int *retiBuyPrice = NULL) { return -1; }
+		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL) { return -1; }
 		virtual Metric GetCargoSpaceLeft (void) { return 1000000.0; }
 		virtual int GetCombatPower (void) { return 0; }
 		virtual int GetCyberDefenseLevel (void) { return 1; }
@@ -2266,6 +2325,7 @@ class CSpaceObject : public CObject
 		virtual int GetLastFireTime (void) const { return 0; }
 		virtual int GetLevel (void) const { return 1; }
 		virtual int GetMaxPower (void) const { return 0; }
+		virtual int GetMaxLightDistance (void) { return 0; }
 		virtual int GetOpenDockingPortCount (void) { return 0; }
 		virtual CEnergyField *GetOverlay (DWORD dwID) const { return NULL; }
 		virtual const CString &GetOverlayData (DWORD dwID, const CString &sAttrib) { return NULL_STR; }
@@ -2274,9 +2334,10 @@ class CSpaceObject : public CObject
 		virtual int GetOverlayRotation (DWORD dwID) { return -1; }
 		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return NULL; }
 		virtual int GetPerception (void) { return perceptNormal; }
+		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice) { return false; }
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return NULL; }
 		virtual int GetScore (void) { return 0; }
-		virtual int GetSellPrice (const CItem &Item, bool bNoInventoryCheck = false) { return 0; }
+		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags) { return 0; }
 		virtual int GetShieldLevel (void) { return -1; }
 		virtual COLORREF GetSpaceColor (void) { return 0; }
 		virtual CString GetStargateID (void) const { return NULL_STR; }
@@ -2577,6 +2638,41 @@ class CGlobalSpaceObject
 		CSpaceObject *m_pObj;				//	Object pointer (may be NULL)
 	};
 
+class CObjectTracker
+	{
+	public:
+		struct SObjEntry
+			{
+			CTopologyNode *pNode;
+			CDesignType *pType;
+			DWORD dwObjID;
+			};
+
+		~CObjectTracker (void);
+
+		void Delete (CSpaceObject *pObj);
+		void DeleteAll (void);
+		bool Find (const CString &sNodeID, const CDesignTypeCriteria &Criteria, TArray<SObjEntry> *retResult);
+		void Insert (CSpaceObject *pObj);
+		void ReadFromStream (SUniverseLoadCtx &Ctx);
+		void WriteToStream (IWriteStream *pStream);
+
+	private:
+		struct SObjList
+			{
+			CTopologyNode *pNode;
+			CDesignType *pType;
+			TArray<DWORD> ObjectIDs;
+			};
+
+		bool AccumulateEntries (TArray<SObjList *> &Table, const CDesignTypeCriteria &Criteria, TArray<SObjEntry> *retResult);
+		SObjList *GetList (CSpaceObject *pObj);
+		SObjList *GetList (CTopologyNode *pNode, CDesignType *pType);
+
+		TArray<SObjList *> m_AllLists;
+		TSortMap<CString, TArray<SObjList *>> m_ByNode;
+	};
+
 //	Implementations ------------------------------------------------------------
 
 #ifndef INCL_TSE_SFX
@@ -2675,11 +2771,12 @@ class CUniverse : public CObject
 		virtual ~CUniverse (void);
 
 		ALERROR Init (SInitDesc &Ctx, CString *retsError);
-		ALERROR InitGame (CString *retsError);
+		ALERROR InitGame (DWORD dwStartingMap, CString *retsError);
 		void StartGame (bool bNewGame);
 
 		inline ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError) { return m_Design.AddDynamicType(pExtension, dwUNID, sSource, bNewGame, retsError); }
 		void AddEvent (CTimedEvent *pEvent);
+		inline void AddObject (CSpaceObject *pObj) { m_Objects.Insert(pObj); }
 		void AddSound (DWORD dwUNID, int iChannel);
 		inline void AddTimeDiscontinuity (const CTimeSpan &Duration) { m_Time.AddDiscontinuity(m_iTick++, Duration); }
 		ALERROR AddStarSystem (CTopologyNode *pTopology, CSystem *pSystem);
@@ -2694,9 +2791,11 @@ class CUniverse : public CObject
 		ALERROR CreateRandomMission (const TArray<CMissionType *> &Types, CSpaceObject *pOwner, ICCItem *pCreateData, CMission **retpMission, CString *retsError);
 		ALERROR CreateStarSystem (const CString &sNodeID, CSystem **retpSystem, CString *retsError = NULL, CSystemCreateStats *pStats = NULL);
 		ALERROR CreateStarSystem (CTopologyNode *pTopology, CSystem **retpSystem, CString *retsError = NULL, CSystemCreateStats *pStats = NULL);
+		inline void DeleteObject (CSpaceObject *pObj) { m_Objects.Delete(pObj); }
 		void DestroySystem (CSystem *pSystem);
 		inline CMission *FindMission (DWORD dwID) const { return m_AllMissions.GetMissionByID(dwID); }
 		CSpaceObject *FindObject (DWORD dwID);
+		inline bool FindObjects (const CString &sNodeID, const CDesignTypeCriteria &Criteria, TArray<CObjectTracker::SObjEntry> *retResult) { return m_Objects.Find(sNodeID, Criteria, retResult); }
 		inline void FireOnGlobalObjDestroyed (SDestroyCtx &Ctx) { m_Design.FireOnGlobalObjDestroyed(Ctx); }
 		inline void FireOnGlobalPaneInit (void *pScreen, CDesignType *pRoot, const CString &sScreen, const CString &sPane) { m_Design.FireOnGlobalPaneInit(pScreen, pRoot, sScreen, sPane); }
 		inline void FireOnGlobalPlayerChangedShips (CSpaceObject *pOldShip) { m_Design.FireOnGlobalPlayerChangedShips(pOldShip); }
@@ -2712,6 +2811,7 @@ class CUniverse : public CObject
 		const CDamageAdjDesc *GetArmorDamageAdj (int iLevel) const;
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
+		CMission *GetCurrentMission (void);
 		CTimeSpan GetElapsedGameTime (void);
 		inline CExtensionCollection &GetExtensionCollection (void) { return m_Extensions; }
 		CString GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib);
@@ -2737,6 +2837,7 @@ class CUniverse : public CObject
 		inline bool LogImageLoad (void) const { return (m_iLogImageLoad == 0); }
 		void PlaySound (CSpaceObject *pSource, int iChannel);
 		void PutPlayerInSystem (CShip *pPlayerShip, const CVector &vPos, CTimedEventList &SavedEvents);
+		void RefreshCurrentMission (void);
 		ALERROR Reinit (void);
 		ALERROR SaveDeviceStorage (void);
 		ALERROR SaveToStream (IWriteStream *pStream);
@@ -2858,9 +2959,10 @@ class CUniverse : public CObject
 		void InitDefaultHitEffects (void);
 		ALERROR InitDeviceStorage (CString *retsError);
 		ALERROR InitLevelEncounterTables (void);
-		ALERROR InitTopology (CString *retsError);
+		ALERROR InitTopology (DWORD dwStartingMap, CString *retsError);
 		void NotifyMissionsOfNewSystem (CSystem *pSystem);
 		inline void SetCurrentAdventureDesc (CAdventureDesc *pAdventure) { m_pAdventure = pAdventure; }
+		void UpdateMissions (int iTick, CSystem *pSystem);
 
 		//	Design data
 
@@ -2890,6 +2992,7 @@ class CUniverse : public CObject
 		CTopology m_Topology;					//	Array of CTopologyNode
 		CMissionList m_AllMissions;				//	List of all missions
 		CTimedEventList m_Events;				//	List of all global events
+		CObjectTracker m_Objects;				//	Objects across all systems
 
 		//	Support structures
 
@@ -2953,14 +3056,17 @@ CString ParseCriteriaParam (char **ioPos, bool bExpectColon = true, bool *retbBi
 
 //	CodeChain helper functions (CCUtil.cpp)
 
+Metric CalcRandomMetric (CCodeChain &CC, ICCItem *pItem);
 CString CreateDataFieldFromItemList (const TArray<CItem> &List);
 CString CreateDataFromItem (CCodeChain &CC, ICCItem *pItem);
 ICCItem *CreateDisposition (CCodeChain &CC, CSovereign::Disposition iDisp);
 ICCItem *CreateListFromImage (CCodeChain &CC, const CObjectImageArray &Image, int iRotation = 0);
 ICCItem *CreateListFromItem (CCodeChain &CC, const CItem &Item);
+ICCItem *CreateListFromOrbit (CCodeChain &CC, const COrbit &OrbitDesc);
 ICCItem *CreateListFromVector (CCodeChain &CC, const CVector &vVector);
 CItem CreateItemFromList (CCodeChain &CC, ICCItem *pList);
 CSpaceObject *CreateObjFromItem (CCodeChain &CC, ICCItem *pItem);
+bool CreateOrbitFromList (CCodeChain &CC, ICCItem *pList, COrbit *retOrbitDesc);
 ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue);
 CShip *CreateShipObjFromItem (CCodeChain &CC, ICCItem *pArg);
 CStation *CreateStationObjFromItem (CCodeChain &CC, ICCItem *pArg);

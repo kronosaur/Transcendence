@@ -10,6 +10,7 @@ class CDockScreen;
 class CGameStats;
 class CItemCtx;
 class CObjectImageArray;
+class COrbit;
 class CMultiverseCollection;
 class CMultiverseCatalogEntry;
 class CShipClass;
@@ -75,6 +76,7 @@ class CFormulaText
 //	[ ] Add entry to DESIGN_CHAR in CDesignType (make sure it matches the char??? entry)
 //	[ ] Add entry to DESIGN_CLASS_NAME in CDesignType
 //	[ ] Add case to CDesignTypeCriteria::ParseCriteria (if type should be enumerable)
+//	[ ] Add constructor call to CDesignType::CreateFromXML
 
 enum DesignTypes
 	{
@@ -102,8 +104,9 @@ enum DesignTypes
 
 	designEconomyType =					20,
 	designTemplateType =				21,
+	designGenericType =					22,
 
-	designCount	=						22, 
+	designCount	=						23, 
 
 	designSetAll =						0xffffffff,
 	charEconomyType =					'$',
@@ -126,8 +129,9 @@ enum DesignTypes
 	charSound =							'u',
 	charSovereign =						'v',
 	charNameGenerator =					'w',
-	charSystemType =					'y',
+	charGenericType =					'x',
 
+	charSystemType =					'y',
 	charSystemMap =						'z',
 	charTemplateType =					'_',
 	};
@@ -245,8 +249,8 @@ class CDesignType
 		inline void MarkImages (void) { OnMarkImages(); }
 		inline void SetGlobalData (const CString &sAttrib, const CString &sData) { m_GlobalData.SetData(sAttrib, sData); }
 		inline void SetUNID (DWORD dwUNID) { m_dwUNID = dwUNID; }
-		inline bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) { return m_Language.Translate(pObj, sID, retpResult); }
-		inline bool TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText) { return m_Language.Translate(pObj, sID, retsText); }
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult);
+		bool TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText);
 
 		static CString GetTypeChar (DesignTypes iType);
 
@@ -283,6 +287,7 @@ class CDesignType
 		void InitCachedEvents (void);
 		bool InSelfReference (CDesignType *pType);
 		void MergeLanguageTo (CLanguageDataBlock &Dest);
+		bool TranslateVersion2 (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult);
 
 		DWORD m_dwUNID;
 		CExtension *m_pExtension;			//	Extension
@@ -347,6 +352,17 @@ template <class CLASS> class CDesignTypeRef
 	protected:
 		CLASS *m_pType;
 		DWORD m_dwUNID;
+	};
+
+//	Generic Type ---------------------------------------------------------------
+
+class CGenericType : public CDesignType
+	{
+	public:
+		//	CDesignType overrides
+
+		static CGenericType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designGenericType) ? (CGenericType *)pType : NULL); }
+		virtual DesignTypes GetType (void) const { return designGenericType; }
 	};
 
 //	Design Type References ----------------------------------------------------
@@ -1188,7 +1204,10 @@ struct CItemCriteria
 	CItemCriteria (void);
 	CItemCriteria (const CItemCriteria &Copy);
 	~CItemCriteria (void);
+
 	CItemCriteria &operator= (const CItemCriteria &Copy);
+
+	int GetMaxLevelMatched (void) const;
 
 	DWORD dwItemCategories;			//	Set of ItemCategories to match on
 	DWORD dwExcludeCategories;		//	Categories to exclude
@@ -1279,13 +1298,13 @@ class CItemEnhancement
 		int GetAbsorbAdj (const DamageDesc &Damage) const;
 		int GetActivateRateAdj (void) const;
 		int GetDamageAdj (const DamageDesc &Damage) const;
-		int GetDamageBonus (void) const;
 		inline DamageTypes GetDamageType (void) const { return (DamageTypes)(DWORD)((m_dwMods & etData2Mask) >> 4); }
 		CString GetEnhancedDesc (const CItem &Item, CSpaceObject *pInstalled, CInstalledDevice *pDevice = NULL) const;
 		int GetEnhancedRate (int iRate) const;
 		inline CItemType *GetEnhancementType (void) const { return m_pEnhancer; }
 		inline int GetExpireTime (void) const { return m_iExpireTime; }
 		int GetHPAdj (void) const;
+		int GetHPBonus (void) const;
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline int GetLevel (void) const { return (int)(DWORD)(m_dwMods & etData1Mask); }
 		inline int GetLevel2 (void) const { return (int)(DWORD)((m_dwMods & etData2Mask) >> 4); }
@@ -1938,7 +1957,8 @@ struct SDeviceDesc
 			iMinFireArc(0),
 			iMaxFireArc(0),
 			bSecondary(false),
-			dwLinkedFireOptions(0)
+			dwLinkedFireOptions(0),
+			iSlotBonus(0)
 		{ }
 
 	CItem Item;
@@ -1954,6 +1974,8 @@ struct SDeviceDesc
 	bool bSecondary;
 
 	DWORD dwLinkedFireOptions;
+
+	int iSlotBonus;
 
 	CItemList ExtraItems;
 	};
@@ -2151,15 +2173,16 @@ class CPlayerSettings
 		CEffectCreator *FindEffectCreator (const CString &sUNID);
 		inline const SArmorImageDesc &GetArmorDesc (void) const { return (m_fHasArmorDesc ? m_ArmorDesc : *m_pArmorDescInherited); }
 		inline const SArmorSegmentImageDesc &GetArmorDesc (int iIndex) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments[iIndex] : m_pArmorDescInherited->Segments[iIndex]); }
-		inline int GetArmorDescCount (void) const { return m_ArmorDesc.Segments.GetCount(); }
+		inline int GetArmorDescCount (void) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments.GetCount() : m_pArmorDescInherited->Segments.GetCount()); }
 		inline const CString &GetDesc (void) const { return m_sDesc; }
 		inline DWORD GetLargeImage (void) const { return m_dwLargeImage; }
 		inline const SReactorImageDesc &GetReactorDesc (void) const { return (m_fHasReactorDesc ? m_ReactorDesc : *m_pReactorDescInherited); }
 		inline const SShieldImageDesc &GetShieldDesc (void) const { return (m_fHasShieldDesc ? m_ShieldDesc : *m_pShieldDescInherited); }
 		inline const CDockScreenTypeRef &GetShipScreen (void) const { return m_pShipScreen; }
 		inline const CCurrencyAndRange &GetStartingCredits (void) const { return m_StartingCredits; }
-		inline const CString &GetStartNode (void) const { return m_sStartNode; }
-		inline const CString &GetStartPos (void) const { return m_sStartPos; }
+		inline DWORD GetStartingMap (void) const { return m_dwStartMap; }
+		inline const CString &GetStartingNode (void) const { return m_sStartNode; }
+		inline const CString &GetStartingPos (void) const { return m_sStartPos; }
 		inline bool HasAutopilot (void) const { return (m_fAutopilot ? true : false); }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc);
 		inline bool IsDebugOnly (void) const { return (m_fDebug ? true : false); }
@@ -2179,6 +2202,7 @@ class CPlayerSettings
 
 		//	Miscellaneous
 		CCurrencyAndRange m_StartingCredits;		//	Starting credits
+		DWORD m_dwStartMap;							//	Starting map UNID
 		CString m_sStartNode;						//	Starting node (may be blank)
 		CString m_sStartPos;						//	Label of starting position (may be blank)
 		CDockScreenTypeRef m_pShipScreen;			//	Ship screen
@@ -3676,7 +3700,7 @@ class CSystemType : public CDesignType
 		inline bool FindEventHandlerSystemType (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 		ALERROR FireOnCreate (SSystemCreateCtx &SysCreateCtx, CString *retsError = NULL);
 		bool FireOnObjJumpPosAdj (CSpaceObject *pPos, CVector *iovPos);
-		ALERROR FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCItem *pCode, CString *retsError);
+		ALERROR FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCItem *pCode, const COrbit &OrbitDesc, CString *retsError);
 		inline CXMLElement *GetDesc (void) { return m_pDesc; }
 		CXMLElement *GetLocalSystemTables (void);
 
@@ -3719,6 +3743,63 @@ class CDockScreenType : public CDesignType
 		CXMLElement *m_pDesc;
 	};
 
+class CStationEncounterDesc
+	{
+	public:
+		CStationEncounterDesc (void) :
+				m_bMaxCountLimit(false),
+				m_iMaxCountInSystem(-1)
+			{ }
+
+		int CalcLevelFromFrequency (void) const;
+		ALERROR InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		inline bool CanBeRandomlyEncountered (void) const { return !m_sLevelFrequency.IsBlank(); }
+		int GetCountOfRandomEncounterLevels (void) const;
+		inline Metric GetEnemyExclusionRadius (void) const { return m_rEnemyExclusionRadius; }
+		int GetFrequencyByLevel (int iLevel) const;
+		inline const CString &GetLocationCriteria (void) { return m_sLocationCriteria; }
+		inline int GetMaxAppearing (void) const { return (m_bMaxCountLimit ? m_MaxAppearing.Roll() : -1); }
+		inline bool IsUniqueInSystem (void) const { return (m_iMaxCountInSystem == 1); }
+
+	private:
+		CString m_sLevelFrequency;			//	String array of frequency distribution by level
+		CString m_sLocationCriteria;		//	Criteria for location
+		Metric m_rEnemyExclusionRadius;		//	No enemy stations within this radius
+
+		bool m_bMaxCountLimit;				//	If FALSE, no limit
+		DiceRange m_MaxAppearing;
+
+		int m_iMaxCountInSystem;			//	-1 means no limit
+	};
+
+class CStationEncounterCtx
+	{
+	public:
+		void AddEncounter (int iLevel);
+		bool CanBeEncountered (const CStationEncounterDesc &Desc);
+		bool CanBeEncounteredInSystem (CSystem *pSystem, CStationType *pStationType, const CStationEncounterDesc &Desc);
+		int GetFrequencyByLevel (int iLevel, const CStationEncounterDesc &Desc);
+		int GetFrequencyForSystem (CSystem *pSystem, CStationType *pStation, const CStationEncounterDesc &Desc);
+		void ReadFromStream (SUniverseLoadCtx &Ctx);
+		void Reinit (const CStationEncounterDesc &Desc);
+		void WriteToStream (IWriteStream *pStream);
+
+	private:
+		struct SEncounterStats
+			{
+			SEncounterStats (void) :
+					iCount(0),
+					iLimit(-1)
+				{ }
+
+			int iCount;						//	Number of times encountered
+			int iLimit;						//	Encounter limit (-1 = no limit)
+			};
+
+		SEncounterStats m_Total;			//	Encounters in entire game
+		TSortMap<int, SEncounterStats> m_ByLevel;	//	Encounters by system level
+	};
+
 //	CStationType --------------------------------------------------------------
 
 class CStationType : public CDesignType
@@ -3731,8 +3812,9 @@ class CStationType : public CDesignType
 		inline bool AlertWhenAttacked (void) { return (mathRandom(1, 100) <= m_iAlertWhenAttacked); }
 		inline bool AlertWhenDestroyed (void) { return (mathRandom(1, 100) <= m_iAlertWhenDestroyed); }
 		inline bool CanAttack (void) const { return (m_fCanAttack ? true : false); }
-		inline bool CanBeEncountered (void) { return (!IsUnique() || !m_fEncountered); }
-		bool CanBeEncountered (CSystem *pSystem);
+		inline bool CanBeEncountered (void) { return m_EncounterRecord.CanBeEncountered(m_RandomPlacement); }
+		inline bool CanBeEncountered (CSystem *pSystem) { return m_EncounterRecord.CanBeEncounteredInSystem(pSystem, this, m_RandomPlacement); }
+		inline bool CanBeEncounteredRandomly (void) { return m_RandomPlacement.CanBeRandomlyEncountered(); }
 		inline bool CanBeHitByFriends (void) { return (m_fNoFriendlyTarget ? false : true); }
 		inline bool CanHitFriends (void) { return (m_fNoFriendlyFire ? false : true); }
 		CString GenerateRandomName (const CString &sSubst, DWORD *retdwFlags);
@@ -3748,26 +3830,27 @@ class CStationType : public CDesignType
 		inline CString GetDestEntryPoint (void) { return m_sStargateDestEntryPoint; }
 		inline int GetEjectaAdj (void) { return m_iEjectaAdj; }
 		CWeaponFireDesc *GetEjectaType (void) { return m_pEjectaType; }
-		inline Metric GetEnemyExclusionRadius (void) const { return m_rEnemyExclusionRadius; }
+		inline Metric GetEnemyExclusionRadius (void) const { return m_RandomPlacement.GetEnemyExclusionRadius(); }
 		CWeaponFireDesc *GetExplosionType (void) { return m_pExplosionType; }
 		inline int GetEncounterFrequency (void) { return m_iEncounterFrequency; }
 		inline IShipGenerator *GetEncountersTable (void) { return m_pEncounters; }
 		inline int GetFireRateAdj (void) { return m_iFireRateAdj; }
 		inline CXMLElement *GetFirstDockScreen (void) { return m_pFirstDockScreen.GetDesc(); }
 		inline CDesignType *GetFirstDockScreen (CString *retsName) { return m_pFirstDockScreen.GetDockScreen(this, retsName); }
-		int GetFrequencyByLevel (int iLevel);
-		int GetFrequencyForSystem (CSystem *pSystem);
+		inline int GetFrequencyByLevel (int iLevel) { return m_EncounterRecord.GetFrequencyByLevel(iLevel, m_RandomPlacement); }
+		inline int GetFrequencyForSystem (CSystem *pSystem) { return m_EncounterRecord.GetFrequencyForSystem(pSystem, this, m_RandomPlacement); }
 		inline CEffectCreator *GetGateEffect (void) { return m_pGateEffect; }
 		inline const CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, DWORD dwModifiers, int *retiRotation = NULL) { return m_Image.GetImage(Selector, dwModifiers, retiRotation); }
 		inline IImageEntry *GetImageRoot (void) const { return m_Image.GetRoot(); }
 		inline int GetImageVariants (void) { return m_iImageVariants; }
 		inline int GetInitialHitPoints (void) { return m_iHitPoints; }
 		inline IShipGenerator *GetInitialShips (void) { return m_pInitialShips; }
-		inline const CString &GetLocationCriteria (void) { return m_sLocationCriteria; }
+		inline const CString &GetLocationCriteria (void) { return m_RandomPlacement.GetLocationCriteria(); }
 		inline Metric GetMass (void) { return m_rMass; }
 		inline int GetMinShips (void) { return m_iMinShips; }
 		inline Metric GetMaxEffectiveRange (void) { return m_rMaxAttackDistance; }
 		inline int GetMaxHitPoints (void) { return m_iMaxHitPoints; }
+		inline int GetMaxLightDistance (void) { return m_iMaxLightDistance; }
 		inline int GetMaxShipConstruction (void) { return m_iMaxConstruction; }
 		inline int GetMaxStructuralHitPoints (void) { return m_iMaxStructuralHP; }
 		const CString &GetName (DWORD *retdwFlags = NULL);
@@ -3805,13 +3888,11 @@ class CStationType : public CDesignType
 		inline bool IsShipEncounter (void) { return (m_fShipEncounter ? true : false); }
 		inline bool IsStatic (void) { return (m_fStatic ? true : false); }
 		inline bool IsTimeStopImmune (void) { return (m_fTimeStopImmune ? true : false); }
-		inline bool IsUnique (void) { return (m_fUnique ? true : false); }
-		inline bool IsUniqueInSystem (void) { return (m_fUniqueInSystem ? true : false); }
 		inline bool IsWall (void) { return (m_fWall ? true : false); }
 		void MarkImages (const CCompositeImageSelector &Selector);
 		void PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick);
 		void SetImageSelector (CStation *pStation, CCompositeImageSelector *retSelector);
-		inline void SetEncountered (bool bEncountered = true) { m_fEncountered = bEncountered; }
+		inline void SetEncountered (int iLevel) { m_EncounterRecord.AddEncounter(iLevel); }
 		inline bool ShowsMapIcon (void) { return (m_fNoMapIcon ? false : true); }
 		inline bool UsesReverseArticle (void) { return (m_fReverseArticle ? true : false); }
 
@@ -3828,6 +3909,7 @@ class CStationType : public CDesignType
 		virtual ALERROR OnBindDesign (SDesignLoadCtx &Ctx);
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnFinishBindDesign (SDesignLoadCtx &Ctx);
+		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const;
 		virtual void OnMarkImages (void);
 		virtual void OnReadFromStream (SUniverseLoadCtx &Ctx);
 		virtual void OnReinit (void);
@@ -3886,8 +3968,6 @@ class CStationType : public CDesignType
 		DWORD m_fSign:1;								//	Station is a text sign
 		DWORD m_fBeacon:1;								//	Station is a nav beacon
 		DWORD m_fRadioactive:1;							//	Station is radioactive
-		DWORD m_fUnique:1;								//	Station is unique
-		DWORD m_fEncountered:1;							//	Unique station has already been encountered
 		DWORD m_fCanAttack:1;							//	Station is active (i.e., will react if attacked)
 		DWORD m_fShipEncounter:1;						//	This is a ship encounter
 		DWORD m_fImmutable:1;							//	Station can not take damage or become radioactive, etc.
@@ -3899,10 +3979,9 @@ class CStationType : public CDesignType
 		DWORD m_fHasOnObjDockedEvent:1;					//	Station has OnObjDocked event
 		DWORD m_fStatic:1;								//	Use CStatic instead of CStation
 		DWORD m_fBackground:1;							//	Background object
-		DWORD m_fUniqueInSystem:1;						//	Unique in system
 		DWORD m_fNoFriendlyTarget:1;					//	Station cannot be hit by friends
 		DWORD m_fVirtual:1;								//	Virtual stations do not show up
-		DWORD m_fSpare:7;
+		DWORD m_fSpare:10;
 
 		//	Images
 		CCompositeImageDesc m_Image;
@@ -3921,10 +4000,9 @@ class CStationType : public CDesignType
 		int m_iAlertWhenDestroyed;						//	Chance that station will warn others when destroyed
 		Metric m_rMaxAttackDistance;					//	Max range at which station guns attack
 
-		//	Random population
-		CString m_sLevelFrequency;						//	String array of frequency distribution by level
-		CString m_sLocationCriteria;					//	Criteria for location
-		Metric m_rEnemyExclusionRadius;					//	No enemy stations within this radius
+		//	Random occurrence
+		CStationEncounterDesc m_RandomPlacement;		//	Random encounter information
+		CStationEncounterCtx m_EncounterRecord;			//	Record of encounters so far
 
 		//	Ships
 		IShipGenerator *m_pInitialShips;				//	Ships at creation time
@@ -3952,6 +4030,7 @@ class CStationType : public CDesignType
 
 		//	Miscellaneous
 		COLORREF m_rgbSpaceColor;						//	Space color
+		int m_iMaxLightDistance;						//	Max distance at which there is no (effective) light from star
 		CEffectCreatorRef m_pBarrierEffect;				//	Effect when object hits station
 		CSovereignRef m_pControllingSovereign;			//	If controlled by different sovereign
 														//	(e.g., centauri occupation)
@@ -4210,7 +4289,12 @@ class CMissionType : public CDesignType
 	{
 	public:
 		inline const CString &GetName (void) const { return m_sName; }
+		inline int GetExpireTime (void) const { return m_iExpireTime; }
+		inline int GetOutOfSystemTimeOut (void) const { return m_iFailIfOutOfSystem; }
+		inline int GetPriority (void) const { return m_iPriority; }
 		inline bool FailureWhenOwnerDestroyed (void) const { return !m_fNoFailureOnOwnerDestroyed; }
+		inline bool FailureWhenOutOfSystem (void) const { return (m_iFailIfOutOfSystem != -1); }
+		inline bool HasDebrief (void) const { return !m_fNoDebrief; }
 
 		//	CDesignType overrides
 
@@ -4228,6 +4312,7 @@ class CMissionType : public CDesignType
 		//	Basic properties
 
 		CString m_sName;					//	Internal name
+		int m_iPriority;					//	Relative priority (default = 1)
 
 		//	Mission creation
 
@@ -4235,12 +4320,13 @@ class CMissionType : public CDesignType
 		int m_iMaxAcceptCount;				//	Limit to number of times mission has been accepted by player
 											//		(-1 if no limit)
 		int m_iAccepted;					//	Number of times player has accepted this mission type
-		DiceRange m_Expiration;				//	Mission expires after this amount
+		int m_iExpireTime;					//	Mission expires after this amount
 											//		of time if not accepted.
+		int m_iFailIfOutOfSystem;			//	If player is out of mission system for this amount of time
+											//		(in ticks) then mission fails (-1 means on timeout)
 
-		DWORD m_fExpires:1;					//	If TRUE, mission expires unless
-											//		accepted by m_Expiration time.
 		DWORD m_fNoFailureOnOwnerDestroyed:1;	//	If TRUE, mission does not fail when owner destroyed
+		DWORD m_fNoDebrief:1;				//	If TRUE, mission is closed on success
 		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;
@@ -4264,6 +4350,7 @@ class CAdventureDesc : public CDesignType
 		inline DWORD GetExtensionUNID (void) { return m_dwExtensionUNID; }
 		inline const CString &GetName (void) { return m_sName; }
 		inline const CDamageAdjDesc *GetShieldDamageAdj (int iLevel) const { return &m_ShieldDamageAdj[iLevel - 1]; }
+		inline DWORD GetStartingMapUNID (void) { return m_dwStartingMap; }
 		inline const CString &GetStartingNodeID (void) { return m_sStartingNodeID; }
 		inline const CString &GetStartingPos (void) { return m_sStartingPos; }
 		ALERROR GetStartingShipClasses (TSortMap<CString, CShipClass *> *retClasses, CString *retsError);
@@ -4300,6 +4387,7 @@ class CAdventureDesc : public CDesignType
 		CString m_sWelcomeMessage;				//	Equivalent of "Welcome to Transcendence!"
 
 		CDesignTypeCriteria m_StartingShips;	//	Starting ship criteria
+		DWORD m_dwStartingMap;					//	Default system map to load
 		CString m_sStartingNodeID;				//	NodeID where we start
 		CString m_sStartingPos;					//	Named object at which we start
 
@@ -4384,6 +4472,7 @@ class CSystemMap : public CDesignType
 		inline const CString &GetName (void) const { return m_sName; }
 		inline void GetScale (int *retiInitial, int *retiMin, int *retiMax) { if (retiInitial) *retiInitial = m_iInitialScale; if (retiMin) *retiMin = m_iMinScale; if (retiMax) *retiMax = m_iMaxScale; }
 		inline const CString &GetStartingNodeID (void) { return m_FixedTopology.GetFirstNodeID(); }
+		inline bool IsStartingMap (void) const { return m_bStartingMap; }
 
 		//	CDesignType overrides
 		static CSystemMap *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designSystemMap) ? (CSystemMap *)pType : NULL); }
@@ -4425,6 +4514,7 @@ class CSystemMap : public CDesignType
 		CTopologyDescTable m_FixedTopology;
 		TArray<CXMLElement *> m_Creators;
 		TArray<ITopologyProcessor *> m_Processors;
+		bool m_bStartingMap;					//	Do not load unless specified by player ship
 
 		//	Annotations
 		TArray<SMapAnnotation> m_Annotations;
@@ -4524,6 +4614,7 @@ class CInstalledDevice
 		inline int GetPosRadius (void) const { return m_iPosRadius; }
 		inline int GetPosZ (void) const { return m_iPosZ; }
 		inline int GetRotation (void) const { return AngleMiddle(m_iMinFireArc, m_iMaxFireArc); }
+		inline int GetSlotBonus (void) const { return m_iSlotBonus; }
 		inline int GetTemperature (void) const { return m_iTemperature; }
 		inline int GetTimeUntilReady (void) const { return m_iTimeUntilReady; }
 		inline void IncTemperature (int iChange) { m_iTemperature += iChange; }
@@ -4557,6 +4648,7 @@ class CInstalledDevice
 		inline void SetPosZ (int iZ) { m_iPosZ = iZ; m_f3DPosition = (iZ != 0); }
 		inline void SetRegenerating (bool bRegenerating) { m_fRegenerating = bRegenerating; }
 		inline void SetSecondary (bool bSecondary = true) { m_fSecondaryWeapon = bSecondary; }
+		inline void SetSlotBonus (int iBonus) { m_iSlotBonus = iBonus; }
 		inline void SetTemperature (int iTemperature) { m_iTemperature = iTemperature; }
 		inline void SetTimeUntilReady (int iDelay) { m_iTimeUntilReady = iDelay; }
 		inline void SetTriggered (bool bTriggered) { m_fTriggered = bTriggered; }
@@ -4643,10 +4735,13 @@ class CInstalledDevice
 		int m_iTimeUntilReady:16;				//	Timer counting down until ready to activate
 		int m_iFireAngle:16;					//	Last fire angle
 
-		int m_iBonus:16;						//	Bonus for weapons (+1, etc.)
+		int m_iBonus:16;						//	Bonus for weapons, etc. (10 = +10%, etc.)
+												//		This is computed based on any
+												//		enhancements and any bonuses confered
+												//		by devices.
 		int m_iTemperature:16;					//	Temperature for weapons
 		int m_iActivateDelayAdj:16;				//	Adjustment to activation delay
-		int m_iSpare:16;
+		int m_iSlotBonus:16;					//	Bonus from device slot itself
 
 		DWORD m_fOmniDirectional:1;				//	Installed on turret
 		DWORD m_fOverdrive:1;					//	Device has overdrive installed
@@ -4757,6 +4852,7 @@ class CExtension
 		inline DWORD GetAPIVersion (void) const { return m_dwAPIVersion; }
 		CG16bitImage *GetCoverImage (void) const;
 		inline const TArray<CString> &GetCredits (void) const { return m_Credits; }
+		inline const CString &GetDisabledReason (void) const { return m_sDisabledReason; }
 		inline CString GetDesc (void) { return (m_pAdventureDesc ? m_pAdventureDesc->GetDesc() : NULL_STR); }
 		inline const CDesignTable &GetDesignTypes (void) { return m_DesignTypes; }
 		inline CExternalEntityTable *GetEntities (void) { return m_pEntities; }
@@ -4772,11 +4868,13 @@ class CExtension
 		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
 		inline bool IsDebugOnly (void) const { return m_bDebugOnly; }
+		inline bool IsDisabled (void) const { return m_bDisabled; }
 		inline bool IsHidden (void) const { return m_bPrivate; }
 		inline bool IsMarked (void) const { return m_bMarked; }
 		inline bool IsRegistered (void) const { return m_bRegistered; }
 		inline bool IsRegistrationVerified (void) { return (m_bRegistered && m_bVerified); }
 		ALERROR Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, CString *retsError);
+		inline void SetDisabled (const CString &sReason) { if (!m_bDisabled) { m_sDisabledReason = sReason; m_bDisabled = true; } }
 		inline void SetDigest (const CIntegerIP &Digest) { m_Digest = Digest; }
 		inline void SetMarked (bool bMarked = true) { m_bMarked = bMarked; }
 		inline void SetModifiedTime (const CTimeDate &Time) { m_ModifiedTime = Time; }
@@ -4811,6 +4909,7 @@ class CExtension
 		CIntegerIP m_Digest;				//	Digest (for registered files)
 		DWORD m_dwAPIVersion;				//	Version of API that we're using
 		CExternalEntityTable *m_pEntities;	//	Entities defined by this extension
+		CString m_sDisabledReason;			//	Reason why extension is disabled
 
 		CString m_sName;					//	Extension name
 		DWORD m_dwRelease;					//	Release number
@@ -4831,6 +4930,7 @@ class CExtension
 		bool m_bRegistered;					//	UNID indicates this is a registered extension
 		bool m_bVerified;					//	Signature and license verified
 		bool m_bPrivate;					//	Do not show in stats
+		bool m_bDisabled;					//	Disabled (for some reason)
 	};
 
 class CExtensionCollection
@@ -4933,7 +5033,7 @@ struct SDesignLoadCtx
 			bLoadModule(false)
 		{ }
 
-	inline DWORD GetAPIVersion (void) const { return (pExtension ? pExtension->GetAPIVersion() : EXTENSION_VERSION); }
+	inline DWORD GetAPIVersion (void) const { return (pExtension ? pExtension->GetAPIVersion() : API_VERSION); }
 
 	//	Context
 	CString sResDb;							//	ResourceDb filespec
@@ -5046,6 +5146,7 @@ class CDesignCollection
 
 IShipController *CreateShipController (const CString &sAI);
 DWORD ExtensionVersionToInteger (DWORD dwVersion);
+CString GenerateLevelFrequency (const CString &sLevelFrequency, int iCenterLevel);
 CString GenerateRandomName (const CString &sList, const CString &sSubst);
 CString GenerateRandomNameFromTemplate (const CString &sName, const CString &sSubst = NULL_STR);
 CString GetDamageName (DamageTypes iType);

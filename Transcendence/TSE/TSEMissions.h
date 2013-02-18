@@ -49,11 +49,14 @@ class CMission : public CSpaceObject
 							   CMission **retpMission,
 							   CString *retsError);
 		void FireCustomEvent (const CString &sEvent);
+		inline DWORD GetAcceptedOn (void) const { return m_dwAcceptedOn; }
 		inline bool IsActive (void) const { return (m_iStatus == statusAccepted || (!m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure))); }
 		inline bool IsClosed (void) const { return (!IsActive() && IsCompleted()); }
 		inline bool IsCompleted (void) const { return (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure || m_iStatus == statusSuccess || m_iStatus == statusFailure); }
 		inline bool IsCompletedNonPlayer (void) const { return (m_iStatus == statusSuccess || m_iStatus == statusFailure); }
 		inline bool IsFailure (void) const { return (m_iStatus == statusFailure || m_iStatus == statusPlayerFailure); }
+		inline bool IsOpen (void) const { return (m_iStatus == statusOpen); }
+		inline bool IsPlayerMission (void) const { return m_fAcceptedByPlayer; }
 		inline bool IsRecorded (void) const { return (m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure)); }
 		inline bool IsSuccess (void) const { return (m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
 		inline bool IsUnavailable (void) const { return (m_iStatus == statusClosed || m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
@@ -66,6 +69,7 @@ class CMission : public CSpaceObject
 		bool SetPlayerTarget (void);
 		bool SetSuccess (ICCItem *pData);
 		bool SetUnavailable (void);
+		void UpdateExpiration (int iTick);
 
 		static bool ParseCriteria (const CString &sCriteria, SCriteria *retCriteria);
 
@@ -75,6 +79,7 @@ class CMission : public CSpaceObject
 		virtual CString GetName (DWORD *retdwFlags = NULL) { if (retdwFlags) *retdwFlags = 0; return m_pType->GetName(); }
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual CDesignType *GetType (void) const { return m_pType; }
+		virtual bool HasAttribute (const CString &sAttribute) const { return m_pType->HasAttribute(sAttribute); }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
@@ -86,6 +91,7 @@ class CMission : public CSpaceObject
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnObjDestroyedNotify (SDestroyCtx &Ctx);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);
 		virtual void OnWriteToStream (IWriteStream *pStream);
 
 	private:
@@ -111,13 +117,20 @@ class CMission : public CSpaceObject
 		EStatus m_iStatus;					//	Current mission status
 		CGlobalSpaceObject m_pOwner;		//	Mission owner (may be NULL)
 		CString m_sNodeID;					//	NodeID of owner
+		DWORD m_dwCreatedOn;				//	Mission created on (used to check expiration)
+		DWORD m_dwAcceptedOn;				//	Tick on which mission was accepted
+		DWORD m_dwLeftSystemOn;				//	Left the system on this tick (only used if the mission
+											//		times out when out of the system).
+
+		CString m_sTitle;					//	Mission title
+		CString m_sInstructions;			//	Current instructions
 
 		DWORD m_fIntroShown:1;				//	TRUE if player has seen intro
 		DWORD m_fDeclined:1;				//	TRUE if player has declined at least once
 		DWORD m_fDebriefed:1;				//	TRUE if player has been debriefed
 		DWORD m_fInOnCreate:1;				//	TRUE if we're inside OnCreate
-		DWORD m_fSpare5:1;
-		DWORD m_fSpare6:1;
+		DWORD m_fInMissionSystem:1;			//	TRUE if player is in the proper mission system
+		DWORD m_fAcceptedByPlayer:1;		//	TRUE if this is a player mission
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 		DWORD m_dwSpare:24;

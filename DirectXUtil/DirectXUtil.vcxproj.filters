@@ -182,5 +182,8 @@
     <ClCompile Include="16bitDrawGradient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CG16bitPixel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

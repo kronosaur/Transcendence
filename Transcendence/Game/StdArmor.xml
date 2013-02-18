@@ -216,9 +216,9 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 			mass=				"2000"
-			attributes=			"MinorItem"
+			attributes=			"MinorItem, Solon"
 
-			description=		"Originally designed at the Cenobite Labs, XMH armor uses an experimental metallic hydrogen alloy. Most stations do not have the technology to repair XMH armor."
+			description=		"Originally designed by Solon Industries, XMH armor uses an experimental metallic hydrogen alloy. Most stations do not have the technology to repair XMH armor."
 
 			sortName=			"XMH armor, segment of"
 			>
@@ -962,7 +962,7 @@
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
-			description=		"Designed by the Kabuto Defense Corporation, Gusoku armor is light yet resistant to particle beam and blast damage."
+			description=		"Designed by the Bushido Corporation, Gusoku armor is light yet resistant to particle beam and blast damage."
 
 			sortName=			"Gusoku armor, segment of"
 			>

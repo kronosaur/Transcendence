@@ -12,20 +12,23 @@
 
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
 #define ALL_ATTRIB							CONSTLIT("all")
+#define ONLY_NOT_RANDOM_ATTRIB				CONSTLIT("onlyNotRandom")
 
-#define FIELD_LEVEL							CONSTLIT("level")
-#define FIELD_CATEGORY						CONSTLIT("category")
-#define FIELD_NAME							CONSTLIT("name")
 #define FIELD_ARMOR_CLASS					CONSTLIT("armorClass")
-#define FIELD_HP							CONSTLIT("hp")
-#define FIELD_FIRE_RATE_ADJ					CONSTLIT("fireRateAdj")
-#define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
 #define FIELD_CAN_ATTACK					CONSTLIT("canAttack")
+#define FIELD_CATEGORY						CONSTLIT("category")
+#define FIELD_COUNT_DISTRIBUTION			CONSTLIT("countDistribution")
+#define FIELD_ENTITY						CONSTLIT("entity")
 #define FIELD_EXPLOSION_TYPE				CONSTLIT("explosionType")
+#define FIELD_FIRE_RATE_ADJ					CONSTLIT("fireRateAdj")
+#define FIELD_HP							CONSTLIT("hp")
+#define FIELD_LEVEL							CONSTLIT("level")
+#define FIELD_NAME							CONSTLIT("name")
+#define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
 
 #define TOTAL_COUNT_FILENAME				CONSTLIT("TransData_EncounterCount.txt")
 
-void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
+void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
 	{
 	ALERROR error;
 	int i, j;
@@ -45,6 +48,7 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		}
 
 	bool bAll = pCmdLine->GetAttributeBool(ALL_ATTRIB);
+	bool bOnlyNotRandom = pCmdLine->GetAttributeBool(ONLY_NOT_RANDOM_ATTRIB);
 
 	//	Generate a table of all matching encounters
 
@@ -57,8 +61,27 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		CStationType *pType = Universe.GetStationType(i);
 		int iLevel = pType->GetLevel();
-		if (iLevel == 0 && !bAll)
-			continue;
+
+		//	If we're selecting all types, then do it
+
+		if (bAll)
+			;
+
+		//	If we only want non-random types, then skip any random encounters.
+
+		else if (bOnlyNotRandom)
+			{
+			if (pType->CanBeEncounteredRandomly())
+				continue;
+			}
+
+		//	Otherwise we skip anything except random encounters.
+
+		else
+			{
+			if (!pType->CanBeEncounteredRandomly())
+				continue;
+			}
 
 		//	If we don't match the criteria, then continue
 
@@ -75,10 +98,11 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		//	Figure out the sort order
 
 		char szBuffer[1024];
-		wsprintf(szBuffer, "%02d%s%s", 
-				pType->GetLevel(),
+		wsprintf(szBuffer, "%02d%s%s%08x", 
+				iLevel,
 				sCategory.GetASCIIZPointer(), 
-				sName.GetASCIIZPointer());
+				sName.GetASCIIZPointer(),
+				pType->GetUNID());
 		Table.AddEntry(CString(szBuffer), (CObject *)pType);
 		}
 
@@ -93,8 +117,10 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
-		if (!strEquals(sAttrib, CONSTLIT("all"))
-				&& !strEquals(sAttrib, CONSTLIT("criteria"))
+		if (!strEquals(sAttrib, ALL_ATTRIB)
+				&& !strEquals(sAttrib, CRITERIA_ATTRIB)
+				&& !strEquals(sAttrib, ONLY_NOT_RANDOM_ATTRIB)
+				&& !strEquals(sAttrib, CONSTLIT("adventure"))
 				&& !strEquals(sAttrib, CONSTLIT("encountertable"))
 				&& !strEquals(sAttrib, CONSTLIT("nologo")))
 			{
@@ -107,27 +133,13 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 			}
 		}
 
-#if 0
-	if (pCmdLine->GetAttributeBool(FIELD_ARMOR_CLASS))
-		Cols.Insert(FIELD_ARMOR_CLASS);
-	if (pCmdLine->GetAttributeBool(FIELD_HP))
-		Cols.Insert(FIELD_HP);
-	if (pCmdLine->GetAttributeBool(FIELD_FIRE_RATE_ADJ))
-		Cols.Insert(FIELD_FIRE_RATE_ADJ);
-	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT))
-		Cols.Insert(FIELD_TOTAL_COUNT);
-	if (pCmdLine->GetAttributeBool(FIELD_CAN_ATTACK))
-		Cols.Insert(FIELD_CAN_ATTACK);
-	if (pCmdLine->GetAttributeBool(FIELD_EXPLOSION_TYPE))
-		Cols.Insert(FIELD_EXPLOSION_TYPE);
-#endif
-
 	//	If we need to output total count, then load the table
 
-	CSymbolTable TotalCount(TRUE, TRUE);
-	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT))
+	CDesignTypeStats TotalCount;
+	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT)
+			|| pCmdLine->GetAttributeBool(FIELD_COUNT_DISTRIBUTION))
 		{
-		if (error = LoadTotalCount(TOTAL_COUNT_FILENAME, TotalCount))
+		if (error = LoadDesignTypeStats(&TotalCount))
 			return;
 		}
 
@@ -159,20 +171,35 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 					printf("\t");
 
 				const CString &sField = Cols[j];
-				CString sValue = pType->GetDataField(sField);
+
+				//	Get the value
+
+				CString sValue;
+				if (strEquals(sField, FIELD_ENTITY))
+					{
+					CString *pValue;
+					if (EntityTable.Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
+						sValue = *pValue;
+					else
+						sValue = CONSTLIT("?");
+					}
+				else
+					sValue = pType->GetDataField(sField);
+
+				//	Format and output
 
 				if (strEquals(sField, FIELD_FIRE_RATE_ADJ))
 					printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
 				else if (strEquals(sField, FIELD_TOTAL_COUNT))
 					{
-					double rCount = 0.0;
-
-					CString sKey = strFromInt(pType->GetUNID(), false);
-					EntryInfo *pEntry;
-					if (TotalCount.Lookup(sKey, (CObject **)&pEntry) == NOERROR)
-						rCount = pEntry->rTotalCount;
-
+					SDesignTypeInfo *pInfo = TotalCount.GetAt(pType->GetUNID());
+					double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
 					printf("%.2f", rCount);
+					}
+				else if (strEquals(sField, FIELD_COUNT_DISTRIBUTION))
+					{
+					SDesignTypeInfo *pInfo = TotalCount.GetAt(pType->GetUNID());
+					printf("%s", (pInfo ? pInfo->sDistribution : NULL_STR).GetASCIIZPointer());
 					}
 				else
 					printf(sValue.GetASCIIZPointer());

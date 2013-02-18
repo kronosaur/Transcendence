@@ -9,9 +9,9 @@
 			minScale=			"50" 
 			maxScale=			"100" 
 			>
-			
-		<!-- REGIONS ======================================================= -->
 
+		<!-- NEW BEYOND ==================================================== -->
+		
 		<NodeGroup ID="NewBeyondMainline">
 			<Stargate from="SE:Outbound"	to="C1:Inbound"/>
 			<Stargate from="C1:Outbound"	to="C3:Inbound"/>
@@ -26,53 +26,6 @@
 				<Stargate chance="50" from="C4:Outbound" to="CP:Inbound"/>
 			</StargateTable>
 		</NodeGroup>
-		
-		<NodeGroup ID="UngovernedTerritoriesMainline">
-			<StargateTable>
-				<Group chance="50">
-					<Stargate from="SK:Outbound" to="C5A:Inbound"/>
-					<Stargate from="C5A:Outbound" to="C5:Inbound"/>
-				</Group>
-				<Stargate chance="50" from="SK:Outbound" to="C5:Inbound"/>
-			</StargateTable>
-			<Stargate from="C5:Outbound"	to="C6:Inbound"/>
-			<StargateTable>
-				<Group chance="50">
-					<Stargate from="C6:Outbound" to="C6A:Inbound"/>
-					<Stargate from="C6A:Outbound" to="CD:Inbound"/>
-				</Group>
-				<Stargate chance="50" from="C6:Outbound" to="CD:Inbound"/>
-			</StargateTable>
-			<Stargate from="CD:Outbound"	to="C7:Inbound"/>
-			<Stargate from="C7:Outbound"	to="C8:Inbound"/>
-			<StargateTable>
-				<Group chance="50">
-					<Stargate from="C8:Outbound" to="C8A:Inbound"/>
-					<Stargate from="C8A:Outbound" to="C9:Inbound"/>
-				</Group>
-				<Stargate chance="50" from="C8:Outbound" to="C9:Inbound"/>
-			</StargateTable>
-		</NodeGroup>
-
-		<NodeGroup ID="OuterRealmMainline">
-			<Stargate from="A1:Outbound"	to="A2:Inbound"/>
-			<Stargate from="A2:Outbound"	to="EC:Inbound"/>
-			<Stargate from="EC:Outbound"	to="A3:Inbound"/>
-			<StargateTable>
-				<Group chance="50">
-					<Stargate from="A3:Outbound" to="A3A:Inbound"/>
-					<Stargate from="A3A:Outbound" to="PJ:Inbound"/>
-				</Group>
-				<Stargate chance="50" from="A3:Outbound" to="PJ:Inbound"/>
-			</StargateTable>
-			<Stargate from="PJ:Outbound"	to="A5:Inbound"/>
-			<Stargate from="A5:Outbound"	to="A6:Inbound"/>
-			<Stargate from="A6:Outbound"	to="A7:Inbound"/>
-			<Stargate from="A7:Outbound"	to="G1:Inbound"/>
-			<Stargate from="G1:Outbound"	to="G2:Inbound"/>
-		</NodeGroup>
-		
-		<!-- NEW BEYOND ==================================================== -->
 		
 		<!-- CHARON -->
 		
@@ -213,7 +166,215 @@
 			</System>
 		</Node>
 		
+		<!-- UNGOVERNED TERRITORIES ======================================== -->
+		
+		<NodeGroup ID="UngovernedTerritoriesMainline">
+			<StargateTable>
+				<Group chance="50">
+					<Stargate from="SK:Outbound" to="C5A:Inbound"/>
+					<Stargate from="C5A:Outbound" to="C5:Inbound"/>
+				</Group>
+				<Stargate chance="50" from="SK:Outbound" to="C5:Inbound"/>
+			</StargateTable>
+			<Stargate from="C5:Outbound"	to="C6:Inbound"/>
+			<StargateTable>
+				<Group chance="50">
+					<Stargate from="C6:Outbound" to="C6A:Inbound"/>
+					<Stargate from="C6A:Outbound" to="CD:Inbound"/>
+				</Group>
+				<Stargate chance="50" from="C6:Outbound" to="CD:Inbound"/>
+			</StargateTable>
+			<Stargate from="CD:Outbound"	to="C7:Inbound"/>
+			<Stargate from="C7:Outbound"	to="C8:Inbound"/>
+			<StargateTable>
+				<Group chance="50">
+					<Stargate from="C8:Outbound" to="C8A:Inbound"/>
+					<Stargate from="C8A:Outbound" to="C9:Inbound"/>
+				</Group>
+				<Stargate chance="50" from="C8:Outbound" to="C9:Inbound"/>
+			</StargateTable>
+		</NodeGroup>
+
+		<!-- JIANG'S STAR -->
+		
+		<Node ID="C9" x="-273" y="222">
+			<System
+					name=				"Jiang's Star"
+					level=				"6"
+					attributes=			"huaramarcaGate, ungoverned"
+					>
+				<System UNID="&ssEarthSpaceVolcanic;"/>
+			</System>
+
+			<MapEffect>
+				<Group xOffset="240" yOffset="125">
+					<Text text=				"Ungoverned Territories" 
+							font=			"Title"
+							primaryColor=	"0xff, 0xff, 0xff"
+							opacity=		"20"
+							/>
+				</Group>
+				
+				<Group xOffset="180" yOffset="40">
+					<Text text=				"Sung Slavers" 
+							font=			"SubTitle"
+							primaryColor=	"0xff, 0xff, 0xff"
+							opacity=		"20"
+							/>
+				</Group>
+			</MapEffect>
+		</Node>
+
+		<!-- SANCTUARY -->
+		
+		<Node ID="CD" x="0" y="260">
+			<System
+					name=			"Sanctuary"
+					level=			"5"
+					attributes=		"huaramarcaGate, ungoverned"
+					>
+				<System UNID="&ssEarthSpaceNebulae;"/>
+			</System>
+
+			<MapEffect>
+				<Group xOffset="-160" yOffset="160">
+					<Text text=				"Huari Empire" 
+							font=			"SubTitle"
+							primaryColor=	"0xff, 0xff, 0xff"
+							opacity=		"20"
+							/>
+				</Group>
+			</MapEffect>
+		</Node>
+		
+		<!-- MINOR UNGOVERNED TERRITORIES SYSTEMS -->
+
+		<Node ID="C5A" x="196" y="79">
+			<System
+					level=			"4"
+					attributes=		"ungoverned"
+					>
+				<Table>
+					<System chance="50" name="Mu Casser"	UNID="&ssEarthSpaceStandard;"/>
+					<System chance="50" name="Dorado"		UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C5" x="162" y="130">
+			<System		
+					level=			"4"
+					attributes=		"ungoverned"
+					>
+				<Table>
+					<System chance="17" name="Humboldt"	UNID="&ssEarthSpaceStandard;"/>
+					<System chance="8"  name="Neheb"		UNID="&ssEarthSpaceBinary;"/>
+					<System chance="25" name="70 Ophiuchi" UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="Draconis"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Hadar"		UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C6" x="106" y="191">
+			<System				
+					level=			"5"
+					attributes=		"huaramarcaGate, ungoverned"
+					>
+				<Table>
+					<System chance="17" name="Orthrus"	UNID="&ssEarthSpaceBinary;"/>
+					<System chance="8"  name="Kinder's Star"	UNID="&ssEarthSpaceStandard;"/>
+					<System chance="17" name="Lebezerin"	UNID="&ssEarthSpaceNebulae;"/>
+					<System chance="8"  name="Kruger 60"	UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="Tiberius"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Acheron"	UNID="&ssEarthSpaceVolcanic;"/>
+					<System chance="8"  name="Khaldun"	UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C6A" x="44" y="239">
+			<System
+					level=			"5"
+					attributes=		"huaramarcaGate, ungoverned"
+					>
+				<Table>
+					<System chance="17" name="Junger"		UNID="&ssEarthSpaceStandard;"/>
+					<System chance="8"  name="Ravena"		UNID="&ssEarthSpaceBinary;"/>
+					<System chance="17" name="Jaoel"		UNID="&ssEarthSpaceNebulae;"/>
+					<System chance="8"  name="55 Cancri"	UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="Trajan"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Tarterus"	UNID="&ssEarthSpaceVolcanic;"/>
+					<System chance="8"  name="Shihab"		UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C7" x="-94" y="295">
+			<System
+					level=			"5"
+					attributes=		"huaramarcaGate, ungoverned"
+					>
+				<Table>
+					<System chance="17" name="Amphion"	UNID="&ssEarthSpaceBinary;"/>
+					<System chance="8"  name="Kanto"		UNID="&ssEarthSpaceStandard;"/>
+					<System chance="17" name="Raziel"		UNID="&ssEarthSpaceNebulae;"/>
+					<System chance="8"  name="Estelle"	UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="Domitus"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Gehenna"	UNID="&ssEarthSpaceVolcanic;"/>
+					<System chance="8"  name="Arrakis"	UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C8" x="-191" y="292">
+			<System
+					level=			"6"
+					attributes=		"huaramarcaGate, ungoverned"
+					>
+				<Table>
+					<System chance="17" name="Zethus"		UNID="&ssEarthSpaceBinary;"/>
+					<System chance="8"  name="Nobunaga"	UNID="&ssEarthSpaceStandard;"/>
+					<System chance="20" name="Galgaliel"	UNID="&ssEarthSpaceNebulae;"/>
+					<System chance="5"  name="Cinder"		UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="Numerianus"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="20" name="Exael"		UNID="&ssEarthSpaceVolcanic;"/>
+					<System chance="5"  name="Alembra"	UNID="&ssEarthSpaceDesert;"/>
+				</Table>
+			</System>
+		</Node>
+
+		<Node ID="C8A" x="-238" y="268">
+			<System
+					level=				"6"
+					attributes=			"huaramarcaGate, ungoverned"
+					>
+				<Table>
+					<System chance="50" name="Maharashtra" UNID="&ssEarthSpaceNebulae;"/>
+					<System chance="50" name="Bhutihan"	UNID="&ssEarthSpaceVolcanic;"/>
+				</Table>
+			</System>
+		</Node>
+
 		<!-- OUTER REALM =================================================== -->
+		
+		<NodeGroup ID="OuterRealmMainline">
+			<Stargate from="A1:Outbound"	to="A2:Inbound"/>
+			<Stargate from="A2:Outbound"	to="EC:Inbound"/>
+			<Stargate from="EC:Outbound"	to="A3:Inbound"/>
+			<StargateTable>
+				<Group chance="50">
+					<Stargate from="A3:Outbound" to="A3A:Inbound"/>
+					<Stargate from="A3A:Outbound" to="PJ:Inbound"/>
+				</Group>
+				<Stargate chance="50" from="A3:Outbound" to="PJ:Inbound"/>
+			</StargateTable>
+			<Stargate from="PJ:Outbound"	to="A5:Inbound"/>
+			<Stargate from="A5:Outbound"	to="A6:Inbound"/>
+			<Stargate from="A6:Outbound"	to="A7:Inbound"/>
+			<Stargate from="A7:Outbound"	to="G1:Inbound"/>
+			<Stargate from="G1:Outbound"	to="G2:Inbound"/>
+		</NodeGroup>
 		
 		<!-- DANTALION -->
 		
@@ -391,169 +552,6 @@
 					<System chance="25" name="IC 767"		UNID="&ssEarthSpaceNebulae;"/>
 					<System chance="25" name="HD 11901"	UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="25" name="HD 44594"	UNID="&ssEarthSpaceVolcanic;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<!-- UNGOVERNED TERRITORIES ======================================== -->
-		
-		<!-- JIANG'S STAR -->
-		
-		<Node ID="C9" x="-273" y="222">
-			<System
-					name=				"Jiang's Star"
-					level=				"6"
-					attributes=			"ungoverned"
-					>
-				<System UNID="&ssEarthSpaceVolcanic;"/>
-			</System>
-
-			<MapEffect>
-				<Group xOffset="240" yOffset="125">
-					<Text text=				"Ungoverned Territories" 
-							font=			"Title"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-				
-				<Group xOffset="180" yOffset="40">
-					<Text text=				"Sung Slavers" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
-		</Node>
-
-		<!-- SANCTUARY -->
-		
-		<Node ID="CD" x="0" y="260">
-			<System
-					name=			"Sanctuary"
-					level=			"5"
-					attributes=		"ungoverned"
-					>
-				<System UNID="&ssEarthSpaceNebulae;"/>
-			</System>
-
-			<MapEffect>
-				<Group xOffset="-160" yOffset="160">
-					<Text text=				"Huari Empire" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
-		</Node>
-		
-		<!-- MINOR UNGOVERNED TERRITORIES SYSTEMS -->
-
-		<Node ID="C5A" x="196" y="79">
-			<System
-					level=			"4"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="50" name="Mu Casser"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="50" name="Dorado"		UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C5" x="162" y="130">
-			<System		
-					level=			"4"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="17" name="Humboldt"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="8"  name="Neheb"		UNID="&ssEarthSpaceBinary;"/>
-					<System chance="25" name="70 Ophiuchi" UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Draconis"	UNID="&ssEarthSpaceAsteroids;"/>
-					<System chance="25" name="Hadar"		UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C6" x="106" y="191">
-			<System				
-					level=			"5"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="17" name="Orthrus"	UNID="&ssEarthSpaceBinary;"/>
-					<System chance="8"  name="Kinder's Star"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="17" name="Lebezerin"	UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="8"  name="Kruger 60"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Tiberius"	UNID="&ssEarthSpaceAsteroids;"/>
-					<System chance="17" name="Acheron"	UNID="&ssEarthSpaceVolcanic;"/>
-					<System chance="8"  name="Khaldun"	UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C6A" x="44" y="239">
-			<System
-					level=			"5"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="17" name="Junger"		UNID="&ssEarthSpaceStandard;"/>
-					<System chance="8"  name="Ravena"		UNID="&ssEarthSpaceBinary;"/>
-					<System chance="17" name="Jaoel"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="8"  name="55 Cancri"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Trajan"		UNID="&ssEarthSpaceAsteroids;"/>
-					<System chance="17" name="Tarterus"	UNID="&ssEarthSpaceVolcanic;"/>
-					<System chance="8"  name="Shihab"		UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C7" x="-94" y="295">
-			<System
-					level=			"5"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="17" name="Amphion"	UNID="&ssEarthSpaceBinary;"/>
-					<System chance="8"  name="Kanto"		UNID="&ssEarthSpaceStandard;"/>
-					<System chance="17" name="Raziel"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="8"  name="Estelle"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Domitus"	UNID="&ssEarthSpaceAsteroids;"/>
-					<System chance="17" name="Gehenna"	UNID="&ssEarthSpaceVolcanic;"/>
-					<System chance="8"  name="Arrakis"	UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C8" x="-191" y="292">
-			<System
-					level=			"6"
-					attributes=		"ungoverned"
-					>
-				<Table>
-					<System chance="17" name="Zethus"		UNID="&ssEarthSpaceBinary;"/>
-					<System chance="8"  name="Nobunaga"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="20" name="Galgaliel"	UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="5"  name="Cinder"		UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Numerianus"	UNID="&ssEarthSpaceAsteroids;"/>
-					<System chance="20" name="Exael"		UNID="&ssEarthSpaceVolcanic;"/>
-					<System chance="5"  name="Alembra"	UNID="&ssEarthSpaceDesert;"/>
-				</Table>
-			</System>
-		</Node>
-
-		<Node ID="C8A" x="-238" y="268">
-			<System
-					level=				"6"
-					attributes=			"ungoverned"
-					>
-				<Table>
-					<System chance="50" name="Maharashtra" UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="50" name="Bhutihan"	UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
 		</Node>

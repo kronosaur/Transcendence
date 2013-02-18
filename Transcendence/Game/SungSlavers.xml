@@ -459,7 +459,7 @@
 	<!-- Slaver, Wind -->
 
 	<ShipClass UNID="&scWindSlaver;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Wind slaver"
 			type=				""
 			score=				"235"
@@ -508,7 +508,7 @@
 	<!-- Slaver, Steel -->
 
 	<ShipClass UNID="&scSteelSlaver;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Steel slaver"
 			type=				""
 			score=				"510"
@@ -553,7 +553,7 @@
 	<!-- Slaver, Earth -->
 
 	<ShipClass UNID="&scEarthSlaver;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
 			score=				"935"
@@ -628,7 +628,7 @@
 	-->
 
 	<ShipClass UNID="&scCarrierEarthSlaver;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
 			score=				"1100"
@@ -808,7 +808,7 @@
 	<!-- Slaver, Dragon -->
 
 	<ShipClass UNID="&scDragonSlaver;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Dragon Slaver"
 			type=				""
 			score=				"2015"
@@ -893,7 +893,7 @@
 	<!-- Sung Transport -->
 
 	<ShipClass UNID="&scSungTransport;"
-			manufacturer=		""
+			manufacturer=		"Sung Slavers"
 			class=				"Sung transport"
 			type=				""
 			score=				"470"
@@ -907,7 +907,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			leavesWreck=		"100"
 
-			attributes=			"genericClass, sungSlavers"
+			attributes=			"freighter, genericClass, sungSlavers"
 			>
 
 		<Armor>

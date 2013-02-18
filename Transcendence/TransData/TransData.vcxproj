@@ -188,6 +188,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="Topology.cpp" />
+    <ClCompile Include="TradeSim.cpp" />
     <ClCompile Include="Words.cpp" />
   </ItemGroup>
   <ItemGroup>

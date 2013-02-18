@@ -22,6 +22,7 @@
 #define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
 #define ENHANCED_ATTRIB							CONSTLIT("enhanced")
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
+#define HP_BONUS_ATTRIB							CONSTLIT("hpBonus")
 #define ITEM_ATTRIB								CONSTLIT("item")
 #define LEVEL_ATTRIB							CONSTLIT("level")
 #define LEVEL_CURVE_ATTRIB						CONSTLIT("levelCurve")
@@ -76,6 +77,9 @@ class CSingleDevice : public IDeviceGenerator
 		bool m_bDefaultLinkedFire;
 
 		bool m_bSecondary;
+
+		int m_iSlotBonus;
+		bool m_bDefaultSlotBonus;
 
 		IItemGenerator *m_pExtraItems;
 	};
@@ -224,6 +228,8 @@ ALERROR IDeviceGenerator::InitDeviceDescFromXML (SDesignLoadCtx &Ctx, CXMLElemen
 
 	retDesc->bSecondary = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
 
+	retDesc->iSlotBonus = pDesc->GetAttributeInteger(HP_BONUS_ATTRIB);
+
 	return NOERROR;
 	}
 
@@ -310,6 +316,15 @@ void CSingleDevice::AddDevices (SDeviceGenerateCtx &Ctx)
 			Desc.dwLinkedFireOptions = 0;
 
 		Desc.bSecondary = m_bSecondary;
+
+		//	Slot bonus
+
+		if (!m_bDefaultSlotBonus)
+			Desc.iSlotBonus = m_iSlotBonus;
+		else if (bUseSlotDesc)
+			Desc.iSlotBonus = SlotDesc.iSlotBonus;
+		else
+			Desc.iSlotBonus = 0;
 
 		//	Add extra items
 
@@ -445,6 +460,16 @@ ALERROR CSingleDevice::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		}
 
 	m_bSecondary = pDesc->GetAttributeBool(SECONDARY_WEAPON_ATTRIB);
+
+	//	Slot bonus
+
+	if (pDesc->FindAttributeInteger(HP_BONUS_ATTRIB, &m_iSlotBonus))
+		m_bDefaultSlotBonus = false;
+	else
+		{
+		m_iSlotBonus = 0;
+		m_bDefaultSlotBonus = true;
+		}
 
 	//	Load extra items
 

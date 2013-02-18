@@ -419,12 +419,13 @@ class CTextCrawlSession : public IHISession
 	{
 	public:
 		CTextCrawlSession (CHumanInterface &HI,
-						   const CG16bitImage &Image,
+						   const CG16bitImage *pImage,
 						   const CString &sText,
 						   const CString &sCmdDone);
 
 		//	IHISession virtuals
 		virtual void OnCleanUp (void);
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
 		virtual ALERROR OnInit (CString *retsError);
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData);
 		virtual void OnLButtonDown (int x, int y, DWORD dwFlags);
@@ -435,7 +436,7 @@ class CTextCrawlSession : public IHISession
 	private:
 		void CreateCrawlAnimation (const CString &sText, const RECT &rcRect, IAnimatron **retpAni);
 
-		const CG16bitImage &m_Image;
+		const CG16bitImage *m_pImage;
 		CString m_sText;
 		CString m_sCmdDone;
 	};

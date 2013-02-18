@@ -22,7 +22,6 @@
 #define STATION_TAG								CONSTLIT("Station")
 #define TRADE_TAG								CONSTLIT("Trade")
 
-
 #define ABANDONED_SCREEN_ATTRIB					CONSTLIT("abandonedScreen")
 #define ALERT_WHEN_ATTACKED_ATTRIB				CONSTLIT("alertWhenAttacked")
 #define ALERT_WHEN_DESTROYED_ATTRIB				CONSTLIT("alertWhenDestroyed")
@@ -56,6 +55,7 @@
 #define MASS_ATTRIB								CONSTLIT("mass")
 #define MAX_CONSTRUCTION_ATTRIB					CONSTLIT("maxConstruction")
 #define MAX_HIT_POINTS_ATTRIB					CONSTLIT("maxHitPoints")
+#define MAX_LIGHT_DISTANCE						CONSTLIT("maxLightRadius")
 #define MAX_STRUCTURAL_HIT_POINTS_ATTRIB		CONSTLIT("maxStructuralHitPoints")
 #define MIN_SHIPS_ATTRIB						CONSTLIT("minShips")
 #define MOBILE_ATTRIB							CONSTLIT("mobile")
@@ -120,6 +120,8 @@
 #define VALUE_TRUE								CONSTLIT("true")
 
 #define MAX_ATTACK_DISTANCE						(g_KlicksPerPixel * 512)
+
+#define SPECIAL_IS_ENEMY_OF						CONSTLIT("isEnemyOf:")
 
 CStationType::CStationType (void) : 
 		m_pDesc(NULL),
@@ -192,22 +194,6 @@ void CStationType::AddTypesUsedByXML (CXMLElement *pElement, TSortMap<DWORD, boo
 		AddTypesUsedByXML(pElement->GetContentElement(i), retTypesUsed);
 	}
 
-bool CStationType::CanBeEncountered (CSystem *pSystem)
-
-//	CanBeEncountered
-//
-//	Returns TRUE if the station type can be encountered in the given system.
-
-	{
-	if (pSystem)
-		{
-		if (IsUniqueInSystem() && pSystem->IsStationInSystem(this))
-			return false;
-		}
-
-	return (!IsUnique() || !m_fEncountered);
-	}
-
 CString CStationType::ComposeLoadError (const CString &sError)
 
 //	ComposeLoadError
@@ -231,7 +217,7 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = m_pAbandonedDockScreen.GetStringUNID(this);
 	else if (strEquals(sField, FIELD_CATEGORY))
 		{
-		if (m_sLevelFrequency.IsBlank())
+		if (!CanBeEncounteredRandomly())
 			*retsValue = CONSTLIT("04-Not Random");
 		else if (HasAttribute(CONSTLIT("debris")))
 			*retsValue = CONSTLIT("03-Debris");
@@ -308,43 +294,6 @@ CSovereign *CStationType::GetControllingSovereign (void)
 		return m_pSovereign;
 	}
 
-int CStationType::GetFrequencyByLevel (int iLevel)
-
-//	GetFrequencyByLevel
-//
-//	Returns the chance of this station type appearing at this level
-
-	{
-	if (IsUnique() && m_fEncountered)
-		return 0;
-	else
-		return ::GetFrequencyByLevel(m_sLevelFrequency, iLevel);
-	}
-
-int CStationType::GetFrequencyForSystem (CSystem *pSystem)
-
-//	GetFrequencyForSystem
-//
-//	Returns the chance that this station type will appear in the given system
-
-	{
-	//	If we're unique in the universe and already encountered, then no chance
-	//	of appearing again.
-
-	if (IsUnique() && m_fEncountered)
-		return 0;
-
-	//	If this station is unique in the system, see if there are other
-	//	stations of this type in the system
-
-	if (IsUniqueInSystem() && pSystem->IsStationInSystem(this))
-		return 0;
-
-	//	Otherwise, go by level
-
-	return ::GetFrequencyByLevel(m_sLevelFrequency, pSystem->GetLevel());
-	}
-
 int CStationType::GetLevel (void) const
 
 //	GetLevel
@@ -352,53 +301,31 @@ int CStationType::GetLevel (void) const
 //	Returns the average level of the station.
 
 	{
+	int i;
+	int iLevel;
+
 	if (m_iLevel)
 		return m_iLevel;
+	else if (iLevel = m_RandomPlacement.CalcLevelFromFrequency())
+		return iLevel;
 	else
 		{
-		int iLevel = 1;
-		int iTotal = 0;
-		int iCount = 0;
-		char *pPos = m_sLevelFrequency.GetASCIIZPointer();
-		while (*pPos != '\0')
+		//	Take the highest level of armor or devices
+
+		iLevel = (m_pArmor ? m_pArmor->GetLevel() : 1);
+		for (i = 0; i < m_iDevicesCount; i++)
 			{
-			int iFreq = 0;
-
-			switch (*pPos)
+			if (!m_Devices[i].IsEmpty())
 				{
-				case 'C':
-				case 'c':
-					iFreq = ftCommon;
-					break;
-
-				case 'U':
-				case 'u':
-					iFreq = ftUncommon;
-					break;
-
-				case 'R':
-				case 'r':
-					iFreq = ftRare;
-					break;
-
-				case 'V':
-				case 'v':
-					iFreq = ftVeryRare;
-					break;
+				int iDeviceLevel = m_Devices[i].GetClass()->GetLevel();
+				if (iDeviceLevel > iLevel)
+					iLevel = iDeviceLevel;
 				}
-
-			iTotal += iFreq * iLevel;
-			iCount += iFreq;
-
-			pPos++;
-			if (*pPos != ' ')
-				iLevel++;
 			}
 
-		if (iCount > 0)
-			return (int)(((double)iTotal / (double)iCount) + 0.5);
-		else
-			return 0;
+		//	Done
+
+		return iLevel;
 		}
 	}
 
@@ -686,7 +613,6 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fSign = pDesc->GetAttributeBool(SIGN_ATTRIB);
 	m_fBeacon = pDesc->GetAttributeBool(BEACON_ATTRIB);
 	m_fRadioactive = pDesc->GetAttributeBool(RADIOACTIVE_ATTRIB);
-	m_fEncountered = false;
 	m_fNoMapIcon = pDesc->GetAttributeBool(NO_MAP_ICON_ATTRIB);
 	m_fMultiHull = pDesc->GetAttributeBool(MULTI_HULL_ATTRIB);
 	m_fTimeStopImmune = pDesc->GetAttributeBool(TIME_STOP_IMMUNE_ATTRIB);
@@ -697,6 +623,7 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fNoBlacklist = pDesc->GetAttributeBool(NO_BLACKLIST_ATTRIB);
 	m_iShipRepairRate = pDesc->GetAttributeInteger(SHIP_REPAIR_RATE_ATTRIB);
 	m_rgbSpaceColor = LoadCOLORREF(pDesc->GetAttribute(SPACE_COLOR_ATTRIB));
+	m_iMaxLightDistance = pDesc->GetAttributeIntegerBounded(MAX_LIGHT_DISTANCE, 1, -1, 500);
 	m_iAlertWhenAttacked = pDesc->GetAttributeInteger(ALERT_WHEN_ATTACKED_ATTRIB);
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
 	m_iFireRateAdj = strToInt(pDesc->GetAttribute(FIRE_RATE_ADJ_ATTRIB), 80);
@@ -720,28 +647,12 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_dwRandomNameFlags = 0;
 		}
 
-	//	Get unique attributes
-
-	CString sUnique = pDesc->GetAttribute(UNIQUE_ATTRIB);
-	m_fUnique = false;
-	m_fUniqueInSystem = false;
-	if (strEquals(sUnique, UNIQUE_IN_SYSTEM))
-		m_fUniqueInSystem = true;
-	else if (strEquals(sUnique, UNIQUE_IN_UNIVERSE))
-		m_fUnique = true;
-	else if (strEquals(sUnique, VALUE_TRUE))
-		m_fUnique = true;
-
 	//	Placement
 
-	m_sLevelFrequency = pDesc->GetAttribute(LEVEL_FREQUENCY_ATTRIB);
-	m_sLocationCriteria = pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB);
-	int iRadius;
-	if (pDesc->FindAttributeInteger(ENEMY_EXCLUSION_RADIUS_ATTRIB, &iRadius)
-			&& iRadius >= 0)
-		m_rEnemyExclusionRadius = iRadius * LIGHT_SECOND;
-	else
-		m_rEnemyExclusionRadius = 30 * LIGHT_SECOND;
+	if (error = m_RandomPlacement.InitFromStationTypeXML(Ctx, pDesc))
+		return error;
+
+	m_EncounterRecord.Reinit(m_RandomPlacement);
 
 	//	Background objects
 
@@ -1062,6 +973,27 @@ ALERROR CStationType::OnFinishBindDesign (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
+bool CStationType::OnHasSpecialAttribute (const CString &sAttrib) const
+
+//	OnHasSpecialAttribute
+//
+//	Returns TRUE if we have the special attribute
+
+	{
+	if (strStartsWith(sAttrib, SPECIAL_IS_ENEMY_OF))
+		{
+		CString sValue = strSubString(sAttrib, SPECIAL_IS_ENEMY_OF.GetLength());
+		DWORD dwSovereign = (DWORD)strToInt(sValue, 0);
+		CSovereign *pSovereign = g_pUniverse->FindSovereign(dwSovereign);
+		if (pSovereign == NULL)
+			return false;
+
+		return m_pSovereign->IsEnemy(pSovereign);
+		}
+	else
+		return false;
+	}
+
 void CStationType::OnMarkImages (void)
 
 //	OnMarkImages
@@ -1093,7 +1025,18 @@ void CStationType::OnReadFromStream (SUniverseLoadCtx &Ctx)
 	DWORD dwLoad;
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	
-	m_fEncountered =	((dwLoad & 0x00000001) ? true : false);
+	bool bEncountered;
+	bEncountered =		((dwLoad & 0x00000001) ? true : false);
+
+	//	Load encounter record
+
+	if (Ctx.dwVersion >= 19)
+		m_EncounterRecord.ReadFromStream(Ctx);
+	else
+		{
+		if (bEncountered)
+			m_EncounterRecord.AddEncounter(0);
+		}
 
 	//	Load opaque data
 
@@ -1107,7 +1050,7 @@ void CStationType::OnReinit (void)
 //	Reinitialize the type
 
 	{
-	m_fEncountered = false;
+	m_EncounterRecord.Reinit(m_RandomPlacement);
 	}
 
 void CStationType::OnWriteToStream (IWriteStream *pStream)
@@ -1122,8 +1065,9 @@ void CStationType::OnWriteToStream (IWriteStream *pStream)
 	DWORD dwSave;
 
 	dwSave = 0;
-	dwSave |= (m_fEncountered ?	0x00000001 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+	m_EncounterRecord.WriteToStream(pStream);
 	}
 
 void CStationType::PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick)

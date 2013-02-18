@@ -189,7 +189,8 @@ void CChooseAdventureSession::CmdSelectExtensions (bool bSelect)
 	int i;
 
 	for (i = 0; i < m_ExtensionList.GetCount(); i++)
-		SetPropertyBool(strPatternSubst(CONSTLIT("idExtension:%d"), i), PROP_CHECKED, bSelect);
+		if (!m_ExtensionList[i]->IsDisabled())
+			SetPropertyBool(strPatternSubst(CONSTLIT("idExtension:%d"), i), PROP_CHECKED, bSelect);
 	}
 
 void CChooseAdventureSession::CreateAdventureDesc (CExtension *pAdventure)
@@ -794,6 +795,12 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 	for (i = 0; i < m_ExtensionList.GetCount(); i++)
 		{
 		int cyLine;
+		bool bDisabled = m_ExtensionList[i]->IsDisabled();
+
+		//	Label
+
+		CString sLabel = (bDisabled ? strPatternSubst(CONSTLIT("%s [%s]"), m_ExtensionList[i]->GetName(), m_ExtensionList[i]->GetDisabledReason())
+				: m_ExtensionList[i]->GetName());
 
 		//	Create a button
 
@@ -804,11 +811,13 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 				y,
 				cxMaxWidth,
 				CVisualPalette::OPTION_CHECKBOX_LARGE_FONT,
-				m_ExtensionList[i]->GetName(),
+				sLabel,
 				&pButton,
 				&cyLine);
 
-		if (Defaults.Find(m_ExtensionList[i]->GetUNID()))
+		if (bDisabled)
+			pButton->SetPropertyBool(PROP_ENABLED, false);
+		else if (Defaults.Find(m_ExtensionList[i]->GetUNID()))
 			pButton->SetPropertyBool(PROP_CHECKED, true);
 
 		//	Add an event when clicked so that we can recompute game 

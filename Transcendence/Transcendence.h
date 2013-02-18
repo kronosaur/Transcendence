@@ -146,9 +146,17 @@ enum TargetTypes
 
 struct SNewGameSettings
 	{
+	SNewGameSettings (void) :
+			iPlayerGenome(genomeUnknown),
+			dwPlayerShip(0),
+			bFullCreate(false)
+		{ }
+
 	CString sPlayerName;						//	Character name
 	GenomeTypes iPlayerGenome;					//	Genome
 	DWORD dwPlayerShip;							//	Starting ship class
+
+	bool bFullCreate;							//	If TRUE, create all systems
 	};
 
 struct SAdventureSettings
@@ -1641,7 +1649,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			{
 			gsNone,
 			gsIntro,
-			gsProlog,
 			gsInGame,
 			gsDocked,
 			gsEnteringStargate,
@@ -1729,14 +1736,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void StopAnimations (void);
 		void StopIntro (void);
 
-		void AnimateCrawlScreen (void);
-		void AnimateProlog (bool bTopMost);
-		void GetCrawlAnimationRect (RECT *retrcRect);
-		ALERROR InitCrawlScreen (void);
-		void PaintCrawlBackground (void);
-		ALERROR StartProlog (void);
-		void StopProlog (void);
-
 		ALERROR StartGame (bool bNewGame = false);
 
 		void OnKeyDownHelp (int iVirtKey, DWORD dwKeyData);
@@ -1783,6 +1782,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CloseGameLog (void);
 
 		inline void SetGameCreated (bool bValue = true) { m_bGameCreated = bValue; }
+		inline bool IsGameCreated (void) { return m_bGameCreated; }
 
 		inline CGameFile &GetGameFile (void);
 
@@ -1860,9 +1860,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CString m_sCommand;
 
 		//	Crawl screen
-		CG16bitImage *m_pCrawlImage;
-		CTextCrawlDisplay m_CrawlText;
-		bool m_bContinue;
 		bool m_bGameCreated;
 
 		//	Help screen
@@ -2090,6 +2087,7 @@ class CGameSettings
 			dockPortIndicator,				//	Options for dock port indicator
 			allowInvokeLetterHotKeys,		//	Allow invoke entries to have letter hot keys
 			noAutoSave,						//	NOT YET IMPLEMENTED
+			noFullCreate,					//	If TRUE, we don't create all systems in the topology
 
 			//	Extension options
 			useTDB,							//	Force use of .TDB
@@ -2118,7 +2116,7 @@ class CGameSettings
 			noCrashPost,					//	Do not post crash log to Multiverse
 
 			//	Constants
-			OPTIONS_COUNT = 24,
+			OPTIONS_COUNT = 25,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2178,7 +2176,7 @@ class CTranscendenceModel
 		ALERROR InitAdventure (const SAdventureSettings &Settings, CString *retsError);
 		ALERROR StartNewGame (const CString &sUsername, const SNewGameSettings &NewGame, CString *retsError);
 		void StartNewGameAbort (void);
-		ALERROR StartNewGameBackground (CString *retsError = NULL);
+		ALERROR StartNewGameBackground (const SNewGameSettings &NewGame, CString *retsError = NULL);
 		ALERROR StartGame (bool bNewGame);
 
 		ALERROR GetGameStats (CGameStats *retStats);
@@ -2251,7 +2249,8 @@ class CTranscendenceModel
 			};
 
 		CString CalcEpitaph (SDestroyCtx &Ctx);
-		void CalcStartingPos (CShipClass *pStartingShip, CString *retsNodeID, CString *retsPos);
+		void CalcStartingPos (CShipClass *pStartingShip, DWORD *retdwMap, CString *retsNodeID, CString *retsPos);
+		ALERROR CreateAllSystems (const CString &sStartNode, CSystem **retpStartingSystem, CString *retsError);
 		void GenerateGameStats (CGameStats *retStats, bool bGameOver = false);
 		ALERROR LoadGameStats (const CString &sFilespec, CGameStats *retStats);
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
@@ -2339,6 +2338,8 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateLoading,
 			stateIntro,
 			stateNewGame,
+			statePrologue,
+			statePrologueDone,
 			stateInGame,
 			stateEpilogue,
 			stateEndGameStats,
@@ -2359,7 +2360,6 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 //	Utility functions
 
 void AnimateMainWindow (HWND hWnd);
-CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs = NULL);
 void CopyGalacticMapToClipboard (HWND hWnd, CGalacticMapPainter *pPainter);
 void CopyGameStatsToClipboard (HWND hWnd, const CGameStats &GameStats);
 const CG16bitFont &GetFontByName (const SFontTable &Fonts, const CString &sFontName);

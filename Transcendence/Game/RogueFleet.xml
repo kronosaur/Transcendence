@@ -10,7 +10,7 @@
 	<!-- Rogue Mine Layer -->
 
 	<ShipClass UNID="&scRogueMineLayer;"
-			manufacturer=		""
+			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aurochs"
 			type=				"mine layer"
 			score=				"975"

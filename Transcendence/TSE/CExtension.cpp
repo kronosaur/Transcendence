@@ -70,7 +70,8 @@ CExtension::CExtension (void) :
 		m_bMarked(false),
 		m_bDebugOnly(false),
 		m_bRegistered(false),
-		m_bVerified(false)
+		m_bVerified(false),
+		m_bDisabled(false)
 
 //	CExtension constructor
 
@@ -149,6 +150,26 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 	pExtension->m_ModifiedTime = fileGetModifiedTime(Ctx.sResDb);
 	pExtension->m_bRegistered = true;
 	pExtension->m_bPrivate = true;
+
+	//	Load the apiVersion
+
+	CString sAPIVersion;
+	if (pDesc->FindAttribute(API_VERSION_ATTRIB, &sAPIVersion))
+		{
+		pExtension->m_dwAPIVersion = (DWORD)strToInt(sAPIVersion, 0);
+		if (pExtension->m_dwAPIVersion < 12)
+			pExtension->m_dwAPIVersion = 0;
+		}
+
+	//	If this version is later than what we expect, then we fail.
+
+	if (pExtension->m_dwAPIVersion > API_VERSION)
+		{
+		pExtension->m_pEntities = NULL;	//	Let our parent clean up
+		delete pExtension;
+		Ctx.sError = CONSTLIT("Newer version of Transcendence.exe required.");
+		return ERR_FAIL;
+		}
 
 	//	We return the base extension
 
@@ -380,6 +401,11 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 		*retsError = strPatternSubst(CONSTLIT("Unable to load extension: incompatible version: %s"), sAPIVersion);
 		return ERR_FAIL;
 		}
+
+	//	If this is a later version, then disabled it
+
+	if (pExtension->m_dwAPIVersion > API_VERSION)
+		pExtension->SetDisabled(CONSTLIT("Requires a newer version of Transcendence.exe"));
 
 	//	Release
 
@@ -652,8 +678,22 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 			CXMLElement *pRoot;
 			if (error = ExtDb.LoadGameFile(&pRoot, pResolver, retsError))
 				{
-				*retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
-				return ERR_FAIL;
+				//	If we're in debug mode then this is a real error.
+
+				if (g_pUniverse->InDebugMode())
+					{
+					*retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
+					return ERR_FAIL;
+					}
+
+				//	Otherwise, we try to continue as if nothing bad had happened, but we
+				//	disable the extension.
+
+				else
+					{
+					pRoot = new CXMLElement;
+					SetDisabled((retsError ? *retsError : CONSTLIT("Unable to load")));
+					}
 				}
 
 			//	Set up context

@@ -850,6 +850,212 @@ CString ComposeNounPhrase (const CString &sNoun,
 		return sNounPhrase;
 	}
 
+CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs)
+
+//	ComposePlayerNameString
+//
+//	Replaces the following variables:
+//
+//		%name%				player name
+//		%he%				he or she
+//		%his%				his or her (matching case)
+//		%hers%				his or hers (matching case)
+//		%him%				him or her (matching case)
+//		%sir%				sir or ma'am (matching case)
+//		%man%				man or woman (matching case)
+//		%brother%			brother or sister (matching case)
+//		%%					%
+
+	{
+	//	Prepare output
+
+	CString sOutput;
+	int iOutLeft = sString.GetLength() * 2;
+	char *pOut = sOutput.GetWritePointer(iOutLeft);
+
+	//	Compose. Loop once for each segment that we need to add
+
+	bool bDone = false;
+	bool bVar = false;
+	char *pPos = sString.GetASCIIZPointer();
+	while (!bDone)
+		{
+		CString sVar;
+		char *pSeg;
+		char *pSegEnd;
+
+		if (bVar)
+			{
+			ASSERT(*pPos == '%');
+
+			//	Skip %
+
+			pPos++;
+			char *pStart = pPos;
+			while (*pPos != '%' && *pPos != '\0')
+				pPos++;
+
+			sVar = CString(pStart, pPos - pStart);
+
+			//	Skip the next %
+
+			if (*pPos == '%')
+				{
+				pPos++;
+				bVar = false;
+				}
+			else
+				bDone = true;
+
+			bool bCapitalize = (*sVar.GetASCIIZPointer() >= 'A' && *sVar.GetASCIIZPointer() <= 'Z');
+
+			//	Setup the segment depending on the variable
+
+			if (sVar.IsBlank())
+				sVar = CONSTLIT("%");
+			else if (strEquals(sVar, CONSTLIT("name")))
+				sVar = sPlayerName;
+			else if (strEquals(sVar, CONSTLIT("he")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("he");
+				else
+					sVar = CONSTLIT("she");
+				}
+			else if (strEquals(sVar, CONSTLIT("sir")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("sir");
+				else
+					sVar = CONSTLIT("ma'am");
+				}
+			else if (strEquals(sVar, CONSTLIT("man")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("man");
+				else
+					sVar = CONSTLIT("woman");
+				}
+			else if (strEquals(sVar, CONSTLIT("his")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("his");
+				else
+					sVar = CONSTLIT("her");
+				}
+			else if (strEquals(sVar, CONSTLIT("him")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("him");
+				else
+					sVar = CONSTLIT("her");
+				}
+			else if (strEquals(sVar, CONSTLIT("hers")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("his");
+				else
+					sVar = CONSTLIT("hers");
+				}
+			else if (strEquals(sVar, CONSTLIT("brother")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("brother");
+				else
+					sVar = CONSTLIT("sister");
+				}
+			else if (strEquals(sVar, CONSTLIT("son")))
+				{
+				if (iGenome == genomeHumanMale)
+					sVar = CONSTLIT("son");
+				else
+					sVar = CONSTLIT("daughter");
+				}
+			else if (pArgs)
+				{
+				int iArg = strToInt(sVar, 0);
+				if (iArg < 0)
+					{
+					iArg = -iArg;
+					bCapitalize = true;
+					}
+
+				if (iArg > 0)
+					{
+					ICCItem *pArg = pArgs->GetElement(iArg + 1);
+					if (pArg)
+						sVar = pArg->GetStringValue();
+					}
+				}
+
+			//	If we could not find a valid var, then we assume a
+			//	single % sign.
+
+			else
+				{
+				sVar = CONSTLIT("%");
+				pPos = pStart;
+				bDone = (*pPos == '\0');
+				bVar = false;
+				bCapitalize = false;
+				}
+
+			//	Capitalize, if necessary
+
+			if (bCapitalize)
+				sVar = strCapitalize(sVar);
+
+			//	Setup segment
+
+			pSeg = sVar.GetASCIIZPointer();
+			pSegEnd = pSeg + sVar.GetLength();
+			}
+		else
+			{
+			//	Skip to the next variable or the end of the string
+
+			pSeg = pPos;
+			while (*pPos != '%' && *pPos != '\0')
+				pPos++;
+
+			if (*pPos == '\0')
+				bDone = true;
+			else
+				bVar = true;
+
+			pSegEnd = pPos;
+			}
+
+		//	Add the next segment
+
+		int iLen = pSegEnd - pSeg;
+		if (iLen > 0)
+			{
+			if (iLen > iOutLeft)
+				{
+				int iAlloc = sOutput.GetLength();
+				int iCurLen = iAlloc - iOutLeft;
+				int iNewAlloc = max(iAlloc * 2, iAlloc + iLen);
+				pOut = sOutput.GetWritePointer(iNewAlloc);
+				pOut += iCurLen;
+				iOutLeft = iNewAlloc - iCurLen;
+				}
+
+			while (pSeg < pSegEnd)
+				*pOut++ = *pSeg++;
+
+			iOutLeft -= iLen;
+			}
+		}
+
+	//	Done
+
+	int iAlloc = sOutput.GetLength();
+	int iCurLen = iAlloc - iOutLeft;
+	sOutput.Truncate(iCurLen);
+	return sOutput;
+	}
+
 void ComputePercentages (int iCount, int *pTable)
 
 //	ComputePercentages
@@ -1088,6 +1294,163 @@ DWORD ExtensionVersionToInteger (DWORD dwVersion)
 		default:
 			return 0;
 		}
+	}
+
+CString GenerateLevelFrequency (const CString &sLevelFrequency, int iCenterLevel)
+
+//	GenerateLevelFrequency
+//
+//	Parses a special level frequency value of the form:
+//
+//	systemLevel:bbb|c|aaa
+//
+//	Where c is the frequency at iCenterLevel; bbb is the frequency before that 
+//	level, and aaa is the frequency after that level.
+//
+//	For example, if iCenterLevel == 5 then:
+//
+//	"systemLevel:u|c|r"		->		"---uc r"
+
+	{
+	char *pPos = sLevelFrequency.GetASCIIZPointer();
+
+	//	Skip to the colon
+
+	while (*pPos != '\0' && *pPos != ':')
+		pPos++;
+
+	if (*pPos != ':')
+		return NULL_STR;
+
+	//	systemLevel: u | c | r
+	//	           ^
+
+	pPos++;
+	while (*pPos == ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	             ^
+
+	char *pBelow = pPos;
+
+	//	Count until the separator
+
+	while (*pPos != '\0' && *pPos != '|' && *pPos != ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	              ^
+
+	int iBelowCount = (int)(pPos - pBelow);
+
+	//	Find the separator
+
+	while (*pPos == ' ')
+		pPos++;
+
+	if (*pPos != '|')
+		return NULL_STR;
+
+	//	systemLevel: u | c | r
+	//	               ^
+
+	pPos++;
+	while (*pPos == ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	                 ^
+
+	char *pCenter = pPos;
+
+	//	Count until the separator
+
+	while (*pPos != '\0' && *pPos != '|' && *pPos != ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	                  ^
+
+	int iCenterCount = (int)(pPos - pCenter);
+	if (iCenterCount == 0)
+		return NULL_STR;
+
+	//	Find the separator
+
+	while (*pPos == ' ')
+		pPos++;
+
+	if (*pPos != '|')
+		return NULL_STR;
+
+	//	systemLevel: u | c | r
+	//	                   ^
+
+	pPos++;
+	while (*pPos == ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	                     ^
+
+	char *pAbove = pPos;
+
+	//	Count until the separator
+
+	while (*pPos != '\0' && *pPos != '|' && *pPos != ' ')
+		pPos++;
+
+	//	systemLevel: u | c | r
+	//	                      ^
+
+	int iAboveCount = (int)(pPos - pAbove);
+
+	//	Figure out the maximum level that we have
+
+	int iMaxLevel = iCenterLevel + iAboveCount;
+	int iStringSize = iMaxLevel + ((iMaxLevel - 1) / 5);
+	CString sResult;
+	char *pDest = sResult.GetWritePointer(iStringSize);
+
+	//	Skip levels below 1
+
+	while (iCenterLevel - iBelowCount < 1)
+		{
+		pBelow++;
+		iBelowCount--;
+		}
+
+	//	Write out all the levels
+
+	int iCurLevel = 1;
+	while (iCurLevel <= iMaxLevel)
+		{
+		if (iCurLevel < iCenterLevel)
+			{
+			if (iCurLevel < iCenterLevel - iBelowCount)
+				*pDest++ = '-';
+			else
+				*pDest++ = *pBelow++;
+			}
+		else if (iCurLevel == iCenterLevel)
+			*pDest++ = *pCenter;
+		else
+			*pDest++ = *pAbove++;
+
+		//	Add a spacing
+
+		if ((iCurLevel % 5) == 0)
+			*pDest++ = ' ';
+
+		//	Next
+
+		iCurLevel++;
+		}
+
+	//	Done
+
+	return sResult;
 	}
 
 CString GenerateRandomName (const CString &sList, const CString &sSubst)

@@ -2329,3 +2329,19 @@ CItemCriteria::~CItemCriteria (void)
 		pFilter->Discard(&g_pUniverse->GetCC());
 	}
 
+int CItemCriteria::GetMaxLevelMatched (void) const
+
+//	GetMaxLevelMatches
+//
+//	Returns the maximum item level that this criteria matches. If there is no
+//	explicit level match, then we return the maximum item level.
+
+	{
+	if (iEqualToLevel != -1)
+		return iEqualToLevel;
+
+	if (iLessThanLevel != -1)
+		return iLessThanLevel - 1;
+
+	return MAX_ITEM_LEVEL;
+	}

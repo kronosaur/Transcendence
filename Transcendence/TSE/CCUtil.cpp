@@ -4,20 +4,104 @@
 
 #include "PreComp.h"
 
+#define CLASS_CORBIT					CONSTLIT("COrbit")
+
 #define DISP_NEUTRAL					CONSTLIT("neutral")
 #define DISP_ENEMY						CONSTLIT("enemy")
 #define DISP_FRIEND						CONSTLIT("friend")
 
-void CreateBinaryFromList (CCodeChain &CC, ICCItem *pList, void *pvDest)
+#define FIELD_GAUSSIAN					CONSTLIT("gaussian")
+
+Metric CalcRandomMetric (CCodeChain &CC, ICCItem *pItem)
+
+//	CalcRandomMetric
+//
+//	Parses an item to generate a Metric. The item may have one of the following
+//	formats:
+//
+//	integer
+//		We treat as a distance in light-seconds.
+//
+//	('gaussian min center max)
+//		We return a random distance between min and max with center as the 
+//		average, using a Gaussian random distribution. All values are expressed
+//		in light-seconds, but we can return random numbers anywhere in between.
+
+	{
+	if (pItem == NULL || pItem->IsNil())
+		return 0.0;
+	else if (pItem->IsList())
+		{
+		if (pItem->GetCount() >= 4 && strEquals(pItem->GetElement(0)->GetStringValue(), FIELD_GAUSSIAN))
+			{
+			//	Get the parameters
+
+			double rLow = pItem->GetElement(1)->GetIntegerValue();
+			double rMid = pItem->GetElement(2)->GetIntegerValue();
+			double rHigh = pItem->GetElement(3)->GetIntegerValue();
+			if (rLow >= rMid || rLow >= rHigh || rMid >= rHigh)
+				return 0.0;
+
+			//	Compute some ranges
+
+			double rHighRange = rHigh - rMid;
+			double rLowRange = rMid - rLow;
+
+			//	Generate a gaussian, but clip out after 3 standard deviations
+
+			double rMaxStdDev = 3.0;
+			double rValue;
+			do
+				{
+				rValue = mathRandomGaussian();
+				}
+			while (rValue > rMaxStdDev || rValue < -rMaxStdDev);
+
+			rValue = rValue / rMaxStdDev;
+
+			//	Scale to proper value
+
+			if (rValue >= 0.0)
+				return (rMid + rValue * rHighRange) * LIGHT_SECOND;
+			else
+				return (rMid + rValue * rLowRange) * LIGHT_SECOND;
+			}
+		else
+			return 0.0;
+		}
+	else
+		return (pItem->GetIntegerValue() * LIGHT_SECOND);
+	}
+
+bool CreateBinaryFromList (CCodeChain &CC, const CString &sClass, ICCItem *pList, void *pvDest)
 
 //	CreateBinaryFromList
 //
 //	Initializes binary structure from a list
 
 	{
+	int iStart = 0;
+
+	//	Check the class, if provided
+
+	if (!sClass.IsBlank())
+		{
+		if (pList->GetCount() < 1)
+			return false;
+
+		if (!strEquals(pList->GetElement(0)->GetStringValue(), sClass))
+			return false;
+
+		iStart++;
+		}
+
+	//	Load the binary data
+
 	DWORD *pDest = (DWORD *)pvDest;
-	for (int i = 0; i < pList->GetCount(); i++)
+	for (int i = iStart; i < pList->GetCount(); i++)
 		*pDest++ = (DWORD)pList->GetElement(i)->GetIntegerValue();
+
+	return true;
 	}
 
 CString CreateDataFieldFromItemList (const TArray<CItem> &List)
@@ -89,7 +173,7 @@ CItem CreateItemFromList (CCodeChain &CC, ICCItem *pList)
 	return NewItem;
 	}
 
-ICCItem *CreateListFromBinary (CCodeChain &CC, void const *pvSource, int iLengthBytes)
+ICCItem *CreateListFromBinary (CCodeChain &CC, const CString &sClass, void const *pvSource, int iLengthBytes)
 
 //	CreateListFromBinary
 //
@@ -102,7 +186,12 @@ ICCItem *CreateListFromBinary (CCodeChain &CC, void const *pvSource, int iLength
 
 	CCLinkedList *pList = (CCLinkedList *)pResult;
 
-	//	CItem is two DWORD long
+	//	Add a class, if provided
+
+	if (!sClass.IsBlank())
+		pList->AppendStringValue(&CC, sClass);
+
+	//	Add binary bytes in DWORD chunks.
 
 	DWORD *pSource = (DWORD *)pvSource;
 	int iCount = AlignUp(iLengthBytes, sizeof(DWORD)) / sizeof(DWORD);
@@ -179,6 +268,16 @@ ICCItem *CreateListFromItem (CCodeChain &CC, const CItem &Item)
 	return Item.WriteToCCItem(CC);
 	}
 
+ICCItem *CreateListFromOrbit (CCodeChain &CC, const COrbit &OrbitDesc)
+
+//	CreateListFromOrbit
+//
+//	Encodes a COrbit object into a code chain list.
+
+	{
+	return CreateListFromBinary(CC, CLASS_CORBIT, &OrbitDesc, sizeof(OrbitDesc));
+	}
+
 ICCItem *CreateListFromVector (CCodeChain &CC, const CVector &vVector)
 
 //	CreateListFromVector
@@ -186,7 +285,7 @@ ICCItem *CreateListFromVector (CCodeChain &CC, const CVector &vVector)
 //	Creates a code chain list from a vector
 
 	{
-	return CreateListFromBinary(CC, &vVector, sizeof(vVector));
+	return CreateListFromBinary(CC, NULL_STR, &vVector, sizeof(vVector));
 	}
 
 CSpaceObject *CreateObjFromItem (CCodeChain &CC, ICCItem *pItem)
@@ -206,6 +305,26 @@ CSpaceObject *CreateObjFromItem (CCodeChain &CC, ICCItem *pItem)
 		}
 
 	return pObj;
+	}
+
+bool CreateOrbitFromList (CCodeChain &CC, ICCItem *pList, COrbit *retOrbitDesc)
+
+//	CreateOrbitFromList
+//
+//	Creates an orbit from a list.
+
+	{
+	//	Must be a list
+
+	if (!pList->IsList())
+		return false;
+
+	//	Load binary from list and check the class
+
+	if (!CreateBinaryFromList(CC, CLASS_CORBIT, pList, retOrbitDesc))
+		return false;
+
+	return true;
 	}
 
 ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue)
@@ -269,7 +388,7 @@ CVector CreateVectorFromList (CCodeChain &CC, ICCItem *pList)
 	CVector vVec;
 
 	if (pList->IsList())
-		CreateBinaryFromList(CC, pList, &vVec);
+		CreateBinaryFromList(CC, NULL_STR, pList, &vVec);
 	else if (pList->IsInteger())
 		{
 		CSpaceObject *pObj = CreateObjFromItem(CC, pList);
@@ -644,13 +763,13 @@ bool GetPosOrObject (CEvalContext *pEvalCtx,
 			if (sCriteria.IsBlank())
 				return false;
 
-			CAttributeCriteria Criteria;
-			if (Criteria.Parse(sCriteria) != NOERROR)
+			SLocationCriteria Criteria;
+			if (Criteria.AttribCriteria.Parse(sCriteria) != NOERROR)
 				return false;
 
 			//	Get a random location
 
-			if (!pSystem->FindRandomLocation(Criteria, 0, NULL, &iLocID))
+			if (!pSystem->FindRandomLocation(Criteria, 0, COrbit(), NULL, &iLocID))
 				return false;
 
 			//	Return the position

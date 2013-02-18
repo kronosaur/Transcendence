@@ -391,7 +391,7 @@ EnhanceItemStatus CSpaceObject::AddItemEnhancement (CItemListManipulator &ItemLi
 	return iResult;
 	}
 
-ALERROR CSpaceObject::AddToSystem (CSystem *pSystem)
+ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bInLoad)
 
 //	AddToSystem
 //
@@ -414,6 +414,15 @@ ALERROR CSpaceObject::AddToSystem (CSystem *pSystem)
 		return error;
 
 	m_pSystem = pSystem;
+
+	//	If this is a ship or station then add to the global list
+
+	if (!bInLoad)
+		{
+		CSpaceObject::Categories iCategory = GetCategory();
+		if (iCategory == CSpaceObject::catStation || iCategory == CSpaceObject::catShip)
+			g_pUniverse->AddObject(this);
+		}
 
 	return NOERROR;
 	}
@@ -980,6 +989,13 @@ void CSpaceObject::Destroy (DestructionTypes iCause, const CDamageSource &Attack
 	//	(so that we can detect any attempts at recursion).
 
 	m_fDestroyed = true;
+
+	//	Remove from the object from the universal list (NOTE: We must do this
+	//	before we clear out m_pSystem.)
+
+	CSpaceObject::Categories iCategory = GetCategory();
+	if (iCategory == CSpaceObject::catStation || iCategory == CSpaceObject::catShip)
+		g_pUniverse->DeleteObject(this);
 
 	//	Remove from system. This will call OnObjDestroyed to all other
 	//	interested objects
@@ -3633,7 +3649,7 @@ bool CSpaceObject::IsDestinyTime (int iCycle, int iOffset)
 //	depending on its destiny.
  
 	{
-	return (((GetSystem()->GetTick() + GetDestiny()) % iCycle) == iOffset);
+	return (((g_pUniverse->GetTicks() + GetDestiny()) % iCycle) == iOffset);
 	}
 
 bool CSpaceObject::IsEnemy (const CSpaceObject *pObj) const
@@ -4833,6 +4849,13 @@ void CSpaceObject::Remove (DestructionTypes iCause, const CDamageSource &Attacke
 
 		m_fDestroyed = true;
 
+		//	Remove from the object from the universal list (NOTE: We must do this
+		//	before we clear out m_pSystem.)
+
+		CSpaceObject::Categories iCategory = GetCategory();
+		if (iCategory == CSpaceObject::catStation || iCategory == CSpaceObject::catShip)
+			g_pUniverse->DeleteObject(this);
+
 		//	Remove
 
 		SDestroyCtx Ctx;
@@ -5222,51 +5245,17 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
 //	result.
 
 	{
-	int i;
-
 	//	First we ask the type
 
 	CDesignType *pType = GetType();
-	if (pType)
-		{
-		if (pType->Translate(this, sID, retpResult))
-			return true;
-
-		//	For backwards compatibility we check in static data if necessary.
-
-		if (pType->GetVersion() < 3)
-			{
-			CString sData = pType->GetStaticData(CONSTLIT("Language"));
-			if (!sData.IsBlank())
-				{
-				CCodeChainCtx Ctx;
-
-				ICCItem *pData = Ctx.Link(sData, 0, NULL);
-
-				for (i = 0; i < pData->GetCount(); i++)
-					{
-					ICCItem *pEntry = pData->GetElement(i);
-					if (pEntry->GetCount() == 2 && strEquals(sID, pEntry->GetElement(0)->GetStringValue()))
-						{
-						*retpResult = Ctx.Run(pEntry->GetElement(1));	//	LATER:Event
-						Ctx.Discard(pData);
-						return true;
-						}
-					}
-
-				Ctx.Discard(pData);
-				}
-			}
-		}
+	if (pType && pType->Translate(this, sID, retpResult))
+		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign)
-		{
-		if (pSovereign->Translate(this, sID, retpResult))
-			return true;
-		}
+	if (pSovereign && pSovereign->Translate(this, sID, retpResult))
+		return true;
 
 	//	Otherwise, we can't find it.
 
@@ -5280,53 +5269,17 @@ bool CSpaceObject::Translate (const CString &sID, CString *retsText)
 //	Translate a message by ID.
 
 	{
-	int i;
-
 	//	First we ask the type
 
 	CDesignType *pType = GetType();
-	if (pType)
-		{
-		if (pType->TranslateText(this, sID, retsText))
-			return true;
-
-		//	For backwards compatibility we check in static data if necessary.
-
-		if (pType->GetVersion() < 3)
-			{
-			CString sData = pType->GetStaticData(CONSTLIT("Language"));
-			if (!sData.IsBlank())
-				{
-				CCodeChainCtx Ctx;
-
-				ICCItem *pData = Ctx.Link(sData, 0, NULL);
-
-				for (i = 0; i < pData->GetCount(); i++)
-					{
-					ICCItem *pEntry = pData->GetElement(i);
-					if (pEntry->GetCount() == 2 && strEquals(sID, pEntry->GetElement(0)->GetStringValue()))
-						{
-						ICCItem *pResult = Ctx.Run(pEntry->GetElement(1));	//	LATER:Event
-						*retsText = pResult->GetStringValue();
-						Ctx.Discard(pResult);
-						Ctx.Discard(pData);
-						return true;
-						}
-					}
-
-				Ctx.Discard(pData);
-				}
-			}
-		}
+	if (pType && pType->TranslateText(this, sID, retsText))
+		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign)
-		{
-		if (pSovereign->TranslateText(this, sID, retsText))
-			return true;
-		}
+	if (pSovereign && pSovereign->TranslateText(this, sID, retsText))
+		return true;
 
 	//	Otherwise, we can't find it.
 

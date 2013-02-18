@@ -1258,7 +1258,7 @@
 	<!-- Earthzone Armed Shuttle -->
 
 	<ShipClass UNID="&scEarthzone;"
-			manufacturer=		"United African States"
+			manufacturer=		"Revolution Designs"
 			class=				"Earthzone"
 			type=				"armed shuttle"
 			score=				"70"
@@ -3179,7 +3179,7 @@
 	<!-- Atonement-class Gunship -->
 
 	<ShipClass UNID="&scAtonement;"
-			manufacturer=		"United Africa States"
+			manufacturer=		"United African States"
 			class=				"Atonement"
 			type=				"heavy gunship"
 			score=				"545"
@@ -3232,7 +3232,7 @@
 	<!-- Repentant-class Gunship -->
 
 	<ShipClass UNID="&scRepentant;"
-			manufacturer=		"United Africa States"
+			manufacturer=		"United African States"
 			class=				"Repentant"
 			type=				"gunship"
 			score=				"340"
@@ -3392,7 +3392,6 @@
 			manufacturer=		"United African States"
 			class=				"Oromo"
 			type=				"gunship"
-			score=				"105"
 
 			mass=				"75"
 			cargoSpace=			"25"
@@ -3440,13 +3439,12 @@
 			manufacturer=		"United African States"
 			class=				"Sotho"
 			type=				"gunship"
-			score=				"175"
 
 			mass=				"100"
 			cargoSpace=			"25"
 			thrust=				"500"
-			maneuver=			"3"
-			maxSpeed=			"20"
+			maneuver=			"4"
+			maxSpeed=			"18"
 
 			leavesWreck=		"50"
 
@@ -3454,8 +3452,8 @@
 			>
 
 		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itHeavyCeramicPlate;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itHeavyCeramicPlate;" areaSet="1,4" />
+			<ArmorSection start="270" span="180" armorID="&itPolyceramicPlate;"/>
+			<ArmorSection start="90"  span="180" armorID="&itPolyceramicPlate;"/>
 		</Armor>
 
 		<Devices>
@@ -3476,8 +3474,7 @@
 		</DriveImages>
 
 		<AISettings
-			fireRateAdj=		"20"
-			fireRangeAdj=		"50"
+			fireRateAdj=		"15"
 			fireAccuracy=		"90"
 			perception=			"4"
 			/>
@@ -3499,7 +3496,7 @@
 
 			leavesWreck=		"75"
 
-			attributes=			"genericClass,outlaws"
+			attributes=			"freighter, genericClass, outlaws"
 			>
 
 		<Armor>
@@ -3544,7 +3541,7 @@
 
 			leavesWreck=		"90"
 
-			attributes=			"genericClass,outlaws"
+			attributes=			"freighter, genericClass, outlaws"
 			>
 
 		<Armor>
@@ -3582,7 +3579,6 @@
 			manufacturer=		"United African States"
 			class=				"Zulu"
 			type=				"gunship"
-			score=				"45"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -3627,7 +3623,6 @@
 			manufacturer=		"United African States"
 			class=				"Zulu II"
 			type=				"gunship"
-			score=				"70"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -4836,7 +4831,7 @@
 	<!-- Plague Gunship -->
 
 	<ShipClass UNID="&scPlague;"
-			manufacturer=		"Freeworlds Designs"
+			manufacturer=		"Revolution Designs"
 			class=				"Plague"
 			type=				"gunship"
 			score=				"180"
@@ -4875,7 +4870,7 @@
 	<!-- Revelations Missileship -->
 
 	<ShipClass UNID="&scRevelations;"
-			manufacturer=		"Freeworlds Designs"
+			manufacturer=		"Revolution Designs"
 			class=				"Revelations"
 			type=				"missileship"
 			score=				"220"

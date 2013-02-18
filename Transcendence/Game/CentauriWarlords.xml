@@ -920,7 +920,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted"
-			unique=				"inUniverse"
+			maxAppearing=		"1"
 
 			noArticle=			"true"
 			>

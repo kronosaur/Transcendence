@@ -49,6 +49,7 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
+#define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
 #define TYPE_ISLANDS_SWITCH					CONSTLIT("typeIslands")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
@@ -265,7 +266,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		return;
 		}
 
-	if (error = Universe.InitGame(&sError))
+	if (error = Universe.InitGame(0, &sError))
 		{
 		printf("\n%s\n", sError.GetASCIIZPointer());
 		::kernelSetDebugLog(NULL);
@@ -284,7 +285,11 @@ void AlchemyMain (CXMLElement *pCmdLine)
 	if (pCmdLine->GetAttributeBool(ARMOR_TABLE_SWITCH))
 		GenerateArmorTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
-		GenerateEncounterTable(Universe, pCmdLine);
+		{
+		CIDTable EntityTable(TRUE, TRUE);
+		ComputeUNID2EntityTable(sDataFile, EntityTable);
+		GenerateEncounterTable(Universe, pCmdLine, EntityTable);
+		}
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
@@ -349,6 +354,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateTypeIslands(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
 		HexarcTest(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TRADE_SIM_SWITCH))
+		DoTradeSim(Universe, pCmdLine);
 	else
 		GenerateStats(Universe, pCmdLine);
 
@@ -409,6 +416,7 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
 	CCodeChain &CC = g_pUniverse->GetCC();
+	bool bNoLogo = pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
 
 	//	Prepare the universe
 
@@ -466,15 +474,19 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		//	Welcome
 
-		printf("(help) for function help.\n");
-		printf("\\q to quit.\n\n");
+		if (!bNoLogo)
+			{
+			printf("(help) for function help.\n");
+			printf("\\q to quit.\n\n");
+			}
 
 		//	Loop
 
 		while (true)
 			{
 			char szBuffer[1024];
-			printf(": ");
+			if (!bNoLogo)
+				printf(": ");
 			gets_s(szBuffer, sizeof(szBuffer)-1);
 			CString sCommand(szBuffer);
 

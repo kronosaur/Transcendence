@@ -103,6 +103,7 @@ class ICCItem : public CObject
 		virtual ICCItem *Enum (CEvalContext *pCtx, ICCItem *pCode) = 0;
 		virtual int GetCount (void) = 0;
 		virtual ICCItem *GetElement (int iIndex) = 0;
+		virtual ICCItem *GetElement (const CString &sKey) { return NULL; }
 		virtual ICCItem *GetElement (CCodeChain *pCC, int iIndex);
 		virtual ICCItem *Head (CCodeChain *pCC) = 0;
 		inline BOOL IsList (void) { return IsNil() || !IsAtom(); }
@@ -582,6 +583,7 @@ class CCSymbolTable : public ICCList
 		virtual ICCItem *Enum (CEvalContext *pCtx, ICCItem *pCode) { ASSERT(false); return NULL; }
 		virtual int GetCount (void) { return m_Symbols.GetCount(); }
 		virtual ICCItem *GetElement (int iIndex);
+		virtual ICCItem *GetElement (const CString &sKey);
 		virtual ICCItem *GetElement (CCodeChain *pCC, int iIndex);
 		virtual ICCItem *Head (CCodeChain *pCC) { return GetElement(0); }
 		virtual ICCItem *Tail (CCodeChain *pCC) { return GetElement(1); }

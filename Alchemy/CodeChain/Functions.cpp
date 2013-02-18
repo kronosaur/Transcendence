@@ -17,6 +17,7 @@
 //		*	Any number of items (must be last)
 
 #include <Windows.h>
+#include <Math.h>
 #include "Kernel.h"
 #include "KernelObjID.h"
 #include "CodeChain.h"
@@ -2743,7 +2744,7 @@ ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 	return pCC->CreateInteger(iResult);
 	}
 
-ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
+ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 
 //	fnRandom
 //
@@ -2752,47 +2753,71 @@ ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 	{
 	CCodeChain *pCC = pCtx->pCC;
-	ICCItem *pArgs;
-	ICCItem *pResult;
 
-	//	Evaluate the arguments and validate them
-
-	pArgs = pCC->EvaluateArgs(pCtx, pArguments, CONSTLIT("*"));
-	if (pArgs->IsError())
-		return pArgs;
-
-	//	Do stuff based on parameters
-
-	if (pArgs->GetCount() == 2)
+	switch (dwData)
 		{
-		int iOp1 = pArgs->GetElement(0)->GetIntegerValue();
-		int iOp2 = pArgs->GetElement(1)->GetIntegerValue();
-		pArgs->Discard(pCC);
+		case FN_RANDOM:
+			{
+			//	Do stuff based on parameters
 
-		pResult = pCC->CreateInteger(mathRandom(iOp1, iOp2));
+			if (pArgs->GetCount() == 2)
+				{
+				int iOp1 = pArgs->GetElement(0)->GetIntegerValue();
+				int iOp2 = pArgs->GetElement(1)->GetIntegerValue();
+				return pCC->CreateInteger(mathRandom(iOp1, iOp2));
+				}
+			else if (pArgs->GetCount() == 1)
+				{
+				ICCItem *pList = pArgs->GetElement(0);
+
+				if (pList->IsNil() || pList->GetCount() == 0)
+					return pCC->CreateNil();
+
+				return pList->GetElement(mathRandom(0, pList->GetCount()-1))->Reference();
+				}
+			else
+				return pCC->CreateNil();
+			}
+
+		case FN_RANDOM_GAUSSIAN:
+			{
+			//	Get the parameters
+
+			double rLow = pArgs->GetElement(0)->GetIntegerValue();
+			double rMid = pArgs->GetElement(1)->GetIntegerValue();
+			double rHigh = pArgs->GetElement(2)->GetIntegerValue();
+			if (rLow >= rMid || rLow >= rHigh || rMid >= rHigh)
+				return pCC->CreateNil();
+
+			//	Compute some ranges
+
+			double rHighRange = rHigh - rMid;
+			double rLowRange = rMid - rLow;
+
+			//	Generate a gaussian, but clip out after 3 standard deviations
+
+			double rMaxStdDev = 3.0;
+			double rValue;
+			do
+				{
+				rValue = mathRandomGaussian();
+				}
+			while (rValue > rMaxStdDev || rValue < -rMaxStdDev);
+
+			rValue = rValue / rMaxStdDev;
+
+			//	Scale to proper value
+
+			if (rValue >= 0.0)
+				return pCC->CreateInteger((int)floor(rMid + rValue * rHighRange + 0.5));
+			else
+				return pCC->CreateInteger((int)floor(rMid + rValue * rLowRange + 0.5));
+			}
+
+		default:
+			ASSERT(false);
+			return NULL;
 		}
-	else if (pArgs->GetCount() == 1)
-		{
-		ICCItem *pList = pArgs->GetElement(0);
-
-		if (pList->IsNil())
-			pResult = pCC->CreateNil();
-		else if (pList->GetCount() == 0)
-			pResult = pCC->CreateNil();
-		else
-			pResult = pList->GetElement(mathRandom(0, pList->GetCount()-1))->Reference();
-
-		pArgs->Discard(pCC);
-		}
-	else
-		{
-		pResult = pCC->CreateNil();
-		pArgs->Discard(pCC);
-		}
-
-	//	Done
-
-	return pResult;
 	}
 
 ICCItem *fnRandomTable (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)

@@ -5,7 +5,10 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define ID_CTRL_WAIT						CONSTLIT("ctrlWait")
 #define ID_TEXT_CRAWL_PERFORMANCE			CONSTLIT("textCrawl")
+
+#define CMD_SHOW_WAIT_ANIMATION				CONSTLIT("cmdShowWaitAnimation")
 
 const int TEXT_CRAWL_X =					512;
 const int TEXT_CRAWL_HEIGHT =				512;
@@ -23,10 +26,10 @@ const Metric CRAWL_SPEED =					1.0;
 #define PROP_FADE_EDGE_HEIGHT				CONSTLIT("fadeEdgeHeight")
 
 CTextCrawlSession::CTextCrawlSession (CHumanInterface &HI,
-									  const CG16bitImage &Image,
+									  const CG16bitImage *pImage,
 									  const CString &sText,
 									  const CString &sCmdDone) : IHISession(HI),
-		m_Image(Image),
+		m_pImage(pImage),
 		m_sText(sText),
 		m_sCmdDone(sCmdDone)
 
@@ -106,6 +109,25 @@ void CTextCrawlSession::OnCleanUp (void)
 	{
 	}
 
+ALERROR CTextCrawlSession::OnCommand (const CString &sCmd, void *pData)
+
+//	OnCommand
+//
+//	Handle a command
+
+	{
+	if (strEquals(sCmd, CMD_SHOW_WAIT_ANIMATION))
+		{
+		CUIHelper Helper(m_HI);
+
+		IAnimatron *pAni;
+		Helper.CreateSessionWaitAnimation(ID_CTRL_WAIT, CONSTLIT("Creating Game"), &pAni);
+		StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+		}
+
+	return NOERROR;
+	}
+
 ALERROR CTextCrawlSession::OnInit (CString *retsError)
 
 //	OnInit
@@ -174,8 +196,11 @@ void CTextCrawlSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 	{
 	const CVisualPalette &VI = m_HI.GetVisuals();
 
-	RECT rcCenter;
-	VI.DrawSessionBackground(Screen, m_Image, 0, &rcCenter);
+	if (m_pImage)
+		{
+		RECT rcCenter;
+		VI.DrawSessionBackground(Screen, *m_pImage, 0, &rcCenter);
+		}
 	}
 
 void CTextCrawlSession::OnReportHardCrash (CString *retsMessage)

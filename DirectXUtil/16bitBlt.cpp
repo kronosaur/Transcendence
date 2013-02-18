@@ -161,6 +161,120 @@ bool CalcBltTransform (Metric rX,
 	return (RectWidth(*retrcDest) > 0 ) && (RectHeight(*retrcDest) > 0);
 	}
 
+void CopyBltColorize (CG16bitImage &Dest,
+					  int xDest,
+					  int yDest,
+					  int cxDest,
+					  int cyDest,
+					  const CG16bitImage &Src,
+					  int xSrc,
+					  int ySrc,
+					  DWORD dwHue,
+					  DWORD dwSaturation)
+
+//	CopyBltColorize
+//
+//	Blts the source to the destination and colorizes to the given color.
+//	NOTE: We copy the source mask over, if any.
+//
+//	See: Computer Graphics, Foley & van Dam, p.593.
+
+	{
+	//	Compute the color
+
+	COLORREF rgbBlack = RGB(0, 0, 0);
+	COLORREF rgbWhite = RGB(255, 255, 255);
+	COLORREF rgbHue = CG16bitPixel::RGBRealToRGB(CG16bitPixel::HSBToRGB(SColorHSB(dwHue, 1.0, 1.0)));
+	COLORREF rgbColor = CG16bitPixel::Blend(RGB(128, 128, 128), rgbHue, dwSaturation / 100.0);
+
+	//	Different code paths depending on whether we have alpha values or not
+
+	if (Src.HasAlpha() && Dest.HasAlpha())
+		{
+		//	Loop over every pixel in the destination
+
+		WORD *pSrcRow = Src.GetPixel(Src.GetRowStart(ySrc), xSrc);
+		WORD *pDestRow = Dest.GetPixel(Dest.GetRowStart(yDest), xDest);
+		WORD *pDestRowEnd = Dest.GetPixel(Dest.GetRowStart(yDest + cyDest), xDest);
+		BYTE *pSrcRowAlpha = Src.GetAlphaValue(xSrc, ySrc);
+		BYTE *pDestRowAlpha = Dest.GetAlphaValue(xDest, yDest);
+		while (pDestRow < pDestRowEnd)
+			{
+			WORD *pSrcPos = pSrcRow;
+			WORD *pDestPos = pDestRow;
+			WORD *pDestPosEnd = pDestRow + cxDest;
+			BYTE *pSrcAlpha = pSrcRowAlpha;
+			BYTE *pDestAlpha = pDestRowAlpha;
+			while (pDestPos < pDestPosEnd)
+				{
+				//	Convert color
+				
+				WORD wSrc = *pSrcPos;
+				DWORD srcBrightness = GetRValue(CG16bitPixel::Desaturate(CG16bitPixel::PixelToRGB(wSrc)));
+				double rB = srcBrightness / 255.0;
+
+				COLORREF rgbResult = CG16bitPixel::Blend(rgbBlack, rgbColor, rgbWhite, 2.0 * (rB - 1.0) + 1.0);
+				*pDestPos = CG16bitPixel::RGBToPixel(rgbResult);
+
+				//	Copy alpha value
+
+				*pDestAlpha++ = *pSrcAlpha++;
+
+				//	Next
+
+				pSrcPos++;
+				pDestPos++;
+				}
+
+			pSrcRow = Src.NextRow(pSrcRow);
+			pDestRow = Dest.NextRow(pDestRow);
+			pSrcRowAlpha = Src.NextAlphaRow(pSrcRowAlpha);
+			pDestRowAlpha = Dest.NextAlphaRow(pDestRowAlpha);
+			}
+		}
+	//	LATER: Handle case of alpha blt on non-alpha blt
+	else
+		{
+		WORD wSrcBackColor = Src.GetBackColor();
+		WORD wDestBackColor = Dest.GetBackColor();
+
+		//	Loop over every pixel in the destination
+
+		WORD *pSrcRow = Src.GetPixel(Src.GetRowStart(ySrc), xSrc);
+		WORD *pDestRow = Dest.GetPixel(Dest.GetRowStart(yDest), xDest);
+		WORD *pDestRowEnd = Dest.GetPixel(Dest.GetRowStart(yDest + cyDest), xDest);
+		while (pDestRow < pDestRowEnd)
+			{
+			WORD *pSrcPos = pSrcRow;
+			WORD *pDestPos = pDestRow;
+			WORD *pDestPosEnd = pDestRow + cxDest;
+			while (pDestPos < pDestPosEnd)
+				{
+				WORD wSrc = *pSrcPos;
+
+				if (wSrc == wSrcBackColor)
+					*pDestPos = wDestBackColor;
+				else
+					{
+					DWORD srcBrightness = GetRValue(CG16bitPixel::Desaturate(CG16bitPixel::PixelToRGB(wSrc)));
+					double rB = srcBrightness / 255.0;
+
+					COLORREF rgbResult = CG16bitPixel::Blend(rgbBlack, rgbColor, rgbWhite, 2.0 * (rB - 1.0) + 1.0);
+					*pDestPos = CG16bitPixel::RGBToPixel(rgbResult);
+					}
+
+				//	Next
+
+				pSrcPos++;
+				pDestPos++;
+				}
+
+			pSrcRow = Src.NextRow(pSrcRow);
+			pDestRow = Dest.NextRow(pDestRow);
+			}
+		}
+	}
+
 void CopyBltTransformed (CG16bitImage &Dest, 
 						 const RECT &rcDest,
 						 const CG16bitImage &Src, 

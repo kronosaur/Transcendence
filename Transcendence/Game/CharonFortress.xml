@@ -897,7 +897,7 @@
 
 			<!-- Random stations -->
 
-			<FillRandomLocation
+			<FillLocations
 					count=				"1d4" 
 					stationCriteria=	"!primary,!debris,+envAir,-envAvoidsAir,!korolovShipping" 
 					percentEnemies=		"65"
@@ -915,6 +915,10 @@
 			<RandomLocation count="2d2-1" match="++asteroids">
 				<RandomStation stationCriteria="*debris"/>
 			</RandomLocation>
+
+			<!-- Create more stargates in case an extension added more links -->
+
+			<Lookup table="HumanSpaceStargates"/>
 
 		</SystemGroup>
 

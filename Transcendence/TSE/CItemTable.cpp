@@ -147,6 +147,7 @@ class CGroupOfGenerators : public IItemGenerator
 class CRandomItems : public IItemGenerator
 	{
 	public:
+		CRandomItems (void) : m_Table(NULL) { }
 		static ALERROR Create (const CItemCriteria &Crit, 
 							   const CString &sLevelFrequency,
 							   IItemGenerator **retpGenerator);
@@ -166,7 +167,7 @@ class CRandomItems : public IItemGenerator
 			int iProbability;
 			};
 
-		void InitTable (void);
+		void InitTable (const CString &sLevelFrequency);
 
 		int m_iCount;
 		SEntry *m_Table;
@@ -177,6 +178,8 @@ class CRandomItems : public IItemGenerator
 		int m_iLevelCurve;
 		int m_iDamaged;
 		CRandomEnhancementGenerator m_Enhanced;
+		bool m_bDynamicLevelFrequency;		//	If TRUE, level frequency depends on system level
+		int m_iDynamicLevel;
 	};
 
 ALERROR IItemGenerator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, IItemGenerator **retpGenerator)
@@ -818,6 +821,17 @@ void CRandomItems::AddItems (SItemAddCtx &Ctx)
 
 	{
 	int i, j;
+
+	//	If this is a dynamic table, then we need to generate it now
+
+	if (m_bDynamicLevelFrequency && m_iDynamicLevel != Ctx.iLevel)
+		{
+		InitTable(GenerateLevelFrequency(m_sLevelFrequency, Ctx.iLevel));
+		m_iDynamicLevel = Ctx.iLevel;
+		}
+
+	//	Roll
+
 	int iRoll = mathRandom(1, 1000);
 	bool bAllAtOnce = (m_iDamaged == 0 && m_Enhanced.GetChance() == 0);
 
@@ -894,6 +908,8 @@ ALERROR CRandomItems::Create (const CItemCriteria &Crit,
 	CRandomItems *pGenerator = new CRandomItems;
 	pGenerator->m_Criteria = Crit;
 	pGenerator->m_sLevelFrequency = sLevelFrequency;
+	pGenerator->m_bDynamicLevelFrequency = false;
+	pGenerator->m_iDynamicLevel = 0;
 	pGenerator->m_iDamaged = 0;
 	pGenerator->m_iLevel = 0;
 	pGenerator->m_iLevelCurve = 0;
@@ -901,7 +917,7 @@ ALERROR CRandomItems::Create (const CItemCriteria &Crit,
 	pGenerator->m_iCount = 0;
 	pGenerator->m_Table = NULL;
 
-	pGenerator->InitTable();
+	pGenerator->InitTable(sLevelFrequency);
 	if (pGenerator->m_iCount == 0)
 		return ERR_FAIL;
 
@@ -919,16 +935,21 @@ struct ItemEntryStruct
 	int iRemainder;
 	};
 
-void CRandomItems::InitTable (void)
+void CRandomItems::InitTable (const CString &sLevelFrequency)
 
 //	InitTable
 //
 //	Initializes the m_Table array.
 //
-//	We assume that m_Criteria, m_sLevelFrequency, m_iLevel, and m_iLevelCurve are properly initialized.
+//	We assume that m_Criteria, m_iLevel, and m_iLevelCurve are properly initialized.
 
 	{
 	int i;
+
+	//	Free original, if necessary
+
+	if (m_Table)
+		delete [] m_Table;
 
 	//	Start by allocating an array large enough to hold
 	//	all item types in the universe
@@ -938,7 +959,7 @@ void CRandomItems::InitTable (void)
 
 	//	Figure out if we should use level curves or level frequency
 
-	bool bUseLevelFrequency = !m_sLevelFrequency.IsBlank();
+	bool bUseLevelFrequency = !sLevelFrequency.IsBlank();
 
 	//	Iterate over every item type and add it to the table if
 	//	it matches the given criteria
@@ -964,7 +985,7 @@ void CRandomItems::InitTable (void)
 		int iScore;
 		if (bUseLevelFrequency)
 			{
-			iScore = 1000 * GetFrequencyByLevel(m_sLevelFrequency, pType->GetLevel()) / ftCommon;
+			iScore = 1000 * GetFrequencyByLevel(sLevelFrequency, pType->GetLevel()) / ftCommon;
 			}
 		else
 			{
@@ -1113,6 +1134,9 @@ ALERROR CRandomItems::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	CItem::ParseCriteria(sCriteria, &m_Criteria);
 	m_sLevelFrequency = pDesc->GetAttribute(LEVEL_FREQUENCY_ATTRIB);
+	m_bDynamicLevelFrequency = (strFind(m_sLevelFrequency, CONSTLIT(":")) != -1);
+	m_iDynamicLevel = 0;
+
 	m_iLevel = pDesc->GetAttributeInteger(LEVEL_ATTRIB);
 	m_iLevelCurve = pDesc->GetAttributeInteger(LEVEL_CURVE_ATTRIB);
 	m_iDamaged = pDesc->GetAttributeInteger(DAMAGED_ATTRIB);
@@ -1133,7 +1157,8 @@ ALERROR CRandomItems::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 //	Resolve references
 
 	{
-	InitTable();
+	if (!m_bDynamicLevelFrequency)
+		InitTable(m_sLevelFrequency);
 
 	return NOERROR;
 	}

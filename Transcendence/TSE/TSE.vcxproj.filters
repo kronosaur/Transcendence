@@ -298,9 +298,6 @@
     <ClCompile Include="CExtensionCollection.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
-    <ClCompile Include="CMissionType.cpp">
-      <Filter>Source Files\DesignTypes</Filter>
-    </ClCompile>
     <ClCompile Include="CNameGenerator.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
@@ -665,6 +662,21 @@
       <Filter>Source Files\Missions</Filter>
     </ClCompile>
     <ClCompile Include="CTimedEventList.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CEnvironmentGrid.cpp">
+      <Filter>Source Files\StarSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CMissionType.cpp">
+      <Filter>Source Files\Missions</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectTracker.cpp">
+      <Filter>Source Files\SpaceObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="CStationEncounterDesc.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CStationEncounterCtx.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>

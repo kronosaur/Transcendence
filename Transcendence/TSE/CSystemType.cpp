@@ -102,7 +102,7 @@ bool CSystemType::FireOnObjJumpPosAdj (CSpaceObject *pObj, CVector *iovPos)
 	return false;
 	}
 
-ALERROR CSystemType::FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCItem *pCode, CString *retsError)
+ALERROR CSystemType::FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCItem *pCode, const COrbit &OrbitDesc, CString *retsError)
 
 //	FireSystemCreateCode
 //
@@ -112,6 +112,7 @@ ALERROR CSystemType::FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCIt
 	CCodeChainCtx Ctx;
 	Ctx.SetExtension(GetExtension());	//	This code always comes from the SystemType (never inherited).
 	Ctx.SetSystemCreateCtx(&SysCreateCtx);
+	Ctx.DefineOrbit(CONSTLIT("aOrbit"), OrbitDesc);
 
 	ICCItem *pResult = Ctx.Run(pCode);
 	if (pResult->IsError())

@@ -51,6 +51,7 @@
 #define CMD_NULL								CONSTLIT("null")
 
 #define CMD_POST_CRASH_REPORT					CONSTLIT("cmdPostCrashReport")
+#define CMD_SHOW_WAIT_ANIMATION					CONSTLIT("cmdShowWaitAnimation")
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
@@ -78,6 +79,7 @@
 
 #define CMD_SESSION_STATS_DONE					CONSTLIT("sessionStatsDone")
 #define CMD_SESSION_EPILOGUE_DONE				CONSTLIT("sessionEpilogueDone")
+#define CMD_SESSION_PROLOGUE_DONE				CONSTLIT("sessionPrologueDone")
 
 #define CMD_UI_BACK_TO_INTRO					CONSTLIT("uiBackToIntro")
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
@@ -91,6 +93,7 @@
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
+#define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
 
 #define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Downloads")
 
@@ -478,6 +481,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_CREATE))
 		{
 		SNewGameSettings *pNewGame = (SNewGameSettings *)pData;
+		pNewGame->bFullCreate = !g_pUniverse->InDebugMode() || !m_Settings.GetBoolean(CGameSettings::noFullCreate);
 
 		//	Let the model begin the creation
 
@@ -503,12 +507,32 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Kick-off background thread to finish up creating the game
 
 		g_pTrans->SetGameCreated(false);
-		m_HI.AddBackgroundTask(new CStartNewGameTask(m_HI, m_Model), this, CMD_MODEL_NEW_GAME_CREATED);
+		m_HI.AddBackgroundTask(new CStartNewGameTask(m_HI, m_Model, *pNewGame), this, CMD_MODEL_NEW_GAME_CREATED);
 
 		//	Start the prologue
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
-		g_pTrans->StartProlog();
+		CG16bitImage *pCrawlImage = m_Model.GetCrawlImage();
+		const CString &sCrawlText = m_Model.GetCrawlText();
+
+		m_HI.ShowSession(new CTextCrawlSession(m_HI, pCrawlImage, sCrawlText, CMD_SESSION_PROLOGUE_DONE));
+		m_iState = statePrologue;
+		}
+
+	//	Player has stopped the prologue
+
+	else if (strEquals(sCmd, CMD_SESSION_PROLOGUE_DONE))
+		{
+		m_iState = statePrologueDone;
+
+		//	If we're done create the new game then we can continue
+
+		if (g_pTrans->IsGameCreated())
+			HICommand(CMD_UI_START_GAME);
+
+		//	Otherwise start wait animation
+
+		else
+			m_HI.GetSession()->HICommand(CMD_SHOW_WAIT_ANIMATION);
 		}
 
 	//	Background creation of game is done
@@ -528,6 +552,19 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 
 		g_pTrans->SetGameCreated();
+
+		//	If the prologue is done, then we can start the game
+
+		if (m_iState == statePrologueDone)
+			HICommand(CMD_UI_START_GAME);
+		}
+
+	//	Start the game
+
+	else if (strEquals(sCmd, CMD_UI_START_GAME))
+		{
+		m_HI.ShowSession(new CLegacySession(m_HI));
+		g_pTrans->StartGame(true);
 		}
 
 	//	Choose a save file to load
@@ -672,7 +709,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Otherwise, start epilog session
 
-		m_HI.ShowSession(new CTextCrawlSession(m_HI, *pCrawlImage, sCrawlText, CMD_SESSION_EPILOGUE_DONE));
+		m_HI.ShowSession(new CTextCrawlSession(m_HI, pCrawlImage, sCrawlText, CMD_SESSION_EPILOGUE_DONE));
 		m_iState = stateEpilogue;
 		}
 

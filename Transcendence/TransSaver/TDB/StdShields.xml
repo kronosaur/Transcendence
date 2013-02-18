@@ -407,7 +407,7 @@
 			frequency=			"common"
 			modifiers=			"MajorItem; Specialty; Bushido"
 
-			description=		"This is the entry-level generator in Kabuto Defense's Yoroi line."
+			description=		"This is the entry-level generator in Bushido Corporation's Yoroi line."
 
 			sortName=			"Yoroi shields, S100"
 			>
@@ -589,7 +589,7 @@
 			frequency=			"uncommon"
 			modifiers=			"MajorItem; Specialty; Bushido"
 
-			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Kabuto Defense corporation."
+			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Bushido Corporation."
 
 			sortName=			"Yoroi shields, S500"
 			>
@@ -693,7 +693,7 @@
 			frequency=			"uncommon"
 			modifiers=			"MajorItem; Military; Specialty; Bushido"
 
-			description=		"This is the military version of the S500 shield generator created by the Kabuto Defense corporation."
+			description=		"This is the military version of the S500 shield generator created by the Bushido Corporation."
 
 			sortName=			"Yoroi shields, MX"
 			>

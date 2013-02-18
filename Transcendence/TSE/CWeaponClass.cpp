@@ -1894,7 +1894,7 @@ CString CWeaponClass::GetReference (CItemCtx &Ctx, int iVariant, DWORD dwFlags)
 		if (pDevice)
 			Damage.AddBonus(pDevice->GetBonus());
 		else
-			Damage.AddBonus(Mods.GetDamageBonus());
+			Damage.AddBonus(Mods.GetHPBonus());
 
 		//	Area of effect
 
@@ -1999,7 +1999,7 @@ bool CWeaponClass::GetReferenceDamageType (CItemCtx &Ctx, int iVariant, DamageTy
 		if (pSource && pDevice)
 			Damage.AddBonus(pDevice->GetBonus());
 		else
-			Damage.AddBonus(Mods.GetDamageBonus());
+			Damage.AddBonus(Mods.GetHPBonus());
 
 		//	Get description
 

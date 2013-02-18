@@ -72,6 +72,50 @@
 
 		<!-- Planets and Planetoids -->
 
+		<AsteroidArcBelt>
+			<Group>
+				<Siblings count="4-6" radiusInc="-70--40" angle="equidistant">
+					<Group>
+						<OrbitalDistribution count="50" arcLength="600" radialWidth="50">
+							<Lookup table="AsteroidSmall"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="1-2" arcLength="800" radialWidth="40">
+							<Label attributes="asteroids,asteroidbelt"/>
+						</OrbitalDistribution>
+					</Group>
+				</Siblings>
+
+				<Siblings count="3-4" radiusInc="-20-50" angle="equidistant">
+					<Group>
+						<OrbitalDistribution count="200" arcLength="400" radialWidth="90">
+							<Lookup table="AsteroidSmall"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="1-4" arcLength="400" radialWidth="90">
+							<Label attributes="asteroids,asteroidbelt"/>
+						</OrbitalDistribution>
+
+						<Siblings chace="50" arcInc="300">
+							<Label attributes="asteroids,asteroidbelt"/>
+						</Siblings>
+					</Group>
+				</Siblings>
+
+				<Siblings count="5-7" radiusInc="70-120" angle="equidistant">
+					<Group>
+						<OrbitalDistribution count="50" arcLength="700" radialWidth="40">
+							<Lookup table="AsteroidSmall"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="1-2" arcLength="900" radialWidth="20">
+							<Label attributes="asteroids,asteroidbelt"/>
+						</OrbitalDistribution>
+					</Group>
+				</Siblings>
+			</Group>
+		</AsteroidArcBelt>
+
 		<AsteroidBelt>
 			<Group>
 				<Siblings count="500" distribution="4d40-82">
@@ -847,9 +891,49 @@
 		
 		<!-- Star Systems -->
 
+		<AsteroidArcBeltSystem>
+			<Group>
+				<Station type="&stK-TypeStar;"/>
+
+				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
+
+				<AddTerritory minRadius="0"		maxRadius="360"		attributes="innerSystem"/>
+				<AddTerritory minRadius="360"	maxRadius="620"		attributes="lifeZone"/>
+				<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem"/>
+
+				<Orbitals count="6-8" BodeDistanceStart="80" BodeDistanceEnd="1000" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="20" table="DesertWorld"/>
+							<Lookup chance="60" table="RockyWorld"/>
+							<Lookup chance="5"  table="InnerGasGiant"/>
+							<Lookup chance="15" table="InnerMethaneGiant"/>
+						</Table>
+						<Lookup	maxRadius="480" table="AsteroidArcBelt"/>
+						<Table maxRadius="750">
+							<Lookup chance="2"  table="DesertWorld"/>
+							<Lookup chance="6"  table="RockyWorld"/>
+							<Lookup chance="5"  table="IcyWorld"/>
+							<Lookup chance="35" table="GasGiant"/>
+							<Lookup chance="22" table="RingedWorld"/>
+							<Lookup chance="23" table="MethaneGiant"/>
+							<Lookup chance="7"  table="OuterRockyGroup"/>
+						</Table>
+						<Table maxRadius="1200">
+							<Lookup chance="20" table="IcyWorld"/>
+							<Lookup chance="20" table="GasGiant"/>
+							<Lookup chance="40" table="MethaneGiant"/>
+							<Lookup chance="15" table="RingedWorld"/>
+							<Lookup chance="5"  table="OuterRockyGroup"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</AsteroidArcBeltSystem>
+
 		<AsteroidBeltSystem>
 			<Group>
-				<Station type="&stG-TypeStar;"/>
+				<Station type="&stK-TypeStar;"/>
 
 				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
 
@@ -928,7 +1012,7 @@
 
 		<LightNebulaSystem>
 			<Group>
-				<Station type="&stG-TypeStar;"/>
+				<Station type="&stNebulaStar;"/>
 
 				<AddAttribute attributes="GTypeSystem, nebulaSystem"/>
 				

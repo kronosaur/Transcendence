@@ -1501,7 +1501,9 @@ const double g_Pi = 3.14159265358979323846;			//	Pi
 int mathRound (double x);
 int mathNearestPowerOf2 (int x);
 int mathPower (int x, int n);
+DWORD mathRandom (void);
 int mathRandom (int iFrom, int iTo);
+double mathRandomGaussian (void);
 int mathSeededRandom (int iSeed, int iFrom, int iTo);
 int mathSqrt (int x);
 inline double mathDegreesToRadians (double rDegrees) { return g_Pi * rDegrees / 180.0; }

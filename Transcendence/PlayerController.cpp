@@ -2019,6 +2019,11 @@ void CPlayerShipController::Update (int iTick)
 
 	if (iTick % UPDATE_HELP_TIME)
 		UpdateHelp(iTick);
+
+#ifdef DEBUG
+	for (int i = 0; i < m_TargetList.GetCount(); i++)
+		ASSERT(!m_TargetList.Get(i)->IsDestroyed());
+#endif
 	}
 
 void CPlayerShipController::UpdateHelp (int iTick)

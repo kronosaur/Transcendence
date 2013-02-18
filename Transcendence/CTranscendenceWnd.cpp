@@ -47,7 +47,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_pIntroSystem(NULL),
 		m_pMenuObj(NULL),
 		m_bRedirectDisplayMessage(false),
-		m_pCrawlImage(NULL),
 		m_chKeyDown('\0'),
 		m_bDockKeyDown(false),
 		m_bNextWeaponKey(false),
@@ -81,10 +80,6 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 			{
 			case gsIntro:
 				AnimateIntro(bTopMost);
-				break;
-
-			case gsProlog:
-				AnimateProlog(bTopMost);
 				break;
 
 			case gsInGame:
@@ -963,10 +958,6 @@ void CTranscendenceWnd::ReportCrash (void)
 
 		case gsIntro:
 			m_sCrashInfo.Append(CONSTLIT("game state: intro\r\n"));
-			break;
-
-		case gsProlog:
-			m_sCrashInfo.Append(CONSTLIT("game state: prolog\r\n"));
 			break;
 
 		default:
@@ -1920,10 +1911,6 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 			OnKeyDownIntro(iVirtKey, dwKeyData);
 			break;
 
-		case gsProlog:
-			m_bContinue = true;
-			break;
-
 		case gsDocked:
 			{
 			//	Deal with console
@@ -2096,10 +2083,6 @@ LONG CTranscendenceWnd::WMLButtonDown (int x, int y, DWORD dwFlags)
 		{
 		case gsIntro:
 			OnLButtonDownIntro(x, y, dwFlags);
-			break;
-
-		case gsProlog:
-			m_bContinue = true;
 			break;
 
 		case gsDocked:

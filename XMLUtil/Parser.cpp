@@ -351,7 +351,13 @@ ALERROR ParseElement (ParserCtx *pCtx, CXMLElement **retpElement)
 	//	under the root).
 
 	if (pCtx->m_pController && pCtx->pElement && pCtx->pElement->GetParentElement() == NULL)
-		pCtx->m_pController->OnOpenTag(pElement);
+		{
+		if (error = pCtx->m_pController->OnOpenTag(pElement, &pCtx->sError))
+			{
+			delete pElement;
+			return error;
+			}
+		}
 
 	//	If we don't have an empty element then keep parsing until
 	//	we find a close tag

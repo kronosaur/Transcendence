@@ -399,6 +399,7 @@
 	
 	<StationType UNID="&baStKatsArcologyBase;"
 			name=				"(arcology base)"
+			virtual=			"true"
 			>
 
 		<StaticData>
@@ -2648,6 +2649,10 @@
 
 				</Group>
 			</Orbitals>
+
+			<!-- Create more stargates in case an extension added more links -->
+
+			<Lookup table="HumanSpaceStargates"/>
 
 		</SystemGroup>
 

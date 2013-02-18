@@ -1687,7 +1687,7 @@
 
 			level=				"10"
 			attributes=			"friendly"
-			unique=				"inUniverse"
+			maxAppearing=		"1"
 			>
 
 		<Ships>
@@ -2783,7 +2783,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<Buy	criteria="*"					priceAdj="100" actualPrice="true"/>
+			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
 		</Trade>
 
 		<StaticData>

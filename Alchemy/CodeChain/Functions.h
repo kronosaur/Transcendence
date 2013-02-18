@@ -56,6 +56,8 @@
 #define FN_SORT							52
 #define FN_ITEM							53
 #define FN_SET_ITEM						54
+#define FN_RANDOM						55
+#define FN_RANDOM_GAUSSIAN				56
 
 ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnApply (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
@@ -86,7 +88,7 @@ ICCItem *fnMatch (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMathList (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
-ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
+ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnRandomTable (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnRegEx (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnSeededRandom (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);

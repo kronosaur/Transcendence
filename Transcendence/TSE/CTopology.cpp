@@ -1713,7 +1713,7 @@ void CTopology::ReadFromStream (SUniverseLoadCtx &Ctx)
 
 //	Initialize Topology
 
-ALERROR CUniverse::InitTopology (CString *retsError)
+ALERROR CUniverse::InitTopology (DWORD dwStartingMap, CString *retsError)
 
 //	InitTopology
 //
@@ -1752,6 +1752,15 @@ ALERROR CUniverse::InitTopology (CString *retsError)
 	for (i = 0; i < m_Design.GetCount(designSystemMap); i++)
 		{
 		CSystemMap *pMap = CSystemMap::AsType(m_Design.GetEntry(designSystemMap, i));
+
+		//	If this is a starting map and it is no the map that we're starting
+		//	with, then skip it.
+
+		if (pMap->IsStartingMap() && pMap->GetUNID() != dwStartingMap)
+			continue;
+
+		//	Add topology
+
 		if (error = pMap->AddFixedTopology(m_Topology, retsError))
 			return error;
 		}

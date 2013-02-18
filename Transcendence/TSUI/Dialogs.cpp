@@ -767,6 +767,51 @@ void CVisualPalette::CreateMessagePane (CAniSequencer *pContainer,
 		*retpControl = pRoot;
 	}
 
+void CVisualPalette::CreateRingAnimation (CAniSequencer *pContainer, int iCount, int iMinRadius, int iInc) const
+
+//	CreateRingAnimation
+//
+//	Creates spinning rings.
+
+	{
+	int i;
+
+	int iRadius = iMinRadius;
+
+	for (i = 0; i < iCount; i++)
+		{
+		int iInner = iRadius;
+		int iOuter = iInner + iInc - RING_SPACING;
+		int iArc = mathRandom(90, 270);
+		int iStart = mathRandom(0, 359);
+
+		//	Create the ring
+
+		TArray<CVector> Points;
+		CreateArcPolygon(iInner, iOuter, iArc, &Points);
+
+		IAnimatron *pRing = new CAniPolygon(Points);
+		pRing->SetPropertyColor(PROP_COLOR, GetColor(colorAreaDialogHighlight));
+
+		//	Animate rotation
+
+		Metric rRate = mathRandom(RING_MIN_RATE, RING_MAX_RATE);
+		if (mathRandom(1, 100) <= 50)
+			rRate = -rRate;
+
+		pRing->AnimateLinearRotation(iStart, rRate, durationInfinite);
+
+		//	Add it
+
+		pContainer->AddTrack(pRing, 0);
+
+		//	Next
+
+		iRadius += iInc;
+		iInc += RING_SIZE_INC;
+		}
+	}
+
 void CVisualPalette::CreateStdDialog (const RECT &rcRect, const CString &sTitle, IAnimatron **retpDlg, CAniSequencer **retpContainer) const
 
 //	CreateStdDialog
@@ -884,8 +929,6 @@ void CVisualPalette::CreateWaitAnimation (CAniSequencer *pContainer, const CStri
 //	Shows an animation while we wait for something.
 
 	{
-	int i;
-
 	//	Figure out the position of the ring animation
 
 	int xCenter = rcRect.left + (RectWidth(rcRect) / 2);
@@ -898,42 +941,7 @@ void CVisualPalette::CreateWaitAnimation (CAniSequencer *pContainer, const CStri
 
 	//	Create rings of increasing diameter
 
-	int iRadius = RING_MIN_RADIUS;
-	int iInc = RING_SIZE;
-	int iCount = RING_COUNT;
-
-	for (i = 0; i < iCount; i++)
-		{
-		int iInner = iRadius;
-		int iOuter = iInner + iInc - RING_SPACING;
-		int iArc = mathRandom(90, 270);
-		int iStart = mathRandom(0, 359);
-
-		//	Create the ring
-
-		TArray<CVector> Points;
-		CreateArcPolygon(iInner, iOuter, iArc, &Points);
-
-		IAnimatron *pRing = new CAniPolygon(Points);
-		pRing->SetPropertyColor(PROP_COLOR, GetColor(colorAreaDialogHighlight));
-
-		//	Animate rotation
-
-		Metric rRate = mathRandom(RING_MIN_RATE, RING_MAX_RATE);
-		if (mathRandom(1, 100) <= 50)
-			rRate = -rRate;
-
-		pRing->AnimateLinearRotation(iStart, rRate, durationInfinite);
-
-		//	Add it
-
-		pRoot->AddTrack(pRing, 0);
-
-		//	Next
-
-		iRadius += iInc;
-		iInc += RING_SIZE_INC;
-		}
+	CreateRingAnimation(pRoot, RING_COUNT, RING_MIN_RADIUS, RING_SIZE);
 
 	//	Done
 

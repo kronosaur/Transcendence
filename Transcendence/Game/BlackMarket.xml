@@ -7,7 +7,7 @@
 	<!-- Molotok-class Heavy Gunship -->
 
 	<ShipClass UNID="&scMolotok;"
-			manufacturer=		""
+			manufacturer=		"Makayev-Energia"
 			class=				"Molotok bounty hunter"
 			type=				""
 
@@ -19,7 +19,7 @@
 
 			leavesWreck=		"50"
 
-			attributes=			"blackMarket,genericClass"
+			attributes=			"blackMarket, genericClass, outlaws"
 			>
 
 		<Armor>

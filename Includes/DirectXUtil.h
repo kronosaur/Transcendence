@@ -51,6 +51,65 @@ struct SPoint
 
 inline int PointsToPixels (int iPoints, int iDPI = 96) { return ::MulDiv(iPoints, iDPI, 72); }
 
+struct SColorHSB
+	{
+	SColorHSB (void)
+		{ }
+
+	SColorHSB (double rHueParam, double rSaturationParam, double rBrightnessParam) :
+			rHue(rHueParam),
+			rSaturation(rSaturationParam),
+			rBrightness(rBrightnessParam)
+		{ }
+
+	double rHue;			//	0-360
+	double rSaturation;		//	0-1
+	double rBrightness;		//	0-1
+	};
+
+struct SColorRGB
+	{
+	SColorRGB (void)
+		{ }
+
+	SColorRGB (double rRedParam, double rGreenParam, double rBlueParam) :
+			rRed(rRedParam),
+			rGreen(rGreenParam),
+			rBlue(rBlueParam)
+		{ }
+
+	double rRed;			//	0-1
+	double rGreen;			//	0-1
+	double rBlue;			//	0-1
+	};
+
+class CG16bitPixel
+	{
+	public:
+		static COLORREF Blend (COLORREF rgbFrom, COLORREF rgbTo, double rUnitRange);
+		static COLORREF Blend (COLORREF rgbNegative, COLORREF rgbCenter, COLORREF rgbPositive, double rDoubleRange);
+		static COLORREF Desaturate (COLORREF rgbColor);
+		static inline DWORD GetBlue8bit (WORD wPixel) { return GetBlue5bit(wPixel) << 3; }
+		static inline DWORD GetGreen8bit (WORD wPixel) { return GetGreen6bit(wPixel) << 2; }
+		static inline DWORD GetRed8bit (WORD wPixel) { return GetRed5bit(wPixel) << 3; }
+		static SColorRGB HSBToRGB (const SColorHSB &hsbColor);
+		static inline COLORREF PixelToRGB (WORD wPixel) { return RGB(GetRed8bit(wPixel), GetGreen8bit(wPixel), GetBlue8bit(wPixel)); }
+		static inline SColorRGB PixelToRGBReal (WORD wPixel) { return RGBToRGBReal(PixelToRGB(wPixel)); }
+		static SColorHSB RGBToHSB (const SColorRGB &rgbColor);
+		static inline SColorHSB RGBToHSB (WORD wPixel) { return RGBToHSB(PixelToRGBReal(wPixel)); }
+		static inline WORD RGBToPixel (DWORD dwRed8bit, DWORD dwGreen8bit, DWORD dwBlue8bit) { return (WORD)((dwBlue8bit >> 3) | ((dwGreen8bit >> 2) << 5) | ((dwRed8bit >> 3) << 11)); }
+		static inline WORD RGBToPixel (COLORREF rgbColor) { return RGBToPixel(GetRValue(rgbColor), GetGValue(rgbColor), GetBValue(rgbColor)); }
+		static COLORREF RGBRealToRGB (const SColorRGB &rgbColor);
+		static SColorRGB RGBToRGBReal (COLORREF rgbColor);
+
+	private:
+		static inline WORD GetBlue5bit (WORD wPixel) { return (wPixel & 0x1f); }
+		static inline WORD GetGreen6bit (WORD wPixel) { return (wPixel & 0x7e0) >> 5; }
+		static inline WORD GetRed5bit (WORD wPixel) { return (wPixel & 0xf800) >> 11; }
+
+		WORD m_wPixel;
+	};
+
 class CG16bitSprite
 	{
 	public:
@@ -340,6 +399,16 @@ bool CalcBltTransform (Metric rX,
 					   CXForm *retSrcToDest, 
 					   CXForm *retDestToSrc, 
 					   RECT *retrcDest);
+void CopyBltColorize (CG16bitImage &Dest,
+					  int xDest,
+					  int yDest,
+					  int cxDest,
+					  int cyDest,
+					  const CG16bitImage &Src,
+					  int xSrc,
+					  int ySrc,
+					  DWORD dwHue,
+					  DWORD dwSaturation);
 void CopyBltTransformed (CG16bitImage &Dest, 
 						 const RECT &rcDest,
 						 const CG16bitImage &Src, 

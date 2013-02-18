@@ -23,6 +23,10 @@ const int INPUT_ERROR_TIME =					(30 * 10);
 
 const int PADDING_LEFT =						20;
 
+const int RING_SIZE =							8;
+const int RING_MIN_RADIUS =						10;
+const int RING_COUNT =							4;
+
 #define ALIGN_RIGHT								CONSTLIT("right")
 
 #define CMD_CLOSE_SESSION						CONSTLIT("cmdCloseSession")
@@ -305,6 +309,59 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession,
 	//	Done
 
 	*retpControl = pRoot;
+	}
+
+void CUIHelper::CreateSessionWaitAnimation (const CString &sID, const CString &sText, IAnimatron **retpControl) const
+
+//	CreateSessionWaitAnimation
+//
+//	Creates a small wait animation at the lower-left of a session screen.
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+
+	//	Compute some metrics
+
+	RECT rcRect;
+	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
+
+	//	Figure out the position of the ring animation
+
+	int xCenter = rcRect.left + (TITLE_BAR_HEIGHT / 2);
+	int yCenter = rcRect.bottom + (TITLE_BAR_HEIGHT / 2);
+
+	//	Create a sequencer to hold all the animations
+
+	CAniSequencer *pRoot;
+	CAniSequencer::Create(CVector(xCenter, yCenter), &pRoot);
+
+	//	Create rings of increasing diameter
+
+	VI.CreateRingAnimation(pRoot, RING_COUNT, RING_MIN_RADIUS, RING_SIZE);
+
+	//	Add some text
+
+	if (!sText.IsBlank())
+		{
+		const CG16bitFont &SubTitleFont = VI.GetFont(fontSubTitle);
+
+		int xText = 8 + (TITLE_BAR_HEIGHT / 2);
+		int yText = -(SubTitleFont.GetHeight() / 2);
+
+		IAnimatron *pName = new CAniText;
+		pName->SetPropertyVector(PROP_POSITION, CVector(xText, yText));
+		pName->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), SubTitleFont.GetHeight()));
+		pName->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextFade));
+		pName->SetPropertyFont(PROP_FONT, &SubTitleFont);
+		pName->SetPropertyString(PROP_TEXT, sText);
+
+		pRoot->AddTrack(pName, 0);
+		}
+
+	//	Done
+
+	if (retpControl)
+		*retpControl = pRoot;
 	}
 
 void CInputErrorMessageController::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)

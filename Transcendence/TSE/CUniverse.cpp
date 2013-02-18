@@ -61,6 +61,12 @@
 //	17: 1.08g
 //		Added missions
 //
+//	18: 1.2 Alpha 1
+//		Added m_Objects
+//
+//	19: 1.2 Alpha 1
+//		Added m_EncounterRecord in CStationType
+//
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
@@ -745,6 +751,34 @@ const CDamageAdjDesc *CUniverse::GetArmorDamageAdj (int iLevel) const
 		return CAdventureDesc::GetDefaultArmorDamageAdj(iLevel);
 	}
 
+CMission *CUniverse::GetCurrentMission (void)
+
+//	GetCurrentMission
+//
+//	Returns the current player mission (or NULL)
+
+	{
+	int i;
+	DWORD dwLatestMission = 0;
+	CMission *pCurrentMission = NULL;
+
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+		if (pMission->IsActive() && pMission->IsPlayerMission())
+			{
+			DWORD dwAcceptedOn = pMission->GetAcceptedOn();
+			if (pCurrentMission == NULL || dwAcceptedOn > dwLatestMission)
+				{
+				pCurrentMission = pMission;
+				dwLatestMission = dwAcceptedOn;
+				}
+			}
+		}
+
+	return pCurrentMission;
+	}
+
 void CUniverse::GetMissions (CSpaceObject *pSource, const CMission::SCriteria &Criteria, TArray<CMission *> *retList)
 
 //	GetMissions
@@ -845,15 +879,19 @@ CTopologyNode *CUniverse::GetFirstTopologyNode (void)
 	{
 	ASSERT(m_StarSystems.GetCount() == 0);
 
+	//	Get the default map
+
+	CAdventureDesc *pAdventure = GetCurrentAdventureDesc();
+	DWORD dwStartingMap = (pAdventure ? pAdventure->GetStartingMapUNID() : 0);
+
 	//	Initialize the topology
 
 	CString sError;
-	InitTopology(&sError);
+	InitTopology(dwStartingMap, &sError);
 
 	//	Figure out the starting node
 
 	CString sNodeID;
-	CAdventureDesc *pAdventure = GetCurrentAdventureDesc();
 	if (pAdventure)
 		sNodeID = pAdventure->GetStartingNodeID();
 
@@ -1152,7 +1190,7 @@ void CUniverse::InitDefaultHitEffects (void)
 		}
 	}
 
-ALERROR CUniverse::InitGame (CString *retsError)
+ALERROR CUniverse::InitGame (DWORD dwStartingMap, CString *retsError)
 
 //	InitGame
 //
@@ -1162,9 +1200,18 @@ ALERROR CUniverse::InitGame (CString *retsError)
 	{
 	ALERROR error;
 
+	//	If starting map is 0, see if we can get it from the adventure
+
+	if (dwStartingMap == 0)
+		{
+		CAdventureDesc *pAdventure = GetCurrentAdventureDesc();
+		if (pAdventure)
+			dwStartingMap = pAdventure->GetStartingMapUNID();
+		}
+
 	//	Initialize the topology. This is the point at which the topology is created
 
-	if (error = InitTopology(retsError))
+	if (error = InitTopology(dwStartingMap, retsError))
 		return error;
 
 	return NOERROR;
@@ -1288,6 +1335,8 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	DWORD		type: UNID
 //	Type-specific data
 //
+//	CObjectTracker	m_Objects
+//
 //	NOTE: The debug mode flag is stored in the game file header. Callers must 
 //	set the universe to debug mode from the game file header flag before calling
 //	this function.
@@ -1406,6 +1455,14 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 			return ERR_FAIL;
 			}
 
+		//	Make sure this extension is enabled
+
+		if (pExtension->IsDisabled())
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to load extension %s (%08x): %s"), pExtension->GetName(), pExtension->GetUNID(), pExtension->GetDisabledReason());
+			return ERR_FAIL;
+			}
+
 		InitCtx.Extensions.Insert(pExtension);
 		}
 
@@ -1483,6 +1540,8 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		if (m_AllMissions.ReadFromStream(ObjCtx, retsError) != NOERROR)
 			return ERR_FAIL;
 
+		//	Events
+
 		m_Events.ReadFromStream(ObjCtx);
 		}
 
@@ -1537,6 +1596,11 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 				}
 			}
 		}
+
+	//	Objects
+
+	if (Ctx.dwVersion >= 18)
+		m_Objects.ReadFromStream(Ctx);
 
 	//	Load previous versions' type data
 
@@ -1749,6 +1813,20 @@ void CUniverse::PutPlayerInSystem (CShip *pPlayerShip, const CVector &vPos, CTim
 		}
 	}
 
+void CUniverse::RefreshCurrentMission (void)
+
+//	RefreshCurrentMission
+//
+//	Picks the most recently accepted player mission and refresh the target.
+
+	{
+	CMission *pMission = GetCurrentMission();
+	if (pMission == NULL)
+		return;
+
+	pMission->SetPlayerTarget();
+	}
+
 ALERROR CUniverse::Reinit (void)
 
 //	Reinit
@@ -1768,6 +1846,7 @@ ALERROR CUniverse::Reinit (void)
 	SetCurrentSystem(NULL);
 	m_StarSystems.RemoveAll();
 	m_dwNextID = 1;
+	m_Objects.DeleteAll();
 
 	//	NOTE: We don't reinitialize m_bDebugMode or m_bRegistered because those
 	//	are set before Reinit (and thus we would overwrite them).
@@ -1831,7 +1910,6 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //
 //	DWORD		No of missions
 //	CMission	Mission
-//
 //	CTimedEventList	m_Events
 //
 //	DWORD		No of topology nodes
@@ -1841,6 +1919,7 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	DWORD		No of types
 //	DWORD		type: UNID
 //	CDesignType
+//	CObjectTracker
 
 	{
 	int i;
@@ -1954,6 +2033,11 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 
 		pType->WriteToStream(pStream);
 		}
+
+	//	Save out universal object data. Must be written out after the
+	//	topology data, because we need that.
+
+	m_Objects.WriteToStream(pStream);
 
 	return NOERROR;
 	}
@@ -2217,6 +2301,10 @@ void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	m_Events.Update(m_iTick, m_pCurrentSystem);
 
+	//	Update missions
+
+	UpdateMissions(m_iTick, m_pCurrentSystem);
+
 	//	Next
 
 	m_iTick++;
@@ -2244,6 +2332,46 @@ void CUniverse::UpdateExtended (void)
 	//	Update the system 
 
 	pSystem->UpdateExtended(TotalTime);
+	}
+
+void CUniverse::UpdateMissions (int iTick, CSystem *pSystem)
+
+//	UpdateMissions
+//
+//	Update missions in the system.
+
+	{
+	int i;
+
+	SUpdateCtx Ctx;
+	Ctx.pSystem = pSystem;
+
+	//	Loop over all active missions (i.e., missions that the player has 
+	//	accepted and not yet completed).
+
+	for (i = 0; i < m_AllMissions.GetCount(); i++)
+		{
+		CMission *pMission = m_AllMissions.GetMission(i);
+
+		//	If this is an active mission, update it.
+
+		if (!pMission->IsDestroyed() && pMission->IsActive())
+			pMission->Update(Ctx);
+		}
+
+	//	Every 11 ticks we check for mission expirations (since it is not that 
+	//	important if we expire them right away)
+
+	if ((iTick % 11) == 0)
+		{
+		for (i = 0; i < m_AllMissions.GetCount(); i++)
+			{
+			CMission *pMission = m_AllMissions.GetMission(i);
+
+			if (!pMission->IsDestroyed() && pMission->IsOpen())
+				pMission->UpdateExpiration(iTick);
+			}
+		}
 	}
 
 CString CUniverse::ValidatePlayerName (const CString &sName)

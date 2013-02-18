@@ -360,6 +360,112 @@
 
 	</DockScreen>
 
+<!-- REFUEL SCREEN =============================================================
+
+	This screen allows the player to refuel from a station. It requires the
+	station to use the <Refuel> directive in its <Trade> section.
+
+-->
+
+	<DockScreen UNID="&dsRPGRefuel;"
+			nestedScreen="true"
+			>
+
+		<Panes>
+			<Default
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block (maxAfford currencyUsed fuelToUse)
+						(setq currencyUsed (objGetDefaultCurrency gSource))
+
+						(setq fuelToUse (objGetRefuelItemAndPrice gSource gPlayerShip))
+						(setq gItem (@ fuelToUse 0))
+						(setq gCost (@ fuelToUse 1))
+						
+						(if fuelToUse
+							(setq gMaxCount (shpGetFuelNeeded gPlayerShip gItem))
+							(setq gMaxCount 0)
+							)
+
+						(if (gr gCost 0)
+							(setq maxAfford (divide (objGetBalance gPlayerShip currencyUsed) gCost))
+							)
+
+						(switch
+							(not fuelToUse)
+								(block Nil
+									(setq gMaxCount 0)
+									(scrSetDesc gScreen (cat "This refueling facility does not have fuel compatible with your ship's reactor."))
+									)
+
+							(eq gCost 0)
+								(switch
+									(eq gMaxCount 0)
+										(scrSetDesc gScreen "Your ship is does not need any fuel.")
+									(eq gMaxCount 1)
+										(scrSetDesc gScreen (cat "Your ship needs one " (itmGetName gItem 0) " to refuel. We can refuel you free of charge."))
+									(scrSetDesc gScreen (cat "Your ship needs " gMaxCount " " (itmGetName gItem 2) " to refuel. We can refuel you free of charge. How many do you wish to use?"))
+									)
+
+							(geq maxAfford gMaxCount)
+								(switch
+									(eq gMaxCount 0)
+										(scrSetDesc gScreen "Your ship is does not need any fuel.")
+									(eq gMaxCount 1)
+										(scrSetDesc gScreen (cat "Your ship needs one " (itmGetName gItem 0) " to refuel for a total cost of " (fmtCurrency currencyUsed gCost) "."))
+									(scrSetDesc gScreen (cat "Your ship needs " gMaxCount " " (itmGetName gItem 2) " to refuel. Each " (itmGetName gItem 0) " costs " (fmtCurrency currencyUsed gCost) " (" (fmtCurrency currencyUsed (multiply gCost gMaxCount)) " total). How many do you wish to buy?"))
+									)
+
+							(block Nil
+								(setq gMaxCount maxAfford)
+								(switch
+									(eq gMaxCount 0)
+										(scrSetDesc gScreen "You cannot afford to refuel your ship.")
+									(eq gMaxCount 1)
+										(scrSetDesc gScreen (cat "Each " (itmGetName gItem 0) " costs " (fmtCurrency currencyUsed gCost) ". You can only afford a single one."))
+									(scrSetDesc gScreen (cat "Each " (itmGetName gItem 0) " costs " (fmtCurrency currencyUsed gCost) ". You can only afford " gMaxCount " " (itmGetName gItem 2) ". How many do you wish to buy?"))
+									)
+								)
+							)
+
+						(scrSetCounter gScreen gMaxCount)
+
+						; Enable/disable actions
+						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Refuel" default="1" key="R">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								
+								(block (itemsToUse currencyUsed)
+									(setq itemsToUse (itmCreate (itmGetType gItem) count))
+									(setq currencyUsed (objGetDefaultCurrency gSource))
+									
+									(shpRefuelFromItem gPlayerShip itemsToUse)
+									
+									(objCharge gPlayerShip currencyUsed (multiply count gCost))
+									(plyRecordBuyItem gPlayer itemsToUse currencyUsed (multiply count gCost))
+									
+									(scrExitScreen gScreen)
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
 <!-- REPAIR ITEM SCREEN ========================================================
 
 	This screen allows the player to repair an item.

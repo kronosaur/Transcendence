@@ -70,6 +70,12 @@
     <Filter Include="Notes and Documents">
       <UniqueIdentifier>{64f46807-8cf9-4d33-9bb2-b2543826e0a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XML Files\Corporate Expansion">
+      <UniqueIdentifier>{1b437930-5440-4ad0-bf5f-88e316f34461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML Files\Corporate Hierarchy Vol 01">
+      <UniqueIdentifier>{d786ae4c-461a-4d71-9b27-4ab1f193f11f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CIntroShipController.cpp">
@@ -142,9 +148,6 @@
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="IntroScreen.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
-    <ClCompile Include="PrologEpilog.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="CArmorDisplay.cpp">
@@ -648,6 +651,63 @@
     </None>
     <None Include="Game\Readme.htm">
       <Filter>Notes and Documents</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\CoporateExpansion.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\PlayerShips.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateHierarchyVol01.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\PlayerShipsBase.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Makayev.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateShipyard.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMetropolis.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateer.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateerMissions.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission01.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Topology.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Anaxas.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\BeitAlgez.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Gunsan.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Silla.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\TauCeti.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Warlords.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Outlaws.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalliedMerchanters.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -259,6 +259,22 @@
 //	81: 1.1
 //		m_iMaxDist to CDockingPorts
 //
+//	82:	1.2 Alpha 1
+//		m_pEnvironment in CSystem is saved differently.
+//
+//	83: 1.2 Alpha 1
+//		iService in CTradingDesc
+//
+//	84: 1.2 Alpha 1
+//		m_dwLeftSystemOn in CMission
+//
+//	85: 1.2 Alpha 1
+//		m_dwCreatedOn in CMission
+//
+//	86: 1.2 Alpha 1
+//		m_dwAcceptedOn in CMission
+//		m_fAcceptedByPlayer in CMission
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -510,16 +526,17 @@ int CSystem::CalculateLightIntensity (const CVector &vPos, CSpaceObject **retpSt
 
 	//	Compute the percentage
 
+	int iMaxDist = pBestObj->GetMaxLightDistance();
 	int iDistFromCenter = (iBestDist < 15 ? 0 : iBestDist - 15);
-	int iPercent = 100 - (iDistFromCenter * 100 / 120);
+	int iPercent = 100 - (iDistFromCenter * 100 / iMaxDist);
 
 	if (retpStar)
 		*retpStar = pBestObj;
 
-	return max(0, iPercent);
+	return Max(0, iPercent);
 	}
 
-int CSystem::CalcLocationWeight (int iLocID, const CAttributeCriteria &Criteria)
+int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &Criteria)
 
 //	CalcLocationWeight
 //
@@ -547,7 +564,6 @@ int CSystem::CalcLocationWeight (int iLocID, const CAttributeCriteria &Criteria)
 
 	//	Adjust weight based on criteria
 
-	CLocationDef *pLoc = GetLocation(iLocID);
 	const CString &sAttributes = pLoc->GetAttributes();
 	CVector vPos = pLoc->GetOrbit().GetObjectPos();
 
@@ -774,52 +790,6 @@ void CSystem::ComputeStars (void)
 		}
 	}
 
-void CSystem::ConvertSpaceEnvironmentToPointers (CTileMap &UNIDs, CTileMap **retpPointers)
-
-//	ConvertSpaceEnvironmentToPointers
-//
-//	Converts m_pEnvironment to pointers (restore from save file)
-
-	{
-	*retpPointers = new CTileMap(UNIDs.GetSize(), UNIDs.GetScale());
-
-	STileMapEnumerator k;
-	while (UNIDs.HasMore(k))
-		{
-		DWORD dwTile;
-		int xTile;
-		int yTile;
-
-		UNIDs.GetNext(k, &xTile, &yTile, &dwTile);
-		CSpaceEnvironmentType *pEnv = g_pUniverse->FindSpaceEnvironment(dwTile);
-		if (pEnv)
-			(*retpPointers)->SetTile(xTile, yTile, (DWORD)pEnv);
-		}
-	}
-
-void CSystem::ConvertSpaceEnvironmentToUNIDs (CTileMap &Pointers, CTileMap **retpUNIDs)
-
-//	ConvertSpaceEnvironmentToUNIDs
-//
-//	Converts m_pEnvironment to UNIDs
-
-	{
-	*retpUNIDs = new CTileMap(Pointers.GetSize(), Pointers.GetScale());
-
-	STileMapEnumerator k;
-	while (Pointers.HasMore(k))
-		{
-		DWORD dwTile;
-		int xTile;
-		int yTile;
-
-		Pointers.GetNext(k, &xTile, &yTile, &dwTile);
-		CSpaceEnvironmentType *pEnv = (CSpaceEnvironmentType *)dwTile;
-		if (pEnv)
-			(*retpUNIDs)->SetTile(xTile, yTile, pEnv->GetUNID());
-		}
-	}
-
 ALERROR CSystem::CreateFlotsam (const CItem &Item, 
 								const CVector &vPos, 
 								const CVector &vVel, 
@@ -903,7 +873,6 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 //	CTerritoryList	m_Territories
 
 	{
-	ALERROR error;
 	int i;
 	DWORD dwLoad;
 	DWORD dwCount;
@@ -1028,7 +997,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 		//	Set the system (note: this will change the index to the new
 		//	system)
 
-		pObj->AddToSystem(Ctx.pSystem);
+		pObj->AddToSystem(Ctx.pSystem, true);
 		}
 
 	//	If we have old style registrations then we need to convert to subscriptions
@@ -1131,15 +1100,8 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
 	if (dwCount)
 		{
-		CTileMap *pEnv;
-		if (error = CTileMap::CreateFromStream(Ctx.pStream, &pEnv))
-			{
-			*retsError = CONSTLIT("Unable to load environment map.");
-			return error;
-			}
-
-		ConvertSpaceEnvironmentToPointers(*pEnv, &Ctx.pSystem->m_pEnvironment);
-		delete pEnv;
+		Ctx.pSystem->m_pEnvironment = new CEnvironmentGrid;
+		Ctx.pSystem->m_pEnvironment->ReadFromStream(Ctx);
 		}
 	else
 		Ctx.pSystem->m_pEnvironment = NULL;
@@ -1934,7 +1896,7 @@ bool CSystem::FindObjectName (CSpaceObject *pObj, CString *retsName)
 	return false;
 	}
 
-bool CSystem::FindRandomLocation (const CAttributeCriteria &Criteria, DWORD dwFlags, CStationType *pStationToPlace, int *retiLocID)
+bool CSystem::FindRandomLocation (const SLocationCriteria &Criteria, DWORD dwFlags, const COrbit &CenterOrbitDesc, CStationType *pStationToPlace, int *retiLocID)
 
 //	FindRandomLocation
 //
@@ -1942,88 +1904,16 @@ bool CSystem::FindRandomLocation (const CAttributeCriteria &Criteria, DWORD dwFl
 //	given criteria.
 
 	{
-	//	Check labels for overlap
+	//	Generate a table of LocationIDs that match the given criteria.
 
-	BlockOverlappingLocations();
-
-	//	Generate a list of empty locations. If none are left, we
-	//	could not find a location
-
-	TArray<int> EmptyLocations;
-	if (!GetEmptyLocations(&EmptyLocations))
-		return false;
-
-	int iSize = EmptyLocations.GetCount();
-
-	//	Build up a probability table to see which of the entries
-	//	in the label list fit the match best.
-
-	int i;
-	int *pProbTable = new int[iSize];
-
-	//	Initialize the table
-
-	int iTotal = 0;
-	for (i = 0; i < iSize; i++)
-		{
-		pProbTable[i] = CalcLocationWeight(EmptyLocations[i], Criteria);
-		iTotal += pProbTable[i];
-		}
-
-	//	If no entries match, then we're done
-
-	if (iTotal == 0)
-		{
-		delete [] pProbTable;
-		return false;
-		}
-
-	//	Keep trying until we find something or until we run out of tries
-
-	int iTries = 20;
-	int iPos;
-	while (iTries)
-		{
-		//	Pick a random entry in the table
-
-		iPos = 0;
-		int iRoll = mathRandom(0, iTotal - 1);
-
-		//	Get the position
-
-		while (pProbTable[iPos] <= iRoll)
-			iRoll -= pProbTable[iPos++];
-
-		//	If we're not done trying, see if this position is near enemies
-		//	if it is, then pick again
-
-		if (pStationToPlace && iTries > 1)
-			{
-			CLocationDef *pLoc = GetLocation(EmptyLocations[iPos]);
-
-			if (!IsAreaClear(pLoc->GetOrbit().GetObjectPos(), 0.0, 0, pStationToPlace))
-				{
-				iTries--;
-				continue;
-				}
-			}
-
-		//	We found something
-
-		break;
-		}
-
-	delete [] pProbTable;
-
-	//	If we ran out of tries, then we didn't find anything
-
-	if (iTries == 0)
+	TProbabilityTable<int> Table;
+	if (!GetEmptyLocations(Criteria, CenterOrbitDesc, pStationToPlace, &Table))
 		return false;
 
 	//	Done
 
 	if (retiLocID)
-		*retiLocID = EmptyLocations[iPos];
+		*retiLocID = Table[Table.RollPos()];
 
 	return true;
 	}
@@ -2129,6 +2019,88 @@ int CSystem::GetEmptyLocationCount (void)
 	TArray<int> EmptyLocations;
 	m_Locations.GetEmptyLocations(&EmptyLocations);
 	return EmptyLocations.GetCount();
+	}
+
+bool CSystem::GetEmptyLocations (const SLocationCriteria &Criteria, const COrbit &CenterOrbitDesc, CStationType *pStationToPlace, TProbabilityTable<int> *retTable)
+
+//	GetEmptyLocations
+//
+//	Returns a list of empty locations that match the given criteria.
+
+	{
+	int i;
+
+	retTable->DeleteAll();
+
+	//	Check labels for overlap
+
+	BlockOverlappingLocations();
+
+	//	See if we need to check for distance from center
+
+	CVector vCenter;
+	bool bCheckMin = (Criteria.rMinDist != 0.0);
+	bool bCheckMax = (Criteria.rMaxDist != 0.0);
+	Metric rMinDist2;
+	Metric rMaxDist2;
+	if (bCheckMin || bCheckMax)
+		{
+		vCenter = CenterOrbitDesc.GetObjectPos();
+		rMinDist2 = Criteria.rMinDist * Criteria.rMinDist;
+		rMaxDist2 = Criteria.rMaxDist * Criteria.rMaxDist;
+		}
+	else
+		{
+		rMinDist2 = 0.0;
+		rMaxDist2 = 0.0;
+		}
+
+	//	Loop over all locations and add as appropriate
+
+	for (i = 0; i < m_Locations.GetCount(); i++)
+		{
+		CLocationDef *pLoc = m_Locations.GetLocation(i);
+
+		//	Skip locations that are not empty.
+
+		if (!pLoc->IsEmpty())
+			continue;
+
+		//	Compute the probability based on attributes
+
+		int iChance = CalcLocationWeight(pLoc, Criteria.AttribCriteria);
+		if (iChance == 0)
+			continue;
+
+		//	If we need to check distance, do it now
+
+		if (bCheckMin || bCheckMax)
+			{
+			CVector vDist = pLoc->GetOrbit().GetObjectPos() - vCenter;
+			Metric rDist2 = vDist.Length2();
+
+			if (bCheckMin && rDist2 < rMinDist2)
+				continue;
+			else if (bCheckMax && rDist2 > rMaxDist2)
+				continue;
+			}
+
+		//	Make sure the area is clear
+
+		if (pStationToPlace)
+			{
+			if (!IsAreaClear(pLoc->GetOrbit().GetObjectPos(), 0.0, 0, pStationToPlace))
+				continue;
+			}
+
+		//	Add to the table
+
+		retTable->Insert(i, iChance);
+		}
+
+	//	Done
+
+	return (retTable->GetCount() > 0);
 	}
 
 int CSystem::GetLevel (void)
@@ -2237,7 +2209,7 @@ CSpaceEnvironmentType *CSystem::GetSpaceEnvironment (int xTile, int yTile)
 
 	{
 	if (m_pEnvironment)
-		return (CSpaceEnvironmentType *)m_pEnvironment->GetTile(xTile, yTile);
+		return m_pEnvironment->GetTileType(xTile, yTile);
 	else
 		return NULL;
 	}
@@ -2261,7 +2233,7 @@ CSpaceEnvironmentType *CSystem::GetSpaceEnvironment (const CVector &vPos, int *r
 		if (retyTile)
 			*retyTile = y;
 
-		return (CSpaceEnvironmentType *)m_pEnvironment->GetTile(x, y);
+		return m_pEnvironment->GetTileType(x, y);
 		}
 	else
 		{
@@ -2698,6 +2670,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	int i;
 	int iLayer;
 
+	CVector vCenterPos = pCenter->GetPos();
+
 	//	Figure out what color space should be. Space gets lighter as we get
 	//	near the central star
 
@@ -2707,6 +2681,11 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 	Dest.SetClipRect(rcView);
 	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), rgbSpaceColor);
+
+	//	Compute the radius of the circle on which we'll show target indicators
+	//	(in pixels)
+
+	Metric rIndicatorRadius = Min(RectWidth(rcView), RectHeight(rcView)) / 2.0;
 
 	//	Paint the star field
 
@@ -2724,8 +2703,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	CVector vEnhancedDiagonal(g_KlicksPerPixel * (Metric)(2 * RectWidth(rcView)),
 			g_KlicksPerPixel * (Metric)(2 * RectHeight(rcView)));
 
-	CVector vEnhancedUR = pCenter->GetPos() + vEnhancedDiagonal;
-	CVector vEnhancedLL = pCenter->GetPos() - vEnhancedDiagonal;
+	CVector vEnhancedUR = vCenterPos + vEnhancedDiagonal;
+	CVector vEnhancedLL = vCenterPos - vEnhancedDiagonal;
 
 	//	Compose the paint context
 
@@ -2738,7 +2717,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 	int xCenter = rcView.left + RectWidth(rcView) / 2;
 	int yCenter = rcView.top + RectHeight(rcView) / 2;
-	Ctx.XForm = ViewportTransform(pCenter->GetPos(), g_KlicksPerPixel, xCenter, yCenter);
+	Ctx.XForm = ViewportTransform(vCenterPos, g_KlicksPerPixel, xCenter, yCenter);
 
 	//	Compute the bounds relative to the center
 
@@ -2770,8 +2749,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 				//	Compute the size of the viewport at the given object's distance
 
 				CVector vParallaxDiag = vDiagonal * rParallaxDist;
-				CVector vParallaxUR = pCenter->GetPos() + vParallaxDiag;
-				CVector vParallaxLL = pCenter->GetPos() - vParallaxDiag;
+				CVector vParallaxUR = vCenterPos + vParallaxDiag;
+				CVector vParallaxLL = vCenterPos - vParallaxDiag;
 
 				//	If we're in the viewport, then we add it
 
@@ -2811,7 +2790,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		SViewportPaintCtx LocalCtx;
 		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
-		LocalCtx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		LocalCtx.XForm = ViewportTransform(vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
 
 		//	Figure out the position of the object in pixels
 
@@ -2848,7 +2827,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		for (x = x1; x <= x2; x++)
 			for (y = y1; y <= y2; y++)
 				{
-				CSpaceEnvironmentType *pEnv = (CSpaceEnvironmentType *)m_pEnvironment->GetTile(x, y);
+				CSpaceEnvironmentType *pEnv = m_pEnvironment->GetTileType(x, y);
 				if (pEnv)
 					{
 					int xCenter, yCenter;
@@ -2907,7 +2886,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 		SViewportPaintCtx LocalCtx;
 		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
-		LocalCtx.XForm = ViewportTransform(pCenter->GetPos(), pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		LocalCtx.XForm = ViewportTransform(vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
 
 		//	Figure out the position of the object in pixels
 
@@ -2933,50 +2912,58 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		{
 		CSpaceObject *pObj = m_EnhancedDisplayObjs.GetObj(i);
 
-		//	Figure out the position of the object in pixels
-		//	relative to the center of the screen
-
-		int x, y;
-		Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
-		x = x - xCenter;
-		y = y - yCenter;
-
-		//	Now clip the position to the side of the screen
-
-		if (x >= rcBounds.right)
-			{
-			y = y * (rcBounds.right - 1) / x;
-			x = rcBounds.right - 1;
-			}
-		else if (x < rcBounds.left)
-			{
-			y = y * (rcBounds.left) / x;
-			x = rcBounds.left;
-			}
-
-		if (y >= rcBounds.bottom)
-			{
-			x = x * (rcBounds.bottom - 1) / y;
-			y = rcBounds.bottom - 1;
-			}
-		else if (y < rcBounds.top)
-			{
-			x = x * rcBounds.top / y;
-			y = rcBounds.top;
-			}
-
-		//	Draw the indicator
+		//	If this is a destination marker then we paint it at the circumference
+		//	of a circle around the center.
 
 		if (pObj->IsPlayerTarget() || pObj->IsPlayerDestination())
 			{
+			CVector vDir = (pObj->GetPos() - vCenterPos).Normal();
+
 			PaintDestinationMarker(Dest, 
-					xCenter + x, 
-					yCenter + y,
+					xCenter + (int)(rIndicatorRadius * vDir.GetX()), 
+					yCenter - (int)(rIndicatorRadius * vDir.GetY()),
 					pObj,
 					pCenter);
 			}
+
+		//	Otherwise we paint this as a block at the edge of the screen
+
 		else
 			{
+			//	Figure out the position of the object in pixels
+			//	relative to the center of the screen
+
+			int x, y;
+			Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
+			x = x - xCenter;
+			y = y - yCenter;
+
+			//	Now clip the position to the side of the screen
+
+			if (x >= rcBounds.right)
+				{
+				y = y * (rcBounds.right - 1) / x;
+				x = rcBounds.right - 1;
+				}
+			else if (x < rcBounds.left)
+				{
+				y = y * (rcBounds.left) / x;
+				x = rcBounds.left;
+				}
+
+			if (y >= rcBounds.bottom)
+				{
+				x = x * (rcBounds.bottom - 1) / y;
+				y = rcBounds.bottom - 1;
+				}
+			else if (y < rcBounds.top)
+				{
+				x = x * rcBounds.top / y;
+				y = rcBounds.top;
+				}
+
+			//	Draw the indicator
+
 			WORD wColor = pObj->GetSymbolColor();
 
 			Dest.Fill(xCenter + x - (ENHANCED_SRS_BLOCK_SIZE / 2), 
@@ -3160,7 +3147,7 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		for (x = x1; x <= x2; x++)
 			for (y = y1; y <= y2; y++)
 				{
-				CSpaceEnvironmentType *pEnv = (CSpaceEnvironmentType *)m_pEnvironment->GetTile(x, y);
+				CSpaceEnvironmentType *pEnv = m_pEnvironment->GetTileType(x, y);
 				if (pEnv)
 					{
 					int xCenter, yCenter;
@@ -3251,6 +3238,17 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 			xCenter, 
 			yCenter);
 
+	//	Paint the glow from all stars
+
+	for (i = 0; i < m_Stars.GetCount(); i++)
+		{
+		CSpaceObject *pStar = m_Stars.GetObj(i);
+		Trans.Transform(pStar->GetPos(), &x, &y);
+		int iGlowRadius = (int)((pStar->GetMaxLightDistance() * LIGHT_SECOND) / rMapScale);
+
+		DrawAlphaGradientCircle(Dest, x, y, iGlowRadius, (WORD)CG16bitImage::PixelFromRGB(pStar->GetSpaceColor()));
+		}
+
 	//	Paint the grid
 
 	PaintViewportGrid(Dest, rcView, Trans, CVector(), 100.0 * LIGHT_SECOND);
@@ -3260,13 +3258,12 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	if (m_pEnvironment)
 		{
 		STileMapEnumerator k;
-		while (m_pEnvironment->HasMore(k))
+		while (m_pEnvironment->HasMoreTiles(k))
 			{
-			DWORD dwTile;
 			int xTile;
 			int yTile;
 
-			m_pEnvironment->GetNext(k, &xTile, &yTile, &dwTile);
+			m_pEnvironment->GetNextTileType(k, &xTile, &yTile);
 			CVector vPos = TileToVector(xTile, yTile);
 
 			Trans.Transform(vPos, &x, &y);
@@ -3795,12 +3792,7 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 	dwCount = (m_pEnvironment ? 1 : 0);
 	pStream->Write((char *)&dwCount, sizeof(DWORD));
 	if (m_pEnvironment)
-		{
-		CTileMap *pEnv;
-		ConvertSpaceEnvironmentToUNIDs(*m_pEnvironment, &pEnv);
-		pEnv->WriteToStream(pStream);
-		delete pEnv;
-		}
+		m_pEnvironment->WriteToStream(pStream);
 
 	//	Locations & Territories
 
@@ -3870,9 +3862,9 @@ void CSystem::SetSpaceEnvironment (int xTile, int yTile, CSpaceEnvironmentType *
 
 	{
 	if (m_pEnvironment == NULL)
-		m_pEnvironment = new CTileMap(seaArraySize, seaScale);
+		m_pEnvironment = new CEnvironmentGrid;
 
-	m_pEnvironment->SetTile(xTile, yTile, (DWORD)pEnvironment);
+	m_pEnvironment->SetTileType(xTile, yTile, pEnvironment);
 	}
 
 ALERROR CSystem::StargateCreated (CSpaceObject *pGate, const CString &sStargateID, const CString &sDestNodeID, const CString &sDestEntryPoint)

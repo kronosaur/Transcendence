@@ -10,6 +10,7 @@
 #include "XMLUtil.h"
 #include "TransData.h"
 
+#define BY_ATTRIBUTE_ATTRIB					CONSTLIT("byAttribute")
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
 #define GENERATE_ACTUAL_COUNT_ATTRIB		CONSTLIT("generateSimTables")
 
@@ -43,157 +44,129 @@ char *g_szFreqCode[] =
 	"",	"C", "UC", "R", "VR", "NR",
 	};
 
+struct SItemTableCtx
+	{
+	SItemTableCtx (void) :
+			pUniverse(NULL),
+			pCmdLine(NULL),
+			pEntityTable(NULL)
+		{ }
+
+	CUniverse *pUniverse;
+	CXMLElement *pCmdLine;
+	CIDTable *pEntityTable;
+
+	TArray<CString> Cols;
+	CDesignTypeStats TotalCount;
+	};
+
+typedef TSortMap<CString, CItemType *> SItemTypeList;
+
+struct SAttributeEntry
+	{
+	CString sAttribute;
+	SItemTypeList ItemTable;
+	};
+
+typedef TSortMap<CString, SAttributeEntry> SByAttributeTypeList;
+
+bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine);
 int GetItemFreq (CItemType *pType);
 int GetItemType (CItemType *pType);
+void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
+void OutputHeader (SItemTableCtx &Ctx);
+void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
+void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CItemType *> *retList);
+void SortTable (SItemTableCtx &Ctx, const TArray<CItemType *> &List, SItemTypeList *retSorted);
 
 void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
 	{
-	ALERROR error;
-	int i, j;
+	//	Create the context
+
+	SItemTableCtx Ctx;
+	Ctx.pUniverse = &Universe;
+	Ctx.pCmdLine = pCmdLine;
+	Ctx.pEntityTable = &EntityTable;
 
 	//	Compute the criteria
 
-	CItemCriteria Crit;
-	CString sCriteria;
-	if (pCmdLine->FindAttribute(CRITERIA_ATTRIB, &sCriteria))
-		CItem::ParseCriteria(sCriteria, &Crit);
-	else
-		CItem::InitCriteriaAll(&Crit);
-
-	//	Generate a table
-
-	CSymbolTable Table(FALSE, TRUE);
-
-	//	Loop over all items that match and add them to
-	//	a sorted table.
-
-	for (j = 0; j < Universe.GetItemTypeCount(); j++)
+	TArray<CItemType *> Selection;
+	SelectByCriteria(Ctx, pCmdLine->GetAttribute(CRITERIA_ATTRIB), &Selection);
+	if (Selection.GetCount() == 0)
 		{
-		CItemType *pType = Universe.GetItemType(j);
-		CItem Item(pType, 1);
+		printf("No entries match criteria.\n");
+		return;
+		}
 
-		if (!Item.MatchesCriteria(Crit))
-			continue;
+	//	Compute columns
 
-		//	Figure out the sort order
+	if (!CalcColumns(Ctx, pCmdLine))
+		return;
 
-		char szBuffer[1024];
-		wsprintf(szBuffer, "%02d%s%02d%s", 
-				pType->GetLevel(),
-				g_szTypeCode[GetItemType(pType)], 
-				GetItemFreq(pType), 
-				pType->GetNounPhrase().GetASCIIZPointer());
-		Table.AddEntry(CString(szBuffer), (CObject *)pType);
+	//	Sort the list
+
+	SItemTypeList ItemList;
+	SortTable(Ctx, Selection, &ItemList);
+
+	//	If by attribute, output categorized list
+
+	if (pCmdLine->GetAttributeBool(BY_ATTRIBUTE_ATTRIB))
+		OutputByAttribute(Ctx, ItemList);
+
+	//	Otherwise, just output a full table
+
+	else
+		{
+		OutputHeader(Ctx);
+		OutputTable(Ctx, ItemList);
+		}
+
+	printf("\n");
+	}
+
+bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
+	{
+	int i;
+
+	Ctx.Cols.DeleteAll();
+
+	//	Generate a list of columns to display
+
+	Ctx.Cols.Insert(FIELD_LEVEL);
+	Ctx.Cols.Insert(FIELD_TYPE);
+	Ctx.Cols.Insert(FIELD_FREQUENCY);
+	Ctx.Cols.Insert(FIELD_NAME);
+
+	//	Add fields as columns
+
+	for (i = 0; i < pCmdLine->GetAttributeCount(); i++)
+		{
+		CString sAttrib = pCmdLine->GetAttributeName(i);
+
+		if (!strEquals(sAttrib, CONSTLIT("adventure"))
+				&& !strEquals(sAttrib, BY_ATTRIBUTE_ATTRIB)
+				&& !strEquals(sAttrib, CONSTLIT("itemtable"))
+				&& !strEquals(sAttrib, CONSTLIT("criteria"))
+				&& !strEquals(sAttrib, CONSTLIT("nologo")))
+			{
+			CString sValue = pCmdLine->GetAttribute(i);
+				
+			if (!strEquals(sValue, CONSTLIT("true")))
+				Ctx.Cols.Insert(strPatternSubst(CONSTLIT("%s:%s"), sAttrib, sValue));
+			else
+				Ctx.Cols.Insert(sAttrib);
+			}
 		}
 
 	//	If we need to output total count, then load the table
 
-	CSymbolTable TotalCount(TRUE, TRUE);
 	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT))
 		{
-		if (error = LoadTotalCount(TOTAL_COUNT_FILENAME, TotalCount))
-			return;
+		if (LoadDesignTypeStats(&Ctx.TotalCount) != NOERROR)
+			return false;
 		}
 
-	//	If we've got any entries in the table, output now
-
-	if (Table.GetCount())
-		{
-		//	Generate a list of columns to display
-
-		TArray<CString> Cols;
-		Cols.Insert(FIELD_LEVEL);
-		Cols.Insert(FIELD_TYPE);
-		Cols.Insert(FIELD_FREQUENCY);
-		Cols.Insert(FIELD_NAME);
-
-		//	Add fields as columns
-
-		for (i = 0; i < pCmdLine->GetAttributeCount(); i++)
-			{
-			CString sAttrib = pCmdLine->GetAttributeName(i);
-
-			if (!strEquals(sAttrib, CONSTLIT("adventure"))
-					&& !strEquals(sAttrib, CONSTLIT("itemtable"))
-					&& !strEquals(sAttrib, CONSTLIT("criteria"))
-					&& !strEquals(sAttrib, CONSTLIT("nologo")))
-				{
-				CString sValue = pCmdLine->GetAttribute(i);
-				
-				if (!strEquals(sValue, CONSTLIT("true")))
-					Cols.Insert(strPatternSubst(CONSTLIT("%s:%s"), sAttrib, sValue));
-				else
-					Cols.Insert(sAttrib);
-				}
-			}
-
-		//	Output the header
-
-		for (j = 0; j < Cols.GetCount(); j++)
-			{
-			if (j != 0)
-				printf("\t");
-
-			printf(Cols[j].GetASCIIZPointer());
-			}
-
-		printf("\n");
-
-		//	Output each row
-
-		for (i = 0; i < Table.GetCount(); i++)
-			{
-			CItemType *pType = (CItemType *)Table.GetValue(i);
-
-			for (j = 0; j < Cols.GetCount(); j++)
-				{
-				if (j != 0)
-					printf("\t");
-
-				const CString &sField = Cols[j];
-
-				//	Get the field value
-
-				CString sValue;
-				if (strEquals(sField, FIELD_ENTITY))
-					{
-					CString *pValue;
-					if (EntityTable.Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
-						sValue = *pValue;
-					else
-						sValue = CONSTLIT("?");
-					}
-				else
-					sValue = pType->GetDataField(sField);
-
-				//	Format the value
-
-				if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
-					printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
-				else if (strEquals(sField, FIELD_POWER))
-					printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
-				else if (strEquals(sField, FIELD_TOTAL_COUNT))
-					{
-					double rCount = 0.0;
-
-					CString sKey = strFromInt(pType->GetUNID(), false);
-					EntryInfo *pEntry;
-					if (TotalCount.Lookup(sKey, (CObject **)&pEntry) == NOERROR)
-						rCount = pEntry->rTotalCount;
-
-					printf("%.2f", rCount);
-					}
-				else
-					printf(sValue.GetASCIIZPointer());
-				}
-
-			printf("\n");
-			}
-
-		printf("\n");
-		}
-	else
-		printf("No entries match criteria.\n");
+	return true;
 	}
 
 int GetItemFreq (CItemType *pType)
@@ -242,5 +215,178 @@ int GetItemType (CItemType *pType)
 
 		default:
 			return 8;
+		}
+	}
+
+void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
+	{
+	int i, j;
+
+	//	Make a categorized list by attribute
+
+	SByAttributeTypeList ByAttributeTable;
+	for (i = 0; i < ItemList.GetCount(); i++)
+		{
+		const CString &sKey = ItemList.GetKey(i);
+		CItemType *pType = ItemList[i];
+
+		//	Loop over all attributes
+
+		TArray<CString> Attribs;
+		ParseAttributes(pType->GetAttributes(), &Attribs);
+		for (j = 0; j < Attribs.GetCount(); j++)
+			{
+			bool bNew;
+			SAttributeEntry *pEntry = ByAttributeTable.SetAt(Attribs[j], &bNew);
+			if (bNew)
+				pEntry->sAttribute = Attribs[j];
+
+			pEntry->ItemTable.Insert(sKey, pType);
+			}
+
+		//	If no attribute
+
+		if (Attribs.GetCount() == 0)
+			{
+			bool bNew;
+			SAttributeEntry *pEntry = ByAttributeTable.SetAt(CONSTLIT("(none)"), &bNew);
+			if (bNew)
+				pEntry->sAttribute = CONSTLIT("(none)");
+
+			pEntry->ItemTable.Insert(sKey, pType);
+			}
+		}
+
+	//	Now loop over all attributes
+
+	for (i = 0; i < ByAttributeTable.GetCount(); i++)
+		{
+		const SAttributeEntry &Entry = ByAttributeTable[i];
+		printf("%s\n\n", Entry.sAttribute.GetASCIIZPointer());
+
+		OutputHeader(Ctx);
+		OutputTable(Ctx, Entry.ItemTable);
+		printf("\n");
+		}
+	}
+
+void OutputHeader (SItemTableCtx &Ctx)
+	{
+	int i;
+
+	for (i = 0; i < Ctx.Cols.GetCount(); i++)
+		{
+		if (i != 0)
+			printf("\t");
+
+		printf(Ctx.Cols[i].GetASCIIZPointer());
+		}
+
+	printf("\n");
+	}
+
+void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
+	{
+	int i, j;
+
+	if (ItemList.GetCount() == 0)
+		return;
+
+	//	Output each row
+
+	for (i = 0; i < ItemList.GetCount(); i++)
+		{
+		CItemType *pType = ItemList[i];
+
+		for (j = 0; j < Ctx.Cols.GetCount(); j++)
+			{
+			if (j != 0)
+				printf("\t");
+
+			const CString &sField = Ctx.Cols[j];
+
+			//	Get the field value
+
+			CString sValue;
+			if (strEquals(sField, FIELD_ENTITY))
+				{
+				CString *pValue;
+				if (Ctx.pEntityTable->Lookup(pType->GetUNID(), (CObject **)&pValue) == NOERROR)
+					sValue = *pValue;
+				else
+					sValue = CONSTLIT("?");
+				}
+			else
+				sValue = pType->GetDataField(sField);
+
+			//	Format the value
+
+			if (strEquals(sField, FIELD_AVERAGE_DAMAGE) || strEquals(sField, FIELD_POWER_PER_SHOT))
+				printf("%.2f", strToInt(sValue, 0, NULL) / 1000.0);
+			else if (strEquals(sField, FIELD_POWER))
+				printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
+			else if (strEquals(sField, FIELD_TOTAL_COUNT))
+				{
+				SDesignTypeInfo *pInfo = Ctx.TotalCount.GetAt(pType->GetUNID());
+				double rCount = (pInfo ? pInfo->rPerGameMeanCount : 0.0);
+				printf("%.2f", rCount);
+				}
+			else
+				printf(sValue.GetASCIIZPointer());
+			}
+
+		printf("\n");
+		}
+	}
+
+void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CItemType *> *retList)
+	{
+	int i;
+
+	//	Compute the criteria
+
+	CItemCriteria Crit;
+	if (!sCriteria.IsBlank())
+		CItem::ParseCriteria(sCriteria, &Crit);
+	else
+		CItem::InitCriteriaAll(&Crit);
+
+	//	Loop over all items that match and add them to
+	//	a sorted table.
+
+	retList->DeleteAll();
+	for (i = 0; i < Ctx.pUniverse->GetItemTypeCount(); i++)
+		{
+		CItemType *pType = Ctx.pUniverse->GetItemType(i);
+		CItem Item(pType, 1);
+
+		if (!Item.MatchesCriteria(Crit))
+			continue;
+
+		retList->Insert(pType);
+		}
+	}
+
+void SortTable (SItemTableCtx &Ctx, const TArray<CItemType *> &List, SItemTypeList *retSorted)
+	{
+	int i;
+
+	//	Loop over all items that match and add them to
+	//	a sorted table.
+
+	retSorted->DeleteAll();
+	for (i = 0; i < List.GetCount(); i++)
+		{
+		CItemType *pType = List[i];
+
+		//	Add with sort key
+
+		char szBuffer[1024];
+		wsprintf(szBuffer, "%02d%s%02d%s", 
+				pType->GetLevel(),
+				g_szTypeCode[GetItemType(pType)], 
+				GetItemFreq(pType), 
+				pType->GetNounPhrase().GetASCIIZPointer());
+		retSorted->Insert(CString(szBuffer), pType);
 		}
 	}

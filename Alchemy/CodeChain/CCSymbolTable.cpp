@@ -252,12 +252,45 @@ ICCItem *CCSymbolTable::GetElement (int iIndex)
 //	GetElement
 //
 //	Returns the nth value
+//
+//	NOTE: No need to discard the result, but be careful of use.
 
 	{
 	if (iIndex < 0 || iIndex >= m_Symbols.GetCount())
 		return NULL;
 
 	return dynamic_cast<ICCItem *>(m_Symbols.GetValue(iIndex));
+	}
+
+ICCItem *CCSymbolTable::GetElement (const CString &sKey)
+
+//	GetElement
+//
+//	Returns the value for a key (or NULL).
+//
+//	NOTE: No need to discard the result, but be careful of use.
+
+	{
+	ALERROR error;
+
+	CObject *pItem;
+	if (error = m_Symbols.Lookup(sKey, &pItem))
+		{
+		if (error == ERR_NOTFOUND)
+			{
+			//	If we could not find it in this symbol table, look for
+			//	the symbol in the parent
+
+			if (m_pParent)
+				return m_pParent->GetElement(sKey);
+			else
+				return NULL;
+			}
+		else
+			return NULL;
+		}
+
+	return dynamic_cast<ICCItem *>(pItem);
 	}
 
 ICCItem *CCSymbolTable::GetElement (CCodeChain *pCC, int iIndex)

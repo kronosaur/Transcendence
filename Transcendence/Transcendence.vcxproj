@@ -211,7 +211,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="PrologEpilog.cpp" />
     <ClCompile Include="CArmorDisplay.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -347,13 +346,19 @@
     <ClInclude Include="Transcendence.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Antarctica.xml" />
+    <None Include="Game\Antarctica.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\AresOrthodoxy.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\BlackMarket.xml" />
+    <None Include="Game\BlackMarket.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CentauriWarlords.xml" />
-    <None Include="Game\CharonPirates.xml" />
+    <None Include="Game\CharonPirates.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Code.xml">
       <SubType>Designer</SubType>
     </None>
@@ -361,7 +366,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\CommonwealthAgricultural.xml" />
-    <None Include="Game\CommonwealthFleet.xml" />
+    <None Include="Game\CommonwealthFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CommonwealthMetropolis.xml" />
     <None Include="Game\CommonwealthMilitia.xml" />
     <None Include="Game\CommonwealthMining.xml">
@@ -372,11 +379,50 @@
     <None Include="Game\CorporateHierarchy.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Domina.xml" />
+    <None Include="Game\Domina.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\DwargRaiders.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\EncountersVol01.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\CoporateExpansion.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission01.xml" />
+    <None Include="Game\Extensions\Corporate Expansion\PlayerShips.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Anaxas.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\BeitAlgez.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateHierarchyVol01.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMetropolis.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateer.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateerMissions.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateShipyard.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Gunsan.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Makayev.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Outlaws.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\PlayerShipsBase.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Silla.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\TauCeti.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Topology.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalliedMerchanters.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Warlords.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Heretic.xml">
@@ -403,7 +449,9 @@
     <None Include="Game\Ringers.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\RogueFleet.xml" />
+    <None Include="Game\RogueFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\RPGCode.xml">
       <SubType>Designer</SubType>
     </None>
@@ -418,7 +466,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Stargates.xml" />
-    <None Include="Game\StdAutons.xml" />
+    <None Include="Game\StdAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdDevices.xml" />
     <None Include="Game\StdDockScreens.xml">
       <SubType>Designer</SubType>
@@ -428,7 +478,9 @@
     <None Include="Game\SungSlavers.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Teratons.xml" />
+    <None Include="Game\Teratons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Tinkers.xml" />
     <None Include="Game\UrakWarlords.xml" />
     <None Include="Game\UsefulItems.xml">
@@ -445,7 +497,9 @@
     <None Include="Game\Huari.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\PlayerShips.xml" />
+    <None Include="Game\PlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StarsOfThePilgrim.xml" />
     <None Include="Game\Extensions\AdventureSample.xml" />
     <None Include="Game\Extensions\DebugCode.xml" />
@@ -460,13 +514,21 @@
     <None Include="Game\BattleArena.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\BattleArenaGladiators.xml" />
-    <None Include="Game\CharonFortress.xml" />
+    <None Include="Game\BattleArenaGladiators.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\CharonFortress.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Eridani.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\HumanSpaceMap.xml" />
-    <None Include="Game\StdArmor.xml" />
+    <None Include="Game\HumanSpaceMap.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\StdArmor.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdEffects.xml" />
     <None Include="Game\StdFuel.xml" />
     <None Include="Game\StdPlayerShips.xml">
@@ -479,7 +541,9 @@
     <None Include="Game\StdTypes.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\StdUnknownItems.xml" />
+    <None Include="Game\StdUnknownItems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdWeapons.xml" />
     <None Include="Game\StKatharines.xml">
       <SubType>Designer</SubType>
@@ -487,7 +551,9 @@
     <None Include="Game\CoreEffects.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\CoreTypes.xml" />
+    <None Include="Game\CoreTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Transcendence.xml">
       <SubType>Designer</SubType>
     </None>
@@ -501,9 +567,13 @@
     </None>
     <None Include="Game\RPGTypes.xml" />
     <None Include="Game\Mining.xml" />
-    <None Include="Game\StarSystems.xml" />
+    <None Include="Game\StarSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\UniverseEffects.xml" />
-    <None Include="Game\Worlds.xml" />
+    <None Include="Game\Worlds.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Resources\DamageTypes.jpg" />
     <None Include="Game\Resources\DamageTypesMask.bmp" />
     <None Include="Game\Resources\FontRes.xml" />

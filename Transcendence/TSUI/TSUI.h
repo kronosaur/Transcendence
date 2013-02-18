@@ -524,6 +524,7 @@ class CVisualPalette : public IFontTable
 								const RECT &rcRect,
 								DWORD dwOptions,
 								IAnimatron **retpControl) const;
+		void CreateRingAnimation (CAniSequencer *pContainer, int iCount, int iMinRadius, int iInc) const;
 		void CreateStdDialog (const RECT &rcRect, const CString &sTitle, IAnimatron **retpDlg, CAniSequencer **retpContainer) const;
 		void CreateWaitAnimation (CAniSequencer *pContainer, const CString &sID, const RECT &rcRect, IAnimatron **retpControl) const;
 
@@ -532,6 +533,7 @@ class CVisualPalette : public IFontTable
 		virtual const CG16bitFont *GetFont (const STextFormatDesc &Desc) const { return &GetFont(Desc.sTypeface); }
 
 	private:
+
 		WORD m_Color[colorCount];
 		CG16bitFont m_Font[fontCount];
 		CG16bitImage m_Image[imageCount];

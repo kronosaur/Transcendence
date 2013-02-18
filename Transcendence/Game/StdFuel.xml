@@ -13,7 +13,7 @@
 			mass=				"100"
 			frequency=			"common"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel"
+			attributes=			"BasicFuel; Consumable; Fuel"
 
 			data=				"2500"
 
@@ -35,7 +35,7 @@
 			mass=				"150"
 			frequency=			"common"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel; 100MW"
+			attributes=			"BasicFuel; Consumable; Fuel; 100MW"
 
 			data=				"10000"
 
@@ -56,7 +56,7 @@
 			mass=				"200"
 			frequency=			"common"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel"
+			attributes=			"BasicFuel; Consumable; Fuel"
 
 			data=				"20000"
 			description=		"Starship reactors larger than 100MW need a denser fuel than helium. Highly-enriched xenotite, an exotic antimatter mineral, is a common alternative."
@@ -76,7 +76,7 @@
 			mass=				"200"
 			frequency=			"common"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel"
+			attributes=			"BasicFuel; Consumable; Fuel"
 
 			data=				"50000"
 			description=		"Pteracnium is a stable transuranic compound of immense energy density. Refined and packaged as fuel rods this compound is ideal for gigawatt-class reactors."
@@ -96,7 +96,7 @@
 			mass=				"200"
 			frequency=			"common"
 			numberAppearing=	"3d6"
-			attributes=			"Consumable; Fuel; ZeroPoint"
+			attributes=			"BasicFuel; Consumable; Fuel; ZeroPoint"
 
 			data=				"250000"
 			description=		"These zero-point fuel cells are designed to refuel the 1GW Hyperion reactor."

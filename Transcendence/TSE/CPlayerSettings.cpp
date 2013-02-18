@@ -38,6 +38,7 @@
 #define SHIELD_EFFECT_ATTRIB					CONSTLIT("shieldLevelEffect")
 #define SHIP_SCREEN_ATTRIB						CONSTLIT("shipScreen")
 #define STARTING_CREDITS_ATTRIB					CONSTLIT("startingCredits")
+#define STARTING_MAP_ATTRIB						CONSTLIT("startingMap")
 #define STARTING_POS_ATTRIB						CONSTLIT("startingPos")
 #define STARTING_SYSTEM_ATTRIB					CONSTLIT("startingSystem")
 #define WIDTH_ATTRIB							CONSTLIT("width")
@@ -288,6 +289,9 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 		sAttrib = CONSTLIT("5d20+200");
 
 	if (error = m_StartingCredits.InitFromXML(Ctx, sAttrib))
+		return error;
+
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(STARTING_MAP_ATTRIB), &m_dwStartMap))
 		return error;
 
 	m_sStartNode = pDesc->GetAttribute(STARTING_SYSTEM_ATTRIB);

@@ -15,6 +15,7 @@
 #define INCLUDE_10_STARTING_CLASSES_ATTRIB		CONSTLIT("include10StartingShips")
 #define LEVEL_ATTRIB							CONSTLIT("level")
 #define NAME_ATTRIB								CONSTLIT("name")
+#define STARTING_MAP_ATTRIB						CONSTLIT("startingMap")
 #define STARTING_POS_ATTRIB						CONSTLIT("startingPos")
 #define STARTING_SHIP_CRITERIA_ATTRIB			CONSTLIT("startingShipCriteria")
 #define STARTING_SYSTEM_ATTRIB					CONSTLIT("startingSystem")
@@ -340,6 +341,9 @@ ALERROR CAdventureDesc::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	m_fIncludeOldShipClasses = pDesc->GetAttributeBool(INCLUDE_10_STARTING_CLASSES_ATTRIB);
 
 	//	Starting position
+
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(STARTING_MAP_ATTRIB), &m_dwStartingMap))
+		return error;
 
 	m_sStartingNodeID = pDesc->GetAttribute(STARTING_SYSTEM_ATTRIB);
 	m_sStartingPos = pDesc->GetAttribute(STARTING_POS_ATTRIB);

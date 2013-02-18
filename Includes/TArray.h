@@ -239,6 +239,40 @@ template <class VALUE> class TArray : public CArrayBase
 				}
 			}
 
+		void InsertSorted (const VALUE &Value, ESortOptions Order = AscendingSort)
+			{
+			int iCount = GetCount();
+			int iMin = 0;
+			int iMax = iCount;
+			int iTry = iMax / 2;
+
+			while (true)
+				{
+				if (iMax <= iMin)
+					{
+					Insert(Value, iMin);
+					break;
+					}
+
+				int iCompare = Order * KeyCompare(Value, GetAt(iTry));
+				if (iCompare == 0)
+					{
+					Insert(Value, iTry);
+					break;
+					}
+				else if (iCompare == -1)
+					{
+					iMin = iTry + 1;
+					iTry = iMin + (iMax - iMin) / 2;
+					}
+				else if (iCompare == 1)
+					{
+					iMax = iTry;
+					iTry = iMin + (iMax - iMin) / 2;
+					}
+				}
+			}
+
 		void Shuffle (void)
 			{
 			if (GetCount() < 2)
@@ -346,6 +380,71 @@ template <class VALUE> class TArray : public CArrayBase
 			}
 	};
 #pragma warning(default:4291)
+
+//	TProbabilityTable ----------------------------------------------------------
+
+template <class VALUE> class TProbabilityTable
+	{
+	public:
+		TProbabilityTable (void) :
+				m_iTotalChance(0)
+			{ }
+
+		inline VALUE &operator [] (int iIndex) const { return GetAt(iIndex); }
+
+		void Delete (int iIndex)
+			{
+			m_iTotalChance -= m_Table[iIndex].iChance;
+			m_Table.Delete(iIndex);
+			}
+
+		void DeleteAll (void)
+			{
+			m_Table.DeleteAll();
+			m_iTotalChance = 0;
+			}
+
+		inline VALUE &GetAt (int iIndex) const { return m_Table[iIndex].Value; }
+		inline int GetCount (void) const { return m_Table.GetCount(); }
+
+		void Insert (const VALUE &NewValue, int iChance)
+			{
+			ASSERT(iChance >= 0);
+
+			SEntry *pEntry = m_Table.Insert();
+			pEntry->iChance = iChance;
+			pEntry->Value = NewValue;
+			m_iTotalChance += iChance;
+			}
+
+		inline bool IsEmpty (void) const { return (m_iTotalChance == 0); }
+
+		int RollPos (void) const
+			{
+			if (IsEmpty())
+				return -1;
+
+			int iPos = 0;
+			int iRoll = mathRandom(0, m_iTotalChance - 1);
+
+			//	Get the position
+
+			while (m_Table[iPos].iChance <= iRoll)
+				iRoll -= m_Table[iPos++].iChance;
+
+			return iPos;
+			}
+
+	private:
+		struct SEntry
+			{
+			int iChance;
+			VALUE Value;
+			};
+
+		TArray<SEntry> m_Table;
+		int m_iTotalChance;
+	};
 
 //	Simple array classes
 

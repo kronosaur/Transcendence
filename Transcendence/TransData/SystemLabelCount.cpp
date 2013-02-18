@@ -52,7 +52,7 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Initialize the universe
 
-		if (error = Universe.InitGame(&sError))
+		if (error = Universe.InitGame(0, &sError))
 			{
 			printf("ERROR: %s", sError.GetASCIIZPointer());
 			return;

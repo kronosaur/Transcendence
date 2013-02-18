@@ -52,7 +52,7 @@ void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine)
 		//	Initialize the universe
 
 		CString sError;
-		if (Universe.InitGame(&sError) != NOERROR)
+		if (Universe.InitGame(0, &sError) != NOERROR)
 			{
 			printf("ERROR: %s", sError.GetASCIIZPointer());
 			return;

@@ -1,0 +1,2 @@
+(for i 1 10000 (print (randomGaussian -10 0 10)))
+\q

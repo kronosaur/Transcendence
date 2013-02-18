@@ -4,12 +4,19 @@
 
 <!-- MISSION SCREEN ============================================================
 
-	Invoke as follows:
+	gData uses the following fields:
 
-	(scrShowScreen gScreen &dsRPGMission;
-		{
-		missionObj:	mission-object
-		})
+	missionObj:			The mission that we are showing.
+
+	nextScreen:			If specified, we navigate to the given screen when we're
+						done. This may also be a list consisting of a screen and
+						a pane.
+
+	MISSION OBJECT
+
+	If the mission object has a data value named "rewardNextScreen" then it is used
+	as a nextScreen parameter during debrief. This is used to implement things
+	like promotions.
 
 -->
 
@@ -119,6 +126,8 @@
 						(missionText (msnTranslate missionObj 'Briefing))
 						(pageCount (if (isatom missionText) 1 (count missionText)))
 						(pageNo (scrGetData gScreen 'curPage))
+
+						(atLastPage Nil)
 						)
 
 						; Start at the beginning if we have no page number
@@ -131,27 +140,15 @@
 
 						; Next page
 						(setq pageNo (add pageNo 1))
-						(if (eq pageNo pageCount)
+						(setq atLastPage (eq pageNo pageCount))
 
-							; We're at the end of the briefing; ask the player
-							; to accept or decline.
-							(block nil
-								(scrShowAction gScreen 'continue nil)
-								(scrShowAction gScreen 'accept true)
-								(scrShowAction gScreen 'decline true)
+						; Initialize actions
+						(scrShowAction gScreen 'continue (not atLastPage))
+						(scrShowAction gScreen 'accept atLastPage)
+						(scrShowAction gScreen 'decline atLastPage)
 
-								(scrSetData gSCreen 'curPage nil)
-								)
-
-							; Continue to the next page of the briefing
-							(block nil
-								(scrShowAction gScreen 'continue true)
-								(scrShowAction gScreen 'accept nil)
-								(scrShowAction gScreen 'decline nil)
-
-								(scrSetData gScreen 'curPage pageNo)
-								)
-							)
+						; Remeber page
+						(scrSetData gSCreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
@@ -213,7 +210,13 @@
 
 				<Actions>
 					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
-						(scrExitScreen gScreen)
+						(block Nil
+							(scrExitScreen gScreen)
+
+							(if (@ gData 'nextScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
 					</Action>
 				</Actions>
 			</ReplyDecline>
@@ -244,23 +247,72 @@
 
 			<Success>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						(descText (msnTranslate missionObj 'SuccessDebrief))
-						)
+					(block (missionObj descText pageCount pageNo atLastPage rewardResult)
 
-						(scrSetDesc gScreen descText)
+						(setq missionObj (scrGetData gScreen 'missionObj))
+
+						; If we haven't already, give the player the reward. We need
+						; to call msnReward before getting the debriefing text because
+						; we might have gotten a promotion (or something).
+
+						(if (not (msnGetProperty missionObj 'isDebriefed))
+							(block Nil
+								(msnReward missionObj)
+								(msnSetProperty missionObj 'isDebriefed True)
+								)
+							)
+
+						; Get the debriefing text and page counts
+
+						(setq descText (msnTranslate missionObj 'SuccessDebrief))
+						(setq pageCount (if (isatom descText) 1 (count descText)))
+						(setq pageNo (scrGetData gScreen 'curPage))
+
+						; Start at the beginning if we have no page number
+
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+
+						(scrSetDesc gScreen (@ descText pageNo))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'continue (not atLastPage))
+						(scrShowAction gScreen 'done atLastPage)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
-						(block (
-							(missionObj (scrGetData gScreen 'missionObj))
-							)
+					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+						(scrShowPane gScreen "Success")
+					</Action>
 
-							(msnReward missionObj)
+					<Action id="done" name="Continue" key="C" default="1" cancel="1">
+						(block (missionObj)
+							(setq missionObj (scrGetData gScreen 'missionObj))
 							(scrExitScreen gScreen)
+
+							(switch
+								(@ gData 'nextScreen)
+									(scrShowScreen gScreen (@ gData 'nextScreen))
+
+								(msnGetData missionObj 'rewardNextScreen)
+									(scrShowScreen gScreen (msnGetData missionObj 'rewardNextScreen))
+
+								Nil
+								)
 							)
 					</Action>
 				</Actions>
@@ -285,6 +337,10 @@
 
 							(msnSetProperty missionObj 'isDebriefed True)
 							(scrExitScreen gScreen)
+
+							(if (@ gData 'nextScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
 							)
 					</Action>
 				</Actions>
@@ -303,7 +359,13 @@
 
 				<Actions>
 					<Action name="Continue" key="C" default="1" cancel="1">
-						(scrExitScreen gScreen)
+						(block Nil
+							(scrExitScreen gScreen)
+
+							(if (@ gData 'nextScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
 					</Action>
 				</Actions>
 			</AlreadyDebriefed>
@@ -321,7 +383,13 @@
 
 				<Actions>
 					<Action name="Continue" key="C" default="1" cancel="1">
-						(scrExitScreen gScreen)
+						(block Nil
+							(scrExitScreen gScreen)
+
+							(if (@ gData 'nextScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
 					</Action>
 				</Actions>
 			</Unavailable>
@@ -345,12 +413,121 @@
 		</Events>
 	</DockScreen>
 
+<!-- DELIVERY MISSION SCREEN ===================================================
+
+	gData uses the following fields:
+
+	missionObj:			The mission that we are showing.
+
+	MISSION OBJECT
+
+	In order to take advantage of this screen, the mission object should have
+	the following characteristics:
+
+	1.	The mission type must have the "deliveryMission" attribute.
+
+	2.	The mission object must have data of "destID" with the ID of the
+		recipient of the delivery.
+
+	3.	The mission type should handle an event called "OnDeliveryMissionCompleted"
+		which handles the delivery (e.g., removing the appropriate object
+		from the player's cargo. The event must call either msnSuccess or
+		msnFailure. It must return a string to display to the user describing
+		the result.
+
+-->
+
+	<DockScreen UNID="&dsRPGDeliveryMission;"
+			nestedScreen=		"true"
+			>
+		<OnScreenInit>
+			(block Nil
+				; Store the mission object in screen data
+				(scrSetData gScreen 'missionObj (@ gData 'missionObj))
+				)
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (missionObj desc)
+						(setq missionObj (scrGetData gScreen 'missionObj))
+						(setq desc (msnFireEvent missionObj 'OnDeliveryMissionCompleted))
+						(scrSetDesc gScreen desc)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				; Find a delivery mission that is not completed and whose recipient
+				; is this station.
+
+				(block (missionObj)
+					(switch
+						(setq missionObj (@ 
+								(filter (msnFind gSource "a +deliveryMission;") theMission 
+									(and
+										(not (msnGetProperty theMission 'isCompleted))
+										(eq gSource (objGetObjByID (msnGetData theMission 'destID)))
+										)
+									)
+								0))
+							(list &dsRPGDeliveryMission; { missionObj: missionObj } 4)
+
+						; Otherwise, nothing
+
+						Nil
+						)
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</DockScreen>
+
 <!-- GLOBAL FUNCTIONS ==========================================================
 
 -->
 
 	<Globals>
 		(block Nil
+			(setq rpgSetTarget (lambda (missionObj reasonCode targetObj command)
+				(block (newTargetObj)
+					(switch
+						; If we just got debriefed then we clear our targets.
+
+						(eq reasonCode 'debriefed)
+							(shpCancelOrders gPlayerShip)
+
+						; If the mission is complete, then we point towards the 
+						; owner station.
+
+						(msnGetProperty missionObj 'isCompleted)
+							(if (setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock newTargetObj)
+									)
+								)
+
+						; Otherwise, we point towards the target
+
+						(if targetObj
+							(block Nil
+								(shpCancelOrders gPlayerShip)
+								(shpOrder gPlayerShip (if command command 'attack) targetObj)
+								)
+							)
+						)
+					)
+				))
+
 			(setq intMissionAchievementString (lambda (missionsCompleted missionsFailed)
 				(if (eq (int missionsFailed) 0)
 					(int missionsCompleted)

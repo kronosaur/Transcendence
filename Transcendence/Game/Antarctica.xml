@@ -52,7 +52,7 @@
 	-->
 
 	<ShipClass UNID="&scCSCAntarctica;"
-			manufacturer=		""
+			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
 			score=				"2855"
@@ -750,7 +750,7 @@
 	-->
 
 	<ShipClass UNID="&scCSCTerra;"
-			manufacturer=		""
+			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
 			score=				"3655"
@@ -1750,7 +1750,7 @@
 
 			level=				"9"
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			unique=				"inUniverse"
+			maxAppearing=		"1"
 			>
 
 		<Ships>
@@ -1775,7 +1775,7 @@
 
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- ---c- ----- ----- -----"
-			unique=				"inUniverse"
+			maxAppearing=		"1"
 			locationCriteria=	"+OuterSystem,-planetary"
 			enemyExclusionRadius="50"
 			>

@@ -92,6 +92,20 @@ class CSimViewer
 		DWORD m_dwLastUpdate;
 	};
 
+struct SDesignTypeInfo
+	{
+	SDesignTypeInfo (void) :
+			rPerGameMedianCount(0.0),
+			rPerGameMeanCount(0.0)
+		{ }
+
+	double rPerGameMedianCount;				//	Median encountered per game
+	double rPerGameMeanCount;				//	Mean encountered per game
+	CString sDistribution;					//	"1 (5%); 2 (10%); 3 (70%); 4 (10%); 5 (5%)"
+	};
+
+typedef TSortMap<DWORD, SDesignTypeInfo> CDesignTypeStats;
+
 //	Functions
 
 void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable);
@@ -99,15 +113,16 @@ char *FrequencyChar (int iFreq);
 void ShowHelp (CXMLElement *pCmdLine);
 void MarkItemsKnown (CUniverse &Universe);
 bool OutputImage (CG16bitImage &Image, const CString &sFilespec);
-ALERROR LoadTotalCount (const CString &sFilename, CSymbolTable &TotalCount);
+ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats);
 
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine);
 void DoRandomNumberTest (void);
 void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine);
+void DoTradeSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
-void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
 void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);

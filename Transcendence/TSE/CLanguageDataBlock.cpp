@@ -195,7 +195,7 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 		{
 		if (retsText)
 			{
-			*retsText = pEntry->sText;
+			*retsText = ::ComposePlayerNameString(pEntry->sText, g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome());
 			return resultString;
 			}
 		else
@@ -222,11 +222,14 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 		{
 		if (retText)
 			{
+			CString sPlayerName = g_pUniverse->GetPlayerName();
+			GenomeTypes iPlayerGenome = g_pUniverse->GetPlayerGenome();
+
 			retText->DeleteAll();
 
 			retText->InsertEmpty(pResult->GetCount());
 			for (i = 0; i < pResult->GetCount(); i++)
-				retText->GetAt(i) = pResult->GetElement(i)->GetStringValue();
+				retText->GetAt(i) = ::ComposePlayerNameString(pResult->GetElement(i)->GetStringValue(), sPlayerName, iPlayerGenome);
 
 			iResult = resultArray;
 			}
@@ -240,7 +243,7 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 		{
 		if (retsText)
 			{
-			*retsText = pResult->GetStringValue();
+			*retsText = ::ComposePlayerNameString(pResult->GetStringValue(), g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome());
 			iResult = resultString;
 			}
 		else
@@ -261,29 +264,43 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCI
 //	Translates to an item. The caller is responsible for discarding.
 
 	{
-	//	If we can't find this ID then we can't translate
+	int i;
 
-	SEntry *pEntry = m_Data.GetAt(sID);
-	if (pEntry == NULL)
-		return false;
+	TArray<CString> List;
+	CString sText;
+	ETranslateResult iResult = Translate(pObj, sID, &List, &sText);
 
-	//	If we don't need to run code then we just return the string.
-
-	if (pEntry->pCode == NULL)
+	switch (iResult)
 		{
-		*retpResult = g_pUniverse->GetCC().CreateString(pEntry->sText);
-		return true;
+		case resultNotFound:
+			return false;
+
+		case resultFound:
+			//	This only happens if the caller passed in NULL for retText.
+			//	It means that we don't need the result.
+			return true;
+
+		case resultArray:
+			{
+			*retpResult = g_pUniverse->GetCC().CreateLinkedList();
+
+			CCLinkedList *pList = (CCLinkedList *)(*retpResult);
+			for (i = 0; i < List.GetCount(); i++)
+				pList->AppendStringValue(&g_pUniverse->GetCC(), List[i]);
+
+			return true;
+			}
+
+		case resultString:
+			{
+			*retpResult = g_pUniverse->GetCC().CreateString(sText);
+			return true;
+			}
+
+		default:
+			ASSERT(false);
+			return false;
 		}
-
-	//	Otherwise we have to run some code
-
-	CCodeChainCtx Ctx;
-	Ctx.SaveAndDefineSourceVar(pObj);
-	Ctx.DefineString(CONSTLIT("aTextID"), sID);
-	
-	*retpResult = Ctx.Run(pEntry->pCode);	//	LATER:Event
-
-	return true;
 	}
 
 bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const

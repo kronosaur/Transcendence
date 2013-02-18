@@ -122,6 +122,7 @@
 	
 	<StationType UNID="&baTeratonNestBase;"
 			name=				"(teraton nest base)"
+			virtual=			"true"
 			>
 
 		<Language>

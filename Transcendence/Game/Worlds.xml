@@ -20,11 +20,18 @@
 		name=				"(star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
-		spaceColor=			"0x15, 0x56, 0x7a"
+		spaceColor=			"0x12, 0x50, 0x79"
+		maxLightRadius=		"600"
 
 		attributes=			"star"
 		>
-	<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Image>
+			<FilterColorize hue="203" saturation="75">
+				<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+
 	</StationType>
 
 	<!-- G-Type Star -->
@@ -33,11 +40,36 @@
 		name=				"(star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
-		spaceColor=			"0x7a, 0x76, 0x15"
+		spaceColor=			"0x68, 0x63, 0x23"
+		maxLightRadius=		"480"
 
 		attributes=			"star"
 		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Image>
+			<FilterColorize hue="57" saturation="50">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- K-Type Star -->
+
+	<StationType UNID="&stK-TypeStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x70, 0x44, 0x1a"
+		maxLightRadius=		"480"
+
+		attributes=			"star"
+		>
+
+		<Image>
+			<FilterColorize hue="30" saturation="63">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
 	</StationType>
 
 	<!-- M-Type Star -->
@@ -50,6 +82,25 @@
 		attributes=			"star"
 		>
 	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Nebula Star -->
+
+	<StationType UNID="&stNebulaStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x43, 0x3d, 0x4d"
+		maxLightRadius=		"300"
+
+		attributes=			"star"
+		>
+
+		<Image>
+			<FilterColorize hue="262" saturation="12">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
 	</StationType>
 
 	<!-- White Dwarf Star -->
@@ -71,6 +122,7 @@
 		scale=				"star"
 		sovereign=			"&svIndependent;"
 		spaceColor=			"0x59, 0x0e, 0x00"
+		maxLightRadius=		"240"
 
 		attributes=			"star"
 		>
@@ -96,6 +148,7 @@
 		scale=				"star"
 		sovereign=			"&svIndependent;"
 		spaceColor=			"0x59, 0x0e, 0x00"
+		maxLightRadius=		"480"
 
 		attributes=			"star"
 		>

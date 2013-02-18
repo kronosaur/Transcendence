@@ -56,7 +56,6 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares I"
 			type=				"freighter"
-			score=				"100"
 
 			mass=				"1000"
 			cargoSpace=			"6000"
@@ -138,7 +137,6 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares II"
 			type=				"freighter"
-			score=				"140"
 
 			mass=				"1200"
 			cargoSpace=			"6000"
@@ -224,7 +222,6 @@
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares V"
 			type=				"superfreighter"
-			score=				"380"
 
 			mass=				"2000"
 			cargoSpace=			"10000"
@@ -324,7 +321,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI100"
 			type=				"freighter"
-			score=				"85"
 
 			mass=				"100"
 			cargoSpace=			"250"
@@ -411,7 +407,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI200"
 			type=				"freighter"
-			score=				"150"
 
 			mass=				"200"
 			cargoSpace=			"500"
@@ -500,7 +495,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI7000"
 			type=				"freighter"
-			score=				"535"
 
 			mass=				"850"
 			cargoSpace=			"2000"
@@ -594,7 +588,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
-			score=				"300"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -656,7 +649,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI200"
 			type=				"freighter"
-			score=				"150"
 
 			mass=				"200"
 			cargoSpace=			"500"
@@ -712,10 +704,9 @@
 	-->
 
 	<ShipClass UNID="&scWolfenVolkov;"
-			manufacturer=		""
+			manufacturer=		"Pacific Defense Corporation"
 			class=				"Wolfen"
 			type=				"gunship"
-			score=				"715"
 
 			mass=				"30"
 			cargoSpace=			"35"
@@ -2700,7 +2691,7 @@
 
 			attributes=			"debris, friendly, helenaVolkov, locked, shipwreck"
 			
-			unique=				"inUniverse"
+			maxAppearing=		"1"
 			levelFrequency=		"---vr vvv-- ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>

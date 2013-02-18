@@ -62,7 +62,7 @@
 			value=				"750"
 			mass=				"1200"
 			frequency=			"rare"
-			attributes=			"MajorItem"
+			attributes=			"MajorItem; NAMI"
 			showReference=		"true"
 
 			description=		"Better than a class I at deflecting laser energy; worse at deflecting anything else."
@@ -288,7 +288,7 @@
 			value=				"5000"
 			mass=				"3000"
 			frequency=			"uncommon"
-			attributes=			"MajorItem"
+			attributes=			"MajorItem; PacificDefense"
 
 			description=		"The R1 deflector was developed a few decades ago to protect Fleet ships against the powerful lightning cannons of the Ares Orthodoxy."
 
@@ -317,7 +317,7 @@
 			value=				"12000"
 			mass=				"3500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem"
+			attributes=			"Kabuto; MajorItem"
 
 			description=		"Each model of the Nephren series is tuned for a different kind of damage. The P25 is designed to defend against particle and ion damage."
 			>
@@ -342,7 +342,7 @@
 			value=				"8000"
 			mass=				"1600"
 			frequency=			"rare"
-			attributes=			"MajorItem; Specialty"
+			attributes=			"Kartal; MajorItem; Specialty"
 
 			description=		"This generator uses an array of superconducting coils. Individual coils must be replaced to restore the field after damage is taken."
 			>
@@ -368,7 +368,7 @@
 			mass=				"100"
 			frequency=			"uncommon"
 			numberAppearing=	"1d6+1"
-			attributes=			"Consumable"
+			attributes=			"Consumable; Kartal"
 
 			description=		"This is a special type of coil used to repair superconducting shield generators."
 			>
@@ -407,7 +407,7 @@
 			frequency=			"common"
 			attributes=			"MajorItem; Specialty; Bushido"
 
-			description=		"This is the entry-level generator in Kabuto Defense's Yoroi line."
+			description=		"This is the entry-level generator in Bushido Corporation's Yoroi line."
 
 			sortName=			"Yoroi shields, S100"
 			>
@@ -458,7 +458,7 @@
 			value=				"20000"
 			mass=				"6000"
 			frequency=			"rare"
-			attributes=			"MajorItem; Military"
+			attributes=			"MajorItem; Military; Onorad"
 
 			description=		"The Invincible-class deflector is extremely powerful. Its one flaw is that it disables all other ship systems when it collapses."
 			>
@@ -560,7 +560,7 @@
 			value=				"20000"
 			mass=				"3500"
 			frequency=			"common"
-			attributes=			"MajorItem; Military"
+			attributes=			"MajorItem; Military; PacificDefense"
 
 			description=		"This is an updated version of the R1 deflector, designed to resist the Ares Orthodoxy's lightning cannons."
 
@@ -589,7 +589,7 @@
 			frequency=			"uncommon"
 			attributes=			"MajorItem; Specialty; Bushido"
 
-			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Kabuto Defense corporation."
+			description=		"The Yoroi S500 is the most powerful shield generator available for non-military customers of the Bushido Corporation."
 
 			sortName=			"Yoroi shields, S500"
 			>
@@ -641,7 +641,7 @@
 			value=				"45000"
 			mass=				"3500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Military"
+			attributes=			"Kabuto; MajorItem; Military"
 
 			description=		"Each model of the Nephren series is tuned for a different kind of damage. The B700 is designed to defend against blast and thermonuclear damage."
 			>
@@ -666,7 +666,7 @@
 			value=				"40000"
 			mass=				"2300"
 			frequency=			"rare"
-			attributes=			"MajorItem; Specialty"
+			attributes=			"MajorItem; Onorad; Specialty"
 
 			description=		"Trenton shields regenerate much faster than others, but at the cost of allowing some damage to leak through."
 			>
@@ -693,7 +693,7 @@
 			frequency=			"uncommon"
 			attributes=			"MajorItem; Military; Specialty; Bushido"
 
-			description=		"This is the military version of the S500 shield generator created by the Kabuto Defense corporation."
+			description=		"This is the military version of the S500 shield generator created by the Bushido Corporation."
 
 			sortName=			"Yoroi shields, MX"
 			>
@@ -718,7 +718,7 @@
 			value=				"90000"
 			mass=				"4000"
 			frequency=			"rare"
-			attributes=			"MajorItem; Military"
+			attributes=			"Kabuto; MajorItem; Military"
 
 			description=		"This shield generator reflects all ion energy."
 			>
@@ -809,7 +809,7 @@
 			level=				"8"
 			value=				"65000"
 			mass=				"2000"
-			attributes=			"MajorItem; Military"
+			attributes=			"MajorItem; Military; PacificDefense"
 			frequency=			"common"
 
 			description=		"Plasma shield generators are used on most military ships. Plasma shield generators cannot be used on civilian ships without a special military ID."
@@ -833,7 +833,7 @@
 			level=				"8"
 			value=				"100000"
 			mass=				"6000"
-			attributes=			"MajorItem; Military"
+			attributes=			"MajorItem; Military; PacificDefense"
 			frequency=			"rare"
 
 			description=		"The most powerful version of the R-series deflectors is used on Commonwealth Fleet capital ships."
@@ -929,7 +929,7 @@
 			value=				"190000"
 			mass=				"4500"
 			frequency=			"uncommon"
-			attributes=			"MajorItem; Military"
+			attributes=			"Kabuto; MajorItem; Military"
 
 			description=		"The Nephren X1 is an experimental model that defends against ion and positron damage."
 			>
@@ -956,7 +956,7 @@
 			value=				"250000"
 			mass=				"2500"
 			frequency=			"rare"
-			attributes=			"MajorItem; Military"
+			attributes=			"Kabuto; MajorItem; Military"
 
 			description=		"The Lazarus is an experimental shield generator. It has a phenomenal generation rate, but it consumes almost prohibitive amounts of power."
 			>

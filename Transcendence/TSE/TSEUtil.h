@@ -9,6 +9,7 @@ class CDesignType;
 class CEconomyType;
 class CItemCtx;
 class CExtension;
+class COrbit;
 struct SDesignLoadCtx;
 struct SDamageCtx;
 struct SSystemCreateCtx;
@@ -160,10 +161,10 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD EXTENSION_VERSION =							12;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								13;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						17;
-const DWORD SYSTEM_SAVE_VERSION =						81;		//	See: CSystem.cpp
+const DWORD UNIVERSE_SAVE_VERSION =						19;
+const DWORD SYSTEM_SAVE_VERSION =						86;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -716,6 +717,7 @@ struct STileMapEnumerator
 class CTileMap
 	{
 	public:
+		CTileMap (void);
 		CTileMap (int iSize, int iScale);
 		~CTileMap (void);
 
@@ -726,6 +728,8 @@ class CTileMap
 		int GetTotalSize (void) const;
 		inline int GetSize (void) const { return m_iSize; }
 		bool HasMore (STileMapEnumerator &i) const;
+		void Init (int iSize, int iScale);
+		ALERROR ReadFromStream (IReadStream *pStream);
 		void SetTile (int x, int y, DWORD dwTile);
 		void WriteToStream (IWriteStream *pStream) const;
 
@@ -1078,6 +1082,7 @@ class CCodeChainCtx
 		void DefineItem (const CString &sVar, CItemCtx &ItemCtx);
 		void DefineItemType (const CString &sVar, CItemType *pType);
 		inline void DefineNil (const CString &sVar) { m_CC.DefineGlobal(sVar, m_CC.CreateNil()); }
+		void DefineOrbit (const CString &sVar, const COrbit &OrbitDesc);
 		void DefineSource (CSpaceObject *pSource);
 		void DefineSpaceObject (const CString &sVar, CSpaceObject *pObj);
 		inline void DefineString (const CString &sVar, const CString &sValue) { m_CC.DefineGlobalString(sVar, sValue); }
@@ -1367,6 +1372,7 @@ class CDeviceStorage
 //	Miscellaneous utility functions
 
 CString AppendModifiers (const CString &sModifierList1, const CString &sModifierList2);
+CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs = NULL);
 int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
 CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);

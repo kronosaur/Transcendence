@@ -29,6 +29,7 @@
 #define NODE_COUNT_ATTRIB					CONSTLIT("nodeCount")
 #define PATTERN_ATTRIB						CONSTLIT("pattern")
 #define STARGATE_PREFIX_ATTRIB				CONSTLIT("stargatePrefix")
+#define STARTING_MAP_ATTRIB					CONSTLIT("startingMap")
 #define UNID_ATTRIB							CONSTLIT("unid")
 #define X_ATTRIB							CONSTLIT("x")
 #define Y_ATTRIB							CONSTLIT("y")
@@ -321,6 +322,8 @@ ALERROR CSystemMap::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_dwBackgroundImage = pDesc->GetAttributeInteger(BACKGROUND_IMAGE_ATTRIB);
 	if (error = m_pPrimaryMap.LoadUNID(Ctx, pDesc->GetAttribute(PRIMARY_MAP_ATTRIB)))
 		return error;
+
+	m_bStartingMap = pDesc->GetAttributeBool(STARTING_MAP_ATTRIB);
 
 	//	If we have a primary map, then add it to the Uses list.
 

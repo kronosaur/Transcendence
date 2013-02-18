@@ -327,7 +327,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aquila"
 			type=				"cruiser"
-			score=				"2835"
 
 			mass=				"10000"
 			cargoSpace=			"1000"
@@ -638,10 +637,9 @@
 	-->
 
 	<ShipClass UNID="&scCSCTaskForce;"
-			manufacturer=		""
+			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
-			score=				"2330"
 
 			mass=				"50000"
 			cargoSpace=			"5000"
@@ -3203,10 +3201,9 @@
 	<!-- CSC Hospital -->
 
 	<ShipClass UNID="&scCSCHospital;"
-			manufacturer=		""
+			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
-			score=				"2330"
 
 			mass=				"50000"
 			cargoSpace=			"5000"
@@ -3615,10 +3612,9 @@
 	<!-- Aurochs Transport -->
 
 	<ShipClass UNID="&scAurochs;"
-			manufacturer=		""
+			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aurochs"
 			type=				"transport"
-			score=				"1090"
 
 			mass=				"8000"
 			cargoSpace=			"5600"
@@ -3629,7 +3625,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			leavesWreck=		"80"
 
-			attributes=			"genericClass"
+			attributes=			"freighter, genericClass"
 			>
 
 		<Armor>
@@ -3700,7 +3696,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI500"
 			type=				"freighter"
-			score=				"1420"
 
 			mass=				"250"
 			cargoSpace=			"200"
@@ -3940,7 +3935,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Britannia"
 			type=				"heavy gunship"
-			score=				"635"
 
 			mass=				"300"
 			cargoSpace=			"50"
@@ -4003,7 +3997,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion"
 			type=				"heavy gunship"
-			score=				"635"
 
 			mass=				"250"
 			cargoSpace=			"50"
@@ -4054,7 +4047,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion/X"
 			type=				"heavy gunship"
-			score=				"1230"
 
 			mass=				"250"
 			cargoSpace=			"50"
@@ -4099,7 +4091,87 @@
 
 	</ShipClass>
 
-	<!-- CSC America Encounter -->
+	<!-- CSC Task Force Encounter
+	
+	GLOBAL DATA
+
+	shipsLeft: A list of ships not yet deployed.
+
+	-->
+
+	<StationType UNID="&stCSCTaskForceEncounter;"
+			name=				"(CSC Task Force)"
+			sovereign=			"&svCommonwealthFleet;"
+			shipEncounter=		"true"
+			scale=				"ship"
+
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- -ucu- ----- ----- -----"
+			maxAppearing=		"2-4"
+			unique=				"inSystem"
+			locationCriteria=	"+OuterSystem,-planetary"
+			enemyExclusionRadius="50"
+			>
+
+		<StaticData>
+			<CSCData>
+				{
+					america:	{ name: "CSC America" }
+					atlantica:	{ name: "CSC Atlantica" }
+					asia:		{ name: "CSC Asia" }
+					india:		{ name: "CSC India" }
+					pacifica:	{ name: "CSC Pacifica" }
+					}
+			</CSCData>
+		</StaticData>
+
+		<InitialData>
+			<shipsLeft>
+				("america" "atlantica" "asia" "india" "pacifica")
+			</shipsLeft>
+		</InitialData>
+
+		<Ships>
+			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">
+				<OnCreate>
+					(block (shipsLeft shipToCreate dataEntry)
+
+						; Pick a random ship
+						(setq shipsLeft (typGetData &stCSCTaskForceEncounter; 'shipsLeft))
+						(setq shipToCreate (if (not shipsLeft) "america" (random shipsLeft)))
+						(setq dataEntry (@ (typGetStaticData &stCSCTaskForceEncounter; 'CSCData) shipToCreate))
+
+						; Remove from list
+						(typSetData &stCSCTaskForceEncounter; 'shipsLeft 
+							(filter shipsLeft theShip 
+								(not (eq theShip shipToCreate))
+								)
+							)
+
+						; Name the ship
+
+						(objSetName gSource (@ dataEntry 'name) 0x01)
+						(objSetData gSource 'CSC shipToCreate)
+						)
+				</OnCreate>
+
+				<Escorts>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+					<Ship					count="1"	class="&scCenturion;"	orders="guard" controller="fleetcommand">
+						<Escorts>
+							<Ship     count="6"	class="&scCenturion;"	orders="escort" controller="fleet"/>
+						</Escorts>
+					</Ship>
+				</Escorts>
+			</Ship>
+		</Ships>
+	</StationType>
+
+	<!-- CSC America Encounter (DEPRECATED) -->
 
 	<StationType UNID="&stCSCAmericaEncounter;"
 			name=				"(CSC America)"
@@ -4107,11 +4179,7 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -rur- ----- ----- -----"
-			unique=				"inUniverse"
-			locationCriteria=	"+OuterSystem,-planetary"
-			enemyExclusionRadius="50"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			>
 
 		<Ships>
@@ -4140,7 +4208,7 @@
 
 	</StationType>
 
-	<!-- CSC Atlantica Encounter -->
+	<!-- CSC Atlantica Encounter (DEPRECATED) -->
 
 	<StationType UNID="&stCSCAtlanticaEncounter;"
 			name=				"(CSC Atlantica)"
@@ -4148,11 +4216,7 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -rur- ----- ----- -----"
-			unique=				"inUniverse"
-			locationCriteria=	"+OuterSystem,-planetary"
-			enemyExclusionRadius="50"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			>
 
 		<Ships>
@@ -4180,9 +4244,9 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- rcu-- ----- ----- -----"
-			unique=				"inUniverse"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- ruu-- ----- ----- -----"
+			maxAppearing=		"1"
 			locationCriteria=	"*"
 			enemyExclusionRadius="50"
 			>
@@ -4204,7 +4268,7 @@
 
 	</StationType>
 
-	<!-- CSC Asia Encounter -->
+	<!-- CSC Asia Encounter (DEPRECATED) -->
 
 	<StationType UNID="&stCSCAsiaEncounter;"
 			name=				"(CSC Asia)"
@@ -4212,11 +4276,7 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -rur- ----- ----- -----"
-			unique=				"inUniverse"
-			locationCriteria=	"+OuterSystem,-planetary"
-			enemyExclusionRadius="50"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			>
 
 		<Ships>
@@ -4236,7 +4296,7 @@
 
 	</StationType>
 
-	<!-- CSC India Encounter -->
+	<!-- CSC India Encounter (DEPRECATED) -->
 
 	<StationType UNID="&stCSCIndiaEncounter;"
 			name=				"(CSC India)"
@@ -4244,11 +4304,7 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -rur- ----- ----- -----"
-			unique=				"inUniverse"
-			locationCriteria=	"+OuterSystem,-planetary"
-			enemyExclusionRadius="50"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			>
 
 		<Ships>
@@ -4268,7 +4324,7 @@
 
 	</StationType>
 
-	<!-- CSC Pacifica Encounter -->
+	<!-- CSC Pacifica Encounter (DEPRECATED) -->
 
 	<StationType UNID="&stCSCPacificaEncounter;"
 			name=				"(CSC Pacifica)"
@@ -4276,11 +4332,7 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -rur- ----- ----- -----"
-			unique=				"inUniverse"
-			locationCriteria=	"+OuterSystem,-planetary"
-			enemyExclusionRadius="50"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
 			>
 
 		<Ships>
@@ -4308,9 +4360,9 @@
 			shipEncounter=		"true"
 			scale=				"ship"
 
-			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- rcu-- ----- ----- -----"
-			unique=				"inUniverse"
+			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
+			levelFrequency=		"----- ruu-- ----- ----- -----"
+			maxAppearing=		"1"
 			locationCriteria=	"*"
 			enemyExclusionRadius="50"
 			>

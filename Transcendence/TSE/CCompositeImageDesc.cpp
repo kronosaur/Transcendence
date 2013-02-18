@@ -6,19 +6,25 @@
 //
 //	<Image .../>
 //
-//	<Image>
-//		<Composite>
-//			{ordered list of entries}
-//		</Composite>
-//	</Image>
+//	<Composite>
+//		{ordered list of entries}
+//	</Composite>
+//
+//	<FilterColorize color="...">
+//		{an entry}
+//	</FilterColorize>
+//
+//	<Table>
+//		{set of entries}
+//	</Table>
+//
+//	The outer-most entry must be one of the following:
+//
+//	<Image .../>
 //
 //	<Image>
-//		<Table>
-//			{set of entries}
-//		</Table>
+//		{an entry}
 //	</Image>
-//
-//	OPTIONAL:
 //
 //	<ImageComposite>
 //		{ordered list of entries}
@@ -33,13 +39,16 @@
 #include "PreComp.h"
 
 #define COMPOSITE_TAG							CONSTLIT("Composite")
-#define EFFECT_TAG								CONSTLIT("Effect")
+#define FILTER_COLORIZE_TAG						CONSTLIT("FilterColorize")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define IMAGE_COMPOSITE_TAG						CONSTLIT("ImageComposite")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
 #define TABLE_TAG								CONSTLIT("Table")
 
 #define CHANCE_ATTRIB							CONSTLIT("chance")
+#define COLOR_ATTRIB							CONSTLIT("color")
+#define HUE_ATTRIB								CONSTLIT("hue")
+#define SATURATION_ATTRIB						CONSTLIT("saturation")
 
 class CCompositeEntry : public IImageEntry
 	{
@@ -63,6 +72,30 @@ class CCompositeEntry : public IImageEntry
 
 		CObjectImageArray m_Image;
 		CG16bitImage *m_pImageCache;
+	};
+
+class CFilterColorizeEntry : public IImageEntry
+	{
+	public:
+		CFilterColorizeEntry (void) : m_pSource(NULL) { }
+		virtual ~CFilterColorizeEntry (void);
+
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { if (m_pSource) m_pSource->AddTypesUsed(retTypesUsed); }
+		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
+		virtual int GetMaxLifetime (void) const;
+		virtual int GetVariantCount (void) { return 1; }
+		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
+		virtual void InitSelector (CCompositeImageSelector *retSelector);
+		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector);
+		virtual bool IsConstant (void);
+		virtual void MarkImage (void);
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+	private:
+		IImageEntry *m_pSource;
+		DWORD m_dwHue;
+		DWORD m_dwSaturation;
+		WORD m_wColor;
 	};
 
 class CImageEntry : public IImageEntry
@@ -332,6 +365,8 @@ ALERROR CCompositeImageDesc::InitEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 		pEntry = new CCompositeEntry;
 	else if (strEquals(pDesc->GetTag(), TABLE_TAG) || strEquals(pDesc->GetTag(), IMAGE_VARIANTS_TAG))
 		pEntry = new CTableEntry;
+	else if (strEquals(pDesc->GetTag(), FILTER_COLORIZE_TAG))
+		pEntry = new CFilterColorizeEntry;
 	else
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("Unknown image tag: %s"), pDesc->GetTag());
@@ -732,6 +767,197 @@ ALERROR CCompositeEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		if (error = m_Layers[i]->OnDesignLoadComplete(Ctx))
 			return error;
 		}
+
+	return NOERROR;
+	}
+
+//	CFilterColorizeEntry -------------------------------------------------------
+
+CFilterColorizeEntry::~CFilterColorizeEntry (void)
+
+//	CFilterColorizeEntry destructor
+
+	{
+	if (m_pSource)
+		delete m_pSource;
+	}
+
+void CFilterColorizeEntry::GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage)
+
+//	GetImage
+//
+//	Fills in the image
+
+	{
+	//	Null case
+
+	if (m_pSource == NULL)
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	//	Get the source image (which we want to colorize)
+
+	CObjectImageArray Source;
+	m_pSource->GetImage(Selector, &Source);
+	const RECT &rcSource = Source.GetImageRect();
+	CG16bitImage &SourceImage = Source.GetImage(NULL_STR);
+	int cxWidth = RectWidth(rcSource);
+	int cyHeight = RectHeight(rcSource);
+	if (Source.IsEmpty() || cxWidth == 0 || cyHeight == 0)
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	//	Create the destination image
+
+	CG16bitImage *pDest = new CG16bitImage;
+	pDest->CreateBlank(cxWidth, cyHeight, SourceImage.HasAlpha());
+	if (!SourceImage.HasAlpha())
+		pDest->SetTransparentColor();
+
+	//	Blt the to the destination with colorization
+
+	CopyBltColorize(*pDest,
+			0,
+			0,
+			cxWidth,
+			cyHeight,
+			SourceImage,
+			rcSource.left,
+			rcSource.top,
+			m_dwHue,
+			m_dwSaturation);
+
+	//	Initialize an image
+
+	RECT rcFinalRect;
+	rcFinalRect.left = 0;
+	rcFinalRect.top = 0;
+	rcFinalRect.right = cxWidth;
+	rcFinalRect.bottom = cyHeight;
+
+	CObjectImageArray Comp;
+	Comp.Init(pDest, rcFinalRect, 0, 0, true);
+
+	//	Done
+
+	retImage->TakeHandoff(Comp);
+	}
+
+int CFilterColorizeEntry::GetMaxLifetime (void) const
+
+//	GetMaxLifetime
+//
+//	Returns the maximum lifetime
+
+	{
+	if (m_pSource == NULL)
+		return 0;
+
+	return m_pSource->GetMaxLifetime();
+	}
+
+ALERROR CFilterColorizeEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Initialize from XML
+
+	{
+	ALERROR error;
+
+	m_dwID = IDGen.GetID();
+
+	CString sColor;
+	if (pDesc->FindAttribute(COLOR_ATTRIB, &sColor))
+		{
+		COLORREF rgbColor = LoadCOLORREF(sColor);
+		SColorHSB hsbColor = CG16bitPixel::RGBToHSB(CG16bitPixel::RGBToRGBReal(rgbColor));
+		m_dwHue = (DWORD)hsbColor.rHue;
+		m_dwSaturation = (DWORD)(hsbColor.rSaturation * 100.0);
+		}
+	else
+		{
+		m_dwHue = pDesc->GetAttributeIntegerBounded(HUE_ATTRIB, 0, 359, 0);
+		m_dwSaturation = pDesc->GetAttributeIntegerBounded(SATURATION_ATTRIB, 0, 100, 100);
+		}
+
+	//	Load sub-entry
+
+	if (pDesc->GetContentElementCount() == 0)
+		return NOERROR;
+
+	if (error = CCompositeImageDesc::InitEntryFromXML(Ctx, pDesc->GetContentElement(0), IDGen, &m_pSource))
+		return error;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+void CFilterColorizeEntry::InitSelector (CCompositeImageSelector *retSelector)
+
+//	InitSelector
+//
+//	Initializes the selector
+
+	{
+	if (m_pSource)
+		m_pSource->InitSelector(retSelector);
+	}
+
+void CFilterColorizeEntry::InitSelector (int iVariant, CCompositeImageSelector *retSelector)
+
+//	InitSelector
+//
+//	For now we just initialize a single entry
+
+	{
+	if (m_pSource)
+		m_pSource->InitSelector(iVariant, retSelector);
+	}
+
+bool CFilterColorizeEntry::IsConstant (void)
+
+//	IsConstant
+//
+//	Returns TRUE if this is a constant entry
+
+	{
+	if (m_pSource == NULL)
+		return true;
+
+	return m_pSource->IsConstant();
+	}
+
+void CFilterColorizeEntry::MarkImage (void)
+
+//	MarkImage
+//
+//	Mark all images
+
+	{
+	if (m_pSource)
+		m_pSource->MarkImage();
+	}
+
+ALERROR CFilterColorizeEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
+
+//	OnDesignLoadComplete
+//
+//	Bind design
+
+	{
+	ALERROR error;
+
+	if (m_pSource == NULL)
+		return NOERROR;
+
+	if (error = m_pSource->OnDesignLoadComplete(Ctx))
+		return error;
 
 	return NOERROR;
 	}

@@ -168,7 +168,7 @@ EResults RunEncounter (CUniverse &Universe, CSimViewer &Viewer, CStationType *pD
 	//	Make sure the universe is clean
 
 	CString sError;
-	if (Universe.InitGame(&sError) != NOERROR)
+	if (Universe.InitGame(0, &sError) != NOERROR)
 		{
 		printf("ERROR: %s", sError.GetASCIIZPointer());
 		return resultError;

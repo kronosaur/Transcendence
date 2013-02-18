@@ -33,6 +33,7 @@
 #define STATS_SWITCH						CONSTLIT("stats")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
+#define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
 
 void ShowHelp (CXMLElement *pCmdLine)
@@ -66,10 +67,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/all]                include non-random stations.\n");
 		printf("      [/criteria:xxx]       only encounters that match criteria.\n");
 		printf("                            e.g., \"+enemy\"\n");
+		printf("      [/onlyNotRandom]      Only non-random stations.\n");
 		printf("\n");
 		printf("      [/abandonedDockScreen] station dock screen when abandoned.\n");
 		printf("      [/armorClass]         armor class.\n");
 		printf("      [/canAttack]          station can attack.\n");
+		printf("      [/countDistribution]  the number appearing in different games.\n");
 		printf("      [/dockScreen]         station dock screen.\n");
 		printf("      [/explosionType]      type of explosion when destroyed.\n");
 		printf("      [/fireRateAdj]        fire rate adjustment.\n");
@@ -86,6 +89,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /itemtable            Item table.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/byAttribute]        Categorize by attribute.\n");
 		printf("      [/criteria:xxx]       only items that match criteria.\n");
 		printf("\n");
 		printf("      [/adjustedHP]         hp adjusted for damage type.\n");
@@ -273,6 +277,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");
+		printf("  /tradesim             Generates statistics of item trading.\n");
 		if (bDebug)
 			printf("  /typeDependencies     Show a list of all types and their dependencies.\n");
 		if (bDebug)

@@ -210,7 +210,7 @@ void CShip::CalcDeviceBonus (void)
 			{
 			//	Keep track of the bonuses for this device
 
-			int iTotalBonus = 0;
+			int iTotalBonus = m_Devices[i].GetSlotBonus();
 			int iFireDelayAdj = 100;
 			int iFireDelayDenominator = 1;
 
@@ -291,7 +291,7 @@ void CShip::CalcDeviceBonus (void)
 
 			//	Add bonus from any enhancements
 
-			iTotalBonus += m_Devices[i].GetMods().GetDamageBonus();
+			iTotalBonus += m_Devices[i].GetMods().GetHPBonus();
 
 			//	Add activate delay adj from any enhancements
 
@@ -2354,7 +2354,7 @@ CString CShip::GetReactorName (void)
 		return strPatternSubst(CONSTLIT("%s reactor"), m_pClass->GetShortName());
 	}
 
-int CShip::GetSellPrice (const CItem &Item, bool bNoInventoryCheck)
+int CShip::GetSellPrice (const CItem &Item, DWORD dwFlags)
 
 //	GetSellPrice
 //

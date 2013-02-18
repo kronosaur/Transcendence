@@ -27,7 +27,7 @@ class IXMLParserController
 	public:
 		virtual ~IXMLParserController (void) { }
 
-		virtual void OnOpenTag (CXMLElement *pElement) { }
+		virtual ALERROR OnOpenTag (CXMLElement *pElement, CString *retsError) { return NOERROR; }
 		virtual CString ResolveExternalEntity (const CString &sName, bool *retbFound = NULL) = 0;
 	};
 

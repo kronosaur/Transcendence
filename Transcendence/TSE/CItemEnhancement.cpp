@@ -324,11 +324,12 @@ int CItemEnhancement::GetDamageAdj (const DamageDesc &Damage) const
 		}
 	}
 
-int CItemEnhancement::GetDamageBonus (void) const
+int CItemEnhancement::GetHPBonus (void) const
 
-//	GetDamageBonus
+//	GetHPBonus
 //
-//	Returns the damage bonus for the weapon
+//	Returns the damage bonus for the weapon, in percentage points.
+//	(e.g., 10 = +10%).
 
 	{
 	switch (GetType())
@@ -359,6 +360,7 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 				{
 				case itemcatWeapon:
 				case itemcatLauncher:
+				case itemcatShields:
 					{
 					int iDamageBonus;
 
@@ -369,7 +371,7 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 					if (pDevice)
 						iDamageBonus = pDevice->GetBonus();
 					else
-						iDamageBonus = GetDamageBonus();
+						iDamageBonus = GetHPBonus();
 
 					//	Bonus
 

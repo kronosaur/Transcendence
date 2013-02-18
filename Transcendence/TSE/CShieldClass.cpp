@@ -370,13 +370,22 @@ void CShieldClass::CalcMinMaxHP (CItemCtx &Ctx, int iCharges, int iArmorSegs, in
 	//	If we're installed, fire the custom event to get max HPs
 
 	if (Ctx.GetSource() && Ctx.GetDevice())
+		{
 		iMax = FireGetMaxHP(Ctx.GetDevice(), Ctx.GetSource(), iMax);
 
-	//	Mods
+		//	Apply bonus from device (which includes mods)
 
-	const CItemEnhancement &Mods = Ctx.GetMods();
-	if (Mods.IsNotEmpty())
-		iMax = iMax * Mods.GetHPAdj() / 100;
+		iMax += (iMax * Ctx.GetDevice()->GetBonus() / 100);
+		}
+
+	//	Otherwise, we just apply mods
+
+	else
+		{
+		const CItemEnhancement &Mods = Ctx.GetMods();
+		if (Mods.IsNotEmpty())
+			iMax = iMax * Mods.GetHPAdj() / 100;
+		}
 
 	//	Done
 
@@ -875,8 +884,9 @@ int CShieldClass::GetMaxHP (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 	//	Adjust based on enhancements
 
-	if (pDevice->GetMods().IsNotEmpty())
-		iMax = iMax * pDevice->GetMods().GetHPAdj() / 100;
+	int iBonus = pDevice->GetBonus();
+	if (iBonus != 0)
+		iMax = iMax + ((iMax * iBonus) / 100);
 
 	//	Done
 

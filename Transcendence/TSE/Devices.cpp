@@ -528,6 +528,7 @@ CInstalledDevice::CInstalledDevice (void) :
 		m_iBonus(0),
 		m_iTemperature(0),
 		m_iActivateDelayAdj(100),
+		m_iSlotBonus(0),
 
 		m_fOmniDirectional(false),
 		m_fSecondaryWeapon(false),
@@ -693,6 +694,8 @@ void CInstalledDevice::InitFromDesc (const SDeviceDesc &Desc)
 	SetLinkedFireOptions(Desc.dwLinkedFireOptions);
 
 	m_fSecondaryWeapon = Desc.bSecondary;
+
+	m_iSlotBonus = Desc.iSlotBonus;
 	}
 
 ALERROR CInstalledDevice::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -779,8 +782,9 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 		m_iMaxFireArc = Desc.iMaxFireArc;
 
 		SetLinkedFireOptions(Desc.dwLinkedFireOptions);
-
 		m_fSecondaryWeapon = Desc.bSecondary;
+
+		m_iSlotBonus = Desc.iSlotBonus;
 		}
 
 	//	Event (when creating a ship we wait until the
@@ -832,7 +836,7 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = m_iBonus; hi = m_iTemperature
-//	DWORD		device: low = (spare); hi = m_iDeviceSlot
+//	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelayAdj
 //	DWORD		device: flags
 
@@ -878,7 +882,7 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 	m_iTemperature = (int)HIWORD(dwLoad);
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	//	LOWORD(dwLoad) unused
+	m_iSlotBonus = (int)LOWORD(dwLoad);
 
 	if (Ctx.dwVersion >= 29)
 		m_iDeviceSlot = (int)HIWORD(dwLoad);
@@ -1093,7 +1097,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = m_iBonus; hi = m_iTemperature
-//	DWORD		device: low = unused; hi = m_iDeviceSlot
+//	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelayAdj; hi = m_iPosZ
 //	DWORD		device: flags
 
@@ -1120,7 +1124,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 	dwSave = MAKELONG(m_iBonus, m_iTemperature);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
-	dwSave = MAKELONG(0, m_iDeviceSlot);
+	dwSave = MAKELONG(m_iSlotBonus, m_iDeviceSlot);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	dwSave = MAKELONG(m_iActivateDelayAdj, m_iPosZ);

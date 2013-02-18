@@ -10,8 +10,7 @@
 #include "XMLUtil.h"
 #include "TransData.h"
 
-#define ITEM_COUNT_FILENAME				CONSTLIT("TransData_ItemCount.txt")
-#define ENCOUNTER_COUNT_FILENAME		CONSTLIT("TransData_EncounterCount.txt")
+#define TYPE_COUNT_FILENAME				CONSTLIT("TransData_TypeCount.txt")
 
 #define DEFAULT_SYSTEM_SAMPLE				100
 
@@ -34,125 +33,108 @@ class SystemInfo : public CObject
 		CSymbolTable Stations;						//	Stations of a given type
 	};
 
-ALERROR OutputItemTable (CSymbolTable &AllSystems, int iSystemSample);
-ALERROR OutputEncounterTable (CSymbolTable &AllSystems, int iSystemSample);
+struct STypeStats
+	{
+	TNumberSeries<double> PerGame;			//	Number appearing in the entire game
+	TNumberSeries<double> PerLevel[MAX_TECH_LEVEL];	//	Number appearing at each level
+	};
+
+struct STypeInfo
+	{
+	STypeInfo (void)
+		{
+		int i;
+
+		iTotalCount = 0;
+		for (i = 0; i < MAX_TECH_LEVEL; i++)
+			PerLevel[i] = 0;
+		}
+
+	int iTotalCount;						//	Total count so far
+	int PerLevel[MAX_TECH_LEVEL];			//	Total count per level
+	};
+
+void AccumulateSystem (CTopologyNode *pNode, CSystem *pSystem, TSortMap<DWORD, STypeInfo> &AllTypes);
+ALERROR OutputTypeTable (TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample);
 
 void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	ALERROR error;
-	int i, j;
+	int i, j, k;
 
 	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
 	if (iSystemSample == 0)
 		iSystemSample = DEFAULT_SYSTEM_SAMPLE;
 
-	//	Generate systems for multiple games
+	//	Keep track of stats for each type
 
-	CSymbolTable AllSystems(TRUE, TRUE);
+	TSortMap<DWORD, STypeStats> AllStats;
 	for (i = 0; i < iSystemSample; i++)
 		{
+		TSortMap<DWORD, STypeInfo> AllTypes;
+
 		printf("sample %d...\n", i+1);
 
-		CTopologyNode *pNode = Universe.GetFirstTopologyNode();
+		//	Initialize the game
 
-		while (true)
+		CString sError;
+		if (error = Universe.InitGame(0, &sError))
 			{
+			printf("%s\n", sError.GetASCIIZPointer());
+			return;
+			}
+
+		//	Loop over all nodes
+
+		for (j = 0; j < Universe.GetTopologyNodeCount(); j++)
+			{
+			CTopologyNode *pNode = Universe.GetTopologyNode(j);
+
+			//	Skip end game nodes
+
+			if (pNode->IsEndGame())
+				continue;
+
 			//	Create the system
 
 			CSystem *pSystem;
-			if (error = Universe.CreateStarSystem(pNode, &pSystem))
+			if (error = Universe.CreateStarSystem(pNode, &pSystem, &sError))
 				{
-				printf("ERROR: Unable to create star system.\n");
+				printf("ERROR: Unable to create star system: %s\n", sError.GetASCIIZPointer());
 				return;
 				}
 
-			//	Find this system in the table.
+			//	Accumulate
 
-			SystemInfo *pSystemEntry;
-			if (error = AllSystems.Lookup(pNode->GetSystemName(), (CObject **)&pSystemEntry))
-				{
-				pSystemEntry = new SystemInfo;
-				pSystemEntry->sName = pNode->GetSystemName();
-				pSystemEntry->iLevel = pNode->GetLevel();
-				pSystemEntry->dwSystemType = pNode->GetSystemDescUNID();
-				pSystemEntry->iCount = 1;
-
-				AllSystems.AddEntry(pSystemEntry->sName, pSystemEntry);
-				}
-			else
-				pSystemEntry->iCount++;
-
-			//	Add the encounters to the appropriate tables
-
-			for (j = 0; j < pSystem->GetObjectCount(); j++)
-				{
-				CSpaceObject *pObj = pSystem->GetObject(j);
-
-				if (pObj)
-					{
-					//	Add this encounter to the table
-
-					CStationType *pType;
-					if (pType = pObj->GetEncounterInfo())
-						{
-						CString sKey = strFromInt(pType->GetUNID(), false);
-
-						//	See if we have this type in the table
-
-						StationInfo *pEntry;
-						if (error = pSystemEntry->Stations.Lookup(sKey, (CObject **)&pEntry))
-							{
-							pEntry = new StationInfo;
-							pEntry->pType = pType;
-							pEntry->iSystemCount = 0;
-							pEntry->iTotalCount = 1;
-
-							pSystemEntry->Stations.AddEntry(sKey, pEntry);
-							}
-						else
-							pEntry->iTotalCount++;
-						}
-
-					//	Enumerate the items in this object
-
-					CItemListManipulator ItemList(pObj->GetItemList());
-					ItemList.ResetCursor();
-					while (ItemList.MoveCursorForward())
-						{
-						const CItem &Item(ItemList.GetItemAtCursor());
-
-						if (!Item.IsInstalled() && !Item.IsDamaged())
-							{
-							CString sKey = strFromInt(Item.GetType()->GetUNID(), false);
-
-							//	Find the item type in the table
-
-							ItemInfo *pEntry;
-							if (error = pSystemEntry->Items.Lookup(sKey, (CObject **)&pEntry))
-								{
-								pEntry = new ItemInfo;
-								pEntry->pType = Item.GetType();
-								pEntry->iTotalCount = Item.GetCount();
-
-								pSystemEntry->Items.AddEntry(sKey, pEntry);
-								}
-							else
-								pEntry->iTotalCount += Item.GetCount();
-							}
-						}
-					}
-				}
-
-			//	Get the next node
-
-			CString sEntryPoint;
-			pNode = pSystem->GetStargateDestination(CONSTLIT("Outbound"), &sEntryPoint);
-			if (pNode == NULL || pNode->IsEndGame())
-				break;
+			AccumulateSystem(pNode, pSystem, AllTypes);
 
 			//	Done with old system
 
 			Universe.DestroySystem(pSystem);
+			}
+
+		//	Now accumulate all stats
+
+		for (j = 0; j < Universe.GetDesignTypeCount(); j++)
+			{
+			CDesignType *pType = Universe.GetDesignType(j);
+			STypeStats *pStats = AllStats.SetAt(pType->GetUNID());
+
+			STypeInfo *pTypeInfo = AllTypes.GetAt(pType->GetUNID());
+			if (pTypeInfo)
+				{
+				pStats->PerGame.Insert(pTypeInfo->iTotalCount);
+
+				for (k = 0; k < MAX_TECH_LEVEL; k++)
+					pStats->PerLevel[k].Insert(pTypeInfo->PerLevel[k]);
+				}
+			else
+				{
+				pStats->PerGame.Insert(0);
+
+				for (k = 0; k < MAX_TECH_LEVEL; k++)
+					pStats->PerLevel[k].Insert(0);
+				}
 			}
 
 		Universe.Reinit();
@@ -160,10 +142,7 @@ void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Output
 
-	if (error = OutputItemTable(AllSystems, iSystemSample))
-		return;
-
-	if (error = OutputEncounterTable(AllSystems, iSystemSample))
+	if (error = OutputTypeTable(AllStats, iSystemSample))
 		return;
 
 	//	Create a table with the sum of all items for the game
@@ -171,119 +150,122 @@ void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 	printf("Total count statistic computed.\n");
 	}
 
-ALERROR OutputEncounterTable (CSymbolTable &AllSystems, int iSystemSample)
+void AccumulateSystem (CTopologyNode *pNode, CSystem *pSystem, TSortMap<DWORD, STypeInfo> &AllTypes)
+	{
+	int j;
+
+	int iSystemLevel = pSystem->GetLevel();
+
+	//	Add the encounters to the appropriate tables
+
+	for (j = 0; j < pSystem->GetObjectCount(); j++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(j);
+
+		if (pObj)
+			{
+			//	Add this encounter to the table
+
+			CDesignType *pType;
+			if ((pType = pObj->GetEncounterInfo()) || (pType = pObj->GetType()))
+				{
+				STypeInfo *pInfo = AllTypes.SetAt(pType->GetUNID());
+				pInfo->iTotalCount++;
+				pInfo->PerLevel[iSystemLevel]++;
+				}
+
+			//	Enumerate the items in this object
+
+			CItemListManipulator ItemList(pObj->GetItemList());
+			ItemList.ResetCursor();
+			while (ItemList.MoveCursorForward())
+				{
+				const CItem &Item(ItemList.GetItemAtCursor());
+
+				if (!Item.IsInstalled() && !Item.IsDamaged())
+					{
+					STypeInfo *pInfo = AllTypes.SetAt(Item.GetType()->GetUNID());
+					pInfo->iTotalCount += Item.GetCount();
+					pInfo->PerLevel[iSystemLevel] += Item.GetCount();
+					}
+				}
+			}
+		}
+	}
+
+ALERROR OutputTypeTable (TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample)
 	{
 	ALERROR error;
 	int i, j;
-	CSymbolTable AllStations(TRUE, TRUE);
-
-	for (i = 0; i < AllSystems.GetCount(); i++)
-		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
-
-		for (j = 0; j < pSystemEntry->Stations.GetCount(); j++)
-			{
-			StationInfo *pEntry = (StationInfo *)pSystemEntry->Stations.GetValue(j);
-
-			CString sKey = strFromInt(pEntry->pType->GetUNID(), false);
-
-			StationInfo *pDestEntry;
-			if (error = AllStations.Lookup(sKey, (CObject **)&pDestEntry))
-				{
-				pDestEntry = new StationInfo;
-				pDestEntry->pType = pEntry->pType;
-				pDestEntry->rTotalCount = ((double)pEntry->iTotalCount / (double)iSystemSample);
-
-				AllStations.AddEntry(sKey, pDestEntry);
-				}
-			else
-				pDestEntry->rTotalCount += ((double)pEntry->iTotalCount / (double)iSystemSample);
-			}
-		}
 
 	//	Output all items to a well-known file
 
-	CTextFileLog Output(ENCOUNTER_COUNT_FILENAME);
+	CTextFileLog Output(TYPE_COUNT_FILENAME);
 	if (error = Output.Create(FALSE))
 		{
-		printf("ERROR: Unable to create output file: %s\n", ENCOUNTER_COUNT_FILENAME.GetASCIIZPointer());
+		printf("ERROR: Unable to create output file: %s\n", TYPE_COUNT_FILENAME.GetASCIIZPointer());
 		return error;
 		}
 
-	for (i = 0; i < AllStations.GetCount(); i++)
+	for (i = 0; i < AllStats.GetCount(); i++)
 		{
-		StationInfo *pEntry = (StationInfo *)AllStations.GetValue(i);
-		Output.LogOutput(0, "0x%x\t%d", pEntry->pType->GetUNID(), (int)((pEntry->rTotalCount * 1000) + 0.5));
+		DWORD dwUNID = AllStats.GetKey(i);
+		const STypeStats &Stats = AllStats[i];
+
+		TArray<TNumberSeries<double>::SHistogramPoint> Histogram;
+		Stats.PerGame.CalcHistogram(&Histogram);
+
+		CString sLine;
+		sLine = strPatternSubst("0x%x\t%d\t%d", dwUNID, (int)((Stats.PerGame.GetMean() * 1000.0) + 0.5), Histogram.GetCount());
+
+		for (j = 0; j < Histogram.GetCount(); j++)
+			sLine.Append(strPatternSubst("\t%d\t%d", Histogram[j].iValue, (int)(Histogram[j].rPercent * 100.0 + 0.5)));
+
+		Output.LogOutput(0, sLine);
 		}
 
 	if (error = Output.Close())
 		{
-		printf("ERROR: Unable to create output file: %s\n", ENCOUNTER_COUNT_FILENAME.GetASCIIZPointer());
+		printf("ERROR: Unable to create output file: %s\n", TYPE_COUNT_FILENAME.GetASCIIZPointer());
 		return error;
 		}
 
 	return NOERROR;
 	}
 
-ALERROR OutputItemTable (CSymbolTable &AllSystems, int iSystemSample)
+void ReadLine (char *pPos, char *pEndPos, TArray<int> *retValues, char **retpPos)
 	{
-	ALERROR error;
-	int i, j;
-	CSymbolTable AllItems(TRUE, TRUE);
-
-	for (i = 0; i < AllSystems.GetCount(); i++)
+	while (true)
 		{
-		SystemInfo *pSystemEntry = (SystemInfo *)AllSystems.GetValue(i);
+		//	Skip to the next number.
 
-		for (j = 0; j < pSystemEntry->Items.GetCount(); j++)
+		while (pPos < pEndPos && !strIsDigit(pPos) && *pPos != '-' && *pPos != '+' && *pPos != '\n' && *pPos != '\r')
+			pPos++;
+
+		if (pPos >= pEndPos || *pPos == '\n' || *pPos == '\r')
 			{
-			ItemInfo *pEntry = (ItemInfo *)pSystemEntry->Items.GetValue(j);
+			while (pPos < pEndPos && (*pPos == '\n' || *pPos == '\r'))
+				pPos++;
 
-			CString sKey = strFromInt(pEntry->pType->GetUNID(), false);
-
-			ItemInfo *pDestEntry;
-			if (error = AllItems.Lookup(sKey, (CObject **)&pDestEntry))
-				{
-				pDestEntry = new ItemInfo;
-				pDestEntry->pType = pEntry->pType;
-				pDestEntry->rTotalCount = ((double)pEntry->iTotalCount / (double)iSystemSample);
-
-				AllItems.AddEntry(sKey, pDestEntry);
-				}
-			else
-				pDestEntry->rTotalCount += ((double)pEntry->iTotalCount / (double)iSystemSample);
+			break;
 			}
+
+		//	Parse the number
+
+		int iValue = strParseInt(pPos, 0, &pPos);
+		retValues->Insert(iValue);
 		}
 
-	//	Output all items to a well-known file
-
-	CTextFileLog Output(ITEM_COUNT_FILENAME);
-	if (error = Output.Create(FALSE))
-		{
-		printf("ERROR: Unable to create output file: %s\n", ITEM_COUNT_FILENAME.GetASCIIZPointer());
-		return error;
-		}
-
-	for (i = 0; i < AllItems.GetCount(); i++)
-		{
-		ItemInfo *pEntry = (ItemInfo *)AllItems.GetValue(i);
-		Output.LogOutput(0, "0x%x\t%d", pEntry->pType->GetUNID(), (int)((pEntry->rTotalCount * 1000) + 0.5));
-		}
-
-	if (error = Output.Close())
-		{
-		printf("ERROR: Unable to create output file: %s\n", ITEM_COUNT_FILENAME.GetASCIIZPointer());
-		return error;
-		}
-
-	return NOERROR;
+	if (retpPos)
+		*retpPos = pPos;
 	}
 
-ALERROR LoadTotalCount (const CString &sFilename, CSymbolTable &TotalCount)
+ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats)
 	{
 	ALERROR error;
+	int i;
 
-	CFileReadBlock Input(sFilename);
+	CFileReadBlock Input(TYPE_COUNT_FILENAME);
 	if (error = Input.Open())
 		{
 		printf("ERROR: Unable to open total count file. Use /generateSimTables.");
@@ -295,33 +277,52 @@ ALERROR LoadTotalCount (const CString &sFilename, CSymbolTable &TotalCount)
 
 	while (pPos < pEndPos)
 		{
-		//	Read an UNID
+		int iArg = 0;
 
-		DWORD dwUNID = (DWORD)strParseInt(pPos, 0, &pPos);
-		if (dwUNID == 0)
-			break;
+		//	Read all values
 
-		//	Read an count
+		TArray<int> Values;
+		ReadLine(pPos, pEndPos, &Values, &pPos);
 
-		if (pPos >= pEndPos)
+		//	Get the entry
+
+		if (Values.GetCount() == 0)
+			continue;
+
+		DWORD dwUNID = (DWORD)Values[iArg++];
+		SDesignTypeInfo *pInfo = retStats->SetAt(dwUNID);
+
+		//	Get the total count
+
+		if (iArg < Values.GetCount())
+			pInfo->rPerGameMeanCount = (Values[iArg++] / 1000.0);
+
+		//	Get the distribution
+
+		if (iArg < Values.GetCount())
 			{
-			printf("ERROR: Unexpected end of file.");
-			return ERR_FAIL;
-			}
+			CString sDist;
+			int iDistCount = Values[iArg++];
 
-		int iCount = strParseInt(pPos, 0, &pPos);
+			for (i = 0; i < iDistCount; i++)
+				{
+				int iValue;
+				int iPercent;
 
-		//	Add the entry
+				if (iArg < Values.GetCount())
+					iValue = Values[iArg++];
+				else
+					iValue = 0;
 
-		CString sKey = strFromInt(dwUNID, false);
-		EntryInfo *pEntry = new EntryInfo;
-		pEntry->dwUNID = dwUNID;
-		pEntry->rTotalCount = (double)iCount / 1000.0;
+				if (iArg < Values.GetCount())
+					iPercent = Values[iArg++];
+				else
+					iPercent = 0;
 
-		if (error = TotalCount.AddEntry(sKey, pEntry))
-			{
-			printf("ERROR: Invalid UNID.");
-			return error;
+				sDist.Append(strPatternSubst(CONSTLIT("%d (%d%%) "), iValue, iPercent));
+				}
+
+			pInfo->sDistribution = sDist;
 			}
 		}
 

@@ -3,8 +3,15 @@
 //	Integer math package
 
 #include "Kernel.h"
-
 #include <math.h>
+
+#define	m		((unsigned long)2147483647)
+#define	q		((unsigned long)44488)
+
+#define	a		((unsigned int)48271)
+#define	r		((unsigned int)3399)
+
+DWORD g_Seed = 0;
 
 int mathNearestPowerOf2 (int x)
 
@@ -62,6 +69,47 @@ int mathPower (int x, int n)
 		return 0;
 	}
 
+DWORD mathRandom (void)
+
+//	mathRandom
+//
+//	Returns a random 31-bit number: 0 to 2^31-1 (2147483647)
+//
+//	Based on code written by William S. England (Oct 1988) based
+//	on:
+//
+//	Stephen K. Park and Keith W. Miller. RANDOM NUMBER GENERATORS:
+//	GOOD ONES ARE HARD TO FIND. Communications of the ACM,
+//	New York, NY.,October 1988 p.1192
+
+	{
+	//	Seed it
+
+	if (g_Seed == 0)
+		{
+		g_Seed = MAKELONG(rand() % 0x10000, rand() % 0x10000);
+		g_Seed *= ::GetTickCount();
+		}
+
+	//	Random
+
+	int lo, hi, test;
+
+	hi = g_Seed / q;
+	lo = g_Seed % q;
+
+	test = a * lo - r * hi;
+
+	if (test > 0)
+		g_Seed = test;
+	else
+		g_Seed = test + m;
+
+	//	Done
+
+	return g_Seed;
+	}
+
 int mathRandom (int iFrom, int iTo)
 
 //	mathRandom
@@ -78,6 +126,43 @@ int mathRandom (int iFrom, int iTo)
 		iRandom = rand() % iRange;
 
 	return iRandom + iFrom;
+	}
+
+double mathRandomMinusOneToOne (void)
+	{
+	DWORD dwValue = mathRandom();
+
+	if (dwValue % 2)
+		return ((dwValue >> 1) / 1073741824.0);
+	else
+		return ((dwValue >> 1) / -1073741824.0);
+	}
+
+double mathRandomGaussian (void)
+
+//	mathRandomGaussian
+//
+//	Returns a random number with Gaussian distribution. The mean value is 0.0 
+//	and the standard deviation is 1.0.
+//
+//	Uses the polar form of the Box-Muller transformation.
+//
+//	See: http://www.taygeta.com/random/gaussian.html
+
+	{
+	double x1, x2, w;
+
+	do
+		{
+		x1 = mathRandomMinusOneToOne();
+		x2 = mathRandomMinusOneToOne();
+		w = x1 * x1 + x2 * x2;
+		}
+	while (w >= 1.0);
+
+	w = sqrt((-2.0 * log(w)) / w);
+
+	return x1 * w;
 	}
 
 int mathRound (double x)

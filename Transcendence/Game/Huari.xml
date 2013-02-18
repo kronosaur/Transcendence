@@ -2531,8 +2531,8 @@
 					; Pick a random system in Huari space to have a gateway to Huaramarca
 					(setq gateway
 						(random
-							(filter (sysGetNodes) theNode
-								(and (sysHasAttribute theNode 'ungoverned) (geq (sysGetLevel theNode) 5))
+							(filter (sysGetNodes) theNode 
+								(sysHasAttribute theNode 'huaramarcaGate)
 								)
 							)
 						)

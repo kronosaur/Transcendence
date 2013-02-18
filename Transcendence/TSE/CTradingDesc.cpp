@@ -4,8 +4,14 @@
 
 #include "PreComp.h"
 
-#define SELL_TAG								CONSTLIT("Sell")
+#define ACCEPT_DONATION_TAG						CONSTLIT("AcceptDonation")
 #define BUY_TAG									CONSTLIT("Buy")
+#define INSTALL_ARMOR_TAG						CONSTLIT("InstallArmor")
+#define INSTALL_DEVICE_TAG						CONSTLIT("InstallDevice")
+#define REFUEL_TAG								CONSTLIT("Refuel")
+#define REMOVE_DEVICE_TAG						CONSTLIT("RemoveDevice")
+#define REPAIR_ARMOR_TAG						CONSTLIT("RepairArmor")
+#define SELL_TAG								CONSTLIT("Sell")
 
 #define ACTUAL_PRICE_ATTRIB						CONSTLIT("actualPrice")
 #define CURRENCY_ATTRIB							CONSTLIT("currency")
@@ -45,15 +51,24 @@ void CTradingDesc::AddOrder (CItemType *pItemType, const CString &sCriteria, int
 	{
 	int i;
 
+	//	Convert to new method
+
+	EServiceTypes iService;
+	DWORD dwNewFlags;
+	ReadServiceFromFlags(dwFlags, &iService, &dwNewFlags);
+	if (iService == serviceNone)
+		return;
+
 	//	We always add at the beginning (because new orders take precedence)
 
-	SCommodityDesc *pCommodity = m_List.InsertAt(0);
+	SServiceDesc *pCommodity = m_List.InsertAt(0);
+	pCommodity->iService = iService;
 	pCommodity->pItemType = pItemType;
 	if (pItemType == NULL)
 		CItem::ParseCriteria(sCriteria, &pCommodity->ItemCriteria);
 	pCommodity->PriceAdj.SetInteger(iPriceAdj);
-	pCommodity->dwFlags = dwFlags;
-	pCommodity->sID = ComputeID(pCommodity->pItemType.GetUNID(), sCriteria, dwFlags);
+	pCommodity->dwFlags = dwNewFlags;
+	pCommodity->sID = ComputeID(iService, pCommodity->pItemType.GetUNID(), sCriteria, dwNewFlags);
 
 	//	If we find a previous order for the same criteria, then delete it
 
@@ -65,23 +80,55 @@ void CTradingDesc::AddOrder (CItemType *pItemType, const CString &sCriteria, int
 			}
 	}
 
-CString CTradingDesc::ComputeID (DWORD dwUNID, const CString &sCriteria, DWORD dwFlags)
+CString CTradingDesc::ComputeID (EServiceTypes iService, DWORD dwUNID, const CString &sCriteria, DWORD dwFlags)
 
 //	ComputeID
 //
 //	Generates a string ID for the order. Two identical orders should have the same ID
 
 	{
-	CString sFlags;
-	if (dwFlags & FLAG_SELLS)
-		sFlags = CONSTLIT("S");
-	else
-		sFlags = CONSTLIT("B");
+	CString sService;
+	switch (iService)
+		{
+		case serviceAcceptDonations:
+			sService = CONSTLIT("A");
+			break;
+
+		case serviceBuy:
+			sService = CONSTLIT("S");
+			break;
+
+		case serviceInstallDevice:
+			sService = CONSTLIT("Id");
+			break;
+
+		case serviceRefuel:
+			sService = CONSTLIT("F");
+			break;
+
+		case serviceRemoveDevice:
+			sService = CONSTLIT("Vd");
+			break;
+
+		case serviceRepairArmor:
+			sService = CONSTLIT("Ra");
+			break;
+
+		case serviceReplaceArmor:
+			sService = CONSTLIT("Ia");
+			break;
+
+		case serviceSell:
+			sService = CONSTLIT("S");
+
+		default:
+			sService = CONSTLIT("?");
+		}
 
 	if (dwUNID)
-		return strPatternSubst(CONSTLIT("%s:%x"), sFlags, dwUNID);
+		return strPatternSubst(CONSTLIT("%s:%x"), sService, dwUNID);
 	else
-		return strPatternSubst(CONSTLIT("%s:%s"), sFlags, sCriteria);
+		return strPatternSubst(CONSTLIT("%s:%s"), sService, sCriteria);
 	}
 
 int CTradingDesc::ComputeMaxCurrency (CSpaceObject *pObj)
@@ -94,7 +141,7 @@ int CTradingDesc::ComputeMaxCurrency (CSpaceObject *pObj)
 	return m_iMaxCurrency * (90 + ((pObj->GetDestiny() + 9) / 18)) / 100;
 	}
 
-int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SCommodityDesc &Commodity)
+int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SServiceDesc &Commodity) const
 
 //	ComputePrice
 //
@@ -155,7 +202,7 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 		for (i = 0; i < iCount; i++)
 			{
 			CXMLElement *pLine = pDesc->GetContentElement(i);
-			SCommodityDesc *pCommodity = &pTrade->m_List[i];
+			SServiceDesc *pCommodity = &pTrade->m_List[i];
 
 			//	Parse criteria
 
@@ -178,14 +225,33 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 			if (error = pCommodity->InventoryAdj.InitFromString(Ctx, pLine->GetAttribute(INVENTORY_ADJ_ATTRIB)))
 				return error;
 
+			//	Service
+
+			if (strEquals(pLine->GetTag(), ACCEPT_DONATION_TAG))
+				pCommodity->iService = serviceAcceptDonations;
+			else if (strEquals(pLine->GetTag(), BUY_TAG))
+				pCommodity->iService = serviceBuy;
+			else if (strEquals(pLine->GetTag(), INSTALL_ARMOR_TAG))
+				pCommodity->iService = serviceReplaceArmor;
+			else if (strEquals(pLine->GetTag(), INSTALL_DEVICE_TAG))
+				pCommodity->iService = serviceInstallDevice;
+			else if (strEquals(pLine->GetTag(), REFUEL_TAG))
+				pCommodity->iService = serviceRefuel;
+			else if (strEquals(pLine->GetTag(), REMOVE_DEVICE_TAG))
+				pCommodity->iService = serviceRemoveDevice;
+			else if (strEquals(pLine->GetTag(), REPAIR_ARMOR_TAG))
+				pCommodity->iService = serviceRepairArmor;
+			else if (strEquals(pLine->GetTag(), SELL_TAG))
+				pCommodity->iService = serviceSell;
+			else
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("Unknown Trade directive: %s."), pLine->GetTag());
+				return ERR_FAIL;
+				}
+
 			//	Flags
 
 			pCommodity->dwFlags = 0;
-			if (strEquals(pLine->GetTag(), BUY_TAG))
-				pCommodity->dwFlags |= FLAG_BUYS;
-			else if (strEquals(pLine->GetTag(), SELL_TAG))
-				pCommodity->dwFlags |= FLAG_SELLS;
-
 			if (pLine->GetAttributeBool(ACTUAL_PRICE_ATTRIB))
 				pCommodity->dwFlags |= FLAG_ACTUAL_PRICE;
 
@@ -194,7 +260,7 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 
 			//	Set ID
 
-			pCommodity->sID = pTrade->ComputeID(pCommodity->pItemType.GetUNID(), sCriteria, pCommodity->dwFlags);
+			pCommodity->sID = pTrade->ComputeID(pCommodity->iService, pCommodity->pItemType.GetUNID(), sCriteria, pCommodity->dwFlags);
 			}
 		}
 
@@ -205,7 +271,7 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 	return NOERROR;
 	}
 
-bool CTradingDesc::Buys (CSpaceObject *pObj, const CItem &Item, int *retiPrice, int *retiMaxCount)
+bool CTradingDesc::Buys (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice, int *retiMaxCount)
 
 //	Buys
 //
@@ -221,9 +287,17 @@ bool CTradingDesc::Buys (CSpaceObject *pObj, const CItem &Item, int *retiPrice, 
 	//	Loop over the commodity list and find the first entry that matches
 
 	for (i = 0; i < m_List.GetCount(); i++)
-		if (Matches(Item, m_List[i])
-				&& (m_List[i].dwFlags & FLAG_BUYS))
+		if (((m_List[i].iService == serviceBuy) || (m_List[i].iService == serviceAcceptDonations))
+				&& Matches(Item, m_List[i]))
 			{
+			//	If this is virtual price and we don't want virtual, then skip
+
+			if ((m_List[i].iService == serviceAcceptDonations)
+					&& (dwFlags & FLAG_NO_DONATION))
+				return false;
+
+			//	Compute price
+
 			int iPrice = ComputePrice(pObj, Item, m_List[i]);
 			if (iPrice < 0)
 				return false;
@@ -261,7 +335,128 @@ int CTradingDesc::Charge (CSpaceObject *pObj, int iCharge)
 		return 0;
 	}
 
-bool CTradingDesc::Matches (const CItem &Item, const SCommodityDesc &Commodity)
+bool CTradingDesc::FindService (EServiceTypes iService, const CItem &Item, const SServiceDesc **retpDesc)
+
+//	FindService
+//
+//	Finds the given service for the given item.
+
+	{
+	int i;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == iService 
+				&& Matches(Item, m_List[i]))
+			{
+			if (retpDesc)
+				*retpDesc = &m_List[i];
+
+			return true;
+			}
+	
+	return false;
+	}
+
+int CTradingDesc::GetMaxLevelMatched (EServiceTypes iService) const
+
+//	GetMaxLevelMatched
+//
+//	Returns the max item level matched for the given service. Returns -1 if the
+//	service is not available.
+
+	{
+	int i;
+	int iMaxLevel = -1;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == iService)
+			{
+			int iLevel;
+			if (m_List[i].pItemType)
+				iLevel = m_List[i].pItemType->GetLevel();
+			else
+				iLevel = m_List[i].ItemCriteria.GetMaxLevelMatched();
+
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+	
+	return iMaxLevel;
+	}
+
+bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice) const
+
+//	GetRefuelItemAndPrice
+//
+//	Returns the appropriate fuel and price to refuel the given object.
+
+	{
+	int i, j;
+	CShip *pShipToRefuel = pObjToRefuel->AsShip();
+	if (pShipToRefuel == NULL)
+		return false;
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == serviceRefuel)
+			{
+			int iBestLevel = 0;
+			int iBestPrice = 0;
+			CItemType *pBestItem = NULL;
+
+			//	Find the highest-level item that matches the given criteria.
+			//	If we find it, then we use it.
+
+			for (j = 0; j < g_pUniverse->GetItemTypeCount(); j++)
+				{
+				CItemType *pType = g_pUniverse->GetItemType(j);
+				CItem Item(pType, 1);
+
+				if (Item.MatchesCriteria(m_List[i].ItemCriteria)
+						&& pShipToRefuel->IsFuelCompatible(Item))
+					{
+					if (pBestItem == NULL || iBestLevel > pType->GetLevel())
+						{
+						//	Compute the price, because if we don't sell it, then we
+						//	skip it.
+						//
+						//	NOTE: Unlike selling, we allow 0 prices because some 
+						//	stations give fuel for free.
+
+						int iPrice = ComputePrice(pObj, Item, m_List[i]);
+						if (iPrice >= 0)
+							{
+							pBestItem = pType;
+							iBestLevel = pType->GetLevel();
+							iBestPrice = iPrice;
+							}
+						}
+					}
+				}
+
+			//	If found, then return it.
+
+			if (pBestItem)
+				{
+				if (retpItemType)
+					*retpItemType = pBestItem;
+
+				if (retiPrice)
+					*retiPrice = iBestPrice;
+
+				return true;
+				}
+			}
+
+	//	Otherwise, not found
+
+	return false;
+	}
+
+bool CTradingDesc::Matches (const CItem &Item, const SServiceDesc &Commodity)
 
 //	Matches
 //
@@ -342,6 +537,7 @@ void CTradingDesc::ReadFromStream (SLoadCtx &Ctx)
 //	DWORD			m_iReplenishCurrency
 //	DWORD			No of orders
 //
+//	DWORD			iService
 //	CString			sID
 //	DWORD			pItemType
 //	CString			ItemCriteria
@@ -381,7 +577,10 @@ void CTradingDesc::ReadFromStream (SLoadCtx &Ctx)
 
 		for (i = 0; i < m_List.GetCount(); i++)
 			{
-			SCommodityDesc &Commodity = m_List[i];
+			SServiceDesc &Commodity = m_List[i];
+
+			if (Ctx.dwVersion >= 83)
+				Ctx.pStream->Read((char *)&Commodity.iService, sizeof(DWORD));
 
 			Commodity.sID.ReadFromStream(Ctx.pStream);
 
@@ -405,11 +604,43 @@ void CTradingDesc::ReadFromStream (SLoadCtx &Ctx)
 
 			Ctx.pStream->Read((char *)&Commodity.dwFlags, sizeof(DWORD));
 
+			//	If necessary we need to load backwards-compatible service
+
+			if (Ctx.dwVersion < 83)
+				ReadServiceFromFlags(Commodity.dwFlags, &Commodity.iService, &Commodity.dwFlags);
+
 			//	For now we don't support inventory adj in dynamic trade descs
 			
 			Commodity.dwFlags &= ~FLAG_INVENTORY_ADJ;
 			}
 		}
+	}
+
+void CTradingDesc::ReadServiceFromFlags (DWORD dwFlags, EServiceTypes *retiService, DWORD *retdwFlags)
+
+//	ReadServiceFromFlags
+//
+//	Before we had service types we encoded info in flags. This function converts
+//	to the new method.
+
+	{
+	if (retiService)
+		{
+		if (dwFlags & FLAG_SELLS)
+			*retiService = serviceSell;
+		else if (dwFlags & FLAG_BUYS)
+			*retiService = serviceBuy;
+		else if (dwFlags & FLAG_ACCEPTS_DONATIONS)
+			*retiService = serviceAcceptDonations;
+		else
+			{
+			ASSERT(false);
+			*retiService = serviceNone;
+			}
+		}
+
+	if (retdwFlags)
+		*retdwFlags = (dwFlags & ~(FLAG_SELLS | FLAG_BUYS | FLAG_ACCEPTS_DONATIONS));
 	}
 
 void CTradingDesc::RefreshInventory (CSpaceObject *pObj, int iPercent)
@@ -461,7 +692,7 @@ void CTradingDesc::RefreshInventory (CSpaceObject *pObj, int iPercent)
 	DEBUG_CATCH
 	}
 
-bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, int *retiPrice)
+bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice)
 
 //	Sells
 //
@@ -469,30 +700,25 @@ bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, int *retiPrice)
 //	Optionally returns a price
 
 	{
-	int i;
+	const SServiceDesc *pDesc;
+	if (!FindService(serviceSell, Item, &pDesc))
+		return false;
 
-	//	Loop over the commodity list and find the first entry that matches
+	//	Compute price
 
-	for (i = 0; i < m_List.GetCount(); i++)
-		if (Matches(Item, m_List[i])
-				&& (m_List[i].dwFlags & FLAG_SELLS))
-			{
-			int iPrice = ComputePrice(pObj, Item, m_List[i]);
-			if (iPrice <= 0)
-				return false;
+	int iPrice = ComputePrice(pObj, Item, *pDesc);
+	if (iPrice <= 0)
+		return false;
 
-			//	Done
+	//	Done
 
-			if (retiPrice)
-				*retiPrice = iPrice;
+	if (retiPrice)
+		*retiPrice = iPrice;
 
-			return true;
-			}
-
-	return false;
+	return true;
 	}
 
-bool CTradingDesc::SetInventoryCount (CSpaceObject *pObj, SCommodityDesc &Desc, CItemType *pItemType)
+bool CTradingDesc::SetInventoryCount (CSpaceObject *pObj, SServiceDesc &Desc, CItemType *pItemType)
 
 //	SetInventoryCount
 //
@@ -543,6 +769,7 @@ void CTradingDesc::WriteToStream (IWriteStream *pStream)
 //	DWORD			m_iReplenishCurrency
 //	DWORD			No of orders
 //
+//	DWORD			iService
 //	CString			sID
 //	DWORD			pItemType
 //	CString			ItemCriteria
@@ -565,7 +792,10 @@ void CTradingDesc::WriteToStream (IWriteStream *pStream)
 
 	for (i = 0; i < m_List.GetCount(); i++)
 		{
-		const SCommodityDesc &Commodity = m_List[i];
+		const SServiceDesc &Commodity = m_List[i];
+
+		dwSave = Commodity.iService;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 		Commodity.sID.WriteToStream(pStream);
 

@@ -136,6 +136,18 @@ void CCodeChainCtx::DefineItemType (const CString &sVar, CItemType *pType)
 		m_CC.DefineGlobal(sVar, m_CC.CreateNil());
 	}
 
+void CCodeChainCtx::DefineOrbit (const CString &sVar, const COrbit &OrbitDesc)
+
+//	DefineOrbit
+//
+//	Defines a global COrbit variable
+
+	{
+	ICCItem *pValue = CreateListFromOrbit(m_CC, OrbitDesc);
+	m_CC.DefineGlobal(sVar, pValue);
+	pValue->Discard(&m_CC);
+	}
+
 void CCodeChainCtx::DefineSource (CSpaceObject *pSource)
 
 //	DefineSource

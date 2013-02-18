@@ -110,6 +110,7 @@ class CUIHelper
 								 const TArray<SMenuEntry> *pMenu,
 								 DWORD dwOptions, 
 								 IAnimatron **retpControl) const;
+		void CreateSessionWaitAnimation (const CString &sID, const CString &sText, IAnimatron **retpControl) const;
 
 	private:
 		void CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString &sText, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
