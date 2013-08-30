@@ -127,9 +127,18 @@ void TransCompiler (CXMLElement *pCmdLine)
 
 	//	Optional entities file.
 
-	CString sEntitiesFilespec = pCmdLine->GetAttribute(ATTRIB_ENTITIES);
-	if (sEntitiesFilespec.IsBlank() && !strEquals(pathGetFilename(sInputFilespec), CONSTLIT("Transcendence.xml")))
-		sEntitiesFilespec = CONSTLIT("Transcendence.tdb");
+	CString sEntities = pCmdLine->GetAttribute(ATTRIB_ENTITIES);
+	TArray<CString> EntityFilespecs;
+	if (strDelimitEx(sEntities, ',', DELIMIT_TRIM_WHITESPACE, 0, &EntityFilespecs) != NOERROR)
+		{
+		printf("error : Unable to parse list of entity filespecs.\n");
+		return;
+		}
+
+	//	Always add Transcendence.tdb, if not compiling it.
+
+	if (!strEquals(pathGetFilename(sInputFilespec), CONSTLIT("Transcendence.xml")))
+		EntityFilespecs.Insert(CONSTLIT("Transcendence.tdb"), 0);
 
 	//	If we just want to dump an existing TDB then we do that
 
@@ -142,6 +151,27 @@ void TransCompiler (CXMLElement *pCmdLine)
 
 	else
 		{
+		//	Add all entities
+
+		CExternalEntityTable *pEntities = NULL;
+		for (i = 0; i < EntityFilespecs.GetCount(); i++)
+			{
+			CExternalEntityTable *pNewEntities;
+			if (error = ReadEntities(EntityFilespecs[i], &pNewEntities))
+				{
+				printf("error : Unable to read entities file '%s'\n", EntityFilespecs[i].GetASCIIZPointer());
+				return;
+				}
+
+			if (pEntities == NULL)
+				pEntities = pNewEntities;
+			else
+				{
+				pNewEntities->SetParent(pEntities);
+				pEntities = pNewEntities;
+				}
+			}
+
 		//	Create the output file
 
 		if (error = CDataFile::Create(sOutputFilespec, 4096, 0))
@@ -155,18 +185,6 @@ void TransCompiler (CXMLElement *pCmdLine)
 			{
 			printf("error : Unable to open '%s'\n", sOutputFilespec.GetASCIIZPointer());
 			return;
-			}
-
-		//	Entities
-
-		CExternalEntityTable *pEntities = NULL;
-		if (!sEntitiesFilespec.IsBlank())
-			{
-			if (error = ReadEntities(sEntitiesFilespec, &pEntities))
-				{
-				printf("error : Unable to read entities file '%s'\n", sEntitiesFilespec.GetASCIIZPointer());
-				return;
-				}
 			}
 
 		//	Prepare a symbol table to hold all the resource files

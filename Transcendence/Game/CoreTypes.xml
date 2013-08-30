@@ -56,15 +56,9 @@
 				lifetime=			"30"
 				powerUse=			"10"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -94,19 +88,10 @@
 				lifetime=			"67"
 				powerUse=			"160"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"48"
-						width=				"8"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Segment of Heavy Plasteel Plate -->
@@ -139,7 +124,6 @@
 			manufacturer=		"United African States"
 			class=				"Mikeno"
 			type=				"destroyer"
-			score=				"705"
 
 			mass=				"5000"
 			cargoSpace=			"500"

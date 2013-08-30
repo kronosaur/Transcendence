@@ -253,9 +253,7 @@
 
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Segment of Heavy Sung Armor -->
@@ -462,46 +460,49 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Wind slaver"
 			type=				""
-			score=				"235"
 
+			attributes=			"genericClass, sungSlavers"
+			   
 			mass=				"50"
-			cargoSpace=			"10"
-			thrust=				"400"
+			thrustRatio=		"14"
 			maneuver=			"1"
 			maxSpeed=			"30"
+			cargoSpace=			"10"
 
 			cyberDefenseLevel=	"4"
 
 			leavesWreck=		"35"
-
-			attributes=			"genericClass, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightSungArmor;"/>
-			<ArmorSection start="225" span="90" armorID="&itLightSungArmor;"/>
-			<ArmorSection start="135" span="90" armorID="&itLightSungArmor;"/>
-			<ArmorSection start="45"  span="90" armorID="&itLightSungArmor;"/>
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightSungArmor;"
+			count=				"1"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itNeutronBlaster;"/>
 		</Devices>
 
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-
-		<AISettings
-			fireRateAdj=		"20"
-			fireRangeAdj=		"50"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
 
 		<DriveImages>
 			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 			<NozzlePos x="-30" y="-4"/>
 			<NozzlePos x="-30" y="5"/>
 		</DriveImages>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
 
 	</ShipClass>
 
@@ -511,41 +512,50 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Steel slaver"
 			type=				""
-			score=				"510"
 
+			attributes=			"genericClass, sungSlavers"
+			   
 			mass=				"250"
-			cargoSpace=			"10"
-			thrust=				"800"
+			thrustRatio=		"4"
 			maneuver=			"8"
 			maxSpeed=			"15"
+			cargoSpace=			"10"
 
 			cyberDefenseLevel=	"6"
 
 			leavesWreck=		"65"
-
-			attributes=			"genericClass, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itSungArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itSungArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itSungArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itSungArmor;" areaSet="7,13" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itSungArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itParticleBeamWeapon;" omnidirectional="true"/>
 			<Device deviceID="&itCyberDeckDisarm;"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
+		<Items>
+			<Item chance="50"	count="2d6"		item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"40"
 			fireRangeAdj=		"50"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 	</ShipClass>
@@ -556,37 +566,28 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
-			score=				"935"
 
+			attributes=			"capitalShip, genericClass, sungSlavers"
+			   
 			mass=				"9500"
-			cargoSpace=			"500"
-			thrust=				"3200"
+			thrustRatio=		"1"
 			maneuver=			"8"
 			maxSpeed=			"12"
+			cargoSpace=			"500"
 
 			cyberDefenseLevel=	"6"
 
 			explosionType=		"&vtBlastExplosion2;"
 			leavesWreck=		"100"
-
-			attributes=			"capitalShip, genericClass, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itHeavySungArmor;" nonCritical="general" />
-			<ArmorSection start="225" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="165" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="135" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="105" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itHeavySungArmor;" nonCritical="general" />
-			<ArmorSection start="45"  span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itHeavySungArmor;" nonCritical="dev0" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavySungArmor;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
@@ -594,6 +595,22 @@
 			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-43"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"68"
+					/>
+		</Interior>
 
 		<Items>
 			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
@@ -605,10 +622,14 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
-			fireRateAdj=		"25"
+			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"5"
 
@@ -631,37 +652,28 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Earth Slaver"
 			type=				""
-			score=				"1100"
 
+			attributes=			"capitalShip, sungSlavers"
+			   
 			mass=				"9500"
-			cargoSpace=			"500"
-			thrust=				"3200"
+			thrustRatio=		"1"
 			maneuver=			"8"
 			maxSpeed=			"12"
+			cargoSpace=			"500"
 
 			cyberDefenseLevel=	"6"
 
 			explosionType=		"&vtBlastExplosion2;"
 			leavesWreck=		"100"
-
-			attributes=			"capitalShip, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itHeavySungArmor;" nonCritical="general" />
-			<ArmorSection start="225" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="165" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="135" span="30" armorID="&itHeavySungArmor;" nonCritical="drive" />
-			<ArmorSection start="105" span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itHeavySungArmor;" nonCritical="general" />
-			<ArmorSection start="45"  span="30" armorID="&itHeavySungArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itHeavySungArmor;" nonCritical="dev0" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavySungArmor;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itParticleBoltCannon;"/>
 			<Device deviceID="&itCyberDeckLowerShields;"/>
@@ -669,6 +681,22 @@
 			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-43"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"68"
+					/>
+		</Interior>
 
 		<Items>
 			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
@@ -680,10 +708,14 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<!-- AI and Behavior -->
+		
 		<AISettings
-			fireRateAdj=		"25"
+			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"5"
 
@@ -811,7 +843,6 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Dragon Slaver"
 			type=				""
-			score=				"2015"
 
 			mass=				"4000"
 			cargoSpace=			"200"
@@ -870,6 +901,7 @@
 			fireAccuracy=		"95"
 			perception=			"6"
 
+			combatStyle=		"advanced"
 			ignoreShieldsDown=	"true"
 			/>
 
@@ -896,7 +928,6 @@
 			manufacturer=		"Sung Slavers"
 			class=				"Sung transport"
 			type=				""
-			score=				"470"
 
 			mass=				"8000"
 			cargoSpace=			"5000"
@@ -961,6 +992,7 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -979,7 +1011,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itPlasteelPlate;"
+			armorID=			"&itSungArmor;"
 			hitPoints=			"125"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -1075,10 +1107,10 @@
 
 		<Ships>
 			<Table>
-				<Ship chance="30"	count="2d3" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				<Ship chance="30"	count="2d6" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
 				<Group chance="60">
 					<Ship			count="1"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
-					<Ship			count="1d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="2d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
 				</Group>
 				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
 			</Table>
@@ -1093,12 +1125,12 @@
 
 		<Items>
 			<Lookup					count="1d4"	table="&trStationSupplies;" />
-			<Lookup					count="1d2" table="&trConsumables5;"/>
-			<Lookup					count="1d2" table="&trMinorItem5;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables6;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			<Lookup					count="1"	table="&trConsumables6;"/>
+			<Lookup					count="1"	table="&trMinorItem6;"/>
+			<Table chance="75">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
 			</Table>
 		</Items>
 
@@ -1573,7 +1605,7 @@
 					desc=	"What item do you wish to use the longzhu sphere on?">
 
 				<Actions>
-					<Action name="Use on this item" default="1" key="U">
+					<Action name="Use on this Item" default="1" key="U">
 						(block (itemType)
 							(setq gItem (scrGetItem gScreen))
 							(setq itemType (itmGetType gItem))

@@ -73,6 +73,29 @@ int CStationEncounterCtx::GetFrequencyByLevel (int iLevel, const CStationEncount
 	return Desc.GetFrequencyByLevel(iLevel);
 	}
 
+int CStationEncounterCtx::GetFrequencyForNode (CTopologyNode *pNode, CStationType *pStation, const CStationEncounterDesc &Desc)
+
+//	GetFrequencyForNode
+//
+//	Returns the chance that this station type will appear in the given node.
+
+	{
+	//	If we cannot be encountered at all, then we're done
+
+	if (!CanBeEncountered(Desc))
+		return 0;
+
+	//	Check for a level limit
+
+	SEncounterStats *pCount = m_ByLevel.GetAt(pNode->GetLevel());
+	if (pCount && pCount->iLimit != -1 && pCount->iCount >= pCount->iLimit)
+		return 0;
+
+	//	Otherwise, let the descriptor figure out the chance
+
+	return Desc.GetFrequencyByNode(pNode, pStation);
+	}
+
 int CStationEncounterCtx::GetFrequencyForSystem (CSystem *pSystem, CStationType *pStation, const CStationEncounterDesc &Desc)
 
 //	GetFrequencyForSystem
@@ -80,6 +103,11 @@ int CStationEncounterCtx::GetFrequencyForSystem (CSystem *pSystem, CStationType 
 //	Returns the chance that this station type will appear in the given system
 
 	{
+	//	If we cannot be encountered at all, then we're done
+
+	if (!CanBeEncountered(Desc))
+		return 0;
+
 	//	If this station is unique in the system, see if there are other
 	//	stations of this type in the system
 
@@ -92,9 +120,9 @@ int CStationEncounterCtx::GetFrequencyForSystem (CSystem *pSystem, CStationType 
 	if (pCount && pCount->iLimit != -1 && pCount->iCount >= pCount->iLimit)
 		return 0;
 
-	//	Otherwise, go by level
+	//	Otherwise, let the descriptor figure out the chance
 
-	return GetFrequencyByLevel(pSystem->GetLevel(), Desc);
+	return Desc.GetFrequencyByNode(pSystem->GetTopology(), pStation);
 	}
 
 void CStationEncounterCtx::ReadFromStream (SUniverseLoadCtx &Ctx)

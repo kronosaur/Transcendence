@@ -190,7 +190,8 @@ ALERROR dibCreate24bitDIB (int cxWidth, int cyHeight, DWORD dwFlags, HBITMAP *re
 	::DeleteDC(hDC);
 	hDC = NULL;
 
-	*retpPixel = (BYTE *)pBits;
+	if (retpPixel)
+		*retpPixel = (BYTE *)pBits;
 	*rethBitmap = hBitmap;
 
 	return NOERROR;
@@ -403,7 +404,7 @@ ALERROR dibLoadFromBlock (IReadBlock &Data, HBITMAP *rethDIB, EBitmapTypes *reti
 	DWORD dwPaletteSize = dibPaletteSize(&bi);
 	DWORD dwLen = bi.biSize + dwPaletteSize + dwBits;
 
-	//	Create a DIBSection
+	//	Create a DIBSection.
 
 	if (error = dibCreate16bitDIB(bi.biWidth, bi.biHeight, &hDIB, NULL))
 		{

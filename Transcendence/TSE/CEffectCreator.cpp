@@ -7,6 +7,7 @@
 #define BOLT_TAG								CONSTLIT("Bolt")
 #define DAMAGE_TAG								CONSTLIT("Damage")
 #define EFFECT_TAG								CONSTLIT("Effect")
+#define EVENTS_TAG								CONSTLIT("Events")
 #define FLARE_TAG								CONSTLIT("Flare")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define IMAGE_AND_TAIL_TAG						CONSTLIT("ImageAndTail")
@@ -22,10 +23,20 @@
 #define SMOKE_TRAIL_TAG							CONSTLIT("SmokeTrail")
 #define STARBURST_TAG							CONSTLIT("Starburst")
 
-#define UNID_ATTRIB								CONSTLIT("UNID")
+#define INSTANCE_ATTRIB							CONSTLIT("instance")
 #define SOUND_ATTRIB							CONSTLIT("sound")
+#define UNID_ATTRIB								CONSTLIT("UNID")
+
+#define INSTANCE_CREATOR						CONSTLIT("creator")
+#define INSTANCE_GAME							CONSTLIT("game")
+#define INSTANCE_OWNER							CONSTLIT("owner")
 
 #define STR_NO_UNID								CONSTLIT("(no UNID)")
+
+static char *CACHED_EVENTS[CEffectCreator::evtCount] =
+	{
+		"GetParameters",
+	};
 
 CEffectCreator::~CEffectCreator (void)
 
@@ -67,20 +78,30 @@ ALERROR CEffectCreator::CreateEffect (CSystem *pSystem,
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant)
+									  int iVariant,
+									  CSpaceObject **retpEffect)
 
 //	CreateEffect
 //
 //	Default creation of effect (using CEffect)
 
 	{
-	return CEffect::Create(this,
+	ALERROR error;
+	CEffect *pEffect;
+
+	if (error = CEffect::Create(this,
 			pSystem,
 			pAnchor,
 			vPos,
 			vVel,
 			iRotation,
-			NULL);
+			&pEffect))
+		return error;
+
+	if (retpEffect)
+		*retpEffect = pEffect;
+
+	return NOERROR;
 	}
 
 ALERROR CEffectCreator::CreateFromTag (const CString &sTag, CEffectCreator **retpCreator)
@@ -94,6 +115,8 @@ ALERROR CEffectCreator::CreateFromTag (const CString &sTag, CEffectCreator **ret
 
 	if (strEquals(sTag, CImageEffectCreator::GetClassTag()))
 		pCreator = new CImageEffectCreator;
+	else if (strEquals(sTag, CRayEffectCreator::GetClassTag()))
+		pCreator = new CRayEffectCreator;
 	else if (strEquals(sTag, CPolyflashEffectCreator::GetClassTag()))
 		pCreator = new CPolyflashEffectCreator;
 	else if (strEquals(sTag, CShockwaveEffectCreator::GetClassTag()))
@@ -197,11 +220,11 @@ ALERROR CEffectCreator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 			return error;
 		}
 
-	//	Sound Effect (resolved later)
+	//	Initialize basic parameters
 
-	if (error = pCreator->m_Sound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
+	if (error = pCreator->InitBasicsFromXML(Ctx, pDesc))
 		return error;
-	
+
 	//	Done
 
 	*retpCreator = pCreator;
@@ -232,6 +255,15 @@ ALERROR CEffectCreator::CreateSimpleFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 
 	pCreator->m_sUNID = sUNID;
 
+	//	Load events
+
+	CXMLElement *pEventsDesc = pDesc->GetContentElementByTag(EVENTS_TAG);
+	if (pEventsDesc)
+		{
+		if (error = pCreator->m_Events.InitFromXML(Ctx, pEventsDesc))
+			return error;
+		}
+
 	//	Type-specific creation
 
 	if (error = pCreator->OnEffectCreateFromXML(Ctx, pDesc, sUNID))
@@ -248,7 +280,8 @@ ALERROR CEffectCreator::CreateTypeFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 //	CreateTypeFromXML
 //
-//	Creates the class only. This is used by the main Design load code.
+//	Creates the class only. This is used by the main Design load code when we use
+//	the full <EffectType> definition.
 
 	{
 	ALERROR error;
@@ -361,7 +394,7 @@ IEffectPainter *CEffectCreator::CreatePainterFromStream (SLoadCtx &Ctx, bool bNu
 	Ctx.iLoadState = loadStateEffect;
 	Ctx.sEffectUNID = pCreator->GetUNIDString();
 
-	IEffectPainter *pPainter = pCreator->CreatePainter();
+	IEffectPainter *pPainter = pCreator->CreatePainter(CCreatePainterCtx());
 
 	//	Load it
 
@@ -399,7 +432,7 @@ IEffectPainter *CEffectCreator::CreatePainterFromStreamAndCreator (SLoadCtx &Ctx
 	if (pCreator == NULL)
 		return NULL;
 
-	IEffectPainter *pPainter = pCreator->CreatePainter();
+	IEffectPainter *pPainter = pCreator->CreatePainter(CCreatePainterCtx());
 	pPainter->ReadFromStream(Ctx);
 
 	//	Done
@@ -407,25 +440,99 @@ IEffectPainter *CEffectCreator::CreatePainterFromStreamAndCreator (SLoadCtx &Ctx
 	return pPainter;
 	}
 
-CString IEffectPainter::ReadUNID (SLoadCtx &Ctx)
+ALERROR CEffectCreator::InitBasicsFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
-//	ReadUNID
+//	InitBasicsFromXML
 //
-//	Returns the UNID saved to a stream
+//	Initialize some basic parameters.
 
 	{
-	CString sUNID;
+	ALERROR error;
 
-	if (Ctx.dwVersion >= 15)
-		sUNID.ReadFromStream(Ctx.pStream);
-	else
+	//	Initialize sound.
+
+	if (error = m_Sound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
+		return error;
+
+	//	Figure out what kind of instancing model we use
+
+	CString sAttrib;
+	if (pDesc->FindAttribute(INSTANCE_ATTRIB, &sAttrib))
 		{
-		DWORD dwUNID;
-		Ctx.pStream->Read((char *)&dwUNID, sizeof(DWORD));
-		sUNID = strFromInt(dwUNID, false);
+		if (strEquals(sAttrib, INSTANCE_GAME))
+			m_iInstance = instGame;
+		else if (strEquals(sAttrib, INSTANCE_OWNER))
+			m_iInstance = instOwner;
+		else if (strEquals(sAttrib, INSTANCE_CREATOR))
+			m_iInstance = instCreator;
+		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid instance type: %s"), sAttrib);
+			return ERR_FAIL;
+			}
 		}
+	else
+		m_iInstance = instCreator;
 
-	return sUNID;
+	//	Done
+
+	return NOERROR;
+	}
+
+void CEffectCreator::InitPainterParameters (CCreatePainterCtx &Ctx, IEffectPainter *pPainter)
+
+//	InitPainterParameters
+//
+//	Initialize painter parameters
+
+	{
+	SEventHandlerDesc Event;
+	if (FindEventHandlerEffectType(evtGetParameters, &Event))
+		{
+		CCodeChainCtx CCCtx;
+
+		CCCtx.SaveAndDefineDataVar(Ctx.GetData());
+
+		ICCItem *pResult = CCCtx.Run(Event);
+		if (pResult->IsError())
+			::kernelDebugLogMessage(CONSTLIT("EffectType %x GetParameters: %s"), GetUNID(), (LPSTR)pResult->GetStringValue());
+		else if (pResult->IsSymbolTable())
+			{
+			int i;
+			CCSymbolTable *pTable = (CCSymbolTable *)pResult;
+
+			for (i = 0; i < pTable->GetCount(); i++)
+				{
+				CString sParam = pTable->GetKey(i);
+				ICCItem *pValue = pTable->GetElement(i);
+				CEffectParamDesc Value;
+
+				if (pValue->IsNil())
+					Value.InitNull();
+				else if (pValue->IsInteger())
+					Value.InitInteger(pValue->GetIntegerValue());
+				else if (pValue->IsIdentifier())
+					{
+					CString sValue = pValue->GetStringValue();
+					char *pPos = sValue.GetASCIIZPointer();
+
+					//	If this is a color, parse it
+
+					if (*pPos == '#')
+						Value.InitColor(::LoadRGBColor(sValue));
+
+					//	Otherwise, a string
+
+					}
+
+				pPainter->SetParam(Ctx, sParam, Value);
+				}
+			}
+		else
+			::kernelDebugLogMessage(CONSTLIT("EffectType %x GetParameters: Expected struct result."), GetUNID());
+
+		CCCtx.Discard(pResult);
+		}
 	}
 
 bool CEffectCreator::IsValidUNID (void)
@@ -509,6 +616,10 @@ ALERROR CEffectCreator::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_Sound.Bind(Ctx))
 		return error;
 
+	//	Cache some events
+
+	InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
+
 	//	Load our descendants
 
 	if (error = OnEffectBindDesign(Ctx))
@@ -522,7 +633,7 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 //	OnCreateFromXML
 //
 //	Load from XML. This is only called if we go through the EffectType path
-//	(as opposed to plain Effect).
+//	(as opposed to plain Effect types).
 
 	{
 	ALERROR error;
@@ -531,7 +642,7 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 
 	m_sUNID = strFromInt(GetUNID(), false);
 
-	if (error = m_Sound.LoadUNID(Ctx, pDesc->GetAttribute(SOUND_ATTRIB)))
+	if (error = InitBasicsFromXML(Ctx, pDesc))
 		return error;
 
 	//	Allow our subclass to initialize based on the effect
@@ -562,6 +673,16 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 		}
 	
 	return NOERROR;
+	}
+
+void CEffectCreator::OnEffectPlaySound (CSpaceObject *pSource)
+
+//	OnEffectPlaySound
+//
+//	Play a sound
+
+	{
+	m_Sound.PlaySound(pSource);
 	}
 
 CEffectCreator *CEffectCreator::OnFindEffectCreator (const CString &sUNID)
@@ -606,6 +727,30 @@ CEffectCreator *CEffectCreator::OnFindEffectCreator (const CString &sUNID)
 	return pSubEffect->FindEffectCreatorInType(CString(pPos));
 	}
 
+bool CEffectCreator::OnFindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent) const
+
+//	OnFindEventHandler
+//
+//	Looks for an event handler.
+
+	{
+	ICCItem *pCode;
+	if (m_Events.FindEvent(sEvent, &pCode))
+		{
+		if (retEvent)
+			{
+			retEvent->pExtension = GetExtension();
+			retEvent->pCode = pCode;
+			}
+
+		return true;
+		}
+
+	//	Not found
+
+	return false;
+	}
+
 void CEffectCreator::PlaySound (CSpaceObject *pSource)
 
 //	PlaySound
@@ -613,7 +758,7 @@ void CEffectCreator::PlaySound (CSpaceObject *pSource)
 //	Play the sound effect
 
 	{
-	m_Sound.PlaySound(pSource);
+	OnEffectPlaySound(pSource);
 	}
 
 void CEffectCreator::WritePainterToStream (IWriteStream *pStream, IEffectPainter *pPainter)
@@ -687,6 +832,105 @@ void IEffectPainter::GetRect (RECT *retRect) const
 	retRect->right = 0;
 	}
 
+void IEffectPainter::OnReadFromStream (SLoadCtx &Ctx)
+
+//	OnReadFromStream
+//
+//	This is the default for reading painter parameters. We ask the painter for
+//	a list of its parameters and read those.
+
+	{
+	int i;
+
+	//	Read parameters
+
+	if (Ctx.dwVersion >= 90)
+		{
+		//	Read the number of parameters
+
+		DWORD dwCount;
+		Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
+
+		for (i = 0; i < (int)dwCount; i++)
+			{
+			//	Read the parameter name
+
+			CString sParam;
+			sParam.ReadFromStream(Ctx.pStream);
+
+			//	Read the value
+
+			CEffectParamDesc Value;
+			Value.ReadFromStream(Ctx);
+
+			//	Set it
+
+			SetParam(CCreatePainterCtx(), sParam, Value);
+			}
+		}
+	}
+
+void IEffectPainter::OnWriteToStream (IWriteStream *pStream)
+
+//	OnWriteToStream
+//
+//	Writes list of parameters from the painter.
+
+	{
+	int i;
+
+	TArray<CString> Params;
+	if (!m_bSingleton && GetParamList(&Params))
+		{
+		//	Write the count of parameters
+
+		DWORD dwSave = Params.GetCount();
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+		//	Write each parameter (name and value)
+
+		for (i = 0; i < Params.GetCount(); i++)
+			{
+			//	Write the parameter value
+
+			Params[i].WriteToStream(pStream);
+
+			//	Write the value
+
+			CEffectParamDesc Value;
+			GetParam(Params[i], &Value);
+
+			Value.WriteToStream(pStream);
+			}
+		}
+	else
+		{
+		DWORD dwSave = 0;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+		}
+	}
+
+CString IEffectPainter::ReadUNID (SLoadCtx &Ctx)
+
+//	ReadUNID
+//
+//	Returns the UNID saved to a stream
+
+	{
+	CString sUNID;
+
+	if (Ctx.dwVersion >= 15)
+		sUNID.ReadFromStream(Ctx.pStream);
+	else
+		{
+		DWORD dwUNID;
+		Ctx.pStream->Read((char *)&dwUNID, sizeof(DWORD));
+		sUNID = strFromInt(dwUNID, false);
+		}
+
+	return sUNID;
+	}
+
 ALERROR IEffectPainter::ValidateClass (SLoadCtx &Ctx, const CString &sOriginalClass)
 
 //	ValidateClass
@@ -722,7 +966,7 @@ ALERROR IEffectPainter::ValidateClass (SLoadCtx &Ctx, const CString &sOriginalCl
 
 				//	Load the original painter
 
-				IEffectPainter *pOriginalPainter = pOriginalCreator->CreatePainter();
+				IEffectPainter *pOriginalPainter = pOriginalCreator->CreatePainter(CCreatePainterCtx());
 				pOriginalPainter->ReadFromStream(Ctx);
 
 				//	Discard

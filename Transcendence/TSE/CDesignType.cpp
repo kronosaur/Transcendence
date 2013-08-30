@@ -17,12 +17,14 @@
 #define ITEM_TABLE_TAG							CONSTLIT("ItemTable")
 #define ITEM_TYPE_TAG							CONSTLIT("ItemType")
 #define LANGUAGE_TAG							CONSTLIT("Language")
+#define LOOKUP_TAG								CONSTLIT("Lookup")
 #define MISSION_TYPE_TAG						CONSTLIT("MissionType")
 #define OVERLAY_TYPE_TAG						CONSTLIT("OverlayType")
 #define POWER_TAG								CONSTLIT("Power")
 #define SHIP_CLASS_TAG							CONSTLIT("ShipClass")
 #define SHIP_ENERGY_FIELD_TYPE_TAG				CONSTLIT("ShipEnergyFieldType")
 #define SHIP_TABLE_TAG							CONSTLIT("ShipTable")
+#define SOUNDTRACK_TAG							CONSTLIT("Soundtrack")
 #define SOVEREIGN_TAG							CONSTLIT("Sovereign")
 #define SPACE_ENVIRONMENT_TYPE_TAG				CONSTLIT("SpaceEnvironmentType")
 #define STATIC_DATA_TAG							CONSTLIT("StaticData")
@@ -34,6 +36,7 @@
 #define TYPE_TAG								CONSTLIT("Type")
 
 #define ATTRIBUTES_ATTRIB						CONSTLIT("attributes")
+#define EFFECT_ATTRIB							CONSTLIT("effect")
 #define INHERIT_ATTRIB							CONSTLIT("inherit")
 #define MODIFIERS_ATTRIB						CONSTLIT("modifiers")
 #define UNID_ATTRIB								CONSTLIT("UNID")
@@ -41,6 +44,7 @@
 #define GET_CREATE_POS_EVENT					CONSTLIT("GetCreatePos")
 #define GET_GLOBAL_ACHIEVEMENTS_EVENT			CONSTLIT("GetGlobalAchievements")
 #define GET_GLOBAL_DOCK_SCREEN_EVENT			CONSTLIT("GetGlobalDockScreen")
+#define GET_GLOBAL_PLAYER_PRICE_ADJ_EVENT		CONSTLIT("GetGlobalPlayerPriceAdj")
 #define GET_GLOBAL_RESURRECT_POTENTIAL_EVENT	CONSTLIT("GetGlobalResurrectPotential")
 #define ON_GLOBAL_MARK_IMAGES_EVENT				CONSTLIT("OnGlobalMarkImages")
 #define ON_GLOBAL_OBJ_DESTROYED_EVENT			CONSTLIT("OnGlobalObjDestroyed")
@@ -51,14 +55,19 @@
 #define ON_GLOBAL_RESURRECT_EVENT				CONSTLIT("OnGlobalResurrect")
 #define ON_GLOBAL_TOPOLOGY_CREATED_EVENT		CONSTLIT("OnGlobalTopologyCreated")
 #define ON_GLOBAL_SYSTEM_CREATED_EVENT			CONSTLIT("OnGlobalSystemCreated")
+#define ON_GLOBAL_SYSTEM_STARTED_EVENT			CONSTLIT("OnGlobalSystemStarted")
+#define ON_GLOBAL_SYSTEM_STOPPED_EVENT			CONSTLIT("OnGlobalSystemStopped")
 #define ON_GLOBAL_UNIVERSE_CREATED_EVENT		CONSTLIT("OnGlobalUniverseCreated")
 #define ON_GLOBAL_UNIVERSE_LOAD_EVENT			CONSTLIT("OnGlobalUniverseLoad")
 #define ON_GLOBAL_UNIVERSE_SAVE_EVENT			CONSTLIT("OnGlobalUniverseSave")
+#define ON_GLOBAL_UPDATE_EVENT					CONSTLIT("OnGlobalUpdate")
 #define ON_RANDOM_ENCOUNTER_EVENT				CONSTLIT("OnRandomEncounter")
 
+#define SPECIAL_EXTENSION						CONSTLIT("extension:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
 #define FIELD_EXTENSION_UNID					CONSTLIT("extensionUNID")
+#define FIELD_NAME								CONSTLIT("name")
 #define FIELD_UNID								CONSTLIT("unid")
 #define FIELD_VERSION							CONSTLIT("version")
 
@@ -234,6 +243,8 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			pType = new CSystemType;
 		else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))
 			pType = new CStationType;
+		else if (strEquals(pDesc->GetTag(), SOUNDTRACK_TAG))
+			pType = new CSoundType;
 		else if (strEquals(pDesc->GetTag(), SOVEREIGN_TAG))
 			pType = new CSovereign;
 		else if (strEquals(pDesc->GetTag(), DOCK_SCREEN_TAG))
@@ -323,12 +334,18 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 
 //	FindDataField
 //
-//	Subclasses should call this method when they do know the field.
+//	Subclasses should call this method when they do not know the field.
 //	[Normally we would do an OnFindDataField pattern, but we're too lazy
 //	to change all the instances.]
 
 	{
-	if (strEquals(sField, FIELD_VERSION))
+	if (strEquals(sField, FIELD_EXTENSION_UNID))
+		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->GetUNID() : 0));
+	else if (strEquals(sField, FIELD_NAME))
+		*retsValue = strPatternSubst("%s 0x%08x", GetTypeClassName(), m_dwUNID);
+	else if (strEquals(sField, FIELD_UNID))
+		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
+	else if (strEquals(sField, FIELD_VERSION))
 		{
 		//	Starting in version 12 we start numbering api versions independently 
 		//	of release version.
@@ -338,10 +355,6 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 		else
 			*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
 		}
-	else if (strEquals(sField, FIELD_UNID))
-		*retsValue = strPatternSubst("0x%08x", m_dwUNID);
-	else if (strEquals(sField, FIELD_EXTENSION_UNID))
-		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->GetUNID() : 0));
 	else
 		return false;
 
@@ -355,6 +368,11 @@ bool CDesignType::FindEventHandler (const CString &sEvent, SEventHandlerDesc *re
 //	Returns an event handler
 
 	{
+	//	Ask subclasses
+
+	if (OnFindEventHandler(sEvent, retEvent))
+		return true;
+
 	//	If we have it, great
 
 	ICCItem *pCode;
@@ -395,7 +413,7 @@ bool CDesignType::FindStaticData (const CString &sAttrib, const CString **retpDa
 	return false;
 	}
 
-void CDesignType::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem **retpResult)
+void CDesignType::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomEvent
 //
@@ -408,6 +426,7 @@ void CDesignType::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEven
 	if (FindEventHandler(sEvent, &Event))
 		{
 		Ctx.SetEvent(iEvent);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -596,6 +615,47 @@ bool CDesignType::FireGetGlobalDockScreen (const SEventHandlerDesc &Event, CSpac
 
 	Ctx.Discard(pResult);
 	return bResult;
+	}
+
+bool CDesignType::FireGetGlobalPlayerPriceAdj (const SEventHandlerDesc &Event, ETradeServiceTypes iService, CSpaceObject *pProvider, const CItem &Item, ICCItem *pData, int *retiPriceAdj)
+
+//	FireGetGlobalPlayerPriceAdj
+//
+//	Fires event to allow types to modify prices charged to the player.
+
+	{
+	CCodeChainCtx Ctx;
+
+	//	Set up
+
+	Ctx.SetEvent(eventGetGlobalPlayerPriceAdj);
+	Ctx.SetItemType(Item.GetType());
+	Ctx.DefineString(CONSTLIT("aService"), CTradingDesc::ServiceToString(iService));
+	Ctx.DefineSpaceObject(CONSTLIT("aProviderObj"), pProvider);
+	Ctx.SaveAndDefineItemVar(Item);
+	if (pData)
+		Ctx.SaveAndDefineDataVar(pData);
+
+	//	Run
+
+	ICCItem *pResult = Ctx.Run(Event);
+
+	int iPriceAdj = 100;
+	if (pResult->IsError())
+		ReportEventError(GET_GLOBAL_PLAYER_PRICE_ADJ_EVENT, pResult);
+	else if (pResult->IsNil())
+		;
+	else
+		iPriceAdj = pResult->GetIntegerValue();
+
+	//	Done
+
+	Ctx.Discard(pResult);
+
+	if (retiPriceAdj)
+		*retiPriceAdj = iPriceAdj;
+
+	return (iPriceAdj != 100);
 	}
 
 int CDesignType::FireGetGlobalResurrectPotential (void)
@@ -857,6 +917,42 @@ ALERROR CDesignType::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCtx, 
 	return NOERROR;
 	}
 
+void CDesignType::FireOnGlobalSystemStarted (const SEventHandlerDesc &Event)
+
+//	FireOnGlobalSystemStarted
+//
+//	System has started
+
+	{
+	CCodeChainCtx CCCtx;
+
+	//	Run code
+
+	ICCItem *pResult = CCCtx.Run(Event);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_SYSTEM_STARTED_EVENT, pResult);
+
+	CCCtx.Discard(pResult);
+	}
+
+void CDesignType::FireOnGlobalSystemStopped (const SEventHandlerDesc &Event)
+
+//	FireOnGlobalSystemStopped
+//
+//	System has stopped
+
+	{
+	CCodeChainCtx CCCtx;
+
+	//	Run code
+
+	ICCItem *pResult = CCCtx.Run(Event);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_SYSTEM_STOPPED_EVENT, pResult);
+
+	CCCtx.Discard(pResult);
+	}
+
 ALERROR CDesignType::FireOnGlobalTopologyCreated (CString *retsError)
 
 //	FireOnGlobalTopologyCreated
@@ -974,6 +1070,26 @@ ALERROR CDesignType::FireOnGlobalUniverseSave (const SEventHandlerDesc &Event)
 
 	Ctx.Discard(pResult);
 	return NOERROR;
+	}
+
+void CDesignType::FireOnGlobalUpdate (const SEventHandlerDesc &Event)
+
+//	FireOnGlobalUpdate
+//
+//	Fire event
+
+	{
+	CCodeChainCtx Ctx;
+
+	//	Run code
+
+	ICCItem *pResult = Ctx.Run(Event);
+	if (pResult->IsError())
+		ReportEventError(ON_GLOBAL_UPDATE_EVENT, pResult);
+
+	//	Done
+
+	Ctx.Discard(pResult);
 	}
 
 void CDesignType::FireOnRandomEncounter (CSpaceObject *pObj)
@@ -1118,6 +1234,19 @@ CString CDesignType::GetTypeClassName (void) const
 	return CString(DESIGN_CLASS_NAME[GetType()]);
 	}
 
+bool CDesignType::HasAttribute (const CString &sAttrib) const
+
+//	HasAttribute
+//
+//	Returns TRUE if we have the literal or special attribute.
+
+	{
+	if (HasLiteralAttribute(sAttrib))
+		return true;
+
+	return HasSpecialAttribute(sAttrib);
+	}
+
 bool CDesignType::HasSpecialAttribute (const CString &sAttrib) const
 
 //	HasSpecialAttribute
@@ -1125,7 +1254,12 @@ bool CDesignType::HasSpecialAttribute (const CString &sAttrib) const
 //	Returns TRUE if we have the special attribute
 
 	{
-	if (strStartsWith(sAttrib, SPECIAL_UNID))
+	if (strStartsWith(sAttrib, SPECIAL_EXTENSION))
+		{
+		DWORD dwUNID = strToInt(strSubString(sAttrib, SPECIAL_EXTENSION.GetLength()), 0);
+		return (m_pExtension && (m_pExtension->GetUNID() == dwUNID));
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_UNID))
 		{
 		DWORD dwUNID = strToInt(strSubString(sAttrib, SPECIAL_UNID.GetLength()), 0);
 		return (GetUNID() == dwUNID);
@@ -1315,7 +1449,7 @@ bool CDesignType::MatchesCriteria (const CDesignTypeCriteria &Criteria)
 	//	Check required attributes
 
 	for (i = 0; i < Criteria.GetRequiredAttribCount(); i++)
-		if (!HasAttribute(Criteria.GetRequiredAttrib(i)))
+		if (!HasLiteralAttribute(Criteria.GetRequiredAttrib(i)))
 			return false;
 
 	for (i = 0; i < Criteria.GetRequiredSpecialAttribCount(); i++)
@@ -1325,7 +1459,7 @@ bool CDesignType::MatchesCriteria (const CDesignTypeCriteria &Criteria)
 	//	Check excluded attributes
 
 	for (i = 0; i < Criteria.GetExcludedAttribCount(); i++)
-		if (HasAttribute(Criteria.GetExcludedAttrib(i)))
+		if (HasLiteralAttribute(Criteria.GetExcludedAttrib(i)))
 			return false;
 
 	for (i = 0; i < Criteria.GetExcludedSpecialAttribCount(); i++)
@@ -1678,6 +1812,9 @@ CEffectCreatorRef::~CEffectCreatorRef (void)
 	{
 	if (m_bDelete && m_pType)
 		delete m_pType;
+
+	if (m_pSingleton)
+		delete m_pSingleton;
 	}
 
 CEffectCreatorRef &CEffectCreatorRef::operator= (const CEffectCreatorRef &Source)
@@ -1702,6 +1839,16 @@ CEffectCreatorRef &CEffectCreatorRef::operator= (const CEffectCreatorRef &Source
 
 ALERROR CEffectCreatorRef::Bind (SDesignLoadCtx &Ctx)
 	{
+	//	Clean up, because we might want to recompute for next time.
+
+	if (m_pSingleton)
+		{
+		delete m_pSingleton;
+		m_pSingleton = NULL;
+		}
+
+	//	Bind
+
 	if (m_dwUNID)
 		return CDesignTypeRef<CEffectCreator>::Bind(Ctx);
 	else if (m_pType)
@@ -1736,6 +1883,36 @@ ALERROR CEffectCreatorRef::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 	return NOERROR;
 	}
 
+IEffectPainter *CEffectCreatorRef::CreatePainter (CCreatePainterCtx &Ctx)
+
+//	CreatePainter
+//
+//	Use this call when we want to use a per-owner singleton.
+
+	{
+	if (m_pType == NULL)
+		return NULL;
+
+	//	If we have a singleton, then return that.
+
+	if (m_pSingleton)
+		return m_pSingleton;
+
+	IEffectPainter *pPainter = m_pType->CreatePainter(Ctx);
+
+	//	If we're an owner singleton then we only need to create this once.
+
+	if (m_pType->GetInstance() == CEffectCreator::instOwner)
+		{
+		pPainter->SetSingleton(true);
+		m_pSingleton = pPainter;
+		}
+
+	//	Done
+
+	return pPainter;
+	}
+
 ALERROR CEffectCreatorRef::LoadEffect (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc, const CString &sAttrib)
 	{
 	ALERROR error;
@@ -1748,6 +1925,32 @@ ALERROR CEffectCreatorRef::LoadEffect (SDesignLoadCtx &Ctx, const CString &sUNID
 	else
 		if (error = LoadUNID(Ctx, sAttrib))
 			return error;
+
+	return NOERROR;
+	}
+
+ALERROR CEffectCreatorRef::LoadSimpleEffect (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc)
+
+//	LoadSimpleEffect
+//
+//	Loads an effect from XML.
+
+	{
+	ALERROR error;
+
+	if (strEquals(pDesc->GetTag(), LOOKUP_TAG))
+		{
+		if (error = LoadUNID(Ctx, pDesc->GetAttribute(EFFECT_ATTRIB)))
+			return error;
+		}
+	else
+		{
+		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pDesc, sUNID, &m_pType))
+			return error;
+
+		m_dwUNID = 0;
+		m_bDelete = true;
+		}
 
 	return NOERROR;
 	}
@@ -1904,6 +2107,28 @@ ALERROR CDesignTypeCriteria::ParseCriteria (const CString &sCriteria, CDesignTyp
 			case charTemplateType:
 				//	We don't support enumerating template types
 				break;
+
+			case 'L':
+				{
+				int iHigh;
+				int iLow;
+
+				if (ParseCriteriaParamLevelRange(&pPos, &iLow, &iHigh))
+					{
+					if (iHigh == -1)
+						{
+						retCriteria->m_iGreaterThanLevel = iLow - 1;
+						retCriteria->m_iLessThanLevel = iLow + 1;
+						}
+					else
+						{
+						retCriteria->m_iGreaterThanLevel = iLow - 1;
+						retCriteria->m_iLessThanLevel = iHigh + 1;
+						}
+					}
+
+				break;
+				}
 
 			case 'V':
 				retCriteria->m_bIncludeVirtual = true;

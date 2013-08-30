@@ -269,7 +269,7 @@ void CArmorDisplay::Update (void)
 
 		//	Paint the modifiers
 
-		if (pShield->GetMods().IsNotEmpty() || pShield->GetBonus() != 0)
+		if (pShield->GetEnhancements() != NULL)
 			{
 			pShip->SetCursorAtNamedDevice(ItemList, devShields);
 			CString sMods = pShield->GetEnhancedDesc(pShip, &ItemList.GetItemAtCursor());
@@ -333,7 +333,7 @@ void CArmorDisplay::Update (void)
 		Ctx.iRotation = 90;
 
 		if (m_pShieldPainter == NULL)
-			m_pShieldPainter = ShieldDesc.pShieldEffect->CreatePainter();
+			m_pShieldPainter = ShieldDesc.pShieldEffect->CreatePainter(CCreatePainterCtx());
 
 		m_pShieldPainter->Paint(m_Buffer, x, y, Ctx);
 		}

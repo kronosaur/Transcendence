@@ -78,7 +78,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		if (bWeaponPos)
 			{
-			int iScale = RectWidth(pClass->GetImage().GetImageRect());
+			int iScale = pClass->GetImage().GetImageViewportSize();
 			int iRotation = Direction2Angle(i, iRotationCount);
 
 			CDeviceDescList Devices;

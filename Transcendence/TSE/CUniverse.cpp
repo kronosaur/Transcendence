@@ -67,6 +67,13 @@
 //	19: 1.2 Alpha 1
 //		Added m_EncounterRecord in CStationType
 //
+//	24: 1.2 Alpha 2
+//		Added m_ObjStats in CUniverse
+//		Added object names to CObjectTracker
+//		Added m_iAccepted to CMissionType
+//		Added m_sAttributes to CTopologyNode
+//		Added m_AscendedObjects to CUniverse
+
 //	See: TSEUtil.h for definition of UNIVERSE_SAVE_VERSION
 
 #include "PreComp.h"
@@ -105,6 +112,14 @@ DWORD g_dwPerformanceTimer;
 #endif
 
 static CUniverse::IHost g_DefaultHost;
+
+static char *FONT_TABLE[CUniverse::fontCount] = 
+	{
+	"Medium",				//	Map label: Tahoma 13
+	"SmallBold",			//	Signs: Tahoma 11 bold
+	"SmallBold",			//	SRS object name: Tahoma 11 bold
+	"Header",				//	SRS object message
+	};
 
 CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_Sounds(FALSE, TRUE),
@@ -161,7 +176,9 @@ CUniverse::~CUniverse (void)
 	//	Free up various arrays whose cleanup requires m_CC
 
 	m_Design.CleanUp();
+	m_Extensions.CleanUp();
 
+	//	Done
 
 	g_pUniverse = NULL;
 	}
@@ -490,16 +507,6 @@ void CUniverse::DebugOutput (char *pszLine, ...)
 #endif
 	}
 
-void CUniverse::DeleteAllMissions (void)
-
-//	DeleteAllMissions
-//
-//	Deletes all missions.
-
-	{
-	m_AllMissions.DeleteAll();
-	}
-
 void CUniverse::DestroySystem (CSystem *pSystem)
 
 //	DestroySystem
@@ -633,7 +640,7 @@ CShipClass *CUniverse::FindShipClassByName (const CString &sName)
 		{
 		CShipClass *pClass = GetShipClass(i);
 		if (!pClass->IsVirtual()
-				&& pClass->HasAttribute(CONSTLIT("genericClass"))
+				&& pClass->HasLiteralAttribute(CONSTLIT("genericClass"))
 				&& strEquals(sName, pClass->GetName()))
 			return pClass;
 		}
@@ -644,7 +651,7 @@ CShipClass *CUniverse::FindShipClassByName (const CString &sName)
 		{
 		CShipClass *pClass = GetShipClass(i);
 		if (!pClass->IsVirtual()
-				&& pClass->HasAttribute(CONSTLIT("genericClass"))
+				&& pClass->HasLiteralAttribute(CONSTLIT("genericClass"))
 				&& strFind(pClass->GetName(), sName) != -1)
 			return pClass;
 		}
@@ -1053,11 +1060,23 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 	if (!m_bBasicInit)
 		{
+		//	Set the host (OK if Ctx.pHost is NULL)
+
+		SetHost(Ctx.pHost);
+
 		//	Initialize CodeChain
 
 		if (error = InitCodeChain())
 			{
 			*retsError = CONSTLIT("Unable to initialize CodeChain.");
+			return error;
+			}
+
+		//	Initialize fonts
+
+		if (error = InitFonts())
+			{
+			*retsError = CONSTLIT("Unable to initialize fonts.");
 			return error;
 			}
 
@@ -1161,10 +1180,6 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 	m_Extensions.FreeDeleted();
 
-	//	Init encounter tables
-
-	InitLevelEncounterTables();
-
 	return NOERROR;
 	}
 
@@ -1190,6 +1205,49 @@ void CUniverse::InitDefaultHitEffects (void)
 		}
 	}
 
+ALERROR CUniverse::InitFonts (void)
+
+//	InitFonts
+//
+//	Initializes fonts
+
+	{
+	int i;
+
+	for (i = 0; i < fontCount; i++)
+		{
+		m_FontTable[i] = m_pHost->GetFont(CString(FONT_TABLE[i]));
+
+		//	If we could not find the font then we need to create a default version
+
+		if (m_FontTable[i] == NULL)
+			{
+			HFONT hFont = ::CreateFont(-13,
+					0,
+					0,
+					0,
+					FW_NORMAL,
+					false,
+					false,
+					false,
+					ANSI_CHARSET,
+					OUT_TT_ONLY_PRECIS,
+					CLIP_DEFAULT_PRECIS,
+					ANTIALIASED_QUALITY,
+					FF_SWISS,
+					"Tahoma");
+
+			m_DefaultFonts[i].CreateFromFont(hFont);
+			m_FontTable[i] = &m_DefaultFonts[i];
+			::DeleteObject(hFont);
+			}
+		}
+
+	//	Done
+	
+	return NOERROR;
+	}
+
 ALERROR CUniverse::InitGame (DWORD dwStartingMap, CString *retsError)
 
 //	InitGame
@@ -1213,6 +1271,90 @@ ALERROR CUniverse::InitGame (DWORD dwStartingMap, CString *retsError)
 
 	if (error = InitTopology(dwStartingMap, retsError))
 		return error;
+
+	//	Tell all types that the topology has been initialized (we need to do this
+	//	before we call InitLevelEncounterTable).
+
+	m_Design.NotifyTopologyInit();
+
+	//	Init encounter tables (this must be done AFTER InitTopoloy because it
+	//	some station encounters specify a topology node).
+
+	InitLevelEncounterTables();
+
+	return NOERROR;
+	}
+
+ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
+
+//	InitRequiredEncounters
+//
+//	Called from inside InitTopology. If there are any encounter types that need
+//	to be created then we distribute them across the topology here.
+
+	{
+	int i, j;
+
+	//	Loop over all station types and see if we need to distribute them.
+
+	for (i = 0; i < GetStationTypeCount(); i++)
+		{
+		CStationType *pType = GetStationType(i);
+		int iCount = pType->GetNumberAppearing();
+		if (iCount <= 0)
+			continue;
+
+		//	Make a list of all the nodes in which this station can appear
+
+		TProbabilityTable<CTopologyNode *> Table;
+		for (j = 0; j < m_Topology.GetTopologyNodeCount(); j++)
+			{
+			CTopologyNode *pNode = m_Topology.GetTopologyNode(j);
+
+			int iFreq = pType->GetFrequencyForNode(pNode);
+			if (iFreq > 0)
+				Table.Insert(pNode, iFreq);
+			}
+
+		//	If no nodes, then report a warning
+
+		if (Table.GetCount() == 0)
+			{
+			kernelDebugLogMessage("Warning: Not enough appropriate systems to create %d %s [%08x].", iCount, pType->GetNounPhrase(iCount > 1 ? nounPlural : 0), pType->GetUNID());
+			continue;
+			}
+
+		//	If this station is unique per system then we need at least the 
+		//	required number of systems. If not, we adjust the count.
+
+		if (pType->IsUniqueInSystem() && iCount < Table.GetCount())
+			{
+			iCount = Table.GetCount();
+			kernelDebugLogMessage("Warning: Decreasing number appearing of %s [%08x] to %d due to lack of appropriate systems.", pType->GetNounPhrase(nounPlural), pType->GetUNID(), iCount);
+			}
+
+		//	Loop over the required number and place them in appropriate nodes.
+
+		for (j = 0; j < iCount; j++)
+			{
+			CTopologyNode *pNode = Table.GetAt(Table.RollPos());
+
+			//	If the station is unique in the system and we've already got a 
+			//	station in this system, then try again.
+
+			if (pType->IsUniqueInSystem() && pNode->GetRequiredEncounter(pType) != 0)
+				{
+				j--;
+				continue;
+				}
+
+			//	Add it to this node
+
+			pNode->ChangeRequiredEncounter(pType, 1);
+			}
+		}
+
+	//	Done
 
 	return NOERROR;
 	}
@@ -1322,9 +1464,8 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	DWORD		index of POV (0xffffffff if none)
 //	CTimeSpan	time that we've spent playing the game
 //
-//	DWORD		No of missions
-//	CMission	Mission
-//
+//	CMissionList	m_AllMissions
+//	CAscendedObjectList	m_AscendedObjects;
 //	CTimedEventList	m_Events
 //
 //	DWORD		No of topology nodes
@@ -1336,6 +1477,7 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 //	Type-specific data
 //
 //	CObjectTracker	m_Objects
+//	CObjectStats	m_ObjStats
 //
 //	NOTE: The debug mode flag is stored in the game file header. Callers must 
 //	set the universe to debug mode from the game file header flag before calling
@@ -1540,6 +1682,9 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		if (m_AllMissions.ReadFromStream(ObjCtx, retsError) != NOERROR)
 			return ERR_FAIL;
 
+		if (Ctx.dwVersion >= 24)
+			m_AscendedObjects.ReadFromStream(ObjCtx);
+
 		//	Events
 
 		m_Events.ReadFromStream(ObjCtx);
@@ -1601,6 +1746,9 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 
 	if (Ctx.dwVersion >= 18)
 		m_Objects.ReadFromStream(Ctx);
+
+	if (Ctx.dwVersion >= 20)
+		m_ObjStats.ReadFromStream(Ctx);
 
 	//	Load previous versions' type data
 
@@ -1689,7 +1837,7 @@ void CUniverse::PaintObjectMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		m_pPOV->GetSystem()->PaintViewportMapObject(Dest, rcView, m_pPOV, pObj);
 	}
 
-void CUniverse::PaintPOV (CG16bitImage &Dest, const RECT &rcView, bool bEnhanced)
+void CUniverse::PaintPOV (CG16bitImage &Dest, const RECT &rcView, DWORD dwFlags)
 
 //	PaintPOV
 //
@@ -1697,7 +1845,7 @@ void CUniverse::PaintPOV (CG16bitImage &Dest, const RECT &rcView, bool bEnhanced
 
 	{
 	if (m_pPOV)
-		m_pPOV->GetSystem()->PaintViewport(Dest, rcView, m_pPOV, bEnhanced);
+		m_pPOV->GetSystem()->PaintViewport(Dest, rcView, m_pPOV, dwFlags);
 	}
 
 void CUniverse::PaintPOVLRS (CG16bitImage &Dest, const RECT &rcView, bool *retbNewEnemies)
@@ -1857,7 +2005,8 @@ ALERROR CUniverse::Reinit (void)
 
 	//	Clean up global missions
 
-	DeleteAllMissions();
+	m_AllMissions.DeleteAll();
+	m_AscendedObjects.DeleteAll();
 
 	//	Delete all events
 
@@ -1908,8 +2057,8 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	DWORD		index of POV (0xffffffff if none)
 //	DWORD		milliseconds that we've spent playing the game
 //
-//	DWORD		No of missions
-//	CMission	Mission
+//	CMissionList	m_AllMissions
+//	CAscendedObjectList	m_AscendedObjects
 //	CTimedEventList	m_Events
 //
 //	DWORD		No of topology nodes
@@ -1920,6 +2069,7 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 //	DWORD		type: UNID
 //	CDesignType
 //	CObjectTracker
+//	CObjStats
 
 	{
 	int i;
@@ -2005,6 +2155,8 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	if (m_AllMissions.WriteToStream(pStream, &sError) != NOERROR)
 		return ERR_FAIL;
 
+	m_AscendedObjects.WriteToStream(pStream);
+
 	//	Save out event data. Note that we save this after the missions because
 	//	events may refer to missions.
 
@@ -2038,6 +2190,7 @@ ALERROR CUniverse::SaveToStream (IWriteStream *pStream)
 	//	topology data, because we need that.
 
 	m_Objects.WriteToStream(pStream);
+	m_ObjStats.WriteToStream(pStream);
 
 	return NOERROR;
 	}
@@ -2243,6 +2396,10 @@ void CUniverse::StartGame (bool bNewGame)
 
 		FireOnGlobalUniverseCreated();
 
+		//	The current system has started
+
+		m_Design.FireOnGlobalSystemStarted();
+
 		//	If we have a player then tell objects that the player has entered
 		//	the system.
 
@@ -2304,6 +2461,10 @@ void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	Update missions
 
 	UpdateMissions(m_iTick, m_pCurrentSystem);
+
+	//	Update types
+
+	m_Design.FireOnGlobalUpdate(m_iTick);
 
 	//	Next
 

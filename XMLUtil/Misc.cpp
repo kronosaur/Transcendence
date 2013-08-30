@@ -168,7 +168,7 @@ ALERROR CreateXMLElementFromCommandLine (int argc, char *argv[], CXMLElement **r
 						}
 					else if (*pPos == ' ')
 						pPos++;
-					else if (*pPos == '/' || *pPos == '-' || *pPos == '\0')
+					else if (*pPos == '\0')
 						{
 						iState = stateStart;
 						}

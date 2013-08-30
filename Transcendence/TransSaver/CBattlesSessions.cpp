@@ -116,7 +116,7 @@ void CBattlesSession::CreateBattle (DWORD dwFlags, DWORD dwNewShipClass, DWORD d
 
 					//	Attack a ship of an enemy sovereign
 
-					pController->AddOrder(IShipController::orderDestroyTarget, pShips[(iIndex + 1) % SOVEREIGN_COUNT], 0);
+					pController->AddOrder(IShipController::orderDestroyTarget, pShips[(iIndex + 1) % SOVEREIGN_COUNT], IShipController::SData());
 					}
 				}
 			}
@@ -268,7 +268,7 @@ void CBattlesSession::CreateRandomShips (DWORD dwClass, CSovereign *pSovereign, 
 			pShipClass = g_pUniverse->GetShipClass(mathRandom(0, g_pUniverse->GetShipClassCount()-1));
 		while (pShipClass->IsPlayerShip()
 				|| pShipClass->IsVirtual()
-				|| !pShipClass->HasAttribute(ATTRIB_GENERIC_SHIP_CLASS));
+				|| !pShipClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS));
 		}
 
 	//	Normally we create a single ship, but sometimes we create lots
@@ -563,7 +563,7 @@ void CBattlesSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 
 	//	Paint the universe
 
-	g_pUniverse->PaintPOV(Screen, rcViewport, false);
+	g_pUniverse->PaintPOV(Screen, rcViewport, 0);
 	}
 
 void CBattlesSession::OnPOVSet (CSpaceObject *pObj)

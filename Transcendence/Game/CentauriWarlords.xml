@@ -3,7 +3,7 @@
 <TranscendenceModule>
 
 	<Sovereign UNID="&svCentauriWarlords;"
-			name="Centauri Warlords"
+			name="Centauri Clans"
 			alignment="destructive order"
 			/>
 
@@ -36,6 +36,7 @@
 				lifetime=			"30"
 				powerUse=			"100"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -43,15 +44,6 @@
 				<Shot posAngle="90" posRadius="13" />
 				<Shot posAngle="270" posRadius="13" />
 			</Configuration>
-
-			<Effect>
-				<Bolt
-						length=				"16"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -84,6 +76,7 @@
 				lifetime=			"20"
 				powerUse=			"100"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -91,15 +84,6 @@
 				<Shot posAngle="90" posRadius="13" />
 				<Shot posAngle="270" posRadius="13" />
 			</Configuration>
-
-			<Effect>
-				<Bolt
-						length=				"40"
-						width=				"4"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -131,6 +115,7 @@
 				lifetime=			"30"
 				powerUse=			"10"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -138,15 +123,6 @@
 				<Shot posAngle="90" posRadius="13" />
 				<Shot posAngle="270" posRadius="13" />
 			</Configuration>
-
-			<Effect>
-				<Bolt
-						length=				"12"
-						width=				"2"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -203,7 +179,6 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"heavy raider"
-			score=				"160"
 
 			mass=				"100"
 			cargoSpace=			"10"
@@ -491,7 +466,6 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"command ship"
-			score=				"140"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -531,7 +505,6 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"heavy raider"
-			score=				"90"
 
 			mass=				"100"
 			cargoSpace=			"10"
@@ -578,7 +551,6 @@
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"raider"
-			score=				"20"
 
 			mass=				"45"
 			cargoSpace=			"5"
@@ -803,7 +775,7 @@
 	<!-- Centauri Camp -->
 
 	<StationType UNID="&stCentauriCamp;"
-			name=				"Centauri Warlords camp"
+			name=				"Centauri warlord camp"
 			sovereign=			"&svCentauriWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -816,7 +788,7 @@
 			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated"
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
 			levelFrequency=		"crv-- ----- ----- ----- -----"
 			locationCriteria=	"+OuterSystem,-asteroids,-void"
 			>
@@ -839,12 +811,10 @@
 		</Ships>
 
 		<Items>
-			<Item		chance="80" count="1d6" item="&itCentauriRice;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables2;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-			</Table>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
+				<Lookup	chance="50"				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="uncommon">
@@ -856,7 +826,7 @@
 	<!-- Centauri Stronghold -->
 
 	<StationType UNID="&stCentauriStronghold;"
-			name=				"Centauri Warlords stronghold"
+			name=				"Centauri warlord stronghold"
 			sovereign=			"&svCentauriWarlords;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
@@ -864,12 +834,12 @@
 			canAttack=			"true"
 
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"150"
-			fireRateAdj=		"60"
+			hitPoints=			"75"
+			fireRateAdj=		"40"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated"
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
 			levelFrequency=		"rurv- ----- ----- ----- -----"
 			locationCriteria=	"+OuterSystem,-asteroids,-void"
 			>
@@ -892,12 +862,10 @@
 		</Ships>
 
 		<Items>
-			<Item		chance="80" count="1d8" item="&itCentauriRice;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
+				<Lookup							table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">
@@ -919,7 +887,7 @@
 			hitPoints=			"35"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted"
+			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted, warlords"
 			maxAppearing=		"1"
 
 			noArticle=			"true"

@@ -13,7 +13,7 @@
 					desc=	"You are inside the main compartment of your ship. A hatch in front of you opens into the cargo hold. To the side there is a small ladder that leads to the reactor and the ship's engines.">
 
 				<Actions>
-					<Action name="Ship configuration" key="S">
+					<Action name="Ship Configuration" key="S">
 						(scrShowScreen gScreen &dsShipConfig;)
 					</Action>
 
@@ -21,18 +21,18 @@
 						(scrShowScreen gScreen &dsRPGMissionJournal;)
 					</Action>
 
-					<Action name="View cargo hold" key="V" >
+					<Action name="View Cargo Hold" key="V" >
 						(block Nil
 							(setq gDest Nil)
 							(scrShowScreen gScreen &dsCargoHold;)
 							)
 					</Action>
 
-					<Action name="Refuel engines" key="R" >
+					<Action name="Refuel Reactor" key="R" >
 						(scrShowScreen gScreen &dsManualRefuel;)
 					</Action>
 
-					<Action name="Back to cockpit" cancel="1" key="B">
+					<Action name="Back to Cockpit" cancel="1" key="B">
 						<Exit/>
 					</Action>
 				</Actions>
@@ -136,7 +136,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Jettison this item" key="J" >
+					<Action name="Jettison this Item" key="J" >
 						(switch
 							(gr gMaxCount 1)
 								(scrShowPane gScreen "JettisonQuantity")

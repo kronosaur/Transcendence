@@ -26,6 +26,33 @@
 #define CONSTANT_PREFIX							CONSTLIT("constant")
 #define UNAVAILABLE_PREFIX						CONSTLIT("unavailable")
 
+struct SServiceData
+	{
+	char *pszName;
+	char *pszIDPrefix;
+	char *pszTag;
+	};
+
+static SServiceData SERVICE_DATA[serviceCount] =
+	{
+		{	"(serviceNone)",			"",		""				},	//	serviceNone
+
+		{	"priceOfferedToPlayer",		"B",	"Buy"			},	//	serviceBuy
+		{	"priceForPlayerToBuy",		"S",	"Sell"			},	//	serviceSell
+		{	"valueOfDonation",			"A",	"AcceptDonation"},	//	serviceAcceptDonations
+		{	"priceToRefuel",			"F",	"Refuel"		},	//	serviceRefuel
+		{	"priceToRepairArmor",		"Ra",	"RepairArmor"	},	//	serviceRepairArmor
+
+		{	"priceToReplaceArmor",		"Ia",	"ReplaceArmor"	},	//	serviceReplaceArmor
+		{	"priceToInstallDevice",		"Id",	"InstallDevice"	},	//	serviceInstallDevice
+		{	"priceToRemoveDevice",		"Vd",	"RemoveDevice"	},	//	serviceRemoveDevice
+		{	"priceToUpgradeDevice",		"Ud",	"UpgradeDevice"	},	//	serviceUpgradeDevice
+		{	"priceToEnhanceItem",		"Ei",	"EnhanceItem"	},	//	serviceEnhanceItem
+
+		{	"priceToRepairItem",		"Ri",	"RepairItem"	},	//	serviceRepairItem
+		{	"customPrice",				"X",	"Custom"		},	//	serviceCustom
+	};
+
 CTradingDesc::CTradingDesc (void) : 
 		m_iMaxCurrency(0),
 		m_iReplenishCurrency(0)
@@ -53,7 +80,7 @@ void CTradingDesc::AddOrder (CItemType *pItemType, const CString &sCriteria, int
 
 	//	Convert to new method
 
-	EServiceTypes iService;
+	ETradeServiceTypes iService;
 	DWORD dwNewFlags;
 	ReadServiceFromFlags(dwFlags, &iService, &dwNewFlags);
 	if (iService == serviceNone)
@@ -80,50 +107,29 @@ void CTradingDesc::AddOrder (CItemType *pItemType, const CString &sCriteria, int
 			}
 	}
 
-CString CTradingDesc::ComputeID (EServiceTypes iService, DWORD dwUNID, const CString &sCriteria, DWORD dwFlags)
+int CTradingDesc::CalcPriceForService (ETradeServiceTypes iService, CSpaceObject *pProvider, const CItem &Item, int iCount, DWORD dwFlags)
+
+//	CalcPriceForService
+//
+//	Compute a price for a service (used by objects without a Trade descriptor
+
+	{
+	SServiceDesc Default;
+	Default.iService = iService;
+	Default.PriceAdj.InitFromInteger(100);
+	Default.dwFlags = 0;
+
+	return ComputePrice(pProvider, pProvider->GetDefaultEconomy(), Item, iCount, Default, dwFlags);
+	}
+
+CString CTradingDesc::ComputeID (ETradeServiceTypes iService, DWORD dwUNID, const CString &sCriteria, DWORD dwFlags)
 
 //	ComputeID
 //
 //	Generates a string ID for the order. Two identical orders should have the same ID
 
 	{
-	CString sService;
-	switch (iService)
-		{
-		case serviceAcceptDonations:
-			sService = CONSTLIT("A");
-			break;
-
-		case serviceBuy:
-			sService = CONSTLIT("S");
-			break;
-
-		case serviceInstallDevice:
-			sService = CONSTLIT("Id");
-			break;
-
-		case serviceRefuel:
-			sService = CONSTLIT("F");
-			break;
-
-		case serviceRemoveDevice:
-			sService = CONSTLIT("Vd");
-			break;
-
-		case serviceRepairArmor:
-			sService = CONSTLIT("Ra");
-			break;
-
-		case serviceReplaceArmor:
-			sService = CONSTLIT("Ia");
-			break;
-
-		case serviceSell:
-			sService = CONSTLIT("S");
-
-		default:
-			sService = CONSTLIT("?");
-		}
+	CString sService = ((iService >= 0 && iService < serviceCount) ? CString(SERVICE_DATA[iService].pszIDPrefix) : CONSTLIT("?"));
 
 	if (dwUNID)
 		return strPatternSubst(CONSTLIT("%s:%x"), sService, dwUNID);
@@ -141,7 +147,7 @@ int CTradingDesc::ComputeMaxCurrency (CSpaceObject *pObj)
 	return m_iMaxCurrency * (90 + ((pObj->GetDestiny() + 9) / 18)) / 100;
 	}
 
-int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SServiceDesc &Commodity) const
+int CTradingDesc::ComputePrice (CSpaceObject *pObj, CEconomyType *pCurrency, const CItem &Item, int iCount, const SServiceDesc &Commodity, DWORD dwFlags)
 
 //	ComputePrice
 //
@@ -149,15 +155,43 @@ int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SSe
 
 	{
 	bool bActual = (Commodity.dwFlags & FLAG_ACTUAL_PRICE ? true : false);
+	bool bPlayerAdj = !(dwFlags & FLAG_NO_PLAYER_ADJ);
 
-	//	Get the price 
+	//	Get the raw price from the item
+
+	int iItemPrice;
+	switch (Commodity.iService)
+		{
+		case serviceRepairArmor:
+			{
+			CArmorClass *pArmor = Item.GetType()->GetArmorClass();
+			if (pArmor == NULL)
+				return -1;
+
+			iItemPrice = iCount * pArmor->GetRepairCost();
+			break;
+			}
+
+		case serviceInstallDevice:
+		case serviceReplaceArmor:
+			{
+			iItemPrice = iCount * Item.GetType()->GetInstallCost();
+			break;
+			}
+
+		default:
+			iItemPrice = iCount * Item.GetTradePrice(pObj, bActual);
+			break;
+		}
+
+	//	Adjust the price appropriately
 
 	CurrencyValue iPrice;
 	CString sPrefix;
 	int iPriceAdj = Commodity.PriceAdj.EvalAsInteger(pObj, &sPrefix);
 
 	if (sPrefix.IsBlank())
-		iPrice = iPriceAdj * Item.GetTradePrice(pObj, bActual) / 100;
+		iPrice = iPriceAdj * iItemPrice / 100;
 	else if (strEquals(sPrefix, CONSTANT_PREFIX))
 		iPrice = iPriceAdj;
 	else if (strEquals(sPrefix, UNAVAILABLE_PREFIX))
@@ -168,9 +202,16 @@ int CTradingDesc::ComputePrice (CSpaceObject *pObj, const CItem &Item, const SSe
 		return -1;
 		}
 
+	//	Let global types adjust the price
+
+	int iPlayerPriceAdj;
+	if (bPlayerAdj 
+			&& g_pUniverse->GetDesignCollection().FireGetGlobalPlayerPriceAdj(Commodity.iService, pObj, Item, NULL, &iPlayerPriceAdj))
+		iPrice = iPlayerPriceAdj * iPrice / 100;
+
 	//	Convert to proper currency
 
-	return (int)m_pCurrency->Exchange(Item.GetCurrencyType(), iPrice);
+	return (int)pCurrency->Exchange(Item.GetCurrencyType(), iPrice);
 	}
 
 ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CTradingDesc **retpTrade)
@@ -181,7 +222,7 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 
 	{
 	ALERROR error;
-	int i;
+	int i, j;
 
 	//	Allocate the trade structure
 
@@ -227,23 +268,17 @@ ALERROR CTradingDesc::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CT
 
 			//	Service
 
-			if (strEquals(pLine->GetTag(), ACCEPT_DONATION_TAG))
-				pCommodity->iService = serviceAcceptDonations;
-			else if (strEquals(pLine->GetTag(), BUY_TAG))
-				pCommodity->iService = serviceBuy;
-			else if (strEquals(pLine->GetTag(), INSTALL_ARMOR_TAG))
-				pCommodity->iService = serviceReplaceArmor;
-			else if (strEquals(pLine->GetTag(), INSTALL_DEVICE_TAG))
-				pCommodity->iService = serviceInstallDevice;
-			else if (strEquals(pLine->GetTag(), REFUEL_TAG))
-				pCommodity->iService = serviceRefuel;
-			else if (strEquals(pLine->GetTag(), REMOVE_DEVICE_TAG))
-				pCommodity->iService = serviceRemoveDevice;
-			else if (strEquals(pLine->GetTag(), REPAIR_ARMOR_TAG))
-				pCommodity->iService = serviceRepairArmor;
-			else if (strEquals(pLine->GetTag(), SELL_TAG))
-				pCommodity->iService = serviceSell;
-			else
+			pCommodity->iService = serviceNone;
+			for (j = 0; j < serviceCount; j++)
+				{
+				if (strEquals(pLine->GetTag(), CString(SERVICE_DATA[j].pszTag, -1, true)))
+					{
+					pCommodity->iService = (ETradeServiceTypes)j;
+					break;
+					}
+				}
+
+			if (pCommodity->iService == serviceNone)
 				{
 				Ctx.sError = strPatternSubst(CONSTLIT("Unknown Trade directive: %s."), pLine->GetTag());
 				return ERR_FAIL;
@@ -298,7 +333,7 @@ bool CTradingDesc::Buys (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, i
 
 			//	Compute price
 
-			int iPrice = ComputePrice(pObj, Item, m_List[i]);
+			int iPrice = ComputePrice(pObj, Item, 1, m_List[i], dwFlags);
 			if (iPrice < 0)
 				return false;
 
@@ -335,7 +370,7 @@ int CTradingDesc::Charge (CSpaceObject *pObj, int iCharge)
 		return 0;
 	}
 
-bool CTradingDesc::FindService (EServiceTypes iService, const CItem &Item, const SServiceDesc **retpDesc)
+bool CTradingDesc::FindService (ETradeServiceTypes iService, const CItem &Item, const SServiceDesc **retpDesc)
 
 //	FindService
 //
@@ -359,7 +394,71 @@ bool CTradingDesc::FindService (EServiceTypes iService, const CItem &Item, const
 	return false;
 	}
 
-int CTradingDesc::GetMaxLevelMatched (EServiceTypes iService) const
+bool CTradingDesc::GetArmorInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const
+
+//	GetArmorInstallPrice
+//
+//	Returns the price to install the given armor
+
+	{
+	int i;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == serviceReplaceArmor
+				&& Matches(Item, m_List[i]))
+			{
+			//	Compute price
+
+			int iPrice = ComputePrice(pObj, Item, 1, m_List[i], dwFlags);
+			if (iPrice < 0)
+				return false;
+
+			//	Done
+
+			if (retiPrice)
+				*retiPrice = iPrice;
+
+			return true;
+			}
+
+	return false;
+	}
+
+bool CTradingDesc::GetArmorRepairPrice (CSpaceObject *pObj, const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice) const
+
+//	GetArmorRepairPrice
+//
+//	Returns the price for repairing the given armor.
+
+	{
+	int i;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == serviceRepairArmor
+				&& Matches(Item, m_List[i]))
+			{
+			//	Compute price
+
+			int iPrice = ComputePrice(pObj, Item, iHPToRepair, m_List[i], dwFlags);
+			if (iPrice < 0)
+				return false;
+
+			//	Done
+
+			if (retiPrice)
+				*retiPrice = iPrice;
+
+			return true;
+			}
+
+	return false;
+	}
+
+int CTradingDesc::GetMaxLevelMatched (ETradeServiceTypes iService) const
 
 //	GetMaxLevelMatched
 //
@@ -388,7 +487,7 @@ int CTradingDesc::GetMaxLevelMatched (EServiceTypes iService) const
 	return iMaxLevel;
 	}
 
-bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice) const
+bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObjToRefuel, DWORD dwFlags, CItemType **retpItemType, int *retiPrice) const
 
 //	GetRefuelItemAndPrice
 //
@@ -418,7 +517,7 @@ bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObj
 				if (Item.MatchesCriteria(m_List[i].ItemCriteria)
 						&& pShipToRefuel->IsFuelCompatible(Item))
 					{
-					if (pBestItem == NULL || iBestLevel > pType->GetLevel())
+					if (pBestItem == NULL || pType->GetLevel() > iBestLevel)
 						{
 						//	Compute the price, because if we don't sell it, then we
 						//	skip it.
@@ -426,7 +525,7 @@ bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObj
 						//	NOTE: Unlike selling, we allow 0 prices because some 
 						//	stations give fuel for free.
 
-						int iPrice = ComputePrice(pObj, Item, m_List[i]);
+						int iPrice = ComputePrice(pObj, Item, 1, m_List[i], dwFlags);
 						if (iPrice >= 0)
 							{
 							pBestItem = pType;
@@ -456,7 +555,7 @@ bool CTradingDesc::GetRefuelItemAndPrice (CSpaceObject *pObj, CSpaceObject *pObj
 	return false;
 	}
 
-bool CTradingDesc::Matches (const CItem &Item, const SServiceDesc &Commodity)
+bool CTradingDesc::Matches (const CItem &Item, const SServiceDesc &Commodity) const
 
 //	Matches
 //
@@ -616,7 +715,7 @@ void CTradingDesc::ReadFromStream (SLoadCtx &Ctx)
 		}
 	}
 
-void CTradingDesc::ReadServiceFromFlags (DWORD dwFlags, EServiceTypes *retiService, DWORD *retdwFlags)
+void CTradingDesc::ReadServiceFromFlags (DWORD dwFlags, ETradeServiceTypes *retiService, DWORD *retdwFlags)
 
 //	ReadServiceFromFlags
 //
@@ -706,7 +805,7 @@ bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, 
 
 	//	Compute price
 
-	int iPrice = ComputePrice(pObj, Item, *pDesc);
+	int iPrice = ComputePrice(pObj, Item, 1, *pDesc, dwFlags);
 	if (iPrice <= 0)
 		return false;
 
@@ -716,6 +815,19 @@ bool CTradingDesc::Sells (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, 
 		*retiPrice = iPrice;
 
 	return true;
+	}
+
+CString CTradingDesc::ServiceToString (ETradeServiceTypes iService)
+
+//	ServiceToString
+//
+//	Returns a string representing the service
+
+	{
+	if (iService >= 0 && iService < serviceCount)
+		return CString(SERVICE_DATA[iService].pszName);
+	else
+		return CONSTLIT("unknown");
 	}
 
 bool CTradingDesc::SetInventoryCount (CSpaceObject *pObj, SServiceDesc &Desc, CItemType *pItemType)

@@ -173,9 +173,9 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 			"(or exp1 exp2 ... expn) -> True/Nil",
 			NULL,	0,	},
 
-		{	"power",			fnMathOld,			FN_MATH_POWER,
+		{	"power",			fnMathFractions,		FN_MATH_POWER,
 			"(power x y) -> z",
-			NULL,	0,	},
+			"vv",	0,	},
 
 		{	"regex",			fnRegEx,			0,
 			"(regex source pattern ['offset|'subex]) -> result",
@@ -253,6 +253,22 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 		{	"sysGlobals",		fnSysInfo,		FN_SYSINFO_GLOBALS,		"",		NULL,	0,	},
 		{	"sysPoolUsage",		fnSysInfo,		FN_SYSINFO_POOLUSAGE,	"",		NULL,	0,	},
 		{	"sysTicks",			fnSysInfo,		FN_SYSINFO_TICKS,		"",		NULL,	0,	},
+
+		{	"typeof",			fnItem,			FN_ITEM_TYPE,
+			"(typeof item) -> type\n\n"
+
+			"type\n\n"
+
+			"   error\n"
+			"   function\n"
+			"   int32\n"
+			"   list\n"
+			"   primitive\n"
+			"   string\n"
+			"   struct\n",
+
+			"v",	0,	},
+
 		{	"vecVector",		fnVecCreate,	0,						"",		NULL,	0,	},
 		{	"vecSetElement",	fnVector,		FN_VECTOR_SETELEMENT,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 	};

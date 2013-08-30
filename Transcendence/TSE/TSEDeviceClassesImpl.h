@@ -142,6 +142,9 @@ class CEnhancerClass : public CDeviceClass
 		virtual bool GetDeviceEnhancementDesc (CInstalledDevice *pDevice, CSpaceObject *pSource, CInstalledDevice *pWeapon, SDeviceEnhancementDesc *retDesc);
 		virtual int GetPowerRating (CItemCtx &Ctx) { return m_iPowerUse; }
 
+	protected:
+		virtual bool OnAccumulateEnhancements (CItemCtx &Device, CInstalledDevice *pTarget, TArray<CString> &EnhancementIDs, CItemEnhancementStack *pEnhancements);
+
 	private:
 		CEnhancerClass (void);
 
@@ -382,6 +385,9 @@ class CWeaponClass : public CDeviceClass
 		inline int GetVariantCount (void) { return m_iShotVariants; }
 		inline CWeaponFireDesc *GetVariant (int iIndex) { return &m_pShotData[iIndex]; }
 
+		static int GetStdDamage (int iLevel);
+		static bool IsStdDamageType (DamageTypes iDamageType, int iLevel);
+
 		//	CDeviceClass virtuals
 
 		virtual bool Activate (CInstalledDevice *pDevice, 
@@ -392,7 +398,7 @@ class CWeaponClass : public CDeviceClass
 		virtual CWeaponClass *AsWeaponClass (void) { return this; }
 		virtual int CalcFireSolution (CInstalledDevice *pDevice, CSpaceObject *pSource, CSpaceObject *pTarget);
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		virtual bool CanRotate (CItemCtx &Ctx);
+		virtual bool CanRotate (CItemCtx &Ctx, int *retiMinFireArc = NULL, int *retiMaxFireArc = NULL);
 		virtual int GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual int GetAmmoVariant (const CItemType *pItem) const;
 		virtual ItemCategories GetCategory (void) const;
@@ -471,7 +477,8 @@ class CWeaponClass : public CDeviceClass
 
 		int CalcBalance (int iVariant);
 		int CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPosOffset, int *ShotDir, bool bSetAlternating);
-		int CalcConfigurationMultiplier (CWeaponFireDesc *pShot = NULL) const;
+		int CalcConfigurationMultiplier (CWeaponFireDesc *pShot = NULL, bool bIncludeFragments = true) const;
+		Metric CalcDamage (CWeaponFireDesc *pShot) const;
 		Metric CalcDamagePerShot (CWeaponFireDesc *pShot) const;
 		int CalcFireAngle (CItemCtx &ItemCtx, Metric rSpeed, CSpaceObject *pTarget, bool *retbOutOfArc);
 		EOnFireWeaponResults FireOnFireWeapon (CItemCtx &ItemCtx, 
@@ -532,6 +539,8 @@ class CWeaponClass : public CDeviceClass
 		int m_iCounterUpdateRate;				//	Ticks to update counter
 		int m_iCounterUpdate;					//	Inc/dec value per update
 		int m_iCounterActivate;					//	Inc/dec value per shot
+
+		bool m_bTargetStationsOnly;				//	Do not target ships
 
 		SEventHandlerDesc m_CachedEvents[evtCount];	//	Cached events
 

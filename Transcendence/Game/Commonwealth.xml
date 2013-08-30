@@ -11,40 +11,17 @@
 			class=				"EI500"
 			type=				"freighter"
 
+			attributes=			"genericClass"
+			 
+			size=				"27"
 			mass=				"250"
-			cargoSpace=			"200"
 			thrust=				"200"
 			maneuver=			"6"
 			maxSpeed=			"18"
+			cargoSpace=			"200"
 
 			leavesWreck=		"75"
-
-			attributes=			"genericClass"
 			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="225" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="135" span="90" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="45"  span="90" armorID="&itAdvancedReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itOmniTurbolaserCannon;"/>
-			<Device deviceID="&itClass3Deflector;"/>
-		</Devices>
-
-		<Items>
-			<Item count="1d6" item="&itHelium3FuelRod;"/>
-		</Items>
-
-		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-22" y="-16"	z="0"/>
-			<NozzlePos x="-22" y="16"	z="0"/>
-		</DriveImages>
 
 		<Names definiteArticle="true">
 			freighter Armadillo; freighter Bjorn; freighter Caballero;
@@ -58,11 +35,39 @@
 			freighter Yonder Star; freighter Zorro
 		</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itOmniTurbolaserCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="1d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-22" y="-16"	z="0"/>
+			<NozzlePos x="-22" y="16"	z="0"/>
+		</DriveImages>
+
 		<AISettings
 			fireRateAdj=		"120"
 			fireAccuracy=		"85"
 			perception=			"4"
 			/>
+
+		<!-- AI and Behavior -->
 
 		<Events>
 			<OnDestroy>
@@ -303,6 +308,8 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -401,6 +408,8 @@
 			fireRateAdj=		"40"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<!-- low thrust
@@ -455,6 +464,8 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<!-- low thrust
@@ -505,6 +516,8 @@
 			fireRateAdj=		"30"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
@@ -523,56 +536,20 @@
 			manufacturer=		"NAMI"
 			class=				"Scarab"
 			type=				"superfreighter"
+			level=				"6"
+			   
+			attributes=			"commonwealth,freighter,genericClass"
 
-			mass=				"20000"
-			cargoSpace=			"15000"
-			thrust=				"2000"
+			size=				"175"
+			mass=				"15000"
+			thrustRatio=		"0.2"
 			maneuver=			"20"
 			maxSpeed=			"6"
+			cargoSpace=			"120000"
 
 			explosionType=		"&vtBlastExplosion4;"
 			leavesWreck=		"100"
-
-			attributes=			"commonwealth,freighter,genericClass"
 			>
-
-		<Armor>
-			<ArmorSection start="345" span="15" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="330" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="315" span="15" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="300" span="15" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="285" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="270" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="255" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="240" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="225" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="210" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="195" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="180" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-
-			<ArmorSection start="165" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="150" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="135" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="120" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="105" span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="90"  span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="75"  span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="60"  span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="45"  span="15" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="30"  span="15" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="15"  span="15" armorID="&itAdvancedReactiveArmor;" nonCritical="general"/>
-			<ArmorSection start="0"   span="15" armorID="&itAdvancedReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itSlamCannon;" omnidirectional="true"/>
-			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
-		</Devices>
-
-		<Items>
-		</Items>
-
-		<Image imageID="&rsLargeShips1;" imageX="1344" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<Names definiteArticle="true">
 			superfreighter St. Aoki; superfreighter St. Beatrice; superfreighter St. Celendin;
@@ -587,12 +564,60 @@
 			superfreighter St. Bharati; superfreighter St. Madhavi; superfreighter St. Astrel
 		</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"18"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itSlamCannon;" omnidirectional="true"/>
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"20"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-68"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"30"
+
+					posX=		"19"
+					posY=		"0"
+					sizeX=		"140"
+					sizeY=		"50"
+					/>
+		</Interior>
+
+		<Items>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsLargeShips1;" imageX="1344" imageY="0" imageWidth="192" imageHeight="192"/>
+
 		<AISettings
 			fireRateAdj=		"40"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
+
+		<!-- AI and Behavior -->
 
 		<Events>
 			<OnDestroy>
@@ -641,6 +666,8 @@
 			fireRateAdj=		"30"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48"/>
@@ -699,17 +726,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"1"
 					/>
@@ -795,13 +822,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -826,7 +853,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 5)
 									(setq gArmorSegment 0)
@@ -961,17 +988,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"5"
 					levelCurve=		"1"
 					/>
@@ -1075,13 +1102,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1106,7 +1133,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 7)
 									(setq gArmorSegment 0)
@@ -1262,12 +1289,12 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotForSale;"
+					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="5" 
-					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotForSale;"
+					criteria=		"* +Meds; -Illegal; -Military; -Alien; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
@@ -1333,13 +1360,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1645,7 +1672,7 @@
 					(switch
 						(eq (msnGetData gSource 'targetType) 'centauriWarlords)
 							(cat
-								"\"A band of Centauri warlords has been harrassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
+								"\"A band of Centauri warlords has been harassing this station recently. We've discovered the location of their base and we want you to go there and destroy them. "
 								"If you succeed we'll pay you " (msnGetData gSource 'reward) " credits. Will you help us?\""
 								)
 							
@@ -2128,7 +2155,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Donate item" key="D" default="1">
+							<Action name="Donate Item" key="D" default="1">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(setq gPrevPane "Default")
@@ -2194,17 +2221,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
@@ -2300,13 +2327,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -2331,7 +2358,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gArmorSegment 0)
@@ -2919,7 +2946,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate this item" default="1" key="D">
+					<Action name="Donate this Item" default="1" key="D">
 						(switch
 							(gr gMaxCount 1)
 								(scrShowPane gScreen "Quantity")
@@ -3491,7 +3518,7 @@
 							)
 					</Action>
 
-					<Action name="Repair or replace armor" key="A" >
+					<Action name="Repair or Replace Armor" key="A" >
 						(block Nil
 							(setq gTechLevel 8)
 							(setq gArmorSegment 0)
@@ -3501,7 +3528,7 @@
 							)
 					</Action>
 
-					<Action name="Install device" key="D" >
+					<Action name="Install Device" key="D" >
 						(block Nil
 							(setq gTechLevel 7)
 							(setq gTechModifier Nil)
@@ -3511,14 +3538,14 @@
 							)
 					</Action>
 
-					<Action name="Remove device" key="V" >
+					<Action name="Remove Device" key="V" >
 						(block Nil
 							(setq gMargin 100)
 							(scrShowScreen gScreen "&dsRemoveDevice;")
 							)
 					</Action>
 
-					<Action name="Upgrade reactor" key="P" >
+					<Action name="Upgrade Reactor" key="P" >
 						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 							{
 							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")

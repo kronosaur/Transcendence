@@ -19,10 +19,13 @@
 #define ON_REMOVED_AS_ENHANCEMENT_EVENT			CONSTLIT("OnRemovedAsEnhancement")
 #define ON_UNINSTALL_EVENT						CONSTLIT("OnUninstall")
 
+#define PROPERTY_CATEGORY						CONSTLIT("category")
 #define PROPERTY_CHARGES						CONSTLIT("charges")
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
+#define PROPERTY_DESCRIPTION					CONSTLIT("description")
 #define PROPERTY_DISRUPTED						CONSTLIT("disrupted")
 #define PROPERTY_INC_CHARGES					CONSTLIT("incCharges")
+#define PROPERTY_INSTALLED						CONSTLIT("installed")
 
 #define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
@@ -257,8 +260,7 @@ bool CItem::FireCanBeInstalled (CSpaceObject *pSource, CString *retsError) const
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 
@@ -298,8 +300,7 @@ bool CItem::FireCanBeUninstalled (CSpaceObject *pSource, CString *retsError) con
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 
@@ -339,8 +340,7 @@ void CItem::FireOnAddedAsEnhancement (CSpaceObject *pSource, const CItem &ItemEn
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(ItemEnhanced);
+		Ctx.SaveAndDefineItemVar(ItemEnhanced);
 		Ctx.DefineInteger(CONSTLIT("aResult"), (int)iStatus);
 
 		ICCItem *pResult = Ctx.Run(Event);
@@ -363,8 +363,7 @@ void CItem::FireOnDisabled (CSpaceObject *pSource) const
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -386,8 +385,7 @@ void CItem::FireOnEnabled (CSpaceObject *pSource) const
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -409,8 +407,7 @@ void CItem::FireOnInstall (CSpaceObject *pSource) const
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -433,8 +430,7 @@ void CItem::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) c
 		CCodeChainCtx CCCtx;
 
 		CCCtx.SaveAndDefineSourceVar(pSource);
-		CCCtx.SaveItemVar();
-		CCCtx.DefineItem(*this);
+		CCCtx.SaveAndDefineItemVar(*this);
 		CCCtx.DefineSpaceObject(CONSTLIT("aObjDestroyed"), Ctx.pObj);
 		CCCtx.DefineSpaceObject(CONSTLIT("aDestroyer"), Ctx.Attacker.GetObj());
 		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.iCause) : NULL));
@@ -462,8 +458,7 @@ bool CItem::FireOnReactorOverload (CSpaceObject *pSource) const
 		bool bHandled = false;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -491,8 +486,7 @@ void CItem::FireOnRemovedAsEnhancement (CSpaceObject *pSource, const CItem &Item
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(ItemEnhanced);
+		Ctx.SaveAndDefineItemVar(ItemEnhanced);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -514,14 +508,45 @@ void CItem::FireOnUninstall (CSpaceObject *pSource) const
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Item %x OnUninstall"), m_pItemType->GetUNID()), pResult);
 		Ctx.Discard(pResult);
 		}
+	}
+
+CString CItem::GetDesc (void) const
+
+//	GetDesc
+//
+//	Gets the item description
+	
+	{
+	//	If we have code, call it to generate the description
+
+	SEventHandlerDesc Event;
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtGetDescription, &Event))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SetEvent(eventGetDescription);
+		Ctx.SetItemType(GetType());
+		Ctx.SaveAndDefineSourceVar(NULL);
+		Ctx.SaveAndDefineItemVar(*this);
+
+		ICCItem *pResult = Ctx.Run(Event);
+		CString sDesc = pResult->GetStringValue();
+		Ctx.Discard(pResult);
+
+		return sDesc;
+		}
+
+	//	Otherwise, get it from the item
+
+	else
+		return m_pItemType->GetDesc(); 
 	}
 
 DWORD CItem::GetDisruptedDuration (void) const
@@ -603,15 +628,15 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 	//	If we have code, call it to generate the name
 
 	SEventHandlerDesc Event;
-	if (m_pItemType->FindEventHandlerItemType(CItemType::evtGetName, &Event))
+	if (m_pItemType->FindEventHandlerItemType(CItemType::evtGetName, &Event)
+			&& !(dwFlags & nounNoEvent))
 		{
 		CCodeChainCtx Ctx;
 
 		Ctx.SetEvent(eventGetName);
 		Ctx.SetItemType(GetType());
 		Ctx.SaveAndDefineSourceVar(NULL);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -640,12 +665,16 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 
 		//	Modifiers
 
+		if ((dwFlags & nounInstalledState)
+				&& IsInstalled())
+			sModifier = CONSTLIT("installed ");
+
 		if (!(dwFlags & nounNoModifiers))
 			{
 			if (IsDamaged() || (GetMods().IsDisadvantage()))
-				sModifier = CONSTLIT("damaged ");
+				sModifier.Append(CONSTLIT("damaged "));
 			else if (IsEnhanced() || GetMods().IsEnhancement())
-				sModifier = CONSTLIT("enhanced ");
+				sModifier.Append(CONSTLIT("enhanced "));
 			}
 		}
 
@@ -654,7 +683,7 @@ CString CItem::GetNounPhrase (DWORD dwFlags) const
 	return ComposeNounPhrase(sName, (int)m_dwCount, sModifier, dwNounFlags, dwFlags);
 	}
 
-ICCItem *CItem::GetProperty (CItemCtx &Ctx, const CString &sName) const
+ICCItem *CItem::GetProperty (CCodeChainCtx *pCCCtx, CItemCtx &Ctx, const CString &sName) const
 
 //	GetProperty
 //
@@ -663,14 +692,28 @@ ICCItem *CItem::GetProperty (CItemCtx &Ctx, const CString &sName) const
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_CHARGES))
+	if (strEquals(sName, PROPERTY_CATEGORY))
+		return CC.CreateString(GetItemCategoryID(m_pItemType->GetCategory()));
+
+	else if (strEquals(sName, PROPERTY_CHARGES))
 		return CC.CreateInteger(GetCharges());
 
 	else if (strEquals(sName, PROPERTY_DAMAGED))
 		return CC.CreateBool(IsDamaged());
 
+	else if (strEquals(sName, PROPERTY_DESCRIPTION))
+		{
+		if (pCCCtx && pCCCtx->GetEvent() == eventGetDescription)
+			return CC.CreateString(m_pItemType->GetDesc());
+		else
+			return CC.CreateString(GetDesc());
+		}
+
 	else if (strEquals(sName, PROPERTY_DISRUPTED))
 		return CC.CreateBool(IsDisrupted());
+
+	else if (strEquals(sName, PROPERTY_INSTALLED))
+		return CC.CreateBool(IsInstalled());
 
 	else
 		{
@@ -798,10 +841,10 @@ int CItem::GetTradePrice (CSpaceObject *pObj, bool bActual) const
 //	GetTradePrice
 //
 //	Returns the price that pObj would pay to buy the item
-//	(or the price that pObj would access to sell the item)
+//	(or the price that pObj would accept to sell the item)
 //
 //	Normally this is identical to GetValue(), but this call allows
-//	items to compute a different value based on other factor
+//	items to compute a different value based on other factors.
 
 	{
 	SEventHandlerDesc Event;
@@ -812,8 +855,7 @@ int CItem::GetTradePrice (CSpaceObject *pObj, bool bActual) const
 		Ctx.SetEvent(eventGetTradePrice);
 		Ctx.SetItemType(GetType());
 		Ctx.SaveAndDefineSourceVar(pObj);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(*this);
+		Ctx.SaveAndDefineItemVar(*this);
 		Ctx.DefineString(CONSTLIT("aPriceType"), (bActual ? CONSTLIT("actual") : CONSTLIT("normal")));
 
 		ICCItem *pResult = Ctx.Run(Event);
@@ -1138,16 +1180,19 @@ bool CItem::MatchesCriteria (const CItemCriteria &Criteria) const
 	if (Criteria.bExcludeVirtual && m_pItemType->IsVirtual())
 		return false;
 
+	if (Criteria.bLauncherMissileOnly && m_pItemType->IsAmmunition())
+		return false;
+
 	//	Check required modifiers
 
 	for (i = 0; i < Criteria.ModifiersRequired.GetCount(); i++)
-		if (!m_pItemType->HasAttribute(Criteria.ModifiersRequired[i]))
+		if (!m_pItemType->HasLiteralAttribute(Criteria.ModifiersRequired[i]))
 			return false;
 
 	//	Check modifiers not allowed
 
 	for (i = 0; i < Criteria.ModifiersNotAllowed.GetCount(); i++)
-		if (m_pItemType->HasAttribute(Criteria.ModifiersNotAllowed[i]))
+		if (m_pItemType->HasLiteralAttribute(Criteria.ModifiersNotAllowed[i]))
 			return false;
 
 	//	Check required special attributes
@@ -1267,6 +1312,7 @@ void CItem::InitCriteriaAll (CItemCriteria *retCriteria)
 	retCriteria->bExcludeVirtual = true;
 	retCriteria->bInstalledOnly = false;
 	retCriteria->bNotInstalledOnly = false;
+	retCriteria->bLauncherMissileOnly = false;
 	retCriteria->ModifiersRequired.DeleteAll();
 	retCriteria->ModifiersNotAllowed.DeleteAll();
 	retCriteria->SpecialAttribRequired.DeleteAll();
@@ -1361,6 +1407,9 @@ CString CItem::GenerateCriteria (const CItemCriteria &Criteria)
 
 	if (Criteria.bNotInstalledOnly)
 		Output.Write("U", 1);
+
+	if (Criteria.bLauncherMissileOnly)
+		Output.Write("M", 1);
 
 	if (!Criteria.bExcludeVirtual)
 		Output.Write("V", 1);
@@ -1463,6 +1512,7 @@ void CItem::ParseCriteria (const CString &sCriteria, CItemCriteria *retCriteria)
 	retCriteria->bExcludeVirtual = true;
 	retCriteria->bInstalledOnly = false;
 	retCriteria->bNotInstalledOnly = false;
+	retCriteria->bLauncherMissileOnly = false;
 	retCriteria->ModifiersRequired.DeleteAll();
 	retCriteria->ModifiersNotAllowed.DeleteAll();
 	retCriteria->SpecialAttribRequired.DeleteAll();
@@ -1655,40 +1705,27 @@ void CItem::ParseCriteria (const CString &sCriteria, CItemCriteria *retCriteria)
 
 			case 'L':
 				{
-				CString sParam = ParseCriteriaParam(&pPos);
-				char *pParamPos = sParam.GetASCIIZPointer();
+				int iHigh;
+				int iLow;
 
-				//	Parse the first number
-
-				int iLow = strParseInt(pParamPos, -1, &pParamPos);
-
-				//	If we don't have a second number, then we just want items
-				//	of the given level.
-
-				if (*pParamPos != '-')
+				if (ParseCriteriaParamLevelRange(&pPos, &iLow, &iHigh))
 					{
-					if (iLow != -1)
+					if (iHigh == -1)
 						retCriteria->iEqualToLevel = iLow;
-					}
-
-				//	Otherwise, we parse a second number
-
-				else
-					{
-					pParamPos++;
-					int iHi = strParseInt(pParamPos, -1, &pParamPos);
-
-					if (iLow == -1)
-						iLow = 1;
-					if (iHi == -1)
-						iHi = MAX_ITEM_LEVEL;
-
-					retCriteria->iGreaterThanLevel = iLow - 1;
-					retCriteria->iLessThanLevel = iHi + 1;
+					else
+						{
+						retCriteria->iGreaterThanLevel = iLow - 1;
+						retCriteria->iLessThanLevel = iHigh + 1;
+						}
 					}
 
 				break;
 				}
+
+			case 'M':
+				retCriteria->bLauncherMissileOnly = true;
+				retCriteria->dwItemCategories |= itemcatMissile;
+				break;
 
 			case 'N':
 				retCriteria->wFlagsMustBeCleared |= flagDamaged;
@@ -2091,6 +2128,17 @@ bool CItem::SetProperty (CItemCtx &Ctx, const CString &sName, ICCItem *pValue, C
 			SetCharges(Max(0, GetCharges() + pValue->GetIntegerValue()));
 		}
 
+	else if (strEquals(sName, PROPERTY_INSTALLED))
+		{
+		if (pValue && pValue->IsNil())
+			SetInstalled(-1);
+		else
+			{
+			*retsError = CONSTLIT("Unable to set installation flag on item.");
+			return false;
+			}
+		}
+
 	else
 		{
 		//	If this is a device, then pass it on
@@ -2254,6 +2302,7 @@ CItemCriteria::CItemCriteria (const CItemCriteria &Copy)
 	bExcludeVirtual = Copy.bExcludeVirtual;
 	bInstalledOnly = Copy.bInstalledOnly;
 	bNotInstalledOnly = Copy.bNotInstalledOnly;
+	bLauncherMissileOnly = Copy.bLauncherMissileOnly;
 
 	ModifiersRequired = Copy.ModifiersRequired;
 	ModifiersNotAllowed = Copy.ModifiersNotAllowed;
@@ -2296,6 +2345,7 @@ CItemCriteria &CItemCriteria::operator= (const CItemCriteria &Copy)
 	bExcludeVirtual = Copy.bExcludeVirtual;
 	bInstalledOnly = Copy.bInstalledOnly;
 	bNotInstalledOnly = Copy.bNotInstalledOnly;
+	bLauncherMissileOnly = Copy.bLauncherMissileOnly;
 
 	ModifiersRequired = Copy.ModifiersRequired;
 	ModifiersNotAllowed = Copy.ModifiersNotAllowed;

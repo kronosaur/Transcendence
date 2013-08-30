@@ -429,6 +429,121 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			break;
 			}
 
+		case aicombatAdvanced:
+			{
+			const int MAX_BRAVERY_TICKS = 300;				//	Number of ticks since last attack to be 100% brave
+			const Metric BRAVERY_DECAY_POWER = 2.0;
+			const Metric MAX_RANGE_ADJ = 0.9;				//	Shrink primary aim range2 by this much at max bravery
+			const Metric MIN_RANGE_FACTOR = 25.0;			//	Increase min range2 by this factor at min bravery
+			const Metric TANGENT_SPEED_RATIO =	0.025;
+
+			//	Compute how brave we are based on the last time we got hit.
+
+			int iLastHit = Max(0, Min(MAX_BRAVERY_TICKS, (g_pUniverse->GetTicks() - m_iLastAttack)));
+			const Metric rBravery = pow((Metric)iLastHit / (Metric)MAX_BRAVERY_TICKS, BRAVERY_DECAY_POWER);
+
+			const Metric rMaxAimRange2 = (1.0 - (MAX_RANGE_ADJ * rBravery)) * m_rPrimaryAimRange2;
+			const Metric rMinDist2 = Min(rMaxAimRange2 * 0.5, (1.0 + (1.0 - rBravery) * MIN_RANGE_FACTOR) * MIN_TARGET_DIST2);
+
+			//	If we're waiting for shields to regenerate, then
+			//	spiral away
+
+			if (IsWaitingForShieldsToRegen()
+					&& pShip->GetMaxSpeed() >= pTarget->GetMaxSpeed())
+				{
+				DEBUG_COMBAT_OUTPUT("Wait for shields");
+				vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget, 75));
+				}
+
+			//	If we're not well in range of our primary weapon then
+			//	get closer to the target. (Or if we are not moving)
+
+			else if (rTargetDist2 > rMaxAimRange2)
+				{
+				DEBUG_COMBAT_OUTPUT("Close on target");
+
+				//	Try to flank our target, if we are faster
+
+				bool bFlank = (pShip->GetMaxSpeed() > pTarget->GetMaxSpeed());
+				vDirection = CombinePotential(CalcManeuverCloseOnTarget(pShip, pTarget, vTarget, rTargetDist2, bFlank));
+				}
+
+			//	If we're attacking a static target then find a good spot
+			//	and shoot from there.
+
+			else if (!pTarget->CanMove())
+				{
+				int iClock = g_pUniverse->GetTicks() / (170 + pShip->GetDestiny() / 3);
+				int iAngle = AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
+				Metric rRadius = MIN_STATION_TARGET_DIST + (LIGHT_SECOND * (pShip->GetDestiny() % 100) / 10.0);
+
+				//	This is the position that we want to go to
+
+				CVector vPos = pTarget->GetPos() + PolarToVector(iAngle + 180, rRadius) + GetPotential();
+
+				//	We don't want to thrust unless we're in position
+
+				bNoThrustThroughTurn = true;
+
+				//	Figure out which way we need to move to end up where we want
+				//	(Note that we don't combine the potential because we've already accounted for
+				//	it above).
+
+				vDirection = CalcManeuverFormation(pShip, vPos, CVector(), iAngle);
+				}
+
+			//	If we're attacking a station, then keep our distance so that
+			//	we don't get caught in the explosion
+
+			else if (m_fAvoidExplodingStations
+					&& rTargetDist2 < MIN_STATION_TARGET_DIST2 
+					&& pTarget->GetMass() > 5000.0)
+				{
+				DEBUG_COMBAT_OUTPUT("Spiral away to avoid explosion");
+				vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget));
+				}
+
+			//	If we're too close to our target, spiral away
+
+			else if (rTargetDist2 < rMinDist2)
+				{
+				DEBUG_COMBAT_OUTPUT("Spiral away");
+				vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget));
+				}
+
+			//	If we're moving too fast relative to the target, then we slow down.
+
+			else
+				{
+				CVector vTargetVel = pTarget->GetVel() - pShip->GetVel();
+				Metric rTargetDist = sqrt(rTargetDist2);
+				CVector vTargetNormal = vTarget / rTargetDist;
+				CVector vTargetTangentNormal = vTargetNormal.Perpendicular();
+
+				if (Absolute(vTargetVel.Dot(vTargetTangentNormal)) > TANGENT_SPEED_RATIO * rTargetDist)
+					{
+					DEBUG_COMBAT_OUTPUT("Slow down to aim");
+					vDirection = CombinePotential(vTargetVel);
+					}
+
+				//	If we're moving too slowly, move away
+
+				else if (pTarget->CanMove()
+						&& (pShip->GetVel().Length2() < (0.01 * 0.01 * LIGHT_SPEED * LIGHT_SPEED)))
+					{
+					DEBUG_COMBAT_OUTPUT("Speed away");
+					vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget));
+					}
+
+				//	Otherwise, hazard avoidance only
+
+				else
+					vDirection = GetPotential();
+				}
+
+			break;
+			}
+
 		case aicombatStandOff:
 			{
 			Metric rMaxRange2 = m_rBestWeaponRange * m_rBestWeaponRange;

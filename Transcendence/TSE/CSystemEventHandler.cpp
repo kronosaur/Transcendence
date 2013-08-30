@@ -54,7 +54,7 @@ void CSystemEventHandler::OnReadFromStream (SLoadCtx &Ctx)
 //	Metric			m_rMaxRange2
 
 	{
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pHandler);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pHandler);
 	Ctx.pStream->Read((char *)&m_rMaxRange2, sizeof(Metric));
 	}
 

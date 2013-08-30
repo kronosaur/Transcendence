@@ -16,6 +16,7 @@ const int BACKGROUND_FOCUS_X =	(DESC_PANE_X / 2);
 const int BACKGROUND_FOCUS_Y =	(g_cyBackground / 2);
 const int MAX_SCREEN_WIDTH =	1024;
 const int MAX_BACKGROUND_WIDTH =	1280;
+const int EXTRA_BACKGROUND_IMAGE = 128;
 
 const int STATUS_BAR_HEIGHT	=	20;
 const int g_cyTitle =			72;
@@ -70,6 +71,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ON_INIT_TAG					CONSTLIT("OnInit")
 #define ON_PANE_INIT_TAG			CONSTLIT("OnPaneInit")
 #define ON_SCREEN_INIT_TAG			CONSTLIT("OnScreenInit")
+#define ON_SCREEN_UPDATE_TAG		CONSTLIT("OnScreenUpdate")
 #define TEXT_TAG					CONSTLIT("Text")
 
 #define ALIGN_ATTRIB				CONSTLIT("align")
@@ -127,6 +129,7 @@ CDockScreen::CDockScreen (void) : CObject(NULL),
 		m_pUniv(NULL),
 		m_pPlayer(NULL),
 		m_pLocation(NULL),
+		m_pData(NULL),
 		m_pDesc(NULL),
 		m_pScreen(NULL),
 		m_bFirstOnInit(true),
@@ -151,7 +154,9 @@ CDockScreen::CDockScreen (void) : CObject(NULL),
 		m_pCurrentFrame(NULL),
 		m_pFrameDesc(NULL),
 		m_bInShowPane(false),
-		m_bNoListNavigation(false)
+		m_bNoListNavigation(false),
+
+		m_pOnScreenUpdate(NULL)
 
 //	CDockScreen constructor
 
@@ -406,6 +411,13 @@ void CDockScreen::CleanUpScreen (void)
 	m_Controls.DeleteAll();
 	m_CurrentActions.CleanUp();
 	m_pDisplayInitialize = NULL;
+	m_pData = NULL;
+
+	if (m_pOnScreenUpdate)
+		{
+		m_pOnScreenUpdate->Discard(&g_pUniverse->GetCC());
+		m_pOnScreenUpdate = NULL;
+		}
 
 	m_bInShowPane = false;
 	}
@@ -577,14 +589,24 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	else if (pImage)
 		{
-		int cxAvail = (RectWidth(rcRect) / 2) + 88;
+		//	EXTRA_BACKGROUND_IMAGE is the amount of image to show to the
+		//	right of the center-line.
+
+		int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
 		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
 
 		CG16bitImage *pScreenMask = m_pUniv->GetLibraryBitmap(dwScreenMaskUNID);
 		if (pScreenMask)
 			{
-			//	Center the mask and align it with the position of pImage.
-			int xAlpha = Max(0, xImage + (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+			//	Center the mask and align it with the position of the background.
+
+			int xAlpha = Max(0, (pScreenMask->GetWidth() - m_pBackgroundImage->GetWidth()) / 2);
+
+			//	If the image is too small, then slide the mask over to the right
+			//	so that the fade-out part aligns with the right edge of the image.
+
+			if (pImage->GetWidth() < cxAvail)
+				xAlpha += (cxAvail - pImage->GetWidth());
 
 			//	Generate a new bitmap containing the mask at the exact position of
 			//	the image we want to blt.
@@ -877,6 +899,8 @@ bool CDockScreen::EvalBool (const CString &sCode)
 	{
 	CCodeChainCtx Ctx;
 	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineSourceVar(m_pLocation);
+	Ctx.SaveAndDefineDataVar(m_pData);
 
 	char *pPos = sCode.GetPointer();
 	ICCItem *pExp = Ctx.Link(sCode, 1, NULL);
@@ -964,6 +988,8 @@ CSpaceObject *CDockScreen::EvalListSource (const CString &sString)
 		{
 		CCodeChainCtx Ctx;
 		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineSourceVar(m_pLocation);
+		Ctx.SaveAndDefineDataVar(m_pData);
 
 		ICCItem *pExp = Ctx.Link(sString, 1, NULL);
 
@@ -1022,6 +1048,7 @@ CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bP
 		{
 		CCodeChainCtx Ctx;
 		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineSourceVar(m_pLocation);
 		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pExp = Ctx.Link(sString, (bPlain ? 0 : 1), NULL);
@@ -1313,6 +1340,7 @@ ALERROR CDockScreen::InitCustomItemList (ICCItem *pData)
 
 	CCodeChainCtx Ctx;
 	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(pData);
 
 	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
@@ -1392,6 +1420,7 @@ ALERROR CDockScreen::InitCustomList (ICCItem *pData)
 
 	CCodeChainCtx Ctx;
 	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(pData);
 
 	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
@@ -1660,6 +1689,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	Init some variables
 
 	m_pLocation = pLocation;
+	m_pData = pData;
 	m_pPlayer = g_pTrans->GetPlayer();
 	m_pExtension = pExtension;
 	m_pDesc = pDesc;
@@ -1765,6 +1795,21 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 			return error;
 		}
 
+	//	Cache the screen's OnUpdate
+
+	CXMLElement *pOnUpdate = m_pDesc->GetContentElementByTag(ON_SCREEN_UPDATE_TAG);
+	if (pOnUpdate)
+		{
+		CCodeChainCtx Ctx;
+		m_pOnScreenUpdate = Ctx.Link(pOnUpdate->GetContentText(0), 0, NULL);
+		if (m_pOnScreenUpdate->IsError())
+			{
+			kernelDebugLogMessage("Unable to parse OnScreenUpdate: %s.", m_pOnScreenUpdate->GetStringValue());
+			Ctx.Discard(m_pOnScreenUpdate);
+			m_pOnScreenUpdate = NULL;
+			}
+		}
+
 	//	Show the pane
 
 	m_rcPane.left = rcScreen.right - g_cxActionsRegion;
@@ -1854,6 +1899,8 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					{
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
+					Ctx.SaveAndDefineSourceVar(m_pLocation);
+					Ctx.SaveAndDefineDataVar(m_pData);
 
 					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
@@ -1893,6 +1940,8 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					{
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
+					Ctx.SaveAndDefineSourceVar(m_pLocation);
+					Ctx.SaveAndDefineDataVar(m_pData);
 					CG16bitImage *pCanvas = &pControl->GetCanvas();
 					Ctx.SetCanvas(pCanvas);
 
@@ -1929,6 +1978,8 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					{
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
+					Ctx.SaveAndDefineSourceVar(m_pLocation);
+					Ctx.SaveAndDefineDataVar(m_pData);
 
 					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
@@ -1970,6 +2021,8 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 					{
 					CCodeChainCtx Ctx;
 					Ctx.SetScreen(this);
+					Ctx.SaveAndDefineSourceVar(m_pLocation);
+					Ctx.SaveAndDefineDataVar(m_pData);
 
 					ICCItem *pResult = Ctx.Run(m_Controls[i].pCode);	//	LATER:Event
 
@@ -2062,6 +2115,23 @@ ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 	pControl->bAnimate = false;
 
 	return NOERROR;
+	}
+
+void CDockScreen::SetListCursor (int iCursor)
+
+//	SetListCursor
+//
+//	Sets the list cursor
+
+	{
+	if (m_pItemListControl)
+		{
+		m_pItemListControl->SetCursor(iCursor);
+		ShowItem();
+
+		if (!m_bInShowPane)
+			m_CurrentActions.ExecuteShowPane(EvalInitialPane());
+		}
 	}
 
 void CDockScreen::SetListFilter (const CItemCriteria &Filter)
@@ -2212,7 +2282,7 @@ void CDockScreen::ShowPane (const CString &sName)
 	m_pFrameDesc->SetText(sDesc);
 	m_pFrameDesc->SetFont(&m_pFonts->Large);
 	m_pFrameDesc->SetColor(m_pFonts->wTextColor);
-	m_pFrameDesc->SetLineSpacing(3);
+	m_pFrameDesc->SetLineSpacing(6);
 
 	//	Justify the text
 
@@ -2398,6 +2468,32 @@ void CDockScreen::Update (int iTick)
 	if (m_bDisplayAnimate && (iTick % 10) == 0)
 		{
 		ShowDisplay(true);
+		}
+
+	//	Call OnScreenUpdate every 15 ticks
+
+	if (m_pOnScreenUpdate
+			&& ((iTick % ON_SCREEN_UPDATE_CYCLE) == 0))
+		{
+		//	Add a reference to m_pOnScreenUpdate because we might
+		//	reinitialize the screen inside the call.
+
+		ICCItem *pCode = m_pOnScreenUpdate->Reference();
+
+		//	Execute
+
+		CCodeChainCtx Ctx;
+		Ctx.SetScreen(this);
+		Ctx.SaveAndDefineSourceVar(m_pLocation);
+		Ctx.SaveAndDefineDataVar(m_pData);
+
+		ICCItem *pResult = Ctx.Run(pCode);
+
+		if (pResult->IsError())
+			kernelDebugLogMessage(CONSTLIT("<OnScreenUpdate>: %s"), pResult->GetStringValue());
+
+		Ctx.Discard(pResult);
+		Ctx.Discard(pCode);
 		}
 	}
 

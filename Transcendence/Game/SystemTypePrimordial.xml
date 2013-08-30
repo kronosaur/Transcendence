@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<SystemPartTable unid="&tbPrimordialSystemParts;">
+
+		<PrimordialSystem>
+			<Group>
+				<Station type="&stPrimordialStar;"/>
+
+				<AddAttribute attributes="GTypeSystem, primordialSystem"/>
+				
+				<!-- Inner Composition -->
+
+				<Table>
+					<AddTerritory chance="20"	minRadius="0"		maxRadius="360"		attributes="innerSystem, metallicComp"/>
+					<AddTerritory chance="50"	minRadius="0"		maxRadius="360"		attributes="innerSystem, primordialComp"/>
+					<AddTerritory chance="20"	minRadius="0"		maxRadius="360"		attributes="innerSystem, rockyComp"/>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="360"		attributes="innerSystem, volcanicComp"/>
+				</Table>
+
+				<!-- Life Zone Composition -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="360"		maxRadius="620"		attributes="lifeZone, metallicComp"/>
+					<AddTerritory chance="75"	minRadius="360"		maxRadius="620"		attributes="lifeZone, primordialComp"/>
+					<AddTerritory chance="15"	minRadius="360"		maxRadius="620"		attributes="lifeZone, rockyComp"/>
+				</Table>
+
+				<!-- Outer Composition -->
+
+				<Table>
+					<AddTerritory chance="25"	minRadius="620"		maxRadius="0"		attributes="outerSystem, frostComp"/>
+					<AddTerritory chance="25"	minRadius="620"		maxRadius="0"		attributes="outerSystem, iceComp"/>
+					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp"/>
+					<AddTerritory chance="25"	minRadius="620"		maxRadius="0"		attributes="outerSystem, primordialComp"/>
+					<AddTerritory chance="15"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp"/>
+				</Table>
+
+				<!-- Primordial Mists -->
+
+				<Orbitals distance="1" scale="light-minute" angle="random">
+					<SpaceEnvironment 
+							type=			"&sePrimordialNebula;"
+							shape=			"circular" 
+							width=			"120"
+							widthVariation=	"100"
+
+							encountersCount="1d4+2"
+							>
+						<Label attributes="primordial"/>
+					</SpaceEnvironment>
+				</Orbitals>
+
+				<Orbitals count="2d3+1" distance="1d6+1" scale="light-minute" angle="random">
+					<SpaceEnvironment 
+							type=			"&sePrimordialMist;"
+							shape=			"arc" 
+							width=			"50"
+							widthVariation=	"100"
+							span=			"1d40+50"
+
+							encountersCount="1d2"
+							>
+						<Label attributes="primordial"/>
+					</SpaceEnvironment>
+				</Orbitals>
+
+				<!-- Worlds -->
+
+				<Orbitals count="1d3+3" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="60" table="DesertWorld"/>
+							<Lookup chance="20" table="RockyWorld"/>
+							<Lookup chance="5"  table="InnerGasGiant"/>
+							<Lookup chance="15" table="InnerMethaneGiant"/>
+						</Table>
+						<Table maxRadius="500">
+							<Lookup chance="6"  table="DesertWorld"/>
+							<Lookup chance="7"  table="RockyWorld"/>
+							<Lookup chance="35" table="GasGiant"/>
+							<Lookup chance="22" table="RingedWorld"/>
+							<Lookup chance="23" table="MethaneGiant"/>
+							<Lookup chance="7"  table="OuterRockyGroup"/>
+						</Table>
+						<Table maxRadius="2000">
+							<Lookup chance="5"  table="DesertWorld"/>
+							<Lookup chance="15" table="IcyWorld"/>
+							<Lookup chance="20" table="GasGiant"/>
+							<Lookup chance="40" table="MethaneGiant"/>
+							<Lookup chance="15" table="RingedWorld"/>
+							<Lookup chance="5"  table="OuterRockyGroup"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</PrimordialSystem>
+
+		<!-- ASTEROIDS -->
+
+		<PrimordialAsteroid>
+			<Table>
+				<Station chance="90"	type="&stSmallPrimordialAsteroid;"/>
+				<Station chance="10"	type="&stMediumPrimordialAsteroid;"/>
+			</Table>
+		</PrimordialAsteroid>
+
+		<!-- SMALL ROCKY WORLDS -->
+
+		<PrimordialPlanetoid>
+			<Group>
+				<Station type="&stMediumPrimordialPlanetoid;"
+						showOrbit="true"
+					/>
+
+				<Orbitals distance="2d6+10" angle="random">
+					<Label attributes="planet, planetary, primordial"/>
+				</Orbitals>
+
+				<Lookup chance="60" table="RandomAsteroidSparseBelt"/>
+			</Group>
+		</PrimordialPlanetoid>
+
+		<PrimordialSmallPlanet>
+			<Group>
+				<Station type="&stSmallPrimordialPlanet;"
+						showOrbit="true"
+					/>
+
+				<Orbitals distance="2d6+10" angle="random">
+					<Label attributes="planet, planetary, primordial"/>
+				</Orbitals>
+
+				<Orbitals distance="2d8+30" angle="random">
+					<Table>
+						<Null chance="50"/>
+						<Group chance="45">
+							<Lookup table="RandomAsteroidMoon"/>
+						</Group>
+						<Group chance="5">
+							<Lookup table="RandomPlanetoidMoon"/>
+						</Group>
+					</Table>
+				</Orbitals>
+
+				<Table>
+					<Null   chance="60"/>
+					<Lookup chance="30" table="RandomAsteroidSparseBelt"/>
+					<Lookup chance="4"	table="RandomTrojanGroup"/>
+					<Lookup chance="4"  table="RandomAntiTrojanGroup"/>
+					<Group  chance="2">
+						<Lookup table="RandomTrojanGroup"/>
+						<Lookup table="RandomAntiTrojanGroup"/>
+					</Group>
+				</Table>
+			</Group>
+		</PrimordialSmallPlanet>
+
+	</SystemPartTable>
+
+<!-- COMPONENTS -->
+
+	<!-- Primordial System Star -->
+
+	<StationType UNID="&stPrimordialStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x4d, 0x41, 0x0f"
+		maxLightRadius=		"300"
+
+		attributes=			"primordial, star"
+		>
+
+		<Image>
+			<FilterColorize hue="49" saturation="60">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- Small Asteroid -->
+
+	<StationType UNID="&stSmallPrimordialAsteroid;"
+		name=				"(asteroid)"
+		scale=				"world"
+		size=				"6"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, organics, primordial, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="0"		imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"	 imageY="0"		imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"	 imageY="40"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="40"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="80"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="80"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="120"	imageWidth="40"  imageHeight="40"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="40"  imageY="120"	imageWidth="40"  imageHeight="40"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="92"/>
+				<Lookup chance="8" table="&tbPrimordialAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 80)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Medium Asteroid -->
+
+	<StationType UNID="&stMediumPrimordialAsteroid;"
+		name=				"(asteroid)"
+		scale=				"world"
+		size=				"55"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, organics, primordial, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="0"		imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="80"    imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="160"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="160"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="240"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="240"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="320"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="320"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="0"   imageY="400"   imageWidth="80"  imageHeight="80"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="80"  imageY="400"   imageWidth="80"  imageHeight="80"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="92"/>
+				<Lookup chance="8" table="&tbPrimordialAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 80)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Medium Planetoid -->
+
+	<StationType UNID="&stMediumPrimordialPlanetoid;"
+		name=				"(asteroid)"
+		scale=				"world"
+		size=				"1640"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"organics, planetoid, primordial, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="0"     imageWidth="160"  imageHeight="160"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="160"   imageWidth="160"  imageHeight="160"/>
+			<Image	imageID="&rsPrimordialAsteroids;"	imageX="160" imageY="320"   imageWidth="160"  imageHeight="160"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Small Primordial Planet -->
+
+	<StationType UNID="&stSmallPrimordialPlanet;"
+		name=				"(planet)"
+		scale=				"world"
+		size=				"2530"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"organics, planetoid, primordial, rocky"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="182" imageY="580"   imageWidth="158"  imageHeight="158"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Medium Primordial Planet -->
+
+	<StationType UNID="&stMediumPrimordialPlanet;"
+		name=				"(planet)"
+		scale=				"world"
+		size=				"4285"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"organics, planet, primordial, rocky"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="0"   imageY="580"   imageWidth="182"  imageHeight="182"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Large Primordial Planet -->
+
+	<StationType UNID="&stLargePrimordialPlanet;"
+		name=				"(planet)"
+		scale=				"world"
+		size=				"6300"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"atmosphere, denseAtmosphere, organics, planet, primordial, rocky"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="0"   imageY="340"   imageWidth="240"  imageHeight="240"/>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="240" imageY="340"   imageWidth="240"  imageHeight="240"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Huge Primordial Planet -->
+
+	<StationType UNID="&stHugePrimordialPlanet;"
+		name=				"(planet)"
+		scale=				"world"
+		size=				"22000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"organics, planet, primordial, rocky"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="340" imageY="0"     imageWidth="270"  imageHeight="270"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Primordial Gas Giant -->
+
+	<StationType UNID="&stPrimordialGasGiant;"
+		name=				"(planet)"
+		scale=				"world"
+		size=				"48200"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"atmosphere, denseAtmosphere, gasGiant, organics, planet, primordial"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsPrimordialWorlds;"	imageX="0"   imageY="0"     imageWidth="340"  imageHeight="340"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Primordial Mist -->
+
+	<SpaceEnvironmentType UNID="&sePrimordialMist;"
+			lrsJammer=			"true"
+			attributes=			"primordial"
+
+			mapColor=			"0x8c, 0x71, 0x19"
+			autoEdges=			"true"
+			>
+
+		<Image imageID="&rsPrimordialMist;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="2048" 
+				imageHeight="2048"/>
+	</SpaceEnvironmentType>
+
+	<!-- Primordial Nebula -->
+
+	<SpaceEnvironmentType UNID="&sePrimordialNebula;"
+			lrsJammer=			"true"
+			attributes=			"primordial"
+
+			mapColor=			"0x8c, 0x71, 0x19"
+			autoEdges=			"true"
+			>
+
+		<Image imageID="&rsPrimordialNebula;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="2048" 
+				imageHeight="2048"/>
+	</SpaceEnvironmentType>
+
+<!-- TABLES -->
+
+	<ItemTable unid="&tbPrimordialAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsPrimordialAsteroids;"	bitmap="Resources\PrimordialAsteroids.jpg"	bitmask="Resources\PrimordialAsteroidsMask.bmp"		loadOnUse="true"/>
+	<Image UNID="&rsPrimordialMist;"		bitmap="Resources\PrimordialMist.jpg"		bitmask="Resources\PrimordialMistMask.bmp"		loadOnUse="true"/>
+	<Image UNID="&rsPrimordialNebula;"		bitmap="Resources\PrimordialNebula.jpg"		bitmask="Resources\PrimordialNebulaMask.bmp"		loadOnUse="true"/>
+	<Image UNID="&rsPrimordialWorlds;"		bitmap="Resources\PrimordialWorlds.jpg"		bitmask="Resources\PrimordialWorldsMask.bmp"		loadOnUse="true"/>
+
+</TranscendenceModule>

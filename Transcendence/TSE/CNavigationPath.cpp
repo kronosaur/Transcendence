@@ -398,7 +398,7 @@ void CNavigationPath::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_dwID, sizeof(DWORD));
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 	Ctx.pStream->Read((char *)&m_iStartIndex, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iEndIndex, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iSuccesses, sizeof(DWORD));

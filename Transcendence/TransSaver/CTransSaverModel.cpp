@@ -25,7 +25,6 @@ ALERROR CTransSaverModel::Init (void)
 
 	m_Universe.SetSoundMgr(&m_HI.GetSoundMgr());
 	m_Universe.SetDebugMode(false);
-	m_Universe.SetHost(NULL);
 	m_Universe.SetSound(false);
 
 	return NOERROR;

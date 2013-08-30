@@ -39,6 +39,7 @@
 #define TRANSCENDENCE_MODULE_TAG				CONSTLIT("TranscendenceModule")
 
 #define API_VERSION_ATTRIB						CONSTLIT("apiVersion")
+#define COVER_IMAGE_UNID_ATTRIB					CONSTLIT("coverImageID")
 #define CREDITS_ATTRIB							CONSTLIT("credits")
 #define DEBUG_ONLY_ATTRIB						CONSTLIT("debugOnly")
 #define EXTENDS_ATTRIB							CONSTLIT("extends")
@@ -83,10 +84,7 @@ CExtension::~CExtension (void)
 //	CExtension destructor
 
 	{
-	if (m_pEntities)
-		delete m_pEntities;
-
-	SweepImages();
+	CleanUp();
 	}
 
 bool CExtension::CanExtend (CExtension *pAdventure) const
@@ -111,6 +109,44 @@ bool CExtension::CanExtend (CExtension *pAdventure) const
 	//	Otherwise, see if this adventure is in the list.
 
 	return m_Extends.Find(pAdventure->GetUNID());
+	}
+
+void CExtension::CleanUp (void)
+
+//	CleanUp
+//
+//	Cleans up class and frees up resources.
+
+	{
+	int i;
+
+	//	Delete entities
+
+	if (m_pEntities)
+		{
+		delete m_pEntities;
+		m_pEntities = NULL;
+		}
+
+	//	Delete design types
+
+	for (i = 0; i < m_DesignTypes.GetCount(); i++)
+		delete m_DesignTypes.GetEntry(i);
+
+	m_DesignTypes.DeleteAll();
+
+	//	Delete global functions
+
+	CCodeChain *pCC = &g_pUniverse->GetCC();
+	for (i = 0; i < m_Globals.GetCount(); i++)
+		m_Globals[i].pCode->Discard(pCC);
+
+	m_Globals.DeleteAll();
+
+	//	Delete other stuff
+
+	m_Topology.CleanUp();
+	SweepImages();
 	}
 
 ALERROR CExtension::ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError)
@@ -422,6 +458,10 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 	if (pExtension->m_sName.IsBlank())
 		pExtension->m_sName = strPatternSubst(CONSTLIT("Extension %x"), pExtension->m_dwUNID);
 
+	//	Image
+
+	pExtension->m_dwCoverUNID = (DWORD)pDesc->GetAttributeInteger(COVER_IMAGE_UNID_ATTRIB);
+
 	//	Load credits (we parse them into a string array)
 
 	CString sCredits = pDesc->GetAttribute(CREDITS_ATTRIB);
@@ -597,6 +637,41 @@ void CExtension::CreateIcon (int cxWidth, int cyHeight, CG16bitImage **retpIcon)
 	*retpIcon = pIcon;
 	}
 
+ALERROR CExtension::ExecuteGlobals (SDesignLoadCtx &Ctx)
+
+//	ExecuteGlobals
+//
+//	Execute the globals
+
+	{
+	int i;
+	CCodeChainCtx CCCtx;
+
+	//	Add a hook so that all lambda expressions defined in this global block
+	//	are wrapped with something that sets the extension UNID to the context.
+
+	if (m_iType != extBase)
+		CCCtx.SetGlobalDefineWrapper(this);
+
+	//	Run the code (which will likely define a bunch of functions)
+
+	for (i = 0; i < m_Globals.GetCount(); i++)
+		{
+		ICCItem *pResult = CCCtx.Run(m_Globals[i].pCode);
+		if (pResult->IsError())
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("%s globals: %s"), m_Globals[i].sFilespec, pResult->GetStringValue());
+			return ERR_FAIL;
+			}
+
+		CCCtx.Discard(pResult);
+		}
+
+	//	Done
+
+	return NOERROR;
+	}
+
 CG16bitImage *CExtension::GetCoverImage (void) const
 
 //	GetCoverImage
@@ -609,14 +684,19 @@ CG16bitImage *CExtension::GetCoverImage (void) const
 	if (m_pCoverImage)
 		return m_pCoverImage;
 
-	//	Must have adventure desc
+	//	Adventure desc overrides our UNID
 
-	if (m_pAdventureDesc == NULL)
+	DWORD dwCoverUNID = m_dwCoverUNID;
+	if (m_pAdventureDesc
+			&& m_pAdventureDesc->GetBackgroundUNID() != 0)
+		dwCoverUNID = m_pAdventureDesc->GetBackgroundUNID();
+
+	if (dwCoverUNID == 0)
 		return NULL;
 
 	//	Find the image object
 
-	CObjectImage *pObjImage = CObjectImage::AsType(m_DesignTypes.FindByUNID(m_pAdventureDesc->GetBackgroundUNID()));
+	CObjectImage *pObjImage = CObjectImage::AsType(m_DesignTypes.FindByUNID(dwCoverUNID));
 	if (pObjImage == NULL)
 		return NULL;
 
@@ -673,6 +753,21 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 			Ctx.bLoadAdventureDesc = (iDesiredState == loadAdventureDesc && m_iType == extAdventure);
 			Ctx.sErrorFilespec = m_sFilespec;
 
+			//	If this is a registered extension then compute a digest for the
+			//	file (so that we can compare against the cloud's digest).
+			//	
+			//	We need to do this even if we fail later because we don't want to
+			//	have to recalc it later.
+
+			if (m_Digest.IsEmpty() && GetFolderType() == folderCollection && IsRegistered())
+				{
+				if (error = fileCreateDigest(m_sFilespec, &m_Digest))
+					{
+					*retsError = strPatternSubst(CONSTLIT("Unable to compute digest for: %s."), m_sFilespec);
+					return error;
+					}
+				}
+
 			//	Parse the XML file into a structure
 
 			CXMLElement *pRoot;
@@ -680,7 +775,8 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 				{
 				//	If we're in debug mode then this is a real error.
 
-				if (g_pUniverse->InDebugMode())
+				if (g_pUniverse->InDebugMode()
+						&& !ExtDb.IsTDB())
 					{
 					*retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
 					return ERR_FAIL;
@@ -691,8 +787,8 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 
 				else
 					{
-					pRoot = new CXMLElement;
 					SetDisabled((retsError ? *retsError : CONSTLIT("Unable to load")));
+					return NOERROR;
 					}
 				}
 
@@ -721,21 +817,6 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 
 			m_iLoadState = (m_iType == extAdventure ? iDesiredState : loadComplete);
 			delete pRoot;
-
-			//	If this is a registered extension then compute a digest for the
-			//	file (so that we can compare against the cloud's digest).
-
-			if (m_iLoadState == loadComplete && GetFolderType() == folderCollection && IsRegistered())
-				{
-				CIntegerIP Digest;
-				if (error = fileCreateDigest(m_sFilespec, &Digest))
-					{
-					*retsError = strPatternSubst(CONSTLIT("Unable to compute digest for: %s."), m_sFilespec);
-					return error;
-					}
-
-				SetDigest(Digest);
-				}
 
 			//	If we get this far and we have no libraries, then include the 
 			//	compatibility library.
@@ -959,24 +1040,22 @@ ALERROR CExtension::LoadGlobalsElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	{
 	CCodeChainCtx CCCtx;
 
-	//	Add a hook so that all lambda expressions defined in this global block
-	//	are wrapped with something that sets the extension UNID to the context.
-
-	if (m_iType != extBase)
-		CCCtx.SetGlobalDefineWrapper(this);
-
-	//	Parse and run the code (which will likely define a bunch of functions)
+	//	Parse the code and keep it
 
 	ICCItem *pCode = CCCtx.Link(pDesc->GetContentText(0), 0, NULL);
-	ICCItem *pResult = CCCtx.Run(pCode);
-	if (pResult->IsError())
+	if (pCode->IsError())
 		{
-		Ctx.sError = strPatternSubst(CONSTLIT("Globals: %s"), pResult->GetStringValue());
+		Ctx.sError = strPatternSubst(CONSTLIT("%s globals: %s"), Ctx.sErrorFilespec, pCode->GetStringValue());
 		return ERR_FAIL;
 		}
 
-	CCCtx.Discard(pResult);
-	CCCtx.Discard(pCode);
+	SGlobalsEntry *pEntry = m_Globals.Insert();
+	pEntry->pCode = pCode;
+	pEntry->sFilespec = Ctx.sErrorFilespec;
+
+#ifdef DEBUG
+	::kernelDebugLogMessage("Loading globals in %s", Ctx.sErrorFilespec);
+#endif
 
 	return NOERROR;
 	}

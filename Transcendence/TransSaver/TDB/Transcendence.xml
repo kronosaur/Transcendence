@@ -3107,7 +3107,7 @@
 				</Initialize>
 
 				<Actions>
-					<Action name="Buy this item" default="1" key="B">
+					<Action name="Buy this Item" default="1" key="B">
 						(if (gr gMaxCount 1)
 							(scrShowPane gScreen "BuyQuantity")
 							(if (eq gMaxCount 1)

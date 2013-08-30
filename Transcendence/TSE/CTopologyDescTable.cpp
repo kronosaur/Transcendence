@@ -26,13 +26,7 @@ CTopologyDescTable::~CTopologyDescTable (void)
 //	CTopologyDescTable destructor
 
 	{
-	int i;
-
-	for (i = 0; i < m_Table.GetCount(); i++)
-		delete m_Table[i];
-
-	if (m_pIDToDesc)
-		delete m_pIDToDesc;
+	CleanUp();
 	}
 
 ALERROR CTopologyDescTable::AddRootNode (SDesignLoadCtx &Ctx, const CString &sNodeID)
@@ -89,6 +83,27 @@ ALERROR CTopologyDescTable::BindDesign (SDesignLoadCtx &Ctx)
 			return error;
 
 	return NOERROR;
+	}
+
+void CTopologyDescTable::CleanUp (void)
+
+//	CleanUp
+//
+//	Clean up table
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		delete m_Table[i];
+
+	m_Table.DeleteAll();
+
+	if (m_pIDToDesc)
+		{
+		delete m_pIDToDesc;
+		m_pIDToDesc = NULL;
+		}
 	}
 
 CEffectCreator *CTopologyDescTable::FindEffectCreator (const CString &sUNID)

@@ -398,8 +398,8 @@ void CGaianProcessorAI::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDest);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
 	Ctx.pStream->Read((char *)&m_rOrbitRadius, sizeof(Metric));
 	Ctx.pStream->Read((char *)&m_iStartTime, sizeof(DWORD));
 	}

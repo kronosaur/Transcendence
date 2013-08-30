@@ -168,7 +168,7 @@ void CAniImageFill::Fill (SAniPaintCtx &Ctx, int x, int y, const TArray<SSimpleR
 		}
 	}
 
-void CAniImageFill::Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitRegion &Region)
+void CAniImageFill::Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitBinaryRegion &Region)
 
 //	Fill
 //

@@ -8,7 +8,7 @@
 #define MATCH_ALL						CONSTLIT("*")
 
 inline bool IsWeightChar (char *pPos) { return (*pPos == '+' || *pPos == '-' || *pPos == '*' || *pPos == '!'); }
-inline bool IsDelimiterChar (char *pPos) { return (*pPos == '\0' || *pPos == ',' || *pPos == ';' || strIsWhitespace(pPos)); }
+inline bool IsDelimiterChar (char *pPos, bool bIsSpecialAttrib = false) { return (*pPos == '\0' || *pPos == ',' || *pPos == ';' || (!bIsSpecialAttrib && strIsWhitespace(pPos))); }
 
 const CString &CAttributeCriteria::GetAttribAndRequired (int iIndex, bool *retbRequired) const
 
@@ -18,22 +18,27 @@ const CString &CAttributeCriteria::GetAttribAndRequired (int iIndex, bool *retbR
 
 	{
 	if (retbRequired)
-		*retbRequired = (m_Weights[iIndex] >= 0);
+		*retbRequired = (m_Attribs[iIndex].iWeight >= 0);
 
-	return m_Attribs[iIndex];
+	return m_Attribs[iIndex].sAttrib;
 	}
 
-const CString &CAttributeCriteria::GetAttribAndWeight (int iIndex, int *retiWeight) const
+const CString &CAttributeCriteria::GetAttribAndWeight (int iIndex, int *retiWeight, bool *retbIsSpecial) const
 
 //	GetAttribAndWeight
 //
 //	Returns the attrib and its weight
 
 	{
-	if (retiWeight)
-		*retiWeight = m_Weights[iIndex];
+	const SEntry &Entry = m_Attribs[iIndex];
 
-	return m_Attribs[iIndex];
+	if (retiWeight)
+		*retiWeight = Entry.iWeight;
+
+	if (retbIsSpecial)
+		*retbIsSpecial = Entry.bIsSpecial;
+
+	return Entry.sAttrib;
 	}
 
 ALERROR CAttributeCriteria::Parse (const CString &sCriteria, DWORD dwFlags, CString *retsError)
@@ -44,7 +49,6 @@ ALERROR CAttributeCriteria::Parse (const CString &sCriteria, DWORD dwFlags, CStr
 
 	{
 	m_Attribs.DeleteAll();
-	m_Weights.DeleteAll();
 	m_dwFlags = dwFlags;
 
 	//	If we match all, then we have no individual criteria
@@ -100,14 +104,21 @@ ALERROR CAttributeCriteria::Parse (const CString &sCriteria, DWORD dwFlags, CStr
 
 			//	Get the attribute until the delimeter
 
+			bool bIsSpecialAttrib = false;
 			char *pStart = pPos;
-			while (!IsDelimiterChar(pPos))
+			while (!IsDelimiterChar(pPos, bIsSpecialAttrib))
+				{
+				if (*pPos == ':')
+					bIsSpecialAttrib = true;
 				pPos++;
+				}
 
 			//	Add to our list
 
-			m_Attribs.Insert(CString(pStart, pPos - pStart));
-			m_Weights.Insert(iMatchWeight);
+			SEntry *pEntry = m_Attribs.Insert();
+			pEntry->sAttrib = CString(pStart, pPos - pStart);
+			pEntry->iWeight = iMatchWeight;
+			pEntry->bIsSpecial = bIsSpecialAttrib;
 			}
 		else
 			pPos++;

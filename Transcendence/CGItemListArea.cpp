@@ -554,14 +554,14 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 				&rcAttrib);
 
 	if (pItemType->IsKnown()
-			&& pItemType->HasAttribute(CONSTLIT("Military")))
+			&& pItemType->HasLiteralAttribute(CONSTLIT("Military")))
 		PaintItemModifier(Dest, 
 				CONSTLIT("Military"),
 				RGB_MILITARY_BACKGROUND,
 				&rcAttrib);
 
 	if (pItemType->IsKnown()
-			&& pItemType->HasAttribute(CONSTLIT("Illegal")))
+			&& pItemType->HasLiteralAttribute(CONSTLIT("Illegal")))
 		PaintItemModifier(Dest, 
 				CONSTLIT("Illegal"),
 				RGB_ILLEGAL_BACKGROUND,

@@ -14,20 +14,20 @@
 
 	<!-- Ion Blaster -->
 
-	<ItemType UNID="&itIonBlaster;"
-			name=				"ion blaster"
+	<ItemType UNID="&itLuminousIonBlaster;"
+			name=				"Luminous blaster"
+			attributes=			"energyWeapon, military, majorItem, notStandard"
+			  
 			level=				"8"
+			frequency=			"common"
+			  
 			value=				"95000"
 			mass=				"4000"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem; Specialty"
 
-			description=		"The ion blaster is used by Luminous for its drones."
-
-			sortName=			"ion blaster"
+			description=		"This ion blaster is used by Luminous for its drones."
 			>
 
-		<Image imageID="&rsItemsEI3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Weapon
 				type=				"beam"
@@ -37,18 +37,11 @@
 				lifetime=			"30"
 				powerUse=			"1000"
 
+				effect=				"&efEIBlasterBeam;"
+				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xff, 0xc7, 0xa0"
-						secondaryColor=		"0xff, 0x95, 0x00"
-						intensity=			"8"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Luminous Drone -->
@@ -57,7 +50,7 @@
 			manufacturer=		""
 			class=				"Luminous drone"
 			type=				""
-			score=				"990"
+			score=				"800"
 
 			mass=				"150"
 			reactorPower=		"1000"
@@ -177,7 +170,7 @@
 			level=				"5"
 			value=				"900"
 			mass=				"3500"
-			attributes=			"Luminous; MinorItem; NotForSale;"
+			attributes=			"Luminous; MinorItem; NotForSale; NotStandard"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 
@@ -294,7 +287,7 @@
 			value=				"12000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Luminous; MajorItem; NotForSale;"
+			attributes=			"Luminous; MajorItem; NotForSale; NotStandard;"
 
 			description=		"The Luminous AI has developed these shield generators for its drones. They are designed to be resistant to particle-beam energy."
 
@@ -322,7 +315,7 @@
 			value=				"12000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Luminous; MajorItem; NotForSale;"
+			attributes=			"Luminous; MajorItem; NotForSale; NotStandard;"
 
 			description=		"The Luminous AI has developed these shield generators for its drones. They are designed to be resistant to blast energy."
 
@@ -350,7 +343,7 @@
 			value=				"12000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Luminous; MajorItem; NotForSale;"
+			attributes=			"Luminous; MajorItem; NotForSale; NotStandard;"
 
 			description=		"The Luminous AI has developed these shield generators for its drones. They are designed to be resistant to ion energy."
 
@@ -378,7 +371,7 @@
 			value=				"12000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Luminous; MajorItem; NotForSale;"
+			attributes=			"Luminous; MajorItem; NotForSale; NotStandard;"
 
 			description=		"The Luminous AI has developed these shield generators for its drones. They are designed to be resistant to thermonuclear energy."
 
@@ -427,11 +420,11 @@
 
 		<Items>
 			<RandomItem count="1d6"
-					criteria=			"* +Info"
+					criteria=			"* +Info; -NotStandard; "
 					level=				"7"
 					levelCurve=			"1"
 					/>
-			<Table>
+			<Table count="1d6">
 				<Item chance="25"	count="1d6"	item="&itOpticalKnowledgeArray;" />
 				<Item chance="20"	count="1d4"	item="&itLuminousArmature;" />
 				<Item chance="35"	count="1d6"	item="&itLuminousScareProgram;" />
@@ -440,7 +433,7 @@
 		</Items>
 
 		<Ships>
-			<Ship			count="1d8"	class="&scLuminousDrone;"	orders="patrol" patrolDist="5"/>
+			<Ship			count="1d6"	class="&scLuminousDrone;"	orders="patrol" patrolDist="5"/>
 		</Ships>
 
 		<GlobalData>

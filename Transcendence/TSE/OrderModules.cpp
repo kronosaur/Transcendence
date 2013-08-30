@@ -76,11 +76,22 @@ IOrderModule *IOrderModule::Create (IShipController::OrderTypes iOrder)
 	{
 	switch (iOrder)
 		{
+		case IShipController::orderAttackArea:
+		case IShipController::orderAttackNearestEnemy:
+		case IShipController::orderDestroyTarget:
+			return new CAttackOrder(iOrder);
+
 		case IShipController::orderAttackStation:
 			return new CAttackStationOrder;
 
-		case IShipController::orderDestroyTarget:
-			return new CAttackOrder;
+		case IShipController::orderFireEvent:
+			return new CFireEventOrder;
+
+		case IShipController::orderSendMessage:
+			return new CSendMessageOrder;
+
+		case IShipController::orderWaitForUndock:
+			return new CWaitOrder(CWaitOrder::waitForUndock);
 
 		default:
 			return NULL;
@@ -126,13 +137,15 @@ void IOrderModule::ObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx)
 			if (IsTarget(i) && Ctx.Attacker.IsCausedByFriendOf(pShip) && Ctx.Attacker.GetObj())
 				pShip->Communicate(Ctx.Attacker.GetObj(), msgNiceShooting);
 
+			//	Clear out the variable. We do this first because the derrived class
+			//	might set it to something else (thus we don't want to clear it after
+			//	the OnObjDestroyed call).
+
+			m_Objs[i] = NULL;
+
 			//	Let our derrived class handle it
 				
 			OnObjDestroyed(pShip, Ctx, i);
-
-			//	Clear out the variable
-
-			m_Objs[i] = NULL;
 			}
 	}
 
@@ -152,11 +165,11 @@ void IOrderModule::ReadFromStream (SLoadCtx &Ctx)
 	for (i = 0; i < (int)dwCount; i++)
 		{
 		if (i < m_iObjCount)
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_Objs[i]);
+			CSystem::ReadObjRefFromStream(Ctx, &m_Objs[i]);
 		else
 			{
 			CSpaceObject *pDummy;
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &pDummy);
+			CSystem::ReadObjRefFromStream(Ctx, &pDummy);
 			}
 		}
 
@@ -187,6 +200,182 @@ void IOrderModule::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
 	}
 
 //	CAttackOrder ---------------------------------------------------------------
+
+CAttackOrder::CAttackOrder (IShipController::OrderTypes iOrder) : IOrderModule(objCount),
+		m_iOrder(iOrder)
+
+//	CAttackOrder constructor
+
+	{
+	switch (m_iOrder)
+		{
+		case IShipController::orderDestroyTarget:
+			m_fNearestTarget = false;
+			m_fInRangeOfObject = false;
+			break;
+
+		case IShipController::orderAttackNearestEnemy:
+			m_fNearestTarget = true;
+			m_fInRangeOfObject = false;
+			break;
+
+		case IShipController::orderAttackArea:
+			m_fNearestTarget = true;
+			m_fInRangeOfObject = true;
+			break;
+		}
+	}
+
+CSpaceObject *CAttackOrder::GetBestTarget (CShip *pShip)
+
+//	GetBestTarget
+//
+//	Returns the best target that we should pursue right now. We return NULL if
+//	there is no appropriate target.
+
+	{
+	int i;
+
+	if (m_fInRangeOfObject)
+		{
+		//	Get the range information
+
+		Metric rRange;
+		CSpaceObject *pCenter = GetTargetArea(pShip, &rRange);
+		if (pCenter == NULL)
+			return NULL;
+
+		Metric rRange2 = rRange * rRange;
+		CVector vCenter = pCenter->GetPos();
+
+		//	Get the list of all visible enemy objects
+
+		TArray<CSpaceObject *> Targets;
+		pShip->GetVisibleEnemies(0, &Targets);
+
+		//	Find the nearest enemy to us that is inside our range
+
+		CSpaceObject *pBestObj = NULL;
+		Metric rBestDist2;
+
+		for (i = 0; i < Targets.GetCount(); i++)
+			{
+			CSpaceObject *pObj = Targets[i];
+
+			//	Make sure this is within the target area
+
+			Metric rDist2 = (pObj->GetPos() - vCenter).Length2();
+			if (rDist2 < rRange2)
+				{
+				//	See if this is closer than our current candidate
+
+				rDist2 = (pObj->GetPos() - pShip->GetPos()).Length2();
+				if (pBestObj == NULL || rDist2 < rBestDist2)
+					{
+					pBestObj = pObj;
+					rBestDist2 = rDist2;
+					}
+				}
+			}
+
+		return pBestObj;
+		}
+	else
+		return pShip->GetNearestVisibleEnemy();
+	}
+
+CSpaceObject *CAttackOrder::GetTargetArea (CShip *pShip, Metric *retrRange)
+
+//	GetTargetArea
+//
+//	Returns the target area that we need to clear.
+
+	{
+	if (!m_fInRangeOfObject)
+		return NULL;
+
+	CSpaceObject *pCenter;
+	IShipController::SData Data;
+	pShip->GetCurrentOrder(&pCenter, &Data);
+
+	if (Data.iDataType == IShipController::dataInteger
+			|| Data.iDataType == IShipController::dataPair)
+		*retrRange = LIGHT_SECOND * Data.dwData1;
+	else
+		*retrRange = LIGHT_SECOND * 100.0;
+
+	return pCenter;
+	}
+
+bool CAttackOrder::IsBetterTarget (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOldTarget, CSpaceObject *pNewTarget)
+
+//	IsBetterTarget
+//
+//	Returns TRUE if pNewTarget is a better target.
+
+	{
+	//	Check to see if the new target is generically better.
+
+	if (!Ctx.CalcIsBetterTarget(pShip, pOldTarget, pNewTarget))
+		return false;
+
+	//	If we're clearing out an area, then make sure the new target is inside
+	//	the area we're trying to clear.
+
+	if (m_fInRangeOfObject && !IsInTargetArea(pShip, pNewTarget))
+		return false;
+
+	//	New target is better
+
+	return true;
+	}
+
+bool CAttackOrder::IsInTargetArea (CShip *pShip, CSpaceObject *pObj)
+
+//	IsInTargetArea
+//
+//	Returns TRUE if pObj is in the area that we're trying to clear.
+
+	{
+	//	If we're not trying to clear an area, then pObj is always valid.
+
+	if (!m_fInRangeOfObject)
+		return true;
+
+	//	Get the original order so we can figure out the area that we're trying
+	//	to clear.
+
+	Metric rRange;
+	CSpaceObject *pCenter = GetTargetArea(pShip, &rRange);
+	if (pCenter == NULL)
+		return true;
+
+	//	Check the range
+
+	Metric rDist2 = (pObj->GetPos() - pCenter->GetPos()).Length2();
+	if (rDist2 > rRange * rRange)
+		return false;
+
+	//	In range
+
+	return true;
+	}
+
+void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
+
+//	OnAttacked
+//
+//	Attacked by something
+
+	{
+	//	If the ship that attacked us is an enemy and it is closer than the 
+	//	current target, then switch to attack it.
+
+	if (m_fNearestTarget 
+			&& pAttacker != m_Objs[objTarget]
+			&& IsBetterTarget(pShip, Ctx, m_Objs[objTarget], pAttacker))
+		m_Objs[objTarget] = pAttacker;
+	}
 
 void CAttackOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 
@@ -267,18 +456,45 @@ void CAttackOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 					}
 				}
 
-			//	If the target has left the safety of the station, 
-			//	and the station is not between the ship and the target, then
-			//	we stop avoiding.
+			//	Check to see if we should do something else
 
-			if (pShip->IsDestinyTime(23)
-					&& rTargetDist2 > WANDER_SAFETY_RANGE2
-					&& Absolute(AngleBearing(VectorToPolar(vTarget), VectorToPolar(vDest))) > 45)
+			if (pShip->IsDestinyTime(23))
 				{
-				//	Note: We don't set stateNone because we want to preserve the timer value
+				int iAngleToStation = VectorToPolar(vDest);
 
-				m_iState = stateAttackingTargetAndAvoiding;
-				m_Objs[objAvoid] = NULL;
+				//	If the target has left the safety of the station, 
+				//	and the station is not between the ship and the target, then
+				//	we stop avoiding.
+
+				if (rTargetDist2 > WANDER_SAFETY_RANGE2
+						&& Absolute(AngleBearing(VectorToPolar(vTarget), iAngleToStation)) > 45)
+					{
+					//	Note: We don't set stateNone because we want to preserve the timer value
+
+					m_iState = stateAttackingTargetAndAvoiding;
+					m_Objs[objAvoid] = NULL;
+					ASSERT(m_Objs[objTarget]);
+					}
+
+				//	Otherwise, if we're attacking any target, see if there is something 
+				//	else that we can tackle.
+
+				else if (m_fNearestTarget)
+					{
+					CSpaceObject *pNewTarget = GetBestTarget(pShip);
+					if (pNewTarget && pNewTarget != m_Objs[objTarget])
+						{
+						CVector vNewTarget = pNewTarget->GetPos() - pShip->GetPos();
+						Metric rNewTargetDist2 = vNewTarget.Length2();
+						if (rNewTargetDist2 > WANDER_SAFETY_RANGE2
+								&& Absolute(AngleBearing(VectorToPolar(vNewTarget), iAngleToStation)) > 45)
+							{
+							m_iState = stateAttackingTargetAndAvoiding;
+							m_Objs[objAvoid] = NULL;
+							m_Objs[objTarget] = pNewTarget;
+							}
+						}
+					}
 				}
 
 			//	See if our timer has expired
@@ -291,7 +507,7 @@ void CAttackOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 		}
 	}
 
-void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData)
+void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data)
 
 //	OnBehaviorStart
 //
@@ -301,6 +517,19 @@ void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObj
 	//	Make sure we're undocked because we're going flying
 
 	Ctx.Undock(pShip);
+
+	//	If we don't have a target and we're looking for the nearest enemy, then
+	//	find it now.
+
+	if (m_fNearestTarget)
+		{
+		pOrderTarget = GetBestTarget(pShip);
+		if (pOrderTarget == NULL)
+			{
+			pShip->CancelCurrentOrder();
+			return;
+			}
+		}
 
 	//	Set our state
 
@@ -312,10 +541,8 @@ void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObj
 
 	//	See if we have a time limit
 
-	if (dwOrderData > 0)
-		m_iCountdown = 1 + (g_TicksPerSecond * dwOrderData);
-	else
-		m_iCountdown = -1;
+	DWORD dwTimer = (m_fInRangeOfObject ? Data.AsInteger2() : Data.AsInteger());
+	m_iCountdown = (dwTimer ? 1 + (g_TicksPerSecond * dwTimer) : -1);
 	}
 
 CString CAttackOrder::OnDebugCrashInfo (void)
@@ -348,6 +575,22 @@ void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iOb
 		//	No need to avoid anymore. Reset our state
 
 		m_iState = stateAttackingTargetAndAvoiding;
+		ASSERT(m_Objs[objTarget]);
+		}
+
+	//	If our target was destroyed and we need to attack the nearest
+	//	target, then go for it.
+
+	else if (m_fNearestTarget && iObj == objTarget)
+		{
+		CSpaceObject *pNewTarget = GetBestTarget(pShip);
+		if (pNewTarget == NULL)
+			{
+			pShip->CancelCurrentOrder();
+			return;
+			}
+
+		m_Objs[objTarget] = pNewTarget;
 		}
 	}
 
@@ -408,16 +651,10 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 	//	attention to this defender.
 
 	if (m_iState == stateAttackingTarget
-			&& pAttacker 
-			&& !pAttacker->IsDestroyed()
 
 			//	If we have secondary weapons, then we keep attacking the
 			//	station and let the secondaries deal with any defenders
 			&& !Ctx.HasSecondaryWeapons()
-
-			//	Don't bother with any ship that is not a friend of the
-			//	station (we assume that this was just a stray shot)
-			&& pAttacker->IsFriend(m_Objs[objTarget])
 
 			//	If the attacker is too low level, then we concentrate on the
 			//	station (we assume that we can ignore their attacks).
@@ -425,9 +662,23 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 
 			//	If the station is about to be destroyed, then we keep up
 			//	the attack.
-			&& m_Objs[objTarget]->GetVisibleDamage() < 75)
+			&& m_Objs[objTarget]->GetVisibleDamage() < 75
+			
+			//	Make sure this is a valid target otherwise
+			&& Ctx.CalcIsBetterTarget(pShip, NULL, pAttacker))
 		{
 		m_iState = stateAttackingDefender;
+		m_Objs[objDefender] = pAttacker;
+		}
+
+	//	If we're attacking a defender and some other defender attack us,
+	//	see if we should switch to them.
+
+	else if (m_iState == stateAttackingDefender
+			&& pAttacker != m_Objs[objTarget]
+			&& pAttacker != m_Objs[objDefender]
+			&& Ctx.CalcIsBetterTarget(pShip, m_Objs[objDefender], pAttacker))
+		{
 		m_Objs[objDefender] = pAttacker;
 		}
 	}
@@ -439,6 +690,13 @@ void CAttackStationOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 //	Do it
 
 	{
+	//	See if our timer has expired
+
+	if (m_iCountdown != -1 && m_iCountdown-- == 0)
+		pShip->CancelCurrentOrder();
+
+	//	Act based on current state
+
 	switch (m_iState)
 		{
 		case stateAttackingTarget:
@@ -446,12 +704,6 @@ void CAttackStationOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 			ASSERT(m_Objs[objTarget]);
 			Ctx.ImplementAttackTarget(pShip, m_Objs[objTarget]);
 			Ctx.ImplementFireOnTargetsOfOpportunity(pShip, m_Objs[objTarget]);
-
-			//	See if our timer has expired
-
-			if (m_iCountdown != -1 && m_iCountdown-- == 0)
-				pShip->CancelCurrentOrder();
-
 			break;
 			}
 
@@ -478,17 +730,28 @@ void CAttackStationOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 					}
 				}
 
-			//	See if our timer has expired
+			break;
+			}
 
-			if (m_iCountdown != -1 && m_iCountdown-- == 0)
-				pShip->CancelCurrentOrder();
+		case stateFollowingNavPath:
+			{
+			Ctx.ImplementAttackNearestTarget(pShip, Ctx.GetBestWeaponRange(), &m_Objs[objDefender]);
+			Ctx.ImplementFireOnTargetsOfOpportunity(pShip, m_Objs[objDefender]);
+
+			bool bAtDest;
+			Ctx.ImplementFollowNavPath(pShip, &bAtDest);
+			if (bAtDest)
+				{
+				Ctx.ClearNavPath();
+				m_iState = stateAttackingTarget;
+				}
 
 			break;
 			}
 		}
 	}
 
-void CAttackStationOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData)
+void CAttackStationOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data)
 
 //	OnBehaviorStart
 //
@@ -499,20 +762,26 @@ void CAttackStationOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CS
 
 	Ctx.Undock(pShip);
 
-	//	Set our state
+	//	Remember our target.
 
-	m_iState = stateAttackingTarget;
 	m_Objs[objTarget] = pOrderTarget;
 	m_Objs[objDefender] = NULL;
 	ASSERT(m_Objs[objTarget]);
 	ASSERT(m_Objs[objTarget]->DebugIsValid() && m_Objs[objTarget]->NotifyOthersWhenDestroyed());
 
+	//	Set our state. If we are too far away from the target then we need to use
+	//	a nav path.
+
+	if (pShip->GetDistance2(pOrderTarget) > NAV_PATH_THRESHOLD2
+			&& Ctx.CalcNavPath(pShip, pOrderTarget))
+		m_iState = stateFollowingNavPath;
+	else
+		m_iState = stateAttackingTarget;
+
 	//	See if we have a time limit
 
-	if (dwOrderData > 0)
-		m_iCountdown = 1 + (g_TicksPerSecond * dwOrderData);
-	else
-		m_iCountdown = -1;
+	DWORD dwTimer = Data.AsInteger();
+	m_iCountdown = (dwTimer ? 1 + (g_TicksPerSecond * dwTimer) : -1);
 	}
 
 CString CAttackStationOrder::OnDebugCrashInfo (void)
@@ -541,7 +810,10 @@ void CAttackStationOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, 
 	//	If the defender was destroyed, switch back
 
 	if (iObj == objDefender)
-		m_iState = stateAttackingTarget;
+		{
+		if (m_iState == stateAttackingDefender)
+			m_iState = stateAttackingTarget;
+		}
 	}
 
 void CAttackStationOrder::OnReadFromStream (SLoadCtx &Ctx)
@@ -588,6 +860,33 @@ void CAttackStationOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStre
 	pStream->Write((char *)&m_iCountdown, sizeof(DWORD));
 	}
 
+//	CFireEventOrder ------------------------------------------------------------
+
+void CFireEventOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
+
+//	OnBehavior
+//
+//	Do it
+
+	{
+	//	Get the current order data
+
+	CSpaceObject *pListener;
+	IShipController::SData Data;
+	pShip->GetCurrentOrder(&pListener, &Data);
+
+	//	Done with the order.
+	//
+	//	NOTE: This will delete our object, so we can't access any member variables after this.
+
+	pShip->CancelCurrentOrder();
+
+	//	Fire the event
+
+	if (pListener && !Data.sData.IsBlank())
+		pListener->FireCustomShipOrderEvent(Data.sData, pShip);
+	}
+
 //	CGuardOrder ----------------------------------------------------------------
 
 void CGuardOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
@@ -599,7 +898,7 @@ void CGuardOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 	{
 	}
 
-void CGuardOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData)
+void CGuardOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data)
 
 //	OnBehaviorStart
 //
@@ -641,7 +940,7 @@ void CGuardOrder::OnReadFromStream (SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iState = (States)dwLoad;
 
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pBase);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pBase);
 	}
 
 void CGuardOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
@@ -657,4 +956,115 @@ void CGuardOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	pSystem->WriteObjRefToStream(m_pBase, pStream);
+	}
+
+//	CSendMessageOrder ------------------------------------------------------------
+
+void CSendMessageOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
+
+//	OnBehavior
+//
+//	Do it
+
+	{
+	//	Get the current order data
+
+	CSpaceObject *pRecipient;
+	IShipController::SData Data;
+	pShip->GetCurrentOrder(&pRecipient, &Data);
+
+	//	Send the message
+
+	if (pRecipient && Data.sData)
+		pRecipient->SendMessage(pShip, Data.sData);
+
+	//	Done with the order.
+
+	pShip->CancelCurrentOrder();
+	}
+
+//	CWaitOrder -----------------------------------------------------------------
+
+void CWaitOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
+
+//	OnBehavior
+//
+//	Do it
+
+	{
+	//	Handle waiting
+
+	Ctx.ImplementHold(pShip);
+	Ctx.ImplementFireOnTargetsOfOpportunity(pShip);
+
+	//	See if our timer has expired
+
+	if (m_iCountdown != -1 && m_iCountdown-- == 0)
+		pShip->CancelCurrentOrder();
+
+	//	Otherwise, see if other conditions are fullfilled.
+
+	else
+		{
+		switch (m_iType)
+			{
+			case waitForUndock:
+				if (m_Objs[objTarget]->GetDockedObj() == NULL)
+					pShip->CancelCurrentOrder();
+				break;
+			}
+		}
+	}
+
+void CWaitOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data)
+
+//	OnBehaviorStart
+//
+//	Initialize order module
+
+	{
+	//	Set target
+
+	switch (m_iType)
+		{
+		case waitForUndock:
+			m_Objs[objTarget] = pOrderTarget;
+			ASSERT(m_Objs[objTarget]->DebugIsValid() && m_Objs[objTarget]->NotifyOthersWhenDestroyed());
+			break;
+		}
+
+	//	See if we have a time limit
+
+	DWORD dwTimer = Data.AsInteger();
+	m_iCountdown = (dwTimer ? 1 + (g_TicksPerSecond * dwTimer) : -1);
+	}
+
+void CWaitOrder::OnReadFromStream (SLoadCtx &Ctx)
+
+//	OnReadFromStream
+//
+//	Load data from saved game
+
+	{
+	DWORD dwLoad;
+
+	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+	m_iType = (EWaitTypes)dwLoad;
+
+	Ctx.pStream->Read((char *)&m_iCountdown, sizeof(DWORD));
+	}
+
+void CWaitOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
+
+//	OnWriteToStream
+//
+//	Write data to saved game
+
+	{
+	DWORD dwSave;
+
+	dwSave = (DWORD)m_iType;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+	pStream->Write((char *)&m_iCountdown, sizeof(DWORD));
 	}

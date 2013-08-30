@@ -183,7 +183,7 @@ void CDamageSource::ReadFromStream (SLoadCtx &Ctx)
 	{
 	DWORD dwLoad;
 
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pSource);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pSource);
 	if (Ctx.dwVersion >= 30)
 		{
 		m_sSourceName.ReadFromStream(Ctx.pStream);
@@ -191,7 +191,7 @@ void CDamageSource::ReadFromStream (SLoadCtx &Ctx)
 		}
 
 	if (Ctx.dwVersion >= 32)
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pSecondarySource);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pSecondarySource);
 
 	if (Ctx.dwVersion >= 45)
 		{

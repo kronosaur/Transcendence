@@ -609,7 +609,7 @@ int CG16bitFont::MeasureText (const CString &sText, int *retcyHeight) const
 		//	(Except for spaces, which should always use the advance width
 		//	otherwise, the cxWidth seems to be 0)
 
-		if (pPos == (pEndPos - 1) && iIndex != 0)
+		if (pPos == pEndPos && iIndex != 0)
 			cxWidth += pMetrics->cxWidth;
 		else
 			cxWidth += pMetrics->cxAdvance;

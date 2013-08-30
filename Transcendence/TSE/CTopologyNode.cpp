@@ -39,6 +39,8 @@
 #define PROPERTY_NAME							CONSTLIT("name")
 #define PROPERTY_POS							CONSTLIT("pos")
 
+#define SPECIAL_NODE_ID							CONSTLIT("nodeID:")
+
 //	CTopologyNode class --------------------------------------------------------
 
 CTopologyNode::CTopologyNode (const CString &sID, DWORD SystemUNID, CSystemMap *pMap) : m_sID(sID),
@@ -179,6 +181,31 @@ ALERROR CTopologyNode::AddStargateConnection (CTopologyNode *pDestNode, bool bOn
 	return NOERROR;
 	}
 
+int CTopologyNode::CalcMatchStrength (const CAttributeCriteria &Criteria)
+
+//	CalcMatchStrength
+//
+//	Calculates the match strength of topology node and the criteria.
+
+	{
+	int i;
+
+	int iStrength = 1000;
+	for (i = 0; i < Criteria.GetCount(); i++)
+		{
+		int iWeight;
+		bool bIsSpecial;
+		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iWeight, &bIsSpecial);
+
+		bool bHasAttrib = (bIsSpecial ? HasSpecialAttribute(sAttrib) : HasAttribute(sAttrib));
+		int iAdj = ::ComputeWeightAdjFromMatchStrength(bHasAttrib, iWeight);
+
+		iStrength = iStrength * iAdj / 1000;
+		}
+
+	return iStrength;
+	}
+
 void CTopologyNode::CreateFromStream (SUniverseLoadCtx &Ctx, CTopologyNode **retpNode)
 
 //	CreateFromStream
@@ -191,6 +218,7 @@ void CTopologyNode::CreateFromStream (SUniverseLoadCtx &Ctx, CTopologyNode **ret
 //	DWORD		m_xPos
 //	DWORD		m_yPos
 //	CString		m_sName
+//	CString		m_sAttributes
 //	DWORD		m_iLevel
 //	DWORD		m_dwID
 //
@@ -238,6 +266,9 @@ void CTopologyNode::CreateFromStream (SUniverseLoadCtx &Ctx, CTopologyNode **ret
 		}
 	
 	pNode->m_sName.ReadFromStream(Ctx.pStream);
+	if (Ctx.dwVersion >= 23)
+		pNode->m_sAttributes.ReadFromStream(Ctx.pStream);
+
 	Ctx.pStream->Read((char *)&pNode->m_iLevel, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&pNode->m_dwID, sizeof(DWORD));
 
@@ -446,36 +477,22 @@ ICCItem *CTopologyNode::GetProperty (const CString &sName)
 		return CC.CreateNil();
 	}
 
-bool CTopologyNode::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+int CTopologyNode::GetRequiredEncounter (CStationType *pType) const
 
-//	SetProperty
+//	GetRequiredEncounter
 //
-//	Set topology node property
+//	Returns the required encounters of the given type.
 
 	{
-	CCodeChain &CC = g_pUniverse->GetCC();
+	int i;
 
-	if (strEquals(sName, PROPERTY_POS))
+	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
 		{
-		if (m_pMap == NULL)
-			{
-			*retsError = CONSTLIT("Node is not on a system map and cannot be positioned.");
-			return false;
-			}
-
-		if (pValue->GetCount() < 2)
-			{
-			*retsError = CONSTLIT("Invalid node coordinate.");
-			return false;
-			}
-
-		m_xPos = pValue->GetElement(0)->GetIntegerValue();
-		m_yPos = pValue->GetElement(1)->GetIntegerValue();
-
-		return true;
+		if (m_RequiredEncounters[i].pType == pType)
+			return m_RequiredEncounters[i].iLeftToCreate;
 		}
-	else
-		return false;
+
+	return 0;
 	}
 
 CString CTopologyNode::GetStargate (int iIndex)
@@ -505,6 +522,22 @@ CTopologyNode *CTopologyNode::GetStargateDest (int iIndex, CString *retsEntryPoi
 	return pDesc->pDestNode;
 	}
 
+bool CTopologyNode::HasSpecialAttribute (const CString &sAttrib) const
+
+//	HasSpecialAttribute
+//
+//	Returns TRUE if we have the special attribute
+
+	{
+	if (strStartsWith(sAttrib, SPECIAL_NODE_ID))
+		{
+		CString sNodeID = strSubString(sAttrib, SPECIAL_NODE_ID.GetLength());
+		return strEquals(sNodeID, GetID());
+		}
+	else
+		return false;
+	}
+
 bool CTopologyNode::HasVariantLabel (const CString &sVariant)
 
 //	HasVariantLabel
@@ -519,6 +552,35 @@ bool CTopologyNode::HasVariantLabel (const CString &sVariant)
 		}
 
 	return false;
+	}
+
+void CTopologyNode::ChangeRequiredEncounter (CStationType *pType, int iChange)
+
+//	ChangeRequiredEncounter
+//
+//	Increment or decrement encounters left.
+
+	{
+	int i;
+
+	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
+		{
+		if (m_RequiredEncounters[i].pType == pType)
+			{
+			if (iChange > 0 || -iChange <= m_RequiredEncounters[i].iLeftToCreate)
+				m_RequiredEncounters[i].iLeftToCreate += iChange;
+			return;
+			}
+		}
+
+	//	If we get this far then we could not find the entry and need to add one.
+
+	if (iChange > 0)
+		{
+		SRequiredEncounterDesc *pEntry = m_RequiredEncounters.Insert();
+		pEntry->pType = pType;
+		pEntry->iLeftToCreate = iChange;
+		}
 	}
 
 ALERROR CTopologyNode::InitFromAdditionalXML (CXMLElement *pDesc, CString *retsError)
@@ -666,10 +728,12 @@ bool CTopologyNode::IsCriteriaAll (const SCriteria &Crit)
 			&& Crit.iMinStargates == 0
 			&& Crit.AttribsNotAllowed.GetCount() == 0
 			&& Crit.AttribsRequired.GetCount() == 0
-			&& Crit.DistanceTo.GetCount() == 0);
+			&& Crit.DistanceTo.GetCount() == 0
+			&& Crit.SpecialRequired.GetCount() == 0
+			&& Crit.SpecialNotAllowed.GetCount() == 0);
 	}
 
-bool CTopologyNode::MatchesCriteria (SCriteriaCtx &Ctx, SCriteria &Crit)
+bool CTopologyNode::MatchesCriteria (SCriteriaCtx &Ctx, const SCriteria &Crit)
 
 //	MatchesCriteria
 //
@@ -693,6 +757,18 @@ bool CTopologyNode::MatchesCriteria (SCriteriaCtx &Ctx, SCriteria &Crit)
 
 	for (i = 0; i < Crit.AttribsNotAllowed.GetCount(); i++)
 		if (::HasModifier(m_sAttributes, Crit.AttribsNotAllowed[i]))
+			return false;
+
+	//	Check special required attributes
+
+	for (i = 0; i < Crit.SpecialRequired.GetCount(); i++)
+		if (!HasSpecialAttribute(Crit.SpecialRequired[i]))
+			return false;
+
+	//	Check disallowed special attributes
+
+	for (i = 0; i < Crit.SpecialNotAllowed.GetCount(); i++)
+		if (HasSpecialAttribute(Crit.SpecialNotAllowed[i]))
 			return false;
 
 	//	Stargates
@@ -849,11 +925,23 @@ ALERROR CTopologyNode::ParseCriteriaInt (const CString &sCriteria, SCriteria *re
 			case '-':
 				{
 				bool bRequired = (*pPos == '+');
-				CString sParam = ::ParseCriteriaParam(&pPos, false);
+				bool bBinaryParam;
+				CString sParam = ::ParseCriteriaParam(&pPos, false, &bBinaryParam);
+
 				if (bRequired)
-					retCrit->AttribsRequired.Insert(sParam);
+					{
+					if (bBinaryParam)
+						retCrit->SpecialRequired.Insert(sParam);
+					else
+						retCrit->AttribsRequired.Insert(sParam);
+					}
 				else
-					retCrit->AttribsNotAllowed.Insert(sParam);
+					{
+					if (bBinaryParam)
+						retCrit->SpecialNotAllowed.Insert(sParam);
+					else
+						retCrit->AttribsNotAllowed.Insert(sParam);
+					}
 				break;
 				}
 			}
@@ -929,6 +1017,38 @@ ALERROR CTopologyNode::ParseStargateString (const CString &sStargate, CString *r
 	return NOERROR;
 	}
 
+bool CTopologyNode::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Set topology node property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_POS))
+		{
+		if (m_pMap == NULL)
+			{
+			*retsError = CONSTLIT("Node is not on a system map and cannot be positioned.");
+			return false;
+			}
+
+		if (pValue->GetCount() < 2)
+			{
+			*retsError = CONSTLIT("Invalid node coordinate.");
+			return false;
+			}
+
+		m_xPos = pValue->GetElement(0)->GetIntegerValue();
+		m_yPos = pValue->GetElement(1)->GetIntegerValue();
+
+		return true;
+		}
+	else
+		return false;
+	}
+
 void CTopologyNode::SetStargateDest (const CString &sName, const CString &sDestNode, const CString &sEntryPoint)
 
 //	SetStargateDest
@@ -960,6 +1080,7 @@ void CTopologyNode::WriteToStream (IWriteStream *pStream)
 //	DWORD		m_xPos
 //	DWORD		m_yPos
 //	CString		m_sName
+//	CString		m_sAttributes
 //	DWORD		m_iLevel
 //	DWORD		m_dwID
 //
@@ -990,6 +1111,7 @@ void CTopologyNode::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_xPos, sizeof(DWORD));
 	pStream->Write((char *)&m_yPos, sizeof(DWORD));
 	m_sName.WriteToStream(pStream);
+	m_sAttributes.WriteToStream(pStream);
 	pStream->Write((char *)&m_iLevel, sizeof(DWORD));
 	pStream->Write((char *)&m_dwID, sizeof(DWORD));
 

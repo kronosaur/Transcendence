@@ -557,7 +557,7 @@ void CParticleEffect::OnReadFromStream (SLoadCtx &Ctx)
 	::OutputDebugString("CParticleEffect::OnReadFromStream\n");
 #endif
 	m_sName.ReadFromStream(Ctx.pStream);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pAnchor);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pAnchor);
 
 	DWORD dwLoad;
 	DWORD dwNext;
@@ -932,14 +932,14 @@ void CParticleEffect::PaintFlameParticles (SParticleArray *pGroup, CG16bitImage 
 
 			if (iColor <= 50)
 				wColor = CG16bitImage::FadeColor(CG16bitImage::RGBValue(255, 255, 255),
-						CG16bitImage::RGBValue(250, 210, 10),
+						CG16bitImage::RGBValue(255, 228, 110),
 						2 * iColor);
 			else if (iColor <= 150)
-				wColor = CG16bitImage::FadeColor(CG16bitImage::RGBValue(250, 210, 10),
-						CG16bitImage::RGBValue(255, 20, 0),
+				wColor = CG16bitImage::FadeColor(CG16bitImage::RGBValue(255, 228, 110),
+						CG16bitImage::RGBValue(255, 59, 27),
 						iColor - 50);
 			else
-				wColor = CG16bitImage::RGBValue(255, 20, 0);
+				wColor = CG16bitImage::RGBValue(255, 59, 27);
 
 			//	Compute the size
 

@@ -46,14 +46,16 @@ class CInitModelTask : public IHITask
 class CLoadExtensionTask : public IHITask
 	{
 	public:
-		CLoadExtensionTask (CHumanInterface &HI, const CString &sFilespec) : IHITask(HI), m_sFilespec(sFilespec) { }
+		CLoadExtensionTask (CHumanInterface &HI, const CHexarcDownloader::SStatus &Status) : IHITask(HI), 
+				m_Status(Status)
+			{ }
 
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
-			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), new CString(strPatternSubst(CONSTLIT("Loading %s..."), pathGetFilename(m_sFilespec))));
+			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), new CString(strPatternSubst(CONSTLIT("Loading %s..."), pathGetFilename(m_Status.sFilespec))));
 
-			ALERROR error = g_pUniverse->LoadNewExtension(m_sFilespec, retsResult);
+			ALERROR error = g_pUniverse->LoadNewExtension(m_Status.sFilespec, m_Status.FileDigest, retsResult);
 			if (error)
 				{
 				m_HI.HIPostCommand(CONSTLIT("serviceError"), new CString(*retsResult));
@@ -61,11 +63,12 @@ class CLoadExtensionTask : public IHITask
 				}
 
 			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), NULL);
+			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoaded"), NULL);
 			return NOERROR;
 			}
 
 	private:
-		CString m_sFilespec;
+		CHexarcDownloader::SStatus m_Status;
 	};
 
 class CLoadGameTask : public IHITask

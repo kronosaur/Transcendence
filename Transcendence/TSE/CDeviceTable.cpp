@@ -39,8 +39,6 @@
 #define TABLE_ATTRIB							CONSTLIT("table")
 #define UNID_ATTRIB								CONSTLIT("unid")
 
-#define STR_G_ITEM								CONSTLIT("gItem")
-
 class CNullDevice : public IDeviceGenerator
 	{
 	};

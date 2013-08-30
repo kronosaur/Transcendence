@@ -274,7 +274,7 @@ class CMessageSession : public IHISession
 class CModExchangeSession : public IHISession
 	{
 	public:
-		CModExchangeSession (CHumanInterface &HI, CCloudService &Service);
+		CModExchangeSession (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse, CExtensionCollection &Extensions, bool bDebugMode = false);
 
 		//	IHISession virtuals
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
@@ -285,8 +285,13 @@ class CModExchangeSession : public IHISession
 
 	private:
 		void CmdDone (void);
+		void CmdRefresh (bool bFullRefresh = true);
+		void CmdRefreshComplete (CListCollectionTask *pTask);
 
 		CCloudService &m_Service;
+		CMultiverseModel &m_Multiverse;
+		CExtensionCollection &m_Extensions;
+		bool m_bDebugMode;
 	};
 
 class CNewGameSession : public IHISession
@@ -439,6 +444,7 @@ class CTextCrawlSession : public IHISession
 		const CG16bitImage *m_pImage;
 		CString m_sText;
 		CString m_sCmdDone;
+		bool m_bWaitAnimation;
 	};
 
 class CWaitSession : public IHISession

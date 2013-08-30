@@ -86,7 +86,6 @@ const DWORD INFINITE_TICK =					0xffffffff;	//	Highest tick
 
 const int MAX_TECH_LEVEL =				25;
 
-
 //	Event Timers
 
 const int ENVIRONMENT_ON_UPDATE_CYCLE =		15;		//	OnObjUpdate in <SpaceEnvironmentType>
@@ -101,12 +100,21 @@ const int ITEM_ON_UPDATE_OFFSET =			7;
 const int OVERLAY_ON_UPDATE_CYCLE =			15;		//	OnUpdate in <OverlayType>
 const int OVERLAY_ON_UPDATE_OFFSET =		11;
 
+const int GLOBAL_ON_UPDATE_CYCLE =			15;		//	OnGlobalUpdate for all types
+
+const int ON_SCREEN_UPDATE_CYCLE =			15;		//	OnScreenUpdate for <DockScreen>
+
 //	Special UNIDs
 //	LATER: UNID should not be hard-coded
 
 const DWORD INVALID_UNID =					0xFFFFFFFF;
 
 const DWORD DEFAULT_SYSTEM_TABLE_UNID =		0x0000000B;	//	tbBasicFragments
+
+const DWORD UNID_DAMAGED_SITE_SMALL =		0x00000050;	//	ovDamagedSiteSmall
+const DWORD UNID_DAMAGED_SITE_MEDIUM =		0x00000051;	//	ovDamagedSiteMedium
+const DWORD UNID_DAMAGED_SITE_LARGE =		0x00000052;	//	ovDamagedSiteSmall
+const DWORD UNID_DEPREZ_SITE_SMALL =		0x00000053;	//	ovDeprezSiteSmall
 
 const DWORD g_PlayerSovereignUNID =			0x00001001;	//	svPlayer
 const DWORD g_PirateSovereignUNID =			0x00001005;	//	svPirates
@@ -218,6 +226,7 @@ enum NounPhraseFlags
 	nounActual				= 0x00000100,	//	Use actual form (not unidentified form)
 	nounNoEvent				= 0x00000200,	//	Do not fire GetName event
 	nounTitleCapitalize		= 0x00000400,	//	Title-capitalize
+	nounInstalledState		= 0x00000800,	//	Prefix with "installed" if item is installed
 	};
 
 enum FrequencyTypes

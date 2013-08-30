@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Convoy Behavior
+	
+		USAGE NOTES
+		
+		This simulates the behavior of a freighter convoy escorted by
+		defenders.
+		
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								'avoidingEnemy			= We're trying to run away
+								'onCourse				= Ship on straight course
+	-->
+
+	<ShipClass UNID="&evStdConvoyEncounterBehavior;"
+			class=				"(convoy encounter behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<GetCreatePos>
+				(if aTargetObj
+					(intComputeRandomEncounterPos aTargetObj)
+					)
+			</GetCreatePos>
+
+			<OnBehavior>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003015_behavior"))
+					(switch
+						; If we see any enemy ships then run away
+						(eq behavior 'onCourse)
+							(block (theEnemy)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(block (shelterObj gateObj)
+										(shpCancelOrders gSource)
+										
+										(setq gateObj (sysFindObject gSource "GN -uncharted;"))
+										(setq shelterObj (sysFindObject gSource "TFAN +populated;"))
+										
+										; If there's shelter nearby, go to it
+										(if (and shelterObj
+												(ls (objGetDistance gSource shelterObj) (objGetDistance gSource gateObj))
+												)
+											(block Nil
+												(shpOrder gSource 'dock shelterObj)
+												(shpOrder gSource 'wait (random 10 40))
+												)
+											)
+											
+										; Gate out
+										(shpOrder gSource 'gate gateObj)
+										
+										(objSetData gSource "00003015_behavior" 'avoidingEnemy)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreateOrders>
+				(block (theCourse)
+					(if (not aTargetObj)
+						(setq aTargeObj gPlayerShip)
+						)
+						
+					; Move towards the player's path
+					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
+					(shpOrder gSource 'holdCourse theCourse 300)
+					
+					; Register a timer so that we can look for enemies
+					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+					(objSetData gSource "00003015_behavior" 'onCourse)
+					)
+			</OnCreateOrders>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003015_behavior"))
+					(switch
+						; If we're done with this order, then we never encountered
+						; the player, so we're done, head for a stargate
+						; Note: we might encounter the player en route
+						(eq behavior 'onCourse)
+							(shpOrder gSource 'gate)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+	
+	<!-- Patrol Behavior
+	
+		USAGE NOTES
+		
+		This simulates the behavior of a ship on patrol that detects the
+		player in a random encounter.
+		
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								'attackingEnemy			= We're engaging the enemy
+								'onCourse				= Ship on straight course
+	-->
+
+	<ShipClass UNID="&evStdPatrolEncounterBehavior;"
+			class=				"(patrol encounter behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<GetCreatePos>
+				(if aTargetObj
+					(intComputeRandomEncounterPos aTargetObj)
+					)
+			</GetCreatePos>
+
+			<OnBehavior>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003014_behavior"))
+					(switch
+						; If we see any enemy ships then attack
+						(eq behavior 'onCourse)
+							(block (theEnemy)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'attack theEnemy)
+										(shpOrder gSource 'attackNearestEnemy)
+										(objSetData gSource "00003014_encounterPos" (objGetPos gSource))
+										(objSetData gSource "00003014_behavior" 'attackingEnemy)
+										)
+									)
+								)
+
+						; If the target has run away, then don't chase
+						(eq behavior 'attackingEnemy)
+							(if (and (geq (sysVectorDistance (objGetData gSource "00003014_encounterPos") (objGetPos gSource)) 300)
+									(geq (objGetDistance gSource (objGetTarget gSource)) 50)
+									)
+								(block Nil
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'gate)
+									(objSetData gSource "00003014_behavior" 'onCourse)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreateOrders>
+				(block (theCourse)
+					(if (not aTargetObj)
+						(setq aTargeObj gPlayerShip)
+						)
+						
+					; Move towards the player's path
+					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
+					(shpOrder gSource 'holdCourse theCourse 300)
+					
+					; Register a timer so that we can look for enemies
+					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+					(objSetData gSource "00003014_behavior" 'onCourse)
+					)
+			</OnCreateOrders>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003014_behavior"))
+					(switch
+						; If we're done with this order, then we never encountered
+						; the player, so we're done, head for a stargate
+						; Note: we might encounter the player en route
+						(eq behavior 'onCourse)
+							(shpOrder gSource 'gate)
+							
+						; If we're done attacking, then we're done
+						(eq behavior 'attackingEnemy)
+							(block Nil
+								(shpOrder gSource 'gate)
+								(objSetData gSource "00003014_behavior" 'onCourse)
+								)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+	
+	<!-- Zone Encounter Behavior
+	
+		USAGE NOTES
+		
+		This is for random encounters in which the player runs into
+		a patrol that is orbiting a station. The patrol will ignore enemies
+		unless the enemies are within 300 light-seconds of the station.
+		
+		Note: This only works with enemies that have their own sovereign.
+		
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								'onCourse				= Ship on straight course
+								'backToBase				= Heading back to base
+								'patrolling				= Orbiting base
+								'leavingSystem			= Leaving
+								
+		homeObj:			Ship's base (may be Nil)
+		
+	-->
+
+	<ShipClass UNID="&evStdZoneEncounterBehavior;"
+			class=				"(zone encounter behavior)"
+			virtual=			"true"
+			
+			attributes=			"behaviorClass"
+			>
+			
+		<Events>
+			<GetCreatePos>
+				(if aTargetObj
+					(intComputeRandomEncounterPos aTargetObj)
+					)
+			</GetCreatePos>
+
+			<OnBehavior>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003016_behavior"))
+					(switch
+						; If we see any enemy ships and we're inside our patrol zone
+						; then attack. Otherwise, change course and head back to base.
+
+						(eq behavior 'onCourse)
+							(block (theEnemy theBase baseDist)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(switch
+
+										; Attack
+										(and (setq theBase (objGetObjRefData gSource "00003016_homeObj"))
+												(leq (setq baseDist (objGetDistance gSource theBase)) 300)
+												)
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'patrol theBase 300)
+												(objSetData gSource "00003016_behavior" 'patrolling)
+												)
+
+										; Back to base
+										theBase
+											(block Nil
+												(shpCancelOrders gSource)
+												(shpOrder gSource 'holdCourse
+													(sysVectorSubtract (objGetPos theBase) (objGetPos gSource))
+													(subtract baseDist 300)
+													)
+												(objSetData gSource "00003016_behavior" 'backToBase)
+												)
+
+										; Leave the system
+										(block Nil
+											(shpCancelOrders gSource)
+											(shpOrder gSource 'gate)
+											(objSetData gSource "00003016_behavior" 'leavingSystem)
+											)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreateOrders>
+				(block (theCourse homeBase)
+					(if (not aTargetObj)
+						(setq aTargeObj gPlayerShip)
+						)
+
+					; Find our nearest base
+					(setq homeBase (sysFindObject gSource "TAFJN"))
+					(if (not homeBase)
+						(setq homeBase aBaseObj)
+						)
+					(objSetObjRefData gSource "00003016_homeObj" homeBase)
+
+					; Move towards the player's path
+					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
+					(shpOrder gSource 'holdCourse theCourse 300)
+
+					; Register a timer so that we can look for enemies
+					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+					(objSetData gSource "00003016_behavior" 'onCourse)
+					)
+			</OnCreateOrders>
+			
+			<OnOrdersCompleted>
+				(block (behavior)
+					(setq behavior (objGetData gSource "00003016_behavior"))
+					(switch
+						; If we're done with this order, then we never encountered
+						; the player, so we're done, head for a stargate
+						; Note: we might encounter the player en route
+						(eq behavior 'onCourse)
+							(shpOrder gSource 'gate)
+							
+						; If we're done attacking, then we're done
+						(eq behavior 'attackingEnemy)
+							(block Nil
+								(shpOrder gSource 'gate)
+								(objSetData gSource "00003016_behavior" 'onCourse)
+								)
+
+						(eq behavior 'backToBase)
+							(block Nil
+								(shpOrder gSource 'patrol (objGetObjRefData gSource "00003016_homeObj") 300)
+								(objSetData gSource "00003016_behavior" 'patrolling)
+								)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+	</ShipClass>
+
+</TranscendenceModule>

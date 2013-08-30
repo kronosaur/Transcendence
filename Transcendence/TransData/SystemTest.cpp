@@ -41,7 +41,7 @@ CString GenerateStationKey (CStationType *pType, CSovereign *pPlayer, CString *r
 	//	Generate sort order
 
 	char *pCat;
-	if (pType->HasAttribute(CONSTLIT("debris")))
+	if (pType->HasLiteralAttribute(CONSTLIT("debris")))
 		pCat = "debris";
 	else if (pType->GetControllingSovereign()->IsEnemy(pPlayer))
 		pCat = "enemy";

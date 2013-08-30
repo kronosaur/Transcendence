@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Side-Mounted Device Base Class
+	
+	USAGE
+	
+	1.	Inherit from this class.
+	2.	Include the auxMountDevice attribute.
+	
+	-->
+	
+	<ItemType UNID="&baStdAuxMountDeviceBase;"
+			name=				"(side-mounted device base class)"
+			virtual=			"true"
+			>
+
+		<Events>
+			<CanBeInstalled>
+				(block (auxDeviceCount)
+					; Count the number of auxiliary devices installed
+					
+					(setq auxDeviceCount (count (objGetItems gSource "dI +auxMountDevice")))
+					
+					(switch
+						; We do not allow more than two auxiliary devices
+						(geq auxDeviceCount 2)
+							"Your ship already has two side-mounted devices; you cannot install another one."
+	
+						; Otherwise, we can install it
+						True
+						)
+					)
+			</CanBeInstalled>
+
+			<GetOverlayType>
+				(block (auxMountPos)
+					(setq auxMountPos (itmGetData gItem "auxMountPos"))
+					(switch
+						(eq auxMountPos 'frontLeft)
+							&ovAuxForwardLeftMount;
+							
+						(eq auxMountPos 'frontRight)
+							&ovAuxForwardRightMount;
+							
+						Nil
+						)
+					)
+			</GetOverlayType>
+
+			<OnInstall>
+				(block (leftFree rightFree)
+				
+					; At install time we mount this either on the left or the right of
+					; the ship's hull, depending on whether some weapon is already there.
+					
+					(setq leftFree True)
+					(setq rightFree True)
+					(enum (objGetItems gSource "dI +auxMountDevice") theDevice
+						(block (mountPos)
+							(setq mountPos (itmGetData theDevice "auxMountPos"))
+							(switch
+								(eq mountPos 'frontLeft)
+									(setq leftFree Nil)
+									
+								(eq mountPos 'frontRight)
+									(setq rightFree Nil)
+								)
+							)
+						)
+						
+					; Mount on the left or right
+					(switch
+						leftFree
+							(block Nil
+								(setq gItem (objSetItemData gSource gItem "auxMountPos" 'frontLeft))
+								(objSetDevicePos gSource gItem 75 20)
+								)
+								
+						rightFree
+							(block Nil
+								(setq gItem (objSetItemData gSource gItem "auxMountPos" 'frontRight))
+								(objSetDevicePos gSource gItem 285 20)
+								)
+						)
+					)
+			</OnInstall>
+
+			<OnUninstall>
+				(block Nil
+					; Clear out the mount position
+					(objSetItemData gSource gItem "auxMountPos" Nil)
+					)
+			</OnUninstall>
+		</Events>
+	</ItemType>
+
+	<!-- Auxiliary forward weapon mounts -->
+
+	<OverlayType UNID="&ovAuxForwardLeftMount;"
+			>
+		<Effect>
+			<Image imageID="&rsAuxMountOverlay;" imageX="0" imageWidth="32" imageHeight="32" rotationCount="40"/>
+		</Effect>
+	</OverlayType>
+
+	<OverlayType UNID="&ovAuxForwardRightMount;"
+			>
+		<Effect>
+			<Image imageID="&rsAuxMountOverlay;" imageX="32" imageWidth="32" imageHeight="32" rotationCount="40"/>
+		</Effect>
+	</OverlayType>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsAuxMountOverlay;"	bitmap="Resources\AuxiliaryWeaponMount.jpg"	bitmask="Resources\AuxiliaryWeaponMountMask.bmp"	loadOnUse="true"/>
+	
+</TranscendenceModule>

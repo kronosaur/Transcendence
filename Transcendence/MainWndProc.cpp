@@ -137,6 +137,9 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 		case WM_LBUTTONUP:
 			return (g_pHI ? g_pHI->WMLButtonUp((int)LOWORD(lParam), (int)HIWORD(lParam), wParam) : 0);
 
+		case MCIWNDM_NOTIFYMODE:
+			return (g_pHI ? g_pHI->MCINotifyMode((int)lParam) : 0);
+
 		case WM_MOUSEMOVE:
 			return g_pHI->WMMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);
 

@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- TABLES -->
+
+	<SystemPartTable unid="&tbRockyPlanets;">
+
+		<RockyPrimary>
+			<LocationCriteriaTable>
+				<Table criteria="*innerSystem">
+					<Lookup chance="100" table="RockyPlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*lifeZone">
+					<Lookup chance="100" table="RockyPlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*outerSystem">
+					<Lookup chance="100" table="RockyPlanetoidPrimary"/>
+				</Table>
+			</LocationCriteriaTable>
+		</RockyPrimary>
+
+		<RockyPlanetoidPrimary>
+			<Lookup table="StandardPlanetoidMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="60" type="&stRockyPlanetoidSizeE;" showOrbit="true"/>
+						<Station chance="30" type="&stRockyPlanetoidSizeF;" showOrbit="true"/>
+						<Station chance="10" type="&stRockyPlanetoidSizeG;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="planet, planetary, planetoid, rocky"/>
+				</_PlanetLabel>
+			</Lookup>
+		</RockyPlanetoidPrimary>
+
+	</SystemPartTable>
+
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Size A Rocky Asteroid -->
+
+	<StationType UNID="&stRockyAsteroidSizeA;"
+		name=				"(rocky asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" table="&tbStoneAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size A Rocky Outer Asteroid -->
+
+	<StationType UNID="&stRockyOuterAsteroidSizeA;"
+		name=				"(rocky outer asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, outer, rocky"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Rocky Asteroid -->
+
+	<StationType UNID="&stRockyAsteroidSizeB;"
+		name=				"(rocky asteroid)"
+		scale=				"world"
+		size=				"65"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d6" table="&tbStoneAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Rocky Outer Asteroid -->
+
+	<StationType UNID="&stRockyOuterAsteroidSizeB;"
+		name=				"(rocky outer asteroid)"
+		scale=				"world"
+		size=				"65"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, outer, rocky"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d6" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Rocky Asteroid -->
+
+	<StationType UNID="&stRockyAsteroidSizeC;"
+		name=				"(rocky asteroid)"
+		scale=				"world"
+		size=				"250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d8" table="&tbStoneAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Rocky Outer Asteroid -->
+
+	<StationType UNID="&stRockyOuterAsteroidSizeC;"
+		name=				"(rocky outer asteroid)"
+		scale=				"world"
+		size=				"250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, outer, rocky"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="90"  imageY="0"   imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="90"  imageY="90"  imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="90"  imageY="180" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="90"  imageY="270" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="90"  imageY="360" imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d8" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Rocky Asteroid -->
+
+	<StationType UNID="&stRockyAsteroidSizeD;"
+		name=				"(rocky asteroid)"
+		scale=				"world"
+		size=				"625"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="0"   imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="110" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="220" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="180" imageY="330" imageWidth="110" imageHeight="110"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d10" table="&tbStoneAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Rocky Outer Asteroid -->
+
+	<StationType UNID="&stRockyOuterAsteroidSizeD;"
+		name=				"(rocky outer asteroid)"
+		scale=				"world"
+		size=				"625"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, outer, rocky"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="290" imageY="0"   imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="290" imageY="110" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="290" imageY="220" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="290" imageY="330" imageWidth="110" imageHeight="110"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d10" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Rocky Planetoid Size E -->
+
+	<StationType UNID="&stRockyPlanetoidSizeE;"
+		name=				"(rocky planetoid)"
+		scale=				"world"
+		size=				"1150"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="130" imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="400" imageY="260" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Rocky Planetoid Size F -->
+
+	<StationType UNID="&stRockyPlanetoidSizeF;"
+		name=				"(rocky planetoid)"
+		scale=				"world"
+		size=				"2050"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="0"   imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="160" imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="660" imageY="320" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Rocky Planetoid Size G -->
+
+	<StationType UNID="&stRockyPlanetoidSizeG;"
+		name=				"(rocky planetoid)"
+		scale=				"world"
+		size=				"4000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, rocky"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsRockyAsteroids;" imageX="980" imageY="0"   imageWidth="175" imageHeight="175"/>
+			<Image	imageID="&rsRockyAsteroids;" imageX="980" imageY="175" imageWidth="175" imageHeight="175"/>
+		</ImageVariants>
+	</StationType>
+
+<!-- TABLES -->
+
+	<ItemTable unid="&tbStoneAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itUraniumOre;"/>
+			<Item levelFrequency="vvvvv vvvvv vvvvv vvvvv vvvvv" count="10-50"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itHeliumRegolith;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+	<ItemTable unid="&tbFrostAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-5"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itHeliumRegolith;"/>
+			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="10-15"	item="&itPalladiumOre;"/>
+			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
+			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-6"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
+		</LevelTable>
+	</ItemTable>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsRockyAsteroids;"	bitmap="Resources\RockyAsteroids.jpg"	bitmask="Resources\RockyAsteroidsMask.bmp"		loadOnUse="true"/>
+	
+</TranscendenceModule>

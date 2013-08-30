@@ -39,6 +39,56 @@ void CLanguageDataBlock::AddEntry (const CString &sID, const CString &sText)
 	pEntry->pCode = NULL;
 	}
 
+ICCItem *CLanguageDataBlock::ComposeCCItem (CCodeChain &CC, ICCItem *pValue, const CString &sPlayerName, GenomeTypes iPlayerGenome) const
+
+//	ComposeCCItem
+//
+//	Recursively parse all strings for player string escape codes (e.g., %name%). 
+//	Callers must discard the result.
+
+	{
+	int i;
+
+	if (pValue->IsSymbolTable())
+		{
+		ICCItem *pResult = CC.CreateSymbolTable();
+
+		CCSymbolTable *pSource = (CCSymbolTable *)pValue;
+		CCSymbolTable *pTable = (CCSymbolTable *)pResult;
+		for (i = 0; i < pValue->GetCount(); i++)
+			{
+			ICCItem *pElement = ComposeCCItem(CC, pSource->GetElement(i), sPlayerName, iPlayerGenome);
+			ICCItem *pKey = CC.CreateString(pSource->GetKey(i));
+			pTable->AddEntry(&CC, pKey, pElement);
+			pElement->Discard(&CC);
+			pKey->Discard(&CC);
+			}
+
+		return pResult;
+		}
+
+	else if (pValue->IsIdentifier())
+		return CC.CreateString(::ComposePlayerNameString(pValue->GetStringValue(), sPlayerName, iPlayerGenome));
+
+	else if (pValue->IsList())
+		{
+		ICCItem *pResult = CC.CreateLinkedList();
+
+		CCLinkedList *pList = (CCLinkedList *)(pResult);
+		for (i = 0; i < pValue->GetCount(); i++)
+			{
+			ICCItem *pElement = ComposeCCItem(CC, pValue->GetElement(i), sPlayerName, iPlayerGenome);
+			pList->Append(&CC, pElement);
+			pElement->Discard(&CC);
+			}
+
+		return pResult;
+		}
+
+	else
+		return pValue->Reference();
+	}
+
 void CLanguageDataBlock::DeleteAll (void)
 
 //	DeleteAll
@@ -168,7 +218,7 @@ void CLanguageDataBlock::MergeFrom (const CLanguageDataBlock &Source)
 		}
 	}
 
-CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText) const
+CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult) const
 
 //	Translate
 //
@@ -216,9 +266,22 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 	if (pResult->IsNil())
 		iResult = resultNotFound;
 
-	//	List of strings
+	//	String
 
-	else if (pResult->GetCount() > 1)
+	else if (pResult->GetValueType() == ICCItem::String)
+		{
+		if (retsText)
+			{
+			*retsText = ::ComposePlayerNameString(pResult->GetStringValue(), g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome());
+			iResult = resultString;
+			}
+		else
+			iResult = resultFound;
+		}
+
+	//	Array of strings
+
+	else if (pResult->GetValueType() == ICCItem::List && pResult->GetCount() > 0 && pResult->GetElement(0)->GetValueType() == ICCItem::String)
 		{
 		if (retText)
 			{
@@ -237,14 +300,14 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 			iResult = resultFound;
 		}
 
-	//	String
+	//	Otherwise we return the naked value
 
 	else
 		{
-		if (retsText)
+		if (retpResult)
 			{
-			*retsText = ::ComposePlayerNameString(pResult->GetStringValue(), g_pUniverse->GetPlayerName(), g_pUniverse->GetPlayerGenome());
-			iResult = resultString;
+			*retpResult = pResult->Reference();
+			iResult = resultCCItem;
 			}
 		else
 			iResult = resultFound;
@@ -268,7 +331,8 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCI
 
 	TArray<CString> List;
 	CString sText;
-	ETranslateResult iResult = Translate(pObj, sID, &List, &sText);
+	ICCItem *pResult;
+	ETranslateResult iResult = Translate(pObj, sID, &List, &sText, &pResult);
 
 	switch (iResult)
 		{
@@ -288,6 +352,16 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCI
 			for (i = 0; i < List.GetCount(); i++)
 				pList->AppendStringValue(&g_pUniverse->GetCC(), List[i]);
 
+			return true;
+			}
+
+		case resultCCItem:
+			{
+			CString sPlayerName = g_pUniverse->GetPlayerName();
+			GenomeTypes iPlayerGenome = g_pUniverse->GetPlayerGenome();
+
+			*retpResult = ComposeCCItem(g_pUniverse->GetCC(), pResult, sPlayerName, iPlayerGenome);
+			pResult->Discard(&g_pUniverse->GetCC());
 			return true;
 			}
 

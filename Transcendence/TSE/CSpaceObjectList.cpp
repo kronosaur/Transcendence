@@ -34,23 +34,39 @@ void CSpaceObjectList::Add (CSpaceObject *pObj, int *retiIndex)
 	FastAdd(pObj, retiIndex);
 	}
 
-void CSpaceObjectList::ReadFromStream (SLoadCtx &Ctx)
+void CSpaceObjectList::ReadFromStream (SLoadCtx &Ctx, bool bIgnoreMissing)
 
 //	ReadFromStream
 //
 //	Read the list from a stream
 
 	{
+	int i;
 	ASSERT(m_List.GetCount() == 0);
 
 	DWORD dwCount;
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
-	if (dwCount)
+	if (dwCount == 0)
+		return;
+
+	//	If we expect all objects to be resolved, then we create the array and
+	//	wait for them to be loaded.
+
+	if (!bIgnoreMissing)
 		{
 		m_List.InsertEmpty(dwCount);
 
-		for (int i = 0; i < (int)dwCount; i++)
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_List[i]);
+		for (i = 0; i < (int)dwCount; i++)
+			CSystem::ReadObjRefFromStream(Ctx, &m_List[i]);
+		}
+
+	//	Otherwise, we use the callback method, which allows us to ignore any
+	//	unresolved entries.
+
+	else
+		{
+		for (i = 0; i < (int)dwCount; i++)
+			CSystem::ReadObjRefFromStream(Ctx, this, &ResolveObjProc);
 		}
 	}
 
@@ -69,6 +85,18 @@ bool CSpaceObjectList::Remove (CSpaceObject *pObj)
 		}
 
 	return false;
+	}
+
+void CSpaceObjectList::ResolveObjProc (void *pCtx, DWORD dwObjID, CSpaceObject *pObj)
+
+//	ResolveObjProc
+//
+//	Resolve an object reference
+
+	{
+	CSpaceObjectList *pList = (CSpaceObjectList *)pCtx;
+	if (pObj && dwObjID)
+		pList->m_List.Insert(pObj);
 	}
 
 void CSpaceObjectList::SetAllocSize (int iNewCount)

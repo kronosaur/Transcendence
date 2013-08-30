@@ -201,7 +201,7 @@ class IAniFillMethod
 
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, int cxWidth, int cyHeight) { }
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const TArray<SSimpleRasterLine> &Lines) { }
-		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitRegion &Region) { }
+		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitBinaryRegion &Region) { }
 		virtual void InitDefaults (CAniPropertySet &Properties) { }
 		virtual void InitPaint (SAniPaintCtx &Ctx, int xOrigin, int yOrigin, CAniPropertySet &Properties) { }
 	};
@@ -574,7 +574,7 @@ class CAniPolygon : public CAniShape
 
 		CVector m_vScale;
 		int m_iRotation;
-		CG16bitRegion m_Region;
+		CG16bitBinaryRegion m_Region;
 	};
 
 class CAniRect : public CAniShape
@@ -966,7 +966,7 @@ class CAniImageFill : public IAniFillMethod
 		//	IAniFillMethod
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, int cxWidth, int cyHeight);
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const TArray<SSimpleRasterLine> &Lines);
-		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitRegion &Region);
+		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitBinaryRegion &Region);
 		virtual void InitDefaults (CAniPropertySet &Properties);
 		virtual void InitPaint (SAniPaintCtx &Ctx, int xOrigin, int yOrigin, CAniPropertySet &Properties);
 
@@ -987,7 +987,7 @@ class CAniSolidFill : public IAniFillMethod
 		//	IAniFillMethod
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, int cxWidth, int cyHeight);
 		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const TArray<SSimpleRasterLine> &Lines);
-		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitRegion &Region);
+		virtual void Fill (SAniPaintCtx &Ctx, int x, int y, const CG16bitBinaryRegion &Region);
 		virtual void InitDefaults (CAniPropertySet &Properties);
 		virtual void InitPaint (SAniPaintCtx &Ctx, int xOrigin, int yOrigin, CAniPropertySet &Properties);
 

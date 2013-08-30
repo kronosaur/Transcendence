@@ -170,6 +170,22 @@ void CWeaponFireDesc::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 		}
 	}
 
+IEffectPainter *CWeaponFireDesc::CreateEffect (void)
+
+//	CreateEffect
+//
+//	Creates an effect to paint the projectile. The caller is responsible for
+//	calling Delete on the result.
+//
+//	NOTE: We may return NULL if the weapon has no effect.
+
+	{
+	CCreatePainterCtx Ctx;
+	Ctx.SetWeaponFireDesc(this);
+
+	return m_pEffect.CreatePainter(Ctx);
+	}
+
 void CWeaponFireDesc::CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx)
 
 //	CreateHitEffect
@@ -731,6 +747,19 @@ bool CWeaponFireDesc::FireOnFragment (const CDamageSource &Source, CSpaceObject 
 		return false;
 	}
 
+Metric CWeaponFireDesc::GetAveInitialSpeed (void) const
+
+//	GetAveInitialSpeed
+//
+//	Returns the average initial speed
+
+	{
+	if (m_fVariableInitialSpeed)
+		return (m_MissileSpeed.GetAveValueFloat() * LIGHT_SPEED / 100.0);
+	else
+		return GetRatedSpeed();
+	}
+
 Metric CWeaponFireDesc::GetInitialSpeed (void) const
 
 //	GetInitialSpeed
@@ -927,7 +956,7 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 			}
 
 		m_fVariableInitialSpeed = !m_MissileSpeed.IsConstant();
-		m_rMissileSpeed = (double)m_MissileSpeed.GetAveValue() * LIGHT_SPEED / 100;
+		m_rMissileSpeed = m_MissileSpeed.GetAveValueFloat() * LIGHT_SPEED / 100;
 		}
 	else
 		{
@@ -968,18 +997,10 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 		//	For backwards compatibility, if we don't have an effect, assume
 		//	a beam effect.
 
-		if (m_iFireType == ftBeam && m_pEffect == NULL)
+		if (m_iFireType == ftBeam && m_pEffect.IsEmpty())
 			{
 			if (error = m_pEffect.CreateBeamEffect(Ctx, pDesc, strPatternSubst("%s:e", sUNID)))
 				return error;
-
-			//	Backwards compatibility in case a CBeam object is loaded from
-			//	an old save file.
-
-			m_iBeamType = beamLaser;
-			m_wPrimaryColor = CG16bitImage::RGBValue(0xf1, 0x5f, 0x2a);
-			m_wSecondaryColor = CG16bitImage::RGBValue(0xff, 0x00, 0x00);
-			m_iIntensity = 1;
 			}
 
 		//	Load the image for the missile
@@ -1234,7 +1255,7 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 	//	Compute max effective range
 
 	if (m_iFireType == ftArea)
-		m_rMaxEffectiveRange = (m_ExpansionSpeed.GetAveValue() * LIGHT_SECOND / 100.0) * Ticks2Seconds(iMaxLifetime) * 0.75;
+		m_rMaxEffectiveRange = (m_ExpansionSpeed.GetAveValueFloat() * LIGHT_SECOND / 100.0) * Ticks2Seconds(iMaxLifetime) * 0.75;
 	else
 		{
 		Metric rEffectiveLifetime;

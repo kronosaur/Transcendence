@@ -168,6 +168,43 @@ DWORD CTileMap::GetTile (int x, int y) const
 	return pMap->GetTile(x * m_iSize + y);
 	}
 
+DWORD *CTileMap::GetTilePointer (int x, int y)
+
+//	GetTilePointer
+//
+//	Returns a pointer to a tile DWORD. This pointer is NOT valid across 
+//	modifications to the tile map. That is, the value of this pointer is 
+//	undefined after a call to SetTile.
+//
+//	NULL means that no tile exists at the given location.
+
+	{
+	if (x < 0 || y < 0 || m_pMap == NULL)
+		return NULL;
+
+	CTileMapSection *pMap = m_pMap;
+	int iDenom = m_iFirstDenominator;
+	while (iDenom > 1)
+		{
+		int x1 = x / iDenom;
+		int y1 = y / iDenom;
+
+		if (x1 >= m_iSize || y1 >= m_iSize)
+			return NULL;
+
+		pMap = pMap->GetTileMapSection(x1 * m_iSize + y1);
+		if (pMap == NULL)
+			return NULL;
+
+		x = x % iDenom;
+		y = y % iDenom;
+
+		iDenom /= m_iSize;
+		}
+
+	return pMap->GetTilePointer(x * m_iSize + y);
+	}
+
 int CTileMap::GetTotalSize (void) const
 
 //	GetTotalSize
@@ -236,50 +273,49 @@ ALERROR CTileMap::ReadFromStream (IReadStream *pStream)
 	Init(iSize, iScale);
 	int iCount = iSize * iSize;
 
-	//	Load list of map sections
+	//	Load map sections
 
-	DWORD dwOffset;
-	pStream->Read((char *)&dwOffset, sizeof(DWORD));
-	while (dwOffset != 0xffffffff)
+	if (error = ReadMapSection(pStream, m_iScale, &m_pMap))
+		return error;
+
+	return NOERROR;
+	}
+
+ALERROR CTileMap::ReadMapSection (IReadStream *pStream, int iScale, CTileMapSection **retpSection)
+	{
+	ALERROR error;
+
+	int iCount = m_iSize * m_iSize;
+	CTileMapSection *pSection = NULL;
+
+	if (iScale == 0)
 		{
-		int iDenom = m_iFirstDenominator * m_iFirstDenominator;
-
-		//	Load the map section
-
-		if (iDenom == 1)
-			m_pMap->ReadFromStream(iCount, pStream);
-		else
-			{
-			CTileMapSection *pSection = new CTileMapSection(iCount);
-			if (error = pSection->ReadFromStream(iCount, pStream))
-				return error;
-
-			//	Add the map to the appropriate level
-
-			int iOffset = (int)dwOffset;
-			CTileMapSection *pDest = m_pMap;
-			while (iDenom > iCount)
-				{
-				int iIndex = iOffset / iDenom;
-
-				CTileMapSection *pOldMap = pDest;
-				pDest = pDest->GetTileMapSection(iIndex);
-				if (pDest == NULL)
-					{
-					pDest = new CTileMapSection(iCount);
-					pOldMap->SetTileMapSection(iIndex, pDest);
-					}
-
-				iOffset = iOffset % iDenom;
-				iDenom = iDenom / iCount;
-				}
-
-			pDest->SetTileMapSection(iOffset, pSection);
-			}
-
-		if (error = pStream->Read((char *)&dwOffset, sizeof(DWORD)))
+		pSection = new CTileMapSection(iCount);
+		if (error = pSection->ReadFromStream(iCount, pStream))
 			return error;
 		}
+	else
+		{
+		DWORD dwOffset;
+		pStream->Read((char *)&dwOffset, sizeof(DWORD));
+		while (dwOffset != 0xffffffff)
+			{
+			ASSERT(dwOffset < (DWORD)iCount);
+
+			if (pSection == NULL)
+				pSection = new CTileMapSection(iCount);
+
+			CTileMapSection *pSubSection;
+			if (error = ReadMapSection(pStream, iScale - 1, &pSubSection))
+				return error;
+
+			pSection->SetTileMapSection(dwOffset, pSubSection);
+
+			pStream->Read((char *)&dwOffset, sizeof(DWORD));
+			}
+		}
+
+	*retpSection = pSection;
 
 	return NOERROR;
 	}
@@ -390,8 +426,7 @@ void CTileMap::SetTile (int x, int y, DWORD dwTile)
 	}
 
 void CTileMap::WriteMapSection (CTileMapSection *pMap, 
-								int iOffset,
-								int iDenom, 
+								int iScale,
 								IWriteStream *pStream) const
 
 //	WriteMapSection
@@ -399,21 +434,25 @@ void CTileMap::WriteMapSection (CTileMapSection *pMap,
 //	Writes out the map recursively
 
 	{
-	if (iDenom == 1)
-		{
-		pStream->Write((char *)&iOffset, sizeof(DWORD));
+	if (iScale == 0)
 		pMap->WriteToStream(m_iSize * m_iSize, pStream);
-		}
 	else
 		{
 		int iCount = m_iSize * m_iSize;
-		int iNewDenom = iDenom / iCount;
 		for (int i = 0; i < iCount; i++)
 			{
 			CTileMapSection *pSection = pMap->GetTileMapSection(i);
 			if (pSection)
-				WriteMapSection(pSection, iOffset + i * iNewDenom, iNewDenom, pStream);
+				{
+				pStream->Write((char *)&i, sizeof(DWORD));
+				WriteMapSection(pSection, iScale - 1, pStream);
+				}
 			}
+
+		//	End marker
+
+		DWORD dwSave = 0xffffffff;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
 		}
 	}
 
@@ -435,14 +474,12 @@ void CTileMap::WriteToStream (IWriteStream *pStream) const
 	//	Write out each tile at the lowest scale
 
 	if (m_pMap)
+		WriteMapSection(m_pMap, m_iScale, pStream);
+	else
 		{
-		int iCount = m_iSize * m_iSize;
-		int iDenom = m_iFirstDenominator * m_iFirstDenominator;
-		WriteMapSection(m_pMap, 0, iDenom, pStream);
+		//	End marker
+
+		DWORD dwSave = 0xffffffff;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
 		}
-
-	//	End marker
-
-	DWORD dwSave = 0xffffffff;
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

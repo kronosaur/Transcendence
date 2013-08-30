@@ -7,7 +7,7 @@
 
 #define STORE_SIZE_INIT						256
 #define STORE_SIZE_INCREMENT				256
-#define STORE_ALLOC_MAX						(8 * 1024 * 1024)
+#define STORE_ALLOC_MAX						(64 * 1024 * 1024)
 
 static DATADESCSTRUCT g_DataDesc[] =
 	{	{ DATADESC_OPCODE_REFERENCE,	1,	0 },		//	m_pStore
@@ -168,6 +168,16 @@ CString &CString::operator= (const CString &pString)
 		m_pStore->iRefCount++;
 
 	return *this;
+	}
+
+bool CString::operator== (const CString &sValue) const
+
+//	operator ==
+//
+//	NOTE: Case-insensitive compare
+
+	{
+	return strEquals(*this, sValue);
 	}
 
 void CString::AddToFreeList (PSTORESTRUCT pStore, int iSize)

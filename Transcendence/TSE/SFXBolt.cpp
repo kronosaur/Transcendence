@@ -87,7 +87,7 @@ void CBoltEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewportPaint
 			wStart);
 	}
 
-bool CBoltEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CBoltEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

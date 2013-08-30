@@ -27,35 +27,13 @@
 			</StargateTable>
 		</NodeGroup>
 		
-		<!-- CHARON -->
-		
-		<Node ID="CP" x="259" y="-58">
-			<System
-					name="Charon"
-					level=			"3"
-					attributes=		"newBeyond"
-					>
-				<System UNID="&ssCharonPirateFortress;"/>
-			</System>
-
-			<MapEffect>
-				<Group xOffset="-120" yOffset="-60">
-					<Text text=				"Charon Pirates" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
-		</Node>
-
 		<!-- ERIDANI -->
 		
 		<Node ID="SE" x="-29" y="-33">
 			<System 
 					name=			"Eridani"
 					level=			"1"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<System UNID="&ssStartonEridani;"/>
 			</System>
@@ -77,10 +55,32 @@
 			<System
 					name=			"Rigel Aurelius"
 					level=			"2"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<System UNID="&ssBattleArena;"/>
 			</System>
+		</Node>
+
+		<!-- CHARON -->
+		
+		<Node ID="CP" x="259" y="-58">
+			<System
+					name="Charon"
+					level=			"3"
+					attributes=		"humanSpace, mainline, newBeyond"
+					>
+				<System UNID="&ssCharonPirateFortress;"/>
+			</System>
+
+			<MapEffect>
+				<Group xOffset="-120" yOffset="-60">
+					<Text text=				"Charon Pirates" 
+							font=			"SubTitle"
+							primaryColor=	"0xff, 0xff, 0xff"
+							opacity=		"20"
+							/>
+				</Group>
+			</MapEffect>
 		</Node>
 
 		<!-- SAINT KATHARINE'S STAR -->
@@ -89,7 +89,7 @@
 			<System
 					name=			"St. Katharine's Star"
 					level=			"4"
-					attributes=		"stKatharine"
+					attributes=		"humanSpace, mainline, stKatharine"
 					>
 				<System UNID="&ssStKatharine;"/>
 			</System>
@@ -100,7 +100,7 @@
 		<Node ID="C1" x="27" y="-96">
 			<System
 					level=			"1"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
 					<System chance="30" name="Groombridge" UNID="&ssEarthSpaceStandard;"/>
@@ -113,7 +113,7 @@
 		<Node ID="C3" x="78" y="-140">
 			<System
 					level=			"2"
-					attributes=		"NewBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
 					<System chance="25" name="Orgos"		UNID="&ssEarthSpaceStandard;"/>
@@ -127,7 +127,7 @@
 		<Node ID="C3A" x="137" y="-173">
 			<System
 					level=			"2"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
 					<System chance="50" name="Lacaille"	UNID="&ssEarthSpaceRedDwarf;"/>
@@ -139,7 +139,7 @@
 		<Node ID="C4" x="240" y="-157">
 			<System
 					level=			"3"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
 					<System chance="17" name="Van Maanen"	UNID="&ssEarthSpaceStandard;"/>
@@ -154,7 +154,7 @@
 		<Node ID="C4A" x="258" y="-107">
 			<System
 					level=			"3"
-					attributes=		"newBeyond"
+					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
 					<System chance="17" name="Manchester"	UNID="&ssEarthSpaceStandard;"/>
@@ -195,13 +195,35 @@
 			</StargateTable>
 		</NodeGroup>
 
+		<!-- SANCTUARY -->
+		
+		<Node ID="CD" x="0" y="260">
+			<System
+					name=			"Sanctuary"
+					level=			"5"
+					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
+					>
+				<System UNID="&ssEarthSpaceNebulae;"/>
+			</System>
+
+			<MapEffect>
+				<Group xOffset="-160" yOffset="160">
+					<Text text=				"Huari Empire" 
+							font=			"SubTitle"
+							primaryColor=	"0xff, 0xff, 0xff"
+							opacity=		"20"
+							/>
+				</Group>
+			</MapEffect>
+		</Node>
+		
 		<!-- JIANG'S STAR -->
 		
 		<Node ID="C9" x="-273" y="222">
 			<System
 					name=				"Jiang's Star"
 					level=				"6"
-					attributes=			"huaramarcaGate, ungoverned"
+					attributes=			"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<System UNID="&ssEarthSpaceVolcanic;"/>
 			</System>
@@ -225,34 +247,12 @@
 			</MapEffect>
 		</Node>
 
-		<!-- SANCTUARY -->
-		
-		<Node ID="CD" x="0" y="260">
-			<System
-					name=			"Sanctuary"
-					level=			"5"
-					attributes=		"huaramarcaGate, ungoverned"
-					>
-				<System UNID="&ssEarthSpaceNebulae;"/>
-			</System>
-
-			<MapEffect>
-				<Group xOffset="-160" yOffset="160">
-					<Text text=				"Huari Empire" 
-							font=			"SubTitle"
-							primaryColor=	"0xff, 0xff, 0xff"
-							opacity=		"20"
-							/>
-				</Group>
-			</MapEffect>
-		</Node>
-		
 		<!-- MINOR UNGOVERNED TERRITORIES SYSTEMS -->
 
 		<Node ID="C5A" x="196" y="79">
 			<System
 					level=			"4"
-					attributes=		"ungoverned"
+					attributes=		"humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="50" name="Mu Casser"	UNID="&ssEarthSpaceStandard;"/>
@@ -264,7 +264,7 @@
 		<Node ID="C5" x="162" y="130">
 			<System		
 					level=			"4"
-					attributes=		"ungoverned"
+					attributes=		"humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="17" name="Humboldt"	UNID="&ssEarthSpaceStandard;"/>
@@ -279,7 +279,7 @@
 		<Node ID="C6" x="106" y="191">
 			<System				
 					level=			"5"
-					attributes=		"huaramarcaGate, ungoverned"
+					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="17" name="Orthrus"	UNID="&ssEarthSpaceBinary;"/>
@@ -296,7 +296,7 @@
 		<Node ID="C6A" x="44" y="239">
 			<System
 					level=			"5"
-					attributes=		"huaramarcaGate, ungoverned"
+					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="17" name="Junger"		UNID="&ssEarthSpaceStandard;"/>
@@ -313,7 +313,7 @@
 		<Node ID="C7" x="-94" y="295">
 			<System
 					level=			"5"
-					attributes=		"huaramarcaGate, ungoverned"
+					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="17" name="Amphion"	UNID="&ssEarthSpaceBinary;"/>
@@ -330,7 +330,7 @@
 		<Node ID="C8" x="-191" y="292">
 			<System
 					level=			"6"
-					attributes=		"huaramarcaGate, ungoverned"
+					attributes=		"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="17" name="Zethus"		UNID="&ssEarthSpaceBinary;"/>
@@ -347,7 +347,7 @@
 		<Node ID="C8A" x="-238" y="268">
 			<System
 					level=				"6"
-					attributes=			"huaramarcaGate, ungoverned"
+					attributes=			"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
 					<System chance="50" name="Maharashtra" UNID="&ssEarthSpaceNebulae;"/>
@@ -359,8 +359,7 @@
 		<!-- OUTER REALM =================================================== -->
 		
 		<NodeGroup ID="OuterRealmMainline">
-			<Stargate from="A1:Outbound"	to="A2:Inbound"/>
-			<Stargate from="A2:Outbound"	to="EC:Inbound"/>
+			<Stargate from="A1:Outbound"	to="EC:Inbound"/>
 			<Stargate from="EC:Outbound"	to="A3:Inbound"/>
 			<StargateTable>
 				<Group chance="50">
@@ -370,31 +369,18 @@
 				<Stargate chance="50" from="A3:Outbound" to="PJ:Inbound"/>
 			</StargateTable>
 			<Stargate from="PJ:Outbound"	to="A5:Inbound"/>
-			<Stargate from="A5:Outbound"	to="A6:Inbound"/>
-			<Stargate from="A6:Outbound"	to="A7:Inbound"/>
+			<Stargate from="A5:Outbound"	to="A7:Inbound"/>
 			<Stargate from="A7:Outbound"	to="G1:Inbound"/>
 			<Stargate from="G1:Outbound"	to="G2:Inbound"/>
 		</NodeGroup>
 		
-		<!-- DANTALION -->
-		
-		<Node ID="A7" x="-288" y="-269">
-			<System
-					name=				"Dantalion"
-					level=				"9"
-					attributes=			"outerRealm"
-					>
-				<System UNID="&ssDantalion;"/>
-			</System>
-		</Node>
-
 		<!-- ETA CETI -->
 		
 		<Node ID="EC" x="-284" y="36">
 			<System
 					name=				"Eta Ceti"
 					level=				"7"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<System UNID="&ssEarthSpaceVolcanic;"/>
 			</System>
@@ -418,24 +404,13 @@
 			</MapEffect>
 		</Node>
 		
-		<!-- HERETIC -->
-		
-		<Node ID="G2" x="-382" y="-388">
-			<System
-					UNID=				"&ssHeretic;"
-					name=				"Heretic"
-					level=				"10"
-					attributes=			"outerRealm"
-					/>
-		</Node>
-		
 		<!-- POINT JUNO -->
 		
 		<Node ID="PJ" x="-203" y="-136">
 			<System
 					name=				"Point Juno"
 					level=				"8"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<System UNID="&ssPointJuno;"/>
 			</System>
@@ -451,12 +426,35 @@
 			</MapEffect>
 		</Node>
 		
+		<!-- DANTALION -->
+		
+		<Node ID="A7" x="-288" y="-269">
+			<System
+					name=				"Dantalion"
+					level=				"9"
+					attributes=			"humanSpace, mainline, outerRealm"
+					>
+				<System UNID="&ssDantalion;"/>
+			</System>
+		</Node>
+
+		<!-- HERETIC -->
+		
+		<Node ID="G2" x="-382" y="-388">
+			<System
+					UNID=				"&ssHeretic;"
+					name=				"Heretic"
+					level=				"10"
+					attributes=			"humanSpace, mainline, outerRealm"
+					/>
+		</Node>
+		
 		<!-- MINOR OUTER REALM SYSTEMS -->
 
 		<Node ID="A1" x="-292" y="149">
 			<System
 					level=				"7"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="17" name="Sleng"		UNID="&ssEarthSpaceStandard;"/>
@@ -471,7 +469,7 @@
 		<Node ID="A2" x="-293" y="95">
 			<System
 					level=				"7"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="17" name="Zhang Li"	UNID="&ssEarthSpaceStandard;"/>
@@ -486,7 +484,7 @@
 		<Node ID="A3" x="-253" y="-23">
 			<System
 					level=				"8"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="17" name="Ki Xyrrmir"	UNID="&ssEarthSpaceStandard;"/>
@@ -501,7 +499,7 @@
 		<Node ID="A3A" x="-222" y="-73">
 			<System
 					level=				"8"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="25" name="St. Esperance's Star" UNID="&ssEarthSpaceStandard;"/>
@@ -515,7 +513,7 @@
 		<Node ID="A5" x="-216" y="-188">
 			<System
 					level=				"9"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="25" name="Umi"		UNID="&ssEarthSpaceStandard;"/>
@@ -529,7 +527,7 @@
 		<Node ID="A6" x="-254" y="-234">
 			<System
 					level=				"9"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="25" name="Denebola"	UNID="&ssEarthSpaceStandard;"/>
@@ -545,7 +543,7 @@
 		<Node ID="G1" x="-346" y="-331">
 			<System
 					level=				"10"
-					attributes=			"outerRealm"
+					attributes=			"humanSpace, mainline, outerRealm"
 					>
 				<Table>
 					<System chance="25" name="LV 426"		UNID="&ssEarthSpaceStandard;"/>

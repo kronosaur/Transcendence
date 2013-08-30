@@ -5,14 +5,14 @@
 #include "PreComp.h"
 #include "math.h"
 
-CSystem::Orbit::Orbit (void) : m_rEccentricity(0.0),
+COrbit::COrbit (void) : m_rEccentricity(0.0),
 		m_rSemiMajorAxis(0.0),
 		m_rRotation(0.0),
 		m_rPos(0.0)
 	{
 	}
 
-CSystem::Orbit::Orbit (const CVector &vCenter, Metric rRadius, Metric rPos) : m_vFocus(vCenter),
+COrbit::COrbit (const CVector &vCenter, Metric rRadius, Metric rPos) : m_vFocus(vCenter),
 		m_rSemiMajorAxis(rRadius),
 		m_rEccentricity(0.0),
 		m_rRotation(0.0),
@@ -20,7 +20,7 @@ CSystem::Orbit::Orbit (const CVector &vCenter, Metric rRadius, Metric rPos) : m_
 	{
 	}
 
-CSystem::Orbit::Orbit (const CVector &vCenter, 
+COrbit::COrbit (const CVector &vCenter, 
 					   Metric rSemiMajorAxis,
 					   Metric rEccentricity,
 					   Metric rRotation,
@@ -33,7 +33,7 @@ CSystem::Orbit::Orbit (const CVector &vCenter,
 	{
 	}
 
-CVector CSystem::Orbit::GetPoint (Metric rAngle) const
+CVector COrbit::GetPoint (Metric rAngle) const
 	{
 	Metric rRadius = m_rSemiMajorAxis * (1.0 - (m_rEccentricity * m_rEccentricity)) 
 			/ (1.0 - m_rEccentricity * cos(rAngle));
@@ -41,7 +41,7 @@ CVector CSystem::Orbit::GetPoint (Metric rAngle) const
 	return m_vFocus + CVector(cos(rAngle + m_rRotation) * rRadius, sin(rAngle + m_rRotation) * rRadius);
 	}
 
-CVector CSystem::Orbit::GetPointAndRadius (Metric rAngle, Metric *retrRadius) const
+CVector COrbit::GetPointAndRadius (Metric rAngle, Metric *retrRadius) const
 	{
 	*retrRadius = m_rSemiMajorAxis * (1.0 - (m_rEccentricity * m_rEccentricity)) 
 			/ (1.0 - m_rEccentricity * cos(rAngle));
@@ -49,12 +49,12 @@ CVector CSystem::Orbit::GetPointAndRadius (Metric rAngle, Metric *retrRadius) co
 	return m_vFocus + CVector(cos(rAngle + m_rRotation) * (*retrRadius), sin(rAngle + m_rRotation) * (*retrRadius));
 	}
 
-CVector CSystem::Orbit::GetPointCircular (Metric rAngle) const
+CVector COrbit::GetPointCircular (Metric rAngle) const
 	{
 	return m_vFocus + CVector(cos(rAngle) * m_rSemiMajorAxis, sin(rAngle) * m_rSemiMajorAxis);
 	}
 
-void CSystem::Orbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF rgbColor)
+void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF rgbColor)
 
 //	Paint
 //

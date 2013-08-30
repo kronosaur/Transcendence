@@ -9,6 +9,7 @@
 class CMultiverseFileRef
 	{
 	public:
+		inline const CIntegerIP &GetDigest (void) const { return m_Digest; }
 		inline const CString &GetFilePath (void) const { return m_sFilePath; }
 		ALERROR InitFromJSON (const CJSONValue &Desc, CString *retsResult);
 		inline bool IsEmpty (void) const { return m_sFilePath.IsBlank(); }
@@ -17,6 +18,7 @@ class CMultiverseFileRef
 		CString m_sFilePath;				//	FilePath on service
 		CTimeDate m_ModifiedTime;
 		DWORD m_dwSize;
+		CIntegerIP m_Digest;				//	File data digest (according to server)
 
 		CString m_sFilespec;				//	Filespec on local disk
 	};
@@ -24,24 +26,63 @@ class CMultiverseFileRef
 class CMultiverseCatalogEntry
 	{
 	public:
+		enum ELicenseTypes
+			{
+			licenseUnknown,
+			licenseAuto,
+			licenseCore,
+			licenseFree,
+			licensePaid,
+			};
+
+		enum ELocalStatus
+			{
+			statusUnknown,					//	Don't know whether we have it
+			statusNotAvailable,				//	Not on this computer
+			statusDownloadInProgress,		//	Currently downloading the extension
+			statusLoaded,					//	Available and ready for use
+
+			statusError,					//	Could not load for some reason
+			};
+
 		CMultiverseCatalogEntry (const CMultiverseCatalogEntry &Src);
+		~CMultiverseCatalogEntry (void);
 		static ALERROR CreateFromJSON (const CJSONValue &Entry, CMultiverseCatalogEntry **retpEntry, CString *retsResult);
 
+		inline const CString &GetDesc (void) const { return m_sDesc; }
+		inline CG16bitImage *GetIcon (void) const { return m_pIcon; }
+		inline CG16bitImage *GetIconHandoff (void) { CG16bitImage *pIcon = m_pIcon; m_pIcon = NULL; return pIcon; }
+		inline ELicenseTypes GetLicenseType (void) const { return m_iLicenseType; }
+		inline const CString &GetName (void) const { return m_sName; }
 		inline DWORD GetRelease (void) const { return m_dwRelease; }
+		inline ELocalStatus GetStatus (void) const { return m_iStatus; }
 		inline const CMultiverseFileRef &GetTDBFileRef (void) const { return m_TDBFile; }
+		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
 		bool IsValid (void);
+		void SetIcon (CG16bitImage *pImage);
+		inline void SetStatus (ELocalStatus iStatus) { m_iStatus = iStatus; }
 
 	private:
-		CMultiverseCatalogEntry (void) { }
+		CMultiverseCatalogEntry (void) : 
+				m_iLicenseType(licenseUnknown),
+				m_iStatus(statusUnknown),
+				m_pIcon(NULL)
+			{ }
 
 		CString m_sUNID;					//	Fully qualified UNID
 		DWORD m_dwRelease;					//	Catalog entry release
 		DWORD m_dwVersion;					//	Catalog entry version
+		EExtensionTypes m_iType;			//	Type of extension
+
+		CString m_sName;					//	Name of extension
+		CString m_sDesc;					//	Description
+		CMultiverseFileRef m_TDBFile;		//	Reference to TDB file.
+		ELicenseTypes m_iLicenseType;		//	Type of license
 
 		DWORD m_dwUNID;						//	UNID
-
-		CMultiverseFileRef m_TDBFile;		//	Reference to TDB file.
+		ELocalStatus m_iStatus;				//	Current status
+		CG16bitImage *m_pIcon;				//	200x100 image
 	};
 
 class CMultiverseCollection
@@ -72,6 +113,7 @@ class CMultiverseModel
 		CMultiverseModel (void);
 
 		ALERROR GetCollection (CMultiverseCollection *retCollection) const;
+		ALERROR GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCollection *retCollection) const;
 		EOnlineStates GetOnlineState (CString *retsUsername = NULL) const;
 		inline const CString &GetServiceStatus (void) { return m_sLastStatus; }
 		bool IsLoadCollectionNeeded (void) const;
@@ -155,8 +197,20 @@ class CHexarcDownloader
 	public:
 		struct SStatus
 			{
+			SStatus (void) :
+					iProgress(0)
+				{ }
+
+			SStatus (const SStatus &Src)
+				{
+				sFilespec = Src.sFilespec;
+				iProgress = Src.iProgress;
+				FileDigest = Src.FileDigest;
+				}
+
 			CString sFilespec;				//	Filespec to which we're downloading
 			int iProgress;					//	0-100. If 100, then file is ready.
+			CIntegerIP FileDigest;			//	Desired digest
 			};
 
 		CHexarcDownloader (void) : m_Requests(1000), m_pCurrent(NULL), m_dwChunkSize(100000) { }
@@ -165,7 +219,8 @@ class CHexarcDownloader
 		void AddRequest (const CString &sAPI,
 						 const CString &sFilePath,
 						 const CJSONValue &AuthToken,
-						 const CString &sFilespec);
+						 const CString &sFilespec,
+						 const CIntegerIP &FileDigest);
 		void GetStatus (SStatus *retStatus);
 		ALERROR Update (CHexarcSession &Session, SStatus *retStatus, CString *retsError);
 
@@ -176,6 +231,7 @@ class CHexarcDownloader
 			CString sFilePath;				//	FilePath of the file to download
 			CJSONValue AuthToken;			//	AuthToken to use
 			CString sFilespec;				//	Destination filespec
+			CIntegerIP FileDigest;			//	File digest
 
 			DWORD dwTotalLen;				//	Initialized after first download
 			DWORD dwDownload;				//	Total downloaded so far

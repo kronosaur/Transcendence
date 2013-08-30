@@ -22,6 +22,9 @@ const int DEFAULT_ARRAY_GRANULARITY = 10;
 
 class CArrayBase
 	{
+	public:
+		inline void SetGranularity (int iGranularity) { if (m_pBlock) m_pBlock->m_iGranularity = iGranularity; }
+
 	protected:
 		CArrayBase (HANDLE hHeap, int iGranularity);
 		~CArrayBase (void);
@@ -273,6 +276,37 @@ template <class VALUE> class TArray : public CArrayBase
 				}
 			}
 
+		VALUE Pop (void)
+			{
+			int iCount = GetCount();
+			if (iCount == 0)
+				return VALUE();
+
+			VALUE Temp = GetAt(iCount - 1);
+			Delete(iCount - 1);
+			return Temp;
+			}
+
+		void Push (const VALUE &Value)
+			{
+			Insert(Value);
+			}
+
+		void SetCount (int iNewCount)
+			{
+			int iCurCount = GetCount();
+			if (iNewCount > iCurCount)
+				InsertEmpty(iNewCount - iCurCount);
+			else if (iNewCount < iCurCount)
+				{
+				VALUE *pElement = (VALUE *)GetBytes();
+				for (int i = iNewCount; i < iCurCount; i++, pElement++)
+					pElement->VALUE::~VALUE();
+
+				DeleteBytes(iNewCount * sizeof(VALUE), (iCurCount - iNewCount) * sizeof(VALUE));
+				}
+			}
+
 		void Shuffle (void)
 			{
 			if (GetCount() < 2)
@@ -405,6 +439,9 @@ template <class VALUE> class TProbabilityTable
 			}
 
 		inline VALUE &GetAt (int iIndex) const { return m_Table[iIndex].Value; }
+
+		inline int GetChance (int iIndex) const { return m_Table[iIndex].iChance; }
+
 		inline int GetCount (void) const { return m_Table.GetCount(); }
 
 		void Insert (const VALUE &NewValue, int iChance)
@@ -433,6 +470,14 @@ template <class VALUE> class TProbabilityTable
 				iRoll -= m_Table[iPos++].iChance;
 
 			return iPos;
+			}
+
+		void SetChance (int iIndex, int iChance)
+			{
+			ASSERT(iChance >= 0);
+
+			m_iTotalChance += iChance - m_Table[iIndex].iChance;
+			m_Table[iIndex].iChance = iChance;
 			}
 
 	private:

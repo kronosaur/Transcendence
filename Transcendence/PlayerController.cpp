@@ -7,15 +7,12 @@
 
 #define INVOKE_REFRESH_INTERVAL					100		//	Ticks to gain 1 point of deity rel (if rel is negative)
 
+#define CMD_PLAYER_COMBAT_MISSION_STARTED		CONSTLIT("playerCombatMisionStarted")
+
 #define STR_NO_TARGET_FOR_FLEET					CONSTLIT("No target selected")
 #define STR_NO_TARGETING_COMPUTER				CONSTLIT("No targeting computer installed")
 
-static DATADESCSTRUCT g_DataDesc[] =
-	{	{ DATADESC_OPCODE_VTABLE,		1,	0 },		//	IShipController virtuals
-		{ DATADESC_OPCODE_REFERENCE,	1,	0 },		//	m_pTrans
-		{ DATADESC_OPCODE_INT,			4,	0 },		//	ints
-		{ DATADESC_OPCODE_STOP,	0,	0 } };
-static CObjectClass<CPlayerShipController>g_Class(OBJID_CPLAYERSHIPCONTROLLER, g_DataDesc);
+static CObjectClass<CPlayerShipController>g_Class(OBJID_CPLAYERSHIPCONTROLLER);
 
 const Metric MAX_IN_COMBAT_RANGE =				LIGHT_SECOND * 30.0;
 const int UPDATE_HELP_TIME =					31;
@@ -63,7 +60,7 @@ CPlayerShipController::~CPlayerShipController (void)
 	{
 	}
 
-void CPlayerShipController::AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore)
+void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore)
 
 //	AddOrder
 //
@@ -88,6 +85,13 @@ void CPlayerShipController::AddOrder(OrderTypes Order, CSpaceObject *pTarget, DW
 			SetDestination(pTarget);
 			break;
 		}
+
+	//	Tell controller that we're in combat mode
+
+	if (Order == orderGuard
+			|| Order == orderEscort
+			|| Order == orderDestroyTarget)
+		g_pHI->HICommand(CMD_PLAYER_COMBAT_MISSION_STARTED);
 	}
 
 bool CPlayerShipController::AreAllDevicesEnabled (void)
@@ -551,7 +555,7 @@ bool CPlayerShipController::HasCommsTarget (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
 		if (pObj 
-				&& pObj->CanCommunicateWith(m_pShip, true)
+				&& pObj->CanCommunicateWith(m_pShip)
 				&& !pObj->IsInactive()
 				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
@@ -764,59 +768,71 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 //	Message from another object
 
 	{
-	bool bHandled;
-	CString sMessage;
-
-	//	First ask the sender to translate the message
-
-	CString sID = GetMessageID(iMessage);
-
-	if (pSender)
+	switch (iMessage)
 		{
-		if (!sID.IsBlank())
-			bHandled = pSender->Translate(sID, &sMessage);
-		else
-			bHandled = false;
+		case msgDockingSequenceEngaged:
+			pSender->Highlight();
+			m_pTrans->DisplayMessage(CONSTLIT("Docking sequence engaged"));
+			return resAck;
 
-		//	If the sender did not handle it and if it is an older version, then use
-		//	the now deprecated <OnTranslateMessage>
+		default:
+			{
+			bool bHandled;
+			CString sMessage;
 
-		if (!bHandled && pSender->GetVersion() < 3)
-			bHandled = pSender->FireOnTranslateMessage(sID, &sMessage);
+			//	First ask the sender to translate the message
+
+			CString sID = GetMessageID(iMessage);
+
+			if (pSender)
+				{
+				if (!sID.IsBlank())
+					bHandled = pSender->Translate(sID, &sMessage);
+				else
+					bHandled = false;
+
+				//	If the sender did not handle it and if it is an older version, then use
+				//	the now deprecated <OnTranslateMessage>
+
+				if (!bHandled && pSender->GetVersion() < 3)
+					bHandled = pSender->FireOnTranslateMessage(sID, &sMessage);
+				}
+			else
+				bHandled = false;
+
+			//	If we got no translation, then see if we can ask the sovereign
+			//	to translate
+
+			if (!bHandled)
+				{
+				CSovereign *pSovereign = NULL;
+
+				if (pSender)
+					pSovereign = pSender->GetSovereign();
+
+				//	Make sure we have a sovereign
+
+				if (pSovereign == NULL)
+					pSovereign = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
+
+				//	Get the message based on the sovereign
+
+				sMessage = pSovereign->GetText(iMessage);
+				}
+
+			//	If we have a message, display it
+
+			if (!sMessage.IsBlank())
+				{
+				if (pSender)
+					pSender->Highlight(sMessage);
+				else
+					m_pTrans->DisplayMessage(sMessage);
+				}
+
+			return resNoAnswer;
+			}
 		}
-	else
-		bHandled = false;
-
-	//	If we got no translation, then see if we can ask the sovereign
-	//	to translate
-
-	if (!bHandled)
-		{
-		CSovereign *pSovereign = NULL;
-
-		if (pSender)
-			pSovereign = pSender->GetSovereign();
-
-		//	Make sure we have a sovereign
-
-		if (pSovereign == NULL)
-			pSovereign = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-
-		//	Get the message based on the sovereign
-
-		sMessage = pSovereign->GetText(iMessage);
-		}
-
-	//	If we have a message, display it
-
-	if (!sMessage.IsBlank())
-		{
-		m_pTrans->DisplayMessage(sMessage);
-		if (pSender)
-			pSender->Highlight(CG16bitImage::RGBValue(0, 255, 0));
-		}
-
-	return resNoAnswer;
 	}
 
 void CPlayerShipController::OnComponentChanged (ObjectComponentTypes iComponent)
@@ -1010,7 +1026,7 @@ void CPlayerShipController::OnFuelLowWarning (int iSeq)
 		}
 	}
 
-void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
+void CPlayerShipController::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
 
 //	OnEnterGate
 //
@@ -1323,9 +1339,25 @@ void CPlayerShipController::OnMessage (CSpaceObject *pSender, const CString &sMs
 
 	{
 	if (pSender)
-		pSender->Highlight(CG16bitImage::RGBValue(0, 255, 0));
+		pSender->Highlight(sMsg);
+	else
+		m_pTrans->DisplayMessage(sMsg);
+	}
 
-	m_pTrans->DisplayMessage(sMsg);
+void CPlayerShipController::OnMissionCompleted (CMission *pMission, bool bSuccess)
+
+//	OnMissionCompleted
+//
+//	A player mission has finished.
+
+	{
+	if (pMission->KeepsStats())
+		{
+		if (bSuccess)
+			m_Stats.OnKeyEvent(CPlayerGameStats::eventMissionSuccess, pMission, 0);
+		else
+			m_Stats.OnKeyEvent(CPlayerGameStats::eventMissionFailure, pMission, 0);
+		}
 	}
 
 void CPlayerShipController::OnNewSystem (CSystem *pSystem)
@@ -1409,7 +1441,7 @@ void CPlayerShipController::OnProgramDamage (CSpaceObject *pHacker, const Progra
 
 	{
 	if (pHacker)
-		pHacker->Highlight(CG16bitImage::RGBValue(0, 255, 0));
+		pHacker->Highlight();
 
 	m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Cyberattack detected: %s"), Program.sProgramName));
 	}
@@ -1490,10 +1522,10 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 
 	Ctx.pStream->Read((char *)&m_iGenome, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_dwStartingShipClass, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pShip);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pStation);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDestination);
+	CSystem::ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pShip);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pStation);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDestination);
 	Ctx.pStream->Read((char *)&m_iManeuver, sizeof(DWORD));
 
 	if (Ctx.dwVersion >= 49)
@@ -1935,7 +1967,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	//	the previous controller, which is us)
 
 	pOldShip->SetController(new CStandardShipAI, false);
-	pOldShip->GetController()->AddOrder(IShipController::orderWait, NULL, 0);
+	pOldShip->GetController()->AddOrder(IShipController::orderWait, NULL, IShipController::SData());
 
 	//	Old ship stops tracking fuel (otherwise, it would run out)
 

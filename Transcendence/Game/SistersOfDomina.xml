@@ -10,7 +10,7 @@
 			value=				"500"
 			mass=				"1"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Psionic"
+			attributes=			"Art; Consumable; Lux; Psionic"
 
 			description=		"A beautiful prayer stone cut out of a crystal of some sort; the symbol of Domina is carved on one face."
 			>
@@ -27,7 +27,7 @@
 			value=				"2000"
 			mass=				"10"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Psionic"
+			attributes=			"Art; Consumable; Lux; Psionic"
 
 			description=		"A heavy, pure crystal set in a platinum band; the symbol of Domina is inscribed on one face."
 			>
@@ -44,7 +44,7 @@
 			value=				"5000"
 			mass=				"100"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Psionic; RingerValuable"
+			attributes=			"Art; Consumable; Lux; Psionic; RingerValuable"
 
 			description=		"These hyperdense crystals are formed inside black holes; they resonate with transcendent consciousness."
 			>
@@ -181,7 +181,7 @@
 							desc="You are in the sanctum of the Sisters of Domina. The plasteel walls that surround you are micro-engraved with the revelation of Domina. You see before you a holographic display of indescribable beauty and you feel immersed in the energies of a vast cosmic fountain.">
 
 						<Actions>
-							<Action name="Offer item" key="O">
+							<Action name="Offer Item" key="O">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(setq gPrevPane "Default")
@@ -344,7 +344,7 @@
 					desc="Your disembodied mind hurtles through space in the wake of a photon. Stars dance around you like fireflies. Nebulous veils part before you to reveal a fragment of the Eternal Pattern.\n\nYou feel the blessing of Domina upon you. She urges you to continue your journey to the Galactic Core.">
 
 				<Actions>
-					<Action name="Continue contemplating" default="1" key="C">
+					<Action name="Continue Contemplating" default="1" key="C">
 						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
 							(scrShowPane gScreen "Default")
 							(scrShowPane gScreen "NoMoreContemplating")
@@ -361,7 +361,7 @@
 					desc="Images and patterns dance in your head like spinning galaxies. You see with the eyes of Domina but the visions blast your brain like a nova.\n\nWhen you recover from your reverie you remember only some mundane information about the position of stations in this star system.">
 
 				<Actions>
-					<Action name="Continue contemplating" default="1" key="C">
+					<Action name="Continue Contemplating" default="1" key="C">
 						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
 							(scrShowPane gScreen "Default")
 							(scrShowPane gScreen "NoMoreContemplating")
@@ -378,7 +378,7 @@
 					desc="Your contemplation ends as your rational mind considers the impossibility of communicating across the light-years.">
 
 				<Actions>
-					<Action name="Continue contemplating" default="1" key="C">
+					<Action name="Continue Contemplating" default="1" key="C">
 						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
 							(scrShowPane gScreen "Default")
 							(scrShowPane gScreen "NoMoreContemplating")
@@ -398,7 +398,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue contemplating" default="1" key="C">
+					<Action name="Continue Contemplating" default="1" key="C">
 						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
 							(scrShowPane gScreen "Default")
 							(scrShowPane gScreen "NoMoreContemplating")
@@ -455,7 +455,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Donate this item" default="1" key="D">
+					<Action name="Donate this Item" default="1" key="D">
 						(switch
 							(gr gMaxCount 1)
 								(scrShowPane gScreen "Quantity")
@@ -801,7 +801,7 @@
 					desc="&quot;Welcome, Pilgrim! Your journey to the Galactic Core will be long and arduous but we are here to help those of pure spirit and in true need.&quot;">
 
 				<Actions>
-					<Action name="Refuel ship" key="R">
+					<Action name="Refuel Ship" key="R">
 						(if (and (gr (plyGetCredits gPlayer) 0) 
 								(leq (objGetData gPlayerShip "sistersAttitude") 0))
 							(scrShowPane gScreen "TooRich")
@@ -816,7 +816,7 @@
 							)
 					</Action>
 
-					<Action name="Repair armor" key="A">
+					<Action name="Repair Armor" key="A">
 						(if (and (gr (plyGetCredits gPlayer) 0)
 								(leq (objGetData gPlayerShip "sistersAttitude") 0))
 							(scrShowPane gScreen "TooRich")

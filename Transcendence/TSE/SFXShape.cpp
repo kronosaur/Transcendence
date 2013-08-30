@@ -25,7 +25,7 @@ class CShapeEffectPainter : public IEffectPainter
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
@@ -39,7 +39,7 @@ class CShapeEffectPainter : public IEffectPainter
 		int m_iCachedWidth;
 		int m_iCachedLength;
 		int m_iCachedRotation;
-		CG16bitRegion m_CachedRegion;
+		CG16bitBinaryRegion m_CachedRegion;
 	};
 
 //	CShapeEffectCreator
@@ -56,7 +56,7 @@ CShapeEffectCreator::~CShapeEffectCreator (void)
 		delete [] m_TransBuffer;
 	}
 
-IEffectPainter *CShapeEffectCreator::CreatePainter (void)
+IEffectPainter *CShapeEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -124,7 +124,7 @@ ALERROR CShapeEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEle
 	return NOERROR;
 	}
 
-void CShapeEffectCreator::CreateShapeRegion (int iAngle, int iLength, int iWidth, CG16bitRegion *pRegion)
+void CShapeEffectCreator::CreateShapeRegion (int iAngle, int iLength, int iWidth, CG16bitBinaryRegion *pRegion)
 
 //	CreateShapeRegion
 //
@@ -248,7 +248,7 @@ void CShapeEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPain
 		m_CachedRegion.FillTrans(Dest, x, y, wColor, byOpacity);
 	}
 
-bool CShapeEffectPainter::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CShapeEffectPainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

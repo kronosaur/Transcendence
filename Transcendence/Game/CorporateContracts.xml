@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE TranscendenceModule
+	[
+	<!ENTITY CONTRACT_ID			"0">
+	<!ENTITY CONTRACT_TYPE			"1">
+	<!ENTITY CONTRACT_TITLE			"2">
+	<!ENTITY CONTRACT_DESC			"3">
+	<!ENTITY CONTRACT_OBJ_ID		"4">
+	<!ENTITY CONTRACT_NODE_ID		"5">
+	<!ENTITY CONTRACT_EXPIRES		"6">
+
+	<!ENTITY CONTRACT_ITEM			"7">
+	<!ENTITY CONTRACT_COST			"8">
+
+	<!ENTITY LIST_TITLE				"0">
+	<!ENTITY LIST_ICON				"1">
+	<!ENTITY LIST_DESC				"2">
+	<!ENTITY LIST_CONTRACT_ID		"3">
+	]>
+
+<TranscendenceModule>
+
+	<!-- Corporate Contract Board
+
+	GLOBAL DATA
+
+	Board:				The contract board is a list of entries. Each entry is a list that
+						describes the contract. The first element in the list is the type
+						of contract. The remaining elements depend on the contract type. The
+						following describes the elements in each contract:
+
+							ID
+							"request"
+							title of contract
+							description of contract
+							objID of station offering contract
+							nodeID of station location
+							expiration time
+
+							itemStruct of request
+							credits offered for request
+
+
+							ID
+							"sale"
+							title of contract
+							description of contract
+							objID of station offering contract
+							nodeID of station location
+							expiration time
+
+							itemStruct of sale
+							credits charged for sale
+
+	Contracts{ObjID}:	Same as Board but lists active contracts for the given Object ID
+
+	LastBoardUpdate:	Tick on which board was last updated (or Nil)
+
+	NextContractID:		ID of next contract
+
+
+	USAGE
+
+	Stations that want to participate in the contract board must do the following:
+
+		1.	Include an <OnContractQuery> event and return True if they can generate
+			a contract at that time.
+
+		2.	Include an <OnContractGenerate> event that generates a contract.
+
+		3.	In the <OnScreenInit> for their main screen, stations should call (intShowContractDeliveryScreen).
+			If there are active contracts, the station should show the dsContractDelivery screen.
+
+	-->
+
+	<StationType UNID="&stCorporateContractBoard;"
+			name=				"Corporate contract board"
+			sovereign=			"&svCorporate;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsContractBoardBkgnd;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itCeralloyArmor;"
+			hitPoints=			"250"
+			repairRate=			"1"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"corporate, corporateCustoms, independent,friendly,envAir,envEarth,envFire,envWater,populated"
+			levelFrequency=		"-rucu r---- ----- ----- -----"
+			unique=				"inSystem"
+			locationCriteria=	"+planetary,-asteroids"
+			>
+
+		<Names definiteArticle="true">%s Contract Board</Names>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="512" imageWidth="160" imageHeight="256"/>
+
+		<Ships>
+			<Lookup count="2" table="&tbCorpDefenders;"/>
+			<Lookup count="1d2" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Table>
+				<Lookup chance="75" table="&tbCorpDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<GlobalData>
+			<NextContractID>1</NextContractID>
+		</GlobalData>
+
+		<Events>
+			<OnDestroy>
+				(intCorporateOnDestroy)
+			</OnDestroy>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are docked at a corporate contract board station.">
+
+						<Actions>
+							<Action name="Browse open contracts" default="1" key="B">
+								(block Nil
+									(intUpdateContractBoard)
+									(scrShowScreen gScreen "ContractBoard")
+									)
+							</Action>
+
+							<Action name="Review assigned contract" key="R">
+								(scrShowScreen gScreen "ActiveContracts")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+			<ActiveContracts
+				type=			"customPicker"
+				backgroundID=	"&rsItemListScreen;"
+				>
+
+				<List>
+					(intInitContractList (objGetGlobalData gSource (cat "Contracts" (objGetID gPlayerShip))))
+				</List>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (theContract)
+								(setq theContract (scrGetListEntry gScreen))
+								(if theContract
+									(block Nil
+										(scrSetDesc gScreen (item theContract &LIST_DESC;))
+										)
+									(block Nil
+										(scrSetDesc gScreen "You do not have any assigned contracts.")
+										(scrEnableAction gScreen 0 Nil)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Cancel contract" key="C">
+							</Action>
+
+							<Action name="Done" default="1" cancel="1" key="D">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ActiveContracts>
+
+			<ContractAssigned>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Contract has been assigned. You are now responsible for fulfilling the terms of the contract.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Done" default="1" cancel="1" key="D">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ContractAssigned>
+
+			<ContractBoard
+				type=			"customPicker"
+				backgroundID=	"&rsItemListScreen;"
+				>
+
+				<List>
+					(intInitContractList (objGetGlobalData gSource "Board"))
+				</List>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (theContract)
+								(if (objGetGlobalData gSource (cat "Contracts" (objGetID gPlayerShip)))
+
+									; If the player already has a contract, they cannot take another one
+									(block Nil
+										(scrSetDesc gScreen "You already have an assigned contract. Return to the main screen and review your assigned contract.")
+										(scrEnableAction gScreen 0 Nil)
+										)
+
+									; Show the contract		
+									(block Nil
+										(setq theContract (scrGetListEntry gScreen))
+										(if theContract
+											(block Nil
+												(scrSetDesc gScreen (item theContract &LIST_DESC;))
+												)
+											(block Nil
+												(scrSetDesc gScreen "There are no contracts available.")
+												(scrEnableAction gScreen 0 Nil)
+												)
+											)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Take contract" default="1" key="T">
+								(block (theContract)
+									(setq theContract (scrGetListEntry gScreen))
+									(intTakeContract gPlayerShip (item theContract &LIST_CONTRACT_ID;))
+									(scrShowScreen gScreen "ContractAssigned")
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								(scrShowScreen gScreen "Main")
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</ContractBoard>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="79"	y="6" />
+			<Port x="97"	y="-53" />
+			<Port x="48"	y="-116" />
+			<Port x="-27"	y="-121" />
+			<Port x="-82"	y="-78" />
+			<Port x="-89"	y="-2" />
+			<Port x="-39"	y="51" />
+			<Port x="24"	y="49" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Global Functions -->
+
+	<Globals>
+		(block Nil
+			(setq intCreateContractID (lambda Nil
+				(block (ourID nextID)
+					(setq ourID (typGetGlobalData &stCorporateContractBoard; "nextContractID"))
+					(setq nextID (add ourID 1))
+					(typSetGlobalData &stCorporateContractBoard; "nextContractID" nextID)
+					ourID
+					)
+				))
+
+			(setq intCreateRequestContract (lambda (theStation resToBuy)
+				(block Nil
+					(switch
+						(eq (itmGetPrice resToBuy) 0)
+							Nil
+
+						(block (stationList lowestPrice price total totalPrice)
+							; Generate a list of stations that might sell the resource
+							(setq stationList (sysFindObject theStation "TAF +populated; -blackmarket;"))
+
+							; Find the lowest price for the resource in the system
+
+							(setq lowestPrice (objGetSellPrice theStation resToBuy))
+							(if (leq lowestPrice 1)
+								(setq lowestPrice (multiply (itmGetPrice resToBuy) 2))
+								)
+
+							(enum stationList obj
+								(block (price)
+									(setq price (objGetSellPrice obj resToBuy))
+									(if (and (gr price 1) (ls price lowestPrice))
+										(setq lowestPrice price)
+										)
+									)
+								)
+
+							; Price that the station offers is lower than that
+							(setq price (divide (multiply lowestPrice 95) 100))
+
+							; Compute the amount of the resource
+							(if (leq (sysGetLevel) 10)
+								(setq total (item '(0 1000 2500 4000 6000 8000 10000 12500 15000 17500 20000) (sysGetLevel)))
+								(setq total 25000)
+								)
+
+							(setq total (divide total (itmGetPrice resToBuy)))
+
+							; Round up
+							(setq total (multiply (divide (add total 4) 5) 5))
+
+							; Set count
+							(setq resToBuy (itmCreate (itmGetType resToBuy) total))
+							(setq totalPrice (multiply lowestPrice total))
+
+							; Return the contract structure
+							(list
+								(intCreateContractID)
+								"request"
+								(cat "Deliver " (itmGetName resToBuy 0x110))
+								(cat "Deliver " (itmGetName resToBuy 0x110) " to " (objGetName theStation 0x00) " in the " (sysGetName) " system and receive " totalPrice " credits (" lowestPrice " credits each).")
+								(objGetID theStation)
+								(sysGetNode)
+								(add (unvGetTick) (random 1800 2400))
+								resToBuy
+								totalPrice
+								)
+							)
+						)
+					)
+				))
+
+			(setq intFindActiveContract (lambda (theShip theStation)
+				(block (foundContract)
+					(enumwhile 
+							(typGetGlobalData &stCorporateContractBoard; (cat "Contracts" (objGetID theShip)))
+							(not foundContract)
+							theContract
+						(if (eq (item theContract &CONTRACT_OBJ_ID;) (objGetID theStation))
+							(setq foundContract theContract)
+							)
+						)
+					foundContract
+					)
+				))
+
+			(setq intFulfillContract (lambda (theShip theStation theContract doIt)
+				(block (result)
+
+					; See if we can fulfill the contract
+
+					(switch
+						(eq (item theContract &CONTRACT_TYPE;) "request")
+							(block (theItem)
+								(setq theItem (item theContract &CONTRACT_ITEM;))
+
+								; Make sure the ship has the items
+								(if (objHasItem theShip theItem)
+									(block Nil
+										(if doIt
+											(block Nil
+												; Remove the items from the ship
+												(objRemoveItem theShip theItem)
+
+												; Note: we don't add the items to the station because
+												; we assume that the station has consumed them.
+
+												; Pay the player
+												(if (eq theShip gPlayerShip)
+													(intMissionRewardPayment (item theContract &CONTRACT_COST;))
+													)
+												)
+											)
+
+										; Generate text
+										(setq result
+											(cat "Thank you for delivering " (itmGetName theItem 0x40) 
+												". We will deposit " (item theContract &CONTRACT_COST;) 
+												" credits to your account."
+												)
+											)
+										)
+									(setq result Nil)
+									)
+								)
+						(setq result Nil)
+						)
+
+					; If we completed the contract, remove it from the active list
+
+					(if (and result doIt)
+						(block (activeBoard activeContracts theContractID)
+							(setq theContractID (item theContract &CONTRACT_ID;))
+							(setq activeBoard (cat "Contracts" (objGetID theShip)))
+							(setq activeContracts (typGetGlobalData &stCorporateContractBoard; activeBoard))
+
+							; Remove the contract from the board
+
+							(for i 0 (subtract (count activeContracts) 1)
+								(if (eq (item (item activeContracts i) &CONTRACT_ID;) theContractID)
+									(setq activeContracts (lnkReplace activeContracts i Nil))
+									)
+								)
+							(setq activeContracts (lnkRemoveNil activeContracts))
+							(typSetGlobalData &stCorporateContractBoard; activeBoard activeContracts)
+							)
+						)
+
+					; Done
+
+					result
+					)
+				))
+
+			(setq intGenerateStandardRequestContract1 (lambda Nil
+				(block (roll)
+					(setq roll (random 1 100))
+					(switch
+						(leq roll 40)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Food; -Illegal; &lt;=$100" "ccccc"))
+
+						(leq roll 70)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Res; -Illegal; &gt;=$50" "-ccur"))
+
+						(leq roll 90)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Lux; -Illegal; &lt;=$300" "ccccc"))
+
+						(leq roll 100)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Meds; -Illegal;" "ccccc"))
+						)
+					)
+				))
+
+			(setq intGenerateIndustrialRequestContract1 (lambda Nil
+				(block (roll)
+					(setq roll (random 1 100))
+					(switch
+						(leq roll 60)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Res; -Illegal; &gt;=$50" "-ccur"))
+
+						(leq roll 90)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Fuel; -Illegal;" "-uccu"))
+
+						(leq roll 100)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Food; -Illegal;" "ccccc"))
+						)
+					)
+				))
+
+			(setq intGenerateMiningRequestContract1 (lambda Nil
+				(block (roll)
+					(setq roll (random 1 100))
+					(switch
+						(leq roll 40)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Fuel; -Illegal;" "-uccu"))
+
+						(leq roll 75)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Res; -Ore; -Illegal;" "ccccc"))
+
+						(leq roll 100)
+							(intCreateRequestContract gSource (itmCreateRandom "* +Food; -Illegal;" "ccccc"))
+						)
+					)
+				))
+
+			(setq intInitContractList (lambda (theBoard)
+				(block (theList)
+					(enum theBoard theContract
+						(switch
+							(eq (item theContract &CONTRACT_TYPE;) "request")
+								(setq theList 
+									(lnkAppend theList 
+										(list 
+											(item theContract &CONTRACT_TITLE;)
+											(itmGetImageDesc (item theContract &CONTRACT_ITEM;))
+											(item theContract &CONTRACT_DESC;)
+											(item theContract &CONTRACT_ID;)
+											)
+										)
+									)
+							)
+						)
+					theList
+					)
+				))
+
+			(setq intShowContractDeliveryScreen (lambda Nil
+				(and (scrIsFirstOnInit gScreen) (intFindActiveContract gPlayerShip gSource))
+				))
+
+			(setq intTakeContract (lambda (theShip theContractID)
+				(block (contractBoard theContract activeContracts)
+					(setq contractBoard (typGetGlobalData &stCorporateContractBoard; "Board"))
+
+					; Remove the contract from the board
+
+					(for i 0 (subtract (count contractBoard) 1)
+						(if (eq (item (item contractBoard i) &CONTRACT_ID;) theContractID)
+							(block Nil
+								(setq theContract (item contractBoard i))
+								(setq contractBoard (lnkReplace contractBoard i Nil))
+								)
+							)
+						)
+					(setq contractBoard (lnkRemoveNil contractBoard))
+					(typSetGlobalData &stCorporateContractBoard; "Board" contractBoard)
+
+					; Add the contract to the active board
+
+					(if theContract
+						(block (activeBoard)
+							(setq activeBoard (cat "Contracts" (objGetID theShip)))
+							(setq activeContracts (typGetGlobalData &stCorporateContractBoard; activeBoard))
+							(setq activeContracts (lnkAppend activeContracts theContract))
+							(typSetGlobalData &stCorporateContractBoard; activeBoard activeContracts)
+							)
+						)
+					)
+				))
+
+			(setq intUpdateContractBoard (lambda Nil
+				(block (contractBoard lastUpdate newContracts maxContracts)
+					(setq contractBoard (typGetGlobalData &stCorporateContractBoard; "Board"))
+
+					; Remove all expired contracts
+
+					(for i 0 (subtract (count contractBoard) 1)
+						(if (ls (item (item contractBoard i) &CONTRACT_EXPIRES;) (unvGetTick))
+							(setq contractBoard (lnkReplace contractBoard i Nil))
+							)
+						)
+					(setq contractBoard (lnkRemoveNil contractBoard))
+
+					; Figure out how long it has been since we last updated the board
+					; and calculate the number of new contracts that we need to add
+
+					(setq lastUpdate (typGetGlobalData &stCorporateContractBoard; "LastBoardUpdate"))
+					(setq maxContracts (add 4 (modulo (objGetDestiny gSource) 4)))
+					(if (not lastUpdate)
+						(setq newContracts maxContracts)
+						(block (elapsed)
+							(setq elapsed (subtract (unvGetTick) lastUpdate))
+							(setq newContracts (divide elapsed 200))
+							(setq newContracts (if (gr newContracts maxContracts) maxContracts newContracts))
+							)
+						)
+
+					; Add the appropriate number of contracts
+
+					(for i 0 (subtract newContracts 1)
+						(block (allStations)
+
+							; Generate a list of all stations that have a contract
+
+							(enum (sysFindObject gSource "TAF +populated;") theStation
+								(if	(objFireEvent theStation "OnContractQuery")
+									(setq allStations (lnkAppend allStations theStation))
+									)
+								)
+
+							; Pick a random station and ask it to generate a contract
+
+							(if allStations
+								(block (newContract)
+									(setq newContract (objFireEvent (random allStations) "OnContractGenerate"))
+
+									; Add the contract to the board
+									(if newContract
+										(block Nil
+											(setq contractBoard (lnkAppend contractBoard newContract))
+											)
+										)
+									)
+								)
+							)
+						)
+
+					; Done
+
+					(typSetGlobalData &stCorporateContractBoard; "Board" contractBoard)
+					(typSetGlobalData &stCorporateContractBoard; "LastBoardUpdate" (unvGetTick))
+					)
+				))
+			)
+	</Globals>
+
+	<DockScreen UNID="&dsContractDelivery;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (theContract)
+						; Find the contract
+						(setq theContract (intFindActiveContract gPlayerShip gSource))
+
+						(if theContract
+							(block Nil
+								; See if the player has fulfilled the contract
+								(setq gResult (intFulfillContract gPlayerShip gSource theContract Nil))
+
+								(if gResult
+									(scrSetDesc gScreen (cat "The dockmaster meets you as you dock: \"" gResult "\""))
+									(scrSetDesc gScreen "The dockmaster meets you as you dock: \"We're still expecting you to fulfill your contract!\"")
+									)
+								)
+							(block Nil
+								(setq gResult Nil)
+								(scrSetDesc gScreen (cat "The dockmaster scratches her head: \"Hmmm, looks like this contract database is messed up.\""))
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block Nil
+							(if gResult
+								(block (theContract)
+									(setq theContract (intFindActiveContract gPlayerShip gSource))
+									(intFulfillContract gPlayerShip gSource theContract True)
+									)
+								)
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				; If we have a delivery mission to this station, then show
+				; the proper screen.
+				;
+				; The screen is shown with mission priority (4) meaning that
+				; it will show up after decon and confiscation screens.
+				
+				(if	(and (objMatches gSource Nil "sTAV")
+						(intFindActiveContract gPlayerShip gSource)
+						)
+					(list &dsContractDelivery; 4)
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</DockScreen>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsContractBoardBkgnd;" bitmap="Resources\ContractBoardScreen.jpg" loadOnUse="true" />
+
+</TranscendenceModule>

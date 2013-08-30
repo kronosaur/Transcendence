@@ -5,9 +5,11 @@
 
 #include "PreComp.h"
 
+#define FIELD_DIGEST							CONSTLIT("digest")
 #define FIELD_FILE_PATH							CONSTLIT("filePath")
 #define FIELD_UPLOADED_ON						CONSTLIT("uploadedOn")
 
+#define ERR_INVALID_DIGEST						CONSTLIT("Unable to read file digest.")
 #define ERR_INVALID_FILE_REF					CONSTLIT("Invalid file reference for catalog entry.")
 
 ALERROR CMultiverseFileRef::InitFromJSON (const CJSONValue &Desc, CString *retsResult)
@@ -19,6 +21,17 @@ ALERROR CMultiverseFileRef::InitFromJSON (const CJSONValue &Desc, CString *retsR
 	{
 	m_sFilePath = Desc.GetElement(FIELD_FILE_PATH).AsString();
 	CString sUploadedOn = Desc.GetElement(FIELD_UPLOADED_ON).AsString();
+
+	const CJSONValue &Digest = Desc.GetElement(FIELD_DIGEST);
+	if (!Digest.IsNull())
+		{
+		if (!CHexarc::ConvertToIntegerIP(Digest, &m_Digest))
+			{
+			if (retsResult)
+				*retsResult = ERR_INVALID_DIGEST;
+			return ERR_FAIL;
+			}
+		}
 
 	//	Initialize
 

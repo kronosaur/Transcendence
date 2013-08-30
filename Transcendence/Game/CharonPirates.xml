@@ -48,7 +48,6 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Corsair"
 			type=				"gunship"
-			score=				"25"
 
 			mass=				"45"
 			cargoSpace=			"5"
@@ -93,35 +92,47 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Corsair II"
 			type=				"gunship"
-			score=				"110"
+			level=				"3"
 
+			attributes=			"charonPirates, genericClass"
+			   
 			mass=				"45"
-			cargoSpace=			"5"
-			thrust=				"250"
+			thrustRatio=		"10"
 			maneuver=			"4"
 			maxSpeed=			"25"
+			cargoSpace=			"5"
 
 			leavesWreck=		"20"
-
-			attributes=			"charonPirates,genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" areaSet="1,4" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightTitaniumPlate;"
+			count=				"2"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itDualLaserCannon;"/>
 			<Device deviceID="&itNAMIMissileLauncher;"/>
-			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itAClassDefenseScreen;"/>
 		</Devices>
-
-		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<Items>
 			<Item count="2d6" item="&itKM100Missile;"/>
 		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
+			<NozzlePos x="-30" y="-7"/>
+			<NozzlePos x="-30" y="7"/>
+		</DriveImages>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"30"
@@ -132,12 +143,6 @@
 			perception=			"4"
 			/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-30" y="-7"/>
-			<NozzlePos x="-30" y="7"/>
-		</DriveImages>
-
 	</ShipClass>
 
 	<!-- Drake-class Missileship -->
@@ -146,40 +151,47 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Drake"
 			type=				"missileship"
-			score=				"350"
 
+			attributes=			"capitalShip, charonPirates, genericClass"
+			   
 			mass=				"1000"
-			cargoSpace=			"5"
-			thrust=				"250"
+			thrustRatio=		"1"
 			maneuver=			"10"
 			maxSpeed=			"12"
+			cargoSpace=			"5"
 
 			explosionType=		"&vtKineticExplosion3;"
 			leavesWreck=		"85"
-
-			attributes=			"capitalShip, charonPirates, genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="315" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="285" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="255" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="225" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="195" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="165" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="135" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="105" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="75"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="45"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="15"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" minFireArc="20" maxFireArc="160" posAngle="60" posRadius="30"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="340" posAngle="300" posRadius="30"/>
+			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="20"  maxFireArc="160" posAngle="60"  posRadius="30"/>
+			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="200" maxFireArc="340" posAngle="300" posRadius="30"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"60"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"40"
+
+					posX=		"-34"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"28"
+					/>
+		</Interior>
 
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
@@ -189,12 +201,16 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
 			combatStyle=		"standOff"
-			fireRateAdj=		"30"
+			fireRateAdj=		"50"
 			fireAccuracy=		"90"
 
 			perception=			"4"
@@ -208,23 +224,25 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Viking"
 			type=				"gunship"
-			score=				"95"
+			level=				"2"
 
+			attributes=			"charonPirates, genericClass"
+			   
 			mass=				"150"
-			cargoSpace=			"5"
-			thrust=				"250"
+			thrustRatio=		"4"
 			maneuver=			"5"
 			maxSpeed=			"20"
+			cargoSpace=			"5"
 
 			leavesWreck=		"35"
-
-			attributes=			"charonPirates,genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" areaSet="1,4" />
-		</Armor>
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
 
 		<Devices>
 			<Device deviceID="&itTurbolaserCannon;"/>
@@ -234,13 +252,19 @@
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
-			fireRateAdj=		"50"
+			fireRateAdj=		"30"
 			fireRangeAdj=		"50"
 			fireAccuracy=		"85"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 	</ShipClass>
@@ -251,40 +275,47 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Viking II"
 			type=				"gunship"
-			score=				"240"
 
+			attributes=			"charonPirates, genericClass"
+			   
 			mass=				"150"
-			cargoSpace=			"5"
-			thrust=				"250"
+			thrustRatio=		"4"
 			maneuver=			"5"
 			maxSpeed=			"20"
+			cargoSpace=			"5"
 
 			leavesWreck=		"35"
-
-			attributes=			"charonPirates,genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itHeavyReactiveArmor;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itHeavyReactiveArmor;" areaSet="1,4" />
-		</Armor>
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"2"
+			/>
 
 		<Devices>
 			<Device deviceID="&itDualTurbolaserCannon;"/>
-			<Device deviceID="&itClass2Deflector;"/>
+			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"30"
 			fireRangeAdj=		"50"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 	</ShipClass>
@@ -345,52 +376,18 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Charon frigate"
 			type=				""
-			score=				"540"
 
+			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
+			   
 			mass=				"1000"
 			cargoSpace=			"1000"
-			thrust=				"250"
+			thrustRatio=		"2"
 			maneuver=			"10"
 			maxSpeed=			"18"
 
 			explosionType=		"&vtKineticExplosion4;"
 			leavesWreck=		"85"
-
-			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
 			>
-
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="315" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="285" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="255" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="225" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="195" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="165" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="135" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="105" span="30" armorID="&itAdvancedReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="75"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="45"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="15"  span="30" armorID="&itAdvancedReactiveArmor;" areaSet="7,13" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
-		</Devices>
-
-		<Items>
-			<Item count="2d6" item="&itHelium3FuelRod;"/>
-			<Table>
-				<Item chance="85" count="10d20" item="&itKM500Missile;"/>
-				<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
-			</Table>
-		</Items>
-
-		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
 		<Names definiteArticle="true">
 			pirate ship Anemone; pirate ship Archelon; pirate ship Architeuthis;
@@ -404,11 +401,57 @@
 			pirate ship Xuanlong;
 		</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+			<Table>
+				<Item chance="85" count="10d20" item="&itKM500Missile;"/>
+				<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<!-- AI and Behavior -->
+
 		<AISettings
 			aggressor=			"true"
-			fireRateAdj=		"35"
+			fireRateAdj=		"50"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -799,35 +842,28 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Charon frigate"
 			type=				""
-			score=				"620"
+			   
+			attributes=			"capitalShip, charonPirates, charonFrigate, majorShip"
 
 			mass=				"1000"
 			cargoSpace=			"1000"
-			thrust=				"250"
+			thrustRatio=		"2"
 			maneuver=			"10"
 			maxSpeed=			"18"
 
 			explosionType=		"&vtKineticExplosion4;"
 			leavesWreck=		"85"
-
-			attributes=			"capitalShip, charonPirates, charonFrigate, majorShip"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
-			<ArmorSection start="315" span="30" armorID="&itBlastPlate;" areaSet="3,4" />
-			<ArmorSection start="285" span="30" armorID="&itBlastPlate;" areaSet="1,6" />
-			<ArmorSection start="255" span="30" armorID="&itBlastPlate;" areaSet="7,13" />
-			<ArmorSection start="225" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
-			<ArmorSection start="195" span="30" armorID="&itBlastPlate;" areaSet="3,4" />
-			<ArmorSection start="165" span="30" armorID="&itBlastPlate;" areaSet="1,6" />
-			<ArmorSection start="135" span="30" armorID="&itBlastPlate;" areaSet="7,13" />
-			<ArmorSection start="105" span="30" armorID="&itBlastPlate;" areaSet="0,2" />
-			<ArmorSection start="75"  span="30" armorID="&itBlastPlate;" areaSet="3,4" />
-			<ArmorSection start="45"  span="30" armorID="&itBlastPlate;" areaSet="1,6" />
-			<ArmorSection start="15"  span="30" armorID="&itBlastPlate;" areaSet="7,13" />
-		</Armor>
+		<Names definiteArticle="true">pirate ship Kronosaurus</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
@@ -836,20 +872,39 @@
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 			<Item count="20d20" item="&itKM500Missile;"/>
 		</Items>
 
+		<!-- Image and Effects -->
+
 		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
-		<Names definiteArticle="true">pirate ship Kronosaurus</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"25"
 			fireAccuracy=		"95"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -927,12 +982,12 @@
 			canAttack=			"true"
 
 			armorID=			"&itLightTitaniumPlate;"
-			hitPoints=			"50"
+			hitPoints=			"70"
 			fireRateAdj=		"80"
 			explosionType=		"&vtKineticExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
 			locationCriteria=	"-planet,-void"
 			>
@@ -955,11 +1010,7 @@
 		</Ships>
 
 		<Items>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables2;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-			</Table>
+			<Lookup chance="50" table="&trStdLevelTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -985,12 +1036,12 @@
 			canAttack=			"true"
 
 			armorID=			"&itReactiveArmor;"
-			hitPoints=			"50"
+			hitPoints=			"75"
 			fireRateAdj=		"60"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"-cuv- ----- ----- ----- -----"
 			locationCriteria=	"-planet,-void"
 			>
@@ -1018,12 +1069,10 @@
 		</Ships>
 
 		<Items>
-			<Item					count="2d8"	item="&itKM100Missile;" />
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Group	levelValue="0, 1000, 1500, 2000, 0">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">
@@ -1062,7 +1111,7 @@
 			explosionType=		"&vtKineticExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"r---- ----- ----- ----- -----"
 			locationCriteria=	"-planet,-void"
 			>
@@ -1085,11 +1134,7 @@
 		</Ships>
 
 		<Items>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Lookup	chance="60"		table="&trStdLevelTreasure;"/>
 		</Items>
 
 		<Encounters frequency="common">
@@ -1123,7 +1168,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itReactiveArmor;"
+			armorID=			"&itHeavyReactiveArmor;"
 			hitPoints=			"100"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion2;"
@@ -1131,7 +1176,7 @@
 
 			alertWhenDestroyed=	"30"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated"
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, pirates, populated"
 			levelFrequency=		"-rcr- ----- ----- ----- -----"
 			locationCriteria=	"-planet,-void"
 			>
@@ -1190,12 +1235,10 @@
 		</Reinforcements>
 
 		<Items>
-			<Item					count="2d8"	item="&itKM100Missile;" />
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Group	levelValue="0, 2000, 3000, 4000, 0">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<Encounters frequency="common">
@@ -1251,7 +1294,7 @@
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonPirates, enemy, human, majorStation, populated, primaryStronghold, uncharted"
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
@@ -1293,12 +1336,10 @@
 		</Ships>
 
 		<Items>
-			<Item					count="2d8"	item="&itKM100Missile;" />
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>
@@ -1325,15 +1366,15 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itReactiveArmor;"
-			hitPoints=			"100"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"75"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
 			alertWhenDestroyed=	"30"
 
-			attributes=			"charonPirates, enemy, human, majorStation, populated, primaryStronghold, uncharted"
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
@@ -1390,12 +1431,10 @@
 		</Reinforcements>
 
 		<Items>
-			<Item					count="2d8"	item="&itKM100Missile;" />
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>
@@ -1422,7 +1461,7 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itReactiveArmor;"
+			armorID=			"&itHeavyReactiveArmor;"
 			hitPoints=			"100"
 			fireRateAdj=		"40"
 			explosionType=		"&vtBlastExplosion2;"
@@ -1430,7 +1469,7 @@
 
 			alertWhenDestroyed=	"30"
 
-			attributes=			"charonPirates, enemy, human, majorStation, populated, primaryStronghold, uncharted"
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
@@ -1487,12 +1526,10 @@
 		</Reinforcements>
 
 		<Items>
-			<Item					count="2d8"	item="&itKM100Missile;" />
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
 		</Items>
 
 		<DockingPorts>

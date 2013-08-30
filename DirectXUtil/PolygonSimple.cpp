@@ -36,9 +36,9 @@ static void ScanEdge (int X1,
 					  int Y2,
 					  bool bSetX,
 					  int iSkipFirst,
-					  CG16bitRegion::SRun **iopRun);
+					  CG16bitBinaryRegion::SRun **iopRun);
 
-int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG16bitRegion::SRun **retpLines)
+int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG16bitBinaryRegion::SRun **retpLines)
 
 //	CreateScanLinesFromSimplePolygon
 //
@@ -53,7 +53,7 @@ int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG1
 	{
 	int i, MinIndex, MaxIndex, MinPoint_Y, MaxPoint_Y;
 	int CurrentIndex, PreviousIndex;
-	CG16bitRegion::SRun *EdgePointPtr;
+	CG16bitBinaryRegion::SRun *EdgePointPtr;
 	SPoint *VertexPtr;
 
 	//	Point to the vertex list
@@ -84,7 +84,7 @@ int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG1
 
 	//	Allocate and initialize result
 
-	CG16bitRegion::SRun *pLine = new CG16bitRegion::SRun [iLineCount];
+	CG16bitBinaryRegion::SRun *pLine = new CG16bitBinaryRegion::SRun [iLineCount];
 	for (i = 0; i < iLineCount; i++)
 		pLine[i].y = yStart + i;
 
@@ -230,7 +230,7 @@ void ScanEdge (int X1,
 			   int Y2,
 			   bool bSetX,
 			   int iSkipFirst,
-			   CG16bitRegion::SRun **iopRun)
+			   CG16bitBinaryRegion::SRun **iopRun)
 
 //	ScanEdge
 //
@@ -238,7 +238,7 @@ void ScanEdge (int X1,
 
 	{
 	int i;
-	CG16bitRegion::SRun *pRun = *iopRun;
+	CG16bitBinaryRegion::SRun *pRun = *iopRun;
 
 	//	Direction in which x moves (y2 is always > y1, so y always counts up)
 

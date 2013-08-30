@@ -87,6 +87,7 @@ class CException
 inline int Absolute (int iValue) { return (iValue < 0 ? -iValue : iValue); }
 inline double Absolute (double rValue) { return (rValue < 0.0 ? -rValue : rValue); }
 inline int AlignUp (int iValue, int iGranularity) { return ((iValue + (iGranularity - 1)) / iGranularity) * iGranularity; }
+inline int ClockMod (int iValue, int iDivisor) { int iResult = (iValue % iDivisor); return (iResult < 0 ? iResult + iDivisor : iResult); }
 inline BOOL IsShiftDown (void) { return (GetAsyncKeyState(VK_SHIFT) & 0x8000) ? TRUE : FALSE; }
 inline BOOL IsControlDown (void) { return (GetAsyncKeyState(VK_CONTROL) & 0x8000) ? TRUE : FALSE; }
 inline int Sign (int iValue) { return (iValue == 0 ? 0 : (iValue > 0 ? 1 : -1)); }
@@ -357,7 +358,7 @@ template <class T>
 class CObjectClass : public IObjectClass
 	{
 	public:
-		CObjectClass (OBJCLASSID ObjID, PDATADESCSTRUCT pDataDesc)
+		CObjectClass (OBJCLASSID ObjID, PDATADESCSTRUCT pDataDesc = NULL)
 				: IObjectClass(ObjID, pDataDesc)
 				{ CObjectClassFactory::NewClass(this); }
  
@@ -609,6 +610,7 @@ class CString : public CObject
 		CString (const CString &pString);
 		CString &operator= (const CString &pString);
 		inline operator LPSTR () const { return GetASCIIZPointer(); }
+		bool operator== (const CString &sValue) const;
 
 		char *GetASCIIZPointer (void) const;
 		ALERROR Append (const CString &sString);

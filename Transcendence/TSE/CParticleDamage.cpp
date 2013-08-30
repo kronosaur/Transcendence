@@ -7,6 +7,7 @@
 static CObjectClass<CParticleDamage>g_Class(OBJID_CPARTICLEDAMAGE, NULL);
 
 CParticleDamage::CParticleDamage (void) : CSpaceObject(&g_Class),
+		m_pEnhancements(NULL),
 		m_pPainter(NULL)
 
 //	CParticleDamage constructor
@@ -21,18 +22,21 @@ CParticleDamage::~CParticleDamage (void)
 	{
 	if (m_pPainter)
 		m_pPainter->Delete();
+
+	if (m_pEnhancements)
+		m_pEnhancements->Delete();
 	}
 
 ALERROR CParticleDamage::Create (CSystem *pSystem,
-							 CWeaponFireDesc *pDesc,
-							 int iBonus,
-							 DestructionTypes iCause,
-							 const CDamageSource &Source,
-							 const CVector &vPos,
-							 const CVector &vVel,
-							 int iDirection,
-							 CSpaceObject *pTarget,
-							 CParticleDamage **retpObj)
+								 CWeaponFireDesc *pDesc,
+								 CItemEnhancementStack *pEnhancements,
+								 DestructionTypes iCause,
+								 const CDamageSource &Source,
+								 const CVector &vPos,
+								 const CVector &vVel,
+								 int iDirection,
+								 CSpaceObject *pTarget,
+								 CParticleDamage **retpObj)
 
 //	Create
 //
@@ -62,7 +66,7 @@ ALERROR CParticleDamage::Create (CSystem *pSystem,
 
 	pParticles->m_pDesc = pDesc;
 	pParticles->m_pTarget = pTarget;
-	pParticles->m_iBonus = iBonus;
+	pParticles->m_pEnhancements = (pEnhancements ? pEnhancements->AddRef() : NULL);
 	pParticles->m_iCause = iCause;
 	pParticles->m_iEmitDirection = iDirection;
 	pParticles->m_vEmitSourcePos = vPos;
@@ -83,7 +87,12 @@ ALERROR CParticleDamage::Create (CSystem *pSystem,
 
 	CEffectCreator *pEffect;
 	if (pEffect = pDesc->GetEffect())
-		pParticles->m_pPainter = pEffect->CreatePainter();
+		{
+		CCreatePainterCtx Ctx;
+		Ctx.SetWeaponFireDesc(pDesc);
+
+		pParticles->m_pPainter = pEffect->CreatePainter(Ctx);
+		}
 
 	//	Remember the sovereign of the source (in case the source is destroyed)
 
@@ -305,9 +314,21 @@ void CParticleDamage::OnReadFromStream (SLoadCtx &Ctx)
 	sDescUNID.ReadFromStream(Ctx.pStream);
 	m_pDesc = g_pUniverse->FindWeaponFireDesc(sDescUNID);
 
+	//	Old style bonus
+
+	if (Ctx.dwVersion < 92)
+		{
+		int iBonus;
+		Ctx.pStream->Read((char *)&iBonus, sizeof(DWORD));
+		if (iBonus != 0)
+			{
+			m_pEnhancements = new CItemEnhancementStack;
+			m_pEnhancements->InsertHPBonus(iBonus);
+			}
+		}
+
 	//	Load other stuff
 
-	Ctx.pStream->Read((char *)&m_iBonus, sizeof(m_iBonus));
 	if (Ctx.dwVersion >= 18)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
@@ -318,7 +339,7 @@ void CParticleDamage::OnReadFromStream (SLoadCtx &Ctx)
 
 	Ctx.pStream->Read((char *)&m_iLifeLeft, sizeof(m_iLifeLeft));
 	m_Source.ReadFromStream(Ctx);
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(m_iTick));
 	Ctx.pStream->Read((char *)&m_iDamage, sizeof(m_iDamage));
 	if (Ctx.dwVersion >= 3 && Ctx.dwVersion < 67)
@@ -364,9 +385,14 @@ void CParticleDamage::OnReadFromStream (SLoadCtx &Ctx)
 	//	Read the target
 
 	if (Ctx.dwVersion >= 67)
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
 	else
 		m_pTarget = NULL;
+
+	//	Enhancements
+
+	if (Ctx.dwVersion >= 92)
+		CItemEnhancementStack::ReadFromStream(Ctx, &m_pEnhancements);
 	}
 
 void CParticleDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
@@ -391,7 +417,7 @@ void CParticleDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	EffectCtx.pDamageDesc = m_pDesc;
 	EffectCtx.iTotalParticleCount = m_iParticleCount;
-	EffectCtx.iDamageBonus = m_iBonus;
+	EffectCtx.pEnhancements = m_pEnhancements;
 	EffectCtx.iCause = m_iCause;
 	EffectCtx.bAutomatedWeapon = IsAutomatedWeapon();
 	EffectCtx.Attacker = m_Source;
@@ -431,7 +457,6 @@ void CParticleDamage::OnWriteToStream (IWriteStream *pStream)
 //	Write out to stream
 //
 //	CString			CWeaponFireDesc UNID
-//	DWORD			m_iBonus
 //	DWORD			m_iLifeLeft
 //	DWORD			m_Source (CSpaceObject ref)
 //	DWORD			m_pSovereign (CSovereign ref)
@@ -447,10 +472,12 @@ void CParticleDamage::OnWriteToStream (IWriteStream *pStream)
 //	CParticleArray
 //
 //	CSpaceObject	m_pTarget
+//
+//	CItemEnhancementStack	m_pEnhancements
+
 	{
 	DWORD dwSave;
 	m_pDesc->m_sUNID.WriteToStream(pStream);
-	pStream->Write((char *)&m_iBonus, sizeof(m_iBonus));
 	dwSave = m_iCause;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	pStream->Write((char *)&m_iLifeLeft, sizeof(m_iLifeLeft));
@@ -469,6 +496,10 @@ void CParticleDamage::OnWriteToStream (IWriteStream *pStream)
 	m_Particles.WriteToStream(pStream);
 
 	WriteObjRefToStream(m_pTarget, pStream);
+
+	//	Enhancements
+
+	CItemEnhancementStack::WriteToStream(m_pEnhancements, pStream);
 	}
 
 bool CParticleDamage::PointInObject (const CVector &vObjPos, const CVector &vPointPos)

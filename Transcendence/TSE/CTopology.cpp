@@ -44,7 +44,9 @@
 #define FRAGMENT_EXIT_DEST						CONSTLIT("[FragmentExit]")
 #define PREV_DEST								CONSTLIT("[Prev]")
 
-const int DEFAULT_MIN_SEPARATION = 40;
+const int DEFAULT_MIN_SEPARATION =				40;
+const int INFINITE_DISTANCE =					2000000000;
+const int UNKNOWN_DISTANCE =					-1;
 
 CTopology::CTopology (void)
 
@@ -1411,13 +1413,16 @@ int CTopology::GetDistance (const CString &sSourceID, const CString &sDestID)
 		return -1;
 
 	//	We mark nodes to track our progress, so we have to save the
-	//	previous value of the marks
+	//	previous value of the marks.
+	//
+	//	We also initialize the calculated distance to UNKNOWN_DISTANCE
 
 	bool *pOldMarks = new bool [GetTopologyNodeCount()];
 	for (i = 0; i < GetTopologyNodeCount(); i++)
 		{
 		pOldMarks[i] = GetTopologyNode(i)->IsMarked();
 		GetTopologyNode(i)->SetMarked(false);
+		GetTopologyNode(i)->SetCalcDistance(UNKNOWN_DISTANCE);
 		}
 
 	//	Find the source node in the list
@@ -1426,9 +1431,17 @@ int CTopology::GetDistance (const CString &sSourceID, const CString &sDestID)
 	if (pSource == NULL)
 		return -1;
 
+	//	Find the destination node; We know that it's distance is 0
+
+	CTopologyNode *pDest = FindTopologyNode(sDestID);
+	if (pDest == NULL)
+		return -1;
+
+	pDest->SetCalcDistance(0);
+
 	//	Loop over all gates and recurse
 
-	int iBestDist = GetDistance(pSource, sDestID, -1);
+	int iBestDist = GetDistance(pSource, sDestID, INFINITE_DISTANCE);
 
 	//	Restore
 
@@ -1438,51 +1451,72 @@ int CTopology::GetDistance (const CString &sSourceID, const CString &sDestID)
 
 	//	Done
 
-	return iBestDist;
+	return (iBestDist != INFINITE_DISTANCE ? iBestDist : -1);
 	}
 
 int CTopology::GetDistance (CTopologyNode *pSource, const CString &sDestID, int iBestDist)
 
 //	GetDistance
 //
-//	Returns the distance from pSource to sDestID. We do not check any nodes that have been
-//	marked; and we mark any nodes that we check.
+//	Returns the distance from pSource to sDestID, using calculated distance
+//	(stored in each topology node).
 //
-//	If iBestDist is not -1, then we don't return a distance larger than iBestDist
-//	(we return -1 instead).
+//	NOTE: We mark nodes that we are in the middle of evaluating, so that we don't
+//	recurse infinitely. Callers must clear all marks.
 
 	{
 	int i;
 
-	//	If we are at the destination, then we're done
+	//	If we already know the distance of this node, then we return it.
 
-	if (strEquals(pSource->GetID(), sDestID))
-		return 0;
+	int iNewBestDist = pSource->GetCalcDistance();
+	if (iNewBestDist != UNKNOWN_DISTANCE)
+		return iNewBestDist;
 
-	//	If we already have a better distance, no need to continue
+	//	If the best distance that we've already calculated is 0, then we fail
+	//	(since we can't get closer than that). This optimizes the algorithm
+	//	so we don't keep evaluating paths that are longer than the best path.
 
 	if (iBestDist == 0)
-		return -1;
+		return INFINITE_DISTANCE;
 
-	//	Mark this node because we don't want to loop back
+	//	Mark this node so that we don't recurse into it.
 
-	pSource->SetMarked(true);
+	bool bSavedMark = pSource->IsMarked();
+	pSource->SetMarked();
 
-	//	Check all stargates
+	//	Recursively compute the distance based on any neighboring
+	//	systems.
 
-	int iNewBestDist = -1;
+	iNewBestDist = INFINITE_DISTANCE;
 	for (i = 0; i < pSource->GetStargateCount(); i++)
 		{
 		CTopologyNode *pDest = pSource->GetStargateDest(i);
 		if (pDest && !pDest->IsMarked())
 			{
-			int iDist = GetDistance(pDest, sDestID, (iBestDist != -1 ? iBestDist - 1 : -1));
-			if (iDist != -1 
-					&& (iBestDist == -1 || iDist + 1 < iBestDist)
-					&& (iNewBestDist == -1 || iDist + 1 < iNewBestDist))
-				iNewBestDist = iDist + 1;
+			int iDist = GetDistance(pDest, sDestID, iNewBestDist - 1);
+			if (iDist < iNewBestDist)
+				{
+				iNewBestDist = iDist;
+
+				//	Can't get closer than this, so we're done.
+
+				if (iNewBestDist == 0)
+					break;
+				}
 			}
 		}
+
+	//	Clear the mark
+
+	pSource->SetMarked(bSavedMark);
+
+	//	Our distance is 1 more than the best distance from any of our neighbors.
+
+	if (iNewBestDist != INFINITE_DISTANCE)
+		iNewBestDist++;
+
+	pSource->SetCalcDistance(iNewBestDist);
 
 	//	Done
 
@@ -1799,6 +1833,12 @@ ALERROR CUniverse::InitTopology (DWORD dwStartingMap, CString *retsError)
 	for (i = 0; i < m_Design.GetCount(); i++)
 		if (error = m_Design.GetEntry(i)->FireOnGlobalTopologyCreated(retsError))
 			return error;
+
+	//	For all encounters that are required (i.e., specify an exact number to 
+	//	be encountered) we distribute them randomly across all topology nodes.
+
+	if (error = InitRequiredEncounters(retsError))
+		return error;
 
 	return NOERROR;
 	}

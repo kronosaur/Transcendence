@@ -6,6 +6,7 @@
 #include "PreComp.h"
 
 #define AGGRESSOR_ATTRIB						CONSTLIT("aggressor")
+#define ASCEND_ON_GATE_ATTRIB					CONSTLIT("ascendOnGate")
 #define COMBAT_SEPARATION_ATTRIB				CONSTLIT("combatSeparation")
 #define COMBAT_STYLE_ATTRIB						CONSTLIT("combatStyle")
 #define FIRE_ACCURACY_ATTRIB					CONSTLIT("fireAccuracy")
@@ -16,16 +17,18 @@
 #define NO_SHIELD_RETREAT_ATTRIB				CONSTLIT("ignoreShieldsDown")
 #define NO_FRIENDLY_FIRE_ATTRIB					CONSTLIT("noFriendlyFire")
 #define NO_FRIENDLY_FIRE_CHECK_ATTRIB			CONSTLIT("noFriendlyFireCheck")
+#define NO_NAV_PATHS_ATTRIB						CONSTLIT("noNavPaths")
 #define NO_ORDER_GIVER_ATTRIB					CONSTLIT("noOrderGiver")
 #define NON_COMBATANT_ATTRIB					CONSTLIT("nonCombatant")
 #define PERCEPTION_ATTRIB						CONSTLIT("perception")
 #define STAND_OFF_COMBAT_ATTRIB					CONSTLIT("standOffCombat")
 
-#define COMBAT_STYLE_STANDARD					CONSTLIT("standard")
-#define COMBAT_STYLE_STAND_OFF					CONSTLIT("standOff")
+#define COMBAT_STYLE_ADVANCED					CONSTLIT("advanced")
+#define COMBAT_STYLE_CHASE						CONSTLIT("chase")
 #define COMBAT_STYLE_FLYBY						CONSTLIT("flyby")
 #define COMBAT_STYLE_NO_RETREAT					CONSTLIT("noRetreat")
-#define COMBAT_STYLE_CHASE						CONSTLIT("chase")
+#define COMBAT_STYLE_STANDARD					CONSTLIT("standard")
+#define COMBAT_STYLE_STAND_OFF					CONSTLIT("standOff")
 
 #define STR_TRUE								CONSTLIT("True")
 
@@ -34,6 +37,61 @@ CAISettings::CAISettings (void)
 //	CAISettings constructor
 
 	{
+	}
+
+AICombatStyles CAISettings::ConvertToAICombatStyle (const CString &sValue)
+
+//	ConvertToAICombatStyle
+//
+//	Converts a string to combat style
+
+	{
+	if (strEquals(sValue, COMBAT_STYLE_ADVANCED))
+		return aicombatAdvanced;
+	else if (strEquals(sValue, COMBAT_STYLE_CHASE))
+		return aicombatChase;
+	else if (strEquals(sValue, COMBAT_STYLE_FLYBY))
+		return aicombatFlyby;
+	else if (strEquals(sValue, COMBAT_STYLE_NO_RETREAT))
+		return aicombatNoRetreat;
+	else if (strEquals(sValue, COMBAT_STYLE_STANDARD))
+		return aicombatStandOff;
+	else if (strEquals(sValue, COMBAT_STYLE_STAND_OFF))
+		return aicombatStandOff;
+	else
+		return aicombatStandard;
+	}
+
+CString CAISettings::ConvertToID (AICombatStyles iStyle)
+
+//	ConvertToID
+//
+//	Converts a combat style to a string ID
+
+	{
+	switch (iStyle)
+		{
+		case aicombatStandard:
+			return COMBAT_STYLE_STANDARD;
+
+		case aicombatStandOff:
+			return COMBAT_STYLE_STAND_OFF;
+
+		case aicombatFlyby:
+			return COMBAT_STYLE_FLYBY;
+
+		case aicombatNoRetreat:
+			return COMBAT_STYLE_NO_RETREAT;
+
+		case aicombatChase:
+			return COMBAT_STYLE_CHASE;
+
+		case aicombatAdvanced:
+			return COMBAT_STYLE_ADVANCED;
+
+		default:
+			return NULL_STR;
+		}
 	}
 
 CString CAISettings::GetValue (const CString &sSetting)
@@ -45,31 +103,12 @@ CString CAISettings::GetValue (const CString &sSetting)
 	{
 	if (strEquals(sSetting, AGGRESSOR_ATTRIB))
 		return (m_fAggressor ? STR_TRUE : NULL_STR);
+	else if (strEquals(sSetting, ASCEND_ON_GATE_ATTRIB))
+		return (m_fAscendOnGate ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, COMBAT_SEPARATION_ATTRIB))
 		return (m_rMinCombatSeparation > 0.0 ? strFromInt((int)(m_rMinCombatSeparation / g_KlicksPerPixel)) : NULL_STR);
 	else if (strEquals(sSetting, COMBAT_STYLE_ATTRIB))
-		{
-		switch (m_iCombatStyle)
-			{
-			case aicombatStandard:
-				return COMBAT_STYLE_STANDARD;
-
-			case aicombatStandOff:
-				return COMBAT_STYLE_STAND_OFF;
-
-			case aicombatFlyby:
-				return COMBAT_STYLE_FLYBY;
-
-			case aicombatNoRetreat:
-				return COMBAT_STYLE_NO_RETREAT;
-
-			case aicombatChase:
-				return COMBAT_STYLE_CHASE;
-
-			default:
-				return NULL_STR;
-			}
-		}
+		return ConvertToID(m_iCombatStyle);
 	else if (strEquals(sSetting, FIRE_ACCURACY_ATTRIB))
 		return strFromInt(m_iFireAccuracy);
 	else if (strEquals(sSetting, FIRE_RANGE_ADJ_ATTRIB))
@@ -84,6 +123,8 @@ CString CAISettings::GetValue (const CString &sSetting)
 		return (m_fNoFriendlyFire ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_FRIENDLY_FIRE_CHECK_ATTRIB))
 		return (m_fNoFriendlyFireCheck ? STR_TRUE : NULL_STR);
+	else if (strEquals(sSetting, NO_NAV_PATHS_ATTRIB))
+		return (m_fNoNavPaths ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_ORDER_GIVER_ATTRIB))
 		return (m_fNoOrderGiver ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NON_COMBATANT_ATTRIB))
@@ -105,18 +146,7 @@ ALERROR CAISettings::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	CString sCombatStyle;
 	if (pDesc->FindAttribute(COMBAT_STYLE_ATTRIB, &sCombatStyle))
-		{
-		if (strEquals(sCombatStyle, COMBAT_STYLE_STAND_OFF))
-			m_iCombatStyle = aicombatStandOff;
-		else if (strEquals(sCombatStyle, COMBAT_STYLE_FLYBY))
-			m_iCombatStyle = aicombatFlyby;
-		else if (strEquals(sCombatStyle, COMBAT_STYLE_NO_RETREAT))
-			m_iCombatStyle = aicombatNoRetreat;
-		else if (strEquals(sCombatStyle, COMBAT_STYLE_CHASE))
-			m_iCombatStyle = aicombatChase;
-		else
-			m_iCombatStyle = aicombatStandard;
-		}
+		m_iCombatStyle = ConvertToAICombatStyle(sCombatStyle);
 	else
 		{
 		//	Compatibility with version < 0.97
@@ -147,12 +177,14 @@ ALERROR CAISettings::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Flags
 
+	m_fAscendOnGate = pDesc->GetAttributeBool(ASCEND_ON_GATE_ATTRIB);
 	m_fNoShieldRetreat = pDesc->GetAttributeBool(NO_SHIELD_RETREAT_ATTRIB);
 	m_fNoDogfights = pDesc->GetAttributeBool(NO_DOGFIGHTS_ATTRIB);
 	m_fNonCombatant = pDesc->GetAttributeBool(NON_COMBATANT_ATTRIB);
 	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
 	m_fAggressor = pDesc->GetAttributeBool(AGGRESSOR_ATTRIB);
 	m_fNoFriendlyFireCheck = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_CHECK_ATTRIB);
+	m_fNoNavPaths = pDesc->GetAttributeBool(NO_NAV_PATHS_ATTRIB);
 	m_fNoOrderGiver = pDesc->GetAttributeBool(NO_ORDER_GIVER_ATTRIB);
 
 	return NOERROR;
@@ -172,12 +204,14 @@ void CAISettings::InitToDefault (void)
 	m_iPerception = CSpaceObject::perceptNormal;
 	m_rMinCombatSeparation = -1.0;			//	Compute based on image size
 
+	m_fAscendOnGate = false;
 	m_fNoShieldRetreat = false;
 	m_fNoDogfights = false;
 	m_fNonCombatant = false;
 	m_fNoFriendlyFire = false;
 	m_fAggressor = false;
 	m_fNoFriendlyFireCheck = false;
+	m_fNoNavPaths = false;
 	m_fNoOrderGiver = false;
 	}
 
@@ -219,6 +253,8 @@ void CAISettings::ReadFromStream (SLoadCtx &Ctx)
 	m_fAggressor =				((dwLoad & 0x00000010) ? true : false);
 	m_fNoFriendlyFireCheck =	((dwLoad & 0x00000020) ? true : false);
 	m_fNoOrderGiver =			((dwLoad & 0x00000040) ? true : false);
+	m_fAscendOnGate =			((dwLoad & 0x00000080) ? true : false);
+	m_fNoNavPaths =				((dwLoad & 0x00000100) ? true : false);
 	}
 
 CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
@@ -230,21 +266,12 @@ CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
 	{
 	if (strEquals(sSetting, AGGRESSOR_ATTRIB))
 		m_fAggressor = !sValue.IsBlank();
+	else if (strEquals(sSetting, ASCEND_ON_GATE_ATTRIB))
+		m_fAscendOnGate = !sValue.IsBlank();
 	else if (strEquals(sSetting, COMBAT_SEPARATION_ATTRIB))
 		m_rMinCombatSeparation = Max(1, strToInt(sValue, 1)) * g_KlicksPerPixel;
 	else if (strEquals(sSetting, COMBAT_STYLE_ATTRIB))
-		{
-		if (strEquals(sValue, COMBAT_STYLE_STAND_OFF))
-			m_iCombatStyle = aicombatStandOff;
-		else if (strEquals(sValue, COMBAT_STYLE_FLYBY))
-			m_iCombatStyle = aicombatFlyby;
-		else if (strEquals(sValue, COMBAT_STYLE_NO_RETREAT))
-			m_iCombatStyle = aicombatNoRetreat;
-		else if (strEquals(sValue, COMBAT_STYLE_CHASE))
-			m_iCombatStyle = aicombatChase;
-		else
-			m_iCombatStyle = aicombatStandard;
-		}
+		m_iCombatStyle = ConvertToAICombatStyle(sValue);
 	else if (strEquals(sSetting, FIRE_ACCURACY_ATTRIB))
 		m_iFireAccuracy = Max(0, Min(strToInt(sValue, 100), 100));
 	else if (strEquals(sSetting, FIRE_RANGE_ADJ_ATTRIB))
@@ -259,6 +286,8 @@ CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
 		m_fNoFriendlyFire = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_FRIENDLY_FIRE_CHECK_ATTRIB))
 		m_fNoFriendlyFireCheck = !sValue.IsBlank();
+	else if (strEquals(sSetting, NO_NAV_PATHS_ATTRIB))
+		m_fNoNavPaths = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_ORDER_GIVER_ATTRIB))
 		m_fNoOrderGiver = !sValue.IsBlank();
 	else if (strEquals(sSetting, NON_COMBATANT_ATTRIB))
@@ -307,5 +336,7 @@ void CAISettings::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fAggressor ?				0x00000010 : 0);
 	dwSave |= (m_fNoFriendlyFireCheck ?		0x00000020 : 0);
 	dwSave |= (m_fNoOrderGiver ?			0x00000040 : 0);
+	dwSave |= (m_fAscendOnGate ?			0x00000080 : 0);
+	dwSave |= (m_fNoNavPaths ?				0x00000100 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

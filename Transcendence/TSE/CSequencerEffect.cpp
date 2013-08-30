@@ -98,7 +98,7 @@ void CSequencerEffect::OnReadFromStream (SLoadCtx &Ctx)
 	else
 		m_pType = NULL;
 
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pAnchor);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pAnchor);
 	Ctx.pStream->Read((char *)&m_vAnchorOffset, sizeof(CVector));
 	Ctx.pStream->Read((char *)&m_iStartTime, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iTimeCursor, sizeof(DWORD));

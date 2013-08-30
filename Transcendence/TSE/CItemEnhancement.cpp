@@ -69,16 +69,40 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 				//	If we're making the disadvantage worse, then
 				//	continue; otherwise, no effect.
 
-				case etStrengthen:
 				case etRegenerate:
 				case etResist:
 				case etResistEnergy:
 				case etResistMatter:
 				case etPowerEfficiency:
-				case etSpeed:
 					{
 					if (Enhancement.GetType() == GetType()
 							&& Enhancement.GetLevel() > GetLevel())
+						{
+						*this = Enhancement;
+						return eisWorse;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etHPBonus:
+				case etStrengthen:
+					{
+					if ((GetType() == etHPBonus || GetType() == etStrengthen)
+							&& Enhancement.GetHPBonus() < GetHPBonus())
+						{
+						*this = Enhancement;
+						return eisWorse;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etSpeed:
+				case etSpeedOld:
+					{
+					if ((GetType() == etSpeed || GetType() == etSpeedOld)
+							&& Enhancement.GetActivateRateAdj() > GetActivateRateAdj())
 						{
 						*this = Enhancement;
 						return eisWorse;
@@ -126,7 +150,6 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 				//	If the enhancement is the opposite of the disadvantage
 				//	then the disadvantage is repaired.
 
-				case etStrengthen:
 				case etResist:
 				case etResistEnergy:
 				case etResistMatter:
@@ -135,9 +158,32 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 				case etResistByDamage:
 				case etResistByDamage2:
 				case etReflect:
-				case etSpeed:
 					{
 					if (GetType() == Enhancement.GetType())
+						{
+						*this = CItemEnhancement();
+						return eisRepaired;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etHPBonus:
+				case etStrengthen:
+					{
+					if (GetType() == etHPBonus || GetType() == etStrengthen)
+						{
+						*this = CItemEnhancement();
+						return eisRepaired;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etSpeed:
+				case etSpeedOld:
+					{
+					if (GetType() == etSpeed || GetType() == etSpeedOld)
 						{
 						*this = CItemEnhancement();
 						return eisRepaired;
@@ -160,83 +206,88 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 		{
 		if (!Enhancement.IsDisadvantage())
 			{
-			if (Enhancement.GetType() == GetType())
+			switch (Enhancement.GetType())
 				{
-				switch (Enhancement.GetType())
+				case etHPBonus:
+				case etStrengthen:
 					{
-					case etStrengthen:
+					if (GetType() != etHPBonus 
+							&& GetType() != etStrengthen)
+						return eisNoEffect;
+
+					//	If stackable...
+
+					else if (Enhancement.GetLevel() == 0)
 						{
-						//	If stackable...
-
-						if (Enhancement.GetLevel() == 0)
-							{
-							if (GetLevel() == 15)
-								return eisNoEffect;
-							else
-								{
-								m_dwMods++;
-								return eisBetter;
-								}
-							}
-
-						//	If improving...
-
-						else if (Enhancement.GetLevel() > GetLevel())
-							{
-							*this = Enhancement;
-							return eisBetter;
-							}
-						else
-							return eisNoEffect;
+						SetModBonus(GetHPBonus() + 10);
+						return eisBetter;
 						}
 
-					//	If this is the same type of enhancement and it is better,
-					//	then take it (otherwise, no effect)
+					//	If improving...
 
-					case etRegenerate:
-					case etResist:
-					case etResistEnergy:
-					case etResistMatter:
-					case etPowerEfficiency:
-					case etSpeed:
+					else if (Enhancement.GetHPBonus() > GetHPBonus())
 						{
-						if (Enhancement.GetLevel() > GetLevel())
-							{
-							*this = Enhancement;
-							return eisBetter;
-							}
-						else
-							return eisNoEffect;
+						*this = Enhancement;
+						return eisBetter;
 						}
-
-					case etResistByLevel:
-					case etResistByDamage:
-					case etResistByDamage2:
-						{
-						if (Enhancement.GetDamageType() != GetDamageType())
-							{
-							*this = Enhancement;
-							return eisEnhancementReplaced;
-							}
-						else if (Enhancement.GetLevel() > GetLevel())
-							{
-							*this = Enhancement;
-							return eisBetter;
-							}
-						else
-							return eisNoEffect;
-						}
-
-					default:
+					else
 						return eisNoEffect;
 					}
-				}
 
-			//	No effect if we're already enhanced
+				//	If this is the same type of enhancement and it is better,
+				//	then take it (otherwise, no effect)
 
-			else
-				{
-				return eisNoEffect;
+				case etRegenerate:
+				case etResist:
+				case etResistEnergy:
+				case etResistMatter:
+				case etPowerEfficiency:
+					{
+					if (Enhancement.GetType() == GetType()
+							&& Enhancement.GetLevel() > GetLevel())
+						{
+						*this = Enhancement;
+						return eisBetter;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etSpeed:
+				case etSpeedOld:
+					{
+					if (Enhancement.GetType() == GetType()
+							&& Enhancement.GetActivateRateAdj() < GetActivateRateAdj())
+						{
+						*this = Enhancement;
+						return eisBetter;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				case etResistByLevel:
+				case etResistByDamage:
+				case etResistByDamage2:
+					{
+					if (Enhancement.GetType() != GetType())
+						return eisNoEffect;
+					else if (Enhancement.GetDamageType() != GetDamageType())
+						{
+						*this = Enhancement;
+						return eisEnhancementReplaced;
+						}
+					else if (Enhancement.GetLevel() > GetLevel())
+						{
+						*this = Enhancement;
+						return eisBetter;
+						}
+					else
+						return eisNoEffect;
+					}
+
+				default:
+					return eisNoEffect;
 				}
 			}
 		else
@@ -247,6 +298,50 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 			return eisEnhancementRemoved;
 			}
 		}
+	}
+
+DWORD CItemEnhancement::EncodeABC (DWORD dwTypeCode, int A, int B, int C)
+
+//	EncodeABC
+//
+//	Encodes a mod with data A, B, and C.
+
+	{
+	DWORD dwDataA = Max(0, Min(A, (int)etDataAMax));
+	DWORD dwDataB = Max(0, Min(B, (int)etDataBMax));
+	DWORD dwDataC = Max(0, Min(B, (int)etDataCMax));
+	return dwTypeCode
+			| dwDataA
+			| (dwDataB << 16)
+			| (dwDataC << 24);
+	}
+
+DWORD CItemEnhancement::EncodeAX (DWORD dwTypeCode, int A, int X)
+
+//	EncodeAX
+//
+//	Encodes a mod with data A and X.
+
+	{
+	DWORD dwDataA = Max(0, Min(A, (int)etDataAMax));
+	DWORD dwDataX = Max(0, Min(X, (int)etDataXMax));
+	return dwTypeCode
+			| dwDataA
+			| (dwDataX << 16);
+	}
+
+DWORD CItemEnhancement::Encode12 (DWORD dwTypeCode, int Data1, int Data2)
+
+//	Encode12
+//
+//	Encodes a mod with data 1 and 2.
+
+	{
+	DWORD dwData1 = Max(0, Min(Data1, (int)0xF));
+	DWORD dwData2 = Max(0, Min(Data2, (int)0xF));
+	return dwTypeCode
+			| dwData1
+			| (dwData2 << 4);
 	}
 
 int CItemEnhancement::GetAbsorbAdj (const DamageDesc &Damage) const
@@ -334,6 +429,9 @@ int CItemEnhancement::GetHPBonus (void) const
 	{
 	switch (GetType())
 		{
+		case etHPBonus:
+			return (IsDisadvantage() ? -GetDataX() : GetDataX());
+
 		case etStrengthen:
 			return Level2Bonus(GetLevel(), IsDisadvantage());
 
@@ -352,8 +450,11 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 //	the device structure. In the future we need a better mechanism)
 
 	{
+	CItemEnhancementStack *pAllEnhancements = (pDevice ? pDevice->GetEnhancements() : NULL);
+
 	switch (GetType())
 		{
+		case etHPBonus:
 		case etStrengthen:
 			{
 			switch (Item.GetType()->GetCategory())
@@ -368,8 +469,8 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 					//	calculated and cached in the device; we do this so that we can
 					//	include bonuses from all sources.
 
-					if (pDevice)
-						iDamageBonus = pDevice->GetBonus();
+					if (pAllEnhancements)
+						iDamageBonus = pAllEnhancements->GetBonus();
 					else
 						iDamageBonus = GetHPBonus();
 
@@ -479,6 +580,7 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 			return (IsDisadvantage() ? CONSTLIT("-Drain") : CONSTLIT("+Efficient"));
 
 		case etSpeed:
+		case etSpeedOld:
 			return (IsDisadvantage() ? CONSTLIT("-Slow") : CONSTLIT("+Fast"));
 
 		default:
@@ -486,21 +588,44 @@ CString CItemEnhancement::GetEnhancedDesc (const CItem &Item, CSpaceObject *pIns
 		}
 	}
 
-int CItemEnhancement::GetActivateRateAdj (void) const
+int CItemEnhancement::GetActivateRateAdj (int *retiMinDelay, int *retiMaxDelay) const
 
 //	GetActivateRateAdj
 //
 //	Returns the adj to activate/fire delay
 
 	{
+	int iAdj = 100;
+	int iMinDelay = 0;
+	int iMaxDelay = 0;
+
 	switch (GetType())
 		{
 		case etSpeed:
-			return Level2DamageAdj(GetLevel(), IsDisadvantage());
+			if (IsDisadvantage())
+				iAdj = 100 + GetDataA() * 5;
+			else
+				iAdj = GetDataA();
+
+			iMinDelay = GetDataB();
+			iMaxDelay = GetDataC();
+			break;
+
+		case etSpeedOld:
+			iAdj = Level2DamageAdj(GetLevel(), IsDisadvantage());
+			break;
 
 		default:
-			return 100;
+			iAdj = 100;
 		}
+
+	if (retiMinDelay)
+		*retiMinDelay = iMinDelay;
+
+	if (retiMaxDelay)
+		*retiMaxDelay = iMaxDelay;
+
+	return iAdj;
 	}
 
 int CItemEnhancement::GetEnhancedRate (int iRate) const
@@ -513,6 +638,18 @@ int CItemEnhancement::GetEnhancedRate (int iRate) const
 	switch (GetType())
 		{
 		case etSpeed:
+			{
+			int iMin;
+			int iMax;
+			int iAdj = GetActivateRateAdj(&iMin, &iMax);
+			int iNewRate = Max(iMin, (iRate * iAdj + 50) / 100);
+			if (iMax != 0 && iNewRate > iMax)
+				return iMax;
+			else
+				return iNewRate;
+			}
+
+		case etSpeedOld:
 			return Max(1, (iRate * Level2DamageAdj(GetLevel(), IsDisadvantage()) + 50) / 100);
 
 		default:
@@ -529,6 +666,21 @@ int CItemEnhancement::GetHPAdj (void) const
 	{
 	switch (GetType())
 		{
+		case etHPBonus:
+			{
+			int iData = GetDataX();
+
+			if (IsDisadvantage())
+				{
+				if (iData >= 0 && iData <= 90)
+					return 100 - iData;
+				else
+					return 10;
+				}
+			else
+				return 100 + iData;
+			}
+
 		case etStrengthen:
 			{
 			int iLevel = GetLevel();
@@ -578,6 +730,39 @@ int CItemEnhancement::GetPowerAdj (void) const
 		}
 	}
 
+SpecialDamageTypes CItemEnhancement::GetSpecialDamage (int *retiLevel) const
+
+//	GetSpecialDamage
+//
+//	Returns special damage enhancement type (or specialNone)
+
+	{
+	SpecialDamageTypes iSpecial;
+	int iLevel;
+
+	switch (GetType())
+		{
+		case etSpecialDamage:
+			iSpecial = (SpecialDamageTypes)GetLevel2();
+			iLevel = 0;
+			break;
+
+		case etConferSpecialDamage:
+			iSpecial = (SpecialDamageTypes)GetDataA();
+			iLevel = GetDataB();
+			break;
+
+		default:
+			iSpecial = specialNone;
+			iLevel = 0;
+		}
+
+	if (retiLevel)
+		*retiLevel = iLevel;
+
+	return iSpecial;
+	}
+
 int CItemEnhancement::GetValueAdj (const CItem &Item) const
 
 //	GetValueAdj
@@ -589,17 +774,23 @@ int CItemEnhancement::GetValueAdj (const CItem &Item) const
 		{
 		switch (GetType())
 			{
+			case etHPBonus:
+				return Max(-80, -GetDataX());
+
 			case etStrengthen:
 			case etResistByLevel:
 			case etResistByDamage:
 			case etResistByDamage2:
+			case etSpeedOld:
+				return Max(-80, -10 * GetLevel());
+
 			case etSpeed:
-				return Min(-80, -10 * GetLevel());
+				return Max(-80, -3 * GetDataA());
 
 			case etResist:
 			case etResistMatter:
 			case etResistEnergy:
-				return Min(-80, -20 * GetLevel());
+				return Max(-80, -20 * GetLevel());
 
 			case etPhotoRegenerate:
 			case etPhotoRecharge:
@@ -621,6 +812,9 @@ int CItemEnhancement::GetValueAdj (const CItem &Item) const
 		{
 		switch (GetType())
 			{
+			case etHPBonus:
+				return 2 * GetDataX();
+
 			case etStrengthen:
 				return 20 * GetLevel();
 
@@ -630,8 +824,11 @@ int CItemEnhancement::GetValueAdj (const CItem &Item) const
 			case etResistByLevel:
 			case etResistByDamage:
 			case etResistByDamage2:
-			case etSpeed:
+			case etSpeedOld:
 				return 10 * GetLevel();
+
+			case etSpeed:
+				return 2 * (100 - GetDataA());
 
 			case etResist:
 			case etResistMatter:
@@ -653,6 +850,138 @@ int CItemEnhancement::GetValueAdj (const CItem &Item) const
 				return 0;
 			}
 		}
+	}
+
+ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDesc)
+
+//	InitFromDesc
+//
+//	Initializes from a string of the following forms:
+//
+//	{number}		Interpret as a mod code
+//	+armor:{n}		Add armor special damage, where n is an item level
+//	+shield:{n}		Add shield disrupt special damage, where n is an item level
+
+	{
+	//	If the string is a number then we interpret it as a mod code.
+
+	bool bFailed;
+	DWORD dwCode = strToInt(sDesc, 0, &bFailed);
+	if (!bFailed)
+		{
+		m_dwMods = dwCode;
+		return NOERROR;
+		}
+
+	//	Parse the string
+
+	char *pPos = sDesc.GetASCIIZPointer();
+
+	//	Expect either "+" or "-" (for disadvantage)
+
+	bool bDisadvantage;
+	if (*pPos == '+')
+		bDisadvantage = false;
+	else if (*pPos == '-')
+		bDisadvantage = true;
+	else
+		{
+		Ctx.sError = CONSTLIT("Invalid enhancement description: expected '+' or '-'.");
+		return ERR_FAIL;
+		}
+
+	pPos++;
+
+	//	Parse the enhancement name
+
+	char *pStart = pPos;
+	while (*pPos != ':' && *pPos != '\0')
+		pPos++;
+
+	CString sID(pStart, (int)(pPos - pStart));
+
+	//	See if we have a value
+
+	int iValue = 0;
+	if (*pPos == ':')
+		{
+		pPos++;
+		iValue = strParseInt(pPos, 0);
+		}
+
+	//	See if this is an hpBonus
+
+	if (strEquals(sID, CONSTLIT("hpBonus")))
+		{
+		if (iValue < -100)
+			{
+			Ctx.sError = CONSTLIT("hpBonus penalty cannot exceed 100%.");
+			return ERR_FAIL;
+			}
+		else if (iValue < 0)
+			SetModCode(EncodeAX(etHPBonus | etDisadvantage, 0, -iValue));
+		else if (iValue == 0)
+			SetModCode(Encode12(etStrengthen));
+		else if (iValue <= 1000)
+			SetModCode(EncodeAX(etHPBonus, 0, iValue));
+		else
+			{
+			Ctx.sError = CONSTLIT("hpBonus cannot exceed 1000%.");
+			return ERR_FAIL;
+			}
+		}
+
+	//	Speed bonus
+
+	else if (strEquals(sID, CONSTLIT("speed")))
+		{
+		if (iValue <= 0)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid speed value: %s."), iValue);
+			return ERR_FAIL;
+			}
+		else
+			//	LATER: Support min and max delay limits
+			SetModSpeed(iValue);
+		}
+
+	//	Otherwise, see if this is a special damage 
+
+	else
+		{
+		SpecialDamageTypes iSpecial = DamageDesc::ConvertToSpecialDamageTypes(sID);
+		switch (iSpecial)
+			{
+			case specialArmor:
+			case specialShieldDisrupt:
+				{
+				if (bDisadvantage)
+					{
+					Ctx.sError = CONSTLIT("Disadvantage not supported.");
+					return ERR_FAIL;
+					}
+
+				if (iValue < 1 || iValue > MAX_ITEM_LEVEL)
+					{
+					Ctx.sError = strPatternSubst(CONSTLIT("Invalid %s damage level: %d"), sID, iValue);
+					return ERR_FAIL;
+					}
+
+				SetModSpecialDamage(iSpecial, iValue);
+				break;
+				}
+
+			default:
+				{
+				Ctx.sError = strPatternSubst(CONSTLIT("Invalid enhancement name: %s"), sID);
+				return ERR_FAIL;
+				}
+			}
+		}
+
+	//	Done
+
+	return NOERROR;
 	}
 
 bool CItemEnhancement::IsEqual (const CItemEnhancement &Comp) const
@@ -760,6 +1089,45 @@ void CItemEnhancement::ReadFromStream (DWORD dwVersion, IReadStream *pStream)
 
 	if (dwVersion < 46 && m_dwMods != 0)
 		m_dwID = g_pUniverse->CreateGlobalID();
+	}
+
+void CItemEnhancement::SetModBonus (int iBonus)
+
+//	SetModBonus
+//
+//	Sets bonus enhancement
+
+	{
+	if (iBonus >= 0)
+		m_dwMods = EncodeAX(etHPBonus, 0, iBonus);
+	else
+		m_dwMods = EncodeAX(etHPBonus | etDisadvantage, 0, -iBonus);
+	}
+
+void CItemEnhancement::SetModSpecialDamage (SpecialDamageTypes iSpecial, int iLevel)
+
+//	SetModSpecialDamage
+//
+//	Sets special damage
+
+	{
+	if (iLevel == 0)
+		m_dwMods = Encode12(etSpecialDamage, 0, iSpecial);
+	else
+		m_dwMods = EncodeABC(etConferSpecialDamage, iSpecial, iLevel);
+	}
+
+void CItemEnhancement::SetModSpeed (int iAdj, int iMinDelay, int iMaxDelay)
+
+//	SetModSpeed
+//
+//	Sets a speed adjustment mod.
+
+	{
+	if (iAdj <= 100)
+		m_dwMods = EncodeABC(etSpeed, iAdj, iMinDelay, iMaxDelay);
+	else
+		m_dwMods = EncodeABC(etSpeed | etDisadvantage, (iAdj - 100) / 5, iMinDelay, iMaxDelay);
 	}
 
 void CItemEnhancement::WriteToStream (IWriteStream *pStream) const

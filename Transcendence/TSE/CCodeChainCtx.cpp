@@ -277,6 +277,32 @@ void CCodeChainCtx::SaveAndDefineDataVar (ICCItem *pData)
 		DefineNil(STR_G_DATA);
 	}
 
+void CCodeChainCtx::SaveAndDefineItemVar (const CItem &Item)
+
+//	SaveAndDefineItemVar
+//
+//	Saves and defines gItem
+
+	{
+	if (m_pOldItem == NULL)
+		m_pOldItem = m_CC.LookupGlobal(STR_G_ITEM, this);
+
+	DefineItem(STR_G_ITEM, Item);
+	}
+
+void CCodeChainCtx::SaveAndDefineItemVar (CItemCtx &ItemCtx)
+
+//	SaveAndDefineItemVar
+//
+//	Saves and defines gItem
+
+	{
+	if (m_pOldItem == NULL)
+		m_pOldItem = m_CC.LookupGlobal(STR_G_ITEM, this);
+
+	DefineItem(STR_G_ITEM, ItemCtx);
+	}
+
 void CCodeChainCtx::SaveAndDefineSourceVar (CSpaceObject *pSource)
 
 //	SaveAndDefineSourceVar

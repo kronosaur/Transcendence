@@ -10,12 +10,11 @@ class CBeamEffectCreator : public CEffectCreator,
 	{
 	public:
 		static CString GetClassTag (void) { return CONSTLIT("Beam"); }
-		static BeamTypes ParseBeamType (const CString &sValue);
 
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
@@ -24,13 +23,34 @@ class CBeamEffectCreator : public CEffectCreator,
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
 		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
 
 	private:
+		enum BeamTypes
+			{
+			beamUnknown =				-1,
+
+			beamHeavyBlaster =			0,
+			beamLaser =					1,
+			beamLightning =				2,
+			beamStarBlaster =			3,
+
+			beamGreenParticle =			4,
+			beamBlueParticle =			5,
+			beamElectron =				6,
+			beamPositron =				7,
+			beamGraviton =				8,
+			beamBlaster =				9,
+			beamGreenLightning =		10,
+			beamParticle =				11,
+			beamLightningBolt =			12,
+			beamJaggedBolt =			13,
+			};
+
 		struct SLineDesc
 			{
 			int xFrom;
@@ -39,15 +59,18 @@ class CBeamEffectCreator : public CEffectCreator,
 			int yTo;
 			};
 
-		void CreateLightningGlow (SLineDesc &Line, int iPointCount, CVector *pPoints, int iSize, CG16bitRegion *retRegion);
+		void CreateLightningGlow (SLineDesc &Line, int iPointCount, CVector *pPoints, int iSize, CG16bitBinaryRegion *retRegion);
 		void DrawBeam (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamBlaster (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamHeavyBlaster (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
+		void DrawBeamJaggedBolt (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamLaser (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamLightning (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamLightningBolt (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamParticle (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
 		void DrawBeamStarBlaster (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx);
+
+		static BeamTypes ParseBeamType (const CString &sValue);
 
 		BeamTypes m_iType;
 		int m_iIntensity;
@@ -63,7 +86,7 @@ class CBoltEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
@@ -71,7 +94,7 @@ class CBoltEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -90,6 +113,7 @@ class CEffectGroupCreator : public CEffectCreator
 		CEffectGroupCreator (void);
 
 		void ApplyOffsets (SViewportPaintCtx *ioCtx, int *retx, int *rety);
+		IEffectPainter *CreateSubPainter (CCreatePainterCtx &Ctx, int iIndex) { return m_pCreators[iIndex].CreatePainter(Ctx); }
 		inline int GetCount (void) { return m_iCount; }
 		inline CEffectCreator *GetCreator (int iIndex) { return m_pCreators[iIndex]; }
 		static CString GetClassTag (void) { return CONSTLIT("Group"); }
@@ -104,8 +128,9 @@ class CEffectGroupCreator : public CEffectCreator
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant = 0);
-		virtual IEffectPainter *CreatePainter (void);
+									  int iVariant = 0,
+									  CSpaceObject **retpEffect = NULL);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void);
 		virtual CEffectCreator *GetSubEffect (int iIndex) { if (iIndex < 0 || iIndex >= m_iCount) return NULL; return m_pCreators[iIndex]; }
 		virtual void SetLifetime (int iLifetime);
@@ -114,11 +139,12 @@ class CEffectGroupCreator : public CEffectCreator
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
 		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+		virtual void OnEffectPlaySound (CSpaceObject *pSource);
 		virtual void OnMarkImages (void);
 
 	private:
 		int m_iCount;
-		CEffectCreator **m_pCreators;
+		CEffectCreatorRef *m_pCreators;
 
 		bool m_bHasOffsets;
 		int m_xOffset;						//	Cartessian coords (pixels)
@@ -153,8 +179,9 @@ class CEffectSequencerCreator : public CEffectCreator
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant = 0);
-		virtual IEffectPainter *CreatePainter (void) { ASSERT(false); return NULL; }
+									  int iVariant = 0,
+									  CSpaceObject **retpEffect = NULL);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { ASSERT(false); return NULL; }
 		virtual int GetLifetime (void);
 		virtual CEffectCreator *GetSubEffect (int iIndex) { if (iIndex < 0 || iIndex >= m_Timeline.GetCount()) return NULL; return m_Timeline[iIndex].pCreator; }
 
@@ -192,8 +219,9 @@ class CEffectVariantCreator : public CEffectCreator
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant = 0);
-		virtual IEffectPainter *CreatePainter (void);
+									  int iVariant = 0,
+									  CSpaceObject **retpEffect = NULL);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void);
 		virtual CEffectCreator *GetSubEffect (int iIndex) { if (iIndex < 0 || iIndex >= m_Effects.GetCount()) return NULL; return m_Effects[iIndex].pEffect; }
 		virtual void SetLifetime (int iLifetime);
@@ -224,7 +252,7 @@ class CEllipseEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return m_iLifetime; }
 
 		//	IEffectPainter virtuals
@@ -232,7 +260,7 @@ class CEllipseEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -270,7 +298,7 @@ class CFlareEffectCreator : public CEffectCreator
 		inline Styles GetStyle (void) const { return m_iStyle; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void SetLifetime (int iLifetime) { m_iLifetime = iLifetime; }
 
@@ -298,7 +326,7 @@ class CImageEffectCreator : public CEffectCreator,
 		inline bool IsDirectional (void) const { return m_bDirectional; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void SetVariants (int iVariants);
 
@@ -309,7 +337,7 @@ class CImageEffectCreator : public CEffectCreator,
 		virtual void GetRect (RECT *retRect) const;
 		virtual int GetVariants (void) const { return m_iVariants; }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -333,7 +361,7 @@ class CImageAndTailEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void SetVariants (int iVariants) { m_iVariants = iVariants; }
 
@@ -342,7 +370,7 @@ class CImageAndTailEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const { *retRect = m_Image.GetImageRect(); }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -373,8 +401,9 @@ class CImageFractureEffectCreator : public CEffectCreator
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant = 0);
-		virtual IEffectPainter *CreatePainter (void) { ASSERT(false); return NULL; }
+									  int iVariant = 0,
+									  CSpaceObject **retpEffect = NULL);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { ASSERT(false); return NULL; }
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -393,7 +422,7 @@ class CMoltenBoltEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
@@ -401,7 +430,7 @@ class CMoltenBoltEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -424,7 +453,7 @@ class CNullEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
@@ -441,6 +470,7 @@ class CParticleCloudEffectCreator : public CEffectCreator
 			styleCloud,
 			styleRing,
 			styleSplash,
+			styleJet,
 			};
 
 		static CString GetClassTag (void) { return CONSTLIT("ParticleCloud"); }
@@ -456,15 +486,17 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		inline int GetParticleCount (void) const { return m_ParticleCount.Roll(); }
 		inline int GetParticleCountMax (void) const { return m_ParticleCount.GetMaxValue(); }
 		inline CEffectCreator *GetParticleEffect (void) const { return m_pParticleEffect; }
-		inline int GetParticleLifetime (void) const { return m_ParticleLifetime.Roll(); }
-		inline int GetParticleLifetimeMax (void) const { return Max(1, m_ParticleLifetime.GetMaxValue()); }
+		inline int GetParticleLifetime (void) const { return (m_rSlowMotionFactor == 1.0 ? m_ParticleLifetime.Roll() : (int)((m_ParticleLifetime.Roll() / m_rSlowMotionFactor))); }
+		inline int GetParticleLifetimeMax (void) const { return Max(1, (m_rSlowMotionFactor == 1.0 ? m_ParticleLifetime.GetMaxValue() : (int)(m_ParticleLifetime.GetMaxValue() / m_rSlowMotionFactor))); }
 		inline Metric GetRingRadius (void) const { return m_rRingRadius; }
+		inline Metric GetSlowMotionFactor (void) const { return m_rSlowMotionFactor; }
+		inline Styles GetStyle (void) const { return m_iStyle; }
 		inline int GetViscosity (void) const { return m_iViscosity; }
 		inline int GetWakePotential (void) const { return m_iWakePotential; }
 
 		//	CEffectCreator virtuals
 		virtual ~CParticleCloudEffectCreator (void);
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_Lifetime.Roll(); }
 		virtual void SetLifetime (int iLifetime) { m_Lifetime.SetConstant(iLifetime); }
 
@@ -474,6 +506,7 @@ class CParticleCloudEffectCreator : public CEffectCreator
 
 	private:
 		Styles m_iStyle;								//	Effect style
+		Metric m_rSlowMotionFactor;						//	Slow motion
 		DiceRange m_Lifetime;							//	Lifetime of effect
 		DiceRange m_ParticleCount;						//	Initial number of particles
 		DiceRange m_ParticleLifetime;					//	Lifetime of each particle
@@ -510,7 +543,7 @@ class CParticleCometEffectCreator : public CEffectCreator,
 		inline int GetMaxAge (void) { return POINT_COUNT-1; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return -1; }
 
 		//	IEffectPainter virtuals
@@ -558,8 +591,9 @@ class CParticleExplosionEffectCreator : public CEffectCreator
 									  const CVector &vPos,
 									  const CVector &vVel,
 									  int iRotation,
-									  int iVariant = 0);
-		virtual IEffectPainter *CreatePainter (void) { ASSERT(false); return NULL; }
+									  int iVariant = 0,
+									  CSpaceObject **retpEffect = NULL);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { ASSERT(false); return NULL; }
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -582,7 +616,7 @@ class CPlasmaSphereEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
@@ -590,7 +624,7 @@ class CPlasmaSphereEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -610,11 +644,41 @@ class CPolyflashEffectCreator : public CEffectCreator
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return 1; }
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID) { return NOERROR; }
+	};
+
+class CRayEffectCreator : public CEffectCreator
+	{
+	public:
+		CRayEffectCreator (void);
+		~CRayEffectCreator (void);
+			
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("Ray"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_Length;			//	length: Length of ray (pixels)
+		CEffectParamDesc m_Width;			//	width: Width of ray (pixels)
+		CEffectParamDesc m_Shape;			//	shape: Shape of ray
+		CEffectParamDesc m_Style;			//	style: Style of ray
+		CEffectParamDesc m_Intensity;		//	intensity: Intensity of ray
+		CEffectParamDesc m_PrimaryColor;	//	primaryColor: Primary color
+		CEffectParamDesc m_SecondaryColor;	//	secondaryColor: Secondary color
+
+		IEffectPainter *m_pSingleton;
 	};
 
 class CShapeEffectCreator : public CEffectCreator
@@ -624,7 +688,7 @@ class CShapeEffectCreator : public CEffectCreator
 		static CString GetClassTag (void) { return CONSTLIT("Shape"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
-		void CreateShapeRegion (int iAngle, int iLength, int iWidth, CG16bitRegion *pRegion);
+		void CreateShapeRegion (int iAngle, int iLength, int iWidth, CG16bitBinaryRegion *pRegion);
 		inline WORD GetColor (void) const { return m_wColor; }
 		inline int GetLength (void) const { return m_iLength; }
 		inline int GetLengthInc (void) const { return m_iLengthInc; }
@@ -635,7 +699,7 @@ class CShapeEffectCreator : public CEffectCreator
 
 		//	CEffectCreator virtuals
 		virtual ~CShapeEffectCreator (void);
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return 0; }
 
 	protected:
@@ -684,7 +748,7 @@ class CShockwaveEffectCreator : public CEffectCreator
 		inline Styles GetStyle (void) const { return m_iStyle; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void SetLifetime (int iLifetime) { m_iLifetime = iLifetime; }
 
@@ -726,7 +790,7 @@ class CSingleParticleEffectCreator : public CEffectCreator
 		inline WORD GetSecondaryColor (void) const { return m_wSecondaryColor; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -757,7 +821,7 @@ class CSmokeTrailEffectCreator : public CEffectCreator
 
 		//	CEffectCreator virtuals
 		virtual ~CSmokeTrailEffectCreator (void);
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void SetLifetime (int iLifetime) { m_iLifetime = iLifetime; }
 
@@ -786,7 +850,7 @@ class CStarburstEffectCreator : public CEffectCreator,
 		virtual CString GetTag (void) { return GetClassTag(); }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void) { return this; }
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx) { return this; }
 		virtual int GetLifetime (void) { return m_iLifetime; }
 
 		//	IEffectPainter virtuals
@@ -794,7 +858,7 @@ class CStarburstEffectCreator : public CEffectCreator,
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
@@ -806,6 +870,7 @@ class CStarburstEffectCreator : public CEffectCreator,
 			styleMorningStar,							//	Sphere with random triangular spikes
 			styleLightningStar,							//	Sphere with tail of lightning
 			styleFlare,									//	Constant glow plus spikes
+			styleBallLightning,							//	Constant glow plus curving lightning
 			};
 
 		void CreateDiamondSpike (int iAngle, int iLength, int iWidthAngle, SPoint *Poly);
@@ -830,7 +895,7 @@ class CTextEffectCreator : public CEffectCreator
 		inline WORD GetPrimaryColor (void) { return m_wPrimaryColor; }
 
 		//	CEffectCreator virtuals
-		virtual IEffectPainter *CreatePainter (void);
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
 		virtual int GetLifetime (void) { return m_iLifetime; }
 
 	protected:

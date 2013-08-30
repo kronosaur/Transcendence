@@ -481,6 +481,34 @@ void CCSymbolTable::Reset (void)
 	m_pDefineHook = NULL;
 	}
 
+void CCSymbolTable::SetIntegerValue (CCodeChain &CC, const CString &sKey, int iValue)
+
+//	SetIntegerValue
+//
+//	Sets an integer value
+
+	{
+	ICCItem *pKey = CC.CreateString(sKey);
+	ICCItem *pValue = CC.CreateInteger(iValue);
+	AddEntry(&CC, pKey, pValue);
+	pKey->Discard(&CC);
+	pValue->Discard(&CC);
+	}
+
+void CCSymbolTable::SetStringValue (CCodeChain &CC, const CString &sKey, const CString &sValue)
+
+//	SetStringValue
+//
+//	Sets a string value
+
+	{
+	ICCItem *pKey = CC.CreateString(sKey);
+	ICCItem *pValue = CC.CreateString(sValue);
+	AddEntry(&CC, pKey, pValue);
+	pKey->Discard(&CC);
+	pValue->Discard(&CC);
+	}
+
 ICCItem *CCSymbolTable::SimpleLookup (CCodeChain *pCC, ICCItem *pKey, BOOL *retbFound, int *retiOffset)
 
 //	SimpleLookup

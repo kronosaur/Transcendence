@@ -102,7 +102,7 @@ void CMoltenBoltEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewpor
 
 	//	Paint
 
-	CG16bitRegion Region;
+	CG16bitBinaryRegion Region;
 	WORD wColor = CG16bitImage::BlendPixel(Ctx.wSpaceColor, m_wSecondaryColor, 200);
 	Region.CreateFromConvexPolygon(SHAPE_COUNT, Poly);
 	Region.Fill(Dest, x, y, wColor);
@@ -117,7 +117,7 @@ void CMoltenBoltEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewpor
 	Region.Fill(Dest, x, y, m_wPrimaryColor);
 	}
 
-bool CMoltenBoltEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CMoltenBoltEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

@@ -1070,7 +1070,7 @@ void CStandardShipAI::OnBehavior (void)
 						|| (pDock && pPlayer && pDock->IsAngryAt(pPlayer) && pDock->GetDistance(pPlayer) <= THREAT_SENSOR_RANGE))
 					{
 					CancelCurrentOrder();
-					AddOrder(IShipController::orderGate, NULL, 0);
+					AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 					}
 				}
 
@@ -1201,7 +1201,14 @@ void CStandardShipAI::BehaviorStart (void)
 
 		case IShipController::orderEscort:
 			{
-			SetState(stateEscorting);
+			//	If this is a support ship, then we follow. Otherwise we
+			//	are an armed escort.
+
+			if (m_AICtx.IsNonCombatant())
+				SetState(stateFollowing);
+			else
+				SetState(stateEscorting);
+
 			m_pDest = GetCurrentOrderTarget();
 			ASSERT(m_pDest);
 
@@ -1239,6 +1246,7 @@ void CStandardShipAI::BehaviorStart (void)
 			if (pGate)
 				{
 				if (GetDistance2(pGate) > NAV_PATH_THRESHOLD2
+						&& !m_AICtx.NoNavPaths()
 						&& m_AICtx.CalcNavPath(m_pShip, pGate))
 					{
 					SetState(stateOnCourseForPointViaNavPath);
@@ -1516,8 +1524,8 @@ void CStandardShipAI::BehaviorStart (void)
 
 			if (pBestDest)
 				{
-				AddOrder(IShipController::orderWait, NULL, mathRandom(4, 24), true);
-				AddOrder(IShipController::orderDock, pBestDest, 0, true);
+				AddOrder(IShipController::orderWait, NULL, IShipController::SData(mathRandom(4, 24)), true);
+				AddOrder(IShipController::orderDock, pBestDest, IShipController::SData(), true);
 				}
 
 			//	Otherwise, gate out of here
@@ -1545,6 +1553,12 @@ void CStandardShipAI::BehaviorStart (void)
 				m_iCountdown = 1 + (g_TicksPerSecond * GetCurrentOrderData());
 			else
 				m_iCountdown = -1;
+			break;
+			}
+
+		case IShipController::orderWaitForPlayer:
+			{
+			SetState(stateWaiting);
 			break;
 			}
 
@@ -1695,7 +1709,7 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 				{
 				case IShipController::orderGateOnThreat:
 					CancelCurrentOrder();
-					AddOrder(IShipController::orderGate, NULL, 0);
+					AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 					break;
 
 				case IShipController::orderGuard:
@@ -1764,7 +1778,7 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 
 				case stateWaitingUnarmed:
 					CancelCurrentOrder();
-					AddOrder(IShipController::orderGate, NULL, 0);
+					AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 					break;
 
 				case stateOnCourseForLootDocking:
@@ -1845,8 +1859,27 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 	{
 	switch (iMessage)
 		{
+		case msgAbort:
+			{
+			switch (m_State)
+				{
+				case stateAttackingThreat:
+				case stateAttackingPrincipalThreat:
+				case stateOnPatrolOrbit:
+					if (pParam1 == NULL || pParam1 == m_pTarget)
+						SetState(stateNone);
+					return resAck;
+
+				default:
+					return resNoAnswer;
+				}
+			}
+
 		case msgAttack:
 			{
+			if (m_AICtx.IsNonCombatant())
+				return resNoAnswer;
+
 			switch (m_State)
 				{
 				case stateEscorting:
@@ -1880,6 +1913,9 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 
 		case msgAttackDeter:
 			{
+			if (m_AICtx.IsNonCombatant())
+				return resNoAnswer;
+
 			switch (m_State)
 				{
 				case stateAttackingTarget:
@@ -1933,7 +1969,7 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 						{
 						AddOrder(IShipController::orderDestroyTarget,
 								pParam1,
-								0,
+								IShipController::SData(),
 								true);
 						return resAck;
 						}
@@ -1975,6 +2011,26 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 				}
 			}
 
+		case msgQueryCommunications:
+			{
+			if (GetCurrentOrder() == IShipController::orderEscort)
+				{
+				DWORD dwRes = 0;
+				if (!m_AICtx.IsNonCombatant())
+					dwRes |= resCanAttack;
+				if (m_State == stateAttackingTarget)
+					dwRes |= (resCanAbortAttack | resCanFormUp);
+				if (m_State != stateWaiting)
+					dwRes |= resCanWait;
+				else
+					dwRes |= resCanFormUp;
+
+				return dwRes;
+				}
+			else
+				return 0;
+			}
+
 		case msgQueryEscortStatus:
 			{
 			if (GetEscortPrincipal() == pParam1)
@@ -1982,6 +2038,9 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 			else
 				return resNoAnswer;
 			}
+
+		case msgQueryWaitStatus:
+			return (m_State == stateWaiting ? resAck : resNoAnswer);
 
 		case msgQueryAttackStatus:
 			{
@@ -2001,6 +2060,18 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 				default:
 					return resNoAnswer;
 				}
+			}
+
+		case msgWait:
+			{
+			if (GetCurrentOrder() == IShipController::orderEscort)
+				{
+				SetState(stateWaiting);
+				m_pDest = GetCurrentOrderTarget();
+				return resAck;
+				}
+			else
+				return resNoAnswer;
 			}
 
 		default:
@@ -2190,9 +2261,9 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 					CancelCurrentOrder();
 
 					if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) && Ctx.Attacker.GetObj())
-						AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), 0);
+						AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), IShipController::SData());
 					else
-						AddOrder(IShipController::orderAttackNearestEnemy, NULL, 0);
+						AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
 
 					break;
 					}
@@ -2216,7 +2287,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 			case IShipController::orderGateOnStationDestroyed:
 			case IShipController::orderGateOnThreat:
 				CancelCurrentOrder();
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 				break;
 
 			//	Avenge
@@ -2225,7 +2296,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				if (Ctx.Attacker.IsCausedByEnemyOf(m_pShip))
 					{
 					CancelCurrentOrder();
-					AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), 0);
+					AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), IShipController::SData());
 					}
 			}
 		}
@@ -2266,8 +2337,8 @@ void CStandardShipAI::OnReadFromStream (SLoadCtx &Ctx)
 	//	Read stuff
 
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDest);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
 	Ctx.pStream->Read((char *)&m_rDistance, sizeof(Metric));
 
 	//	Read code

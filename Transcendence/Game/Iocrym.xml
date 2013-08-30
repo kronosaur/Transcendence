@@ -18,7 +18,7 @@
 			mass=				"25000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice10;"
-			attributes=			"Alien; MajorItem"
+			attributes=			"Alien; Iocrym; MajorItem"
 
 			description=		"This alien device is designed to defend the giant commandships of the Iocrym."
 			>
@@ -41,7 +41,7 @@
 			value=				"4000000"
 			mass=				"15000"
 			frequency=			"veryrare"
-			attributes=			"Alien; MajorItem"
+			attributes=			"Alien; Iocrym; MajorItem"
 
 			description=		"As the Iocrym abhor chaos, their weapons are designed to reduce their targets to plasma clouds of uniform density."
 			>
@@ -92,7 +92,7 @@
 			mass=				"500"
 			frequency=			"rare"
 			numberAppearing=	"20d40"
-			attributes=			"Alien; Consumable; Missile"
+			attributes=			"Alien; Consumable; Iocrym; Missile"
 
 			description=		"This receptacle contains the fierce energies that power the quantumsphere disintegrator."
 
@@ -111,7 +111,7 @@
 			level=				"12"
 			value=				"100000"
 			mass=				"12000"
-			attributes=			"Alien; MinorItem"
+			attributes=			"Alien; Iocrym; MinorItem"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 
@@ -143,7 +143,7 @@
 			mass=				"100000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice10;"
-			attributes=			"Alien; MajorItem"
+			attributes=			"Alien; Iocrym; MajorItem"
 
 			description=		"This alien device heals Iocrym armor. It is possible that it is able to repair other kinds of armor as well."
 			>
@@ -164,7 +164,7 @@
 			level=				"12"
 			value=				"1000000"
 			mass=				"50000"
-			attributes=			"Alien; MajorItem"
+			attributes=			"Alien; Iocrym; MajorItem"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice10;"
 
@@ -230,7 +230,7 @@
 			level=				"11"
 			value=				"50000"
 			mass=				"1700"
-			attributes=			"Alien; MinorItem"
+			attributes=			"Alien; Iocrym; MinorItem"
 			frequency=			"common"
 			numberAppearing=	"1d4"
 
@@ -263,7 +263,7 @@
 			value=				"400000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Alien; Military; MajorItem; NotForSale"
+			attributes=			"Alien; Iocrym; Military; MajorItem; NotForSale"
 			unknownType=		"&itUnknownAlienDevice10;"
 
 			description=		"This is a plasma weapon used by the Iocrym gunships."
@@ -331,7 +331,7 @@
 			value=				"400000"
 			mass=				"5000"
 			frequency=			"veryrare"
-			attributes=			"Alien; Military; MajorItem; NotForSale"
+			attributes=			"Alien; Iocrym; Military; MajorItem; NotForSale"
 			unknownType=		"&itUnknownAlienDevice10;"
 
 			description=		"This is a short-range weapon used by Iocrym commandships to defend their perimeter."
@@ -378,7 +378,7 @@
 			mass=				"5000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice;"
-			attributes=			"Alien; MajorItem; Military; NotForSale"
+			attributes=			"Alien; Iocrym; MajorItem; Military; NotForSale"
 
 			description=		"This byzantine alien device generates a particle shield that absorbs most human weapons."
 			>
@@ -411,7 +411,6 @@
 			manufacturer=		"Iocrym"
 			class=				""
 			type=				"command ship"
-			score=				"6730"
 
 			mass=				"100000"
 			cargoSpace=			"50000"
@@ -551,7 +550,6 @@
 			manufacturer=		"Iocrym"
 			class=				""
 			type=				"sentinel"
-			score=				"2985"
 
 			mass=				"5000"
 			cargoSpace=			"1000"

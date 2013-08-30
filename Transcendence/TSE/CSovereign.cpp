@@ -331,6 +331,7 @@ void CSovereign::InitEnemyObjectList (CSystem *pSystem)
 
 			if (pObj 
 					&& pObj->ClassCanAttack()
+					&& !pObj->IsDestroyed()
 					&& IsEnemy(pObj->GetSovereign()))
 				m_EnemyObjects.FastAdd(pObj);
 			}

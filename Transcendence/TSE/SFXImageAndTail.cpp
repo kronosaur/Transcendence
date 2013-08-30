@@ -102,7 +102,7 @@ void CImageAndTailEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewp
 	m_Image.PaintImage(Dest, x, y, iTick, (Ctx.iVariant % m_iVariants));
 	}
 
-bool CImageAndTailEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CImageAndTailEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

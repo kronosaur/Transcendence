@@ -29,8 +29,6 @@ Metric CalcDistanceToPath (const CVector &Pos,
 						   CVector *retvNearestPoint = NULL,
 						   CVector *retvAway = NULL);
 Metric CalcInterceptTime (const CVector &vTarget, const CVector &vTargetVel, Metric rMissileSpeed, Metric *retrRange = NULL);
-CVector TileToVector (int x, int y);
-void VectorToTile (const CVector &vPos, int *retx, int *rety);
 bool IntersectLine (const CVector &vStart1, const CVector &vEnd1, const CVector &vStart2, const CVector &vEnd2, CVector *retvIntersection = NULL, Metric *retIntersectFraction = NULL);
 bool IntersectRect (const CVector &vUR1, const CVector &vLL1,
 					const CVector &vUR2, const CVector &vLL2);

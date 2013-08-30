@@ -394,7 +394,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this armor" default="1" key="I" >
+					<Action name="Install this Armor" default="1" key="I" >
 						(block (thisItem currencyUsed)
 							(setq thisItem (scrGetItem gScreen))
 							(setq currencyUsed (objGetDefaultCurrency gSource))
@@ -469,7 +469,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this device" default="1" key="I">
+					<Action name="Install this Device" default="1" key="I">
 						(if gCanInstall
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
@@ -529,7 +529,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this device" default="1" key="I">
+					<Action name="Install this Device" default="1" key="I">
 						(if gCanInstall
 							(block (itemPrice)
 								; Install the item
@@ -612,7 +612,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this weapon" default="1" key="I">
+					<Action name="Install this Weapon" default="1" key="I">
 						(if gCanInstall
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
@@ -706,7 +706,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Remove this device" default="1" key="R">
+					<Action name="Remove this Device" default="1" key="R">
 						(block (thisItem currencyUsed)
 							(setq thisItem (scrGetItem gScreen))
 							(setq currencyUsed (objGetDefaultCurrency gSource))
@@ -781,7 +781,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Remove this weapon" default="1" key="R">
+					<Action name="Remove this Weapon" default="1" key="R">
 						(block (thisItem currencyUsed)
 							(setq thisItem (scrGetItem gScreen))
 							(setq currencyUsed (objGetDefaultCurrency gSource))
@@ -1092,7 +1092,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy this item" default="1" key="B">
+					<Action name="Buy this Item" default="1" key="B">
 						(if (gr gMaxCount 1)
 							(scrShowPane gScreen "BuyQuantity")
 							(if (eq gMaxCount 1)
@@ -1240,15 +1240,22 @@
 				<Actions>
 					<Action name="Buy &amp; Install" default="1" key="I">
 						(if gCanInstall
-							(block Nil
+							(block (itemInstalled)
+								;	We need to store gItem elsewhere in case it gets clobbered
+								;	after we buy it.
+								
+								(setq itemInstalled gItem)
+								(scrSetData gScreen 'itemInstalled itemInstalled)
+								
 								(intBuyItems 1 (add gCost gInstallCost))
-								(shpInstallDevice gPlayerShip gItem)
+								
+								(shpInstallDevice gPlayerShip itemInstalled)
 								(scrShowPane gScreen "InstallSuccess")
 								)
 							)
 					</Action>
 
-					<Action name="Buy only" key="B">
+					<Action name="Buy Only" key="B">
 						(block Nil
 							(intBuyItems 1 gCost)
 							(scrShowPane gScreen "Default")
@@ -1265,9 +1272,10 @@
 					noListNavigation="true"
 					>
 				<OnPaneInit>
-					(block Nil
+					(block (itemInstalled)
+						(setq itemInstalled (scrGetData gScreen 'itemInstalled))
 						(scrSetDesc gScreen
-							(cat (itmGetName gItem 0x01) " installed successfully.")
+							(cat (itmGetName itemInstalled 0x01) " installed successfully.")
 							)
 						)
 				</OnPaneInit>
@@ -1442,7 +1450,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Sell this item" default="1" key="S">
+					<Action name="Sell this Item" default="1" key="S">
 						(if (gr gCost 0)
 							(if (gr gMaxCount 1)
 								(scrShowPane gScreen "SellQuantity")

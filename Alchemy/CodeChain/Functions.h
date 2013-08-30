@@ -58,6 +58,7 @@
 #define FN_SET_ITEM						54
 #define FN_RANDOM						55
 #define FN_RANDOM_GAUSSIAN				56
+#define FN_ITEM_TYPE					57
 
 ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnApply (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
@@ -86,6 +87,7 @@ ICCItem *fnLoop (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMatch (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnMathFractions (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMathList (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnRandom (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData);
