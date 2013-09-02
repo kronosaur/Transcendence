@@ -46,7 +46,6 @@ extern int g_iDebugLine;
 
 CBaseShipAI::CBaseShipAI (IObjectClass *pClass) : CObject(pClass),
 		m_pShip(NULL),
-		m_Orders(sizeof(OrderEntry), 1),
 		m_pCommandCode(NULL),
 		m_pOrderModule(NULL),
 		m_fDeviceActivate(false),
@@ -74,7 +73,7 @@ CBaseShipAI::~CBaseShipAI (void)
 		delete m_pOrderModule;
 	}
 
-void CBaseShipAI::AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore)
+void CBaseShipAI::AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore)
 
 //	AddOrder
 //
@@ -123,22 +122,10 @@ void CBaseShipAI::AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData
 
 	//	Add the order
 
-	OrderEntry Entry;
-	Entry.Order = Order;
-	Entry.pTarget = pTarget;
-	Entry.dwData = dwData;
-
-	if (bAddBefore)
-		{
-		m_Orders.InsertStruct(&Entry, 0, NULL);
+	bool bChanged = (bAddBefore || m_Orders.GetCount() == 0);
+	m_Orders.Insert(Order, pTarget, Data, bAddBefore);
+	if (bChanged)
 		FireOnOrderChanged();
-		}
-	else
-		{
-		m_Orders.AppendStruct(&Entry, NULL);
-		if (m_Orders.GetCount() == 1)
-			FireOnOrderChanged();
-		}
 	}
 
 void CBaseShipAI::Behavior (void)
@@ -184,7 +171,7 @@ void CBaseShipAI::Behavior (void)
 		if ((iOrder = GetCurrentOrder()) == IShipController::orderNone)
 			{
 			iOrder = ((m_pShip->GetDockedObj() == NULL) ? IShipController::orderGate : IShipController::orderWait);
-			AddOrder(iOrder, NULL, 0);
+			AddOrder(iOrder, NULL, IShipController::SData());
 			}
 		}
 
@@ -220,7 +207,16 @@ void CBaseShipAI::Behavior (void)
 
 		//	Initialize order module
 
-		m_pOrderModule->BehaviorStart(m_pShip, m_AICtx, GetCurrentOrderTarget(), GetCurrentOrderData());
+		CSpaceObject *pTarget;
+		SData Data;
+		GetCurrentOrderEx(&pTarget, &Data);
+		m_pOrderModule->BehaviorStart(m_pShip, m_AICtx, pTarget, Data);
+
+		//	NOTE: We might have cancelled the order inside BehaviorStart, so we
+		//	return in that case.
+
+		if (m_pOrderModule == NULL)
+			return;
 		}
 
 	//	Implement orders
@@ -472,7 +468,8 @@ void CBaseShipAI::CancelAllOrders (void)
 //	Cancel orders
 
 	{
-	m_Orders.RemoveAll();
+	m_AICtx.ClearNavPath();
+	m_Orders.DeleteAll();
 	FireOnOrderChanged();
 	}
 
@@ -485,7 +482,7 @@ void CBaseShipAI::CancelCurrentOrder (void)
 	{
 	if (m_Orders.GetCount() > 0)
 		{
-		m_Orders.Remove(0);
+		m_Orders.DeleteCurrent();
 		FireOnOrderChanged();
 		}
 	}
@@ -622,7 +619,12 @@ void CBaseShipAI::FireOnOrderChanged (void)
 		//	to reallocate everything; we just need to restart it.
 
 		if (m_pOrderModule->GetOrder() == GetCurrentOrder())
-			m_pOrderModule->BehaviorStart(m_pShip, m_AICtx, GetCurrentOrderTarget(), GetCurrentOrderData());
+			{
+			CSpaceObject *pTarget;
+			SData Data;
+			GetCurrentOrderEx(&pTarget, &Data);
+			m_pOrderModule->BehaviorStart(m_pShip, m_AICtx, pTarget, Data);
+			}
 
 		//	Otherwise, we delete the order module and allow it to be recreated.
 
@@ -701,35 +703,17 @@ IShipController::OrderTypes CBaseShipAI::GetCurrentOrder (void) const
 //	Returns current order
 
 	{
-	if (m_Orders.GetCount() == 0)
-		return IShipController::orderNone;
-	else
-		return ((OrderEntry *)m_Orders.GetStruct(0))->Order;
+	return m_Orders.GetCurrentOrder();
 	}
 
-IShipController::OrderTypes CBaseShipAI::GetCurrentOrderEx (CSpaceObject **retpTarget, DWORD *retdwData)
+IShipController::OrderTypes CBaseShipAI::GetCurrentOrderEx (CSpaceObject **retpTarget, IShipController::SData *retData)
 
 //	GetCurrentOrderEx
 //
 //	Returns current order and related data
 
 	{
-	if (m_Orders.GetCount() == 0)
-		{
-		if (retpTarget)
-			*retpTarget = NULL;
-		if (retdwData)
-			*retdwData = 0;
-		return IShipController::orderNone;
-		}
-	else
-		{
-		if (retpTarget)
-			*retpTarget = GetCurrentOrderTarget();
-		if (retdwData)
-			*retdwData = GetCurrentOrderData();
-		return ((OrderEntry *)m_Orders.GetStruct(0))->Order;
-		}
+	return m_Orders.GetCurrentOrder(retpTarget, retData);
 	}
 
 CSpaceObject *CBaseShipAI::GetEscortPrincipal (void) const
@@ -1040,17 +1024,23 @@ void CBaseShipAI::OnDocked (CSpaceObject *pObj)
 	OnDockedEvent(pObj);
 	}
 
-void CBaseShipAI::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
+void CBaseShipAI::OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
 
 //	OnEnterGate
 //
 //	Ship enters a stargate
 	
 	{
+	//	If we're ascending, then leave the ship alone (it will get pulled out of
+	//	the system by our caller).
+
+	if (bAscend)
+		;
+
 	//	If our orders are to follow the player through a gate, then suspend
 	//	until the player removes us from the system in TransferGateFollowers
 
-	if (GetCurrentOrder() == IShipController::orderFollowPlayerThroughGate)
+	else if (GetCurrentOrder() == IShipController::orderFollowPlayerThroughGate)
 		m_pShip->Suspend();
 
 	//	Otherwise, we destroy ourselves
@@ -1066,8 +1056,6 @@ void CBaseShipAI::OnNewSystem (CSystem *pSystem)
 //	Ship has moved from one system to another
 
 	{
-	int i;
-
 	//	Reset the nav path (because it was for the last system)
 
 	m_AICtx.ClearNavPath();
@@ -1082,21 +1070,10 @@ void CBaseShipAI::OnNewSystem (CSystem *pSystem)
 	//	Note that this is called before the player is in the system
 	//	but after all other player followers have been transfered.
 
-	for (i = 0; i < m_Orders.GetCount(); i++)
-		{
-		OrderEntry *pOrder = (OrderEntry *)m_Orders.GetStruct(i);
-		if (pOrder->pTarget 
-				&& pOrder->pTarget->GetSystem() != pSystem
-				&& !pOrder->pTarget->IsPlayer())
-			{
-			//	Remove the order
-
-			m_Orders.Remove(i);
-			if (i == 0)
-				FireOnOrderChanged();
-			i--;
-			}
-		}
+	bool bChanged;
+	m_Orders.OnNewSystem(pSystem, &bChanged);
+	if (bChanged)
+		FireOnOrderChanged();
 	}
 
 void CBaseShipAI::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
@@ -1115,11 +1092,11 @@ void CBaseShipAI::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode
 		switch (iResult)
 			{
 			case CSpaceObject::interFollowPlayer:
-				AddOrder(IShipController::orderFollowPlayerThroughGate, pObj, 0, true);
+				AddOrder(IShipController::orderFollowPlayerThroughGate, pObj, IShipController::SData(), true);
 				break;
 
 			case CSpaceObject::interWaitForPlayer:
-				AddOrder(IShipController::orderWaitForPlayer, NULL, 0, true);
+				AddOrder(IShipController::orderWaitForPlayer, NULL, IShipController::SData(), true);
 				break;
 			}
 		}
@@ -1136,16 +1113,16 @@ void CBaseShipAI::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode
 				//	her or wait for her to return.
 
 				if (m_pShip->Communicate(m_pShip, msgQueryWaitStatus) == resAck)
-					AddOrder(IShipController::orderWaitForPlayer, NULL, 0, true);
+					AddOrder(IShipController::orderWaitForPlayer, NULL, IShipController::SData(), true);
 				else
-					AddOrder(IShipController::orderFollowPlayerThroughGate, pObj, 0, true);
+					AddOrder(IShipController::orderFollowPlayerThroughGate, pObj, IShipController::SData(), true);
 				}
 			else if (pObj == GetCurrentOrderTarget())
 				{
 				//	Otherwise, we cancel our order and follow the ship through the gate
 
 				CancelCurrentOrder();
-				AddOrder(IShipController::orderGate, pStargate, 0, true);
+				AddOrder(IShipController::orderGate, pStargate, IShipController::SData(), true);
 				}
 			break;
 
@@ -1153,7 +1130,7 @@ void CBaseShipAI::OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode
 
 		case IShipController::orderDestroyTarget:
 			if (pObj->IsPlayer() && pObj == GetCurrentOrderTarget())
-				AddOrder(IShipController::orderDestroyPlayerOnReturn, NULL, 0, true);
+				AddOrder(IShipController::orderDestroyPlayerOnReturn, NULL, IShipController::SData(), true);
 			break;
 		}
 	}
@@ -1202,19 +1179,10 @@ void CBaseShipAI::OnObjDestroyed (const SDestroyCtx &Ctx)
 	//	Loop over all our future orders and make sure that we
 	//	delete any that refer to this object.
 
-	for (int i = 0; i < m_Orders.GetCount(); i++)
-		{
-		OrderEntry *pOrder = (OrderEntry *)m_Orders.GetStruct(i);
-		if (pOrder->pTarget == Ctx.pObj)
-			{
-			//	Remove the order
-
-			m_Orders.Remove(i);
-			if (i == 0)
-				FireOnOrderChanged();
-			i--;
-			}
-		}
+	bool bChanged;
+	m_Orders.OnObjDestroyed(Ctx.pObj, &bChanged);
+	if (bChanged)
+		FireOnOrderChanged();
 	}
 
 void CBaseShipAI::OnPlayerChangedShips (CSpaceObject *pOldShip)
@@ -1224,8 +1192,6 @@ void CBaseShipAI::OnPlayerChangedShips (CSpaceObject *pOldShip)
 //	Player has changed ships
 
 	{
-	int i;
-
 	//	Get the new player ship
 
 	CSpaceObject *pPlayerShip = g_pUniverse->GetPlayer();
@@ -1237,28 +1203,10 @@ void CBaseShipAI::OnPlayerChangedShips (CSpaceObject *pOldShip)
 
 	//	Loop over all orders and see if we need to change the target
 
-	for (i = 0; i < m_Orders.GetCount(); i++)
-		{
-		OrderEntry *pOrder = (OrderEntry *)m_Orders.GetStruct(i);
-		bool bOrderChanged = false;
-
-		switch (pOrder->Order)
-			{
-			case orderDestroyTarget:
-			case orderEscort:
-			case orderFollow:
-			case orderPatrol:
-				if (pOrder->pTarget == pOldShip)
-					{
-					pOrder->pTarget = pPlayerShip;
-					bOrderChanged = (i == 0);
-					}
-				break;
-			}
-
-		if (bOrderChanged)
-			FireOnOrderChanged();
-		}
+	bool bChanged;
+	m_Orders.OnPlayerChangedShips(pOldShip, pPlayerShip, &bChanged);
+	if (bChanged)
+		FireOnOrderChanged();
 	}
 
 void CBaseShipAI::OnPlayerObj (CSpaceObject *pPlayer)
@@ -1296,7 +1244,7 @@ void CBaseShipAI::OnPlayerObj (CSpaceObject *pPlayer)
 		switch (iOrder)
 			{
 			case IShipController::orderDestroyPlayerOnReturn:
-				AddOrder(IShipController::orderDestroyTarget, pPlayer, 0, true);
+				AddOrder(IShipController::orderDestroyTarget, pPlayer, IShipController::SData(), true);
 				break;
 
 			case IShipController::orderWaitForPlayer:
@@ -1306,7 +1254,7 @@ void CBaseShipAI::OnPlayerObj (CSpaceObject *pPlayer)
 
 				if (!m_fIsPlayerWingman)
 					{
-					AddOrder(IShipController::orderEscort, pPlayer, 0, true);
+					AddOrder(IShipController::orderEscort, pPlayer, IShipController::SData(), true);
 					m_pShip->Communicate(m_pShip, msgWait);
 					}
 				break;
@@ -1321,12 +1269,26 @@ void CBaseShipAI::OnStationDestroyed (const SDestroyCtx &Ctx)
 //	Station has been destroyed
 
 	{
-	//	Let our subclass deal with it...
+	ASSERT(!Ctx.pObj->IsDestroyed());
 
-	OnObjDestroyedNotify(Ctx);
+	//	In some cases we ignore the notification because the station still
+	//	exists
 
-	//	NOTE: We do not remove the object from all orders because otherwise
-	//	we would remove orders to loot a station.
+	DWORD dwFlags = GetOrderFlags(GetCurrentOrder());
+	if (dwFlags & ORDER_FLAG_DELETE_ON_STATION_DESTROYED)
+		{
+		if (m_pOrderModule)
+			m_pOrderModule->ObjDestroyed(m_pShip, Ctx);
+		else
+			OnObjDestroyedNotify(Ctx);
+		}
+
+	//	Remove orders as appropriate
+
+	bool bChanged;
+	m_Orders.OnStationDestroyed(Ctx.pObj, &bChanged);
+	if (bChanged)
+		FireOnOrderChanged();
 	}
 
 void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
@@ -1353,14 +1315,15 @@ void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 //	DWORD		flags
 
 	{
-	int i;
 	DWORD dwLoad;
 
 	//	Read stuff
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	CShipClass *pClass = g_pUniverse->FindShipClass(dwLoad);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pShip);
+	CSystem::ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pShip);
+	if (m_pShip == NULL)
+		m_pShip = pShip;
 
 	//	Ship controls moved to m_AICtx
 
@@ -1455,21 +1418,7 @@ void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 
 	//	Read orders
 
-	DWORD dwCount;
-	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
-	for (i = 0; i < (int)dwCount; i++)
-		{
-		OrderEntry Entry;
-		m_Orders.AppendStruct(&Entry, NULL);
-		}
-
-	for (i = 0; i < (int)dwCount; i++)
-		{
-		OrderEntry *pEntry = (OrderEntry *)m_Orders.GetStruct(i);
-		Ctx.pStream->Read((char *)&pEntry->Order, sizeof(DWORD));
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &pEntry->pTarget);
-		Ctx.pStream->Read((char *)&pEntry->dwData, sizeof(DWORD));
-		}
+	m_Orders.ReadFromStream(Ctx);
 
 	//	Command code
 
@@ -1549,14 +1498,14 @@ void CBaseShipAI::SetCommandCode (ICCItem *pCode)
 		m_pCommandCode = pCode->Reference();
 	}
 
-void CBaseShipAI::SetCurrentOrderData (DWORD dwData)
+void CBaseShipAI::SetCurrentOrderData (const SData &Data)
 
 //	SetCurrentOrderData
 //
 //	Set the data for current order
 
 	{
-	((OrderEntry *)m_Orders.GetStruct(0))->dwData = dwData;
+	m_Orders.SetCurrentOrderData(Data);
 	}
 
 void CBaseShipAI::SetShipToControl (CShip *pShip)
@@ -1612,7 +1561,7 @@ void CBaseShipAI::UpgradeShieldBehavior (void)
 
 			//	If we cannot install this item, skip it
 
-			else if (m_pShip->CanInstallDevice(Item, bReplace) != CShip::insOK)
+			else if (!m_pShip->CanInstallItem(Item))
 				;
 
 			//	Otherwise, remember this item
@@ -1690,7 +1639,7 @@ void CBaseShipAI::UpgradeWeaponBehavior (void)
 
 					//	If we cannot install this item, skip it
 
-					else if (m_pShip->CanInstallDevice(Item, true) != CShip::insOK)
+					else if (!m_pShip->CanInstallItem(Item))
 						;
 
 					//	Otherwise, remember this item
@@ -1789,7 +1738,6 @@ void CBaseShipAI::WriteToStream (IWriteStream *pStream)
 //	Subclasses...
 
 	{
-	int i;
 	DWORD dwSave;
 
 	dwSave = (DWORD)GetClass()->GetObjID();
@@ -1814,15 +1762,7 @@ void CBaseShipAI::WriteToStream (IWriteStream *pStream)
 
 	//	Orders
 
-	dwSave = m_Orders.GetCount();
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
-	for (i = 0; i < m_Orders.GetCount(); i++)
-		{
-		OrderEntry *pOrder = (OrderEntry *)m_Orders.GetStruct(i);
-		pStream->Write((char *)&pOrder->Order, sizeof(DWORD));
-		m_pShip->WriteObjRefToStream(pOrder->pTarget, pStream);
-		pStream->Write((char *)&pOrder->dwData, sizeof(DWORD));
-		}
+	m_Orders.WriteToStream(pStream, m_pShip->GetSystem());
 
 	//	Command code
 

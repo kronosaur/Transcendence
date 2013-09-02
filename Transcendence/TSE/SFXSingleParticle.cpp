@@ -40,7 +40,7 @@ class CSingleParticlePainter : public IEffectPainter
 
 //	CSingleParticleEffectCreator object
 
-IEffectPainter *CSingleParticleEffectCreator::CreatePainter (void)
+IEffectPainter *CSingleParticleEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //

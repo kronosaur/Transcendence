@@ -11,10 +11,13 @@
 #include "TransData.h"
 
 #define BY_ATTRIBUTE_ATTRIB					CONSTLIT("byAttribute")
+#define BY_SHIP_CLASS_ATTRIB				CONSTLIT("byShipClass")
+#define BY_SHIP_CLASS_USAGE_ATTRIB			CONSTLIT("byShipClassUsage")
 #define CRITERIA_ATTRIB						CONSTLIT("criteria")
 #define GENERATE_ACTUAL_COUNT_ATTRIB		CONSTLIT("generateSimTables")
 
 #define FIELD_AVERAGE_DAMAGE				CONSTLIT("averageDamage")
+#define FIELD_TYPE							CONSTLIT("category")
 #define FIELD_ENTITY						CONSTLIT("entity")
 #define FIELD_FREQUENCY						CONSTLIT("frequency")
 #define FIELD_LEVEL							CONSTLIT("level")
@@ -22,11 +25,10 @@
 #define FIELD_POWER							CONSTLIT("power")
 #define FIELD_POWER_PER_SHOT				CONSTLIT("powerPerShot")
 #define FIELD_TOTAL_COUNT					CONSTLIT("totalCount")
-#define FIELD_TYPE							CONSTLIT("category")
 
 #define TOTAL_COUNT_FILENAME				CONSTLIT("TransData_ItemCount.txt")
 
-char *g_szTypeCode[] =
+static char *g_szTypeCode[] =
 	{
 	"",
 	"Armor",
@@ -39,7 +41,7 @@ char *g_szTypeCode[] =
 	"Misc",
 	};
 
-char *g_szFreqCode[] =
+static char *g_szFreqCode[] =
 	{
 	"",	"C", "UC", "R", "VR", "NR",
 	};
@@ -70,10 +72,19 @@ struct SAttributeEntry
 
 typedef TSortMap<CString, SAttributeEntry> SByAttributeTypeList;
 
+struct SShipClassEntry
+	{
+	CString sShipClassName;
+	SItemTypeList ItemTable;
+	};
+
+typedef TSortMap<CString, SShipClassEntry> SByShipClassTypeList;
+
 bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine);
 int GetItemFreq (CItemType *pType);
 int GetItemType (CItemType *pType);
 void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
+void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool bShowUsage);
 void OutputHeader (SItemTableCtx &Ctx);
 void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList);
 void SelectByCriteria (SItemTableCtx &Ctx, const CString &sCriteria, TArray<CItemType *> *retList);
@@ -113,6 +124,12 @@ void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 	if (pCmdLine->GetAttributeBool(BY_ATTRIBUTE_ATTRIB))
 		OutputByAttribute(Ctx, ItemList);
 
+	else if (pCmdLine->GetAttributeBool(BY_SHIP_CLASS_ATTRIB))
+		OutputByShipClass(Ctx, ItemList, false);
+
+	else if (pCmdLine->GetAttributeBool(BY_SHIP_CLASS_USAGE_ATTRIB))
+		OutputByShipClass(Ctx, ItemList, true);
+
 	//	Otherwise, just output a full table
 
 	else
@@ -145,6 +162,8 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
 
 		if (!strEquals(sAttrib, CONSTLIT("adventure"))
 				&& !strEquals(sAttrib, BY_ATTRIBUTE_ATTRIB)
+				&& !strEquals(sAttrib, BY_SHIP_CLASS_ATTRIB)
+				&& !strEquals(sAttrib, BY_SHIP_CLASS_USAGE_ATTRIB)
 				&& !strEquals(sAttrib, CONSTLIT("itemtable"))
 				&& !strEquals(sAttrib, CONSTLIT("criteria"))
 				&& !strEquals(sAttrib, CONSTLIT("nologo")))
@@ -267,6 +286,115 @@ void OutputByAttribute (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 		OutputHeader(Ctx);
 		OutputTable(Ctx, Entry.ItemTable);
 		printf("\n");
+		}
+	}
+
+void OutputByShipClass (SItemTableCtx &Ctx, const SItemTypeList &ItemList, bool bShowUsage)
+	{
+	int i, j;
+
+	//	Make a map of ship classes for each item
+
+	TSortMap<DWORD, TArray<CShipClass *>> ItemToShipClass;
+	for (i = 0; i < g_pUniverse->GetShipClassCount(); i++)
+		{
+		CShipClass *pClass = g_pUniverse->GetShipClass(i);
+
+		//	Skip non-generic ones
+
+		if (!pClass->HasLiteralAttribute(CONSTLIT("genericClass")))
+			continue;
+
+		//	Add the list of types used by the ship
+
+		TSortMap<DWORD, bool> TypesUsed;
+		pClass->AddTypesUsed(&TypesUsed);
+
+		//	For each item type, add it to the map
+
+		for (j = 0; j < TypesUsed.GetCount(); j++)
+			{
+			CDesignType *pType = g_pUniverse->FindDesignType(TypesUsed.GetKey(j));
+			if (pType && pType->GetType() == designItemType)
+				{
+				TArray<CShipClass *> *pList = ItemToShipClass.SetAt(pType->GetUNID());
+				pList->Insert(pClass);
+				}
+			}
+		}
+
+	//	If we want to show usage, then we print each item along with the 
+	//	ship classes using each item.
+
+	if (bShowUsage)
+		{
+		for (i = 0; i < ItemList.GetCount(); i++)
+			{
+			CItemType *pType = ItemList[i];
+			printf("%s\n", (LPSTR)pType->GetNounPhrase());
+
+			TArray<CShipClass *> *pList = ItemToShipClass.SetAt(pType->GetUNID());
+			for (j = 0; j < pList->GetCount(); j++)
+				printf("\t%s\n", (LPSTR)pList->GetAt(j)->GetName());
+
+			if (pList->GetCount() == 0)
+				printf("\t(none)\n");
+
+			printf("\n");
+			}
+		}
+
+	//	Otherwise we categorize by ship class
+
+	else
+		{
+		//	Now make a list of all ship classes that have our items
+
+		SByShipClassTypeList ByShipClassTable;
+		for (i = 0; i < ItemList.GetCount(); i++)
+			{
+			const CString &sKey = ItemList.GetKey(i);
+			CItemType *pType = ItemList[i];
+
+			//	Loop over all ship classes
+
+			TArray<CShipClass *> *pList = ItemToShipClass.SetAt(pType->GetUNID());
+			for (j = 0; j < pList->GetCount(); j++)
+				{
+				CString sClassName = pList->GetAt(j)->GetName();
+
+				bool bNew;
+				SShipClassEntry *pEntry = ByShipClassTable.SetAt(sClassName, &bNew);
+				if (bNew)
+					pEntry->sShipClassName = sClassName;
+
+				pEntry->ItemTable.Insert(sKey, pType);
+				}
+
+			//	If no ship class
+
+			if (pList->GetCount() == 0)
+				{
+				bool bNew;
+				SShipClassEntry *pEntry = ByShipClassTable.SetAt(CONSTLIT("(none)"), &bNew);
+				if (bNew)
+					pEntry->sShipClassName = CONSTLIT("(none)");
+
+				pEntry->ItemTable.Insert(sKey, pType);
+				}
+			}
+
+		//	Now loop over all attributes
+
+		for (i = 0; i < ByShipClassTable.GetCount(); i++)
+			{
+			const SShipClassEntry &Entry = ByShipClassTable[i];
+			printf("%s\n\n", Entry.sShipClassName.GetASCIIZPointer());
+
+			OutputHeader(Ctx);
+			OutputTable(Ctx, Entry.ItemTable);
+			printf("\n");
+			}
 		}
 	}
 

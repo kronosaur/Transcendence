@@ -29,3 +29,17 @@ class CTDBFile
 		CString m_sTitle;					//	Title
 		TSortMap<CString, int> m_ResourceMap;	//	Map of resource filename to entryID.
 	};
+
+class CLibraryResolver : public IXMLParserController
+	{
+	public:
+		~CLibraryResolver (void);
+
+		inline void AddEntities (CExternalEntityTable *pEntities) { m_Tables.Insert(pEntities); }
+
+		//	IXMLParserController virtuals
+		virtual CString ResolveExternalEntity (const CString &sName, bool *retbFound = NULL);
+
+	private:
+		TArray<CExternalEntityTable *> m_Tables;
+	};

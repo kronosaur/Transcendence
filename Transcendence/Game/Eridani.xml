@@ -30,17 +30,17 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"1"
 					/>
@@ -648,7 +648,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Go to level 5" key="G" default="1">
+							<Action name="Go to Level 5" key="G" default="1">
 								(scrShowPane gScreen "Level5")
 							</Action>
 
@@ -667,7 +667,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Go to unit 224D" key="G" default="1">
+							<Action name="Go to Unit 224D" key="G" default="1">
 								(scrShowPane gScreen "Unit224D")
 							</Action>
 
@@ -721,26 +721,26 @@
 
 			<SmallInnerAsteroid>
 				<Table>
-					<Lookup chance="80" table="AsteroidSmallMetallic"/>
-					<Lookup chance="20" table="AsteroidSmall"/>
+					<Station chance="80" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeA;"/>
 				</Table>
 			</SmallInnerAsteroid>
 
 			<MediumInnerAsteroid>
 				<Table>
-					<Lookup chance="80" table="AsteroidMediumMetallic"/>
-					<Lookup chance="20" table="AsteroidMedium"/>
+					<Station chance="80" type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</MediumInnerAsteroid>
 
 			<StJohnAsteroid>
 				<Table>
-					<Lookup chance="35" table="AsteroidSmallFrost"/>
-					<Lookup chance="20" table="AsteroidSmallMetallic"/>
-					<Lookup chance="35" table="AsteroidSmall"/>
-					<Lookup chance="4" table="AsteroidMediumFrost"/>
-					<Lookup chance="2" table="AsteroidMediumMetallic"/>
-					<Lookup chance="4" table="AsteroidMedium"/>
+					<Station chance="35" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="20" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="35" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="4"  type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="2"  type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="4"  type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</StJohnAsteroid>
 
@@ -766,10 +766,10 @@
 
 			<OuterAsteroid>
 				<Table>
-					<Lookup chance="70" table="AsteroidSmallFrost"/>
-					<Lookup chance="20" table="AsteroidSmall"/>
-					<Lookup chance="8" table="AsteroidMediumFrost"/>
-					<Lookup chance="2" table="AsteroidMedium"/>
+					<Station chance="70" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="8"  type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="2"  type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</OuterAsteroid>
 
@@ -816,7 +816,6 @@
 					<Null	 chance="10" />
 				</Table>
 			</StJohnTrojanStations>
-
 		</Tables>
 
 		<SystemGroup>
@@ -826,6 +825,11 @@
 
 			<Station type="&stG-TypeStar;" name="Epsilon Eridani"/>
 
+			<AddAttribute attributes="GTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+
 			<Orbitals angle="incrementing:30-330">
 
 				<!-- Dante II
@@ -833,7 +837,7 @@
 
 				<Group distance="80">
 					<Primary>
-						<Station type="&stCrateredPlanet;" 
+						<Station type="&stRockyPlanetoidSizeF;" 
 								objName="OldStart"
 								name="Dante II" 
 								showOrbit="true"
@@ -922,7 +926,7 @@
 
 				<Group distance="160">
 					<Primary>
-						<Station type="&stDesertPlanet;" name="Hageron" showOrbit="true"/>
+						<Station type="&stDesertTerrestrialSizeH;" name="Hageron" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="1d8+8" angle="random">
@@ -935,7 +939,7 @@
 
 				<Group distance="270">
 					<Primary>
-						<Station type="&stCrateredPlanet;" name="Raphael" showOrbit="true"/>
+						<Station type="&stRockyPlanetoidSizeG;" name="Raphael" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="1d8+8" angle="random">
@@ -989,7 +993,7 @@
 					<!-- St. John's World -->
 
 					<Primary>
-						<Station type="&stHydrogenGasGiant;" 
+						<Station type="&stHydrogenGasGiantSizeM;" 
 								name="St. John's World" 
 								showOrbit="true"
 								/>
@@ -1003,7 +1007,7 @@
 
 						<Group distance="22">
 							<Primary>
-								<Station type="&stCrateredPlanet;" name="Morgana"/>
+								<Station type="&stPrimordialPlanetoidSizeF;" name="Morgana"/>
 							</Primary>
 
 							<!-- Debug Objects -->
@@ -1066,7 +1070,7 @@
 
 						<Group distance="45">
 							<Primary>
-								<Station type="&stCrateredPlanet;" name="Mordred"/>
+								<Station type="&stRockyPlanetoidSizeG;" name="Mordred"/>
 							</Primary>
 						</Group>
 
@@ -1078,7 +1082,7 @@
 							<!-- The planet Uther -->
 
 							<Primary>
-								<Station type="&stIcePlanet;" name="Uther"/>
+								<Station type="&stIcePlanetoidSizeG;" name="Uther"/>
 							</Primary>
 
 							<!-- The main stations are all in a group -->
@@ -1215,7 +1219,7 @@
 
 						<Group distance="140">
 							<Primary>
-								<Station type="&stCrateredPlanet;" name="Lancelot"/>
+								<Station type="&stMetallicPlanetoidSizeF;" name="Lancelot"/>
 							</Primary>
 
 							<Orbitals distance="6" angle="random">
@@ -1271,7 +1275,7 @@
 
 				<Group distance="900">
 					<Primary>
-						<Station type="&stMethaneGasGiant;" name="Voerms" showOrbit="true"/>
+						<Station type="&stMethaneGasGiantSizeK;" name="Voerms" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals count="6d6" distance="2d4+15" angle="random">
@@ -1326,7 +1330,7 @@
 					; If we don't have at least 3, then create some near Voerms
 					(if (ls (count centauriStations) 3)
 						(block (voerms)
-							(setq voerms (item (filter (sysFindObject Nil "t +planet;") theObj (eq (objGetName theObj) "Voerms")) 0))
+							(setq voerms (item (filter (sysFindObject Nil "t +isPlanet:true;") theObj (eq (objGetName theObj) "Voerms")) 0))
 							(if voerms
 								(for i 1 (random 2 3)
 									(block Nil

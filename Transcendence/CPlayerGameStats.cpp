@@ -19,6 +19,9 @@ const DWORD INVALID_TIME = 0xffffffff;
 #define ITEMS_BOUGHT_VALUE_STAT					CONSTLIT("itemsBoughtValue")
 #define ITEMS_SOLD_COUNT_STAT					CONSTLIT("itemsSoldCount")
 #define ITEMS_SOLD_VALUE_STAT					CONSTLIT("itemsSoldValue")
+#define MISSION_COMPLETED_STAT					CONSTLIT("missionCompleted")
+#define MISSION_FAILURE_STAT					CONSTLIT("missionFailure")
+#define MISSION_SUCCESS_STAT					CONSTLIT("missionSuccess")
 #define OBJS_DESTROYED_STAT						CONSTLIT("objsDestroyed")
 #define RESURRECT_COUNT_STAT					CONSTLIT("resurrectCount")
 #define SCORE_STAT								CONSTLIT("score")
@@ -30,6 +33,8 @@ const DWORD INVALID_TIME = 0xffffffff;
 #define STR_DESTROYED							CONSTLIT("destroyed")
 #define STR_ENEMY_DESTROYED						CONSTLIT("enemyDestroyed")
 #define STR_FRIEND_DESTROYED					CONSTLIT("friendDestroyed")
+#define STR_MISSION_FAILURE						CONSTLIT("missionFailure")
+#define STR_MISSION_SUCCESS						CONSTLIT("missionSuccess")
 #define STR_SAVED								CONSTLIT("saved")
 
 class CStatCounterArray
@@ -372,6 +377,14 @@ CString CPlayerGameStats::GenerateKeyEventStat (TArray<SKeyEventStatsResult> &Li
 					Output.Write(STR_DESTROYED.GetASCIIZPointer(), STR_DESTROYED.GetLength());
 					break;
 
+				case eventMissionFailure:
+					Output.Write(STR_MISSION_FAILURE.GetASCIIZPointer(), STR_MISSION_FAILURE.GetLength());
+					break;
+
+				case eventMissionSuccess:
+					Output.Write(STR_MISSION_SUCCESS.GetASCIIZPointer(), STR_MISSION_SUCCESS.GetLength());
+					break;
+
 				case eventSavedByPlayer:
 					Output.Write(STR_SAVED.GetASCIIZPointer(), STR_SAVED.GetLength());
 					break;
@@ -561,34 +574,43 @@ CString CPlayerGameStats::GetKeyEventStat (const CString &sStat, const CString &
 					|| (List[i].pStats->iType == eventFriendDestroyedByPlayer)
 					|| (List[i].pStats->iType == eventMajorDestroyed));
 
-		//	Done
-
-		return GenerateKeyEventStat(List);
 		}
-	else if (strEquals(sStat, ENEMY_OBJS_DESTROYED_STAT))
+
+	else if (strEquals(sStat, MISSION_COMPLETED_STAT))
 		{
 		//	Mark the events that we're interested in
 
 		for (i = 0; i < List.GetCount(); i++)
-			List[i].bMarked = (List[i].pStats->iType == eventEnemyDestroyedByPlayer);
-
-		//	Done
-
-		return GenerateKeyEventStat(List);
+			List[i].bMarked = ((List[i].pStats->iType == eventMissionFailure) 
+					|| (List[i].pStats->iType == eventMissionSuccess));
 		}
-	else if (strEquals(sStat, FRIENDLY_OBJS_DESTROYED_STAT))
-		{
-		//	Mark the events that we're interested in
 
-		for (i = 0; i < List.GetCount(); i++)
-			List[i].bMarked = (List[i].pStats->iType == eventFriendDestroyedByPlayer);
+	//	Otherwise we check for the type that we want
 
-		//	Done
-
-		return GenerateKeyEventStat(List);
-		}
 	else
-		return NULL_STR;
+		{
+		EEventTypes iEvent;
+
+		if (strEquals(sStat, ENEMY_OBJS_DESTROYED_STAT))
+			iEvent = eventEnemyDestroyedByPlayer;
+		else if (strEquals(sStat, FRIENDLY_OBJS_DESTROYED_STAT))
+			iEvent = eventFriendDestroyedByPlayer;
+		else if (strEquals(sStat, MISSION_FAILURE_STAT))
+			iEvent = eventMissionFailure;
+		else if (strEquals(sStat, MISSION_SUCCESS_STAT))
+			iEvent = eventMissionSuccess;
+		else
+			return NIL_VALUE;
+
+		//	Mark the events that we're interested in
+
+		for (i = 0; i < List.GetCount(); i++)
+			List[i].bMarked = (List[i].pStats->iType == iEvent);
+		}
+
+	//	Done
+
+	return GenerateKeyEventStat(List);
 	}
 
 bool CPlayerGameStats::GetMatchingKeyEvents (const CString &sNodeID, const CDesignTypeCriteria &Crit, TArray<SKeyEventStatsResult> *retList) const
@@ -976,7 +998,11 @@ void CPlayerGameStats::OnKeyEvent (EEventTypes iType, CSpaceObject *pObj, DWORD 
 
 	CSystem *pSystem = pObj->GetSystem();
 	if (pSystem == NULL)
-		return;
+		{
+		pSystem = g_pUniverse->GetCurrentSystem();
+		if (pSystem == NULL)
+			return;
+		}
 
 	//	Get the NodeID where the event happened
 
@@ -1000,7 +1026,7 @@ void CPlayerGameStats::OnKeyEvent (EEventTypes iType, CSpaceObject *pObj, DWORD 
 	//	If the object name is the same as the type name then we don't bother
 	//	storing it in the event (to save memory)
 
-	if (strEquals(sName, pType->GetTypeName()))
+	if (sName.IsBlank() || strEquals(sName, pType->GetTypeName()))
 		{
 		sName = NULL_STR;
 		dwNameFlags = 0;
@@ -1012,7 +1038,7 @@ void CPlayerGameStats::OnKeyEvent (EEventTypes iType, CSpaceObject *pObj, DWORD 
 	SKeyEventStats *pStats = pEventList->Insert();
 	pStats->iType = iType;
 	pStats->dwTime = g_pUniverse->GetTicks();
-	pStats->dwObjUNID = pObj->GetType()->GetUNID();
+	pStats->dwObjUNID = pType->GetUNID();
 	pStats->sObjName = sName;
 	pStats->dwObjNameFlags = dwNameFlags;
 	pStats->dwCauseUNID = dwCauseUNID;

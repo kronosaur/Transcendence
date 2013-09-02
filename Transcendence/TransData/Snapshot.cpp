@@ -142,7 +142,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			rcViewport.right = cxWidth;
 			rcViewport.bottom = cyHeight;
 			
-			pSystem->PaintViewport(Output, rcViewport, pTarget, false);
+			pSystem->PaintViewport(Output, rcViewport, pTarget, 0);
 
 			//	Write to file
 

@@ -164,11 +164,11 @@
 				</OnPaneInit>
 			
 				<Actions>
-					<Action name="Increase virus" prevKey="1" key="I">
+					<Action name="Increase Virus" prevKey="1" key="I">
 						(setq gNeurohackViralLoad (add gNeurohackViralLoad 1))
 					</Action>
 					
-					<Action name="Decrease virus" nextKey="1" key="D">
+					<Action name="Decrease Virus" nextKey="1" key="D">
 						(if (gr gNeurohackViralLoad 0)
 							(setq gNeurohackViralLoad (subtract gNeurohackViralLoad 1))
 							)
@@ -232,7 +232,7 @@
 				</OnPaneInit>
 				
 				<Actions>
-					<Action name="Try again" default="1" key="T">
+					<Action name="Try Again" default="1" key="T">
 						(block Nil
 							(setq gNeurohackWillpower gNeurohackWillpowerMax)
 							(setq gNeurohackDamage 0)

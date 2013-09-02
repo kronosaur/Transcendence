@@ -12,6 +12,7 @@
 #define CHANCE_ATTRIB							CONSTLIT("chance")
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 
+#define SPECIAL_DAMAGE_ARMOR					CONSTLIT("armor")
 #define SPECIAL_DAMAGE_BLINDING					CONSTLIT("blinding")
 #define SPECIAL_DAMAGE_DEVICE					CONSTLIT("device")
 #define SPECIAL_DAMAGE_DEVICE_DISRUPT			CONSTLIT("deviceDisrupt")
@@ -170,6 +171,183 @@ DamageTypes LoadDamageTypeFromXML (const CString &sAttrib)
 	return damageError;
 	}
 
+//	DamageDesc -----------------------------------------------------------------
+
+void DamageDesc::AddEnhancements (CItemEnhancementStack *pEnhancements)
+
+//	AddEnhancements
+//
+//	Applies any enhancements in the given stack to the damage descriptor
+//	(including bonus and special damage).
+
+	{
+	if (pEnhancements == NULL)
+		return;
+
+	//	Add bonus
+
+	AddBonus(pEnhancements->GetBonus());
+
+	//	Add special damage
+
+	pEnhancements->ApplySpecialDamage(this);
+	}
+
+SpecialDamageTypes DamageDesc::ConvertToSpecialDamageTypes (const CString &sValue)
+
+//	ConvertToSpecialDamageTypes
+//
+//	Converts
+
+	{
+	if (strEquals(sValue, SPECIAL_DAMAGE_ARMOR))
+		return specialArmor;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_BLINDING))
+		return specialBlinding;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_DEVICE))
+		return specialDeviceDamage;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_DEVICE_DISRUPT))
+		return specialDeviceDisrupt;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_DISINTEGRATION))
+		return specialDisintegration;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_EMP))
+		return specialEMP;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_FUEL))
+		return specialFuel;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_MINING))
+		return specialMining;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_MOMENTUM))
+		return specialMomentum;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_RADIATION))
+		return specialRadiation;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_SHATTER))
+		return specialShatter;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_SHIELD))
+		return specialShieldDisrupt;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_WMD))
+		return specialWMD;
+	else if (strEquals(sValue, SPECIAL_DAMAGE_WORMHOLE))
+		return specialWormhole;
+	else
+		return specialNone;
+	}
+
+int DamageDesc::GetSpecialDamage (SpecialDamageTypes iSpecial) const
+
+//	GetSpecialDamage
+//
+//	Returns special damage level
+
+	{
+	switch (iSpecial)
+		{
+		case specialArmor:
+			return m_ArmorDamage;
+
+		case specialBlinding:
+			return m_BlindingDamage;
+
+		case specialDeviceDamage:
+			return m_DeviceDamage;
+
+		case specialDeviceDisrupt:
+			return m_DeviceDisruptDamage;
+
+		case specialDisintegration:
+			return m_DisintegrationDamage;
+
+		case specialEMP:
+			return m_EMPDamage;
+
+		case specialFuel:
+			return m_FuelDamage;
+
+		case specialMining:
+			return m_MiningAdj;
+
+		case specialMomentum:
+			return m_MomentumDamage;
+
+		case specialRadiation:
+			return m_RadiationDamage;
+
+		case specialShatter:
+			return m_ShatterDamage;
+
+		case specialShieldDisrupt:
+			return m_ShieldDamage;
+
+		case specialWMD:
+			return m_MassDestructionAdj;
+
+		default:
+			return 0;
+		}
+	}
+
+void DamageDesc::SetSpecialDamage (SpecialDamageTypes iSpecial, int iLevel)
+
+//	SetSpecialDamage
+//
+//	Sets special damage
+
+	{
+	switch (iSpecial)
+		{
+		case specialArmor:
+			m_ArmorDamage = Max(1, Min(iLevel, MAX_ITEM_LEVEL));
+			break;
+
+		case specialBlinding:
+			m_BlindingDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialDeviceDamage:
+			m_DeviceDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialDeviceDisrupt:
+			m_DeviceDisruptDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialDisintegration:
+			m_DisintegrationDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialEMP:
+			m_EMPDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialFuel:
+			m_FuelDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialMining:
+			m_MiningAdj = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialMomentum:
+			m_MomentumDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialRadiation:
+			m_RadiationDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialShatter:
+			m_ShatterDamage = Max(0, Min(iLevel, 7));
+			break;
+
+		case specialShieldDisrupt:
+			m_ShieldDamage = Max(1, Min(iLevel, MAX_ITEM_LEVEL));
+			break;
+
+		case specialWMD:
+			m_MassDestructionAdj = Max(0, Min(iLevel, 7));
+			break;
+		}
+	}
+
 void DamageDesc::SetDamage (int iDamage)
 
 //	SetDamage
@@ -178,14 +356,6 @@ void DamageDesc::SetDamage (int iDamage)
 
 	{
 	m_Damage = DiceRange(0, 0, iDamage);
-	}
-
-Metric DamageDesc::GetAverageDamage (void)
-	{
-	if (m_Damage.GetFaces() > 0)
-		return m_Damage.GetCount() * ((1.0 + m_Damage.GetFaces()) / 2.0) + m_Damage.GetBonus();
-	else
-		return (Metric)m_Damage.GetBonus();
 	}
 
 CString DamageDesc::GetDesc (DWORD dwFlags)
@@ -287,6 +457,7 @@ ALERROR DamageDesc::LoadFromXML (SDesignLoadCtx &Ctx, const CString &sAttrib)
 	m_BlindingDamage = 0;
 	m_SensorDamage = 0;
 	m_ShieldDamage = 0;
+	m_ArmorDamage = 0;
 	m_WormholeDamage = 0;
 	m_FuelDamage = 0;
 	m_fNoSRSFlash = false;
@@ -386,6 +557,8 @@ ALERROR DamageDesc::LoadTermFromXML (SDesignLoadCtx &Ctx, const CString &sType, 
 			if (Ctx.GetAPIVersion() < 3)
 				m_ShieldDamage = 1 + ((m_ShieldDamage * m_ShieldDamage) / 2);
 			}
+		else if (strEquals(sType, SPECIAL_DAMAGE_ARMOR))
+			m_ArmorDamage = (BYTE)Max(1, Min(iCount, MAX_ITEM_LEVEL));
 		else if (strEquals(sType, SPECIAL_DAMAGE_WORMHOLE))
 			m_WormholeDamage = (DWORD)Min(iCount, MAX_INTENSITY);
 		else if (strEquals(sType, SPECIAL_DAMAGE_FUEL))
@@ -584,6 +757,7 @@ void DamageDesc::ReadFromStream (SLoadCtx &Ctx)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		m_ShieldDamage = (BYTE)(dwLoad & 0xff);
+		m_ArmorDamage = (BYTE)((dwLoad & 0xff00) >> 8);
 		}
 	}
 
@@ -653,7 +827,7 @@ void DamageDesc::WriteToStream (IWriteStream *pStream) const
 	dwSave |= m_ShatterDamage << 9;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
-	dwSave = m_ShieldDamage;
+	dwSave = (m_ArmorDamage << 8) | m_ShieldDamage;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 

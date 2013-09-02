@@ -90,14 +90,35 @@ void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 void GenerateStationFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
+	int i, j;
+
 	printf("STATION FREQUENCY TABLE\n\n");
+
+	//	Figure out which columns to show
+
+	TArray<CString> Cols;
+	Cols.Insert(CONSTLIT("Level"));
+	Cols.Insert(CONSTLIT("Freq"));
+	Cols.Insert(CONSTLIT("Name"));
+	Cols.Insert(CONSTLIT("Type"));
+	Cols.Insert(CONSTLIT("Environment"));
+
+	//	Print the header
+
+	for (i = 0; i < Cols.GetCount(); i++)
+		{
+		if (i != 0)
+			printf("\t");
+		printf("%s", (LPSTR)Cols[i]);
+		}
+
+	printf("\n");
 
 	//	For all levels, 1-25
 
 	int iLevel;
 	for (iLevel = 1; iLevel <= MAX_ITEM_LEVEL; iLevel++)
 		{
-		int i;
 		CSymbolTable Sort(FALSE, TRUE);
 
 		//	Find all stations for this level and add them to
@@ -122,20 +143,77 @@ void GenerateStationFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		if (Sort.GetCount() > 0)
 			{
-			printf("Level %s\n\n", strLevel(iLevel));
-
 			for (i = 0; i < Sort.GetCount(); i++)
 				{
 				CStationType *pType = (CStationType *)Sort.GetValue(i);
 
-				printf("%s\t%s\t%s\t%s\n",
-						FrequencyChar(pType->GetFrequencyByLevel(iLevel)),
-						pType->GetName().GetASCIIZPointer(),
-						pType->GetAttributes().GetASCIIZPointer(),
-						pType->GetLocationCriteria().GetASCIIZPointer());
-				}
+				for (j = 0; j < Cols.GetCount(); j++)
+					{
+					if (j != 0)
+						printf("\t");
 
-			printf("\n");
+					if (strEquals(Cols[j], CONSTLIT("Level")))
+						printf("%d", iLevel);
+					else if (strEquals(Cols[j], CONSTLIT("Freq")))
+						printf((LPSTR)FrequencyChar(pType->GetFrequencyByLevel(iLevel)));
+					else if (strEquals(Cols[j], CONSTLIT("Name")))
+						printf((LPSTR)pType->GetName());
+					else if (strEquals(Cols[j], CONSTLIT("Type")))
+						{
+						if (pType->HasAttribute(CONSTLIT("enemy")))
+							printf("Enemy");
+						else if (pType->HasAttribute(CONSTLIT("debris")))
+							printf("Debris");
+						else
+							printf("Friend");
+						}
+					else if (strEquals(Cols[j], CONSTLIT("Environment")))
+						{
+						bool bElements = false;
+
+						if (pType->HasAttribute(CONSTLIT("envAir")))
+							{
+							if (bElements)
+								printf(", ");
+
+							printf("envAir");
+							bElements = true;
+							}
+
+						if (pType->HasAttribute(CONSTLIT("envEarth")))
+							{
+							if (bElements)
+								printf(", ");
+
+							printf("envEarth");
+							bElements = true;
+							}
+
+						if (pType->HasAttribute(CONSTLIT("envFire")))
+							{
+							if (bElements)
+								printf(", ");
+
+							printf("envFire");
+							bElements = true;
+							}
+
+						if (pType->HasAttribute(CONSTLIT("envWater")))
+							{
+							if (bElements)
+								printf(", ");
+
+							printf("envWater");
+							bElements = true;
+							}
+
+						if (!bElements)
+							printf("None");
+						}
+					}
+
+				printf("\n");
+				}
 			}
 		}
 	}

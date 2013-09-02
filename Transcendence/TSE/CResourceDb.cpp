@@ -779,6 +779,21 @@ ALERROR CResourceDb::OpenDb (void)
 	return NOERROR;
 	}
 
+CString CResourceDb::ResolveFilespec (const CString &sFolder, const CString &sFilename) const
+
+//	ResolveFilespec
+//
+//	Resolves the given filename to a filespec.
+//	
+//	NOTE: This is only appropriate for refering to stand-alone files. In all 
+//	othercases we return NULL_STR.
+
+	{
+	CString sFilespec = pathAddComponent(m_sRoot, sFolder);
+	sFilespec = pathAddComponent(sFilespec, sFilename);
+	return sFilespec;
+	}
+
 void CResourceDb::SetEntities (IXMLParserController *pEntities, bool bFree)
 
 //	SetEntities

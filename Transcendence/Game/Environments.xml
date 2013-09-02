@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<SpaceEnvironmentType UNID="&seLightNebula;"
+			lrsJammer=			"true"
+			dragFactor=			"73"
+			attributes=			"nebula"
+
+			mapColor=			"0xa7, 0x73, 0x97"
+			autoEdges=			"true"
+			>
+
+		<Image imageID="&rsLightNebula;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="1024" 
+				imageHeight="1024"/>
+	</SpaceEnvironmentType>
+
+<!-- BACKWARD COMPATIBILITY -->
+
+	<Effect UNID="&efNebula;">
+		<Image imageID="&rsNebula;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="256" 
+				imageHeight="256"
+				imageVariants="4"/>
+	</Effect>
+
+	<SpaceEnvironmentType UNID="&seNebula;"
+			lrsJammer=			"true"
+			dragFactor=			"73"
+			attributes=			"nebula"
+			>
+
+		<Image imageID="&rsNebulaEnv;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="640" 
+				imageHeight="640"/>
+	</SpaceEnvironmentType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsLightNebula;"		bitmap="Resources\LightNebula.jpg"		loadOnUse="true"/>
+
+	<Image UNID="&rsNebulaEnv;"		bitmap="Resources\Nebula.jpg"			bitmask="Resources\NebulaMask.bmp"	 sprite="true"/>
+	<Image UNID="&rsNebula;"		bitmap="Resources\NebulaHighlights.jpg"	bitmask="Resources\NebulaHighlightsMask.bmp"/>
+
+</TranscendenceModule>

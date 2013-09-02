@@ -192,7 +192,7 @@ void CItemList::SortItems (void)
 
 		//	Next, sort by install location
 
-		if (Item.IsInstalled())
+		if (Item.IsInstalled() && Item.GetType()->GetArmorClass())
 			sCat.Append(strPatternSubst(CONSTLIT("%03d%08x"), Item.GetInstalled(), Item.GetType()->GetUNID()));
 		else
 			sCat.Append(CONSTLIT("99900000000"));
@@ -211,7 +211,7 @@ void CItemList::SortItems (void)
 			sCat.Append(CONSTLIT("1"));
 
 		CString sName = pType->GetSortName();
-		CString sSort = strPatternSubst(CONSTLIT("%s%s%s%d"), sInstalled, sCat, sName, (i * (int)this) % 0x10000);
+		CString sSort = strPatternSubst(CONSTLIT("%s%s%s%d"), sInstalled, sCat, sName, ((DWORD)(int)&Item) % 0x10000);
 		Sort.AddEntry(sSort, (CObject *)i);
 		}
 

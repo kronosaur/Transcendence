@@ -25,7 +25,7 @@ class CTextPainter : public IEffectPainter
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 		virtual bool SetParamString (const CString &sParam, const CString &sValue);
 		virtual bool SetProperty (const CString &sProperty, ICCItem *pValue);
 
@@ -48,7 +48,7 @@ class CTextPainter : public IEffectPainter
 
 //	CTextEffectCreator object
 
-IEffectPainter *CTextEffectCreator::CreatePainter (void)
+IEffectPainter *CTextEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -222,7 +222,7 @@ void CTextPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &C
 	pFont->DrawText(Dest, rcRect, wColor, byOpacity, m_sText, 0, dwFlags);
 	}
 
-bool CTextPainter::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CTextPainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

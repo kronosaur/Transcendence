@@ -22,9 +22,7 @@
 			<Effect>
 				<Image imageID="&rsMissiles;" imageX="0" imageY="112" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="2" randomStartFrame="true" />
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 <!-- KINETIC EXPLOSIONS -->

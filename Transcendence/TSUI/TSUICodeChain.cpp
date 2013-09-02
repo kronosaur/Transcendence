@@ -134,9 +134,11 @@ ICCItem *fnUI (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_PLAY_MUSIC:
 			{
+			CString sTrack = pArgs->GetElement(0)->GetStringValue();
+
 			//	Get the filespec
 
-			CString sFilespec = pathAddComponent(g_pHI->GetOptions().m_sMusicFolder, pArgs->GetElement(0)->GetStringValue());
+			CString sFilespec = pathAddComponent(g_pHI->GetOptions().m_sMusicFolder, sTrack);
 			int iPos = (pArgs->GetCount() > 1 ? pArgs->GetElement(1)->GetIntegerValue() : 0);
 			
 			//	Play it

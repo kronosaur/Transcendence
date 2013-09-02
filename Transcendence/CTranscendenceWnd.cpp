@@ -91,16 +91,18 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Figure out some stats
 
+				DWORD dwViewportFlags = 0;
 				bool bBlind = false;
-				bool bSRSEnhanced = false;
 				bool bShowMapHUD = false;
 				CShip *pShip = NULL;
 				if (GetPlayer())
 					{
 					pShip = GetPlayer()->GetShip();
 					bBlind = pShip->IsBlind();
-					bSRSEnhanced = pShip->IsSRSEnhanced();
 					bShowMapHUD = GetPlayer()->IsMapHUDActive();
+
+					if (pShip->IsSRSEnhanced())
+						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
 					}
 
 				//	Update some displays
@@ -146,7 +148,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				else
 					{
 					SetProgramState(psPaintingSRS);
-					g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, bSRSEnhanced);
+					g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, dwViewportFlags);
 					SetProgramState(psAnimating);
 
 					PaintMainScreenBorder();
@@ -351,7 +353,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, false);
+				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
 				PaintMainScreenBorder();
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
@@ -381,7 +383,12 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				m_iTick++;
 
 				if (--m_iCountdown == 0)
-					EnterStargate();
+					{
+					g_pHI->HICommand(CONSTLIT("gameEnterStargate"));
+					m_State = gsLeavingStargate;
+					m_iCountdown = TICKS_AFTER_GATE;
+					}
+
 				break;
 				}
 
@@ -394,7 +401,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, false);
+				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
 				PaintMainScreenBorder();
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
@@ -424,7 +431,10 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				m_iTick++;
 
 				if (--m_iCountdown == 0)
-					LeaveStargate();
+					{
+					g_pHI->HICommand(CONSTLIT("gameLeaveStargate"));
+					m_State = gsInGame;
+					}
 				break;
 				}
 			}
@@ -544,23 +554,6 @@ void CTranscendenceWnd::DoCommand (DWORD dwCmd)
 		}
 	}
 
-void CTranscendenceWnd::EnterStargate (void)
-
-//	EnterStargate
-//
-//	Place the player in the new system
-
-	{
-	//	State
-
-	m_State = gsLeavingStargate;
-	m_iCountdown = TICKS_AFTER_GATE;
-
-	//	Let the model handle everything
-
-	m_pTC->GetModel().OnPlayerTraveledThroughGate();
-	}
-
 void CTranscendenceWnd::GetMousePos (POINT *retpt)
 
 //	GetMousePos
@@ -570,22 +563,6 @@ void CTranscendenceWnd::GetMousePos (POINT *retpt)
 	{
 	::GetCursorPos(retpt);
 	::ScreenToClient(m_hWnd, retpt);
-	}
-
-void CTranscendenceWnd::LeaveStargate (void)
-
-//	LeaveStargate
-//
-//	Place the player in the new system
-
-	{
-	//	State
-
-	m_State = gsInGame;
-
-	//	Let the model handle everything
-
-	m_pTC->GetModel().OnPlayerExitedGate();
 	}
 
 void CTranscendenceWnd::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)
@@ -698,6 +675,7 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 	{
 	//	Clean up
 
+	HideCommsTargetMenu();
 	m_CurrentPicker = pickNone;
 	m_CurrentMenu = menuNone;
 	m_bAutopilot = false;
@@ -1140,6 +1118,7 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 							break;
 
 						case menuCommsTarget:
+							HideCommsTargetMenu();
 							if (dwData)
 								ShowCommsMenu((CSpaceObject *)dwData);
 							else
@@ -1386,11 +1365,6 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 		goto Fail;
 		}
 
-	//	Play Intro Music
-
-	if (!m_pTC->GetOptionBoolean(CGameSettings::noMusic))
-		g_pHI->GetSoundMgr().PlayMusic(CONSTLIT("TranscendenceMarch.mp3"));
-
 	//	Initialize debug console
 
 	RECT rcRect;
@@ -1487,13 +1461,19 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 			else if (m_CurrentMenu != menuNone)
 				{
 				if (iVirtKey == VK_ESCAPE)
+					{
+					HideCommsTargetMenu();
 					m_CurrentMenu = menuNone;
+					}
 				else
 					{
 					CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
 					if ((iCommand == CGameKeys::keyInvokePower && m_CurrentMenu == menuInvoke)
 							|| (iCommand == CGameKeys::keyCommunications && m_CurrentMenu == menuCommsTarget))
+						{
+						HideCommsTargetMenu();
 						m_CurrentMenu = menuNone;
+						}
 					}
 				}
 

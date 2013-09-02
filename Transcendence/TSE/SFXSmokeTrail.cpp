@@ -22,7 +22,7 @@ const int DEFAULT_EMIT_SPEED =					20;
 class CSmokeTrailPainter : public IEffectPainter
 	{
 	public:
-		CSmokeTrailPainter (CSmokeTrailEffectCreator *pCreator);
+		CSmokeTrailPainter (CCreatePainterCtx &Ctx, CSmokeTrailEffectCreator *pCreator);
 
 		//	IEffectPainter virtuals
 		virtual ~CSmokeTrailPainter (void);
@@ -62,14 +62,14 @@ CSmokeTrailEffectCreator::~CSmokeTrailEffectCreator (void)
 		delete m_pParticleEffect;
 	}
 
-IEffectPainter *CSmokeTrailEffectCreator::CreatePainter (void)
+IEffectPainter *CSmokeTrailEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
 //	Creates a new painter
 
 	{
-	return new CSmokeTrailPainter(this);
+	return new CSmokeTrailPainter(Ctx, this);
 	}
 
 Metric CSmokeTrailEffectCreator::GetEmitSpeed (void) const
@@ -170,7 +170,7 @@ ALERROR CSmokeTrailEffectCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 
 //	CSmokeTrailPainter object
 
-CSmokeTrailPainter::CSmokeTrailPainter (CSmokeTrailEffectCreator *pCreator) : 
+CSmokeTrailPainter::CSmokeTrailPainter (CCreatePainterCtx &Ctx, CSmokeTrailEffectCreator *pCreator) : 
 		m_pCreator(pCreator),
 		m_iLastDirection(-1),
 		m_iTick(0)
@@ -187,7 +187,7 @@ CSmokeTrailPainter::CSmokeTrailPainter (CSmokeTrailEffectCreator *pCreator) :
 
 	CEffectCreator *pEffect = pCreator->GetParticleEffect();
 	if (pEffect)
-		m_pParticlePainter = pEffect->CreatePainter();
+		m_pParticlePainter = pEffect->CreatePainter(Ctx);
 	else
 		m_pParticlePainter = NULL;
 	}

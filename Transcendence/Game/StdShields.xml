@@ -4,6 +4,31 @@
 
 <!-- LEVEL I -->
 
+	<!-- A-Class Defense Screen -->
+
+	<ItemType UNID="&itAClassDefenseScreen;"
+			name=				"A-class defender"
+			attributes=			"MajorItem; PacificDefense"
+			  
+			level=				"1"
+			frequency=			"rare"
+			  
+			value=				"250"
+			mass=				"1000"
+
+			description=		"Though obsoleted by EI's series of deflectors, these shield generators are cheap and effective for small ships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"25"
+				regen=			"6"
+				depletionDelay=	"600"
+				powerUse=		"5"
+				/>
+	</ItemType>
+
 	<!-- Class I Deflector -->
 
 	<ItemType UNID="&itClass1Deflector;"

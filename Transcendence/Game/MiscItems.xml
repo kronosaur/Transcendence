@@ -133,7 +133,7 @@
 			numberAppearing=	"1d4"
 			attributes=			"Consumable; Food; Lux"
 
-			description=		"Even after the disastrous tectonic quakes of the 22nd Century, the island city states of New California on Earth continue to make the most excellent of red wines."
+			description=		"Even after the disastrous tectonic quakes of the 22nd century, the island city states of New California on Earth continue to make the most excellent of red wines."
 
 			sortName=			"California Cabernet Sauvignon, case of"
 			>
@@ -150,12 +150,12 @@
 			mass=				"1"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Art; Consumable"
+			attributes=			"Art; Consumable; Lux"
 
 			description=		"This is a beautiful parchment scroll containing archaic Chinese calligraphy."
 			>
 
-		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- CDM Archive -->

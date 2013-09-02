@@ -473,7 +473,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Deploy probe" default="1" key="D">
+							<Action name="Deploy Probe" default="1" key="D">
 								(block (theProbe probeNumber probeDist)
 									(setq probeNumber (typIncGlobalData &itMRADExperiment; "probeCount"))
 
@@ -629,7 +629,6 @@
 			manufacturer=		"Ringers"
 			class=				"Huygens"
 			type=				"explorer"
-			score=				"705"
 
 			mass=				"5000"
 			cargoSpace=			"1500"
@@ -794,7 +793,6 @@
 			manufacturer=		"Corporate"
 			class=				""
 			type=				"explorer"
-			score=				"2160"
 
 			mass=				"8000"
 			cargoSpace=			"1000"
@@ -1267,7 +1265,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Donate this item" default="1" key="D">
+							<Action name="Donate this Item" default="1" key="D">
 								(switch
 									(gr gMaxCount 1)
 										(scrShowPane gScreen "Quantity")
@@ -1383,17 +1381,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"5"
 					levelCurve=		"1"
 					/>
@@ -1612,13 +1610,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1643,7 +1641,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 7)
 									(setq gArmorSegment 0)
@@ -2120,7 +2118,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 10)
 									(setq gArmorSegment 0)
@@ -2130,7 +2128,7 @@
 									)
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gTechModifier Nil)
@@ -2140,7 +2138,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 120)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -2223,19 +2221,19 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"* +Meds; -Illegal; -NotForSale;"
+					criteria=		"* +Meds; -Illegal; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"u -NotForSale;"
+					criteria=		"u -NotForSale; -NotStandard;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="2d12" 
-					criteria=		"f -NotForSale;"
+					criteria=		"f -NotForSale; -NotStandard;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
@@ -2687,13 +2685,13 @@
 							desc=	"The central structure of the Ringers Collective is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -3089,7 +3087,7 @@
 							desc="You are in the sanctum of the Sisters of Domina. The plasteel walls that surround you are micro-engraved with the revelation of Domina. You see before you a holographic display of indescribable beauty and you feel immersed in the energies of a vast cosmic fountain.">
 
 						<Actions>
-							<Action name="Offer item" key="O">
+							<Action name="Offer Item" key="O">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(setq gPrevPane "Default")
@@ -3205,6 +3203,10 @@
 		</Items>
 
 		<Trade currency="rin" max="50000" replenish="2500">
+			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="95"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -3557,23 +3559,16 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 95) (&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A">
-								(block Nil
-									(setq gTechLevel 11)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A">
+								(scrShowScreen gScreen "&dsRepairArmor;" {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
-							<Action name="Install device" key="D">
+							<Action name="Install Device" key="D">
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gTechModifier "Taikon")
@@ -3583,7 +3578,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V">
+							<Action name="Remove Device" key="V">
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -4058,7 +4053,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Enter chamber" default="1" key="E">
+							<Action name="Enter Chamber" default="1" key="E">
 								(switch
 									; If we're in progress, then we must have quit on a previous attempt
 									(eq (objGetData gSource "neurohack") 'inProgress)
@@ -4102,7 +4097,7 @@
 						</OnPaneInit>
 						
 						<Actions>
-							<Action name="Begin neurohack" default="1" key="B">
+							<Action name="Begin Neurohack" default="1" key="B">
 								(switch
 									(eq (neuGetCharges) 0)
 										(scrShowPane gScreen "NoROM")
@@ -4476,7 +4471,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Download coordinates" key="D" default="1">
+							<Action name="Download Coordinates" key="D" default="1">
 								(block Nil
 									(setq nextObj (objGetObjRefData gSource "nextObj"))
 									(if nextObj
@@ -4659,7 +4654,7 @@
 							desc=	"You are docked at the Heretic Gate. This gate has been deactivated ever since the Ancient Races of the Galaxy quarantined Human Space. The Heretic Gate is the only barrier that stands between humanity and the rest of the Galaxy. It is also the only way to get to the Galactic Core.">
 
 						<Actions>
-							<Action name="Activate stargate" default="1" key="A">
+							<Action name="Activate Stargate" default="1" key="A">
 								<Navigate screen="PickItem"/>
 							</Action>
 
@@ -4701,7 +4696,7 @@
 							desc=	"You are in the alien control room of the Heretic Gate. Pick an item to use to attempt to activate the stargate.">
 
 						<Actions>
-							<Action name="Use this item" default="1" key="U">
+							<Action name="Use this Item" default="1" key="U">
 								(block Nil
 									(setq gItem (scrGetItem gScreen))
 									(switch
@@ -5601,13 +5596,16 @@
 			lrsJammer=			"true"
 			dragFactor=			"73"
 			attributes=			"nebula"
+
+			mapColor=			"0xa7, 0x73, 0x97"
+			autoEdges=			"true"
 			>
 
-		<Image imageID="&rsNebulaEnv;" 
+		<Image imageID="&rsLightNebula;" 
 				imageX="0" 
 				imageY="0" 
-				imageWidth="640" 
-				imageHeight="640"/>
+				imageWidth="1024" 
+				imageHeight="1024"/>
 
 		<Events>
 			<OnObjUpdate>
@@ -5676,10 +5674,10 @@
 
 			<InnerAsteroid>
 				<Table>
-					<Lookup chance="45" table="AsteroidSmallMetallic"/>
-					<Lookup chance="45" table="AsteroidSmall"/>
-					<Lookup chance="5" table="AsteroidMediumMetallic"/>
-					<Lookup chance="5" table="AsteroidMedium"/>
+					<Station chance="45" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="45" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="5" type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="5" type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</InnerAsteroid>
 		</Tables>
@@ -5706,7 +5704,7 @@
 
 			<Orbitals distance="4" scale="light-minute" angle="random">
 				<Group>
-					<Lookup table="AsteroidMedium"/>
+					<Station chance="5" type="&stRockyAsteroidSizeB;"/>
 
 					<Siblings count="6d4+1" angle="equidistant" radiusInc="-120-120">
 						<Group>
@@ -5744,12 +5742,12 @@
 
 			<Orbitals distance="8" scale="light-minute" angle="random">
 				<Group>
-					<Station type="&stMediumAsteroid;"
+					<Station type="&stRockyPlanetoidSizeE;"
 							showOrbit="true"
 							/>
 
 					<Siblings count="4d4+8" distribution="4d40-82">
-						<Lookup table="AsteroidSmall"/>
+						<Station type="&stRockyAsteroidSizeA;"/>
 					</Siblings>
 				</Group>
 			</Orbitals>
@@ -5758,7 +5756,7 @@
 
 			<Orbitals count="2d4" distance="300-420" angle="random">
 				<SpaceEnvironment 
-						type=			"&seNebula;"
+						type=			"&seLightNebula;"
 						shape=			"arc" 
 						width=			"60"
 						widthVariation=	"100"
@@ -5775,7 +5773,7 @@
 
 			<Orbitals count="2d4" distance="780-880" angle="random">
 				<SpaceEnvironment 
-						type=			"&seNebula;"
+						type=			"&seLightNebula;"
 						shape=			"arc" 
 						width=			"60"
 						widthVariation=	"100"
@@ -5810,7 +5808,7 @@
 
 			<Orbitals distance="24" scale="light-minute" angle="random">
 				<Group>
-					<Station type="&stCrateredPlanet;" 
+					<Station type="&stRockyPlanetoidSizeG;" 
 							name="Heretic III" 
 							showOrbit="true"
 							/>

@@ -27,6 +27,7 @@
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
 #define HEXARC_TEST_SWITCH					CONSTLIT("hexarcTest")
+#define IMAGES_SWITCH						CONSTLIT("images")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
 #define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
@@ -52,8 +53,11 @@
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
 #define TYPE_ISLANDS_SWITCH					CONSTLIT("typeIslands")
+#define TYPE_TABLE_SWITCH					CONSTLIT("typeTable")
+#define WEAPON_IMAGES_SWITCH				CONSTLIT("weaponImages")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
 #define WORD_LIST_SWITCH					CONSTLIT("wordlist")
+#define WORLD_IMAGES_SWITCH					CONSTLIT("worldImages")
 
 #define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
 #define GAME_FILE_SWITCH					CONSTLIT("gameFile")
@@ -213,6 +217,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 			return;
 			}
 
+		printf("Cleared registered bit on %s.\n", (char *)sSaveFile);
 		::kernelSetDebugLog(NULL);
 		return;
 		}
@@ -227,10 +232,13 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	DWORD dwInitFlags = 0;
 	if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH)
+			|| pCmdLine->GetAttributeBool(IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
-			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH))
+			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH)
+			|| pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH) 
+			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
 		;
 	else
 		dwInitFlags |= flagNoResources;
@@ -250,10 +258,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	CHost Host;
 	CUniverse Universe;
-	Universe.SetHost(&Host);
 	CString sError;
 
 	CUniverse::SInitDesc Ctx;
+	Ctx.pHost = &Host;
 	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
 	Ctx.dwAdventure = dwAdventureUNID;
 	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
@@ -290,6 +298,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		ComputeUNID2EntityTable(sDataFile, EntityTable);
 		GenerateEncounterTable(Universe, pCmdLine, EntityTable);
 		}
+	else if (pCmdLine->GetAttributeBool(IMAGES_SWITCH))
+		GenerateImageChart(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
@@ -350,12 +360,22 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		RunEncounterSim(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TYPE_DEPENDENCIES_SWITCH))
 		GenerateTypeDependencies(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TYPE_TABLE_SWITCH))
+		{
+		CIDTable EntityTable(TRUE, TRUE);
+		ComputeUNID2EntityTable(sDataFile, EntityTable);
+		GenerateTypeTable(Universe, pCmdLine, EntityTable);
+		}
 	else if (pCmdLine->GetAttributeBool(TYPE_ISLANDS_SWITCH))
 		GenerateTypeIslands(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(HEXARC_TEST_SWITCH))
 		HexarcTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TRADE_SIM_SWITCH))
 		DoTradeSim(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH))
+		GenerateWeaponEffectChart(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
+		GenerateWorldImageChart(Universe, pCmdLine);
 	else
 		GenerateStats(Universe, pCmdLine);
 

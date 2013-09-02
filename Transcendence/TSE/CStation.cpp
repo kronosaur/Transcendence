@@ -9,37 +9,37 @@
 //#define DEBUG_ALERTS
 #endif
 
-#define ITEM_TAG						CONSTLIT("Item")
-#define INITIAL_DATA_TAG				CONSTLIT("InitialData")
-#define DEVICES_TAG						CONSTLIT("Devices")
-#define ITEMS_TAG						CONSTLIT("Items")
+#define ITEM_TAG								CONSTLIT("Item")
+#define INITIAL_DATA_TAG						CONSTLIT("InitialData")
+#define DEVICES_TAG								CONSTLIT("Devices")
+#define ITEMS_TAG								CONSTLIT("Items")
 
-#define COUNT_ATTRIB					CONSTLIT("count")
-#define ITEM_ATTRIB						CONSTLIT("item")
-#define DEVICE_ID_ATTRIB				CONSTLIT("deviceID")
-#define X_ATTRIB						CONSTLIT("x")
-#define Y_ATTRIB						CONSTLIT("y")
-#define NO_MAP_LABEL_ATTRIB				CONSTLIT("noMapLabel")
-#define SHIPWRECK_UNID_ATTRIB			CONSTLIT("shipwreckID")
-#define NAME_ATTRIB						CONSTLIT("name")
+#define COUNT_ATTRIB							CONSTLIT("count")
+#define ITEM_ATTRIB								CONSTLIT("item")
+#define DEVICE_ID_ATTRIB						CONSTLIT("deviceID")
+#define X_ATTRIB								CONSTLIT("x")
+#define Y_ATTRIB								CONSTLIT("y")
+#define NO_MAP_LABEL_ATTRIB						CONSTLIT("noMapLabel")
+#define SHIPWRECK_UNID_ATTRIB					CONSTLIT("shipwreckID")
+#define NAME_ATTRIB								CONSTLIT("name")
 
-#define PROPERTY_ABANDONED				CONSTLIT("abandoned")
-#define PROPERTY_HP						CONSTLIT("hp")
-#define PROPERTY_IMMUTABLE				CONSTLIT("immutable")
-#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL	CONSTLIT("installDeviceMaxLevel")
-#define PROPERTY_MAX_HP					CONSTLIT("maxHP")
-#define PROPERTY_MAX_STRUCTURAL_HP		CONSTLIT("maxStructuralHP")
-#define PROPERTY_ORBIT					CONSTLIT("orbit")
-#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL	CONSTLIT("repairArmorMaxLevel")
-#define PROPERTY_STRUCTURAL_HP			CONSTLIT("structuralHP")
+#define PROPERTY_ABANDONED						CONSTLIT("abandoned")
+#define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_IMMUTABLE						CONSTLIT("immutable")
+#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
+#define PROPERTY_MAX_HP							CONSTLIT("maxHP")
+#define PROPERTY_MAX_STRUCTURAL_HP				CONSTLIT("maxStructuralHP")
+#define PROPERTY_ORBIT							CONSTLIT("orbit")
+#define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
+#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
+#define PROPERTY_STRUCTURAL_HP					CONSTLIT("structuralHP")
 
-#define STR_TRUE						CONSTLIT("True")
+#define STR_TRUE								CONSTLIT("true")
 
 const int TRADE_UPDATE_FREQUENCY =		1801;			//	Interval for checking trade
 const int STATION_SCAN_TARGET_FREQUENCY	= 29;
 const int STATION_ATTACK_FREQUENCY =	67;
 const int STATION_REINFORCEMENT_FREQUENCY =	607;
-const int STATION_REPAIR_FREQUENCY =	30;
 const int STATION_TARGET_FREQUENCY =	503;
 const int DAYS_TO_REFRESH_INVENTORY =	5;
 const int INVENTORY_REFRESHED_PER_UPDATE = 5;			//	% of inventory refreshed on each update frequency
@@ -58,16 +58,7 @@ const WORD RGB_SIGN_COLOR =				CG16bitImage::RGBValue(196, 223, 155);
 const COLORREF RGB_ORBIT_LINE =			RGB(115, 149, 229);
 const WORD RGB_MAP_LABEL =				CG16bitImage::RGBValue(255, 217, 128);
 
-static DATADESCSTRUCT g_DataDesc[] =
-	{	{ DATADESC_OPCODE_REFERENCE,	1,	0 },		//	m_pSystem
-		{ DATADESC_OPCODE_INT,			2,	0 },		//	m_iIndex, m_iDestiny
-		{ DATADESC_OPCODE_INT,			4,	0 },		//	m_vPos
-		{ DATADESC_OPCODE_INT,			4,	0 },		//	m_vVel
-		{ DATADESC_OPCODE_INT,			1,	0 },		//	m_dwFlags
-		{ DATADESC_OPCODE_REFERENCE,	1,	0 },		//	m_pSovereign
-		{ DATADESC_OPCODE_EMBED_OBJ,	1,	0 },		//	m_Image
-		{ DATADESC_OPCODE_STOP,	0,	0 } };
-static CObjectClass<CStation>g_Class(OBJID_CSTATION, g_DataDesc);
+static CObjectClass<CStation>g_Class(OBJID_CSTATION);
 
 static char g_ImageTag[] = "Image";
 static char g_ShipsTag[] = "Ships";
@@ -214,13 +205,17 @@ void CStation::Blacklist (CSpaceObject *pObj)
 //	pObj is blacklisted (this only works for the player)
 
 	{
-	if (!pObj->IsPlayer())
+	if (pObj && !pObj->IsPlayer())
 		return;
 
 	//	No need if we don't support blacklist
 
 	if (!m_pType->IsBlacklistEnabled())
 		return;
+
+	//	Remember if we need to send out an event
+
+	bool bFireEvent = !m_Blacklist.IsBlacklisted();
 
 	//	Remember that player is blacklisted
 	//	(We do this early in case we recurse)
@@ -229,13 +224,23 @@ void CStation::Blacklist (CSpaceObject *pObj)
 
 	//	Tell our base to attack
 
-	if (m_pBase)
-		Communicate(m_pBase, msgAttack, pObj);
+	if (pObj)
+		{
+		if (m_pBase)
+			Communicate(m_pBase, msgAttack, pObj);
 
-	//	Send all our subordinates to attack
+		//	Send all our subordinates to attack
 
-	for (int i = 0; i < m_Subordinates.GetCount(); i++)
-		Communicate(m_Subordinates.GetObj(i), msgAttackDeter, pObj);
+		for (int i = 0; i < m_Subordinates.GetCount(); i++)
+			Communicate(m_Subordinates.GetObj(i), msgAttackDeter, pObj);
+		}
+
+	//	Fire event (we do this at the end because the event could reverse it).
+
+	if (bFireEvent)
+		{
+		FireOnPlayerBlacklisted();
+		}
 	}
 
 int CStation::CalcNumberOfShips (void)
@@ -314,6 +319,39 @@ bool CStation::ClassCanAttack (void)
 	return (m_pType->CanAttack());
 	}
 
+void CStation::ClearBlacklist (CSpaceObject *pObj)
+
+//	ClearBlacklist
+//
+//	Removes blacklist
+
+	{
+	if (pObj && !pObj->IsPlayer())
+		return;
+
+	//	No need if we don't support blacklist
+
+	if (!m_pType->IsBlacklistEnabled())
+		return;
+
+	//	Remember that player is not blacklisted
+	//	(We do this early in case we recurse)
+
+	m_Blacklist.ClearBlacklist();
+
+	if (pObj)
+		{
+		//	Remove object from target
+
+		m_Targets.Remove(pObj);
+
+		//	Send all our subordinates to cancel attack
+
+		for (int i = 0; i < m_Subordinates.GetCount(); i++)
+			Communicate(m_Subordinates.GetObj(i), msgAbort, pObj);
+		}
+	}
+
 CurrencyValue CStation::CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue)
 
 //	CreditMoney
@@ -364,8 +402,15 @@ void CStation::CreateDestructionEffect (void)
 
 	if (Explosion.pDesc)
 		{
+		CItemEnhancementStack *pEnhancements = NULL;
+		if (Explosion.iBonus != 0)
+			{
+			pEnhancements = new CItemEnhancementStack;
+			pEnhancements->InsertHPBonus(Explosion.iBonus);
+			}
+
 		GetSystem()->CreateWeaponFire(Explosion.pDesc,
-				Explosion.iBonus,
+				pEnhancements,
 				Explosion.iCause,
 				CDamageSource(this, Explosion.iCause),
 				GetPos(),
@@ -374,6 +419,9 @@ void CStation::CreateDestructionEffect (void)
 				NULL,
 				CSystem::CWF_EXPLOSION,
 				NULL);
+
+		if (pEnhancements)
+			pEnhancements->Delete();
 		}
 
 	//	Some air leaks
@@ -492,11 +540,12 @@ void CStation::CreateEjectaFromDamage (int iDamage, const CVector &vHitPos, int 
 	}
 
 ALERROR CStation::CreateFromType (CSystem *pSystem,
-		CStationType *pType,
-		const CVector &vPos,
-		const CVector &vVel,
-		CXMLElement *pExtraData,
-		CStation **retpStation)
+								  CStationType *pType,
+								  const CVector &vPos,
+								  const CVector &vVel,
+								  CXMLElement *pExtraData,
+								  CStation **retpStation,
+								  CString *retsError)
 
 //	CreateFromType
 //
@@ -509,13 +558,21 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	int i;
 
 	if (!pType->CanBeEncountered())
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Cannot be encountered");
 		return ERR_FAIL;
+		}
 
 	//	Create the new station
 
 	pStation = new CStation;
 	if (pStation == NULL)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Out of memory");
 		return ERR_MEMORY;
+		}
 
 	//	Initialize
 
@@ -600,7 +657,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	//
 	//	This call also sets the bounds (since setting the image sets the bounds)
 
-	pType->SetImageSelector(pStation, &pStation->m_ImageSelector);
+	pType->SetImageSelector(&pStation->m_ImageSelector);
 
 	//	Now that we have an image, set the bound
 
@@ -620,6 +677,8 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	if (error = pStation->CreateRandomItems(pType->GetRandomItemTable(), pSystem->GetLevel()))
 		{
+		if (retsError)
+			*retsError = CONSTLIT("Unable to create random items");
 		delete pStation;
 		return error;
 		}
@@ -639,7 +698,11 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 			DWORD dwDeviceID = pDeviceDesc->GetAttributeInteger(DEVICE_ID_ATTRIB);
 			CDeviceClass *pClass = g_pUniverse->FindDeviceClass(dwDeviceID);
 			if (pClass == NULL)
+				{
+				if (retsError)
+					*retsError = strPatternSubst(CONSTLIT("Cannot find deviceID: %08x"), dwDeviceID);
 				return ERR_FAIL;
+				}
 
 			//	Allocate the devices structure
 
@@ -696,6 +759,8 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	if (error = pStation->AddToSystem(pSystem))
 		{
+		if (retsError)
+			*retsError = CONSTLIT("Unable to add to system.");
 		delete pStation;
 		return error;
 		}
@@ -778,6 +843,11 @@ ALERROR CStation::CreateMapImage (void)
 	if (m_Scale != scaleStar && m_Scale != scaleWorld)
 		return NOERROR;
 
+	//	Scale is 0.5 light-second per pixel (we compute the fraction of a full-sized image,
+	//	while is at 12500 klicks per pixel.)
+
+	Metric rScale = g_KlicksPerPixel / (0.3 * LIGHT_SECOND);
+
 	//	Make sure we have an image
 
 	int iTick, iRotation;
@@ -793,8 +863,8 @@ ALERROR CStation::CreateMapImage (void)
 			rcImage.top + RectHeight(rcImage) * iRotation,
 			RectWidth(rcImage),
 			RectHeight(rcImage),
-			1.0 / g_iMapScale,
-			1.0 / g_iMapScale,
+			rScale,
+			rScale,
 			0.0))
 		return error;
 
@@ -855,8 +925,15 @@ void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
 
 	if (Explosion.pDesc)
 		{
+		CItemEnhancementStack *pEnhancements = NULL;
+		if (Explosion.iBonus != 0)
+			{
+			pEnhancements = new CItemEnhancementStack;
+			pEnhancements->InsertHPBonus(Explosion.iBonus);
+			}
+
 		GetSystem()->CreateWeaponFire(Explosion.pDesc,
-				Explosion.iBonus,
+				pEnhancements,
 				Explosion.iCause,
 				CDamageSource(this, Explosion.iCause),
 				GetPos(),
@@ -865,6 +942,9 @@ void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
 				NULL,
 				CSystem::CWF_EXPLOSION,
 				NULL);
+
+		if (pEnhancements)
+			pEnhancements->Delete();
 		}
 	else
 		{
@@ -1002,6 +1082,52 @@ void CStation::FriendlyFire (CSpaceObject *pAttacker)
 		Blacklist(pAttacker);
 		SetAngry();
 		}
+	}
+
+bool CStation::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
+
+//	GetArmorInstallPrice
+//
+//	Returns the price to install the given armor
+
+	{
+	//	See if we have an override
+
+	if (m_pTrade && m_pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if (pTrade && pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, we do not repair
+
+	return false;
+	}
+
+bool CStation::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
+
+//	GetArmorRepairPrice
+//
+//	Returns the price to repair the given number of HP for the given armor item.
+
+	{
+	//	See if we have an override
+
+	if (m_pTrade && m_pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if (pTrade && pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, we do not repair
+
+	return false;
 	}
 
 CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
@@ -1209,7 +1335,7 @@ ICCItem *CStation::GetProperty (const CString &sName)
 		int iMaxLevel = -1;
 		if (m_pTrade)
 			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(CTradingDesc::serviceInstallDevice);
+			int iLevel = m_pTrade->GetMaxLevelMatched(serviceInstallDevice);
 			if (iLevel > iMaxLevel)
 				iMaxLevel = iLevel;
 			}
@@ -1217,7 +1343,7 @@ ICCItem *CStation::GetProperty (const CString &sName)
 		CTradingDesc *pTrade = m_pType->GetTradingDesc();
 		if (pTrade)
 			{
-			int iLevel = pTrade->GetMaxLevelMatched(CTradingDesc::serviceInstallDevice);
+			int iLevel = pTrade->GetMaxLevelMatched(serviceInstallDevice);
 			if (iLevel > iMaxLevel)
 				iMaxLevel = iLevel;
 			}
@@ -1234,12 +1360,15 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_ORBIT))
 		return (m_pMapOrbit ? CreateListFromOrbit(CC, *m_pMapOrbit) : CC.CreateNil());
 
+	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
+		return CC.CreateBool(IsBlacklisted(NULL));
+
 	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
 		{
 		int iMaxLevel = -1;
 		if (m_pTrade)
 			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(CTradingDesc::serviceRepairArmor);
+			int iLevel = m_pTrade->GetMaxLevelMatched(serviceRepairArmor);
 			if (iLevel > iMaxLevel)
 				iMaxLevel = iLevel;
 			}
@@ -1247,7 +1376,7 @@ ICCItem *CStation::GetProperty (const CString &sName)
 		CTradingDesc *pTrade = m_pType->GetTradingDesc();
 		if (pTrade)
 			{
-			int iLevel = pTrade->GetMaxLevelMatched(CTradingDesc::serviceRepairArmor);
+			int iLevel = pTrade->GetMaxLevelMatched(serviceRepairArmor);
 			if (iLevel > iMaxLevel)
 				iMaxLevel = iLevel;
 			}
@@ -1287,13 +1416,13 @@ bool CStation::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **re
 	{
 	//	See if we have an override
 
-	if (m_pTrade && m_pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, retpItemType, retiPrice))
+	if (m_pTrade && m_pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
 		return true;
 
 	//	Otherwise, ask our design type
 
 	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, retpItemType, retiPrice))
+	if (pTrade && pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
 		return true;
 
 	//	Otherwise, we do not refuel
@@ -1432,7 +1561,7 @@ bool CStation::HasAttribute (const CString &sAttribute) const
 //	Returns TRUE if it has the given attribute
 
 	{
-	return m_pType->HasAttribute(sAttribute);
+	return m_pType->HasLiteralAttribute(sAttribute);
 	}
 
 bool CStation::HasMapLabel (void)
@@ -1470,7 +1599,10 @@ bool CStation::IsBlacklisted (CSpaceObject *pObj)
 //	Returns TRUE if we are blacklisted
 	
 	{
-	return (pObj->IsPlayer() && m_Blacklist.IsBlacklisted());
+	if (pObj)
+		return (pObj->IsPlayer() && m_Blacklist.IsBlacklisted());
+	else
+		return m_Blacklist.IsBlacklisted();
 	}
 
 EDamageResults CStation::GetPassthroughDefault (void)
@@ -1708,6 +1840,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 	//	Armor effects
 
+	bool bCustomDamage = false;
 	if (m_pArmorClass)
 		{
 		//	Create an item context
@@ -1715,35 +1848,28 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 		CItem ArmorItem(m_pArmorClass->GetItemType(), 1);
 		CItemCtx ItemCtx(&ArmorItem, this);
 
+		//	Compute the effects based on damage and our armor
+
+		m_pArmorClass->CalcDamageEffects(ItemCtx, Ctx);
+
+		//	Give custom weapons a chance
+
+		bCustomDamage = Ctx.pDesc->FireOnDamageArmor(Ctx);
+		if (IsDestroyed())
+			return damageDestroyed;
+
+		//	Adjust the damage for the armor
+
+		m_pArmorClass->CalcAdjustedDamage(ItemCtx, Ctx);
+
 		//	If this armor section reflects this kind of damage then
 		//	send the damage on
 
-		if (m_pArmorClass->IsReflective(ItemCtx, Ctx.Damage) && Ctx.pCause)
+		if (Ctx.bReflect && Ctx.pCause)
 			{
 			Ctx.pCause->CreateReflection(Ctx.vHitPos, (Ctx.iDirection + 120 + mathRandom(0, 120)) % 360);
 			return damageNoDamage;
 			}
-
-		//	If this is a paralysis attack then no damage
-
-		int iEMP = Ctx.Damage.GetEMPDamage();
-		if (iEMP)
-			Ctx.iDamage = 0;
-
-		//	If this is blinding attack then no damage
-
-		int iBlinding = Ctx.Damage.GetBlindingDamage();
-		if (iBlinding)
-			Ctx.iDamage = 0;
-
-		//	If this is device damage, then damage is decreased
-
-		if (Ctx.Damage.GetDeviceDamage() || Ctx.Damage.GetDeviceDisruptDamage())
-			Ctx.iDamage = Ctx.iDamage / 2;
-
-		//	Adjust the damage for the armor
-
-		Ctx.iDamage = m_pArmorClass->CalcAdjustedDamage(NULL, Ctx.Damage, Ctx.iDamage);
 		}
 
 	//	If we're a multi-hull object then we adjust for mass destruction
@@ -1761,7 +1887,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 	//	If no damage, we're done
 
-	if (Ctx.iDamage == 0)
+	if (Ctx.iDamage == 0 && !bCustomDamage)
 		return damageNoDamage;
 
 	//	Give events a chance to change the damage
@@ -1792,6 +1918,7 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 		//	Run OnDestroy script
 
+		m_Overlays.FireOnObjDestroyed(this, DestroyCtx);
 		FireOnItemObjDestroyed(DestroyCtx);
 		FireOnDestroy(DestroyCtx);
 
@@ -1871,6 +1998,7 @@ void CStation::OnDestroyed (SDestroyCtx &Ctx)
 	{
 	//	Run OnDestroy script
 
+	m_Overlays.FireOnObjDestroyed(this, Ctx);
 	FireOnItemObjDestroyed(Ctx);
 	FireOnDestroy(Ctx);
 
@@ -2138,7 +2266,7 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		rcRect.right = x + 40;
 		rcRect.bottom = y + 20;
 
-		g_pUniverse->GetSignFont().DrawText(Dest, rcRect, RGB_SIGN_COLOR, GetName(), -2);
+		g_pUniverse->GetNamedFont(CUniverse::fontSign).DrawText(Dest, rcRect, RGB_SIGN_COLOR, GetName(), -2);
 		}
 
 	//	Paint energy fields
@@ -2148,11 +2276,6 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	Ctx.iDestiny = GetDestiny();
 	Ctx.iRotation = GetRotation();
 	m_Overlays.Paint(Dest, x, y, Ctx);
-
-	//	Highlight
-
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, Image.GetImageRectAtPoint(x, y));
 
 	//	Now paint any object that are docked in front of us
 
@@ -2171,6 +2294,11 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				}
 			}
 		}
+
+	//	Highlight
+
+	if (IsHighlighted() && !Ctx.fNoSelection)
+		PaintHighlight(Dest, Image.GetImageRectAtPoint(x, y), Ctx);
 
 #ifdef DEBUG_BOUNDING_RECT
 	{
@@ -2340,7 +2468,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 
 	//	Stuff
 
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 	Ctx.pStream->Read((char *)&m_Scale, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_rMass, sizeof(Metric));
 
@@ -2452,8 +2580,8 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 
 	if (Ctx.dwVersion >= 47)
 		{
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pBase);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pBase);
 		}
 	else
 		{
@@ -2473,7 +2601,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 		CSovereign *pBlacklist;
 		int iCounter;
 
-		Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &pBlacklist);
+		CSystem::ReadSovereignRefFromStream(Ctx, &pBlacklist);
 		Ctx.pStream->Read((char *)&iCounter, sizeof(DWORD));
 
 		if (pBlacklist != NULL)
@@ -2590,6 +2718,15 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 
 	if (m_pType->IsBackgroundObject())
 		SetCannotBeHit();
+	}
+
+void CStation::OnSetEventFlags (void)
+
+//	OnSetEventFlags
+//
+//	Sets the flags the cache whether the object has certain events
+
+	{
 	}
 
 void CStation::OnStationDestroyed (const SDestroyCtx &Ctx)
@@ -3067,12 +3204,12 @@ void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
 				}
 
-			g_pUniverse->GetMapLabelFont().DrawText(Dest, 
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
 					x + m_xMapLabel + 1, 
 					y + m_yMapLabel + 1, 
 					0,
 					m_sMapLabel);
-			g_pUniverse->GetMapLabelFont().DrawText(Dest, 
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
 					x + m_xMapLabel, 
 					y + m_yMapLabel, 
 					RGB_MAP_LABEL,
@@ -3267,18 +3404,6 @@ void CStation::SetAngry (void)
 		m_iAngryCounter = Max(MIN_ANGER, m_iAngryCounter + ANGER_INC);
 	}
 
-void CStation::SetEventFlags (void)
-
-//	GetEventFlags
-//
-//	Sets the flags the cache whether the object has certain events
-
-	{
-	SetHasOnObjDockedEvent(FindEventHandler(CONSTLIT("OnObjDocked")));
-	SetHasOnAttackedEvent(FindEventHandler(CONSTLIT("OnAttacked")));
-	SetHasOnDamageEvent(FindEventHandler(CONSTLIT("OnDamage")));
-	}
-
 void CStation::SetFlotsamImage (CItemType *pItemType)
 
 //	SetFlotsamImage
@@ -3430,7 +3555,7 @@ void CStation::SetWreckParams (CShipClass *pWreckClass, CShip *pShip)
 			if (dwNounFlags & nounPersonalName)
 				sName = strPatternSubst(CONSTLIT("wreck of %s's %s"),
 						ComposeNounPhrase(sName, 1, CString(), dwNounFlags, nounArticle),
-						(!pWreckClass->GetTypeName().IsBlank() ? pWreckClass->GetTypeName() : pWreckClass->GetShortName()));
+						(!pWreckClass->GetShipTypeName().IsBlank() ? pWreckClass->GetShipTypeName() : pWreckClass->GetShortName()));
 			else
 				sName = strPatternSubst(CONSTLIT("wreck of %s"),
 						ComposeNounPhrase(sName, 1, CString(), dwNounFlags, nounArticle));
@@ -3508,6 +3633,17 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 
 		m_iMaxStructuralHP = Max(0, pValue->GetIntegerValue());
 		m_iStructuralHP = Min(m_iStructuralHP, m_iMaxStructuralHP);
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
+		{
+		CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+
+		if (pValue->IsNil())
+			ClearBlacklist(pPlayer);
+		else
+			Blacklist(pPlayer);
+
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))

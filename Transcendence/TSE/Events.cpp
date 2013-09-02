@@ -186,8 +186,8 @@ void CTimedEncounterEvent::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_dwEncounterTableUNID, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pGate);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pGate);
 	Ctx.pStream->Read((char *)&m_rDistance, sizeof(Metric));
 	}
 
@@ -287,7 +287,7 @@ void CTimedCustomEvent::OnReadFromStream (SLoadCtx &Ctx)
 //	Read data
 
 	{
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pObj);
+	CSystem::ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pObj);
 	m_sEvent.ReadFromStream(Ctx.pStream);
 	}
 
@@ -384,7 +384,7 @@ void CTimedRecurringEvent::OnReadFromStream (SLoadCtx &Ctx)
 //	Read data
 
 	{
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pObj);
+	CSystem::ReadObjRefFromStream(Ctx, (CSpaceObject **)&m_pObj);
 	m_sEvent.ReadFromStream(Ctx.pStream);
 	Ctx.pStream->Read((char *)&m_iInterval, sizeof(DWORD));
 	}

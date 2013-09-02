@@ -275,6 +275,22 @@
 //		m_dwAcceptedOn in CMission
 //		m_fAcceptedByPlayer in CMission
 //
+//	87: 1.2 Alpha 2
+//		m_Orders in CBaseShipAI has new structure
+//
+//	88: 1.2 Alpha 3
+//		Save size of tiles in CEnvironmentGrid
+//
+//	89: 1.2 Alpha 3
+//		m_pDebriefer in CMission
+//
+//	91: 1.2 Alpha 3
+//		m_Interior in CShip
+//
+//	92: 1.2 Alpha 3
+//		m_pEnhancements in CInstalledDevice
+//		m_pEnhancements in CMissile
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -349,6 +365,8 @@ const Metric BACKGROUND_OBJECT_FACTOR =					4.0;
 const int GRID_SIZE =									128;
 #define CELL_SIZE										(1024.0 * g_KlicksPerPixel)
 #define CELL_BORDER										(128.0 * g_KlicksPerPixel)
+
+const Metric SAME_POS_THRESHOLD2 =						(g_KlicksPerPixel * g_KlicksPerPixel);
 
 bool CalcOverlap (SLabelEntry *pEntries, int iCount);
 void SetLabelBelow (SLabelEntry &Entry, int cyChar);
@@ -475,6 +493,51 @@ ALERROR CSystem::AddToSystem (CSpaceObject *pObj, int *retiIndex)
 	//	If we could not find a free place, add a new object
 
 	return m_AllObjects.AppendObject(pObj, retiIndex);
+	}
+
+bool CSystem::AscendObject (CSpaceObject *pObj, CString *retsError)
+
+//	AscendObject
+//
+//	Removes the object from the system and adds it to the global list of 
+//	ascended objects. Return FALSE if there was an error.
+
+	{
+	if (pObj->IsAscended())
+		return true;
+
+	if (pObj->IsDestroyed())
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Cannot ascend destroyed objects.");
+		return false;
+		}
+
+	if (pObj->IsPlayer())
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Cannot ascend the player ship.");
+		return false;
+		}
+
+	if (pObj->GetSystem() != this)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Cannot ascend object in another system.");
+		return false;
+		}
+
+	//	Ascend the object
+
+	pObj->Ascend();
+
+	//	Add to the list of ascended objects
+
+	g_pUniverse->AddAscendedObj(pObj);
+
+	//	Done
+
+	return true;
 	}
 
 int CSystem::CalculateLightIntensity (const CVector &vPos, CSpaceObject **retpStar)
@@ -613,6 +676,54 @@ COLORREF CSystem::CalculateSpaceColor (CSpaceObject *pPOV)
 	return RGB(iRed, iGreen, iBlue);
 	}
 
+void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpaceObject *pCenter, DWORD dwFlags)
+
+//	CalcViewportCtx
+//
+//	Initializes the viewport context
+
+	{
+	Ctx.pCenter = pCenter;
+	Ctx.vCenterPos = pCenter->GetPos();
+	Ctx.rcView = rcView;
+	Ctx.vDiagonal = CVector(g_KlicksPerPixel * (Metric)(RectWidth(rcView)) / 2,
+				g_KlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
+	Ctx.vUR = Ctx.vCenterPos + Ctx.vDiagonal;
+	Ctx.vLL = Ctx.vCenterPos - Ctx.vDiagonal;
+
+	//	Compute the transformation to map world coordinates to the viewport
+
+	Ctx.xCenter = rcView.left + RectWidth(rcView) / 2;
+	Ctx.yCenter = rcView.top + RectHeight(rcView) / 2;
+	Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+
+	//	Figure out the extended boundaries. This is used for enhanced display.
+
+	const Metric ENHANCED_DISPLAY_RANGE = 4.0;
+	Ctx.vEnhancedDiagonal = CVector(g_KlicksPerPixel * ENHANCED_DISPLAY_RANGE * (Metric)RectWidth(rcView) / 2.0,
+			g_KlicksPerPixel * ENHANCED_DISPLAY_RANGE * (Metric)RectHeight(rcView) / 2.0);
+	Ctx.vEnhancedUR = Ctx.vCenterPos + Ctx.vEnhancedDiagonal;
+	Ctx.vEnhancedLL = Ctx.vCenterPos - Ctx.vEnhancedDiagonal;
+
+	//	Initialize some flags
+
+	Ctx.fEnhancedDisplay = ((dwFlags & VWP_ENHANCED_DISPLAY) ? true : false);
+	Ctx.fNoStarfield = ((dwFlags & VWP_NO_STAR_FIELD) ? true : false);
+
+	//	Figure out what color space should be. Space gets lighter as we get
+	//	near the central star
+
+	COLORREF rgbSpaceColor = CalculateSpaceColor(pCenter);
+	Ctx.wSpaceColor = CG16bitImage::RGBValue(GetRValue(rgbSpaceColor),
+			GetGValue(rgbSpaceColor),
+			GetBValue(rgbSpaceColor));
+
+	//	Compute the radius of the circle on which we'll show target indicators
+	//	(in pixels)
+
+	Ctx.rIndicatorRadius = Min(RectWidth(rcView), RectHeight(rcView)) / 2.0;
+	}
+
 void CSystem::CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bool bInDoEvent)
 
 //	CancelTimedEvent
@@ -663,8 +774,8 @@ void CSystem::ComputeMapLabels (void)
 
 	//	Compute some font metrics
 
-	int cxChar = g_pUniverse->GetMapLabelFont().GetAverageWidth();
-	int cyChar = g_pUniverse->GetMapLabelFont().GetHeight();
+	int cxChar = g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).GetAverageWidth();
+	int cyChar = g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).GetHeight();
 
 	//	Compute a transform for map coordinate
 
@@ -684,7 +795,7 @@ void CSystem::ComputeMapLabels (void)
 			{
 			Labels[iLabelCount].pObj = pObj;
 			Trans.Transform(pObj->GetPos(), &Labels[iLabelCount].x, &Labels[iLabelCount].y);
-			Labels[iLabelCount].cxLabel = g_pUniverse->GetMapLabelFont().MeasureText(pObj->GetName(NULL));
+			Labels[iLabelCount].cxLabel = g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).MeasureText(pObj->GetName(NULL));
 
 			SetLabelRight(Labels[iLabelCount], cyChar);
 
@@ -982,17 +1093,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 
 		//	Update any previous objects that are waiting for this reference
 
-		CIntArray *pList;
-		if (Ctx.ForwardReferences.Lookup(dwID, (CObject **)&pList) == NOERROR)
-			{
-			for (int j = 0; j < pList->GetCount(); j++)
-				{
-				CSpaceObject **pAddr = (CSpaceObject **)pList->GetElement(j);
-				*pAddr = pObj;
-				}
-
-			Ctx.ForwardReferences.RemoveEntry(dwID, NULL);
-			}
+		Ctx.ForwardReferences.ResolveRefs(dwID, pObj);
 
 		//	Set the system (note: this will change the index to the new
 		//	system)
@@ -1023,52 +1124,13 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	//	[This happens because of a bug in 1.0 RC1]
 
 	if (pPlayerShip)
-		{
-		CIntArray *pList;
-		if (Ctx.ForwardReferences.Lookup(pPlayerShip->GetID(), (CObject **)&pList) == NOERROR)
-			{
-			for (int j = 0; j < pList->GetCount(); j++)
-				{
-				CSpaceObject **pAddr = (CSpaceObject **)pList->GetElement(j);
-				*pAddr = pPlayerShip;
-				}
-
-			Ctx.ForwardReferences.RemoveEntry(pPlayerShip->GetID(), NULL);
-			}
-		}
-
-	//	If we on version 79 or prior we try to fix up a bug in the subscribed
-	//	objects code.
-
-	if (Ctx.dwVersion < 80)
-		{
-		for (i = 0; i < Ctx.pSystem->GetObjectCount(); i++)
-			{
-			CSpaceObject *pObj = Ctx.pSystem->GetObject(i);
-			if (pObj)
-				pObj->FixVersion77Bug(Ctx);
-			}
-		}
+		Ctx.ForwardReferences.ResolveRefs(pPlayerShip->GetID(), pPlayerShip);
 
 	//	If we've got left over references, then dump debug output
 
-	if (Ctx.ForwardReferences.GetCount() > 0)
+	if (Ctx.ForwardReferences.HasUnresolved())
 		{
-		*retsError = strPatternSubst(CONSTLIT("%d undefined object reference%p:"), Ctx.ForwardReferences.GetCount());
-
-		for (i = 0; i < Ctx.ForwardReferences.GetCount(); i++)
-			{
-			DWORD dwID = Ctx.ForwardReferences.GetKey(i);
-			CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(i);
-			retsError->Append(strPatternSubst(CONSTLIT("\r\nReference: %d"), dwID));
-
-			for (int j = 0; j < pList->GetCount(); j++)
-				{
-				CSpaceObject **pAddr = (CSpaceObject **)pList->GetElement(j);
-				retsError->Append(strPatternSubst(CONSTLIT("\r\nAddress: %x"), (DWORD)pAddr));
-				}
-			}
-
+		*retsError = strPatternSubst(CONSTLIT("Undefined object references"));
 		return ERR_FAIL;
 		}
 
@@ -1100,7 +1162,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
 	if (dwCount)
 		{
-		Ctx.pSystem->m_pEnvironment = new CEnvironmentGrid;
+		Ctx.pSystem->m_pEnvironment = new CEnvironmentGrid(0);
 		Ctx.pSystem->m_pEnvironment->ReadFromStream(Ctx);
 		}
 	else
@@ -1545,8 +1607,11 @@ ALERROR CSystem::CreateStation (CStationType *pType,
 	SSystemCreateCtx Ctx;
 	Ctx.pTopologyNode = GetTopology();
 	Ctx.pSystem = this;
-	Ctx.pLocalTables = (m_pType ? m_pType->GetLocalSystemTables() : NULL);
 	Ctx.pStats = NULL;
+
+	CXMLElement *pLocalTable = (m_pType ? m_pType->GetLocalSystemTables() : NULL);
+	if (pLocalTable)
+		Ctx.LocalTables.Insert(pLocalTable);
 
 	//	Generate an orbit. First we look for the nearest object with
 	//	an orbit.
@@ -1604,7 +1669,7 @@ ALERROR CSystem::CreateStation (CStationType *pType,
 	}
 
 ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
-								   int iBonus,
+								   CItemEnhancementStack *pEnhancements,
 								   DestructionTypes iCause,
 								   const CDamageSource &Source,
 								   const CVector &vPos,
@@ -1630,7 +1695,7 @@ ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
 
 			CMissile::Create(this,
 					pDesc,
-					iBonus,
+					pEnhancements,
 					iCause,
 					Source,
 					vPos,
@@ -1649,7 +1714,7 @@ ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
 
 			CAreaDamage::Create(this,
 					pDesc,
-					iBonus,
+					pEnhancements,
 					iCause,
 					Source,
 					vPos,
@@ -1666,7 +1731,7 @@ ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
 
 			CParticleDamage::Create(this,
 					pDesc,
-					iBonus,
+					pEnhancements,
 					iCause,
 					Source,
 					vPos,
@@ -1685,7 +1750,7 @@ ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
 
 			CRadiusDamage::Create(this,
 					pDesc,
-					iBonus,
+					pEnhancements,
 					iCause,
 					Source,
 					vPos,
@@ -1736,7 +1801,7 @@ ALERROR CSystem::CreateWeaponFire (CWeaponFireDesc *pDesc,
 	}
 
 ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
-									    int iBonus,
+									    CItemEnhancementStack *pEnhancements,
 									    DestructionTypes iCause,
 									    const CDamageSource &Source,
 									    CSpaceObject *pTarget,
@@ -1831,7 +1896,7 @@ ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
 				Metric rSpeed = pFragDesc->pDesc->GetInitialSpeed();
 
 				if (error = CreateWeaponFire(pFragDesc->pDesc,
-						iBonus,
+						pEnhancements,
 						iCause,
 						Source,
 						vPos + CVector(mathRandom(-10, 10) * g_KlicksPerPixel / 10.0, mathRandom(-10, 10) * g_KlicksPerPixel / 10.0),
@@ -1855,6 +1920,42 @@ ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
 		}
 
 	return NOERROR;
+	}
+
+bool CSystem::DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **retpObj, CString *retsError)
+
+//	DescendObject
+//
+//	Descends the object back to the system.
+
+	{
+	CSpaceObject *pObj = g_pUniverse->RemoveAscendedObj(dwObjID);
+	if (pObj == NULL)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Object not ascended.");
+		return false;
+		}
+
+	pObj->SetAscended(false);
+
+	//	Clear the time-stop flag if necessary
+
+	if (pObj->IsTimeStopped())
+		pObj->RestartTime();
+
+	//	Place the ship at the gate in the new system
+
+	pObj->Resume();
+	pObj->Place(vPos);
+	pObj->AddToSystem(this);
+
+	//	Done
+
+	if (retpObj)
+		*retpObj = pObj;
+
+	return true;
 	}
 
 CSpaceObject *CSystem::FindObject (DWORD dwID)
@@ -2007,6 +2108,16 @@ void CSystem::FlushEnemyObjectCache (void)
 
 	for (i = 0; i < g_pUniverse->GetSovereignCount(); i++)
 		g_pUniverse->GetSovereign(i)->FlushEnemyObjectCache();
+	}
+
+CString CSystem::GetAttribsAtPos (const CVector &vPos)
+
+//	GetAttribsAtPos
+//
+//	Returns the attributes at the given position
+
+	{
+	return m_Territories.GetAttribsAtPos(vPos);
 	}
 
 int CSystem::GetEmptyLocationCount (void)
@@ -2257,6 +2368,17 @@ CTopologyNode *CSystem::GetStargateDestination (const CString &sStargate, CStrin
 	return m_pTopology->GetGateDest(sStargate, retsEntryPoint);
 	}
 
+int CSystem::GetTileSize (void) const
+
+//	GetTileSize
+//
+//	Returns the tile size in pixels
+
+	{
+	InitSpaceEnvironment();
+	return m_pEnvironment->GetTileSize();
+	}
+
 bool CSystem::HasAttribute (const CVector &vPos, const CString &sAttrib)
 
 //	HasAttribute
@@ -2316,6 +2438,17 @@ bool CSystem::HasAttribute (const CVector &vPos, const CString &sAttrib)
 
 		return m_Territories.HasAttribute(vPos, sAttrib);
 		}
+	}
+
+void CSystem::InitSpaceEnvironment (void) const
+
+//	InitSpaceEnvironment
+//
+//	Initialize if not already
+
+	{
+	if (m_pEnvironment == NULL)
+		m_pEnvironment = new CEnvironmentGrid(m_pType->GetAPIVersion());
 	}
 
 bool CSystem::IsAreaClear (const CVector &vPos, Metric rRadius, DWORD dwFlags, CStationType *pType)
@@ -2391,6 +2524,26 @@ bool CSystem::IsAreaClear (const CVector &vPos, Metric rRadius, DWORD dwFlags, C
 	return true;
 	}
 
+bool CSystem::IsStarAtPos (const CVector &vPos)
+
+//	IsStarAtPos
+//
+//	Returns TRUE if there is a star at the given position.
+
+	{
+	int i;
+
+	for (i = 0; i < m_Stars.GetCount(); i++)
+		{
+		CSpaceObject *pStar = m_Stars.GetObj(i);
+		CVector vDist = vPos - pStar->GetPos();
+		if (vDist.Length2() < SAME_POS_THRESHOLD2)
+			return true;
+		}
+
+	return false;
+	}
+
 bool CSystem::IsStationInSystem (CStationType *pType)
 
 //	IsStationInSystem
@@ -2436,7 +2589,8 @@ void CSystem::MarkImages (void)
 
 	//	Give all types a chance to mark images
 
-	
+	if (m_pEnvironment)
+		m_pEnvironment->MarkImages();
 
 	g_pUniverse->SetLogImageLoad(true);
 	}
@@ -2469,7 +2623,7 @@ CVector CSystem::OnJumpPosAdj (CSpaceObject *pObj, const CVector &vPos)
 	return vPos;
 	}
 
-void CSystem::PaintDestinationMarker (CG16bitImage &Dest, int x, int y, CSpaceObject *pObj, CSpaceObject *pCenter)
+void CSystem::PaintDestinationMarker (SViewportPaintCtx &Ctx, CG16bitImage &Dest, int x, int y, CSpaceObject *pObj)
 
 //	PaintDestinationMarker
 //
@@ -2482,7 +2636,7 @@ void CSystem::PaintDestinationMarker (CG16bitImage &Dest, int x, int y, CSpaceOb
 	//	(We want the angle of the center with respect to the object because we
 	//	start at the edge of the screen and point inward).
 
-	int iBearing = VectorToPolar(pCenter->GetPos() - pObj->GetPos());
+	int iBearing = VectorToPolar(Ctx.pCenter->GetPos() - pObj->GetPos());
 
 	//	Generate a set of points for the directional indicator
 
@@ -2516,61 +2670,31 @@ void CSystem::PaintDestinationMarker (CG16bitImage &Dest, int x, int y, CSpaceOb
 
 	//	Paint the directional indicator
 
-	CG16bitRegion Region;
+	CG16bitBinaryRegion Region;
 	Region.CreateFromConvexPolygon(5, Poly);
 	WORD wColor = pObj->GetSymbolColor();
 	Region.Fill(Dest, x, y, wColor);
 
 	//	Paint the text
 
-	CG16bitFont &Font = g_pUniverse->GetSignFont();
+	const CG16bitFont &Font = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
 	vPos = PolarToVector(iBearing, 5 * ENHANCED_SRS_BLOCK_SIZE);
 	int xText = x + (int)vPos.GetX();
 	int yText = y - (int)vPos.GetY();
 
+	DWORD iAlign = alignCenter;
 	if (iBearing > 180)
 		yText += 2 * ENHANCED_SRS_BLOCK_SIZE;
 	else
-		yText -= (2 * ENHANCED_SRS_BLOCK_SIZE) + Font.GetHeight();
-
-	CString sName;
-	if (pObj->IsIdentified())
-		sName = pObj->GetNounPhrase(0);
-	else if (pCenter->IsEnemy(pObj))
-		sName = CONSTLIT("Unknown Hostile");
-	else
-		sName = CONSTLIT("Unknown Friendly");
-
-	int cxText = Font.MeasureText(sName);
-
-	//	Center text
-
-	const RECT &rcClip = Dest.GetClipRect();
-	xText = xText - cxText / 2;
-	xText = Max((int)rcClip.left, xText);
-	xText = Min((int)(rcClip.right - cxText), xText);
-
-	//	Paint
-
-	Font.DrawText(Dest, xText, yText, wColor, sName);
-
-	//	If necessary, draw distance and bearing
-
-	if (pObj->IsShowingDistanceAndBearing())
 		{
-		Metric rDist = (pObj->GetPos() - pCenter->GetPos()).Length();
-		CString sText = strPatternSubst(CONSTLIT("Distance: %d"), (int)(rDist / LIGHT_SECOND));
-
-		cxText = Font.MeasureText(sText);
-		xText = x + (int)vPos.GetX() - (cxText / 2);
-		xText = Max((int)rcClip.left, xText);
-		xText = Min((int)(rcClip.right - cxText), xText);
-
-		Font.DrawText(Dest, xText, yText + Font.GetHeight(), wColor, sText);
+		yText -= (2 * ENHANCED_SRS_BLOCK_SIZE);
+		iAlign |= alignBottom;
 		}
+
+	pObj->PaintHighlightText(Dest, xText, yText, Ctx, (AlignmentStyles)iAlign, wColor);
 	}
 
-void CSystem::PaintStarField(CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, Metric rKlicksPerPixel, COLORREF rgbSpaceColor)
+void CSystem::PaintStarField(CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, Metric rKlicksPerPixel, WORD wSpaceColor)
 
 //	PaintStarField
 //
@@ -2588,7 +2712,7 @@ void CSystem::PaintStarField(CG16bitImage &Dest, const RECT &rcView, CSpaceObjec
 
 	//	Compute the minimum brightness to paint
 
-	WORD wMaxColor = (WORD)(Max(Max(GetRValue(rgbSpaceColor), GetGValue(rgbSpaceColor)), GetBValue(rgbSpaceColor)));
+	WORD wMaxColor = (WORD)(Max(Max(CG16bitImage::RedValue(wSpaceColor), CG16bitImage::GreenValue(wSpaceColor)), CG16bitImage::BlueValue(wSpaceColor)));
 	WORD wSpaceValue = CG16bitImage::RGBValue(wMaxColor, wMaxColor, wMaxColor);
 
 	//	Get the absolute position of the center
@@ -2660,7 +2784,7 @@ void CSystem::PaintStarField(CG16bitImage &Dest, const RECT &rcView, CSpaceObjec
 void CSystem::PaintViewport (CG16bitImage &Dest, 
 							 const RECT &rcView, 
 							 CSpaceObject *pCenter, 
-							 bool bEnhanced)
+							 DWORD dwFlags)
 
 //	PaintViewport
 //
@@ -2670,62 +2794,28 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	int i;
 	int iLayer;
 
-	CVector vCenterPos = pCenter->GetPos();
+	//	Initialize the viewport context
 
-	//	Figure out what color space should be. Space gets lighter as we get
-	//	near the central star
-
-	COLORREF rgbSpaceColor = CalculateSpaceColor(pCenter);
+	SViewportPaintCtx Ctx;
+	CalcViewportCtx(Ctx, rcView, pCenter, dwFlags);
 
 	//	Clear the rect
 
 	Dest.SetClipRect(rcView);
-	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), rgbSpaceColor);
-
-	//	Compute the radius of the circle on which we'll show target indicators
-	//	(in pixels)
-
-	Metric rIndicatorRadius = Min(RectWidth(rcView), RectHeight(rcView)) / 2.0;
+	Dest.Fill(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), Ctx.wSpaceColor);
 
 	//	Paint the star field
 
-	PaintStarField(Dest, rcView, pCenter, g_KlicksPerPixel, rgbSpaceColor);
-
-	//	Figure out the boundary of the viewport in system coordinates. 
-
-	CVector vDiagonal(g_KlicksPerPixel * (Metric)(RectWidth(rcView)) / 2,
-				g_KlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
-	CVector vUR = pCenter->GetPos() + vDiagonal;
-	CVector vLL = pCenter->GetPos() - vDiagonal;
-
-	//	Figure out the extended boundaries. This is used for enhanced display.
-
-	CVector vEnhancedDiagonal(g_KlicksPerPixel * (Metric)(2 * RectWidth(rcView)),
-			g_KlicksPerPixel * (Metric)(2 * RectHeight(rcView)));
-
-	CVector vEnhancedUR = vCenterPos + vEnhancedDiagonal;
-	CVector vEnhancedLL = vCenterPos - vEnhancedDiagonal;
-
-	//	Compose the paint context
-
-	SViewportPaintCtx Ctx;
-	Ctx.wSpaceColor = CG16bitImage::RGBValue(GetRValue(rgbSpaceColor),
-			GetGValue(rgbSpaceColor),
-			GetBValue(rgbSpaceColor));
-
-	//	Compute the transformation to map world coordinates to the viewport
-
-	int xCenter = rcView.left + RectWidth(rcView) / 2;
-	int yCenter = rcView.top + RectHeight(rcView) / 2;
-	Ctx.XForm = ViewportTransform(vCenterPos, g_KlicksPerPixel, xCenter, yCenter);
+	if (!Ctx.fNoStarfield)
+		PaintStarField(Dest, rcView, pCenter, g_KlicksPerPixel, Ctx.wSpaceColor);
 
 	//	Compute the bounds relative to the center
 
 	RECT rcBounds;
-	rcBounds.left = rcView.left - xCenter + (ENHANCED_SRS_BLOCK_SIZE / 2);
-	rcBounds.top = rcView.top - yCenter + (ENHANCED_SRS_BLOCK_SIZE / 2);
-	rcBounds.right = rcView.right - xCenter - (ENHANCED_SRS_BLOCK_SIZE / 2);
-	rcBounds.bottom = rcView.bottom - yCenter - (ENHANCED_SRS_BLOCK_SIZE / 2);
+	rcBounds.left = rcView.left - Ctx.xCenter + (ENHANCED_SRS_BLOCK_SIZE / 2);
+	rcBounds.top = rcView.top - Ctx.yCenter + (ENHANCED_SRS_BLOCK_SIZE / 2);
+	rcBounds.right = rcView.right - Ctx.xCenter - (ENHANCED_SRS_BLOCK_SIZE / 2);
+	rcBounds.bottom = rcView.bottom - Ctx.yCenter - (ENHANCED_SRS_BLOCK_SIZE / 2);
 
 	//	Generate lists of all objects to paint by layer
 
@@ -2748,9 +2838,9 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 				{
 				//	Compute the size of the viewport at the given object's distance
 
-				CVector vParallaxDiag = vDiagonal * rParallaxDist;
-				CVector vParallaxUR = vCenterPos + vParallaxDiag;
-				CVector vParallaxLL = vCenterPos - vParallaxDiag;
+				CVector vParallaxDiag = Ctx.vDiagonal * rParallaxDist;
+				CVector vParallaxUR = Ctx.vCenterPos + vParallaxDiag;
+				CVector vParallaxLL = Ctx.vCenterPos - vParallaxDiag;
 
 				//	If we're in the viewport, then we add it
 
@@ -2764,80 +2854,57 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 						m_ForegroundObjs.FastAdd(pObj);
 					}
 				}
-			else if (pObj->InBox(vUR, vLL) && !pObj->IsVirtual())
+			else if (pObj->InBox(Ctx.vUR, Ctx.vLL) && !pObj->IsVirtual())
 				{
 				m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
 				pObj->SetPaintNeeded();
 				}
-			else if ((bEnhanced
+			else if ((Ctx.fEnhancedDisplay
 							&& (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
-							&& pObj->PosInBox(vEnhancedUR, vEnhancedLL)
+							&& pObj->PosInBox(Ctx.vEnhancedUR, Ctx.vEnhancedLL)
 							&& !pObj->IsInactive()
 							&& !pObj->IsVirtual())
 						|| pObj->IsPlayerTarget()
-						|| pObj->IsPlayerDestination())
+						|| pObj->IsPlayerDestination()
+						|| pObj->IsHighlighted())
 				m_EnhancedDisplayObjs.FastAdd(pObj);
 			}
 		}
 
 	//	Paint background objects
 
+	ViewportTransform SavedXForm = Ctx.XForm;
 	for (i = 0; i < m_BackgroundObjs.GetCount(); i++)
 		{
 		CSpaceObject *pObj = m_BackgroundObjs.GetObj(i);
 
-		//	Compute the transform
+		//	Adjust the transform to deal with parallax
 
-		SViewportPaintCtx LocalCtx;
-		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
-		LocalCtx.XForm = ViewportTransform(vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
 
 		//	Figure out the position of the object in pixels
 
 		int x, y;
-		LocalCtx.XForm.Transform(pObj->GetPos(), &x, &y);
+		Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
 
 		//	Paint the object in the viewport
 
 		SetProgramState(psPaintingSRS, pObj);
 
-		LocalCtx.pObj = pObj;
+		Ctx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
-				LocalCtx);
+				Ctx);
 
 		SetProgramState(psPaintingSRS);
 		}
+	Ctx.XForm = SavedXForm;
 
 	//	Paint any space environment
 
 	if (m_pEnvironment)
-		{
-		int x, y, x1, y1, x2, y2;
-
-		VectorToTile(vUR, &x2, &y1);
-		VectorToTile(vLL, &x1, &y2);
-		
-		//	Increase bounds (so we can paint the edges)
-
-		x1--; y1--;
-		x2++; y2++;
-
-		for (x = x1; x <= x2; x++)
-			for (y = y1; y <= y2; y++)
-				{
-				CSpaceEnvironmentType *pEnv = m_pEnvironment->GetTileType(x, y);
-				if (pEnv)
-					{
-					int xCenter, yCenter;
-					CVector vCenter = TileToVector(x, y);
-					Ctx.XForm.Transform(vCenter, &xCenter, &yCenter);
-
-					pEnv->Paint(Dest, xCenter, yCenter);
-					}
-				}
-		}
+		m_pEnvironment->Paint(Dest, Ctx, Ctx.vUR, Ctx.vLL);
 
 	//	Paint all the objects by layer
 
@@ -2878,33 +2945,33 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 	//	Paint foreground objects
 
+	SavedXForm = Ctx.XForm;
 	for (i = 0; i < m_ForegroundObjs.GetCount(); i++)
 		{
 		CSpaceObject *pObj = m_ForegroundObjs.GetObj(i);
 
 		//	Compute the transform
 
-		SViewportPaintCtx LocalCtx;
-		LocalCtx.wSpaceColor = Ctx.wSpaceColor;
-		LocalCtx.XForm = ViewportTransform(vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, xCenter, yCenter);
+		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
 
 		//	Figure out the position of the object in pixels
 
 		int x, y;
-		LocalCtx.XForm.Transform(pObj->GetPos(), &x, &y);
+		Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
 
 		//	Paint the object in the viewport
 
 		SetProgramState(psPaintingSRS, pObj);
 
-		LocalCtx.pObj = pObj;
+		Ctx.pObj = pObj;
 		pObj->Paint(Dest, 
 				x,
 				y,
-				LocalCtx);
+				Ctx);
 
 		SetProgramState(psPaintingSRS);
 		}
+	Ctx.XForm = SavedXForm;
 
 	//	Paint all the enhanced display markers
 
@@ -2915,15 +2982,17 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		//	If this is a destination marker then we paint it at the circumference
 		//	of a circle around the center.
 
-		if (pObj->IsPlayerTarget() || pObj->IsPlayerDestination())
+		if (pObj->IsPlayerTarget()
+				|| pObj->IsPlayerDestination()
+				|| pObj->IsHighlighted())
 			{
-			CVector vDir = (pObj->GetPos() - vCenterPos).Normal();
+			CVector vDir = (pObj->GetPos() - Ctx.vCenterPos).Normal();
 
-			PaintDestinationMarker(Dest, 
-					xCenter + (int)(rIndicatorRadius * vDir.GetX()), 
-					yCenter - (int)(rIndicatorRadius * vDir.GetY()),
-					pObj,
-					pCenter);
+			PaintDestinationMarker(Ctx,
+					Dest, 
+					Ctx.xCenter + (int)(Ctx.rIndicatorRadius * vDir.GetX()), 
+					Ctx.yCenter - (int)(Ctx.rIndicatorRadius * vDir.GetY()),
+					pObj);
 			}
 
 		//	Otherwise we paint this as a block at the edge of the screen
@@ -2935,8 +3004,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 			int x, y;
 			Ctx.XForm.Transform(pObj->GetPos(), &x, &y);
-			x = x - xCenter;
-			y = y - yCenter;
+			x = x - Ctx.xCenter;
+			y = y - Ctx.yCenter;
 
 			//	Now clip the position to the side of the screen
 
@@ -2966,8 +3035,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 
 			WORD wColor = pObj->GetSymbolColor();
 
-			Dest.Fill(xCenter + x - (ENHANCED_SRS_BLOCK_SIZE / 2), 
-					yCenter + y - (ENHANCED_SRS_BLOCK_SIZE / 2),
+			Dest.Fill(Ctx.xCenter + x - (ENHANCED_SRS_BLOCK_SIZE / 2), 
+					Ctx.yCenter + y - (ENHANCED_SRS_BLOCK_SIZE / 2),
 					ENHANCED_SRS_BLOCK_SIZE, 
 					ENHANCED_SRS_BLOCK_SIZE, 
 					wColor);
@@ -3226,7 +3295,7 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	int yCenter = rcView.top + RectHeight(rcView) / 2;
 
 	CVector vDiagonal(rMapScale * (Metric)(RectWidth(rcView) + 256) / 2,
-				rMapScale * (Metric)(RectHeight(rcView) + 256) / 2);
+				rMapScale * MAP_VERTICAL_ADJUST * (Metric)(RectHeight(rcView) + 256) / 2);
 	CVector vUR = pCenter->GetPos() + vDiagonal;
 	CVector vLL = pCenter->GetPos() - vDiagonal;
 
@@ -3238,6 +3307,15 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 			xCenter, 
 			yCenter);
 
+	//	Paint the grid
+
+	PaintViewportGrid(Dest, rcView, Trans, CVector(), 100.0 * LIGHT_SECOND);
+
+	//	Paint space environment
+
+	if (m_pEnvironment)
+		m_pEnvironment->PaintMap(Dest, vUR, vLL, Trans);
+
 	//	Paint the glow from all stars
 
 	for (i = 0; i < m_Stars.GetCount(); i++)
@@ -3247,28 +3325,6 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		int iGlowRadius = (int)((pStar->GetMaxLightDistance() * LIGHT_SECOND) / rMapScale);
 
 		DrawAlphaGradientCircle(Dest, x, y, iGlowRadius, (WORD)CG16bitImage::PixelFromRGB(pStar->GetSpaceColor()));
-		}
-
-	//	Paint the grid
-
-	PaintViewportGrid(Dest, rcView, Trans, CVector(), 100.0 * LIGHT_SECOND);
-
-	//	Paint space environment
-
-	if (m_pEnvironment)
-		{
-		STileMapEnumerator k;
-		while (m_pEnvironment->HasMoreTiles(k))
-			{
-			int xTile;
-			int yTile;
-
-			m_pEnvironment->GetNextTileType(k, &xTile, &yTile);
-			CVector vPos = TileToVector(xTile, yTile);
-
-			Trans.Transform(vPos, &x, &y);
-			Dest.DrawPixel(x, y, CG16bitImage::RGBValue(255,0,255));
-			}
 		}
 
 	//	Paint all planets and stars first
@@ -3440,17 +3496,35 @@ void CSystem::ReadObjRefFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	if (Ctx.ObjMap.Lookup(dwID, (CObject **)retpObj) == NOERROR)
 		return;
 
-	//	If we could not find it, add the return pointer to a map so that
-	//	we can fill it in later (when we load the actual object)
+	//	If we could not find it, add the return pointer as a reference
 
-	CIntArray *pList;
-	if (Ctx.ForwardReferences.Lookup(dwID, (CObject **)&pList) != NOERROR)
-		{
-		pList = new CIntArray;
-		Ctx.ForwardReferences.AddEntry(dwID, pList);
-		}
+	Ctx.ForwardReferences.InsertRef(dwID, retpObj);
+	}
 
-	pList->AppendElement((int)retpObj, NULL);
+void CSystem::ReadObjRefFromStream (SLoadCtx &Ctx, void *pCtx, PRESOLVEOBJIDPROC pfnResolveProc)
+
+//	ReadObjRefFromStream
+//
+//	Reads the object reference from the stream
+
+	{
+	//	Load the ID
+
+	DWORD dwID;
+	Ctx.pStream->Read((char *)&dwID, sizeof(DWORD));
+	if (dwID == OBJID_NULL)
+		return;
+
+	//	Lookup the ID in the map. If we find it, then resolve it now.
+
+	CSpaceObject *pObj;
+	if (Ctx.ObjMap.Lookup(dwID, (CObject **)&pObj) == NOERROR)
+		(pfnResolveProc)(pCtx, dwID, pObj);
+
+	//	If we could not find it, add the return pointer as a reference
+
+	else
+		Ctx.ForwardReferences.InsertRef(dwID, pCtx, pfnResolveProc);
 	}
 
 void CSystem::ReadSovereignRefFromStream (SLoadCtx &Ctx, CSovereign **retpSovereign)
@@ -3512,6 +3586,7 @@ void CSystem::RemoveObject (SDestroyCtx &Ctx)
 	//	Tell all other objects that the given object was destroyed
 	//	NOTE: The destroyed flag is already set on the object
 
+	ASSERT(Ctx.pObj->IsDestroyed());
 	if (Ctx.pObj->NotifyOthersWhenDestroyed())
 		{
 		DEBUG_SAVE_PROGRAMSTATE;
@@ -3861,9 +3936,7 @@ void CSystem::SetSpaceEnvironment (int xTile, int yTile, CSpaceEnvironmentType *
 //	Sets the space environment
 
 	{
-	if (m_pEnvironment == NULL)
-		m_pEnvironment = new CEnvironmentGrid;
-
+	InitSpaceEnvironment();
 	m_pEnvironment->SetTileType(xTile, yTile, pEnvironment);
 	}
 
@@ -3936,6 +4009,17 @@ void CSystem::StopTimeForAll (int iDuration, CSpaceObject *pExcept)
 		}
 
 	m_iTimeStopped = iDuration;
+	}
+
+CVector CSystem::TileToVector (int x, int y) const
+
+//	TileToVector
+//
+//	Convert space environment coordinates
+
+	{
+	InitSpaceEnvironment();
+	return m_pEnvironment->TileToVector(x, y);
 	}
 
 void CSystem::TransferObjEventsIn (CSpaceObject *pObj, CTimedEventList &ObjEvents)
@@ -4331,6 +4415,17 @@ void CSystem::UpdateRandomEncounters (void)
 	//	Next encounter
 
 	m_iNextEncounter = m_iTick + mathRandom(6000, 9000);
+	}
+
+void CSystem::VectorToTile (const CVector &vPos, int *retx, int *rety) const
+
+//	VectorToTile
+//
+//	Convert space environment coordinates
+
+	{
+	InitSpaceEnvironment();
+	m_pEnvironment->VectorToTile(vPos, retx, rety);
 	}
 
 void CSystem::WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream, CSpaceObject *pReferrer)

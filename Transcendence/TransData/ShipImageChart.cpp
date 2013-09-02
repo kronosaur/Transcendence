@@ -107,8 +107,20 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		orderName = 3,
 		};
 
+	//	Get the criteria from the command line. Always append 's' because we
+	//	want ship classes.
+
+	CString sCriteria = strPatternSubst(CONSTLIT("%s s"), pCmdLine->GetAttribute(CONSTLIT("criteria")));
+	CDesignTypeCriteria Criteria;
+	if (CDesignTypeCriteria::ParseCriteria(sCriteria, &Criteria) != NOERROR)
+		{
+		printf("ERROR: Unable to parse criteria.\n");
+		return;
+		}
+
 	//	Options
 
+	bool bAllClasses = pCmdLine->GetAttributeBool(CONSTLIT("all"));
 	bool bTextBoxesOnly = pCmdLine->GetAttributeBool(CONSTLIT("textBoxesOnly"));
 
 	//	Figure out what order we want
@@ -175,6 +187,11 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		CShipClass *pClass = Universe.GetShipClass(i);
 
+		//	Skip if we don't match criteria
+
+		if (!pClass->MatchesCriteria(Criteria))
+			continue;
+
 		//	Skip player ship classes
 
 		if (pClass->GetPlayerSettings())
@@ -182,7 +199,7 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Skip non-generic classes
 
-		if (!pClass->HasAttribute(CONSTLIT("genericClass")))
+		if (!bAllClasses && !pClass->HasLiteralAttribute(CONSTLIT("genericClass")))
 			continue;
 
 		//	Compute the sort key

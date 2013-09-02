@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-	209, 165,  91, 183,  31,  61, 117, 161, 100,  38,
-	147,  20, 226, 197,  34,  31,  59,  20,  75,  44,
+    106,  76, 109, 239,  10, 255,  83,  41, 246,  36,
+    118,  90, 166,  30,  20, 240, 230, 129,  38, 208,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -67,12 +67,7 @@ CExtensionCollection::~CExtensionCollection (void)
 //	CExtensionCollection destructor
 
 	{
-	int i;
-
-	for (i = 0; i < m_Extensions.GetCount(); i++)
-		delete m_Extensions[i];
-
-	FreeDeleted();
+	CleanUp();
 	}
 
 void CExtensionCollection::AddOrReplace (CExtension *pExtension)
@@ -222,6 +217,23 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 	//	Success.
 
 	return NOERROR;
+	}
+
+void CExtensionCollection::CleanUp (void)
+
+//	CleanUp
+//
+//	Clean up and free data
+
+	{
+	int i;
+
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		delete m_Extensions[i];
+
+	m_Extensions.DeleteAll();
+
+	FreeDeleted();
 	}
 
 void CExtensionCollection::ClearAllMarks (void)
@@ -568,7 +580,18 @@ ALERROR CExtensionCollection::ComputeFilesToLoad (const CString &sFilespec, CExt
 
 		CResourceDb ExtDb(sFilepath, true);
 		if (error = ExtDb.Open(DFOPEN_FLAG_READ_ONLY, retsError))
+			{
+			//	If this is a TDB then ignore the error--we assume that we will try to 
+			//	repair it when we open the collection
+
+			if (ExtDb.IsTDB())
+				{
+				::kernelDebugLogMessage("Unable to load extension: %s", sFilepath);
+				continue;
+				}
+
 			return error;
+			}
 
 		//	If this is a module, then skip it
 
@@ -951,7 +974,7 @@ ALERROR CExtensionCollection::LoadBaseFile (const CString &sFilespec, DWORD dwFl
 	return NOERROR;
 	}
 
-ALERROR CExtensionCollection::LoadFile (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, CString *retsError)
+ALERROR CExtensionCollection::LoadFile (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, const CIntegerIP &CheckDigest, bool *retbReload, CString *retsError)
 
 //	LoadFile
 //
@@ -983,6 +1006,47 @@ ALERROR CExtensionCollection::LoadFile (const CString &sFilespec, CExtension::EF
 		delete pExtension;
 		return error;
 		}
+
+	//	Did the load succeed?
+
+	if ((dwFlags & FLAG_ERROR_ON_DISABLE)
+			&& pExtension->IsDisabled())
+		{
+		if (retsError)
+			*retsError = strPatternSubst(CONSTLIT("Extension %s: %s"), pExtension->GetFilespec(), pExtension->GetDisabledReason());
+		delete pExtension;
+		return ERR_FAIL;
+		}
+
+	//	Check the digest before we accept it.
+
+	if (pExtension->IsRegistered() 
+			&& !CheckDigest.IsEmpty())
+		{
+		//	NOTE: We set the verification flag even if the file failed to load.
+		//	If the digest matches then the file is good--it probably failed because
+		//	of a missing library.
+
+		if (pExtension->GetDigest() == CheckDigest)
+			pExtension->SetVerified();
+
+		//	Otherwise, we have an error
+
+		else
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Extension file corrupt: %s"), pExtension->GetFilespec());
+			delete pExtension;
+			return ERR_FAIL;
+			}
+		}
+
+	//	If we just added a new library, then tell our caller that it might want
+	//	to try reloading disabled extensions that rely on this library.
+
+	if (retbReload)
+		*retbReload = (pExtension->GetType() == extLibrary 
+				&& !pExtension->IsDisabled());
 
 	//	Add the extensions to our list. We lock because we expect this function
 	//	to be called without a lock; we don't want to lock while doing the
@@ -1057,7 +1121,7 @@ ALERROR CExtensionCollection::LoadFolderStubsOnly (const CString &sFilespec, CEx
 	return NOERROR;
 	}
 
-ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, CString *retsError)
+ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, const CIntegerIP &FileDigest, CString *retsError)
 
 //	LoadNewExtension
 //
@@ -1065,6 +1129,10 @@ ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, CStrin
 //	the Collection folder.
 
 	{
+	//	If this extension has music files, then we need to extract them and generate a new
+	//	TDB. Otherwise we just copy the TDB to the collection folder.
+
+
 	//	NOTE: We don't need to lock because LoadFile will lock appropriately.
 
 	//	Delete the destination filespec
@@ -1082,10 +1150,91 @@ ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, CStrin
 
 	//	Load the file
 
-	if (LoadFile(sNewFilespec, CExtension::folderCollection, FLAG_DESC_ONLY, retsError) != NOERROR)
+	bool bReload;
+	if (LoadFile(sNewFilespec, CExtension::folderCollection, FLAG_DESC_ONLY, FileDigest, &bReload, retsError) != NOERROR)
 		return ERR_FAIL;
 
+	//	If necessary, try reloading other extensions that might become enabled after
+	//	this new file is loaded. We keep reloading until we've enabled no more
+	//	extensions.
+
+	if (bReload)
+		{
+		while (ReloadDisabledExtensions(FLAG_DESC_ONLY))
+			;
+		}
+
 	return NOERROR;
+	}
+
+bool CExtensionCollection::ReloadDisabledExtensions (DWORD dwFlags)
+
+//	ReloadDisabledExtensions
+//
+//	Loops over all disabled extensions and tries to reload any that required a
+//	missing library.
+//
+//	We return TRUE if any extension was enabled in this way. 
+
+	{
+	int i;
+
+	struct SEntry
+		{
+		CString sFilespec;
+		CExtension::EFolderTypes iFolder;
+		CIntegerIP FileDigest;
+		};
+
+	//	First make a list of all extensions that we want to reload
+
+	m_cs.Lock();
+	TArray<SEntry> ReloadList;
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		{
+		CExtension *pExtension = m_Extensions[i];
+		if (pExtension->IsDisabled())
+			{
+			SEntry *pEntry = ReloadList.Insert();
+			pEntry->sFilespec = pExtension->GetFilespec();
+			pEntry->iFolder = pExtension->GetFolderType();
+
+			//	If the original load was verified, then we can
+			//	verify a subsequent load (since it is the same file).
+
+			if (pExtension->IsRegistrationVerified())
+				pEntry->FileDigest = pExtension->GetDigest();
+			}
+		}
+	m_cs.Unlock();
+
+	//	Now try reloading each extension. We do this outside the lock because
+	//	it is time-consuming. The calls will lock appropriately.
+
+	bool bSuccess = false;
+	for (i = 0; i < ReloadList.GetCount(); i++)
+		{
+		const SEntry &Entry = ReloadList[i];
+
+		//	Load the extension. If we fail, then ignore it--it means we could
+		//	not fix the problem.
+
+		if (LoadFile(Entry.sFilespec, 
+				Entry.iFolder, 
+				FLAG_DESC_ONLY | FLAG_ERROR_ON_DISABLE, 
+				Entry.FileDigest, 
+				NULL, 
+				NULL) != NOERROR)
+			continue;
+
+		//	Otherwise, we succeeded at least on one extension
+
+		bSuccess = true;
+		}
+
+	//	Done
+
+	return bSuccess;
 	}
 
 void CExtensionCollection::SetRegisteredExtensions (const CMultiverseCollection &Collection, TArray<CMultiverseCatalogEntry *> *retNotFound)
@@ -1093,7 +1242,7 @@ void CExtensionCollection::SetRegisteredExtensions (const CMultiverseCollection 
 //	SetRegisteredExtensions
 //
 //	Given the user's collection, set the registered bit on all appropriate
-//	extensions.
+//	extensions and return a list of extensions that need to be downloaded.
 
 	{
 	CSmartLock Lock(m_cs);
@@ -1105,13 +1254,28 @@ void CExtensionCollection::SetRegisteredExtensions (const CMultiverseCollection 
 		{
 		CMultiverseCatalogEntry *pEntry = Collection.GetEntry(i);
 
+		//	Skip core entries
+
+		if (pEntry->GetLicenseType() == CMultiverseCatalogEntry::licenseCore)
+			continue;
+
 		//	Look for this extension in our list. If we found it then compare
 		//	the signature to make sure that we have the right version.
 
 		CExtension *pExtension;
 		if (FindExtension(pEntry->GetUNID(), pEntry->GetRelease(), CExtension::folderCollection, &pExtension))
 			{
-			//	LATER: Compare the digest...
+			//	Compare the digests. If they match, then this is a registered
+			//	extension.
+
+			if (pEntry->GetTDBFileRef().GetDigest() == pExtension->GetDigest())
+				pExtension->SetVerified();
+			
+			//	Otherwise we assume that we have an old version and ask to download
+			//	the file again.
+
+			else
+				retNotFound->Insert(pEntry);
 			}
 
 		//	If we did not find the extension, then add it to the list of entries that
@@ -1136,6 +1300,49 @@ void CExtensionCollection::SweepImages (void)
 
 	for (i = 0; i < m_Extensions.GetCount(); i++)
 		m_Extensions[i]->SweepImages();
+	}
+
+void CExtensionCollection::UpdateCollectionStatus (CMultiverseCollection &Collection, int cxIconSize, int cyIconSize)
+
+//	UpdateCollectionStatus
+//
+//	Updates the local status of all entries in the collection
+
+	{
+	CSmartLock Lock(m_cs);
+	int i;
+
+	for (i = 0; i < Collection.GetCount(); i++)
+		{
+		CMultiverseCatalogEntry *pEntry = Collection.GetEntry(i);
+
+		//	Figure out which folder to look in
+
+		CExtension::EFolderTypes iFolder;
+		if (pEntry->GetLicenseType() == CMultiverseCatalogEntry::licenseCore)
+			iFolder = CExtension::folderBase;
+		else
+			iFolder = CExtension::folderCollection;
+
+		//	Look for this extension in our list.
+
+		CExtension *pExtension;
+		if (FindExtension(pEntry->GetUNID(), 0, iFolder, &pExtension))
+			{
+			pEntry->SetStatus(CMultiverseCatalogEntry::statusLoaded);
+
+			//	Set the icon
+
+			CG16bitImage *pIcon;
+			pExtension->CreateIcon(cxIconSize, cyIconSize, &pIcon);
+			pEntry->SetIcon(pIcon);
+			}
+
+		//	If we can't find it, then we know that it's not loaded
+
+		else
+			pEntry->SetStatus(CMultiverseCatalogEntry::statusNotAvailable);
+		}
 	}
 
 //	CLibraryResolver -----------------------------------------------------------
@@ -1215,3 +1422,4 @@ CString CLibraryResolver::ResolveExternalEntity (const CString &sName, bool *ret
 
 	return NULL_STR;
 	}
+

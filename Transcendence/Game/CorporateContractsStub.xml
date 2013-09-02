@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	<Globals>
+		(block Nil
+			(setq intShowContractDeliveryScreen (lambda Nil
+				Nil
+				))
+			)
+	</Globals>
+
+	<DockScreen UNID="&dsContractDelivery;"	nestedScreen="true">
+		<Panes>
+			<Default desc="ContractDelivery">
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+</TranscendenceModule>

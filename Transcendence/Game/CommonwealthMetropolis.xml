@@ -30,17 +30,17 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"1"
 					/>
@@ -158,17 +158,17 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"5"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"2"
 					/>
@@ -251,7 +251,7 @@
 			<Default desc="You are in a large and crowded spacer bar.">
 
 				<Actions>
-					<Action name="Sit at the bar" default="1" key="S">
+					<Action name="Sit at the Bar" default="1" key="S">
 						(if (geq (plyGetCredits gPlayer) 5)
 							(block Nil
 								(plyCharge gPlayer 5)
@@ -610,7 +610,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy items" default="1" key="B">
+					<Action name="Buy Items" default="1" key="B">
 						(scrShowBuyScreen 
 							"* -Illegal"			; items sold to player
 							Nil						; obsolete
@@ -623,7 +623,7 @@
 							)
 					</Action>
 
-					<Action name="Sell items" key="S">
+					<Action name="Sell Items" key="S">
 						(scrShowSellScreen
 							"*"						; items bought from player
 							)
@@ -648,7 +648,7 @@
 							)
 					</Action>
 
-					<Action name="Repair or replace armor" key="A" >
+					<Action name="Repair or Replace Armor" key="A" >
 						(block Nil
 							(setq gTechLevel 7)
 							(setq gArmorSegment 0)
@@ -658,7 +658,7 @@
 							)
 					</Action>
 
-					<Action name="Install device" key="D" >
+					<Action name="Install Device" key="D" >
 						(block Nil
 							(setq gTechLevel 6)
 							(setq gTechModifier Nil)
@@ -668,14 +668,14 @@
 							)
 					</Action>
 
-					<Action name="Remove device" key="V" >
+					<Action name="Remove Device" key="V" >
 						(block Nil
 							(setq gMargin 100)
 							(scrShowScreen gScreen "&dsRemoveDevice;")
 							)
 					</Action>
 
-					<Action name="Upgrade reactor" key="P" >
+					<Action name="Upgrade Reactor" key="P" >
 						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 							{
 							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-4;")

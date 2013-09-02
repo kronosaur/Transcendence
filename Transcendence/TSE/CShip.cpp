@@ -19,6 +19,7 @@ static CObjectClass<CShip>g_Class(OBJID_CSHIP, NULL);
 
 const Metric MAX_MANEUVER_DELAY	=				8.0;
 const Metric MANEUVER_MASS_FACTOR =				0.4;
+const Metric MAX_SPEED_FOR_DOCKING2 =			(0.04 * 0.04 * LIGHT_SPEED * LIGHT_SPEED);
 
 #define MAX_DELTA								(2.0 * g_KlicksPerPixel)
 #define MAX_DELTA2								(MAX_DELTA * MAX_DELTA)
@@ -45,10 +46,14 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
+#define PROPERTY_CHARACTER						CONSTLIT("character")
 #define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
 #define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
+#define PROPERTY_DOCKED_AT_ID					CONSTLIT("dockedAtID")
+#define PROPERTY_DOCKING_ENABLED				CONSTLIT("dockingEnabled")
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_PLAYER_WINGMAN					CONSTLIT("playerWingman")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
 #define PROPERTY_SELECTED_LAUNCHER				CONSTLIT("selectedLauncher")
 #define PROPERTY_SELECTED_MISSILE				CONSTLIT("selectedMissile")
@@ -71,6 +76,7 @@ CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_Devices(NULL),
 		m_pEncounterInfo(NULL),
 		m_dwNameFlags(0),
+		m_pExitGate(NULL),
 		m_pDeferredOrders(NULL)
 
 //	CShip constructor
@@ -141,8 +147,8 @@ void CShip::Behavior (void)
 //	Implements behavior
 
 	{
-	if (!IsInactive())
-		m_pController->Behavior(); 
+	if (!IsInactive() && !m_fControllerDisabled)
+		m_pController->Behavior();
 	}
 
 void CShip::CalcArmorBonus (void)
@@ -201,106 +207,43 @@ void CShip::CalcDeviceBonus (void)
 
 	{
 	int i, j;
-	bool bEnhancers = false;
 
 	//	Loop over all devices
 
 	for (i = 0; i < GetDeviceCount(); i++)
 		if (!m_Devices[i].IsEmpty())
 			{
-			//	Keep track of the bonuses for this device
+			//	Keep an enhancement stack for this device
 
-			int iTotalBonus = m_Devices[i].GetSlotBonus();
-			int iFireDelayAdj = 100;
-			int iFireDelayDenominator = 1;
+			CItemEnhancementStack *pEnhancements = new CItemEnhancementStack;
+			TArray<CString> EnhancementIDs;
 
-			//	This is the activation delay without bonuses; we compute it
-			//	only when we need it.
+			//	Add any enhancements on the item itself
 
-			int iActivateDelay = -1;
+			if (!m_Devices[i].GetMods().IsEmpty())
+				pEnhancements->Insert(m_Devices[i].GetMods());
 
-			//	Loop over all devices and apply bonuses
+			//	Add any slot bonus
 
-			CSymbolTable Bonuses;
+			int iSlotBonus = m_Devices[i].GetSlotBonus();
+			if (iSlotBonus != 0)
+				pEnhancements->InsertHPBonus(iSlotBonus);
+
+			//	Add enhancements from other devices
+
 			for (j = 0; j < GetDeviceCount(); j++)
 				if (i != j && !m_Devices[j].IsEmpty())
 					{
-					//	See if this device confers any bonuses
+					//	See if this device enhances us
 
-					SDeviceEnhancementDesc Desc;
-					if (m_Devices[j].GetDeviceEnhancementDesc(this, &m_Devices[i], &Desc)
-							&& (Desc.sID.IsBlank() || Bonuses.Lookup(Desc.sID) == ERR_NOTFOUND))
+					if (m_Devices[j].AccumulateEnhancements(this, &m_Devices[i], EnhancementIDs, pEnhancements))
 						{
-						//	Add hp/damage bonus
-
-						iTotalBonus += Desc.iBonus;
-
-						//	Add rate adj bonuses
-
-						if (Desc.iActivateAdj != 100)
-							{
-							//	Figure out the activation delay without any bonuses
-							//	This is only used if we need to compute adj after limits
-							//	(min or max)
-
-							if (iActivateDelay == -1)
-								{
-								m_Devices[i].SetActivateDelayAdj(100);
-								iActivateDelay = m_Devices[i].GetActivateDelay(this);
-								}
-
-							//	Now compute the adj
-
-							if (iActivateDelay > 0)
-								{
-								int iNewActivateDelay = (iActivateDelay * Desc.iActivateAdj + 50) / 100;
-								if (iNewActivateDelay < Desc.iMinActivateDelay)
-									{
-									if (Desc.iActivateAdj < 100)
-										{
-										iFireDelayAdj *= 100 * Desc.iMinActivateDelay / iActivateDelay;
-										iFireDelayDenominator *= 100;
-										}
-									}
-								else if (iNewActivateDelay > Desc.iMaxActivateDelay && Desc.iMaxActivateDelay > 0)
-									{
-									if (Desc.iActivateAdj > 100)
-										{
-										iFireDelayAdj *= 100 * Desc.iMaxActivateDelay / iActivateDelay;
-										iFireDelayDenominator *= 100;
-										}
-									}
-								else
-									{
-									iFireDelayAdj *= Desc.iActivateAdj;
-									iFireDelayDenominator *= 100;
-									}
-								}
-							}
-
 						//	If the device affected something, then we now know what it is
 
 						if (IsPlayer())
 							m_Devices[j].GetClass()->GetItemType()->SetKnown();
-
-						//	Remember that we already added this enhancement ID
-
-						Bonuses.AddEntry(Desc.sID, NULL);
 						}
 					}
-
-			//	Add bonus from any enhancements
-
-			iTotalBonus += m_Devices[i].GetMods().GetHPBonus();
-
-			//	Add activate delay adj from any enhancements
-
-			int iModAdj = m_Devices[i].GetMods().GetActivateRateAdj();
-			if (iModAdj != 100)
-				{
-				iFireDelayAdj *= iModAdj;
-				iFireDelayDenominator *= 100;
-				}
 
 			//	Deal with class specific stuff
 
@@ -309,9 +252,11 @@ void CShip::CalcDeviceBonus (void)
 				case itemcatLauncher:
 				case itemcatWeapon:
 					{
-					//	Energy fields add a bonus
+					//	Overlays add a bonus
 
-					iTotalBonus += m_EnergyFields.GetWeaponBonus(&m_Devices[i], this);
+					int iBonus = m_EnergyFields.GetWeaponBonus(&m_Devices[i], this);
+					if (iBonus != 0)
+						pEnhancements->InsertHPBonus(iBonus);
 					break;
 					}
 
@@ -334,8 +279,11 @@ void CShip::CalcDeviceBonus (void)
 			//	Set the bonuses
 			//	Note that these include any bonuses confered by item enhancements
 
-			m_Devices[i].SetBonus(iTotalBonus);
-			m_Devices[i].SetActivateDelayAdj(iFireDelayAdj / iFireDelayDenominator);
+			m_Devices[i].SetActivateDelayAdj(pEnhancements->CalcActivateDelay(CItemCtx(this, &m_Devices[i])));
+
+			//	Take ownership of the stack.
+
+			m_Devices[i].SetEnhancements(pEnhancements);
 			}
 
 	//	Make sure we don't overflow fuel (in case we downgrade the reactor)
@@ -369,9 +317,11 @@ bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObjec
 	CInstalledDevice *pDevice = ItemCtx.GetDevice();
 
 	//	For primary weapons, the target is the controller target.
-	//	[Note: IsSecondaryWeapon returns TRUE for linked fire options.]
+	//	
+	//	NOTE: Selectable means that the weapon is not a secondary weapon
+	//	and not a linked-fire weapon.
 
-	if (!pDevice->IsSecondaryWeapon())
+	if (pDevice->IsSelectable(ItemCtx))
 		{
 		*retpTarget = m_pController->GetTarget();
 		*retiFireSolution = -1;
@@ -409,6 +359,183 @@ bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObjec
 			return (*retpTarget != NULL);
 			}
 		}
+	}
+
+CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, int *retiSlot)
+
+//	CalcDeviceToReplace
+//
+//	Checks to see if installing the given item REQUIRES us to replace an already
+//	installed device.
+
+	{
+	int i;
+
+	//	Pre-initialize
+
+	if (retiSlot)
+		*retiSlot = -1;
+
+	//	Get the item type
+
+	CDeviceClass *pDevice = Item.GetType()->GetDeviceClass();
+	if (pDevice == NULL)
+		return insNotInstallable;
+
+	ItemCategories iCategory = pDevice->GetCategory();
+	ItemCategories iSlotCategory = pDevice->GetSlotCategory();
+
+	//	See how many device slots we need
+
+	int iSlotsRequired = pDevice->GetSlotsRequired();
+
+	//	See if if this is a device with an assigned slot (like a shield generator
+	//	or cargo hold, etc.)
+
+	DeviceNames iNamedSlot = GetDeviceNameForCategory(iCategory);
+	if (iNamedSlot != devNone 
+			&& iNamedSlot != devPrimaryWeapon
+			&& HasNamedDevice(iNamedSlot))
+		{
+		if (retiSlot)
+			*retiSlot = m_NamedDevices[iNamedSlot];
+
+		switch (iNamedSlot)
+			{
+			case devMissileWeapon:
+				return insReplaceLauncher;
+
+			case devShields:
+				return insReplaceShields;
+
+			case devDrive:
+				return insReplaceDrive;
+
+			case devCargo:
+				return insReplaceCargo;
+
+			case devReactor:
+				return insReplaceReactor;
+
+			default:
+				ASSERT(false);
+				return insNoDeviceSlotsLeft;
+			}
+		}
+
+	//	If we have no limitation on slots, then we can continue.
+
+	if (m_pClass->GetMaxDevices() == -1)
+		return insOK;
+
+	//	Otherwise, check to make sure that we have enough slots.
+
+	bool bIsWeapon = (iSlotCategory == itemcatWeapon || iSlotCategory == itemcatLauncher);
+	bool bIsMisc = (iSlotCategory == itemcatMiscDevice);
+	int iAll = 0;
+	int iWeapons = 0;
+	int iNonWeapons = 0;
+
+	//	Count the number of slots being used up currently
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty())
+			{
+			int iSlots = pDevice->GetClass()->GetSlotsRequired();
+			iAll += iSlots;
+
+			if (pDevice->GetSlotCategory() == itemcatWeapon 
+					|| pDevice->GetSlotCategory() == itemcatLauncher)
+				iWeapons += iSlots;
+			else
+				iNonWeapons += iSlots;
+			}
+		}
+
+	//	See how many slots we would need to free in order to install this 
+	//	device.
+
+	int iAllSlotsNeeded = (iAll + iSlotsRequired) - m_pClass->GetMaxDevices();
+	int iWeaponSlotsNeeded = (bIsWeapon
+			&& (m_pClass->GetMaxWeapons() < m_pClass->GetMaxDevices())
+				? ((iWeapons + iSlotsRequired) - m_pClass->GetMaxWeapons())
+				: 0);
+	int iNonWeaponSlotsNeeded = (!bIsWeapon
+			&& (m_pClass->GetMaxNonWeapons() < m_pClass->GetMaxDevices())
+				? ((iNonWeapons + iSlotsRequired) - m_pClass->GetMaxNonWeapons())
+				: 0);
+
+	//	If we have enough space, then we're done
+
+	if (iAllSlotsNeeded <= 0
+			&& iWeaponSlotsNeeded <= 0
+			&& iNonWeaponSlotsNeeded <= 0)
+		return insOK;
+
+	//	If we need more space, check to see if we replace an existing device.
+
+	int iSlotToReplace = -1;
+	int iBestLevel;
+	int iBestType;
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty())
+			{
+			bool bThisIsWeapon = (pDevice->GetSlotCategory() == itemcatWeapon || pDevice->GetSlotCategory() == itemcatLauncher);
+			bool bThisIsMisc = (pDevice->GetSlotCategory() == itemcatMiscDevice);
+			int iAllSlotsFreed = pDevice->GetClass()->GetSlotsRequired();
+			int iWeaponSlotsFreed = (bThisIsWeapon ? iAllSlotsFreed	: 0);
+			int iNonWeaponSlotsFreed = (!bThisIsWeapon ? iAllSlotsFreed : 0);
+
+			int iThisType;
+			if (bThisIsMisc)
+				iThisType = 3;
+			else if (bThisIsWeapon)
+				iThisType = 2;
+			else
+				iThisType = 1;
+
+			int iThisLevel = pDevice->GetClass()->GetLevel();
+
+			//	See if uninstalling this device would be enough; if not, then
+			//	don't bother.
+
+			if (iAllSlotsFreed < iAllSlotsNeeded
+					|| iWeaponSlotsFreed < iWeaponSlotsNeeded
+					|| iNonWeaponSlotsFreed < iNonWeaponSlotsNeeded)
+				continue;
+
+			//	See if removing this device is better than removing another one.
+
+			if (iSlotToReplace == -1
+					|| (iThisType > iBestType)
+					|| (iThisType == iBestType && iThisLevel > iBestLevel))
+				{
+				iSlotToReplace = i;
+				iBestType = iThisType;
+				iBestLevel = iThisLevel;
+				}
+			}
+		}
+
+	//	If we found it, then OK. Otherwise, we cannot install
+
+	if (iSlotToReplace != -1)
+		{
+		if (retiSlot)
+			*retiSlot = iSlotToReplace;
+
+		return insReplaceOther;
+		}
+	else if (iWeaponSlotsNeeded > 0)
+		return insNoWeaponSlotsLeft;
+	else if (iNonWeaponSlotsNeeded > 0)
+		return insNoNonWeaponSlotsLeft;
+	else
+		return insNoDeviceSlotsLeft;
 	}
 
 int CShip::CalcMaxCargoSpace (void) const
@@ -485,168 +612,128 @@ bool CShip::CanAttack (void) const
 	return (!IsInactive() && !IsVirtual());
 	}
 
-CShip::InstallArmorStatus CShip::CanInstallArmor (const CItem &Item) const
+bool CShip::CanInstallItem (const CItem &Item, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
 
-//	CanInstallArmor
+//	CanInstallItem
 //
-//	Returns whether or not the armor can be installed
+//	Returns TRUE if we can install the given item.
 
 	{
-	//	See if the armor is too heavy
+	bool bCanInstall = false;
+	InstallItemResults iResult = insOK;
+	CString sResult;
+	CItem ItemToReplace;
 
-	int iMaxArmor = m_pClass->GetMaxArmorMass();
-	if (iMaxArmor && Item.GetMassKg() > iMaxArmor)
-		return insArmorTooHeavy;
+	//	If this is an armor item, see if we can install it.
 
-	return insArmorOK;
-	}
-
-CShip::InstallArmorStatus CShip::CanInstallArmor (CItemListManipulator &ItemList) const
-	{
-	return CanInstallArmor(ItemList.GetItemAtCursor());
-	}
-
-CShip::InstallDeviceStatus CShip::CanInstallDevice (const CItem &Item, bool bReplace)
-
-//	CanInstallDevice
-//
-//	Returns whether or not the device can be installed
-
-	{
-	int i;
-
-	//	Get the item type
-
-	CDeviceClass *pDevice = Item.GetType()->GetDeviceClass();
-	if (pDevice == NULL)
-		return insNotADevice;
-
-	ItemCategories iCategory = pDevice->GetCategory();
-	ItemCategories iSlotCategory = pDevice->GetSlotCategory();
-
-	//	See if the ship's engine core is powerful enough
-
-	if (GetMaxPower() > 0
-			&& pDevice->GetPowerRating(CItemCtx(&Item)) >= GetMaxPower())
-		return insEngineCoreTooWeak;
-
-	//	If this is a reactor, then see if the ship class can support it
-
-	if (iCategory == itemcatReactor
-			&& m_pClass->GetMaxReactorPower() > 0
-			&& pDevice->GetReactorDesc()->iMaxPower > m_pClass->GetMaxReactorPower())
-		return insReactorMaxPower;
-
-	//	See how many device slots we need
-
-	int iSlots = pDevice->GetSlotsRequired();
-	int iSlotsToBeFreed = 0;
-
-	//	See if we are replacing an existing device
-
-	DeviceNames iNamedDevice;
-	InstallDeviceStatus iAlreadyInstalledError;
-	switch (iCategory)
+	if (Item.IsArmor())
 		{
-		case itemcatLauncher:
-			iNamedDevice = devMissileWeapon;
-			iAlreadyInstalledError = insLauncherInstalled;
-			break;
+		int iMaxArmor = m_pClass->GetMaxArmorMass();
 
-		case itemcatShields:
-			iNamedDevice = devShields;
-			iAlreadyInstalledError = insShieldsInstalled;
-			break;
+		//	Fire CanBeInstalled to check for custom conditions
 
-		case itemcatDrive:
-			iNamedDevice = devDrive;
-			iAlreadyInstalledError = insDriveInstalled;
-			break;
-
-		case itemcatCargoHold:
-			iNamedDevice = devCargo;
-			iAlreadyInstalledError = insCargoInstalled;
-			break;
-
-		case itemcatReactor:
-			iNamedDevice = devReactor;
-			iAlreadyInstalledError = insReactorInstalled;
-			break;
-
-		default:
-			iNamedDevice = devNone;
-			iAlreadyInstalledError = insOK;
-		}
-
-	if (iNamedDevice != devNone)
-		{
-		CInstalledDevice *pAlreadyInstalled = GetNamedDevice(iNamedDevice);
-		if (pAlreadyInstalled)
+		if (!Item.FireCanBeInstalled(this, &sResult))
 			{
-			if (bReplace)
-				iSlotsToBeFreed = pAlreadyInstalled->GetClass()->GetSlotsRequired();
-			else
-				return iAlreadyInstalledError;
+			bCanInstall = false;
+			iResult = insCannotInstall;
+			}
+
+		//	See if the armor is too heavy
+
+		else if (iMaxArmor && Item.GetMassKg() > iMaxArmor)
+			iResult = insArmorTooHeavy;
+
+		//	Otherwise, we're OK
+
+		else
+			{
+			bCanInstall = true;
+			iResult = insOK;
 			}
 		}
 
-	//	Check to see if have exceeded the available device slots
+	//	If this is a device item, see if we can install it.
 
-	if (m_pClass->GetMaxDevices() != -1)
+	else if (Item.IsDevice())
 		{
-		//	Count the number of slots being used up currently
+		//	Get the item type
 
-		int iAll = 0;
-		int iWeapons = 0;
-		int iNonWeapons = 0;
-		for (i = 0; i < GetDeviceCount(); i++)
+		CDeviceClass *pDevice = Item.GetType()->GetDeviceClass();
+		ItemCategories iCategory = pDevice->GetCategory();
+		ItemCategories iSlotCategory = pDevice->GetSlotCategory();
+
+		//	Fire CanBeInstalled to check for custom conditions
+
+		if (!Item.FireCanBeInstalled(this, &sResult))
 			{
-			CInstalledDevice *pDevice = GetDevice(i);
-			if (!pDevice->IsEmpty())
-				{
-				int iSlots = pDevice->GetClass()->GetSlotsRequired();
-				iAll += iSlots;
+			bCanInstall = false;
+			iResult = insCannotInstall;
+			}
 
-				if (pDevice->GetSlotCategory() == itemcatWeapon || pDevice->GetSlotCategory() == itemcatLauncher)
-					iWeapons += iSlots;
-				else
-					iNonWeapons += iSlots;
+		//	See if the ship's engine core is powerful enough
+
+		else if (GetMaxPower() > 0
+				&& pDevice->GetPowerRating(CItemCtx(&Item)) >= GetMaxPower())
+			iResult = insReactorTooWeak;
+
+		//	If this is a reactor, then see if the ship class can support it
+
+		else if (iCategory == itemcatReactor
+				&& m_pClass->GetMaxReactorPower() > 0
+				&& pDevice->GetReactorDesc()->iMaxPower > m_pClass->GetMaxReactorPower())
+			iResult = insReactorIncompatible;
+
+		//	See if we have enough device slots to install or if we have to
+		//	replace an existing device.
+
+		else
+			{
+			int iSlot;
+			iResult = CalcDeviceToReplace(Item, &iSlot);
+			switch (iResult)
+				{
+				case insReplaceCargo:
+				case insReplaceDrive:
+				case insReplaceLauncher:
+				case insReplaceOther:
+				case insReplaceReactor:
+				case insReplaceShields:
+					bCanInstall = true;
+					break;
+
+				default:
+					bCanInstall = false;
+				}
+
+			if (iSlot != -1)
+				{
+				CItemListManipulator ItemList(GetItemList());
+				SetCursorAtDevice(ItemList, iSlot);
+				ItemToReplace = ItemList.GetItemAtCursor();
 				}
 			}
-
-		//	See if we can fit the new device
-
-		if (iAll + iSlots - iSlotsToBeFreed > m_pClass->GetMaxDevices())
-			return insNoSlots;
-
-		//	See if we have exceeded the maximum number of weapons
-
-		if ((iSlotCategory == itemcatWeapon || iSlotCategory == itemcatLauncher)
-				&& m_pClass->GetMaxWeapons() < m_pClass->GetMaxDevices()
-				&& iWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxWeapons())
-			return insNoWeaponSlots;
-
-		//	See if we have exceeded the maximum number of non-weapons
-
-		if ((iSlotCategory != itemcatWeapon && iSlotCategory != itemcatLauncher)
-				&& m_pClass->GetMaxNonWeapons() < m_pClass->GetMaxDevices()
-				&& iNonWeapons + iSlots - iSlotsToBeFreed > m_pClass->GetMaxNonWeapons())
-			return insNoGeneralSlots;
 		}
 
-	//	Otherwise it is OK
+	//	Otherwise, item is not installable.
 
-	return insOK;
-	}
+	else
+		{
+		bCanInstall = false;
+		iResult = insNotInstallable;
+		}
 
-CShip::InstallDeviceStatus CShip::CanInstallDevice (CItemListManipulator &ItemList)
+	//	Done
 
-//	CanInstallDevice
-//
-//	Returns whether or not the device can be installed
+	if (retiResult)
+		*retiResult = iResult;
 
-	{
-	return CanInstallDevice(ItemList.GetItemAtCursor());
+	if (retsResult)
+		*retsResult = sResult;
+
+	if (retItemToReplace)
+		*retItemToReplace = ItemToReplace;
+
+	return bCanInstall;
 	}
 
 CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
@@ -815,6 +902,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_iBlindnessTimer = 0;
 	pShip->m_iLRSBlindnessTimer = 0;
 	pShip->m_iParalysisTimer = 0;
+	pShip->m_iDriveDamagedTimer = 0;
 	pShip->m_iDisarmedTimer = 0;
 	pShip->m_iExitGateTimer = 0;
 	pShip->m_pExitGate = NULL;
@@ -841,6 +929,8 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fManualSuspended = false;
 	pShip->m_fGalacticMap = false;
 	pShip->m_fRecalcItemMass = true;
+	pShip->m_fDockingDisabled = false;
+	pShip->m_fControllerDisabled = false;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -900,27 +990,40 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		//	Assign to named devices
 
-		ItemCategories Category = pShip->m_Devices[i].GetCategory();
-		if (pShip->m_Devices[i].IsSecondaryWeapon())
-			;
-		else if (pShip->m_NamedDevices[devPrimaryWeapon] == -1
-				&& Category == itemcatWeapon)
-			pShip->m_NamedDevices[devPrimaryWeapon] = i;
-		else if (pShip->m_NamedDevices[devMissileWeapon] == -1
-				&& Category == itemcatLauncher)
-			pShip->m_NamedDevices[devMissileWeapon] = i;
-		else if (pShip->m_NamedDevices[devShields] == -1
-				&& Category == itemcatShields)
-			pShip->m_NamedDevices[devShields] = i;
-		else if (pShip->m_NamedDevices[devDrive] == -1
-				&& Category == itemcatDrive)
-			pShip->m_NamedDevices[devDrive] = i;
-		else if (pShip->m_NamedDevices[devCargo] == -1
-				&& Category == itemcatCargoHold)
-			pShip->m_NamedDevices[devCargo] = i;
-		else if (pShip->m_NamedDevices[devReactor] == -1
-				&& Category == itemcatReactor)
-			pShip->m_NamedDevices[devReactor] = i;
+		switch (pShip->m_Devices[i].GetCategory())
+			{
+			case itemcatWeapon:
+				if (pShip->m_NamedDevices[devPrimaryWeapon] == -1
+						&& pShip->m_Devices[i].IsSelectable(CItemCtx(pShip, &pShip->m_Devices[i])))
+					pShip->m_NamedDevices[devPrimaryWeapon] = i;
+				break;
+
+			case itemcatLauncher:
+				if (pShip->m_NamedDevices[devMissileWeapon] == -1
+						&& pShip->m_Devices[i].IsSelectable(CItemCtx(pShip, &pShip->m_Devices[i])))
+					pShip->m_NamedDevices[devMissileWeapon] = i;
+				break;
+
+			case itemcatShields:
+				if (pShip->m_NamedDevices[devShields] == -1)
+					pShip->m_NamedDevices[devShields] = i;
+				break;
+
+			case itemcatDrive:
+				if (pShip->m_NamedDevices[devDrive] == -1)
+					pShip->m_NamedDevices[devDrive] = i;
+				break;
+
+			case itemcatCargoHold:
+				if (pShip->m_NamedDevices[devCargo] == -1)
+					pShip->m_NamedDevices[devCargo] = i;
+				break;
+
+			case itemcatReactor:
+				if (pShip->m_NamedDevices[devReactor] == -1)
+					pShip->m_NamedDevices[devReactor] = i;
+				break;
+			}
 
 		//	Add extra items (we do this at the end because this will
 		//	modify the cursor)
@@ -1042,6 +1145,10 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	else
 		pShip->SetEventFlags();
 
+	//	Ship interior
+
+	pShip->m_Interior.Init(pClass->GetInteriorDesc());
+
 	//	If we have a generator context, set some more settings
 
 	if (pCtx)
@@ -1116,216 +1223,83 @@ CurrencyValue CShip::CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue)
 		return pMoney->GetCredits(dwEconomyUNID);
 	}
 
-AbilityStatus CShip::GetAbility (Abilities iAbility)
+void CShip::DamageCargo (SDamageCtx &Ctx)
 
-//	GetAbility
+//	DamageCargo
 //
-//	Returns the status of the given ability
+//	Damages the cargo hold
 
 	{
-	switch (iAbility)
+	//	Create an overlay to spew smoke
+
+	DWORD dwDamageUNID = (mathRandom(1, 100) <= 20 ? UNID_DAMAGED_SITE_SMALL : UNID_DEPREZ_SITE_SMALL);
+	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
+	if (pOverlayType)
 		{
-		case ablShortRangeScanner:
-			return (IsBlind() ? ablDamaged : ablInstalled);
+		//	Convert from a hit position to an overlay pos
 
-		case ablLongRangeScanner:
-			return ablInstalled;
+		int iPosAngle;
+		int iPosRadius;
+		CalcOverlayPos(pOverlayType, Ctx.vHitPos, &iPosAngle, &iPosRadius);
 
-		case ablAutopilot:
-			return (HasAutopilot() ? ablInstalled : ablUninstalled);
+		//	Add the overlay (lasts 10-30 seconds real time)
 
-		case ablExtendedScanner:
-			return (IsSRSEnhanced() ? ablInstalled : ablUninstalled);
-
-		case ablTargetingSystem:
-			return (HasTargetingComputer() ? ablInstalled : ablUninstalled);
-
-		case ablSystemMap:
-			return ablInstalled;
-
-		case ablGalacticMap:
-			return (m_fGalacticMap ? ablInstalled : ablUninstalled);
-
-		default:
-			return ablUninstalled;
+		AddOverlay(pOverlayType, iPosAngle, iPosRadius, iPosAngle, mathRandom(10 * g_TicksPerSecond, 30 * g_TicksPerSecond));
 		}
 	}
 
-CurrencyValue CShip::GetBalance (DWORD dwEconomyUNID)
+void CShip::DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx)
 
-//	GetBalance
+//	DamageDevice
 //
-//	Returns the amount of money the station has left
+//	Damages the given device
 
 	{
-	ASSERT(m_pController);
+	//	Damage the device
 
-	CCurrencyBlock *pMoney = m_pController->GetCurrencyBlock();
-	if (pMoney)
-		return (int)pMoney->GetCredits(dwEconomyUNID);
-	else
-		return 0;
+	DamageItem(pDevice);
+	OnDeviceStatus(pDevice, CDeviceClass::failDeviceHitByDamage);
+
+	//	Create an overlay to spew smoke
+
+	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_SMALL);
+	if (pOverlayType)
+		CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, 9000);
 	}
 
-Metric CShip::GetCargoMass (void)
+void CShip::DamageDrive (SDamageCtx &Ctx)
 
-//	GetCargoMass
+//	DamageDrive
 //
-//	Returns the total mass of all items in cargo (in metric tons).
+//	Damages the main drive.
 
 	{
-	if (m_fRecalcItemMass)
+	//	Look for a drive device. If we have it, and it is undamaged, then it is
+	//	damaged.
+
+	CInstalledDevice *pDrive = GetNamedDevice(devDrive);
+	if (pDrive && !pDrive->IsDamaged())
 		{
-		m_rItemMass = CalculateItemMass(&m_rCargoMass);
-		m_fRecalcItemMass = false;
+		DamageDevice(pDrive, Ctx);
+		return;
 		}
 
-	return m_rCargoMass;
-	}
+	//	Otherwise, we damage the built-in drive.
 
-Metric CShip::GetItemMass (void)
-
-//	GetItemMass
-//
-//	Returns the total mass of all items (in metric tons).
-
-	{
-	if (m_fRecalcItemMass)
+	if (m_iDriveDamagedTimer != -1)
 		{
-		m_rItemMass = CalculateItemMass(&m_rCargoMass);
-		m_fRecalcItemMass = false;
+		int iDamageTime = mathRandom(1800, 3600);
+
+		//	Increment timer
+
+		m_iDriveDamagedTimer = Min(m_iDriveDamagedTimer + iDamageTime, MAX_SHORT);
+
+		//	Create an overlay to spew smoke
+
+		CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
+		if (pOverlayType)
+			CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, iDamageTime);
 		}
-
-	return m_rItemMass;
-	}
-
-ICCItem *CShip::GetProperty (const CString &sName)
-
-//	GetProperty
-//
-//	Returns a property
-
-	{
-	int i;
-	CCodeChain &CC = g_pUniverse->GetCC();
-
-	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CInstalledArmor *pSection = GetArmorSection(i);
-			if (!pSection->GetClass()->IsBlindingDamageImmune(pSection))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE) || strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CInstalledArmor *pSection = GetArmorSection(i);
-			if (!pSection->GetClass()->IsDeviceDamageImmune(pSection))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else if (strEquals(sName, PROPERTY_DISINTEGRATION_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CInstalledArmor *pSection = GetArmorSection(i);
-			if (!pSection->GetClass()->IsDisintegrationImmune(pSection))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CInstalledArmor *pSection = GetArmorSection(i);
-			if (!pSection->GetClass()->IsEMPDamageImmune(pSection))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else if (strEquals(sName, PROPERTY_RADIATION_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CInstalledArmor *pSection = GetArmorSection(i);
-			if (!pSection->GetClass()->IsRadiationImmune(pSection))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
-		{
-		CItem theItem = GetNamedDeviceItem(devMissileWeapon);
-		if (theItem.GetType() == NULL)
-			return CC.CreateNil();
-
-		return CreateListFromItem(CC, theItem);
-		}
-	else if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
-		{
-		CInstalledDevice *pLauncher = GetNamedDevice(devMissileWeapon);
-		if (pLauncher == NULL)
-			return CC.CreateNil();
-
-		CItemType *pType;
-		pLauncher->GetSelectedVariantInfo(this, NULL, NULL, &pType);
-		if (pType == NULL)
-			return CC.CreateNil();
-
-		if (pType->IsMissile())
-			{
-			CItemListManipulator ItemList(GetItemList());
-			CItem theItem(pType, 1);
-			if (!ItemList.SetCursorAtItem(theItem))
-				return CC.CreateNil();
-
-			return CreateListFromItem(CC, ItemList.GetItemAtCursor());
-			}
-
-		//	Sometimes a launcher has no ammo (e.g., a disposable missile
-		//	launcher). In that case we return the launcher itself.
-
-		else
-			{
-			CItem theItem = GetNamedDeviceItem(devMissileWeapon);
-			if (theItem.GetType() == NULL)
-				return CC.CreateNil();
-
-			return CreateListFromItem(CC, theItem);
-			}
-		}
-	else if (strEquals(sName, PROPERTY_SELECTED_WEAPON))
-		{
-		CItem theItem = GetNamedDeviceItem(devPrimaryWeapon);
-		if (theItem.GetType() == NULL)
-			return CC.CreateNil();
-
-		return CreateListFromItem(CC, theItem);
-		}
-	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
-		{
-		for (i = 0; i < GetArmorSectionCount(); i++)
-			{
-			CItemCtx Ctx(this, GetArmorSection(i));
-			if (!Ctx.GetArmorClass()->IsShatterImmune(Ctx))
-				return CC.CreateNil();
-			}
-
-		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
-		}
-	else
-		return CSpaceObject::GetProperty(sName);
 	}
 
 int CShip::DamageArmor (int iSect, DamageDesc &Damage)
@@ -1373,12 +1347,6 @@ void CShip::DamageExternalDevice (int iDev, SDamageCtx &Ctx)
 	//	If we're already damaged, then nothing more can happen
 
 	if (pDevice->IsEmpty() || pDevice->IsDamaged())
-		return;
-
-	//	The chance that the device got hit depends on the number of armor segments
-	//	A device takes up 1/9th of the surface area of a segment.
-
-	if (mathRandom(1, GetArmorSectionCount() * 9) != 7)
 		return;
 
 	//	If the device gets hit, see if it gets damaged
@@ -1736,6 +1704,43 @@ CInstalledDevice *CShip::FindDevice (const CItem &Item)
 		return NULL;
 	}
 
+bool CShip::FindDeviceAtPos (const CVector &vPos, CInstalledDevice **retpDevice)
+
+//	FindDeviceAtPos
+//
+//	Returns a random device within a few pixels of the given position.
+
+	{
+	int i;
+
+	const Metric MAX_DIST = 5.0 * g_KlicksPerPixel;
+	CVector vUR(vPos.GetX() + MAX_DIST, vPos.GetY() + MAX_DIST);
+	CVector vLL(vPos.GetX() - MAX_DIST, vPos.GetY() - MAX_DIST);
+
+	//	Make a list of all devices near the given position
+
+	TArray<CInstalledDevice *> List;
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty()
+				&& pDevice->GetPos(this).InBox(vUR, vLL))
+			List.Insert(pDevice);
+		}
+
+	//	Do we have any devices? If so, return a random one.
+
+	if (List.GetCount() > 0)
+		{
+		if (retpDevice)
+			*retpDevice = List[mathRandom(0, List.GetCount() - 1)];
+
+		return true;
+		}
+	else
+		return false;
+	}
+
 int CShip::FindDeviceIndex (CInstalledDevice *pDevice) const
 
 //	FindDeviceIndex
@@ -1823,7 +1828,7 @@ int CShip::FindNextDevice (int iStart, ItemCategories Category, int iDir)
 		int iDevice = ((iDir * i) + iStartingSlot) % GetDeviceCount();
 		if (!m_Devices[iDevice].IsEmpty() 
 				&& m_Devices[iDevice].GetCategory() == Category
-				&& !m_Devices[iDevice].IsSecondaryWeapon())
+				&& m_Devices[iDevice].IsSelectable(CItemCtx(this, &m_Devices[iDevice])))
 			return iDevice;
 		}
 
@@ -1911,7 +1916,17 @@ void CShip::FinishCreation (SShipGeneratorCtx *pCtx)
 		}
 	}
 
-void CShip::GateHook (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
+bool CShip::FollowsObjThroughGate (CSpaceObject *pLeader)
+
+//	FollowsObjThroughGate
+//
+//	Returns true if we follow the leader through a gate
+
+	{
+	return m_pController->FollowsObjThroughGate(pLeader);
+	}
+
+void CShip::GateHook (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
 
 //	GateHook
 //
@@ -1930,7 +1945,58 @@ void CShip::GateHook (CTopologyNode *pDestNode, const CString &sDestEntryPoint, 
 
 	//	Let the controller handle it
 
-	m_pController->OnEnterGate(pDestNode, sDestEntryPoint, pStargate);
+	m_pController->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend);
+	}
+
+AbilityStatus CShip::GetAbility (Abilities iAbility)
+
+//	GetAbility
+//
+//	Returns the status of the given ability
+
+	{
+	switch (iAbility)
+		{
+		case ablShortRangeScanner:
+			return (IsBlind() ? ablDamaged : ablInstalled);
+
+		case ablLongRangeScanner:
+			return ablInstalled;
+
+		case ablAutopilot:
+			return (HasAutopilot() ? ablInstalled : ablUninstalled);
+
+		case ablExtendedScanner:
+			return (IsSRSEnhanced() ? ablInstalled : ablUninstalled);
+
+		case ablTargetingSystem:
+			return (HasTargetingComputer() ? ablInstalled : ablUninstalled);
+
+		case ablSystemMap:
+			return ablInstalled;
+
+		case ablGalacticMap:
+			return (m_fGalacticMap ? ablInstalled : ablUninstalled);
+
+		default:
+			return ablUninstalled;
+		}
+	}
+
+CurrencyValue CShip::GetBalance (DWORD dwEconomyUNID)
+
+//	GetBalance
+//
+//	Returns the amount of money the station has left
+
+	{
+	ASSERT(m_pController);
+
+	CCurrencyBlock *pMoney = m_pController->GetCurrencyBlock();
+	if (pMoney)
+		return (int)pMoney->GetCredits(dwEconomyUNID);
+	else
+		return 0;
 	}
 
 CSpaceObject *CShip::GetBase (void) const
@@ -1949,6 +2015,22 @@ CSpaceObject *CShip::GetBase (void) const
 
 	else
 		return m_pController->GetBase();
+	}
+
+Metric CShip::GetCargoMass (void)
+
+//	GetCargoMass
+//
+//	Returns the total mass of all items in cargo (in metric tons).
+
+	{
+	if (m_fRecalcItemMass)
+		{
+		m_rItemMass = CalculateItemMass(&m_rCargoMass);
+		m_fRecalcItemMass = false;
+		}
+
+	return m_rCargoMass;
 	}
 
 Metric CShip::GetCargoSpaceLeft (void)
@@ -2069,7 +2151,28 @@ CDesignType *CShip::GetDefaultDockScreen (CString *retsName)
 //	Returns the screen on dock (NULL_STR if none)
 
 	{
-	return m_pClass->GetFirstDockScreen(retsName);
+	//	If docking is disabled or we are docked with some station, then no one
+	//	can dock with us.
+
+	if (m_fDockingDisabled 
+			|| m_pDocked != NULL
+			|| IsDestroyed())
+		return NULL;
+
+	//	If no screen, then we're done
+
+	CDesignType *pScreen = m_pClass->GetFirstDockScreen(retsName);
+	if (pScreen == NULL)
+		return NULL;
+
+	//	If we're moving, then no one can dock.
+
+	if (GetVel().Length2() > MAX_SPEED_FOR_DOCKING2)
+		return NULL;
+
+	//	Done
+
+	return pScreen;
 	}
 
 CSpaceObject *CShip::GetEscortPrincipal (void) const
@@ -2160,6 +2263,22 @@ int CShip::GetItemDeviceName (const CItem &Item) const
 	return -1;
 	}
 
+Metric CShip::GetItemMass (void)
+
+//	GetItemMass
+//
+//	Returns the total mass of all items (in metric tons).
+
+	{
+	if (m_fRecalcItemMass)
+		{
+		m_rItemMass = CalculateItemMass(&m_rCargoMass);
+		m_fRecalcItemMass = false;
+		}
+
+	return m_rItemMass;
+	}
+
 int CShip::GetManeuverDelay (void)
 
 //	GetManeuverDelay
@@ -2178,16 +2297,6 @@ int CShip::GetManeuverDelay (void)
 		}
 	else
 		return m_pClass->GetManeuverDelay();
-	}
-
-bool CShip::FollowsObjThroughGate (CSpaceObject *pLeader)
-
-//	FollowsObjThroughGate
-//
-//	Returns true if we follow the leader through a gate
-
-	{
-	return m_pController->FollowsObjThroughGate(pLeader);
 	}
 
 Metric CShip::GetMass (void)
@@ -2340,6 +2449,150 @@ int CShip::GetPowerConsumption (void)
 		return 1;
 	}
 
+ICCItem *CShip::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	int i;
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsBlindingDamageImmune(CItemCtx(this, pSection)))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_CHARACTER))
+		{
+		CGenericType *pCharacter = m_pClass->GetCharacter();
+		return (pCharacter ? CC.CreateInteger(pCharacter->GetUNID()) : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE) || strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsDeviceDamageImmune(CItemCtx(this, pSection)))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_DISINTEGRATION_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsDisintegrationImmune(CItemCtx(this, pSection)))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_DOCKED_AT_ID))
+		return (m_pDocked ? CC.CreateInteger(m_pDocked->GetID()) : CC.CreateNil());
+
+	else if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
+		return CC.CreateBool(SupportsDocking());
+
+	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsEMPDamageImmune(CItemCtx(this, pSection)))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))
+		{
+		return CC.CreateBool(m_pController->IsPlayerWingman());
+		}
+	else if (strEquals(sName, PROPERTY_RADIATION_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pSection = GetArmorSection(i);
+			if (!pSection->GetClass()->IsRadiationImmune(CItemCtx(this, pSection)))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
+		{
+		CItem theItem = GetNamedDeviceItem(devMissileWeapon);
+		if (theItem.GetType() == NULL)
+			return CC.CreateNil();
+
+		return CreateListFromItem(CC, theItem);
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
+		{
+		CInstalledDevice *pLauncher = GetNamedDevice(devMissileWeapon);
+		if (pLauncher == NULL)
+			return CC.CreateNil();
+
+		CItemType *pType;
+		pLauncher->GetSelectedVariantInfo(this, NULL, NULL, &pType);
+		if (pType == NULL)
+			return CC.CreateNil();
+
+		if (pType->IsMissile())
+			{
+			CItemListManipulator ItemList(GetItemList());
+			CItem theItem(pType, 1);
+			if (!ItemList.SetCursorAtItem(theItem))
+				return CC.CreateNil();
+
+			return CreateListFromItem(CC, ItemList.GetItemAtCursor());
+			}
+
+		//	Sometimes a launcher has no ammo (e.g., a disposable missile
+		//	launcher). In that case we return the launcher itself.
+
+		else
+			{
+			CItem theItem = GetNamedDeviceItem(devMissileWeapon);
+			if (theItem.GetType() == NULL)
+				return CC.CreateNil();
+
+			return CreateListFromItem(CC, theItem);
+			}
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_WEAPON))
+		{
+		CItem theItem = GetNamedDeviceItem(devPrimaryWeapon);
+		if (theItem.GetType() == NULL)
+			return CC.CreateNil();
+
+		return CreateListFromItem(CC, theItem);
+		}
+	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
+		{
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CItemCtx Ctx(this, GetArmorSection(i));
+			if (!Ctx.GetArmorClass()->IsShatterImmune(Ctx))
+				return CC.CreateNil();
+			}
+
+		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+	else
+		return CSpaceObject::GetProperty(sName);
+	}
+
 CString CShip::GetReactorName (void)
 
 //	GetReactorName
@@ -2352,19 +2605,6 @@ CString CShip::GetReactorName (void)
 		return pReactor->GetClass()->GetItemType()->GetNounPhrase();
 	else
 		return strPatternSubst(CONSTLIT("%s reactor"), m_pClass->GetShortName());
-	}
-
-int CShip::GetSellPrice (const CItem &Item, DWORD dwFlags)
-
-//	GetSellPrice
-//
-//	Returns the price at which the ship will sell the given
-//	item. Returns 0 if the ship cannot or will not sell the
-//	item.
-
-	{
-	CEconomyType *pDefaultEconomy = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
-	return (int)pDefaultEconomy->Exchange(Item.GetCurrencyType(), Item.GetTradePrice(this));
 	}
 
 int CShip::GetShieldLevel (void)
@@ -2420,23 +2660,76 @@ int CShip::GetVisibleDamage (void)
 //	Returns the amount of damage (%) that the object has taken
 
 	{
-	int iMaxPercent = 0;
+	int i;
 
-	//	Compute max and actual HP
+	//	If we have interior structure then we follow a different algorithm
 
-	for (int i = 0; i < GetArmorSectionCount(); i++)
+	if (!m_Interior.IsEmpty())
 		{
-		CInstalledArmor *pArmor = GetArmorSection(i);
+		//	Compute:
+		//
+		//	The sum of max hit points of all armor segments
+		//	The sum of remaining hit points of all armor segments
+		//	The percent damage of the worst armor segment
 
-		int iMaxHP = pArmor->GetMaxHP(this);
-		int iDamage = (iMaxHP > 0 ? 100 - (pArmor->GetHitPoints() * 100 / iMaxHP) : 100);
-		if (iDamage > iMaxPercent)
-			iMaxPercent = iDamage;
+		int iTotalMaxArmor = 0;
+		int iTotalArmorLeft = 0;
+		int iWorstDamage = 0;
+
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pArmor = GetArmorSection(i);
+
+			int iMaxHP = pArmor->GetMaxHP(this);
+			iTotalMaxArmor += iMaxHP;
+
+			int iLeft = pArmor->GetHitPoints();
+			iTotalArmorLeft += iLeft;
+
+			int iDamage = (iMaxHP > 0 ? 100 - (iLeft * 100 / iMaxHP) : 100);
+			if (iDamage > iWorstDamage)
+				iWorstDamage = iDamage;
+			}
+
+		//	Compute the percent damage of all armor segments.
+
+		int iArmorDamage = (iTotalMaxArmor > 0 ? 100 - (iTotalArmorLeft * 100 / iTotalMaxArmor) : 100);
+
+		//	Compute the percent damage of all interior segments.
+
+		int iMaxInterior;
+		int iInteriorLeft;
+		m_Interior.GetHitPoints(this, m_pClass->GetInteriorDesc(), &iInteriorLeft, &iMaxInterior);
+		int iInteriorDamage = (iMaxInterior > 0 ? 100 - (iInteriorLeft * 100 / iMaxInterior) : 100);
+
+		//	Combine all damage together, scaled so that interior + worst damage are 90%
+		//	of the result.
+
+		return ((10 * iArmorDamage) + (45 * iWorstDamage) + (45 * iInteriorDamage)) / 100;
 		}
 
-	//	Return % damage of the worst armor segment
+	//	Otherwise, we base it on armor
 
-	return iMaxPercent;
+	else
+		{
+		int iMaxPercent = 0;
+
+		//	Compute max and actual HP
+
+		for (i = 0; i < GetArmorSectionCount(); i++)
+			{
+			CInstalledArmor *pArmor = GetArmorSection(i);
+
+			int iMaxHP = pArmor->GetMaxHP(this);
+			int iDamage = (iMaxHP > 0 ? 100 - (pArmor->GetHitPoints() * 100 / iMaxHP) : 100);
+			if (iDamage > iMaxPercent)
+				iMaxPercent = iDamage;
+			}
+
+		//	Return % damage of the worst armor segment
+
+		return iMaxPercent;
+		}
 	}
 
 bool CShip::GetWeaponIsReady (DeviceNames iDev)
@@ -2457,7 +2750,7 @@ bool CShip::HasAttribute (const CString &sAttribute) const
 //	Returns TRUE if it has the given attribute
 
 	{
-	return m_pClass->HasAttribute(sAttribute);
+	return m_pClass->HasLiteralAttribute(sAttribute);
 	}
 
 bool CShip::HasNamedDevice (DeviceNames iDev) const
@@ -2602,12 +2895,13 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 	CDeviceClass *pNewDevice = ItemList.GetItemAtCursor().GetType()->GetDeviceClass();
 	ASSERT(pNewDevice);
 
-	//	If necessary, remove previous item in named slot
-
 	DeviceNames iNamedSlot = GetDeviceNameForCategory(pNewDevice->GetCategory());
-	if (iDeviceSlot == -1 
-			&& iNamedSlot != devNone && iNamedSlot != devPrimaryWeapon
-			&& HasNamedDevice(iNamedSlot))
+
+	//	If necessary, remove previous item in a slot
+
+	int iSlotToReplace;
+	CalcDeviceToReplace(ItemList.GetItemAtCursor(), &iSlotToReplace);
+	if (iSlotToReplace != -1)
 		{
 		//	If we're upgrading/downgrading a reactor, then remember the old fuel level
 
@@ -2619,7 +2913,7 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 
 		CItem ItemToInstall = ItemList.GetItemAtCursor();
 		CItemListManipulator RemoveItem(GetItemList());
-		SetCursorAtNamedDevice(RemoveItem, iNamedSlot);
+		SetCursorAtDevice(RemoveItem, iSlotToReplace);
 		RemoveItemAsDevice(RemoveItem);
 		ItemList.Refresh(ItemToInstall);
 
@@ -2636,7 +2930,11 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 	if (iDeviceSlot == -1)
 		{
 		iDeviceSlot = FindFreeDeviceSlot();
-		ASSERT(iDeviceSlot != -1);
+		if (iDeviceSlot == -1)
+			{
+			ASSERT(false);
+			return;
+			}
 		}
 
 	CInstalledDevice *pDevice = &m_Devices[iDeviceSlot];
@@ -2650,13 +2948,13 @@ void CShip::InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot
 	switch (pDevice->GetCategory())
 		{
 		case itemcatWeapon:
-			if (!pDevice->IsSecondaryWeapon())
+			if (pDevice->IsSelectable(CItemCtx(this, pDevice)))
 				m_NamedDevices[devPrimaryWeapon] = iDeviceSlot;
 			m_pController->OnWeaponStatusChanged();
 			break;
 
 		case itemcatLauncher:
-			if (!pDevice->IsSecondaryWeapon())
+			if (pDevice->IsSelectable(CItemCtx(this, pDevice)))
 				m_NamedDevices[devMissileWeapon] = iDeviceSlot;
 			m_pController->OnWeaponStatusChanged();
 			break;
@@ -2781,7 +3079,7 @@ bool CShip::IsRadiationImmune (void)
 	for (int i = 0; i < GetArmorSectionCount(); i++)
 		{
 		CInstalledArmor *pSection = GetArmorSection(i);
-		if (!pSection->GetClass()->IsRadiationImmune(pSection))
+		if (!pSection->GetClass()->IsRadiationImmune(CItemCtx(this, pSection)))
 			return false;
 		}
 
@@ -2978,6 +3276,30 @@ bool CShip::ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const 
 			vObj1Pos);
 	}
 
+void CShip::OnAscended (void)
+
+//	OnAscended
+//
+//	Ship has ascended out of the system.
+
+	{
+	//	Kill any event handlers (these are often used to provide behavior in
+	//	a specific system).
+
+	SetOverride(NULL);
+
+	//	Cancel all orders in case we're keeping pointers to other system
+	//	objects.
+
+	m_pController->CancelAllOrders();
+
+	//	Clear out docking variables (we've already undocked, because we've 
+	//	already sent an EnterGate message to all other objects in the system).
+
+	m_pDocked = NULL;
+	m_pExitGate = NULL;
+	}
+
 void CShip::OnBounce (CSpaceObject *pBarrierObj, const CVector &vPos)
 
 //	OnBounce
@@ -3138,10 +3460,20 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 		}
 
 	//	Damage any devices that are outside the hull (e.g., Patch Spiders)
+	//	Ignore devices with overlays because they get damaged in the overlay
+	//	damage section.
 
 	for (i = 0; i < GetDeviceCount(); i++)
-		if (!m_Devices[i].IsEmpty() && m_Devices[i].IsExternal())
-			DamageExternalDevice(i, Ctx);
+		if (!m_Devices[i].IsEmpty() 
+				&& m_Devices[i].IsExternal()
+				&& m_Devices[i].GetOverlay() == NULL)
+			{
+			//	The chance that the device got hit depends on the number of armor segments
+			//	A device takes up 1/9th of the surface area of a segment.
+
+			if (mathRandom(1, GetArmorSectionCount() * 9) == 7)
+				DamageExternalDevice(i, Ctx);
+			}
 
 	//	Let the armor handle it
 
@@ -3157,6 +3489,23 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 		m_pController->OnDamaged(Ctx.Attacker, pArmor, Ctx.Damage, Ctx.iDamage);
 		return damageArmorHit;
+		}
+
+	//	Otherwise, if we have interior compartments (like a capital ship) then
+	//	we do damage.
+
+	else if (!m_Interior.IsEmpty())
+		{
+		EDamageResults iResult = m_Interior.Damage(this, m_pClass->GetInteriorDesc(), Ctx);
+		if (iResult == damageDestroyed)
+			{
+			if (!OnDestroyCheck(Ctx.Damage.GetCause(), Ctx.Attacker))
+				return damageArmorHit;
+
+			Destroy(Ctx.Damage.GetCause(), Ctx.Attacker);
+			}
+
+		return iResult;
 		}
 
 	//	Otherwise we're in big trouble
@@ -3270,6 +3619,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 	//	them a chance to do something before the object does; e.g., some objects
 	//	destroy item on their OnDestroy).
 
+	m_EnergyFields.FireOnObjDestroyed(this, Ctx);
 	FireOnItemObjDestroyed(Ctx);
 	FireOnDestroy(Ctx);
 
@@ -3555,6 +3905,8 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 //	Paint the ship
 
 	{
+	int i;
+
 	if (IsInactive())
 		return;
 
@@ -3578,7 +3930,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 		{
 		const CObjectImageArray *pImage;
 		pImage = &m_pClass->GetImage();
-		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y));
+		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
 		}
 
 	//	Paint energy fields
@@ -3598,7 +3950,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	if (IsParalyzed() || m_iDisarmedTimer > 0 || m_fDeviceDisrupted)
 		{
 		Metric rSize = (Metric)RectWidth(m_pClass->GetImage().GetImageRect()) / 2;
-		for (int i = 0; i < PARALYSIS_ARC_COUNT; i++)
+		for (i = 0; i < PARALYSIS_ARC_COUNT; i++)
 			{
 			//	Compute the beginning of this arc
 
@@ -3637,6 +3989,23 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 #ifdef DEBUG
 	m_pController->DebugPaintInfo(Dest, x, y, Ctx);
 #endif
+
+#ifdef DEBUG_WEAPON_POS
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty()
+				&& (pDevice->GetCategory() == itemcatWeapon
+					|| pDevice->GetCategory() == itemcatLauncher))
+			{
+			CVector vPos = pDevice->GetPos(this);
+			int xPos, yPos;
+			Ctx.XForm.Transform(vPos, &xPos, &yPos);
+
+			Dest.DrawDot(xPos, yPos, CG16bitImage::RGBValue(255, 255, 0), CG16bitImage::markerMediumCross);
+			}
+		}
+#endif
 	}
 
 void CShip::OnPlayerObj (CSpaceObject *pPlayer)
@@ -3674,7 +4043,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //	DWORD		low = m_iManeuverDelay; hi = m_iContaminationTimer
 //	DWORD		low = m_iBlindnessTimer; hi = m_iParalysisTimer
 //	DWORD		low = m_iExitGateTimer; hi = m_iDisarmedTimer
-//	DWORD		low = m_iLRSBlindnessTimer;
+//	DWORD		low = m_iLRSBlindnessTimer; hi = m_iDriveDamagedTimer
 //	DWORD		m_iFuelLeft
 //	Metric		m_rItemMass (V2)
 //	Metric		m_rCargoMass
@@ -3703,6 +4072,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //	DWORD		field: iLifeLeft
 //	IEffectPainter field: pPainter
 //
+//	CShipInterior
 //	CDockingPorts
 //
 //	DWORD		No of registered objects
@@ -3743,7 +4113,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 
 	//	Load misc stuff
 
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 
 	//	Load name
 
@@ -3777,12 +4147,13 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_iDisarmedTimer = (int)HIWORD(dwLoad);
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iLRSBlindnessTimer = (int)LOWORD(dwLoad);
+	m_iDriveDamagedTimer = (int)HIWORD(dwLoad);
 	Ctx.pStream->Read((char *)&m_iFuelLeft, sizeof(DWORD));
 	if (Ctx.dwVersion >= 2)
 		Ctx.pStream->Read((char *)&m_rItemMass, sizeof(Metric));
 	Ctx.pStream->Read((char *)&m_rCargoMass, sizeof(Metric));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDocked);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pExitGate);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDocked);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pExitGate);
 	if (Ctx.dwVersion >= 42)
 		Ctx.pStream->Read((char *)&m_iLastFireTime, sizeof(DWORD));
 	else
@@ -3811,6 +4182,8 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fManualSuspended =		((dwLoad & 0x00004000) ? true : false);
 	bool bIrradiatedBy =		((dwLoad & 0x00008000) ? true : false);
 	m_fGalacticMap =			((dwLoad & 0x00010000) ? true : false);
+	m_fDockingDisabled =		((dwLoad & 0x00020000) ? true : false);
+	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
 
 	//	This is recomputed every tick
 	m_fDeviceDisrupted = false;
@@ -3882,9 +4255,24 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 
 	m_EnergyFields.ReadFromStream(Ctx, this);
 
+	//	Ship interior
+
+	if (Ctx.dwVersion >= 91)
+		m_Interior.ReadFromStream(this, m_pClass->GetInteriorDesc(), Ctx);
+
 	//	Docking ports and registered objects
 
 	m_DockingPorts.ReadFromStream(this, Ctx);
+
+#ifdef DEBUG
+	if (m_pClass->HasDockingPorts()
+			&& m_DockingPorts.GetPortCount(this) == 0)
+		{
+		m_DockingPorts.InitPorts(this, 
+				m_pClass->GetDockingPortCount(),
+				m_pClass->GetDockingPortPositions());
+		}
+#endif
 
 	//	Registered objects / subscriptions
 
@@ -3940,6 +4328,18 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 		}
 	}
 
+void CShip::OnSetEventFlags (void)
+
+//	OnGetEventFlags
+//
+//	Sets the flags the cache whether the object has certain events
+
+	{
+	SetHasInterSystemEvent(FindEventHandler(CONSTLIT("OnPlayerLeftSystem")) 
+			|| FindEventHandler(CONSTLIT("OnPlayerEnteredSystem")));
+	SetHasOnOrdersCompletedEvent(FindEventHandler(CONSTLIT("OnOrdersCompleted")));
+	}
+
 void CShip::OnStationDestroyed (const SDestroyCtx &Ctx)
 
 //	OnStationDestroyed
@@ -3987,13 +4387,24 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	if (m_fDestroyInGate)
 		{
+		const CAISettings *pAI = m_pController->GetAISettings();
+
+		//	If we're supposed to ascend on gate, then ascend now
+
+		if (m_pClass->GetCharacter() != NULL
+				|| (pAI && pAI->AscendOnGate()))
+			{
+			m_fDestroyInGate = false;
+			GetSystem()->AscendObject(this);
+			}
+
 		//	If we're already suspended, then instead of destroying the ship, remove
 		//	it from the system and re-add it. We need to do this so that all
 		//	OnObjDestroyed notifications go out, etc.
 		//
 		//	Note that this will also clear out any events registered for the ship.
 
-		if (IsSuspended())
+		else if (IsSuspended())
 			{
 			CSystem *pSystem = GetSystem();
 			if (pSystem)
@@ -4186,6 +4597,11 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (m_iParalysisTimer != -1)
 			m_iParalysisTimer--;
 		}
+
+	//	Drive damage timer
+
+	if (m_iDriveDamagedTimer > 0)
+		m_iDriveDamagedTimer--;
 
 	//	Update armor
 
@@ -4443,7 +4859,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		low = m_iManeuverDelay; hi = m_iContaminationTimer
 //	DWORD		low = m_iBlindnessTimer; hi = m_iParalysisTimer
 //	DWORD		low = m_iExitGateTimer; hi = m_iDisarmedTimer
-//	DWORD		low = m_iLRSBlindnessTimer;
+//	DWORD		low = m_iLRSBlindnessTimer; hi = m_iDriveDamagedTimer
 //	DWORD		m_iFuelLeft
 //	Metric		m_rItemMass
 //	Metric		m_rCargoMass
@@ -4474,6 +4890,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		field: type UNID
 //	DWORD		field: iLifeLeft
 //
+//	CShipInterior
 //	CDockingPorts
 //
 //	DWORD		No of registered objects
@@ -4506,7 +4923,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	dwSave = MAKELONG(m_iExitGateTimer, m_iDisarmedTimer);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
-	dwSave = MAKELONG(m_iLRSBlindnessTimer, 0);
+	dwSave = MAKELONG(m_iLRSBlindnessTimer, m_iDriveDamagedTimer);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	pStream->Write((char *)&m_iFuelLeft, sizeof(DWORD));
@@ -4534,6 +4951,8 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fManualSuspended ?		0x00004000 : 0);
 	dwSave |= (m_pIrradiatedBy ?		0x00008000 : 0);
 	dwSave |= (m_fGalacticMap ?			0x00010000 : 0);
+	dwSave |= (m_fDockingDisabled ?		0x00020000 : 0);
+	dwSave |= (m_fControllerDisabled ?	0x00040000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Armor
@@ -4572,6 +4991,10 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	//	Energy fields
 
 	m_EnergyFields.WriteToStream(pStream);
+
+	//	Ship interior
+
+	m_Interior.WriteToStream(pStream);
 
 	//	Docking ports
 
@@ -4675,12 +5098,12 @@ void CShip::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform 
 			m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
 			}
 
-		g_pUniverse->GetMapLabelFont().DrawText(Dest, 
+		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
 				x + MAP_LABEL_X + 1, 
 				y + MAP_LABEL_Y + 1, 
 				0,
 				m_sMapLabel);
-		g_pUniverse->GetMapLabelFont().DrawText(Dest, 
+		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
 				x + MAP_LABEL_X, 
 				y + MAP_LABEL_Y, 
 				RGB_MAP_LABEL,
@@ -4861,9 +5284,26 @@ void CShip::ReadyFirstMissile (void)
 //	Selects the first missile
 
 	{
+	int i;
+
 	CInstalledDevice *pDevice = GetNamedDevice(devMissileWeapon);
 	if (pDevice)
+		{
 		pDevice->SelectFirstVariant(this);
+
+		//	If we have any linked missile launchers, then select them also
+
+		for (i = 0; i < GetDeviceCount(); i++)
+			{
+			CInstalledDevice *pLinkedDevice = GetDevice(i);
+			CItemCtx Ctx(this, pLinkedDevice);
+
+			if (!pLinkedDevice->IsEmpty()
+					&& pLinkedDevice != pDevice
+					&& pLinkedDevice->IsLinkedFire(Ctx, itemcatLauncher))
+				pLinkedDevice->SelectFirstVariant(this);
+			}
+		}
 	}
 
 void CShip::ReadyFirstWeapon (void)
@@ -4891,9 +5331,26 @@ void CShip::ReadyNextMissile (int iDir)
 //	Selects the next missile
 
 	{
+	int i;
+
 	CInstalledDevice *pDevice = GetNamedDevice(devMissileWeapon);
 	if (pDevice)
+		{
 		pDevice->SelectNextVariant(this, iDir);
+
+		//	If we have any linked missile launchers, then select them also
+
+		for (i = 0; i < GetDeviceCount(); i++)
+			{
+			CInstalledDevice *pLinkedDevice = GetDevice(i);
+			CItemCtx Ctx(this, pLinkedDevice);
+
+			if (!pLinkedDevice->IsEmpty()
+					&& pLinkedDevice != pDevice
+					&& pLinkedDevice->IsLinkedFire(Ctx, itemcatLauncher))
+				pLinkedDevice->SelectNextVariant(this, iDir);
+			}
+		}
 	}
 
 void CShip::ReadyNextWeapon (int iDir)
@@ -4925,7 +5382,7 @@ void CShip::RechargeItem (CItemListManipulator &ItemList, int iCharges)
 
 	//	Set charges
 
-	int iNewCharges = Max(0, Min(MAX_ITEM_CHARGES, ItemList.GetItemAtCursor().GetCharges() + iCharges));
+	int iNewCharges = Max(0, ItemList.GetItemAtCursor().GetCharges() + iCharges);
 	ItemList.SetChargesAtCursor(iNewCharges, 1);
 	InvalidateItemListState();
 
@@ -4979,8 +5436,7 @@ void CShip::Refuel (const CItem &Fuel)
 		//	Define parameters
 
 		Ctx.SaveAndDefineSourceVar(this);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(Fuel);
+		Ctx.SaveAndDefineItemVar(Fuel);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -5442,21 +5898,6 @@ void CShip::SetDriveDesc (const DriveDesc *pDesc)
 		}
 	}
 
-void CShip::SetEventFlags (void)
-
-//	GetEventFlags
-//
-//	Sets the flags the cache whether the object has certain events
-
-	{
-	SetHasInterSystemEvent(FindEventHandler(CONSTLIT("OnPlayerLeftSystem")) 
-			|| FindEventHandler(CONSTLIT("OnPlayerEnteredSystem")));
-	SetHasOnObjDockedEvent(FindEventHandler(CONSTLIT("OnObjDocked")));
-	SetHasOnAttackedEvent(FindEventHandler(CONSTLIT("OnAttacked")));
-	SetHasOnDamageEvent(FindEventHandler(CONSTLIT("OnDamage")));
-	SetHasOnOrdersCompletedEvent(FindEventHandler(CONSTLIT("OnOrdersCompleted")));
-	}
-
 void CShip::SetFireDelay (CInstalledDevice *pWeapon, int iDelay)
 
 //	SetFireDelay
@@ -5591,6 +6032,9 @@ void CShip::SetOrdersFromGenerator (SShipGeneratorCtx &Ctx)
 
 			case IShipController::orderDestroyTarget:
 			case IShipController::orderAimAtTarget:
+			case IShipController::orderDestroyTargetHold:
+			case IShipController::orderAttackStation:
+			case IShipController::orderBombard:
 				{
 				pOrderTarget = Ctx.pTarget;
 				break;
@@ -5615,7 +6059,7 @@ void CShip::SetOrdersFromGenerator (SShipGeneratorCtx &Ctx)
 		else if (bNeedsDockOrder)
 			{
 			if (Ctx.pBase)
-				GetController()->AddOrder(IShipController::orderDock, Ctx.pBase, 0);
+				GetController()->AddOrder(IShipController::orderDock, Ctx.pBase, IShipController::SData());
 			else
 				kernelDebugLogMessage("Unable to add ship order %d to ship class %x; no target specified", IShipController::orderDock, GetType()->GetUNID());
 			}
@@ -5634,13 +6078,13 @@ void CShip::SetOrdersFromGenerator (SShipGeneratorCtx &Ctx)
 			//	Add the order
 
 			else
-				GetController()->AddOrder(Ctx.iOrder, pOrderTarget, Ctx.dwOrderData);
+				GetController()->AddOrder(Ctx.iOrder, pOrderTarget, Ctx.OrderData);
 			}
 
 		//	If necessary, append an order to attack nearest enemy ships
 
 		if (Ctx.dwCreateFlags & SShipCreateCtx::ATTACK_NEAREST_ENEMY)
-			GetController()->AddOrder(IShipController::orderAttackNearestEnemy, NULL, 0);
+			GetController()->AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
 
 		//	If this ship is ordered to guard then it counts as a subordinate
 
@@ -5658,7 +6102,17 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
+	if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
+		{
+		m_fDockingDisabled = pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))
+		{
+		m_pController->SetPlayerWingman(!pValue->IsNil());
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_SELECTED_MISSILE))
 		{
 		//	Nil means that we don't want to make a change
 

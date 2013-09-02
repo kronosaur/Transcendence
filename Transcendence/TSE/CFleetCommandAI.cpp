@@ -243,7 +243,7 @@ void CFleetCommandAI::BehaviorStart (void)
 		{
 		case IShipController::orderNone:
 			if (m_pShip->GetDockedObj() == NULL)
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 			break;
 
 		case IShipController::orderDestroyTarget:
@@ -903,8 +903,8 @@ void CFleetCommandAI::OnReadFromStream (SLoadCtx &Ctx)
 	DWORD dwLoad;
 
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pObjective);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pObjective);
 	Ctx.pStream->Read((char *)&m_iCounter, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iStartingAssetCount, sizeof(DWORD));
 
@@ -916,9 +916,9 @@ void CFleetCommandAI::OnReadFromStream (SLoadCtx &Ctx)
 
 		for (i = 0; i < m_iAssetCount; i++)
 			{
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pAssets[i].pAsset);
+			CSystem::ReadObjRefFromStream(Ctx, &m_pAssets[i].pAsset);
 			Ctx.pStream->Read((char *)&m_pAssets[i].iFormationPos, sizeof(DWORD));
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pAssets[i].pTarget);
+			CSystem::ReadObjRefFromStream(Ctx, &m_pAssets[i].pTarget);
 			}
 		}
 
@@ -930,7 +930,7 @@ void CFleetCommandAI::OnReadFromStream (SLoadCtx &Ctx)
 
 		for (i = 0; i < m_iTargetCount; i++)
 			{
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTargets[i].pTarget);
+			CSystem::ReadObjRefFromStream(Ctx, &m_pTargets[i].pTarget);
 			Ctx.pStream->Read((char *)&m_pTargets[i].iAssignedTo, sizeof(DWORD));
 			Ctx.pStream->Read((char *)&m_pTargets[i].iKilled, sizeof(DWORD));
 			}

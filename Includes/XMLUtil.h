@@ -60,11 +60,13 @@ class CXMLElement : public CObject
 		bool AttributeExists (const CString &sName);
 		bool FindAttribute (const CString &sName, CString *retsValue = NULL);
 		bool FindAttributeBool (const CString &sName, bool *retbValue = NULL);
+		bool FindAttributeDouble (const CString &sName, double *retrValue = NULL);
 		bool FindAttributeInteger (const CString &sName, int *retiValue = NULL);
 		CString GetAttribute (const CString &sName);
 		inline CString GetAttribute (int iIndex) { return *(CString *)m_Attributes.GetValue(iIndex); }
 		bool GetAttributeBool (const CString &sName);
 		inline int GetAttributeCount (void) { return m_Attributes.GetCount(); }
+		double GetAttributeDouble (const CString &sName);
 		int GetAttributeInteger (const CString &sName);
 		int GetAttributeIntegerBounded (const CString &sName, int iMin, int iMax = -1, int iNull = 0);
 		ALERROR GetAttributeIntegerList (const CString &sName, CIntArray *pList);

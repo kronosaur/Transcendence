@@ -44,7 +44,7 @@ ALERROR CStaticEffect::Create (CEffectCreator *pType,
 	pEffect->SetCannotMove();
 
 	ASSERT(pType);
-	pEffect->m_pPainter = pType->CreatePainter();
+	pEffect->m_pPainter = pType->CreatePainter(CCreatePainterCtx());
 
 	//	Set the size of the object
 

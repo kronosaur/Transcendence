@@ -31,7 +31,8 @@ CTextCrawlSession::CTextCrawlSession (CHumanInterface &HI,
 									  const CString &sCmdDone) : IHISession(HI),
 		m_pImage(pImage),
 		m_sText(sText),
-		m_sCmdDone(sCmdDone)
+		m_sCmdDone(sCmdDone),
+		m_bWaitAnimation(false)
 
 //	CTextCrawSession constructor
 
@@ -118,11 +119,16 @@ ALERROR CTextCrawlSession::OnCommand (const CString &sCmd, void *pData)
 	{
 	if (strEquals(sCmd, CMD_SHOW_WAIT_ANIMATION))
 		{
-		CUIHelper Helper(m_HI);
+		if (!m_bWaitAnimation)
+			{
+			CUIHelper Helper(m_HI);
 
-		IAnimatron *pAni;
-		Helper.CreateSessionWaitAnimation(ID_CTRL_WAIT, CONSTLIT("Creating Game"), &pAni);
-		StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+			IAnimatron *pAni;
+			Helper.CreateSessionWaitAnimation(ID_CTRL_WAIT, CONSTLIT("Creating Game"), &pAni);
+			StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+			m_bWaitAnimation = true;
+			}
 		}
 
 	return NOERROR;

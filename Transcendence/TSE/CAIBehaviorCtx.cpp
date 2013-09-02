@@ -363,6 +363,62 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 	CalcBestWeapon(pShip, NULL, 0.0);
 	}
 
+bool CAIBehaviorCtx::CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget, CSpaceObject *pNewTarget) const
+
+//	CalcIsBetterTarget
+//
+//	Returns TRUE if the new target is better than the existing one.
+
+	{
+	//	The new target must be a real target
+
+	if (pNewTarget == NULL 
+			|| pNewTarget->IsDestroyed()
+			|| !pShip->IsEnemy(pNewTarget))
+		return false;
+
+	//	See if the new target is better
+
+	else
+		{
+		//	Compute the distance to the new target
+
+		Metric rDist2 = (pNewTarget->GetPos() - pShip->GetPos()).Length2();
+
+		//	See if the new target is visible to us. If not, then it cannot be a
+		//	better target.
+
+		Metric rMaxVisibility = RangeIndex2Range(pNewTarget->GetDetectionRangeIndex(pShip->GetPerception()));
+		Metric rMaxVisibility2 = rMaxVisibility * rMaxVisibility;
+		if (rDist2 > rMaxVisibility2)
+			return false;
+
+		//	If the current target is not valid, then we always switch
+
+		else if (pCurTarget == NULL
+				|| pCurTarget->IsDestroyed())
+			return true;
+
+		//	There is a 20% chance that we automatically switch to the new target,
+		//	regardless of its distance.
+
+		else if (mathRandom(1, 100) <= 20)
+			return true;
+
+		//	Otherwise, we see if the attacker is closer than the current target.
+		//	If it is, then switch to it.
+
+		else
+			{
+			Metric rCurTargetDist2 = (pCurTarget->GetPos() - pShip->GetPos()).Length2();
+			if (rDist2 < rCurTargetDist2)
+				return true;
+			else
+				return false;
+			}
+		}
+	}
+
 bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 
 //	CalcNavPath

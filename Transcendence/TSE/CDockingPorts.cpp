@@ -77,7 +77,7 @@ void CDockingPorts::DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj)
 		{
 		m_pPort[iDockingPort].pObj = pObj;
 		m_pPort[iDockingPort].iStatus = psInUse;
-		pObj->Place(pOwner->GetPos() + m_pPort[iDockingPort].vPos);
+		pObj->Place(GetPortPos(pOwner, m_pPort[iDockingPort]));
 		pObj->OnDocked(pOwner);
 
 		//	Set the ship's rotation. We do this because this is only called
@@ -119,7 +119,7 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 	for (i = 0; i < m_iPortCount; i++)
 		if (m_pPort[i].iStatus == psEmpty)
 			{
-			CVector vPortPos = pOwner->GetPos() + m_pPort[i].vPos;
+			CVector vPortPos = GetPortPos(pOwner, m_pPort[i]);
 			CVector vDistance = vPos - vPortPos;
 			Metric rDistance2 = vDistance.Length2();
 
@@ -169,17 +169,19 @@ int CDockingPorts::FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRe
 		}
 	}
 
-CVector CDockingPorts::GetPortPos (CSpaceObject *pOwner, int iPort)
+CVector CDockingPorts::GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port) const
 
 //	GetPortPos
 //
-//	Get position of port
+//	Get the absolute position of the port (or relative, if pOwner == NULL)
 
 	{
-	if (pOwner)
-		return pOwner->GetPos() + m_pPort[iPort].vPos;
+	if (pOwner == NULL)
+		return Port.vPos;
+	else if (pOwner->GetRotation() == 0)
+		return (pOwner->GetPos() + Port.vPos);
 	else
-		return m_pPort[iPort].vPos;
+		return (pOwner->GetPos() + Port.vPos.Rotate(pOwner->GetRotation()));
 	}
 
 int CDockingPorts::GetPortsInUseCount (CSpaceObject *pOwner)
@@ -210,7 +212,7 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius)
 	if (iCount > 0)
 		{
 		m_iPortCount = iCount;
-		m_pPort = new DockingPort[iCount];
+		m_pPort = new SDockingPort[iCount];
 
 		int iAngle = 360 / iCount;
 		for (int i = 0; i < iCount; i++)
@@ -237,7 +239,7 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
 	if (iCount > 0)
 		{
 		m_iPortCount = iCount;
-		m_pPort = new DockingPort[iCount];
+		m_pPort = new SDockingPort[iCount];
 
 		for (int i = 0; i < iCount; i++)
 			{
@@ -277,7 +279,7 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 		m_iPortCount = pDockingPorts->GetContentElementCount();
 		if (m_iPortCount > 0)
 			{
-			m_pPort = new DockingPort[m_iPortCount];
+			m_pPort = new SDockingPort[m_iPortCount];
 
 			for (i = 0; i < m_iPortCount; i++)
 				{
@@ -300,7 +302,7 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 
 		else if ((m_iPortCount = pDockingPorts->GetAttributeIntegerBounded(PORT_COUNT_ATTRIB, 0, -1, 0)) > 0)
 			{
-			m_pPort = new DockingPort[m_iPortCount];
+			m_pPort = new SDockingPort[m_iPortCount];
 			
 			int iRadius = pDockingPorts->GetAttributeIntegerBounded(PORT_RADIUS_ATTRIB, 0, -1, DEFAULT_PORT_POS_RADIUS);
 			Metric rRadius = g_KlicksPerPixel * iRadius;
@@ -369,13 +371,12 @@ void CDockingPorts::MoveAll (CSpaceObject *pOwner)
 //	Move all docked objects to follow the owner
 
 	{
-	CVector vPos = pOwner->GetPos();
 	CVector vVel = pOwner->GetVel();
 
 	for (int i = 0; i < m_iPortCount; i++)
 		if (m_pPort[i].iStatus == psInUse)
 			{
-			m_pPort[i].pObj->SetPos(vPos + m_pPort[i].vPos);
+			m_pPort[i].pObj->SetPos(GetPortPos(pOwner, m_pPort[i]));
 			m_pPort[i].pObj->SetVel(vVel);
 			}
 	}
@@ -423,11 +424,11 @@ void CDockingPorts::ReadFromStream (CSpaceObject *pOwner, SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&m_iPortCount, sizeof(DWORD));
 	if (m_iPortCount > 0)
 		{
-		m_pPort = new DockingPort[m_iPortCount];
+		m_pPort = new SDockingPort[m_iPortCount];
 		for (int i = 0; i < m_iPortCount; i++)
 			{
 			Ctx.pStream->Read((char *)&m_pPort[i].iStatus, sizeof(DWORD));
-			Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pPort[i].pObj);
+			CSystem::ReadObjRefFromStream(Ctx, &m_pPort[i].pObj);
 			Ctx.pStream->Read((char *)&m_pPort[i].vPos, sizeof(CVector));
 			if (Ctx.dwVersion >= 24)
 				Ctx.pStream->Read((char *)&m_pPort[i].iRotation, sizeof(DWORD));
@@ -512,9 +513,9 @@ bool CDockingPorts::RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj, int i
 		return false;
 		}
 
-	//	Commence docking
+	//	Commence docking 
 
-	pObj->SendMessage(pOwner, CONSTLIT("Docking sequence engaged"));
+	pOwner->Communicate(pObj, msgDockingSequenceEngaged);
 	pObj->FreezeControls();
 
 	m_pPort[iPort].iStatus = psDocking;
@@ -615,6 +616,11 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 	if (pPlayer && pOwner->IsStargate() && rDist2 < GATE_DIST2)
 		pPlayer = NULL;
 
+	//	Don't bother if the docking is disabled
+
+	if (pPlayer && !pOwner->SupportsDocking())
+		pPlayer = NULL;
+
 	//	Loop over all ports
 
 	for (i = 0; i < m_iPortCount; i++)
@@ -634,7 +640,7 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 				{
 				//	Compute the distance from the player to the port
 
-				CVector vPortPos = pOwner->GetPos() + m_pPort[i].vPos;
+				CVector vPortPos = GetPortPos(pOwner, m_pPort[i]);
 				Metric rDist2 = (vPortPos - pPlayer->GetPos()).Length2();
 
 				//	If this is a better port, then replace the existing 
@@ -655,7 +661,7 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 	DEBUG_CATCH
 	}
 
-void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, DockingPort &Port)
+void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &Port)
 
 //	UpdateDockingManeuvers
 //
@@ -668,7 +674,7 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, DockingPort &P
 	if (pShip == NULL)
 		return;
 
-	CVector vDest = pOwner->GetPos() + Port.vPos;
+	CVector vDest = GetPortPos(pOwner, Port);
 	CVector vDestVel = pOwner->GetVel();
 
 	//	Figure out how far we are from where we want to be

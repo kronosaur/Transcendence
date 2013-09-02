@@ -2,6 +2,14 @@
 //
 //	Transcendence UI Engine
 //	Copyright (c) 2010 by George Moromisato. All Rights Reserved.
+//
+//	BASIC NOTIFICATIONS
+//
+//	The following controller commands are used by the system:
+//
+//	cmdSoundtrackDone: Notification when a music track has finished playing.
+//	
+//	cmdTaskDone: Default notification when a background task has completed.
 
 #ifndef INCL_TSUI
 #define INCL_TSUI
@@ -619,6 +627,7 @@ class CHumanInterface
 		inline void DeleteTimer (DWORD dwID) { m_Timers.DeleteTimer(m_hWnd, dwID); }
 
 		//	Message Handlers
+		LONG MCINotifyMode (int iMode);
 		void OnAnimate (void);
 		void OnPostCommand (LPARAM pData);
 		inline void OnTaskComplete (LPARAM pData) { m_Background.OnTaskComplete(pData); }
@@ -669,11 +678,13 @@ class CHumanInterface
 
 		HWND m_hWnd;
 		CScreenMgr m_ScreenMgr;
-		CSoundMgr m_SoundMgr;
 		CBackgroundProcessor m_Background;
 		CTimerRegistry m_Timers;
 		CVisualPalette m_Visuals;
 		CFrameRateCounter m_FrameRate;
+
+		//	Sound
+		CSoundMgr m_SoundMgr;
 
 		char m_chKeyDown;
 		EHIShutdownReasons m_iShutdownCode;		//	Valid after call to Shutdown
@@ -683,6 +694,7 @@ extern CHumanInterface *g_pHI;
 
 #include "CloudInterface.h"
 #include "Painters.h"
+#include "Soundtrack.h"
 #include "UIHelpers.h"
 
 //	Inlines

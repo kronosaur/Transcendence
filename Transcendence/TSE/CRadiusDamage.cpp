@@ -7,6 +7,7 @@
 static CObjectClass<CRadiusDamage>g_Class(OBJID_CRADIUSDAMAGE, NULL);
 
 CRadiusDamage::CRadiusDamage (void) : CSpaceObject(&g_Class),
+		m_pEnhancements(NULL),
 		m_pPainter(NULL)
 
 //	CRadiusDamage constructor
@@ -21,11 +22,14 @@ CRadiusDamage::~CRadiusDamage (void)
 	{
 	if (m_pPainter)
 		m_pPainter->Delete();
+
+	if (m_pEnhancements)
+		m_pEnhancements->Delete();
 	}
 
 ALERROR CRadiusDamage::Create (CSystem *pSystem,
 							   CWeaponFireDesc *pDesc,
-							   int iBonus,
+							   CItemEnhancementStack *pEnhancements,
 							   DestructionTypes iCause,
 							   const CDamageSource &Source,
 							   const CVector &vPos,
@@ -57,7 +61,7 @@ ALERROR CRadiusDamage::Create (CSystem *pSystem,
 
 	pArea->m_iLifeLeft = pDesc->GetLifetime();
 	pArea->m_pDesc = pDesc;
-	pArea->m_iBonus = iBonus;
+	pArea->m_pEnhancements = (pEnhancements ? pEnhancements->AddRef() : NULL);
 	pArea->m_iCause = iCause;
 	pArea->m_Source = Source;
 	pArea->m_pTarget = pTarget;
@@ -79,7 +83,10 @@ ALERROR CRadiusDamage::Create (CSystem *pSystem,
 	CEffectCreator *pEffect;
 	if (pEffect = pDesc->GetEffect())
 		{
-		pArea->m_pPainter = pEffect->CreatePainter();
+		CCreatePainterCtx Ctx;
+		Ctx.SetWeaponFireDesc(pDesc);
+
+		pArea->m_pPainter = pEffect->CreatePainter(Ctx);
 
 		//	The lifetime of the object is based on the painter
 
@@ -195,9 +202,21 @@ void CRadiusDamage::OnReadFromStream (SLoadCtx &Ctx)
 	sDescUNID.ReadFromStream(Ctx.pStream);
 	m_pDesc = g_pUniverse->FindWeaponFireDesc(sDescUNID);
 
+	//	Old style bonus
+
+	if (Ctx.dwVersion < 92)
+		{
+		int iBonus;
+		Ctx.pStream->Read((char *)&iBonus, sizeof(DWORD));
+		if (iBonus != 0)
+			{
+			m_pEnhancements = new CItemEnhancementStack;
+			m_pEnhancements->InsertHPBonus(iBonus);
+			}
+		}
+
 	//	Load other stuff
 
-	Ctx.pStream->Read((char *)&m_iBonus, sizeof(m_iBonus));
 	if (Ctx.dwVersion >= 18)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
@@ -209,16 +228,21 @@ void CRadiusDamage::OnReadFromStream (SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&m_iLifeLeft, sizeof(m_iLifeLeft));
 	m_Source.ReadFromStream(Ctx);
 	if (Ctx.dwVersion >= 19)
-		Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
 	else
 		m_pTarget = NULL;
 
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(m_iTick));
 
 	//	Load painter
 
 	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pDesc->GetEffect());
+
+	//	Enhancements
+
+	if (Ctx.dwVersion >= 92)
+		CItemEnhancementStack::ReadFromStream(Ctx, &m_pEnhancements);
 	}
 
 void CRadiusDamage::OnSystemLoaded (void)
@@ -290,7 +314,7 @@ void CRadiusDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 						Ctx.pObj = pObj;
 						Ctx.pDesc = m_pDesc;
 						Ctx.Damage = m_pDesc->m_Damage;
-						Ctx.Damage.AddBonus(m_iBonus);
+						Ctx.Damage.AddEnhancements(m_pEnhancements);
 						Ctx.Damage.SetCause(m_iCause);
 						if (IsAutomatedWeapon())
 							Ctx.Damage.SetAutomatedWeapon();
@@ -323,7 +347,7 @@ void CRadiusDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (m_pDesc->HasFragments())
 			{
 			GetSystem()->CreateWeaponFragments(m_pDesc,
-					m_iBonus,
+					m_pEnhancements,
 					m_iCause,
 					m_Source,
 					m_pTarget,
@@ -353,7 +377,6 @@ void CRadiusDamage::OnWriteToStream (IWriteStream *pStream)
 //	Write out to stream
 //
 //	CString			CWeaponFireDesc UNID
-//	DWORD			m_iBonus
 //	DWORD			m_iCause
 //	DWORD			m_iLifeLeft
 //	DWORD			m_Source (CSpaceObject ref)
@@ -361,12 +384,13 @@ void CRadiusDamage::OnWriteToStream (IWriteStream *pStream)
 //	DWORD			m_pSovereign (CSovereign ref)
 //	DWORD			m_iTick
 //	IEffectPainter	m_pPainter
+//
+//	CItemEnhancementStack	m_pEnhancements
 
 	{
 	DWORD dwSave;
 
 	m_pDesc->m_sUNID.WriteToStream(pStream);
-	pStream->Write((char *)&m_iBonus, sizeof(m_iBonus));
 	dwSave = m_iCause;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	pStream->Write((char *)&m_iLifeLeft, sizeof(m_iLifeLeft));
@@ -376,6 +400,10 @@ void CRadiusDamage::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_iTick, sizeof(m_iTick));
 
 	CEffectCreator::WritePainterToStream(pStream, m_pPainter);
+
+	//	Enhancements
+
+	CItemEnhancementStack::WriteToStream(m_pEnhancements, pStream);
 	}
 
 bool CRadiusDamage::PointInObject (const CVector &vObjPos, const CVector &vPointPos)

@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Wingman Base Class
+
+		USAGE NOTES
+		
+		Do not rely on the implementation of this class across versions. If you wish
+		to inherit from this class in an Extension, you should copy the class into
+		your own Extension and then inherit from that.
+
+		EXTRA DATA
+		
+		behavior:			Ship's current behavior
+								Nil						= nothing
+								'attackingAtWill		= attacking any target in range
+								'attackingTarget		= attacking a target
+								'escorting				= escorting the player
+								'goingHome				= wingman wants to go home
+								'repairingArmor			= docking with station to repair
+								'waiting				= waiting for the player
+
+		homeSystem			System nodeID where we were created
+		nextArmorRepairMsg	Tick at which we should tell player about armor damage
+		welcomeMsg			True if we already said hello to player
+
+		GLOBAL DATA
+
+		status:				Ship's status
+								Nil						= never encountered
+								'joined					= Has joined the player
+								'declined				= Player has declined escort
+								'destroyed				= Dead
+								'destroyedByPlayer		= Killed by player
+								'returnedHome			= Left the player to return home
+								
+	-->
+
+	<ShipClass UNID="&baStdWingmanBase;"
+			class=				"(wingman base class)"
+			virtual=			"true"
+			
+			attributes=			"baseClass"
+			>
+
+		<Communications>
+			<Message name="Attack target" key="A">
+				<OnShow>
+					(and (objGetTarget gSender)
+						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
+						(not (eq (objGetData gSource "behavior") 'goingHome))
+						)
+				</OnShow>
+				
+				<Invoke>
+					(switch
+						(eq (objGetTarget gSender) gSource)
+							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself "\"Unable to comply\""))
+							
+						(not (objIsEnemy gPlayerShip (objGetTarget gSender)))
+							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends "\"Unable to comply\""))
+
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack (objGetTarget gSender))
+							
+							(objSetData gSource "behavior" 'attackingTarget)
+							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Break &amp; attack" key="B">
+				<OnShow>
+					(eq (objGetData gSource "behavior") 'escorting)
+				</OnShow>
+				
+				<Invoke>
+					(block (theTarget)
+						(switch
+							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
+									(gr (objGetDistance gPlayerShip theTarget) 100)
+									)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+							
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack theTarget)
+								
+								(objSetData gSource "behavior" 'attackingAtWill)
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Form up" key="F">
+				<OnShow>
+					(and 
+						(or (eq (objGetData gSource "behavior") 'waiting)
+							(objCommunicate gSource gSender 'QueryAttackStatus)
+							)
+						(not (eq (objGetData gSource "behavior") 'goingHome))
+						)
+				</OnShow>
+
+				<Invoke>
+					(block (behavior)
+						(setq behavior (objGetData gSource "behavior"))
+						(switch
+							(eq behavior 'escorting)
+								(block Nil
+									(objCommunicate gSource gSender 'FormUp)
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
+									)
+
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'follow gPlayerShip)
+								
+								(objSetData gSource "behavior" 'escorting)
+								(if (or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
+									(objSendMessage gSender gSource (objTranslate gSource 'CancelAttackAck "\"Acknowledged\""))
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
+									)
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Status" key="S">
+				<OnShow>
+					True
+				</OnShow>
+				
+				<Invoke>
+					(block (behavior armorDamage shieldLevel)
+						(setq behavior (objGetData gSource "behavior"))
+						
+						(objSendMessage gSender gSource
+							(switch
+								(or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
+									(objTranslate gSource 'StatusAttackingTarget "\"Engaging target\"")
+
+								(eq behavior 'goingHome)
+									(objTranslate gSource 'StatusGoingHome "\"Returning home\"")
+								
+								(eq behavior 'repairingArmor)
+									(objTranslate gSource 'StatusRepairingArmor "\"Repairing armor\"")
+									
+								(eq behavior 'waiting)
+									(objTranslate gSource 'StatusWaiting "\"Waiting\"")
+									
+								(and (eq (setq armorDamage (objGetVisibleDamage gSource)) 0)
+										(or (eq (setq shieldLevel (objGetShieldLevel gSource)) 100) (eq shieldLevel -1))
+										)
+									(objTranslate gSource 'Status100Percent "\"No damage\"")
+
+								(eq armorDamage 0)
+									(cat "Shields down to " shieldLevel "%")
+								
+								(cat "Armor is " armorDamage "% damaged")
+								)
+							)
+							
+						(objSetShowAsDestination gSource Nil 'autoclear)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Wait" key="W">
+				<OnShow>
+					(eq (objGetData gSource "behavior") 'escorting)
+				</OnShow>
+
+				<Invoke>
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'hold)
+						
+						(objSetData gSource "behavior" 'waiting)
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Acknowledged\""))
+						)
+				</Invoke>
+			</Message>
+		</Communications>
+		
+		<Language>
+			<Text id="EscortReportingIn">
+				(if (not (objGetData gSource "welcomeMsg"))
+					(block Nil
+						(objSetData gSource "welcomeMsg" True)
+						(objTranslate gSource 'WingmanJoined "\"Ready\"")
+						)
+					""
+					)
+			</Text>
+			
+			<Text id="NiceShooting">			"\"Nice shooting!\""</Text>
+			<Text id="WatchYourTargets">		"\"Watch your targets!\""</Text>
+		</Language>
+		
+		<Events>
+			<OnBehavior>
+				(block (behavior theTarget nextTime maxSystemLevel armorDamage)
+					(setq behavior (objGetData gSource "behavior"))
+					
+					(switch
+						; If we're injured and we're near a base that repairs armor then
+						; dock with the base and get repaired
+
+						(and (eq behavior 'escorting)
+								(geq (setq armorDamage (objGetVisibleDamage gSource)) 10)
+								(not (objIsUnderAttack gSource))
+								)
+							(switch
+								; Some wingmen (like Jenna) doesn't want to proceed beyond a certain point
+								(and (setq maxSystemLevel (objGetStaticData gSource "MaxSystemLevel"))
+										(gr (sysGetLevel) maxSystemLevel)
+										)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'hold 30)
+										(shpOrder gSource 'gate (intGetGateToSystem gSource (objGetData gSource "homeSystem")))
+
+										(objSetData gSource "behavior" 'goingHome)
+										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImGoingHome "\"Going home\""))
+										)
+								
+								; If there is a station that can repair armor, dock with it
+								(setq theTarget (srvFindRepairArmor gSource 60 (itmGetLevel (shpGetArmor gSource 0))))
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'dock theTarget)
+										(shpOrder gSource 'wait (random 3 8))
+										
+										(objSetData gSource "behavior" 'repairingArmor)
+										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImRepairingArmor "\"Docking to repair armor\""))
+										)
+									
+								; Otherwise, tell the player that we need repairs
+								(and (geq armorDamage 50)
+										(or (not (setq nextTime (objGetData gSource "nextArmorRepairMsg")))
+											(geq (unvGetTick) nextTime)
+											)
+										)
+									(block Nil
+										(objSendMessage gPlayerShip gSource (objTranslate gSource 'MyArmorNeedsRepair "\"Armor repair needed\""))
+										(objSetData gSource "nextArmorRepairMsg" (add (unvGetTick) 3600))
+										)
+								)
+						)
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block Nil
+					(objSetData gSource "homeSystem" (sysGetNode))
+					(sysAddObjRecurringTimerEvent 60 gSource "OnBehavior")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(switch
+					(eq (objGetGlobalData gSource "status") 'returnedHome)
+						Nil
+
+					(and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(objSetGlobalData gSource "status" 'destroyedByPlayer)
+
+					(block Nil
+						(objSetGlobalData gSource "status" 'destroyed)
+						(plyMessage gPlayer (objTranslate gSource 'WingmanKilled "Wingman killed"))
+						)
+					)
+			</OnDestroy>
+			
+			<OnEnteredGate>
+				(if (eq (objGetData gSource "behavior") 'goingHome)
+					(objSetGlobalData gSource "status" 'returnedHome)
+					)
+			</OnEnteredGate>
+			
+			<OnEnteredSystem>
+				(block (maxSystemLevel)
+					(setq maxSystemLevel (objGetStaticData gSource "MaxSystemLevel"))
+					(switch
+						(not maxSystemLevel)
+							Nil
+							
+						(eq (objGetData gSource "homeSystem") (sysGetNode))
+							Nil
+
+						(geq (sysGetLevel) maxSystemLevel)
+							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImTooFarFromHome "\"I'm too far from home\""))
+
+						(eq (sysGetLevel) (subtract maxSystemLevel 1))
+							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImFarFromHome "\"I'm far from home\""))
+						)
+					)
+			</OnEnteredSystem>
+
+			<OnOrdersCompleted>
+				(block (behavior theTarget)
+					(setq behavior (objGetData gSource "behavior"))
+					(switch
+						(eq behavior 'repairingArmor)
+							(block Nil
+								(intArmorRepairAll gSource 25 'alwaysRepair)
+								(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired "\"Armor repairs completed\""))
+								)
+						)
+					
+					; Set orders and state
+					
+					(switch
+						(and (eq behavior 'attackingAtWill)
+								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
+								(leq (objGetDistance gPlayerShip theTarget) 100)
+								)
+							(shpOrder gSource 'attack theTarget)
+								
+						gPlayerShip
+							(block Nil
+								(shpOrder gSource 'follow gPlayerShip)
+								(objSetData gSource "behavior" 'escorting)
+								)
+
+						(block Nil
+							(shpOrder gSource 'hold)
+							(objSetData gSource "behavior" 'waiting)
+							)
+						)
+					)
+			</OnOrdersCompleted>
+			
+			<OnPlayerLeftSystem>
+				(block (behavior)
+					(setq behavior (objGetData gSource "behavior"))
+					(switch
+						(or (not behavior)
+								(eq behavior 'goingHome)
+								)
+							Nil
+
+						; If we're waiting, stay in this system and wait for the player
+						(or (eq behavior 'waiting)
+								(eq behavior 'repairingArmor)
+								)
+							'waitForPlayer
+
+						; Otherwise, follow the player through the gate
+						'followPlayer
+						)
+					)
+			</OnPlayerLeftSystem>
+			
+			<OnTranslateMessage>
+				(switch
+					(eq aMessage 'EscortReportingIn)
+						(if (not (objGetData gSource "welcomeMsg"))
+							(block Nil
+								(objSetData gSource "welcomeMsg" True)
+								(objTranslate gSource 'WingmanJoined "\"Ready\"")
+								)
+							""
+							)
+							
+					(eq aMessage 'WatchYourTargets)
+						(objTranslate gSource 'WatchYourTargets "\"Watch your targets!\"")
+						
+					(eq aMessage 'NiceShooting)
+						(objTranslate gSource 'NiceShooting "\"Nice shooting!\"")
+						
+					Nil
+					)
+			</OnTranslateMessage>
+
+			<OrderJoinPlayer>
+				(block Nil
+					(shpSetPlayerWingman gSource)
+					(objSetGlobalData gSource "status" 'joined)
+					)
+			</OrderJoinPlayer>
+		</Events>
+	</ShipClass>
+
+</TranscendenceModule>

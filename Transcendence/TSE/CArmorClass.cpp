@@ -4,30 +4,32 @@
 
 #include "PreComp.h"
 
-#define INSTALL_COST_ATTRIB						CONSTLIT("installCost")
-#define PHOTO_REPAIR_ATTRIB						CONSTLIT("photoRepair")
-#define REPAIR_RATE_ATTRIB						CONSTLIT("repairRate")
-#define DECAY_RATE_ATTRIB						CONSTLIT("decayRate")
-#define REPAIR_TECH_ATTRIB						CONSTLIT("repairTech")
-#define UNID_ATTRIB								CONSTLIT("unid")
-#define RADIATION_IMMUNE_ATTRIB					CONSTLIT("radiationImmune")
-#define PHOTO_RECHARGE_ATTRIB					CONSTLIT("photoRecharge")
-#define COMPLETE_BONUS_ATTRIB					CONSTLIT("completeBonus")
-#define SHIELD_INTERFERENCE_ATTRIB				CONSTLIT("shieldInterference")
-#define COMPOSITION_ATTRIB						CONSTLIT("composition")
-#define DISINTEGRATION_IMMUNE_ATTRIB			CONSTLIT("disintegrationImmune")
-#define SHATTER_IMMUNE_ATTRIB					CONSTLIT("shatterImmune")
-#define EMP_DAMAGE_ADJ_ATTRIB					CONSTLIT("EMPDamageAdj")
 #define BLINDING_DAMAGE_ADJ_ATTRIB				CONSTLIT("blindingDamageAdj")
-#define DEVICE_DAMAGE_ADJ_ATTRIB				CONSTLIT("deviceDamageAdj")
-#define STEALTH_ATTRIB							CONSTLIT("stealth")
-#define POWER_USE_ATTRIB						CONSTLIT("powerUse")
-#define REFLECT_ATTRIB							CONSTLIT("reflect")
-#define REPAIR_COST_ADJ_ATTRIB					CONSTLIT("repairCostAdj")
-#define INSTALL_COST_ADJ_ATTRIB					CONSTLIT("installCostAdj")
+#define BLINDING_IMMUNE_ATTRIB					CONSTLIT("blindingImmune")
+#define COMPLETE_BONUS_ATTRIB					CONSTLIT("completeBonus")
 #define DAMAGE_ADJ_LEVEL_ATTRIB					CONSTLIT("damageAdjLevel")
-#define REGEN_ATTRIB							CONSTLIT("regen")
 #define DECAY_ATTRIB							CONSTLIT("decay")
+#define DECAY_RATE_ATTRIB						CONSTLIT("decayRate")
+#define DEVICE_DAMAGE_ADJ_ATTRIB				CONSTLIT("deviceDamageAdj")
+#define DEVICE_DAMAGE_IMMUNE_ATTRIB				CONSTLIT("deviceDamageImmune")
+#define DISINTEGRATION_IMMUNE_ATTRIB			CONSTLIT("disintegrationImmune")
+#define EMP_DAMAGE_ADJ_ATTRIB					CONSTLIT("EMPDamageAdj")
+#define EMP_IMMUNE_ATTRIB						CONSTLIT("EMPImmune")
+#define INSTALL_COST_ATTRIB						CONSTLIT("installCost")
+#define INSTALL_COST_ADJ_ATTRIB					CONSTLIT("installCostAdj")
+#define PHOTO_RECHARGE_ATTRIB					CONSTLIT("photoRecharge")
+#define PHOTO_REPAIR_ATTRIB						CONSTLIT("photoRepair")
+#define POWER_USE_ATTRIB						CONSTLIT("powerUse")
+#define RADIATION_IMMUNE_ATTRIB					CONSTLIT("radiationImmune")
+#define REFLECT_ATTRIB							CONSTLIT("reflect")
+#define REGEN_ATTRIB							CONSTLIT("regen")
+#define REPAIR_COST_ADJ_ATTRIB					CONSTLIT("repairCostAdj")
+#define REPAIR_RATE_ATTRIB						CONSTLIT("repairRate")
+#define REPAIR_TECH_ATTRIB						CONSTLIT("repairTech")
+#define SHATTER_IMMUNE_ATTRIB					CONSTLIT("shatterImmune")
+#define SHIELD_INTERFERENCE_ATTRIB				CONSTLIT("shieldInterference")
+#define STEALTH_ATTRIB							CONSTLIT("stealth")
+#define UNID_ATTRIB								CONSTLIT("unid")
 
 #define GET_MAX_HP_EVENT						CONSTLIT("GetMaxHP")
 #define ON_ARMOR_DAMAGE_EVENT					CONSTLIT("OnArmorDamage")
@@ -39,6 +41,7 @@
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_HP_BONUS							CONSTLIT("hpBonus")
 #define FIELD_INSTALL_COST						CONSTLIT("installCost")
+#define FIELD_REGEN								CONSTLIT("regen")
 #define FIELD_REPAIR_COST						CONSTLIT("repairCost")
 #define FIELD_SHIELD_INTERFERENCE				CONSTLIT("shieldInterference")
 
@@ -47,6 +50,7 @@
 #define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
 #define PROPERTY_SHATTER_IMMUNE					CONSTLIT("shatterImmune")
 
@@ -143,100 +147,9 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 	if (pSource == NULL || pArmor == NULL)
 		return damageNoDamage;
 
-	//	Compute all the effects
+	//	Compute all the effects (this initializes elements in Ctx).
 
-	Ctx.iHPLeft = pArmor->GetHitPoints();
-
-	//	Reflect
-
-	Ctx.bReflect = (IsReflective(ItemCtx, Ctx.Damage) && Ctx.iDamage > 0);
-
-	//	Disintegration
-
-	int iDisintegration = Ctx.Damage.GetDisintegrationDamage();
-	Ctx.bDisintegrate = (iDisintegration > 0 && !IsDisintegrationImmune(pArmor));
-
-	//	Shatter
-
-	int iShatter = Ctx.Damage.GetShatterDamage();
-	if (iShatter)
-		{
-		//	Compute the threshold mass. Below this size, we shatter the object
-
-		int iMassLimit = 10 * mathPower(5, iShatter);
-		Ctx.bShatter = (pSource->GetMass() < iMassLimit);
-		}
-	else
-		Ctx.bShatter = false;
-
-	//	Blinding
-
-	int iBlinding = Ctx.Damage.GetBlindingDamage();
-	if (iBlinding && !IsBlindingDamageImmune(pArmor))
-		{
-		//	The chance of being blinded is dependent
-		//	on the rating.
-
-		int iChance = 4 * iBlinding * iBlinding * GetBlindingDamageAdj() / 100;
-		Ctx.bBlind = (mathRandom(1, 100) <= iChance);
-		Ctx.iBlindTime = Ctx.iDamage * g_TicksPerSecond / 2;
-		}
-	else
-		Ctx.bBlind = false;
-
-	//	EMP
-
-	int iEMP = Ctx.Damage.GetEMPDamage();
-	if (iEMP && !IsEMPDamageImmune(pArmor))
-		{
-		//	The chance of being paralyzed is dependent
-		//	on the EMP rating.
-
-		int iChance = 4 * iEMP * iEMP * GetEMPDamageAdj() / 100;
-		Ctx.bParalyze = (mathRandom(1, 100) <= iChance);
-		Ctx.iParalyzeTime = Ctx.iDamage * g_TicksPerSecond / 2;
-		}
-	else
-		Ctx.bParalyze = false;
-
-	//	Device disrupt
-
-	int iDeviceDisrupt = Ctx.Damage.GetDeviceDisruptDamage();
-	if (iDeviceDisrupt && !IsDeviceDamageImmune(pArmor))
-		{
-		//	The chance of damaging a device depends on the rating.
-
-		int iChance = 4 * iDeviceDisrupt * iDeviceDisrupt * GetDeviceDamageAdj() / 100;
-		Ctx.bDeviceDisrupt = (mathRandom(1, 100) <= iChance);
-		Ctx.iDisruptTime = 2 * Ctx.iDamage * g_TicksPerSecond;
-		}
-	else
-		Ctx.bDeviceDisrupt = false;
-
-	//	Device damage
-
-	int iDeviceDamage = Ctx.Damage.GetDeviceDamage();
-	if (iDeviceDamage && !IsDeviceDamageImmune(pArmor))
-		{
-		//	The chance of damaging a device depends on the rating.
-
-		int iChance = 4 * iDeviceDamage * iDeviceDamage * GetDeviceDamageAdj() / 100;
-		Ctx.bDeviceDamage = (mathRandom(1, 100) <= iChance);
-		}
-	else
-		Ctx.bDeviceDamage = false;
-
-	//	Radiation
-
-	int iRadioactive = Ctx.Damage.GetRadiationDamage();
-	Ctx.bRadioactive = (iRadioactive > 0 && !IsRadiationImmune(pArmor));
-
-	//	Some effects decrease damage
-
-	if (iBlinding || iEMP)
-		Ctx.iDamage = 0;
-	else if (iDeviceDamage)
-		Ctx.iDamage = Ctx.iDamage / 2;
+	CalcDamageEffects(ItemCtx, Ctx);
 
 	//	First give custom weapons a chance
 
@@ -246,7 +159,7 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 
 	//	Damage adjustment
 
-	Ctx.iDamage = CalcAdjustedDamage(pArmor, Ctx.Damage, Ctx.iDamage);
+	CalcAdjustedDamage(ItemCtx, Ctx);
 
 	//	If the armor has custom code to deal with damage, handle it here.
 
@@ -355,6 +268,59 @@ void CArmorClass::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 	{
 	}
 
+void CArmorClass::CalcAdjustedDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
+
+//	CalcAdjustedDamage
+//
+//	Modifies Ctx.iDamage to account for damage type adjustments, etc.
+
+	{
+	CInstalledArmor *pArmor = ItemCtx.GetArmor();
+
+	//	Adjust for special armor damage:
+	//
+	//	<0	=	2.5x damage
+	//	0	=	2x damage
+	//	1	=	1.5x damage
+	//	2	=	1.25x damage
+	//	>2	=	1x damage
+
+	int iDamageLevel = Ctx.Damage.GetArmorDamageLevel();
+	if (iDamageLevel > 0)
+		{
+		int iDiff = m_pItemType->GetLevel() - iDamageLevel;
+		int iAdj;
+
+		switch (iDiff)
+			{
+			case 0:
+				iAdj = 200;
+				break;
+
+			case 1:
+				iAdj = 150;
+				break;
+
+			case 2:
+				iAdj = 125;
+				break;
+
+			default:
+				if (iDiff < 0)
+					iAdj = 250;
+				else
+					iAdj = 100;
+			}
+
+		Ctx.iDamage = (iAdj * Ctx.iDamage + 50) / 100;
+		}
+
+	//	Adjust for damage type
+
+	int iDamageAdj = GetDamageAdj((pArmor ? pArmor->GetMods() : CItemEnhancement()), Ctx.Damage);
+	Ctx.iDamage = (iDamageAdj * Ctx.iDamage + 50) / 100;
+	}
+
 int CArmorClass::CalcAdjustedDamage (CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) 
 
 //	CalcAdjustedDamage
@@ -366,6 +332,41 @@ int CArmorClass::CalcAdjustedDamage (CInstalledArmor *pArmor, const DamageDesc &
 		return (GetDamageAdj(pArmor->GetMods(), Damage) * iDamage + 50) / 100;
 	else
 		return (GetDamageAdj(CItemEnhancement(), Damage) * iDamage + 50) / 100;
+	}
+
+int CArmorClass::CalcAverageRelativeDamageAdj (void)
+
+//	CalcAverageRelativeDamageAdj
+//
+//	Compares this armor against standard damage adj for the level and returns
+//	the average damage adj relative to the standard.
+
+	{
+	int i;
+	Metric rTotalAdj = 0.0;
+	int iCount = 0;
+	int iArmorLevel = m_pItemType->GetLevel();
+
+	for (i = damageLaser; i < damageCount; i++)
+		{
+		//	If this damage type is within two levels of the armor level,
+		//	then we include it in our calculations.
+
+		int iDamageLevel = ::GetDamageTypeLevel((DamageTypes)i);
+		if (iArmorLevel < iDamageLevel + 5
+				&& iArmorLevel > iDamageLevel - 3)
+			{
+			int iStdAdj = GetStdDamageAdj(iArmorLevel, (DamageTypes)i);
+			int iDamageAdj = GetDamageAdj((DamageTypes)i);
+
+			rTotalAdj += (iStdAdj > 0.0 ? (Metric)iDamageAdj * 100.0 / iStdAdj : 1000.0);
+			iCount++;
+			}
+		}
+
+	//	Return average
+
+	return (iCount > 0 ? (int)((rTotalAdj / iCount) + 0.5) : 100);
 	}
 
 int CArmorClass::CalcBalance (void)
@@ -558,6 +559,114 @@ int CArmorClass::CalcBalance (void)
 	return 5 * iBalance;
 	}
 
+void CArmorClass::CalcDamageEffects (CItemCtx &ItemCtx, SDamageCtx &Ctx)
+
+//	CalcDamageEffects
+//
+//	Initialize the damage effects based on the damage and on this armor type.
+
+	{
+	CSpaceObject *pSource = ItemCtx.GetSource();
+	CInstalledArmor *pArmor = ItemCtx.GetArmor();
+
+	//	Compute all the effects (if we don't have installed armor, then the 
+	//	caller is responsible for setting this).
+
+	if (pArmor)
+		Ctx.iHPLeft = pArmor->GetHitPoints();
+
+	//	Reflect
+
+	Ctx.bReflect = (IsReflective(ItemCtx, Ctx.Damage) && Ctx.iDamage > 0);
+
+	//	Disintegration
+
+	int iDisintegration = Ctx.Damage.GetDisintegrationDamage();
+	Ctx.bDisintegrate = (iDisintegration > 0 && !IsDisintegrationImmune(ItemCtx));
+
+	//	Shatter
+
+	int iShatter = Ctx.Damage.GetShatterDamage();
+	if (iShatter)
+		{
+		//	Compute the threshold mass. Below this size, we shatter the object
+
+		int iMassLimit = 10 * mathPower(5, iShatter);
+		Ctx.bShatter = (pSource && pSource->GetMass() < iMassLimit);
+		}
+	else
+		Ctx.bShatter = false;
+
+	//	Blinding
+
+	int iBlinding = Ctx.Damage.GetBlindingDamage();
+	if (iBlinding && !IsBlindingDamageImmune(ItemCtx))
+		{
+		//	The chance of being blinded is dependent
+		//	on the rating.
+
+		int iChance = 4 * iBlinding * iBlinding * GetBlindingDamageAdj() / 100;
+		Ctx.bBlind = (mathRandom(1, 100) <= iChance);
+		Ctx.iBlindTime = Ctx.iDamage * g_TicksPerSecond / 2;
+		}
+	else
+		Ctx.bBlind = false;
+
+	//	EMP
+
+	int iEMP = Ctx.Damage.GetEMPDamage();
+	if (iEMP && !IsEMPDamageImmune(ItemCtx))
+		{
+		//	The chance of being paralyzed is dependent
+		//	on the EMP rating.
+
+		int iChance = 4 * iEMP * iEMP * GetEMPDamageAdj() / 100;
+		Ctx.bParalyze = (mathRandom(1, 100) <= iChance);
+		Ctx.iParalyzeTime = Ctx.iDamage * g_TicksPerSecond / 2;
+		}
+	else
+		Ctx.bParalyze = false;
+
+	//	Device disrupt
+
+	int iDeviceDisrupt = Ctx.Damage.GetDeviceDisruptDamage();
+	if (iDeviceDisrupt && !IsDeviceDamageImmune(ItemCtx))
+		{
+		//	The chance of damaging a device depends on the rating.
+
+		int iChance = 4 * iDeviceDisrupt * iDeviceDisrupt * GetDeviceDamageAdj() / 100;
+		Ctx.bDeviceDisrupt = (mathRandom(1, 100) <= iChance);
+		Ctx.iDisruptTime = 2 * Ctx.iDamage * g_TicksPerSecond;
+		}
+	else
+		Ctx.bDeviceDisrupt = false;
+
+	//	Device damage
+
+	int iDeviceDamage = Ctx.Damage.GetDeviceDamage();
+	if (iDeviceDamage && !IsDeviceDamageImmune(ItemCtx))
+		{
+		//	The chance of damaging a device depends on the rating.
+
+		int iChance = 4 * iDeviceDamage * iDeviceDamage * GetDeviceDamageAdj() / 100;
+		Ctx.bDeviceDamage = (mathRandom(1, 100) <= iChance);
+		}
+	else
+		Ctx.bDeviceDamage = false;
+
+	//	Radiation
+
+	int iRadioactive = Ctx.Damage.GetRadiationDamage();
+	Ctx.bRadioactive = (iRadioactive > 0 && !IsRadiationImmune(ItemCtx));
+
+	//	Some effects decrease damage
+
+	if (iBlinding || iEMP)
+		Ctx.iDamage = 0;
+	else if (iDeviceDamage)
+		Ctx.iDamage = Ctx.iDamage / 2;
+	}
+
 int CArmorClass::CalcPowerUsed (CInstalledArmor *pArmor)
 
 //	CalcPowerUsed
@@ -622,14 +731,17 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 
 	//	Blind-immune
 
-	pArmor->m_iBlindingDamageAdj = pDesc->GetAttributeIntegerBounded(BLINDING_DAMAGE_ADJ_ATTRIB, 
-			0, 
-			-1, 
-			iLevel >= BLIND_IMMUNE_LEVEL ? 0 : 100);
+	bool bValue;
+	if (pDesc->FindAttributeBool(BLINDING_IMMUNE_ATTRIB, &bValue))
+		pArmor->m_iBlindingDamageAdj = (bValue ? 0 : 100);
+	else
+		pArmor->m_iBlindingDamageAdj = pDesc->GetAttributeIntegerBounded(BLINDING_DAMAGE_ADJ_ATTRIB, 
+				0, 
+				-1, 
+				iLevel >= BLIND_IMMUNE_LEVEL ? 0 : 100);
 
 	//	Radiation-immune
 
-	bool bValue;
 	if (pDesc->FindAttributeBool(RADIATION_IMMUNE_ATTRIB, &bValue))
 		pArmor->m_fRadiationImmune = bValue;
 	else
@@ -637,23 +749,35 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 
 	//	EMP-immune
 
-	pArmor->m_iEMPDamageAdj = pDesc->GetAttributeIntegerBounded(EMP_DAMAGE_ADJ_ATTRIB, 
-			0, 
-			-1, 
-			iLevel >= EMP_IMMUNE_LEVEL ? 0 : 100);
+	if (pDesc->FindAttributeBool(EMP_IMMUNE_ATTRIB, &bValue))
+		pArmor->m_iEMPDamageAdj = (bValue ? 0 : 100);
+	else
+		pArmor->m_iEMPDamageAdj = pDesc->GetAttributeIntegerBounded(EMP_DAMAGE_ADJ_ATTRIB, 
+				0, 
+				-1, 
+				iLevel >= EMP_IMMUNE_LEVEL ? 0 : 100);
 
 	//	Device damage immune
 
-	pArmor->m_iDeviceDamageAdj = pDesc->GetAttributeIntegerBounded(DEVICE_DAMAGE_ADJ_ATTRIB, 
-			0,
-			-1, 
-			iLevel >= DEVICE_DAMAGE_IMMUNE_LEVEL ? 0 : 100);
+	if (pDesc->FindAttributeBool(DEVICE_DAMAGE_IMMUNE_ATTRIB, &bValue))
+		pArmor->m_iDeviceDamageAdj = (bValue ? 0 : 100);
+	else
+		pArmor->m_iDeviceDamageAdj = pDesc->GetAttributeIntegerBounded(DEVICE_DAMAGE_ADJ_ATTRIB, 
+				0,
+				-1, 
+				iLevel >= DEVICE_DAMAGE_IMMUNE_LEVEL ? 0 : 100);
+
+	//	Shatter immune
+
+	pArmor->m_fShatterImmune = pDesc->GetAttributeBool(SHATTER_IMMUNE_ATTRIB);
+
+	//	Disintegration immune
+
+	pArmor->m_fDisintegrationImmune = pDesc->GetAttributeBool(DISINTEGRATION_IMMUNE_ATTRIB);
 
 	pArmor->m_fPhotoRepair = pDesc->GetAttributeBool(PHOTO_REPAIR_ATTRIB);
-	pArmor->m_fDisintegrationImmune = pDesc->GetAttributeBool(DISINTEGRATION_IMMUNE_ATTRIB);
 	pArmor->m_fPhotoRecharge = pDesc->GetAttributeBool(PHOTO_RECHARGE_ATTRIB);
 	pArmor->m_fShieldInterference = pDesc->GetAttributeBool(SHIELD_INTERFERENCE_ATTRIB);
-	pArmor->m_fShatterImmune = pDesc->GetAttributeBool(SHATTER_IMMUNE_ATTRIB);
 
 	pArmor->m_iStealth = pDesc->GetAttributeInteger(STEALTH_ATTRIB);
 	if (pArmor->m_iStealth == 0)
@@ -740,6 +864,8 @@ bool CArmorClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_REPAIR_COST))
 		*retsValue = strFromInt(m_iRepairCost);
+	else if (strEquals(sField, FIELD_REGEN))
+		*retsValue = strFromInt((int)m_Regen.GetHPPer180());
 	else if (strEquals(sField, FIELD_INSTALL_COST))
 		*retsValue = strFromInt(m_iInstallCost);
 	else if (strEquals(sField, FIELD_SHIELD_INTERFERENCE))
@@ -769,8 +895,7 @@ int CArmorClass::FireGetMaxHP (CItemCtx &ItemCtx, int iMaxHP) const
 
 		CCodeChainCtx Ctx;
 		Ctx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(ItemCtx);
+		Ctx.SaveAndDefineItemVar(ItemCtx);
 
 		Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
 
@@ -801,8 +926,7 @@ void CArmorClass::FireOnArmorDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 
 		CCodeChainCtx CCCtx;
 		CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-		CCCtx.SaveItemVar();
-		CCCtx.DefineItem(ItemCtx);
+		CCCtx.SaveAndDefineItemVar(ItemCtx);
 
 		CCCtx.DefineInteger(CONSTLIT("aArmorHP"), Ctx.iHPLeft);
 		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
@@ -853,6 +977,30 @@ int CArmorClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
 		return iDamageAdj;
 	}
 
+int CArmorClass::GetDamageAdjForWeaponLevel (int iLevel)
+
+//	GetDamageAdjForWeaponLevel
+//
+//	Returns the least effective damage adjustment of all damage types appropriate
+//	to the given level.
+
+	{
+	int i;
+
+	int iBestAdj = 0;
+	for (i = 0; i < damageCount; i++)
+		{
+		if (CWeaponClass::IsStdDamageType((DamageTypes)i, iLevel))
+			{
+			int iDamageAdj = GetDamageAdj((DamageTypes)i);
+			if (iDamageAdj > iBestAdj)
+				iBestAdj = iDamageAdj;
+			}
+		}
+
+	return iBestAdj;
+	}
+
 ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 
 //	GetItemProperty
@@ -863,22 +1011,25 @@ ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 	CCodeChain &CC = g_pUniverse->GetCC();
 
 	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
-		return CC.CreateBool(IsBlindingDamageImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsBlindingDamageImmune(Ctx));
 
 	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE))
-		return CC.CreateBool(IsDeviceDamageImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsDeviceDamageImmune(Ctx));
 
 	else if (strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
-		return CC.CreateBool(IsDeviceDamageImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsDeviceDamageImmune(Ctx));
 
 	else if (strEquals(sName, PROPERTY_DISINTEGRATION_IMMUNE))
-		return CC.CreateBool(IsDisintegrationImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsDisintegrationImmune(Ctx));
 
 	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
-		return CC.CreateBool(IsEMPDamageImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsEMPDamageImmune(Ctx));
+
+	else if (strEquals(sName, PROPERTY_HP))
+		return CC.CreateInteger(GetMaxHP(Ctx));
 
 	else if (strEquals(sName, PROPERTY_RADIATION_IMMUNE))
-		return CC.CreateBool(IsRadiationImmune(Ctx.GetArmor()));
+		return CC.CreateBool(IsRadiationImmune(Ctx));
 
 	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
 		return CC.CreateBool(IsShatterImmune(Ctx));
@@ -1231,16 +1382,6 @@ bool CArmorClass::IsReflective (CItemCtx &ItemCtx, const DamageDesc &Damage)
 		}
 	else
 		return false;
-	}
-
-bool CArmorClass::IsShatterImmune (CItemCtx &ItemCtx)
-
-//	IsShatterImmune
-//
-//	Returns TRUE if armor is shatter immune
-
-	{
-	return (m_fShatterImmune || (ItemCtx.GetMods().IsShatterImmune()));
 	}
 
 ALERROR CArmorClass::OnBindDesign (SDesignLoadCtx &Ctx)

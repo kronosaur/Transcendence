@@ -33,6 +33,36 @@ class CItemDataAnimatron : public IAnimatron
 		TArray<SDamageAdjCell> m_DamageAdj;
 	};
 
+class CListCollectionTask : public IHITask
+	{
+	public:
+		CListCollectionTask (CHumanInterface &HI, 
+							 CExtensionCollection &Extensions, 
+							 CMultiverseModel &Multiverse, 
+							 CCloudService &Service, 
+							 int cxWidth, 
+							 bool bNoCollectionRefresh = false,
+							 bool bDebugMode = false);
+		~CListCollectionTask (void);
+
+		inline IAnimatron *GetListHandoff (void) { IAnimatron *pResult = m_pList; m_pList = NULL; return pResult; }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult);
+
+	private:
+		void CreateEntry (CMultiverseCatalogEntry *pCatalogEntry, int yStart, IAnimatron **retpEntry, int *retcyHeight);
+
+		CExtensionCollection &m_Extensions;
+		CMultiverseModel &m_Multiverse;
+		CCloudService &m_Service;
+		int m_cxWidth;
+		bool m_bNoCollectionRefresh;
+		bool m_bDebugMode;
+
+		CAniListBox *m_pList;
+	};
+
 class CListSaveFilesTask : public IHITask
 	{
 	public:

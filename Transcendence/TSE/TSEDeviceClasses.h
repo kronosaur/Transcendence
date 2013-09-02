@@ -317,6 +317,7 @@ class CShieldClass : public CDeviceClass
 		int m_iRegenHP;							//	HP regenerated each cycle
 		int m_iDepletionDelay;					//	Ticks to recover from full depletion
 		int m_iPowerUse;						//	Power used during regeneration (1/10 megawatt)
+		int m_iIdlePowerUse;					//	Power used to maintain shields
 		DamageTypeSet m_WeaponSuppress;			//	Types of weapons suppressed
 		DamageTypeSet m_Reflective;				//	Types of damage reflected
 
@@ -480,6 +481,7 @@ class CWeaponClass : public CDeviceClass
 		int m_iFireRate;						//	Ticks between shots
 		int m_iFireRateSecs;					//	Game seconds between shots
 		int m_iPowerUse;						//	Power use to recharge capacitors (1/10 megawatt)
+		int m_iIdlePowerUse;					//	Power use when capacitors fully charged
 		int m_iRecoil;							//	0-7 (as per momentum damage)
 		int m_iFailureChance;					//	Chance of failure
 

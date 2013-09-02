@@ -31,13 +31,13 @@
 	<ItemType UNID="&itHeliumAssembly;"
 			name=				"helium&#xb3; reactor assembly| helium&#xb3; reactor assemblies"
 			level=				"4"
-			value=				"75"
+			value=				"150"
 			mass=				"150"
 			frequency=			"common"
 			numberAppearing=	"3d6"
 			attributes=			"BasicFuel; Consumable; Fuel; 100MW"
 
-			data=				"10000"
+			data=				"15000"
 
 			description=		"This is an enriched bundle of He&#xb3; fuel rods. Though more efficient than individual fuel rods, only reactors 50 megawatts and larger can accommodate them."
 			>
@@ -52,8 +52,8 @@
 	<ItemType UNID="&itXenotiteFuelRod;"
 			name=				"xenotite fuel rod"
 			level=				"5"
-			value=				"160"
-			mass=				"200"
+			value=				"200"
+			mass=				"120"
 			frequency=			"common"
 			numberAppearing=	"3d6"
 			attributes=			"BasicFuel; Consumable; Fuel"
@@ -72,8 +72,8 @@
 	<ItemType UNID="&itPteracniumFuelRod;"
 			name=				"pteracnium fuel rod"
 			level=				"7"
-			value=				"300"
-			mass=				"200"
+			value=				"500"
+			mass=				"120"
 			frequency=			"common"
 			numberAppearing=	"3d6"
 			attributes=			"BasicFuel; Consumable; Fuel"
@@ -92,7 +92,7 @@
 	<ItemType UNID="&itHadronVacuumFuelCell;"
 			name=				"hadron-vacuum fuel cell"
 			level=				"9"
-			value=				"2000"
+			value=				"2500"
 			mass=				"200"
 			frequency=			"common"
 			numberAppearing=	"3d6"
@@ -104,6 +104,5 @@
 
 		<Image imageID="&rsItems1;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 	</ItemType>
-
 
 </TranscendenceModule>

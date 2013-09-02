@@ -113,10 +113,10 @@ class CIntroShipController : public CObject, public IShipController
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(bNoAutoTarget); }
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
 
-		virtual void AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, dwData, bAddBefore); }
+		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
 		virtual void CancelAllOrders (void) { m_pDelegate->CancelAllOrders(); }
 		virtual void CancelCurrentOrder (void) { m_pDelegate->CancelCurrentOrder(); }
-		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, DWORD *retdwData = NULL) { return m_pDelegate->GetCurrentOrderEx(retpTarget, retdwData); }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL) { return m_pDelegate->GetCurrentOrderEx(retpTarget, retData); }
 
 		//	Events
 
@@ -126,7 +126,7 @@ class CIntroShipController : public CObject, public IShipController
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnDocked (CSpaceObject *pObj) { m_pDelegate->OnDocked(pObj); }
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) { m_pDelegate->OnDockedObjChanged(pLocation); }
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate); }
+		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
 		virtual void OnFuelLowWarning (int iSeq) { m_pDelegate->OnFuelLowWarning(iSeq); }
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg) { m_pDelegate->OnMessage(pSender, sMsg); }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { m_pDelegate->OnObjDestroyed(Ctx); }
@@ -176,6 +176,8 @@ class CPlayerGameStats
 			eventFriendDestroyedByPlayer =		2,		//	The player destroyed something important
 			eventSavedByPlayer =				3,		//	The player saved something from being destroyed
 			eventMajorDestroyed =				4,		//	A major object was destroyed, but not by the player
+			eventMissionSuccess =				5,		//	The player successfully completed a mission
+			eventMissionFailure =				6,		//	The player failed a mission
 			};
 
 		CPlayerGameStats (void);
@@ -394,7 +396,7 @@ class CPlayerShipController : public CObject, public IShipController
 		bool HasFleet (void);
 
 		//	IShipController virtuals
-		virtual void AddOrder(OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore = false);
+		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false);
 		virtual void CancelAllOrders (void);
 		virtual void CancelCurrentOrder (void);
 		virtual void CancelDocking (void);
@@ -431,13 +433,14 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent);
 		virtual void OnDocked (CSpaceObject *pObj);
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation);
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
+		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
 		virtual void OnFuelLowWarning (int iSeq);
 		virtual void OnItemFired (const CItem &Item) { m_Stats.OnItemFired(Item); }
 		virtual void OnItemInstalled (const CItem &Item) { m_Stats.OnItemInstalled(Item); }
 		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
 		virtual void OnLifeSupportWarning (int iSecondsLeft);
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg);
+		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess);
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx);
@@ -640,7 +643,7 @@ class CListWrapper : public IListData
 		virtual bool MoveCursorForward (void);
 		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y);
 		virtual void ResetCursor (void) { m_iCursor = -1; }
-		virtual void SetCursor (int iCursor) { m_iCursor = iCursor; }
+		virtual void SetCursor (int iCursor) { m_iCursor = Min(Max(-1, iCursor), GetCount() - 1); }
 
 	private:
 		CCodeChain *m_pCC;
@@ -660,6 +663,7 @@ class CGItemListArea : public AGArea
 
 		void CleanUp (void);
 		inline void DeleteAtCursor (int iCount) { if (m_pListData) m_pListData->DeleteAtCursor(iCount); InitRowDesc(); Invalidate(); }
+		inline int GetCursor (void) { return (m_pListData ? m_pListData->GetCursor() : -1); }
 		ICCItem *GetEntryAtCursor (void);
 		inline const CItem &GetItemAtCursor (void) { return (m_pListData ? m_pListData->GetItemAtCursor() : g_DummyItem); }
 		inline CItemListManipulator &GetItemListManipulator (void) { return (m_pListData ? m_pListData->GetItemListManipulator() : g_DummyItemListManipulator); }
@@ -906,11 +910,13 @@ class CDockScreen : public CObject,
 		const CString &GetDescription (void);
 		CG16bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
+		inline int GetListCursor (void) { return (m_pItemListControl ? m_pItemListControl->GetCursor() : -1); }
 		CString GetTextInput (void);
 		bool IsCurrentItemValid (void);
 		void SetDescription (const CString &sDesc);
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		void SetCounter (int iCount);
+		void SetListCursor (int iCursor);
 		void SetTextInput (const CString &sText);
 		void ShowPane (const CString &sName);
 		bool ShowScreen (const CString &sName, const CString &sPane);
@@ -983,6 +989,7 @@ class CDockScreen : public CObject,
 		CUniverse *m_pUniv;
 		CPlayerShipController *m_pPlayer;
 		CSpaceObject *m_pLocation;
+		ICCItem *m_pData;
 		CExtension *m_pExtension;
 		CXMLElement *m_pDesc;
 		AGScreen *m_pScreen;
@@ -1021,6 +1028,9 @@ class CDockScreen : public CObject,
 		CGTextArea *m_pFrameDesc;
 		bool m_bInShowPane;
 		bool m_bNoListNavigation;
+
+		//	Events
+		ICCItem *m_pOnScreenUpdate;
 	};
 
 struct SDockFrame
@@ -1744,9 +1754,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CleanUpDisplays (void);
 		void ClearDebugLines (void);
 		void ComputeScreenSize (void);
-		void EnterStargate (void);
 		ALERROR InitDisplays (void);
-		void LeaveStargate (void);
 		void LoadPreferences (void);
 		void PaintDebugLines (void);
 		void PaintFrameRate (void);
@@ -1770,6 +1778,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void DoInvocation (CPower *pPower);
 		void DoUseItemCommand (DWORD dwData);
 		DWORD GetCommsStatus (void);
+		void HideCommsTargetMenu (void);
 		void ShowCommsMenu (CSpaceObject *pObj);
 		void ShowCommsSquadronMenu (void);
 		void ShowCommsTargetMenu (void);
@@ -2212,6 +2221,7 @@ class CTranscendenceModel
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
 		inline CG16bitImage *GetCrawlImage (void) const { return m_pCrawlImage; }
+		inline CSoundType *GetCrawlSoundtrack (void) const { return m_pCrawlSoundtrack; }
 		inline const CString &GetCrawlText (void) const { return m_sCrawlText; }
 		inline bool GetDebugMode (void) const { return m_bDebugMode; }
 		inline CGameFile &GetGameFile (void) { return m_GameFile; }
@@ -2226,6 +2236,7 @@ class CTranscendenceModel
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
+		inline void SetCrawlSoundtrack (DWORD dwTrack) { m_pCrawlSoundtrack = g_pUniverse->FindSoundType(dwTrack); }
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
 		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
@@ -2286,6 +2297,7 @@ class CTranscendenceModel
 		CDesignType *m_pResurrectType;				//	DesignType that will handle resurrect (or NULL)
 		CString m_sEpitaph;							//	Epitaph
 		CG16bitImage *m_pCrawlImage;				//	For epilogue/prologue
+		CSoundType *m_pCrawlSoundtrack;				//	For epilogue/prologue
 		CString m_sCrawlText;						//	For epilogue/prologue
 
 		//	Stargate temporaries
@@ -2353,6 +2365,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 
 		CCloudService m_Service;
 		CMultiverseModel m_Multiverse;
+		CSoundtrackManager m_Soundtrack;
 
 		CGameSettings m_Settings;
 	};

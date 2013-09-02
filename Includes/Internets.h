@@ -53,6 +53,7 @@ class CHTTPMessage
 			stateStart,					//	Haven't parsed anything
 			stateHeaders,				//	Parse the headers
 			stateBody,					//	Parse the body
+			stateChunk,					//	In the middle of a chunk
 			stateDone,					//	Found end of message
 			};
 
@@ -84,6 +85,7 @@ class CHTTPMessage
 		States m_iState;
 		int m_iPos;
 		CString m_sBody;				//	Temporary store while we parse
+		int m_iChunkLeft;				//	Amount left to read
 	};
 
 class CHTTPClientSession

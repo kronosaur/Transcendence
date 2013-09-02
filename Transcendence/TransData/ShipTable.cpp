@@ -12,11 +12,13 @@
 
 #define MAX_LEVEL			25
 
+#define FIELD_BALANCE							CONSTLIT("balance")
 #define FIELD_ENTITY							CONSTLIT("entity")
 #define FIELD_LEVEL								CONSTLIT("level")
 #define FIELD_MANEUVER							CONSTLIT("maneuver")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_SCORE								CONSTLIT("score")
+#define FIELD_SCORE_CALC						CONSTLIT("scoreCalc")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
 void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable)
@@ -48,7 +50,14 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 		{
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
-		if (!strEquals(sAttrib, CONSTLIT("all"))
+		if (strEquals(sAttrib, FIELD_BALANCE))
+			{
+			Cols.Insert(CONSTLIT("balanceType"));
+			Cols.Insert(CONSTLIT("combatStrength"));
+			Cols.Insert(CONSTLIT("damage"));
+			Cols.Insert(CONSTLIT("defenseStrength"));
+			}
+		else if (!strEquals(sAttrib, CONSTLIT("all"))
 				&& !strEquals(sAttrib, CONSTLIT("allClasses"))
 				&& !strEquals(sAttrib, CONSTLIT("criteria"))
 				&& !strEquals(sAttrib, CONSTLIT("debug"))
@@ -89,7 +98,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 
 		//	Only include generic classes unless otherwise specified
 
-		if (!bAllClasses && !pClass->HasAttribute(CONSTLIT("genericClass")))
+		if (!bAllClasses && !pClass->HasLiteralAttribute(CONSTLIT("genericClass")))
 			continue;
 
 		if (!pClass->MatchesCriteria(Criteria))
@@ -98,8 +107,8 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 		//	Figure out the sort order
 
 		char szBuffer[1024];
-		wsprintf(szBuffer, "%08d%s%d", 
-				pClass->GetScore(),
+		wsprintf(szBuffer, "%04d%s%d", 
+				pClass->GetLevel(),
 				pClass->GetNounPhrase(0).GetASCIIZPointer(),
 				pClass->GetUNID());
 		Table.AddEntry(CString(szBuffer), (CObject *)pClass);
@@ -135,16 +144,8 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 			if (strEquals(sField, FIELD_MANEUVER) 
 					|| strEquals(sField, FIELD_THRUST_TO_WEIGHT))
 				printf("%.1f", strToInt(sValue, 0, NULL) / 1000.0);
-			else if (strEquals(sField, FIELD_SCORE))
-				{
-				int iActualScore = pClass->GetScore();
-				int iScore = pClass->CalcScore();
-
-				if (iScore == iActualScore)
-					printf("%d", iScore);
-				else
-					printf("%d (%d)\n", iScore, iActualScore);
-				}
+			else if (strEquals(sField, FIELD_SCORE_CALC))
+				printf("%d", pClass->CalcScore());
 			else
 				printf(sValue.GetASCIIZPointer());
 			}

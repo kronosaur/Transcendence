@@ -1102,7 +1102,7 @@
 							showTextInput="true">
 
 						<Actions>
-							<Action name="Enter code" key="E" default="1">
+							<Action name="Enter Code" key="E" default="1">
 								(block Nil
 									(if (eq (scrGetInputText gScreen) (typGetGlobalData &stCSCEuropaWreck; "VaultCode"))
 										(block Nil
@@ -1248,14 +1248,19 @@
 
 		<SystemGroup>
 
-			<Station type="&stA-TypeStar;" name="Zheling"/>
+			<Station type="&stNebulaStar;" name="Zheling"/>
+
+			<AddAttribute attributes="GTypeSystem, nebulaSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="240"		attributes="innerSystem, organicComp, greenhouseZone"/>
+			<AddTerritory minRadius="240"	maxRadius="400"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="400"	maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
 
 			<!-- Zheling I is volcanic world -->
 
 			<Orbitals distance="75-85" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stVolcanicPlanet;" name="Zheling I"	showOrbit="true"/>
+						<Station type="&stVolcanicTerrestrialSizeH;" name="Zheling I"	showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="10-14" angle="random">
@@ -1269,7 +1274,7 @@
 			<Orbitals distance="155-165" angle="255-285">
 				<Group>
 					<Primary>
-						<Station type="&stDesertPlanet;" name="Zheling II" showOrbit="true"/>
+						<Station type="&stDesertTerrestrialSizeH;" name="Zheling II" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="7-12" angle="random">
@@ -1277,7 +1282,7 @@
 					</Orbitals>
 
 					<Orbitals distance="18-24" angle="random">
-						<Station type="&stPlanetoid;"/>
+						<Station type="&stRockyPlanetoidSizeF;"/>
 					</Orbitals>
 
 				</Group>
@@ -1288,7 +1293,7 @@
 			<Orbitals distance="240-270" angle="100-190">
 				<Group>
 					<Primary>
-						<Station type="&stGreenhousePlanet;" name="Zheling III" showOrbit="true"/>
+						<Station type="&stGreenhouseTerrestrialSizeI;" name="Zheling III" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="10-16" angle="random">
@@ -1299,7 +1304,7 @@
 
 					<Trojan offset="120">
 						<SpaceEnvironment 
-								type=			"&seNebula;"
+								type=			"&seLightNebula;"
 								shape=			"arc" 
 								width=			"120"
 								widthVariation=	"60"
@@ -1327,13 +1332,13 @@
 			<Orbitals distance="360-400" angle="30-75">
 				<Group>
 					<Primary>
-						<Station type="&stHydrogenGasGiant;" name="Zheling Iv" showOrbit="true"/>
+						<Station type="&stHydrogenGasGiantSizeM;" name="Zheling Iv" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals count="4d12" distance="2d6+4" eccentricity="20-40" angle="random">
 						<Table>
-							<Station chance="75" type="&stSmallFrostAsteroid;" />
-							<Station chance="25" type="&stMediumFrostAsteroid;" />
+							<Station chance="75" type="&stRockyOuterAsteroidSizeA;" />
+							<Station chance="25" type="&stRockyOuterAsteroidSizeB;" />
 						</Table>
 					</Orbitals>
 
@@ -1350,26 +1355,24 @@
 					<Trojan>
 						<Group>
 							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyOuterAsteroidSizeA;" />
 							</Orbitals>
 
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyOuterAsteroidSizeB;" />
 							</Orbitals>
-
 						</Group>
 					</Trojan>
 
 					<AntiTrojan>
 						<Group>
 							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyOuterAsteroidSizeA;" />
 							</Orbitals>
 
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyOuterAsteroidSizeB;" />
 							</Orbitals>
-
 						</Group>
 					</AntiTrojan>
 
@@ -1377,7 +1380,7 @@
 
 					<Trojan offset="60">
 						<SpaceEnvironment 
-								type=			"&seNebula;"
+								type=			"&seLightNebula;"
 								shape=			"arc" 
 								width=			"200"
 								widthVariation=	"100"
@@ -1393,7 +1396,7 @@
 
 					<AntiTrojan offset="120">
 						<SpaceEnvironment 
-								type=			"&seNebula;"
+								type=			"&seLightNebula;"
 								shape=			"arc" 
 								width=			"200"
 								widthVariation=	"100"
@@ -1406,7 +1409,6 @@
 								>
 						</SpaceEnvironment>
 					</AntiTrojan>
-
 				</Group>
 			</Orbitals>
 
@@ -1415,21 +1417,20 @@
 			<Orbitals distance="600-660" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stMethaneGasGiant;" name="Zheling V" showOrbit="true"/>
+						<Station type="&stMethaneGasGiantSizeK;" name="Zheling V" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="18-20" angle="random">
-						<Lookup table="AsteroidMedium"/>
+						<Station type="&stRockyOuterAsteroidSizeB;"/>
 					</Orbitals>
 
 					<Orbitals distance="28-32" angle="random">
-						<Station type="&stCrateredPlanet;"/>
+						<Station type="&stRockyPlanetoidSizeE;"/>
 					</Orbitals>
 
 					<Orbitals distance="40-44" angle="random">
-						<Lookup table="AsteroidMedium"/>
+						<Station type="&stRockyOuterAsteroidSizeD;"/>
 					</Orbitals>
-
 				</Group>
 			</Orbitals>
 

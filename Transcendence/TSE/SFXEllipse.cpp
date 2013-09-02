@@ -114,7 +114,7 @@ void CEllipseEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 		}
 	}
 
-bool CEllipseEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CEllipseEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

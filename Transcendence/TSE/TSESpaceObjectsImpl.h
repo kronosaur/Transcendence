@@ -10,7 +10,7 @@ class CAreaDamage : public CSpaceObject
 	public:
 		static ALERROR Create (CSystem *pSystem,
 				CWeaponFireDesc *pDesc,
-				int iBonus,
+				CItemEnhancementStack *pEnhancements,
 				DestructionTypes iCause,
 				const CDamageSource &Source,
 				const CVector &vPos,
@@ -48,7 +48,7 @@ class CAreaDamage : public CSpaceObject
 		CAreaDamage (void);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
-		int m_iBonus;							//	Bonus
+		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements
 		DestructionTypes m_iCause;				//	Cause of damage
 		IEffectPainter *m_pPainter;				//	Effect painter
 		int m_iInitialDelay;					//	Delay before start
@@ -354,7 +354,7 @@ class CMissile : public CSpaceObject
 	public:
 		static ALERROR Create (CSystem *pSystem,
 				CWeaponFireDesc *pDesc,
-				int iBonus,
+				CItemEnhancementStack *pEnhancements,
 				DestructionTypes iCause,
 				const CDamageSource &Source,
 				const CVector &vPos,
@@ -411,7 +411,7 @@ class CMissile : public CSpaceObject
 		void CreateFragments (const CVector &vPos);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
-		int m_iBonus;							//	Bonus damage
+		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements
 		DestructionTypes m_iCause;				//	Cause of damage
 		int m_iLifeLeft;						//	Ticks left
 		int m_iHitPoints;						//	HP left
@@ -425,7 +425,7 @@ class CMissile : public CSpaceObject
 		CSpaceObject *m_pTarget;				//	Target
 		int m_iTick;							//	Number of ticks of life so far
 		TQueue<SExhaustParticle> *m_pExhaust;	//	Array of exhaust particles
-		CG16bitRegion *m_pVaporTrailRegions;	//	Array of vapor trail regions
+		CG16bitBinaryRegion *m_pVaporTrailRegions;	//	Array of vapor trail regions
 		int m_iSavedRotationsCount;				//	Number of saved rotations
 		int *m_pSavedRotations;					//	Array of saved rotation angles
 
@@ -443,7 +443,7 @@ class CParticleDamage : public CSpaceObject
 	public:
 		static ALERROR Create (CSystem *pSystem,
 				CWeaponFireDesc *pDesc,
-				int iBonus,
+				CItemEnhancementStack *pEnhancements,
 				DestructionTypes iCause,
 				const CDamageSource &Source,
 				const CVector &vPos,
@@ -483,8 +483,8 @@ class CParticleDamage : public CSpaceObject
 		void InitParticles (int iCount, const CVector &vPos, const CVector &vInitVel, int iDirection);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
+		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements
 		CSpaceObject *m_pTarget;				//	Target
-		int m_iBonus;							//	Bonus
 		DestructionTypes m_iCause;				//	Cause of damage
 		int m_iTick;							//	Counter
 		int m_iLifeLeft;						//	Ticks left
@@ -700,7 +700,7 @@ class CRadiusDamage : public CSpaceObject
 	public:
 		static ALERROR Create (CSystem *pSystem,
 				CWeaponFireDesc *pDesc,
-				int iBonus,
+				CItemEnhancementStack *pEnhancements,
 				DestructionTypes iCause,
 				const CDamageSource &Source,
 				const CVector &vPos,
@@ -738,7 +738,7 @@ class CRadiusDamage : public CSpaceObject
 		CRadiusDamage (void);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
-		int m_iBonus;							//	Bonus
+		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements
 		DestructionTypes m_iCause;				//	Cause of damage
 		IEffectPainter *m_pPainter;				//	Effect painter
 		int m_iTick;							//	Counter
@@ -785,30 +785,6 @@ class CSequencerEffect : public CSpaceObject
 class CShip : public CSpaceObject
 	{
 	public:
-		enum InstallArmorStatus
-			{
-			insArmorOK				= 0,
-			insArmorTooHeavy		= 1,	//	Armor is too heavy for ship class
-			};
-
-		enum InstallDeviceStatus
-			{
-			insOK					= 0,	//	Can install this device
-			insNotADevice			= 1,	//	Item is not a device
-			insNoSlots				= 2,	//	No slots available for any device
-			insAlreadyInstalled		= 3,	//	Device is already installed
-			insShieldsInstalled		= 4,	//	Shield generator is already installed
-			insDriveInstalled		= 5,	//	Drive is already installed
-			insLauncherInstalled	= 6,	//	Missile launcher already installed
-			insEngineCoreTooWeak	= 7,	//	Engine core is too weak
-			insCargoInstalled		= 8,	//	Cargo expansion is already installed
-			insReactorInstalled		= 9,	//	Reactor upgrade is already installed
-			insCargoMaxExpansion	= 10,	//	Cargo expansion does not fit on ship
-			insReactorMaxPower		= 11,	//	Reactor is too powerful for ship
-			insNoWeaponSlots		= 12,	//	No slots available for more weapons
-			insNoGeneralSlots		= 13,	//	No slots available for non-weapons
-			};
-
 		enum RemoveDeviceStatus
 			{
 			remOK					= 0,	//	Can remove this device
@@ -830,6 +806,7 @@ class CShip : public CSpaceObject
 
 		//	Orders
 		inline void CancelCurrentOrder (void) { m_pController->CancelCurrentOrder(); }
+		inline IShipController::OrderTypes GetCurrentOrder (CSpaceObject **retpTarget, IShipController::SData *retData = NULL) { return m_pController->GetCurrentOrderEx(retpTarget, retData); }
 		inline DWORD GetCurrentOrderData (void) { return m_pController->GetCurrentOrderData(); }
 
 		//	Armor methods
@@ -845,19 +822,17 @@ class CShip : public CSpaceObject
 		void UninstallArmor (CItemListManipulator &ItemList);
 
 		//	Device methods
-		InstallArmorStatus CanInstallArmor (const CItem &Item) const;
-		InstallArmorStatus CanInstallArmor (CItemListManipulator &ItemList) const;
-		InstallDeviceStatus CanInstallDevice (const CItem &Item, bool bReplace = false);
-		InstallDeviceStatus CanInstallDevice (CItemListManipulator &ItemList);
 		RemoveDeviceStatus CanRemoveDevice (const CItem &Item);
 		void ClearAllTriggered (void);
-		void DamageExternalDevice (int iDev, SDamageCtx &Ctx);
+		void DamageCargo (SDamageCtx &Ctx);
+		void DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx);
+		void DamageDrive (SDamageCtx &Ctx);
 		void EnableDevice (int iDev, bool bEnable = true);
+		bool FindDeviceAtPos (const CVector &vPos, CInstalledDevice **retpDevice);
 		DeviceNames GetDeviceNameForCategory (ItemCategories iCategory);
 		int GetItemDeviceName (const CItem &Item) const;
 		CItem GetNamedDeviceItem (DeviceNames iDev);
 		bool HasNamedDevice (DeviceNames iDev) const;
-//		inline bool HasSecondaryWeapons (void) { return m_fHasSecondaryWeapons; }
 		void InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot = -1);
 		bool IsDeviceSlotAvailable (void);
 		void ReadyFirstWeapon (void);
@@ -922,7 +897,8 @@ class CShip : public CSpaceObject
 		int GetManeuverDelay (void);
 		inline int GetRotationAngle (void) { return m_pClass->GetRotationAngle(); }
 		inline int GetRotationRange (void) { return m_pClass->GetRotationRange(); }
-		inline Metric GetThrust (void) { return m_iThrust; }
+		inline Metric GetThrust (void) { return (IsMainDriveDamaged() ? (m_iThrust / 2) : m_iThrust); }
+		inline bool IsMainDriveDamaged (void) const { return m_iDriveDamagedTimer != 0; }
 		inline bool IsInertialess (void) { return (m_pDriveDesc->fInertialess ? true : false); }
 		inline void SetMaxSpeedHalf (void) { m_fHalfSpeed = true; }
 		inline void ResetMaxSpeed (void) { m_fHalfSpeed = false; }
@@ -931,6 +907,7 @@ class CShip : public CSpaceObject
 		inline IShipController *GetController (void) { return m_pController; }
 		inline CShipClass *GetClass (void) { return m_pClass; }
 		void SetController (IShipController *pController, bool bFreeOldController = true);
+		inline void SetControllerEnabled (bool bEnabled = true) { m_fControllerDisabled = !bEnabled; }
 		void SetCommandCode (ICCItem *pCode);
 		inline void SetDestroyInGate (void) { m_fDestroyInGate = true; }
 		inline void SetEncounterInfo (CStationType *pEncounterInfo) { m_pEncounterInfo = pEncounterInfo; }
@@ -944,11 +921,13 @@ class CShip : public CSpaceObject
 		virtual CShip *AsShip (void) { return this; }
 		virtual void Behavior (void);
 		virtual bool CanAttack (void) const;
+		virtual bool CanInstallItem (const CItem &Item, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual bool CanMove (void) { return true; }
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual bool ClassCanAttack (void) { return true; }
 		virtual void ConsumeFuel (int iFuel);
 		virtual CurrencyValue CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
+		virtual void DamageExternalDevice (int iDev, SDamageCtx &Ctx);
 		virtual void DeactivateShields (void);
 		virtual CString DebugCrashInfo (void);
 		virtual void Decontaminate (void);
@@ -1001,11 +980,10 @@ class CShip : public CSpaceObject
 		virtual ScaleTypes GetScale (void) const { return scaleShip; }
 		virtual int GetScore (void) { return m_pClass->GetScore(); }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pClass->GetScreen(sName); }
-		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual int GetShieldLevel (void);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual int GetStealth (void) const;
-		virtual Metric GetMaxSpeed (void) { return (m_fHalfSpeed ? (m_rMaxSpeed / 2.0) : m_rMaxSpeed); }
+		virtual Metric GetMaxSpeed (void) { return ((m_fHalfSpeed || IsMainDriveDamaged()) ? (m_rMaxSpeed / 2.0) : m_rMaxSpeed); }
 		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
 		virtual CDesignType *GetType (void) const { return m_pClass; }
 		virtual int GetVisibleDamage (void);
@@ -1027,6 +1005,7 @@ class CShip : public CSpaceObject
 		virtual bool IsVirtual (void) const { return m_pClass->IsVirtual(); }
 		virtual void MarkImages (void);
 		virtual bool ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const CVector &vObj2Pos);
+		virtual void OnAscended (void);
 		virtual void OnBounce (CSpaceObject *pBarrierObj, const CVector &vPos);
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent);
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent);
@@ -1037,6 +1016,7 @@ class CShip : public CSpaceObject
 		virtual void OnHitByDeviceDamage (void);
 		virtual void OnHitByDeviceDisruptDamage (DWORD dwDuration);
 		virtual void OnHitByRadioactiveDamage (SDamageCtx &Ctx);
+		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) { m_pController->OnMissionCompleted(pMission, bSuccess); }
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip);
@@ -1061,7 +1041,6 @@ class CShip : public CSpaceObject
 		virtual void Resume (void) { m_fManualSuspended = false; if (!IsInGate()) ClearCannotBeHit(); }
 		virtual void SendMessage (CSpaceObject *pSender, const CString &sMsg);
 		virtual bool SetAbility (Abilities iAbility, AbilityModifications iModification, int iDuration, DWORD dwOptions);
-		virtual void SetEventFlags (void);
 		virtual void SetFireDelay (CInstalledDevice *pWeapon, int iDelay = -1);
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { m_pClass->SetGlobalData(sAttribute, sData); }
 		virtual void SetIdentified (bool bIdentified = true) { m_fIdentified = bIdentified; }
@@ -1082,7 +1061,7 @@ class CShip : public CSpaceObject
 
 		//	CSpaceObject virtuals
 		virtual bool CanFireOn (CSpaceObject *pObj) { return CanFireOnObjHelper(pObj); }
-		virtual void GateHook (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
+		virtual void GateHook (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
@@ -1092,6 +1071,7 @@ class CShip : public CSpaceObject
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { m_pController->OnPaintSRSEnhancements(Dest, Ctx); }
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnSetEventFlags (void);
 		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);
 		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) { m_pController->OnUpdatePlayer(Ctx); }
 		virtual void OnWriteToStream (IWriteStream *pStream);
@@ -1105,6 +1085,7 @@ class CShip : public CSpaceObject
 		int CalcMaxCargoSpace (void) const;
 		void CalcDeviceBonus (void);
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
+		InstallItemResults CalcDeviceToReplace (const CItem &Item, int *retiSlot = NULL);
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
@@ -1136,6 +1117,7 @@ class CShip : public CSpaceObject
 		int m_NamedDevices[devNamesCount];
 		const DriveDesc *m_pDriveDesc;			//	Drive descriptor
 		const ReactorDesc *m_pReactorDesc;		//	Reactor descriptor
+		CShipInterior m_Interior;				//	Interior decks and compartments (optionally)
 		CEnergyFieldList m_EnergyFields;		//	List of energy fields
 		CDockingPorts m_DockingPorts;			//	Docking ports (optionally)
 		CStationType *m_pEncounterInfo;			//	Pointer back to encounter type (generally NULL)
@@ -1153,7 +1135,8 @@ class CShip : public CSpaceObject
 												//	(-1 = permanent)
 		int m_iLRSBlindnessTimer:16;			//	Ticks until LRS blindness wears off
 												//	(-1 = permanent)
-		int m_iSpare:16;
+		int m_iDriveDamagedTimer:16;			//	Ticks until drive repaired
+												//	(-1 = permanent)
 		int m_iLastFireTime;					//	Tick when we last fired a weapon
 
 		int m_iFuelLeft;						//	Fuel left (kilos)
@@ -1187,8 +1170,11 @@ class CShip : public CSpaceObject
 		DWORD m_fManualSuspended:1;				//	TRUE if ship is suspended
 		DWORD m_fGalacticMap:1;					//	TRUE if ship has galactic map installed
 		DWORD m_fRecalcItemMass:1;				//	TRUE if we need to recalculate m_rImageMass
-		
-		DWORD m_dwSpare:16;
+
+		DWORD m_fDockingDisabled:1;				//	TRUE if docking is disabled
+		DWORD m_fControllerDisabled:1;			//	TRUE if we want to disable controller
+
+		DWORD m_dwSpare:14;
 
 	friend CObjectClass<CShip>;
 	};
@@ -1232,7 +1218,8 @@ class CStation : public CSpaceObject
 				const CVector &vPos,
 				const CVector &vVel,
 				CXMLElement *pExtraData,
-				CStation **retpStation);
+				CStation **retpStation,
+				CString *retsError = NULL);
 		virtual ~CStation (void);
 
 		inline void ClearFireReconEvent (void) { m_fFireReconEvent = false; }
@@ -1282,6 +1269,8 @@ class CStation : public CSpaceObject
 		virtual CurrencyValue CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual CString DebugCrashInfo (void);
 		virtual void Decontaminate (void) { m_fRadioactive = false; }
+		virtual bool GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
+		virtual bool GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice);
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID);
 		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL);
 		virtual Categories GetCategory (void) const { return catStation; }
@@ -1297,7 +1286,7 @@ class CStation : public CSpaceObject
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pType->GetGlobalData(sAttribute); }
 		virtual const CObjectImageArray &GetImage (void) { return m_pType->GetImage(m_ImageSelector, 0); }
 		virtual int GetLevel (void) const { return m_pType->GetLevel(); }
-		virtual const COrbit *GetMapOrbit (void) { return m_pMapOrbit; }
+		virtual const COrbit *GetMapOrbit (void) const { return m_pMapOrbit; }
 		virtual Metric GetMass (void) { return m_rMass; }
 		virtual int GetMaxLightDistance (void) { return m_pType->GetMaxLightDistance(); }
 		virtual CString GetName (DWORD *retdwFlags = NULL);
@@ -1313,6 +1302,7 @@ class CStation : public CSpaceObject
 		virtual CSystem::LayerEnum GetPaintLayer (void);
 		virtual Metric GetParallaxDist (void) { return m_pType->GetParallaxDist(); }
 		virtual EDamageResults GetPassthroughDefault (void);
+		virtual int GetPlanetarySize (void) const { return (GetScale() == scaleWorld ? m_pType->GetSize() : 0); }
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual IShipGenerator *GetRandomEncounterTable (int *retiFrequency = NULL) const;
 		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
@@ -1361,7 +1351,6 @@ class CStation : public CSpaceObject
 		virtual bool RemoveSubordinate (CSpaceObject *pSubordinate);
 		virtual bool RequestDock (CSpaceObject *pObj, int iPort = -1);
 		virtual bool RequestGate (CSpaceObject *pObj);
-		virtual void SetEventFlags (void);
 		virtual void SetExplored (bool bExplored = true) { m_fExplored = bExplored; }
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { m_pType->SetGlobalData(sAttribute, sData); }
 		virtual void SetKnown (bool bKnown = true) { m_fKnown = bKnown; }
@@ -1389,6 +1378,7 @@ class CStation : public CSpaceObject
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnSetEventFlags (void);
 		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);
 		virtual void OnUpdateExtended (const CTimeSpan &ExtraTime);
 		virtual void OnWriteToStream (IWriteStream *pStream);
@@ -1405,6 +1395,7 @@ class CStation : public CSpaceObject
 		void AllocTradeOverride (void);
 		void Blacklist (CSpaceObject *pObj);
 		int CalcNumberOfShips (void);
+		void ClearBlacklist (CSpaceObject *pObj);
 		void CreateDestructionEffect (void);
 		void CreateEjectaFromDamage (int iDamage, const CVector &vHitPos, int iDirection, const DamageDesc &Damage);
 		void CreateStructuralDestructionEffect (SDestroyCtx &Ctx);
@@ -1412,7 +1403,7 @@ class CStation : public CSpaceObject
 		void FinishCreation (void);
 		void FriendlyFire (CSpaceObject *pAttacker);
 		const CObjectImageArray &GetImage (int *retiTick, int *retiRotation);
-		bool IsBlacklisted (CSpaceObject *pObj);
+		bool IsBlacklisted (CSpaceObject *pObj = NULL);
 		inline bool IsImmutable (void) const { return m_fImmutable; }
 		void RaiseAlert (CSpaceObject *pTarget);
 		void SetAngry (void);

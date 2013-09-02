@@ -105,7 +105,7 @@ void CAutonAI::BehaviorStart (void)
 		case IShipController::orderNone:
 			{
 			if (m_pShip->GetDockedObj() == NULL)
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 			break;
 			}
 
@@ -326,8 +326,8 @@ void CAutonAI::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDest);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
 	}
 
 void CAutonAI::OnWriteToStream (IWriteStream *pStream)

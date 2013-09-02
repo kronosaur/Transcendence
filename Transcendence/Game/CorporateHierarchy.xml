@@ -5,68 +5,67 @@
 	<!-- CorporateCruiser -->
 
 	<ShipClass UNID="&scCorporateCruiser;"
-			manufacturer=		"Corporate"
-			class=				""
-			type=				"cruiser"
-			score=				"2160"
+			manufacturer=		"Rasiermesser"
+			class=				"Corporate cruiser"
+			type=				""
 
+			attributes=			"capitalShip, corporate, genericClass, majorShip"
+			   
+			size=				"275"
 			mass=				"8000"
-			cargoSpace=			"1000"
-			thrust=				"5000"
+			thrustRatio=		"2"
 			maneuver=			"12"
 			maxSpeed=			"20"
+			cargoSpace=			"1000"
 
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
 			leavesWreck=		"100"
-
-			attributes=			"capitalShip, corporate, genericClass, majorShip"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="330" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="315" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="300" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="285" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="270" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="255" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="240" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="225" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="210" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="195" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="180" span="15" armorID="&itQuadroCarbideArmor;" />
-
-			<ArmorSection start="165" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="150" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="135" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="120" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="105" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="90"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="75"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="60"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="45"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="30"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="15"  span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="0"   span="15" armorID="&itQuadroCarbideArmor;" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHexaCarbideArmor;"
+			count=				"18"
+			/>
+		
 		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="115" posRadius="50" posZ="0"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="245" posRadius="50" posZ="0"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
 			<Device deviceID="&itPlasmaShieldGenerator;"/>
 		</Devices>
 
-		<Image imageID="&rsLargeShips1;" imageX="576" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-25"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"40"
+					/>
+		</Interior>
 
 		<Items>
 			<Item count="40d20" item="&itGotha10Missile;"/>
 			<Item count="2d12" item="&itPteracniumFuelRod;"/>
 		</Items>
 
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+
+		<!-- AI and Behavior -->
+		
 		<AISettings
-			fireRateAdj=		"25"
+			fireRateAdj=		"40"
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
@@ -119,38 +118,38 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"w -Specialty; -NotForSale;"
+					criteria=		"w -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"---ru cur"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"d~w -Specialty; -NotForSale;"
+					criteria=		"d~w -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"---ru cur"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"a -Specialty; -NotForSale;"
+					criteria=		"a -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"---ru cur"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 
 			<RandomItem count="1d12" 
-					criteria=		"u -Specialty; -NotForSale;"
+					criteria=		"u -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"---ru cur"
 					/>
 
 			<RandomItem count="2d12" 
-					criteria=		"m -Specialty; -NotForSale;"
+					criteria=		"m -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"---ru cur"
 					/>
 
 			<RandomItem count="1d6" 
-					criteria=		"adu -Specialty; -NotForSale;"
+					criteria=		"adu -Specialty; -NotStandard; -NotForSale;"
 					levelFrequency=	"----- rucur"
 					/>
 		</Items>
@@ -160,6 +159,10 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="115"/>
 			<Buy	criteria="adumfNU -Illegal; -ID; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="adumfNU -Illegal; -ID;"				priceAdj="10"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-8;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -183,7 +186,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									Nil						; obsolete
@@ -196,7 +199,7 @@
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -218,13 +221,10 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Install weapon" key="W" >
+							<Action name="Install Weapon" key="W" >
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gTechModifier Nil)
@@ -234,7 +234,7 @@
 									)
 							</Action>
 
-							<Action name="Remove weapon" key="V" >
+							<Action name="Remove Weapon" key="V" >
 								(scrShowScreen gScreen "&dsRemoveWeapon;")
 							</Action>
 
@@ -311,27 +311,27 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"as -Illegal; -Military; -NotForSale;"
+					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"ucu--"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="10" 
-					criteria=		"as -Illegal; -Military; -NotForSale;"
+					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"-ucu-"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="5" 
-					criteria=		"as -Illegal; -Military; -NotForSale;"
+					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"-rucu r"
 					/>
 			<RandomItem count="3" 
-					criteria=		"as -Illegal; -Military; -NotForSale;"
+					criteria=		"as -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"--ruc ur"
 					/>
 			<RandomItem count="4" 
-					criteria=		"u +ArmorRepair; -Illegal; -Military; -NotForSale;"
+					criteria=		"u +ArmorRepair; -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"ccuuu ur"
 					/>
 
@@ -379,7 +379,7 @@
 							desc=	"You are docked at an armor dealer station.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									Nil						; obsolete
@@ -392,13 +392,13 @@
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 7)
 									(setq gArmorSegment 0)
@@ -408,7 +408,7 @@
 									)
 							</Action>
 
-							<Action name="Upgrade shield generator" key="H">
+							<Action name="Upgrade Shield Generator" key="H">
 								(block Nil
 									(setq gItem (itmCreate &itMonopoleDeflector; 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
@@ -486,30 +486,30 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"w -Illegal; -Military; -NotForSale;"
+					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"c----"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement2)"
 					/>
 			<RandomItem count="15" 
-					criteria=		"w -Illegal; -Military; -NotForSale;"
+					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"ucu--"
 					enhanced=		"10"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 			<RandomItem count="8" 
-					criteria=		"w -Illegal; -Military; -NotForSale;"
+					criteria=		"w -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"rucur"
 					enhanced=		"5"
 					enhancement=	"=(intHPEnhancement1)"
 					/>
 
 			<RandomItem count="20" 
-					criteria=		"m -Illegal; -Military; -NotForSale;"
+					criteria=		"m -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"ucu--"
 					/>
 			<RandomItem count="10" 
-					criteria=		"m -Illegal; -Military; -NotForSale;"
+					criteria=		"m -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"rucur"
 					/>
 		</Items>
@@ -565,7 +565,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									Nil						; obsolete
@@ -578,13 +578,13 @@
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Install new weapon" key="I">
+							<Action name="Install New Weapon" key="I">
 								(block Nil
 									(setq gItem (itmCreate (item (objGetStaticData gSource "WeaponUpgradeList") (objGetData gSource "WeaponUpgrade")) 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
@@ -688,6 +688,8 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +Makayev; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="500"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -794,6 +796,8 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +Bushido; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="300"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -867,7 +871,7 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; +Auton; -NotForSale;"
+					criteria=		"* -Illegal; -Military; +Auton; -NotStandard; -NotForSale;"
 					level=			"4"
 					levelCurve=		"2"
 					/>
@@ -897,19 +901,19 @@
 							desc=	"You are docked at an auton dealer.">
 
 						<Actions>
-							<Action name="Buy autons" default="1" key="B">
+							<Action name="Buy Autons" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell autons" key="S">
+							<Action name="Sell Autons" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Repair active autons" key="R">
+							<Action name="Repair Active Autons" key="R">
 								(block Nil
 									; Figure out the list of autons for the player
 									(setq gList (sysFindObject gPlayerShip "s B:auton; O:escort;"))
@@ -1090,7 +1094,7 @@
 							desc=	"You are in the maintenance level of a Corporate Enclave. The door to the maintenance shop is open and you hear voices inside.">
 
 						<Actions>
-							<Action name="Enter maintenance shop" default="1" key="E">
+							<Action name="Enter Maintenance Shop" default="1" key="E">
 								<ShowPane pane="MaintenanceShop"/>
 							</Action>
 
@@ -1163,7 +1167,7 @@
 							desc=	"You are in the corporate level of a Corporate Enclave. The day-to-day services and manufacturing of the various corporations are carried-out on this level.">
 
 						<Actions>
-							<Action name="Sell items" default="1" key="S">
+							<Action name="Sell Items" default="1" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1250,6 +1254,9 @@
 
 		<Trade currency="credit" max="5000" replenish="250">
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-3;" priceAdj="80"/>
+			<Refuel			criteria="f +BasicFuel; L:4-8;" priceAdj="90"/>
 		</Trade>
 
 		<Events>
@@ -1268,17 +1275,14 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 92) (&itHelium3FuelRod; 80)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1391,6 +1395,10 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Makayev; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -1422,7 +1430,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" key="B">
+							<Action name="Buy Items" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									Nil						; obsolete
@@ -1435,7 +1443,7 @@
 									)
 							</Action>
 
-							<Action name="Repair items" key="R">
+							<Action name="Repair Items" key="R">
 								(scrShowScreen gScreen "&dsRPGRepairItem;" {
 									criteria: "*~aD +Makayev;"
 									priceAdj: 65
@@ -1458,23 +1466,16 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A" >
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install device" key="d" >
+							<Action name="Install Device" key="d" >
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gTechModifier Nil)
@@ -1484,7 +1485,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -1577,7 +1578,7 @@
 					(objSetData gSource "maxInventory" maxInventory)
 					
 					; Pick the items that we manufacture
-					(setq allItems (shuffle (itmGetTypes "t -Res; -Fuel; -ID; -Illegal; -Art; -NotForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6")))
+					(setq allItems (shuffle (itmGetTypes "t -Res; -Fuel; -ID; -Illegal; -Art; -Antique; -Alien; -NotForSale; F:curv; &gt;$0 &lt;=$500 &lt;=6")))
 					(setq totalItems (min (random 3 5) (count allItems)))
 					(for i 1 totalItems
 						(block (theType thePrice theCount)
@@ -1669,13 +1670,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 							
-							<Action name="Sell items" default="1" key="S">
+							<Action name="Sell Items" default="1" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1978,7 +1979,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Sell items" key="S" default="1">
+							<Action name="Sell Items" key="S" default="1">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -2077,13 +2078,13 @@
 							desc=	"You are docked at an independent ice farm on a small asteroid. Cold and stale air blows out of a wheezing recycler and you hear the drone of struggling generators and pumps.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -2138,7 +2139,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
+			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"-rrru r---- ----- ----- -----"
 			unique=				"inSystem"
 			locationCriteria=	"+planetary,-asteroids"
@@ -2217,7 +2218,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Purchase insurance" default="1" key="P">
+							<Action name="Purchase Insurance" default="1" key="P">
 								(switch
 									(objGetGlobalData gSource "insured")
 										(scrShowPane gScreen "AlreadyInsured")
@@ -2263,8 +2264,10 @@
 
 					<BuyInsurance>
 						<OnPaneInit>
-							(block (desc claims)
+							(block (desc claims priceAdj)
 								(setq claims (objGetGlobalData gSource "claims"))
+
+								; Compute the price based on prior claims
 
 								(switch
 									(or (not claims) (eq claims 0))
@@ -2279,14 +2282,45 @@
 									(setq gCost 1000000)
 									)
 
-								(setq desc (cat "Our conglomerate specializes in providing full personal and property coverage against death and destruction. Claims are settled by full replacement of life and property, including resuscitation and cloning. Based on your risk profile we can offer you full coverage for " gCost " credits. "))
+								; Include any global adjustments
 
-								(if (ls (plyGetCredits gPlayer) gCost)
-									(block Nil
-										(scrSetDesc gScreen (cat desc "Unfortunately, you cannot afford this service currently, but we urge you to return as soon as your financial situation improves."))
-										(scrEnableAction gScreen 0 Nil)
-										)
-									(scrSetDesc gScreen (cat desc "Do you wish to purchase this service?"))
+								(if (setq priceAdj (objGetPlayerPriceAdj gSource { type:'corporateInsurance priorClaims:(if claims claims 0) }))
+									(setq gCost (divide (multiply gCost priceAdj) 100))
+									)
+
+								; Compose text
+
+								(setq desc (cat 
+									"\"Our conglomerate specializes in providing full personal and property coverage against death and destruction. "
+									"Claims are settled by full replacement of life and property, including resuscitation and cloning.\n\n"
+									))
+
+								(switch
+									(not priceAdj)
+										(setq desc (cat desc "\"Based on your risk profile we can offer you full coverage for " gCost " credits. "))
+
+									(eq gCost 0)
+										(setq desc (cat desc 
+											"\"With your Corporate discount we can offer you full coverage for...let me see..."
+											"wow, you must have some powerful friends! We can offer you full coverage free of charge! "
+											))
+										
+									(setq desc (cat desc "\"With your Corporate discount we can offer you full coverage for " gCost " credits. "))
+									)
+
+								(switch
+									(eq gCost 0)
+										(scrSetDesc gScreen desc "Do you wish to accept our offer?\"")
+										
+									(ls (plyGetCredits gPlayer) gCost)
+										(block Nil
+											(scrSetDesc gScreen desc
+												"Unfortunately, you cannot afford this service currently, but we urge you to return as soon as your financial situation improves.\""
+												)
+											(scrEnableAction gScreen 0 Nil)
+											)
+
+									(scrSetDesc gScreen desc "Do you wish to purchase this service?\"")
 									)
 								)
 						</OnPaneInit>
@@ -2310,7 +2344,7 @@
 					</BuyInsurance>
 
 					<Done
-							desc= "Thank you for your purchase. We wish you a long and happy life, secure in the knowledge that the oldest and most powerful insurance conglomerate stands behind you.">
+							desc= "&quot;Thank you for your purchase. We wish you a long and happy life, secure in the knowledge that the oldest and most powerful insurance conglomerate stands behind you.&quot;">
 
 						<Actions>
 							<Action name="Continue" cancel="1" default="1" key="C">
@@ -2386,32 +2420,32 @@
 
 		<Items>
 			<RandomItem count="1d6" 
-					criteria=		"d +Taikon;"
+					criteria=		"d +Taikon; -NotStandard; -NotForSale"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="1d6" 
-					criteria=		"a +Taikon;"
+					criteria=		"a +Taikon; -NotStandard; -NotForSale"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="3d6" 
-					criteria=		"m +Taikon;"
+					criteria=		"m +Taikon; -NotStandard; -NotForSale"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="1d6" 
-					criteria=		"*"
+					criteria=		"* -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="2d6" 
-					criteria=		"*~ad -Alien;"
+					criteria=		"*~ad -Alien; -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="1d3" 
-					criteria=		"* +Alien;"
+					criteria=		"* +Alien; -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"2"
 					/>
@@ -2423,6 +2457,11 @@
 			<Sell	criteria="*NU +RingerValuable;"		priceAdj="510"/>
 			<Sell	criteria="*NU +Alien;"				priceAdj="125"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+
+			<Refuel			criteria="f +unid:&itPteracniumFuelRod;;" priceAdj="85"/>
+			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2444,7 +2483,7 @@
 							desc=	"You are docked at a Taikon Ventures station.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
@@ -2466,23 +2505,16 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 85) (&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A">
-								(block Nil
-									(setq gTechLevel 11)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A">
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install device" key="D">
+							<Action name="Install Device" key="D">
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gTechModifier "Taikon")
@@ -2492,7 +2524,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V">
+							<Action name="Remove Device" key="V">
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -2570,17 +2602,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"5"
 					levelCurve=		"0"
 					/>
 			<RandomItem count="15" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="8" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
@@ -2632,19 +2664,19 @@
 							desc=	"You are docked at a Corporate Trading Post.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Order items" key="O">
+							<Action name="Order Items" key="O">
 								(switch
 									(eq (objGetData gSource "MissionStatus") "intransit")
 										(scrShowScreen gScreen "OrderInTransit")
@@ -3014,19 +3046,19 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"admu -Illegal; -Military; -NotForSale;"
+					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"----c"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 			<RandomItem count="15" 
-					criteria=		"admu -Illegal; -Military; -NotForSale;"
+					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"----u cu"
 					enhanced=		"5"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
 					/>
 			<RandomItem count="8" 
-					criteria=		"admu -Illegal; -Military; -NotForSale;"
+					criteria=		"admu -Illegal; -Military; -NotStandard; -NotForSale;"
 					levelFrequency=	"----r ucur"
 					enhanced=		"1"
 					enhancement=	"=(intCorporateGenerateEnhancement gItem)"
@@ -3058,13 +3090,13 @@
 							desc=	"You are docked at a franchise of Thor's Wondrous Devices.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -3218,7 +3250,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy items" default="1" key="B">
+					<Action name="Buy Items" default="1" key="B">
 						(scrShowBuyScreen 
 							"*"						; items sold to player
 							Nil						; obsolete
@@ -3247,13 +3279,10 @@
 
 				<Actions>
 					<Action name="Refuel" key="R">
-						(block Nil
-							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-							(scrShowScreen gScreen "&dsRefuel;")
-							)
+						(scrShowScreen gScreen "&dsRPGRefuel;")
 					</Action>
 
-					<Action name="Install weapon" key="W" >
+					<Action name="Install Weapon" key="W" >
 						(block Nil
 							(setq gTechLevel 8)
 							(setq gTechModifier Nil)
@@ -3263,7 +3292,7 @@
 							)
 					</Action>
 
-					<Action name="Remove weapon" key="V" >
+					<Action name="Remove Weapon" key="V" >
 						(scrShowScreen gScreen "&dsRemoveWeapon;")
 					</Action>
 
@@ -3360,9 +3389,10 @@
 	
 <!-- RESOURCES -->
 
-	<Image UNID="&rsMakayevFactory;" bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsManufacturingPlant;" bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
 	
-	<Image UNID="&rsTradingPostAnimation;" bitmap="Resources\TradingPostGenericAd.jpg" bitmask="Resources\TradingPostGenericAdMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsTradingPostAnimation;"	bitmap="Resources\TradingPostGenericAd.jpg" bitmask="Resources\TradingPostGenericAdMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

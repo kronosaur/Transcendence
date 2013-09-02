@@ -25,7 +25,7 @@ class CPolyflashPainter : public IEffectPainter
 
 //	CPolyflashEffectCreator object
 
-IEffectPainter *CPolyflashEffectCreator::CreatePainter (void)
+IEffectPainter *CPolyflashEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -75,7 +75,7 @@ void CPolyflashPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 //	Paints the flash
 
 	{
-	CG16bitRegion Region;
+	CG16bitBinaryRegion Region;
 	SPoint Poly[6];
 
 	//	Create the broad outer flame

@@ -4,12 +4,184 @@
 
 <!-- STAR SYSTEMS =============================================================
 
-	STANDARD LABELS
+	Creating a random star system consists of two main processes: 1) we 
+	generate random planets, asteroids, and nebulae; 2) we place stations and
+	encounters randomly around appropriate locations.
 
-	innerSystem			within 360 light-seconds of star
-	lifeZone			between 360 and 620 light-seconds of star
-	nearStations		within 30 light-seconds of any station (not debris)
-	outerSystem			beyond 620 light-seconds of star
+	OBJECT TYPES
+
+	Object types (implemented as a StationType) represent specific planets
+	and asteroids. Specific object types have the following properties:
+
+	CLASSIFICATION		An object's classification represents the type or kind
+						of object. For example, some objects are "volcanic"
+						while others are "primordial". This library defines
+						several classifications, but additional libraries may
+						defines an arbitrary number of new classifications.
+
+						Generally, a classification encompasses something unique
+						about the objects in the class.
+
+	SIZE				An object has a specific size (in kilometers) that can
+						be placed into one of 13 size classes:
+
+								Asteroid			< 1,000 km
+						sizeA		Tiny			~ 10 km
+						sizeB		Small			~ 50 km
+						sizeC		Medium			~ 100 km
+						sizeD		Large			~ 500 km
+
+								Planetoid			~ 2,500 km
+						sizeE		Small			~ 1,000 km
+						sizeF		Medium			~ 2,000	km
+						sizeG		Large			~ 4,000 km
+		
+								Terrestrial			~ 10,000 km
+						sizeH		Small			~ 5,000 km
+						sizeI		Medium			~ 10,000 km
+						sizeJ		Large			~ 20,000 km
+
+								Gas Giant			~ 100,000 km
+						sizeK		Small			~ 50,000 km
+						sizeL		Medium			~ 100,000 km
+						sizeM		Large			~ 200,000 km
+
+	REGION				An object may appear different depending on its distance
+						from the central star. For example, some objects may have
+						a coating of ice when far away. For purposes of object
+						appearence, there are three regions:
+
+						inner		Inner objects are baked by the central star.
+
+						lifeZone	LifeZone objects are at the right distance 
+									to possibly support liquid water (although
+									they are not required).
+
+						outer		Outer objects are frozen.
+
+	Every concrete object type (represented by a StationType) has the above 
+	properties. For example, stPrimordialInnerAsteroidSizeA implements an object
+	with the following properties:
+
+		classification: primordial
+		size: A
+		region: inner
+	
+	In general, each StationType should have a unique combination of properties.
+	If an object with identical properties can have multiple appearences, then
+	it should generally be implemented as multiple image variants within a 
+	single StationType.
+
+	Object types should include these properties in their attributes. For 
+	example, stPrimordialAsteroidSizeA should have the following attributes:
+
+	primordial			The classification
+	sizeA				The size
+	lifeZone			The region
+
+	If the object type can be found in multiple regions, then it should have
+	all of the appropriate regions listed. In addition, all object types should
+	have the attribute "generic" if they wish to be selected randomly in a
+	system morphology.
+
+	SYSTEM MORPHOLOGIES
+
+	A system morphology defines the form and configuration of a specific kind
+	of system. For example, the AsteroidArcBeltSystem definition creates a 
+	system with a K-class star and asteroid belts.
+
+	System morphologies are designed to be included in a SystemType definitions.
+	The SystemType is responsible for binding the physical characteristics of
+	the system (its morphology) with the stations and encounters that are 
+	appropriate to it.
+
+	For example, there could be two (or more) different SystemTypes that include
+	the AsteroidArcBeltSystem: One might be a friendly Commonwealth system with
+	a heavy Commonwealth presence; the other might define an enemy system with
+	lots of Ranx stations.
+	
+	The tbSystemMorphologies table contains all of the system morphologies
+	defined by this library.
+
+	SYSTEM ZONES
+
+	The system morphologies in this library could, laboriously, define the 
+	system in terms of specific object types. For example, a morphology could
+	randomly place a size A primordial asteroid in the inner region. But this
+	would duplicate lots of code.
+
+	Instead, the morphologies use the concept of "zones" to help place specific
+	object types. There are twelve zone types defined in this library:
+
+						Inner Zones			Life Zones			Outer Zones
+					 ===========================================================
+	Metallic Zones	 |	molten				metallic			barren
+	Organic Zones	 |	greenhouse			primordial			tholin
+	Rocky Zones		 |	cinder				desert				frost
+	Water Zones		 |	steam				biosphere			ice
+
+	In general, each system morphology picks an approprize zone for its inner,
+	lifeZone and outer regions. For example, the VolcanicSystem morphology might
+	pick molten for its inner zone, desert for its lifezone and barren for its
+	outer zone.
+
+	The system morphology then uses "group morphologies" to place asteroids
+	and planets. The group morphologies will determined the zone in which they
+	have been placed to pick specific object types.
+
+	Example: The VolcanicSystem morphology defines the inner zone to be molten.
+	It then creates an AsteroidSparseBeltMorph in the inner zone. The
+	definition of AsteroidSpareseBeltMorph picks a different set of random
+	asteroids depending on the zone it finds itself in. For molten zone it picks
+	lots of volcanic asteroids.
+
+	NOTE: These zones are an implementation detail of the system morphologies
+	defined in this library. Do not assume that these are the only zones 
+	available nor that systems must have a certain set of zones.
+
+	EXTENSIONS
+
+	Extensions and libraries using this library should follow these guidelines:
+
+	1.	DO use any of the object types (StationTypes) defined in this library.
+	2.	DO define your own object types, but DO NOT expect them to be 
+		automatically selected by morphologies in this library.
+	3.	DO define your own SystemTypes. DO include any system morphology defined
+		in this library.
+	4.	DO use any group morphology defined in this library.
+	5.	DO define your own morphology tables and use them in your own 
+		SystemTypes. Your own tables may include these object types or your own
+		object types.
+
+	DISTANCE ATTRIBUTES
+
+	innerSystem			Hot zone; 60% of max star illumination
+	lifeZone			Lize zone; from end of inner to edge of illumination
+	outerSystem			Outsize star's max illumination
+
+	COMPOSITION ATTRIBUTES
+
+	metallicComp		High metallic content
+	organicComp			High organic content
+	rockyComp			High rock content
+	waterComp			High water content
+
+	ZONE ATTRIBUTES
+
+	barrenZone			metallic, outer
+	biosphereZone		water, lifeZone
+	cinderZone			rocky, inner
+	desertZone			rocky, lifeZone
+	frostZone			rocky, outer
+	greenhouseZone		organic, inner
+	iceZone				water, outer
+	metallicZone		metallic, lifeZone
+	moltenZone			metallic, inner
+	primordialZone		organic, lifeZone
+	steamZone			water, inner
+	tholinZone			organic, outer
+
+	OBJECT ATTRIBUTES
 
 	asteroids			among asteroids
 	asteroidbelt		among asteroid belt around star
@@ -66,830 +238,14 @@
 
 -->
 
-<!-- SYSTEM PARTS -->
+	<SystemPartTable unid="&tbSystemMorphologies;">
 
-	<SystemPartTable unid="&tbBasicSystemParts;">
+		<!-- ASTEROID ARC BELT SYSTEM ==========================================
 
-		<!-- Planets and Planetoids -->
+			Arc Belt
+			Metallic
 
-		<AsteroidArcBelt>
-			<Group>
-				<Siblings count="4-6" radiusInc="-70--40" angle="equidistant">
-					<Group>
-						<OrbitalDistribution count="50" arcLength="600" radialWidth="50">
-							<Lookup table="AsteroidSmall"/>
-						</OrbitalDistribution>
-
-						<OrbitalDistribution count="1-2" arcLength="800" radialWidth="40">
-							<Label attributes="asteroids,asteroidbelt"/>
-						</OrbitalDistribution>
-					</Group>
-				</Siblings>
-
-				<Siblings count="3-4" radiusInc="-20-50" angle="equidistant">
-					<Group>
-						<OrbitalDistribution count="200" arcLength="400" radialWidth="90">
-							<Lookup table="AsteroidSmall"/>
-						</OrbitalDistribution>
-
-						<OrbitalDistribution count="1-4" arcLength="400" radialWidth="90">
-							<Label attributes="asteroids,asteroidbelt"/>
-						</OrbitalDistribution>
-
-						<Siblings chace="50" arcInc="300">
-							<Label attributes="asteroids,asteroidbelt"/>
-						</Siblings>
-					</Group>
-				</Siblings>
-
-				<Siblings count="5-7" radiusInc="70-120" angle="equidistant">
-					<Group>
-						<OrbitalDistribution count="50" arcLength="700" radialWidth="40">
-							<Lookup table="AsteroidSmall"/>
-						</OrbitalDistribution>
-
-						<OrbitalDistribution count="1-2" arcLength="900" radialWidth="20">
-							<Label attributes="asteroids,asteroidbelt"/>
-						</OrbitalDistribution>
-					</Group>
-				</Siblings>
-			</Group>
-		</AsteroidArcBelt>
-
-		<AsteroidBelt>
-			<Group>
-				<Siblings count="500" distribution="4d40-82">
-					<Lookup table="AsteroidSmall"/>
-				</Siblings>
-
-				<Siblings count="50" distribution="4d20-42">
-					<Lookup table="AsteroidMedium"/>
-				</Siblings>
-
-				<Siblings count="1d6+6" radiusInc="4d40-82" angle="minSeparation:10">
-					<Label attributes="asteroids,asteroidbelt"/>
-				</Siblings>
-			</Group>
-		</AsteroidBelt>
-
-		<AsteroidGroupAmorphous>
-			<Orbitals count="3-6" distance="4-10" angle="random">
-				<Group>
-					<Orbitals count="3d6" distance="1-16" angle="random">
-						<Lookup table="AsteroidSmall"/>
-					</Orbitals>
-
-					<Orbitals count="2d2-2" distance="1-10" angle="random">
-						<Lookup table="AsteroidMedium"/>
-					</Orbitals>
-
-					<Orbitals count="1" distance="0-3" angle="random">
-						<Label attributes="asteroids"/>
-					</Orbitals>
-				</Group>
-			</Orbitals>
-		</AsteroidGroupAmorphous>
-
-		<AsteroidGroupArc>
-			<Group>
-				<Siblings count="1d20" arcInc="2d85-86" radiusInc="-4-4">
-					<Lookup table="AsteroidSmall"/>
-				</Siblings>
-
-				<Siblings count="1d20" arcInc="2d65-66" radiusInc="-6-6">
-					<Lookup table="AsteroidSmall"/>
-				</Siblings>
-
-				<Siblings count="1d20" arcInc="2d45-46" radiusInc="-8-8">
-					<Lookup table="AsteroidSmall"/>
-				</Siblings>
-
-				<Siblings count="1d20" arcInc="2d25-26" radiusInc="-12-12">
-					<Lookup table="AsteroidSmall"/>
-				</Siblings>
-
-				<Siblings count="1d5-1" arcInc="2d15-16" radiusInc="-16-16">
-					<Lookup table="AsteroidMedium"/>
-				</Siblings>
-
-				<Siblings count="1" arcInc="2d9-10" radiusInc="-24-24">
-					<Label attributes="asteroids"/>
-				</Siblings>
-
-				<Siblings count="1" arcInc="86-90" radiusInc="-2-2">
-					<Label attributes="asteroids"/>
-				</Siblings>
-
-				<Siblings count="1" arcInc="-86--90" radiusInc="-2-2">
-					<Label attributes="asteroids"/>
-				</Siblings>
-			</Group>
-		</AsteroidGroupArc>
-
-		<AsteroidMedium>
-			<Table>
-				<Station chance="90" type="&stMediumAsteroid;"/>
-				<Station chance="10" type="&stOreMediumAsteroid;"/>
-			</Table>
-		</AsteroidMedium>
-
-		<AsteroidMediumFrost>
-			<Table>
-				<Station chance="95" type="&stMediumFrostAsteroid;"/>
-				<Station chance="5" type="&stOreMediumFrostAsteroid;"/>
-			</Table>
-		</AsteroidMediumFrost>
-
-		<AsteroidMediumMetallic>
-			<Table>
-				<Station chance="90" type="&stMediumMetallicAsteroid;"/>
-				<Station chance="10" type="&stOreMediumMetallicAsteroid;"/>
-			</Table>
-		</AsteroidMediumMetallic>
-
-		<AsteroidMediumVolcanic>
-			<Table>
-				<Station chance="85" type="&stMediumVolcanicAsteroid;"/>
-				<Station chance="15" type="&stOreMediumVolcanicAsteroid;"/>
-			</Table>
-		</AsteroidMediumVolcanic>
-
-		<AsteroidSmall>
-			<Table>
-				<Station chance="90" type="&stSmallAsteroid;"/>
-				<Station chance="10" type="&stOreSmallAsteroid;"/>
-			</Table>
-		</AsteroidSmall>
-
-		<AsteroidSmallFrost>
-			<Table>
-				<Station chance="95" type="&stSmallFrostAsteroid;"/>
-				<Station chance="5" type="&stOreSmallFrostAsteroid;"/>
-			</Table>
-		</AsteroidSmallFrost>
-
-		<AsteroidSmallMetallic>
-			<Table>
-				<Station chance="90" type="&stSmallMetallicAsteroid;"/>
-				<Station chance="10" type="&stOreSmallMetallicAsteroid;"/>
-			</Table>
-		</AsteroidSmallMetallic>
-
-		<AsteroidSmallVolcanic>
-			<Table>
-				<Station chance="85" type="&stSmallVolcanicAsteroid;"/>
-				<Station chance="15" type="&stOreSmallVolcanicAsteroid;"/>
-			</Table>
-		</AsteroidSmallVolcanic>
-
-		<Comet>
-			<Group>
-				<Station type="&stCrateredPlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d4+8" angle="random">
-					<Label attributes="asteroids,comet,frost"/>
-				</Orbitals>
-
-				<Trojan probability="10">
-					<Lookup table="FrostTrojans"/>
-				</Trojan>
-
-				<AntiTrojan probability="10">
-					<Lookup table="FrostTrojans"/>
-				</AntiTrojan>
-
-			</Group>
-		</Comet>
-
-		<DesertWorld>
-			<Group>
-				<Station type="&stDesertPlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+10" angle="random">
-					<Label attributes="desert,planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+30" angle="random">
-					<Table>
-						<Null chance="50"/>
-						<Group chance="45">
-							<Lookup table="AsteroidMedium"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary"/>
-							</Orbitals>
-						</Group>
-						<Group chance="5">
-							<Station type="&stCrateredPlanet;"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary"/>
-							</Orbitals>
-						</Group>
-					</Table>
-				</Orbitals>
-
-				<Trojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmall"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMedium"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan"/>
-						</Orbitals>
-
-					</Group>
-				</Trojan>
-
-				<AntiTrojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmall"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMedium"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan"/>
-						</Orbitals>
-
-					</Group>
-				</AntiTrojan>
-
-			</Group>
-		</DesertWorld>
-
-		<FrostTrojans>
-			<Table>
-				<Group chance="50">
-					<Orbitals count="2d8+4" distance="1-30" angle="random">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Orbitals>
-
-					<Orbitals count="4d8+4" distance="1-80" angle="random">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Orbitals>
-
-					<Orbitals count="1d6" distance="2d8+8" angle="random">
-						<Lookup table="AsteroidMediumFrost"/>
-					</Orbitals>
-
-					<Orbitals count="1d2" distance="2d8+6" angle="random">
-						<Label attributes="asteroids,frost,trojan"/>
-					</Orbitals>
-				</Group>
-				<Group chance="50">
-					<Orbitals count="2d4+4" distance="1d24" angle="random">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Orbitals>
-
-					<Orbitals count="1d6" distance="2d8+8" angle="random">
-						<Lookup table="AsteroidMediumFrost"/>
-					</Orbitals>
-
-					<Siblings count="1d40" arcInc="2d205-206" radiusInc="-4-4">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Siblings>
-
-					<Siblings count="1d40" arcInc="2d159-160" radiusInc="-6-6">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Siblings>
-
-					<Siblings count="1d32" arcInc="2d109-110" radiusInc="-8-8">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Siblings>
-
-					<Orbitals chance="90" distance="2d8+6" angle="random">
-						<Label attributes="asteroids,frost,trojan"/>
-					</Orbitals>
-
-					<Siblings chance="30" arcInc="120-200">
-						<Label attributes="asteroids,frost,trojan"/>
-					</Siblings>
-
-					<Siblings chance="30" arcInc="-200--120">
-						<Label attributes="asteroids,frost,trojan"/>
-					</Siblings>
-				</Group>
-			</Table>
-		</FrostTrojans>
-
-		<GasGiant>
-			<Group>
-				<Station type="&stHydrogenGasGiant;"
-						showOrbit="true"
-					/>
-
-				<Orbitals count="2d2+1" distance="1d6+12" angle="equidistant">
-					<Label attributes="gasgiant,planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+24" angle="random">
-					<Group>
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="gasgiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+64" angle="random">
-					<Group probability="80">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="gasgiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+104" angle="random">
-					<Group probability="40">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="gasgiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Trojan probability="60">
-					<Table>
-						<Lookup chance="75" table="StdTrojans"/>
-						<Lookup chance="25" table="FrostTrojans"/>
-					</Table>
-				</Trojan>
-
-				<AntiTrojan probability="60">
-					<Table>
-						<Lookup chance="75" table="StdTrojans"/>
-						<Lookup chance="25" table="FrostTrojans"/>
-					</Table>
-				</AntiTrojan>
-
-			</Group>
-
-		</GasGiant>
-
-		<IcyWorld>
-			<Group>
-				<Station type="&stIcePlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+10" angle="random">
-					<Label attributes="planet,planetary,frost"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+30" angle="random">
-					<Table>
-						<Null chance="50"/>
-						<Group chance="35">
-							<Lookup table="AsteroidMediumFrost"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary,frost"/>
-							</Orbitals>
-						</Group>
-						<Group chance="15">
-							<Orbitals count="2d6" distance="1d12+4" angle="random">
-								<Lookup table="AsteroidSmallFrost"/>
-							</Orbitals>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="asteroids,planetary,frost"/>
-							</Orbitals>
-						</Group>
-					</Table>
-				</Orbitals>
-
-				<Trojan probability="10">
-					<Lookup table="FrostTrojans"/>
-				</Trojan>
-
-				<AntiTrojan probability="10">
-					<Lookup table="FrostTrojans"/>
-				</AntiTrojan>
-
-			</Group>
-		</IcyWorld>
-
-		<InnerGasGiant>
-			<Group>
-				<Station type="&stHydrogenGasGiant;"
-						showOrbit="true"
-					/>
-
-				<Orbitals count="2d2+1" distance="1d6+12" angle="equidistant">
-					<Label attributes="gasgiant,planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+24" angle="random">
-					<Group>
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="gasgiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+64" angle="random">
-					<Group probability="60">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="gasgiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Trojan probability="30">
-					<Lookup table="StdTrojans"/>
-				</Trojan>
-
-				<AntiTrojan probability="30">
-					<Lookup table="StdTrojans"/>
-				</AntiTrojan>
-
-			</Group>
-
-		</InnerGasGiant>
-
-		<InnerMethaneGiant>
-			<Group>
-				<Station type="&stMethaneGasGiant;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="1d6+12" angle="random">
-					<Label attributes="methanegiant,planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+24" angle="random">
-					<Group probability="70">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="methanegiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+64" angle="random">
-					<Group probability="50">
-						<Lookup table="AsteroidMedium"/>
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="methanegiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Trojan probability="25">
-					<Lookup table="StdTrojans"/>
-				</Trojan>
-
-				<AntiTrojan probability="25">
-					<Lookup table="StdTrojans"/>
-				</AntiTrojan>
-
-			</Group>
-		</InnerMethaneGiant>
-
-		<MethaneGiant>
-			<Group>
-				<Station type="&stMethaneGasGiant;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="1d6+12" angle="random">
-					<Label attributes="methanegiant,planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+24" angle="random">
-					<Group probability="80">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="methanegiant,moon,planetary"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+64" angle="random">
-					<Group probability="90">
-						<Lookup table="AsteroidMediumFrost"/>
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="methanegiant,moon,planetary,frost"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Orbitals distance="2d8+104" angle="random">
-					<Group probability="90">
-						<Lookup table="AsteroidMediumFrost"/>
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="methanegiant,moon,planetary,frost"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Trojan probability="60">
-					<Lookup table="FrostTrojans"/>
-				</Trojan>
-
-				<AntiTrojan probability="60">
-					<Lookup table="FrostTrojans"/>
-				</AntiTrojan>
-
-			</Group>
-		</MethaneGiant>
-
-		<OuterRockyGroup>
-			<Group>
-				<Station type="&stCrateredPlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+10" angle="random">
-					<Label attributes="planet,planetary"/>
-				</Orbitals>
-
-				<Siblings count="1d8+5" radiusInc="4d20-42" angle="minSeparation:10">
-					<Group>
-						<Lookup table="AsteroidMediumFrost"/>
-
-						<Orbitals distance="1d8+8" angle="random">
-							<Table>
-								<Null	 chance="60"/>
-								<Label   chance="40" attributes="asteroids,frost"/>
-							</Table>
-						</Orbitals>
-					</Group>
-				</Siblings>
-			</Group>
-		</OuterRockyGroup>
-
-		<RingedWorld>
-			<Group>
-				<Station type="&stRingedGasGiant;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+12" angle="random">
-					<Label attributes="asteroids,planet,planetary,ringedgiant,frost"/>
-				</Orbitals>
-
-				<Orbitals distance="1d8+32" angle="random">
-					<Group probability="80">
-						<Station type="&stCrateredPlanet;" />
-
-						<Orbitals distance="2d4+8" angle="random">
-							<Label attributes="moon,planetary,ringedgiant"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-
-				<Trojan probability="60">
-					<Table>
-						<Lookup chance="50" table="StdTrojans"/>
-						<Lookup chance="50" table="FrostTrojans"/>
-					</Table>
-				</Trojan>
-
-				<AntiTrojan probability="60">
-					<Table>
-						<Lookup chance="50" table="StdTrojans"/>
-						<Lookup chance="50" table="FrostTrojans"/>
-					</Table>
-				</AntiTrojan>
-
-			</Group>
-		</RingedWorld>
-
-		<RockyWorld>
-			<Group>
-				<Station type="&stCrateredPlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+10" angle="random">
-					<Label attributes="planet,planetary"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+30" angle="random">
-					<Table>
-						<Null chance="50"/>
-						<Group chance="35">
-							<Lookup table="AsteroidMedium"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary"/>
-							</Orbitals>
-						</Group>
-						<Group chance="15">
-							<Station type="&stCrateredPlanet;"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary"/>
-							</Orbitals>
-						</Group>
-					</Table>
-				</Orbitals>
-
-				<Trojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmall"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMedium"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan"/>
-						</Orbitals>
-
-					</Group>
-				</Trojan>
-
-				<AntiTrojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmall"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMedium"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan"/>
-						</Orbitals>
-
-					</Group>
-				</AntiTrojan>
-
-			</Group>
-		</RockyWorld>
-
-		<StdTrojans>
-			<Table>
-				<Group chance="50">
-					<Orbitals count="2d8+4" distance="1-30" angle="random">
-						<Lookup table="AsteroidSmall"/>
-					</Orbitals>
-
-					<Orbitals count="4d8+4" distance="1-80" angle="random">
-						<Lookup table="AsteroidSmall"/>
-					</Orbitals>
-
-					<Orbitals count="1d6" distance="2d8+8" angle="random">
-						<Lookup table="AsteroidMedium"/>
-					</Orbitals>
-
-					<Orbitals count="1d2" distance="2d8+6" angle="random">
-						<Label attributes="asteroids,trojan"/>
-					</Orbitals>
-				</Group>
-				<Group chance="50">
-					<Orbitals count="2d4+4" distance="1d24" angle="random">
-						<Lookup table="AsteroidSmall"/>
-					</Orbitals>
-
-					<Orbitals count="1d6" distance="2d8+8" angle="random">
-						<Lookup table="AsteroidMedium"/>
-					</Orbitals>
-
-					<Siblings count="1d40" arcInc="2d205-206" radiusInc="-4-4">
-						<Lookup table="AsteroidSmall"/>
-					</Siblings>
-
-					<Siblings count="1d40" arcInc="2d159-160" radiusInc="-6-6">
-						<Lookup table="AsteroidSmall"/>
-					</Siblings>
-
-					<Siblings count="1d32" arcInc="2d109-110" radiusInc="-8-8">
-						<Lookup table="AsteroidSmall"/>
-					</Siblings>
-
-					<Orbitals chance="90" distance="2d8+6" angle="random">
-						<Label attributes="asteroids,trojan"/>
-					</Orbitals>
-
-					<Siblings chance="30" arcInc="120-200">
-						<Label attributes="asteroids,trojan"/>
-					</Siblings>
-
-					<Siblings chance="30" arcInc="-200--120">
-						<Label attributes="asteroids,trojan"/>
-					</Siblings>
-				</Group>
-			</Table>
-		</StdTrojans>
-
-		<VolcanicWorld>
-			<Group>
-				<Station type="&stVolcanicPlanet;"
-						showOrbit="true"
-					/>
-
-				<Orbitals distance="2d6+10" angle="random">
-					<Label attributes="planet,planetary,volcanic"/>
-				</Orbitals>
-
-				<Orbitals distance="2d8+30" angle="random">
-					<Table>
-						<Null chance="50"/>
-						<Group chance="45">
-							<Lookup table="AsteroidMediumVolcanic"/>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary,volcanic"/>
-							</Orbitals>
-						</Group>
-						<Group chance="5">
-							<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmallVolcanic"/>
-							</Orbitals>
-
-							<Orbitals distance="2d4+8" angle="random">
-								<Label attributes="moon,planetary,volcanic"/>
-							</Orbitals>
-						</Group>
-					</Table>
-				</Orbitals>
-
-				<Trojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmallVolcanic"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMediumVolcanic"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan,volcanic"/>
-						</Orbitals>
-
-					</Group>
-				</Trojan>
-
-				<AntiTrojan>
-					<Group probability="10">
-						<Orbitals count="1d4+4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidSmallVolcanic"/>
-						</Orbitals>
-
-						<Orbitals count="1d4" distance="2d8+8" angle="random">
-							<Lookup table="AsteroidMediumVolcanic"/>
-						</Orbitals>
-
-						<Orbitals count="1d3+1" distance="1d8+6" angle="random">
-							<Label attributes="asteroids,trojan,volcanic"/>
-						</Orbitals>
-
-					</Group>
-				</AntiTrojan>
-
-			</Group>
-		</VolcanicWorld>
-
-		<Vulcanoids>
-			<Group>
-				<Siblings count="250" distribution="2d40-41">
-					<Lookup table="AsteroidSmallVolcanic"/>
-				</Siblings>
-
-				<Siblings count="50" distribution="2d20-21">
-					<Lookup table="AsteroidMediumVolcanic"/>
-				</Siblings>
-
-				<Siblings count="1d4+1" radiusInc="2d40-41" angle="minSeparation:15">
-					<Label attributes="asteroids,volcanic"/>
-				</Siblings>
-			</Group>
-		</Vulcanoids>
-		
-		<!-- Star Systems -->
+		-->
 
 		<AsteroidArcBeltSystem>
 			<Group>
@@ -897,39 +253,74 @@
 
 				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
 
-				<AddTerritory minRadius="0"		maxRadius="360"		attributes="innerSystem"/>
-				<AddTerritory minRadius="360"	maxRadius="620"		attributes="lifeZone"/>
-				<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem"/>
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="60"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="30"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="60"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="0"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
 
 				<Orbitals count="6-8" BodeDistanceStart="80" BodeDistanceEnd="1000" angle="random">
 					<Variants>
 						<Table maxRadius="300">
-							<Lookup chance="20" table="DesertWorld"/>
-							<Lookup chance="60" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
+							<Lookup chance="20" table="DesertPrimary"/>
+							<Lookup chance="40" table="MetallicPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="5"  table="HydrogenGasGiantPrimary"/>
+							<Lookup chance="15" table="MethaneGasGiantPrimary"/>
 						</Table>
-						<Lookup	maxRadius="480" table="AsteroidArcBelt"/>
+						<Lookup	maxRadius="480" table="AsteroidArcBeltLarge"/>
 						<Table maxRadius="750">
-							<Lookup chance="2"  table="DesertWorld"/>
-							<Lookup chance="6"  table="RockyWorld"/>
-							<Lookup chance="5"  table="IcyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
+							<Lookup chance="2"  table="DesertPrimary"/>
+							<Lookup chance="5"  table="IcePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="6"  table="RockyPrimary"/>
+							<Lookup chance="70" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="3"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="1200">
-							<Lookup chance="20" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="25" table="IcePrimary"/>
+							<Lookup chance="20" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"	table="AsteroidBelt25"/>
 						</Table>
 					</Variants>
 				</Orbitals>
 			</Group>
 		</AsteroidArcBeltSystem>
+
+		<!-- ASTEROID BELT SYSTEM ==============================================
+
+			Asteroid Belt
+			Rocky
+
+		-->
 
 		<AsteroidBeltSystem>
 			<Group>
@@ -937,78 +328,179 @@
 
 				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
 
-				<AddTerritory minRadius="0"		maxRadius="360"		attributes="innerSystem"/>
-				<AddTerritory minRadius="360"	maxRadius="620"		attributes="lifeZone"/>
-				<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem"/>
+				<!-- Inner Zone -->
 
-				<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<Table>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="60"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="0"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="60"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
 					<Variants>
 						<Table maxRadius="300">
-							<Lookup chance="20" table="DesertWorld"/>
-							<Lookup chance="60" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
+							<Lookup chance="20" table="DesertPrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="50" table="RockyPrimary"/>
+							<Lookup chance="5"  table="HydrogenGasGiantPrimary"/>
+							<Lookup chance="15" table="MethaneGasGiantPrimary"/>
 						</Table>
-						<Lookup	maxRadius="450" table="AsteroidBelt"/>
+						<Lookup	maxRadius="450" table="AsteroidBelt500"/>
 						<Table maxRadius="600">
-							<Lookup chance="2"  table="DesertWorld"/>
-							<Lookup chance="6"  table="RockyWorld"/>
-							<Lookup chance="5"  table="IcyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
+							<Lookup chance="2"  table="DesertPrimary"/>
+							<Lookup chance="6"  table="RockyPrimary"/>
+							<Lookup chance="5"  table="IcePrimary"/>
+							<Lookup chance="80" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="3"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="20" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="25" table="IcePrimary"/>
+							<Lookup chance="30" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"	table="AsteroidBelt25"/>
 						</Table>
 					</Variants>
 				</Orbitals>
 			</Group>
 		</AsteroidBeltSystem>
 
+		<!-- BINARY SYSTEM (YELLOW STAR AND RED DWARF) =========================
+
+			Binary
+
+		-->
+
+		<YellowStarAndRedDwarfBinarySystem>
+			<Group>
+				<AddAttribute attributes="binarySystem"/>
+
+				<!-- Primary Star -->
+
+				<Lookup table="YellowStarSystem"/>
+
+				<!-- Void Encounters -->
+
+				<Orbitals count="16" distance="3d200+240" angle="random" exclusionRadius="100">
+					<Label attributes="void"/>
+				</Orbitals>
+
+				<!-- Companion Star System -->
+
+				<Orbitals distance="1800-2000" angle="330-390" eccentricity="1d10+20" rotation="random">
+					<Group>
+						<Lookup table="RedDwarfSystem"/>
+
+						<!-- Void Encounters -->
+
+						<Orbitals count="12" distance="3d150+240" angle="random" exclusionRadius="100">
+							<Label attributes="void"/>
+						</Orbitals>
+					</Group>
+				</Orbitals>
+			</Group>
+		</YellowStarAndRedDwarfBinarySystem>
+
+		<!-- DESERT SYSTEM =====================================================
+
+			Hot
+			Rocky
+
+		-->
+
 		<DesertSystem>
 			<Group>
 				<Station type="&stA-TypeStar;"/>
 
 				<AddAttribute attributes="ATypeSystem"/>
-				
-				<AddTerritory minRadius="0"		maxRadius="400"		attributes="innerSystem"/>
-				<AddTerritory minRadius="400"	maxRadius="720"		attributes="lifeZone"/>
-				<AddTerritory minRadius="720"	maxRadius="0"		attributes="outerSystem"/>
 
-				<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="480"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="480"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="60"	minRadius="0"		maxRadius="480"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="0"	minRadius="0"		maxRadius="480"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="480"		maxRadius="800"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="10"	minRadius="480"		maxRadius="800"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="60"	minRadius="480"		maxRadius="800"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="0"	minRadius="480"		maxRadius="800"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="800"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="0"	minRadius="800"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="60"	minRadius="800"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="10"	minRadius="800"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
 					<Variants>
 						<Table maxRadius="300">
-							<Lookup chance="60" table="DesertWorld"/>
-							<Lookup chance="20" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
+							<Lookup chance="60" table="DesertPrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="500">
-							<Lookup chance="6"  table="DesertWorld"/>
-							<Lookup chance="7"  table="RockyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
+							<Lookup chance="20" table="DesertPrimary"/>
+							<Lookup chance="5"  table="GreenhousePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="60" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="3"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="5"  table="DesertWorld"/>
-							<Lookup chance="15" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="40" table="DesertPrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"	table="AsteroidBelt25"/>
 						</Table>
 					</Variants>
 				</Orbitals>
 			</Group>
 		</DesertSystem>
+
+		<!-- LIGHT NEBULA SYSTEM ===============================================
+
+			Nebula
+
+		-->
 
 		<LightNebulaSystem>
 			<Group>
@@ -1016,15 +508,38 @@
 
 				<AddAttribute attributes="GTypeSystem, nebulaSystem"/>
 				
-				<AddTerritory minRadius="0"		maxRadius="360"		attributes="innerSystem"/>
-				<AddTerritory minRadius="360"	maxRadius="620"		attributes="lifeZone"/>
-				<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem"/>
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="240"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="240"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="40"	minRadius="0"		maxRadius="240"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="20"	minRadius="0"		maxRadius="240"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="240"		maxRadius="400"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="30"	minRadius="240"		maxRadius="400"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="40"	minRadius="240"		maxRadius="400"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="20"	minRadius="240"		maxRadius="400"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="400"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="30"	minRadius="400"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="30"	minRadius="400"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="30"	minRadius="400"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
 
 				<!-- Nebulae -->
 
 				<Orbitals distance="4" scale="light-minute" angle="random">
 					<SpaceEnvironment 
-							type=			"&seNebula;"
+							type=			"&seLightNebula;"
 							shape=			"circular" 
 							width=			"120"
 							widthVariation=	"100"
@@ -1040,7 +555,7 @@
 
 				<Orbitals count="2d3+1" distance="1d10+4" scale="light-minute" angle="random">
 					<SpaceEnvironment 
-							type=			"&seNebula;"
+							type=			"&seLightNebula;"
 							shape=			"arc" 
 							width=			"100"
 							widthVariation=	"100"
@@ -1057,67 +572,203 @@
 
 				<!-- Worlds -->
 
-				<Orbitals count="1d3+3" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<Orbitals count="4-6" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
 					<Variants>
 						<Table maxRadius="300">
-							<Lookup chance="60" table="DesertWorld"/>
-							<Lookup chance="20" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="20" table="PrimordialPrimary"/>
+							<Lookup chance="35" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="500">
-							<Lookup chance="6"  table="DesertWorld"/>
-							<Lookup chance="7"  table="RockyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
+							<Lookup chance="5"  table="DesertPrimary"/>
+							<Lookup chance="5"  table="PrimordialPrimary"/>
+							<Lookup chance="8"  table="RockyPrimary"/>
+							<Lookup chance="5"  table="IcePrimary"/>
+							<Lookup chance="70" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="3"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="5"  table="DesertWorld"/>
-							<Lookup chance="15" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="PrimordialPrimary"/>
+							<Lookup chance="20" table="IcePrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+							<Lookup chance="25" table="PrimordialGasGiantPrimary"/>
+							<Lookup chance="3"  table="AsteroidBelt12"/>
+							<Lookup chance="2"  table="AsteroidBelt25"/>
 						</Table>
 					</Variants>
 				</Orbitals>
 			</Group>
 		</LightNebulaSystem>
 
-		<RedDwarfSystem>
+		<!-- PRIMORDIAL SYSTEM =================================================
+
+			Primordial (Organic)
+
+		-->
+
+		<PrimordialSystem>
 			<Group>
-				<Station type="&stRedDwarfStar;"/>
+				<Station type="&stPrimordialStar;"/>
+
+				<AddAttribute attributes="GTypeSystem, primordialSystem"/>
 				
-				<AddAttribute attributes="redDwarfSystem"/>
-				
-				<AddTerritory minRadius="0"		maxRadius="300"		attributes="innerSystem"/>
-				<AddTerritory minRadius="300"	maxRadius="520"		attributes="lifeZone"/>
-				<AddTerritory minRadius="520"	maxRadius="0"		attributes="outerSystem"/>
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="240"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="60"	minRadius="0"		maxRadius="240"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="240"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="0"	minRadius="0"		maxRadius="240"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="5"	minRadius="240"		maxRadius="400"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="80"	minRadius="240"		maxRadius="400"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="10"	minRadius="240"		maxRadius="400"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="5"	minRadius="240"		maxRadius="400"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="400"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="60"	minRadius="400"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="20"	minRadius="400"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="10"	minRadius="400"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Primordial Mists -->
+
+				<Orbitals distance="1" scale="light-minute" angle="random">
+					<SpaceEnvironment 
+							type=			"&sePrimordialNebula;"
+							shape=			"circular" 
+							width=			"120"
+							widthVariation=	"100"
+
+							encountersCount="1d4+2"
+							>
+						<Label attributes="primordial"/>
+					</SpaceEnvironment>
+				</Orbitals>
+
+				<Orbitals count="2d3+1" distance="1d6+1" scale="light-minute" angle="random">
+					<SpaceEnvironment 
+							type=			"&sePrimordialMist;"
+							shape=			"arc" 
+							width=			"50"
+							widthVariation=	"100"
+							span=			"1d40+50"
+
+							encountersCount="1d2"
+							>
+						<Label attributes="primordial"/>
+					</SpaceEnvironment>
+				</Orbitals>
 
 				<!-- Worlds -->
 
-				<Orbitals count="1d2+3" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d100+740" angle="random">
+				<Orbitals count="1d3+3" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="60" table="PrimordialPrimary"/>
+							<Lookup chance="15" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="5"  table="GasGiantPrimary"/>
+							<Lookup chance="10" table="PrimordialGasGiantPrimary"/>
+						</Table>
+						<Table maxRadius="900">
+							<Lookup chance="20" table="PrimordialPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="43" table="PrimordialGasGiantPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="2"  table="AsteroidBelt25"/>
+							<Lookup chance="1"  table="AsteroidBelt50"/>
+						</Table>
+						<Table maxRadius="3000">
+							<Lookup chance="20" table="PrimordialPrimary"/>
+							<Lookup chance="20" table="IcePrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+							<Lookup chance="25" table="PrimordialGasGiantPrimary"/>
+							<Lookup chance="3"  table="AsteroidBelt12"/>
+							<Lookup chance="2"  table="AsteroidBelt25"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</PrimordialSystem>
+
+		<!-- RED DWARF SYSTEM ==================================================
+
+			Cold
+			Ice
+
+		-->
+
+		<RedDwarfSystem>
+			<Group>
+				<Station type="&stRedDwarfStar;" showOrbit="true"/>
+				
+				<AddAttribute attributes="redDwarfSystem"/>
+				
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="20"	minRadius="0"		maxRadius="190"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="190"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="65"	minRadius="0"		maxRadius="190"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="5"	minRadius="0"		maxRadius="190"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="20"	minRadius="190"		maxRadius="320"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="10"	minRadius="190"		maxRadius="320"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="50"	minRadius="190"		maxRadius="320"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="20"	minRadius="190"		maxRadius="320"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="320"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="20"	minRadius="320"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="40"	minRadius="320"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="30"	minRadius="320"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
+
+				<Orbitals count="4-5" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d100+740" angle="random">
 					<Variants>
 						<Table maxRadius="290">
-							<Lookup chance="10" table="DesertWorld"/>
-							<Lookup chance="60" table="RockyWorld"/>
-							<Lookup chance="30" table="IcyWorld"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="60" table="RockyPrimary"/>
+							<Lookup chance="30" table="IcePrimary"/>
 						</Table>
 						<Table maxRadius="480">
-							<Lookup chance="20" table="RockyWorld"/>
-							<Lookup chance="40" table="IcyWorld"/>
-							<Lookup chance="10" table="RingedWorld"/>
-							<Lookup chance="10" table="MethaneGiant"/>
-							<Lookup chance="20" table="OuterRockyGroup"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="40" table="IcePrimary"/>
+							<Lookup chance="40" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="30" table="IcyWorld"/>
-							<Lookup chance="10" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="30" table="IcePrimary"/>
+							<Lookup chance="40" table="MethaneGasGiantPrimary"/>
+							<Lookup chance="5"  table="AsteroidBelt12"/>
+							<Lookup chance="15" table="AsteroidBelt25"/>
+							<Lookup chance="10" table="AsteroidBelt50"/>
 						</Table>
 					</Variants>
 				</Orbitals>
@@ -1125,10 +776,17 @@
 				<!-- Comets -->
 
 				<Orbitals count="1d4-1" scale="light-minute" distance="1d8+8" angle="random" eccentricity="1d20+70" rotation="random" exclusionRadius="100">
-					<Lookup table="Comet"/>
+					<Lookup table="IceComet"/>
 				</Orbitals>
 			</Group>
 		</RedDwarfSystem>
+
+		<!-- VOLCANIC SYSTEM ===================================================
+
+			Hot
+			Metallic
+
+		-->
 
 		<VolcanicSystem>
 			<Group>
@@ -1136,130 +794,69 @@
 
 				<AddAttribute attributes="redGiantSystem"/>
 				
-				<AddTerritory minRadius="0"		maxRadius="400"		attributes="innerSystem"/>
-				<AddTerritory minRadius="400"	maxRadius="720"		attributes="lifeZone"/>
-				<AddTerritory minRadius="720"	maxRadius="0"		attributes="outerSystem"/>
+				<!-- Inner Zone -->
 
-				<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<Table>
+					<AddTerritory chance="60"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="30"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="0"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="40"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="10"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="50"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="0"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="20"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="40"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-8" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
 					<Variants>
-						<Lookup	maxRadius="100" table="Vulcanoids"/>
+						<Lookup	maxRadius="100" table="AsteroidVulcanoidBelt300"/>
 						<Table maxRadius="300">
-							<Lookup chance="75" table="VolcanicWorld"/>
-							<Lookup chance="20" table="DesertWorld"/>
-							<Lookup chance="5"  table="RockyWorld"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="5"  table="RockyPrimary"/>
+							<Lookup chance="65" table="VolcanicPrimary"/>
 						</Table>
 						<Table maxRadius="500">
-							<Lookup chance="25" table="DesertWorld"/>
-							<Lookup chance="50" table="VolcanicWorld"/>
-							<Lookup chance="15" table="RockyWorld"/>
-							<Lookup chance="10" table="GasGiant"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="50" table="VolcanicPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="5"  table="DesertWorld"/>
-							<Lookup chance="15" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="5"  table="DesertPrimary"/>
+							<Lookup chance="15" table="IcePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="55" table="GasGiantPrimary"/>
+							<Lookup chance="5"  table="AsteroidBelt12"/>
+							<Lookup chance="10" table="AsteroidBelt25"/>
+							<Lookup chance="10" table="AsteroidBelt50"/>
 						</Table>
 					</Variants>
 				</Orbitals>
 			</Group>
 		</VolcanicSystem>
 
-		<YellowStarAndRedDwarfBinarySystem>
-			<Group>
-				<!-- Primary Star -->
-
-				<Station type="&stG-TypeStar;"/>
-				
-				<AddAttribute attributes="binarySystem, GTypeSystem, redDwarfSystem"/>
-
-				<AddTerritory minRadius="0"		maxRadius="360"		attributes="innerSystem"/>
-				<AddTerritory minRadius="360"	maxRadius="620"		attributes="lifeZone"/>
-				<AddTerritory criteria="-innerSystem; -lifeZone;" 	attributes="outerSystem"/>
-
-				<Orbitals count="1d2+3" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
-					<Variants>
-						<Table maxRadius="300">
-							<Lookup chance="20" table="DesertWorld"/>
-							<Lookup chance="60" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
-						</Table>
-						<Table maxRadius="500">
-							<Lookup chance="2"  table="DesertWorld"/>
-							<Lookup chance="6"  table="RockyWorld"/>
-							<Lookup chance="5"  table="IcyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
-						</Table>
-						<Table maxRadius="2000">
-							<Lookup chance="20" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
-						</Table>
-					</Variants>
-				</Orbitals>
-
-				<!-- Void Encounters -->
-
-				<Orbitals count="16" distance="3d200+240" angle="random" exclusionRadius="100">
-					<Label attributes="void"/>
-				</Orbitals>
-
-				<!-- Companion Star System -->
-
-				<Orbitals distance="1800-2000" angle="330-390" eccentricity="1d10+20" rotation="random">
-					<Group>
-						<Station type="&stRedDwarfStar;" showOrbit="true"/>
-
-						<AddTerritory minRadius="0"		maxRadius="300"		attributes="innerSystem"/>
-						<AddTerritory minRadius="300"	maxRadius="520"		attributes="lifeZone"/>
-						
-						<Orbitals count="1d2+1" BodeDistanceStart="1d12+40" BodeDistanceEnd="1d100+740" angle="random">
-							<Variants>
-								<Table maxRadius="290">
-									<Lookup chance="10" table="DesertWorld"/>
-									<Lookup chance="60" table="RockyWorld"/>
-									<Lookup chance="30" table="IcyWorld"/>
-								</Table>
-								<Table maxRadius="480">
-									<Lookup chance="20" table="RockyWorld"/>
-									<Lookup chance="40" table="IcyWorld"/>
-									<Lookup chance="10" table="RingedWorld"/>
-									<Lookup chance="10" table="MethaneGiant"/>
-									<Lookup chance="20" table="OuterRockyGroup"/>
-								</Table>
-								<Table maxRadius="2000">
-									<Lookup chance="30" table="IcyWorld"/>
-									<Lookup chance="10" table="GasGiant"/>
-									<Lookup chance="40" table="MethaneGiant"/>
-									<Lookup chance="15" table="RingedWorld"/>
-									<Lookup chance="5"  table="OuterRockyGroup"/>
-								</Table>
-							</Variants>
-						</Orbitals>
-
-						<!-- Comets -->
-
-						<Orbitals count="1d4+2" scale="light-minute" distance="1d4+8" angle="random" eccentricity="1d20+70" rotation="random" exclusionRadius="100">
-							<Lookup table="Comet"/>
-						</Orbitals>
-
-						<!-- Void Encounters -->
-
-						<Orbitals count="12" distance="3d150+240" angle="random" exclusionRadius="100">
-							<Label attributes="void"/>
-						</Orbitals>
-					</Group>
-				</Orbitals>
-			</Group>
-		</YellowStarAndRedDwarfBinarySystem>
+		<!-- YELLOW STAR SYSTEM ================================================
+		-->
 
 		<YellowStarSystem>
 			<Group>
@@ -1267,29 +864,62 @@
 
 				<AddAttribute attributes="GTypeSystem"/>
 				
-				<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<!-- Inner Zone -->
+
+				<Table>
+					<AddTerritory chance="20"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
+					<AddTerritory chance="10"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
+					<AddTerritory chance="70"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+					<AddTerritory chance="0"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
+				</Table>
+
+				<!-- Life Zone -->
+
+				<Table>
+					<AddTerritory chance="20"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
+					<AddTerritory chance="10"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
+					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+					<AddTerritory chance="10"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
+				</Table>
+
+				<!-- Outer Zone -->
+
+				<Table>
+					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+				</Table>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
 					<Variants>
 						<Table maxRadius="300">
-							<Lookup chance="20" table="DesertWorld"/>
-							<Lookup chance="60" table="RockyWorld"/>
-							<Lookup chance="5"  table="InnerGasGiant"/>
-							<Lookup chance="15" table="InnerMethaneGiant"/>
+							<Lookup chance="20" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="50" table="RockyPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="500">
-							<Lookup chance="2"  table="DesertWorld"/>
-							<Lookup chance="6"  table="RockyWorld"/>
-							<Lookup chance="5"  table="IcyWorld"/>
-							<Lookup chance="35" table="GasGiant"/>
-							<Lookup chance="22" table="RingedWorld"/>
-							<Lookup chance="23" table="MethaneGiant"/>
-							<Lookup chance="7"  table="OuterRockyGroup"/>
+							<Lookup chance="2"  table="DesertPrimary"/>
+							<Lookup chance="5"  table="GreenhousePrimary"/>
+							<Lookup chance="5"  table="IcePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="6"  table="RockyPrimary"/>
+							<Lookup chance="70" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidBelt12"/>
+							<Lookup chance="3"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="20" table="IcyWorld"/>
-							<Lookup chance="20" table="GasGiant"/>
-							<Lookup chance="40" table="MethaneGiant"/>
-							<Lookup chance="15" table="RingedWorld"/>
-							<Lookup chance="5"  table="OuterRockyGroup"/>
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="25" table="IcePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"	table="AsteroidBelt25"/>
 						</Table>
 					</Variants>
 				</Orbitals>
@@ -1297,6 +927,180 @@
 		</YellowStarSystem>
 		
 	</SystemPartTable>
+
+<!-- STARS -->
+
+	<!-- Primordial Star -->
+
+	<StationType UNID="&stPrimordialStar;"
+		name=				"(primordial star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x4d, 0x41, 0x0f"
+		maxLightRadius=		"400"
+
+		attributes=			"generic, primordial, star"
+		>
+
+		<Image>
+			<FilterColorize hue="49" saturation="60">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- O-Type Star -->
+
+	<StationType UNID="&stO-TypeStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- A-Type Star -->
+
+	<StationType UNID="&stA-TypeStar;"
+		name=				"(A class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x12, 0x50, 0x79"
+		maxLightRadius=		"800"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="203" saturation="75">
+				<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+
+	</StationType>
+
+	<!-- G-Type Star -->
+
+	<StationType UNID="&stG-TypeStar;"
+		name=				"(G class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x68, 0x63, 0x23"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="57" saturation="50">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- K-Type Star -->
+
+	<StationType UNID="&stK-TypeStar;"
+		name=				"(K class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x70, 0x44, 0x1a"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="30" saturation="63">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- M-Type Star -->
+
+	<StationType UNID="&stM-TypeStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Nebula Star -->
+
+	<StationType UNID="&stNebulaStar;"
+		name=				"(nebula star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x43, 0x3d, 0x4d"
+		maxLightRadius=		"400"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="262" saturation="12">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
+	<!-- White Dwarf Star -->
+
+	<StationType UNID="&stWhiteDwarfStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Red Dwarf Star -->
+
+	<StationType UNID="&stRedDwarfStar;"
+		name=				"(red dwarf star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x59, 0x0e, 0x00"
+		maxLightRadius=		"320"
+
+		attributes=			"generic, star"
+		>
+	<Image imageID="&rsRedDwarfStar;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Blue Giant Star -->
+
+	<StationType UNID="&stBlueGiantStar;"
+		name=				"(star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"star"
+		>
+	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
+
+	<!-- Red Giant Star -->
+
+	<StationType UNID="&stRedGiantStar;"
+		name=				"(red giant star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x59, 0x0e, 0x00"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+	<Image imageID="&rsRedGiantStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
+	</StationType>
 
 <!-- CODE ======================================================================
 

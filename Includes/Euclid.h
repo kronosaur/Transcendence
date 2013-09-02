@@ -40,6 +40,7 @@ class CVector
 		inline Metric Dot (const CVector &vA) const { return x * vA.x + y * vA.y; }
 		inline const Metric &GetX (void) const { return x; }
 		inline const Metric &GetY (void) const { return y; }
+		inline bool InBox (const CVector &vUR, const CVector &vLL) const { return (x >= vLL.x && x < vUR.x	&& y >= vLL.y && y < vUR.y); }
 		inline bool IsNull (void) const { return (x == 0.0 && y == 0.0); }
 		inline Metric Length (void) const { return sqrt(x * x + y * y); }
 		inline Metric Length2 (void) const { return (x * x + y * y); }
@@ -203,6 +204,7 @@ class CIntegerIP
 		CString AsBase64 (void) const;
 		inline BYTE *GetBytes (void) const { return m_pNumber; }
 		inline int GetLength (void) const { return m_iCount; }
+		inline bool IsEmpty (void) const { return (m_pNumber == NULL); }
 		void TakeHandoff (CIntegerIP &Src);
 
 	private:

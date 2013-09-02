@@ -81,7 +81,7 @@
 //	
 //	...wait for timer...
 //
-//	CTranscendenceWnd::EnterStargate
+//	CTranscendenceController::HICommand("cmdGameEnterStargate")
 //		CTranscendenceModel::OnPlayerTraveledThroughGate
 //			Create or load system
 //			UpdateExtended
@@ -90,7 +90,7 @@
 //
 //	...wait for timer...
 //
-//	CTranscendenceWnd::LeaveStargate
+//	CTranscendenceController::HICommand("cmdGameLeaveStargate")
 //		CTranscendenceModel::OnPlayerExitedGate
 //			Player added to new system
 //			gPlayerShip defined
@@ -103,14 +103,17 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-#define HIGH_SCORES_FILENAME				CONSTLIT("HighScores.xml")
+#define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
+#define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
-#define STR_G_PLAYER						CONSTLIT("gPlayer")
-#define STR_G_PLAYER_SHIP					CONSTLIT("gPlayerShip")
+#define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
 
-#define NESTED_SCREEN_ATTRIB				CONSTLIT("nestedScreen")
+#define STR_G_PLAYER							CONSTLIT("gPlayer")
+#define STR_G_PLAYER_SHIP						CONSTLIT("gPlayerShip")
 
-#define DEFAULT_SCREEN_NAME					CONSTLIT("[DefaultScreen]")
+#define NESTED_SCREEN_ATTRIB					CONSTLIT("nestedScreen")
+
+#define DEFAULT_SCREEN_NAME						CONSTLIT("[DefaultScreen]")
 
 CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) : 
 		m_HI(HI), 
@@ -121,6 +124,7 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
+		m_pCrawlSoundtrack(NULL),
 		m_iLastHighScore(-1),
 		m_pDock(NULL),
 		m_pDestNode(NULL)
@@ -742,6 +746,10 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 			m_pDock = NULL;
 			}
 
+		//	Tell controller that we're undocked
+
+		m_HI.HICommand(CMD_PLAYER_UNDOCKED);
+
 		//	Clean up
 
 		m_pDefaultScreensRoot = NULL;
@@ -1217,11 +1225,11 @@ ALERROR CTranscendenceModel::LoadUniverse (CString *retsError)
 
 	m_Universe.SetDebugMode(m_bDebugMode);
 	m_Universe.SetSoundMgr(&m_HI.GetSoundMgr());
-	m_Universe.SetHost(g_pTrans);
 
 	//	Load the Transcendence Data Definition file that describes the universe.
 
 	CUniverse::SInitDesc Ctx;
+	Ctx.pHost = g_pTrans;
 	Ctx.bDebugMode = m_bDebugMode;
 	Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
 	Ctx.bDefaultExtensions = true;
@@ -1504,7 +1512,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		//	Done
 
 		m_iState = stateInGame;
-		m_HI.HICommand(CONSTLIT("gameEnterFinalStargate"));
+		m_HI.HICommand(CMD_GAME_ENTER_FINAL_STARGATE);
 		return;
 		}
 
@@ -1569,6 +1577,12 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 		throw CException(ERR_FAIL);
 		}
 
+	//	Let all types know that the current system is going away
+	//	(Obviously, we need to call this before we change the current system.
+	//	Note also that at this point the player is already gone.)
+
+	m_Universe.GetDesignCollection().FireOnGlobalSystemStopped();
+
 	//	Set the new system
 
 	m_Universe.SetNewSystem(pNewSystem, pShip, pStart);
@@ -1578,6 +1592,11 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	SetProgramState(psStargateTransferringGateFollowers);
 	TransferGateFollowers(m_pOldSystem, pNewSystem, pStart);
+
+	//	Let all types know that we have a new system. Again, this is called 
+	//	before the player has entered the system.
+
+	m_Universe.GetDesignCollection().FireOnGlobalSystemStarted();
 
 	//	Garbage-collect images and load those for the new system
 
@@ -1591,7 +1610,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 	//	Save the old system.
 	//	NOTE: From this point on the save file is invalid until we save the
-	//	game at the end of LeaveStargate().
+	//	game at the end of OnPlayerExitedGate().
 	//	FLAG_ENTER_GATE sets the save file in a state such that we can recover in case
 	//	we crash before we save the rest of the file.
 
@@ -1927,7 +1946,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	SDockFrame OldFrame;
 	if (bNewFrame = (!bReturn && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
 		m_DockFrames.Push(NewFrame);
-	else
+	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
 
 	//	Show the screen
@@ -1968,7 +1987,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 		if (bNewFrame)
 			m_DockFrames.Pop();
-		else
+		else if (!bReturn)
 			{
 			m_DockFrames.SetCurrent(OldFrame);
 			m_DockFrames.DiscardOldFrame(OldFrame);
@@ -1980,7 +1999,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	//	Clean up the old frames (which may contain a CodeChain item)
 
-	if (!bNewFrame)
+	if (!bNewFrame && !bReturn)
 		m_DockFrames.DiscardOldFrame(OldFrame);
 
 	//	If no frames then we exited inside of InitScreen
@@ -2096,6 +2115,7 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 	//	it (when it sweeps unused images).
 
 	m_pCrawlImage = NULL;
+	m_pCrawlSoundtrack = NULL;
 
 	//	Tell the universe to start the game
 
@@ -2174,6 +2194,7 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	ASSERT(pAdventure);
 
 	m_pCrawlImage = NULL;
+	m_pCrawlSoundtrack = NULL;
 	m_sCrawlText = NULL_STR;
 
 	m_Universe.SetLogImageLoad(false);
@@ -2328,7 +2349,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 
 			//	Do not count unknown items
 
-			if (pType->HasAttribute(CONSTLIT("unknown")))
+			if (pType->HasLiteralAttribute(CONSTLIT("unknown")))
 				continue;
 
 			//	Do not count virtual items
@@ -2369,7 +2390,7 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 				return error;
 				}
 
-			pHenchman->GetController()->AddOrder(IShipController::orderEscort, pPlayerShip, i);
+			pHenchman->GetController()->AddOrder(IShipController::orderEscort, pPlayerShip, IShipController::SData(i));
 			}
 		}
 #endif
@@ -2492,4 +2513,52 @@ void CTranscendenceModel::UseItem (CItem &Item)
 //	Use item
 
 	{
+	CShip *pShip = m_pPlayer->GetShip();
+	CItemList &ItemList = pShip->GetItemList();
+	CItemType *pType = Item.GetType();
+
+	//	Use in cockpit
+
+	if (pType->IsUsableInCockpit())
+		{
+		CString sError;
+
+		//	Run the invoke script
+
+		pShip->UseItem(Item, &sError);
+
+		//	Done
+
+		if (!sError.IsBlank())
+			{
+			pShip->SendMessage(NULL, sError);
+			::kernelDebugLogMessage(sError);
+			}
+
+		pShip->OnComponentChanged(comCargo);
+		}
+
+	//	Use screen
+
+	else if (pType->GetUseScreen())
+		{
+		CCodeChain &CC = m_Universe.GetCC();
+
+		ICCItem *pItem = CreateListFromItem(CC, Item);
+		CC.DefineGlobal(CONSTLIT("gItem"), pItem);
+		pItem->Discard(&CC);
+
+		//	Show the dock screen
+
+		CString sScreen;
+		CDesignType *pRoot = pType->GetUseScreen(&sScreen);
+		CString sError;
+		if (!ShowShipScreen(pType, pRoot, sScreen, NULL_STR, NULL, &sError))
+			{
+			pShip->SendMessage(NULL, sError);
+			::kernelDebugLogMessage(sError);
+			}
+
+		pShip->OnComponentChanged(comCargo);
+		}
 	}

@@ -249,37 +249,6 @@ bool IntersectRect (const CVector &vUR, const CVector &vLL, const CVector &vPoin
 			&& vLL.GetY() < vPoint.GetY());
 	}
 
-CVector TileToVector (int x, int y)
-
-//	TileToVector
-//
-//	Returns the coordinates of the center of the given tile
-
-	{
-	ASSERT(seaScale == 1);
-
-	int xyHalfSize = (seaArraySize * seaArraySize) / 2;
-	return CVector(
-			(x - xyHalfSize + 0.5) * seaTileSize * g_KlicksPerPixel,
-			-((y - xyHalfSize + 0.5) * seaTileSize * g_KlicksPerPixel)
-			);
-	}
-
-void VectorToTile (const CVector &vPos, int *retx, int *rety)
-
-//	VectorToTile
-//
-//	Converts from a vector to space environment tile coordinates
-
-	{
-	//	This algorithm is designed for only two levels; change
-	//	if seaScale changes.
-	ASSERT(seaScale == 1);
-
-	*retx = (int)(((vPos.GetX() / g_KlicksPerPixel) / seaTileSize) + (seaArraySize * seaArraySize / 2));
-	*rety = (int)(((-vPos.GetY() / g_KlicksPerPixel) / seaTileSize) + (seaArraySize * seaArraySize / 2));
-	}
-
 //	ViewportTransform ---------------------------------------------------------
 
 ViewportTransform::ViewportTransform (const CVector &vCenter, Metric xScale, Metric yScale, int xCenter, int yCenter)

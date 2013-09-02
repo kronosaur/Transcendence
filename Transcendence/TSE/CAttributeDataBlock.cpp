@@ -361,7 +361,7 @@ void CAttributeDataBlock::ReadFromStream (SLoadCtx &Ctx)
 				}
 			else
 				{
-				Ctx.pSystem->ReadObjRefFromStream(Ctx, &pEntry->pObj);
+				CSystem::ReadObjRefFromStream(Ctx, &pEntry->pObj);
 				pEntry->dwObjID = OBJID_NULL;
 				}
 

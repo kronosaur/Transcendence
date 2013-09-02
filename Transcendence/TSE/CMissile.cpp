@@ -11,7 +11,7 @@ static CObjectClass<CMissile>g_Class(OBJID_CMISSILE, NULL);
 
 CMissile::CMissile (void) : CSpaceObject(&g_Class),
 		m_pExhaust(NULL),
-		m_iBonus(0),
+		m_pEnhancements(NULL),
 		m_pPainter(NULL),
 		m_pVaporTrailRegions(NULL),
 		m_iSavedRotationsCount(0),
@@ -40,6 +40,9 @@ CMissile::~CMissile (void)
 
 	if (m_pSavedRotations)
 		delete [] m_pSavedRotations;
+
+	if (m_pEnhancements)
+		m_pEnhancements->Delete();
 	}
 
 int CMissile::ComputeVaporTrail (void)
@@ -63,7 +66,7 @@ int CMissile::ComputeVaporTrail (void)
 		if (m_pVaporTrailRegions)
 			delete [] m_pVaporTrailRegions;
 
-		m_pVaporTrailRegions = new CG16bitRegion [m_iSavedRotationsCount];
+		m_pVaporTrailRegions = new CG16bitBinaryRegion [m_iSavedRotationsCount];
 
 		//	Compute some constants
 
@@ -141,7 +144,7 @@ int CMissile::ComputeVaporTrail (void)
 
 		//	Allocate array of regions
 
-		m_pVaporTrailRegions = new CG16bitRegion [iCount];
+		m_pVaporTrailRegions = new CG16bitBinaryRegion [iCount];
 
 		int iDirection = (m_iRotation + 180) % 360;
 		int iLeft = (iDirection + 90) % 360;
@@ -195,15 +198,15 @@ int CMissile::ComputeVaporTrail (void)
 	}
 
 ALERROR CMissile::Create (CSystem *pSystem,
-			CWeaponFireDesc *pDesc,
-			int iBonus,
-			DestructionTypes iCause,
-			const CDamageSource &Source,
-			const CVector &vPos,
-			const CVector &vVel,
-			int iRotation,
-			CSpaceObject *pTarget,
-			CMissile **retpMissile)
+						  CWeaponFireDesc *pDesc,
+						  CItemEnhancementStack *pEnhancements,
+						  DestructionTypes iCause,
+						  const CDamageSource &Source,
+						  const CVector &vPos,
+						  const CVector &vVel,
+						  int iRotation,
+						  CSpaceObject *pTarget,
+						  CMissile **retpMissile)
 
 //	Create
 //
@@ -222,6 +225,11 @@ ALERROR CMissile::Create (CSystem *pSystem,
 	//	We can't save missiles without an UNID
 	ASSERT(!pDesc->m_sUNID.IsBlank());
 
+	//	Target must be valid
+	ASSERT(pTarget == NULL || !pTarget->IsDestroyed());
+	if (pTarget && pTarget->IsDestroyed())
+		pTarget = NULL;
+
 	//	Don't bother telling others when we are destroyed (Note that
 	//	if we do this then we also need to set the CannotBeHit flag;
 	//	otherwise we will crash when a beam hits us. This is because
@@ -237,7 +245,7 @@ ALERROR CMissile::Create (CSystem *pSystem,
 	pMissile->SetObjectDestructionHook();
 
 	pMissile->m_pDesc = pDesc;
-	pMissile->m_iBonus = iBonus;
+	pMissile->m_pEnhancements = (pEnhancements ? pEnhancements->AddRef() : NULL);
 	pMissile->m_iCause = iCause;
 	pMissile->m_iHitPoints = pDesc->GetHitPoints();
 	pMissile->m_iLifeLeft = pDesc->GetLifetime();
@@ -263,12 +271,9 @@ ALERROR CMissile::Create (CSystem *pSystem,
 
 	//	Create a painter instance
 
-	CEffectCreator *pEffect;
-	if (pEffect = pDesc->GetEffect())
-		{
-		pMissile->m_pPainter = pEffect->CreatePainter();
+	pMissile->m_pPainter = pDesc->CreateEffect();
+	if (pMissile->m_pPainter)
 		pMissile->SetBounds(pMissile->m_pPainter);
-		}
 
 	//	Create exhaust trail, if necessary
 
@@ -308,6 +313,8 @@ void CMissile::CreateFragments (const CVector &vPos)
 //	Create fragments
 
 	{
+	DEBUG_TRY
+
 	//	If there is an event, then let it handle the fragmentation
 
 	if (m_pDesc->FireOnFragment(m_Source, this, vPos, m_pHit, m_pTarget))
@@ -318,7 +325,7 @@ void CMissile::CreateFragments (const CVector &vPos)
 
 	if (m_pDesc->HasFragments())
 		GetSystem()->CreateWeaponFragments(m_pDesc,
-				m_iBonus,
+				m_pEnhancements,
 				m_iCause,
 				m_Source,
 				m_pTarget,
@@ -332,7 +339,7 @@ void CMissile::CreateFragments (const CVector &vPos)
 	Ctx.pObj = NULL;
 	Ctx.pDesc = m_pDesc;
 	Ctx.Damage = m_pDesc->m_Damage;
-	Ctx.Damage.AddBonus(m_iBonus);
+	Ctx.Damage.AddEnhancements(m_pEnhancements);
 	Ctx.Damage.SetCause(m_iCause);
 	if (IsAutomatedWeapon())
 		Ctx.Damage.SetAutomatedWeapon();
@@ -342,6 +349,8 @@ void CMissile::CreateFragments (const CVector &vPos)
 	Ctx.Attacker = m_Source;
 
 	m_pDesc->CreateHitEffect(GetSystem(), Ctx);
+
+	DEBUG_CATCH
 	}
 
 #if 0
@@ -374,7 +383,7 @@ void CMissile::CreateReflection (const CVector &vPos, int iDirection)
 
 	Create(GetSystem(),
 			m_pDesc,
-			m_iBonus,
+			m_pEnhancements,
 			m_iCause,
 			m_Source.GetObj(),
 			vPos,
@@ -421,6 +430,34 @@ CString CMissile::DebugCrashInfo (void)
 	catch (...)
 		{
 		sResult.Append(strPatternSubst(CONSTLIT("m_pExhaust: %x [invalid]\r\n"), (DWORD)m_pExhaust));
+		}
+
+	//	m_pEnhancements
+
+	try
+		{
+		if (m_pEnhancements)
+			sResult.Append(strPatternSubst(CONSTLIT("m_pEnhancements: %d\r\n"), m_pEnhancements->GetCount()));
+		else
+			sResult.Append(CONSTLIT("m_pEnhancements: none\r\n"));
+		}
+	catch (...)
+		{
+		sResult.Append(strPatternSubst(CONSTLIT("m_pEnhancements: %x [invalid]\r\n"), (DWORD)m_pEnhancements));
+		}
+
+	//	m_pPainter
+
+	try
+		{
+		if (m_pPainter)
+			sResult.Append(strPatternSubst(CONSTLIT("m_pPainter: %s\r\n"), m_pPainter->GetCreator()->GetTypeClassName()));
+		else
+			sResult.Append(CONSTLIT("m_pPainter: none\r\n"));
+		}
+	catch (...)
+		{
+		sResult.Append(strPatternSubst(CONSTLIT("m_pPainter: %x [invalid]\r\n"), (DWORD)m_pPainter));
 		}
 
 	return sResult;
@@ -623,6 +660,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		Ctx.iVariant = (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0);
 		Ctx.iRotation = m_iRotation;
 		Ctx.iDestiny = GetDestiny();
+		Ctx.iMaxLength = (int)((g_SecondsPerUpdate * Max(1, m_iTick) * m_pDesc->GetRatedSpeed()) / g_KlicksPerPixel);
 
 		if (!m_fDestroyed && (m_pHit == NULL || m_fPassthrough))
 			m_pPainter->Paint(Dest, x, y, Ctx);
@@ -701,7 +739,6 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 //	Read object data from a stream
 //
 //	CString		CWeaponFireDesc UNID
-//	DWORD		m_iBonus
 //	DWORD		m_iCause
 //	DWORD		m_iHitPoints
 //	DWORD		m_iLifeLeft
@@ -724,6 +761,8 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 //	DWORD		flags
 //	DWORD		Number of saved rotations
 //	DWORD		rotation[]
+//
+//	CItemEnhancementStack	m_pEnhancements
 
 	{
 	DWORD dwLoad;
@@ -737,9 +776,21 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 	sDescUNID.ReadFromStream(Ctx.pStream);
 	m_pDesc = g_pUniverse->FindWeaponFireDesc(sDescUNID);
 
+	//	Old style bonus
+
+	if (Ctx.dwVersion < 92)
+		{
+		int iBonus;
+		Ctx.pStream->Read((char *)&iBonus, sizeof(DWORD));
+		if (iBonus != 0)
+			{
+			m_pEnhancements = new CItemEnhancementStack;
+			m_pEnhancements->InsertHPBonus(iBonus);
+			}
+		}
+
 	//	Load other stuff
 
-	Ctx.pStream->Read((char *)&m_iBonus, sizeof(m_iBonus));
 	if (Ctx.dwVersion >= 18)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
@@ -755,12 +806,12 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 
 	Ctx.pStream->Read((char *)&m_iLifeLeft, sizeof(DWORD));
 	m_Source.ReadFromStream(Ctx);
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pHit);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pHit);
 	Ctx.pStream->Read((char *)&m_vHitPos, sizeof(CVector));
 	Ctx.pStream->Read((char *)&m_iHitDir, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iRotation, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(DWORD));
 
 	//	Load painter
@@ -783,9 +834,9 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&vPos, sizeof(CVector));
 		Ctx.pStream->Read((char *)&vVel, sizeof(CVector));
 
-		if (m_pExhaust && i < m_pExhaust->GetMaxCount())
+		if (m_pExhaust && i < m_pExhaust->GetCapacity())
 			{
-			SExhaustParticle &Particle = m_pExhaust->GetAt(m_pExhaust->Queue());
+			SExhaustParticle &Particle = m_pExhaust->EnqueueAndOverwrite();
 			Particle.vPos = vPos;
 			Particle.vVel = vVel;
 			}
@@ -810,6 +861,11 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		else
 			m_iSavedRotationsCount = 0;
 		}
+
+	//	Enhancements
+
+	if (Ctx.dwVersion >= 92)
+		CItemEnhancementStack::ReadFromStream(Ctx, &m_pEnhancements);
 	}
 
 void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
@@ -919,10 +975,7 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			{
 			if (iTick % m_pDesc->m_iExhaustRate)
 				{
-				if (m_pExhaust->GetCount() == m_pExhaust->GetMaxCount())
-					m_pExhaust->Dequeue();
-
-				SExhaustParticle &New = m_pExhaust->GetAt(m_pExhaust->Queue());
+				SExhaustParticle &New = m_pExhaust->EnqueueAndOverwrite();
 				New.vPos = GetPos();
 				New.vVel = GetVel();
 				}
@@ -984,8 +1037,7 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			{
 			//	If we have fragments, then explode now
 
-			if (m_iHitDir == -1
-					&& m_pDesc->ProximityBlast()
+			if (m_pDesc->ProximityBlast()
 					&& m_iTick >= m_pDesc->GetProximityFailsafe())
 				{
 				CreateFragments(m_vHitPos);
@@ -1000,7 +1052,7 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 				DamageCtx.pObj = m_pHit;
 				DamageCtx.pDesc = m_pDesc;
 				DamageCtx.Damage = m_pDesc->m_Damage;
-				DamageCtx.Damage.AddBonus(m_iBonus);
+				DamageCtx.Damage.AddEnhancements(m_pEnhancements);
 				DamageCtx.Damage.SetCause(m_iCause);
 				if (IsAutomatedWeapon())
 					DamageCtx.Damage.SetAutomatedWeapon();
@@ -1078,7 +1130,6 @@ void CMissile::OnWriteToStream (IWriteStream *pStream)
 //	Write the object's data to stream
 //
 //	CString		CWeaponFireDesc UNID
-//	DWORD		m_iBonus
 //	DWORD		m_iCause
 //	DWORD		m_iHitPoints
 //	DWORD		m_iLifeLeft
@@ -1100,12 +1151,13 @@ void CMissile::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		flags
 //	DWORD		Number of saved rotations
 //	DWORD		rotation[]
+//
+//	CItemEnhancementStack	m_pEnhancements
 
 	{
 	DWORD dwSave;
 
 	m_pDesc->m_sUNID.WriteToStream(pStream);
-	pStream->Write((char *)&m_iBonus, sizeof(m_iBonus));
 	dwSave = m_iCause;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	pStream->Write((char *)&m_iHitPoints, sizeof(DWORD));
@@ -1157,6 +1209,10 @@ void CMissile::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_iSavedRotationsCount, sizeof(DWORD));
 	if (m_iSavedRotationsCount)
 		pStream->Write((char *)m_pSavedRotations, sizeof(DWORD) * m_iSavedRotationsCount);
+
+	//	Enhancements
+
+	CItemEnhancementStack::WriteToStream(m_pEnhancements, pStream);
 	}
 
 void CMissile::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
@@ -1190,7 +1246,7 @@ bool CMissile::PointInObject (const CVector &vObjPos, const CVector &vPointPos)
 	int y = -(int)((vOffset.GetY() / g_KlicksPerPixel) + 0.5);
 
 	if (m_pPainter)
-		return m_pPainter->PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
+		return m_pPainter->PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0), m_iRotation);
 	else
 		return m_pDesc->m_Image.PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
 	}

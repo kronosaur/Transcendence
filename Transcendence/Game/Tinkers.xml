@@ -31,7 +31,10 @@
 				Tinker Sikorsky; Tinker Tesla; Tinker Wang
 		</Names>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+		<ImageVariants>
+			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsTinkerStations;" imageX="0"   imageY="130" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
 
 		<Ships>
 			<Lookup count="1d4" table="&tbCommDefenders;"/>
@@ -47,7 +50,7 @@
 		
 		<Items>
 			<RandomItem count="3d6" 
-					criteria=		"aswd -Illegal; -Military; -NotForSale;"
+					criteria=		"aswd -Illegal; -Military; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"2"
 					damaged=		"100"
@@ -119,19 +122,19 @@
 							desc=	"You are docked at a station belonging to the Tinkers Guild. The docking bay is decorated with various ancient devices of unknown origin and purpose.">
 
 						<Actions>
-							<Action name="Buy scrap" default="1" key="B">
+							<Action name="Buy Scrap" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell scrap" key="S">
+							<Action name="Sell Scrap" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A">
+							<Action name="Repair or Replace Armor" key="A">
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gArmorSegment 0)
@@ -141,7 +144,7 @@
 									)
 							</Action>
 
-							<Action name="Custom work" key="C">
+							<Action name="Custom Work" key="C">
 								<Navigate screen="PickItem"/>
 							</Action>
 
@@ -171,7 +174,7 @@
 							desc=	"You are in a machine shop surrounded by robot welders and cutters. A woman approaches you. &quot;If you've got some scrap or otherwise useless items we can turn them into something useful. Pick an item.&quot;">
 
 						<Actions>
-							<Action name="Use this item" default="1" key="U">
+							<Action name="Use this Item" default="1" key="U">
 								(block Nil
 									(setq gItem (scrGetItem gScreen))
 									(if gItem
@@ -205,7 +208,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Use these items" default="1" key="U">
+							<Action name="Use these Items" default="1" key="U">
 								<![CDATA[
 								(block (count)
 									(setq count (scrGetCounter gScreen))
@@ -406,5 +409,9 @@
 		</DockingPorts>
 
 	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsTinkerStations;"		bitmap="Resources\TinkerStations.jpg" bitmask="Resources\TinkerStationsMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

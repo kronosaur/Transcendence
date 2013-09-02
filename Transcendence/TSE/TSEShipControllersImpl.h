@@ -37,6 +37,7 @@ class CAIBehaviorCtx
 	public:
 		CAIBehaviorCtx (void);
 
+		inline bool AscendOnGate (void) const { return m_AISettings.AscendOnGate(); }
 		inline bool AvoidsExplodingStations (void) const { return m_fAvoidExplodingStations; }
 		inline void ClearBestWeapon (void) { m_fRecalcBestWeapon = true; }
 		inline void ClearNavPath (void) { m_pNavPath = NULL; m_iNavPathPos = -1; }
@@ -76,6 +77,7 @@ class CAIBehaviorCtx
 		inline bool NoDogfights (void) const { return m_AISettings.NoDogfights(); }
 		inline bool NoFriendlyFire (void) const { return m_AISettings.NoFriendlyFire(); }
 		inline bool NoFriendlyFireCheck (void) const { return m_AISettings.NoFriendlyFireCheck(); }
+		inline bool NoNavPaths (void) const { return m_AISettings.NoNavPaths(); }
 		inline bool NoOrderGiver (void) const { return m_AISettings.NoOrderGiver(); }
 		inline bool NoShieldRetreat (void) const { return m_AISettings.NoShieldRetreat(); }
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -128,6 +130,7 @@ class CAIBehaviorCtx
 		void CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget);
 		void CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric rTargetDist2);
 		void CalcInvariants (CShip *pShip);
+		bool CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget, CSpaceObject *pNewTarget) const;
 		bool CalcNavPath (CShip *pShip, CSpaceObject *pTo);
 		void CalcNavPath (CShip *pShip, CSpaceObject *pFrom, CSpaceObject *pTo);
 		void CalcNavPath (CShip *pShip, CNavigationPath *pPath);
@@ -156,6 +159,7 @@ class CAIBehaviorCtx
 		CVector m_vPotential;					//	Avoid potential
 		CNavigationPath *m_pNavPath;			//	Current navigation path
 		int m_iNavPathPos;						//	-1 = not in nav path
+
 		DWORD m_fDockingRequested:1;			//	TRUE if we've requested docking
 		DWORD m_fWaitForShieldsToRegen:1;		//	TRUE if ship is waiting for shields to regen
 		DWORD m_dwSpare1:30;
@@ -193,7 +197,7 @@ class IOrderModule
 
 		void Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage);
 		inline void Behavior (CShip *pShip, CAIBehaviorCtx &Ctx) { OnBehavior(pShip, Ctx); }
-		inline void BehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { OnBehaviorStart(pShip, Ctx, pOrderTarget, dwOrderData); }
+		inline void BehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data) { OnBehaviorStart(pShip, Ctx, pOrderTarget, Data); }
 		DWORD Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		static IOrderModule *Create (IShipController::OrderTypes iOrder);
 		CString DebugCrashInfo (void);
@@ -211,17 +215,66 @@ class IOrderModule
 		virtual bool IsTarget (CSpaceObject *pObj) { return false; }
 		virtual void OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage) { }
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx) = 0;
-		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, DWORD dwOrderData) { }
+		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data) { }
 		virtual CString OnDebugCrashInfo (void) { return NULL_STR; }
 		virtual CSpaceObject *OnGetBase (void) { return NULL; }
 		virtual IShipController::OrderTypes OnGetOrder (void) = 0;
 		virtual CSpaceObject *OnGetTarget (void) { return NULL; }
 		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj) { }
-		virtual void OnReadFromStream (SLoadCtx &Ctx) = 0;
-		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream) = 0;
+		virtual void OnReadFromStream (SLoadCtx &Ctx) { }
+		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream) { }
 
 		int m_iObjCount;
 		CSpaceObject *m_Objs[MAX_OBJS];
+	};
+
+class COrderList
+	{
+	public:
+		~COrderList (void);
+
+		void DeleteAll (void);
+		void DeleteCurrent (void);
+		inline int GetCount (void) const { return m_List.GetCount(); }
+		inline IShipController::OrderTypes GetCurrentOrder (void) const { return (IShipController::OrderTypes)(GetCurrentEntry().dwOrderType); }
+		IShipController::OrderTypes GetCurrentOrder (CSpaceObject **retpTarget, IShipController::SData *retData = NULL) const;
+		inline DWORD GetCurrentOrderData (void) const { return GetCurrentEntry().dwData; }
+		inline CSpaceObject *GetCurrentOrderTarget (void) const { return GetCurrentEntry().pTarget; }
+		void Insert (IShipController::OrderTypes iOrder, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false);
+		void OnNewSystem (CSystem *pNewSystem, bool *retbCurrentChanged);
+		void OnObjDestroyed (CSpaceObject *pObj, bool *retbCurrentChanged);
+		void OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, bool *retbCurrentChanged);
+		void OnStationDestroyed (CSpaceObject *pObj, bool *retbCurrentChanged);
+		void ReadFromStream (SLoadCtx &Ctx);
+		void SetCurrentOrderData (const IShipController::SData &Data);
+		void WriteToStream (IWriteStream *pStream, CSystem *pSystem);
+
+	private:
+		struct SOrderEntry
+			{
+			SOrderEntry (void) :
+					dwOrderType(0),
+					dwDataType(IShipController::dataNone),
+					pTarget(NULL),
+					dwData(0)
+				{ }
+
+			DWORD dwOrderType:8;			//	IShipController::OrderTypes
+			DWORD dwDataType:8;				//	EDataTypes
+			DWORD dwSpare:16;
+
+			CSpaceObject *pTarget;
+			DWORD dwData;
+			};
+
+		void CleanUp (SOrderEntry *pEntry);
+		const SOrderEntry &GetCurrentEntry (void) const { return (m_List.GetCount() > 0 ? m_List[0] : m_NullOrder); }
+		SOrderEntry &GetCurrentEntryActual (void) { return (m_List.GetCount() > 0 ? m_List[0] : m_NullOrder); }
+		void SetEntryData (SOrderEntry *pEntry, const IShipController::SData &Data);
+
+		TArray<SOrderEntry> m_List;
+
+		static SOrderEntry m_NullOrder;
 	};
 
 class CBaseShipAI : public CObject, public IShipController
@@ -236,6 +289,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual void DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader);
 		virtual CString GetAISetting (const CString &sSetting) { return m_AICtx.GetAISetting(sSetting); }
+		virtual const CAISettings *GetAISettings (void) { return &m_AICtx.GetAISettings(); }
 		virtual CSpaceObject *GetBase (void) const;
 		virtual int GetCombatPower (void);
 		virtual bool GetDeviceActivate (void) { return m_fDeviceActivate; }
@@ -254,7 +308,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage);
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		virtual void OnDocked (CSpaceObject *pObj);
-		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
+		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual void OnWeaponStatusChanged (void) { m_AICtx.ClearBestWeapon(); }
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
@@ -273,20 +327,13 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip);
 		virtual void WriteToStream (IWriteStream *pStream);
 
-		virtual void AddOrder(IShipController::OrderTypes Order, CSpaceObject *pTarget, DWORD dwData, bool bAddBefore = false);
+		virtual void AddOrder (IShipController::OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false);
 		virtual void CancelAllOrders (void);
 		virtual void CancelCurrentOrder (void);
-		virtual DWORD GetCurrentOrderData (void) { return ((OrderEntry *)m_Orders.GetStruct(0))->dwData; }
-		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, DWORD *retdwData = NULL);
+		virtual DWORD GetCurrentOrderData (void) { return m_Orders.GetCurrentOrderData(); }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
 
 	protected:
-		struct OrderEntry
-			{
-			IShipController::OrderTypes Order;
-			CSpaceObject *pTarget;
-			DWORD dwData;
-			};
-
 		CSpaceObject *CalcEnemyShipInRange (CSpaceObject *pCenter, Metric rRange, CSpaceObject *pExcludeObj = NULL);
 		bool CalcFlockingFormation (CSpaceObject *pLeader,
 									Metric rFOVRange,
@@ -303,7 +350,7 @@ class CBaseShipAI : public CObject, public IShipController
 		void FireOnOrderChanged (void);
 		void FireOnOrdersCompleted (void);
 		IShipController::OrderTypes GetCurrentOrder (void) const;
-		inline CSpaceObject *GetCurrentOrderTarget (void) const { return ((OrderEntry *)m_Orders.GetStruct(0))->pTarget; }
+		inline CSpaceObject *GetCurrentOrderTarget (void) const { return m_Orders.GetCurrentOrderTarget(); }
 		inline Metric GetDistance (CSpaceObject *pObj) const { return (pObj->GetPos() - m_pShip->GetPos()).Length(); }
 		inline Metric GetDistance2 (CSpaceObject *pObj) const { return (pObj->GetPos() - m_pShip->GetPos()).Length2(); }
 		inline int GetOrderCount (void) const { return m_Orders.GetCount(); }
@@ -314,7 +361,7 @@ class CBaseShipAI : public CObject, public IShipController
 		void HandleFriendlyFire (CSpaceObject *pOrderGiver);
 		inline bool IsDockingRequested (void) { return m_AICtx.IsDockingRequested(); }
 		void ResetBehavior (void);
-		void SetCurrentOrderData (DWORD dwData);
+		void SetCurrentOrderData (const SData &Data);
 		void UpgradeShieldBehavior (void);
 		void UpgradeWeaponBehavior (void);
 		void UseItemsBehavior (void);
@@ -335,7 +382,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual void OnWriteToStream (IWriteStream *pStream) { }
 
 		CShip *m_pShip;							//	Ship that we're controlling
-		CStructArray m_Orders;					//	Ordered list of orders
+		COrderList m_Orders;					//	Ordered list of orders
 		ICCItem *m_pCommandCode;				//	Code to generate orders (may be NULL)
 
 		CAIBehaviorCtx m_AICtx;					//	Ctx for behavior
@@ -832,4 +879,3 @@ class CZoanthropeAI : public CBaseShipAI
 IShipController *CreateShipController (const CString &sAI);
 
 #endif
-

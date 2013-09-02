@@ -16,14 +16,36 @@ CTerritoryList::~CTerritoryList (void)
 		delete m_List[i];
 	}
 
-bool CTerritoryList::HasAttribute (const CVector &vPos, const CString &sAttrib)
+CString CTerritoryList::GetAttribsAtPos (const CVector &vPos) const
+
+//	GetAttribsAtPos
+//
+//	Returns the attributes at the given position
+
+	{
+	int i;
+
+	CString sAttribs;
+	for (i = 0; i < m_List.GetCount(); i++)
+		{
+		//	If this territory matches the criteria then we include it.
+
+		if (m_List[i]->PointInTerritory(vPos)
+				&& MatchesCriteria(m_List[i], vPos))
+			sAttribs = ::AppendModifiers(sAttribs, m_List[i]->GetAttributes());
+		}
+
+	return sAttribs;
+	}
+
+bool CTerritoryList::HasAttribute (const CVector &vPos, const CString &sAttrib) const
 
 //	HasAttribute
 //
 //	Returns TRUE if the given point has the given attribute
 
 	{
-	int i, j;
+	int i;
 
 	for (i = 0; i < m_List.GetCount(); i++)
 		{
@@ -35,64 +57,66 @@ bool CTerritoryList::HasAttribute (const CVector &vPos, const CString &sAttrib)
 
 		//	Test
 
-		if (m_List[i]->HasAttribute(vPos, sAttrib))
-			{
-			//	If we have the attribute, make sure that we match
-			//	the criteria, if any.
-
-			const CString &sCriteria = m_List[i]->GetCriteria();
-			if (!sCriteria.IsBlank())
-				{
-				//	Mark this territory so we don't try to evaluate it
-
-				m_List[i]->SetMarked(true);
-
-				//	Parse the criteria
-
-				CString sError;
-				CAttributeCriteria Criteria;
-				if (Criteria.Parse(sCriteria, 0, &sError) != NOERROR)
-					kernelDebugLogMessage("Error parsing territory: %s", sError);
-
-				//	Loop over all elements of the criteria
-
-				bool bMatches = true;
-				for (j = 0; j < Criteria.GetCount(); j++)
-					{
-					bool bRequired;
-					const CString &sAttrib = Criteria.GetAttribAndRequired(j, &bRequired);
-
-					//	Recusively see if we have the attribute
-
-					bool bFound = HasAttribute(vPos, sAttrib);
-
-					//	If we don't match, then we're done
-
-					if (bFound != bRequired)
-						{
-						bMatches = false;
-						break;
-						}
-					}
-
-				//	Restore
-
-				m_List[i]->SetMarked(false);
-
-				//	If we matched, then we're done
-
-				if (bMatches)
-					return true;
-				}
-
-			//	If we have no criteria, then we match
-
-			else
-				return true;
-			}
+		if (m_List[i]->HasAttribute(vPos, sAttrib)
+				&& MatchesCriteria(m_List[i], vPos))
+			return true;
 		}
 
 	return false;
+	}
+
+bool CTerritoryList::MatchesCriteria (CTerritoryDef *pTerritory, const CVector &vPos) const
+
+//	MatchesCriteria
+//
+//	See if the territory's criteria matches.
+
+	{
+	int j;
+
+	const CString &sCriteria = pTerritory->GetCriteria();
+	if (sCriteria.IsBlank())
+		return true;
+
+	//	Mark this territory so we don't try to evaluate it
+
+	pTerritory->SetMarked(true);
+
+	//	Parse the criteria
+
+	CString sError;
+	CAttributeCriteria Criteria;
+	if (Criteria.Parse(sCriteria, 0, &sError) != NOERROR)
+		kernelDebugLogMessage("Error parsing territory: %s", sError);
+
+	//	Loop over all elements of the criteria
+
+	bool bMatches = true;
+	for (j = 0; j < Criteria.GetCount(); j++)
+		{
+		bool bRequired;
+		const CString &sAttrib = Criteria.GetAttribAndRequired(j, &bRequired);
+
+		//	Recusively see if we have the attribute
+
+		bool bFound = HasAttribute(vPos, sAttrib);
+
+		//	If we don't match, then we're done
+
+		if (bFound != bRequired)
+			{
+			bMatches = false;
+			break;
+			}
+		}
+
+	//	Restore
+
+	pTerritory->SetMarked(false);
+
+	//	Done
+
+	return bMatches;
 	}
 
 void CTerritoryList::ReadFromStream (SLoadCtx &Ctx)

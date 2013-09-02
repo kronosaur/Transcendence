@@ -127,3 +127,74 @@ bool CEnhancerClass::GetDeviceEnhancementDesc (CInstalledDevice *pDevice, CSpace
 	return true;
 	}
 
+bool CEnhancerClass::OnAccumulateEnhancements (CItemCtx &Device, CInstalledDevice *pTarget, TArray<CString> &EnhancementIDs, CItemEnhancementStack *pEnhancements)
+
+//	OnAccumulateEnhancements
+//
+//	Enhances pTarget
+
+	{
+	CInstalledDevice *pDevice = Device.GetDevice();
+	CSpaceObject *pSource = Device.GetSource();
+
+	//	If disabled or damaged then we do not enhance anything
+
+	if (pDevice 
+			&& (!pDevice->IsEnabled() || pDevice->IsDamaged()))
+		return false;
+
+	//	If the target item does not match our criteria, then no enhancement
+
+	if (pSource 
+			&& pTarget
+			&& !pSource->GetItemForDevice(pTarget).MatchesCriteria(m_Criteria))
+		return false;
+
+	//	If this enhancement type has already been applied, then nothing
+
+	if (!m_sEnhancementType.IsBlank()
+			&& EnhancementIDs.Find(m_sEnhancementType))
+		return false;
+
+	//	Keep track of enhancements.
+
+	bool bEnhanced = false;
+
+	//	Add HP bonus enhancements
+
+	int iBonus;
+	if (m_bUseArray)
+		{
+		//	NOTE: We enter 0 for a variant because we want to hard-code to 
+		//	the first variant (otherwise we would default to the selected
+		//	variant)
+
+		int iType = pTarget->GetDamageType(0);
+		iBonus = (iType != -1 ? m_iDamageAdjArray[iType] : 0);
+		}
+	else
+		iBonus = m_iDamageAdj;
+
+	if (iBonus != 0)
+		{
+		pEnhancements->InsertHPBonus(iBonus);
+		bEnhanced = true;
+		}
+
+	//	Add speed enhancements
+
+	if (m_iActivateAdj != 100)
+		{
+		pEnhancements->InsertActivateAdj(m_iActivateAdj, m_iMinActivateDelay, m_iMaxActivateDelay);
+		bEnhanced = true;
+		}
+
+	//	Remember that we added this enhancement type
+
+	if (!m_sEnhancementType.IsBlank())
+		EnhancementIDs.Insert(m_sEnhancementType);
+
+	//	Done
+
+	return bEnhanced;
+	}

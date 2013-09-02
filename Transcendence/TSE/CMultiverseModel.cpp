@@ -99,6 +99,57 @@ ALERROR CMultiverseModel::GetCollection (CMultiverseCollection *retCollection) c
 	return NOERROR;
 	}
 
+ALERROR CMultiverseModel::GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCollection *retCollection) const
+
+//	GetEntry
+//
+//	Returns the entry by UNID and release.
+
+	{
+	int i;
+
+	//	If we're in the middle of getting the collection then wait a little bit
+
+	bool bSuccess = false;
+	for (i = 0; i < 30; i++)
+		{
+		m_cs.Lock();
+		if (!m_fLoadingCollection && m_fCollectionLoaded)
+			{
+			bSuccess = true;
+			break;
+			}
+		m_cs.Unlock();
+
+		::Sleep(100);
+		}
+
+	if (!bSuccess)
+		return ERR_FAIL;
+
+	//	Object is locked. Get the collection.
+
+	retCollection->DeleteAll();
+	for (i = 0; i < m_Collection.GetCount(); i++)
+		{
+		CMultiverseCatalogEntry *pEntry = m_Collection.GetEntry(i);
+
+		//	Clone a copy and add it to the result.
+
+		if (pEntry->GetUNID() == dwUNID
+				&& (dwRelease == 0 || pEntry->GetRelease() == dwRelease))
+			{
+			CMultiverseCatalogEntry *pCopy = new CMultiverseCatalogEntry(*pEntry);
+			retCollection->Insert(pCopy);
+			}
+		}
+
+	//	Done
+
+	m_cs.Unlock();
+	return NOERROR;
+	}
+
 CMultiverseModel::EOnlineStates CMultiverseModel::GetOnlineState (CString *retsUsername) const
 
 //	GetOnlineState

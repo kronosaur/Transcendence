@@ -190,7 +190,7 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 				//	Chunked transfer encoding
 
 				if (FindHeader(CONSTLIT("Transfer-Encoding"), &sEncoding)
-						&& !strEquals(sEncoding, CONSTLIT("identity")))
+						&& strEquals(sEncoding, CONSTLIT("chunked")))
 					{
 					//	Read the chunk size line
 
@@ -211,12 +211,23 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 					m_sBody.Append(CString(pPos, iLength, true));
 					pPos += iLength;
 
-					//	We don't deal with partial chunks...
+					//	If we have a partial chunk, then we need to remember state
+					//	and wait for more
 
 					if (iLength < iTotalLength)
-						m_iState = stateDone;
+						{
+						m_iChunkLeft = iTotalLength - iLength;
+						m_iState = stateChunk;
+						}
 
-					//	Keep looping for the next chunk
+					//	Otherwise, we're done with this chunk
+
+					else
+						{
+						//	Read the terminating line end
+
+						GetToken(pPos, pEndPos, '\r', &pPos);
+						}
 					}
 
 				//	Otherwise, look for content length
@@ -247,6 +258,31 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 
 				else
 					m_iState = stateDone;
+
+				break;
+				}
+
+			case stateChunk:
+				{
+				//	Keep reading
+
+				int iLength = Min(m_iChunkLeft, pEndPos - pPos);
+				m_sBody.Append(CString(pPos, iLength, true));
+				pPos += iLength;
+				m_iChunkLeft -= iLength;
+
+				//	Done?
+
+				if (m_iChunkLeft == 0)
+					{
+					//	Read the terminating line end
+
+					GetToken(pPos, pEndPos, '\r', &pPos);
+
+					//	Parse the next chunk
+
+					m_iState = stateBody;
+					}
 
 				break;
 				}

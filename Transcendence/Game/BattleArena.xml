@@ -103,11 +103,17 @@
 			multiHull=			"true"
 			immutable=			"true"
 
-			attributes=			"battleArena, friendly, human, majorStation, populated"
+			attributes=			"battleArena, corporate, corporateDecon, friendly, human, majorStation, populated"
 			level=				"2"
 			>
 
 		<Image			imageID="&rsBattleArena;" imageX="0" imageY="2560" imageWidth="128" imageHeight="256"/>
+
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+		</Trade>
 
 		<Events>
 			<GetGlobalAchievements>
@@ -637,11 +643,11 @@
 
 						<Actions>
 						<!--
-							<Action name="Purchase tickets" default="1" key="P">
+							<Action name="Purchase Tickets" default="1" key="P">
 							</Action>
 						-->
 
-							<Action name="Enter combat" key="E">
+							<Action name="Enter Combat" key="E">
 								(block (arenaRank)
 									(setq arenaRank (objGetGlobalData gSource "arenaRank"))
 									(switch
@@ -732,23 +738,16 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 120) (&itHelium3FuelRod; 120)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
-								(block Nil
-									(setq gTechLevel 6)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A" >
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
 									(setq gTechLevel 6)
 									(setq gTechModifier Nil)
@@ -758,7 +757,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -834,7 +833,7 @@
 									)
 							</Action>
 
-							<Action name="Back out" cancel="1" key="B">
+							<Action name="Back Out" cancel="1" key="B">
 								(scrShowPane gScreen "Chicken")
 							</Action>
 						</Actions>
@@ -1162,7 +1161,7 @@
 									)
 							</Action>
 
-							<Action name="Back out" cancel="1" key="B">
+							<Action name="Back Out" cancel="1" key="B">
 								(scrShowScreen gScreen "ChooseOpponent")
 							</Action>
 						</Actions>
@@ -1445,7 +1444,7 @@
 
 									; Create Morgental's cruiser
 									(setq cruiserObj (sysCreateShip 
-										&scKateMorgentalCruiser; 
+										&scKateMorgentalCruiserArena; 
 										(objGetPos theAnchorObj)
 										&svCorporate;
 										))
@@ -1579,7 +1578,7 @@
 									)
 							</Action>
 
-							<Action name="Back out" cancel="1" key="B">
+							<Action name="Back Out" cancel="1" key="B">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1683,7 +1682,7 @@
 									)
 							</Action>
 
-							<Action name="Back out" cancel="1" key="B">
+							<Action name="Back Out" cancel="1" key="B">
 								<ShowPane pane="Chicken"/>
 							</Action>
 
@@ -1887,7 +1886,7 @@
 									)
 							</Action>
 
-							<Action name="Next opponent" key="N" nextKey="1">
+							<Action name="Next Opponent" key="N" nextKey="1">
 								(block Nil
 									(setq gCursor (add gCursor 1))
 									(setq gSelect (item gList gCursor))
@@ -1895,7 +1894,7 @@
 									)
 							</Action>
 
-							<Action name="Previous opponent" key="P" prevKey="1">
+							<Action name="Previous Opponent" key="P" prevKey="1">
 								(block Nil
 									(setq gCursor (subtract gCursor 1))
 									(setq gSelect (item gList gCursor))
@@ -1985,7 +1984,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, friendly, human, katamiRescue, majorStation, populated"
+			attributes=			"blackMarket, friendly, human, katamiRescue, majorStation, outlaws, populated"
 			>
 
 		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
@@ -2053,20 +2052,20 @@
 							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
 
 						<Actions>
-							<Action name="Talk to station boss" key="T">
+							<Action name="Talk to Station Boss" key="T">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(scrShowScreen gScreen "Boss")
 									)
 							</Action>
 
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									intBlackMarketBuyPrice	; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									intBlackMarketSellPrice	; items bought from player
 									Nil						; obsolete
@@ -2101,7 +2100,7 @@
 									)
 							</Action>
 
-							<Action name="Upgrade cargo hold" key="C">
+							<Action name="Upgrade Cargo Hold" key="C">
 								(block Nil
 									(setq gCost 2200)
 									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
@@ -2246,71 +2245,70 @@
 	target:				Target object
 	-->
 
-	<ShipClass UNID="&scKateMorgentalCruiser;"
-			manufacturer=		""
+	<ShipClass UNID="&scKateMorgentalCruiserArena;"
+			manufacturer=		"Rasiermesser"
 			class=				"Corporate cruiser"
 			type=				""
-			score=				"2160"
 
+			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
+			   
+			size=				"275"
 			mass=				"8000"
-			cargoSpace=			"1000"
-			thrust=				"5000"
+			thrustRatio=		"2"
 			maneuver=			"12"
 			maxSpeed=			"20"
+			cargoSpace=			"1000"
 
 			cyberDefenseLevel=	"8"
 
 			explosionType=		"&vtThermoExplosion2;"
 			leavesWreck=		"100"
-
-			attributes=			"corporate, capitalShip, kateMorgental, majorShip"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="330" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="315" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="300" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="285" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="270" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="255" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="240" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="225" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="210" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="195" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="180" span="15" armorID="&itQuadroCarbideArmor;" />
+		<Names noArticle="true" personalName="true">Kate Morgental</Names>
 
-			<ArmorSection start="165" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="150" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="135" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="120" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="105" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="90"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="75"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="60"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="45"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="30"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="15"  span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="0"   span="15" armorID="&itQuadroCarbideArmor;" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHexaCarbideArmor;"
+			count=				"18"
+			/>
+		
 		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="120" posRadius="60"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="240" posRadius="60"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
 			<Device deviceID="&itPlasmaShieldGenerator;"/>
 		</Devices>
 
-		<Image imageID="&rsLargeShips1;" imageX="576" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-25"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"40"
+					/>
+		</Interior>
 
 		<Items>
 			<Item count="40d20" item="&itGotha10Missile;"/>
 			<Item count="2d12" item="&itPteracniumFuelRod;"/>
 		</Items>
 
-		<Names noArticle="true" personalName="true">Kate Morgental</Names>
+		<!-- Image and Effects -->
 
+		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+
+		<!-- AI and Behavior -->
+		
 		<AISettings
-			fireRateAdj=		"25"
+			fireRateAdj=		"40"
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
@@ -2410,6 +2408,25 @@
 
 	</ShipClass>
 
+	<!-- G-Type Star -->
+
+	<StationType UNID="&stRigelAureliusStar;"
+		name=				"(G class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"0x68, 0x63, 0x23"
+		maxLightRadius=		"300"
+
+		attributes=			"generic, star"
+		>
+
+		<Image>
+			<FilterColorize hue="57" saturation="50">
+				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</FilterColorize>
+		</Image>
+	</StationType>
+
 	<!-- Rigel Aurelius system -->
 
 	<SystemType UNID="&ssBattleArena;" noRandomEncounters="true">
@@ -2480,32 +2497,20 @@
 
 			<SeverusAsteroid>
 				<Table>
-					<Lookup chance="35" table="AsteroidSmallFrost"/>
-					<Lookup chance="10" table="AsteroidSmallMetallic"/>
-					<Lookup chance="45" table="AsteroidSmall"/>
-					<Lookup chance="4" table="AsteroidMediumFrost"/>
-					<Lookup chance="1" table="AsteroidMediumMetallic"/>
-					<Lookup chance="5" table="AsteroidMedium"/>
+					<Station chance="35" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="10" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="45" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="4" type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="1" type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="5" type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</SeverusAsteroid>
 
 			<SeverusTrojans>
 				<Group>
-					<Siblings count="2d20" arcInc="2d205-206" radiusInc="-4-4">
+					<OrbitalDistribution count="2d25+75" arcLength="720" radialWidth="60">
 						<Lookup table="SeverusAsteroid"/>
-					</Siblings>
-
-					<Siblings count="2d20" arcInc="2d159-160" radiusInc="-6-6">
-						<Lookup table="SeverusAsteroid"/>
-					</Siblings>
-
-					<Siblings count="2d16" arcInc="2d109-110" radiusInc="-8-8">
-						<Lookup table="SeverusAsteroid"/>
-					</Siblings>
-
-					<Siblings count="2d12" arcInc="2d49-50" radiusInc="-12-12">
-						<Lookup table="SeverusAsteroid"/>
-					</Siblings>
+					</OrbitalDistribution>
 				</Group>
 			</SeverusTrojans>
 		</Tables>
@@ -2514,14 +2519,19 @@
 
 			<!-- Star -->
 
-			<Station type="&stG-TypeStar;" name="Rigel Aurelius"/>
+			<Station type="&stRigelAureliusStar;" name="Rigel Aurelius"/>
+
+			<AddAttribute attributes="GTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
 
 			<!-- Carus -->
 
 			<Orbitals distance="90" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stCrateredPlanet;" 
+						<Station type="&stRockyPlanetoidSizeG;" 
 								name="Carus" 
 								showOrbit="true"
 								/>
@@ -2554,7 +2564,7 @@
 			<Orbitals distance="3" scale="light-minute" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stCrateredPlanet;" 
+						<Station type="&stGreenhouseTerrestrialSizeI;" 
 								name="Tacitus" 
 								showOrbit="true"
 								/>
@@ -2567,15 +2577,15 @@
 					<Trojan>
 						<Group>
 							<Orbitals count="2d4+4" distance="1d24" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyAsteroidSizeA;"/>
 							</Orbitals>
 
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyAsteroidSizeB;"/>
 							</Orbitals>
 
 							<Orbitals distance="2d8+6" angle="random">
-								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids,trojan"/>
+								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids, rocky, trojan"/>
 							</Orbitals>
 						</Group>
 					</Trojan>
@@ -2588,7 +2598,7 @@
 			<Orbitals distance="5" scale="light-minute" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stCrateredPlanet;" 
+						<Station type="&stDesertTerrestrialSizeH;" 
 								name="Geta" 
 								showOrbit="true"
 								/>
@@ -2597,15 +2607,15 @@
 					<AntiTrojan>
 						<Group>
 							<Orbitals count="4d4+8" distance="1d48" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyAsteroidSizeA;"/>
 							</Orbitals>
 
 							<Orbitals count="2d6" distance="1d36" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyAsteroidSizeB;"/>
 							</Orbitals>
 
 							<Orbitals distance="2d8+6" angle="random">
-								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids,trojan"/>
+								<RandomStation stationCriteria="*enemy" locationAttribs="asteroids, rocky, trojan"/>
 							</Orbitals>
 						</Group>
 					</AntiTrojan>
@@ -2618,7 +2628,7 @@
 			<Orbitals distance="9" scale="light-minute" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stMethaneGasGiant;" 
+						<Station type="&stMethaneGasGiantSizeK;" 
 								name="Severus" 
 								showOrbit="true"
 								/>
@@ -2914,7 +2924,6 @@
 							<Station type="&stBlackMarketRigelAurelius;"/>
 						</Orbitals>
 					</AntiTrojan>
-
 				</Group>
 			</Orbitals>
 

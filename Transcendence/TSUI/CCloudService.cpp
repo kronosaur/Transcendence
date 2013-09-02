@@ -328,7 +328,7 @@ ALERROR CCloudService::RegisterUser (ITaskProcessor *pProcessor, const CString &
 	return NOERROR;
 	}
 
-ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const CString &sFilespec)
+ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const CString &sFilespec, const CIntegerIP &FileDigest)
 
 //	RequestExtensionDownload
 //
@@ -341,7 +341,7 @@ ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const
 		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canDownloadExtension))
 			{
 			//	Only one service can register a user
-			return m_Services[i]->RequestExtensionDownload(sFilePath, sFilespec);
+			return m_Services[i]->RequestExtensionDownload(sFilePath, sFilespec, FileDigest);
 			}
 
 	return NOERROR;

@@ -38,10 +38,6 @@ DWORD WINAPI CTranscendenceWnd::BackgroundThread (LPVOID pData)
 				pThis->m_bGameCreated = true;
 				break;
 
-			case bsBlt:
-				pThis->BackgroundBlt(&pThis->m_Secondary);
-				break;
-
 			default:
 				ASSERT(false);
 			}
@@ -51,33 +47,6 @@ DWORD WINAPI CTranscendenceWnd::BackgroundThread (LPVOID pData)
 		::ResetEvent(pThis->m_hWorkAvailableEvent);
 		pThis->m_iBackgroundState = bsNone;
 		}
-	}
-
-void CTranscendenceWnd::BackgroundBlt (CG16bitImage *pScreen)
-
-//	BackgroundBlt
-//
-//	Blt the screen
-
-	{
-	//	First blt to a surface that conforms to the primary screen res
-
-	pScreen->BltToSurface(m_pBack, m_PrimaryType);
-
-	//	Now blt the surface
-
-	RECT    rcSrc;  // source blit rectangle
-	RECT    rcDest; // destination blit rectangle
-	POINT   p;
-
-	// find out where on the primary surface our window lives
-	p.x = 0; p.y = 0;
-	::ClientToScreen(m_hWnd, &p);
-	::GetClientRect(m_hWnd, &rcDest);
-	OffsetRect(&rcDest, p.x, p.y);
-	SetRect(&rcSrc, 0, 0, g_cxScreen, g_cyScreen);
-
-	m_pPrimary->Blt(&rcDest, m_pBack, &rcSrc, DDBLT_ASYNC, NULL);
 	}
 
 void CTranscendenceWnd::BackgroundLoadUniverse (void)
@@ -100,9 +69,10 @@ void CTranscendenceWnd::BackgroundLoadUniverse (void)
 
 	//	Set the default name of the player
 
-	m_sPlayerName = m_pHighScoreList->GetMostRecentPlayerName();
-	if (m_sPlayerName.IsBlank())
-		m_sPlayerName = sysGetUserName();
+	CString sPlayerName = m_pHighScoreList->GetMostRecentPlayerName();
+	if (sPlayerName.IsBlank())
+		sPlayerName = sysGetUserName();
+	m_pTC->GetModel().SetPlayerName(sPlayerName);
 
 	m_iPlayerGenome = m_pHighScoreList->GetMostRecentPlayerGenome();
 	if (m_iPlayerGenome == genomeUnknown)
@@ -128,8 +98,8 @@ void CTranscendenceWnd::BackgroundNewGame (void)
 	{
 	if (StartNewGameBackground(&m_sBackgroundError) != NOERROR)
 		{
-		m_Universe.Reinit();
-		m_GameFile.Close();
+		g_pUniverse->Reinit();
+		GetGameFile().Close();
 		return;
 		}
 	}

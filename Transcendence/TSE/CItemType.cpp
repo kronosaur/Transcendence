@@ -4,25 +4,26 @@
 
 #include "PreComp.h"
 
-#define NAMES_TAG								CONSTLIT("Names")
+#define ARMOR_TAG								CONSTLIT("Armor")
+#define AUTO_DEFENSE_CLASS_TAG					CONSTLIT("AutoDefenseDevice")
+#define CARGO_HOLD_CLASS_TAG					CONSTLIT("CargoHoldDevice")
+#define CYBER_DECK_CLASS_TAG					CONSTLIT("CyberDeckDevice")
+#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
+#define DRIVE_CLASS_TAG							CONSTLIT("DriveDevice")
+#define ENHANCER_CLASS_TAG						CONSTLIT("EnhancerDevice")
+#define EVENTS_TAG								CONSTLIT("Events")
+#define GLOBAL_DATA_TAG							CONSTLIT("GlobalData")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define COCKPIT_USE_TAG							CONSTLIT("Invoke")
-#define ARMOR_TAG								CONSTLIT("Armor")
-#define WEAPON_CLASS_TAG						CONSTLIT("Weapon")
-#define SHIELD_CLASS_TAG						CONSTLIT("Shields")
-#define DRIVE_CLASS_TAG							CONSTLIT("DriveDevice")
-#define CARGO_HOLD_CLASS_TAG					CONSTLIT("CargoHoldDevice")
-#define REPAIRER_CLASS_TAG						CONSTLIT("RepairerDevice")
-#define SOLAR_DEVICE_CLASS_TAG					CONSTLIT("SolarDevice")
-#define ENHANCER_CLASS_TAG						CONSTLIT("EnhancerDevice")
-#define CYBER_DECK_CLASS_TAG					CONSTLIT("CyberDeckDevice")
-#define AUTO_DEFENSE_CLASS_TAG					CONSTLIT("AutoDefenseDevice")
+#define LANGUAGE_TAG							CONSTLIT("Language")
 #define MISCELLANEOUS_CLASS_TAG					CONSTLIT("MiscellaneousDevice")
-#define EVENTS_TAG								CONSTLIT("Events")
+#define NAMES_TAG								CONSTLIT("Names")
 #define REACTOR_CLASS_TAG						CONSTLIT("ReactorDevice")
-#define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
+#define REPAIRER_CLASS_TAG						CONSTLIT("RepairerDevice")
+#define SHIELD_CLASS_TAG						CONSTLIT("Shields")
 #define STATIC_DATA_TAG							CONSTLIT("StaticData")
-#define GLOBAL_DATA_TAG							CONSTLIT("GlobalData")
+#define SOLAR_DEVICE_CLASS_TAG					CONSTLIT("SolarDevice")
+#define WEAPON_CLASS_TAG						CONSTLIT("Weapon")
 
 #define INSTANCE_DATA_ATTRIB					CONSTLIT("charges")
 #define DATA_ATTRIB								CONSTLIT("data")
@@ -51,7 +52,6 @@
 #define VALUE_CHARGES_ATTRIB					CONSTLIT("valueCharges")
 #define VIRTUAL_ATTRIB							CONSTLIT("virtual")
 
-#define GET_NAME_EVENT							CONSTLIT("GetName")
 #define GET_TRADE_PRICE_EVENT					CONSTLIT("GetTradePrice")
 #define ON_ENABLED_EVENT						CONSTLIT("OnEnable")
 #define ON_INSTALL_EVENT						CONSTLIT("OnInstall")
@@ -88,6 +88,7 @@
 #define FIELD_REFERENCE							CONSTLIT("reference")
 #define FIELD_SHORT_NAME						CONSTLIT("shortName")
 #define FIELD_SLOT_CATEGORY						CONSTLIT("slotCategory")
+#define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
 #define FIELD_UNKNOWN_TYPE						CONSTLIT("unknownType")
 #define FIELD_USE_KEY							CONSTLIT("useKey")
 
@@ -102,6 +103,7 @@ const int FLOTSAM_IMAGE_WIDTH =					32;
 
 static char *CACHED_EVENTS[CItemType::evtCount] =
 	{
+		"GetDescription",
 		"GetName",
 		"GetTradePrice",
 		"OnInstall",
@@ -137,15 +139,21 @@ CItemType::~CItemType (void)
 		delete m_pDevice;
 	}
 
-ALERROR CItemType::ComposeError (const CString &sName, const CString &sError, CString *retsError)
+bool CItemType::IsAmmunition (void) const
 
-//	ComposeError
+//	IsAmmunition
 //
-//	Composes an error string when loading
+//	Determines whether this is a missile for a launcher or just ammunition for a normal weapon.
 
 	{
-	*retsError = strPatternSubst("%s: %s", sName, sError);
-	return ERR_FAIL;
+	if (!IsMissile())
+		return false;
+
+	CDeviceClass *pWeapon;
+	if (!CDeviceClass::FindWeaponFor((CItemType *)this, &pWeapon))
+		return false;
+
+	return (pWeapon->GetItemType()->GetCategory() != itemcatLauncher);
 	}
 
 void CItemType::CreateEmptyFlotsam (CSystem *pSystem, 
@@ -228,20 +236,14 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 	//	Deal with the meta-data that we know about
 
 	if (strEquals(sField, FIELD_LEVEL))
-		{
 		*retsValue = strFromInt(GetLevel());
-		return true;
-		}
+
 	else if (strEquals(sField, FIELD_CATEGORY))
-		{
 		*retsValue = GetItemCategory(GetCategory());
-		return true;
-		}
+	
 	else if (strEquals(sField, FIELD_SLOT_CATEGORY))
-		{
 		*retsValue = GetItemCategory(GetSlotCategory());
-		return true;
-		}
+	
 	else if (strEquals(sField, FIELD_FREQUENCY))
 		{
 		switch (GetFrequency())
@@ -265,25 +267,21 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 			default:
 				*retsValue = CONSTLIT("NR");
 			}
-
-		return true;
 		}
 	else if (strEquals(sField, FIELD_FUEL_CAPACITY) && IsFuel())
 		{
 		int iFuelPerItem = strToInt(GetData(), 0);
 		*retsValue = strFromInt(iFuelPerItem / FUEL_UNITS_PER_STD_ROD);
-		return true;
+
+		//	NOTE: When IsFuel() is FALSE we fall through to the else
+		//	case, which asks reactor devices.
 		}
 	else if (strEquals(sField, FIELD_NAME))
-		{
 		*retsValue = GetNounPhrase();
-		return true;
-		}
+
 	else if (strEquals(sField, FIELD_MASS))
-		{
 		*retsValue = strFromInt(CItem(this, 1).GetMassKg());
-		return true;
-		}
+	
 	else if (strEquals(sField, FIELD_SHORT_NAME))
 		{
 		CString sName = GetNounPhrase();
@@ -313,21 +311,13 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 			}
 		else
 			*retsValue = sName;
-
-		return true;
 		}
 	else if (strEquals(sField, FIELD_REFERENCE))
-		{
-		CItemCtx Ctx;
-		*retsValue = GetReference(Ctx);
-		return true;
-		}
+		*retsValue = GetReference(CItemCtx());
+
 	else if (strEquals(sField, FIELD_COST))
-		{
-		CItemCtx Ctx;
-		*retsValue = strFromInt(GetValue(Ctx));
-		return true;
-		}
+		*retsValue = strFromInt(GetValue(CItemCtx()));
+
 	else if (strEquals(sField, FIELD_INSTALL_COST))
 		{
 		int iCost = GetInstallCost();
@@ -335,18 +325,13 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 			*retsValue = NULL_STR;
 		else
 			*retsValue = strFromInt(iCost);
-		return true;
 		}
 	else if (strEquals(sField, FIELD_AVERAGE_COUNT))
-		{
 		*retsValue = strFromInt(m_NumberAppearing.GetAveValue());
-		return true;
-		}
+
 	else if (strEquals(sField, FIELD_DESCRIPTION))
-		{
 		*retsValue = m_sDescription;
-		return true;
-		}
+
 	else if (strEquals(sField, FIELD_IMAGE_DESC))
 		{
 		const RECT &rcImage = m_Image.GetImageRect();
@@ -354,7 +339,6 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 				m_Image.GetFilename(),
 				rcImage.left,
 				rcImage.top);
-		return true;
 		}
 	else if (strEquals(sField, FIELD_DEVICE_SLOTS))
 		{
@@ -362,18 +346,15 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 			*retsValue = strFromInt(m_pDevice->GetSlotsRequired());
 		else
 			*retsValue = NULL_STR;
-		return true;
 		}
+	else if (strEquals(sField, FIELD_TREASURE_VALUE))
+		*retsValue = strFromInt((int)CEconomyType::ExchangeToCredits(GetCurrencyType(), GetValue(CItemCtx(), true)));
+
 	else if (strEquals(sField, FIELD_UNKNOWN_TYPE))
-		{
 		*retsValue = (m_pUnknownType ? strPatternSubst(CONSTLIT("0x%x"), m_pUnknownType->GetUNID()) : NULL_STR);
-		return true;
-		}
+
 	else if (strEquals(sField, FIELD_USE_KEY))
-		{
 		*retsValue = m_sUseKey;
-		return true;
-		}
 
 	//	Otherwise, see if the device class knows
 
@@ -403,7 +384,7 @@ bool CItemType::FindDataField (const CString &sField, CString *retsValue)
 		return CDesignType::FindDataField(sField, retsValue);
 		}
 
-	return false;
+	return true;
 	}
 
 CDeviceClass *CItemType::GetAmmoLauncher (int *retiVariant) const
@@ -868,7 +849,7 @@ bool CItemType::IsFuel (void) const
 //	Returns TRUE if this is fuel
 
 	{
-	return HasAttribute(STR_FUEL);
+	return HasLiteralAttribute(STR_FUEL);
 	}
 
 bool CItemType::IsMissile (void) const
@@ -878,7 +859,7 @@ bool CItemType::IsMissile (void) const
 //	Returns TRUE if this is a missile
 
 	{
-	return HasAttribute(STR_MISSILE);
+	return HasLiteralAttribute(STR_MISSILE);
 	}
 
 void CItemType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
@@ -967,7 +948,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iMass = pDesc->GetAttributeInteger(CONSTLIT(g_MassAttrib));
 
 	if (error = m_iValue.InitFromXML(Ctx, pDesc->GetAttribute(VALUE_ATTRIB)))
-		return ComposeError(m_sName, Ctx.sError, &Ctx.sError);
+		return ComposeLoadError(Ctx, Ctx.sError);
 
 	//	Initialize frequency
 
@@ -978,7 +959,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	else
 		{
 		if (error = m_NumberAppearing.LoadFromXML(sNumberAppearing))
-			return ComposeError(m_sName, CONSTLIT("Unable to parse numberAppearing"), &Ctx.sError);
+			return ComposeLoadError(Ctx, CONSTLIT("Unable to parse numberAppearing"));
 		}
 
 	//	Get the unknown type info
@@ -1038,7 +1019,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		if (strEquals(pSubDesc->GetTag(), IMAGE_TAG))
 			{
 			if (error = m_Image.InitFromXML(Ctx, pSubDesc))
-				return ComposeError(m_sName, CONSTLIT("Unable to load image"), &Ctx.sError);
+				return ComposeLoadError(Ctx, CONSTLIT("Unable to load image"));
 			}
 
 		//	Process unknown names
@@ -1075,6 +1056,9 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pSubDesc->GetTag(), GLOBAL_DATA_TAG))
 			;
 
+		else if (strEquals(pSubDesc->GetTag(), LANGUAGE_TAG))
+			;
+
 		else if (strEquals(pSubDesc->GetTag(), STATIC_DATA_TAG))
 			;
 
@@ -1083,7 +1067,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pSubDesc->GetTag(), ON_REFUEL_TAG))
 			{
 			if (error = AddEventHandler(ON_REFUEL_TAG, pSubDesc->GetContentText(0), &Ctx.sError))
-				return ComposeError(m_sName, CONSTLIT("Unable to load OnRefuel event"), &Ctx.sError);
+				return ComposeLoadError(Ctx, CONSTLIT("Unable to load OnRefuel event"));
 			}
 
 		//	Armor
@@ -1091,7 +1075,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pSubDesc->GetTag(), ARMOR_TAG))
 			{
 			if (error = CArmorClass::CreateFromXML(Ctx, pSubDesc, this, &m_pArmor))
-				return ComposeError(m_sName, CONSTLIT("Unable to load Armor descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 
 		//	Devices
@@ -1099,57 +1083,57 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pSubDesc->GetTag(), WEAPON_CLASS_TAG))
 			{
 			if (error = CWeaponClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, Ctx.sError, &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), SHIELD_CLASS_TAG))
 			{
 			if (error = CShieldClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load shield descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), DRIVE_CLASS_TAG))
 			{
 			if (error = CDriveClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load drive descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), CARGO_HOLD_CLASS_TAG))
 			{
 			if (error = CCargoSpaceClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load cargo hold descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), ENHANCER_CLASS_TAG))
 			{
 			if (error = CEnhancerClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load enhancer descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), REPAIRER_CLASS_TAG))
 			{
 			if (error = CRepairerClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load repairer descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), SOLAR_DEVICE_CLASS_TAG))
 			{
 			if (error = CSolarDeviceClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load solar device descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), CYBER_DECK_CLASS_TAG))
 			{
 			if (error = CCyberDeckClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load cyber device descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), AUTO_DEFENSE_CLASS_TAG))
 			{
 			if (error = CAutoDefenseClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load defense device descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), MISCELLANEOUS_CLASS_TAG))
 			{
 			if (error = CMiscellaneousClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load miscellaneous device descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else if (strEquals(pSubDesc->GetTag(), REACTOR_CLASS_TAG))
 			{
 			if (error = CReactorClass::CreateFromXML(Ctx, pSubDesc, this, &m_pDevice))
-				return ComposeError(m_sName, CONSTLIT("Unable to load reactor descriptor"), &Ctx.sError);
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unable to load %s: %s"), pSubDesc->GetTag(), Ctx.sError));
 			}
 		else
 			kernelDebugLogMessage("Unknown sub-element for ItemType: %s", pSubDesc->GetTag());

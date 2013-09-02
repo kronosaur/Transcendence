@@ -386,6 +386,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"4"
+
 			combatStyle=		"standOff"
 			/>
 
@@ -641,65 +642,30 @@
 			class=				"Commonwealth Star Carrier"
 			type=				""
 
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
+			inherit=			"&baCSCBase;"
+			   
 			mass=				"50000"
-			cargoSpace=			"5000"
-			thrust=				"10000"
+			thrustRatio=		"0.5"
 			maneuver=			"24"
 			maxSpeed=			"2"
+			cargoSpace=			"5000"
 
 			cyberDefenseLevel=	"8"
 			explosionType=		"&vtThermoExplosion4;"
 			leavesWreck=		"100"
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, genericClass, fleetLaw, majorShip"
-
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
-			
-			inherit=			"&baCSCBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itP1000HexphaseArmor;"
+			count=				"24"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
 			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
@@ -710,11 +676,31 @@
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"600"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"200"
+
+					posX=		"-56"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"60"
+					/>
+		</Interior>
+
 		<Items>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
 		</Items>
 
+		<!-- Image and Effects -->
+
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"10"
@@ -3104,7 +3090,7 @@
 									(eq behavior 'moving)
 										(scrSetDesc gScreen
 											"You are on the flight deck of " (objGetName gSource 0x04) ". "
-											"The ship is on maneuvers and the XO is giving orders to the navigator and the sensor chief."
+											"The ship is on maneuvers and the XO is giving orders to the astrogator and the sensor chief."
 											)
 											
 									(eq gLevel 1)
@@ -3472,7 +3458,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Sell items" default="1" key="S">
+							<Action name="Sell Items" default="1" key="S">
 								(block (medicalItem)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -3492,7 +3478,7 @@
 									)
 							</Action>
 
-							<Action name="Donate items" key="D">
+							<Action name="Donate Items" key="D">
 								(block (medicalItems)
 									; Remove the items from the cargo hold
 									(enum gItem medicalItem
@@ -3669,6 +3655,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -3982,6 +3969,8 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -4031,6 +4020,8 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"85"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -4081,6 +4072,8 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -4756,7 +4749,7 @@
 							)
 					</Action>
 
-					<Action name="Repair or replace armor" key="A" >
+					<Action name="Repair or Replace Armor" key="A" >
 						(block Nil
 							(setq gTechLevel 10)
 							(setq gArmorSegment 0)
@@ -4767,7 +4760,7 @@
 							)
 					</Action>
 
-					<Action name="Install device" key="D" >
+					<Action name="Install Device" key="D" >
 						(block Nil
 							(setq gTechLevel 9)
 							(setq gTechModifier Nil)
@@ -4777,14 +4770,14 @@
 							)
 					</Action>
 
-					<Action name="Remove device" key="V" >
+					<Action name="Remove Device" key="V" >
 						(block Nil
 							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
 							(scrShowScreen gScreen "&dsRemoveDevice;")
 							)
 					</Action>
 
-					<Action name="Upgrade reactor" key="P" >
+					<Action name="Upgrade Reactor" key="P" >
 						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 							{
 							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")

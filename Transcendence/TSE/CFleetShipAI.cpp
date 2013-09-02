@@ -363,7 +363,7 @@ void CFleetShipAI::BehaviorStart (void)
 		case IShipController::orderNone:
 			{
 			if (m_pShip->GetDockedObj() == NULL)
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 			break;
 			}
 
@@ -426,7 +426,8 @@ void CFleetShipAI::BehaviorStart (void)
 			//	gate-out
 
 			if (m_iFormation >= FORMATIONS_COUNT
-					|| m_iPlace >= g_Formations[m_iFormation].iCount)
+					|| m_iPlace >= g_Formations[m_iFormation].iCount
+					|| m_pLeader == NULL)
 				{
 				CancelCurrentOrder();
 				break;
@@ -547,6 +548,13 @@ void CFleetShipAI::ImplementKeepFormation (bool *retbInFormation)
 //	Stay in formation
 
 	{
+	if (m_pLeader == NULL)
+		{
+		if (retbInFormation)
+			*retbInFormation = true;
+		return;
+		}
+	
 	SFormationPlace *pFormation = g_Formations[m_iFormation].pFormation;
 
 	//	Figure out where our place in the formation is
@@ -623,7 +631,7 @@ DWORD CFleetShipAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage,
 			if (GetCurrentOrder() == IShipController::orderEscort)
 				{
 				if (dwParam2 != 0xffffffff)
-					SetCurrentOrderData(dwParam2);
+					SetCurrentOrderData(SData(dwParam2));
 
 				SetState(stateNone);
 				return resAck;
@@ -745,7 +753,7 @@ void CFleetShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 						&& Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) 
 						&& pAttacker != pLeaderTarget
 						&& mathRandom(1, 100) <= iAvengeChance)
-					AddOrder(IShipController::orderDestroyTarget, pAttacker, 0);
+					AddOrder(IShipController::orderDestroyTarget, pAttacker, IShipController::SData());
 
 				//	Take on leader's orders
 
@@ -754,13 +762,13 @@ void CFleetShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 					case IShipController::orderDestroyTarget:
 					case IShipController::orderGuard:
 						if (pLeaderTarget)
-							AddOrder(iLeaderOrders, pLeaderTarget, 0);
+							AddOrder(iLeaderOrders, pLeaderTarget, IShipController::SData());
 						break;
 					}
 
 				//	Attack other enemies
 
-				AddOrder(IShipController::orderAttackNearestEnemy, NULL, 0);
+				AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
 				}
 			break;
 
@@ -822,9 +830,9 @@ void CFleetShipAI::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pLeader);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pDest);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pLeader);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
 	Ctx.pStream->Read((char *)&m_iFormation, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iPlace, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iCounter, sizeof(DWORD));

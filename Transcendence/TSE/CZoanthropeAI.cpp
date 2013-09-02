@@ -189,7 +189,7 @@ void CZoanthropeAI::BehaviorStart (void)
 		case IShipController::orderNone:
 			{
 			if (m_pShip->GetDockedObj() == NULL)
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 			break;
 			}
 
@@ -546,8 +546,8 @@ void CZoanthropeAI::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pBase);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pBase);
 	Ctx.pStream->Read((char *)&m_vPotential, sizeof(m_vPotential));
 	}
 

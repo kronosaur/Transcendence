@@ -141,19 +141,14 @@ void CBeam::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 		BeamCtx.xTo = x + m_xToOffset;
 		BeamCtx.yTo = y + m_yToOffset;
 		}
-	BeamCtx.iIntensity = m_pDesc->GetIntensity();
+	BeamCtx.iIntensity = 1;
 	BeamCtx.wBackgroundColor = Ctx.wSpaceColor;
-	BeamCtx.wPrimaryColor = m_pDesc->GetPrimaryColor();
-	BeamCtx.wSecondaryColor = m_pDesc->GetSecondaryColor();
+	BeamCtx.wPrimaryColor = CG16bitImage::RGBValue(0xf1, 0x5f, 0x2a);
+	BeamCtx.wSecondaryColor = CG16bitImage::RGBValue(0xff, 0x00, 0x00);
 
 	//	Paint a line
 
-	switch (m_pDesc->GetBeamType())
-		{
-		case beamLaser:
-			DrawLaserBeam(Dest, BeamCtx);
-			break;
-		}
+	DrawLaserBeam(Dest, BeamCtx);
 
 	//	Draw the head of the beam if we have an image
 
@@ -211,8 +206,8 @@ void CBeam::OnReadFromStream (SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iLifeLeft, sizeof(m_iLifeLeft));
 	m_Source.ReadFromStream(Ctx);
-	Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pHit);
+	CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pHit);
 	Ctx.pStream->Read((char *)&m_iHitDir, sizeof(DWORD));
 
 	ComputeOffsets();

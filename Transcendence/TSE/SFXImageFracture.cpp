@@ -11,7 +11,8 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 												   const CVector &vPos,
 												   const CVector &vVel,
 												   int iRotation,
-												   int iVariant)
+												   int iVariant,
+												   CSpaceObject **retpEffect)
 
 //	CreateEffect
 //
@@ -19,12 +20,12 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 
 	{
 	ALERROR error;
+	CFractureEffect *pObj = NULL;
 
 	//	Create the effect
 
 	if (!m_Image.IsEmpty())
 		{
-		CFractureEffect *pObj;
 		if (error = CFractureEffect::Create(pSystem,
 				vPos,
 				vVel,
@@ -39,6 +40,9 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 
 		PlaySound(pObj);
 		}
+
+	if (retpEffect)
+		*retpEffect = pObj;
 
 	return NOERROR;
 	}

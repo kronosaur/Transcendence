@@ -57,7 +57,7 @@
 	<!-- Segment of Ultra Light Titanium Plate -->
 
 	<ItemType UNID="&itUltraLightTitaniumPlate;"
-			name=				"[segment(s) of ]ultra light titanium armor"
+			name=				"[segment(s) of ]ultra-light titanium armor"
 			level=				"1"
 			value=				"10"
 			frequency=			"common"
@@ -66,7 +66,7 @@
 			attributes=			"MinorItem"
 			showReference=		"true"
 
-			description=		"Ultra light titanium armor is used on small and fast gunships."
+			description=		"Ultra-light titanium armor is used on small and fast gunships."
 
 			sortName=			"titanium armor.40"
 			>
@@ -1253,7 +1253,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 			mass=				"15000"
-			attributes=			"Military; MinorItem; NotForSale;"
+			attributes=			"Military; MinorItem; NotForSale; NotStandard;"
 
 			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
 

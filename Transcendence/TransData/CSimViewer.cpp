@@ -117,7 +117,7 @@ void CSimViewer::PaintViewport (CUniverse &Universe)
 		rcView.right = m_Buffer.GetWidth();
 		rcView.bottom = m_Buffer.GetHeight();
 
-		Universe.PaintPOV(m_Buffer, rcView, false);
+		Universe.PaintPOV(m_Buffer, rcView, 0);
 
 		HDC hDC = ::GetDC(m_hWnd);
 		if (hDC)

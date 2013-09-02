@@ -1,0 +1,1283 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- GROUP MORPHOLOGIES
+
+	SIZE CLASSIFICATION
+
+			Asteroid			< 1,000 km
+	sizeA		Tiny			~ 10 km
+	sizeB		Small			~ 50 km
+	sizeC		Medium			~ 100 km
+	sizeD		Large			~ 500 km
+
+			Planetoid			~ 2,500 km
+	sizeE		Small			~ 1,000 km
+	sizeF		Medium			~ 2,000	km
+	sizeG		Large			~ 4,000 km
+		
+			Terrestrial			~ 10,000 km
+	sizeH		Small			~ 5,000 km
+	sizeI		Medium			~ 10,000 km
+	sizeJ		Large			~ 20,000 km
+
+			Gas Giant			~ 100,000 km
+	sizeK		Small			~ 50,000 km
+	sizeL		Medium			~ 100,000 km
+	sizeM		Large			~ 200,000 km
+
+-->
+
+	<SystemPartTable unid="&tbAsteroidMorphologies;">
+
+		<!-- ASTEROID ARCS -->
+
+		<AsteroidArc12>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d4+8" arcLength="200" radialWidth="18">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="1"	arcLength="250" radialWidth="18">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidArc12>
+
+		<AsteroidArc25>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d8+16" arcLength="350" radialWidth="30">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="2"	arcLength="430" radialWidth="30">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidArc25>
+
+		<AsteroidArc50>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidArc50>
+
+		<AsteroidArc100>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d25+75" arcLength="500" radialWidth="60">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="3-5" arcLength="620"	radialWidth="30">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidArc100>
+
+		<AsteroidArc200>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d50+150" arcLength="400" radialWidth="84">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="4-8" arcLength="500"	radialWidth="84">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidArc200>
+
+		<!-- ASTEROID ARC BELTS -->
+
+		<AsteroidArcBeltLarge>
+			<Group>
+				<Siblings count="4-6" radiusInc="-70--40" angle="equidistant">
+					<Table>
+						<Lookup chance="20"	table="AsteroidArc12"/>
+						<Lookup chance="60" table="AsteroidArc25"/>
+						<Lookup chance="20" table="AsteroidArc50"/>
+					</Table>
+				</Siblings>
+
+				<Siblings count="3-4" radiusInc="-20-50" angle="equidistant">
+					<Group>
+						<Table>
+							<Lookup chance="10" table="AsteroidArc50"/>
+							<Lookup chance="60" table="AsteroidArc100"/>
+							<Lookup chance="30" table="AsteroidArc200"/>
+						</Table>
+						<Siblings chance="50" arcInc="300">
+							<Lookup table="LocationDefinition">
+								<_Morphology>
+									<Lookup table="VariantAsteroidBeltLabel"/>
+								</_Morphology>
+							</Lookup>
+						</Siblings>
+					</Group>
+				</Siblings>
+
+				<Siblings count="5-7" radiusInc="70-120" angle="equidistant">
+					<Table>
+						<Lookup chance="20" table="AsteroidArc25"/>
+						<Lookup chance="60" table="AsteroidArc50"/>
+						<Lookup chance="20" table="AsteroidArc100"/>
+					</Table>
+				</Siblings>
+			</Group>
+		</AsteroidArcBeltLarge>
+
+		<!-- ASTEROID BELTS -->
+
+		<AsteroidBelt12>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d4+8" radialWidth="18">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="1"	radialWidth="18">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt12>
+
+		<AsteroidBelt25>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d8+16" radialWidth="30">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="2"	radialWidth="30">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt25>
+
+		<AsteroidBelt50>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d14+35" radialWidth="42">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="2-4"	radialWidth="42">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt50>
+
+		<AsteroidBelt100>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d25+75" radialWidth="60">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="3-5"	radialWidth="30">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt100>
+
+		<AsteroidBelt200>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d50+150" radialWidth="84">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="4-8"	radialWidth="84">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt200>
+
+		<AsteroidBelt500>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d125+375" radialWidth="130">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="6-12"	radialWidth="130">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</AsteroidBelt500>
+
+		<!-- ASTEROID TROJANS -->
+
+		<AsteroidTrojans12>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="60">
+						<Group>
+							<OrbitalDistribution count="2d4+8" arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidTrojans12>
+
+		<AsteroidTrojans25>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="60">
+						<Group>
+							<OrbitalDistribution count="2d8+16" arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidTrojans25>
+
+		<AsteroidTrojans50>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="60">
+						<Group>
+							<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidTrojans50>
+
+		<AsteroidTrojans100>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="60">
+						<Group>
+							<OrbitalDistribution count="2d25+75" arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidTrojans100>
+
+		<AsteroidAntiTrojans12>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="-60">
+						<Group>
+							<OrbitalDistribution count="2d4+8" arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="200" radialWidth="18">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidAntiTrojans12>
+
+		<AsteroidAntiTrojans25>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="-60">
+						<Group>
+							<OrbitalDistribution count="2d8+16" arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="360" radialWidth="30">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidAntiTrojans25>
+
+		<AsteroidAntiTrojans50>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="-60">
+						<Group>
+							<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="500" radialWidth="42">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidAntiTrojans50>
+
+		<AsteroidAntiTrojans100>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Siblings count="1" angleInc="-60">
+						<Group>
+							<OrbitalDistribution count="2d25+75" arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroid"/>
+							</OrbitalDistribution>
+
+							<Siblings chance="35" count="1"	arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcLength="720" radialWidth="60">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+							<Siblings chance="35" count="1"	arcInc="-10-10" radiusInc="-10-10">
+								<Lookup table="VariantAsteroidTrojanLabel"/>
+							</Siblings>
+						</Group>
+					</Siblings>
+				</_Morphology>
+			</Lookup>
+		</AsteroidAntiTrojans100>
+
+		<!-- ASTEROID VULCANOIDS -->
+
+		<AsteroidVulcanoidBelt300>
+			<Variant variant="inner">
+				<Variant variant="volcanic">
+					<OrbitalDistribution count="2d50+250" radialWidth="90">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="4-8"	radialWidth="90">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</Variant>
+			</Variant>
+		</AsteroidVulcanoidBelt300>
+
+		<!-- COMPANIONS -->
+
+		<AsteroidCompanion>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Table>
+						<Lookup chance="40"		table="VariantSizeB"/>
+						<Lookup chance="50"		table="VariantSizeC"/>
+						<Lookup chance="10"		table="VariantSizeD"/>
+					</Table>
+				</_Morphology>
+			</Lookup>
+
+			<Orbitals distance="2d4+8" angle="random">
+				<Label attributes="moon, planetary"/>
+			</Orbitals>
+		</AsteroidCompanion>
+
+		<PlanetoidCompanion>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<Table>
+						<Lookup chance="60"		table="VariantSizeE"/>
+						<Lookup chance="30"		table="VariantSizeF"/>
+						<Lookup chance="10"		table="VariantSizeG"/>
+					</Table>
+				</_Morphology>
+			</Lookup>
+
+			<Orbitals distance="2d4+8" angle="random">
+				<Label attributes="moon, planetary"/>
+			</Orbitals>
+		</PlanetoidCompanion>
+
+		<!-- Located Morphology
+
+			This definition should be invoked inside a Lookup that defines a
+			Morphology subtable. The Morphology subtable may refer to region and
+			classification variants.
+
+			REQUIRES
+
+			_Morphology:		Directive that will receive proper variant
+								definitions.
+
+		-->
+
+		<LocationDefinition>
+			<LocationCriteriaTable>
+
+				<!-- MOLTEN ZONE (inner metallic) -->
+
+				<Variant criteria="*moltenZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- GREENHOUSE ZONE (inner organic) -->
+
+				<Variant criteria="*greenhouseZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="30"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- CINDER ZONE (inner rocky) -->
+
+				<Variant criteria="*cinderZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- STEAM ZONE (inner water) -->
+
+				<Variant criteria="*steamZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="50"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- METALLIC ZONE (lifeZone metallic) -->
+
+				<Variant criteria="*metallicZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- PRIMORDIAL ZONE (lifeZone organic) -->
+
+				<Variant criteria="*primordialZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="10" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- DESERT ZONE (lifeZone rocky) -->
+
+				<Variant criteria="*desertZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- BIOSPHERE ZONE (lifeZone water) -->
+
+				<Variant criteria="*biophereZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="15" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="15"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- BARREN ZONE (outer metallic) -->
+
+				<Variant criteria="*barrenZone"		variant="outer">
+					<Table>
+						<Variant chance="20"		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- THOLIN ZONE (outer organic) -->
+
+				<Variant criteria="*tholinZone"		variant="outer">
+					<Table>
+						<Variant chance="10" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- FROST ZONE (outer rocky) -->
+
+				<Variant criteria="*frostZone"	variant="outer">
+					<Table>
+						<Variant chance="20" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="50"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- ICE ZONE (outer water) -->
+
+				<Variant criteria="*iceZone"	variant="outer">
+					<Table>
+						<Variant chance="60" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+			</LocationCriteriaTable>
+		</LocationDefinition>
+
+		<!-- Variant Asteroids & Planetoids
+		
+			These definitions must be invoked with a double Variant directive.
+			One directive must define the region (inner, lifeZone, outer); the
+			other must define the classification (frost, ice, metallic, etc).
+			
+		-->
+
+		<VariantAsteroid>
+			<Table>
+				<Lookup chance="80"		table="VariantSizeA"/>
+				<Lookup chance="14"		table="VariantSizeB"/>
+				<Lookup chance="5"		table="VariantSizeC"/>
+				<Lookup chance="1"		table="VariantSizeD"/>
+			</Table>
+		</VariantAsteroid>
+
+		<VariantAsteroidBeltLabel>
+			<VariantTable>
+				<Label variant="ice"		attributes="asteroids, asteroidBelt, ice"/>
+				<Label variant="metallic"	attributes="asteroids, asteroidBelt, metallic"/>
+				<Label variant="primordial"	attributes="asteroids, asteroidBelt, primordial"/>
+				<Label variant="rocky"		attributes="asteroids, asteroidBelt, rocky"/>
+				<Label variant="volcanic"	attributes="asteroids, asteroidBelt, volcanic"/>
+			</VariantTable>
+		</VariantAsteroidBeltLabel>
+
+		<VariantSizeA>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeA>
+
+		<VariantSizeB>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeB>
+
+		<VariantSizeC>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeC>
+
+		<VariantSizeD>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeD>
+
+		<VariantSizeE>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeE>
+
+		<VariantSizeF>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeF>
+
+		<VariantSizeG>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeG>
+
+		<VariantAsteroidTrojanLabel>
+			<VariantTable>
+				<Label variant="ice"		attributes="asteroids, ice, trojan"/>
+				<Label variant="metallic"	attributes="asteroids, metallic, trojan"/>
+				<Label variant="primordial"	attributes="asteroids, primordial, trojan"/>
+				<Label variant="rocky"		attributes="asteroids, rocky, trojan"/>
+				<Label variant="volcanic"	attributes="asteroids, trojan, volcanic"/>
+			</VariantTable>
+		</VariantAsteroidTrojanLabel>
+
+	</SystemPartTable>
+
+	<SystemPartTable unid="&tbPlanetaryMorphologies;">
+
+		<!-- A planetoid in a sparse field of lesser asteroids. Use for small 
+			planets and planetoids.
+
+			REQUIRES
+
+			_PlanetType:	A planet definition
+			_PlanetLabel:	A label for station around planet
+			
+		-->
+
+		<StandardPlanetoidMorphology>
+
+			<!-- A planet (the type is an input to the table) -->
+
+			<Lookup table="_PlanetType"/>
+
+			<!-- A label in orbit around the planet (also an input, in case the
+				caller wants to define some special attributes. -->
+
+			<Orbitals distance="2d6+10" angle="random">
+				<Lookup table="_PlanetLabel"/>
+			</Orbitals>
+
+			<!-- Since this is a small planet, good chance of lots asteroids in
+				the orbit. -->
+
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="50" table="AsteroidBelt12"/>
+				<Lookup chance="20" table="AsteroidBelt25"/>
+				<Lookup chance="9" table="AsteroidBelt50"/>
+				<Lookup chance="1" table="AsteroidBelt100"/>
+			</Table>
+
+		</StandardPlanetoidMorphology>
+
+		<!-- A larger (terrestrial-sized) planet, possibly with satellites and
+			some chance of trojans or other asteroids.
+
+			REQUIRES
+
+			_PlanetType:	A planet definition
+			_PlanetLabel:	A label for stations around planet
+
+		-->
+
+		<StandardTerrestrialMorphology>
+
+			<!-- A planet (the type is an input to the table) -->
+
+			<Lookup table="_PlanetType"/>
+
+			<!-- A label in orbit around the planet (also an input, in case the
+				caller wants to define some special attributes. -->
+
+			<Orbitals distance="2d6+10" angle="random">
+				<Lookup table="_PlanetLabel"/>
+			</Orbitals>
+
+			<!-- Chance of one or more moons around the planet -->
+
+			<Table>
+				<!-- No moon -->
+				<Null		chance="50"/>
+
+				<!-- One small moon -->
+				<Orbitals	chance="30" distance="2d8+30" angle="random">
+					<Lookup table="AsteroidCompanion"/>
+				</Orbitals>
+
+				<!-- Two small moons -->
+				<Group		chance="12">
+					<Orbitals	distance="2d8+24" angle="random">
+						<Lookup table="AsteroidCompanion"/>
+					</Orbitals>
+					<Orbitals	distance="2d8+48" angle="random">
+						<Lookup table="AsteroidCompanion"/>
+					</Orbitals>
+				</Group>
+
+				<!-- One large moon -->
+				<Orbitals	chance="8" distance="2d8+32" angle="random">
+					<Lookup table="PlanetoidCompanion"/>
+				</Orbitals>
+			</Table>
+
+			<!-- Chance of trojans and/or asteroids -->
+
+			<Table>
+				<!-- Nothing -->
+				<Null		chance="60"/>
+
+				<!-- One trojan area -->
+				<Lookup		chance="10" table="AsteroidTrojans12"/>
+				<Lookup		chance="10" table="AsteroidAntiTrojans12"/>
+
+				<!-- Asteroid belt -->
+				<Lookup		chance="10" table="AsteroidBelt12"/>
+				<Lookup		chance="5"  table="AsteroidBelt25"/>
+
+				<!-- Two trojan areas -->
+				<Group		chance="4">
+					<Lookup	table="AsteroidTrojans12"/>
+					<Lookup	table="AsteroidAntiTrojans12"/>
+				</Group>
+
+				<!-- Asteroid belt plus two trojan areas -->
+				<Group		chance="1">
+					<Lookup	table="AsteroidBelt12"/>
+					<Lookup	table="AsteroidTrojans12"/>
+					<Lookup	table="AsteroidAntiTrojans12"/>
+				</Group>
+			</Table>
+
+		</StandardTerrestrialMorphology>
+
+		<!-- A gas giant planet with satellites and trojans.
+
+			REQUIRES
+
+			_PlanetType:	A planet definition
+			_PlanetLabel:	A label for stations around planet
+
+		-->
+
+		<StandardGasGiantMorphology>
+
+			<!-- A planet (the type is an input to the table) -->
+
+			<Lookup table="_PlanetType"/>
+
+			<!-- A label in orbit around the planet (also an input, in case the
+				caller wants to define some special attributes. -->
+
+			<Orbitals count="2d2" distance="2d6+12" angle="equidistant">
+				<Lookup table="_PlanetLabel"/>
+			</Orbitals>
+
+			<!-- Chance of one or more moons around the planet -->
+
+			<Table>
+				<!-- No moon -->
+				<Null		chance="10"/>
+
+				<!-- One large moon -->
+				<Orbitals	chance="30" distance="2d8+24" angle="random">
+					<Lookup table="PlanetoidCompanion"/>
+				</Orbitals>
+
+				<!-- Two moons -->
+				<Group		chance="40">
+					<Orbitals	distance="2d8+24" angle="random">
+						<Table>
+							<Lookup chance="75" table="AsteroidCompanion"/>
+							<Lookup chance="25" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+					<Orbitals	distance="2d8+64" angle="random">
+						<Table>
+							<Lookup chance="40" table="AsteroidCompanion"/>
+							<Lookup chance="60" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+				</Group>
+
+				<!-- Three moons -->
+				<Group		chance="20">
+					<Orbitals	distance="2d8+24" angle="random">
+						<Table>
+							<Lookup chance="80" table="AsteroidCompanion"/>
+							<Lookup chance="20" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+					<Orbitals	distance="2d8+64" angle="random">
+						<Table>
+							<Lookup chance="40" table="AsteroidCompanion"/>
+							<Lookup chance="60" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+					<Orbitals	distance="2d8+104" angle="random">
+						<Table>
+							<Lookup chance="80" table="AsteroidCompanion"/>
+							<Lookup chance="20" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+				</Group>
+			</Table>
+
+			<!-- Chance of trojans and/or asteroids -->
+
+			<Table>
+				<!-- Nothing -->
+				<Null		chance="10"/>
+
+				<!-- One trojan area -->
+				<Lookup		chance="10" table="AsteroidTrojans50"/>
+				<Lookup		chance="10" table="AsteroidAntiTrojans50"/>
+				<Lookup		chance="20" table="AsteroidTrojans100"/>
+				<Lookup		chance="20" table="AsteroidAntiTrojans100"/>
+
+				<!-- Two trojan areas -->
+				<Group		chance="5">
+					<Lookup	table="AsteroidTrojans25"/>
+					<Lookup	table="AsteroidAntiTrojans25"/>
+				</Group>
+
+				<Group		chance="20">
+					<Lookup	table="AsteroidTrojans50"/>
+					<Lookup	table="AsteroidAntiTrojans50"/>
+				</Group>
+
+				<Group		chance="5">
+					<Lookup	table="AsteroidTrojans100"/>
+					<Lookup	table="AsteroidAntiTrojans100"/>
+				</Group>
+			</Table>
+		</StandardGasGiantMorphology>
+
+		<!-- A gas giant planet with satellites and trojans.
+
+			REQUIRES
+
+			_PlanetType:	A planet definition
+			_PlanetLabel:	A label for stations around planet
+
+		-->
+
+		<SmallGasGiantMorphology>
+
+			<!-- A planet (the type is an input to the table) -->
+
+			<Lookup table="_PlanetType"/>
+
+			<!-- A label in orbit around the planet (also an input, in case the
+				caller wants to define some special attributes. -->
+
+			<Orbitals count="1-2" distance="2d6+12" angle="equidistant">
+				<Lookup table="_PlanetLabel"/>
+			</Orbitals>
+
+			<!-- Chance of one or more moons around the planet -->
+
+			<Table>
+				<!-- No moon -->
+				<Null		chance="20"/>
+
+				<!-- One moon -->
+				<Orbitals	chance="60" distance="2d8+24" angle="random">
+					<Table>
+						<Lookup chance="20" table="AsteroidCompanion"/>
+						<Lookup chance="80" table="PlanetoidCompanion"/>
+					</Table>
+				</Orbitals>
+
+				<!-- Two moons -->
+				<Group		chance="20">
+					<Orbitals	distance="2d8+24" angle="random">
+						<Table>
+							<Lookup chance="80" table="AsteroidCompanion"/>
+							<Lookup chance="20" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+					<Orbitals	distance="2d8+64" angle="random">
+						<Table>
+							<Lookup chance="50" table="AsteroidCompanion"/>
+							<Lookup chance="50" table="PlanetoidCompanion"/>
+						</Table>
+					</Orbitals>
+				</Group>
+			</Table>
+
+			<!-- Chance of trojans and/or asteroids -->
+
+			<Table>
+				<!-- Nothing -->
+				<Null		chance="10"/>
+
+				<!-- One trojan area -->
+				<Lookup		chance="15" table="AsteroidTrojans25"/>
+				<Lookup		chance="15" table="AsteroidAntiTrojans25"/>
+				<Lookup		chance="20" table="AsteroidTrojans50"/>
+				<Lookup		chance="20" table="AsteroidAntiTrojans50"/>
+
+				<!-- Two trojan areas -->
+				<Group		chance="5">
+					<Lookup	table="AsteroidTrojans12"/>
+					<Lookup	table="AsteroidAntiTrojans12"/>
+				</Group>
+
+				<Group		chance="10">
+					<Lookup	table="AsteroidTrojans25"/>
+					<Lookup	table="AsteroidAntiTrojans25"/>
+				</Group>
+
+				<Group		chance="5">
+					<Lookup	table="AsteroidTrojans50"/>
+					<Lookup	table="AsteroidAntiTrojans50"/>
+				</Group>
+			</Table>
+		</SmallGasGiantMorphology>
+
+	</SystemPartTable>
+
+</TranscendenceModule>

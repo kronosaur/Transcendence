@@ -11,9 +11,10 @@
 			class=				"Molotok bounty hunter"
 			type=				""
 
-			mass=				"200"
+			size=				"27"
+			mass=				"144"
 			cargoSpace=			"50"
-			thrust=				"1000"
+			thrustRatio=		"12.5"
 			maneuver=			"4"
 			maxSpeed=			"22"
 
@@ -41,18 +42,20 @@
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips2;" imageX="640" imageY="0" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsMolotok;" imageX="0" imageY="0" imageWidth="68" imageHeight="68"/>
 
 		<AISettings
 			fireRateAdj=		"25"
 			fireAccuracy=		"85"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
 			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-42" y="5"/>
-			<NozzlePos x="-42" y="-5"/>
+			<NozzlePos x="-45"  y="9"   z="-1"/>
+			<NozzlePos x="-45"  y="-9"  z="-1"/>
 			</DriveImages>
 
 		</ShipClass>
@@ -114,7 +117,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, human, majorStation, populated"
+			attributes=			"blackMarket, friendly, envEarth, envAvoidsAir, human, majorStation, outlaws, populated"
 			levelFrequency=		"-uccu v---- ----- ----- -----"
 			locationCriteria=	"+planetary,-asteroids"
 			>
@@ -178,20 +181,20 @@
 							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
 
 						<Actions>
-							<Action name="Talk to station boss" key="T">
+							<Action name="Talk to Station Boss" key="T">
 								(block Nil
 									(setq gPrevScreen "Main")
 									(scrShowScreen gScreen "Boss")
 									)
 							</Action>
 
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									intBlackMarketBuyPrice	; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									intBlackMarketSellPrice	; items bought from player
 									Nil						; obsolete
@@ -226,7 +229,7 @@
 									)
 							</Action>
 
-							<Action name="Upgrade cargo hold" key="C">
+							<Action name="Upgrade Cargo Hold" key="C">
 								(block Nil
 									(setq gCost 2200)
 									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
@@ -520,7 +523,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, human, populated"
+			attributes=			"blackMarket, envEarth, majorStation, envAvoidsAir, friendly, human, outlaws, populated"
 			levelFrequency=		"---uc crr-- ----- ----- -----"
 			locationCriteria=	"+planetary,-asteroids"
 			enemyExclusionRadius="50"
@@ -589,7 +592,7 @@
 							desc=	"The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									intBlackMarketBuyPrice	; items sold to player
 									Nil						; obsolete
@@ -602,7 +605,7 @@
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									intBlackMarketSellPrice	; items bought from player
 									Nil						; obsolete
@@ -641,7 +644,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gArmorSegment 0)
@@ -651,7 +654,7 @@
 									)
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
 									(setq gTechLevel 9)
 									(setq gTechModifier Nil)
@@ -661,14 +664,14 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 120)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
 									)
 							</Action>
 
-							<Action name="Upgrade cargo hold" key="C">
+							<Action name="Upgrade Cargo Hold" key="C">
 								(block Nil
 									(setq gCost 2200)
 									(setq gItem (itmCreate &itSmugglersCargoHold; 1))
@@ -677,7 +680,7 @@
 									)
 							</Action>
 
-							<Action name="Upgrade reactor" key="P" >
+							<Action name="Upgrade Reactor" key="P" >
 								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 									{
 									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
@@ -732,7 +735,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, human, populated"
+			attributes=			"blackMarket, friendly, envAir, envAvoidsFire, human, outlaws, populated"
 			levelFrequency=		"rcuuu r---- ----- ----- -----"
 			locationCriteria=	"--planetary,+void"
 			>
@@ -777,7 +780,7 @@
 							desc=	"You are docked at a Tempus manufacturing lab. The docking bay is guarded by two men with heavy weapons. They check you out and then step aside to let you in.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
@@ -1186,5 +1189,9 @@
 			</Ship>
 		</LevelTable>
 	</ShipTable>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsMolotok;"	bitmap="Resources\Molotok.jpg" bitmask="Resources\MolotokMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

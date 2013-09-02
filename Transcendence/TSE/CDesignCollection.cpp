@@ -21,13 +21,18 @@ static char *CACHED_EVENTS[CDesignCollection::evtCount] =
 	{
 		"GetGlobalAchievements",
 		"GetGlobalDockScreen",
+		"GetGlobalPlayerPriceAdj",
 		"OnGlobalPaneInit",
 		"OnGlobalMarkImages",
-		"OnGlobalObjDestroyed",
 
+		"OnGlobalObjDestroyed",
+		"OnGlobalSystemStarted",
+		"OnGlobalSystemStopped",
 		"OnGlobalUniverseCreated",
 		"OnGlobalUniverseLoad",
+
 		"OnGlobalUniverseSave",
+		"OnGlobalUpdate",
 	};
 
 CDesignCollection::CDesignCollection (void) :
@@ -202,6 +207,12 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 	m_pTopology = NULL;
 	m_pAdventureExtension = NULL;
 
+	//	Create a design load context
+
+	SDesignLoadCtx Ctx;
+	Ctx.bBindAsNewGame = bNewGame;
+	Ctx.bNoResources = bNoResources;
+
 	//	Loop over the bind list in order and add appropriate types to m_AllTypes
 	//	(The order guarantees that the proper types override)
 
@@ -217,6 +228,14 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 			::OutputDebugString(strPatternSubst(CONSTLIT("%08x: %s\n"), Types.GetEntry(j)->GetUNID(), Types.GetEntry(j)->GetTypeName()));
 			}
 #endif
+
+		//	Run globals for the extension
+
+		if (error = pExtension->ExecuteGlobals(Ctx))
+			{
+			*retsError = Ctx.sError;
+			return error;
+			}
 
 		//	Add the types
 
@@ -236,12 +255,6 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 		if (pExtension->GetType() == extAdventure || pExtension->GetType() == extBase)
 			m_pTopology = &pExtension->GetTopology();
 		}
-
-	//	Create a design load context
-
-	SDesignLoadCtx Ctx;
-	Ctx.bBindAsNewGame = bNewGame;
-	Ctx.bNoResources = bNoResources;
 
 	//	If this is a new game, then create all the Template types
 
@@ -619,6 +632,37 @@ bool CDesignCollection::FireGetGlobalDockScreen (CSpaceObject *pObj, CString *re
 	return true;
 	}
 
+bool CDesignCollection::FireGetGlobalPlayerPriceAdj (ETradeServiceTypes iService, CSpaceObject *pProvider, const CItem &Item, ICCItem *pData, int *retiPriceAdj)
+
+//	FireGetGlobalPlayerPriceAdj
+//
+//	Returns a price adjustment for the player, given a service, a provider,
+//	and an item.
+
+	{
+	int i;
+
+	//	Fire all events
+
+	int iPriceAdj = 100;
+	for (i = 0; i < m_EventsCache[evtGetGlobalPlayerPriceAdj]->GetCount(); i++)
+		{
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtGetGlobalPlayerPriceAdj]->GetEntry(i, &Event);
+
+		int iSinglePriceAdj;
+		if (pType->FireGetGlobalPlayerPriceAdj(Event, iService, pProvider, Item, pData, &iSinglePriceAdj))
+			iPriceAdj = iPriceAdj * iSinglePriceAdj / 100;
+		}
+
+	//	Done
+
+	if (retiPriceAdj)
+		*retiPriceAdj = iPriceAdj;
+
+	return (iPriceAdj != 100);
+	}
+
 void CDesignCollection::FireOnGlobalMarkImages (void)
 
 //	FireOnGlobalMarkImages
@@ -759,6 +803,46 @@ void CDesignCollection::FireOnGlobalSystemCreated (SSystemCreateCtx &SysCreateCt
 		}
 	}
 
+void CDesignCollection::FireOnGlobalSystemStarted (void)
+
+//	FireOnGlobalSystemStarted
+//
+//	Notify all types that a system is starting
+
+	{
+	int i;
+
+	//	Fire all events
+
+	for (i = 0; i < m_EventsCache[evtOnGlobalSystemStarted]->GetCount(); i++)
+		{
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalSystemStarted]->GetEntry(i, &Event);
+
+		pType->FireOnGlobalSystemStarted(Event);
+		}
+	}
+
+void CDesignCollection::FireOnGlobalSystemStopped (void)
+
+//	FireOnGlobalSystemStopped
+//
+//	Notify all types that a system has stopped
+
+	{
+	int i;
+
+	//	Fire all events
+
+	for (i = 0; i < m_EventsCache[evtOnGlobalSystemStopped]->GetCount(); i++)
+		{
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalSystemStopped]->GetEntry(i, &Event);
+
+		pType->FireOnGlobalSystemStopped(Event);
+		}
+	}
+
 ALERROR CDesignCollection::FireOnGlobalTypesInit (SDesignLoadCtx &Ctx)
 
 //	FireOnGlobalTypesInit
@@ -833,6 +917,26 @@ void CDesignCollection::FireOnGlobalUniverseSave (void)
 		CDesignType *pType = m_EventsCache[evtOnGlobalUniverseSave]->GetEntry(i, &Event);
 
 		pType->FireOnGlobalUniverseSave(Event);
+		}
+	}
+
+void CDesignCollection::FireOnGlobalUpdate (int iTick)
+
+//	FireOnGlobalUpdate
+//
+//	Types get a chance to do whatever they want once every 15 ticks.
+
+	{
+	int i;
+
+	CString sError;
+	for (i = 0; i < m_EventsCache[evtOnGlobalUpdate]->GetCount(); i++)
+		{
+		SEventHandlerDesc Event;
+		CDesignType *pType = m_EventsCache[evtOnGlobalUpdate]->GetEntry(i, &Event);
+
+		if ((((DWORD)iTick + pType->GetUNID()) % GLOBAL_ON_UPDATE_CYCLE) == 0)
+			pType->FireOnGlobalUpdate(Event);
 		}
 	}
 
@@ -957,6 +1061,22 @@ bool CDesignCollection::IsRegisteredGame (void)
 			return false;
 
 	return true;
+	}
+
+void CDesignCollection::NotifyTopologyInit (void)
+
+//	NotifyTopologyInit
+//
+//	Notify all types that the topology has been initialized.
+
+	{
+	int i;
+
+	for (i = 0; i < m_AllTypes.GetCount(); i++)
+		{
+		CDesignType *pType = m_AllTypes.GetEntry(i);
+		pType->TopologyInitialized();
+		}
 	}
 
 void CDesignCollection::ReadDynamicTypes (SUniverseLoadCtx &Ctx)

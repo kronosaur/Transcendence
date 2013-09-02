@@ -16,7 +16,8 @@ ALERROR CParticleExplosionEffectCreator::CreateEffect (CSystem *pSystem,
 													   const CVector &vPos,
 													   const CVector &vVel,
 													   int iRotation,
-													   int iVariant)
+													   int iVariant,
+													   CSpaceObject **retpEffect)
 
 //	CreateEffect
 //
@@ -43,6 +44,11 @@ ALERROR CParticleExplosionEffectCreator::CreateEffect (CSystem *pSystem,
 	//	Play Sound
 
 	PlaySound(pObj);
+
+	//	Done
+
+	if (retpEffect)
+		*retpEffect = pObj;
 
 	return NOERROR;
 	}
