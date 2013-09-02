@@ -20,15 +20,16 @@
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="laser"
-				
-				criteria=		"w~l +damageType:laser;"
-				hpBonus=		"+75"
-
+		<MiscellaneousDevice
 				powerUse=		"5"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"laser"
+						 criteria=		"w~l +damageType:laser;"
+						 enhancement=	"+hpBonus:75;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 <!-- LEVEL II -->
@@ -49,15 +50,16 @@
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="kinetic"
-				
-				criteria=		"w~l +damageType:kinetic;"
-				hpBonus=		"+50"
-				
+		<MiscellaneousDevice
 				powerUse=		"10"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"kinetic"
+						 criteria=		"w~l +damageType:kinetic;"
+						 enhancement=	"+hpBonus:50;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- Cargo Hold Expansion -->
@@ -192,15 +194,16 @@
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="particleAccelerator"
-				
-				criteria=		"w~l +damageType:particle; +EnergyWeapon;"
-				hpBonus=		"+25"
-
+		<MiscellaneousDevice
 				powerUse=		"100"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"particleAccelerator"
+						 criteria=		"w~l +energyWeapon; +damageType:particle;"
+						 enhancement=	"+hpBonus:50;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- Smuggler's Cargo Hold -->
@@ -264,17 +267,10 @@
 				lifetime=			"30"
 				powerUse=			"10"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Nova-50 reactor -->
@@ -309,7 +305,7 @@
 			value=				"3500"
 			mass=				"2000"
 			frequency=			"rare"
-			attributes=			"MajorItem"
+			attributes=			"HonokuTomashi, MajorItem"
 
 			description=		"The patcher arm, manufactured by Honoku-Tomashi, is a robotic arm that attaches to a ship's hull and performs basic repairs on its armor."
 			>
@@ -362,15 +358,16 @@
 
 		<Image imageID="&rsItemsMakayev1;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="makayevEnhancer"
-				
-				criteria=		"w~l +damageType:blast; +Makayev;"
-				hpBonus=		"+50"
-
+		<MiscellaneousDevice
 				powerUse=		"150"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"makayevEnhancer"
+						 criteria=		"w~l +Makayev; +damageType:blast;"
+						 enhancement=	"+hpBonus:75;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- Nova-100 reactor -->
@@ -391,7 +388,7 @@
 		<ReactorDevice
 				maxPower=		"1000"
 				fuelEfficiency=	"18"
-				maxFuel=		"250000"
+				maxFuel=		"275000"
 				fuelCriteria=	"f L:2-5;" 
 				/>
 
@@ -415,15 +412,16 @@
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="howitzerLoader"
-				
-				criteria=		"w~l +Howitzer;"
-				activateAdj=	"70"
-
+		<MiscellaneousDevice
 				powerUse=		"250"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"howitzerLoader"
+						 criteria=		"w~l +Howitzer;"
+						 enhancement=	"+speed:70;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- Patch Spider -->
@@ -470,15 +468,16 @@
 
 		<Image imageID="&rsItemsRasiermesser3;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="rasiermesserEnhancer"
-				
-				criteria=		"w~l +Rasiermesser; -EnergyWeapon;"
-				hpBonus=		"+50"
-
+		<MiscellaneousDevice
 				powerUse=		"250"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"rasiermesserEnhancer"
+						 criteria=		"w~l +rasiermesser; -energyWeapon;"
+						 enhancement=	"+hpBonus:75;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- 150NX reactor -->
@@ -499,7 +498,7 @@
 		<ReactorDevice
 				maxPower=		"1500"
 				fuelEfficiency=	"16"
-				maxFuel=		"375000"
+				maxFuel=		"450000"
 				fuelCriteria=	"f L:3-6;" 
 				/>
 
@@ -546,15 +545,16 @@
 
 		<Image imageID="&rsItemsBushido2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<EnhancerDevice
-				enhancementType="bushidoEnhancer"
-				
-				criteria=		"w~l +Bushido; +EnergyWeapon;"
-				hpBonus=		"+50"
-
+		<MiscellaneousDevice
 				powerUse=		"400"
-				/>
-
+				>
+			<EnhancementAbilities>
+				<Enhance type=			"bushidoEnhancer"
+						 criteria=		"w~l +bushido; +energyWeapon;"
+						 enhancement=	"+hpBonus:75;"
+						 />
+			</EnhancementAbilities>
+		</MiscellaneousDevice>
 	</ItemType>
 
 	<!-- Inertialess drive -->
@@ -623,17 +623,9 @@
 				interaction=		"20"
 				powerUse=			"100"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"64"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -656,7 +648,7 @@
 		<ReactorDevice
 				maxPower=		"2500"
 				fuelEfficiency=	"15"
-				maxFuel=		"600000"
+				maxFuel=		"900000"
 				fuelCriteria=	"f L:4-7;" 
 				/>
 
@@ -777,7 +769,7 @@
 		<ReactorDevice
 				maxPower=		"5000"
 				fuelEfficiency=	"16"
-				maxFuel=		"1200000"
+				maxFuel=		"2100000"
 				fuelCriteria=	"f L:5-8;" 
 				/>
 
@@ -803,7 +795,7 @@
 		<ReactorDevice
 				maxPower=		"10000"
 				fuelEfficiency=	"15"
-				maxFuel=		"2500000"
+				maxFuel=		"5000000"
 				fuelCriteria=	"f L:6-9;" 
 				/>
 

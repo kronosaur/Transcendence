@@ -220,7 +220,9 @@ bool CSoundMgr::GetMusicPlayState (SMusicPlayState *retState)
 		return false;
 		}
 
-	retState->bPlaying = (MCIWndGetMode(m_hMusic, NULL, 0) == MCI_MODE_PLAY);
+	int iMode = MCIWndGetMode(m_hMusic, NULL, 0);
+	retState->bPlaying = (iMode == MCI_MODE_PLAY);
+	retState->bPaused = (iMode == MCI_MODE_PAUSE);
 	retState->iLength = MCIWndGetLength(m_hMusic);
 	retState->iPos = MCIWndGetPosition(m_hMusic);
 	
@@ -260,7 +262,7 @@ ALERROR CSoundMgr::Init (HWND hWnd)
 
 	m_hMusic = ::MCIWndCreate(hWnd, 
 			(HINSTANCE)::GetWindowLong(hWnd, GWL_HINSTANCE),
-			WS_OVERLAPPED | WS_CHILD | MCIWNDF_NOERRORDLG | MCIWNDF_NOMENU | MCIWNDF_NOPLAYBAR,
+			WS_OVERLAPPED | WS_CHILD | MCIWNDF_NOERRORDLG | MCIWNDF_NOMENU | MCIWNDF_NOPLAYBAR | MCIWNDF_NOTIFYALL,
 			NULL);
 	//::ShowWindow(m_hMusic, SW_HIDE);
 	if (m_hMusic == NULL)
@@ -631,7 +633,7 @@ bool CSoundMgr::PlayMusic (const CString &sFilename, int iPos, CString *retsErro
 		{
 		//	Stop playing first
 
-		if (State.bPlaying)
+		if (State.bPlaying || State.bPaused)
 			MCIWndStop(m_hMusic);
 
 		//	Open new file
@@ -683,4 +685,18 @@ void CSoundMgr::StopMusic (void)
 	{
 	if (m_hMusic)
 		MCIWndStop(m_hMusic);
+	}
+
+void CSoundMgr::TogglePlayPaused (void)
+
+//	TogglePlayPaused
+//
+//	Play/Pause
+
+	{
+	int iMode = MCIWndGetMode(m_hMusic, 0, NULL);
+	if (iMode == MCI_MODE_PLAY)
+		MCIWndPause(m_hMusic);
+	else if (iMode == MCI_MODE_PAUSE)
+		MCIWndPlay(m_hMusic);
 	}

@@ -17,24 +17,25 @@
 			manufacturer=		"United African States"
 			class=				"Borer"
 			type=				"gunship"
-			score=				"25"
-
-			mass=				"50"
-			cargoSpace=			"25"
-			thrust=				"100"
-			maneuver=			"12"
-			maxSpeed=			"10"
-
-			leavesWreck=		"50"
 
 			attributes=			""
+			   
+			mass=				"50"
+			thrustRatio=		"4"
+			maneuver=			"12"
+			maxSpeed=			"10"
+			cargoSpace=			"25"
+
+			leavesWreck=		"50"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightReactiveArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itMiningLaser;"/>
 		</Devices>
@@ -43,7 +44,19 @@
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-13"  y="0"	z="32"/>
+			<NozzlePos x="-13"  y="0"	z="-32"/>
+			<NozzlePos x="-13"  y="22"	z="0"/>
+			<NozzlePos x="-13"  y="-22"	z="0"/>
+		</DriveImages>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"40"
@@ -127,7 +140,6 @@
 					)
 			</OrderSetFree>
 		</Events>
-
 	</ShipClass>
 
 	<!-- Mining Colony
@@ -207,7 +219,7 @@
 
 		<Items>
 			<RandomItem 
-					criteria=		"* +Ore; -NotForSale;"
+					criteria=		"* +Ore; -NotStandard; -NotForSale;"
 					level=			"1"
 					levelCurve=		"2"
 					/>
@@ -455,13 +467,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -486,7 +498,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 5)
 									(setq gArmorSegment 0)
@@ -496,7 +508,7 @@
 									)
 							</Action>
 
-							<Action name="Install mining laser" key="M">
+							<Action name="Install Mining Laser" key="M">
 								(block Nil
 									(setq gItem (itmCreate &itMiningLaser; 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
@@ -505,7 +517,7 @@
 									)
 							</Action>
 
-							<Action name="Upgrade cargo hold" key="C">
+							<Action name="Upgrade Cargo Hold" key="C">
 								(block Nil
 									(setq gItem (itmCreate &itMinersCargoHold; 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
@@ -606,7 +618,7 @@
 										; Find the most distant planet
 										(setq centerStar (sysFindObject gSource "tN +star;"))
 										(if (not centerStar) (setq centerStar gSource))
-										(setq farthestPlanet (sysFindObject centerStar "tR +planet;"))
+										(setq farthestPlanet (sysFindObject centerStar "tR +isPlanet:true;"))
 
 										; Pick a random distance beyond the farthest planet
 										(if farthestPlanet

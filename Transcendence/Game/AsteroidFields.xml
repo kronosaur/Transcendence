@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- ASTEROID FIELDS
+
+	SIZE CLASSIFICATION
+
+			Asteroid			< 1,000 km
+	sizeA		Tiny			~ 10 km
+	sizeB		Small			~ 50 km
+	sizeC		Medium			~ 100 km
+	sizeD		Large			~ 500 km
+
+			Planetoid			~ 2,500 km
+	sizeE		Small			~ 1,000 km
+	sizeF		Medium			~ 2,000	km
+	sizeG		Large			~ 4,000 km
+		
+			Terrestrial			~ 10,000 km
+	sizeH		Small			~ 5,000 km
+	sizeI		Medium			~ 10,000 km
+	sizeJ		Large			~ 20,000 km
+
+			Gas Giant			~ 100,000 km
+	sizeK		Small			~ 50,000 km
+	sizeL		Medium			~ 100,000 km
+	sizeM		Large			~ 200,000 km
+
+-->
+
+	<SystemPartTable unid="&tbAsteroidMorphologies;">
+
+		<LocatedAsteroidSparseBelt>
+			<Lookup table="LocationDefinition">
+				<_Morphology>
+					<OrbitalDistribution count="2d4+8" radialWidth="20">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="1"	radialWidth="20">
+						<Label attributes="asteroids, asteroidBelt"/>
+					</OrbitalDistribution>
+				</_Morphology>
+			</Lookup>
+		</LocatedAsteroidSparseBelt>
+
+		<!-- Located Morphology
+
+			This definition should be invoked inside a Lookup that defines a
+			Morphology subtable. The Morphology subtable may refer to region and
+			classification variants.
+
+		-->
+
+		<LocationDefinition>
+			<LocationCriteriaTable>
+
+				<!-- MOLTEN ZONE (inner metallic) -->
+
+				<Variant criteria="*moltenZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- GREENHOUSE ZONE (inner organic) -->
+
+				<Variant criteria="*greenhouseZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="30"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- CINDER ZONE (inner rocky) -->
+
+				<Variant criteria="*cinderZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="40"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- STEAM ZONE (inner water) -->
+
+				<Variant criteria="*steamZone"	variant="inner">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="50"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- METALLIC ZONE (lifeZone metallic) -->
+
+				<Variant criteria="*metallicZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- PRIMORDIAL ZONE (lifeZone organic) -->
+
+				<Variant criteria="*primordialZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="10" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- DESERT ZONE (lifeZone rocky) -->
+
+				<Variant criteria="*desertZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="0" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- BIOSPHERE ZONE (lifeZone water) -->
+
+				<Variant criteria="*biophereZone"	variant="lifeZone">
+					<Table>
+						<Variant chance="15" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="15"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- BARREN ZONE (outer metallic) -->
+
+				<Variant criteria="*barrenZone"		variant="outer">
+					<Table>
+						<Variant chance="20"		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- THOLIN ZONE (outer organic) -->
+
+				<Variant criteria="*tholinZone"		variant="outer">
+					<Table>
+						<Variant chance="10" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="60" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- FROST ZONE (outer rocky) -->
+
+				<Variant criteria="*frostZone"	variant="outer">
+					<Table>
+						<Variant chance="20" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="50"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+
+				<!-- ICE ZONE (outer water) -->
+
+				<Variant criteria="*iceZone"	variant="outer">
+					<Table>
+						<Variant chance="60" 		variant="ice">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10"		variant="metallic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="10" 		variant="primordial">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="20"		variant="rocky">
+							<Lookup table="_Morphology"/>
+						</Variant>
+						<Variant chance="0" 		variant="volcanic">
+							<Lookup table="_Morphology"/>
+						</Variant>
+					</Table>
+				</Variant>
+			</LocationCriteriaTable>
+		</LocationDefinition>
+
+		<!-- Variant Asteroids & Planetoids
+		
+			These definitions must be invoked with a double Variant directive.
+			One directive must define the region (inner, lifeZone, outer); the
+			other must define the classification (frost, ice, metallic, etc).
+			
+		-->
+
+		<VariantAsteroid>
+			<Table>
+				<Lookup chance="80"		table="LocatedSizeA"/>
+				<Lookup chance="14"		table="LocatedSizeB"/>
+				<Lookup chance="5"		table="LocatedSizeC"/>
+				<Lookup chance="1"		table="LocatedSizeD"/>
+			</Table>
+		</VariantAsteroid>
+
+		<VariantSizeA>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +inner; +sizeA"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +inner; +sizeA"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +inner; +sizeA"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +inner; +sizeA"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +inner; +sizeA"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +lifeZone; +sizeA"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +lifeZone; +sizeA"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +lifeZone; +sizeA"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +lifeZone; +sizeA"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +lifeZone; +sizeA"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="frost"		stationCriteria="+frost;		+generic; +outer; +sizeA"/>
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +outer; +sizeA"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +outer; +sizeA"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +outer; +sizeA"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +outer; +sizeA"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +outer; +sizeA"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeA>
+
+		<VariantSizeB>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +inner; +sizeB"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +inner; +sizeB"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +inner; +sizeB"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +inner; +sizeB"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +inner; +sizeB"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +lifeZone; +sizeB"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +lifeZone; +sizeB"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +lifeZone; +sizeB"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +lifeZone; +sizeB"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +lifeZone; +sizeB"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +outer; +sizeB"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +outer; +sizeB"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +outer; +sizeB"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +outer; +sizeB"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +outer; +sizeB"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeB>
+
+		<VariantSizeC>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +inner; +sizeC"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +inner; +sizeC"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +inner; +sizeC"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +inner; +sizeC"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +inner; +sizeC"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +lifeZone; +sizeC"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +lifeZone; +sizeC"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +lifeZone; +sizeC"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +lifeZone; +sizeC"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +lifeZone; +sizeC"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +outer; +sizeC"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +outer; +sizeC"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +outer; +sizeC"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +outer; +sizeC"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +outer; +sizeC"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeC>
+
+		<VariantSizeD>
+			<VariantTable>
+				<VariantTable variant="inner">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +inner; +sizeD"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +inner; +sizeD"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +inner; +sizeD"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +inner; +sizeD"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +inner; +sizeD"/>
+				</VariantTable>
+				<VariantTable variant="lifeZone">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +lifeZone; +sizeD"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +lifeZone; +sizeD"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +lifeZone; +sizeD"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +lifeZone; +sizeD"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +lifeZone; +sizeD"/>
+				</VariantTable>
+				<VariantTable variant="outer">
+					<RandomStation variant="ice"		stationCriteria="+ice;			+generic; +outer; +sizeD"/>
+					<RandomStation variant="metallic"	stationCriteria="+metallic;		+generic; +outer; +sizeD"/>
+					<RandomStation variant="primordial" stationCriteria="+primordial;	+generic; +outer; +sizeD"/>
+					<RandomStation variant="rocky"		stationCriteria="+rocky;		+generic; +outer; +sizeD"/>
+					<RandomStation variant="volcanic"	stationCriteria="+volcanic;		+generic; +outer; +sizeD"/>
+				</VariantTable>
+			</VariantTable>
+		</VariantSizeD>
+
+		<!-- Asteroid Moon
+
+			A single moon
+
+		-->
+
+		<LocatedAsteroidMoon>
+			<LocationCriteriaTable>
+				<Group criteria="*frostComp">
+					<Lookup table="FrostAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="frost, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*iceComp">
+					<Lookup table="IceAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="ice, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*metallicComp">
+					<Lookup table="MetallicAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="metallic, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*primordialComp">
+					<Lookup table="PrimordialAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="moon, planetary, primordial"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*rockyComp">
+					<Lookup table="RockyAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="moon, planetary, rocky"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*volcanicComp">
+					<Lookup table="VolcanicAsteroidMedium"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="ice, moon, volcanic"/>
+					</Orbitals>
+				</Group>
+			</LocationCriteriaTable>
+		</LocatedAsteroidMoon>
+
+		<!-- Planetoid Moon
+		-->
+
+		<LocatedPlanetoidMoon>
+			<LocationCriteriaTable>
+				<Group criteria="*frostComp">
+					<Lookup table="FrostPlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="frost, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*iceComp">
+					<Lookup table="IcePlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="ice, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*metallicComp">
+					<Lookup table="MetallicPlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="metallic, moon, planetary"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*primordialComp">
+					<Lookup table="PrimordialPlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="moon, planetary, primordial"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*rockyComp">
+					<Lookup table="RockyPlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="moon, planetary, rocky"/>
+					</Orbitals>
+				</Group>
+				<Group criteria="*volcanicComp">
+					<Lookup table="VolcanicPlanetoid"/>
+					<Orbitals distance="2d4+8" angle="random">
+						<Label attributes="ice, moon, volcanic"/>
+					</Orbitals>
+				</Group>
+			</LocationCriteriaTable>
+		</LocatedPlanetoidMoon>
+
+	</SystemPartTable>
+
+	<SystemPartTable unid="&tbPlanetaryMorphologies;">
+
+		<!-- A planetoid, around the size of Ceres, in a field of lesser asteroids -->
+
+		<PlanetMorphologySizeE>
+			<!-- A planet (the type is an input to the table) -->
+
+			<Lookup table="_PlanetType"/>
+
+			<!-- A label in orbit around the planet (also an input, in case the
+				caller wants to define some special attributes. -->
+
+			<Orbitals distance="2d6+10" angle="random">
+				<Lookup table="_PlanetLabel"/>
+			</Orbitals>
+
+			<!-- Since this is a small planet, good chance of lots asteroids in
+				the orbit. -->
+
+			<Lookup table="LocatedAsteroidSparseBelt"/>
+
+		</PlanetMorphologySizeE>
+
+		<!-- A Pluto-sized planetoid -->
+
+		<PlanetMorphologySizeF>
+			
+		</PlanetMorphologySizeF>
+
+	</SystemPartTable>
+
+</TranscendenceModule>

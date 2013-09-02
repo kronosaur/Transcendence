@@ -18,8 +18,10 @@
 #define NAMES_TAG								CONSTLIT("Names")
 #define REINFORCEMENTS_TAG						CONSTLIT("Reinforcements")
 #define SATELLITES_TAG							CONSTLIT("Satellites")
+#define SHIP_TAG								CONSTLIT("Ship")
 #define SHIPS_TAG								CONSTLIT("Ships")
 #define STATION_TAG								CONSTLIT("Station")
+#define TABLE_TAG								CONSTLIT("Table")
 #define TRADE_TAG								CONSTLIT("Trade")
 
 #define ABANDONED_SCREEN_ATTRIB					CONSTLIT("abandonedScreen")
@@ -31,8 +33,10 @@
 #define BARRIER_EFFECT_ATTRIB					CONSTLIT("barrierEffect")
 #define BEACON_ATTRIB							CONSTLIT("beacon")
 #define CAN_ATTACK_ATTRIB						CONSTLIT("canAttack")
+#define CHANCE_ATTRIB							CONSTLIT("chance")
 #define CONSTRUCTION_RATE_ATTRIB				CONSTLIT("constructionRate")
 #define CONTROLLING_SOVEREIGN_ATTRIB			CONSTLIT("controllingSovereign")
+#define COUNT_ATTRIB							CONSTLIT("count")
 #define DEFAULT_BACKGROUND_ID_ATTRIB			CONSTLIT("defaultBackgroundID")
 #define DEST_ENTRY_POINT_ATTRIB					CONSTLIT("destEntryPoint")	
 #define DEST_NODE_ATTRIB						CONSTLIT("destNodeID")
@@ -74,6 +78,7 @@
 #define SHIP_REPAIR_RATE_ATTRIB					CONSTLIT("shipRepairRate")
 #define SHIPWRECK_UNID_ATTRIB					CONSTLIT("shipwreckID")
 #define SIGN_ATTRIB								CONSTLIT("sign")
+#define SIZE_ATTRIB								CONSTLIT("size")
 #define SOVEREIGN_ATTRIB						CONSTLIT("sovereign")
 #define SPACE_COLOR_ATTRIB						CONSTLIT("spaceColor")
 #define STEALTH_ATTRIB							CONSTLIT("stealth")
@@ -107,14 +112,25 @@
 
 #define FIELD_ABANDONED_DOCK_SCREEN				CONSTLIT("abandonedDockScreen")
 #define FIELD_ARMOR_CLASS						CONSTLIT("armorClass")
+#define FIELD_ARMOR_LEVEL						CONSTLIT("armorLevel")
+#define FIELD_BALANCE							CONSTLIT("balance")
 #define FIELD_CAN_ATTACK						CONSTLIT("canAttack")
 #define FIELD_CATEGORY							CONSTLIT("category")
+#define FIELD_DEFENDER_STRENGTH					CONSTLIT("defenderStrength")
 #define FIELD_DOCK_SCREEN						CONSTLIT("dockScreen")
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
 #define FIELD_FIRE_RATE_ADJ						CONSTLIT("fireRateAdj")
+#define FIELD_HITS_TO_DESTROY					CONSTLIT("hitsToDestroy")			//	# of hits by std level weapon to destroy station
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_MAX_LIGHT_RADIUS					CONSTLIT("maxLightRadius")
 #define FIELD_NAME								CONSTLIT("name")
+#define FIELD_REGEN								CONSTLIT("regen")					//	hp repaired per 180 ticks
+#define FIELD_SATELLITE_STRENGTH				CONSTLIT("satelliteStrength")
+#define FIELD_SIZE								CONSTLIT("size")
+#define FIELD_TREASURE_BALANCE					CONSTLIT("treasureBalance")			//	100 = treasure appropriate for defenses, 200 = twice as much treasure
+#define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
+#define FIELD_WEAPON_STRENGTH					CONSTLIT("weaponStrength")			//	Strength of weapons (100 = level weapon @ 1/4 fire rate).
 
 #define VALUE_FALSE								CONSTLIT("false")
 #define VALUE_TRUE								CONSTLIT("true")
@@ -122,6 +138,80 @@
 #define MAX_ATTACK_DISTANCE						(g_KlicksPerPixel * 512)
 
 #define SPECIAL_IS_ENEMY_OF						CONSTLIT("isEnemyOf:")
+#define SPECIAL_SCALE							CONSTLIT("scale:")
+#define SPECIAL_SIZE_CLASS						CONSTLIT("sizeClass:")
+
+struct SSizeData
+	{
+	int iMinSize;
+	int iMaxSize;
+	};
+
+//	NOTE: These must match the values of ESizeClass
+
+static SSizeData SIZE_DATA[] = 
+	{
+		{	0,			0,	},
+
+		{	1,			24,	},
+		{	25,			74,	},
+		{	75,			299,	},
+		{	300,		749,	},
+
+		{	750,		1499,	},
+		{	1500,		2999,	},
+		{	3000,		4499,	},
+
+		{	4500,		7499,	},
+		{	7500,		14999,	},
+		{	15000,		29999,	},
+
+		{	30000,		74999,	},
+		{	75000,		149999,	},
+		{	150000,		1000000,	},
+	};
+
+//	Standard station table
+
+struct SStdStationDesc
+	{
+	CurrencyValue dwTreasureValue;			//	Std value of treasure at this level
+	};
+
+static SStdStationDesc STD_STATION_DATA[] =
+	{
+		{	0,		},
+
+		{	750,	},
+		{	1000,	},
+		{	1500,	},
+		{	2000,	},
+		{	4000,	},
+
+		{	8000,	},
+		{	16000,	},
+		{	32000,	},
+		{	64000,	},
+		{	128000,	},
+
+		{	256000,	},
+		{	512000,	},
+		{	1000000,	},
+		{	2000000,	},
+		{	4100000,	},
+
+		{	8200000,	},
+		{	16400000,	},
+		{	32800000,	},
+		{	65500000,	},
+		{	131000000,	},
+
+		{	262000000,	},
+		{	524000000,	},
+		{	1000000000,	},
+		{	2100000000,	},
+		{	4200000000,	},
+	};
 
 CStationType::CStationType (void) : 
 		m_pDesc(NULL),
@@ -194,6 +284,394 @@ void CStationType::AddTypesUsedByXML (CXMLElement *pElement, TSortMap<DWORD, boo
 		AddTypesUsedByXML(pElement->GetContentElement(i), retTypesUsed);
 	}
 
+Metric CStationType::CalcBalance (int iLevel)
+
+//	CalcBalance
+//
+//	Calculates the station defense balance assuming the station is at the given level.
+
+	{
+	if (iLevel <= 0 || iLevel > MAX_TECH_LEVEL)
+		return 0.0;
+
+	Metric rBalance = (CalcDefenderStrength(iLevel) + CalcWeaponStrength(iLevel)) / 3.5;
+	rBalance *= sqrt((Metric)CalcHitsToDestroy(iLevel) / 50.0);
+	return rBalance;
+	}
+
+Metric CStationType::CalcDefenderStrength (int iLevel)
+
+//	CalcDefenderStrength
+//
+//	Returns the strength of station defenders
+//	1.0 = 1 defender of station level.
+
+	{
+	Metric rTotal = 0.0;
+
+	//	Add ship defenders
+
+	if (m_pInitialShips)
+		rTotal += m_pInitialShips->GetAverageLevelStrength(iLevel);
+
+	//	Add satellite defenses
+
+	if (m_pSatellitesDesc)
+		rTotal += CalcSatelliteStrength(m_pSatellitesDesc, iLevel);
+
+	//	Done
+
+	return rTotal;
+	}
+
+int CStationType::CalcHitsToDestroy (int iLevel)
+
+//	CalcHitsToDestroy
+//
+//	Returns the number of hits that it would take to destroy the station when 
+//	hit by a standard weapon of the given level.
+
+	{
+	//	If station cannot be destroyed, then 0
+
+	if (IsImmutable()
+			|| (m_iMaxHitPoints == 0 && m_iMaxStructuralHP == 0))
+		return 0;
+
+	//	Compute the weapon that we want to use.
+
+	int iDamageAdj = (m_pArmor ? m_pArmor->GetArmorClass()->GetDamageAdjForWeaponLevel(iLevel) : 100);
+	Metric rWeaponDamage = (Metric)CWeaponClass::GetStdDamage(iLevel);
+
+	//	If the station is multi-hulled, then assume WMD4 and adjust weapon damage.
+
+	if (IsMultiHull())
+		{
+		int iWMD = 34;
+		rWeaponDamage = Max(1.0, (iWMD * rWeaponDamage / 100.0));
+		}
+
+	//	If we have hit points, then use that. Otherwise, we use structural 
+	//	points.
+
+	int iTotalHP;
+	if (m_iMaxHitPoints > 0)
+		{
+		iTotalHP = m_iMaxHitPoints;
+
+		//	Adjust weapon damage for station repairs. The standard fire rate is
+		//	once per 8 ticks, and the repair rate is per 30 ticks.
+
+		if (m_iRepairRate > 0)
+			rWeaponDamage = Max(0.0, rWeaponDamage - (8.0 * m_iRepairRate / STATION_REPAIR_FREQUENCY));
+		}
+	else
+		iTotalHP = m_iMaxStructuralHP;
+
+	//	Adjust weapon damage for armor
+
+	rWeaponDamage = iDamageAdj * rWeaponDamage / 100.0;
+
+	//	If weapon does no damage then we can never destroy the station
+
+	if (rWeaponDamage <= 0.0)
+		return 0;
+
+	//	Otherwise, divide to figure out the number of hits to destroy.
+
+	Metric rTotalHits = Max(1.0, (Metric)iTotalHP / rWeaponDamage);
+
+	//	Add hits to destroy satellites
+
+	if (m_pSatellitesDesc)
+		rTotalHits += CalcSatelliteHitsToDestroy(m_pSatellitesDesc, iLevel);
+
+	//	DOne
+
+	return (int)rTotalHits;
+	}
+
+Metric CStationType::CalcSatelliteHitsToDestroy (CXMLElement *pSatellites, int iLevel, bool bIgnoreChance)
+
+//	CalcSatelliteHitsToDestroy
+//
+//	Calculate the total hits to destroy all satellites
+
+	{
+	int i;
+
+	const CString &sTag = pSatellites->GetTag();
+
+	int iChance;
+	Metric rChanceAdj;
+	if (!bIgnoreChance
+			&& pSatellites->FindAttributeInteger(CHANCE_ATTRIB, &iChance))
+		rChanceAdj = (Metric)iChance / 100.0;
+	else
+		rChanceAdj = 1.0;
+
+	Metric rTotalHits = 0.0;
+	if (strEquals(sTag, SHIP_TAG))
+		{
+		//	Skip ships
+		}
+	else if (strEquals(sTag, STATION_TAG))
+		{
+		CStationType *pStationType = g_pUniverse->FindStationType((DWORD)pSatellites->GetAttributeInteger(TYPE_ATTRIB));
+		if (pStationType == NULL || !pStationType->CanAttack())
+			return 0.0;
+
+		rTotalHits += (rChanceAdj * pStationType->CalcHitsToDestroy(iLevel));
+		}
+	else if (strEquals(sTag, TABLE_TAG))
+		{
+		int iTotalChance = 0;
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			iTotalChance += pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB);
+
+		if (iTotalChance > 0)
+			{
+			for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+				rTotalHits += rChanceAdj * CalcSatelliteHitsToDestroy(pSatellites->GetContentElement(i), iLevel, true) 
+						* (Metric)pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB)
+						/ 100.0;
+			}
+		}
+	else
+		{
+		Metric rCount = 1.0;
+
+		CString sAttrib;
+		if (pSatellites->FindAttribute(COUNT_ATTRIB, &sAttrib))
+			{
+			DiceRange Count;
+			Count.LoadFromXML(sAttrib);
+			rCount = Count.GetAveValueFloat();
+			}
+
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			rTotalHits += rCount * rChanceAdj * CalcSatelliteHitsToDestroy(pSatellites->GetContentElement(i), iLevel);
+		}
+
+	//	Done
+
+	return rTotalHits;
+	}
+
+Metric CStationType::CalcSatelliteStrength (CXMLElement *pSatellites, int iLevel, bool bIgnoreChance)
+
+//	CalcSatelliteStrength
+//
+//	Computes the total strength of satellites
+//	100 = 1 satellite at station level.
+
+	{
+	int i;
+
+	const CString &sTag = pSatellites->GetTag();
+
+	int iChance;
+	Metric rChanceAdj;
+	if (!bIgnoreChance
+			&& pSatellites->FindAttributeInteger(CHANCE_ATTRIB, &iChance))
+		rChanceAdj = (Metric)iChance / 100.0;
+	else
+		rChanceAdj = 1.0;
+
+	Metric rTotal = 0.0;
+	if (strEquals(sTag, SHIP_TAG))
+		{
+		//	Load generator
+
+		SDesignLoadCtx Ctx;
+		IShipGenerator *pGenerator;
+		if (IShipGenerator::CreateFromXML(Ctx, pSatellites, &pGenerator) != NOERROR)
+			return 0.0;
+
+		if (pGenerator->OnDesignLoadComplete(Ctx) != NOERROR)
+			{
+			delete pGenerator;
+			return 0.0;
+			}
+
+		rTotal += rChanceAdj * pGenerator->GetAverageLevelStrength(iLevel);
+
+		delete pGenerator;
+		}
+	else if (strEquals(sTag, STATION_TAG))
+		{
+		CStationType *pStationType = g_pUniverse->FindStationType((DWORD)pSatellites->GetAttributeInteger(TYPE_ATTRIB));
+		if (pStationType == NULL)
+			return 0.0;
+
+		rTotal += rChanceAdj * pStationType->GetLevelStrength(iLevel);
+		}
+	else if (strEquals(sTag, TABLE_TAG))
+		{
+		int iTotalChance = 0;
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			iTotalChance += pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB);
+
+		if (iTotalChance > 0)
+			{
+			for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+				rTotal += rChanceAdj * CalcSatelliteStrength(pSatellites->GetContentElement(i), iLevel, true) 
+						* (Metric)pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB)
+						/ 100.0;
+			}
+		}
+	else
+		{
+		Metric rCount = 1.0;
+
+		CString sAttrib;
+		if (pSatellites->FindAttribute(COUNT_ATTRIB, &sAttrib))
+			{
+			DiceRange Count;
+			Count.LoadFromXML(sAttrib);
+			rCount = Count.GetAveValueFloat();
+			}
+
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			rTotal += rCount * rChanceAdj * CalcSatelliteStrength(pSatellites->GetContentElement(i), iLevel);
+		}
+
+	//	Done
+
+	return rTotal;
+	}
+
+Metric CStationType::CalcSatelliteTreasureValue (CXMLElement *pSatellites, int iLevel, bool bIgnoreChance)
+
+//	CalcSatelliteTreasureValue
+//
+//	Computes the total treasure value in satellites
+
+	{
+	int i;
+
+	const CString &sTag = pSatellites->GetTag();
+
+	int iChance;
+	Metric rChanceAdj;
+	if (!bIgnoreChance
+			&& pSatellites->FindAttributeInteger(CHANCE_ATTRIB, &iChance))
+		rChanceAdj = (Metric)iChance / 100.0;
+	else
+		rChanceAdj = 1.0;
+
+	Metric rTotal = 0.0;
+	if (strEquals(sTag, SHIP_TAG))
+		{
+		//	Skip
+		}
+	else if (strEquals(sTag, STATION_TAG))
+		{
+		CStationType *pStationType = g_pUniverse->FindStationType((DWORD)pSatellites->GetAttributeInteger(TYPE_ATTRIB));
+		if (pStationType == NULL)
+			return 0.0;
+
+		Metric rTreasure = rChanceAdj * pStationType->CalcTreasureValue(iLevel);
+
+		//	Treasure in asteroids should be discounted (since not everyone has
+		//	a mining cannon).
+
+		if (!pStationType->CanAttack() 
+				&& pStationType->HasAttribute(CONSTLIT("asteroid")))
+			rTreasure *= 0.2;
+
+		rTotal += rTreasure;
+		}
+	else if (strEquals(sTag, TABLE_TAG))
+		{
+		int iTotalChance = 0;
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			iTotalChance += pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB);
+
+		if (iTotalChance > 0)
+			{
+			for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+				rTotal += rChanceAdj * CalcSatelliteTreasureValue(pSatellites->GetContentElement(i), iLevel, true) 
+						* (Metric)pSatellites->GetContentElement(i)->GetAttributeInteger(CHANCE_ATTRIB)
+						/ 100.0;
+			}
+		}
+	else
+		{
+		Metric rCount = 1.0;
+
+		CString sAttrib;
+		if (pSatellites->FindAttribute(COUNT_ATTRIB, &sAttrib))
+			{
+			DiceRange Count;
+			Count.LoadFromXML(sAttrib);
+			rCount = Count.GetAveValueFloat();
+			}
+
+		for (i = 0; i < pSatellites->GetContentElementCount(); i++)
+			rTotal += rCount * rChanceAdj * CalcSatelliteTreasureValue(pSatellites->GetContentElement(i), iLevel);
+		}
+
+	//	Done
+
+	return rTotal;
+	}
+
+Metric CStationType::CalcTreasureValue (int iLevel)
+
+//	CalcTreasureValue
+//
+//	Calculates the value of total treasure, include treasure on satellites.
+
+	{
+	Metric rTotal = 0.0;
+
+	if (m_pItems)
+		rTotal += m_pItems->GetAverageValue(iLevel);
+
+	if (m_pSatellitesDesc)
+		rTotal += CalcSatelliteTreasureValue(m_pSatellitesDesc, iLevel);
+
+	return rTotal;
+	}
+
+Metric CStationType::CalcWeaponStrength (int iLevel)
+
+//	CalcWeaponStrength
+//
+//	Computes the total strength of all station weapons.
+//	1.0 = level weapon at 1/4 fire rate.
+
+	{
+	int i;
+
+	//	Start by adding up all weapons.
+
+	Metric rTotal = 0.0;
+	for (i = 0; i < m_iDevicesCount; i++)
+		{
+		if (m_Devices[i].IsEmpty()
+				|| (m_Devices[i].GetCategory() != itemcatWeapon
+					&& m_Devices[i].GetCategory() != itemcatLauncher))
+			continue;
+
+		CDeviceClass *pDeviceClass = m_Devices[i].GetClass();
+		int iDevLevel = pDeviceClass->GetLevel();
+
+		//	Lower level weapons count less; higher level weapons count more.
+
+		rTotal += ::CalcLevelDiffStrength(iDevLevel - iLevel);
+		}
+
+	//	Adjust for fire rate. Double the fire rate means double the strength.
+
+	rTotal *= (40.0 / (Metric)m_iFireRateAdj);
+
+	//	Done
+
+	return rTotal;
+	}
+
 CString CStationType::ComposeLoadError (const CString &sError)
 
 //	ComposeLoadError
@@ -215,19 +693,23 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 	{
 	if (strEquals(sField, FIELD_ABANDONED_DOCK_SCREEN))
 		*retsValue = m_pAbandonedDockScreen.GetStringUNID(this);
+	else if (strEquals(sField, FIELD_BALANCE))
+		*retsValue = strFromInt((int)(CalcBalance(GetLevel()) * 100.0));
 	else if (strEquals(sField, FIELD_CATEGORY))
 		{
 		if (!CanBeEncounteredRandomly())
 			*retsValue = CONSTLIT("04-Not Random");
-		else if (HasAttribute(CONSTLIT("debris")))
+		else if (HasLiteralAttribute(CONSTLIT("debris")))
 			*retsValue = CONSTLIT("03-Debris");
-		else if (HasAttribute(CONSTLIT("enemy")))
+		else if (HasLiteralAttribute(CONSTLIT("enemy")))
 			*retsValue = CONSTLIT("02-Enemy");
-		else if (HasAttribute(CONSTLIT("friendly")))
+		else if (HasLiteralAttribute(CONSTLIT("friendly")))
 			*retsValue = CONSTLIT("01-Friendly");
 		else
 			*retsValue = CONSTLIT("04-Not Random");
 		}
+	else if (strEquals(sField, FIELD_DEFENDER_STRENGTH))
+		*retsValue = strFromInt((int)(100.0 * CalcDefenderStrength(GetLevel())));
 	else if (strEquals(sField, FIELD_DOCK_SCREEN))
 		*retsValue = m_pFirstDockScreen.GetStringUNID(this);
 	else if (strEquals(sField, FIELD_LEVEL))
@@ -241,10 +723,19 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		else
 			*retsValue = CONSTLIT("none");
 		}
+	else if (strEquals(sField, FIELD_ARMOR_LEVEL))
+		{
+		if (m_pArmor)
+			*retsValue = strFromInt(m_pArmor->GetLevel());
+		else
+			*retsValue = NULL_STR;
+		}
 	else if (strEquals(sField, FIELD_HP))
 		*retsValue = strFromInt(m_iHitPoints);
 	else if (strEquals(sField, FIELD_FIRE_RATE_ADJ))
 		*retsValue = strFromInt(10000 / m_iFireRateAdj);
+	else if (strEquals(sField, FIELD_HITS_TO_DESTROY))
+		*retsValue = strFromInt(CalcHitsToDestroy(GetLevel()));
 	else if (strEquals(sField, FIELD_CAN_ATTACK))
 		*retsValue = (CanAttack() ? VALUE_TRUE : VALUE_FALSE);
 	else if (strEquals(sField, FIELD_EXPLOSION_TYPE))
@@ -262,6 +753,25 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 
 		*retsValue = CONSTLIT("none");
 		}
+	else if (strEquals(sField, FIELD_MAX_LIGHT_RADIUS))
+		*retsValue = strFromInt(m_iMaxLightDistance);
+	else if (strEquals(sField, FIELD_REGEN))
+		*retsValue = strFromInt(m_iRepairRate * 180 / STATION_REPAIR_FREQUENCY);
+	else if (strEquals(sField, FIELD_SATELLITE_STRENGTH))
+		*retsValue = strFromInt((m_pSatellitesDesc ? (int)(100.0 * CalcSatelliteStrength(m_pSatellitesDesc, GetLevel())) : 0));
+	else if (strEquals(sField, FIELD_SIZE))
+		*retsValue = strFromInt(m_iSize);
+	else if (strEquals(sField, FIELD_TREASURE_BALANCE))
+		{
+		int iLevel = GetLevel();
+		Metric rExpected = CalcBalance(iLevel) * (Metric)STD_STATION_DATA[iLevel].dwTreasureValue;
+		Metric rTreasure = CalcTreasureValue(iLevel);
+		*retsValue = strFromInt((int)(100.0 * (rExpected > 0.0 ? rTreasure / rExpected : 0.0)));
+		}
+	else if (strEquals(sField, FIELD_TREASURE_VALUE))
+		*retsValue = strFromInt((int)CalcTreasureValue(GetLevel()));
+	else if (strEquals(sField, FIELD_WEAPON_STRENGTH))
+		*retsValue = strFromInt((int)(100.0 * CalcWeaponStrength(GetLevel())));
 	else
 		return CDesignType::FindDataField(sField, retsValue);
 
@@ -329,6 +839,29 @@ int CStationType::GetLevel (void) const
 		}
 	}
 
+Metric CStationType::GetLevelStrength (int iLevel)
+
+//	GetLevelStrength
+//
+//	Returns the level strength of the given station (relative to iLevel).
+//	1.0 = station with level appropriate weapon and 25 hits to destroy.
+
+	{
+	Metric rTotal = 0.0;
+
+	//	Strength is based on weapons and ships
+
+	rTotal = CalcWeaponStrength(iLevel) + CalcDefenderStrength(iLevel);
+
+	//	Adjust by armor. 1.0 = 25 hits to destroy.
+
+	rTotal *= (CalcHitsToDestroy(iLevel) / 25.0);
+
+	//	Done
+
+	return rTotal;
+	}
+
 const CString &CStationType::GetName (DWORD *retdwFlags)
 
 //	GetName
@@ -352,6 +885,25 @@ CString CStationType::GetNounPhrase (DWORD dwFlags)
 	DWORD dwNameFlags;
 	CString sName = GetName(&dwNameFlags);
 	return ::ComposeNounPhrase(sName, 1, NULL_STR, dwNameFlags, dwFlags);
+	}
+
+bool CStationType::IsSizeClass (ESizeClass iClass) const
+
+//	IsSizeClass
+//
+//	Returns TRUE if we are the given size class.
+
+	{
+	switch (GetScale())
+		{
+		case scaleWorld:
+			return (iClass >= worldSizeA && iClass <= worldSizeM
+					&& m_iSize >= SIZE_DATA[iClass].iMinSize 
+					&& m_iSize <= SIZE_DATA[iClass].iMaxSize);
+
+		default:
+			return false;
+		}
 	}
 
 void CStationType::MarkImages (const CCompositeImageSelector &Selector)
@@ -700,27 +1252,16 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			m_iMaxStructuralHP = m_iStructuralHP;
 		}
 
-	//	Get the scale
+	//	Get the scale (default to structure)
 
-	CString sScale = pDesc->GetAttribute(SCALE_ATTRIB);
-	if (strEquals(sScale, STAR_SCALE))
-		m_iScale = scaleStar;
-	else if (strEquals(sScale, WORLD_SCALE))
-		m_iScale = scaleWorld;
-	else if (strEquals(sScale, SHIP_SCALE))
-		m_iScale = scaleShip;
-	else if (strEquals(sScale, FLOTSAM_SCALE))
-		m_iScale = scaleFlotsam;
-	else
+	m_iScale = ParseScale(pDesc->GetAttribute(SCALE_ATTRIB));
+	if (m_iScale == scaleNone)
 		m_iScale = scaleStructure;
 
-	//	Mass
+	//	Mass & Size
 	
-	int iMass = pDesc->GetAttributeInteger(MASS_ATTRIB);
-	if (iMass != 0)
-		m_rMass = iMass;
-	else
-		m_rMass = 1000000;
+	m_iSize = pDesc->GetAttributeIntegerBounded(SIZE_ATTRIB, 1, -1, 0);
+	m_rMass = pDesc->GetAttributeIntegerBounded(MASS_ATTRIB, 1, -1, 1000000);
 
 	//	Load devices
 
@@ -956,8 +1497,6 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (error = m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB)))
 		return error;
 
-	m_fHasOnObjDockedEvent = FindEventHandler(CONSTLIT("OnObjDocked"));
-
 	//	Done
 
 	return NOERROR;
@@ -990,6 +1529,17 @@ bool CStationType::OnHasSpecialAttribute (const CString &sAttrib) const
 
 		return m_pSovereign->IsEnemy(pSovereign);
 		}
+	else if (strStartsWith(sAttrib, SPECIAL_SCALE))
+		{
+		CString sValue = strSubString(sAttrib, SPECIAL_SCALE.GetLength());
+		return (ParseScale(sValue) == GetScale());
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_SIZE_CLASS))
+		{
+		CString sValue = strSubString(sAttrib, SPECIAL_SIZE_CLASS.GetLength());
+		ESizeClass iClass = ParseSizeClass(sValue);
+		return IsSizeClass(iClass);
+		}
 	else
 		return false;
 	}
@@ -1005,7 +1555,7 @@ void CStationType::OnMarkImages (void)
 	//	a default image selector
 
 	CCompositeImageSelector Selector;
-	SetImageSelector(NULL, &Selector);
+	SetImageSelector(&Selector);
 
 	//	Mark
 
@@ -1030,6 +1580,9 @@ void CStationType::OnReadFromStream (SUniverseLoadCtx &Ctx)
 
 	//	Load encounter record
 
+	if (Ctx.dwVersion >= 25)
+		m_RandomPlacement.ReadFromStream(Ctx);
+
 	if (Ctx.dwVersion >= 19)
 		m_EncounterRecord.ReadFromStream(Ctx);
 	else
@@ -1053,6 +1606,19 @@ void CStationType::OnReinit (void)
 	m_EncounterRecord.Reinit(m_RandomPlacement);
 	}
 
+void CStationType::OnTopologyInitialized (void)
+
+//	OnTopologyInitialize
+//
+//	The topology has been initialized.
+
+	{
+	//	We take this opportunity to resolve the level of certain encounters
+	//	(now that we know the topology).
+
+	m_RandomPlacement.InitLevelFrequency();
+	}
+
 void CStationType::OnWriteToStream (IWriteStream *pStream)
 
 //	OnWriteToStream
@@ -1067,6 +1633,7 @@ void CStationType::OnWriteToStream (IWriteStream *pStream)
 	dwSave = 0;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
+	m_RandomPlacement.WriteToStream(pStream);
 	m_EncounterRecord.WriteToStream(pStream);
 	}
 
@@ -1089,6 +1656,44 @@ void CStationType::PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick)
 		}
 	}
 
+ScaleTypes CStationType::ParseScale (const CString sValue)
+
+//	ParseScale
+//
+//	Parses a scale value
+
+	{
+	if (strEquals(sValue, STAR_SCALE))
+		return scaleStar;
+	else if (strEquals(sValue, WORLD_SCALE))
+		return scaleWorld;
+	else if (strEquals(sValue, STRUCTURE_SCALE))
+		return scaleStructure;
+	else if (strEquals(sValue, SHIP_SCALE))
+		return scaleShip;
+	else if (strEquals(sValue, FLOTSAM_SCALE))
+		return scaleFlotsam;
+	else
+		return scaleNone;
+	}
+
+CStationType::ESizeClass CStationType::ParseSizeClass (const CString sValue)
+
+//	ParseSizeClass
+//
+//	Parses size class values
+
+	{
+	char *pPos = sValue.GetASCIIZPointer();
+
+	if (*pPos >= 'a' && *pPos <= 'm')
+		return (ESizeClass)(*pPos - 'a' + worldSizeA);
+	else if (*pPos >= 'A' && *pPos <= 'M')
+		return (ESizeClass)(*pPos - 'A' + worldSizeA);
+	else
+		return sizeNone;
+	}
+
 void CStationType::Reinit (void)
 
 //	Reinit
@@ -1098,7 +1703,7 @@ void CStationType::Reinit (void)
 	{
 	}
 
-void CStationType::SetImageSelector (CStation *pStation, CCompositeImageSelector *retSelector)
+void CStationType::SetImageSelector (CCompositeImageSelector *retSelector)
 
 //	SetImageSelector
 //

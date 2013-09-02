@@ -96,7 +96,7 @@ void CPlasmaSphereEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewp
 		}
 	}
 
-bool CPlasmaSphereEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CPlasmaSphereEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

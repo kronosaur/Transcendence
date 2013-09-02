@@ -9,6 +9,8 @@
 #include "../TSE/TSE.h"
 #endif
 
+#include "Utilities.h"
+
 //	Used by sim tables
 
 class EntryInfo : public CObject
@@ -54,44 +56,6 @@ class StationInfo : public CObject
 		int iTempCount;								//	Temp count for a specific system instance
 	};
 
-class CImageGrid
-	{
-	public:
-		void Create (int iCount, int cxCellWidth, int cyCellHeight);
-		void GetCellCenter (int iIndex, int *retx, int *rety);
-		inline CG16bitImage &GetImage (void) { return m_Image; }
-
-	private:
-		CG16bitImage m_Image;
-		int m_iCount;
-		int m_iCellColumns;
-		int m_iCellRows;
-		int m_cxCellWidth;
-		int m_cyCellHeight;
-	};
-
-class CSimViewer
-	{
-	public:
-		CSimViewer (void) : m_hWnd(NULL) { }
-		~CSimViewer (void) { Destroy(); }
-
-		void Create (void);
-		void Destroy (void);
-		inline bool IsEmpty (void) { return (m_hWnd == NULL); }
-		void PaintViewport (CUniverse &Universe);
-
-		inline void WMDestroy (void) { m_hWnd = NULL; }
-
-	private:
-		void ProcessMessages (void);
-		static LONG APIENTRY WndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
-
-		HWND m_hWnd;
-		CG16bitImage m_Buffer;
-		DWORD m_dwLastUpdate;
-	};
-
 struct SDesignTypeInfo
 	{
 	SDesignTypeInfo (void) :
@@ -124,6 +88,7 @@ void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
 void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
+void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
 void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine);
@@ -144,7 +109,10 @@ void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTopology (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeDependencies (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateTypeIslands (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
+void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateWordList (const CString &sDataFile, CXMLElement *pCmdLine);
+void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void HexarcTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
 void Run (CUniverse &Universe, CXMLElement *pCmdLine);

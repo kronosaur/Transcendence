@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- ANALYZE SCREEN ============================================================
+	
+	GLOBAL DATA
+	
+	skillLevel:			Total number of successful uses
+	
+	ITEM OBJECT
+	
+	We fire OnAnalyzeItem to allow the item to handle analysis. The item should
+	return a struct with the following fields:
+	
+		desc: A description of the result of the analysis.
+	
+-->
+
+	<DockScreen UNID="&dsRPGAnalyzeItem;"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*"
+			/>
+			
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (desc skillLevel chargesLeft itemToAnalyze canAnalyze result)
+					
+						;	Init skill level
+						
+						(setq skillLevel (typGetData &dsRPGAnalyzeItem; 'skillLevel))
+						(if (not skillLevel)
+							(block Nil
+								(typSetData &dsRPGAnalyzeItem; 'skillLevel 0)
+								(setq skillLevel 0)
+								)
+							)
+							
+						;	Report the number of charges remaining
+
+						(setq chargesLeft (itmGetProperty gItem 'charges))
+						(setq desc (cat
+							"Charges Left: " chargesLeft "\n\n"
+							))
+						
+						;	Item to analyze
+							
+						(setq itemToAnalyze (scrGetItem gScreen))
+						
+						;	Continue with description
+						
+						(setq canAnalyze Nil)
+						(switch
+							;	If no more charges then we cannot analyze anything
+							
+							(eq chargesLeft 0)
+								(setq desc (cat desc "Unfortunately, " (itmGetName gItem 0x40) " is out of charge and cannot function."))
+								
+							;	Check to see if this analyzer can handle this item
+							
+							(and (setq result (objFireItemEvent gSource gItem 'CanAnalyzeItem { itemToAnalyze: itemToAnalyze }))
+									(not (@ result 'canAnalyzeItem))
+									)
+								(setq desc (cat desc (@ result 'message)))
+								
+							;	OK
+							
+							(block Nil
+								(setq desc (cat desc
+									"You can analyze " (itmGetName itemToAnalyze 0x804)
+									))
+									
+								(switch
+									(ls skillLevel 2)
+										(setq desc (cat desc
+											", though you do not have much experience analyzing items."
+											))
+									
+									(ls skillLevel 5)
+										(setq desc (cat desc
+											"; you have some experience analyzing items."
+											))
+									
+									(ls skillLevel 10)
+										(setq desc (cat desc
+											"; you are proficient at analyzing items."
+											))
+									
+									(setq desc (cat desc
+										"; you are an expert at analyzing items."
+										))
+									)
+								
+								(setq canAnalyze True)
+								)
+							)
+						
+						;	Initialize
+						
+						(scrSetDesc gScreen desc)
+						(scrEnableAction gScreen 0 canAnalyze)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Analyze Item" key="A" default="1">
+						(block (result)
+							(setq result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
+							
+							(setq gItem (objSetItemProperty gSource gItem 'incCharges -1))
+							
+							(setq gTitle (cat 
+								"Charges Left: " (itmGetProperty gItem 'charges) "\n\n"
+								(@ result 'desc)
+								))
+							(scrShowPane gScreen "Done")
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<Exit/>
+					</Action>
+					
+				</Actions>
+			</Default>
+			
+			<Done 
+					desc="=gTitle"
+					noListNavigation="true"
+					>
+
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="D">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Done>
+		</Panes>
+	</DockScreen>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq rpgAnalyzeItem (lambda (sourceObj itemToAnalyze desc)
+			
+				;	We return a struct with the following elements:
+				;
+				;		desc: The description of the result.
+				
+				(block (skillLevel failureChance result)
+					
+					;	Compute the chance of failure based on skillLevel
+					
+					(setq skillLevel (typGetData &dsRPGAnalyzeItem; 'skillLevel))
+					(switch
+						(ls skillLevel 2)
+							(setq failureChance 20)
+
+						(ls skillLevel 5)
+							(setq failureChance 10)
+
+						(ls skillLevel 10)
+							(setq failureChance 5)
+
+						(setq failureChance 0)
+						)
+						
+					;	Our skill level increases
+					
+					(typIncData &dsRPGAnalyzeItem; 'skillLevel 1)
+						
+					;	Analyze
+					
+					(switch
+						;	There is a chance of failure, depending on the skill of
+						;	the user.
+						
+						(leq (random 1 100) failureChance)
+							(block Nil
+							
+								(switch
+								
+									;	Analysis failed, but the original item is intact
+									
+									(gr (random 1 100) (divide failureChance 2))
+										(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
+										
+									;	If this is an undamaged device then it got damaged by
+									;	the analysis.
+									
+									(itmMatches itemToAnalyze "dN")
+										(block Nil
+											(setq desc (cat
+												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally short out a major component. "
+												"The " (itmGetName itemToAnalyze 0x80) " has been damaged."
+												))
+											(objSetItemProperty sourceObj itemToAnalyze 'damaged True)
+											)
+											
+									;	If this is an item that can be destroyed, it is.
+									
+									(itmMatches itemToAnalyze "ut~ad -Res;")
+										(block Nil
+											(setq desc (cat
+												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally destroy " 
+												(if (gr (itmGetCount itemToAnalyze) 1) "them" "it")
+												" with a burst high-energy ions. "
+												))
+											(objRemoveItem sourceObj itemToAnalyze)
+											)
+									
+									;	Otherwise, failure.
+									
+									(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
+									)
+								)
+					
+						;	First we let the item analyze itself. If it works, then
+						;	we return the result.
+						
+						(setq result (objFireItemEvent sourceObj itemToAnalyze 'OnAnalyzeItem))
+							(setq desc (@ result 'desc))
+						
+						;	If this is an unknown item, then we identify it.
+						
+						(not (itmIsKnown itemToAnalyze))
+							(block Nil
+								(itmSetKnown itemToAnalyze)
+								(setq desc (cat
+									"Your analysis reveals it to be " (itmGetName itemToAnalyze 0x04) "."
+									))
+								)
+								
+						;	Otherwise, nothing
+						
+						(setq desc (cat
+							"You run the analyzer but are unable to reveal any additional information on the item."
+							))
+						)
+						
+					;	Done
+					
+					{
+						desc: desc
+						}
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

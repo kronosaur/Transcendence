@@ -56,15 +56,6 @@
 				imageTicksPerFrame="1"/>
 	</Effect>
 
-	<Effect UNID="&efNebula;">
-		<Image imageID="&rsNebula;" 
-				imageX="0" 
-				imageY="0" 
-				imageWidth="256" 
-				imageHeight="256"
-				imageVariants="4"/>
-	</Effect>
-
 	<Effect UNID="&efGemOfSacrifice;">
 		<Starburst
 				lifetime=		"40"
@@ -94,7 +85,7 @@
 	<Image UNID="&rsZubrinLRS;"			bitmap="Resources\LargeHUD.jpg"		/>
 	<Image UNID="&rsZubrinLRSBorder;"	bitmask="Resources\LRSBorderMask.bmp"/>
 	<Image UNID="&rsZubrinTargeting;"	bitmap="Resources\WeaponsHUD.bmp"		/>
-	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.bmp"/>
+	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"/>
 	<Image UNID="&rsZubrinDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
 
 	<Image UNID="&rsSRSSnow;"			bitmap="Resources\ScreenSnow.jpg"/>
@@ -141,9 +132,6 @@
 	<Image UNID="&rsShockwave2;"	bitmap="Resources\Shockwave2.jpg"		bitmask="Resources\Shockwave2Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsShockwave3;"	bitmap="Resources\Shockwave3.jpg"		bitmask="Resources\Shockwave3Mask.bmp" loadOnUse="true"/>
 
-	<Image UNID="&rsNebulaEnv;"		bitmap="Resources\Nebula.jpg"			bitmask="Resources\NebulaMask.bmp"	 sprite="true"/>
-	<Image UNID="&rsNebula;"		bitmap="Resources\NebulaHighlights.jpg"	bitmask="Resources\NebulaHighlightsMask.bmp"/>
-
 	<Sound UNID="&snShipExplosion1;"		filename="Resources\ShipExplosion1.wav"/>
 	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
 	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
@@ -179,10 +167,34 @@
 			-	must not have this modifier
 
 -->
+	
+	<ItemTable UNID="&trStdLevelTreasure;">
+		<Group	levelValue="
+				  	750,     1000,     1500,     2000,      4000,
+				   8000,    16000,    32000,    64000,    128000,
+				 256000,   512000,  1000000,  2000000,   4100000,
+				8200000, 16400000, 32800000, 65500000, 131000000"
+				>
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
 
 	<ItemTable UNID="&trConsumables1;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal; -Military"
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
 				level=				"1"
 				levelCurve=			"2"
 				/>
@@ -190,7 +202,7 @@
 
 	<ItemTable UNID="&trConsumables2;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal; -Military"
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
 				level=				"2"
 				levelCurve=			"2"
 				/>
@@ -198,7 +210,7 @@
 
 	<ItemTable UNID="&trConsumables3;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal; -Military"
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
 				level=				"3"
 				levelCurve=			"2"
 				/>
@@ -206,7 +218,7 @@
 
 	<ItemTable UNID="&trConsumables4;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal; -Military"
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
 				level=				"4"
 				levelCurve=			"2"
 				/>
@@ -214,7 +226,7 @@
 
 	<ItemTable UNID="&trConsumables5;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal; -Military"
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
 				level=				"5"
 				levelCurve=			"2"
 				/>
@@ -222,7 +234,7 @@
 
 	<ItemTable UNID="&trConsumables6;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal;"
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
 				level=				"6"
 				levelCurve=			"2"
 				/>
@@ -230,7 +242,7 @@
 
 	<ItemTable UNID="&trConsumables7;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal;"
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
 				level=				"7"
 				levelCurve=			"2"
 				/>
@@ -238,7 +250,7 @@
 
 	<ItemTable UNID="&trConsumables8;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal;"
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
 				level=				"8"
 				levelCurve=			"2"
 				/>
@@ -246,7 +258,7 @@
 
 	<ItemTable UNID="&trConsumables9;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal;"
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
 				level=				"9"
 				levelCurve=			"2"
 				/>
@@ -254,7 +266,7 @@
 
 	<ItemTable UNID="&trConsumables10;">
 		<RandomItem
-				criteria=			"fmut +Consumable; -Illegal;"
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
 				level=				"10"
 				levelCurve=			"2"
 				/>
@@ -262,7 +274,7 @@
 
 	<ItemTable UNID="&trMajorItem1;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"1"
 				levelCurve=			"2"
 				/>
@@ -270,7 +282,7 @@
 
 	<ItemTable UNID="&trMajorItem2;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"2"
 				levelCurve=			"2"
 				/>
@@ -278,7 +290,7 @@
 
 	<ItemTable UNID="&trMajorItem3;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"3"
 				levelCurve=			"2"
 				/>
@@ -286,7 +298,7 @@
 
 	<ItemTable UNID="&trMajorItem4;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"4"
 				levelCurve=			"2"
 				/>
@@ -294,7 +306,7 @@
 
 	<ItemTable UNID="&trMajorItem5;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"5"
 				levelCurve=			"2"
 				/>
@@ -302,7 +314,7 @@
 
 	<ItemTable UNID="&trMajorItem6;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal; -Military"
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
 				level=				"6"
 				levelCurve=			"2"
 				/>
@@ -310,7 +322,7 @@
 
 	<ItemTable UNID="&trMajorItem7;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal;"
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
 				level=				"7"
 				levelCurve=			"2"
 				/>
@@ -318,7 +330,7 @@
 
 	<ItemTable UNID="&trMajorItem8;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal;"
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
 				level=				"8"
 				levelCurve=			"2"
 				/>
@@ -326,7 +338,7 @@
 
 	<ItemTable UNID="&trMajorItem9;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal;"
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
 				level=				"9"
 				levelCurve=			"2"
 				/>
@@ -334,7 +346,7 @@
 
 	<ItemTable UNID="&trMajorItem10;">
 		<RandomItem
-				criteria=			"wsd +MajorItem; -Illegal;"
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
 				level=				"10"
 				levelCurve=			"2"
 				/>
@@ -342,7 +354,7 @@
 
 	<ItemTable UNID="&trMinorItem1;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal; -Military"
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
 				level=				"1"
 				levelCurve=			"2"
 				/>
@@ -350,7 +362,7 @@
 
 	<ItemTable UNID="&trMinorItem2;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal; -Military"
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
 				level=				"2"
 				levelCurve=			"2"
 				/>
@@ -358,7 +370,7 @@
 
 	<ItemTable UNID="&trMinorItem3;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal; -Military"
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
 				level=				"3"
 				levelCurve=			"2"
 				/>
@@ -366,7 +378,7 @@
 
 	<ItemTable UNID="&trMinorItem4;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal; -Military"
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
 				level=				"4"
 				levelCurve=			"2"
 				/>
@@ -374,7 +386,7 @@
 
 	<ItemTable UNID="&trMinorItem5;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal; -Military"
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
 				level=				"5"
 				levelCurve=			"2"
 				/>
@@ -382,7 +394,7 @@
 
 	<ItemTable UNID="&trMinorItem6;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal;"
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
 				level=				"6"
 				levelCurve=			"2"
 				/>
@@ -390,7 +402,7 @@
 
 	<ItemTable UNID="&trMinorItem7;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal;"
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
 				level=				"7"
 				levelCurve=			"2"
 				/>
@@ -398,7 +410,7 @@
 
 	<ItemTable UNID="&trMinorItem8;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal;"
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
 				level=				"8"
 				levelCurve=			"2"
 				/>
@@ -406,7 +418,7 @@
 
 	<ItemTable UNID="&trMinorItem9;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal;"
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
 				level=				"9"
 				levelCurve=			"2"
 				/>
@@ -414,7 +426,7 @@
 
 	<ItemTable UNID="&trMinorItem10;">
 		<RandomItem
-				criteria=			"afmut +MinorItem; -Illegal;"
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
 				level=				"10"
 				levelCurve=			"2"
 				/>
@@ -435,12 +447,12 @@
 	<ItemTable UNID="&trUsefulItems1;">
 		<Table>
 			<RandomItem chance="50"
-					criteria=		"fmu -Illegal; -Military; -Alien"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
 					level=			"1"
 					levelCurve=		"2"
 					/>
 			<RandomItem chance="50"
-					criteria=		"fmu -Illegal; -Military; -Alien"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
 					level=			"2"
 					levelCurve=		"2"
 					/>
@@ -450,12 +462,12 @@
 	<ItemTable UNID="&trMiscItems1;">
 		<Table>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"1"
 					levelCurve=		"2"
 					/>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"2"
 					levelCurve=		"2"
 					/>
@@ -467,12 +479,12 @@
 	<ItemTable UNID="&trMiscItems2;">
 		<Table>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"3"
 					levelCurve=		"2"
 					/>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"4"
 					levelCurve=		"2"
 					/>
@@ -482,12 +494,12 @@
 	<ItemTable UNID="&trUsefulItems2;">
 		<Table>
 			<RandomItem chance="50"
-					criteria=		"fmu -Illegal; -Military; -Alien"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
 					level=			"3"
 					levelCurve=		"2"
 					/>
 			<RandomItem chance="50"
-					criteria=		"fmu -Illegal; -Military; -Alien"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
 					level=			"4"
 					levelCurve=		"2"
 					/>
@@ -499,12 +511,12 @@
 	<ItemTable UNID="&trMiscItems3;">
 		<Table>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"5"
 					levelCurve=		"2"
 					/>
 			<RandomItem chance="50"
-					criteria=		"t -Illegal; -Military; -Alien"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
 					level=			"6"
 					levelCurve=		"2"
 					/>
@@ -513,7 +525,7 @@
 
 	<ItemTable UNID="&trHaloGems;">
 		<RandomItem 
-				criteria=			"* +HaloGem;"
+				criteria=			"* +HaloGem; -NotStandard"
 				level=				"7"
 				levelCurve=			"1"
 				/>
@@ -573,7 +585,7 @@
 
 	<ItemTable UNID="&trMilitaryItem4;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"4"
 				levelCurve=			"2"
 				/>
@@ -581,7 +593,7 @@
 
 	<ItemTable UNID="&trMilitaryItem5;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"5"
 				levelCurve=			"2"
 				/>
@@ -589,7 +601,7 @@
 
 	<ItemTable UNID="&trMilitaryItem6;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"6"
 				levelCurve=			"2"
 				/>
@@ -597,7 +609,7 @@
 
 	<ItemTable UNID="&trMilitaryItem7;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"7"
 				levelCurve=			"2"
 				/>
@@ -605,7 +617,7 @@
 
 	<ItemTable UNID="&trMilitaryItem8;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"8"
 				levelCurve=			"2"
 				/>
@@ -613,7 +625,7 @@
 
 	<ItemTable UNID="&trMilitaryItem9;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"9"
 				levelCurve=			"2"
 				/>
@@ -621,7 +633,7 @@
 
 	<ItemTable UNID="&trMilitaryItem10;">
 		<RandomItem	
-				criteria=			"* +Military"	
+				criteria=			"* +Military; -NotStandard"	
 				level=				"10"
 				levelCurve=			"2"
 				/>
@@ -631,7 +643,7 @@
 
 	<ItemTable UNID="&trMedicalItem;">
 		<RandomItem
-				criteria=			"* +Meds"
+				criteria=			"* +Meds; -NotStandard"
 				level=				"5"
 				levelCurve=			"4"
 				/>
@@ -1087,721 +1099,6 @@
 
 	</ItemType>
 
-<!-- BEHAVIORS AND BASE CLASSES =========================================== -->
-
-	<!-- Convoy Behavior
-	
-		USAGE NOTES
-		
-		This simulates the behavior of a freighter convoy escorted by
-		defenders.
-		
-		EXTRA DATA
-		
-		behavior:			Ship's current behavior
-								'avoidingEnemy			= We're trying to run away
-								'onCourse				= Ship on straight course
-	-->
-
-	<ShipClass UNID="&evStdConvoyEncounterBehavior;"
-			class=				"(convoy encounter behavior)"
-			virtual=			"true"
-			
-			attributes=			"behaviorClass"
-			>
-			
-		<Events>
-			<GetCreatePos>
-				(if aTargetObj
-					(intComputeRandomEncounterPos aTargetObj)
-					)
-			</GetCreatePos>
-
-			<OnBehavior>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003015_behavior"))
-					(switch
-						; If we see any enemy ships then run away
-						(eq behavior 'onCourse)
-							(block (theEnemy)
-								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
-									(block (shelterObj gateObj)
-										(shpCancelOrders gSource)
-										
-										(setq gateObj (sysFindObject gSource "GN -uncharted;"))
-										(setq shelterObj (sysFindObject gSource "TFAN +populated;"))
-										
-										; If there's shelter nearby, go to it
-										(if (and shelterObj
-												(ls (objGetDistance gSource shelterObj) (objGetDistance gSource gateObj))
-												)
-											(block Nil
-												(shpOrder gSource 'dock shelterObj)
-												(shpOrder gSource 'wait (random 10 40))
-												)
-											)
-											
-										; Gate out
-										(shpOrder gSource 'gate gateObj)
-										
-										(objSetData gSource "00003015_behavior" 'avoidingEnemy)
-										)
-									)
-								)
-						)
-					)
-			</OnBehavior>
-			
-			<OnCreateOrders>
-				(block (theCourse)
-					(if (not aTargetObj)
-						(setq aTargeObj gPlayerShip)
-						)
-						
-					; Move towards the player's path
-					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
-					(shpOrder gSource 'holdCourse theCourse 300)
-					
-					; Register a timer so that we can look for enemies
-					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
-					(objSetData gSource "00003015_behavior" 'onCourse)
-					)
-			</OnCreateOrders>
-			
-			<OnOrdersCompleted>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003015_behavior"))
-					(switch
-						; If we're done with this order, then we never encountered
-						; the player, so we're done, head for a stargate
-						; Note: we might encounter the player en route
-						(eq behavior 'onCourse)
-							(shpOrder gSource 'gate)
-						)
-					)
-			</OnOrdersCompleted>
-		</Events>
-	</ShipClass>
-	
-	<!-- Patrol Behavior
-	
-		USAGE NOTES
-		
-		This simulates the behavior of a ship on patrol that detects the
-		player in a random encounter.
-		
-		EXTRA DATA
-		
-		behavior:			Ship's current behavior
-								'attackingEnemy			= We're engaging the enemy
-								'onCourse				= Ship on straight course
-	-->
-
-	<ShipClass UNID="&evStdPatrolEncounterBehavior;"
-			class=				"(patrol encounter behavior)"
-			virtual=			"true"
-			
-			attributes=			"behaviorClass"
-			>
-			
-		<Events>
-			<GetCreatePos>
-				(if aTargetObj
-					(intComputeRandomEncounterPos aTargetObj)
-					)
-			</GetCreatePos>
-
-			<OnBehavior>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003014_behavior"))
-					(switch
-						; If we see any enemy ships then attack
-						(eq behavior 'onCourse)
-							(block (theEnemy)
-								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'attack theEnemy)
-										(shpOrder gSource 'attackNearestEnemy)
-										(objSetData gSource "00003014_encounterPos" (objGetPos gSource))
-										(objSetData gSource "00003014_behavior" 'attackingEnemy)
-										)
-									)
-								)
-
-						; If the target has run away, then don't chase
-						(eq behavior 'attackingEnemy)
-							(if (and (geq (sysVectorDistance (objGetData gSource "00003014_encounterPos") (objGetPos gSource)) 300)
-									(geq (objGetDistance gSource (objGetTarget gSource)) 50)
-									)
-								(block Nil
-									(shpCancelOrders gSource)
-									(shpOrder gSource 'gate)
-									(objSetData gSource "00003014_behavior" 'onCourse)
-									)
-								)
-						)
-					)
-			</OnBehavior>
-			
-			<OnCreateOrders>
-				(block (theCourse)
-					(if (not aTargetObj)
-						(setq aTargeObj gPlayerShip)
-						)
-						
-					; Move towards the player's path
-					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
-					(shpOrder gSource 'holdCourse theCourse 300)
-					
-					; Register a timer so that we can look for enemies
-					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
-					(objSetData gSource "00003014_behavior" 'onCourse)
-					)
-			</OnCreateOrders>
-			
-			<OnOrdersCompleted>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003014_behavior"))
-					(switch
-						; If we're done with this order, then we never encountered
-						; the player, so we're done, head for a stargate
-						; Note: we might encounter the player en route
-						(eq behavior 'onCourse)
-							(shpOrder gSource 'gate)
-							
-						; If we're done attacking, then we're done
-						(eq behavior 'attackingEnemy)
-							(block Nil
-								(shpOrder gSource 'gate)
-								(objSetData gSource "00003014_behavior" 'onCourse)
-								)
-						)
-					)
-			</OnOrdersCompleted>
-		</Events>
-	</ShipClass>
-	
-	<!-- Zone Encounter Behavior
-	
-		USAGE NOTES
-		
-		This is for random encounters in which the player runs into
-		a patrol that is orbiting a station. The patrol will ignore enemies
-		unless the enemies are within 300 light-seconds of the station.
-		
-		Note: This only works with enemies that have their own sovereign.
-		
-		EXTRA DATA
-		
-		behavior:			Ship's current behavior
-								'onCourse				= Ship on straight course
-								'backToBase				= Heading back to base
-								'patrolling				= Orbiting base
-								'leavingSystem			= Leaving
-								
-		homeObj:			Ship's base (may be Nil)
-		
-	-->
-
-	<ShipClass UNID="&evStdZoneEncounterBehavior;"
-			class=				"(zone encounter behavior)"
-			virtual=			"true"
-			
-			attributes=			"behaviorClass"
-			>
-			
-		<Events>
-			<GetCreatePos>
-				(if aTargetObj
-					(intComputeRandomEncounterPos aTargetObj)
-					)
-			</GetCreatePos>
-
-			<OnBehavior>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003016_behavior"))
-					(switch
-						; If we see any enemy ships and we're inside our patrol zone
-						; then attack. Otherwise, change course and head back to base.
-
-						(eq behavior 'onCourse)
-							(block (theEnemy theBase baseDist)
-								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
-									(switch
-
-										; Attack
-										(and (setq theBase (objGetObjRefData gSource "00003016_homeObj"))
-												(leq (setq baseDist (objGetDistance gSource theBase)) 300)
-												)
-											(block Nil
-												(shpCancelOrders gSource)
-												(shpOrder gSource 'patrol theBase 300)
-												(objSetData gSource "00003016_behavior" 'patrolling)
-												)
-
-										; Back to base
-										theBase
-											(block Nil
-												(shpCancelOrders gSource)
-												(shpOrder gSource 'holdCourse
-													(sysVectorSubtract (objGetPos theBase) (objGetPos gSource))
-													(subtract baseDist 300)
-													)
-												(objSetData gSource "00003016_behavior" 'backToBase)
-												)
-
-										; Leave the system
-										(block Nil
-											(shpCancelOrders gSource)
-											(shpOrder gSource 'gate)
-											(objSetData gSource "00003016_behavior" 'leavingSystem)
-											)
-										)
-									)
-								)
-						)
-					)
-			</OnBehavior>
-			
-			<OnCreateOrders>
-				(block (theCourse homeBase)
-					(if (not aTargetObj)
-						(setq aTargeObj gPlayerShip)
-						)
-
-					; Find our nearest base
-					(setq homeBase (sysFindObject gSource "TAFJN"))
-					(if (not homeBase)
-						(setq homeBase aBaseObj)
-						)
-					(objSetObjRefData gSource "00003016_homeObj" homeBase)
-
-					; Move towards the player's path
-					(setq theCourse (intComputeRandomEncounterCourse gSource aTargetObj))
-					(shpOrder gSource 'holdCourse theCourse 300)
-
-					; Register a timer so that we can look for enemies
-					(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
-					(objSetData gSource "00003016_behavior" 'onCourse)
-					)
-			</OnCreateOrders>
-			
-			<OnOrdersCompleted>
-				(block (behavior)
-					(setq behavior (objGetData gSource "00003016_behavior"))
-					(switch
-						; If we're done with this order, then we never encountered
-						; the player, so we're done, head for a stargate
-						; Note: we might encounter the player en route
-						(eq behavior 'onCourse)
-							(shpOrder gSource 'gate)
-							
-						; If we're done attacking, then we're done
-						(eq behavior 'attackingEnemy)
-							(block Nil
-								(shpOrder gSource 'gate)
-								(objSetData gSource "00003016_behavior" 'onCourse)
-								)
-
-						(eq behavior 'backToBase)
-							(block Nil
-								(shpOrder gSource 'patrol (objGetObjRefData gSource "00003016_homeObj") 300)
-								(objSetData gSource "00003016_behavior" 'patrolling)
-								)
-						)
-					)
-			</OnOrdersCompleted>
-		</Events>
-	</ShipClass>
-	
-	<!-- Wingman Base Class
-
-		USAGE NOTES
-		
-		Do not rely on the implementation of this class across versions. If you wish
-		to inherit from this class in an Extension, you should copy the class into
-		your own Extension and then inherit from that.
-
-		EXTRA DATA
-		
-		behavior:			Ship's current behavior
-								Nil						= nothing
-								'attackingAtWill		= attacking any target in range
-								'attackingTarget		= attacking a target
-								'escorting				= escorting the player
-								'goingHome				= wingman wants to go home
-								'repairingArmor			= docking with station to repair
-								'waiting				= waiting for the player
-
-		homeSystem			System nodeID where we were created
-		nextArmorRepairMsg	Tick at which we should tell player about armor damage
-		welcomeMsg			True if we already said hello to player
-
-		GLOBAL DATA
-
-		status:				Ship's status
-								Nil						= never encountered
-								'joined					= Has joined the player
-								'declined				= Player has declined escort
-								'destroyed				= Dead
-								'destroyedByPlayer		= Killed by player
-								'returnedHome			= Left the player to return home
-								
-	-->
-
-	<ShipClass UNID="&baStdWingmanBase;"
-			class=				"(wingman base class)"
-			virtual=			"true"
-			
-			attributes=			"baseClass"
-			>
-
-		<Communications>
-			<Message name="Attack target" key="A">
-				<OnShow>
-					(and (objGetTarget gSender)
-						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
-						(not (eq (objGetData gSource "behavior") 'goingHome))
-						)
-				</OnShow>
-				
-				<Invoke>
-					(switch
-						(eq (objGetTarget gSender) gSource)
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself "\"Unable to comply\""))
-							
-						(not (objIsEnemy gPlayerShip (objGetTarget gSender)))
-							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends "\"Unable to comply\""))
-
-						(block Nil
-							(shpCancelOrders gSource)
-							(shpOrder gSource 'attack (objGetTarget gSender))
-							
-							(objSetData gSource "behavior" 'attackingTarget)
-							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
-							)
-						)
-				</Invoke>
-			</Message>
-			
-			<Message name="Break &amp; attack" key="B">
-				<OnShow>
-					(eq (objGetData gSource "behavior") 'escorting)
-				</OnShow>
-				
-				<Invoke>
-					(block (theTarget)
-						(switch
-							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
-									(gr (objGetDistance gPlayerShip theTarget) 100)
-									)
-								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
-							
-							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'attack theTarget)
-								
-								(objSetData gSource "behavior" 'attackingAtWill)
-								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Acknowledged\""))
-								)
-							)
-						)
-				</Invoke>
-			</Message>
-
-			<Message name="Form up" key="F">
-				<OnShow>
-					(and 
-						(or (eq (objGetData gSource "behavior") 'waiting)
-							(objCommunicate gSource gSender 'QueryAttackStatus)
-							)
-						(not (eq (objGetData gSource "behavior") 'goingHome))
-						)
-				</OnShow>
-
-				<Invoke>
-					(block (behavior)
-						(setq behavior (objGetData gSource "behavior"))
-						(switch
-							(eq behavior 'escorting)
-								(block Nil
-									(objCommunicate gSource gSender 'FormUp)
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
-									)
-
-							(block Nil
-								(shpCancelOrders gSource)
-								(shpOrder gSource 'follow gPlayerShip)
-								
-								(objSetData gSource "behavior" 'escorting)
-								(if (or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
-									(objSendMessage gSender gSource (objTranslate gSource 'CancelAttackAck "\"Acknowledged\""))
-									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Acknowledged\""))
-									)
-								)
-							)
-						)
-				</Invoke>
-			</Message>
-			
-			<Message name="Status" key="S">
-				<OnShow>
-					True
-				</OnShow>
-				
-				<Invoke>
-					(block (behavior armorDamage shieldLevel)
-						(setq behavior (objGetData gSource "behavior"))
-						
-						(objSendMessage gSender gSource
-							(switch
-								(or (eq behavior 'attackingTarget) (eq behavior 'attackingAtWill))
-									(objTranslate gSource 'StatusAttackingTarget "\"Engaging target\"")
-
-								(eq behavior 'goingHome)
-									(objTranslate gSource 'StatusGoingHome "\"Returning home\"")
-								
-								(eq behavior 'repairingArmor)
-									(objTranslate gSource 'StatusRepairingArmor "\"Repairing armor\"")
-									
-								(eq behavior 'waiting)
-									(objTranslate gSource 'StatusWaiting "\"Waiting\"")
-									
-								(and (eq (setq armorDamage (objGetVisibleDamage gSource)) 0)
-										(or (eq (setq shieldLevel (objGetShieldLevel gSource)) 100) (eq shieldLevel -1))
-										)
-									(objTranslate gSource 'Status100Percent "\"No damage\"")
-
-								(eq armorDamage 0)
-									(cat "Shields down to " shieldLevel "%")
-								
-								(cat "Armor is " armorDamage "% damaged")
-								)
-							)
-							
-						(objSetShowAsDestination gSource Nil 'autoclear)
-						)
-				</Invoke>
-			</Message>
-
-			<Message name="Wait" key="W">
-				<OnShow>
-					(eq (objGetData gSource "behavior") 'escorting)
-				</OnShow>
-
-				<Invoke>
-					(block Nil
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'hold)
-						
-						(objSetData gSource "behavior" 'waiting)
-						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Acknowledged\""))
-						)
-				</Invoke>
-			</Message>
-		</Communications>
-		
-		<Language>
-			<Text id="EscortReportingIn">
-				(if (not (objGetData gSource "welcomeMsg"))
-					(block Nil
-						(objSetData gSource "welcomeMsg" True)
-						(objTranslate gSource 'WingmanJoined "\"Ready\"")
-						)
-					""
-					)
-			</Text>
-			
-			<Text id="NiceShooting">			"\"Nice shooting!\""</Text>
-			<Text id="WatchYourTargets">		"\"Watch your targets!\""</Text>
-		</Language>
-		
-		<Events>
-			<OnBehavior>
-				(block (behavior theTarget nextTime maxSystemLevel armorDamage)
-					(setq behavior (objGetData gSource "behavior"))
-					
-					(switch
-						; If we're injured and we're near a base that repairs armor then
-						; dock with the base and get repaired
-
-						(and (eq behavior 'escorting)
-								(geq (setq armorDamage (objGetVisibleDamage gSource)) 10)
-								(not (objIsUnderAttack gSource))
-								)
-							(switch
-								; Some wingmen (like Jenna) doesn't want to proceed beyond a certain point
-								(and (setq maxSystemLevel (objGetStaticData gSource "MaxSystemLevel"))
-										(gr (sysGetLevel) maxSystemLevel)
-										)
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'hold 30)
-										(shpOrder gSource 'gate (intGetGateToSystem gSource (objGetData gSource "homeSystem")))
-
-										(objSetData gSource "behavior" 'goingHome)
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImGoingHome "\"Going home\""))
-										)
-								
-								; If there is a station that can repair armor, dock with it
-								(setq theTarget (srvFindRepairArmor gSource 60 (itmGetLevel (shpGetArmor gSource 0))))
-									(block Nil
-										(shpCancelOrders gSource)
-										(shpOrder gSource 'dock theTarget)
-										(shpOrder gSource 'wait (random 3 8))
-										
-										(objSetData gSource "behavior" 'repairingArmor)
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImRepairingArmor "\"Docking to repair armor\""))
-										)
-									
-								; Otherwise, tell the player that we need repairs
-								(and (geq armorDamage 50)
-										(or (not (setq nextTime (objGetData gSource "nextArmorRepairMsg")))
-											(geq (unvGetTick) nextTime)
-											)
-										)
-									(block Nil
-										(objSendMessage gPlayerShip gSource (objTranslate gSource 'MyArmorNeedsRepair "\"Armor repair needed\""))
-										(objSetData gSource "nextArmorRepairMsg" (add (unvGetTick) 3600))
-										)
-								)
-						)
-					)
-			</OnBehavior>
-
-			<OnCreate>
-				(block Nil
-					(objSetData gSource "homeSystem" (sysGetNode))
-					(sysAddObjRecurringTimerEvent 60 gSource "OnBehavior")
-					)
-			</OnCreate>
-
-			<OnDestroy>
-				(switch
-					(eq (objGetGlobalData gSource "status") 'returnedHome)
-						Nil
-
-					(and gPlayerShip (eq aOrderGiver gPlayerShip))
-						(objSetGlobalData gSource "status" 'destroyedByPlayer)
-
-					(block Nil
-						(objSetGlobalData gSource "status" 'destroyed)
-						(plyMessage gPlayer (objTranslate gSource 'WingmanKilled "Wingman killed"))
-						)
-					)
-			</OnDestroy>
-			
-			<OnEnteredGate>
-				(if (eq (objGetData gSource "behavior") 'goingHome)
-					(objSetGlobalData gSource "status" 'returnedHome)
-					)
-			</OnEnteredGate>
-			
-			<OnEnteredSystem>
-				(block (maxSystemLevel)
-					(setq maxSystemLevel (objGetStaticData gSource "MaxSystemLevel"))
-					(switch
-						(not maxSystemLevel)
-							Nil
-							
-						(eq (objGetData gSource "homeSystem") (sysGetNode))
-							Nil
-
-						(geq (sysGetLevel) maxSystemLevel)
-							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImTooFarFromHome "\"I'm too far from home\""))
-
-						(eq (sysGetLevel) (subtract maxSystemLevel 1))
-							(objSendMessage gPlayerShip gSource (objTranslate gSource 'ImFarFromHome "\"I'm far from home\""))
-						)
-					)
-			</OnEnteredSystem>
-
-			<OnOrdersCompleted>
-				(block (behavior theTarget)
-					(setq behavior (objGetData gSource "behavior"))
-					(switch
-						(eq behavior 'repairingArmor)
-							(block Nil
-								(intArmorRepairAll gSource 25 'alwaysRepair)
-								(objSendMessage gPlayerShip gSource (objTranslate gSource 'ArmorRepaired "\"Armor repairs completed\""))
-								)
-						)
-					
-					; Set orders and state
-					
-					(switch
-						(and (eq behavior 'attackingAtWill)
-								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
-								(leq (objGetDistance gPlayerShip theTarget) 100)
-								)
-							(shpOrder gSource 'attack theTarget)
-								
-						gPlayerShip
-							(block Nil
-								(shpOrder gSource 'follow gPlayerShip)
-								(objSetData gSource "behavior" 'escorting)
-								)
-
-						(block Nil
-							(shpOrder gSource 'hold)
-							(objSetData gSource "behavior" 'waiting)
-							)
-						)
-					)
-			</OnOrdersCompleted>
-			
-			<OnPlayerLeftSystem>
-				(block (behavior)
-					(setq behavior (objGetData gSource "behavior"))
-					(switch
-						(or (not behavior)
-								(eq behavior 'goingHome)
-								)
-							Nil
-
-						; If we're waiting, stay in this system and wait for the player
-						(or (eq behavior 'waiting)
-								(eq behavior 'repairingArmor)
-								)
-							'waitForPlayer
-
-						; Otherwise, follow the player through the gate
-						'followPlayer
-						)
-					)
-			</OnPlayerLeftSystem>
-			
-			<OnTranslateMessage>
-				(switch
-					(eq aMessage 'EscortReportingIn)
-						(if (not (objGetData gSource "welcomeMsg"))
-							(block Nil
-								(objSetData gSource "welcomeMsg" True)
-								(objTranslate gSource 'WingmanJoined "\"Ready\"")
-								)
-							""
-							)
-							
-					(eq aMessage 'WatchYourTargets)
-						(objTranslate gSource 'WatchYourTargets "\"Watch your targets!\"")
-						
-					(eq aMessage 'NiceShooting)
-						(objTranslate gSource 'NiceShooting "\"Nice shooting!\"")
-						
-					Nil
-					)
-			</OnTranslateMessage>
-
-			<OrderJoinPlayer>
-				(block Nil
-					(shpSetPlayerWingman gSource)
-					(objSetGlobalData gSource "status" 'joined)
-					)
-			</OrderJoinPlayer>
-		</Events>
-	</ShipClass>
-
 <!-- SHIP CLASSES ========================================================= -->
 
 	<!-- EI100/M Missileship-->
@@ -1810,7 +1107,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI100/M"
 			type=				"missileship"
-			score=				"245"
 
 			mass=				"250"
 			cargoSpace=			"150"
@@ -1847,6 +1143,7 @@
 			fireRateAdj=		"60"
 			fireAccuracy=		"100"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -1856,30 +1153,37 @@
 
 	<ShipClass UNID="&scTenhoveSentinel;"
 			manufacturer=		"Tenhove Defense Systems"
-			class=				"Tenhove"
+			class=				"TA3"
 			type=				"sentinel"
-			score=				"25"
 
-			mass=				"15"
-			cargoSpace=			"0"
-			thrust=				"30"
+			attributes=			"auton, genericClass"
+
+			size=				"4"
+			mass=				"3"
+			thrustRatio=		"3"
 			maneuver=			"1"
 			maxSpeed=			"5"
+			cargoSpace=			"0"
 
 			leavesWreck=		"10"
-
-			attributes=			"genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumPlate;"/>
-		</Armor>
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightTitaniumPlate;"
+			count=				"1"
+			/>
 
 		<Devices>
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
 
+		<!-- Image and Effects -->
+
 		<Image imageID="&rsSmallShips1;" imageX="96" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"50"
@@ -1888,21 +1192,6 @@
 			/>
 
 	</ShipClass>
-
-<!-- *************************************************************************** -->
-
-	<SpaceEnvironmentType UNID="&seNebula;"
-			lrsJammer=			"true"
-			dragFactor=			"73"
-			attributes=			"nebula"
-			>
-
-		<Image imageID="&rsNebulaEnv;" 
-				imageX="0" 
-				imageY="0" 
-				imageWidth="640" 
-				imageHeight="640"/>
-	</SpaceEnvironmentType>
 
 <!-- STATION TYPES ============================================================
 

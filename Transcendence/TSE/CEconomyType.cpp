@@ -50,6 +50,16 @@ CurrencyValue CEconomyType::Exchange (CEconomyType *pFrom, CurrencyValue iAmount
 		}
 	}
 
+CurrencyValue CEconomyType::ExchangeToCredits (CEconomyType *pFrom, CurrencyValue iAmount)
+
+//	ExchangeToCredits
+//
+//	Converts the given amount to credits.
+
+	{
+	return pFrom->m_iCreditConversion * iAmount / 100;
+	}
+
 bool CEconomyType::FindDataField (const CString &sField, CString *retsValue)
 
 //	FindDataField

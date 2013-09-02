@@ -291,53 +291,15 @@ void CTranscendenceWnd::DoUseItemCommand (DWORD dwData)
 //	Use an item
 
 	{
+	//	Get the item
+
 	CShip *pShip = GetPlayer()->GetShip();
 	CItemList &ItemList = pShip->GetItemList();
 	CItem &Item = ItemList.GetItem(dwData);
-	CItemType *pType = Item.GetType();
 
-	//	Use in cockpit
+	//	Use it
 
-	if (pType->IsUsableInCockpit())
-		{
-		CString sError;
-
-		//	Run the invoke script
-
-		pShip->UseItem(Item, &sError);
-
-		//	Done
-
-		if (!sError.IsBlank())
-			DisplayMessage(sError);
-
-		pShip->OnComponentChanged(comCargo);
-		}
-
-	//	Use screen
-
-	else if (pType->GetUseScreen())
-		{
-		CCodeChain &CC = g_pUniverse->GetCC();
-
-		ICCItem *pItem = CreateListFromItem(CC, Item);
-		CC.DefineGlobal(CONSTLIT("gItem"), pItem);
-		pItem->Discard(&CC);
-
-		//	Show the dock screen
-
-		CString sScreen;
-		CDesignType *pRoot = pType->GetUseScreen(&sScreen);
-		CString sError;
-		if (!GetModel().ShowShipScreen(pType, pRoot, sScreen, NULL_STR, NULL, &sError))
-			{
-			g_pTrans->DisplayMessage(sError);
-			::kernelDebugLogMessage(sError);
-			return;
-			}
-
-		pShip->OnComponentChanged(comCargo);
-		}
+	GetModel().UseItem(Item);
 
 	//	Dismiss picker
 
@@ -412,6 +374,28 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 		}
 
 	return dwStatus;
+	}
+
+void CTranscendenceWnd::HideCommsTargetMenu (void)
+
+//	HideCommsTargetMenu
+//
+//	Remove all highlight keys
+
+	{
+	int i;
+
+	if (m_CurrentMenu == menuCommsTarget)
+		{
+		for (i = 0; i < m_MenuData.GetCount(); i++)
+			{
+			CSpaceObject *pObj = (CSpaceObject *)m_MenuData.GetItemData(i);
+			if (pObj)
+				pObj->SetHighlightChar(0);
+			}
+
+		m_CurrentMenu = menuNone;
+		}
 	}
 
 ALERROR CTranscendenceWnd::InitDisplays (void)
@@ -890,6 +874,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 							pObj->GetName(),
 							0,
 							(DWORD)pObj);
+
+					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
 					}
 				}
 			}
@@ -913,6 +899,8 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 							pObj->GetName(),
 							0,
 							(DWORD)pObj);
+
+					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
 					}
 				}
 			}

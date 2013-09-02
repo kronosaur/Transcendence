@@ -15,6 +15,8 @@ static CObjectClass<CMission>g_MissionClass(OBJID_CMISSION, NULL);
 #define EVENT_ON_STARTED						CONSTLIT("OnStarted")
 
 #define PROPERTY_ACCEPTED_ON					CONSTLIT("acceptedOn")
+#define PROPERTY_DEBRIEFER_ID					CONSTLIT("debrieferID")
+#define PROPERTY_FORCE_UNDOCK_AFTER_DEBRIEF		CONSTLIT("forceUndockAfterDebrief")
 #define PROPERTY_IS_ACTIVE						CONSTLIT("isActive")
 #define PROPERTY_IS_COMPLETED					CONSTLIT("isCompleted")
 #define PROPERTY_IS_DEBRIEFED					CONSTLIT("isDebriefed")
@@ -119,6 +121,10 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			//	station that gave the mission).
 
 			FireOnSetPlayerTarget(REASON_FAILURE);
+
+			//	Let the player record the mission failure
+
+			pPlayer->OnMissionCompleted(this, false);
 			}
 
 		//	Mission success
@@ -143,6 +149,10 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			//	station that gave the mission).
 
 			FireOnSetPlayerTarget(REASON_SUCCESS);
+
+			//	Let the player record the mission success
+
+			pPlayer->OnMissionCompleted(this, true);
 			}
 
 		//	If there is no debrief, then we close the mission
@@ -186,6 +196,13 @@ ALERROR CMission::Create (CMissionType *pType,
 	{
 	CMission *pMission;
 
+	//	If we cannot encounter this mission, then we fail
+
+	if (!pType->CanBeEncountered())
+		return ERR_NOTFOUND;
+
+	//	Create the new object
+
 	pMission = new CMission;
 	if (pMission == NULL)
 		{
@@ -203,6 +220,7 @@ ALERROR CMission::Create (CMissionType *pType,
 	pMission->m_fDebriefed = false;
 	pMission->m_fAcceptedByPlayer = false;
 	pMission->m_pOwner = pOwner;
+	pMission->m_pDebriefer = NULL;
 
 	//	NodeID
 
@@ -216,6 +234,10 @@ ALERROR CMission::Create (CMissionType *pType,
 	pMission->m_fInMissionSystem = true;
 	pMission->m_dwAcceptedOn = 0;
 	pMission->m_dwLeftSystemOn = 0;
+
+	//	Set flags so we know which events we have
+
+	pMission->SetEventFlags();
 
 	//	Fire OnCreate
 
@@ -421,6 +443,19 @@ ICCItem *CMission::GetProperty (const CString &sName)
 	if (strEquals(sName, PROPERTY_ACCEPTED_ON))
 		return (m_fAcceptedByPlayer ? CC.CreateInteger(m_dwAcceptedOn) : CC.CreateNil());
 
+	else if (strEquals(sName, PROPERTY_DEBRIEFER_ID))
+		{
+		if (m_pDebriefer.GetID() != OBJID_NULL)
+			return CC.CreateInteger(m_pDebriefer.GetID());
+		else if (m_pOwner.GetID() != OBJID_NULL)
+			return CC.CreateInteger(m_pOwner.GetID());
+		else
+			return CC.CreateNil();
+		}
+
+	else if (strEquals(sName, PROPERTY_FORCE_UNDOCK_AFTER_DEBRIEF))
+		return CC.CreateBool(m_pType->ForceUndockAfterDebrief());
+
 	else if (strEquals(sName, PROPERTY_IS_ACTIVE))
 		return CC.CreateBool(IsActive());
 
@@ -527,6 +562,28 @@ bool CMission::MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria
 			}
 		}
 
+	if (Criteria.bOnlySourceDebriefer)
+		{
+		if (m_pDebriefer.GetID() != OBJID_NULL)
+			{
+			if (pSource == NULL || pSource->GetID() != m_pDebriefer.GetID())
+				return false;
+			}
+		else
+			{
+			if (pSource)
+				{
+				if (pSource->GetID() != m_pOwner.GetID())
+					return false;
+				}
+			else
+				{
+				if (m_pOwner.GetID() != OBJID_NULL)
+					return false;
+				}
+			}
+		}
+
 	//	Check required attributes
 
 	for (i = 0; i < Criteria.AttribsRequired.GetCount(); i++)
@@ -604,6 +661,7 @@ void CMission::OnNewSystem (CSystem *pSystem)
 	//	Resolve owner
 
 	m_pOwner.Resolve();
+	m_pDebriefer.Resolve();
 
 	//	Clear any object references (because they might belong to a different
 	//	system).
@@ -626,6 +684,24 @@ void CMission::OnNewSystem (CSystem *pSystem)
 			}
 		else
 			{
+			//	If mission fails when we leave the system, fail now
+
+			if (m_pType->GetOutOfSystemTimeOut() == 0)
+				SetFailure(NULL);
+
+			//	If required, close the mission
+
+			if (!m_fDebriefed 
+					&& IsCompleted() 
+					&& m_pType->CloseIfOutOfSystem())
+				{
+				m_fDebriefed = true;
+
+				FireOnSetPlayerTarget(REASON_DEBRIEFED);
+				CloseMission();
+				return;
+				}
+
 			//	Left the system. If we used to be in our system, then keep 
 			//	track of when we left.
 
@@ -669,9 +745,23 @@ void CMission::OnObjDestroyedNotify (SDestroyCtx &Ctx)
 				}
 			}
 
-		//	Clear out owner pointer
+		//	Clear out owner pointer (unless we left a wreck)
 
-		m_pOwner.CleanUp();
+		if (Ctx.pWreck == NULL)
+			m_pOwner.CleanUp();
+		else if (Ctx.pWreck->GetID() != m_pOwner.GetID())
+			m_pOwner = Ctx.pWreck;
+		}
+
+	if (Ctx.pObj->GetID() == m_pDebriefer.GetID())
+		{
+		//	If our debriefer has been destroyed, then remove it.
+		//	(But only if it didn't leave a wreck).
+
+		if (Ctx.pWreck == NULL)
+			m_pDebriefer.CleanUp();
+		else if (Ctx.pWreck->GetID() != m_pDebriefer.GetID())
+			m_pDebriefer = Ctx.pWreck;
 		}
 	}
 
@@ -695,7 +785,8 @@ void CMission::OnReadFromStream (SLoadCtx &Ctx)
 //
 //	DWORD		Mission type UNID
 //	DWORD		Mission status
-//	DWORD		CGlobalSpaceObject
+//	CGlobalSpaceObject	m_pOwner
+//	CGlobalSpaceObject	m_pDebriefer
 //	CString		m_sNodeID
 //	DWORD		m_dwCreatedOn
 //	DWORD		m_dwLeftSystemOn
@@ -716,6 +807,9 @@ void CMission::OnReadFromStream (SLoadCtx &Ctx)
 	m_iStatus = (EStatus)dwLoad;
 
 	m_pOwner.ReadFromStream(Ctx);
+	if (Ctx.dwVersion >= 89)
+		m_pDebriefer.ReadFromStream(Ctx);
+
 	m_sNodeID.ReadFromStream(Ctx.pStream);
 
 	if (Ctx.dwVersion >= 85)
@@ -753,6 +847,10 @@ void CMission::OnReadFromStream (SLoadCtx &Ctx)
 
 	if (Ctx.dwVersion < 84)
 		m_fInMissionSystem = true;
+
+#ifdef DEBUG
+	SetEventFlags();
+#endif
 	}
 
 void CMission::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
@@ -774,7 +872,19 @@ void CMission::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			&& (iTimeout = m_pType->GetOutOfSystemTimeOut()) != -1)
 		{
 		if (m_dwLeftSystemOn + iTimeout < (DWORD)g_pUniverse->GetTicks())
+			{
 			SetFailure(NULL);
+
+			//	If required, close the mission
+
+			if (!m_fDebriefed && m_pType->CloseIfOutOfSystem())
+				{
+				m_fDebriefed = true;
+
+				FireOnSetPlayerTarget(REASON_DEBRIEFED);
+				CloseMission();
+				}
+			}
 		}
 	}
 
@@ -787,7 +897,8 @@ void CMission::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		Mission type UNID
 //	DWORD		Mission status
 //	DWORD		Player status
-//	DWORD		CGlobalSpaceObject
+//	CGlobalSpaceObject	m_pOwner
+//	CGlobalSpaceObject	m_pDebriefer
 //	CString		m_sNodeID
 //	DWORD		m_dwCreatedOn
 //	DWORD		m_dwLeftSystemOn
@@ -806,6 +917,7 @@ void CMission::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	m_pOwner.WriteToStream(pStream);
+	m_pDebriefer.WriteToStream(pStream);
 	m_sNodeID.WriteToStream(pStream);
 	pStream->Write((char *)&m_dwCreatedOn, sizeof(DWORD));
 	pStream->Write((char *)&m_dwLeftSystemOn, sizeof(DWORD));
@@ -864,6 +976,10 @@ bool CMission::ParseCriteria (const CString &sCriteria, SCriteria *retCriteria)
 
 			case 'u':
 				retCriteria->bIncludeUnavailable = true;
+				break;
+
+			case 'D':
+				retCriteria->bOnlySourceDebriefer = true;
 				break;
 
 			case 'S':
@@ -957,6 +1073,7 @@ bool CMission::SetAccepted (void)
 
 	m_fAcceptedByPlayer = true;
 	m_dwAcceptedOn = g_pUniverse->GetTicks();
+	m_pType->IncAccepted();
 
 	//	Player accepts the mission
 
@@ -964,7 +1081,16 @@ bool CMission::SetAccepted (void)
 
 	CSpaceObject *pOwner = m_pOwner.GetObj();
 	if (pOwner)
+		{
+		//	Track mission accept stats
+
+		if (KeepsStats())
+			g_pUniverse->GetObjStatsActual(pOwner->GetID()).iPlayerMissionsGiven++;
+
+		//	Let the mission given know
+
 		pOwner->FireOnMissionAccepted(this);
+		}
 
 	//	If the above call changed anything, then we're done
 
@@ -1144,6 +1270,14 @@ bool CMission::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 			else
 				m_fDebriefed = false;
 			}
+		}
+
+	else if (strEquals(sName, PROPERTY_DEBRIEFER_ID))
+		{
+		if (pValue->IsNil())
+			m_pDebriefer.SetID(OBJID_NULL);
+		else
+			m_pDebriefer.SetID(pValue->GetIntegerValue());
 		}
 
 	else if (strEquals(sName, PROPERTY_IS_DECLINED))

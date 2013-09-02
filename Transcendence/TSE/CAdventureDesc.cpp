@@ -276,9 +276,9 @@ bool CAdventureDesc::IsValidStartingClass (CShipClass *pClass)
 //	Return TRUE if this ship class is a valid starting class for this adventure.
 
 	{
-	if (m_fIncludeOldShipClasses && pClass->GetVersion() < 12)
+	if (m_fIncludeOldShipClasses && pClass->GetAPIVersion() < 12)
 		{
-		if (pClass->HasAttribute(CONSTLIT("notInPartI")))
+		if (pClass->HasLiteralAttribute(CONSTLIT("notInPartI")))
 			return false;
 		else
 			return true;

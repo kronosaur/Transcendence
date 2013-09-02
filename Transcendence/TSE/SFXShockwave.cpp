@@ -109,7 +109,7 @@ void CShockwaveEffectCreator::CreateGlowGradient (int iSolidWidth, int iGlowWidt
 		}
 	}
 
-IEffectPainter *CShockwaveEffectCreator::CreatePainter (void)
+IEffectPainter *CShockwaveEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //

@@ -13,7 +13,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Aurochs"
 			type=				"mine layer"
-			score=				"975"
 
 			mass=				"8000"
 			cargoSpace=			"5600"
@@ -103,6 +102,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"standOff"
 			/>
 
@@ -120,7 +120,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"150"
+			hitPoints=			"300"
 			fireRateAdj=		"20"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -171,7 +171,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"250"
+			hitPoints=			"400"
 			repairRate=			"1"
 			shipRepairRate=		"1"
 			fireRateAdj=		"20"

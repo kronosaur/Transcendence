@@ -174,13 +174,14 @@
 
 			<!-- Random Debris -->
 
-			<RandomLocation probability="50" locationCriteria="++outerSystem; ++asteroids">
+			<RandomLocation probability="50" locationCriteria="++outerSystem; ++asteroids; !void">
 				<Orbitals count="1d6" distance="1d8+6" angle="random">
 					<RandomStation stationCriteria="*debris"/>
 				</Orbitals>
 			</RandomLocation>
 
 			<FillLocations
+					locationCriteria=	"!void"
 					percentFull=		"50"
 					stationCriteria=	"*debris"
 					/>

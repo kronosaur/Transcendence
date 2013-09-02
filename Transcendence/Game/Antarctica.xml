@@ -55,7 +55,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
-			score=				"2855"
 
 			mass=				"50000"
 			cargoSpace=			"5000"
@@ -753,7 +752,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"Commonwealth Star Carrier"
 			type=				""
-			score=				"3655"
 
 			mass=				"50000"
 			cargoSpace=			"5000"
@@ -1438,17 +1436,17 @@
 
 		<Items>
 			<RandomItem count="10" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="3" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
@@ -1672,13 +1670,13 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1703,7 +1701,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gArmorSegment 0)
@@ -1798,38 +1796,7 @@
 
 		<SystemGroup>
 
-			<!-- Star -->
-
-			<Station type="&stRedGiantStar;"/>
-
-			<!-- Worlds -->
-
-			<Orbitals count="1d3+4" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
-
-				<Variants>
-					<Lookup	maxRadius="100" table="Vulcanoids"/>
-					<Table maxRadius="300">
-						<Lookup chance="75" table="VolcanicWorld"/>
-						<Lookup chance="20" table="DesertWorld"/>
-						<Lookup chance="5"  table="RockyWorld"/>
-					</Table>
-					<Table maxRadius="500">
-						<Lookup chance="25" table="DesertWorld"/>
-						<Lookup chance="50" table="VolcanicWorld"/>
-						<Lookup chance="15" table="RockyWorld"/>
-						<Lookup chance="10" table="GasGiant"/>
-					</Table>
-					<Table maxRadius="2000">
-						<Lookup chance="5"  table="DesertWorld"/>
-						<Lookup chance="15" table="IcyWorld"/>
-						<Lookup chance="20" table="GasGiant"/>
-						<Lookup chance="40" table="MethaneGiant"/>
-						<Lookup chance="15" table="RingedWorld"/>
-						<Lookup chance="5"  table="OuterRockyGroup"/>
-					</Table>
-				</Variants>
-
-			</Orbitals>
+			<Lookup table="VolcanicSystem"/>
 
 			<!-- Place the two stargates -->
 

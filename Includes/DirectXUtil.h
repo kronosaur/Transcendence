@@ -43,6 +43,16 @@ typedef double RealPixelChannel;
 class CG16bitFont;
 class CG16bitImage;
 
+enum AlignmentStyles
+	{
+	alignLeft =				0x00000001,
+	alignCenter =			0x00000002,
+	alignRight =			0x00000004,
+	alignTop =				0x00000008,
+	alignMiddle =			0x00000010,
+	alignBottom =			0x00000020,
+	};
+
 struct SPoint
 	{
 	int x;
@@ -203,6 +213,7 @@ class CG16bitImage : public CObject
 								 Metric xSrcInc, Metric ySrcInc,
 								 int *xDest, int *yDest,
 								 int *cxDest, int *cyDest);
+		int AdjustTextX (const CG16bitFont &Font, const CString &sText, AlignmentStyles iAlign, int x);
 		void AssociateSurface (LPDIRECTDRAW7 pDD);
 		void ConvertToSprite (void);
 		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0);
@@ -490,16 +501,6 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 void DrawRectDotted (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, WORD wColor);
 void DrawDottedLine (CG16bitImage &Dest, int x1, int y1, int x2, int y2, WORD wColor);
 
-enum AlignmentStyles
-	{
-	alignLeft =				0x00000001,
-	alignCenter =			0x00000002,
-	alignRight =			0x00000004,
-	alignTop =				0x00000008,
-	alignMiddle =			0x00000010,
-	alignBottom =			0x00000020,
-	};
-
 enum EffectTypes
 	{
 	effectShadow =			0x01,
@@ -597,53 +598,43 @@ class CG16bitFont : public CObject
 		bool m_bUnderline;			//	Underline
 	};
 
-#ifdef LATER
-enum PenStyles
-	{
-	penSolid,
-	penDashed,
-	};
-
-struct SPenDesc
-	{
-	SPenDesc (void) :
-			iStyle(penSolid),
-			rThickness(1.0),
-			wColor(CG16bitImage::RGBValue(255, 255, 255))
-		{ }
-
-	PenStyles iStyle;
-	Metric rThickness;
-	WORD wColor;
-	BYTE byOpacity;
-	};
-
-class CG16bitRealRegion
+class CG16bitRegion
 	{
 	public:
-		void CreateRect (const CVector &vFrom, const CVector &vTo, Metric rHeight);
+		CG16bitRegion (void);
+		~CG16bitRegion (void) { CleanUp(); }
+
+		void CleanUp (void);
+		void ColorTransBlt (CG16bitImage &Dest, int xDest, int yDest, CG16bitImage &Src, int xSrc, int ySrc, int cxWidth, int cyHeight);
+		ALERROR CreateFromMask (const CG16bitImage &Source, int xSrc, int ySrc, int cxWidth, int cyHeight);
 
 	private:
-		struct SRun
+		enum ECodes
 			{
-			int x;						//	x start of run
-			int cx;						//	length of run
-			BYTE byOpacity;				//	opacity 0-255
+			codeMask =			0xC000,
+			countMask =			0x3FFF,
+
+			code00 =			0x0000,
+			codeRun =			0x4000,
+			codeEndOfLine =		0x8000,
+			codeFF =			0xC000,
 			};
 
-		struct SLine
-			{
-			int y;						//	y position of line
-			TArray<SRun> Runs;			//	Runs sorted by increasing x
-			};
+		void AllocCode (DWORD dwNewAlloc);
+		void ColorTransBltAlpha (CG16bitImage &Dest, int xDest, int yDest, CG16bitImage &Src, int xSrc, int ySrc, int cxWidth, int cyHeight, int xMask, int yMask);
+		void ColorTransBltBackColor (CG16bitImage &Dest, int xDest, int yDest, CG16bitImage &Src, int xSrc, int ySrc, int cxWidth, int cyHeight, int xMask, int yMask);
+		void ColorTransBltPlain (CG16bitImage &Dest, int xDest, int yDest, CG16bitImage &Src, int xSrc, int ySrc, int cxWidth, int cyHeight, int xMask, int yMask);
+		void WriteCode (WORD *&pCode, DWORD &dwCodeSize, DWORD dwCode, DWORD dwCount);
+		void WriteCodeRun (WORD *&pCode, DWORD &dwCodeSize, BYTE *pRun, DWORD dwCount);
 
-		inline void DeleteAll (void) { m_Lines.DeleteAll(); }
-
-		TArray<SLine> m_Lines;			//	Lines sorted by incresing y
+		int m_cxWidth;
+		int m_cyHeight;
+		DWORD m_dwAlloc;
+		WORD *m_pCode;
+		TArray<DWORD> m_LineIndex;
 	};
-#endif
 
-class CG16bitRegion
+class CG16bitBinaryRegion
 	{
 	public:
 		struct SRun
@@ -653,8 +644,8 @@ class CG16bitRegion
 			int y;
 			};
 
-		CG16bitRegion (void);
-		~CG16bitRegion (void);
+		CG16bitBinaryRegion (void);
+		~CG16bitBinaryRegion (void);
 
 		void CreateFromPolygon (int iVertexCount, SPoint *pVertexList);
 		void CreateFromConvexPolygon (int iVertexCount, SPoint *pVertexList);
@@ -681,13 +672,155 @@ class CG16bitRegion
 
 bool IsConvexPolygon (int iVertexCount, SPoint *pVertexList);
 bool IsSimplePolygon (int iVertexCount, SPoint *pVertexList);
-int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitRegion::SRun **retpLines);
-int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG16bitRegion::SRun **retpLines);
+int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitBinaryRegion::SRun **retpLines);
+int CreateScanLinesFromSimplePolygon (int iVertexCount, SPoint *pVertexList, CG16bitBinaryRegion::SRun **retpLines);
 
 inline void CG16bitImage::DrawText (int x, int y, const CG16bitFont &Font, WORD wColor, CString sText, DWORD dwFlags, int *retx)
 	{
 	Font.DrawText(*this, x, y, wColor, sText, dwFlags, retx);
 	}
+
+class CG16bitLinePainter
+	{
+	public:
+		struct SPixelDesc
+			{
+			WORD *pPos;						//	Pixel to draw on
+			DWORD dwOpacity;				//	Opacity
+			int x;							//	x-coordinate on image
+			int y;							//	y-coordinate on image
+
+			double rV;						//	Distance from start to end along line (0 to 1.0)
+			double rW;						//	Distance perpendicular to line axis (0 to 1.0)
+			};
+
+		void PaintSolid (CG16bitImage &Image, int x1, int y1, int x2, int y2, int iWidth, WORD wColor);
+		void Rasterize (CG16bitImage &Image, int x1, int y1, int x2, int y2, int iWidth, TArray<SPixelDesc> *retPixels);
+
+	private:
+		enum ESlopeTypes
+			{
+			lineNull,						//	No line
+			linePoint,						//	Single point
+			lineXDominant,
+			lineYDominant,
+			};
+
+		ESlopeTypes CalcIntermediates (const CG16bitImage &Image, int x1, int y1, int x2, int y2, int iWidth);
+		void CalcPixelMapping (int x1, int y1, int x2, int y2, double *retrV, double *retrW);
+
+		inline void NextX (int &x, int &y)
+			{
+			if (m_d >= 0)
+				{
+				y = y + m_sy;
+				m_d = m_d - m_ax;
+				m_rWUp += m_rWUpInc;
+				m_rWDown -= m_rWDownDec;
+				}
+
+			m_d = m_d + m_ay;
+			m_rWUp -= m_rWUpDec;
+			m_rWDown += m_rWDownInc;
+			}
+
+		inline void NextY (int &x, int &y)
+			{
+			if (m_d >= 0)
+				{
+				x = x + m_sx;
+				m_d = m_d - m_ay;
+				m_rWUp += m_rWUpInc;
+				m_rWDown -= m_rWDownDec;
+				}
+
+			m_d = m_d + m_ax;
+			m_rWUp -= m_rWUpDec;
+			m_rWDown += m_rWDownInc;
+			}
+
+		inline void NextX (int &x, int &y, double &rV, double &rW)
+			{
+			if (m_d >= 0)
+				{
+				y = y + m_sy;
+				m_d = m_d - m_ax;
+				m_rWUp += m_rWUpInc;
+				m_rWDown -= m_rWDownDec;
+
+				rV += m_rVIncY;
+				rW += m_rWIncY;
+				}
+
+			m_d = m_d + m_ay;
+			m_rWUp -= m_rWUpDec;
+			m_rWDown += m_rWDownInc;
+
+			rV += m_rVIncX;
+			rW += m_rWIncX;
+			}
+
+		inline void NextY (int &x, int &y, double &rV, double &rW)
+			{
+			if (m_d >= 0)
+				{
+				x = x + m_sx;
+				m_d = m_d - m_ay;
+				m_rWUp += m_rWUpInc;
+				m_rWDown -= m_rWDownDec;
+
+				rV += m_rVIncX;
+				rW += m_rWIncX;
+				}
+
+			m_d = m_d + m_ax;
+			m_rWUp -= m_rWUpDec;
+			m_rWDown += m_rWDownInc;
+
+			rV += m_rVIncY;
+			rW += m_rWIncY;
+			}
+
+		int m_dx;							//	Distance from x1 to x2
+		int m_sx;							//	Direction (from x1 to x2)
+		int m_ax;							//	absolute distance x (times 2)
+		double m_rL;						//	Length of line
+		int m_xStart;
+		int m_xEnd;
+
+		int m_dy;							//	Distance from y1 to y2
+		int m_sy;							//	Direction (from y1 to y2)
+		int m_ay;							//	absolute distance y (times 2)
+		int m_yStart;
+		int m_yEnd;
+
+		int m_d;							//	Discriminator
+
+		double m_rHalfWidth;				//	Half of width;
+		int m_iAxisHalfWidth;				//	Half line width aligned on dominant axis
+		int m_iAxisWidth;					//	Full width of line aligned on dominant axis
+
+		double m_rWDown;					//	Intermediates for line width
+		double m_rWDownDec;
+		double m_rWDownInc;
+		double m_rWUp;
+		double m_rWUpDec;
+		double m_rWUpInc;
+		int m_wMin;
+		int m_wMax;
+
+		int m_iPosRowInc;					//	Image row offset
+
+		double m_rVPerX;					//	Movement along V (line axis) for every X movement
+		double m_rVPerY;					//	Movement along V for every Y movement
+		double m_rWPerX;					//	Movement along W (perp axis) for every X movement
+		double m_rWPerY;					//	Movement along W for every Y movement
+
+		double m_rVIncX;
+		double m_rVIncY;
+		double m_rWIncX;
+		double m_rWIncY;
+	};
 
 //	 8-bit drawing functions (for masks) ---------------------------------------
 
@@ -1160,6 +1293,7 @@ class CSoundMgr
 			{
 			CString sFilename;
 			bool bPlaying;
+			bool bPaused;
 			int iLength;
 			int iPos;
 			};
@@ -1182,6 +1316,7 @@ class CSoundMgr
 		bool PlayMusic (const CString &sFilename, int iPos = 0, CString *retsError = NULL);
 		int SetMusicVolume (int iVolumeLevel);
 		void StopMusic (void);
+		void TogglePlayPaused (void);
 
 	private:
 		struct SChannel

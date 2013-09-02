@@ -44,6 +44,15 @@ bool CObjectTracker::AccumulateEntries (TArray<SObjList *> &Table, const CDesign
 			pEntry->pNode = pList->pNode;
 			pEntry->pType = pList->pType;
 			pEntry->dwObjID = pList->ObjectIDs[j];
+
+			SObjName *pName = pList->ObjectNames.GetAt(pEntry->dwObjID);
+			if (pName)
+				{
+				pEntry->sName = pName->sName;
+				pEntry->dwNameFlags = pName->dwNameFlags;
+				}
+			else
+				pEntry->sName = pList->pType->GetTypeName(&pEntry->dwNameFlags);
 			}
 		}
 
@@ -195,11 +204,26 @@ void CObjectTracker::Insert (CSpaceObject *pObj)
 //	NOTE: We rely on our caller to NOT insert the same object twice.
 
 	{
+	CDesignType *pType = pObj->GetType();
+	if (pType == NULL)
+		return;
+
 	SObjList *pList = GetList(pObj);
 	if (pList == NULL)
 		return;
 
 	pList->ObjectIDs.Insert(pObj->GetID());
+
+	//	If the name of this object does not match the type, then we store it.
+
+	DWORD dwNameFlags;
+	CString sName = pObj->GetName(&dwNameFlags);
+	if (!strEquals(sName, pType->GetTypeName()))
+		{
+		SObjName *pName = pList->ObjectNames.Insert(pObj->GetID());
+		pName->sName = sName;
+		pName->dwNameFlags = dwNameFlags;
+		}
 	}
 
 void CObjectTracker::ReadFromStream (SUniverseLoadCtx &Ctx)
@@ -217,6 +241,13 @@ void CObjectTracker::ReadFromStream (SUniverseLoadCtx &Ctx)
 //
 //	For each object
 //	DWORD			ObjID
+//
+//	DWORD			No. of names
+//
+//	For each name
+//	DWORD			ObjID
+//	DWORD			Name Flags
+//	CString			Name
 
 	{
 	int i;
@@ -254,6 +285,33 @@ void CObjectTracker::ReadFromStream (SUniverseLoadCtx &Ctx)
 			if (pList)
 				pList->ObjectIDs.Insert(dwLoad);
 			}
+
+		//	Read names
+
+		if (Ctx.dwVersion >= 21)
+			{
+			Ctx.pStream->Read((char *)&iObjCount, sizeof(DWORD));
+
+			for (j = 0; j < iObjCount; j++)
+				{
+				DWORD dwObjID;
+				Ctx.pStream->Read((char *)&dwObjID, sizeof(DWORD));
+
+				if (pList)
+					{
+					SObjName *pName = pList->ObjectNames.Insert(dwObjID);
+			
+					Ctx.pStream->Read((char *)&pName->dwNameFlags, sizeof(DWORD));
+					pName->sName.ReadFromStream(Ctx.pStream);
+					}
+				else
+					{
+					CString sDummy;
+					Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+					sDummy.ReadFromStream(Ctx.pStream);
+					}
+				}
+			}
 		}
 	}
 
@@ -272,6 +330,13 @@ void CObjectTracker::WriteToStream (IWriteStream *pStream)
 //
 //	For each object
 //	DWORD			ObjID
+//
+//	DWORD			No. of names
+//
+//	For each name
+//	DWORD			ObjID
+//	DWORD			Name Flags
+//	CString			Name
 
 	{
 	int i;
@@ -290,6 +355,8 @@ void CObjectTracker::WriteToStream (IWriteStream *pStream)
 		dwSave = pList->pType->GetUNID();
 		pStream->Write((char *)&dwSave, sizeof(DWORD));
 
+		//	Write out all object IDs
+
 		dwSave = pList->ObjectIDs.GetCount();
 		pStream->Write((char *)&dwSave, sizeof(DWORD));
 
@@ -297,6 +364,21 @@ void CObjectTracker::WriteToStream (IWriteStream *pStream)
 			{
 			dwSave = pList->ObjectIDs[j];
 			pStream->Write((char *)&dwSave, sizeof(DWORD));
+			}
+
+		//	Write out all object names
+
+		dwSave = pList->ObjectNames.GetCount();
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+		for (j = 0; j < pList->ObjectNames.GetCount(); j++)
+			{
+			dwSave = pList->ObjectNames.GetKey(j);
+			pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+			const SObjName &Name = pList->ObjectNames[j];
+			pStream->Write((char *)&Name.dwNameFlags, sizeof(DWORD));
+			Name.sName.WriteToStream(pStream);
 			}
 		}
 	}

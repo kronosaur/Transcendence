@@ -381,7 +381,7 @@
 					desc=	"You are floating next to boulders of mined ore.">
 
 				<Actions>
-					<Action name="Bring aboard" key="B" default="1" >
+					<Action name="Bring Aboard" key="B" default="1" >
 						(block Nil
 							(if (objGetItems gPlayerShip "*I +MinersHold;")
 								(scrShowScreen gScreen &dsRPGLoot; {
@@ -446,73 +446,6 @@
 			</Empty>
 		</Panes>
 	</DockScreen>
-	
-<!-- MISCELLANEOUS -->
-
-	<!-- Ore Tables -->
-
-	<ItemTable unid="&tbStoneAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="ccccc ccccc ccccc ccccc ccccc" count="45-60"	item="&itTitaniumOre;"/>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itUraniumOre;"/>
-			<Item levelFrequency="vvvvv vvvvv vvvvv vvvvv vvvvv" count="10-50"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itHeliumRegolith;"/>
-			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPalladiumOre;"/>
-			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
-			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vv vvvvv vvvvv vvvvv vvvvv" count="1-35"	item="&itGoldOre;"/>
-			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v vvvvv vvvvv vvvvv vvvvv" count="5-15"	item="&itDuralloyOre;"/>
-		</LevelTable>
-	</ItemTable>
-
-	<ItemTable unid="&tbFrostAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="1-5"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-20"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="ruuuu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itHeliumRegolith;"/>
-			<Item levelFrequency="ruccc ccccc ccccc ccccc ccccc" count="10-15"	item="&itPalladiumOre;"/>
-			<Item levelFrequency="vruuu uuuuu uuuuu uuuuu uuuuu" count="1-6"	item="&itCobaltThoriumOre;"/>
-			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="1-4"	item="&itGoldOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="---vr rrrrr rrrrr rrrrr rrrrr" count="1-6"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="----v rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itOrthoSteelOre;"/>
-		</LevelTable>
-	</ItemTable>
-	
-	<ItemTable unid="&tbMetallicAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-35"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itGoldOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="--ruc ccccc ccccc ccccc ccccc" count="5-10"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
-			<Item levelFrequency="---vr uuuuu uuuuu uuuuu uuuuu" count="5-15"	item="&itOrthoSteelOre;"/>
-			<Item levelFrequency="----- vrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itIthaliumOre;"/>
-		</LevelTable>
-	</ItemTable>
-	
-	<ItemTable unid="&tbVolcanicAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="5-10"	item="&itGoldOre;"/>
-			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="1-35"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-25"	item="&itPteracniumOre;"/>
-			<Item levelFrequency="---ru ccccc ccccc ccccc ccccc" count="10-45"	item="&itOrthoSteelOre;"/>
-			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
-			<Item levelFrequency="----- -vvvv vvvvv vvvvv vvvvv" count="10-35"	item="&itIthaliumOre;"/>
-			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-4"	item="&itNeutroniumOre;"/>
-			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-6"	item="&itTetramiteOre;"/>
-			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1-2"	item="&itHyperonicOre;"/>
-			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1"		item="&itEtheriumOre;"/>
-		</LevelTable>
-	</ItemTable>
 	
 <!-- RESOURCES -->
 

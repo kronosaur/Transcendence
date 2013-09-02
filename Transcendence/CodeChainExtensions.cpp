@@ -8,11 +8,13 @@
 #define FN_CNV_DRAW_RECT			1
 #define FN_CNV_DRAW_IMAGE			2
 #define FN_CNV_DRAW_TEXT			3
+#define FN_CNV_DRAW_LINE			4
 
 ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FN_GAME_SET_CRAWL_TEXT		1
 #define FN_GAME_SET_CRAWL_IMAGE		2
+#define FN_GAME_SET_CRAWL_SOUNDTRACK	3
 
 ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -42,6 +44,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_CHANGE_SHIPS			18
 #define FN_PLY_ENABLE_MESSAGE		19
 #define FN_PLY_GET_KEY_EVENT_STAT	20
+#define FN_PLY_USE_ITEM				21
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -65,6 +68,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_EXIT_SCREEN			15
 #define FN_SCR_DATA					16
 #define FN_SCR_REFRESH_SCREEN		17
+#define FN_SCR_LIST_CURSOR			18
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -92,6 +96,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(gamSetCrawlImage imageUNID) -> True/Nil",
 			"i",	PPFLAG_SIDEEFFECTS, },
 
+		{	"gamSetCrawlSoundtrack",		fnGameSet,		FN_GAME_SET_CRAWL_SOUNDTRACK,
+			"(gamSetCrawlSoundtrack soundtrackUNID) -> True/Nil",
+			"i",	PPFLAG_SIDEEFFECTS, },
+
 		{	"gamSetCrawlText",				fnGameSet,		FN_GAME_SET_CRAWL_TEXT,
 			"(gamSetCrawlText text) -> True/Nil",
 			"s",	PPFLAG_SIDEEFFECTS, },
@@ -103,13 +111,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(cnvDrawImage x y imageDesc [screen] [ID])",
 			"iil*",	PPFLAG_SIDEEFFECTS,	},
 
+		{	"cnvDrawLine",					fnCanvas,			FN_CNV_DRAW_LINE,
+			"(cnvDrawLine xFrom yFrom xTo yTo width color [screen] [ID])",
+			"iiiiiv*",	PPFLAG_SIDEEFFECTS,	},
+
 		{	"cnvDrawRect",					fnCanvas,			FN_CNV_DRAW_RECT,
 			"(cnvDrawRect x y width height color [screen] [ID])",
 			"iiiiv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"cnvDrawText",					fnCanvas,			FN_CNV_DRAW_TEXT,
-			"(cnvDrawText x y text font color alignment [screen] [ID])",
-			"iissvs*",	PPFLAG_SIDEEFFECTS,	},
+			"(cnvDrawText x y [width] text font color alignment [screen] [ID])",
+			"ii*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrAddAction",					fnScrSet,		FN_SCR_ADD_ACTION,
 			"(scrAddAction screen actionID pos label [key] [special] code)",
@@ -139,6 +151,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrGetItem",					fnScrItem,		FN_SCR_GET_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrGetItem screen) => item
+
+		{	"scrGetListCursor",				fnScrGet,		FN_SCR_LIST_CURSOR,
+			"(scrGetListCursor screen) -> cursor",
+			"i",	0,	},
 
 		{	"scrGetListEntry",				fnScrGetOld,		FN_SCR_LIST_ENTRY,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrGetListEntry screen) -> entry
@@ -174,6 +190,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"scrSetInputText",				fnScrSetOld,		FN_SCR_INPUT_TEXT,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetInputText screen text)
+
+		{	"scrSetListCursor",				fnScrSet,		FN_SCR_LIST_CURSOR,
+			"(scrSetListCursor screen cursor)",
+			"ii",	0,	},
 
 		{	"scrSetListFilter",				fnScrSetOld,		FN_SCR_LIST_FILTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetListFilter screen filter)
@@ -241,8 +261,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iss",	0,	},
 
 		{	"plyGetKeyEventStat",				fnPlyGet,			FN_PLY_GET_KEY_EVENT_STAT,
-			"(plyGetKeyEventStat player stat nodeID typeCriteria) -> value",
-			"isss",	0,	},
+			"(plyGetKeyEventStat player stat nodeID typeCriteria) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'enemyObjsDestroyed\n"
+			"   'friendlyObjsDestroyed\n"
+			"   'missionCompleted\n"
+			"   'missionFailure\n"
+			"   'missionSuccess\n"
+			"   'objsDestroyed\n",
+
+			"isvs",	0,	},
 
 		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(plyGetRedirectMessage player)
@@ -264,6 +294,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"plyRedirectMessage",			fnPlySetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(plyRedirectMessage player True/Nil)
+
+		{	"plyUseItem",					fnPlySet,			FN_PLY_USE_ITEM,
+			"(plyUseItem player item)",
+			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		//	Deprecated functions
 		//	--------------------
@@ -401,6 +435,27 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_CNV_DRAW_LINE:
+			{
+			int xFrom = pArgs->GetElement(0)->GetIntegerValue();
+			int yFrom = pArgs->GetElement(1)->GetIntegerValue();
+			int xTo = pArgs->GetElement(2)->GetIntegerValue();
+			int yTo = pArgs->GetElement(3)->GetIntegerValue();
+			int iWidth = pArgs->GetElement(4)->GetIntegerValue();
+			WORD wColor = GetColorArg(pArgs->GetElement(5));
+			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
+			if (pCanvas == NULL)
+				return pCC->CreateNil();
+
+			if (iWidth <= 0)
+				return pCC->CreateNil();
+
+			CG16bitLinePainter LinePainter;
+			LinePainter.PaintSolid(*pCanvas, xFrom, yFrom, xTo, yTo, iWidth, wColor);
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_CNV_DRAW_RECT:
 			{
 			int x = pArgs->GetElement(0)->GetIntegerValue();
@@ -419,14 +474,22 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_CNV_DRAW_TEXT:
 			{
-			int x = pArgs->GetElement(0)->GetIntegerValue();
-			int y = pArgs->GetElement(1)->GetIntegerValue();
-			CString sText = g_pTrans->ComposePlayerNameString(pArgs->GetElement(2)->GetStringValue());
-			const CG16bitFont *pControlFont = &GetFontByName(g_pTrans->GetFonts(), pArgs->GetElement(3)->GetStringValue());
-			WORD wColor = GetColorArg(pArgs->GetElement(4));
-			CString sAlign = pArgs->GetElement(5)->GetStringValue();
+			int iArg = 0;
+			if (pArgs->GetCount() < 6)
+				return pCC->CreateError(CONSTLIT("Insufficient arguments for cnvDrawText."));
 
-			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, 6);
+			if (pArgs->GetElement(2)->IsInteger() && pArgs->GetCount() < 7)
+				return pCC->CreateError(CONSTLIT("Insufficient arguments for cnvDrawText."));
+
+			int x = pArgs->GetElement(iArg++)->GetIntegerValue();
+			int y = pArgs->GetElement(iArg++)->GetIntegerValue();
+			int cxWidth = (pArgs->GetElement(iArg)->IsInteger() ? pArgs->GetElement(iArg++)->GetIntegerValue() : -1);
+			CString sText = g_pTrans->ComposePlayerNameString(pArgs->GetElement(iArg++)->GetStringValue());
+			const CG16bitFont *pControlFont = &GetFontByName(g_pTrans->GetFonts(), pArgs->GetElement(iArg++)->GetStringValue());
+			WORD wColor = GetColorArg(pArgs->GetElement(iArg++));
+			CString sAlign = pArgs->GetElement(iArg++)->GetStringValue();
+
+			CG16bitImage *pCanvas = GetCanvasArg(pEvalCtx, pArgs, iArg);
 			if (pCanvas == NULL)
 				return pCC->CreateNil();
 
@@ -441,21 +504,32 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				{
 				dwFlags |= CG16bitFont::AlignCenter;
 
-				int cxWidth = Min(x, (pCanvas->GetWidth() - x));
-				rcRect.left = x - cxWidth;
-				rcRect.right = x + cxWidth;
+				int cxHalfWidth;
+				if (cxWidth == -1)
+					cxHalfWidth = Min(x, (pCanvas->GetWidth() - x));
+				else
+					cxHalfWidth = cxWidth / 2;
+
+				rcRect.left = x - cxHalfWidth;
+				rcRect.right = x + cxHalfWidth;
 				}
 			else if (strEquals(sAlign, ALIGN_RIGHT))
 				{
 				dwFlags |= CG16bitFont::AlignRight;
 
-				rcRect.left = 0;
+				if (cxWidth == -1)
+					cxWidth = x;
+
+				rcRect.left = (x - cxWidth);
 				rcRect.right = x;
 				}
 			else
 				{
+				if (cxWidth == -1)
+					cxWidth = (pCanvas->GetWidth() - x);
+
 				rcRect.left = x;
-				rcRect.right = pCanvas->GetWidth();
+				rcRect.right = x + cxWidth;
 				}
 
 			//	Paint
@@ -486,6 +560,10 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		case FN_GAME_SET_CRAWL_IMAGE:
 			g_pTrans->GetModel().SetCrawlImage((DWORD)pArgs->GetElement(0)->GetIntegerValue());
+			return pCC->CreateTrue();
+
+		case FN_GAME_SET_CRAWL_SOUNDTRACK:
+			g_pTrans->GetModel().SetCrawlSoundtrack((DWORD)pArgs->GetElement(0)->GetIntegerValue());
 			return pCC->CreateTrue();
 
 		case FN_GAME_SET_CRAWL_TEXT:
@@ -640,7 +718,9 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (CDesignTypeCriteria::ParseCriteria(pArgs->GetElement(3)->GetStringValue(), &Crit) != NOERROR)
 				return pCC->CreateError(CONSTLIT("Invalid type criteria:"), pArgs->GetElement(3));
 
-			CString sResult = pPlayer->GetKeyEventStat(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2)->GetStringValue(), Crit);
+			CString sNodeID = (!pArgs->GetElement(2)->IsNil() ? pArgs->GetElement(2)->GetStringValue() : NULL_STR);
+
+			CString sResult = pPlayer->GetKeyEventStat(pArgs->GetElement(1)->GetStringValue(), sNodeID, Crit);
 			if (!sResult.IsBlank())
 				pResult = pCC->Link(sResult, 0, NULL);
 			else
@@ -894,6 +974,17 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			break;
 			}
 
+		case FN_PLY_USE_ITEM:
+			{
+			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
+			if (Item.GetType() == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid item"), pArgs->GetElement(1));
+
+			g_pTrans->GetModel().UseItem(Item);
+			pResult = pCC->CreateTrue();
+			break;
+			}
+
 		default:
 			ASSERT(FALSE);
 			pResult = pCC->CreateNil();
@@ -1012,6 +1103,9 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_SCR_LIST_CURSOR:
+			return pCC->CreateInteger(pScreen->GetListCursor());
+
 		case FN_SCR_DATA:
 			{
 			if (!g_pTrans->GetModel().InScreenSession())
@@ -1327,6 +1421,10 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_SCR_LIST_CURSOR:
+			pScreen->SetListCursor(pArgs->GetElement(1)->GetIntegerValue());
+			return pCC->CreateTrue();
+
 		case FN_SCR_SHOW_ACTION:
 			{
 			//	Only if valid
@@ -1485,7 +1583,7 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			}
 		else
 			{
-			sPane = pScreenArg->GetElement(1)->GetStringValue();
+			sPane = (pScreenArg->GetElement(1)->IsNil() ? NULL_STR : pScreenArg->GetElement(1)->GetStringValue());
 			pData = pScreenArg->GetElement(2);
 			}
 		}
@@ -1494,7 +1592,7 @@ ICCItem *fnScrShowScreen (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		sScreen = pScreenArg->GetStringValue();
 		if (pArgs->GetCount() >= 4)
 			{
-			sPane = pArgs->GetElement(2)->GetStringValue();
+			sPane = (pArgs->GetElement(2)->IsNil() ? NULL_STR : pArgs->GetElement(2)->GetStringValue());
 			pData = pArgs->GetElement(3);
 			}
 		else if (pArgs->GetCount() >= 3)

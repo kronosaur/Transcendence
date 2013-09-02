@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- TABLES -->
+
+	<SystemPartTable unid="&tbIcePlanets;">
+
+		<IcePrimary>
+			<LocationCriteriaTable>
+				<Table criteria="*innerSystem">
+					<Lookup chance="100" table="IcePlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*lifeZone">
+					<Lookup chance="100" table="IcePlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*outerSystem">
+					<Lookup chance="100" table="IcePlanetoidPrimary"/>
+				</Table>
+			</LocationCriteriaTable>
+		</IcePrimary>
+
+		<IcePlanetoidPrimary>
+			<Lookup table="StandardPlanetoidMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="60" type="&stIcePlanetoidSizeE;" showOrbit="true"/>
+						<Station chance="30" type="&stIcePlanetoidSizeF;" showOrbit="true"/>
+						<Station chance="10" type="&stIcePlanetoidSizeG;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="ice, planet, planetary, planetoid"/>
+				</_PlanetLabel>
+			</Lookup>
+		</IcePlanetoidPrimary>
+
+		<IceComet>
+			<Table>
+				<RandomStation	chance="10"	stationCriteria="*ice; *generic; *sizeClass:B;" locationAttribs="*" includeAll="true" showOrbit="true"/>
+				<RandomStation	chance="20"	stationCriteria="*ice; *generic; *sizeClass:C;" locationAttribs="*" includeAll="true" showOrbit="true"/>
+				<RandomStation	chance="40"	stationCriteria="*ice; *generic; *sizeClass:D;" locationAttribs="*" includeAll="true" showOrbit="true"/>
+				<Station		chance="20" type="&stIcePlanetoidSizeE;" showOrbit="true"/>
+				<Station		chance="8"  type="&stIcePlanetoidSizeF;" showOrbit="true"/>
+				<Station		chance="3"  type="&stIcePlanetoidSizeG;" showOrbit="true"/>
+			</Table>
+
+			<Orbitals distance="2d4+8" angle="random">
+				<Label attributes="asteroids, comet, ice"/>
+			</Orbitals>
+		</IceComet>
+
+	</SystemPartTable>
+
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Size A Ice Asteroid -->
+
+	<StationType UNID="&stIceAsteroidSizeA;"
+		name=				"(ice asteroid)"
+		scale=				"world"
+		size=				"7"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="0"   imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="40"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="80"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="120" imageWidth="40" imageHeight="40"/>
+
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="0"   imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="40"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="80"  imageWidth="40" imageHeight="40"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="40"  imageY="120" imageWidth="40" imageHeight="40"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Ice Asteroid -->
+
+	<StationType UNID="&stIceAsteroidSizeB;"
+		name=				"(ice asteroid)"
+		scale=				"world"
+		size=				"60"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="0"   imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="60"  imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="120" imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="0"   imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="60"  imageWidth="60" imageHeight="60"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="140" imageY="120" imageWidth="60" imageHeight="60"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d6" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Ice Asteroid -->
+
+	<StationType UNID="&stIceAsteroidSizeC;"
+		name=				"(ice asteroid)"
+		scale=				"world"
+		size=				"165"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="160" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="240" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="320" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="400" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="480" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="560" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="640" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="720" imageWidth="80" imageHeight="80"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="0"   imageY="800" imageWidth="80" imageHeight="80"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d8" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Ice Asteroid -->
+
+	<StationType UNID="&stIceAsteroidSizeD;"
+		name=				"(ice asteroid)"
+		scale=				"world"
+		size=				"670"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, ice, inner, lifeZone, outer"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="180" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="300" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="420" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="540" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="660" imageWidth="120" imageHeight="120"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="80"  imageY="780" imageWidth="120" imageHeight="120"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="95"/>
+				<Lookup chance="5" count="1d10" table="&tbFrostAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Ice Planetoid Size E -->
+
+	<StationType UNID="&stIcePlanetoidSizeE;"
+		name=				"(ice planetoid)"
+		scale=				"world"
+		size=				"1250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="0"   imageWidth="140" imageHeight="140"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="140" imageWidth="140" imageHeight="140"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Ice Planetoid Size F -->
+
+	<StationType UNID="&stIcePlanetoidSizeF;"
+		name=				"(ice planetoid)"
+		scale=				"world"
+		size=				"2450"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="280" imageWidth="160" imageHeight="160"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="440" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Ice Planetoid Size G -->
+
+	<StationType UNID="&stIcePlanetoidSizeG;"
+		name=				"(ice planetoid)"
+		scale=				"world"
+		size=				"4000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, ice, inner, lifeZone, outer, planetoid"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="600" imageWidth="180" imageHeight="180"/>
+			<Image			imageID="&rsIceAsteroids;" imageX="200" imageY="780" imageWidth="180" imageHeight="180"/>
+		</ImageVariants>
+	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsIceAsteroids;"			bitmap="Resources\IceAsteroids.jpg"			bitmask="Resources\IceAsteroidsMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsWorldsIcePlanet1;"		bitmap="Resources\WorldsIcePlanet1.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsIcePlanet2;"		bitmap="Resources\WorldsIcePlanet2.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsIcePlanet3;"		bitmap="Resources\WorldsIcePlanet3.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsWorldsIcePlanet4;"		bitmap="Resources\WorldsIcePlanet3.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

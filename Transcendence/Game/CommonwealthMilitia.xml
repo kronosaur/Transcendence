@@ -10,7 +10,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Ronin/C"
 			type=				"gunship"
-			score=				"300"
 
 			mass=				"100"
 			cargoSpace=			"50"
@@ -50,6 +49,8 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 			
 		<StaticData>
@@ -117,7 +118,6 @@
 			manufacturer=		"Pacific Defense Corporation"
 			class=				"Centurion/X"
 			type=				"heavy gunship"
-			score=				"1550"
 
 			mass=				"250"
 			cargoSpace=			"50"
@@ -155,6 +155,8 @@
 			fireRateAdj=		"10"
 			fireAccuracy=		"95"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -285,31 +287,31 @@
 
 		<Items>
 			<RandomItem count="2d4" 
-					criteria=		"w -Illegal; -Alien; -Specialty; -NotForSale"
+					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"5"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"w -Illegal; -Alien; -Specialty; -NotForSale"
+					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"s -Illegal; -Alien; -Specialty; -NotForSale"
+					criteria=		"s -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"s -Illegal; -Alien; -Specialty; -NotForSale"
+					criteria=		"s -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"6"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="2d4" 
-					criteria=		"a -Illegal; -Alien; -Specialty; -NotForSale"
+					criteria=		"a -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
 					level=			"6"
 					levelCurve=		"1"
 					/>
@@ -489,7 +491,7 @@
 								
 								(if gStart
 									(cat
-										"\"" (objGetName gStart 0x05) " in the system has been harrassing traffic in the area. "
+										"\"" (objGetName gStart 0x05) " in the system has been harassing traffic in the area. "
 										"We want you to take it out. Clear?\""
 										)
 									Nil
@@ -1025,7 +1027,7 @@
 
 					<Armory desc="You are in the station's armory shop. You may buy weapons and armor to equip your ship.">
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									(lambda (thisItem)
 										(block (rank)
@@ -1188,7 +1190,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
+							<Action name="Repair or Replace Armor" key="A" >
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gArmorSegment 0)
@@ -1198,7 +1200,7 @@
 									)
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
 									(setq gTechLevel 7)
 									(setq gTechModifier Nil)
@@ -1208,14 +1210,14 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
 									)
 							</Action>
 
-							<Action name="Upgrade reactor" key="P" >
+							<Action name="Upgrade Reactor" key="P" >
 								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 									{
 									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-6;")
@@ -1237,7 +1239,7 @@
 							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">
 
 						<Actions>
-							<Action name="Sit at the bar" key="S" default="1">
+							<Action name="Sit at the Bar" key="S" default="1">
 								(if (geq (plyGetCredits gPlayer) 5)
 									(block Nil
 										(plyCharge gPlayer 5)

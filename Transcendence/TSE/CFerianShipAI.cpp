@@ -218,7 +218,7 @@ void CFerianShipAI::BehaviorStart (void)
 		case IShipController::orderNone:
 			{
 			if (m_pShip->GetDockedObj() == NULL)
-				AddOrder(IShipController::orderGate, NULL, 0);
+				AddOrder(IShipController::orderGate, NULL, IShipController::SData());
 			break;
 			}
 
@@ -442,9 +442,9 @@ void CFerianShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				//	Avenge the base
 
 				if (Ctx.Attacker.IsCausedByNonFriendOf(m_pShip) && Ctx.Attacker.GetObj())
-					AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), 0);
+					AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), IShipController::SData());
 				else if (m_State == stateAttackingThreat)
-					AddOrder(IShipController::orderDestroyTarget, m_pTarget, 0);
+					AddOrder(IShipController::orderDestroyTarget, m_pTarget, IShipController::SData());
 
 				//	Stop mining
 
@@ -493,8 +493,8 @@ void CFerianShipAI::OnReadFromStream (SLoadCtx &Ctx)
 
 	{
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pTarget);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pBase);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pBase);
 	}
 
 void CFerianShipAI::OnWriteToStream (IWriteStream *pStream)

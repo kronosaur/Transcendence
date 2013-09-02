@@ -13,17 +13,16 @@
 			manufacturer=		"Urak"
 			class=				""
 			type=				"sentinel"
-			score=				"155"
 
 			mass=				"100"
 			cargoSpace=			"5"
-			thrust=				"200"
+			thrustRatio=		"4"
 			maneuver=			"2"
 			maxSpeed=			"16"
 
 			leavesWreck=		"15"
 
-			attributes=			"genericClass,urak"
+			attributes=			"auton, genericClass, urak"
 			>
 
 		<Armor>
@@ -44,6 +43,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
 			combatStyle=		"noRetreat"
 			/>
 
@@ -55,44 +55,51 @@
 			manufacturer=		"Urak"
 			class=				""
 			type=				"destroyer"
-			score=				"680"
 
+			attributes=			"capitalShip, genericClass, urak"
+			   
 			mass=				"5000"
-			cargoSpace=			"500"
-			thrust=				"750"
+			thrustRatio=		"1"
 			maneuver=			"12"
 			maxSpeed=			"10"
+			cargoSpace=			"500"
 
 			cyberDefenseLevel=	"4"
 
 			explosionType=		"&vtKineticExplosion4;"
 			leavesWreck=		"100"
-
-			attributes=			"capitalShip, genericClass, urak"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="315" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="285" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="255" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="225" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="195" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="165" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="135" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="105" span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="75"  span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="45"  span="30" armorID="&itUrakArmorHeavy;" />
-			<ArmorSection start="15"  span="30" armorID="&itUrakArmorHeavy;" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itUrakArmorHeavy;"
+			count=				"12"
+			/>
+		
 		<Devices>
-			<Device deviceID="&itUrakHowitzer;" minFireArc="330" maxFireArc="30" />
-			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="90" maxFireArc="270" posAngle="180" posRadius="12"/>
-			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="15" posRadius="25"/>
-			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="190" maxFireArc="10" posAngle="345" posRadius="25"/>
+			<Device deviceID="&itUrakHowitzer;"									 minFireArc="330" maxFireArc="30"  posAngle="0"   posRadius="45" posZ="25"/>
+			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="16" posZ="30"/>
+			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="30"  posRadius="16" posZ="30"/>
+			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="330" posRadius="16" posZ="30"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"40"
+					sizeY=		"40"
+					/>
+		</Interior>
 
 		<Items>
 			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
@@ -103,11 +110,15 @@
 			</Table>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="768" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips4;" imageX="768" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<!-- AI and Behavior -->
+		
 		<AISettings
 			aggressor=			"true"
-			fireRateAdj=		"15"
+			fireRateAdj=		"40"
 			fireAccuracy=		"90"
 			perception=			"5"
 			combatStyle=		"noRetreat"
@@ -141,6 +152,7 @@
 				lifetime=			"38"
 				powerUse=			"60"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -148,15 +160,6 @@
 				<Shot posAngle="90" posRadius="12" angle="3d5-9"/>
 				<Shot posAngle="270" posRadius="12" angle="3d5-9"/>
 			</Configuration>
-
-			<Effect>
-				<Bolt
-						length=				"16"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -365,7 +368,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itUrakArmorLight;"
-			hitPoints=			"75"
+			hitPoints=			"40"
 			fireRateAdj=		"60"
 			explosionType=		"&vtKineticExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -390,10 +393,10 @@
 		</Reinforcements>
 
 		<Items>
-			<Table>
+			<Table count="1d3">
 				<Lookup chance="30" count="1" table="&trConsumables3;"/>
 				<RandomItem chance="30"
-						criteria=			"* +Res;"
+						criteria=			"* +Res; -NotStandard;"
 						levelFrequency=		"rucur"
 						/>
 				<Item chance="15" count="1d4" item="&itUrakArmorLight;"/>
@@ -427,7 +430,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itUrakArmorLight;"
-			hitPoints=			"150"
+			hitPoints=			"90"
 			fireRateAdj=		"60"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -452,12 +455,12 @@
 		</Reinforcements>
 
 		<Items>
-			<RandomItem
-					criteria=			"* +Res;"
+			<RandomItem count="1d4"
+					criteria=			"* +Res; -NotStandard;"
 					levelFrequency=		"-uccu"
 					/>
-			<RandomItem chance="10"
-					criteria=			"* +Res;"
+			<RandomItem chance="30"
+					criteria=			"* +Res; -NotStandard;"
 					levelFrequency=		"---uc cu---"
 					/>
 			<Table>
@@ -492,7 +495,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itUrakArmorHeavy;"
-			hitPoints=			"250"
+			hitPoints=			"200"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -527,14 +530,14 @@
 
 		<Items>
 			<RandomItem
-					criteria=			"* +Res;"
+					criteria=			"* +Res; -NotStandard;"
 					levelFrequency=		"-uccu"
 					/>
 			<RandomItem chance="10"
-					criteria=			"* +Res;"
+					criteria=			"* +Res; -NotStandard;"
 					levelFrequency=		"---uc cu---"
 					/>
-			<Table>
+			<Table count="1-4">
 				<Lookup chance="15" count="1" table="&trConsumables5;"/>
 				<Item chance="20" count="1d4" item="&itUrakArmorLight;"/>
 				<Item chance="20" count="1" item="&itUrakMassDriver;"/>

@@ -130,7 +130,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	//	Tell the universe to paint
 
-	g_pUniverse->PaintPOV(TheScreen, m_rcIntroMain, false);
+	g_pUniverse->PaintPOV(TheScreen, m_rcIntroMain, 0);
 
 	//	Paint displays
 
@@ -228,7 +228,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	//	Update the universe
 
-	g_pUniverse->Update(g_SecondsPerUpdate);
+	g_pUniverse->Update(g_SecondsPerUpdate, true);
 	m_iTick++;
 
 	//	Slight HACK: If the current POV is not a ship, then create a new one
@@ -361,7 +361,7 @@ void CTranscendenceWnd::CreateCreditsAnimation (IAnimatron **retpAnimatron)
 	iTime += 150;
 
 	Names.DeleteAll();
-	Names.Insert(CONSTLIT("Michael c. Tangent"));
+	Names.Insert(CONSTLIT("Michael Tangent"));
 	m_UIRes.CreateMediumCredit(CONSTLIT("music by"), 
 			Names,
 			xMidCenter,
@@ -606,9 +606,9 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 					{
 					pController->CancelAllOrders();
 					if (pShip->GetSovereign() == pSovereign1)
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, 0);
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
 					else
-						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, 0);
+						pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
 					}
 				}
 			}
@@ -857,7 +857,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	if (Service.HasCapability(ICIService::modExchange))
 		{
-		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Exchange"), 0, &pButton);
+		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Collection"), 0, &pButton);
 		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_MOD_EXCHANGE);
 		}
 
@@ -889,7 +889,7 @@ ALERROR CTranscendenceWnd::CreateRandomShip (CSystem *pSystem, DWORD dwClass, CS
 				&&	(pShipClass->GetScore() > 1000 
 					|| pShipClass->IsPlayerShip()
 					|| pShipClass->IsVirtual()
-					|| !pShipClass->HasAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
+					|| !pShipClass->HasLiteralAttribute(ATTRIB_GENERIC_SHIP_CLASS)));
 		}
 
 	//	Normally we create a single ship, but sometimes we create lots
@@ -1452,6 +1452,7 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 
 				DestroyIntroShips();
 				CreateIntroShips(pClass->GetUNID(), dwSovereign);
+				CancelCurrentIntroState();
 				break;
 				}
 
@@ -1530,6 +1531,11 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 			case 'k':
 				DestroyIntroShips();
 				CreateIntroShips();
+				break;
+
+			case 'L':
+			case 'l':
+				DoCommand(CMD_CONTINUE_OLD_GAME);
 				break;
 
 			case 'N':
@@ -1671,6 +1677,11 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 				break;
 				}
 
+			case 'Q':
+			case 'q':
+				DoCommand(CMD_QUIT_GAME);
+				break;
+
 			case 'S':
 			case 's':
 				if (m_iIntroState == isShipStats)
@@ -1698,7 +1709,7 @@ void CTranscendenceWnd::OnIntroPOVSet (CSpaceObject *pObj)
 		{
 		case isBlank:
 		case isBlankThenRandom:
-		case isEnterShipClass:
+//		case isEnterShipClass:
 		case isShipStats:
 			SetIntroState(isShipStats);
 			break;
@@ -2492,9 +2503,9 @@ ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
 				{
 				IShipController *pController = pShip->GetController();
 				if (pShip->GetSovereign() == pSovereign1)
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, 0);
+					pController->AddOrder(IShipController::orderDestroyTarget, pShip2, IShipController::SData());
 				else
-					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, 0);
+					pController->AddOrder(IShipController::orderDestroyTarget, pShip1, IShipController::SData());
 				}
 			}
 		}

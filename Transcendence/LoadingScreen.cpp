@@ -141,10 +141,10 @@ ALERROR CTranscendenceWnd::LoadUniverseDefinition (void)
 
 	//	Make sure the universe know about our various managers
 
-	m_Universe.SetDebugMode(m_Options.bDebugGame);
-	m_Universe.SetSoundMgr(&m_SoundMgr);
+	g_pUniverse->SetDebugMode(m_Options.bDebugGame);
+	g_pUniverse->SetSoundMgr(&g_pHI->GetSoundMgr());
 #ifdef DEBUG
-	m_Universe.SetDebugOutput(this);
+	g_pUniverse->SetDebugOutput(this);
 #endif
 
 	//	Figure out what to load. If no extension is supplied, we check for an XML
@@ -158,12 +158,12 @@ ALERROR CTranscendenceWnd::LoadUniverseDefinition (void)
 
 	//	Load the Transcendence Data Definition file that describes the universe.
 
-	if (error = m_Universe.Init(TransPath(sGameFile), &m_sBackgroundError))
+	if (error = g_pUniverse->Init(TransPath(sGameFile), &m_sBackgroundError))
 		return error;
 
 	//	Initialize Transcendence extensions
 
-	CCodeChain &CC = m_Universe.GetCC();
+	CCodeChain &CC = g_pUniverse->GetCC();
 	if (error = InitCodeChainExtensions(CC))
 		return error;
 
@@ -177,6 +177,8 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 //	Paints the loading screen
 
 	{
+	CG16bitImage &TheScreen = g_pHI->GetScreen();
+
 	int cyBarHeight = Max(MIN_BAR_HEIGHT, (g_cyScreen - m_TitleImage.GetHeight()) / 2);
 	int xImage = (g_cxScreen - m_TitleImage.GetWidth()) / 2;
 	int yImage = (g_cyScreen - m_TitleImage.GetHeight()) / 2;
@@ -187,13 +189,13 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 		{
 		//	Paint bars across top and bottom
 
-		m_Screen.Fill(0, 
+		TheScreen.Fill(0, 
 				0, 
 				g_cxScreen, 
 				cyBarHeight,
 				RGB_BAR);
 
-		m_Screen.Fill(0, 
+		TheScreen.Fill(0, 
 				g_cyScreen - cyBarHeight, 
 				g_cxScreen, 
 				cyBarHeight,
@@ -201,7 +203,7 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 
 		//	Paint image
 
-		m_Screen.Blt(0,
+		TheScreen.Blt(0,
 				0,
 				m_TitleImage.GetWidth(),
 				m_TitleImage.GetHeight(),
@@ -211,13 +213,13 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 
 	//	Paint a frame around viewscreen
 
-		m_Screen.FillLine(0, yImage, g_cxScreen, RGB_FRAME);
-		m_Screen.FillLine(0, yImage + m_TitleImage.GetHeight(), g_cxScreen, RGB_FRAME);
+		TheScreen.FillLine(0, yImage, g_cxScreen, RGB_FRAME);
+		TheScreen.FillLine(0, yImage + m_TitleImage.GetHeight(), g_cxScreen, RGB_FRAME);
 
 		//	Paint the copyright text
 
 		int cxWidth = m_Fonts.MediumHeavyBold.MeasureText(m_sCopyright);
-		m_Fonts.MediumHeavyBold.DrawText(m_Screen,
+		m_Fonts.MediumHeavyBold.DrawText(TheScreen,
 				(g_cxScreen - cxWidth) / 2,
 				yImage + Y_COPYRIGHT_TEXT,
 				m_Fonts.wTitleColor,
@@ -227,28 +229,31 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 
 		CString sLoading = CONSTLIT("Loading");
 		cxWidth = m_Fonts.SubTitle.MeasureText(sLoading, NULL);
-		m_Fonts.SubTitle.DrawText(m_Screen,
+		m_Fonts.SubTitle.DrawText(TheScreen,
 				(g_cxScreen - cxWidth) / 2,
 				m_rcMainScreen.bottom - (m_Fonts.SubTitle.GetHeight() + 32),
 				RGB_LOADING_TEXT,
 				sLoading);
 
+#ifdef PERSISTENT_BUFFER
 		m_bTitleInvalid = false;
+#endif
 		}
 
 	//	Animate the stargate
 
+	RECT rcSG;
+	rcSG.left = (g_cxScreen - STARGATE_WIDTH) / 2;
+	rcSG.right = rcSG.left + STARGATE_WIDTH;
+	rcSG.top = m_rcScreen.bottom - ((RectHeight(m_rcScreen) - m_TitleImage.GetHeight()) / 2) - STARGATE_HEIGHT / 2;
+	rcSG.bottom = rcSG.top + STARGATE_HEIGHT;
+
+#ifdef PERSISTENT_BUFFER
 	if ((m_iCountdown % 2) == 0)
 		{
-		RECT rcSG;
-		rcSG.left = (g_cxScreen - STARGATE_WIDTH) / 2;
-		rcSG.right = rcSG.left + STARGATE_WIDTH;
-		rcSG.top = m_rcScreen.bottom - ((RectHeight(m_rcScreen) - m_TitleImage.GetHeight()) / 2) - STARGATE_HEIGHT / 2;
-		rcSG.bottom = rcSG.top + STARGATE_HEIGHT;
-
 		//	Erase the stargate
 
-		m_Screen.Blt(rcSG.left - xImage,
+		TheScreen.Blt(rcSG.left - xImage,
 				m_TitleImage.GetHeight() - STARGATE_HEIGHT / 2,
 				STARGATE_WIDTH,
 				STARGATE_HEIGHT / 2,
@@ -256,7 +261,7 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 				rcSG.left,
 				rcSG.top);
 
-		m_Screen.Fill(rcSG.left, 
+		TheScreen.Fill(rcSG.left, 
 				rcSG.top + STARGATE_HEIGHT / 2, 
 				STARGATE_WIDTH, 
 				STARGATE_HEIGHT / 2,
@@ -264,7 +269,7 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 
 		//	Paint stargate
 
-		m_Screen.ColorTransBlt(STARGATE_WIDTH * ((m_iCountdown / 2) % 12),
+		TheScreen.ColorTransBlt(STARGATE_WIDTH * ((m_iCountdown / 2) % 12),
 				0,
 				STARGATE_WIDTH,
 				STARGATE_HEIGHT,
@@ -273,6 +278,16 @@ void CTranscendenceWnd::PaintLoadingScreen (void)
 				rcSG.left,
 				rcSG.top);
 		}
+#else
+	TheScreen.ColorTransBlt(STARGATE_WIDTH * ((m_iCountdown / 2) % 12),
+			0,
+			STARGATE_WIDTH,
+			STARGATE_HEIGHT,
+			255,
+			m_StargateImage,
+			rcSG.left,
+			rcSG.top);
+#endif
 	}
 
 ALERROR CTranscendenceWnd::StartLoading (void)
@@ -324,26 +339,6 @@ ALERROR CTranscendenceWnd::StartLoading (void)
 		return error;
 
 	error = m_StargateImage.CreateFromBitmap(hDIB, hBitmask);
-	::DeleteObject(hDIB);
-	::DeleteObject(hBitmask);
-	if (error)
-		return error;
-
-	//	Load damage types
-
-	if (error = JPEGLoadFromResource(g_hInst,
-			MAKEINTRESOURCE(IDR_DAMAGE_TYPE_ICONS),
-			JPEG_LFR_DIB, 
-			NULL, 
-			&hDIB))
-		return error;
-
-	if (error = dibLoadFromResource(g_hInst,
-			MAKEINTRESOURCE(IDB_DAMAGE_TYPE),
-			&hBitmask))
-		return error;
-
-	error = m_DamageTypeIcons.CreateFromBitmap(hDIB, hBitmask);
 	::DeleteObject(hDIB);
 	::DeleteObject(hBitmask);
 	if (error)

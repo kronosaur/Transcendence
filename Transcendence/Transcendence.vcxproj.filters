@@ -76,6 +76,9 @@
     <Filter Include="XML Files\Corporate Hierarchy Vol 01">
       <UniqueIdentifier>{d786ae4c-461a-4d71-9b27-4ab1f193f11f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="XML Files\Part I Soundtrack">
+      <UniqueIdentifier>{4acdf57a-fc57-4573-ae68-04e279028db8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CIntroShipController.cpp">
@@ -312,27 +315,6 @@
     </None>
     <None Include="Game\StarsOfThePilgrim.xml">
       <Filter>XML Files\Part I</Filter>
-    </None>
-    <None Include="Game\Extensions\AdventureSample.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\DebugCode.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\DebugShips.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\EffectsTest.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\PerformanceTest.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\ShipChangeSample.xml">
-      <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\WeaponsSample\WeaponsSample.xml">
-      <Filter>XML Files\Debug</Filter>
     </None>
     <None Include="Game\Extensions\Book of the Augur\BookOfTheAugur.xml">
       <Filter>XML Files\Book of the Augur</Filter>
@@ -652,9 +634,6 @@
     <None Include="Game\Readme.htm">
       <Filter>Notes and Documents</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\CoporateExpansion.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
     <None Include="Game\Extensions\Corporate Expansion\PlayerShips.xml">
       <Filter>XML Files\Corporate Expansion</Filter>
     </None>
@@ -709,10 +688,145 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalliedMerchanters.xml">
       <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
+    <None Include="Game\Extensions\Corporate Expansion\CyclopsStoryArc.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AnarchistChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StdChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission02.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AntonNasser.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission03.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CharonPirateChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Environments.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Ice.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Metallic.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Primordial.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Rocky.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Volcanic.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\UniverseCompatibility.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Groups.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission04.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMisc.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Cyclops.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\KateMorgental.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\RPGCharacters.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Rasiermesser.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CommonwealthChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\GunsanComplex.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission05.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\ChimericInjector.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\Mission06.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StockMarket.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Curators.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Kartal.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\PartI Soundtrack\StarsOfThePilgrimSoundtrack.xml">
+      <Filter>XML Files\Part I Soundtrack</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AutonBay.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\RPGAutons.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGAnalyzers.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGBehaviors.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\RPGWingmen.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Debug\DebugCode.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\RPGAuxDevices.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\CorporateExpansion.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
+      <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="Game\Extensions\Debug\DebugShips.xml">
+      <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="Game\Extensions\Debug\PerformanceTest.xml">
+      <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="Game\Extensions\Debug\ShipChangeSample.xml">
+      <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="Game\Extensions\Debug\HighLevelTest.xml">
+      <Filter>XML Files\Debug</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

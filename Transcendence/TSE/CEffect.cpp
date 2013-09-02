@@ -46,7 +46,7 @@ ALERROR CEffect::Create (CEffectCreator *pType,
 	pEffect->SetObjectDestructionHook();
 
 	ASSERT(pType);
-	pEffect->m_pPainter = pType->CreatePainter();
+	pEffect->m_pPainter = pType->CreatePainter(CCreatePainterCtx());
 	pEffect->m_pAnchor = pAnchor;
 	pEffect->m_iLifetime = pType->GetLifetime();
 	pEffect->m_iRotation = iRotation;
@@ -173,7 +173,7 @@ void CEffect::OnReadFromStream (SLoadCtx &Ctx)
 	::OutputDebugString("CEffect::OnReadFromStream\n");
 #endif
 	m_pPainter = CEffectCreator::CreatePainterFromStream(Ctx);
-	Ctx.pSystem->ReadObjRefFromStream(Ctx, &m_pAnchor);
+	CSystem::ReadObjRefFromStream(Ctx, &m_pAnchor);
 	Ctx.pStream->Read((char *)&m_iLifetime, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(DWORD));
 

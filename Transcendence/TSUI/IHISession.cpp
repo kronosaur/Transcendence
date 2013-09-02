@@ -5,6 +5,11 @@
 
 #include "stdafx.h"
 
+#define CMD_SOUNDTRACK_NEXT						CONSTLIT("cmdSoundtrackNext")
+#define CMD_SOUNDTRACK_PLAY_PAUSE				CONSTLIT("cmdSoundtrackPlayPause")
+#define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
+#define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
+
 #define PROP_ENABLED							CONSTLIT("enabled")
 
 IHISession::IHISession (CHumanInterface &HI) : IHICommand(HI),
@@ -164,6 +169,31 @@ void IHISession::HIKeyDown (int iVirtKey, DWORD dwKeyData)
 
 	if (m_Reanimator.HandleKeyDown(iVirtKey, dwKeyData))
 		return;
+
+	//	Handle some system level keys
+
+	switch (iVirtKey)
+		{
+		case VK_MEDIA_NEXT_TRACK:
+			m_HI.HICommand(CMD_SOUNDTRACK_NEXT);
+			return;
+
+		case VK_MEDIA_PLAY_PAUSE:
+			m_HI.HICommand(CMD_SOUNDTRACK_PLAY_PAUSE);
+			return;
+
+		case VK_MEDIA_PREV_TRACK:
+			m_HI.HICommand(CMD_SOUNDTRACK_PREV);
+			return;
+
+		case VK_MEDIA_STOP:
+			m_HI.HICommand(CMD_SOUNDTRACK_STOP);
+			return;
+
+		//	Fall through
+		}
+
+	//	Let our subclass handle it.
 
 	OnKeyDown(iVirtKey, dwKeyData);
 	}

@@ -148,6 +148,26 @@ bool CG16bitImage::AdjustScaledCoords (Metric *xSrc, Metric *ySrc, int cxSrc, in
 	return (*cxDest > 0 && *cyDest > 0);
 	}
 
+int CG16bitImage::AdjustTextX (const CG16bitFont &Font, const CString &sText, AlignmentStyles iAlign, int x)
+
+//	AdjustTextX
+//
+//	Adjusts the x coordinate to paint the text at, accounting for:
+//
+//	1.	alignment, offsetting if necessary
+//	2.	clipping, offsetting to fit in clip region.
+
+	{
+	int cxText = Font.MeasureText(sText);
+
+	if (iAlign & alignCenter)
+		x -= (cxText / 2);
+	else if (iAlign & alignRight)
+		x -= cxText;
+
+	return Min(Max((int)m_rcClip.left, x), (int)m_rcClip.right - cxText);
+	}
+
 void CG16bitImage::AssociateSurface (LPDIRECTDRAW7 pDD)
 
 //	AssociateSurface
@@ -1478,11 +1498,8 @@ ALERROR CG16bitImage::CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask, DWORD
 		//	Now load the alpha channel (if any). We do this first because we
 		//	may need to pre-multiply the RGB values by the alpha later
 
-		if (hBitmask && dibIs16bit(hBitmask))
+		if (hBitmask)
 			{
-			int x, y;
-			WORD *pSource;
-			BYTE *pDest;
 			void *pBase;
 			int iStride;
 			int cxAlphaWidth, cyAlphaHeight;
@@ -1508,63 +1525,30 @@ ALERROR CG16bitImage::CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask, DWORD
 				goto Fail;
 				}
 
-			//	Copy the bits
+			//	Copy bits
 
-			if (dwFlags & cfbDesaturateAlpha)
+			if (dibIs24bit(hBitmask))
 				{
+				int x, y;
+				BYTE *pSource;
+				BYTE *pDest;
+
 				for (y = 0; y < cyHeight; y++)
 					{
-					pSource = (WORD *)((char *)pBase + iStride * y);
+					pSource = (BYTE *)((char *)pBase + iStride * y);
 					pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
 
 					if (y < cyAlphaHeight)
 						{
 						for (x = 0; x < cxWidth; x++)
 							{
-							if (x >= cxAlphaWidth || *pSource == 0)
+							if (x >= cxAlphaWidth)
 								*pDest = 0x00;
-							else if (*pSource == 0xffff)
-								*pDest = 0xff;
 							else
-								{
-								DWORD dwSource = *pSource;
-								DWORD dwBlue = (((dwSource & 0x001f) << 8) / 31);
-								DWORD dwGreen = (((dwSource & 0x07e0) << 3) / 63);
-								DWORD dwRed = (((dwSource & 0xf800) >> 3) / 31);
-
-								DWORD dwMaxColor, dwMinColor;
-								if (dwBlue > dwGreen)
-									{
-									if (dwRed > dwBlue)
-										{
-										dwMaxColor = dwRed;
-										dwMinColor = dwGreen;
-										}
-									else
-										{
-										dwMaxColor = dwBlue;
-										dwMinColor = (dwRed > dwGreen ? dwGreen : dwRed);
-										}
-									}
-								else
-									{
-									if (dwRed > dwGreen)
-										{
-										dwMaxColor = dwRed;
-										dwMinColor = dwBlue;
-										}
-									else
-										{
-										dwMaxColor = dwGreen;
-										dwMinColor = (dwRed > dwBlue ? dwBlue : dwRed);
-										}
-									}
-
-								*pDest = (BYTE)((dwMaxColor + dwMinColor) / 2);
-								}
+								*pDest = *pSource;
 
 							pDest++;
-							pSource++;
+							pSource += 3;
 							}
 						}
 					else
@@ -1574,33 +1558,104 @@ ALERROR CG16bitImage::CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask, DWORD
 						}
 					}
 				}
-			else
+			else if (dibIs16bit(hBitmask))
 				{
-				for (y = 0; y < cyHeight; y++)
+				int x, y;
+				WORD *pSource;
+				BYTE *pDest;
+
+				if (dwFlags & cfbDesaturateAlpha)
 					{
-					pSource = (WORD *)((char *)pBase + iStride * y);
-					pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
-
-					if (y < cyAlphaHeight)
+					for (y = 0; y < cyHeight; y++)
 						{
-						for (x = 0; x < cxWidth; x++)
-							{
-							if (x >= cxAlphaWidth || *pSource == 0)
-								*pDest = 0x00;
-							else if (*pSource == 0xffff)
-								*pDest = 0xff;
-							else
-								//	Take the green channel and convert to 0-255
-								*pDest = (BYTE)(((*pSource & 0x07e0) << 3) / 63);
+						pSource = (WORD *)((char *)pBase + iStride * y);
+						pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
 
-							pDest++;
-							pSource++;
+						if (y < cyAlphaHeight)
+							{
+							for (x = 0; x < cxWidth; x++)
+								{
+								if (x >= cxAlphaWidth || *pSource == 0)
+									*pDest = 0x00;
+								else if (*pSource == 0xffff)
+									*pDest = 0xff;
+								else
+									{
+									DWORD dwSource = *pSource;
+									DWORD dwBlue = (((dwSource & 0x001f) << 8) / 31);
+									DWORD dwGreen = (((dwSource & 0x07e0) << 3) / 63);
+									DWORD dwRed = (((dwSource & 0xf800) >> 3) / 31);
+
+									DWORD dwMaxColor, dwMinColor;
+									if (dwBlue > dwGreen)
+										{
+										if (dwRed > dwBlue)
+											{
+											dwMaxColor = dwRed;
+											dwMinColor = dwGreen;
+											}
+										else
+											{
+											dwMaxColor = dwBlue;
+											dwMinColor = (dwRed > dwGreen ? dwGreen : dwRed);
+											}
+										}
+									else
+										{
+										if (dwRed > dwGreen)
+											{
+											dwMaxColor = dwRed;
+											dwMinColor = dwBlue;
+											}
+										else
+											{
+											dwMaxColor = dwGreen;
+											dwMinColor = (dwRed > dwBlue ? dwBlue : dwRed);
+											}
+										}
+
+									*pDest = (BYTE)((dwMaxColor + dwMinColor) / 2);
+									}
+
+								pDest++;
+								pSource++;
+								}
+							}
+						else
+							{
+							for (x = 0; x < cxWidth; x++)
+								*pDest++ = 0;
 							}
 						}
-					else
+					}
+				else
+					{
+					for (y = 0; y < cyHeight; y++)
 						{
-						for (x = 0; x < cxWidth; x++)
-							*pDest++ = 0;
+						pSource = (WORD *)((char *)pBase + iStride * y);
+						pDest = (BYTE *)(pAlpha + y * iAlphaRowSize);
+
+						if (y < cyAlphaHeight)
+							{
+							for (x = 0; x < cxWidth; x++)
+								{
+								if (x >= cxAlphaWidth || *pSource == 0)
+									*pDest = 0x00;
+								else if (*pSource == 0xffff)
+									*pDest = 0xff;
+								else
+									//	Take the green channel and convert to 0-255
+									*pDest = (BYTE)(((*pSource & 0x07e0) << 3) / 63);
+
+								pDest++;
+								pSource++;
+								}
+							}
+						else
+							{
+							for (x = 0; x < cxWidth; x++)
+								*pDest++ = 0;
+							}
 						}
 					}
 				}

@@ -286,7 +286,7 @@ void CShockwaveHitTest::Update (SEffectUpdateCtx &Ctx, const CVector &vPos, Metr
 							DamageCtx.pObj = pObj;
 							DamageCtx.pDesc = Ctx.pDamageDesc;
 							DamageCtx.Damage = Ctx.pDamageDesc->m_Damage;
-							DamageCtx.Damage.AddBonus(Ctx.iDamageBonus);
+							DamageCtx.Damage.AddEnhancements(Ctx.pEnhancements);
 							DamageCtx.Damage.SetCause(Ctx.iCause);
 							if (Ctx.bAutomatedWeapon)
 								DamageCtx.Damage.SetAutomatedWeapon();

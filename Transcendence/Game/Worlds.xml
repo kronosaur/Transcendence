@@ -2,643 +2,178 @@
 
 <TranscendenceModule>
 
-	<!-- O-Type Star -->
-
-	<StationType UNID="&stO-TypeStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- A-Type Star -->
-
-	<StationType UNID="&stA-TypeStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x12, 0x50, 0x79"
-		maxLightRadius=		"600"
-
-		attributes=			"star"
-		>
-
-		<Image>
-			<FilterColorize hue="203" saturation="75">
-				<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
-
-	</StationType>
-
-	<!-- G-Type Star -->
-
-	<StationType UNID="&stG-TypeStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x68, 0x63, 0x23"
-		maxLightRadius=		"480"
-
-		attributes=			"star"
-		>
-
-		<Image>
-			<FilterColorize hue="57" saturation="50">
-				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
-	</StationType>
-
-	<!-- K-Type Star -->
-
-	<StationType UNID="&stK-TypeStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x70, 0x44, 0x1a"
-		maxLightRadius=		"480"
-
-		attributes=			"star"
-		>
-
-		<Image>
-			<FilterColorize hue="30" saturation="63">
-				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
-	</StationType>
-
-	<!-- M-Type Star -->
-
-	<StationType UNID="&stM-TypeStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- Nebula Star -->
-
-	<StationType UNID="&stNebulaStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x43, 0x3d, 0x4d"
-		maxLightRadius=		"300"
-
-		attributes=			"star"
-		>
-
-		<Image>
-			<FilterColorize hue="262" saturation="12">
-				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
-	</StationType>
-
-	<!-- White Dwarf Star -->
-
-	<StationType UNID="&stWhiteDwarfStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- Red Dwarf Star -->
-
-	<StationType UNID="&stRedDwarfStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x59, 0x0e, 0x00"
-		maxLightRadius=		"240"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsRedDwarfStar;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- Blue Giant Star -->
-
-	<StationType UNID="&stBlueGiantStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- Red Giant Star -->
-
-	<StationType UNID="&stRedGiantStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-		spaceColor=			"0x59, 0x0e, 0x00"
-		maxLightRadius=		"480"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsRedGiantStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
-	<!-- Small Asteroid -->
-
-	<StationType UNID="&stSmallAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, stoneAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtStoneAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Events>
-			; Note: We add this even to asteroids without ore because some scenarios
-			; call for adding ore to existing asteroids
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Asteroid -->
-
-	<StationType UNID="&stMediumAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, stoneAsteroid"
-
-		ejectaType=			"&vtStoneAsteroidEjecta;"
-		>
-		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Large Asteroid
-
-		LATER: Need a different image (a non-spherical asteroid image)
-
-	 -->
-
-	<StationType UNID="&stLargeAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, smallPlanetoid, stoneAsteroid"
-
-		ejectaType=			"&vtStoneAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Frost Asteroid -->
-
-	<StationType UNID="&stSmallFrostAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, frostAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Frost Asteroid -->
-
-	<StationType UNID="&stMediumFrostAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, frostAsteroid, mediumAsteroid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="256" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Ice Asteroid
-	
-		LATER: Need an appropriate image.
-	 
-	 -->
-
-	<StationType UNID="&stSmallIceAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, iceAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Large Ice Asteroid
-	
-		LATER: Need an appropriate image.
-
-	 -->
-
-	<StationType UNID="&stLargeIceAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, iceAsteroid, smallPlanetoid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Metallic Asteroid -->
-
-	<StationType UNID="&stSmallMetallicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, metallicAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtMetallicAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 30)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Metallic Asteroid -->
-
-	<StationType UNID="&stMediumMetallicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, metallicAsteroid"
-
-		ejectaType=			"&vtMetallicAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 30)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Volcanic Asteroid -->
-
-	<StationType UNID="&stSmallVolcanicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, tinyAsteroid, volcanicAsteroid"
-
-		ejectaType=			"&vtVolcanicAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 20)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Volcanic Asteroid -->
-
-	<StationType UNID="&stMediumVolcanicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, volcanicAsteroid"
-
-		ejectaType=			"&vtVolcanicAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 20)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Planetoid -->
-
-	<StationType UNID="&stPlanetoid;"
-		name=				"(planetoid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"planet, rockyPlanet, smallPlanetoid"
-
-		ejectaType=			"&vtStoneAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0"   imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128" />
-		</ImageVariants>
-	</StationType>
-
-	<!-- Cratered Planet -->
-
-	<StationType UNID="&stCrateredPlanet;"
-		name=				"(planet)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"planet, rockyPlanet"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0"   imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128" />
-		</ImageVariants>
-	</StationType>
-
-	<!-- Ice Planet -->
-
-	<StationType UNID="&stIcePlanet;"
-		name=				"(planet)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"icePlanet, planet"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorldsIcePlanet1;" imageX="0" imageY="0"   imageWidth="182" imageHeight="182" />
-			<Image			imageID="&rsWorldsIcePlanet2;" imageX="0" imageY="0"   imageWidth="182" imageHeight="182" />
-			<Image			imageID="&rsWorldsIcePlanet3;" imageX="0" imageY="0"   imageWidth="182" imageHeight="182" />
-			<Image			imageID="&rsWorldsIcePlanet4;" imageX="0" imageY="0"   imageWidth="182" imageHeight="182" />
-		</ImageVariants>
-	</StationType>
-
-	<!-- Volcanic Planet -->
-
-	<StationType UNID="&stVolcanicPlanet;"
-		name=				"(planet)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"planet, volcanicPlanet"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="512" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="640" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="768" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="896" imageWidth="128" imageHeight="128"/>
-		</ImageVariants>
-	</StationType>
-
-	<!-- Greenhouse Planet -->
-
-	<StationType UNID="&stGreenhousePlanet;"
-		name=				"(planet)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"co2planet, planet"
-		>
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="0"   imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="128" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128" />
-			<Image			imageID="&rsWorlds1;" imageX="0" imageY="384" imageWidth="128" imageHeight="128" />
-		</ImageVariants>
-	</StationType>
+<!-- TABLES -->
+
+	<SystemPartTable unid="&tbStandardPlanets;">
+
+		<DesertPrimary>
+			<Lookup table="StandardTerrestrialMorphology">
+				<_PlanetType>
+					<Station type="&stDesertTerrestrialSizeH;" showOrbit="true"/>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="desert, planet, planetary, terrestrial"/>
+				</_PlanetLabel>
+			</Lookup>
+		</DesertPrimary>
+
+		<GreenhousePrimary>
+			<Lookup table="StandardTerrestrialMorphology">
+				<_PlanetType>
+					<Station type="&stGreenhouseTerrestrialSizeI;" showOrbit="true"/>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="greenhouse, planet, planetary, terrestrial"/>
+				</_PlanetLabel>
+			</Lookup>
+		</GreenhousePrimary>
+
+		<GasGiantPrimary>
+			<Table>
+				<Lookup chance="60" table="MethaneGasGiantPrimary"/>
+				<Lookup chance="30" table="HydrogenGasGiantPrimary"/>
+				<Lookup chance="10" table="RingedGasGiantPrimary"/>
+			</Table>
+		</GasGiantPrimary>
+
+		<HydrogenGasGiantPrimary>
+			<Lookup table="StandardGasGiantMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="100" type="&stHydrogenGasGiantSizeM;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="gasGiant, hydrogenGiant, planet, planetary"/>
+				</_PlanetLabel>
+			</Lookup>
+		</HydrogenGasGiantPrimary>
+
+		<MethaneGasGiantPrimary>
+			<Lookup table="SmallGasGiantMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="100" type="&stMethaneGasGiantSizeK;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="gasGiant, methaneGiant, planet, planetary"/>
+				</_PlanetLabel>
+			</Lookup>
+		</MethaneGasGiantPrimary>
+
+		<RingedGasGiantPrimary>
+			<Lookup table="StandardGasGiantMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="100" type="&stRingedGasGiant;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="gasGiant, planet, planetary, ringedGiant"/>
+				</_PlanetLabel>
+			</Lookup>
+		</RingedGasGiantPrimary>
+
+	</SystemPartTable>
+
+<!-- ASTEROIDS & PLANETS -->
 
 	<!-- Biosphere -->
 
-	<StationType UNID="&stBiospherePlanet;"
-		name=				"(planet)"
+	<StationType UNID="&stBiosphereTerrestrialSizeI;"
+		name=				"(biosphere terrestrial)"
 		scale=				"world"
+		size=				"10000"
 		sovereign=			"&svIndependent;"
 
-		attributes=			"biospherePlanet, planet"
+		attributes=			"biosphere, generic, terrestrial"
 		>
 		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="0"   imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="384" imageWidth="128" imageHeight="128"/>
+			<Image	imageID="&rsBiosphereTerrestrials;" imageX="0"   imageY="0"   imageWidth="230" imageHeight="230"/>
+			<Image	imageID="&rsBiosphereTerrestrials;" imageX="0"   imageY="230" imageWidth="230" imageHeight="230"/>
+			<Image	imageID="&rsBiosphereTerrestrials;" imageX="0"   imageY="460" imageWidth="230" imageHeight="230"/>
 		</ImageVariants>
 	</StationType>
 
 	<!-- Desert Planet -->
 
-	<StationType UNID="&stDesertPlanet;"
-		name=				"(planet)"
+	<StationType UNID="&stDesertTerrestrialSizeH;"
+		name=				"(desert terrestrial)"
 		scale=				"world"
+		size=				"8300"
 		sovereign=			"&svIndependent;"
 
-		attributes=			"desertPlanet, planet"
+		attributes=			"desert, generic, terrestrial"
 		>
 		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
-			<Image			imageID="&rsWorlds2;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
+			<Image	imageID="&rsDesertTerrestrials;" imageX="0"   imageY="0"   imageWidth="220" imageHeight="220"/>
+			<Image	imageID="&rsDesertTerrestrials;" imageX="0"   imageY="220" imageWidth="220" imageHeight="220"/>
+			<Image	imageID="&rsDesertTerrestrials;" imageX="0"   imageY="440" imageWidth="220" imageHeight="220"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Greenhouse Planet -->
+
+	<StationType UNID="&stGreenhouseTerrestrialSizeI;"
+		name=				"(greenhouse terrestrial)"
+		scale=				"world"
+		size=				"13250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, greenhouse, terrestrial"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsGreenhouseTerrestrials;" imageX="0"   imageY="0"   imageWidth="250" imageHeight="250"/>
+			<Image	imageID="&rsGreenhouseTerrestrials;" imageX="0"   imageY="250" imageWidth="250" imageHeight="250"/>
+			<Image	imageID="&rsGreenhouseTerrestrials;" imageX="0"   imageY="500" imageWidth="250" imageHeight="250"/>
 		</ImageVariants>
 	</StationType>
 
 	<!-- Hydrogen Gas Giant -->
 
-	<StationType UNID="&stHydrogenGasGiant;"
-		name=				"(planet)"
+	<StationType UNID="&stHydrogenGasGiantSizeM;"
+		name=				"(hydrogen gas giant)"
 		scale=				"world"
+		size=				"151500"
 		sovereign=			"&svIndependent;"
 
-		attributes=			"hydrogenGiant, planet"
+		attributes=			"gasGiant, generic"
 		>
-		<Image imageID="&rsWorlds1;" imageX="0" imageY="512" imageWidth="256" imageHeight="256" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<ImageVariants>
+			<Image	imageID="&rsHydrogenGasGiant01;" imageX="0"   imageY="0"   imageWidth="450" imageHeight="450"/>
+			<Image	imageID="&rsHydrogenGasGiant02;" imageX="0"   imageY="0"   imageWidth="450" imageHeight="450"/>
+			<Image	imageID="&rsHydrogenGasGiant03;" imageX="0"   imageY="0"   imageWidth="450" imageHeight="450"/>
+		</ImageVariants>
 	</StationType>
 
-	<!-- Ringed Gas Giant -->
+	<!-- Methane Gas Giant -->
 
-	<StationType UNID="&stRingedGasGiant;"
-		name=				"(planet)"
+	<StationType UNID="&stMethaneGasGiantSizeK;"
+		name=				"(methane gas giant)"
 		scale=				"world"
+		size=				"49500"
 		sovereign=			"&svIndependent;"
 
-		attributes=			"planet, ringedGiant"
+		attributes=			"gasGiant, generic"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMethaneGasGiant01;" imageX="0"   imageY="0"   imageWidth="340" imageHeight="340"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Ringed Gas Giant
+	
+		LATER: This image is out-of-scale. Scale should be based on the size of
+		the planet, not the full size of the rings. -->
+
+	<StationType UNID="&stRingedGasGiant;"
+		name=				"(ringed gas giant)"
+		scale=				"world"
+		size=				"100000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"gasGiant, generic, ringSystem"
 		>
 
 		<ImageVariants>
@@ -653,42 +188,21 @@
 		</ImageVariants>
 	</StationType>
 
-	<!-- Methane Gas Giant -->
-
-	<StationType UNID="&stMethaneGasGiant;"
-		name=				"(planet)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"planet, methaneGiant"
-		>
-		<Image imageID="&rsWorlds1;" imageX="0" imageY="768" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
 	<!-- Resources -->
 
-	<Image UNID="&rsWorlds1;"		bitmap="Resources\Worlds1.jpg"		bitmask="Resources\Worlds1Mask.bmp"  />
-	<Image UNID="&rsWorlds2;"		bitmap="Resources\Worlds2.jpg"		bitmask="Resources\Worlds2Mask.bmp"  />
+	<Image UNID="&rsBiosphereTerrestrials;"		bitmap="Resources\BiosphereTerrestrials.jpg"		bitmask="Resources\BiosphereTerrestrialsMask.bmp"  />
+	<Image UNID="&rsDesertTerrestrials;"		bitmap="Resources\DesertTerrestrials.jpg"			bitmask="Resources\DesertTerrestrialsMask.bmp"  />
+	<Image UNID="&rsGreenhouseTerrestrials;"	bitmap="Resources\GreenhouseTerrestrials.jpg"		bitmask="Resources\GreenhouseTerrestrialsMask.bmp"  />
+
+	<Image UNID="&rsHydrogenGasGiant01;"		bitmap="Resources\HydrogenGasGiant01.jpg"			bitmask="Resources\HydrogenGasGiant01Mask.bmp"  />
+	<Image UNID="&rsHydrogenGasGiant02;"		bitmap="Resources\HydrogenGasGiant02.jpg"			bitmask="Resources\HydrogenGasGiant01Mask.bmp"  />
+	<Image UNID="&rsHydrogenGasGiant03;"		bitmap="Resources\HydrogenGasGiant03.jpg"			bitmask="Resources\HydrogenGasGiant01Mask.bmp"  />
+
+	<Image UNID="&rsMethaneGasGiant01;"			bitmap="Resources\MethaneGiant01.jpg"				bitmask="Resources\MethaneGiant01Mask.bmp"  />
 
 	<Image UNID="&rsAStar;"					bitmap="Resources\AStar.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
 	<Image UNID="&rsStar1;"					bitmap="Resources\Star1.jpg"				bitmask="Resources\Star1Mask.bmp"   loadOnUse="true"/>
 	<Image UNID="&rsRedDwarfStar;"			bitmap="Resources\RedDwarfStar.jpg"			bitmask="Resources\RedDwarfStarMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsRedGiantStar;"			bitmap="Resources\RedGiantStar.jpg"			bitmask="Resources\RedGiantStarMask.bmp"  loadOnUse="true"/>
-
-	<Image UNID="&rsMetallicAsteroids;"		bitmap="Resources\MetallicAsteroids.jpg"	bitmask="Resources\MetallicAsteroidsMask.bmp"  loadOnUse="true"/>
-
-	<Image UNID="&rsWorldsIcePlanet1;"		bitmap="Resources\WorldsIcePlanet1.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsIcePlanet2;"		bitmap="Resources\WorldsIcePlanet2.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsIcePlanet3;"		bitmap="Resources\WorldsIcePlanet3.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsIcePlanet4;"		bitmap="Resources\WorldsIcePlanet3.jpg"		bitmask="Resources\WorldsIcePlanetMask.bmp"  loadOnUse="true"/>
-
-	<Image UNID="&rsWorldsRingedGiant1;"	bitmap="Resources\WorldsRingedGiant1.jpg"	bitmask="Resources\WorldsRingedGiant1Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant2;"	bitmap="Resources\WorldsRingedGiant2.jpg"	bitmask="Resources\WorldsRingedGiant2Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant3;"	bitmap="Resources\WorldsRingedGiant3.jpg"	bitmask="Resources\WorldsRingedGiant3Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant4;"	bitmap="Resources\WorldsRingedGiant4.jpg"	bitmask="Resources\WorldsRingedGiant4Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant5;"	bitmap="Resources\WorldsRingedGiant5.jpg"	bitmask="Resources\WorldsRingedGiant5Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant6;"	bitmap="Resources\WorldsRingedGiant6.jpg"	bitmask="Resources\WorldsRingedGiant6Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant7;"	bitmap="Resources\WorldsRingedGiant7.jpg"	bitmask="Resources\WorldsRingedGiant7Mask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsWorldsRingedGiant8;"	bitmap="Resources\WorldsRingedGiant8.jpg"	bitmask="Resources\WorldsRingedGiant8Mask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

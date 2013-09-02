@@ -57,11 +57,11 @@
 			<Orbitals distance="5" scale="light-minute" angle="random">
 				<Group>
 					<Siblings count="500" distribution="4d40-82">
-						<Lookup table="AsteroidSmall"/>
+						<Station type="&stRockyAsteroidSizeA;"/>
 					</Siblings>
 
 					<Siblings count="50" distribution="4d20-42">
-						<Lookup table="AsteroidMedium"/>
+						<Station type="&stRockyAsteroidSizeB;"/>
 					</Siblings>
 
 					<!--
@@ -77,7 +77,7 @@
 
 			<Orbitals distance="7" scale="light-minute" angle="random">
 				<Group>
-					<Station type="&stHydrogenGasGiant;" 
+					<Station type="&stHydrogenGasGiantSizeM;" 
 							name="GromE" 
 							showOrbit="true"
 							/>

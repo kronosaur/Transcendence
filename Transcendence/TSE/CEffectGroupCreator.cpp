@@ -15,7 +15,7 @@
 class CEffectGroupPainter : public IEffectPainter
 	{
 	public:
-		CEffectGroupPainter (CEffectGroupCreator *pCreator);
+		CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreatePainterCtx &Ctx);
 
 		virtual ~CEffectGroupPainter (void);
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
@@ -27,7 +27,7 @@ class CEffectGroupPainter : public IEffectPainter
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 		virtual void SetVariants (int iVariants);
 
 	protected:
@@ -41,7 +41,7 @@ class CEffectGroupPainter : public IEffectPainter
 		IEffectPainter **m_pPainters;
 	};
 
-CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator) : m_pCreator(pCreator)
+CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreatePainterCtx &Ctx) : m_pCreator(pCreator)
 
 //	CEffectGroupPainter constructor
 
@@ -49,7 +49,7 @@ CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator) : m_pCr
 	m_pPainters = new IEffectPainter * [m_pCreator->GetCount()];
 
 	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		m_pPainters[i] = m_pCreator->GetCreator(i)->CreatePainter();
+		m_pPainters[i] = m_pCreator->CreateSubPainter(Ctx, i);
 	}
 
 CEffectGroupPainter::~CEffectGroupPainter (void)
@@ -251,7 +251,7 @@ void CEffectGroupPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVec
 			m_pPainters[i]->PaintHit(Dest, x, y, vHitPos, *pCtx);
 	}
 
-bool CEffectGroupPainter::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CEffectGroupPainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //
@@ -260,7 +260,7 @@ bool CEffectGroupPainter::PointInImage (int x, int y, int iTick, int iVariant) c
 	{
 	for (int i = 0; i < m_pCreator->GetCount(); i++)
 		if (m_pPainters[i])
-			if (m_pPainters[i]->PointInImage(x, y, iTick, iVariant))
+			if (m_pPainters[i]->PointInImage(x, y, iTick, iVariant, iRotation))
 				return true;
 
 	return false;
@@ -292,15 +292,8 @@ CEffectGroupCreator::~CEffectGroupCreator (void)
 //	CEffectGroupCreator destructor
 
 	{
-	int i;
-
 	if (m_pCreators)
-		{
-		for (i = 0; i < m_iCount; i++)
-			delete m_pCreators[i];
-
 		delete [] m_pCreators;
-		}
 	}
 
 void CEffectGroupCreator::ApplyOffsets (SViewportPaintCtx *ioCtx, int *retx, int *rety)
@@ -341,7 +334,8 @@ ALERROR CEffectGroupCreator::CreateEffect (CSystem *pSystem,
 										   const CVector &vPos,
 										   const CVector &vVel,
 										   int iRotation,
-										   int iVariant)
+										   int iVariant,
+										   CSpaceObject **retpEffect)
 
 //	CreateEffect
 //
@@ -349,24 +343,38 @@ ALERROR CEffectGroupCreator::CreateEffect (CSystem *pSystem,
 
 	{
 	ALERROR error;
+	CSpaceObject *pLastEffect = NULL;
+
+	//	Create the sub effects
 
 	for (int i = 0; i < m_iCount; i++)
 		{
-		if (error = m_pCreators[i]->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation, iVariant))
+		if (error = m_pCreators[i]->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation, iVariant, &pLastEffect))
 			return error;
 		}
+
+	//	Play sound associated with the group (if any)
+	//	(We use the effect object only to get a position).
+
+	if (pLastEffect)
+		CEffectCreator::PlaySound(pLastEffect);
+
+	//	Done
+
+	if (retpEffect)
+		*retpEffect = pLastEffect;
 
 	return NOERROR;
 	}
 
-IEffectPainter *CEffectGroupCreator::CreatePainter (void)
+IEffectPainter *CEffectGroupCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
 //	Creates a painter
 
 	{
-	return new CEffectGroupPainter(this);
+	return new CEffectGroupPainter(this, Ctx);
 	}
 
 int CEffectGroupCreator::GetLifetime (void)
@@ -410,14 +418,13 @@ ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEle
 	if (m_iCount == 0)
 		return ERR_FAIL;
 
-	m_pCreators = new CEffectCreator * [m_iCount];
+	m_pCreators = new CEffectCreatorRef [m_iCount];
 
 	for (i = 0; i < m_iCount; i++)
 		{
 		CString sSubUNID = strPatternSubst(CONSTLIT("%s/%d"), sUNID, i);
 
-		CXMLElement *pCreatorDesc = pDesc->GetContentElement(i);
-		if (error = CEffectCreator::CreateSimpleFromXML(Ctx, pCreatorDesc, sSubUNID, &m_pCreators[i]))
+		if (error = m_pCreators[i].LoadSimpleEffect(Ctx, sSubUNID, pDesc->GetContentElement(i)))
 			return error;
 		}
 
@@ -445,10 +452,27 @@ ALERROR CEffectGroupCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 	ALERROR error;
 
 	for (int i = 0; i < m_iCount; i++)
-		if (error = m_pCreators[i]->BindDesign(Ctx))
+		if (error = m_pCreators[i].Bind(Ctx))
 			return error;
 
 	return NOERROR;
+	}
+
+void CEffectGroupCreator::OnEffectPlaySound (CSpaceObject *pSource)
+
+//	OnEffectPlaySound
+//
+//	Play sounds
+
+	{
+	//	Let subclass play sounds associated with the group
+
+	CEffectCreator::OnEffectPlaySound(pSource);
+
+	//	Play additional sounds
+
+	for (int i = 0; i < m_iCount; i++)
+		m_pCreators[i]->PlaySound(pSource);
 	}
 
 void CEffectGroupCreator::OnMarkImages (void)

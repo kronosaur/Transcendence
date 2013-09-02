@@ -89,15 +89,9 @@
 				lifetime=			"30"
 				powerUse=			"10"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -127,17 +121,9 @@
 				lifetime=			"60"
 				powerUse=			"10"
 				
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"16"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -169,18 +155,9 @@
 				lifetime=			"40"
 				powerUse=			"11"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"12"
-						width=				"2"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
-
 		</Weapon>
 	</ItemType>
 
@@ -212,17 +189,10 @@
 				lifetime=			"30"
 				powerUse=			"20"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"blaster"
-						primaryColor=		"0xff, 0xff, 0x00"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- DM1500 Missile Rack -->
@@ -314,15 +284,9 @@
 				lifetime=			"30"
 				powerUse=			"30"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -352,17 +316,10 @@
 				lifetime=			"30"
 				powerUse=			"30"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Heavy Recoilless Cannon -->
@@ -393,18 +350,9 @@
 				lifetime=			"80"
 				powerUse=			"22"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"20"
-						width=				"4"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
-
 		</Weapon>
 
 	</ItemType>
@@ -474,6 +422,7 @@
 				lifetime=			"40"
 				powerUse=			"20"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -482,15 +431,6 @@
 				<Shot posAngle="0" posRadius="0" angle="0"/>
 				<Shot posAngle="0" posRadius="0" angle="4"/>
 			</Configuration>
-
-			<Effect>
-				<Bolt
-						length=				"12"
-						width=				"2"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -522,17 +462,9 @@
 				lifetime=			"60"
 				powerUse=			"70"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"16"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -560,17 +492,10 @@
 				lifetime=			"30"
 				powerUse=			"60"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Moskva Light Turret -->
@@ -649,17 +574,10 @@
 				lifetime=			"30"
 				powerUse=			"30"
 
+				effect=				"&efLaserBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xf1, 0x5f, 0x2a"
-						secondaryColor=		"0xff, 0x00, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- NAMI Missile Launcher -->
@@ -739,7 +657,6 @@
 									/>
 						</Effect>
 					</Fragment>
-
 				</Missile>
 
 				<Missile ammoID="&itKM100Missile;"
@@ -980,17 +897,9 @@
 				lifetime=			"60"
 				powerUse=			"60"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"40"
-						width=				"4"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1009,7 +918,7 @@
 
 		<Image imageID="&rsItemsRasiermesser1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Weapon UNID="&itSmartCannon;" itemID="&itSmartCannon;"
+		<Weapon
 				fireRate=			"15"
 				powerUse=			"10"
 				>
@@ -1024,21 +933,13 @@
 						interaction=	"50"
 						maneuverability="2"
 
+						effect=			"&efKineticBoltDefault;"
 						sound=			"&snRecoillessCannon;"
 						vaporTrailLength="5"
 						vaporTrailWidth="350"
 						vaporTrailWidthInc="-5"
 						vaporTrailColor="0xd0, 0xd0, 0xd0"
 						>
-
-					<Effect>
-						<Bolt
-								length=				"16"
-								width=				"3"
-								primaryColor=		"0xcd, 0xf3, 0xff"
-								secondaryColor=		"0x8f, 0xa9, 0xb2"
-								/>
-					</Effect>
 				</Missile>
 			</Missiles>
 		</Weapon>
@@ -1072,17 +973,9 @@
 				lifetime=			"60"
 				powerUse=			"50"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"16"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1109,18 +1002,11 @@
 				lifetime=			"30"
 				powerUse=			"60"
 
+				effect=				"&efLaserBeamDefault;"
 				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL IV -->
@@ -1134,7 +1020,7 @@
 			mass=				"6000"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Illegal; MajorItem; Sapiens"
+			attributes=			"Illegal; MajorItem; Sapiens; NotStandard;"
 
 			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
 			>
@@ -1190,19 +1076,10 @@
 				lifetime=			"67"
 				powerUse=			"160"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"48"
-						width=				"8"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Flenser Relativistic Cannon -->
@@ -1230,17 +1107,9 @@
 				interaction=		"20"
 				powerUse=			"130"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"64"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1579,18 +1448,10 @@
 				lifetime=			"40"
 				powerUse=			"100"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=		"particle"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x5f, 0xf1, 0x2a"
-						intensity=		"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- PK25 Morning Star Cannon -->
@@ -1709,17 +1570,9 @@
 				lifetime=			"60"
 				powerUse=			"60"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"40"
-						width=				"4"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1786,18 +1639,11 @@
 				lifetime=			"30"
 				powerUse=			"140"
 
+				effect=				"&efLaserBeamDefault;"
 				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Omni Turbolaser Cannon -->
@@ -1826,18 +1672,11 @@
 				lifetime=			"30"
 				powerUse=			"70"
 
+				effect=				"&efLaserBeamDefault;"
 				hitEffect=			"&efGreenLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0x5f, 0xf1, 0x2a"
-						secondaryColor=		"0x00, 0xff, 0x00"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL V -->
@@ -1918,17 +1757,9 @@
 				interaction=		"20"
 				powerUse=			"300"
 
+				effect=				"&efKineticBoltDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Bolt
-						length=				"64"
-						width=				"3"
-						primaryColor=		"0xcd, 0xf3, 0xff"
-						secondaryColor=		"0x8f, 0xa9, 0xb2"
-						/>
-			</Effect>
 		</Weapon>
 	</ItemType>
 
@@ -1994,18 +1825,10 @@
 				lifetime=			"60"
 				powerUse=			"300"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=		"particle"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x5f, 0xf1, 0x2a"
-						intensity=		"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Makayev launcher -->
@@ -2237,18 +2060,10 @@
 				lifetime=			"40"
 				powerUse=			"300"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=		"particle"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x5f, 0xf1, 0x2a"
-						intensity=		"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Omni Particle Cannon -->
@@ -2277,18 +2092,10 @@
 				lifetime=			"40"
 				powerUse=			"200"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=		"particle"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x5f, 0xf1, 0x2a"
-						intensity=		"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Neutron Blaster -->
@@ -2316,18 +2123,10 @@
 				lifetime=			"30"
 				powerUse=			"200"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=		"particle"
-						primaryColor=	"0x5f, 0xf1, 0x2a"
-						secondaryColor=	"0x5f, 0xf1, 0x2a"
-						intensity=		"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Moskva 33 repeater -->
@@ -2460,18 +2259,11 @@
 				lifetime=			"30"
 				powerUse=			"300"
 
+				effect=				"&efLaserBeamDefault;"
 				hitEffect=			"&efXRayLaserHitEffect;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"laser"
-						primaryColor=		"0xc4, 0x2a, 0xf1"
-						secondaryColor=		"0xc0, 0x00, 0xff"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL VI -->
@@ -2703,18 +2495,10 @@
 				lifetime=			"40"
 				powerUse=			"300"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"heavyblaster"
-						primaryColor=		"0x33, 0xff, 0x33"
-						secondaryColor=		"0x00, 0x99, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 <!-- LEVEL VII -->
@@ -2744,18 +2528,10 @@
 				lifetime=			"30"
 				powerUse=			"600"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"heavyblaster"
-						primaryColor=		"0x33, 0xff, 0x33"
-						secondaryColor=		"0x00, 0x99, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Ion Disruptor -->
@@ -2795,12 +2571,44 @@
 
 	</ItemType>
 
+	<!-- Light Ion Blaster -->
+
+	<ItemType UNID="&itLightIonBlaster;"
+			name=				"light ion blaster"
+			attributes=			"EI, energyWeapon, military, majorItem"
+			  
+			level=				"7"
+			frequency=			"common"
+			  
+			value=				"42000"
+			mass=				"3000"
+
+			description=		"EI consistently denies rumors that it used stolen Ares schematics to develop this line of ion weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:4d6"
+				fireRate=			"10"
+				lifetime=			"30"
+				powerUse=			"500"
+
+				effect=				"&efEIBlasterBeam;"
+				hitEffect=			"&efEIBlasterHit;" 
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
 	<!-- Star Cannon -->
 
 	<ItemType UNID="&itStarCannon;"
 			name=				"Katana star cannon"
 			level=				"7"
-			value=				"40000"
+			value=				"50000"
 			mass=				"5000"
 			frequency=			"common"
 			attributes=			"EnergyWeapon; MajorItem; Military; Specialty; Bushido"
@@ -2829,7 +2637,6 @@
 						/>
 			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Kiloton Cannon -->
@@ -2837,7 +2644,7 @@
 	<ItemType UNID="&itKilotonCannon;"
 			name=				"kiloton cannon"
 			level=				"7"
-			value=				"50000"
+			value=				"45000"
 			mass=				"4000"
 			frequency=			"uncommon"
 			attributes=			"EI; MajorItem; Military; Specialty"
@@ -2914,7 +2721,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:6d12; momentum3; WMD5"
+				damage=				"thermo:8d12; momentum3; WMD5"
 				fireRate=			"35"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -3111,18 +2918,10 @@
 				lifetime=			"40"
 				powerUse=			"600"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"heavyblaster"
-						primaryColor=		"0x33, 0xff, 0x33"
-						secondaryColor=		"0x00, 0x99, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Omni Tev9 Blaster -->
@@ -3151,18 +2950,10 @@
 				lifetime=			"40"
 				powerUse=			"400"
 
+				effect=				"&efParticleBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"heavyblaster"
-						primaryColor=		"0x33, 0xff, 0x33"
-						secondaryColor=		"0x00, 0x99, 0x00"
-						intensity=			"5"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Thermo Cannon -->
@@ -3189,7 +2980,7 @@
 				<Missile ammoID="&itThermoCannonShell;"
 						type=			"missile"
 
-						damage=			"thermo:4d12; momentum2; WMD5"
+						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
 						hitPoints=		"10"
 						lifetime=		"100"
@@ -3238,7 +3029,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:4d12; momentum2; WMD4"
+				damage=				"thermo:6d12; momentum2; WMD4"
 				fireRate=			"20"
 				missileSpeed=		"40"
 				hitPoints=			"5"
@@ -3288,7 +3079,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"thermo:9d12+9; momentum3; WMD5"
+				damage=				"thermo:12d12+9; momentum3; WMD5"
 				fireRate=			"40"
 				missileSpeed=		"50"
 				lifetime=			"120"
@@ -3333,6 +3124,38 @@
 
 	</ItemType>
 
+	<!-- Ion Blaster -->
+
+	<ItemType UNID="&itIonBlaster;"
+			name=				"ion blaster"
+			attributes=			"EI, energyWeapon, military, majorItem"
+			  
+			level=				"8"
+			frequency=			"common"
+			  
+			value=				"95000"
+			mass=				"4000"
+
+			description=		"The ion blaster fires a bolt of ionized particles."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:11d6; WMD1"
+				fireRate=			"20"
+				lifetime=			"30"
+				powerUse=			"1000"
+
+				effect=				"&efEIBlasterBeam;"
+				hitEffect=			"&efEIBlasterHit;" 
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
 	<!-- Ion Flame Cannon -->
 
 	<ItemType UNID="&itIonFlameCannon;"
@@ -3356,6 +3179,7 @@
 				lifetime=			"20"
 				powerUse=			"1000"
 
+				effect=				"&efIonBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
 
@@ -3368,17 +3192,7 @@
 				<Shot posAngle="0" posRadius="0" angle="5"/>
 				<Shot posAngle="0" posRadius="0" angle="8"/>
 			</Configuration>
-			
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xa0, 0xf0, 0xff"
-						secondaryColor=		"0x00, 0xa9, 0xff"
-						intensity=			"1"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Rasiermesser Launcher -->
@@ -3406,7 +3220,7 @@
 				<Missile ammoID="&itGotha10Missile;"
 						type=			"missile"
 						lifetime=		"120"
-						damage=			"thermo:4d12; momentum3; WMD7"
+						damage=			"thermo:8d24; momentum3; WMD7"
 						missileSpeed=	"70"
 						hitPoints=		"20"
 						sound=			"&snMissileLauncher;"
@@ -3436,7 +3250,7 @@
 				<Missile ammoID="&itGotha400Seeker;"
 						type=			"missile"
 						lifetime=		"120"
-						damage=			"thermo:4d12; momentum3; WMD7"
+						damage=			"thermo:6d24; momentum3; WMD7"
 						missileSpeed=	"65"
 						hitPoints=		"20"
 						maneuverability="2"
@@ -3496,7 +3310,7 @@
 				<Missile ammoID="&itThermoCannonShell;"
 						type=			"missile"
 
-						damage=			"thermo:4d12; momentum2; WMD5"
+						damage=			"thermo:6d12; momentum2; WMD5"
 						missileSpeed=	"60"
 						lifetime=		"100"
 						hitPoints=		"10"
@@ -3623,15 +3437,15 @@
 
 	<ItemType UNID="&itHeavyIonBlaster;"
 			name=				"heavy ion blaster"
+			attributes=			"EI, energyWeapon, military, majorItem"
+			  
 			level=				"9"
+			frequency=			"common"
+			  
 			value=				"190000"
 			mass=				"4500"
-			frequency=			"common"
-			attributes=			"EI; EnergyWeapon; Military; MajorItem"
 
 			description=		"This is a more powerful version of the ion blaster."
-
-			sortName=			"ion blaster, heavy"
 			>
 
 		<Image imageID="&rsItemsEI3;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
@@ -3639,23 +3453,16 @@
 		<Weapon
 				type=				"beam"
 
-				damage=				"ion:7d6; WMD1"
-				fireRate=			"10"
+				damage=				"ion:8d20; WMD1"
+				fireRate=			"30"
 				lifetime=			"30"
 				powerUse=			"2000"
 
+				effect=				"&efEIBlasterBeam;"
+				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xff, 0xc7, 0xa0"
-						secondaryColor=		"0xff, 0x95, 0x00"
-						intensity=			"11"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- NAMI Heavy Launcher -->
@@ -3913,23 +3720,16 @@
 				type=				"beam"
 
 				omnidirectional=	"true"
-				damage=				"ion:5d6; WMD1"
+				damage=				"ion:4d6; WMD1"
 				fireRate=			"15"
 				lifetime=			"30"
 				powerUse=			"1200"
 
+				effect=				"&efEIBlasterBeam;"
+				hitEffect=			"&efEIBlasterHit;" 
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xff, 0xc7, 0xa0"
-						secondaryColor=		"0xff, 0x95, 0x00"
-						intensity=			"8"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Advanced Tritium Cannon -->
@@ -4011,22 +3811,14 @@
 				powerUse=			"3000"
 
 				type=				"beam"
-				damage=				"ion:5d6; WMD1"
-				fireRate=			"15"
+				damage=				"ion:4d6; WMD1"
+				fireRate=			"20"
 				lifetime=			"30"
 
+				effect=				"&efIonBeamDefault;"
 				sound=				"&snLaserCannon;"
 				>
-			<Effect>
-				<Beam
-						beamType=			"lightning"
-						primaryColor=		"0xff, 0xc7, 0xa0"
-						secondaryColor=		"0xff, 0x95, 0x00"
-						intensity=			"8"
-						/>
-			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Plasma Cannon -->
@@ -4051,7 +3843,7 @@
 
 				lifetime=			"60"
 				hitPoints=			"10"
-				damage=				"plasma:8d12; WMD4"
+				damage=				"plasma:10d12+8; WMD4"
 				powerUse=			"3000"
 
 				missileSpeed=		"40"
@@ -4696,7 +4488,130 @@
 	</ItemType>
 
 	<!-- Resources -->
+	
+	<EffectType UNID="&efEIBlasterBeam;"
+			instance=			"creator"
+			>
+		<Effect>
+			<Ray
+					style=			"jagged"
+					shape=			"tapered"
+					primaryColor=	"#ff9500"
+					secondaryColor=	"#804a00"
+					/>
+		</Effect>
 
+		<Events>
+			<GetParameters>
+				(block (damageHP primaryColor secondaryColor)
+					(setq damageHP (@ gData 'damageHP))
+
+					{
+						length:
+							(mathScale 
+								damageHP						; average damage of weapon
+								5								; min damage
+								70								; max damage
+								60								; min beam length
+								260								; max beam length
+								50								; scale gamma
+								)
+						width: (mathScale damageHP 5 70 20 40 50)
+						intensity: 40
+						}
+					)
+			</GetParameters>
+		</Events>
+	</EffectType>
+
+	<Effect UNID="&efEIBlasterHit;">
+		<Variants>
+			<Effect maxValue="0">
+				<ParticleCloud
+						style=				"splash"
+						lifetime=			"15"
+						emitDuration=		"5"
+						emitRate=			"10"
+						emitSpeed=			"5-10"
+						particleLifetime=	"10"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"3"
+								primaryColor=	"#ffca80"
+								secondaryColor=	"#ff9500"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="21" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"20-25"
+						emitSpeed=		"1-6"
+						particleLifetime="4"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"#ffca80"
+								secondaryColor=	"#ff9500"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+			
+			<Effect maxValue="31" 
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"30-37"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"#ffca80"
+								secondaryColor=	"#ff9500"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+
+			<Effect
+					sound="&snArmorHit1;">
+				<ParticleCloud
+						style=			"splash" 
+						lifetime=		"20" 
+						emitDuration=	"60"
+						emitRate=		"40-50"
+						emitSpeed=		"1-6"
+						particleLifetime="5"
+						>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								maxWidth=		"1-2"
+								primaryColor=	"#ffca80"
+								secondaryColor=	"#ff9500"
+								/>
+					</ParticleEffect>
+				</ParticleCloud>
+			</Effect>
+		</Variants>
+	</Effect>
+	
 	<Image UNID="&rsItemsBushido1;"			bitmap="Resources\ItemsBushido1.jpg" bitmask="Resources\ItemsBushido1Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsItemsBushido2;"			bitmap="Resources\ItemsBushido2.jpg" bitmask="Resources\ItemsBushido2Mask.bmp" loadOnUse="true"/>
 	

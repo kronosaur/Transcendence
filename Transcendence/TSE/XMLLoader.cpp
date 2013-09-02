@@ -20,7 +20,6 @@
 #define ITEM_TYPE_TAG						(CONSTLIT("ItemType"))
 #define SHIP_CLASS_TAG						(CONSTLIT("ShipClass"))
 #define IMAGE_TAG							(CONSTLIT("Image"))
-#define SOUND_TAG							(CONSTLIT("Sound"))
 #define STATION_TYPE_TAG					(CONSTLIT("StationType"))
 #define SYSTEM_TYPE_TAG						(CONSTLIT("SystemType"))
 #define SOVEREIGN_TAG						(CONSTLIT("Sovereign"))
@@ -69,42 +68,6 @@ ALERROR CUniverse::InitCodeChain (void)
 
 	if (error = InitCodeChainPrimitives())
 		return error;
-
-	//	Create some fonts
-
-	HFONT hFont = ::CreateFont(-12,
-			0,
-			0,
-			0,
-			FW_NORMAL,
-			false,
-			false,
-			false,
-			ANSI_CHARSET,
-			OUT_TT_ONLY_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_SWISS,
-			"Tahoma");
-	m_MapLabelFont.CreateFromFont(hFont);
-	::DeleteObject(hFont);
-
-	hFont = ::CreateFont(-11,
-			0,
-			0,
-			0,
-			FW_BOLD,
-			false,
-			false,
-			false,
-			ANSI_CHARSET,
-			OUT_TT_ONLY_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_SWISS,
-			"Tahoma");
-	m_SignFont.CreateFromFont(hFont);
-	::DeleteObject(hFont);
 
 	return NOERROR;
 	}

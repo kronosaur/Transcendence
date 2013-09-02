@@ -67,10 +67,21 @@
 			<OnGlobalObjDestroyed>
 				(block (theType)
 					(setq theType (objGetType aObjDestroyed))
-					(if (or (eq theType &stSungFortress;)
-							(eq theType &stSungCitadel;)
-							(eq theType &stSungFortressInHuaramarca;))
-						(huaSungDestroyed aObjDestroyed aOrderGiver)
+					
+					(switch
+					
+						;	Sung station destroyed
+						
+						(or (eq theType &stSungFortress;)
+								(eq theType &stSungCitadel;)
+								(eq theType &stSungFortressInHuaramarca;)
+								)
+							(huaSungDestroyed aObjDestroyed aOrderGiver)
+							
+						;	Huari ship destroyed
+						
+						(eq theType &scHurinDestroyer;)
+							(huaHuariDestroyed aObjDestroyed aOrderGiver)
 						)
 					)
 			</OnGlobalObjDestroyed>
@@ -98,76 +109,6 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
 
 	</ItemType>
-
-	<!-- Hurin Destroyer -->
-
-	<ShipClass UNID="&scHurinDestroyer;"
-			manufacturer=		"Huari"
-			class=				"Hurin"
-			type=				"destroyer"
-			score=				"1020"
-
-			mass=				"5000"
-			cargoSpace=			"1000"
-			thrust=				"3500"
-			maneuver=			"12"
-			maxSpeed=			"8"
-
-			explosionType=		"&vtBlastExplosion1;"
-			leavesWreck=		"95"
-
-			attributes=			"capitalShip, genericClass, huari, special"
-			>
-
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
-			<ArmorSection start="315" span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
-			<ArmorSection start="285" span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
-			<ArmorSection start="255" span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
-			<ArmorSection start="225" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
-			<ArmorSection start="195" span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
-			<ArmorSection start="165" span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
-			<ArmorSection start="135" span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
-			<ArmorSection start="105" span="30" armorID="&itDuralloyArmor;" areaSet="0,2" />
-			<ArmorSection start="75"  span="30" armorID="&itDuralloyArmor;" areaSet="3,4" />
-			<ArmorSection start="45"  span="30" armorID="&itDuralloyArmor;" areaSet="1,6" />
-			<ArmorSection start="15"  span="30" armorID="&itDuralloyArmor;" areaSet="7,13" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="67" posRadius="32" minFireArc="0" maxFireArc="200" />
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="35" posRadius="46" minFireArc="0" maxFireArc="170" />
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="25" posRadius="53" minFireArc="300" maxFireArc="170" />
-
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="293" posRadius="32" minFireArc="160" maxFireArc="0" />
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="325" posRadius="46" minFireArc="190" maxFireArc="0" />
-			<Device deviceID="&itSlamCannon;" secondaryWeapon="true" posAngle="335" posRadius="53" minFireArc="190" maxFireArc="60" />
-
-			<Device deviceID="&itSuperconductingShields;"/>
-			<Device deviceID="&it250MWReactor;"/>
-		</Devices>
-
-		<Items>
-			<Item count="2d12"	item="&itPteracniumFuelRod;"/>
-			<Item count="5d10" item="&itSuperconductingCoil;"/>
-		</Items>
-
-		<Image imageID="&rsMediumShips4;" imageX="640" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
-
-		<AISettings
-			combatStyle=		"standOff"
-			fireRateAdj=		"15"
-			fireAccuracy=		"90"
-			perception=			"5"
-			/>
-
-		<Events>
-			<OnDestroy>
-				(huaHuariDestroyed gSource aOrderGiver)
-			</OnDestroy>
-		</Events>
-
-	</ShipClass>
 
 	<!-- Huari Temple
 
@@ -2350,7 +2291,7 @@
 			<System 
 					name=			"Huaramarca"
 					level=			"6"
-					attributes=		"huari, noAutoGateCreate"
+					attributes=		"huari, humanSpace, noAutoGateCreate"
 					>
 				<System UNID="&ssHuaramarca;"/>
 			</System>
@@ -2368,16 +2309,16 @@
 		<Tables>
 			<OuterAsteroid>
 				<Table>
-					<Lookup chance="85" table="AsteroidSmallFrost"/>
-					<Lookup chance="10" table="AsteroidSmall"/>
-					<Lookup chance="4" table="AsteroidMediumFrost"/>
-					<Lookup chance="1" table="AsteroidMedium"/>
+					<Station chance="85" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="10" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="4" type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="1" type="&stRockyAsteroidSizeB;"/>
 				</Table>
 			</OuterAsteroid>
 
 			<OuterAsteroidField>
 				<Group>
-					<Station type="&stMediumFrostAsteroid;" showOrbit="true"/>
+					<Station type="&stRockyOuterAsteroidSizeD;" showOrbit="true"/>
 
 					<Siblings count="2d20" arcInc="2d411-412" radiusInc="-8-8">
 						<Lookup table="OuterAsteroid"/>
@@ -2404,6 +2345,11 @@
 
 			<Station type="&stRedGiantStar;"/>
 
+			<AddAttribute attributes="redGiantSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
+			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+
 			<!-- Worlds -->
 
 			<Orbitals angle="incrementing:30-330">
@@ -2412,7 +2358,7 @@
 
 				<Group distance="80">
 					<Primary>
-						<Station type="&stVolcanicPlanet;" name="Urcaguary" showOrbit="true"/>
+						<Station type="&stVolcanicTerrestrialSizeH;" name="Urcaguary" showOrbit="true"/>
 					</Primary>
 				</Group>
 
@@ -2420,7 +2366,7 @@
 
 				<Group distance="160">
 					<Primary>
-						<Station type="&stPlanetoid;" name="Pariacaca" showOrbit="true"/>
+						<Station type="&stRockyPlanetoidSizeF;" name="Pariacaca" showOrbit="true"/>
 					</Primary>
 				</Group>
 
@@ -2428,7 +2374,7 @@
 
 				<Group distance="270">
 					<Primary>
-						<Station type="&stIcePlanet;"	name="Illapa" showOrbit="true"/>
+						<Station type="&stIcePlanetoidSizeG;"	name="Illapa" showOrbit="true"/>
 					</Primary>
 
 					<!-- Huari Temple -->
@@ -2466,7 +2412,7 @@
 
 				<Group distance="520">
 					<Primary>
-						<Station type="&stMethaneGasGiant;"	name="Mama Cocha" showOrbit="true"/>
+						<Station type="&stMethaneGasGiantSizeK;"	name="Mama Cocha" showOrbit="true"/>
 					</Primary>
 
 					<!-- Moons of Mama Cocha -->
@@ -2475,19 +2421,19 @@
 
 						<Group distance="20">
 							<Primary>
-								<Lookup table="AsteroidMediumFrost"/>
+								<Station type="&stRockyOuterAsteroidSizeB;"/>
 							</Primary>
 						</Group>
 
 						<Group distance="40">
 							<Primary>
-								<Station type="&stCrateredPlanet;" />
+								<Station type="&stRockyPlanetoidSizeG;" />
 							</Primary>
 						</Group>
 
 						<Group distance="80">
 							<Primary>
-								<Station type="&stPlanetoid;" />
+								<Station type="&stRockyPlanetoidSizeE;" />
 							</Primary>
 						</Group>
 					</Orbitals>
@@ -2497,7 +2443,7 @@
 
 				<Group distance="900">
 					<Primary>
-						<Station type="&stIcePlanet;" name="Supay" showOrbit="true"/>
+						<Station type="&stIcePlanetoidSizeF;" name="Supay" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="40" angle="random">

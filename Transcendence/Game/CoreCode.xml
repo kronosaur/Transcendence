@@ -289,6 +289,48 @@
 					(item (item probTable theEntry) 1)
 					)
 				))
+
+			(setq mathScale (lambda (x fromMin fromMax toMin toMax gamma)
+
+			;	Scales x, which must be in the range fromMin to fromMax to the
+			;	destination scale, toMin to Max.
+			;
+			;	gamma is an optional parameter that scales based on a power
+			;	function. At 100, the mapping is linear. At 50 we use a square
+			;	root function; at 200 we square it.
+
+				(block (toRange result)
+
+					(setq toRange (subtract toMax toMin))
+
+					;	Map to the result range
+
+					(setq result
+						(divide
+							(multiply
+								(subtract 
+									(min (max fromMin x) fromMax)
+									fromMin
+									)
+								toRange
+								)
+							(subtract fromMax fromMin)
+							)
+						)
+
+					;	If we have a gamma parameter, adjust it
+
+					(if gamma
+						(setq result
+							(@ (power (list result toRange) (list gamma 100)) 0)
+							)
+						)
+
+					;	Done
+
+					(add result toMin)
+					)
+				))
 				
 			; Object functions -------------------------------------------------
 			
@@ -334,7 +376,19 @@
 				))
 				
 			; String functions -------------------------------------------------
-				
+
+			(setq strG (lambda (genome humanMaleWord humanFemaleWord)
+				(switch
+					(eq genome 'humanFemale)
+						humanFemaleWord
+
+					(eq genome 'humanMale)
+						humanMaleWord
+
+					humanMaleWord
+					)
+				))
+
 			(setq strMassString (lambda (mass)
 			
 			; Returns a string for the mass with appropriate units. The mass
@@ -391,6 +445,20 @@
 					theValue
 					)
 				))
+
+			(setq sysGetStargateLeadingToNode (lambda (nodeID)
+			
+			; Returns the stargate object that leads to the given nodeID from 
+			; the current system. Nil if the node is unreachable.
+			; ------------------------------------------------------------------
+
+				(sysGetObjectByName
+					(map (sysGetStargates) '(excludeNil reduceMin original) gateID
+						(sysGetTopologyDistance (sysGetStargateDestinationNode gateID) nodeID)
+						)
+					)
+				))
+
 			)
 	</Globals>
 </TranscendenceModule>

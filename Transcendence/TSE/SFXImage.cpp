@@ -20,7 +20,7 @@ class CImagePainter : public IEffectPainter
 		virtual void GetRect (RECT *retRect) const;
 		virtual int GetVariants (void) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0) const;
+		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
@@ -31,7 +31,7 @@ class CImagePainter : public IEffectPainter
 		CCompositeImageSelector m_Sel;
 	};
 
-IEffectPainter *CImageEffectCreator::CreatePainter (void)
+IEffectPainter *CImageEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -150,7 +150,7 @@ void CImageEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewportPain
 		}
 	}
 
-bool CImageEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CImageEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //
@@ -276,7 +276,7 @@ void CImagePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 		}
 	}
 
-bool CImagePainter::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CImagePainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

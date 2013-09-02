@@ -5,12 +5,15 @@
 #include "PreComp.h"
 
 #define ON_CREATE_EVENT							CONSTLIT("OnCreate")
-#define ON_DESTROY_EVENT						CONSTLIT("OnDestroy")
-#define ON_UPDATE_EVENT							CONSTLIT("OnUpdate")
 #define ON_DAMAGE_EVENT							CONSTLIT("OnDamage")
+#define ON_DESTROY_EVENT						CONSTLIT("OnDestroy")
+#define ON_OBJ_DESTROYED_EVENT					CONSTLIT("OnObjDestroyed")
+#define ON_UPDATE_EVENT							CONSTLIT("OnUpdate")
 
 #define OVERLAY_RADIUS							(10.0 * g_KlicksPerPixel)
 #define OVERLAY_RADIUS2							(OVERLAY_RADIUS * OVERLAY_RADIUS)
+
+#define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 
 CEnergyField::CEnergyField (void) : 
 		m_pType(NULL),
@@ -100,12 +103,18 @@ bool CEnergyField::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 			//	Handle damage (if we don't do anything on hit, then
 			//	we let the damage through)
 
-			if (!FireOnDamage(pSource, Ctx))
-				return false;
+			if (FireOnDamage(pSource, Ctx))
+				{
+				CreateHitEffect(pSource, Ctx);
+				return true;
+				}
 
-			//	Hit effect
+			//	If we're a device overlay then there is a chance that we
+			//	damage the device.
 
-			CreateHitEffect(pSource, Ctx);
+			if (m_iDevice != -1
+					&& mathRandom(1, 100) <= 40)
+				pSource->DamageExternalDevice(m_iDevice, Ctx);
 			}
 		
 		return bHit;
@@ -132,7 +141,7 @@ void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 		if (m_pHitPainter)
 			m_pHitPainter->Delete();
-		m_pHitPainter = pHitEffect->CreatePainter();
+		m_pHitPainter = pHitEffect->CreatePainter(CCreatePainterCtx());
 
 		//	Initialize
 
@@ -183,7 +192,12 @@ void CEnergyField::CreateFromType (CEnergyFieldType *pType,
 
 	CEffectCreator *pCreator = pType->GetEffectCreator();
 	if (pCreator)
-		pField->m_pPainter = pCreator->CreatePainter();
+		{
+		CCreatePainterCtx CreateCtx;
+		CreateCtx.SetLifetime(pField->m_iLifeLeft);
+
+		pField->m_pPainter = pCreator->CreatePainter(CreateCtx);
+		}
 
 	pField->m_pHitPainter = NULL;
 
@@ -350,6 +364,41 @@ void CEnergyField::FireOnDestroy (CSpaceObject *pSource)
 			pSource->ReportEventError(strPatternSubst(CONSTLIT("Overlay OnDestroy: %s"), pResult->GetStringValue()), pResult);
 
 		Ctx.Discard(pResult);
+		}
+	}
+
+void CEnergyField::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const
+
+//	FireOnObjDestroyed
+//
+//	OnObjDestroyed event
+
+	{
+	SEventHandlerDesc Event;
+	if (m_pType->FindEventHandler(ON_OBJ_DESTROYED_EVENT, &Event))
+		{
+		CCodeChainCtx CCCtx;
+
+		//	Setup
+
+		CCCtx.SaveAndDefineSourceVar(pSource);
+		CCCtx.DefineInteger(CONSTLIT("aOverlayID"), m_dwID);
+		CCCtx.DefineSpaceObject(CONSTLIT("aObjDestroyed"), Ctx.pObj);
+		CCCtx.DefineSpaceObject(CONSTLIT("aDestroyer"), Ctx.Attacker.GetObj());
+		CCCtx.DefineSpaceObject(CONSTLIT("aOrderGiver"), (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.iCause) : NULL));
+		CCCtx.DefineSpaceObject(CONSTLIT("aWreckObj"), Ctx.pWreck);
+		CCCtx.DefineString(CONSTLIT("aDestroyReason"), GetDestructionName(Ctx.iCause));
+
+		//	Execute
+
+		ICCItem *pResult = CCCtx.Run(Event);
+
+		//	Done
+
+		if (pResult->IsError())
+			pSource->ReportEventError(strPatternSubst(CONSTLIT("Overlay OnObjDestroyed: %s"), pResult->GetStringValue()), pResult);
+
+		CCCtx.Discard(pResult);
 		}
 	}
 
@@ -560,15 +609,19 @@ void CEnergyField::Update (CSpaceObject *pSource)
 
 	//	Update the painters
 
+	SEffectUpdateCtx UpdateCtx;
+	UpdateCtx.pSystem = pSource->GetSystem();
+	UpdateCtx.pObj = pSource;
+
 	if (m_pPainter)
 		{
-		m_pPainter->OnUpdate();
+		m_pPainter->OnUpdate(UpdateCtx);
 		m_pPainter->OnMove();
 		}
 
 	if (m_pHitPainter)
 		{
-		m_pHitPainter->OnUpdate();
+		m_pHitPainter->OnUpdate(UpdateCtx);
 		m_pHitPainter->OnMove();
 		}
 

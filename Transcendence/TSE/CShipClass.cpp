@@ -17,6 +17,7 @@
 #define FUEL_LOW_LEVEL_IMAGE_TAG				CONSTLIT("FuelLowLevelImage")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define INSTALL_TAG								CONSTLIT("Install")
+#define INTERIOR_TAG							CONSTLIT("Interior")
 #define ITEMS_TAG								CONSTLIT("Items")
 #define NAMES_TAG								CONSTLIT("Names")
 #define NOZZLE_IMAGE_TAG						CONSTLIT("NozzleImage")
@@ -33,6 +34,8 @@
 #define AUTOPILOT_ATTRIB						CONSTLIT("autopilot")
 #define ARMOR_ID_ATTRIB							CONSTLIT("armorID")
 #define CARGO_SPACE_ATTRIB						CONSTLIT("cargoSpace")
+#define CHARACTER_ATTRIB						CONSTLIT("character")
+#define COUNT_ATTRIB							CONSTLIT("count")
 #define CYBER_DEFENSE_LEVEL_ATTRIB				CONSTLIT("cyberDefenseLevel")
 #define DEBUG_ONLY_ATTRIB						CONSTLIT("debugOnly")
 #define DEFAULT_BACKGROUND_ID_ATTRIB			CONSTLIT("defaultBackgroundID")
@@ -49,6 +52,7 @@
 #define INERTIALESS_DRIVE_ATTRIB				CONSTLIT("inertialessDrive")
 #define LARGE_IMAGE_ATTRIB						CONSTLIT("largeImage")
 #define LEAVES_WRECK_ATTRIB						CONSTLIT("leavesWreck")
+#define LEVEL_ATTRIB							CONSTLIT("level")
 #define MAX_ARMOR_ATTRIB						CONSTLIT("maxArmor")
 #define MAX_CARGO_SPACE_ATTRIB					CONSTLIT("maxCargoSpace")
 #define MAX_DEVICES_ATTRIB						CONSTLIT("maxDevices")
@@ -69,11 +73,14 @@
 #define REVERSE_ARTICLE_ATTRIB					CONSTLIT("reverseArticle")
 #define ROTATION_COUNT_ATTRIB					CONSTLIT("rotationCount")
 #define SCORE_ATTRIB							CONSTLIT("score")
+#define SIZE_ATTRIB								CONSTLIT("size")
 #define SHIP_SCREEN_ATTRIB						CONSTLIT("shipScreen")
 #define STARTING_CREDITS_ATTRIB					CONSTLIT("startingCredits")
 #define STARTING_POS_ATTRIB						CONSTLIT("startingPos")
 #define STARTING_SYSTEM_ATTRIB					CONSTLIT("startingSystem")
 #define STRUCTURAL_HIT_POINTS_ATTRIB			CONSTLIT("structuralHitPoints")
+#define THRUST_ATTRIB							CONSTLIT("thrust")
+#define THRUST_RATIO_ATTRIB						CONSTLIT("thrustRatio")
 #define TIME_STOP_IMMUNE_ATTRIB					CONSTLIT("timeStopImmune")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define VIRTUAL_ATTRIB							CONSTLIT("virtual")
@@ -82,32 +89,34 @@
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
 
-#define FIELD_FUEL_CAPACITY						CONSTLIT("fuelCapacity")
-#define FIELD_FUEL_CRITERIA						CONSTLIT("fuelCriteria")
-#define FIELD_FUEL_EFFICIENCY					CONSTLIT("fuelEfficiency")
-#define FIELD_POWER								CONSTLIT("power")
-
 #define FIELD_ARMOR_ITEMS						CONSTLIT("armorItems")
+#define FIELD_BALANCE_TYPE						CONSTLIT("balanceType")
 #define FIELD_CARGO_SPACE						CONSTLIT("cargoSpace")
+#define FIELD_COMBAT_STRENGTH					CONSTLIT("combatStrength")			//	value reflecting combat power (attack and defense)
+#define FIELD_DAMAGE_RATE						CONSTLIT("damage")					//	damage per 180 ticks
+#define FIELD_DEFENSE_RATE						CONSTLIT("defenseStrength")			//	value reflecting difficulty killing
 #define FIELD_DEVICE_SLOTS						CONSTLIT("deviceSlots")
 #define FIELD_DEVICE_SLOTS_NON_WEAPONS			CONSTLIT("deviceSlotsNonWeapons")
 #define FIELD_DEVICE_SLOTS_WEAPONS				CONSTLIT("deviceSlotsWeapons")
 #define FIELD_DEVICE_ITEMS						CONSTLIT("deviceItems")
+#define FIELD_DODGE_RATE						CONSTLIT("dodgeRate")
 #define FIELD_DRIVE_IMAGE						CONSTLIT("driveImage")
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
 #define FIELD_FIRE_ACCURACY						CONSTLIT("fireAccuracy")
 #define FIELD_FIRE_RANGE_ADJ					CONSTLIT("fireRangeAdj")
 #define FIELD_FIRE_RATE_ADJ						CONSTLIT("fireRateAdj")
 #define FIELD_GENERIC_NAME						CONSTLIT("genericName")
+#define FIELD_HP								CONSTLIT("hp")
 #define FIELD_HULL_MASS							CONSTLIT("hullMass")
 #define FIELD_LAUNCHER							CONSTLIT("launcher")
 #define FIELD_LAUNCHER_UNID						CONSTLIT("launcherUNID")
 #define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_MANEUVER							CONSTLIT("maneuver")
+#define FIELD_MANUFACTURER						CONSTLIT("manufacturer")
+#define FIELD_MASS								CONSTLIT("mass")
 #define FIELD_MAX_ARMOR_MASS					CONSTLIT("maxArmorMass")
 #define FIELD_MAX_CARGO_SPACE					CONSTLIT("maxCargoSpace")
 #define FIELD_MAX_SPEED							CONSTLIT("maxSpeed")
-#define FIELD_MANEUVER							CONSTLIT("maneuver")
-#define FIELD_MANUFACTURER						CONSTLIT("manufacturer")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_PRIMARY_ARMOR						CONSTLIT("primaryArmor")
 #define FIELD_PRIMARY_ARMOR_UNID				CONSTLIT("primaryArmorUNID")
@@ -115,11 +124,14 @@
 #define FIELD_PRIMARY_WEAPON_RANGE				CONSTLIT("primaryWeaponRange")
 #define FIELD_PRIMARY_WEAPON_RANGE_ADJ			CONSTLIT("primaryWeaponRangeAdj")
 #define FIELD_PRIMARY_WEAPON_UNID				CONSTLIT("primaryWeaponUNID")
+#define FIELD_REGEN								CONSTLIT("regen")
 #define FIELD_SCORE								CONSTLIT("score")
+#define FIELD_SIZE								CONSTLIT("size")
 #define FIELD_SHIELD							CONSTLIT("shield")
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_SHIP_STATUS_SCREEN				CONSTLIT("shipStatusScreen")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
+#define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
 
 #define ERR_OUT_OF_MEMORY						CONSTLIT("out of memory")
 #define ERR_BAD_IMAGE							CONSTLIT("invalid ship image")
@@ -137,6 +149,7 @@
 #define ERR_UNKNOWN_EQUIPMENT_DIRECTIVE			CONSTLIT("unknown equipment directive: %s")
 
 #define SPECIAL_IS_PLAYER_CLASS					CONSTLIT("isPlayerClass:")
+#define SPECIAL_MANUFACTURER					CONSTLIT("manufacturer:")
 
 #define SPECIAL_VALUE_TRUE						CONSTLIT("true")
 
@@ -148,14 +161,12 @@
 #define DEFAULT_POWER_USE						20
 
 static char g_ArmorTag[] = "Armor";
-static char g_ArmorSectionTag[] = "ArmorSection";
 static char g_AISettingsTag[] = "AISettings";
 
 static char g_ManufacturerAttrib[] = "manufacturer";
 static char g_ClassAttrib[] = "class";
 static char g_TypeAttrib[] = "type";
 static char g_MassAttrib[] = "mass";
-static char g_ThrustAttrib[] = "thrust";
 static char g_ManeuverAttrib[] = "maneuver";
 static char g_MaxSpeedAttrib[] = "maxSpeed";
 static char g_StartAttrib[] = "start";
@@ -186,37 +197,36 @@ static ScoreDesc g_XP[] =
 		//							Drawback
 		//									Level Score
 
-		{	20,		5,		20,		0,		50 },			//	I
-		{	50,		10,		50,		-5,		100 },			//	II
-		{	115,	15,		100,	-10,	200 },			//	III
-		{	200,	20,		170,	-20,	350 },			//	IV
-		{	340,	30,		260,	-35,	600 },			//	V
-		{	500,	45,		370,	-50,	900 },			//	VI
-		{	750,	60,		500,	-65,	1400 },			//	VII
-		{	1050,	80,		650,	-85,	1900 },			//	VIII
-		{	1450,	100,	820,	-105,	2600 },			//	IX
-		{	1900,	125,	1010,	-130,	3250 },			//	X
-		{	2400,	150,	1220,	-155,	4200 },			//	XI
-		{	3000,	180,	1450,	-185,	5500 },			//	XII
-		{	3600,	210,	1700,	-215,	6750 },			//	XIII
-		{	4250,	245,	1970,	-250,	8250 },			//	XIV
-		{	5000,	280,	2260,	-285,	10000 },		//	XV
-		{	6000,	320,	2570,	-325,	11500 },		//	XVI
-		{	7000,	360,	2900,	-365,	13250 },		//	XVII
-		{	8000,	405,	3250,	-410,	15000 },		//	XVIII
-		{	9000,	450,	3620,	-455,	16750 },		//	XIX
-		{	10000,	500,	4010,	-505,	18500 },		//	XX
-		{	11000,	550,	4420,	-555,	20500 },		//	XXI
-		{	12000,	605,	4850,	-610,	22500 },		//	XXII
-		{	13000,	660,	5300,	-665,	25000 },		//	XXIII
-		{	14000,	720,	5770,	-725,	26500 },		//	XXIV
-		{	15000,	780,	6260,	-785,	30000 },		//	XXV
+		{	30,		3,		20,		-2,		50		},		//	I
+		{	55,		5,		40,		-3,		100		},		//	II
+		{	110,	10,		75,		-6,		200		},		//	III
+		{	200,	20,		130,	-10,	350		},		//	IV
+		{	340,	30,		230,	-20,	600		},		//	V
+		{	510,	45,		340,	-25,	900		},		//	VI
+		{	800,	70,		530,	-40,	1400	},		//	VII
+		{	1100,	95,		720,	-55,	1900	},		//	VIII
+		{	1500,	130,	990,	-80,	2600	},		//	IX
+		{	1850,	160,	1250,	-100,	3250	},		//	X
+		{	2400,	210,	1600,	-130,	4200	},		//	XI
+		{	3150,	280,	2100,	-170,	5500	},		//	XII
+		{	3850,	340,	2550,	-200,	6750	},		//	XIII
+		{	4700,	410,	3150,	-250,	8250	},		//	XIV
+		{	5700,	500,	3800,	-300,	10000	},		//	XV
+		{	6550,	580,	4350,	-350,	11500	},		//	XVI
+		{	7550,	660,	5050,	-400,	13250	},		//	XVII
+		{	8550,	750,	5700,	-450,	15000	},		//	XVIII
+		{	9550,	840,	6350,	-500,	16750	},		//	XIX
+		{	10500,	930,	7050,	-560,	18500	},		//	XX
+		{	11500,	1050,	7800,	-620,	20500	},		//	XXI
+		{	13000,	1150,	8550,	-680,	22500	},		//	XXII
+		{	14500,	1250,	9500,	-750,	25000	},		//	XXIII
+		{	15000,	1350,	10000,	-800,	26500	},		//	XXIV
+		{	17000,	1500,	11500,	-900,	30000	},		//	XXV
 	};
 
 #define SCORE_DESC_COUNT							(sizeof(g_XP) / sizeof(g_XP[0]))
 
 CShipClass::CShipClass (void) : 
-		m_Hull(sizeof(HullSection), 2),
 		m_pDevices(NULL),
 		m_pPlayerSettings(NULL),
 		m_pItems(NULL),
@@ -249,7 +259,579 @@ CShipClass::~CShipClass (void)
 		delete [] m_DockingPorts;
 	}
 
-Metric CShipClass::CalcMass (const CDeviceDescList &Devices)
+CShipClass::EBalanceTypes CShipClass::CalcBalanceType (CString *retsDesc) const
+
+//	CalcBalanceType
+//
+//	Calculates the balance type for this ship (based on level and combat strength.
+
+	{
+	Metric rCombat = CalcCombatStrength();
+	Metric rAttack = CalcDamageRate();
+	Metric rDefense = CalcDefenseRate();
+	Metric rAttackDefenseRatio = (rDefense > 0.0 ? rAttack / rDefense : 1000.0);
+
+	int iLevel = GetLevel();
+
+	//	Calculate the standard combat strength for ships of this level.
+
+	const Metric k0 = 1.4;
+	const Metric k1 = 8.0;
+	Metric rStdCombat = k1 * pow(k0, iLevel - 1);
+
+	//	If we're less than 1/4 standard then we're too weak to be a minion
+
+	if (rCombat < 0.25 * rStdCombat
+			&& iLevel > 1)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("too weak");
+		return typeTooWeak;
+		}
+
+	//	If we're more than 4 times standard then we're too strong even for a boss
+
+	else if (rCombat >= 4.0 * rStdCombat)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("too strong");
+		return typeTooStrong;
+		}
+
+	//	See if this is a non-combatant
+
+	else if (rAttackDefenseRatio < 0.5 && rAttack < 0.5 * rStdCombat)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("non-combatant");
+		return typeNonCombatant;
+		}
+
+	//	If we're less than 3/4 standard and our defense is low, then we're a minion
+
+	else if (rCombat < 0.75 * rStdCombat
+			&& rAttackDefenseRatio > 0.5)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("minion");
+		return typeMinion;
+		}
+
+	//	If we're less than 1.5 standard then we're a standard ship.
+
+	else if (rCombat < 1.5 * rStdCombat)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("standard");
+		return typeStandard;
+		}
+
+	//	If we're less than 2.5 standard then we're elite
+
+	else if (rCombat < 2.5 * rStdCombat)
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("elite");
+		return typeElite;
+		}
+
+	//	If we're less than 4 times standard then we're a boss
+
+	else
+		{
+		if (retsDesc) *retsDesc = CONSTLIT("boss");
+		return typeBoss;
+		}
+	}
+
+CItemType *CShipClass::CalcBestMissile (const SDeviceDesc &Device) const
+
+//	CalcBestMissile
+//
+//	Computes the best missile item type available to the given device (which 
+//	must be a launcher).
+
+	{
+	CItemType *pType = Device.Item.GetType();
+	CDeviceClass *pDevice = (pType ? pType->GetDeviceClass() : NULL);
+	if (pDevice == NULL)
+		return NULL;
+
+	//	Look for the highest missile level and use that as the
+	//	weapon level.
+
+	CItemType *pBestMissile = NULL;
+	IItemGenerator *pItems = GetRandomItemTable();
+	if (pItems)
+		FindBestMissile(pDevice, pItems, &pBestMissile);
+
+	FindBestMissile(pDevice, Device.ExtraItems, &pBestMissile);
+
+	return pBestMissile;
+	}
+
+Metric CShipClass::CalcCombatStrength (void) const
+
+//	CalcCombatStrength
+//
+//	Computes a rough value for combat strength of the ship.
+
+	{
+	//	Get the attack strength (and the best weapon level)
+
+	int iWeaponLevel;
+	Metric rAttack = CalcDamageRate(NULL, &iWeaponLevel);
+
+	//	If we're using weapons for a damage type weaker than expected for our
+	//	current level, then we adjust.
+
+	int iExpectedDamageTier = (GetLevel() + 2) / 3;
+	int iWeaponDamageTier = (iWeaponLevel + 2) / 3;
+	switch (iExpectedDamageTier - iWeaponDamageTier)
+		{
+		case 1:
+			rAttack *= 0.85;
+			break;
+
+		case 2:
+			rAttack *= 0.5;
+			break;
+
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+			rAttack *= 0.33;
+			break;
+		}
+
+	//	Get the defense strength
+
+	Metric rDefense = CalcDefenseRate();
+
+	//	Combine attack and defense strengths
+
+	const Metric ATTACK_FACTOR = 0.5;
+	const Metric DEFENSE_FACTOR = 0.25;
+	const Metric MAX_ATTACK_RATIO = 5.0;
+
+	return (ATTACK_FACTOR * Min(rAttack, rDefense * MAX_ATTACK_RATIO))
+		+ (DEFENSE_FACTOR * rDefense);
+	}
+
+Metric CShipClass::CalcDamageRate (int *retiAveWeaponLevel, int *retiMaxWeaponLevel) const
+
+//	CalcDamageRate
+//
+//	Computes the rough number of HP of damage dealt by this ship in 180 ticks.
+//	This is based on weapons and maneuverability.
+//
+//	NOTE: Damage rate is NOT adjusted for damage type because we want this to
+//	follow the current weapon damage HP table (which also does not adjust for
+//	damage type). Callers should adjust if necessary.
+
+	{
+	int i;
+
+	const Metric MANEUVER_FACTOR = 0.5;
+
+	Metric rTotalDamageRate = 0.0;
+	Metric rTotalDamageLevels = 0.0;
+	Metric rPrimaryDamageRate = 0.0;
+	int iPrimaryLevel = 0;
+	int iMaxWeaponLevel = 0;
+
+	//	Loop over all weapons and add up their damage.
+
+	for (i = 0; i < m_AverageDevices.GetCount(); i++)
+		{
+		const SDeviceDesc &Desc = m_AverageDevices.GetDeviceDesc(i);
+		CItemType *pItem = Desc.Item.GetType();
+		CDeviceClass *pDevice = (pItem ? pItem->GetDeviceClass() : NULL);
+		bool bIsLauncher;
+
+		//	Figure out if this is a weapon or a launcher; if neither, then we
+		//	skip this device.
+
+		if (pDevice == NULL)
+			continue;
+		else if (pDevice->GetCategory() == itemcatLauncher)
+			bIsLauncher = true;
+		else if (pDevice->GetCategory() == itemcatWeapon)
+			bIsLauncher = false;
+		else
+			continue;
+
+		CWeaponClass *pWeapon = pDevice->AsWeaponClass();
+		if (pWeapon == NULL)
+			continue;
+
+		//	If this is a launcher then we need to figure out the best available
+		//	variant.
+
+		int iVariant = 0;
+		int iMissileLevel = 0;
+		if (bIsLauncher)
+			{
+			CItemType *pBestMissile = CalcBestMissile(Desc);
+			if (pBestMissile)
+				{
+				iVariant = pDevice->GetAmmoVariant(pBestMissile);
+				iMissileLevel = pBestMissile->GetLevel();
+				}
+			else
+				iVariant = -1;
+			}
+
+		//	If no valid variant, then skip
+
+		if (iVariant == -1)
+			continue;
+
+		//	Compute the damage rate for the weapon
+
+		Metric rDamageRate = (Metric)pDevice->GetDataFieldInteger(strPatternSubst(CONSTLIT("damage:%d"), iVariant));
+
+		//	Compute weapon level
+
+		int iWeaponLevel = (bIsLauncher ? iMissileLevel : pDevice->GetLevel());
+
+		//	Compute the total coverage of the weapon (360 = omnidirectional; 0 = fixed)
+
+		int iDeviceCoverage;
+		if (Desc.bOmnidirectional)
+			iDeviceCoverage = 360;
+		else if (Desc.iMaxFireArc != Desc.iMinFireArc)
+			iDeviceCoverage = ::AngleRange(Desc.iMinFireArc, Desc.iMaxFireArc);
+		else
+			iDeviceCoverage = 0;
+
+		int iMinFireArc;
+		int iMaxFireArc;
+		int iWeaponCoverage;
+		if (!pWeapon->CanRotate(CItemCtx(), &iMinFireArc, &iMaxFireArc))
+			iWeaponCoverage = 0;
+		else if (iMinFireArc != iMaxFireArc)
+			iWeaponCoverage = ::AngleRange(iMinFireArc, iMaxFireArc);
+		else
+			iWeaponCoverage = 360;
+
+		int iCoverage = Max(iDeviceCoverage, iWeaponCoverage);
+
+		//	For area weapons we adjust damage rate based on coverage.
+
+		if (iCoverage >= 90)
+			rDamageRate *= ((Metric)iCoverage / 360.0);
+
+		//	Otherwise, for fixed weapons we need to adjust based on the 
+		//	maneuverability of the ship.
+
+		else
+			{
+			int iManeuverDelay = Max(1, Min(GetManeuverDelay(), 4));
+			Metric rManeuver = 1.0 / iManeuverDelay;
+
+			rDamageRate *= rManeuver 
+					* MANEUVER_FACTOR
+					* (1.0 + (3.0 * iCoverage / 90.0));
+			}
+
+		//	Adjust by AI fire rate
+
+		if (m_AISettings.GetFireRateAdj() > 0)
+			rDamageRate *= 10.0 / m_AISettings.GetFireRateAdj();
+
+		//	If this is a primary weapon, then keep track of the best rate.
+		//	Otherwise, we just add to the total.
+
+		if (bIsLauncher || Desc.bSecondary)
+			{
+			rTotalDamageRate += rDamageRate;
+			rTotalDamageLevels += (rDamageRate * iWeaponLevel);
+			}
+		else
+			{
+			if (rDamageRate > rPrimaryDamageRate)
+				{
+				rPrimaryDamageRate = rDamageRate;
+				iPrimaryLevel = iWeaponLevel;
+				}
+			}
+
+		//	Keep track of max weapon level
+
+		if (iWeaponLevel > iMaxWeaponLevel)
+			iMaxWeaponLevel = iWeaponLevel;
+		}
+
+	//	Add up primary weapon
+
+	rTotalDamageRate += rPrimaryDamageRate;
+	rTotalDamageLevels += (rPrimaryDamageRate * iPrimaryLevel);
+
+	//	Compute average level, if necessary
+
+	if (retiAveWeaponLevel)
+		*retiAveWeaponLevel = (rTotalDamageRate > 0.0 ? (int)((rTotalDamageLevels / rTotalDamageRate) + 0.5) : 0);
+
+	if (retiMaxWeaponLevel)
+		*retiMaxWeaponLevel = iMaxWeaponLevel;
+
+	//	Done
+
+	return rTotalDamageRate;
+	}
+
+Metric CShipClass::CalcDefenseRate (void) const
+
+//	CalcDefenseRate
+//
+//	Calculates the smallest amount of damage per 180 ticks required to destroy
+//	the ship in less than 6 * 180 ticks.
+
+	{
+	const Metric T = 6.0;	//	six 180 tick cycles
+
+	//	Compute armor strength values
+
+	Metric Ahp;
+	Metric Aregen;
+	CArmorClass *pArmor;
+	if (m_Hull.GetCount() > 0)
+		pArmor = m_Hull[0].pArmor;
+	else
+		pArmor = NULL;
+
+	if (pArmor)
+		{
+		Ahp = pArmor->GetMaxHP(CItemCtx());
+		Aregen = pArmor->GetItemType()->GetDataFieldInteger(FIELD_REGEN);
+
+		//	Adjust for damage type adjustment (for armor that has more resistance
+		//	than standard armor, e.g., meteorsteel).
+
+		int iDamageAdj = pArmor->CalcAverageRelativeDamageAdj();
+		Metric rDamageAdj = (iDamageAdj > 0 ? 100.0 / iDamageAdj : 10.0);
+		Ahp *= rDamageAdj;
+		Aregen *= rDamageAdj;
+
+		//	Adjust for number of segments
+
+		Metric rAdj;
+		switch (m_Hull.GetCount())
+			{
+			case 1:
+				rAdj = 0.5;
+				break;
+
+			case 2:
+			case 3:
+				rAdj = 0.67;
+				break;
+
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				rAdj = 0.9;
+				break;
+
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+			case 12:
+				rAdj = 1.0;
+				break;
+
+			default:
+				rAdj = Max(1.0, m_Hull.GetCount() / 12.0);
+			}
+
+		Ahp *= rAdj;
+		Aregen *= rAdj;
+		}
+	else
+		{
+		Ahp = 0.0;
+		Aregen = 0.0;
+		}
+
+	//	If we have interior structure, we add it to the armor hit points.
+	//	NOTE: We don't try to this as a third term in the equation below because
+	//	it is too hard to solve the equation. [And because it is rare for
+	//	either armor or interior to have high regeneration.]
+
+	if (!m_Interior.IsEmpty())
+		{
+		Metric Ihp = m_Interior.GetHitPoints();
+		if (Ihp > 0.0)
+			{
+			//	Adjust because we need WMD damage
+
+			Ihp *= 2.0;
+
+			//	Adjust regen proportionally.
+
+			Metric rTotal = Ahp + Ihp;
+			Aregen = (Ahp * Aregen) / rTotal;
+
+			//	Adjust armor hp
+
+			Ahp += Ihp;
+			}
+		}
+
+	//	Compute shield strength values
+
+	Metric Shp;
+	Metric Sregen;
+	CDeviceClass *pDevice = m_AverageDevices.GetNamedDevice(devShields);
+	if (pDevice)
+		{
+		CItemType *pShieldType = pDevice->GetItemType();
+		Shp = pShieldType->GetDataFieldInteger(FIELD_HP);
+		Sregen = pShieldType->GetDataFieldInteger(FIELD_REGEN);
+		}
+	else
+		{
+		Shp = 0.0;
+		Sregen = 0.0;
+		}
+
+	//		    Shp			   Ahp
+	//	T = ------------ + ------------
+	//		 X - Sregen		X - Aregen
+	//
+	//	Solve for X (both roots)
+
+	Metric i1 = pow(-Ahp - Aregen * T - Shp - Sregen * T, 2) - 4.0 * T * (Ahp * Sregen + Aregen * Shp + Aregen * Sregen * T);
+	if (i1 < 0.0)
+		return 0.0;
+
+	Metric i2 = Ahp + Aregen * T + Shp + Sregen * T;
+
+	Metric x1 = -(sqrt(i1) + i2) / (2 * T);
+	Metric x2 = (sqrt(i1) + i2) / (2 * T);
+
+	//	Take whichever is positive
+
+	Metric rRate;
+	if (x1 > 0.0)
+		rRate = x1;
+	else if (x2 > 0.0)
+		rRate = x2;
+	else
+		return 0.0;
+
+	//	Adjust rate based on maneuverability of ship
+
+	Metric rHitRate = rRate * (1.0 - CalcDodgeRate());
+	rRate = rRate * rRate / rHitRate;
+
+	//	Done
+
+	return rRate;
+	}
+
+int CShipClass::CalcLevel (void) const
+
+//	CalcLevel
+//
+//	Calculate the ship level based on devices, etc.
+
+	{
+	int i;
+
+	int iBestLevel = 1;
+
+	//	Figure out what armor we've got
+
+	int iArmorSections = GetHullSectionCount();
+	int iArmorLevel = (iArmorSections > 0 ? GetHullSection(0)->pArmor->GetItemType()->GetLevel() : 1);
+	if (iArmorLevel > iBestLevel)
+		iBestLevel = iArmorLevel;
+
+	//	Loop over all devices and figure out the highest level.
+
+	for (i = 0; i < m_AverageDevices.GetCount(); i++)
+		{
+		const SDeviceDesc &Desc = m_AverageDevices.GetDeviceDesc(i);
+		CDeviceClass *pDevice = Desc.Item.GetType()->GetDeviceClass();
+
+		//	Compute the device level
+
+		int iDeviceLevel = ComputeDeviceLevel(Desc);
+
+		//	Keep track of the best device level
+
+		if (iDeviceLevel > iBestLevel)
+			iBestLevel = iDeviceLevel;
+		}
+
+	//	Done
+
+	return iBestLevel;
+	}
+
+Metric CShipClass::CalcManeuverValue (bool bDodge) const
+
+//	CalcManeuverValue
+//
+//	Computes the rough probability (0.0-1.0) that the ship can dodge an enemy shot,
+//	based on maneuverability, speed, and thrust.
+
+	{
+	const Metric PIVOT_SPEED = 12.0;
+	const Metric PIVOT_DODGE = 0.5;
+	const Metric K1 = 0.5;
+	const Metric K2 = 1.0 / g_Pi;
+	const Metric K3 = 1.25 / g_Pi;
+
+	const Metric PIVOT_THRUST = 12.0;
+	const Metric MAX_THRUST_ADJ = 8.0;
+
+	const int SIZE_FACTOR = 16;
+
+	//	Get some statistics
+
+	DriveDesc Drive;
+	GetDriveDesc(&Drive);
+
+	Metric rMass = CalcMass(m_AverageDevices);
+	Metric rThrustRatio = 2.0 * (rMass > 0.0 ? Drive.iThrust / rMass : 0.0);
+	int iManeuverDelay = Max(1, GetManeuverDelay());
+	Metric rSpeed = 100.0 * Drive.rMaxSpeed / LIGHT_SPEED;
+
+	//	Speed of 12 is a pivot point. Above this speed it gets easy to dodge
+	//	shots; below this speed it gets increasingly harder.
+
+	Metric rDodge;
+	if (rSpeed >= PIVOT_SPEED)
+		rDodge = PIVOT_DODGE + (K2 * atan(K1 * (rSpeed - PIVOT_SPEED)));
+	else
+		rDodge = Max(0.0, PIVOT_DODGE + (K3 * atan(K1 * (rSpeed - PIVOT_SPEED))));
+
+	//	Generate an adjustment based on maneuverability:
+	//	1 = normal dodge rate; 10 = very low dodge rate
+
+	int iManeuverAdj = iManeuverDelay;
+
+	//	Generate an adjustment based on thrust-ratio:
+	//	1 = normal dodge rate; 10 = very low dodge rate
+
+	int iThrustAdj = (rThrustRatio < PIVOT_THRUST ? (int)(1.0 + (MAX_THRUST_ADJ * (PIVOT_THRUST - rThrustRatio) / PIVOT_THRUST)) : 1);
+
+	//	Generate an adjustment based on ship size:
+	//	1 = normal dodge rate; 10 = very low dodge rate
+
+	int cxWidth = RectWidth(GetImage().GetImageRect());
+	int iSizeAdj = (bDodge ? Max(1, cxWidth / SIZE_FACTOR) : 1);
+
+	//	Adjust dodge rate
+
+	rDodge = pow(rDodge, Max(Max(iManeuverAdj, iThrustAdj), iSizeAdj));
+
+	//	Done
+
+	return rDodge;
+	}
+
+Metric CShipClass::CalcMass (const CDeviceDescList &Devices) const
 
 //	CalcMass
 //
@@ -346,49 +928,28 @@ int CShipClass::CalcScore (void)
 			iLauncherLevel > iWeaponLevel);
 	}
 
-int CShipClass::ComputeDeviceLevel (const SDeviceDesc &Device)
+int CShipClass::ComputeDeviceLevel (const SDeviceDesc &Device) const
 
 //	ComputeDeviceLevel
 //
 //	Computes the level of the given device
 
 	{
-	CDeviceClass *pDevice = Device.Item.GetType()->GetDeviceClass();
+	CItemType *pType = Device.Item.GetType();
+	CDeviceClass *pDevice = (pType ? pType->GetDeviceClass() : NULL);
 	if (pDevice == NULL)
 		return 0;
 
 	if (pDevice->GetCategory() == itemcatLauncher)
 		{
-		int iLevel = 0;
-
 		//	Look for the highest missile level and use that as the
 		//	weapon level.
 
-		IItemGenerator *pItems = GetRandomItemTable();
-		if (pItems)
-			FindBestMissile(pItems, &iLevel);
-
-		FindBestMissile(Device.ExtraItems, &iLevel);
-
-		return iLevel;
+		CItemType *pBestMissile = CalcBestMissile(Device);
+		return (pBestMissile ? pBestMissile->GetLevel() : 0);
 		}
 	else
 		return pDevice->GetLevel();
-	}
-
-
-int CShipClass::ComputeLevel (int iScore)
-
-//	ComputeLevel
-//
-//	Returns the level of the ship class
-
-	{
-	int i = 0;
-	while (i < SCORE_DESC_COUNT-1 && g_XP[i].iScoreLevel < iScore)
-		i++;
-
-	return i+1;
 	}
 
 enum LowMediumHigh
@@ -577,6 +1138,8 @@ int CShipClass::ComputeScore (const CDeviceDescList &Devices,
 				}
 
 			case itemcatReactor:
+			case itemcatDrive:
+			case itemcatCargoHold:
 				//	Reactors don't count as improvements
 				break;
 
@@ -706,8 +1269,15 @@ void CShipClass::CreateExplosion (CShip *pShip, CSpaceObject *pWreck)
 
 	if (Explosion.pDesc)
 		{
+		CItemEnhancementStack *pEnhancements = NULL;
+		if (Explosion.iBonus != 0)
+			{
+			pEnhancements = new CItemEnhancementStack;
+			pEnhancements->InsertHPBonus(Explosion.iBonus);
+			}
+
 		pShip->GetSystem()->CreateWeaponFire(Explosion.pDesc,
-				Explosion.iBonus,
+				pEnhancements,
 				Explosion.iCause,
 				CDamageSource(pShip, Explosion.iCause, pWreck),
 				pShip->GetPos(),
@@ -716,6 +1286,9 @@ void CShipClass::CreateExplosion (CShip *pShip, CSpaceObject *pWreck)
 				NULL,
 				CSystem::CWF_EXPLOSION,
 				NULL);
+
+		if (pEnhancements)
+			pEnhancements->Delete();
 		}
 
 	//	Otherwise, if no defined explosion, we create a default one
@@ -980,7 +1553,7 @@ void CShipClass::CreateWreckImage (void)
 	m_WreckImage.Init(&m_WreckBitmap, rcRect, 0, 0, false);
 	}
 
-void CShipClass::FindBestMissile (IItemGenerator *pItems, int *ioLevel)
+void CShipClass::FindBestMissile (CDeviceClass *pLauncher, IItemGenerator *pItems, CItemType **retpBestMissile) const
 
 //	FindBestMissile
 //
@@ -993,17 +1566,19 @@ void CShipClass::FindBestMissile (IItemGenerator *pItems, int *ioLevel)
 		{
 		CItemType *pType = pItems->GetItemType(i);
 		if (pType->GetCategory() == itemcatMissile
-				&& pType->GetLevel() > *ioLevel)
-			*ioLevel = pType->GetLevel();
+				&& (pLauncher->GetAmmoVariant(pType) != -1)
+				&& (*retpBestMissile == NULL
+					|| pType->GetLevel() > (*retpBestMissile)->GetLevel()))
+			*retpBestMissile = pType;
 		}
 
 	//	Recurse
 
 	for (i = 0; i < pItems->GetGeneratorCount(); i++)
-		FindBestMissile(pItems->GetGenerator(i), ioLevel);
+		FindBestMissile(pLauncher, pItems->GetGenerator(i), retpBestMissile);
 	}
 
-void CShipClass::FindBestMissile (const CItemList &Items, int *ioLevel)
+void CShipClass::FindBestMissile (CDeviceClass *pLauncher, const CItemList &Items, CItemType **retpBestMissile) const
 
 //	FindBestMissile
 //
@@ -1016,8 +1591,10 @@ void CShipClass::FindBestMissile (const CItemList &Items, int *ioLevel)
 		{
 		CItemType *pType = Items.GetItem(i).GetType();
 		if (pType->GetCategory() == itemcatMissile
-				&& pType->GetLevel() > *ioLevel)
-			*ioLevel = pType->GetLevel();
+				&& (pLauncher->GetAmmoVariant(pType) != -1)
+				&& (*retpBestMissile == NULL
+					|| pType->GetLevel() > (*retpBestMissile)->GetLevel()))
+			*retpBestMissile = pType;
 		}
 	}
 
@@ -1030,8 +1607,22 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 	{
 	int i;
 
-	if (strEquals(sField, FIELD_CARGO_SPACE))
+	if (strEquals(sField, FIELD_BALANCE_TYPE))
+		CalcBalanceType(retsValue);
+	else if (strEquals(sField, FIELD_CARGO_SPACE))
 		*retsValue = strFromInt(GetCargoSpace());
+	else if (strEquals(sField, FIELD_COMBAT_STRENGTH))
+		*retsValue = strFromInt((int)(CalcCombatStrength() + 0.5));
+	else if (strEquals(sField, FIELD_DAMAGE_RATE))
+		*retsValue = strFromInt((int)(CalcDamageRate() + 0.5));
+	else if (strEquals(sField, FIELD_DEFENSE_RATE))
+		*retsValue = strFromInt((int)(CalcDefenseRate() + 0.5));
+	else if (strEquals(sField, FIELD_DODGE_RATE))
+		*retsValue = strFromInt((int)(100.0 * CalcDodgeRate()));
+	else if (strEquals(sField, FIELD_MANUFACTURER))
+		*retsValue = m_sManufacturer;
+	else if (strEquals(sField, FIELD_MASS))
+		*retsValue = strFromInt(m_iMass);
 	else if (strEquals(sField, FIELD_MAX_SPEED))
 		{
 		DriveDesc Desc;
@@ -1040,8 +1631,6 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_NAME))
 		*retsValue = GetNounPhrase(0x00);
-	else if (strEquals(sField, FIELD_MANUFACTURER))
-		*retsValue = m_sManufacturer;
 	else if (strEquals(sField, FIELD_PRIMARY_ARMOR))
 		{
 		CItemType *pItem = g_pUniverse->FindItemType(strToInt(GetDataField(FIELD_PRIMARY_ARMOR_UNID), 0));
@@ -1158,6 +1747,8 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		int iRatio = (int)((200.0 * (rMass > 0.0 ? Drive.iThrust / rMass : 0.0)) + 0.5);
 		*retsValue = strFromInt(10 * iRatio);
 		}
+	else if (strEquals(sField, FIELD_TREASURE_VALUE))
+		*retsValue = strFromInt(m_pItems ? (int)m_pItems->GetAverageValue(GetLevel()) : 0);
 	else if (strEquals(sField, FIELD_PRIMARY_WEAPON_RANGE))
 		{
 		int iRange = 0;
@@ -1195,6 +1786,8 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_SCORE))
 		*retsValue = strFromInt(m_iScore);
+	else if (strEquals(sField, FIELD_SIZE))
+		*retsValue = strFromInt(m_iSize);
 	else if (strEquals(sField, FIELD_LEVEL))
 		*retsValue = strFromInt(m_iLevel);
 	else if (strEquals(sField, FIELD_MAX_CARGO_SPACE))
@@ -1377,7 +1970,7 @@ CCommunicationsHandler *CShipClass::GetCommsHandler (void)
 		return (m_OriginalCommsHandler.GetCount() ? &m_OriginalCommsHandler : NULL);
 	}
 
-void CShipClass::GetDriveDesc (DriveDesc *retDriveDesc)
+void CShipClass::GetDriveDesc (DriveDesc *retDriveDesc) const
 
 //	GetDriveDesc
 //
@@ -1410,13 +2003,13 @@ CString CShipClass::GetGenericName (DWORD *retdwFlags)
 		*retdwFlags = m_dwClassNameFlags;
 
 	if (GetClassName().IsBlank())
-		return strPatternSubst(CONSTLIT("%s %s"), GetManufacturerName(), GetTypeName());
+		return strPatternSubst(CONSTLIT("%s %s"), GetManufacturerName(), GetShipTypeName());
 	else
 		{
-		if (GetTypeName().IsBlank())
+		if (GetShipTypeName().IsBlank())
 			return GetClassName();
 		else
-			return strPatternSubst(CONSTLIT("%s-class %s"), GetClassName(), GetTypeName());
+			return strPatternSubst(CONSTLIT("%s-class %s"), GetClassName(), GetShipTypeName());
 		}
 	}
 
@@ -1576,7 +2169,7 @@ CString CShipClass::GetShortName (void)
 
 	{
 	if (GetClassName().IsBlank())
-		return strPatternSubst(LITERAL("%s %s"), GetManufacturerName(), GetTypeName());
+		return strPatternSubst(LITERAL("%s %s"), GetManufacturerName(), GetShipTypeName());
 	else
 		return GetClassName();
 	}
@@ -1740,6 +2333,9 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_ExhaustImage.OnDesignLoadComplete(Ctx))
 		goto Fail;
 
+	if (error = m_Character.Bind(Ctx))
+		goto Fail;
+
 	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
 		goto Fail;
 
@@ -1809,25 +2405,51 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	GenerateDevices(1, m_AverageDevices);
 
+	//	Initialize thrust, if necessary
+
+	if (m_rThrustRatio != 0.0)
+		{
+		Metric rMass = CalcMass(m_AverageDevices);
+		if (rMass > 0.0)
+			m_DriveDesc.iThrust = (int)(((m_rThrustRatio * rMass) / 2.0) + 0.5);
+		}
+
+	//	Bind structures
+
+	if (error = m_Interior.BindDesign(Ctx))
+		goto Fail;
+
 	//	Events
 
 	m_fHasOnOrderChangedEvent = FindEventHandler(CONSTLIT("OnOrderChanged"));
 	m_fHasOnAttackedByPlayerEvent = FindEventHandler(CONSTLIT("OnAttackedByPlayer"));
-	m_fHasOnObjDockedEvent = FindEventHandler(CONSTLIT("OnObjDocked"));
 	m_fHasOnOrdersCompletedEvent = FindEventHandler(CONSTLIT("OnOrdersCompleted"));
-
-	//	Compute score and level
-
-	if (m_iScore == 0)
-		m_iScore = CalcScore();
-
-	m_iLevel = ComputeLevel(m_iScore);
 
 	return NOERROR;
 
 Fail:
 
 	return ComposeLoadError(Ctx, Ctx.sError);
+	}
+
+ALERROR CShipClass::OnFinishBindDesign (SDesignLoadCtx &Ctx)
+
+//	OnFinishBindDesign
+//
+//	All types bound.
+
+	{
+	//	Compute score and level
+
+	if (!m_fScoreOverride)
+		m_iScore = CalcScore();
+
+	if (!m_fLevelOverride)
+		m_iLevel = CalcLevel();
+
+	//	Done
+
+	return NOERROR;
 	}
 
 ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -1847,9 +2469,15 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_sName = pDesc->GetAttribute(CONSTLIT(g_ClassAttrib));
 	m_sTypeName = pDesc->GetAttribute(CONSTLIT(g_TypeAttrib));
 	m_dwClassNameFlags = LoadNameFlags(pDesc);
-	m_iScore = pDesc->GetAttributeInteger(SCORE_ATTRIB);
 	m_fVirtual = pDesc->GetAttributeBool(VIRTUAL_ATTRIB);
 	m_fInheritedPlayerSettings = false;
+
+	//	Score and level
+
+	m_fScoreOverride = pDesc->FindAttributeInteger(SCORE_ATTRIB, &m_iScore);
+	m_fLevelOverride = pDesc->FindAttributeInteger(LEVEL_ATTRIB, &m_iLevel);
+
+	//	Names
 
 	CXMLElement *pNames = pDesc->GetContentElementByTag(NAMES_TAG);
 	if (pNames)
@@ -1872,6 +2500,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Initialize design
 
 	m_iMass = pDesc->GetAttributeInteger(CONSTLIT(g_MassAttrib));
+	m_iSize = pDesc->GetAttributeIntegerBounded(SIZE_ATTRIB, 1, -1, 0);
 	m_iCargoSpace = pDesc->GetAttributeInteger(CARGO_SPACE_ATTRIB);
 	m_iMaxCargoSpace = Max(m_iCargoSpace, pDesc->GetAttributeInteger(MAX_CARGO_SPACE_ATTRIB));
 	m_iManeuverability = pDesc->GetAttributeInteger(CONSTLIT(g_ManeuverAttrib));
@@ -1887,7 +2516,17 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	m_DriveDesc.dwUNID = GetUNID();
 	m_DriveDesc.rMaxSpeed = (double)pDesc->GetAttributeInteger(CONSTLIT(g_MaxSpeedAttrib)) * LIGHT_SPEED / 100;
-	m_DriveDesc.iThrust = pDesc->GetAttributeInteger(CONSTLIT(g_ThrustAttrib));
+
+	//	We also accept a thrust ratio
+
+	if (pDesc->FindAttributeDouble(THRUST_RATIO_ATTRIB, &m_rThrustRatio))
+		m_DriveDesc.iThrust = 0;
+	else
+		{
+		m_DriveDesc.iThrust = pDesc->GetAttributeInteger(THRUST_ATTRIB);
+		m_rThrustRatio = 0.0;
+		}
+
 	m_DriveDesc.iPowerUse = DEFAULT_POWER_USE;
 	m_DriveDesc.fInertialess = pDesc->GetAttributeBool(INERTIALESS_DRIVE_ATTRIB);
 
@@ -1903,26 +2542,57 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	CXMLElement *pArmor = pDesc->GetContentElementByTag(CONSTLIT(g_ArmorTag));
 	if (pArmor)
 		{
-		for (i = 0; i < pArmor->GetContentElementCount(); i++)
+		//	If no content, then we assume a regular distribution of armor
+
+		if (pArmor->GetContentElementCount() == 0)
 			{
-			CXMLElement *pSectionDesc = pArmor->GetContentElement(i);
-			HullSection Section;
+			int iSegCount = pArmor->GetAttributeIntegerBounded(COUNT_ATTRIB, 1, -1, 4);
+			CString sArmorUNID = pArmor->GetAttribute(ARMOR_ID_ATTRIB);
 
-			Section.iStartAt = pSectionDesc->GetAttributeInteger(CONSTLIT(g_StartAttrib));
-			Section.iSpan = pSectionDesc->GetAttributeInteger(CONSTLIT(g_SpanAttrib));
+			int iSegSize = 360 / iSegCount;
+			int iSegPos = 360 - (iSegSize / 2);
 
-			if (error = Section.pArmor.LoadUNID(Ctx, pSectionDesc->GetAttribute(ARMOR_ID_ATTRIB)))
-				return error;
+			m_Hull.InsertEmpty(iSegCount);
+			for (i = 0; i < iSegCount; i++)
+				{
+				HullSection &Section = m_Hull[i];
 
-			Section.dwAreaSet = ParseNonCritical(pSectionDesc->GetAttribute(NON_CRITICAL_ATTRIB));
+				Section.iStartAt = iSegPos;
+				Section.iSpan = iSegSize;
 
-			if (error = Section.Enhanced.InitFromXML(Ctx, pSectionDesc))
-				return ComposeLoadError(Ctx, Ctx.sError);
+				if (error = Section.pArmor.LoadUNID(Ctx, sArmorUNID))
+					return error;
 
-			//	Add the section
+				Section.dwAreaSet = CShipClass::sectCritical;
 
-			if (error = m_Hull.AppendStruct(&Section, NULL))
-				return ComposeLoadError(Ctx, ERR_OUT_OF_MEMORY);
+				if (error = Section.Enhanced.InitFromXML(Ctx, pArmor))
+					return ComposeLoadError(Ctx, Ctx.sError);
+
+				iSegPos += iSegSize;
+				}
+			}
+
+		//	Otherwise, we load each segment separately.
+
+		else
+			{
+			m_Hull.InsertEmpty(pArmor->GetContentElementCount());
+			for (i = 0; i < pArmor->GetContentElementCount(); i++)
+				{
+				CXMLElement *pSectionDesc = pArmor->GetContentElement(i);
+				HullSection &Section = m_Hull[i];
+
+				Section.iStartAt = pSectionDesc->GetAttributeInteger(CONSTLIT(g_StartAttrib));
+				Section.iSpan = pSectionDesc->GetAttributeInteger(CONSTLIT(g_SpanAttrib));
+
+				if (error = Section.pArmor.LoadUNID(Ctx, pSectionDesc->GetAttribute(ARMOR_ID_ATTRIB)))
+					return error;
+
+				Section.dwAreaSet = ParseNonCritical(pSectionDesc->GetAttribute(NON_CRITICAL_ATTRIB));
+
+				if (error = Section.Enhanced.InitFromXML(Ctx, pSectionDesc))
+					return ComposeLoadError(Ctx, Ctx.sError);
+				}
 			}
 		}
 
@@ -1944,6 +2614,15 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iMaxNonWeapons = pDesc->GetAttributeInteger(MAX_NON_WEAPONS_ATTRIB);
 	if (m_iMaxNonWeapons == 0)
 		m_iMaxNonWeapons = m_iMaxDevices;
+
+	//	Load interior structure
+
+	CXMLElement *pInterior = pDesc->GetContentElementByTag(INTERIOR_TAG);
+	if (pInterior)
+		{
+		if (error = m_Interior.InitFromXML(Ctx, pInterior))
+			return ComposeLoadError(Ctx, Ctx.sError);
+		}
 
 	//	Load AI settings
 
@@ -2000,7 +2679,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	CXMLElement *pDriveImages = pDesc->GetContentElementByTag(DRIVE_IMAGES_TAG);
 	if (pDriveImages)
 		{
-		int iScale = RectWidth(m_Image.GetImageRect());
+		int iScale = m_Image.GetImageViewportSize();
 
 		for (i = 0; i < pDriveImages->GetContentElementCount(); i++)
 			{
@@ -2038,6 +2717,11 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		}
 	else
 		m_pEscorts = NULL;
+
+	//	Characters
+
+	if (error = m_Character.LoadUNID(Ctx, pDesc->GetAttribute(CHARACTER_ATTRIB)))
+		return error;
 
 	//	Initialize docking data
 
@@ -2158,6 +2842,11 @@ bool CShipClass::OnHasSpecialAttribute (const CString &sAttrib) const
 			return (GetPlayerSettings() != NULL);
 		else
 			return (GetPlayerSettings() == NULL);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_MANUFACTURER))
+		{
+		CString sValue = strSubString(sAttrib, SPECIAL_MANUFACTURER.GetLength());
+		return strEquals(sValue, GetManufacturerName());
 		}
 	else
 		return false;
@@ -2302,7 +2991,7 @@ void CShipClass::Paint (CG16bitImage &Dest,
 #ifdef DEBUG_3D_ADJ
 	{
 	int i;
-	int iScale = RectWidth(m_Image.GetImageRect());
+	int iScale = m_Image.GetImageViewportSize();
 	for (i = 0; i < 360; i++)
 		{
 		int xP, yP;

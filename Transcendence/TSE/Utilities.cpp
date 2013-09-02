@@ -97,51 +97,59 @@ struct SOrderTypeData
 	//	-		no data
 	//	i		integer (may be optional)
 	//	2		two integers (encoded in a DWORD)
+	//  s		string data
+
+	DWORD dwFlags;
 	};
 
 static const SOrderTypeData g_OrderTypes[] =
 	{
-		//	name					target	data
-		{	"",						"-",	"-"	 },
+		//	name						target	data
+		{	"",							"-",	"-",	0	 },
 
-		{	"guard",				"o",	"-" },
-		{	"dock",					"o",	"-" },
-		{	"attack",				"o",	"i" },
-		{	"wait",					"-",	"i" },
-		{	"gate",					"*",	"-" },
+		{	"guard",					"o",	"-",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED },
+		{	"dock",						"o",	"-",	0 },
+		{	"attack",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"wait",						"-",	"i",	0 },
+		{	"gate",						"*",	"-",	0 },
 
-		{	"gateOnThreat",			"-",	"-" },
-		{	"gateOnStationDestroyed",	"-",	"-" },
-		{	"patrol",				"o",	"i" },
-		{	"escort",				"o",	"2"	},
-		{	"scavenge",				"-",	"-" },
+		{	"gateOnThreat",				"-",	"-",	0 },
+		{	"gateOnStationDestroyed",	"-",	"-",	0 },
+		{	"patrol",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"escort",					"o",	"2",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP	},
+		{	"scavenge",					"-",	"-",	0 },
 
-		{	"followPlayerThroughGate",	"o",	"-" },
-		{	"attackNearestEnemy",	"-",	"-" },
-		{	"tradeRoute",			"-",	"-" },
-		{	"wander",				"-",	"-" },
-		{	"loot",					"o",	"-" },
+		{	"followPlayerThroughGate",	"o",	"-",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"attackNearestEnemy",		"-",	"-",	0 },
+		{	"tradeRoute",				"-",	"-",	0 },
+		{	"wander",					"-",	"-",	0 },
+		{	"loot",						"o",	"-",	0 },
 
-		{	"hold",					"-",	"i" },
-		{	"mine",					"o",	"-" },
-		{	"waitForPlayer",		"-",	"-" },
-		{	"attackPlayerOnReturn",	"-",	"-" },
-		{	"follow",				"o",	"-" },
+		{	"hold",						"-",	"i",	0 },
+		{	"mine",						"o",	"-",	0 },
+		{	"waitForPlayer",			"-",	"-",	0 },
+		{	"attackPlayerOnReturn",		"-",	"-",	0 },
+		{	"follow",					"o",	"-",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
 
-		{	"navPath",				"-",	"i"	},
-		{	"goto",					"o",	"-" },
-		{	"waitForTarget",		"o",	"i" },
-		{	"waitForEnemy",			"-",	"i" },
-		{	"bombard",				"o",	"i" },
+		{	"navPath",					"-",	"i",	0	},
+		{	"goto",						"o",	"-",	0 },
+		{	"waitForTarget",			"o",	"i",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"waitForEnemy",				"-",	"i",	0 },
+		{	"bombard",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED },
 
-		{	"approach",				"o",	"i" },
-		{	"aim",					"o",	"-" },
-		{	"orbit",				"o",	"2" },
-		{	"holdCourse",			"-",	"2" },
-		{	"turnTo",				"-",	"i" },
+		{	"approach",					"o",	"i",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"aim",						"o",	"-",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"orbit",					"o",	"2",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"holdCourse",				"-",	"2",	0 },
+		{	"turnTo",					"-",	"i",	0 },
 
-		{	"attackHold",			"o",	"i" },
-		{	"attackStation",		"o",	"i" },
+		{	"attackHold",				"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"attackStation",			"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED },
+		{	"fireEvent",				"o",	"s",	0 },
+		{	"waitForUndock",			"o",	"i",	0 },
+		{	"sendMessage",				"o",	"s",	0 },
+
+		{	"attackArea",				"o",	"2",	0 },
 	};
 
 #define ORDER_TYPES_COUNT		(sizeof(g_OrderTypes) / sizeof(g_OrderTypes[0]))
@@ -202,6 +210,7 @@ static char *g_pszMessageID[] =
 	"AttackInFormation",		//	msgAttackInFormation
 	"DeterTarget",				//	msgAttackDeter
 	"QueryAttackStatus",		//	msgQueryAttackStatus
+	"DockingSequenceEngaged",	//	msgDockingSequenceEngaged
 	};
 
 #define MESSAGE_ID_COUNT			(sizeof(g_pszMessageID) / sizeof(g_pszMessageID[0]))
@@ -547,6 +556,35 @@ int CalcEffectiveHP (int iLevel, int iHP, int *iHPbyDamageType)
 		return (int)((rTotalHP / rTotalWeight) + 0.5);
 	else
 		return 0;
+	}
+
+Metric CalcLevelDiffStrength (int iDiff)
+
+//	CalcLevelDiffStrength
+//
+//	Returns the relative strength based on a level difference.
+
+	{
+	switch (iDiff)
+		{
+		case -2:
+			return 0.3125;
+
+		case -1:
+			return 0.625;
+
+		case 0:
+			return 1.0;
+
+		case +1:
+			return 1.667;
+
+		case +2:
+			return 2.5;
+
+		default:
+			return (iDiff > 0 ? 4.0 : 0.25);
+		}
 	}
 
 IShipController::ManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle)
@@ -1792,6 +1830,59 @@ CSpaceObject::InterSystemResults GetInterSystemResult (const CString &sString)
 		return CSpaceObject::interNoAction;
 	}
 
+CString GetItemCategoryID (ItemCategories iCategory)
+
+//	GetItemCategoryID
+//
+//	Returns the category name
+
+	{
+	switch (iCategory)
+		{
+		case itemcatMisc:
+			return CONSTLIT("misc");
+
+		case itemcatArmor:
+			return CONSTLIT("armor");
+
+		case itemcatWeapon:
+			return CONSTLIT("weapon");
+
+		case itemcatMiscDevice:
+			return CONSTLIT("device");
+
+		case itemcatLauncher:
+			return CONSTLIT("launcher");
+
+		case itemcatNano:
+			return CONSTLIT("(unused)");
+
+		case itemcatReactor:
+			return CONSTLIT("reactor");
+
+		case itemcatShields:
+			return CONSTLIT("shields");
+
+		case itemcatCargoHold:
+			return CONSTLIT("cargoHold");
+
+		case itemcatFuel:
+			return CONSTLIT("fuel");
+
+		case itemcatMissile:
+			return CONSTLIT("ammo");
+
+		case itemcatDrive:
+			return CONSTLIT("drive");
+
+		case itemcatUseful:
+			return CONSTLIT("useful");
+
+		default:
+			return CONSTLIT("unknown");
+		}
+	}
+
 CString GetItemCategoryName (ItemCategories iCategory)
 
 //	GetItemCategoryName
@@ -1881,6 +1972,16 @@ MessageTypes GetMessageFromID (const CString &sID)
 	return msgNone;
 	}
 
+DWORD GetOrderFlags (IShipController::OrderTypes iOrder)
+
+//	GetOrderFlags
+//
+//	Returns flags
+
+	{
+	return g_OrderTypes[iOrder].dwFlags;
+	}
+
 CString GetOrderName (IShipController::OrderTypes iOrder)
 
 //	GetOrderName
@@ -1904,6 +2005,7 @@ int OrderGetDataCount (IShipController::OrderTypes iOrder)
 			return 0;
 
 		case 'i':
+		case 's':
 			return 1;
 		
 		case '2':
@@ -1912,6 +2014,16 @@ int OrderGetDataCount (IShipController::OrderTypes iOrder)
 		default:
 			return 0;
 		}
+	}
+
+bool OrderHasDataString (IShipController::OrderTypes iOrder)
+
+//	OrderHasDataString
+//
+//	Returns TRUE if the given order requires string data
+
+	{
+	return (*g_OrderTypes[iOrder].szData == 's');
 	}
 
 bool OrderHasTarget (IShipController::OrderTypes iOrder, bool *retbRequired)
@@ -2063,31 +2175,6 @@ bool IsMatterDamage (DamageTypes iType)
 		}
 	}
 
-ArmorCompositionTypes LoadArmorComposition (const CString &sString)
-
-//	LoadArmorComposition
-//
-//	Load armor composition attribute
-
-	{
-	if (strEquals(sString, ARMOR_COMPOSITION_METALLIC))
-		return compMetallic;
-	else if (strEquals(sString, ARMOR_COMPOSITION_CERAMIC))
-		return compCeramic;
-	else if (strEquals(sString, ARMOR_COMPOSITION_CARBIDE))
-		return compCarbide;
-	else if (strEquals(sString, ARMOR_COMPOSITION_NANOSCALE))
-		return compNanoScale;
-	else if (strEquals(sString, ARMOR_COMPOSITION_QUANTUM))
-		return compQuantum;
-	else if (strEquals(sString, ARMOR_COMPOSITION_GRAVITIC))
-		return compGravitic;
-	else if (strEquals(sString, ARMOR_COMPOSITION_DARKMATTER))
-		return compDarkMatter;
-	else
-		return compUnknown;
-	}
-
 ALERROR LoadCodeBlock (const CString &sCode, ICCItem **retpCode, CString *retsError)
 
 //	LoadCodeBlock
@@ -2215,11 +2302,26 @@ WORD LoadRGBColor (const CString &sString)
 
 	{
 	char *pPos = sString.GetASCIIZPointer();
-	int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iBlue = strParseInt(pPos, 0, &pPos, NULL);
 
-	return CG16bitImage::RGBValue(iRed, iGreen, iBlue);
+	//	If it starts with a # we expect an RGB DWORD
+
+	if (*pPos == '#')
+		{
+		pPos++;
+		DWORD dwColor = strParseIntOfBase(pPos, 16, 0);
+		return CG16bitImage::RGBValue((dwColor >> 16) & 0xFF, (dwColor >> 8) & 0xFF, dwColor & 0xFF);
+		}
+
+	//	Otherwise, we expect three comma-separated values
+
+	else
+		{
+		int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iBlue = strParseInt(pPos, 0, &pPos, NULL);
+
+		return CG16bitImage::RGBValue(iRed, iGreen, iBlue);
+		}
 	}
 
 COLORREF LoadCOLORREF (const CString &sString)
@@ -2481,11 +2583,15 @@ CString ParseCriteriaParam (char **ioPos, bool bExpectColon, bool *retbBinaryPar
 	//	Parse the parameter
 
 	bool bBinaryParam = false;
+	bool bAllowSpaces = false;
 	char *pStart = pPos;
-	while (*pPos != ';' && *pPos != ' ' && *pPos != '\t' && *pPos != '\0')
+	while (*pPos != ';' && (bAllowSpaces || *pPos != ' ') && *pPos != '\t' && *pPos != '\0')
 		{
 		if (*pPos == ':')
+			{
+			bAllowSpaces = true;
 			bBinaryParam = true;
+			}
 		pPos++;
 		}
 
@@ -2500,6 +2606,53 @@ CString ParseCriteriaParam (char **ioPos, bool bExpectColon, bool *retbBinaryPar
 		*retbBinaryParam = bBinaryParam;
 
 	return CString(pStart, pPos - pStart);
+	}
+
+bool ParseCriteriaParamLevelRange (char **ioPos, int *retiLow, int *retiHigh)
+
+//	ParseCriteriaParamLevelRange
+//
+//	Returns levels
+
+	{
+	CString sParam = ParseCriteriaParam(ioPos);
+	char *pParamPos = sParam.GetASCIIZPointer();
+
+	//	Parse the first number
+
+	int iLow = strParseInt(pParamPos, -1, &pParamPos);
+	int iHigh;
+
+	//	If we don't have a second number, then we just want items
+	//	of the given level.
+
+	if (*pParamPos != '-')
+		{
+		iHigh = -1;
+		}
+
+	//	Otherwise, we parse a second number
+
+	else
+		{
+		pParamPos++;
+		iHigh = strParseInt(pParamPos, -1, &pParamPos);
+
+		if (iLow == -1)
+			iLow = 1;
+		if (iHigh == -1)
+			iHigh = MAX_ITEM_LEVEL;
+		}
+
+	//	Done
+
+	if (retiLow)
+		*retiLow = iLow;
+
+	if (retiHigh)
+		*retiHigh = iHigh;
+
+	return (iLow != -1);
 	}
 
 ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList)
@@ -2570,6 +2723,24 @@ GenomeTypes ParseGenomeID (const CString &sText)
 			return (GenomeTypes)i;
 
 	return genomeUnknown;
+	}
+
+void ParseIntegerList (const CString &sList, DWORD dwFlags, TArray<int> *retList)
+
+//	ParseIntegerList
+//
+//	Splits a string into a list of integers, using ParseStringList.
+
+	{
+	int i;
+
+	TArray<CString> List;
+	ParseStringList(sList, dwFlags, &List);
+
+	retList->DeleteAll();
+	retList->InsertEmpty(List.GetCount());
+	for (i = 0; i < List.GetCount(); i++)
+		retList->GetAt(i) = strToInt(List[i], 0);
 	}
 
 void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue)
@@ -2817,6 +2988,82 @@ CString ParseNounForm (const CString &sNoun, DWORD dwNounFlags, bool bPluralize,
 	return sDest;
 	}
 
+bool ParseOrderString (const CString &sValue, IShipController::OrderTypes *retiOrder, IShipController::SData *retData)
+
+//	ParseOrderString
+//
+//	Parses an order string of the form:
+//
+//	{order}:{d1}:{d2}
+
+	{
+	char *pPos = sValue.GetASCIIZPointer();
+
+	//	Parse the order name
+
+	char *pStart = pPos;
+	while (*pPos != '\0' && *pPos != ':')
+		pPos++;
+
+	CString sOrder(pStart, (int)(pPos - pStart));
+
+	//	For backwards compatibility we handle some special names.
+
+	IShipController::OrderTypes iOrder;
+	if (strEquals(sOrder, CONSTLIT("trade route")))
+		iOrder = IShipController::orderTradeRoute;
+	else
+		{
+		iOrder = GetOrderType(sOrder);
+
+		//	Check for error
+
+		if (iOrder == IShipController::orderNone && !sOrder.IsBlank())
+			return false;
+		}
+
+	//	Get additional data
+
+	if (retData)
+		{
+		DWORD dwData1 = 0;
+		DWORD dwData2 = 0;
+
+		if (*pPos != ':')
+			*retData = IShipController::SData();
+		else
+			{
+			pPos++;
+			pStart = pPos;
+			while (*pPos != '\0' && *pPos != ':')
+				pPos++;
+
+			CString sData(pStart, (int)(pPos - pStart));
+			dwData1 = strToInt(sData, 0);
+
+			if (*pPos != ':')
+				*retData = IShipController::SData(dwData1);
+			else
+				{
+				pPos++;
+				pStart = pPos;
+				while (*pPos != '\0')
+					pPos++;
+
+				CString sData(pStart, (int)(pPos - pStart));
+				dwData2 = strToInt(sData, 0);
+
+				*retData = IShipController::SData(dwData1, dwData2);
+				}
+			}
+		}
+
+	//	Done
+
+	*retiOrder = iOrder;
+	return true;
+	}
+
 EStorageScopes ParseStorageScopeID (const CString &sID)
 
 //	ParseStorageScopeID
@@ -2976,3 +3223,33 @@ void ReportCrashObj (CString *retsMessage, CSpaceObject *pCrashObj)
 	retsMessage->Append(strPatternSubst(CONSTLIT("obj pointer: %x\r\n"), pCrashObj));
 	retsMessage->Append(sData);
 	}
+
+bool SetFrequencyByLevel (CString &sLevelFrequency, int iLevel, int iFreq)
+
+//	SetFrequencyByLevel
+//
+//	Sets the frequency on the given string. We assume that the string has places
+//	for the appropriate level.
+
+	{
+	ASSERT(iLevel >= 1 && iLevel <= MAX_ITEM_LEVEL);
+	int iChar = iLevel + ((iLevel - 1) / 5) - 1;
+	if (iChar < 0 || iChar >= sLevelFrequency.GetLength())
+		return false;
+
+	char *pPos = sLevelFrequency.GetASCIIZPointer() + iChar;
+
+	if (iFreq >= ftCommon)
+		*pPos = 'c';
+	else if (iFreq >= ftUncommon)
+		*pPos = 'u';
+	else if (iFreq >= ftRare)
+		*pPos = 'r';
+	else if (iFreq >= ftVeryRare)
+		*pPos = 'v';
+	else
+		*pPos = '-';
+
+	return true;
+	}
+

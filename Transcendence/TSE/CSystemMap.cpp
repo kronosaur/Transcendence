@@ -65,7 +65,7 @@ void CSystemMap::AddAnnotation (CEffectCreator *pEffect, int x, int y, int iRota
 	{
 	SMapAnnotation *pAnnotation = m_Annotations.Insert();
 	pAnnotation->dwID = g_pUniverse->CreateGlobalID();
-	pAnnotation->pPainter = pEffect->CreatePainter();
+	pAnnotation->pPainter = pEffect->CreatePainter(CCreatePainterCtx());
 	pAnnotation->xOffset = x;
 	pAnnotation->yOffset = y;
 	pAnnotation->iTick = 0;

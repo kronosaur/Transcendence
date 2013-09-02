@@ -41,37 +41,37 @@
 
 		<Items>
 			<RandomItem count="1d12" 
-					criteria=		"* +Meds; -Illegal; -NotForSale;"
+					criteria=		"* +Meds; -Illegal; -NotStandard; -NotForSale;"
 					level=			"6"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"w -NotForSale;"
+					criteria=		"w -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"d~w -NotForSale;"
+					criteria=		"d~w -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d8" 
-					criteria=		"a -NotForSale;"
+					criteria=		"a -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="1d4" 
-					criteria=		"u -NotForSale;"
+					criteria=		"u -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="2d12" 
-					criteria=		"f -NotForSale;"
+					criteria=		"f -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
@@ -81,8 +81,8 @@
 
 			<Table>
 				<Null chance="57"/>
-				<RandomItem chance="37" count="1"	criteria="u +HaloGem;"	levelFrequency="----- -ccur"/>
-				<RandomItem chance="6"	count="2"	criteria="u +HaloGem;"	levelFrequency="----- -ccur"/>
+				<RandomItem chance="37" count="1"	criteria="u +HaloGem; -NotStandard;"	levelFrequency="----- -ccur"/>
+				<RandomItem chance="6"	count="2"	criteria="u +HaloGem; -NotStandard;"	levelFrequency="----- -ccur"/>
 			</Table>
 
 			<Item chance="50"	count="1"		item="&itPlasmaTorch;" />
@@ -135,13 +135,13 @@
 							desc=	"The central structure of the Ringers Collective is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -222,25 +222,25 @@
 
 		<Items>
 			<RandomItem count="1d4" 
-					criteria=		"w -NotForSale;"
+					criteria=		"w -NotStandard; -NotForSale;"
 					level=			"8"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d8" 
-					criteria=		"d~w -NotForSale;"
+					criteria=		"d~w -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
 
 			<RandomItem count="1d8" 
-					criteria=		"a -NotForSale;"
+					criteria=		"a -NotStandard; -NotForSale;"
 					level=			"9"
 					levelCurve=		"1"
 					/>
 
 			<RandomItem count="4d12" 
-					criteria=		"f -NotForSale;"
+					criteria=		"f -NotStandard; -NotForSale;"
 					level=			"7"
 					levelCurve=		"2"
 					/>
@@ -301,13 +301,13 @@
 							desc=	"The central structure of the Ringer Shipyard is a large marketplace containing sophisticated and rare devices from all over Human Space. Commonwealth credits are not accepted here.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -331,7 +331,7 @@
 									)
 							</Action>
 
-							<Action name="Repair or replace armor" key="A">
+							<Action name="Repair or Replace Armor" key="A">
 								(block Nil
 									(setq gTechLevel 12)
 									(setq gArmorSegment 0)
@@ -341,7 +341,7 @@
 									)
 							</Action>
 
-							<Action name="Install device" key="D">
+							<Action name="Install Device" key="D">
 								(block Nil
 									(setq gTechLevel 10)
 									(setq gTechModifier Nil)
@@ -360,14 +360,14 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V">
+							<Action name="Remove Device" key="V">
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
 									)
 							</Action>
 
-							<Action name="Upgrade reactor" key="P">
+							<Action name="Upgrade Reactor" key="P">
 								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 									{
 									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")

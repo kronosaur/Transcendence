@@ -31,11 +31,36 @@
 	<!ENTITY efDarkSteelHitDefault		"0x0000001D">
 	<!ENTITY efDarkLightningHitDefault	"0x0000001E">
 	<!ENTITY efDarkFireHitDefault		"0x0000001F">
-	
+
 	<!ENTITY efShieldHUDDefault			"0x00000020">
 	<!ENTITY rsShieldHUDDefault			"0x00000021">
 	
 	<!ENTITY rsMikeno					"0x00000030">
+
+	<!ENTITY efLaserBeamDefault			"0x00000040">
+	<!ENTITY efKineticBoltDefault		"0x00000041">
+	<!ENTITY efParticleBeamDefault		"0x00000042">
+	<!ENTITY efBlastShellDefault		"0x00000043">
+	<!ENTITY efIonBeamDefault			"0x00000044">
+	<!ENTITY efThermoShellDefault		"0x00000045">
+	<!ENTITY efPositronBeamDefault		"0x00000046">
+	<!ENTITY efPlasmaBoltDefault		"0x00000047">
+	<!ENTITY efAntimatterBeamDefault	"0x00000048">
+	<!ENTITY efNanoBlobDefault			"0x00000049">
+	<!ENTITY efGravitonBeamDefault		"0x0000004A">
+	<!ENTITY efSingularityMassDefault	"0x0000004B">
+	<!ENTITY efDarkAcidBoltDefault		"0x0000004C">
+	<!ENTITY efDarkSteelBoltDefault		"0x0000004D">
+	<!ENTITY efDarkLightningBoltDefault	"0x0000004E">
+	<!ENTITY efDarkFireBoltDefault		"0x0000004F">
+	
+	<!ENTITY ovDamagedSiteSmall			"0x00000050">
+	<!ENTITY ovDamagedSiteMedium		"0x00000051">
+	<!ENTITY ovDamagedSiteLarge			"0x00000052">
+	<!ENTITY ovDeprezSiteSmall			"0x00000053">
+	
+	<!ENTITY efEIBlasterBeam			"0x00000060">
+	<!ENTITY efEIBlasterHit				"0x00000061">
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
@@ -587,6 +612,11 @@
 	<!ENTITY itDepletedUraniumArmor		"0x000041B8">
 	<!ENTITY vtLongreachI				"0x000041B9">
 	<!ENTITY vtICXLaserCannon			"0x000041BA">
+	<!ENTITY itPortableAnalyzer			"0x000041BB">
+	<!ENTITY itEngineeringAnalyzer		"0x000041BC">
+	<!ENTITY itAdvancedAnalyzer			"0x000041BD">
+	<!ENTITY itAClassDefenseScreen		"0x000041BE">
+	<!ENTITY itLightIonBlaster			"0x000041BF">
 
 	<!ENTITY vtStoneAsteroidEjecta		"0x00005001">
 	<!ENTITY vtIceAsteroidEjecta		"0x00005002">
@@ -887,6 +917,15 @@
 	<!ENTITY dsRPGRefuel				"0x00010015">
 	<!ENTITY dsRPGDeliveryMission		"0x00010016">
 	<!ENTITY dsRPGMissionJournal		"0x00010017">
+	<!ENTITY dsRPGRepairArmor			"0x00010018">
+	<!ENTITY dsRPGReplaceArmor			"0x00010019">
+	<!ENTITY dsRPGMessage				"0x0001001A">
+	<!ENTITY dsRPGCharacterDefault		"0x0001001B">
+	<!ENTITY dsRPGAnalyzeItem			"0x0001001C">
+	<!ENTITY baStdAuxMountDeviceBase	"0x0001001D">
+	<!ENTITY ovAuxForwardLeftMount		"0x0001001E">
+	<!ENTITY ovAuxForwardRightMount		"0x0001001F">
+	<!ENTITY rsAuxMountOverlay			"0x00010020">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -895,6 +934,87 @@
 	<!ENTITY rsOreSmall					"0x00020010">
 	<!ENTITY rsStdStargate				"0x00020011">
 	<!ENTITY rsStargateEffects			"0x00020012">
+	<!ENTITY rsLightNebula				"0x00020013">
+	<!ENTITY stPrimordialStar			"0x00020014">
+	<!ENTITY seLightNebula				"0x00020015">
+	<!ENTITY rsPrimordialMist			"0x00020016">
+	<!ENTITY sePrimordialMist			"0x00020017">
+	<!ENTITY rsPrimordialNebula			"0x00020018">
+	<!ENTITY sePrimordialNebula			"0x00020019">
+	<!ENTITY rsPrimordialAsteroids		"0x0002001A">
+	<!ENTITY rsPrimordialWorlds			"0x0002001B">
+	<!ENTITY stPrimordialAsteroidSizeA	"0x0002001C">
+	<!ENTITY stPrimordialAsteroidSizeB	"0x0002001D">
+	<!ENTITY stPrimordialPlanetoidSizeF	"0x0002001E">
+	<!ENTITY stPrimordialPlanetoidSizeF2	"0x0002001F">
+	<!ENTITY stPrimordialTerrestrialSizeH	"0x00020020">
+	<!ENTITY stPrimordialTerrestrialSizeH2	"0x00020021">
+	<!ENTITY stPrimordialTerrestrialSizeJ	"0x00020022">
+	<!ENTITY stPrimordialGasGiantSizeK	"0x00020023">
+	<!ENTITY tbSystemMorphologies		"0x00020024">
+	<!ENTITY tbPrimordialAsteroidOre	"0x00020025">
+	<!ENTITY tbAsteroidMorphologies		"0x00020026">
+	<!ENTITY tbPlanetaryMorphologies	"0x00020027">
+	<!ENTITY stRockyAsteroidSizeA		"0x00020028">
+	<!ENTITY stRockyOuterAsteroidSizeA	"0x00020029">
+	<!ENTITY stRockyAsteroidSizeB		"0x0002002A">
+	<!ENTITY stRockyOuterAsteroidSizeB	"0x0002002B">
+	<!ENTITY stRockyAsteroidSizeC		"0x0002002C">
+	<!ENTITY stRockyOuterAsteroidSizeC	"0x0002002D">
+	<!ENTITY stRockyAsteroidSizeD		"0x0002002E">
+	<!ENTITY stRockyOuterAsteroidSizeD	"0x0002002F">
+	<!ENTITY stRockyPlanetoidSizeE		"0x00020030">
+	<!ENTITY stRockyPlanetoidSizeF		"0x00020031">
+	<!ENTITY stRockyPlanetoidSizeG		"0x00020032">
+	<!ENTITY stIceAsteroidSizeA			"0x00020033">
+	<!ENTITY stIceAsteroidSizeB			"0x00020034">
+	<!ENTITY stIceAsteroidSizeC			"0x00020035">
+	<!ENTITY stIceAsteroidSizeD			"0x00020036">
+	<!ENTITY stIcePlanetoidSizeE		"0x00020037">
+	<!ENTITY stIcePlanetoidSizeF		"0x00020038">
+	<!ENTITY stIcePlanetoidSizeG		"0x00020039">
+	<!ENTITY stMetallicAsteroidSizeA	"0x0002003A">
+	<!ENTITY stMetallicAsteroidSizeB	"0x0002003B">
+	<!ENTITY stMetallicAsteroidSizeC	"0x0002003C">
+	<!ENTITY stMetallicAsteroidSizeD	"0x0002003D">
+	<!ENTITY stMetallicPlanetoidSizeE	"0x0002003E">
+	<!ENTITY stMetallicPlanetoidSizeF	"0x0002003F">
+	<!ENTITY stMetallicPlanetoidSizeG	"0x00020040">
+	<!ENTITY stPrimordialAsteroidSizeC	"0x00020041">
+	<!ENTITY stPrimordialAsteroidSizeD	"0x00020042">
+	<!ENTITY stPrimordialPlanetoidSizeE	"0x00020043">
+	<!ENTITY stPrimordialPlanetoidSizeG	"0x00020044">
+	<!ENTITY stVolcanicAsteroidSizeA	"0x00020045">
+	<!ENTITY stVolcanicAsteroidSizeB	"0x00020046">
+	<!ENTITY stVolcanicAsteroidSizeC	"0x00020047">
+	<!ENTITY stVolcanicAsteroidSizeD	"0x00020048">
+	<!ENTITY stVolcanicPlanetoidSizeE	"0x00020049">
+	<!ENTITY stVolcanicPlanetoidSizeF	"0x0002004A">
+	<!ENTITY stVolcanicPlanetoidSizeG	"0x0002004B">
+	<!ENTITY stVolcanicTerrestrialSizeH	"0x0002004C">
+	<!ENTITY rsIceAsteroids				"0x0002004D">
+	<!ENTITY rsMetallicAsteroids2		"0x0002004E">
+	<!ENTITY rsRockyAsteroids			"0x0002004F">
+	<!ENTITY rsVolcanicAsteroids		"0x00020050">
+	<!ENTITY rsVolcanicTerrestrials		"0x00020051">
+	<!ENTITY rsBiosphereTerrestrials	"0x00020052">
+	<!ENTITY stBiosphereTerrestrialSizeI	"0x00020053">
+	<!ENTITY rsDesertTerrestrials		"0x00020054">
+	<!ENTITY stDesertTerrestrialSizeH	"0x00020055">
+	<!ENTITY rsGreenhouseTerrestrials	"0x00020056">
+	<!ENTITY stGreenhouseTerrestrialSizeI	"0x00020057">
+	<!ENTITY rsHydrogenGasGiant01		"0x00020058">
+	<!ENTITY stHydrogenGasGiantSizeM	"0x00020059">
+	<!ENTITY rsHydrogenGasGiant02		"0x0002005A">
+	<!ENTITY rsHydrogenGasGiant03		"0x0002005B">
+	<!ENTITY rsMethaneGasGiant01		"0x0002005C">
+	<!ENTITY stMethaneGasGiantSizeK		"0x0002005D">
+	<!ENTITY tbPrimordialPlanets		"0x0002005E">
+	<!ENTITY tbStandardPlanets			"0x0002005F">
+	<!ENTITY tbIcePlanets				"0x00020060">
+	<!ENTITY tbMetallicPlanets			"0x00020061">
+	<!ENTITY tbRockyPlanets				"0x00020062">
+	<!ENTITY tbVolcanicPlanets			"0x00020063">
 	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
@@ -932,6 +1052,9 @@
 	<!ENTITY scPlayerSapphireBase		"0x00100003">
 	<!ENTITY scPlayerEI500Base			"0x00100004">
 	<!ENTITY scPlayerWolfenBase			"0x00100005">
+	<!ENTITY unidKateMorgental			"0x00100006">
+	<!ENTITY scKateMorgentalCruiser		"0x00100007">
+	<!ENTITY trStdLevelTreasure			"0x00100008">
 	
 	<!-- COMMONWEALTH 0010 -->
 	
@@ -1043,6 +1166,7 @@
 	<!ENTITY stBattleArena				"0x00142001">
 	<!ENTITY stBattleArenaWall			"0x00142002">
 	<!ENTITY stBlackMarketRigelAurelius	"0x00142003">
+	<!ENTITY stRigelAureliusStar		"0x00142004">
 
 	<!ENTITY scIAVLightG1				"0x00143001">
 	<!ENTITY scBorerG1					"0x00143002">
@@ -1112,7 +1236,7 @@
 	<!ENTITY scEmpress					"0x00153008">
 	<!ENTITY scWolfenVolkov				"0x00153009">
 	<!ENTITY scRoninCharonBuster		"0x0015300A">
-	<!ENTITY scKateMorgentalCruiser		"0x0015300B">
+	<!ENTITY scKateMorgentalCruiserArena	"0x0015300B">
 	<!ENTITY baCharonBuster				"0x0015300C">
 	<!ENTITY scEI200CharonBuster		"0x0015300D">
 
@@ -1141,6 +1265,7 @@
 	<!ENTITY rsManufacturingPlant		"0x0015F00C">
 	<!ENTITY rsRasiermesserFactory		"0x0015F00D">
 	<!ENTITY rsMakayevFactory			"0x0015F00E">
+	<!ENTITY rsCorporateCruiser			"0x0015F00F">
 
 	<!-- CHARON PIRATES 0016 -->
 
@@ -1182,6 +1307,8 @@
 	<!ENTITY dsBlackMarketPayDebt		"0x0017A001">
 	<!ENTITY dsBlackMarketRefuseDock	"0x0017A002">
 	<!ENTITY dsBlackMarketPromotion		"0x0017A003">
+
+	<!ENTITY rsMolotok					"0x0017F001">
 
 	<!-- SISTERS OF DOMINA 0018 -->
 
@@ -1486,6 +1613,7 @@
 	<!ENTITY itHeliotropeFuel			"0x08010044">
 	<!ENTITY svHeliotropes				"0x08010045">
 	<!ENTITY tbHeliotropeEncounters		"0x08010046">
+	<!ENTITY efSunflareCannonEffect		"0x08010047">
 
 	<!ENTITY stXenophobeFleet			"0x08010080">
 	<!ENTITY stXenophobeWorldship		"0x08010081">
@@ -1495,6 +1623,7 @@
 	<!ENTITY scXenophobeArk				"0x08010085">
 	<!ENTITY rsXenophobeArk				"0x08010086">
 	<!ENTITY itXenophobeLancer			"0x08010087">
+	<!ENTITY rsXenophobeWorldship		"0x08010088">
 
 	<!ENTITY stVentariColony			"0x080100C0">
 	<!ENTITY scVentariCruiser			"0x080100C1">
@@ -1552,6 +1681,7 @@
 	<!ENTITY itLuminousIonShields		"0x080200C9">
 	<!ENTITY itLuminousThermoShields	"0x080200CA">
 	<!ENTITY svFriendlyLuminous			"0x080200CB">
+	<!ENTITY itLuminousIonBlaster		"0x080200CC">
 
 	<!ENTITY stHuariFortress			"0x08020100">
 	<!ENTITY scHurinDestroyer			"0x08020101">
@@ -1593,6 +1723,11 @@
 	<!ENTITY scZulu-II					"0x08030007">
 	<!ENTITY scT55ArmedTransport		"0x08030008">
 	<!ENTITY tbOutlawEncounters			"0x08030009">
+	<!ENTITY rsZulu						"0x0803000A">
+	<!ENTITY rsT31ArmedTransport		"0x0803000B">
+	<!ENTITY rsT55ArmedTransport		"0x0803000C">
+	<!ENTITY rsOromo					"0x0803000D">
+	<!ENTITY rsSotho					"0x0803000E">
 
 	<!ENTITY stMarauderOutpost			"0x08030040">
 	<!ENTITY stMarauderCompound			"0x08030041">
@@ -1646,6 +1781,7 @@
 	<!ENTITY stOutlawTurret				"0x08040009">
 	<!ENTITY evOutlawMinerBehavior		"0x0804000A">
 	<!ENTITY tbOutlawMinerEncounters	"0x0804000B">
+	<!ENTITY rsBorer					"0x0804000C">
 
 	<!ENTITY stAnarchistGathering		"0x08040040">
 	<!ENTITY stAnarchistGatheringSat	"0x08040041">
@@ -1654,14 +1790,17 @@
 	<!ENTITY scEarthzone				"0x08040044">
 	<!ENTITY scHornet					"0x08040045">
 	<!ENTITY tbAnarchistEncounters		"0x08040046">
+	<!ENTITY rsAnarchistStations		"0x08040047">
 
 	<!ENTITY stTinkerGathering			"0x08040080">
+	<!ENTITY rsTinkerStations			"0x08040081">
 
 	<!ENTITY stRanxOutpost				"0x080400C0">
 	<!ENTITY stRanxFortress				"0x080400C1">
 	<!ENTITY scRanxGunship				"0x080400C2">
 	<!ENTITY scRanxDreadnought			"0x080400C3">
 	<!ENTITY tbRanxEncounters			"0x080400C4">
+	<!ENTITY rsRanxDreadnought			"0x080400C5">
 
 	<!ENTITY stFerianColony				"0x08040100">
 	<!ENTITY scFerianMiner				"0x08040101">
@@ -1707,10 +1846,14 @@
 	<!-- HUARI 0021 0xxx -->
 	
 	<!ENTITY smHuariSpace				"0x00210001">
+
+	<!-- PART I SOUNDTRACK 0082 -->
+
+	<!ENTITY muDominaMainTheme			"0x00820020">
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"13"
+		apiVersion=						"14"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -1905,11 +2048,16 @@
 			UNID=				"&unidRPGLibrary;"
 			name=				"Transcendence RPG"
 			release=			"1"
-			apiVersion=			"12"
+			apiVersion=			"14"
 			private=			"true"
 			>
 			
 		<Module filename="HUD.xml"/>
+		<Module filename="RPGAnalyzers.xml"/>
+		<Module filename="RPGAutons.xml"/>
+		<Module filename="RPGAuxDevices.xml"/>
+		<Module filename="RPGBehaviors.xml"/>
+		<Module filename="RPGCharacters.xml"/>
 		<Module filename="RPGCode.xml"/>
 		<Module filename="RPGCompatibility.xml"/>
 		<Module filename="RPGDockScreens.xml"/>
@@ -1917,21 +2065,30 @@
 		<Module filename="RPGPlayer.xml"/>
 		<Module filename="RPGShipScreens.xml"/>
 		<Module filename="RPGTypes.xml"/>
+		<Module filename="RPGWingmen.xml"/>
 	</TranscendenceLibrary>
 	
 	<TranscendenceLibrary
 			UNID=				"&unidUniverseLibrary;"
 			name=				"Transcendence Universe"
 			release=			"1"
-			apiVersion=			"12"
+			apiVersion=			"14"
 			private=			"true"
 			>
-		
+
+		<Module filename="Environments.xml"/>
+		<Module filename="Groups.xml"/>
+		<Module filename="Ice.xml"/>
+		<Module filename="Metallic.xml"/>
 		<Module filename="Mining.xml"/>
 		<Module filename="Neurohack.xml"/>
+		<Module filename="Primordial.xml"/>
+		<Module filename="Rocky.xml"/>
 		<Module filename="Stargates.xml"/>
 		<Module filename="StarSystems.xml"/>
+		<Module filename="UniverseCompatibility.xml"/>
 		<Module filename="UniverseEffects.xml"/>
+		<Module filename="Volcanic.xml"/>
 		<Module filename="Worlds.xml"/>
 	</TranscendenceLibrary>
 
@@ -1939,7 +2096,7 @@
 			UNID=				"&unidHumanSpaceLibrary;"
 			name=				"Human Space"
 			release=			"1"
-			apiVersion=			"12"
+			apiVersion=			"14"
 			>
 			
 		<Library unid="&unidUniverseLibrary;"/>
@@ -1976,6 +2133,7 @@
 		<Module filename="DwargRaiders.xml"/>
 		<Module filename="EncountersVol01.xml"/>
 		<Module filename="Iocrym.xml"/>
+		<Module filename="KateMorgental.xml"/>
 		<Module filename="KorolovShipping.xml"/>
 		<Module filename="Luminous.xml"/>
 		<Module filename="OutlawMiners.xml"/>
@@ -1990,7 +2148,7 @@
 		
 		<!-- These modules implement items. They should be clean, for the most
 			part. -->
-		
+
 		<Module filename="MiscItems.xml"/>
 		<Module filename="StdArmor.xml"/>
 		<Module filename="StdAutons.xml"/>
@@ -2019,7 +2177,7 @@
 			UNID=				"&unidCompatibilityLibrary;"
 			name=				"Transcendence Compatibility Library" 
 			release=			"1" 
-			apiVersion=			"12"
+			apiVersion=			"14"
 			>
 			
 		<Library unid="&unidRPGLibrary;"/>
@@ -2035,7 +2193,7 @@
 			UNID=				"&unidStarsOfThePilgrim;"
 			name=				"Domina &amp; Oracus I: The Stars of the Pilgrim"
 			release=			"1" 
-			apiVersion=			"12"
+			apiVersion=			"14"
 			>
 
 		<Library unid="&unidRPGLibrary;"/>
@@ -2069,6 +2227,7 @@
 				<OnGameStart>
 					(block Nil
 						(gamSetCrawlImage &rsProlog1;)
+						(gamSetCrawlSoundtrack &muDominaMainTheme;)
 						(gamSetCrawlText (cat
 							"When the dream came, you knew Domina had chosen you. "
 							"You would sacrifice everything for the chance She offered: "
@@ -2088,6 +2247,8 @@
 								&rsEndGameDestroyed;
 								)
 							)
+
+						(gamSetCrawlSoundtrack &muDominaMainTheme;)
 
 						(gamSetCrawlText 
 							(plyComposeString gPlayer

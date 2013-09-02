@@ -4,7 +4,6 @@
 
 #include "PreComp.h"
 
-
 #define SPIKE_COUNT_ATTRIB						(CONSTLIT("spikeCount"))
 #define SPIKE_LENGTH_ATTRIB						(CONSTLIT("spikeLength"))
 #define PRIMARY_COLOR_ATTRIB					(CONSTLIT("primaryColor"))
@@ -12,10 +11,11 @@
 #define STYLE_ATTRIB							(CONSTLIT("style"))
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 
-#define STYLE_PLAIN								(CONSTLIT("plain"))
-#define STYLE_MORNING_STAR						(CONSTLIT("morningStar"))
-#define STYLE_LIGHTNING_STAR					(CONSTLIT("lightningStar"))
-#define STYLE_FLARE								(CONSTLIT("flare"))
+#define STYLE_BALL_LIGHTNING					CONSTLIT("ballLightning")
+#define STYLE_FLARE								CONSTLIT("flare")
+#define STYLE_PLAIN								CONSTLIT("plain")
+#define STYLE_LIGHTNING_STAR					CONSTLIT("lightningStar")
+#define STYLE_MORNING_STAR						CONSTLIT("morningStar")
 
 void CStarburstEffectCreator::GetRect (RECT *retRect) const
 
@@ -73,7 +73,9 @@ ALERROR CStarburstEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXM
 	ALERROR error;
 
 	CString sStyle = pDesc->GetAttribute(STYLE_ATTRIB);
-	if (strEquals(sStyle, STYLE_MORNING_STAR))
+	if (strEquals(sStyle, STYLE_BALL_LIGHTNING))
+		m_iStyle = styleBallLightning;
+	else if (strEquals(sStyle, STYLE_MORNING_STAR))
 		m_iStyle = styleMorningStar;
 	else if (strEquals(sStyle, STYLE_LIGHTNING_STAR))
 		m_iStyle = styleLightningStar;
@@ -115,22 +117,52 @@ void CStarburstEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewport
 
 	switch (m_iStyle)
 		{
-		case stylePlain:
+		case styleBallLightning:
 			{
+			//	Paint the glowing orb
+
+			DrawAlphaGradientCircle(Dest,
+					x,
+					y,
+					2 * m_SpikeLength.GetMaxValue(),
+					m_wSecondaryColor);
+
+			//	Paint concentric lightning
+
 			int iSeparation = 360 / iCount;
-			int iAngle = Ctx.iTick * 3;
+			int iAngle = Ctx.iTick * 5;
+			int iExtra = (iCount > 4 ? iCount / 4 : 1);
 
 			for (i = 0; i < iCount; i++)
 				{
-				int xDest, yDest;
-				IntPolarToVector(iAngle, (Metric)m_SpikeLength.Roll(), &xDest, &yDest);
+				Metric rLength = (Metric)m_SpikeLength.Roll();
 
-				Dest.DrawBiColorLine(x, y,
-						x + xDest,
-						y + yDest,
-						1,
+				int x1, y1;
+				IntPolarToVector(iAngle, rLength, &x1, &y1);
+
+				int x2, y2;
+				IntPolarToVector(iAngle + 15, rLength, &x2, &y2);
+
+				int x3, y3;
+				IntPolarToVector(iAngle + 30, rLength, &x3, &y3);
+
+				DrawLightning(Dest,
+						x + x1,
+						y + y1,
+						x + x2,
+						y + y2,
 						m_wPrimaryColor,
-						Ctx.wSpaceColor);
+						8,
+						0.4);
+
+				DrawLightning(Dest,
+						x + x2,
+						y + y2,
+						x + x3,
+						y + y3,
+						m_wPrimaryColor,
+						8,
+						0.4);
 
 				iAngle += iSeparation;
 				}
@@ -174,31 +206,6 @@ void CStarburstEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewport
 			break;
 			}
 
-		case styleMorningStar:
-			{
-			//	Paint the spikes
-
-			for (i = 0; i < iCount; i++)
-				{
-				SPoint Spike[4];
-				int iSpikeLength = m_SpikeLength.Roll();
-				CreateDiamondSpike(mathRandom(1, 360), iSpikeLength, 5, Spike);
-
-				CG16bitRegion Region;
-				Region.CreateFromConvexPolygon(4, Spike);
-				Region.Fill(Dest, x, y, m_wSecondaryColor);
-				}
-
-			//	Paint the glowing orb
-
-			DrawAlphaGradientCircle(Dest,
-					x,
-					y,
-					m_SpikeLength.GetMaxValue(),
-					m_wPrimaryColor);
-			break;
-			}
-
 		case styleLightningStar:
 			{
 			//	Paint the tail
@@ -227,7 +234,7 @@ void CStarburstEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewport
 				int iSpikeLength = m_SpikeLength.Roll();
 				CreateDiamondSpike(mathRandom(1, 360), iSpikeLength, 5, Spike);
 
-				CG16bitRegion Region;
+				CG16bitBinaryRegion Region;
 				Region.CreateFromConvexPolygon(4, Spike);
 				Region.Fill(Dest, x, y, m_wSecondaryColor);
 				}
@@ -241,10 +248,58 @@ void CStarburstEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SViewport
 					m_wPrimaryColor);
 			break;
 			}
+
+		case styleMorningStar:
+			{
+			//	Paint the spikes
+
+			for (i = 0; i < iCount; i++)
+				{
+				SPoint Spike[4];
+				int iSpikeLength = m_SpikeLength.Roll();
+				CreateDiamondSpike(mathRandom(1, 360), iSpikeLength, 5, Spike);
+
+				CG16bitBinaryRegion Region;
+				Region.CreateFromConvexPolygon(4, Spike);
+				Region.Fill(Dest, x, y, m_wSecondaryColor);
+				}
+
+			//	Paint the glowing orb
+
+			DrawAlphaGradientCircle(Dest,
+					x,
+					y,
+					m_SpikeLength.GetMaxValue(),
+					m_wPrimaryColor);
+			break;
+			}
+
+		case stylePlain:
+			{
+			int iSeparation = 360 / iCount;
+			int iAngle = Ctx.iTick * 3;
+
+			for (i = 0; i < iCount; i++)
+				{
+				int xDest, yDest;
+				IntPolarToVector(iAngle, (Metric)m_SpikeLength.Roll(), &xDest, &yDest);
+
+				Dest.DrawBiColorLine(x, y,
+						x + xDest,
+						y + yDest,
+						1,
+						m_wPrimaryColor,
+						Ctx.wSpaceColor);
+
+				iAngle += iSeparation;
+				}
+
+			break;
+			}
 		}
 	}
 
-bool CStarburstEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CStarburstEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

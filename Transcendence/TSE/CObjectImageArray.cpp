@@ -10,6 +10,7 @@ static CObjectClass<CObjectImageArray>g_Class(OBJID_COBJECTIMAGEARRAY, NULL);
 #define ROTATE_OFFSET_ATTRIB			CONSTLIT("rotationOffset")
 #define BLENDING_ATTRIB					CONSTLIT("blend")
 #define ROTATION_COUNT_ATTRIB			CONSTLIT("rotationCount")
+#define VIEWPORT_SIZE_ATTRIB			CONSTLIT("viewportSize")
 #define X_OFFSET_ATTRIB					CONSTLIT("xOffset")
 #define Y_OFFSET_ATTRIB					CONSTLIT("yOffset")
 
@@ -201,6 +202,7 @@ void CObjectImageArray::CopyFrom (const CObjectImageArray &Source)
 	m_iTicksPerFrame = Source.m_iTicksPerFrame;
 	m_iFlashTicks = Source.m_iFlashTicks;
 	m_iBlending = Source.m_iBlending;
+	m_iViewportSize = Source.m_iViewportSize;
 	m_pGlowImages = NULL;
 	m_pScaledImages = NULL;
 
@@ -459,6 +461,17 @@ RECT CObjectImageArray::GetImageRectAtPoint (int x, int y) const
 	return rcRect;
 	}
 
+int CObjectImageArray::GetImageViewportSize (void) const
+
+//	GetImageViewportSize
+//
+//	Returns the size of the image viewport (in pixels). This is used to compute
+//	perspective distortion.
+
+	{
+	return m_iViewportSize;
+	}
+
 bool CObjectImageArray::ImagesIntersect (int iTick, int iRotation, int x, int y, const CObjectImageArray &Image2, int iTick2, int iRotation2) const
 
 //	ImagesIntersect
@@ -707,6 +720,7 @@ ALERROR CObjectImageArray::Init (CG16bitImage *pBitmap, const RECT &rcImage, int
 	m_iRotationOffset = 0;
 	m_pRotationOffset = NULL;
 	m_iBlending = blendNormal;
+	m_iViewportSize = RectWidth(rcImage);
 
 	return NOERROR;
 	}
@@ -732,6 +746,7 @@ ALERROR CObjectImageArray::Init (DWORD dwBitmapUNID, const RECT &rcImage, int iF
 	m_iRotationOffset = 0;
 	m_pRotationOffset = NULL;
 	m_iBlending = blendNormal;
+	m_iViewportSize = RectWidth(rcImage);
 
 	return NOERROR;
 	}
@@ -775,6 +790,13 @@ ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 		m_iBlending = blendLighten;
 	else
 		m_iBlending = blendNormal;
+
+	//	Viewport
+
+	if (pDesc->FindAttributeInteger(VIEWPORT_SIZE_ATTRIB, &m_iViewportSize))
+		m_iViewportSize = Max(1, m_iViewportSize);
+	else
+		m_iViewportSize = RectWidth(m_rcImage);
 
 	//	Compute rotation offsets
 
@@ -1257,6 +1279,11 @@ void CObjectImageArray::ReadFromStream (SLoadCtx &Ctx)
 	else
 		m_iRotationCount = STD_ROTATION_COUNT;
 
+	if (Ctx.dwVersion >= 90)
+		Ctx.pStream->Read((char *)&m_iViewportSize, sizeof(DWORD));
+	else
+		m_iViewportSize = RectWidth(m_rcImage);
+
 	DWORD dwLoad;
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	if (dwLoad)
@@ -1325,6 +1352,7 @@ void CObjectImageArray::TakeHandoff (CObjectImageArray &Source)
 	m_iTicksPerFrame = Source.m_iTicksPerFrame;
 	m_iFlashTicks = Source.m_iFlashTicks;
 	m_iBlending = Source.m_iBlending;
+	m_iViewportSize = Source.m_iViewportSize;
 	m_iRotationOffset = Source.m_iRotationOffset;
 	}
 
@@ -1341,6 +1369,7 @@ void CObjectImageArray::WriteToStream (IWriteStream *pStream) const
 //	DWORD		m_iFlashTicks
 //	DWORD		m_iBlending
 //	DWORD		m_iRotationCount
+//	DWORD		m_iViewportSize
 
 //	DWORD		No of rotation offsets
 //	DWORD		x
@@ -1355,6 +1384,7 @@ void CObjectImageArray::WriteToStream (IWriteStream *pStream) const
 	pStream->Write((char *)&m_iFlashTicks, sizeof(DWORD));
 	pStream->Write((char *)&m_iBlending, sizeof(DWORD));
 	pStream->Write((char *)&m_iRotationCount, sizeof(DWORD));
+	pStream->Write((char *)&m_iViewportSize, sizeof(DWORD));
 
 	if (m_pRotationOffset)
 		{

@@ -23,7 +23,6 @@
 			manufacturer=		""
 			class=				"Zoanthrope raider"
 			type=				""
-			score=				"240"
 
 			mass=				"25"
 			cargoSpace=			"5"
@@ -78,7 +77,6 @@
 			manufacturer=		""
 			class=				"Dwarg master"
 			type=				""
-			score=				"785"
 
 			mass=				"100"
 			cargoSpace=			"25"
@@ -131,7 +129,6 @@
 			manufacturer=		""
 			class=				"Zoanthrope behemoth"
 			type=				""
-			score=				"910"
 
 			mass=				"12500"
 			cargoSpace=			"100"
@@ -271,7 +268,7 @@
 			mass=				"2500"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Dwarg; MinorItem; NotForSale;"
+			attributes=			"Dwarg; MinorItem; NotForSale; NotStandard"
 
 			description=		"Dwarg engineers developed this particle-reflecting armor to defend themselves against Sung slavers."
 
@@ -296,7 +293,7 @@
 			level=				"5"
 			value=				"5000"
 			mass=				"3000"
-			attributes=			"Dwarg; MajorItem; NotForSale;"
+			attributes=			"Dwarg; MajorItem; NotForSale; NotStandard"
 			frequency=			"rare"
 
 			description=		"Dwarg masters use this cannon to paralyze their targets."
@@ -333,9 +330,7 @@
 
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Cnidocyst Nodule -->
@@ -345,7 +340,7 @@
 			level=				"5"
 			value=				"75"
 			mass=				"10"
-			attributes=			"Consumable; Dwarg; Missile; NotForSale;"
+			attributes=			"Consumable; Dwarg; Missile; NotForSale; NotStandard"
 			frequency=			"uncommon"
 			numberAppearing=	"2d12"
 
@@ -366,7 +361,7 @@
 			mass=				"6000"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Dwarg; MajorItem; Military; NotForSale;"
+			attributes=			"Dwarg; MajorItem; Military; NotForSale; NotStandard"
 
 			description=		"Dwarg behemoths use this thermonuclear cannon."
 			sortName=			"Dwarg.1.20"
@@ -422,7 +417,7 @@
 			mass=				"12000"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"Dwarg; Military; MinorItem; NotForSale;"
+			attributes=			"Dwarg; Military; MinorItem; NotForSale; NotStandard"
 
 			description=		"This heavy armor is used by Dwarg behemoths. It reflects particle and ion damage."
 
@@ -505,8 +500,8 @@
 			canAttack=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itDwargChitonArmor;"
-			hitPoints=			"150"
+			armorID=			"&itDwargCatoptricArmor;"
+			hitPoints=			"180"
 			fireRateAdj=		"50"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -540,7 +535,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Table>
+			<Table count="1d4">
 				<Lookup chance="40" count="1" table="&trConsumables5;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
@@ -601,8 +596,8 @@
 			noMapLabel=			"true"
 
 			multiHull=			"true"
-			armorID=			"&itDwargChitonArmor;"
-			hitPoints=			"150"
+			armorID=			"&itDwargCatoptricArmor;"
+			hitPoints=			"180"
 			fireRateAdj=		"50"
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
@@ -626,7 +621,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Table>
+			<Table count="1d2">
 				<Lookup chance="40" count="1" table="&trConsumables5;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
@@ -703,7 +698,7 @@
 		</Reinforcements>
 
 		<Items>
-			<Table>
+			<Table count="2-6">
 				<Lookup chance="40" count="1" table="&trConsumables7;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem7;"/>

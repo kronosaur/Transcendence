@@ -333,14 +333,14 @@ void CCompositeImageDesc::InitDamagePainters (void)
 		{
 		CEffectCreator *pEffect = g_pUniverse->FindEffectType(MEDIUM_STATION_DAMAGE_UNID);
 		if (pEffect)
-			g_pMediumDamage = pEffect->CreatePainter();
+			g_pMediumDamage = pEffect->CreatePainter(CCreatePainterCtx());
 		}
 
 	if (g_pLargeDamage == NULL)
 		{
 		CEffectCreator *pEffect = g_pUniverse->FindEffectType(LARGE_STATION_DAMAGE_UNID);
 		if (pEffect)
-			g_pLargeDamage = pEffect->CreatePainter();
+			g_pLargeDamage = pEffect->CreatePainter(CCreatePainterCtx());
 		}
 	}
 

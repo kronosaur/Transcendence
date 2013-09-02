@@ -8,29 +8,48 @@
 			manufacturer=		"United African States"
 			class=				"Borer"
 			type=				"gunship"
-			score=				"25"
 
+			attributes=			"genericClass, outlawMiners"
+			   
 			mass=				"50"
-			cargoSpace=			"25"
-			thrust=				"100"
+			thrustRatio=		"4"
 			maneuver=			"12"
 			maxSpeed=			"10"
+			cargoSpace=			"25"
 
 			leavesWreck=		"50"
-
-			attributes=			"genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itLightReactiveArmor;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itLightReactiveArmor;" areaSet="1,4" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightReactiveArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itMiningLaser;"/>
 		</Devices>
 
-		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
+
+		<DriveImages>
+			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
+			<NozzlePos x="-13"  y="0"	z="32"/>
+			<NozzlePos x="-13"  y="0"	z="-32"/>
+			<NozzlePos x="-13"  y="22"	z="0"/>
+			<NozzlePos x="-13"  y="-22"	z="0"/>
+		</DriveImages>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
 
 		<Events>
 			<OnCreate>
@@ -54,13 +73,6 @@
 					)
 			</OnCreate>
 		</Events>
-
-		<AISettings
-			fireRateAdj=		"40"
-			fireAccuracy=		"70"
-			perception=			"4"
-			/>
-
 	</ShipClass>
 
 	<!-- Borer II-class Gunship -->
@@ -69,24 +81,25 @@
 			manufacturer=		"United African States"
 			class=				"Borer II"
 			type=				"gunship"
-			score=				"85"
 
-			mass=				"60"
+			attributes=			"genericClass, outlawMiners"
+			   
+			mass=				"50"
+			thrustRatio=		"4"
+			maneuver=			"8"
+			maxSpeed=			"10"
 			cargoSpace=			"25"
-			thrust=				"250"
-			maneuver=			"6"
-			maxSpeed=			"15"
 
 			leavesWreck=		"50"
-
-			attributes=			"genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" areaSet="1,4" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itMiningLaser;"/>
 			<Device deviceID="&itClass1Deflector;"/>
@@ -96,15 +109,25 @@
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips1;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
 
 		<DriveImages>
 			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-11"  y="0"	z="16"/>
-			<NozzlePos x="-11"  y="0"	z="-16"/>
-			<NozzlePos x="-11"  y="16"	z="0"/>
-			<NozzlePos x="-11"  y="-16"	z="0"/>
+			<NozzlePos x="-13"  y="0"	z="32"/>
+			<NozzlePos x="-13"  y="0"	z="-32"/>
+			<NozzlePos x="-13"  y="22"	z="0"/>
+			<NozzlePos x="-13"  y="-22"	z="0"/>
 		</DriveImages>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
 
 		<Events>
 			<OnCreate>
@@ -133,13 +156,6 @@
 					)
 			</OnCreate>
 		</Events>
-
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-
 	</ShipClass>
 
 	<!-- Hammerhead-class Gunship -->
@@ -148,7 +164,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"Hammerhead"
 			type=				"gunship"
-			score=				"35"
 
 			mass=				"30"
 			cargoSpace=			"10"
@@ -158,7 +173,7 @@
 
 			leavesWreck=		"20"
 
-			attributes=			"genericClass"
+			attributes=			"genericClass, outlawMiners"
 			>
 
 		<Armor>
@@ -168,7 +183,7 @@
 
 		<Devices>
 			<Device deviceID="&itRecoillessCannon;"/>
-			<Device deviceID="&itClass1Deflector;"/>
+			<Device deviceID="&itAClassDefenseScreen;"/>
 		</Devices>
 
 		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
@@ -178,6 +193,8 @@
 			fireRangeAdj=		"50"
 			fireAccuracy=		"80"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -193,7 +210,6 @@
 			manufacturer=		"Earth Industries"
 			class=				"Hammerhead II"
 			type=				"gunship"
-			score=				"165"
 
 			mass=				"30"
 			cargoSpace=			"10"
@@ -203,7 +219,7 @@
 
 			leavesWreck=		"25"
 
-			attributes=			"genericClass"
+			attributes=			"genericClass, outlawMiners"
 			>
 
 		<Armor>
@@ -223,6 +239,8 @@
 			fireRangeAdj=		"50"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<DriveImages>
@@ -247,11 +265,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeramicPlate;"
-			hitPoints=			"50"
+			hitPoints=			"75"
 			explosionType=		"&vtKineticExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"ucr-- ----- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
 			>
@@ -268,7 +286,7 @@
 			<Table>
 				<Group chance="40">
 					<Ship			count="1d3"	class="&scBorer;"		orders="guard"/>
-					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="20">
 					<Ship			count="1d3"	class="&scBorer;"	orders="guard"/>
@@ -325,11 +343,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"80"
+			hitPoints=			"90"
 			explosionType=		"&vtBlastExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"-ucr- ----- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
 			>
@@ -375,7 +393,7 @@
 
 		<Items>
 			<Item count="2d6"	item="&itPalladiumOre;"/>
-			<Table>
+			<Table chance="50">
 				<Lookup chance="40" count="1" table="&trConsumables4;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
@@ -400,11 +418,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"120"
+			hitPoints=			"150"
 			explosionType=		"&vtBlastExplosion2;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"--uur ----- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
 			>
@@ -420,17 +438,17 @@
 		<Ships>
 			<Table>
 				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scOromo;"		orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="40">
 					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="35">
-					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scSotho;"		orders="guard"/>
 				</Group>
 			</Table>
 		</Ships>
@@ -445,8 +463,8 @@
 		</Satellites>
 
 		<Items>
-			<Item count="3d6"	item="&itCeralloyOre;"/>
-			<Table>
+			<Item count="2d6"	item="&itCeralloyOre;"/>
+			<Table chance="25">
 				<Lookup chance="40" count="1" table="&trConsumables5;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
@@ -475,7 +493,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"---uc r---- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
 			enemyExclusionRadius="40"
@@ -492,20 +510,20 @@
 		<Ships>
 			<Table>
 				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="40">
 					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="25">
-					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
 					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"	orders="guard"/>
 				</Group>
 				<Group chance="10">
-					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d8"	class="&scOromo;"	orders="patrol" patrolDist="5"/>
 					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
 				</Group>
 			</Table>
@@ -530,7 +548,7 @@
 
 		<Items>
 			<Item count="3d8"	item="&itDuralloyOre;"/>
-			<Table>
+			<Table chance="25">
 				<Lookup chance="40" count="1" table="&trConsumables5;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
@@ -555,11 +573,11 @@
 
 			multiHull=			"true"
 			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"150"
+			hitPoints=			"200"
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, populated, settlers"
+			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"----u ur--- ----- ----- -----"
 			locationCriteria=	"++asteroids,--frost,--ice"
 			enemyExclusionRadius="40"
@@ -576,17 +594,17 @@
 		<Ships>
 			<Table>
 				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="40">
-					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
 				</Group>
 				<Group chance="35">
-					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
 					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scSotho;"	orders="guard"/>
 				</Group>
 			</Table>
 		</Ships>
@@ -618,7 +636,7 @@
 
 		<Items>
 			<Item count="2d6"	item="&itPteracniumOre;"/>
-			<Table>
+			<Table chance="50">
 				<Lookup chance="40" count="1" table="&trConsumables6;"/>
 				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
 				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
@@ -646,7 +664,7 @@
 			armorID=			"&itCeralloyArmor;"
 			hitPoints=			"90"
 			structuralHitPoints="25"
-			fireRateAdj=		"40"
+			fireRateAdj=		"20"
 			ejectaType=			"&vtWreckEjecta;"
 			>
 
@@ -864,4 +882,8 @@
 		</Events>
 	</ShipClass>
 	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsBorer;"		bitmap="Resources\Borer.jpg" bitmask="Resources\BorerMask.bmp" loadOnUse="true"/>
+
 </TranscendenceModule>

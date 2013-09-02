@@ -4,7 +4,8 @@
 
 #include "PreComp.h"
 
-static Metric g_rViewAngle =					0.4636448f;
+//static Metric g_rViewAngle =					0.4636448f;
+static Metric g_rViewAngle =					0.27925268;		//	16 degree angle
 static Metric g_rK1 =							sin(g_rViewAngle);
 static Metric g_rK2 =							cos(g_rViewAngle);
 
@@ -21,11 +22,12 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, int 
 //	Calculates the coordinate
 
 	{
+	Metric rScale = (Metric)iScale;
 	CVector vPos = PolarToVector(iAngle, (Metric)iRadius);
 
-	Metric rX = vPos.GetX() / (Metric)iScale;
-	Metric rY = vPos.GetY() / (Metric)iScale;
-	Metric rZ = -(Metric)iZ / (Metric)iScale;
+	Metric rX = vPos.GetX() / rScale;
+	Metric rY = vPos.GetY() / rScale;
+	Metric rZ = -(Metric)iZ / rScale;
 
 	//	Convert to global coordinates (which we align on the camera,
 	//	in effect we rotate the object to align to the camera).
@@ -36,7 +38,7 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, int 
 
 	rZg += 2.0f;
 
-	Metric rD = iScale * 2.0f;
+	Metric rD = rScale * 2.0f;
 
 	//	Now convert to projection coordinates
 
@@ -57,11 +59,12 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVec
 //	Calculates the coordinate (inputs are in pixels; output is in kilometers)
 
 	{
+	Metric rScale = (Metric)iScale;
 	CVector vPos = PolarToVector(iAngle, (Metric)iRadius);
 
-	Metric rX = vPos.GetX() / (Metric)iScale;
-	Metric rY = vPos.GetY() / (Metric)iScale;
-	Metric rZ = -(Metric)iZ / (Metric)iScale;
+	Metric rX = vPos.GetX() / rScale;
+	Metric rY = vPos.GetY() / rScale;
+	Metric rZ = -(Metric)iZ / rScale;
 
 	//	Convert to global coordinates (which we align on the camera,
 	//	in effect we rotate the object to align to the camera).
@@ -72,7 +75,7 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVec
 
 	rZg += 2.0f;
 
-	Metric rD = iScale * 2.0f;
+	Metric rD = rScale * 2.0f;
 
 	//	Now convert to projection coordinates
 

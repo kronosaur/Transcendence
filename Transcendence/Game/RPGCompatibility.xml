@@ -63,7 +63,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Repair item" default="1" key="R">
+					<Action name="Repair Item" default="1" key="R">
 						(block Nil
 							(setq gItem (scrGetItem gScreen))
 							
@@ -160,7 +160,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Jettison this item" default="1" key="J" >
+					<Action name="Jettison this Item" default="1" key="J" >
 						(switch
 							(gr gMaxCount 1)
 								(scrShowPane gScreen "JettisonQuantity")
@@ -278,7 +278,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Loot this item" key="L" default="1" >
+					<Action name="Loot this Item" key="L" default="1" >
 						<![CDATA[
 						(if (> gMaxCount 1)
 							(scrShowPane gScreen "LootQuantity")

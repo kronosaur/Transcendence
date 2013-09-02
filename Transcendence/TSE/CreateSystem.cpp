@@ -6,6 +6,7 @@
 #include "math.h"
 
 #ifdef DEBUG
+//#define DEBUG_STATION_TABLE_CACHE
 //#define DEBUG_STRESS_TEST
 //#define DEBUG_STATION_TABLES
 //#define DEBUG_STATION_PLACEMENT
@@ -50,7 +51,9 @@
 #define TABLE_TAG						CONSTLIT("Table")
 #define TABLES_TAG						CONSTLIT("Tables")
 #define TROJAN_TAG						CONSTLIT("Trojan")
+#define VARIANT_TAG						CONSTLIT("Variant")
 #define VARIANTS_TAG					CONSTLIT("Variants")
+#define VARIANTS_TABLE_TAG				CONSTLIT("VariantTable")
 
 #define ANGLE_ATTRIB					CONSTLIT("angle")
 #define ANGLE_ADJ_ATTRIB				CONSTLIT("angleAdj")
@@ -73,6 +76,7 @@
 #define EXCLUSION_RADIUS_ATTRIB			CONSTLIT("exclusionRadius")
 #define ID_ATTRIB						CONSTLIT("id")
 #define IMAGE_VARIANT_ATTRIB			CONSTLIT("imageVariant")
+#define INCLUDE_ALL_ATTRIB				CONSTLIT("includeAll")
 #define INTERVAL_ATTRIB					CONSTLIT("interval")
 #define LEVEL_FREQUENCY_ATTRIB			CONSTLIT("levelFrequency")
 #define LOCATION_ATTRIBS_ATTRIB			CONSTLIT("locationAttribs")
@@ -96,7 +100,6 @@
 #define ORDERS_ATTRIB					CONSTLIT("orders")
 #define PATCHES_ATTRIB					CONSTLIT("patchType")
 #define PATCH_FREQUENCY_ATTRIB			CONSTLIT("patchFrequency")
-#define PATROL_DIST_ATTRIB				CONSTLIT("patrolDist")
 #define PERCENT_ENEMIES_ATTRIB			CONSTLIT("percentEnemies")
 #define PERCENT_FULL_ATTRIB				CONSTLIT("percentFull")
 #define PROBABILITY_ATTRIB				CONSTLIT("probability")
@@ -108,6 +111,7 @@
 #define ROTATION_ATTRIB					CONSTLIT("rotation")
 #define SEPARATE_ENEMIES_ATTRIB			CONSTLIT("separateEnemies")
 #define SHAPE_ATTRIB					CONSTLIT("shape")
+#define SHOW_ORBIT_ATTRIB				CONSTLIT("showOrbit")
 #define SOVEREIGN_ATTRIB				CONSTLIT("sovereign")
 #define SPACE_SCALE_ATTRIB				CONSTLIT("spaceScale")
 #define SPAN_ATTRIB						CONSTLIT("span")
@@ -164,11 +168,10 @@
 //	Minimum distance that two enemy stations can be (in light-seconds)
 
 #define MIN_ENEMY_DIST					30
-#define MAX_NEBULAE						10000
+#define MAX_NEBULAE						100000
 #define OVERLAP_DIST					(25.0 * LIGHT_SECOND)
 
 static char g_ProbabilitiesAttrib[] = "probabilities";
-static char g_ShowOrbitAttrib[] = "showOrbit";
 
 //	Debugging Support
 
@@ -279,10 +282,20 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 							bool bIgnoreChance = false);
 ALERROR CreateVariantsTable (SSystemCreateCtx *pCtx, CXMLElement *pDesc, const COrbit &OrbitDesc);
 ALERROR GenerateAngles (SSystemCreateCtx *pCtx, const CString &sAngle, int iCount, Metric *pAngles);
+void DumpDebugStack (SSystemCreateCtx *pCtx);
+void GenerateRandomPosition (SSystemCreateCtx *pCtx, COrbit *retOrbit);
+ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
+									const CString &sCriteria,
+									const CString &sLocationAttribs,
+									const CVector &vPos,
+									bool bIncludeAll,
+									TArray<CStationTableCache::SEntry> *retTable);
 ALERROR GetLocationCriteria (SSystemCreateCtx *pCtx, CXMLElement *pDesc, SLocationCriteria *retCriteria);
 bool IsExclusionZoneClear (SSystemCreateCtx *pCtx, const CVector &vPos, Metric rRadius);
 bool IsExclusionZoneClear (SSystemCreateCtx *pCtx, const CVector &vPos, CStationType *pType);
 ALERROR ModifyCreatedStation (SSystemCreateCtx *pCtx, CStation *pStation, CXMLElement *pDesc, const COrbit &OrbitDesc);
+inline void PopDebugStack (SSystemCreateCtx *pCtx) { if (g_pUniverse->InDebugMode()) pCtx->DebugStack.Pop(); }
+inline void PushDebugStack (SSystemCreateCtx *pCtx, const CString &sLine) { if (g_pUniverse->InDebugMode()) pCtx->DebugStack.Push(sLine); }
 void RemoveOverlappingLabels (SSystemCreateCtx *pCtx, Metric rMinDistance);
 
 //	Helper functions
@@ -421,6 +434,7 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 							 const CString &sLocationAttribs,
 							 const CVector &vPos,
 							 bool bSeparateEnemies,
+							 bool bIncludeAll,
 							 CStationType **retpType)
 
 //	ChooseRandomStation
@@ -430,187 +444,61 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 
 	{
 	ALERROR error;
-
-#ifdef DEBUG_STATION_PLACEMENT
-	{
-	char szBuffer[1024];
-	wsprintf(szBuffer, "ChooseRandomStation (%s)\n", sCriteria.GetASCIIZPointer());
-	::OutputDebugString(szBuffer);
-	}
-#endif
-
-	int iLevel = pCtx->pSystem->GetLevel();
-
-	//	Build up a probability table that gives the chance to create
-	//	each station type
-
 	int i;
-	int iSize = g_pUniverse->GetStationTypeCount();
-	int *pProbTable = new int[iSize];
 
-	//	Initialize the table
+	//	Generate a description of the table that we are about to generate
+	//	to see if we've already got this table in the cache.
 
-	for (i = 0; i < iSize; i++)
+	CString sTableDesc = strPatternSubst(CONSTLIT("%s|||%s|||%s|||%s"),
+			sCriteria,
+			sLocationAttribs,
+			pCtx->pSystem->GetAttribsAtPos(vPos),
+			(bIncludeAll ? CONSTLIT("ALL") : NULL_STR));
+
+	//	If this table is not cached then generate it.
+
+	TArray<CStationTableCache::SEntry> *pTable;
+	if (!pCtx->StationTables.FindTable(sTableDesc, &pTable))
 		{
-		CStationType *pType = g_pUniverse->GetStationType(i);
-		pProbTable[i] = pType->GetFrequencyForSystem(pCtx->pSystem);
-		}
-
-	//	Loop over each station type and adjust for the location that
-	//	we want to create the station at
-
-	if (!strEquals(sLocationAttribs, MATCH_ALL))
-		{
-		for (i = 0; i < iSize; i++)
-			{
-			if (pProbTable[i])
-				{
-				CStationType *pType = g_pUniverse->GetStationType(i);
-				if (!strEquals(pType->GetLocationCriteria(), MATCH_ALL))
-					{
-					CAttributeCriteria Criteria;
-					if (error = Criteria.Parse(pType->GetLocationCriteria(), 0, &pCtx->sError))
-						{
-						pCtx->sError = strPatternSubst(CONSTLIT("StationType %x: Invalid locationCriteria"), pType->GetUNID());
-						return error;
-						}
-
-					for (int j = 0; j < Criteria.GetCount(); j++)
-						{
-						int iMatchStrength;
-						const CString &sAttrib = Criteria.GetAttribAndWeight(j, &iMatchStrength);
-
-						int iAdj = ComputeLocationWeight(pCtx,
-								sLocationAttribs,
-								vPos,
-								sAttrib,
-								iMatchStrength);
-						pProbTable[i] = (pProbTable[i] * iAdj) / 1000;
-						}
-					}
-
-				//	If we want to separate enemies, then see if there are any
-				//	enemies of this station type at this location.
-
-				if (bSeparateEnemies && pProbTable[i] > 0)
-					{
-					if (!IsExclusionZoneClear(pCtx, vPos, pType))
-						pProbTable[i] = 0;
-					}
-				}
-			}
-		}
-
-	//	Loop over each part of the criteria and refine the table
-
-	if (!strEquals(sCriteria, MATCH_ALL))
-		{
-		CAttributeCriteria Criteria;
-		if (error = Criteria.Parse(sCriteria, 0, &pCtx->sError))
+		if (error = GenerateRandomStationTable(pCtx, sCriteria, sLocationAttribs, vPos, bIncludeAll, pTable))
 			return error;
-
-		for (i = 0; i < Criteria.GetCount(); i++)
-			{
-			int iMatchStrength;
-			const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iMatchStrength);
-
-			for (int j = 0; j < iSize; j++)
-				{
-				CStationType *pType = g_pUniverse->GetStationType(j);
-
-				//	Adjust probability
-
-				if (pProbTable[j])
-					{
-					int iAdj = ComputeStationWeight(pCtx, pType, sAttrib, iMatchStrength);
-					pProbTable[j] = (pProbTable[j] * iAdj) / 1000;
-					}
-				}
-			}
 		}
 
-	//	Add up the total probabilities in the table
+	//	Now generate a probability table and add all the entries
 
-	int iTotal = 0;
-	for (i = 0; i < iSize; i++)
-		iTotal += pProbTable[i];
-
-	//	If no entries match, then we're done
-
-	if (iTotal == 0)
+	TProbabilityTable<CStationType *> Table;
+	for (i = 0; i < pTable->GetCount(); i++)
 		{
-		delete [] pProbTable;
+		const CStationTableCache::SEntry &Entry = pTable->GetAt(i);
 
+		//	Make sure we can still encounter this type. [If we've already created
+		//	a system-unique object then it will still be in the cached tables.]
+
+		if (!Entry.pType->CanBeEncountered(pCtx->pSystem))
+			continue;
+
+		//	If we want to separate enemies, then see if there are any
+		//	enemies of this station type at this location.
+
+		if (bSeparateEnemies && !IsExclusionZoneClear(pCtx, vPos, Entry.pType))
+			continue;
+
+		//	Add it
+
+		Table.Insert(Entry.pType, Entry.iChance);
+		}
+
+	//	Short-circuit
+
+	if (Table.GetCount() == 0)
+		{
 		STATION_PLACEMENT_OUTPUT("   no appropriate station found for this location\n");
 		return ERR_NOTFOUND;
 		}
 
-#ifdef DEBUG_STATION_TABLES
-	{
-	int i;
-	char szBuffer[1024];
-	wsprintf(szBuffer, "ChooseRandomStation\nCriteria: %s\nLocation: %s\n\n",
-			sCriteria.GetASCIIZPointer(),
-			sLocationAttribs.GetASCIIZPointer());
-	::OutputDebugString(szBuffer);
+	//	Roll
 
-	//	First list all the stations that are in the list
-
-	for (i = 0; i < iSize; i++)
-		{
-		if (pProbTable[i])
-			{
-			CStationType *pType = g_pUniverse->GetStationType(i);
-			double rProb = 100.0 * (double)pProbTable[i] / (double)iTotal;
-			wsprintf(szBuffer, "%3d.%02d %s\n", 
-					(int)rProb,
-					((int)(rProb * 100)) % 100,
-					pType->GetName().GetASCIIZPointer());
-
-			::OutputDebugString(szBuffer);
-			}
-		}
-
-	::OutputDebugString("\n");
-
-	//	Then include the stations that are not
-
-#if 0
-	for (i = 0; i < iSize; i++)
-		{
-		if (pProbTable[i] == 0)
-			{
-			CStationType *pType = g_pUniverse->GetStationType(i);
-			wsprintf(szBuffer, "%s\n", pType->GetName().GetASCIIZPointer());
-			::OutputDebugString(szBuffer);
-			}
-		}
-#endif
-	}
-#endif
-
-	//	Pick a random entry in the table
-
-	int iRoll = mathRandom(1, iTotal);
-	int iPos = 0;
-
-	//	Get the position
-
-	while (pProbTable[iPos] < iRoll)
-		iRoll -= pProbTable[iPos++];
-
-	//	Found it
-
-	*retpType = g_pUniverse->GetStationType(iPos);
-	delete [] pProbTable;
-
-#ifdef DEBUG_STATION_PLACEMENT
-	{
-	char szBuffer[1024];
-	wsprintf(szBuffer, "   chose station: %s\n", (*retpType)->GetName().GetASCIIZPointer());
-	::OutputDebugString(szBuffer);
-	}
-#endif
+	*retpType = Table.GetAt(Table.RollPos());
 
 	return NOERROR;
 	}
@@ -696,7 +584,16 @@ ALERROR DistributeStationsAtRandomLocations (SSystemCreateCtx *pCtx, CXMLElement
 
 	TProbabilityTable<int> LocationTable;
 	if (!pCtx->pSystem->GetEmptyLocations(LocationCriteria, OrbitDesc, NULL, &LocationTable))
+		{
+		if (g_pUniverse->InDebugMode())
+			{
+			PushDebugStack(pCtx, strPatternSubst(CONSTLIT("FillLocations locationCriteria=%s"), pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB)));
+			kernelDebugLogMessage("Warning: No locations found.");
+			DumpDebugStack(pCtx);
+			PopDebugStack(pCtx);
+			}
 		return NOERROR;
+		}
 
 	//	Figure out how many stations to create
 
@@ -736,6 +633,8 @@ ALERROR DistributeStationsAtRandomLocations (SSystemCreateCtx *pCtx, CXMLElement
 
 	bool bSeparateEnemies = pDesc->GetAttributeBool(SEPARATE_ENEMIES_ATTRIB);
 
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("FillLocations locationCriteria=%s stationCriteria=%s"), pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB), sStationCriteria));
+
 	//	Create the stations
 
 	for (i = 0; i < iCount; i++)
@@ -774,6 +673,7 @@ ALERROR DistributeStationsAtRandomLocations (SSystemCreateCtx *pCtx, CXMLElement
 			break;
 		}
 
+	PopDebugStack(pCtx);
 	return NOERROR;
 	}
 
@@ -817,6 +717,7 @@ ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx,
 				pLoc->GetAttributes(),
 				pLoc->GetOrbit().GetObjectPos(),
 				bSeparateEnemies,
+				false,
 				&pType))
 			{
 			//	If we couldn't find an appropriate location then try picking
@@ -824,7 +725,14 @@ ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx,
 
 			if (error == ERR_NOTFOUND)
 				{
-				iTries--;
+				//	No more tries
+
+				if (--iTries == 0 && g_pUniverse->InDebugMode())
+					{
+					kernelDebugLogMessage("Warning: Ran out of tries in FillLocations");
+					DumpDebugStack(pCtx);
+					}
+
 				continue;
 				}
 			else
@@ -834,7 +742,7 @@ ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx,
 		//	Remember if this is friend or enemy
 
 		if (retbEnemy)
-			*retbEnemy = pType->HasAttribute(ENEMY_ATTRIBUTE);
+			*retbEnemy = pType->HasLiteralAttribute(ENEMY_ATTRIBUTE);
 
 		//	Remember object created
 
@@ -856,8 +764,6 @@ ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx,
 		pCtx->pSystem->SetLocationObjID(iLocID, pCtx->dwLastObjID);
 		pCtx->dwLastObjID = dwSavedLastObjID;
 		LocationTable.Delete(iTablePos);
-
-		//	No more tries
 
 		break;
 		}
@@ -1114,6 +1020,8 @@ ALERROR CreateObjectAtRandomLocation (SSystemCreateCtx *pCtx, CXMLElement *pDesc
 	if (iChildCount == 0)
 		return NOERROR;
 
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("RandomLocation criteria=%s"), pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB)));
+
 	//	Compute criteria
 
 	SLocationCriteria Criteria;
@@ -1124,7 +1032,16 @@ ALERROR CreateObjectAtRandomLocation (SSystemCreateCtx *pCtx, CXMLElement *pDesc
 
 	TProbabilityTable<int> Table;
 	if (!pCtx->pSystem->GetEmptyLocations(Criteria, OrbitDesc, NULL, &Table))
+		{
+		if (g_pUniverse->InDebugMode())
+			{
+			kernelDebugLogMessage("Warning: No locations found for RandomLocation");
+			DumpDebugStack(pCtx);
+			}
+
+		PopDebugStack(pCtx);
 		return NOERROR;
+		}
 
 	//	Figure out the number of objects to create, ...
 
@@ -1150,7 +1067,14 @@ ALERROR CreateObjectAtRandomLocation (SSystemCreateCtx *pCtx, CXMLElement *pDesc
 
 		if (Table.IsEmpty())
 			{
+			if (g_pUniverse->InDebugMode())
+				{
+				kernelDebugLogMessage("Warning: Ran out of locations in RandomLocation directive");
+				DumpDebugStack(pCtx);
+				}
+
 			pCtx->sLocationAttribs = sSavedLocationAttribs;
+			PopDebugStack(pCtx);
 			return NOERROR;
 			}
 
@@ -1188,6 +1112,7 @@ ALERROR CreateObjectAtRandomLocation (SSystemCreateCtx *pCtx, CXMLElement *pDesc
 		}
 
 	pCtx->sLocationAttribs = sSavedLocationAttribs;
+	PopDebugStack(pCtx);
 
 	return NOERROR;
 	}
@@ -1207,6 +1132,8 @@ ALERROR CreateOrbitals (SSystemCreateCtx *pCtx,
 
 	if (pObj->GetContentElementCount() == 0)
 		return NOERROR;
+
+	PushDebugStack(pCtx, CONSTLIT("Orbitals"));
 
 	//	Figure out the number of objects to create, ...
 
@@ -1533,6 +1460,10 @@ ALERROR CreateOrbitals (SSystemCreateCtx *pCtx,
 			}
 		}
 
+	//	Done
+
+	PopDebugStack(pCtx);
+
 	return NOERROR;
 	}
 
@@ -1610,6 +1541,9 @@ ALERROR CreateRandomStation (SSystemCreateCtx *pCtx,
 	CString sLocationAttribs = pDesc->GetAttribute(LOCATION_ATTRIBS_ATTRIB);
 	if (sLocationAttribs.IsBlank())
 		sLocationAttribs = pCtx->sLocationAttribs;
+	bool bIncludeAll = pDesc->GetAttributeBool(INCLUDE_ALL_ATTRIB);
+
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("RandomStation stationCriteria=%s locationAttribs=%s"), sStationCriteria, sLocationAttribs));
 
 	//	Pick a random station type that fits the criteria
 
@@ -1619,10 +1553,14 @@ ALERROR CreateRandomStation (SSystemCreateCtx *pCtx,
 			sLocationAttribs,
 			OrbitDesc.GetObjectPos(),
 			false,
+			bIncludeAll,
 			&pType))
 		{
 		if (error == ERR_NOTFOUND)
+			{
+			PopDebugStack(pCtx);
 			return NOERROR;
+			}
 		else
 			return error;
 		}
@@ -1641,13 +1579,17 @@ ALERROR CreateRandomStation (SSystemCreateCtx *pCtx,
 
 	CStation *pStation = (pObj ? pObj->AsStation() : NULL);
 	if (pStation == NULL)
+		{
+		PopDebugStack(pCtx);
 		return NOERROR;
+		}
 
 	//	Modify the station, if necessary
 
 	if (error = ModifyCreatedStation(pCtx, pStation, pDesc, OrbitDesc))
 		return error;
 
+	PopDebugStack(pCtx);
 	return NOERROR;
 	}
 
@@ -1666,6 +1608,8 @@ ALERROR CreateRandomStationAtAppropriateLocation (SSystemCreateCtx *pCtx, CXMLEl
 	CString sStationCriteria = pDesc->GetAttribute(STATION_CRITERIA_ATTRIB);
 	bool bSeparateEnemies = pDesc->GetAttributeBool(SEPARATE_ENEMIES_ATTRIB);
 
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("PlaceRandomStation stationCriteria=%s"), sStationCriteria));
+
 	//	Keep trying for a while to make sure that we find something that fits
 
 	int iTries = 10;
@@ -1679,10 +1623,14 @@ ALERROR CreateRandomStationAtAppropriateLocation (SSystemCreateCtx *pCtx, CXMLEl
 				MATCH_ALL,
 				NullVector,
 				false,
+				false,
 				&pType))
 			{
 			if (error == ERR_NOTFOUND)
+				{
+				PopDebugStack(pCtx);
 				return NOERROR;
+				}
 			else
 				return error;
 			}
@@ -1743,6 +1691,7 @@ ALERROR CreateRandomStationAtAppropriateLocation (SSystemCreateCtx *pCtx, CXMLEl
 		break;
 		}
 
+	PopDebugStack(pCtx);
 	return NOERROR;
 	}
 
@@ -1755,6 +1704,7 @@ ALERROR CreateSiblings (SSystemCreateCtx *pCtx,
 //	Creates objects in similar orbits
 
 	{
+	int i;
 	ALERROR error;
 	CString sDistribution;
 
@@ -1764,6 +1714,8 @@ ALERROR CreateSiblings (SSystemCreateCtx *pCtx,
 	//	Get the number of objects to create
 
 	int iCount = GetDiceCountFromAttribute(pObj->GetAttribute(COUNT_ATTRIB));
+	if (iCount <= 0)
+		return NOERROR;
 
 	//	Create a random distribution
 
@@ -1773,7 +1725,7 @@ ALERROR CreateSiblings (SSystemCreateCtx *pCtx,
 		Distribution.LoadFromXML(sDistribution);
 		Metric rScale = GetScale(pObj);
 
-		for (int i = 0; i < iCount; i++)
+		for (i = 0; i < iCount; i++)
 			{
 			COrbit SiblingOrbit(OrbitDesc.GetFocus(),
 					OrbitDesc.GetSemiMajorAxis() + (rScale * Distribution.Roll()),
@@ -1845,9 +1797,11 @@ ALERROR CreateSiblings (SSystemCreateCtx *pCtx,
 			iAngleInc = incNone;
 			}
 
-		//	Loop over count
+		//	Generate all the orbits
 
-		for (int i = 0; i < iCount; i++)
+		TArray<COrbit> Orbits;
+		Orbits.InsertEmpty(iCount);
+		for (i = 0; i < iCount; i++)
 			{
 			Metric rRadiusAdj = rRadiusAdjScale * (Metric)RadiusAdj.Roll();
 			Metric rAngleAdj;
@@ -1873,16 +1827,28 @@ ALERROR CreateSiblings (SSystemCreateCtx *pCtx,
 					rAngleAdj = 0.0;
 				}
 
-			COrbit SiblingOrbit(OrbitDesc.GetFocus(),
+			Orbits[i] = COrbit(OrbitDesc.GetFocus(),
 					OrbitDesc.GetSemiMajorAxis() + rRadiusAdj,
 					OrbitDesc.GetEccentricity(),
 					OrbitDesc.GetRotation(),
 					OrbitDesc.GetObjectAngle() + rAngleAdj);
+			}
 
+		//	Loop over count
+
+		int iPos = 0;
+		int iObj = 0;
+		int iLoops = Max(iCount, pObj->GetContentElementCount());
+
+		for (i = 0; i < iLoops; i++)
+			{
 			if (error = CreateSystemObject(pCtx,
-					pObj->GetContentElement(0),
-					SiblingOrbit))
+					pObj->GetContentElement(iObj),
+					Orbits[iPos]))
 				return error;
+
+			iObj = (iObj + 1) % pObj->GetContentElementCount();
+			iPos = (iPos + 1) % iCount;
 			}
 
 		if (pAngles)
@@ -1976,10 +1942,46 @@ ALERROR CreateSpaceEnvironment (SSystemCreateCtx *pCtx, CXMLElement *pDesc, cons
 
 	//	Figure out what tile we need here
 
-	CSpaceEnvironmentType *pEnvironment = g_pUniverse->FindSpaceEnvironment(pDesc->GetAttributeInteger(TYPE_ATTRIB));
-	if (pEnvironment == NULL)
+	CSpaceEnvironmentType *pEnvType = g_pUniverse->FindSpaceEnvironment(pDesc->GetAttributeInteger(TYPE_ATTRIB));
+	if (pEnvType == NULL)
 		{
 		pCtx->sError = CONSTLIT("Invalid space environment type");
+		return ERR_FAIL;
+		}
+
+	//	Keep track of all the places where we've added nebulae
+
+	TArray<CEnvironmentGrid::STileDesc> NebulaTiles;
+
+	//	Initialize some context
+
+	CEnvironmentGrid *pEnvironment = pCtx->pSystem->GetEnvironmentGrid();
+	CEnvironmentGrid::SCreateCtx CreateCtx;
+	CreateCtx.pSystem = pCtx->pSystem;
+	CreateCtx.pOrbitDesc = &OrbitDesc;
+	CreateCtx.pEnv = pEnvType;
+
+	//	Fill the appropriate shape
+
+	CString sShape = pDesc->GetAttribute(SHAPE_ATTRIB);
+	if (strEquals(sShape, SHAPE_CIRCULAR))
+		{
+		CreateCtx.rWidth = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_ATTRIB)) * LIGHT_SECOND;
+		CreateCtx.iWidthVariation = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_VARIATION_ATTRIB));
+
+		pEnvironment->CreateCircularNebula(CreateCtx, &NebulaTiles);
+		}
+	else if (strEquals(sShape, SHAPE_ARC))
+		{
+		CreateCtx.rWidth = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_ATTRIB)) * LIGHT_SECOND;
+		CreateCtx.iWidthVariation = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_VARIATION_ATTRIB));
+		CreateCtx.iSpan = GetDiceCountFromAttribute(pDesc->GetAttribute(SPAN_ATTRIB));
+
+		pEnvironment->CreateArcNebula(CreateCtx, &NebulaTiles);
+		}
+	else
+		{
+		pCtx->sError = CONSTLIT("Invalid space environment shape");
 		return ERR_FAIL;
 		}
 
@@ -1988,166 +1990,37 @@ ALERROR CreateSpaceEnvironment (SSystemCreateCtx *pCtx, CXMLElement *pDesc, cons
 	CEffectCreator *pPatchType = g_pUniverse->FindEffectType(pDesc->GetAttributeInteger(PATCHES_ATTRIB));
 	int iPatchFrequency = GetDiceCountFromAttribute(pDesc->GetAttribute(PATCH_FREQUENCY_ATTRIB));
 
-	//	Keep track of all the places where we've added nebulae
-
-	int *xNebulae = new int [MAX_NEBULAE];
-	int *yNebulae = new int [MAX_NEBULAE];
-	int iNebulaeCount = 0;
-
-	//	Fill the appropriate shape
-
-	CString sShape = pDesc->GetAttribute(SHAPE_ATTRIB);
-	if (strEquals(sShape, SHAPE_CIRCULAR))
+	if (pPatchType && iPatchFrequency > 0)
 		{
-		Metric rHalfWidth = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_ATTRIB)) * LIGHT_SECOND / 2.0;
-		Metric rMaxVariation = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_VARIATION_ATTRIB)) * rHalfWidth / 100.0;
-		Metric rHalfVariation = rMaxVariation / 2.0;
+		int iCount = NebulaTiles.GetCount();
 
-		CVector vCenter = OrbitDesc.GetFocus();
+		//	Adjust patch frequency based on size of tile (based on 512x512 tiles).
 
-		//	Compute the inner and outer radius for each degree around the orbit
-		//	Also, while we're at it, we compute the upper-left and lower-right
-		//	bounds of the nebula
+		int iSize = 512 / pCtx->pSystem->GetTileSize();
+		iSize *= iSize;
+		if (iSize > 1)
+			iCount /= iSize;
 
-		Metric rOuterRadius[360];
-		Metric rInnerRadius[360];
-		CVector vUL = vCenter;
-		CVector vLR = vCenter;
+		//	Create all patches
 
-		Metric rOuterVariation = rHalfVariation;
-		Metric rInnerVariation = rHalfVariation;
-		for (i = 0; i < 360; i++)
+		for (i = 0; i < iCount; i++)
 			{
-			Metric rAngle = i * g_Pi / 180.0;
-			Metric rRadius;
-			OrbitDesc.GetPointAndRadius(rAngle, &rRadius);
-
-			rOuterRadius[i] = rRadius + rHalfWidth + rOuterVariation - rHalfVariation;
-			rInnerRadius[i] = rRadius - rHalfWidth + rInnerVariation - rHalfVariation;
-
-			//	Adjust inner and outer radius in a random walk
-
-			ChangeVariation(&rOuterVariation, rMaxVariation);
-			ChangeVariation(&rInnerVariation, rMaxVariation);
-
-			//	Adjust bounds
-
-			AdjustBounds(&vUL, &vLR, vCenter + PolarToVector(i, rOuterRadius[i]));
-			}
-
-		//	Now iterate over every tile in bounds and see if it is within
-		//	the band that we have defined.
-
-		int xTileStart, yTileStart, xTileEnd, yTileEnd;
-		VectorToTile(vUL, &xTileStart, &yTileStart);
-		VectorToTile(vLR, &xTileEnd, &yTileEnd);
-
-		int x, y;
-		for (x = xTileStart; x <= xTileEnd; x++)
-			for (y = yTileStart; y <= yTileEnd; y++)
+			if (mathRandom(1, 100) <= iPatchFrequency)
 				{
-				CVector vTile = TileToVector(x, y);
-				CVector vRadius = vTile - vCenter;
+				int iTileSize = pCtx->pSystem->GetTileSize();
+				const CEnvironmentGrid::STileDesc &TileDesc = NebulaTiles[mathRandom(0, NebulaTiles.GetCount() - 1)];
+				CVector vPos = pCtx->pSystem->TileToVector(TileDesc.x, TileDesc.y);
 
-				Metric rRadius;
-				int iAngle = VectorToPolar(vRadius, &rRadius);
+				CVector vOffset(
+						g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)),
+						g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)));
 
-				if (rRadius > rInnerRadius[iAngle] && rRadius < rOuterRadius[iAngle])
-					{
-					CreateSpaceEnvironmentTile(pCtx, vTile, x, y, pEnvironment, pPatchType, iPatchFrequency);
-
-					if (iNebulaeCount < MAX_NEBULAE - 1)
-						{
-						xNebulae[iNebulaeCount] = x;
-						yNebulae[iNebulaeCount++] = y;
-						}
-					}
+				CStaticEffect::Create(pPatchType,
+						pCtx->pSystem,
+						vPos + vOffset,
+						NULL);
 				}
-		}
-	else if (strEquals(sShape, SHAPE_ARC))
-		{
-		Metric rHalfWidth = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_ATTRIB)) * LIGHT_SECOND / 2.0;
-		Metric rMaxVariation = GetDiceCountFromAttribute(pDesc->GetAttribute(WIDTH_VARIATION_ATTRIB)) * rHalfWidth / 100.0;
-		Metric rHalfVariation = rMaxVariation / 2.0;
-		int iHalfSpan = GetDiceCountFromAttribute(pDesc->GetAttribute(SPAN_ATTRIB)) / 2;
-
-		CVector vCenter = OrbitDesc.GetFocus();
-		int iArcCenterAngle = (((int)((180.0 * OrbitDesc.GetObjectAngle() / g_Pi) + 0.5)) % 360);
-
-		//	Compute the inner and outer radius for each degree around the orbit
-		//	Also, while we're at it, we compute the upper-left and lower-right
-		//	bounds of the nebula
-
-		Metric rOuterRadius[360];
-		Metric rInnerRadius[360];
-		CVector vUL = CVector(g_InfiniteDistance, -g_InfiniteDistance);
-		CVector vLR = CVector(-g_InfiniteDistance, g_InfiniteDistance);
-
-		Metric rOuterVariation = 0.0;
-		Metric rInnerVariation = rMaxVariation;
-		for (i = 0; i < 360; i++)
-			{
-			rOuterRadius[i] = 0.0;
-			rInnerRadius[i] = 0.0;
 			}
-
-		for (i = -iHalfSpan; i <= iHalfSpan; i++)
-			{
-			int iAngle = ((iArcCenterAngle + i + 360) % 360);
-
-			Metric rAngle = iAngle * g_Pi / 180.0;
-			Metric rRadius;
-			OrbitDesc.GetPointAndRadius(rAngle, &rRadius);
-
-			rOuterRadius[iAngle] = rRadius + rHalfWidth + rOuterVariation - rHalfVariation;
-			rInnerRadius[iAngle] = rRadius - rHalfWidth + rInnerVariation - rHalfVariation;
-
-			//	Adjust inner and outer radius in a random walk
-
-			ChangeVariation(&rOuterVariation, rMaxVariation);
-			ChangeVariation(&rInnerVariation, rMaxVariation);
-
-			//	Adjust bounds
-
-			AdjustBounds(&vUL, &vLR, vCenter + PolarToVector(iAngle, rOuterRadius[iAngle]));
-			AdjustBounds(&vUL, &vLR, vCenter + PolarToVector(iAngle, rInnerRadius[iAngle]));
-			}
-
-		//	Now iterate over every tile in bounds and see if it is within
-		//	the band that we have defined.
-
-		int xTileStart, yTileStart, xTileEnd, yTileEnd;
-		VectorToTile(vUL, &xTileStart, &yTileStart);
-		VectorToTile(vLR, &xTileEnd, &yTileEnd);
-
-		int x, y;
-		for (x = xTileStart; x <= xTileEnd; x++)
-			for (y = yTileStart; y <= yTileEnd; y++)
-				{
-				CVector vTile = TileToVector(x, y);
-				CVector vRadius = vTile - vCenter;
-
-				Metric rRadius;
-				int iAngle = VectorToPolar(vRadius, &rRadius);
-
-				if (rRadius > rInnerRadius[iAngle] && rRadius < rOuterRadius[iAngle])
-					{
-					CreateSpaceEnvironmentTile(pCtx, vTile, x, y, pEnvironment, pPatchType, iPatchFrequency);
-
-					if (iNebulaeCount < MAX_NEBULAE - 1)
-						{
-						xNebulae[iNebulaeCount] = x;
-						yNebulae[iNebulaeCount++] = y;
-						}
-					}
-				}
-		}
-	else
-		{
-		pCtx->sError = CONSTLIT("Invalid space environment shape");
-		delete xNebulae;
-		delete yNebulae;
-		return ERR_FAIL;
 		}
 
 	//	Create random encounters
@@ -2158,36 +2031,33 @@ ALERROR CreateSpaceEnvironment (SSystemCreateCtx *pCtx, CXMLElement *pDesc, cons
 	if (pDesc->GetContentElementCount())
 		pEncounter = pDesc->GetContentElement(0);
 
-	if (pEncounter && iNebulaeCount > 0)
+	if (pEncounter && NebulaTiles.GetCount() > 0)
 		{
 		if (iEncounters == 0)
 			iEncounters = 1;
+
+		int iTileSize = pCtx->pSystem->GetTileSize();
 
 		for (i = 0; i < iEncounters; i++)
 			{
 			//	Pick a random tile
 
-			int iTile = mathRandom(0, iNebulaeCount-1);
-			CVector vCenter = TileToVector(xNebulae[iTile], yNebulae[iTile]);
+			const CEnvironmentGrid::STileDesc &TileDesc = NebulaTiles[mathRandom(0, NebulaTiles.GetCount() - 1)];
+
+			CVector vCenter = pCtx->pSystem->TileToVector(TileDesc.x, TileDesc.y);
 			CVector vOffset(
-					g_KlicksPerPixel * (mathRandom(0, seaTileSize) - (seaTileSize / 2)),
-					g_KlicksPerPixel * (mathRandom(0, seaTileSize) - (seaTileSize / 2)));
+					g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)),
+					g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)));
 
 			COrbit NewOrbit(vCenter + vOffset, 0.0);
 
 			//	Create the object
 
 			if (error = CreateSystemObject(pCtx, pEncounter, NewOrbit))
-				{
-				delete xNebulae;
-				delete yNebulae;
 				return error;
-				}
 			}
 		}
 
-	delete xNebulae;
-	delete yNebulae;
 	return NOERROR;
 	}
 
@@ -2205,9 +2075,11 @@ void CreateSpaceEnvironmentTile (SSystemCreateCtx *pCtx,
 
 	if (pPatch && mathRandom(1, 100) <= iPatchFrequency)
 		{
+		int iTileSize = pCtx->pSystem->GetTileSize();
+
 		CVector vOffset(
-				g_KlicksPerPixel * (mathRandom(0, seaTileSize) - (seaTileSize / 2)),
-				g_KlicksPerPixel * (mathRandom(0, seaTileSize) - (seaTileSize / 2)));
+				g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)),
+				g_KlicksPerPixel * (mathRandom(0, iTileSize) - (iTileSize / 2)));
 
 		CStaticEffect::Create(pPatch,
 				pCtx->pSystem,
@@ -2338,6 +2210,8 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		{
 		CRandomEntryResults Results;
 
+		PushDebugStack(pCtx, TABLE_TAG);
+
 		if (error = CRandomEntryGenerator::Generate(pObj, Results))
 			{
 			pCtx->sError = CONSTLIT("<Table> error");
@@ -2351,6 +2225,8 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			if (error = CreateSystemObject(pCtx, pResult, OrbitDesc, true))
 				return error;
 			}
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, GROUP_TAG) || strEquals(sTag, SYSTEM_GROUP_TAG))
 		{
@@ -2364,6 +2240,8 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		}
 	else if (strEquals(sTag, LOOKUP_TAG))
 		{
+		int i;
+
 		//	If we've got an offset, change the orbit
 
 		COrbit NewOrbit;
@@ -2373,12 +2251,19 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 
 		CExtension *pOldExtension = pCtx->pExtension;
 
-		//	Find the appropriate table. First we look in the local table:
+		//	Find the appropriate table. First we look in the local tables
 
 		CXMLElement *pTableDesc = NULL;
 		CString sTable = pObj->GetAttribute(TABLE_ATTRIB);
-		if (pCtx->pLocalTables)
-			pTableDesc = pCtx->pLocalTables->GetContentElementByTag(sTable);
+
+		PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Lookup table=%s"), sTable));
+
+		for (i = 0; i < pCtx->LocalTables.GetCount(); i++)
+			{
+			pTableDesc = pCtx->LocalTables[i]->GetContentElementByTag(sTable);
+			if (pTableDesc)
+				break;
+			}
 
 		//	If not found, we look in all global tables
 
@@ -2397,9 +2282,14 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			pCtx->pExtension = pTable->GetExtension();
 			}
 
+		//	Add any tables that we define inside the lookup (we use these for
+		//	variable substitution).
+
+		pCtx->LocalTables.Insert(pObj, 0);
+
 		//	Create all the objects
 
-		for (int i = 0; i < pTableDesc->GetContentElementCount(); i++)
+		for (i = 0; i < pTableDesc->GetContentElementCount(); i++)
 			{
 			CXMLElement *pResult = pTableDesc->GetContentElement(i);
 
@@ -2409,7 +2299,12 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 				return error;
 			}
 
+		//	Restore
+
+		pCtx->LocalTables.Delete(0);
 		pCtx->pExtension = pOldExtension;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, ORBITALS_TAG))
 		{
@@ -2418,6 +2313,8 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		}
 	else if (strEquals(sTag, TROJAN_TAG))
 		{
+		PushDebugStack(pCtx, TROJAN_TAG);
+
 		Metric rOffset;
 		CString sOffset;
 		if (pObj->FindAttribute(OFFSET_ATTRIB, &sOffset))
@@ -2444,9 +2341,13 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			if (error = CreateSystemObject(pCtx, pItem, TrojanOrbit))
 				return error;
 			}
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, ANTI_TROJAN_TAG))
 		{
+		PushDebugStack(pCtx, TROJAN_TAG);
+
 		Metric rOffset;
 		CString sOffset;
 		if (pObj->FindAttribute(OFFSET_ATTRIB, &sOffset))
@@ -2473,6 +2374,8 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			if (error = CreateSystemObject(pCtx, pItem, TrojanOrbit))
 				return error;
 			}
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, RANDOM_LOCATION_TAG))
 		{
@@ -2498,13 +2401,21 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		}
 	else if (strEquals(sTag, SIBLINGS_TAG))
 		{
+		PushDebugStack(pCtx, SIBLINGS_TAG);
+
 		if (error = CreateSiblings(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, OFFSET_TAG))
 		{
+		PushDebugStack(pCtx, OFFSET_TAG);
+
 		if (error = CreateOffsetObjects(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, LABEL_TAG))
 		{
@@ -2523,21 +2434,34 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		}
 	else if (strEquals(sTag, LEVEL_TABLE_TAG))
 		{
+		PushDebugStack(pCtx, LEVEL_TABLE_TAG);
+
 		if (error = CreateLevelTable(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, LOCATION_CRITERIA_TABLE_TAG))
 		{
+		PushDebugStack(pCtx, LOCATION_CRITERIA_TABLE_TAG);
+
 		if (error = CreateLocationCriteriaTable(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
-	else if (strEquals(sTag, VARIANTS_TAG))
+	else if (strEquals(sTag, VARIANT_TAG))
 		{
-		if (error = CreateVariantsTable(pCtx, pObj, OrbitDesc))
-			return error;
-		}
-	else if (strEquals(sTag, PRIMARY_TAG))
-		{
+		bool bDeleteVariant = false;
+		CString sVariant = pObj->GetAttribute(VARIANT_ATTRIB);
+		if (!sVariant.IsBlank())
+			{
+			pCtx->Variants.Insert(sVariant);
+			bDeleteVariant = true;
+			}
+
+		PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Variant variant=%s"), sVariant));
+
 		for (int i = 0; i < pObj->GetContentElementCount(); i++)
 			{
 			CXMLElement *pItem = pObj->GetContentElement(i);
@@ -2545,9 +2469,40 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			if (error = CreateSystemObject(pCtx, pItem, OrbitDesc))
 				return error;
 			}
+
+		PopDebugStack(pCtx);
+
+		if (bDeleteVariant)
+			pCtx->Variants.Delete(pCtx->Variants.GetCount() - 1);
+		}
+	else if (strEquals(sTag, VARIANTS_TAG)
+			|| strEquals(sTag, VARIANTS_TABLE_TAG))
+		{
+		PushDebugStack(pCtx, VARIANTS_TABLE_TAG);
+
+		if (error = CreateVariantsTable(pCtx, pObj, OrbitDesc))
+			return error;
+
+		PopDebugStack(pCtx);
+		}
+	else if (strEquals(sTag, PRIMARY_TAG))
+		{
+		PushDebugStack(pCtx, PRIMARY_TAG);
+
+		for (int i = 0; i < pObj->GetContentElementCount(); i++)
+			{
+			CXMLElement *pItem = pObj->GetContentElement(i);
+
+			if (error = CreateSystemObject(pCtx, pItem, OrbitDesc))
+				return error;
+			}
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, STARGATE_TAG))
 		{
+		PushDebugStack(pCtx, STARGATE_TAG);
+
 		//	If we've got an offset, change the orbit
 
 		COrbit NewOrbit;
@@ -2557,10 +2512,14 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 
 		if (error = CreateStargate(pCtx, pObj, *pOrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, SHIP_TAG))
 		{
 		int iCount = GetDiceCountFromAttribute(pObj->GetAttribute(COUNT_ATTRIB));
+
+		PushDebugStack(pCtx, SHIP_TAG);
 
 		//	Load generator
 
@@ -2598,10 +2557,14 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 
 		if (CreateCtx.Result.GetCount() > 0)
 			pCtx->dwLastObjID = CreateCtx.Result.GetObj(0)->GetID();
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, PARTICLES_TAG))
 		{
 		CParticleEffect *pSObj;
+
+		PushDebugStack(pCtx, PARTICLES_TAG);
 
 		if (error = pCtx->pSystem->CreateParticles(pObj, OrbitDesc, &pSObj))
 			{
@@ -2610,10 +2573,13 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			}
 
 		pCtx->dwLastObjID = pSObj->GetID();
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, MARKER_TAG))
 		{
 		CMarker *pSObj;
+
+		PushDebugStack(pCtx, MARKER_TAG);
 
 		if (error = pCtx->pSystem->CreateMarker(pObj, OrbitDesc, &pSObj))
 			{
@@ -2622,19 +2588,30 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 			}
 
 		pCtx->dwLastObjID = pSObj->GetID();
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, SPACE_ENVIRONMENT_TAG))
 		{
+		PushDebugStack(pCtx, SPACE_ENVIRONMENT_TAG);
+
 		if (error = CreateSpaceEnvironment(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, ORBITAL_DISTRIBUTION_TAG))
 		{
+		PushDebugStack(pCtx, ORBITAL_DISTRIBUTION_TAG);
+
 		if (error = CreateArcDistribution(pCtx, pObj, OrbitDesc))
 			return error;
+
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, CODE_TAG))
 		{
+		PushDebugStack(pCtx, CODE_TAG);
+
 		//	Parse the code
 
 		ICCItem *pCode = g_pUniverse->GetCC().Link(pObj->GetContentText(0), 0, NULL);
@@ -2658,6 +2635,7 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		//	Done
 
 		pCode->Discard(&g_pUniverse->GetCC());
+		PopDebugStack(pCtx);
 		}
 	else if (strEquals(sTag, NULL_TAG))
 		NULL;
@@ -2695,7 +2673,8 @@ ALERROR CreateVariantsTable (SSystemCreateCtx *pCtx, CXMLElement *pDesc, const C
 		CString sVariant;
 		if (pVariant->FindAttribute(VARIANT_ATTRIB, &sVariant))
 			{
-			if (!pCtx->pTopologyNode->HasVariantLabel(sVariant))
+			if (!pCtx->pTopologyNode->HasVariantLabel(sVariant)
+					&& !pCtx->Variants.Find(sVariant))
 				continue;
 			}
 
@@ -2750,13 +2729,49 @@ ALERROR CreateVariantsTable (SSystemCreateCtx *pCtx, CXMLElement *pDesc, const C
 		break;
 		}
 
+	//	If not found, warning (but no error because this happens at run-time)
+
+	if (pFound == NULL)
+		{
+		if (g_pUniverse->InDebugMode())
+			{
+			CString sOutput = CONSTLIT("Warning: no match for variant table:");
+
+			for (i = 0; i < pDesc->GetContentElementCount(); i++)
+				{
+				CXMLElement *pVariant = pDesc->GetContentElement(i);
+
+				CString sValue;
+				if (pVariant->FindAttribute(VARIANT_ATTRIB, &sValue))
+					sOutput = strPatternSubst(CONSTLIT("%s\n\tvariant: %s"), sOutput, sValue);
+				else if (pVariant->FindAttribute(MAX_RADIUS_ATTRIB, &sValue))
+					sOutput = strPatternSubst(CONSTLIT("%s\n\tmaxRadius: %s"), sOutput, sValue);
+				else if (pVariant->FindAttribute(VARIANT_LOCATION_CRITERIA_ATTRIB, &sValue))
+					sOutput = strPatternSubst(CONSTLIT("%s\n\tvariantLocationCriteria: %s"), sOutput, sValue);
+				else
+					sOutput = strPatternSubst(CONSTLIT("%s\n\tdefault"), sOutput);
+				}
+
+			CString sActive;
+			for (i = 0; i < pCtx->Variants.GetCount(); i++)
+				if (i == 0)
+					sActive = pCtx->Variants[i];
+				else
+					sActive = strPatternSubst(CONSTLIT("%s, %s"), sActive, pCtx->Variants[i]);
+
+			sOutput = strPatternSubst(CONSTLIT("%s\n\tActive variants: %s"), sOutput, sActive);
+
+			kernelDebugLogMessage((LPSTR)sOutput);
+			DumpDebugStack(pCtx);
+			}
+
+		return NOERROR;
+		}
+
 	//	Create
 
-	if (pFound)
-		{
-		if (error = CreateSystemObject(pCtx, pFound, OrbitDesc))
-			return error;
-		}
+	if (error = CreateSystemObject(pCtx, pFound, OrbitDesc))
+		return error;
 	
 	return NOERROR;
 	}
@@ -2782,6 +2797,31 @@ bool CheckForOverlap (SSystemCreateCtx *pCtx, const CVector &vPos)
 		}
 
 	return false;
+	}
+
+void DumpDebugStack (SSystemCreateCtx *pCtx)
+
+//	DumpDebugStack
+//
+//	Output the current debug stack
+
+	{
+	int i;
+
+	if (g_pUniverse->InDebugMode())
+		{
+		CString sStack;
+
+		for (i = 0; i < pCtx->DebugStack.GetCount(); i++)
+			{
+			if (i == 0)
+				sStack = strPatternSubst(CONSTLIT("Create system stack:\n\t 1: %s"), pCtx->DebugStack[i]);
+			else
+				sStack = strPatternSubst(CONSTLIT("%s\n\t%2d: %s"), sStack, i+1, pCtx->DebugStack[i]);
+			}
+
+		kernelDebugLogMessage((LPSTR)sStack);
+		}
 	}
 
 ALERROR GenerateAngles (SSystemCreateCtx *pCtx, const CString &sAngle, int iCount, Metric *pAngles)
@@ -2900,6 +2940,257 @@ ALERROR GenerateAngles (SSystemCreateCtx *pCtx, const CString &sAngle, int iCoun
 		for (i = 0; i < iCount; i++)
 			pAngles[i] = mathDegreesToRadians(AngleRange.Roll());
 		}
+
+	return NOERROR;
+	}
+
+void GenerateRandomPosition (SSystemCreateCtx *pCtx, COrbit *retOrbit)
+
+//	GenerateRandomPosition
+//
+//	Generates a random position
+
+	{
+	int i;
+
+	//	Make a list of all the objects that we could orbit.
+
+	TArray<CSpaceObject *> CenterObj;
+	for (i = 0; i < pCtx->pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pCtx->pSystem->GetObject(i);
+		if (pObj
+				&& pObj->GetScale() == scaleWorld)
+			{
+			CStationType *pType = CStationType::AsType(pObj->GetType());
+			if (pType 
+					&& pType->GetSize() >= 1000
+					&& !pObj->HasAttribute(CONSTLIT("asteroid")))
+				CenterObj.Insert(pObj);
+			}
+		}
+
+	//	Keep trying to find random positions that are not too close to any other
+	//	objects.
+
+	Metric rMinActive2 = (50 * 50) * (LIGHT_SECOND * LIGHT_SECOND);
+	COrbit NewOrbit;
+	int iTries = 100;
+	bool bFound = false;
+	while (iTries-- > 0 && !bFound)
+		{
+		//	If we have no objects then just pick a random spot around the
+		//	central star.
+
+		CSpaceObject *pCenter = NULL;
+		if (CenterObj.GetCount() == 0)
+			NewOrbit = COrbit(CVector(), LIGHT_SECOND * mathRandom(30, 800));
+
+		//	Otherwise, pick a spot orbiting a random planet
+
+		else
+			{
+			pCenter = CenterObj[mathRandom(0, CenterObj.GetCount() - 1)];
+			NewOrbit = COrbit(pCenter->GetPos(), LIGHT_SECOND * mathRandom(15, 50));
+			}
+
+		//	Check to see if the chosen position is too close to anything.
+
+		CVector vTry = NewOrbit.GetObjectPos();
+		bFound = true;
+		for (i = 0; i < pCtx->pSystem->GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = pCtx->pSystem->GetObject(i);
+			if (pObj 
+					&& pObj != pCenter
+					&& !pObj->IsInactive()
+					&& pObj->CanAttack())
+				{
+				Metric rDist2 = (pObj->GetPos() - vTry).Length2();
+				if (rDist2 < rMinActive2)
+					{
+					bFound = false;
+					break;
+					}
+				}
+			}
+		}
+
+	//	Done
+
+	*retOrbit = NewOrbit;
+	}
+
+ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
+									const CString &sCriteria,
+									const CString &sLocationAttribs,
+									const CVector &vPos,
+									bool bIncludeAll,
+									TArray<CStationTableCache::SEntry> *retTable)
+
+//	GenerateRandomStationTable
+//
+//	Returns an array of station type matching the given criteria and sets the
+//	temp value to the chance.
+
+	{
+	ALERROR error;
+	int i, j;
+
+	retTable->DeleteAll();
+
+	//	Loop over all station types
+
+	int iLevel = pCtx->pSystem->GetLevel();
+	int iCount = g_pUniverse->GetStationTypeCount();
+
+	//	Initialize the table
+	//
+	//	If we're including all it usually means that we're by-passing the normal
+	//	encounter probabilities and going straight by station criteria.
+	//	(We do this, e.g., to create random asteroids of appropriate type.)
+
+	if (bIncludeAll)
+		{
+		//	If we're including all, then we ignore the levelFrequency property
+		//	of a type.
+
+		for (i = 0; i < iCount; i++)
+			g_pUniverse->GetStationType(i)->SetTempChance(100);
+		}
+	else
+		{
+		for (i = 0; i < iCount; i++)
+			{
+			CStationType *pType = g_pUniverse->GetStationType(i);
+			pType->SetTempChance(pType->GetFrequencyForSystem(pCtx->pSystem));
+			}
+		}
+
+	//	Loop over each part of the criteria and refine the table
+
+	if (!strEquals(sCriteria, MATCH_ALL))
+		{
+		//	Parse station criteria if we've got it.
+
+		CAttributeCriteria StationCriteria;
+		if (error = StationCriteria.Parse(sCriteria, 0, &pCtx->sError))
+			return error;
+
+		for (i = 0; i < iCount; i++)
+			{
+			CStationType *pType = g_pUniverse->GetStationType(i);
+			if (pType->GetTempChance())
+				{
+				for (j = 0; j < StationCriteria.GetCount(); j++)
+					{
+					int iMatchStrength;
+					const CString &sAttrib = StationCriteria.GetAttribAndWeight(j, &iMatchStrength);
+
+					int iAdj = ComputeStationWeight(pCtx, pType, sAttrib, iMatchStrength);
+
+					if (iAdj > 0)
+						pType->SetTempChance((pType->GetTempChance() * iAdj) / 1000);
+					else
+						{
+						pType->SetTempChance(0);
+						break;
+						}
+					}
+				}
+			}
+		}
+
+	//	Loop over each station type and adjust for the location that
+	//	we want to create the station at
+
+	if (!strEquals(sLocationAttribs, MATCH_ALL))
+		{
+		for (i = 0; i < iCount; i++)
+			{
+			CStationType *pType = g_pUniverse->GetStationType(i);
+			if (pType->GetTempChance())
+				{
+				if (!strEquals(pType->GetLocationCriteria(), MATCH_ALL))
+					{
+					CAttributeCriteria Criteria;
+					if (error = Criteria.Parse(pType->GetLocationCriteria(), 0, &pCtx->sError))
+						{
+						pCtx->sError = strPatternSubst(CONSTLIT("StationType %x: Invalid locationCriteria"), pType->GetUNID());
+						return error;
+						}
+
+					for (j = 0; j < Criteria.GetCount(); j++)
+						{
+						int iMatchStrength;
+						const CString &sAttrib = Criteria.GetAttribAndWeight(j, &iMatchStrength);
+
+						int iAdj = ComputeLocationWeight(pCtx,
+								sLocationAttribs,
+								vPos,
+								sAttrib,
+								iMatchStrength);
+						pType->SetTempChance((pType->GetTempChance() * iAdj) / 1000);
+						}
+					}
+				}
+			}
+		}
+
+	//	Loop over all required types and see if any are in our table. If so, 
+	//	then they get priority.
+
+	bool bPrioritizeRequiredEncounters = false;
+	for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
+		{
+		if (pCtx->RequiredEncounters[i].pType->GetTempChance() > 0)
+			{
+			if (pCtx->RequiredEncounters[i].iLeftToCreate > 0)
+				bPrioritizeRequiredEncounters = true;
+			else
+				//	If this encounter cannot be created, remove it from the list
+				pCtx->RequiredEncounters[i].pType->SetTempChance(0);
+			}
+		}
+
+	//	If we are prioritizing required encounters, then we remove all other
+	//	probabilities from the table.
+
+	if (bPrioritizeRequiredEncounters)
+		{
+		//	Keep track of the current probability of all required encounters
+
+		TArray<int> SavedChance;
+		SavedChance.InsertEmpty(pCtx->RequiredEncounters.GetCount());
+		for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
+			SavedChance[i] = pCtx->RequiredEncounters[i].pType->GetTempChance();
+
+		//	Clear all probabilities
+
+		for (i = 0; i < iCount; i++)
+			g_pUniverse->GetStationType(i)->SetTempChance(0);
+
+		//	Restore the required encounter probabilities
+
+		for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
+			pCtx->RequiredEncounters[i].pType->SetTempChance(SavedChance[i]);
+		}
+
+	//	Now that we've initialized all the types, return the ones with a non-zero
+	//	chance.
+
+	for (i = 0; i < iCount; i++)
+		{
+		CStationType *pType = g_pUniverse->GetStationType(i);
+		if (pType->GetTempChance())
+			{
+			CStationTableCache::SEntry *pEntry = retTable->Insert();
+			pEntry->pType = pType;
+			pEntry->iChance = pType->GetTempChance();
+			}
+		}
+
+	//	Done
 
 	return NOERROR;
 	}
@@ -3042,7 +3333,8 @@ ALERROR ModifyCreatedStation (SSystemCreateCtx *pCtx, CStation *pStation, CXMLEl
 
 	//	If we want to show the orbit for this station, set the orbit desc
 
-	if (pDesc->GetAttributeBool(CONSTLIT(g_ShowOrbitAttrib)))
+	if (pDesc->GetAttributeBool(SHOW_ORBIT_ATTRIB)
+			&& !OrbitDesc.IsNull())
 		pStation->SetMapOrbit(OrbitDesc);
 
 	//	Set the image variant
@@ -3170,7 +3462,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 
 	{
 	ALERROR error;
-	int i;
+	int i, j;
 
 	CXMLElement *pDesc = pType->GetDesc();
 	if (pDesc == NULL)
@@ -3245,20 +3537,42 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	Ctx.pExtension = pType->GetExtension();
 	Ctx.pTopologyNode = pTopology;
 	Ctx.pSystem = pSystem;
-	Ctx.pLocalTables = pTables;
 	Ctx.pStats = pStats;
 
-	if (error = CreateSystemObject(&Ctx,
-			pPrimary,
-			COrbit()))
+	//	Add local tables
+
+	if (pTables)
+		Ctx.LocalTables.Insert(pTables);
+
+	//	Required encounters
+
+	if (pTopology)
+		pTopology->GetRequiredEncounters(&Ctx.RequiredEncounters);
+
+	//	Start the debug stack
+
+	PushDebugStack(&Ctx, strPatternSubst(CONSTLIT("SystemType nodeID=%s unid=%x"), pTopology->GetID(), pType->GetUNID()));
+
+	//	Create
+
+	try
+		{
+		error = CreateSystemObject(&Ctx,
+				pPrimary,
+				COrbit());
+		}
+	catch (...)
+		{
+		Ctx.sError = CONSTLIT("Crash in CreateSystemObject.");
+		error = ERR_FAIL;
+		}
+
+	if (error)
 		{
 		if (retsError)
 			*retsError = Ctx.sError;
 		kernelDebugLogMessage("Unable to create system: %s", Ctx.sError);
-#ifdef DEBUG
-		::OutputDebugString(Ctx.sError.GetASCIIZPointer());
-		::OutputDebugString("\n");
-#endif
+		DumpDebugStack(&Ctx);
 		return error;
 		}
 
@@ -3270,6 +3584,67 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Now invoke OnGlobalSystemCreated
 
 	g_pUniverse->FireOnGlobalSystemCreated(Ctx);
+
+	//	Make sure this system has all the required objects that we want
+
+	for (i = 0; i < Ctx.RequiredEncounters.GetCount(); i++)
+		{
+		int iToCreate = Ctx.RequiredEncounters[i].iLeftToCreate;
+		for (j = 0; j < iToCreate; j++)
+			{
+			CStationType *pType = Ctx.RequiredEncounters[i].pType;
+
+			//	Look for an appropriate location to create the station at.
+
+			COrbit OrbitDesc;
+			CString sLocationAttribs;
+			int iLocation;
+			if (error = ChooseRandomLocation(&Ctx, 
+					pType->GetLocationCriteria(), 
+					NULL,
+					&OrbitDesc, 
+					&sLocationAttribs,
+					&iLocation))
+				{
+				//	If we couldn't find an appropriate location then we try 
+				//	picking a random location in the system that is away from
+				//	other stations.
+
+				if (error == ERR_NOTFOUND)
+					{
+					GenerateRandomPosition(&Ctx, &OrbitDesc);
+					iLocation = -1;
+					}
+				else
+					return error;
+				}
+
+			//	Remember saved last obj
+
+			DWORD dwSavedLastObjID = Ctx.dwLastObjID;
+			Ctx.dwLastObjID = 0;
+
+			//	Create the station at the location
+
+			if (error = pSystem->CreateStation(&Ctx,
+					pType,
+					OrbitDesc.GetObjectPos(),
+					OrbitDesc,
+					true,
+					NULL))
+				return error;
+
+			//	Remember that we filled this location
+
+			if (iLocation != -1)
+				pSystem->SetLocationObjID(iLocation, Ctx.dwLastObjID);
+			Ctx.dwLastObjID = dwSavedLastObjID;
+			}
+		}
+
+#ifdef DEBUG_STATION_TABLE_CACHE
+	kernelDebugLogMessage("Station table cache hit rate: %3d%%  size: %d", Ctx.StationTables.GetCacheHitRate(), Ctx.StationTables.GetCacheSize());
+#endif
 
 	STOP_STRESS_TEST;
 
@@ -3308,7 +3683,8 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 		if (pSystem->GetNamedObject(pTopology->GetStargate(i)) == NULL)
 			{
 			//	Log, but for backwards compatibility with <1.1 extensions continue running.
-			kernelDebugLogMessage("Unable to find required stargate: %s", pTopology->GetStargate(i));
+			kernelDebugLogMessage("Warning: Unable to find required stargate: %s", pTopology->GetStargate(i));
+			DumpDebugStack(&Ctx);
 			}
 
 	//	Done
@@ -3380,7 +3756,8 @@ ALERROR CSystem::CreateParticles (CXMLElement *pDesc, const COrbit &oOrbit, CPar
 	return NOERROR;
 	}
 
-ALERROR CSystem::CreateStationInt (CStationType *pType,
+ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
+								   CStationType *pType,
 								   const CVector &vPos,
 								   const CVector &vVel,
 								   CXMLElement *pExtraData,
@@ -3393,6 +3770,7 @@ ALERROR CSystem::CreateStationInt (CStationType *pType,
 
 	{
 	ALERROR error;
+	int i;
 	CSpaceObject *pStation = NULL;
 
 	//	If this is a ship encounter, then just create the ship
@@ -3404,6 +3782,7 @@ ALERROR CSystem::CreateStationInt (CStationType *pType,
 			{
 			ASSERT(false);
 			kernelDebugLogMessage("No ship for ship encounter: %s", pType->GetName());
+			DumpDebugStack(pCtx);
 			if (retpStation)
 				*retpStation = NULL;
 			return NOERROR;
@@ -3463,15 +3842,17 @@ ALERROR CSystem::CreateStationInt (CStationType *pType,
 		{
 		//	Create the station
 
+		CString sError;
 		if (error = CStation::CreateFromType(this,
 				pType,
 				vPos,
 				vVel,
 				pExtraData,
-				(CStation **)&pStation))
+				(CStation **)&pStation,
+				&sError))
 			{
 			if (retsError)
-				*retsError = strPatternSubst(CONSTLIT("Unable to create station from type: %s"), pType->GetName());
+				*retsError = strPatternSubst(CONSTLIT("Unable to create station from type %s [%08x]: %s"), pType->GetName(), pType->GetUNID(), sError);
 			return error;
 			}
 		}
@@ -3482,18 +3863,34 @@ ALERROR CSystem::CreateStationInt (CStationType *pType,
 		{
 		//	Create the station
 
+		CString sError;
 		if (error = CStation::CreateFromType(this,
 				pType,
 				vPos,
 				vVel,
 				pExtraData,
-				(CStation **)&pStation))
+				(CStation **)&pStation,
+				&sError))
 			{
 			if (retsError)
-				*retsError = strPatternSubst(CONSTLIT("Unable to create station from type: %s"), pType->GetName());
+				*retsError = strPatternSubst(CONSTLIT("Unable to create station from type %s [%08x]: %s"), pType->GetName(), pType->GetUNID(), sError);
 			return error;
 			}
 		}
+
+	//	If necessary, decrement the required encounters counter.
+
+	for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
+		{
+		if (pCtx->RequiredEncounters[i].pType == pType)
+			{
+			if (pCtx->RequiredEncounters[i].iLeftToCreate > 0)
+				pCtx->RequiredEncounters[i].iLeftToCreate--;
+			break;
+			}
+		}
+
+	//	Check station separation
 
 #ifdef DEBUG_STATION_SEPARATION
 	if (pStation->CanAttack())
@@ -3551,7 +3948,8 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 
 	//	Create the station (or ship encounter). Note that pStation may come back NULL
 
-	if (error = CreateStationInt(pType,
+	if (error = CreateStationInt(pCtx,
+			pType,
 			vPos,
 			NullVector,
 			pExtraData,
@@ -3644,12 +4042,17 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 		return ERR_FAIL;
 		}
 
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Station unid=%x"), pStationType->GetUNID()));
+
 	//	If this is a unique station that we've already encountered, then bail out (this is not
 	//	an error because sometimes we explicitly place a station even though there is a chance
 	//	that it might have been encountered previously).
 
 	if (!pStationType->CanBeEncountered(pCtx->pSystem))
+		{
+		PopDebugStack(pCtx);
 		return NOERROR;
+		}
 
 	//	Get offsets
 
@@ -3691,6 +4094,7 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 
 	if (pStationType->IsShipEncounter())
 		{
+		PopDebugStack(pCtx);
 		if (retpStation)
 			*retpStation = NULL;
 		return NOERROR;
@@ -3703,6 +4107,7 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 
 	//	Done
 
+	PopDebugStack(pCtx);
 	if (retpStation)
 		*retpStation = pStation;
 

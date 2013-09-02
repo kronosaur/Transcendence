@@ -14,6 +14,9 @@
 const int AGGRESSOR_THRESHOLD =					(30 * 30);
 
 const int ITEM_UPDATE_CYCLE =					30;
+const int HIGHLIGHT_TIMER =						200;
+const int HIGHLIGHT_BLINK =						110;
+const int HIGHLIGHT_FADE =						30;
 
 const Metric g_rMaxCommsRange =					(LIGHT_MINUTE * 8.0);
 const Metric g_rMaxCommsRange2 =				(g_rMaxCommsRange * g_rMaxCommsRange);
@@ -21,14 +24,7 @@ const Metric g_rMaxCommsRange2 =				(g_rMaxCommsRange * g_rMaxCommsRange);
 #define BOUNDS_CHECK_DIST 						(256.0 * g_KlicksPerPixel)
 #define BOUNDS_CHECK_DIST2						(BOUNDS_CHECK_DIST * BOUNDS_CHECK_DIST)
 
-static DATADESCSTRUCT g_DataDesc[] =
-	{	{ DATADESC_OPCODE_REFERENCE,	1,	0 },		//	m_pSystem
-		{ DATADESC_OPCODE_INT,			1,	0 },		//	m_iDestiny
-		{ DATADESC_OPCODE_INT,			2,	0 },		//	m_vPos
-		{ DATADESC_OPCODE_INT,			2,	0 },		//	m_vVel
-		{ DATADESC_OPCODE_INT,			1,	0 },		//	m_dwFlags
-		{ DATADESC_OPCODE_STOP,	0,	0 } };
-static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
+static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 
 #define HIGHLIGHT_CORNER_WIDTH					8
 #define HIGHLIGHT_CORNER_HEIGHT					8
@@ -49,6 +45,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 #define ON_ENTERED_SYSTEM_EVENT					CONSTLIT("OnEnteredSystem")
 #define ON_LOAD_EVENT							CONSTLIT("OnLoad")
 #define ON_MINING_EVENT							CONSTLIT("OnMining")
+#define ON_OBJ_BLACKLISTED_PLAYER_EVENT			CONSTLIT("OnObjBlacklistedPlayer")
 #define ON_OBJ_DESTROYED_EVENT					CONSTLIT("OnObjDestroyed")
 #define ON_OBJ_DOCKED_EVENT						CONSTLIT("OnObjDocked")
 #define ON_OBJ_ENTERED_GATE_EVENT				CONSTLIT("OnObjEnteredGate")
@@ -60,6 +57,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 #define ON_OVERRIDE_INIT_EVENT					CONSTLIT("OnEventHandlerInit")
 #define ON_MISSION_ACCEPTED_EVENT				CONSTLIT("OnMissionAccepted")
 #define ON_MISSION_COMPLETED_EVENT				CONSTLIT("OnMissionCompleted")
+#define ON_PLAYER_BLACKLISTED_EVENT				CONSTLIT("OnPlayerBlacklisted")
 #define ON_PLAYER_ENTERED_SYSTEM_EVENT			CONSTLIT("OnPlayerEnteredSystem")
 #define ON_PLAYER_LEFT_SYSTEM_EVENT				CONSTLIT("OnPlayerLeftSystem")
 #define ON_RANDOM_ENCOUNTER_EVENT				CONSTLIT("OnRandomEncounter")
@@ -70,14 +68,24 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT, g_DataDesc);
 
 #define ORDER_DOCKED							CONSTLIT("docked")
 
+#define PROPERTY_CATEGORY						CONSTLIT("category")
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
+#define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
+#define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
 #define SPECIAL_DATA							CONSTLIT("data:")
-#define SPECIAL_IS_PLAYER_CLASS					CONSTLIT("isPlayerClass:")
+#define SPECIAL_IS_PLANET						CONSTLIT("isPlanet:")
+#define SPECIAL_PROPERTY						CONSTLIT("property:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
 #define SPECIAL_VALUE_TRUE						CONSTLIT("true")
+
+#define CATEGORY_SHIP							CONSTLIT("ship")
+#define CATEGORY_STATION						CONSTLIT("station")
+#define CATEGORY_MISSILE						CONSTLIT("missile")
+#define CATEGORY_EFFECT							CONSTLIT("effect")
 
 static Metric g_rMaxPerceptionRange[CSpaceObject::perceptMax+1] =
 	{
@@ -99,6 +107,35 @@ static Metric g_rMaxPerceptionRange[CSpaceObject::perceptMax+1] =
 	0.0,
 	};
 
+struct SInstallItemResultsData
+	{
+	char *pszID;
+	int iArmorCompatibleID;
+	int iDeviceCompatibleID;
+	};
+
+SInstallItemResultsData INSTALL_ITEM_RESULTS_TABLE[] =
+	{
+		{	"ok",						0,		0,	},
+
+		{	"armorTooHeavy",			1,		-1,	},
+		{	"cannotInstall",			-1,		-1,	},
+		{	"noDeviceSlotsLeft",		-1,		2	},
+		{	"noNonWeaponSlotsLeft",		-1,		13	},
+		{	"noWeaponSlotsLeft",		-1,		12	},
+		{	"notInstallable",			-1,		1	},
+		{	"reactorIncompatible",		-1,		11	},
+		{	"reactorOverload",			-1,		-1	},
+		{	"reactorTooWeak",			-1,		7	},
+
+		{	"replacementRequired",		-1,		8	},
+		{	"replacementRequired",		-1,		5	},
+		{	"replacementRequired",		-1,		6	},
+		{	"replacementRequired",		-1,		14	},
+		{	"replacementRequired",		-1,		9	},
+		{	"replacementRequired",		-1,		4	},
+	};
+
 CSpaceObject *CSpaceObject::m_pObjInUpdate = NULL;
 bool CSpaceObject::m_bObjDestroyed = false;
 
@@ -117,8 +154,8 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_rBoundsX(0.0),
 		m_rBoundsY(0.0),
 
-		m_wHighlightColor(0),
 		m_iHighlightCountdown(0),
+		m_iHighlightChar(0),
 
 		m_pFirstEffect(NULL),
 		m_pOverride(NULL),
@@ -157,6 +194,7 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fPaintNeeded(false),
 		m_fNonLinearMove(false),
 		m_fHasName(false),
+		m_fAscended(false),
 		m_fSpare(0)
 
 
@@ -391,6 +429,24 @@ EnhanceItemStatus CSpaceObject::AddItemEnhancement (CItemListManipulator &ItemLi
 	return iResult;
 	}
 
+void CSpaceObject::AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID)
+
+//	AddOverlay
+//
+//	Adds an overlay at the given position.
+
+	{
+	//	Convert from a hit position to an overlay pos
+
+	int iPosAngle;
+	int iPosRadius;
+	CalcOverlayPos(pType, vPos, &iPosAngle, &iPosRadius);
+			
+	//	Add the overlay
+
+	AddOverlay(pType, iPosAngle, iPosRadius, iRotation, iLifetime, retdwID);
+	}
+
 ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bInLoad)
 
 //	AddToSystem
@@ -427,6 +483,48 @@ ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bInLoad)
 	return NOERROR;
 	}
 
+void CSpaceObject::Ascend (void)
+
+//	Ascend
+//
+//	Ascend out of system so that it can move to a different system.
+
+	{
+	//	To everyone else in the system, it looks like the object entered a gate
+
+	EnterGate(NULL, NULL_STR, NULL, true);
+
+	//	Let subclasses handle this
+
+	OnAscended();
+
+	//	Remove the object from the old system
+
+	Remove(enteredStargate, CDamageSource());
+
+	//	Done
+
+	SetAscended(true);
+	}
+
+void CSpaceObject::CalcOverlayPos (CEnergyFieldType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
+
+//	CalcOverlayPos
+//
+//	Calculates an overlay position from the given absolute position.
+
+	{
+	Metric rRadius;
+	int iDirection = VectorToPolar(vPos - GetPos(), &rRadius);
+	int iRotationOrigin = ((pOverlayType && pOverlayType->RotatesWithShip()) ? GetRotation() : 0);
+
+	if (retiPosAngle)
+		*retiPosAngle = AngleMod(iDirection - iRotationOrigin);
+
+	if (retiPosRadius)
+		*retiPosRadius = (int)(rRadius / g_KlicksPerPixel);
+	}
+
 Metric CSpaceObject::CalculateItemMass (Metric *retrCargoMass)
 
 //	CalculateCargoMass
@@ -460,7 +558,7 @@ Metric CSpaceObject::CalculateItemMass (Metric *retrCargoMass)
 	return rTotal;
 	}
 
-bool CSpaceObject::CanCommunicateWith (CSpaceObject *pSender, bool bNoOnShowCheck)
+bool CSpaceObject::CanCommunicateWith (CSpaceObject *pSender)
 
 //	CanCommunicateWith
 //
@@ -490,9 +588,7 @@ bool CSpaceObject::CanCommunicateWith (CSpaceObject *pSender, bool bNoOnShowChec
 
 	for (i = 0; i < pHandler->GetCount(); i++)
 		{
-		if (bNoOnShowCheck)
-			return true;
-		else if (pHandler->GetMessage(i).OnShowEvent.pCode == NULL)
+		if (pHandler->GetMessage(i).OnShowEvent.pCode == NULL)
 			return true;
 		else
 			{
@@ -556,6 +652,22 @@ bool CSpaceObject::CanFireOnObjHelper (CSpaceObject *pObj)
 		&& (pObj->CanBeHitByFriends() || GetSovereign() != pObj->GetSovereign()));
 	}
 
+bool CSpaceObject::CanInstallItem (const CItem &Item, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
+
+//	CanInstallItem
+//
+//	Must be overridden by subclasses.
+
+	{
+	if (retiResult)
+		*retiResult = insCannotInstall;
+
+	if (retsResult)
+		*retsResult = CONSTLIT("Item installation not supported.");
+
+	return false;
+	}
+
 void CSpaceObject::CommsMessageFrom (CSpaceObject *pSender, int iIndex)
 
 //	CommsMessageFrom
@@ -586,6 +698,41 @@ void CSpaceObject::CommsMessageFrom (CSpaceObject *pSender, int iIndex)
 		}
 	}
 
+int CSpaceObject::ConvertToCompatibleIndex (const CItem &Item, InstallItemResults iResult)
+
+//	ConvertToCompatibleIndex
+//
+//	Converts a result to the compatible ID number
+
+	{
+	if (iResult < 0 || iResult >= insInstallItemResultsCount)
+		{
+		ASSERT(false);
+		return -1;
+		}
+
+	if (Item.IsArmor())
+		return INSTALL_ITEM_RESULTS_TABLE[iResult].iArmorCompatibleID;
+	else
+		return INSTALL_ITEM_RESULTS_TABLE[iResult].iDeviceCompatibleID;
+	}
+
+CString CSpaceObject::ConvertToID (InstallItemResults iResult)
+
+//	ConvertToID
+//
+//	Converts a result to its ID
+
+	{
+	if (iResult < 0 || iResult >= insInstallItemResultsCount)
+		{
+		ASSERT(false);
+		return NULL_STR;
+		}
+
+	return CString(INSTALL_ITEM_RESULTS_TABLE[iResult].pszID);
+	}
+
 void CSpaceObject::CopyDataFromObj (CSpaceObject *pSource)
 
 //	CopyDataFromObj
@@ -611,7 +758,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 //	Vector		m_vVel
 //	Metric		m_rBoundsX
 //	Metric		m_rBoundsY
-//	DWORD		low = m_wHighlightColor; hi = m_iHighlightCountdown
+//	DWORD		low = unused; hi = m_iHighlightCountdown
 //	DWORD		m_pOverride
 //	CItemList	m_ItemList
 //	DWORD		m_iControlsFrozen
@@ -665,7 +812,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	Ctx.pStream->Read((char *)&pObj->m_rBoundsX, sizeof(Metric));
 	Ctx.pStream->Read((char *)&pObj->m_rBoundsY, sizeof(Metric));
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	pObj->m_wHighlightColor = LOWORD(dwLoad);
+	//	LOWORD unused
 	pObj->m_iHighlightCountdown = HIWORD(dwLoad);
 
 	//	Override
@@ -712,6 +859,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fHasOnOrdersCompletedEvent =((dwLoad & 0x00100000) ? true : false);
 	pObj->m_fPlayerDocked =				((dwLoad & 0x00200000) ? true : false);
 	pObj->m_fNonLinearMove =			((dwLoad & 0x00400000) ? true : false);
+	pObj->m_fAscended =					((dwLoad & 0x00800000) ? true : false);
 
 	//	At this point, OnCreate has always been called--no need to save
 
@@ -738,9 +886,12 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 		}
 
 	//	Subscriptions
+	//
+	//	NOTE: We ignore any missing objects. This can happen if (e.g.) a mission
+	//	gets destroyed while we're out of the system.
 
 	if (Ctx.dwVersion >= 77)
-		pObj->m_SubscribedObjs.ReadFromStream(Ctx);
+		pObj->m_SubscribedObjs.ReadFromStream(Ctx, true);
 
 	//	Load the effect list
 
@@ -845,6 +996,8 @@ EDamageResults CSpaceObject::Damage (SDamageCtx &Ctx)
 //	Cause damage to the object
 
 	{
+	DEBUG_TRY
+
 	ASSERT(!IsInDamageCode());
 	SetInDamageCode();
 
@@ -856,6 +1009,8 @@ EDamageResults CSpaceObject::Damage (SDamageCtx &Ctx)
 
 	ClearInDamageCode();
 	return iResult;
+
+	DEBUG_CATCH
 	}
 
 void CSpaceObject::DamageItem (CInstalledDevice *pDevice)
@@ -959,6 +1114,8 @@ void CSpaceObject::Destroy (DestructionTypes iCause, const CDamageSource &Attack
 //	Destroy this object
 
 	{
+	DEBUG_TRY
+
 	//	Do not recurse
 
 	if (IsDestroyed())
@@ -1042,6 +1199,8 @@ void CSpaceObject::Destroy (DestructionTypes iCause, const CDamageSource &Attack
 
 	if (m_pObjInUpdate == this)
 		m_bObjDestroyed = true;
+
+	DEBUG_CATCH
 	}
 
 void CSpaceObject::DisruptItem (CItemListManipulator &ItemList, DWORD dwDuration)
@@ -1117,7 +1276,7 @@ EnhanceItemStatus CSpaceObject::EnhanceItem (CItemListManipulator &ItemList, con
 
 		if (iResult == eisOK 
 				&& Enhancement.IsRadiationImmune()
-				&& pArmorClass->IsRadiationImmune(pArmor))
+				&& pArmorClass->IsRadiationImmune(CItemCtx(this, pArmor)))
 			return eisAlreadyEnhanced;
 
 		//	Remember the old max hp value
@@ -1165,7 +1324,7 @@ EnhanceItemStatus CSpaceObject::EnhanceItem (CItemListManipulator &ItemList, con
 	return iResult;
 	}
 
-void CSpaceObject::EnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate)
+void CSpaceObject::EnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend)
 
 //	EnterGate
 //
@@ -1202,7 +1361,7 @@ void CSpaceObject::EnterGate (CTopologyNode *pDestNode, const CString &sDestEntr
 	//	Note: Objects rely on this happening after other objects
 	//	are notified.
 
-	GateHook(pDestNode, sDestEntryPoint, pStargate);
+	GateHook(pDestNode, sDestEntryPoint, pStargate, bAscend);
 	}
 
 int CSpaceObject::FindCommsMessage (const CString &sName)
@@ -1361,7 +1520,7 @@ void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEve
 		}
 	}
 
-void CSpaceObject::FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem **retpResult)
+void CSpaceObject::FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomItemEvent
 //
@@ -1376,8 +1535,8 @@ void CSpaceObject::FireCustomItemEvent (const CString &sEvent, const CItem &Item
 		//	Define some globals
 
 		Ctx.SaveAndDefineSourceVar(this);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(Item);
+		Ctx.SaveAndDefineItemVar(Item);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		//	Run code
 
@@ -1421,6 +1580,39 @@ void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverla
 	//	Fire event
 
 	pOverlay->FireCustomEvent(this, sEvent, retpResult);
+	}
+
+void CSpaceObject::FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject *pShip, ICCItem **retpResult)
+
+//	FireCustomShipOrderEvent
+//
+//	Fires an event in response to a fireEvent order.
+
+	{
+	CCodeChainCtx Ctx;
+
+	SEventHandlerDesc Event;
+	if (FindEventHandler(sEvent, &Event))
+		{
+		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.DefineSpaceObject(CONSTLIT("aShipObj"), pShip);
+
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			ReportEventError(sEvent, pResult);
+
+		//	Either return the event result or discard it
+
+		if (retpResult)
+			*retpResult = pResult;
+		else
+			Ctx.Discard(pResult);
+		}
+	else
+		{
+		if (retpResult)
+			*retpResult = Ctx.CreateNil();
+		}
 	}
 
 bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority)
@@ -1986,6 +2178,29 @@ void CSpaceObject::FireOnMissionCompleted (CMission *pMission, const CString &sR
 		}
 	}
 
+void CSpaceObject::FireOnObjBlacklistedPlayer (CSpaceObject *pObj)
+
+//	FireOnObjBlacklistedPlayer
+//
+//	Fire OnObjBlacklistedPlayer event
+
+	{
+	SEventHandlerDesc Event;
+
+	if (FindEventHandler(ON_OBJ_BLACKLISTED_PLAYER_EVENT, &Event))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.DefineSpaceObject(CONSTLIT("aObj"), pObj);
+
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			ReportEventError(ON_OBJ_BLACKLISTED_PLAYER_EVENT, pResult);
+		Ctx.Discard(pResult);
+		}
+	}
+
 void CSpaceObject::FireOnObjDestroyed (const SDestroyCtx &Ctx)
 
 //	FireOnObjDestroyed
@@ -2200,6 +2415,41 @@ void CSpaceObject::FireOnOrdersCompleted (void)
 		}
 	}
 
+void CSpaceObject::FireOnPlayerBlacklisted (void)
+
+//	FireOnPlayerBlacklisted
+//
+//	Fire OnPlayerBlacklisted event
+
+	{
+	int i;
+	SEventHandlerDesc Event;
+
+	//	Fire an event for ourselves
+
+	if (FindEventHandler(ON_PLAYER_BLACKLISTED_EVENT, &Event))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SaveAndDefineSourceVar(this);
+
+		ICCItem *pResult = Ctx.Run(Event);
+		if (pResult->IsError())
+			ReportEventError(ON_PLAYER_BLACKLISTED_EVENT, pResult);
+
+		Ctx.Discard(pResult);
+		}
+
+	//	Now fire an event for all subscribers
+
+	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
+		{
+		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
+		if (!pObj->IsDestroyed())
+			pObj->FireOnObjBlacklistedPlayer(this);
+		}
+	}
+
 CSpaceObject::InterSystemResults CSpaceObject::FireOnPlayerEnteredSystem (CSpaceObject *pPlayer)
 
 //	FireOnPlayerEnteredSystem
@@ -2404,88 +2654,30 @@ bool CSpaceObject::FireOnTranslateMessage (const CString &sMessage, CString *ret
 	return bHandled;
 	}
 
-void CSpaceObject::FixVersion77Bug (SLoadCtx &Ctx)
+bool CSpaceObject::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
 
-//	FixVersion77Bug
+//	GetArmorInstallPrice
 //
-//	In version 77 we would sometimes get duplicate entries in the 
-//	m_SubscribedObjs array. Unfortunately, at destroy-time we would only remove
-//	one of the entries. This left old entries in the list, which could not be
-//	resolved at load time.
-//
-//	This code removes any old entries that could not be resolved.
+//	Default price for objects that do not implement <Trade>
 
 	{
-	int i, j, k;
+	if (retiPrice)
+		*retiPrice = CTradingDesc::CalcPriceForService(serviceReplaceArmor, this, Item, 1, dwFlags);
 
-	TArray<CSpaceObject *> &RawList = m_SubscribedObjs.GetRawList();
+	return true;
+	}
 
-	//	Loop over all subscribed objects
+bool CSpaceObject::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
 
-	if (Ctx.dwVersion == 77 && Ctx.ForwardReferences.GetCount() > 0)
-		{
-		TArray<int> ToDelete;
-		for (i = 0; i < RawList.GetCount(); i++)
-			{
-			CSpaceObject **pAddr = &RawList[i];
+//	GetArmorRepairPrice
+//
+//	Default price for objects that do not implement <Trade>
 
-			//	See if this entry is unresolved
+	{
+	if (retiPrice)
+		*retiPrice = CTradingDesc::CalcPriceForService(serviceRepairArmor, this, Item, iHPToRepair, dwFlags);
 
-			bool bFound = false;
-			for (j = 0; j < Ctx.ForwardReferences.GetCount(); j++)
-				{
-				DWORD dwID = (DWORD)Ctx.ForwardReferences.GetKey(j);
-				CIntArray *pList = (CIntArray *)Ctx.ForwardReferences.GetValue(j);
-				for (k = 0; k < pList->GetCount(); k++)
-					{
-					CSpaceObject **pUnresolvedAddr = (CSpaceObject **)pList->GetElement(k);
-					if (pUnresolvedAddr == pAddr)
-						{
-						pList->RemoveElement(k);
-						k--;
-
-						bFound = true;
-						}
-					}
-
-				//	Delete the reference, if needed
-
-				if (pList->GetCount() == 0)
-					{
-					Ctx.ForwardReferences.RemoveEntry(dwID, NULL);
-					j--;
-					}
-				}
-
-			//	If we found this as an unresolved reference, delete it.
-
-			if (bFound)
-				ToDelete.Insert(i - ToDelete.GetCount());
-			}
-
-		//	Delete appropriate entries
-
-		for (i = 0; i < ToDelete.GetCount(); i++)
-			{
-			ASSERT(ToDelete[i] < RawList.GetCount());
-			RawList.Delete(ToDelete[i]);
-			}
-		}
-
-	//	In versions before 80 we had a bug which caused us to save NULL 
-	//	objects. Remove them here.
-
-	if (Ctx.dwVersion < 80)
-		{
-		for (i = 0; i < RawList.GetCount(); i++)
-			{
-			if (RawList[i] == NULL)
-				{
-				RawList.Delete(i);
-				i--;
-				}
-			}
-		}
+	return true;
 	}
 
 void CSpaceObject::GetBoundingRect (CVector *retvUR, CVector *retvLL)
@@ -2724,7 +2916,7 @@ CItem CSpaceObject::GetItemForDevice (CInstalledDevice *pDevice)
 	return ItemList.GetItemAtCursor();
 	}
 
-ICCItem *CSpaceObject::GetItemProperty (const CItem &Item, const CString &sName)
+ICCItem *CSpaceObject::GetItemProperty (CCodeChainCtx *pCCCtx, const CItem &Item, const CString &sName)
 
 //	GetItemProperty
 //
@@ -2742,7 +2934,7 @@ ICCItem *CSpaceObject::GetItemProperty (const CItem &Item, const CString &sName)
 	//	Return the property
 
 	CItemCtx Ctx(&Item, this);
-	return Item.GetProperty(Ctx, sName);
+	return Item.GetProperty(pCCCtx, Ctx, sName);
 	}
 
 CSpaceObject *CSpaceObject::GetNearestEnemy (Metric rMaxRange, bool bIncludeStations)
@@ -2752,6 +2944,8 @@ CSpaceObject *CSpaceObject::GetNearestEnemy (Metric rMaxRange, bool bIncludeStat
 //	Returns the nearest enemy ship or station
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Get the sovereign
@@ -2794,6 +2988,8 @@ CSpaceObject *CSpaceObject::GetNearestEnemy (Metric rMaxRange, bool bIncludeStat
 		}
 
 	return pBestObj;
+
+	DEBUG_CATCH
 	}
 
 CSpaceObject *CSpaceObject::GetNearestEnemyStation (Metric rMaxRange)
@@ -3006,10 +3202,12 @@ CSpaceObject *CSpaceObject::GetNearestVisibleEnemy (Metric rMaxRange, bool bIncl
 
 //	GetNearestVisibleEnemy
 //
-//	Returns the nearest enemy that is visible to this object
+//	Returns the nearest enemy that is visible to the given center point.
 
 	{
 	int i;
+
+	CVector vCenter = GetPos();
 
 	//	Get the sovereign
 
@@ -3050,9 +3248,10 @@ CSpaceObject *CSpaceObject::GetNearestVisibleEnemy (Metric rMaxRange, bool bIncl
 		if ((pObj->GetCategory() == catShip
 					|| (bIncludeStations && pObj->GetCategory() == catStation))
 				&& pObj->CanAttack()
+				&& !pObj->IsDestroyed()
 				&& pObj != this)
 			{
-			CVector vDist = GetPos() - pObj->GetPos();
+			CVector vDist = vCenter - pObj->GetPos();
 			Metric rDist2 = vDist.Length2();
 
 			if (rDist2 < rBestDist2
@@ -3113,7 +3312,97 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	return CC.CreateNil();
+	if (strEquals(sName, PROPERTY_CATEGORY))
+		{
+		switch (GetCategory())
+			{
+			case catShip:
+				return CC.CreateString(CATEGORY_SHIP);
+
+			case catStation:
+				return CC.CreateString(CATEGORY_STATION);
+
+			case catBeam:
+			case catMissile:
+				return CC.CreateString(CATEGORY_MISSILE);
+
+			default:
+				return CC.CreateString(CATEGORY_EFFECT);
+			}
+		}
+	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))
+		{
+		int iCount = g_pUniverse->GetObjStats(GetID()).iPlayerMissionsGiven;
+		if (iCount > 0)
+			return CC.CreateInteger(iCount);
+		else
+			return CC.CreateNil();
+		}
+	else if (strEquals(sName, PROPERTY_UNDER_ATTACK))
+		return CC.CreateBool(IsUnderAttack());
+	else
+		return CC.CreateNil();
+	}
+
+bool CSpaceObject::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
+
+//	GetRefuelItemAndPrice
+//
+//	Classes with a <Trade> element should override this.
+
+	{
+	int i;
+
+	//	Get the ship
+
+	CShip *pShipToRefuel = pObjToRefuel->AsShip();
+	if (pShipToRefuel == NULL)
+		return false;
+
+	//	Find the highest-level item that can be used by the ship
+
+	int iBestLevel = 0;
+	int iBestPrice = 0;
+	CItemType *pBestItem = NULL;
+
+	for (i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
+		{
+		CItemType *pType = g_pUniverse->GetItemType(i);
+		CItem Item(pType, 1);
+
+		if (pShipToRefuel->IsFuelCompatible(Item))
+			{
+			if (pBestItem == NULL || pType->GetLevel() > iBestPrice)
+				{
+				//	Compute the price, because if we don't sell it, then we
+				//	skip it.
+				//
+				//	NOTE: Unlike selling, we allow 0 prices because some 
+				//	stations give fuel for free.
+
+				int iPrice = CTradingDesc::CalcPriceForService(serviceRefuel, this, Item, 1, 0);
+				if (iPrice >= 0)
+					{
+					pBestItem = pType;
+					iBestLevel = pType->GetLevel();
+					iBestPrice = iPrice;
+					}
+				}
+			}
+		}
+
+	if (pBestItem == NULL)
+		return false;
+
+	//	Done
+
+	if (retpItemType)
+		*retpItemType = pBestItem;
+
+	if (retiPrice)
+		*retiPrice = iBestPrice;
+
+	return true;
 	}
 
 CXMLElement *CSpaceObject::GetScreen (const CString &sName)
@@ -3127,6 +3416,16 @@ CXMLElement *CSpaceObject::GetScreen (const CString &sName)
 	Screen.LoadUNID(sName);
 	Screen.Bind(NULL);
 	return Screen.GetDesc();
+	}
+
+int CSpaceObject::GetSellPrice (const CItem &Item, DWORD dwFlags)
+
+//	GetSellPrice
+//
+//	Default sell price computation for objects without a <Trade> desc.
+
+	{
+	return CTradingDesc::CalcPriceForService(serviceSell, this, Item, 1, dwFlags);
 	}
 
 CSovereign *CSpaceObject::GetSovereignToDefend (void) const
@@ -3191,6 +3490,77 @@ WORD CSpaceObject::GetSymbolColor (void)
 		return CG16bitImage::RGBValue(0, 192, 0);
 	}
 
+void CSpaceObject::GetVisibleEnemies (DWORD dwFlags, TArray<CSpaceObject *> *retList, CSpaceObject *pExcludeObj)
+
+//	GetVisibleEnemies
+//
+//	Returns a list of visible enemies.
+
+	{
+	int i;
+
+	CVector vCenter = GetPos();
+
+	//	Get the sovereign
+
+	CSovereign *pSovereign = GetSovereignToDefend();
+	if (pSovereign == NULL || GetSystem() == NULL)
+		return;
+
+	//	Include stations
+
+	bool bIncludeStations = ((dwFlags & FLAG_INCLUDE_STATIONS) ? true : false);
+
+	//	If a ship has fired its weapon after this time, then it counts
+	//	as an aggressor
+
+	int iAggressorThreshold;
+	if (dwFlags & FLAG_INCLUDE_NON_AGGRESSORS)
+		iAggressorThreshold = -1;
+	else
+		iAggressorThreshold = g_pUniverse->GetTicks() - AGGRESSOR_THRESHOLD;
+
+	//	Get the list of enemy objects
+
+	const CSpaceObjectList &ObjList = pSovereign->GetEnemyObjectList(GetSystem());
+
+	//	Compute this object's perception and perception range
+
+	int iPerception = GetPerception();
+	Metric rRange2[RANGE_INDEX_COUNT];
+	for (i = 0; i < RANGE_INDEX_COUNT; i++)
+		{
+		rRange2[i] = RangeIndex2Range(i);
+		rRange2[i] = rRange2[i] * rRange2[i];
+		}
+
+	//	Loop over all objects
+
+	int iObjCount = ObjList.GetCount();
+	for (i = 0; i < iObjCount; i++)
+		{
+		CSpaceObject *pObj = ObjList.GetObj(i);
+
+		if ((pObj->GetCategory() == catShip
+					|| (bIncludeStations && pObj->GetCategory() == catStation))
+				&& pObj->CanAttack()
+				&& !pObj->IsDestroyed()
+				&& pObj != this)
+			{
+			CVector vDist = vCenter - pObj->GetPos();
+			Metric rDist2 = vDist.Length2();
+
+			if (rDist2 < rRange2[pObj->GetDetectionRangeIndex(iPerception)]
+					&& pObj != pExcludeObj
+					&& pObj->GetLastFireTime() > iAggressorThreshold
+					&& !pObj->IsEscortingFriendOf(this))
+				{
+				retList->Insert(pObj);
+				}
+			}
+		}
+	}
+
 bool CSpaceObject::HasFuelItem (void)
 
 //	HasFuelItem
@@ -3224,6 +3594,33 @@ bool CSpaceObject::HasSpecialAttribute (const CString &sAttrib) const
 		CString sDataField = strSubString(sAttrib, SPECIAL_DATA.GetLength());
 		return !(GetData(sDataField).IsBlank());
 		}
+	else if (strStartsWith(sAttrib, SPECIAL_IS_PLANET))
+		{
+		CString sValue = strSubString(sAttrib, SPECIAL_IS_PLANET.GetLength());
+
+		//	Figure out if we are a planet or not.
+
+		const COrbit *pOrbit;
+		bool bIsPlanet = (HasAttribute(CONSTLIT("planet"))
+				||  (GetScale() == scaleWorld
+					&& (GetPlanetarySize() >= 1000)
+					&& (pOrbit = GetMapOrbit())
+					&& (pOrbit->GetFocus().IsNull() || GetSystem()->IsStarAtPos(pOrbit->GetFocus()))));
+
+		//	Check value
+
+		return (bIsPlanet == strEquals(sValue, SPECIAL_VALUE_TRUE));
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_PROPERTY))
+		{
+		CString sProperty = strSubString(sAttrib, SPECIAL_PROPERTY.GetLength());
+
+		ICCItem *pValue = ((CSpaceObject *)this)->GetProperty(sProperty);
+		bool bResult = !pValue->IsNil();
+		pValue->Discard(&g_pUniverse->GetCC());
+
+		return bResult;
+		}
 	else
 		{
 		CDesignType *pType = GetType();
@@ -3232,6 +3629,17 @@ bool CSpaceObject::HasSpecialAttribute (const CString &sAttrib) const
 
 		return pType->HasSpecialAttribute(sAttrib);
 		}
+	}
+
+void CSpaceObject::Highlight (const CString &sText)
+
+//	Highlight
+//
+//	Highlight object.
+	
+	{
+	m_sHighlightText = sText;
+	m_iHighlightCountdown = HIGHLIGHT_TIMER;
 	}
 
 CSpaceObject *CSpaceObject::HitTest (const CVector &vStart, 
@@ -4403,7 +4811,7 @@ void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPain
 		}
 	}
 
-void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect)
+void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx)
 
 //	PaintHighlight
 //
@@ -4447,6 +4855,115 @@ void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect)
 	Dest.DrawLine(rcRect.right, rcRect.bottom,
 			rcRect.right, rcRect.bottom - HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
+
+	//	Paint message, if we have one
+
+	if (!m_sHighlightText.IsBlank() || m_iHighlightChar)
+		PaintHighlightText(Dest, rcRect.left + RectWidth(rcRect) / 2, rcRect.bottom + 2, Ctx, alignCenter, wColor);
+	}
+
+void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor)
+
+//	PaintHighlightText
+//
+//	Paint highlight text
+
+	{
+	const int KEY_BOX_SIZE = 18;
+	const CG16bitFont &NameFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
+	const CG16bitFont &MessageFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSMessage);
+	const RECT &rcClip = Dest.GetClipRect();
+
+	if (iAlign & alignBottom)
+		{
+		y -= NameFont.GetHeight()
+				+ (IsShowingDistanceAndBearing() ? NameFont.GetHeight() : 0)
+				+ (!m_sHighlightText.IsBlank() ? MessageFont.GetHeight() : 0)
+				+ (m_iHighlightChar ? KEY_BOX_SIZE + 2 : 0);
+		}
+
+	//	Figure out what name to paint
+
+	CString sName;
+	if (IsIdentified())
+		sName = GetNounPhrase(0);
+	else if (Ctx.pCenter->IsEnemy(this))
+		sName = CONSTLIT("Unknown Hostile");
+	else
+		sName = CONSTLIT("Unknown Friendly");
+
+	//	Paint it
+
+	NameFont.DrawText(Dest, 
+			Dest.AdjustTextX(NameFont, sName, iAlign, x),
+			y,
+			wColor, 
+			sName);
+	y += NameFont.GetHeight();
+
+	//	Paint distance and bearing, if required
+
+	if (IsShowingDistanceAndBearing())
+		{
+		Metric rDist = (GetPos() - Ctx.pCenter->GetPos()).Length();
+		CString sText = strPatternSubst(CONSTLIT("Distance: %d"), (int)(rDist / LIGHT_SECOND));
+		NameFont.DrawText(Dest,
+				Dest.AdjustTextX(NameFont, sText, iAlign, x),
+				y,
+				wColor,
+				sText);
+
+		y += NameFont.GetHeight();
+		}
+
+	//	Paint the message, if we have one
+
+	if (!m_sHighlightText.IsBlank())
+		{
+		//	Paint message
+
+		WORD wMessageColor;
+		if (m_iHighlightCountdown > HIGHLIGHT_BLINK)
+			wMessageColor = CG16bitImage::BlendPixel(wColor, 0xffff, 255 * (m_iHighlightCountdown - HIGHLIGHT_BLINK) / (HIGHLIGHT_TIMER - HIGHLIGHT_BLINK));
+		else
+			wMessageColor = wColor;
+
+		DWORD dwOpacity;
+		if (m_iHighlightCountdown < HIGHLIGHT_FADE)
+			dwOpacity = 255 * m_iHighlightCountdown / HIGHLIGHT_FADE;
+		else
+			dwOpacity = 255;
+
+		MessageFont.DrawText(Dest, 
+				Dest.AdjustTextX(MessageFont, m_sHighlightText, iAlign, x),
+				y, 
+				wMessageColor, 
+				dwOpacity, 
+				m_sHighlightText);
+		y += MessageFont.GetHeight();
+		}
+
+	//	Paint the highlight key
+
+	if (m_iHighlightChar)
+		{
+		const CG16bitFont &KeyFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
+		char chChar = (char)m_iHighlightChar;
+		CString sKey = CString(&chChar, 1);
+
+		y += 2;
+
+		Dest.Fill(x - KEY_BOX_SIZE / 2, y, KEY_BOX_SIZE, KEY_BOX_SIZE, wColor);
+
+		int xText = x - (KeyFont.MeasureText(sKey) / 2);
+		int yText = y + (KEY_BOX_SIZE / 2) - (KeyFont.GetHeight() / 2);
+
+		KeyFont.DrawText(Dest,
+				xText,
+				yText,
+				0,
+				sKey);
+		}
 	}
 
 void CSpaceObject::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
@@ -5050,11 +5567,11 @@ void CSpaceObject::SetCursorAtArmor (CItemListManipulator &ItemList, CInstalledA
 		}
 	}
 
-void CSpaceObject::SetCursorAtDevice (CItemListManipulator &ItemList, CInstalledDevice *pDevice)
+bool CSpaceObject::SetCursorAtDevice (CItemListManipulator &ItemList, int iDevSlot)
 
 //	SetCursorAtDevice
 //
-//	Sets the given cursor at the item for the device.
+//	Sets the given cursor at the item for the device. Returns TRUE if successful.
 
 	{
 	ItemList.ResetCursor();
@@ -5063,13 +5580,25 @@ void CSpaceObject::SetCursorAtDevice (CItemListManipulator &ItemList, CInstalled
 		{
 		const CItem &Item = ItemList.GetItemAtCursor();
 		if (Item.IsInstalled()
-				&& Item.GetType() == pDevice->GetClass()->GetItemType()
-				&& Item.GetInstalled() == pDevice->GetDeviceSlot())
+				&& Item.IsDevice()
+				&& Item.GetInstalled() == iDevSlot)
 			{
 			ASSERT(Item.GetCount() == 1);
-			break;
+			return true;
 			}
 		}
+
+	return false;
+	}
+
+bool CSpaceObject::SetCursorAtDevice (CItemListManipulator &ItemList, CInstalledDevice *pDevice)
+
+//	SetCursorAtDevice
+//
+//	Sets the given cursor at the item for the device.
+
+	{
+	return SetCursorAtDevice(ItemList, pDevice->GetDeviceSlot());
 	}
 
 void CSpaceObject::SetCursorAtRandomItem (CItemListManipulator &ItemList, const CItemCriteria &Crit)
@@ -5126,6 +5655,22 @@ void CSpaceObject::SetDataInteger (const CString &sAttrib, int iValue)
 	SetData(sAttrib, sData);
 	}
 
+void CSpaceObject::SetEventFlags (void)
+
+//	SetEventFlags
+//
+//	Sets cached flags for events
+
+	{
+	SetHasOnAttackedEvent(FindEventHandler(CONSTLIT("OnAttacked")));
+	SetHasOnDamageEvent(FindEventHandler(CONSTLIT("OnDamage")));
+	SetHasOnObjDockedEvent(FindEventHandler(CONSTLIT("OnObjDocked")));
+
+	//	Let subclasses do their bit
+
+	OnSetEventFlags();
+	}
+
 bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICCItem *pValue, int iCount, CItem *retItem, CString *retsError)
 
 //	SetItemProperty
@@ -5162,6 +5707,48 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 			}
 
 		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), (pValue == NULL || !pValue->IsNil()));
+		}
+
+	else if (strEquals(sName, PROPERTY_HP))
+		{
+		int iHP = (pValue ? pValue->GetIntegerValue() : 0);
+
+		if (Item.IsInstalled())
+			{
+			if (Item.GetType()->GetArmorClass())
+				{
+				CShip *pShip = AsShip();
+
+				int iArmorSeg = Item.GetInstalled();
+				CInstalledArmor *pSection = pShip->GetArmorSection(iArmorSeg);
+				if (pSection == NULL)
+					{
+					*retsError = CONSTLIT("Unable to find armor segment on ship.");
+					return false;
+					}
+
+				iHP = Min(iHP, pSection->GetMaxHP(this));
+
+				if (iHP < pSection->GetHitPoints())
+					{
+					DamageDesc Damage(damageGeneric, DiceRange(0, 0, pSection->GetHitPoints() - iHP));
+					Damage.SetNoSRSFlash();
+					pShip->DamageArmor(iArmorSeg, Damage);
+					}
+				else if (iHP > pSection->GetHitPoints())
+					pShip->RepairArmor(iArmorSeg, iHP - pSection->GetHitPoints());
+				}
+			else
+				{
+				*retsError = CONSTLIT("Unable to set hit points.");
+				return false;
+				}
+			}
+		else
+			{
+			*retsError = CONSTLIT("Unable to set hit points.");
+			return false;
+			}
 		}
 
 	//	We handle damage differently because we may need to remove enhancements,
@@ -5298,7 +5885,10 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 	//	Update the highlight
 
 	if (m_iHighlightCountdown > 0)
-		m_iHighlightCountdown--;
+		{
+		if (--m_iHighlightCountdown == 0)
+			m_sHighlightText = NULL_STR;
+		}
 
 	//	Update the effects
 
@@ -5392,8 +5982,7 @@ void CSpaceObject::UseItem (CItem &Item, CString *retsError)
 	//	Define parameters
 
 	Ctx.SaveAndDefineSourceVar(this);
-	Ctx.SaveItemVar();
-	Ctx.DefineItem(Item);
+	Ctx.SaveAndDefineItemVar(Item);
 	Ctx.SetScreensRoot(Item.GetType());
 
 	//	The <Invoke> code is not a real event, so it cannot be inherited
@@ -5434,7 +6023,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 //	Vector		m_vVel
 //	Metric		m_rBoundsX
 //	Metric		m_rBoundsY
-//	DWORD		low = m_wHighlightColor; hi = m_iHighlightCountdown
+//	DWORD		low = unused; hi = m_iHighlightCountdown
 //	DWORD		m_pOverride
 //	CItemList	m_ItemList
 //	DWORD		m_iControlsFrozen
@@ -5465,7 +6054,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_vVel, sizeof(m_vVel));
 	pStream->Write((char *)&m_rBoundsX, sizeof(m_rBoundsX));
 	pStream->Write((char *)&m_rBoundsY, sizeof(m_rBoundsY));
-	dwSave = MAKELONG(m_wHighlightColor, m_iHighlightCountdown);
+	dwSave = MAKELONG(0, m_iHighlightCountdown);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Override
@@ -5508,6 +6097,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fHasOnOrdersCompletedEvent	? 0x00100000 : 0);
 	dwSave |= (m_fPlayerDocked				? 0x00200000 : 0);
 	dwSave |= (m_fNonLinearMove				? 0x00400000 : 0);
+	dwSave |= (m_fAscended					? 0x00800000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 

@@ -243,6 +243,7 @@ void CTargetDisplay::Update (void)
 					TARGET_IMAGE_Y);
 			Ctx.fNoRecon = true;
 			Ctx.fNoDockedShips = true;
+			Ctx.fNoSelection = true;
 
 			pTarget->Paint(m_Buffer, TARGET_IMAGE_X, TARGET_IMAGE_Y, Ctx);
 			}

@@ -41,7 +41,8 @@ CHexarcDownloader::~CHexarcDownloader (void)
 void CHexarcDownloader::AddRequest (const CString &sAPI,
 									const CString &sFilePath,
 									const CJSONValue &AuthToken,
-									const CString &sFilespec)
+									const CString &sFilespec,
+									const CIntegerIP &FileDigest)
 
 //	AddRequest
 //
@@ -55,11 +56,12 @@ void CHexarcDownloader::AddRequest (const CString &sAPI,
 	pNewRequest->sFilePath = sFilePath;
 	pNewRequest->AuthToken = AuthToken;
 	pNewRequest->sFilespec = sFilespec;
+	pNewRequest->FileDigest = FileDigest;
 
 	pNewRequest->dwTotalLen = 0;
 	pNewRequest->dwDownload = 0;
 
-	m_Requests.Queue(pNewRequest);
+	m_Requests.TryEnqueue(pNewRequest);
 	}
 
 void CHexarcDownloader::GetStatus (SStatus *retStatus)
@@ -196,6 +198,7 @@ ALERROR CHexarcDownloader::Update (CHexarcSession &Session, SStatus *retStatus, 
 	m_pCurrent->dwDownload += sData.GetLength();
 	retStatus->sFilespec = m_pCurrent->sFilespec;
 	retStatus->iProgress = (100 * m_pCurrent->dwDownload / m_pCurrent->dwTotalLen);
+	retStatus->FileDigest = m_pCurrent->FileDigest;
 
 	//	Are we done? If not, then ask for more
 

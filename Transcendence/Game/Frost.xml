@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Small Frost Asteroid -->
+
+	<StationType UNID="&stSmallFrostAsteroid;"
+		name=				"(frost asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, frost, generic, sizeA"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds1;" imageX="224" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Medium Frost Asteroid -->
+
+	<StationType UNID="&stMediumFrostAsteroid;"
+		name=				"(frost asteroid)"
+		scale=				"world"
+		size=				"65"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, frost, generic, sizeB"
+
+		ejectaType=			"&vtIceAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="256" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds1;" imageX="192" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 50)
+			</OnMining>
+		</Events>
+	</StationType>
+
+</TranscendenceModule>

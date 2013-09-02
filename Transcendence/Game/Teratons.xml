@@ -359,12 +359,12 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"* +Res;"
+					criteria=		"* +Res; -NotStandard"
 					level=			"7"
 					levelCurve=		"3"
 					/>
 			<RandomItem count="10" 
-					criteria=		"f"
+					criteria=		"f -NotStandard"
 					level=			"8"
 					levelCurve=		"3"
 					/>
@@ -489,13 +489,13 @@
 							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -562,7 +562,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Drop item in pit" default="1" key="D">
+							<Action name="Drop Item in Pit" default="1" key="D">
 								<Navigate screen="DropItem"/>
 							</Action>
 
@@ -632,7 +632,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Drop this item" default="1" key="D">
+							<Action name="Drop this Item" default="1" key="D">
 								(block (table entry criteria material energy disposition)
 									(setq gItem (scrGetItem gScreen))
 
@@ -809,12 +809,12 @@
 
 		<Items>
 			<RandomItem count="12" 
-					criteria=		"*"
+					criteria=		"* -NotStandard"
 					level=			"7"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="1d2" 
-					criteria=		"* +Alien;"
+					criteria=		"* +Alien; -NotStandard;"
 					level=			"9"
 					levelCurve=		"3"
 					/>
@@ -1163,13 +1163,13 @@
 							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)
@@ -1231,22 +1231,22 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"*"
+					criteria=		"* -NotStandard"
 					level=			"7"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="10" 
-					criteria=		"adm"
+					criteria=		"adm -NotStandard"
 					level=			"8"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
-					criteria=		"wm"
+					criteria=		"wm -NotStandard"
 					level=			"9"
 					levelCurve=		"2"
 					/>
 			<RandomItem count="5" 
-					criteria=		"fmut +Consumable;"
+					criteria=		"fmut +Consumable; -NotStandard;"
 					level=			"10"
 					levelCurve=		"2"
 					/>
@@ -1285,13 +1285,13 @@
 							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
 
 						<Actions>
-							<Action name="Buy items" default="1" key="B">
+							<Action name="Buy Items" default="1" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									)
 							</Action>
 
-							<Action name="Sell items" key="S">
+							<Action name="Sell Items" key="S">
 								(scrShowSellScreen
 									"*"						; items bought from player
 									)

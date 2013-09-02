@@ -16,6 +16,7 @@
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entities")
+#define IMAGES_SWITCH						CONSTLIT("images")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
@@ -34,7 +35,10 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
+#define TYPE_TABLE_SWITCH					CONSTLIT("typeTable")
+#define WEAPON_IMAGES_SWITCH				CONSTLIT("weaponImages")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
+#define WORLD_IMAGES_SWITCH					CONSTLIT("worldImages")
 
 void ShowHelp (CXMLElement *pCmdLine)
 
@@ -71,13 +75,41 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("\n");
 		printf("      [/abandonedDockScreen] station dock screen when abandoned.\n");
 		printf("      [/armorClass]         armor class.\n");
+		printf("      [/armorLevel]         level of armor.\n");
+		printf("      [/balance]            100 = defenses balanced for level.\n");
 		printf("      [/canAttack]          station can attack.\n");
+		printf("      [/category]           friendly/enemy/debris.\n");
 		printf("      [/countDistribution]  the number appearing in different games.\n");
+		printf("      [/defenderStrength]   strength of defenders (relative to level).\n");
 		printf("      [/dockScreen]         station dock screen.\n");
 		printf("      [/explosionType]      type of explosion when destroyed.\n");
 		printf("      [/fireRateAdj]        fire rate adjustment.\n");
+		printf("      [/hitsToDestroy]      no. of hits to destroy with weapon of encounter level.\n");
 		printf("      [/hp]                 initial hit points.\n");
+		printf("      [/maxLightRadius]     light radius for suns (in light-seconds).\n");
+		printf("      [/regen]              repair rate in hp per 180 ticks.\n");
+		printf("      [/satelliteStrength]  strength of satellites (relative to level).\n");
+		printf("      [/size]               size of object (in kilometers).\n");
 		printf("      [/totalCount]         total number appearing per game.\n");
+		printf("      [/treasureBalance]    treasure relative to defense (100 = balanced).\n");
+		printf("      [/treasureValue]      value of average treasure (in credits).\n");
+		printf("      [/weaponStrength]     strength of weapons (relative to level).\n");
+		}
+	else if (pCmdLine->GetAttributeBool(IMAGES_SWITCH))
+		{
+		printf("  /images               Generates chart of images.\n");
+		printf("      /criteria:n           Type criteria of images to show.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/sort:xxx]           Sort worlds in given order.\n");
+		printf("         largest               Larger objects first.\n");
+		printf("         name                  By name.\n");
+		printf("         smallest              Smaller objects first.\n");
+		printf("      [/textBoxesOnly]      Output textboxes only.\n");
+		printf("      [/width:n]            Width of image in pixels.\n");
+		printf("      [/xMargin:n]          Margin around images.\n");
+		printf("      [/xSpacing:n]         Spacing between images.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ITEM_FREQUENCY_SWITCH))
 		{
@@ -90,6 +122,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /itemtable            Item table.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/byAttribute]        Categorize by attribute.\n");
+		printf("      [/byShipClass]        Categorize by ship class using the item.\n");
+		printf("      [/byShipClassUsage]   Show ship classes using given item.\n");
 		printf("      [/criteria:xxx]       only items that match criteria.\n");
 		printf("\n");
 		printf("      [/adjustedHP]         hp adjusted for damage type.\n");
@@ -162,7 +196,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/rotation:n]         Specifies the rotation of all ships.\n");
 		printf("      [/sort:xxx]           Sort ships in given order.\n");
 		printf("         largest               Larger ships first.\n");
-		printf("         name                  By ship name descending.\n");
+		printf("         name                  By ship name.\n");
 		printf("         smallest              Smaller ships first.\n");
 		printf("      [/textBoxesOnly]      Output textboxes only.\n");
 		printf("      [/width:n]            Width of image in pixels.\n");
@@ -177,7 +211,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/criteria:xxx]       Ships must match criteria.\n");
 		printf("\n");
 		printf("      [/armorItems]         installed armor items.\n");
+		printf("      [/balanceType]        designation based on combat strength.\n");
 		printf("      [/cargoSpace]         cargo space available (in tons).\n");
+		printf("      [/combatStrength]     combat power (absolute).\n");
+		printf("      [/damage]             damage done per 180 ticks.\n");
+		printf("      [/defenseStrength]    defense strength (absolute).\n");
 		printf("      [/deviceSlots]        number of device slots.\n");
 		printf("      [/deviceSlotsNonWeapons] number of slots for non-weapons.\n");
 		printf("      [/deviceSlotsWeapons] number of slots for weapons.\n");
@@ -238,12 +276,62 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("       /count:n             n iterations.\n");
 		}
+	else if (pCmdLine->GetAttributeBool(TYPE_TABLE_SWITCH))
+		{
+		printf("  /typeTable            Generates sample of all systems.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/criteria:xxx]       Type of given criteria.\n");
+		printf("\n");
+		printf("      criteria:\n");
+		printf("          $                     EconomyType.\n");
+		printf("          a                     AdventureDesc.\n");
+		printf("          b                     ItemTable.\n");
+		printf("          c                     EffectType.\n");
+		printf("          d                     DockScreen.\n");
+		printf("          e                     SpaceEnvironmentType.\n");
+		printf("          f                     OverlayType.\n");
+		printf("          h                     ShipTable.\n");
+		printf("          i                     ItemType.\n");
+		printf("          m                     Image.\n");
+		printf("          n                     MissionType.\n");
+		printf("          p                     Power.\n");
+		printf("          s                     ShipClass.\n");
+		printf("          t                     StationType.\n");
+		printf("          u                     SoundType.\n");
+		printf("          v                     Sovereign.\n");
+		printf("          x                     GenericType.\n");
+		printf("          y                     SystemType.\n");
+		printf("          z                     SystemMap.\n");
+		printf("          _                     TemplateType.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH))
+		{
+		printf("  /weaponimages         Generates images of weapon effects.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/criteria:xxx]       only items that match criteria.\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		}
 	else if (pCmdLine->GetAttributeBool(WORD_GENERATOR_SWITCH))
 		{
 		printf("  /wordgenerator        Generate a list of random words.\n");
 		printf("       /count:n             Number of words to generate.\n");
 		printf("       /input:filename      List of words to use as examples.\n");
 		printf("      [/novel]              Exclude words in the input file.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
+		{
+		printf("  /worldimages          Generates world images.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/sort:xxx]           Sort worlds in given order.\n");
+		printf("         largest               Larger worlds first.\n");
+		printf("         name                  By name.\n");
+		printf("         smallest              Smaller worlds first.\n");
+		printf("      [/textBoxesOnly]      Output textboxes only.\n");
+		printf("      [/width:n]            Width of image in pixels.\n");
+		printf("      [/xMargin:n]          Margin around images.\n");
+		printf("      [/xSpacing:n]         Spacing between images.\n");
 		}
 	else
 		{
@@ -282,8 +370,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 			printf("  /typeDependencies     Show a list of all types and their dependencies.\n");
 		if (bDebug)
 			printf("  /typeIslands          Show groups of types that depend on each other.\n");
+		printf("  /typeTable            Generates a table of type information.\n");
+		printf("  /weaponimages         Generates images of weapon effects.\n");
 		if (bDebug)
 			printf("  /wordlist             Lists all unique words.\n");
+		printf("  /worldimages          Generates images of worlds.\n");
 		}
 
 	printf("\n");

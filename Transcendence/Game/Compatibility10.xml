@@ -97,7 +97,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy this item" default="1" key="B">
+					<Action name="Buy this Item" default="1" key="B">
 						(if (gr gMaxCount 1)
 							(scrShowPane gScreen "BuyQuantity")
 							(if (eq gMaxCount 1)
@@ -198,7 +198,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this device" default="1" key="I">
+					<Action name="Install this Device" default="1" key="I">
 						(if gCanInstall
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
@@ -249,7 +249,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this device" default="1" key="I">
+					<Action name="Install this Device" default="1" key="I">
 						(if gCanInstall
 							(block Nil
 								; Install the new items
@@ -454,7 +454,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Remove this device" default="1" key="R">
+					<Action name="Remove this Device" default="1" key="R">
 						(block (dsDryDock thisItem)
 							(setq thisItem (scrGetItem gScreen))
 
@@ -658,7 +658,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Install this armor" default="1" key="I" >
+					<Action name="Install this Armor" default="1" key="I" >
 						(block (thisItem)
 							(setq thisItem (scrGetItem gScreen))
 
@@ -777,7 +777,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Sell this item" default="1" key="S">
+					<Action name="Sell this Item" default="1" key="S">
 						(if (gr gCost 0)
 							(if (gr gMaxCount 1)
 								(scrShowPane gScreen "SellQuantity")

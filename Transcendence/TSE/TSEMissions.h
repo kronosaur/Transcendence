@@ -27,7 +27,8 @@ class CMission : public CSpaceObject
 					bIncludeUnavailable(false),
 					bIncludeActive(false),
 					bIncludeRecorded(false),
-					bOnlySourceOwner(false)
+					bOnlySourceOwner(false),
+					bOnlySourceDebriefer(false)
 				{ }
 
 			bool bIncludeOpen;					//	Include open missions
@@ -36,6 +37,7 @@ class CMission : public CSpaceObject
 			bool bIncludeRecorded;				//	Include recorded missions
 
 			bool bOnlySourceOwner;				//	Source must be owner
+			bool bOnlySourceDebriefer;			//	Source must be debriefer
 
 			TArray<CString> AttribsRequired;	//	Required attributes
 			TArray<CString> AttribsNotAllowed;	//	Exclude objects with these attributes
@@ -60,6 +62,7 @@ class CMission : public CSpaceObject
 		inline bool IsRecorded (void) const { return (m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure)); }
 		inline bool IsSuccess (void) const { return (m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
 		inline bool IsUnavailable (void) const { return (m_iStatus == statusClosed || m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
+		inline bool KeepsStats (void) const { return m_pType->KeepsStats(); }
 		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
 		void OnPlayerEnteredSystem (void);
 		bool Reward (ICCItem *pData);
@@ -79,7 +82,7 @@ class CMission : public CSpaceObject
 		virtual CString GetName (DWORD *retdwFlags = NULL) { if (retdwFlags) *retdwFlags = 0; return m_pType->GetName(); }
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual CDesignType *GetType (void) const { return m_pType; }
-		virtual bool HasAttribute (const CString &sAttribute) const { return m_pType->HasAttribute(sAttribute); }
+		virtual bool HasAttribute (const CString &sAttribute) const { return m_pType->HasLiteralAttribute(sAttribute); }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
@@ -116,6 +119,8 @@ class CMission : public CSpaceObject
 		CMissionType *m_pType;				//	Mission type
 		EStatus m_iStatus;					//	Current mission status
 		CGlobalSpaceObject m_pOwner;		//	Mission owner (may be NULL)
+		CGlobalSpaceObject m_pDebriefer;	//	Object at which player debriefs (may be NULL,
+											//		in which case we debrief at the owner obj).
 		CString m_sNodeID;					//	NodeID of owner
 		DWORD m_dwCreatedOn;				//	Mission created on (used to check expiration)
 		DWORD m_dwAcceptedOn;				//	Tick on which mission was accepted

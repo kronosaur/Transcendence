@@ -223,7 +223,7 @@ EResults RunEncounter (CUniverse &Universe, CSimViewer &Viewer, CStationType *pD
 		return resultError;
 		}
 
-	pController->AddOrder(IShipController::orderAttackStation, pStation, 0);
+	pController->AddOrder(IShipController::orderAttackStation, pStation, IShipController::SData());
 
 	//	Watch the attacker
 

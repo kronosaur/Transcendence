@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- TABLES -->
+
+	<SystemPartTable unid="&tbVolcanicPlanets;">
+
+		<VolcanicPrimary>
+			<LocationCriteriaTable>
+				<Table criteria="*innerSystem">
+					<Lookup chance="70" table="VolcanicPlanetoidPrimary"/>
+					<Lookup chance="30" table="VolcanicTerrestrialPrimary"/>
+				</Table>
+				<Table criteria="*lifeZone">
+					<Lookup chance="40" table="VolcanicPlanetoidPrimary"/>
+					<Lookup chance="60" table="VolcanicTerrestrialPrimary"/>
+				</Table>
+				<Table criteria="*outerSystem">
+					<Lookup chance="80" table="VolcanicPlanetoidPrimary"/>
+					<Lookup chance="20" table="VolcanicTerrestrialPrimary"/>
+				</Table>
+			</LocationCriteriaTable>
+		</VolcanicPrimary>
+
+		<VolcanicPlanetoidPrimary>
+			<Lookup table="StandardPlanetoidMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="60" type="&stVolcanicPlanetoidSizeE;" showOrbit="true"/>
+						<Station chance="30" type="&stVolcanicPlanetoidSizeF;" showOrbit="true"/>
+						<Station chance="10" type="&stVolcanicPlanetoidSizeG;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="planet, planetary, planetoid, volcanic"/>
+				</_PlanetLabel>
+			</Lookup>
+		</VolcanicPlanetoidPrimary>
+
+		<VolcanicTerrestrialPrimary>
+			<Lookup table="StandardTerrestrialMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="100" type="&stVolcanicTerrestrialSizeH;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="planet, planetary, terrestrial, volcanic"/>
+				</_PlanetLabel>
+			</Lookup>
+		</VolcanicTerrestrialPrimary>
+
+	</SystemPartTable>
+
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Size A Volcanic Asteroid -->
+
+	<StationType UNID="&stVolcanicAsteroidSizeA;"
+		name=				"(volcanic asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="85"/>
+				<Lookup chance="15" table="&tbVolcanicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Volcanic Asteroid -->
+
+	<StationType UNID="&stVolcanicAsteroidSizeB;"
+		name=				"(volcanic asteroid)"
+		scale=				"world"
+		size=				"70"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
+
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="85"/>
+				<Lookup chance="15" count="1d6" table="&tbVolcanicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Volcanic Asteroid -->
+
+	<StationType UNID="&stVolcanicAsteroidSizeC;"
+		name=				"(volcanic asteroid)"
+		scale=				"world"
+		size=				"255"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="0"   imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="90"  imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="180" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="270" imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="0"   imageY="360" imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="85"/>
+				<Lookup chance="15" count="1d8" table="&tbVolcanicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Volcanic Asteroid -->
+
+	<StationType UNID="&stVolcanicAsteroidSizeD;"
+		name=				"(volcanic asteroid)"
+		scale=				"world"
+		size=				"590"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="0"   imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="110" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="220" imageWidth="110" imageHeight="110"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="90"  imageY="330" imageWidth="110" imageHeight="110"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="85"/>
+				<Lookup chance="15" count="1d10" table="&tbVolcanicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 20)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Volcanic Planetoid Size E -->
+
+	<StationType UNID="&stVolcanicPlanetoidSizeE;"
+		name=				"(volcanic planetoid)"
+		scale=				"world"
+		size=				"1000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="0"   imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="130" imageWidth="130" imageHeight="130"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="200"  imageY="260" imageWidth="130" imageHeight="130"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Volcanic Planetoid Size F -->
+
+	<StationType UNID="&stVolcanicPlanetoidSizeF;"
+		name=				"(volcanic planetoid)"
+		scale=				"world"
+		size=				"2450"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="0"   imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="160" imageWidth="160" imageHeight="160"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="330"  imageY="320" imageWidth="160" imageHeight="160"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Volcanic Planetoid Size G -->
+
+	<StationType UNID="&stVolcanicPlanetoidSizeG;"
+		name=				"(volcanic planetoid)"
+		scale=				"world"
+		size=				"3750"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, volcanic"
+
+		ejectaType=			"&vtVolcanicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="0"   imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsVolcanicAsteroids;" imageX="490"  imageY="180" imageWidth="180" imageHeight="180"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Size H Volcanic Terrestrial -->
+
+	<StationType UNID="&stVolcanicTerrestrialSizeH;"
+		name=				"(volcanic terrestrial)"
+		scale=				"world"
+		size=				"5250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, terrestrial, volcanic"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsVolcanicTerrestrials;" imageX="0"   imageY="0"   imageWidth="200" imageHeight="200"/>
+			<Image	imageID="&rsVolcanicTerrestrials;" imageX="0"   imageY="200" imageWidth="200" imageHeight="200"/>
+			<Image	imageID="&rsVolcanicTerrestrials;" imageX="0"   imageY="400" imageWidth="200" imageHeight="200"/>
+			<Image	imageID="&rsVolcanicTerrestrials;" imageX="0"   imageY="600" imageWidth="200" imageHeight="200"/>
+		</ImageVariants>
+	</StationType>
+
+<!-- TABLES -->
+
+	<ItemTable unid="&tbVolcanicAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="5-10"	item="&itGoldOre;"/>
+			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="1-35"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-25"	item="&itPteracniumOre;"/>
+			<Item levelFrequency="---ru ccccc ccccc ccccc ccccc" count="10-45"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
+			<Item levelFrequency="----- -vvvv vvvvv vvvvv vvvvv" count="10-35"	item="&itIthaliumOre;"/>
+			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-4"	item="&itNeutroniumOre;"/>
+			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-6"	item="&itTetramiteOre;"/>
+			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1-2"	item="&itHyperonicOre;"/>
+			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1"		item="&itEtheriumOre;"/>
+		</LevelTable>
+	</ItemTable>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsVolcanicAsteroids;"		bitmap="Resources\VolcanicAsteroids.jpg"	bitmask="Resources\VolcanicAsteroidsMask.bmp"		loadOnUse="true"/>
+	<Image UNID="&rsVolcanicTerrestrials;"	bitmap="Resources\VolcanicTerrestrials.jpg"	bitmask="Resources\VolcanicTerrestrialsMask.bmp"		loadOnUse="true"/>
+	
+</TranscendenceModule>

@@ -27,7 +27,7 @@
 			explosionType=		"&vtBlastExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"charonFortress, charonPirates, enemy, human, majorStation, populated"
+			attributes=			"charonFortress, charonPirates, enemy, human, majorStation, pirates, populated"
 			level=				"3"
 			alertWhenAttacked=	"100"
 
@@ -186,6 +186,14 @@
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+
 		<Ships>
 			<Lookup count="1d2" table="&tbCommDefenders;"/>
 			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
@@ -321,7 +329,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Escort freighter" default="1" key="E">
+							<Action name="Escort Freighter" default="1" key="E">
 								(block (missionStatus)
 									(setq missionStatus (objGetData gSource "MissionStatus"))
 									(switch
@@ -368,25 +376,18 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 92) (&itHelium3FuelRod; 80)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A" >
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
-									(setq gTechLevel 6)
+									(setq gTechLevel (objGetProperty gSource 'installDeviceMaxLevel))
 									(setq gTechModifier Nil)
 									(setq gCheckMilitaryID True)
 									(setq gMargin 100)
@@ -394,7 +395,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -404,9 +405,7 @@
 							<Action name="Done" cancel="1" key="N">
 								<ShowPane pane="Default"/>
 							</Action>
-
 						</Actions>
-
 					</DockServices>
 
 					<CantUseCommandCenter
@@ -772,11 +771,16 @@
 
 			<Station type="&stRedDwarfStar;" name="Cardel Orionis"/>
 
+			<AddAttribute attributes="redDwarfSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="190"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="190"	maxRadius="320"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="320"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+
 			<!-- Lesser Anterock -->
 
 			<Orbitals distance="1d10+75" angle="random">
 				<Group>
-					<Station type="&stCrateredPlanet;" 
+					<Station type="&stRockyPlanetoidSizeG;" 
 							name="Lesser Anterock" 
 							showOrbit="true"
 							/>
@@ -798,89 +802,39 @@
 			<!-- Greater Anterock -->
 
 			<Orbitals distance="1d20+150" angle="random">
-				<Group>
-					<Station type="&stIcePlanet;" 
-							name="Greater Anterock" 
-							showOrbit="true"
-							/>
-
-					<Orbitals distance="12" angle="random">
-						<Label attributes="moon,planetary,frost"/>
-					</Orbitals>
-				</Group>
+				<Lookup table="StandardPlanetoidMorphology">
+					<_PlanetType>
+						<Station type="&stIcePlanetoidSizeF;" 
+								name="Greater Anterock" 
+								showOrbit="true"
+								/>
+					</_PlanetType>
+					<_PlanetLabel>
+						<Label attributes="ice, planet, planetary, planetoid"/>
+					</_PlanetLabel>
+				</Lookup>
 			</Orbitals>
 
 			<!-- Cardel Prime -->
 
 			<Orbitals distance="7" scale="light-minute" angle="random" eccentricity="30" rotation="120">
-				<Group>
-					<Station type="&stHydrogenGasGiant;" 
-							name="Cardel Prime" 
-							showOrbit="true"
-							/>
-
-					<Orbitals distance="1d6+18" angle="random">
-						<Group>
-							<Station type="&stCrateredPlanet;" />
-
-							<Orbitals distance="2d8+12" angle="random">
-								<Label attributes="gasgiant,moon,planetary"/>
-							</Orbitals>
-						</Group>
-					</Orbitals>
-
-					<Orbitals distance="2d6+35" angle="random">
-						<Group probability="60">
-							<Station type="&stCrateredPlanet;" />
-
-							<Orbitals distance="2d8+12" angle="random">
-								<Label attributes="gasgiant,moon,planetary"/>
-							</Orbitals>
-						</Group>
-					</Orbitals>
-
-					<Orbitals distance="4d6+65" angle="random">
-						<Group>
-							<Station type="&stIcePlanet;" />
-
-							<Orbitals distance="2d8+12" angle="random">
-								<Lookup table="StargateOutbound"/>
-							</Orbitals>
-						</Group>
-					</Orbitals>
-
-					<Trojan>
-						<Table>
-							<Lookup chance="75" table="StdTrojans"/>
-							<Lookup chance="25" table="FrostTrojans"/>
-						</Table>
-					</Trojan>
-
-					<AntiTrojan>
-						<Table>
-							<Lookup chance="75" table="StdTrojans"/>
-							<Lookup chance="25" table="FrostTrojans"/>
-						</Table>
-					</AntiTrojan>
-				</Group>
+				<Lookup table="StandardGasGiantMorphology">
+					<_PlanetType>
+						<Station type="&stHydrogenGasGiantSizeM;" 
+								name="Cardel Prime" 
+								showOrbit="true"
+								/>
+					</_PlanetType>
+					<_PlanetLabel>
+						<Label attributes="gasGiant, hydrogenGiant, planet, planetary"/>
+					</_PlanetLabel>
+				</Lookup>
 			</Orbitals>
 
 			<!-- Ice Belt -->
 
 			<Orbitals distance="12" scale="light-minute" angle="random" eccentricity="40" rotation="120">
-				<Group>
-					<Siblings count="500" distribution="4d60-122">
-						<Lookup table="AsteroidSmallFrost"/>
-					</Siblings>
-
-					<Siblings count="50" distribution="4d20-42">
-						<Lookup table="AsteroidMediumFrost"/>
-					</Siblings>
-
-					<Siblings count="2d6+6" distribution="4d40-82">
-						<Label attributes="asteroids,asteroidbelt,frost"/>
-					</Siblings>
-				</Group>
+				<Lookup table="AsteroidBelt500"/>
 			</Orbitals>
 
 			<!-- Charon Pirate Fortress -->

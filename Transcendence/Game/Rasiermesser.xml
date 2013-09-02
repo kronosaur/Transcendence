@@ -129,6 +129,8 @@
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="m +Rasiermesser; -Military; -Illegal; -NotForSale;" priceAdj="120" inventoryAdj="800"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -254,6 +256,10 @@
 		<Trade currency="credit" max="100000" replenish="5000">
 			<Sell	criteria="m +Rasiermesser; -Illegal; -NotForSale;" priceAdj="110" inventoryAdj="1200"/>
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -310,7 +316,7 @@
 									)
 							</Action>
 
-							<Action name="Buy items" key="B">
+							<Action name="Buy Items" key="B">
 								(scrShowBuyScreen 
 									"*"						; items sold to player
 									Nil						; obsolete
@@ -323,7 +329,7 @@
 									)
 							</Action>
 
-							<Action name="Repair items" key="R">
+							<Action name="Repair Items" key="R">
 								(scrShowScreen gScreen "&dsRPGRepairItem;" {
 									criteria: "*~aD +Rasiermesser;"
 									priceAdj: 65
@@ -346,23 +352,16 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 100) (&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A" >
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install weapon" key="W" >
+							<Action name="Install Weapon" key="W" >
 								(block Nil
 									(setq gTechLevel 8)
 									(setq gTechModifier Nil)
@@ -372,7 +371,7 @@
 									)
 							</Action>
 
-							<Action name="Remove weapon" key="V" >
+							<Action name="Remove Weapon" key="V" >
 								(scrShowScreen gScreen "&dsRemoveWeapon;")
 							</Action>
 
@@ -426,7 +425,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Offer item" default="1" key="O">
+							<Action name="Offer Item" default="1" key="O">
 								(scrShowScreen gScreen "OfferItem")
 							</Action>
 
@@ -464,7 +463,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Offer item" default="1" key="O">
+							<Action name="Offer Item" default="1" key="O">
 								(block (haveDamaged haveUndamaged gain haveCount)
 
 									; See if we've already got the item that the player donated
@@ -689,7 +688,6 @@
 	<!-- Resources -->
 
 	<Image UNID="&rsRasiermesserFactory;" bitmap="Resources\RasiermesserFactory.jpg" bitmask="Resources\RasiermesserFactoryMask.bmp"  loadOnUse="true"/>
-	
 	<Image UNID="&rsRasiermesserFactoryBkgnd;" bitmap="Resources\RasiermesserFactoryScreen.jpg" loadOnUse="true" />
 
 </TranscendenceModule>

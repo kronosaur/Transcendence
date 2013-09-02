@@ -26,6 +26,7 @@
 
 //	Forwards
 
+double GetFractionArg (ICCItem *pArg, double *retrDenom = NULL);
 ALERROR HelperSetq (CEvalContext *pCtx, ICCItem *pVar, ICCItem *pValue, ICCItem **retpError);
 
 ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
@@ -1480,6 +1481,30 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 				}
 			}
 
+		case FN_ITEM_TYPE:
+			{
+			ICCItem *pItem = pArgs->GetElement(0);
+
+			if (pItem->IsError())
+				return pCC->CreateString(CONSTLIT("error"));
+			else if (pItem->IsNil())
+				return pCC->CreateString(CONSTLIT("nil"));
+			else if (pItem->IsInteger())
+				return pCC->CreateString(CONSTLIT("int32"));
+			else if (pItem->IsPrimitive())
+				return pCC->CreateString(CONSTLIT("primitive"));
+			else if (pItem->IsLambdaFunction())
+				return pCC->CreateString(CONSTLIT("function"));
+			else if (pItem->IsIdentifier())
+				return pCC->CreateString(CONSTLIT("string"));
+			else if (pItem->IsSymbolTable())
+				return pCC->CreateString(CONSTLIT("struct"));
+			else if (pItem->IsList())
+				return pCC->CreateString(CONSTLIT("list"));
+			else
+				return pCC->CreateString(CONSTLIT("true"));
+			}
+
 		case FN_SET_ITEM:
 			{
 			//	We evaluate the target. We either end up with an array or a
@@ -1603,6 +1628,12 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 
 			else
 				{
+				if (pArgs->GetCount() < 3)
+					{
+					pTarget->Discard(pCC);
+					return pCC->CreateError(CONSTLIT("Not enough parameters for set@. Value expected."));
+					}
+
 				ICCItem *pKey = pArgs->GetElement(1);
 				ICCItem *pValue = pArgs->GetElement(2);
 
@@ -2274,6 +2305,8 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 	bool bExcludeNil = false;
 	bool bReduceMin = false;
 	bool bReduceMax = false;
+	bool bReduceAverage = false;
+	bool bReduceSum = false;
 	bool bOriginal = false;
 
 	int iOptionalArg = 1;
@@ -2292,6 +2325,10 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 				bReduceMax = true;
 			else if (strEquals(sValue, CONSTLIT("reduceMin")))
 				bReduceMin = true;
+			else if (strEquals(sValue, CONSTLIT("reduceAverage")))
+				bReduceAverage = true;
+			else if (strEquals(sValue, CONSTLIT("reduceSum")))
+				bReduceSum = true;
 			}
 		}
 
@@ -2347,6 +2384,7 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 
 	int iBestItem = -1;
 	int iAccumulate = 0;
+	int iCount = 0;
 	for (i = 0; i < pSource->GetCount(); i++)
 		{
 		ICCItem *pItem = pSource->GetElement(pCC, i);
@@ -2366,9 +2404,14 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 			break;
 			}
 
+		//	If result is Nil, then exclude
+
+		if (bExcludeNil && pMapped->IsNil())
+			;
+
 		//	If we're reducing to max/min, then look for the max/min value
 
-		if (bReduceMax)
+		else if (bReduceMax)
 			{
 			int iValue = pMapped->GetIntegerValue();
 			if (iBestItem == -1 || iValue > iAccumulate)
@@ -2386,18 +2429,20 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 				iAccumulate = iValue;
 				}
 			}
+		else if (bReduceAverage || bReduceSum)
+			{
+			iAccumulate += pMapped->GetIntegerValue();
+			iCount++;
+			}
 
 		//	Add the mapped value to the result
 
 		else
 			{
-			if (!bExcludeNil || !pMapped->IsNil())
-				{
-				if (bOriginal)
-					pList->Append(pCC, pItem);
-				else
-					pList->Append(pCC, pMapped);
-				}
+			if (bOriginal)
+				pList->Append(pCC, pItem);
+			else
+				pList->Append(pCC, pMapped);
 			}
 
 		//	Next
@@ -2422,6 +2467,20 @@ ICCItem *fnMap (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 			return pSource->GetElement(iBestItem)->Reference();
 		else
 			return pCC->CreateInteger(iAccumulate);
+		}
+	else if (bReduceSum)
+		{
+		if (iCount == 0)
+			return pCC->CreateNil();
+
+		return pCC->CreateInteger(iAccumulate);
+		}
+	else if (bReduceAverage)
+		{
+		if (iCount == 0)
+			return pCC->CreateNil();
+
+		return pCC->CreateInteger(iAccumulate / iCount);
 		}
 	else
 		{
@@ -2687,6 +2746,77 @@ ICCItem *fnMath (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		}
 	}
 
+double GetFractionArg (ICCItem *pArg, double *retrDenom)
+	{
+	if (pArg->IsList() && pArg->GetCount() >= 2)
+		{
+		double rNum = pArg->GetElement(0)->GetIntegerValue();
+		double rDenom = pArg->GetElement(1)->GetIntegerValue();
+		if (rDenom == 0.0)
+			{
+			rNum = 0.0;
+			rDenom = 1.0;
+			}
+		else if (rDenom < 0.0)
+			{
+			rNum = -rNum;
+			rDenom = -rDenom;
+			}
+
+		if (retrDenom)
+			*retrDenom = rDenom;
+
+		return rNum / rDenom;
+		}
+	else
+		{
+		if (retrDenom)
+			*retrDenom = 1.0;
+
+		return (double)pArg->GetIntegerValue();
+		}
+	}
+
+ICCItem *fnMathFractions (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnMathFractions
+//
+//	Parameters can be fractions
+
+	{
+	CCodeChain *pCC = pCtx->pCC;
+
+	//	Compute
+
+	switch (dwData)
+		{
+		case FN_MATH_POWER:
+			{
+			double rResultDenom;
+			double rX = GetFractionArg(pArgs->GetElement(0), &rResultDenom);
+			double rY = GetFractionArg(pArgs->GetElement(1));
+			double rResult = pow(rX, rY);
+
+			if (rResultDenom == 1.0)
+				return pCC->CreateInteger((int)(rResult + 0.5));
+			else
+				{
+				ICCItem *pResult = pCC->CreateLinkedList();
+				CCLinkedList *pList = (CCLinkedList *)pResult;
+
+				pList->AppendIntegerValue(pCC, (int)((rResult * rResultDenom) + 0.5));
+				pList->AppendIntegerValue(pCC, (int)(rResultDenom + 0.5));
+
+				return pResult;
+				}
+			}
+
+		default:
+			ASSERT(false);
+			return NULL;
+		}
+	}
+
 ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 //	fnMathOld
@@ -2729,10 +2859,6 @@ ICCItem *fnMathOld (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 				iResult = iOp1 / iOp2;
 			else
 				return pCC->CreateError(CONSTLIT("Division by zero"), pArguments);
-			break;
-
-		case FN_MATH_POWER:
-			iResult = mathPower(iOp1, iOp2);
 			break;
 
 		default:

@@ -97,7 +97,7 @@ void CMarker::OnReadFromStream (SLoadCtx &Ctx)
 	if (Ctx.dwVersion >= 8)
 		{
 		m_sName.ReadFromStream(Ctx.pStream);
-		Ctx.pSystem->ReadSovereignRefFromStream(Ctx, &m_pSovereign);
+		CSystem::ReadSovereignRefFromStream(Ctx, &m_pSovereign);
 		}
 	}
 

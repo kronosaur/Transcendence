@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- KateMorgental
+
+	GLOBAL DATA
+
+	firstPlayerMeetingTime: Tick of player's first meeting with Kate.
+			Nil if the player has never met him face to face.
+
+	lastestPlayerMeetingTime: Tick of most recent meeting with Kate.
+
+	lastNodeID: Kate's last known position. Nil means unknown.
+
+	lastSystemPos: Kate's last known position in the lastNodeID system.
+
+	objID: The objID of Kates's current ship. If Nil, then no ship has
+			been created yet.
+
+	playerRel: If Nil, Kate has never met the player. Positive numbers mean that
+			Kate likes/trusts/respects the player. Negative numbers mean the
+			opposite.
+
+	screenData: This is a structure specifying the screen to show when the player
+			interacts with Kate. The struct has the following fields:
+
+			screen: The screen to show
+			pane: If non-Nil, the pane to navigate to
+			data: If non-Nil, data to pass to the screen
+
+			If this value is Nil, then we look for missions tagged with 
+			kateMorgentalMission.
+
+	-->
+
+	<Type UNID="&unidKateMorgental;">
+		<StaticData>
+			<MissionAttribute>"kateMorgentalMission"</MissionAttribute>
+			<Name>"Kate Morgental"</Name>
+			<Sovereign>&svCorporate;</Sovereign>
+		</StaticData>
+
+		<Events>
+			<OnGlobalSystemStopped>
+				;	If Kate is in this system, then ascend her (so that
+				;	she can appear in other systems).
+				(rpgCharacterAscend &unidKateMorgental;)
+			</OnGlobalSystemStopped>
+		</Events>
+
+		<Language>
+		</Language>
+	</Type>
+
+	<!-- Kate Morgental's Corporate Cruiser
+
+	-->
+
+	<ShipClass UNID="&scKateMorgentalCruiser;"
+			manufacturer=		"Rasiermesser"
+			class=				"Corporate cruiser"
+			type=				""
+
+			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
+			   
+			size=				"275"
+			mass=				"8000"
+			thrustRatio=		"2"
+			maneuver=			"12"
+			maxSpeed=			"20"
+			cargoSpace=			"1000"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtThermoExplosion2;"
+			leavesWreck=		"100"
+			>
+
+		<Names noArticle="true" personalName="true">Kate Morgental</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHexaCarbideArmor;"
+			count=				"18"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-25"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"40"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="40d20" item="&itGotha10Missile;"/>
+			<Item count="2d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<!-- Events -->
+
+		<Events>
+		</Events>
+
+		<!-- Language -->
+
+		<Language>
+			<Text id="FirstMeetingIntro">
+				(cat
+					"LATER: Welcome, I'm Kate Morgental."
+					)
+			</Text>
+
+			<Text id="MeetingIntro">
+				(cat
+					(random (list
+						(cat
+							"LATER: Kate intro scene 1"
+							)
+						(cat
+							"LATER: Kate intro scene 2"
+							)
+						(cat
+							"LATER: Kate intro scene 3"
+							)
+						(cat
+							"LATER: Kate intro scene 4"
+							)
+						))
+					"\n\nShe turns to you: \"Welcome back, %name%!\""
+					)
+			</Text>
+
+			<Text id="NoMissions">
+				(cat
+					"\"LATER: Everything's quiet today, %name%. But something's always happening in this crazy universe "
+					"so come back later for the next crisis.\""
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+
+</TranscendenceModule>

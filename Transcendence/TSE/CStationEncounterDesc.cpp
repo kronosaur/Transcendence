@@ -5,10 +5,14 @@
 
 #include "PreComp.h"
 
+#define ENCOUNTER_TAG							CONSTLIT("Encounter")
+
 #define ENEMY_EXCLUSION_RADIUS_ATTRIB			CONSTLIT("enemyExclusionRadius")
 #define LEVEL_FREQUENCY_ATTRIB					CONSTLIT("levelFrequency")
 #define LOCATION_CRITERIA_ATTRIB				CONSTLIT("locationCriteria")
 #define MAX_APPEARING_ATTRIB					CONSTLIT("maxAppearing")
+#define NUMBER_APPEARING_ATTRIB					CONSTLIT("numberAppearing")
+#define SYSTEM_CRITERIA_ATTRIB					CONSTLIT("systemCriteria")
 #define UNIQUE_ATTRIB							CONSTLIT("unique")
 
 #define UNIQUE_IN_SYSTEM						CONSTLIT("inSystem")
@@ -96,13 +100,45 @@ int CStationEncounterDesc::GetFrequencyByLevel (int iLevel) const
 
 //	GetFrequencyByLevel
 //
-//	Returns the frequency of the encounter
-	
+//	Returns the frequency of the encounter by level. Note this is used for stats 
+//	and random encounters. To determine the frequency of a station in a given
+//	system, use GetFrequencyBySystem instead.
+
 	{
 	if (!CanBeRandomlyEncountered())
 		return 0;
 
-	return ::GetFrequencyByLevel(m_sLevelFrequency, iLevel);
+	if (m_sLevelFrequency.IsBlank())
+		return ftCommon;
+	else
+		return ::GetFrequencyByLevel(m_sLevelFrequency, iLevel);
+	}
+
+int CStationEncounterDesc::GetFrequencyByNode (CTopologyNode *pNode, CStationType *pType) const
+
+//	GetFrequencyByNode
+//
+//	Returns the frequency of the encounter in this system.
+
+	{
+	if (!CanBeRandomlyEncountered())
+		return 0;
+
+	//	If we have system criteria, then check it here.
+
+	if (m_bSystemCriteria)
+		{
+		CTopologyNode::SCriteriaCtx Ctx;
+		if (!pNode->MatchesCriteria(Ctx, m_SystemCriteria))
+			return 0;
+		}
+
+	//	Check by level frequency
+
+	if (m_sLevelFrequency.IsBlank())
+		return ftCommon;
+	else
+		return ::GetFrequencyByLevel(m_sLevelFrequency, pNode->GetLevel());
 	}
 
 ALERROR CStationEncounterDesc::InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -112,15 +148,45 @@ ALERROR CStationEncounterDesc::InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXML
 //	Initialize from <StationType>
 
 	{
+	//	If we have an encounter element, then use that.
+
+	CXMLElement *pEncounter = pDesc->GetContentElementByTag(ENCOUNTER_TAG);
+	if (pEncounter)
+		return InitFromXML(Ctx, pEncounter);
+
+	//	Otherwise, we use information at the root
+
+	return InitFromXML(Ctx, pDesc);
+	}
+
+ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Initialize from an <Encounter> element (or a root <StationType> element).
+
+	{
 	ALERROR error;
+
+	//	Number appearing
+
+	CString sAttrib;
+	if (pDesc->FindAttribute(NUMBER_APPEARING_ATTRIB, &sAttrib))
+		{
+		m_bNumberAppearing = true;
+		if (error = m_NumberAppearing.LoadFromXML(sAttrib))
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid numberAppearing parameter."));
+			return error;
+			}
+		}
 
 	//	Get unique attributes
 
-	CString sMaxAppearing;
-	if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sMaxAppearing))
+	else if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sAttrib))
 		{
 		m_bMaxCountLimit = true;
-		if (error = m_MaxAppearing.LoadFromXML(sMaxAppearing))
+		if (error = m_MaxAppearing.LoadFromXML(sAttrib))
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Invalid maxAppearing parameter."));
 			return error;
@@ -128,7 +194,8 @@ ALERROR CStationEncounterDesc::InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXML
 
 		m_iMaxCountInSystem = 1;
 		}
-	else
+
+	if (!m_bMaxCountLimit)
 		{
 		CString sUnique = pDesc->GetAttribute(UNIQUE_ATTRIB);
 		if (strEquals(sUnique, UNIQUE_IN_SYSTEM))
@@ -149,7 +216,17 @@ ALERROR CStationEncounterDesc::InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXML
 			}
 		}
 
-	//	Level frequency
+	//	System criteria
+
+	if (pDesc->FindAttribute(SYSTEM_CRITERIA_ATTRIB, &sAttrib))
+		{
+		if (error = CTopologyNode::ParseCriteria(sAttrib, &m_SystemCriteria, &Ctx.sError))
+			return error;
+
+		m_bSystemCriteria = true;
+		}
+
+	//	Level frequency and criteria
 
 	m_sLevelFrequency = pDesc->GetAttribute(LEVEL_FREQUENCY_ATTRIB);
 	m_sLocationCriteria = pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB);
@@ -167,3 +244,73 @@ ALERROR CStationEncounterDesc::InitFromStationTypeXML (SDesignLoadCtx &Ctx, CXML
 
 	return NOERROR;
 	}
+
+void CStationEncounterDesc::InitLevelFrequency (void)
+
+//	InitLevelFrequency
+//
+//	Initializes m_sLevelFrequency if it is not set and if we have a system
+//	criteria. This must be called only after the topology has been initialized.
+
+	{
+	int i;
+
+	if ((m_sLevelFrequency.IsBlank() || m_bAutoLevelFrequency)
+			&& m_bSystemCriteria)
+		{
+		//	Start with no encounters
+
+		m_sLevelFrequency = CString("----- ----- ----- ----- -----");
+
+		//	Loop over all nodes and check to see if we appear at the node.
+		//	If we do, we mark that level 'common.'
+
+		CTopologyNode::SCriteriaCtx Ctx;
+		CTopology &Topology = g_pUniverse->GetTopology();
+		for (i = 0; i < Topology.GetTopologyNodeCount(); i++)
+			{
+			CTopologyNode *pNode = Topology.GetTopologyNode(i);
+
+			if (pNode->MatchesCriteria(Ctx, m_SystemCriteria))
+				::SetFrequencyByLevel(m_sLevelFrequency, pNode->GetLevel(), ftCommon);
+			}
+
+		//	Remember that we initialized this so that we can save it out.
+
+		m_bAutoLevelFrequency = true;
+		}
+	}
+
+void CStationEncounterDesc::ReadFromStream (SUniverseLoadCtx &Ctx)
+
+//	ReadFromStream
+//
+//	Reads from a stream
+
+	{
+	CString sLevelFrequency;
+
+	sLevelFrequency.ReadFromStream(Ctx.pStream);
+	if (!sLevelFrequency.IsBlank())
+		{
+		m_sLevelFrequency = sLevelFrequency;
+		m_bAutoLevelFrequency = true;
+		}
+	}
+
+void CStationEncounterDesc::WriteToStream (IWriteStream *pStream)
+
+//	WriteToStream
+//
+//	Writes to a stream
+
+	{
+	//	We only need to write the level frequency if we generated it from
+	//	topology.
+
+	if (m_bAutoLevelFrequency)
+		m_sLevelFrequency.WriteToStream(pStream);
+	else
+		NULL_STR.WriteToStream(pStream);
+	}
+

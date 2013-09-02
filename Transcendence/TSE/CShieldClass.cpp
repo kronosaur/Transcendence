@@ -161,7 +161,7 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 		iReflectChance = Max(iReflectChance, MAX_REFLECTION_CHANCE);
 	if (iReflectChance 
 			&& Ctx.pCause 
-			&& Ctx.Damage.GetShieldDamage() == 0)
+			&& Ctx.Damage.GetShieldDamageLevel() == 0)
 		{
 		//	Compute the chance that we will reflect (based on the strength of
 		//	our shields)
@@ -371,11 +371,14 @@ void CShieldClass::CalcMinMaxHP (CItemCtx &Ctx, int iCharges, int iArmorSegs, in
 
 	if (Ctx.GetSource() && Ctx.GetDevice())
 		{
+		CItemEnhancementStack *pEnhancements = Ctx.GetDevice()->GetEnhancements();
+
 		iMax = FireGetMaxHP(Ctx.GetDevice(), Ctx.GetSource(), iMax);
 
 		//	Apply bonus from device (which includes mods)
 
-		iMax += (iMax * Ctx.GetDevice()->GetBonus() / 100);
+		if (pEnhancements)
+			iMax += (iMax * pEnhancements->GetBonus() / 100);
 		}
 
 	//	Otherwise, we just apply mods
@@ -668,8 +671,7 @@ int CShieldClass::FireGetMaxHP (CInstalledDevice *pDevice, CSpaceObject *pSource
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
+		Ctx.SaveAndDefineItemVar(pSource->GetItemForDevice(pDevice));
 		Ctx.DefineInteger(CONSTLIT("aMaxHP"), iMaxHP);
 
 		ICCItem *pResult = Ctx.Run(Event);
@@ -698,8 +700,7 @@ void CShieldClass::FireOnShieldDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 
 		CCodeChainCtx CCCtx;
 		CCCtx.SaveAndDefineSourceVar(ItemCtx.GetSource());
-		CCCtx.SaveItemVar();
-		CCCtx.DefineItem(ItemCtx);
+		CCCtx.SaveAndDefineItemVar(ItemCtx);
 
 		CCCtx.DefineInteger(CONSTLIT("aArmorSeg"), Ctx.iSectHit);
 		CCCtx.DefineSpaceObject(CONSTLIT("aCause"), Ctx.pCause);
@@ -795,8 +796,7 @@ void CShieldClass::FireOnShieldDown (CInstalledDevice *pDevice, CSpaceObject *pS
 		CCodeChainCtx Ctx;
 
 		Ctx.SaveAndDefineSourceVar(pSource);
-		Ctx.SaveItemVar();
-		Ctx.DefineItem(pSource->GetItemForDevice(pDevice));
+		Ctx.SaveAndDefineItemVar(pSource->GetItemForDevice(pDevice));
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -816,9 +816,20 @@ int CShieldClass::GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage)
 
 	int iAdj = m_DamageAdj.GetAdj(Damage.GetDamageType());
 
-	//	Adjust based on the type of damage
+	//	Adjust based on difference in level (negative numbers means the shield
+	//	is lower than the damage level):
+	//
+	//	...
+	//	-3	=	4.5x damage
+	//	-2	=	4x damage
+	//	-1	=	3.5x damage
+	//	0	=	3x damage
+	//	1	=	2.5x damage
+	//	2	=	2x damage
+	//	3	=	1.5x damage
+	//	>3	=	1x damage
 
-	if (Damage.GetShieldDamage())
+	if (Damage.GetShieldDamageLevel())
 		iAdj = iAdj * Max(100, 300 + (50 * (Damage.GetShieldDamageLevel() - GetLevel()))) / 100;
 
 	//	Adjust based on enhancements
@@ -884,9 +895,9 @@ int CShieldClass::GetMaxHP (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 	//	Adjust based on enhancements
 
-	int iBonus = pDevice->GetBonus();
-	if (iBonus != 0)
-		iMax = iMax + ((iMax * iBonus) / 100);
+	CItemEnhancementStack *pEnhancements = pDevice->GetEnhancements();
+	if (pEnhancements)
+		iMax = iMax + ((iMax * pEnhancements->GetBonus()) / 100);
 
 	//	Done
 

@@ -10,6 +10,7 @@
 #define SECONDARY_COLOR_ATTRIB			CONSTLIT("secondaryColor")
 
 #define BEAM_TYPE_HEAVY_BLASTER			CONSTLIT("heavyblaster")
+#define BEAM_TYPE_JAGGED_BOLT			CONSTLIT("jaggedBolt")
 #define BEAM_TYPE_LASER					CONSTLIT("laser")
 #define BEAM_TYPE_LIGHTNING				CONSTLIT("lightning")
 #define BEAM_TYPE_LIGHTNING_BOLT		CONSTLIT("lightningBolt")
@@ -23,7 +24,7 @@
 
 const int LIGHTNING_POINT_COUNT	= 16;			//	Must be a power of 2
 
-void CBeamEffectCreator::CreateLightningGlow (SLineDesc &Line, int iPointCount, CVector *pPoints, int iSize, CG16bitRegion *retRegion)
+void CBeamEffectCreator::CreateLightningGlow (SLineDesc &Line, int iPointCount, CVector *pPoints, int iSize, CG16bitBinaryRegion *retRegion)
 
 //	CreateLightningGlow
 //
@@ -86,6 +87,10 @@ void CBeamEffectCreator::DrawBeam (CG16bitImage &Dest, SLineDesc &Line, SViewpor
 
 		case beamHeavyBlaster:
 			DrawBeamHeavyBlaster(Dest, Line, Ctx);
+			break;
+
+		case beamJaggedBolt:
+			DrawBeamJaggedBolt(Dest, Line, Ctx);
 			break;
 
 		case beamLaser:
@@ -163,7 +168,7 @@ void CBeamEffectCreator::DrawBeamHeavyBlaster (CG16bitImage &Dest, SLineDesc &Li
 	if (iRadius == 0)
 		return;
 
-	CG16bitRegion Region;
+	CG16bitBinaryRegion Region;
 	SPoint Poly[8];
 
 	//	Compute some metrics
@@ -191,6 +196,45 @@ void CBeamEffectCreator::DrawBeamHeavyBlaster (CG16bitImage &Dest, SLineDesc &Li
 	CreateBlasterShape(iAngle, iLengthUnit, iWidthUnit - 1, Poly);
 	Region.CreateFromConvexPolygon(8, Poly);
 	Region.Fill(Dest, Line.xTo, Line.yTo, m_wPrimaryColor);
+	}
+
+void CBeamEffectCreator::DrawBeamJaggedBolt (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx)
+
+//	DrawBeamJaggedBolt
+//
+//	Draws a jagged bolt
+
+	{
+	int i;
+
+	//	Rasterize the line
+
+	CG16bitLinePainter LinePainter;
+	TArray<CG16bitLinePainter::SPixelDesc> Pixels;
+
+	LinePainter.Rasterize(Dest,
+			Line.xFrom,
+			Line.yFrom,
+			Line.xTo,
+			Line.yTo,
+			m_iIntensity,
+			&Pixels);
+
+	for (i = 0; i < Pixels.GetCount(); i++)
+		{
+		const CG16bitLinePainter::SPixelDesc &Pixel = Pixels[i];
+
+		DWORD dwOpacity = Min(Max(0, (int)(255.0 * (1.0 - Absolute(Pixel.rW)))), 255);
+		if (Pixel.dwOpacity != 255)
+			dwOpacity = dwOpacity * Pixel.dwOpacity / 255;
+
+		if (dwOpacity == 255)
+			*(Pixel.pPos) = m_wPrimaryColor;
+		else
+			{
+			*(Pixel.pPos) = CG16bitImage::BlendPixel(*(Pixel.pPos), m_wPrimaryColor, dwOpacity);
+			}
+		}
 	}
 
 void CBeamEffectCreator::DrawBeamLaser (CG16bitImage &Dest, SLineDesc &Line, SViewportPaintCtx &Ctx)
@@ -275,7 +319,7 @@ void CBeamEffectCreator::DrawBeamLightning (CG16bitImage &Dest, SLineDesc &Line,
 		if (iRadius == 0)
 			return;
 
-		CG16bitRegion Region;
+		CG16bitBinaryRegion Region;
 		SPoint Poly[8];
 
 		//	Paint the outer-most glow
@@ -415,7 +459,7 @@ void CBeamEffectCreator::DrawBeamLightningBolt (CG16bitImage &Dest, SLineDesc &L
 			//	Create a polygon for the glow shaped like a wide version of the
 			//	lightning bolt.
 
-			CG16bitRegion GlowRegion;
+			CG16bitBinaryRegion GlowRegion;
 			CreateLightningGlow(Line, iPointCount, pPoints, m_iIntensity, &GlowRegion);
 
 			//	Paint the glow
@@ -456,10 +500,10 @@ void CBeamEffectCreator::DrawBeamLightningBolt (CG16bitImage &Dest, SLineDesc &L
 			//	Create a polygon for the glow shaped like a wide version of the
 			//	lightning bolt.
 
-			CG16bitRegion GlowRegion1;
+			CG16bitBinaryRegion GlowRegion1;
 			CreateLightningGlow(Line, iPointCount, pPoints, m_iIntensity, &GlowRegion1);
 
-			CG16bitRegion GlowRegion2;
+			CG16bitBinaryRegion GlowRegion2;
 			CreateLightningGlow(Line, iPointCount, pPoints, 10, &GlowRegion2);
 
 			//	Paint the glow
@@ -686,7 +730,7 @@ void CBeamEffectCreator::PaintHit (CG16bitImage &Dest, int x, int y, const CVect
 	DrawBeam(Dest, Line, Ctx);
 	}
 
-BeamTypes CBeamEffectCreator::ParseBeamType (const CString &sValue)
+CBeamEffectCreator::BeamTypes CBeamEffectCreator::ParseBeamType (const CString &sValue)
 
 //	ParseBeamType
 //
@@ -713,11 +757,13 @@ BeamTypes CBeamEffectCreator::ParseBeamType (const CString &sValue)
 		return beamGreenLightning;
 	else if (strEquals(sValue, BEAM_TYPE_PARTICLE))
 		return beamParticle;
+	else if (strEquals(sValue, BEAM_TYPE_JAGGED_BOLT))
+		return beamJaggedBolt;
 	else
 		return beamUnknown;
 	}
 
-bool CBeamEffectCreator::PointInImage (int x, int y, int iTick, int iVariant) const
+bool CBeamEffectCreator::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
 
 //	PointInImage
 //

@@ -6,8 +6,10 @@
 
 const int FIXED_POINT =							256;
 const WORD FLAME_CORE_COLOR =					CG16bitImage::RGBValue(255,241,230);
-const WORD FLAME_MIDDLE_COLOR =					CG16bitImage::RGBValue(248,200,12);
-const WORD FLAME_OUTER_COLOR =					CG16bitImage::RGBValue(189,30,0);
+const WORD FLAME_MIDDLE_COLOR =					CG16bitImage::RGBValue(255,208,0);
+const WORD FLAME_OUTER_COLOR =					CG16bitImage::RGBValue(255,59,27);
+//const WORD FLAME_MIDDLE_COLOR =					CG16bitImage::RGBValue(248,200,12);
+//const WORD FLAME_OUTER_COLOR =					CG16bitImage::RGBValue(189,30,0);
 
 #define PAINT_GASEOUS_PARTICLE(Dest,x,y,iWidth,wColor,iFade,iFade2)	\
 	{	\
@@ -203,7 +205,7 @@ void CParticleArray::Paint (CG16bitImage &Dest,
 		{
 		case paintFlame:
 			{
-			int iCore = 1;
+			int iCore = Desc.iMaxLifetime / 6;
 			int iFlame = Desc.iMaxLifetime / 2;
 			int iSmoke = 3 * Desc.iMaxLifetime / 4;
 			int iSmokeBrightness = 80;
@@ -925,7 +927,7 @@ void CParticleArray::Update (SEffectUpdateCtx &Ctx)
 				DamageCtx.pDesc = Ctx.pDamageDesc;
 				DamageCtx.Damage = Ctx.pDamageDesc->m_Damage;
 				DamageCtx.Damage.SetDamage(iDamage);
-				DamageCtx.Damage.AddBonus(Ctx.iDamageBonus);
+				DamageCtx.Damage.AddEnhancements(Ctx.pEnhancements);
 				DamageCtx.Damage.SetCause(Ctx.iCause);
 				if (Ctx.bAutomatedWeapon)
 					DamageCtx.Damage.SetAutomatedWeapon();

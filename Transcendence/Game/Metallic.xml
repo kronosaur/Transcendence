@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- TABLES -->
+
+	<SystemPartTable unid="&tbMetallicPlanets;">
+
+		<MetallicPrimary>
+			<LocationCriteriaTable>
+				<Table criteria="*innerSystem">
+					<Lookup chance="100" table="MetallicPlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*lifeZone">
+					<Lookup chance="100" table="MetallicPlanetoidPrimary"/>
+				</Table>
+				<Table criteria="*outerSystem">
+					<Lookup chance="100" table="MetallicPlanetoidPrimary"/>
+				</Table>
+			</LocationCriteriaTable>
+		</MetallicPrimary>
+
+		<MetallicPlanetoidPrimary>
+			<Lookup table="StandardPlanetoidMorphology">
+				<_PlanetType>
+					<Table>
+						<Station chance="60" type="&stMetallicPlanetoidSizeE;" showOrbit="true"/>
+						<Station chance="30" type="&stMetallicPlanetoidSizeF;" showOrbit="true"/>
+						<Station chance="10" type="&stMetallicPlanetoidSizeG;" showOrbit="true"/>
+					</Table>
+				</_PlanetType>
+				<_PlanetLabel>
+					<Label attributes="metallic, planet, planetary, planetoid"/>
+				</_PlanetLabel>
+			</Lookup>
+		</MetallicPlanetoidPrimary>
+
+	</SystemPartTable>
+
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Size A Metallic Asteroid -->
+
+	<StationType UNID="&stMetallicAsteroidSizeA;"
+		name=				"(metallic asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" table="&tbMetallicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Metallic Asteroid -->
+
+	<StationType UNID="&stMetallicAsteroidSizeB;"
+		name=				"(metallic asteroid)"
+		scale=				"world"
+		size=				"55"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
+
+			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d6" table="&tbMetallicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Metallic Asteroid -->
+
+	<StationType UNID="&stMetallicAsteroidSizeC;"
+		name=				"(metallic asteroid)"
+		scale=				"world"
+		size=				"250"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="0"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="90"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="180"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="270"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="360"		imageWidth="90" imageHeight="90"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="0"   imageY="450"		imageWidth="90" imageHeight="90"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d8" table="&tbMetallicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Metallic Asteroid -->
+
+	<StationType UNID="&stMetallicAsteroidSizeD;"
+		name=				"(metallic asteroid)"
+		scale=				"world"
+		size=				"625"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, metallic, outer"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="0"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="120"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="240"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="360"		imageWidth="120" imageHeight="120"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="90"  imageY="480"		imageWidth="120" imageHeight="120"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d10" table="&tbMetallicAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 30)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Metallic Planetoid Size E -->
+
+	<StationType UNID="&stMetallicPlanetoidSizeE;"
+		name=				"(metallic planetoid)"
+		scale=				"world"
+		size=				"1150"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone,  metallic, outer, planetoid"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="0"		imageWidth="140" imageHeight="140"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="140"		imageWidth="140" imageHeight="140"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="280"		imageWidth="140" imageHeight="140"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Metallic Planetoid Size F -->
+
+	<StationType UNID="&stMetallicPlanetoidSizeF;"
+		name=				"(metallic planetoid)"
+		scale=				"world"
+		size=				"2050"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, metallic, outer, planetoid"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="0"		imageWidth="150" imageHeight="150"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="150"		imageWidth="150" imageHeight="150"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="350"  imageY="300"		imageWidth="150" imageHeight="150"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Metallic Planetoid Size G -->
+
+	<StationType UNID="&stMetallicPlanetoidSizeG;"
+		name=				"(metallic planetoid)"
+		scale=				"world"
+		size=				"4000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, metallic, outer, planetoid"
+
+		ejectaType=			"&vtMetallicAsteroidEjecta;"
+		>
+		<ImageVariants>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="210"  imageY="450"		imageWidth="180" imageHeight="180"/>
+			<Image	imageID="&rsMetallicAsteroids2;" imageX="390"  imageY="450"		imageWidth="180" imageHeight="180"/>
+		</ImageVariants>
+	</StationType>
+
+<!-- TABLES -->
+
+	<ItemTable unid="&tbMetallicAsteroidOre;">
+		<LevelTable>
+			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itUraniumOre;"/>
+			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-35"	item="&itPlasteelOre;"/>
+			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
+			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itGoldOre;"/>
+			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
+			<Item levelFrequency="--ruc ccccc ccccc ccccc ccccc" count="5-10"	item="&itDuralloyOre;"/>
+			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
+			<Item levelFrequency="---vr uuuuu uuuuu uuuuu uuuuu" count="5-15"	item="&itOrthoSteelOre;"/>
+			<Item levelFrequency="----- vrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itIthaliumOre;"/>
+		</LevelTable>
+	</ItemTable>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsMetallicAsteroids;"		bitmap="Resources\MetallicAsteroids.jpg"	bitmask="Resources\MetallicAsteroidsMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsMetallicAsteroids2;"	bitmap="Resources\MetallicAsteroids2.jpg"	bitmask="Resources\MetallicAsteroids2Mask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

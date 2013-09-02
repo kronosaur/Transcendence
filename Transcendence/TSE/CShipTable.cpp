@@ -22,6 +22,7 @@
 #define CONTROLLER_ATTRIB			CONSTLIT("controller")
 #define COUNT_ATTRIB				CONSTLIT("count")
 #define EVENT_HANDLER_ATTRIB		CONSTLIT("eventHandler")
+#define ITEM_TABLE_ATTRIB			CONSTLIT("itemTable")
 #define LEVEL_FREQUENCY_ATTRIB		CONSTLIT("levelFrequency")
 #define MAX_SHIPS_ATTRIB			CONSTLIT("maxShips")
 #define NAME_ATTRIB					CONSTLIT("name")
@@ -37,6 +38,7 @@ class CLevelTableOfShipGenerators : public IShipGenerator
 		virtual ~CLevelTableOfShipGenerators (void);
 		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
+		virtual Metric GetAverageLevelStrength (int iLevel);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual ALERROR ValidateForRandomEncounter (void);
@@ -44,6 +46,11 @@ class CLevelTableOfShipGenerators : public IShipGenerator
 	private:
 		struct SEntry
 			{
+			SEntry (void) :
+					pEntry(NULL),
+					iChance(0)
+				{ }
+
 			IShipGenerator *pEntry;
 			CString sLevelFrequency;
 			int iChance;
@@ -60,6 +67,7 @@ class CLookupShipTable : public IShipGenerator
 	public:
 		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
+		virtual Metric GetAverageLevelStrength (int iLevel) { return m_Count.GetAveValueFloat() * m_pTable->GetAverageLevelStrength(iLevel); }
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
@@ -79,6 +87,7 @@ class CSingleShip : public IShipGenerator
 		virtual ~CSingleShip (void);
 		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
+		virtual Metric GetAverageLevelStrength (int iLevel);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual ALERROR ValidateForRandomEncounter (void);
@@ -106,7 +115,7 @@ class CSingleShip : public IShipGenerator
 		CDesignTypeRef<CDesignType> m_pOverride;	//	Override (event handler)
 		CString m_sController;						//	Controller to use (or "" to use default)
 		IShipController::OrderTypes m_iOrder;		//	Ship order
-		DWORD m_dwOrderData;						//	Order data
+		IShipController::SData m_OrderData;			//	Order data
 	};
 
 class CTableOfShipGenerators : public IShipGenerator
@@ -116,6 +125,7 @@ class CTableOfShipGenerators : public IShipGenerator
 		virtual ~CTableOfShipGenerators (void);
 		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
+		virtual Metric GetAverageLevelStrength (int iLevel);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual ALERROR ValidateForRandomEncounter (void);
@@ -123,6 +133,11 @@ class CTableOfShipGenerators : public IShipGenerator
 	private:
 		struct SEntry
 			{
+			SEntry (void) :
+					pEntry(NULL),
+					iChance(0)
+				{ }
+
 			IShipGenerator *pEntry;
 			int iChance;
 			};
@@ -139,6 +154,7 @@ class CGroupOfShipGenerators : public IShipGenerator
 		virtual ~CGroupOfShipGenerators (void);
 		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		virtual void CreateShips (SShipCreateCtx &Ctx);
+		virtual Metric GetAverageLevelStrength (int iLevel);
 		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual ALERROR ValidateForRandomEncounter (void);
@@ -356,6 +372,40 @@ void CLevelTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				}
 			}
 		}
+	}
+
+Metric CLevelTableOfShipGenerators::GetAverageLevelStrength (int iLevel)
+
+//	GetAverageLevelStrength
+//
+//	Returns average strength of ships created by generator (using iLevel as the
+//	standard).
+
+	{
+	int i;
+
+	Metric rCount = m_Count.GetAveValueFloat();
+
+	//	Compute the table for this level.
+
+	Metric rTotal = 0.0;
+	int iTotalChance = 0;
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		int iChance = GetFrequencyByLevel(m_Table[i].sLevelFrequency, iLevel);
+		iTotalChance += iChance;
+		}
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		int iChance = GetFrequencyByLevel(m_Table[i].sLevelFrequency, iLevel);
+		if (iChance > 0)
+			rTotal += (rCount * m_Table[i].pEntry->GetAverageLevelStrength(iLevel) * (Metric)iChance / (Metric)iTotalChance);
+		}
+
+	//	Done
+
+	return rTotal;
 	}
 
 ALERROR CLevelTableOfShipGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -595,7 +645,7 @@ void CSingleShip::CreateShip (SShipCreateCtx &Ctx,
 	GeneratorCtx.dwCreateFlags = Ctx.dwFlags;
 
 	GeneratorCtx.iOrder = m_iOrder;
-	GeneratorCtx.dwOrderData = m_dwOrderData;
+	GeneratorCtx.OrderData = m_OrderData;
 
 	GeneratorCtx.pBase = Ctx.pBase;
 	GeneratorCtx.pTarget = Ctx.pTarget;
@@ -744,6 +794,28 @@ void CSingleShip::CreateShips (SShipCreateCtx &Ctx)
 		}
 	}
 
+Metric CSingleShip::GetAverageLevelStrength (int iLevel)
+
+//	GetAverageLevelStrength
+//
+//	Returns average strength of ships created by generator (using iLevel as the
+//	standard).
+
+	{
+	//	Compute based on the level of the ship relative to the input level.
+
+	Metric rTotal = m_Count.GetAveValueFloat() * ::CalcLevelDiffStrength(m_pShipClass->GetLevel() - iLevel);
+
+	//	Add any escorts
+
+	if (m_pEscorts)
+		rTotal += m_pEscorts->GetAverageLevelStrength(iLevel);
+
+	//	Done
+
+	return rTotal;
+	}
+
 ALERROR CSingleShip::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	LoadFromXML
@@ -800,29 +872,41 @@ ALERROR CSingleShip::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		}
 
 	//	Load orders
-	//	For compatibility, some orders have alternate strings
 
-	CString sOrders = pDesc->GetAttribute(ORDERS_ATTRIB);
-	if (strEquals(sOrders, CONSTLIT("trade route")))
-		sOrders = CONSTLIT("tradeRoute");
+	if (!ParseOrderString(pDesc->GetAttribute(ORDERS_ATTRIB), &m_iOrder, &m_OrderData))
+		{
+		Ctx.sError = strPatternSubst("Invalid order: %s", pDesc->GetAttribute(ORDERS_ATTRIB));
+		return ERR_FAIL;
+		}
 
-	m_iOrder = GetOrderType(sOrders);
+	//	For backwards compatibility, handle patrol distance
+
 	switch (m_iOrder)
 		{
 		case IShipController::orderPatrol:
-			m_dwOrderData = Max(1, pDesc->GetAttributeInteger(PATROL_DIST_ATTRIB));
+			if (m_OrderData.AsInteger() == 0)
+				m_OrderData = IShipController::SData(pDesc->GetAttributeIntegerBounded(PATROL_DIST_ATTRIB, 1, -1, 1));
 			break;
-
-		default:
-			m_dwOrderData = 0;
 		}
 
 	//	Load items
 
+	DWORD dwItemTableUNID;
 	CXMLElement *pItems = pDesc->GetContentElementByTag(ITEMS_TAG);
 	if (pItems)
 		{
 		if (error = IItemGenerator::CreateFromXML(Ctx, pItems, &m_pItems))
+			return error;
+		}
+	else if (pDesc->FindAttributeInteger(ITEM_TABLE_ATTRIB, (int *)&dwItemTableUNID))
+		{
+		if (dwItemTableUNID == 0)
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Must specify a valid item table UNID: %s"), pDesc->GetAttribute(ITEM_TABLE_ATTRIB));
+			return ERR_FAIL;
+			}
+
+		if (error = IItemGenerator::CreateLookupTable(Ctx, dwItemTableUNID, &m_pItems))
 			return error;
 		}
 	else
@@ -946,6 +1030,30 @@ void CTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				}
 			}
 		}
+	}
+
+Metric CTableOfShipGenerators::GetAverageLevelStrength (int iLevel)
+
+//	GetAverageLevelStrength
+//
+//	Returns average strength of ships created by generator (using iLevel as the
+//	standard).
+
+	{
+	int i;
+
+	if (m_iTotalChance == 0)
+		return 0.0;
+
+	Metric rCount = m_Count.GetAveValueFloat();
+
+	//	Average value is proportional to chances.
+
+	Metric rTotal = 0.0;
+	for (i = 0; i < m_Table.GetCount(); i++)
+		rTotal += (rCount * (Metric)m_Table[i].pEntry->GetAverageLevelStrength(iLevel) * (Metric)m_Table[i].iChance / (Metric)m_iTotalChance);
+
+	return rTotal;
 	}
 
 ALERROR CTableOfShipGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -1072,6 +1180,32 @@ void CGroupOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				m_Table[i].pEntry->CreateShips(Ctx);
 			}
 		}
+	}
+
+Metric CGroupOfShipGenerators::GetAverageLevelStrength (int iLevel)
+
+//	GetAverageLevelStrength
+//
+//	Returns average strength of ships created by generator (using iLevel as the
+//	standard).
+
+	{
+	int i;
+
+	Metric rCount = m_Count.GetAveValueFloat();
+
+	//	Average value is proportional to chances.
+
+	Metric rTotal = 0.0;
+	for (i = 0; i < m_iTableCount; i++)
+		{
+		if (m_Table[i].iChance >= 100)
+			rTotal += (rCount * m_Table[i].pEntry->GetAverageLevelStrength(iLevel) * (Metric)m_Table[i].iChance / 100.0);
+		else
+			rTotal += rCount * m_Table[i].pEntry->GetAverageLevelStrength(iLevel);
+		}
+
+	return rTotal;
 	}
 
 ALERROR CGroupOfShipGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)

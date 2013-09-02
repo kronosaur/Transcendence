@@ -75,17 +75,18 @@ ALERROR CEffectVariantCreator::CreateEffect (CSystem *pSystem,
 										   const CVector &vPos,
 										   const CVector &vVel,
 										   int iRotation,
-										   int iVariant)
+										   int iVariant,
+										   CSpaceObject **retpEffect)
 
 //	CreateEffect
 //
 //	Creates an effect object
 
 	{
-	return ChooseVariant(iVariant)->pEffect->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation, iVariant);
+	return ChooseVariant(iVariant)->pEffect->CreateEffect(pSystem, pAnchor, vPos, vVel, iRotation, iVariant, retpEffect);
 	}
 
-IEffectPainter *CEffectVariantCreator::CreatePainter (void)
+IEffectPainter *CEffectVariantCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -241,7 +242,7 @@ void CEffectVariantPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 	if (m_Cache[iIndex] == NULL)
 		{
 		CEffectCreator *pCreator = m_pCreator->GetVariantCreator(iIndex);
-		m_Cache[iIndex] = pCreator->CreatePainter();
+		m_Cache[iIndex] = pCreator->CreatePainter(CCreatePainterCtx());
 		}
 
 	//	Paint

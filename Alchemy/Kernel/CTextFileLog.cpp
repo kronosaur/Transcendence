@@ -67,6 +67,7 @@ ALERROR CTextFileLog::Create (BOOL bAppend)
 			NULL);
 	if (m_hFile == INVALID_HANDLE_VALUE)
 		{
+		DWORD dwError = ::GetLastError();
 		m_hFile = NULL;
 		return ERR_FAIL;
 		}

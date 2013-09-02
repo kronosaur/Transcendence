@@ -198,17 +198,17 @@
 
 		<Items>
 			<RandomItem count="20" 
-					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="20" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"2"
 					levelCurve=		"1"
 					/>
 			<RandomItem count="5" 
-					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotForSale;"
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
 					level=			"3"
 					levelCurve=		"1"
 					/>
@@ -1039,7 +1039,7 @@
 					<Pub desc="You are in a large restaurant and bar filled with monument visitors.">
 						
 						<Actions>
-							<Action name="Sit at the bar" default="1" key="S">
+							<Action name="Sit at the Bar" default="1" key="S">
 								(if (geq (plyGetCredits gPlayer) 10)
 									(block Nil
 										(plyCharge gPlayer 10)
@@ -1149,7 +1149,7 @@
 							)
 					</Action>
 
-					<Action name="Repair or replace armor" key="A" >
+					<Action name="Repair or Replace Armor" key="A" >
 						(block Nil
 							(setq gTechLevel 7)
 							(setq gArmorSegment 0)
@@ -1159,7 +1159,7 @@
 							)
 					</Action>
 
-					<Action name="Install device" key="D" >
+					<Action name="Install Device" key="D" >
 						(block Nil
 							(setq gTechLevel 6)
 							(setq gTechModifier Nil)
@@ -1169,14 +1169,14 @@
 							)
 					</Action>
 
-					<Action name="Remove device" key="V" >
+					<Action name="Remove Device" key="V" >
 						(block Nil
 							(setq gMargin 100)
 							(scrShowScreen gScreen "&dsRemoveDevice;")
 							)
 					</Action>
 
-					<Action name="Upgrade reactor" key="P" >
+					<Action name="Upgrade Reactor" key="P" >
 						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 							{
 							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
@@ -1519,7 +1519,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy items" default="1" key="B">
+					<Action name="Buy Items" default="1" key="B">
 						(scrShowBuyScreen 
 							"* -Specialty;"
 							Nil						; obsolete
@@ -1532,7 +1532,7 @@
 							)
 					</Action>
 
-					<Action name="Sell items" key="S">
+					<Action name="Sell Items" key="S">
 						(scrShowSellScreen
 							"*"
 							)
@@ -1554,7 +1554,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Buy items" default="1" key="B">
+					<Action name="Buy Items" default="1" key="B">
 						; Buy screen
 						(scrShowBuyScreen 
 							"* +Food; +Specialty;"	; items sold to player
@@ -1702,11 +1702,11 @@
 						(scrSetActionLabel gScreen 0
 							(switch
 								(itmMatches gItem "v")
-									"Enhance drive"
+									"Enhance Drive"
 								(itmMatches gItem "r")
-									"Enhance reactor"
+									"Enhance Reactor"
 								(itmMatches gItem "s")
-									"Enhance shields"
+									"Enhance Shields"
 								"Enhance"
 								)
 							"E"
@@ -2298,7 +2298,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Open containment" key="O" default="1">
+							<Action name="Open Containment" key="O" default="1">
 								(block (theSphere)
 									(setq theSphere (item (objGetItems gSource "* +unid:&itDallSphere;") 0))
 									
@@ -2409,12 +2409,17 @@
 
 			<Station type="&stA-TypeStar;" name="St. Katharine's Star"/>
 
+			<AddAttribute attributes="ATypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="480"		attributes="innerSystem, metallicComp, moltenZone"/>
+			<AddTerritory minRadius="480"	maxRadius="800"		attributes="lifeZone, waterComp, biosphereZone"/>
+			<AddTerritory minRadius="800"	maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
+
 			<!-- Redglow -->
 
 			<Orbitals distance="50" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stVolcanicPlanet;" name="Redglow" showOrbit="true" />
+						<Station type="&stVolcanicPlanetoidSizeG;" name="Redglow" showOrbit="true" />
 					</Primary>
 
 					<Orbitals distance="18" angle="equidistant">
@@ -2446,13 +2451,12 @@
 			<Orbitals distance="110" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stDesertPlanet;" name="Radiant" showOrbit="true"/>
+						<Station type="&stDesertTerrestrialSizeH;" name="Radiant" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals count="1d3" distance="10" angle="equidistant">
 						<Lookup table="FriendlyStations" />
 					</Orbitals>
-
 				</Group>
 			</Orbitals>
 
@@ -2461,7 +2465,7 @@
 			<Orbitals distance="260" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stBiospherePlanet;" name="Incandescent" showOrbit="true"/>
+						<Station type="&stBiosphereTerrestrialSizeI;" name="Incandescent" showOrbit="true"/>
 						
 						<Station type="&stStKatsArcology;"/>
 						
@@ -2514,7 +2518,7 @@
 					<!-- Majestic -->
 
 					<Primary>
-						<Station type="&stHydrogenGasGiant;" name="Majestic" showOrbit="true" />
+						<Station type="&stHydrogenGasGiantSizeM;" name="Majestic" showOrbit="true" />
 					</Primary>
 
 					<!-- Majestic I -->
@@ -2522,7 +2526,7 @@
 					<Orbitals distance="22" angle="random">
 						<Group>
 							<Primary>
-								<Station type="&stCrateredPlanet;" name="Nearworld"/>
+								<Station type="&stRockyPlanetoidSizeE;" name="Nearworld"/>
 							</Primary>
 
 							<Orbitals count="1d3-1" distance="10" angle="equidistant">
@@ -2537,7 +2541,7 @@
 					<Orbitals distance="45" angle="random">
 						<Group>
 							<Primary>
-								<Station type="&stIcePlanet;" name="Farworld"/>
+								<Station type="&stIcePlanetoidSizeG;" name="Farworld"/>
 							</Primary>
 
 							<Orbitals distance="12" angle="equidistant">
@@ -2553,11 +2557,11 @@
 					<Trojan>
 						<Group>
 							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyAsteroidSizeA;"/>
 							</Orbitals>
 
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyAsteroidSizeB;"/>
 							</Orbitals>
 
 							<Table>
@@ -2571,11 +2575,11 @@
 					<AntiTrojan>
 						<Group>
 							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidSmall"/>
+								<Station type="&stRockyAsteroidSizeA;"/>
 							</Orbitals>
 
 							<Orbitals count="1d6" distance="2d8+8" angle="random">
-								<Lookup table="AsteroidMedium"/>
+								<Station type="&stRockyAsteroidSizeB;"/>
 							</Orbitals>
 
 							<Table>
@@ -2594,7 +2598,7 @@
 			<Orbitals distance="10" scale="light-minute" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stIcePlanet;" name="Fulgent" showOrbit="true"/>
+						<Station type="&stIcePlanetoidSizeG;" name="Fulgent" showOrbit="true"/>
 					</Primary>
 
 					<Orbitals distance="18" angle="equidistant">
@@ -2626,11 +2630,11 @@
 			<Orbitals distance="780" angle="random">
 				<Group>
 					<Siblings count="500" distribution="4d60-122">
-						<Lookup table="AsteroidSmallFrost"/>
+						<Station type="&stIceAsteroidSizeA;"/>
 					</Siblings>
 
 					<Siblings count="50" distribution="4d20-42">
-						<Lookup table="AsteroidMediumFrost"/>
+						<Station type="&stIceAsteroidSizeB;"/>
 					</Siblings>
 				</Group>
 			</Orbitals>
@@ -2644,9 +2648,8 @@
 			<Orbitals distance="17" scale="light-minute" angle="random">
 				<Group>
 					<Primary>
-						<Station type="&stIcePlanet;" name="Tenebrous" showOrbit="true"/>
+						<Station type="&stPrimordialPlanetoidSizeG;" name="Tenebrous" showOrbit="true"/>
 					</Primary>
-
 				</Group>
 			</Orbitals>
 

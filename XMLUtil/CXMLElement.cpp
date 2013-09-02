@@ -202,6 +202,25 @@ bool CXMLElement::FindAttributeBool (const CString &sName, bool *retbValue)
 		return false;
 	}
 
+bool CXMLElement::FindAttributeDouble (const CString &sName, double *retrValue)
+
+//	FindAttributeDouble
+//
+//	Finds an attribute.
+
+	{
+	CString *pValue;
+
+	if (m_Attributes.Lookup(sName, (CObject **)&pValue) == NOERROR)
+		{
+		if (retrValue)
+			*retrValue = strToDouble(*pValue, 0.0);
+		return true;
+		}
+	else
+		return false;
+	}
+
 bool CXMLElement::FindAttributeInteger (const CString &sName, int *retiValue)
 
 //	FindAttributeInteger
@@ -252,6 +271,16 @@ bool CXMLElement::GetAttributeBool (const CString &sName)
 		return false;
 	}
 
+double CXMLElement::GetAttributeDouble (const CString &sName)
+
+//	GetAttributeDouble
+//
+//	Returns a double attribute.
+
+	{
+	return strToDouble(GetAttribute(sName), 0.0);
+	}
+
 float CXMLElement::GetAttributeFloat (const CString &sName)
 
 //	GetAttributeFloat
@@ -259,9 +288,7 @@ float CXMLElement::GetAttributeFloat (const CString &sName)
 //	Returns a floating point attribute
 
 	{
-#ifndef LATER
-	return (float)GetAttributeInteger(sName);
-#endif
+	return (float)strToDouble(GetAttribute(sName), 0.0);
 	}
 
 int CXMLElement::GetAttributeInteger (const CString &sName)

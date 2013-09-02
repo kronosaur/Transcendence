@@ -118,14 +118,18 @@
 				;
 				; In addition, the following optional fields are supported
 				;
-				;	totalPrice:				The total price to install (may include purchase price)
-				;	installPriceAdj:		Installation price (only if totalPrice is Nil)
-				;	currencyUsed:			The currency used
-				;	maxTechLevel:			The maximum tech level we will install
-				;	techCriteria:			If not Nil, the item must match this criteria
-				;	checkMilitaryID:		If True, we check for military ID, if necessary
-				;	itemInCargo:			If True, item is in player's cargo hold
 				;	buyAndInstall:			If True, we're installing as part of purchase
+				;	checkMilitaryID:		If True, we check for military ID, if necessary
+				;	checkTotalPower:		If True, we fail unless the total power of all devices matches reactor output
+				;	currencyUsed:			The currency used
+				;	installerObj:			Object installing the device (if Nil, we assume a station)
+				;	installPriceAdj:		Installation price (only if totalPrice is Nil)
+				;	itemInCargo:			If True, item is in player's cargo hold
+				;	maxTechLevel:			The maximum tech level we will install
+				;	noCargoCheck:			If True, then we don't check to see if the old device fits in cargo
+				;	targetObj:				Object on which to install (if Nil, we assume player ship)
+				;	techCriteria:			If not Nil, the item must match this criteria
+				;	totalPrice:				The total price to install (may include purchase price)
 				;
 				; We return a struct with the following elements:
 				;
@@ -133,18 +137,44 @@
 				;	price:					Total installation cost
 				;	desc:					Description of installation attempt
 
-				(block (thisItem totalCost canInstall desc theResult itemName currencyUsed)
+				(block (thisItem totalCost canInstall desc itemName currencyUsed targetObj installerObj textYourShip textWe textYour)
 				
 					(setq thisItem (@ data 'item))
 					(setq currencyUsed (@ data 'currencyUsed))
-					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency gPlayerShip)))
+					(setq targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
+					(setq installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
+					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency targetObj)))
 					(setq itemName (itmGetName thisItem (if (@ data 'buyAndInstall) 0x40 0x04)))
 					(setq canInstall Nil)
-
-					(if thisItem
-						(block (cargoNeeded replaceCriteria)
+					
+					;	If the target object is not the player's ship, then we need to modify
+					;	some text
+					
+					(setq textYourShip
+						(if (eq targetObj gPlayerShip)
+							"your ship"
+							(cat "the " (objGetName targetObj 0x00))
+							)
+						)
 						
-							; Compute the cost to install
+					(setq textWe
+						(if (eq installerObj gPlayerShip)
+							"you"
+							"we"
+							)
+						)
+						
+					(setq textYour
+						(if (eq targetObj gPlayerShip)
+							"your"
+							"the"
+							)
+						)
+						
+					(if thisItem
+						(block (cargoNeeded itemToReplace resultMessage resultCode returnValue)
+						
+							;	Compute the cost to install
 							
 							(switch
 								(@ data 'totalPrice)
@@ -152,22 +182,27 @@
 								
 								(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
 								)
+								
+							;	Ask the object is we can install the item
 
-							(setq theResult (shpCanInstallDevice gPlayerShip thisItem))
-							(setq replaceCriteria Nil)
-
+							(setq returnValue (objCanInstallItem targetObj thisItem))
+							(setq resultCode (@ returnValue 1))
+							(setq resultMessage (@ returnValue 2))
+							(setq itemToReplace (@ returnValue 3))
+							
 							(switch
-								; If we don't have the technology, we cannot install
-								; (except for specific items that we know about)
+								;	If we don't have the technology, we cannot install
+								;	(except for specific items that we know about)
+								
 								(and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
 										(or (not (@ data 'techCriteria))
 											(not (itmMatches thisItem (@ data 'techCriteria))))
 										)
-									(setq desc (cat "We do not have the technology to install " itemName " on your ship."))
+									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
 
 								(and (@ data 'checkMilitaryID)
 										(itmHasModifier thisItem "Military")
-										(not (objGetItems gPlayerShip "*+MilitaryID"))
+										(not (objGetItems targetObj "*+MilitaryID"))
 										)
 									(setq desc (cat "You must have a military ID to use " itemName "."))
 									
@@ -176,63 +211,43 @@
 										)
 									(setq desc "We do not install illegal items.")
 
-								(eq theResult 2)
-									(setq desc "Your ship cannot support any more devices.")
+								(eq resultCode 'cannotInstall)
+									(setq desc resultMessage)
 
-								(eq theResult 4)
+								(eq resultCode 'noDeviceSlotsLeft)
+									(setq desc (cat (strCapitalize textYourShip) " cannot support any more devices."))
+
+								(eq resultCode 'reactorTooWeak)
+									(setq desc (cat (strCapitalize textYourShip) "'s reactor is not powerful enough for this device."))
+
+								(eq resultCode 'reactorIncompatible)
+									(setq desc (cat "The power output of " itemName " is too high for " textYourShip "."))
+
+								(eq resultCode 'noWeaponSlotsLeft)
+									(setq desc (cat (strCapitalize textYourShip) " cannot support any more weapons."))
+
+								(eq resultCode 'noNonWeaponSlotsLeft)
+									(setq desc (cat (strCapitalize textYourShip) " cannot support any more non-weapon devices."))
+									
+								(and (eq resultCode 'replacementRequired)
+										(eq (itmGetType thisItem) (itmGetType itemToReplace))
+										(eq (itmIsEnhanced thisItem) (itmIsEnhanced itemToReplace))
+										(eq (itmGetProperty thisItem 'damaged) (itmGetProperty itemToReplace 'damaged))
+										(geq (itmGetProperty thisItem 'charges) (itmGetProperty itemToReplace 'charges))
+										)
+									(setq desc (cat (strCapitalize textYourShip) " already has " itemName " (and cannot support more devices unless you remove one first)."))
+									
+								(eq resultCode 'replacementRequired)
 									(block Nil
-										(setq desc (cat "We can remove your shield generator and install " itemName))
-										(setq replaceCriteria "sI")
+										(setq desc (cat (strCapitalize textWe) " can remove " textYour " " (itmGetName itemToReplace 0x80) " and install " itemName))
 										(setq canInstall True)
 										)
-
-								(eq theResult 5)
-									(block Nil
-										(setq desc (cat "We can remove your propulsion system and install " itemName))
-										(setq replaceCriteria "vI")
-										(setq canInstall True)
-										)
-
-								(eq theResult 6)
-									(block Nil
-										(setq desc (cat "We can remove your missile launcher and install " itemName))
-										(setq replaceCriteria "lI")
-										(setq canInstall True)
-										)
-
-								(eq theResult 7)
-									(setq desc "Your ship's reactor is not powerful enough for this device.")
-
-								(eq theResult 8)
-									(setq desc "You already have a cargo expansion system installed.")
-
-								(eq theResult 9)
-									(block Nil
-										(setq desc (cat "We can remove your reactor upgrade and install " itemName))
-										(setq replaceCriteria "rI")
-										(setq canInstall True)
-										)
-
-								(eq theResult 10)
-									(setq desc "The cargo expansion system is too large to be installed in your ship.")
-
-								(eq theResult 11)
-									(setq desc (cat "The power output of " itemName " is too high for your ship."))
-
-								(eq theResult 12)
-									(setq desc "Your ship cannot support any more weapons.")
-
-								(eq theResult 13)
-									(setq desc "Your ship cannot support any more non-weapon devices.")
-
-								(not (isint theResult))
-									(setq desc theResult)
-
-								(not (eq theResult 0))
+									
+								(not (eq resultCode 'ok))
 									(setq desc "This device cannot be installed.")
 
 								(block Nil
-									(setq desc (cat "We can install " itemName " on your ship"))
+									(setq desc (cat (strCapitalize textWe) " can install " itemName " on " textYourShip))
 									(setq canInstall True)
 									)
 								)
@@ -240,36 +255,35 @@
 							; If we need to remove a device, then it will cost more
 
 							(setq cargoNeeded 0)
-							(if (and canInstall replaceCriteria)
-								(objEnumItems gPlayerShip replaceCriteria itemToRemove
-									(block Nil
-										(if (not (@ data 'totalPrice))
-											(setq totalCost 
-												(add totalCost 
-													; Remove cost is 1/2 of install cost
-													(divide (multiply gMargin (itmGetInstallCost itemToRemove currencyUsed)) 200)
-													)
+							(if (and canInstall itemToReplace)
+								(block Nil
+									(if (not (@ data 'totalPrice))
+										(setq totalCost 
+											(add totalCost 
+												; Remove cost is 1/2 of install cost
+												(divide (multiply gMargin (itmGetInstallCost itemToReplace currencyUsed)) 200)
 												)
 											)
+										)
 
-										; See how much cargo space we need to store the old item
+									; See how much cargo space we need to store the old item
 
-										(setq cargoNeeded (itmGetMass itemToRemove))
-										(if (@ data 'isItemInCargo)
-											(setq cargoNeeded (subtract cargoNeeded (itmGetMass thisItem)))
-											)
+									(setq cargoNeeded (itmGetMass itemToReplace))
+									(if (@ data 'itemInCargo)
+										(setq cargoNeeded (subtract cargoNeeded (itmGetMass thisItem)))
 										)
 									)
 								)
 
 							; See if the item fits
 
-							(if canInstall
-								(if (gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
-									(block Nil
-										(setq desc (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap."))
-										(setq canInstall Nil)
-										)
+							(if (and canInstall
+									(gr cargoNeeded (objGetCargoSpaceLeft targetObj))
+									(not (@ data 'noCargoCheck))
+									)
+								(block Nil
+									(setq desc (cat desc ". Unfortunately, there isn't enough room in your cargo hold to do the swap."))
+									(setq canInstall Nil)
 									)
 								)
 
@@ -277,17 +291,31 @@
 
 							(if canInstall
 								(if (gr totalCost 0)
-									(if (gr totalCost (objGetBalance gPlayerShip currencyUsed))
+									(if (gr totalCost (objGetBalance targetObj currencyUsed))
 										(block Nil
 											(setq desc (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost."))
 											(setq canInstall Nil)
 											)
 										(setq desc (cat desc " for " (if (@ data 'buyAndInstall) "an additional " "") (fmtCurrency currencyUsed totalCost) "."))
 										)
-									(setq desc (cat desc " at no charge."))
+										
+									(if (not (eq installerObj gPlayerShip))
+										(setq desc (cat desc " at no charge."))
+										(setq desc (cat desc "."))
+										)
 									)
 								)
+								
+							;	See if we are downgrading
+							
+							(if (and canInstall
+									itemToReplace
+									(ls (itmGetLevel thisItem) (itmGetLevel itemToReplace))
+									)
+								(setq desc (cat desc "  (However, the " (itmGetName itemToReplace 0x00) " is higher level.)"))
+								)
 							)
+							
 						(setq desc "You do not have any devices that can be installed.")
 						)
 
@@ -297,6 +325,43 @@
 						price: totalCost
 						desc: desc
 						}
+					)
+				))
+
+			(setq rpgPageCount (lambda (textDesc)
+				(if (isatom textDesc) 1 (count textDesc))
+				))
+
+			(setq rpgPageDesc (lambda (textDesc pageNo)
+				(block (pageDesc)
+					(switch
+						(eq (typeof textDesc) 'struct)
+							(setq pageDesc textDesc)
+
+						(eq (typeof textDesc) 'string)
+							(setq pageDesc {
+								desc: textDesc
+								})
+
+						(eq (typeof (@ textDesc pageNo)) 'struct)
+							(setq pageDesc (@ textDesc pageNo))
+
+						(setq pageDesc {
+							desc: (@ textDesc pageNo)
+							})
+						)
+
+					(if (not (@ pageDesc 'desc))
+						(set@ pageDesc 'desc "You have successfully completed the mission.")
+						)
+
+					(if (and (@ pageDesc 'nextLabel) (not (@ pageDesc 'nextKey)))
+						(set@ pageDesc 'nextKey
+							(@ (regex (@ pageDesc 'nextLabel) "{$?}*{{$A}+}{$?}*" 'subex) 1)
+							)
+						)
+
+					pageDesc
 					)
 				))
 

@@ -161,10 +161,10 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								13;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								14;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
-const DWORD UNIVERSE_SAVE_VERSION =						19;
-const DWORD SYSTEM_SAVE_VERSION =						86;		//	See: CSystem.cpp
+const DWORD UNIVERSE_SAVE_VERSION =						25;
+const DWORD SYSTEM_SAVE_VERSION =						92;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -187,6 +187,26 @@ enum ELoadStates
 	//	entries to this enum.
 	};
 
+typedef void (*PRESOLVEOBJIDPROC) (void *pCtx, DWORD dwObjID, CSpaceObject *pObj);
+
+class CSpaceObjectAddressResolver
+	{
+	public:
+		bool HasUnresolved (void);
+		void InsertRef (DWORD dwObjID, void *pCtx, PRESOLVEOBJIDPROC pfnResolveProc);
+		void InsertRef (DWORD dwObjID, CSpaceObject **ppAddr);
+		void ResolveRefs (DWORD dwObjID, CSpaceObject *pObj);
+
+	private:
+		struct SEntry
+			{
+			PRESOLVEOBJIDPROC pfnResolveProc;	//	If NULL, then pCtx is an address to fix up.
+			void *pCtx;
+			};
+
+		TSortMap<DWORD, TArray<SEntry>> m_List;
+	};
+
 struct SLoadCtx
 	{
 	SLoadCtx (void) : 
@@ -194,7 +214,6 @@ struct SLoadCtx
 			pStream(NULL),
 			pSystem(NULL),
 			ObjMap(FALSE, TRUE),
-			ForwardReferences(TRUE, FALSE),
 			iLoadState(loadStateUnknown),
 			dwObjClassID(0)
 		{ }
@@ -205,8 +224,7 @@ struct SLoadCtx
 	CSystem *pSystem;					//	System to load into
 
 	CIDTable ObjMap;					//	Map of ID to objects.
-	CIDTable ForwardReferences;			//	Map of ID to CIntArray of addresses
-										//		that need CSpaceObject pointer
+	CSpaceObjectAddressResolver ForwardReferences;
 
 	//	For backwards compatibility we keep track of the list of objects
 	//	that want a subscription to the given ObjID.
@@ -270,13 +288,19 @@ class CAttributeCriteria
 
 		inline int GetCount (void) const { return m_Attribs.GetCount(); }
 		const CString &GetAttribAndRequired (int iIndex, bool *retbRequired) const;
-		const CString &GetAttribAndWeight (int iIndex, int *retiWeight) const;
+		const CString &GetAttribAndWeight (int iIndex, int *retiWeight, bool *retbIsSpecial = NULL) const;
 		inline bool MatchesAll (void) const { return (GetCount() == 0); }
 		ALERROR Parse (const CString &sCriteria, DWORD dwFlags = 0, CString *retsError = NULL);
 
 	private:
-		TArray<CString> m_Attribs;
-		TArray<int> m_Weights;
+		struct SEntry
+			{
+			CString sAttrib;
+			int iWeight;
+			bool bIsSpecial;
+			};
+
+		TArray<SEntry> m_Attribs;
 		DWORD m_dwFlags;
 	};
 
@@ -287,6 +311,7 @@ class DiceRange
 		DiceRange (int iFaces, int iCount, int iBonus);
 
 		inline int GetAveValue (void) const { return (m_iCount * (m_iFaces + 1) / 2) + m_iBonus; }
+		inline Metric GetAveValueFloat (void) const { return (m_iFaces > 0 ? ((m_iCount * (m_iFaces + 1.0) / 2.0) + m_iBonus) : m_iBonus); }
 		inline int GetBonus (void) const { return m_iBonus; }
 		inline int GetCount (void) const { return m_iCount; }
 		inline int GetFaces (void) const { return m_iFaces; }
@@ -444,6 +469,7 @@ class CLanguageDataBlock
 			{
 			resultArray,
 			resultString,
+			resultCCItem,
 
 			resultFound,
 			resultNotFound,
@@ -455,7 +481,8 @@ class CLanguageDataBlock
 			ICCItem *pCode;
 			};
 
-		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText) const;
+		ICCItem *ComposeCCItem (CCodeChain &CC, ICCItem *pValue, const CString &sPlayerName, GenomeTypes iPlayerGenome) const;
+		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult = NULL) const;
 
 		TSortMap<CString, SEntry> m_Data;
 	};
@@ -617,7 +644,7 @@ class CSpaceObjectList
 		inline CSpaceObject *GetObj (int iIndex) const { return m_List[iIndex]; }
 		inline TArray<CSpaceObject *> &GetRawList (void) { return m_List; }
 		inline bool IsEmpty (void) const { return (m_List.GetCount() == 0); }
-		void ReadFromStream (SLoadCtx &Ctx);
+		void ReadFromStream (SLoadCtx &Ctx, bool bIgnoreMissing = false);
 		inline void Remove (int iIndex) { m_List.Delete(iIndex); }
 		bool Remove (CSpaceObject *pObj);
 		inline void RemoveAll (void) { m_List.DeleteAll(); }
@@ -627,6 +654,8 @@ class CSpaceObjectList
 		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 	private:
+		static void ResolveObjProc (void *pCtx, DWORD dwObjID, CSpaceObject *pObj);
+
 		TArray<CSpaceObject *> m_List;
 	};
 
@@ -674,6 +703,7 @@ class CTile
 		CTile (void) : m_dwData(0) { }
 
 		inline DWORD GetTile (void) { return m_dwData; }
+		inline DWORD *GetTilePointer (void) { return &m_dwData; }
 		inline CTileMapSection *GetTileMapSection (void) { return (CTileMapSection *)m_dwData; }
 		inline void SetTile (DWORD dwTile) { m_dwData = dwTile; }
 		inline void SetTileMapSection (CTileMapSection *pMap) { m_dwData = (DWORD)pMap; }
@@ -689,6 +719,7 @@ class CTileMapSection
 		~CTileMapSection (void) { delete [] m_pMap; }
 
 		inline DWORD GetTile (int iIndex) { return m_pMap[iIndex].GetTile(); }
+		inline DWORD *GetTilePointer (int iIndex) { return m_pMap[iIndex].GetTilePointer(); }
 		inline CTileMapSection *GetTileMapSection (int iIndex) { return m_pMap[iIndex].GetTileMapSection(); }
 		inline ALERROR ReadFromStream (int iCount, IReadStream *pStream) { return pStream->Read((char *)m_pMap, iCount * sizeof(CTile)); }
 		inline void SetTile (int iIndex, DWORD dwTile) { m_pMap[iIndex].SetTile(dwTile); }
@@ -724,6 +755,7 @@ class CTileMap
 		static ALERROR CreateFromStream (IReadStream *pStream, CTileMap **retpMap);
 		void GetNext (STileMapEnumerator &i, int *retx, int *rety, DWORD *retdwTile) const;
 		DWORD GetTile (int x, int y) const;
+		DWORD *GetTilePointer (int x, int y);
 		inline int GetScale (void) const { return m_iScale; }
 		int GetTotalSize (void) const;
 		inline int GetSize (void) const { return m_iSize; }
@@ -736,8 +768,9 @@ class CTileMap
 	private:
 		void ComputeDenominator (void);
 		void CleanUpMapSection (CTileMapSection *pMap, int iScale);
+		ALERROR ReadMapSection (IReadStream *pStream, int iScale, CTileMapSection **retpSection);
 		bool SelectNext (STileMapEnumerator &i) const;
-		void WriteMapSection (CTileMapSection *pMap, int iOffset, int iDenom, IWriteStream *pStream) const;
+		void WriteMapSection (CTileMapSection *pMap, int iScale, IWriteStream *pStream) const;
 
 		int m_iSize;
 		int m_iScale;
@@ -1065,6 +1098,8 @@ enum ECodeChainEvents
 	eventDoEvent =						5,
 	eventObjFireEvent =					6,
 	eventOnGlobalTypesInit =			7,
+	eventGetGlobalPlayerPriceAdj =		8,
+	eventGetDescription =				9,
 	};
 
 class CCodeChainCtx
@@ -1078,7 +1113,6 @@ class CCodeChainCtx
 		inline void DefineInteger (const CString &sVar, int iValue) { m_CC.DefineGlobalInteger(sVar, iValue); }
 		void DefineItem (const CItem &Item);
 		void DefineItem (const CString &sVar, const CItem &Item);
-		void DefineItem (CItemCtx &ItemCtx) { DefineItem(CONSTLIT("gItem"), ItemCtx); }
 		void DefineItem (const CString &sVar, CItemCtx &ItemCtx);
 		void DefineItemType (const CString &sVar, CItemType *pType);
 		inline void DefineNil (const CString &sVar) { m_CC.DefineGlobal(sVar, m_CC.CreateNil()); }
@@ -1100,6 +1134,8 @@ class CCodeChainCtx
 		ICCItem *Run (const SEventHandlerDesc &Event);
 		ICCItem *RunLambda (ICCItem *pCode);
 		void SaveAndDefineDataVar (ICCItem *pData);
+		void SaveAndDefineItemVar (const CItem &Item);
+		void SaveAndDefineItemVar (CItemCtx &ItemCtx);
 		void SaveAndDefineSourceVar (CSpaceObject *pSource);
 		void SaveItemVar (void);
 		void SaveSourceVar (void);
@@ -1348,6 +1384,24 @@ class C3DConversion
 		TArray<SEntry> m_Cache;
 	};
 
+//	Wave Generators ------------------------------------------------------------
+
+class CWaveGenerator2
+	{
+	public:
+		CWaveGenerator2 (Metric rWave0Amp, Metric rWave0Cycles, Metric rWave1Amp, Metric rWave1Cycles, bool b0to1 = true);
+
+		Metric GetValue (Metric rAngle);
+
+	private:
+		Metric m_rWave0Amp;
+		Metric m_rWave0Cycles;
+		Metric m_rWave1Amp;
+		Metric m_rWave1Cycles;
+
+		Metric m_rOffset;
+	};
+
 //	Local device storage class -------------------------------------------------
 
 class CDeviceStorage
@@ -1386,6 +1440,7 @@ void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey,
 const DWORD PSL_FLAG_ALLOW_WHITESPACE =		0x00000001;
 void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retList);
 inline void ParseAttributes (const CString &sAttribs, TArray<CString> *retAttribs) { ParseStringList(sAttribs, 0, retAttribs); }
+void ParseIntegerList (const CString &sList, DWORD dwFlags, TArray<int> *retList);
 
 #ifdef LEVEL_ROMAN_NUMERALS
 inline CString strLevel (int iLevel) { return strRomanNumeral(iLevel); }

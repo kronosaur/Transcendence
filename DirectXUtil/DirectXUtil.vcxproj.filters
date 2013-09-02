@@ -68,9 +68,6 @@
     <ClCompile Include="CG16bitRealRegion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CG16bitRegion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CG16bitSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -183,6 +180,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CG16bitPixel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitBinaryRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitRegion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CG16bitLinePainter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

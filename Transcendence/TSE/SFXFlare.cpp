@@ -72,7 +72,7 @@ void CFlareEffectCreator::CreateFlareSpike (int iAngle, int iLength, int iWidth,
 	Poly[3].y = -(int)vPos.GetY();
 	}
 
-IEffectPainter *CFlareEffectCreator::CreatePainter (void)
+IEffectPainter *CFlareEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 //	CreatePainter
 //
@@ -201,7 +201,7 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 					SPoint Spike[4];
 					m_pCreator->CreateFlareSpike(i * iAngle, iRadius, iRadius / MAIN_SPIKE_WIDTH_RATIO, Spike);
 
-					CG16bitRegion Region;
+					CG16bitBinaryRegion Region;
 					Region.CreateFromSimplePolygon(4, Spike);
 					Region.FillTrans(Dest, x, y, wColor, MAIN_SPIKE_OPACITY);
 					}

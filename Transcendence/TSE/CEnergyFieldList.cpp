@@ -121,6 +121,23 @@ void CEnergyFieldList::AddField (CSpaceObject *pSource,
 		*retdwID = pField->GetID();
 	}
 
+void CEnergyFieldList::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const
+
+//	FireOnObjDestroyed
+//
+//	Calls OnObjDestroyed on all overlays
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->FireOnObjDestroyed(pSource, Ctx);
+
+		pField = pField->GetNext();
+		}
+	}
+
 const CString &CEnergyFieldList::GetData (DWORD dwID, const CString &sAttrib)
 
 //	GetData

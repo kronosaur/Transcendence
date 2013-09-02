@@ -57,42 +57,65 @@
 			class=				"Antares I"
 			type=				"freighter"
 
-			mass=				"1000"
-			cargoSpace=			"6000"
-			thrust=				"600"
+			attributes=			"commonwealth,freighter,genericClass"
+			   
+			size=				"135"
+			mass=				"5000"
+			thrustRatio=		"1"
 			maneuver=			"20"
 			maxSpeed=			"8"
+			cargoSpace=			"30000"
 
 			leavesWreck=		"100"
-
-			attributes=			"commonwealth,freighter,genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="315" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="285" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="255" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="225" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="195" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="165" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="135" span="30" armorID="&itHeavyTitaniumPlate;" />
-			<ArmorSection start="105" span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="75"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="45"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-			<ArmorSection start="15"  span="30" armorID="&itHeavyTitaniumPlate;" nonCritical="general"/>
-		</Armor>
+		<Names noArticle="true">Antares Heavy 1%0%0</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyTitaniumPlate;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itRecoillessCannon;" omnidirectional="true"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"20"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"30"
+
+					posX=		"-50"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"28"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"20"
+
+					posX=		"2"
+					posY=		"0"
+					sizeX=		"72"
+					sizeY=		"60"
+					/>
+		</Interior>
+
 		<Items>
 		</Items>
 
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsAntaresIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
-		<Names noArticle="true">Antares Heavy 1%0%0</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"120"
@@ -109,11 +132,11 @@
 						0 ; apprentices cannot escort
 						0 ; journeymen cannot escort
 
-						; Masters: 150 - 750 credits
+						; Masters: 30 - 150 credits per container
 						; 36,000 - 180,000 cargo value
-						(multiply 25 (add (add (random 2 10) (random 2 10)) (random 2 10)))
+						(multiply 5 (add (random 2 10) (random 2 10) (random 2 10)))
 
-						750 ; legends don't escort, but add anyway
+						150 ; legends don't escort, but add anyway
 						)
 					(typGetGlobalData &stKorolovShipping; "level")
 					)
@@ -138,43 +161,66 @@
 			class=				"Antares II"
 			type=				"freighter"
 
-			mass=				"1200"
-			cargoSpace=			"6000"
-			thrust=				"1200"
+			attributes=			"commonwealth,freighter,genericClass"
+			   
+			size=				"135"
+			mass=				"6000"
+			thrustRatio=		"1.5"
 			maneuver=			"20"
 			maxSpeed=			"12"
+			cargoSpace=			"30000"
 
 			leavesWreck=		"100"
-
-			attributes=			"commonwealth,freighter,genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="315" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="285" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="255" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="225" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="195" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="165" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="135" span="30" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="105" span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="75"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="45"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="15"  span="30" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-		</Armor>
+		<Names noArticle="true">Antares Heavy 2%0%0</Names>
 
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itHeavyRecoillessCannon;" secondaryWeapon="true" posAngle="0" posRadius="25" omnidirectional="true"/>
 			<Device deviceID="&itHeavyRecoillessCannon;" secondaryWeapon="true" posAngle="180" posRadius="25" omnidirectional="true"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"15"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"30"
+
+					posX=		"-50"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"28"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"30"
+
+					posX=		"2"
+					posY=		"0"
+					sizeX=		"72"
+					sizeY=		"60"
+					/>
+		</Interior>
+
 		<Items>
 		</Items>
 
+		<!-- Image and Effects -->
+
 		<Image imageID="&rsAntaresIIImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
-		<Names noArticle="true">Antares Heavy 2%0%0</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"120"
@@ -190,15 +236,15 @@
 						0 ; no level 0
 						0 ; apprentices cannot escort
 
-						; Journeymen: 300 - 1200 credits
+						; Journeymen: 60 - 240 credits per container
 						; 72,000 - 288,000
-						(multiply 10 (add (random 10 40) (random 10 40) (random 10 40)))
+						(multiply 2 (add (random 10 40) (random 10 40) (random 10 40)))
 
-						; Masters: 1000 - 2000 credits
+						; Masters: 200 - 400 credits per container
 						; 240,000 - 480,000
-						(multiply 10 (add (add (random 30 60) (random 30 60)) (random 40 80)))
+						(multiply 2 (add (random 30 60) (random 30 60) (random 40 80)))
 
-						750 ; legends don't escort, but add anyway
+						400 ; legends don't escort, but add anyway
 						)
 					(typGetGlobalData &stKorolovShipping; "level")
 					)
@@ -221,59 +267,70 @@
 	<ShipClass UNID="&scAntaresV;"
 			manufacturer=		"Makayev-Energia"
 			class=				"Antares V"
-			type=				"superfreighter"
-
-			mass=				"2000"
-			cargoSpace=			"10000"
-			thrust=				"1200"
-			maneuver=			"20"
-			maxSpeed=			"8"
-
-			leavesWreck=		"100"
+			type=				"freighter"
+			level=				"4"
 
 			attributes=			"commonwealth,freighter,genericClass"
+
+			size=				"180"
+			mass=				"10000"
+			thrustRatio=		"1"
+			maneuver=			"20"
+			maxSpeed=			"8"
+			cargoSpace=			"50000"
+
+			leavesWreck=		"100"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="15" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="330" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="315" span="15" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="300" span="15" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="285" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="270" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="255" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="240" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="225" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="210" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="195" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="180" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
+		<Names noArticle="true">Antares Heavy 5%0%0</Names>
 
-			<ArmorSection start="165" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="150" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="135" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="120" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="105" span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="90"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="75"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="60"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="45"  span="15" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="30"  span="15" armorID="&itLightPlasteelPlate;" />
-			<ArmorSection start="15"  span="15" armorID="&itLightPlasteelPlate;" nonCritical="general"/>
-			<ArmorSection start="0"   span="15" armorID="&itLightPlasteelPlate;" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="0" posRadius="50" omnidirectional="true"/>
 			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="0" posRadius="0" omnidirectional="true"/>
 			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" posAngle="180" posRadius="50" omnidirectional="true"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"20"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"40"
+
+					posX=		"-74"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"28"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"30"
+
+					posX=		"2"
+					posY=		"0"
+					sizeX=		"120"
+					sizeY=		"60"
+					/>
+		</Interior>
+
 		<Items>
 		</Items>
 
+		<!-- Image and Effects -->
+
 		<Image imageID="&rsAntaresVImage;" imageX="0" imageY="0" imageWidth="180" imageHeight="180"/>
 
-		<Names noArticle="true">Antares Heavy 5%0%0</Names>
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"120"
@@ -289,15 +346,15 @@
 						0 ; no level 0
 						0 ; apprentices cannot escort
 
-						; Journeymen: 200 - 800 credits
+						; Journeymen: 40 - 160 credits
 						; 80,000 - 320,000 cargo value
-						(multiply 50 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
+						(multiply 10 (add (random 1 4) (random 1 4) (random 1 4) (random 1 4)))
 
-						; Masters: 800 - 2000 credits
+						; Masters: 160 - 400 credits
 						; 320,000 - 800,000 cargo value
-						(add (multiply 50 (add (random 4 10) (random 4 10))) (multiply 50 (add (random 4 10) (random 4 10))))
+						(add (multiply 10 (add (random 4 10) (random 4 10))) (multiply 10 (add (random 4 10) (random 4 10))))
 
-						2000 ; legends don't escort, but add anyway
+						400 ; legends don't escort, but add anyway
 						)
 					(typGetGlobalData &stKorolovShipping; "level")
 					)
@@ -321,31 +378,19 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI100"
 			type=				"freighter"
-
-			mass=				"100"
-			cargoSpace=			"250"
-			thrust=				"200"
-			maneuver=			"6"
-			maxSpeed=			"12"
-
-			leavesWreck=		"75"
+			level=				"2"
 
 			attributes=			"commonwealth,freighter,genericClass"
+			   
+			size=				"40"
+			mass=				"100"
+			thrustRatio=		"3.6"
+			maneuver=			"6"
+			maxSpeed=			"12"
+			cargoSpace=			"250"
+
+			leavesWreck=		"75"
 			>
-
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itLightReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="135" span="90" armorID="&itLightReactiveArmor;" areaSet="1,6" />
-			<ArmorSection start="45"  span="90" armorID="&itLightReactiveArmor;" areaSet="7,13" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;" omnidirectional="true"/>
-			<Device deviceID="&itClass1Deflector;"/>
-		</Devices>
-
-		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
 
 		<Names definiteArticle="true">
 			freighter Anon7; freighter Beta Antares; freighter Claire Rennard;
@@ -358,6 +403,24 @@
 			freighter Velo; freighter Wantanabe Maru; freighter Xan; freighter Yasu Maru;
 			freighter Zodiac Bound
 		</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightReactiveArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"80"
@@ -407,33 +470,19 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI200"
 			type=				"freighter"
-
-			mass=				"200"
-			cargoSpace=			"500"
-			thrust=				"200"
-			maneuver=			"6"
-			maxSpeed=			"16"
-
-			leavesWreck=		"75"
+			level=				"3"
 
 			attributes=			"commonwealth,freighter,genericClass"
+			   
+			size=				"54"
+			mass=				"200"
+			thrustRatio=		"1.8"
+			maneuver=			"6"
+			maxSpeed=			"16"
+			cargoSpace=			"500"
+
+			leavesWreck=		"75"
 			>
-
-		<Armor>
-			<ArmorSection start="330" span="60" armorID="&itReactiveArmor;" />
-			<ArmorSection start="270" span="60" armorID="&itReactiveArmor;" />
-			<ArmorSection start="210" span="60" armorID="&itReactiveArmor;" />
-			<ArmorSection start="150" span="60" armorID="&itReactiveArmor;" />
-			<ArmorSection start="90"  span="60" armorID="&itReactiveArmor;" />
-			<ArmorSection start="30"  span="60" armorID="&itReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itBlaster;" omnidirectional="true"/>
-			<Device deviceID="&itClass1Deflector;"/>
-		</Devices>
-
-		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
 
 		<Names definiteArticle="true">
 			freighter King Albert; freighter Barbosa; freighter Cyteen;
@@ -446,6 +495,24 @@
 			freighter Voltaire; freighter Washburn; freighter Xanthus; freighter Yushin Maru;
 			freighter Zephyr
 		</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"6"
+			/>
+
+		<Devices>
+			<Device deviceID="&itBlaster;" omnidirectional="true"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"90"
@@ -495,39 +562,19 @@
 			manufacturer=		"Earth Industries"
 			class=				"EI7000"
 			type=				"freighter"
-
-			mass=				"850"
-			cargoSpace=			"2000"
-			thrust=				"1000"
-			maneuver=			"6"
-			maxSpeed=			"12"
-
-			leavesWreck=		"100"
+			level=				"5"
 
 			attributes=			"commonwealth,freighter,genericClass"
+			
+			size=				"75"
+			mass=				"850"
+			thrustRatio=		"2"
+			maneuver=			"6"
+			maxSpeed=			"12"
+			cargoSpace=			"2000"
+
+			leavesWreck=		"100"
 			>
-
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="225" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="165" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="135" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="105" span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="45"  span="30" armorID="&itAdvancedReactiveArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itAdvancedReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
-			<Device deviceID="&itClass3Deflector;"/>
-		</Devices>
-
-		<Image imageID="&rsEI7000Image;" imageX="0" imageY="0" imageWidth="110" imageHeight="110"/>
 
 		<Names definiteArticle="true">
 			freighter Ammon; freighter Caelestis; freighter Fulgurator;
@@ -538,6 +585,50 @@
 			freighter Parthinus; freighter Poeninus; freighter Solutorius;
 			freighter Taranis; freighter Uxellinus
 		</Names>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true"/>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"50"
+
+					posX=		"6"
+					posY=		"0"
+					sizeX=		"74"
+					sizeY=		"36"
+					/>
+		</Interior>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsEI7000Image;" imageX="0" imageY="0" imageWidth="110" imageHeight="110"/>
+
+		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"20"
@@ -636,6 +727,8 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 	</ShipClass>
 
@@ -745,6 +838,8 @@
 			fireRateAdj=		"10"
 			fireAccuracy=		"95"
 			perception=			"4"
+			
+			combatStyle=		"advanced"
 			/>
 
 		<Image imageID="&rsWolfenGunship;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
@@ -942,6 +1037,14 @@
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="0" imageWidth="224" imageHeight="224"/>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="90"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+
 		<Ships>
 			<Ship					count="1d2" class="&scRoninC;" orders="guard"/>
 			<Table count="1d4+1">
@@ -980,12 +1083,12 @@
 
 			<freighterData>
 				(	; class			description
-					(&scAntaresI;	"The Antares I design is more than a hundred years old, built originally by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered by armor, the Antares I can haul over 6,000 tons of cargo, but only the most skilled pilots can protect it from pirate attack. Only Masters in the Korolov Shipping Corporation are rated to escort the Antares I class.")
+					(&scAntaresI;	"The Antares I design is more than a hundred years old, built originally by the massive Polyarny Shipyards orbiting Ceres. Slow and unencumbered by armor, the Antares I can haul 30 kilotons of cargo, but only the most skilled pilots can protect it from pirate attack. Only Masters in the Korolov Shipping Corporation are rated to escort the Antares I class.")
 					(&scAntaresII;	"While sacrificing none of its cargo capacity, the Antares II has a top speed 50% higher than its predecessor. Escort pilots must have the rank of Journeyman or Master to defend the Antares II class.")
 					(&scAntaresV;	"The Antares V is basically a stretched version of the earlier II series. It has larger cargo capacity and upgraded weapons. Escort pilots must have the rank of Journeyman or Master to escort the Antares V class.")
 					(&scEI100;		"The EI100 class freighter was designed for fast interplanetary transportation. Early in its history, it even carried passengers, but today it carries light commodities. Because of the relatively low value of its cargo, the EI100 is often escorted by Apprentice pilots.")
 					(&scEI200;		"The EI200 class freighter is a larger and faster version of the 100 series. It has double the cargo capacity and upgraded armor and weapons. It is designed to transport small quantities of high-value cargo. The EI200 is so well defended that even Apprentices are allowed to escort them.")
-					(&scEI7000;		"The 7000 is the most powerful member of the EI freighter series. With a cargo capacity of 2,000 tons and heavy armor and weapons, the EI7000 is ideal for high-value cargos. Only Journeymen and Masters are rated to escort the EI7000 class.")
+					(&scEI7000;		"The 7000 is the most powerful member of the EI freighter series. With a cargo capacity of 2 kilotons and heavy armor and weapons, the EI7000 is ideal for high-value cargos. Only Journeymen and Masters are rated to escort the EI7000 class.")
 					)
 			</freighterData>
 
@@ -1403,7 +1506,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Escort freighter" default="1" key="E">
+							<Action name="Escort Freighter" default="1" key="E">
 								(block (playerLevel charonStronghold)
 									(setq playerLevel (typGetGlobalData &stKorolovShipping; "level"))
 									(setq charonStronghold (objGetObjRefData gSource "charonStronghold"))
@@ -1500,7 +1603,7 @@
 								; If there are multiple transports that can be escorted, change the text
 								; of the decline button
 								(if (setq gMore (geq (count dockedFreighters) 2))
-									(scrSetActionLabel gScreen 1 "Decline &amp; request another")
+									(scrSetActionLabel gScreen 1 "Decline &amp; Request Another")
 									(scrSetActionLabel gScreen 1 "Decline")
 									)
 
@@ -2209,25 +2312,18 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 92) (&itHelium3FuelRod; 90)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
-							<Action name="Repair or replace armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+							<Action name="Repair or Replace Armor" key="A" >
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
-							<Action name="Install device" key="D" >
+							<Action name="Install Device" key="D" >
 								(block Nil
-									(setq gTechLevel 6)
+									(setq gTechLevel (objGetProperty gSource 'installDeviceMaxLevel))
 									(setq gTechModifier Nil)
 									(setq gCheckMilitaryID True)
 									(setq gMargin 100)
@@ -2235,7 +2331,7 @@
 									)
 							</Action>
 
-							<Action name="Remove device" key="V" >
+							<Action name="Remove Device" key="V" >
 								(block Nil
 									(setq gMargin 100)
 									(scrShowScreen gScreen "&dsRemoveDevice;")
@@ -2625,7 +2721,7 @@
 						</OnPaneInit>
 
 						<Actions>
-							<Action name="Next ship" default="1" key="N" nextKey="1">
+							<Action name="Next Ship" default="1" key="N" nextKey="1">
 								(block Nil
 									(setq gCursor (add gCursor 1))
 									(setq gSelect (item (typGetStaticData &stKorolovShipping; gDataSet) gCursor))
@@ -2633,7 +2729,7 @@
 									)
 							</Action>
 
-							<Action name="Previous ship" key="P" prevKey="1">
+							<Action name="Previous Ship" key="P" prevKey="1">
 								(block Nil
 									(setq gCursor (subtract gCursor 1))
 									(setq gSelect (item (typGetStaticData &stKorolovShipping; gDataSet) gCursor))

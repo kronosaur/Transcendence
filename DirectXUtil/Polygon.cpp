@@ -32,9 +32,9 @@ static SEdgeState *g_pGET;
 static SEdgeState *g_pAET;
 static int g_iRunCount;
 static int g_iRunAlloc;
-static CG16bitRegion::SRun *g_pRuns;
+static CG16bitBinaryRegion::SRun *g_pRuns;
 
-int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitRegion::SRun **retpLines)
+int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitBinaryRegion::SRun **retpLines)
 
 //	CreateScanLinesFromPolygon
 //
@@ -55,7 +55,7 @@ int CreateScanLinesFromPolygon (int iVertexCount, SPoint *pVertexList, CG16bitRe
 	//	Initialize the output
 
 	g_iRunAlloc = INIT_ARRAY_ALLOC;
-	g_pRuns = new CG16bitRegion::SRun [g_iRunAlloc];
+	g_pRuns = new CG16bitBinaryRegion::SRun [g_iRunAlloc];
 	g_iRunCount = 0;
 
 	//	Build the global edge table. This initializes g_pGET.
@@ -337,8 +337,8 @@ void ScanOutAET (int YToScan)
 			else
 				g_iRunAlloc += 1000;
 
-			CG16bitRegion::SRun *pNewAlloc = new CG16bitRegion::SRun [g_iRunAlloc];
-			utlMemCopy((char *)g_pRuns, (char *)pNewAlloc, g_iRunCount * sizeof(CG16bitRegion::SRun));
+			CG16bitBinaryRegion::SRun *pNewAlloc = new CG16bitBinaryRegion::SRun [g_iRunAlloc];
+			utlMemCopy((char *)g_pRuns, (char *)pNewAlloc, g_iRunCount * sizeof(CG16bitBinaryRegion::SRun));
 			delete [] g_pRuns;
 			g_pRuns = pNewAlloc;
 			}
