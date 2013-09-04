@@ -2,7 +2,7 @@
 //
 //	Implements CGLockedSurface class
 
-#include <Windows.h>
+#include <windows.h>
 #include <MMSystem.h>
 
 #include "Kernel.h"

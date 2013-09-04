@@ -11,7 +11,7 @@
 
 #define _CRT_RAND_S
 #include <stdlib.h>
-#include <Windows.h>
+#include <windows.h>
 
 //	Debugging defines
 
