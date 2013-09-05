@@ -352,6 +352,16 @@ class CObject
 		IObjectClass *m_pClass;
 	};
 
+//	Factory for creating objects
+
+class CObjectClassFactory
+	{
+	public:
+		static CObject *Create (OBJCLASSID ObjID);
+		static IObjectClass *GetClass (OBJCLASSID ObjID);
+		static void NewClass (IObjectClass *pClass);
+	};
+
 //	Template for object classes
 
 template <class T>
@@ -363,17 +373,7 @@ class CObjectClass : public IObjectClass
 				{ CObjectClassFactory::NewClass(this); }
  
 		virtual CObject *Instantiate (void) { return new T; }
-		virtual int GetObjSize (void) { return sizeof T; }
-	};
-
-//	Factory for creating objects
-
-class CObjectClassFactory
-	{
-	public:
-		static CObject *Create (OBJCLASSID ObjID);
-		static IObjectClass *GetClass (OBJCLASSID ObjID);
-		static void NewClass (IObjectClass *pClass);
+		virtual int GetObjSize (void) { return sizeof(T); }
 	};
 
 //	Synchronization -----------------------------------------------------------
