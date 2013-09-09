@@ -291,6 +291,10 @@
 //		m_pEnhancements in CInstalledDevice
 //		m_pEnhancements in CMissile
 //
+//	93: 1.2 Beta 2
+//		m_iActivateDelay in CInstalledDevice (instead of m_iActivateDelayAdj)
+//		CEffectGroupPainter saves a count
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

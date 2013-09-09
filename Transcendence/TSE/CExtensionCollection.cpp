@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-    106,  76, 109, 239,  10, 255,  83,  41, 246,  36,
-    118,  90, 166,  30,  20, 240, 230, 129,  38, 208,
+	208, 141,  52,  51, 144, 213, 202,  98,  37, 106,
+	163,  66,  76, 202, 180, 175,  26, 254,  42, 192,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -78,6 +78,8 @@ void CExtensionCollection::AddOrReplace (CExtension *pExtension)
 //	an existing extension (by filespec), the previous one is deleted.
 
 	{
+	CSmartLock Lock(m_cs);
+
 	//	First see if we're replacing this extension (we only check for non-base
 	//	extensions).
 
@@ -133,7 +135,7 @@ void CExtensionCollection::AddOrReplace (CExtension *pExtension)
 		m_ByFilespec.SetAt(pExtension->GetFilespec(), pExtension);
 	}
 
-ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError)
+ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFlags, const TArray<CExtension *> &Compatibility, TArray<CExtension *> *retList, CString *retsError)
 
 //	AddToBindList
 //
@@ -141,6 +143,7 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 //	(We make sure that we don't add the same extension twice.)
 
 	{
+	CSmartLock Lock(m_cs);
 	ALERROR error;
 	int i;
 
@@ -205,9 +208,19 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 
 		//	Add it to the bind list (recursively)
 
-		if (error = AddToBindList(pLibrary, dwFlags, retList, retsError))
+		if (error = AddToBindList(pLibrary, dwFlags, Compatibility, retList, retsError))
 			return error;
 		}
+
+	//	Check to see if there are any compatibility libraries that we need to include
+
+	for (i = 0; i < Compatibility.GetCount(); i++)
+		if (pExtension->GetAPIVersion() <= Compatibility[i]->GetAutoIncludeAPIVersion()
+				&& pExtension->GetUNID() != Compatibility[i]->GetUNID())
+			{
+			if (error = AddToBindList(Compatibility[i], dwFlags, Compatibility, retList, retsError))
+				return error;
+			}
 
 	//	Finally add the extension itself.
 
@@ -243,6 +256,7 @@ void CExtensionCollection::ClearAllMarks (void)
 //	Clear marks on all extensions.
 
 	{
+	CSmartLock Lock(m_cs);
 	int i;
 
 	for (i = 0; i < m_Extensions.GetCount(); i++)
@@ -467,6 +481,11 @@ ALERROR CExtensionCollection::ComputeBindOrder (CExtension *pAdventure,
 
 	ClearAllMarks();
 
+	//	Make a list of all compatibility libraries
+
+	TArray<CExtension *> CompatibilityLibraries;
+	ComputeCompatibilityLibraries(pAdventure, dwFlags, &CompatibilityLibraries);
+
 	//	We always bind the base extension first
 
 	m_pBase->SetMarked();
@@ -475,7 +494,7 @@ ALERROR CExtensionCollection::ComputeBindOrder (CExtension *pAdventure,
 	//	Now add the adventure and any dependencies
 
 	if (pAdventure)
-		if (error = AddToBindList(pAdventure, dwFlags, retList, retsError))
+		if (error = AddToBindList(pAdventure, dwFlags, CompatibilityLibraries, retList, retsError))
 			return error;
 
 	//	Now add all of the desired extensions.
@@ -494,11 +513,69 @@ ALERROR CExtensionCollection::ComputeBindOrder (CExtension *pAdventure,
 
 		//	Add it and all dependencies
 
-		if (error = AddToBindList(DesiredExtensions[i], dwFlags, retList, retsError))
+		if (error = AddToBindList(DesiredExtensions[i], dwFlags, CompatibilityLibraries, retList, retsError))
 			return error;
 		}
 
 	return NOERROR;
+	}
+
+void CExtensionCollection::ComputeCompatibilityLibraries (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList)
+
+//	ComputeCompatibilityLibraries
+//
+//	Make a list of all libraries that may be auto included for compatibility.
+
+	{
+	CSmartLock Lock(m_cs);
+
+	int i, j;
+
+	//	Initialize
+
+	bool bDebugMode = ((dwFlags & FLAG_DEBUG_MODE) == FLAG_DEBUG_MODE);
+	retList->DeleteAll();
+
+	//	Loop by UNID because we allow at most one of each UNID.
+
+	for (i = 0; i < m_ByUNID.GetCount(); i++)
+		{
+		TArray<CExtension *> &ExtensionList = m_ByUNID.GetValue(i);
+		if (ExtensionList.GetCount() == 0)
+			continue;
+
+		//	We only consider libraries with a compatibility value
+
+		if (ExtensionList[0]->GetType() != extLibrary
+				|| ExtensionList[0]->GetAutoIncludeAPIVersion() == 0)
+			continue;
+
+		//	Out of all the releases, select the latest version.
+
+		CExtension *pBest = NULL;
+		for (j = 0; j < ExtensionList.GetCount(); j++)
+			{
+			//	If this is debug only and we're not in debug mode then skip.
+
+			if (ExtensionList[j]->IsDebugOnly() && !bDebugMode)
+				continue;
+
+			//	If this extension does not extend the adventure, then skip.
+
+			if (pAdventure && !ExtensionList[j]->CanExtend(pAdventure))
+				continue;
+
+			//	Compute the best extension out of the list.
+
+			if (Compare(ExtensionList[j], pBest, bDebugMode) == 1)
+				pBest = ExtensionList[j];
+			}
+
+		//	If we found one then add it to the list.
+
+		if (pBest)
+			retList->Insert(pBest);
+		}
 	}
 
 ALERROR CExtensionCollection::ComputeFilesToLoad (const CString &sFilespec, CExtension::EFolderTypes iFolder, TSortMap<CString, int> &List, CString *retsError)
@@ -1052,9 +1129,7 @@ ALERROR CExtensionCollection::LoadFile (const CString &sFilespec, CExtension::EF
 	//	to be called without a lock; we don't want to lock while doing the
 	//	expensive load operation.
 
-	m_cs.Lock();
 	AddOrReplace(pExtension);
-	m_cs.Unlock();
 
 	//	Done
 
@@ -1113,9 +1188,7 @@ ALERROR CExtensionCollection::LoadFolderStubsOnly (const CString &sFilespec, CEx
 		//	to be called without a lock; we don't want to lock while doing the
 		//	expensive load operation.
 
-		m_cs.Lock();
 		AddOrReplace(pExtension);
-		m_cs.Unlock();
 		}
 
 	return NOERROR;

@@ -79,6 +79,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noDebugLog",				optionBoolean,	"false",	0	},
 		{	"debugVideo",				optionBoolean,	"false",	0	},
 		{	"noCrashPost",				optionBoolean,	"false",	0	},
+		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
 	};
 
 SCommandLineData g_CommandLineData[] =

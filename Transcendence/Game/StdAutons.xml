@@ -48,6 +48,7 @@
 			fireRateAdj=		"15"
 			fireAccuracy=		"70"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 		
@@ -97,6 +98,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"80"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 			
@@ -171,6 +173,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"80"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 			
@@ -236,6 +239,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"80"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 
@@ -287,6 +291,7 @@
 			fireAccuracy=		"80"
 			perception=			"4"
 			nonCombatant=		"true"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 
@@ -373,6 +378,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 
@@ -448,6 +454,7 @@
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
+			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
 			/>
 
@@ -470,6 +477,8 @@
 			  
 			value=				"490"
 			mass=				"1000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"For around 500 credits, OmniDefense Systems' AutoSentinel keeps you and your loved ones safe from harm. NOTE: For professional security needs, order the 1M battle auton."
 			>
@@ -497,6 +506,8 @@
 
 			value=				"2000"
 			mass=				"1000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"This is a commercial auton primarily used for defending small stations. NOTE: For professional security needs, order the 1M battle auton."
 			>
@@ -524,6 +535,8 @@
 
 			value=				"2500"
 			mass=				"1000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"This variant of the 300D is equipped with an anti-missile defense system."
 			>
@@ -551,6 +564,8 @@
 			  
 			value=				"2500"
 			mass=				"5000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"Dock with this auton to store supplies on its cargo platform. This auton has space for 75 tons of cargo. "
 			>
@@ -578,6 +593,8 @@
 			  
 			value=				"200"
 			mass=				"2000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"The 200A series was recalled several years ago because of an unstable AI."
 			>
@@ -605,6 +622,8 @@
 			  
 			value=				"5000"
 			mass=				"5000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"The 1M battle auton is the most powerful autonomous defense bot manufactured by the OmniDefense Systems corporation."
 			>
@@ -632,6 +651,8 @@
 			  
 			value=				"7500"
 			mass=				"5000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
 
 			description=		"This is a variant of OmniDefense Systems' 1M battle auton. Instead of a particle beam, it is equipped with an EMP cannon."
 			>

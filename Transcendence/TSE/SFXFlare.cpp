@@ -11,6 +11,8 @@
 #define STYLE_ATTRIB							CONSTLIT("style")
 
 #define STYLE_FADING_BLAST						CONSTLIT("fadingBlast")
+#define STYLE_FLICKER							CONSTLIT("flicker")
+#define STYLE_PLAIN								CONSTLIT("plain")
 
 const int MAIN_SPIKE_COUNT =					3;
 const int MAIN_SPIKE_WIDTH_RATIO =				32;
@@ -32,6 +34,8 @@ class CFlarePainter : public IEffectPainter
 		virtual void OnWriteToStream (IWriteStream *pStream);
 
 	private:
+		void PaintFlare (CG16bitImage &Dest, int x, int y, int iRadius, WORD wColor, bool bSpikes, SViewportPaintCtx &Ctx);
+
 		CFlareEffectCreator *m_pCreator;
 		int m_iTick;
 	};
@@ -92,8 +96,15 @@ ALERROR CFlareEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEle
 	CString sStyle = pDesc->GetAttribute(STYLE_ATTRIB);
 	if (strEquals(sStyle, STYLE_FADING_BLAST))
 		m_iStyle = styleFadingBlast;
+	else if (strEquals(sStyle, STYLE_FLICKER))
+		m_iStyle = styleFlicker;
+	else if (sStyle.IsBlank() || strEquals(sStyle, STYLE_PLAIN))
+		m_iStyle = stylePlain;
 	else
-		m_iStyle = styleFadingBlast;
+		{
+		Ctx.sError = strPatternSubst(CONSTLIT("Invalid Flare style: %s"), sStyle);
+		return ERR_FAIL;
+		}
 
 	m_iRadius = pDesc->GetAttributeIntegerBounded(RADIUS_ATTRIB, 0, -1, 100);
 	m_iLifetime = pDesc->GetAttributeIntegerBounded(LIFETIME_ATTRIB, 0, -1, 1);
@@ -160,18 +171,25 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 //	Paint
 
 	{
-	int i;
-	
-	//	Safety checks
-
 	int iTotalLifetime = m_pCreator->GetLifetime();
-	if (iTotalLifetime <= 0)
-		return;
 
 	switch (m_pCreator->GetStyle())
 		{
+		case CFlareEffectCreator::styleFlicker:
+			if ((m_iTick % 2) == 0)
+				PaintFlare(Dest, x, y, m_pCreator->GetRadius(), m_pCreator->GetPrimaryColor(), true, Ctx);
+			break;
+
+		case CFlareEffectCreator::stylePlain:
+			PaintFlare(Dest, x, y, m_pCreator->GetRadius(), m_pCreator->GetPrimaryColor(), false, Ctx);
+			break;
+
 		case CFlareEffectCreator::styleFadingBlast:
 			{
+			//	Safety checks
+
+			if (iTotalLifetime <= 0)
+				return;
 
 			//	Radius shrinks proportionally each tick
 
@@ -191,31 +209,46 @@ void CFlarePainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &
 
 			//	Paint
 
-			if (iRadius)
-				{
-				//	Paint each of the spikes first
-
-				int iAngle = 360 / MAIN_SPIKE_COUNT;
-				for (i = 0; i < MAIN_SPIKE_COUNT; i++)
-					{
-					SPoint Spike[4];
-					m_pCreator->CreateFlareSpike(i * iAngle, iRadius, iRadius / MAIN_SPIKE_WIDTH_RATIO, Spike);
-
-					CG16bitBinaryRegion Region;
-					Region.CreateFromSimplePolygon(4, Spike);
-					Region.FillTrans(Dest, x, y, wColor, MAIN_SPIKE_OPACITY);
-					}
-
-				//	Paint the extended glow
-
-				DrawAlphaGradientCircle(Dest,
-						x,
-						y,
-						iRadius,
-						wColor);
-				}
+			PaintFlare(Dest, x, y, iRadius, wColor, true, Ctx);
 
 			break;
 			}
+		}
+	}
+
+void CFlarePainter::PaintFlare (CG16bitImage &Dest, int x, int y, int iRadius, WORD wColor, bool bSpikes, SViewportPaintCtx &Ctx)
+
+//	PaintFlare
+//
+//	Paints a flare
+
+	{
+	int i;
+
+	if (iRadius > 0)
+		{
+		//	Paint each of the spikes first
+
+		if (bSpikes)
+			{
+			int iAngle = 360 / MAIN_SPIKE_COUNT;
+			for (i = 0; i < MAIN_SPIKE_COUNT; i++)
+				{
+				SPoint Spike[4];
+				m_pCreator->CreateFlareSpike(i * iAngle, iRadius, iRadius / MAIN_SPIKE_WIDTH_RATIO, Spike);
+
+				CG16bitBinaryRegion Region;
+				Region.CreateFromSimplePolygon(4, Spike);
+				Region.FillTrans(Dest, x, y, wColor, MAIN_SPIKE_OPACITY);
+				}
+			}
+
+		//	Paint the extended glow
+
+		DrawAlphaGradientCircle(Dest,
+				x,
+				y,
+				iRadius,
+				wColor);
 		}
 	}

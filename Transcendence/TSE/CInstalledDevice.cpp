@@ -24,7 +24,7 @@ CInstalledDevice::CInstalledDevice (void) :
 		m_iTimeUntilReady(0),
 		m_iFireAngle(0),
 		m_iTemperature(0),
-		m_iActivateDelayAdj(100),
+		m_iActivateDelay(0),
 		m_iSlotBonus(0),
 
 		m_fOmniDirectional(false),
@@ -46,6 +46,56 @@ CInstalledDevice::~CInstalledDevice (void)
 	{
 	if (m_pEnhancements)
 		m_pEnhancements->Delete();
+	}
+
+CInstalledDevice &CInstalledDevice::operator= (const CInstalledDevice &Obj)
+
+//	CInstalledDevice operator =
+
+	{
+	if (m_pEnhancements)
+		m_pEnhancements->Delete();
+
+	m_pItem = Obj.m_pItem;
+	m_pClass = Obj.m_pClass;
+	m_pOverlay = Obj.m_pOverlay;
+	m_dwTargetID = Obj.m_dwTargetID;
+	m_pEnhancements = (Obj.m_pEnhancements ? Obj.m_pEnhancements->AddRef() : NULL);
+
+	m_dwData = Obj.m_dwData;
+
+	m_iDeviceSlot = Obj.m_iDeviceSlot;
+
+	m_iPosAngle = Obj.m_iPosAngle;
+	m_iPosRadius = Obj.m_iPosRadius;
+	m_iPosZ = Obj.m_iPosZ;
+	m_iMinFireArc = Obj.m_iMinFireArc;
+	m_iMaxFireArc = Obj.m_iMaxFireArc;
+
+	m_iTimeUntilReady = Obj.m_iTimeUntilReady;
+	m_iFireAngle = Obj.m_iFireAngle;
+
+	m_iTemperature = Obj.m_iTemperature;
+	m_iActivateDelay = Obj.m_iActivateDelay;
+	m_iSlotBonus = Obj.m_iSlotBonus;
+	
+	m_fOmniDirectional = Obj.m_fOmniDirectional;
+	m_fOverdrive = Obj.m_fOverdrive;
+	m_fOptimized = Obj.m_fOptimized;
+	m_fSecondaryWeapon = Obj.m_fSecondaryWeapon;
+	m_fEnabled = Obj.m_fEnabled;
+	m_fExternal = Obj.m_fExternal;
+	m_fWaiting = Obj.m_fWaiting;
+	m_fTriggered = Obj.m_fTriggered;
+
+	m_fRegenerating = Obj.m_fRegenerating;
+	m_fLastActivateSuccessful = Obj.m_fLastActivateSuccessful;
+	m_f3DPosition = Obj.m_f3DPosition;
+	m_fLinkedFireAlways = Obj.m_fLinkedFireAlways;
+	m_fLinkedFireTarget = Obj.m_fLinkedFireTarget;
+	m_fLinkedFireEnemy = Obj.m_fLinkedFireEnemy;
+
+	return *this;
 	}
 
 int CInstalledDevice::CalcPowerUsed (CSpaceObject *pSource)
@@ -105,7 +155,7 @@ int CInstalledDevice::GetActivateDelay (CSpaceObject *pSource)
 //	Returns the number of ticks to wait for activation
 	
 	{
-	return (m_iActivateDelayAdj	* m_pClass->GetActivateDelay(this, pSource) + 50) / 100;
+	return m_iActivateDelay;
 	}
 
 CString CInstalledDevice::GetEnhancedDesc (CSpaceObject *pSource, const CItem *pItem)
@@ -126,9 +176,9 @@ CString CInstalledDevice::GetEnhancedDesc (CSpaceObject *pSource, const CItem *p
 
 	//	Describe enhancements from the device only (e.g., confered by other devices)
 
-	else if (GetActivateDelayAdj() > 100)
+	else if (GetActivateDelay(pSource) > m_pClass->GetActivateDelay(this, pSource))
 		return CONSTLIT("-Slow");
-	else if (GetActivateDelayAdj() < 100)
+	else if (GetActivateDelay(pSource) < m_pClass->GetActivateDelay(this, pSource))
 		return CONSTLIT("+Fast");
 	else if (iDamageBonus = (m_pEnhancements ? m_pEnhancements->GetBonus() : 0))
 		return (iDamageBonus > 0 ? strPatternSubst(CONSTLIT("+%d%%"), iDamageBonus) : strPatternSubst(CONSTLIT("%d%%"), iDamageBonus));
@@ -244,7 +294,6 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 	m_pOverlay = NULL;
 	m_dwData = 0;
 	m_iTemperature = 0;
-	m_iActivateDelayAdj = 100;
 	m_fExternal = m_pClass->IsExternal();
 	m_fWaiting = false;
 	m_fEnabled = true;
@@ -266,6 +315,11 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 
 	m_pItem = ItemList.GetItemPointerAtCursor();
 	ASSERT(m_pItem);
+
+	//	Default to basic fire delay. Callers must set the appropriate delay
+	//	based on enhancements later.
+
+	m_iActivateDelay = m_pClass->GetActivateDelay(this, pObj);
 
 	//	If we're installing a device after creation then we
 	//	zero-out the device position, etc. If necessary the
@@ -361,7 +415,7 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = unused; hi = m_iTemperature
 //	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
-//	DWORD		device: low = m_iActivateDelayAdj
+//	DWORD		device: low = m_iActivateDelay; hi = m_iPosZ
 //	DWORD		device: flags
 //
 //	CItemEnhancementStack
@@ -427,14 +481,19 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 	if (Ctx.dwVersion >= 44)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		m_iActivateDelayAdj = (int)LOWORD(dwLoad);
+		m_iActivateDelay = (int)LOWORD(dwLoad);
 		m_iPosZ = (int)HIWORD(dwLoad);
 		}
 	else
 		{
-		m_iActivateDelayAdj = 100;
+		m_iActivateDelay = 8;
 		m_iPosZ = 0;
 		}
+
+	//	In newer versions we store an activation delay instead of an adjustment
+
+	if (Ctx.dwVersion < 93)
+		m_iActivateDelay = m_iActivateDelay * m_pClass->GetActivateDelay(this, pSource) / 100;
 
 	//	We no longer store mods in the device structure
 
@@ -663,7 +722,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
 //	DWORD		device: low = unused; hi = m_iTemperature
 //	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
-//	DWORD		device: low = m_iActivateDelayAdj; hi = m_iPosZ
+//	DWORD		device: low = m_iActivateDelay; hi = m_iPosZ
 //	DWORD		device: flags
 //
 //	CItemEnhancementStack
@@ -694,7 +753,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 	dwSave = MAKELONG(m_iSlotBonus, m_iDeviceSlot);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
-	dwSave = MAKELONG(m_iActivateDelayAdj, m_iPosZ);
+	dwSave = MAKELONG(m_iActivateDelay, m_iPosZ);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	dwSave = 0;

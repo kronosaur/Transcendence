@@ -87,6 +87,26 @@ bool CSpaceObjectList::Remove (CSpaceObject *pObj)
 	return false;
 	}
 
+void CSpaceObjectList::RemoveSystemObjs (void)
+
+//	RemoveSystemObjs
+//
+//	Remove objects that are part of the current system.
+
+	{
+	int i;
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		{
+		CSpaceObject *pObj = m_List[i];
+		if (!pObj->IsNonSystemObj())
+			{
+			Remove(i);
+			i--;
+			}
+		}
+	}
+
 void CSpaceObjectList::ResolveObjProc (void *pCtx, DWORD dwObjID, CSpaceObject *pObj)
 
 //	ResolveObjProc

@@ -226,12 +226,14 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 	CMemoryWriteStream RequestBuff;
 	if (RequestBuff.Create() != NOERROR)
 		{
+		::kernelDebugLogMessage("Out of memory: Unable to create request buffer.");
 		m_iLastError = inetsOutOfMemory;
 		return m_iLastError;
 		}
 
 	if (Request.WriteToBuffer(&RequestBuff) != NOERROR)
 		{
+		::kernelDebugLogMessage("Unable to stream request buffer.");
 		m_iLastError = inetsInvalidMessage;
 		return m_iLastError;
 		}
@@ -241,6 +243,7 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 	DWORD dwBytesWritten;
 	if (!WriteBuffer(RequestBuff.GetPointer(), RequestBuff.GetLength(), &dwBytesWritten))
 		{
+		::kernelDebugLogMessage("Unable to send request to server.");
 		Disconnect();
 		m_iLastError = inetsUnableToWrite;
 		return m_iLastError;
@@ -252,6 +255,7 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 	int iResponseBuffSize = 0;
 	if (ResponseBuff.Create() != NOERROR)
 		{
+		::kernelDebugLogMessage("Out of memory: Unable to create response buffer.");
 		m_iLastError = inetsOutOfMemory;
 		return m_iLastError;
 		}
@@ -269,6 +273,7 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 		int iReadSize = 4096;
 		if (ResponseBuff.Write(NULL, iReadSize - (ResponseBuff.GetLength() - iResponseBuffSize)) != NOERROR)
 			{
+			::kernelDebugLogMessage("Out of memory: Unable to write to response buffer.");
 			m_iLastError = inetsOutOfMemory;
 			return m_iLastError;
 			}
@@ -278,6 +283,7 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 		DWORD dwBytesRead;
 		if (!ReadBuffer(ResponseBuff.GetPointer() + iResponseBuffSize, iReadSize, &dwBytesRead))
 			{
+			::kernelDebugLogMessage("Unable to read from server. Reponse:\r\n%s", CString(ResponseBuff.GetPointer(), iResponseBuffSize, true));
 			Disconnect();
 			m_iLastError = inetsUnableToRead;
 			return m_iLastError;

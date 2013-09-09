@@ -730,10 +730,10 @@ ICCItem *CItem::GetProperty (CCodeChainCtx *pCCCtx, CItemCtx &Ctx, const CString
 		else if (pArmor = GetType()->GetArmorClass())
 			return pArmor->GetItemProperty(Ctx, sName);
 
-		//	Otherwise, nothing
+		//	Otherwise, from the type
 
 		else
-			return CC.CreateNil();
+			return CreateResultFromDataField(CC, GetType()->GetDataField(sName));
 		}
 	}
 

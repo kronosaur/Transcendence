@@ -601,6 +601,7 @@ class IListData
 		virtual void ResetCursor (void) { }
 		virtual void SetCursor (int iCursor) { }
 		virtual void SetFilter (const CItemCriteria &Filter) { }
+		virtual void SyncCursor (void) { }
 	};
 
 class CItemListWrapper : public IListData
@@ -621,6 +622,7 @@ class CItemListWrapper : public IListData
 		virtual void ResetCursor (void) { m_ItemList.Refresh(CItem()); }
 		virtual void SetCursor (int iCursor) { m_ItemList.SetCursor(iCursor); }
 		virtual void SetFilter (const CItemCriteria &Filter) { m_ItemList.SetFilter(Filter); }
+		virtual void SyncCursor (void) { m_ItemList.SyncCursor(); }
 
 	private:
 		CSpaceObject *m_pSource;
@@ -644,6 +646,7 @@ class CListWrapper : public IListData
 		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y);
 		virtual void ResetCursor (void) { m_iCursor = -1; }
 		virtual void SetCursor (int iCursor) { m_iCursor = Min(Max(-1, iCursor), GetCount() - 1); }
+		virtual void SyncCursor (void);
 
 	private:
 		CCodeChain *m_pCC;
@@ -680,6 +683,7 @@ class CGItemListArea : public AGArea
 		void SetList (CItemList &ItemList);
 		inline void SetRowHeight (int cyHeight) { m_cyRow = Max(1, cyHeight); }
 		inline void SetUIRes (const CUIResources *pUIRes) { m_pUIRes = pUIRes; }
+		inline void SyncCursor (void) { if (m_pListData) m_pListData->SyncCursor(); Invalidate(); }
 
 		//	AGArea virtuals
 		virtual bool LButtonDown (int x, int y);
@@ -2123,9 +2127,10 @@ class CGameSettings
 			noDebugLog,						//	Do not write out a debug log
 			debugVideo,						//	Write out video information
 			noCrashPost,					//	Do not post crash log to Multiverse
+			noCollectionDownload,			//	Do not automatically download collection
 
 			//	Constants
-			OPTIONS_COUNT = 25,
+			OPTIONS_COUNT = 26,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

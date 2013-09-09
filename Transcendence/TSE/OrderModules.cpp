@@ -5,6 +5,10 @@
 
 #include "PreComp.h"
 
+const int ATTACK_TIME_THRESHOLD =		150;
+
+const Metric ATTACK_RANGE				(g_KlicksPerPixel * 600.0);
+const Metric MAX_FOLLOW_DISTANCE		(g_KlicksPerPixel * 350.0);
 const Metric PATROL_SENSOR_RANGE =		(30.0 * LIGHT_SECOND);
 const Metric SAFE_ORBIT_RANGE =			(30.0 * LIGHT_SECOND);
 const Metric THREAT_SENSOR_RANGE =		(10.0 * LIGHT_SECOND);
@@ -40,17 +44,26 @@ IOrderModule::~IOrderModule (void)
 	{
 	}
 
-void IOrderModule::Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
+void IOrderModule::Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire)
 
 //	Attacked
 //
 //	Handle an attack from another object
 
 	{
-	OnAttacked(pShip, Ctx, pAttacker, Damage);
+	//	Tell our escorts that we were attacked, if necessary
+
+	if (pAttacker
+			&& !bFriendlyFire
+			&& pAttacker->CanAttack())
+		Ctx.CommunicateWithEscorts(pShip, msgAttackDeter, pAttacker);
+
+	//	Let our subclass handle it.
+
+	OnAttacked(pShip, Ctx, pAttacker, Damage, bFriendlyFire);
 	}
 
-DWORD IOrderModule::Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
+DWORD IOrderModule::Communicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
 
 //	Communicate
 //
@@ -59,11 +72,24 @@ DWORD IOrderModule::Communicate (CShip *pShip, CSpaceObject *pSender, MessageTyp
 	{
 	switch (iMessage)
 		{
+		case msgEscortAttacked:
+			{
+			//	Treat this as an attack on ourselves
+
+			DamageDesc Dummy;
+			pShip->GetController()->OnAttacked(pParam1, Dummy);
+			return resAck;
+			}
+
+		case msgEscortReportingIn:
+			Ctx.SetHasEscorts(true);
+			return resAck;
+
 		case msgQueryAttackStatus:
 			return (IsAttacking() ? resAck : resNoAnswer);
 
 		default:
-			return resNoAnswer;
+			return OnCommunicate(pShip, Ctx, pSender, iMessage, pParam1, dwParam2);
 		}
 	}
 
@@ -83,6 +109,9 @@ IOrderModule *IOrderModule::Create (IShipController::OrderTypes iOrder)
 
 		case IShipController::orderAttackStation:
 			return new CAttackStationOrder;
+
+		case IShipController::orderEscort:
+			return new CEscortOrder;
 
 		case IShipController::orderFireEvent:
 			return new CFireEventOrder;
@@ -127,6 +156,7 @@ void IOrderModule::ObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx)
 
 	{
 	int i;
+	bool bCancelOrder = false;
 
 	for (i = 0; i < m_iObjCount; i++)
 		if (Ctx.pObj == m_Objs[i])
@@ -145,7 +175,17 @@ void IOrderModule::ObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx)
 
 			//	Let our derrived class handle it
 				
-			OnObjDestroyed(pShip, Ctx, i);
+			OnObjDestroyed(pShip, Ctx, i, &bCancelOrder);
+
+			//	If our derrived class wants us to cancel the order, then we're done.
+			//	(After we cancel the order, the order module will be invalid, so
+			//	we need to leave.
+
+			if (bCancelOrder)
+				{
+				pShip->CancelCurrentOrder();
+				return;
+				}
 			}
 	}
 
@@ -361,7 +401,7 @@ bool CAttackOrder::IsInTargetArea (CShip *pShip, CSpaceObject *pObj)
 	return true;
 	}
 
-void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
+void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire)
 
 //	OnAttacked
 //
@@ -372,6 +412,7 @@ void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 	//	current target, then switch to attack it.
 
 	if (m_fNearestTarget 
+			&& !bFriendlyFire
 			&& pAttacker != m_Objs[objTarget]
 			&& IsBetterTarget(pShip, Ctx, m_Objs[objTarget], pAttacker))
 		m_Objs[objTarget] = pAttacker;
@@ -561,7 +602,7 @@ CString CAttackOrder::OnDebugCrashInfo (void)
 	return sResult;
 	}
 
-void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj)
+void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder)
 
 //	OnObjDestroyed
 //
@@ -586,7 +627,7 @@ void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iOb
 		CSpaceObject *pNewTarget = GetBestTarget(pShip);
 		if (pNewTarget == NULL)
 			{
-			pShip->CancelCurrentOrder();
+			*retbCancelOrder = true;
 			return;
 			}
 
@@ -640,7 +681,7 @@ void CAttackOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
 
 //	CAttackStationOrder --------------------------------------------------------
 
-void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage)
+void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire)
 
 //	OnAttacked
 //
@@ -651,6 +692,8 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 	//	attention to this defender.
 
 	if (m_iState == stateAttackingTarget
+			
+			&& !bFriendlyFire
 
 			//	If we have secondary weapons, then we keep attacking the
 			//	station and let the secondaries deal with any defenders
@@ -675,6 +718,7 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 	//	see if we should switch to them.
 
 	else if (m_iState == stateAttackingDefender
+			&& !bFriendlyFire
 			&& pAttacker != m_Objs[objTarget]
 			&& pAttacker != m_Objs[objDefender]
 			&& Ctx.CalcIsBetterTarget(pShip, m_Objs[objDefender], pAttacker))
@@ -800,7 +844,7 @@ CString CAttackStationOrder::OnDebugCrashInfo (void)
 	return sResult;
 	}
 
-void CAttackStationOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj)
+void CAttackStationOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder)
 
 //	OnObjDestroyed
 //
@@ -858,6 +902,302 @@ void CAttackStationOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStre
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	pStream->Write((char *)&m_iCountdown, sizeof(DWORD));
+	}
+
+//	CEscortOrder -----------------------------------------------------------------
+
+void CEscortOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire)
+
+//	OnAttacked
+//
+//	We were attacked.
+
+	{
+	if (pAttacker
+			&& !bFriendlyFire
+			&& pAttacker->CanAttack())
+		{
+		//	Tell our principal that we were attacked
+
+		pShip->Communicate(m_Objs[objPrincipal], msgEscortAttacked, pAttacker);
+
+		//	Attack the target
+
+		if (!Ctx.IsNonCombatant()
+				&& (m_iState == stateEscorting
+					|| m_iState == stateAttackingThreat))
+			{
+			m_Objs[objTarget] = pAttacker;
+			m_iState = stateAttackingThreat;
+			}
+		}
+	}
+
+void CEscortOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
+
+//	OnBehavior
+//
+//	Do it
+
+	{
+	switch (m_iState)
+		{
+		case stateEscorting:
+			{
+			//	If we're a non-combatant, then we just follow
+
+			if (Ctx.IsNonCombatant())
+				{
+				CVector vTarget = m_Objs[objPrincipal]->GetPos() - pShip->GetPos();
+				Metric rTargetDist2 = vTarget.Dot(vTarget);
+				Metric rMaxDist = (MAX_FOLLOW_DISTANCE) + (g_KlicksPerPixel * (pShip->GetDestiny() % 120));
+
+				if (rTargetDist2 > (rMaxDist * rMaxDist))
+					Ctx.ImplementCloseOnTarget(pShip, m_Objs[objPrincipal], vTarget, rTargetDist2);
+				else if (rTargetDist2 < (g_KlicksPerPixel * g_KlicksPerPixel * 1024.0))
+					Ctx.ImplementSpiralOut(pShip, vTarget);
+				else
+					Ctx.ImplementStop(pShip);
+				}
+
+			//	Otherwise, we follow the principal
+
+			else
+				{
+				Ctx.ImplementEscort(pShip, m_Objs[objPrincipal], &m_Objs[objTarget]);
+
+				//	See if we need to defer a threat
+
+				if (!Ctx.NoAttackOnThreat() 
+						&& pShip->IsDestinyTime(30) 
+						&& !Ctx.IsWaitingForShieldsToRegen())
+					{
+					m_Objs[objTarget] = pShip->GetVisibleEnemyInRange(m_Objs[objPrincipal], PATROL_SENSOR_RANGE);
+					if (m_Objs[objTarget])
+						{
+						m_iState = stateAttackingThreat;
+						ASSERT(m_Objs[objTarget]->DebugIsValid() && m_Objs[objTarget]->NotifyOthersWhenDestroyed());
+						}
+					}
+				}
+
+			break;
+			}
+
+		case stateAttackingThreat:
+			{
+			ASSERT(m_Objs[objTarget]);
+			Ctx.ImplementAttackTarget(pShip, m_Objs[objTarget]);
+			Ctx.ImplementFireOnTargetsOfOpportunity(pShip, m_Objs[objTarget]);
+
+			//	Every once in a while check to see if we've wandered too far from
+			//	our base.
+
+			if (pShip->IsDestinyTime(20))
+				{
+				int iTick = pShip->GetSystem()->GetTick();
+				CVector vRange = m_Objs[objPrincipal]->GetPos() - pShip->GetPos();
+				Metric rDistance2 = vRange.Dot(vRange);
+
+				//	If we're outside of our patrol range and if we haven't
+				//	been hit in a while then stop the attack.
+
+				if (rDistance2 > (PATROL_SENSOR_RANGE * PATROL_SENSOR_RANGE)
+						&& (iTick - Ctx.GetLastAttack()) > ATTACK_TIME_THRESHOLD)
+					m_iState = stateEscorting;
+				}
+
+			break;
+			}
+
+		case stateWaiting:
+			{
+			Ctx.ImplementHold(pShip);
+			Ctx.ImplementFireOnTargetsOfOpportunity(pShip);
+			break;
+			}
+		}
+	}
+
+void CEscortOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data)
+
+//	OnBehaviorStart
+//
+//	Initialize order module
+
+	{
+	ASSERT(pOrderTarget);
+
+	//	Set state
+
+	m_iState = stateEscorting;
+
+	//	Remember the principal and report in
+
+	m_Objs[objPrincipal] = pOrderTarget;
+	pShip->Communicate(pOrderTarget, msgEscortReportingIn, pShip);
+	}
+
+DWORD CEscortOrder::OnCommunicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
+
+//	OnCommunicate
+//
+//	Handle communications
+
+	{
+	switch (iMessage)
+		{
+		case msgAbort:
+			{
+			switch (m_iState)
+				{
+				case stateAttackingThreat:
+					if (pParam1 == NULL || pParam1 == m_Objs[objTarget])
+						m_iState = stateEscorting;
+					return resAck;
+
+				default:
+					return resNoAnswer;
+				}
+			}
+
+		case msgAttack:
+		case msgAttackDeter:
+			{
+			if (Ctx.IsNonCombatant()
+					|| pParam1 == NULL
+					|| pParam1->IsDestroyed())
+				return resNoAnswer;
+
+			switch (m_iState)
+				{
+				case stateEscorting:
+				case stateAttackingThreat:
+					m_iState = stateAttackingThreat;
+					m_Objs[objTarget] = pParam1;
+					ASSERT(m_Objs[objTarget]->DebugIsValid() && m_Objs[objTarget]->NotifyOthersWhenDestroyed());
+					return resAck;
+
+				default:
+					return resNoAnswer;
+				}
+			}
+
+		case msgDestroyBroadcast:
+			{
+			if (pParam1 == NULL
+					|| !pParam1->IsDestroyed())
+				return resNoAnswer;
+
+			pShip->GetController()->AddOrder(IShipController::orderDestroyTarget,
+						pParam1,
+						IShipController::SData(),
+						true);
+
+			return resAck;
+			}
+
+		case msgFormUp:
+			{
+			if (m_iState != stateEscorting)
+				{
+				m_iState = stateEscorting;
+				return resAck;
+				}
+			else
+				return resNoAnswer;
+			}
+
+		case msgQueryCommunications:
+			{
+			DWORD dwRes = 0;
+
+			if (!Ctx.IsNonCombatant())
+				dwRes |= resCanAttack;
+			if (m_iState == stateAttackingThreat)
+				dwRes |= (resCanAbortAttack | resCanFormUp);
+			if (m_iState != stateWaiting)
+				dwRes |= resCanWait;
+			else
+				dwRes |= resCanFormUp;
+
+			return dwRes;
+			}
+
+		case msgQueryEscortStatus:
+			{
+			if (m_Objs[objPrincipal] == pParam1)
+				return resAck;
+			else
+				return resNoAnswer;
+			}
+
+		case msgQueryWaitStatus:
+			return (m_iState == stateWaiting ? resAck : resNoAnswer);
+
+		case msgQueryAttackStatus:
+			return (m_iState == stateAttackingThreat ? resAck : resNoAnswer);
+
+		case msgWait:
+			m_iState = stateWaiting;
+			return resAck;
+
+		default:
+			return resNoAnswer;
+		}
+	}
+
+void CEscortOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder)
+
+//	OnObjDestroyed
+//
+//	Object destroyed
+
+	{
+	if (iObj == objPrincipal)
+		{
+		//	Retaliate
+
+		if (Ctx.Attacker.IsCausedByNonFriendOf(pShip) && Ctx.Attacker.GetObj())
+			pShip->GetController()->AddOrder(IShipController::orderDestroyTarget, Ctx.Attacker.GetObj(), IShipController::SData());
+		else
+			pShip->GetController()->AddOrder(IShipController::orderAttackNearestEnemy, NULL, IShipController::SData());
+
+		//	Cancel our order
+
+		*retbCancelOrder = true;
+		}
+	else if (iObj == objTarget)
+		{
+		if (m_iState == stateAttackingThreat)
+			m_iState = stateEscorting;
+		}
+	}
+
+void CEscortOrder::OnReadFromStream (SLoadCtx &Ctx)
+
+//	OnReadFromStream
+//
+//	Load data from saved game
+
+	{
+	DWORD dwLoad;
+
+	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+	m_iState = (States)dwLoad;
+	}
+
+void CEscortOrder::OnWriteToStream (CSystem *pSystem, IWriteStream *pStream)
+
+//	OnWriteToStream
+//
+//	Write data to saved game
+
+	{
+	DWORD dwSave;
+
+	dwSave = (DWORD)m_iState;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
 //	CFireEventOrder ------------------------------------------------------------

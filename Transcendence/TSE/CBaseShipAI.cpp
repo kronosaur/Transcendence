@@ -960,6 +960,8 @@ void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 //	or it can be the missile/beam that hit us.
 
 	{
+	bool bFriendlyFire = false;
+
 	if (pAttacker)
 		{
 		CSpaceObject *pOrderGiver = pAttacker->GetOrderGiver(Damage.GetCause());
@@ -978,13 +980,15 @@ void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 
 			if (!Damage.IsAutomatedWeapon())
 				HandleFriendlyFire(pOrderGiver);
+
+			bFriendlyFire = true;
 			}
 		}
 
 	//	Notify our order module (or derrived class if we're doing it old-style)
 
 	if (m_pOrderModule)
-		m_pOrderModule->Attacked(m_pShip, m_AICtx, pAttacker, Damage);
+		m_pOrderModule->Attacked(m_pShip, m_AICtx, pAttacker, Damage, bFriendlyFire);
 	else
 		OnAttackedNotify(pAttacker, Damage);
 
@@ -1001,7 +1005,7 @@ DWORD CBaseShipAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, 
 
 	{
 	if (m_pOrderModule)
-		return m_pOrderModule->Communicate(m_pShip, pSender, iMessage, pParam1, dwParam2);
+		return m_pOrderModule->Communicate(m_pShip, m_AICtx, pSender, iMessage, pParam1, dwParam2);
 	else
 		return OnCommunicateNotify(pSender, iMessage, pParam1, dwParam2);
 	}

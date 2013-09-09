@@ -85,15 +85,12 @@
 
 				sound=				"&snMissileLauncher;"
 
+				effect=				"&efMissileNAMI;"
 				vaporTrailLength=	"16"
 				vaporTrailWidth=	"110"
 				vaporTrailWidthInc=	"5"
 				vaporTrailColor=	"0xd0, 0xd0, 0xd0"
 				>
-
-			<Effect>
-				<Image imageID="&rsStdMissile1;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="40"/>
-			</Effect>						
 
 			<HitEffect
 					sound="&snArmorHit1;"

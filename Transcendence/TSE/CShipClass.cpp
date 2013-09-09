@@ -35,6 +35,7 @@
 #define ARMOR_ID_ATTRIB							CONSTLIT("armorID")
 #define CARGO_SPACE_ATTRIB						CONSTLIT("cargoSpace")
 #define CHARACTER_ATTRIB						CONSTLIT("character")
+#define CHARACTER_CLASS_ATTRIB					CONSTLIT("characterClass")
 #define COUNT_ATTRIB							CONSTLIT("count")
 #define CYBER_DEFENSE_LEVEL_ATTRIB				CONSTLIT("cyberDefenseLevel")
 #define DEBUG_ONLY_ATTRIB						CONSTLIT("debugOnly")
@@ -130,6 +131,7 @@
 #define FIELD_SHIELD							CONSTLIT("shield")
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_SHIP_STATUS_SCREEN				CONSTLIT("shipStatusScreen")
+#define FIELD_STARTING_SYSTEM					CONSTLIT("startingSystem")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 #define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
 
@@ -1677,6 +1679,18 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		else
 			*retsValue = CONSTLIT("none");
 		}
+	else if (strEquals(sField, FIELD_STARTING_SYSTEM))
+		{
+		const CPlayerSettings *pPlayer = GetPlayerSettings();
+		if (pPlayer)
+			{
+			*retsValue = pPlayer->GetStartingNode();
+			if (retsValue->IsBlank())
+				*retsValue = g_pUniverse->GetCurrentAdventureDesc()->GetStartingNodeID();
+			}
+		else
+			*retsValue = NULL_STR;
+		}
 	else if (strEquals(sField, FIELD_LAUNCHER))
 		{
 		CItemType *pItem = g_pUniverse->FindItemType(strToInt(GetDataField(FIELD_LAUNCHER_UNID), 0));
@@ -2336,6 +2350,9 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_Character.Bind(Ctx))
 		goto Fail;
 
+	if (error = m_CharacterClass.Bind(Ctx))
+		goto Fail;
+
 	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
 		goto Fail;
 
@@ -2721,6 +2738,9 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Characters
 
 	if (error = m_Character.LoadUNID(Ctx, pDesc->GetAttribute(CHARACTER_ATTRIB)))
+		return error;
+
+	if (error = m_CharacterClass.LoadUNID(Ctx, pDesc->GetAttribute(CHARACTER_CLASS_ATTRIB)))
 		return error;
 
 	//	Initialize docking data

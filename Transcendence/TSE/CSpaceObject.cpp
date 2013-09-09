@@ -72,6 +72,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
@@ -3311,6 +3312,7 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
+	CDesignType *pType;
 
 	if (strEquals(sName, PROPERTY_CATEGORY))
 		{
@@ -3330,6 +3332,8 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 				return CC.CreateString(CATEGORY_EFFECT);
 			}
 		}
+	else if (strEquals(sName, PROPERTY_KNOWN))
+		return CC.CreateBool(IsKnown());
 	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))
 		{
 		int iCount = g_pUniverse->GetObjStats(GetID()).iPlayerMissionsGiven;
@@ -3340,6 +3344,8 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		}
 	else if (strEquals(sName, PROPERTY_UNDER_ATTACK))
 		return CC.CreateBool(IsUnderAttack());
+	else if (pType = GetType())
+		return CreateResultFromDataField(CC, pType->GetDataField(sName));
 	else
 		return CC.CreateNil();
 	}
@@ -3559,6 +3565,80 @@ void CSpaceObject::GetVisibleEnemies (DWORD dwFlags, TArray<CSpaceObject *> *ret
 				}
 			}
 		}
+	}
+
+CSpaceObject *CSpaceObject::GetVisibleEnemyInRange (CSpaceObject *pCenter, Metric rMaxRange, bool bIncludeStations, CSpaceObject *pExcludeObj)
+
+//	GetVisibleEnemyInRange
+//
+//	Returns the first enemy that we find in range.
+
+	{
+	DEBUG_TRY
+
+	int i;
+	Metric rMaxRange2 = rMaxRange * rMaxRange;
+
+	//	Compute this object's perception and perception range
+
+	int iPerception = GetPerception();
+	Metric rRange2[RANGE_INDEX_COUNT];
+	for (i = 0; i < RANGE_INDEX_COUNT; i++)
+		{
+		rRange2[i] = RangeIndex2Range(i);
+		rRange2[i] = rRange2[i] * rRange2[i];
+		}
+
+	//	The player is a special case (because sometimes a station is angry at the 
+	//	player even though she is not an enemy)
+
+	CSpaceObject *pPlayer = GetPlayer();
+	if (pPlayer 
+			&& pCenter->IsAngryAt(pPlayer)
+			&& pPlayer != pExcludeObj
+			&& !pPlayer->IsEscortingFriendOf(this))
+		{
+		CVector vRange = pPlayer->GetPos() - pCenter->GetPos();
+		Metric rDistance2 = vRange.Dot(vRange);
+
+		if (rDistance2 < rMaxRange2
+				&& rDistance2 < rRange2[pPlayer->GetDetectionRangeIndex(iPerception)])
+			return pPlayer;
+		}
+
+	//	Get the sovereign
+
+	CSovereign *pSovereign = GetSovereignToDefend();
+	if (pSovereign == NULL || GetSystem() == NULL)
+		return NULL;
+
+	//	Loop
+
+	const CSpaceObjectList &ObjList = pSovereign->GetEnemyObjectList(GetSystem());
+	int iCount = ObjList.GetCount();
+	for (i = 0; i < iCount; i++)
+		{
+		CSpaceObject *pObj = ObjList.GetObj(i);
+
+		if ((pObj->GetCategory() == catShip
+					|| (bIncludeStations && pObj->GetCategory() == catStation))
+				&& pObj->CanAttack()
+				&& pObj != this)
+			{
+			CVector vRange = pObj->GetPos() - pCenter->GetPos();
+			Metric rDistance2 = vRange.Dot(vRange);
+
+			if (rDistance2 < rMaxRange2
+					&& rDistance2 < rRange2[pObj->GetDetectionRangeIndex(iPerception)]
+					&& pObj != pExcludeObj
+					&& !pObj->IsEscortingFriendOf(this))
+				return pObj;
+			}
+		}
+
+	DEBUG_CATCH
+
+	return NULL;
 	}
 
 bool CSpaceObject::HasFuelItem (void)
@@ -4797,7 +4877,7 @@ void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPain
 	SEffectNode *pEffect = m_pFirstEffect;
 	while (pEffect)
 		{
-		Ctx.iTick = pEffect->iTick++;
+		Ctx.iTick = pEffect->iTick;
 		Ctx.iVariant = 0;
 		Ctx.iRotation = pEffect->iRotation;
 		Ctx.iDestiny = GetDestiny();
@@ -5393,9 +5473,9 @@ void CSpaceObject::Remove (DestructionTypes iCause, const CDamageSource &Attacke
 		//	Delete all subscriptions. We are leaving the system, so we can't
 		//	hold on to pointers to the old system.
 		//
-		//	LATER: We need to deal with missions separately.
+		//	NOTE: We leave mission objects intact
 
-		m_SubscribedObjs.RemoveAll();
+		m_SubscribedObjs.RemoveSystemObjs();
 
 		//	Done
 
@@ -5821,7 +5901,13 @@ bool CSpaceObject::SetProperty (const CString &sName, ICCItem *pValue, CString *
 //	Sets an object property
 
 	{
-	return false;
+	if (strEquals(sName, PROPERTY_KNOWN))
+		{
+		SetKnown(!pValue->IsNil());
+		return true;
+		}
+	else
+		return false;
 	}
 
 bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
@@ -5898,7 +5984,7 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 		{
 		SEffectNode *pNext = pEffect->pNext;
 
-		if (pEffect->iTick >= pEffect->pPainter->GetInitialLifetime())
+		if (++pEffect->iTick >= pEffect->pPainter->GetLifetime())
 			{
 			if (pPrev)
 				pPrev->pNext = pNext;

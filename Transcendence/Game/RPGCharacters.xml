@@ -176,6 +176,11 @@
 
 								(if (eq (sysGetNode) (typGetData charType 'lastNodeID))
 									(setq pos (typGetData charType 'lastSystemPos))
+									
+									;	If he was not here last, then clear out the player's
+									;	knowledge of the ship's position
+
+									(objSetProperty shipObj 'known Nil)
 									)
 
 								;	Descend him back to the system

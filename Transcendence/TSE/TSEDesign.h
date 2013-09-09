@@ -1676,10 +1676,11 @@ class CItemListManipulator
 		void SetFilter (const CItemCriteria &Filter);
 		bool Refresh (const CItem &Item);
 
-		inline bool IsCursorValid (void) { return m_iCursor != -1; }
+		inline bool IsCursorValid (void) { return (m_iCursor != -1 && m_iCursor < m_ItemList.GetCount()); }
 		bool MoveCursorBack (void);
 		bool MoveCursorForward (void);
 		void ResetCursor (void);
+		void SyncCursor (void);
 
 		DWORD AddItemEnhancementAtCursor (const CItemEnhancement &Mods, int iCount = 1);
 		void ClearDisruptedAtCursor (int iCount = 1);
@@ -2435,6 +2436,7 @@ class CAISettings
 		void InitToDefault (void);
 		inline bool IsAggressor (void) const { return m_fAggressor; }
 		inline bool IsNonCombatant (void) const { return m_fNonCombatant; }
+		inline bool NoAttackOnThreat (void) const { return m_fNoAttackOnThreat; }
 		inline bool NoDogfights (void) const { return m_fNoDogfights; }
 		inline bool NoFriendlyFire (void) const { return m_fNoFriendlyFire; }
 		inline bool NoFriendlyFireCheck (void) const { return m_fNoFriendlyFireCheck; }
@@ -2469,8 +2471,9 @@ class CAISettings
 		DWORD m_fAscendOnGate:1;				//	If TRUE, we ascend when the ship gates out
 
 		DWORD m_fNoNavPaths:1;					//	If TRUE, do not use nav paths
+		DWORD m_fNoAttackOnThreat:1;			//	Do not attack enemies while escorting (unless ordered)
 
-		DWORD m_dwSpare:23;
+		DWORD m_dwSpare:22;
 	};
 
 enum ProgramTypes
@@ -2873,6 +2876,7 @@ struct SEffectUpdateCtx
 	SEffectUpdateCtx (void) : 
 			pSystem(NULL),
 			pObj(NULL),
+			bFade(false),
 
 			pDamageDesc(NULL),
 			pEnhancements(NULL),
@@ -2888,6 +2892,7 @@ struct SEffectUpdateCtx
 	//	Object context
 	CSystem *pSystem;							//	Current system
 	CSpaceObject *pObj;							//	The object that the effect is part of
+	bool bFade;									//	Effect fading
 
 	//	Damage context
 	CWeaponFireDesc *pDamageDesc;				//	Damage done by particles (may be NULL)
@@ -2956,7 +2961,6 @@ class IEffectPainter
 
 		void GetBounds (RECT *retRect);
 		void GetBounds (const CVector &vPos, CVector *retvUR, CVector *retvLL);
-		int GetInitialLifetime (void);
 		inline void OnUpdate (void) { SEffectUpdateCtx Ctx; OnUpdate(Ctx); }
 		inline void PlaySound (CSpaceObject *pSource);
 		inline void ReadFromStream (SLoadCtx &Ctx) { OnReadFromStream(Ctx); }
@@ -2969,6 +2973,7 @@ class IEffectPainter
 		virtual void Delete (void) { if (!m_bSingleton) delete this; }
 		virtual CEffectCreator *GetCreator (void) = 0;
 		virtual int GetFadeLifetime (void) { return 0; }
+		virtual int GetLifetime (void) { return GetInitialLifetime(); }
 		virtual void GetParam (const CString &sParam, CEffectParamDesc *retValue) { retValue->InitNull(); }
 		virtual bool GetParamList (TArray<CString> *retList) const { return false; }
 		virtual int GetParticleCount (void) { return 1; }
@@ -2995,6 +3000,8 @@ class IEffectPainter
 		virtual void OnWriteToStream (IWriteStream *pStream);
 
 	private:
+		int GetInitialLifetime (void);
+
 		bool m_bSingleton;
 	};
 
@@ -3777,6 +3784,7 @@ class CShipClass : public CDesignType
 		const SArmorImageDesc *GetArmorDescInherited (void);
 		inline int GetCargoSpace (void) { return m_iCargoSpace; }
 		inline CGenericType *GetCharacter (void) { return m_Character; }
+		inline CGenericType *GetCharacterClass (void) { return m_CharacterClass; }
 		inline int GetCyberDefenseLevel (void) { return m_iCyberDefenseLevel; }
 		inline DWORD GetDefaultBkgnd (void) { return m_dwDefaultBkgnd; }
 		inline int GetDockingPortCount (void) { return m_iDockingPortsCount; }
@@ -3973,8 +3981,11 @@ class CShipClass : public CDesignType
 		//	Escorts
 		IShipGenerator *m_pEscorts;				//	Escorts
 
-		//	Docking
+		//	Character
+		CGenericTypeRef m_CharacterClass;		//	Character class
 		CGenericTypeRef m_Character;			//	Character for ship
+
+		//	Docking
 		int m_iDockingPortsCount;				//	Number of docking ports
 		CVector *m_DockingPorts;			//	Position of docking ports
 		CDockScreenTypeRef m_pDefaultScreen;	//	Default screen
@@ -5302,6 +5313,8 @@ class CInstalledDevice
 		CInstalledDevice (void);
 		~CInstalledDevice (void);
 
+		CInstalledDevice &operator= (const CInstalledDevice &Obj);
+
 		//	Create/Install/uninstall/Save/Load methods
 
 		void FinishInstall (CSpaceObject *pSource);
@@ -5324,7 +5337,6 @@ class CInstalledDevice
 		//	of the device class. For example, IsOmniDirectional does not check the
 		//	properties of the device class
 
-		inline int GetActivateDelayAdj (void) { return m_iActivateDelayAdj; }
 		inline int GetCharges (CSpaceObject *pSource) { return (m_pItem ? m_pItem->GetCharges() : 0); }
 		inline DWORD GetData (void) const { return m_dwData; }
 		inline int GetDeviceSlot (void) const { return m_iDeviceSlot; }
@@ -5356,7 +5368,7 @@ class CInstalledDevice
 		inline bool IsRegenerating (void) const { return (m_fRegenerating ? true : false); }
 		inline bool IsTriggered (void) const { return (m_fTriggered ? true : false); }
 		inline bool IsWaiting (void) const { return (m_fWaiting ? true : false); }
-		inline void SetActivateDelayAdj (int iAdj) { m_iActivateDelayAdj = iAdj; }
+		inline void SetActivateDelay (int iDelay) { m_iActivateDelay = iDelay; }
 		inline void SetData (DWORD dwData) { m_dwData = dwData; }
 		inline void SetDeviceSlot (int iDev) { m_iDeviceSlot = iDev; }
 		inline void SetEnabled (bool bEnabled) { m_fEnabled = bEnabled; }
@@ -5465,7 +5477,7 @@ class CInstalledDevice
 		int m_iFireAngle:16;					//	Last fire angle
 
 		int m_iTemperature:16;					//	Temperature for weapons
-		int m_iActivateDelayAdj:16;				//	Adjustment to activation delay
+		int m_iActivateDelay:16;				//	Cached activation delay
 		int m_iSlotBonus:16;					//	Bonus from device slot itself
 		int m_iSpare:16;
 
@@ -5578,6 +5590,7 @@ class CExtension
 		ALERROR ExecuteGlobals (SDesignLoadCtx &Ctx);
 		inline CAdventureDesc *GetAdventureDesc (void) const { return m_pAdventureDesc; }
 		inline DWORD GetAPIVersion (void) const { return m_dwAPIVersion; }
+		inline DWORD GetAutoIncludeAPIVersion (void) const { return m_dwAutoIncludeAPIVersion; }
 		CG16bitImage *GetCoverImage (void) const;
 		inline const TArray<CString> &GetCredits (void) const { return m_Credits; }
 		inline const CString &GetDisabledReason (void) const { return m_sDisabledReason; }
@@ -5657,6 +5670,9 @@ class CExtension
 
 		TArray<SLibraryDesc> m_Libraries;	//	Extensions that we use.
 		TArray<DWORD> m_Extends;			//	UNIDs that this extension extends
+		DWORD m_dwAutoIncludeAPIVersion;	//	Library adds compatibility to any
+											//		extension at or below this
+											//		API version.
 
 		mutable CG16bitImage *m_pCoverImage;	//	Large cover image
 
@@ -5711,8 +5727,9 @@ class CExtensionCollection
 
 	private:
 		void AddOrReplace (CExtension *pExtension);
-		ALERROR AddToBindList (CExtension *pExtension, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
+		ALERROR AddToBindList (CExtension *pExtension, DWORD dwFlags, const TArray<CExtension *> &Compatibility, TArray<CExtension *> *retList, CString *retsError);
 		void ClearAllMarks (void);
+		void ComputeCompatibilityLibraries (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList);
 		ALERROR ComputeFilesToLoad (const CString &sFilespec, CExtension::EFolderTypes iFolder, TSortMap<CString, int> &List, CString *retsError);
 		ALERROR LoadBaseFile (const CString &sFilespec, DWORD dwFlags, CString *retsError);
 		ALERROR LoadFile (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, const CIntegerIP &CheckDigest, bool *retbReload, CString *retsError);

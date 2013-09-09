@@ -38,7 +38,7 @@ class CEffectGroupPainter : public IEffectPainter
 		SViewportPaintCtx *AdjustCtx (SViewportPaintCtx &Ctx, SViewportPaintCtx &NewCtx, int *retx, int *rety);
 
 		CEffectGroupCreator *m_pCreator;
-		IEffectPainter **m_pPainters;
+		TArray<IEffectPainter *> m_Painters;
 	};
 
 CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreatePainterCtx &Ctx) : m_pCreator(pCreator)
@@ -46,10 +46,10 @@ CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreate
 //	CEffectGroupPainter constructor
 
 	{
-	m_pPainters = new IEffectPainter * [m_pCreator->GetCount()];
+	m_Painters.InsertEmpty(m_pCreator->GetCount());
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		m_pPainters[i] = m_pCreator->CreateSubPainter(Ctx, i);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		m_Painters[i] = m_pCreator->CreateSubPainter(Ctx, i);
 	}
 
 CEffectGroupPainter::~CEffectGroupPainter (void)
@@ -57,11 +57,9 @@ CEffectGroupPainter::~CEffectGroupPainter (void)
 //	CEffectGroupPainter destructor
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->Delete();
-
-	delete [] m_pPainters;
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->Delete();
 	}
 
 SViewportPaintCtx *CEffectGroupPainter::AdjustCtx (SViewportPaintCtx &Ctx, SViewportPaintCtx &NewCtx, int *retx, int *rety)
@@ -97,9 +95,9 @@ int CEffectGroupPainter::GetFadeLifetime (void)
 	{
 	int iMaxLifetime = 0;
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			iMaxLifetime = Max(iMaxLifetime, m_pPainters[i]->GetFadeLifetime());
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			iMaxLifetime = Max(iMaxLifetime, m_Painters[i]->GetFadeLifetime());
 
 	return iMaxLifetime;
 	}
@@ -116,11 +114,11 @@ void CEffectGroupPainter::GetRect (RECT *retRect) const
 	retRect->bottom = 0;
 	retRect->right = 0;
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
 			{
 			RECT rcRect;
-			m_pPainters[i]->GetRect(&rcRect);
+			m_Painters[i]->GetRect(&rcRect);
 
 			::UnionRect(retRect, retRect, &rcRect);
 			}
@@ -131,9 +129,9 @@ void CEffectGroupPainter::OnBeginFade (void)
 //	OnBeginFade
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->OnBeginFade();
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->OnBeginFade();
 	}
 
 void CEffectGroupPainter::OnMove (bool *retbBoundsChanged)
@@ -143,12 +141,12 @@ void CEffectGroupPainter::OnMove (bool *retbBoundsChanged)
 	{
 	bool bBoundsChanged = false;
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
 			{
 			bool bSingleBoundsChanged;
 
-			m_pPainters[i]->OnMove(&bSingleBoundsChanged);
+			m_Painters[i]->OnMove(&bSingleBoundsChanged);
 
 			if (bSingleBoundsChanged)
 				bBoundsChanged = true;
@@ -163,26 +161,52 @@ void CEffectGroupPainter::OnReadFromStream (SLoadCtx &Ctx)
 //	OnReadFromStream
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
+	int i;
+	DWORD dwLoad;
+
+	int iCount;
+	if (Ctx.dwVersion >= 93)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		iCount = dwLoad;
+		}
+	else
+		iCount = m_Painters.GetCount();
+
+	//	Read all the painters
+
+	for (i = 0; i < iCount; i++)
+		{
+		//	The UNID is ignored (because it is the UNID of the creator)
+
+		ReadUNID(Ctx);
+
+		//	Validate the class
+
+		CString sExpected = (i < m_Painters.GetCount() ? m_Painters[i]->GetCreator()->GetTag() : NULL_STR);
+		if (IEffectPainter::ValidateClass(Ctx, sExpected) != NOERROR)
 			{
-			//	The UNID is ignored (because it is the UNID of the creator)
-
-			ReadUNID(Ctx);
-
-			//	Validate the class
-
-			if (IEffectPainter::ValidateClass(Ctx, m_pPainters[i]->GetCreator()->GetTag()) != NOERROR)
+			if (i < m_Painters.GetCount())
 				{
-				m_pPainters[i]->Delete();
-				m_pPainters[i] = NULL;
-				continue;
+				m_Painters[i]->Delete();
+				m_Painters[i] = NULL;
 				}
 
-			//	Read the painter
-
-			m_pPainters[i]->ReadFromStream(Ctx);
+			continue;
 			}
+
+		//	Read the painter
+
+		m_Painters[i]->ReadFromStream(Ctx);
+		}
+
+	//	If we have extra painters, then delete them
+
+	for (i = iCount; i < m_Painters.GetCount(); i++)
+		{
+		m_Painters[i]->Delete();
+		m_Painters[i] = NULL;
+		}
 	}
 
 void CEffectGroupPainter::OnUpdate (SEffectUpdateCtx &Ctx)
@@ -192,9 +216,9 @@ void CEffectGroupPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 //	Update painters
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->OnUpdate(Ctx);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->OnUpdate(Ctx);
 	}
 
 void CEffectGroupPainter::OnWriteToStream (IWriteStream *pStream)
@@ -202,8 +226,11 @@ void CEffectGroupPainter::OnWriteToStream (IWriteStream *pStream)
 //	OnWriteToStream
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		CEffectCreator::WritePainterToStream(pStream, m_pPainters[i]);
+	DWORD dwSave = m_Painters.GetCount();
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		CEffectCreator::WritePainterToStream(pStream, m_Painters[i]);
 	}
 
 void CEffectGroupPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -216,9 +243,9 @@ void CEffectGroupPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPain
 	SViewportPaintCtx NewCtx;
 	SViewportPaintCtx *pCtx = AdjustCtx(Ctx, NewCtx, &x, &y);
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->Paint(Dest, x, y, *pCtx);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->Paint(Dest, x, y, *pCtx);
 	}
 
 void CEffectGroupPainter::PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -231,9 +258,9 @@ void CEffectGroupPainter::PaintFade (CG16bitImage &Dest, int x, int y, SViewport
 	SViewportPaintCtx NewCtx;
 	SViewportPaintCtx *pCtx = AdjustCtx(Ctx, NewCtx, &x, &y);
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->PaintFade(Dest, x, y, *pCtx);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->PaintFade(Dest, x, y, *pCtx);
 	}
 
 void CEffectGroupPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx)
@@ -246,9 +273,9 @@ void CEffectGroupPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVec
 	SViewportPaintCtx NewCtx;
 	SViewportPaintCtx *pCtx = AdjustCtx(Ctx, NewCtx, &x, &y);
 
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->PaintHit(Dest, x, y, vHitPos, *pCtx);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->PaintHit(Dest, x, y, vHitPos, *pCtx);
 	}
 
 bool CEffectGroupPainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const
@@ -258,9 +285,9 @@ bool CEffectGroupPainter::PointInImage (int x, int y, int iTick, int iVariant, i
 //	Returns TRUE if the point is in the image
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			if (m_pPainters[i]->PointInImage(x, y, iTick, iVariant, iRotation))
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			if (m_Painters[i]->PointInImage(x, y, iTick, iVariant, iRotation))
 				return true;
 
 	return false;
@@ -273,9 +300,9 @@ void CEffectGroupPainter::SetVariants (int iVariants)
 //	Sets the variants
 
 	{
-	for (int i = 0; i < m_pCreator->GetCount(); i++)
-		if (m_pPainters[i])
-			m_pPainters[i]->SetVariants(iVariants);
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->SetVariants(iVariants);
 	}
 
 //	CEffectGroupCreator --------------------------------------------------------

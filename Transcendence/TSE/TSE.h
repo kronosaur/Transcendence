@@ -50,26 +50,27 @@
 //	Define some debugging symbols
 
 #ifdef DEBUG
-//#define DEBUG_SOURCE_LOAD_TRACE
-//#define DEBUG_SHIP
-//#define DEBUG_HENCHMAN
-//#define DEBUG_LOAD
-//#define DEBUG_COMBAT
 //#define DEBUG_ALL_ITEMS
 //#define DEBUG_ALL_NODES
+//#define DEBUG_ASTAR_PATH
+//#define DEBUG_ASTAR_PERF
 //#define DEBUG_ATTACK_TARGET
+//#define DEBUG_AVOID_POTENTIAL
+//#define DEBUG_BOUNDING_RECT
+//#define DEBUG_COMBAT
+//#define DEBUG_DOCK_PORT_POS
+//#define DEBUG_FIRE_ON_OPPORTUNITY
+//#define DEBUG_HENCHMAN
+//#define DEBUG_LOAD
+//#define DEBUG_NAV_PATH
+//#define DEBUG_NEBULA_PAINTING
+//#define DEBUG_PERFORMANCE
+//#define DEBUG_SHIP
+//#define DEBUG_SOURCE_LOAD_TRACE
+//#define DEBUG_STATION_EXCLUSION_ZONE
+#define DEBUG_TARGET_LIST
 #define DEBUG_VECTOR
 //#define DEBUG_WEAPON_POS
-//#define DEBUG_PERFORMANCE
-//#define DEBUG_NEBULA_PAINTING
-//#define DEBUG_ASTAR_PERF
-//#define DEBUG_ASTAR_PATH
-//#define DEBUG_NAV_PATH
-//#define DEBUG_AVOID_POTENTIAL
-//#define DEBUG_DOCK_PORT_POS
-//#define DEBUG_STATION_EXCLUSION_ZONE
-//#define DEBUG_BOUNDING_RECT
-//#define DEBUG_FIRE_ON_OPPORTUNITY
 #endif
 
 //	We leave this defined because we want to get traces in the field in case
@@ -2122,6 +2123,7 @@ class CSpaceObject : public CObject
 		inline const CVector &GetVel (void) const { return m_vVel; }
 		inline DWORD GetVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetVisibleEnemies (DWORD dwFlags, TArray<CSpaceObject *> *retList, CSpaceObject *pExcludeObj = NULL);
+		CSpaceObject *GetVisibleEnemyInRange (CSpaceObject *pCenter, Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
 		inline bool HasInterSystemEvent (void) const { return (m_fHasInterSystemEvent ? true : false); }
 		inline bool HasNonLinearMove (void) const { return (m_fNonLinearMove ? true : false); }
 		inline bool HasOnAttackedEvent (void) const { return (m_fHasOnAttackedEvent ? true : false); }
@@ -2327,6 +2329,7 @@ class CSpaceObject : public CObject
 		virtual bool IsExplored (void) { return true; }
 		virtual bool IsKnown (void) { return true; }
 		virtual bool IsMarker (void) { return false; }
+		virtual bool IsNonSystemObj (void) { return false; }
 		virtual bool IsVirtual (void) const { return false; }
 		virtual bool IsWreck (void) const { return false; }
 		virtual void MarkImages (void) { }

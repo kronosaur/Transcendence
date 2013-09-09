@@ -652,8 +652,25 @@ ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	CXMLElement *pEffect = pDesc->GetContentElementByTag(EFFECT_TAG);
 	ASSERT(pEffect);
 
+	//	Continue
+
 	if (pEffect->GetContentElementCount() == 1)
-		error = OnEffectCreateFromXML(Ctx, pEffect->GetContentElement(0), m_sUNID);
+		{
+		CXMLElement *pEffectDesc = pEffect->GetContentElement(0);
+
+		//	Load events for this effect, in case they're here.
+
+		CXMLElement *pEventsDesc = pEffectDesc->GetContentElementByTag(EVENTS_TAG);
+		if (pEventsDesc)
+			{
+			if (error = m_Events.InitFromXML(Ctx, pEventsDesc))
+				return error;
+			}
+
+		//	Load the single effect
+
+		error = OnEffectCreateFromXML(Ctx, pEffectDesc, m_sUNID);
+		}
 	else
 		error = OnEffectCreateFromXML(Ctx, pEffect, m_sUNID);
 

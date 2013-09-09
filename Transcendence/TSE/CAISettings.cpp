@@ -13,8 +13,9 @@
 #define FIRE_RANGE_ADJ_ATTRIB					CONSTLIT("fireRangeAdj")
 #define FIRE_RATE_ADJ_ATTRIB					CONSTLIT("fireRateAdj")
 #define FLYBY_COMBAT_ATTRIB						CONSTLIT("flybyCombat")
-#define NO_DOGFIGHTS_ATTRIB						CONSTLIT("noDogfights")
 #define NO_SHIELD_RETREAT_ATTRIB				CONSTLIT("ignoreShieldsDown")
+#define NO_ATTACK_ON_THREAT_ATTRIB				CONSTLIT("noAttackOnThreat")
+#define NO_DOGFIGHTS_ATTRIB						CONSTLIT("noDogfights")
 #define NO_FRIENDLY_FIRE_ATTRIB					CONSTLIT("noFriendlyFire")
 #define NO_FRIENDLY_FIRE_CHECK_ATTRIB			CONSTLIT("noFriendlyFireCheck")
 #define NO_NAV_PATHS_ATTRIB						CONSTLIT("noNavPaths")
@@ -115,6 +116,8 @@ CString CAISettings::GetValue (const CString &sSetting)
 		return strFromInt(m_iFireRangeAdj);
 	else if (strEquals(sSetting, FIRE_RATE_ADJ_ATTRIB))
 		return strFromInt(m_iFireRateAdj);
+	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
+		return (m_fNoAttackOnThreat ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_DOGFIGHTS_ATTRIB))
 		return (m_fNoDogfights ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_SHIELD_RETREAT_ATTRIB))
@@ -183,6 +186,7 @@ ALERROR CAISettings::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fNonCombatant = pDesc->GetAttributeBool(NON_COMBATANT_ATTRIB);
 	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
 	m_fAggressor = pDesc->GetAttributeBool(AGGRESSOR_ATTRIB);
+	m_fNoAttackOnThreat = pDesc->GetAttributeBool(NO_ATTACK_ON_THREAT_ATTRIB);
 	m_fNoFriendlyFireCheck = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_CHECK_ATTRIB);
 	m_fNoNavPaths = pDesc->GetAttributeBool(NO_NAV_PATHS_ATTRIB);
 	m_fNoOrderGiver = pDesc->GetAttributeBool(NO_ORDER_GIVER_ATTRIB);
@@ -210,6 +214,7 @@ void CAISettings::InitToDefault (void)
 	m_fNonCombatant = false;
 	m_fNoFriendlyFire = false;
 	m_fAggressor = false;
+	m_fNoAttackOnThreat = true;
 	m_fNoFriendlyFireCheck = false;
 	m_fNoNavPaths = false;
 	m_fNoOrderGiver = false;
@@ -255,6 +260,7 @@ void CAISettings::ReadFromStream (SLoadCtx &Ctx)
 	m_fNoOrderGiver =			((dwLoad & 0x00000040) ? true : false);
 	m_fAscendOnGate =			((dwLoad & 0x00000080) ? true : false);
 	m_fNoNavPaths =				((dwLoad & 0x00000100) ? true : false);
+	m_fNoAttackOnThreat =		((dwLoad & 0x00000200) ? true : false);
 	}
 
 CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
@@ -278,6 +284,8 @@ CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
 		m_iFireRangeAdj = Max(1, strToInt(sValue, 100));
 	else if (strEquals(sSetting, FIRE_RATE_ADJ_ATTRIB))
 		m_iFireRateAdj = Max(1, strToInt(sValue, 10));
+	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
+		m_fNoAttackOnThreat = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_DOGFIGHTS_ATTRIB))
 		m_fNoDogfights = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_SHIELD_RETREAT_ATTRIB))
@@ -338,5 +346,6 @@ void CAISettings::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fNoOrderGiver ?			0x00000040 : 0);
 	dwSave |= (m_fAscendOnGate ?			0x00000080 : 0);
 	dwSave |= (m_fNoNavPaths ?				0x00000100 : 0);
+	dwSave |= (m_fNoAttackOnThreat ?		0x00000200 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
