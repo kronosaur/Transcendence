@@ -5,6 +5,7 @@
 
 #include "PreComp.h"
 
+#define CRITERIA_TAG							CONSTLIT("Criteria")
 #define ENCOUNTER_TAG							CONSTLIT("Encounter")
 
 #define ENEMY_EXCLUSION_RADIUS_ATTRIB			CONSTLIT("enemyExclusionRadius")
@@ -129,6 +130,7 @@ int CStationEncounterDesc::GetFrequencyByNode (CTopologyNode *pNode, CStationTyp
 	if (m_bSystemCriteria)
 		{
 		CTopologyNode::SCriteriaCtx Ctx;
+		Ctx.pTopology = &g_pUniverse->GetTopology();
 		if (!pNode->MatchesCriteria(Ctx, m_SystemCriteria))
 			return 0;
 		}
@@ -218,7 +220,15 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 
 	//	System criteria
 
-	if (pDesc->FindAttribute(SYSTEM_CRITERIA_ATTRIB, &sAttrib))
+	CXMLElement *pCriteria = pDesc->GetContentElementByTag(CRITERIA_TAG);
+	if (pCriteria)
+		{
+		if (error = CTopologyNode::ParseCriteria(pCriteria, &m_SystemCriteria, &Ctx.sError))
+			return error;
+
+		m_bSystemCriteria = true;
+		}
+	else if (pDesc->FindAttribute(SYSTEM_CRITERIA_ATTRIB, &sAttrib))
 		{
 		if (error = CTopologyNode::ParseCriteria(sAttrib, &m_SystemCriteria, &Ctx.sError))
 			return error;

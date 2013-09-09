@@ -1034,6 +1034,9 @@ ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 	else if (strEquals(sName, PROPERTY_SHATTER_IMMUNE))
 		return CC.CreateBool(IsShatterImmune(Ctx));
 
+	else if (m_pItemType)
+		return CreateResultFromDataField(CC, m_pItemType->GetDataField(sName));
+
 	else
 		return CC.CreateNil();
 	}

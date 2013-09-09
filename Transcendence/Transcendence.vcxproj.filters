@@ -274,9 +274,6 @@
     <None Include="Game\Compatibility10.xml">
       <Filter>XML Files</Filter>
     </None>
-    <None Include="Game\Domina.xml">
-      <Filter>XML Files</Filter>
-    </None>
     <None Include="Game\Heretic.xml">
       <Filter>XML Files</Filter>
     </None>
@@ -804,6 +801,12 @@
       <Filter>XML Files\RPG Library</Filter>
     </None>
     <None Include="Game\Extensions\Corporate Expansion\CorporateExpansion.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </None>
+    <None Include="Game\Domina.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </None>
+    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml">
       <Filter>XML Files\Corporate Expansion</Filter>
     </None>
   </ItemGroup>

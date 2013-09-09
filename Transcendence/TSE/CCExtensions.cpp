@@ -1320,6 +1320,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'known\n"
 			"   'playerMissionsGiven\n"
 			"   'underAttack\n"
 			"\n"
@@ -1327,6 +1328,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"   'blindingImmune\n"
 			"   'character\n"
+			"   'characterClass\n"
 			"   'deviceDamageImmune\n"
 			"   'deviceDisruptImmune\n"
 			"   'disintegrationImmune\n"
@@ -1572,6 +1574,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (ships)\n\n"
 
 			"   'dockingEnabled True|Nil\n"
+			"   'known True|Nil\n"
 			"   'playerWingman True|Nil\n"
 			"   'selectedMissile type|item\n"
 			"   'selectedWeapon type|item\n"
@@ -1580,6 +1583,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"   'hp hitPoints\n"
 			"   'immutable True|Nil\n"
+			"   'known True|Nil\n"
 			"   'maxHP hitPoints\n"
 			"   'maxStructuralHP hitPoints\n"
 			"   'playerBlacklisted True|Nil\n"

@@ -1694,6 +1694,7 @@ int CWeaponClass::GetActivateDelay (CInstalledDevice *pDevice, CSpaceObject *pSo
 //	GetActivateDelay
 //
 //	Returns the number of ticks between shots
+//	NOTE: We do not adjust for enhancements.
 
 	{
 	return m_iFireRate;

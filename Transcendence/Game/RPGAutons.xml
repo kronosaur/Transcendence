@@ -148,12 +148,23 @@
 				</OnShow>
 				
 				<Invoke>
-					(block Nil
-						(shpCancelOrders gSource)
-						(shpOrder gSource 'gate gSender)
+					(switch
 						
-						(objSetData gSource 'behavior 'returning)
-						(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+						;	Make sure that there is enough cargo space in the ship to
+						;	hold the auton.
+						
+						(gr (objFireEvent gSource "CalcMass") (objGetCargoSpaceLeft gSender))
+							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
+								
+						;	Return
+							
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate gSender)
+						
+							(objSetData gSource 'behavior 'returning)
+							(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+							)
 						)
 				</Invoke>
 			</Message>
@@ -182,6 +193,22 @@
 		</Communications>
 		
 		<Events>
+			<CalcMass>
+				(block (autonType)
+					(setq autonType (objGetData gSource 'autonItemType))
+					(if (not autonType)
+						(setq autonType &itAutoSentinel;)
+						)
+
+					(add
+						(itmGetMass autonType)
+						(map (objGetItems gSource "*U") 'reduceSum theItem 
+							(multiply (itmGetCount theItem) (itmGetMass theItem))
+							)
+						)
+					)
+			</CalcMass>
+			
 			<ConvertToItem>
 				(block (autonType autonItem)
 					(setq autonType (objGetData gSource 'autonItemType))
@@ -200,7 +227,20 @@
 						devices: (map (objGetItems gSource "dI") theDev {
 							item: (itmSetProperty theDev 'installed Nil)
 							})
+							
+						cargo: (objGetItems gSource "*U")
 						}))
+						
+					;	Add one charge on the item for every ton of cargo inside the auton
+					
+					(setq autonItem (itmSetProperty autonItem 'charges
+						(divide 
+							(map (objGetItems gSource "*U") 'reduceSum theItem 
+								(multiply (itmGetCount theItem) (itmGetMass theItem))
+								)
+							1000
+							)
+						))
 						
 					;	Done
 					
@@ -264,6 +304,12 @@
 								
 							(enum (objGetItems auton "adU") theItem
 								(objRemoveItem auton theItem)
+								)
+								
+							;	Add items to cargo
+							
+							(enum (@ autonConfig 'cargo) theItem
+								(objAddItem auton theItem)
 								)
 							)
 						)

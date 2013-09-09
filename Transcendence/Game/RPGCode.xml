@@ -194,9 +194,10 @@
 								;	If we don't have the technology, we cannot install
 								;	(except for specific items that we know about)
 								
-								(and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
-										(or (not (@ data 'techCriteria))
-											(not (itmMatches thisItem (@ data 'techCriteria))))
+								(or (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
+										(and (@ data 'techCriteria)
+											(not (itmMatches thisItem (@ data 'techCriteria)))
+											)
 										)
 									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
 

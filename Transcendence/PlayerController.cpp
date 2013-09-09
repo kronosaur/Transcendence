@@ -612,16 +612,25 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 	{
 	int i;
 
-	//	Compute some invariants based on our perception
-
-	int iPerception = m_pShip->GetPerception();
-
 	//	Make a list of all targets
 
 	if (!bUpdate)
 		m_TargetList.RemoveAll();
 
-	CSystem *pSystem = m_pShip->GetSystem();
+	//	Make sure we're valid
+
+	CSystem *pSystem;
+	if (m_pShip == NULL
+			|| (pSystem = m_pShip->GetSystem()) == NULL)
+		{
+		m_TargetList.RemoveAll();
+		return;
+		}
+
+	//	Compute some invariants based on our perception
+
+	int iPerception = m_pShip->GetPerception();
+
 	char szBuffer[1024];
 	for (i = 0; i < pSystem->GetObjectCount(); i++)
 		{
@@ -1703,6 +1712,10 @@ void CPlayerShipController::Reset (void)
 	if (m_pDestination)
 		SetDestination(NULL);
 
+	//	Clear target list
+
+	m_TargetList.RemoveAll();
+
 	//	Create autodock
 
 	m_pAutoDock = NULL;
@@ -2049,12 +2062,22 @@ void CPlayerShipController::Update (int iTick)
 	{
 	//	Update help
 
-	if (iTick % UPDATE_HELP_TIME)
+	if ((iTick % UPDATE_HELP_TIME) == 0)
 		UpdateHelp(iTick);
 
-#ifdef DEBUG
+#ifdef DEBUG_TARGET_LIST
+//	if ((iTick % 30) == 0)
+//		InitTargetList(targetEnemies, true);
+
 	for (int i = 0; i < m_TargetList.GetCount(); i++)
-		ASSERT(!m_TargetList.Get(i)->IsDestroyed());
+		{
+		CSpaceObject *pObj = m_TargetList.Get(i);
+		ASSERT(!pObj->IsDestroyed());
+		ASSERT(pObj->GetType());
+
+		if ((iTick % 30) == 0)
+			::kernelDebugLogMessage("Target %d: %s (%x)", i, pObj->GetName(), (DWORD)pObj);
+		}
 #endif
 	}
 

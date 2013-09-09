@@ -161,10 +161,10 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								14;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								15;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						92;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						93;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -648,6 +648,7 @@ class CSpaceObjectList
 		inline void Remove (int iIndex) { m_List.Delete(iIndex); }
 		bool Remove (CSpaceObject *pObj);
 		inline void RemoveAll (void) { m_List.DeleteAll(); }
+		void RemoveSystemObjs (void);
 		void SetAllocSize (int iNewCount);
 		inline void SetObj (int iIndex, CSpaceObject *pObj) { m_List[iIndex] = pObj; }
 		void Subtract (const CSpaceObjectList &List);

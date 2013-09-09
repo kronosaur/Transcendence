@@ -39,6 +39,7 @@
 #define TRANSCENDENCE_MODULE_TAG				CONSTLIT("TranscendenceModule")
 
 #define API_VERSION_ATTRIB						CONSTLIT("apiVersion")
+#define AUTO_INCLUDE_FOR_COMPATIBILITY_ATTRIB	CONSTLIT("autoIncludeForCompatibility")
 #define COVER_IMAGE_UNID_ATTRIB					CONSTLIT("coverImageID")
 #define CREDITS_ATTRIB							CONSTLIT("credits")
 #define DEBUG_ONLY_ATTRIB						CONSTLIT("debugOnly")
@@ -95,11 +96,6 @@ bool CExtension::CanExtend (CExtension *pAdventure) const
 
 	{
 	ASSERT(pAdventure);
-
-	//	Only extensions can extend
-
-	if (m_iType != extExtension)
-		return false;
 
 	//	If our extend list is empty then we extend everything.
 
@@ -482,6 +478,10 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 				pExtension->m_Extends.Insert(dwUNID);
 			}
 		}
+
+	//	Other options
+
+	pExtension->m_dwAutoIncludeAPIVersion = (DWORD)pDesc->GetAttributeIntegerBounded(AUTO_INCLUDE_FOR_COMPATIBILITY_ATTRIB, 0, -1, 0);
 
 	//	Done
 
@@ -1053,7 +1053,7 @@ ALERROR CExtension::LoadGlobalsElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	pEntry->pCode = pCode;
 	pEntry->sFilespec = Ctx.sErrorFilespec;
 
-#ifdef DEBUG
+#ifdef DEBUG_GLOBALS
 	::kernelDebugLogMessage("Loading globals in %s", Ctx.sErrorFilespec);
 #endif
 

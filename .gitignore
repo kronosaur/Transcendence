@@ -26,6 +26,7 @@
 *.res
 *.sav
 *.scc
+*.sdf
 *.suo
 *.tmp
 *.tlog

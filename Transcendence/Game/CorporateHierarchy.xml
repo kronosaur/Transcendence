@@ -1071,7 +1071,7 @@
 								<Navigate screen="CorporateLevel" />
 							</Action>
 
-							<Action name="Residential Level" key="R">
+							<Action name="Residential Level" key="R" id="residentialLevel">
 								<ShowPane pane="ResidentialLevel"/>
 							</Action>
 

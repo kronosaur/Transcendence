@@ -243,6 +243,8 @@
 				lifetime=			"12"
 				powerUse=			"20"
 
+				effect=				"&efBlastShellDefault;"
+				fireEffect=			"&efBlastFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
@@ -250,26 +252,7 @@
 				<Shot posAngle="90" posRadius="12" angle="3d5-9"/>
 				<Shot posAngle="270" posRadius="12" angle="3d5-9"/>
 			</Configuration>
-
-			<Effect>
-				<ImageAndTail 
-						imageID=			"&rsMissiles;" 
-						imageX=				"96" 
-						imageY=				"0" 
-						imageWidth=			"16" 
-						imageHeight=		"16"
-						imageFrameCount=	"2"
-						imageTicksPerFrame=	"2"
-
-						length=				"30"
-						width=				"3"
-						primaryColor=		"0xff, 0xff, 0xff"
-						secondaryColor=		"0xc0, 0xc2, 0x85"
-						/>
-			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Urak Howitzer -->
@@ -302,20 +285,11 @@
 				powerUse=			"150"
 				recoil=				"2"
 
-				fireEffect=			"&efMediumCannonFlash;"
+				effect=				"&efBlastShellDefault;"
+				fireEffect=			"&efBlastFireDefault;"
 				hitEffect=			"&efFragmentationExplosion;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<MoltenBolt
-						width=				"5"
-						length=				"20"
-						growth=				"3"
-						primaryColor=		"0xea, 0xed, 0xae"
-						secondaryColor=		"0xc0, 0xc2, 0x85"
-						/>
-			</Effect>
 
 			<HitEffect
 					sound="&snArmorHit1;"
@@ -354,7 +328,6 @@
 				</Effect>
 			</Fragment>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Urak Outpost -->

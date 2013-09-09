@@ -5,13 +5,16 @@
 
 #include "PreComp.h"
 
+#define ANIMATE_OPACITY_ATTRIB			CONSTLIT("animateOpacity")
 #define INTENSITY_ATTRIB				CONSTLIT("intensity")
 #define LENGTH_ATTRIB					CONSTLIT("length")
+#define LIFETIME_ATTRIB					CONSTLIT("lifetime")
 #define PRIMARY_COLOR_ATTRIB			CONSTLIT("primaryColor")
 #define SECONDARY_COLOR_ATTRIB			CONSTLIT("secondaryColor")
 #define SHAPE_ATTRIB					CONSTLIT("shape")
 #define STYLE_ATTRIB					CONSTLIT("style")
 #define WIDTH_ATTRIB					CONSTLIT("width")
+#define XFORM_ROTATION_ATTRIB			CONSTLIT("xformRotation")
 
 class CRayEffectPainter : public IEffectPainter
 	{
@@ -21,6 +24,7 @@ class CRayEffectPainter : public IEffectPainter
 
 		//	IEffectPainter virtuals
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
+		virtual int GetLifetime (void) { return m_iLifetime; }
 		virtual void GetParam (const CString &sParam, CEffectParamDesc *retValue);
 		virtual bool GetParamList (TArray<CString> *retList) const;
 		virtual void GetRect (RECT *retRect) const;
@@ -30,6 +34,13 @@ class CRayEffectPainter : public IEffectPainter
 		virtual void SetParam (CCreatePainterCtx &Ctx, const CString &sParam, const CEffectParamDesc &Value);
 
 	private:
+		enum EAnimationTypes
+			{
+			animateNone =			0,
+
+			animateFade =			1,
+			};
+
 		enum ERayShapes
 			{
 			shapeUnknown =			0,
@@ -70,6 +81,11 @@ class CRayEffectPainter : public IEffectPainter
 		WORD m_wPrimaryColor;
 		WORD m_wSecondaryColor;
 
+		int m_iXformRotation;
+
+		int m_iLifetime;
+		EAnimationTypes m_iOpacityAnimation;
+
 		//	Temporary variables based on shape/style/etc.
 
 		bool m_bInitialized;				//	TRUE if values are valid
@@ -95,6 +111,16 @@ const Metric GLOW_FACTOR =				(0.4 / 100.0);
 const Metric BRIGHT_FACTOR =			(0.25 / 100.0);
 const Metric SOLID_FACTOR =				(0.40 / 100.0);
 const Metric GRAINY_SIGMA =				1.0;
+
+static LPSTR ANIMATION_TABLE[] =
+	{
+	//	Must be same order as EAnimationTypes
+		"",
+
+		"fade",
+
+		NULL
+	};
 
 static LPSTR SHAPE_TABLE[] =
 	{
@@ -158,6 +184,7 @@ IEffectPainter *CRayEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 
 	//	Initialize the painter parameters
 
+	pPainter->SetParam(Ctx, ANIMATE_OPACITY_ATTRIB, m_AnimateOpacity);
 	pPainter->SetParam(Ctx, LENGTH_ATTRIB, m_Length);
 	pPainter->SetParam(Ctx, WIDTH_ATTRIB, m_Width);
 	pPainter->SetParam(Ctx, SHAPE_ATTRIB, m_Shape);
@@ -165,6 +192,8 @@ IEffectPainter *CRayEffectCreator::CreatePainter (CCreatePainterCtx &Ctx)
 	pPainter->SetParam(Ctx, INTENSITY_ATTRIB, m_Intensity);
 	pPainter->SetParam(Ctx, PRIMARY_COLOR_ATTRIB, m_PrimaryColor);
 	pPainter->SetParam(Ctx, SECONDARY_COLOR_ATTRIB, m_SecondaryColor);
+	pPainter->SetParam(Ctx, LIFETIME_ATTRIB, m_Lifetime);
+	pPainter->SetParam(Ctx, XFORM_ROTATION_ATTRIB, m_XformRotation);
 
 	//	Initialize via GetParameters, if necessary
 
@@ -190,6 +219,9 @@ ALERROR CRayEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEleme
 	{
 	ALERROR error;
 
+	if (error = m_AnimateOpacity.InitIdentifierFromXML(Ctx, pDesc->GetAttribute(ANIMATE_OPACITY_ATTRIB), ANIMATION_TABLE))
+		return error;
+
 	if (error = m_Length.InitIntegerFromXML(Ctx, pDesc->GetAttribute(LENGTH_ATTRIB)))
 		return error;
 
@@ -209,6 +241,12 @@ ALERROR CRayEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLEleme
 		return error;
 
 	if (error = m_SecondaryColor.InitColorFromXML(Ctx, pDesc->GetAttribute(SECONDARY_COLOR_ATTRIB)))
+		return error;
+
+	if (error = m_Lifetime.InitIntegerFromXML(Ctx, pDesc->GetAttribute(LIFETIME_ATTRIB)))
+		return error;
+
+	if (error = m_XformRotation.InitIntegerFromXML(Ctx, pDesc->GetAttribute(XFORM_ROTATION_ATTRIB)))
 		return error;
 
 	return NOERROR;
@@ -243,6 +281,9 @@ CRayEffectPainter::CRayEffectPainter (CEffectCreator *pCreator) :
 		m_iIntensity(50),
 		m_wPrimaryColor(CG16bitImage::RGBValue(255, 255, 255)),
 		m_wSecondaryColor(CG16bitImage::RGBValue(128, 128, 128)),
+		m_iXformRotation(0),
+		m_iLifetime(0),
+		m_iOpacityAnimation(animateNone),
 		m_bInitialized(false)
 
 //	CRayEffectCreator constructor
@@ -827,11 +868,17 @@ void CRayEffectPainter::GetParam (const CString &sParam, CEffectParamDesc *retVa
 //	Returns the parameter
 
 	{
-	if (strEquals(sParam, INTENSITY_ATTRIB))
+	if (strEquals(sParam, ANIMATE_OPACITY_ATTRIB))
+		retValue->InitInteger(m_iOpacityAnimation);
+
+	else if (strEquals(sParam, INTENSITY_ATTRIB))
 		retValue->InitInteger(m_iIntensity);
 
 	else if (strEquals(sParam, LENGTH_ATTRIB))
 		retValue->InitInteger(m_iLength);
+
+	else if (strEquals(sParam, LIFETIME_ATTRIB))
+		retValue->InitInteger(m_iLifetime);
 
 	else if (strEquals(sParam, PRIMARY_COLOR_ATTRIB))
 		retValue->InitColor(m_wPrimaryColor);
@@ -848,6 +895,9 @@ void CRayEffectPainter::GetParam (const CString &sParam, CEffectParamDesc *retVa
 	else if (strEquals(sParam, WIDTH_ATTRIB))
 		retValue->InitInteger(m_iWidth);
 
+	else if (strEquals(sParam, XFORM_ROTATION_ATTRIB))
+		retValue->InitInteger(m_iXformRotation);
+
 	else
 		retValue->InitNull();
 	}
@@ -860,14 +910,17 @@ bool CRayEffectPainter::GetParamList (TArray<CString> *retList) const
 
 	{
 	retList->DeleteAll();
-	retList->InsertEmpty(7);
-	retList->GetAt(0) = INTENSITY_ATTRIB;
-	retList->GetAt(1) = LENGTH_ATTRIB;
-	retList->GetAt(2) = PRIMARY_COLOR_ATTRIB;
-	retList->GetAt(3) = SECONDARY_COLOR_ATTRIB;
-	retList->GetAt(4) = SHAPE_ATTRIB;
-	retList->GetAt(5) = STYLE_ATTRIB;
-	retList->GetAt(6) = WIDTH_ATTRIB;
+	retList->InsertEmpty(10);
+	retList->GetAt(0) = ANIMATE_OPACITY_ATTRIB;
+	retList->GetAt(1) = INTENSITY_ATTRIB;
+	retList->GetAt(2) = LENGTH_ATTRIB;
+	retList->GetAt(3) = LIFETIME_ATTRIB;
+	retList->GetAt(4) = PRIMARY_COLOR_ATTRIB;
+	retList->GetAt(5) = SECONDARY_COLOR_ATTRIB;
+	retList->GetAt(6) = SHAPE_ATTRIB;
+	retList->GetAt(7) = STYLE_ATTRIB;
+	retList->GetAt(8) = WIDTH_ATTRIB;
+	retList->GetAt(9) = XFORM_ROTATION_ATTRIB;
 
 	return true;
 	}
@@ -901,7 +954,7 @@ void CRayEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 	//	Compute the two end points of the line. We paint from the head to the tail.
 
 	int iLength = (Ctx.iMaxLength != -1 ? Min(Ctx.iMaxLength, m_iLength) : m_iLength);
-	CVector vFrom = PolarToVector(Ctx.iRotation, -iLength);
+	CVector vFrom = PolarToVector(AngleMod(Ctx.iRotation + m_iXformRotation), -iLength);
 	int xTo = x + (int)(vFrom.GetX() + 0.5);
 	int yTo = y - (int)(vFrom.GetY() + 0.5);
 	int xFrom = x;
@@ -926,7 +979,7 @@ void CRayEffectPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVecto
 	//	Compute the two end points of the line. We paint from the head to the tail.
 
 	int iLength = (Ctx.iMaxLength != -1 ? Min(Ctx.iMaxLength, m_iLength) : m_iLength);
-	CVector vFrom = PolarToVector(Ctx.iRotation, -iLength);
+	CVector vFrom = PolarToVector(AngleMod(Ctx.iRotation + m_iXformRotation), -iLength);
 	int xTo = x + (int)(vFrom.GetX() + 0.5);
 	int yTo = y - (int)(vFrom.GetY() + 0.5);
 
@@ -960,6 +1013,29 @@ void CRayEffectPainter::PaintRay (CG16bitImage &Dest, int xFrom, int yFrom, int 
 			yTo,
 			m_iWidth,
 			&Pixels);
+
+	//	Compute opacity animation
+
+	DWORD dwOpacity;
+	switch (m_iOpacityAnimation)
+		{
+		case animateFade:
+			{
+			if (m_iLifetime > 0)
+				dwOpacity = 255 * (m_iLifetime - (Ctx.iTick % m_iLifetime)) / m_iLifetime;
+			else
+				dwOpacity = 255;
+			break;
+			}
+
+		default:
+			dwOpacity = 255;
+		}
+
+	//	Short-circuit
+
+	if (dwOpacity == 0)
+		return;
 
 	//	Loop over all pixels and fill them in
 
@@ -1038,6 +1114,11 @@ void CRayEffectPainter::PaintRay (CG16bitImage &Dest, int xFrom, int yFrom, int 
 		else
 			wColor = m_wPrimaryColor;
 
+		//	Apply opacity, if necessary
+
+		if (dwOpacity != 255)
+			Pixel.dwOpacity = Pixel.dwOpacity * dwOpacity / 255;
+
 		//	Draw
 
 		if (Pixel.dwOpacity == 0)
@@ -1072,11 +1153,17 @@ void CRayEffectPainter::SetParam (CCreatePainterCtx &Ctx, const CString &sParam,
 //	Sets parameters
 
 	{
-	if (strEquals(sParam, INTENSITY_ATTRIB))
+	if (strEquals(sParam, ANIMATE_OPACITY_ATTRIB))
+		m_iOpacityAnimation = (EAnimationTypes)Value.EvalIntegerBounded(Ctx, 0, -1, animateNone);
+
+	else if (strEquals(sParam, INTENSITY_ATTRIB))
 		m_iIntensity = Value.EvalIntegerBounded(Ctx, 0, 100, 50);
 
 	else if (strEquals(sParam, LENGTH_ATTRIB))
 		m_iLength = Value.EvalIntegerBounded(Ctx, 1, -1, (int)(STD_SECONDS_PER_UPDATE * LIGHT_SECOND / KLICKS_PER_PIXEL));
+
+	else if (strEquals(sParam, LIFETIME_ATTRIB))
+		m_iLifetime = Value.EvalIntegerBounded(Ctx, 0, -1, 0);
 
 	else if (strEquals(sParam, PRIMARY_COLOR_ATTRIB))
 		m_wPrimaryColor = Value.EvalColor(Ctx);
@@ -1092,4 +1179,7 @@ void CRayEffectPainter::SetParam (CCreatePainterCtx &Ctx, const CString &sParam,
 
 	else if (strEquals(sParam, WIDTH_ATTRIB))
 		m_iWidth = Value.EvalIntegerBounded(Ctx, 1, -1, 10);
+
+	else if (strEquals(sParam, XFORM_ROTATION_ATTRIB))
+		m_iXformRotation = Value.EvalIntegerBounded(Ctx, -359, 359, 0);
 	}

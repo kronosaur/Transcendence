@@ -479,7 +479,7 @@ void CCompositeImageDesc::PaintDamage (CG16bitImage &Dest, const RECT &rcDest, i
 	if (iVariantCount == 0)
 		return;
 
-	int iLifetime = pPainter->GetInitialLifetime();
+	int iLifetime = pPainter->GetLifetime();
 	if (iLifetime == 0)
 		return;
 
