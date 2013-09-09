@@ -493,7 +493,9 @@
     <None Include="Game\Extensions\Corporate Expansion\Mission04.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission05.xml" />
+    <None Include="Game\Extensions\Corporate Expansion\Mission05.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Extensions\Corporate Expansion\Mission06.xml" />
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\ChimericInjector.xml">
       <SubType>Designer</SubType>
@@ -702,7 +704,9 @@
     <None Include="Game\StdDockScreens.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\StdExplosions.xml" />
+    <None Include="Game\StdExplosions.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdSovereigns.xml" />
     <None Include="Game\SungSlavers.xml">
       <SubType>Designer</SubType>
@@ -892,6 +896,7 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml" />
     <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
       <SubType>Designer</SubType>
     </Xml>

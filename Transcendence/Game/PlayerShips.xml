@@ -11,33 +11,33 @@
 			class=				"Sapphire"
 			type=				"yacht"
 
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerSapphireBase;"
+			characterClass=		"&unidPilgrimClass;"
+			   
 			mass=				"30"
-			reactorPower=		"150"
-			fuelCapacity=		"37500"
-			cargoSpace=			"50"
 			thrustRatio=		"6.6"
-			rotationCount=		"40"
 			maneuver=			"2"
 			maxSpeed=			"20"
+			cargoSpace=			"50"
+			rotationCount=		"40"
 
+			reactorPower=		"150"
+			fuelCapacity=		"37500"
 			maxArmor=			"6000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
 
 			leavesWreck=		"30"
-			
-			attributes=			"00200000_PlayerShip"
-			
-			inherit=			"&scPlayerSapphireBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			
@@ -49,12 +49,8 @@
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsSapphireYacht;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
 
 		<DriveImages>
@@ -62,6 +58,14 @@
 			<NozzlePos x="-28" y="-4"/>
 			<NozzlePos x="-28" y="5"/>
 		</DriveImages>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
 		
 	</ShipClass>
 
@@ -72,34 +76,34 @@
 			class=				"EI500"
 			type=				"freighter"
 
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerEI500Base;"
+			characterClass=		"&unidPilgrimClass;"
+			   
 			mass=				"150"
-			reactorPower=		"250"
-			fuelCapacity=		"60000"
-			cargoSpace=			"200"
 			thrustRatio=		"1.5"
-			rotationCount=		"40"
 			maneuver=			"4"
 			maxSpeed=			"18"
+			cargoSpace=			"200"
+			rotationCount=		"40"
 
+			reactorPower=		"250"
+			fuelCapacity=		"60000"
 			maxArmor=			"20000"
 			maxCargoSpace=		"200"
 			maxDevices=			"9"
 			maxWeapons=			"2"
 
 			leavesWreck=		"75"
-			
-			attributes=			"00200000_PlayerShip"
-			
-			inherit=			"&scPlayerEI500Base;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itHeavyTitaniumPlate;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itHeavyTitaniumPlate;" areaSet="1,6" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyTitaniumPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			
@@ -122,6 +126,8 @@
 			</Table>
 		</Items>
 
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsEI500Freighter;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<DriveImages>
@@ -130,12 +136,14 @@
 			<NozzlePos x="-24" y="16"	z="0"/>
 		</DriveImages>
 
+		<!-- AI and Behavior -->
+		
 		<AISettings
 			fireRateAdj=		"120"
 			fireAccuracy=		"85"
 			perception=			"4"
 			/>
-
+		
 	</ShipClass>
 
 	<!-- Player Ship: Wolfen-class Gunship -->
@@ -145,34 +153,34 @@
 			class=				"Wolfen"
 			type=				"gunship"
 
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerWolfenBase;"
+			characterClass=		"&unidPilgrimClass;"
+			   
 			mass=				"30"
-			reactorPower=		"100"
-			fuelCapacity=		"25000"
-			cargoSpace=			"35"
 			thrustRatio=		"13"
-			rotationCount=		"40"
 			maneuver=			"2"
 			maxSpeed=			"25"
+			cargoSpace=			"35"
+			rotationCount=		"40"
 
+			reactorPower=		"100"
+			fuelCapacity=		"25000"
 			maxArmor=			"12000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
 
 			leavesWreck=		"20"
-			
-			attributes=			"00200000_PlayerShip"
-			
-			inherit=			"&scPlayerWolfenBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
-			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
-			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
-			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+		
 		<Devices>
 			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
 			
@@ -186,12 +194,8 @@
 			<Item count="4d6" item="&itKM100Missile;"/>
 		</Items>
 
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"90"
-			perception=			"4"
-			/>
-
+		<!-- Image and Effects -->
+		
 		<Image imageID="&rsWolfenGunship;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<DriveImages>
@@ -200,6 +204,14 @@
 			<NozzlePos x="-18" y="0"  z="-5"/>
 			<NozzlePos x="-18" y="9"  z="0"/>
 		</DriveImages>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
 
 	</ShipClass>
 

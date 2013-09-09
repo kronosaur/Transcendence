@@ -258,6 +258,7 @@ ALERROR CMissile::Create (CSystem *pSystem,
 	pMissile->m_fReflection = false;
 	pMissile->m_fDetonate = false;
 	pMissile->m_fPassthrough = false;
+	pMissile->m_fPainterFade = false;
 	pMissile->m_dwSpareFlags = 0;
 
 	//	Friendly fire
@@ -666,7 +667,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 			m_pPainter->Paint(Dest, x, y, Ctx);
 		else if (m_pHit)
 			m_pPainter->PaintHit(Dest, x, y, m_vHitPos, Ctx);
-		else
+		else if (m_fPainterFade)
 			m_pPainter->PaintFade(Dest, x, y, Ctx);
 
 		//	For backwards compatibility, we also paint an image for beams
@@ -851,6 +852,7 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		m_fReflection =		((dwLoad & 0x00000002) ? true : false);
 		m_fDetonate =		((dwLoad & 0x00000004) ? true : false);
 		m_fPassthrough =	((dwLoad & 0x00000008) ? true : false);
+		m_fPainterFade =	((dwLoad & 0x00000010) ? true : false);
 
 		Ctx.pStream->Read((char *)&m_iSavedRotationsCount, sizeof(DWORD));
 		if (m_iSavedRotationsCount > 0)
@@ -884,7 +886,10 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 		if (m_pPainter)
 			{
-			m_pPainter->OnUpdate();
+			SEffectUpdateCtx PainterCtx;
+			PainterCtx.bFade = true;
+
+			m_pPainter->OnUpdate(PainterCtx);
 
 			//	LATER: We shouldn't have to update bounds here because
 			//	it is set in OnMove.
@@ -1094,18 +1099,25 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 			int iFadeLife;
 			if (m_pDesc->GetVaporTrailLength())
-				{
-				m_fDestroyed = true;
-				m_iLifeLeft = m_pDesc->GetVaporTrailLength();
-				}
+				iFadeLife = m_pDesc->GetVaporTrailLength();
+			else
+				iFadeLife = 0;
 
 			//	If we've got an effect that needs time to fade out, then keep
 			//	the missile object alive
 
-			else if (m_pPainter && (iFadeLife = m_pPainter->GetFadeLifetime()))
+			int iPainterFadeLife;
+			if (m_pPainter && (iPainterFadeLife = m_pPainter->GetFadeLifetime()))
 				{
 				m_pPainter->OnBeginFade();
+				m_fPainterFade = true;
+				iFadeLife = Max(iPainterFadeLife, iFadeLife);
+				}
 
+			//	If we've got a fade life, then keep the missile alive
+
+			if (iFadeLife > 0)
+				{
 				m_fDestroyed = true;
 				m_iLifeLeft = iFadeLife;
 				}
@@ -1202,6 +1214,7 @@ void CMissile::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fReflection ?	0x00000002 : 0);
 	dwSave |= (m_fDetonate ?	0x00000004 : 0);
 	dwSave |= (m_fPassthrough ? 0x00000008 : 0);
+	dwSave |= (m_fPainterFade ? 0x00000010 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Saved rotations

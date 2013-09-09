@@ -414,6 +414,9 @@ ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 	else if (strEquals(sName, PROPERTY_SECONDARY))
 		return CC.CreateBool(pDevice->IsSecondaryWeapon());
 
+	else if (m_pItemType)
+		return CreateResultFromDataField(CC, m_pItemType->GetDataField(sName));
+
 	else
 		return CC.CreateNil();
 	}

@@ -998,3 +998,14 @@ void CListWrapper::PaintImageAtCursor (CG16bitImage &Dest, int x, int y)
 			y);
 	}
 
+void CListWrapper::SyncCursor (void)
+
+//	SyncCursor
+//
+//	Make sure the cursor is inbounds
+
+	{
+	if (m_iCursor != -1
+			&& m_iCursor >= m_pList->GetCount())
+		m_iCursor = m_pList->GetCount() - 1;
+	}

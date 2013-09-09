@@ -40,19 +40,19 @@ int CItemEnhancementStack::CalcActivateDelay (CItemCtx &DeviceCtx) const
 	if (pDevice == NULL)
 		return 0;
 
-	Metric rDelay = -1.0;
+	//	Get the raw activation delay. NOTE: This DOES NOT include
+	//	any enhancements on the item.
+
+	Metric rDelay = pDevice->GetClass()->GetActivateDelay(pDevice, DeviceCtx.GetSource());
+
+	//	Apply enhancements (including on the item itself)
+
 	for (i = 0; i < m_Stack.GetCount(); i++)
 		{
 		int iMin, iMax;
 		int iAdj = m_Stack[i].GetActivateRateAdj(&iMin, &iMax);
 		if (iAdj != 100)
 			{
-			if (rDelay < 0.0)
-				{
-				pDevice->SetActivateDelayAdj(100);
-				rDelay = pDevice->GetActivateDelay(DeviceCtx.GetSource());
-				}
-
 			rDelay = iAdj * rDelay / 100.0;
 			if (rDelay < (Metric)iMin)
 				rDelay = (Metric)iMin;
@@ -61,7 +61,7 @@ int CItemEnhancementStack::CalcActivateDelay (CItemCtx &DeviceCtx) const
 			}
 		}
 
-	return (rDelay < 0.0 ? 100 : (int)(rDelay + 0.5));
+	return (int)(rDelay + 0.5);
 	}
 
 void CItemEnhancementStack::CalcCache (void) const

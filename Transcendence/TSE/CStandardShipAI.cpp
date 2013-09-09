@@ -1647,30 +1647,7 @@ void CStandardShipAI::CommunicateWithEscorts (MessageTypes iMessage, CSpaceObjec
 //	Sends a message to the ship's escorts
 
 	{
-	if (m_fHasEscorts)
-		{
-		bool bEscortsFound = false;
-
-		CSovereign *pSovereign = m_pShip->GetSovereign();
-		for (int i = 0; i < m_pShip->GetSystem()->GetObjectCount(); i++)
-			{
-			CSpaceObject *pObj = m_pShip->GetSystem()->GetObject(i);
-
-			if (pObj 
-					&& pObj->GetCategory() == CSpaceObject::catShip
-					&& pObj->GetSovereign() == pSovereign
-					&& pObj != m_pShip
-					&& !pObj->IsInactive()
-					&& pObj->GetEscortPrincipal() == m_pShip)
-				{
-				m_pShip->Communicate(pObj, iMessage, pParam1, dwParam2);
-				bEscortsFound = true;
-				}
-			}
-
-		if (!bEscortsFound)
-			m_fHasEscorts = false;
-		}
+	m_AICtx.CommunicateWithEscorts(m_pShip, iMessage, pParam1, dwParam2);
 	}
 
 bool CStandardShipAI::IsBeingAttacked (void)
@@ -1991,6 +1968,7 @@ DWORD CStandardShipAI::OnCommunicateNotify (CSpaceObject *pSender, MessageTypes 
 			}
 
 		case msgEscortReportingIn:
+			m_AICtx.SetHasEscorts(true);
 			m_fHasEscorts = true;
 			return resAck;
 

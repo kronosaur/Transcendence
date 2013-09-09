@@ -23,6 +23,7 @@
 #define WAKE_POTENTIAL_ATTRIB					CONSTLIT("wakePotential")
 
 #define STYLE_CLOUD								CONSTLIT("cloud")
+#define STYLE_EXHAUST							CONSTLIT("exhaust")
 #define STYLE_JET								CONSTLIT("jet")
 #define STYLE_RING								CONSTLIT("ring")
 #define STYLE_SPLASH							CONSTLIT("splash")
@@ -126,7 +127,9 @@ ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 	ALERROR error;
 
 	CString sStyle = pDesc->GetAttribute(STYLE_ATTRIB);
-	if (strEquals(sStyle, STYLE_JET))
+	if (strEquals(sStyle, STYLE_EXHAUST))
+		m_iStyle = styleExhaust;
+	else if (strEquals(sStyle, STYLE_JET))
 		m_iStyle = styleJet;
 	else if (strEquals(sStyle, STYLE_RING))
 		m_iStyle = styleRing;
@@ -358,6 +361,34 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 
 	switch (m_pCreator->GetStyle())
 		{
+		case CParticleCloudEffectCreator::styleExhaust:
+			{
+			if (m_iLastDirection == -1)
+				break;
+
+			for (i = 0; i < iCount; i++)
+				{
+				//	Position (start at the center)
+
+				CVector vPos;
+
+				//	Generate a random velocity backwards
+
+				int iRotation = 180 + m_iLastDirection + mathRandom(-2, 2);
+				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed()));
+
+				//	Lifetime
+
+				int iLifeLeft = m_pCreator->GetParticleLifetime();
+
+				//	Add the particle
+
+				m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation);
+				}
+
+			break;
+			}
+
 		case CParticleCloudEffectCreator::styleJet:
 			{
 			for (i = 0; i < iCount; i++)
@@ -501,7 +532,7 @@ void CParticleCloudPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 	//	Update the single-particle painter
 
 	if (m_pParticlePainter)
-		m_pParticlePainter->OnUpdate();
+		m_pParticlePainter->OnUpdate(Ctx);
 
 	//	Update cohesion
 
@@ -530,7 +561,8 @@ void CParticleCloudPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 
 	//	Create new particles
 
-	if (m_iEmitLifetime == -1 || m_iTick < m_iEmitLifetime)
+	if (!Ctx.bFade
+			&& (m_iEmitLifetime == -1 || m_iTick < m_iEmitLifetime))
 		{
 		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
 		CreateNewParticles(m_pCreator->GetNewParticleCount(), vVel);
@@ -574,6 +606,7 @@ void CParticleCloudPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 
 	if (m_iLastDirection == -1)
 		{
+		m_iLastDirection = iTrailDirection;
 		InitParticles();
 		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
 		CreateNewParticles(m_pCreator->GetNewParticleCount(), vVel);

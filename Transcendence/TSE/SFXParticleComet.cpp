@@ -8,6 +8,7 @@
 #define WIDTH_ATTRIB							(CONSTLIT("width"))
 #define PRIMARY_COLOR_ATTRIB					(CONSTLIT("primaryColor"))
 #define PARTICLE_COUNT_ATTRIB					(CONSTLIT("particleCount"))
+#define SECONDARY_COLOR_ATTRIB					(CONSTLIT("secondaryColor"))
 
 //	CParticleCometEffectCreator object
 
@@ -165,6 +166,12 @@ ALERROR CParticleCometEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 
 	m_wPrimaryColor = ::LoadRGBColor(pDesc->GetAttribute(PRIMARY_COLOR_ATTRIB));
 
+	CString sAttrib;
+	if (pDesc->FindAttribute(SECONDARY_COLOR_ATTRIB, &sAttrib))
+		m_wSecondaryColor = ::LoadRGBColor(sAttrib);
+	else
+		m_wSecondaryColor = m_wPrimaryColor;
+
 	//	Compute arrays
 
 	ComputeSplinePoints();
@@ -185,17 +192,42 @@ void CParticleCometEffectCreator::Paint (CG16bitImage &Dest, int x, int y, SView
 	int iParticleSize = 2;
 	int iMaxAge = GetMaxAge();
 
-	for (i = 0; i < GetParticleCount(); i++)
-		{
-		int iAge;
-		CVector vPos = GetParticlePos(i, Ctx.iTick, Ctx.iRotation, &iAge);
-		DWORD dwOpacity = 255 - (iAge * 255 / iMaxAge);
+	//	If we fade the color then we need a different loop
 
-		DrawParticle(Dest,
-				x + (int)vPos.GetX(),
-				y - (int)vPos.GetY(),
-				m_wPrimaryColor,
-				iParticleSize,
-				dwOpacity);
+	if (m_wPrimaryColor != m_wSecondaryColor)
+		{
+		for (i = 0; i < GetParticleCount(); i++)
+			{
+			int iAge;
+			CVector vPos = GetParticlePos(i, Ctx.iTick, Ctx.iRotation, &iAge);
+			DWORD dwOpacity = 255 - (iAge * 255 / iMaxAge);
+			WORD wColor = CG16bitImage::FadeColor(m_wPrimaryColor, m_wSecondaryColor, 100 * iAge / iMaxAge);
+
+			DrawParticle(Dest,
+					x + (int)vPos.GetX(),
+					y - (int)vPos.GetY(),
+					wColor,
+					iParticleSize,
+					dwOpacity);
+			}
+		}
+	
+	//	Otherwise paint all in one color
+
+	else
+		{
+		for (i = 0; i < GetParticleCount(); i++)
+			{
+			int iAge;
+			CVector vPos = GetParticlePos(i, Ctx.iTick, Ctx.iRotation, &iAge);
+			DWORD dwOpacity = 255 - (iAge * 255 / iMaxAge);
+
+			DrawParticle(Dest,
+					x + (int)vPos.GetX(),
+					y - (int)vPos.GetY(),
+					m_wPrimaryColor,
+					iParticleSize,
+					dwOpacity);
+			}
 		}
 	}

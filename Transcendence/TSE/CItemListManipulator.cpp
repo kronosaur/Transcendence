@@ -563,6 +563,18 @@ bool CItemListManipulator::SetPropertyAtCursor (CSpaceObject *pSource, const CSt
 	return true;
 	}
 
+void CItemListManipulator::SyncCursor (void)
+
+//	SyncCursor
+//
+//	Make sure the cursor is in bounds.
+
+	{
+	if (m_iCursor != -1
+			&& m_iCursor >= m_ItemList.GetCount())
+		m_iCursor = m_ItemList.GetCount() - 1;
+	}
+
 void CItemListManipulator::TransferAtCursor (int iCount, CItemList &DestList)
 
 //	TransferAtCursor

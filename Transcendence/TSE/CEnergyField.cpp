@@ -145,7 +145,7 @@ void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 		//	Initialize
 
-		m_iPaintHit = m_pHitPainter->GetInitialLifetime();
+		m_iPaintHit = m_pHitPainter->GetLifetime();
 		m_iPaintHitTick = 0;
 
 		m_pHitPainter->PlaySound(pSource);

@@ -694,6 +694,42 @@
 			</Effect>
 		</Variants>
 	</Effect>
+	
+<!-- DEFAULT FIRE EFFECTS ======================================================
+
+	These effects may be used in weapons to create fire effects.
+	
+-->
+	
+	<EffectType UNID="&efBlastFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 6 80 16 64 50)
+								width: (mathScale damageHP 6 80 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
 
 <!-- DEFAULT PROJECTILE EFFECTS ================================================
 
@@ -846,6 +882,89 @@
 					)
 			</GetParameters>
 		</Events>
+	</EffectType>
+
+	<EffectType UNID="&efBlastShellDefault;"
+			instance=			"owner"
+			>
+		
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					length=			"12"
+					width=			"6"
+					xformRotation=	"10"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	6 80 16 64 50)
+								width: (mathScale damageHP 6 80 6 24 50)
+								intensity: 10
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"-10"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	6 80 16 64 50)
+								width: (mathScale damageHP 6 80 6 24 50)
+								intensity: 10
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					>
+			
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:
+									(mathScale 
+										damageHP						; average damage of weapon
+										6								; min damage
+										80								; max damage
+										60								; min beam length
+										220								; max beam length
+										50								; scale gamma
+										)
+								width: (mathScale damageHP 6 80 6 22 50)
+								intensity: 30
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
 	</EffectType>
 
 	<EffectType UNID="&efIonBeamDefault;"

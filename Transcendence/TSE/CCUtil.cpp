@@ -348,7 +348,9 @@ ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue)
 
 	else if (strEquals(sValue, CONSTLIT("true")))
 		return CC.CreateTrue();
-	else if (strEquals(sValue, CONSTLIT("nil")) || strEquals(sValue, CONSTLIT("false")))
+	else if (strEquals(sValue, CONSTLIT("nil")) 
+			|| strEquals(sValue, CONSTLIT("false"))
+			|| strEquals(sValue, CONSTLIT("none")))
 		return CC.CreateNil();
 
 	//	Otherwise, see if it is a string or an integer

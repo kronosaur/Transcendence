@@ -65,6 +65,7 @@ class CAIBehaviorCtx
 		inline Metric GetPrimaryAimRange2 (void) const { return m_rPrimaryAimRange2; }
 		inline bool GetThrust (CShip *pShip) const { return m_ShipControls.GetThrust(pShip); }
 		inline int GetThrustDir (void) const { return m_ShipControls.GetThrustDir(); }
+		inline bool HasEscorts (void) const { return m_fHasEscorts; }
 		inline bool HasMultipleWeapons (void) const { return m_fHasMultipleWeapons; }
 		inline bool HasSecondaryWeapons (void) const { return m_fHasSecondaryWeapons; }
 		inline bool HasSuperconductingShields (void) const { return m_fSuperconductingShields; }
@@ -74,6 +75,7 @@ class CAIBehaviorCtx
 		inline bool IsImmobile (void) const { return m_fImmobile; }
 		inline bool IsNonCombatant (void) const { return m_AISettings.IsNonCombatant(); }
 		inline bool IsWaitingForShieldsToRegen (void) const { return m_fWaitForShieldsToRegen; }
+		inline bool NoAttackOnThreat (void) const { return m_AISettings.NoAttackOnThreat(); }
 		inline bool NoDogfights (void) const { return m_AISettings.NoDogfights(); }
 		inline bool NoFriendlyFire (void) const { return m_AISettings.NoFriendlyFire(); }
 		inline bool NoFriendlyFireCheck (void) const { return m_AISettings.NoFriendlyFireCheck(); }
@@ -85,6 +87,7 @@ class CAIBehaviorCtx
 		inline CString SetAISetting (const CString &sSetting, const CString &sValue) { return m_AISettings.SetValue(sSetting, sValue); }
 		inline void SetAISettings (const CAISettings &Source) { m_AISettings = Source; }
 		inline void SetDockingRequested (bool bValue = true) { m_fDockingRequested = bValue; }
+		inline void SetHasEscorts (bool bValue = true) { m_fHasEscorts = bValue; }
 		void SetLastAttack (int iTick);
 		inline void SetLastTurn (IShipController::ManeuverTypes iTurn) { m_iLastTurn = iTurn; }
 		inline void SetLastTurnCount (int iCount) { m_iLastTurnCount = iCount; }
@@ -141,6 +144,7 @@ class CAIBehaviorCtx
 			{ return (NoFriendlyFireCheck() || pShip->IsLineOfFireClear(pDevice, pTarget, iFireAngle, rMaxRange)); }
 		inline CVector CombinePotential (const CVector &vDir)
 			{ return GetPotential() + (vDir.Normal() * 100.0 * g_KlicksPerPixel);	}
+		void CommunicateWithEscorts (CShip *pShip, MessageTypes iMessage, CSpaceObject *pParam1 = NULL, DWORD dwParam2 = 0);
 		void Undock (CShip *pShip);
 
 	private:
@@ -182,7 +186,7 @@ class CAIBehaviorCtx
 		DWORD m_fAvoidExplodingStations:1;		//	TRUE if ship avoids exploding stations
 		DWORD m_fRecalcBestWeapon:1;			//	TRUE if we need to recalc best weapon
 		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has secondary weapons
-		DWORD m_fSpare8:1;
+		DWORD m_fHasEscorts:1;					//	TRUE if ship has escorts
 
 		DWORD m_dwSpare:24;
 	};
@@ -195,10 +199,10 @@ class IOrderModule
 		IOrderModule (int iObjCount);
 		virtual ~IOrderModule (void);
 
-		void Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage);
+		void Attacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire);
 		inline void Behavior (CShip *pShip, CAIBehaviorCtx &Ctx) { OnBehavior(pShip, Ctx); }
 		inline void BehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data) { OnBehaviorStart(pShip, Ctx, pOrderTarget, Data); }
-		DWORD Communicate (CShip *pShip, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
+		DWORD Communicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		static IOrderModule *Create (IShipController::OrderTypes iOrder);
 		CString DebugCrashInfo (void);
 		inline CSpaceObject *GetBase (void) { return OnGetBase(); }
@@ -213,14 +217,15 @@ class IOrderModule
 		virtual bool IsAttacking (void) { return false; }
 		virtual bool IsTarget (int iObj) { return false; }
 		virtual bool IsTarget (CSpaceObject *pObj) { return false; }
-		virtual void OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage) { }
+		virtual void OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pAttacker, const DamageDesc &Damage, bool bFriendlyFire) { }
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx) = 0;
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data) { }
+		virtual DWORD OnCommunicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) { return resNoAnswer; }
 		virtual CString OnDebugCrashInfo (void) { return NULL_STR; }
 		virtual CSpaceObject *OnGetBase (void) { return NULL; }
 		virtual IShipController::OrderTypes OnGetOrder (void) = 0;
 		virtual CSpaceObject *OnGetTarget (void) { return NULL; }
-		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj) { }
+		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder) { }
 		virtual void OnReadFromStream (SLoadCtx &Ctx) { }
 		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream) { }
 

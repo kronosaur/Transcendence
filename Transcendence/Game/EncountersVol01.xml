@@ -2151,7 +2151,7 @@
 				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
 				<Group chance="60">
 					<Ship			count="2d4"	class="&scHeliotropeGunship;"	orders="guard"/>
-					<Ship			count="1"	class="&scHeliotropeDestroyer;"	orders="guard"/>
+					<Ship			count="1"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
 				</Group>
 				<Ship  chance="15"	count="1d4"	class="&scHeliotropeDestroyer;"	orders="patrol:5"/>
 			</Table>

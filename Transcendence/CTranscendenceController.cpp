@@ -979,7 +979,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Request download. If a request was made then begin a background
 		//	task to process the download.
 
-		if (RequestCatalogDownload(Download))
+		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
+				&& RequestCatalogDownload(Download))
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
 		}
 

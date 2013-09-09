@@ -61,6 +61,18 @@
 	
 	<!ENTITY efEIBlasterBeam			"0x00000060">
 	<!ENTITY efEIBlasterHit				"0x00000061">
+	<!ENTITY efSlamCannonShell			"0x00000062">
+	<!ENTITY efAkanCannonShell			"0x00000063">
+	
+	<!ENTITY efLaserFireDefault			"0x00000070">
+	<!ENTITY efKineticFireDefault		"0x00000071">
+	<!ENTITY efParticleFireDefault		"0x00000072">
+	<!ENTITY efBlastFireDefault			"0x00000073">
+	
+	<!ENTITY rsMissileNAMI				"0x00000080">
+	<!ENTITY efMissileNAMI				"0x00000081">
+	<!ENTITY rsMissileStrelka			"0x00000082">
+	<!ENTITY efMissileStrelka			"0x00000083">
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
@@ -1825,6 +1837,8 @@
 	<!-- DOMINA 0020 1xxx -->
 	
 	<!ENTITY svDomina					"0x00201001">
+	<!ENTITY unidPilgrimClass			"0x00201002">
+	<!ENTITY dsPilgrimBeringStation		"0x00201003">
 	
 	<!-- 0020 2xxx -->
 	
@@ -1853,7 +1867,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"14"
+		apiVersion=						"15"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2101,6 +2115,7 @@
 			
 		<Library unid="&unidUniverseLibrary;"/>
 		
+		<Module filename="Domina.xml"/>
 		<Module filename="HSCompatibility.xml"/>
 		<Module filename="HumanSpaceMap.xml"/>
 		
@@ -2168,7 +2183,6 @@
 			adventure; others should be core types. -->
 		
 		<Module filename="Code.xml"/>
-		<Module filename="Domina.xml"/>
 		<Module filename="StdDockScreens.xml"/>
 		<Module filename="StdTypes.xml"/>
 	</TranscendenceLibrary>

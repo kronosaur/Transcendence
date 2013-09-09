@@ -47,6 +47,7 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
 #define PROPERTY_CHARACTER						CONSTLIT("character")
+#define PROPERTY_CHARACTER_CLASS				CONSTLIT("characterClass")
 #define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
 #define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
@@ -279,7 +280,7 @@ void CShip::CalcDeviceBonus (void)
 			//	Set the bonuses
 			//	Note that these include any bonuses confered by item enhancements
 
-			m_Devices[i].SetActivateDelayAdj(pEnhancements->CalcActivateDelay(CItemCtx(this, &m_Devices[i])));
+			m_Devices[i].SetActivateDelay(pEnhancements->CalcActivateDelay(CItemCtx(this, &m_Devices[i])));
 
 			//	Take ownership of the stack.
 
@@ -1443,15 +1444,21 @@ CString CShip::DebugCrashInfo (void)
 //	Return info that might be useful in a crash.
 
 	{
+	CString sResult;
+
+	sResult.Append(strPatternSubst(CONSTLIT("m_pDocked: %s\r\n"), CSpaceObject::DebugDescribe(m_pDocked)));
+	sResult.Append(strPatternSubst(CONSTLIT("m_pExitGate: %s\r\n"), CSpaceObject::DebugDescribe(m_pExitGate)));
+
 	try
 		{
-		return m_pController->DebugCrashInfo();
+		sResult.Append(m_pController->DebugCrashInfo());
 		}
 	catch (...)
 		{
+		sResult.Append(strPatternSubst(CONSTLIT("Invalid controller: %x\r\n"), (DWORD)m_pController));
 		}
 
-	return strPatternSubst(CONSTLIT("Invalid controller: %x\r\n"), (DWORD)m_pController);
+	return sResult;
 	}
 
 void CShip::Decontaminate (void)
@@ -2474,6 +2481,11 @@ ICCItem *CShip::GetProperty (const CString &sName)
 		{
 		CGenericType *pCharacter = m_pClass->GetCharacter();
 		return (pCharacter ? CC.CreateInteger(pCharacter->GetUNID()) : CC.CreateNil());
+		}
+	else if (strEquals(sName, PROPERTY_CHARACTER_CLASS))
+		{
+		CGenericType *pCharacterClass = m_pClass->GetCharacterClass();
+		return (pCharacterClass ? CC.CreateInteger(pCharacterClass->GetUNID()) : CC.CreateNil());
 		}
 	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE) || strEquals(sName, PROPERTY_DEVICE_DISRUPT_IMMUNE))
 		{
@@ -4394,6 +4406,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (m_pClass->GetCharacter() != NULL
 				|| (pAI && pAI->AscendOnGate()))
 			{
+			ResetMaxSpeed();
 			m_fDestroyInGate = false;
 			GetSystem()->AscendObject(this);
 			}

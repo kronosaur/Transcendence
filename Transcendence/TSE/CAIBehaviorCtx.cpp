@@ -29,7 +29,8 @@ CAIBehaviorCtx::CAIBehaviorCtx (void) :
 		m_fSuperconductingShields(false),
 		m_fHasMultipleWeapons(false),
 		m_fHasSecondaryWeapons(false),
-		m_fRecalcBestWeapon(true)
+		m_fRecalcBestWeapon(true),
+		m_fHasEscorts(false)
 
 //	CAIBehaviorCtx constructor
 
@@ -725,6 +726,40 @@ void CAIBehaviorCtx::CancelDocking (CShip *pShip, CSpaceObject *pBase)
 	SetDockingRequested(false);
 	}
 
+void CAIBehaviorCtx::CommunicateWithEscorts (CShip *pShip, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
+
+//	CommunicateWithEscorts
+//
+//	Sends a message to the ship's escorts
+
+	{
+	int i;
+
+	if (HasEscorts())
+		{
+		bool bEscortsFound = false;
+
+		CSovereign *pSovereign = pShip->GetSovereign();
+		for (i = 0; i < pShip->GetSystem()->GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = pShip->GetSystem()->GetObject(i);
+
+			if (pObj 
+					&& pObj->GetCategory() == CSpaceObject::catShip
+					&& pObj != pShip
+					&& !pObj->IsInactive()
+					&& pObj->GetEscortPrincipal() == pShip)
+				{
+				pShip->Communicate(pObj, iMessage, pParam1, dwParam2);
+				bEscortsFound = true;
+				}
+			}
+
+		if (!bEscortsFound)
+			SetHasEscorts(false);
+		}
+	}
+
 void CAIBehaviorCtx::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream
@@ -777,6 +812,7 @@ void CAIBehaviorCtx::ReadFromStream (SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_fDockingRequested =		((dwLoad & 0x00000001) ? true : false);
 	m_fWaitForShieldsToRegen =	((dwLoad & 0x00000002) ? true : false);
+	m_fHasEscorts =				((dwLoad & 0x00000004) ? true : false);
 
 	//	These flags do not need to be saved
 
@@ -859,5 +895,6 @@ void CAIBehaviorCtx::WriteToStream (CSystem *pSystem, IWriteStream *pStream)
 	dwSave = 0;
 	dwSave |= (m_fDockingRequested ?		0x00000001 : 0);
 	dwSave |= (m_fWaitForShieldsToRegen ?	0x00000002 : 0);
+	dwSave |= (m_fHasEscorts ?				0x00000004 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

@@ -433,7 +433,8 @@ class CMissile : public CSpaceObject
 		DWORD m_fReflection:1;					//	TRUE if this is a reflection
 		DWORD m_fDetonate:1;					//	TRUE if we should detonate on next update
 		DWORD m_fPassthrough:1;					//	TRUE if shot passed through
-		DWORD m_dwSpareFlags:28;				//	Flags
+		DWORD m_fPainterFade:1;					//	TRUE if we need to paint a fading painter
+		DWORD m_dwSpareFlags:27;				//	Flags
 
 	friend CObjectClass<CMissile>;
 	};
@@ -994,6 +995,7 @@ class CShip : public CSpaceObject
 		virtual bool IsDisarmed (void) { return m_iDisarmedTimer != 0; }
 		virtual bool IsIdentified (void) { return m_fIdentified; }
 		virtual bool IsInactive (void) const { return (m_fManualSuspended || m_iExitGateTimer > 0); }
+		virtual bool IsKnown (void) { return m_fKnown; }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
 		virtual bool IsOutOfFuel (void) { return m_fOutOfFuel; }

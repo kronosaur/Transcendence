@@ -2058,7 +2058,7 @@ void CDockScreen::ShowItem (void)
 //	Sets the title and description for the currently selected item
 
 	{
-	m_pItemListControl->Invalidate();
+	m_pItemListControl->SyncCursor();
 
 	//	If we've got an installed armor segment selected, then highlight
 	//	it on the armor display
