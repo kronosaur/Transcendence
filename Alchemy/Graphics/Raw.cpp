@@ -3,7 +3,7 @@
 //	Contains routines to manipulate the raw image format (DWORD per pixel,
 //	8bits each for RGB, plus 8bits for transparency information
 
-#include <Windows.h>
+#include <windows.h>
 #include <MMSystem.h>
 
 #include "Kernel.h"
