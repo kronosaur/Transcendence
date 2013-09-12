@@ -5,7 +5,7 @@
 #ifndef INCL_ALCHEMY
 #define INCL_ALCHEMY
 
-#include <Windows.h>
+#include <windows.h>
 #include <mmsystem.h>
 
 #define NO_DIRECT_DRAW

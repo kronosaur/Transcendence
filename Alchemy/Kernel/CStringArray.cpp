@@ -2,7 +2,7 @@
 //
 //	Implementation of dynamic array of string objects
 
-#include <Windows.h>
+#include <windows.h>
 #include "Kernel.h"
 #include "KernelObjID.h"
 

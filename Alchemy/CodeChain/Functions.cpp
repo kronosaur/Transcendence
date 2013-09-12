@@ -16,7 +16,7 @@
 //		y	Symbol table
 //		*	Any number of items (must be last)
 
-#include <Windows.h>
+#include <windows.h>
 #include <Math.h>
 #include "Kernel.h"
 #include "KernelObjID.h"

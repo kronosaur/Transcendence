@@ -3,7 +3,7 @@
 //	Implements CPageManager class
 //	Copyright (c) 2011 by George Moromisato. All Rights Reserved.
 
-#include <Windows.h>
+#include <windows.h>
 #include "Kernel.h"
 #include "KernelObjID.h"
 #include "CodeChain.h"

@@ -3,7 +3,7 @@
 //	Implements the page library for CodeChain
 //	Copyright (c) 2011 by George Moromisato. All Rights Reserved.
 
-#include <Windows.h>
+#include <windows.h>
 #include "Kernel.h"
 #include "KernelObjID.h"
 #include "CodeChain.h"

@@ -2,7 +2,7 @@
 //
 //	Contains routines to manipulate regions
 
-#include <Windows.h>
+#include <windows.h>
 #include <MMSystem.h>
 
 #include "Kernel.h"
