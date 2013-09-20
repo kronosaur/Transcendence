@@ -186,6 +186,19 @@
 								;	Descend him back to the system
 
 								(setq shipObj (sysDescendObject objID pos))
+								
+								;	If we could not descend, then something happened. Just create
+								;	the character here.
+
+								(if (not shipObj)
+									(block Nil
+										(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+										(typSetData charType 'objID (objGetId shipObj))
+										)
+									)
+									
+								;	Done
+								
 								(typSetData charType 'screenData Nil)
 								)
 							

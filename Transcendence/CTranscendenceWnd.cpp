@@ -52,7 +52,8 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_bNextWeaponKey(false),
 		m_bNextMissileKey(false),
 		m_bPrevWeaponKey(false),
-		m_bPrevMissileKey(false)
+		m_bPrevMissileKey(false),
+		m_bPaused(false)
 
 //	CTranscendence constructor
 
@@ -474,6 +475,7 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 	m_PickerDisplay.CleanUp();
 
 	m_bDebugConsole = false;
+	m_bPaused = false;
 	}
 
 void CTranscendenceWnd::ClearDebugLines (void)

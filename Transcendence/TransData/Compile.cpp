@@ -19,7 +19,9 @@ void Decompile (const CString &sDataFile, CXMLElement *pCmdLine)
 
 	//	Open the TDB file
 
-	CString sDb = CONSTLIT("Transcendence.tdb");
+	CString sDb = sDataFile;
+	if (strEquals(sDb, CONSTLIT("Transcendence")))
+		sDb = CONSTLIT("Transcendence.tdb");
 
 	CResourceDb Resources(sDb);
 	if (error = Resources.Open(0, &sError))

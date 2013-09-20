@@ -442,14 +442,15 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			int iLastHit = Max(0, Min(MAX_BRAVERY_TICKS, (g_pUniverse->GetTicks() - m_iLastAttack)));
 			const Metric rBravery = pow((Metric)iLastHit / (Metric)MAX_BRAVERY_TICKS, BRAVERY_DECAY_POWER);
 
-			const Metric rMaxAimRange2 = (1.0 - (MAX_RANGE_ADJ * rBravery)) * m_rPrimaryAimRange2;
+			const Metric rMaxAimRange2 = (pTarget->CanMove() ? ((1.0 - (MAX_RANGE_ADJ * rBravery)) * m_rPrimaryAimRange2) : m_rPrimaryAimRange2);
 			const Metric rMinDist2 = Min(rMaxAimRange2 * 0.5, (1.0 + (1.0 - rBravery) * MIN_RANGE_FACTOR) * MIN_TARGET_DIST2);
 
 			//	If we're waiting for shields to regenerate, then
 			//	spiral away
 
 			if (IsWaitingForShieldsToRegen()
-					&& pShip->GetMaxSpeed() >= pTarget->GetMaxSpeed())
+					&& pShip->GetMaxSpeed() >= pTarget->GetMaxSpeed()
+					&& pShip->GetController()->GetCurrentOrderEx() != IShipController::orderEscort)
 				{
 				DEBUG_COMBAT_OUTPUT("Wait for shields");
 				vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget, 75));
@@ -464,7 +465,7 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 
 				//	Try to flank our target, if we are faster
 
-				bool bFlank = (pShip->GetMaxSpeed() > pTarget->GetMaxSpeed());
+				bool bFlank = (pTarget->CanMove() && pShip->GetMaxSpeed() > pTarget->GetMaxSpeed());
 				vDirection = CombinePotential(CalcManeuverCloseOnTarget(pShip, pTarget, vTarget, rTargetDist2, bFlank));
 				}
 

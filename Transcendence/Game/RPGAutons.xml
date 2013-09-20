@@ -368,6 +368,9 @@
 					; Set orders and state
 					
 					(switch
+						(not (objGetProperty gSource 'playerWingman))
+							Nil
+							
 						gPlayerShip
 							(block Nil
 								(shpOrder gSource 'escort gPlayerShip)
@@ -386,6 +389,9 @@
 				(block (behavior)
 					(setq behavior (objGetData gSource 'behavior))
 					(switch
+						(not (objGetProperty gSource 'playerWingman))
+							Nil
+							
 						; If we're waiting, stay in this system and wait for the player
 						
 						(eq behavior 'waiting)

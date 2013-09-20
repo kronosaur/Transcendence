@@ -161,10 +161,10 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								15;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								16;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						93;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						94;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{

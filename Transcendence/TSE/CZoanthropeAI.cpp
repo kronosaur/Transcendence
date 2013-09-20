@@ -400,6 +400,8 @@ void CZoanthropeAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damag
 //	or it can be the missile/beam that hit us.
 
 	{
+	DEBUG_TRY
+
 	if (pAttacker)
 		{
 		//	If we were attacked by a friend, then warn them off
@@ -451,6 +453,8 @@ void CZoanthropeAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damag
 	//	Remember the last time we were attacked (debounce quick hits)
 
 	m_AICtx.SetLastAttack(m_pShip->GetSystem()->GetTick());
+
+	DEBUG_CATCH
 	}
 
 DWORD CZoanthropeAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)

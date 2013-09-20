@@ -730,5 +730,8 @@
     <ClCompile Include="CInstalledDevice.cpp">
       <Filter>Source Files\Items</Filter>
     </ClCompile>
+    <ClCompile Include="CCompositeImageModifiers.cpp">
+      <Filter>Source Files\Images</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

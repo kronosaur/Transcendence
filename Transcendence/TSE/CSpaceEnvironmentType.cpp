@@ -12,6 +12,7 @@
 #define DRAG_FACTOR_ATTRIB						CONSTLIT("dragFactor")
 #define LRS_JAMMER_ATTRIB						CONSTLIT("lrsJammer")
 #define MAP_COLOR_ATTRIB						CONSTLIT("mapColor")
+#define OPACITY_ATTRIB							CONSTLIT("opacity")
 #define SHIELD_JAMMER_ATTRIB					CONSTLIT("shieldJammer")
 #define SRS_JAMMER_ATTRIB						CONSTLIT("srsJammer")
 #define UNID_ATTRIB								CONSTLIT("UNID")
@@ -249,7 +250,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 					//	Inside is full nebula
 
 					else if (rRadius < rMinRadius)
-						*pAlpha = 0xFF;
+						*pAlpha = (BYTE)m_dwOpacity;
 
 					//	Range between
 
@@ -257,7 +258,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 						{
 						Metric rRange = rMaxRadius - rMinRadius;
 						Metric rValue = Min(Max(0.0, (rRadius - rMinRadius) / rRange), 1.0);
-						*pAlpha = 0xFF - (BYTE)(0xFF * rValue);
+						*pAlpha = ((BYTE)m_dwOpacity - (BYTE)(m_dwOpacity * rValue));
 						}
 					}
 				}
@@ -312,7 +313,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 					//	Below min, is full nebula
 
 					if (y1 < rMin)
-						*pAlpha = 0xFF;
+						*pAlpha = (BYTE)m_dwOpacity;
 
 					//	Above max is empty space
 
@@ -325,7 +326,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 						{
 						Metric rRange = rMax - rMin;
 						Metric rValue = Min(Max(0.0, (y1 - rMin) / rRange), 1.0);
-						*pAlpha = 0xFF - (BYTE)(0xFF * rValue);
+						*pAlpha = (BYTE)m_dwOpacity - (BYTE)((BYTE)m_dwOpacity * rValue);
 						}
 
 					}
@@ -384,7 +385,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 					//	Above max is full nebula
 
 					else if (y1 > (int)rMax)
-						*pAlpha = 0xFF;
+						*pAlpha = (BYTE)m_dwOpacity;
 
 					//	Range between
 
@@ -392,7 +393,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 						{
 						Metric rRange = rMax - rMin;
 						Metric rValue = Min(Max(0.0, (y1 - rMin) / rRange), 1.0);
-						*pAlpha = (BYTE)(0xFF * rValue);
+						*pAlpha = (BYTE)(m_dwOpacity * rValue);
 						}
 					}
 				}
@@ -461,13 +462,13 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 						{
 						Metric rRange = rMax - rMin;
 						Metric rValue = Min(Max(0.0, (y1 - rTopInner) / rRange), 1.0);
-						*pAlpha = 0xFF - (BYTE)(0xFF * rValue);
+						*pAlpha = (BYTE)m_dwOpacity - (BYTE)(m_dwOpacity * rValue);
 						}
 
 					//	Above bottom inner is full nebula
 
 					else if (y1 > rBottomInner)
-						*pAlpha = 0xFF;
+						*pAlpha = (BYTE)m_dwOpacity;
 
 					//	Above bottom outer is a blend
 
@@ -475,7 +476,7 @@ void CSpaceEnvironmentType::CreateEdgeTile (const SEdgeDesc &EdgeDesc, STileDesc
 						{
 						Metric rRange = rMax - rMin;
 						Metric rValue = Min(Max(0.0, (y1 - rBottomOuter) / rRange), 1.0);
-						*pAlpha = (BYTE)(0xFF * rValue);
+						*pAlpha = (BYTE)(m_dwOpacity * rValue);
 						}
 
 					//	Else, empty space
@@ -624,6 +625,8 @@ ALERROR CSpaceEnvironmentType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement
 	else
 		m_rgbMapColor = RGB(0x80, 0x00, 0x80);
 
+	m_dwOpacity = pDesc->GetAttributeIntegerBounded(OPACITY_ATTRIB, 0, 255, 255);
+
 	//	Keep track of the events that we have
 
 	m_bHasOnUpdateEvent = FindEventHandler(ON_OBJ_UPDATE_EVENT);
@@ -710,7 +713,7 @@ void CSpaceEnvironmentType::Paint (CG16bitImage &Dest, int x, int y, int xTile, 
 				rcTileSource.top,
 				RectWidth(rcTileSource),
 				RectHeight(rcTileSource),
-				255,
+				m_dwOpacity,
 				TileImage,
 				x - xCenter,
 				y - yCenter);

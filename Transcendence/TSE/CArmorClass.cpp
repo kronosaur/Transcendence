@@ -142,6 +142,8 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 //	Sets Ctx.iDamage to the amount of hit points left after damage absorption.
 
 	{
+	DEBUG_TRY
+
 	CSpaceObject *pSource = ItemCtx.GetSource();
 	CInstalledArmor *pArmor = ItemCtx.GetArmor();
 	if (pSource == NULL || pArmor == NULL)
@@ -257,6 +259,8 @@ EDamageResults CArmorClass::AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 		}
 
 	return damageArmorHit;
+
+	DEBUG_CATCH
 	}
 
 void CArmorClass::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)

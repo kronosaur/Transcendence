@@ -68,6 +68,11 @@ NullPoint/*
 S1/*
 STBrowser/*
 test.bat
+Transcendence/OldTopology.xml
+Transcendence/RegisteredExtensions.txt
+Transcendence/UpgradeLog.XML
+Transcendence/Worklist.txt
+Transcendence/Worklist (Completed).txt
 Transcendence/Debug/*
 Transcendence/Documents/*
 Transcendence/Game/*.tdb
@@ -85,9 +90,8 @@ Transcendence/Game/Spanish.dic
 Transcendence/Game/Storage.xml
 Transcendence/Game/TestExtension/*
 Transcendence/Game/Test*.tl
+Transcendence/Game/TDBs/*
 Transcendence/ipch/*
-Transcendence/OldTopology.xml
-Transcendence/RegisteredExtensions.txt
 Transcendence/Release/*
 Transcendence/TransCompiler/Debug/*
 Transcendence/TransCompiler/Release/*
@@ -102,9 +106,7 @@ Transcendence/TransSaver/Release/*
 Transcendence/TSE/Debug/*
 Transcendence/TSUI/Debug/*
 Transcendence/TSUI/CHexarcService.cpp
-Transcendence/UpgradeLog.XML
-Transcendence/Worklist.txt
-Transcendence/Worklist (Completed).txt
 Transcendence/_UpgradeReport_Files/*
 WikiData/*
 XMLUtil/Debug/*
+XWord/*

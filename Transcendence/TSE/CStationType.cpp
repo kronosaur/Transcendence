@@ -918,7 +918,11 @@ void CStationType::MarkImages (const CCompositeImageSelector &Selector)
 	//	Cache the destroyed station image, if necessary
 
 	if (HasWreckImage())
-		m_Image.MarkImage(Selector, CCompositeImageDesc::modStationDamage);
+		{
+		CCompositeImageModifiers Modifiers;
+		Modifiers.SetStationDamage();
+		m_Image.MarkImage(Selector, Modifiers);
+		}
 
 	//	Explosions and other effects
 
@@ -1208,8 +1212,8 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Background objects
 
-	m_rParallaxDist = pDesc->GetAttributeIntegerBounded(BACKGROUND_PLANE_ATTRIB, 0, -1, 0) / 100.0;
-	m_fBackground = (m_rParallaxDist > 0.0);
+	m_rParallaxDist = pDesc->GetAttributeIntegerBounded(BACKGROUND_PLANE_ATTRIB, 0, -1, 100) / 100.0;
+	m_fOutOfPlane = (m_rParallaxDist != 1.0);
 
 	//	Get hit points and max hit points
 

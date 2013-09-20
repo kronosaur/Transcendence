@@ -56,6 +56,7 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
 #define PROPERTY_PLAYER_WINGMAN					CONSTLIT("playerWingman")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
+#define PROPERTY_ROTATION						CONSTLIT("rotation")
 #define PROPERTY_SELECTED_LAUNCHER				CONSTLIT("selectedLauncher")
 #define PROPERTY_SELECTED_MISSILE				CONSTLIT("selectedMissile")
 #define PROPERTY_SELECTED_WEAPON				CONSTLIT("selectedWeapon")
@@ -1036,9 +1037,10 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 	pClass->InstallEquipment(pShip);
 
-	//	Add the ship to the system
+	//	Add the ship to the system (but don't add it to the universe
+	//	list--we will add it later in FinishCreation).
 
-	if (error = pShip->AddToSystem(pSystem))
+	if (error = pShip->AddToSystem(pSystem, true))
 		{
 		delete pShip;
 		return error;
@@ -1921,6 +1923,11 @@ void CShip::FinishCreation (SShipGeneratorCtx *pCtx)
 
 		pCtx = NULL;
 		}
+
+	//	Add the object to the universe. We wait until the end in case
+	//	OnCreate ends up setting the name (or something).
+
+	g_pUniverse->AddObject(this);
 	}
 
 bool CShip::FollowsObjThroughGate (CSpaceObject *pLeader)
@@ -2541,6 +2548,9 @@ ICCItem *CShip::GetProperty (const CString &sName)
 
 		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
 		}
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		return CC.CreateInteger(GetRotation());
+
 	else if (strEquals(sName, PROPERTY_SELECTED_LAUNCHER))
 		{
 		CItem theItem = GetNamedDeviceItem(devMissileWeapon);
@@ -3989,8 +3999,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			}
 		}
 
-	if (m_pClass->HasDockingPorts())
-		m_fKnown = true;
+	m_fKnown = true;
 
 	//	Identified
 
@@ -6123,6 +6132,11 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))
 		{
 		m_pController->SetPlayerWingman(!pValue->IsNil());
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		{
+		SetRotation(pValue->GetIntegerValue());
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_SELECTED_MISSILE))

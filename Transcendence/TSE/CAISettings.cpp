@@ -214,7 +214,7 @@ void CAISettings::InitToDefault (void)
 	m_fNonCombatant = false;
 	m_fNoFriendlyFire = false;
 	m_fAggressor = false;
-	m_fNoAttackOnThreat = true;
+	m_fNoAttackOnThreat = false;
 	m_fNoFriendlyFireCheck = false;
 	m_fNoNavPaths = false;
 	m_fNoOrderGiver = false;

@@ -113,7 +113,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Game/Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -159,7 +159,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Game/Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -204,7 +204,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib; dxguid.lib;version.lib;vfw32.lib;winmm.lib;dsound.lib;ddraw.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Game/Transcendence.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -539,7 +539,9 @@
     <None Include="Game\Commonwealth.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\CommonwealthAgricultural.xml" />
+    <None Include="Game\CommonwealthAgricultural.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CommonwealthFleet.xml">
       <SubType>Designer</SubType>
     </None>
@@ -627,7 +629,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Topology.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalliedMerchanters.xml">
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalignedMerchanters.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Warlords.xml">
@@ -892,7 +894,9 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AutonBay.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml" />
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
       <SubType>Designer</SubType>
     </None>
@@ -901,9 +905,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <None Include="Game\Extensions\Debug\DebugCode.xml" />
-    <Xml Include="Game\Extensions\Debug\DebugShips.xml">
-      <SubType>Designer</SubType>
-    </Xml>
+    <None Include="Game\Extensions\Debug\DebugShips.xml" />
     <Xml Include="Game\Extensions\Debug\HighLevelTest.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -914,7 +916,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\RPGBehaviors.xml" />
-    <None Include="Game\RPGWingmen.xml" />
+    <None Include="Game\RPGWingmen.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\RPGAuxDevices.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

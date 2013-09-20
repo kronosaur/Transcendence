@@ -33,6 +33,8 @@ bool CEnergyFieldList::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 //	Absorbs damage (returns TRUE if damage was absorbed)
 
 	{
+	DEBUG_TRY
+
 	bool bDamageAbsorbed = false;
 
 	CEnergyField *pField = m_pFirst;
@@ -48,6 +50,8 @@ bool CEnergyFieldList::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 		}
 
 	return bDamageAbsorbed;
+
+	DEBUG_CATCH
 	}
 
 bool CEnergyFieldList::AbsorbsWeaponFire (CInstalledDevice *pDevice)

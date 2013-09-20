@@ -419,6 +419,7 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 		pExtension->m_dwAPIVersion = (DWORD)strToInt(sAPIVersion, 0);
 		if (pExtension->m_dwAPIVersion < 12)
 			pExtension->m_dwAPIVersion = 0;
+		pExtension->m_sVersion = pDesc->GetAttribute(VERSION_ATTRIB);
 		}
 	else
 		{

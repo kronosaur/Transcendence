@@ -92,6 +92,11 @@
 #define FIELD_UNKNOWN_TYPE						CONSTLIT("unknownType")
 #define FIELD_USE_KEY							CONSTLIT("useKey")
 
+#define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
+#define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
+
+#define SPECIAL_TRUE							CONSTLIT("true")
+
 static char g_NameAttrib[] = "name";
 static char g_ObjectAttrib[] = "object";
 static char g_MassAttrib[] = "mass";
@@ -1155,6 +1160,52 @@ CEffectCreator *CItemType::OnFindEffectCreator (const CString &sUNID)
 		return m_pDevice->FindEffectCreator(sUNID);
 	else
 		return NULL;
+	}
+
+bool CItemType::OnHasSpecialAttribute (const CString &sAttrib) const
+
+//	OnHasSpecialAttribute
+//
+//	Returns TRUE if we have the special attribute
+
+	{
+	if (strStartsWith(sAttrib, SPECIAL_DAMAGE_TYPE))
+		{
+		//	Get the device
+
+		CDeviceClass *pDevice;
+		int iVariant;
+		if (IsMissile())
+			pDevice = GetAmmoLauncher(&iVariant);
+		else
+			{
+			pDevice = GetDeviceClass();
+			iVariant = 0;
+			}
+
+		if (pDevice == NULL)
+			return false;
+
+		DamageTypes iType = LoadDamageTypeFromXML(strSubString(sAttrib, SPECIAL_DAMAGE_TYPE.GetLength(), -1));
+		if (iType == damageError)
+			return false;
+
+		return (iType == pDevice->GetDamageType(NULL, iVariant));
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_CAN_BE_DAMAGED))
+		{
+		bool bValue = strEquals(strSubString(sAttrib, SPECIAL_CAN_BE_DAMAGED.GetLength(), -1), SPECIAL_TRUE);
+
+		CDeviceClass *pDevice;
+		if (pDevice = GetDeviceClass())
+			return (pDevice->CanBeDamaged() == bValue);
+		else if (IsArmor())
+			return (true == bValue);
+		else
+			return (false == bValue);
+		}
+	else
+		return false;
 	}
 
 void CItemType::OnReadFromStream (SUniverseLoadCtx &Ctx)

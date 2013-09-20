@@ -295,6 +295,9 @@
 //		m_iActivateDelay in CInstalledDevice (instead of m_iActivateDelayAdj)
 //		CEffectGroupPainter saves a count
 //
+//	94: 1.2 Beta 3
+//		m_rParallaxDist in CStation
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -661,7 +664,7 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 	return iWeight;
 	}
 
-COLORREF CSystem::CalculateSpaceColor (CSpaceObject *pPOV)
+WORD CSystem::CalculateSpaceColor (CSpaceObject *pPOV)
 
 //	CalculateSpaceColor
 //
@@ -677,7 +680,11 @@ COLORREF CSystem::CalculateSpaceColor (CSpaceObject *pPOV)
 	int iGreen = GetGValue(rgbStarColor) * iPercent / 100;
 	int iBlue = GetBValue(rgbStarColor) * iPercent / 100;
 
-	return RGB(iRed, iGreen, iBlue);
+	COLORREF rgbSpaceColor = RGB(iRed, iGreen, iBlue);
+
+	return CG16bitImage::RGBValue(GetRValue(rgbSpaceColor),
+			GetGValue(rgbSpaceColor),
+			GetBValue(rgbSpaceColor));
 	}
 
 void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpaceObject *pCenter, DWORD dwFlags)
@@ -717,10 +724,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 	//	Figure out what color space should be. Space gets lighter as we get
 	//	near the central star
 
-	COLORREF rgbSpaceColor = CalculateSpaceColor(pCenter);
-	Ctx.wSpaceColor = CG16bitImage::RGBValue(GetRValue(rgbSpaceColor),
-			GetGValue(rgbSpaceColor),
-			GetBValue(rgbSpaceColor));
+	Ctx.wSpaceColor = CalculateSpaceColor(pCenter);
 
 	//	Compute the radius of the circle on which we'll show target indicators
 	//	(in pixels)
@@ -2052,6 +2056,8 @@ void CSystem::FireOnSystemObjAttacked (SDamageCtx &Ctx)
 //	Fires OnSystemObjAttacked event to all handlers
 
 	{
+	DEBUG_TRY
+
 	CSystemEventHandler *pHandler = m_EventHandlers.GetNext();
 	while (pHandler)
 		{
@@ -2060,6 +2066,8 @@ void CSystem::FireOnSystemObjAttacked (SDamageCtx &Ctx)
 
 		pHandler = pHandler->GetNext();
 		}
+
+	DEBUG_CATCH
 	}
 
 void CSystem::FireOnSystemObjDestroyed (SDestroyCtx &Ctx)
@@ -2837,7 +2845,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 			{
 			Metric rParallaxDist;
 
-			if (pObj->IsBackgroundObj()
+			if (pObj->IsOutOfPlaneObj()
 					&& ((rParallaxDist = pObj->GetParallaxDist()) != 1.0))
 				{
 				//	Compute the size of the viewport at the given object's distance
@@ -3137,10 +3145,7 @@ void CSystem::PaintViewportObject (CG16bitImage &Dest, const RECT &rcView, CSpac
 	//	Compute the transformation to map world coordinates to the viewport
 
 	SViewportPaintCtx Ctx;
-	COLORREF rgbSpaceColor = CalculateSpaceColor(pCenter);
-	Ctx.wSpaceColor = CG16bitImage::RGBValue(GetRValue(rgbSpaceColor),
-			GetGValue(rgbSpaceColor),
-			GetBValue(rgbSpaceColor));
+	Ctx.wSpaceColor = CalculateSpaceColor(pCenter);
 	Ctx.XForm = ViewportTransform(pCenter->GetPos(), g_KlicksPerPixel, xCenter, yCenter);
 
 	//	Paint object
@@ -3438,18 +3443,26 @@ void CSystem::PlaceInGate (CSpaceObject *pObj, CSpaceObject *pGate)
 	if (pShip == NULL)
 		return;
 
-	//	We keep on incrementing the timer as long as we are creating ships
-	//	in the same tick.
-
-	if (m_iTick != g_iGateTimerTick)
-		{
-		g_iGateTimer = 0;
-		g_iGateTimerTick = m_iTick;
-		}
+	//	Set at gate position
 
 	pShip->Place(pGate->GetPos(), pGate->GetVel());
-	pShip->SetInGate(pGate, g_iGateTimer);
-	g_iGateTimer += mathRandom(11, 22);
+
+	//	We keep on incrementing the timer as long as we are creating ships
+	//	in the same tick. [But only if we're not creating the system.]
+
+	if (!m_fInCreate)
+		{
+		if (m_iTick != g_iGateTimerTick)
+			{
+			g_iGateTimer = 0;
+			g_iGateTimerTick = m_iTick;
+			}
+
+		pShip->SetInGate(pGate, g_iGateTimer);
+		g_iGateTimer += mathRandom(11, 22);
+		}
+	else
+		pShip->SetInGate(pGate, 0);
 	}
 
 void CSystem::PlayerEntered (CSpaceObject *pPlayer)

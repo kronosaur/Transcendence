@@ -167,6 +167,35 @@ void CListCollectionTask::CreateEntry (CMultiverseCatalogEntry *pCatalogEntry, i
 	pTypeLabel->SetPropertyString(PROP_TEXT, sType);
 
 	pRoot->AddTrack(pTypeLabel, 0);
+
+	//	Add a version string
+
+	CString sVersion;
+	if (!pCatalogEntry->GetVersion().IsBlank())
+		sVersion = strPatternSubst(CONSTLIT("version: %s"), pCatalogEntry->GetVersion());
+
+	if (pCatalogEntry->GetStatus() == CMultiverseCatalogEntry::statusCorrupt)
+		{
+		if (!sVersion.IsBlank())
+			sVersion.Append(CONSTLIT(" "));
+
+		sVersion.Append(CONSTLIT("ERROR: File corrupted."));
+		}
+
+	//	Add the version number
+
+	if (!sVersion.IsBlank())
+		{
+		IAnimatron *pVersion = new CAniText;
+		pVersion->SetPropertyVector(PROP_POSITION, CVector(xText + cxTypeBackground + ICON_SPACING_HORZ, y + TYPE_CORNER_RADIUS));
+		pVersion->SetPropertyVector(PROP_SCALE, CVector(10000, 1000));
+		pVersion->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogLabel));
+		pVersion->SetPropertyFont(PROP_FONT, &MediumFont);
+		pVersion->SetPropertyString(PROP_TEXT, sVersion);
+
+		pRoot->AddTrack(pVersion, 0);
+		}
+
 	y += cyTypeBackground;
 
 	//	Now add the description

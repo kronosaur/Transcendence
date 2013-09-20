@@ -196,7 +196,7 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fNonLinearMove(false),
 		m_fHasName(false),
 		m_fAscended(false),
-		m_fSpare(0)
+		m_fOutOfPlaneObj(false)
 
 
 //	CSpaceObject constructor
@@ -448,7 +448,7 @@ void CSpaceObject::AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int
 	AddOverlay(pType, iPosAngle, iPosRadius, iRotation, iLifetime, retdwID);
 	}
 
-ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bInLoad)
+ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bNoGlobalInsert)
 
 //	AddToSystem
 //
@@ -474,7 +474,7 @@ ALERROR CSpaceObject::AddToSystem (CSystem *pSystem, bool bInLoad)
 
 	//	If this is a ship or station then add to the global list
 
-	if (!bInLoad)
+	if (!bNoGlobalInsert)
 		{
 		CSpaceObject::Categories iCategory = GetCategory();
 		if (iCategory == CSpaceObject::catStation || iCategory == CSpaceObject::catShip)
@@ -861,6 +861,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fPlayerDocked =				((dwLoad & 0x00200000) ? true : false);
 	pObj->m_fNonLinearMove =			((dwLoad & 0x00400000) ? true : false);
 	pObj->m_fAscended =					((dwLoad & 0x00800000) ? true : false);
+	pObj->m_fOutOfPlaneObj =			((dwLoad & 0x01000000) ? true : false);
 
 	//	At this point, OnCreate has always been called--no need to save
 
@@ -1751,6 +1752,8 @@ void CSpaceObject::FireOnAttacked (SDamageCtx &Ctx)
 //	Fire OnAttacked event
 
 	{
+	DEBUG_TRY
+
 	SEventHandlerDesc Event;
 
 	if (FindEventHandler(ON_ATTACKED_EVENT, &Event))
@@ -1776,6 +1779,8 @@ void CSpaceObject::FireOnAttacked (SDamageCtx &Ctx)
 
 		CCCtx.Discard(pResult);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CSpaceObject::FireOnAttackedByPlayer (void)
@@ -4318,7 +4323,8 @@ void CSpaceObject::ItemsModified (void)
 	if (IsPlayerDocked())
 		{
 		CSpaceObject *pPlayer = GetPlayer();
-		pPlayer->OnDockedObjChanged(this);
+		if (pPlayer)
+			pPlayer->OnDockedObjChanged(this);
 		}
 	}
 
@@ -6184,6 +6190,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fPlayerDocked				? 0x00200000 : 0);
 	dwSave |= (m_fNonLinearMove				? 0x00400000 : 0);
 	dwSave |= (m_fAscended					? 0x00800000 : 0);
+	dwSave |= (m_fOutOfPlaneObj				? 0x01000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 

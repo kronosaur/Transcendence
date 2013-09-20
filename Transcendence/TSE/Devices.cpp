@@ -58,24 +58,28 @@ bool CDeviceClass::AccumulateEnhancements (CItemCtx &Device, CInstalledDevice *p
 
 	//	See if we can enhance the target device
 
-	for (i = 0; i < m_Enhancements.GetCount(); i++)
+	if (pDevice == NULL 
+			|| (pDevice->IsEnabled() && !pDevice->IsDamaged()))
 		{
-		//	If this type of enhancement has already been applied, skip it
+		for (i = 0; i < m_Enhancements.GetCount(); i++)
+			{
+			//	If this type of enhancement has already been applied, skip it
 
-		if (EnhancementIDs.Find(m_Enhancements[i].sType))
-			continue;
+			if (EnhancementIDs.Find(m_Enhancements[i].sType))
+				continue;
 
-		//	If we don't match the criteria, skip it.
+			//	If we don't match the criteria, skip it.
 
-		if (pSource 
-				&& pTarget
-				&& !pSource->GetItemForDevice(pTarget).MatchesCriteria(m_Enhancements[i].Criteria))
-			continue;
+			if (pSource 
+					&& pTarget
+					&& !pSource->GetItemForDevice(pTarget).MatchesCriteria(m_Enhancements[i].Criteria))
+				continue;
 
-		//	Add the enhancement
+			//	Add the enhancement
 
-		pEnhancements->Insert(m_Enhancements[i].Enhancement);
-		bEnhanced = true;
+			pEnhancements->Insert(m_Enhancements[i].Enhancement);
+			bEnhanced = true;
+			}
 		}
 
 	//	Let sub-classes add their own

@@ -167,7 +167,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.iSize = pStationType->GetSize();
 
 				pStationType->SetImageSelector(&NewEntry.Selector);
-				NewEntry.pImage = &pStationType->GetImage(NewEntry.Selector, 0);
+				NewEntry.pImage = &pStationType->GetImage(NewEntry.Selector, CCompositeImageModifiers());
 				break;
 				}
 

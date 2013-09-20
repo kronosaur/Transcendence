@@ -63,6 +63,7 @@
 #define ON_GLOBAL_UPDATE_EVENT					CONSTLIT("OnGlobalUpdate")
 #define ON_RANDOM_ENCOUNTER_EVENT				CONSTLIT("OnRandomEncounter")
 
+#define SPECIAL_EVENT							CONSTLIT("event:")
 #define SPECIAL_EXTENSION						CONSTLIT("extension:")
 #define SPECIAL_UNID							CONSTLIT("unid:")
 
@@ -1254,7 +1255,12 @@ bool CDesignType::HasSpecialAttribute (const CString &sAttrib) const
 //	Returns TRUE if we have the special attribute
 
 	{
-	if (strStartsWith(sAttrib, SPECIAL_EXTENSION))
+	if (strStartsWith(sAttrib, SPECIAL_EVENT))
+		{
+		CString sEvent = strSubString(sAttrib, SPECIAL_EVENT.GetLength());
+		return FindEventHandler(sEvent);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_EXTENSION))
 		{
 		DWORD dwUNID = strToInt(strSubString(sAttrib, SPECIAL_EXTENSION.GetLength()), 0);
 		return (m_pExtension && (m_pExtension->GetUNID() == dwUNID));

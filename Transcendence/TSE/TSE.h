@@ -877,6 +877,7 @@ class CEnvironmentGrid
 					pEnv(NULL),
 					pOrbitDesc(NULL),
 					rWidth(0.0),
+					rHeight(0.0),
 					iWidthVariation(0),
 					iSpan(0)
 				{ }
@@ -887,6 +888,7 @@ class CEnvironmentGrid
 			const COrbit *pOrbitDesc;		//	Orbit (may be NULL)
 
 			Metric rWidth;
+			Metric rHeight;
 			int iWidthVariation;			//	0-100
 			int iSpan;
 			};
@@ -895,6 +897,7 @@ class CEnvironmentGrid
 
 		void CreateArcNebula (SCreateCtx &Ctx, TArray<STileDesc> *retTiles);
 		void CreateCircularNebula (SCreateCtx &Ctx, TArray<STileDesc> *retTiles);
+		void CreateSquareNebula (SCreateCtx &Ctx, TArray<STileDesc> *retTiles);
 		void GetNextTileType (STileMapEnumerator &i, int *retx, int *rety, CSpaceEnvironmentType **retpEnv = NULL, DWORD *retdwEdgeMask = NULL) const;
 		inline int GetTileSize (void) const { return m_iTileSize; }
 		CSpaceEnvironmentType *GetTileType (int xTile, int yTile, DWORD *retdwEdgeMask = NULL);
@@ -1050,7 +1053,7 @@ class CSystem : public CObject
 		bool AscendObject (CSpaceObject *pObj, CString *retsError = NULL);
 		int CalculateLightIntensity (const CVector &vPos, CSpaceObject **retpStar = NULL);
 		inline int CalcMatchStrength (const CAttributeCriteria &Criteria) { return (m_pTopology ? m_pTopology->CalcMatchStrength(Criteria) : (Criteria.MatchesAll() ? 1000 : 0)); }
-		COLORREF CalculateSpaceColor (CSpaceObject *pPOV);
+		WORD CalculateSpaceColor (CSpaceObject *pPOV);
 		void CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bool bInDoEvent = false);
 		void CancelTimedEvent (CDesignType *pSource, const CString &sEvent, bool bInDoEvent = false);
 		bool DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **retpObj = NULL, CString *retsError = NULL);
@@ -1996,13 +1999,13 @@ class CSpaceObject : public CObject
 		void AddEffect (IEffectPainter *pPainter, const CVector &vPos, int iTick = 0, int iRotation = 0);
 		void AddEventSubscriber (CSpaceObject *pObj);
 		void AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID = NULL);
-		ALERROR AddToSystem (CSystem *pSystem, bool bInLoad = false);
+		ALERROR AddToSystem (CSystem *pSystem, bool bNoGlobalInsert = false);
 		void Ascend (void);
 		inline bool Blocks (CSpaceObject *pObj) { return (m_fIsBarrier && CanBlock(pObj)); }
 		inline bool BlocksShips (void) { return (m_fIsBarrier && CanBlockShips()); }
 		void CalcOverlayPos (CEnergyFieldType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius);
 		inline bool CanBeControlled (void) { return m_iControlsFrozen == 0; }
-		inline bool CanBeHit (void) { return !m_fCannotBeHit; }
+		inline bool CanBeHit (void) { return (!m_fCannotBeHit && !m_fOutOfPlaneObj); }
 		inline bool CanBeHitByFriends (void) { return !m_fNoFriendlyTarget; }
 		inline bool CanBounce (void) { return m_fCanBounce; }
 		bool CanDetect (int Perception, CSpaceObject *pObj);
@@ -2163,6 +2166,7 @@ class CSpaceObject : public CObject
 		inline bool IsMarked (void) const { return m_fMarked; }
 		inline bool IsMobile (void) const { return !m_fCannotMove; }
 		inline bool IsNamed (void) const { return m_fHasName; }
+		inline bool IsOutOfPlaneObj (void) const { return m_fOutOfPlaneObj; }
 		inline bool IsPaintNeeded (void) { return m_fPaintNeeded; }
 		inline bool IsPlayerDestination (void) { return m_fPlayerDestination; }
 		inline bool IsPlayerDocked (void) { return m_fPlayerDocked; }
@@ -2217,6 +2221,7 @@ class CSpaceObject : public CObject
 		inline void SetMarked (bool bMarked = true) { m_fMarked = bMarked; }
 		inline void SetNamed (bool bNamed = true) { m_fHasName = bNamed; }
 		inline void SetObjRefData (const CString &sAttrib, CSpaceObject *pObj) { m_Data.SetObjRefData(sAttrib, pObj); }
+		inline void SetOutOfPlaneObj (bool bValue = true) { m_fOutOfPlaneObj = bValue; }
 		void SetOverride (CDesignType *pOverride);
 		inline void SetPaintNeeded (void) { m_fPaintNeeded = true; }
 		inline void SetPlayerDestination (void) { m_fPlayerDestination = true; }
@@ -2325,7 +2330,6 @@ class CSpaceObject : public CObject
 		virtual CDesignType *GetWreckType (void) const { return NULL; }
 		virtual bool HasAttribute (const CString &sAttribute) const { return false; }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
-		virtual bool IsBackgroundObj (void) { return false; }
 		virtual bool IsExplored (void) { return true; }
 		virtual bool IsKnown (void) { return true; }
 		virtual bool IsMarker (void) { return false; }
@@ -2555,10 +2559,10 @@ class CSpaceObject : public CObject
 		inline void SetCannotMove (void) { m_fCannotMove = true; }
 		inline void SetCanBounce (void) { m_fCanBounce = true; }
 		inline void SetBounds (Metric rBounds) { m_rBoundsX = rBounds; m_rBoundsY = rBounds; }
-		inline void SetBounds (const RECT &rcRect)
-			{ 
-			m_rBoundsX = g_KlicksPerPixel * (RectWidth(rcRect) / 2);
-			m_rBoundsY = g_KlicksPerPixel * (RectHeight(rcRect) / 2);
+		inline void SetBounds (const RECT &rcRect, Metric rParallaxDist = 1.0)
+			{
+			m_rBoundsX = Max(1.0, rParallaxDist) * g_KlicksPerPixel * (RectWidth(rcRect) / 2);
+			m_rBoundsY = Max(1.0, rParallaxDist) * g_KlicksPerPixel * (RectHeight(rcRect) / 2);
 			}
 		inline void SetBounds (IEffectPainter *pPainter)
 			{
@@ -2649,8 +2653,7 @@ class CSpaceObject : public CObject
 		DWORD m_fHasName:1;						//	TRUE if object has been named (this is an optimization--it may have false positives)
 		DWORD m_fMarked:1;						//	Temporary marker for processing lists (not persistent)
 		DWORD m_fAscended:1;					//	TRUE if object is ascended (i.e., stored outside a system)
-
-		DWORD m_fSpare:1;
+		DWORD m_fOutOfPlaneObj:1;				//	TRUE if object is out of plane
 
 #ifdef DEBUG_VECTOR
 		CVector m_vDebugVector;			//	Draw a vector

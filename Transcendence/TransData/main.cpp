@@ -170,7 +170,9 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	//	Figure out the data file that we're working on
 
-	CString sDataFile = CONSTLIT("Transcendence");
+	CString sDataFile = pCmdLine->GetAttribute(CONSTLIT("dataFile"));
+	if (sDataFile.IsBlank())
+		sDataFile = CONSTLIT("Transcendence");
 
 	//	See if we are doing a command that does not require parsing
 

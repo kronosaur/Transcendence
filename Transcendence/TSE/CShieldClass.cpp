@@ -111,6 +111,8 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 //	Absorbs damage
 
 	{
+	DEBUG_TRY
+
 	//	If we're depleted then we cannot absorb anything
 
 	Ctx.iHPLeft = GetHPLeft(pDevice, pShip);
@@ -232,6 +234,8 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 
 	Ctx.iDamage -= Ctx.iAbsorb;
 	return (Ctx.iDamage == 0);
+
+	DEBUG_CATCH
 	}
 
 bool CShieldClass::AbsorbsWeaponFire (CInstalledDevice *pDevice, CSpaceObject *pSource, CInstalledDevice *pWeapon)

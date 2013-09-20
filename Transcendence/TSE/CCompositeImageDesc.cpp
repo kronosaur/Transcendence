@@ -142,8 +142,6 @@ class CTableEntry : public IImageEntry
 	};
 
 static CObjectImageArray EMPTY_IMAGE;
-static IEffectPainter *g_pMediumDamage = NULL;
-static IEffectPainter *g_pLargeDamage = NULL;
 
 CCompositeImageDesc::CCompositeImageDesc (void) : m_pRoot(NULL)
 
@@ -161,60 +159,7 @@ CCompositeImageDesc::~CCompositeImageDesc (void)
 		delete m_pRoot;
 	}
 
-void CCompositeImageDesc::ApplyModifiers (DWORD dwModifiers, CObjectImageArray *retImage) const
-
-//	ApplyModifiers
-//
-//	Apply modifiers to the image
-
-	{
-	if (dwModifiers & modStationDamage)
-		{
-		InitDamagePainters();
-
-		//	Create a blank bitmap
-
-		RECT rcImage = retImage->GetImageRect();
-		int cxWidth = RectWidth(rcImage);
-		int cyHeight = RectHeight(rcImage);
-		CG16bitImage *pDest = new CG16bitImage;
-		pDest->CreateBlank(cxWidth, cyHeight, true);
-
-		rcImage.left = 0;
-		rcImage.top = 0;
-		rcImage.right = cxWidth;
-		rcImage.bottom = cyHeight;
-
-		//	Start with undamaged image
-
-		retImage->CopyImage(*pDest,
-				0,
-				0,
-				0,
-				0);
-
-		//	Add some large damage
-
-		int iCount = (cxWidth / 32) * (cyHeight / 32);
-		PaintDamage(*pDest, rcImage, iCount, g_pLargeDamage);
-
-		//	Add some medium damage
-
-		iCount = (cxWidth / 4) + (cyHeight / 4);
-		PaintDamage(*pDest, rcImage, iCount, g_pMediumDamage);
-
-		//	Flatten mask
-
-		if (!retImage->HasAlpha())
-			pDest->SetTransparentColor();
-
-		//	Replace the image
-
-		retImage->Init(pDest, rcImage, 0, 0, true);
-		}
-	}
-
-CCompositeImageDesc::SCacheEntry *CCompositeImageDesc::FindCacheEntry (const CCompositeImageSelector &Selector, DWORD dwModifiers) const
+CCompositeImageDesc::SCacheEntry *CCompositeImageDesc::FindCacheEntry (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers) const
 
 //	FindCacheEntry
 //
@@ -229,7 +174,7 @@ CCompositeImageDesc::SCacheEntry *CCompositeImageDesc::FindCacheEntry (const CCo
 	if (m_bConstant)
 		{
 		for (i = 0; i < m_Cache.GetCount(); i++)
-			if (m_Cache[i].dwModifiers == dwModifiers)
+			if (m_Cache[i].Modifiers == Modifiers)
 				return &m_Cache[i];
 
 		return NULL;
@@ -238,13 +183,13 @@ CCompositeImageDesc::SCacheEntry *CCompositeImageDesc::FindCacheEntry (const CCo
 	//	Otherwise, look in the cache for the proper selector
 
 	for (i = 0; i < m_Cache.GetCount(); i++)
-		if (m_Cache[i].Selector == Selector && m_Cache[i].dwModifiers == dwModifiers)
+		if (m_Cache[i].Selector == Selector && m_Cache[i].Modifiers == Modifiers)
 			return &m_Cache[i];
 
 	return NULL;
 	}
 
-CObjectImageArray &CCompositeImageDesc::GetImage (const CCompositeImageSelector &Selector, DWORD dwModifiers, int *retiRotation) const
+CObjectImageArray &CCompositeImageDesc::GetImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers, int *retiRotation) const
 
 //	GetImage
 //
@@ -285,7 +230,7 @@ CObjectImageArray &CCompositeImageDesc::GetImage (const CCompositeImageSelector 
 
 		//	Look in the cache
 
-		SCacheEntry *pEntry = FindCacheEntry(Selector, dwModifiers);
+		SCacheEntry *pEntry = FindCacheEntry(Selector, Modifiers);
 		if (pEntry)
 			return pEntry->Image;
 
@@ -293,13 +238,13 @@ CObjectImageArray &CCompositeImageDesc::GetImage (const CCompositeImageSelector 
 
 		pEntry = m_Cache.Insert();
 		pEntry->Selector = Selector;
-		pEntry->dwModifiers = dwModifiers;
+		pEntry->Modifiers = Modifiers;
 		m_pRoot->GetImage(Selector, &pEntry->Image);
 
 		//	Apply modifiers
 
-		if (dwModifiers)
-			ApplyModifiers(dwModifiers, &pEntry->Image);
+		if (!Modifiers.IsEmpty())
+			Modifiers.Apply(&pEntry->Image);
 
 		//	Done
 
@@ -320,28 +265,6 @@ int CCompositeImageDesc::GetMaxLifetime (void) const
 		return 0;
 
 	return m_pRoot->GetMaxLifetime();
-	}
-
-void CCompositeImageDesc::InitDamagePainters (void)
-
-//	InitDamagePainters
-//
-//	Initializes station damage bitmaps
-
-	{
-	if (g_pMediumDamage == NULL)
-		{
-		CEffectCreator *pEffect = g_pUniverse->FindEffectType(MEDIUM_STATION_DAMAGE_UNID);
-		if (pEffect)
-			g_pMediumDamage = pEffect->CreatePainter(CCreatePainterCtx());
-		}
-
-	if (g_pLargeDamage == NULL)
-		{
-		CEffectCreator *pEffect = g_pUniverse->FindEffectType(LARGE_STATION_DAMAGE_UNID);
-		if (pEffect)
-			g_pLargeDamage = pEffect->CreatePainter(CCreatePainterCtx());
-		}
 	}
 
 ALERROR CCompositeImageDesc::InitEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIDCounter &IDGen, IImageEntry **retpEntry)
@@ -429,14 +352,14 @@ void CCompositeImageDesc::MarkImage (void)
 	m_pRoot->MarkImage();
 	}
 
-void CCompositeImageDesc::MarkImage (const CCompositeImageSelector &Selector, DWORD dwModifiers)
+void CCompositeImageDesc::MarkImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers)
 
 //	MarkImage
 //
 //	Marks the image in use
 
 	{
-	GetImage(Selector, dwModifiers).MarkImage();
+	GetImage(Selector, Modifiers).MarkImage();
 	}
 
 ALERROR CCompositeImageDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
@@ -461,72 +384,6 @@ ALERROR CCompositeImageDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		return error;
 
 	return NOERROR;
-	}
-
-void CCompositeImageDesc::PaintDamage (CG16bitImage &Dest, const RECT &rcDest, int iCount, IEffectPainter *pPainter)
-
-//	PaintDamage
-//
-//	Applies damage to the image
-
-	{
-	if (pPainter == NULL)
-		return;
-
-	//	Get some data
-
-	int iVariantCount = pPainter->GetVariants();
-	if (iVariantCount == 0)
-		return;
-
-	int iLifetime = pPainter->GetLifetime();
-	if (iLifetime == 0)
-		return;
-
-	//	Create context
-
-	SViewportPaintCtx Ctx;
-
-	//	Paint damage
-
-	for (int i = 0; i < iCount; i++)
-		{
-		//	Pick a random position
-
-		int x = rcDest.left + mathRandom(0, RectWidth(rcDest)-1);
-		int y = rcDest.top + mathRandom(0, RectHeight(rcDest)-1);
-
-		//	Set some parameters
-
-		Ctx.iTick = mathRandom(0, iLifetime - 1);
-		Ctx.iVariant = mathRandom(0, iVariantCount - 1);
-		Ctx.iRotation = mathRandom(0, 359);
-		Ctx.iDestiny = mathRandom(0, 359);
-
-		//	Paint
-
-		pPainter->Paint(Dest, x, y, Ctx);
-		}
-	}
-
-void CCompositeImageDesc::Reinit (void)
-
-//	Reinit
-//
-//	Reinitialize global data
-
-	{
-	if (g_pMediumDamage)
-		{
-		g_pMediumDamage->Delete();
-		g_pMediumDamage = NULL;
-		}
-
-	if (g_pLargeDamage)
-		{
-		g_pLargeDamage->Delete();
-		g_pLargeDamage = NULL;
-		}
 	}
 
 //	CCompositeEntry ------------------------------------------------------------

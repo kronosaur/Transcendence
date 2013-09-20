@@ -541,8 +541,31 @@ ALERROR ParsePrologue (ParserCtx *pCtx)
 			}
 		else
 			{
-			pCtx->sError = CONSTLIT("unknown XML prologue attribute");
-			return ERR_FAIL;
+			//	Assume it is an unknown attribute
+
+			if (ParseToken(pCtx) != tkEquals)
+				{
+				pCtx->sError = LITERAL("invalid prologue attribute");
+				return ERR_FAIL;
+				}
+
+			if (ParseToken(pCtx) != tkQuote)
+				{
+				pCtx->sError = LITERAL("invalid prologue attribute");
+				return ERR_FAIL;
+				}
+
+			if (ParseToken(pCtx) != tkText)
+				{
+				pCtx->sError = LITERAL("invalid prologue attribute");
+				return ERR_FAIL;
+				}
+
+			if (ParseToken(pCtx) != tkQuote)
+				{
+				pCtx->sError = LITERAL("invalid prologue attribute");
+				return ERR_FAIL;
+				}
 			}
 
 #ifdef LATER
