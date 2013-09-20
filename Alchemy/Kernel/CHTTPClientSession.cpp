@@ -14,6 +14,7 @@ CHTTPClientSession::CHTTPClientSession (void) :
 		m_bConnected(false),
 		m_hStop(INVALID_HANDLE_VALUE),
 		m_iStatus(notConnected),
+		m_iInternetStatus(internetUnknown),
 		m_dwLastActivity(0)
 
 //	CHTTPClientSession constructor
@@ -31,6 +32,51 @@ CHTTPClientSession::~CHTTPClientSession (void)
 	Disconnect();
 	::CloseHandle(m_hReadDone);
 	::CloseHandle(m_hWriteDone);
+	}
+
+bool CHTTPClientSession::CheckInternetAccess (void)
+
+//	CheckInternetAccess
+//
+//	Returns TRUE if we can access a well-known Internet server.
+
+	{
+	CString sHost = CONSTLIT("google.com");
+
+	//	Set our status so we don't recurse.
+
+	m_iInternetStatus = internetChecking;
+
+	//	Try to connect
+
+	Disconnect();
+	if (Connect(sHost, CONSTLIT("80")) != inetsOK)
+		{
+		m_iInternetStatus = internetDisconnected;
+		return false;
+		}
+
+	//	Try to send and receive data
+
+	CHTTPMessage Request;
+	Request.InitRequest(CONSTLIT("GET"), CONSTLIT("/"));
+	Request.AddHeader(CONSTLIT("Host"), sHost);
+	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("AlchemyDebug/1.0"));
+	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
+	Request.AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
+
+	CHTTPMessage Response;
+	if (Send(Request, &Response) != inetsOK)
+		{
+		Disconnect();
+		m_iInternetStatus = internetDisconnected;
+		return false;
+		}
+
+	//	If send succeeded it will set m_iInternetStatus.
+
+	Disconnect();
+	return true;
 	}
 
 EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &sPort)
@@ -73,8 +119,11 @@ EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &s
 		HOSTENT *phe = ::gethostbyname(sHost.GetASCIIZPointer());
 		if (phe == NULL)
 			{
+			::kernelDebugLogMessage("gethostbyname failed: %d.", ::WSAGetLastError());
 			m_iStatus = notConnected;
 			m_iLastError = inetsDNSError;
+			if (m_iInternetStatus != internetChecking)
+				m_iInternetStatus = internetUnknown;
 			return m_iLastError;
 			}
 
@@ -87,6 +136,7 @@ EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &s
 	PROTOENT *ppe = ::getprotobyname("tcp");
 	if (ppe == NULL)
 		{
+		::kernelDebugLogMessage("getprotobyname failed: %d.", ::WSAGetLastError());
 		m_iStatus = notConnected;
 		m_iLastError = inetsInvalidProtocol;
 		return m_iLastError;
@@ -97,6 +147,7 @@ EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &s
 	m_Socket = ::socket(AF_INET, SOCK_STREAM, ppe->p_proto);
 	if (m_Socket == INVALID_SOCKET)
 		{
+		::kernelDebugLogMessage("socket failed: %d.", ::WSAGetLastError());
 		m_iStatus = notConnected;
 		m_iLastError = inetsUnableToCreateSocket;
 		return m_iLastError;
@@ -107,10 +158,12 @@ EInetsErrors CHTTPClientSession::Connect (const CString &sHost, const CString &s
 	m_iStatus = connecting;
 	if (connect(m_Socket, (SOCKADDR *)&name, sizeof(name)))
 		{
-		int iError = ::WSAGetLastError();
+		::kernelDebugLogMessage("connect failed: %d.", ::WSAGetLastError());
 		::closesocket(m_Socket);
 		m_iStatus = notConnected;
 		m_iLastError = inetsCannotConnect;
+		if (m_iInternetStatus != internetChecking)
+			m_iInternetStatus = internetUnknown;
 		return m_iLastError;
 		}
 
@@ -157,14 +210,25 @@ bool CHTTPClientSession::IsConnected (void)
 	return (m_iStatus == connected);
 	}
 
-bool CHTTPClientSession::IsResponseComplete (CMemoryWriteStream &Response)
+bool CHTTPClientSession::IsInternetAvailable (void)
 
-//	IsResponseComplete
+//	IsInternetAvailable
 //
-//	Parses the response and returns TRUE if the response is complete
+//	Returns TRUE if we believe that the Internet is available (via check on
+//	well-known reliable host).
 
 	{
-	return true;
+	switch (m_iInternetStatus)
+		{
+		case internetDisconnected:
+			return false;
+
+		case internetUnknown:
+			return CheckInternetAccess();
+
+		default:
+			return true;
+		}
 	}
 
 bool CHTTPClientSession::ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRead)
@@ -192,7 +256,10 @@ bool CHTTPClientSession::ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRea
 			&dwBytesRead,
 			&oRead)
 			&& (lasterror = GetLastError()) != ERROR_IO_PENDING)
+		{
+		::kernelDebugLogMessage("ReadFile failed: %x", lasterror);
 		return false;
+		}
 
 	//	Wait for data
 
@@ -246,6 +313,8 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 		::kernelDebugLogMessage("Unable to send request to server.");
 		Disconnect();
 		m_iLastError = inetsUnableToWrite;
+		if (m_iInternetStatus != internetChecking)
+			m_iInternetStatus = internetUnknown;
 		return m_iLastError;
 		}
 
@@ -286,6 +355,8 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 			::kernelDebugLogMessage("Unable to read from server. Reponse:\r\n%s", CString(ResponseBuff.GetPointer(), iResponseBuffSize, true));
 			Disconnect();
 			m_iLastError = inetsUnableToRead;
+			if (m_iInternetStatus != internetChecking)
+				m_iInternetStatus = internetUnknown;
 			return m_iLastError;
 			}
 
@@ -301,6 +372,8 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 	//	Done
 
 	m_dwLastActivity = ::GetTickCount();
+	m_iInternetStatus = internetConnected;
+
 	return inetsOK;
 	}
 
@@ -352,7 +425,10 @@ bool CHTTPClientSession::WaitForTransfer (OVERLAPPED &oOp, DWORD *retdwBytesTran
 		if (error != ERROR_IO_INCOMPLETE
 				&& error != ERROR_IO_PENDING)
 			//	Any error means that we should stop.
+			{
+			::kernelDebugLogMessage("GetOverlappedResult failed: %x", error);
 			return false;
+			}
 
 		//	Do progress notification
 
@@ -364,7 +440,10 @@ bool CHTTPClientSession::WaitForTransfer (OVERLAPPED &oOp, DWORD *retdwBytesTran
 		if (dwBytesTransfered == dwLastBytes)
 			{
 			if (++iTimeOutLoops >= 30)
+				{
+				::kernelDebugLogMessage("WaitForTransfer timed out");
 				return false;
+				}
 			}
 
 		//	If we are making progress, reset our counters
@@ -378,6 +457,7 @@ bool CHTTPClientSession::WaitForTransfer (OVERLAPPED &oOp, DWORD *retdwBytesTran
 
 	//	We can't here
 
+	::kernelDebugLogMessage("This cannot happen.");
 	return false;
 	}
 
@@ -406,7 +486,10 @@ bool CHTTPClientSession::WriteBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwWr
 			&dwBytesWritten,
 			&oWrite)
 			&& (lasterror = GetLastError()) != ERROR_IO_PENDING)
+		{
+		::kernelDebugLogMessage("WriteFile failed: %x", lasterror);
 		return false;
+		}
 
 	//	Keep looping until we write all the data
 

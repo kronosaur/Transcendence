@@ -27,6 +27,7 @@
 #define ERR_DNS_ERROR							CONSTLIT("Unable to resolve address for %s.")
 #define ERR_CANNOT_SEND							CONSTLIT("Unable to send command to server.")
 #define ERR_UNKNOWN_RESPONSE_TYPE				CONSTLIT("Unknown response content type.")
+#define ERR_NO_INTERNET							CONSTLIT("You are not connected to the Internet.")
 
 const DWORD MAX_CONNECTION_IDLE_TIME =			5 * 60 * 1000;
 
@@ -247,7 +248,13 @@ ALERROR CHexarcSession::ServerCommand (const CHTTPMessage &Request, CJSONValue *
 	CString sError;
 	if (!Connect(&sError))
 		{
-		*retResult = CJSONValue(sError);
+		if (!m_Session.IsInternetAvailable())
+			{
+			*retResult = CJSONValue(ERR_NO_INTERNET);
+			kernelDebugLogMessage("Unable to verify connection to the Internet.");
+			}
+		else
+			*retResult = CJSONValue(sError);
 		return ERR_FAIL;
 		}
 
@@ -263,6 +270,16 @@ ALERROR CHexarcSession::ServerCommand (const CHTTPMessage &Request, CJSONValue *
 			{
 			m_Session.Disconnect();
 			return ServerCommand(Request, retResult);
+			}
+
+		//	Check to see if we have internet access. If we don't then that
+		//	explains the problem.
+
+		else if (!m_Session.IsInternetAvailable())
+			{
+			*retResult = CJSONValue(ERR_NO_INTERNET);
+			kernelDebugLogMessage("Unable to verify connection to the Internet.");
+			return ERR_FAIL;
 			}
 
 		//	Otherwise, error

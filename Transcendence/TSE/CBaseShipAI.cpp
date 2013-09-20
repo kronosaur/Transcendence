@@ -960,6 +960,8 @@ void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 //	or it can be the missile/beam that hit us.
 
 	{
+	DEBUG_TRY
+
 	bool bFriendlyFire = false;
 
 	if (pAttacker)
@@ -995,6 +997,8 @@ void CBaseShipAI::OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage)
 	//	Remember the last time we were attacked (debounce quick hits)
 
 	m_AICtx.SetLastAttack(m_pShip->GetSystem()->GetTick());
+
+	DEBUG_CATCH
 	}
 
 DWORD CBaseShipAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)
@@ -1279,7 +1283,7 @@ void CBaseShipAI::OnStationDestroyed (const SDestroyCtx &Ctx)
 	//	exists
 
 	DWORD dwFlags = GetOrderFlags(GetCurrentOrder());
-	if (dwFlags & ORDER_FLAG_DELETE_ON_STATION_DESTROYED)
+	if (dwFlags & (ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED))
 		{
 		if (m_pOrderModule)
 			m_pOrderModule->ObjDestroyed(m_pShip, Ctx);

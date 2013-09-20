@@ -7,6 +7,7 @@
 
 #define FIELD_DAMAGE_HP					CONSTLIT("damageHP")
 #define FIELD_SPEED						CONSTLIT("speed")
+#define FIELD_WEAPON_UNID				CONSTLIT("weaponUNID")
 
 CCreatePainterCtx::~CCreatePainterCtx (void)
 
@@ -52,4 +53,8 @@ void CCreatePainterCtx::SetWeaponFireDescData (CCodeChain &CC, CCSymbolTable *pT
 	{
 	pTable->SetIntegerValue(CC, FIELD_DAMAGE_HP, (int)(pDesc->GetAveDamage() + 0.5));
 	pTable->SetIntegerValue(CC, FIELD_SPEED, (int)((100.0 * pDesc->GetAveInitialSpeed() / LIGHT_SPEED) + 0.5));
+
+	CItemType *pWeapon = pDesc->GetWeaponType();
+	DWORD dwWeaponUNID = (pWeapon ? pWeapon->GetUNID() : 0);
+	pTable->SetIntegerValue(CC, FIELD_WEAPON_UNID, dwWeaponUNID);
 	}

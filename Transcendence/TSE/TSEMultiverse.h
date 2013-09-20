@@ -41,6 +41,7 @@ class CMultiverseCatalogEntry
 			statusNotAvailable,				//	Not on this computer
 			statusDownloadInProgress,		//	Currently downloading the extension
 			statusLoaded,					//	Available and ready for use
+			statusCorrupt,					//	Loaded, but digest did not match
 
 			statusError,					//	Could not load for some reason
 			};
@@ -59,9 +60,11 @@ class CMultiverseCatalogEntry
 		inline const CMultiverseFileRef &GetTDBFileRef (void) const { return m_TDBFile; }
 		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
+		inline const CString &GetVersion (void) const { return m_sVersion; }
 		bool IsValid (void);
 		void SetIcon (CG16bitImage *pImage);
 		inline void SetStatus (ELocalStatus iStatus) { m_iStatus = iStatus; }
+		inline void SetVersion (const CString &sVersion) { m_sVersion = sVersion; }
 
 	private:
 		CMultiverseCatalogEntry (void) : 
@@ -73,6 +76,7 @@ class CMultiverseCatalogEntry
 		CString m_sUNID;					//	Fully qualified UNID
 		DWORD m_dwRelease;					//	Catalog entry release
 		DWORD m_dwVersion;					//	Catalog entry version
+		CString m_sVersion;					//	User-visible version
 		EExtensionTypes m_iType;			//	Type of extension
 
 		CString m_sName;					//	Name of extension

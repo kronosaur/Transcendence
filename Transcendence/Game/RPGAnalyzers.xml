@@ -25,7 +25,14 @@
 		<ListOptions
 			dataFrom=	"player"
 			list=		"*"
-			/>
+			>
+			(scrSetListFilter gScreen (lambda (theItem)
+				(or
+					(not (itmIsKnown theItem))
+					(objFireItemEvent gSource theItem 'GetIsAnalysisRequired)
+					)
+				))
+		</ListOptions>
 			
 		<Panes>
 			<Default>
@@ -61,6 +68,11 @@
 							
 							(eq chargesLeft 0)
 								(setq desc (cat desc "Unfortunately, " (itmGetName gItem 0x40) " is out of charge and cannot function."))
+								
+							;	Nothing to analyze
+							
+							(not itemToAnalyze)
+								(setq desc (cat desc "There are no items here requiring analysis."))
 								
 							;	Check to see if this analyzer can handle this item
 							

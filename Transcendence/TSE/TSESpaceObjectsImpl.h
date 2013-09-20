@@ -1286,7 +1286,7 @@ class CStation : public CSpaceObject
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pType->GetGlobalData(sAttribute); }
-		virtual const CObjectImageArray &GetImage (void) { return m_pType->GetImage(m_ImageSelector, 0); }
+		virtual const CObjectImageArray &GetImage (void) { return m_pType->GetImage(m_ImageSelector, CCompositeImageModifiers()); }
 		virtual int GetLevel (void) const { return m_pType->GetLevel(); }
 		virtual const COrbit *GetMapOrbit (void) const { return m_pMapOrbit; }
 		virtual Metric GetMass (void) { return m_rMass; }
@@ -1302,7 +1302,7 @@ class CStation : public CSpaceObject
 		virtual int GetOverlayRotation (DWORD dwID) { return m_Overlays.GetRotation(dwID); }
 		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return m_Overlays.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void);
-		virtual Metric GetParallaxDist (void) { return m_pType->GetParallaxDist(); }
+		virtual Metric GetParallaxDist (void) { return m_rParallaxDist; }
 		virtual EDamageResults GetPassthroughDefault (void);
 		virtual int GetPlanetarySize (void) const { return (GetScale() == scaleWorld ? m_pType->GetSize() : 0); }
 		virtual ICCItem *GetProperty (const CString &sName);
@@ -1324,7 +1324,6 @@ class CStation : public CSpaceObject
 		virtual bool IsAbandoned (void) const { return (m_iHitPoints == 0 && !IsImmutable()); }
 		virtual bool IsActiveStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
-		virtual bool IsBackgroundObj (void) { return m_pType->IsBackgroundObject(); }
 		virtual bool IsExplored (void) { return m_fExplored; }
 		virtual bool IsKnown (void) { return m_fKnown; }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
@@ -1404,7 +1403,7 @@ class CStation : public CSpaceObject
 		ALERROR CreateMapImage (void);
 		void FinishCreation (void);
 		void FriendlyFire (CSpaceObject *pAttacker);
-		const CObjectImageArray &GetImage (int *retiTick, int *retiRotation);
+		const CObjectImageArray &GetImage (bool bFade, int *retiTick, int *retiRotation);
 		bool IsBlacklisted (CSpaceObject *pObj = NULL);
 		inline bool IsImmutable (void) const { return m_fImmutable; }
 		void RaiseAlert (CSpaceObject *pTarget);
@@ -1425,6 +1424,7 @@ class CStation : public CSpaceObject
 		COrbit *m_pMapOrbit;					//	Orbit to draw on map
 		int m_xMapLabel;						//	Name label in map view
 		int m_yMapLabel;
+		Metric m_rParallaxDist;					//	Parallax distance (1.0 = normal; > 1.0 = background; < 1.0 = foreground)
 
 		CString m_sStargateDestNode;			//	Destination node
 		CString m_sStargateDestEntryPoint;		//	Destination entry point

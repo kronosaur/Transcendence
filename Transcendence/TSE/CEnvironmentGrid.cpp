@@ -313,6 +313,65 @@ void CEnvironmentGrid::CreateCircularNebula (SCreateCtx &Ctx, TArray<STileDesc> 
 			}
 	}
 
+void CEnvironmentGrid::CreateSquareNebula (SCreateCtx &Ctx, TArray<STileDesc> *retTiles)
+
+//	CreateSquareNebula
+//
+//	The nebula is a square:
+//
+//	center: Ctx.pOrbitDesc position
+//	height: Ctx.rHeight
+//	width: Ctx.rWidth
+
+	{
+	if (Ctx.pEnv == NULL || Ctx.pOrbitDesc == NULL || Ctx.rWidth == 0.0 || Ctx.rHeight == 0.0)
+		return;
+
+	CVector vCenter = Ctx.pOrbitDesc->GetObjectPos();
+
+	//	Compute the bounds of the nebula
+
+	CVector vUL = vCenter + CVector(-0.5 * Ctx.rWidth, -0.5 * Ctx.rHeight);
+	CVector vLR = vCenter + CVector(0.5 * Ctx.rWidth, 0.5 * Ctx.rHeight);
+
+	//	Now iterate over every tile in bounds and see if it is within
+	//	the band that we have defined.
+
+	int xTileStart, yTileStart, xTileEnd, yTileEnd;
+	VectorToTile(vUL, &xTileStart, &yTileStart);
+	VectorToTile(vLR, &xTileEnd, &yTileEnd);
+
+	//	Set the granularity of the result array (so that we don't keep on
+	//	reallocating).
+
+	if (retTiles)
+		{
+		retTiles->DeleteAll();
+		int iGranularity = Max(DEFAULT_ARRAY_GRANULARITY, (xTileEnd - xTileStart + 1) * (yTileEnd - yTileStart + 1) / 2);
+		retTiles->SetGranularity(iGranularity);
+		}
+
+	//	Set all tiles
+
+	int x, y;
+	for (x = xTileStart; x <= xTileEnd; x++)
+		for (y = yTileStart; y <= yTileEnd; y++)
+			{
+			SetTileType(x, y, Ctx.pEnv);
+
+			//	Add to list of tiles
+
+			if (retTiles)
+				{
+				STileDesc *pNewTile = retTiles->Insert();
+				pNewTile->x = x;
+				pNewTile->y = y;
+				pNewTile->pEnv = Ctx.pEnv;
+				pNewTile->dwEdgeMask = 0;
+				}
+			}
+	}
+
 void CEnvironmentGrid::GetNextTileType (STileMapEnumerator &i, int *retx, int *rety, CSpaceEnvironmentType **retpEnv, DWORD *retdwEdgeMask) const
 
 //	GetNextTileType

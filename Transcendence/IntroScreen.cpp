@@ -228,8 +228,11 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	//	Update the universe
 
-	g_pUniverse->Update(g_SecondsPerUpdate, true);
-	m_iTick++;
+	if (!m_bPaused)
+		{
+		g_pUniverse->Update(g_SecondsPerUpdate, true);
+		m_iTick++;
+		}
 
 	//	Slight HACK: If the current POV is not a ship, then create a new one
 

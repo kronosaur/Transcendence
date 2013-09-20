@@ -44,7 +44,6 @@
 #define FUNC_REGISTER							CONSTLIT("register")
 #define FUNC_REQUEST_LOGIN						CONSTLIT("requestLogin")
 
-
 #define METHOD_OPTIONS							CONSTLIT("OPTIONS")
 #define METHOD_POST								CONSTLIT("POST")
 

@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-	208, 141,  52,  51, 144, 213, 202,  98,  37, 106,
-	163,  66,  76, 202, 180, 175,  26, 254,  42, 192,
+    188, 169, 154, 128,  51,  22,  75, 155, 186, 189,
+    236,  95, 123, 195, 123, 105, 254,  10, 117, 249,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -898,6 +898,35 @@ void CExtensionCollection::InitEntityResolver (CExtension *pExtension, DWORD dwF
 	retResolver->AddResolver(pExtension->GetEntities());
 	}
 
+bool CExtensionCollection::IsRegisteredGame (CExtension *pAdventure, const TArray<CExtension *> &DesiredExtensions, DWORD dwFlags)
+
+//	IsRegisteredGame
+//
+//	Returns TRUE if the given adventure and set of extensions can be used
+//	to create a registered game. We check to make sure all extensions and 
+//	libraries are registered and verified.
+
+	{
+	CSmartLock Lock(m_cs);
+	int i;
+
+	//	Compute the full set of extensions that we need to load. This will include 
+	//	any libraries.
+
+	TArray<CExtension *> BindOrder;
+	CString sError;
+	if (ComputeBindOrder(pAdventure, DesiredExtensions, dwFlags, &BindOrder, &sError) != NOERROR)
+		return false;
+
+	//	Loop over all extensions and make sure all are verified.
+
+	for (i = 0; i < BindOrder.GetCount(); i++)
+		if (!BindOrder[i]->IsRegistrationVerified())
+			return false;
+
+	return true;
+	}
+
 ALERROR CExtensionCollection::Load (const CString &sFilespec, DWORD dwFlags, CString *retsError)
 
 //	Load
@@ -1402,13 +1431,17 @@ void CExtensionCollection::UpdateCollectionStatus (CMultiverseCollection &Collec
 		CExtension *pExtension;
 		if (FindExtension(pEntry->GetUNID(), 0, iFolder, &pExtension))
 			{
-			pEntry->SetStatus(CMultiverseCatalogEntry::statusLoaded);
+			if (pExtension->IsRegistrationVerified())
+				pEntry->SetStatus(CMultiverseCatalogEntry::statusLoaded);
+			else
+				pEntry->SetStatus(CMultiverseCatalogEntry::statusCorrupt);
 
 			//	Set the icon
 
 			CG16bitImage *pIcon;
 			pExtension->CreateIcon(cxIconSize, cyIconSize, &pIcon);
 			pEntry->SetIcon(pIcon);
+			pEntry->SetVersion(pExtension->GetVersion());
 			}
 
 		//	If we can't find it, then we know that it's not loaded

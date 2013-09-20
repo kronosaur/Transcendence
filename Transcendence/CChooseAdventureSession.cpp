@@ -332,6 +332,11 @@ ALERROR CChooseAdventureSession::OnInit (CString *retsError)
 
 	StartPerformance(m_pRoot, ID_ROOT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
+	//	Set the adventure status again because we can't access the extension
+	//	checkboxes until the performance starts.
+
+	SetAdventureStatus(m_AdventureList[m_iSelection], m_yBottomSection);
+
 	//	Done
 
 	return NOERROR;
@@ -457,22 +462,22 @@ void CChooseAdventureSession::SetAdventureStatus (CExtension *pAdventure, int yP
 	const CG16bitFont &MediumFont = VI.GetFont(fontMedium);
 	const CG16bitFont &MediumBoldFont = VI.GetFont(fontMediumBold);
 
-	//	Figure out if this is a registered game or not.
-
-	bool bRegistered = (!g_pUniverse->InDebugMode() && pAdventure->IsRegistrationVerified());
+	bool bRegistered = !g_pUniverse->InDebugMode();
 	if (bRegistered)
 		{
+		//	Make a list of all extensions
+
+		TArray<CExtension *> Extensions;
 		for (i = 0; i < m_ExtensionList.GetCount(); i++)
 			{
 			if (GetPropertyBool(strPatternSubst(CONSTLIT("idExtension:%d"), i), PROP_CHECKED))
-				{
-				if (!m_ExtensionList[i]->IsRegistrationVerified())
-					{
-					bRegistered = false;
-					break;
-					}
-				}
+				Extensions.Insert(m_ExtensionList[i]);
 			}
+
+		//	See if the game can be registered
+
+		if (!g_pUniverse->GetExtensionCollection().IsRegisteredGame(pAdventure, Extensions, 0))
+			bRegistered = false;
 		}
 
 	//	Generate status

@@ -108,19 +108,19 @@ static const SOrderTypeData g_OrderTypes[] =
 		{	"",							"-",	"-",	0	 },
 
 		{	"guard",					"o",	"-",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED },
-		{	"dock",						"o",	"-",	0 },
+		{	"dock",						"o",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
 		{	"attack",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
 		{	"wait",						"-",	"i",	0 },
 		{	"gate",						"*",	"-",	0 },
 
-		{	"gateOnThreat",				"-",	"-",	0 },
-		{	"gateOnStationDestroyed",	"-",	"-",	0 },
+		{	"gateOnThreat",				"-",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
+		{	"gateOnStationDestroyed",	"-",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
 		{	"patrol",					"o",	"i",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
-		{	"escort",					"o",	"2",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP	},
+		{	"escort",					"o",	"2",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP	},
 		{	"scavenge",					"-",	"-",	0 },
 
-		{	"followPlayerThroughGate",	"o",	"-",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
-		{	"attackNearestEnemy",		"-",	"-",	0 },
+		{	"followPlayerThroughGate",	"o",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"attackNearestEnemy",		"-",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
 		{	"tradeRoute",				"-",	"-",	0 },
 		{	"wander",					"-",	"-",	0 },
 		{	"loot",						"o",	"-",	0 },
@@ -129,7 +129,7 @@ static const SOrderTypeData g_OrderTypes[] =
 		{	"mine",						"o",	"-",	0 },
 		{	"waitForPlayer",			"-",	"-",	0 },
 		{	"attackPlayerOnReturn",		"-",	"-",	0 },
-		{	"follow",					"o",	"-",	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
+		{	"follow",					"o",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },
 
 		{	"navPath",					"-",	"i",	0	},
 		{	"goto",						"o",	"-",	0 },
@@ -149,7 +149,7 @@ static const SOrderTypeData g_OrderTypes[] =
 		{	"waitForUndock",			"o",	"i",	0 },
 		{	"sendMessage",				"o",	"s",	0 },
 
-		{	"attackArea",				"o",	"2",	0 },
+		{	"attackArea",				"o",	"2",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
 	};
 
 #define ORDER_TYPES_COUNT		(sizeof(g_OrderTypes) / sizeof(g_OrderTypes[0]))

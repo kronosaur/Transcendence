@@ -254,13 +254,13 @@
     <ClInclude Include="PreComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sessions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Transcendence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -682,9 +682,6 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Outlaws.xml">
       <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalliedMerchanters.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
     <None Include="Game\Extensions\Corporate Expansion\CyclopsStoryArc.xml">
       <Filter>XML Files\Corporate Expansion</Filter>
     </None>
@@ -809,6 +806,10 @@
     <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml">
       <Filter>XML Files\Corporate Expansion</Filter>
     </None>
+    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalignedMerchanters.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </None>
+    <None Include="Game\Extensions\Debug\DebugShips.xml" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">
@@ -817,9 +818,6 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
-      <Filter>XML Files\Debug</Filter>
-    </Xml>
-    <Xml Include="Game\Extensions\Debug\DebugShips.xml">
       <Filter>XML Files\Debug</Filter>
     </Xml>
     <Xml Include="Game\Extensions\Debug\PerformanceTest.xml">

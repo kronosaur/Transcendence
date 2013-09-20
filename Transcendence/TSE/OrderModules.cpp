@@ -408,6 +408,8 @@ void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 //	Attacked by something
 
 	{
+	DEBUG_TRY
+
 	//	If the ship that attacked us is an enemy and it is closer than the 
 	//	current target, then switch to attack it.
 
@@ -416,6 +418,8 @@ void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 			&& pAttacker != m_Objs[objTarget]
 			&& IsBetterTarget(pShip, Ctx, m_Objs[objTarget], pAttacker))
 		m_Objs[objTarget] = pAttacker;
+
+	DEBUG_CATCH
 	}
 
 void CAttackOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
@@ -688,6 +692,8 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 //	We've been attacked
 
 	{
+	DEBUG_TRY
+
 	//	If we're currently attacking the station, see if we should switch our
 	//	attention to this defender.
 
@@ -725,6 +731,8 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 		{
 		m_Objs[objDefender] = pAttacker;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CAttackStationOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
@@ -913,6 +921,8 @@ void CEscortOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 //	We were attacked.
 
 	{
+	DEBUG_TRY
+
 	if (pAttacker
 			&& !bFriendlyFire
 			&& pAttacker->CanAttack())
@@ -931,6 +941,8 @@ void CEscortOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 			m_iState = stateAttackingThreat;
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CEscortOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)

@@ -861,19 +861,45 @@ class IImageEntry
 		DWORD m_dwID;
 	};
 
+class CCompositeImageModifiers
+	{
+	public:
+		CCompositeImageModifiers (void) :
+				m_wFadeColor(0),
+				m_wFadeOpacity(0),
+				m_fStationDamage(false)
+			{ }
+
+		bool operator== (const CCompositeImageModifiers &Val) const;
+
+		void Apply (CObjectImageArray *retImage) const;
+		inline bool IsEmpty (void) const { return (m_wFadeOpacity == 0 && !m_fStationDamage); }
+		inline void SetFadeColor (WORD wColor, DWORD dwOpacity) { m_wFadeColor = wColor; m_wFadeOpacity = (WORD)dwOpacity; }
+		inline void SetStationDamage (bool bValue = true) { m_fStationDamage = bValue; }
+
+		static void Reinit (void);
+
+	private:
+		static void InitDamagePainters (void);
+		static void PaintDamage (CG16bitImage &Dest, const RECT &rcDest, int iCount, IEffectPainter *pPainter);
+
+		CG16bitImage *CreateCopy (CObjectImageArray *pImage, RECT *retrcNewImage) const;
+
+		WORD m_wFadeColor;					//	Apply a wash on top of image
+		WORD m_wFadeOpacity;				//		0 = no wash
+
+		DWORD m_fStationDamage:1;			//	Apply station damage to image
+		DWORD m_dwSpare:31;
+	};
+
 class CCompositeImageDesc
 	{
 	public:
-		enum Modifiers
-			{
-			modStationDamage =		0x00000001,
-			};
-
 		CCompositeImageDesc (void);
 		~CCompositeImageDesc (void);
 
 		inline void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { if (m_pRoot) m_pRoot->AddTypesUsed(retTypesUsed); }
-		CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, DWORD dwModifiers = 0, int *retiRotation = NULL) const;
+		CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers = CCompositeImageModifiers(), int *retiRotation = NULL) const;
 		int GetMaxLifetime (void) const;
 		inline IImageEntry *GetRoot (void) const { return m_pRoot; }
 		inline int GetVariantCount (void) { return (m_pRoot ? m_pRoot->GetVariantCount() : 0); }
@@ -884,22 +910,18 @@ class CCompositeImageDesc
 		inline bool IsConstant (void) const { return m_bConstant; }
 		inline bool IsEmpty (void) { return (GetVariantCount() == 0); }
 		void MarkImage (void);
-		void MarkImage (const CCompositeImageSelector &Selector, DWORD dwModifiers = 0);
+		void MarkImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers = CCompositeImageModifiers());
 		ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
-		static void Reinit (void);
 
 	private:
 		struct SCacheEntry
 			{
 			CCompositeImageSelector Selector;
-			DWORD dwModifiers;
+			CCompositeImageModifiers Modifiers;
 			CObjectImageArray Image;
 			};
 
-		void ApplyModifiers (DWORD dwModifiers, CObjectImageArray *retImage) const;
-		SCacheEntry *FindCacheEntry (const CCompositeImageSelector &Selector, DWORD dwModifiers) const;
-		static void InitDamagePainters (void);
-		static void PaintDamage (CG16bitImage &Dest, const RECT &rcDest, int iCount, IEffectPainter *pPainter);
+		SCacheEntry *FindCacheEntry (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers) const;
 
 		IImageEntry *m_pRoot;
 		bool m_bConstant;
@@ -2603,6 +2625,7 @@ enum EOrderFlags
 	{
 	ORDER_FLAG_DELETE_ON_STATION_DESTROYED =	0x00000001,	//	Delete the order when target is station destroyed
 	ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP =		0x00000002,	//	Update target if player changes ship
+	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED =	0x00000004,	//	Notify controller when any station destroyed
 	};
 
 class IShipController
@@ -3607,6 +3630,7 @@ class CItemType : public CDesignType
 		virtual ALERROR OnBindDesign (SDesignLoadCtx &Ctx);
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID);
+		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const;
 		virtual void OnReadFromStream (SUniverseLoadCtx &Ctx);
 		virtual void OnReinit (void);
 		virtual void OnWriteToStream (IWriteStream *pStream);
@@ -4480,7 +4504,7 @@ class CStationType : public CDesignType
 		inline int GetFrequencyForNode (CTopologyNode *pNode) { return m_EncounterRecord.GetFrequencyForNode(pNode, this, m_RandomPlacement); }
 		inline int GetFrequencyForSystem (CSystem *pSystem) { return m_EncounterRecord.GetFrequencyForSystem(pSystem, this, m_RandomPlacement); }
 		inline CEffectCreator *GetGateEffect (void) { return m_pGateEffect; }
-		inline const CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, DWORD dwModifiers, int *retiRotation = NULL) { return m_Image.GetImage(Selector, dwModifiers, retiRotation); }
+		inline const CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers, int *retiRotation = NULL) { return m_Image.GetImage(Selector, Modifiers, retiRotation); }
 		inline IImageEntry *GetImageRoot (void) const { return m_Image.GetRoot(); }
 		inline int GetImageVariants (void) { return m_iImageVariants; }
 		inline int GetInitialHitPoints (void) { return m_iHitPoints; }
@@ -4518,7 +4542,7 @@ class CStationType : public CDesignType
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
 		inline bool HasWreckImage (void) const { return (!IsImmutable() && m_iMaxHitPoints > 0); }
 		inline bool IsActive (void) { return (m_fInactive ? false : true); }
-		inline bool IsBackgroundObject (void) { return (m_fBackground ? true : false); }
+		inline bool IsOutOfPlaneObject (void) { return (m_fOutOfPlane ? true : false); }
 		inline bool IsBeacon (void) { return (m_fBeacon ? true : false); }
 		inline bool IsBlacklistEnabled (void) { return (m_fNoBlacklist ? false : true); }
 		inline bool IsDestroyWhenEmpty (void) { return (m_fDestroyWhenEmpty ? true : false); }
@@ -4637,7 +4661,7 @@ class CStationType : public CDesignType
 		DWORD m_fNoBlacklist:1;							//	Does not blacklist player if attacked
 		DWORD m_fReverseArticle:1;						//	Use "a" instead of "an" and vice versa
 		DWORD m_fStatic:1;								//	Use CStatic instead of CStation
-		DWORD m_fBackground:1;							//	Background object
+		DWORD m_fOutOfPlane:1;							//	Background or foreground object
 		DWORD m_fNoFriendlyTarget:1;					//	Station cannot be hit by friends
 		DWORD m_fVirtual:1;								//	Virtual stations do not show up
 		DWORD m_fSpare:11;
@@ -4961,6 +4985,7 @@ class CSpaceEnvironmentType : public CDesignType
 		CObjectImageArray m_EdgeMask;
 		int m_iImageTileCount;			//	Tiles in m_Image
 		COLORREF m_rgbMapColor;			//	Color of tile on map
+		DWORD m_dwOpacity;				//	Opacity (0-255)
 
 		bool m_bLRSJammer;				//	If TRUE, LRS is disabled
 		bool m_bShieldJammer;			//	If TRUE, shields are disabled
@@ -5609,6 +5634,7 @@ class CExtension
 		inline DWORD GetRelease (void) const { return m_dwRelease; }
 		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
+		inline const CString &GetVersion (void) const { return m_sVersion; }
 		inline bool IsDebugOnly (void) const { return m_bDebugOnly; }
 		inline bool IsDisabled (void) const { return m_bDisabled; }
 		inline bool IsHidden (void) const { return m_bPrivate; }
@@ -5661,6 +5687,7 @@ class CExtension
 
 		CString m_sName;					//	Extension name
 		DWORD m_dwRelease;					//	Release number
+		CString m_sVersion;					//	User-visible version number
 		DWORD m_dwCoverUNID;				//	UNID of cover image
 		CDesignTable m_DesignTypes;			//	Design types defined by extension
 		CTopologyDescTable m_Topology;		//	Topology defined by extension 
@@ -5716,6 +5743,7 @@ class CExtensionCollection
 		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension::EFolderTypes iFolder, CExtension **retpExtension = NULL);
 		void FreeDeleted (void);
 		void InitEntityResolver (CExtension *pExtension, DWORD dwFlags, CEntityResolverList *retResolver);
+		bool IsRegisteredGame (CExtension *pAdventure, const TArray<CExtension *> &DesiredExtensions, DWORD dwFlags);
 		ALERROR Load (const CString &sFilespec, DWORD dwFlags, CString *retsError);
 		inline bool LoadedInDebugMode (void) { return m_bLoadedInDebugMode; }
 		ALERROR LoadNewExtension (const CString &sFilespec, const CIntegerIP &FileDigest, CString *retsError);

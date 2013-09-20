@@ -5,6 +5,8 @@
 #ifndef INCL_INTERNETS
 #define INCL_INTERNETS
 
+#include <winhttp.h>
+
 enum EInetsErrors
 	{
 	inetsOK =						0,	//	Success
@@ -108,11 +110,20 @@ class CHTTPClientSession
 		inline const CString &GetHost (void) { return m_sHost; }
 		inline DWORD GetTicksSinceLastActivity (void) { return (m_dwLastActivity == 0 ? 0xffffffff : (::GetTickCount() - m_dwLastActivity)); }
 		bool IsConnected (void);
+		bool IsInternetAvailable (void);
 		EInetsErrors Send (const CHTTPMessage &Request, CHTTPMessage *retResponse);
 		inline void SetStopEvent (HANDLE hEvent) { m_hStop = hEvent; }
 
 	private:
-		static bool IsResponseComplete (CMemoryWriteStream &Response);
+		enum EInternetStatuses
+			{
+			internetUnknown,
+			internetConnected,
+			internetDisconnected,
+			internetChecking,
+			};
+
+		bool CheckInternetAccess (void);
 		bool ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRead = NULL);
 		bool WaitForTransfer (OVERLAPPED &oOp, DWORD *retdwBytesTransfered = NULL);
 		bool WriteBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwWritten = NULL);
@@ -128,6 +139,7 @@ class CHTTPClientSession
 		HANDLE m_hStop;
 
 		EStatuses m_iStatus;
+		EInternetStatuses m_iInternetStatus;
 		DWORD m_dwLastActivity;			//	Tick on which we last used the connection
 	};
 
