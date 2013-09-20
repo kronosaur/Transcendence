@@ -43,7 +43,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itP1000HexphaseArmor;"
-			hitPoints=			"500"
+			hitPoints=			"1000"
 			repairRate=			"2"
 			shipRepairRate=		"3"
 			explosionType=		"&vtThermoExplosion3;"
@@ -79,6 +79,16 @@
 			</Table>
 		</Reinforcements>
 
+		<Satellites>
+			<Orbitals distance="8" angle="90">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="8" angle="270">
+				<Station type="&stNavBeacon;" imageVariant="1"/>
+			</Orbitals>
+		</Satellites>
+		
 		<Events>
 			<GetGlobalAchievements>
 				(block (theList status)
@@ -158,11 +168,6 @@
 
 					(setq marker (sysCreateMarker "Ares Fleet" pos &svAres;))
 					(objSetObjRefData gSource "BetaFleetMarker" marker)
-
-					; Set a default timer so that if the player never accepts the mission, the
-					; fleets still end up attacking
-
-					(sysAddObjTimerEvent 1600 gSource "OnTimerDefaultAttack")
 					)
 			</OnCreate>
 
@@ -639,7 +644,14 @@
 
 						<Actions>
 							<Action name="Continue" default="1" cancel="1" key="C">
-								<ShowPane pane="Default"/>
+								(block Nil
+									; Set a default timer so that if the player never accepts the mission, the
+									; fleets still end up attacking
+
+									(sysAddObjTimerEvent 1600 gSource "OnTimerDefaultAttack")
+									
+									(scrShowPane gScreen "Default")
+									)
 							</Action>
 						</Actions>
 					</CCMissionDeclined>

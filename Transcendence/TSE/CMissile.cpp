@@ -461,6 +461,14 @@ CString CMissile::DebugCrashInfo (void)
 		sResult.Append(strPatternSubst(CONSTLIT("m_pPainter: %x [invalid]\r\n"), (DWORD)m_pPainter));
 		}
 
+	//	Objects
+
+	if (m_pHit)
+		{
+		sResult.Append("m_pHit CSpaceObject\r\n");
+		ReportCrashObj(&sResult, m_pHit);
+		}
+
 	return sResult;
 	}
 

@@ -53,17 +53,20 @@ class CLoadExtensionTask : public IHITask
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
+			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadBegin"), NULL);
 			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), new CString(strPatternSubst(CONSTLIT("Loading %s..."), pathGetFilename(m_Status.sFilespec))));
 
 			ALERROR error = g_pUniverse->LoadNewExtension(m_Status.sFilespec, m_Status.FileDigest, retsResult);
 			if (error)
 				{
 				m_HI.HIPostCommand(CONSTLIT("serviceError"), new CString(*retsResult));
+				m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadEnd"), NULL);
 				return ERR_FAIL;
 				}
 
 			m_HI.HIPostCommand(CONSTLIT("serviceStatus"), NULL);
 			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoaded"), NULL);
+			m_HI.HIPostCommand(CONSTLIT("serviceExtensionLoadEnd"), NULL);
 			return NOERROR;
 			}
 

@@ -144,7 +144,7 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		CStationType *pType = Table[i];
 
 		pType->SetImageSelector(&Selectors[i]);
-		const CObjectImageArray &Image = pType->GetImage(Selectors[i], 0);
+		const CObjectImageArray &Image = pType->GetImage(Selectors[i], CCompositeImageModifiers());
 
 		CImageArranger::SCellDesc *pNewCell = Cells.Insert();
 		pNewCell->cxWidth = RectWidth(Image.GetImageRect());
@@ -176,7 +176,7 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 			{
 			if (!bTextBoxesOnly)
 				{
-				const CObjectImageArray &Image = pType->GetImage(Selectors[i], 0);
+				const CObjectImageArray &Image = pType->GetImage(Selectors[i], CCompositeImageModifiers());
 				Image.PaintImageUL(Output,
 						x,
 						y,

@@ -63,6 +63,7 @@
 			type=				""
 
 			attributes=			"capitalShip, corporate, kateMorgental, majorShip"
+			character=			"&unidKateMorgental;"
 			   
 			size=				"275"
 			mass=				"8000"
@@ -70,11 +71,10 @@
 			maneuver=			"12"
 			maxSpeed=			"20"
 			cargoSpace=			"1000"
-
 			cyberDefenseLevel=	"8"
 
-			explosionType=		"&vtThermoExplosion2;"
 			leavesWreck=		"100"
+			explosionType=		"&vtThermoExplosion2;"
 			>
 
 		<Names noArticle="true" personalName="true">Kate Morgental</Names>

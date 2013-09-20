@@ -30,6 +30,7 @@
 #define PROPERTY_MAX_HP							CONSTLIT("maxHP")
 #define PROPERTY_MAX_STRUCTURAL_HP				CONSTLIT("maxStructuralHP")
 #define PROPERTY_ORBIT							CONSTLIT("orbit")
+#define PROPERTY_PARALLAX						CONSTLIT("parallax")
 #define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
 #define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_STRUCTURAL_HP					CONSTLIT("structuralHP")
@@ -603,7 +604,11 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Background objects cannot be hit
 
-	if (pType->IsBackgroundObject() || pType->IsVirtual())
+	pStation->m_rParallaxDist = pType->GetParallaxDist();
+	if (pStation->m_rParallaxDist != 1.0)
+		pStation->SetOutOfPlaneObj(true);
+
+	if (pType->IsVirtual())
 		pStation->SetCannotBeHit();
 
 	//	Friendly fire?
@@ -661,9 +666,9 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Now that we have an image, set the bound
 
-	const CObjectImageArray &Image = pStation->GetImage(NULL, NULL);
+	const CObjectImageArray &Image = pStation->GetImage(false, NULL, NULL);
 	const RECT &rcImage = Image.GetImageRect();
-	pStation->SetBounds(rcImage);
+	pStation->SetBounds(rcImage, pStation->GetParallaxDist());
 
 	//	If we are a wreck, set the wreck parameters (mass, etc.)
 
@@ -757,7 +762,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	//	Add to system (note that we must add the station to the system
 	//	before creating any ships).
 
-	if (error = pStation->AddToSystem(pSystem))
+	if (error = pStation->AddToSystem(pSystem, true))
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Unable to add to system.");
@@ -851,7 +856,7 @@ ALERROR CStation::CreateMapImage (void)
 	//	Make sure we have an image
 
 	int iTick, iRotation;
-	const CObjectImageArray &Image = GetImage(&iTick, &iRotation);
+	const CObjectImageArray &Image = GetImage(false, &iTick, &iRotation);
 	if (Image.IsEmpty())
 		return NOERROR;
 
@@ -902,7 +907,7 @@ void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
 	//	Create fracture effect
 
 	int iTick, iVariant;
-	const CObjectImageArray &Image = GetImage(&iTick, &iVariant);
+	const CObjectImageArray &Image = GetImage(false, &iTick, &iVariant);
 
 	if (!Image.IsEmpty())
 		{
@@ -1055,6 +1060,11 @@ void CStation::FinishCreation (void)
 	//	Fire OnCreate
 
 	FireOnCreate();
+
+	//	Add the object to the universe. We wait until the end in case
+	//	OnCreate ends up setting the name (or something).
+
+	g_pUniverse->AddObject(this);
 	}
 
 void CStation::FriendlyFire (CSpaceObject *pAttacker)
@@ -1227,7 +1237,7 @@ DWORD CStation::GetDefaultEconomyUNID (void)
 	return DEFAULT_ECONOMY_UNID;
 	}
 
-const CObjectImageArray &CStation::GetImage (int *retiTick, int *retiRotation)
+const CObjectImageArray &CStation::GetImage (bool bFade, int *retiTick, int *retiRotation)
 
 //	GetImage
 //
@@ -1246,13 +1256,29 @@ const CObjectImageArray &CStation::GetImage (int *retiTick, int *retiRotation)
 
 	//	Modifiers (such as station damage)
 
-	DWORD dwModifiers = 0;
+	CCompositeImageModifiers Modifiers;
 	if (ShowWreckImage())
-		dwModifiers |= CCompositeImageDesc::modStationDamage;
+		Modifiers.SetStationDamage(true);
+
+#ifdef DISTANCE_FADE
+	if (bFade
+			&& IsOutOfPlaneObj()
+			&& GetParallaxDist() > 1.0)
+		{
+		DWORD dwOpacity = Min(255, (int)(25.5 * (GetParallaxDist() - 1.0)));
+		if (dwOpacity != 0)
+			Modifiers.SetFadeColor(GetSystem()->CalculateSpaceColor(this), dwOpacity);
+		}
+#elif defined(CONSTANT_FADE)
+	if (bFade
+			&& IsOutOfPlaneObj()
+			&& GetParallaxDist() > 1.0)
+		Modifiers.SetFadeColor(GetSystem()->CalculateSpaceColor(this), 128);
+#endif
 
 	//	Image
 
-	return m_pType->GetImage(m_ImageSelector, dwModifiers, retiRotation);
+	return m_pType->GetImage(m_ImageSelector, Modifiers, retiRotation);
 	}
 
 CString CStation::GetName (DWORD *retdwFlags)
@@ -1359,6 +1385,9 @@ ICCItem *CStation::GetProperty (const CString &sName)
 
 	else if (strEquals(sName, PROPERTY_ORBIT))
 		return (m_pMapOrbit ? CreateListFromOrbit(CC, *m_pMapOrbit) : CC.CreateNil());
+
+	else if (strEquals(sName, PROPERTY_PARALLAX))
+		return (m_rParallaxDist != 1.0 ? CC.CreateInteger((int)(m_rParallaxDist * 100.0)) : CC.CreateNil());
 
 	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
 		return CC.CreateBool(IsBlacklisted(NULL));
@@ -1586,7 +1615,7 @@ bool CStation::ImageInObject (const CVector &vObjPos, const CObjectImageArray &I
 
 	{
 	int iDestTick, iDestVariant;
-	const CObjectImageArray &DestImage = GetImage(&iDestTick, &iDestVariant);
+	const CObjectImageArray &DestImage = GetImage(false, &iDestTick, &iDestVariant);
 
 	return ImagesIntersect(Image, iTick, iRotation, vImagePos,
 			DestImage, iDestTick, iDestVariant, vObjPos);
@@ -2102,7 +2131,7 @@ bool CStation::ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, con
 
 	{
 	int iTick, iVariant;
-	const CObjectImageArray &Image = GetImage(&iTick, &iVariant);
+	const CObjectImageArray &Image = GetImage(false, &iTick, &iVariant);
 
 	return pObj2->ImageInObject(vObj2Pos, Image, iTick, iVariant, vObj1Pos);
 	}
@@ -2244,7 +2273,7 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	//	Paint
 
 	int iTick, iVariant;
-	const CObjectImageArray &Image = GetImage(&iTick, &iVariant);
+	const CObjectImageArray &Image = GetImage(true, &iTick, &iVariant);
 	if (m_fRadioactive)
 		Image.PaintImageWithGlow(Dest, x, y, iTick, iVariant, RGB(0, 255, 0));
 	else
@@ -2405,6 +2434,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 //	Orbit		System orbit
 //	DWORD		m_xMapLabel
 //	DWORD		m_yMapLabel
+//	Metric		m_rParallaxDist
 //	CString		m_sStargateDestNode
 //	CString		m_sStargateDestEntryPoint
 //	DWORD		armor class UNID, 0xffffffff if no armor
@@ -2501,6 +2531,21 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 
 	Ctx.pStream->Read((char *)&m_xMapLabel, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_yMapLabel, sizeof(DWORD));
+
+	//	Parallax
+
+	if (Ctx.dwVersion >= 94)
+		Ctx.pStream->Read((char *)&m_rParallaxDist, sizeof(Metric));
+	else
+		{
+		m_rParallaxDist = m_pType->GetParallaxDist();
+
+		//	For previous versions, we have to set the OutOfPlaneObj cached bit
+		//	manually.
+
+		if (m_rParallaxDist != 1.0)
+			SetOutOfPlaneObj(true);
+		}
 
 	//	Load the stargate info
 
@@ -2713,11 +2758,6 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	//	If this is a world or a star, create a small image
 
 	CreateMapImage();
-
-	//	For previous version, we have to set CannotBeHit manually
-
-	if (m_pType->IsBackgroundObject())
-		SetCannotBeHit();
 	}
 
 void CStation::OnSetEventFlags (void)
@@ -2816,7 +2856,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	if (m_iDestroyedAnimation)
 		{
 		int iTick, iRotation;
-		const CObjectImageArray &Image = GetImage(&iTick, &iRotation);
+		const CObjectImageArray &Image = GetImage(false, &iTick, &iRotation);
 		int cxWidth = RectWidth(Image.GetImageRect());
 
 		CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_StationDestroyedUNID);
@@ -2918,6 +2958,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 //	Orbit		System orbit
 //	DWORD		m_xMapLabel
 //	DWORD		m_yMapLabel
+//	Metric		m_rParallaxDist
 //	CString		m_sStargateDestNode
 //	CString		m_sStargateDestEntryPoint
 //	DWORD		armor class UNID, 0xffffffff if no armor
@@ -2989,6 +3030,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 
 	pStream->Write((char *)&m_xMapLabel, sizeof(DWORD));
 	pStream->Write((char *)&m_yMapLabel, sizeof(DWORD));
+	pStream->Write((char *)&m_rParallaxDist, sizeof(Metric));
 	m_sStargateDestNode.WriteToStream(pStream);
 	m_sStargateDestEntryPoint.WriteToStream(pStream);
 
@@ -3235,7 +3277,7 @@ bool CStation::PointInObject (const CVector &vObjPos, const CVector &vPointPos)
 	//	Ask the image if the point is inside or not
 
 	int iTick, iVariant;
-	const CObjectImageArray &Image = GetImage(&iTick, &iVariant);
+	const CObjectImageArray &Image = GetImage(false, &iTick, &iVariant);
 
 	return Image.PointInImage(x, y, iTick, iVariant);
 	}
@@ -3265,7 +3307,7 @@ void CStation::PointInObjectInit (SPointInObjectCtx &Ctx)
 
 	{
 	int iTick, iVariant;
-	Ctx.pObjImage = &GetImage(&iTick, &iVariant);
+	Ctx.pObjImage = &GetImage(false, &iTick, &iVariant);
 
 	Ctx.pObjImage->PointInImageInit(Ctx, iTick, iVariant);
 	}
@@ -3418,10 +3460,10 @@ void CStation::SetFlotsamImage (CItemType *pItemType)
 
 	//	We don't care about iTick or iRotation because 
 	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(NULL, NULL);
+	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
 
 	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage);
+	SetBounds(rcImage, GetParallaxDist());
 	}
 
 int CStation::GetImageVariant (void)
@@ -3453,10 +3495,10 @@ void CStation::SetImageVariant (int iVariant)
 
 	//	We don't care about iTick or iRotation because 
 	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(NULL, NULL);
+	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
 
 	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage);
+	SetBounds(rcImage, GetParallaxDist());
 	}
 
 void CStation::SetMapOrbit (const COrbit &oOrbit)
@@ -3525,10 +3567,10 @@ void CStation::SetWreckImage (CShipClass *pWreckClass)
 
 	//	We don't care about iTick or iRotation because 
 	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(NULL, NULL);
+	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
 
 	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage);
+	SetBounds(rcImage, GetParallaxDist());
 	}
 
 void CStation::SetWreckParams (CShipClass *pWreckClass, CShip *pShip)
@@ -3611,6 +3653,32 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 	else if (strEquals(sName, PROPERTY_IMMUTABLE))
 		{
 		m_fImmutable = !pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_PARALLAX))
+		{
+		if (pValue->IsNil())
+			{
+			m_rParallaxDist = 1.0;
+			SetOutOfPlaneObj(false);
+			}
+		else
+			{
+			Metric rParallaxDist = pValue->GetIntegerValue() / 100.0;
+			if (rParallaxDist <= 0.0)
+				{
+				*retsError = strPatternSubst(CONSTLIT("Parallax must be >= 1."));
+				return false;
+				}
+
+			const CObjectImageArray &Image = GetImage(false, NULL, NULL);
+			const RECT &rcImage = Image.GetImageRect();
+			SetBounds(rcImage, rParallaxDist);
+
+			m_rParallaxDist = rParallaxDist;
+			SetOutOfPlaneObj(m_rParallaxDist != 1.0);
+			}
+
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_MAX_HP))

@@ -918,48 +918,7 @@ bool CItem::HasSpecialAttribute (const CString &sAttrib) const
 //	Returns TRUE if we have the given special attribute
 
 	{
-	if (strStartsWith(sAttrib, SPECIAL_DAMAGE_TYPE))
-		{
-		//	Get the device
-
-		CDeviceClass *pDevice;
-		int iVariant;
-		if (m_pItemType->IsMissile())
-			pDevice = m_pItemType->GetAmmoLauncher(&iVariant);
-		else
-			{
-			pDevice = m_pItemType->GetDeviceClass();
-			iVariant = 0;
-			}
-
-		if (pDevice == NULL)
-			return false;
-
-		DamageTypes iType = LoadDamageTypeFromXML(strSubString(sAttrib, SPECIAL_DAMAGE_TYPE.GetLength(), -1));
-		if (iType == damageError)
-			return false;
-
-		return (iType == pDevice->GetDamageType(NULL, iVariant));
-		}
-	else if (strStartsWith(sAttrib, SPECIAL_CAN_BE_DAMAGED))
-		{
-		bool bValue = strEquals(strSubString(sAttrib, SPECIAL_CAN_BE_DAMAGED.GetLength(), -1), SPECIAL_TRUE);
-
-		CDeviceClass *pDevice;
-		if (pDevice = m_pItemType->GetDeviceClass())
-			return (pDevice->CanBeDamaged() == bValue);
-		else if (m_pItemType->IsArmor())
-			return (true == bValue);
-		else
-			return (false == bValue);
-		}
-	else if (strStartsWith(sAttrib, SPECIAL_UNID))
-		{
-		DWORD dwUNID = strToInt(strSubString(sAttrib, SPECIAL_UNID.GetLength(), -1), 0);
-		return (m_pItemType->GetUNID() == dwUNID);
-		}
-
-	return false;
+	return m_pItemType->HasSpecialAttribute(sAttrib);
 	}
 
 bool CItem::IsEqual (const CItem &Item) const

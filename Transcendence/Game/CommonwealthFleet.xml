@@ -4115,11 +4115,11 @@
 			</CSCData>
 		</StaticData>
 
-		<InitialData>
+		<GlobalData>
 			<shipsLeft>
 				("america" "atlantica" "asia" "india" "pacifica")
 			</shipsLeft>
-		</InitialData>
+		</GlobalData>
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCTaskForce;" orders="hold">

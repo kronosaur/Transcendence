@@ -342,6 +342,7 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_SYS_CREATE_ENCOUNTER			3
 #define FN_SYS_PLAY_SOUND				4
 #define FN_SYS_CREATE_FLOTSAM			5
+#define FN_SYS_CREATE_ENVIRONMENT		6
 
 ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 
@@ -496,7 +497,17 @@ ICCItem *fnSovereignSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FIELD_ANGLE_OFFSET				CONSTLIT("angleOffset")
 #define FIELD_ARC_OFFSET				CONSTLIT("arcOffset")
+#define FIELD_CENTER					CONSTLIT("center")
+#define FIELD_HEIGHT					CONSTLIT("height")
+#define FIELD_LENGTH					CONSTLIT("length")
+#define FIELD_ORBIT						CONSTLIT("orbit")
 #define FIELD_RADIUS_OFFSET				CONSTLIT("radiusOffset")
+#define FIELD_ROTATION					CONSTLIT("rotation")
+#define FIELD_WIDTH						CONSTLIT("width")
+
+#define SHAPE_ARC						CONSTLIT("arc")
+#define SHAPE_ORBITAL					CONSTLIT("orbital")
+#define SHAPE_SQUARE					CONSTLIT("square")
 
 #define UNID_TYPE_ITEM_TYPE				CONSTLIT("itemtype")
 #define UNID_TYPE_SHIP_CLASS			CONSTLIT("shipclass")
@@ -1337,6 +1348,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'EMPImmune\n"
 			"   'playerWingman\n"
 			"   'radiationImmune\n"
+			"   'rotation\n"
 			"   'selectedLauncher\n"
 			"   'selectedMissile\n"
 			"   'selectedWeapon\n"
@@ -1351,9 +1363,12 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'maxHP\n"
 			"   'maxStructuralHP\n"
 			"   'orbit\n"
+			"   'parallax\n"
 			"   'playerBlacklisted\n"
 			"   'repairArmorMaxLevel\n"
-			"   'structuralHP\n",
+			"   'structuralHP\n"
+			"\n"
+			"NOTE: All data fields (accessed via objGetDataField) are also valid properties.\n",
 
 			"is",	0,	},
 
@@ -1565,8 +1580,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iii",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetPos",					fnObjSet,		FN_OBJ_POSITION,
-			"(objSetPos obj vector)",
-			"iv",	PPFLAG_SIDEEFFECTS,	},
+			"(objSetPos obj vector [rotation])",
+			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetProperty",				fnObjSet,		FN_OBJ_SET_PROPERTY,
 			"(objSetProperty obj property value) -> True/Nil\n\n"
@@ -1576,6 +1591,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'dockingEnabled True|Nil\n"
 			"   'known True|Nil\n"
 			"   'playerWingman True|Nil\n"
+			"   'rotation angle\n"
 			"   'selectedMissile type|item\n"
 			"   'selectedWeapon type|item\n"
 			"\n"
@@ -1586,6 +1602,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'known True|Nil\n"
 			"   'maxHP hitPoints\n"
 			"   'maxStructuralHP hitPoints\n"
+			"   'parallax factor\n"
 			"   'playerBlacklisted True|Nil\n"
 			"   'structuralHP hitPoints\n",
 
@@ -2051,7 +2068,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"sysOrbitPos",					fnSystemOrbit,	FN_SYS_ORBIT_POS,
 			"(sysOrbitPos orbit [options]) -> vector\n\n"
 			
-			"options:\n\n"
+			"Options parameter is a struct with the following fields:\n\n"
 			
 			"   'angleOffset:n              +/- n degrees along orbit arc\n"
 			"   'arcOffset:n                +/- n light-seconds along orbit arc\n"
@@ -2071,6 +2088,40 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"sysSetData",					fnSystemGet,	FN_SYS_SET_DATA,
 			"(sysSetData [nodeID] attrib data) -> data",
 			"sv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"sysSetEnvironment",			fnSystemCreate,		FN_SYS_CREATE_ENVIRONMENT,
+			"(sysSetEnvironment unid shape options) -> True/Nil\n\n"
+
+			"shape\n\n"
+
+			"   'arc\n"
+			"      Creates an arc along an orbit. Options must include the\n"
+			"      following fields:\n\n"
+
+			"         'orbit: This is the orbit to use. The arc will be\n"
+			"            centered on the current orbit position (e.g., the\n"
+			"            planet location).\n"
+			"         'length: The length of the arc (in degrees).\n"
+			"         'width: The width at the center of the arc (in light-\n"
+			"            seconds).\n"
+			"\n"
+			"   'orbital\n"
+			"      Creates a random environment along the orbit. Options\n"
+			"      must include the following fields:\n\n"
+
+			"         'orbit: This is the orbit to use.\n"
+			"         'width: The average width of the ring, in light-\n"
+			"            seconds.\n"
+			"\n"
+			"   'square\n"
+			"      Creates a square patch. Options must include the\n"
+			"         following fields:\n\n"
+
+			"         'center: The center position of the patch.\n"
+			"         'height: The height of the patch (in light-seconds).\n"
+			"         'width: The width of the patch (in light-seconds).\n",
+
+			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysSetKnown",					fnSystemGet,	FN_SYS_SET_KNOWN,
 			"(sysSetKNown [nodeID] [True/Nil]) -> True/Nil",
@@ -5872,6 +5923,15 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			GetPosOrObject(pEvalCtx, pArgs->GetElement(1), &vPos);
 			pObj->Place(vPos, pObj->GetVel());
 
+			//	Set rotation
+
+			if (pArgs->GetCount() >= 3)
+				{
+				CString sError;
+				if (!pObj->SetProperty(FIELD_ROTATION, pArgs->GetElement(2), &sError))
+					return pCC->CreateError(sError);
+				}
+
 			//	Return the resulting position
 
 			return pArgs->GetElement(1)->Reference();
@@ -8613,7 +8673,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			CStationType *pEncounter = g_pUniverse->FindStationType(pArgs->GetElement(0)->GetIntegerValue());
 			if (pEncounter == NULL)
-				return pCC->CreateError(CONSTLIT("unknown station type ID"), pArgs->GetElement(0));
+				return pCC->CreateError(CONSTLIT("Unknown station type ID"), pArgs->GetElement(0));
 
 			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
 			if (pSystem == NULL)
@@ -8624,6 +8684,79 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			pSystem->CreateRandomEncounter(pTable, NULL, pEncounter->GetSovereign(), pSystem->GetPlayer());
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_SYS_CREATE_ENVIRONMENT:
+			{
+			//	Get basic parameters
+
+			CSpaceEnvironmentType *pEnvType = g_pUniverse->FindSpaceEnvironment(pArgs->GetElement(0)->GetIntegerValue());
+			if (pEnvType == NULL)
+				return pCC->CreateError(CONSTLIT("Unknown environment type"), pArgs->GetElement(0));
+
+			CString sShape = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pOptions = pArgs->GetElement(2);
+
+			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+			if (pSystem == NULL)
+				return StdErrorNoSystem(*pCC);
+
+			CEnvironmentGrid *pEnvironment = pSystem->GetEnvironmentGrid();
+
+			//	Make sure we mark the environment so that it properly loads its tileset
+
+			pEnvType->MarkImages();
+
+			//	Compose create context
+
+			CEnvironmentGrid::SCreateCtx CreateCtx;
+			CreateCtx.pSystem = pSystem;
+			CreateCtx.pEnv = pEnvType;
+
+			//	Processing depends on shape
+
+			if (strEquals(sShape, SHAPE_ARC))
+				{
+				COrbit OrbitDesc;
+				if (!CreateOrbitFromList(*pCC, pOptions->GetElement(FIELD_ORBIT), &OrbitDesc))
+					return pCC->CreateError(CONSTLIT("Invalid orbit object"), pOptions->GetElement(FIELD_ORBIT));
+
+				CreateCtx.pOrbitDesc = &OrbitDesc;
+				CreateCtx.rWidth = pOptions->GetElement(FIELD_WIDTH)->GetIntegerValue() * LIGHT_SECOND;
+				CreateCtx.iWidthVariation = 100;
+
+				pEnvironment->CreateCircularNebula(CreateCtx, NULL);
+				}
+			else if (strEquals(sShape, SHAPE_ORBITAL))
+				{
+				COrbit OrbitDesc;
+				if (!CreateOrbitFromList(*pCC, pOptions->GetElement(FIELD_ORBIT), &OrbitDesc))
+					return pCC->CreateError(CONSTLIT("Invalid orbit object"), pOptions->GetElement(FIELD_ORBIT));
+
+				CreateCtx.pOrbitDesc = &OrbitDesc;
+				CreateCtx.rWidth = pOptions->GetElement(FIELD_WIDTH)->GetIntegerValue() * LIGHT_SECOND;
+				CreateCtx.iWidthVariation = 100;
+				CreateCtx.iSpan = pOptions->GetElement(FIELD_LENGTH)->GetIntegerValue();
+
+				pEnvironment->CreateArcNebula(CreateCtx, NULL);
+				}
+			else if (strEquals(sShape, SHAPE_SQUARE))
+				{
+				CVector vPos;
+				GetPosOrObject(pEvalCtx, pOptions->GetElement(FIELD_CENTER), &vPos);
+
+				COrbit OrbitDesc(vPos, 0.0);
+
+				CreateCtx.pOrbitDesc = &OrbitDesc;
+				CreateCtx.rWidth = pOptions->GetElement(FIELD_WIDTH)->GetIntegerValue() * LIGHT_SECOND;
+				CreateCtx.rHeight = pOptions->GetElement(FIELD_HEIGHT)->GetIntegerValue() * LIGHT_SECOND;
+
+				pEnvironment->CreateSquareNebula(CreateCtx, NULL);
+				}
+			else
+				return pCC->CreateError(CONSTLIT("Unknown shape"), pArgs->GetElement(2));
 
 			return pCC->CreateTrue();
 			}
@@ -9311,9 +9444,8 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			GetPosOrObject(pEvalCtx, pArgs->GetElement(1), &vPos);
 
 			CSpaceObject *pObj;
-			CString sError;
-			if (!pSystem->DescendObject(dwObjID, vPos, &pObj, &sError))
-				return pCC->CreateError(sError);
+			if (!pSystem->DescendObject(dwObjID, vPos, &pObj))
+				return pCC->CreateNil();
 
 			return pCC->CreateInteger((int)pObj);
 			}

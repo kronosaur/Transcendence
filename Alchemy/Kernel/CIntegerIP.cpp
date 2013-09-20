@@ -60,14 +60,40 @@ bool CIntegerIP::operator== (const CIntegerIP &Src) const
 //	CIntegerIP operator ==
 
 	{
-	if (m_iCount != Src.m_iCount)
-		return false;
+	//	We want to compare even if one or both have leading zeros
+
+	BYTE *pDst;
+	BYTE *pDstEnd;
+	BYTE *pSrc;
+	int iExtra;
+	if (m_iCount >= Src.m_iCount)
+		{
+		pDst = m_pNumber;
+		pDstEnd = pDst + m_iCount;
+		pSrc = Src.m_pNumber;
+		iExtra = m_iCount - Src.m_iCount;
+		}
+	else
+		{
+		pDst = Src.m_pNumber;
+		pDstEnd = pDst + Src.m_iCount;
+		pSrc = m_pNumber;
+		iExtra = Src.m_iCount - m_iCount;
+		}
+
+	//	If we have any extra, make sure they are all 0
+
+	while (iExtra > 0)
+		{
+		if (*pDst != 0)
+			return false;
+
+		pDst++;
+		iExtra--;
+		}
 
 	//	LATER: Optimize for DWORD compares
 
-	BYTE *pDst = m_pNumber;
-	BYTE *pDstEnd = pDst + m_iCount;
-	BYTE *pSrc = Src.m_pNumber;
 	while (pDst < pDstEnd)
 		if (*pDst++ != *pSrc++)
 			return false;

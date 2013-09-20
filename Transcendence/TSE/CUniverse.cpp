@@ -2001,7 +2001,7 @@ ALERROR CUniverse::Reinit (void)
 
 	//	Reinitialize some global classes
 
-	CCompositeImageDesc::Reinit();
+	CCompositeImageModifiers::Reinit();
 
 	//	Clean up global missions
 

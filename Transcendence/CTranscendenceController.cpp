@@ -84,6 +84,8 @@
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
 #define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
+#define CMD_SERVICE_EXTENSION_LOAD_BEGIN		CONSTLIT("serviceExtensionLoadBegin")
+#define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
@@ -1020,6 +1022,18 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
 		//	message.
+		}
+
+	//	Starting to load extension. We need to temporarily free the
+	//	intro pane because we don't want two threads to access CC simultaneously.
+
+	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOAD_BEGIN))
+		{
+		g_pTrans->m_bPaused = true;
+		}
+	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOAD_END))
+		{
+		g_pTrans->m_bPaused = false;
 		}
 
 	//	Extension finished loaded
