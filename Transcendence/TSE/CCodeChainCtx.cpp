@@ -8,6 +8,8 @@
 #define STR_G_ITEM								CONSTLIT("gItem")
 #define STR_G_SOURCE							CONSTLIT("gSource")
 
+TArray<CCodeChainCtx::SInvokeFrame> CCodeChainCtx::g_Invocations;
+
 CCodeChainCtx::CCodeChainCtx (void) :
 		m_CC(g_pUniverse->GetCC()),
 		m_iEvent(eventNone),
@@ -17,6 +19,7 @@ CCodeChainCtx::CCodeChainCtx (void) :
 		m_pScreensRoot(NULL),
 		m_pSysCreateCtx(NULL),
 		m_pExtension(NULL),
+		m_pListData(NULL),
 		m_pOldData(NULL),
 		m_pOldSource(NULL),
 		m_pOldItem (NULL),
@@ -41,6 +44,18 @@ CCodeChainCtx::~CCodeChainCtx (void)
 		m_CC.SetGlobalDefineHook(m_pOldGlobalDefineHook);
 		delete pHook;
 		}
+	}
+
+void CCodeChainCtx::AddFrame (void)
+
+//	AddFrame
+//
+//	Adds an invocation frame
+
+	{
+	SInvokeFrame *pFrame = g_Invocations.Insert();
+	pFrame->iEvent = m_iEvent;
+	pFrame->pListData = m_pListData;
 	}
 
 CSpaceObject *CCodeChainCtx::AsSpaceObject (ICCItem *pItem)
@@ -187,6 +202,34 @@ void CCodeChainCtx::DefineVector (const CString &sVar, const CVector &vVector)
 	pValue->Discard(&m_CC);
 	}
 
+bool CCodeChainCtx::InEvent (ECodeChainEvents iEvent) const
+
+//	InEvent
+//
+//	Returns TRUE if we are inside this event (by looking at the invocation 
+//	stack).
+
+	{
+	int i;
+
+	for (i = 0; i < g_Invocations.GetCount(); i++)
+		if (g_Invocations[i].iEvent == iEvent)
+			return true;
+
+	return false;
+	}
+
+void CCodeChainCtx::RemoveFrame (void)
+
+//	RemoveFrame
+//
+//	Removes a frame
+
+	{
+	ASSERT(g_Invocations.GetCount() > 0);
+	g_Invocations.Delete(g_Invocations.GetCount() - 1);
+	}
+
 void CCodeChainCtx::RestoreVars (void)
 
 //	RestoreVars
@@ -224,7 +267,15 @@ ICCItem *CCodeChainCtx::Run (ICCItem *pCode)
 //	(which must be discarded by the caller)
 
 	{
-	return m_CC.TopLevel(pCode, this);
+	DEBUG_TRY
+
+	AddFrame();
+	ICCItem *pResult = m_CC.TopLevel(pCode, this);
+	RemoveFrame();
+
+	return pResult;
+
+	DEBUG_CATCH
 	}
 
 ICCItem *CCodeChainCtx::Run (const SEventHandlerDesc &Event)
@@ -235,6 +286,8 @@ ICCItem *CCodeChainCtx::Run (const SEventHandlerDesc &Event)
 //	caller).
 
 	{
+	DEBUG_TRY
+
 	CExtension *pOldExtension = m_pExtension;
 	m_pExtension = Event.pExtension;
 
@@ -242,6 +295,8 @@ ICCItem *CCodeChainCtx::Run (const SEventHandlerDesc &Event)
 
 	m_pExtension = pOldExtension;
 	return pResult;
+
+	DEBUG_CATCH
 	}
 
 ICCItem *CCodeChainCtx::RunLambda (ICCItem *pCode)
@@ -252,13 +307,26 @@ ICCItem *CCodeChainCtx::RunLambda (ICCItem *pCode)
 //	and returns a result (which must be discarded by the caller)
 
 	{
+	DEBUG_TRY
+
+	AddFrame();
+
 	//	If this is a lambda expression, then eval as if
 	//	it were an expression with no arguments
 
+	ICCItem *pResult;
 	if (pCode->IsFunction())
-		return m_CC.Apply(pCode, m_CC.CreateNil(), this);
+		pResult = m_CC.Apply(pCode, m_CC.CreateNil(), this);
 	else
-		return m_CC.TopLevel(pCode, this);
+		pResult = m_CC.TopLevel(pCode, this);
+
+	//	Done
+
+	RemoveFrame();
+
+	return pResult;
+
+	DEBUG_CATCH
 	}
 
 void CCodeChainCtx::SaveAndDefineDataVar (ICCItem *pData)

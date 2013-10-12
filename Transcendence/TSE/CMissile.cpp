@@ -235,6 +235,7 @@ ALERROR CMissile::Create (CSystem *pSystem,
 	//	otherwise we will crash when a beam hits us. This is because
 	//	m_pHit is setup in Move and the object can go away between then
 	//	and our Update event.)
+
 	if (pDesc->GetInteraction() == 0)
 		{
 		pMissile->DisableObjectDestructionNotify();
@@ -480,6 +481,18 @@ void CMissile::DetonateNow (CSpaceObject *pHit)
 
 	{
 	m_fDetonate = true;
+	}
+
+CSpaceObject::Categories CMissile::GetCategory (void) const
+
+//	GetCategory
+//
+//	Returns the category of the object.
+
+	{
+	//	We count as a beam if we're type="beam"
+
+	return (m_pDesc->GetFireType() == ftBeam ? catBeam : catMissile);
 	}
 
 CString CMissile::GetName (DWORD *retdwFlags)

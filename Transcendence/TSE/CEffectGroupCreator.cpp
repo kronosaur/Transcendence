@@ -38,7 +38,7 @@ class CEffectGroupPainter : public IEffectPainter
 		SViewportPaintCtx *AdjustCtx (SViewportPaintCtx &Ctx, SViewportPaintCtx &NewCtx, int *retx, int *rety);
 
 		CEffectGroupCreator *m_pCreator;
-		TArray<IEffectPainter *> m_Painters;
+		TArray<CEffectPainterRef> m_Painters;
 	};
 
 CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreatePainterCtx &Ctx) : m_pCreator(pCreator)
@@ -49,7 +49,7 @@ CEffectGroupPainter::CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreate
 	m_Painters.InsertEmpty(m_pCreator->GetCount());
 
 	for (int i = 0; i < m_Painters.GetCount(); i++)
-		m_Painters[i] = m_pCreator->CreateSubPainter(Ctx, i);
+		m_Painters[i].Set(m_pCreator->CreateSubPainter(Ctx, i));
 	}
 
 CEffectGroupPainter::~CEffectGroupPainter (void)
@@ -58,8 +58,7 @@ CEffectGroupPainter::~CEffectGroupPainter (void)
 
 	{
 	for (int i = 0; i < m_Painters.GetCount(); i++)
-		if (m_Painters[i])
-			m_Painters[i]->Delete();
+		m_Painters[i].Delete();
 	}
 
 SViewportPaintCtx *CEffectGroupPainter::AdjustCtx (SViewportPaintCtx &Ctx, SViewportPaintCtx &NewCtx, int *retx, int *rety)
@@ -187,10 +186,7 @@ void CEffectGroupPainter::OnReadFromStream (SLoadCtx &Ctx)
 		if (IEffectPainter::ValidateClass(Ctx, sExpected) != NOERROR)
 			{
 			if (i < m_Painters.GetCount())
-				{
-				m_Painters[i]->Delete();
-				m_Painters[i] = NULL;
-				}
+				m_Painters[i].Delete();
 
 			continue;
 			}
@@ -203,10 +199,7 @@ void CEffectGroupPainter::OnReadFromStream (SLoadCtx &Ctx)
 	//	If we have extra painters, then delete them
 
 	for (i = iCount; i < m_Painters.GetCount(); i++)
-		{
-		m_Painters[i]->Delete();
-		m_Painters[i] = NULL;
-		}
+		m_Painters[i].Delete();
 	}
 
 void CEffectGroupPainter::OnUpdate (SEffectUpdateCtx &Ctx)

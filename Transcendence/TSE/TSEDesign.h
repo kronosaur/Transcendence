@@ -1437,7 +1437,7 @@ class CItemEnhancement
 		CItemEnhancement (DWORD dwMods) : m_dwID(OBJID_NULL), m_dwMods(dwMods), m_pEnhancer(NULL), m_iExpireTime(-1) { }
 
 		inline DWORD AsDWORD (void) const { return m_dwMods; }
-		EnhanceItemStatus Combine (CItemEnhancement Enhancement);
+		EnhanceItemStatus Combine (const CItem &Item, CItemEnhancement Enhancement);
 		int GetAbsorbAdj (const DamageDesc &Damage) const;
 		int GetActivateRateAdj (int *retiMinDelay = NULL, int *retiMaxDelay = NULL) const;
 		int GetDamageAdj (const DamageDesc &Damage) const;
@@ -1460,6 +1460,8 @@ class CItemEnhancement
 		SpecialDamageTypes GetSpecialDamage (int *retiLevel = NULL) const;
 		inline ItemEnhancementTypes GetType (void) const { return (ItemEnhancementTypes)(m_dwMods & etTypeMask); }
 		int GetValueAdj (const CItem &Item) const;
+		ALERROR InitFromDesc (ICCItem *pItem, CString *retsError);
+		ALERROR InitFromDesc (const CString &sDesc, CString *retsError);
 		ALERROR InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDesc);
 		inline bool IsBlindingImmune (void) const { return IsIonEffectImmune() || ((GetType() == etSpecialDamage) && GetLevel2() == specialBlinding && !IsDisadvantage()); }
 		inline bool IsDecaying (void) const { return ((GetType() == etRegenerate) && IsDisadvantage()); }
@@ -1486,16 +1488,24 @@ class CItemEnhancement
 		inline void SetID (DWORD dwID) { m_dwID = dwID; }
 		void SetModBonus (int iBonus);
 		inline void SetModCode (DWORD dwMods) { m_dwMods = dwMods; }
+		inline void SetModImmunity (SpecialDamageTypes iSpecial) { m_dwMods = Encode12(etSpecialDamage, 0, (int)iSpecial); }
+		inline void SetModReflect (DamageTypes iDamageType) { m_dwMods = Encode12(etReflect, 0, (int)iDamageType); }
+		inline void SetModResistDamage (DamageTypes iDamageType, int iAdj) { m_dwMods = Encode12(etResistByDamage | (iAdj > 100 ? etDisadvantage : 0), DamageAdj2Level(iAdj), (int)iDamageType); }
+		inline void SetModResistDamageClass (DamageTypes iDamageType, int iAdj) { m_dwMods = Encode12(etResistByDamage2 | (iAdj > 100 ? etDisadvantage : 0), DamageAdj2Level(iAdj), (int)iDamageType); }
+		inline void SetModResistDamageTier (DamageTypes iDamageType, int iAdj) { m_dwMods = Encode12(etResistByLevel | (iAdj > 100 ? etDisadvantage : 0), DamageAdj2Level(iAdj), (int)iDamageType); }
+		inline void SetModResistEnergy (int iAdj) { m_dwMods = Encode12(etResistEnergy | (iAdj > 100 ? etDisadvantage : 0), DamageAdj2Level(iAdj)); }
+		inline void SetModResistMatter (int iAdj) { m_dwMods = Encode12(etResistMatter | (iAdj > 100 ? etDisadvantage : 0), DamageAdj2Level(iAdj)); }
 		void SetModSpecialDamage (SpecialDamageTypes iSpecial, int iLevel = 0);
 		void SetModSpeed (int iAdj, int iMinDelay = 0, int iMaxDelay = 0);
 		void WriteToStream (IWriteStream *pStream) const;
 
 	private:
+		inline bool IsIonEffectImmune (void) const { return ((GetType() == etImmunityIonEffects) && !IsDisadvantage()); }
+
+		static int DamageAdj2Level (int iDamageAdj);
 		static DWORD EncodeABC (DWORD dwTypeCode, int A = 0, int B = 0, int C = 0);
 		static DWORD EncodeAX (DWORD dwTypeCode, int A = 0, int X = 0);
 		static DWORD Encode12 (DWORD dwTypeCode, int Data1 = 0, int Data2 = 0);
-
-		inline bool IsIonEffectImmune (void) const { return ((GetType() == etImmunityIonEffects) && !IsDisadvantage()); }
 		static int Level2Bonus (int iLevel, bool bDisadvantage = false);
 		static int Level2DamageAdj (int iLevel, bool bDisadvantage = false);
 
@@ -1849,11 +1859,12 @@ class CArmorClass : public CObject
 		int GetDamageAdjForWeaponLevel (int iLevel);
 		inline int GetDeviceDamageAdj (void) { return m_iDeviceDamageAdj; }
 		inline int GetEMPDamageAdj (void) { return m_iEMPDamageAdj; }
-		inline CItemType *GetItemType (void) { return m_pItemType; }
-		inline CString GetName (void);
 		inline int GetInstallCost (void) { return m_iInstallCost; }
 		ICCItem *GetItemProperty (CItemCtx &Ctx, const CString &sName);
+		inline CItemType *GetItemType (void) { return m_pItemType; }
 		int GetMaxHP (CItemCtx &ItemCtx);
+		inline int GetMaxHPBonus (void) const { return m_iMaxHPBonus; }
+		inline CString GetName (void);
 		CString GetReference (CItemCtx &Ctx, int iVariant = -1);
 		bool GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pInstalled, int *retiHP, int *retArray);
 		inline int GetRepairCost (void) { return m_iRepairCost; }
@@ -1892,6 +1903,7 @@ class CArmorClass : public CObject
 		int m_iArmorCompleteBonus;				//	Extra HP if armor is complete
 		int m_iStealth;							//	Stealth level
 		int m_iPowerUse;						//	Power consumed (1/10 MWs)
+		int m_iMaxHPBonus;						//	Max HP bonus allowed for this armor
 		CRegenDesc m_Regen;						//	Regeneration desc
 		CRegenDesc m_Decay;						//	Decay desc
 		
@@ -1977,6 +1989,7 @@ class CDeviceClass : public CObject
 		inline int GetDataFieldInteger (const CString &sField) { CString sValue; if (FindDataField(sField, &sValue)) return strToInt(sValue, 0, NULL); else return 0; }
 		inline CItemType *GetItemType (void) { return m_pItemType; }
 		inline int GetLevel (void) const;
+		inline int GetMaxHPBonus (void) const { return m_iMaxHPBonus; }
 		inline CString GetName (void);
 		inline CEnergyFieldType *GetOverlayType (void) const { return m_pOverlayType; }
 		CString GetReferencePower (CItemCtx &Ctx);
@@ -2028,6 +2041,7 @@ class CDeviceClass : public CObject
 		virtual void GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus) { *retiStatus = 0; *retiMaxStatus = 0; }
 		virtual int GetValidVariantCount (CSpaceObject *pSource, CInstalledDevice *pDevice) { return 0; }
 		virtual int GetWeaponEffectiveness (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget) { return 0; }
+		virtual bool IsAmmoWeapon (void) { return false; }
 		virtual bool IsAreaWeapon (CSpaceObject *pSource, CInstalledDevice *pDevice) { return false; }
 		virtual bool IsAutomatedWeapon (void) { return false; }
 		virtual bool IsExternal (void) { return (m_fExternal ? true : false); }
@@ -2080,6 +2094,7 @@ class CDeviceClass : public CObject
 
 		COverlayTypeRef m_pOverlayType;			//	Associated overlay (may be NULL)
 
+		int m_iMaxHPBonus;						//	Max HP bonus for this device
 		TArray<SEnhancerDesc> m_Enhancements;	//	Enhancements confered on other items
 
 		SEventHandlerDesc m_CachedEvents[evtCount];	//	Cached events
@@ -2984,6 +2999,7 @@ class IEffectPainter
 
 		void GetBounds (RECT *retRect);
 		void GetBounds (const CVector &vPos, CVector *retvUR, CVector *retvLL);
+		inline bool IsSingleton (void) const { return m_bSingleton; }
 		inline void OnUpdate (void) { SEffectUpdateCtx Ctx; OnUpdate(Ctx); }
 		inline void PlaySound (CSpaceObject *pSource);
 		inline void ReadFromStream (SLoadCtx &Ctx) { OnReadFromStream(Ctx); }
@@ -2992,7 +3008,17 @@ class IEffectPainter
 		static ALERROR ValidateClass (SLoadCtx &Ctx, const CString &sOriginalClass);
 		void WriteToStream (IWriteStream *pStream);
 
+#ifdef DEBUG_SINGLETON_EFFECTS
+		virtual ~IEffectPainter (void)
+			{
+			if (m_bSingleton)
+				{
+				::kernelDebugLogMessage("Delete singleton painter: %08x", (DWORD)this);
+				}
+			}
+#else
 		virtual ~IEffectPainter (void) { }
+#endif
 		virtual void Delete (void) { if (!m_bSingleton) delete this; }
 		virtual CEffectCreator *GetCreator (void) = 0;
 		virtual int GetFadeLifetime (void) { return 0; }
@@ -3026,6 +3052,43 @@ class IEffectPainter
 		int GetInitialLifetime (void);
 
 		bool m_bSingleton;
+	};
+
+class CEffectPainterRef
+	{
+	public:
+		CEffectPainterRef (void) :
+				m_pPainter(NULL)
+			{ }
+
+		~CEffectPainterRef (void) { Delete(); }
+
+		inline operator IEffectPainter *() const { return m_pPainter; }
+		inline IEffectPainter * operator->() const { return m_pPainter; }
+
+		void Delete (void)
+			{
+			if (m_pPainter && m_bDelete)
+				m_pPainter->Delete();
+
+			m_pPainter = NULL;
+			}
+
+		inline bool IsEmpty (void) const { return (m_pPainter == NULL); }
+
+		void Set (IEffectPainter *pPainter)
+			{
+			Delete();
+			if (pPainter)
+				{
+				m_pPainter = pPainter;
+				m_bDelete = !pPainter->IsSingleton();
+				}
+			}
+
+	private:
+		IEffectPainter *m_pPainter;
+		bool m_bDelete;
 	};
 
 //	Topology Descriptors -------------------------------------------------------
@@ -3585,6 +3648,7 @@ class CItemType : public CDesignType
 		inline Metric GetMass (CItemCtx &Ctx) const { return GetMassKg(Ctx) / 1000.0; }
 		int GetMassKg (CItemCtx &Ctx) const;
 		inline int GetMaxCharges (void) const { return (m_fInstanceData ? m_InitDataValue.GetMaxValue() : 0); }
+		int GetMaxHPBonus (void) const;
 		inline DWORD GetModCode (void) const { return m_dwModCode; }
 		CString GetName (DWORD *retdwFlags, bool bActualName = false) const;
 		CString GetNounPhrase (DWORD dwFlags = 0) const;
@@ -4817,7 +4881,7 @@ class CSovereign : public CDesignType
 
 		void DeleteRelationships (void);
 		inline void FlushEnemyObjectCache (void) { m_pEnemyObjectsSystem = NULL; }
-		Disposition GetDispositionTowards (CSovereign *pSovereign);
+		Disposition GetDispositionTowards (CSovereign *pSovereign, bool bCheckParent = true);
 		inline const CSpaceObjectList &GetEnemyObjectList (CSystem *pSystem) { InitEnemyObjectList(pSystem); return m_EnemyObjects; }
 		CString GetText (MessageTypes iMsg);
 		inline bool IsEnemy (CSovereign *pSovereign) { return (m_bSelfRel || (pSovereign != this)) && (GetDispositionTowards(pSovereign) == dispEnemy); }
@@ -4851,7 +4915,7 @@ class CSovereign : public CDesignType
 			};
 
 		bool CalcSelfRel (void);
-		SRelationship *FindRelationship (CSovereign *pSovereign);
+		SRelationship *FindRelationship (CSovereign *pSovereign, bool bCheckParent = false);
 		inline Alignments GetAlignment (void) { return m_iAlignment; }
 		void InitEnemyObjectList (CSystem *pSystem);
 		void InitRelationships (void);
@@ -5037,6 +5101,7 @@ class CShipTable : public CDesignType
 class CMissionType : public CDesignType
 	{
 	public:
+		inline bool CanBeDeleted (void) const { return m_fAllowDelete; }
 		inline bool CanBeEncountered (void) const { return (m_iMaxAppearing == -1 || m_iAccepted < m_iMaxAppearing); }
 		inline bool CloseIfOutOfSystem (void) const { return m_fCloseIfOutOfSystem; }
 		inline bool FailureWhenOwnerDestroyed (void) const { return !m_fNoFailureOnOwnerDestroyed; }
@@ -5091,7 +5156,7 @@ class CMissionType : public CDesignType
 		DWORD m_fNoStats:1;					//	If TRUE, mission is not included in count of missions assigned/completed
 		DWORD m_fCloseIfOutOfSystem:1;		//	If TRUE, mission is closed if player leaves system.
 		DWORD m_fForceUndockAfterDebrief:1;	//	If TRUE, default mission screen undocks after debrief
-		DWORD m_fSpare6:1;
+		DWORD m_fAllowDelete:1;				//	If TRUE, player can delete mission
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 
@@ -5642,6 +5707,7 @@ class CExtension
 		inline bool IsRegistered (void) const { return m_bRegistered; }
 		inline bool IsRegistrationVerified (void) { return (m_bRegistered && m_bVerified); }
 		ALERROR Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, CString *retsError);
+		inline void SetDeleted (void) { m_bDeleted = true; }
 		inline void SetDisabled (const CString &sReason) { if (!m_bDisabled) { m_sDisabledReason = sReason; m_bDisabled = true; } }
 		inline void SetDigest (const CIntegerIP &Digest) { m_Digest = Digest; }
 		inline void SetMarked (bool bMarked = true) { m_bMarked = bMarked; }
@@ -5651,6 +5717,7 @@ class CExtension
 		void SweepImages (void);
 
 		static ALERROR ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError);
+		static void DebugDump (CExtension *pExtension, bool bFull = false);
 
 	private:
 		struct SGlobalsEntry
@@ -5711,6 +5778,7 @@ class CExtension
 		bool m_bVerified;					//	Signature and license verified
 		bool m_bPrivate;					//	Do not show in stats
 		bool m_bDisabled;					//	Disabled (for some reason)
+		bool m_bDeleted;
 	};
 
 class CExtensionCollection
@@ -5738,6 +5806,7 @@ class CExtensionCollection
 		ALERROR ComputeAvailableAdventures (DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
 		ALERROR ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
 		ALERROR ComputeBindOrder (CExtension *pAdventure, const TArray<CExtension *> &DesiredExtensions, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
+		void DebugDump (void);
 		bool FindAdventureFromDesc (DWORD dwUNID, DWORD dwFlags = 0, CExtension **retpExtension = NULL);
 		bool FindBestExtension (DWORD dwUNID, DWORD dwRelease = 0, DWORD dwFlags = 0, CExtension **retpExtension = NULL);
 		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension::EFolderTypes iFolder, CExtension **retpExtension = NULL);

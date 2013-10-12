@@ -52,4 +52,3 @@ NEW APPLICATION (UI)
 [ ] Add declaration of CTranscendenceController in application header
 [ ] Implement CTranscendenceController
 [ ] Add DXFN (DirectX fonts) to resource file
-

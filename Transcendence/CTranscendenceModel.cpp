@@ -1008,6 +1008,8 @@ ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, 
 	Ctx.dwAdventure = Settings.pAdventure->GetUNID();
 	Ctx.Extensions = Settings.Extensions;
 
+	::kernelDebugLogMessage("Initializing adventure: %s", Settings.pAdventure->GetFilespec());
+
 	return m_Universe.Init(Ctx, retsError);
 	}
 
@@ -1083,107 +1085,118 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 //	Load a previously saved game and keeps the game file open
 
 	{
-	ALERROR error;
-
-	m_Universe.Reinit();
-
-	//	Old game
-
-	if (error = m_GameFile.Open(sFilespec))
+	try
 		{
-		*retsError = strPatternSubst(CONSTLIT("Unable to open save file: %s"), sFilespec);
-		return error;
+		ALERROR error;
+
+		m_Universe.Reinit();
+
+		//	Old game
+
+		if (error = m_GameFile.Open(sFilespec))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to open save file: %s"), sFilespec);
+			return error;
+			}
+
+		//	If this is a registered game and we're not signed in with that player
+		//	then we can't continue.
+
+		if (m_GameFile.IsRegistered() && !strEquals(m_GameFile.GetUsername(), sSignedInUsername))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Save file %s may only be opened by %s."), sFilespec, m_GameFile.GetUsername());
+			m_GameFile.Close();
+			return ERR_FAIL;
+			}
+
+		//	Load the universe
+
+		DWORD dwSystemID, dwPlayerID;
+		if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
+			{
+			m_GameFile.Close();
+			return error;
+			}
+
+		//	Load the POV system
+
+		CSystem *pSystem;
+		CSpaceObject *pPlayerObj;
+		if (error = m_GameFile.LoadSystem(dwSystemID, 
+				&pSystem, 
+				retsError,
+				dwPlayerID, 
+				&pPlayerObj))
+			{
+			m_GameFile.Close();
+			return error;
+			}
+
+		CShip *pPlayerShip = pPlayerObj->AsShip();
+		if (pPlayerShip == NULL)
+			{
+			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
+			m_GameFile.Close();
+			return ERR_FAIL;
+			}
+
+		//	Set the player ship
+
+		ASSERT(m_pPlayer == NULL);
+		m_pPlayer = dynamic_cast<CPlayerShipController *>(pPlayerShip->GetController());
+		if (m_pPlayer == NULL)
+			{
+			*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
+			m_GameFile.Close();
+			return ERR_FAIL;
+			}
+
+		m_pPlayer->Init(g_pTrans);
+
+		//	If we didn't save the player name then it means that we have an older
+		//	version.
+
+		if (m_pPlayer->GetPlayerName().IsBlank())
+			m_pPlayer->SetName(m_GameFile.GetPlayerName());
+
+		//	We only need to do this for backwards compatibility (pre 0.97 this flag
+		//	was not set)
+
+		pPlayerShip->TrackMass();
+
+		//	Set the resurrect flag (this will be cleared if we save the game
+		//	properly later)
+
+		if (error = m_GameFile.SetGameResurrect())
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to set resurrect flag"));
+			m_pPlayer = NULL;
+			m_GameFile.Close();
+			return error;
+			}
+
+		//	Set the resurrect count
+
+		m_pPlayer->SetResurrectCount(m_GameFile.GetResurrectCount());
+
+		//	Set debug mode appropriately
+
+		m_bDebugMode = m_Universe.InDebugMode();
+
+		//	Log that we loaded a game
+
+		kernelDebugLogMessage("Loaded game file version: %x", m_GameFile.GetCreateVersion());
+
+		return NOERROR;
 		}
-
-	//	If this is a registered game and we're not signed in with that player
-	//	then we can't continue.
-
-	if (m_GameFile.IsRegistered() && !strEquals(m_GameFile.GetUsername(), sSignedInUsername))
+	catch (...)
 		{
-		*retsError = strPatternSubst(CONSTLIT("Save file %s may only be opened by %s."), sFilespec, m_GameFile.GetUsername());
-		m_GameFile.Close();
-		return ERR_FAIL;
-		}
-
-	//	Load the universe
-
-	DWORD dwSystemID, dwPlayerID;
-	if (error = m_GameFile.LoadUniverse(m_Universe, &dwSystemID, &dwPlayerID, retsError))
-		{
-		m_GameFile.Close();
-		return error;
-		}
-
-	//	Load the POV system
-
-	CSystem *pSystem;
-	CSpaceObject *pPlayerObj;
-	if (error = m_GameFile.LoadSystem(dwSystemID, 
-			&pSystem, 
-			retsError,
-			dwPlayerID, 
-			&pPlayerObj))
-		{
-		m_GameFile.Close();
-		return error;
-		}
-
-	CShip *pPlayerShip = pPlayerObj->AsShip();
-	if (pPlayerShip == NULL)
-		{
-		*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
-		m_GameFile.Close();
-		return ERR_FAIL;
-		}
-
-	//	Set the player ship
-
-	ASSERT(m_pPlayer == NULL);
-	m_pPlayer = dynamic_cast<CPlayerShipController *>(pPlayerShip->GetController());
-	if (m_pPlayer == NULL)
-		{
-		*retsError = CONSTLIT("Save file corruption: Player ship is invalid.");
-		m_GameFile.Close();
-		return ERR_FAIL;
-		}
-
-	m_pPlayer->Init(g_pTrans);
-
-	//	If we didn't save the player name then it means that we have an older
-	//	version.
-
-	if (m_pPlayer->GetPlayerName().IsBlank())
-		m_pPlayer->SetName(m_GameFile.GetPlayerName());
-
-	//	We only need to do this for backwards compatibility (pre 0.97 this flag
-	//	was not set)
-
-	pPlayerShip->TrackMass();
-
-	//	Set the resurrect flag (this will be cleared if we save the game
-	//	properly later)
-
-	if (error = m_GameFile.SetGameResurrect())
-		{
-		*retsError = strPatternSubst(CONSTLIT("Unable to set resurrect flag"));
 		m_pPlayer = NULL;
 		m_GameFile.Close();
-		return error;
+		*retsError = CONSTLIT("Crash loading game.");
+
+		return ERR_FAIL;
 		}
-
-	//	Set the resurrect count
-
-	m_pPlayer->SetResurrectCount(m_GameFile.GetResurrectCount());
-
-	//	Set debug mode appropriately
-
-	m_bDebugMode = m_Universe.InDebugMode();
-
-	//	Log that we loaded a game
-
-	kernelDebugLogMessage("Loaded game file version: %x", m_GameFile.GetCreateVersion());
-
-	return NOERROR;
 	}
 
 ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats *retStats)
@@ -1219,38 +1232,47 @@ ALERROR CTranscendenceModel::LoadUniverse (CString *retsError)
 //	Loads the universe
 
 	{
-	ALERROR error;
+	try
+		{
+		ALERROR error;
 
-	//	Make sure the universe know about our various managers
+		//	Make sure the universe know about our various managers
 
-	m_Universe.SetDebugMode(m_bDebugMode);
-	m_Universe.SetSoundMgr(&m_HI.GetSoundMgr());
+		m_Universe.SetDebugMode(m_bDebugMode);
+		m_Universe.SetSoundMgr(&m_HI.GetSoundMgr());
 
-	//	Load the Transcendence Data Definition file that describes the universe.
+		//	Load the Transcendence Data Definition file that describes the universe.
 
-	CUniverse::SInitDesc Ctx;
-	Ctx.pHost = g_pTrans;
-	Ctx.bDebugMode = m_bDebugMode;
-	Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
-	Ctx.bDefaultExtensions = true;
+		CUniverse::SInitDesc Ctx;
+		Ctx.pHost = g_pTrans;
+		Ctx.bDebugMode = m_bDebugMode;
+		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
+		Ctx.bDefaultExtensions = true;
 
-	if (m_bForceTDB)
-		Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+		if (m_bForceTDB)
+			Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
 
-	if (error = m_Universe.Init(Ctx, retsError))
-		return error;
+		if (error = m_Universe.Init(Ctx, retsError))
+			return error;
 
-	//	Initialize TSUI CodeChain primitives
+		//	Initialize TSUI CodeChain primitives
 
-	if (error = m_HI.InitCodeChainPrimitives(m_Universe.GetCC()))
-		return error;
+		if (error = m_HI.InitCodeChainPrimitives(m_Universe.GetCC()))
+			return error;
 
-	//	Initialize Transcendence application primitives
+		//	Initialize Transcendence application primitives
 
-	if (error = InitCodeChainExtensions(m_Universe.GetCC()))
-		return error;
+		if (error = InitCodeChainExtensions(m_Universe.GetCC()))
+			return error;
 
-	return NOERROR;
+		return NOERROR;
+		}
+	catch (...)
+		{
+		if (retsError)
+			*retsError = CONSTLIT("Crash loading universe.");
+		return ERR_FAIL;
+		}
 	}
 
 void CTranscendenceModel::MarkGateFollowers (CSystem *pSystem)
@@ -2239,6 +2261,8 @@ ALERROR CTranscendenceModel::StartNewGameBackground (const SNewGameSettings &New
 
 	ASSERT(m_iState == stateCreatingNewGame);
 	ASSERT(m_pPlayer);
+
+	::kernelDebugLogMessage("Starting new game.");
 
 	//	Figure out the ship class that we want
 

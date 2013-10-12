@@ -388,9 +388,13 @@ void CDockingPorts::OnDestroyed (void)
 //	If we've been destroyed, then release all objects
 
 	{
+	DEBUG_TRY
+
 	for (int i = 0; i < m_iPortCount; i++)
 		if (m_pPort[i].iStatus == psDocking)
 			m_pPort[i].pObj->UnfreezeControls();
+
+	DEBUG_CATCH
 	}
 
 void CDockingPorts::OnObjDestroyed (CSpaceObject *pOwner, CSpaceObject *pObj, bool *retbDestroyed)

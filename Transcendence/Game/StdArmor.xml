@@ -1101,7 +1101,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"350"
+				hitPoints=	"360"
 				hpBonus=	"  +0,  +0, +50, +50, +25,  +0"
 				/>
 
@@ -1333,10 +1333,10 @@
 		</StaticData>
 	</ItemType>
 
-	<!-- Segment of P1300 Hexphase armor -->
+	<!-- Segment of P1000 Hexphase armor -->
 
 	<ItemType UNID="&itP1000HexphaseArmor;"
-			name=				"[segment(s) of ]P1300 Hexphase armor"
+			name=				"[segment(s) of ]P1000 Hexphase armor"
 			level=				"9"
 			value=				"40000"
 			mass=				"40000"
@@ -1344,15 +1344,15 @@
 			frequency=			"veryrare"
 			numberAppearing=	"1d4"
 
-			description=		"Hexphase armor is used by Commonwealth Star Carriers. P1300-grade armor can withstand 1300 units of thermonuclear damage before collapsing."
+			description=		"Hexphase armor is used by Commonwealth Star Carriers. P1000-grade armor can withstand 1000 units of thermonuclear damage before collapsing."
 
-			sortName=			"Hexphase armor, P1300, segment of"
+			sortName=			"Hexphase armor, P1000, segment of"
 			>
 
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"780"
+				hitPoints=	"600"
 				hpBonus=	"  +0,  +0,+100,+100, +50,  +0"
 
 				repairTech=	"8"

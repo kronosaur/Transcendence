@@ -213,6 +213,23 @@
 		<Image imageID="&rsItems1;" imageX="96" imageY="576" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
+	<!-- Cerium Electrode -->
+
+	<ItemType UNID="&itCeriumElectrode;"
+			name=				"cerium electrode"
+			level=				"5"
+			value=				"200"
+			mass=				"10"
+			frequency=			"common"
+			numberAppearing=	"1d10"
+			attributes=			"Consumable; Res;"
+
+			description=		"Cerium electrodes have several industrial uses, including as catalysts for nanofactories."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
 	<!-- Cerusite Crystal -->
 
 	<ItemType UNID="&itCerusiteCrystal;"
@@ -343,6 +360,23 @@
 	</ItemType>
 
 <!-- EEEEE -->
+
+	<!-- Erbium Rob -->
+
+	<ItemType UNID="&itErbiumRod;"
+			name=				"erbium rod"
+			level=				"6"
+			value=				"500"
+			mass=				"50"
+			frequency=			"common"
+			numberAppearing=	"1d6"
+			attributes=			"Consumable; Res;"
+
+			description=		"Forged into an exotic alloy, erbium rods are used in high-performance starship components."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+	</ItemType>
 
 	<!-- Etherium Ore -->
 
@@ -593,6 +627,23 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
+	<!-- Holmium fiber -->
+
+	<ItemType UNID="&itHolmiumFiber;"
+			name=				"[roll(s) of ]holmium fiber"
+			level=				"6"
+			value=				"750"
+			mass=				"100"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6"
+			attributes=			"Consumable; Res;"
+
+			description=		"This exotic rare-earth element is woven into fibers for use in ion-sensitive equipment."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
 	<!-- itHumanOrgans -->
 
 	<ItemType UNID="&itHumanOrgans;"
@@ -829,6 +880,23 @@
 
 <!-- LLLLL -->
 
+	<!-- Lanthanum Glass -->
+
+	<ItemType UNID="&itLanthanumGlass;"
+			name=				"[disk(s) of ]lanthanum glass"
+			level=				"4"
+			value=				"100"
+			mass=				"5"
+			frequency=			"common"
+			numberAppearing=	"2d6"
+			attributes=			"Consumable; Res;"
+
+			description=		"Lanthanum glass has special optical properties used in lasers, fields generators, and other starship components."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
 	<!-- Laudanum Ampule -->
 
 	<ItemType UNID="&itLaudanumAmpule;"
@@ -973,6 +1041,23 @@
 	</ItemType>
 
 <!-- NNNNN -->
+
+	<!-- Neodymium Magnet -->
+
+	<ItemType UNID="&itNeodymiumMagnet;"
+			name=				"neodymium magnet array"
+			level=				"4"
+			value=				"200"
+			mass=				"10"
+			frequency=			"common"
+			numberAppearing=	"1d4"
+			attributes=			"Consumable; Res;"
+
+			description=		"Neodymium permanent magnets are ubiquitous in various starship components and devices."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+	</ItemType>
 
 	<!-- Neuranase -->
 

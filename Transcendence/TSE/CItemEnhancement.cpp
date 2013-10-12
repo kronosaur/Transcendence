@@ -4,7 +4,20 @@
 
 #include "PreComp.h"
 
-EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
+int CItemEnhancement::DamageAdj2Level (int iDamageAdj)
+
+//	DamageAdj2Level
+//
+//	Converts from a damage adjustment to a level (0-15)
+
+	{
+	if (iDamageAdj <= 100)
+		return Min(9, 10 - (iDamageAdj + 5) / 10);
+	else
+		return Min(9, (100 - (10000 / (iDamageAdj + 5))) / 10);
+	}
+
+EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement Enhancement)
 
 //	Combine
 //
@@ -219,8 +232,16 @@ EnhanceItemStatus CItemEnhancement::Combine (CItemEnhancement Enhancement)
 
 					else if (Enhancement.GetLevel() == 0)
 						{
-						SetModBonus(GetHPBonus() + 10);
-						return eisBetter;
+						int iOldBonus = GetHPBonus();
+						int iMaxBonus = Item.GetType()->GetMaxHPBonus();
+						int iNewBonus = Min(iOldBonus + 10, iMaxBonus);
+						if (iNewBonus > iOldBonus)
+							{
+							SetModBonus(GetHPBonus() + 10);
+							return eisBetter;
+							}
+						else
+							return eisNoEffect;
 						}
 
 					//	If improving...
@@ -852,15 +873,25 @@ int CItemEnhancement::GetValueAdj (const CItem &Item) const
 		}
 	}
 
-ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDesc)
+ALERROR CItemEnhancement::InitFromDesc (const CString &sDesc, CString *retsError)
 
 //	InitFromDesc
 //
 //	Initializes from a string of the following forms:
 //
-//	{number}		Interpret as a mod code
-//	+armor:{n}		Add armor special damage, where n is an item level
-//	+shield:{n}		Add shield disrupt special damage, where n is an item level
+//	{number}					Interpret as a mod code
+//	+armor:{n}					Add	armor special damage, where n is an item level
+//	+hpBonus:{n}				Add hp bonus.
+//	+immunity:{s}				Immunity to special damage s.
+//	+reflect:{s}				Reflects damage type s.
+//	+regen						Regenerate
+//	+resist:{s}:{n}				DamageAdj for type s set to n
+//	+resistDamageClass:{s}:{n}	DamageAdj for type s (and its next-tier mate) set to n
+//	+resistDamageTier:{s}:{n}	DamageAdj for type s (and its tier mate) set to n
+//	+resistEnergy:{n}			DamageAdj for energy damage set to n
+//	+resistMatter:{n}			DamageAdj for matter damage set to n
+//	+shield:{n}					Add shield disrupt special damage, where n is an item level
+//	+speed:{n}					Faster. n is new delay value as a percent of normal
 
 	{
 	//	If the string is a number then we interpret it as a mod code.
@@ -886,7 +917,8 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 		bDisadvantage = true;
 	else
 		{
-		Ctx.sError = CONSTLIT("Invalid enhancement description: expected '+' or '-'.");
+		if (retsError)
+			*retsError = CONSTLIT("Invalid enhancement description: expected '+' or '-'.");
 		return ERR_FAIL;
 		}
 
@@ -903,19 +935,43 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 	//	See if we have a value
 
 	int iValue = 0;
+	CString sValue;
 	if (*pPos == ':')
 		{
 		pPos++;
-		iValue = strParseInt(pPos, 0);
+
+		if (*pPos == '-' || *pPos == '+' || (*pPos >= '0' && *pPos <= '9'))
+			iValue = strParseInt(pPos, 0, &pPos);
+		else
+			{
+			char *pStart = pPos;
+			while (*pPos != '\0' && *pPos != ':')
+				pPos++;
+
+			sValue = CString(pStart, (int)(pPos - pStart));
+			}
+		}
+
+	//	See if we have a second value
+
+	int iValue2 = 0;
+	if (*pPos == ':')
+		{
+		pPos++;
+		iValue2 = strParseInt(pPos, 0, &pPos);
 		}
 
 	//	See if this is an hpBonus
 
 	if (strEquals(sID, CONSTLIT("hpBonus")))
 		{
+		if (bDisadvantage && iValue > 0)
+			iValue = -iValue;
+
 		if (iValue < -100)
 			{
-			Ctx.sError = CONSTLIT("hpBonus penalty cannot exceed 100%.");
+			if (retsError)
+				*retsError = CONSTLIT("hpBonus penalty cannot exceed 100%.");
 			return ERR_FAIL;
 			}
 		else if (iValue < 0)
@@ -926,10 +982,127 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 			SetModCode(EncodeAX(etHPBonus, 0, iValue));
 		else
 			{
-			Ctx.sError = CONSTLIT("hpBonus cannot exceed 1000%.");
+			if (retsError)
+				*retsError = CONSTLIT("hpBonus cannot exceed 1000%.");
 			return ERR_FAIL;
 			}
 		}
+
+	//	Immunity
+
+	else if (strEquals(sID, CONSTLIT("immunity")))
+		{
+		if (strEquals(sValue, CONSTLIT("ionEffects")))
+			m_dwMods = Encode12(etImmunityIonEffects);
+		else
+			{
+			SpecialDamageTypes iSpecial = DamageDesc::ConvertToSpecialDamageTypes(sValue);
+			switch (iSpecial)
+				{
+				case specialRadiation:
+				case specialBlinding:
+				case specialEMP:
+				case specialDeviceDamage:
+				case specialDisintegration:
+				case specialMomentum:
+				case specialShieldDisrupt:
+				case specialDeviceDisrupt:
+				case specialShatter:
+					{
+					if (bDisadvantage)
+						{
+						if (retsError)
+							*retsError = CONSTLIT("Disadvantage not supported.");
+						return ERR_FAIL;
+						}
+
+					SetModImmunity(iSpecial);
+					break;
+					}
+
+				default:
+					{
+					if (retsError)
+						*retsError = strPatternSubst(CONSTLIT("Invalid immunity: %s"), sID);
+					return ERR_FAIL;
+					}
+				}
+			}
+		}
+
+	//	Reflect bonus
+
+	else if (strEquals(sID, CONSTLIT("reflect")))
+		{
+		DamageTypes iDamageType = LoadDamageTypeFromXML(sValue);
+		if (iDamageType == damageError)
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid damage type: %s"), sValue);
+			return ERR_FAIL;
+			}
+
+		SetModReflect(iDamageType);
+		}
+
+	//	Regen
+
+	else if (strEquals(sID, CONSTLIT("regen")))
+		{
+		m_dwMods = Encode12(etRegenerate | (bDisadvantage ? etDisadvantage : 0));
+		}
+
+	//	Resist damage
+
+	else if (strEquals(sID, CONSTLIT("resist")))
+		{
+		DamageTypes iDamageType = LoadDamageTypeFromXML(sValue);
+		if (iDamageType == damageError)
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid damage type: %s"), sValue);
+			return ERR_FAIL;
+			}
+
+		SetModResistDamage(iDamageType, iValue2);
+		}
+
+	//	Resist damage
+
+	else if (strEquals(sID, CONSTLIT("resistDamageClass")))
+		{
+		DamageTypes iDamageType = LoadDamageTypeFromXML(sValue);
+		if (iDamageType == damageError)
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid damage type: %s"), sValue);
+			return ERR_FAIL;
+			}
+
+		SetModResistDamageClass(iDamageType, iValue2);
+		}
+
+	//	Resist damage tier
+
+	else if (strEquals(sID, CONSTLIT("resistDamageTier")))
+		{
+		DamageTypes iDamageType = LoadDamageTypeFromXML(sValue);
+		if (iDamageType == damageError)
+			{
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid damage type: %s"), sValue);
+			return ERR_FAIL;
+			}
+
+		SetModResistDamageTier(iDamageType, iValue2);
+		}
+
+	//	Resist energy/matter
+
+	else if (strEquals(sID, CONSTLIT("resistEnergy")))
+		SetModResistEnergy(iValue);
+	else if (strEquals(sID, CONSTLIT("resistMatter")))
+		SetModResistMatter(iValue);
 
 	//	Speed bonus
 
@@ -937,7 +1110,8 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 		{
 		if (iValue <= 0)
 			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Invalid speed value: %s."), iValue);
+			if (retsError)
+				*retsError = strPatternSubst(CONSTLIT("Invalid speed value: %s."), iValue);
 			return ERR_FAIL;
 			}
 		else
@@ -957,13 +1131,15 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 				{
 				if (bDisadvantage)
 					{
-					Ctx.sError = CONSTLIT("Disadvantage not supported.");
+					if (retsError)
+						*retsError = CONSTLIT("Disadvantage not supported.");
 					return ERR_FAIL;
 					}
 
 				if (iValue < 1 || iValue > MAX_ITEM_LEVEL)
 					{
-					Ctx.sError = strPatternSubst(CONSTLIT("Invalid %s damage level: %d"), sID, iValue);
+					if (retsError)
+						*retsError = strPatternSubst(CONSTLIT("Invalid %s damage level: %d"), sID, iValue);
 					return ERR_FAIL;
 					}
 
@@ -973,7 +1149,8 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 
 			default:
 				{
-				Ctx.sError = strPatternSubst(CONSTLIT("Invalid enhancement name: %s"), sID);
+				if (retsError)
+					*retsError = strPatternSubst(CONSTLIT("Invalid enhancement name: %s"), sID);
 				return ERR_FAIL;
 				}
 			}
@@ -982,6 +1159,32 @@ ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDes
 	//	Done
 
 	return NOERROR;
+	}
+
+ALERROR CItemEnhancement::InitFromDesc (ICCItem *pItem, CString *retsError)
+
+//	InitFromDesc
+//
+//	Initializes from a CodeChain item
+
+	{
+	if (pItem->IsInteger())
+		{
+		m_dwMods = (DWORD)pItem->GetIntegerValue();
+		return NOERROR;
+		}
+	else
+		return InitFromDesc(pItem->GetStringValue(), retsError);
+	}
+
+ALERROR CItemEnhancement::InitFromDesc (SDesignLoadCtx &Ctx, const CString &sDesc)
+
+//	InitFromDesc
+//
+//	Initializes from a descriptor
+	
+	{
+	return InitFromDesc(sDesc, &Ctx.sError); 
 	}
 
 bool CItemEnhancement::IsEqual (const CItemEnhancement &Comp) const

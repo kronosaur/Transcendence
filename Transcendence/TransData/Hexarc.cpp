@@ -245,7 +245,6 @@ void InitRequest (const CString &sHost, const CString &sMethod, const CString &s
 	retMessage->AddHeader(CONSTLIT("Host"), sHost);
 	retMessage->AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TransData/1.0"));
 	retMessage->AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
-	retMessage->AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
 	}
 
 bool ServerCommand (CHTTPClientSession &Session, const CString &sMethod, const CString &sFunc, CJSONValue &Payload, CJSONValue *retResult)

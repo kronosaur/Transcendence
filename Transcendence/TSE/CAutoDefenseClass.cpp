@@ -171,7 +171,6 @@ void CAutoDefenseClass::Update (CInstalledDevice *pDevice,
 							&& pObj->GetCategory() == CSpaceObject::catMissile
 							&& pObj->GetSource() != pSource
 							&& !pObj->IsInactive()
-							&& pObj->CanBeHit()
 							&& (pObj->GetSource() == NULL || pSource->IsEnemy(pObj->GetSource())))
 						{
 						CVector vRange = pObj->GetPos() - vSourcePos;
@@ -216,7 +215,6 @@ void CAutoDefenseClass::Update (CInstalledDevice *pDevice,
 							&& (m_TargetCriteria.dwCategories & pObj->GetCategory())
 							&& ((rDistance2 = (pObj->GetPos() - vSourcePos).Length2()) < rBestDist2)
 							&& pObj->MatchesCriteria(Ctx, m_TargetCriteria)
-							&& pObj->CanBeHit()
 							&& !pObj->IsInactive()
 							&& pObj != pSource)
 						{
@@ -236,6 +234,13 @@ void CAutoDefenseClass::Update (CInstalledDevice *pDevice,
 			int iFireAngle = pWeapon->CalcFireSolution(pDevice, pSource, pBestTarget);
 			if (iFireAngle != -1)
 				{
+				//	Since we're using this as a target, set the destroy notify flag
+				//	(Normally beams don't notify, so we need to override this).
+
+				pBestTarget->SetDestructionNotify();
+
+				//	Fire
+
 				pDevice->SetFireAngle(iFireAngle);
 				pWeapon->Activate(pDevice, pSource, pBestTarget, retbSourceDestroyed, retbConsumedItems);
 				pDevice->SetTimeUntilReady(m_iRechargeTicks);
@@ -299,7 +304,10 @@ ALERROR CAutoDefenseClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDes
 		if (strEquals(sTarget, MISSILES_TARGET))
 			pDevice->m_iTargeting = trgMissiles;
 		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Invalid target type: %s. Use target=\"missiles\" or targetCriteria=\"{criteria}\"."), sTarget);
 			return ERR_FAIL;
+			}
 		}
 
 	//	Done

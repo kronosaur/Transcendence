@@ -254,6 +254,7 @@ ALERROR CEffectCreator::CreateSimpleFromXML (SDesignLoadCtx &Ctx, CXMLElement *p
 		return ERR_MEMORY;
 
 	pCreator->m_sUNID = sUNID;
+	pCreator->m_iInstance = instCreator;
 
 	//	Load events
 
@@ -609,23 +610,31 @@ ALERROR CEffectCreator::OnBindDesign (SDesignLoadCtx &Ctx)
 //	Bind the design
 
 	{
-	ALERROR error;
+	try
+		{
+		ALERROR error;
 
-	//	Load sounds
+		//	Load sounds
 
-	if (error = m_Sound.Bind(Ctx))
-		return error;
+		if (error = m_Sound.Bind(Ctx))
+			return error;
 
-	//	Cache some events
+		//	Cache some events
 
-	InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
+		InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
-	//	Load our descendants
+		//	Load our descendants
 
-	if (error = OnEffectBindDesign(Ctx))
-		return error;
+		if (error = OnEffectBindDesign(Ctx))
+			return error;
 
-	return NOERROR;
+		return NOERROR;
+		}
+	catch (...)
+		{
+		::kernelDebugLogMessage("Crash in CEffectCreator::OnBindDesign. [m_sUNID = %s]", m_sUNID);
+		throw;
+		}
 	}
 
 ALERROR CEffectCreator::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)

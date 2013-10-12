@@ -165,6 +165,8 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 			"(multiply x1 x2 ... xn) -> z",
 			"v*",	0,	},
 
+		{	"neq",				fnEquality,		FN_EQUALITY_NEQ,			"",		NULL,	0,	},
+
 		{	"not",				fnLogical,		FN_LOGICAL_NOT,
 			"(not exp) -> True/Nil",
 			NULL,	0,	},

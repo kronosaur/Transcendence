@@ -10,6 +10,7 @@ class CEconomyType;
 class CItemCtx;
 class CExtension;
 class COrbit;
+struct CItemCriteria;
 struct SDesignLoadCtx;
 struct SDamageCtx;
 struct SSystemCreateCtx;
@@ -161,7 +162,7 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								16;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								17;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
 const DWORD SYSTEM_SAVE_VERSION =						94;		//	See: CSystem.cpp
@@ -1087,136 +1088,6 @@ class CRegenDesc
 		bool m_bEmpty;						//	If TRUE, no regen
 	};
 
-//	CodeChain context
-
-enum ECodeChainEvents
-	{
-	eventNone =							0,
-	eventOnAIUpdate =					1,
-	eventOnUpdate =						2,
-	eventGetName =						3,
-	eventGetTradePrice =				4,
-	eventDoEvent =						5,
-	eventObjFireEvent =					6,
-	eventOnGlobalTypesInit =			7,
-	eventGetGlobalPlayerPriceAdj =		8,
-	eventGetDescription =				9,
-	};
-
-class CCodeChainCtx
-	{
-	public:
-		CCodeChainCtx (void);
-		~CCodeChainCtx (void);
-
-		inline ICCItem *CreateNil (void) { return m_CC.CreateNil(); }
-		void DefineDamageEffects (const CString &sVar, SDamageCtx &Ctx);
-		inline void DefineInteger (const CString &sVar, int iValue) { m_CC.DefineGlobalInteger(sVar, iValue); }
-		void DefineItem (const CItem &Item);
-		void DefineItem (const CString &sVar, const CItem &Item);
-		void DefineItem (const CString &sVar, CItemCtx &ItemCtx);
-		void DefineItemType (const CString &sVar, CItemType *pType);
-		inline void DefineNil (const CString &sVar) { m_CC.DefineGlobal(sVar, m_CC.CreateNil()); }
-		void DefineOrbit (const CString &sVar, const COrbit &OrbitDesc);
-		void DefineSource (CSpaceObject *pSource);
-		void DefineSpaceObject (const CString &sVar, CSpaceObject *pObj);
-		inline void DefineString (const CString &sVar, const CString &sValue) { m_CC.DefineGlobalString(sVar, sValue); }
-		inline void DefineVar (const CString &sVar, ICCItem *pValue) { m_CC.DefineGlobal(sVar, pValue); }
-		void DefineVector (const CString &sVar, const CVector &vVector);
-		inline CG16bitImage *GetCanvas (void) const { return m_pCanvas; }
-		inline ECodeChainEvents GetEvent (void) const { return m_iEvent; }
-		inline CExtension *GetExtension (void) const { return m_pExtension; }
-		inline CItemType *GetItemType (void) const { return m_pItemType; }
-		inline CDesignType *GetScreensRoot (void) const { return m_pScreensRoot; }
-		inline SSystemCreateCtx *GetSystemCreateCtx (void) const { return m_pSysCreateCtx; }
-		inline ICCItem *Link (const CString &sString, int iOffset, int *retiLinked) { return m_CC.Link(sString, iOffset, retiLinked); }
-		void RestoreVars (void);
-		ICCItem *Run (ICCItem *pCode);
-		ICCItem *Run (const SEventHandlerDesc &Event);
-		ICCItem *RunLambda (ICCItem *pCode);
-		void SaveAndDefineDataVar (ICCItem *pData);
-		void SaveAndDefineItemVar (const CItem &Item);
-		void SaveAndDefineItemVar (CItemCtx &ItemCtx);
-		void SaveAndDefineSourceVar (CSpaceObject *pSource);
-		void SaveItemVar (void);
-		void SaveSourceVar (void);
-		inline void SetCanvas (CG16bitImage *pCanvas) { m_pCanvas = pCanvas; }
-		inline void SetEvent (ECodeChainEvents iEvent) { m_iEvent = iEvent; }
-		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
-		void SetGlobalDefineWrapper (CExtension *pExtension);
-		inline void SetItemType (CItemType *pType) { m_pItemType = pType; }
-		inline void SetScreen (void *pScreen) { m_pScreen = pScreen; }
-		inline void SetScreensRoot (CDesignType *pRoot) { m_pScreensRoot = pRoot; }
-		inline void SetSystemCreateCtx (SSystemCreateCtx *pCtx) { m_pSysCreateCtx = pCtx; }
-
-		CSpaceObject *AsSpaceObject (ICCItem *pItem);
-		CVector AsVector (ICCItem *pItem);
-		inline void Discard (ICCItem *pItem) { pItem->Discard(&m_CC); }
-
-	private:
-		CCodeChain &m_CC;					//	CodeChain
-		ECodeChainEvents m_iEvent;			//	Event raised
-
-		void *m_pScreen;					//	Cast to CDockScreen by upper-levels (may be NULL)
-		CG16bitImage *m_pCanvas;			//	Used for dock screen canvas (may be NULL)
-		CItemType *m_pItemType;				//	Used for item events (may be NULL)
-		CDesignType *m_pScreensRoot;		//	Used to resolve local screens (may be NULL)
-		SSystemCreateCtx *m_pSysCreateCtx;	//	Used during system create (may be NULL)
-		CExtension *m_pExtension;			//	Extension that defined this code
-
-		//	Saved variables
-		ICCItem *m_pOldData;
-		ICCItem *m_pOldSource;
-		ICCItem *m_pOldItem;
-
-		bool m_bRestoreGlobalDefineHook;
-		IItemTransform *m_pOldGlobalDefineHook;
-	};
-
-class CFunctionContextWrapper : public ICCAtom
-	{
-	public:
-		CFunctionContextWrapper (ICCItem *pFunction);
-
-		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
-
-		//	ICCItem virtuals
-		virtual ICCItem *Clone (CCodeChain *pCC);
-		virtual ICCItem *Execute (CEvalContext *pCtx, ICCItem *pArgs);
-		virtual CString GetHelp (void) { return NULL_STR; }
-		virtual CString GetStringValue (void) { return m_pFunction->GetStringValue(); }
-		virtual ValueTypes GetValueType (void) { return Function; }
-		virtual BOOL IsIdentifier (void) { return FALSE; }
-		virtual BOOL IsFunction (void) { return TRUE; }
-		virtual BOOL IsPrimitive (void) { return FALSE; }
-		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0) { return m_pFunction->Print(pCC, dwFlags); }
-		virtual void Reset (void) { }
-
-	protected:
-		//	ICCItem virtuals
-		virtual void DestroyItem (CCodeChain *pCC);
-		virtual ICCItem *StreamItem (CCodeChain *pCC, IWriteStream *pStream);
-		virtual ICCItem *UnstreamItem (CCodeChain *pCC, IReadStream *pStream);
-
-	private:
-		ICCItem *m_pFunction;
-		CExtension *m_pExtension;
-	};
-
-class CAddFunctionContextWrapper : public IItemTransform
-	{
-	public:
-		CAddFunctionContextWrapper (void) : m_pExtension(NULL) { }
-
-		inline void SetExtension (CExtension *pExtension) { m_pExtension = pExtension; }
-
-		//	IItemTransform
-		virtual ICCItem *Transform (CCodeChain &CC, ICCItem *pItem);
-
-	private:
-		CExtension *m_pExtension;
-	};
-
 //	CZoneGrid ------------------------------------------------------------------
 
 class CZoneGrid
@@ -1422,6 +1293,34 @@ class CDeviceStorage
 
 		TSortMap<CString, CString> m_Storage;
 		bool m_bModified;
+	};
+
+//	IListData ------------------------------------------------------------------
+
+extern const CItem g_DummyItem;
+extern CItemListManipulator g_DummyItemListManipulator;
+
+class IListData
+	{
+	public:
+		virtual ~IListData (void) { }
+		virtual void DeleteAtCursor (int iCount) { }
+		virtual int GetCount (void) { return 0; }
+		virtual int GetCursor (void) { return -1; }
+		virtual CString GetDescAtCursor (void) { return NULL_STR; }
+		virtual ICCItem *GetEntryAtCursor (CCodeChain &CC) { return CC.CreateNil(); }
+		virtual const CItem &GetItemAtCursor (void) { return g_DummyItem; }
+		virtual CItemListManipulator &GetItemListManipulator (void) { return g_DummyItemListManipulator; }
+		virtual CSpaceObject *GetSource (void) { return NULL; }
+		virtual CString GetTitleAtCursor (void) { return NULL_STR; }
+		virtual bool IsCursorValid (void) { return false; }
+		virtual bool MoveCursorBack (void) { return false; }
+		virtual bool MoveCursorForward (void) { return false; }
+		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y) { }
+		virtual void ResetCursor (void) { }
+		virtual void SetCursor (int iCursor) { }
+		virtual void SetFilter (const CItemCriteria &Filter) { }
+		virtual void SyncCursor (void) { }
 	};
 
 //	Miscellaneous utility functions

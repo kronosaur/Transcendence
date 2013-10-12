@@ -1262,7 +1262,7 @@ EnhanceItemStatus CSpaceObject::EnhanceItem (CItemListManipulator &ItemList, con
 	//	Figure out the effect of the enhancement on the item
 
 	CItemEnhancement Enhancement = Item.GetMods();
-	EnhanceItemStatus iResult = Enhancement.Combine(Mods.GetModCode());
+	EnhanceItemStatus iResult = Enhancement.Combine(Item, Mods.GetModCode());
 
 	//	Handle some special cases
 
@@ -2053,6 +2053,8 @@ void CSpaceObject::FireOnItemObjDestroyed (const SDestroyCtx &Ctx)
 //	Fires OnObjDestroyed event for all items
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Make a list of all items that have an OnObjDestroyed event.
@@ -2070,6 +2072,8 @@ void CSpaceObject::FireOnItemObjDestroyed (const SDestroyCtx &Ctx)
 
 	for (i = 0; i < Items.GetCount(); i++)
 		Items[i].FireOnObjDestroyed(this, Ctx);
+
+	DEBUG_CATCH
 	}
 
 void CSpaceObject::FireOnItemUpdate (void)
@@ -4393,13 +4397,9 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 	if (Crit.pSource == this)
 		return false;
 
-	if (!(Crit.dwCategories & GetCategory()))
-		{
-		//	If we're selecting the player then it's OK
-
-		if (!Crit.bSelectPlayer || !IsPlayer())
-			return false;
-		}
+	if (!(Crit.dwCategories & GetCategory())
+			&& (!Crit.bSelectPlayer || !IsPlayer()))
+		return false;
 
 	//	NOTE: Virtual objects always count as active. E.g., we want the virtual
 	//	St. Victoria station to count as active, but not as CanAttack

@@ -59,6 +59,7 @@
 #define FN_RANDOM						55
 #define FN_RANDOM_GAUSSIAN				56
 #define FN_ITEM_TYPE					57
+#define FN_EQUALITY_NEQ					58
 
 ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnApply (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData);

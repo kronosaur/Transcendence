@@ -568,7 +568,7 @@
 		
 		<Armor
 			armorID=			"&itAdvancedReactiveArmor;"
-			count=				"18"
+			count=				"20"
 			/>
 		
 		<Devices>
@@ -593,7 +593,7 @@
 			
 			<Compartment name="cargo contatiners"
 					type=		"cargo"
-					hitPoints=	"30"
+					hitPoints=	"100"
 
 					posX=		"19"
 					posY=		"0"
@@ -610,7 +610,7 @@
 		<Image imageID="&rsLargeShips1;" imageX="1344" imageY="0" imageWidth="192" imageHeight="192"/>
 
 		<AISettings
-			fireRateAdj=		"40"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 			

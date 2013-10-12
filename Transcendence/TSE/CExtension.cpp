@@ -73,7 +73,8 @@ CExtension::CExtension (void) :
 		m_bDebugOnly(false),
 		m_bRegistered(false),
 		m_bVerified(false),
-		m_bDisabled(false)
+		m_bDisabled(false),
+		m_bDeleted(false)
 
 //	CExtension constructor
 
@@ -638,6 +639,38 @@ void CExtension::CreateIcon (int cxWidth, int cyHeight, CG16bitImage **retpIcon)
 	*retpIcon = pIcon;
 	}
 
+void CExtension::DebugDump (CExtension *pExtension, bool bFull)
+
+//	DebugDump
+//
+//	Dumps debug output for the extension.
+
+	{
+	if (pExtension == NULL)
+		{
+		::kernelDebugLogMessage("Null extension pointer.");
+		return;
+		}
+
+	try
+		{
+		::kernelDebugLogMessage("%08x %s [%08x]", pExtension->m_dwUNID, pExtension->m_sFilespec, (DWORD)pExtension);
+		if (bFull)
+			{
+			if (pExtension->m_bDeleted)
+				::kernelDebugLogMessage("DELETED");
+			if (pExtension->m_bDisabled)
+				::kernelDebugLogMessage("DISABLED: %s", pExtension->m_sDisabledReason);
+			if (pExtension->m_bVerified)
+				::kernelDebugLogMessage("VERIFIED");
+			}
+		}
+	catch (...)
+		{
+		::kernelDebugLogMessage("Invalid extension pointer.");
+		}
+	}
+
 ALERROR CExtension::ExecuteGlobals (SDesignLoadCtx &Ctx)
 
 //	ExecuteGlobals
@@ -645,6 +678,8 @@ ALERROR CExtension::ExecuteGlobals (SDesignLoadCtx &Ctx)
 //	Execute the globals
 
 	{
+	DEBUG_TRY
+
 	int i;
 	CCodeChainCtx CCCtx;
 
@@ -671,6 +706,8 @@ ALERROR CExtension::ExecuteGlobals (SDesignLoadCtx &Ctx)
 	//	Done
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 CG16bitImage *CExtension::GetCoverImage (void) const

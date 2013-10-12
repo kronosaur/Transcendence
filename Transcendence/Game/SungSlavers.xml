@@ -858,21 +858,13 @@
 			attributes=			"capitalShip, genericClass, majorShip, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="315" span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="285" span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="255" span="30" armorID="&itDragonArmor;" nonCritical="general" />
-			<ArmorSection start="225" span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="195" span="30" armorID="&itDragonArmor;" nonCritical="drive" />
-			<ArmorSection start="165" span="30" armorID="&itDragonArmor;" nonCritical="drive" />
-			<ArmorSection start="135" span="30" armorID="&itDragonArmor;" nonCritical="drive" />
-			<ArmorSection start="105" span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="75"  span="30" armorID="&itDragonArmor;" nonCritical="general" />
-			<ArmorSection start="45"  span="30" armorID="&itDragonArmor;" />
-			<ArmorSection start="15"  span="30" armorID="&itDragonArmor;" nonCritical="dev0" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itDragonArmor;"
+			count=				"12"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itQianlongArchcannon;">
 				<Items>
@@ -941,55 +933,49 @@
 			attributes=			"freighter, genericClass, sungSlavers"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="340" span="10" armorID="&itSungArmor;" nonCritical="scanners" />
-			<ArmorSection start="330" span="10" armorID="&itSungArmor;" nonCritical="general" />
-			<ArmorSection start="320" span="10" armorID="&itSungArmor;" nonCritical="general" />
-			<ArmorSection start="310" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="300" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="290" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="280" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="270" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="260" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="250" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="240" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="230" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="220" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="210" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="200" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="190" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="180" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="170" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="160" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="150" span="10" armorID="&itSungArmor;"/>
-			<ArmorSection start="140" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="130" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="120" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="110" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="100" span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="90"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="80"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="70"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="60"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="50"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="40"  span="10" armorID="&itSungArmor;" nonCritical="cargo" />
-			<ArmorSection start="30"  span="10" armorID="&itSungArmor;" nonCritical="general" />
-			<ArmorSection start="20"  span="10" armorID="&itSungArmor;" nonCritical="general" />
-			<ArmorSection start="10"  span="10" armorID="&itSungArmor;" nonCritical="tactical" />
-			<ArmorSection start="0"   span="10" armorID="&itSungArmor;"/>
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itSungArmor;"
+			count=				"20"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itParticleBeamWeapon;" omnidirectional="true"/>
 			<Device deviceID="&itYoroiS100;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"50"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-66"
+					posY=		"0"
+					sizeX=		"60"
+					sizeY=		"30"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"150"
+
+					posX=		"10"
+					posY=		"0"
+					sizeX=		"118"
+					sizeY=		"30"
+					/>
+		</Interior>
+
 		<Image imageID="&rsLargeShips1;" imageX="1152" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<AISettings
-			fireRateAdj=		"15"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 			

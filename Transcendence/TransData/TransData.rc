@@ -32,13 +32,12 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "\r\n"
     "\0"
 END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""afxres.h""\r\n"
+    "#include ""windows.h""\r\n"
     "\0"
 END
 
@@ -51,8 +50,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,8,402,0
- PRODUCTVERSION 2,8,402,0
+ FILEVERSION 2,8,403,0
+ PRODUCTVERSION 2,8,403,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,12 +68,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "TransData"
-            VALUE "FileVersion", "2.8.402.0"
+            VALUE "FileVersion", "2.8.403.0"
             VALUE "InternalName", "TransData"
             VALUE "LegalCopyright", "Copyright (c) 2001-2013 by Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "OriginalFilename", "TransData"
             VALUE "ProductName", "TransData"
-            VALUE "ProductVersion", "2.8.2"
+            VALUE "ProductVersion", "2.8.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -86,15 +85,4 @@ END
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
 

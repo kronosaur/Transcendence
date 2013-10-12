@@ -66,8 +66,10 @@ const WORD RGB_MAP_LABEL =						CG16bitImage::RGBValue(255, 217, 128);
 
 const Metric MAX_AUTO_TARGET_DISTANCE =			(LIGHT_SECOND * 30.0);
 
+const int MAX_DAMAGE_OVERLAY_COUNT =			10;
+const int MAX_DRIVE_DAMAGE_OVERLAY_COUNT =		3;
+
 CShip::CShip (void) : CSpaceObject(&g_Class),
-		m_Armor(sizeof(CInstalledArmor), 2),
 		m_pDocked(NULL),
 		m_pDriveDesc(NULL),
 		m_pReactorDesc(NULL),
@@ -1050,6 +1052,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 	CArmorClass *pArmorClass = NULL;
 	bool bComplete = true;
+	pShip->m_Armor.InsertEmpty(pClass->GetHullSectionCount());
 	for (i = 0; i < pClass->GetHullSectionCount(); i++)
 		{
 		CShipClass::HullSection *pSect = pClass->GetHullSection(i);
@@ -1062,7 +1065,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		//	Install
 
-		CInstalledArmor ArmorSect;
+		CInstalledArmor &ArmorSect = pShip->m_Armor[i];
 		ArmorSect.Install(pShip, ShipItems, i, true);
 
 		//	Remember if we need to call OnInstall for this item
@@ -1076,11 +1079,6 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 			pArmorClass = pSect->pArmor;
 		else if (pArmorClass != pSect->pArmor)
 			bComplete = false;
-
-		//	Add armor
-
-		if (error = pShip->m_Armor.AppendStruct(&ArmorSect, NULL))
-			return error;
 		}
 
 	//	Update armor hit points now that we know whether we have a complete
@@ -1237,7 +1235,8 @@ void CShip::DamageCargo (SDamageCtx &Ctx)
 
 	DWORD dwDamageUNID = (mathRandom(1, 100) <= 20 ? UNID_DAMAGED_SITE_SMALL : UNID_DEPREZ_SITE_SMALL);
 	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
-	if (pOverlayType)
+	if (pOverlayType
+			&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DAMAGE_OVERLAY_COUNT)
 		{
 		//	Convert from a hit position to an overlay pos
 
@@ -1300,7 +1299,8 @@ void CShip::DamageDrive (SDamageCtx &Ctx)
 		//	Create an overlay to spew smoke
 
 		CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
-		if (pOverlayType)
+		if (pOverlayType
+				&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DRIVE_DAMAGE_OVERLAY_COUNT)
 			CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, iDamageTime);
 		}
 	}
@@ -3431,7 +3431,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	//	Figure out which section of armor got hit
 
 	Ctx.iSectHit = m_pClass->GetHullSectionAtAngle(iHitAngle);
-	CInstalledArmor *pArmor = (Ctx.iSectHit != -1 ? GetArmorSection(Ctx.iSectHit) : NULL);
+	CInstalledArmor *pArmor = ((Ctx.iSectHit != -1 && Ctx.iSectHit < GetArmorSectionCount()) ? GetArmorSection(Ctx.iSectHit) : NULL);
 
 	//	Tell our controller that someone hit us
 
@@ -3536,7 +3536,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 		{
 		//	Figure out which areas of the ship got affected
 
-		CShipClass::HullSection *pSect = (Ctx.iSectHit != -1 ? m_pClass->GetHullSection(Ctx.iSectHit) : NULL);
+		CShipClass::HullSection *pSect = ((Ctx.iSectHit != -1 && Ctx.iSectHit < m_pClass->GetHullSectionCount()) ? m_pClass->GetHullSection(Ctx.iSectHit) : NULL);
 		DWORD dwDamage = (pSect ? pSect->dwAreaSet : CShipClass::sectCritical);
 
 		//	If this is a non-critical hit, then there is still a random
@@ -3619,6 +3619,8 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 //	Ship has been destroyed
 
 	{
+	DEBUG_TRY
+
 	//	Figure out if we're creating a wreck or not
 
 	bool bCreateWreck = (Ctx.iCause != removedFromSystem)
@@ -3717,6 +3719,8 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 		default:
 			m_pClass->CreateExplosion(this, Ctx.pWreck);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CShip::OnDocked (CSpaceObject *pObj)
@@ -3937,6 +3941,8 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 		iTick = GetDestiny();
 
 	bool bPaintThrust = (m_pController->GetThrust() && !IsParalyzed() && ((iTick + GetDestiny()) % 4) != 0);
+	const CObjectImageArray *pImage;
+	pImage = &m_pClass->GetImage();
 
 	m_pClass->Paint(Dest, 
 			x, 
@@ -3949,11 +3955,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			);
 
 	if (IsHighlighted() && !Ctx.fNoSelection)
-		{
-		const CObjectImageArray *pImage;
-		pImage = &m_pClass->GetImage();
 		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
-		}
 
 	//	Paint energy fields
 
@@ -3961,7 +3963,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	Ctx.iVariant = 0;
 	Ctx.iDestiny = GetDestiny();
 	Ctx.iRotation = GetRotation();
-	m_EnergyFields.Paint(Dest, x, y, Ctx);
+	m_EnergyFields.Paint(Dest, pImage->GetImageViewportSize(), x, y, Ctx);
 
 	//	Paint effects
 
@@ -4213,13 +4215,9 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 
 	DWORD dwCount;
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
+	m_Armor.InsertEmpty(dwCount);
 	for (i = 0; i < (int)dwCount; i++)
-		{
-		CInstalledArmor Armor;
-		Armor.ReadFromStream(this, i, Ctx);
-
-		m_Armor.AppendStruct(&Armor, NULL);
-		}
+		m_Armor[i].ReadFromStream(this, i, Ctx);
 
 	//	Stealth
 

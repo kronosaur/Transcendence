@@ -868,10 +868,10 @@ CString ComposeNounPhrase (const CString &sNoun,
 		}
 	else if (iCount > 1
 			&& ((dwComposeFlags & nounCount) || (dwComposeFlags & nounCountOnly)))
-		{
-		sArticle = strFromInt(iCount, false);
-		sArticle.Append(CONSTLIT(" "));
-		}
+		sArticle = strPatternSubst(CONSTLIT("%d "), iCount);
+
+	else if (dwComposeFlags & nounCountAlways)
+		sArticle = strPatternSubst(CONSTLIT("%d "), iCount);
 
 	//	Compose
 

@@ -183,7 +183,8 @@ void CAIBehaviorCtx::CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric
 						if (rMaxRange > m_rMaxWeaponRange)
 							m_rMaxWeaponRange = rMaxRange;
 
-						if (pWeapon->GetClass()->GetLevel() > iBestNonLauncherLevel)
+						if (!pWeapon->GetClass()->IsAmmoWeapon()
+								&& pWeapon->GetClass()->GetLevel() > iBestNonLauncherLevel)
 							iBestNonLauncherLevel = pWeapon->GetClass()->GetLevel();
 
 						iPrimaryCount++;
@@ -332,6 +333,7 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 				//	Figure out the best non-launcher level
 
 				if (pDevice->GetCategory() != itemcatLauncher
+						&& !pDevice->GetClass()->IsAmmoWeapon()
 						&& pDevice->GetClass()->GetLevel() > m_iBestNonLauncherWeaponLevel)
 					{
 					m_iBestNonLauncherWeaponLevel = pDevice->GetClass()->GetLevel();
@@ -629,15 +631,17 @@ int CAIBehaviorCtx::CalcWeaponScore (CShip *pShip, CSpaceObject *pTarget, CInsta
 
 	iScore += pType->GetLevel() * 10;
 
-	//	Missiles count for more
+	//	Missiles/ammo count for more
 
-	if (pWeapon->GetCategory() == itemcatLauncher)
+	if (pWeapon->GetCategory() == itemcatLauncher
+			|| pWeapon->GetClass()->IsAmmoWeapon())
 		{
 		//	Don't waste missiles on "lesser" targets
 
 		if (pTarget 
 				&& pTarget->GetCategory() == CSpaceObject::catShip
-				&& pTarget->GetLevel() <= (m_iBestNonLauncherWeaponLevel + 2)
+				&& !pTarget->IsMultiHull()
+				&& pTarget->GetLevel() <= (m_iBestNonLauncherWeaponLevel - 2)
 				&& pTarget->GetLevel() <= (pType->GetLevel() - 2)
 				&& !pTarget->IsPlayer())
 			return 1;

@@ -132,7 +132,11 @@ void CBaseShipAI::Behavior (void)
 
 //	Behavior
 //
-//	Fly, fight, die
+//	Fly, fight, die.
+//
+//	NOTE: Most custom controllers override this. Only the standard controller 
+//	uses this. [And eventually, once we use order modules for everything,
+//	we should be able to delete the standard controller.]
 
 	{
 	//	Reset
@@ -204,6 +208,13 @@ void CBaseShipAI::Behavior (void)
 			OnBehavior();
 			return;
 			}
+
+		//	Tell our descendants to clean up. We need to do this because we don't
+		//	want our descendants to hold on to object pointers (since the order
+		//	module will handle everything, including getting destroyed object
+		//	notifications).
+
+		OnCleanUp();
 
 		//	Initialize order module
 

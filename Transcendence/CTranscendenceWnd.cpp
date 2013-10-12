@@ -28,10 +28,6 @@ int g_cyScreen = 0;
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
 #define STR_FIXED_TYPEFACE					CONSTLIT("Lucida Console")
 
-const CItem g_DummyItem;
-CItemList g_DummyItemList;
-CItemListManipulator g_DummyItemListManipulator(g_DummyItemList);
-
 CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) : m_hWnd(hWnd),
 		m_pTC(pTC),
 		m_State(gsNone),
@@ -1401,7 +1397,7 @@ LONG CTranscendenceWnd::WMDestroy (void)
 	if (m_State == gsDocked)
 		GetPlayer()->Undock();
 
-	//	Clean up debug console
+	//	Clean up displays
 
 	m_DebugConsole.CleanUp();
 

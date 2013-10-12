@@ -14,6 +14,7 @@
 #define EVENTS_TAG								CONSTLIT("Events")
 #define GLOBAL_DATA_TAG							CONSTLIT("GlobalData")
 #define IMAGE_TAG								CONSTLIT("Image")
+#define INITIAL_DATA_TAG						CONSTLIT("InitialData")
 #define ITEM_TABLE_TAG							CONSTLIT("ItemTable")
 #define ITEM_TYPE_TAG							CONSTLIT("ItemType")
 #define LANGUAGE_TAG							CONSTLIT("Language")
@@ -180,6 +181,7 @@ ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
 //	Bind design elements
 	
 	{
+	ALERROR error;
 	int i;
 
 	//	Now that we've connected to our based classes, update the event cache
@@ -188,12 +190,14 @@ ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
 	if (m_pInheritFrom)
 		{
 		for (i = 0; i < evtCount; i++)
+			{
 			if (m_EventsCache[i].pCode == NULL)
 				{
 				SEventHandlerDesc *pInherit = m_pInheritFrom->GetInheritedCachedEvent((ECachedHandlers)i);
 				if (pInherit)
 					m_EventsCache[i] = *pInherit;
 				}
+			}
 
 		//	Update the language block with data from our ancestors
 
@@ -202,7 +206,17 @@ ALERROR CDesignType::BindDesign (SDesignLoadCtx &Ctx)
 
 	//	Type-specific
 
-	return OnBindDesign(Ctx);
+	try
+		{
+		error = OnBindDesign(Ctx);
+		}
+	catch (...)
+		{
+		::kernelDebugLogMessage("Crash in OnBindDesign [UNID: %08x]", m_dwUNID);
+		throw;
+		}
+
+	return error;
 	}
 
 ALERROR CDesignType::ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sError)
@@ -1376,7 +1390,8 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			}
 		else if (strEquals(pItem->GetTag(), STATIC_DATA_TAG))
 			m_StaticData.SetFromXML(pItem);
-		else if (strEquals(pItem->GetTag(), GLOBAL_DATA_TAG))
+		else if (strEquals(pItem->GetTag(), GLOBAL_DATA_TAG)
+				|| (GetType() == designSovereign && strEquals(pItem->GetTag(), INITIAL_DATA_TAG)))
 			{
 			m_InitGlobalData.SetFromXML(pItem);
 			m_GlobalData = m_InitGlobalData;
@@ -1486,12 +1501,16 @@ void CDesignType::MergeLanguageTo (CLanguageDataBlock &Dest)
 //	destination.
 
 	{
+	DEBUG_TRY
+
 	Dest.MergeFrom(m_Language);
 
 	//	If we inherit from another type, add that data too
 
 	if (m_pInheritFrom)
 		m_pInheritFrom->MergeLanguageTo(Dest);
+
+	DEBUG_CATCH
 	}
 
 ALERROR CDesignType::PrepareBindDesign (SDesignLoadCtx &Ctx)
@@ -1845,11 +1864,22 @@ CEffectCreatorRef &CEffectCreatorRef::operator= (const CEffectCreatorRef &Source
 
 ALERROR CEffectCreatorRef::Bind (SDesignLoadCtx &Ctx)
 	{
+	DEBUG_TRY
+
 	//	Clean up, because we might want to recompute for next time.
 
 	if (m_pSingleton)
 		{
-		delete m_pSingleton;
+		try
+			{
+			delete m_pSingleton;
+			}
+		catch (...)
+			{
+			::kernelDebugLogMessage("Crash deleting singleton: %08x. UNID = %08x", (DWORD)m_pSingleton, m_dwUNID);
+			throw;
+			}
+
 		m_pSingleton = NULL;
 		}
 
@@ -1861,6 +1891,8 @@ ALERROR CEffectCreatorRef::Bind (SDesignLoadCtx &Ctx)
 		return m_pType->BindDesign(Ctx);
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CEffectCreatorRef::CreateBeamEffect (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)
@@ -1912,6 +1944,10 @@ IEffectPainter *CEffectCreatorRef::CreatePainter (CCreatePainterCtx &Ctx)
 		{
 		pPainter->SetSingleton(true);
 		m_pSingleton = pPainter;
+
+#ifdef DEBUG_SINGLETON_EFFECTS
+		::kernelDebugLogMessage("Create singleton painter UNID = %08x: %08x", m_dwUNID, (DWORD)pPainter);
+#endif
 		}
 
 	//	Done
@@ -2242,7 +2278,7 @@ CString ParseAchievementSort (ICCItem *pItem)
 	else if (pItem->IsNil())
 		return NULL_STR;
 	else if (pItem->IsInteger())
-		return strPatternSubst(CONSTLIT("%010d"), pItem->GetIntegerValue());
+		return strPatternSubst(CONSTLIT("%08x"), pItem->GetIntegerValue());
 	else
 		return pItem->GetStringValue();
 	}
