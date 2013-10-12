@@ -5,11 +5,6 @@
 #include "Kernel.h"
 #include <math.h>
 
-#define	m		((unsigned long)2147483647)
-#define	q		((unsigned long)44488)
-
-#define	a		((unsigned int)48271)
-#define	r		((unsigned int)3399)
 
 DWORD g_Seed = 0;
 
@@ -83,6 +78,12 @@ DWORD mathRandom (void)
 //	New York, NY.,October 1988 p.1192
 
 	{
+	const DWORD m = (DWORD)2147483647;
+	const DWORD q = (DWORD)44488;
+
+	const DWORD a = (DWORD)48271;
+	const DWORD r = (DWORD)3399;
+
 	//	Seed it
 
 	if (g_Seed == 0)
@@ -206,20 +207,14 @@ int mathSeededRandom (int iSeed, int iFrom, int iTo)
 //	The same random number is returned for any given value of iSeed
 
 	{
-#define rand_with_seed()		(((dwSeed = dwSeed * 214013L + 2531011L) >> 16) & 0x7fff)
+	int a = 1103515245;
+	int c = 12345;
 
-	DWORD dwSeed = (DWORD)iSeed;
-	int iRandom;
+	iSeed = a * iSeed + c;
+	int iRandom = iSeed ^ (iSeed >> 11) ^ (iSeed << 5) & (iSeed >> 7) ^ (iSeed << 3) ^ (iSeed >> 13);
 	int iRange = Absolute(iTo - iFrom) + 1;
 
-	if (iRange > RAND_MAX)
-		iRandom = ((10000 * rand_with_seed()) + (rand_with_seed() % 10000)) % iRange;
-	else
-		iRandom = rand_with_seed() % iRange;
-
-	return iRandom + iFrom;
-
-#undef rand_with_seed
+	return iFrom + (Absolute(iRandom) % iRange);
 	}
 
 int mathSqrt (int x)

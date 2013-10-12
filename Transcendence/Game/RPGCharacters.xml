@@ -277,9 +277,11 @@
 				))
 
 			(setq rpgCharacterSetMeeting (lambda (charType)
-				(typSetData charType 'latestPlayerMeetingTime (unvGetTick))
-				(if (not (typGetData charType 'firstPlayerMeetingTime))
-					(typSetData charType 'firstPlayerMeetingTime (unvGetTick))
+				(block Nil
+					(typSetData charType 'latestPlayerMeetingTime (unvGetTick))
+					(if (not (typGetData charType 'firstPlayerMeetingTime))
+						(typSetData charType 'firstPlayerMeetingTime (unvGetTick))
+						)
 					)
 				))
 

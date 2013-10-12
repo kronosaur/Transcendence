@@ -1850,6 +1850,12 @@
 								imageHeight="48"
 								imageFrameCount="16"
 								imageTicksPerFrame="2"/>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"65"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
 					</HitEffect>
 				</Missile>
 
@@ -1881,6 +1887,22 @@
 							vaporTrailColor="0xd0, 0xd0, 0xd0"
 							>
 						<Image imageID="&rsMissiles4;" imageX="0" imageY="0" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="1"/>
+						
+						<HitEffect>
+							<Image imageID="&rsExplosionsAG48;"
+									imageX="0"
+									imageY="0"
+									imageWidth="48"
+									imageHeight="48"
+									imageFrameCount="16"
+									imageTicksPerFrame="2"/>
+							<Flare
+									style=			"fadingBlast"
+									radius=			"40"
+									primaryColor=	"0xff, 0xff, 0xf0"
+									lifetime=		"8"
+									/>
+						</HitEffect>
 					</Fragment>
 				</Missile>
 			</Missiles>
@@ -2527,7 +2549,6 @@
 
 						failsafe=		"10"
 
-						hitEffect=		"&efFragmentationExplosion;"
 						sound=			"&snMissileLauncher;"
 						>
 
@@ -2535,11 +2556,22 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"150"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
 					<Fragment 
 							count=				"48"
 							type=				"beam"
 
-							damage=				"thermo:1d8+1; WMD4"
+							damage=				"thermo:1d8+2; WMD4"
 							lifetime=			"5"
 							>
 						<Effect>
@@ -2553,9 +2585,7 @@
 					</Fragment>
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Mark V Howitzer -->
@@ -2610,6 +2640,12 @@
 						imageHeight="64"
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"100"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+						/>
 			</HitEffect>
 		</Weapon>
 
@@ -2685,6 +2721,12 @@
 									imageHeight="48"
 									imageFrameCount="16"
 									imageTicksPerFrame="2"/>
+							<Flare
+									style=			"fadingBlast"
+									radius=			"220"
+									primaryColor=	"0xff, 0xff, 0xf0"
+									lifetime=		"8"
+									/>
 						</HitEffect>
 					</Fragment>
 
@@ -2738,6 +2780,12 @@
 									imageHeight="48"
 									imageFrameCount="16"
 									imageTicksPerFrame="2"/>
+							<Flare
+									style=			"fadingBlast"
+									radius=			"220"
+									primaryColor=	"0xff, 0xff, 0xf0"
+									lifetime=		"8"
+									/>
 						</HitEffect>
 					</Fragment>
 
@@ -2859,6 +2907,12 @@
 								imageHeight="64"
 								imageFrameCount="16"
 								imageTicksPerFrame="2"/>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"95"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
 					</HitEffect>
 				</Missile>
 			</Missiles>
@@ -2910,6 +2964,12 @@
 						imageHeight="64"
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"95"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+						/>
 			</HitEffect>
 		</Weapon>
 
@@ -2976,6 +3036,12 @@
 						imageHeight="96"
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"150"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+						/>
 			</HitEffect>
 		</Weapon>
 
@@ -3101,6 +3167,12 @@
 								imageHeight="64"
 								imageFrameCount="16"
 								imageTicksPerFrame="2"/>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"100"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
 					</HitEffect>
 				</Missile>
 
@@ -3132,6 +3204,12 @@
 								imageHeight="64"
 								imageFrameCount="16"
 								imageTicksPerFrame="2"/>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"95"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
 					</HitEffect>
 				</Missile>
 
@@ -3189,6 +3267,12 @@
 								imageHeight="64"
 								imageFrameCount="16"
 								imageTicksPerFrame="2"/>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"95"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
 					</HitEffect>
 				</Missile>
 			</Missiles>
@@ -3278,6 +3362,12 @@
 									imageHeight="64"
 									imageFrameCount="16"
 									imageTicksPerFrame="2"/>
+							<Flare
+									style=			"fadingBlast"
+									radius=			"95"
+									primaryColor=	"0xff, 0xff, 0xf0"
+									lifetime=		"8"
+									/>
 						</HitEffect>
 					</Fragment>
 
@@ -3409,6 +3499,12 @@
 									imageHeight="48"
 									imageFrameCount="16"
 									imageTicksPerFrame="2"/>
+							<Flare
+									style=			"fadingBlast"
+									radius=			"65"
+									primaryColor=	"0xff, 0xff, 0xf0"
+									lifetime=		"8"
+									/>
 						</HitEffect>
 					</Fragment>
 
@@ -3639,6 +3735,12 @@
 						imageHeight="64"
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"95"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+						/>
 			</HitEffect>
 		</Weapon>
 

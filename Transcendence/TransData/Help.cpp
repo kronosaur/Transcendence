@@ -12,6 +12,7 @@
 
 #define ARMOR_TABLE_SWITCH					CONSTLIT("armortable")
 #define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
+#define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
@@ -60,6 +61,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/viewer]             Open viewer to watch the battle.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(CLEAR_REGISTERED_SWITCH))
+		{
+		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
+		printf("       /dataFile:filename   TDB file to decompile.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(DECOMPILE_SWITCH))
 		{
 		printf("  /clearRegistered      Clears registered flag on game file.\n");
 		printf("       /gameFile:filename   Save file to clear.\n");

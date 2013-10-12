@@ -311,6 +311,8 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 //	Load a star system from the game file
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	ASSERT(m_pFile);
@@ -397,6 +399,8 @@ ALERROR CGameFile::LoadSystem (DWORD dwUNID,
 		return ComposeLoadError(CONSTLIT("Unable to close stream."), retsError);
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CGameFile::LoadSystemMapFromStream (DWORD dwVersion, const CString &sStream)
@@ -457,6 +461,8 @@ ALERROR CGameFile::LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *r
 //	Load the universe
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	ASSERT(m_pFile);
@@ -502,6 +508,8 @@ ALERROR CGameFile::LoadUniverse (CUniverse &Univ, DWORD *retdwSystemID, DWORD *r
 	Stream.Close();
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CGameFile::Open (const CString &sFilename)
@@ -511,6 +519,8 @@ ALERROR CGameFile::Open (const CString &sFilename)
 //	Open an existing game file
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	if (m_iRefCount == 0)
@@ -582,6 +592,8 @@ Fail:
 	delete m_pFile;
 	m_pFile = NULL;
 	return error;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CGameFile::SaveGameHeader (SGameHeader &Header)

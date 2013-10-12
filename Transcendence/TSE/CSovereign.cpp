@@ -238,7 +238,7 @@ bool CSovereign::FindDataField (const CString &sField, CString *retsValue)
 	return true;
 	}
 
-CSovereign::SRelationship *CSovereign::FindRelationship (CSovereign *pSovereign)
+CSovereign::SRelationship *CSovereign::FindRelationship (CSovereign *pSovereign, bool bCheckParent)
 
 //	FindRelationship
 //
@@ -250,10 +250,21 @@ CSovereign::SRelationship *CSovereign::FindRelationship (CSovereign *pSovereign)
 	while (pRel && pRel->pSovereign != pSovereign)
 		pRel = pRel->pNext;
 
+	//	If we didn't find a relationship and we want to check our parent, then
+	//	we see if they have a relationship.
+
+	CSovereign *pInheritFrom;
+	if (pRel == NULL 
+			&& bCheckParent
+			&& (pInheritFrom = CSovereign::AsType(GetInheritFrom())))
+		pRel = pInheritFrom->FindRelationship(pSovereign, true);
+
+	//	Done
+
 	return pRel;
 	}
 
-CSovereign::Disposition CSovereign::GetDispositionTowards (CSovereign *pSovereign)
+CSovereign::Disposition CSovereign::GetDispositionTowards (CSovereign *pSovereign, bool bCheckParent)
 
 //	GetDispositionTowards
 //
@@ -268,7 +279,7 @@ CSovereign::Disposition CSovereign::GetDispositionTowards (CSovereign *pSovereig
 	//	See if we have a specific relationship. If so, then return the
 	//	disposition there.
 
-	SRelationship *pRel = FindRelationship(pSovereign);
+	SRelationship *pRel = FindRelationship(pSovereign, bCheckParent);
 	if (pRel)
 		return pRel->iDisp;
 
@@ -347,6 +358,8 @@ void CSovereign::InitRelationships (void)
 //	Initialize relationships from XML element
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	if (m_pInitialRelationships)
@@ -376,7 +389,7 @@ void CSovereign::InitRelationships (void)
 				if (pRelDesc->GetAttributeBool(MUTUAL_ATTRIB)
 						&& pTarget != this)
 					{
-					Disposition iReverseDisp = pTarget->GetDispositionTowards(this);
+					Disposition iReverseDisp = pTarget->GetDispositionTowards(this, false);
 					if (iReverseDisp != iDisp)
 						{
 						//	Check to see if we already have an explicit relationship
@@ -396,6 +409,8 @@ void CSovereign::InitRelationships (void)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CSovereign::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
@@ -463,7 +478,7 @@ ALERROR CSovereign::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(sAlignment, DESTRUCTIVE_CHAOS_ALIGN))
 			m_iAlignment = alignMegalomaniac;
 		else
-			return ERR_FAIL;
+			return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unknown alignment: %s"), sAlignment));
 		}
 
 	//	Load relationships

@@ -14,7 +14,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"500"
 			repairRate=			"3"
 			shipRepairRate=		"2"
 			explosionType=		"&vtThermoExplosion1;"
@@ -129,7 +129,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itP120HexphaseArmor;"
-			hitPoints=			"500"
+			hitPoints=			"1000"
 			repairRate=			"5"
 			shipRepairRate=		"2"
 			fireRateAdj=		"40"

@@ -14,6 +14,7 @@
 	
 	behavior:			Autons's current behavior
 							Nil						= nothing
+							'attackingAtWill		= attacking any target in range
 							'attackingTarget		= attacking a target
 							'escorting				= escorting the player
 							'returning				= returning to player ship
@@ -97,6 +98,33 @@
 							
 							(objSetData gSource 'behavior 'attackingTarget)
 							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Break &amp; attack" key="B">
+				<OnShow>
+					(and (eq (objGetData gSource "behavior") 'escorting)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+				
+				<Invoke>
+					(block (theTarget)
+						(switch
+							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
+									(gr (objGetDistance gPlayerShip theTarget) 100)
+									)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+							
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack theTarget)
+								
+								(objSetData gSource "behavior" 'attackingAtWill)
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+								)
 							)
 						)
 				</Invoke>
@@ -370,6 +398,12 @@
 					(switch
 						(not (objGetProperty gSource 'playerWingman))
 							Nil
+							
+						(and (eq behavior 'attackingAtWill)
+								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
+								(leq (objGetDistance gPlayerShip theTarget) 100)
+								)
+							(shpOrder gSource 'attack theTarget)
 							
 						gPlayerShip
 							(block Nil

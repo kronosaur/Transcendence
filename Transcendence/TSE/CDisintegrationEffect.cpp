@@ -47,6 +47,8 @@ ALERROR CDisintegrationEffect::Create (CSystem *pSystem,
 //	Creates a new effects object
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	CDisintegrationEffect *pEffect;
 
@@ -89,6 +91,8 @@ ALERROR CDisintegrationEffect::Create (CSystem *pSystem,
 		*retpEffect = pEffect;
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CDisintegrationEffect::InitParticle (SParticle *pParticle)

@@ -1655,6 +1655,7 @@
 									(objSetIdentified gTarget)
 									(shpCancelOrders gPlayerShip)
 									(shpOrder gPlayerShip 'attack gTarget)
+									(objSetIdentified gTarget)
 
 									(objSetData gSource "missionID" 'destroyStation)
 									(objSetData gSource "missionStatus" 'inProgress)

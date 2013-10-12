@@ -118,6 +118,8 @@ ALERROR CPlayerSettings::Bind (SDesignLoadCtx &Ctx, CShipClass *pClass)
 //	Bind design
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	int i;
 
@@ -193,6 +195,8 @@ ALERROR CPlayerSettings::Bind (SDesignLoadCtx &Ctx, CShipClass *pClass)
 	//	Done
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CPlayerSettings::CleanUp (void)

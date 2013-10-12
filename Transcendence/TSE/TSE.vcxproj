@@ -161,6 +161,7 @@
     <ClInclude Include="TSESpaceObjectsImpl.h" />
     <ClInclude Include="TSEStorage.h" />
     <ClInclude Include="TSETopologyProcessorsImpl.h" />
+    <ClInclude Include="TSETransLisp.h" />
     <ClInclude Include="TSETypes.h" />
     <ClInclude Include="TSEUtil.h" />
   </ItemGroup>
@@ -271,6 +272,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="IListData.cpp" />
     <ClCompile Include="SFXRay.cpp" />
     <ClCompile Include="XMLLoader.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

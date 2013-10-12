@@ -123,14 +123,32 @@
 				<Actions>
 					<Action name="Analyze Item" key="A" default="1">
 						(block (result)
+						
+							;	Analyze the item
 							(setq result (rpgAnalyzeItem gSource (scrGetItem gScreen)))
-							
+						
+							;	Consume a charge on the analyzer
 							(setq gItem (objSetItemProperty gSource gItem 'incCharges -1))
 							
+							;	Set the title (for the next pane)
 							(setq gTitle (cat 
 								"Charges Left: " (itmGetProperty gItem 'charges) "\n\n"
 								(@ result 'desc)
 								))
+								
+							(dbgOutput "Analyze:")
+								
+							;	Set the filter so we only select the modified item
+							(scrSetListFilter gScreen (lambda (theItem)
+								(block Nil
+									(dbgOutput "item1: " (itmGetName theItem 0))
+									(dbgOutput "item2: " (itmGetName (@ result 'modifiedItem) 0))
+									(itmIsEqual theItem (@ result 'modifiedItem))
+									)
+								))
+							
+							;	Done
+							
 							(scrShowPane gScreen "Done")
 							)
 					</Action>
@@ -162,7 +180,7 @@
 
 	<Globals>
 		(block Nil
-			(setq rpgAnalyzeItem (lambda (sourceObj itemToAnalyze desc)
+			(setq rpgAnalyzeItem (lambda (sourceObj itemToAnalyze desc modifiedItem)
 			
 				;	We return a struct with the following elements:
 				;
@@ -215,7 +233,7 @@
 												"You attempt to analyze " (itmGetName itemToAnalyze 0x40) " but accidentally short out a major component. "
 												"The " (itmGetName itemToAnalyze 0x80) " has been damaged."
 												))
-											(objSetItemProperty sourceObj itemToAnalyze 'damaged True)
+											(setq modifiedItem (objSetItemProperty sourceObj itemToAnalyze 'damaged True))
 											)
 											
 									;	If this is an item that can be destroyed, it is.
@@ -228,11 +246,15 @@
 												" with a burst high-energy ions. "
 												))
 											(objRemoveItem sourceObj itemToAnalyze)
+											(setq modifiedItem Nil)
 											)
 									
 									;	Otherwise, failure.
 									
-									(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
+									(block Nil
+										(setq desc (cat "Unfortunately, you botched the analysis and got no results."))
+										(setq modifiedItem itemToAnalyze)
+										)
 									)
 								)
 					
@@ -240,7 +262,10 @@
 						;	we return the result.
 						
 						(setq result (objFireItemEvent sourceObj itemToAnalyze 'OnAnalyzeItem))
-							(setq desc (@ result 'desc))
+							(block Nil
+								(setq desc (@ result 'desc))
+								(setq modifiedItem (@ result 'modifiedItem))
+								)
 						
 						;	If this is an unknown item, then we identify it.
 						
@@ -250,19 +275,24 @@
 								(setq desc (cat
 									"Your analysis reveals it to be " (itmGetName itemToAnalyze 0x04) "."
 									))
+								(setq modifiedItem itemToAnalyze)
 								)
 								
 						;	Otherwise, nothing
 						
-						(setq desc (cat
-							"You run the analyzer but are unable to reveal any additional information on the item."
-							))
+						(block Nil
+							(setq desc (cat
+								"You run the analyzer but are unable to reveal any additional information on the item."
+								))
+							(setq modifiedItem itemToAnalyze)
+							)
 						)
 						
 					;	Done
 					
 					{
 						desc: desc
+						modifiedItem: itemToAnalyze
 						}
 					)
 				))

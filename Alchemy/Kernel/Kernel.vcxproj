@@ -468,6 +468,7 @@
     <ClCompile Include="CMarkovWordGenerator.cpp" />
     <ClCompile Include="CryptoRandom.cpp" />
     <ClCompile Include="SecureHashAlgorithm.cpp" />
+    <ClCompile Include="Zip.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Includes\Crypto.h" />
@@ -480,6 +481,12 @@
     <ClInclude Include="..\..\Includes\TMap.h" />
     <ClInclude Include="..\..\Includes\TQueue.h" />
     <ClInclude Include="..\..\Includes\TStack.h" />
+    <ClInclude Include="..\..\Includes\Zip.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\zlib-1.2.7\contrib\vstudio\vc10\zlibstat.vcxproj">
+      <Project>{745dec58-ebb3-47a9-a9b8-4c6627c01bf8}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

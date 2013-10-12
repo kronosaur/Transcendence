@@ -730,7 +730,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"itmSetEnhanced",				fnItemSet,		FN_ITEM_ENHANCED,
 			"(itmSetEnhanced item mods) -> item",
-			"vi",	0,	},
+			"vv",	0,	},
 
 		{	"itmSetKnown",					fnItemTypeSet,	FN_ITEM_TYPE_SET_KNOWN,
 			"(itmSetKnown type|item [True/Nil])",
@@ -1762,6 +1762,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property\n\n"
 			
 			"   'acceptedOn        Tick on which player accepted mission (or Nil)\n"
+			"   'canBeDeleted      Mission can be deleted by player\n"
 			"   'debrieferID       ID of the object that will debrief the player\n"
 			"   'isActive          Is an active player mission\n"
 			"   'isCompleted       Is a completed mission (player or non-player)\n"
@@ -2923,7 +2924,7 @@ ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (g_pUniverse->AddDynamicType(pCtx->GetExtension(), 
 					dwUNID, 
 					pArgs->GetElement(1)->GetStringValue(), 
-					((pCtx->GetEvent() == eventOnGlobalTypesInit) ? true : false),
+					pCtx->InEvent(eventOnGlobalTypesInit),
 					&sError) != NOERROR)
 				return pCC->CreateError(sError);
 
@@ -3545,7 +3546,7 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	If we're inside the GetName event, then don't recurse
 
-			if (pCtx->GetEvent() == eventGetName && pCtx->GetItemType() == Item.GetType())
+			if (pCtx->InEvent(eventGetName) && pCtx->GetItemType() == Item.GetType())
 				dwFlags |= nounNoEvent;
 
 			pResult = pCC->CreateString(Item.GetNounPhrase(dwFlags));
@@ -3681,8 +3682,15 @@ ICCItem *fnItemSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			}
 
 		case FN_ITEM_ENHANCED:
-			Item.AddEnhancement((DWORD)pArgs->GetElement(1)->GetIntegerValue());
+			{
+			CItemEnhancement Mods;
+			CString sError;
+			if (Mods.InitFromDesc(pArgs->GetElement(1), &sError) != NOERROR)
+				return pCC->CreateError(sError, pArgs->GetElement(1));
+
+			Item.AddEnhancement(Mods);
 			return CreateListFromItem(*pCC, Item);
+			}
 
 		case FN_ITEM_PROPERTY:
 			{
@@ -4824,7 +4832,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Avoid recursion
 
-			if ((pCtx->GetEvent() == eventGetTradePrice || pCtx->GetEvent() == eventGetGlobalPlayerPriceAdj)
+			if ((pCtx->InEvent(eventGetTradePrice) || pCtx->InEvent(eventGetGlobalPlayerPriceAdj))
 					&& pCtx->GetItemType() == Item.GetType())
 				iValue = Item.GetValue();
 
@@ -5079,7 +5087,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	Avoid recursion
 
-			if ((pCtx->GetEvent() == eventGetTradePrice || pCtx->GetEvent() == eventGetGlobalPlayerPriceAdj)
+			if ((pCtx->InEvent(eventGetTradePrice) || pCtx->InEvent(eventGetGlobalPlayerPriceAdj))
 					&& pCtx->GetItemType() == Item.GetType())
 				iValue = Item.GetValue();
 
@@ -6131,7 +6139,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			CString sProperty = pArgs->GetElement(2)->GetStringValue();
 			ICCItem *pValue = (pArgs->GetCount() > 3 ? pArgs->GetElement(3) : NULL);
-			int iCount = (pArgs->GetCount() > 4 ? Max(0, pArgs->GetElement(4)->GetIntegerValue()) : -1);
+			int iCount = (pArgs->GetCount() > 4 ? Max(0, pArgs->GetElement(4)->GetIntegerValue()) : 1);
 
 			//	Set it
 
@@ -6810,7 +6818,7 @@ ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			}
 
 		case FN_MISSION_CANCEL_TIMER:
-			return pCC->CreateBool(g_pUniverse->CancelEvent(pMission, pArgs->GetElement(1)->GetStringValue(), pCtx->GetEvent() == eventDoEvent));
+			return pCC->CreateBool(g_pUniverse->CancelEvent(pMission, pArgs->GetElement(1)->GetStringValue(), pCtx->InEvent(eventDoEvent)));
 
 		case FN_MISSION_CLOSED:
 			return pCC->CreateBool(pMission->SetUnavailable());
@@ -7982,6 +7990,20 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 					pItemList = &ItemList;
 				}
 
+			//	Get the enhancement
+
+			CItemEnhancement Mods;
+			CString sError;
+			if (pArgs->GetCount() > 2)
+				{
+				if (Mods.InitFromDesc(pArgs->GetElement(2), &sError) != NOERROR)
+					{
+					pArgs->Discard(pCC);
+					pResult = pCC->CreateError(sError);
+					break;
+					}
+				}
+
 			if (pItemList == NULL)
 				{
 				pArgs->Discard(pCC);
@@ -7989,21 +8011,16 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 				}
 			else if (pItemList->GetItemAtCursor().GetType()->IsArmor())
 				{
-				DWORD dwMods = 0;
-				if (pArgs->GetCount() > 2)
-					dwMods = (DWORD)pArgs->GetElement(2)->GetIntegerValue();
-
-				EnhanceItemStatus iResult = pShip->EnhanceItem(*pItemList, dwMods);
+				EnhanceItemStatus iResult = pShip->EnhanceItem(*pItemList, Mods);
 				pArgs->Discard(pCC);
 				pResult = pCC->CreateInteger(iResult);
 				}
 			else if (pItemList->GetItemAtCursor().GetType()->IsDevice())
 				{
-				DWORD dwMods = etBinaryEnhancement;
-				if (pArgs->GetCount() > 2)
-					dwMods = (DWORD)pArgs->GetElement(2)->GetIntegerValue();
+				if (Mods.IsEmpty())
+					Mods = CItemEnhancement(etBinaryEnhancement);
 
-				EnhanceItemStatus iResult = pShip->EnhanceItem(*pItemList, dwMods);
+				EnhanceItemStatus iResult = pShip->EnhanceItem(*pItemList, Mods);
 				pArgs->Discard(pCC);
 				pResult = pCC->CreateInteger(iResult);
 				}
@@ -8627,7 +8644,7 @@ ICCItem *fnSystemAddStationTimerEvent (CEvalContext *pEvalCtx, ICCItem *pArgs, D
 				return pCC->CreateNil();
 			CString sEvent = pArgs->GetElement(1)->GetStringValue();
 			
-			pTarget->GetSystem()->CancelTimedEvent(pTarget, sEvent, pCtx->GetEvent() == eventDoEvent);
+			pTarget->GetSystem()->CancelTimedEvent(pTarget, sEvent, pCtx->InEvent(eventDoEvent));
 
 			return pCC->CreateTrue();
 			}
@@ -8643,7 +8660,7 @@ ICCItem *fnSystemAddStationTimerEvent (CEvalContext *pEvalCtx, ICCItem *pArgs, D
 			if (pSystem == NULL)
 				return StdErrorNoSystem(*pCC);
 
-			pSystem->CancelTimedEvent(pTarget, sEvent, pCtx->GetEvent() == eventDoEvent);
+			pSystem->CancelTimedEvent(pTarget, sEvent, pCtx->InEvent(eventDoEvent));
 
 			return pCC->CreateTrue();
 			}

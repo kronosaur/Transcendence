@@ -414,6 +414,7 @@ void CAttackOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *
 	//	current target, then switch to attack it.
 
 	if (m_fNearestTarget 
+			&& pAttacker
 			&& !bFriendlyFire
 			&& pAttacker != m_Objs[objTarget]
 			&& IsBetterTarget(pShip, Ctx, m_Objs[objTarget], pAttacker))
@@ -694,10 +695,15 @@ void CAttackStationOrder::OnAttacked (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceO
 	{
 	DEBUG_TRY
 
+	//	Nothing to do if no attacker
+
+	if (pAttacker == NULL)
+		;
+
 	//	If we're currently attacking the station, see if we should switch our
 	//	attention to this defender.
 
-	if (m_iState == stateAttackingTarget
+	else if (m_iState == stateAttackingTarget
 			
 			&& !bFriendlyFire
 

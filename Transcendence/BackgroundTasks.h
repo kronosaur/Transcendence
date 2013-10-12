@@ -108,7 +108,11 @@ class CLoadUserCollectionTask : public IHITask
 		CLoadUserCollectionTask (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse) : IHITask(HI), m_Service(Service), m_Multiverse(Multiverse) { }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
+			{
+			::kernelDebugLogMessage("Loading user collection.");
+			return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); 
+			}
 
 	private:
 		CCloudService &m_Service;

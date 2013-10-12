@@ -42,6 +42,8 @@ ALERROR CFractureEffect::Create (CSystem *pSystem,
 //	Creates a new effects object
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	CFractureEffect *pEffect;
 
@@ -84,6 +86,8 @@ ALERROR CFractureEffect::Create (CSystem *pSystem,
 		*retpEffect = pEffect;
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CFractureEffect::InitParticleArray (void)

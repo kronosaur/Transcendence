@@ -1,5 +1,6 @@
 *.aps
 *.bak
+*.cache
 *.dep
 *.dsp
 *.dsw

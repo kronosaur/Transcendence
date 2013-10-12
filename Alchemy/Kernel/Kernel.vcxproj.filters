@@ -25,6 +25,9 @@
       <UniqueIdentifier>{a98f25ff-1fe0-4649-89b3-c8669291417f}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Zip">
+      <UniqueIdentifier>{06d51e6d-d484-4d67-a70e-684c0dcf49ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CArchiver.cpp">
@@ -180,6 +183,9 @@
     <ClCompile Include="SecureHashAlgorithm.cpp">
       <Filter>Source Files\Crypto</Filter>
     </ClCompile>
+    <ClCompile Include="Zip.cpp">
+      <Filter>Source Files\Zip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Includes\Crypto.h">
@@ -210,6 +216,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Includes\TStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Includes\Zip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

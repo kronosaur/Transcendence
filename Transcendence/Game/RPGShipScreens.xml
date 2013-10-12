@@ -449,10 +449,22 @@
 
 							(scrSetDesc gScreen (msnGetProperty theMission 'summary))
 							)
+							
+						(scrShowAction gScreen 0 (msnGetProperty theMission 'canBeDeleted))
 						)
 				</OnPaneInit>
 
 				<Actions>
+					<Action name="Remove Mission" key="R">
+						(block (theEntry theMission)
+							(setq theEntry (scrGetListEntry gScreen))
+							(setq theMission (@ theEntry 3))
+							
+							(msnFailure theMission)
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+					
 					<Action name="Done" key="D" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>

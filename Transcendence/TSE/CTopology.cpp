@@ -1488,11 +1488,17 @@ int CTopology::GetDistance (CTopologyNode *pSource, const CString &sDestID, int 
 	//	Recursively compute the distance based on any neighboring
 	//	systems.
 
+	bool bDistKnown = true;
 	iNewBestDist = INFINITE_DISTANCE;
 	for (i = 0; i < pSource->GetStargateCount(); i++)
 		{
 		CTopologyNode *pDest = pSource->GetStargateDest(i);
-		if (pDest && !pDest->IsMarked())
+		if (pDest == NULL)
+			continue;
+
+		//	Try to calculate the distance, if we can
+
+		if (!pDest->IsMarked())
 			{
 			int iDist = GetDistance(pDest, sDestID, iNewBestDist - 1);
 			if (iDist < iNewBestDist)
@@ -1505,6 +1511,13 @@ int CTopology::GetDistance (CTopologyNode *pSource, const CString &sDestID, int 
 					break;
 				}
 			}
+
+		//	If the destination node doesn't know its distance, then we can't
+		//	compute our distance either (it means that we're down a dead-end branch
+		//	or something).
+
+		if (pDest->GetCalcDistance() == UNKNOWN_DISTANCE)
+			bDistKnown = false;
 		}
 
 	//	Clear the mark
@@ -1516,7 +1529,10 @@ int CTopology::GetDistance (CTopologyNode *pSource, const CString &sDestID, int 
 	if (iNewBestDist != INFINITE_DISTANCE)
 		iNewBestDist++;
 
-	pSource->SetCalcDistance(iNewBestDist);
+	//	If we have enough information to set our distance, do it now
+
+	if (bDistKnown)
+		pSource->SetCalcDistance(iNewBestDist);
 
 	//	Done
 

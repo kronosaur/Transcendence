@@ -2315,8 +2315,31 @@ void CStandardShipAI::OnReadFromStream (SLoadCtx &Ctx)
 	//	Read stuff
 
 	Ctx.pStream->Read((char *)&m_State, sizeof(DWORD));
-	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
-	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+
+	//	If we don't have an order module, then we expect to need these.
+
+	if (m_pOrderModule == NULL)
+		{
+		CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
+		CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
+		}
+
+	//	Otherwise, we ignore them, since the order module should be
+	//	handling it.
+	//
+	//	[In previous versions we neglected to clear them, so we could
+	//	get cases where these were non-NULL but invalid (because we never
+	//	got called on destruction).]
+
+	else
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+
+		m_pDest = NULL;
+		m_pTarget = NULL;
+		}
+
 	Ctx.pStream->Read((char *)&m_rDistance, sizeof(Metric));
 
 	//	Read code

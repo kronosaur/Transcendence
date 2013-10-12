@@ -14,7 +14,7 @@
 
 			multiHull=			"true"
 			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"250"
+			hitPoints=			"500"
 			repairRate=			"3"
 			shipRepairRate=		"2"
 			explosionType=		"&vtThermoExplosion1;"
@@ -983,7 +983,7 @@
 							</Orbitals>
 
 							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
-								<Station type="&stRasiermesserFactory;"/>
+								<Station type="&stTinkerGathering;"/>
 								<!--
 								<Station type="&stTeratonFactory;"/>
 								<Station type="&stCommonwealthFortress;"/>

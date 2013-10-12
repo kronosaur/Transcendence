@@ -98,6 +98,9 @@
     <ClInclude Include="TSEPaint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TSETransLisp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CAdventureRecord.cpp">
@@ -732,6 +735,9 @@
     </ClCompile>
     <ClCompile Include="CCompositeImageModifiers.cpp">
       <Filter>Source Files\Images</Filter>
+    </ClCompile>
+    <ClCompile Include="IListData.cpp">
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

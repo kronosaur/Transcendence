@@ -866,6 +866,9 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 //	We get called here when the ship takes damage
 
 	{
+	if (pArmor == NULL)
+		return;
+
 	int iMaxArmorHP = pArmor->GetMaxHP(m_pShip);
 
 	m_pTrans->Autopilot(false);
@@ -911,6 +914,8 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 //	Ship has been destroyed
 
 	{
+	DEBUG_TRY
+
 	//	Clear various variables
 
 	Reset();
@@ -930,6 +935,8 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 	g_pTrans->GetModel().OnPlayerDestroyed(Ctx, &sEpitaph);
 
 	m_pTrans->PlayerDestroyed(sEpitaph, Ctx.bResurrectPending);
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable)

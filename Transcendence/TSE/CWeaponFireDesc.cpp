@@ -1359,6 +1359,8 @@ ALERROR CWeaponFireDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 //	Done loading all design elements
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	int i;
 
@@ -1415,6 +1417,8 @@ ALERROR CWeaponFireDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CWeaponFireDesc::OverrideDesc (SDesignLoadCtx &Ctx, CXMLElement *pDesc)

@@ -37,14 +37,13 @@
 
 			<Stargates>
 				<Stargate name="SE" to="SE:Outbound"/>
-				<Stargate name="C3" to="C3:Outbound"/>
+				<Stargate name="BA" to="BA:Outbound"/>
 				<Stargate name="SK" to="SK:Outbound"/>
 				<Stargate name="C6" to="C6:Outbound"/>
-				<Stargate name="C8" to="C8:Outbound"/>
-				<Stargate name="A1" to="A1:Outbound"/>
+				<Stargate name="CD" to="CD:Outbound"/>
+				<Stargate name="C9" to="C9:Outbound"/>
 				<Stargate name="EC" to="EC:Outbound"/>
 				<Stargate name="PJ" to="PJ:Outbound"/>
-				<Stargate name="A6" to="A6:Outbound"/>
 				<Stargate name="G2" to="G2:Inbound"/>
 			</Stargates>
 		</Node>

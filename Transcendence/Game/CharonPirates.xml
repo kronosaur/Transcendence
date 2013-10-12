@@ -1779,7 +1779,7 @@
 						(block (bestDist bestPlanet primaryPos primaryType)
 							; Find the most distant planet in the system
 							(setq bestDist 0)
-							(enum (sysFindObject sourceObj "t:planet;") theObj
+							(enum (sysFindObject sourceObj "t +isPlanet:true;") theObj
 								(block (theDist)
 									(setq theDist (sysVectorDistance (objGetPos theObj)))
 									(if (gr theDist bestDist)

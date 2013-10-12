@@ -920,15 +920,15 @@ ALERROR CDataFile::ReadEntry (int iEntry, CString *retsData)
 	if (m_pEntryTable[iEntry].dwBlock == FREE_ENTRY)
 		return ERR_FAIL;
 
+	//	Calculate the position
+
+	dwPos = sizeof(HEADERSTRUCT) + m_pEntryTable[iEntry].dwBlock * m_iBlockSize;
+
 	//	Allocate space in the string
 
 	pDest = retsData->GetWritePointer((int)m_pEntryTable[iEntry].dwSize);
 	if (pDest == NULL)
 		return ERR_MEMORY;
-
-	//	Calculate the position
-
-	dwPos = sizeof(HEADERSTRUCT) + m_pEntryTable[iEntry].dwBlock * m_iBlockSize;
 
 	//	Position the file
 

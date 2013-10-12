@@ -750,6 +750,7 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 //	Equality and inequality
 //
 //	(eq exp1 exp2 ... expn)
+//	(neq exp1 exp2 ... expn)
 //	(> exp1 exp2 ... expn)
 //	(>= exp1 exp2 ... expn)
 //	(< exp1 exp2 ... expn)
@@ -771,6 +772,7 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 	//	Loop over all arguments
 
+	bool bOk = true;
 	for (i = 0; i < pArgs->GetCount(); i++)
 		{
 		pExp = pArgs->GetElement(i);
@@ -783,12 +785,10 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 		if (pPrev)
 			{
-			BOOL bOk;
-
 			//	Special case for eq because we don't want compares
 			//	to Nil to equal 0
 
-			if (dwData == FN_EQUALITY_EQ)
+			if ((dwData == FN_EQUALITY_EQ) || (dwData == FN_EQUALITY_NEQ))
 				{
 				if (pPrev->IsNil() || pExp->IsNil())
 					bOk = (pPrev->IsNil() && pExp->IsNil());
@@ -808,35 +808,21 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 				switch (dwData)
 					{
-					case FN_EQUALITY_EQ:
-						{
-						bOk = (iResult == 0);
-						break;
-						}
-
 					case FN_EQUALITY_LESSER:
-						{
 						bOk = (iResult < 0);
 						break;
-						}
 
 					case FN_EQUALITY_LESSER_EQ:
-						{
 						bOk = (iResult <= 0);
 						break;
-						}
 
 					case FN_EQUALITY_GREATER:
-						{
 						bOk = (iResult > 0);
 						break;
-						}
 
 					case FN_EQUALITY_GREATER_EQ:
-						{
 						bOk = (iResult >= 0);
 						break;
-						}
 
 					default:
 						ASSERT(FALSE);
@@ -846,10 +832,7 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 			//	If we don't have a match, return
 
 			if (!bOk)
-				{
-				pArgs->Discard(pCC);
-				return pCC->CreateNil();
-				}
+				break;
 			}
 
 		//	Remember the previous element so that we can compare
@@ -857,10 +840,15 @@ ICCItem *fnEquality (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 		pPrev = pExp;
 		}
 
+	//	Negate, if necessary
+
+	if (dwData == FN_EQUALITY_NEQ)
+		bOk = !bOk;
+
 	//	If we get here, then all items are ok
 
 	pArgs->Discard(pCC);
-	pResult = pCC->CreateTrue();
+	pResult = pCC->CreateBool(bOk);
 
 	//	Done
 

@@ -211,6 +211,7 @@ void CDockScreenActions::ExecuteCode (CDockScreen *pScreen, const CString &sID, 
 	Ctx.SaveAndDefineDataVar(m_pData);
 	Ctx.DefineString(CONSTLIT("aActionID"), sID);
 	Ctx.SetScreen(pScreen);
+	Ctx.SetDockScreenList(pScreen->GetListData());
 
 	ICCItem *pResult = Ctx.RunLambda(pCode);
 

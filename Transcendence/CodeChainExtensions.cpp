@@ -1461,6 +1461,7 @@ ICCItem *fnScrSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 	ICCItem *pArgs;
 	ICCItem *pResult;
 
@@ -1540,6 +1541,12 @@ ICCItem *fnScrSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 				pScreen->SetListFilter(Filter);
 				}
+
+			//	If we're not inside list initialization, advance to the next cursor 
+			//	position (otherwise we end up with a cursor of -1)
+
+			if (!pCtx->InEvent(eventInitDockScreenList))
+				pScreen->SelectNextItem();
 
 			pResult = pCC->CreateTrue();
 			break;

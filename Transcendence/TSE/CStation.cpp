@@ -2025,6 +2025,8 @@ void CStation::OnDestroyed (SDestroyCtx &Ctx)
 //	Station has been destroyed
 
 	{
+	DEBUG_TRY
+
 	//	Run OnDestroy script
 
 	m_Overlays.FireOnObjDestroyed(this, Ctx);
@@ -2053,6 +2055,8 @@ void CStation::OnDestroyed (SDestroyCtx &Ctx)
 		default:
 			CreateStructuralDestructionEffect(Ctx);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CStation::OnMove (const CVector &vOldPos, Metric rSeconds)
@@ -2304,7 +2308,7 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	Ctx.iVariant = 0;
 	Ctx.iDestiny = GetDestiny();
 	Ctx.iRotation = GetRotation();
-	m_Overlays.Paint(Dest, x, y, Ctx);
+	m_Overlays.Paint(Dest, Image.GetImageViewportSize(), x, y, Ctx);
 
 	//	Now paint any object that are docked in front of us
 
@@ -3121,6 +3125,10 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 	{
 	if (m_pType->IsVirtual())
 		return;
+
+	//	Object is known if we can scan it.
+
+	m_fKnown = true;
 
 	//	Paint worlds and stars fully
 

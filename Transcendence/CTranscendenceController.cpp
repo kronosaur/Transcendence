@@ -984,6 +984,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+
+#ifdef DEBUG
+		else
+			{
+			fileCopy(CONSTLIT("Collection\\CorporateCommand.tdb"), CONSTLIT("Downloads\\CorporateCommand.tdb"));
+			CHexarcDownloader::SStatus Status;
+			Status.sFilespec = CONSTLIT("Downloads\\CorporateCommand.tdb");
+			m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, Status));
+			}
+#endif
 		}
 
 	//	Service status
@@ -1024,7 +1034,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	message.
 		}
 
-	//	Starting to load extension. We need to temporarily free the
+	//	Starting to load extension. We need to temporarily freeze the
 	//	intro pane because we don't want two threads to access CC simultaneously.
 
 	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOAD_BEGIN))
@@ -1243,6 +1253,11 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 	//	Stop music
 
 	m_HI.GetSoundMgr().StopMusic();
+
+	//	Clean up displays (or else we'll be holding on to bad pointers after the
+	//	universe gets cleaned up)
+
+	g_pTrans->CleanUpDisplays();
 
 	//	If we're still in the game and we're exiting, make sure
 	//	to save the game first

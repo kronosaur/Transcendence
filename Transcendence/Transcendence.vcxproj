@@ -555,7 +555,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Compatibility10.xml" />
-    <None Include="Game\CoreCode.xml" />
+    <None Include="Game\CoreCode.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CorporateHierarchy.xml">
       <SubType>Designer</SubType>
     </None>
@@ -900,16 +902,21 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml" />
+    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
       <SubType>Designer</SubType>
     </Xml>
     <None Include="Game\Extensions\Debug\DebugCode.xml" />
-    <None Include="Game\Extensions\Debug\DebugShips.xml" />
+    <None Include="Game\Extensions\Debug\DebugShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Xml Include="Game\Extensions\Debug\HighLevelTest.xml">
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="Game\Extensions\Debug\PerformanceTest.xml" />
+    <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
     <Xml Include="Game\Extensions\Debug\ShipChangeSample.xml" />
     <None Include="Game\RPGAnalyzers.xml" />
     <None Include="Game\RPGAutons.xml">

@@ -72,6 +72,7 @@
 #define DEBUG_VECTOR
 //#define DEBUG_WEAPON_POS
 #endif
+#define DEBUG_SINGLETON_EFFECTS
 
 //	We leave this defined because we want to get traces in the field in case
 //	of a crash.
@@ -79,8 +80,9 @@
 
 //	Debugging help
 
-#define DEBUG_TRY			try {
-#define DEBUG_CATCH			} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
+#define DEBUG_TRY				try {
+#define DEBUG_CATCH				} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
+#define DEBUG_CATCH_MSG(msg)	} catch (...) { kernelDebugLogMessage(msg); throw; }
 
 //	If ITEM_REFERENCE is defined, then the player doesn't see the
 //	stats for an item until they install it (or get reference info)
@@ -140,6 +142,10 @@ extern CUniverse *g_pUniverse;
 #include "TSEUtil.h"
 #endif
 
+#ifndef INCL_TSE_TRANS_LISP
+#include "TSETransLisp.h"
+#endif
+
 #ifndef INCL_TSE_DESIGN
 #include "TSEDesign.h"
 #endif
@@ -186,7 +192,21 @@ class CResourceDb
 		ALERROR ExtractResource (const CString sFilespec, CString *retsData);
 
 	private:
+		enum EFlags
+			{
+			//	SResourceEntry flags
+			FLAG_COMPRESS_ZLIB =		0x00000001,
+			};
+
+		struct SResourceEntry
+			{
+			CString sFilename;
+			int iEntryID;
+			DWORD dwFlags;
+			};
+
 		ALERROR OpenDb (void);
+		ALERROR ReadEntry (const CString &sFilespec, CString *retsData);
 
 		int m_iVersion;
 		bool m_bGameFileInDb;
@@ -199,6 +219,7 @@ class CResourceDb
 
 		//	If we're using a TDB
 		CDataFile *m_pDb;
+		TSortMap<CString, SResourceEntry> m_ResourceMap;
 		CSymbolTable *m_pResourceMap;
 		int m_iGameFile;
 
@@ -1690,7 +1711,7 @@ class CEnergyField
 		inline int GetRotation (void) const { return m_iRotation; }
 		inline CEnergyFieldType *GetType (void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
-		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
 		inline void SetDevice (int iDev) { m_iDevice = iDev; }
@@ -1743,15 +1764,16 @@ class CEnergyFieldList
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		bool AbsorbsWeaponFire (CInstalledDevice *pDevice);
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
-		CEnergyField *GetOverlay (DWORD dwID) const;
+		int GetCountOfType (CEnergyFieldType *pType);
 		const CString &GetData (DWORD dwID, const CString &sAttrib);
-		CVector GetPos (CSpaceObject *pSource, DWORD dwID);
 		void GetList (TArray<CEnergyField *> &List);
+		CEnergyField *GetOverlay (DWORD dwID) const;
+		CVector GetPos (CSpaceObject *pSource, DWORD dwID);
 		int GetRotation (DWORD dwID);
 		CEnergyFieldType *GetType (DWORD dwID);
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		inline bool IsEmpty (void) { return (m_pFirst == NULL); }
-		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void ReadFromStream (SLoadCtx &Ctx, CSpaceObject *pSource);
 		void RemoveField (CSpaceObject *pSource, DWORD dwID);
 		void SetData (DWORD dwID, const CString &sAttrib, const CString &sData);
@@ -2211,6 +2233,7 @@ class CSpaceObject : public CObject
 		inline void SetDataFromDataBlock (const CAttributeDataBlock &Block) { m_Data = Block; }
 		inline void SetDataFromXML (CXMLElement *pData) { m_Data.SetFromXML(pData); }
 		void SetDataInteger (const CString &sAttrib, int iValue);
+		inline void SetDestructionNotify (bool bNotify = true) { m_fNoObjectDestructionNotify = !bNotify; }
 		void SetEventFlags (void);
 		inline void SetHasOnAttackedEvent (bool bHasEvent) { m_fHasOnAttackedEvent = bHasEvent; }
 		inline void SetHasOnDamageEvent (bool bHasEvent) { m_fHasOnDamageEvent = bHasEvent; }
@@ -2410,6 +2433,7 @@ class CSpaceObject : public CObject
 		virtual bool IsBlind (void) { return false; }
 		virtual bool IsDisarmed (void) { return false; }
 		virtual bool IsIdentified (void) { return true; }
+		virtual bool IsMultiHull (void) { return false; }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return false; }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return false; }
 		virtual bool IsOutOfFuel (void) { return false; }
@@ -2789,6 +2813,59 @@ class CAscendedObjectList
 		void CleanUp (void);
 
 		TArray<CSpaceObject *> m_List;
+	};
+
+//	IListData implementatsion --------------------------------------------------
+
+class CItemListWrapper : public IListData
+	{
+	public:
+		CItemListWrapper (CSpaceObject *pSource);
+		CItemListWrapper (CItemList &ItemList);
+
+		virtual void DeleteAtCursor (int iCount) { m_ItemList.DeleteAtCursor(iCount); if (m_pSource) m_pSource->InvalidateItemListAddRemove(); }
+		virtual int GetCount (void) { return m_ItemList.GetCount(); }
+		virtual int GetCursor (void) { return m_ItemList.GetCursor(); }
+		virtual const CItem &GetItemAtCursor (void) { return m_ItemList.GetItemAtCursor(); }
+		virtual CItemListManipulator &GetItemListManipulator (void) { return m_ItemList; }
+		virtual CSpaceObject *GetSource (void) { return m_pSource; }
+		virtual bool IsCursorValid (void) { return m_ItemList.IsCursorValid(); }
+		virtual bool MoveCursorBack (void) { return m_ItemList.MoveCursorBack(); }
+		virtual bool MoveCursorForward (void) { return m_ItemList.MoveCursorForward(); }
+		virtual void ResetCursor (void) { m_ItemList.Refresh(CItem()); }
+		virtual void SetCursor (int iCursor) { m_ItemList.SetCursor(iCursor); }
+		virtual void SetFilter (const CItemCriteria &Filter) { m_ItemList.SetFilter(Filter); }
+		virtual void SyncCursor (void) { m_ItemList.SyncCursor(); }
+
+	private:
+		CSpaceObject *m_pSource;
+		CItemListManipulator m_ItemList;
+	};
+
+class CListWrapper : public IListData
+	{
+	public:
+		CListWrapper (CCodeChain *pCC, ICCItem *pList);
+		virtual ~CListWrapper (void) { m_pList->Discard(m_pCC); }
+
+		virtual int GetCount (void) { return m_pList->GetCount(); }
+		virtual int GetCursor (void) { return m_iCursor; }
+		virtual CString GetDescAtCursor (void);
+		virtual ICCItem *GetEntryAtCursor (CCodeChain &CC);
+		virtual CString GetTitleAtCursor (void);
+		virtual bool IsCursorValid (void) { return (m_iCursor != -1); }
+		virtual bool MoveCursorBack (void);
+		virtual bool MoveCursorForward (void);
+		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y);
+		virtual void ResetCursor (void) { m_iCursor = -1; }
+		virtual void SetCursor (int iCursor) { m_iCursor = Min(Max(-1, iCursor), GetCount() - 1); }
+		virtual void SyncCursor (void);
+
+	private:
+		CCodeChain *m_pCC;
+		ICCItem *m_pList;
+
+		int m_iCursor;
 	};
 
 //	Implementations ------------------------------------------------------------

@@ -229,7 +229,6 @@ void CHexarcSession::InitRequest (const CString &sMethod, const CString &sFuncti
 	retMessage->AddHeader(CONSTLIT("Host"), m_sHost);
 	retMessage->AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
 	retMessage->AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
-	retMessage->AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
 	}
 
 ALERROR CHexarcSession::ServerCommand (const CHTTPMessage &Request, CJSONValue *retResult)

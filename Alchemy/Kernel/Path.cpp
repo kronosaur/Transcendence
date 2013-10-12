@@ -20,6 +20,19 @@
 void FreePIDL (LPITEMIDLIST pidl);
 CString GetVersionString (char *pData, WORD *pLangInfo, const CString &sString);
 
+bool fileCopy (const CString &sSourceFilespec, const CString &sDestFilespec)
+
+//	fileMove
+//
+//	Moves a file
+
+	{
+	if (!::CopyFile(sSourceFilespec.GetASCIIZPointer(), sDestFilespec.GetASCIIZPointer(), FALSE))
+		return false;
+
+	return true;
+	}
+
 bool fileDelete (const CString &sFilespec, bool bRecycle)
 
 //	fileDelete
