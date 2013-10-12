@@ -76,6 +76,26 @@ bool CEnergyFieldList::AbsorbsWeaponFire (CInstalledDevice *pDevice)
 	return false;
 	}
 
+int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)
+
+//	GetCountOfType
+//
+//	Returns the number of existing overlays of the given type.
+
+	{
+	int iCount = 0;
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (pField->GetType() == pType)
+			iCount++;
+
+		pField = pField->GetNext();
+		}
+
+	return iCount;
+	}
+
 void CEnergyFieldList::AddField (CSpaceObject *pSource, 
 								 CEnergyFieldType *pType, 
 								 int iPosAngle,
@@ -132,6 +152,8 @@ void CEnergyFieldList::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroy
 //	Calls OnObjDestroyed on all overlays
 
 	{
+	DEBUG_TRY
+
 	CEnergyField *pField = m_pFirst;
 	while (pField)
 		{
@@ -140,6 +162,8 @@ void CEnergyFieldList::FireOnObjDestroyed (CSpaceObject *pSource, const SDestroy
 
 		pField = pField->GetNext();
 		}
+
+	DEBUG_CATCH
 	}
 
 const CString &CEnergyFieldList::GetData (DWORD dwID, const CString &sAttrib)
@@ -281,7 +305,7 @@ int CEnergyFieldList::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *p
 	return iBonus;
 	}
 
-void CEnergyFieldList::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+void CEnergyFieldList::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx)
 
 //	Paint
 //
@@ -292,7 +316,7 @@ void CEnergyFieldList::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCt
 	while (pField)
 		{
 		if (!pField->IsDestroyed())
-			pField->Paint(Dest, x, y, Ctx);
+			pField->Paint(Dest, iScale, x, y, Ctx);
 
 		pField = pField->GetNext();
 		}

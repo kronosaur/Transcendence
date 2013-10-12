@@ -703,7 +703,7 @@ ICCItem *CItem::GetProperty (CCodeChainCtx *pCCCtx, CItemCtx &Ctx, const CString
 
 	else if (strEquals(sName, PROPERTY_DESCRIPTION))
 		{
-		if (pCCCtx && pCCCtx->GetEvent() == eventGetDescription)
+		if (pCCCtx && pCCCtx->InEvent(eventGetDescription))
 			return CC.CreateString(m_pItemType->GetDesc());
 		else
 			return CC.CreateString(GetDesc());

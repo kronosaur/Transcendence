@@ -1054,133 +1054,143 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 //	(e.g., to change adventures or simply to reload the extensions directory.)
 
 	{
-	ALERROR error;
-
-	//	Boot up
-
-	if (!m_bBasicInit)
+	try
 		{
-		//	Set the host (OK if Ctx.pHost is NULL)
+		ALERROR error;
 
-		SetHost(Ctx.pHost);
+		//	Boot up
 
-		//	Initialize CodeChain
-
-		if (error = InitCodeChain())
+		if (!m_bBasicInit)
 			{
-			*retsError = CONSTLIT("Unable to initialize CodeChain.");
-			return error;
+			//	Set the host (OK if Ctx.pHost is NULL)
+
+			SetHost(Ctx.pHost);
+
+			//	Initialize CodeChain
+
+			if (error = InitCodeChain())
+				{
+				*retsError = CONSTLIT("Unable to initialize CodeChain.");
+				return error;
+				}
+
+			//	Initialize fonts
+
+			if (error = InitFonts())
+				{
+				*retsError = CONSTLIT("Unable to initialize fonts.");
+				return error;
+				}
+
+			//	Load local device storage
+
+			if (error = InitDeviceStorage(retsError))
+				return error;
+
+			m_bBasicInit = true;
 			}
 
-		//	Initialize fonts
+		//	Initialize some stuff
 
-		if (error = InitFonts())
-			{
-			*retsError = CONSTLIT("Unable to initialize fonts.");
+		m_bDebugMode = Ctx.bDebugMode;
+
+		//	We only load adventure desc (no need to load the whole thing)
+
+		DWORD dwFlags = CExtensionCollection::FLAG_DESC_ONLY;
+
+		//	Debug mode
+
+		if (m_bDebugMode)
+			dwFlags |= CExtensionCollection::FLAG_DEBUG_MODE;
+
+		//	If requested we don't load resources
+
+		if (Ctx.bNoResources)
+			dwFlags |= CExtensionCollection::FLAG_NO_RESOURCES;
+
+		//	Load everything
+
+		if (error = m_Extensions.Load(Ctx.sFilespec, dwFlags, retsError))
 			return error;
+
+		//	Figure out the adventure to bind to.
+
+		if (Ctx.pAdventure == NULL && Ctx.dwAdventure)
+			{
+			//	Look for the adventure by UNID.
+
+			DWORD dwFindFlags = dwFlags | CExtensionCollection::FLAG_ADVENTURE_ONLY;
+
+			if (!m_Extensions.FindBestExtension(Ctx.dwAdventure, 0, dwFindFlags, &Ctx.pAdventure))
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %08x."), Ctx.dwAdventure);
+				return ERR_FAIL;
+				}
 			}
 
-		//	Load local device storage
+		//	If necessary figure out which extensions to add
 
-		if (error = InitDeviceStorage(retsError))
-			return error;
-
-		m_bBasicInit = true;
-		}
-
-	//	Initialize some stuff
-
-	m_bDebugMode = Ctx.bDebugMode;
-
-	//	We only load adventure desc (no need to load the whole thing)
-
-	DWORD dwFlags = CExtensionCollection::FLAG_DESC_ONLY;
-
-	//	Debug mode
-
-	if (m_bDebugMode)
-		dwFlags |= CExtensionCollection::FLAG_DEBUG_MODE;
-
-	//	If requested we don't load resources
-
-	if (Ctx.bNoResources)
-		dwFlags |= CExtensionCollection::FLAG_NO_RESOURCES;
-
-	//	Load everything
-
-	if (error = m_Extensions.Load(Ctx.sFilespec, dwFlags, retsError))
-		return error;
-
-	//	Figure out the adventure to bind to.
-
-	if (Ctx.pAdventure == NULL && Ctx.dwAdventure)
-		{
-		//	Look for the adventure by UNID.
-
-		DWORD dwFindFlags = dwFlags | CExtensionCollection::FLAG_ADVENTURE_ONLY;
-
-		if (!m_Extensions.FindBestExtension(Ctx.dwAdventure, 0, dwFindFlags, &Ctx.pAdventure))
+		if (Ctx.bDefaultExtensions)
 			{
-			*retsError = strPatternSubst(CONSTLIT("Unable to find adventure: %08x."), Ctx.dwAdventure);
-			return ERR_FAIL;
+			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
+					dwFlags, 
+					&Ctx.Extensions, 
+					retsError))
+				return error;
 			}
-		}
 
-	//	If necessary figure out which extensions to add
+		//	Get the bind order
 
-	if (Ctx.bDefaultExtensions)
-		{
-		if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
+		TArray<CExtension *> BindOrder;
+		if (error = m_Extensions.ComputeBindOrder(Ctx.pAdventure,
+				Ctx.Extensions,
 				dwFlags, 
-				&Ctx.Extensions, 
+				&BindOrder,
 				retsError))
 			return error;
-		}
 
-	//	Get the bind order
+		//	Reinitialize. This clears out previous game state, but only if we
+		//	are creating a new game.
 
-	TArray<CExtension *> BindOrder;
-	if (error = m_Extensions.ComputeBindOrder(Ctx.pAdventure,
-			Ctx.Extensions,
-			dwFlags, 
-			&BindOrder,
-			retsError))
-		return error;
-
-	//	Reinitialize. This clears out previous game state, but only if we
-	//	are creating a new game.
-
-	if (!Ctx.bInLoadGame)
-		{
-		if (error = Reinit())
+		if (!Ctx.bInLoadGame)
 			{
-			*retsError = CONSTLIT("Unable to reinit.");
-			return error;
+			if (error = Reinit())
+				{
+				*retsError = CONSTLIT("Unable to reinit.");
+				return error;
+				}
 			}
+
+		//	Set the current adventure (we need to do this before BindDesign, since
+		//	we need the current adventure to get the shield and armor damage adj
+		//	tables.
+
+		SetCurrentAdventureDesc(Ctx.pAdventure->GetAdventureDesc());
+
+		//	Bind
+		//
+		//	We don't need to log image load
+
+		SetLogImageLoad(false);
+		error = m_Design.BindDesign(BindOrder, !Ctx.bInLoadGame, Ctx.bNoResources, retsError);
+		SetLogImageLoad(true);
+
+		if (error)
+			return error;
+
+		//	Now that we've bound we can delete any previous extensions
+
+		m_Extensions.FreeDeleted();
+
+		return NOERROR;
+		} 
+	catch (...)
+		{
+		kernelDebugLogMessage("Crash in CUniverse::Init");
+		m_Extensions.DebugDump();
+		*retsError = CONSTLIT("Unable to initialize universe.");
+		return ERR_FAIL;
 		}
-
-	//	Set the current adventure (we need to do this before BindDesign, since
-	//	we need the current adventure to get the shield and armor damage adj
-	//	tables.
-
-	SetCurrentAdventureDesc(Ctx.pAdventure->GetAdventureDesc());
-
-	//	Bind
-	//
-	//	We don't need to log image load
-
-	SetLogImageLoad(false);
-	error = m_Design.BindDesign(BindOrder, !Ctx.bInLoadGame, Ctx.bNoResources, retsError);
-	SetLogImageLoad(true);
-
-	if (error)
-		return error;
-
-	//	Now that we've bound we can delete any previous extensions
-
-	m_Extensions.FreeDeleted();
-
-	return NOERROR;
 	}
 
 void CUniverse::InitDefaultHitEffects (void)
@@ -1982,6 +1992,8 @@ ALERROR CUniverse::Reinit (void)
 //	Reinitializes the universe
 
 	{
+	DEBUG_TRY
+
 	//	We start at tick 1 because sometimes we need to start with some things
 	//	in the past.
 
@@ -2030,6 +2042,8 @@ ALERROR CUniverse::Reinit (void)
 	NoiseReinit();
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CUniverse::SaveToStream (IWriteStream *pStream)

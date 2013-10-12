@@ -19,10 +19,11 @@
 #include "Alchemy.h"
 #include "Crypto.h"
 #include "XMLUtil.h"
-#include "TDB.h"
+#include "Zip.h"
+#include "..\TSE\TSE.h"
 
 #define TDB_SIGNATURE							'TRDB'
-#define TDB_VERSION								11
+#define TDB_VERSION								12
 
 #define NOARGS									CONSTLIT("noArgs")
 #define SWITCH_HELP								CONSTLIT("help")
@@ -49,22 +50,34 @@
 #define ATTRIB_BITMASK							CONSTLIT("bitmask")
 #define ATTRIB_FILENAME							CONSTLIT("filename")
 
+enum EFlags
+	{
+	//	SResourceEntry flags
+	FLAG_COMPRESS_ZLIB =		0x00000001,
+	};
+
+struct SResourceEntry
+	{
+	CString sFilename;
+	int iEntryID;
+	DWORD dwFlags;
+	};
+
 struct SCompilerCtx
 	{
 	SCompilerCtx (void) :
-			Resources(FALSE, TRUE),
 			iErrorCount(0) 
 		{ }
 
 	CString sRootPath;
-	CSymbolTable Resources;
+	TSortMap<CString, SResourceEntry> ResourceMap;
 	int iErrorCount;
 	};
 
 void DumpTDB (const CString &sFilespec);
 ALERROR ReadEntities (const CString &sFilespec, CExternalEntityTable **retpEntityTable);
 ALERROR ParseGameFile (SCompilerCtx &Ctx, const CString &sFilename, CXMLElement **retpData);
-ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, CDataFile &Out, int *retiGameFile);
+ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, bool bCompress, CDataFile &Out, int *retiGameFile);
 ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out);
 ALERROR WriteModule (SCompilerCtx &Ctx,
 					 const CString &sFilename, 
@@ -74,7 +87,7 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 					 int *retiModuleEntry);
 ALERROR WriteModuleImages (SCompilerCtx &Ctx, CXMLElement *pModule, const CString &sFolder, CDataFile &Out);
 ALERROR WriteModuleSounds (SCompilerCtx &Ctx, CXMLElement *pModule, const CString &sFolder, CDataFile &Out);
-ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CString &sFolder, CDataFile &Out);
+ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CString &sFolder, bool bCompress, CDataFile &Out);
 ALERROR WriteSubModules (SCompilerCtx &Ctx, 
 						 CXMLElement *pModule,
 						 const CString &sFolder, 
@@ -96,8 +109,8 @@ void TransCompiler (CXMLElement *pCmdLine)
 	ALERROR error;
 	int i;
 
-	printf("TransCompiler v1.02\n");
-	printf("Copyright (c) 2003-2012 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
+	printf("TransCompiler v2.0\n");
+	printf("Copyright (c) 2003-2013 by Kronosaur Productions, LLC. All Rights Reserved.\n\n");
 
 	if (pCmdLine->GetAttributeBool(NOARGS) || pCmdLine->GetAttributeBool(SWITCH_HELP))
 		{
@@ -253,17 +266,18 @@ void DumpTDB (const CString &sFilespec)
 
 	//	Open the TDB
 
-	CTDBFile TDBFile;
-	if (TDBFile.Open(sFilespec, CTDBFile::FLAG_READ_ONLY) != NOERROR)
+	CString sError;
+	CResourceDb TDBFile(sFilespec, true);
+	if (TDBFile.Open(DFOPEN_FLAG_READ_ONLY, &sError) != NOERROR)
 		{
-		printf("error : Unable to open '%s'\n", sFilespec.GetASCIIZPointer());
+		printf("error : Unable to open '%s': %s\n", sFilespec.GetASCIIZPointer(), sError.GetASCIIZPointer());
 		return;
 		}
 
 	//	Dump out all the resources
 
 	for (i = 0; i < TDBFile.GetResourceCount(); i++)
-		printf("%s\n", TDBFile.GetResourceName(i).GetASCIIZPointer());
+		printf("%s\n", TDBFile.GetResourceFilespec(i).GetASCIIZPointer());
 	}
 
 ALERROR ReadEntities (const CString &sFilespec, CExternalEntityTable **retpEntityTable)
@@ -329,7 +343,7 @@ ALERROR ReadEntities (const CString &sFilespec, CExternalEntityTable **retpEntit
 	return NOERROR;
 	}
 
-ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, CDataFile &Out, int *retiGameFile)
+ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, bool bCompress, CDataFile &Out, int *retiGameFile)
 	{
 	ALERROR error;
 
@@ -342,6 +356,26 @@ ALERROR WriteGameFile (SCompilerCtx &Ctx, const CString &sFilespec, CDataFile &O
 		}
 
 	CString sData(theFile.GetPointer(0, -1), theFile.GetLength(), TRUE);
+
+	if (bCompress)
+		{
+		CBufferReadBlock Input(sData);
+
+		CMemoryWriteStream Output;
+		if (error = Output.Create())
+			return ERR_FAIL;
+
+		CString sError;
+		if (!zipCompress(Input, compressionZlib, Output, &sError))
+			{
+			printf("error: %s", sError.GetASCIIZPointer());
+			Ctx.iErrorCount++;
+			return ERR_FAIL;
+			}
+
+		sData = CString(Output.GetPointer(), Output.GetLength());
+		}
+
 	if (error = Out.AddEntry(sData, retiGameFile))
 		{
 		printf("error : Unable to store '%s'\n", sFilespec.GetASCIIZPointer());
@@ -359,6 +393,7 @@ ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out)
 	ALERROR error;
 	CMemoryWriteStream Stream;
 	DWORD dwSave;
+	int i;
 
 	if (error = Stream.Create())
 		{
@@ -389,15 +424,16 @@ ALERROR WriteHeader (SCompilerCtx &Ctx, int iGameFile, CDataFile &Out)
 
 	//	Resource map
 
-	CString sSave;
-	if (error = CObject::Flatten(&Ctx.Resources, &sSave))
+	dwSave = Ctx.ResourceMap.GetCount();
+	Stream.Write((char *)&dwSave, sizeof(dwSave));
+	for (i = 0; i < Ctx.ResourceMap.GetCount(); i++)
 		{
-		printf("error : Unable to flatten resources map\n");
-		Ctx.iErrorCount++;
-		return error;
-		}
+		const SResourceEntry &Entry = Ctx.ResourceMap[i];
+		Entry.sFilename.WriteToStream(&Stream);
 
-	sSave.WriteToStream(&Stream);
+		Stream.Write((char *)&Entry.iEntryID, sizeof(dwSave));
+		Stream.Write((char *)&Entry.dwFlags, sizeof(dwSave));
+		}
 
 	//	Write out the header
 
@@ -449,17 +485,27 @@ ALERROR WriteModule (SCompilerCtx &Ctx,
 	pEntityTable = &EntityTable;
 	printf("done.\n");
 
+	//	Compress if this is NOT the main file. We can't compress the
+	//	main file because we sometimes need to read it partially.
+
+	bool bCompress = (retiModuleEntry == NULL);
+
 	//	Write the module itself
 
 	int iEntry;
-	if (error = WriteGameFile(Ctx, sFilename, Out, &iEntry))
+	if (error = WriteGameFile(Ctx, sFilename, bCompress, Out, &iEntry))
 		return error;
 
 	//	If the caller doesn't want the module entry, then it means that this is
 	//	a module (instead of the main file). If so, add it to the resources table
 
 	if (retiModuleEntry == NULL)
-		Ctx.Resources.AddEntry(sFilename, (CObject *)iEntry);
+		{
+		SResourceEntry *pEntry = Ctx.ResourceMap.Insert(sFilename);
+		pEntry->sFilename = sFilename;
+		pEntry->iEntryID = iEntry;
+		pEntry->dwFlags = (bCompress ? FLAG_COMPRESS_ZLIB : 0);
+		}
 
 	//	Store all the image resources
 
@@ -563,14 +609,16 @@ ALERROR WriteModuleImages (SCompilerCtx &Ctx, CXMLElement *pModule, const CStrin
 			CString sFilename = pItem->GetAttribute(ATTRIB_BITMAP);
 			if (!sFilename.IsBlank())
 				{
-				if (error = WriteResource(Ctx, sFilename, sFolder, Out))
+				bool bCompress = strEquals(strToLower(pathGetExtension(sFilename)), CONSTLIT("bmp"));
+				if (error = WriteResource(Ctx, sFilename, sFolder, bCompress, Out))
 					continue;
 				}
 
 			sFilename = pItem->GetAttribute(ATTRIB_BITMASK);
 			if (!sFilename.IsBlank())
 				{
-				if (error = WriteResource(Ctx, sFilename, sFolder, Out))
+				bool bCompress = strEquals(strToLower(pathGetExtension(sFilename)), CONSTLIT("bmp"));
+				if (error = WriteResource(Ctx, sFilename, sFolder, bCompress, Out))
 					continue;
 				}
 			}
@@ -597,7 +645,7 @@ ALERROR WriteModuleSounds (SCompilerCtx &Ctx, CXMLElement *pModule, const CStrin
 		else if (strEquals(pItem->GetTag(), TAG_SOUND))
 			{
 			CString sFilename = pItem->GetAttribute(ATTRIB_FILENAME);
-			if (error = WriteResource(Ctx, sFilename, sFolder, Out))
+			if (error = WriteResource(Ctx, sFilename, sFolder, false, Out))
 				continue;
 			}
 		}
@@ -605,7 +653,7 @@ ALERROR WriteModuleSounds (SCompilerCtx &Ctx, CXMLElement *pModule, const CStrin
 	return NOERROR;
 	}
 
-ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CString &sFolder, CDataFile &Out)
+ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CString &sFolder, bool bCompress, CDataFile &Out)
 	{
 	ALERROR error;
 	CString sFilespec = pathAddComponent(sFolder, sFilename);
@@ -614,18 +662,44 @@ ALERROR WriteResource (SCompilerCtx &Ctx, const CString &sFilename, const CStrin
 	if (error = theFile.Open())
 		{
 		printf("error : Unable to open '%s'\n", sFilespec.GetASCIIZPointer());
+		Ctx.iErrorCount++;
 		return error;
 		}
 
 	CString sData(theFile.GetPointer(0, -1), theFile.GetLength(), TRUE);
+
+	if (bCompress)
+		{
+		CBufferReadBlock Input(sData);
+
+		CMemoryWriteStream Output;
+		if (error = Output.Create())
+			return ERR_FAIL;
+
+		CString sError;
+		if (!zipCompress(Input, compressionZlib, Output, &sError))
+			{
+			printf("error: %s", sError.GetASCIIZPointer());
+			Ctx.iErrorCount++;
+			return ERR_FAIL;
+			}
+
+		sData = CString(Output.GetPointer(), Output.GetLength());
+		}
+
 	int iEntry;
 	if (error = Out.AddEntry(sData, &iEntry))
 		{
 		printf("error : Unable to store '%s'\n", sFilespec.GetASCIIZPointer());
+		Ctx.iErrorCount++;
 		return error;
 		}
 
-	Ctx.Resources.AddEntry(sFilespec, (CObject *)iEntry);
+	SResourceEntry *pEntry = Ctx.ResourceMap.Insert(sFilespec);
+	pEntry->sFilename = sFilespec;
+	pEntry->iEntryID = iEntry;
+	pEntry->dwFlags = (bCompress ? FLAG_COMPRESS_ZLIB : 0);
+
 	printf("   %s\n", sFilespec.GetASCIIZPointer());
 
 	return NOERROR;
@@ -685,4 +759,3 @@ ALERROR ParseGameFile (SCompilerCtx &Ctx, const CString &sFilename, CXMLElement 
 
 	return NOERROR;
 	}
-

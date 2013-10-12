@@ -70,6 +70,7 @@
 
 			attributes=			"envAir, envAvoidsFire, friendly, human, majorStation, populated, religious, sistersOfDomina"
 			levelFrequency=		"ruccc ur--- ----- ----- -----"
+			unique=				"inSystem"
 			locationCriteria=	"+planetary; -innerSystem"
 
 			definiteArticle=	"true"

@@ -17,6 +17,7 @@
 #define EMP_IMMUNE_ATTRIB						CONSTLIT("EMPImmune")
 #define INSTALL_COST_ATTRIB						CONSTLIT("installCost")
 #define INSTALL_COST_ADJ_ATTRIB					CONSTLIT("installCostAdj")
+#define MAX_HP_BONUS_ATTRIB						CONSTLIT("maxHPBonus")
 #define PHOTO_RECHARGE_ATTRIB					CONSTLIT("photoRecharge")
 #define PHOTO_REPAIR_ATTRIB						CONSTLIT("photoRepair")
 #define POWER_USE_ATTRIB						CONSTLIT("powerUse")
@@ -788,6 +789,7 @@ ALERROR CArmorClass::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIt
 		pArmor->m_iStealth = CSpaceObject::stealthNormal;
 
 	pArmor->m_iPowerUse = pDesc->GetAttributeIntegerBounded(POWER_USE_ATTRIB, 0);
+	pArmor->m_iMaxHPBonus = pDesc->GetAttributeIntegerBounded(MAX_HP_BONUS_ATTRIB, 0, -1, 150);
 
 	//	Load reflection
 

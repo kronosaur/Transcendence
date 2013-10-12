@@ -842,6 +842,8 @@ ALERROR CObjectImageArray::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 //	All design elements have been loaded
 
 	{
+	DEBUG_TRY
+
 #ifdef NO_RESOURCES
 	if (Ctx.bNoResources)
 		return NOERROR;
@@ -859,6 +861,8 @@ ALERROR CObjectImageArray::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const

@@ -599,6 +599,21 @@ int CItemType::GetMassKg (CItemCtx &Ctx) const
 		return m_iMass;
 	}
 
+int CItemType::GetMaxHPBonus (void) const
+
+//	GetMaxHPBonus
+//
+//	Returns the maximum possible HP bonus for this item.
+
+	{
+	if (m_pArmor)
+		return m_pArmor->GetMaxHPBonus();
+	else if (m_pDevice)
+		return m_pDevice->GetMaxHPBonus();
+	else
+		return 150;
+	}
+
 CString CItemType::GetName (DWORD *retdwFlags, bool bActualName) const
 
 //	GetName

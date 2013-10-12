@@ -19,7 +19,7 @@ class CEffectVariantPainter : public IEffectPainter
 
 	private:
 		CEffectVariantCreator *m_pCreator;
-		TArray<IEffectPainter *> m_Cache;
+		TArray<CEffectPainterRef> m_Cache;
 	};
 
 CEffectVariantCreator::CEffectVariantCreator (void)
@@ -210,11 +210,7 @@ CEffectVariantPainter::CEffectVariantPainter (CEffectVariantCreator *pCreator) :
 //	CEffectVariantPainter constructor
 	
 	{
-	int i;
-
 	m_Cache.InsertEmpty(pCreator->GetVariantCount());
-	for (i = 0; i < m_Cache.GetCount(); i++)
-		m_Cache[i] = NULL;
 	}
 
 CEffectVariantPainter::~CEffectVariantPainter (void)
@@ -225,8 +221,7 @@ CEffectVariantPainter::~CEffectVariantPainter (void)
 	int i;
 
 	for (i = 0; i < m_Cache.GetCount(); i++)
-		if (m_Cache[i])
-			m_Cache[i]->Delete();
+		m_Cache[i].Delete();
 	}
 
 void CEffectVariantPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -239,10 +234,10 @@ void CEffectVariantPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 	//	Find the appropriate effect
 
 	int iIndex = m_pCreator->GetVariantCreatorIndex(Ctx.iVariant);
-	if (m_Cache[iIndex] == NULL)
+	if (m_Cache[iIndex].IsEmpty())
 		{
 		CEffectCreator *pCreator = m_pCreator->GetVariantCreator(iIndex);
-		m_Cache[iIndex] = pCreator->CreatePainter(CCreatePainterCtx());
+		m_Cache[iIndex].Set(pCreator->CreatePainter(CCreatePainterCtx()));
 		}
 
 	//	Paint

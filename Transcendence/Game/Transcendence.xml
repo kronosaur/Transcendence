@@ -629,6 +629,13 @@
 	<!ENTITY itAdvancedAnalyzer			"0x000041BD">
 	<!ENTITY itAClassDefenseScreen		"0x000041BE">
 	<!ENTITY itLightIonBlaster			"0x000041BF">
+	<!ENTITY itLanthanumGlass			"0x000041C0">
+	<!ENTITY itCeriumElectrode			"0x000041C1">
+	<!ENTITY itNeodymiumMagnet			"0x000041C2">
+	<!ENTITY itErbiumRod				"0x000041C3">
+	<!ENTITY itHolmiumFiber				"0x000041C4">
+	<!ENTITY itDualMarkIIIHowitzer		"0x000041C5">
+	<!ENTITY itOmniXRayLaserCannon		"0x000041C6">
 
 	<!ENTITY vtStoneAsteroidEjecta		"0x00005001">
 	<!ENTITY vtIceAsteroidEjecta		"0x00005002">
@@ -1806,6 +1813,9 @@
 
 	<!ENTITY stTinkerGathering			"0x08040080">
 	<!ENTITY rsTinkerStations			"0x08040081">
+	<!ENTITY dsTinkerCustomWork			"0x08040082">
+	<!ENTITY svTinkers					"0x08040083">
+	<!ENTITY msTinkerReminder			"0x08040084">
 
 	<!ENTITY stRanxOutpost				"0x080400C0">
 	<!ENTITY stRanxFortress				"0x080400C1">
@@ -1867,7 +1877,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"15"
+		apiVersion=						"17"
 		>
 
 <!-- TRANSCENDENCE ************************************************************

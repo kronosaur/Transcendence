@@ -56,63 +56,29 @@
 			class=				"Commonwealth Star Carrier"
 			type=				""
 
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, cscAntarctica, majorShip, uncharted"
+			   
 			mass=				"50000"
 			cargoSpace=			"5000"
 			thrust=				"10000"
 			maneuver=			"24"
 			maxSpeed=			"2"
-
 			cyberDefenseLevel=	"6"
+			   
 			explosionType=		"&vtThermoExplosion4;"
 			leavesWreck=		"100"
-
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, cscAntarctica, majorShip, uncharted"
 
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itP1000HexphaseArmor;"
+			count=				"20"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
 			<Device deviceID="&itTeV9Blaster;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
@@ -124,6 +90,22 @@
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"600"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"200"
+
+					posX=		"-56"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"60"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item				count="100"		item="&itM2Missile;"/>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
@@ -132,7 +114,7 @@
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
 
 		<AISettings
-			fireRateAdj=		"10"
+			fireRateAdj=		"15"
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
@@ -456,8 +438,8 @@
 									; Send a battlefleet to attack the Antarctica
 
 									(setq start (sysFindObject gSource "GN -uncharted;"))
-									(objSetData gSource "attackersLeft" 6)
-									(for i 1 6
+									(objSetData gSource "attackersLeft" 4)
+									(for i 1 4
 										(block (attacker)
 											(setq attacker (sysCreateShip &scAquilaCruiser; start &svFleetAssassins;))
 											(shpOrderAttack attacker gSource)
@@ -753,65 +735,30 @@
 			class=				"Commonwealth Star Carrier"
 			type=				""
 
+			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
+			inherit=			"&baCSCBase;"
+			   
 			mass=				"50000"
 			cargoSpace=			"5000"
 			thrust=				"10000"
 			maneuver=			"24"
 			maxSpeed=			"2"
-
 			cyberDefenseLevel=	"6"
+			   
 			explosionType=		"&vtThermoExplosion4;"
 			leavesWreck=		"100"
 
-			attributes=			"capitalShip, commonwealth, commonwealthFleet, commonwealthMilitary, fleetLaw, majorShip"
-
 			dockScreen=			"Main"
 			defaultBackgroundID="&rsCSCBkgnd;"
-			
-			inherit=			"&baCSCBase;"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="340" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="330" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="320" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="310" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="300" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="290" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="280" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="270" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="260" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="250" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="240" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="230" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="220" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="210" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="200" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="190" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="180" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="170" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="160" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="150" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="140" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="130" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="120" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-
-			<ArmorSection start="110" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="100" span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="90"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="80"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="70"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="60"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="50"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="40"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="30"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="20"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="10"  span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-			<ArmorSection start="0"   span="10" armorID="&itP1000HexphaseArmor;" areaSet="7,13" />
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itP1000HexphaseArmor;"
+			count=				"20"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="270" maxFireArc="90"  posAngle="0" posRadius="64"/>
 			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="90"  maxFireArc="270" posAngle="180" posRadius="64"/>
@@ -823,6 +770,22 @@
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
 
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"600"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"200"
+
+					posX=		"-56"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"60"
+					/>
+		</Interior>
+		
 		<Items>
 			<Item				count="300"		item="&itM2Missile;"/>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
@@ -831,7 +794,7 @@
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
 
 		<AISettings
-			fireRateAdj=		"10"
+			fireRateAdj=		"15"
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>

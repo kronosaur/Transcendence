@@ -370,7 +370,7 @@ class CMissile : public CSpaceObject
 		virtual void CreateReflection (const CVector &vPos, int iDirection);
 		virtual CString DebugCrashInfo (void);
 		virtual void DetonateNow (CSpaceObject *pHit);
-		virtual Categories GetCategory (void) const { return (m_pDesc->GetFireType() == ftBeam ? catBeam : catMissile); }
+		virtual Categories GetCategory (void) const;
 		virtual CString GetDamageCauseNounPhrase (DWORD dwFlags) { return m_Source.GetDamageCauseNounPhrase(dwFlags); }
 		virtual DestructionTypes GetDamageCauseType (void) { return m_iCause; }
 		virtual int GetInteraction (void) { return m_pDesc->GetInteraction(); }
@@ -811,7 +811,7 @@ class CShip : public CSpaceObject
 		inline DWORD GetCurrentOrderData (void) { return m_pController->GetCurrentOrderData(); }
 
 		//	Armor methods
-		inline CInstalledArmor *GetArmorSection (int iSect) { return (CInstalledArmor *)m_Armor.GetStruct(iSect); }
+		inline CInstalledArmor *GetArmorSection (int iSect) { return &m_Armor[iSect]; }
 		inline int GetArmorSectionCount (void) { return m_Armor.GetCount(); }
 		int DamageArmor (int iSect, DamageDesc &Damage);
 		void InstallItemAsArmor (CItemListManipulator &ItemList, int iSect);
@@ -996,6 +996,7 @@ class CShip : public CSpaceObject
 		virtual bool IsIdentified (void) { return m_fIdentified; }
 		virtual bool IsInactive (void) const { return (m_fManualSuspended || m_iExitGateTimer > 0); }
 		virtual bool IsKnown (void) { return m_fKnown; }
+		virtual bool IsMultiHull (void) { return !m_Interior.IsEmpty(); }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
 		virtual bool IsOutOfFuel (void) { return m_fOutOfFuel; }
@@ -1113,7 +1114,7 @@ class CShip : public CSpaceObject
 		int m_iRotation:16;						//	Current rotation (in degrees)
 		int m_iPrevRotation:16;					//	Previous rotation
 
-		CStructArray m_Armor;					//	Array of CInstalledArmor
+		TArray<CInstalledArmor> m_Armor;		//	Array of CInstalledArmor
 		int m_iDeviceCount;						//	Number of devices
 		CInstalledDevice *m_Devices;			//	Array of devices
 		int m_NamedDevices[devNamesCount];
@@ -1325,7 +1326,9 @@ class CStation : public CSpaceObject
 		virtual bool IsActiveStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
 		virtual bool IsExplored (void) { return m_fExplored; }
+		virtual bool IsIdentified (void) { return m_fKnown; }
 		virtual bool IsKnown (void) { return m_fKnown; }
+		virtual bool IsMultiHull (void) { return m_pType->IsMultiHull(); }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
 		virtual bool IsRadioactive (void) { return (m_fRadioactive ? true : false); }
@@ -1354,6 +1357,7 @@ class CStation : public CSpaceObject
 		virtual bool RequestGate (CSpaceObject *pObj);
 		virtual void SetExplored (bool bExplored = true) { m_fExplored = bExplored; }
 		virtual void SetGlobalData (const CString &sAttribute, const CString &sData) { m_pType->SetGlobalData(sAttribute, sData); }
+		virtual void SetIdentified (bool bIdentified = true) { m_fKnown = bIdentified; }
 		virtual void SetKnown (bool bKnown = true) { m_fKnown = bKnown; }
 		virtual void SetMapLabelPos (int x, int y) { m_xMapLabel = x; m_yMapLabel = y; }
 		virtual void SetName (const CString &sName, DWORD dwFlags = 0);

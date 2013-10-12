@@ -2,11 +2,49 @@
 
 <TranscendenceModule>
 
+	<!-- Tinker's Guild
+
+	-->
+	
+	<Sovereign UNID="&svTinkers;"
+			name="Tinkers Guild"
+			alignment="constructive chaos"
+			>
+		<InitialData>
+			<Recipes>
+				(
+					{ item:&itYoroiS500;				enhancement:"+resist:thermo:60"		components:( { item:&itHolmiumFiber; count:4 } { item:&itYoroiS100; count:2 } )	extraCost:0 }
+					{ item:&itSuperconductingShields;	enhancement:"+resistMatter:60"		components:( { item:&itSuperconductingCoil; count:4 } { item:&itHeavySungArmor; count:2 } )	extraCost:0 }
+					{ item:&itCyclotronDeflectorIV;		enhancement:"+resistDamageClass:blast:60"	components:( { item:&itBlastUpgrade; count:1 } { item:&itCyclotronDeflectorIII; count:2 })	extraCost:0 }
+					{ item:&itSolonShieldGenerator;		enhancement:"+resist:blast:60"		components:( { item:&itMonopoleDeflector; count:2 })	extraCost:0 }
+					
+					{ item:&itOrthoSteel;				enhancement:"+regen"				components:( { item:&itDuralloyOre; count:4 } { item:&itOrthoSteelOre; count:4 })	extraCost:0 }
+					{ item:&itHeavyBlastPlate;			enhancement:"+resist:ion:60"		components:( { item:&itUrakArmorHeavy; count:2 } { item:&itPteracniumOre; count:4 })	extraCost:0 }
+					{ item:&itDuralloyArmor;			enhancement:"+immunity:EMP"			components:( { item:&itNeodymiumMagnet; count:2 } { item:&itDuralloyOre; count:4 })	extraCost:0 }
+					{ item:&itStealthPlate;				enhancement:"+regen"				components:( { item:&itDuralloyOre; count:3 } { item:&itHyperfiberRoll; count:4 })	extraCost:0 }
+					{ item:&itLightBlastPlate;			enhancement:"+reflect:particle"		components:( { item:&itDwargChitonArmor; count:1 } { item:&itCeralloyOre; count:4 })	extraCost:0 }
+					{ item:&itCeralloyArmor;			enhancement:"+immunity:ionEffects"	components:( { item:&itHyperfiberRoll; count:2 } { item:&itCeralloyOre; count:4 })	extraCost:0 }
+					{ item:&itAdvancedReactiveArmor;	enhancement:"+resist:particle:60"	components:( { item:&it400HexageneMAG; count:2 } { item:&itPlasteelOre; count:6 })	extraCost:0 }
+					{ item:&itSolarArmor;				enhancement:"+reflect:laser"		components:( { item:&itLanthanumGlass; count:1 } { item:&itPalladiumOre; count:3 })	extraCost:0 }
+					
+					{ item:&itDualMarkIIIHowitzer;		enhancement:Nil						components:( { item:&itMakayevBlastEnhancer; count:1 } { item:&itMarkIIIHowitzer; count:2 })	extraCost:0 }
+					{ item:&itOmniXRayLaserCannon;		enhancement:Nil						components:( { item:&itXRayLaserCannon; count:1 } { item:&itOmniLaserCannon; count:1 })	extraCost:0 }
+					{ item:&itSlamCannon;				enhancement:"+speed:70"				components:( { item:&itMakayevLauncher; count:1 } { item:&itSlamCannon; count:1 })	extraCost:0 }
+					{ item:&itDualTurbolaserCannon;		enhancement:Nil						components:( { item:&itTurbolaserCannon; count:4 })	extraCost:0 }
+					{ item:&itWasteCannon;				enhancement:Nil						components:( { item:&itRadioactiveWaste; count:8 })	extraCost:0 }
+					{ item:&itXM900Missile;				enhancement:Nil						components:( { item:&itFusionTrigger; count:1 })	extraCost:0 }
+					
+					{ item:&itArmorRepairDevice;		enhancement:Nil						components:( { item:&itRepairingNanos; count:6 })	extraCost:0 }
+					)
+			</Recipes>
+		</InitialData>
+	</Sovereign>
+
 	<!-- Tinker Gathering -->
 
 	<StationType UNID="&stTinkerGathering;"
 			name=				"Tinker gathering"
-			sovereign=			"&svIndependent;"
+			sovereign=			"&svTinkers;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -145,174 +183,41 @@
 							</Action>
 
 							<Action name="Custom Work" key="C">
-								<Navigate screen="PickItem"/>
+								(if (objGetData gSource 'customIntroDone)
+									(scrShowScreen gScreen &dsTinkerCustomWork;)
+									(scrShowPane gScreen "CustomWorkIntro")
+									)
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
+						
+					<CustomWorkIntro>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You're in a machine shop surrounded by moving autowelders and cutters. A dark-skinned woman stands amid the chaos holding a datapad.\n\n"
+								
+								"\"We have a list of items we can fabricate for you. You'll need to provide the required scrap items or raw materials plus fabrication cost.\""
+								)
+						</OnPaneInit>
+				
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetData gSource 'customIntroDone True)
+									(scrShowPane gScreen "Default")
+									(scrShowScreen gScreen &dsTinkerCustomWork;)
+									)
+							</Action>
+						</Actions>
+					</CustomWorkIntro>
 				</Panes>
 			</Main>
 
-			<PickItem
-					name=				"Ship's Cargo Hold"
-					type=				"itemPicker"
-					backgroundID=		"&rsItemListScreen;"
-					>
-
-				<ListOptions
-					dataFrom=	"player"
-					list=		"*U"
-					/>
-
-				<Panes>
-					<Default
-							desc=	"You are in a machine shop surrounded by robot welders and cutters. A woman approaches you. &quot;If you've got some scrap or otherwise useless items we can turn them into something useful. Pick an item.&quot;">
-
-						<Actions>
-							<Action name="Use this Item" default="1" key="U">
-								(block Nil
-									(setq gItem (scrGetItem gScreen))
-									(if gItem
-										(block Nil
-											(setq gMaxCount (itmGetCount gItem))
-											(if (eq gMaxCount 1)
-												(scrShowPane gScreen "UseItem")
-												(scrShowPane gScreen "UseQuantity")
-												)
-											)
-										)
-									)
-							</Action>
-
-							<Action name="Leave" cancel="1" key="L">
-								<Navigate screen="Main"/>
-							</Action>
-
-						</Actions>
-
-					</Default>
-
-					<UseQuantity
-							showCounter=	"true">
-
-						<OnPaneInit>
-							(block Nil
-								(scrSetDesc gScreen (cat "How many " (itmGetName gItem 2) " do you wish to use in this process?"))
-								(scrSetCounter gScreen gMaxCount)
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Use these Items" default="1" key="U">
-								<![CDATA[
-								(block (count)
-									(setq count (scrGetCounter gScreen))
-									(if (> count gMaxCount)
-										(scrSetCounter gScreen gMaxCount)
-										(block Nil
-											(setq gMaxCount count)
-											(scrShowPane gScreen "UseItem")
-											)
-										)
-									)
-									]]>
-							</Action>
-
-							<Action name="Cancel" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</UseQuantity>
-
-					<UseItem>
-						<OnPaneInit>
-							(block (testWork foundPartial)
-								; Loop through our table looking to see if there
-								; is something that we can convert
-
-								(setq foundPartial Nil)
-								(setq gMatch Nil)
-								(enum (objGetStaticData gSource 'CustomWork) testWork
-									(block Nil
-										(if (eq (item testWork 0) (itmGetType gItem))
-											(block Nil
-												(setq foundPartial True)
-												(if (geq gMaxCount (item testWork 1))
-													(block Nil
-														(setq gMatch testWork)
-														(setq gCount (divide gMaxCount (item testWork 1)))
-														(setq gCost (multiply gCount 50))
-														)
-													)
-												)
-											)
-										)
-									)
-
-								; Set state depending on whether we matched
-
-								(switch
-									gMatch
-										(scrSetDesc gScreen (cat "We can convert your " (itmGetName (itmCreate (itmGetType gItem) gMaxCount) 8) " into " (itmGetName (itmCreate (item gMatch 2) gCount) 8) " for " gCost " credits. Do you wish to proceed?"))
-									foundPartial
-										(scrSetDesc gScreen (cat "If we had more " (itmGetName gItem 2) " we might be able to do something, but there's nothing we can do with so few."))
-									(scrSetDesc gScreen "Sorry, that junk isn't useful to us. We can't do anything with it.")
-									)
-
-								; Enable/disable actions
-								(scrEnableAction gScreen 0 (and gMatch (geq (plyGetCredits gPlayer) gCost)))
-								)
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Proceed" default="1" key="P">
-								(if (and gMatch (geq (plyGetCredits gPlayer) gCost))
-									(block Nil
-										(scrRemoveItem gScreen gMaxCount)
-										(plyCharge gPlayer gCost)
-										(objAddItem gPlayerShip (itmCreate (item gMatch 2) gCount))
-
-										(scrShowPane gScreen 'Done)
-										)
-									)
-							</Action>
-
-							<Action name="Cancel" cancel="1" key="C">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</UseItem>
-
-					<Done
-							noListNavigation="true"
-							>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "After much work with the robots the woman comes back with " (itmGetName (itmCreate (item gMatch 2) 1) 4) ". \"Here you go,\" she says, \"nothing to it once you know how these machines work.\""))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Continue" default="1" cancel="1" key="C">
-								<Navigate screen="Main"/>
-							</Action>
-						</Actions>
-
-					</Done>
-				</Panes>
-
-			</PickItem>
-
 			<Decon>
-
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -394,7 +299,6 @@
 					</DeconDone>
 				</Panes>
 			</Decon>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -407,9 +311,517 @@
 			<Port x="-60"	y="60" />
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
-
 	</StationType>
+	
+<!-- ITEMS -->
+	
+	<!-- Dual Mark III Howitzer -->
 
+	<ItemType UNID="&itDualMarkIIIHowitzer;"
+			name=				"dual mark III howitzer"
+			attributes=			"howitzer, majorItem, tinkers"
+
+			level=				"6"
+			value=				"25000"
+			mass=				"10000"
+			frequency=			"notRandom"
+			numberAppearing=	"1"
+
+			description=		"The Tinkers Guild has developed a technique for combining two mark III howitzers."
+			>
+
+		<Image imageID="&rsItemsMakayev3;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				configuration=		"dual"
+				damage=				"blast:8d12; momentum3; WMD4"
+				fireRate=			"40"
+				missileSpeed=		"50"
+				lifetime=			"120"
+				hitPoints=			"6"
+				powerUse=			"600"
+				recoil=				"4"
+
+				effect=				"&efBlastShellDefault;"
+				fireEffect=			"&efBlastFireDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsMediumExplosions;" 
+						imageX="0" 
+						imageY="0" 
+						imageWidth="64" 
+						imageHeight="64"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Omni X-Ray laser cannon -->
+
+	<ItemType UNID="&itOmniXRayLaserCannon;"
+			name=				"omnidirectional x-ray laser"
+			attributes=			"energyWeapon, majorItem, tinkers"
+			  
+			level=				"5"
+			value=				"9000"
+			mass=				"2500"
+			frequency=			"notRandom"
+
+			description=		"The Tinkers Guild designed this a nuclear-powered laser mounted on an omnidirectional turret."
+			>
+
+		<Image imageID="&rsItemsBushido1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				omnidirectional=	"true"
+				damage=				"laser:8d4"
+				fireRate=			"20"
+				lifetime=			"30"
+				powerUse=			"250"
+
+				effect=				"&efLaserBeamDefault;"
+				hitEffect=			"&efXRayLaserHitEffect;" 
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+<!-- DOCK SCREENS -->
+	
+	<DockScreen UNID="&dsTinkerCustomWork;"
+			type=           "customItemPicker"
+			backgroundID=   "&rsItemListScreen;"
+			nestedScreen=   "true"
+			>
+		<List>
+			(map (typGetData &svTinkers; 'Recipes) 'excludeNil theRecipe
+				(tinkerCreateItem theRecipe 1)
+				)
+		</List>
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (theItem theRecipe theComponents desc componentDesc componentPrice workCost errorDesc missingComponents maxCount availableComponents)
+						(setq theItem (scrGetItem gScreen))
+						
+						;	Find the recipe for this item
+						
+						(setq theRecipe
+							(@ (filter (typGetData &svTinkers; 'Recipes) theRecipe
+									(eq (@ theRecipe 'item) (itmGetType theItem))
+									)
+								0
+								)
+							)
+							
+						;	Describe the components needed
+						
+						(setq theComponents 
+							(map (@ theRecipe 'components) theDesc
+								(itmCreate (@ theDesc 'item) (@ theDesc 'count))
+								)
+							)
+
+						(setq componentDesc (strItemList theComponents 0x0108))
+							
+						;	Compute the total price of the components and compare to the
+						;	price of the result.
+						
+						(setq componentPrice 
+							(map theComponents 'reduceSum theComponent 
+								;	For devices we assume a damaged device
+								(if (itmMatches theComponent "d")
+									(multiply (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True)))
+									(multiply (itmGetCount theComponent) (itmGetPrice theComponent))
+									)
+								)
+							)
+						
+						;	The total cost of the work compensates for any difference between
+						;	the input and output prices.
+						
+						(setq workCost 
+							(add
+								(max 
+									50
+									(intRoundUp (subtract (itmGetPrice theItem) componentPrice) 25)
+									)
+								(@ theRecipe 'extraCost)
+								)
+							)
+							
+						;	For each required component, add up the number of items the player
+						;	actually has. Note that we accept damaged items.
+						
+						(setq availableComponents
+							(map theComponents theComponent
+								(block (countAvailable)
+									(setq countAvailable 0)
+									
+									;	Add the number of non-damaged items we have
+								
+									(setq countAvailable (add countAvailable
+										(objHasItem gPlayerShip theComponent 1)
+										))
+										
+									;	Now add damaged items
+									
+									(setq countAvailable (add countAvailable
+										(objHasItem gPlayerShip (itmSetProperty theComponent 'damaged True) 1)
+										))
+										
+									;	Compose entry
+									
+									{	item: theComponent
+										available: countAvailable
+										}
+									)
+								)
+							)
+							
+						;	Generate a list of the number of items the player is missing.
+						;	Note that we accept damaged items.
+						
+						(setq missingComponents
+							(map availableComponents 'excludeNil theEntry
+								(block (countAvailable)
+									(switch
+										(eq (@ theEntry 'available) 0)
+											(cat "\n\nUnfortunately, you do not have any " (itmGetName (@ theEntry 'item) 0x102) ".")
+											
+										(ls (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+											(cat "\n\nUnfortunately, you only have " (itmGetName (itmSetCount (@ theEntry 'item) (@ theEntry 'available)) 0x1100) ".")
+											
+										;	Otherwise we have enough, so these items are not missing
+										
+										Nil
+										)
+									)
+								)
+							)
+							
+						;	See if the player has the required components and money
+						
+						(switch
+							missingComponents
+								(block Nil
+									(setq maxCount 0)
+									(setq errorDesc (@ missingComponents 0))
+									)
+								
+							(leq (plyGetCredits gPlayer) workCost)
+								(block Nil
+									(setq maxCount 0)
+									(setq errorDesc "\n\nUnfortunately, you cannot afford the cost.")
+									)
+
+							(block Nil
+								;	Figure out the maximum number of items we could create
+						
+								(setq maxCount (divide (plyGetCredits gPlayer) workCost))
+								(enum availableComponents theEntry
+									(setq maxCount (min
+										maxCount
+										(divide (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+										))
+									)
+									
+								(setq errorDesc "")
+								)
+							)
+						
+						;	Set the description
+						
+						(scrSetDesc gScreen
+							"\"To fabricate " (itmGetName theItem 0x0108) " we need "
+							componentDesc
+							" plus " workCost " credits."
+							errorDesc
+							"\""
+							)
+							
+						;	Remember the recipe, the components, and the cost for later
+						
+						(scrSetData gScreen 'recipe theRecipe)
+						(scrSetData gScreen 'components theComponents)
+						(scrSetData gScreen 'cost workCost)
+						(scrSetData gScreen 'maxCount maxCount)
+							
+						;	Disable Fabricate action if we can't do it
+						
+						(scrEnableAction gScreen 0 (gr maxCount 0))
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Fabricate" default="1" key="F">
+						(if (gr (scrGetData gScreen 'maxCount) 1)
+							(scrShowPane gScreen "FabricateCount")
+							
+							(block Nil
+								(scrSetData gScreen 'result 
+									(tinkerFabricate 
+										(scrGetData gScreen 'recipe)
+										(scrGetData gScreen 'cost)
+										1
+										)
+									)
+								(scrShowPane gScreen "FabricateResult")
+								)
+							)
+					</Action>
+					
+					<Action name="Remember for Later" key="R">
+						(block (theMission)
+							(setq theMission (msnCreate &msTinkerReminder; gSource {
+								recipe: (scrGetData gScreen 'recipe)
+								components: (scrGetData gScreen 'components)
+								cost: (scrGetData gScreen 'cost)
+								destID: (objGetID gSource)
+								}))
+								
+							(if theMission
+								(msnAccept theMission)
+								)
+								
+							(scrShowPane gScreen "MissionAdded")
+							)
+					</Action>
+					
+					<Action name="Done" cancel="1" key="D">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<FabricateCount
+					showCounter=	"true"
+					>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "How many items do you wish to fabricate?"))
+						(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
+						)
+				</OnPaneInit>
+			
+				<Actions>
+					<Action name="Fabricate" default="1" key="F">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count (scrGetData gScreen 'maxCount))
+								(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
+								(block Nil
+									(scrSetData gScreen 'result 
+										(tinkerFabricate 
+											(scrGetData gScreen 'recipe)
+											(scrGetData gScreen 'cost)
+											count
+											)
+										)
+									(scrShowPane gScreen "FabricateResult")
+									)
+								)
+							)
+					</Action>
+					
+					<Action name="Cancel" cancel="1" key="C">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</FabricateCount>
+				
+			<FabricateResult
+					noListNavigation="true"
+					>
+				<OnPaneInit>
+					(block (theResult)
+						(setq theResult (scrGetData gScreen 'result))
+						(scrSetDesc gScreen 
+							"After much work with the robots the woman returns with her creation: "
+							"\"Nothing to it once you know how these machines work.\"\n\n"
+							
+							"Fabricated: " (itmGetName (@ theResult 'itemsCreated) 0x08) ".\n"
+							"Consumed: " (strItemList (@ theResult 'itemsConsumed) 0x08) ".\n"
+							"Total Cost: " (@ theResult 'totalCost) " credits."
+							)
+						)
+				</OnPaneInit>
+			
+				<Actions>
+					<Action name="Done" default="1" cancel="1" key="D">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</FabricateResult>
+			
+			<MissionAdded
+					noListNavigation="true"
+					>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						"A reminder has been added to your mission computer. Once you obtain the necessary items "
+						"you may return here to fabricate "
+						(itmGetName (tinkerCreateItem (scrGetData gScreen 'recipe) 1) 0x108)
+						"."
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action name="Done" default="1" cancel="1" key="D">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</MissionAdded>
+		</Panes>
+	</DockScreen>
+	
+<!-- MISSIONS -->
+	
+	<!-- Tinker Reminder =======================================================
+
+	EXTRA DATA
+	
+	recipe:				The item and recipe
+	components:			The components needed to fabricate the item.
+	cost:				The cost to fabricate per item.
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msTinkerReminder;"
+			name=				"Tinkers Reminder"
+			attributes=			"tinkers"
+
+			allowPlayerDelete=	"true"
+			noDebrief=			"true"
+			noStats=			"true"
+			>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					;	Store the parameters of the mission
+					
+					(msnSetData gSource 'recipe (@ gData 'recipe))
+					(msnSetData gSource 'components (@ gData 'components))
+					(msnSetData gSource 'cost (@ gData 'cost))
+					
+					;	Remember the current system and the station that offered
+					;	the mission.
+					
+					(msnSetData gSource 'destID (@ gData 'destID))
+					(msnSetData gSource 'destSystem (sysGetNode))
+					)
+			</OnCreate>
+
+			<OnSetPlayerTarget>
+			</OnSetPlayerTarget>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Find components for Tinker fabrication"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Acquire "
+					(strItemList (msnGetData gSource 'components) 0x0108)
+					" to have the Tinkers fabricate "
+					(itmGetName (tinkerCreateItem (msnGetData gSource 'recipe) 1) 0x108) ".\n\n"
+					
+					"System: " (sysGetName (msnGetData gSource 'destSystem))
+					)
+			</Text>
+		</Language>
+	</MissionType>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq tinkerCreateItem (lambda (theRecipe theCount)
+				(if (@ theRecipe 'enhancement)
+					(itmSetCount (itmSetEnhanced (itmCreate (@ theRecipe 'item) 1) (@ theRecipe 'enhancement)) theCount)
+					(itmCreate (@ theRecipe 'item) theCount)
+					)
+				))
+				
+			(setq tinkerFabricate (lambda (theRecipe theCost theCount)
+				(block (itemToCreate itemsConsumed)
+				
+					(setq itemToCreate (tinkerCreateItem theRecipe theCount))
+				
+					;	Consume items. NOTE: We expect our callers to have already checked
+					;	to make sure there are enough items.
+					
+					(enum (@ theRecipe 'components) theEntry
+						(block (available leftToConsume damageItem goodItem)
+							(setq leftToConsume (multiply theCount (@ theEntry 'count)))
+							
+							;	Consume damaged items first
+							
+							(setq damagedItem (itmSetProperty (itmCreate (@ theEntry 'item) 1) 'damaged True))
+							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem gPlayerShip damagedItem available)
+									(setq leftToConsume (subtract leftToConsume available))
+									(setq itemsConsumed (list (itmSetCount damagedItem available)))
+									)
+								)
+								
+							;	Consume good items
+							
+							(setq goodItem (itmCreate (@ theEntry 'item) 1))
+							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem)))
+							(if (gr available 0)
+								(block Nil
+									(objRemoveItem gPlayerShip goodItem available)
+									(setq leftToConsume (subtract leftToConsume available))
+									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
+									)
+								)
+							)
+						)
+						
+					;	Charge player
+					
+					(plyCharge gPlayer (multiply theCost theCount))
+					
+					;	Create the resulting item
+					
+					(objAddItem gPlayerShip itemToCreate)
+					
+					;	Loop over player missions and see if we've accomplished any of them
+					
+					(enum (msnFind gSource "aS +unid:&msTinkerReminder;;") theMission
+						(if (itmIsEqual itemToCreate (tinkerCreateItem (msnGetData theMission 'recipe) 1))
+							(msnSuccess theMission)
+							)
+						)
+					
+					;	Return result
+					
+					{	itemsCreated: itemToCreate
+						itemsConsumed: itemsConsumed
+						totalCost: (multiply theCost theCount)
+						}
+					)
+				))
+			)
+	</Globals>
+	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsTinkerStations;"		bitmap="Resources\TinkerStations.jpg" bitmask="Resources\TinkerStationsMask.bmp" loadOnUse="true"/>

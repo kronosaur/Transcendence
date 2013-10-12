@@ -13,6 +13,7 @@
 #define EXTERNAL_ATTRIB							CONSTLIT("external")
 #define ITEM_ID_ATTRIB							CONSTLIT("itemID")
 #define MAX_FIRE_ARC_ATTRIB						CONSTLIT("maxFireArc")
+#define MAX_HP_BONUS_ATTRIB						CONSTLIT("maxHPBonus")
 #define MIN_FIRE_ARC_ATTRIB						CONSTLIT("minFireArc")
 #define OMNIDIRECTIONAL_ATTRIB					CONSTLIT("omnidirectional")
 #define OVERLAY_TYPE_ATTRIB						CONSTLIT("overlayType")
@@ -111,6 +112,8 @@ ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 //	Bind the design
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	if (error = m_pOverlayType.Bind(Ctx))
@@ -119,6 +122,8 @@ ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 	m_pItemType->InitCachedEvents(evtCount, CACHED_EVENTS, m_CachedEvents);
 
 	return OnDesignLoadComplete(Ctx);
+
+	DEBUG_CATCH
 	}
 
 CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
@@ -217,8 +222,9 @@ ALERROR CDeviceClass::InitDeviceFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc
 	if (error = m_pOverlayType.LoadUNID(Ctx, pDesc->GetAttribute(OVERLAY_TYPE_ATTRIB)))
 		return error;
 
-	//	Is this device external?
+	//	Other settings
 
+	m_iMaxHPBonus = pDesc->GetAttributeIntegerBounded(MAX_HP_BONUS_ATTRIB, 0, -1, 150);
 	m_fExternal = pDesc->GetAttributeBool(EXTERNAL_ATTRIB);
 
 	//	Does this device enhance other items?

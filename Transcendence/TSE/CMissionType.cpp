@@ -4,6 +4,7 @@
 
 #include "PreComp.h"
 
+#define ALLOW_PLAYER_DELETE_ATTRIB				CONSTLIT("allowPlayerDelete")
 #define DEBRIEF_AFTER_OUT_OF_SYSTEM_ATTRIB		CONSTLIT("debriefAfterOutOfSystem")
 #define EXPIRE_TIME_ATTRIB						CONSTLIT("expireTime")
 #define FAILURE_AFTER_OUT_OF_SYSTEM_ATTRIB		CONSTLIT("failureAfterOutOfSystem")
@@ -60,6 +61,7 @@ ALERROR CMissionType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fNoStats = pDesc->GetAttributeBool(NO_STATS_ATTRIB);
 	m_fCloseIfOutOfSystem = pDesc->GetAttributeBool(DEBRIEF_AFTER_OUT_OF_SYSTEM_ATTRIB);
 	m_fForceUndockAfterDebrief = pDesc->GetAttributeBool(FORCE_UNDOCK_AFTER_DEBRIEF_ATTRIB);
+	m_fAllowDelete = pDesc->GetAttributeBool(ALLOW_PLAYER_DELETE_ATTRIB);
 
 	CString sAttrib;
 	if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sAttrib))

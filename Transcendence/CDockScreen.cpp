@@ -1030,7 +1030,7 @@ CSpaceObject *CDockScreen::EvalListSource (const CString &sString)
 		return m_pLocation;
 	}
 
-CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, bool *retbError)
+CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, ECodeChainEvents iEvent, bool *retbError)
 
 //	EvalString
 //
@@ -1047,6 +1047,7 @@ CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bP
 	if (bPlain || *pPos == '=')
 		{
 		CCodeChainCtx Ctx;
+		Ctx.SetEvent(iEvent);
 		Ctx.SetScreen(this);
 		Ctx.SaveAndDefineSourceVar(m_pLocation);
 		Ctx.SaveAndDefineDataVar(pData);
@@ -1406,7 +1407,7 @@ ALERROR CDockScreen::InitCustomList (ICCItem *pData)
 	if (pListData->FindAttribute(ROW_HEIGHT_ATTRIB, &sRowHeight))
 		{
 		bool bError;
-		int cyRow = strToInt(EvalString(sRowHeight, pData, false, &bError), -1);
+		int cyRow = strToInt(EvalString(sRowHeight, pData, false, eventNone, &bError), -1);
 		if (!bError && cyRow > 0)
 			m_pItemListControl->SetRowHeight(cyRow);
 		}
@@ -1643,7 +1644,7 @@ ALERROR CDockScreen::InitItemList (ICCItem *pData)
 
 	CString sCode = pOptions->GetContentText(0);
 	if (!sCode.IsBlank())
-		EvalString(sCode, pData, true);
+		EvalString(sCode, pData, true, eventInitDockScreenList);
 
 	//	Position the cursor on the next relevant item
 

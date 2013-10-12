@@ -90,6 +90,8 @@
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
 
+#define FIELD_ARMOR_COUNT						CONSTLIT("armorCount")				//	Number of armor segments
+#define FIELD_ARMOR_HP							CONSTLIT("armorHP")					//	HP of average armor segment
 #define FIELD_ARMOR_ITEMS						CONSTLIT("armorItems")
 #define FIELD_BALANCE_TYPE						CONSTLIT("balanceType")
 #define FIELD_CARGO_SPACE						CONSTLIT("cargoSpace")
@@ -1262,6 +1264,8 @@ void CShipClass::CreateExplosion (CShip *pShip, CSpaceObject *pWreck)
 //	Creates an explosion for the given ship
 
 	{
+	DEBUG_TRY
+
 	//	Explosion effect and damage
 
 	SExplosionType Explosion;
@@ -1358,6 +1362,8 @@ void CShipClass::CreateExplosion (CShip *pShip, CSpaceObject *pWreck)
 	//	Always play default sound
 
 	g_pUniverse->PlaySound(pShip, g_pUniverse->FindSound(g_ShipExplosionSoundUNID));
+
+	DEBUG_CATCH
 	}
 
 void CShipClass::CreateWreck (CShip *pShip, CSpaceObject **retpWreck)
@@ -1367,6 +1373,8 @@ void CShipClass::CreateWreck (CShip *pShip, CSpaceObject **retpWreck)
 //	Creates a wreck for the given ship
 
 	{
+	DEBUG_TRY
+
 	//	Create the wreck
 
 	CStation *pWreck;
@@ -1446,7 +1454,7 @@ void CShipClass::CreateWreck (CShip *pShip, CSpaceObject **retpWreck)
 					else if (CItemEnhancement(WreckItem.GetMods()).IsEnhancement())
 						{
 						CItemEnhancement Mods(WreckItem.GetMods());
-						Mods.Combine(etLoseEnhancement);
+						Mods.Combine(WreckItem, etLoseEnhancement);
 						WreckItem.AddEnhancement(Mods);
 						}
 					else if (WreckItem.IsEnhanced())
@@ -1474,6 +1482,8 @@ void CShipClass::CreateWreck (CShip *pShip, CSpaceObject **retpWreck)
 
 	if (retpWreck)
 		*retpWreck = pWreck;
+
+	DEBUG_CATCH
 	}
 
 void CShipClass::CreateWreckImage (void)
@@ -1609,7 +1619,18 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 	{
 	int i;
 
-	if (strEquals(sField, FIELD_BALANCE_TYPE))
+	if (strEquals(sField, FIELD_ARMOR_COUNT))
+		*retsValue = strFromInt(GetHullSectionCount());
+	else if (strEquals(sField, FIELD_ARMOR_HP))
+		{
+		CShipClass::HullSection *pSection = (GetHullSectionCount() > 0 ? GetHullSection(0) : NULL);
+		if (pSection)
+			pSection->pArmor->FindDataField(FIELD_HP, retsValue);
+		else
+			*retsValue = NULL_STR;
+		return true;
+		}
+	else if (strEquals(sField, FIELD_BALANCE_TYPE))
 		CalcBalanceType(retsValue);
 	else if (strEquals(sField, FIELD_CARGO_SPACE))
 		*retsValue = strFromInt(GetCargoSpace());
@@ -1891,6 +1912,8 @@ void CShipClass::GenerateDevices (int iLevel, CDeviceDescList &Devices)
 //	Generate a list of devices
 	
 	{
+	DEBUG_TRY
+
 	Devices.RemoveAll();
 
 	if (m_pDevices)
@@ -1902,6 +1925,8 @@ void CShipClass::GenerateDevices (int iLevel, CDeviceDescList &Devices)
 
 		m_pDevices->AddDevices(Ctx);
 		}
+
+	DEBUG_CATCH
 	}
 
 CString CShipClass::GenerateShipName (DWORD *retdwFlags)

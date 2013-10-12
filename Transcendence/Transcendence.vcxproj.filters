@@ -784,7 +784,6 @@
     <None Include="Game\RPGBehaviors.xml">
       <Filter>XML Files\RPG Library</Filter>
     </None>
-    <None Include="Game\RPGWingmen.xml" />
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml">
       <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
@@ -809,7 +808,15 @@
     <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalignedMerchanters.xml">
       <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
-    <None Include="Game\Extensions\Debug\DebugShips.xml" />
+    <None Include="Game\RPGWingmen.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Extensions\Debug\DebugShips.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
+    <None Include="Game\Extensions\Debug\RandomnessTest.xml">
+      <Filter>XML Files\Debug</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">

@@ -374,6 +374,7 @@ class CBaseShipAI : public CObject, public IShipController
 		//	CBaseShipAI virtuals
 		virtual void OnAttackedNotify (CSpaceObject *pAttacker, const DamageDesc &Damage) { }
 		virtual void OnBehavior (void) { }
+		virtual void OnCleanUp (void) { }
 		virtual DWORD OnCommunicateNotify (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) { return resNoAnswer; }
 		virtual CString OnDebugCrashInfo (void) { return NULL_STR; }
 		virtual void OnDockedEvent (CSpaceObject *pObj) { }
@@ -739,6 +740,7 @@ class CStandardShipAI : public CBaseShipAI
 		//	CBaseShipAI overrides
 		virtual void OnAttackedNotify (CSpaceObject *pAttacker, const DamageDesc &Damage);
 		virtual void OnBehavior (void);
+		virtual void OnCleanUp (void) { m_State = stateNone; m_pTarget = NULL; m_pDest = NULL; }
 		virtual DWORD OnCommunicateNotify (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 		virtual CString OnDebugCrashInfo (void);
 		virtual void OnDockedEvent (CSpaceObject *pObj);

@@ -427,6 +427,7 @@ class CWeaponClass : public CDeviceClass
 											 CItemType **retpType = NULL);
 		virtual int GetValidVariantCount (CSpaceObject *pSource, CInstalledDevice *pDevice);
 		virtual int GetWeaponEffectiveness (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget);
+		virtual bool IsAmmoWeapon (void);
 		virtual bool IsAreaWeapon (CSpaceObject *pSource, CInstalledDevice *pDevice);
 		virtual bool IsVariantSelected (CSpaceObject *pSource, CInstalledDevice *pDevice);
 		virtual bool IsWeaponAligned (CSpaceObject *pShip, CInstalledDevice *pDevice, CSpaceObject *pTarget, int *retiAimAngle = NULL, int *retiFireAngle = NULL);
@@ -477,7 +478,7 @@ class CWeaponClass : public CDeviceClass
 
 		int CalcBalance (int iVariant);
 		int CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, int iFireAngle, CVector *ShotPosOffset, int *ShotDir, bool bSetAlternating);
-		int CalcConfigurationMultiplier (CWeaponFireDesc *pShot = NULL, bool bIncludeFragments = true) const;
+		Metric CalcConfigurationMultiplier (CWeaponFireDesc *pShot = NULL, bool bIncludeFragments = true) const;
 		Metric CalcDamage (CWeaponFireDesc *pShot) const;
 		Metric CalcDamagePerShot (CWeaponFireDesc *pShot) const;
 		int CalcFireAngle (CItemCtx &ItemCtx, Metric rSpeed, CSpaceObject *pTarget, bool *retbOutOfArc);

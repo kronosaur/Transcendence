@@ -63,7 +63,6 @@ bool CHTTPClientSession::CheckInternetAccess (void)
 	Request.AddHeader(CONSTLIT("Host"), sHost);
 	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("AlchemyDebug/1.0"));
 	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
-	Request.AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
 
 	CHTTPMessage Response;
 	if (Send(Request, &Response) != inetsOK)
@@ -75,6 +74,7 @@ bool CHTTPClientSession::CheckInternetAccess (void)
 
 	//	If send succeeded it will set m_iInternetStatus.
 
+	::kernelDebugLogMessage("Request to %s succeeded.", sHost);
 	Disconnect();
 	return true;
 	}
@@ -263,8 +263,17 @@ bool CHTTPClientSession::ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRea
 
 	//	Wait for data
 
-	if (!WaitForTransfer(oRead, &dwBytesRead) || dwBytesRead == 0)
+	if (!WaitForTransfer(oRead, &dwBytesRead))
+		{
+		::kernelDebugLogMessage("WaitForTransfer failed.");
 		return false;
+		}
+
+	if (dwBytesRead == 0)
+		{
+		::kernelDebugLogMessage("0 bytes returned.");
+		return false;
+		}
 
 	//	Done
 

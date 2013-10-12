@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-    188, 169, 154, 128,  51,  22,  75, 155, 186, 189,
-    236,  95, 123, 195, 123, 105, 254,  10, 117, 249,
+    127, 104,  27, 246, 140, 129, 107, 126, 198, 181,
+     20,  38, 185,  44, 253,  89, 187,  69,  46, 182,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -108,7 +108,9 @@ void CExtensionCollection::AddOrReplace (CExtension *pExtension)
 		//	Add to deleted list. We can't delete outright because its 
 		//	structures may have been bound by CDesignCollection.
 
+		pPreviousExtension->SetDeleted();
 		m_Deleted.Insert(pPreviousExtension);
+		::kernelDebugLogMessage("Replaced extension: %s", pPreviousExtension->GetFilespec());
 		}
 
 	//	Insert
@@ -464,6 +466,8 @@ ALERROR CExtensionCollection::ComputeBindOrder (CExtension *pAdventure,
 //	a required extension is missing).
 
 	{
+	DEBUG_TRY
+
 	CSmartLock Lock(m_cs);
 
 	ALERROR error;
@@ -518,6 +522,8 @@ ALERROR CExtensionCollection::ComputeBindOrder (CExtension *pAdventure,
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CExtensionCollection::ComputeCompatibilityLibraries (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList)
@@ -693,6 +699,36 @@ ALERROR CExtensionCollection::ComputeFilesToLoad (const CString &sFilespec, CExt
 	return NOERROR;
 	}
 
+void CExtensionCollection::DebugDump (void)
+
+//	DebugDump
+//
+//	Dump information on crash
+
+	{
+	CSmartLock Lock(m_cs);
+	int i, j;
+
+	::kernelDebugLogMessage("m_pBase:");
+	CExtension::DebugDump(m_pBase);
+
+	::kernelDebugLogMessage("m_Extensions:");
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		CExtension::DebugDump(m_Extensions[i], true);
+
+	::kernelDebugLogMessage("m_ByUNID:");
+	for (i = 0; i < m_ByUNID.GetCount(); i++)
+		{
+		const TArray<CExtension *> &List = m_ByUNID[i];
+		for (j = 0; j < List.GetCount(); j++)
+			CExtension::DebugDump(List[j]);
+		}
+
+	::kernelDebugLogMessage("m_ByFilespec:");
+	for (i = 0; i < m_ByFilespec.GetCount(); i++)
+		CExtension::DebugDump(m_ByFilespec[i]);
+	}
+
 bool CExtensionCollection::FindAdventureFromDesc (DWORD dwUNID, DWORD dwFlags, CExtension **retpExtension)
 
 //	FindAdventureFromDesc
@@ -858,6 +894,8 @@ void CExtensionCollection::FreeDeleted (void)
 //	Frees deleted list
 
 	{
+	DEBUG_TRY
+
 	CSmartLock Lock(m_cs);
 	int i;
 
@@ -865,6 +903,8 @@ void CExtensionCollection::FreeDeleted (void)
 		delete m_Deleted[i];
 
 	m_Deleted.DeleteAll();
+
+	DEBUG_CATCH
 	}
 
 void CExtensionCollection::InitEntityResolver (CExtension *pExtension, DWORD dwFlags, CEntityResolverList *retResolver)
@@ -1231,10 +1271,6 @@ ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, const 
 //	the Collection folder.
 
 	{
-	//	If this extension has music files, then we need to extract them and generate a new
-	//	TDB. Otherwise we just copy the TDB to the collection folder.
-
-
 	//	NOTE: We don't need to lock because LoadFile will lock appropriately.
 
 	//	Delete the destination filespec

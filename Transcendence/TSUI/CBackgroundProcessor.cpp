@@ -351,7 +351,16 @@ DWORD WINAPI CBackgroundProcessor::Thread (LPVOID pData)
 				pThis->SetProgress(CONSTLIT("Running"), 0);
 
 				CString sResult;
-				ALERROR error = pTask->HIExecute(pThis, &sResult);
+				ALERROR error;
+				try
+					{
+					error = pTask->HIExecute(pThis, &sResult);
+					}
+				catch (...)
+					{
+					sResult = CONSTLIT("Crash executing task.");
+					error = ERR_FAIL;
+					}
 
 				pThis->SetProgress(NULL_STR, -1);
 				pThis->SetResult(error, (sResult.IsBlank() ? CONSTLIT("Done") : sResult));

@@ -448,7 +448,7 @@ CVector CEnergyField::GetPos (CSpaceObject *pSource)
 		return pSource->GetPos();
 	}
 
-void CEnergyField::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+void CEnergyField::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx)
 
 //	Paint
 //
@@ -463,9 +463,11 @@ void CEnergyField::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &C
 
 	if (m_iPosRadius)
 		{
-		CVector vOffset = PolarToVector(iRotationOrigin + m_iPosAngle, (Metric)m_iPosRadius);
-		x = x + (int)vOffset.GetX();
-		y = y - (int)vOffset.GetY();
+		int xOffset, yOffset;
+		C3DConversion::CalcCoord(iScale, iRotationOrigin + m_iPosAngle, m_iPosRadius, 0, &xOffset, &yOffset);
+
+		x = x + xOffset;
+		y = y + yOffset;
 		}
 
 	//	Adjust rotation

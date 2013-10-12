@@ -12,9 +12,10 @@
 //	CString		resource table (flattened CSymbolTable)
 
 #include "PreComp.h"
+#include "Zip.h"
 
 #define TDB_SIGNATURE							'TRDB'
-#define TDB_VERSION								11
+#define TDB_VERSION								12
 
 #define FILE_TYPE_XML							CONSTLIT("xml")
 #define FILE_TYPE_TDB							CONSTLIT("tdb")
@@ -173,13 +174,7 @@ ALERROR CResourceDb::ExtractResource (const CString sFilespec, CString *retsData
 
 	if (m_bResourcesInDb && m_pDb)
 		{
-		//	Look-up the resource in the map
-
-		int iEntry;
-		if (error = m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry))
-			return error;
-
-		if (error = m_pDb->ReadEntry(iEntry, retsData))
+		if (error = ReadEntry(sFilespec, retsData))
 			return error;
 		}
 	else
@@ -195,8 +190,8 @@ int CResourceDb::GetResourceCount (void)
 //	Returns the number of resources
 
 	{
-	if (m_pDb && m_pResourceMap)
-		return m_pResourceMap->GetCount();
+	if (m_pDb)
+		return m_ResourceMap.GetCount();
 	else
 		return 0;
 	}
@@ -208,8 +203,8 @@ CString CResourceDb::GetResourceFilespec (int iIndex)
 //	Returns the filespec of the given resource
 
 	{
-	if (m_pDb && m_pResourceMap)
-		return m_pResourceMap->GetKey(iIndex);
+	if (m_pDb)
+		return m_ResourceMap.GetKey(iIndex);
 	else
 		return NULL_STR;
 	}
@@ -223,8 +218,6 @@ CString CResourceDb::GetRootTag (void)
 	{
 	if (m_bGameFileInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		int iReadSize = Min(m_pDb->GetEntryLength(m_iGameFile), 1024);
 
 		CString sGameFile;
@@ -264,8 +257,6 @@ bool CResourceDb::ImageExists (const CString &sFolder, const CString &sFilename)
 	{
 	if (m_bResourcesInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sFilespec;
 		if (m_iVersion >= 11 && !sFolder.IsBlank())
 			sFilespec = pathAddComponent(sFolder, sFilename);
@@ -274,8 +265,8 @@ bool CResourceDb::ImageExists (const CString &sFolder, const CString &sFilename)
 
 		//	Look-up the resource in the map
 
-		int iEntry;
-		return (m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry) == NOERROR);
+		SResourceEntry *pEntry = m_ResourceMap.GetAt(sFilespec);
+		return (pEntry != NULL);
 		}
 	else
 		{
@@ -300,8 +291,6 @@ ALERROR CResourceDb::LoadEntities (CString *retsError, CExternalEntityTable **re
 
 	if (m_bGameFileInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sGameFile;
 		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
 			{
@@ -351,8 +340,6 @@ ALERROR CResourceDb::LoadGameFileStub (CXMLElement **retpData, CExternalEntityTa
 
 	if (m_bGameFileInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sGameFile;
 		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
 			{
@@ -405,8 +392,6 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, IXMLParserController 
 
 	if (m_bGameFileInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sGameFile;
 		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
 			{
@@ -473,22 +458,14 @@ ALERROR CResourceDb::LoadImage (const CString &sFolder, const CString &sFilename
 		{
 		if (m_bResourcesInDb && m_pDb)
 			{
-			ASSERT(m_pResourceMap);
-
 			CString sFilespec;
 			if (m_iVersion >= 11 && !sFolder.IsBlank())
 				sFilespec = pathAddComponent(sFolder, sFilename);
 			else
 				sFilespec = sFilename;
 
-			//	Look-up the resource in the map
-
-			int iEntry;
-			if (error = m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry))
-				return error;
-
 			CString sData;
-			if (error = m_pDb->ReadEntry(iEntry, &sData))
+			if (error = ReadEntry(sFilespec, &sData))
 				return error;
 
 			CString sType = pathGetExtension(sFilespec);
@@ -569,8 +546,6 @@ ALERROR CResourceDb::LoadModule (const CString &sFolder, const CString &sFilenam
 
 	if (m_bGameFileInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sFilespec;
 		if (m_iVersion >= 11)
 			sFilespec = pathAddComponent(sFolder, sFilename);
@@ -579,19 +554,10 @@ ALERROR CResourceDb::LoadModule (const CString &sFolder, const CString &sFilenam
 
 		//	Look up the file in the map
 
-		int iEntry;
-		TRY(m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry));
-		if (error)
-			{
-			*retsError = strPatternSubst(CONSTLIT("%s: Resource map corrupt."), m_sGameFile);
-			return error;
-			}
-
 		CString sGameFile;
-		TRY(m_pDb->ReadEntry(iEntry, &sGameFile));
-		if (error)
+		if (error = ReadEntry(sFilespec, &sGameFile))
 			{
-			*retsError = strPatternSubst(CONSTLIT("%s: Unable to read entry: %d"), m_sGameFile, iEntry);
+			*retsError = strPatternSubst(CONSTLIT("%s: Unable to read entry %s."), m_sGameFile, sFilespec);
 			return error;
 			}
 
@@ -636,22 +602,14 @@ ALERROR CResourceDb::LoadSound (CSoundMgr &SoundMgr, const CString &sFolder, con
 
 	if (m_bResourcesInDb && m_pDb)
 		{
-		ASSERT(m_pResourceMap);
-
 		CString sFilespec;
 		if (m_iVersion >= 11)
 			sFilespec = pathAddComponent(sFolder, sFilename);
 		else
 			sFilespec = sFilename;
 
-		//	Look-up the resource in the map
-
-		int iEntry;
-		if (error = m_pResourceMap->Lookup(sFilespec, (CObject **)&iEntry))
-			return error;
-
 		CString sData;
-		if (error = m_pDb->ReadEntry(iEntry, &sData))
+		if (error = ReadEntry(sFilespec, &sData))
 			return error;
 
 		CBufferReadBlock Data(sData);
@@ -673,6 +631,43 @@ ALERROR CResourceDb::LoadSound (CSoundMgr &SoundMgr, const CString &sFolder, con
 	return NOERROR;
 	}
 
+ALERROR CResourceDb::ReadEntry (const CString &sFilespec, CString *retsData)
+
+//	ReadEntry
+//
+//	Reads an entry
+
+	{
+	ALERROR error;
+
+	//	Look-up the resource in the map
+
+	SResourceEntry *pEntry = m_ResourceMap.GetAt(sFilespec);
+	if (pEntry == NULL)
+		return ERR_FAIL;
+
+	if (error = m_pDb->ReadEntry(pEntry->iEntryID, retsData))
+		return error;
+
+	//	If this is a compressed entry, we need to uncompress it.
+
+	if (pEntry->dwFlags & FLAG_COMPRESS_ZLIB)
+		{
+		CBufferReadBlock Input(*retsData);
+
+		CMemoryWriteStream Output;
+		if (error = Output.Create())
+			return ERR_FAIL;
+
+		if (!::zipDecompress(Input, compressionZlib, Output))
+			return ERR_FAIL;
+
+		*retsData = CString(Output.GetPointer(), Output.GetLength());
+		}
+
+	return NOERROR;
+	}
+
 ALERROR CResourceDb::Open (DWORD dwFlags, CString *retsError)
 
 //	Open
@@ -686,8 +681,6 @@ ALERROR CResourceDb::Open (DWORD dwFlags, CString *retsError)
 
 	if (m_pDb)
 		{
-		ASSERT(m_pResourceMap == NULL);
-
 		char *pszResID;
 		if (pathIsResourcePath(m_sFilespec, &pszResID))
 			{
@@ -727,13 +720,12 @@ ALERROR CResourceDb::OpenDb (void)
 
 	{
 	ALERROR error;
+	int i;
 
 	//	Load the resource map, if necessary
 
 	if (m_pDb)
 		{
-		ASSERT(m_pResourceMap == NULL);
-
 		CString sData;
 		if (error = m_pDb->ReadEntry(m_pDb->GetDefaultEntry(), &sData))
 			return error;
@@ -761,19 +753,53 @@ ALERROR CResourceDb::OpenDb (void)
 
 		Stream.Read((char *)&m_iGameFile, sizeof(DWORD));
 
-		//	Read the game title
+		//	Read the game title (and ignore it).
 
 		CString sLoad;
 		sLoad.ReadFromStream(&Stream);
 
-		//	Read the flattened symbol table
+		//	For versions 12 and higher we use a different format
 
-		sLoad.ReadFromStream(&Stream);
+		m_ResourceMap.DeleteAll();
+		if (m_iVersion >= 12)
+			{
+			Stream.Read((char *)&dwLoad, sizeof(DWORD));
+			int iCount = (int)dwLoad;
+			for (i = 0; i < iCount; i++)
+				{
+				CString sFilespec;
+				sFilespec.ReadFromStream(&Stream);
+				SResourceEntry *pEntry = m_ResourceMap.Insert(sFilespec);
+				pEntry->sFilename = sFilespec;
+				Stream.Read((char *)&pEntry->iEntryID, sizeof(DWORD));
+				Stream.Read((char *)&pEntry->dwFlags, sizeof(DWORD));
+				}
+			}
 
-		//	Unflatten the symbol table
+		//	Otherwise, old style
 
-		if (error = CObject::Unflatten(sLoad, (CObject **)&m_pResourceMap))
-			return error;
+		else
+			{
+			//	Read the flattened symbol table
+
+			sLoad.ReadFromStream(&Stream);
+
+			//	Unflatten the symbol table
+
+			CSymbolTable *pTable;
+			if (error = CObject::Unflatten(sLoad, (CObject **)&pTable))
+				return error;
+
+			//	Convert to new format
+
+			for (i = 0; i < pTable->GetCount(); i++)
+				{
+				SResourceEntry *pEntry = m_ResourceMap.Insert(pTable->GetKey(i));
+				pEntry->sFilename = pTable->GetKey(i);
+				pEntry->iEntryID = (int)pTable->GetValue(i);
+				pEntry->dwFlags = 0;
+				}
+			}
 		}
 
 	return NOERROR;

@@ -739,6 +739,11 @@ void CShieldClass::FireOnShieldDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 		if (pResult->IsNil())
 			NULL;
 
+		//	If an error, report it
+
+		else if (pResult->IsError())
+			ItemCtx.GetSource()->ReportEventError(ON_SHIELD_DAMAGE_EVENT, pResult);
+
 		//	If we return a list, then modify variables
 
 		else if (pResult->IsList())

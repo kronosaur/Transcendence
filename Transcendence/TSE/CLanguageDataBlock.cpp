@@ -199,6 +199,8 @@ void CLanguageDataBlock::MergeFrom (const CLanguageDataBlock &Source)
 //	Merges entries from Source that we do not already have.
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	for (i = 0; i < Source.m_Data.GetCount(); i++)
@@ -216,6 +218,8 @@ void CLanguageDataBlock::MergeFrom (const CLanguageDataBlock &Source)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult) const

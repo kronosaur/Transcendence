@@ -115,7 +115,6 @@ ALERROR CXelerus::PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord 
 	Request.AddHeader(CONSTLIT("Host"), m_sHost);
 	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
 	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
-	Request.AddHeader(CONSTLIT("Connection"), CONSTLIT("close"));
 	Request.SetBody(pForm);
 
 	//	Establish a session

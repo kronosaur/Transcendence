@@ -1456,6 +1456,7 @@ struct SFileVersionInfo
 	ULONG64 dwProductVersion;
 	};
 
+bool fileCopy (const CString &sSourceFilespec, const CString &sDestFilespec);
 bool fileDelete (const CString &sFilespec, bool bRecycle = false);
 
 const DWORD FFL_FLAG_DIRECTORIES_ONLY =		0x00000001;

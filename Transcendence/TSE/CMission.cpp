@@ -15,6 +15,7 @@ static CObjectClass<CMission>g_MissionClass(OBJID_CMISSION, NULL);
 #define EVENT_ON_STARTED						CONSTLIT("OnStarted")
 
 #define PROPERTY_ACCEPTED_ON					CONSTLIT("acceptedOn")
+#define PROPERTY_CAN_BE_DELETED					CONSTLIT("canBeDeleted")
 #define PROPERTY_DEBRIEFER_ID					CONSTLIT("debrieferID")
 #define PROPERTY_FORCE_UNDOCK_AFTER_DEBRIEF		CONSTLIT("forceUndockAfterDebrief")
 #define PROPERTY_IS_ACTIVE						CONSTLIT("isActive")
@@ -443,6 +444,9 @@ ICCItem *CMission::GetProperty (const CString &sName)
 	if (strEquals(sName, PROPERTY_ACCEPTED_ON))
 		return (m_fAcceptedByPlayer ? CC.CreateInteger(m_dwAcceptedOn) : CC.CreateNil());
 
+	else if (strEquals(sName, PROPERTY_CAN_BE_DELETED))
+		return CC.CreateBool(m_pType->CanBeDeleted());
+
 	else if (strEquals(sName, PROPERTY_DEBRIEFER_ID))
 		{
 		if (m_pDebriefer.GetID() != OBJID_NULL)
@@ -620,6 +624,8 @@ void CMission::OnDestroyed (SDestroyCtx &Ctx)
 //	Mission is destroyed
 
 	{
+	DEBUG_TRY
+
 	if (m_fInOnCreate)
 		return;
 
@@ -641,6 +647,8 @@ void CMission::OnDestroyed (SDestroyCtx &Ctx)
 	//	Destroy the mission
 
 	FireOnDestroy(Ctx);
+
+	DEBUG_CATCH
 	}
 
 void CMission::OnNewSystem (CSystem *pSystem)

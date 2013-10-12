@@ -31,8 +31,6 @@ const int FRAME_RATE_COUNT =				51;		//	number of statistics to keep (for debugg
 
 extern HINSTANCE g_hInst;
 extern CTranscendenceWnd *g_pTrans;
-extern const CItem g_DummyItem;
-extern CItemListManipulator g_DummyItemListManipulator;
 
 #define TICKS_BEFORE_GATE					34
 #define TICKS_AFTER_GATE					30
@@ -581,80 +579,6 @@ class CButtonDisplay : public CObject
 		DWORD m_dwTag;
 	};
 
-class IListData
-	{
-	public:
-		virtual ~IListData (void) { }
-		virtual void DeleteAtCursor (int iCount) { }
-		virtual int GetCount (void) { return 0; }
-		virtual int GetCursor (void) { return -1; }
-		virtual CString GetDescAtCursor (void) { return NULL_STR; }
-		virtual ICCItem *GetEntryAtCursor (CCodeChain &CC) { return CC.CreateNil(); }
-		virtual const CItem &GetItemAtCursor (void) { return g_DummyItem; }
-		virtual CItemListManipulator &GetItemListManipulator (void) { return g_DummyItemListManipulator; }
-		virtual CSpaceObject *GetSource (void) { return NULL; }
-		virtual CString GetTitleAtCursor (void) { return NULL_STR; }
-		virtual bool IsCursorValid (void) { return false; }
-		virtual bool MoveCursorBack (void) { return false; }
-		virtual bool MoveCursorForward (void) { return false; }
-		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y) { }
-		virtual void ResetCursor (void) { }
-		virtual void SetCursor (int iCursor) { }
-		virtual void SetFilter (const CItemCriteria &Filter) { }
-		virtual void SyncCursor (void) { }
-	};
-
-class CItemListWrapper : public IListData
-	{
-	public:
-		CItemListWrapper (CSpaceObject *pSource);
-		CItemListWrapper (CItemList &ItemList);
-
-		virtual void DeleteAtCursor (int iCount) { m_ItemList.DeleteAtCursor(iCount); if (m_pSource) m_pSource->InvalidateItemListAddRemove(); }
-		virtual int GetCount (void) { return m_ItemList.GetCount(); }
-		virtual int GetCursor (void) { return m_ItemList.GetCursor(); }
-		virtual const CItem &GetItemAtCursor (void) { return m_ItemList.GetItemAtCursor(); }
-		virtual CItemListManipulator &GetItemListManipulator (void) { return m_ItemList; }
-		virtual CSpaceObject *GetSource (void) { return m_pSource; }
-		virtual bool IsCursorValid (void) { return m_ItemList.IsCursorValid(); }
-		virtual bool MoveCursorBack (void) { return m_ItemList.MoveCursorBack(); }
-		virtual bool MoveCursorForward (void) { return m_ItemList.MoveCursorForward(); }
-		virtual void ResetCursor (void) { m_ItemList.Refresh(CItem()); }
-		virtual void SetCursor (int iCursor) { m_ItemList.SetCursor(iCursor); }
-		virtual void SetFilter (const CItemCriteria &Filter) { m_ItemList.SetFilter(Filter); }
-		virtual void SyncCursor (void) { m_ItemList.SyncCursor(); }
-
-	private:
-		CSpaceObject *m_pSource;
-		CItemListManipulator m_ItemList;
-	};
-
-class CListWrapper : public IListData
-	{
-	public:
-		CListWrapper (CCodeChain *pCC, ICCItem *pList);
-		virtual ~CListWrapper (void) { m_pList->Discard(m_pCC); }
-
-		virtual int GetCount (void) { return m_pList->GetCount(); }
-		virtual int GetCursor (void) { return m_iCursor; }
-		virtual CString GetDescAtCursor (void);
-		virtual ICCItem *GetEntryAtCursor (CCodeChain &CC);
-		virtual CString GetTitleAtCursor (void);
-		virtual bool IsCursorValid (void) { return (m_iCursor != -1); }
-		virtual bool MoveCursorBack (void);
-		virtual bool MoveCursorForward (void);
-		virtual void PaintImageAtCursor (CG16bitImage &Dest, int x, int y);
-		virtual void ResetCursor (void) { m_iCursor = -1; }
-		virtual void SetCursor (int iCursor) { m_iCursor = Min(Max(-1, iCursor), GetCount() - 1); }
-		virtual void SyncCursor (void);
-
-	private:
-		CCodeChain *m_pCC;
-		ICCItem *m_pList;
-
-		int m_iCursor;
-	};
-
 #define ITEM_LIST_AREA_PAGE_UP_ACTION			(0xffff0001)
 #define ITEM_LIST_AREA_PAGE_DOWN_ACTION			(0xffff0002)
 
@@ -670,6 +594,7 @@ class CGItemListArea : public AGArea
 		ICCItem *GetEntryAtCursor (void);
 		inline const CItem &GetItemAtCursor (void) { return (m_pListData ? m_pListData->GetItemAtCursor() : g_DummyItem); }
 		inline CItemListManipulator &GetItemListManipulator (void) { return (m_pListData ? m_pListData->GetItemListManipulator() : g_DummyItemListManipulator); }
+		inline IListData *GetList (void) const { return m_pListData; }
 		inline CSpaceObject *GetSource (void) { return (m_pListData ? m_pListData->GetSource() : NULL); }
 		inline bool IsCursorValid (void) { return (m_pListData ? m_pListData->IsCursorValid() : false); }
 		bool MoveCursorBack (void);
@@ -915,8 +840,11 @@ class CDockScreen : public CObject,
 		CG16bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pItemListControl->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return (m_pItemListControl ? m_pItemListControl->GetCursor() : -1); }
+		inline IListData *GetListData (void) { return (m_pItemListControl ? m_pItemListControl->GetList() : NULL); }
 		CString GetTextInput (void);
 		bool IsCurrentItemValid (void);
+		void SelectNextItem (bool *retbMore = NULL);
+		void SelectPrevItem (void);
 		void SetDescription (const CString &sDesc);
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		void SetCounter (int iCount);
@@ -966,7 +894,7 @@ class CDockScreen : public CObject,
 		CString EvalInitialPane (void);
 		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
 		CSpaceObject *EvalListSource (const CString &sString);
-		CString EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, bool *retbError = NULL);
+		CString EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, bool *retbError = NULL);
 		SDisplayControl *FindDisplayControl (const CString &sID);
 		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
 		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
@@ -975,8 +903,6 @@ class CDockScreen : public CObject,
 		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
 		ALERROR InitFonts (void);
 		ALERROR InitItemList (ICCItem *pData);
-		void SelectNextItem (bool *retbMore = NULL);
-		void SelectPrevItem (void);
 		void ShowDisplay (bool bAnimateOnly = false);
 		void ShowItem (void);
 		void UpdateCredits (void);

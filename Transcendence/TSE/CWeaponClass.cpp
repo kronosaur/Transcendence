@@ -502,7 +502,7 @@ int CWeaponClass::CalcConfiguration (CItemCtx &ItemCtx, CWeaponFireDesc *pShot, 
 	return iShotCount;
 	}
 
-int CWeaponClass::CalcConfigurationMultiplier (CWeaponFireDesc *pShot, bool bIncludeFragments) const
+Metric CWeaponClass::CalcConfigurationMultiplier (CWeaponFireDesc *pShot, bool bIncludeFragments) const
 
 //	CalcConfigurationMultiplier
 //
@@ -514,36 +514,41 @@ int CWeaponClass::CalcConfigurationMultiplier (CWeaponFireDesc *pShot, bool bInc
 		if (m_iShotVariants == 1)
 			pShot = &m_pShotData[0];
 		else
-			return 1;
+			return 1.0;
 		}
 
-	int iMult = 1;
+	Metric rMult = 1.0;
 	switch (m_Configuration)
 		{
 		case ctDual:
 		case ctSpread2:
-			iMult = 2;
+			rMult = 2.0;
 			break;
 
 		case ctSpread3:
-			iMult = 3;
+			rMult = 3.0;
 			break;
 
 		case ctWall:
 		case ctSpread5:
-			iMult = 5;
+			rMult = 5.0;
 			break;
 
 		case ctCustom:
 			if (m_bConfigAlternating)
-				iMult = 1;
+				rMult = 1.0;
 			else
-				iMult = m_iConfigCount;
+				rMult = m_iConfigCount;
 			break;
 		}
 
 	if (pShot->m_iContinuous > 0)
-		iMult *= (pShot->m_iContinuous + 1);
+		rMult *= (pShot->m_iContinuous + 1);
+
+	//	Include passhtrough
+
+	if (pShot->GetPassthrough() > 0)
+		rMult *= 1.0 + (4.0 * pShot->GetPassthrough() / 100.0);
 
 	//	Compute fragment count
 
@@ -555,12 +560,12 @@ int CWeaponClass::CalcConfigurationMultiplier (CWeaponFireDesc *pShot, bool bInc
 		int iMax = pShot->GetFirstFragment()->Count.GetMaxValue();
 
 		//	Compute the average, then divide by two (assume that at
-		//	most half the fragments will hit)
+		//	most one third the fragments will hit)
 
-		iMult *= ((iMin + iMax) / 2) / 2;
+		rMult *= ((iMin + iMax) / 2) / 3.0;
 		}
 
-	return iMult;
+	return rMult;
 	}
 
 Metric CWeaponClass::CalcDamage (CWeaponFireDesc *pShot) const
@@ -1064,9 +1069,9 @@ bool CWeaponClass::FindDataField (int iVariant, const CString &sField, CString *
 	else if (strEquals(sField, FIELD_HP))
 		*retsValue = strFromInt(pShot->GetHitPoints());
 	else if (strEquals(sField, FIELD_MIN_DAMAGE))
-		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMinDamage());
+		*retsValue = strFromInt((int)(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMinDamage()));
 	else if (strEquals(sField, FIELD_MAX_DAMAGE))
-		*retsValue = strFromInt(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMaxDamage());
+		*retsValue = strFromInt((int)(CalcConfigurationMultiplier(pShot) * pShot->m_Damage.GetMaxDamage()));
 	else if (strEquals(sField, FIELD_DAMAGE_TYPE))
 		*retsValue = strFromInt(pShot->m_Damage.GetDamageType());
 	else if (strEquals(sField, FIELD_FIRE_DELAY))
@@ -2158,7 +2163,7 @@ bool CWeaponClass::GetReferenceDamageType (CItemCtx &Ctx, int iVariant, DamageTy
 
 		//	Add the multiplier
 
-		int iMult = CalcConfigurationMultiplier(pShot) * iFragments;
+		int iMult = (int)CalcConfigurationMultiplier(pShot);
 		if (iMult > 1)
 			sDamage.Append(strPatternSubst(CONSTLIT(" (x%d)"), iMult));
 
@@ -2445,6 +2450,17 @@ int CWeaponClass::GetWeaponEffectiveness (CSpaceObject *pSource, CInstalledDevic
 	//	Score
 
 	return iScore;
+	}
+
+bool CWeaponClass::IsAmmoWeapon (void)
+
+//	IsAmmoWeapon
+//
+//	Returns TRUE if weapon uses ammo
+
+	{
+	return (m_bLauncher
+			|| (m_iShotVariants > 0 && m_pShotData[0].GetAmmoType()));
 	}
 
 bool CWeaponClass::IsAreaWeapon (CSpaceObject *pSource, CInstalledDevice *pDevice)
@@ -2770,6 +2786,8 @@ ALERROR CWeaponClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 //	Done loading all design elements
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	//	Events
@@ -2783,6 +2801,8 @@ ALERROR CWeaponClass::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 			return error;
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 CEffectCreator *CWeaponClass::OnFindEffectCreator (const CString &sUNID)

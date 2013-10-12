@@ -176,7 +176,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"700"
+				hitPoints=	"600"
 				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
 				repairTech=	"8"
 				/>
@@ -263,7 +263,6 @@
 						fragmentCount=	"1"
 						failsafe=		"15"
 
-						hitEffect=		"&efFragmentationExplosion;"
 						sound=			"&snMissileLauncher;"
 						vaporTrailLength="64"
 						vaporTrailWidth="400"
@@ -275,10 +274,21 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"400"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
 					<Fragment 
 							type=			"area"
 
-							damage=			"thermo:8d12; WMD7"
+							damage=			"thermo:2d12; WMD7"
 							expansionSpeed=	"25"
 							missileSpeed=	"0"
 							lifetime=		"24"
@@ -311,7 +321,6 @@
 						fragmentCount=	"1"
 						failsafe=		"6"
 
-						hitEffect=		"&efFragmentationExplosion;"
 						sound=			"&snMissileLauncher;"
 						>
 
@@ -319,10 +328,21 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"170"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
 					<Fragment 
 							type=			"area"
 
-							damage=			"thermo:6d12; WMD3"
+							damage=			"thermo:1d12; WMD3"
 							expansionSpeed=	"35"
 							missileSpeed=	"0"
 							lifetime=		"24"
@@ -342,12 +362,9 @@
 							</Shockwave>
 						</Effect>
 					</Fragment>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Ares Lightning Turret -->
@@ -417,7 +434,6 @@
 						fragmentCount=	"1"
 						failsafe=		"6"
 
-						hitEffect=		"&efFragmentationExplosion;"
 						sound=			"&snMissileLauncher;"
 						>
 
@@ -425,10 +441,21 @@
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"170"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
 					<Fragment 
 							type=			"area"
 
-							damage=			"thermo:6d12; WMD3"
+							damage=			"thermo:2d10; WMD3"
 							expansionSpeed=	"35"
 							missileSpeed=	"0"
 							lifetime=		"24"
@@ -446,12 +473,9 @@
 							</Shockwave>
 						</Effect>
 					</Fragment>
-
 				</Missile>
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Hecates Cannon -->
@@ -505,6 +529,12 @@
 						imageHeight="96"
 						imageFrameCount="16"
 						imageTicksPerFrame="2"/>
+				<Flare
+						style=			"fadingBlast"
+						radius=			"150"
+						primaryColor=	"0xff, 0xff, 0xf0"
+						lifetime=		"8"
+						/>
 			</HitEffect>
 		</Weapon>
 	</ItemType>
@@ -546,7 +576,7 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"positron:7d8; shield:8"
+				damage=				"positron:6d8; shield:8"
 				fireRate=			"15"
 				missileSpeed=		"80"
 				interaction=		"0"
@@ -565,9 +595,7 @@
 
 				<Image imageID="&rsMissiles4;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="10"/>
 			</Exhaust>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Ares plasma cannon -->
@@ -820,7 +848,7 @@
 		
 		<Armor
 			armorID=			"&itHeavyTharsisPlate;"
-			count=				"18"
+			count=				"12"
 			/>
 		
 		<Devices>
@@ -885,48 +913,42 @@
 			attributes=			"ares, freighter, genericClass"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="340" span="10" armorID="&itLightTharsisPlate;" nonCritical="scanners" />
-			<ArmorSection start="330" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="320" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="310" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="300" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="290" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="280" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="270" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="260" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="250" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="240" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="230" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="220" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="210" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="200" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="190" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="180" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="170" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="160" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="150" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="140" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="130" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="120" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="110" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="100" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="90"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="80"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="70"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="60"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="50"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="40"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="30"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="20"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="10"  span="10" armorID="&itLightTharsisPlate;" nonCritical="tactical" />
-			<ArmorSection start="0"   span="10" armorID="&itLightTharsisPlate;"/>
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightTharsisPlate;"
+			count=				"20"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"60"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"60"
+
+					posX=		"-66"
+					posY=		"0"
+					sizeX=		"36"
+					sizeY=		"46"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"180"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"110"
+					sizeY=		"60"
+					/>
+		</Interior>
 
 		<Image imageID="&rsLargeShips1;" imageX="768" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
@@ -940,7 +962,7 @@
 
 	</ShipClass>
 
-	<!-- Polar-class Freighter -->
+	<!-- Polar II-class Freighter -->
 
 	<ShipClass UNID="&scPolar2;"
 			manufacturer=		"Ares Orthodoxy"
@@ -959,49 +981,43 @@
 			attributes=			"ares, freighter"
 			>
 
-		<Armor>
-			<ArmorSection start="350" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="340" span="10" armorID="&itLightTharsisPlate;" nonCritical="scanners" />
-			<ArmorSection start="330" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="320" span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="310" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="300" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="290" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="280" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="270" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="260" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="250" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="240" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="230" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="220" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="210" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="200" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="190" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="180" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="170" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="160" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="150" span="10" armorID="&itLightTharsisPlate;"/>
-			<ArmorSection start="140" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="130" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="120" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="110" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="100" span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="90"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="80"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="70"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="60"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="50"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="40"  span="10" armorID="&itLightTharsisPlate;" nonCritical="cargo" />
-			<ArmorSection start="30"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="20"  span="10" armorID="&itLightTharsisPlate;" nonCritical="general" />
-			<ArmorSection start="10"  span="10" armorID="&itLightTharsisPlate;" nonCritical="tactical" />
-			<ArmorSection start="0"   span="10" armorID="&itLightTharsisPlate;"/>
-		</Armor>
-
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightTharsisPlate;"
+			count=				"20"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itAresArchcannon;" omnidirectional="true"/>
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"60"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"60"
+
+					posX=		"-66"
+					posY=		"0"
+					sizeX=		"36"
+					sizeY=		"46"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"180"
+
+					posX=		"0"
+					posY=		"0"
+					sizeX=		"110"
+					sizeY=		"60"
+					/>
+		</Interior>
 
 		<Image imageID="&rsLargeShips1;" imageX="768" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
@@ -1081,7 +1097,7 @@
 			   
 			mass=				"130"
 			thrustRatio=		"6"
-			maneuver=			"4"
+			maneuver=			"2"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
 
@@ -1119,11 +1135,12 @@
 		<!-- AI and Behavior -->
 
 		<AISettings
-			fireRateAdj=		"25"
+			fireRateAdj=		"20"
 			fireAccuracy=		"90"
 			perception=			"4"
 			
 			combatStyle=		"advanced"
+			ignoreShieldsDown=	"true"
 			/>
 
 	</ShipClass>
@@ -1153,7 +1170,7 @@
 		
 		<Armor
 			armorID=			"&itMassiveTharsisPlate;"
-			count=				"24"
+			count=				"16"
 			/>
 		
 		<Devices>

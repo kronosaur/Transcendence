@@ -388,6 +388,39 @@
 					humanMaleWord
 					)
 				))
+				
+			(setq strItemList (lambda (itemList nameFlags)
+			
+			;	Returns a string describing the items in the list. For example:
+			;
+			;	"a ton of titanium ore, 2 segments of reactive armor, and
+			;	a slave coffin"
+			
+				(block (result lastItem)
+				
+					(if (not nameFlags)	(setq nameFlags 0x08))
+					(setq i 0)
+					(setq lastItem (subtract (count itemList) 1))
+					
+					(enum itemList theItem
+						(block nil
+							(switch
+								(eq i 0)
+									(setq result (itmGetName theItem nameFlags))
+										
+								(eq i lastItem)
+									(setq result (cat result " and " (itmGetName theItem nameFlags)))
+										
+								(setq result (cat result ", " (itmGetName theItem nameFlags)))
+								)
+
+							(setq i (add i 1))
+							)
+						)
+						
+					result
+					)
+				))
 
 			(setq strMassString (lambda (mass)
 			
