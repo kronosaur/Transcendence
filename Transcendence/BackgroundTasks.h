@@ -34,13 +34,22 @@ class CInitAdventureTask : public IHITask
 class CInitModelTask : public IHITask
 	{
 	public:
-		CInitModelTask (CHumanInterface &HI, CTranscendenceModel &Model) : IHITask(HI), m_Model(Model) { }
+		CInitModelTask (CHumanInterface &HI, 
+						CTranscendenceModel &Model, 
+						const CString &sCollectionFolder, 
+						const TArray<CString> &ExtensionFolders) : IHITask(HI), 
+				m_Model(Model),
+				m_sCollectionFolder(sCollectionFolder),
+				m_ExtensionFolders(ExtensionFolders)
+			{ }
 
 		//	IHITask virtuals
-		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(retsResult); }
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Model.InitBackground(m_sCollectionFolder, m_ExtensionFolders, retsResult); }
 
 	private:
 		CTranscendenceModel &m_Model;
+		CString m_sCollectionFolder;
+		TArray<CString> m_ExtensionFolders;
 	};
 
 class CLoadExtensionTask : public IHITask

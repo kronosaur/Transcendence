@@ -237,7 +237,7 @@ ALERROR CDataFile::Create (const CString &sFilename,
 
 	hFile = CreateFile(sFilename.GetASCIIZPointer(),
 			GENERIC_READ | GENERIC_WRITE,
-			0,
+			FILE_SHARE_READ,
 			NULL,
 			CREATE_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
@@ -683,7 +683,7 @@ ALERROR CDataFile::Open (const CString &sFilename, DWORD dwFlags)
 	else
 		{
 		dwAccess = GENERIC_READ | GENERIC_WRITE;
-		dwShare = 0;
+		dwShare = FILE_SHARE_READ;
 		m_fReadOnly = false;
 		}
 

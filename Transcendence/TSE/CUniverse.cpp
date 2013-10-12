@@ -1057,6 +1057,7 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 	try
 		{
 		ALERROR error;
+		int i;
 
 		//	Boot up
 
@@ -1086,6 +1087,14 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 			if (error = InitDeviceStorage(retsError))
 				return error;
+
+			//	Set folders for Collection and extensions
+
+			if (!Ctx.sCollectionFolder.IsBlank())
+				m_Extensions.SetCollectionFolder(Ctx.sCollectionFolder);
+
+			for (i = 0; i < Ctx.ExtensionFolders.GetCount(); i++)
+				m_Extensions.AddExtensionFolder(Ctx.ExtensionFolders[i]);
 
 			m_bBasicInit = true;
 			}

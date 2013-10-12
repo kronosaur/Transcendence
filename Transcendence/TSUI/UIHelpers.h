@@ -66,7 +66,7 @@ class CListCollectionTask : public IHITask
 class CListSaveFilesTask : public IHITask
 	{
 	public:
-		CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, const CString &sUsername, int cxWidth);
+		CListSaveFilesTask (CHumanInterface &HI, const TArray<CString> &Folders, const CString &sUsername, int cxWidth);
 		~CListSaveFilesTask (void);
 
 		inline IAnimatron *GetListHandoff (void) { IAnimatron *pResult = m_pList; m_pList = NULL; return pResult; }
@@ -77,7 +77,7 @@ class CListSaveFilesTask : public IHITask
 	private:
 		void CreateFileEntry (CGameFile &GameFile, const CTimeDate &ModifiedTime, int yStart, IAnimatron **retpEntry, int *retcyHeight);
 
-		CString m_sFolder;
+		TArray<CString> m_Folders;
 		CString m_sUsername;
 		int m_cxWidth;
 

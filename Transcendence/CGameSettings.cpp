@@ -17,6 +17,8 @@
 #define REGISTRY_MUSIC_OPTION					CONSTLIT("Music")
 #define REGISTRY_SOUND_VOLUME_OPTION			CONSTLIT("SoundVolume")
 
+#define TRANSCENDENCE_APP_DATA					CONSTLIT("Kronosaur\\Transcendence")
+
 #define OPTION_FLAG_HEX							0x00000001
 
 enum OptionTypes
@@ -54,7 +56,8 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noAutoSave",				optionBoolean,	"false",	0	},
 		{	"noFullCreate",				optionBoolean,	"false",	0	},
 
-		//	Extension options
+		//	Installation options
+
 		{	"useTDB",					optionBoolean,	"false",	0	},
 
 		//	Video options
@@ -119,9 +122,33 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 	for (i = 0; i < OPTIONS_COUNT; i++)
 		SetValue(i, CString(g_OptionData[i].pszDefaultValue, -1, true), true);
 
+	//	Look for a file in the current directory and see if it is writable. If
+	//	not, then look in AppData. We remember the place where we found a valid
+	//	file as our AppData root (and we base other directories off that).
+
+	if (pathIsWritable(sFilespec))
+		{
+		//	AppData is current directory
+		m_sAppData = NULL_STR;
+		}
+	else
+		{
+		m_sAppData = pathAddComponent(pathGetSpecialFolder(folderAppData), TRANSCENDENCE_APP_DATA);
+		if (!pathCreate(m_sAppData)
+				|| !pathIsWritable(m_sAppData))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to write to AppData folder: %s"), m_sAppData);
+			return ERR_FAIL;
+			}
+		}
+
+	//	Settings file
+
+	CString sSettingsFilespec = pathAddComponent(m_sAppData, sFilespec);
+
 	//	Load XML
 
-	CFileReadBlock DataFile(sFilespec);
+	CFileReadBlock DataFile(sSettingsFilespec);
 	CXMLElement *pData;
 	CString sError;
 	if (error = CXMLElement::ParseXML(&DataFile, &pData, retsError))
@@ -275,9 +302,13 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 	if (!m_bModified)
 		return NOERROR;
 
+	//	Settings file
+
+	CString sSettingsFilespec = pathAddComponent(m_sAppData, sFilespec);
+
 	//	Create the file
 
-	CFileWriteStream DataFile(sFilespec, FALSE);
+	CFileWriteStream DataFile(sSettingsFilespec, FALSE);
 	if (error = DataFile.Create())
 		return error;
 

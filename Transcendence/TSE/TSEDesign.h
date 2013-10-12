@@ -5802,6 +5802,7 @@ class CExtensionCollection
 		CExtensionCollection (void);
 		~CExtensionCollection (void);
 
+		inline void AddExtensionFolder (const CString &sFilespec) { m_ExtensionFolders.Insert(sFilespec); }
 		void CleanUp (void);
 		ALERROR ComputeAvailableAdventures (DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
 		ALERROR ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
@@ -5816,6 +5817,7 @@ class CExtensionCollection
 		ALERROR Load (const CString &sFilespec, DWORD dwFlags, CString *retsError);
 		inline bool LoadedInDebugMode (void) { return m_bLoadedInDebugMode; }
 		ALERROR LoadNewExtension (const CString &sFilespec, const CIntegerIP &FileDigest, CString *retsError);
+		inline void SetCollectionFolder (const CString &sFilespec) { m_sCollectionFolder = sFilespec; }
 		void SetRegisteredExtensions (const CMultiverseCollection &Collection, TArray<CMultiverseCatalogEntry *> *retNotFound);
 		void SweepImages (void);
 		void UpdateCollectionStatus (CMultiverseCollection &Collection, int cxIconSize, int cyIconSize);
@@ -5832,6 +5834,9 @@ class CExtensionCollection
 		ALERROR LoadFile (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, const CIntegerIP &CheckDigest, bool *retbReload, CString *retsError);
 		ALERROR LoadFolderStubsOnly (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, CString *retsError);
 		bool ReloadDisabledExtensions (DWORD dwFlags);
+
+		CString m_sCollectionFolder;		//	Path to collection folder
+		TArray<CString> m_ExtensionFolders;	//	Paths to extension folders
 
 		CCriticalSection m_cs;				//	Protects modifications
 		TArray<CExtension *> m_Extensions;	//	All loaded extensions

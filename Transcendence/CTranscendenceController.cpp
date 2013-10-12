@@ -115,6 +115,9 @@
 
 #define DEBUG_LOG_FILENAME						CONSTLIT("Debug.log")
 #define SETTINGS_FILENAME						CONSTLIT("Settings.xml")
+#define FOLDER_COLLECTION						CONSTLIT("Collection")
+#define FOLDER_EXTENSIONS						CONSTLIT("Extensions")
+#define FOLDER_SAVE_FILES						CONSTLIT("Games")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -248,7 +251,7 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 	//	Set the debug log
 
 	if (!bLogFileOpened && !m_Settings.GetBoolean(CGameSettings::noDebugLog))
-		if (error = kernelSetDebugLog(DEBUG_LOG_FILENAME))
+		if (error = kernelSetDebugLog(pathAddComponent(m_Settings.GetAppDataFolder(), DEBUG_LOG_FILENAME)))
 			return error;
 
 	//	If we're windowed, figure out the size that we want.
@@ -589,7 +592,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_SELECT_SAVE_FILE))
 		{
 		DisplayMultiverseStatus(NULL_STR);
-		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service)))
+		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service, m_Model.GetSaveFileFolders())))
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, NULL_STR, CMD_NULL));
 			return NOERROR;
@@ -984,16 +987,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
-
-#ifdef DEBUG
-		else
-			{
-			fileCopy(CONSTLIT("Collection\\CorporateCommand.tdb"), CONSTLIT("Downloads\\CorporateCommand.tdb"));
-			CHexarcDownloader::SStatus Status;
-			Status.sFilespec = CONSTLIT("Downloads\\CorporateCommand.tdb");
-			m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, Status));
-			}
-#endif
 		}
 
 	//	Service status
@@ -1155,14 +1148,34 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	//	Set some options
 
+	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
 	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
 	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
 	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
 
+	//	Figure out where the Collection folder is and where the Extension
+	//	folders are.
+
+	CString sCollectionFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_COLLECTION);
+	TArray<CString> ExtensionFolders;
+	ExtensionFolders.Insert(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_EXTENSIONS));
+
+	//	If our AppData is elsewhere, then add an Extensions folder under the
+	//	current folder.
+
+	if (!m_Settings.GetAppDataFolder().IsBlank())
+		ExtensionFolders.Insert(FOLDER_EXTENSIONS);
+
+	//	If we're using the current directory for AppData, then also look for
+	//	save files in the current directory (for backwards compatibility)
+
+	if (m_Settings.GetAppDataFolder().IsBlank())
+		m_Model.AddSaveFileFolder(CONSTLIT(""));
+
 	//	Kick off a background initialization of the model
 	//	(this will load the universe)
 
-	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model), this, CMD_MODEL_INIT_DONE);
+	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), this, CMD_MODEL_INIT_DONE);
 
 	//	If the clouds services have not been initialized yet (because there was no
 	//	<Services> tag in the settings file) then initialize to defaults here.
@@ -1299,10 +1312,14 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 	if (Downloads.GetCount() == 0)
 		return false;
 
+	//	Figure out the path
+
+	CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
 	//	Make sure that we have the Downloads folder
 
-	if (!pathExists(FILESPEC_DOWNLOADS_FOLDER))
-		pathCreate(FILESPEC_DOWNLOADS_FOLDER);
+	if (!pathExists(sDownloadsFolder))
+		pathCreate(sDownloadsFolder);
 
 	//	If we have to download extensions, do it now.
 
@@ -1315,7 +1332,7 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 
 		//	Generate a path to download to
 
-		CString sFilespec = pathAddComponent(FILESPEC_DOWNLOADS_FOLDER, CHexarc::GetFilenameFromFilePath(sFilePath));
+		CString sFilespec = pathAddComponent(sDownloadsFolder, CHexarc::GetFilenameFromFilePath(sFilePath));
 
 		//	Request a download. (We can do this synchronously because it
 		//	doesn't take long and the call is thread-safe).

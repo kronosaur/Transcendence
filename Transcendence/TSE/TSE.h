@@ -71,8 +71,8 @@
 #define DEBUG_TARGET_LIST
 #define DEBUG_VECTOR
 //#define DEBUG_WEAPON_POS
+//#define DEBUG_SINGLETON_EFFECTS
 #endif
-#define DEBUG_SINGLETON_EFFECTS
 
 //	We leave this defined because we want to get traces in the field in case
 //	of a crash.
@@ -2944,6 +2944,8 @@ class CUniverse : public CObject
 
 			IHost *pHost;					//	Host
 			CString sFilespec;				//	Filespec of main XML file.
+			CString sCollectionFolder;		//	If non-blank, use this as Collection folder (and remember it)
+			TArray<CString> ExtensionFolders;	//	Add these as extension folders.
 
 			//	Options
 

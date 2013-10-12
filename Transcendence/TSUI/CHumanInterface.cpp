@@ -360,7 +360,8 @@ void CHumanInterface::HIPostCommand (const CString &sCmd, void *pData)
 	pMsg->sCmd = sCmd;
 	pMsg->pData = pData;
 
-	::PostMessage(m_hWnd, WM_HI_COMMAND, 0, (LPARAM)pMsg);
+	if (!::PostMessage(m_hWnd, WM_HI_COMMAND, 0, (LPARAM)pMsg))
+		::kernelDebugLogMessage("Unable to send post HICommand (PostMessage failed): %s.", sCmd);
 	}
 
 LONG CHumanInterface::MCINotifyMode (int iMode)

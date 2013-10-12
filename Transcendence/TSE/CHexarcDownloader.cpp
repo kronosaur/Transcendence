@@ -18,6 +18,7 @@
 
 #define ERR_BINARY_EXPECTED						CONSTLIT("%s: Binary data expected.")
 #define ERR_INVALID_FILE_SIZE					CONSTLIT("%s: Invalid file size.")
+#define ERR_CANT_CREATE_FILE					CONSTLIT("%s: Unable to create file for writing.")
 #define ERR_CANT_OPEN_FILE						CONSTLIT("%s: Unable to open file for writing.")
 #define ERR_CANT_WRITE_FILE						CONSTLIT("%s: Unable to write to file.")
 
@@ -167,7 +168,7 @@ ALERROR CHexarcDownloader::Update (CHexarcSession &Session, SStatus *retStatus, 
 		{
 		if (File.Create() != NOERROR)
 			{
-			*retsError = strPatternSubst(ERR_CANT_OPEN_FILE, m_pCurrent->sFilespec);
+			*retsError = strPatternSubst(ERR_CANT_CREATE_FILE, m_pCurrent->sFilespec);
 			return ERR_FAIL;
 			}
 		}

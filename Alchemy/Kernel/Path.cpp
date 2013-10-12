@@ -514,6 +514,10 @@ CString pathGetSpecialFolder (ESpecialFolders iFolder)
 	int iCSIDL;
 	switch (iFolder)
 		{
+		case folderAppData:
+			iCSIDL = CSIDL_APPDATA;
+			break;
+
 		case folderDocuments:
 			iCSIDL = CSIDL_PERSONAL;
 			break;
@@ -531,18 +535,12 @@ CString pathGetSpecialFolder (ESpecialFolders iFolder)
 			return NULL_STR;
 		}
 
-	//	Get the location
-
-	LPITEMIDLIST pidl;
-	HRESULT hr = SHGetSpecialFolderLocation(NULL, iCSIDL, &pidl);
-	if (hr != S_OK)
-		return NULL_STR;
-
-	// Convert the item ID list's binary representation into a file system path
+	//	Get the path
 
 	CString sPath;
 	char *pDest = sPath.GetWritePointer(MAX_PATH);
-	if (!SHGetPathFromIDList(pidl, pDest))
+	HRESULT hr = ::SHGetFolderPath(NULL, iCSIDL, NULL, SHGFP_TYPE_CURRENT, pDest);
+	if (hr != S_OK)
 		return NULL_STR;
 
 	//	Truncate to the correct size
@@ -551,7 +549,6 @@ CString pathGetSpecialFolder (ESpecialFolders iFolder)
 
 	//	Done
 
-	FreePIDL(pidl);
 	return sPath;
 	}
 
@@ -586,6 +583,18 @@ bool pathIsAbsolute (const CString &sPath)
 		return false;
 	}
 
+bool pathIsFolder (const CString &sFilespec)
+
+//	pathIsFolder
+//
+//	Returns TRUE if filespec is a folder.
+
+	{
+	DWORD dwResult = ::GetFileAttributes(sFilespec.GetASCIIZPointer());
+	return (dwResult != 0xffffffff
+			&& (dwResult & FILE_ATTRIBUTE_DIRECTORY));
+	}
+
 bool pathIsResourcePath (const CString &sPath, char **retpszResID)
 
 //	pathIsResourcePath
@@ -607,6 +616,65 @@ bool pathIsResourcePath (const CString &sPath, char **retpszResID)
 		}
 	else
 		return false;
+	}
+
+bool pathIsWritable (const CString &sFilespec)
+
+//	pathIsWritable
+//
+//	If sFilespec is a directory, we try to create a temporary file. If it
+//	succeeds, then we're writable. If sFilespec is an existing file, we try
+//	to open it in write mode.
+
+	{
+	if (!pathExists(sFilespec))
+		{
+		HANDLE hFile = ::CreateFile(sFilespec.GetASCIIZPointer(),
+					GENERIC_READ | GENERIC_WRITE,
+					FILE_SHARE_READ,
+					NULL,
+					CREATE_ALWAYS,
+					FILE_ATTRIBUTE_NORMAL,
+					NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+			return false;
+
+		::CloseHandle(hFile);
+		fileDelete(sFilespec);
+		return true;
+		}
+	else if (pathIsFolder(sFilespec))
+		{
+		CString sTestFile = pathAddComponent(sFilespec, CONSTLIT("~temp.txt"));
+		HANDLE hFile = ::CreateFile(sTestFile.GetASCIIZPointer(),
+					GENERIC_READ | GENERIC_WRITE,
+					FILE_SHARE_READ,
+					NULL,
+					CREATE_ALWAYS,
+					FILE_ATTRIBUTE_NORMAL,
+					NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+			return false;
+
+		::CloseHandle(hFile);
+		fileDelete(sTestFile);
+		return true;
+		}
+	else
+		{
+		HANDLE hFile = ::CreateFile(sFilespec.GetASCIIZPointer(),
+					GENERIC_READ | GENERIC_WRITE,
+					FILE_SHARE_READ,
+					NULL,
+					OPEN_ALWAYS,
+					FILE_ATTRIBUTE_NORMAL,
+					NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+			return false;
+
+		::CloseHandle(hFile);
+		return true;
+		}
 	}
 
 CString pathMakeAbsolute (const CString &sPath, const CString &sRoot)

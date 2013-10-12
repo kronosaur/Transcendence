@@ -51,8 +51,8 @@ const int MAJOR_PADDING_TOP =					20;
 const int SELECTION_BORDER_WIDTH =				1;
 const int SELECTION_CORNER_RADIUS =				8;
 
-CListSaveFilesTask::CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, const CString &sUsername, int cxWidth) : IHITask(HI), 
-		m_sFolder(sFolder),
+CListSaveFilesTask::CListSaveFilesTask (CHumanInterface &HI, const TArray<CString> &Folders, const CString &sUsername, int cxWidth) : IHITask(HI), 
+		m_Folders(Folders),
 		m_sUsername(sUsername),
 		m_cxWidth(cxWidth),
 		m_pList(NULL)
@@ -274,7 +274,18 @@ ALERROR CListSaveFilesTask::OnExecute (ITaskProcessor *pProcessor, CString *rets
 	//	Make a list of all files in the directory
 
 	TArray<CString> SaveFiles;
-	if (!fileGetFileList(m_sFolder, NULL_STR, CONSTLIT("*.sav"), 0, &SaveFiles))
+	bool bAtLeastOneFolder = false;
+	for (i = 0; i < m_Folders.GetCount(); i++)
+		{
+		if (!fileGetFileList(m_Folders[i], NULL_STR, CONSTLIT("*.sav"), 0, &SaveFiles))
+			::kernelDebugLogMessage("Unable to read from save file folder: %s", m_Folders[i]);
+		else
+			bAtLeastOneFolder = true;
+		}
+
+	//	If we couldn't read from any folder, return an error
+
+	if (!bAtLeastOneFolder)
 		{
 		*retsResult = ERR_DIRECTORY_FAILED;
 		return ERR_FAIL;

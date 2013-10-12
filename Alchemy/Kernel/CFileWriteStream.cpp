@@ -69,7 +69,7 @@ ALERROR CFileWriteStream::Create (void)
 
 	m_hFile = CreateFile(m_sFilename.GetASCIIZPointer(),
 			GENERIC_WRITE,
-			0,
+			FILE_SHARE_READ,
 			NULL,
 			(m_bUnique ? CREATE_NEW : CREATE_ALWAYS),
 			FILE_ATTRIBUTE_NORMAL,
@@ -94,7 +94,7 @@ ALERROR CFileWriteStream::Open (void)
 
 	m_hFile = CreateFile(m_sFilename.GetASCIIZPointer(),
 			GENERIC_WRITE,
-			0,
+			FILE_SHARE_READ,
 			NULL,
 			OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,

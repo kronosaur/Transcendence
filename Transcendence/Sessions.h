@@ -231,7 +231,7 @@ class CLoginSession : public IHISession
 class CLoadGameSession : public IHISession
 	{
 	public:
-		CLoadGameSession (CHumanInterface &HI, CCloudService &Service);
+		CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders);
 
 		//	IHISession virtuals
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
@@ -247,6 +247,7 @@ class CLoadGameSession : public IHISession
 		void CmdReadComplete (CListSaveFilesTask *pTask);
 
 		CCloudService &m_Service;
+		TArray<CString> m_Folders;
 	};
 
 class CMessageSession : public IHISession

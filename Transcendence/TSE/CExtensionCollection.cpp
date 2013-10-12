@@ -53,6 +53,7 @@ class CLibraryResolver : public IXMLParserController
 	};
 
 CExtensionCollection::CExtensionCollection (void) :
+		m_sCollectionFolder(FILESPEC_COLLECTION_FOLDER),
 		m_pBase(NULL),
 		m_bReloadNeeded(true),
 		m_bLoadedInDebugMode(false)
@@ -979,8 +980,6 @@ ALERROR CExtensionCollection::Load (const CString &sFilespec, DWORD dwFlags, CSt
 	ALERROR error;
 	int i;
 
-	CString sPath = pathGetPath(sFilespec);
-
 	//	If we don't need to load, then we're done.
 
 	if (!m_bReloadNeeded)
@@ -996,11 +995,14 @@ ALERROR CExtensionCollection::Load (const CString &sFilespec, DWORD dwFlags, CSt
 	//	We begin by loading stubs for all extension (i.e., only basic extension
 	//	information and entities).
 
-	if (error = LoadFolderStubsOnly(pathAddComponent(sPath, FILESPEC_COLLECTION_FOLDER), CExtension::folderCollection, dwFlags, retsError))
+	if (error = LoadFolderStubsOnly(m_sCollectionFolder, CExtension::folderCollection, dwFlags, retsError))
 		return error;
 
-	if (error = LoadFolderStubsOnly(pathAddComponent(sPath, FILESPEC_EXTENSIONS_FOLDER), CExtension::folderExtensions, dwFlags, retsError))
-		return error;
+	for (i = 0; i < m_ExtensionFolders.GetCount(); i++)
+		{
+		if (error = LoadFolderStubsOnly(m_ExtensionFolders[i], CExtension::folderExtensions, dwFlags, retsError))
+			return error;
+		}
 
 	//	Now that we know about all the extensions that we have, continue loading.
 
@@ -1219,7 +1221,8 @@ ALERROR CExtensionCollection::LoadFolderStubsOnly (const CString &sFilespec, CEx
 
 	if (!pathExists(sFilespec))
 		{
-		pathCreate(sFilespec);
+		if (iFolder == CExtension::folderCollection)
+			pathCreate(sFilespec);
 		return NOERROR;
 		}
 
@@ -1271,38 +1274,46 @@ ALERROR CExtensionCollection::LoadNewExtension (const CString &sFilespec, const 
 //	the Collection folder.
 
 	{
-	//	NOTE: We don't need to lock because LoadFile will lock appropriately.
-
-	//	Delete the destination filespec
-
-	CString sNewFilespec = pathAddComponent(FILESPEC_COLLECTION_FOLDER, pathGetFilename(sFilespec));
-	fileDelete(sNewFilespec);
-
-	//	Generate a destination filespec and move the file.
-
-	if (!fileMove(sFilespec, sNewFilespec))
+	try
 		{
-		*retsError = strPatternSubst(ERR_CANT_MOVE, sFilespec, sNewFilespec);
+		//	NOTE: We don't need to lock because LoadFile will lock appropriately.
+
+		//	Delete the destination filespec
+
+		CString sNewFilespec = pathAddComponent(m_sCollectionFolder, pathGetFilename(sFilespec));
+		fileDelete(sNewFilespec);
+
+		//	Generate a destination filespec and move the file.
+
+		if (!fileMove(sFilespec, sNewFilespec))
+			{
+			*retsError = strPatternSubst(ERR_CANT_MOVE, sFilespec, sNewFilespec);
+			return ERR_FAIL;
+			}
+
+		//	Load the file
+
+		bool bReload;
+		if (LoadFile(sNewFilespec, CExtension::folderCollection, FLAG_DESC_ONLY, FileDigest, &bReload, retsError) != NOERROR)
+			return ERR_FAIL;
+
+		//	If necessary, try reloading other extensions that might become enabled after
+		//	this new file is loaded. We keep reloading until we've enabled no more
+		//	extensions.
+
+		if (bReload)
+			{
+			while (ReloadDisabledExtensions(FLAG_DESC_ONLY))
+				;
+			}
+
+		return NOERROR;
+		}
+	catch (...)
+		{
+		*retsError = strPatternSubst(CONSTLIT("Crash loading new extension: %s."), sFilespec);
 		return ERR_FAIL;
 		}
-
-	//	Load the file
-
-	bool bReload;
-	if (LoadFile(sNewFilespec, CExtension::folderCollection, FLAG_DESC_ONLY, FileDigest, &bReload, retsError) != NOERROR)
-		return ERR_FAIL;
-
-	//	If necessary, try reloading other extensions that might become enabled after
-	//	this new file is loaded. We keep reloading until we've enabled no more
-	//	extensions.
-
-	if (bReload)
-		{
-		while (ReloadDisabledExtensions(FLAG_DESC_ONLY))
-			;
-		}
-
-	return NOERROR;
 	}
 
 bool CExtensionCollection::ReloadDisabledExtensions (DWORD dwFlags)

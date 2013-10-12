@@ -2028,7 +2028,7 @@ class CGameSettings
 			noAutoSave,						//	NOT YET IMPLEMENTED
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
 
-			//	Extension options
+			//	Installation options
 			useTDB,							//	Force use of .TDB
 
 			//	Video options
@@ -2061,6 +2061,7 @@ class CGameSettings
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
 
+		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
 		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
 		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
@@ -2099,6 +2100,10 @@ class CGameSettings
 		SOption m_Options[OPTIONS_COUNT];	//	Options
 		CGameKeys m_KeyMap;					//	Key map
 		CExtensionListMap m_Extensions;		//	Default extensions
+
+		CString m_sAppData;					//	Location of Settings.xml
+		TArray<CString> m_SaveFileFolders;	//	List of folders for save files (1st is default)
+		TArray<CString> m_ExtensionsFolders;//	List of folders for extensions (may be empty)
 
 		CString m_sSaveFile;				//	Optional save file to open on game start
 
@@ -2148,6 +2153,7 @@ class CTranscendenceModel
 		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError);
 		void UseItem (CItem &Item);
 
+		void AddSaveFileFolder (const CString &sFilespec);
 		int AddHighScore (const CGameRecord &Score);
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
@@ -2160,10 +2166,11 @@ class CTranscendenceModel
 		inline CHighScoreList &GetHighScoreList (void) { return m_HighScoreList; }
 		inline CPlayerShipController *GetPlayer (void) { return m_pPlayer; }
 		inline const CString &GetProductName (void) { return m_Version.sProductName; }
+		inline const TArray<CString> &GetSaveFileFolders (void) const { return m_SaveFileFolders; }
 		inline CUniverse &GetUniverse (void) { return m_Universe; }
 		inline const CString &GetVersion (void) { return m_Version.sProductVersion; }
 		ALERROR Init (void);
-		ALERROR InitBackground (CString *retsError = NULL);
+		ALERROR InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
@@ -2194,9 +2201,10 @@ class CTranscendenceModel
 		void CalcStartingPos (CShipClass *pStartingShip, DWORD *retdwMap, CString *retsNodeID, CString *retsPos);
 		ALERROR CreateAllSystems (const CString &sStartNode, CSystem **retpStartingSystem, CString *retsError);
 		void GenerateGameStats (CGameStats *retStats, bool bGameOver = false);
+		inline CString GetSaveFilePath (void) const { return (m_SaveFileFolders.GetCount() == 0 ? NULL_STR : m_SaveFileFolders[0]); }
 		ALERROR LoadGameStats (const CString &sFilespec, CGameStats *retStats);
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
-		ALERROR LoadUniverse (CString *retsError = NULL);
+		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
 		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
@@ -2205,6 +2213,7 @@ class CTranscendenceModel
 		States m_iState;
 
 		SFileVersionInfo m_Version;
+		TArray<CString> m_SaveFileFolders;			//	List of all save file folders (first is the default)
 		bool m_bDebugMode;							//	Game in debug mode (or next game should be in debug mode)
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound

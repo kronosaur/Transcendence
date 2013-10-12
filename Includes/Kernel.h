@@ -1440,6 +1440,7 @@ CString strWord (const CString &sString, int iWordPos);
 
 enum ESpecialFolders
 	{
+	folderAppData,
 	folderDocuments,
 	folderPictures,
 	folderMusic,
@@ -1480,8 +1481,10 @@ CString pathGetPath (const CString &sPath);
 CString pathGetResourcePath (char *pszResID);
 CString pathGetSpecialFolder (ESpecialFolders iFolder);
 bool pathIsAbsolute (const CString &sPath);
+bool pathIsFolder (const CString &sFilespec);
 inline bool pathIsPathSeparator (char *pPos) { return (*pPos == '\\' || *pPos == '/'); }
 bool pathIsResourcePath (const CString &sPath, char **retpszResID);
+bool pathIsWritable (const CString &sFilespec);
 CString pathMakeAbsolute (const CString &sPath, const CString &sRoot = NULL_STR);
 CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool bNoCheck = false);
 CString pathStripExtension (const CString &sPath);
