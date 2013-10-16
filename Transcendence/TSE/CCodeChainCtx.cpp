@@ -202,6 +202,16 @@ void CCodeChainCtx::DefineVector (const CString &sVar, const CVector &vVector)
 	pValue->Discard(&m_CC);
 	}
 
+DWORD CCodeChainCtx::GetAPIVersion (void) const
+
+//	GetAPIVersion
+//
+//	Returns the API version of the extension
+	
+	{
+	return (m_pExtension ? m_pExtension->GetAPIVersion() : API_VERSION);
+	}
+
 bool CCodeChainCtx::InEvent (ECodeChainEvents iEvent) const
 
 //	InEvent

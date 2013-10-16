@@ -6112,7 +6112,12 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			CItemListManipulator ItemList(pObj->GetItemList());
 			if (!ItemList.SetCursorAtItem(Item))
-				return pCC->CreateNil();
+				{
+				if (pCtx->GetAPIVersion() >= 18)
+					return pCC->CreateError(CONSTLIT("Unable to find specified item in object."), pArgs->GetElement(1));
+				else
+					return pCC->CreateNil();
+				}
 
 			//	Set the data
 
@@ -7335,6 +7340,7 @@ ICCItem *fnShipSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 
 	//	Get the ship arg
 
@@ -7536,8 +7542,15 @@ ICCItem *fnShipSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			else
 				{
 				CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-				if (ItemList.SetCursorAtItem(Item))
-					pItemList = &ItemList;
+				if (!ItemList.SetCursorAtItem(Item))
+					{
+					if (pCtx->GetAPIVersion() >= 18)
+						return pCC->CreateError(CONSTLIT("Unable to find specified item in object."), pArgs->GetElement(1));
+					else
+						return pCC->CreateNil();
+					}
+
+				pItemList = &ItemList;
 				}
 
 			if (pItemList == NULL)
@@ -7568,6 +7581,7 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
+	CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
 	ICCItem *pArgs;
 	ICCItem *pResult;
 
@@ -7654,8 +7668,16 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			else
 				{
 				CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-				if (ItemList.SetCursorAtItem(Item))
-					pItemList = &ItemList;
+				if (!ItemList.SetCursorAtItem(Item))
+					{
+					pArgs->Discard(pCC);
+					if (pCtx->GetAPIVersion() >= 18)
+						return pCC->CreateError(CONSTLIT("Unable to find specified item in object."));
+					else
+						return pCC->CreateNil();
+					}
+
+				pItemList = &ItemList;
 				}
 
 			pArgs->Discard(pCC);
@@ -7700,8 +7722,16 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			else
 				{
 				CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-				if (ItemList.SetCursorAtItem(Item))
-					pItemList = &ItemList;
+				if (!ItemList.SetCursorAtItem(Item))
+					{
+					pArgs->Discard(pCC);
+					if (pCtx->GetAPIVersion() >= 18)
+						return pCC->CreateError(CONSTLIT("Unable to find specified item in object."));
+					else
+						return pCC->CreateNil();
+					}
+
+				pItemList = &ItemList;
 				}
 
 			int iSegment = pArgs->GetElement(2)->GetIntegerValue();
@@ -7986,8 +8016,16 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			else
 				{
 				CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-				if (ItemList.SetCursorAtItem(Item))
-					pItemList = &ItemList;
+				if (!ItemList.SetCursorAtItem(Item))
+					{
+					pArgs->Discard(pCC);
+					if (pCtx->GetAPIVersion() >= 18)
+						return pCC->CreateError(CONSTLIT("Unable to find specified item in object."));
+					else
+						return pCC->CreateNil();
+					}
+
+				pItemList = &ItemList;
 				}
 
 			//	Get the enhancement
@@ -8063,8 +8101,16 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			else
 				{
 				CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-				if (ItemList.SetCursorAtItem(Item))
-					pItemList = &ItemList;
+				if (!ItemList.SetCursorAtItem(Item))
+					{
+					pArgs->Discard(pCC);
+					if (pCtx->GetAPIVersion() >= 18)
+						return pCC->CreateError(CONSTLIT("Unable to find specified item in object."));
+					else
+						return pCC->CreateNil();
+					}
+
+				pItemList = &ItemList;
 				}
 
 			pArgs->Discard(pCC);

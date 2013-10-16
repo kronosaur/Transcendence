@@ -42,6 +42,7 @@ class CCodeChainCtx
 		inline void DefineString (const CString &sVar, const CString &sValue) { m_CC.DefineGlobalString(sVar, sValue); }
 		inline void DefineVar (const CString &sVar, ICCItem *pValue) { m_CC.DefineGlobal(sVar, pValue); }
 		void DefineVector (const CString &sVar, const CVector &vVector);
+		DWORD GetAPIVersion (void) const;
 		inline CG16bitImage *GetCanvas (void) const { return m_pCanvas; }
 		inline CExtension *GetExtension (void) const { return m_pExtension; }
 		inline CItemType *GetItemType (void) const { return m_pItemType; }
