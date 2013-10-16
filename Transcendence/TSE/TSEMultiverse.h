@@ -120,6 +120,8 @@ class CMultiverseModel
 		ALERROR GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCollection *retCollection) const;
 		EOnlineStates GetOnlineState (CString *retsUsername = NULL) const;
 		inline const CString &GetServiceStatus (void) { return m_sLastStatus; }
+		const CString &GetUpgradeURL (void) const { return m_sUpgradeURL; }
+		inline ULONG64 GetUpgradeVersion (void) const { return m_UpgradeVersion.dwProductVersion; }
 		bool IsLoadCollectionNeeded (void) const;
 		void OnCollectionLoading (void);
 		void OnCollectionLoadFailed (void);
@@ -132,10 +134,13 @@ class CMultiverseModel
 
 	private:
 		void DeleteCollection (void);
+		void SetUpgradeVersion (const CJSONValue &Entry);
 
 		mutable CCriticalSection m_cs;		//	Protects access to all data
 		CString m_sUsername;				//	User that we're representing
 		CMultiverseCollection m_Collection;	//	User's collection of registered extensions
+		SFileVersionInfo m_UpgradeVersion;	//	This is the engine version available on the Multiverse
+		CString m_sUpgradeURL;				//	The URL where we can find an upgrade, if necessary
 
 		CString m_sLastStatus;				//	Most recent service status
 

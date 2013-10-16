@@ -4,9 +4,31 @@
 //	Copyright (c) 2010 by George Moromisato. All Rights Reserved.
 
 #include "stdafx.h"
+#include "Internets.h"
 
-#define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
-#define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
+#define CMD_SERVICE_ERROR								CONSTLIT("serviceError")
+#define CMD_SERVICE_STATUS								CONSTLIT("serviceStatus")
+#define CMD_SERVICE_UPGRADE_READY						CONSTLIT("serviceUpgradeReady")
+
+#define PROTOCOL_HTTP									CONSTLIT("http")
+
+#define STR_DOWNLOADING_UPGRADE							CONSTLIT("Downloading upgrade...")
+#define STR_DOWNLOADING_UPGRADE_PROGRESS				CONSTLIT("Downloading upgrade...%s")
+
+class CCommsProgress : public IHTTPClientSessionEvents
+	{
+	public:
+		CCommsProgress (CHumanInterface &HI, const CString &sText) :
+				m_HI(HI),
+				m_sText(sText)
+			{ }
+
+		virtual void OnReceiveData (int iBytesReceived, int iBytesLeft);
+
+	private:
+		CHumanInterface &m_HI;
+		CString m_sText;
+	};
 
 CCloudService::~CCloudService (void)
 
@@ -47,6 +69,76 @@ void CCloudService::CleanUp (void)
 		delete m_Services[i];
 
 	m_Services.DeleteAll();
+	}
+
+ALERROR CCloudService::DownloadUpgrade (ITaskProcessor *pProcessor, const CString &sDownloadURL, CString *retsResult)
+
+//	DownloadUpgrade
+//
+//	Download a new game upgrade
+
+	{
+	CHTTPClientSession Session;
+
+	SendServiceStatus(STR_DOWNLOADING_UPGRADE);
+
+	//	Parse the URL to get the host name
+
+	CString sProtocol;
+	CString sHost;
+	CString sPath;
+	if (!urlParse(sDownloadURL.GetASCIIZPointer(), &sProtocol, &sHost, &sPath))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to parse download URL: %s."), sDownloadURL);
+		return ERR_FAIL;
+		}
+
+	if (!strEquals(sProtocol, PROTOCOL_HTTP))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unsupported protocol in download URL: %s."), sDownloadURL);
+		return ERR_FAIL;
+		}
+
+	//	Connect to the host
+
+	if (Session.Connect(sHost, CONSTLIT("80")) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to connect to server: %s."), sDownloadURL);
+		return ERR_FAIL;
+		}
+
+	//	Now issue a GET
+
+	CHTTPMessage Request;
+	Request.InitRequest(CONSTLIT("GET"), sPath);
+	Request.AddHeader(CONSTLIT("Host"), sHost);
+	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
+	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
+
+	//	Send the request and wait for response
+
+	CCommsProgress Progress(*m_pHI, STR_DOWNLOADING_UPGRADE_PROGRESS);
+	CHTTPMessage Response;
+	if (Session.Send(Request, &Response, &Progress) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: Error sending to server."), sDownloadURL);
+		return ERR_FAIL;
+		}
+
+	//	If we get an error, return
+
+	if (Response.GetStatusCode() != 200)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: %s"), sDownloadURL, Response.GetStatusMsg());
+		return ERR_FAIL;
+		}
+
+	//	Return the body up our controller
+
+	IMediaType *pBody = Response.GetBodyHandoff();
+	m_pHI->HICommand(CMD_SERVICE_UPGRADE_READY, pBody);
+
+	return NOERROR;
 	}
 
 CString CCloudService::GetDefaultUsername (void)
@@ -130,6 +222,7 @@ ALERROR CCloudService::InitFromXML (CHumanInterface &HI, CXMLElement *pDesc, boo
 	int i;
 
 	ASSERT(m_Services.GetCount() == 0);
+	m_pHI = &HI;
 
 	//	Get the list of default services
 
@@ -347,6 +440,34 @@ ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const
 	return NOERROR;
 	}
 
+void CCloudService::SendServiceError (const CString &sStatus)
+
+//	SendServiceError
+//
+//	Sends current status to the controller.
+
+	{
+	if (m_pHI)
+		{
+		CString *pData = new CString(sStatus);
+		m_pHI->HIPostCommand(CMD_SERVICE_ERROR, pData);
+		}
+	}
+
+void CCloudService::SendServiceStatus (const CString &sStatus)
+
+//	SendServiceStatus
+//
+//	Sends current status to the controller.
+
+	{
+	if (m_pHI)
+		{
+		CString *pData = new CString(sStatus);
+		m_pHI->HIPostCommand(CMD_SERVICE_STATUS, pData);
+		}
+	}
+
 ALERROR CCloudService::SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult)
 
 //	SignInUser
@@ -458,3 +579,15 @@ void ICIService::SendServiceStatus (const CString &sStatus)
 	m_HI.HIPostCommand(CMD_SERVICE_STATUS, pData);
 	}
 
+//	CCommsProgress -------------------------------------------------------------
+
+void CCommsProgress::OnReceiveData (int iBytesReceived, int iBytesLeft)
+
+//	OnReceiveData
+//
+//	Display progress
+
+	{
+	CString *pData = new CString(strPatternSubst(m_sText, strFormatBytes(iBytesReceived)));
+	m_HI.HIPostCommand(CMD_SERVICE_STATUS, pData);
+	}

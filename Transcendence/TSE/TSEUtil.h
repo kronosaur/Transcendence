@@ -162,7 +162,13 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								17;		//	See: LoadExtensionVersion in Utilities.cpp
+#ifdef TRANSCENDENCE_STABLE_RELEASE
+#define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.stable")
+#else
+#define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.next")
+#endif
+
+const DWORD API_VERSION =								18;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
 const DWORD SYSTEM_SAVE_VERSION =						94;		//	See: CSystem.cpp

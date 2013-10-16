@@ -272,6 +272,28 @@ bool fileMove (const CString &sSourceFilespec, const CString &sDestFilespec)
 	return true;
 	}
 
+bool fileOpen (const CString &sFile, const CString &sParameters, const CString &sCurrentFolder, CString *retsError)
+
+//	fileOpen
+//
+//	Launches the current file.
+
+	{
+	int iResult = (int)::ShellExecute(NULL,
+			NULL,
+			pathMakeAbsolute(sFile.GetASCIIZPointer()).GetASCIIZPointer(),
+			(!sParameters.IsBlank() ? sParameters.GetASCIIZPointer() : NULL),
+			(!sCurrentFolder.IsBlank() ? pathMakeAbsolute(sCurrentFolder).GetASCIIZPointer() : NULL),
+			SW_SHOWDEFAULT);
+	if (iResult <= 32)
+		{
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to launch program: %s; error = %d"), sFile, iResult);
+		return false;
+		}
+
+	return true;
+	}
+
 CString pathAddComponent (const CString &sPath, const CString &sComponent)
 
 //	pathAddComponent
@@ -295,7 +317,7 @@ CString pathAddComponent (const CString &sPath, const CString &sComponent)
 
 		//	If the path name does not have a trailing backslash, add one
 
-		if (!sPath.IsBlank() && pString[iPathLength-1] != '\\')
+		if (!sPath.IsBlank() && !pathIsPathSeparator(pString + iPathLength - 1))
 			sResult.Append(LITERAL("\\"));
 
 		//	Now concatenate the component
@@ -347,12 +369,12 @@ bool pathCreate (const CString &sPath)
 		{
 		//	Skip over this backslash
 
-		while (*pPos == '\\' && *pPos != '0')
+		while (pathIsPathSeparator(pPos))
 			pPos++;
 
 		//	Skip to the next backslash
 
-		while (*pPos != '\\' && *pPos != '\0')
+		while (!pathIsPathSeparator(pPos) && *pPos != '\0')
 			pPos++;
 
 		//	Trim the path here and see if it exists so far
@@ -394,7 +416,7 @@ CString pathGetExecutablePath (HINSTANCE hInstance)
 	//	Skip backwards to the first backslash
 
 	pPos = szBuffer + iLen;
-	while (*pPos != '\\' && pPos != szBuffer)
+	while (!pathIsPathSeparator(pPos) && pPos != szBuffer)
 		pPos--;
 
 	*pPos = '\0';
@@ -458,7 +480,7 @@ CString pathGetFilename (const CString &sPath)
 
 	//	Look for the first backslash
 
-	while (pPos > pStart && *(pPos - 1) != '\\')
+	while (pPos > pStart && !pathIsPathSeparator(pPos - 1))
 		pPos--;
 
 	return CString(pPos);
@@ -721,7 +743,7 @@ CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool b
 	//	Do we have to strip a slash?
 
 	char *pPos = sFilespec.GetASCIIZPointer() + sRoot.GetLength();
-	if (*pPos == '\\')
+	if (pathIsPathSeparator(pPos))
 		pPos++;
 
 	return CString(pPos);

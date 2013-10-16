@@ -926,7 +926,9 @@
     <None Include="Game\RPGWingmen.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\RPGAuxDevices.xml" />
+    <None Include="Game\RPGAuxDevices.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

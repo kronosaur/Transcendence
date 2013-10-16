@@ -29,6 +29,13 @@
 
 #include "PreComp.h"
 
+#define FIELD_DOWNLOAD_URL						CONSTLIT("downloadURL")
+#define FIELD_FILE_VERSION						CONSTLIT("fileVersion")
+#define FIELD_TYPE								CONSTLIT("type")
+#define FIELD_UNID								CONSTLIT("unid")
+
+#define TYPE_GAME_ENGINE						CONSTLIT("gameEngine")
+
 CMultiverseModel::CMultiverseModel (void) :
 		m_fUserSignedIn(false),
 		m_fCollectionLoaded(false),
@@ -290,6 +297,17 @@ ALERROR CMultiverseModel::SetCollection (const CJSONValue &Data, CString *retsRe
 		{
 		const CJSONValue &Entry = Data.GetElement(i);
 
+		//	If this is a game engine entry then see if it tells us to upgrade
+		//	our engine.
+
+		if (strEquals(TYPE_GAME_ENGINE, Entry.GetElement(FIELD_TYPE).AsString()))
+			{
+			SetUpgradeVersion(Entry);
+			continue;
+			}
+
+		//	Create a catalog entry and add to our collection
+
 		CMultiverseCatalogEntry *pNewEntry;
 		if (CMultiverseCatalogEntry::CreateFromJSON(Entry, &pNewEntry, retsResult) != NOERROR)
 			{
@@ -349,6 +367,45 @@ void CMultiverseModel::SetDisabled (void)
 	m_sUsername = NULL_STR;
 	m_fUserSignedIn = false;
 	DeleteCollection();
+	}
+
+void CMultiverseModel::SetUpgradeVersion (const CJSONValue &Entry)
+
+//	SetUpgradeVersion
+//
+//	Sets the engine version available on the Multiverse.
+
+	{
+	//	If this is not for our engine, then ignore it.
+
+	if (!strEquals(Entry.GetElement(FIELD_UNID).AsString(), UPGRADE_ENTRY_UNID))
+		return;
+
+	//	Get the upgrade URL
+
+	m_sUpgradeURL = Entry.GetElement(FIELD_DOWNLOAD_URL).AsString();
+	if (m_sUpgradeURL.IsBlank())
+		{
+		::kernelDebugLogMessage("Missing download URL in upgrade entry.");
+		return;
+		}
+
+	//	Parse the fileVersion
+
+	m_UpgradeVersion.sProductVersion = Entry.GetElement(FIELD_FILE_VERSION).AsString();
+
+	TArray<CString> Parts;
+	if (::strDelimit(m_UpgradeVersion.sProductVersion, '.', 0, &Parts) != NOERROR
+			|| Parts.GetCount() != 4)
+		{
+		::kernelDebugLogMessage("Invalid upgrade entry fileVersion: %s", m_UpgradeVersion.sProductVersion);
+		return;
+		}
+
+	m_UpgradeVersion.dwProductVersion = (((ULONG64)strToInt(Parts[0], 0)) << 48)
+			| (((ULONG64)strToInt(Parts[1], 0)) << 32)
+			| (((ULONG64)strToInt(Parts[2], 0)) << 16)
+			| (((ULONG64)strToInt(Parts[3], 0)));
 	}
 
 void CMultiverseModel::SetUsername (const CString &sUsername)

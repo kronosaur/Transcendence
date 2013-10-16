@@ -85,6 +85,9 @@ class ICIServiceFactory
 class CCloudService
 	{
 	public:
+		CCloudService (void) : m_pHI(NULL)
+			{ }
+
 		~CCloudService (void);
 
 		void CleanUp (void);
@@ -99,6 +102,7 @@ class CCloudService
 		ALERROR WritePrivateData (void);
 
 		ALERROR ChangePassword (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sOldPassword, const CString &sNewPassword, CString *retsResult = NULL);
+		ALERROR DownloadUpgrade (ITaskProcessor *pProcessor, const CString &sUpgradeURL, CString *retsResult = NULL);
 		ALERROR Housekeeping (ITaskProcessor *pProcessor);
 		ALERROR LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult = NULL);
 		ALERROR PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult = NULL);
@@ -111,6 +115,10 @@ class CCloudService
 		ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL);
 
 	private:
+		void SendServiceError (const CString &sStatus);
+		void SendServiceStatus (const CString &sStatus);
+
+		CHumanInterface *m_pHI;
 		TArray<ICIService *> m_Services;
 	};
 

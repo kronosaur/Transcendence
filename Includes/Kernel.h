@@ -1391,6 +1391,8 @@ CString strEncodeW1252ToUTF8Char (char chChar);
 bool strEquals (const CString &sString1, const CString &sString2);
 int strFind (const CString &sString, const CString &sStringToFind);
 
+CString strFormatBytes (DWORD dwBytes);
+
 #define FORMAT_LEADING_ZERO						0x00000001
 #define FORMAT_THOUSAND_SEPARATOR				0x00000002
 #define FORMAT_UNSIGNED							0x00000004
@@ -1448,6 +1450,11 @@ enum ESpecialFolders
 
 struct SFileVersionInfo
 	{
+	SFileVersionInfo (void) :
+			dwFileVersion(0),
+			dwProductVersion(0)
+		{ }
+
 	CString sProductName;
 	CString sProductVersion;
 	CString sCompanyName;
@@ -1469,6 +1476,7 @@ CTimeDate fileGetModifiedTime (const CString &sFilespec);
 DWORD fileGetProductVersion (void);
 ALERROR fileGetVersionInfo (const CString &sFilename, SFileVersionInfo *retInfo);
 bool fileMove (const CString &sSourceFilespec, const CString &sDestFilespec);
+bool fileOpen (const CString &sFile, const CString &sParameters = NULL_STR, const CString &sCurrentFolder = NULL_STR, CString *retsError = NULL);
 
 CString pathAddComponent (const CString &sPath, const CString &sComponent);
 CString pathAddExtensionIfNecessary (const CString &sPath, const CString &sExtension);

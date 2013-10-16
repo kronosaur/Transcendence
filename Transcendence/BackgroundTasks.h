@@ -234,3 +234,19 @@ class CStartNewGameTask : public IHITask
 		CTranscendenceModel &m_Model;
 		SNewGameSettings m_NewGame;
 	};
+
+class CUpgradeProgram : public IHITask
+	{
+	public:
+		CUpgradeProgram (CHumanInterface &HI, CCloudService &Service, const CString &sUpgradeURL) : IHITask(HI), 
+				m_Service(Service),
+				m_sUpgradeURL(sUpgradeURL)
+			{ }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult) { return m_Service.DownloadUpgrade(pProcessor, m_sUpgradeURL, retsResult); }
+
+	private:
+		CCloudService &m_Service;
+		CString m_sUpgradeURL;
+	};

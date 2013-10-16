@@ -634,8 +634,10 @@ ALERROR CExtensionCollection::ComputeFilesToLoad (const CString &sFilespec, CExt
 			}
 
 		//	If this is an XML file then we overwrite a TDB file of the same name.
+		//	Except in the Collection folder, which only allows TDBs
 
-		if (strEquals(sFileExtension, EXTENSION_XML))
+		if (strEquals(sFileExtension, EXTENSION_XML)
+				&& iFolder != CExtension::folderCollection)
 			{
 			CString sTDBFilespec = strPatternSubst(CONSTLIT("%s.tdb"), sExtensionRoot);
 

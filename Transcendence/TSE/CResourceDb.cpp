@@ -23,7 +23,6 @@
 
 CResourceDb::CResourceDb (const CString &sFilespec, bool bExtension) : 
 		m_sFilespec(sFilespec),
-		m_pResourceMap(NULL),
 		m_iVersion(TDB_VERSION),
 		m_pEntities(NULL),
 		m_bFreeEntities(false)
@@ -125,9 +124,6 @@ CResourceDb::~CResourceDb (void)
 	{
 	if (m_pDb)
 		delete m_pDb;
-
-	if (m_pResourceMap)
-		delete m_pResourceMap;
 
 	SetEntities(NULL);
 	}
@@ -395,7 +391,7 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, IXMLParserController 
 		CString sGameFile;
 		if (error = m_pDb->ReadEntry(m_iGameFile, &sGameFile))
 			{
-			*retsError = strPatternSubst(CONSTLIT("%s is corrupt"), m_sGameFile);
+			if (retsError) *retsError = strPatternSubst(CONSTLIT("%s is corrupt"), m_sGameFile);
 			return error;
 			}
 
@@ -406,10 +402,14 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, IXMLParserController 
 
 		if (error = CXMLElement::ParseXML(&GameFile, pEntities, retpData, &sError, ioEntityTable))
 			{
-			if (error == ERR_NOTFOUND)
-				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
-			else
-				*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+			if (retsError)
+				{
+				if (error == ERR_NOTFOUND)
+					*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
+				else
+					*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+				}
+
 			return error;
 			}
 		}
@@ -422,10 +422,14 @@ ALERROR CResourceDb::LoadGameFile (CXMLElement **retpData, IXMLParserController 
 
 		if (error = CXMLElement::ParseXML(&DataFile, pEntities, retpData, &sError, ioEntityTable))
 			{
-			if (error == ERR_NOTFOUND)
-				*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
-			else
-				*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+			if (retsError)
+				{
+				if (error == ERR_NOTFOUND)
+					*retsError = strPatternSubst(CONSTLIT("Unable to open file: %s"), m_sGameFile);
+				else
+					*retsError = strPatternSubst(CONSTLIT("%s: %s"), m_sGameFile, sError);
+				}
+
 			return error;
 			}
 		}
@@ -799,6 +803,8 @@ ALERROR CResourceDb::OpenDb (void)
 				pEntry->iEntryID = (int)pTable->GetValue(i);
 				pEntry->dwFlags = 0;
 				}
+
+			delete pTable;
 			}
 		}
 

@@ -153,10 +153,13 @@ ALERROR CExtension::ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError)
 //	Adds the filename to the load error.
 
 	{
-	if (Ctx.sErrorFilespec)
-		*retsError = strPatternSubst(CONSTLIT("%s: %s"), Ctx.sErrorFilespec, Ctx.sError);
-	else
-		*retsError = Ctx.sError;
+	if (retsError)
+		{
+		if (Ctx.sErrorFilespec)
+			*retsError = strPatternSubst(CONSTLIT("%s: %s"), Ctx.sErrorFilespec, Ctx.sError);
+		else
+			*retsError = Ctx.sError;
+		}
 
 	return ERR_FAIL;
 	}
@@ -816,7 +819,7 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 				if (g_pUniverse->InDebugMode()
 						&& !ExtDb.IsTDB())
 					{
-					*retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
+					if (retsError) *retsError = strPatternSubst(CONSTLIT("Error parsing %s: %s"), m_sFilespec, *retsError);
 					return ERR_FAIL;
 					}
 
@@ -843,7 +846,13 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 				if (error = LoadDesignElement(Ctx, pItem))
 					{
 					delete pRoot;
-					return ComposeLoadError(Ctx, retsError);
+
+					if (g_pUniverse->InDebugMode()
+							&& !ExtDb.IsTDB())
+						return ComposeLoadError(Ctx, retsError);
+
+					SetDisabled(Ctx.sError);
+					return NOERROR;
 					}
 				}
 

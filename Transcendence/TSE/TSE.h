@@ -47,6 +47,10 @@
 
 #define LEVEL_ROMAN_NUMERALS
 
+//	Uncomment out the following define when building a stable release
+
+//#define TRANSCENDENCE_STABLE_RELEASE
+
 //	Define some debugging symbols
 
 #ifdef DEBUG
@@ -220,7 +224,6 @@ class CResourceDb
 		//	If we're using a TDB
 		CDataFile *m_pDb;
 		TSortMap<CString, SResourceEntry> m_ResourceMap;
-		CSymbolTable *m_pResourceMap;
 		int m_iGameFile;
 
 		IXMLParserController *m_pEntities;			//	Entities to use in parsing

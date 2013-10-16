@@ -105,7 +105,7 @@ ALERROR CMemoryWriteStream::Write (char *pData, int iLength, int *retiBytesWritt
 			{
 			//	Allocate a new, bigger virtual block
 
-			int iNewMaxSize = (m_iMaxSize < 0x3fff000 ? m_iMaxSize * 2 : 0x7fff0000);
+			int iNewMaxSize = (m_iMaxSize < 0x3fff0000 ? m_iMaxSize * 2 : 0x7fff0000);
 			char *pNewBlock = (char *)::VirtualAlloc(NULL, iNewMaxSize, MEM_RESERVE, PAGE_NOACCESS);
 			if (pNewBlock == NULL)
 				return ERR_MEMORY;

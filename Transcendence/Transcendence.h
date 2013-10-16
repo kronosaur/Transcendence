@@ -2141,6 +2141,7 @@ class CTranscendenceModel
 		void ExitScreenSession (bool bForceUndock = false);
 		bool FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen = NULL, ICCItem **retpData = NULL);
 		inline int GetLastHighScore (void) { return m_iLastHighScore; }
+		const SFileVersionInfo &GetProgramVersion (void) const { return m_Version; }
 		void GetScreenSession (SDockFrame *retFrame);
 		inline bool InScreenSession (void) { return !m_DockFrames.IsEmpty(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
@@ -2259,7 +2260,9 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 	public:
 		CTranscendenceController (CHumanInterface &HI) : IHIController(HI),
 				m_iState(stateNone),
-				m_Model(HI) { }
+				m_Model(HI),
+				m_bUpgradeDownloaded(false)
+			{ }
 
 		inline const CGameKeys &GetKeyMap (void) const { return m_Settings.GetKeyMap(); }
 		inline CTranscendenceModel &GetModel (void) { return m_Model; }
@@ -2297,8 +2300,13 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateEndGameStats,
 			};
 
+		void CleanUpUpgrade (void);
+		bool CheckAndRunUpgrade (void);
 		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
+		bool InstallUpgrade (CString *retsError);
+		bool IsUpgradeReady (void);
 		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
 		States m_iState;
 		CTranscendenceModel m_Model;
@@ -2306,6 +2314,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		CCloudService m_Service;
 		CMultiverseModel m_Multiverse;
 		CSoundtrackManager m_Soundtrack;
+		bool m_bUpgradeDownloaded;
 
 		CGameSettings m_Settings;
 	};
