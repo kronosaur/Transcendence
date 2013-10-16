@@ -197,6 +197,8 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 
 	DEBUG_TRY
 
+	CShipClass::UnbindGlobal();
+
 	for (i = 0; i < m_AllTypes.GetCount(); i++)
 		m_AllTypes.GetEntry(i)->UnbindDesign();
 	m_AllTypes.DeleteAll();
@@ -1106,6 +1108,16 @@ bool CDesignCollection::IsRegisteredGame (void)
 			return false;
 
 	return true;
+	}
+
+void CDesignCollection::MarkGlobalImages (void)
+
+//	MarkGlobalImages
+//
+//	Mark images needed by types. In general we only mark images that are global
+//	(such as damage bitmap images used by ship classes).
+
+	{
 	}
 
 void CDesignCollection::NotifyTopologyInit (void)

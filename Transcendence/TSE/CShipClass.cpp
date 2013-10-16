@@ -2291,6 +2291,17 @@ void CShipClass::InstallEquipment (CShip *pShip)
 		}
 	}
 
+void CShipClass::UnbindGlobal (void)
+
+//	UnbindGlobal
+//
+//	We're unbinding, which means we have to release any resources.
+
+	{
+	g_pDamageBitmap = NULL;
+	g_pWreckDesc = NULL;
+	}
+
 void CShipClass::MarkImages (bool bMarkDevices)
 
 //	MarkImages
@@ -2946,8 +2957,6 @@ void CShipClass::OnReinit (void)
 //	Reinitialize the class
 
 	{
-	g_pWreckDesc = NULL;
-
 	InitShipNamesIndices();
 	}
 

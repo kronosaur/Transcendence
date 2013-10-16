@@ -3113,7 +3113,7 @@ class CUniverse : public CObject
 		inline CObjectImage *FindLibraryImage (DWORD dwUNID) { return CObjectImage::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID) { return m_Design.GetImage(dwUNID); }
 		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, true); }
-		inline void MarkLibraryBitmaps (void) { if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
+		inline void MarkLibraryBitmaps (void) { m_Design.MarkGlobalImages(); if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
 		inline void ReleaseLibraryBitmap (CG16bitImage *pBitmap) { }
 		inline void SweepLibraryBitmaps (void) { m_Extensions.SweepImages(); m_Design.SweepImages(); }
 

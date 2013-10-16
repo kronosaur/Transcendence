@@ -3956,6 +3956,8 @@ class CShipClass : public CDesignType
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
 
+		static void UnbindGlobal (void);
+
 	protected:
 		//	CDesignType overrides
 		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
@@ -5978,6 +5980,7 @@ class CDesignCollection
 		bool IsAdventureExtensionBound (DWORD dwUNID);
 		bool IsAdventureExtensionLoaded (DWORD dwUNID);
 		bool IsRegisteredGame (void);
+		void MarkGlobalImages (void);
 		void NotifyTopologyInit (void);
 		void ReadDynamicTypes (SUniverseLoadCtx &Ctx);
 		void Reinit (void);
