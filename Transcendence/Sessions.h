@@ -293,6 +293,8 @@ class CModExchangeSession : public IHISession
 		CMultiverseModel &m_Multiverse;
 		CExtensionCollection &m_Extensions;
 		bool m_bDebugMode;
+		bool m_bWaitingForRefresh;
+		bool m_bRefreshAgain;
 	};
 
 class CNewGameSession : public IHISession

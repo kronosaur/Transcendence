@@ -179,7 +179,7 @@ void CListCollectionTask::CreateEntry (CMultiverseCatalogEntry *pCatalogEntry, i
 		if (!sVersion.IsBlank())
 			sVersion.Append(CONSTLIT(" "));
 
-		sVersion.Append(CONSTLIT("ERROR: File corrupted."));
+		sVersion.Append(CONSTLIT("Registration signature does not match."));
 		}
 
 	//	Add the version number

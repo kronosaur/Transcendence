@@ -632,12 +632,10 @@ class CGItemListArea : public AGArea
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
+		void FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight);
 		void PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected);
+		void PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs);
 		void PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
-		void PaintItemModifier (CG16bitImage &Dest, 
-								const CString &sLabel,
-								COLORREF rgbBackground,
-								RECT *ioRect);
 
 		IListData *m_pListData;
 		ListTypes m_iType;

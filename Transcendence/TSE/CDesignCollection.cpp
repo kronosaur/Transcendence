@@ -358,6 +358,8 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 	//	to bind. We also use it to set up the inheritence hierarchy, which means
 	//	that we rely on the map from UNID to valid design type (m_AllTypes)
 
+	m_DisplayAttribs.DeleteAll();
+
 	DEBUG_TRY
 	for (i = 0; i < m_AllTypes.GetCount(); i++)
 		{
@@ -367,6 +369,13 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 			*retsError = Ctx.sError;
 			return error;
 			}
+
+		//	We take this opportunity to build a list of display attributes
+		//	defined by each type.
+
+		const CDisplayAttributeDefinitions &Attribs = pEntry->GetDisplayAttributes();
+		if (!Attribs.IsEmpty())
+			m_DisplayAttribs.Append(Attribs);
 		}
 	DEBUG_CATCH_MSG("Crash in PrepareBind.");
 
@@ -1025,7 +1034,7 @@ void CDesignCollection::GetEnabledExtensions (TArray<CExtension *> *retExtension
 		}
 	}
 
-CG16bitImage *CDesignCollection::GetImage (DWORD dwUNID, bool bCopy)
+CG16bitImage *CDesignCollection::GetImage (DWORD dwUNID, DWORD dwFlags)
 
 //	GetImage
 //
@@ -1040,7 +1049,7 @@ CG16bitImage *CDesignCollection::GetImage (DWORD dwUNID, bool bCopy)
 	if (pImage == NULL)
 		return NULL;
 
-	if (bCopy)
+	if (dwFlags & FLAG_IMAGE_COPY)
 		return pImage->CreateCopy();
 	else
 		{
@@ -1049,6 +1058,14 @@ CG16bitImage *CDesignCollection::GetImage (DWORD dwUNID, bool bCopy)
 
 		if (pRawImage == NULL)
 			kernelDebugLogMessage(sError);
+
+		//	Lock, if requested. NOTE: Since we obtained the image above,
+		//	this call is guaranteed to succeed.
+
+		if (dwFlags & FLAG_IMAGE_LOCK)
+			pImage->Lock(SDesignLoadCtx());
+
+		//	Done
 
 		return pRawImage;
 		}

@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 #define ADVENTURE_DESC_TAG						CONSTLIT("AdventureDesc")
+#define DISPLAY_ATTRIBUTES_TAG					CONSTLIT("DisplayAttributes")
 #define DOCK_SCREEN_TAG							CONSTLIT("DockScreen")
 #define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
 #define ECONOMY_TYPE_TAG						CONSTLIT("EconomyType")
@@ -1401,6 +1402,11 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		else if (strEquals(pItem->GetTag(), LANGUAGE_TAG))
 			{
 			if (error = m_Language.InitFromXML(Ctx, pItem))
+				return ComposeLoadError(Ctx, Ctx.sError);
+			}
+		else if (strEquals(pItem->GetTag(), DISPLAY_ATTRIBUTES_TAG))
+			{
+			if (error = m_DisplayAttribs.InitFromXML(Ctx, pItem))
 				return ComposeLoadError(Ctx, Ctx.sError);
 			}
 

@@ -3025,6 +3025,7 @@ class CUniverse : public CObject
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CMission *GetCurrentMission (void);
+		inline const CDisplayAttributeDefinitions &GetDisplayAttributes (void) const { return m_Design.GetDisplayAttributes(); }
 		CTimeSpan GetElapsedGameTime (void);
 		inline CExtensionCollection &GetExtensionCollection (void) { return m_Extensions; }
 		CString GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib);
@@ -3111,8 +3112,8 @@ class CUniverse : public CObject
 		inline void ClearLibraryBitmapMarks (void) { m_Design.ClearImageMarks(); }
 		void GarbageCollectLibraryBitmaps (void);
 		inline CObjectImage *FindLibraryImage (DWORD dwUNID) { return CObjectImage::AsType(m_Design.FindEntry(dwUNID)); }
-		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID) { return m_Design.GetImage(dwUNID); }
-		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, true); }
+		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID, DWORD dwFlags = 0) { return m_Design.GetImage(dwUNID, dwFlags); }
+		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, CDesignCollection::FLAG_IMAGE_COPY); }
 		inline void MarkLibraryBitmaps (void) { m_Design.MarkGlobalImages(); if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
 		inline void ReleaseLibraryBitmap (CG16bitImage *pBitmap) { }
 		inline void SweepLibraryBitmaps (void) { m_Extensions.SweepImages(); m_Design.SweepImages(); }

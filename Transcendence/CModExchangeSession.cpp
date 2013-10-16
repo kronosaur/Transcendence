@@ -35,7 +35,9 @@ CModExchangeSession::CModExchangeSession (CHumanInterface &HI, CCloudService &Se
 		m_Service(Service),
 		m_Multiverse(Multiverse),
 		m_Extensions(Extensions),
-		m_bDebugMode(bDebugMode)
+		m_bDebugMode(bDebugMode),
+		m_bWaitingForRefresh(false),
+		m_bRefreshAgain(false)
 
 //	CModExchangeSession constructor
 
@@ -92,6 +94,7 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	//	Done with wait animation
 
 	StopPerformance(ID_CTRL_WAIT);
+	m_bWaitingForRefresh = false;
 
 	//	Check for error
 
@@ -119,6 +122,14 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	pList->SetPropertyMetric(PROP_VIEWPORT_HEIGHT, (Metric)RectHeight(rcRect));
 
 	StartPerformance(pList, ID_LIST, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+
+	//	If we were asked to refresh while waiting, refresh again.
+
+	if (m_bRefreshAgain)
+		{
+		m_bRefreshAgain = false;
+		CmdRefresh(false);
+		}
 	}
 
 ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
@@ -135,7 +146,12 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_REFRESH_COMPLETE))
 		CmdRefreshComplete((CListCollectionTask *)pData);
 	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOADED))
-		CmdRefresh(false);
+		{
+		if (!m_bWaitingForRefresh)
+			CmdRefresh(false);
+		else
+			m_bRefreshAgain = true;
+		}
 
 	return NOERROR;
 	}
@@ -154,6 +170,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 	//	Create a task to read the list of save files from disk
 
 	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, false, m_bDebugMode), this, CMD_REFRESH_COMPLETE);
+	m_bWaitingForRefresh = true;
 
 	//	Create the title and menu
 
