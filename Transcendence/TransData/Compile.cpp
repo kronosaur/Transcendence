@@ -23,6 +23,8 @@ void Decompile (const CString &sDataFile, CXMLElement *pCmdLine)
 	if (strEquals(sDb, CONSTLIT("Transcendence")))
 		sDb = CONSTLIT("Transcendence.tdb");
 
+	CString sMainFile = pathStripExtension(pathGetFilename(sDb));
+
 	CResourceDb Resources(sDb);
 	if (error = Resources.Open(0, &sError))
 		{
@@ -32,19 +34,18 @@ void Decompile (const CString &sDataFile, CXMLElement *pCmdLine)
 
 	//	Output to a sub folder
 
-	CString sOutputFolder = pathStripExtension(sDb);
-	sOutputFolder.Append(CONSTLIT("Source"));
+	CString sOutputFolder = strPatternSubst(CONSTLIT("%s_Source"), sMainFile);
 
 	//	Extract the main game file
 
 	CString sData;
 	if (error = Resources.ExtractMain(&sData))
 		{
-		printf("Unable to extract file: Transcendence.xml\n");
+		printf("Unable to extract file: %s.xml\n", sMainFile.GetASCIIZPointer());
 		return;
 		}
 
-	CString sOutputFilespec = pathAddComponent(sOutputFolder, CONSTLIT("Transcendence.xml"));
+	CString sOutputFilespec = pathAddComponent(sOutputFolder, strPatternSubst(CONSTLIT("%s.xml"), sMainFile));
 	if (error = ExtractFile(sOutputFilespec, sData))
 		return;
 

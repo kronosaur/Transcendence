@@ -62,13 +62,13 @@ void ShowHelp (CXMLElement *pCmdLine)
 		}
 	else if (pCmdLine->GetAttributeBool(CLEAR_REGISTERED_SWITCH))
 		{
-		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
-		printf("       /dataFile:filename   TDB file to decompile.\n");
+		printf("  /clearRegistered      Clears registered flag on game file.\n");
+		printf("       /gameFile:filename   Save file to clear.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(DECOMPILE_SWITCH))
 		{
-		printf("  /clearRegistered      Clears registered flag on game file.\n");
-		printf("       /gameFile:filename   Save file to clear.\n");
+		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
+		printf("       /dataFile:filename   TDB file to decompile.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
