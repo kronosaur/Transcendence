@@ -48,7 +48,29 @@ EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement
 		if (Enhancement.GetType() == etStrengthen
 				&& Enhancement.GetLevel() == 0
 				&& Enhancement.GetEnhancementType() == GetEnhancementType())
-			m_dwMods = dwNewMods + 1;
+			{
+			int iMaxBonus = Item.GetType()->GetMaxHPBonus();
+			int iNewBonus = Min(10, iMaxBonus);
+			if (iNewBonus > 0)
+				{
+				SetModBonus(iNewBonus);
+				return eisOK;
+				}
+			else
+				return eisNoEffect;
+			}
+		else if (Enhancement.GetType() == etHPBonus)
+			{
+			int iMaxBonus = Item.GetType()->GetMaxHPBonus();
+			int iNewBonus = Min(Enhancement.GetHPBonus(), iMaxBonus);
+			if (iNewBonus > 0)
+				{
+				SetModBonus(iNewBonus);
+				return eisOK;
+				}
+			else
+				return eisNoEffect;
+			}
 
 		//	For all others, take the enhancement
 
@@ -228,27 +250,14 @@ EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement
 							&& GetType() != etStrengthen)
 						return eisNoEffect;
 
-					//	If stackable...
-
-					else if (Enhancement.GetLevel() == 0)
-						{
-						int iOldBonus = GetHPBonus();
-						int iMaxBonus = Item.GetType()->GetMaxHPBonus();
-						int iNewBonus = Min(iOldBonus + 10, iMaxBonus);
-						if (iNewBonus > iOldBonus)
-							{
-							SetModBonus(GetHPBonus() + 10);
-							return eisBetter;
-							}
-						else
-							return eisNoEffect;
-						}
-
 					//	If improving...
 
-					else if (Enhancement.GetHPBonus() > GetHPBonus())
+					int iOldBonus = GetHPBonus();
+					int iMaxBonus = Item.GetType()->GetMaxHPBonus();
+					int iNewBonus = Min((Enhancement.GetLevel() == 0 ? iOldBonus + 10 : Enhancement.GetHPBonus()), iMaxBonus);
+					if (iNewBonus > iOldBonus)
 						{
-						*this = Enhancement;
+						SetModBonus(iNewBonus);
 						return eisBetter;
 						}
 					else
