@@ -45,24 +45,12 @@ EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement
 		{
 		//	For stackable strengthening, start at 1
 
-		if (Enhancement.GetType() == etStrengthen
-				&& Enhancement.GetLevel() == 0
+		if ((Enhancement.GetType() == etStrengthen
+					|| Enhancement.GetType() == etHPBonus)
 				&& Enhancement.GetEnhancementType() == GetEnhancementType())
 			{
 			int iMaxBonus = Item.GetType()->GetMaxHPBonus();
-			int iNewBonus = Min(10, iMaxBonus);
-			if (iNewBonus > 0)
-				{
-				SetModBonus(iNewBonus);
-				return eisOK;
-				}
-			else
-				return eisNoEffect;
-			}
-		else if (Enhancement.GetType() == etHPBonus)
-			{
-			int iMaxBonus = Item.GetType()->GetMaxHPBonus();
-			int iNewBonus = Min(Enhancement.GetHPBonus(), iMaxBonus);
+			int iNewBonus = Min((Enhancement.GetLevel() == 0 ? 10 : Enhancement.GetHPBonus()), iMaxBonus);
 			if (iNewBonus > 0)
 				{
 				SetModBonus(iNewBonus);
