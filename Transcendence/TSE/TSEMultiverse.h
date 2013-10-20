@@ -97,10 +97,98 @@ class CMultiverseCollection
 		void DeleteAll (void);
 		inline int GetCount (void) const { return m_List.GetCount(); }
 		inline CMultiverseCatalogEntry *GetEntry (int iIndex) const { return m_List[iIndex]; }
+		bool HasAllUNIDs (const TArray<DWORD> &UNIDList) const;
+		bool HasAnyUNID (const TArray<DWORD> &UNIDList) const;
+		bool HasUNID (DWORD dwUNID) const;
 		inline void Insert (CMultiverseCatalogEntry *pEntry) { m_List.Insert(pEntry); }
 
 	private:
 		TArray<CMultiverseCatalogEntry *> m_List;
+	};
+
+class CMultiverseNewsEntry
+	{
+	public:
+		CMultiverseNewsEntry (const CMultiverseNewsEntry &Src);
+		~CMultiverseNewsEntry (void);
+
+		static ALERROR CreateFromJSON (const CJSONValue &Entry, CMultiverseNewsEntry **retpEntry, CString *retsResult);
+
+		void FindImages (const CString &sCacheFilespec, TSortMap<CString, CString> *retDownloads);
+		inline const CString &GetBody (void) const { return m_sBody; }
+		inline const CString &GetCallToActionText (void) const { return m_sCallToActionText; }
+		inline const CString &GetCallToActionURL (void) const { return m_sCallToActionURL; }
+		inline const CString &GetID (void) const { return m_sID; }
+		inline const TArray<DWORD> &GetExcludedUNIDs (void) const { return m_ExcludedUNIDs; }
+		inline const TArray<DWORD> &GetRequiredUNIDs (void) const { return m_RequiredUNIDs; }
+		inline const CString &GetTitle (void) const { return m_sTitle; }
+		inline bool IsShown (void) const { return m_bShown; }
+		CG16bitImage *LoadImage (void);
+		CG16bitImage *LoadImageHandoff (void);
+		inline void SetShown (bool bShown = true) { m_bShown = bShown; }
+
+	private:
+		CMultiverseNewsEntry (void) :
+				m_bShown(false)
+			{ }
+
+		void FindImage (const CString &sImageURL, 
+						const CString &sImageFilename,
+						const CString &sCacheFilespec,
+						CString *retsImageFilespec,
+						TSortMap<CString, CString> *retDownloads);
+
+		CString m_sID;						//	Multiverse ID of this entry
+		CString m_sTitle;					//	Title
+		CString m_sBody;					//	Body (plain text)
+		CString m_sCallToActionText;		//	Footer text
+		CString m_sCallToActionURL;			//	URL to navigate to when clicked.
+		CString m_sImageURL;
+		CString m_sImageMaskURL;
+		TArray<DWORD> m_RequiredUNIDs;		//	List of UNIDs that we must have to show entry
+		TArray<DWORD> m_ExcludedUNIDs;		//	List of UNIDs that we CANNOT have to show entry
+
+		//	We store the image here after loading
+
+		CString m_sImageFilespec;			//	Local path to image (blank if download needed)
+		CString m_sImageMaskFilespec;		//	Local path to mask (blank if download needed)
+		CG16bitImage m_Image;
+
+		//	News entry state
+
+		bool m_bShown;						//	TRUE if we've shown the news this session
+	};
+
+class CMultiverseNews
+	{
+	public:
+		~CMultiverseNews (void) { DeleteAll(); }
+
+		void DeleteAll (void);
+		inline int GetCount (void) const { return m_List.GetCount(); }
+		inline CMultiverseNewsEntry *GetEntry (int iIndex) const { return m_List[iIndex]; }
+		ALERROR Save (const CString &sCacheFilespec, CString *retsResult);
+		ALERROR SetNews (const CJSONValue &Data, const CString &sCacheFilespec, TSortMap<CString, CString> *retDownloads, CString *retsResult);
+		void ShowNews (CMultiverseNewsEntry *pEntry);
+
+	private:
+		struct SUserReadState
+			{
+			SUserReadState (void) :
+					iReadCount(0)
+				{ }
+
+			CTimeDate LastRead;				//	Last time we showed the news
+			int iReadCount;					//	Number of times we shown the news lately.
+			};
+
+		ALERROR LoadReadState (const CString &sFilespec, CString *retsError);
+		inline void Insert (CMultiverseNewsEntry *pEntry) { m_List.Insert(pEntry); }
+		ALERROR SaveReadState (const CString &sFilespec, CString *retsError);
+
+		TArray<CMultiverseNewsEntry *> m_List;
+		TSortMap<CString, SUserReadState> m_ReadState;
+		bool m_bReadStateModified;
 	};
 
 class CMultiverseModel
@@ -118,17 +206,21 @@ class CMultiverseModel
 
 		ALERROR GetCollection (CMultiverseCollection *retCollection) const;
 		ALERROR GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCollection *retCollection) const;
+		CMultiverseNewsEntry *GetNextNewsEntry (void);
 		EOnlineStates GetOnlineState (CString *retsUsername = NULL) const;
 		inline const CString &GetServiceStatus (void) { return m_sLastStatus; }
 		const CString &GetUpgradeURL (void) const { return m_sUpgradeURL; }
 		inline ULONG64 GetUpgradeVersion (void) const { return m_UpgradeVersion.dwProductVersion; }
 		bool IsLoadCollectionNeeded (void) const;
+		bool IsLoadNewsNeeded (void) const;
 		void OnCollectionLoading (void);
 		void OnCollectionLoadFailed (void);
 		void OnUserSignedIn (const CString &sUsername);
 		void OnUserSignedOut (void);
+		ALERROR Save (const CString &sCacheFilespec, CString *retsResult = NULL) { return m_News.Save(sCacheFilespec, retsResult); }
 		ALERROR SetCollection (const CJSONValue &Data, CString *retsResult);
 		void SetDisabled (void);
+		ALERROR SetNews (const CJSONValue &Data, const CString &sCacheFilespec, TSortMap<CString, CString> *retDownloads, CString *retsResult);
 		void SetServiceStatus (const CString &sStatus) { m_sLastStatus = sStatus; }
 		void SetUsername (const CString &sUsername);
 
@@ -139,6 +231,7 @@ class CMultiverseModel
 		mutable CCriticalSection m_cs;		//	Protects access to all data
 		CString m_sUsername;				//	User that we're representing
 		CMultiverseCollection m_Collection;	//	User's collection of registered extensions
+		CMultiverseNews m_News;				//	News from the Multiverse
 		SFileVersionInfo m_UpgradeVersion;	//	This is the engine version available on the Multiverse
 		CString m_sUpgradeURL;				//	The URL where we can find an upgrade, if necessary
 
@@ -148,8 +241,9 @@ class CMultiverseModel
 		DWORD m_fCollectionLoaded:1;		//	TRUE if collection is loaded.
 		DWORD m_fDisabled:1;				//	TRUE if we don't have multiverse support.
 		DWORD m_fLoadingCollection:1;		//	TRUE if we're currently loading the collection.
+		DWORD m_fNewsLoaded:1;				//	TRUE if news is loaded.
 
-		DWORD m_dwSpare:28;
+		DWORD m_dwSpare:27;
 	};
 
 //	CHexarc --------------------------------------------------------------------

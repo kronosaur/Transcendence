@@ -40,7 +40,8 @@ CMultiverseModel::CMultiverseModel (void) :
 		m_fUserSignedIn(false),
 		m_fCollectionLoaded(false),
 		m_fDisabled(false),
-		m_fLoadingCollection(false)
+		m_fLoadingCollection(false),
+		m_fNewsLoaded(false)
 
 //	CMultiverseModel constructor
 
@@ -157,6 +158,49 @@ ALERROR CMultiverseModel::GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCo
 	return NOERROR;
 	}
 
+CMultiverseNewsEntry *CMultiverseModel::GetNextNewsEntry (void)
+
+//	GetNextNewsEntry
+//
+//	Returns the next news entry to display.
+//
+//	NOTE: We return a copy which the callers are responsible for freeing.
+	
+	{
+	CSmartLock Lock(m_cs);
+	int i;
+
+	//	Loop over all entries in order
+
+	for (i = 0; i < m_News.GetCount(); i++)
+		{
+		CMultiverseNewsEntry *pEntry = m_News.GetEntry(i);
+
+		//	If we've already shown this entry, skip it.
+
+		if (pEntry->IsShown())
+			continue;
+
+		//	If this entry does not match the collection criteria, then skip it.
+
+		if (m_Collection.HasAnyUNID(pEntry->GetExcludedUNIDs()))
+			continue;
+
+		if (!m_Collection.HasAllUNIDs(pEntry->GetRequiredUNIDs()))
+			continue;
+
+		//	Mark the entry as having been shown
+
+		m_News.ShowNews(pEntry);
+
+		//	return this entry
+
+		return new CMultiverseNewsEntry(*pEntry);
+		}
+	
+	return NULL;
+	}
+
 CMultiverseModel::EOnlineStates CMultiverseModel::GetOnlineState (CString *retsUsername) const
 
 //	GetOnlineState
@@ -207,6 +251,18 @@ bool CMultiverseModel::IsLoadCollectionNeeded (void) const
 	//	Need to load the collection
 
 	return true;
+	}
+
+bool CMultiverseModel::IsLoadNewsNeeded (void) const
+
+//	IsLoadNewsNeeded
+//
+//	Returns TRUE if we need to load the news
+
+	{
+	CSmartLock Lock(m_cs);
+
+	return !m_fNewsLoaded;
 	}
 
 void CMultiverseModel::OnCollectionLoadFailed (void)
@@ -367,6 +423,18 @@ void CMultiverseModel::SetDisabled (void)
 	m_sUsername = NULL_STR;
 	m_fUserSignedIn = false;
 	DeleteCollection();
+	}
+
+ALERROR CMultiverseModel::SetNews (const CJSONValue &Data, const CString &sCacheFilespec, TSortMap<CString, CString> *retDownloads, CString *retsResult)
+
+//	SetNews
+//
+//	Sets the list of news articles from the Multiverse.
+
+	{
+	CSmartLock Lock(m_cs);
+	m_fNewsLoaded = true;
+	return m_News.SetNews(Data, sCacheFilespec, retDownloads, retsResult);
 	}
 
 void CMultiverseModel::SetUpgradeVersion (const CJSONValue &Entry)

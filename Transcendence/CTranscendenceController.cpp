@@ -82,6 +82,7 @@
 
 #define CMD_SERVICE_ACCOUNT_CHANGED				CONSTLIT("serviceAccountChanged")
 #define CMD_SERVICE_COLLECTION_LOADED			CONSTLIT("serviceCollectionLoaded")
+#define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
 #define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
@@ -89,6 +90,7 @@
 #define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
+#define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
 #define CMD_SERVICE_UPGRADE_READY				CONSTLIT("serviceUpgradeReady")
 
@@ -110,8 +112,8 @@
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
 
-#define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Downloads")
-#define FILESPEC_UPGRADE_FILE					CONSTLIT("Downloads\\Upgrade.zip")
+#define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Cache")
+#define FILESPEC_UPGRADE_FILE					CONSTLIT("Cache\\Upgrade.zip")
 
 #define ID_MULTIVERSE_STATUS_SEQ				CONSTLIT("idMultiverseStatusSeq")
 #define ID_MULTIVERSE_STATUS_TEXT				CONSTLIT("idMultiverseStatusText")
@@ -178,6 +180,10 @@ bool CTranscendenceController::CheckAndRunUpgrade (void)
 	::kernelSetDebugLog(NULL);
 
 	//	Run
+	//
+	//	LATER: Since we're running in a different directory, we should add this
+	//	Extension directory as a command-line parameter so that the EXE in AppData
+	//	knowns about our Extensions.
 
 	if (!fileOpen(sExe))
 		{
@@ -561,6 +567,26 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_Service.HasCapability(ICIService::autoLoginUser))
 			m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
+
+		//	If we can, download news
+
+		else if (m_Service.HasCapability(ICIService::canLoadNews)
+				&& m_Multiverse.IsLoadNewsNeeded())
+			{
+			//	Figure out the path for the news image cache
+
+			CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+			//	Make sure it exists
+
+			if (!pathExists(sDownloadsFolder))
+				pathCreate(sDownloadsFolder);
+
+			//	Start a task to load the news (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			}
 
 		//	Legacy CTranscendenceWnd takes over
 
@@ -1185,6 +1211,11 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+
+		//	Otherwise we're done downloading
+
+		else
+			m_HI.HIPostCommand(CMD_SERVICE_DOWNLOADS_COMPLETE);
 		}
 
 	//	Upgrade ready
@@ -1276,6 +1307,40 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Continue downloading
 
 		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		}
+
+	//	Done downloading extensions.
+
+	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_COMPLETE))
+		{
+		//	Download news
+
+		if (m_Service.HasCapability(ICIService::canLoadNews)
+				&& m_Multiverse.IsLoadNewsNeeded())
+			{
+			//	Figure out the path for the news image cache
+
+			CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+			//	Make sure it exists
+
+			if (!pathExists(sDownloadsFolder))
+				pathCreate(sDownloadsFolder);
+
+			//	Start a task to load the news (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			}
+		}
+
+	//	News loaded
+
+	else if (strEquals(sCmd, CMD_SERVICE_NEWS_LOADED))
+		{
+		//	Tell the current session that we loaded news.
+
+		m_HI.GetSession()->HICommand(CMD_SERVICE_NEWS_LOADED);
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
@@ -1385,8 +1450,12 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	TArray<CString> ExtensionFolders;
 	ExtensionFolders.Insert(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_EXTENSIONS));
 
+	//	Add additional folders from our settings
+
+	ExtensionFolders.Insert(m_Settings.GetExtensionFolders());
+
 	//	If our AppData is elsewhere, then add an Extensions folder under the
-	//	current folder.
+	//	current folder. [This allows the player to manually place extensions in Program Files.]
 
 	if (!m_Settings.GetAppDataFolder().IsBlank())
 		ExtensionFolders.Insert(FOLDER_EXTENSIONS);
@@ -1518,6 +1587,7 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 			}
 
 		m_Model.SaveHighScoreList();
+		m_Multiverse.Save(pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER));
 		m_Settings.Save(SETTINGS_FILENAME);
 		}
 	}

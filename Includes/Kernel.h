@@ -196,9 +196,11 @@ class CTimeDate
 		inline int Millisecond (void) const { return m_Time.wMilliseconds; }
 
 		int Compare (const CTimeDate &Src) const;
+		int DayOfWeek (void) const;
 		int DaysSince1AD (void) const;
 		CString Format (const CString &sFormat) const;
 		int MillisecondsSinceMidnight (void) const;
+		bool Parse (const CString &sFormat, const CString &sValue, CString *retsError = NULL);
 		CTimeDate ToLocalTime (void) const;
 
 	private:

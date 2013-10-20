@@ -631,78 +631,6 @@
     <None Include="Game\Readme.htm">
       <Filter>Notes and Documents</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\PlayerShips.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateHierarchyVol01.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\PlayerShipsBase.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Makayev.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateShipyard.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMetropolis.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateer.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateerMissions.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission01.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Topology.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Anaxas.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\BeitAlgez.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Gunsan.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Silla.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\TauCeti.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Warlords.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Outlaws.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\CyclopsStoryArc.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AnarchistChimeras.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StdChimeras.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission02.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AntonNasser.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission03.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CharonPirateChimeras.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
     <None Include="Game\Environments.xml">
       <Filter>XML Files\Universe Library</Filter>
     </None>
@@ -727,53 +655,14 @@
     <None Include="Game\Groups.xml">
       <Filter>XML Files\Universe Library</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission04.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMisc.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Cyclops.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
     <None Include="Game\KateMorgental.xml">
       <Filter>XML Files\Human Space Library</Filter>
     </None>
     <None Include="Game\RPGCharacters.xml">
       <Filter>XML Files\RPG Library</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Rasiermesser.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CommonwealthChimeras.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\GunsanComplex.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission05.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\ChimericInjector.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission06.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StockMarket.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Curators.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Kartal.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
     <None Include="Game\Extensions\PartI Soundtrack\StarsOfThePilgrimSoundtrack.xml">
       <Filter>XML Files\Part I Soundtrack</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AutonBay.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
     <None Include="Game\RPGAutons.xml">
       <Filter>XML Files\RPG Library</Filter>
@@ -784,29 +673,14 @@
     <None Include="Game\RPGBehaviors.xml">
       <Filter>XML Files\RPG Library</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
-    </None>
     <None Include="Game\Extensions\Debug\DebugCode.xml">
       <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
     <None Include="Game\RPGAuxDevices.xml">
       <Filter>XML Files\RPG Library</Filter>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\CorporateExpansion.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
     <None Include="Game\Domina.xml">
       <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml">
-      <Filter>XML Files\Corporate Expansion</Filter>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalignedMerchanters.xml">
-      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </None>
     <None Include="Game\RPGWingmen.xml">
       <Filter>XML Files\RPG Library</Filter>
@@ -835,6 +709,150 @@
     </Xml>
     <Xml Include="Game\Extensions\Debug\HighLevelTest.xml">
       <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Anaxas.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\BeitAlgez.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\CorporateExpansion.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\CyclopsStoryArc.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Gunsan.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission01.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission02.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission03.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission04.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission05.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Mission06.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\PilgrimClass.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\PlayerShips.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Silla.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\TauCeti.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateCommand\Topology.xml">
+      <Filter>XML Files\Corporate Expansion</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AnarchistChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Anaxas.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AntonNasser.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AutonBay.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\BeitAlgez.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CharonPirateChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\ChimericInjector.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CommonwealthChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateHierarchyVol01.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateMetropolis.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateMisc.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporatePrivateer.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporatePrivateerMissions.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateShipyard.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Curators.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Cyclops.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Gunsan.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\GunsanComplex.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Kartal.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\LumiereDiaspora.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Makayev.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Omnithor.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Outlaws.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\PlayerShipsBase.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Rasiermesser.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Silla.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\StdChimeras.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\StockMarket.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\TauCeti.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Topology.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\UnalignedMerchanters.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
+    </Xml>
+    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Warlords.xml">
+      <Filter>XML Files\Corporate Hierarchy Vol 01</Filter>
     </Xml>
   </ItemGroup>
 </Project>

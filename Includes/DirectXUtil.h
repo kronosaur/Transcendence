@@ -220,6 +220,7 @@ class CG16bitImage : public CObject
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight, BYTE byOpacity);
 		ALERROR CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask = NULL, DWORD dwFlags = 0);
+		ALERROR CreateFromFile (const CString &sImageFilespec, const CString &sMaskFilespec = NULL_STR, DWORD dwFlags = 0);
 		ALERROR CreateFromImage (const CG16bitImage &Image);
 		ALERROR CreateFromImageTransformed (const CG16bitImage &Source,
 											int xSrc, 
@@ -289,6 +290,7 @@ class CG16bitImage : public CObject
 		inline bool HasAlpha (void) const { return (m_pAlpha != NULL); }
 		inline bool HasMask (void) const { return m_bHasMask; }
 		inline bool HasRGB (void) const { return (m_pRGB != NULL); }
+		void IntersectMask (int xMask, int yMask, int cxMask, int cyMask, const CG16bitImage &Mask, int xDest, int yDest);
 		inline bool IsEmpty (void) const { return (m_cxWidth == 0 || m_cyHeight == 0); }
 		inline bool IsSprite (void) const { return m_pSprite != NULL; }
 		inline bool IsTransparent (void) const { return m_pRedAlphaTable != NULL; }
@@ -427,6 +429,7 @@ void CopyBltTransformed (CG16bitImage &Dest,
 						 const CXForm &SrcToDest,
 						 const CXForm &DestToSrc,
 						 const RECT &rcDestXForm);
+void CreateRoundedRectAlpha (int cxWidth, int cyHeight, int iRadius, CG16bitImage *retImage);
 void DrawAlphaGradientCircle (CG16bitImage &Dest, 
 		int xDest, 
 		int yDest, 

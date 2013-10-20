@@ -11,39 +11,19 @@
 
 #define EMPTY_PATH										CONSTLIT("/")
 
-void strParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort)
+CString urlCompose (const CString &sProtocol, const CString &sHost, const CString &sPath)
 
-//	strParseHostspec
+//	urlCompose
 //
-//	Parses a spec of the form:
-//
-//	hostname
-//	hostname:port
+//	Composes an URL
 
 	{
-	char *pPos = sHostspec.GetASCIIZPointer();
-	char *pStart = pPos;
-	while (*pPos != ':' && *pPos != '\0')
-		pPos++;
-
-	if (retsHost)
-		*retsHost = CString(pStart, (int)(pPos - pStart));
-
-	if (retsPort)
-		{
-		if (*pPos != ':')
-			{
-			*retsPort = NULL_STR;
-			return;
-			}
-
-		pPos++;
-		pStart = pPos;
-		while (*pPos != '\0')
-			pPos++;
-
-		*retsPort = CString(pStart, (int)(pPos - pStart));
-		}
+	if (sPath.IsBlank())
+		return strPatternSubst(CONSTLIT("%s://%s"), sProtocol, sHost);
+	else if (*sPath.GetASCIIZPointer() == '/')
+		return strPatternSubst(CONSTLIT("%s://%s%s"), sProtocol, sHost, sPath);
+	else
+		return strPatternSubst(CONSTLIT("%s://%s/%s"), sProtocol, sHost, sPath);
 	}
 
 CString urlDecode (const CString &sURL, DWORD dwFlags)
@@ -271,3 +251,39 @@ bool urlParse (char *pStart, CString *retsProtocol, CString *retsHost, CString *
 
 	return true;
 	}
+
+void urlParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort)
+
+//	urlParseHostspec
+//
+//	Parses a spec of the form:
+//
+//	hostname
+//	hostname:port
+
+	{
+	char *pPos = sHostspec.GetASCIIZPointer();
+	char *pStart = pPos;
+	while (*pPos != ':' && *pPos != '\0')
+		pPos++;
+
+	if (retsHost)
+		*retsHost = CString(pStart, (int)(pPos - pStart));
+
+	if (retsPort)
+		{
+		if (*pPos != ':')
+			{
+			*retsPort = NULL_STR;
+			return;
+			}
+
+		pPos++;
+		pStart = pPos;
+		while (*pPos != '\0')
+			pPos++;
+
+		*retsPort = CString(pStart, (int)(pPos - pStart));
+		}
+	}
+

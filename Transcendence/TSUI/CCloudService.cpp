@@ -84,58 +84,13 @@ ALERROR CCloudService::DownloadUpgrade (ITaskProcessor *pProcessor, const CStrin
 
 	//	Parse the URL to get the host name
 
-	CString sProtocol;
-	CString sHost;
-	CString sPath;
-	if (!urlParse(sDownloadURL.GetASCIIZPointer(), &sProtocol, &sHost, &sPath))
-		{
-		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to parse download URL: %s."), sDownloadURL);
-		return ERR_FAIL;
-		}
-
-	if (!strEquals(sProtocol, PROTOCOL_HTTP))
-		{
-		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unsupported protocol in download URL: %s."), sDownloadURL);
-		return ERR_FAIL;
-		}
-
-	//	Connect to the host
-
-	if (Session.Connect(sHost, CONSTLIT("80")) != inetsOK)
-		{
-		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to connect to server: %s."), sDownloadURL);
-		return ERR_FAIL;
-		}
-
-	//	Now issue a GET
-
-	CHTTPMessage Request;
-	Request.InitRequest(CONSTLIT("GET"), sPath);
-	Request.AddHeader(CONSTLIT("Host"), sHost);
-	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
-	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
-
-	//	Send the request and wait for response
-
+	IMediaType *pBody;
 	CCommsProgress Progress(*m_pHI, STR_DOWNLOADING_UPGRADE_PROGRESS);
-	CHTTPMessage Response;
-	if (Session.Send(Request, &Response, &Progress) != inetsOK)
-		{
-		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: Error sending to server."), sDownloadURL);
+	if (ICIService::DownloadFile(sDownloadURL, &pBody, &Progress, retsResult) != NOERROR)
 		return ERR_FAIL;
-		}
 
-	//	If we get an error, return
+	//	Return the body up our controller (it takes ownership of it).
 
-	if (Response.GetStatusCode() != 200)
-		{
-		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: %s"), sDownloadURL, Response.GetStatusMsg());
-		return ERR_FAIL;
-		}
-
-	//	Return the body up our controller
-
-	IMediaType *pBody = Response.GetBodyHandoff();
 	m_pHI->HICommand(CMD_SERVICE_UPGRADE_READY, pBody);
 
 	return NOERROR;
@@ -291,6 +246,26 @@ bool CCloudService::IsModified (void)
 			return true;
 
 	return false;
+	}
+
+ALERROR CCloudService::LoadNews (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, const SFileVersionInfo &AppVersion, const CString &sCacheFilespec, CString *retsResult)
+
+//	LoadNews
+//
+//	Loads the news from the multiverse
+
+	{
+	int i;
+
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canLoadNews))
+			{
+			//	For now we only support a single service
+
+			return m_Services[i]->LoadNews(pProcessor, Multiverse, AppVersion, sCacheFilespec, retsResult);
+			}
+
+	return NOERROR;
 	}
 
 ALERROR CCloudService::LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult)
@@ -556,6 +531,115 @@ ALERROR CCloudService::WritePrivateData (void)
 	}
 
 //	ICIService -----------------------------------------------------------------
+
+ALERROR ICIService::DownloadFile (const CString &sURL, IMediaType **retpBody, IHTTPClientSessionEvents *pEvents, CString *retsResult)
+
+//	DownloadFile
+//
+//	Downloads a file at the given URL (synchronously). If successful, the 
+//	contents of the file are in retResult. Otherwise, retResult is an error
+//	string.
+
+	{
+	CHTTPClientSession Session;
+
+	//	Parse the URL to get the host name
+
+	CString sProtocol;
+	CString sHost;
+	CString sPath;
+	if (!urlParse(sURL.GetASCIIZPointer(), &sProtocol, &sHost, &sPath))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to parse download URL: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	if (!strEquals(sProtocol, PROTOCOL_HTTP))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unsupported protocol in download URL: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	Connect to the host
+
+	if (Session.Connect(sHost, CONSTLIT("80")) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to connect to server: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	Now issue a GET
+
+	CHTTPMessage Request;
+	Request.InitRequest(CONSTLIT("GET"), sPath);
+	Request.AddHeader(CONSTLIT("Host"), sHost);
+	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
+	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
+
+	//	Send the request and wait for response
+
+	CHTTPMessage Response;
+	if (Session.Send(Request, &Response, pEvents) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: Error sending to server."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	If we get an error, return
+
+	if (Response.GetStatusCode() != 200)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: %s"), sURL, Response.GetStatusMsg());
+		return ERR_FAIL;
+		}
+
+	//	Return the body
+
+	if (retpBody)
+		*retpBody = Response.GetBodyHandoff();
+
+	return NOERROR;
+	}
+
+ALERROR ICIService::DownloadFile (const CString &sURL, const CString &sDestFilespec, IHTTPClientSessionEvents *pEvents, CString *retsResult)
+
+//	DownloadFile
+//
+//	Downloads the file and writes it to the given filespec
+
+	{
+	ALERROR error;
+
+	//	Download first (otherwise we have to delete the file on error).
+
+	IMediaType *pBody;
+	if (DownloadFile(sURL, &pBody, pEvents, retsResult) != NOERROR)
+		return ERR_FAIL;
+
+	//	Open the file for writing
+
+	CFileWriteStream DestFile(sDestFilespec);
+	if (DestFile.Create() != NOERROR)
+		{
+		delete pBody;
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to create file: %s"), sDestFilespec);
+		return ERR_FAIL;
+		}
+
+	//	Write the body out
+
+	error = DestFile.Write(pBody->GetMediaBuffer().GetPointer(), pBody->GetMediaLength());
+	delete pBody;
+	if (error)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to write to file: %s"), sDestFilespec);
+		return ERR_FAIL;
+		}
+
+	//	Done
+
+	return NOERROR;
+	}
 
 void ICIService::SendServiceError (const CString &sStatus)
 

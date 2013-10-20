@@ -39,6 +39,7 @@ class ICIService
 			canLoadUserCollection =		0x00000100,	//	We can retrieve the user's collection
 			canDownloadExtension =		0x00000200,	//	We can download an extension from the multiverse
 			canPostCrashReport =		0x00000400,	//	We can post a crash report
+			canLoadNews =				0x00000800,	//	We can load news from the multiverse
 			};
 
 		ICIService (CHumanInterface &HI) : m_HI(HI), m_bEnabled(false), m_bModified(false) { }
@@ -54,6 +55,7 @@ class ICIService
 		virtual ALERROR Housekeeping (ITaskProcessor *pProcessor) { return NOERROR; }
 		virtual ALERROR InitFromXML (CXMLElement *pDesc, bool *retbModified) { *retbModified = false; return NOERROR; }
 		virtual ALERROR InitPrivateData (void) { return NOERROR; }
+		virtual ALERROR LoadNews (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, const SFileVersionInfo &AppVersion, const CString &sCacheFilespec, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult = NULL) { return NOERROR; }
 		virtual ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL) { return NOERROR; }
@@ -65,6 +67,9 @@ class ICIService
 		virtual ALERROR SignOutUser (ITaskProcessor *pProcessor, CString *retsError = NULL) { return NOERROR; }
 		virtual ALERROR WriteAsXML (IWriteStream *pOutput) { return NOERROR; }
 		virtual ALERROR WritePrivateData (void) { return NOERROR; }
+
+		static ALERROR DownloadFile (const CString &sURL, IMediaType **retpBody, IHTTPClientSessionEvents *pEvents = NULL, CString *retsResult = NULL);
+		static ALERROR DownloadFile (const CString &sURL, const CString &sDestFilespec, IHTTPClientSessionEvents *pEvents = NULL, CString *retsResult = NULL);
 
 	protected:
 		void SendServiceError (const CString &sStatus);
@@ -104,6 +109,7 @@ class CCloudService
 		ALERROR ChangePassword (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sOldPassword, const CString &sNewPassword, CString *retsResult = NULL);
 		ALERROR DownloadUpgrade (ITaskProcessor *pProcessor, const CString &sUpgradeURL, CString *retsResult = NULL);
 		ALERROR Housekeeping (ITaskProcessor *pProcessor);
+		ALERROR LoadNews (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, const SFileVersionInfo &AppVersion, const CString &sCacheFilespec, CString *retsResult = NULL);
 		ALERROR LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult = NULL);
 		ALERROR PostCrashReport (ITaskProcessor *pProcessor, const CString &sCrash, CString *retsResult = NULL);
 		ALERROR PostGameRecord (ITaskProcessor *pProcessor, const CGameRecord &Record, const CGameStats &Stats, CString *retsResult = NULL);

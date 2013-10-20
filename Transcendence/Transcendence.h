@@ -1549,6 +1549,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
+		ALERROR HICommand (const CString &sCmd, void *pData = NULL);
 		void HideDockScreen (void);
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
@@ -1605,6 +1606,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			isShipStats,
 			isBlankThenRandom,
 			isEnterShipClass,
+			isNews,
 			};
 
 		enum EpilogState
@@ -1644,6 +1646,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
 		void CreateHighScoresAnimation (IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
+		void CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron);
 		void CreatePlayerBarAnimation (IAnimatron **retpAni);
 		ALERROR CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip);
 		void CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron);
@@ -1795,6 +1798,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		int *m_pHighScorePos;
 		int m_iHighScoreSelection;
 		CString m_sCommand;
+		CString m_sNewsURL;
 
 		//	Crawl screen
 		bool m_bGameCreated;
@@ -2062,6 +2066,7 @@ class CGameSettings
 		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
 		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
 		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
+		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) { return m_Options[iOption].iValue; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_KeyMap; }
@@ -2101,7 +2106,7 @@ class CGameSettings
 
 		CString m_sAppData;					//	Location of Settings.xml
 		TArray<CString> m_SaveFileFolders;	//	List of folders for save files (1st is default)
-		TArray<CString> m_ExtensionsFolders;//	List of folders for extensions (may be empty)
+		TArray<CString> m_ExtensionFolders;//	List of folders for extensions (may be empty)
 
 		CString m_sSaveFile;				//	Optional save file to open on game start
 

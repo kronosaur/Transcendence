@@ -120,7 +120,7 @@ bool Connect (const CString &sHostspec, CHTTPClientSession &Session)
 	{
 	CString sHost;
 	CString sPort;
-	strParseHostspec(sHostspec, &sHost, &sPort);
+	urlParseHostspec(sHostspec, &sHost, &sPort);
 
 	EInetsErrors iError = Session.Connect(sHost, sPort);
 	if (iError != inetsOK)

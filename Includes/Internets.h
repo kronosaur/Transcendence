@@ -238,10 +238,11 @@ class CBase64Encoder : public IWriteStream
 
 //	Utilities ------------------------------------------------------------------
 
-void strParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort);
+CString urlCompose (const CString &sProtocol, const CString &sHost, const CString &sPath);
 CString urlDecode (const CString &sURL, DWORD dwFlags = 0);
 CString urlEncode (const CString &sText, DWORD dwFlags = 0);
 bool urlParse (char *pStart, CString *retsProtocol = NULL, CString *retsHost = NULL, CString *retsPath = NULL, char **retpEnd = NULL);
+void urlParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort);
 
 //	Winsock.h doesn't define these constants so we need to do it here.
 //	Winsock2.h DOES define them. If we ever switch to that, we won't need this.

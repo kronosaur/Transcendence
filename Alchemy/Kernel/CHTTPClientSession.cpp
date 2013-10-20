@@ -7,7 +7,9 @@
 
 #include "Internets.h"
 
-const int ONE_SECOND =							1000;
+#define PROTOCOL_HTTP									CONSTLIT("http")
+
+const int ONE_SECOND =									1000;
 
 CHTTPClientSession::CHTTPClientSession (void) :
 		m_iLastError(inetsOK),

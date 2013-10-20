@@ -211,6 +211,21 @@ template <class VALUE> class TArray : public CArrayBase
 			VALUE *pElement = new(GetBytes() + iOffset) VALUE(Value);
 			}
 
+		void Insert (const TArray<VALUE> &Src, int iIndex = -1)
+			{
+			int i;
+
+			int iOffset;
+			if (iIndex == -1) iIndex = GetCount();
+			iOffset = iIndex * sizeof(VALUE);
+			InsertBytes(iOffset, NULL, Src.GetCount() * sizeof(VALUE), GetGranularity() * sizeof(VALUE));
+
+			for (i = 0; i < Src.GetCount(); i++)
+				{
+				VALUE *pElement = new(GetBytes() + iOffset + i * sizeof(VALUE)) VALUE(Src[i]);
+				}
+			}
+
 		VALUE *Insert (void)
 			{
 			int iOffset = GetCount() * sizeof(VALUE);

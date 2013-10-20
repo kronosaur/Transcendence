@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <ddraw.h>
 #include "Alchemy.h"
+#include "JPEGUtil.h"
 #include "DirectXUtil.h"
 
 //#define DEBUG_TIME
@@ -918,7 +919,7 @@ void CG16bitImage::BltWithMask (int xSrc, int ySrc, int cxWidth, int cyHeight, c
 
 //	BltWithMask
 //
-//	Blt the image to the destination
+//	Blt the image to the destination (the mask matches the destination).
 
 	{
 	if (Mask.m_pAlpha == NULL)
@@ -1826,6 +1827,84 @@ ALERROR CG16bitImage::CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask, DWORD
 		::kernelDebugLogMessage("Crash in CG16bitImage::CreateFromBitmap.");
 		return ERR_FAIL;
 		}
+	}
+
+ALERROR CG16bitImage::CreateFromFile (const CString &sImageFilespec, const CString &sMaskFilespec, DWORD dwFlags)
+
+//	CreateFromFile
+//
+//	Creates from a file
+
+	{
+	ALERROR error;
+
+	//	Load the image
+
+	HBITMAP hImage;
+	EBitmapTypes iImageType;
+	CString sType = pathGetExtension(sImageFilespec);
+	if (strEquals(sType, CONSTLIT("jpg")))
+		{
+		if (error = ::JPEGLoadFromFile(sImageFilespec, JPEG_LFR_DIB, NULL, &hImage))
+			return error;
+
+		iImageType = bitmapRGB;
+		}
+	else
+		{
+		if (error = ::dibLoadFromFile(sImageFilespec, &hImage, &iImageType))
+			return error;
+		}
+
+	//	Load the mask, if it exists
+
+	HBITMAP hImageMask;
+	EBitmapTypes iImageMaskType;
+	if (!sMaskFilespec.IsBlank())
+		{
+		CString sType = pathGetExtension(sMaskFilespec);
+		if (strEquals(sType, CONSTLIT("jpg")))
+			{
+			if (error = ::JPEGLoadFromFile(sMaskFilespec, JPEG_LFR_DIB, NULL, &hImageMask))
+				return error;
+
+			iImageMaskType = bitmapRGB;
+			}
+		else
+			{
+			if (error = ::dibLoadFromFile(sMaskFilespec, &hImageMask, &iImageMaskType))
+				return error;
+			}
+		}
+	else
+		{
+		hImageMask = NULL;
+		iImageMaskType = bitmapNone;
+		}
+
+	//	Create a new CG16BitImage
+
+	error = CreateFromBitmap(hImage, hImageMask, CG16bitImage::cfbPreMultAlpha);
+
+	//	We don't need these bitmaps anymore
+
+	if (hImage)
+		::DeleteObject(hImage);
+
+	if (hImageMask)
+		::DeleteObject(hImageMask);
+
+	//	Check for error
+
+	if (error)
+		return error;
+
+	//	If we have a monochrom mask, then we assume black is the background color
+
+	if (iImageMaskType == bitmapMonochrome)
+		SetTransparentColor();
+
+	return NOERROR;
 	}
 
 ALERROR CG16bitImage::CreateFromImage (const CG16bitImage &Image)
@@ -2752,6 +2831,82 @@ void CG16bitImage::InitBMI (BITMAPINFO **retpbi)
 	//	Done
 
 	*retpbi = pbmi;
+	}
+
+void CG16bitImage::IntersectMask (int xMask, int yMask, int cxMask, int cyMask, const CG16bitImage &Mask, int xDest, int yDest)
+
+//	IntersectMask
+//
+//	Intersects the given mask with this bitmap's current mask.
+//
+//	xMask, yMask, cxMask, cyMask are the portions of Mask that we want to 
+//	intersect.
+//
+//	xDest and yDest are the coordinates (relative to this bitmap) where we 
+//	should align the mask.
+
+	{
+	//	Must have an alpha channel
+
+	if (Mask.m_pAlpha == NULL)
+		return;
+
+	//	If the destination does not have an alpha channel, we create one
+
+	if (m_pAlpha == NULL)
+		{
+		m_iAlphaRowSize = AlignUp(m_cxWidth, sizeof(DWORD)) / sizeof(DWORD);
+		m_pAlpha = (DWORD *)MemAlloc(m_cyHeight * m_iAlphaRowSize * sizeof(DWORD));
+
+		utlMemSet(m_pAlpha, m_cyHeight * m_iAlphaRowSize * sizeof(DWORD), (char)(BYTE)255);
+
+		//	LATER: If we have a transparent color, apply that.
+		}
+
+	//	Make sure we're in bounds
+
+	if (!AdjustCoords(&xMask, &yMask, Mask.m_cxWidth, Mask.m_cyHeight, 
+			&xDest, &yDest,
+			&cxMask, &cyMask))
+		return;
+
+	//	Prepare some constants
+
+	int xDestEnd = xDest + cxMask;
+	int yDestEnd = yDest + cyMask;
+
+	//	Apply
+
+	int x;
+	int y;
+
+	for (y = 0; y < m_cyHeight; y++)
+		{
+		BYTE *pAlphaRow = GetAlphaValue(0, y);
+
+		if (y >= yDest && y < yDestEnd)
+			{
+			BYTE *pSrcAlphaRow = Mask.GetAlphaValue(0, yMask + (y - yDest));
+
+			for (x = 0; x < m_cxWidth; x++)
+				{
+				if (x >= xDest && x < xDestEnd)
+					{
+					BYTE *pSrcAlpha = pSrcAlphaRow + xMask + (x - xDest);
+
+					pAlphaRow[x] = (BYTE)((DWORD)pAlphaRow[x] * (DWORD)pSrcAlpha[0] / 255);
+					}
+				else
+					pAlphaRow[x] = 0;
+				}
+			}
+		else
+			{
+			//	If we're outside the mask, then we set to 0
+
+			utlMemSet(pAlphaRow, m_cxWidth, 0);
+			}
+		}
 	}
 
 void CG16bitImage::MaskedBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, CG16bitImage &Source, int xDest, int yDest)

@@ -111,6 +111,30 @@ class CLoadGameWithSignInTask : public IHITask
 		CString m_sFilespec;
 	};
 
+class CLoadNewsTask : public IHITask
+	{
+	public:
+		CLoadNewsTask (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse, const SFileVersionInfo &AppVersion, const CString &sCacheFilespec) : IHITask(HI), 
+				m_Service(Service), 
+				m_Multiverse(Multiverse),
+				m_AppVersion(AppVersion),
+				m_sCacheFilespec(sCacheFilespec)
+			{ }
+
+		//	IHITask virtuals
+		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
+			{
+			::kernelDebugLogMessage("Loading news.");
+			return m_Service.LoadNews(pProcessor, m_Multiverse, m_AppVersion, m_sCacheFilespec, retsResult); 
+			}
+
+	private:
+		CCloudService &m_Service;
+		CMultiverseModel &m_Multiverse;
+		SFileVersionInfo m_AppVersion;
+		CString m_sCacheFilespec;
+	};
+
 class CLoadUserCollectionTask : public IHITask
 	{
 	public:

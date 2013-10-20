@@ -1577,4 +1577,3 @@ CString CLibraryResolver::ResolveExternalEntity (const CString &sName, bool *ret
 
 	return NULL_STR;
 	}
-

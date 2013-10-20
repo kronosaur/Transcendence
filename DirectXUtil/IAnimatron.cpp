@@ -18,7 +18,7 @@
 #define PROP_SCROLL_POS							CONSTLIT("scrollPos")
 #define PROP_VIEWPORT_HEIGHT					CONSTLIT("viewportHeight")
 
-void IAnimatron::AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut)
+void IAnimatron::AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut, DWORD dwMaxOpacity)
 
 //	AnimateLinearFade
 //
@@ -26,7 +26,7 @@ void IAnimatron::AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut)
 
 	{
 	CLinearFade *pFader = new CLinearFade;
-	pFader->SetParams(iDuration, iFadeIn, iFadeOut);
+	pFader->SetParams(iDuration, iFadeIn, iFadeOut, dwMaxOpacity);
 	AnimateProperty(CONSTLIT("opacity"), pFader);
 	}
 

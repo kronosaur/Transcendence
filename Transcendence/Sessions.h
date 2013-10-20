@@ -148,6 +148,7 @@ class CLegacySession : public IHISession
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
 		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return g_pTrans->HICommand(sCmd, pData); }
 		virtual ALERROR OnInit (CString *retsError) { SetNoCursor(true); return NOERROR; }
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }

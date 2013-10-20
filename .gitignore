@@ -79,6 +79,7 @@ Transcendence/Documents/*
 Transcendence/Game/*.bat
 Transcendence/Game/*.tdb
 Transcendence/Game/*.txt
+Transcendence/Game/Cache/*
 Transcendence/Game/Collection/*
 Transcendence/Game/compileBotA.bat
 Transcendence/Game/DebugExtensions/*

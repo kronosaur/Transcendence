@@ -5,11 +5,13 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define EXTENSION_FOLDER_TAG					CONSTLIT("ExtensionFolder")
 #define EXTENSIONS_TAG							CONSTLIT("Extensions")
 #define KEY_MAP_TAG								CONSTLIT("KeyMap")
 #define OPTION_TAG								CONSTLIT("Option")
 
 #define NAME_ATTRIB								CONSTLIT("name")
+#define PATH_ATTRIB								CONSTLIT("path")
 #define VALUE_ATTRIB							CONSTLIT("value")
 
 #define REGISTRY_COMPANY_NAME					CONSTLIT("Neurohack")
@@ -200,6 +202,12 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 			if (error = m_KeyMap.ReadFromXML(pItem))
 				return error;
 			}
+		else if (strEquals(pItem->GetTag(), EXTENSION_FOLDER_TAG))
+			{
+			CString sFolder;
+			if (pItem->FindAttribute(PATH_ATTRIB, &sFolder))
+				m_ExtensionFolders.Insert(sFolder);
+			}
 		else if (strEquals(pItem->GetTag(), EXTENSIONS_TAG))
 			{
 			if (error = m_Extensions.ReadFromXML(pItem))
@@ -297,6 +305,7 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 //	Save game settings to a file (if necessary)
 
 	{
+	int i;
 	ALERROR error;
 
 	if (!m_bModified)
@@ -318,9 +327,24 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 	if (error = DataFile.Write(sData.GetPointer(), sData.GetLength(), NULL))
 		return error;
 
+	//	Write extension folders
+
+	if (m_ExtensionFolders.GetCount() > 0)
+		{
+		for (i = 0; i < m_ExtensionFolders.GetCount(); i++)
+			{
+			sData = strPatternSubst(CONSTLIT("\t<ExtensionFolder path=\"%s\"/>\r\n"), m_ExtensionFolders[i]);
+			if (error = DataFile.Write(sData.GetPointer(), sData.GetLength()))
+				return error;
+			}
+
+		if (error = DataFile.Write("\r\n", 2, NULL))
+			return error;
+		}
+
 	//	Loop over options
 
-	for (int i = 0; i < OPTIONS_COUNT; i++)
+	for (i = 0; i < OPTIONS_COUNT; i++)
 		{
 		//	Don't bother saving if our current value is the same 
 		//	as the default value
