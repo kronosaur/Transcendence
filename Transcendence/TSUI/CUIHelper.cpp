@@ -284,6 +284,18 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession,
 		pSession->RegisterPerformanceEvent(pOKButton, EVENT_ON_CLICK, CMD_OK_SESSION);
 		}
 
+	//	Add extensions button
+
+	else if (dwOptions & OPTION_SESSION_ADD_EXTENSION_BUTTON)
+		{
+		const CG16bitImage &OKIcon = VI.GetImage(imageSlotIcon);
+
+		IAnimatron *pOKButton;
+		VI.CreateImageButton(pRoot, CMD_OK_SESSION, (RectWidth(rcRect) - BUTTON_WIDTH) / 2, yBottomBar + (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &OKIcon, CONSTLIT("Add Extension"), 0, &pOKButton);
+
+		pSession->RegisterPerformanceEvent(pOKButton, EVENT_ON_CLICK, CMD_OK_SESSION);
+		}
+
 	//	Add menu items, if necessary
 
 	if (pMenu)

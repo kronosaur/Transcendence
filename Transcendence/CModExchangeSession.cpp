@@ -7,6 +7,7 @@
 #include "Transcendence.h"
 
 #define CMD_CLOSE_SESSION						CONSTLIT("cmdCloseSession")
+#define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_REFRESH								CONSTLIT("cmdRefresh")
 #define CMD_REFRESH_COMPLETE					CONSTLIT("cmdRefreshComplete")
 
@@ -25,6 +26,8 @@
 #define PROP_SCALE								CONSTLIT("scale")
 #define PROP_TEXT								CONSTLIT("text")
 #define PROP_VIEWPORT_HEIGHT					CONSTLIT("viewportHeight")
+
+#define URL_MULTIVERSE_CATALOG					CONSTLIT("http://multiverse.kronosaur.com/catalog.hexm")
 
 #define ERR_DESC								CONSTLIT("Unable to retrive collection from Multiverse: %s")
 #define ERR_TITLE								CONSTLIT("Unable to list collection")
@@ -141,6 +144,8 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 	{
 	if (strEquals(sCmd, CMD_CLOSE_SESSION))
 		CmdDone();
+	else if (strEquals(sCmd, CMD_OK_SESSION))
+		sysOpenURL(URL_MULTIVERSE_CATALOG);
 	else if (strEquals(sCmd, CMD_REFRESH))
 		CmdRefresh();
 	else if (strEquals(sCmd, CMD_REFRESH_COMPLETE))
@@ -181,7 +186,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 	pEntry->sLabel = CONSTLIT("Refresh");
 
 	IAnimatron *pTitle;
-	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Mod Collection"), &Menu, 0, &pTitle);
+	Helper.CreateSessionTitle(this, m_Service, CONSTLIT("Mod Collection"), &Menu, CUIHelper::OPTION_SESSION_ADD_EXTENSION_BUTTON, &pTitle);
 	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	//	Create a wait animation
