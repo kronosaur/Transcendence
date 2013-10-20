@@ -784,7 +784,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//			0 = OK
 		//			1 = Armor too heavy
 		//			string = custom fail reason
-			"iv",	0,	},
+			"iv*",	0,	},
 
 		{	"shpCanInstallDevice",			fnShipSet,			FN_SHIP_CAN_INSTALL_DEVICE,
 			"(shpCanInstallDevice ship item) -> result",
@@ -1046,7 +1046,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"ii",	0,	},
 
 		{	"objCanInstallItem",				fnObjGet,			FN_OBJ_CAN_INSTALL_ITEM,
-			"(objCanInstallItem obj item) -> (True/Nil resultCode resultString [itemToReplace])\n\n"
+			"(objCanInstallItem obj item [armorSeg]) -> (True/Nil resultCode resultString [itemToReplace])\n\n"
 			
 			"resultCode\n\n"
 			
@@ -1062,7 +1062,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'reactorTooWeak\n"
 			"   'replacementRequired\n",
 
-			"iv",	0,	},
+			"iv*",	0,	},
 
 		{	"objChangeEquipmentStatus",		fnObjSet,		FN_OBJ_SET_ABILITY,
 			"(objChangeEquipmentStatus obj equipment command [duration] [options]) -> True/Nil\n\n"
@@ -4667,13 +4667,17 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_CAN_INSTALL_ITEM:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			if (Item.GetType() == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid item"), pArgs->GetElement(1));
+
+			int iSlot = (pArgs->GetCount() > 2 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
 
 			//	Ask the object
 
 			CSpaceObject::InstallItemResults iResult;
 			CString sResult;
 			CItem ItemToReplace;
-			bool bCanInstall = pObj->CanInstallItem(Item, &iResult, &sResult, &ItemToReplace);
+			bool bCanInstall = pObj->CanInstallItem(Item, iSlot, &iResult, &sResult, &ItemToReplace);
 
 			//	Generate the result
 
@@ -7376,12 +7380,13 @@ ICCItem *fnShipSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_SHIP_CAN_INSTALL_DEVICE:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			int iSlot = (pArgs->GetCount() > 2 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
 
 			//	Check standard conditions
 
 			CSpaceObject::InstallItemResults iResult;
 			CString sResult;
-			pShip->CanInstallItem(Item, &iResult, &sResult);
+			pShip->CanInstallItem(Item, iSlot, &iResult, &sResult);
 
 			if (!sResult.IsBlank())
 				return pCC->CreateString(sResult);

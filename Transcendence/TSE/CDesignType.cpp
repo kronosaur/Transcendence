@@ -134,6 +134,7 @@ static char *DESIGN_CLASS_NAME[designCount] =
 
 static char *CACHED_EVENTS[CDesignType::evtCount] =
 	{
+		"CanInstallItem",
 		"OnGlobalTypesInit",
 		"OnObjDestroyed",
 		"OnSystemObjAttacked",

@@ -616,7 +616,7 @@ bool CShip::CanAttack (void) const
 	return (!IsInactive() && !IsVirtual());
 	}
 
-bool CShip::CanInstallItem (const CItem &Item, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
+bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
 
 //	CanInstallItem
 //
@@ -646,6 +646,14 @@ bool CShip::CanInstallItem (const CItem &Item, InstallItemResults *retiResult, C
 
 		else if (iMaxArmor && Item.GetMassKg() > iMaxArmor)
 			iResult = insArmorTooHeavy;
+
+		//	Ask the object if we can install this item
+
+		else if (!FireCanInstallItem(Item, iSlot, &sResult))
+			{
+			bCanInstall = false;
+			iResult = insCannotInstall;
+			}
 
 		//	Otherwise, we're OK
 
