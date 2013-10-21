@@ -36,30 +36,6 @@ void CCSymbolTable::AddByOffset (CCodeChain *pCC, int iOffset, ICCItem *pEntry)
 	((ICCItem *)pOldEntry)->Discard(pCC);
 	}
 
-void CCSymbolTable::DeleteEntry (CCodeChain *pCC, ICCItem *pKey)
-
-//	DeleteEntry
-//
-//	Deletes the entry
-
-	{
-	CObject *pOldEntry;
-
-	if (m_Symbols.RemoveEntry(pKey->GetStringValue(), &pOldEntry) != NOERROR)
-		{
-		//	We get an error is the key was not found. This is OK.
-		return;
-		}
-
-	//	If we have a previous entry, decrement its refcount since we're
-	//	throwing it away
-
-	ICCItem *pPrevEntry = (ICCItem *)pOldEntry;
-	pPrevEntry->Discard(pCC);
-
-	SetModified();
-	}
-
 ICCItem *CCSymbolTable::AddEntry (CCodeChain *pCC, ICCItem *pKey, ICCItem *pEntry, bool bForceLocalAdd)
 
 //	AddEntry
@@ -177,6 +153,55 @@ ICCItem *CCSymbolTable::Clone (CCodeChain *pCC)
 	pNewTable->m_bLocalFrame = m_bLocalFrame;
 
 	return pNewTable;
+	}
+
+void CCSymbolTable::DeleteAll (CCodeChain *pCC, bool bLambdaOnly)
+
+//	DeleteAll
+//
+//	Delete all entries
+
+	{
+	int i;
+
+	for (i = 0; i < m_Symbols.GetCount(); i++)
+		{
+		CObject *pEntry = m_Symbols.GetValue(i);
+		ICCItem *pItem = (ICCItem *)pEntry;
+		if (bLambdaOnly && pItem->IsPrimitive())
+			continue;
+
+#ifdef DEBUG
+		::kernelDebugLogMessage(m_Symbols.GetKey(i).GetASCIIZPointer());
+#endif
+		pItem->Discard(pCC);
+		m_Symbols.RemoveEntry(i);
+		i--;
+		}
+	}
+
+void CCSymbolTable::DeleteEntry (CCodeChain *pCC, ICCItem *pKey)
+
+//	DeleteEntry
+//
+//	Deletes the entry
+
+	{
+	CObject *pOldEntry;
+
+	if (m_Symbols.RemoveEntry(pKey->GetStringValue(), &pOldEntry) != NOERROR)
+		{
+		//	We get an error is the key was not found. This is OK.
+		return;
+		}
+
+	//	If we have a previous entry, decrement its refcount since we're
+	//	throwing it away
+
+	ICCItem *pPrevEntry = (ICCItem *)pOldEntry;
+	pPrevEntry->Discard(pCC);
+
+	SetModified();
 	}
 
 void CCSymbolTable::DestroyItem (CCodeChain *pCC)

@@ -371,6 +371,7 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked,
 				&& *pPos != SYMBOL_OPENBRACE
 				&& *pPos != SYMBOL_CLOSEBRACE
 				&& *pPos != SYMBOL_COLON
+				&& *pPos != SYMBOL_QUOTE
 				&& *pPos != ';')
         	pPos++;
 
@@ -378,6 +379,12 @@ ICCItem *CCodeChain::Link (const CString &sString, int iOffset, int *retiLinked,
 
 		if (pStartString == pPos)
 			pResult = CreateParseError(iCurLine, strPatternSubst(CONSTLIT("Unexpected character: %s"), CString(pPos, 1)));
+
+		//	If we ended in a quote then that's a bug
+
+		else if (*pPos == SYMBOL_QUOTE)
+			pResult = CreateParseError(iCurLine, strPatternSubst(CONSTLIT("Identifiers must not use single quote characters: %s"), 
+					strSubString(sString, iOffset + (pStartString - pStart), (pPos + 1 - pStartString))));
 
 		//	Otherwise, get the identifier
 

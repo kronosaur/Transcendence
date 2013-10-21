@@ -434,6 +434,17 @@ ALERROR CCodeChain::DefineGlobalString (const CString &sVar, const CString &sVal
 	return error;
 	}
 
+void CCodeChain::DiscardAllGlobals (void)
+
+//	DiscardAllGlobals
+//
+//	Discard all globals.
+
+	{
+	if (m_pGlobalSymbols)
+		m_pGlobalSymbols->DeleteAll(this, true);
+	}
+
 ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 
 //	Eval
@@ -556,7 +567,6 @@ ICCItem *CCodeChain::Eval (CEvalContext *pEvalCtx, ICCItem *pItem)
 
 	else
 		return pItem->Reference();
-
 	}
 
 ICCItem *CCodeChain::EvalLiteralStruct (CEvalContext *pCtx, ICCItem *pItem)

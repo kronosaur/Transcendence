@@ -245,7 +245,20 @@ ICCItem *CCLambda::Execute (CEvalContext *pCtx, ICCItem *pArgs)
 			if (bNoEval || *(pVar->GetStringValue().GetASCIIZPointer()) == '%')
 				pResult = pArg->Reference();
 			else
+				{
 				pResult = pCC->Eval(pCtx, pArg);
+
+				//	HACK: If we get back an error and it is "Function name expected"
+				//	then we need to exit. We can't just exit with any error because
+				//	we might want to pass an error into a function.
+
+				if (pResult->IsError()
+						&& strStartsWith(pResult->GetStringValue(), CONSTLIT("Function name expected")))
+					{
+					pLocalSymbols->Discard(pCC);
+					return pResult;
+					}
+				}
 
 			pItem = pLocalSymbols->AddEntry(pCC, pVar, pResult);
 			pResult->Discard(pCC);

@@ -762,6 +762,7 @@ class CDictionary : public CObject
 		void GetEntry (int iEntry, int *retiKey, int *retiValue) const;
 		ALERROR ReplaceEntry (int iKey, int iValue, BOOL bAdd, BOOL *retbAdded, int *retiOldValue);
 		ALERROR RemoveAll (void) { return m_Array.RemoveAll(); }
+		ALERROR RemoveEntryByOrdinal (int iEntry, int *retiOldValue = NULL);
 		ALERROR RemoveEntry (int iKey, int *retiOldValue);
 
 	protected:
@@ -820,6 +821,7 @@ class CSymbolTable : public CDictionary
 		ALERROR Lookup (const CString &sKey, CObject **retpValue = NULL) const;
 		ALERROR LookupEx (const CString &sKey, int *retiEntry) const;
 		ALERROR RemoveAll (void);
+		ALERROR RemoveEntry (int iEntry, CObject **retpOldValue = NULL);
 		ALERROR RemoveEntry (const CString &sKey, CObject **retpOldValue);
 		ALERROR ReplaceEntry (const CString &sKey, CObject *pValue, BOOL bAdd, CObject **retpOldValue);
 		void SetValue (int iEntry, CObject *pValue, CObject **retpOldValue);
