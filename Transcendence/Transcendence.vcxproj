@@ -490,7 +490,6 @@
     <None Include="Game\AresOrthodoxy.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\PartI Soundtrack\StarsOfThePilgrimSoundtrack.xml" />
     <None Include="Game\Groups.xml">
       <SubType>Designer</SubType>
     </None>
@@ -636,13 +635,6 @@
     <None Include="Game\UsefulItems.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\PartII\EncountersVol02.xml" />
-    <None Include="Game\Extensions\PartII\EncountersVol02Erebien.xml" />
-    <None Include="Game\Extensions\PartII\GammaCrucis.xml" />
-    <None Include="Game\Extensions\PartII\Mourner.xml" />
-    <None Include="Game\Extensions\PartII\StdMechanistItems.xml" />
-    <None Include="Game\Extensions\PartII\SystemsVol02.xml" />
-    <None Include="Game\Extensions\PartII\VaultOfTheGalaxy.xml" />
     <None Include="Game\Elysium.xml" />
     <None Include="Game\Huari.xml">
       <SubType>Designer</SubType>
@@ -653,7 +645,6 @@
     <None Include="Game\StarsOfThePilgrim.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Book of the Augur\BookOfTheAugur.xml" />
     <None Include="Game\BattleArena.xml">
       <SubType>Designer</SubType>
     </None>
@@ -700,9 +691,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Transcendence.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Chronicles of Human Space\ChroniclesOfHumanSpace.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\HUD.xml" />
@@ -799,54 +787,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\Elysium\CorporateCommand\Anaxas.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\BeitAlgez.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\CorporateExpansion.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\CyclopsStoryArc.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Gunsan.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission01.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission02.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission03.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission04.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission05.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Mission06.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\PilgrimClass.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\PlayerShips.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Silla.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\TauCeti.xml" />
-    <Xml Include="..\..\Elysium\CorporateCommand\Topology.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AnarchistChimeras.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Anaxas.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AntonNasser.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\AutonBay.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\BeitAlgez.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CharonPirateChimeras.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\ChimericInjector.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CommonwealthChimeras.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateHierarchyVol01.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateMetropolis.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateMisc.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporatePrivateer.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporatePrivateerMissions.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\CorporateShipyard.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Curators.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Cyclops.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Gunsan.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\GunsanComplex.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Kartal.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\LumiereDiaspora.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Makayev.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Omnithor.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Outlaws.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\PlayerShipsBase.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Rasiermesser.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Silla.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\StdChimeras.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\StockMarket.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\TauCeti.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Topology.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\UnalignedMerchanters.xml" />
-    <Xml Include="..\..\Elysium\CorporateHierarchyVol01\Warlords.xml" />
     <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
       <SubType>Designer</SubType>
     </Xml>
