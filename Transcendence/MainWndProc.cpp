@@ -15,6 +15,8 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 //	WndProc for main window
 
 	{
+	ALERROR error;
+
 	switch (message)
 		{
 		case WM_ACTIVATEAPP:
@@ -56,9 +58,10 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 
 			//	Initialize
 
-			if (g_pHI->WMCreate(pCreate->hInstance, hWnd, pCreateTrans->pszCommandLine, pController) != NOERROR)
+			if (error = g_pHI->WMCreate(pCreate->hInstance, hWnd, pCreateTrans->pszCommandLine, pController))
 				{
-				::MessageBox(NULL, "Unable to initialize Transcendence", "Transcendence", MB_OK);
+				if (error != ERR_CANCEL)
+					::MessageBox(NULL, "Unable to initialize Transcendence", "Transcendence", MB_OK);
 
 				CHumanInterface::Destroy();
 				return -1;

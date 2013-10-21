@@ -1172,6 +1172,8 @@ int strFind (const CString &sString, const CString &sStringToFind)
 //	Finds the target string in the given string and returns the
 //	offset in sString at which the target starts. If the target is
 //	not found anywhere in sString then we return -1
+//
+//	Find is case insensitive.
 
 	{
 	int iStringLen = sString.GetLength();
@@ -1199,6 +1201,40 @@ int strFind (const CString &sString, const CString &sStringToFind)
 	//	Didn't find it
 
 	return -1;
+	}
+
+CString strFormatBytes (DWORD dwBytes)
+
+//	strFormatBytes
+//
+//	Converts a number of bytes to a string, as follows:
+//
+//	1 KB - 999 KB
+//	1 MB - 999 MB
+//	1 GB
+
+	{
+	if (dwBytes >= 1000000000)
+		{
+		dwBytes += 50000000;
+		DWORD dwMajor = dwBytes / 1000000000;
+		DWORD dwMinor = (dwBytes % 1000000000) / 100000000;
+		return strPatternSubst(CONSTLIT("%d.%d GB"), dwMajor, dwMinor);
+		}
+	else if (dwBytes >= 1000000)
+		{
+		dwBytes += 50000;
+		DWORD dwMajor = dwBytes / 1000000;
+		DWORD dwMinor = (dwBytes % 1000000) / 100000;
+		return strPatternSubst(CONSTLIT("%d.%d MB"), dwMajor, dwMinor);
+		}
+	else
+		{
+		dwBytes += 52;
+		DWORD dwMajor = dwBytes / 1024;
+		DWORD dwMinor = (dwBytes % 1024) / 103;
+		return strPatternSubst(CONSTLIT("%d.%d KB"), dwMajor, dwMinor);
+		}
 	}
 
 CString strFormatInteger (int iValue, int iMinFieldWidth, DWORD dwFlags)

@@ -17,15 +17,26 @@ const int MODIFIER_SPACING_X =				4;
 
 const WORD RGB_DISABLED_TEXT =				CG16bitImage::RGBValue(128,128,128);
 
-const COLORREF RGB_MILITARY_BACKGROUND =	RGB(0,23,167);
-const COLORREF RGB_ILLEGAL_BACKGROUND =		RGB(167,23,0);
-const WORD RGB_MODIFIER_TEXT =				CG16bitImage::RGBValue(150,180,255);
+const COLORREF RGB_MILITARY_BACKGROUND =			RGB(0,23,167);
+const COLORREF RGB_ILLEGAL_BACKGROUND =				RGB(167,23,0);
+const WORD RGB_MODIFIER_TEXT =						CG16bitImage::RGBValue(150,180,255);
+
+const WORD RGB_MODIFIER_NEGATIVE_BACKGROUND =		CG16bitImage::RGBValue(167,23,0);
+const WORD RGB_MODIFIER_NEGATIVE_TEXT =				CG16bitImage::RGBValue(255,180,150);
+const WORD RGB_MODIFIER_NORMAL_BACKGROUND =			CG16bitImage::RGBValue(96,96,96);
+const WORD RGB_MODIFIER_NORMAL_TEXT =				CG16bitImage::RGBValue(196,196,196);
+const WORD RGB_MODIFIER_POSITIVE_BACKGROUND =		CG16bitImage::RGBValue(0,23,167);
 
 const int DAMAGE_ADJ_ICON_WIDTH =			16;
 const int DAMAGE_ADJ_ICON_HEIGHT =			16;
 const int DAMAGE_ADJ_ICON_SPACING_X =		2;
 
 const int DAMAGE_ADJ_SPACING_X =			6;
+
+const int ATTRIB_PADDING_X =				4;
+const int ATTRIB_PADDING_Y =				0;
+const int ATTRIB_SPACING_X =				2;
+const int ATTRIB_SPACING_Y =				2;
 
 #define STR_NO_ITEMS						CONSTLIT("There are no items here")
 
@@ -93,6 +104,12 @@ int CGItemListArea::CalcRowHeight (int iRow)
 				break;
 				}
 
+			//	Compute the rect where the reference text will paint
+
+			RECT rcDrawRect = rcRect;
+			rcDrawRect.left += ICON_WIDTH + ITEM_TEXT_MARGIN_X;
+			rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
+
 			int iLevel = pType->GetApparentLevel();
 
 			//	Compute the height of the row
@@ -106,6 +123,16 @@ int CGItemListArea::CalcRowHeight (int iRow)
 			//	Item title
 
 			cyHeight += m_pFonts->LargeBold.GetHeight();
+
+			//	Attributes
+
+			TArray<SDisplayAttribute> Attribs;
+			if (Item.GetDisplayAttributes(m_pListData->GetSource(), &Attribs))
+				{
+				int cyAttribs;
+				FormatDisplayAttributes(Attribs, rcDrawRect, &cyAttribs);
+				cyHeight += cyAttribs + ATTRIB_SPACING_Y;
+				}
 
 			//	Reference
 
@@ -121,28 +148,14 @@ int CGItemListArea::CalcRowHeight (int iRow)
 			else if (Item.GetReferenceDamageAdj(m_pListData->GetSource(), 0, NULL, NULL))
 				cyHeight += m_pFonts->Medium.GetHeight();
 
-			//	Otherwise, we add the level to the reference
-
-			else
-				{
-				if (sReference.IsBlank())
-					sReference = strPatternSubst("Level %s", strLevel(iLevel));
-				else
-					sReference = strPatternSubst("Level %s — %s", 
-							strLevel(iLevel),
-							sReference);
-				}
-
-			//	Compute the rect where the reference text will paint
-
-			RECT rcDrawRect = rcRect;
-			rcDrawRect.left += ICON_WIDTH + ITEM_TEXT_MARGIN_X;
-			rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
-
 			//	Measure the reference text
 
-			int iLines = m_pFonts->Medium.BreakText(sReference, RectWidth(rcDrawRect), NULL, 0);
-			cyHeight += iLines * m_pFonts->Medium.GetHeight();
+			int iLines;
+			if (!sReference.IsBlank())
+				{
+				iLines = m_pFonts->Medium.BreakText(sReference, RectWidth(rcDrawRect), NULL, 0);
+				cyHeight += iLines * m_pFonts->Medium.GetHeight();
+				}
 
 			//	Measure the description
 
@@ -204,6 +217,44 @@ int CGItemListArea::FindRow (int y)
 			return i;
 
 	return -1;
+	}
+
+void CGItemListArea::FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight)
+
+//	FormatDisplayAttributes
+//
+//	Initializes the rcRect structure in all attribute entries.
+
+	{
+	int i;
+
+	int cxLeft = RectWidth(rcRect);
+	int x = rcRect.left;
+	int y = rcRect.top;
+
+	for (i = 0; i < Attribs.GetCount(); i++)
+		{
+		int cxText = (ATTRIB_PADDING_X * 2) + m_pFonts->Medium.MeasureText(Attribs[i].sText);
+		int cyText = (ATTRIB_PADDING_Y * 2) + m_pFonts->Medium.GetHeight();
+		if (cxText > cxLeft && cxLeft != RectWidth(rcRect))
+			{
+			y += cyText + ATTRIB_SPACING_Y;
+			cxLeft = RectWidth(rcRect);
+			}
+
+		Attribs[i].rcRect.left = x;
+		Attribs[i].rcRect.top = y;
+		Attribs[i].rcRect.right = x + cxText;
+		Attribs[i].rcRect.bottom = y + cyText;
+
+		x += cxText + ATTRIB_SPACING_X;
+		cxLeft -= cxText + ATTRIB_SPACING_X;
+		}
+
+	y += (ATTRIB_PADDING_Y * 2) + m_pFonts->Medium.GetHeight();
+
+	if (retcyHeight)
+		*retcyHeight = y - rcRect.top;
 	}
 
 ICCItem *CGItemListArea::GetEntryAtCursor (void)
@@ -515,6 +566,62 @@ void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool b
 	rcDrawRect.top += cyHeight;
 	}
 
+void CGItemListArea::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs)
+
+//	PaintDisplayAttributes
+//
+//	Paints all display attributes. We assume that FormatDisplayAttributes
+//	has already been called.
+
+	{
+	int i;
+
+	for (i = 0; i < Attribs.GetCount(); i++)
+		{
+		WORD wBackColor;
+		WORD wTextColor;
+
+		//	Figure out the colors
+
+		switch (Attribs[i].iType)
+			{
+			case attribPositive:
+				wBackColor = RGB_MODIFIER_POSITIVE_BACKGROUND;
+				wTextColor = RGB_MODIFIER_TEXT;
+				break;
+
+			case attribNegative:
+				wBackColor = RGB_MODIFIER_NEGATIVE_BACKGROUND;
+				wTextColor = RGB_MODIFIER_NEGATIVE_TEXT;
+				break;
+
+			default:
+				wBackColor = RGB_MODIFIER_NORMAL_BACKGROUND;
+				wTextColor = RGB_MODIFIER_NORMAL_TEXT;
+				break;
+			}
+
+		//	Draw the background
+
+		::DrawRoundedRect(Dest, 
+				Attribs[i].rcRect.left, 
+				Attribs[i].rcRect.top, 
+				RectWidth(Attribs[i].rcRect), 
+				RectHeight(Attribs[i].rcRect), 
+				4, 
+				wBackColor);
+
+		//	Draw the text
+
+		m_pFonts->Medium.DrawText(Dest, 
+				Attribs[i].rcRect.left + ATTRIB_PADDING_X, 
+				Attribs[i].rcRect.top + ATTRIB_PADDING_Y, 
+				wTextColor, 
+				255, 
+				Attribs[i].sText);
+		}
+	}
+
 void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected)
 
 //	PaintItem
@@ -536,52 +643,10 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 	rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
 	rcDrawRect.top += ITEM_TEXT_MARGIN_Y;
 
-	//	Paint the attribute blocks
-
-	RECT rcAttrib;
-	rcAttrib = rcDrawRect;
-	rcAttrib.bottom = rcAttrib.top + m_pFonts->MediumHeavyBold.GetHeight();
-
-	if (Item.IsDamaged())
-		PaintItemModifier(Dest,
-				CONSTLIT("Damaged"),
-				RGB_ILLEGAL_BACKGROUND,
-				&rcAttrib);
-	else if (Item.IsDisrupted())
-		PaintItemModifier(Dest,
-				CONSTLIT("Ionized"),
-				RGB_ILLEGAL_BACKGROUND,
-				&rcAttrib);
-
-	if (pItemType->IsKnown()
-			&& pItemType->HasLiteralAttribute(CONSTLIT("Military")))
-		PaintItemModifier(Dest, 
-				CONSTLIT("Military"),
-				RGB_MILITARY_BACKGROUND,
-				&rcAttrib);
-
-	if (pItemType->IsKnown()
-			&& pItemType->HasLiteralAttribute(CONSTLIT("Illegal")))
-		PaintItemModifier(Dest, 
-				CONSTLIT("Illegal"),
-				RGB_ILLEGAL_BACKGROUND,
-				&rcAttrib);
-
-	CString sEnhanced = Item.GetEnhancedDesc(m_pListData->GetSource());
-	if (!sEnhanced.IsBlank())
-		{
-		bool bDisadvantage = (*(sEnhanced.GetASCIIZPointer()) == '-');
-		PaintItemModifier(Dest,
-				sEnhanced,
-				(bDisadvantage ? RGB_ILLEGAL_BACKGROUND : RGB_MILITARY_BACKGROUND),
-				&rcAttrib);
-		}
-
 	//	Paint the item name
 
 	int cyHeight;
 	RECT rcTitle = rcDrawRect;
-	rcTitle.right = rcAttrib.right;
 	m_pFonts->LargeBold.DrawText(Dest,
 			rcTitle,
 			m_pFonts->wItemTitle,
@@ -591,6 +656,16 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 			&cyHeight);
 
 	rcDrawRect.top += cyHeight;
+
+	//	Paint the display attributes
+
+	TArray<SDisplayAttribute> Attribs;
+	if (Item.GetDisplayAttributes(m_pListData->GetSource(), &Attribs))
+		{
+		FormatDisplayAttributes(Attribs, rcDrawRect, &cyHeight);
+		PaintDisplayAttributes(Dest, Attribs);
+		rcDrawRect.top += cyHeight + ATTRIB_SPACING_Y;
+		}
 
 	//	Stats
 
@@ -605,27 +680,15 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 
 	if (Item.GetReferenceDamageType(m_pListData->GetSource(), -1, 0, &iDamageType, &sDamageRef))
 		{
-		//	Paint the initial text
-
-		sStat = strPatternSubst("Level %s —", strLevel(iLevel));
-		int cxWidth = m_pFonts->Medium.MeasureText(sStat, &cyHeight);
-		m_pFonts->Medium.DrawText(Dest, 
-				rcDrawRect,
-				m_pFonts->wItemRef,
-				sStat,
-				0,
-				0,
-				&cyHeight);
-
 		//	Paint the damage type reference
 
 		m_pUIRes->DrawReferenceDamageType(Dest,
-				rcDrawRect.left + cxWidth + DAMAGE_ADJ_SPACING_X,
+				rcDrawRect.left + DAMAGE_ADJ_SPACING_X,
 				rcDrawRect.top,
 				iDamageType,
 				sDamageRef);
 
-		rcDrawRect.top += cyHeight;
+		rcDrawRect.top += m_pFonts->Medium.GetHeight();
 
 		//	Paint additional reference in the line below
 
@@ -646,7 +709,7 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 		{
 		//	Paint the initial text
 
-		sStat = strPatternSubst("Level %s — hp: %d ", strLevel(iLevel), iHP);
+		sStat = strPatternSubst("hp: %d ", iHP);
 		int cxWidth = m_pFonts->Medium.MeasureText(sStat, &cyHeight);
 		m_pFonts->Medium.DrawText(Dest, 
 				rcDrawRect,
@@ -684,17 +747,10 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 		}
 	else
 		{
-		if (sReference.IsBlank())
-			sStat = strPatternSubst("Level %s", strLevel(iLevel));
-		else
-			sStat = strPatternSubst("Level %s — %s", 
-					strLevel(iLevel),
-					sReference);
-
 		m_pFonts->Medium.DrawText(Dest, 
 				rcDrawRect,
 				m_pFonts->wItemRef,
-				sStat,
+				sReference,
 				0,
 				0,
 				&cyHeight);
@@ -713,33 +769,6 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 			CG16bitFont::SmartQuotes,
 			&cyHeight);
 	rcDrawRect.top += cyHeight;
-	}
-
-void CGItemListArea::PaintItemModifier (CG16bitImage &Dest, 
-										const CString &sLabel,
-										COLORREF rgbBackground,
-										RECT *ioRect)
-
-//	PaintItemModifier
-//
-//	Paints the item modifier and adjusts the rect
-
-	{
-	int cx = m_pFonts->Medium.MeasureText(sLabel);
-
-	Dest.FillRGB(ioRect->right - (cx + 2 * MODIFIER_SPACING_X),
-			ioRect->top,
-			cx + 2 * MODIFIER_SPACING_X,
-			m_pFonts->Medium.GetHeight(),
-			rgbBackground);
-
-	Dest.DrawText(ioRect->right - (cx + MODIFIER_SPACING_X),
-			ioRect->top,
-			m_pFonts->Medium,
-			RGB_MODIFIER_TEXT,
-			sLabel);
-
-	ioRect->right -= (cx + 3 * MODIFIER_SPACING_X);
 	}
 
 void CGItemListArea::SetList (CSpaceObject *pSource)

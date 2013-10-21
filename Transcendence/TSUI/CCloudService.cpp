@@ -4,9 +4,31 @@
 //	Copyright (c) 2010 by George Moromisato. All Rights Reserved.
 
 #include "stdafx.h"
+#include "Internets.h"
 
-#define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
-#define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
+#define CMD_SERVICE_ERROR								CONSTLIT("serviceError")
+#define CMD_SERVICE_STATUS								CONSTLIT("serviceStatus")
+#define CMD_SERVICE_UPGRADE_READY						CONSTLIT("serviceUpgradeReady")
+
+#define PROTOCOL_HTTP									CONSTLIT("http")
+
+#define STR_DOWNLOADING_UPGRADE							CONSTLIT("Downloading upgrade...")
+#define STR_DOWNLOADING_UPGRADE_PROGRESS				CONSTLIT("Downloading upgrade...%s")
+
+class CCommsProgress : public IHTTPClientSessionEvents
+	{
+	public:
+		CCommsProgress (CHumanInterface &HI, const CString &sText) :
+				m_HI(HI),
+				m_sText(sText)
+			{ }
+
+		virtual void OnReceiveData (int iBytesReceived, int iBytesLeft);
+
+	private:
+		CHumanInterface &m_HI;
+		CString m_sText;
+	};
 
 CCloudService::~CCloudService (void)
 
@@ -47,6 +69,31 @@ void CCloudService::CleanUp (void)
 		delete m_Services[i];
 
 	m_Services.DeleteAll();
+	}
+
+ALERROR CCloudService::DownloadUpgrade (ITaskProcessor *pProcessor, const CString &sDownloadURL, CString *retsResult)
+
+//	DownloadUpgrade
+//
+//	Download a new game upgrade
+
+	{
+	CHTTPClientSession Session;
+
+	SendServiceStatus(STR_DOWNLOADING_UPGRADE);
+
+	//	Parse the URL to get the host name
+
+	IMediaType *pBody;
+	CCommsProgress Progress(*m_pHI, STR_DOWNLOADING_UPGRADE_PROGRESS);
+	if (ICIService::DownloadFile(sDownloadURL, &pBody, &Progress, retsResult) != NOERROR)
+		return ERR_FAIL;
+
+	//	Return the body up our controller (it takes ownership of it).
+
+	m_pHI->HICommand(CMD_SERVICE_UPGRADE_READY, pBody);
+
+	return NOERROR;
 	}
 
 CString CCloudService::GetDefaultUsername (void)
@@ -130,6 +177,7 @@ ALERROR CCloudService::InitFromXML (CHumanInterface &HI, CXMLElement *pDesc, boo
 	int i;
 
 	ASSERT(m_Services.GetCount() == 0);
+	m_pHI = &HI;
 
 	//	Get the list of default services
 
@@ -198,6 +246,26 @@ bool CCloudService::IsModified (void)
 			return true;
 
 	return false;
+	}
+
+ALERROR CCloudService::LoadNews (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, const SFileVersionInfo &AppVersion, const CString &sCacheFilespec, CString *retsResult)
+
+//	LoadNews
+//
+//	Loads the news from the multiverse
+
+	{
+	int i;
+
+	for (i = 0; i < m_Services.GetCount(); i++)
+		if (m_Services[i]->IsEnabled() && m_Services[i]->HasCapability(ICIService::canLoadNews))
+			{
+			//	For now we only support a single service
+
+			return m_Services[i]->LoadNews(pProcessor, Multiverse, AppVersion, sCacheFilespec, retsResult);
+			}
+
+	return NOERROR;
 	}
 
 ALERROR CCloudService::LoadUserCollection (ITaskProcessor *pProcessor, CMultiverseModel &Multiverse, CString *retsResult)
@@ -347,6 +415,34 @@ ALERROR CCloudService::RequestExtensionDownload (const CString &sFilePath, const
 	return NOERROR;
 	}
 
+void CCloudService::SendServiceError (const CString &sStatus)
+
+//	SendServiceError
+//
+//	Sends current status to the controller.
+
+	{
+	if (m_pHI)
+		{
+		CString *pData = new CString(sStatus);
+		m_pHI->HIPostCommand(CMD_SERVICE_ERROR, pData);
+		}
+	}
+
+void CCloudService::SendServiceStatus (const CString &sStatus)
+
+//	SendServiceStatus
+//
+//	Sends current status to the controller.
+
+	{
+	if (m_pHI)
+		{
+		CString *pData = new CString(sStatus);
+		m_pHI->HIPostCommand(CMD_SERVICE_STATUS, pData);
+		}
+	}
+
 ALERROR CCloudService::SignInUser (ITaskProcessor *pProcessor, const CString &sUsername, const CString &sPassword, bool bAutoSignIn, CString *retsResult)
 
 //	SignInUser
@@ -436,6 +532,115 @@ ALERROR CCloudService::WritePrivateData (void)
 
 //	ICIService -----------------------------------------------------------------
 
+ALERROR ICIService::DownloadFile (const CString &sURL, IMediaType **retpBody, IHTTPClientSessionEvents *pEvents, CString *retsResult)
+
+//	DownloadFile
+//
+//	Downloads a file at the given URL (synchronously). If successful, the 
+//	contents of the file are in retResult. Otherwise, retResult is an error
+//	string.
+
+	{
+	CHTTPClientSession Session;
+
+	//	Parse the URL to get the host name
+
+	CString sProtocol;
+	CString sHost;
+	CString sPath;
+	if (!urlParse(sURL.GetASCIIZPointer(), &sProtocol, &sHost, &sPath))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to parse download URL: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	if (!strEquals(sProtocol, PROTOCOL_HTTP))
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unsupported protocol in download URL: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	Connect to the host
+
+	if (Session.Connect(sHost, CONSTLIT("80")) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to connect to server: %s."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	Now issue a GET
+
+	CHTTPMessage Request;
+	Request.InitRequest(CONSTLIT("GET"), sPath);
+	Request.AddHeader(CONSTLIT("Host"), sHost);
+	Request.AddHeader(CONSTLIT("User-Agent"), CONSTLIT("TranscendenceClient/1.0"));
+	Request.AddHeader(CONSTLIT("Accept-Language"), CONSTLIT("en-US"));
+
+	//	Send the request and wait for response
+
+	CHTTPMessage Response;
+	if (Session.Send(Request, &Response, pEvents) != inetsOK)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: Error sending to server."), sURL);
+		return ERR_FAIL;
+		}
+
+	//	If we get an error, return
+
+	if (Response.GetStatusCode() != 200)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("%s: %s"), sURL, Response.GetStatusMsg());
+		return ERR_FAIL;
+		}
+
+	//	Return the body
+
+	if (retpBody)
+		*retpBody = Response.GetBodyHandoff();
+
+	return NOERROR;
+	}
+
+ALERROR ICIService::DownloadFile (const CString &sURL, const CString &sDestFilespec, IHTTPClientSessionEvents *pEvents, CString *retsResult)
+
+//	DownloadFile
+//
+//	Downloads the file and writes it to the given filespec
+
+	{
+	ALERROR error;
+
+	//	Download first (otherwise we have to delete the file on error).
+
+	IMediaType *pBody;
+	if (DownloadFile(sURL, &pBody, pEvents, retsResult) != NOERROR)
+		return ERR_FAIL;
+
+	//	Open the file for writing
+
+	CFileWriteStream DestFile(sDestFilespec);
+	if (DestFile.Create() != NOERROR)
+		{
+		delete pBody;
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to create file: %s"), sDestFilespec);
+		return ERR_FAIL;
+		}
+
+	//	Write the body out
+
+	error = DestFile.Write(pBody->GetMediaBuffer().GetPointer(), pBody->GetMediaLength());
+	delete pBody;
+	if (error)
+		{
+		if (retsResult) *retsResult = strPatternSubst(CONSTLIT("Unable to write to file: %s"), sDestFilespec);
+		return ERR_FAIL;
+		}
+
+	//	Done
+
+	return NOERROR;
+	}
+
 void ICIService::SendServiceError (const CString &sStatus)
 
 //	SendServiceError
@@ -458,3 +663,15 @@ void ICIService::SendServiceStatus (const CString &sStatus)
 	m_HI.HIPostCommand(CMD_SERVICE_STATUS, pData);
 	}
 
+//	CCommsProgress -------------------------------------------------------------
+
+void CCommsProgress::OnReceiveData (int iBytesReceived, int iBytesLeft)
+
+//	OnReceiveData
+//
+//	Display progress
+
+	{
+	CString *pData = new CString(strPatternSubst(m_sText, strFormatBytes(iBytesReceived)));
+	m_HI.HIPostCommand(CMD_SERVICE_STATUS, pData);
+	}

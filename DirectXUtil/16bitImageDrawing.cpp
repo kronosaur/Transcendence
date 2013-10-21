@@ -1205,3 +1205,54 @@ void DrawRectDotted (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight
 	DrawDottedLine(Dest, x, y, x, y + cyHeight, wColor);
 	DrawDottedLine(Dest, x + cxWidth, y, x + cxWidth, y + cyHeight, wColor);
 	}
+
+void DrawRoundedRect (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor)
+
+//	DrawRoundedRect
+//
+//	Draws a filled rect with rounded corners.
+
+	{
+	int i;
+
+	if (iRadius <= 0)
+		{
+		Dest.Fill(x, y, cxWidth, cyHeight, wColor);
+		return;
+		}
+
+	//	Generate a set of raster lines for the corner
+
+	int *pSolid = new int [iRadius];
+	BYTE *pEdge = new BYTE [iRadius];
+	RasterizeQuarterCircle8bit(iRadius, pSolid, pEdge);
+
+	//	Fill in each corner
+
+	for (i = 0; i < iRadius; i++)
+		{
+		int xOffset = iRadius - pSolid[i];
+		int cxLine = cxWidth - (iRadius * 2) + (pSolid[i] * 2);
+
+		//	Top edge
+
+		Dest.FillLine(x + xOffset, y + i, cxLine, wColor);
+		Dest.SetPixelTrans(x + xOffset - 1, y + i, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + i, wColor, pEdge[i]);
+
+		//	Bottom edge
+
+		Dest.FillLine(x + xOffset, y + cyHeight - i - 1, cxLine, wColor);
+		Dest.SetPixelTrans(x + xOffset - 1, y + cyHeight - i - 1, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + cyHeight - i - 1, wColor, pEdge[i]);
+		}
+
+	//	Fill the center
+
+	Dest.Fill(x, y + iRadius, cxWidth, (cyHeight - 2 * iRadius), wColor);
+
+	//	Done
+
+	delete [] pSolid;
+	delete [] pEdge;
+	}

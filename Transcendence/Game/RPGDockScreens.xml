@@ -678,7 +678,7 @@
 						
 						(if thisItem
 							(block (desc cargoNeeded)
-								(setq gResult (shpCanInstallArmor gPlayerShip thisItem))
+								(setq gResult (shpCanInstallArmor gPlayerShip thisItem armorSeg))
 								(setq gCost (objGetArmorReplacePrice gSource thisItem))
 								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip armorSeg)) (itmGetMass thisItem)))
 

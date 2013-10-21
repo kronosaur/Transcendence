@@ -632,12 +632,10 @@ class CGItemListArea : public AGArea
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
+		void FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight);
 		void PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected);
+		void PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs);
 		void PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
-		void PaintItemModifier (CG16bitImage &Dest, 
-								const CString &sLabel,
-								COLORREF rgbBackground,
-								RECT *ioRect);
 
 		IListData *m_pListData;
 		ListTypes m_iType;
@@ -1551,6 +1549,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
+		ALERROR HICommand (const CString &sCmd, void *pData = NULL);
 		void HideDockScreen (void);
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
@@ -1607,6 +1606,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 			isShipStats,
 			isBlankThenRandom,
 			isEnterShipClass,
+			isNews,
 			};
 
 		enum EpilogState
@@ -1646,6 +1646,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void CreateCreditsAnimation (IAnimatron **retpAnimatron);
 		void CreateHighScoresAnimation (IAnimatron **retpAnimatron);
 		void CreateLongCreditsAnimation (int x, int y, int cyHeight, IAnimatron **retpAnimatron);
+		void CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron);
 		void CreatePlayerBarAnimation (IAnimatron **retpAni);
 		ALERROR CreateRandomShip (CSystem *pSystem, DWORD dwClass, CSovereign *pSovereign, CShip **retpShip);
 		void CreateScoreAnimation (const CGameRecord &Stats, IAnimatron **retpAnimatron);
@@ -1797,6 +1798,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		int *m_pHighScorePos;
 		int m_iHighScoreSelection;
 		CString m_sCommand;
+		CString m_sNewsURL;
 
 		//	Crawl screen
 		bool m_bGameCreated;
@@ -2028,7 +2030,7 @@ class CGameSettings
 			noAutoSave,						//	NOT YET IMPLEMENTED
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
 
-			//	Extension options
+			//	Installation options
 			useTDB,							//	Force use of .TDB
 
 			//	Video options
@@ -2061,8 +2063,10 @@ class CGameSettings
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
 
+		inline const CString &GetAppDataFolder (void) const { return m_sAppData; }
 		inline bool GetBoolean (int iOption) { return m_Options[iOption].bValue; }
 		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
+		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) { return m_Options[iOption].iValue; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_KeyMap; }
@@ -2100,6 +2104,10 @@ class CGameSettings
 		CGameKeys m_KeyMap;					//	Key map
 		CExtensionListMap m_Extensions;		//	Default extensions
 
+		CString m_sAppData;					//	Location of Settings.xml
+		TArray<CString> m_SaveFileFolders;	//	List of folders for save files (1st is default)
+		TArray<CString> m_ExtensionFolders;//	List of folders for extensions (may be empty)
+
 		CString m_sSaveFile;				//	Optional save file to open on game start
 
 		bool m_bModified;					//	If TRUE, we need to save out settings
@@ -2136,6 +2144,7 @@ class CTranscendenceModel
 		void ExitScreenSession (bool bForceUndock = false);
 		bool FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen = NULL, ICCItem **retpData = NULL);
 		inline int GetLastHighScore (void) { return m_iLastHighScore; }
+		const SFileVersionInfo &GetProgramVersion (void) const { return m_Version; }
 		void GetScreenSession (SDockFrame *retFrame);
 		inline bool InScreenSession (void) { return !m_DockFrames.IsEmpty(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
@@ -2148,6 +2157,7 @@ class CTranscendenceModel
 		bool ShowShipScreen (CDesignType *pDefaultScreensRoot, CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError);
 		void UseItem (CItem &Item);
 
+		void AddSaveFileFolder (const CString &sFilespec);
 		int AddHighScore (const CGameRecord &Score);
 		void CleanUp (void);
 		inline const CString &GetCopyright (void) { return m_Version.sCopyright; }
@@ -2160,10 +2170,11 @@ class CTranscendenceModel
 		inline CHighScoreList &GetHighScoreList (void) { return m_HighScoreList; }
 		inline CPlayerShipController *GetPlayer (void) { return m_pPlayer; }
 		inline const CString &GetProductName (void) { return m_Version.sProductName; }
+		inline const TArray<CString> &GetSaveFileFolders (void) const { return m_SaveFileFolders; }
 		inline CUniverse &GetUniverse (void) { return m_Universe; }
 		inline const CString &GetVersion (void) { return m_Version.sProductVersion; }
 		ALERROR Init (void);
-		ALERROR InitBackground (CString *retsError = NULL);
+		ALERROR InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		ALERROR LoadGame (const CString &sSignedInUsername, const CString &sFilespec, CString *retsError);
 		inline void ResetPlayer (void) { m_pPlayer = NULL; }
 		inline void SetCrawlImage (DWORD dwImage) { m_pCrawlImage = g_pUniverse->GetLibraryBitmap(dwImage); }
@@ -2194,9 +2205,10 @@ class CTranscendenceModel
 		void CalcStartingPos (CShipClass *pStartingShip, DWORD *retdwMap, CString *retsNodeID, CString *retsPos);
 		ALERROR CreateAllSystems (const CString &sStartNode, CSystem **retpStartingSystem, CString *retsError);
 		void GenerateGameStats (CGameStats *retStats, bool bGameOver = false);
+		inline CString GetSaveFilePath (void) const { return (m_SaveFileFolders.GetCount() == 0 ? NULL_STR : m_SaveFileFolders[0]); }
 		ALERROR LoadGameStats (const CString &sFilespec, CGameStats *retStats);
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
-		ALERROR LoadUniverse (CString *retsError = NULL);
+		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
 		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
@@ -2205,6 +2217,7 @@ class CTranscendenceModel
 		States m_iState;
 
 		SFileVersionInfo m_Version;
+		TArray<CString> m_SaveFileFolders;			//	List of all save file folders (first is the default)
 		bool m_bDebugMode;							//	Game in debug mode (or next game should be in debug mode)
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound
@@ -2250,7 +2263,9 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 	public:
 		CTranscendenceController (CHumanInterface &HI) : IHIController(HI),
 				m_iState(stateNone),
-				m_Model(HI) { }
+				m_Model(HI),
+				m_bUpgradeDownloaded(false)
+			{ }
 
 		inline const CGameKeys &GetKeyMap (void) const { return m_Settings.GetKeyMap(); }
 		inline CTranscendenceModel &GetModel (void) { return m_Model; }
@@ -2288,8 +2303,13 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateEndGameStats,
 			};
 
+		void CleanUpUpgrade (void);
+		bool CheckAndRunUpgrade (void);
 		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
+		bool InstallUpgrade (CString *retsError);
+		bool IsUpgradeReady (void);
 		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
 		States m_iState;
 		CTranscendenceModel m_Model;
@@ -2297,6 +2317,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		CCloudService m_Service;
 		CMultiverseModel m_Multiverse;
 		CSoundtrackManager m_Soundtrack;
+		bool m_bUpgradeDownloaded;
 
 		CGameSettings m_Settings;
 	};

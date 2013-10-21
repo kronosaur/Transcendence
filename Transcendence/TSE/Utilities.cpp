@@ -3139,6 +3139,31 @@ void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retL
 		}
 	}
 
+void ParseUNIDList (const CString &sList, DWORD dwFlags, TArray<DWORD> *retList)
+
+//	ParseUNIDList
+//
+//	Returns a list of UNIDs from a string.
+
+	{
+	int i;
+
+	TArray<CString> List;
+	ParseStringList(sList, dwFlags, &List);
+
+	for (i = 0; i < List.GetCount(); i++)
+		{
+		DWORD dwUNID;
+		if (dwFlags & PUL_FLAG_HEX)
+			dwUNID = (DWORD)strParseIntOfBase(List[i].GetASCIIZPointer(), 16, 0);
+		else
+			dwUNID = (DWORD)strToInt(List[i], 0);
+
+		if (dwUNID != 0)
+			retList->Insert(dwUNID);
+		}
+	}
+
 Metric RangeIndex2Range (int iIndex)
 
 //	RangeIndex2Range

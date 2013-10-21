@@ -146,6 +146,24 @@ int CTranscendenceModel::AddHighScore (const CGameRecord &Score)
 	return iPos;
 	}
 
+void CTranscendenceModel::AddSaveFileFolder (const CString &sFilespec)
+
+//	AddSaveFileFolder
+//
+//	Adds a save file folder to the list. The first one becomes the default folder.
+	
+	{
+	m_SaveFileFolders.Insert(sFilespec);
+
+	//	If it doesn't exist, create it
+
+	if (!pathExists(sFilespec))
+		{
+		if (!pathCreate(sFilespec))
+			::kernelDebugLogMessage("Unable to create save file folder: %s", sFilespec);
+		}
+	}
+
 CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 //	CalcEpitaph
@@ -973,7 +991,7 @@ ALERROR CTranscendenceModel::Init (void)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::InitBackground (CString *retsError)
+ALERROR CTranscendenceModel::InitBackground (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
 
 //	InitBackground
 //
@@ -985,7 +1003,7 @@ ALERROR CTranscendenceModel::InitBackground (CString *retsError)
 
 	//	Load the universe
 
-	if (error = LoadUniverse(retsError))
+	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, retsError))
 		return error;
 
 	//	Load the high scores list
@@ -1225,7 +1243,7 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::LoadUniverse (CString *retsError)
+ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, CString *retsError)
 
 //	LoadUniverse
 //
@@ -1244,6 +1262,8 @@ ALERROR CTranscendenceModel::LoadUniverse (CString *retsError)
 		//	Load the Transcendence Data Definition file that describes the universe.
 
 		CUniverse::SInitDesc Ctx;
+		Ctx.sCollectionFolder = sCollectionFolder;
+		Ctx.ExtensionFolders = ExtensionFolders;
 		Ctx.pHost = g_pTrans;
 		Ctx.bDebugMode = m_bDebugMode;
 		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
@@ -2172,7 +2192,7 @@ ALERROR CTranscendenceModel::StartNewGame (const CString &sUsername, const SNewG
 	{
 	//	New game
 
-	CString sFilename = m_GameFile.GenerateFilename(NewGame.sPlayerName);
+	CString sFilename = pathAddComponent(GetSaveFilePath(), m_GameFile.GenerateFilename(NewGame.sPlayerName));
 	m_GameFile.Create(sFilename, sUsername);
 
 	//	If we're signed in and if the adventure/extension combination is

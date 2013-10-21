@@ -2,6 +2,61 @@
 
 <TranscendenceModule>
 
+<!-- CORPORATE HIERARCHY
+	
+	GLOBAL DATA
+
+	statusKateM:		Status of player with respect to Kate Morgental
+							Nil						= Never met
+							'acquaintance			= Met once or twice
+							'ally					= Player has helped
+							'betrayedKatami			= Player did not help Mr. Katami
+							'destroyedByPlayer		= Player killed her
+							'destroyed				= She is dead
+
+-->
+
+	<Sovereign UNID="&svCorporate;"
+			name="Corporate Hierarchy"
+			alignment="constructive chaos"
+			>
+			
+		<Events>
+			<GetGlobalDockScreen>
+				(switch
+					; This only applies to corporate hierarchy stations
+					(not (objMatches gSource Nil "sTAV +corporateCustoms;"))
+						Nil
+						
+					; If the ship is radioactive then we refuse docking
+					(shpIsRadioactive gPlayerShip)
+						(if (objHasAttribute gSource "corporateDecon")
+							(list &dsCommonwealthDecon; 10)
+							(list &dsRefuseContamination; 10)
+							)
+						
+					; If the player has committed crimes, then she's in trouble
+					(geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
+						(list &dsCorporateImprison; 8)
+						
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+		
+		<DisplayAttributes>
+			<!-- Define item attributes so that the player can see which Corporation 
+				created the item. -->
+		
+			<ItemAttribute label="Bushido"			criteria="* +bushido;"/>
+			<ItemAttribute label="EI"				criteria="* +ei;"/>
+			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
+			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
+			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
+			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
+		</DisplayAttributes>
+	</Sovereign>
+
 	<!-- CorporateCruiser -->
 
 	<ShipClass UNID="&scCorporateCruiser;"
@@ -3330,49 +3385,6 @@
 		</Panes>
 	</DockScreen>
 	
-<!-- CORPORATE HIERARCHY
-	
-	GLOBAL DATA
-
-	statusKateM:		Status of player with respect to Kate Morgental
-							Nil						= Never met
-							'acquaintance			= Met once or twice
-							'ally					= Player has helped
-							'betrayedKatami			= Player did not help Mr. Katami
-							'destroyedByPlayer		= Player killed her
-							'destroyed				= She is dead
-
--->
-
-	<Sovereign UNID="&svCorporate;"
-			name="Corporate Hierarchy"
-			alignment="constructive chaos"
-			>
-			
-		<Events>
-			<GetGlobalDockScreen>
-				(switch
-					; This only applies to corporate hierarchy stations
-					(not (objMatches gSource Nil "sTAV +corporateCustoms;"))
-						Nil
-						
-					; If the ship is radioactive then we refuse docking
-					(shpIsRadioactive gPlayerShip)
-						(if (objHasAttribute gSource "corporateDecon")
-							(list &dsCommonwealthDecon; 10)
-							(list &dsRefuseContamination; 10)
-							)
-						
-					; If the player has committed crimes, then she's in trouble
-					(geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
-						(list &dsCorporateImprison; 8)
-						
-					Nil
-					)
-			</GetGlobalDockScreen>
-		</Events>
-	</Sovereign>
-
 <!-- TABLES -->
 
 	<ShipTable unid="&tbCorpDefenders;">

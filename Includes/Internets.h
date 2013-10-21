@@ -39,10 +39,12 @@ class CHTTPMessage
 		void AddHeader (const CString &sField, const CString &sValue);
 		bool FindHeader (const CString &sField, CString *retsValue = NULL) const;
 		inline const CString &GetBodyBuffer (void) const { if (m_pBody) return m_pBody->GetMediaBuffer(); else return NULL_STR; }
+		inline IMediaType *GetBodyHandoff (void) { IMediaType *pBody = m_pBody; m_pBody = NULL; return pBody; }
 		inline DWORD GetStatusCode (void) const { return m_dwStatusCode; }
 		inline const CString &GetStatusMsg (void) const { return m_sStatusMsg; }
 		inline const CString &GetURL (void) const { return m_sURL; }
 		ALERROR InitFromBuffer (const CString &sBuffer, bool bNoBody = false);
+		ALERROR InitFromBufferReset (void);
 		ALERROR InitRequest (const CString &sMethod, const CString &sURL);
 		ALERROR InitResponse (DWORD dwStatusCode, const CString &sStatusMsg);
 		bool IsMessageComplete (void) const { return m_iState == stateDone; }
@@ -85,9 +87,18 @@ class CHTTPMessage
 
 		//	Parse state
 		States m_iState;
-		int m_iPos;
-		CString m_sBody;				//	Temporary store while we parse
+		CMemoryWriteStream m_Buffer;	//	Accumulated buffer; depends on m_iState
+		CString m_sHeaders;				//	Sometimes headers get split across buffers
+		char *m_pPos;					//	Current parsing position in m_Buffer
+		char *m_pPosEnd;				//	End of buffer.
 		int m_iChunkLeft;				//	Amount left to read
+	};
+
+class IHTTPClientSessionEvents
+	{
+	public:
+		virtual ~IHTTPClientSessionEvents (void) { }
+		virtual void OnReceiveData (int iBytesReceived, int iBytesLeft) { }
 	};
 
 class CHTTPClientSession
@@ -111,7 +122,7 @@ class CHTTPClientSession
 		inline DWORD GetTicksSinceLastActivity (void) { return (m_dwLastActivity == 0 ? 0xffffffff : (::GetTickCount() - m_dwLastActivity)); }
 		bool IsConnected (void);
 		bool IsInternetAvailable (void);
-		EInetsErrors Send (const CHTTPMessage &Request, CHTTPMessage *retResponse);
+		EInetsErrors Send (const CHTTPMessage &Request, CHTTPMessage *retResponse, IHTTPClientSessionEvents *pEvents = NULL);
 		inline void SetStopEvent (HANDLE hEvent) { m_hStop = hEvent; }
 
 	private:
@@ -227,9 +238,11 @@ class CBase64Encoder : public IWriteStream
 
 //	Utilities ------------------------------------------------------------------
 
-void strParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort);
+CString urlCompose (const CString &sProtocol, const CString &sHost, const CString &sPath);
 CString urlDecode (const CString &sURL, DWORD dwFlags = 0);
 CString urlEncode (const CString &sText, DWORD dwFlags = 0);
+bool urlParse (char *pStart, CString *retsProtocol = NULL, CString *retsHost = NULL, CString *retsPath = NULL, char **retpEnd = NULL);
+void urlParseHostspec (const CString &sHostspec, CString *retsHost, CString *retsPort);
 
 //	Winsock.h doesn't define these constants so we need to do it here.
 //	Winsock2.h DOES define them. If we ever switch to that, we won't need this.

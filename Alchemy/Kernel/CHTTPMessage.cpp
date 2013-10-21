@@ -8,14 +8,13 @@
 #include "Internets.h"
 
 CString GetToken (char *pPos, char *pEndPos, char chDelimiter, char **retpPos);
-bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos);
+bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos, bool *retbHeadersDone);
 
 CHTTPMessage::CHTTPMessage (void) : 
 		m_iType(typeUnknown),
 		m_dwStatusCode(0),
 		m_pBody(NULL),
-		m_iState(stateStart), 
-		m_iPos(0)
+		m_iState(stateStart)
 
 //	CHTTPMessage constructor
 
@@ -92,13 +91,15 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 //	InitFromBuffer
 //
 //	This function parses the given buffer into a message. The function
-//	may be called multiple times as long as it is always called on the
-//	same buffer (though the buffer may have additional content on 
-//	each call).
+//	may be called multiple times. When we're done, a call to IsMessageComplete
+//	will return TRUE.
 
 	{
-	char *pPos = sBuffer.GetASCIIZPointer() + m_iPos;
+	char *pPos = sBuffer.GetASCIIZPointer();
 	char *pEndPos = sBuffer.GetASCIIZPointer() + sBuffer.GetLength();
+
+	//	Keep looping until we have nothing left to process
+
 	while (pPos < pEndPos && m_iState != stateDone)
 		{
 		switch (m_iState)
@@ -143,7 +144,6 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 				//	Reset everything
 
 				m_Headers.DeleteAll();
-				m_sBody = NULL_STR;
 				if (m_pBody)
 					{
 					delete m_pBody;
@@ -156,29 +156,56 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 
 			case stateHeaders:
 				{
+				//	If we have data from a previous buffer, add it all together
+
+				if (!m_sHeaders.IsBlank())
+					{
+					m_sHeaders.Append(sBuffer);
+					pPos = m_sHeaders.GetASCIIZPointer();
+					pEndPos = pPos + m_sHeaders.GetLength();
+					}
+
+				//	Parse headers
+
 				CString sField;
 				CString sValue;
-				while (ParseHeader(pPos, pEndPos, &sField, &sValue, &pPos))
+				bool bHeadersDone;
+				while (ParseHeader(pPos, pEndPos, &sField, &sValue, &pPos, &bHeadersDone))
 					AddHeader(sField, sValue);
 
-				//	Some messages never have a body
+				//	If we're done with headers, process the body
 
-				CString sLength;
+				if (bHeadersDone)
+					{
+					//	Some messages never have a body
 
-				if (bNoBody 
-						|| (m_dwStatusCode >= 100 && m_dwStatusCode < 200)
-						|| (m_dwStatusCode == 204) || (m_dwStatusCode == 304))
-					m_iState = stateDone;
+					CString sLength;
 
-				//	If content length is 0 then we have no body
+					if (bNoBody 
+							|| (m_dwStatusCode >= 100 && m_dwStatusCode < 200)
+							|| (m_dwStatusCode == 204) || (m_dwStatusCode == 304))
+						m_iState = stateDone;
 
-				else if (FindHeader(CONSTLIT("Content-Length"), &sLength) && strToInt(sLength, 0) == 0)
-					m_iState = stateDone;
+					//	If content length is 0 then we have no body
 
-				//	Otherwise, parse the body
+					else if (FindHeader(CONSTLIT("Content-Length"), &sLength) && strToInt(sLength, 0) == 0)
+						m_iState = stateDone;
 
-				else
-					m_iState = stateBody;
+					//	Otherwise, parse the body
+
+					else
+						m_iState = stateBody;
+					}
+
+				//	Otherwise, if we've still got data it means that we need more
+				//	headers, so we remember this data and wait for more.
+
+				else if (pPos != pEndPos)
+					{
+					m_sHeaders = CString(pPos, (int)(pEndPos - pPos));
+					pPos = pEndPos;
+					}
+
 				break;
 				}
 
@@ -208,7 +235,7 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 					//	Otherwise, read as much as we can
 
 					int iLength = Min(iTotalLength, pEndPos - pPos);
-					m_sBody.Append(CString(pPos, iLength, true));
+					m_Buffer.Write(pPos, iLength);
 					pPos += iLength;
 
 					//	If we have a partial chunk, then we need to remember state
@@ -235,14 +262,14 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 				else if (FindHeader(CONSTLIT("Content-Length"), &sLength))
 					{
 					int iTotalLength = strToInt(sLength, 0);
-					int iRemaining = iTotalLength - m_sBody.GetLength();
+					int iRemaining = iTotalLength - m_Buffer.GetLength();
 					int iLength = Min(iRemaining, pEndPos - pPos);
 
 					//	Append the remainder of the buffer to the body
 
 					if (iLength > 0)
 						{
-						m_sBody.Append(CString(pPos, iLength, true));
+						m_Buffer.Write(pPos, iLength);
 						pPos += iLength;
 						}
 
@@ -267,7 +294,7 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 				//	Keep reading
 
 				int iLength = Min(m_iChunkLeft, pEndPos - pPos);
-				m_sBody.Append(CString(pPos, iLength, true));
+				m_Buffer.Write(pPos, iLength);
 				pPos += iLength;
 				m_iChunkLeft -= iLength;
 
@@ -291,20 +318,30 @@ ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
 
 	//	If we're done, decode the body into an IMediaType object
 
-	if (m_pBody == NULL && m_iState == stateDone && !m_sBody.IsBlank())
+	if (m_pBody == NULL && m_iState == stateDone && m_Buffer.GetLength() > 0)
 		{
 		CString sMediaType;
 		if (!FindHeader(CONSTLIT("Content-Type"), &sMediaType))
 			sMediaType = NULL_STR;
 
 		m_pBody = new CRawMediaType;
-		m_pBody->DecodeFromBuffer(sMediaType, m_sBody);
-		m_sBody = NULL_STR;
+		m_pBody->DecodeFromBuffer(sMediaType, CString(m_Buffer.GetPointer(), m_Buffer.GetLength()));
 		}
 
-	//	Remember our position
+	return NOERROR;
+	}
 
-	m_iPos = pPos - sBuffer.GetASCIIZPointer();
+ALERROR CHTTPMessage::InitFromBufferReset (void)
+
+//	InitFromBufferReset
+//
+//	Call once before the first calls to InitFromBuffer.
+
+	{
+	m_iState = stateStart;
+	m_sHeaders = NULL_STR;
+	if (m_Buffer.Create() != NOERROR)
+		return ERR_FAIL;
 
 	return NOERROR;
 	}
@@ -464,8 +501,10 @@ CString GetToken (char *pPos, char *pEndPos, char chDelimiter, char **retpPos)
 	return CString(pStart, iLen);
 	}
 
-bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos)
+bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos, bool *retbHeadersDone)
 	{
+	char *pOriginal = pPos;
+
 	//	If we hit CRLF, then no more headers
 
 	if (pPos < pEndPos && *pPos == '\r')
@@ -475,6 +514,8 @@ bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpVa
 			pPos++;
 		if (retpPos)
 			*retpPos = pPos;
+		if (retbHeadersDone)
+			*retbHeadersDone = true;
 		return false;
 		}
 
@@ -537,13 +578,28 @@ bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpVa
 	if (pPos + 1 < pEndPos)
 		pPos += 2;
 
-	if (retpPos)
-		*retpPos = pPos;
+	//	If we hit the end of the buffer (even if we've hit a CRLF) then we can't
+	//	process this header. We wait for more data and restore back to the
+	//	beginning
+
+	if (pPos == pEndPos)
+		{
+		if (retpPos)
+			*retpPos = pOriginal;
+		if (retbHeadersDone)
+			*retbHeadersDone = false;
+		return false;
+		}
 
 	//	Done
 
+	if (retpPos)
+		*retpPos = pPos;
+
 	*retpField = sField;
 	*retpValue = sValue;
+	if (retbHeadersDone)
+		*retbHeadersDone = false;
 
 	return true;
 	}

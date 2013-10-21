@@ -44,6 +44,7 @@
 //		set our state to stateInGame.
 
 #include "PreComp.h"
+#include "Zip.h"
 #include "Transcendence.h"
 
 #define SERVICES_TAG							CONSTLIT("Services")
@@ -81,6 +82,7 @@
 
 #define CMD_SERVICE_ACCOUNT_CHANGED				CONSTLIT("serviceAccountChanged")
 #define CMD_SERVICE_COLLECTION_LOADED			CONSTLIT("serviceCollectionLoaded")
+#define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
 #define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
@@ -88,7 +90,9 @@
 #define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
+#define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
+#define CMD_SERVICE_UPGRADE_READY				CONSTLIT("serviceUpgradeReady")
 
 #define CMD_SESSION_STATS_DONE					CONSTLIT("sessionStatsDone")
 #define CMD_SESSION_EPILOGUE_DONE				CONSTLIT("sessionEpilogueDone")
@@ -108,13 +112,17 @@
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
 
-#define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Downloads")
+#define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Cache")
+#define FILESPEC_UPGRADE_FILE					CONSTLIT("Cache\\Upgrade.zip")
 
 #define ID_MULTIVERSE_STATUS_SEQ				CONSTLIT("idMultiverseStatusSeq")
 #define ID_MULTIVERSE_STATUS_TEXT				CONSTLIT("idMultiverseStatusText")
 
 #define DEBUG_LOG_FILENAME						CONSTLIT("Debug.log")
 #define SETTINGS_FILENAME						CONSTLIT("Settings.xml")
+#define FOLDER_COLLECTION						CONSTLIT("Collection")
+#define FOLDER_EXTENSIONS						CONSTLIT("Extensions")
+#define FOLDER_SAVE_FILES						CONSTLIT("Games")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -132,6 +140,61 @@
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
 
 const DWORD SERVICE_HOUSEKEEPING_INTERVAL =		1000 * 60;
+
+void CTranscendenceController::CleanUpUpgrade (void)
+
+//	CleanUpUpgrade
+//
+//	Clean up files from an upgrade.
+
+	{
+	int i;
+
+	//	Delete any previous upgrade files
+
+	TArray<CString> FilesToDelete;
+	if (!fileGetFileList(m_Settings.GetAppDataFolder(), NULL_STR, CONSTLIT("Delete_*.*"), 0, &FilesToDelete))
+		::kernelDebugLogMessage("Unable to list files to delete from previous upgrade.");
+
+	for (i = 0; i < FilesToDelete.GetCount(); i++)
+		if (!fileDelete(FilesToDelete[i]))
+			::kernelDebugLogMessage("Unable to delete file: %s.", FilesToDelete[i]);
+	}
+
+bool CTranscendenceController::CheckAndRunUpgrade (void)
+
+//	CheckAndRunUpgrade
+//
+//	If we upgrades to the AppData directory, then we should run that file. 
+
+	{
+	if (m_Settings.GetAppDataFolder().IsBlank())
+		return false;
+
+	CString sExe = pathAddComponent(m_Settings.GetAppDataFolder(), CONSTLIT("Transcendence.exe"));
+	if (!pathExists(sExe))
+		return false;
+
+	//	Close the log file, otherwise we'll have trouble launching
+
+	::kernelSetDebugLog(NULL);
+
+	//	Run
+	//
+	//	LATER: Since we're running in a different directory, we should add this
+	//	Extension directory as a command-line parameter so that the EXE in AppData
+	//	knowns about our Extensions.
+
+	if (!fileOpen(sExe))
+		{
+		::kernelDebugLogMessage("Unable to run upgraded Transcendence.exe");
+		return false;
+		}
+
+	//	TRUE means we exit this process.
+
+	return true;
+	}
 
 void CTranscendenceController::DisplayMultiverseStatus (const CString &sStatus, bool bError)
 
@@ -208,6 +271,123 @@ void CTranscendenceController::DisplayMultiverseStatus (const CString &sStatus, 
 	pStatus->SetPropertyString(PROP_TEXT, sStatus);
 	}
 
+bool CTranscendenceController::InstallUpgrade (CString *retsError)
+
+//	InstallUpgrade
+//
+//	Installs an upgrade
+
+	{
+	int i;
+
+	//	Upgrade file?
+
+	CString sUpgradeFile = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_UPGRADE_FILE);
+	if (!pathExists(sUpgradeFile))
+		{
+		if (retsError) *retsError = CONSTLIT("No upgrade file found.");
+		return false;
+		}
+
+	//	Make a list of all files in the archive
+
+	TArray<CString> FileList;
+	CString sError;
+	if (!arcList(sUpgradeFile, &FileList, retsError))
+		{
+		fileDelete(sUpgradeFile);
+		::kernelDebugLogMessage(sError.GetASCIIZPointer());
+		return false;
+		}
+
+	//	Figure out where to write out the new files.
+
+	CString sDestFolder = m_Settings.GetAppDataFolder();
+
+	//	Rename the files that we're going to replace, keeping track of what
+	//	we've renamed so we can undo it.
+
+	bool bAbort = false;
+	TArray<CString> FilesToReplace;
+	TArray<CString> RenamedFiles;
+	for (i = 0; i < FileList.GetCount(); i++)
+		{
+		CString sFileToReplace = pathAddComponent(sDestFolder, FileList[i]);
+
+		CString sRenameTo;
+		if (pathExists(sFileToReplace))
+			{
+			sRenameTo = pathAddComponent(sDestFolder, strPatternSubst(CONSTLIT("Delete_%s"), FileList[i]));
+			if (!fileMove(sFileToReplace, sRenameTo))
+				{
+				::kernelDebugLogMessage("Unable to rename %s to %s.", sFileToReplace, sRenameTo);
+				bAbort = true;
+				break;
+				}
+			}
+
+		FilesToReplace.Insert(sFileToReplace);
+		RenamedFiles.Insert(sRenameTo);
+		}
+
+	//	If we failed, move everything back
+
+	if (bAbort)
+		{
+		for (i = 0; i < RenamedFiles.GetCount(); i++)
+			fileMove(RenamedFiles[i], FilesToReplace[i]);
+		if (retsError) *retsError = CONSTLIT("Unable to replace existing files.");
+		return false;
+		}
+
+	//	Now extract all the files to the proper place
+
+	for (i = 0; i < FileList.GetCount(); i++)
+		{
+		if (!arcDecompressFile(sUpgradeFile, FileList[i], FilesToReplace[i], &sError))
+			{
+			::kernelDebugLogMessage(sError.GetASCIIZPointer());
+			bAbort = true;
+			break;
+			}
+		}
+
+	//	If we failed, then we need to delete the files and move everything back.
+
+	if (bAbort)
+		{
+		for (i = 0; i < FileList.GetCount(); i++)
+			fileDelete(FilesToReplace[i]);
+
+		for (i = 0; i < RenamedFiles.GetCount(); i++)
+			fileMove(RenamedFiles[i], FilesToReplace[i]);
+
+		//	Delete the archive because if we failed to decompress then the archive
+		//	is probably bad.
+
+		fileDelete(sUpgradeFile);
+		if (retsError) *retsError = CONSTLIT("Unable to extract files from archive.");
+		return false;
+		}
+
+	//	Delete the original zip archive because we don't need it anymore.
+
+	if (!fileDelete(sUpgradeFile))
+		::kernelDebugLogMessage("Unable to delete upgrade file: %s.", sUpgradeFile);
+
+	return true;
+	}
+
+bool CTranscendenceController::IsUpgradeReady (void)
+
+//	IsUpgradeReady
+//
+//	Returns TRUE if we have an upgrade file in the DOwnloads directory
+
+	{
+	return pathExists(pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_UPGRADE_FILE));
+	}
+
 ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Options)
 
 //	OnBoot
@@ -248,8 +428,17 @@ ALERROR CTranscendenceController::OnBoot (char *pszCommandLine, SHIOptions &Opti
 	//	Set the debug log
 
 	if (!bLogFileOpened && !m_Settings.GetBoolean(CGameSettings::noDebugLog))
-		if (error = kernelSetDebugLog(DEBUG_LOG_FILENAME))
+		if (error = kernelSetDebugLog(pathAddComponent(m_Settings.GetAppDataFolder(), DEBUG_LOG_FILENAME)))
 			return error;
+
+	//	If we're running a new copy, do it now
+
+	if (CheckAndRunUpgrade())
+		return ERR_CANCEL;
+
+	//	Clean up upgrade files
+
+	CleanUpUpgrade();
 
 	//	If we're windowed, figure out the size that we want.
 
@@ -378,6 +567,26 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_Service.HasCapability(ICIService::autoLoginUser))
 			m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
+
+		//	If we can, download news
+
+		else if (m_Service.HasCapability(ICIService::canLoadNews)
+				&& m_Multiverse.IsLoadNewsNeeded())
+			{
+			//	Figure out the path for the news image cache
+
+			CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+			//	Make sure it exists
+
+			if (!pathExists(sDownloadsFolder))
+				pathCreate(sDownloadsFolder);
+
+			//	Start a task to load the news (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			}
 
 		//	Legacy CTranscendenceWnd takes over
 
@@ -589,7 +798,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_SELECT_SAVE_FILE))
 		{
 		DisplayMultiverseStatus(NULL_STR);
-		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service)))
+		if (error = m_HI.OpenPopupSession(new CLoadGameSession(m_HI, m_Service, m_Model.GetSaveFileFolders())))
 			{
 			m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_LOAD_GAME, NULL_STR, CMD_NULL));
 			return NOERROR;
@@ -978,22 +1187,62 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		TArray<CMultiverseCatalogEntry *> Download;
 		g_pUniverse->SetRegisteredExtensions(Collection, &Download);
 
+		//	Let the Mod Collection session refresh
+
+		m_HI.GetSession()->HICommand(CMD_SERVICE_EXTENSION_LOADED);
+
+		//	If we need to download a new version, do so now.
+
+		if (m_Multiverse.GetUpgradeVersion() > m_Model.GetProgramVersion().dwProductVersion
+				&& !IsUpgradeReady()
+				&& !m_bUpgradeDownloaded)
+			{
+			m_HI.AddBackgroundTask(new CUpgradeProgram(m_HI, m_Service, m_Multiverse.GetUpgradeURL()));
+
+			//	Remember that we already did this so we don't try again later (e.g., if
+			//	we refresh the collection).
+
+			m_bUpgradeDownloaded = true;
+			}
+
 		//	Request download. If a request was made then begin a background
 		//	task to process the download.
 
-		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
+		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
 
-#ifdef DEBUG
+		//	Otherwise we're done downloading
+
 		else
+			m_HI.HIPostCommand(CMD_SERVICE_DOWNLOADS_COMPLETE);
+		}
+
+	//	Upgrade ready
+
+	else if (strEquals(sCmd, CMD_SERVICE_UPGRADE_READY))
+		{
+		CString sError;
+		error = WriteUpgradeFile((IMediaType *)pData, &sError);
+		delete (IMediaType *)pData;
+		if (error)
 			{
-			fileCopy(CONSTLIT("Collection\\CorporateCommand.tdb"), CONSTLIT("Downloads\\CorporateCommand.tdb"));
-			CHexarcDownloader::SStatus Status;
-			Status.sFilespec = CONSTLIT("Downloads\\CorporateCommand.tdb");
-			m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, Status));
+			DisplayMultiverseStatus(sError, true);
+			return error;
 			}
-#endif
+
+		//	Install
+
+		DisplayMultiverseStatus(CONSTLIT("Installing upgrade..."));
+		if (!InstallUpgrade(&sError))
+			{
+			DisplayMultiverseStatus(sError, true);
+			return ERR_FAIL;
+			}
+
+		//	Success
+
+		DisplayMultiverseStatus(CONSTLIT("Please restart to upgrade."));
 		}
 
 	//	Service status
@@ -1058,6 +1307,40 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Continue downloading
 
 		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		}
+
+	//	Done downloading extensions.
+
+	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_COMPLETE))
+		{
+		//	Download news
+
+		if (m_Service.HasCapability(ICIService::canLoadNews)
+				&& m_Multiverse.IsLoadNewsNeeded())
+			{
+			//	Figure out the path for the news image cache
+
+			CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+			//	Make sure it exists
+
+			if (!pathExists(sDownloadsFolder))
+				pathCreate(sDownloadsFolder);
+
+			//	Start a task to load the news (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			}
+		}
+
+	//	News loaded
+
+	else if (strEquals(sCmd, CMD_SERVICE_NEWS_LOADED))
+		{
+		//	Tell the current session that we loaded news.
+
+		m_HI.GetSession()->HICommand(CMD_SERVICE_NEWS_LOADED);
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
@@ -1155,14 +1438,38 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 
 	//	Set some options
 
+	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
 	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
 	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
 	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
 
+	//	Figure out where the Collection folder is and where the Extension
+	//	folders are.
+
+	CString sCollectionFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_COLLECTION);
+	TArray<CString> ExtensionFolders;
+	ExtensionFolders.Insert(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_EXTENSIONS));
+
+	//	Add additional folders from our settings
+
+	ExtensionFolders.Insert(m_Settings.GetExtensionFolders());
+
+	//	If our AppData is elsewhere, then add an Extensions folder under the
+	//	current folder. [This allows the player to manually place extensions in Program Files.]
+
+	if (!m_Settings.GetAppDataFolder().IsBlank())
+		ExtensionFolders.Insert(FOLDER_EXTENSIONS);
+
+	//	If we're using the current directory for AppData, then also look for
+	//	save files in the current directory (for backwards compatibility)
+
+	if (m_Settings.GetAppDataFolder().IsBlank())
+		m_Model.AddSaveFileFolder(CONSTLIT(""));
+
 	//	Kick off a background initialization of the model
 	//	(this will load the universe)
 
-	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model), this, CMD_MODEL_INIT_DONE);
+	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), this, CMD_MODEL_INIT_DONE);
 
 	//	If the clouds services have not been initialized yet (because there was no
 	//	<Services> tag in the settings file) then initialize to defaults here.
@@ -1280,6 +1587,7 @@ void CTranscendenceController::OnShutdown (EHIShutdownReasons iShutdownCode)
 			}
 
 		m_Model.SaveHighScoreList();
+		m_Multiverse.Save(pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER));
 		m_Settings.Save(SETTINGS_FILENAME);
 		}
 	}
@@ -1299,10 +1607,14 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 	if (Downloads.GetCount() == 0)
 		return false;
 
+	//	Figure out the path
+
+	CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
 	//	Make sure that we have the Downloads folder
 
-	if (!pathExists(FILESPEC_DOWNLOADS_FOLDER))
-		pathCreate(FILESPEC_DOWNLOADS_FOLDER);
+	if (!pathExists(sDownloadsFolder))
+		pathCreate(sDownloadsFolder);
 
 	//	If we have to download extensions, do it now.
 
@@ -1315,7 +1627,7 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 
 		//	Generate a path to download to
 
-		CString sFilespec = pathAddComponent(FILESPEC_DOWNLOADS_FOLDER, CHexarc::GetFilenameFromFilePath(sFilePath));
+		CString sFilespec = pathAddComponent(sDownloadsFolder, CHexarc::GetFilenameFromFilePath(sFilePath));
 
 		//	Request a download. (We can do this synchronously because it
 		//	doesn't take long and the call is thread-safe).
@@ -1369,4 +1681,31 @@ void CTranscendenceController::SetOptionInteger (int iOption, int iValue)
 		}
 
 	m_Settings.SetInteger(iOption, iValue, bModifySettings);
+	}
+
+ALERROR CTranscendenceController::WriteUpgradeFile (IMediaType *pData, CString *retsError)
+
+//	WriteUpgradeFile
+//
+//	Writes out an upgrade zip file to the Downloads directory
+
+	{
+	const CString &sBuffer = pData->GetMediaBuffer();
+
+	//	Write out to Downloads folder
+
+	CString sOutputFile = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_UPGRADE_FILE);
+	CFileWriteStream File(sOutputFile);
+	if (File.Create() != NOERROR)
+		{
+		*retsError = CONSTLIT("Unable to create Upgrade.zip");
+		return ERR_FAIL;
+		}
+
+	File.Write(sBuffer.GetASCIIZPointer(), sBuffer.GetLength());
+	File.Close();
+
+	//	Done
+
+	return NOERROR;
 	}

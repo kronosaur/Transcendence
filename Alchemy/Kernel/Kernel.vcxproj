@@ -469,6 +469,7 @@
     <ClCompile Include="CryptoRandom.cpp" />
     <ClCompile Include="SecureHashAlgorithm.cpp" />
     <ClCompile Include="Zip.cpp" />
+    <ClCompile Include="ZipArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Includes\Crypto.h" />

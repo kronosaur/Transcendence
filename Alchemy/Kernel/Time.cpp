@@ -4,6 +4,8 @@
 
 #include "Kernel.h"
 
+#define FORMAT_INTERNET							CONSTLIT("internet")
+
 int g_DaysInMonth[] =
 	//	J   F   M   A   M   J   J   A   S   O   N   D
 	{	31,	28,	31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -19,6 +21,16 @@ int g_DaysOfLeapYearByMonth[] =
 char *g_szMonthName[] =
 	{
 	"",	"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+	};
+
+char *g_szMonthNameShort[] =
+	{
+	"",	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+	};
+
+char *g_szDayNameShort[] =
+	{
+	"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 	};
 
 //	CTimeDate -----------------------------------------------------------------
@@ -162,6 +174,23 @@ int CTimeDate::Compare (const CTimeDate &Src) const
 		return 0;
 	}
 
+int CTimeDate::DayOfWeek (void) const
+
+//	DayOfWeek
+//
+//	Returns the day of week of the current date. 0 = Sunday.
+//	See: http://www.faqs.org/faqs/calendars/faq/part1/index.html
+
+	{
+	int a = (14 - m_Time.wMonth) / 12;
+	int y = m_Time.wYear - a;
+	int m = m_Time.wMonth + 12 * a - 2;
+
+	//	LATER: We assume Gregorian calendar
+
+	return (m_Time.wDay + y + y / 4 - y / 100 + y / 400 + (31 * m) / 12) % 7;
+	}
+
 int CTimeDate::DaysSince1AD (void) const
 
 //	DaysSince1AD
@@ -229,94 +258,115 @@ CString CTimeDate::Format (const CString &sFormat) const
 //    %%    percent character %
 
 	{
-	CMemoryWriteStream Stream(0);
-	if (Stream.Create() != NOERROR)
-		return NULL_STR;
+	//	Internet format:
+	//
+	//	Sun, 06 Nov 1994 08:49:37 GMT
 
-	char *pPos = sFormat.GetASCIIZPointer();
-	while (*pPos != '\0')
+	if (strEquals(sFormat, FORMAT_INTERNET))
 		{
-		if (*pPos == '%')
-			{
-			pPos++;
+		return strPatternSubst(CONSTLIT("%s, %02d %s %d %02d:%02d:%02d GMT"),
+				CString(g_szDayNameShort[DayOfWeek()], 3, true),
+				m_Time.wDay,
+				CString(g_szMonthNameShort[m_Time.wMonth], 3, true),
+				m_Time.wYear,
+				m_Time.wHour,
+				m_Time.wMinute,
+				m_Time.wSecond);
+		}
 
-			int iLeadingZeros;
-			if (*pPos == '0')
+	//	Otherwise we expect various fields
+
+	else
+		{
+		CMemoryWriteStream Stream(0);
+		if (Stream.Create() != NOERROR)
+			return NULL_STR;
+
+		char *pPos = sFormat.GetASCIIZPointer();
+		while (*pPos != '\0')
+			{
+			if (*pPos == '%')
 				{
 				pPos++;
 
-				if (*pPos >= '1' && *pPos <= '9')
+				int iLeadingZeros;
+				if (*pPos == '0')
 					{
-					iLeadingZeros = (*pPos) - '0';
 					pPos++;
+
+					if (*pPos >= '1' && *pPos <= '9')
+						{
+						iLeadingZeros = (*pPos) - '0';
+						pPos++;
+						}
+					else
+						iLeadingZeros = 2;
 					}
 				else
-					iLeadingZeros = 2;
-				}
-			else
-				iLeadingZeros = 0;
+					iLeadingZeros = 0;
 			
-			switch (*pPos)
-				{
-				case '\0':
-					break;
-
-				case 'B':
-					Stream.Write(g_szMonthName[m_Time.wMonth], (int)::strlen(g_szMonthName[m_Time.wMonth]));
-					pPos++;
-					break;
-
-				case 'd':
-					WriteNumber(Stream, m_Time.wDay, iLeadingZeros);
-					pPos++;
-					break;
-
-				case 'I':
-					if ((m_Time.wHour % 12) == 0)
-						WriteNumber(Stream, 12, iLeadingZeros);
-					else
-						WriteNumber(Stream, m_Time.wHour % 12, iLeadingZeros);
-					pPos++;
-					break;
-
-				case 'M':
-					WriteNumber(Stream, m_Time.wMinute, 2);
-					pPos++;
-					break;
-
-				case 'p':
-					if (m_Time.wHour < 12)
-						Stream.Write("AM", 2);
-					else
-						Stream.Write("PM", 2);
-					pPos++;
-					break;
-
-				case 'S':
-					WriteNumber(Stream, m_Time.wSecond, 2);
-					pPos++;
-					break;
-
-				case 'Y':
-					WriteNumber(Stream, m_Time.wYear, 0);
-					pPos++;
-					break;
-
-				default:
+				switch (*pPos)
 					{
-					Stream.Write(pPos, 1);
-					pPos++;
+					case '\0':
+						break;
+
+					case 'B':
+						Stream.Write(g_szMonthName[m_Time.wMonth], (int)::strlen(g_szMonthName[m_Time.wMonth]));
+						pPos++;
+						break;
+
+					case 'd':
+						WriteNumber(Stream, m_Time.wDay, iLeadingZeros);
+						pPos++;
+						break;
+
+					case 'I':
+						if ((m_Time.wHour % 12) == 0)
+							WriteNumber(Stream, 12, iLeadingZeros);
+						else
+							WriteNumber(Stream, m_Time.wHour % 12, iLeadingZeros);
+						pPos++;
+						break;
+
+					case 'M':
+						WriteNumber(Stream, m_Time.wMinute, 2);
+						pPos++;
+						break;
+
+					case 'p':
+						if (m_Time.wHour < 12)
+							Stream.Write("AM", 2);
+						else
+							Stream.Write("PM", 2);
+						pPos++;
+						break;
+
+					case 'S':
+						WriteNumber(Stream, m_Time.wSecond, 2);
+						pPos++;
+						break;
+
+					case 'Y':
+						WriteNumber(Stream, m_Time.wYear, 0);
+						pPos++;
+						break;
+
+					default:
+						{
+						Stream.Write(pPos, 1);
+						pPos++;
+						}
 					}
 				}
+			else
+				{
+				Stream.Write(pPos, 1);
+				pPos++;
+				}
 			}
-		else
-			{
-			Stream.Write(pPos, 1);
-			pPos++;
-			}
-		}
 
-	return CString(Stream.GetPointer(), Stream.GetLength());
+		return CString(Stream.GetPointer(), Stream.GetLength());
+		}
 	}
 
 int CTimeDate::MillisecondsSinceMidnight (void) const
@@ -330,6 +380,201 @@ int CTimeDate::MillisecondsSinceMidnight (void) const
 			+ (Second() * 1000)
 			+ (Minute() * 60 * 1000)
 			+ (Hour() * 60 * 60 * 1000);
+	}
+
+bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *retsError)
+
+//	Parse
+//
+//	Parse a date of the given format.
+
+	{
+	//	Internet format:
+	//
+	//	Sun, 06 Nov 1994 08:49:37 GMT
+
+	if (strEquals(sFormat, FORMAT_INTERNET))
+		{
+		char *pPos = sValue.GetASCIIZPointer();
+		char *pPosEnd = pPos + sValue.GetLength();
+
+		//	Skip leading whitespace
+
+		while (strIsWhitespace(pPos))
+			pPos++;
+
+		//	Skip day of week
+
+		while (pPos < pPosEnd
+				&& (*pPos < '0' || *pPos > '9'))
+			pPos++;
+
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Day
+
+		bool bFail;
+		m_Time.wDay = strParseInt(pPos, 0, &pPos, &bFail);
+		if (bFail)
+			goto InvalidValue;
+
+		pPos++;
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Month
+
+		if (*pPos == 'A')
+			{
+			pPos++;
+			if (*pPos == 'p')
+				{
+				m_Time.wMonth = 4;
+				pPos += 3;
+				}
+			else if (*pPos == 'u')
+				{
+				m_Time.wMonth = 8;
+				pPos += 3;
+				}
+			else
+				goto InvalidValue;
+			}
+		else if (*pPos == 'D')
+			{
+			m_Time.wMonth = 12;
+			pPos += 4;
+			}
+		else if (*pPos == 'F')
+			{
+			m_Time.wMonth = 2;
+			pPos += 4;
+			}
+		else if (*pPos == 'J')
+			{
+			pPos++;
+			if (*pPos == 'a')
+				{
+				m_Time.wMonth = 1;
+				pPos += 3;
+				}
+			else if (*pPos == 'u')
+				{
+				pPos++;
+				if (*pPos == 'l')
+					{
+					m_Time.wMonth = 7;
+					pPos += 2;
+					}
+				else if (*pPos == 'n')
+					{
+					m_Time.wMonth = 6;
+					pPos += 2;
+					}
+				else
+					goto InvalidValue;
+				}
+			else
+				goto InvalidValue;
+			}
+		else if (*pPos == 'M')
+			{
+			pPos++;
+			if (*pPos == 'a')
+				{
+				pPos++;
+				if (*pPos == 'r')
+					{
+					m_Time.wMonth = 3;
+					pPos += 2;
+					}
+				else if (*pPos == 'y')
+					{
+					m_Time.wMonth = 5;
+					pPos += 2;
+					}
+				else
+					goto InvalidValue;
+				}
+			else
+				goto InvalidValue;
+			}
+		else if (*pPos == 'N')
+			{
+			m_Time.wMonth = 11;
+			pPos += 4;
+			}
+		else if (*pPos == 'O')
+			{
+			m_Time.wMonth = 10;
+			pPos += 4;
+			}
+		else if (*pPos == 'S')
+			{
+			m_Time.wMonth = 9;
+			pPos += 4;
+			}
+		else
+			goto InvalidValue;
+
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Year
+
+		m_Time.wYear = strParseInt(pPos, 0, &pPos, &bFail);
+		if (bFail)
+			goto InvalidValue;
+
+		pPos++;
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Hour
+
+		m_Time.wHour = strParseInt(pPos, 0, &pPos, &bFail);
+		if (bFail)
+			goto InvalidValue;
+
+		pPos++;
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Minute
+
+		m_Time.wMinute = strParseInt(pPos, 0, &pPos, &bFail);
+		if (bFail)
+			goto InvalidValue;
+
+		pPos++;
+		if (pPos >= pPosEnd)
+			goto InvalidValue;
+
+		//	Second
+
+		m_Time.wSecond = strParseInt(pPos, 0, &pPos, &bFail);
+		if (bFail)
+			goto InvalidValue;
+
+		//	We don't store day of week
+
+		m_Time.wDayOfWeek = 0xffff;
+
+		//	Done
+
+		return true;
+
+InvalidValue:
+
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Invalid date value: %s"), sValue);
+		return false;
+		}
+	else
+		{
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Unsupported date format: %s."), sFormat);
+		return false;
+		}
 	}
 
 CTimeDate CTimeDate::ToLocalTime (void) const

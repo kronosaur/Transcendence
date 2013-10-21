@@ -455,14 +455,16 @@
 					<Fragment 
 							type=			"area"
 
-							damage=			"thermo:2d10; WMD3"
+							damage=			"thermo:1d12; WMD3"
 							expansionSpeed=	"35"
 							missileSpeed=	"0"
 							lifetime=		"24"
 							>
 
 						<Effect>
-							<Shockwave>
+							<Shockwave
+									fadeStart=	"70"
+									>
 								<Image imageID=				"&rsShockwave1;"
 										imageX=				"0" 
 										imageY=				"0" 

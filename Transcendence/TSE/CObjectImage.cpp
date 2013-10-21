@@ -291,7 +291,8 @@ ALERROR CObjectImage::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Load on use
 
-	m_bLoadOnUse = pDesc->GetAttributeBool(LOAD_ON_USE_ATTRIB);
+	if (!pDesc->FindAttributeBool(LOAD_ON_USE_ATTRIB, &m_bLoadOnUse))
+		m_bLoadOnUse = true;
 
 	//	Get the file paths
 

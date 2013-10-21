@@ -162,7 +162,13 @@ inline void DebugStopTimer (char *szTiming) { }
 
 //	Game load/save structures
 
-const DWORD API_VERSION =								17;		//	See: LoadExtensionVersion in Utilities.cpp
+#ifdef TRANSCENDENCE_STABLE_RELEASE
+#define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.stable")
+#else
+#define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.next")
+#endif
+
+const DWORD API_VERSION =								18;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
 const DWORD SYSTEM_SAVE_VERSION =						94;		//	See: CSystem.cpp
@@ -1338,9 +1344,12 @@ ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList);
 void ParseKeyValuePair (const CString &sString, DWORD dwFlags, CString *retsKey, CString *retsValue);
 
 const DWORD PSL_FLAG_ALLOW_WHITESPACE =		0x00000001;
+const DWORD PUL_FLAG_HEX =					0x00000002;
 void ParseStringList (const CString &sList, DWORD dwFlags, TArray<CString> *retList);
 inline void ParseAttributes (const CString &sAttribs, TArray<CString> *retAttribs) { ParseStringList(sAttribs, 0, retAttribs); }
 void ParseIntegerList (const CString &sList, DWORD dwFlags, TArray<int> *retList);
+
+void ParseUNIDList (const CString &sList, DWORD dwFlags, TArray<DWORD> *retList);
 
 #ifdef LEVEL_ROMAN_NUMERALS
 inline CString strLevel (int iLevel) { return strRomanNumeral(iLevel); }

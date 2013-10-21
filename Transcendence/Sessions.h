@@ -148,6 +148,7 @@ class CLegacySession : public IHISession
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
 		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return g_pTrans->HICommand(sCmd, pData); }
 		virtual ALERROR OnInit (CString *retsError) { SetNoCursor(true); return NOERROR; }
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
@@ -231,7 +232,7 @@ class CLoginSession : public IHISession
 class CLoadGameSession : public IHISession
 	{
 	public:
-		CLoadGameSession (CHumanInterface &HI, CCloudService &Service);
+		CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders);
 
 		//	IHISession virtuals
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
@@ -247,6 +248,7 @@ class CLoadGameSession : public IHISession
 		void CmdReadComplete (CListSaveFilesTask *pTask);
 
 		CCloudService &m_Service;
+		TArray<CString> m_Folders;
 	};
 
 class CMessageSession : public IHISession
@@ -292,6 +294,8 @@ class CModExchangeSession : public IHISession
 		CMultiverseModel &m_Multiverse;
 		CExtensionCollection &m_Extensions;
 		bool m_bDebugMode;
+		bool m_bWaitingForRefresh;
+		bool m_bRefreshAgain;
 	};
 
 class CNewGameSession : public IHISession

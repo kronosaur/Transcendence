@@ -196,9 +196,11 @@ class CTimeDate
 		inline int Millisecond (void) const { return m_Time.wMilliseconds; }
 
 		int Compare (const CTimeDate &Src) const;
+		int DayOfWeek (void) const;
 		int DaysSince1AD (void) const;
 		CString Format (const CString &sFormat) const;
 		int MillisecondsSinceMidnight (void) const;
+		bool Parse (const CString &sFormat, const CString &sValue, CString *retsError = NULL);
 		CTimeDate ToLocalTime (void) const;
 
 	private:
@@ -760,6 +762,7 @@ class CDictionary : public CObject
 		void GetEntry (int iEntry, int *retiKey, int *retiValue) const;
 		ALERROR ReplaceEntry (int iKey, int iValue, BOOL bAdd, BOOL *retbAdded, int *retiOldValue);
 		ALERROR RemoveAll (void) { return m_Array.RemoveAll(); }
+		ALERROR RemoveEntryByOrdinal (int iEntry, int *retiOldValue = NULL);
 		ALERROR RemoveEntry (int iKey, int *retiOldValue);
 
 	protected:
@@ -818,6 +821,7 @@ class CSymbolTable : public CDictionary
 		ALERROR Lookup (const CString &sKey, CObject **retpValue = NULL) const;
 		ALERROR LookupEx (const CString &sKey, int *retiEntry) const;
 		ALERROR RemoveAll (void);
+		ALERROR RemoveEntry (int iEntry, CObject **retpOldValue = NULL);
 		ALERROR RemoveEntry (const CString &sKey, CObject **retpOldValue);
 		ALERROR ReplaceEntry (const CString &sKey, CObject *pValue, BOOL bAdd, CObject **retpOldValue);
 		void SetValue (int iEntry, CObject *pValue, CObject **retpOldValue);
@@ -1391,6 +1395,8 @@ CString strEncodeW1252ToUTF8Char (char chChar);
 bool strEquals (const CString &sString1, const CString &sString2);
 int strFind (const CString &sString, const CString &sStringToFind);
 
+CString strFormatBytes (DWORD dwBytes);
+
 #define FORMAT_LEADING_ZERO						0x00000001
 #define FORMAT_THOUSAND_SEPARATOR				0x00000002
 #define FORMAT_UNSIGNED							0x00000004
@@ -1440,6 +1446,7 @@ CString strWord (const CString &sString, int iWordPos);
 
 enum ESpecialFolders
 	{
+	folderAppData,
 	folderDocuments,
 	folderPictures,
 	folderMusic,
@@ -1447,6 +1454,11 @@ enum ESpecialFolders
 
 struct SFileVersionInfo
 	{
+	SFileVersionInfo (void) :
+			dwFileVersion(0),
+			dwProductVersion(0)
+		{ }
+
 	CString sProductName;
 	CString sProductVersion;
 	CString sCompanyName;
@@ -1468,6 +1480,7 @@ CTimeDate fileGetModifiedTime (const CString &sFilespec);
 DWORD fileGetProductVersion (void);
 ALERROR fileGetVersionInfo (const CString &sFilename, SFileVersionInfo *retInfo);
 bool fileMove (const CString &sSourceFilespec, const CString &sDestFilespec);
+bool fileOpen (const CString &sFile, const CString &sParameters = NULL_STR, const CString &sCurrentFolder = NULL_STR, CString *retsError = NULL);
 
 CString pathAddComponent (const CString &sPath, const CString &sComponent);
 CString pathAddExtensionIfNecessary (const CString &sPath, const CString &sExtension);
@@ -1480,8 +1493,10 @@ CString pathGetPath (const CString &sPath);
 CString pathGetResourcePath (char *pszResID);
 CString pathGetSpecialFolder (ESpecialFolders iFolder);
 bool pathIsAbsolute (const CString &sPath);
+bool pathIsFolder (const CString &sFilespec);
 inline bool pathIsPathSeparator (char *pPos) { return (*pPos == '\\' || *pPos == '/'); }
 bool pathIsResourcePath (const CString &sPath, char **retpszResID);
+bool pathIsWritable (const CString &sFilespec);
 CString pathMakeAbsolute (const CString &sPath, const CString &sRoot = NULL_STR);
 CString pathMakeRelative (const CString &sFilespec, const CString &sRoot, bool bNoCheck = false);
 CString pathStripExtension (const CString &sPath);

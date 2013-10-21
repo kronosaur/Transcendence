@@ -91,6 +91,90 @@ class CFormulaText
 		CString m_sText;
 	};
 
+//	Item Criteria --------------------------------------------------------------
+
+struct CItemCriteria
+	{
+	CItemCriteria (void);
+	CItemCriteria (const CItemCriteria &Copy);
+	~CItemCriteria (void);
+
+	CItemCriteria &operator= (const CItemCriteria &Copy);
+
+	int GetMaxLevelMatched (void) const;
+
+	DWORD dwItemCategories;			//	Set of ItemCategories to match on
+	DWORD dwExcludeCategories;		//	Categories to exclude
+	DWORD dwMustHaveCategories;		//	ANDed categories
+
+	WORD wFlagsMustBeSet;			//	These flags must be set
+	WORD wFlagsMustBeCleared;		//	These flags must be cleared
+
+	bool bUsableItemsOnly;			//	Item must be usable
+	bool bExcludeVirtual;			//	Exclude virtual items
+	bool bInstalledOnly;			//	Item must be installed
+	bool bNotInstalledOnly;			//	Item must not be installed
+	bool bLauncherMissileOnly;		//	Item must be a missile for a launcher
+
+	TArray<CString> ModifiersRequired;		//	Required modifiers
+	TArray<CString> ModifiersNotAllowed;	//	Exclude these modifiers
+	TArray<CString> SpecialAttribRequired;	//	Special required attributes
+	TArray<CString> SpecialAttribNotAllowed;//	Exclude these special attributes
+	CString Frequency;				//	If not blank, only items with these frequencies
+
+	int iEqualToLevel;				//	If not -1, only items of this level
+	int iGreaterThanLevel;			//	If not -1, only items greater than this level
+	int iLessThanLevel;				//	If not -1, only items less than this level
+	int iEqualToPrice;				//	If not -1, only items at this price
+	int iGreaterThanPrice;			//	If not -1, only items greater than this price
+	int iLessThanPrice;				//	If not -1, only items less than this price
+	int iEqualToMass;				//	If not -1, only items of this mass (in kg)
+	int iGreaterThanMass;			//	If not -1, only items greater than this mass (in kg)
+	int iLessThanMass;				//	If not -1, only items less than this mass (in kg)
+
+	ICCItem *pFilter;				//	Filter returns Nil for excluded items
+	};
+
+enum EDisplayAttributeTypes
+	{
+	attribNeutral,
+	attribPositive,
+	attribNegative,
+	};
+
+struct SDisplayAttribute
+	{
+	SDisplayAttribute (EDisplayAttributeTypes iTypeCons, const CString &sTextCons) :
+			iType(iTypeCons),
+			sText(sTextCons)
+		{ }
+
+	EDisplayAttributeTypes iType;
+	CString sText;
+
+	RECT rcRect;					//	Reserved for callers
+	};
+
+class CDisplayAttributeDefinitions
+	{
+	public:
+		void AccumulateAttributes (const CItem &Item, TArray<SDisplayAttribute> *retList) const;
+		void Append (const CDisplayAttributeDefinitions &Attribs);
+		inline void DeleteAll (void) { m_Definitions.DeleteAll(); }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		inline bool IsEmpty (void) const { return (m_Definitions.GetCount() == 0); }
+
+	private:
+		struct SEntry
+			{
+			CItemCriteria Criteria;
+			EDisplayAttributeTypes iType;
+			CString sText;
+			};
+
+		TArray<SEntry> m_Definitions;
+	};
+
 //	Base Design Type ----------------------------------------------------------
 //
 //	To add a new DesignType:
@@ -201,17 +285,20 @@ class CDesignTypeCriteria
 		bool m_bIncludeVirtual;
 	};
 
+//	CDesignType
+
 class CDesignType
 	{
 	public:
 		enum ECachedHandlers
 			{
-			evtOnGlobalTypesInit		= 0,
-			evtOnObjDestroyed			= 1,
-			evtOnSystemObjAttacked		= 2,
-			evtOnSystemWeaponFire		= 3,
+			evtCanInstallItem			= 0,
+			evtOnGlobalTypesInit		= 1,
+			evtOnObjDestroyed			= 2,
+			evtOnSystemObjAttacked		= 3,
+			evtOnSystemWeaponFire		= 4,
 
-			evtCount					= 4,
+			evtCount					= 5,
 			};
 
 		CDesignType (void);
@@ -264,6 +351,7 @@ class CDesignType
 		inline const CString &GetAttributes (void) { return m_sAttributes; }
 		inline CString GetDataField (const CString &sField) { CString sValue; FindDataField(sField, &sValue); return sValue; }
 		inline int GetDataFieldInteger (const CString &sField) { CString sValue; if (FindDataField(sField, &sValue)) return strToInt(sValue, 0, NULL); else return 0; }
+		inline const CDisplayAttributeDefinitions &GetDisplayAttributes (void) const { return m_DisplayAttribs; }
 		ICCItem *GetEventHandler (const CString &sEvent) const;
 		void GetEventHandlers (const CEventHandler **retHandlers, TSortMap<CString, SEventHandlerDesc> *retInheritedHandlers);
 		CExtension *GetExtension (void) const { return m_pExtension; }
@@ -340,6 +428,7 @@ class CDesignType
 		CLanguageDataBlock m_Language;			//	Language data
 		CEventHandler m_Events;					//	Event handlers
 		CXMLElement *m_pLocalScreens;			//	Local dock screen
+		CDisplayAttributeDefinitions m_DisplayAttribs;	//	Display attribute definitions
 
 		SEventHandlerDesc m_EventsCache[evtCount];	//	Cached events
 	};
@@ -1321,48 +1410,6 @@ enum AbilityStatus
 
 //	Item Types
 
-struct CItemCriteria
-	{
-	CItemCriteria (void);
-	CItemCriteria (const CItemCriteria &Copy);
-	~CItemCriteria (void);
-
-	CItemCriteria &operator= (const CItemCriteria &Copy);
-
-	int GetMaxLevelMatched (void) const;
-
-	DWORD dwItemCategories;			//	Set of ItemCategories to match on
-	DWORD dwExcludeCategories;		//	Categories to exclude
-	DWORD dwMustHaveCategories;		//	ANDed categories
-
-	WORD wFlagsMustBeSet;			//	These flags must be set
-	WORD wFlagsMustBeCleared;		//	These flags must be cleared
-
-	bool bUsableItemsOnly;			//	Item must be usable
-	bool bExcludeVirtual;			//	Exclude virtual items
-	bool bInstalledOnly;			//	Item must be installed
-	bool bNotInstalledOnly;			//	Item must not be installed
-	bool bLauncherMissileOnly;		//	Item must be a missile for a launcher
-
-	TArray<CString> ModifiersRequired;		//	Required modifiers
-	TArray<CString> ModifiersNotAllowed;	//	Exclude these modifiers
-	TArray<CString> SpecialAttribRequired;	//	Special required attributes
-	TArray<CString> SpecialAttribNotAllowed;//	Exclude these special attributes
-	CString Frequency;				//	If not blank, only items with these frequencies
-
-	int iEqualToLevel;				//	If not -1, only items of this level
-	int iGreaterThanLevel;			//	If not -1, only items greater than this level
-	int iLessThanLevel;				//	If not -1, only items less than this level
-	int iEqualToPrice;				//	If not -1, only items at this price
-	int iGreaterThanPrice;			//	If not -1, only items greater than this price
-	int iLessThanPrice;				//	If not -1, only items less than this price
-	int iEqualToMass;				//	If not -1, only items of this mass (in kg)
-	int iGreaterThanMass;			//	If not -1, only items greater than this mass (in kg)
-	int iLessThanMass;				//	If not -1, only items less than this mass (in kg)
-
-	ICCItem *pFilter;				//	Filter returns Nil for excluded items
-	};
-
 enum ItemEnhancementTypes
 	{
 	etNone =							0x0000,
@@ -1584,6 +1631,7 @@ class CItem
 		inline CEconomyType *GetCurrencyType (void) const;
 		inline CString GetData (const CString &sAttrib) const { return (m_pExtra ? m_pExtra->m_Data.GetData(sAttrib) : NULL_STR); }
 		CString GetDesc (void) const;
+		bool GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribute> *retList) const;
 		DWORD GetDisruptedDuration (void) const;
 		CString GetEnhancedDesc (CSpaceObject *pInstalled = NULL) const;
 		inline int GetInstalled (void) const { return (int)(char)m_dwInstalled; }
@@ -3956,6 +4004,8 @@ class CShipClass : public CDesignType
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
 
+		static void UnbindGlobal (void);
+
 	protected:
 		//	CDesignType overrides
 		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
@@ -5802,6 +5852,7 @@ class CExtensionCollection
 		CExtensionCollection (void);
 		~CExtensionCollection (void);
 
+		inline void AddExtensionFolder (const CString &sFilespec) { m_ExtensionFolders.Insert(sFilespec); }
 		void CleanUp (void);
 		ALERROR ComputeAvailableAdventures (DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
 		ALERROR ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
@@ -5816,6 +5867,7 @@ class CExtensionCollection
 		ALERROR Load (const CString &sFilespec, DWORD dwFlags, CString *retsError);
 		inline bool LoadedInDebugMode (void) { return m_bLoadedInDebugMode; }
 		ALERROR LoadNewExtension (const CString &sFilespec, const CIntegerIP &FileDigest, CString *retsError);
+		inline void SetCollectionFolder (const CString &sFilespec) { m_sCollectionFolder = sFilespec; }
 		void SetRegisteredExtensions (const CMultiverseCollection &Collection, TArray<CMultiverseCatalogEntry *> *retNotFound);
 		void SweepImages (void);
 		void UpdateCollectionStatus (CMultiverseCollection &Collection, int cxIconSize, int cyIconSize);
@@ -5832,6 +5884,9 @@ class CExtensionCollection
 		ALERROR LoadFile (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, const CIntegerIP &CheckDigest, bool *retbReload, CString *retsError);
 		ALERROR LoadFolderStubsOnly (const CString &sFilespec, CExtension::EFolderTypes iFolder, DWORD dwFlags, CString *retsError);
 		bool ReloadDisabledExtensions (DWORD dwFlags);
+
+		CString m_sCollectionFolder;		//	Path to collection folder
+		TArray<CString> m_ExtensionFolders;	//	Paths to extension folders
 
 		CCriticalSection m_cs;				//	Protects modifications
 		TArray<CExtension *> m_Extensions;	//	All loaded extensions
@@ -5930,6 +5985,13 @@ class CDesignCollection
 			evtCount					= 12
 			};
 
+		enum EFlags
+			{
+			//	GetImage flags
+			FLAG_IMAGE_COPY =			0x00000001,
+			FLAG_IMAGE_LOCK =			0x00000002,
+			};
+
 		CDesignCollection (void);
 		~CDesignCollection (void);
 
@@ -5960,19 +6022,21 @@ class CDesignCollection
 		void FireOnGlobalUpdate (int iTick);
 		inline int GetCount (void) const { return m_AllTypes.GetCount(); }
 		inline int GetCount (DesignTypes iType) const { return m_ByType[iType].GetCount(); }
+		inline const CDisplayAttributeDefinitions &GetDisplayAttributes (void) const { return m_DisplayAttribs; }
 		DWORD GetDynamicUNID (const CString &sName);
 		void GetEnabledExtensions (TArray<CExtension *> *retExtensionList);
 		inline CDesignType *GetEntry (int iIndex) const { return m_AllTypes.GetEntry(iIndex); }
 		inline CDesignType *GetEntry (DesignTypes iType, int iIndex) const { return m_ByType[iType].GetEntry(iIndex); }
 		inline CExtension *GetExtension (int iIndex) { return m_BoundExtensions[iIndex]; }
 		inline int GetExtensionCount (void) { return m_BoundExtensions.GetCount(); }
-		CG16bitImage *GetImage (DWORD dwUNID, bool bCopy = false);
+		CG16bitImage *GetImage (DWORD dwUNID, DWORD dwFlags = 0);
 		CString GetStartingNodeID (void);
 		CTopologyDescTable *GetTopologyDesc (void) const { return m_pTopology; }
 		inline bool HasDynamicTypes (void) { return (m_DynamicTypes.GetCount() > 0); }
 		bool IsAdventureExtensionBound (DWORD dwUNID);
 		bool IsAdventureExtensionLoaded (DWORD dwUNID);
 		bool IsRegisteredGame (void);
+		void MarkGlobalImages (void);
 		void NotifyTopologyInit (void);
 		void ReadDynamicTypes (SUniverseLoadCtx &Ctx);
 		void Reinit (void);
@@ -5999,6 +6063,7 @@ class CDesignCollection
 		CExtension *m_pAdventureExtension;
 		CAdventureDesc *m_pAdventureDesc;
 		TSortMap<CString, CEconomyType *> m_EconomyIndex;
+		CDisplayAttributeDefinitions m_DisplayAttribs;
 		CGlobalEventCache *m_EventsCache[evtCount];
 
 		//	Dynamic design types

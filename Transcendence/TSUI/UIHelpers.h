@@ -66,7 +66,7 @@ class CListCollectionTask : public IHITask
 class CListSaveFilesTask : public IHITask
 	{
 	public:
-		CListSaveFilesTask (CHumanInterface &HI, const CString &sFolder, const CString &sUsername, int cxWidth);
+		CListSaveFilesTask (CHumanInterface &HI, const TArray<CString> &Folders, const CString &sUsername, int cxWidth);
 		~CListSaveFilesTask (void);
 
 		inline IAnimatron *GetListHandoff (void) { IAnimatron *pResult = m_pList; m_pList = NULL; return pResult; }
@@ -77,7 +77,7 @@ class CListSaveFilesTask : public IHITask
 	private:
 		void CreateFileEntry (CGameFile &GameFile, const CTimeDate &ModifiedTime, int yStart, IAnimatron **retpEntry, int *retcyHeight);
 
-		CString m_sFolder;
+		TArray<CString> m_Folders;
 		CString m_sUsername;
 		int m_cxWidth;
 
@@ -112,11 +112,12 @@ class CUIHelper
 		enum EOptions
 			{
 			//	CreateClassInfo???
-			OPTION_ITEM_RIGHT_ALIGN =			0x00000001,
+			OPTION_ITEM_RIGHT_ALIGN =				0x00000001,
 
 			//	CreateSessionTitle
-			OPTION_SESSION_OK_BUTTON =			0x00000001,
-			OPTION_SESSION_NO_CANCEL_BUTTON =	0x00000002,
+			OPTION_SESSION_OK_BUTTON =				0x00000001,
+			OPTION_SESSION_NO_CANCEL_BUTTON =		0x00000002,
+			OPTION_SESSION_ADD_EXTENSION_BUTTON =	0x00000004,
 			};
 
 		struct SMenuEntry

@@ -7,7 +7,9 @@
 
 #include "Internets.h"
 
-const int ONE_SECOND =							1000;
+#define PROTOCOL_HTTP									CONSTLIT("http")
+
+const int ONE_SECOND =									1000;
 
 CHTTPClientSession::CHTTPClientSession (void) :
 		m_iLastError(inetsOK),
@@ -285,7 +287,7 @@ bool CHTTPClientSession::ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRea
 	return true;
 	}
 
-EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage *retResponse)
+EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage *retResponse, IHTTPClientSessionEvents *pEvents)
 
 //	Send
 //
@@ -327,41 +329,33 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 		return m_iLastError;
 		}
 
-	//	Now read the response. We build up a buffer to hold it.
+	//	As we read the buffer we parse into the response
 
-	CMemoryWriteStream ResponseBuff;
-	int iResponseBuffSize = 0;
-	if (ResponseBuff.Create() != NOERROR)
+	if (retResponse->InitFromBufferReset() != NOERROR)
 		{
 		::kernelDebugLogMessage("Out of memory: Unable to create response buffer.");
 		m_iLastError = inetsOutOfMemory;
 		return m_iLastError;
 		}
 
-	//	As we read the buffer we parse into the response
-
-	retResponse->InitFromBuffer(CString(ResponseBuff.GetPointer(), iResponseBuffSize, true));
-
 	//	Keep reading until we've got enough (or until the connection drops)
 
+	int iTotalRead = 0;
 	while (!retResponse->IsMessageComplete())
 		{
-		//	Grow the buffer so that we can read into it
-
-		int iReadSize = 4096;
-		if (ResponseBuff.Write(NULL, iReadSize - (ResponseBuff.GetLength() - iResponseBuffSize)) != NOERROR)
-			{
-			::kernelDebugLogMessage("Out of memory: Unable to write to response buffer.");
-			m_iLastError = inetsOutOfMemory;
-			return m_iLastError;
-			}
+		CString sBuffer;
+		const int iReadSize = 4096;
+		char *pBuffer = sBuffer.GetWritePointer(iReadSize);
 
 		//	Read
 
 		DWORD dwBytesRead;
-		if (!ReadBuffer(ResponseBuff.GetPointer() + iResponseBuffSize, iReadSize, &dwBytesRead))
+		bool bOK = ReadBuffer(pBuffer, iReadSize, &dwBytesRead);
+		sBuffer.Truncate(dwBytesRead);
+		iTotalRead += dwBytesRead;
+		if (!bOK)
 			{
-			::kernelDebugLogMessage("Unable to read from server. Reponse:\r\n%s", CString(ResponseBuff.GetPointer(), iResponseBuffSize, true));
+			::kernelDebugLogMessage("Unable to read from server. Reponse:\r\n%s", sBuffer);
 			Disconnect();
 			m_iLastError = inetsUnableToRead;
 			if (m_iInternetStatus != internetChecking)
@@ -369,13 +363,14 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 			return m_iLastError;
 			}
 
-		//	Increment our read position
-
-		iResponseBuffSize += dwBytesRead;
-
 		//	Parse some more
 
-		retResponse->InitFromBuffer(CString(ResponseBuff.GetPointer(), iResponseBuffSize, true));
+		retResponse->InitFromBuffer(sBuffer);
+
+		//	Send notification, if necessary
+
+		if (pEvents)
+			pEvents->OnReceiveData(iTotalRead, -1);
 		}
 
 	//	Done

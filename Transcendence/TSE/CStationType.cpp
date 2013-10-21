@@ -1124,10 +1124,11 @@ ALERROR CStationType::OnBindDesign (SDesignLoadCtx &Ctx)
 			&& (!m_fBeacon)
 			&& (!m_fShipEncounter);
 
-	//	Any object that's static and the size of a planet or larger is immutable
+	//	Any object has not HP and is a star or a world is immutable
 	//	by default.
 
-	if (m_fStatic && (m_iScale == scaleStar || m_iScale == scaleWorld))
+	if ((m_iMaxHitPoints == 0 && m_iStructuralHP == 0)
+			&& (m_iScale == scaleStar || m_iScale == scaleWorld))
 		m_fImmutable = true;
 
 	return NOERROR;

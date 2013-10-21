@@ -922,7 +922,7 @@ class CShip : public CSpaceObject
 		virtual CShip *AsShip (void) { return this; }
 		virtual void Behavior (void);
 		virtual bool CanAttack (void) const;
-		virtual bool CanInstallItem (const CItem &Item, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
+		virtual bool CanInstallItem (const CItem &Item, int iSlot = -1, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual bool CanMove (void) { return true; }
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual bool ClassCanAttack (void) { return true; }

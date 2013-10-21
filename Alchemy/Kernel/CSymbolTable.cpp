@@ -400,6 +400,34 @@ ALERROR CSymbolTable::RemoveAll (void)
 	return CDictionary::RemoveAll();
 	}
 
+ALERROR CSymbolTable::RemoveEntry (int iEntry, CObject **retpOldValue)
+
+//	RemoveEntry
+//
+//	Removes the given entry
+
+	{
+	ALERROR error;
+	int iOldValue;
+
+	//	Let the dictionary do the removing
+
+	if (error = CDictionary::RemoveEntryByOrdinal(iEntry, &iOldValue))
+		return error;
+
+	CObject *pOldObj = (CObject *)iOldValue;
+
+	//	If the caller wants us to return the old value, do it; otherwise,
+	//	we delete it, if necessary
+
+	if (retpOldValue)
+		*retpOldValue = pOldObj;
+	else if (m_bOwned && pOldObj)
+		delete pOldObj;
+
+	return NOERROR;
+	}
+
 ALERROR CSymbolTable::RemoveEntry (const CString &sKey, CObject **retpOldValue)
 
 //	RemoveEntry

@@ -549,6 +549,59 @@ CString CItem::GetDesc (void) const
 		return m_pItemType->GetDesc(); 
 	}
 
+bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribute> *retList) const
+
+//	GetDisplayAttributes
+//
+//	Returns a list of display attributes.
+
+	{
+	//	Empty and check for edge cases
+
+	retList->DeleteAll();
+	if (m_pItemType == NULL)
+		return false;
+
+	//	Always add level
+
+	retList->Insert(SDisplayAttribute(attribNeutral, strPatternSubst(CONSTLIT("level %d"), m_pItemType->GetApparentLevel())));
+
+	//	Add additional custom attributes
+
+	g_pUniverse->GetDisplayAttributes().AccumulateAttributes(*this, retList);
+
+	//	Military and Illegal attributes
+
+	if (m_pItemType->IsKnown()
+			&& m_pItemType->HasLiteralAttribute(CONSTLIT("Military")))
+		retList->Insert(SDisplayAttribute(attribPositive, CONSTLIT("military")));
+
+	if (m_pItemType->IsKnown()
+			&& m_pItemType->HasLiteralAttribute(CONSTLIT("Illegal")))
+		retList->Insert(SDisplayAttribute(attribNegative, CONSTLIT("illegal")));
+
+	//	Add various engine-based attributes
+
+	if (IsDamaged())
+		retList->Insert(SDisplayAttribute(attribNegative, CONSTLIT("damaged")));
+
+	if (IsDisrupted())
+		retList->Insert(SDisplayAttribute(attribNegative, CONSTLIT("ionized")));
+
+	//	Add any enhancements as a display attribute
+
+	CString sEnhanced = GetEnhancedDesc(pSource);
+	if (!sEnhanced.IsBlank())
+		{
+		bool bDisadvantage = (*(sEnhanced.GetASCIIZPointer()) == '-');
+		retList->Insert(SDisplayAttribute((bDisadvantage ? attribNegative : attribPositive), sEnhanced));
+		}
+
+	//	Done
+
+	return (retList->GetCount() > 0);
+	}
+
 DWORD CItem::GetDisruptedDuration (void) const
 
 //	GetDisruptedDuration

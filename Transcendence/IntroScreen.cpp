@@ -34,6 +34,8 @@
 #define RGB_DIALOG_BUTTON_BACKGROUND			CG16bitImage::RGBValue(144,144,192)
 #define RGB_DIALOG_BUTTON_TEXT					CG16bitImage::RGBValue(0, 0, 0)
 
+#define RGB_NEWS_PANE_BACKGROUND				CG16bitImage::RGBValue(128, 213, 255)
+
 #define STR_OVERWRITE							CONSTLIT("Overwrite")
 #define STR_CANCEL								CONSTLIT("Cancel")
 #define STR_OVERWRITE_GAME						CONSTLIT("Overwrite Saved Game?")
@@ -63,16 +65,25 @@ const int PADDING_LEFT =						20;
 const int SMALL_LINK_SPACING =					20;
 const int TITLE_BAR_HEIGHT =					128;
 
+const int NEWS_PANE_WIDTH =						400;
+const int NEWS_PANE_PADDING_X =					20;
+const int NEWS_PANE_PADDING_Y =					8;
+const int NEWS_PANE_CORNER_RADIUS =				8;
+const int NEWS_PANE_INNER_SPACING_Y =			8;
+
 #define ALIGN_CENTER							CONSTLIT("center")
 
 #define CMD_ACCOUNT								CONSTLIT("cmdAccount")
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
+#define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
 #define CMD_SHOW_MOD_EXCHANGE					CONSTLIT("cmdShowModExchange")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
 #define CMD_TOGGLE_DEBUG						CONSTLIT("cmdToggleDebug")
 #define CMD_TOGGLE_MUSIC						CONSTLIT("cmdToggleMusic")
+
+#define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 
 //	These are commands that we send to the Controller
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
@@ -96,6 +107,7 @@ const int TITLE_BAR_HEIGHT =					128;
 #define ID_PLAYER_BAR_PERFORMANCE				CONSTLIT("idPlayerBar")
 #define ID_SHIP_DESC_PERFORMANCE				CONSTLIT("idShipDescPerformance")
 #define ID_TITLES_PERFORMANCE					CONSTLIT("idTitles")
+#define ID_NEWS_PERFORMANCE						CONSTLIT("idNews")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -111,7 +123,16 @@ const int TITLE_BAR_HEIGHT =					128;
 #define PROP_UR_RADIUS							CONSTLIT("urRadius")
 #define PROP_VIEWPORT_HEIGHT					CONSTLIT("viewportHeight")
 
+#define STYLE_CHECK								CONSTLIT("check")
+#define STYLE_DISABLED							CONSTLIT("disabled")
+#define STYLE_DOWN								CONSTLIT("down")
+#define STYLE_FRAME								CONSTLIT("frame")
+#define STYLE_FRAME_FOCUS						CONSTLIT("frameFocus")
+#define STYLE_FRAME_DISABLED					CONSTLIT("frameDisabled")
+#define STYLE_HOVER								CONSTLIT("hover")
 #define STYLE_IMAGE								CONSTLIT("image")
+#define STYLE_NORMAL							CONSTLIT("normal")
+#define STYLE_TEXT								CONSTLIT("text")
 
 void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
@@ -264,6 +285,11 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 				SetIntroState(isBlankThenRandom);
 			break;
 
+		case isNews:
+			if (!m_Reanimator.IsPerformanceRunning(ID_NEWS_PERFORMANCE))
+				SetIntroState(isShipStats);
+			break;
+
 		case isEndGame:
 			if (!m_Reanimator.IsPerformanceRunning(ID_END_GAME_PERFORMANCE))
 				SetIntroState(isHighScoresEndGame);
@@ -281,7 +307,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 		case isOpeningTitles:
 			if (!m_Reanimator.IsPerformanceRunning(ID_TITLES_PERFORMANCE))
-				SetIntroState(isShipStats);
+				SetIntroState(isNews);
 			break;
 		}
 
@@ -307,6 +333,7 @@ void CTranscendenceWnd::CancelCurrentIntroState (void)
 		case isCredits:
 		case isHighScores:
 		case isBlankThenRandom:
+		case isNews:
 			SetIntroState(isShipStats);
 			break;
 
@@ -805,6 +832,175 @@ void CTranscendenceWnd::CreateLongCreditsAnimation (int x, int y, int cyHeight, 
 	*retpAnimatron = pAni;
 	}
 
+void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnimatron **retpAnimatron)
+
+//	CreateNewsAnimation
+//
+//	Creates animation of a Multiverse news entry.
+
+	{
+	int iDuration = 600;
+	int iInitialFade = 30;
+	int iEndFade = 30;
+
+	//	Compute some metrics for the pane based on the entry information
+
+	int cxInnerPane = NEWS_PANE_WIDTH - (2 * NEWS_PANE_PADDING_X);
+
+	CG16bitImage *pImage = pEntry->LoadImageHandoff();
+	int cyImage = (pImage ? pImage->GetHeight() : 0);
+
+	TArray<CString> TitleLines;
+	m_Fonts.SubTitle.BreakText(pEntry->GetTitle(), cxInnerPane, &TitleLines);
+	int cyTitle = m_Fonts.SubTitle.GetHeight() * TitleLines.GetCount();
+
+	TArray<CString> BodyLines;
+	m_Fonts.Medium.BreakText(pEntry->GetBody(), cxInnerPane, &BodyLines);
+	int cyBody = m_Fonts.Medium.GetHeight() * BodyLines.GetCount();
+
+	TArray<CString> FooterLines;
+	m_Fonts.MediumHeavyBold.BreakText(pEntry->GetCallToActionText(), cxInnerPane, &FooterLines);
+	int cyFooter = m_Fonts.MediumHeavyBold.GetHeight() * FooterLines.GetCount();
+
+	int cyPane = cyImage
+			+ cyTitle
+			+ NEWS_PANE_INNER_SPACING_Y
+			+ cyBody
+			+ NEWS_PANE_INNER_SPACING_Y
+			+ cyFooter
+			+ NEWS_PANE_PADDING_Y;
+
+	int xPane = m_rcIntroMain.left + (RectWidth(m_rcIntroMain) / 2) + (RectWidth(m_rcIntroMain) / 6);
+	int yPane = m_rcIntroMain.top + ((RectHeight(m_rcIntroMain) - cyPane) / 2);
+
+	//	Create sequencer to hold everything The origin of the sequencer is
+	//	at the top-center of the pane.
+
+	CAniSequencer *pSeq = new CAniSequencer;
+	pSeq->SetPropertyVector(PROP_POSITION, CVector(xPane, yPane));
+
+	int xLeft = -NEWS_PANE_WIDTH / 2;
+
+	//	Create a button that will respond to clicks on the news pane
+
+	CAniButton *pButton = new CAniButton;
+	pButton->SetPropertyVector(PROP_POSITION, CVector(xLeft, 0));
+	pButton->SetPropertyVector(PROP_SCALE, CVector(NEWS_PANE_WIDTH, cyPane));
+	pButton->SetStyle(STYLE_DOWN, NULL);
+	pButton->SetStyle(STYLE_HOVER, NULL);
+	pButton->SetStyle(STYLE_NORMAL, NULL);
+	pButton->SetStyle(STYLE_DISABLED, NULL);
+	pButton->SetStyle(STYLE_TEXT, NULL);
+	pButton->AddListener(EVENT_ON_CLICK, this, CMD_OPEN_NEWS);
+
+	pSeq->AddTrack(pButton, 0);
+
+	//	Create the background
+
+	CAniRoundedRect *pPane = new CAniRoundedRect;
+	pPane->SetPropertyVector(PROP_POSITION, CVector(xLeft, 0));
+	pPane->SetPropertyVector(PROP_SCALE, CVector(NEWS_PANE_WIDTH, cyPane));
+	pPane->SetPropertyColor(PROP_COLOR, RGB_NEWS_PANE_BACKGROUND);
+	pPane->SetPropertyOpacity(PROP_OPACITY, 64);
+	pPane->SetPropertyInteger(PROP_UL_RADIUS, NEWS_PANE_CORNER_RADIUS);
+	pPane->SetPropertyInteger(PROP_UR_RADIUS, NEWS_PANE_CORNER_RADIUS);
+	pPane->SetPropertyInteger(PROP_LL_RADIUS, NEWS_PANE_CORNER_RADIUS);
+	pPane->SetPropertyInteger(PROP_LR_RADIUS, NEWS_PANE_CORNER_RADIUS);
+	pPane->AnimateLinearFade(iDuration, iInitialFade, iEndFade, 64);
+
+	pSeq->AddTrack(pPane, 0);
+
+	//	Add the content
+
+	int yPos = 0;
+	int xInnerLeft = -(cxInnerPane / 2);
+
+	//	Create the image
+
+	if (pImage)
+		{
+		//	If the image is wide enough to hit the rounded corners, then we
+		//	need to mask it out.
+
+		if (pImage->GetWidth() > (NEWS_PANE_WIDTH - 2 * NEWS_PANE_CORNER_RADIUS))
+			{
+			//	Create a mask the size of the pane and apply it to the image
+			//	(We own the image so we can modify it).
+
+			CG16bitImage PaneMask;
+			CreateRoundedRectAlpha(NEWS_PANE_WIDTH, cyPane, NEWS_PANE_CORNER_RADIUS, &PaneMask);
+			pImage->IntersectMask(0, 
+					0, 
+					PaneMask.GetWidth(), 
+					PaneMask.GetHeight(), 
+					PaneMask,
+					(pImage->GetWidth() - PaneMask.GetWidth()) / 2,
+					0);
+			}
+
+		//	Create an animatron
+
+		CAniRect *pRect = new CAniRect;
+		pRect->SetPropertyVector(PROP_POSITION, CVector(-pImage->GetWidth() / 2, yPos));
+		pRect->SetPropertyVector(PROP_SCALE, CVector(pImage->GetWidth(), pImage->GetHeight()));
+		pRect->SetFillMethod(new CAniImageFill(pImage, true));
+		pRect->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
+
+		pSeq->AddTrack(pRect, 0);
+
+		yPos += cyImage;
+		}
+
+	//	Create the title
+
+	IAnimatron *pText;
+	CAniText::Create(pEntry->GetTitle(),
+			CVector(xInnerLeft, yPos),
+			&m_Fonts.SubTitle,
+			CG16bitFont::AlignCenter,
+			m_Fonts.wTitleColor,
+			&pText);
+	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
+	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
+	pSeq->AddTrack(pText, 0);
+
+	yPos += cyTitle + NEWS_PANE_INNER_SPACING_Y;
+
+	//	Create the text
+
+	CAniText::Create(pEntry->GetBody(),
+			CVector(xInnerLeft, yPos),
+			&m_Fonts.Medium,
+			CG16bitFont::AlignCenter,
+			m_Fonts.wTitleColor,
+			&pText);
+	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
+	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
+	pSeq->AddTrack(pText, 0);
+
+	yPos += cyBody + NEWS_PANE_INNER_SPACING_Y;
+
+	//	Create the call to action
+
+	CAniText::Create(pEntry->GetCallToActionText(),
+			CVector(xInnerLeft, yPos),
+			&m_Fonts.MediumHeavyBold,
+			CG16bitFont::AlignCenter,
+			m_Fonts.wTitleColor,
+			&pText);
+	pText->SetPropertyVector(PROP_SCALE, CVector(cxInnerPane, cyPane));
+	pText->AnimateLinearFade(iDuration, iInitialFade, iEndFade);
+	pSeq->AddTrack(pText, 0);
+
+	//	Remember the URL to open when the user clicks
+
+	m_sNewsURL = pEntry->GetCallToActionURL();
+
+	//	Done
+
+	*retpAnimatron = pSeq;
+	}
+
 void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 //	CreatePlayerBarAnimation
@@ -1042,7 +1238,7 @@ void CTranscendenceWnd::CreateShipDescAnimation (CShip *pShip, IAnimatron **retp
 	int x = m_rcIntroMain.left + (RectWidth(m_rcIntroMain) / 2) + (RectWidth(m_rcIntroMain) / 6);
 	int y = m_rcIntroMain.bottom - RectHeight(m_rcIntroMain) / 3;
 
-	//	Create sequencer to hold everything
+	//	Create sequencer to hold everything.
 
 	CAniSequencer *pSeq = new CAniSequencer;
 
@@ -1378,6 +1574,15 @@ void CTranscendenceWnd::OnCommandIntro (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_CHANGE_PASSWORD))
 		g_pHI->HICommand(CMD_UI_CHANGE_PASSWORD);
+
+	else if (strEquals(sCmd, CMD_OPEN_NEWS))
+		{
+		if (!m_sNewsURL.IsBlank())
+			sysOpenURL(m_sNewsURL);
+		}
+
+	else if (strEquals(sCmd, CMD_SERVICE_NEWS_LOADED))
+		SetIntroState(isNews);
 	}
 
 void CTranscendenceWnd::OnDblClickIntro (int x, int y, DWORD dwFlags)
@@ -2344,6 +2549,26 @@ void CTranscendenceWnd::SetIntroState (IntroState iState)
 			break;
 			}
 
+		case isNews:
+			{
+			CMultiverseNewsEntry *pNews = m_pTC->GetMultiverse().GetNextNewsEntry();
+			if (pNews == NULL)
+				{
+				SetIntroState(isShipStats);
+				return;
+				}
+
+			StopAnimations();
+
+			IAnimatron *pAni;
+			CreateNewsAnimation(pNews, &pAni);
+			delete pNews;
+
+			DWORD dwPerformance = m_Reanimator.AddPerformance(pAni, ID_NEWS_PERFORMANCE);
+			m_Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+			break;
+			}
+
 		case isOpeningTitles:
 			StopAnimations();
 			m_Reanimator.StartPerformance(m_dwTitlesPerformance);
@@ -2591,6 +2816,7 @@ void CTranscendenceWnd::StopAnimations (void)
 	m_Reanimator.StopPerformance(ID_HIGH_SCORES_PERFORMANCE);
 	m_Reanimator.StopPerformance(ID_SHIP_DESC_PERFORMANCE);
 	m_Reanimator.StopPerformance(ID_TITLES_PERFORMANCE);
+	m_Reanimator.StopPerformance(ID_NEWS_PERFORMANCE);
 	}
 
 void CTranscendenceWnd::StopIntro (void)

@@ -490,37 +490,6 @@
     <None Include="Game\AresOrthodoxy.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission04.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission05.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission06.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\ChimericInjector.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CommonwealthChimeras.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMisc.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Curators.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Cyclops.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\GunsanComplex.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Kartal.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Rasiermesser.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StockMarket.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\PartI Soundtrack\StarsOfThePilgrimSoundtrack.xml" />
     <None Include="Game\Groups.xml">
       <SubType>Designer</SubType>
     </None>
@@ -571,70 +540,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Environments.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\CorporateExpansion.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\CyclopsStoryArc.xml" />
-    <None Include="Game\Extensions\Corporate Expansion\Mission01.xml" />
-    <None Include="Game\Extensions\Corporate Expansion\Mission02.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\Mission03.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\PlayerShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AnarchistChimeras.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Anaxas.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AntonNasser.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\BeitAlgez.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CharonPirateChimeras.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateHierarchyVol01.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateMetropolis.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateer.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporatePrivateerMissions.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\CorporateShipyard.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Gunsan.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Makayev.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Outlaws.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\PlayerShipsBase.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Silla.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\StdChimeras.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\TauCeti.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Topology.xml" />
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\UnalignedMerchanters.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Warlords.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Heretic.xml">
@@ -730,13 +635,6 @@
     <None Include="Game\UsefulItems.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\PartII\EncountersVol02.xml" />
-    <None Include="Game\Extensions\PartII\EncountersVol02Erebien.xml" />
-    <None Include="Game\Extensions\PartII\GammaCrucis.xml" />
-    <None Include="Game\Extensions\PartII\Mourner.xml" />
-    <None Include="Game\Extensions\PartII\StdMechanistItems.xml" />
-    <None Include="Game\Extensions\PartII\SystemsVol02.xml" />
-    <None Include="Game\Extensions\PartII\VaultOfTheGalaxy.xml" />
     <None Include="Game\Elysium.xml" />
     <None Include="Game\Huari.xml">
       <SubType>Designer</SubType>
@@ -747,7 +645,6 @@
     <None Include="Game\StarsOfThePilgrim.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Extensions\Book of the Augur\BookOfTheAugur.xml" />
     <None Include="Game\BattleArena.xml">
       <SubType>Designer</SubType>
     </None>
@@ -794,9 +691,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Transcendence.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Chronicles of Human Space\ChroniclesOfHumanSpace.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\HUD.xml" />
@@ -893,18 +787,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\AutonBay.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\LumiereDiaspora.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Hierarchy Vol 01\Omnithor.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Extensions\Corporate Expansion\PilgrimClass.xml">
-      <SubType>Designer</SubType>
-    </None>
     <Xml Include="Game\Extensions\Debug\AdventureSample.xml">
       <SubType>Designer</SubType>
     </Xml>
@@ -926,7 +808,9 @@
     <None Include="Game\RPGWingmen.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\RPGAuxDevices.xml" />
+    <None Include="Game\RPGAuxDevices.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

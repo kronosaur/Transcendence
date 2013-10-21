@@ -74,7 +74,7 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 
 	m_pPlayer = pPlayer;
 	m_rcRect = rcRect;
-	m_pBackground = g_pUniverse->GetLibraryBitmap(g_TargetingImageUNID);
+	m_pBackground = g_pUniverse->GetLibraryBitmap(g_TargetingImageUNID, CDesignCollection::FLAG_IMAGE_LOCK);
 	m_bInvalid = true;
 
 	//	Create the off-screen buffer

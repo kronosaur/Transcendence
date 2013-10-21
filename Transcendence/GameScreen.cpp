@@ -429,11 +429,14 @@ ALERROR CTranscendenceWnd::InitDisplays (void)
 	m_rcLRS.right = m_rcLRS.left + g_LRSWidth;
 	m_rcLRS.bottom = m_rcLRS.top + g_LRSHeight;
 
-	//	Find some bitmaps that we need
+	//	Find some bitmaps that we need. NOTE: We lock the images because we
+	//	don't dispose of them.
+	//
+	//	LATER: These should be obtained form the player ship.
 
-	m_pLargeHUD = g_pUniverse->GetLibraryBitmap(g_LRSImageUNID);
-	m_pSRSSnow = g_pUniverse->GetLibraryBitmap(g_SRSSnowImageUNID);
-	m_pLRSBorder = g_pUniverse->GetLibraryBitmap(g_LRSBorderUNID);
+	m_pLargeHUD = g_pUniverse->GetLibraryBitmap(g_LRSImageUNID, CDesignCollection::FLAG_IMAGE_LOCK);
+	m_pSRSSnow = g_pUniverse->GetLibraryBitmap(g_SRSSnowImageUNID, CDesignCollection::FLAG_IMAGE_LOCK);
+	m_pLRSBorder = g_pUniverse->GetLibraryBitmap(g_LRSBorderUNID, CDesignCollection::FLAG_IMAGE_LOCK);
 
 	//	Create the message display
 

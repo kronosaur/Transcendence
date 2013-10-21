@@ -47,6 +47,10 @@
 
 #define LEVEL_ROMAN_NUMERALS
 
+//	Uncomment out the following define when building a stable release
+
+//#define TRANSCENDENCE_STABLE_RELEASE
+
 //	Define some debugging symbols
 
 #ifdef DEBUG
@@ -71,8 +75,8 @@
 #define DEBUG_TARGET_LIST
 #define DEBUG_VECTOR
 //#define DEBUG_WEAPON_POS
+//#define DEBUG_SINGLETON_EFFECTS
 #endif
-#define DEBUG_SINGLETON_EFFECTS
 
 //	We leave this defined because we want to get traces in the field in case
 //	of a crash.
@@ -220,7 +224,6 @@ class CResourceDb
 		//	If we're using a TDB
 		CDataFile *m_pDb;
 		TSortMap<CString, SResourceEntry> m_ResourceMap;
-		CSymbolTable *m_pResourceMap;
 		int m_iGameFile;
 
 		IXMLParserController *m_pEntities;			//	Entities to use in parsing
@@ -2060,6 +2063,7 @@ class CSpaceObject : public CObject
 		bool FindEventHandler (CDesignType::ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL);
 		inline bool FindEventSubscriber (CSpaceObject *pObj) { return m_SubscribedObjs.FindObj(pObj); }
 		bool FireCanDockAsPlayer (CSpaceObject *pDockTarget, CString *retsError);
+		bool FireCanInstallItem (const CItem &Item, int iSlot, CString *retsResult);
 		void FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent = eventNone, ICCItem **retpResult = NULL);
 		void FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData = NULL, ICCItem **retpResult = NULL);
 		void FireCustomOverlayEvent (const CString &sEvent, DWORD dwID, ICCItem **retpResult = NULL);
@@ -2378,7 +2382,7 @@ class CSpaceObject : public CObject
 
 		//	...for active/intelligent objects (ships, stations, etc.)
 		virtual void AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL) { if (retdwID) *retdwID = 0; }
-		virtual bool CanInstallItem (const CItem &Item, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
+		virtual bool CanInstallItem (const CItem &Item, int iSlot = -1, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue) { return 0; }
 		virtual void CreateRandomDockedShips (IShipGenerator *pGenerator) { }
 		virtual CurrencyValue CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue) { return 0; }
@@ -2944,6 +2948,8 @@ class CUniverse : public CObject
 
 			IHost *pHost;					//	Host
 			CString sFilespec;				//	Filespec of main XML file.
+			CString sCollectionFolder;		//	If non-blank, use this as Collection folder (and remember it)
+			TArray<CString> ExtensionFolders;	//	Add these as extension folders.
 
 			//	Options
 
@@ -3020,6 +3026,7 @@ class CUniverse : public CObject
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CMission *GetCurrentMission (void);
+		inline const CDisplayAttributeDefinitions &GetDisplayAttributes (void) const { return m_Design.GetDisplayAttributes(); }
 		CTimeSpan GetElapsedGameTime (void);
 		inline CExtensionCollection &GetExtensionCollection (void) { return m_Extensions; }
 		CString GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib);
@@ -3106,9 +3113,9 @@ class CUniverse : public CObject
 		inline void ClearLibraryBitmapMarks (void) { m_Design.ClearImageMarks(); }
 		void GarbageCollectLibraryBitmaps (void);
 		inline CObjectImage *FindLibraryImage (DWORD dwUNID) { return CObjectImage::AsType(m_Design.FindEntry(dwUNID)); }
-		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID) { return m_Design.GetImage(dwUNID); }
-		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, true); }
-		inline void MarkLibraryBitmaps (void) { if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
+		inline CG16bitImage *GetLibraryBitmap (DWORD dwUNID, DWORD dwFlags = 0) { return m_Design.GetImage(dwUNID, dwFlags); }
+		inline CG16bitImage *GetLibraryBitmapCopy (DWORD dwUNID) { return m_Design.GetImage(dwUNID, CDesignCollection::FLAG_IMAGE_COPY); }
+		inline void MarkLibraryBitmaps (void) { m_Design.MarkGlobalImages(); if (m_pCurrentSystem) m_pCurrentSystem->MarkImages(); }
 		inline void ReleaseLibraryBitmap (CG16bitImage *pBitmap) { }
 		inline void SweepLibraryBitmaps (void) { m_Extensions.SweepImages(); m_Design.SweepImages(); }
 

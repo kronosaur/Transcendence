@@ -37,8 +37,9 @@
 
 const int SAVE_ENTRY_WIDTH =					720;
 
-CLoadGameSession::CLoadGameSession (CHumanInterface &HI, CCloudService &Service) : IHISession(HI),
-		m_Service(Service)
+CLoadGameSession::CLoadGameSession (CHumanInterface &HI, CCloudService &Service, const TArray<CString> &Folders) : IHISession(HI),
+		m_Service(Service),
+		m_Folders(Folders)
 
 //	CLoadGameSession constructor
 
@@ -205,14 +206,9 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 	RECT rcRect;
 	VI.GetWidescreenRect(m_HI.GetScreen(), &rcRect);
 
-	//	Get the folder where save files are stored.
-	//	(For now all the save files are kept with the executable).
-
-	CString sFolder;
-
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, sFolder, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
+	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, m_Folders, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
 
 	//	Create the title and menu
 

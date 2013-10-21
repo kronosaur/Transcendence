@@ -5,17 +5,21 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+#define EXTENSION_FOLDER_TAG					CONSTLIT("ExtensionFolder")
 #define EXTENSIONS_TAG							CONSTLIT("Extensions")
 #define KEY_MAP_TAG								CONSTLIT("KeyMap")
 #define OPTION_TAG								CONSTLIT("Option")
 
 #define NAME_ATTRIB								CONSTLIT("name")
+#define PATH_ATTRIB								CONSTLIT("path")
 #define VALUE_ATTRIB							CONSTLIT("value")
 
 #define REGISTRY_COMPANY_NAME					CONSTLIT("Neurohack")
 #define REGISTRY_PRODUCT_NAME					CONSTLIT("Transcendence")
 #define REGISTRY_MUSIC_OPTION					CONSTLIT("Music")
 #define REGISTRY_SOUND_VOLUME_OPTION			CONSTLIT("SoundVolume")
+
+#define TRANSCENDENCE_APP_DATA					CONSTLIT("Kronosaur\\Transcendence")
 
 #define OPTION_FLAG_HEX							0x00000001
 
@@ -54,7 +58,8 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noAutoSave",				optionBoolean,	"false",	0	},
 		{	"noFullCreate",				optionBoolean,	"false",	0	},
 
-		//	Extension options
+		//	Installation options
+
 		{	"useTDB",					optionBoolean,	"false",	0	},
 
 		//	Video options
@@ -119,9 +124,33 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 	for (i = 0; i < OPTIONS_COUNT; i++)
 		SetValue(i, CString(g_OptionData[i].pszDefaultValue, -1, true), true);
 
+	//	Look for a file in the current directory and see if it is writable. If
+	//	not, then look in AppData. We remember the place where we found a valid
+	//	file as our AppData root (and we base other directories off that).
+
+	if (pathIsWritable(sFilespec))
+		{
+		//	AppData is current directory
+		m_sAppData = NULL_STR;
+		}
+	else
+		{
+		m_sAppData = pathAddComponent(pathGetSpecialFolder(folderAppData), TRANSCENDENCE_APP_DATA);
+		if (!pathCreate(m_sAppData)
+				|| !pathIsWritable(m_sAppData))
+			{
+			*retsError = strPatternSubst(CONSTLIT("Unable to write to AppData folder: %s"), m_sAppData);
+			return ERR_FAIL;
+			}
+		}
+
+	//	Settings file
+
+	CString sSettingsFilespec = pathAddComponent(m_sAppData, sFilespec);
+
 	//	Load XML
 
-	CFileReadBlock DataFile(sFilespec);
+	CFileReadBlock DataFile(sSettingsFilespec);
 	CXMLElement *pData;
 	CString sError;
 	if (error = CXMLElement::ParseXML(&DataFile, &pData, retsError))
@@ -172,6 +201,12 @@ ALERROR CGameSettings::Load (const CString &sFilespec, CString *retsError)
 			{
 			if (error = m_KeyMap.ReadFromXML(pItem))
 				return error;
+			}
+		else if (strEquals(pItem->GetTag(), EXTENSION_FOLDER_TAG))
+			{
+			CString sFolder;
+			if (pItem->FindAttribute(PATH_ATTRIB, &sFolder))
+				m_ExtensionFolders.Insert(sFolder);
 			}
 		else if (strEquals(pItem->GetTag(), EXTENSIONS_TAG))
 			{
@@ -270,14 +305,19 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 //	Save game settings to a file (if necessary)
 
 	{
+	int i;
 	ALERROR error;
 
 	if (!m_bModified)
 		return NOERROR;
 
+	//	Settings file
+
+	CString sSettingsFilespec = pathAddComponent(m_sAppData, sFilespec);
+
 	//	Create the file
 
-	CFileWriteStream DataFile(sFilespec, FALSE);
+	CFileWriteStream DataFile(sSettingsFilespec, FALSE);
 	if (error = DataFile.Create())
 		return error;
 
@@ -287,9 +327,24 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 	if (error = DataFile.Write(sData.GetPointer(), sData.GetLength(), NULL))
 		return error;
 
+	//	Write extension folders
+
+	if (m_ExtensionFolders.GetCount() > 0)
+		{
+		for (i = 0; i < m_ExtensionFolders.GetCount(); i++)
+			{
+			sData = strPatternSubst(CONSTLIT("\t<ExtensionFolder path=\"%s\"/>\r\n"), m_ExtensionFolders[i]);
+			if (error = DataFile.Write(sData.GetPointer(), sData.GetLength()))
+				return error;
+			}
+
+		if (error = DataFile.Write("\r\n", 2, NULL))
+			return error;
+		}
+
 	//	Loop over options
 
-	for (int i = 0; i < OPTIONS_COUNT; i++)
+	for (i = 0; i < OPTIONS_COUNT; i++)
 		{
 		//	Don't bother saving if our current value is the same 
 		//	as the default value

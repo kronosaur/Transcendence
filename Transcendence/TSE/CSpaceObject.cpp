@@ -32,6 +32,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define STR_UNCHARTED							CONSTLIT("uncharted")
 
 #define CAN_DOCK_AS_PLAYER_EVENT				CONSTLIT("CanDockAsPlayer")
+#define CAN_INSTALL_ITEM_EVENT					CONSTLIT("CanInstallItem")
 #define GET_DOCK_SCREEN_EVENT					CONSTLIT("GetDockScreen")
 #define GET_EXPLOSION_TYPE_EVENT				CONSTLIT("GetExplosionType")
 #define ON_ATTACKED_EVENT						CONSTLIT("OnAttacked")
@@ -653,7 +654,7 @@ bool CSpaceObject::CanFireOnObjHelper (CSpaceObject *pObj)
 		&& (pObj->CanBeHitByFriends() || GetSovereign() != pObj->GetSovereign()));
 	}
 
-bool CSpaceObject::CanInstallItem (const CItem &Item, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
+bool CSpaceObject::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *retiResult, CString *retsResult, CItem *retItemToReplace)
 
 //	CanInstallItem
 //
@@ -1484,6 +1485,50 @@ bool CSpaceObject::FireCanDockAsPlayer (CSpaceObject *pDockTarget, CString *rets
 		Ctx.Discard(pResult);
 
 		return bAllowDock;
+		}
+	else
+		return true;
+	}
+
+bool CSpaceObject::FireCanInstallItem (const CItem &Item, int iSlot, CString *retsResult)
+
+//	FireCanInstallItem
+//
+//	Asks the object whether we can install the given item.
+
+	{
+	SEventHandlerDesc Event;
+	if (FindEventHandler(CDesignType::evtCanInstallItem, &Event))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineItemVar(Item);
+		if (iSlot != -1)
+			Ctx.DefineInteger(CONSTLIT("aArmorSeg"), iSlot);
+		else
+			Ctx.DefineNil(CONSTLIT("aArmorSeg"));
+
+		ICCItem *pResult = Ctx.Run(Event);
+
+		bool bCanBeInstalled;
+		if (pResult->IsError())
+			{
+			*retsResult = pResult->GetStringValue();
+			ReportEventError(strPatternSubst(CONSTLIT("Ship %x CanInstallItem"), GetType()->GetUNID()), pResult);
+			bCanBeInstalled = false;
+			}
+		else if (!pResult->IsTrue())
+			{
+			*retsResult = pResult->GetStringValue();
+			bCanBeInstalled = false;
+			}
+		else
+			bCanBeInstalled = true;
+
+		Ctx.Discard(pResult);
+
+		return bCanBeInstalled;
 		}
 	else
 		return true;
@@ -5713,11 +5758,11 @@ void CSpaceObject::SetCursorAtRandomItem (CItemListManipulator &ItemList, const 
 
 	//	Now choose a random device
 
-	if (iCount > 0)
+	ItemList.ResetCursor();
+	if (ItemPos.GetCount() > 0)
 		{
 		int iRoll = ItemPos[mathRandom(0, ItemPos.GetCount() - 1)];
 
-		ItemList.ResetCursor();
 		while (ItemList.MoveCursorForward() && iRoll > 0)
 			iRoll--;
 		}

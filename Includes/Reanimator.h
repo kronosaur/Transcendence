@@ -299,7 +299,7 @@ class IAnimatron
 		virtual void SetStyle (const CString &sComponent, IAnimatron *pImpl) { }
 
 		//	Helper functions
-		void AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut);
+		void AnimateLinearFade (int iDuration, int iFadeIn, int iFadeOut, DWORD dwMaxOpacity = 255);
 		void AnimateLinearRotation (int iStartAngle, Metric rRate, int iDuration);
 		void AnimatePropertyLinear (const CString &sID, const CString &sName, const CAniProperty &Start, const CAniProperty &End, int iDuration, bool bStartNow = false);
 		void Scroll (EScrollTypes iScroll, int iScrollDist = 0);

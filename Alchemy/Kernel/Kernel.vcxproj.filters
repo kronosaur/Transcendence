@@ -186,6 +186,9 @@
     <ClCompile Include="Zip.cpp">
       <Filter>Source Files\Zip</Filter>
     </ClCompile>
+    <ClCompile Include="ZipArchive.cpp">
+      <Filter>Source Files\Zip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Includes\Crypto.h">

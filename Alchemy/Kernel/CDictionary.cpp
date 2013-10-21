@@ -267,6 +267,33 @@ ALERROR CDictionary::RemoveEntry (int iKey, int *retiOldValue)
 	return NOERROR;
 	}
 
+ALERROR CDictionary::RemoveEntryByOrdinal (int iEntry, int *retiOldValue)
+
+//	RemoveEntryByOrdinal
+//
+//	Removes the given entry
+
+	{
+	ALERROR error;
+	int iOldValue;
+
+	//	Get the old value
+
+	iOldValue = m_Array.GetElement(iEntry + 1);
+
+	//	Remove the entry
+
+	if (error = m_Array.RemoveRange(iEntry, iEntry + 1))
+		return error;
+
+	//	Done
+
+	if (retiOldValue)
+		*retiOldValue = iOldValue;
+
+	return NOERROR;
+	}
+
 ALERROR CDictionary::ReplaceEntry (int iKey, int iValue, BOOL bAdd, BOOL *retbAdded, int *retiOldValue)
 
 //	ReplaceEntry

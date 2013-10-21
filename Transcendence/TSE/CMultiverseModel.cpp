@@ -29,11 +29,19 @@
 
 #include "PreComp.h"
 
+#define FIELD_DOWNLOAD_URL						CONSTLIT("downloadURL")
+#define FIELD_FILE_VERSION						CONSTLIT("fileVersion")
+#define FIELD_TYPE								CONSTLIT("type")
+#define FIELD_UNID								CONSTLIT("unid")
+
+#define TYPE_GAME_ENGINE						CONSTLIT("gameEngine")
+
 CMultiverseModel::CMultiverseModel (void) :
 		m_fUserSignedIn(false),
 		m_fCollectionLoaded(false),
 		m_fDisabled(false),
-		m_fLoadingCollection(false)
+		m_fLoadingCollection(false),
+		m_fNewsLoaded(false)
 
 //	CMultiverseModel constructor
 
@@ -150,6 +158,49 @@ ALERROR CMultiverseModel::GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCo
 	return NOERROR;
 	}
 
+CMultiverseNewsEntry *CMultiverseModel::GetNextNewsEntry (void)
+
+//	GetNextNewsEntry
+//
+//	Returns the next news entry to display.
+//
+//	NOTE: We return a copy which the callers are responsible for freeing.
+	
+	{
+	CSmartLock Lock(m_cs);
+	int i;
+
+	//	Loop over all entries in order
+
+	for (i = 0; i < m_News.GetCount(); i++)
+		{
+		CMultiverseNewsEntry *pEntry = m_News.GetEntry(i);
+
+		//	If we've already shown this entry, skip it.
+
+		if (pEntry->IsShown())
+			continue;
+
+		//	If this entry does not match the collection criteria, then skip it.
+
+		if (m_Collection.HasAnyUNID(pEntry->GetExcludedUNIDs()))
+			continue;
+
+		if (!m_Collection.HasAllUNIDs(pEntry->GetRequiredUNIDs()))
+			continue;
+
+		//	Mark the entry as having been shown
+
+		m_News.ShowNews(pEntry);
+
+		//	return this entry
+
+		return new CMultiverseNewsEntry(*pEntry);
+		}
+	
+	return NULL;
+	}
+
 CMultiverseModel::EOnlineStates CMultiverseModel::GetOnlineState (CString *retsUsername) const
 
 //	GetOnlineState
@@ -200,6 +251,18 @@ bool CMultiverseModel::IsLoadCollectionNeeded (void) const
 	//	Need to load the collection
 
 	return true;
+	}
+
+bool CMultiverseModel::IsLoadNewsNeeded (void) const
+
+//	IsLoadNewsNeeded
+//
+//	Returns TRUE if we need to load the news
+
+	{
+	CSmartLock Lock(m_cs);
+
+	return !m_fNewsLoaded;
 	}
 
 void CMultiverseModel::OnCollectionLoadFailed (void)
@@ -290,6 +353,17 @@ ALERROR CMultiverseModel::SetCollection (const CJSONValue &Data, CString *retsRe
 		{
 		const CJSONValue &Entry = Data.GetElement(i);
 
+		//	If this is a game engine entry then see if it tells us to upgrade
+		//	our engine.
+
+		if (strEquals(TYPE_GAME_ENGINE, Entry.GetElement(FIELD_TYPE).AsString()))
+			{
+			SetUpgradeVersion(Entry);
+			continue;
+			}
+
+		//	Create a catalog entry and add to our collection
+
 		CMultiverseCatalogEntry *pNewEntry;
 		if (CMultiverseCatalogEntry::CreateFromJSON(Entry, &pNewEntry, retsResult) != NOERROR)
 			{
@@ -349,6 +423,57 @@ void CMultiverseModel::SetDisabled (void)
 	m_sUsername = NULL_STR;
 	m_fUserSignedIn = false;
 	DeleteCollection();
+	}
+
+ALERROR CMultiverseModel::SetNews (const CJSONValue &Data, const CString &sCacheFilespec, TSortMap<CString, CString> *retDownloads, CString *retsResult)
+
+//	SetNews
+//
+//	Sets the list of news articles from the Multiverse.
+
+	{
+	CSmartLock Lock(m_cs);
+	m_fNewsLoaded = true;
+	return m_News.SetNews(Data, sCacheFilespec, retDownloads, retsResult);
+	}
+
+void CMultiverseModel::SetUpgradeVersion (const CJSONValue &Entry)
+
+//	SetUpgradeVersion
+//
+//	Sets the engine version available on the Multiverse.
+
+	{
+	//	If this is not for our engine, then ignore it.
+
+	if (!strEquals(Entry.GetElement(FIELD_UNID).AsString(), UPGRADE_ENTRY_UNID))
+		return;
+
+	//	Get the upgrade URL
+
+	m_sUpgradeURL = Entry.GetElement(FIELD_DOWNLOAD_URL).AsString();
+	if (m_sUpgradeURL.IsBlank())
+		{
+		::kernelDebugLogMessage("Missing download URL in upgrade entry.");
+		return;
+		}
+
+	//	Parse the fileVersion
+
+	m_UpgradeVersion.sProductVersion = Entry.GetElement(FIELD_FILE_VERSION).AsString();
+
+	TArray<CString> Parts;
+	if (::strDelimit(m_UpgradeVersion.sProductVersion, '.', 0, &Parts) != NOERROR
+			|| Parts.GetCount() != 4)
+		{
+		::kernelDebugLogMessage("Invalid upgrade entry fileVersion: %s", m_UpgradeVersion.sProductVersion);
+		return;
+		}
+
+	m_UpgradeVersion.dwProductVersion = (((ULONG64)strToInt(Parts[0], 0)) << 48)
+			| (((ULONG64)strToInt(Parts[1], 0)) << 32)
+			| (((ULONG64)strToInt(Parts[2], 0)) << 16)
+			| (((ULONG64)strToInt(Parts[3], 0)));
 	}
 
 void CMultiverseModel::SetUsername (const CString &sUsername)

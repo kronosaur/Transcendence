@@ -35,8 +35,10 @@ const int INDEX_LL_RADIUS =					6;
 const int INDEX_LR_RADIUS =					7;
 #define PROP_LR_RADIUS						CONSTLIT("lrRadius")
 
-#define PROP_COLOR							CONSTLIT("color")
+const int INDEX_OPACITY =					8;
 #define PROP_OPACITY						CONSTLIT("opacity")
+
+#define PROP_COLOR							CONSTLIT("color")
 
 const int PADDING_BOTTOM =					8;
 const int PADDING_LEFT =					8;
@@ -58,6 +60,7 @@ CAniRoundedRect::CAniRoundedRect (void)
 	m_Properties.SetInteger(PROP_UR_RADIUS, 10);
 	m_Properties.SetInteger(PROP_LL_RADIUS, 10);
 	m_Properties.SetInteger(PROP_LR_RADIUS, 10);
+	m_Properties.SetInteger(PROP_OPACITY, 255);
 
 	//	Initialize corners
 

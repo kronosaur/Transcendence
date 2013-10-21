@@ -739,5 +739,14 @@
     <ClCompile Include="IListData.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="CDisplayAttributeDefinitions.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CMultiverseNews.cpp">
+      <Filter>Source Files\Multiverse</Filter>
+    </ClCompile>
+    <ClCompile Include="CMultiverseNewsEntry.cpp">
+      <Filter>Source Files\Multiverse</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
