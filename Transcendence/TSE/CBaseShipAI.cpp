@@ -340,6 +340,7 @@ bool CBaseShipAI::CalcFlockingFormation (CSpaceObject *pLeader,
 				&& pObj->GetSovereign() == m_pShip->GetSovereign()
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& pObj != m_pShip
 				&& pObj != pLeader)
 			{

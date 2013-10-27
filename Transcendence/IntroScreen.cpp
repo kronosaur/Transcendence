@@ -587,6 +587,7 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 				&& !pObj->IsDestroyed()
 				&& pObj != pShipDestroyed
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
 			{
 			if (pObj->GetSovereign() == pSovereign1)
@@ -623,6 +624,7 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsDestroyed()
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& pObj != pShipDestroyed)
 			{
 			CShip *pShip = pObj->AsShip();
@@ -1488,6 +1490,7 @@ void CTranscendenceWnd::DestroyIntroShips (void)
 		CShip *pShip;
 		if (pObj 
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& (pShip = pObj->AsShip()))
 			{
 			if (pShip->GetClass() == pClassToDestroy)
@@ -1712,6 +1715,7 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 					CSpaceObject *pObj = pSystem->GetObject(i);
 					if (pObj 
 							&& pObj->GetCategory() == CSpaceObject::catShip
+							&& !pObj->IsVirtual()
 							&& !pObj->IsInactive())
 						iCount++;
 					}
@@ -1814,7 +1818,8 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 					if (pObj 
 							&& pObj->GetCategory() == CSpaceObject::catShip
 							&& pObj->GetSovereign() != pCurSovereign
-							&& !pObj->IsInactive())
+							&& !pObj->IsInactive()
+							&& !pObj->IsVirtual())
 						Opponents.Insert(pObj);
 					}
 
@@ -1846,6 +1851,7 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + iTotalCount - (i + 1)) % iTotalCount);
 					if (pObj 
 							&& pObj->GetCategory() == CSpaceObject::catShip
+							&& !pObj->IsVirtual()
 							&& !pObj->IsInactive())
 						{
 						g_pUniverse->SetPOV(pObj);
@@ -1874,6 +1880,7 @@ void CTranscendenceWnd::OnCharIntro (char chChar, DWORD dwKeyData)
 					CSpaceObject *pObj = pSystem->GetObject((pPOV->GetIndex() + i + 1) % iTotalCount);
 					if (pObj 
 							&& pObj->GetCategory() == CSpaceObject::catShip
+							&& !pObj->IsVirtual()
 							&& !pObj->IsInactive())
 						{
 						g_pUniverse->SetPOV(pObj);
@@ -2723,6 +2730,7 @@ ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
 
 		if (pObj
 				&& pObj->GetCategory() == CSpaceObject::catShip
+				&& !pObj->IsVirtual()
 				&& !pObj->IsInactive()
 				&& !pObj->GetData(CONSTLIT("IntroController")).IsBlank())
 			{

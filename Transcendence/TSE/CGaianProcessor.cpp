@@ -81,6 +81,7 @@ void CGaianProcessorAI::Behavior (void)
 							&& pObj->IsAbandoned()
 							&& pObj->CanBeDestroyed()
 							&& !pObj->IsInactive()
+							&& !pObj->IsVirtual()
 							&& pObj->GetData(SPACE_OBJ_TAGGED_DATA).IsBlank())
 						{
 						CVector vRange = pObj->GetPos() - m_pShip->GetPos();

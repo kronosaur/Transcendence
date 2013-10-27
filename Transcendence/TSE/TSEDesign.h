@@ -1528,6 +1528,7 @@ class CItemEnhancement
 		bool IsReflective (const DamageDesc &Damage, int *retiReflectChance = NULL) const;
 		inline bool IsShatterImmune (void) const { return ((GetType() == etSpecialDamage) && GetLevel2() == specialShatter && !IsDisadvantage()); }
 		inline bool IsShieldInterfering (void) const { return ((GetType() == etImmunityIonEffects) && IsDisadvantage()); }
+		inline bool IsStacking (void) const { return (GetType() == etStrengthen && GetLevel() == 0); }
 		void ReadFromStream (DWORD dwVersion, IReadStream *pStream);
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetEnhancementType (CItemType *pType) { m_pEnhancer = pType; }

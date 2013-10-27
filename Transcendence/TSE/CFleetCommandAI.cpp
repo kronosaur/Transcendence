@@ -1256,7 +1256,7 @@ void CFleetCommandAI::UpdateTargetListAndPotentials (void)
 		{
 		CSpaceObject *pObj = m_pShip->GetSystem()->GetObject(i);
 
-		if (pObj  == NULL || pObj == m_pObjective || pObj == m_pShip || pObj->IsInactive())
+		if (pObj  == NULL || pObj == m_pObjective || pObj == m_pShip || pObj->IsInactive() || pObj->IsVirtual())
 			NULL;
 
 		//	Compute the influence of ships (both friendly and enemy)

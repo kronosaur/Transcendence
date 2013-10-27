@@ -298,6 +298,10 @@
 //	94: 1.2 Beta 3
 //		m_rParallaxDist in CStation
 //
+//	95: 1.2 RC 2
+//		Updated to fix a bug in 94 in which asteroids were marked as immutable
+//		(preventing mining from working).
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

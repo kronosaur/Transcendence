@@ -110,6 +110,8 @@
 #define UNIQUE_IN_SYSTEM						CONSTLIT("inSystem")
 #define UNIQUE_IN_UNIVERSE						CONSTLIT("inUniverse")
 
+#define EVENT_ON_MINING							CONSTLIT("OnMining")
+
 #define FIELD_ABANDONED_DOCK_SCREEN				CONSTLIT("abandonedDockScreen")
 #define FIELD_ARMOR_CLASS						CONSTLIT("armorClass")
 #define FIELD_ARMOR_LEVEL						CONSTLIT("armorLevel")
@@ -1127,8 +1129,12 @@ ALERROR CStationType::OnBindDesign (SDesignLoadCtx &Ctx)
 	//	Any object has not HP and is a star or a world is immutable
 	//	by default.
 
-	if ((m_iMaxHitPoints == 0 && m_iStructuralHP == 0)
-			&& (m_iScale == scaleStar || m_iScale == scaleWorld))
+	if (!m_fImmutable
+			&& (m_iScale == scaleStar || m_iScale == scaleWorld)
+			&& m_iMaxHitPoints == 0
+			&& m_iStructuralHP == 0
+			&& m_iEjectaAdj == 0
+			&& !FindEventHandler(EVENT_ON_MINING))
 		m_fImmutable = true;
 
 	return NOERROR;

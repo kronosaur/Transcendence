@@ -260,6 +260,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
+		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(STATION_PLACE_SIM_SWITCH))
 		{

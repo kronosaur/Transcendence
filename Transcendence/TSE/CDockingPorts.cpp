@@ -546,6 +546,7 @@ bool CDockingPorts::ShipsNearPort (CSpaceObject *pOwner, CSpaceObject *pRequesti
 		if (pObj
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& pObj != pRequestingObj)
 			{
 			Metric rDist2 = (pObj->GetPos() - vPortPos).Length2();

@@ -596,6 +596,7 @@ void CStandardShipAI::OnBehavior (void)
 							&& !pObj->IsRadioactive()
 							&& !pObj->IsDestroyed()
 							&& !pObj->IsInactive()
+							&& !pObj->IsVirtual()
 							&& pObj->GetData(SPACE_OBJ_SCAVENGE_DATA).IsBlank())
 						{
 						CVector vRange = pObj->GetPos() - m_pShip->GetPos();
@@ -1504,6 +1505,7 @@ void CStandardShipAI::BehaviorStart (void)
 						&& !pObj->IsEnemy(m_pShip)
 						&& !pObj->IsAbandoned()
 						&& !pObj->IsInactive()
+						&& !pObj->IsVirtual()
 						&& pObj->HasAttribute(CONSTLIT("populated")))
 					{
 					CVector vRange = pObj->GetPos() - m_pShip->GetPos();

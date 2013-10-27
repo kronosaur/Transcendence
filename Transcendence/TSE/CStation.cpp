@@ -262,6 +262,7 @@ int CStation::CalcNumberOfShips (void)
 				&& pObj->GetBase() == this
 				&& pObj->GetCategory() == catShip
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& pObj != this)
 			iCount++;
 		}
@@ -2758,6 +2759,16 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 
 	if (Ctx.dwVersion < 77)
 		m_fImmutable = m_pType->IsImmutable();
+
+	//	Fix a bug in version 94 in which asteroids were inadvertently marked
+	//	as immutable.
+
+	else if (Ctx.dwVersion == 94)
+		{
+		if (m_fImmutable
+				&& m_pType->GetEjectaAdj() != 0)
+			m_fImmutable = m_pType->IsImmutable();
+		}
 
 	//	If this is a world or a star, create a small image
 

@@ -43,14 +43,16 @@ EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement
 
 	else if (m_dwMods == etNone)
 		{
-		//	For stackable strengthening, start at 1
+		//	For strength/hpBonus, use the following rules:
+		//
+		//	etStrengthen 0 -> Min(10%, maxHPBonus)
+		//	etStrengthen {level} -> Min( {level} * 10, maxHPBonus )
 
-		if ((Enhancement.GetType() == etStrengthen
+		if (Enhancement.GetType() == etStrengthen
 					|| Enhancement.GetType() == etHPBonus)
-				&& Enhancement.GetEnhancementType() == GetEnhancementType())
 			{
 			int iMaxBonus = Item.GetType()->GetMaxHPBonus();
-			int iNewBonus = Min((Enhancement.GetLevel() == 0 ? 10 : Enhancement.GetHPBonus()), iMaxBonus);
+			int iNewBonus = Min((Enhancement.IsStacking() ? 10 : Enhancement.GetHPBonus()), iMaxBonus);
 			if (iNewBonus > 0)
 				{
 				SetModBonus(iNewBonus);
@@ -242,7 +244,7 @@ EnhanceItemStatus CItemEnhancement::Combine (const CItem &Item, CItemEnhancement
 
 					int iOldBonus = GetHPBonus();
 					int iMaxBonus = Item.GetType()->GetMaxHPBonus();
-					int iNewBonus = Min((Enhancement.GetLevel() == 0 ? iOldBonus + 10 : Enhancement.GetHPBonus()), iMaxBonus);
+					int iNewBonus = Min((Enhancement.IsStacking() ? iOldBonus + 10 : Enhancement.GetHPBonus()), iMaxBonus);
 					if (iNewBonus > iOldBonus)
 						{
 						SetModBonus(iNewBonus);

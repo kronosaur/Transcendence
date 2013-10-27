@@ -171,6 +171,7 @@ void CAutoDefenseClass::Update (CInstalledDevice *pDevice,
 							&& pObj->GetCategory() == CSpaceObject::catMissile
 							&& pObj->GetSource() != pSource
 							&& !pObj->IsInactive()
+							&& !pObj->IsVirtual()
 							&& (pObj->GetSource() == NULL || pSource->IsEnemy(pObj->GetSource())))
 						{
 						CVector vRange = pObj->GetPos() - vSourcePos;
@@ -216,6 +217,7 @@ void CAutoDefenseClass::Update (CInstalledDevice *pDevice,
 							&& ((rDistance2 = (pObj->GetPos() - vSourcePos).Length2()) < rBestDist2)
 							&& pObj->MatchesCriteria(Ctx, m_TargetCriteria)
 							&& !pObj->IsInactive()
+							&& !pObj->IsVirtual()
 							&& pObj != pSource)
 						{
 						pBestTarget = pObj;
