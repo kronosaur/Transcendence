@@ -1714,6 +1714,7 @@ class CEnergyField
 		inline int GetRotation (void) const { return m_iRotation; }
 		inline CEnergyFieldType *GetType (void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
+		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
@@ -1766,6 +1767,7 @@ class CEnergyFieldList
 					   DWORD *retdwID = NULL);
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		bool AbsorbsWeaponFire (CInstalledDevice *pDevice);
+		bool Damage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
 		int GetCountOfType (CEnergyFieldType *pType);
 		const CString &GetData (DWORD dwID, const CString &sAttrib);

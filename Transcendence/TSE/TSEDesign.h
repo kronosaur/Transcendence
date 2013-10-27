@@ -4298,6 +4298,7 @@ class CEnergyFieldType : public CDesignType
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		inline bool HasOnUpdateEvent (void) { return m_bHasOnUpdateEvent; }
 		inline bool IsHitEffectAlt (void) { return m_bAltHitEffect; }
+		inline bool IsShieldOverlay (void) { return m_bShieldOverlay; }
 		inline bool RotatesWithShip (void) { return m_bRotateWithShip; }
 
 		//	CDesignType overrides
@@ -4323,6 +4324,7 @@ class CEnergyFieldType : public CDesignType
 		bool m_bHasOnUpdateEvent;				//	TRUE if we have OnUpdate
 		bool m_bAltHitEffect;					//	If TRUE, hit effect replaces normal effect
 		bool m_bRotateWithShip;					//	If TRUE, we rotate along with source rotation
+		bool m_bShieldOverlay;					//	If TRUE, we are above hull/armor
 	};
 
 //	CSystemType ---------------------------------------------------------------

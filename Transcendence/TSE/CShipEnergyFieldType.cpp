@@ -12,6 +12,7 @@
 #define ABSORB_ADJ_ATTRIB						CONSTLIT("absorbAdj")
 #define ALT_EFFECT_ATTRIB						CONSTLIT("altEffect")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
+#define SHIELD_OVERLAY_ATTRIB					CONSTLIT("shieldOverlay")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
@@ -221,7 +222,8 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 	//	Damage adjustment
 
-	LoadDamageAdj(pDesc, ABSORB_ADJ_ATTRIB, m_iAbsorbAdj);
+	int iAbsorbCount;
+	LoadDamageAdj(pDesc, ABSORB_ADJ_ATTRIB, m_iAbsorbAdj, &iAbsorbCount);
 
 	//	Bonus adjustment
 
@@ -238,6 +240,12 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 	//	Keep track of the events that we have
 
 	m_bHasOnUpdateEvent = FindEventHandler(ON_UPDATE_EVENT);
+
+	//	Are we a field/shield overlay (or part of hull)?
+	//	By default, we are a shield overlay if we absorb damage.
+
+	if (!pDesc->FindAttributeBool(SHIELD_OVERLAY_ATTRIB, &m_bShieldOverlay))
+		m_bShieldOverlay = (iAbsorbCount > 0);
 
 	//	Done
 

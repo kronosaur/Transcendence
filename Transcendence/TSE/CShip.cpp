@@ -3489,6 +3489,16 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 			return damageAbsorbedByShields;
 		}
 
+	//	Let any overlays take damage
+
+	if (m_EnergyFields.Damage(this, Ctx))
+		{
+		if (IsDestroyed())
+			return damageDestroyed;
+		else if (Ctx.iDamage == 0)
+			return damageNoDamage;
+		}
+
 	//	Damage any devices that are outside the hull (e.g., Patch Spiders)
 	//	Ignore devices with overlays because they get damaged in the overlay
 	//	damage section.
