@@ -17,15 +17,12 @@ const int MODIFIER_SPACING_X =				4;
 
 const WORD RGB_DISABLED_TEXT =				CG16bitImage::RGBValue(128,128,128);
 
-const COLORREF RGB_MILITARY_BACKGROUND =			RGB(0,23,167);
-const COLORREF RGB_ILLEGAL_BACKGROUND =				RGB(167,23,0);
-const WORD RGB_MODIFIER_TEXT =						CG16bitImage::RGBValue(150,180,255);
-
-const WORD RGB_MODIFIER_NEGATIVE_BACKGROUND =		CG16bitImage::RGBValue(167,23,0);
-const WORD RGB_MODIFIER_NEGATIVE_TEXT =				CG16bitImage::RGBValue(255,180,150);
-const WORD RGB_MODIFIER_NORMAL_BACKGROUND =			CG16bitImage::RGBValue(96,96,96);
-const WORD RGB_MODIFIER_NORMAL_TEXT =				CG16bitImage::RGBValue(196,196,196);
-const WORD RGB_MODIFIER_POSITIVE_BACKGROUND =		CG16bitImage::RGBValue(0,23,167);
+const WORD RGB_MODIFIER_NEGATIVE_BACKGROUND =		CG16bitImage::RGBValue(140, 42, 42);	//	H:0   S:70  B:55
+const WORD RGB_MODIFIER_NEGATIVE_TEXT =				CG16bitImage::RGBValue(255,153,153);	//	H:0   S:40  B:100
+const WORD RGB_MODIFIER_NORMAL_BACKGROUND =			CG16bitImage::RGBValue(101,101,101);	//	H:0   S:0   B:40
+const WORD RGB_MODIFIER_NORMAL_TEXT =				CG16bitImage::RGBValue(220,220,220);	//	H:0   S:0   B:86
+const WORD RGB_MODIFIER_POSITIVE_BACKGROUND =		CG16bitImage::RGBValue( 42, 42,140);	//	H:240 S:70  B:55
+const WORD RGB_MODIFIER_POSITIVE_TEXT =				CG16bitImage::RGBValue(153,153,255);	//	H:240 S:40  B:100
 
 const int DAMAGE_ADJ_ICON_WIDTH =			16;
 const int DAMAGE_ADJ_ICON_HEIGHT =			16;
@@ -34,7 +31,7 @@ const int DAMAGE_ADJ_ICON_SPACING_X =		2;
 const int DAMAGE_ADJ_SPACING_X =			6;
 
 const int ATTRIB_PADDING_X =				4;
-const int ATTRIB_PADDING_Y =				0;
+const int ATTRIB_PADDING_Y =				1;
 const int ATTRIB_SPACING_X =				2;
 const int ATTRIB_SPACING_Y =				2;
 
@@ -587,7 +584,7 @@ void CGItemListArea::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplay
 			{
 			case attribPositive:
 				wBackColor = RGB_MODIFIER_POSITIVE_BACKGROUND;
-				wTextColor = RGB_MODIFIER_TEXT;
+				wTextColor = RGB_MODIFIER_POSITIVE_TEXT;
 				break;
 
 			case attribNegative:
