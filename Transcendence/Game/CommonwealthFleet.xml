@@ -270,7 +270,7 @@
 			value=				"0"
 			frequency=			"notrandom"
 			mass=				"1"
-			attributes=			"Consumable; Info; LamplighterDataROM"
+			attributes=			"cannotOrder, Consumable; Info; LamplighterDataROM"
 
 			description=		"This unmarked ROM contains what looks like experimental data. It contains millions of data points collected over several years; their meaning and purpose is unknown."
 			>

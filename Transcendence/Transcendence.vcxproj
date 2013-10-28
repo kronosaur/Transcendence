@@ -670,7 +670,9 @@
     <None Include="Game\StdPlayerShips.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\StdShields.xml" />
+    <None Include="Game\StdShields.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdSystems.xml">
       <SubType>Designer</SubType>
     </None>

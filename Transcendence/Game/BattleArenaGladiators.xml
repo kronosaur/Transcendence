@@ -10,7 +10,7 @@
 			value=				"15000"
 			mass=				"4000"
 			frequency=			"notrandom"
-			attributes=			"EI; EnergyWeapon; MajorItem"
+			attributes=			"cannotOrder, EI; EnergyWeapon; MajorItem"
 
 			description=		"A modified particle cannon firing crisscrossing beams."
 
