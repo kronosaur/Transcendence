@@ -2033,6 +2033,7 @@ class CGameSettings
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
+			noAutoUpdate,					//	Do not auto upgrade the game
 
 			//	Video options
 			forceDirectX,					//	Use DirectX to access screen directly
@@ -2059,7 +2060,7 @@ class CGameSettings
 			noCollectionDownload,			//	Do not automatically download collection
 
 			//	Constants
-			OPTIONS_COUNT = 26,
+			OPTIONS_COUNT = 27,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

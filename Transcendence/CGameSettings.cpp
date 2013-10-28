@@ -61,6 +61,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		//	Installation options
 
 		{	"useTDB",					optionBoolean,	"false",	0	},
+		{	"noAutoUpdate",				optionBoolean,	"false",	0	},
 
 		//	Video options
 		{	"forceDirectX",				optionBoolean,	"false",	0	},

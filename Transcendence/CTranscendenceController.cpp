@@ -1194,6 +1194,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	If we need to download a new version, do so now.
 
 		if (m_Multiverse.GetUpgradeVersion() > m_Model.GetProgramVersion().dwProductVersion
+				&& !m_Settings.GetBoolean(CGameSettings::noAutoUpdate)
 				&& !IsUpgradeReady()
 				&& !m_bUpgradeDownloaded)
 			{
