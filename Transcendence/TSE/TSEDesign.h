@@ -2818,7 +2818,7 @@ class IShipController
 		virtual bool GetReverseThrust (void) = 0;
 		virtual CSpaceObject *GetShip (void) { return NULL; }
 		virtual bool GetStopThrust (void) = 0;
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return NULL; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return NULL; }
 		virtual bool GetThrust (void) = 0;
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { }
 		virtual bool IsAngryAt (CSpaceObject *pObj) const { return false; }

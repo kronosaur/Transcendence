@@ -511,7 +511,7 @@ CString CFleetShipAI::DebugCrashInfo (void)
 	return sResult;
 	}
 
-CSpaceObject *CFleetShipAI::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CFleetShipAI::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //
@@ -645,7 +645,7 @@ DWORD CFleetShipAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage,
 			if (GetCurrentOrder() == IShipController::orderEscort && GetCurrentOrderTarget() == pSender)
 				{
 				DWORD dwRes = (resCanBeInFormation | resCanBreakAndAttack);
-				if (pSender->GetTarget(true))
+				if (pSender->GetTarget(CItemCtx(), true))
 					dwRes |= resCanAttack;
 
 				if (m_State == stateAttackTarget

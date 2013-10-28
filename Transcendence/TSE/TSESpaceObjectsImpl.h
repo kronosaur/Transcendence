@@ -985,7 +985,7 @@ class CShip : public CSpaceObject
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual int GetStealth (void) const;
 		virtual Metric GetMaxSpeed (void) { return ((m_fHalfSpeed || IsMainDriveDamaged()) ? (m_rMaxSpeed / 2.0) : m_rMaxSpeed); }
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual CDesignType *GetType (void) const { return m_pClass; }
 		virtual int GetVisibleDamage (void);
 		virtual bool HasAttribute (const CString &sAttribute) const;

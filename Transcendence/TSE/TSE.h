@@ -2139,6 +2139,7 @@ class CSpaceObject : public CObject
 									  DWORD dwFlags = 0);
 
 		CSpaceObject *GetNearestVisibleEnemy (Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
+		CSpaceObject *GetNearestVisibleEnemyInArc (int iMinFireArc, int iMaxFireArc, Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
 		CString GetNounPhrase (DWORD dwFlags);
 		inline CSpaceObject *GetObjRefData (const CString &sAttrib) { return m_Data.GetObjRefData(sAttrib); }
 		inline const CVector &GetOldPos (void) const { return m_vOldPos; }
@@ -2426,7 +2427,7 @@ class CSpaceObject : public CObject
 		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return NULL; }
 		virtual int GetPerception (void) { return perceptNormal; }
 		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return NULL; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return NULL; }
 		virtual int GetScore (void) { return 0; }
 		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual int GetShieldLevel (void) { return -1; }

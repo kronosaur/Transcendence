@@ -259,7 +259,7 @@ CString CGaianProcessorAI::DebugCrashInfo (void)
 	return sResult;
 	}
 
-CSpaceObject *CGaianProcessorAI::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CGaianProcessorAI::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //

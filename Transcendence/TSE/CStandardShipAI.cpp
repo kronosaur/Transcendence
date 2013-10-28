@@ -1694,7 +1694,7 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 				case IShipController::orderGuard:
 					if (pAttacker->GetBase() == GetBase())
 						{
-						CSpaceObject *pTarget = pAttacker->GetTarget();
+						CSpaceObject *pTarget = pAttacker->GetTarget(CItemCtx());
 						if (pTarget)
 							{
 							SetState(stateAttackingThreat);

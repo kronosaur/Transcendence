@@ -315,7 +315,7 @@ CSpaceObject *CZoanthropeAI::GetBase (void) const
 		}
 	}
 
-CSpaceObject *CZoanthropeAI::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CZoanthropeAI::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //

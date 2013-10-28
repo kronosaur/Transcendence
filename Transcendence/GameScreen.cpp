@@ -256,7 +256,7 @@ void CTranscendenceWnd::DoInvocation (CPower *pPower)
 	if (GetPlayer())
 		{
 		CString sError;
-		pPower->InvokeByPlayer(GetPlayer()->GetShip(), GetPlayer()->GetTarget(), &sError);
+		pPower->InvokeByPlayer(GetPlayer()->GetShip(), GetPlayer()->GetTarget(CItemCtx()), &sError);
 		if (!sError.IsBlank())
 			DisplayMessage(sError);
 		}

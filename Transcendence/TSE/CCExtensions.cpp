@@ -5465,7 +5465,7 @@ ICCItem *fnObjGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 		case FN_OBJ_TARGET:
 			{
-			CSpaceObject *pTarget = pObj->GetTarget(true);
+			CSpaceObject *pTarget = pObj->GetTarget(CItemCtx(), true);
 			if (pTarget)
 				pResult = pCC->CreateInteger((int)pTarget);
 			else

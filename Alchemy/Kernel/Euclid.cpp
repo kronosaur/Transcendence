@@ -14,6 +14,19 @@ Metric g_Cosine[360];
 Metric g_Sine[360];
 static bool g_bTrigInit = false;
 
+bool AngleInArc (int iAngle, int iMinAngle, int iMaxAngle)
+
+//	AngleInArc
+//
+//	Returns TRUE if iAngle is inside the given arc
+
+	{
+	if (iMinAngle <= iMaxAngle)
+		return (iAngle >= iMinAngle && iAngle <= iMaxAngle);
+	else
+		return (iAngle >= iMinAngle || iAngle <= iMaxAngle);
+	}
+
 void EuclidInit (void)
 
 //	EuclidInit

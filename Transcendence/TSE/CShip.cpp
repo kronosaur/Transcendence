@@ -327,7 +327,7 @@ bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObjec
 
 	if (pDevice->IsSelectable(ItemCtx))
 		{
-		*retpTarget = m_pController->GetTarget();
+		*retpTarget = m_pController->GetTarget(ItemCtx);
 		*retiFireSolution = -1;
 		return true;
 		}
@@ -347,12 +347,12 @@ bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObjec
 
 		if (dwLinkedFireOptions & CDeviceClass::lkfAlways)
 			{
-			*retpTarget = m_pController->GetTarget();
+			*retpTarget = m_pController->GetTarget(ItemCtx);
 			*retiFireSolution = -1;
 			return true;
 			}
 
-		//	Otherwise, we need let our controller find a target for this weapon.
+		//	Otherwise, we need to let our controller find a target for this weapon.
 
 		else
 			{
@@ -2673,14 +2673,14 @@ int CShip::GetStealth (void) const
 	return Min((int)stealthMax, iStealth);
 	}
 
-CSpaceObject *CShip::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CShip::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //
 //	Returns the target that this ship is attacking
 
 	{
-	return m_pController->GetTarget(bNoAutoTarget);
+	return m_pController->GetTarget(ItemCtx, bNoAutoTarget);
 	}
 
 int CShip::GetVisibleDamage (void)

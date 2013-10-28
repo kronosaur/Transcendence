@@ -108,7 +108,7 @@ class CIntroShipController : public CObject, public IShipController
 		virtual CSpaceObject *GetBase (void) { return m_pDelegate->GetBase(); }
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return m_pDelegate->GetEscortPrincipal(); }
 		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(bNoAutoTarget); }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return m_pDelegate->GetTarget(ItemCtx, bNoAutoTarget); }
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { m_pDelegate->GetWeaponTarget(TargetingCtx, ItemCtx, retpTarget, retiFireSolution); }
 
 		virtual void AddOrder (OrderTypes Order, CSpaceObject *pTarget, const IShipController::SData &Data, bool bAddBefore = false) { m_pDelegate->AddOrder(Order, pTarget, Data, bAddBefore); }
@@ -406,7 +406,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual GenomeTypes GetPlayerGenome (void) { return m_iGenome; }
 		virtual CString GetPlayerName (void) { return m_sName; }
 		virtual bool GetThrust (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual bool GetReverseThrust (void);
 		virtual bool GetStopThrust (void);
 		virtual CSpaceObject *GetOrderGiver (void) { return m_pShip; }
@@ -454,6 +454,7 @@ class CPlayerShipController : public CObject, public IShipController
 
 	private:
 		void ClearFireAngle (void);
+		CSpaceObject *FindAutoTarget (CItemCtx &ItemCtx) const;
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
