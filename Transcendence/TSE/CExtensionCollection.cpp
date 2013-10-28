@@ -386,12 +386,14 @@ ALERROR CExtensionCollection::ComputeAvailableAdventures (DWORD dwFlags, TArray<
 	return NOERROR;
 	}
 
-ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError)
+ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, const TArray<DWORD> &Extensions, TArray<CExtension *> *retList, CString *retsError)
 
 //	ComputeAvailableExtensions
 //
-//	Computes a list of all extensions that can be used with the given adventure.
-//	(pAdventure may be NULL)
+//	Fills retList with extension objects for the given extensions by UNID.
+//	We only include extensions that are compatible with the given adventure.
+//
+//	NOTE: An empty Extensions input means we want all extensions.
 
 	{
 	CSmartLock Lock(m_cs);
@@ -401,6 +403,7 @@ ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure
 	//	Initialize
 
 	bool bDebugMode = ((dwFlags & FLAG_DEBUG_MODE) == FLAG_DEBUG_MODE);
+	bool bAllExtensions = (Extensions.GetCount() == 0);
 	retList->DeleteAll();
 
 	//	Loop by UNID because we allow at most one of each UNID.
@@ -415,6 +418,12 @@ ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure
 		//	releases, so we only need to check once).
 
 		if (ExtensionList[0]->GetType() != extExtension)
+			continue;
+
+		//	If this extension is not on our list, then skip it
+
+		if (!bAllExtensions 
+				&& !Extensions.Find(ExtensionList[0]->GetUNID()))
 			continue;
 
 		//	Out of all the releases, select the latest version.

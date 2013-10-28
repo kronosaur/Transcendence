@@ -346,6 +346,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /clearRegistered      Clears registered flag on game file.\n");
 		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
+		printf("  /images               Generates chart of images.\n");
 		if (bDebug)
 			printf("  /itemsim              Simulation of items encountered.\n");
 		printf("  /itemtable            Item table.\n");

@@ -2966,6 +2966,7 @@ class CUniverse : public CObject
 			CExtension *pAdventure;			//	If not NULL, bind to this adventure
 			DWORD dwAdventure;				//	It not 0, bind to this adventure
 			CString sAdventureFilespec;		//	If not empty, bind to this adventure
+			TArray<DWORD> ExtensionUNIDs;	//	Extensions to use
 
 			//	Extension list
 

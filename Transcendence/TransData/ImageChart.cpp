@@ -53,6 +53,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Options
 
 	bool bTextBoxesOnly = pCmdLine->GetAttributeBool(CONSTLIT("textBoxesOnly"));
+	bool bFieldUNID = pCmdLine->GetAttributeBool(CONSTLIT("unid"));
 
 	//	Figure out what order we want
 
@@ -128,6 +129,24 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		switch (pType->GetType())
 			{
+			case designItemType:
+				{
+				CItemType *pItemType = CItemType::AsType(pType);
+
+				//	Skip virtual classes
+
+				if (pItemType->IsVirtual())
+					continue;
+
+				//	Initialize the entry
+
+				NewEntry.pType = pType;
+				NewEntry.sName = pItemType->GetNounPhrase(0);
+				NewEntry.pImage = &pItemType->GetImage();
+				NewEntry.iSize = RectWidth(NewEntry.pImage->GetImageRect());
+				break;
+				}
+
 			case designShipClass:
 				{
 				CShipClass *pClass = CShipClass::AsType(pType);
@@ -176,6 +195,11 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				continue;
 				break;
 			}
+
+		//	Adjust name
+
+		if (bFieldUNID)
+			NewEntry.sName = strPatternSubst(CONSTLIT("%s (%x)"), NewEntry.sName, NewEntry.pType->GetUNID());
 
 		//	Compute the sort key
 

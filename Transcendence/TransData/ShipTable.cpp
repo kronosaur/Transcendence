@@ -57,11 +57,7 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 			Cols.Insert(CONSTLIT("damage"));
 			Cols.Insert(CONSTLIT("defenseStrength"));
 			}
-		else if (!strEquals(sAttrib, CONSTLIT("all"))
-				&& !strEquals(sAttrib, CONSTLIT("allClasses"))
-				&& !strEquals(sAttrib, CONSTLIT("criteria"))
-				&& !strEquals(sAttrib, CONSTLIT("debug"))
-				&& !strEquals(sAttrib, CONSTLIT("nologo"))
+		else if (!IsMainCommandParam(sAttrib)
 				&& !strEquals(sAttrib, CONSTLIT("shiptable")))
 			{
 			CString sValue = pCmdLine->GetAttribute(i);

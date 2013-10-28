@@ -26,6 +26,8 @@
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
+#define EXTENSION_FOLDER_ATTRIB				CONSTLIT("extensionFolder")
+#define EXTENSIONS_ATTRIB					CONSTLIT("extensions")
 #define HEXARC_TEST_SWITCH					CONSTLIT("hexarcTest")
 #define IMAGES_SWITCH						CONSTLIT("images")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
@@ -76,6 +78,8 @@ class CHost : public CUniverse::IHost
 	};
 
 void AlchemyMain (CXMLElement *pCmdLine);
+ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError);
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError);
 
 int main (int argc, char *argv[ ], char *envp[ ])
 
@@ -108,7 +112,29 @@ int main (int argc, char *argv[ ], char *envp[ ])
 		return 1;
 		}
 
-	AlchemyMain(pCmdLine);
+	//	If we have a text argument, then use it as a command-line file:
+
+	const CString &sArg = pCmdLine->GetContentText(0);
+	if (!sArg.IsBlank())
+		{
+		CString sError;
+		CXMLElement *pDataFile;
+		if (error = CreateXMLElementFromDataFile(sArg, &pDataFile, &sError))
+			{
+			printf("ERROR: %s\n", sError.GetASCIIZPointer());
+			return 1;
+			}
+
+		AlchemyMain(pDataFile);
+		delete pDataFile;
+		}
+
+	//	Otherwise, just use the command line
+
+	else
+		AlchemyMain(pCmdLine);
+
+	//	Done
 
 	delete pCmdLine;
 	}
@@ -127,10 +153,10 @@ void AlchemyMain (CXMLElement *pCmdLine)
 
 	{
 	ALERROR error;
-	bool bLogo = !pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
 
 	//	Welcome message
 
+	bool bLogo = !pCmdLine->GetAttributeBool(NO_LOGO_SWITCH);
 	if (bLogo)
 		{
 		SFileVersionInfo VersionInfo;
@@ -224,71 +250,27 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		return;
 		}
 
-	//	Figure out what adventure we need
-
-	DWORD dwAdventureUNID;
-	if (!pCmdLine->FindAttributeInteger(ADVENTURE_SWITCH, (int *)&dwAdventureUNID))
-		dwAdventureUNID = DEFAULT_ADVENTURE_EXTENSION_UNID;
-
-	//	See if we need to load images
-
-	DWORD dwInitFlags = 0;
-	if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH)
-			|| pCmdLine->GetAttributeBool(IMAGES_SWITCH)
-			|| pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
-			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
-			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
-			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH)
-			|| pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH) 
-			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
-		;
-	else
-		dwInitFlags |= flagNoResources;
-
-	//	We don't need a version check
-
-	dwInitFlags |= flagNoVersionCheck;
-
-	//	We're not loading the game
-
-	dwInitFlags |= flagNewGame;
-
-	//	Open the universe
-
-	if (bLogo)
-		printf("Loading...");
+	//	Initialize the Universe
 
 	CHost Host;
 	CUniverse Universe;
 	CString sError;
 
-	CUniverse::SInitDesc Ctx;
-	Ctx.pHost = &Host;
-	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
-	Ctx.dwAdventure = dwAdventureUNID;
-	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
-	Ctx.bDefaultExtensions = true;
+	if (bLogo)
+		printf("Loading...");
 
-	if (error = Universe.Init(Ctx, &sError))
+	if (error = InitUniverse(Universe, Host, pCmdLine, &sError))
 		{
-		printf("\n%s\n", sError.GetASCIIZPointer());
-		::kernelSetDebugLog(NULL);
-		return;
-		}
+		if (bLogo)
+			printf("\n");
 
-	if (error = Universe.InitGame(0, &sError))
-		{
-		printf("\n%s\n", sError.GetASCIIZPointer());
+		printf("%s\n", sError.GetASCIIZPointer());
 		::kernelSetDebugLog(NULL);
 		return;
 		}
 
 	if (bLogo)
 		printf("done.\n");
-
-	//	Mark everything as known
-
-	MarkItemsKnown(Universe);
 
 	//	Figure out what to do
 
@@ -420,6 +402,157 @@ void ComputeUNID2EntityTable (const CString &sDataFile, CIDTable &EntityTable)
 		DWORD dwUNID = strToInt(sValue, 0);
 		EntityTable.AddEntry(dwUNID, new CString(sEntity));
 		}
+	}
+
+ALERROR CreateXMLElementFromDataFile (const CString &sFilespec, CXMLElement **retpDataFile, CString *retsError)
+	{
+	ALERROR error;
+	int i;
+
+	CFileReadBlock File(sFilespec);
+	if (error = File.Open())
+		{
+		if (retsError) *retsError = strPatternSubst(CONSTLIT("Unable to open data file: %s."), sFilespec);
+		return error;
+		}
+
+	CXMLElement *pFile;
+	if (error = CXMLElement::ParseXML(&File, NULL, &pFile, retsError))
+		return error;
+
+	//	Create a new element that looks like a command-line
+
+	CXMLElement *pDataFile = new CXMLElement(CONSTLIT("TransData"), NULL);
+
+	//	Parse
+
+	CString sExtensionList;
+	for (i = 0; i < pFile->GetContentElementCount(); i++)
+		{
+		CXMLElement *pItem = pFile->GetContentElement(i);
+		if (strEquals(pItem->GetTag(), CONSTLIT("Extension")))
+			{
+			DWORD dwUNID = pItem->GetAttributeInteger(CONSTLIT("unid"));
+			if (dwUNID == 0)
+				{
+				printf("Warning: Invalid extension UNID: %x.\n", dwUNID);
+				continue;
+				}
+
+			if (sExtensionList.IsBlank())
+				sExtensionList = strPatternSubst(CONSTLIT("0x%x"), dwUNID);
+			else
+				sExtensionList = strPatternSubst(CONSTLIT("%s, 0x%x"), sExtensionList, dwUNID);
+			}
+		else if (strEquals(pItem->GetTag(), CONSTLIT("Option")))
+			{
+			CString sName = pItem->GetAttribute(CONSTLIT("name"));
+			CString sValue = pItem->GetAttribute(CONSTLIT("value"));
+			if (sValue.IsBlank())
+				sValue = CONSTLIT("true");
+
+			pDataFile->AddAttribute(sName, sValue);
+			}
+		else
+			printf("Warning: Unknown directive: %s.\n", pItem->GetTag().GetASCIIZPointer());
+		}
+
+	//	Additional parameters
+
+	if (!sExtensionList.IsBlank())
+		pDataFile->AddAttribute(CONSTLIT("extensions"), sExtensionList);
+
+	//	Done
+
+	*retpDataFile = pDataFile;
+	delete pFile;
+	return NOERROR;
+	}
+
+ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, CString *retsError)
+	{
+	ALERROR error;
+
+	CUniverse::SInitDesc Ctx;
+	Ctx.pHost = &Host;
+	Ctx.bDebugMode = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
+
+	//	Figure out what adventure we need
+
+	if (!pCmdLine->FindAttributeInteger(ADVENTURE_SWITCH, (int *)&Ctx.dwAdventure))
+		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
+
+	//	See if we need to load images
+
+	DWORD dwInitFlags = 0;
+	if (pCmdLine->GetAttributeBool(EFFECT_IMAGE_SWITCH)
+			|| pCmdLine->GetAttributeBool(IMAGES_SWITCH)
+			|| pCmdLine->GetAttributeBool(SHIP_IMAGE_SWITCH) 
+			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
+			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
+			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH)
+			|| pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH) 
+			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
+		;
+	else
+		dwInitFlags |= flagNoResources;
+
+	//	We don't need a version check
+
+	dwInitFlags |= flagNoVersionCheck;
+
+	//	We're not loading the game
+
+	dwInitFlags |= flagNewGame;
+
+	//	Extension
+
+	CString sExtensionFolder = pCmdLine->GetAttribute(EXTENSION_FOLDER_ATTRIB);
+	if (!sExtensionFolder.IsBlank())
+		Ctx.ExtensionFolders.Insert(sExtensionFolder);
+
+	CString sExtensionList;
+	if (pCmdLine->FindAttribute(EXTENSIONS_ATTRIB, &sExtensionList))
+		{
+		if (strEquals(sExtensionList, CONSTLIT("none")))
+			NULL;
+		else if (strEquals(sExtensionList, CONSTLIT("all")))
+			Ctx.bDefaultExtensions = true;
+		else
+			{
+			TArray<DWORD> Extensions;
+			ParseUNIDList(sExtensionList, PUL_FLAG_HEX, &Ctx.ExtensionUNIDs);
+			}
+		}
+	else
+		Ctx.bDefaultExtensions = true;
+
+	//	Open the universe
+
+	Ctx.bNoResources = ((dwInitFlags & flagNoResources) == flagNoResources);
+
+	if (error = Universe.Init(Ctx, retsError))
+		return error;
+
+	if (error = Universe.InitGame(0, retsError))
+		return error;
+
+	//	Mark everything as known
+
+	MarkItemsKnown(Universe);
+
+	return NOERROR;
+	}
+
+bool IsMainCommandParam (const CString &sAttrib)
+	{
+	return (strEquals(sAttrib, CONSTLIT("adventure"))
+			|| strEquals(sAttrib, CONSTLIT("all"))
+			|| strEquals(sAttrib, CONSTLIT("allClasses"))
+			|| strEquals(sAttrib, CONSTLIT("criteria"))
+			|| strEquals(sAttrib, CONSTLIT("debug"))
+			|| strEquals(sAttrib, CONSTLIT("extensions"))
+			|| strEquals(sAttrib, CONSTLIT("noLogo")));
 	}
 
 void MarkItemsKnown (CUniverse &Universe)
@@ -560,3 +693,4 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 			}
 		}
 	}
+
