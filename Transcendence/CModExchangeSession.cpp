@@ -74,7 +74,7 @@ void CModExchangeSession::CmdRefresh (bool bFullRefresh)
 
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, !bFullRefresh, m_bDebugMode), this, CMD_REFRESH_COMPLETE);
+	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, !bFullRefresh, m_bDebugMode), 0, this, CMD_REFRESH_COMPLETE);
 
 	//	Create a wait animation
 
@@ -174,7 +174,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, false, m_bDebugMode), this, CMD_REFRESH_COMPLETE);
+	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, false, m_bDebugMode), 0, this, CMD_REFRESH_COMPLETE);
 	m_bWaitingForRefresh = true;
 
 	//	Create the title and menu

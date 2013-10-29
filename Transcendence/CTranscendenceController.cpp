@@ -555,7 +555,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			{
 			//	Kick-off background thread to load the game
 
-			m_HI.AddBackgroundTask(new CLoadGameWithSignInTask(m_HI, m_Service, m_Model, sSaveFile), this, CMD_GAME_LOAD_DONE);
+			m_HI.AddBackgroundTask(new CLoadGameWithSignInTask(m_HI, m_Service, m_Model, sSaveFile), 0, this, CMD_GAME_LOAD_DONE);
 
 			//	Show transition session while we load
 
@@ -566,7 +566,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	If we can sign in automatically, do so now.
 
 		if (m_Service.HasCapability(ICIService::autoLoginUser))
-			m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true));
+			m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, NULL_STR, NULL_STR, true), 0);
 
 		//	If we can, download news
 
@@ -585,7 +585,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the news (we pass in Multiverse so
 			//	that the collection is placed there).
 
-			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), 0, this, CMD_SERVICE_NEWS_LOADED);
 			}
 
 		//	Legacy CTranscendenceWnd takes over
@@ -634,7 +634,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Kick-off background thread to initialize the adventure
 
-		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, *pNewAdventure), this, CMD_MODEL_ADVENTURE_INIT_DONE);
+		m_HI.AddBackgroundTask(new CInitAdventureTask(m_HI, m_Model, *pNewAdventure), 0, this, CMD_MODEL_ADVENTURE_INIT_DONE);
 
 		//	Show transition session while we load
 
@@ -732,7 +732,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Kick-off background thread to finish up creating the game
 
 		g_pTrans->SetGameCreated(false);
-		m_HI.AddBackgroundTask(new CStartNewGameTask(m_HI, m_Model, *pNewGame), this, CMD_MODEL_NEW_GAME_CREATED);
+		m_HI.AddBackgroundTask(new CStartNewGameTask(m_HI, m_Model, *pNewGame), 0, this, CMD_MODEL_NEW_GAME_CREATED);
 
 		//	Start the prologue
 
@@ -818,7 +818,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Kick-off background thread to load the game
 
-		m_HI.AddBackgroundTask(new CLoadGameTask(m_HI, m_Model, m_Service.GetUsername(), *pFilespec), this, CMD_GAME_LOAD_DONE);
+		m_HI.AddBackgroundTask(new CLoadGameTask(m_HI, m_Model, m_Service.GetUsername(), *pFilespec), 0, this, CMD_GAME_LOAD_DONE);
 
 		//	Show transition session while we load
 
@@ -978,7 +978,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		DWORD dwFlags = 0;
 		if (m_Service.HasCapability(ICIService::canPostGameRecord))
 			{
-			m_HI.AddBackgroundTask(new CPostRecordTask(m_HI, m_Service, m_Model.GetGameRecord(), Stats));
+			m_HI.AddBackgroundTask(new CPostRecordTask(m_HI, m_Service, m_Model.GetGameRecord(), Stats), 0);
 
 			dwFlags |= CStatsSession::SHOW_TASK_PROGRESS;
 			}
@@ -1144,7 +1144,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_HOUSEKEEPING))
 		{
-		m_HI.AddBackgroundTask(new CServiceHousekeepingTask(m_HI, m_Service));
+		m_HI.AddBackgroundTask(new CServiceHousekeepingTask(m_HI, m_Service), 0);
 		}
 
 	//	Account has changed (user signed in or signed out, etc)
@@ -1166,7 +1166,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the collection (we pass in Multiverse so
 			//	that the collection is placed there).
 
-			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), this, CMD_SERVICE_COLLECTION_LOADED);
+			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), 0, this, CMD_SERVICE_COLLECTION_LOADED);
 			}
 
 		//	Now change the UI
@@ -1198,7 +1198,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				&& !IsUpgradeReady()
 				&& !m_bUpgradeDownloaded)
 			{
-			m_HI.AddBackgroundTask(new CUpgradeProgram(m_HI, m_Service, m_Multiverse.GetUpgradeURL()));
+			m_HI.AddBackgroundTask(new CUpgradeProgram(m_HI, m_Service, m_Multiverse.GetUpgradeURL()), CHumanInterface::FLAG_LOW_PRIORITY);
 
 			//	Remember that we already did this so we don't try again later (e.g., if
 			//	we refresh the collection).
@@ -1211,7 +1211,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
-			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 
 		//	Otherwise we're done downloading
 
@@ -1228,6 +1228,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		delete (IMediaType *)pData;
 		if (error)
 			{
+			m_Multiverse.SetServiceStatus(NULL_STR);
 			DisplayMultiverseStatus(sError, true);
 			return error;
 			}
@@ -1237,12 +1238,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		DisplayMultiverseStatus(CONSTLIT("Installing upgrade..."));
 		if (!InstallUpgrade(&sError))
 			{
+			m_Multiverse.SetServiceStatus(NULL_STR);
 			DisplayMultiverseStatus(sError, true);
 			return ERR_FAIL;
 			}
 
 		//	Success
 
+		m_Multiverse.SetServiceStatus(CONSTLIT("Please restart to upgrade."));
 		DisplayMultiverseStatus(CONSTLIT("Please restart to upgrade."));
 		}
 
@@ -1268,7 +1271,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	//	Need to continue downloading
 
 	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_IN_PROGRESS))
-		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 
 	//	Extension file downloaded
 
@@ -1277,7 +1280,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Add a task to load the newly downloaded extension
 
 		CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
-		m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus));
+		m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus), 0);
 		delete pStatus;
 
 		//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
@@ -1307,7 +1310,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Continue downloading
 
-		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service));
+		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 		}
 
 	//	Done downloading extensions.
@@ -1331,7 +1334,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the news (we pass in Multiverse so
 			//	that the collection is placed there).
 
-			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), this, CMD_SERVICE_NEWS_LOADED);
+			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), 0, this, CMD_SERVICE_NEWS_LOADED);
 			}
 		}
 
@@ -1367,7 +1370,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		//	We don't need a special notification when sign out is complete, 
 		//	since the service will send out a serviceAccountChanged command.
-		m_HI.AddBackgroundTask(new CSignOutUserTask(m_HI, m_Service), this, CMD_NULL);
+		m_HI.AddBackgroundTask(new CSignOutUserTask(m_HI, m_Service), 0, this, CMD_NULL);
 		}
 
 	//	Change password
@@ -1410,7 +1413,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (!m_Settings.GetBoolean(CGameSettings::noCrashPost))
 			{
 			CString *pCrashReport = (CString *)pData;
-			m_HI.AddBackgroundTask(new CPostCrashReportTask(m_HI, m_Service, *pCrashReport));
+			m_HI.AddBackgroundTask(new CPostCrashReportTask(m_HI, m_Service, *pCrashReport), 0);
 			delete pCrashReport;
 			}
 		}
@@ -1470,7 +1473,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Kick off a background initialization of the model
 	//	(this will load the universe)
 
-	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), this, CMD_MODEL_INIT_DONE);
+	m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
 
 	//	If the clouds services have not been initialized yet (because there was no
 	//	<Services> tag in the settings file) then initialize to defaults here.

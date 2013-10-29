@@ -83,7 +83,7 @@ ALERROR CTransSaverController::OnInit (CString *retsError)
 	//	m_HI owns the task
 
 	CLoadUniverseTask *pTask = new CLoadUniverseTask(m_HI, m_Model);
-	m_HI.AddBackgroundTask(pTask, this, CMD_LOAD_UNIVERSE_DONE);
+	m_HI.AddBackgroundTask(pTask, 0, this, CMD_LOAD_UNIVERSE_DONE);
 
 	//	Show the loading screen
 	//	m_HI owns the session

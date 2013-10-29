@@ -122,7 +122,7 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 			return 0;
 
 		case WM_HI_TASK_COMPLETE:
-			g_pHI->OnTaskComplete(lParam);
+			g_pHI->OnTaskComplete(wParam, lParam);
 			return 0;
 
 		case WM_KEYDOWN:

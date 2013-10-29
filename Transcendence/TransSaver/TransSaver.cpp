@@ -90,7 +90,7 @@ LRESULT WINAPI ScreenSaverProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM l
 			break;
 
 		case WM_HI_TASK_COMPLETE:
-			g_pHI->OnTaskComplete(lParam);
+			g_pHI->OnTaskComplete(wParam, lParam);
 			break;
 
 		case WM_TIMER:
