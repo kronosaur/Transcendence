@@ -49,8 +49,8 @@ CVector CVector::Rotate (int iAngle) const
 //	Returns the vector rotated by the given angle
 
 	{
-	return CVector(x * g_Cosine[iAngle % 360] - y * g_Sine[iAngle % 360],
-			x * g_Sine[iAngle % 360] + y * g_Cosine[iAngle % 360]);
+	return CVector(x * g_Cosine[AngleMod(iAngle)] - y * g_Sine[AngleMod(iAngle)],
+			x * g_Sine[AngleMod(iAngle)] + y * g_Cosine[AngleMod(iAngle)]);
 	}
 
 void IntPolarToVector (int iAngle, Metric rRadius, int *iox, int *ioy)
@@ -60,8 +60,8 @@ void IntPolarToVector (int iAngle, Metric rRadius, int *iox, int *ioy)
 //	PolarToVector using integers
 
 	{
-	*iox = (int)(rRadius * g_Cosine[iAngle % 360]);
-	*ioy = (int)(rRadius * g_Sine[iAngle % 360]);
+	*iox = (int)(rRadius * g_Cosine[AngleMod(iAngle)]);
+	*ioy = (int)(rRadius * g_Sine[AngleMod(iAngle)]);
 	}
 
 int IntVectorToPolar (int x, int y, int *retiRadius)
@@ -110,7 +110,7 @@ CVector PolarToVector (int iAngle, Metric rRadius)
 //	rRadius is a magnitude.
 
 	{
-	return CVector(rRadius * g_Cosine[iAngle % 360], rRadius * g_Sine[iAngle % 360]);
+	return CVector(rRadius * g_Cosine[AngleMod(iAngle)], rRadius * g_Sine[AngleMod(iAngle)]);
 	}
 
 int VectorToPolar (const CVector &vP, Metric *retrRadius)
@@ -120,32 +120,12 @@ int VectorToPolar (const CVector &vP, Metric *retrRadius)
 //	Converts from a vector to polar coordinates (see PolarToVector)
 
 	{
-	int iAngle;
-	Metric rRadius;
-	Metric rSqrRadius = vP.Dot(vP);
-
-	//	If we are at the origin then the angle is undefined
-
-	if (rSqrRadius == 0.0)
-		{
-		iAngle = 0;
-		rRadius = 0.0;
-		}
-	else
-		{
-		rRadius = sqrt(rSqrRadius);
-		if (vP.GetX() >= 0.0)
-			iAngle = (((int)(180 * asin(vP.GetY() / rRadius) / g_Pi)) + 360) % 360;
-		else
-			iAngle = 180 - ((int)(180 * asin(vP.GetY() / rRadius) / g_Pi));
-		}
-
-	//	Done
+	Metric rAngle = atan2(vP.GetY(), vP.GetX());
 
 	if (retrRadius)
-		*retrRadius = rRadius;
+		*retrRadius = vP.Length();
 
-	return iAngle;
+	return AngleToDegrees(rAngle);
 	}
 
 Metric VectorToPolarRadians (const CVector &vP, Metric *retrRadius)
@@ -155,6 +135,17 @@ Metric VectorToPolarRadians (const CVector &vP, Metric *retrRadius)
 //	Converts from a vector to polar coordinates (see PolarToVector)
 
 	{
+	//	LATER: Swtich to atan2 when we verify that all the callers can deal with
+	//	the result (i.e., can deal with negative values, etc.)
+
+#ifdef USE_ATAN2
+	Metric rAngle = atan2(vP.GetY(), vP.GetX());
+
+	if (retrRadius)
+		*retrRadius = vP.Length();
+
+	return rAngle;
+#else
 	Metric rAngle;
 	Metric rRadius;
 	Metric rSqrRadius = vP.Dot(vP);
@@ -181,5 +172,6 @@ Metric VectorToPolarRadians (const CVector &vP, Metric *retrRadius)
 		*retrRadius = rRadius;
 
 	return rAngle;
+#endif
 	}
 

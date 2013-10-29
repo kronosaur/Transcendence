@@ -26,6 +26,7 @@ inline int AngleMiddle (int iLowAngle, int iHighAngle)
 	}
 
 inline Metric AngleToRadians (int iAngle) { return iAngle * g_Pi / 180.0; }
+inline int AngleToDegrees (Metric rAngle) { return AngleMod((int)(rAngle * 180.0 / g_Pi)); }
 
 //	2d vector class
 
