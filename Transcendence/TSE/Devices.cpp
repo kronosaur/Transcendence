@@ -66,7 +66,8 @@ bool CDeviceClass::AccumulateEnhancements (CItemCtx &Device, CInstalledDevice *p
 			{
 			//	If this type of enhancement has already been applied, skip it
 
-			if (EnhancementIDs.Find(m_Enhancements[i].sType))
+			if (!m_Enhancements[i].sType.IsBlank()
+					&& EnhancementIDs.Find(m_Enhancements[i].sType))
 				continue;
 
 			//	If we don't match the criteria, skip it.
@@ -80,6 +81,11 @@ bool CDeviceClass::AccumulateEnhancements (CItemCtx &Device, CInstalledDevice *p
 
 			pEnhancements->Insert(m_Enhancements[i].Enhancement);
 			bEnhanced = true;
+
+			//	Remember that we added this enhancement class
+
+			if (!m_Enhancements[i].sType.IsBlank())
+				EnhancementIDs.Insert(m_Enhancements[i].sType);
 			}
 		}
 

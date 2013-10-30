@@ -208,7 +208,7 @@ ALERROR CLoadGameSession::OnInit (CString *retsError)
 
 	//	Create a task to read the list of save files from disk
 
-	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, m_Folders, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), this, CMD_READ_COMPLETE);
+	m_HI.AddBackgroundTask(new CListSaveFilesTask(m_HI, m_Folders, m_Service.GetUsername(), SAVE_ENTRY_WIDTH), 0, this, CMD_READ_COMPLETE);
 
 	//	Create the title and menu
 

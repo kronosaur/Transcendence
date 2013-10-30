@@ -26,8 +26,8 @@
 const int DIGEST_SIZE = 20;
 static BYTE g_BaseFileDigest[] =
 	{
-    57,  85, 180,  32, 242, 109,  75,  87, 248,  63,
-    40, 141, 206,  95, 150, 169, 172, 198,  26,  60,
+    33,  83, 107, 235,  44,  69, 156,  61, 185, 236,
+    99,  79, 105, 162,  84, 109, 216, 137, 165,  77,
 	};
 
 class CLibraryResolver : public IXMLParserController
@@ -386,12 +386,14 @@ ALERROR CExtensionCollection::ComputeAvailableAdventures (DWORD dwFlags, TArray<
 	return NOERROR;
 	}
 
-ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError)
+ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, const TArray<DWORD> &Extensions, TArray<CExtension *> *retList, CString *retsError)
 
 //	ComputeAvailableExtensions
 //
-//	Computes a list of all extensions that can be used with the given adventure.
-//	(pAdventure may be NULL)
+//	Fills retList with extension objects for the given extensions by UNID.
+//	We only include extensions that are compatible with the given adventure.
+//
+//	NOTE: An empty Extensions input means we want all extensions.
 
 	{
 	CSmartLock Lock(m_cs);
@@ -401,6 +403,7 @@ ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure
 	//	Initialize
 
 	bool bDebugMode = ((dwFlags & FLAG_DEBUG_MODE) == FLAG_DEBUG_MODE);
+	bool bAllExtensions = (Extensions.GetCount() == 0);
 	retList->DeleteAll();
 
 	//	Loop by UNID because we allow at most one of each UNID.
@@ -415,6 +418,12 @@ ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure
 		//	releases, so we only need to check once).
 
 		if (ExtensionList[0]->GetType() != extExtension)
+			continue;
+
+		//	If this extension is not on our list, then skip it
+
+		if (!bAllExtensions 
+				&& !Extensions.Find(ExtensionList[0]->GetUNID()))
 			continue;
 
 		//	Out of all the releases, select the latest version.

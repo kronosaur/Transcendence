@@ -160,13 +160,11 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
 		{
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
-		if (!strEquals(sAttrib, CONSTLIT("adventure"))
+		if (!IsMainCommandParam(sAttrib)
 				&& !strEquals(sAttrib, BY_ATTRIBUTE_ATTRIB)
 				&& !strEquals(sAttrib, BY_SHIP_CLASS_ATTRIB)
 				&& !strEquals(sAttrib, BY_SHIP_CLASS_USAGE_ATTRIB)
-				&& !strEquals(sAttrib, CONSTLIT("itemtable"))
-				&& !strEquals(sAttrib, CONSTLIT("criteria"))
-				&& !strEquals(sAttrib, CONSTLIT("nologo")))
+				&& !strEquals(sAttrib, CONSTLIT("itemtable")))
 			{
 			CString sValue = pCmdLine->GetAttribute(i);
 				

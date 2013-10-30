@@ -322,6 +322,39 @@ void CPlayerShipController::EnableAllDevices (bool bEnable)
 		}
 	}
 
+CSpaceObject *CPlayerShipController::FindAutoTarget (CItemCtx &ItemCtx) const
+
+//	FindAutoTarget
+//
+//	Returns the best target to shoot at if we have an omni weapons, etc.
+
+	{
+	//	If the weapon is directional, then we look for the best target within
+	//	our fire arc.
+
+	CDeviceClass *pWeapon;
+	int iMinFireArc;
+	int iMaxFireArc;
+	if ((pWeapon = ItemCtx.GetDeviceClass()) 
+			&& pWeapon->CanRotate(ItemCtx, &iMinFireArc, &iMaxFireArc)
+			&& (iMinFireArc != iMaxFireArc))
+		{
+		//	Adjust for ship rotation
+
+		iMinFireArc = AngleMod(m_pShip->GetRotation() + iMinFireArc);
+		iMaxFireArc = AngleMod(m_pShip->GetRotation() + iMaxFireArc);
+
+		//	Find ships
+
+		return m_pShip->GetNearestVisibleEnemyInArc(iMinFireArc, iMaxFireArc, MAX_AUTO_TARGET_DISTANCE, true);
+		}
+
+	//	Otherwise, we return the nearest visible enemy
+
+	else
+		return m_pShip->GetNearestVisibleEnemy(MAX_AUTO_TARGET_DISTANCE, true);
+	}
+
 CSpaceObject *CPlayerShipController::FindDockTarget (void)
 
 //	FindDockTarget
@@ -505,7 +538,7 @@ void CPlayerShipController::GetWeaponTarget (STargetingCtx &TargetingCtx, CItemC
 
 		//	The principal target is always first.
 
-		CSpaceObject *pMainTarget = GetTarget(true);
+		CSpaceObject *pMainTarget = GetTarget(ItemCtx, true);
 		if (pMainTarget)
 			TargetingCtx.Targets.Insert(pMainTarget);
 
@@ -1300,7 +1333,7 @@ bool CPlayerShipController::GetDeviceActivate (void)
 	return m_bActivate;
 	}
 
-CSpaceObject *CPlayerShipController::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //
@@ -1316,7 +1349,7 @@ CSpaceObject *CPlayerShipController::GetTarget (bool bNoAutoTarget) const
 			return m_pAutoTarget;
 
 		m_iAutoTargetTick = iTick;
-		m_pAutoTarget = m_pShip->GetNearestVisibleEnemy(MAX_AUTO_TARGET_DISTANCE, true);
+		m_pAutoTarget = FindAutoTarget(ItemCtx);
 
 		//	Make sure the fire angle is set to -1 if we don't have a target.
 		//	Otherwise, we will keep firing at the wrong angle after we destroy

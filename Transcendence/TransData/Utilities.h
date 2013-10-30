@@ -88,3 +88,6 @@ class CSimViewer
 		DWORD m_dwLastUpdate;
 	};
 
+//	Functions
+
+bool IsMainCommandParam (const CString &sAttrib);

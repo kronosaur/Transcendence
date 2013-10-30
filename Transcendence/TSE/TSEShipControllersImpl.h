@@ -305,7 +305,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual bool GetReverseThrust (void) { return false; }
 		virtual CSpaceObject *GetShip (void) { return m_pShip; }
 		virtual bool GetStopThrust (void) { return false; }
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual bool GetThrust (void) { return m_AICtx.GetThrust(m_pShip); }
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		virtual bool IsAngryAt (CSpaceObject *pObj) const;
@@ -415,7 +415,7 @@ class CAutonAI : public CBaseShipAI
 		//	IShipController virtuals
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 
 	protected:
@@ -455,7 +455,7 @@ class CFerianShipAI : public CBaseShipAI
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
 		virtual CSpaceObject *GetBase (void) const { return m_pBase; }
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return m_pTarget; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return m_pTarget; }
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 
 	protected:
@@ -499,7 +499,7 @@ class CFleetCommandAI : public CBaseShipAI
 		//	IShipController virtuals
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return m_pTarget; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return m_pTarget; }
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 
 	protected:
@@ -596,7 +596,7 @@ class CFleetShipAI : public CBaseShipAI
 		//	IShipController virtuals
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 
 	protected:
@@ -652,7 +652,7 @@ class CGaianProcessorAI : public CBaseShipAI
 		//	IShipController virtuals
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 
 	protected:
@@ -698,7 +698,7 @@ class CGladiatorAI : public CBaseShipAI
 		//	IShipController virtuals
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 
 	protected:
 		//	CBaseShipAI overrides
@@ -844,7 +844,7 @@ class CZoanthropeAI : public CBaseShipAI
 		virtual void Behavior (void);
 		virtual CString DebugCrashInfo (void);
 		virtual CSpaceObject *GetBase (void) const;
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const;
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual void OnAttacked (CSpaceObject *pAttacker, const DamageDesc &Damage);
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
 

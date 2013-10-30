@@ -1142,8 +1142,18 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 		if (Ctx.bDefaultExtensions)
 			{
 			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
-					dwFlags, 
+					dwFlags,
+					TArray<DWORD>(),
 					&Ctx.Extensions, 
+					retsError))
+				return error;
+			}
+		else if (Ctx.ExtensionUNIDs.GetCount() > Ctx.Extensions.GetCount())
+			{
+			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure,
+					dwFlags,
+					Ctx.ExtensionUNIDs,
+					&Ctx.Extensions,
 					retsError))
 				return error;
 			}

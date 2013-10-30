@@ -17,7 +17,6 @@
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entities")
-#define IMAGES_SWITCH						CONSTLIT("images")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
@@ -36,6 +35,7 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
+#define IMAGES_SWITCH						CONSTLIT("typeImages")
 #define TYPE_TABLE_SWITCH					CONSTLIT("typeTable")
 #define WEAPON_IMAGES_SWITCH				CONSTLIT("weaponImages")
 #define WORD_GENERATOR_SWITCH				CONSTLIT("wordgenerator")
@@ -103,7 +103,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		}
 	else if (pCmdLine->GetAttributeBool(IMAGES_SWITCH))
 		{
-		printf("  /images               Generates chart of images.\n");
+		printf("  /typeImages           Generates chart of images.\n");
 		printf("      /criteria:n           Type criteria of images to show.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/font:s]             Use given font for labels.\n");
@@ -260,6 +260,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
+		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(STATION_PLACE_SIM_SWITCH))
 		{
@@ -374,6 +375,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /tradesim             Generates statistics of item trading.\n");
 		if (bDebug)
 			printf("  /typeDependencies     Show a list of all types and their dependencies.\n");
+		printf("  /typeImages           Generates chart of images.\n");
 		if (bDebug)
 			printf("  /typeIslands          Show groups of types that depend on each other.\n");
 		printf("  /typeTable            Generates a table of type information.\n");

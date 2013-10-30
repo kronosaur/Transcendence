@@ -753,6 +753,7 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 
 	if (g_pUniverse->GetExtensionCollection().ComputeAvailableExtensions(pAdventure, 
 			(g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+			TArray<DWORD>(),
 			&m_ExtensionList,
 			&sError) != NOERROR)
 		//	LATER: Show error

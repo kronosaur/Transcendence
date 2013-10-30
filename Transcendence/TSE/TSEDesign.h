@@ -1528,6 +1528,7 @@ class CItemEnhancement
 		bool IsReflective (const DamageDesc &Damage, int *retiReflectChance = NULL) const;
 		inline bool IsShatterImmune (void) const { return ((GetType() == etSpecialDamage) && GetLevel2() == specialShatter && !IsDisadvantage()); }
 		inline bool IsShieldInterfering (void) const { return ((GetType() == etImmunityIonEffects) && IsDisadvantage()); }
+		inline bool IsStacking (void) const { return (GetType() == etStrengthen && GetLevel() == 0); }
 		void ReadFromStream (DWORD dwVersion, IReadStream *pStream);
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetEnhancementType (CItemType *pType) { m_pEnhancer = pType; }
@@ -2817,7 +2818,7 @@ class IShipController
 		virtual bool GetReverseThrust (void) = 0;
 		virtual CSpaceObject *GetShip (void) { return NULL; }
 		virtual bool GetStopThrust (void) = 0;
-		virtual CSpaceObject *GetTarget (bool bNoAutoTarget = false) const { return NULL; }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return NULL; }
 		virtual bool GetThrust (void) = 0;
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution) { }
 		virtual bool IsAngryAt (CSpaceObject *pObj) const { return false; }
@@ -4297,6 +4298,7 @@ class CEnergyFieldType : public CDesignType
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		inline bool HasOnUpdateEvent (void) { return m_bHasOnUpdateEvent; }
 		inline bool IsHitEffectAlt (void) { return m_bAltHitEffect; }
+		inline bool IsShieldOverlay (void) { return m_bShieldOverlay; }
 		inline bool RotatesWithShip (void) { return m_bRotateWithShip; }
 
 		//	CDesignType overrides
@@ -4322,6 +4324,7 @@ class CEnergyFieldType : public CDesignType
 		bool m_bHasOnUpdateEvent;				//	TRUE if we have OnUpdate
 		bool m_bAltHitEffect;					//	If TRUE, hit effect replaces normal effect
 		bool m_bRotateWithShip;					//	If TRUE, we rotate along with source rotation
+		bool m_bShieldOverlay;					//	If TRUE, we are above hull/armor
 	};
 
 //	CSystemType ---------------------------------------------------------------
@@ -5855,7 +5858,7 @@ class CExtensionCollection
 		inline void AddExtensionFolder (const CString &sFilespec) { m_ExtensionFolders.Insert(sFilespec); }
 		void CleanUp (void);
 		ALERROR ComputeAvailableAdventures (DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
-		ALERROR ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
+		ALERROR ComputeAvailableExtensions (CExtension *pAdventure, DWORD dwFlags, const TArray<DWORD> &Extensions, TArray<CExtension *> *retList, CString *retsError);
 		ALERROR ComputeBindOrder (CExtension *pAdventure, const TArray<CExtension *> &DesiredExtensions, DWORD dwFlags, TArray<CExtension *> *retList, CString *retsError);
 		void DebugDump (void);
 		bool FindAdventureFromDesc (DWORD dwUNID, DWORD dwFlags = 0, CExtension **retpExtension = NULL);

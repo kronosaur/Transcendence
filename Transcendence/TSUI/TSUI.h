@@ -230,7 +230,7 @@ class CBackgroundProcessor : public ITaskProcessor
 		void CleanUp (void);
 		ALERROR GetLastResult (CString *retsResult);
 		int GetProgress (CString *retsActivity = NULL);
-		ALERROR Init (HWND hWnd);
+		ALERROR Init (HWND hWnd, DWORD dwID);
 		void ListenerDestroyed (IHICommand *pListener);
 		void OnTaskComplete (LPARAM pData);
 		bool RegisterOnAllTasksComplete (IHICommand *pListener, const CString &sCmd = NULL);
@@ -278,6 +278,7 @@ class CBackgroundProcessor : public ITaskProcessor
 		static DWORD WINAPI Thread (LPVOID pData);
 
 		HWND m_hWnd;
+		DWORD m_dwID;
 
 		HANDLE m_hWorkAvailableEvent;
 		HANDLE m_hQuitEvent;
@@ -594,6 +595,12 @@ struct SHIOptions
 class CHumanInterface
 	{
 	public:
+		enum EFlags
+			{
+			//	AddBackgroundTask
+			FLAG_LOW_PRIORITY =				0x00000001,
+			};
+
 		static bool Create (void);
 		static void Destroy (void);
 
@@ -619,7 +626,7 @@ class CHumanInterface
 		void Shutdown (EHIShutdownReasons iCode) { m_iShutdownCode = iCode; ::DestroyWindow(m_hWnd); }
 		int SetSoundVolume (int iVolume);
 
-		void AddBackgroundTask (IHITask *pTask, IHICommand *pListener = NULL, const CString &sCmd = NULL_STR);
+		void AddBackgroundTask (IHITask *pTask, DWORD dwFlags, IHICommand *pListener = NULL, const CString &sCmd = NULL_STR);
 		inline CBackgroundProcessor &GetBackgroundProcessor (void) { return m_Background; }
 		inline bool RegisterOnAllBackgroundTasksComplete (IHICommand *pListener, const CString &sCmd = NULL) { return m_Background.RegisterOnAllTasksComplete(pListener, sCmd); }
 
@@ -630,7 +637,7 @@ class CHumanInterface
 		LONG MCINotifyMode (int iMode);
 		void OnAnimate (void);
 		void OnPostCommand (LPARAM pData);
-		inline void OnTaskComplete (LPARAM pData) { m_Background.OnTaskComplete(pData); }
+		void OnTaskComplete (DWORD dwID, LPARAM pData);
 		LONG WMActivateApp (bool bActivate);
 		LONG WMChar (char chChar, DWORD dwKeyData);
 		ALERROR WMCreate (HMODULE hModule, HWND hWnd, char *pszCommandLine, IHIController *pController);
@@ -679,6 +686,7 @@ class CHumanInterface
 		HWND m_hWnd;
 		CScreenMgr m_ScreenMgr;
 		CBackgroundProcessor m_Background;
+		CBackgroundProcessor m_BackgroundLowPriority;
 		CTimerRegistry m_Timers;
 		CVisualPalette m_Visuals;
 		CFrameRateCounter m_FrameRate;

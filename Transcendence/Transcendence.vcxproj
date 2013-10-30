@@ -546,7 +546,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\HSCompatibility.xml" />
-    <None Include="Game\Ice.xml" />
+    <None Include="Game\Ice.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Iocrym.xml">
       <SubType>Designer</SubType>
     </None>
@@ -668,7 +670,9 @@
     <None Include="Game\StdPlayerShips.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\StdShields.xml" />
+    <None Include="Game\StdShields.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\StdSystems.xml">
       <SubType>Designer</SubType>
     </None>
@@ -730,7 +734,9 @@
     <None Include="Game\Resources\SubTitleHeavyBold.dxfn" />
     <None Include="Game\Resources\Title.dxfn" />
     <None Include="Game\Resources\Title.jpg" />
-    <None Include="Game\Metallic.xml" />
+    <None Include="Game\Metallic.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Transcendence.ico" />
     <None Include="Game\Resources\UIIcons.jpg" />
     <None Include="Game\Resources\UIIconsMask.bmp" />
@@ -804,7 +810,9 @@
     <None Include="Game\RPGAutons.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\RPGBehaviors.xml" />
+    <None Include="Game\RPGBehaviors.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\RPGWingmen.xml">
       <SubType>Designer</SubType>
     </None>

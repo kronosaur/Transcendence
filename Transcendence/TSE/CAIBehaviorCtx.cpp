@@ -449,6 +449,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 					|| (pObj->GetCategory() == CSpaceObject::catStation
 						&& pObj->GetScale() == scaleStructure
 						&& !pObj->IsInactive()
+						&& !pObj->IsVirtual()
 						&& pObj->HasAttribute(CONSTLIT("populated"))
 						&& pObj->IsFriend(pShip))))
 			{

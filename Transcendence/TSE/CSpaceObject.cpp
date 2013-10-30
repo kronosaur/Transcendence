@@ -3323,6 +3323,74 @@ CSpaceObject *CSpaceObject::GetNearestVisibleEnemy (Metric rMaxRange, bool bIncl
 	return pBestObj;
 	}
 
+CSpaceObject *CSpaceObject::GetNearestVisibleEnemyInArc (int iMinFireArc, int iMaxFireArc, Metric rMaxRange, bool bIncludeStations, CSpaceObject *pExcludeObj)
+
+//	GetNearestVisibleEnemy
+//
+//	Returns the nearest enemy that is visible to us and within the given fire
+//	arc.
+
+	{
+	int i;
+
+	CVector vCenter = GetPos();
+
+	//	Get the sovereign
+
+	CSovereign *pSovereign = GetSovereignToDefend();
+	if (pSovereign == NULL || GetSystem() == NULL)
+		return 0;
+
+	//	Get the list of enemy objects
+
+	const CSpaceObjectList &ObjList = pSovereign->GetEnemyObjectList(GetSystem());
+
+	//	Compute this object's perception and perception range
+
+	int iPerception = GetPerception();
+	Metric rRange[RANGE_INDEX_COUNT];
+	for (i = 0; i < RANGE_INDEX_COUNT; i++)
+		rRange[i] = RangeIndex2Range(i);
+
+	//	Loop over all objects finding the nearest visible enemy
+
+	CSpaceObject *pBestObj = NULL;
+	Metric rBestDist = rRange[0];
+
+	//	If the caller has specified a max range, then use that
+
+	if (rMaxRange < rBestDist)
+		rBestDist = rMaxRange;
+
+	int iObjCount = ObjList.GetCount();
+	for (i = 0; i < iObjCount; i++)
+		{
+		CSpaceObject *pObj = ObjList.GetObj(i);
+
+		if ((pObj->GetCategory() == catShip
+					|| (bIncludeStations && pObj->GetCategory() == catStation))
+				&& pObj->CanAttack()
+				&& !pObj->IsDestroyed()
+				&& pObj != this)
+			{
+			CVector vDist = vCenter - pObj->GetPos();
+			Metric rDist;
+			int iAngle = VectorToPolar(vDist, &rDist);
+
+			if (rDist < rBestDist
+					&& rDist < rRange[pObj->GetDetectionRangeIndex(iPerception)]
+					&& pObj != pExcludeObj
+					&& !pObj->IsEscortingFriendOf(this))
+				{
+				rBestDist = rDist;
+				pBestObj = pObj;
+				}
+			}
+		}
+
+	return pBestObj;
+	}
+
 CString CSpaceObject::GetNounPhrase (DWORD dwFlags)
 
 //	GetNounPhrase
@@ -4097,7 +4165,7 @@ bool CSpaceObject::IsUnderAttack (void)
 		CSpaceObject *pObj = GetSystem()->GetObject(i);
 
 		if (pObj
-				&& pObj->GetTarget() == this
+				&& pObj->GetTarget(CItemCtx()) == this
 				&& IsEnemy(pObj)
 				&& pObj != this)
 			return true;
@@ -4496,7 +4564,7 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 	if (Crit.bHomeBaseIsSource && GetBase() != Crit.pSource)
 		return false;
 
-	if (Crit.bTargetIsSource && GetTarget() != Crit.pSource)
+	if (Crit.bTargetIsSource && GetTarget(CItemCtx()) != Crit.pSource)
 		return false;
 
 	//	Check level

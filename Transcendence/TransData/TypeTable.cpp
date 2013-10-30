@@ -74,10 +74,8 @@ void GenerateTypeTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &En
 		{
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
-		if (!strEquals(sAttrib, CRITERIA_ATTRIB)
-				&& !strEquals(sAttrib, CONSTLIT("adventure"))
-				&& !strEquals(sAttrib, CONSTLIT("typetable"))
-				&& !strEquals(sAttrib, CONSTLIT("nologo")))
+		if (!IsMainCommandParam(sAttrib)
+				&& !strEquals(sAttrib, CONSTLIT("typetable")))
 			{
 			CString sValue = pCmdLine->GetAttribute(i);
 			

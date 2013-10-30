@@ -7,6 +7,9 @@
 
 #define CMD_SOUNDTRACK_DONE						CONSTLIT("cmdSoundtrackDone")
 
+const DWORD ID_BACKGROUND_PROCESSOR =				1;
+const DWORD ID_LOW_PRIORITY_BACKGROUND_PROCESSOR =	2;
+
 static CReanimator g_DefaultReanimator;
 CHumanInterface *g_pHI = NULL;
 
@@ -30,14 +33,17 @@ CHumanInterface::~CHumanInterface (void)
 	CleanUp(HIShutdownDestructor);
 	}
 
-void CHumanInterface::AddBackgroundTask (IHITask *pTask, IHICommand *pListener, const CString &sCmd)
+void CHumanInterface::AddBackgroundTask (IHITask *pTask, DWORD dwFlags, IHICommand *pListener, const CString &sCmd)
 
 //	AddBackgroundTask
 //
 //	Adds the task
 
 	{
-	m_Background.AddTask(pTask, pListener, sCmd);
+	if (dwFlags & FLAG_LOW_PRIORITY)
+		m_BackgroundLowPriority.AddTask(pTask, pListener, sCmd);
+	else
+		m_Background.AddTask(pTask, pListener, sCmd);
 	}
 
 DWORD CHumanInterface::AddTimer (DWORD dwMilliseconds, IHICommand *pListener, const CString &sCmd, bool bRecurring)
@@ -118,6 +124,7 @@ void CHumanInterface::CleanUp (EHIShutdownReasons iShutdownCode)
 	//	Wait for all background tasks to end
 
 	m_Background.StopAll();
+	m_BackgroundLowPriority.StopAll();
 
 	//	Clean up session
 
@@ -149,6 +156,7 @@ void CHumanInterface::CleanUp (EHIShutdownReasons iShutdownCode)
 
 	m_Visuals.CleanUp();
 	m_Background.CleanUp();
+	m_BackgroundLowPriority.CleanUp();
 	m_ScreenMgr.CleanUp();
 	m_SoundMgr.CleanUp();
 	}
@@ -171,6 +179,7 @@ void CHumanInterface::ClosePopupSession (void)
 		//	Remove the session from any background tasks and timers
 
 		m_Background.ListenerDestroyed(m_pCurSession);
+		m_BackgroundLowPriority.ListenerDestroyed(m_pCurSession);
 		m_Timers.ListenerDestroyed(m_hWnd, m_pCurSession);
 
 		//	Clean up
@@ -465,6 +474,28 @@ void CHumanInterface::OnPostCommand (LPARAM pData)
 	delete pMsg;
 	}
 
+void CHumanInterface::OnTaskComplete (DWORD dwID, LPARAM pData)
+
+//	OnTaskComplete
+//
+//	Process a message that a given task is complete.
+	
+	{
+	switch (dwID)
+		{
+		case ID_BACKGROUND_PROCESSOR:
+			m_Background.OnTaskComplete(pData); 
+			break;
+
+		case ID_LOW_PRIORITY_BACKGROUND_PROCESSOR:
+			m_BackgroundLowPriority.OnTaskComplete(pData);
+			break;
+
+		default:
+			ASSERT(false);
+		}
+	}
+
 ALERROR CHumanInterface::OpenPopupSession (IHISession *pSession, CString *retsError)
 
 //	OpenPopupSession
@@ -729,9 +760,15 @@ ALERROR CHumanInterface::WMCreate (HMODULE hModule, HWND hWnd, char *pszCommandL
 	if (error = m_ScreenMgr.Init(ScreenOptions, &sError))
 		goto Fail;
 
-	//	Initialize the background processor
+	//	Initialize the background processors
 
-	if (error = m_Background.Init(m_hWnd))
+	if (error = m_Background.Init(m_hWnd, ID_BACKGROUND_PROCESSOR))
+		{
+		sError = CONSTLIT("Unable to initialize background processor.");
+		goto Fail;
+		}
+
+	if (error = m_BackgroundLowPriority.Init(m_hWnd, ID_LOW_PRIORITY_BACKGROUND_PROCESSOR))
 		{
 		sError = CONSTLIT("Unable to initialize background processor.");
 		goto Fail;

@@ -126,7 +126,7 @@ static const SOrderTypeData g_OrderTypes[] =
 		{	"loot",						"o",	"-",	0 },
 
 		{	"hold",						"-",	"i",	0 },
-		{	"mine",						"o",	"-",	0 },
+		{	"mine",						"o",	"-",	ORDER_FLAG_DELETE_ON_STATION_DESTROYED | ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED },
 		{	"waitForPlayer",			"-",	"-",	0 },
 		{	"attackPlayerOnReturn",		"-",	"-",	0 },
 		{	"follow",					"o",	"-",	ORDER_FLAG_NOTIFY_ON_STATION_DESTROYED | ORDER_FLAG_UPDATE_ON_NEW_PLAYER_SHIP },

@@ -40,7 +40,8 @@ bool CEnergyFieldList::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 	CEnergyField *pField = m_pFirst;
 	while (pField)
 		{
-		if (!pField->IsDestroyed())
+		if (!pField->IsDestroyed()
+				&& pField->IsShieldOverlay())
 			{
 			if (pField->AbsorbDamage(pSource, Ctx))
 				bDamageAbsorbed = true;
@@ -74,6 +75,35 @@ bool CEnergyFieldList::AbsorbsWeaponFire (CInstalledDevice *pDevice)
 		}
 
 	return false;
+	}
+
+bool CEnergyFieldList::Damage (CSpaceObject *pSource, SDamageCtx &Ctx)
+
+//	Damage
+//
+//	Takes damage (returns TRUE if damage was absorbed)
+
+	{
+	DEBUG_TRY
+
+	bool bDamageAbsorbed = false;
+
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed()
+				&& !pField->IsShieldOverlay())
+			{
+			if (pField->AbsorbDamage(pSource, Ctx))
+				bDamageAbsorbed = true;
+			}
+
+		pField = pField->GetNext();
+		}
+
+	return bDamageAbsorbed;
+
+	DEBUG_CATCH
 	}
 
 int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)

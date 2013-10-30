@@ -115,7 +115,7 @@ void CChangePasswordSession::CmdOK (void)
 
 	//	Register the name
 
-	m_HI.AddBackgroundTask(new CChangePasswordTask(m_HI, m_Service, m_Service.GetUsername(), sOldPassword, sNewPassword), this, CMD_CHANGE_COMPLETE);
+	m_HI.AddBackgroundTask(new CChangePasswordTask(m_HI, m_Service, m_Service.GetUsername(), sOldPassword, sNewPassword), 0, this, CMD_CHANGE_COMPLETE);
 
 	//	Disable controls
 

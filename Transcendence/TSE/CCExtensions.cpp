@@ -780,7 +780,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"shpCanInstallArmor",			fnShipSet,			FN_SHIP_CAN_INSTALL_ARMOR,
-			"(shpCanInstallArmor ship item) -> result",
+			"(shpCanInstallArmor ship item [armorSeg]) -> result",
 		//			0 = OK
 		//			1 = Armor too heavy
 		//			string = custom fail reason
@@ -5465,7 +5465,7 @@ ICCItem *fnObjGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 		case FN_OBJ_TARGET:
 			{
-			CSpaceObject *pTarget = pObj->GetTarget(true);
+			CSpaceObject *pTarget = pObj->GetTarget(CItemCtx(), true);
 			if (pTarget)
 				pResult = pCC->CreateInteger((int)pTarget);
 			else

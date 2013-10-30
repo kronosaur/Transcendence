@@ -95,7 +95,7 @@ ALERROR CExplorerController::OnInit (void)
 	//	m_HI owns the task
 
 	CLoadUniverseTask *pTask = new CLoadUniverseTask(m_HI, m_Model);
-	m_HI.AddBackgroundTask(pTask, this, CMD_LOAD_UNIVERSE_DONE);
+	m_HI.AddBackgroundTask(pTask, 0, this, CMD_LOAD_UNIVERSE_DONE);
 
 #if 0
 	//	Show the loading screen

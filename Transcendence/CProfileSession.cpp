@@ -127,7 +127,7 @@ ALERROR CProfileSession::OnInit (CString *retsError)
 	//	Create a task to read the profile information and wait until it
 	//	finishes.
 
-	m_HI.AddBackgroundTask(new CReadProfileTask(m_HI, m_Service, RectWidth(m_rcRecords)), this, CMD_READ_COMPLETE);
+	m_HI.AddBackgroundTask(new CReadProfileTask(m_HI, m_Service, RectWidth(m_rcRecords)), 0, this, CMD_READ_COMPLETE);
 
 	//	Create the title
 

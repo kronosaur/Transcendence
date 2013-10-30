@@ -340,6 +340,7 @@ bool CBaseShipAI::CalcFlockingFormation (CSpaceObject *pLeader,
 				&& pObj->GetSovereign() == m_pShip->GetSovereign()
 				&& pObj->GetCategory() == CSpaceObject::catShip
 				&& !pObj->IsInactive()
+				&& !pObj->IsVirtual()
 				&& pObj != m_pShip
 				&& pObj != pLeader)
 			{
@@ -785,7 +786,7 @@ void CBaseShipAI::GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCt
 		//	If we've got a target, add it to the list. Sometimes this will be 
 		//	a duplicate, but that's OK.
 
-		CSpaceObject *pTarget = GetTarget(true);
+		CSpaceObject *pTarget = GetTarget(ItemCtx, true);
 		if (pTarget)
 			TargetingCtx.Targets.Insert(pTarget);
 
@@ -869,7 +870,7 @@ CSpaceObject *CBaseShipAI::GetPlayerOrderGiver (void) const
 		return m_pShip;
 	}
 
-CSpaceObject *CBaseShipAI::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CBaseShipAI::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //
@@ -909,7 +910,7 @@ bool CBaseShipAI::IsAngryAt (CSpaceObject *pObj) const
 //	Returns TRUE if we're angry at the given object
 
 	{
-	if (GetTarget() == pObj)
+	if (GetTarget(CItemCtx()) == pObj)
 		return true;
 
 	switch (GetCurrentOrder())

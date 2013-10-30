@@ -433,7 +433,8 @@ int CPlayerGameStats::GetBestEnemyShipsDestroyed (DWORD *retdwUNID) const
 		if (pClass)
 			{
 			int iScore = pClass->GetScore();
-			if (iScore > iBestScore)
+			if (iScore > iBestScore
+					&& pStats->iEnemyDestroyed > 0)
 				{
 				dwBestUNID = dwUNID;
 				iBestScore = iScore;

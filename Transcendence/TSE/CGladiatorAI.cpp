@@ -190,7 +190,7 @@ CVector CGladiatorAI::ComputePotential (void)
 		{
 		CSpaceObject *pObj = m_pShip->GetSystem()->GetObject(i);
 
-		if (pObj  == NULL || pObj == m_pShip || pObj->IsInactive())
+		if (pObj  == NULL || pObj == m_pShip || pObj->IsInactive() || pObj->IsVirtual())
 			NULL;
 		else if (pObj->Blocks(m_pShip))
 			{
@@ -283,7 +283,7 @@ CString CGladiatorAI::DebugCrashInfo (void)
 	return sResult;
 	}
 
-CSpaceObject *CGladiatorAI::GetTarget (bool bNoAutoTarget) const
+CSpaceObject *CGladiatorAI::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
 
 //	GetTarget
 //

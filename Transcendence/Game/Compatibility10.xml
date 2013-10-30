@@ -603,7 +603,7 @@
 
 						(if thisItem
 							(block (cargoNeeded)
-								(setq gResult (shpCanInstallArmor gPlayerShip thisItem))
+								(setq gResult (shpCanInstallArmor gPlayerShip thisItem gArmorSegment))
 								(setq gCost (divide (multiply gMargin (itmGetInstallCost thisItem)) 500))
 								(setq cargoNeeded (subtract (itmGetMass (shpGetArmor gPlayerShip gArmorSegment)) (itmGetMass thisItem)))
 

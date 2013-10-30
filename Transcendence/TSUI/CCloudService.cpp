@@ -78,8 +78,6 @@ ALERROR CCloudService::DownloadUpgrade (ITaskProcessor *pProcessor, const CStrin
 //	Download a new game upgrade
 
 	{
-	CHTTPClientSession Session;
-
 	SendServiceStatus(STR_DOWNLOADING_UPGRADE);
 
 	//	Parse the URL to get the host name

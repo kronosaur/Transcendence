@@ -84,7 +84,7 @@ int CBackgroundProcessor::GetProgress (CString *retsActivity)
 	return m_iPercentDone;
 	}
 
-ALERROR CBackgroundProcessor::Init (HWND hWnd)
+ALERROR CBackgroundProcessor::Init (HWND hWnd, DWORD dwID)
 
 //	Init
 //
@@ -92,6 +92,7 @@ ALERROR CBackgroundProcessor::Init (HWND hWnd)
 
 	{
 	m_hWnd = hWnd;
+	m_dwID = dwID;
 
 	m_bExecuting = false;
 	m_hWorkAvailableEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -196,7 +197,7 @@ void CBackgroundProcessor::PostOnAllTasksComplete (void)
 //	Post messages to the UI thread that all tasks are done
 
 	{
-	::PostMessage(m_hWnd, WM_HI_TASK_COMPLETE, 0, (LPARAM)NULL);
+	::PostMessage(m_hWnd, WM_HI_TASK_COMPLETE, m_dwID, (LPARAM)NULL);
 	}
 
 void CBackgroundProcessor::PostOnTaskComplete (IHITask *pTask)
@@ -212,7 +213,7 @@ void CBackgroundProcessor::PostOnTaskComplete (IHITask *pTask)
 	STaskCompleteMsg *pMsg = new STaskCompleteMsg;
 	pMsg->pTask = pTask;
 
-	::PostMessage(m_hWnd, WM_HI_TASK_COMPLETE, 0, (LPARAM)pMsg);
+	::PostMessage(m_hWnd, WM_HI_TASK_COMPLETE, m_dwID, (LPARAM)pMsg);
 	}
 
 void CBackgroundProcessor::SetProgress (const CString &sActivity, int iPercentDone)

@@ -831,7 +831,7 @@ void CFleetCommandAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 		//	field. (Obviously this could be a different enemy than the one
 		//	that killed the asset).
 
-		if ((pTarget = FindTarget(Ctx.pObj->GetTarget())) != NULL)
+		if ((pTarget = FindTarget(Ctx.pObj->GetTarget(CItemCtx()))) != NULL)
 			pTarget->iAssignedTo -= Ctx.pObj->GetCombatPower();
 		}
 
@@ -1256,7 +1256,7 @@ void CFleetCommandAI::UpdateTargetListAndPotentials (void)
 		{
 		CSpaceObject *pObj = m_pShip->GetSystem()->GetObject(i);
 
-		if (pObj  == NULL || pObj == m_pObjective || pObj == m_pShip || pObj->IsInactive())
+		if (pObj  == NULL || pObj == m_pObjective || pObj == m_pShip || pObj->IsInactive() || pObj->IsVirtual())
 			NULL;
 
 		//	Compute the influence of ships (both friendly and enemy)

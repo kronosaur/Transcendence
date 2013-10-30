@@ -13,6 +13,7 @@ typedef double Metric;
 
 //	Angles
 
+bool AngleInArc (int iAngle, int iMinAngle, int iMaxAngle);
 inline int AngleMod (int iAngle) { if (iAngle >= 0) return (iAngle % 360); else return 360 - (-iAngle % 360); }
 inline int AngleMiddle (int iLowAngle, int iHighAngle)
 //	Returns the angle in between the two given angles. If iLowAngle > iHighAngle then
@@ -25,6 +26,7 @@ inline int AngleMiddle (int iLowAngle, int iHighAngle)
 	}
 
 inline Metric AngleToRadians (int iAngle) { return iAngle * g_Pi / 180.0; }
+inline int AngleToDegrees (Metric rAngle) { return AngleMod((int)(rAngle * 180.0 / g_Pi)); }
 
 //	2d vector class
 

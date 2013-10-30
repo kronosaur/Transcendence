@@ -185,7 +185,7 @@ void CLoginSession::CmdRegister (void)
 
 	//	Register the name
 
-	m_HI.AddBackgroundTask(new CRegisterUserTask(m_HI, m_Service, sUsername, sPassword, sEmail, bAutoSignIn), this, CMD_REGISTER_COMPLETE);
+	m_HI.AddBackgroundTask(new CRegisterUserTask(m_HI, m_Service, sUsername, sPassword, sEmail, bAutoSignIn), 0, this, CMD_REGISTER_COMPLETE);
 
 	//	Disable controls
 
@@ -256,7 +256,7 @@ void CLoginSession::CmdSignIn (void)
 
 	//	Register the name
 
-	m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, sUsername, sPassword, bAutoSignIn), this, CMD_SIGN_IN_COMPLETE);
+	m_HI.AddBackgroundTask(new CSignInUserTask(m_HI, m_Service, sUsername, sPassword, bAutoSignIn), 0, this, CMD_SIGN_IN_COMPLETE);
 
 	//	Disable controls
 

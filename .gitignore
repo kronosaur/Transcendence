@@ -94,6 +94,7 @@ Transcendence/Game/Storage.xml
 Transcendence/Game/TestExtension/*
 Transcendence/Game/Test*.tl
 Transcendence/Game/TDBs/*
+Transcendence/Game/TransData/*
 Transcendence/ipch/*
 Transcendence/Release/*
 Transcendence/TransCompiler/Debug/*

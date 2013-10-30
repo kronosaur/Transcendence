@@ -117,12 +117,9 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTabl
 		{
 		CString sAttrib = pCmdLine->GetAttributeName(i);
 
-		if (!strEquals(sAttrib, ALL_ATTRIB)
-				&& !strEquals(sAttrib, CRITERIA_ATTRIB)
+		if (!IsMainCommandParam(sAttrib)
 				&& !strEquals(sAttrib, ONLY_NOT_RANDOM_ATTRIB)
-				&& !strEquals(sAttrib, CONSTLIT("adventure"))
-				&& !strEquals(sAttrib, CONSTLIT("encountertable"))
-				&& !strEquals(sAttrib, CONSTLIT("nologo")))
+				&& !strEquals(sAttrib, CONSTLIT("encountertable")))
 			{
 			CString sValue = pCmdLine->GetAttribute(i);
 			
