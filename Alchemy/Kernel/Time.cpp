@@ -35,6 +35,21 @@ char *g_szDayNameShort[] =
 
 //	CTimeDate -----------------------------------------------------------------
 
+CTimeDate::CTimeDate (void)
+
+//	CTimeDate constructor
+
+	{
+	m_Time.wDay = 1;
+	m_Time.wMonth = 1;
+	m_Time.wYear = 1;
+	m_Time.wHour = 0;
+	m_Time.wMinute = 0;
+	m_Time.wSecond = 0;
+	m_Time.wMilliseconds = 0;
+	m_Time.wDayOfWeek = 0xffff;
+	}
+
 CTimeDate::CTimeDate (Constants Init)
 
 //	CTimeDate constructor

@@ -182,7 +182,7 @@ class CTimeDate
 			Today,
 			};
 
-		CTimeDate (void) { }
+		CTimeDate (void);
 		CTimeDate (Constants Init);
 		CTimeDate (const SYSTEMTIME &Time);
 		CTimeDate (int iDaysSince1AD, int iMillisecondsSinceMidnight);
