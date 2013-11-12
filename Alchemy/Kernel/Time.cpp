@@ -431,7 +431,7 @@ bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *r
 
 		bool bFail;
 		m_Time.wDay = strParseInt(pPos, 0, &pPos, &bFail);
-		if (bFail)
+		if (bFail || m_Time.wDay < 1 || m_Time.wDay > 31)
 			goto InvalidValue;
 
 		pPos++;
@@ -539,7 +539,7 @@ bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *r
 		//	Year
 
 		m_Time.wYear = strParseInt(pPos, 0, &pPos, &bFail);
-		if (bFail)
+		if (bFail || m_Time.wYear < 1)
 			goto InvalidValue;
 
 		pPos++;
@@ -549,7 +549,7 @@ bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *r
 		//	Hour
 
 		m_Time.wHour = strParseInt(pPos, 0, &pPos, &bFail);
-		if (bFail)
+		if (bFail || m_Time.wHour > 23)
 			goto InvalidValue;
 
 		pPos++;
@@ -559,7 +559,7 @@ bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *r
 		//	Minute
 
 		m_Time.wMinute = strParseInt(pPos, 0, &pPos, &bFail);
-		if (bFail)
+		if (bFail || m_Time.wMinute > 59)
 			goto InvalidValue;
 
 		pPos++;
@@ -569,8 +569,12 @@ bool CTimeDate::Parse (const CString &sFormat, const CString &sValue, CString *r
 		//	Second
 
 		m_Time.wSecond = strParseInt(pPos, 0, &pPos, &bFail);
-		if (bFail)
+		if (bFail || m_Time.wSecond > 59)
 			goto InvalidValue;
+
+		//	Millisecond is not stored
+
+		m_Time.wMilliseconds = 0;
 
 		//	We don't store day of week
 
