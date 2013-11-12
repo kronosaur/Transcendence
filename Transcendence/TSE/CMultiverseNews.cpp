@@ -81,6 +81,8 @@ ALERROR CMultiverseNews::LoadReadState (const CString &sFilespec, CString *retsE
 
 	//	Done
 
+	delete pData;
+
 	return NOERROR;
 	}
 
