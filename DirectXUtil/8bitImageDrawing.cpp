@@ -63,6 +63,11 @@ void CreateRoundedRectAlpha (int cxWidth, int cyHeight, int iRadius, CG16bitImag
 		pTopRow[xRightEdge] = pEdge[i];
 		pBottomRow[xRightEdge] = pEdge[i];
 		}
+
+	//	Clean up
+
+	delete [] pSolid;
+	delete [] pEdge;
 	}
 
 void DrawHorzLine8bit (CG16bitImage &Dest, int x, int y, int cxWidth, BYTE byValue)
