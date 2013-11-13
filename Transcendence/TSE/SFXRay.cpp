@@ -947,6 +947,8 @@ void CRayEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 //	Paint the effect
 
 	{
+	DEBUG_TRY
+
 	//	Make sure we've computed all our temporaries
 
 	CalcIntermediates();
@@ -963,6 +965,8 @@ void CRayEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 	//	Paint the ray
 
 	PaintRay(Dest, xFrom, yFrom, xTo, yTo, Ctx);
+
+	DEBUG_CATCH
 	}
 
 void CRayEffectPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx)
@@ -999,6 +1003,8 @@ void CRayEffectPainter::PaintRay (CG16bitImage &Dest, int xFrom, int yFrom, int 
 //	Paints the ray
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Rasterize the line
@@ -1130,6 +1136,8 @@ void CRayEffectPainter::PaintRay (CG16bitImage &Dest, int xFrom, int yFrom, int 
 			*(Pixel.pPos) = CG16bitImage::BlendPixel(*(Pixel.pPos), wColor, Pixel.dwOpacity);
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CRayEffectPainter::PointInImage (int x, int y, int iTick, int iVariant, int iRotation) const

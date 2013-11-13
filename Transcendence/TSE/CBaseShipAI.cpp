@@ -304,9 +304,28 @@ CSpaceObject *CBaseShipAI::CalcEnemyShipInRange (CSpaceObject *pCenter, Metric r
 			}
 		}
 
-	DEBUG_CATCH
-
 	return NULL;
+
+	DEBUG_CATCH_CONTINUE
+
+	CSpaceObject *pPlayer = m_pShip->GetPlayer();
+	::kernelDebugLogMessage("Player Ship: %s", CSpaceObject::DebugDescribe(pPlayer));
+
+	CSovereign *pSovereign = m_pShip->GetSovereignToDefend();
+	if (pSovereign)
+		{
+		int i;
+
+		::kernelDebugLogMessage("Sovereign: %x", pSovereign->GetUNID());
+
+		const CSpaceObjectList &ObjList = pSovereign->GetEnemyObjectList(m_pShip->GetSystem());
+		for (i = 0; i < ObjList.GetCount(); i++)
+			::kernelDebugLogMessage("Enemy Obj %d: %s", i, CSpaceObject::DebugDescribe(ObjList.GetObj(i)));
+		}
+	else
+		::kernelDebugLogMessage("Sovereign: none");
+
+	throw CException(ERR_FAIL);
 	}
 
 bool CBaseShipAI::CalcFlockingFormation (CSpaceObject *pLeader,

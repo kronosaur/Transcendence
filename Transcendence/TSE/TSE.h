@@ -86,6 +86,7 @@
 
 #define DEBUG_TRY				try {
 #define DEBUG_CATCH				} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); throw; }
+#define DEBUG_CATCH_CONTINUE	} catch (...) { kernelDebugLogMessage("Crash in %s", CString(__FUNCTION__)); }
 #define DEBUG_CATCH_MSG(msg)	} catch (...) { kernelDebugLogMessage(msg); throw; }
 
 //	If ITEM_REFERENCE is defined, then the player doesn't see the

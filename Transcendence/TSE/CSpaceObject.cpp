@@ -1070,12 +1070,14 @@ CString CSpaceObject::DebugDescribe (CSpaceObject *pObj)
 //	Describe object
 
 	{
-	if (pObj == NULL)
-		return CONSTLIT("none");
-
 	try
 		{
-		return strPatternSubst(CONSTLIT("%x %s (%s)"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
+		if (pObj == NULL)
+			return CONSTLIT("none");
+		else if (pObj->IsDestroyed())
+			return strPatternSubst(CONSTLIT("%x %s (%s) [destroyed]"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
+		else
+			return strPatternSubst(CONSTLIT("%x %s (%s)"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
 		}
 	catch (...)
 		{
