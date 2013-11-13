@@ -389,37 +389,28 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 	ItemCategories iCategory = pDevice->GetCategory();
 	ItemCategories iSlotCategory = pDevice->GetSlotCategory();
 
-	//	See how many device slots we need
-
-	int iSlotsRequired = pDevice->GetSlotsRequired();
-
 	//	See if if this is a device with an assigned slot (like a shield generator
-	//	or cargo hold, etc.)
+	//	or cargo hold, etc.) and the slot is in use, then we need to replace it.
 
-	DeviceNames iNamedSlot = GetDeviceNameForCategory(iCategory);
-	if (iNamedSlot != devNone 
-			&& iNamedSlot != devPrimaryWeapon
-			&& HasNamedDevice(iNamedSlot))
+	if (IsSingletonDevice(iSlotCategory)
+			&& !IsDeviceSlotAvailable(iSlotCategory, retiSlot))
 		{
-		if (retiSlot)
-			*retiSlot = m_NamedDevices[iNamedSlot];
-
-		switch (iNamedSlot)
+		switch (iSlotCategory)
 			{
-			case devMissileWeapon:
+			case itemcatLauncher:
 				return insReplaceLauncher;
 
-			case devShields:
+			case itemcatReactor:
+				return insReplaceReactor;
+
+			case itemcatShields:
 				return insReplaceShields;
 
-			case devDrive:
-				return insReplaceDrive;
-
-			case devCargo:
+			case itemcatCargoHold:
 				return insReplaceCargo;
 
-			case devReactor:
-				return insReplaceReactor;
+			case itemcatDrive:
+				return insReplaceDrive;
 
 			default:
 				ASSERT(false);
@@ -431,6 +422,10 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 
 	if (m_pClass->GetMaxDevices() == -1)
 		return insOK;
+
+	//	See how many device slots we need
+
+	int iSlotsRequired = pDevice->GetSlotsRequired();
 
 	//	Otherwise, check to make sure that we have enough slots.
 
@@ -3052,14 +3047,42 @@ bool CShip::IsArmorRepairable (int iSect)
 	return (pSect->GetHitPoints() >= (pSect->GetMaxHP(this) / 4));
 	}
 
-bool CShip::IsDeviceSlotAvailable (void)
+bool CShip::IsDeviceSlotAvailable (ItemCategories iItemCat, int *retiSlot)
 
 //	IsDeviceSlotAvailable
 //
-//	Returns TRUE if it is possible to install a new device
+//	Returns TRUE if it is possible to install a new device. If the slot is full
+//	then we return the device slot that we need to replace.
 
 	{
-	return true;
+	int i;
+
+	switch (iItemCat)
+		{
+		case itemcatLauncher:
+		case itemcatReactor:
+		case itemcatShields:
+		case itemcatCargoHold:
+		case itemcatDrive:
+			{
+			//	Look for a device of the given slot category.
+
+			for (i = 0; i < GetDeviceCount(); i++)
+				if (!m_Devices[i].IsEmpty()
+						&& m_Devices[i].GetSlotCategory() == iItemCat)
+					{
+					if (retiSlot)
+						*retiSlot = i;
+					return false;
+					}
+
+			return true;
+			}
+
+		default:
+			ASSERT(retiSlot == NULL);
+			return true;
+		}
 	}
 
 bool CShip::IsFuelCompatible (const CItem &Item)
@@ -3114,6 +3137,28 @@ bool CShip::IsRadiationImmune (void)
 		}
 
 	return true;
+	}
+
+bool CShip::IsSingletonDevice (ItemCategories iItemCat)
+
+//	IsSingletonDevice
+//
+//	Returns TRUE if the given item category has a dedicated slot (e.g., shields, 
+//	drive, etc.)
+
+	{
+	switch (iItemCat)
+		{
+		case itemcatLauncher:
+		case itemcatReactor:
+		case itemcatShields:
+		case itemcatCargoHold:
+		case itemcatDrive:
+			return true;
+		
+		default:
+			return false;
+		}
 	}
 
 bool CShip::IsWeaponAligned (DeviceNames iDev, CSpaceObject *pTarget, int *retiAimAngle, int *retiFireAngle, int *retiFacingAngle)

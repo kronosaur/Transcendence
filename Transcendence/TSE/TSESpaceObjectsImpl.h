@@ -835,7 +835,7 @@ class CShip : public CSpaceObject
 		CItem GetNamedDeviceItem (DeviceNames iDev);
 		bool HasNamedDevice (DeviceNames iDev) const;
 		void InstallItemAsDevice (CItemListManipulator &ItemList, int iDeviceSlot = -1);
-		bool IsDeviceSlotAvailable (void);
+		bool IsDeviceSlotAvailable (ItemCategories iItemCat = itemcatNone, int *retiSlot = NULL);
 		void ReadyFirstWeapon (void);
 		void ReadyNextWeapon (int iDir = 1);
 		void ReadyFirstMissile (void);
@@ -1099,6 +1099,7 @@ class CShip : public CSpaceObject
 		Metric GetCargoMass (void);
 		ItemCategories GetCategoryForNamedDevice (DeviceNames iDev);
 		Metric GetItemMass (void);
+		bool IsSingletonDevice (ItemCategories iItemCat);
 		void ReactorOverload (void);
 		bool ShieldsAbsorbFire (CInstalledDevice *pWeapon);
 		void SetDriveDesc (const DriveDesc *pDesc);
