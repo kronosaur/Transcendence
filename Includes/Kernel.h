@@ -187,6 +187,8 @@ class CTimeDate
 		CTimeDate (const SYSTEMTIME &Time);
 		CTimeDate (int iDaysSince1AD, int iMillisecondsSinceMidnight);
 
+		inline operator SYSTEMTIME () const { return m_Time; }
+
 		inline int Year (void) const { return m_Time.wYear; }
 		inline int Month (void) const { return m_Time.wMonth; }
 		inline int Day (void) const { return m_Time.wDay; }
