@@ -626,11 +626,12 @@
 					costToInstall			; Total installation cost (Nil if we should compute this)
 					installMargin			; Markup on installation cost (only if costToInstall is Nil)
 					currencyUsed			; Currency to use in transaction
-					maxTechLevel			; Max tech level that we will install
+					maxTechLevel			; Max tech level that we will install (unless in techCriteria)
 					techCriteria			; If not Nil, the item must match this criteria
 					checkMilitaryID			; If True, we make sure player has a militaryID
 					isItemInCargo			; If True, item is in player's cargo hold
 					buyAndInstall			; If True, we're installing as part of purchase
+					techCriteriaOverride	; If not Nil, and item matches this criteria, install even if above maxTechLevel
 					)
 
 				; We return a list with the following elements:
@@ -650,6 +651,7 @@
 						currencyUsed: currencyUsed
 						maxTechLevel: maxTechLevel
 						techCriteria: techCriteria
+						techCriteriaOverride: techCriteriaOverride
 						checkMilitaryID: checkMilitaryID
 						itemInCargo: isItemInCargo
 						buyAndInstall: buyAndInstall

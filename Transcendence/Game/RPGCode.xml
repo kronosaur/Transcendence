@@ -125,10 +125,11 @@
 				;	installerObj:			Object installing the device (if Nil, we assume a station)
 				;	installPriceAdj:		Installation price (only if totalPrice is Nil)
 				;	itemInCargo:			If True, item is in player's cargo hold
-				;	maxTechLevel:			The maximum tech level we will install
+				;	maxTechLevel:			The maximum tech level we will install (unless we match techCriteriaOverride)
 				;	noCargoCheck:			If True, then we don't check to see if the old device fits in cargo
 				;	targetObj:				Object on which to install (if Nil, we assume player ship)
 				;	techCriteria:			If not Nil, the item must match this criteria
+				;	techCriteriaOverride:	If not Nil, and item matches this criteria, install even if above maxTechLevel
 				;	totalPrice:				The total price to install (may include purchase price)
 				;
 				; We return a struct with the following elements:
@@ -191,12 +192,20 @@
 							(setq itemToReplace (@ returnValue 3))
 							
 							(switch
-								;	If we don't have the technology, we cannot install
+								;	If we don't match the tech criteria then we don't have the
+								;	technology to install.
+								
+								(and (@ data 'techCriteria)
+										(not (itmMatches thisItem (@ data 'techCriteria)))
+										)
+									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+								
+								;	If our max tech level is too low for the item, then we can't install
 								;	(except for specific items that we know about)
 								
-								(or (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
-										(and (@ data 'techCriteria)
-											(not (itmMatches thisItem (@ data 'techCriteria)))
+								(and (gr (itmGetLevel thisItem) (if (@ data 'maxTechLevel) (@ data 'maxTechLevel) 30))
+										(or (not (@ data 'techCriteriaOverride))
+											(not (itmMatches thisItem (@ data 'techCriteriaOverride)))
 											)
 										)
 									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))

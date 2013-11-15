@@ -451,10 +451,14 @@
 								gMargin								; install cost margin
 								(objGetDefaultCurrency gSource)		; currency to use
 								gTechLevel							; max tech level
-								(cat "d +" gTechModifier ";")		; install criteria
+								Nil									; install criteria
 								gCheckMilitaryID					; check military ID
 								True								; item is in cargo
-								Nil)								; buy and install
+								Nil									; buy and install
+								(if gTechModifier					; tech criteria override
+									(cat "d +" gTechModifier ";")
+									)
+								)
 							)
 					
 						(setq gCanInstall (item theResult 0))
@@ -595,10 +599,14 @@
 								gMargin								; install cost margin
 								(objGetDefaultCurrency gSource)		; currency to use
 								gTechLevel							; max tech level
-								(cat "w +" gTechModifier ";")		; install criteria
+								Nil									; install criteria
 								gCheckMilitaryID					; check military ID
 								True									; item is in cargo
-								Nil)								; buy and install
+								Nil									; buy and install
+								(if gTechModifier					; tech criteria override
+									(cat "w +" gTechModifier ";")
+									)
+								)
 							)
 							
 						(setq gCanInstall (item theResult 0))
