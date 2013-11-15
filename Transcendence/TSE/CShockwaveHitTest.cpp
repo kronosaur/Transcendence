@@ -142,7 +142,8 @@ void CShockwaveHitTest::ReadFromStream (SLoadCtx &Ctx)
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_Segments.InsertEmpty(dwLoad);
 
-	Ctx.pStream->Read((char *)&m_Segments[0], sizeof(int) * dwLoad);
+	if (dwLoad > 0)
+		Ctx.pStream->Read((char *)&m_Segments[0], sizeof(int) * dwLoad);
 	}
 
 void CShockwaveHitTest::Update (SEffectUpdateCtx &Ctx, const CVector &vPos, Metric rMinRadius, Metric rMaxRadius)
@@ -321,5 +322,6 @@ void CShockwaveHitTest::WriteToStream (IWriteStream *pStream) const
 	dwSave = m_Segments.GetCount();
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
-	pStream->Write((char *)&m_Segments[0], sizeof(int) * m_Segments.GetCount());
+	if (m_Segments.GetCount() > 0)
+		pStream->Write((char *)&m_Segments[0], sizeof(int) * m_Segments.GetCount());
 	}
