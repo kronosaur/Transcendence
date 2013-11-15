@@ -43,6 +43,7 @@ class ICIService
 			};
 
 		ICIService (CHumanInterface &HI) : m_HI(HI), m_bEnabled(false), m_bModified(false) { }
+		virtual ~ICIService (void) { }
 
 		inline bool IsEnabled (void) { return m_bEnabled; }
 		inline bool IsModified (void) { return m_bModified; }
