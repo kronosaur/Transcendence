@@ -457,6 +457,8 @@ void CDockingPorts::RepairAll (CSpaceObject *pOwner, int iRepairRate)
 //	RepairAll 
 
 	{
+	DEBUG_TRY
+
 	if (iRepairRate > 0)
 		{
 		for (int i = 0; i < m_iPortCount; i++)
@@ -467,6 +469,8 @@ void CDockingPorts::RepairAll (CSpaceObject *pOwner, int iRepairRate)
 				m_pPort[i].pObj->Decontaminate();
 				}
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CDockingPorts::RequestDock (CSpaceObject *pOwner, CSpaceObject *pObj, int iPort)

@@ -1963,6 +1963,8 @@ void CSpaceObject::FireOnDestroy (const SDestroyCtx &Ctx)
 //	Fire OnDestroy event
 
 	{
+	DEBUG_TRY
+
 	SEventHandlerDesc Event;
 
 	if (FindEventHandler(ON_DESTROY_EVENT, &Event))
@@ -1982,6 +1984,8 @@ void CSpaceObject::FireOnDestroy (const SDestroyCtx &Ctx)
 			ReportEventError(ON_DESTROY_EVENT, pResult);
 		CCCtx.Discard(pResult);
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CSpaceObject::FireOnDockObjAdj (CSpaceObject **retpObj)

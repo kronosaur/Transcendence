@@ -184,7 +184,10 @@ DWORD fileGetProductVersion (void)
 
 //	fileGetProductVersion
 //
-//	Returns the version encoded as a DWORD
+//	Returns the version encoded as a DWORD.
+//
+//	NOTE: This is not very accurate, since it tries to pack a DWORDLONG into
+//	a DWORD. Do not use unless you know that your version numbers fit.
 
 	{
 	SFileVersionInfo VerInfo;

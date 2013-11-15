@@ -58,25 +58,35 @@ bool zipDecompress (IReadBlock &Data, ECompressionTypes iFormat, IWriteStream &O
 //	Decompresses a block
 
 	{
-	switch (iFormat)
+	try
 		{
-		case compressionNone:
-			if (!NullCopy(Data, Output, retsError))
-				return false;
-			break;
+		switch (iFormat)
+			{
+			case compressionNone:
+				if (!NullCopy(Data, Output, retsError))
+					return false;
+				break;
 
-		case compressionGzip:
-		case compressionZlib:
-			if (!Inflate(Data, iFormat, Output, retsError))
-				return false;
-			break;
+			case compressionGzip:
+			case compressionZlib:
+				if (!Inflate(Data, iFormat, Output, retsError))
+					return false;
+				break;
 
-		default:
-			ASSERT(false);
-			return false;
+			default:
+				ASSERT(false);
+				return false;
+			}
+
+		return true;
 		}
-
-	return true;
+	catch (...)
+		{
+		::kernelDebugLogMessage("Crash decompressing data.");
+		if (retsError)
+			*retsError = CONSTLIT("Crash decompressing data.");
+		return false;
+		}
 	}
 
 bool Deflate (IReadBlock &Data, ECompressionTypes iFormat, IWriteStream &Output, CString *retsError)

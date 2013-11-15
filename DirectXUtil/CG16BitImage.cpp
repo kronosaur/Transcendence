@@ -40,6 +40,10 @@ CG16bitImage::CG16bitImage (void) : CObject(NULL),
 //	CG16bitImage constructor
 
 	{
+	m_rcClip.left = 0;
+	m_rcClip.top = 0;
+	m_rcClip.right = 0;
+	m_rcClip.bottom = 0;
 	}
 
 CG16bitImage::~CG16bitImage (void)

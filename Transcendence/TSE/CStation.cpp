@@ -251,6 +251,8 @@ int CStation::CalcNumberOfShips (void)
 //	Returns the number of ships associated with this station
 
 	{
+	DEBUG_TRY
+
 	int i;
 	int iCount = 0;
 
@@ -268,6 +270,8 @@ int CStation::CalcNumberOfShips (void)
 		}
 
 	return iCount;
+
+	DEBUG_CATCH
 	}
 
 bool CStation::CanAttack (void) const
