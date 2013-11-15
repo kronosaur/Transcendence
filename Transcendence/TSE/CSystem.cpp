@@ -1927,7 +1927,7 @@ ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
 					pNewObj->SetAutomatedWeapon();
 				}
 
-			delete iAngle;
+			delete [] iAngle;
 			}
 
 		pFragDesc = pFragDesc->pNext;
