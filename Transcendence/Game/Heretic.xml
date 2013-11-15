@@ -2130,7 +2130,7 @@
 
 							<Action name="Install Device" key="D" >
 								(block Nil
-									(setq gTechLevel 9)
+									(setq gTechLevel 10)
 									(setq gTechModifier Nil)
 									(setq gCheckMilitaryID True)
 									(setq gMargin 120)
