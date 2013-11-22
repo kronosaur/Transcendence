@@ -5,6 +5,7 @@ RELEASE
 [ ] Set version number in TransData and TransCompiler, if necessary
 [ ] Set apiVersion number, if necessary (TSEUtil.h)
 [ ] Set apiVersion number in Transcendence.xml
+[ ] Set TRANSCENDENCE_STABLE_RELEASE in TSE.h
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (TSEUtil.h)

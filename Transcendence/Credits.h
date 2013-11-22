@@ -106,6 +106,7 @@ static char *FEEDBACK[] =
 	"l0mars01",
 	"Brian Lane",
 	"TheLastBrunnenG",
+	"Lessil",
 	"Chuck Lindgren",
 	"lootnplunder",
 	"LordSutekh",
@@ -178,6 +179,7 @@ static char *FEEDBACK[] =
 	"Star Weaver",
 	"stealthx",
 	"Stormhawk",
+	"Sutaa",
 
 	"Tamagoyaki",
 	"TaviRider",
