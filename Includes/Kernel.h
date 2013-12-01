@@ -182,10 +182,12 @@ class CTimeDate
 			Today,
 			};
 
-		CTimeDate (void) { }
+		CTimeDate (void);
 		CTimeDate (Constants Init);
 		CTimeDate (const SYSTEMTIME &Time);
 		CTimeDate (int iDaysSince1AD, int iMillisecondsSinceMidnight);
+
+		inline operator SYSTEMTIME () const { return m_Time; }
 
 		inline int Year (void) const { return m_Time.wYear; }
 		inline int Month (void) const { return m_Time.wMonth; }

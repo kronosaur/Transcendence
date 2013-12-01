@@ -2855,7 +2855,7 @@ void CTranscendenceWnd::StopIntro (void)
 
 	if (m_pHighScorePos)
 		{
-		delete m_pHighScorePos;
+		delete [] m_pHighScorePos;
 		m_pHighScorePos = NULL;
 		}
 

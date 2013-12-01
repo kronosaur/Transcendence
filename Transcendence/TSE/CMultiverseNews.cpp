@@ -81,6 +81,8 @@ ALERROR CMultiverseNews::LoadReadState (const CString &sFilespec, CString *retsE
 
 	//	Done
 
+	delete pData;
+
 	return NOERROR;
 	}
 
@@ -176,6 +178,8 @@ ALERROR CMultiverseNews::SetNews (const CJSONValue &Data, const CString &sCacheF
 //	Sets news from Multiverse.
 
 	{
+	DEBUG_TRY
+
 	int i;
 	CString sError;
 
@@ -241,6 +245,8 @@ ALERROR CMultiverseNews::SetNews (const CJSONValue &Data, const CString &sCacheF
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void CMultiverseNews::ShowNews (CMultiverseNewsEntry *pEntry)

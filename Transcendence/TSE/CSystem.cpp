@@ -1826,6 +1826,8 @@ ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
 //	Creates the fragments from a fragmentation weapon
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 	int i;
 
@@ -1925,13 +1927,15 @@ ALERROR CSystem::CreateWeaponFragments (CWeaponFireDesc *pDesc,
 					pNewObj->SetAutomatedWeapon();
 				}
 
-			delete iAngle;
+			delete [] iAngle;
 			}
 
 		pFragDesc = pFragDesc->pNext;
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 bool CSystem::DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **retpObj, CString *retsError)

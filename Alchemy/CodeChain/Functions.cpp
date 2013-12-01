@@ -2959,7 +2959,7 @@ ICCItem *fnRandomTable (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 		ICCItem *pResult = pCC->Eval(pCtx, pArguments->GetElement(i * 2));
 		if (pResult->IsError())
 			{
-			delete pTable;
+			delete [] pTable;
 			return pResult;
 			}
 
@@ -2973,7 +2973,7 @@ ICCItem *fnRandomTable (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 	if (iTotal <= 0)
 		{
-		delete pTable;
+		delete [] pTable;
 		return pCC->CreateNil();
 		}
 
@@ -2991,13 +2991,13 @@ ICCItem *fnRandomTable (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 		//	Execute and return expression
 
-		delete pTable;
+		delete [] pTable;
 		return pCC->Eval(pCtx, pArguments->GetElement(i * 2 + 1));
 		}
 
 	//	We should never get here
 
-	delete pTable;
+	delete [] pTable;
 	return pCC->CreateNil();
 	}
 

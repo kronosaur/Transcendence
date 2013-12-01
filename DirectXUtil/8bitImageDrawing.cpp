@@ -18,14 +18,21 @@ void CreateRoundedRectAlpha (int cxWidth, int cyHeight, int iRadius, CG16bitImag
 	{
 	int i;
 
+	if (cxWidth <= 0 || cyHeight <= 0)
+		return;
+
 	//	Start with a full rectangle
 
 	retImage->CreateBlankAlpha(cxWidth, cyHeight, 255);
 
+	//	Radius can't be larger than half the dimensions
+
+	iRadius = Min(Min(iRadius, cxWidth / 2), cyHeight / 2);
 	if (iRadius <= 0)
 		return;
 
 	//	Generate a set of raster lines for the corner
+	//	NOTE: We guarantee that the solid part is always 1 less than the radius.
 
 	int *pSolid = new int [iRadius];
 	BYTE *pEdge = new BYTE [iRadius];
@@ -38,31 +45,35 @@ void CreateRoundedRectAlpha (int cxWidth, int cyHeight, int iRadius, CG16bitImag
 		BYTE *pTopRow = retImage->GetAlphaRow(i);
 		BYTE *pBottomRow = retImage->GetAlphaRow(cyHeight - (i + 1));
 
-		int xLeftEdge = (iRadius - pSolid[i]) - 1;
-		int xRightEdge = cxWidth - iRadius + pSolid[i];
+		int cxEdge = (iRadius - (pSolid[i] + 1));
 
 		//	Left corners
 
-		if (xLeftEdge > 0)
+		if (cxEdge > 0)
 			{
-			utlMemSet(pTopRow, xLeftEdge, 0);
-			utlMemSet(pBottomRow, xLeftEdge, 0);
+			utlMemSet(pTopRow, cxEdge, 0);
+			utlMemSet(pBottomRow, cxEdge, 0);
 			}
 
-		pTopRow[xLeftEdge] = pEdge[i];
-		pBottomRow[xLeftEdge] = pEdge[i];
+		pTopRow[cxEdge] = pEdge[i];
+		pBottomRow[cxEdge] = pEdge[i];
 
 		//	Right corners
 
-		if (pSolid[i] > 0)
+		if (cxEdge > 0)
 			{
-			utlMemSet(pTopRow - pSolid[i], pSolid[i], 0);
-			utlMemSet(pBottomRow - pSolid[i], pSolid[i], 0);
+			utlMemSet(pTopRow + cxWidth - cxEdge, cxEdge, 0);
+			utlMemSet(pBottomRow + cxWidth - cxEdge, cxEdge, 0);
 			}
 
-		pTopRow[xRightEdge] = pEdge[i];
-		pBottomRow[xRightEdge] = pEdge[i];
+		pTopRow[cxWidth - cxEdge - 1] = pEdge[i];
+		pBottomRow[cxWidth - cxEdge - 1] = pEdge[i];
 		}
+
+	//	Clean up
+
+	delete [] pSolid;
+	delete [] pEdge;
 	}
 
 void DrawHorzLine8bit (CG16bitImage &Dest, int x, int y, int cxWidth, BYTE byValue)

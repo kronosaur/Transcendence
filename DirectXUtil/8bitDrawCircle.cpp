@@ -252,7 +252,8 @@ void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge)
 //	Returns two arrays:
 //
 //	The first is an array (of size iRadius) is the length of the solid part of
-//	each raster line.
+//	each raster line. We guarantee that the solid part is always 1 less than 
+//	the radius.
 //
 //	The second array (also of size iRadius) is the opacity value of each
 //	pixel at the edge of the raster line.
@@ -270,6 +271,15 @@ void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge)
 		Metric rLen = sqrt(rRadius2 - (rRow * rRow));
 		retSolid[i] = (int)rLen;
 		retEdge[i] = (BYTE)((rLen - retSolid[i]) * 255);
+
+		//	We make sure that we fit inside the radius, so the solid part always
+		//	has to be 1 less than the radius
+
+		if (retSolid[i] == iRadius)
+			{
+			retSolid[i]--;
+			retEdge[i] = 255;
+			}
 
 		rRow -= 1.0;
 		}

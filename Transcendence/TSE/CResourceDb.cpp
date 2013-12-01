@@ -642,6 +642,8 @@ ALERROR CResourceDb::ReadEntry (const CString &sFilespec, CString *retsData)
 //	Reads an entry
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	//	Look-up the resource in the map
@@ -670,6 +672,8 @@ ALERROR CResourceDb::ReadEntry (const CString &sFilespec, CString *retsData)
 		}
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR CResourceDb::Open (DWORD dwFlags, CString *retsError)

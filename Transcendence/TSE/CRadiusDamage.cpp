@@ -281,11 +281,11 @@ void CRadiusDamage::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 				{
 				CSpaceObject *pObj = GetSystem()->GetObject(i);
 				if (pObj 
+						&& !pObj->IsDestroyed()
 						&& CanHit(pObj)
 						&& pObj->CanBeHit()
 						&& pObj->InBox(vUR, vLL)
 						&& pObj->CanBeHitBy(m_pDesc->m_Damage)
-						&& !pObj->IsDestroyed()
 						&& pObj != this)
 					{
 					//	Compute the distance between this object and the center

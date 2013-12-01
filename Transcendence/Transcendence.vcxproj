@@ -523,7 +523,9 @@
     <None Include="Game\CommonwealthMining.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Compatibility10.xml" />
+    <None Include="Game\Compatibility10.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\CoreCode.xml">
       <SubType>Designer</SubType>
     </None>

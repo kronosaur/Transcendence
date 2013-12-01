@@ -192,6 +192,7 @@ template <class VALUE> class TArray : public CArrayBase
 
 		inline VALUE &GetAt (int iIndex) const
 			{
+			ASSERT(iIndex >= 0 && iIndex < GetCount());
 			VALUE *pElement = (VALUE *)(GetBytes() + iIndex * sizeof(VALUE));
 			return *pElement;
 			}

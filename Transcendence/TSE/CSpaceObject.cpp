@@ -1070,12 +1070,14 @@ CString CSpaceObject::DebugDescribe (CSpaceObject *pObj)
 //	Describe object
 
 	{
-	if (pObj == NULL)
-		return CONSTLIT("none");
-
 	try
 		{
-		return strPatternSubst(CONSTLIT("%x %s (%s)"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
+		if (pObj == NULL)
+			return CONSTLIT("none");
+		else if (pObj->IsDestroyed())
+			return strPatternSubst(CONSTLIT("%x %s (%s) [destroyed]"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
+		else
+			return strPatternSubst(CONSTLIT("%x %s (%s)"), (DWORD)pObj, pObj->GetName(), pObj->GetObjClassName());
 		}
 	catch (...)
 		{
@@ -1961,6 +1963,8 @@ void CSpaceObject::FireOnDestroy (const SDestroyCtx &Ctx)
 //	Fire OnDestroy event
 
 	{
+	DEBUG_TRY
+
 	SEventHandlerDesc Event;
 
 	if (FindEventHandler(ON_DESTROY_EVENT, &Event))
@@ -1980,6 +1984,8 @@ void CSpaceObject::FireOnDestroy (const SDestroyCtx &Ctx)
 			ReportEventError(ON_DESTROY_EVENT, pResult);
 		CCCtx.Discard(pResult);
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CSpaceObject::FireOnDockObjAdj (CSpaceObject **retpObj)

@@ -333,6 +333,8 @@ void CLevelTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 //	Create the ships
 
 	{
+	DEBUG_TRY
+
 	int i, j;
 
 	//	Compute probabilities
@@ -372,6 +374,8 @@ void CLevelTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 Metric CLevelTableOfShipGenerators::GetAverageLevelStrength (int iLevel)
@@ -496,6 +500,8 @@ void CLookupShipTable::CreateShips (SShipCreateCtx &Ctx)
 //	Create ships
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	if (m_pTable)
@@ -505,6 +511,8 @@ void CLookupShipTable::CreateShips (SShipCreateCtx &Ctx)
 		for (i = 0; i < iCount; i++)
 			m_pTable->CreateShips(Ctx);
 		}
+
+	DEBUG_CATCH
 	}
 
 ALERROR CLookupShipTable::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -720,6 +728,8 @@ void CSingleShip::CreateShips (SShipCreateCtx &Ctx)
 //	Create the ships
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	ASSERT(Ctx.pSystem);
@@ -792,6 +802,8 @@ void CSingleShip::CreateShips (SShipCreateCtx &Ctx)
 				pShip->SetEncounterInfo(Ctx.pEncounterInfo);
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 Metric CSingleShip::GetAverageLevelStrength (int iLevel)
@@ -1012,6 +1024,8 @@ void CTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 //	Create the ships
 
 	{
+	DEBUG_TRY
+
 	int i, j;
 
 	int iCount = m_Count.Roll();
@@ -1030,6 +1044,8 @@ void CTableOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 Metric CTableOfShipGenerators::GetAverageLevelStrength (int iLevel)
@@ -1169,6 +1185,8 @@ void CGroupOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 //	Create the ships
 
 	{
+	DEBUG_TRY
+
 	int i, j;
 
 	int iCount = m_Count.Roll();
@@ -1180,6 +1198,8 @@ void CGroupOfShipGenerators::CreateShips (SShipCreateCtx &Ctx)
 				m_Table[i].pEntry->CreateShips(Ctx);
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 Metric CGroupOfShipGenerators::GetAverageLevelStrength (int iLevel)

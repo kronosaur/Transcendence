@@ -539,6 +539,8 @@ ALERROR ICIService::DownloadFile (const CString &sURL, IMediaType **retpBody, IH
 //	string.
 
 	{
+	DEBUG_TRY
+
 	CHTTPClientSession Session;
 
 	//	Parse the URL to get the host name
@@ -597,6 +599,8 @@ ALERROR ICIService::DownloadFile (const CString &sURL, IMediaType **retpBody, IH
 		*retpBody = Response.GetBodyHandoff();
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 ALERROR ICIService::DownloadFile (const CString &sURL, const CString &sDestFilespec, IHTTPClientSessionEvents *pEvents, CString *retsResult)
@@ -606,6 +610,8 @@ ALERROR ICIService::DownloadFile (const CString &sURL, const CString &sDestFiles
 //	Downloads the file and writes it to the given filespec
 
 	{
+	DEBUG_TRY
+
 	ALERROR error;
 
 	//	Download first (otherwise we have to delete the file on error).
@@ -637,6 +643,8 @@ ALERROR ICIService::DownloadFile (const CString &sURL, const CString &sDestFiles
 	//	Done
 
 	return NOERROR;
+
+	DEBUG_CATCH
 	}
 
 void ICIService::SendServiceError (const CString &sStatus)
