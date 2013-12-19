@@ -423,6 +423,7 @@ class CAutonAI : public CBaseShipAI
 		virtual void OnObjDestroyedNotify (const SDestroyCtx &Ctx);
 		virtual void OnOrderChanged (void);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnSystemLoadedNotify (void);
 		virtual void OnWriteToStream (IWriteStream *pStream);
 
 	private:

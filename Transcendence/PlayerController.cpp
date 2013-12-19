@@ -1739,6 +1739,8 @@ void CPlayerShipController::Reset (void)
 //	Resets the ship (used when changing systems, etc.)
 
 	{
+	DEBUG_TRY
+
 	//	Clear target
 
 	if (m_pTarget)
@@ -1759,6 +1761,8 @@ void CPlayerShipController::Reset (void)
 	//	Create autodock
 
 	m_pAutoDock = NULL;
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::SelectNearestTarget (void)

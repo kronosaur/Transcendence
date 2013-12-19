@@ -726,6 +726,8 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 //	Exits docking
 
 	{
+	DEBUG_TRY
+
 	ASSERT(!m_DockFrames.IsEmpty());
 
 	//	If we have another frame, then switch back to that screen
@@ -776,6 +778,8 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 
 		m_DockFrames.DeleteAll();
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen, ICCItem **retpData)
@@ -1340,6 +1344,8 @@ void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpit
 //	Called from inside the ship's OnDestroyed
 
 	{
+	DEBUG_TRY
+
 	//	Undock, if necessary
 
 	if (InScreenSession())
@@ -1380,6 +1386,8 @@ void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpit
 		}
 	else
 		m_iState = statePlayerInResurrect;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)

@@ -464,6 +464,8 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 //	Clean up player ship structures when ship is destroyed
 
 	{
+	DEBUG_TRY
+
 	m_ReactorDisplay.CleanUp();
 	m_DeviceDisplay.CleanUp();
 	m_TargetDisplay.CleanUp();
@@ -472,6 +474,8 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 
 	m_bDebugConsole = false;
 	m_bPaused = false;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::ClearDebugLines (void)
@@ -688,6 +692,8 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 //	This method gets called when the player is destroyed
 
 	{
+	DEBUG_TRY
+
 	//	Clean up
 
 	HideCommsTargetMenu();
@@ -729,6 +735,8 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 		m_State = gsDestroyed;
 		m_iCountdown = TICKS_AFTER_DESTROYED;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::PlayerEnteredGate (CSystem *pSystem, 
