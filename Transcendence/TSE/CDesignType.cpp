@@ -1045,7 +1045,7 @@ ALERROR CDesignType::FireOnGlobalUniverseCreated (const SEventHandlerDesc &Event
 
 ALERROR CDesignType::FireOnGlobalUniverseLoad (const SEventHandlerDesc &Event)
 
-//	FireOnGlobalUniverseCreated
+//	FireOnGlobalUniverseLoad
 //
 //	Fire event
 

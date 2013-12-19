@@ -1593,7 +1593,8 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		{
 		pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		ExtensionList.InsertEmpty(dwLoad);
-		pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(SExtensionSaveDesc));
+		if (dwLoad > 0)
+			pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(SExtensionSaveDesc));
 		}
 	else if (Ctx.dwVersion >= 8)
 		{
@@ -2020,6 +2021,8 @@ ALERROR CUniverse::Reinit (void)
 
 	//	Clear some basic variables
 
+	m_bRegistered = false;
+	m_bResurrectMode = false;
 	m_Time.DeleteAll();
 	m_pPOV = NULL;
 	SetCurrentSystem(NULL);
