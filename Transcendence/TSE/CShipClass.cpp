@@ -840,6 +840,7 @@ Metric CShipClass::CalcMass (const CDeviceDescList &Devices) const
 //	CalcMass
 //
 //	Returns the total mass of the ship class, including devices and armor
+//	(in tons).
 
 	{
 	int i;
