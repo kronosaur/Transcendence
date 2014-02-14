@@ -238,10 +238,12 @@ const int INSPIRATION_COUNT = (sizeof(INSPIRATION) / sizeof(INSPIRATION[0]));
 
 static char *SOFTWARE[] =
 	{
-	"Microsoft® Visual Studio®",
 	"Adobe® Photoshop®",
 	"Caligari trueSpace®",
+	"Intel® JPEG Library",
+	"Microsoft® Visual Studio®",
 	"Luminous",
+	"zlib"
 	};
 
 const int SOFTWARE_COUNT = (sizeof(SOFTWARE) / sizeof(SOFTWARE[0]));
