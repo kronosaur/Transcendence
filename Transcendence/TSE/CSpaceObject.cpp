@@ -3769,6 +3769,42 @@ CSpaceObject *CSpaceObject::GetVisibleEnemyInRange (CSpaceObject *pCenter, Metri
 	return NULL;
 	}
 
+bool CSpaceObject::HasBeenHitLately (int iTicks)
+
+//	HasBeenHitLately
+//
+//	Returns TRUE if we've been hit in the last iTicks.
+
+	{
+	int iLastHit = GetLastHitTime();
+	if (iLastHit == 0)
+		return false;
+
+	int iNow = g_pUniverse->GetTicks();
+	if ((iNow - iLastHit) <= iTicks)
+		return true;
+
+	return false;
+	}
+
+bool CSpaceObject::HasFiredLately (int iTicks)
+
+//	HasFiredHitLately
+//
+//	Returns TRUE if we've fired our weapons lately.
+
+	{
+	int iLastFire = GetLastFireTime();
+	if (iLastFire == 0)
+		return false;
+
+	int iNow = g_pUniverse->GetTicks();
+	if ((iNow - iLastFire) <= iTicks)
+		return true;
+
+	return false;
+	}
+
 bool CSpaceObject::HasFuelItem (void)
 
 //	HasFuelItem
@@ -4900,18 +4936,6 @@ void CSpaceObject::Move (const CSpaceObjectList &Barriers, Metric rSeconds)
 
 						OnBounce(pBarrier, m_vPos);
 						pBarrier->OnObjBounce(this, m_vPos);
-
-#if 0
-						//	If this object changed orientation or shape this
-						//	round then check to see if we are still blocked.
-						//	If we are, then revert the orientation change.
-
-						if (OrientationChanged())
-							{
-							if (pBarrier->ObjectInObject(this))
-								RevertOrientationChange();
-							}
-#endif
 
 						//	Remember that we already dealt with one barrier
 

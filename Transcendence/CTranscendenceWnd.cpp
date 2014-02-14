@@ -1668,7 +1668,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (GetPlayer())
 							{
 							GetPlayer()->SetThrust(false);
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+							GetPlayer()->SetManeuver(NoRotation);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->SetFireMissile(false);
 							}
@@ -1756,7 +1756,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
 							Autopilot(false);
-							GetPlayer()->SetManeuver(IShipController::RotateLeft);
+							GetPlayer()->SetManeuver(RotateLeft);
 							}
 						break;
 
@@ -1765,7 +1765,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
 							Autopilot(false);
-							GetPlayer()->SetManeuver(IShipController::RotateRight);
+							GetPlayer()->SetManeuver(RotateRight);
 							}
 						break;
 
@@ -2001,13 +2001,13 @@ LONG CTranscendenceWnd::WMKeyUp (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyRotateLeft:
-						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateLeft)
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						if (GetPlayer() && GetPlayer()->GetManeuver() == RotateLeft)
+							GetPlayer()->SetManeuver(NoRotation);
 						break;
 
 					case CGameKeys::keyRotateRight:
-						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateRight)
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						if (GetPlayer() && GetPlayer()->GetManeuver() == RotateRight)
+							GetPlayer()->SetManeuver(NoRotation);
 						break;
 
 					case CGameKeys::keyStop:

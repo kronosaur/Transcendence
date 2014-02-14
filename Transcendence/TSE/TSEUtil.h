@@ -171,7 +171,7 @@ inline void DebugStopTimer (char *szTiming) { }
 const DWORD API_VERSION =								20;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						95;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						97;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -249,10 +249,12 @@ struct SUpdateCtx
 	{
 	SUpdateCtx (void) :
 			pSystem(NULL),
+			pPlayer(NULL),
 			pDockingObj(NULL)
 		{ }
 
 	CSystem *pSystem;					//	Current system
+	CSpaceObject *pPlayer;				//	The player
 
 	//	Used to compute nearest docking port to player
 
@@ -1299,6 +1301,74 @@ class CDeviceStorage
 
 		TSortMap<CString, CString> m_Storage;
 		bool m_bModified;
+	};
+
+//	Integral Rotation Class ----------------------------------------------------
+
+enum EManeuverTypes
+	{
+	NoRotation,
+
+	RotateLeft,
+	RotateRight,
+	};
+
+class CIntegralRotationDesc
+	{
+	public:
+		enum EConstants
+			{
+			ROTATION_FRACTION =				1024,
+			};
+
+		CIntegralRotationDesc (void) { }
+
+		inline int GetFrameAngle (void) const { return (int)((360.0 / m_iCount) + 0.5); }
+		inline int GetFrameCount (void) const { return m_iCount; }
+		int GetFrameIndex (int iAngle) const;
+		int GetManeuverDelay (void) const;
+		int GetManeuverability (void) const;
+		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
+		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
+		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+
+	private:
+		struct SEntry
+			{
+			int iRotation;					//	Angle at this rotation position
+			};
+
+		int m_iCount;						//	Number of rotations
+		int m_iMaxRotationRate;				//	Rotations per tick (in 1/1000ths of a rotation)
+		int m_iRotationAccel;				//	Rotation acceleration (in 1/1000ths of a rotation)
+		TArray<SEntry> m_Rotations;			//	Entries for each rotation
+	};
+
+class CIntegralRotation
+	{
+	public:
+		CIntegralRotation (void) :
+				m_iRotationFrame(0),
+				m_iRotationSpeed(0),
+				m_iRotationAccel(0)
+			{ }
+
+		inline int GetFrameIndex (void) const { return GetFrameIndex(m_iRotationFrame); }
+		EManeuverTypes GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const;
+		int GetRotationAngle (const CIntegralRotationDesc &Desc) const;
+		void ReadFromStream (SLoadCtx &Ctx);
+		void SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle);
+		void Update (const CIntegralRotationDesc &Desc, EManeuverTypes iManeuver);
+		void UpdateAccel (const CIntegralRotationDesc &Desc, Metric rHullMass = 0.0, Metric rItemMass = 0.0);
+		void WriteToStream (IWriteStream *pStream) const;
+
+	private:
+		inline int GetFrameIndex (int iFrame) const { return (iFrame / CIntegralRotationDesc::ROTATION_FRACTION); }
+
+		int m_iRotationFrame;				//	Current rotation (in 1/1000ths of a rotation)
+		int m_iRotationSpeed:16;			//	Current rotation speed (+ clockwise; - counterclockwise; in 1/1000ths)
+		int m_iRotationAccel:16;			//	Current rotation acceleration
 	};
 
 //	IListData ------------------------------------------------------------------

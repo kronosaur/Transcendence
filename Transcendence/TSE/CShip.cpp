@@ -144,7 +144,7 @@ void CShip::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, 
 	m_pController->OnArmorRepaired(-1);
 	}
 
-void CShip::Behavior (void)
+void CShip::Behavior (SUpdateCtx &Ctx)
 
 //	Behavior
 //
@@ -152,7 +152,16 @@ void CShip::Behavior (void)
 
 	{
 	if (!IsInactive() && !m_fControllerDisabled)
+		{
 		m_pController->Behavior();
+
+		//	If we're targeting the player, then the player is under attack
+
+		if (Ctx.pPlayer 
+				&& GetTarget(CItemCtx()) == Ctx.pPlayer
+				&& Ctx.pPlayer->IsEnemy(this))
+			Ctx.pSystem->SetPlayerUnderAttack();
+		}
 	}
 
 void CShip::CalcArmorBonus (void)
@@ -902,10 +911,9 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pController->SetShipToControl(pShip);
 	pShip->m_pSovereign = pSovereign;
 	pShip->m_sName = pClass->GenerateShipName(&pShip->m_dwNameFlags);
-	pShip->m_iRotation = pClass->AlignToRotationAngle(iRotation);
+	pShip->m_Rotation.SetRotationAngle(pClass->GetRotationDesc(), iRotation);
 	pShip->m_iFireDelay = 0;
 	pShip->m_iMissileFireDelay = 0;
-	pShip->m_iManeuverDelay = 0;
 	pShip->m_iBlindnessTimer = 0;
 	pShip->m_iLRSBlindnessTimer = 0;
 	pShip->m_iParalysisTimer = 0;
@@ -915,6 +923,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_pExitGate = NULL;
 	pShip->m_pIrradiatedBy = NULL;
 	pShip->m_iLastFireTime = 0;
+	pShip->m_iLastHitTime = 0;
 	pShip->m_rItemMass = 0.0;
 	pShip->m_rCargoMass = 0.0;
 	pShip->SetDriveDesc(NULL);
@@ -936,6 +945,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fManualSuspended = false;
 	pShip->m_fGalacticMap = false;
 	pShip->m_fRecalcItemMass = true;
+	pShip->m_fRecalcRotationAccel = true;
 	pShip->m_fDockingDisabled = false;
 	pShip->m_fControllerDisabled = false;
 	pShip->m_dwSpare = 0;
@@ -2296,26 +2306,6 @@ Metric CShip::GetItemMass (void)
 	return m_rItemMass;
 	}
 
-int CShip::GetManeuverDelay (void)
-
-//	GetManeuverDelay
-//
-//	Returns the number of ticks to wait between rotations
-
-	{
-	if (m_fTrackMass)
-		{
-		Metric rManeuver = m_pClass->GetManeuverability();
-		Metric rExtraMass = (GetItemMass() - (Metric)m_pClass->GetHullMass()) * MANEUVER_MASS_FACTOR;
-		if (m_pClass->GetHullMass() > 0 && rExtraMass > 0.0)
-			rManeuver = Min(MAX_MANEUVER_DELAY, rManeuver * (1.0f + (rExtraMass / (Metric)m_pClass->GetHullMass())));
-
-		return (int)((rManeuver / STD_SECONDS_PER_UPDATE) + 0.5);
-		}
-	else
-		return m_pClass->GetManeuverDelay();
-	}
-
 Metric CShip::GetMass (void)
 
 //	GetMass
@@ -2802,7 +2792,7 @@ bool CShip::ImageInObject (const CVector &vObjPos, const CObjectImageArray &Imag
 			vImagePos,
 			m_pClass->GetImage(),
 			GetSystem()->GetTick(), 
-			Angle2Direction(GetRotation()), 
+			m_Rotation.GetFrameIndex(), 
 			vObjPos);
 	}
 
@@ -3347,7 +3337,7 @@ bool CShip::ObjectInObject (const CVector &vObj1Pos, CSpaceObject *pObj2, const 
 	return pObj2->ImageInObject(vObj2Pos,
 			m_pClass->GetImage(),
 			GetSystem()->GetTick(),
-			Angle2Direction(GetRotation()),
+			m_Rotation.GetFrameIndex(),
 			vObj1Pos);
 	}
 
@@ -3417,6 +3407,8 @@ void CShip::OnComponentChanged (ObjectComponentTypes iComponent)
 			//	Calculate new mass
 
 			m_fRecalcItemMass = true;
+			if (m_fTrackMass)
+				m_fRecalcRotationAccel = true;
 
 			//	If one of our weapons doesn't have a variant selected, then
 			//	try to select it now (if we just got some new ammo, this will
@@ -3476,10 +3468,14 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	if (Ctx.iDamage == 0)
 		return damageNoDamage;
 
+	//	We're hit
+
+	m_iLastHitTime = g_pUniverse->GetTicks();
+
 	//	Map the direction that we got hit from to a ship-relative
 	//	direction (i.e., adjust for the ship's rotation)
 
-	int iHitAngle = (Ctx.iDirection + 360 - m_iRotation) % 360;
+	int iHitAngle = (Ctx.iDirection + 360 - GetRotation()) % 360;
 
 	//	Figure out which section of armor got hit
 
@@ -3752,7 +3748,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 					GetVel(),
 					m_pClass->GetImage(),
 					0,
-					Angle2Direction(GetRotation()),
+					m_Rotation.GetFrameIndex(),
 					NULL);
 			break;
 
@@ -3770,7 +3766,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 						GetVel(),
 						Image,
 						iTick,
-						Angle2Direction(GetRotation()),
+						m_Rotation.GetFrameIndex(),
 						CFractureEffect::styleExplosion,
 						NULL);
 				}
@@ -3940,6 +3936,8 @@ void CShip::OnItemEnhanced (CItemListManipulator &ItemList)
 		//	Update item mass in case the mass of this item changed
 
 		m_fRecalcItemMass = true;
+		if (m_fTrackMass)
+			m_fRecalcRotationAccel = true;
 
 		//	Update UI
 
@@ -4011,7 +4009,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			x, 
 			y, 
 			Ctx.XForm, 
-			Angle2Direction(GetRotation()), 
+			m_Rotation.GetFrameIndex(), 
 			iTick,
 			bPaintThrust,
 			IsRadioactive()
@@ -4124,9 +4122,9 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //	DWORD		m_pSovereign (CSovereign ref)
 //	CString		m_sName;
 //	DWORD		m_dwNameFlags
-//	DWORD		low = m_iRotation; hi = m_iPrevRotation
+//	CIntegralRotation	m_Rotation
 //	DWORD		low = m_iFireDelay; hi = m_iMissileFireDelay
-//	DWORD		low = m_iManeuverDelay; hi = m_iContaminationTimer
+//	DWORD		low = (spare); hi = m_iContaminationTimer
 //	DWORD		low = m_iBlindnessTimer; hi = m_iParalysisTimer
 //	DWORD		low = m_iExitGateTimer; hi = m_iDisarmedTimer
 //	DWORD		low = m_iLRSBlindnessTimer; hi = m_iDriveDamagedTimer
@@ -4136,6 +4134,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //	DWORD		m_pDocked (CSpaceObject ref)
 //	DWORD		m_pExitGate (CSpaceObject ref)
 //	DWORD		m_iLastFireTime
+//	DWORD		m_iLastHitTime
 //	DWORD		flags
 //
 //	DWORD		Number of armor structs
@@ -4214,16 +4213,23 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 			m_dwNameFlags = 0;
 		}
 
+	//	Load rotation
+
+	if (Ctx.dwVersion >= 97)
+		m_Rotation.ReadFromStream(Ctx);
+	else
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		SetRotation((int)LOWORD(dwLoad));
+		}
+
 	//	Load more
 
-	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_iRotation = (int)LOWORD(dwLoad);
-	m_iPrevRotation = (int)HIWORD(dwLoad);
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iFireDelay = (int)LOWORD(dwLoad);
 	m_iMissileFireDelay = (int)HIWORD(dwLoad);
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_iManeuverDelay = (int)LOWORD(dwLoad);
+	//	Spare = (int)LOWORD(dwLoad)
 	m_iContaminationTimer = (int)HIWORD(dwLoad);
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iBlindnessTimer = (int)LOWORD(dwLoad);
@@ -4244,6 +4250,11 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&m_iLastFireTime, sizeof(DWORD));
 	else
 		m_iLastFireTime = 0;
+
+	if (Ctx.dwVersion >= 96)
+		Ctx.pStream->Read((char *)&m_iLastHitTime, sizeof(DWORD));
+	else
+		m_iLastHitTime = 0;
 
 	//	Load flags
 
@@ -4270,6 +4281,9 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fGalacticMap =			((dwLoad & 0x00010000) ? true : false);
 	m_fDockingDisabled =		((dwLoad & 0x00020000) ? true : false);
 	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
+
+	//	OK to recompute
+	m_fRecalcRotationAccel = true;
 
 	//	This is recomputed every tick
 	m_fDeviceDisrupted = false;
@@ -4539,7 +4553,18 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	//	Initialize
 
 	int iTick = GetSystem()->GetTick() + GetDestiny();
-	m_iPrevRotation = m_iRotation;
+
+	//	Calc rotation acceleration (for player ships we adjust this 
+	//	acceleration based on mass, etc.).
+
+	if (m_fRecalcRotationAccel)
+		{
+		if (m_fTrackMass)
+			m_Rotation.UpdateAccel(m_pClass->GetRotationDesc(), m_pClass->GetHullMass(), GetItemMass());
+		else
+			m_Rotation.UpdateAccel(m_pClass->GetRotationDesc());
+		m_fRecalcRotationAccel = false;
+		}
 
 	//	Check controls
 
@@ -4608,19 +4633,9 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		else
 			m_iDisarmedTimer--;
 
-		//	See if we're rotating
+		//	Update rotation
 
-		if (m_pController->GetManeuver() != IShipController::NoRotation
-				&& m_iManeuverDelay == 0)
-			{
-			if (m_pController->GetManeuver() == IShipController::RotateLeft)
-				m_iRotation += m_pClass->GetRotationAngle();
-			else
-				m_iRotation += 360 - m_pClass->GetRotationAngle();
-
-			m_iRotation = m_iRotation % 360;
-			m_iManeuverDelay = GetManeuverDelay();
-			}
+		m_Rotation.Update(m_pClass->GetRotationDesc(), m_pController->GetManeuver());
 
 		//	See if we're accelerating
 
@@ -4662,16 +4677,8 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		{
 		//	Rotate wildly
 
-		if (m_iManeuverDelay == 0 && m_pDocked == NULL)
-			{
-			if (GetDestiny() % 2)
-				m_iRotation += m_pClass->GetRotationAngle();
-			else
-				m_iRotation += 360 - m_pClass->GetRotationAngle();
-
-			m_iRotation = m_iRotation % 360;
-			m_iManeuverDelay = GetManeuverDelay();
-			}
+		if (m_pDocked == NULL)
+			m_Rotation.Update(m_pClass->GetRotationDesc(), ((GetDestiny() % 2) ? RotateLeft : RotateRight));
 
 		//	Slow down
 
@@ -4922,9 +4929,6 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	if (m_iMissileFireDelay > 0)
 		m_iMissileFireDelay--;
-
-	if (m_iManeuverDelay > 0)
-		m_iManeuverDelay--;
 	}
 
 void CShip::OnWriteToStream (IWriteStream *pStream)
@@ -4937,9 +4941,9 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		m_pSovereign (CSovereign ref)
 //	CString		m_sName
 //	DWORD		m_dwNameFlags
-//	DWORD		low = m_iRotation; hi = m_iPrevRotation
+//	CIntegralRotation m_Rotation
 //	DWORD		low = m_iFireDelay; hi = m_iMissileFireDelay
-//	DWORD		low = m_iManeuverDelay; hi = m_iContaminationTimer
+//	DWORD		low = (spare); hi = m_iContaminationTimer
 //	DWORD		low = m_iBlindnessTimer; hi = m_iParalysisTimer
 //	DWORD		low = m_iExitGateTimer; hi = m_iDisarmedTimer
 //	DWORD		low = m_iLRSBlindnessTimer; hi = m_iDriveDamagedTimer
@@ -4949,6 +4953,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 //	DWORD		m_pDocked (CSpaceObject ref)
 //	DWORD		m_pExitGate (CSpaceObject ref)
 //	DWORD		m_iLastFireTime
+//	DWORD		m_iLastHitTime
 //	DWORD		flags
 //
 //	DWORD		Number of armor structs
@@ -4996,11 +5001,11 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	m_sName.WriteToStream(pStream);
 	pStream->Write((char *)&m_dwNameFlags, sizeof(DWORD));
 
-	dwSave = MAKELONG(m_iRotation, m_iPrevRotation);
-	pStream->Write((char *)&dwSave, sizeof(DWORD));
+	m_Rotation.WriteToStream(pStream);
+
 	dwSave = MAKELONG(m_iFireDelay, m_iMissileFireDelay);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
-	dwSave = MAKELONG(m_iManeuverDelay, m_iContaminationTimer);
+	dwSave = MAKELONG(0, m_iContaminationTimer);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	dwSave = MAKELONG(m_iBlindnessTimer, m_iParalysisTimer);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
@@ -5015,6 +5020,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	WriteObjRefToStream(m_pDocked, pStream);
 	WriteObjRefToStream(m_pExitGate, pStream);
 	pStream->Write((char *)&m_iLastFireTime, sizeof(DWORD));
+	pStream->Write((char *)&m_iLastHitTime, sizeof(DWORD));
 
 	dwSave = 0;
 	dwSave |= (m_fOutOfFuel ?			0x00000001 : 0);
@@ -5111,7 +5117,7 @@ bool CShip::OrientationChanged (void)
 //	Returns TRUE if the object's orientation changed this tick
 
 	{
-	return (m_iRotation != m_iPrevRotation);
+	return false;
 	}
 
 void CShip::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
@@ -5154,7 +5160,7 @@ void CShip::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform 
 				x, 
 				y, 
 				Trans, 
-				Angle2Direction(GetRotation()), 
+				m_Rotation.GetFrameIndex(), 
 				GetSystem()->GetTick(),
 				m_pController->GetThrust() && !IsParalyzed(),
 				IsRadioactive()
@@ -5210,7 +5216,7 @@ bool CShip::PointInObject (const CVector &vObjPos, const CVector &vPointPos)
 
 	//	Ask the image if the point is inside or not
 
-	return m_pClass->GetImage().PointInImage(x, y, GetSystem()->GetTick(), Angle2Direction(GetRotation()));
+	return m_pClass->GetImage().PointInImage(x, y, GetSystem()->GetTick(), m_Rotation.GetFrameIndex());
 	}
 
 bool CShip::PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos)
@@ -5239,7 +5245,7 @@ void CShip::PointInObjectInit (SPointInObjectCtx &Ctx)
 //	Initializes context for PointInObject (for improved performance in loops)
 
 	{
-	m_pClass->GetImage().PointInImageInit(Ctx, GetSystem()->GetTick(), Angle2Direction(GetRotation()));
+	m_pClass->GetImage().PointInImageInit(Ctx, GetSystem()->GetTick(), m_Rotation.GetFrameIndex());
 	}
 
 void CShip::ProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program)
@@ -5711,7 +5717,6 @@ void CShip::RevertOrientationChange (void)
 //	Revert the ship's rotation this tick
 
 	{
-	m_iRotation = m_iPrevRotation;
 	}
 
 DeviceNames CShip::SelectWeapon (int iDev, int iVariant)
@@ -6479,7 +6484,7 @@ void CShip::UpdateDockingManeuver(const CVector &vDest, const CVector &vDestVel,
 		{
 		Accelerate(vDiff * GetMass() / 2000.0, g_SecondsPerUpdate);
 
-		m_pController->SetManeuver(CalcTurnManeuver(iDestFacing, GetRotation(), GetRotationAngle()));
+		m_pController->SetManeuver(GetManeuverToFace(iDestFacing));
 		m_pController->SetThrust(false);
 		}
 
@@ -6493,10 +6498,10 @@ void CShip::UpdateDockingManeuver(const CVector &vDest, const CVector &vDestVel,
 
 		//	Turn towards the angle
 
-		m_pController->SetManeuver(CalcTurnManeuver(iAngle, GetRotation(), GetRotationAngle()));
+		m_pController->SetManeuver(GetManeuverToFace(iAngle));
 
 		//	If we don't need to turn, engage thrust
 
-		m_pController->SetThrust(m_pController->GetManeuver() == IShipController::NoRotation);
+		m_pController->SetThrust(m_pController->GetManeuver() == NoRotation);
 		}
 	}

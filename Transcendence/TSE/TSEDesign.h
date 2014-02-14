@@ -1040,13 +1040,19 @@ class CSoundRef
 class CSoundType : public CDesignType
 	{
 	public:
-		CSoundType (void) { }
+		CSoundType (void) : m_iNextSegment(0)
+			{ }
+
 		~CSoundType (void) { }
 
 		CString GetFilespec (void) const;
 		inline const CAttributeCriteria &GetLocationCriteria (void) const { return m_LocationCriteria; }
+		int GetNextFadePos (int iPos);
+		int GetNextPlayPos (void);
 		inline int GetPriority (void) const { return m_iPriority; }
+		inline int GetSegmentCount (void) const { return (m_Segments.GetCount() == 0 ? 1 : m_Segments.GetCount()); }
 		inline void Init (DWORD dwUNID, const CString &sFilespec, int iPriority = 0) { SetUNID(dwUNID); m_sFilespec = sFilespec; m_iPriority = iPriority; }
+		void SetLastPlayPos (int iPos);
 
 		//	CDesignType overrides
 		static CSoundType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designSound) ? (CSoundType *)pType : NULL); }
@@ -1058,11 +1064,22 @@ class CSoundType : public CDesignType
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 
 	private:
+		struct SSegmentDesc
+			{
+			int iStartPos;
+			int iEndPos;				//	-1 = end of track
+			};
+
+		int FindSegment (int iPos);
+
 		CString m_sResourceDb;			//	Resource db
 		CString m_sFilespec;			//	Sound resource within db
 
 		int m_iPriority;				//	Track priority
 		CAttributeCriteria m_LocationCriteria;	//	Play in specific systems
+
+		TArray<SSegmentDesc> m_Segments;
+		int m_iNextSegment;				//	Index of last segment played
 	};
 
 //	Damage
@@ -2784,16 +2801,6 @@ class IShipController
 			orderAttackArea,			//	pTarget = center; dwData1 = radius (light-seconds); dwData2 = timer.
 			};
 
-		enum ManeuverTypes
-			{
-			NoRotation,
-			RotateLeft,
-			RotateRight,
-
-			ThrustLeft,
-			ThrustRight
-			};
-
 		virtual ~IShipController (void) { }
 
 		virtual void Behavior (void) { }
@@ -2811,7 +2818,7 @@ class IShipController
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return NULL; }
 		virtual int GetFireDelay (void) { return 0; }
 		virtual int GetFireRateAdj (void) { return 10; }
-		virtual ManeuverTypes GetManeuver (void) = 0;
+		virtual EManeuverTypes GetManeuver (void) = 0;
 		virtual CSpaceObject *GetOrderGiver (void) = 0;
 		virtual GenomeTypes GetPlayerGenome (void) { return genomeUnknown; }
 		virtual CString GetPlayerName (void) { return NULL_STR; }
@@ -2827,7 +2834,7 @@ class IShipController
 		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip) { ASSERT(false); }
 		virtual CString SetAISetting (const CString &sSetting, const CString &sValue) { return NULL_STR; }
 		virtual void SetCommandCode (ICCItem *pCode) { }
-		virtual void SetManeuver (ManeuverTypes iManeuver) { }
+		virtual void SetManeuver (EManeuverTypes iManeuver) { }
 		virtual void SetShipToControl (CShip *pShip) { }
 		virtual void SetThrust (bool bThrust) { }
 		virtual void SetPlayerWingman (bool bIsWingman) { }
@@ -3905,10 +3912,8 @@ class CShipClass : public CDesignType
 		CShipClass (void);
 		virtual ~CShipClass (void);
 
-		inline int Angle2Direction (int iAngle) const
-			{ return ((m_iRotationRange - (iAngle / m_iRotationAngle)) + (m_iRotationRange / 4)) % m_iRotationRange; }
-		inline int AlignToRotationAngle (int iAngle) const
-			{ return (((m_iRotationRange - Angle2Direction(iAngle)) + (m_iRotationRange / 4)) * m_iRotationAngle) % 360; }
+		inline int Angle2Direction (int iAngle) const { return m_RotationDesc.GetFrameIndex(iAngle); }
+		inline int AlignToRotationAngle (int iAngle) const { return m_RotationDesc.GetRotationAngle(m_RotationDesc.GetFrameIndex(iAngle)); }
 		Metric CalcMass (const CDeviceDescList &Devices) const;
 		int CalcScore (void);
 		void CreateEmptyWreck (CSystem *pSystem, CShip *pShip, const CVector &vPos, const CVector &vVel, CSovereign *pSovereign, CStation **retpWreck);
@@ -3939,8 +3944,8 @@ class CShipClass : public CDesignType
 		inline const CObjectImageArray &GetImage (void) const { return m_Image; }
 		inline const CObjectImageArray &GetImageSmall (void) { return m_Image; }
 		inline const CShipInteriorDesc &GetInteriorDesc (void) const { return m_Interior; }
-		inline int GetManeuverability (void) { return m_iManeuverability; }
-		inline int GetManeuverDelay (void) const { return m_iManeuverDelay; }
+		inline int GetManeuverability (void) const { return m_RotationDesc.GetManeuverability(); }
+		inline int GetManeuverDelay (void) const { return m_RotationDesc.GetManeuverDelay(); }
 		inline int GetMaxArmorMass (void) const { return m_iMaxArmorMass; }
 		inline int GetMaxCargoSpace (void) const { return m_iMaxCargoSpace; }
 		inline int GetMaxDevices (void) const { return m_iMaxDevices; }
@@ -3954,8 +3959,9 @@ class CShipClass : public CDesignType
 		inline IItemGenerator *GetRandomItemTable (void) const { return m_pItems; }
 		inline const ReactorDesc *GetReactorDesc (void) { return &m_ReactorDesc; }
 		const SReactorImageDesc *GetReactorDescInherited (void);
-		inline int GetRotationAngle (void) { return m_iRotationAngle; }
-		inline int GetRotationRange (void) { return m_iRotationRange; }
+		inline int GetRotationAngle (void) { return m_RotationDesc.GetFrameAngle(); }
+		inline const CIntegralRotationDesc &GetRotationDesc (void) const { return m_RotationDesc; }
+		inline int GetRotationRange (void) { return m_RotationDesc.GetFrameCount(); }
 		inline int GetScore (void) { return m_iScore; }
 		const SShieldImageDesc *GetShieldDescInherited (void);
 		inline DWORD GetShipNameFlags (void) { return m_dwShipNameFlags; }
@@ -4086,10 +4092,7 @@ class CShipClass : public CDesignType
 		int m_iMass;							//	Empty mass (tons)
 		int m_iSize;							//	Length in meters
 		int m_iCargoSpace;						//	Available cargo space (tons)
-		int m_iRotationRange;					//	Number of rotation positions
-		int m_iRotationAngle;					//	Angler per rotation
-		int m_iManeuverability;					//	Ticks per turn angle
-		int m_iManeuverDelay;					//	Ticks per turn angle
+		CIntegralRotationDesc m_RotationDesc;	//	Rotation and maneuverability
 		double m_rThrustRatio;					//	If non-zero, then m_DriveDesc thrust is set based on this.
 		DriveDesc m_DriveDesc;					//	Drive descriptor
 		ReactorDesc m_ReactorDesc;				//	Reactor descriptor

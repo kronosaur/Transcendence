@@ -6964,7 +6964,7 @@ ICCItem *fnShipClass (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			int iRotation = 0;
 			if (pArgs->GetCount() > 1)
-				iRotation = Angle2Direction(pArgs->GetElement(1)->GetIntegerValue(), pClass->GetRotationRange());
+				iRotation = pClass->Angle2Direction(pArgs->GetElement(1)->GetIntegerValue());
 
 			pResult = CreateListFromImage(*pCC, pClass->GetImage(), iRotation);
 			break;

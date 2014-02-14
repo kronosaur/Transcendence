@@ -8,6 +8,8 @@
 #define INVOKE_REFRESH_INTERVAL					100		//	Ticks to gain 1 point of deity rel (if rel is negative)
 
 #define CMD_PLAYER_COMBAT_MISSION_STARTED		CONSTLIT("playerCombatMisionStarted")
+#define CMD_PLAYER_COMBAT_ENDED					CONSTLIT("playerCombatEnded")
+#define CMD_PLAYER_COMBAT_STARTED				CONSTLIT("playerCombatStarted")
 
 #define STR_NO_TARGET_FOR_FLEET					CONSTLIT("No target selected")
 #define STR_NO_TARGETING_COMPUTER				CONSTLIT("No targeting computer installed")
@@ -22,6 +24,9 @@ const Metric MAX_DOCK_DISTANCE2 =				MAX_DOCK_DISTANCE * MAX_DOCK_DISTANCE;
 const Metric MIN_PORT_ANIMATION_DIST =			KLICKS_PER_PIXEL * 2;
 const Metric MIN_PORT_ANIMATION_DIST2 =			MIN_PORT_ANIMATION_DIST * MIN_PORT_ANIMATION_DIST;
 
+const DWORD FIRE_THRESHOLD =					150;
+const DWORD HIT_THRESHOLD =						90;
+
 #define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 64.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
 
@@ -30,7 +35,7 @@ const Metric MIN_PORT_ANIMATION_DIST2 =			MIN_PORT_ANIMATION_DIST * MIN_PORT_ANI
 
 CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_pTrans(NULL),
-		m_iManeuver(IShipController::NoRotation),
+		m_iManeuver(NoRotation),
 		m_bThrust(false),
 		m_bActivate(false),
 		m_bStopThrust(false),
@@ -43,6 +48,7 @@ CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_iLastHelpFireMissileTick(0),
 		m_bMapHUD(false),
 		m_bDockPortIndicators(true),
+		m_bUnderAttack(false),
 		m_pAutoDock(NULL),
 		m_iAutoDockPort(0),
 		m_pAutoTarget(NULL),
@@ -294,7 +300,7 @@ void CPlayerShipController::Dock (void)
 	SetActivate(false);
 	SetFireMain(false);
 	SetFireMissile(false);
-	SetManeuver(IShipController::NoRotation);
+	SetManeuver(NoRotation);
 	SetThrust(false);
 
 	SetUIMessageEnabled(uimsgDockHint, false);
@@ -955,7 +961,7 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 
 	//	Reset everything else
 
-	m_iManeuver = IShipController::NoRotation;
+	m_iManeuver = NoRotation;
 	m_bThrust = false;
 	m_bStopThrust = false;
 	SetFireMain(false);
@@ -1060,7 +1066,7 @@ void CPlayerShipController::OnFuelLowWarning (int iSeq)
 		//	Stop
 
 		SetThrust(false);
-		SetManeuver(IShipController::NoRotation);
+		SetManeuver(NoRotation);
 		SetFireMain(false);
 		SetFireMissile(false);
 		}
@@ -1199,7 +1205,7 @@ void CPlayerShipController::OnStartGame (void)
 //	Game (either new or loaded) has just started
 
 	{
-	m_iManeuver = IShipController::NoRotation;
+	m_iManeuver = NoRotation;
 	m_bThrust = false;
 	m_bStopThrust = false;
 	SetFireMain(false);
@@ -1308,7 +1314,7 @@ bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
 	return false;
 	}
 
-IShipController::ManeuverTypes CPlayerShipController::GetManeuver (void)
+EManeuverTypes CPlayerShipController::GetManeuver (void)
 	{
 	return m_iManeuver;
 	}
@@ -1502,6 +1508,8 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 //	This is called every tick after all other objects have been updated.
 
 	{
+	//	Compute the AutoDock target.
+	//
 	//	If we're already in the middle of docking then we don't change anything.
 
 	if (m_pStation)
@@ -1535,6 +1543,23 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 	else
 		m_pAutoDock = NULL;
+
+	//	See if the player is under attack and if that status has changed from
+	//	the last tick.
+
+	bool bUnderAttack = Ctx.pSystem->EnemiesInLRS()
+			&& (Ctx.pSystem->IsPlayerUnderAttack()
+				|| m_pShip->HasBeenHitLately(HIT_THRESHOLD)
+				|| m_pShip->HasFiredLately(FIRE_THRESHOLD));
+	if (bUnderAttack != m_bUnderAttack)
+		{
+		if (bUnderAttack)
+			g_pHI->HICommand(CMD_PLAYER_COMBAT_STARTED);
+		else
+			g_pHI->HICommand(CMD_PLAYER_COMBAT_ENDED);
+
+		m_bUnderAttack = bUnderAttack;
+		}
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)
@@ -1595,6 +1620,7 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 	m_bThrust = false;
 	m_bActivate = false;
 	m_bStopThrust = false;
+	m_bUnderAttack =			((dwLoad & 0x00000001) ? true : false);
 	m_bMapHUD =					((dwLoad & 0x00001000) ? true : false);
 	m_iLastHelpTick = 0;
 	m_iLastHelpUseTick = 0;
@@ -2054,7 +2080,7 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip)
 	SetTarget(NULL);
 	SetDestination(NULL);
 	m_pAutoDock = NULL;
-	m_iManeuver = IShipController::NoRotation;
+	m_iManeuver = NoRotation;
 	m_bThrust = false;
 	m_bStopThrust = false;
 	SetFireMain(false);
@@ -2323,7 +2349,7 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	dwSave = 0;
-	//	0x00000001
+	dwSave |= (m_bUnderAttack ?			0x00000001 : 0);
 	//	0x00000002
 	//	0x00000004
 	//	0x00000008

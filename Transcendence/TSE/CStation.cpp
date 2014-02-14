@@ -45,7 +45,9 @@ const int STATION_TARGET_FREQUENCY =	503;
 const int DAYS_TO_REFRESH_INVENTORY =	5;
 const int INVENTORY_REFRESHED_PER_UPDATE = 5;			//	% of inventory refreshed on each update frequency
 
-#define MAX_ATTACK_DISTANCE				(LIGHT_SECOND * 25)
+const Metric MAX_ATTACK_DISTANCE =				LIGHT_SECOND * 25;
+const Metric MAX_ATTACK_DISTANCE2 =				MAX_ATTACK_DISTANCE * MAX_ATTACK_DISTANCE;
+
 #define BEACON_RANGE					(LIGHT_SECOND * 20)
 #define MAX_SUBORDINATES				12
 #define BLACKLIST_HIT_LIMIT				3
@@ -1145,6 +1147,19 @@ bool CStation::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dw
 	return false;
 	}
 
+Metric CStation::GetAttackDistance (void) const
+
+//	GetAttackDistance
+//
+//	Returns the distance at which we attack enemies.
+
+	{
+	if (m_iAngryCounter > 0)
+		return Max(MAX_ATTACK_DISTANCE, m_pType->GetMaxEffectiveRange());
+	else
+		return MAX_ATTACK_DISTANCE;
+	}
+
 CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
 
 //	GetBalance
@@ -1546,6 +1561,32 @@ CString CStation::GetStargateID (void) const
 		return NULL_STR;
 
 	return pNode->FindStargateName(m_sStargateDestNode, m_sStargateDestEntryPoint);
+	}
+
+CSpaceObject *CStation::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
+
+//	GetTarget
+//
+//	Returns the station's current target
+
+	{
+	//	If we're not armed, then we never have a target
+
+	if (IsAbandoned() || !m_fArmed || m_pType->IsVirtual())
+		return NULL;
+
+	//	Otherwise, see if the player is in range, if so, then it is our target.
+
+	CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+	if (pPlayer == NULL)
+		return NULL;
+
+	Metric rAttackDist = GetAttackDistance();
+	Metric rAttackDist2 = rAttackDist * rAttackDist;
+	if (GetDistance2(pPlayer) < rAttackDist2)
+		return pPlayer;
+
+	return NULL;
 	}
 
 int CStation::GetVisibleDamage (void)
@@ -2819,7 +2860,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	//	Basic update
 
-	UpdateAttacking(iTick);
+	UpdateAttacking(Ctx, iTick);
 	m_DockingPorts.UpdateAll(Ctx, this);
 	UpdateReinforcements(iTick);
 
@@ -3771,7 +3812,7 @@ void CStation::Undock (CSpaceObject *pObj)
 		}
 	}
 
-void CStation::UpdateAttacking (int iTick)
+void CStation::UpdateAttacking (SUpdateCtx &Ctx, int iTick)
 
 //	UpdateAttacking
 //
@@ -3797,13 +3838,27 @@ void CStation::UpdateAttacking (int iTick)
 	//	Compute the range at which we attack enemies
 
 	Metric rAttackRange;
+	Metric rAttackRange2;
 	if (m_iAngryCounter > 0)
 		{
 		rAttackRange = Max(MAX_ATTACK_DISTANCE, m_pType->GetMaxEffectiveRange());
+		rAttackRange2 = rAttackRange * rAttackRange;
+
+		//	If the player is in range, then she is under attack
+
+		if (Ctx.pPlayer 
+				&& GetDistance2(Ctx.pPlayer) < rAttackRange2)
+			Ctx.pSystem->SetPlayerUnderAttack();
+
+		//	Countdown
+
 		m_iAngryCounter--;
 		}
 	else
+		{
 		rAttackRange = MAX_ATTACK_DISTANCE;
+		rAttackRange2 = rAttackRange * rAttackRange;
+		}
 
 	//	Look for the nearest enemy ship to attack
 
@@ -3812,7 +3867,7 @@ void CStation::UpdateAttacking (int iTick)
 		//	Look for a target
 
 		m_pTarget = NULL;
-		Metric rBestDist = rAttackRange * rAttackRange;
+		Metric rBestDist = rAttackRange2;
 		CSystem *pSystem = GetSystem();
 		for (i = 0; i < pSystem->GetObjectCount(); i++)
 			{

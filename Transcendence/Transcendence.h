@@ -98,7 +98,7 @@ class CIntroShipController : public CObject, public IShipController
 		virtual void Behavior (void) { m_pDelegate->Behavior(); }
 		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
 		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
-		virtual ManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
+		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
 		virtual bool GetThrust (void) { return m_pDelegate->GetThrust(); }
 		virtual bool GetReverseThrust (void) { return m_pDelegate->GetReverseThrust(); }
 		virtual bool GetStopThrust (void) { return m_pDelegate->GetStopThrust(); }
@@ -402,7 +402,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual int GetCombatPower (void);
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
 		virtual CSpaceObject *GetDestination (void) const { return m_pDestination; }
-		virtual ManeuverTypes GetManeuver (void);
+		virtual EManeuverTypes GetManeuver (void);
 		virtual GenomeTypes GetPlayerGenome (void) { return m_iGenome; }
 		virtual CString GetPlayerName (void) { return m_sName; }
 		virtual bool GetThrust (void);
@@ -415,7 +415,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		virtual bool IsPlayer (void) const { return true; }
 		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip);
-		virtual void SetManeuver (IShipController::ManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
+		virtual void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
 		virtual void SetThrust (bool bThrust) { m_bThrust = bThrust; }
 		virtual void WriteToStream (IWriteStream *pStream);
 
@@ -476,7 +476,7 @@ class CPlayerShipController : public CObject, public IShipController
 		int m_iLastHelpUseTick;
 		int m_iLastHelpFireMissileTick;
 
-		ManeuverTypes m_iManeuver;
+		EManeuverTypes m_iManeuver;
 		bool m_bThrust;
 		bool m_bActivate;
 		bool m_bStopThrust;
@@ -491,6 +491,8 @@ class CPlayerShipController : public CObject, public IShipController
 		CString m_sName;						//	Player name
 		GenomeTypes m_iGenome;					//	Player genome
 		DWORD m_dwStartingShipClass;			//	Starting ship class
+
+		bool m_bUnderAttack;					//	TRUE if we're currently under attack
 
 		CSpaceObject *m_pAutoDock;				//	The current station to dock with if we were to 
 												//		press 'D' right now. NULL means no station

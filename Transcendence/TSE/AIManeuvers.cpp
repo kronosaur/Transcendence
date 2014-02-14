@@ -1331,7 +1331,7 @@ void CAIBehaviorCtx::ImplementFormationManeuver (CShip *pShip, const CVector vDe
 
 		//	If we don't need to turn, engage thrust
 
-		if (GetManeuver() == IShipController::NoRotation)
+		if (GetManeuver() == NoRotation)
 			SetThrustDir(CAIShipControls::constAlwaysThrust);
 		}
 
@@ -1401,7 +1401,7 @@ void CAIBehaviorCtx::ImplementHold (CShip *pShip, bool *retbInPlace)
 
 		//	If we don't need to turn, engage thrust
 
-		if (GetManeuver() == IShipController::NoRotation)
+		if (GetManeuver() == NoRotation)
 			SetThrustDir(CAIShipControls::constAlwaysThrust);
 
 		bInPlace = false;
@@ -1477,9 +1477,9 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 			int iTurn = (iDir + 360 - iCurrentDir) % 360;
 
 			if (iTurn >= 180)
-				SetManeuver(IShipController::RotateRight);
+				SetManeuver(RotateRight);
 			else
-				SetManeuver(IShipController::RotateLeft);
+				SetManeuver(RotateLeft);
 
 			//	If we're turning in a new direction now, then reset
 			//	our counter
@@ -1499,10 +1499,10 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 
 				if (m_iLastTurnCount > m_iMaxTurnCount)
 					{
-					if (GetManeuver() == IShipController::RotateRight)
-						SetManeuver(IShipController::RotateLeft);
+					if (GetManeuver() == RotateRight)
+						SetManeuver(RotateLeft);
 					else
-						SetManeuver(IShipController::RotateRight);
+						SetManeuver(RotateRight);
 #ifdef DEBUG_SHIP
 					if (bDebug)
 						g_pUniverse->DebugOutput("Reverse direction");
@@ -1513,8 +1513,8 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 #ifdef DEBUG_SHIP
 			if (bDebug)
 				g_pUniverse->DebugOutput("Turn: %s (%d -> %d)",
-						(m_iManeuver == IShipController::RotateRight ? "right" : 
-							(m_iManeuver == IShipController::RotateLeft ? "left" : "none")),
+						(m_iManeuver == RotateRight ? "right" : 
+							(m_iManeuver == RotateLeft ? "left" : "none")),
 						iCurrentDir,
 						iDir);
 #endif
@@ -1626,18 +1626,7 @@ void CAIBehaviorCtx::ImplementTurnTo (CShip *pShip, int iRotation)
 //	Turn towards the given angle
 
 	{
-	int iCurrentDir = pShip->GetRotation();
-	int iTurn = (iRotation + 360 - iCurrentDir) % 360;
-
-	if ((iTurn >= (360 - (pShip->GetRotationAngle() / 2)))
-			|| (iTurn <= (pShip->GetRotationAngle() / 2)))
-		SetManeuver(IShipController::NoRotation);
-	else
-		{
-		if (iTurn >= 180)
-			SetManeuver(IShipController::RotateRight);
-		else
-			SetManeuver(IShipController::RotateLeft);
-		}
+	//	LATER: Deal with acceleration
+	SetManeuver(pShip->GetManeuverToFace(iRotation));
 	}
 

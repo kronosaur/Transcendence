@@ -62,7 +62,7 @@ CString::CString (void) :
 	{
 	}
 
-CString::CString (char *pString) :
+CString::CString (const char *pString) :
 		CObject(&g_Class),
 		m_pStore(NULL)
 
@@ -732,7 +732,7 @@ Fail:
 	return FALSE;
 	}
 
-ALERROR CString::Transcribe (char *pString, int iLen)
+ALERROR CString::Transcribe (const char *pString, int iLen)
 
 //	Transcribe
 //

@@ -18,17 +18,17 @@ class CAIShipControls
 
 		CAIShipControls (void);
 
-		inline IShipController::ManeuverTypes GetManeuver (void) const { return m_iManeuver; }
+		inline EManeuverTypes GetManeuver (void) const { return m_iManeuver; }
 		inline bool GetThrust (CShip *pShip) const { return (m_iThrustDir == constAlwaysThrust || m_iThrustDir == pShip->GetRotation()); }
 		inline int GetThrustDir (void) const { return m_iThrustDir; }
 		void ReadFromStream (SLoadCtx &Ctx);
-		inline void SetManeuver (IShipController::ManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
+		inline void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
 		inline void SetThrust (bool bThrust) { m_iThrustDir = (bThrust ? constAlwaysThrust : constNeverThrust); }
 		inline void SetThrustDir (int iDir) { m_iThrustDir = iDir; }
 		void WriteToStream (CSystem *pSystem, IWriteStream *pStream);
 
 	private:
-		IShipController::ManeuverTypes m_iManeuver;	//	Current maneuver (turn)
+		EManeuverTypes m_iManeuver;	//	Current maneuver (turn)
 		int m_iThrustDir;						//	Thrust if facing given direction
 	};
 
@@ -53,9 +53,9 @@ class CAIBehaviorCtx
 		inline int GetFireRateAdj (void) const { return m_AISettings.GetFireRateAdj(); }
 		inline Metric GetFlankDist (void) const { return m_rFlankDist; }
 		inline int GetLastAttack (void) const { return m_iLastAttack; }
-		inline IShipController::ManeuverTypes GetLastTurn (void) const { return m_iLastTurn; }
+		inline EManeuverTypes GetLastTurn (void) const { return m_iLastTurn; }
 		inline int GetLastTurnCount (void) const { return m_iLastTurnCount; }
-		inline IShipController::ManeuverTypes GetManeuver (void) const { return m_ShipControls.GetManeuver(); }
+		inline EManeuverTypes GetManeuver (void) const { return m_ShipControls.GetManeuver(); }
 		inline int GetMaxTurnCount (void) const { return m_iMaxTurnCount; }
 		inline Metric GetMaxWeaponRange (void) const { return m_rMaxWeaponRange; }
 		inline Metric GetMinCombatSeparation (void) const { return m_AISettings.GetMinCombatSeparation(); }
@@ -89,9 +89,9 @@ class CAIBehaviorCtx
 		inline void SetDockingRequested (bool bValue = true) { m_fDockingRequested = bValue; }
 		inline void SetHasEscorts (bool bValue = true) { m_fHasEscorts = bValue; }
 		void SetLastAttack (int iTick);
-		inline void SetLastTurn (IShipController::ManeuverTypes iTurn) { m_iLastTurn = iTurn; }
+		inline void SetLastTurn (EManeuverTypes iTurn) { m_iLastTurn = iTurn; }
 		inline void SetLastTurnCount (int iCount) { m_iLastTurnCount = iCount; }
-		inline void SetManeuver (IShipController::ManeuverTypes iManeuver) { m_ShipControls.SetManeuver(iManeuver); }
+		inline void SetManeuver (EManeuverTypes iManeuver) { m_ShipControls.SetManeuver(iManeuver); }
 		inline void SetManeuverCounter (int iCount) { m_iManeuverCounter = iCount; }
 		inline void SetNavPath (CNavigationPath *pNavPath, int iNavPathPos) { m_pNavPath = pNavPath; m_iNavPathPos = iNavPathPos; }
 		inline void SetPotential (const CVector &vVec) { m_vPotential = vVec; }
@@ -156,7 +156,7 @@ class CAIBehaviorCtx
 		CAIShipControls m_ShipControls;			//	Current ship control state
 
 		//	State
-		IShipController::ManeuverTypes m_iLastTurn;	//	Last turn direction
+		EManeuverTypes m_iLastTurn;				//	Last turn direction
 		int m_iLastTurnCount;					//	Number of updates turning
 		int m_iManeuverCounter;					//	Counter used by maneuvers
 		int m_iLastAttack;						//	Tick of last attack on us
@@ -300,7 +300,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual bool GetDeviceActivate (void) { return m_fDeviceActivate; }
 		virtual CSpaceObject *GetEscortPrincipal (void) const;
 		virtual int GetFireRateAdj (void) { return m_AICtx.GetFireRateAdj(); }
-		virtual ManeuverTypes GetManeuver (void) { return m_AICtx.GetManeuver(); }
+		virtual EManeuverTypes GetManeuver (void) { return m_AICtx.GetManeuver(); }
 		virtual CSpaceObject *GetOrderGiver (void);
 		virtual bool GetReverseThrust (void) { return false; }
 		virtual CSpaceObject *GetShip (void) { return m_pShip; }
@@ -325,7 +325,7 @@ class CBaseShipAI : public CObject, public IShipController
 		virtual void OnSystemLoaded (void) { m_AICtx.CalcInvariants(m_pShip); OnSystemLoadedNotify(); }
 		virtual CString SetAISetting (const CString &sSetting, const CString &sValue) { CString sNew = m_AICtx.SetAISetting(sSetting, sValue); m_AICtx.CalcInvariants(m_pShip); return sNew; }
 		virtual void SetCommandCode (ICCItem *pCode);
-		virtual void SetManeuver (ManeuverTypes iManeuver) { m_AICtx.SetManeuver(iManeuver); }
+		virtual void SetManeuver (EManeuverTypes iManeuver) { m_AICtx.SetManeuver(iManeuver); }
 		virtual void SetShipToControl (CShip *pShip);
 		virtual void SetThrust (bool bThrust) { m_AICtx.SetThrust(bThrust); }
 		virtual void SetPlayerWingman (bool bIsWingman) { m_fIsPlayerWingman = bIsWingman; }

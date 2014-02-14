@@ -302,6 +302,12 @@
 //		Updated to fix a bug in 94 in which asteroids were marked as immutable
 //		(preventing mining from working).
 //
+//	96: 1.3
+//		m_iLastHitTime in CShip
+//
+//	97: 1.3
+//		m_Rotation in CShip
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -394,7 +400,10 @@ CSystem::CSystem (void) : CObject(&g_Class),
 		m_fInCreate(false),
 		m_fEncounterTableValid(false),
 		m_StarField(sizeof(CStar), STARFIELD_COUNT),
-		m_ObjGrid(GRID_SIZE, CELL_SIZE, CELL_BORDER)
+		m_ObjGrid(GRID_SIZE, CELL_SIZE, CELL_BORDER),
+		m_fEnemiesInLRS(false),
+		m_fEnemiesInSRS(false),
+		m_fPlayerUnderAttack(false)
 
 //	CSystem constructor
 
@@ -1045,11 +1054,14 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	//	Flags
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	Ctx.pSystem->m_fNoRandomEncounters = ((dwLoad & 0x00000001) ? true : false);
+	Ctx.pSystem->m_fNoRandomEncounters =	((dwLoad & 0x00000001) ? true : false);
 	if (dwLoad & 0x00000002)
 		Ctx.pStream->Read((char *)&Ctx.dwVersion, sizeof(DWORD));
-	Ctx.pSystem->m_fUseDefaultTerritories = ((dwLoad & 0x00000004) ? false : true);
+	Ctx.pSystem->m_fUseDefaultTerritories =	((dwLoad & 0x00000004) ? false : true);
 	Ctx.pSystem->m_fEncounterTableValid = false;
+	Ctx.pSystem->m_fEnemiesInLRS =			((dwLoad & 0x00000008) ? false : true);
+	Ctx.pSystem->m_fEnemiesInSRS =			((dwLoad & 0x00000010) ? false : true);
+	Ctx.pSystem->m_fPlayerUnderAttack =		((dwLoad & 0x00000020) ? false : true);
 
 	//	Scales
 
@@ -3247,6 +3259,7 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	//	Loop over all objects
 
+	m_fEnemiesInLRS = false;
 	bool bNewEnemies = false;
 	for (i = 0; i < GetObjectCount(); i++)
 		{
@@ -3272,10 +3285,17 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 				//	This object is now in the LRS
 
 				bool bNewInLRS = pObj->SetPOVLRS();
-				if (bNewInLRS 
-						&& pCenter->IsEnemy(pObj) 
-						&& pObj->GetCategory() == CSpaceObject::catShip)
-					bNewEnemies = true;
+
+				//	If an enemy, keep track
+
+				if (pCenter->IsEnemy(pObj))
+					{
+					if (bNewInLRS 
+							&& pObj->GetCategory() == CSpaceObject::catShip)
+						bNewEnemies = true;
+
+					m_fEnemiesInLRS = true;
+					}
 				}
 			else
 				{
@@ -3819,9 +3839,12 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 	//	Write flags
 
 	dwSave = 0;
-	dwSave |= (m_fNoRandomEncounters ? 0x00000001 : 0);
+	dwSave |= (m_fNoRandomEncounters ?		0x00000001 : 0);
 	dwSave |= 0x00000002;	//	Include version (this is a hack for backwards compatibility)
-	dwSave |= (!m_fUseDefaultTerritories ? 0x00000004 : 0);
+	dwSave |= (!m_fUseDefaultTerritories ?	0x00000004 : 0);
+	dwSave |= (m_fEnemiesInLRS ?			0x00000008 : 0);
+	dwSave |= (m_fEnemiesInSRS ?			0x00000010 : 0);
+	dwSave |= (m_fPlayerUnderAttack ?		0x00000020 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Save version
@@ -4149,6 +4172,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	SUpdateCtx Ctx;
 	Ctx.pSystem = this;
+	Ctx.pPlayer = GetPlayer();
 
 	//	Delete all objects in the deleted list (we do this at the
 	//	beginning because we want to keep the list after the update
@@ -4189,6 +4213,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	//	Give all objects a chance to react
 
+	m_fPlayerUnderAttack = false;
 	DebugStartTimer();
 	for (i = 0; i < GetObjectCount(); i++)
 		{
@@ -4197,7 +4222,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 		if (pObj && !pObj->IsTimeStopped())
 			{
 			SetProgramState(psUpdatingBehavior, pObj);
-			pObj->Behavior();
+			pObj->Behavior(Ctx);
 
 			//	Update the objects
 

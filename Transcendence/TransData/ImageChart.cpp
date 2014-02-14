@@ -167,7 +167,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.sName = pClass->GetNounPhrase(0);
 				NewEntry.iSize = RectWidth(pClass->GetImage().GetImageRect());
 				NewEntry.pImage = &pClass->GetImage();
-				NewEntry.iRotation = Angle2Direction(iRotation);
+				NewEntry.iRotation = pClass->Angle2Direction(iRotation);
 
 				break;
 				}

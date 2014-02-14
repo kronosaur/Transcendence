@@ -29,6 +29,7 @@ NEW APPLICATION (UI)
 -------------------------------------------------------------------------------
 
 [ ] Create new Win32 project under /Dev/Transcendence
+[ ] Properties - All Configurations - General: Platform Toolset = "Visual Studio 2012 - Windows XP (v110_xp)"
 [ ] Properties - All Configurations - General: Character Set = "Use Multi-Byte Character Set"
 [ ] Properties - All Configurations - C++/General: Additional Include Directories = "..\..\Includes"
 [ ] Properties - All Configurations - C++/General: Detect 64-bit Compatibility Issues = "No"

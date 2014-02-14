@@ -138,7 +138,8 @@ int MainLoop (HWND hWnd, int iFrameDelay)
 		{
 		//	Tell the main window that we're animating
 
-		g_pHI->OnAnimate();
+		if (g_pHI)
+			g_pHI->OnAnimate();
 
 		//	Process all events
 

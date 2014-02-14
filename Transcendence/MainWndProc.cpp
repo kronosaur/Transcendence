@@ -90,26 +90,38 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 			{
 			long iResult = 0;
 
-			//	Quit the app (we do this first in case we crash in clean up)
-
-			PostQuitMessage(0);
-
 			//	Clean up window
 
-			if (g_pHI)
+			try
 				{
-				g_pHI->WMDestroy();
-				CHumanInterface::Destroy();
+				if (g_pHI)
+					{
+					g_pHI->WMDestroy();
+					CHumanInterface::Destroy();
+					}
+
+				//	Clean up
+
+				if (g_pTrans)
+					{
+					iResult = g_pTrans->WMDestroy();
+					delete g_pTrans;
+					g_pTrans = NULL;
+					}
 				}
-
-			//	Clean up
-
-			if (g_pTrans)
+			catch (...)
 				{
-				iResult = g_pTrans->WMDestroy();
-				delete g_pTrans;
+				g_pHI = NULL;
 				g_pTrans = NULL;
 				}
+
+			//	Quit the app 
+			//	
+			//	NOTE: We do this last because we want to wait until all
+			//	windows are done processing. In particular, MCI playback windows
+			//	need to process messages while quitting.
+
+			::PostQuitMessage(0);
 
 			return iResult;
 			}
@@ -142,6 +154,9 @@ LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 
 		case MCIWNDM_NOTIFYMODE:
 			return (g_pHI ? g_pHI->MCINotifyMode((int)lParam) : 0);
+
+		case MCIWNDM_NOTIFYPOS:
+			return 0;
 
 		case WM_MOUSEMOVE:
 			return g_pHI->WMMouseMove((int)LOWORD(lParam), (int)HIWORD(lParam), wParam);

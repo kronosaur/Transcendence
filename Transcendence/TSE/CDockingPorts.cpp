@@ -704,7 +704,7 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 		pShip->Place(vDest);
 		pShip->UnfreezeControls();
 		IShipController *pController = pShip->GetController();
-		pController->SetManeuver(IShipController::NoRotation);
+		pController->SetManeuver(NoRotation);
 
 		Port.iStatus = psInUse;
 
@@ -772,12 +772,12 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 			//	If we're close enough, align to rotation angle
 
 			if (rDelta2 < FINAL_APPROACH2)
-				pController->SetManeuver(CalcTurnManeuver(iFinalRotation, pShip->GetRotation(), pShip->GetRotationAngle()));
+				pController->SetManeuver(pShip->GetManeuverToFace(iFinalRotation));
 
 			//	Otherwise, align along delta v
 
 			else
-				pController->SetManeuver(CalcTurnManeuver(VectorToPolar(vDeltaV), pShip->GetRotation(), pShip->GetRotationAngle()));
+				pController->SetManeuver(pShip->GetManeuverToFace(VectorToPolar(vDeltaV)));
 
 			//	Don't let the AI thrust
 

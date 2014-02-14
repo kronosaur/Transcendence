@@ -203,6 +203,8 @@
     <ClCompile Include="CGlobalSpaceObject.cpp" />
     <ClCompile Include="CImageArranger.cpp" />
     <ClCompile Include="CInstalledDevice.cpp" />
+    <ClCompile Include="CIntegralRotation.cpp" />
+    <ClCompile Include="CIntegralRotationDesc.cpp" />
     <ClCompile Include="CItemEnhancementStack.cpp" />
     <ClCompile Include="CMissionList.cpp" />
     <ClCompile Include="CMoveCtx.cpp" />

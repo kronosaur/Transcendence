@@ -606,7 +606,7 @@ class CString : public CObject
 			};
 
 		CString (void);
-		CString (char *pString);
+		CString (const char *pString);
 		CString (char *pString, int iLength);
 		CString (char *pString, int iLength, BOOL bExternal);
 		virtual ~CString (void);
@@ -624,7 +624,7 @@ class CString : public CObject
 		char *GetWritePointer (int iLength);
 		inline bool IsBlank (void) const { return (GetLength() == 0); }
 		void ReadFromStream (IReadStream *pStream);
-		ALERROR Transcribe (char *pString, int iLen);
+		ALERROR Transcribe (const char *pString, int iLen);
 		void Truncate (int iLength);
 		void WriteToStream (IWriteStream *pStream) const;
 
@@ -1369,6 +1369,7 @@ BOOL kernelInit (DWORD dwFlags = 0);
 ALERROR kernelSetDebugLog (const CString &sFilespec, bool bAppend = true);
 ALERROR kernelSetDebugLog (CTextFileLog *pLog, bool bAppend = true, bool bFreeLog = false);
 HANDLE kernelCreateThread (LPTHREAD_START_ROUTINE pfStart, LPVOID pData);
+bool kernelDispatchUntilEventSet (HANDLE hEvent, DWORD dwTimeout = INFINITE);
 
 //	String functions (CString.cpp)
 

@@ -15,7 +15,7 @@ const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 const Metric WALL_RANGE2 =				(WALL_RANGE * WALL_RANGE);
 
 CAIBehaviorCtx::CAIBehaviorCtx (void) :
-		m_iLastTurn(IShipController::NoRotation),
+		m_iLastTurn(NoRotation),
 		m_iLastTurnCount(0),
 		m_iManeuverCounter(0),
 		m_iLastAttack(0),

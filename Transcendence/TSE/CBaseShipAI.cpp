@@ -1369,13 +1369,13 @@ void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 	if (Ctx.dwVersion < 75)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		m_AICtx.SetManeuver((ManeuverTypes)dwLoad);
+		m_AICtx.SetManeuver((EManeuverTypes)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		m_AICtx.SetThrustDir((int)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		m_AICtx.SetLastTurn((IShipController::ManeuverTypes)dwLoad);
+		m_AICtx.SetLastTurn((EManeuverTypes)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		m_AICtx.SetLastTurnCount(dwLoad);
@@ -1512,7 +1512,7 @@ void CBaseShipAI::ResetBehavior (void)
 	{
 	if (!IsDockingRequested())
 		{
-		m_AICtx.SetManeuver(IShipController::NoRotation);
+		m_AICtx.SetManeuver(NoRotation);
 		m_AICtx.SetThrustDir(CAIShipControls::constNeverThrust);
 		}
 

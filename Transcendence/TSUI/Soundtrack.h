@@ -5,6 +5,82 @@
 
 #pragma once
 
+class CMCIMixer
+	{
+	public:
+		CMCIMixer (int iChannels = 2);
+		~CMCIMixer (void);
+
+		void FadeAtPos (int iPos);
+		void FadeNow (void);
+		int GetCurrentPlayLength (void) const;
+		int GetCurrentPlayPos (void) const;
+		bool Play (CSoundType *pTrack, int iPos = 0);
+		void Stop (void);
+		void TogglePausePlay (void);
+
+	private:
+		enum EChannelState
+			{
+			stateNone,
+			statePlaying,
+			};
+
+		struct SChannel
+			{
+			HWND hMCI;
+			EChannelState iState;
+			};
+
+		enum ERequestType
+			{
+			typeNone,
+			typePlay,
+			typeStop,
+			typePlayPause,
+			typeWaitForPos,
+			typeFadeOut,
+			};
+
+		struct SRequest
+			{
+			ERequestType iType;
+			CSoundType *pTrack;
+			int iPos;
+			};
+
+		void CreateParentWindow (void);
+		void EnqueueRequest (ERequestType iType, CSoundType *pTrack = NULL, int iPos = 0);
+		bool FindChannel (HWND hMCI, SChannel **retpChannel = NULL);
+		void LogError (HWND hMCI, const CString &sFilespec = NULL_STR);
+		LONG OnNotifyMode (HWND hWnd, int iMode);
+		void ProcessFadeOut (const SRequest &Request);
+		void ProcessPlay (const SRequest &Request);
+		void ProcessPlayPause (const SRequest &Request);
+		bool ProcessRequest (void);
+		void ProcessStop (const SRequest &Request);
+		void ProcessWaitForPos (const SRequest &Request);
+		bool Wait (DWORD dwTimeout);
+
+		static LONG APIENTRY ParentWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
+		static DWORD WINAPI ProcessingThread (LPVOID pData);
+
+		HWND m_hParent;
+		int m_iDefaultVolume;				//	Default volume
+		TArray<SChannel> m_Channels;
+		int m_iCurChannel;
+		CSoundType *m_pNowPlaying;			//	Currently playing
+
+		//	Synchronization
+
+		CCriticalSection m_cs;
+		TQueue<SRequest> m_Request;			//	Queue of requests
+		HANDLE m_hProcessingThread;			//	Processing thread handle
+		HANDLE m_hQuitEvent;				//	Tell thread to quit
+		HANDLE m_hWorkEvent;				//	Tell thread to work
+		HANDLE m_hAbortEvent;				//	Tell thread to stop
+	};
+
 class CSoundtrackManager
 	{
 	public:
@@ -23,9 +99,12 @@ class CSoundtrackManager
 		CSoundtrackManager (void);
 		~CSoundtrackManager (void);
 
+		void NotifyEndCombat (void);
 		void NotifyEnterSystem (void);
+		void NotifyStartCombat (void);
 		void NotifyStartCombatMission (void);
 		void NotifyTrackDone (void);
+		void NotifyTrackPlaying (CSoundType *pTrack);
 		void NotifyUndocked (void);
 		void SetGameState (EGameStates iNewState);
 		void SetGameState (EGameStates iNewState, CSoundType *pTrack);
@@ -33,19 +112,22 @@ class CSoundtrackManager
 		void TogglePlayPaused (void);
 
 	private:
-		CSoundType *CalcGameTrackToPlay (const CString &sRequiredAttrib);
-		CSoundType *CalcTrackToPlay (EGameStates iNewState);
-		int GetLastPlayedRank (DWORD dwUNID);
+		CSoundType *CalcGameTrackToPlay (const CString &sRequiredAttrib) const;
+		CSoundType *CalcTrackToPlay (EGameStates iNewState) const;
+		int GetLastPlayedRank (DWORD dwUNID) const;
 		void Play (CSoundType *pTrack);
 		void Reinit (void);
+		void TransitionTo (CSoundType *pTrack, int iPos);
 
+		CMCIMixer m_Mixer;					//	Music mixer
 		bool m_bEnabled;					//	Music is enabled
 		EGameStates m_iGameState;			//	Current soundtrack state
-		CSoundType *m_pNowPlaying;			//	Now playing
+		CSoundType *m_pNowPlaying;			//	What we've scheduled to play
 
 		TQueue<DWORD> m_LastPlayed;			//	UNID of tracks played.
 		bool m_bSystemTrackPlayed;			//	systemSoundtrack already played in system.
 		bool m_bStartCombatWhenUndocked;	//	If TRUE, we play combat music when we undock
+		bool m_bInTransition;				//	Transitioning to a new track
 
 		CSoundType *m_pIntroTrack;			//	Track to play for intro.
 	};

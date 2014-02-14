@@ -1535,7 +1535,7 @@ void CShipClass::CreateWreckImage (void)
 				0,
 				i * cyHeight,
 				0,
-				mathRandom(0, m_iRotationRange - 1));
+				mathRandom(0, m_RotationDesc.GetFrameCount() - 1));
 
 		//	Add some destruction
 
@@ -2557,16 +2557,22 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iSize = pDesc->GetAttributeIntegerBounded(SIZE_ATTRIB, 1, -1, 0);
 	m_iCargoSpace = pDesc->GetAttributeInteger(CARGO_SPACE_ATTRIB);
 	m_iMaxCargoSpace = Max(m_iCargoSpace, pDesc->GetAttributeInteger(MAX_CARGO_SPACE_ATTRIB));
-	m_iManeuverability = pDesc->GetAttributeInteger(CONSTLIT(g_ManeuverAttrib));
-	m_iManeuverDelay = (int)(((Metric)m_iManeuverability / STD_SECONDS_PER_UPDATE) + 0.5);
 	m_iMaxArmorMass = pDesc->GetAttributeInteger(MAX_ARMOR_ATTRIB);
 	m_iMaxReactorPower = pDesc->GetAttributeInteger(MAX_REACTOR_POWER_ATTRIB);
 
+	if (error = m_RotationDesc.InitFromXML(Ctx, pDesc))
+		return ComposeLoadError(Ctx, Ctx.sError);
+
+	m_Image.SetRotationCount(m_RotationDesc.GetFrameCount());
+
+#ifdef OLD_MANEUVER
+	m_iManeuverability = pDesc->GetAttributeInteger(CONSTLIT(g_ManeuverAttrib));
+	m_iManeuverDelay = (int)(((Metric)m_iManeuverability / STD_SECONDS_PER_UPDATE) + 0.5);
 	m_iRotationRange = pDesc->GetAttributeInteger(ROTATION_COUNT_ATTRIB);
 	if (m_iRotationRange <= 0)
 		m_iRotationRange = STD_ROTATION_COUNT;
 	m_iRotationAngle = (360 / m_iRotationRange);
-	m_Image.SetRotationCount(m_iRotationRange);
+#endif
 
 	m_DriveDesc.dwUNID = GetUNID();
 	m_DriveDesc.rMaxSpeed = (double)pDesc->GetAttributeInteger(CONSTLIT(g_MaxSpeedAttrib)) * LIGHT_SPEED / 100;
@@ -2743,7 +2749,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				if (error = m_ExhaustImage.InitFromXML(Ctx, pItem))
 					return ComposeLoadError(Ctx, ERR_BAD_EXHAUST_IMAGE);
 
-				m_ExhaustImage.SetRotationCount(m_iRotationRange);
+				m_ExhaustImage.SetRotationCount(m_RotationDesc.GetFrameCount());
 				}
 			else if (strEquals(pItem->GetTag(), NOZZLE_POS_TAG))
 				{
@@ -2753,7 +2759,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 				//	Load the position
 
-				if (error = pExhaust->PosCalc.Init(pItem, m_iRotationRange, iScale))
+				if (error = pExhaust->PosCalc.Init(pItem, m_RotationDesc.GetFrameCount(), iScale))
 					return ComposeLoadError(Ctx, ERR_DRIVE_IMAGE_FORMAT);
 				}
 			else

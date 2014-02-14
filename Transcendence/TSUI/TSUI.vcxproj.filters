@@ -84,6 +84,9 @@
     <ClCompile Include="CListCollectionTask.cpp">
       <Filter>Source Files\UIHelpers</Filter>
     </ClCompile>
+    <ClCompile Include="CMCIMixer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CloudInterface.h">

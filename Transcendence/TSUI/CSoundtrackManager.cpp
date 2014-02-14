@@ -9,13 +9,16 @@
 #define ATTRIB_SYSTEM_SOUNDTRACK				CONSTLIT("systemSoundtrack")
 #define ATTRIB_TRAVEL_SOUNDTRACK				CONSTLIT("travelSoundtrack")
 
+const int SEGMENT_BOUNDARY_THRESHOLD =			5000;	//	5 seconds
+
 CSoundtrackManager::CSoundtrackManager (void) :
 		m_bEnabled(false),
 		m_iGameState(stateNone),
 		m_pNowPlaying(NULL),
 		m_LastPlayed(10),
 		m_bSystemTrackPlayed(false),
-		m_bStartCombatWhenUndocked(false)
+		m_bStartCombatWhenUndocked(false),
+		m_bInTransition(false)
 
 //	CSoundtrackManager constructor
 
@@ -35,7 +38,7 @@ CSoundtrackManager::~CSoundtrackManager (void)
 		delete m_pIntroTrack;
 	}
 
-CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAttrib)
+CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAttrib) const
 
 //	CalcGameTrackToPlay
 //
@@ -125,7 +128,7 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAtt
 	return Entry.GetAt(Entry.RollPos());
 	}
 
-CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState)
+CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState) const
 
 //	CalcTrackToPlay
 //
@@ -139,6 +142,9 @@ CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState)
 		case stateProgramIntro:
 			return m_pIntroTrack;
 
+		case stateGameCombat:
+			return CalcGameTrackToPlay(ATTRIB_COMBAT_SOUNDTRACK);
+
 		case stateGameTravel:
 			return CalcGameTrackToPlay(ATTRIB_TRAVEL_SOUNDTRACK);
 
@@ -148,7 +154,7 @@ CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState)
 		}
 	}
 
-int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID)
+int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID) const
 
 //	GetLastPlayedRank
 //
@@ -174,6 +180,37 @@ int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID)
 	return -1;
 	}
 
+void CSoundtrackManager::NotifyEndCombat (void)
+
+//	NotifyEndCombat
+//
+//	Player is out of combat
+
+	{
+	//	If we're not in combat, then nothing to do
+
+	if (m_iGameState != stateGameCombat
+			|| m_bInTransition
+			|| !m_bEnabled)
+		return;
+
+	//	Figure out which track to play. If there is nothing to play then we're
+	//	done.
+
+	CSoundType *pTrack = CalcTrackToPlay(stateGameTravel);
+	if (pTrack == NULL)
+		return;
+
+	//	Transition
+
+	TransitionTo(pTrack, pTrack->GetNextPlayPos());
+
+	//	Remember our state
+
+	m_iGameState = stateGameTravel;
+	m_bInTransition = true;
+	}
+
 void CSoundtrackManager::NotifyEnterSystem (void)
 
 //	NotifyEnterSystem
@@ -193,7 +230,7 @@ void CSoundtrackManager::NotifyEnterSystem (void)
 
 		if (m_iGameState != stateGamePrologue)
 			{
-			g_pHI->GetSoundMgr().StopMusic();
+			m_Mixer.Stop();
 			m_pNowPlaying = NULL;
 			}
 
@@ -206,6 +243,37 @@ void CSoundtrackManager::NotifyEnterSystem (void)
 		Play(CalcTrackToPlay(m_iGameState));
 	}
 
+void CSoundtrackManager::NotifyStartCombat (void)
+
+//	NotifyStartCombat
+//
+//	Player has just entered combat.
+
+	{
+	//	If we're already in combat, then nothing to do
+
+	if (m_iGameState == stateGameCombat
+			|| m_bInTransition
+			|| !m_bEnabled)
+		return;
+
+	//	Figure out which track to play. If there is nothing to play then we're
+	//	done.
+
+	CSoundType *pCombatTrack = CalcTrackToPlay(stateGameCombat);
+	if (pCombatTrack == NULL)
+		return;
+
+	//	Transition
+
+	TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
+
+	//	Set state
+
+	m_iGameState = stateGameCombat;
+	m_bInTransition = true;
+	}
+
 void CSoundtrackManager::NotifyStartCombatMission (void)
 
 //	NotifyStartCombatMission
@@ -213,6 +281,7 @@ void CSoundtrackManager::NotifyStartCombatMission (void)
 //	Player has just started a combat mission.
 
 	{
+#if 0
 	//	If we're already playing a combat track then nothing to do.
 
 	if (m_pNowPlaying
@@ -232,6 +301,7 @@ void CSoundtrackManager::NotifyStartCombatMission (void)
 	//	Start playing a combat track
 
 	Play(CalcGameTrackToPlay(ATTRIB_COMBAT_SOUNDTRACK));
+#endif
 	}
 
 void CSoundtrackManager::NotifyTrackDone (void)
@@ -241,9 +311,26 @@ void CSoundtrackManager::NotifyTrackDone (void)
 //	Done playing a track
 
 	{
+	//	If we're transitioning then we wait for a subsequent play.
+
+	if (m_bInTransition)
+		{
+		m_bInTransition = false;
+		return;
+		}
+
 	//	Play another appropriate track
 
 	Play(CalcTrackToPlay(m_iGameState));
+	}
+
+void CSoundtrackManager::NotifyTrackPlaying (CSoundType *pTrack)
+
+//	NotifyTrackPlaying
+//
+//	We're now playing this track
+
+	{
 	}
 
 void CSoundtrackManager::NotifyUndocked (void)
@@ -272,6 +359,11 @@ void CSoundtrackManager::Play (CSoundType *pTrack)
 	if (pTrack == m_pNowPlaying)
 		return;
 
+	//	Remember what we're playing
+
+	if (m_pNowPlaying)
+		m_LastPlayed.EnqueueAndOverwrite(m_pNowPlaying->GetUNID());
+
 	//	Play
 
 	if (m_bEnabled
@@ -284,23 +376,14 @@ void CSoundtrackManager::Play (CSoundType *pTrack)
 			return;
 			}
 
-		CString sError;
-		if (!g_pHI->GetSoundMgr().PlayMusic(sFilespec, 0, &sError))
-			{
-			::kernelDebugLogMessage("Unable to play soundtrack %s: %s", sFilespec, sError);
-			return;
-			}
+		m_Mixer.Play(pTrack);
+		m_pNowPlaying = pTrack;
+
+		//	Remember if we played the system track
+
+		if (pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
+			m_bSystemTrackPlayed = true;
 		}
-
-	//	Remember what we're playing
-
-	if (m_pNowPlaying)
-		m_LastPlayed.EnqueueAndOverwrite(m_pNowPlaying->GetUNID());
-
-	if (pTrack && pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
-		m_bSystemTrackPlayed = true;
-
-	m_pNowPlaying = pTrack;
 	}
 
 void CSoundtrackManager::Reinit (void)
@@ -380,7 +463,7 @@ void CSoundtrackManager::SetMusicEnabled (bool bEnabled)
 
 	else
 		{
-		g_pHI->GetSoundMgr().StopMusic();
+		m_Mixer.Stop();
 		m_pNowPlaying = NULL;
 		}
 	}
@@ -392,5 +475,50 @@ void CSoundtrackManager::TogglePlayPaused (void)
 //	Pause/unpause
 
 	{
-	g_pHI->GetSoundMgr().TogglePlayPaused();
+	m_Mixer.TogglePausePlay();
 	}
+
+void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos)
+
+//	TransitionTo
+//
+//	Transition to play the given track, waiting for a segment boundary, if
+//	necessary.
+
+	{
+	//	If we've got a current track, then we need to fade it out
+
+	if (m_pNowPlaying)
+		{
+		int iCurPos = m_Mixer.GetCurrentPlayPos();
+		int iEndPos = m_pNowPlaying->GetNextFadePos(iCurPos);
+		if (iEndPos == -1)
+			iEndPos = m_Mixer.GetCurrentPlayLength();
+
+		//	Remember the current segment so that next time we start at the
+		//	next segment.
+
+		m_pNowPlaying->SetLastPlayPos(iCurPos);
+
+		//	If we're more than 5 seconds away from the end, then just fade
+		//	away now.
+
+		int iTimeToEnd = iEndPos - iCurPos;
+		if (iTimeToEnd > SEGMENT_BOUNDARY_THRESHOLD)
+			m_Mixer.FadeNow();
+
+		//	Otherwise, fade at the next segment boundary
+
+		else
+			m_Mixer.FadeAtPos(iEndPos);
+		}
+
+	//	Now queue up the next track
+
+	m_Mixer.Play(pTrack, iPos);
+
+	//	Remember what we're playing
+
+	m_pNowPlaying = pTrack;
+	}
+

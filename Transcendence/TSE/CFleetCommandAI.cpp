@@ -383,7 +383,7 @@ CVector CFleetCommandAI::ComputeRallyPointEx (int iBearing, CSpaceObject *pTarge
 
 	//	Randomly offset (+/- rotation angle)
 
-	iAngle = ((iAngle + (mathRandom(-1, 1) * m_pShip->GetRotationAngle()) + 360) % 360);
+	iAngle = ((iAngle + (mathRandom(-1, 1) * 18) + 360) % 360);
 
 	//	Compute the distance from target. If we're a stand-off platform, make sure we
 	//	rally inside of our weapon range.

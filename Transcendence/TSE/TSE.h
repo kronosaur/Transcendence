@@ -49,7 +49,7 @@
 
 //	Uncomment out the following define when building a stable release
 
-#define TRANSCENDENCE_STABLE_RELEASE
+//#define TRANSCENDENCE_STABLE_RELEASE
 
 //	Define some debugging symbols
 
@@ -1082,6 +1082,7 @@ class CSystem : public CObject
 		void CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bool bInDoEvent = false);
 		void CancelTimedEvent (CDesignType *pSource, const CString &sEvent, bool bInDoEvent = false);
 		bool DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **retpObj = NULL, CString *retsError = NULL);
+		inline bool EnemiesInLRS (void) const { return m_fEnemiesInLRS; }
 		inline void EnumObjectsInBoxStart (SSpaceObjectGridEnumerator &i, const CVector &vUR, const CVector &vLL, DWORD dwFlags = 0) { m_ObjGrid.EnumStart(i, vUR, vLL, dwFlags); }
 		inline void EnumObjectsInBoxStart (SSpaceObjectGridEnumerator &i, const CVector &vPos, Metric rRange, DWORD dwFlags = 0)
 			{
@@ -1136,6 +1137,7 @@ class CSystem : public CObject
 		inline CUniverse *GetUniverse (void) const { return g_pUniverse; }
 		bool HasAttribute (const CVector &vPos, const CString &sAttrib);
 		inline bool IsCreationInProgress (void) const { return (m_fInCreate ? true : false); }
+		inline bool IsPlayerUnderAttack (void) const { return m_fPlayerUnderAttack; }
 		bool IsStarAtPos (const CVector &vPos);
 		bool IsStationInSystem (CStationType *pType);
 		inline bool IsTimeStopped (void) { return (m_iTimeStopped != 0); }
@@ -1159,6 +1161,7 @@ class CSystem : public CObject
 		inline void SetID (DWORD dwID) { m_dwID = dwID; }
 		void SetLastUpdated (void);
 		void SetObjectSovereign (CSpaceObject *pObj, CSovereign *pSovereign);
+		inline void SetPlayerUnderAttack (void) { m_fPlayerUnderAttack = true; }
 		void SetPOVLRS (CSpaceObject *pCenter);
 		void SetSpaceEnvironment (int xTile, int yTile, CSpaceEnvironmentType *pEnvironment);
 		ALERROR StargateCreated (CSpaceObject *pGate, const CString &sStargateID, const CString &sDestNodeID, const CString &sDestEntryPoint);
@@ -1257,7 +1260,12 @@ class CSystem : public CObject
 		DWORD m_fInCreate:1;					//	TRUE if system in being created
 		DWORD m_fEncounterTableValid:1;			//	TRUE if m_pEncounterObj is valid
 		DWORD m_fUseDefaultTerritories:1;		//	TRUE if we should use defaults for innerZone, lifeZone, outerZone
-		DWORD m_fSpare:28;
+		DWORD m_fEnemiesInLRS:1;				//	TRUE if we found enemies in last LRS update
+		DWORD m_fEnemiesInSRS:1;				//	TRUE if we found enemies in last SRS update
+		DWORD m_fPlayerUnderAttack:1;			//	TRUE if at least one object has player as target
+		DWORD m_fSpare8:1;
+
+		DWORD m_fSpare:24;
 
 		//	Support structures
 
@@ -2157,6 +2165,8 @@ class CSpaceObject : public CObject
 		inline DWORD GetVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetVisibleEnemies (DWORD dwFlags, TArray<CSpaceObject *> *retList, CSpaceObject *pExcludeObj = NULL);
 		CSpaceObject *GetVisibleEnemyInRange (CSpaceObject *pCenter, Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
+		bool HasBeenHitLately (int iTicks = 30);
+		bool HasFiredLately (int iTicks = 30);
 		inline bool HasInterSystemEvent (void) const { return (m_fHasInterSystemEvent ? true : false); }
 		inline bool HasNonLinearMove (void) const { return (m_fNonLinearMove ? true : false); }
 		inline bool HasOnAttackedEvent (void) const { return (m_fHasOnAttackedEvent ? true : false); }
@@ -2416,6 +2426,7 @@ class CSpaceObject : public CObject
 		virtual CStationType *GetEncounterInfo (void) { return NULL; }
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return NULL; }
 		virtual int GetLastFireTime (void) const { return 0; }
+		virtual int GetLastHitTime (void) const { return 0; }
 		virtual int GetLevel (void) const { return 1; }
 		virtual int GetMaxPower (void) const { return 0; }
 		virtual int GetMaxLightDistance (void) { return 0; }
@@ -2504,7 +2515,7 @@ class CSpaceObject : public CObject
 		virtual CSpaceObject *GetSecondarySource (void) { return NULL; }
 
 		//	...for ships
-		virtual void Behavior (void) { }
+		virtual void Behavior (SUpdateCtx &Ctx) { }
 		virtual void ConsumeFuel (int iFuel) { }
 		virtual bool FollowsObjThroughGate (CSpaceObject *pLeader) { return false; }
 		virtual CSpaceObject *GetBase (void) const { return NULL; }
@@ -3283,7 +3294,7 @@ ICCItem *CreateItemFromDamageEffects (CCodeChain &CC, SDamageCtx &Ctx);
 int GetDamageTypeLevel (DamageTypes iDamage);
 Metric *GetDestinyToBellCurveArray (void);
 void LoadDamageEffectsFromItem (ICCItem *pItem, SDamageCtx &Ctx);
-IShipController::ManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle);
+EManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle);
 CString ParseCriteriaParam (char **ioPos, bool bExpectColon = true, bool *retbBinaryParam = NULL);
 bool ParseCriteriaParamLevelRange (char **ioPos, int *retiLow, int *retiHigh);
 

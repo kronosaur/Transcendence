@@ -1590,6 +1590,8 @@ void CStandardShipAI::BehaviorStart (void)
 
 		case IShipController::orderWander:
 			{
+			int i;
+
 			//	Figure out which bearing to take. We set m_rDistance with
 			//	the direction that we want to move. We will continue moving
 			//	in that direction until we are blocked by an enemy or until
@@ -1619,8 +1621,7 @@ void CStandardShipAI::BehaviorStart (void)
 
 			iBearing = m_pShip->AlignToRotationAngle(iBearing);
 			int iBearingStart = iBearing;
-			ASSERT((360 % m_pShip->GetRotationAngle()) == 0);
-			while (true)
+			for (i = 0; i < m_pShip->GetRotationRange(); i++)
 				{
 				if (!EnemyStationsAtBearing(m_pShip, iBearing, WANDER_SAFETY_RANGE))
 					break;
