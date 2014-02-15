@@ -5,6 +5,9 @@
 
 #include "PreComp.h"
 
+const Metric MANEUVER_MASS_FACTOR =				1.0;
+const Metric MAX_INERTIA_RATIO =				9.0;
+
 EManeuverTypes CIntegralRotation::GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const
 
 //	GetManeuverToFace
@@ -66,8 +69,7 @@ void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx)
 	m_iRotationFrame = (int)dwLoad;
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_iRotationSpeed = (int)LOWORD(dwLoad);
-	m_iRotationAccel = (int)HIWORD(dwLoad);
+	m_iRotationSpeed = (int)dwLoad;
 	}
 
 void CIntegralRotation::SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle)
@@ -109,11 +111,11 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 			break;
 
 		case RotateRight:
-			m_iRotationSpeed = Min(Desc.GetMaxRotationSpeed(), m_iRotationSpeed + m_iRotationAccel);
+			m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccel);
 			break;
 
 		case RotateLeft:
-			m_iRotationSpeed = Max(-Desc.GetMaxRotationSpeed(), m_iRotationSpeed - m_iRotationAccel);
+			m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccel);
 			break;
 		}
 
@@ -123,11 +125,9 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 		{
 		int iFrameMax = Desc.GetFrameCount() * CIntegralRotationDesc::ROTATION_FRACTION;
 
-		m_iRotationFrame += m_iRotationSpeed;
-		if (m_iRotationFrame > 0)
-			m_iRotationFrame = m_iRotationFrame % iFrameMax;
-		else
-			m_iRotationFrame = (m_iRotationFrame % iFrameMax) + iFrameMax;
+		m_iRotationFrame = (m_iRotationFrame + m_iRotationSpeed) % iFrameMax;
+		if (m_iRotationFrame < 0)
+			m_iRotationFrame += iFrameMax;
 		}
 	}
 
@@ -141,13 +141,31 @@ void CIntegralRotation::UpdateAccel (const CIntegralRotationDesc &Desc, Metric r
 	//	If we have no mass, then we just take the default acceleration
 
 	if (rHullMass == 0.0)
+		{
+		m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
 		m_iRotationAccel = Desc.GetRotationAccel();
+		}
 
 	//	Otherwise we compute based on the mass
 
 	else
 		{
-		m_iRotationAccel = Desc.GetRotationAccel();
+		Metric rExtraMass = (rItemMass - rHullMass) * MANEUVER_MASS_FACTOR;
+
+		//	If we don't have too much extra mass, then rotation is not affected.
+
+		if (rExtraMass <= 0.0)
+			{
+			m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
+			m_iRotationAccel = Desc.GetRotationAccel();
+			return;
+			}
+
+		//	Otherwise, we slow down
+
+		Metric rRatio = 1.0f / Min(MAX_INERTIA_RATIO, (1.0f + (rExtraMass / rHullMass)));
+		m_iRotationAccel = (int)mathRound(rRatio * Desc.GetRotationAccel());
+		m_iMaxRotationRate = (int)mathRound(pow(rRatio, 0.3) * Desc.GetMaxRotationSpeed());
 		}
 	}
 
@@ -161,6 +179,6 @@ void CIntegralRotation::WriteToStream (IWriteStream *pStream) const
 	DWORD dwSave = m_iRotationFrame;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
-	dwSave = MAKELONG(m_iRotationSpeed, m_iRotationAccel);
+	dwSave = m_iRotationSpeed;
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

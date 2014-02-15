@@ -1351,6 +1351,7 @@ class CIntegralRotation
 		CIntegralRotation (void) :
 				m_iRotationFrame(0),
 				m_iRotationSpeed(0),
+				m_iMaxRotationRate(0),
 				m_iRotationAccel(0)
 			{ }
 
@@ -1367,8 +1368,10 @@ class CIntegralRotation
 		inline int GetFrameIndex (int iFrame) const { return (iFrame / CIntegralRotationDesc::ROTATION_FRACTION); }
 
 		int m_iRotationFrame;				//	Current rotation (in 1/1000ths of a rotation)
-		int m_iRotationSpeed:16;			//	Current rotation speed (+ clockwise; - counterclockwise; in 1/1000ths)
-		int m_iRotationAccel:16;			//	Current rotation acceleration
+		int m_iRotationSpeed;				//	Current rotation speed (+ clockwise; - counterclockwise; in 1/1000ths)
+
+		int m_iMaxRotationRate;				//	Current max speed
+		int m_iRotationAccel;				//	Current rotation acceleration
 	};
 
 //	IListData ------------------------------------------------------------------
