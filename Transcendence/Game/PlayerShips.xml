@@ -45,8 +45,8 @@
 		
 		<Maneuver
 			rotationCount=		"40"
-			maxRotationRate=	"9"
-			rotationAccel=		"4"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
 			/>
 
 		<Items>

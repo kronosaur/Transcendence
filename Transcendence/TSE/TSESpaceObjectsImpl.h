@@ -895,7 +895,6 @@ class CShip : public CSpaceObject
 		inline int Angle2Direction (int iAngle) const { return m_pClass->Angle2Direction(iAngle); }
 		inline int AlignToRotationAngle (int iAngle) const { return m_pClass->AlignToRotationAngle(iAngle); }
 		inline int GetManeuverability (void) { return m_pClass->GetManeuverability(); }
-		inline int GetManeuverDelay (void) { return m_pClass->GetManeuverDelay(); }
 		inline int GetRotationAngle (void) { return m_pClass->GetRotationAngle(); }
 		inline int GetRotationRange (void) { return m_pClass->GetRotationRange(); }
 		inline EManeuverTypes GetManeuverToFace (int iAngle) const { return m_Rotation.GetManeuverToFace(m_pClass->GetRotationDesc(), iAngle); }

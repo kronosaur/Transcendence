@@ -67,6 +67,7 @@ class CXMLElement : public CObject
 		bool GetAttributeBool (const CString &sName);
 		inline int GetAttributeCount (void) { return m_Attributes.GetCount(); }
 		double GetAttributeDouble (const CString &sName);
+		double GetAttributeDoubleBounded (const CString &sName, double rMin, double rMax = -1.0, double rNull = 0.0);
 		int GetAttributeInteger (const CString &sName);
 		int GetAttributeIntegerBounded (const CString &sName, int iMin, int iMax = -1, int iNull = 0);
 		ALERROR GetAttributeIntegerList (const CString &sName, CIntArray *pList);

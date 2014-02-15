@@ -281,6 +281,40 @@ double CXMLElement::GetAttributeDouble (const CString &sName)
 	return strToDouble(GetAttribute(sName), 0.0);
 	}
 
+double CXMLElement::GetAttributeDoubleBounded (const CString &sName, double rMin, double rMax, double rNull)
+
+//	GetAttributeDoubleBounded
+//
+//	Returns a double, insuring that it is in range
+
+	{
+	CString sValue;
+	if (FindAttribute(sName, &sValue))
+		{
+		bool bFailed;
+		double rValue = strToDouble(sValue, rNull, &bFailed);
+		if (bFailed)
+			return rNull;
+
+		//	The null value is always valid
+
+		if (rValue == rNull)
+			return rValue;
+
+		//	If iMax is less than iMin, then there is no maximum
+
+		else if (rMax < rMin)
+			return Max(rValue, rMin);
+
+		//	Bounded
+
+		else
+			return Max(Min(rValue, rMax), rMin);
+		}
+	else
+		return rNull;
+	}
+
 float CXMLElement::GetAttributeFloat (const CString &sName)
 
 //	GetAttributeFloat

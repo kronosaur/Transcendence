@@ -65,13 +65,13 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 		//	Max rotation rate is in degrees per tick. We need to convert that to
 		//	rotation frames per tick.
 
-		int iDegreesPerTick = pManeuver->GetAttributeIntegerBounded(MAX_ROTATION_RATE_ATTRIB, 1, -1, 360 / STD_ROTATION_COUNT);
-		m_iMaxRotationRate = ROTATION_FRACTION * iDegreesPerTick * m_iCount / 360;
+		Metric rDegreesPerTick = pManeuver->GetAttributeDoubleBounded(MAX_ROTATION_RATE_ATTRIB, 0.01, -1.0, 360.0 / STD_ROTATION_COUNT);
+		m_iMaxRotationRate = Max(1, mathRound(ROTATION_FRACTION * rDegreesPerTick * m_iCount / 360.0));
 
 		//	Also convert rotation acceleration
 
-		int iAccelPerTick = pManeuver->GetAttributeIntegerBounded(ROTATION_ACCEL_ATTRIB, 1, -1, iDegreesPerTick);
-		m_iRotationAccel = ROTATION_FRACTION * iAccelPerTick * m_iCount / 360;
+		Metric rAccelPerTick = pManeuver->GetAttributeDoubleBounded(ROTATION_ACCEL_ATTRIB, 0.01, -1.0, rDegreesPerTick);
+		m_iRotationAccel = Max(1, mathRound(ROTATION_FRACTION * rAccelPerTick * m_iCount / 360.0));
 		}
 
 	//	Otherwise we look for attributes on the root (this is backwards compatible

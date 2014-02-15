@@ -1351,20 +1351,23 @@ class CIntegralRotation
 		CIntegralRotation (void) :
 				m_iRotationFrame(0),
 				m_iRotationSpeed(0),
-				m_iMaxRotationRate(0),
-				m_iRotationAccel(0)
+				m_iMaxRotationRate(CIntegralRotationDesc::ROTATION_FRACTION),
+				m_iRotationAccel(CIntegralRotationDesc::ROTATION_FRACTION)
 			{ }
 
 		inline int GetFrameIndex (void) const { return GetFrameIndex(m_iRotationFrame); }
+		inline Metric GetManeuverRatio (void) const { return (Metric)m_iMaxRotationRate / CIntegralRotationDesc::ROTATION_FRACTION; }
 		EManeuverTypes GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const;
 		int GetRotationAngle (const CIntegralRotationDesc &Desc) const;
-		void ReadFromStream (SLoadCtx &Ctx);
+		void Init (const CIntegralRotationDesc &Desc, int iRotationAngle = 0);
+		void ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDesc &Desc);
 		void SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle);
 		void Update (const CIntegralRotationDesc &Desc, EManeuverTypes iManeuver);
 		void UpdateAccel (const CIntegralRotationDesc &Desc, Metric rHullMass = 0.0, Metric rItemMass = 0.0);
 		void WriteToStream (IWriteStream *pStream) const;
 
 	private:
+		int CalcFinalRotationFrame (const CIntegralRotationDesc &Desc) const;
 		inline int GetFrameIndex (int iFrame) const { return (iFrame / CIntegralRotationDesc::ROTATION_FRACTION); }
 
 		int m_iRotationFrame;				//	Current rotation (in 1/1000ths of a rotation)

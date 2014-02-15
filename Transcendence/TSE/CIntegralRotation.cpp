@@ -8,6 +8,37 @@
 const Metric MANEUVER_MASS_FACTOR =				1.0;
 const Metric MAX_INERTIA_RATIO =				9.0;
 
+int CIntegralRotation::CalcFinalRotationFrame (const CIntegralRotationDesc &Desc) const
+
+//	CalcFinalRotationFrame
+//
+//	Try to figure out what our final rotation frame would be if we stopped
+//	thrusting and turned on inertia only.
+
+	{
+	int iRotationFrame = m_iRotationFrame;
+	int iRotationSpeed = m_iRotationSpeed;
+
+	while (iRotationSpeed > m_iRotationAccel || iRotationSpeed < -m_iRotationAccel)
+		{
+		if (iRotationSpeed > 0)
+			iRotationSpeed = Max(0, iRotationSpeed - m_iRotationAccel);
+		else
+			iRotationSpeed = Min(0, iRotationSpeed + m_iRotationAccel);
+
+		if (iRotationSpeed != 0)
+			{
+			int iFrameMax = Desc.GetFrameCount() * CIntegralRotationDesc::ROTATION_FRACTION;
+
+			iRotationFrame = (iRotationFrame + iRotationSpeed) % iFrameMax;
+			if (iRotationFrame < 0)
+				iRotationFrame += iFrameMax;
+			}
+		}
+
+	return iRotationFrame;
+	}
+
 EManeuverTypes CIntegralRotation::GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const
 
 //	GetManeuverToFace
@@ -16,9 +47,10 @@ EManeuverTypes CIntegralRotation::GetManeuverToFace (const CIntegralRotationDesc
 //	already facing in that (rough) direction).
 
 	{
-	//	Convert to a frame index
+	//	Convert to a frame index. NOTE: We figure out what our rotation would be
+	//	if we stopped thrusting right now.
 
-	int iCurrentFrameIndex = GetFrameIndex();
+	int iCurrentFrameIndex = GetFrameIndex(CalcFinalRotationFrame(Desc));
 	int iDesiredFrameIndex = Desc.GetFrameIndex(iAngle);
 
 	//	See if we need to rotate
@@ -56,7 +88,22 @@ int CIntegralRotation::GetRotationAngle (const CIntegralRotationDesc &Desc) cons
 	return Desc.GetRotationAngle(GetFrameIndex(m_iRotationFrame));
 	}
 
-void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx)
+void CIntegralRotation::Init (const CIntegralRotationDesc &Desc, int iRotationAngle)
+
+//	Init
+//
+//	Initialize
+
+	{
+	//	Defaults
+
+	m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
+	m_iRotationAccel = Desc.GetRotationAccel();
+
+	SetRotationAngle(Desc, iRotationAngle);
+	}
+
+void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDesc &Desc)
 
 //	ReadFromStream
 //
@@ -70,6 +117,11 @@ void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx)
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iRotationSpeed = (int)dwLoad;
+
+	//	Defaults
+
+	m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
+	m_iRotationAccel = Desc.GetRotationAccel();
 	}
 
 void CIntegralRotation::SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle)
@@ -164,8 +216,8 @@ void CIntegralRotation::UpdateAccel (const CIntegralRotationDesc &Desc, Metric r
 		//	Otherwise, we slow down
 
 		Metric rRatio = 1.0f / Min(MAX_INERTIA_RATIO, (1.0f + (rExtraMass / rHullMass)));
-		m_iRotationAccel = (int)mathRound(rRatio * Desc.GetRotationAccel());
-		m_iMaxRotationRate = (int)mathRound(pow(rRatio, 0.3) * Desc.GetMaxRotationSpeed());
+		m_iRotationAccel = Max(1, (int)mathRound(rRatio * Desc.GetRotationAccel()));
+		m_iMaxRotationRate = Max(1, (int)mathRound(pow(rRatio, 0.3) * Desc.GetMaxRotationSpeed()));
 		}
 	}
 

@@ -911,7 +911,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pController->SetShipToControl(pShip);
 	pShip->m_pSovereign = pSovereign;
 	pShip->m_sName = pClass->GenerateShipName(&pShip->m_dwNameFlags);
-	pShip->m_Rotation.SetRotationAngle(pClass->GetRotationDesc(), iRotation);
+	pShip->m_Rotation.Init(pClass->GetRotationDesc(), iRotation);
 	pShip->m_iFireDelay = 0;
 	pShip->m_iMissileFireDelay = 0;
 	pShip->m_iBlindnessTimer = 0;
@@ -4216,11 +4216,11 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	//	Load rotation
 
 	if (Ctx.dwVersion >= 97)
-		m_Rotation.ReadFromStream(Ctx);
+		m_Rotation.ReadFromStream(Ctx, m_pClass->GetRotationDesc());
 	else
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		SetRotation((int)LOWORD(dwLoad));
+		m_Rotation.Init(m_pClass->GetRotationDesc(), (int)LOWORD(dwLoad));
 		}
 
 	//	Load more
@@ -4664,8 +4664,8 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			{
 			//	Stop thrust is proportional to main engine thrust and maneuverability
 
-			Metric rManeuverDelay = Max(2.0, (Metric)GetManeuverDelay());
-			Metric rThrust = GetThrust() / rManeuverDelay;
+			Metric rManeuverAdj = Min((Metric)0.5, m_Rotation.GetManeuverRatio());
+			Metric rThrust = rManeuverAdj * GetThrust();
 
 			AccelerateStop(rThrust, rSecondsPerTick);
 			}
