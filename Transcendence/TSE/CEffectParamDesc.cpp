@@ -46,6 +46,36 @@ WORD CEffectParamDesc::EvalColor (CCreatePainterCtx &Ctx) const
 		}
 	}
 
+int CEffectParamDesc::EvalIdentifier (CCreatePainterCtx &Ctx, LPSTR *pIDMap, int iMax, int iDefault) const
+
+//	EvalIdentifier
+//
+//	Evalues the value as an identifer (either a constant integer or a string,
+//	which is looked up in the ID map).
+
+	{
+	switch (m_iType)
+		{
+		case typeIntegerConstant:
+			return Max(0, Min((int)m_dwData, iMax));
+
+		case typeIntegerDiceRange:
+			return Max(0, Min((int)m_DiceRange.Roll(), iMax));
+
+		case typeStringConstant:
+			{
+			DWORD dwID;
+			if (!FindIdentifier(m_sData, pIDMap, &dwID))
+				return iDefault;
+
+			return (int)dwID;
+			}
+
+		default:
+			return iDefault;
+		}
+	}
+
 int CEffectParamDesc::EvalInteger (CCreatePainterCtx &Ctx) const
 
 //	EvalInteger
@@ -99,6 +129,23 @@ int CEffectParamDesc::EvalIntegerBounded (CCreatePainterCtx &Ctx, int iMin, int 
 		return Max(Min(iValue, iMax), iMin);
 	}
 
+CString CEffectParamDesc::EvalString (CCreatePainterCtx &Ctx) const
+
+//	EvalString
+//
+//	Returns a string
+
+	{
+	switch (m_iType)
+		{
+		case typeStringConstant:
+			return m_sData;
+
+		default:
+			return NULL_STR;
+		}
+	}
+
 ALERROR CEffectParamDesc::InitColorFromXML (SDesignLoadCtx &Ctx, const CString &sValue)
 
 //	InitColorFromXML
@@ -115,6 +162,38 @@ ALERROR CEffectParamDesc::InitColorFromXML (SDesignLoadCtx &Ctx, const CString &
 		}
 
 	return NOERROR;
+	}
+
+bool CEffectParamDesc::FindIdentifier (const CString &sValue, LPSTR *pIDMap, DWORD *retdwID) const
+
+//	FindIdentifier
+//
+//	Finds the identifier in the table
+
+	{
+	//	Loop through the ID table looking for the identifier
+
+	DWORD dwID = 0;
+	LPSTR *pID = pIDMap;
+	while (*pID != NULL)
+		{
+		if ((*pID)[0] != '\0' && strEquals(sValue, CString(*pID, -1, TRUE)))
+			{
+			if (retdwID)
+				*retdwID = dwID;
+
+			return true;
+			}
+
+		//	Next string in the table
+
+		dwID++;
+		pID++;
+		}
+
+	//	Not found
+
+	return false;
 	}
 
 ALERROR CEffectParamDesc::InitIdentifierFromXML (SDesignLoadCtx &Ctx, const CString &sValue, LPSTR *pIDMap)
@@ -136,28 +215,15 @@ ALERROR CEffectParamDesc::InitIdentifierFromXML (SDesignLoadCtx &Ctx, const CStr
 
 	//	Loop through the ID table looking for the identifier
 
-	DWORD dwID = 0;
-	LPSTR *pID = pIDMap;
-	while (*pID != NULL)
+	if (!FindIdentifier(sValue, pIDMap, &m_dwData))
 		{
-		if ((*pID)[0] != '\0' && strEquals(sValue, CString(*pID, -1, TRUE)))
-			{
-			m_iType = typeIntegerConstant;
-			m_dwData = dwID;
-			return NOERROR;
-			}
-
-		//	Next string in the table
-
-		dwID++;
-		pID++;
+		Ctx.sError = strPatternSubst(CONSTLIT("Invalid effect param identifier: %s"), sValue);
+		return ERR_FAIL;
 		}
 
-	//	If we get this far then we didn't find the identifier in the table, 
-	//	which is an error.
+	m_iType = typeIntegerConstant;
 
-	Ctx.sError = strPatternSubst(CONSTLIT("Invalid effect param identifier: %s"), sValue);
-	return ERR_FAIL;
+	return NOERROR;
 	}
 
 ALERROR CEffectParamDesc::InitIntegerFromXML (SDesignLoadCtx &Ctx, const CString &sValue)

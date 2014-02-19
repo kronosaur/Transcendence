@@ -55,8 +55,7 @@
 			mass=				"150"
 			reactorPower=		"1000"
 			cargoSpace=			"10"
-			thrust=				"650"
-			maneuver=			"2"
+			thrustRatio=		"8"
 			maxSpeed=			"20"
 
 			maxDevices=			"2"
@@ -78,6 +77,12 @@
 			<!--<Device deviceID="&itYoroiS500;"/>-->
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"3.0"
+			/>
+
 		<Items>
 			<Item chance="50" count="1d6" item="&itHeliumAssembly;"/>
 			<Item chance="5"  count="1"	  item="&itOpticalKnowledgeArray;"/>
@@ -85,6 +90,10 @@
 
 		<Image imageID="&rsMediumShips3;" imageX="384" imageY="0" imageWidth="96" imageHeight="96"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="20"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"

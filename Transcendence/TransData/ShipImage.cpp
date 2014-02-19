@@ -55,24 +55,57 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	CImageGrid Output;
 	Output.Create(iRotationCount, cxWidth, cyHeight);
 
+	//	Create a rotation structure (to track ship thrusters)
+
+	CIntegralRotation Rotation;
+	Rotation.Init(pClass->GetRotationDesc());
+
+	//	Create an effects structure
+
+	CObjectEffectList Effects;
+	pClass->InitEffects(NULL, &Effects);
+
 	//	Paint
 
-	ViewportTransform Trans;
+	SViewportPaintCtx Ctx;
 	for (i = 0; i < iRotationCount; i++)
 		{
 		int x, y;
 
+		Output.GetCellCenter(i, &x, &y);
+
+		//	Set the ship rotation
+
+		Rotation.SetRotationAngle(pClass->GetRotationDesc(), pClass->GetRotationDesc().GetRotationAngle(i));
+		Ctx.iVariant = Rotation.GetFrameIndex();
+		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetRotationDesc());
+
+		//	Paint thrusters behind ship
+
+		Ctx.bInFront = false;
+		if (bDriveImages)
+			Effects.PaintAll(Ctx, pClass->GetEffectsDesc(), Output.GetImage(), x, y);
+
 		//	Paint the ship
 
-		Output.GetCellCenter(i, &x, &y);
 		pClass->Paint(Output.GetImage(), 
 				x, 
 				y, 
-				Trans, 
+				Ctx.XForm,
 				i, 
 				0,
 				bDriveImages,
 				false);
+
+		//	Paint thrusters in front of ship
+
+		Ctx.bInFront = true;
+		if (bDriveImages)
+			Effects.PaintAll(Ctx, pClass->GetEffectsDesc(), Output.GetImage(), x, y);
+
+		//	Paint the center
+
+		Output.GetImage().DrawDot(x, y, CG16bitImage::RGBValue(0, 255, 255), CG16bitImage::markerMediumCross);
 
 		//	Paint weapon positions
 
@@ -104,6 +137,46 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 						break;
 						}
 					}
+				}
+			}
+
+		//	If requested, paint a polar grid
+
+		if (bGrid)
+			{
+			int iAngle;
+			int iRadius;
+			int iScale = pClass->GetImage().GetImageViewportSize();
+
+			int iMaxRadius = cxWidth / 2;
+			int iRadiusInc = 20;
+			for (iRadius = 0; iRadius <= iMaxRadius; iRadius += 20)
+				{
+				int xLastPos;
+				int yLastPos;
+
+				C3DConversion::CalcCoord(iScale, 0, iRadius, 0, &xLastPos, &yLastPos);
+
+				for (iAngle = 1; iAngle <= 360; iAngle++)
+					{
+					int xPos;
+					int yPos;
+					C3DConversion::CalcCoord(iScale, iAngle, iRadius, 0, &xPos, &yPos);
+
+					Output.GetImage().DrawLine(x + xLastPos, y + yLastPos, x + xPos, y + yPos, 1, CG16bitImage::RGBValue(255, 255, 0));
+
+					xLastPos = xPos;
+					yLastPos = yPos;
+					}
+				}
+
+			for (iAngle = 0; iAngle < 360; iAngle += 18)
+				{
+				int xPos;
+				int yPos;
+				C3DConversion::CalcCoord(iScale, iAngle, iMaxRadius, 0, &xPos, &yPos);
+
+				Output.GetImage().DrawLine(x, y, x + xPos, y + yPos, 1, CG16bitImage::RGBValue(255, 255, 0));
 				}
 			}
 		}

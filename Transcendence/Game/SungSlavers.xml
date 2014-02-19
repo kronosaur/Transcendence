@@ -463,9 +463,8 @@
 
 			attributes=			"genericClass, sungSlavers"
 			   
-			mass=				"50"
+			mass=				"20"
 			thrustRatio=		"14"
-			maneuver=			"1"
 			maxSpeed=			"30"
 			cargoSpace=			"10"
 
@@ -485,15 +484,20 @@
 			<Device deviceID="&itNeutronBlaster;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"4.0"
+			/>
+
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-30" y="-4"/>
-			<NozzlePos x="-30" y="5"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="7"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 		
@@ -515,9 +519,8 @@
 
 			attributes=			"genericClass, sungSlavers"
 			   
-			mass=				"250"
+			mass=				"150"
 			thrustRatio=		"4"
-			maneuver=			"8"
 			maxSpeed=			"15"
 			cargoSpace=			"10"
 
@@ -539,6 +542,12 @@
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item chance="50"	count="2d6"		item="&itHeliumAssembly;"/>
 		</Items>
@@ -546,6 +555,11 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="25"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -571,7 +585,6 @@
 			   
 			mass=				"9500"
 			thrustRatio=		"1"
-			maneuver=			"8"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
 
@@ -595,6 +608,12 @@
 			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -625,6 +644,13 @@
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -657,7 +683,6 @@
 			   
 			mass=				"9500"
 			thrustRatio=		"1"
-			maneuver=			"8"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
 
@@ -681,6 +706,12 @@
 			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
 			<Device deviceID="&itYoroiS100;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -711,6 +742,13 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 		
@@ -846,8 +884,7 @@
 
 			mass=				"4000"
 			cargoSpace=			"200"
-			thrust=				"5000"
-			maneuver=			"3"
+			thrustRatio=		"2.5"
 			maxSpeed=			"18"
 
 			cyberDefenseLevel=	"8"
@@ -877,6 +914,12 @@
 			<Device deviceID="&itDragonShields;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item				  count="2d6"	item="&itPteracniumFuelRod;"/>
 			<Table>
@@ -887,6 +930,11 @@
 		</Items>
 
 		<Image imageID="&rsDragonSlaverImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="90"	posRadius="12"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-90"	posRadius="12"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
 
 		<AISettings
 			fireRateAdj=		"10"
@@ -911,7 +959,6 @@
 					)
 			</OnDestroy>
 		</Events>
-
 	</ShipClass>
 
 	<!-- Sung Transport -->
@@ -923,8 +970,7 @@
 
 			mass=				"8000"
 			cargoSpace=			"5000"
-			thrust=				"1000"
-			maneuver=			"20"
+			thrustRatio=		"0.3"
 			maxSpeed=			"6"
 
 			explosionType=		"&vtBlastExplosion3;"
@@ -945,6 +991,12 @@
 			<Device deviceID="&itYoroiS100;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"2.0"
+			rotationAccel=		"0.2"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -973,6 +1025,11 @@
 		</Interior>
 
 		<Image imageID="&rsLargeShips1;" imageX="1152" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+		</Effects>
 
 		<AISettings
 			fireRateAdj=		"20"

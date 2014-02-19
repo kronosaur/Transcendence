@@ -49,9 +49,8 @@
 
 			attributes=			"battleArena, melee1"
 			   
-			mass=				"50"
+			mass=				"200"
 			thrustRatio=		"4"
-			maneuver=			"12"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
 
@@ -74,17 +73,22 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-13"  y="0"	z="32"/>
-			<NozzlePos x="-13"  y="0"	z="-32"/>
-			<NozzlePos x="-13"  y="22"	z="0"/>
-			<NozzlePos x="-13"  y="-22"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="25"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -112,8 +116,7 @@
 
 			mass=				"100"
 			cargoSpace=			"250"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"2.2"
 			maxSpeed=			"12"
 
 			leavesWreck=		"75"
@@ -147,8 +150,18 @@
 			<Device item="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
@@ -174,8 +187,7 @@
 
 			mass=				"25"
 			cargoSpace=			"5"
-			thrust=				"100"
-			maneuver=			"8"
+			thrustRatio=		"6"
 			maxSpeed=			"13"
 
 			leavesWreck=		"10"
@@ -196,7 +208,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsIAVLight;" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="22"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="21"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="22"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<AISettings
 			aggressor=			"true"
@@ -205,13 +229,6 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-43" y="5"/>
-			<NozzlePos x="-43" y="0"/>
-			<NozzlePos x="-43" y="-5"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>
@@ -229,10 +246,9 @@
 			type=				"gunship"
 			score=				"75"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"50"
-			thrust=				"300"
-			maneuver=			"4"
+			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
 			leavesWreck=		"35"
@@ -257,8 +273,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
@@ -287,8 +314,7 @@
 
 			mass=				"50"
 			cargoSpace=			"50"
-			thrust=				"120"
-			maneuver=			"4"
+			thrustRatio=		"4"
 			maxSpeed=			"20"
 
 			leavesWreck=		"35"
@@ -321,8 +347,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="192" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -349,8 +386,7 @@
 
 			mass=				"100"
 			cargoSpace=			"250"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"2.2"
 			maxSpeed=			"12"
 
 			leavesWreck=		"75"
@@ -384,8 +420,18 @@
 			<Device item="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="29"	posZ="8"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -409,10 +455,9 @@
 			type=				"freighter"
 			score=				"165"
 
-			mass=				"250"
+			mass=				"150"
 			cargoSpace=			"200"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
 			leavesWreck=		"75"
@@ -437,17 +482,30 @@
 			<Device deviceID="&itClass2Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-22" y="-16"	z="0"/>
-			<NozzlePos x="-22" y="16"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="26,27,28,29,30,31,32,33"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="7,8,9,10,11,12,13,14"/>
+			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
+			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
+			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
+			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
+		</Effects>
 
 		<AISettings
 			aggressor=			"true"
@@ -474,8 +532,7 @@
 
 			mass=				"50"
 			cargoSpace=			"10"
-			thrust=				"200"
-			maneuver=			"8"
+			thrustRatio=		"6.5"
 			maxSpeed=			"16"
 
 			leavesWreck=		"30"
@@ -496,8 +553,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsIAVMedium;" imageWidth="64" imageHeight="64"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="30"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="30"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -505,12 +573,6 @@
 			fireAccuracy=		"85"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-50" y="5"/>
-			<NozzlePos x="-50" y="-5"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>0</arenaSkillBase>
@@ -528,8 +590,7 @@
 
 			mass=				"100"
 			cargoSpace=			"10"
-			thrust=				"300"
-			maneuver=			"8"
+			thrustRatio=		"5"
 			maxSpeed=			"16"
 
 			leavesWreck=		"40"
@@ -552,8 +613,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -561,12 +633,6 @@
 			fireAccuracy=		"85"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-53" y="17"/>
-			<NozzlePos x="-53" y="-17"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>0</arenaSkillBase>
@@ -582,10 +648,9 @@
 			type=				"gunship"
 			score=				"165"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"50"
-			thrust=				"300"
-			maneuver=			"4"
+			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
 			leavesWreck=		"35"
@@ -611,8 +676,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -637,8 +713,7 @@
 
 			mass=				"30"
 			cargoSpace=			"50"
-			thrust=				"150"
-			maneuver=			"3"
+			thrustRatio=		"6.6"
 			maxSpeed=			"20"
 
 			leavesWreck=		"30"
@@ -672,6 +747,12 @@
 			</Table>			
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -685,12 +766,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-28" y="-4"/>
-			<NozzlePos x="-28" y="5"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
+		</Effects>
+	
 		<StaticData>
 			<arenaSkillBase>0</arenaSkillBase>
 		</StaticData>
@@ -709,8 +793,7 @@
 
 			mass=				"200"
 			cargoSpace=			"500"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"1.8"
 			maxSpeed=			"16"
 
 			leavesWreck=		"75"
@@ -738,7 +821,18 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsEI200Image;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="42"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="42"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Anton Malik; Ed Somme; Irina Bolstov; Mila Czech; Rene Arms;
@@ -768,8 +862,7 @@
 
 			mass=				"100"
 			cargoSpace=			"10"
-			thrust=				"300"
-			maneuver=			"8"
+			thrustRatio=		"5"
 			maxSpeed=			"16"
 
 			leavesWreck=		"40"
@@ -793,8 +886,19 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsIAVHeavy;" imageWidth="72" imageHeight="72"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="151"	posRadius="31"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-151"	posRadius="31"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<Names noArticle="true" personalName="true">
 			Iron Axe; Death Dealer; Gene Reaper; Jabberwock; Mortal Wound;
 			The Ox; The Undertaker; The Vampyre; The Wyvern; ZeroZero
@@ -806,12 +910,6 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-53" y="17"/>
-			<NozzlePos x="-53" y="-17"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>250</arenaSkillBase>
@@ -827,10 +925,9 @@
 			type=				"gunship"
 			score=				"300"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"50"
-			thrust=				"300"
-			maneuver=			"4"
+			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -864,8 +961,19 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<Names noArticle="true" personalName="true">
 			Brother Benedict; Flavius Maul; Hannibal; Marc Renser; Lawrence Dorr; 
 			Anon Thraces; Perigrine; Vespatian; Gladius Quintus
@@ -894,8 +1002,7 @@
 
 			mass=				"30"
 			cargoSpace=			"50"
-			thrust=				"150"
-			maneuver=			"3"
+			thrustRatio=		"6.6"
 			maxSpeed=			"20"
 
 			leavesWreck=		"30"
@@ -960,6 +1067,12 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -978,12 +1091,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-28" y="-4"/>
-			<NozzlePos x="-28" y="5"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
+		</Effects>
+	
 		<StaticData>
 			<arenaSkillBase>350</arenaSkillBase>
 		</StaticData>
@@ -1000,7 +1116,7 @@
 
 			mass=				"150"
 			cargoSpace=			"50"
-			thrust=				"120"
+			thrustRatio=		"1.0"
 			maneuver=			"3"
 			maxSpeed=			"16"
 
@@ -1038,12 +1154,27 @@
 			<Device item="&itCyclotronDeflectorIII;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="140"	posRadius="26"	posZ="0"	rotation="90"/>
+		</Effects>
+		
 		<Names noArticle="true" personalName="true">
 			Borin Thal; Farah Dawson; Jorgen Nash; Nimmoh Kenyatta; Soren Marx;
 			Crom Cassey; Hathor Said
@@ -1072,10 +1203,9 @@
 			type=				"freighter"
 			score=				"540"
 
-			mass=				"250"
+			mass=				"150"
 			cargoSpace=			"200"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
 			leavesWreck=		"75"
@@ -1114,17 +1244,30 @@
 			<Device deviceID="&itClass3Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-22" y="-16"	z="0"/>
-			<NozzlePos x="-22" y="16"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="26,27,28,29,30,31,32,33"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="7,8,9,10,11,12,13,14"/>
+			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
+			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
+			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
+			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Cara Ogden; Gail Neethan; Kate Janovich; Owen Saul; Tensor Aren;
@@ -1152,10 +1295,9 @@
 			type=				"heavy gunship"
 			score=				"580"
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"2.0"
 			maxSpeed=			"18"
 
 			leavesWreck=		"50"
@@ -1201,11 +1343,26 @@
 			</Device>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Domo; The Journeyman; Roc; Xantic Mage; Typhoon Tom;
@@ -1218,12 +1375,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="10"	z="0"/>
-			<NozzlePos x="-24" y="-10"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>650</arenaSkillBase>
@@ -1239,10 +1390,9 @@
 			type=				"gunship"
 			score=				"380"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"50"
-			thrust=				"300"
-			maneuver=			"4"
+			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -1279,8 +1429,19 @@
 			<Device item="&itMonopoleDeflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<Names noArticle="true" personalName="true">
 			Tycus Armiger; Roland Chu; Eli Stetson; Bill Gibson; Irene Senderos; 
 			Ramon Armiger; Moss Eigen; Septimus Thrace; Titus Antonius
@@ -1309,8 +1470,7 @@
 
 			mass=				"30"
 			cargoSpace=			"50"
-			thrust=				"150"
-			maneuver=			"3"
+			thrustRatio=		"6.6"
 			maxSpeed=			"20"
 
 			leavesWreck=		"30"
@@ -1353,6 +1513,12 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -1371,12 +1537,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-28" y="-4"/>
-			<NozzlePos x="-28" y="5"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
+		</Effects>
+	
 		<StaticData>
 			<arenaSkillBase>550</arenaSkillBase>
 		</StaticData>
@@ -1393,8 +1562,7 @@
 
 			mass=				"20"
 			cargoSpace=			"35"
-			thrust=				"200"
-			maneuver=			"3"
+			thrustRatio=		"13"
 			maxSpeed=			"25"
 
 			leavesWreck=		"20"
@@ -1420,6 +1588,12 @@
 			<Device deviceID="&itCyclotronDeflectorIII;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -1438,12 +1612,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-18" y="-9" z="0"/>
-			<NozzlePos x="-18" y="0"  z="-5"/>
-			<NozzlePos x="-18" y="9"  z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<StaticData>
 			<arenaSkillBase>600</arenaSkillBase>
@@ -1461,10 +1638,9 @@
 			type=				"heavy gunship"
 			score=				"670"
 
-			mass=				"250"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1250"
-			maneuver=			"3"
+			thrustRatio=		"9.0"
 			maxSpeed=			"22"
 
 			leavesWreck=		"50"
@@ -1499,11 +1675,26 @@
 			<Device item="&itCeratopsQuasiArmor1;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
+			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Canis; Goth Antimus; Kolith Maximus; Ord Chamberlain; Tanhauser;
@@ -1516,12 +1707,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="18"	z="0"/>
-			<NozzlePos x="-24" y="-18"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>900</arenaSkillBase>
@@ -1537,10 +1722,9 @@
 			type=				"freighter"
 			score=				"760"
 
-			mass=				"250"
+			mass=				"150"
 			cargoSpace=			"200"
-			thrust=				"200"
-			maneuver=			"6"
+			thrustRatio=		"1.5"
 			maxSpeed=			"18"
 
 			leavesWreck=		"75"
@@ -1576,17 +1760,30 @@
 			<Device deviceID="&itR1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-22" y="-16"	z="0"/>
-			<NozzlePos x="-22" y="16"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="26,27,28,29,30,31,32,33"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="7,8,9,10,11,12,13,14"/>
+			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
+			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
+			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
+			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Darren Kilton; Hilton Wells; Leonardo Morin; Mikhail Petrovich; Victor Grazen;
@@ -1614,10 +1811,9 @@
 			type=				"heavy gunship"
 			score=				"810"
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"2.0"
 			maxSpeed=			"18"
 
 			leavesWreck=		"50"
@@ -1663,11 +1859,26 @@
 			</Device>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			Erin Starton; Kondor; Stormbringer; Ytrix; Xander Mal;
@@ -1680,12 +1891,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="10"	z="0"/>
-			<NozzlePos x="-24" y="-10"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>800</arenaSkillBase>
@@ -1703,8 +1908,7 @@
 
 			mass=				"20"
 			cargoSpace=			"35"
-			thrust=				"200"
-			maneuver=			"3"
+			thrustRatio=		"13"
 			maxSpeed=			"25"
 
 			leavesWreck=		"20"
@@ -1729,6 +1933,12 @@
 			<Device deviceID="&itCyclotronDeflectorIII;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -1747,12 +1957,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-18" y="-9" z="0"/>
-			<NozzlePos x="-18" y="0"  z="-5"/>
-			<NozzlePos x="-18" y="9"  z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<StaticData>
 			<arenaSkillBase>750</arenaSkillBase>
@@ -1770,10 +1983,9 @@
 			type=				"heavy gunship"
 			score=				"950"
 
-			mass=				"250"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1250"
-			maneuver=			"3"
+			thrustRatio=		"9.0"
 			maxSpeed=			"22"
 
 			leavesWreck=		"50"
@@ -1810,11 +2022,26 @@
 			<Device deviceID="&itCeratopsQuasiArmor1;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
+			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">
 			The Dauphin; Hale Thonsen; Lantham; Polaris; Ursus;
@@ -1827,12 +2054,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="18"	z="0"/>
-			<NozzlePos x="-24" y="-18"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>1200</arenaSkillBase>
@@ -1848,10 +2069,9 @@
 			type=				"heavy gunship"
 			score=				"1165"
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"2.0"
 			maxSpeed=			"18"
 
 			leavesWreck=		"50"
@@ -1912,12 +2132,27 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
 		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+		</Effects>
+
 		<Names noArticle="true" personalName="true">
 			Fenris; Luna Mal; Talisman; Dimachaeri; Quartinus;
 			Tannin; Orobas
@@ -1929,12 +2164,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="10"	z="0"/>
-			<NozzlePos x="-24" y="-10"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>1100</arenaSkillBase>
@@ -1952,8 +2181,7 @@
 
 			mass=				"20"
 			cargoSpace=			"35"
-			thrust=				"200"
-			maneuver=			"3"
+			thrustRatio=		"13"
 			maxSpeed=			"25"
 
 			leavesWreck=		"20"
@@ -1985,6 +2213,12 @@
 			<Device deviceID="&itCeratopsQuasiArmor1;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -2003,12 +2237,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="768" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-18" y="-9" z="0"/>
-			<NozzlePos x="-18" y="0"  z="-5"/>
-			<NozzlePos x="-18" y="9"  z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<StaticData>
 			<arenaSkillBase>1000</arenaSkillBase>
@@ -2024,10 +2261,9 @@
 			type=				"heavy gunship"
 			score=				"1485"
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"1000"
-			maneuver=			"3"
+			thrustRatio=		"4.0"
 			maxSpeed=			"22"
 
 			leavesWreck=		"50"
@@ -2078,11 +2314,26 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsManticore;" imageWidth="80" imageHeight="80"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+			<Effect type="rotateRight"		posAngle="46"	posRadius="30"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-142"	posRadius="23"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-46"	posRadius="30"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="142"	posRadius="23"	posZ="0"	rotation="45"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">The Slicer</Names>
 
@@ -2092,12 +2343,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="10"	z="0"/>
-			<NozzlePos x="-24" y="-10"	z="0"/>
-		</DriveImages>
 
 		<StaticData>
 			<arenaSkillBase>1200</arenaSkillBase>

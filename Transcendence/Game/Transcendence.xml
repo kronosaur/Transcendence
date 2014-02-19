@@ -74,6 +74,10 @@
 	<!ENTITY rsMissileStrelka			"0x00000082">
 	<!ENTITY efMissileStrelka			"0x00000083">
 	
+	<!ENTITY efManeuveringThrusterDefault	"0x00000090">
+	<!ENTITY efMainThrusterDefault		"0x00000091">
+	<!ENTITY efMainThrusterLarge		"0x00000092">
+	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
 	<!ENTITY svIndependent				"0x00001003">

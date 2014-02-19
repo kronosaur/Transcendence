@@ -26,8 +26,7 @@
 
 			mass=				"25"
 			cargoSpace=			"5"
-			thrust=				"100"
-			maneuver=			"4"
+			thrustRatio=		"6.5"
 			maxSpeed=			"19"
 
 			leavesWreck=		"20"
@@ -44,13 +43,18 @@
 			<Device deviceID="&itDwargXiphonCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="864" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-23" y="0"	bringToFront="*"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="4"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<Events>
 			<OnObjDestroyed>
 				(intZoanthropeOnObjDestroyed)
@@ -80,8 +84,7 @@
 
 			mass=				"100"
 			cargoSpace=			"25"
-			thrust=				"300"
-			maneuver=			"5"
+			thrustRatio=		"5"
 			maxSpeed=			"22"
 
 			leavesWreck=		"50"
@@ -101,6 +104,12 @@
 			<Device deviceID="&itDwargXiphonCannon;" secondaryWeapon="true" omnidirectional="true"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"7.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="4d20" item="&itDwargCnidocystNodule;"/>
 			<Item count="5d6" item="&itHeliumAssembly;"/>
@@ -108,6 +117,10 @@
 
 		<Image imageID="&rsMediumShips3;" imageX="672" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="43"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			combatStyle=		"standOff"
@@ -115,11 +128,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-44" y="0" z="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -132,8 +140,7 @@
 
 			mass=				"12500"
 			cargoSpace=			"100"
-			thrust=				"1200"
-			maneuver=			"8"
+			thrustRatio=		"0.2"
 			maxSpeed=			"12"
 
 			explosionType=		"&vtBlastExplosion4;"
@@ -163,6 +170,12 @@
 			<Device deviceID="&itDwargXiphonCannon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="270" posRadius="30"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item				  count="2d6"	item="&itXenotiteFuelRod;"/>
 			<Table>
@@ -174,6 +187,16 @@
 
 		<Image imageID="&rsMediumShips4;" imageX="896" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="57"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="57"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="172"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-172"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="57"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="57"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+			
 		<Events>
 			<OnObjDestroyed>
 				(intZoanthropeOnObjDestroyed)

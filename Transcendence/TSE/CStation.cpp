@@ -2315,7 +2315,14 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
 				if (yObj < y)
+					{
+					CSpaceObject *pOldObj = Ctx.pObj;
+					Ctx.pObj = pObj;
+
 					pObj->Paint(Dest, xObj, yObj, Ctx);
+
+					Ctx.pObj = pOldObj;
+					}
 				}
 			}
 		}
@@ -2369,7 +2376,14 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
 				if (yObj >= y)
+					{
+					CSpaceObject *pOldObj = Ctx.pObj;
+					Ctx.pObj = pObj;
+
 					pObj->Paint(Dest, xObj, yObj, Ctx);
+
+					Ctx.pObj = pOldObj;
+					}
 				}
 			}
 		}

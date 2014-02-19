@@ -308,6 +308,9 @@
 //	97: 1.3
 //		m_Rotation in CShip
 //
+//	98: 1.3
+//		m_bUseObjectCenter in CParticleCloudPainter
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

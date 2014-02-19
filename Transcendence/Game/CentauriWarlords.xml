@@ -182,8 +182,7 @@
 
 			mass=				"100"
 			cargoSpace=			"10"
-			thrust=				"100"
-			maneuver=			"8"
+			thrustRatio=		"1.8"
 			maxSpeed=			"13"
 
 			leavesWreck=		"100"
@@ -218,6 +217,12 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item chance="60"	count="2d6" item="&itHelium3FuelRod;"/>
 			<Table>
@@ -232,6 +237,11 @@
 
 		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
 		<Names noArticle="true" personalName="true">Arco Vaughn</Names>
 
 		<AISettings
@@ -240,12 +250,6 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-40" y="12"/>
-			<NozzlePos x="-40" y="-12"/>
-		</DriveImages>
 
 		<StaticData>
 			<msgTableGoHome>
@@ -506,10 +510,9 @@
 			class=				""
 			type=				"heavy raider"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"10"
-			thrust=				"100"
-			maneuver=			"8"
+			thrustRatio=		"1.8"
 			maxSpeed=			"13"
 
 			leavesWreck=		"50"
@@ -529,19 +532,24 @@
 			</Table>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"80"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-40" y="12"/>
-			<NozzlePos x="-40" y="-12"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -552,10 +560,9 @@
 			class=				""
 			type=				"raider"
 
-			mass=				"45"
+			mass=				"25"
 			cargoSpace=			"5"
-			thrust=				"100"
-			maneuver=			"8"
+			thrustRatio=		"4.0"
 			maxSpeed=			"13"
 
 			leavesWreck=		"20"
@@ -572,19 +579,24 @@
 			<Device deviceID="&itCentauriRecoilless;" enhanced="10"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsCentauriRaiderImage;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<AISettings
 			fireRateAdj=		"40"
 			fireAccuracy=		"80"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-38" y="12"/>
-			<NozzlePos x="-38" y="-12"/>
-		</DriveImages>
 
 	</ShipClass>
 	

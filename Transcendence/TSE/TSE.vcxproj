@@ -210,6 +210,8 @@
     <ClCompile Include="CMoveCtx.cpp" />
     <ClCompile Include="CMultiverseNews.cpp" />
     <ClCompile Include="CMultiverseNewsEntry.cpp" />
+    <ClCompile Include="CObjectEffectDesc.cpp" />
+    <ClCompile Include="CObjectEffectList.cpp" />
     <ClCompile Include="CObjectStats.cpp" />
     <ClCompile Include="CObjectTracker.cpp" />
     <ClCompile Include="COrderList.cpp" />

@@ -60,7 +60,6 @@
 			   
 			mass=				"5000"
 			thrustRatio=		"1"
-			maneuver=			"12"
 			maxSpeed=			"10"
 			cargoSpace=			"500"
 
@@ -84,6 +83,12 @@
 			<Device deviceID="&itUrakMassDriverAdvanced;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="330" posRadius="16" posZ="30"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -113,6 +118,11 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsMediumShips4;" imageX="768" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="20"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="20"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 		

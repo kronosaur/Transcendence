@@ -16,8 +16,7 @@
 
 			mass=				"8000"
 			cargoSpace=			"5600"
-			thrust=				"3000"
-			maneuver=			"9"
+			thrustRatio=		"0.8"
 			maxSpeed=			"15"
 
 			explosionType=		"&vtBlastExplosion2;"
@@ -46,7 +45,19 @@
 			<Device deviceID="&itR5Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Image imageID="&rsMediumShips3;" imageX="768" imageY="0" imageWidth="96" imageHeight="96" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-157"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<Items>
 			<Item count="3d12" item="&itStaticMine;"/>

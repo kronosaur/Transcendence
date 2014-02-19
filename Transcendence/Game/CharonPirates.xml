@@ -49,10 +49,9 @@
 			class=				"Corsair"
 			type=				"gunship"
 
-			mass=				"45"
+			mass=				"25"
 			cargoSpace=			"5"
-			thrust=				"250"
-			maneuver=			"4"
+			thrustRatio=		"10"
 			maxSpeed=			"25"
 
 			leavesWreck=		"20"
@@ -69,20 +68,25 @@
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="10"	posZ="10"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"40"
 			fireRangeAdj=		"30"
 			fireAccuracy=		"75"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-30" y="-7"/>
-			<NozzlePos x="-30" y="7"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -96,7 +100,7 @@
 
 			attributes=			"charonPirates, genericClass"
 			   
-			mass=				"45"
+			mass=				"25"
 			thrustRatio=		"10"
 			maneuver=			"4"
 			maxSpeed=			"25"
@@ -118,6 +122,12 @@
 			<Device deviceID="&itAClassDefenseScreen;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itKM100Missile;"/>
 		</Items>
@@ -126,12 +136,11 @@
 		
 		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-30" y="-7"/>
-			<NozzlePos x="-30" y="7"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="10"	posZ="10"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -156,7 +165,6 @@
 			   
 			mass=				"1000"
 			thrustRatio=		"1"
-			maneuver=			"10"
 			maxSpeed=			"12"
 			cargoSpace=			"5"
 
@@ -176,6 +184,12 @@
 			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="20"  maxFireArc="160" posAngle="60"  posRadius="30"/>
 			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="200" maxFireArc="340" posAngle="300" posRadius="30"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -205,6 +219,11 @@
 
 		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -228,9 +247,8 @@
 
 			attributes=			"charonPirates, genericClass"
 			   
-			mass=				"150"
+			mass=				"80"
 			thrustRatio=		"4"
-			maneuver=			"5"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
 
@@ -248,6 +266,12 @@
 			<Device deviceID="&itTurbolaserCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"7.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -256,6 +280,11 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -278,9 +307,8 @@
 
 			attributes=			"charonPirates, genericClass"
 			   
-			mass=				"150"
+			mass=				"80"
 			thrustRatio=		"4"
-			maneuver=			"5"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
 
@@ -299,6 +327,12 @@
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"7.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -307,6 +341,11 @@
 		
 		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -382,7 +421,6 @@
 			mass=				"1000"
 			cargoSpace=			"1000"
 			thrustRatio=		"2"
-			maneuver=			"10"
 			maxSpeed=			"18"
 
 			explosionType=		"&vtKineticExplosion4;"
@@ -416,6 +454,12 @@
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.25"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"100"
@@ -444,6 +488,12 @@
 
 		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -848,7 +898,6 @@
 			mass=				"1000"
 			cargoSpace=			"1000"
 			thrustRatio=		"2"
-			maneuver=			"10"
 			maxSpeed=			"18"
 
 			explosionType=		"&vtKineticExplosion4;"
@@ -871,6 +920,12 @@
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.25"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -897,6 +952,12 @@
 
 		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings

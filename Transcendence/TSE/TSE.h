@@ -2224,12 +2224,7 @@ class CSpaceObject : public CObject
 		void NotifyOnObjDocked (CSpaceObject *pDockTarget);
 		inline bool NotifyOthersWhenDestroyed (void) { return (m_fNoObjectDestructionNotify ? false : true); }
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
-		inline void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) 
-			{
-			PaintDebugVector(Dest, x, y, Ctx);
-			OnPaint(Dest, x, y, Ctx);
-			ClearPaintNeeded();
-			}
+		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor);
 		inline void PaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { OnPaintSRSEnhancements(Dest, Ctx); }
 		inline void Place (const CVector &vPos, const CVector &vVel = NullVector) { m_vPos = vPos; m_vOldPos = vPos; m_vVel = vVel; }
@@ -2264,6 +2259,7 @@ class CSpaceObject : public CObject
 		inline void SetObjRefData (const CString &sAttrib, CSpaceObject *pObj) { m_Data.SetObjRefData(sAttrib, pObj); }
 		inline void SetOutOfPlaneObj (bool bValue = true) { m_fOutOfPlaneObj = bValue; }
 		void SetOverride (CDesignType *pOverride);
+		inline void SetPainted (void) { m_fPainted = true; }
 		inline void SetPaintNeeded (void) { m_fPaintNeeded = true; }
 		inline void SetPlayerDestination (void) { m_fPlayerDestination = true; }
 		inline void SetPlayerDocked (void) { m_fPlayerDocked = true; }
@@ -2286,6 +2282,7 @@ class CSpaceObject : public CObject
 		void Update (SUpdateCtx &Ctx);
 		inline void UpdateExtended (const CTimeSpan &ExtraTime) { OnUpdateExtended(ExtraTime); }
 		inline void UpdatePlayer (SUpdateCtx &Ctx) { OnUpdatePlayer(Ctx); }
+		inline bool WasPainted (void) const { return m_fPainted; }
 		void WriteToStream (IWriteStream *pStream);
 		inline void WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream) { GetSystem()->WriteObjRefToStream(pObj, pStream, this); }
 
@@ -2587,6 +2584,7 @@ class CSpaceObject : public CObject
 		inline void ClearInDamageCode (void) { m_fInDamage = false; }
 		inline void ClearInUpdateCode (void) { m_pObjInUpdate = NULL; m_bObjDestroyed = false; }
 		inline void ClearObjReferences (void) { m_Data.OnSystemChanged(NULL); }
+		inline void ClearPainted (void) { m_fPainted = false; }
 		inline void DisableObjectDestructionNotify (void) { m_fNoObjectDestructionNotify = true; }
 		inline const Metric &GetBounds (void) { return m_rBoundsX; }
 		CSpaceObject *HitTest (const CVector &vStart, Metric rThreshold, const DamageDesc &Damage, CVector *retvHitPos, int *retiHitDir);
@@ -2697,6 +2695,17 @@ class CSpaceObject : public CObject
 		DWORD m_fMarked:1;						//	Temporary marker for processing lists (not persistent)
 		DWORD m_fAscended:1;					//	TRUE if object is ascended (i.e., stored outside a system)
 		DWORD m_fOutOfPlaneObj:1;				//	TRUE if object is out of plane
+
+		DWORD m_fPainted:1;						//	TRUE if we painted the object last tick
+		DWORD m_fSpare2:1;
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
 
 #ifdef DEBUG_VECTOR
 		CVector m_vDebugVector;			//	Draw a vector

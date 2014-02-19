@@ -115,6 +115,8 @@ const DWORD UNID_DAMAGED_SITE_SMALL =		0x00000050;	//	ovDamagedSiteSmall
 const DWORD UNID_DAMAGED_SITE_MEDIUM =		0x00000051;	//	ovDamagedSiteMedium
 const DWORD UNID_DAMAGED_SITE_LARGE =		0x00000052;	//	ovDamagedSiteSmall
 const DWORD UNID_DEPREZ_SITE_SMALL =		0x00000053;	//	ovDeprezSiteSmall
+const DWORD UNID_MANEUVERING_THRUSTER =		0x00000090;	//	efManeuveringThrusterDefault
+const DWORD UNID_MAIN_THRUSTER =			0x00000091;	//	efMainThrusterDefault
 
 const DWORD g_PlayerSovereignUNID =			0x00001001;	//	svPlayer
 const DWORD g_PirateSovereignUNID =			0x00001005;	//	svPirates

@@ -60,8 +60,7 @@
 			   
 			mass=				"50000"
 			cargoSpace=			"5000"
-			thrust=				"10000"
-			maneuver=			"24"
+			thrustRatio=		"0.5"
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
@@ -90,6 +89,12 @@
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"1"
+			rotationAccel=		"0.1"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"600"
@@ -113,6 +118,12 @@
 
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+			
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"
@@ -740,8 +751,7 @@
 			   
 			mass=				"50000"
 			cargoSpace=			"5000"
-			thrust=				"10000"
-			maneuver=			"24"
+			thrust=				"0.5"
 			maxSpeed=			"2"
 			cyberDefenseLevel=	"6"
 			   
@@ -770,6 +780,12 @@
 			<Device deviceID="&vtDamageControlParty;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"1"
+			rotationAccel=		"0.1"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"600"
@@ -793,6 +809,12 @@
 
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="74"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="75"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+			
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"95"

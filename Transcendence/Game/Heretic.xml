@@ -632,8 +632,7 @@
 
 			mass=				"5000"
 			cargoSpace=			"1500"
-			thrust=				"2000"
-			maneuver=			"8"
+			thrustRatio=		"0.8"
 			maxSpeed=			"12"
 
 			explosionType=		"&vtThermoExplosion2;"
@@ -645,34 +644,11 @@
 			dockScreen=			"Main"
 			>
 
-		<Armor>
-			<ArmorSection start="345" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="330" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="315" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="300" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="285" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="270" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="255" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="240" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="225" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="210" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="195" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="180" span="15" armorID="&itQuadroCarbideArmor;" />
-
-			<ArmorSection start="165" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="150" span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="135" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="120" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="105" span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="90"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="75"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="60"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="45"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="30"  span="15" armorID="&itQuadroCarbideArmor;" nonCritical="general"/>
-			<ArmorSection start="15"  span="15" armorID="&itQuadroCarbideArmor;" />
-			<ArmorSection start="0"   span="15" armorID="&itQuadroCarbideArmor;" />
-		</Armor>
-
+		<Armor
+			armorID=			"&itQuadroCarbideArmor;"
+			count=				"24"
+			/>
+		
 		<Devices>
 			<Device deviceID="&itMammoth100Deflector;"/>
 
@@ -680,12 +656,23 @@
 			<Device deviceID="&itPositronLancer;" minFireArc="185" maxFireArc="330" posAngle="270" posRadius="5"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item count="1" item="&itHereticResearchROM;"/>
 		</Items>
 
 		<Image imageID="&rsCorporateExplorer;" imageWidth="192" imageHeight="192" />
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<Names definiteArticle="true">Huygens Explorer</Names>
 
 		<Events>
@@ -796,8 +783,7 @@
 
 			mass=				"8000"
 			cargoSpace=			"1000"
-			thrust=				"5000"
-			maneuver=			"12"
+			thrustRatio=		"1.2"
 			maxSpeed=			"10"
 
 			cyberDefenseLevel=	"8"
@@ -844,12 +830,23 @@
 			<Device deviceID="&itPlasmaShieldGenerator;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3"
+			rotationAccel=		"0.5"
+			/>
+		
 		<Items>
 			<Item count="2d12" item="&itPteracniumFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsCorporateExplorer;" imageWidth="192" imageHeight="192" />
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="88"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<Names definiteArticle="true">Svalbard Explorer</Names>
 
 		<AISettings

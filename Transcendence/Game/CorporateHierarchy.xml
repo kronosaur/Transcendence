@@ -69,7 +69,6 @@
 			size=				"275"
 			mass=				"8000"
 			thrustRatio=		"2"
-			maneuver=			"12"
 			maxSpeed=			"20"
 			cargoSpace=			"1000"
 
@@ -91,6 +90,12 @@
 			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
 			<Device deviceID="&itPlasmaShieldGenerator;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -117,6 +122,10 @@
 
 		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 		
 		<AISettings

@@ -710,7 +710,6 @@
 			   
 			mass=				"210"
 			thrustRatio=		"5"
-			maneuver=			"2"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
 
@@ -729,6 +728,12 @@
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itPteracniumFuelRod;"/>
 		</Items>
@@ -737,12 +742,11 @@
 
 		<Image imageID="&rsMediumShips2;" imageX="1024" imageY="0" imageWidth="64" imageHeight="64" rotationOffset="-8"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-38" y="-3"/>
-			<NozzlePos x="-38" y="0"/>
-			<NozzlePos x="-38" y="3"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="16"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="16"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -788,6 +792,12 @@
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"300"
@@ -814,6 +824,13 @@
 		
 		<Image imageID="&rsMediumShips3;" imageX="576" imageY="0" imageWidth="96" imageHeight="96"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="-5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="172"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-172"	posRadius="43"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		 
 		<!-- AI and Behavior -->
 		
 		<AISettings
@@ -838,7 +855,6 @@
 			   
 			mass=				"8000"
 			thrustRatio=		"2"
-			maneuver=			"6"
 			maxSpeed=			"16"
 			cargoSpace=			"1000"
 
@@ -859,6 +875,12 @@
 			<Device deviceID="&itCydonianHeavyShields;"/>
 			<Device deviceID="&it250MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"6"
+			rotationAccel=		"1"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -884,6 +906,11 @@
 		
 		<Image imageID="&rsMediumShips4;" imageX="1024" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="45"	posRadius="38"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-45"	posRadius="38"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -905,8 +932,7 @@
 
 			mass=				"8000"
 			cargoSpace=			"5000"
-			thrust=				"1000"
-			maneuver=			"20"
+			thrustRatio=		"0.3"
 			maxSpeed=			"8"
 
 			explosionType=		"&vtBlastExplosion4;"
@@ -925,6 +951,12 @@
 		<Devices>
 			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"2"
+			rotationAccel=		"0.2"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -954,6 +986,12 @@
 
 		<Image imageID="&rsLargeShips1;" imageX="768" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"30"
 			fireAccuracy=		"95"
@@ -973,8 +1011,7 @@
 
 			mass=				"8000"
 			cargoSpace=			"5000"
-			thrust=				"1000"
-			maneuver=			"20"
+			thrustRatio=		"0.3"
 			maxSpeed=			"8"
 
 			explosionType=		"&vtBlastExplosion4;"
@@ -995,6 +1032,12 @@
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"2"
+			rotationAccel=		"0.2"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"60"
@@ -1023,6 +1066,12 @@
 
 		<Image imageID="&rsLargeShips1;" imageX="768" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="78"	posZ="-2"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"30"
 			fireAccuracy=		"95"
@@ -1042,9 +1091,8 @@
 
 			attributes=			"ares,genericClass"
 			   
-			mass=				"75"
+			mass=				"60"
 			thrustRatio=		"8"
-			maneuver=			"2"
 			maxSpeed=			"20"
 			cargoSpace=			"25"
 
@@ -1062,6 +1110,12 @@
 			<Device deviceID="&itLightningCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"4.0"
+			/>
+
 		<Items>
 		</Items>
 
@@ -1069,12 +1123,15 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="144" imageY="0" imageWidth="48" imageHeight="48"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-30" y="-3"/>
-			<NozzlePos x="-30" y="0"/>
-			<NozzlePos x="-30" y="3"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="150"	posRadius="8"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-150"	posRadius="8"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="115"	posRadius="19"	posZ="-3"	rotation="0"		sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-140"	posRadius="24"	posZ="-3"	rotation="180"		sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="-115"	posRadius="19"	posZ="-3"	rotation="0"		sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="140"	posRadius="24"	posZ="-3"	rotation="180"		sendToBack="*"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -1097,9 +1154,8 @@
 
 			attributes=			"ares,genericClass"
 			   
-			mass=				"130"
+			mass=				"80"
 			thrustRatio=		"6"
-			maneuver=			"2"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
 
@@ -1119,6 +1175,12 @@
 			<Device deviceID="&itCydonianShields;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="3d20" item="&itMicronuke;"/>
 		</Items>
@@ -1127,12 +1189,11 @@
 		
 		<Image imageID="&rsMediumShips2;" imageX="576" imageY="0" imageWidth="64" imageHeight="64"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-20" y="-3"/>
-			<NozzlePos x="-20" y="0"/>
-			<NozzlePos x="-20" y="3"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="40"	posRadius="8"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="0"	posRadius="6"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-40"	posRadius="8"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -1158,7 +1219,6 @@
 			   
 			mass=				"15000"
 			thrustRatio=		"1"
-			maneuver=			"10"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"
 
@@ -1181,6 +1241,12 @@
 			<Device deviceID="&itLightningTurret;" secondaryWeapon="true" posAngle="330" posRadius="50" posZ="0"/>
 			<Device deviceID="&itKaidunShields;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3.6"
+			rotationAccel=		"0.7"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -1205,6 +1271,15 @@
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsLargeShips2;" imageX="256" imageY="0" imageWidth="256" imageHeight="256"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="118"	posZ="-30"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="118"	posZ="-15"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="118"	posZ="-15"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="118"	posZ="15"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="118"	posZ="15"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="118"	posZ="30"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 

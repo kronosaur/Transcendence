@@ -11,9 +11,8 @@
 
 			attributes=			"genericClass, outlawMiners"
 			   
-			mass=				"50"
+			mass=				"200"
 			thrustRatio=		"4"
-			maneuver=			"12"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
 
@@ -31,17 +30,22 @@
 			<Device deviceID="&itMiningLaser;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-13"  y="0"	z="32"/>
-			<NozzlePos x="-13"  y="0"	z="-32"/>
-			<NozzlePos x="-13"  y="22"	z="0"/>
-			<NozzlePos x="-13"  y="-22"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="25"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 		
@@ -84,8 +88,8 @@
 
 			attributes=			"genericClass, outlawMiners"
 			   
-			mass=				"50"
-			thrustRatio=		"4"
+			mass=				"200"
+			thrustRatio=		"6"
 			maneuver=			"8"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
@@ -105,6 +109,12 @@
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.8"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -113,13 +123,12 @@
 		
 		<Image imageID="&rsBorer;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-13"  y="0"	z="32"/>
-			<NozzlePos x="-13"  y="0"	z="-32"/>
-			<NozzlePos x="-13"  y="22"	z="0"/>
-			<NozzlePos x="-13"  y="-22"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-122"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="14"	posZ="25"	rotation="180"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 		
@@ -167,8 +176,7 @@
 
 			mass=				"30"
 			cargoSpace=			"10"
-			thrust=				"120"
-			maneuver=			"2"
+			thrustRatio=		"7"
 			maxSpeed=			"17"
 
 			leavesWreck=		"20"
@@ -186,8 +194,18 @@
 			<Device deviceID="&itAClassDefenseScreen;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsSmallShips1;" imageX="32" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"50"
 			fireRangeAdj=		"50"
@@ -196,11 +214,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-36" y="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -213,8 +226,7 @@
 
 			mass=				"30"
 			cargoSpace=			"10"
-			thrust=				"200"
-			maneuver=			"2"
+			thrustRatio=		"10"
 			maxSpeed=			"16"
 
 			leavesWreck=		"25"
@@ -232,8 +244,19 @@
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsSmallShips1;" imageX="64" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="167"	posRadius="15"	posZ="3"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-167"	posRadius="15"	posZ="3"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"30"
 			fireRangeAdj=		"50"
@@ -242,12 +265,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-36" y="-2"/>
-			<NozzlePos x="-36" y="2"/>
-		</DriveImages>
 
 	</ShipClass>
 	

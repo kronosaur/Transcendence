@@ -49,6 +49,9 @@ class CRayEffectPainter : public IEffectPainter
 			shapeOval =				2,
 			shapeStraight =			3,
 			shapeTapered =			4,
+			shapeCone =				5,
+
+			shapeMax =				5,
 			};
 
 		enum ERayStyles
@@ -59,11 +62,14 @@ class CRayEffectPainter : public IEffectPainter
 			styleGlow =				2,
 			styleJagged =			3,
 			styleGrainy =			4,
+
+			styleMax =				4,
 			};
 
 		typedef TArray<BYTE> OpacityArray;
 		typedef TArray<WORD> ColorArray;
 
+		void CalcCone (TArray<Metric> &AdjArray);
 		void CalcDiamond (TArray<Metric> &AdjArray);
 		void CalcIntermediates (void);
 		void CalcOval (TArray<Metric> &AdjArray);
@@ -131,6 +137,7 @@ static LPSTR SHAPE_TABLE[] =
 		"oval",
 		"straight",
 		"tapered",
+		"cone",
 
 		NULL
 	};
@@ -298,6 +305,22 @@ CRayEffectPainter::~CRayEffectPainter (void)
 	{
 	}
 
+void CRayEffectPainter::CalcCone (TArray<Metric> &AdjArray)
+
+//	CalcCone
+//
+//	Fills in the given array with cone widths.
+
+	{
+	int i;
+
+	int iEndPoint = AdjArray.GetCount();
+	Metric rXInc = (iEndPoint > 0 ? (1.0 / (Metric)iEndPoint) : 0.0);
+	Metric rX = 0.0;
+	for (i = 0; i < iEndPoint; i++, rX += rXInc)
+		AdjArray[i] = rX;
+	}
+
 void CRayEffectPainter::CalcDiamond (TArray<Metric> &AdjArray)
 
 //	CalcDiamond
@@ -355,6 +378,7 @@ void CRayEffectPainter::CalcIntermediates (void)
 			widthAdjJagged,
 			widthAdjOval,
 			widthAdjTapered,
+			widthAdjCone,
 			};
 
 		EColorTypes iColorTypes = colorNone;
@@ -370,6 +394,38 @@ void CRayEffectPainter::CalcIntermediates (void)
 
 		switch (m_iShape)
 			{
+			case shapeCone:
+				switch (m_iStyle)
+					{
+					case styleBlob:
+						iColorTypes = colorGlow;
+						iOpacityTypes = opacityTaperedGlow;
+						iWidthAdjType = widthAdjBlob;
+						iReshape = widthAdjCone;
+						break;
+
+					case styleGlow:
+						iColorTypes = colorGlow;
+						iOpacityTypes = opacityTaperedGlow;
+						iWidthAdjType = widthAdjCone;
+						break;
+
+					case styleGrainy:
+						iColorTypes = colorGlow;
+						iOpacityTypes = opacityTaperedGlow;
+						iWidthAdjType = widthAdjCone;
+						iTexture = opacityGrainy;
+						break;
+
+					case styleJagged:
+						iColorTypes = colorGlow;
+						iOpacityTypes = opacityTaperedGlow;
+						iWidthAdjType = widthAdjJagged;
+						iReshape = widthAdjCone;
+						break;
+					}
+				break;
+
 			case shapeDiamond:
 				switch (m_iStyle)
 					{
@@ -614,6 +670,16 @@ void CRayEffectPainter::CalcIntermediates (void)
 				break;
 				}
 
+			case widthAdjCone:
+				{
+				m_WidthAdjTop.InsertEmpty(m_iLengthCount);
+
+				CalcCone(m_WidthAdjTop);
+				m_WidthAdjBottom = m_WidthAdjTop;
+
+				break;
+				}
+
 			case widthAdjDiamond:
 				{
 				m_WidthAdjTop.InsertEmpty(m_iLengthCount);
@@ -662,6 +728,20 @@ void CRayEffectPainter::CalcIntermediates (void)
 
 		switch (iReshape)
 			{
+			case widthAdjCone:
+				{
+				TArray<Metric> TaperAdj;
+				TaperAdj.InsertEmpty(m_iLengthCount);
+				CalcCone(TaperAdj);
+
+				for (i = 0; i < m_iLengthCount; i++)
+					{
+					m_WidthAdjTop[i] *= TaperAdj[i];
+					m_WidthAdjBottom[i] *= TaperAdj[i];
+					}
+				break;
+				}
+
 			case widthAdjDiamond:
 				{
 				TArray<Metric> TaperAdj;
@@ -1180,10 +1260,10 @@ void CRayEffectPainter::SetParam (CCreatePainterCtx &Ctx, const CString &sParam,
 		m_wSecondaryColor = Value.EvalColor(Ctx);
 	
 	else if (strEquals(sParam, SHAPE_ATTRIB))
-		m_iShape = (ERayShapes)Value.EvalIntegerBounded(Ctx, 0, -1, shapeStraight);
+		m_iShape = (ERayShapes)Value.EvalIdentifier(Ctx, SHAPE_TABLE, shapeMax, shapeStraight);
 
 	else if (strEquals(sParam, STYLE_ATTRIB))
-		m_iStyle = (ERayStyles)Value.EvalIntegerBounded(Ctx, 0, -1, styleGlow);
+		m_iStyle = (ERayStyles)Value.EvalIdentifier(Ctx, STYLE_TABLE, styleMax, styleGlow);
 
 	else if (strEquals(sParam, WIDTH_ATTRIB))
 		m_iWidth = Value.EvalIntegerBounded(Ctx, 1, -1, 10);

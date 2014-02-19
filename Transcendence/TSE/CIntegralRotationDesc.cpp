@@ -6,11 +6,31 @@
 #include "PreComp.h"
 
 #define MANEUVER_TAG							CONSTLIT("Maneuver")
+#define THRUSTER_TAG							CONSTLIT("Thruster")
+#define THRUST_EFFECT_TAG						CONSTLIT("ThrustEffect")
 
 #define MANEUVER_ATTRIB							CONSTLIT("maneuver")
 #define MAX_ROTATION_RATE_ATTRIB				CONSTLIT("maxRotationRate")
+#define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
+#define POS_RADIUS_ATTRIB						CONSTLIT("posRadius")
+#define POS_Z_ATTRIB							CONSTLIT("posZ")
+#define ROTATION_ATTRIB							CONSTLIT("rotation")
 #define ROTATION_ACCEL_ATTRIB					CONSTLIT("rotationAccel")
 #define ROTATION_COUNT_ATTRIB					CONSTLIT("rotationCount")
+#define THRUST_EFFECT_ATTRIB					CONSTLIT("thrustEffect")
+
+#define ROTATE_LEFT_MANEUVER					CONSTLIT("rotateLeft")
+#define ROTATE_RIGHT_MANEUVER					CONSTLIT("rotateRight")
+
+ALERROR CIntegralRotationDesc::Bind (SDesignLoadCtx &Ctx)
+
+//	Bind
+//
+//	Bind the design
+
+	{
+	return NOERROR;
+	}
 
 int CIntegralRotationDesc::GetFrameIndex (int iAngle) const
 
@@ -46,7 +66,27 @@ int CIntegralRotationDesc::GetManeuverability (void) const
 	return (m_iMaxRotationRate > 0 ? (int)(ROTATION_FRACTION * STD_SECONDS_PER_UPDATE / m_iMaxRotationRate) : 0);
 	}
 
-ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+Metric CIntegralRotationDesc::GetMaxRotationSpeedPerTick (void) const
+
+//	GetMaxRotationSpeedPerTick
+//
+//	Returns the max speed in degrees per tick.
+
+	{
+	return 360.0 * m_iMaxRotationRate / (ROTATION_FRACTION * m_iCount); 
+	}
+
+Metric CIntegralRotationDesc::GetRotationAccelPerTick (void) const
+
+//	GetRotationAccelPerTick
+//
+//	Returns the degrees per tick acceleration.
+
+	{
+	return 360.0 * m_iRotationAccel / (ROTATION_FRACTION * m_iCount); 
+	}
+
+ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iImageScale, int iShipMass, CXMLElement *pDesc)
 
 //	InitFromXML
 //
@@ -83,8 +123,11 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 
 		//	The original maneuverability value is the number of half-ticks that 
 		//	we take per rotation frame.
+		//
+		//	NOTE: For compatibility we don't allow maneuverability less than 2, which was the 
+		//	limit using the old method (1 tick delay).
 
-		int iManeuverability = pDesc->GetAttributeIntegerBounded(MANEUVER_ATTRIB, 1, -1, 2);
+		int iManeuverability = pDesc->GetAttributeIntegerBounded(MANEUVER_ATTRIB, 2, -1, 2);
 
 		//	Convert that to max rotation rate in 1/1000th of rotation per tick
 

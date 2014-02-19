@@ -5,8 +5,17 @@
 
 #include "PreComp.h"
 
+#define FIELD_THRUSTER_POWER					CONSTLIT("thrusterPower")
+
 const Metric MANEUVER_MASS_FACTOR =				1.0;
 const Metric MAX_INERTIA_RATIO =				9.0;
+
+CIntegralRotation::~CIntegralRotation (void)
+
+//	CIntegralRotation destructor
+
+	{
+	}
 
 int CIntegralRotation::CalcFinalRotationFrame (const CIntegralRotationDesc &Desc) const
 
@@ -100,7 +109,8 @@ void CIntegralRotation::Init (const CIntegralRotationDesc &Desc, int iRotationAn
 	m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
 	m_iRotationAccel = Desc.GetRotationAccel();
 
-	SetRotationAngle(Desc, iRotationAngle);
+	if (iRotationAngle != -1)
+		SetRotationAngle(Desc, iRotationAngle);
 	}
 
 void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDesc &Desc)
@@ -112,16 +122,13 @@ void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDe
 	{
 	DWORD dwLoad;
 
+	Init(Desc);
+
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iRotationFrame = (int)dwLoad;
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iRotationSpeed = (int)dwLoad;
-
-	//	Defaults
-
-	m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
-	m_iRotationAccel = Desc.GetRotationAccel();
 	}
 
 void CIntegralRotation::SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle)
@@ -151,23 +158,43 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 				//	Slow down rotation
 
 				if (m_iRotationSpeed > 0)
+					{
 					m_iRotationSpeed = Max(0, m_iRotationSpeed - m_iRotationAccel);
+					m_iLastManeuver = RotateLeft;
+					}
 				else
+					{
 					m_iRotationSpeed = Min(0, m_iRotationSpeed + m_iRotationAccel);
+					m_iLastManeuver = RotateRight;
+					}
 
 				//	If we've stopped rotating, align to center of frame
 
 				if (m_iRotationSpeed == 0)
 					m_iRotationFrame = ((m_iRotationFrame / CIntegralRotationDesc::ROTATION_FRACTION) * CIntegralRotationDesc::ROTATION_FRACTION) + (CIntegralRotationDesc::ROTATION_FRACTION / 2);
 				}
+			else
+				m_iLastManeuver = NoRotation;
 			break;
 
 		case RotateRight:
-			m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccel);
+			if (m_iRotationSpeed < m_iMaxRotationRate)
+				{
+				m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccel);
+				m_iLastManeuver = RotateRight;
+				}
+			else
+				m_iLastManeuver = NoRotation;
 			break;
 
 		case RotateLeft:
-			m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccel);
+			if (m_iRotationSpeed > -m_iMaxRotationRate)
+				{
+				m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccel);
+				m_iLastManeuver = RotateLeft;
+				}
+			else
+				m_iLastManeuver = NoRotation;
 			break;
 		}
 

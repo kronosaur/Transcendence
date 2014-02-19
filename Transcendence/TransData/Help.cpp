@@ -342,6 +342,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		}
 	else
 		{
+		printf("TransData [options] [{command-file}]\n\n");
+
 		printf("  /attributelist        List of attributes used by types.\n");
 		if (bDebug)
 			printf("  /clearRegistered      Clears registered flag on game file.\n");

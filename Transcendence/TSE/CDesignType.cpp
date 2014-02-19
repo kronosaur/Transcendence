@@ -1947,7 +1947,8 @@ IEffectPainter *CEffectCreatorRef::CreatePainter (CCreatePainterCtx &Ctx)
 
 	//	If we're an owner singleton then we only need to create this once.
 
-	if (m_pType->GetInstance() == CEffectCreator::instOwner)
+	if (m_pType->GetInstance() == CEffectCreator::instOwner
+			&& !pPainter->IsSingleton())
 		{
 		pPainter->SetSingleton(true);
 		m_pSingleton = pPainter;

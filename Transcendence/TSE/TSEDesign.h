@@ -667,6 +667,8 @@ struct SViewportPaintCtx
 		fNoDockedShips = false;
 		fEnhancedDisplay = false;
 		fNoStarfield = false;
+		bInFront = true;
+		bFade = false;
 		iTick = 0;
 		iVariant = 0;
 		iDestiny = 0;
@@ -707,6 +709,9 @@ struct SViewportPaintCtx
 	CSpaceObject *pObj;					//	Current object being painted
 
 	//	May be modified by callers
+
+	bool bInFront;						//	If TRUE, paint elements in front of object (otherwise, behind)
+	bool bFade;							//	If TRUE, we're painting a fading element
 	int iTick;
 	int iVariant;
 	int iDestiny;
@@ -2700,6 +2705,152 @@ class CShipInterior
 		TArray<SCompartmentEntry> m_Compartments;
 	};
 
+//	Maneuvering
+
+enum EManeuverTypes
+	{
+	NoRotation,
+
+	RotateLeft,
+	RotateRight,
+	};
+
+class CIntegralRotationDesc
+	{
+	public:
+		enum EConstants
+			{
+			ROTATION_FRACTION =				1024,
+			};
+
+		CIntegralRotationDesc (void) { }
+
+		ALERROR Bind (SDesignLoadCtx &Ctx);
+		inline int GetFrameAngle (void) const { return (int)((360.0 / m_iCount) + 0.5); }
+		inline int GetFrameCount (void) const { return m_iCount; }
+		int GetFrameIndex (int iAngle) const;
+		int GetManeuverDelay (void) const;
+		int GetManeuverability (void) const;
+		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
+		Metric GetMaxRotationSpeedPerTick (void) const;
+		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
+		Metric GetRotationAccelPerTick (void) const;
+		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iImageScale, int iShipMass, CXMLElement *pDesc);
+
+	private:
+		struct SEntry
+			{
+			int iRotation;					//	Angle at this rotation position
+			};
+
+		int m_iCount;						//	Number of rotations
+		int m_iMaxRotationRate;				//	Rotations per tick (in 1/1000ths of a rotation)
+		int m_iRotationAccel;				//	Rotation acceleration (in 1/1000ths of a rotation)
+		TArray<SEntry> m_Rotations;			//	Entries for each rotation
+	};
+
+class CIntegralRotation
+	{
+	public:
+		CIntegralRotation (void) :
+				m_iRotationFrame(0),
+				m_iRotationSpeed(0),
+				m_iMaxRotationRate(CIntegralRotationDesc::ROTATION_FRACTION),
+				m_iRotationAccel(CIntegralRotationDesc::ROTATION_FRACTION),
+				m_iLastManeuver(NoRotation)
+			{ }
+
+		~CIntegralRotation (void);
+
+		inline int GetFrameIndex (void) const { return GetFrameIndex(m_iRotationFrame); }
+		inline EManeuverTypes GetLastManeuver (void) const { return m_iLastManeuver; }
+		inline Metric GetManeuverRatio (void) const { return (Metric)m_iMaxRotationRate / CIntegralRotationDesc::ROTATION_FRACTION; }
+		EManeuverTypes GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const;
+		int GetRotationAngle (const CIntegralRotationDesc &Desc) const;
+		void Init (const CIntegralRotationDesc &Desc, int iRotationAngle = -1);
+		void ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDesc &Desc);
+		void SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle);
+		void Update (const CIntegralRotationDesc &Desc, EManeuverTypes iManeuver);
+		void UpdateAccel (const CIntegralRotationDesc &Desc, Metric rHullMass = 0.0, Metric rItemMass = 0.0);
+		void WriteToStream (IWriteStream *pStream) const;
+
+	private:
+		int CalcFinalRotationFrame (const CIntegralRotationDesc &Desc) const;
+		inline int GetFrameIndex (int iFrame) const { return (iFrame / CIntegralRotationDesc::ROTATION_FRACTION); }
+
+		int m_iRotationFrame;				//	Current rotation (in 1/1000ths of a rotation)
+		int m_iRotationSpeed;				//	Current rotation speed (+ clockwise; - counterclockwise; in 1/1000ths)
+
+		int m_iMaxRotationRate;				//	Current max speed
+		int m_iRotationAccel;				//	Current rotation acceleration
+
+		EManeuverTypes m_iLastManeuver;		//	Maneuver on last update
+	};
+
+//	Object effects
+
+class CObjectEffectDesc
+	{
+	public:
+		enum ETypes
+			{
+			effectNone =				0x00000000,	//	No effect
+
+			effectThrustLeft =			0x00000001,	//	Left (counter-clockwise) thrusters
+			effectThrustRight =			0x00000002,	//	Right (clockwise) thrusters
+			effectThrustMain =			0x00000004,	//	Forward thrust
+			effectThrustStop =			0x00000008,	//	Stop thrusters
+			effectWeaponFire =			0x00000010,	//	Weapon flash
+			};
+
+		struct SEffectDesc
+			{
+			ETypes iType;					//	Type of effect
+			CEffectCreatorRef pEffect;		//	Effect type
+			C3DConversion PosCalc;			//	Position of effect
+			int iRotation;					//	Direction of effect
+			};
+
+		ALERROR Bind (SDesignLoadCtx &Ctx);
+		inline IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx, int iIndex) { return m_Effects[iIndex].pEffect.CreatePainter(Ctx); }
+		CEffectCreator *FindEffectCreator (const CString &sUNID) const;
+		inline int GetEffectCount (void) const { return m_Effects.GetCount(); }
+		int GetEffectCount (DWORD dwEffects) const;
+		const SEffectDesc &GetEffectDesc (int iIndex) const { return m_Effects[iIndex]; }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iFrameCount, int iImageScale, CXMLElement *pDesc);
+		void MarkImages (void);
+
+	private:
+		TArray<SEffectDesc> m_Effects;
+	};
+
+class CObjectEffectList
+	{
+	public:
+		~CObjectEffectList (void);
+
+		void Init (const CObjectEffectDesc &Desc, const TArray<IEffectPainter *> &Painters);
+		void Move (bool *retbBoundsChanged = NULL);
+		void Paint (SViewportPaintCtx &Ctx, const CObjectEffectDesc &Desc, DWORD dwEffects, CG16bitImage &Dest, int x, int y);
+		void PaintAll (SViewportPaintCtx &Ctx, const CObjectEffectDesc &Desc, CG16bitImage &Dest, int x, int y);
+		void Update (const CObjectEffectDesc &Desc, int iRotation, DWORD dwEffects);
+
+	private:
+		struct SFixedEffect
+			{
+			SFixedEffect (void) :
+					pPainter(NULL)
+				{ }
+
+			IEffectPainter *pPainter;
+			};
+
+		void CleanUp (void);
+
+		TArray<SFixedEffect> m_FixedEffects;
+	};
+
 //	Ship Controller
 
 enum EOrderFlags
@@ -2986,6 +3137,8 @@ struct SEffectUpdateCtx
 	//	Object context
 	CSystem *pSystem;							//	Current system
 	CSpaceObject *pObj;							//	The object that the effect is part of
+	CVector vEmitPos;							//	Emittion pos (if not center of effect)
+												//		Relative to center of effect.
 	bool bFade;									//	Effect fading
 
 	//	Damage context
@@ -3024,11 +3177,15 @@ class CEffectParamDesc
 		~CEffectParamDesc (void);
 
 		WORD EvalColor (CCreatePainterCtx &Ctx) const;
+		int EvalIdentifier (CCreatePainterCtx &Ctx, LPSTR *pIDMap, int iMax, int iDefault = 0) const;
 		int EvalInteger (CCreatePainterCtx &Ctx) const;
 		int EvalIntegerBounded (CCreatePainterCtx &Ctx, int iMin, int iMax = -1, int iDefault = -1) const;
+		CString EvalString (CCreatePainterCtx &Ctx) const;
+		inline EDataTypes GetType (void) const { return m_iType; }
 		inline void InitColor (WORD wValue) { CleanUp(); m_dwData = wValue; m_iType = typeColorConstant; }
 		inline void InitInteger (int iValue) { CleanUp(); m_dwData = iValue; m_iType = typeIntegerConstant; }
 		inline void InitNull (void) { CleanUp(); }
+		inline void InitString (const CString &sValue) { CleanUp(); m_sData = sValue; m_iType = typeStringConstant; }
 		ALERROR InitColorFromXML (SDesignLoadCtx &Ctx, const CString &sValue);
 		ALERROR InitIdentifierFromXML (SDesignLoadCtx &Ctx, const CString &sValue, LPSTR *pIDMap);
 		ALERROR InitIntegerFromXML (SDesignLoadCtx &Ctx, const CString &sValue);
@@ -3039,6 +3196,7 @@ class CEffectParamDesc
 
 	private:
 		void CleanUp (void);
+		bool FindIdentifier (const CString &sValue, LPSTR *pIDMap, DWORD *retdwID = NULL) const;
 
 		EDataTypes m_iType;
 		DWORD m_dwData;
@@ -3050,7 +3208,7 @@ class CEffectParamDesc
 class IEffectPainter
 	{
 	public:
-		IEffectPainter (void) : m_bSingleton(false)
+		IEffectPainter (bool bSingleton = false) : m_bSingleton(bSingleton)
 			{ }
 
 		void GetBounds (RECT *retRect);
@@ -3932,6 +4090,7 @@ class CShipClass : public CDesignType
 		inline int GetDockingPortCount (void) { return m_iDockingPortsCount; }
 		inline CVector *GetDockingPortPositions (void) { return m_DockingPorts; }
 		void GetDriveDesc (DriveDesc *retDriveDesc) const;
+		inline CObjectEffectDesc &GetEffectsDesc (void) { return m_Effects; }
 		IShipGenerator *GetEscorts (void) { return m_pEscorts; }
 		CWeaponFireDesc *GetExplosionType (void) { return m_pExplosionType; }
 		inline CXMLElement *GetFirstDockScreen (void) { return m_pDefaultScreen.GetDesc(); }
@@ -3945,7 +4104,6 @@ class CShipClass : public CDesignType
 		inline const CObjectImageArray &GetImageSmall (void) { return m_Image; }
 		inline const CShipInteriorDesc &GetInteriorDesc (void) const { return m_Interior; }
 		inline int GetManeuverability (void) const { return m_RotationDesc.GetManeuverability(); }
-		inline int GetManeuverDelay (void) const { return m_RotationDesc.GetManeuverDelay(); }
 		inline int GetMaxArmorMass (void) const { return m_iMaxArmorMass; }
 		inline int GetMaxCargoSpace (void) const { return m_iMaxCargoSpace; }
 		inline int GetMaxDevices (void) const { return m_iMaxDevices; }
@@ -3978,6 +4136,7 @@ class CShipClass : public CDesignType
 		inline bool HasOnOrderChangedEvent (void) const { return (m_fHasOnOrderChangedEvent ? true : false); }
 		inline bool HasOnOrdersCompletedEvent (void) const { return (m_fHasOnOrdersCompletedEvent ? true : false); }
 		inline bool HasShipName (void) const { return !m_sShipNames.IsBlank(); }
+		void InitEffects (CShip *pShip, CObjectEffectList *retEffects);
 		void InstallEquipment (CShip *pShip);
 		inline bool IsDebugOnly (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsDebugOnly()); }
 		inline bool IsIncludedInAllAdventures (void) { return (m_pPlayerSettings && m_pPlayerSettings->IsIncludedInAllAdventures()); }
@@ -4065,6 +4224,7 @@ class CShipClass : public CDesignType
 		void FindBestMissile (CDeviceClass *pLauncher, IItemGenerator *pItems, CItemType **retpMissile) const;
 		void FindBestMissile (CDeviceClass *pLauncher, const CItemList &Items, CItemType **retpMissile) const;
 		CString GetGenericName (DWORD *retdwFlags = NULL);
+		inline int GetManeuverDelay (void) const { return m_RotationDesc.GetManeuverDelay(); }
 		CPlayerSettings *GetPlayerSettingsInherited (void) const;
 		CStationType *GetWreckDesc (void);
 		void InitShipNamesIndices (void);
@@ -4138,6 +4298,7 @@ class CShipClass : public CDesignType
 
 		//	Image
 		CObjectImageArray m_Image;				//	Image of ship
+		CObjectEffectDesc m_Effects;			//	Effects for ship
 
 		//	Wreck image
 		CG16bitImage m_WreckBitmap;				//	Image to use when ship is wrecked
@@ -4179,24 +4340,36 @@ class CCreatePainterCtx
 	public:
 		CCreatePainterCtx (void) :
 				m_iLifetime(0),
-				m_pOwnerSingleton(NULL),
 				m_pWeaponFireDesc(NULL),
+				m_bUseObjectCenter(false),
 				m_pData(NULL)
 			{ }
 
 		~CCreatePainterCtx (void);
 
+		void AddDataInteger (const CString &sField, int iValue);
 		ICCItem *GetData (void);
 		inline int GetLifetime (void) const { return m_iLifetime; }
 		inline void SetLifetime (int iLifetime) { m_iLifetime = iLifetime; }
+		inline void SetUseObjectCenter (bool bValue = true) { m_bUseObjectCenter = bValue; }
 		inline void SetWeaponFireDesc (CWeaponFireDesc *pDesc) { m_pWeaponFireDesc = pDesc; }
+		inline bool UseObjectCenter (void) const { return m_bUseObjectCenter; }
 
 	private:
+		struct SDataEntry
+			{
+			CString sField;
+			int iValue;
+			};
+
 		void SetWeaponFireDescData (CCodeChain &CC, CCSymbolTable *pTable, CWeaponFireDesc *pDesc);
 
 		int m_iLifetime;						//	Optional lifetime 0 = use creator defaults; -1 = infinite;
-		IEffectPainter **m_pOwnerSingleton;		//	Optional storage for singleton
 		CWeaponFireDesc *m_pWeaponFireDesc;		//	Optional weapon fire desc
+		TArray<SDataEntry> m_Data;				//	Data to add
+
+		bool m_bUseObjectCenter;				//	If TRUE, particle clouds always use the object as center
+
 		ICCItem *m_pData;						//	Generated data
 	};
 

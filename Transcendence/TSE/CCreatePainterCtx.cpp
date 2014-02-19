@@ -18,6 +18,18 @@ CCreatePainterCtx::~CCreatePainterCtx (void)
 		m_pData->Discard(&g_pUniverse->GetCC());
 	}
 
+void CCreatePainterCtx::AddDataInteger (const CString &sField, int iValue)
+
+//	AddDataInteger
+//
+//	Adds data
+
+	{
+	SDataEntry *pEntry = m_Data.Insert();
+	pEntry->sField = sField;
+	pEntry->iValue = iValue;
+	}
+
 ICCItem *CCreatePainterCtx::GetData (void)
 
 //	GetData
@@ -25,6 +37,8 @@ ICCItem *CCreatePainterCtx::GetData (void)
 //	Generate data block for create painter
 
 	{
+	int i;
+
 	if (m_pData)
 		return m_pData;
 
@@ -33,6 +47,11 @@ ICCItem *CCreatePainterCtx::GetData (void)
 	CCodeChain &CC = g_pUniverse->GetCC();
 	m_pData = CC.CreateSymbolTable();
 	CCSymbolTable *pTable = (CCSymbolTable *)m_pData;
+
+	//	Add data
+
+	for (i = 0; i < m_Data.GetCount(); i++)
+		pTable->SetIntegerValue(CC, m_Data[i].sField, m_Data[i].iValue);
 
 	//	Set values depending on what we have in context
 

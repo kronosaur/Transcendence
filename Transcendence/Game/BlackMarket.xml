@@ -36,6 +36,12 @@
 			<Device deviceID="&itClass3Deflector;"/>
 			</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="20d6" item="&itDragonflyCartridge;"/>
 			<Item count="20d6" item="&it800HexageneMAG;"/>
@@ -44,6 +50,11 @@
 
 		<Image imageID="&rsMolotok;" imageX="0" imageY="0" imageWidth="68" imageHeight="68"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="22"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="22"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"25"
 			fireAccuracy=		"85"
@@ -51,12 +62,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-45"  y="9"   z="-1"/>
-			<NozzlePos x="-45"  y="-9"  z="-1"/>
-			</DriveImages>
 
 		</ShipClass>
 		

@@ -9,6 +9,7 @@
 #define DEVICES_TAG								CONSTLIT("Devices")
 #define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
 #define DRIVE_IMAGES_TAG						CONSTLIT("DriveImages")
+#define EFFECTS_TAG								CONSTLIT("Effects")
 #define EQUIPMENT_TAG							CONSTLIT("Equipment")
 #define ESCORTS_TAG								CONSTLIT("Escorts")
 #define EVENTS_TAG								CONSTLIT("Events")
@@ -119,6 +120,7 @@
 #define FIELD_MASS								CONSTLIT("mass")
 #define FIELD_MAX_ARMOR_MASS					CONSTLIT("maxArmorMass")
 #define FIELD_MAX_CARGO_SPACE					CONSTLIT("maxCargoSpace")
+#define FIELD_MAX_ROTATION						CONSTLIT("maxRotation")
 #define FIELD_MAX_SPEED							CONSTLIT("maxSpeed")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_PRIMARY_ARMOR						CONSTLIT("primaryArmor")
@@ -134,7 +136,9 @@
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_SHIP_STATUS_SCREEN				CONSTLIT("shipStatusScreen")
 #define FIELD_STARTING_SYSTEM					CONSTLIT("startingSystem")
+#define FIELD_THRUST							CONSTLIT("thrust")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
+#define FIELD_THRUSTER_POWER					CONSTLIT("thrusterPower")
 #define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
 
 #define ERR_OUT_OF_MEMORY						CONSTLIT("out of memory")
@@ -1647,6 +1651,8 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = m_sManufacturer;
 	else if (strEquals(sField, FIELD_MASS))
 		*retsValue = strFromInt(m_iMass);
+	else if (strEquals(sField, FIELD_MAX_ROTATION))
+		*retsValue = strFromInt(mathRound(m_RotationDesc.GetMaxRotationSpeedPerTick()));
 	else if (strEquals(sField, FIELD_MAX_SPEED))
 		{
 		DriveDesc Desc;
@@ -1773,6 +1779,12 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 			iManeuver = 1;
 
 		*retsValue = strFromInt(30000 / iManeuver);
+		}
+	else if (strEquals(sField, FIELD_THRUST))
+		{
+		DriveDesc Drive;
+		GetDriveDesc(&Drive);
+		*retsValue = strFromInt(Drive.iThrust);
 		}
 	else if (strEquals(sField, FIELD_THRUST_TO_WEIGHT))
 		{
@@ -2252,6 +2264,96 @@ int CShipClass::GetWreckImageVariants (void)
 	return WRECK_IMAGE_VARIANTS;
 	}
 
+void CShipClass::InitEffects (CShip *pShip, CObjectEffectList *retEffects)
+
+//	InitEffects
+//
+//	Initializes effects (like thrust, etc.)
+
+	{
+	int i;
+
+	CObjectEffectDesc &Effects = GetEffectsDesc();
+	if (Effects.GetEffectCount() > 0)
+		{
+		TArray<IEffectPainter *> Painters;
+		Painters.InsertEmpty(Effects.GetEffectCount());
+
+		//	Compute the thrust and max speed
+
+		int iThrust;
+		Metric rMaxSpeed;
+		if (pShip)
+			{
+			iThrust = (int)pShip->GetThrust();
+			rMaxSpeed = pShip->GetMaxSpeed();
+			}
+		else
+			{
+			iThrust = m_DriveDesc.iThrust;
+			rMaxSpeed = m_DriveDesc.rMaxSpeed;
+			}
+
+		//	Compute power of maneuvering thrusters
+
+		int iThrustersPerSide = Max(1, Effects.GetEffectCount(CObjectEffectDesc::effectThrustLeft));
+		int iThrusterPower = Max(1, mathRound((GetHullMass() / iThrustersPerSide) * GetRotationDesc().GetRotationAccelPerTick()));
+
+		//	Compute power of main thruster
+
+		int iMainThrusters = Max(1, Effects.GetEffectCount(CObjectEffectDesc::effectThrustMain));
+		int iMainPower = Max(1, iThrust / iMainThrusters);
+		int iMaxSpeed = mathRound(100.0 * rMaxSpeed / LIGHT_SPEED);
+
+		//	Create painters
+
+		for (i = 0; i < Effects.GetEffectCount(); i++)
+			{
+			const CObjectEffectDesc::SEffectDesc &EffectDesc = Effects.GetEffectDesc(i);
+
+			switch (EffectDesc.iType)
+				{
+				case CObjectEffectDesc::effectThrustLeft:
+				case CObjectEffectDesc::effectThrustRight:
+					{
+					//	For now we only create maneuvering thruster effects on 
+					//	player ships
+
+					if (IsPlayerShip())
+						{
+						CCreatePainterCtx CreateCtx;
+						CreateCtx.AddDataInteger(FIELD_THRUSTER_POWER, iThrusterPower);
+						CreateCtx.SetUseObjectCenter();
+						Painters[i] = Effects.CreatePainter(CreateCtx, i);
+						}
+					else
+						Painters[i] = NULL;
+					break;
+					}
+
+				case CObjectEffectDesc::effectThrustMain:
+					{
+					CCreatePainterCtx CreateCtx;
+					CreateCtx.AddDataInteger(FIELD_MAX_SPEED, iMaxSpeed);
+					CreateCtx.AddDataInteger(FIELD_THRUSTER_POWER, iMainPower);
+					CreateCtx.SetUseObjectCenter();
+					Painters[i] = Effects.CreatePainter(CreateCtx, i);
+					break;
+					}
+
+				default:
+					Painters[i] = NULL;
+					break;
+				}
+			}
+
+		//	Initialize
+		//	NOTE: the m_Effects structure takes ownership of all painters.
+
+		retEffects->Init(Effects, Painters);
+		}
+	}
+
 void CShipClass::InitShipNamesIndices (void)
 
 //	InitShipNamesIndices
@@ -2332,6 +2434,10 @@ void CShipClass::MarkImages (bool bMarkDevices)
 
 	if (m_WreckImage.IsEmpty())
 		CreateWreckImage();
+
+	//	Effects
+
+	m_Effects.MarkImages();
 	}
 
 void CShipClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
@@ -2381,6 +2487,9 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_Image.OnDesignLoadComplete(Ctx))
 		goto Fail;
 
+	if (error = m_Effects.Bind(Ctx))
+		goto Fail;
+
 	if (error = m_ExhaustImage.OnDesignLoadComplete(Ctx))
 		goto Fail;
 
@@ -2391,6 +2500,9 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 		goto Fail;
 
 	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
+		goto Fail;
+
+	if (error = m_RotationDesc.Bind(Ctx))
 		goto Fail;
 
 	for (i = 0; i < GetHullSectionCount(); i++)
@@ -2560,22 +2672,33 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iMaxArmorMass = pDesc->GetAttributeInteger(MAX_ARMOR_ATTRIB);
 	m_iMaxReactorPower = pDesc->GetAttributeInteger(MAX_REACTOR_POWER_ATTRIB);
 
-	if (error = m_RotationDesc.InitFromXML(Ctx, pDesc))
+	//	NOTE: We need to initialize this AFTER we initialize the image because 
+	//	we need the image size.
+
+	if (error = m_RotationDesc.InitFromXML(Ctx, 
+			strPatternSubst(CONSTLIT("%d:r"), GetUNID()), 
+			m_Image.GetImageViewportSize(), 
+			m_iMass,
+			pDesc))
 		return ComposeLoadError(Ctx, Ctx.sError);
 
 	m_Image.SetRotationCount(m_RotationDesc.GetFrameCount());
 
-#ifdef OLD_MANEUVER
-	m_iManeuverability = pDesc->GetAttributeInteger(CONSTLIT(g_ManeuverAttrib));
-	m_iManeuverDelay = (int)(((Metric)m_iManeuverability / STD_SECONDS_PER_UPDATE) + 0.5);
-	m_iRotationRange = pDesc->GetAttributeInteger(ROTATION_COUNT_ATTRIB);
-	if (m_iRotationRange <= 0)
-		m_iRotationRange = STD_ROTATION_COUNT;
-	m_iRotationAngle = (360 / m_iRotationRange);
-#endif
-
 	m_DriveDesc.dwUNID = GetUNID();
 	m_DriveDesc.rMaxSpeed = (double)pDesc->GetAttributeInteger(CONSTLIT(g_MaxSpeedAttrib)) * LIGHT_SPEED / 100;
+
+	//	Load effects
+
+	CXMLElement *pEffects = pDesc->GetContentElementByTag(EFFECTS_TAG);
+	if (pEffects)
+		{
+		if (error = m_Effects.InitFromXML(Ctx, 
+				strPatternSubst(CONSTLIT("%d"), GetUNID()), 
+				m_RotationDesc.GetFrameCount(), 
+				m_Image.GetImageViewportSize(), 
+				pEffects))
+			return ComposeLoadError(Ctx, Ctx.sError);
+		}
 
 	//	We also accept a thrust ratio
 
@@ -2759,7 +2882,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 				//	Load the position
 
-				if (error = pExhaust->PosCalc.Init(pItem, m_RotationDesc.GetFrameCount(), iScale))
+				if (error = pExhaust->PosCalc.Init(pItem, m_RotationDesc.GetFrameCount(), iScale, 180))
 					return ComposeLoadError(Ctx, ERR_DRIVE_IMAGE_FORMAT);
 				}
 			else

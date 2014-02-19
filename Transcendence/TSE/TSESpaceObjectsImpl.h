@@ -1090,6 +1090,7 @@ class CShip : public CSpaceObject
 		void CalcDeviceBonus (void);
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		InstallItemResults CalcDeviceToReplace (const CItem &Item, int *retiSlot = NULL);
+		DWORD CalcEffectsMask (void);
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
@@ -1120,6 +1121,7 @@ class CShip : public CSpaceObject
 		const DriveDesc *m_pDriveDesc;			//	Drive descriptor
 		const ReactorDesc *m_pReactorDesc;		//	Reactor descriptor
 		CIntegralRotation m_Rotation;			//	Ship rotation
+		CObjectEffectList m_Effects;			//	List of effects to paint
 		CShipInterior m_Interior;				//	Interior decks and compartments (optionally)
 		CEnergyFieldList m_EnergyFields;		//	List of energy fields
 		CDockingPorts m_DockingPorts;			//	Docking ports (optionally)

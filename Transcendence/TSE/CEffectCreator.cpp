@@ -524,6 +524,8 @@ void CEffectCreator::InitPainterParameters (CCreatePainterCtx &Ctx, IEffectPaint
 
 					//	Otherwise, a string
 
+					else
+						Value.InitString(sValue);
 					}
 
 				pPainter->SetParam(Ctx, sParam, Value);

@@ -11,6 +11,7 @@
 #define COHESION_ATTRIB							CONSTLIT("cohesion")
 #define EMIT_LIFETIME_ATTRIB					CONSTLIT("emitDuration")
 #define NEW_PARTICLES_ATTRIB					CONSTLIT("emitRate")
+#define EMIT_ROTATION_ATTRIB					CONSTLIT("emitRotation")
 #define EMIT_SPEED_ATTRIB						CONSTLIT("emitSpeed")
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 #define PARTICLE_COUNT_ATTRIB					CONSTLIT("particleCount")
@@ -48,7 +49,7 @@ class CParticleCloudPainter : public IEffectPainter
 		virtual void OnMove (bool *retbBoundsChanged = NULL);
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx);
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { Paint(Dest, x, y, Ctx); }
+		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { bool bOldFade = Ctx.bFade; Ctx.bFade = true; Paint(Dest, x, y, Ctx); Ctx.bFade = bOldFade; }
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx) { Paint(Dest, x, y, Ctx); }
 		virtual void SetParam (CCreatePainterCtx &Ctx, const CString &sParam, const CEffectParamDesc &Value);
 		virtual void SetPos (const CVector &vPos) { m_Particles.SetOrigin(vPos); }
@@ -58,9 +59,9 @@ class CParticleCloudPainter : public IEffectPainter
 		virtual void OnWriteToStream (IWriteStream *pStream);
 
 	private:
-		void CreateInitialParticles (int iCount);
-		void CreateNewParticles (int iCount, const CVector &vInitialVel);
-		void InitParticles (void);
+		void CreateInitialParticles (int iCount, const CVector &vInitialPos);
+		void CreateNewParticles (int iCount, const CVector &vInitialPos, const CVector &vInitialVel);
+		void InitParticles (const CVector &vInitialPos);
 		void SetLifetime (int iLifetime);
 
 		CParticleCloudEffectCreator *m_pCreator;
@@ -69,6 +70,8 @@ class CParticleCloudPainter : public IEffectPainter
 		int m_iLastDirection;
 		int m_iEmitLifetime;
 		int m_iTick;
+
+		bool m_bUseObjectCenter;
 
 		IEffectPainter *m_pParticlePainter;
 	};
@@ -165,7 +168,9 @@ ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 	if (error = m_InitSpeed.LoadFromXML(pDesc->GetAttribute(EMIT_SPEED_ATTRIB), DEFAULT_EMIT_SPEED))
 		return error;
 
-	m_iEmitLifetime = pDesc->GetAttributeIntegerBounded(EMIT_LIFETIME_ATTRIB, 0, -1, 100);
+	int iDefaultEmitLifetime = (m_ParticleLifetime.GetAveValue() == -1 ? 100 : -1);
+	m_iEmitLifetime = pDesc->GetAttributeIntegerBounded(EMIT_LIFETIME_ATTRIB, 0, -1, iDefaultEmitLifetime);
+	m_iEmitRotation = pDesc->GetAttributeInteger(EMIT_ROTATION_ATTRIB);
 	m_iCohesion = pDesc->GetAttributeIntegerBounded(COHESION_ATTRIB, 0, 100, 0);
 	m_iViscosity = pDesc->GetAttributeIntegerBounded(VISCOSITY_ATTRIB, 0, 100, 0);
 	m_iWakePotential = pDesc->GetAttributeIntegerBounded(WAKE_POTENTIAL_ATTRIB, 0, 100, 0);
@@ -241,7 +246,8 @@ ALERROR CParticleCloudEffectCreator::OnEffectBindDesign (SDesignLoadCtx &Ctx)
 CParticleCloudPainter::CParticleCloudPainter (CCreatePainterCtx &Ctx, CParticleCloudEffectCreator *pCreator) : 
 		m_pCreator(pCreator),
 		m_iLastDirection(-1),
-		m_iTick(0)
+		m_iTick(0),
+		m_bUseObjectCenter(Ctx.UseObjectCenter())
 
 //	CParticleCloudPainter constructor
 
@@ -273,7 +279,7 @@ CParticleCloudPainter::~CParticleCloudPainter (void)
 		m_pParticlePainter->Delete();
 	}
 
-void CParticleCloudPainter::CreateInitialParticles (int iCount)
+void CParticleCloudPainter::CreateInitialParticles (int iCount, const CVector &vInitialPos)
 
 //	CreateInitialParticles
 //
@@ -303,9 +309,9 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 
 				CVector vPos;
 				if (pNormalDist[iDestiny] > 0.0)
-					vPos = ::PolarToVector(mathRandom(0, 359), rRadius + pNormalDist[iDestiny] * rOuterRange);
+					vPos = vInitialPos + ::PolarToVector(mathRandom(0, 359), rRadius + pNormalDist[iDestiny] * rOuterRange);
 				else
-					vPos = ::PolarToVector(mathRandom(0, 359), rRadius + pNormalDist[iDestiny] * rInnerRange);
+					vPos = vInitialPos + ::PolarToVector(mathRandom(0, 359), rRadius + pNormalDist[iDestiny] * rInnerRange);
 
 				//	Generate a random velocity
 
@@ -331,7 +337,7 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 				{
 				//	Generate a random position
 
-				CVector vPos = ::PolarToVector(mathRandom(0, 359), mathRandom(0, iRadius) * g_KlicksPerPixel);
+				CVector vPos = vInitialPos + ::PolarToVector(mathRandom(0, 359), mathRandom(0, iRadius) * g_KlicksPerPixel);
 
 				//	Generate a random velocity
 
@@ -350,7 +356,7 @@ void CParticleCloudPainter::CreateInitialParticles (int iCount)
 		}
 	}
 
-void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInitialVel)
+void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInitialPos, const CVector &vInitialVel)
 
 //	CreateNewParticles
 //
@@ -366,15 +372,17 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 			if (m_iLastDirection == -1)
 				break;
 
+			int iBaseRotation = 180 + m_pCreator->GetEmitRotation() + m_iLastDirection;
+
 			for (i = 0; i < iCount; i++)
 				{
-				//	Position (start at the center)
+				//	Position
 
-				CVector vPos;
+				CVector vPos = vInitialPos;
 
 				//	Generate a random velocity backwards
 
-				int iRotation = 180 + m_iLastDirection + mathRandom(-2, 2);
+				int iRotation = iBaseRotation + mathRandom(-2, 2);
 				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed()));
 
 				//	Lifetime
@@ -391,15 +399,17 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 
 		case CParticleCloudEffectCreator::styleJet:
 			{
+			int iBaseRotation = m_pCreator->GetEmitRotation() + (m_iLastDirection != -1 ? m_iLastDirection : 0);
+
 			for (i = 0; i < iCount; i++)
 				{
-				//	Position (start at the center)
+				//	Position
 
-				CVector vPos;
+				CVector vPos = vInitialPos;
 
 				//	Generate a random velocity along the jet direction
 
-				int iRotation = 360 + (m_iLastDirection != -1 ? m_iLastDirection : 0) + mathRandom(-10, 10);
+				int iRotation = iBaseRotation + mathRandom(-10, 10);
 				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed()));
 
 				//	Lifetime
@@ -418,9 +428,9 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 			{
 			for (i = 0; i < iCount; i++)
 				{
-				//	Position (start at the center)
+				//	Position
 
-				CVector vPos;
+				CVector vPos = vInitialPos;
 
 				//	Generate a random velocity
 
@@ -449,7 +459,7 @@ void CParticleCloudPainter::GetRect (RECT *retRect) const
 	*retRect = m_Particles.GetBounds();
 	}
 
-void CParticleCloudPainter::InitParticles (void)
+void CParticleCloudPainter::InitParticles (const CVector &vInitialPos)
 
 //	Init
 //
@@ -469,7 +479,7 @@ void CParticleCloudPainter::InitParticles (void)
 		//	Initialize the array
 
 		m_Particles.Init(iMaxParticleCount);
-		CreateInitialParticles(m_pCreator->GetParticleCount());
+		CreateInitialParticles(m_pCreator->GetParticleCount(), vInitialPos);
 		}
 	}
 
@@ -482,7 +492,7 @@ void CParticleCloudPainter::OnMove (bool *retbBoundsChanged)
 	{
 	//	Make sure particles are initialized
 
-	InitParticles();
+	InitParticles(CVector());
 
 	//	Update the single-particle painter
 
@@ -506,11 +516,19 @@ void CParticleCloudPainter::OnReadFromStream (SLoadCtx &Ctx)
 //	Load from stream
 
 	{
+	DWORD dwLoad;
+
 	m_Particles.ReadFromStream(Ctx);
 
 	Ctx.pStream->Read((char *)&m_iLastDirection, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iEmitLifetime, sizeof(DWORD));
 	Ctx.pStream->Read((char *)&m_iTick, sizeof(DWORD));
+
+	if (Ctx.dwVersion >= 98)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		m_bUseObjectCenter = ((dwLoad & 0x00000001) ? true : false);
+		}
 
 	if (m_pParticlePainter)
 		m_pParticlePainter->Delete();
@@ -527,7 +545,7 @@ void CParticleCloudPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 	{
 	//	Make sure particles are initialized
 
-	InitParticles();
+	InitParticles(Ctx.vEmitPos);
 
 	//	Update the single-particle painter
 
@@ -565,7 +583,7 @@ void CParticleCloudPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 			&& (m_iEmitLifetime == -1 || m_iTick < m_iEmitLifetime))
 		{
 		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
-		CreateNewParticles(m_pCreator->GetNewParticleCount(), vVel);
+		CreateNewParticles(m_pCreator->GetNewParticleCount(), Ctx.vEmitPos, vVel);
 		}
 
 	//	Update
@@ -580,11 +598,16 @@ void CParticleCloudPainter::OnWriteToStream (IWriteStream *pStream)
 //	Write to stream
 
 	{
+	DWORD dwSave = 0;
+
 	m_Particles.WriteToStream(pStream);
 
 	pStream->Write((char *)&m_iLastDirection, sizeof(DWORD));
 	pStream->Write((char *)&m_iEmitLifetime, sizeof(DWORD));
 	pStream->Write((char *)&m_iTick, sizeof(DWORD));
+
+	dwSave |= (m_bUseObjectCenter ? 0x00000001 : 0);
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	CEffectCreator::WritePainterToStream(pStream, m_pParticlePainter);
 	}
@@ -602,14 +625,43 @@ void CParticleCloudPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 
 	int iTrailDirection = Ctx.iRotation;
 
+	//	If we're using the object center then we paint at the object center.
+	//	Otherwise we paint at the given position.
+
+	int xPaint;
+	int yPaint;
+	if (m_bUseObjectCenter)
+		Ctx.XForm.Transform(Ctx.pObj->GetPos(), &xPaint, &yPaint);
+	else
+		{
+		xPaint = x;
+		yPaint = y;
+		}
+
 	//	If we haven't created any particles yet, do it now
 
-	if (m_iLastDirection == -1)
+	if (m_iLastDirection == -1
+			&& !Ctx.bFade)
 		{
 		m_iLastDirection = iTrailDirection;
-		InitParticles();
+
+		//	Figure out the position where we create particles
+
+		CVector vPos;
+
+		//	If we're using the object center then it means that x,y is where
+		//	we emit particles from. We need to convert from screen coordinates
+		//	to object-relative coordinates.
+
+		if (m_bUseObjectCenter)
+			vPos = CVector((x - xPaint) * g_KlicksPerPixel, (yPaint - y) * g_KlicksPerPixel);
+
+		//	Initialize
+
+		InitParticles(vPos);
+
 		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
-		CreateNewParticles(m_pCreator->GetNewParticleCount(), vVel);
+		CreateNewParticles(m_pCreator->GetNewParticleCount(), vPos, vVel);
 		}
 
 	//	Paint with the painter
@@ -622,13 +674,13 @@ void CParticleCloudPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 		if (m_pParticlePainter->GetParticlePaintDesc(&Desc))
 			{
 			Desc.iMaxLifetime = iParticleLifetime;
-			m_Particles.Paint(Dest, x, y, Ctx, Desc);
+			m_Particles.Paint(Dest, xPaint, yPaint, Ctx, Desc);
 			}
 
 		//	Otherwise, we use the painter for each particle
 
 		else
-			m_Particles.Paint(Dest, x, y, Ctx, m_pParticlePainter);
+			m_Particles.Paint(Dest, xPaint, yPaint, Ctx, m_pParticlePainter);
 		}
 
 	//	Update

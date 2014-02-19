@@ -171,7 +171,7 @@ inline void DebugStopTimer (char *szTiming) { }
 const DWORD API_VERSION =								20;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						97;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						98;		//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -1241,15 +1241,15 @@ class C3DConversion
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVector *retvPos);
 		static void CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety);
 		inline void CleanUp (void) { m_Cache.DeleteAll(); }
-		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale);
-		void Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ = 0);
-		void InitCompatible (int iDirectionCount, int iAngle, int iRadius);
-		void InitCompatibleXY (int iDirectionCount, int iX, int iY);
-		void InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ);
-		inline bool IsEmpty (void) { return (m_Cache.GetCount() == 0); }
-		void GetCoord (int iRotation, int *retx, int *rety);
-		void GetCoordFromDir (int iDirection, int *retx, int *rety);
-		inline bool PaintFirst (int iDirection) { return m_Cache[iDirection].bPaintFirst; }
+		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing);
+		void Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ, int iFacing);
+		void InitCompatible (int iDirectionCount, int iAngle, int iRadius, int iFacing);
+		void InitCompatibleXY (int iDirectionCount, int iX, int iY, int iFacing);
+		void InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ, int iFacing);
+		inline bool IsEmpty (void) const { return (m_Cache.GetCount() == 0); }
+		void GetCoord (int iRotation, int *retx, int *rety) const;
+		void GetCoordFromDir (int iDirection, int *retx, int *rety) const;
+		inline bool PaintFirst (int iDirection) const { return m_Cache[iDirection].bPaintFirst; }
 
 	private:
 		struct SEntry
@@ -1304,78 +1304,6 @@ class CDeviceStorage
 	};
 
 //	Integral Rotation Class ----------------------------------------------------
-
-enum EManeuverTypes
-	{
-	NoRotation,
-
-	RotateLeft,
-	RotateRight,
-	};
-
-class CIntegralRotationDesc
-	{
-	public:
-		enum EConstants
-			{
-			ROTATION_FRACTION =				1024,
-			};
-
-		CIntegralRotationDesc (void) { }
-
-		inline int GetFrameAngle (void) const { return (int)((360.0 / m_iCount) + 0.5); }
-		inline int GetFrameCount (void) const { return m_iCount; }
-		int GetFrameIndex (int iAngle) const;
-		int GetManeuverDelay (void) const;
-		int GetManeuverability (void) const;
-		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
-		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
-		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
-
-	private:
-		struct SEntry
-			{
-			int iRotation;					//	Angle at this rotation position
-			};
-
-		int m_iCount;						//	Number of rotations
-		int m_iMaxRotationRate;				//	Rotations per tick (in 1/1000ths of a rotation)
-		int m_iRotationAccel;				//	Rotation acceleration (in 1/1000ths of a rotation)
-		TArray<SEntry> m_Rotations;			//	Entries for each rotation
-	};
-
-class CIntegralRotation
-	{
-	public:
-		CIntegralRotation (void) :
-				m_iRotationFrame(0),
-				m_iRotationSpeed(0),
-				m_iMaxRotationRate(CIntegralRotationDesc::ROTATION_FRACTION),
-				m_iRotationAccel(CIntegralRotationDesc::ROTATION_FRACTION)
-			{ }
-
-		inline int GetFrameIndex (void) const { return GetFrameIndex(m_iRotationFrame); }
-		inline Metric GetManeuverRatio (void) const { return (Metric)m_iMaxRotationRate / CIntegralRotationDesc::ROTATION_FRACTION; }
-		EManeuverTypes GetManeuverToFace (const CIntegralRotationDesc &Desc, int iAngle) const;
-		int GetRotationAngle (const CIntegralRotationDesc &Desc) const;
-		void Init (const CIntegralRotationDesc &Desc, int iRotationAngle = 0);
-		void ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDesc &Desc);
-		void SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle);
-		void Update (const CIntegralRotationDesc &Desc, EManeuverTypes iManeuver);
-		void UpdateAccel (const CIntegralRotationDesc &Desc, Metric rHullMass = 0.0, Metric rItemMass = 0.0);
-		void WriteToStream (IWriteStream *pStream) const;
-
-	private:
-		int CalcFinalRotationFrame (const CIntegralRotationDesc &Desc) const;
-		inline int GetFrameIndex (int iFrame) const { return (iFrame / CIntegralRotationDesc::ROTATION_FRACTION); }
-
-		int m_iRotationFrame;				//	Current rotation (in 1/1000ths of a rotation)
-		int m_iRotationSpeed;				//	Current rotation speed (+ clockwise; - counterclockwise; in 1/1000ths)
-
-		int m_iMaxRotationRate;				//	Current max speed
-		int m_iRotationAccel;				//	Current rotation acceleration
-	};
 
 //	IListData ------------------------------------------------------------------
 

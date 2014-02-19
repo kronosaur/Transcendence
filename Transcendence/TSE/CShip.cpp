@@ -546,6 +546,31 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 		return insNoDeviceSlotsLeft;
 	}
 
+DWORD CShip::CalcEffectsMask (void)
+
+//	CalcEffectsMask
+//
+//	Returns a bit mask of all effects to paint.
+
+	{
+	DWORD dwEffects = 0;
+	if (m_pController->GetThrust() && !IsParalyzed())
+		dwEffects |= CObjectEffectDesc::effectThrustMain;
+	
+	switch (m_Rotation.GetLastManeuver())
+		{
+		case RotateLeft:
+			dwEffects |= CObjectEffectDesc::effectThrustLeft;
+			break;
+
+		case RotateRight:
+			dwEffects |= CObjectEffectDesc::effectThrustRight;
+			break;
+		}
+
+	return dwEffects;
+	}
+
 int CShip::CalcMaxCargoSpace (void) const
 
 //	CalcMaxCargoSpace
@@ -1315,6 +1340,10 @@ void CShip::DamageDrive (SDamageCtx &Ctx)
 		if (pOverlayType
 				&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DRIVE_DAMAGE_OVERLAY_COUNT)
 			CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, iDamageTime);
+
+		//	Update effects
+
+		m_pClass->InitEffects(this, &m_Effects);
 		}
 	}
 
@@ -3961,6 +3990,11 @@ void CShip::OnMove (const CVector &vOldPos, Metric rSeconds)
 
 	if (m_pClass->HasDockingPorts())
 		m_DockingPorts.MoveAll(this);
+
+	//	Move effects
+
+	if (WasPainted())
+		m_Effects.Move();
 	}
 
 void CShip::OnNewSystem (CSystem *pSystem)
@@ -3997,33 +4031,45 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	if (IsInactive())
 		return;
 
-	int iTick = GetSystem()->GetTick();
-	if (IsTimeStopped())
-		iTick = GetDestiny();
+	//	Figure out which effects we need to paint
 
-	bool bPaintThrust = (m_pController->GetThrust() && !IsParalyzed() && ((iTick + GetDestiny()) % 4) != 0);
+	DWORD dwEffects = CalcEffectsMask();
+
+	//	Set up context
+
+	Ctx.iTick = (IsTimeStopped() ? GetDestiny() : g_pUniverse->GetTicks());
+	Ctx.iVariant = m_Rotation.GetFrameIndex();
+	Ctx.iDestiny = GetDestiny();
+	Ctx.iRotation = GetRotation();
+
+	bool bPaintThrust = (m_pController->GetThrust() && !IsParalyzed() && ((Ctx.iTick + GetDestiny()) % 4) != 0);
 	const CObjectImageArray *pImage;
 	pImage = &m_pClass->GetImage();
+
+	//	Paint all effects behind the ship
+
+	Ctx.bInFront = false;
+	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+
+	//	Paint the ship
 
 	m_pClass->Paint(Dest, 
 			x, 
 			y, 
 			Ctx.XForm, 
 			m_Rotation.GetFrameIndex(), 
-			iTick,
+			Ctx.iTick,
 			bPaintThrust,
 			IsRadioactive()
 			);
 
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
+	//	Paint effects in front of the ship.
+
+	Ctx.bInFront = true;
+	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
 
 	//	Paint energy fields
 
-	Ctx.iTick = iTick;
-	Ctx.iVariant = 0;
-	Ctx.iDestiny = GetDestiny();
-	Ctx.iRotation = GetRotation();
 	m_EnergyFields.Paint(Dest, pImage->GetImageViewportSize(), x, y, Ctx);
 
 	//	Paint effects
@@ -4039,14 +4085,14 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			{
 			//	Compute the beginning of this arc
 
-			int iAngle = ((GetDestiny() + iTick) * (15 + i * 7)) % 360;
-			Metric rRadius = rSize * (((GetDestiny() + iTick) * (i * 3716)) % 1000) / 1000.0;
+			int iAngle = ((GetDestiny() + Ctx.iTick) * (15 + i * 7)) % 360;
+			Metric rRadius = rSize * (((GetDestiny() + Ctx.iTick) * (i * 3716)) % 1000) / 1000.0;
 			CVector vFrom(PolarToVector(iAngle, rRadius));
 
 			//	Compute the end of the arc
 
-			iAngle = ((GetDestiny() + iTick + 1) * (15 + i * 7)) % 360;
-			rRadius = rSize * (((GetDestiny() + iTick + 1) * (i * 3716)) % 1000) / 1000.0;
+			iAngle = ((GetDestiny() + Ctx.iTick + 1) * (15 + i * 7)) % 360;
+			rRadius = rSize * (((GetDestiny() + Ctx.iTick + 1) * (i * 3716)) % 1000) / 1000.0;
 			CVector vTo(PolarToVector(iAngle, rRadius));
 
 			//	Draw
@@ -4061,6 +4107,13 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 					0.4);
 			}
 		}
+
+	//	Paint the selection
+
+	if (IsHighlighted() && !Ctx.fNoSelection)
+		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
+
+	//	Known
 
 	m_fKnown = true;
 
@@ -4422,6 +4475,10 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 		m_pController = dynamic_cast<IShipController *>(CObjectClassFactory::Create((OBJCLASSID)dwLoad));
 		m_pController->ReadFromStream(Ctx, this);
 		}
+
+	//	Initialize effects
+
+	m_pClass->InitEffects(this, &m_Effects);
 	}
 
 void CShip::OnSetEventFlags (void)
@@ -4690,8 +4747,13 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	//	Drive damage timer
 
-	if (m_iDriveDamagedTimer > 0)
-		m_iDriveDamagedTimer--;
+	if (m_iDriveDamagedTimer > 0
+			&& (--m_iDriveDamagedTimer == 0))
+		{
+		//	If drive is repaired, update effects
+
+		m_pClass->InitEffects(this, &m_Effects);
+		}
 
 	//	Update armor
 
@@ -4904,6 +4966,12 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			m_fHiddenByNebula = false;
 			}
 		}
+
+	//	Update effects. For efficiency, we only update our effects if we painted
+	//	last tick.
+
+	if (WasPainted())
+		m_Effects.Update(m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
 
 	//	Invalidate
 
@@ -5972,6 +6040,8 @@ void CShip::SetDriveDesc (const DriveDesc *pDesc)
 //	Sets the drive descriptor (or NULL to set back to class)
 
 	{
+	int iOldThrust = m_iThrust;
+
 	if (pDesc)
 		{
 		m_pDriveDesc = pDesc;
@@ -5984,6 +6054,11 @@ void CShip::SetDriveDesc (const DriveDesc *pDesc)
 		m_iThrust = m_pDriveDesc->iThrust;
 		m_rMaxSpeed = m_pDriveDesc->rMaxSpeed;
 		}
+
+	//	If we upgraded, then we reinitialize the effects
+
+	if (m_iThrust != iOldThrust)
+		m_pClass->InitEffects(this, &m_Effects);
 	}
 
 void CShip::SetFireDelay (CInstalledDevice *pWeapon, int iDelay)

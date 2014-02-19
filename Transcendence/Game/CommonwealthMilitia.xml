@@ -11,10 +11,9 @@
 			class=				"Ronin/C"
 			type=				"gunship"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"50"
-			thrust=				"300"
-			maneuver=			"4"
+			thrustRatio=		"5.5"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -37,12 +36,23 @@
 			<Device deviceID="&it25MWReactor;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips1;" imageX="96" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<Names noArticle="true" personalName="true">Jenna</Names>
 
 		<AISettings
@@ -119,9 +129,9 @@
 			class=				"Centurion/X"
 			type=				"heavy gunship"
 
-			mass=				"250"
+			mass=				"90"
 			cargoSpace=			"50"
-			thrust=				"2000"
+			thrustRatio=		"12.0"
 			maneuver=			"3"
 			maxSpeed=			"22"
 
@@ -143,11 +153,26 @@
 			<Device deviceID="&it150MWReactor;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHeliumAssembly;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="320" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="27"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateRight"		posAngle="-98"	posRadius="23"	posZ="0"	rotation="180"/>
+			<Effect type="rotateLeft"		posAngle="-82"	posRadius="23"	posZ="0"	rotation="0"/>
+			<Effect type="rotateLeft"		posAngle="98"	posRadius="23"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<Names noArticle="true" personalName="true">Rama</Names>
 		
@@ -158,12 +183,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-24" y="18"	z="0"/>
-			<NozzlePos x="-24" y="-18"	z="0"/>
-		</DriveImages>
 
 		<Language>
 			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>

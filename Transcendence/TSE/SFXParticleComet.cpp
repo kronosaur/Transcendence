@@ -12,7 +12,9 @@
 
 //	CParticleCometEffectCreator object
 
-CParticleCometEffectCreator::CParticleCometEffectCreator (void) : m_vPoints(NULL),
+CParticleCometEffectCreator::CParticleCometEffectCreator (void) : 
+		IEffectPainter(true),
+		m_vPoints(NULL),
 		m_Particles(NULL)
 
 //	CParticleCometEffectCreator constructor

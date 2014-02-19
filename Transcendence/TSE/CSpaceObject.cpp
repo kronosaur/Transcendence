@@ -197,7 +197,8 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fNonLinearMove(false),
 		m_fHasName(false),
 		m_fAscended(false),
-		m_fOutOfPlaneObj(false)
+		m_fOutOfPlaneObj(false),
+		m_fPainted(false)
 
 
 //	CSpaceObject constructor
@@ -871,6 +872,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fInDamage = false;
 	pObj->m_fDestroyed = false;
 	pObj->m_fPaintNeeded = false;
+	pObj->m_fPainted = false;
 
 	//	Load opaque data
 
@@ -4949,6 +4951,10 @@ void CSpaceObject::Move (const CSpaceObjectList &Barriers, Metric rSeconds)
 	//	Let descendents process the move (if necessary)
 
 	OnMove(m_vOldPos, rSeconds);
+
+	//	Clear painted (until the next tick)
+
+	ClearPainted();
 	}
 
 void CSpaceObject::NotifyOnObjDestroyed (SDestroyCtx &Ctx)
@@ -5014,6 +5020,21 @@ void CSpaceObject::OnObjDestroyed (const SDestroyCtx &Ctx)
 	//	Remove the object if it had a subscription to us
 
 	m_SubscribedObjs.Remove(Ctx.pObj);
+	}
+
+void CSpaceObject::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	Paint
+//
+//	Paint the object
+
+	{
+	PaintDebugVector(Dest, x, y, Ctx);
+
+	OnPaint(Dest, x, y, Ctx);
+
+	SetPainted();
+	ClearPaintNeeded();
 	}
 
 void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)

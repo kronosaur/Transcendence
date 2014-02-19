@@ -109,7 +109,6 @@
 			   
 			mass=				"40"
 			thrustRatio=		"14"
-			maneuver=			"2"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -127,15 +126,20 @@
 			<Device deviceID="&itLancerCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsMediumShips1;" imageX="528" imageY="0" imageWidth="48" imageHeight="48"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-32" y="0"	sendToBack="*"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -159,7 +163,6 @@
 			mass=				"4500"
 			cargoSpace=			"500"
 			thrustRatio=		"1"
-			maneuver=			"10"
 			maxSpeed=			"12"
 
 			cyberDefenseLevel=	"5"
@@ -181,6 +184,12 @@
 			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="180" posAngle="130" posRadius="26" posZ="3"/>
 			<Device deviceID="&itLancerCannon;" secondaryWeapon="true" minFireArc="180" maxFireArc="20" posAngle="230" posRadius="26" posZ="3"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"4"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -211,6 +220,12 @@
 		
 		<Image imageID="&rsMediumShips4;" imageX="512" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="52"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -234,7 +249,6 @@
 			mass=				"50000"
 			cargoSpace=			"25000"
 			thrustRatio=		"0.5"
-			maneuver=			"16"
 			maxSpeed=			"6"
 
 			cyberDefenseLevel=	"8"
@@ -263,6 +277,12 @@
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 			<Device deviceID="&it500MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -293,6 +313,15 @@
 
 		<Image imageID="&rsXenophobeWorldship;" imageX="0" imageY="0" imageWidth="250" imageHeight="250"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="99"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="99"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="93"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="93"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="99"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="99"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"	bringToFront="*"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -710,10 +739,9 @@
 			class=				""
 			type=				"enforcer"
 
-			mass=				"250"
+			mass=				"70"
 			cargoSpace=			"10"
-			thrust=				"1000"
-			maneuver=			"2"
+			thrustRatio=		"7"
 			maxSpeed=			"20"
 
 			leavesWreck=		"35"
@@ -731,12 +759,22 @@
 			<Device deviceID="&itSlamCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="192" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="18"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"20"
 			fireRangeAdj=		"50"
@@ -745,11 +783,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-48" y="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -907,10 +940,9 @@
 			class=				"Ferian miner"
 			type=				""
 
-			mass=				"350"
+			mass=				"150"
 			cargoSpace=			"200"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"4"
 			maxSpeed=			"17"
 
 			leavesWreck=		"40"
@@ -929,6 +961,12 @@
 			<Device deviceID="&itPlasmaTorch;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHeliumAssembly;"/>
 			<Table>
@@ -940,6 +978,10 @@
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"/>
+		</Effects>
 		
 		<Events>
 			<OnDestroy>
@@ -965,10 +1007,9 @@
 			type=				""
 
 			mass=				"1200"
-			cargoSpace=			"20"
-			thrust=				"12000"
-			maneuver=			"3"
+			thrustRatio=		"15"
 			maxSpeed=			"22"
+			cargoSpace=			"20"
 
 			leavesWreck=		"60"
 
@@ -994,11 +1035,21 @@
 			<Device deviceID="&itFerianCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itPteracniumFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsFerianWarrior;" imageWidth="144" imageHeight="144"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
+		</Effects>
 		
 		<Events>
 		</Events>
@@ -1270,7 +1321,6 @@
 			size=				"21"
 			mass=				"50"
 			thrustRatio=		"4"
-			maneuver=			"4"
 			maxSpeed=			"20"
 			cargoSpace=			"50"
 
@@ -1289,6 +1339,12 @@
 			<Device deviceID="&itAClassDefenseScreen;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -1297,6 +1353,11 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="192" imageY="0" imageWidth="48" imageHeight="48"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -1319,8 +1380,7 @@
 
 			mass=				"5"
 			cargoSpace=			"0"
-			thrust=				"50"
-			maneuver=			"1"
+			thrustRatio=		"16"
 			maxSpeed=			"35"
 
 			leavesWreck=		"0"
@@ -1336,18 +1396,23 @@
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
+
 		<Image imageID="&rsSmallShips1;" imageX="128" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<AISettings
 			fireRateAdj=		"30"
 			fireAccuracy=		"70"
 			perception=			"4"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-34" y="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -1997,9 +2062,8 @@
 
 			attributes=			"genericClass, heliotropes"
 			   
-			mass=				"250"
-			thrustRatio=		"4"
-			maneuver=			"4"
+			mass=				"1000"
+			thrustRatio=		"2"
 			maxSpeed=			"15"
 			cargoSpace=			"50"
 
@@ -2017,6 +2081,12 @@
 			<Device deviceID="&itSunflareCannon;"/>
 			<Device deviceID="&itSolonShieldGenerator;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -2043,6 +2113,15 @@
 
 		<Image imageID="&rsMediumShips3;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="-22"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="-10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="-10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="46"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="46"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="42"	posZ="22"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -2063,8 +2142,7 @@
 
 			mass=				"25"
 			cargoSpace=			"5"
-			thrust=				"250"
-			maneuver=			"3"
+			thrustRatio=		"14"
 			maxSpeed=			"20"
 
 			leavesWreck=		"20"
@@ -2083,8 +2161,18 @@
 			<Device deviceID="&itSolarPanelArray;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsSmallShips1;" imageX="224" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -2094,11 +2182,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-34" y="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -2251,10 +2334,9 @@
 			class=				""
 			type=				"interceptor"
 
-			mass=				"25"
+			mass=				"20"
 			cargoSpace=			"5"
-			thrust=				"150"
-			maneuver=			"4"
+			thrustRatio=		"11"
 			maxSpeed=			"30"
 
 			leavesWreck=		"20"
@@ -2271,6 +2353,12 @@
 			<Device deviceID="&itBlaster;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="720" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="5" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<AISettings
@@ -2281,13 +2369,12 @@
 			
 			combatStyle=		"flyby"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-40" y="-3"/>
-			<NozzlePos x="-40" y="3"/>
-		</DriveImages>
-
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="16"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="16"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 	</ShipClass>
 
 	<!-- Himal Refuge -->
@@ -2367,7 +2454,6 @@
 			   
 			mass=				"5000"
 			thrustRatio=		"1.5"
-			maneuver=			"12"
 			maxSpeed=			"8"
 			cargoSpace=			"1000"
 
@@ -2395,6 +2481,12 @@
 			<Device deviceID="&it250MWReactor;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3"
+			rotationAccel=		"0.3"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"250"
@@ -2419,6 +2511,12 @@
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsMediumShips4;" imageX="640" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="55"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="57"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
@@ -2507,10 +2605,9 @@
 			class=				"Kobol gunship"
 			type=				""
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"100"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"9"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -2529,12 +2626,23 @@
 			<Device deviceID="&itOmniTeV9Blaster;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="832" imageY="0" imageWidth="64" imageHeight="64"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"85"
@@ -2543,12 +2651,6 @@
 			combatStyle=		"advanced"
 			/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-26" y="11"	z="0"/>
-			<NozzlePos x="-26" y="-11"	z="0"/>
-		</DriveImages>
-
 	</ShipClass>
 
 	<ShipClass UNID="&scKobolGunshipDualTeV9;"
@@ -2556,10 +2658,9 @@
 			class=				"Kobol gunship"
 			type=				""
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"100"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"9"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -2578,12 +2679,23 @@
 			<Device deviceID="&itDualTeV9Blaster;" />
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="896" imageY="0" imageWidth="64" imageHeight="64"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"15"
 			fireRangeAdj=		"40"
@@ -2593,12 +2705,6 @@
 			combatStyle=		"advanced"
 			/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-26" y="11"	z="0"/>
-			<NozzlePos x="-26" y="-11"	z="0"/>
-		</DriveImages>
-
 	</ShipClass>
 
 	<ShipClass UNID="&scKobolGunshipMissiles;"
@@ -2606,10 +2712,9 @@
 			class=				"Kobol gunship"
 			type=				""
 
-			mass=				"200"
+			mass=				"90"
 			cargoSpace=			"100"
-			thrust=				"1000"
-			maneuver=			"4"
+			thrustRatio=		"9"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -2628,6 +2733,12 @@
 			<Device deviceID="&itRasiermesserLauncher;" posAngle="90" posRadius="20"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itXenotiteFuelRod;"/>
 			<Item chance="50" count="1d12" item="&itGotha400Seeker;"/>
@@ -2636,6 +2747,11 @@
 
 		<Image imageID="&rsMediumShips2;" imageX="960" imageY="0" imageWidth="64" imageHeight="64"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="26"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="26"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"90"
@@ -2643,12 +2759,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-26" y="11"	z="0"/>
-			<NozzlePos x="-26" y="-11"	z="0"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -2727,7 +2837,6 @@
 			   
 			mass=				"50"
 			thrustRatio=		"8"
-			maneuver=			"4"
 			maxSpeed=			"25"
 			cargoSpace=			"5"
 
@@ -2747,6 +2856,12 @@
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item chance="50"	count="2d6"		item="&itHeliumAssembly;"/>
 		</Items>
@@ -2755,12 +2870,11 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="432" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-9" imageFrameCount="0" imageTicksPerFrame="0"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-30" y="-4"/>
-			<NozzlePos x="-30" y="4"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -2783,8 +2897,7 @@
 
 			mass=				"5000"
 			cargoSpace=			"500"
-			thrust=				"1000"
-			maneuver=			"24"
+			thrustRatio=		"0.4"
 			maxSpeed=			"6"
 
 			explosionType=		"&vtBlastExplosion1;"
@@ -2806,6 +2919,12 @@
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"1.0"
+			rotationAccel=		"0.1"
+			/>
+
 		<Items>
 			<Item				count="2d6"	item="&itHeliumAssembly;"/>
 			<Lookup				count="1"	table="&trConsumables3;"/>
@@ -2818,6 +2937,13 @@
 
 		<Image imageID="&rsMediumShips4;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<Escorts>
 			<LevelTable>
 				<Group levelFrequency="cccur v----">
@@ -2861,7 +2987,6 @@
 			   
 			mass=				"5000"
 			thrustRatio=		"1"
-			maneuver=			"8"
 			maxSpeed=			"12"
 			cargoSpace=			"500"
 
@@ -2887,6 +3012,12 @@
 			<Device deviceID="&itClass3Deflector;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -2922,6 +3053,13 @@
 
 		<Image imageID="&rsMediumShips4;" imageX="256" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-167"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="58"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 		
 		<AISettings
@@ -3240,8 +3378,7 @@
 
 			mass=				"100"
 			cargoSpace=			"25"
-			thrust=				"400"
-			maneuver=			"3"
+			thrustRatio=		"7"
 			maxSpeed=			"20"
 
 			leavesWreck=		"50"
@@ -3262,6 +3399,12 @@
 			<Device deviceID="&itNAMIMissileLauncher;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itKM500Missile;"/>
 			<Item count="5d6" item="&itHelium3FuelRod;"/>
@@ -3269,6 +3412,10 @@
 
 		<Image imageID="&rsMediumShips2;" imageX="64" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="0"	rotation="180"	sendToBack="4,16"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -3277,11 +3424,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-45" y="0" sendToBack="4"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -3294,8 +3436,7 @@
 
 			mass=				"50"
 			cargoSpace=			"25"
-			thrust=				"250"
-			maneuver=			"2"
+			thrustRatio=		"7"
 			maxSpeed=			"25"
 
 			leavesWreck=		"35"
@@ -3316,12 +3457,23 @@
 			<Device deviceID="&itClass2Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"18.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips3;" imageX="0" imageY="0" imageWidth="96" imageHeight="96" rotationOffset="-25" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="17"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="17"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"20"
@@ -3330,12 +3482,6 @@
 			
 			combatStyle=		"advanced"
 			/>
-
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-39" y="-8"/>
-			<NozzlePos x="-39" y="8"/>
-		</DriveImages>
 
 	</ShipClass>
 
@@ -3455,7 +3601,6 @@
 			size=				"53"
 			mass=				"200"
 			thrustRatio=		"4"
-			maneuver=			"4"
 			maxSpeed=			"20"
 			cargoSpace=			"25"
 
@@ -3473,6 +3618,12 @@
 			<Device deviceID="&itArbalestCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="1d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -3481,11 +3632,10 @@
 		
 		<Image imageID="&rsOromo;" imageX="0" imageY="0" imageWidth="80" imageHeight="80"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48"/>
-			<NozzlePos x="-58" y="0" z="0"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="37"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -3509,7 +3659,6 @@
 			   
 			mass=				"100"
 			thrustRatio=		"4"
-			maneuver=			"4"
 			maxSpeed=			"18"
 			cargoSpace=			"25"
 
@@ -3528,6 +3677,12 @@
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="3d6" item="&itHelium3FuelRod;"/>
 		</Items>
@@ -3536,12 +3691,11 @@
 		
 		<Image imageID="&rsSotho;" imageX="0" imageY="0" imageWidth="72" imageHeight="72"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-29" y="10"	z="0"/>
-			<NozzlePos x="-29" y="-10"	z="0"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="29"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="29"	posZ="0"	rotation="180"	sendToBack="3,4,16,17"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -3565,7 +3719,6 @@
 			size=				"48"
 			mass=				"300"
 			thrustRatio=		"1.5"
-			maneuver=			"3"
 			maxSpeed=			"16"
 			cargoSpace=			"2000"
 
@@ -3584,6 +3737,12 @@
 			<Device deviceID="&itRecoillessCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 			<Item count="3d20" item="&itSmartCannonShell;"/>
@@ -3593,6 +3752,15 @@
 
 		<Image imageID="&rsT31ArmedTransport;" imageX="0" imageY="0" imageWidth="90" imageHeight="90"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-164"	posRadius="41"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="27"	posRadius="33"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-140"	posRadius="26"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-27"	posRadius="33"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="140"	posRadius="26"	posZ="0"	rotation="90"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -3615,7 +3783,6 @@
 			size=				"65"
 			mass=				"500"
 			thrustRatio=		"1.1"
-			maneuver=			"3"
 			maxSpeed=			"16"
 			cargoSpace=			"5000"
 
@@ -3637,9 +3804,20 @@
 			<Device deviceID="&itBallistaCannon;" omnidirectional="true"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
 		</Items>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="168"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-168"	posRadius="55"	posZ="0"	rotation="180"/>
+		</Effects>
 
 		<Image imageID="&rsT55ArmedTransport;" imageX="0" imageY="0" imageWidth="120" imageHeight="120"/>
 
@@ -3665,7 +3843,6 @@
 			size=				"24"
 			mass=				"25"
 			thrustRatio=		"8"
-			maneuver=			"4"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
 
@@ -3683,15 +3860,20 @@
 			<Device deviceID="&itRecoillessCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<!-- Image and Effects -->
 		
 		<Image imageID="&rsZulu;" imageX="0" imageY="0" imageWidth="55" imageHeight="55"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-16" y="-10"	z="0"/>
-			<NozzlePos x="-16" y="10"	z="0"/>
-		</DriveImages>
+		<Effects>
+			<Effect type="thrustMain"		posAngle="150"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-150"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
 		
 		<!-- AI and Behavior -->
 		
@@ -3718,7 +3900,6 @@
 			size=				"24"
 			mass=				"25"
 			thrustRatio=		"8"
-			maneuver=			"4"
 			maxSpeed=			"20"
 			cargoSpace=			"5"
 
@@ -3736,16 +3917,21 @@
 			<Device deviceID="&itHeavyRecoillessCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsZulu;" imageX="55" imageY="0" imageWidth="55" imageHeight="55"/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-24"/>
-			<NozzlePos x="-16" y="-10"	z="0"/>
-			<NozzlePos x="-16" y="10"	z="0"/>
-		</DriveImages>
-
+		<Effects>
+			<Effect type="thrustMain"		posAngle="150"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-150"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -4540,10 +4726,9 @@
 			class=				""
 			type=				"gunship"
 
-			mass=				"100"
+			mass=				"60"
 			cargoSpace=			"10"
-			thrust=				"700"
-			maneuver=			"3"
+			thrustRatio=		"12"
 			maxSpeed=			"18"
 
 			leavesWreck=		"30"
@@ -4563,6 +4748,12 @@
 			<Device deviceID="&itMonopoleDeflector;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
 		<Items>
 			<Item count="20d20"	item="&itAkan30CannonShell;" />
 			<Table>
@@ -4574,6 +4765,11 @@
 
 		<Image imageID="&rsMediumShips1;" imageX="624" imageY="0" imageWidth="48" imageHeight="48"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="130"	posRadius="12"	posZ="8"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-130"	posRadius="12"	posZ="8"	rotation="180"	bringToFront="*"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"25"
 			fireRangeAdj=		"60"
@@ -4583,11 +4779,6 @@
 			combatStyle=		"advanced"
 			/>
 
-		<DriveImages>
-			<NozzleImage imageID="&rsDriveExhaust;" imageX="48" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
-			<NozzlePos x="-32" y="10"/>
-			<NozzlePos x="-32" y="-10"/>
-		</DriveImages>
 	</ShipClass>
 
 	<!-- Ranx Dreadnought -->
@@ -4628,6 +4819,12 @@
 			<Device deviceID="&itPatchSpider;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"2.0"
+			rotationAccel=		"0.2"
+			/>
+
 		<Interior>
 			<Compartment name="interior"
 					hitPoints=	"300"
@@ -4659,6 +4856,12 @@
 
 		<Image imageID="&rsRanxDreadnought;" imageX="0" imageY="0" imageWidth="280" imageHeight="280"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="175"	posRadius="136"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="136"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-175"	posRadius="136"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -4828,7 +5031,6 @@
 			mass=				"5000"
 			reactorPower=		"5000"
 			thrustRatio=		"0.5"
-			maneuver=			"24"
 			maxSpeed=			"6"
 			maxDevices=			"8"
 			cargoSpace=			"500"
@@ -4848,6 +5050,12 @@
 		<Devices>
 			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" omnidirectional="true"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"1"
+			rotationAccel=		"0.1"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -4879,6 +5087,28 @@
 
 		<Image imageID="&rsMediumShips4;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="-20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="-12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="12"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			
+			<Effect type="thrustMain"		posAngle="132"	posRadius="52"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="128"	posRadius="57"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-132"	posRadius="52"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-128"	posRadius="57"	posZ="20"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
 		<!-- AI and Behavior -->
 
 		<AISettings
@@ -4950,8 +5180,7 @@
 
 			mass=				"50"
 			cargoSpace=			"50"
-			thrust=				"120"
-			maneuver=			"4"
+			thrustRatio=		"4"
 			maxSpeed=			"18"
 
 			leavesWreck=		"35"
@@ -4969,8 +5198,19 @@
 			<Device deviceID="&itWasteCannon;"/>
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
 		<Image imageID="&rsMediumShips1;" imageX="384" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<AISettings
 			fireRateAdj=		"15"
 			fireAccuracy=		"85"
@@ -4990,8 +5230,7 @@
 
 			mass=				"150"
 			cargoSpace=			"150"
-			thrust=				"200"
-			maneuver=			"8"
+			thrustRatio=		"2.5"
 			maxSpeed=			"18"
 
 			leavesWreck=		"55"
@@ -5012,6 +5251,12 @@
 			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" />
 		</Devices>
 
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
 		<Items>
 			<Item count="4d6" item="&itXM300Missile;"/>
 			<Item count="4d6" item="&itHelium3FuelRod;"/>
@@ -5019,6 +5264,11 @@
 
 		<Image imageID="&rsMediumShips2;" imageX="128" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="22"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="22"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
@@ -5458,7 +5708,6 @@
 
 			mass=				"5000"
 			thrustRatio=		"1.0"
-			maneuver=			"12"
 			maxSpeed=			"13"
 			cargoSpace=			"1000"
 
@@ -5480,6 +5729,12 @@
 			<Device deviceID="&itYoroiS500;"/>
 			<Device deviceID="&it250MWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			rotationCount=		"20"
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -5505,6 +5760,12 @@
 		<!-- Image and Effects -->
 
 		<Image imageID="&rsMediumShips3;" imageX="480" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="24"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="23"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="24"	posZ="-20"	rotation="180"	sendToBack="*"	effect="&efMainThrusterLarge;"/>
+		</Effects>
 
 		<!-- AI and Behavior -->
 
