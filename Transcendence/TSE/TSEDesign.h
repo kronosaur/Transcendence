@@ -719,6 +719,31 @@ struct SViewportPaintCtx
 	int iMaxLength;						//	Max length of object (used for projectiles); -1 == no limit
 	};
 
+class CMapViewportCtx
+	{
+	public:
+		CMapViewportCtx (void);
+		CMapViewportCtx (const CVector &vCenter, const RECT &rcView, Metric rMapScale);
+
+		inline const CVector &GetCenterPos (void) const { return m_vCenter; }
+		inline const RECT &GetViewportRect (void) const { return m_rcView; }
+		bool IsInViewport (CSpaceObject *pObj) const;
+		void PaintGrid (CG16bitImage &Dest, const CVector &vPos, Metric rWidth, Metric rInterval = 100.0 * LIGHT_SECOND) const;
+		void Transform (const CVector &vPos, int *retx, int *rety) const;
+
+	private:
+		CVector m_vCenter;				//	Center of viewport in global coordinate
+		RECT m_rcView;					//	RECT of viewport
+		Metric m_rMapScale;				//	Map scale (klicks per pixel)
+
+		CVector m_vUR;					//	Upper-right of viewport bounds (in global coordinates)
+		CVector m_vLL;					//	Lower-left of viewport bounds
+		int m_xCenter;					//	Center of viewport
+		int m_yCenter;					//		(in viewport coordinate)
+
+		ViewportTransform m_Trans;		//	Transform
+	};
+
 struct SPointInObjectCtx
 	{
 	SPointInObjectCtx (void) :
@@ -4152,10 +4177,10 @@ class CShipClass : public CDesignType
 					int iTick, 
 					bool bThrusting,
 					bool bRadioactive);
-		void PaintMap (CG16bitImage &Dest, 
+		void PaintMap (CMapViewportCtx &Ctx, 
+					CG16bitImage &Dest, 
 					int x, 
 					int y, 
-					const ViewportTransform &Trans, 
 					int iDirection, 
 					int iTick, 
 					bool bThrusting,

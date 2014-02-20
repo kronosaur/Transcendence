@@ -3087,25 +3087,27 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	Dest.ResetClipRect();
 	}
 
-void CSystem::PaintViewportGrid (CG16bitImage &Dest, const RECT &rcView, const ViewportTransform &Trans, const CVector &vCenter, Metric rGridSize)
+void CSystem::PaintViewportGrid (CMapViewportCtx &Ctx, CG16bitImage &Dest, Metric rGridSize)
 
 //	PaintViewportGrid
 //
 //	Paints a grid
 
 	{
+	const RECT &rcView = Ctx.GetViewportRect();
+
 	int cxWidth = RectWidth(rcView);
 	int cyHeight = RectHeight(rcView);
 
 	//	Figure out where the center is
 
 	int xCenter, yCenter;
-	Trans.Transform(vCenter, &xCenter, &yCenter);
+	Ctx.Transform(Ctx.GetCenterPos(), &xCenter, &yCenter);
 
 	//	Figure out the grid spacing
 
 	int xSpacing, ySpacing;
-	Trans.Transform(vCenter + CVector(rGridSize, -rGridSize), &xSpacing, &ySpacing);
+	Ctx.Transform(Ctx.GetCenterPos() + CVector(rGridSize, -rGridSize), &xSpacing, &ySpacing);
 	xSpacing -= xCenter;
 	ySpacing -= yCenter;
 	ySpacing = xSpacing;
@@ -3206,9 +3208,8 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	CVector vUR[RANGE_INDEX_COUNT];
 	CVector vLL[RANGE_INDEX_COUNT];
+	Metric rMaxDist2[RANGE_INDEX_COUNT];
 
-	CVector vDiagonal(rKlicksPerPixel * (Metric)(RectWidth(rcView)) / 2,
-				rKlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
 	for (i = 0; i < RANGE_INDEX_COUNT; i++)
 		{
 		Metric rRange = RangeIndex2Range(i);
@@ -3221,9 +3222,18 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		CVector vRange(rRange, rRange);
 		vUR[i] = pCenter->GetPos() + vRange;
 		vLL[i] = pCenter->GetPos() - vRange;
+		rMaxDist2[i] = rRange * rRange;
 		}
 
 	int iPerception = pCenter->GetPerception();
+
+	//	For planetary and stellar objects we use a larger box to make sure that 
+	//	we include it even if it is slightly off screen.
+
+	CVector vLargeDiagonal(rKlicksPerPixel * ((RectWidth(rcView) / 2) + 128),
+				rKlicksPerPixel * ((RectHeight(rcView) / 2) + 128));
+	CVector vLargeUR = pCenter->GetPos() + vLargeDiagonal;
+	CVector vLargeLL = pCenter->GetPos() - vLargeDiagonal;
 
 	//	Compute the transformation to map world coordinates to the viewport
 
@@ -3267,45 +3277,47 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
+		if (pObj == NULL)
+			continue;
 
-		if (pObj)
+		int iRange;
+		if (!pObj->IsInactive()
+				&& !pObj->IsVirtual()
+				&& pObj->InBox(vLargeUR, vLargeLL)
+				&& (pObj->GetScale() == scaleStar 
+					|| pObj->GetScale() == scaleWorld 
+					|| ((iRange = pObj->GetDetectionRangeIndex(iPerception)) < RANGE_INDEX_COUNT
+						&& pCenter->GetDistance2(pObj) <= rMaxDist2[iRange])))
 			{
-			int iRange = pObj->GetDetectionRangeIndex(iPerception);
+			//	Figure out the position of the object in pixels
 
-			if (pObj->InBox(vUR[iRange], vLL[iRange]) 
-					&& !pObj->IsInactive() 
-					&& !pObj->IsVirtual())
+			int x, y;
+			Trans.Transform(pObj->GetPos(), &x, &y);
+
+			//	Paint the object in the viewport
+
+			pObj->PaintLRS(Dest, x, y, Trans);
+
+			//	This object is now in the LRS
+
+			bool bNewInLRS = pObj->SetPOVLRS();
+
+			//	If an enemy, keep track
+
+			if (pCenter->IsEnemy(pObj))
 				{
-				//	Figure out the position of the object in pixels
+				if (bNewInLRS 
+						&& pObj->GetCategory() == CSpaceObject::catShip)
+					bNewEnemies = true;
 
-				int x, y;
-				Trans.Transform(pObj->GetPos(), &x, &y);
-
-				//	Paint the object in the viewport
-
-				pObj->PaintLRS(Dest, x, y, Trans);
-
-				//	This object is now in the LRS
-
-				bool bNewInLRS = pObj->SetPOVLRS();
-
-				//	If an enemy, keep track
-
-				if (pCenter->IsEnemy(pObj))
-					{
-					if (bNewInLRS 
-							&& pObj->GetCategory() == CSpaceObject::catShip)
-						bNewEnemies = true;
-
-					m_fEnemiesInLRS = true;
-					}
+				m_fEnemiesInLRS = true;
 				}
-			else
-				{
-				//	This object is not in the LRS
+			}
+		else
+			{
+			//	This object is not in the LRS
 
-				pObj->ClearPOVLRS();
-				}
+			pObj->ClearPOVLRS();
 			}
 		}
 
@@ -3325,43 +3337,32 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	int i;
 	int x, y;
 
+	//	Initialize context
+
+	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, rMapScale);
+
 	//	Clear the rect
 
 	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), g_rgbSpaceColor);
 
-	//	Figure out the boundary of the viewport in system coordinates
-
-	int xCenter = rcView.left + RectWidth(rcView) / 2;
-	int yCenter = rcView.top + RectHeight(rcView) / 2;
-
-	CVector vDiagonal(rMapScale * (Metric)(RectWidth(rcView) + 256) / 2,
-				rMapScale * MAP_VERTICAL_ADJUST * (Metric)(RectHeight(rcView) + 256) / 2);
-	CVector vUR = pCenter->GetPos() + vDiagonal;
-	CVector vLL = pCenter->GetPos() - vDiagonal;
-
-	//	Compute the transformation to map world coordinates to the viewport
-
-	ViewportTransform Trans(pCenter->GetPos(), 
-			rMapScale, 
-			rMapScale * MAP_VERTICAL_ADJUST,
-			xCenter, 
-			yCenter);
-
-	//	Paint the grid
-
-	PaintViewportGrid(Dest, rcView, Trans, CVector(), 100.0 * LIGHT_SECOND);
-
 	//	Paint space environment
 
 	if (m_pEnvironment)
-		m_pEnvironment->PaintMap(Dest, vUR, vLL, Trans);
+		m_pEnvironment->PaintMap(Ctx, Dest);
 
 	//	Paint the glow from all stars
 
 	for (i = 0; i < m_Stars.GetCount(); i++)
 		{
 		CSpaceObject *pStar = m_Stars.GetObj(i);
-		Trans.Transform(pStar->GetPos(), &x, &y);
+
+		//	Paint a grid for the star
+
+		Ctx.PaintGrid(Dest, pStar->GetPos(), 10.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
+
+		//	Paint glow
+
+		Ctx.Transform(pStar->GetPos(), &x, &y);
 		int iGlowRadius = (int)((pStar->GetMaxLightDistance() * LIGHT_SECOND) / rMapScale);
 
 		DrawAlphaGradientCircle(Dest, x, y, iGlowRadius, (WORD)CG16bitImage::PixelFromRGB(pStar->GetSpaceColor()));
@@ -3375,18 +3376,18 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 		if (pObj 
 				&& (pObj->GetScale() == scaleStar || pObj->GetScale() == scaleWorld)
-				&& (pObj->GetMapOrbit() || pObj->InBox(vUR, vLL)))
+				&& (pObj->GetMapOrbit() || Ctx.IsInViewport(pObj)))
 			{
 			//	Figure out the position of the object in pixels
 
-			Trans.Transform(pObj->GetPos(), &x, &y);
+			Ctx.Transform(pObj->GetPos(), &x, &y);
 
 			//	Paint the object in the viewport
 
-			pObj->PaintMap(Dest, 
+			pObj->PaintMap(Ctx,
+					Dest, 
 					x,
-					y,
-					Trans);
+					y);
 			}
 		}
 
@@ -3397,20 +3398,20 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		CSpaceObject *pObj = GetObject(i);
 
 		if (pObj 
-				&& pObj->InBox(vUR, vLL) 
 				&& (pObj->GetScale() == scaleStructure
-					|| pObj->GetScale() == scaleShip))
+					|| pObj->GetScale() == scaleShip)
+				&& Ctx.IsInViewport(pObj))
 			{
 			//	Figure out the position of the object in pixels
 
-			Trans.Transform(pObj->GetPos(), &x, &y);
+			Ctx.Transform(pObj->GetPos(), &x, &y);
 
 			//	Paint the object in the viewport
 
-			pObj->PaintMap(Dest, 
+			pObj->PaintMap(Ctx,
+					Dest, 
 					x,
-					y,
-					Trans);
+					y);
 
 			//	Paint destination marker
 
@@ -3424,8 +3425,8 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	//	Paint the POV
 
-	Trans.Transform(pCenter->GetPos(), &x, &y);
-	pCenter->PaintMap(Dest, x, y, Trans);
+	Ctx.Transform(pCenter->GetPos(), &x, &y);
+	pCenter->PaintMap(Ctx, Dest, x, y);
 	}
 
 void CSystem::PaintViewportMapObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, CSpaceObject *pObj)
@@ -3437,28 +3438,14 @@ void CSystem::PaintViewportMapObject (CG16bitImage &Dest, const RECT &rcView, CS
 	{
 	int x, y;
 
-	//	Figure out the boundary of the viewport in system coordinates
+	//	Initialize context
 
-	int xCenter = rcView.left + RectWidth(rcView) / 2;
-	int yCenter = rcView.top + RectHeight(rcView) / 2;
-
-	CVector vDiagonal(g_MapKlicksPerPixel * (Metric)(RectWidth(rcView) + 256) / 2,
-				g_MapKlicksPerPixel * (Metric)(RectHeight(rcView) + 256) / 2);
-	CVector vUR = pCenter->GetPos() + vDiagonal;
-	CVector vLL = pCenter->GetPos() - vDiagonal;
-
-	//	Compute the transformation to map world coordinates to the viewport
-
-	ViewportTransform Trans(pCenter->GetPos(), 
-			g_MapKlicksPerPixel, 
-			g_MapKlicksPerPixel * MAP_VERTICAL_ADJUST,
-			xCenter, 
-			yCenter);
+	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, g_KlicksPerPixel);
 
 	//	Paint the obj
 
-	Trans.Transform(pObj->GetPos(), &x, &y);
-	pObj->PaintMap(Dest, x, y, Trans);
+	Ctx.Transform(pObj->GetPos(), &x, &y);
+	pObj->PaintMap(Ctx, Dest, x, y);
 	}
 
 void CSystem::PlaceInGate (CSpaceObject *pObj, CSpaceObject *pGate)

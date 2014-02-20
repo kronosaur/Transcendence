@@ -3249,7 +3249,7 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 		}
 	}
 
-void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
+void CStation::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
 
 //	PaintMap
 //
@@ -3262,7 +3262,7 @@ void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 	//	Draw an orbit
 
 	if (m_pMapOrbit)
-		m_pMapOrbit->Paint(Dest, Trans, RGB_ORBIT_LINE);
+		m_pMapOrbit->Paint(Ctx, Dest, RGB_ORBIT_LINE);
 
 	//	Draw the station
 

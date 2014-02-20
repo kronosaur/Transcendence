@@ -1239,6 +1239,7 @@ class C3DConversion
 	public:
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, int *retx, int *rety);
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVector *retvPos);
+		static void CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ, CVector *retvPos);
 		static void CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety);
 		inline void CleanUp (void) { m_Cache.DeleteAll(); }
 		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing);

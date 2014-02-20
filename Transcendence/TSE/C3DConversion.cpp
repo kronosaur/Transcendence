@@ -91,6 +91,40 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVec
 	retvPos->SetY(rYp);
 	}
 
+void C3DConversion::CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ, CVector *retvPos)
+
+//	CalcCoord
+//
+//	Calculates the coordinate
+
+	{
+	Metric rX = vPos.GetX() / rScale;
+	Metric rY = vPos.GetY() / rScale;
+	Metric rZ = -rPosZ / rScale;
+
+	//	Convert to global coordinates (which we align on the camera,
+	//	in effect we rotate the object to align to the camera).
+
+	Metric rXg = rX;
+	Metric rYg = rY * g_rK2 - rZ * g_rK1;
+	Metric rZg = rY * g_rK1 + rZ * g_rK2;
+
+	rZg += 2.0f;
+
+	Metric rD = rScale * 2.0f;
+
+	//	Now convert to projection coordinates
+
+	Metric rDen = rZg / rD;
+	Metric rXp = rXg / rDen;
+	Metric rYp = rYg / rDen;
+
+	//	Done
+
+	retvPos->SetX(rXp);
+	retvPos->SetY(rYp);
+	}
+
 void C3DConversion::CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety)
 
 //	CalcCoordCompatible

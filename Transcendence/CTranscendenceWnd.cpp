@@ -145,10 +145,8 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				else
 					{
 					SetProgramState(psPaintingSRS);
-					g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, dwViewportFlags);
+					g_pUniverse->PaintPOV(TheScreen, m_rcScreen, dwViewportFlags);
 					SetProgramState(psAnimating);
-
-					PaintMainScreenBorder();
 					}
 
 				if (m_iDamageFlash > 0)
@@ -350,8 +348,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
-				PaintMainScreenBorder();
+				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);
@@ -381,7 +378,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				if (--m_iCountdown == 0)
 					{
-					g_pHI->HICommand(CONSTLIT("gameEnterStargate"));
+					g_pHI->HICommand(CONSTLIT("gameInsideStargate"));
 					m_State = gsLeavingStargate;
 					m_iCountdown = TICKS_AFTER_GATE;
 					}
@@ -398,8 +395,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
-				PaintMainScreenBorder();
+				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);

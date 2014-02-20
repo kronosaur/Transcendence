@@ -206,6 +206,7 @@
     <ClCompile Include="CIntegralRotation.cpp" />
     <ClCompile Include="CIntegralRotationDesc.cpp" />
     <ClCompile Include="CItemEnhancementStack.cpp" />
+    <ClCompile Include="CMapViewportCtx.cpp" />
     <ClCompile Include="CMissionList.cpp" />
     <ClCompile Include="CMoveCtx.cpp" />
     <ClCompile Include="CMultiverseNews.cpp" />

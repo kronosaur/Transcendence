@@ -610,7 +610,7 @@ class COrbit
 		inline const Metric &GetRotation (void) const { return m_rRotation; }
 		inline const Metric &GetSemiMajorAxis (void) const { return m_rSemiMajorAxis; }
 		inline bool IsNull (void) const { return (m_rSemiMajorAxis == 0.0); }
-		void Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF rgbColor);
+		void Paint (CMapViewportCtx &Ctx, CG16bitImage &Dest, COLORREF rgbColor);
 
 	private:
 		CVector m_vFocus;				//	Focus of orbit
@@ -929,7 +929,7 @@ class CEnvironmentGrid
 		inline bool HasMoreTiles (STileMapEnumerator &i) const { return m_Map.HasMore(i); }
 		void MarkImages (void);
 		void Paint (CG16bitImage &Dest, SViewportPaintCtx &Ctx, const CVector &vUR, const CVector &vLL);
-		void PaintMap (CG16bitImage &Dest, const CVector &vUR, const CVector &vLL, const ViewportTransform &Trans);
+		void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest);
 		void ReadFromStream (SLoadCtx &Ctx);
 		void SetTileType (int xTile, int yTile, CSpaceEnvironmentType *pEnv);
 		CVector TileToVector (int x, int y) const;
@@ -1145,7 +1145,7 @@ class CSystem : public CObject
 		void NameObject (const CString &sName, CSpaceObject *pObj);
 		CVector OnJumpPosAdj (CSpaceObject *pObj, const CVector &vPos);
 		void PaintViewport (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, DWORD dwFlags);
-		void PaintViewportGrid (CG16bitImage &Dest, const RECT &rcView, const ViewportTransform &Trans, const CVector &vCenter, Metric rGridSize);
+		void PaintViewportGrid (CMapViewportCtx &Ctx, CG16bitImage &Dest, Metric rGridSize);
 		void PaintViewportObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, CSpaceObject *pObj);
 		void PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, bool *retbNewEnemies);
 		void PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, Metric rMapScale);
@@ -2379,7 +2379,7 @@ class CSpaceObject : public CObject
 		virtual void OnSystemCreated (void) { }
 		virtual void OnSystemLoaded (void) { }
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans) { }
+		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y) { }
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos) { return false; }
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos) { return PointInObject(vObjPos, vPointPos); }
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx) { }

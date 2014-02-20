@@ -1032,7 +1032,7 @@ class CShip : public CSpaceObject
 		virtual void MakeParalyzed (int iTickCount = -1);
 		virtual void MakeRadioactive (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
+		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx);
@@ -1351,7 +1351,7 @@ class CStation : public CSpaceObject
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnSystemCreated (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
+		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void PlaceAtRandomDockPort (CSpaceObject *pObj) { m_DockingPorts.DockAtRandomPort(this, pObj); }
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);

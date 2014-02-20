@@ -646,18 +646,14 @@ void CTranscendenceWnd::PaintMap (void)
 			}
 		}
 
-	g_pUniverse->PaintPOVMap(TheScreen, m_rcMainScreen, rScale);
-
-	//	Paint the edges
-
-	PaintMainScreenBorder();
+	g_pUniverse->PaintPOVMap(TheScreen, m_rcScreen, rScale);
 
 	//	Paint some text, including the system name
 
 	CSpaceObject *pPOV = g_pUniverse->GetPOV();
 	if (pPOV)
 		{
-		int x = m_rcMainScreen.left + 2 * m_Fonts.LargeBold.GetAverageWidth();
+		int x = m_rcScreen.left + 2 * m_Fonts.LargeBold.GetAverageWidth();
 		int y;
 		if (GetPlayer()->IsMapHUDActive())
 			y = m_TargetDisplay.GetRect().top - 3 * m_Fonts.Header.GetHeight();

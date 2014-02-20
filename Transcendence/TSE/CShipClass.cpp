@@ -3195,10 +3195,10 @@ void CShipClass::Paint (CG16bitImage &Dest,
 #endif
 	}
 
-void CShipClass::PaintMap (CG16bitImage &Dest, 
+void CShipClass::PaintMap (CMapViewportCtx &Ctx, 
+						CG16bitImage &Dest, 
 						int x, 
 						int y, 
-						const ViewportTransform &Trans, 
 						int iDirection, 
 						int iTick,
 						bool bThrusting,

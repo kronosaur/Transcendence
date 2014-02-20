@@ -5210,7 +5210,7 @@ void CShip::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform 
 	m_fIdentified = true;
 	}
 
-void CShip::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
+void CShip::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
 
 //	Paint
 //
@@ -5224,10 +5224,10 @@ void CShip::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform 
 
 	if (GetUniverse()->GetPOV() == this)
 		{
-		m_pClass->PaintMap(Dest, 
+		m_pClass->PaintMap(Ctx,
+				Dest, 
 				x, 
 				y, 
-				Trans, 
 				m_Rotation.GetFrameIndex(), 
 				GetSystem()->GetTick(),
 				m_pController->GetThrust() && !IsParalyzed(),

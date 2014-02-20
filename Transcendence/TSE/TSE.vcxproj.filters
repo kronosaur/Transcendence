@@ -763,5 +763,8 @@
     <ClCompile Include="CObjectEffectList.cpp">
       <Filter>Source Files\Ships</Filter>
     </ClCompile>
+    <ClCompile Include="CMapViewportCtx.cpp">
+      <Filter>Source Files\StarSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
