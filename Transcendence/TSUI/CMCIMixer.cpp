@@ -349,6 +349,10 @@ void CMCIMixer::ProcessFadeOut (const SRequest &Request)
 //	Fade out
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("ProcessFadeOut");
+#endif
+
 	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
 
 	int iStartPos = GetCurrentPlayPos();
@@ -390,6 +394,10 @@ void CMCIMixer::ProcessPlay (const SRequest &Request)
 //	Play the file
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("ProcessPlay: %s", Request.pTrack->GetFilespec());
+#endif
+
 	//	Stop all channels
 
 	ProcessStop(Request);
@@ -407,6 +415,11 @@ void CMCIMixer::ProcessPlay (const SRequest &Request)
 		return;
 		}
 
+	//	Set state (we need to do this before we play because the callback inside
+	//	MCIWndPlay needs m_pNowPlaying to be valid).
+
+	m_pNowPlaying = Request.pTrack;
+
 	//	Seek to the proper position
 
 	MCIWndSeek(hMCI, Request.iPos);
@@ -419,8 +432,6 @@ void CMCIMixer::ProcessPlay (const SRequest &Request)
 		LogError(hMCI, sFilespec);
 		return;
 		}
-
-	m_pNowPlaying = Request.pTrack;
 	}
 
 void CMCIMixer::ProcessPlayPause (const SRequest &Request)
@@ -430,6 +441,10 @@ void CMCIMixer::ProcessPlayPause (const SRequest &Request)
 //	Pause and play current track.
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("ProcessPlayPause");
+#endif
+
 	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
 
 	int iMode = MCIWndGetMode(hMCI, 0, NULL);
@@ -517,7 +532,14 @@ void CMCIMixer::ProcessStop (const SRequest &Request)
 	int i;
 
 	for (i = 0; i < m_Channels.GetCount(); i++)
-		MCIWndStop(m_Channels[i].hMCI);
+		if (m_Channels[i].iState == statePlaying)
+			{
+#ifdef DEBUG_SOUNDTRACK
+			kernelDebugLogMessage("ProcessStop");
+#endif
+
+			MCIWndStop(m_Channels[i].hMCI);
+			}
 
 	m_pNowPlaying = NULL;
 	}
@@ -529,6 +551,10 @@ void CMCIMixer::ProcessWaitForPos (const SRequest &Request)
 //	Waits until the current playback position is at the given position.
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("ProcessWaitForPos");
+#endif
+
 	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
 
 	while (true)

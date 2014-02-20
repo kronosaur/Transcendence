@@ -81,7 +81,7 @@
 //	
 //	...wait for timer...
 //
-//	CTranscendenceController::HICommand("cmdGameEnterStargate")
+//	CTranscendenceController::HICommand("gameInsideStargate")
 //		CTranscendenceModel::OnPlayerTraveledThroughGate
 //			Create or load system
 //			UpdateExtended
@@ -104,6 +104,7 @@
 #include "Transcendence.h"
 
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
+#define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
 #define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
@@ -1499,6 +1500,10 @@ void CTranscendenceModel::OnPlayerEnteredGate (CTopologyNode *pDestNode, const C
 	//	Done
 
 	m_iState = statePlayerInGateOldSystem;
+
+	//	Notify the controller
+
+	m_HI.HICommand(CMD_GAME_ENTER_STARGATE, pDestNode);
 	}
 
 void CTranscendenceModel::OnPlayerExitedGate (void)

@@ -38,7 +38,7 @@ CSoundtrackManager::~CSoundtrackManager (void)
 		delete m_pIntroTrack;
 	}
 
-CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAttrib) const
+CSoundType *CSoundtrackManager::CalcGameTrackToPlay (CTopologyNode *pNode, const CString &sRequiredAttrib) const
 
 //	CalcGameTrackToPlay
 //
@@ -46,7 +46,6 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAtt
 
 	{
 	int i;
-	CSystem *pSystem = g_pUniverse->GetCurrentSystem();
 
 	//	Create a probability table of tracks to play.
 
@@ -70,7 +69,7 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAtt
 		//	Calculate the chance for this track based on location
 		//	criteria.
 
-		int iChance = (pSystem ? pSystem->CalcMatchStrength(pTrack->GetLocationCriteria()) : 1000);
+		int iChance = (pNode ? pNode->CalcMatchStrength(pTrack->GetLocationCriteria()) : (pTrack->GetLocationCriteria().MatchesAll() ? 1000 : 0));
 		if (iChance == 0)
 			continue;
 
@@ -120,15 +119,27 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (const CString &sRequiredAtt
 	//	If the table is empty, then there is nothing to play.
 
 	if (Table.GetCount() == 0)
+		{
+#ifdef DEBUG_SOUNDTRACK
+		kernelDebugLogMessage("Unable to find soundtrack for state %d.", m_iGameState);
+#endif
 		return NULL;
+		}
 
 	//	Otherwise, roll out of the first table.
 
 	TProbabilityTable<CSoundType *> &Entry = Table[0];
-	return Entry.GetAt(Entry.RollPos());
+	CSoundType *pResult = Entry.GetAt(Entry.RollPos());
+
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("State: %d: Found %d tracks in priority %d table.", m_iGameState, Table[0].GetCount(), Table.GetKey(0));
+	kernelDebugLogMessage("Chose: %s", (pResult ? pResult->GetFilespec() : CONSTLIT("(none)")));
+#endif
+
+	return pResult;
 	}
 
-CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState) const
+CSoundType *CSoundtrackManager::CalcTrackToPlay (CTopologyNode *pNode, EGameStates iNewState) const
 
 //	CalcTrackToPlay
 //
@@ -143,14 +154,14 @@ CSoundType *CSoundtrackManager::CalcTrackToPlay (EGameStates iNewState) const
 			return m_pIntroTrack;
 
 		case stateGameCombat:
-			return CalcGameTrackToPlay(ATTRIB_COMBAT_SOUNDTRACK);
+			return CalcGameTrackToPlay(pNode, ATTRIB_COMBAT_SOUNDTRACK);
 
 		case stateGameTravel:
-			return CalcGameTrackToPlay(ATTRIB_TRAVEL_SOUNDTRACK);
+			return CalcGameTrackToPlay(pNode, ATTRIB_TRAVEL_SOUNDTRACK);
 
 		default:
 			//	For other states the caller must set a track explicitly.
-			return m_pNowPlaying;
+			return NULL;
 		}
 	}
 
@@ -187,60 +198,86 @@ void CSoundtrackManager::NotifyEndCombat (void)
 //	Player is out of combat
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("Combat done.");
+#endif
+
 	//	If we're not in combat, then nothing to do
 
 	if (m_iGameState != stateGameCombat
-			|| m_bInTransition
-			|| !m_bEnabled)
+			|| m_bInTransition)
 		return;
 
 	//	Figure out which track to play. If there is nothing to play then we're
 	//	done.
 
-	CSoundType *pTrack = CalcTrackToPlay(stateGameTravel);
-	if (pTrack == NULL)
-		return;
+	if (m_bEnabled)
+		{
+		CSoundType *pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameTravel);
+		if (pTrack == NULL)
+			return;
 
-	//	Transition
+		//	Transition
 
-	TransitionTo(pTrack, pTrack->GetNextPlayPos());
+		TransitionTo(pTrack, pTrack->GetNextPlayPos());
+		m_bInTransition = true;
+		}
 
 	//	Remember our state
 
 	m_iGameState = stateGameTravel;
-	m_bInTransition = true;
 	}
 
-void CSoundtrackManager::NotifyEnterSystem (void)
+void CSoundtrackManager::NotifyEnterSystem (CTopologyNode *pNode)
 
 //	NotifyEnterSystem
 //
-//	Player has entered a new system.
+//	Player has entered a new system. At the beginning of the game this is called
+//	when we appear in the system. When passing through a gate, this is called
+//	just as the player hits 'G' to enter the gate (to give us a chance to
+//	transition music).
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("Entered system.");
+#endif
+
+	//	If no node passed in then assume the current node. Generally, when
+	//	passing through a stargate we get an explicit node because we're still 
+	//	in the old system.
+
+	if (pNode == NULL)
+		pNode = g_pUniverse->GetCurrentTopologyNode();
+
+	//	Reset some variables.
+
 	m_bSystemTrackPlayed = false;
 	m_bStartCombatWhenUndocked = false;
 
-	//	We're not already in travel mode, we set us there.
+	//	If we're still in the prologue then let the music continue to play until
+	//	the track is done (but switch our state).
 
-	if (m_iGameState != stateGameTravel)
+	if (m_iGameState == stateGamePrologue && m_pNowPlaying)
 		{
-		//	Unless we're transitioning from the prologue,
-		//	stop playing current track
-
-		if (m_iGameState != stateGamePrologue)
-			{
-			m_Mixer.Stop();
-			m_pNowPlaying = NULL;
-			}
-
 		m_iGameState = stateGameTravel;
+		return;
 		}
-	
-	//	If we're not playing anything, try to play something
 
-	if (m_pNowPlaying == NULL)
-		Play(CalcTrackToPlay(m_iGameState));
+	//	Transition out of our current track and start a new one.
+
+	if (m_bEnabled)
+		{
+		CSoundType *pTrack = CalcTrackToPlay(pNode, stateGameTravel);
+		if (pTrack == NULL)
+			return;
+
+		TransitionTo(pTrack, pTrack->GetNextPlayPos());
+		m_bInTransition = true;
+		}
+
+	//	Remember our state
+
+	m_iGameState = stateGameTravel;
 	}
 
 void CSoundtrackManager::NotifyStartCombat (void)
@@ -250,28 +287,34 @@ void CSoundtrackManager::NotifyStartCombat (void)
 //	Player has just entered combat.
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("Combat started.");
+#endif
+
 	//	If we're already in combat, then nothing to do
 
 	if (m_iGameState == stateGameCombat
-			|| m_bInTransition
-			|| !m_bEnabled)
+			|| m_bInTransition)
 		return;
 
 	//	Figure out which track to play. If there is nothing to play then we're
 	//	done.
 
-	CSoundType *pCombatTrack = CalcTrackToPlay(stateGameCombat);
-	if (pCombatTrack == NULL)
-		return;
+	if (m_bEnabled)
+		{
+		CSoundType *pCombatTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameCombat);
+		if (pCombatTrack == NULL)
+			return;
 
-	//	Transition
+		//	Transition
 
-	TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
+		TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
+		m_bInTransition = true;
+		}
 
 	//	Set state
 
 	m_iGameState = stateGameCombat;
-	m_bInTransition = true;
 	}
 
 void CSoundtrackManager::NotifyStartCombatMission (void)
@@ -281,27 +324,6 @@ void CSoundtrackManager::NotifyStartCombatMission (void)
 //	Player has just started a combat mission.
 
 	{
-#if 0
-	//	If we're already playing a combat track then nothing to do.
-
-	if (m_pNowPlaying
-			&& m_pNowPlaying->HasAttribute(ATTRIB_COMBAT_SOUNDTRACK))
-		return;
-
-	//	If the player is currently docked, then wait until we undock to play
-	//	the appropriate track.
-
-	if (g_pUniverse->GetPlayer()
-			&& g_pUniverse->GetPlayer()->GetDockedObj())
-		{
-		m_bStartCombatWhenUndocked = true;
-		return;
-		}
-
-	//	Start playing a combat track
-
-	Play(CalcGameTrackToPlay(ATTRIB_COMBAT_SOUNDTRACK));
-#endif
 	}
 
 void CSoundtrackManager::NotifyTrackDone (void)
@@ -311,17 +333,19 @@ void CSoundtrackManager::NotifyTrackDone (void)
 //	Done playing a track
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("Track done: %s", (m_pNowPlaying ? m_pNowPlaying->GetFilespec() : CONSTLIT("(none)")));
+#endif
+
 	//	If we're transitioning then we wait for a subsequent play.
 
 	if (m_bInTransition)
-		{
-		m_bInTransition = false;
 		return;
-		}
 
 	//	Play another appropriate track
 
-	Play(CalcTrackToPlay(m_iGameState));
+	if (m_bEnabled)
+		Play(CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), m_iGameState));
 	}
 
 void CSoundtrackManager::NotifyTrackPlaying (CSoundType *pTrack)
@@ -331,6 +355,29 @@ void CSoundtrackManager::NotifyTrackPlaying (CSoundType *pTrack)
 //	We're now playing this track
 
 	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("Track playing: %s", (pTrack ? pTrack->GetFilespec() : CONSTLIT("(none)")));
+#endif
+
+	if (pTrack)
+		{
+		//	Remember that we're playing
+
+		m_pNowPlaying = pTrack;
+
+		//	Remember that we played this.
+
+		m_LastPlayed.EnqueueAndOverwrite(m_pNowPlaying->GetUNID());
+
+		//	Remember if we played the system track
+
+		if (pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
+			m_bSystemTrackPlayed = true;
+
+		//	Done with transition
+
+		m_bInTransition = false;
+		}
 	}
 
 void CSoundtrackManager::NotifyUndocked (void)
@@ -343,7 +390,7 @@ void CSoundtrackManager::NotifyUndocked (void)
 	if (m_bStartCombatWhenUndocked)
 		{
 		m_bStartCombatWhenUndocked = false;
-		Play(CalcGameTrackToPlay(ATTRIB_COMBAT_SOUNDTRACK));
+		Play(CalcGameTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), ATTRIB_COMBAT_SOUNDTRACK));
 		}
 	}
 
@@ -359,11 +406,6 @@ void CSoundtrackManager::Play (CSoundType *pTrack)
 	if (pTrack == m_pNowPlaying)
 		return;
 
-	//	Remember what we're playing
-
-	if (m_pNowPlaying)
-		m_LastPlayed.EnqueueAndOverwrite(m_pNowPlaying->GetUNID());
-
 	//	Play
 
 	if (m_bEnabled
@@ -377,12 +419,6 @@ void CSoundtrackManager::Play (CSoundType *pTrack)
 			}
 
 		m_Mixer.Play(pTrack);
-		m_pNowPlaying = pTrack;
-
-		//	Remember if we played the system track
-
-		if (pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
-			m_bSystemTrackPlayed = true;
 		}
 	}
 
@@ -412,7 +448,7 @@ void CSoundtrackManager::SetGameState (EGameStates iNewState)
 
 	//	Set new state
 
-	SetGameState(iNewState, CalcTrackToPlay(iNewState));
+	SetGameState(iNewState, CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), iNewState));
 	}
 
 void CSoundtrackManager::SetGameState (EGameStates iNewState, CSoundType *pTrack)
@@ -457,15 +493,12 @@ void CSoundtrackManager::SetMusicEnabled (bool bEnabled)
 	//	If we're enabling music, play the current track
 
 	if (m_bEnabled)
-		Play(CalcTrackToPlay(m_iGameState));
+		Play(CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), m_iGameState));
 
 	//	Otherwise, stop playing
 
 	else
-		{
 		m_Mixer.Stop();
-		m_pNowPlaying = NULL;
-		}
 	}
 
 void CSoundtrackManager::TogglePlayPaused (void)
@@ -516,9 +549,4 @@ void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos)
 	//	Now queue up the next track
 
 	m_Mixer.Play(pTrack, iPos);
-
-	//	Remember what we're playing
-
-	m_pNowPlaying = pTrack;
 	}
-

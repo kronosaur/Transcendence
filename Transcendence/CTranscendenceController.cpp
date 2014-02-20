@@ -66,6 +66,7 @@
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
+#define CMD_GAME_INSIDE_STARGATE				CONSTLIT("gameInsideStargate")
 #define CMD_GAME_LEAVE_STARGATE					CONSTLIT("gameLeaveStargate")
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
@@ -519,6 +520,8 @@ void CTranscendenceController::OnCleanUp (void)
 //	Clean up
 
 	{
+	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramQuit);
+
 	//	Clean up
 
 	m_Model.CleanUp();
@@ -920,9 +923,17 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_PLAYER_UNDOCKED))
 		m_Soundtrack.NotifyUndocked();
 
-	//	Entering a stargate
+	//	Player hit 'G' to enter stargate
 
 	else if (strEquals(sCmd, CMD_GAME_ENTER_STARGATE))
+		{
+		CTopologyNode *pDestNode = (CTopologyNode *)pData;
+		m_Soundtrack.NotifyEnterSystem(pDestNode);
+		}
+
+	//	Left system; now inside the stargate
+
+	else if (strEquals(sCmd, CMD_GAME_INSIDE_STARGATE))
 		{
 		m_Model.OnPlayerTraveledThroughGate();
 		}
@@ -932,7 +943,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_LEAVE_STARGATE))
 		{
 		m_Model.OnPlayerExitedGate();
-		m_Soundtrack.NotifyEnterSystem();
 		}
 
 	//	Player has entered final stargate and the game is over

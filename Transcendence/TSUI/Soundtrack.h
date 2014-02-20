@@ -5,6 +5,10 @@
 
 #pragma once
 
+#ifdef DEBUG
+#define DEBUG_SOUNDTRACK
+#endif
+
 class CMCIMixer
 	{
 	public:
@@ -94,13 +98,14 @@ class CSoundtrackManager
 			stateGameTravel,				//	Normal play; travel music
 			stateGameCombat,				//	Combat music
 			stateGameEpitaph,				//	Game over
+			stateProgramQuit,				//	Program is closing
 			};
 
 		CSoundtrackManager (void);
 		~CSoundtrackManager (void);
 
 		void NotifyEndCombat (void);
-		void NotifyEnterSystem (void);
+		void NotifyEnterSystem (CTopologyNode *pNode = NULL);
 		void NotifyStartCombat (void);
 		void NotifyStartCombatMission (void);
 		void NotifyTrackDone (void);
@@ -112,8 +117,8 @@ class CSoundtrackManager
 		void TogglePlayPaused (void);
 
 	private:
-		CSoundType *CalcGameTrackToPlay (const CString &sRequiredAttrib) const;
-		CSoundType *CalcTrackToPlay (EGameStates iNewState) const;
+		CSoundType *CalcGameTrackToPlay (CTopologyNode *pNode, const CString &sRequiredAttrib) const;
+		CSoundType *CalcTrackToPlay (CTopologyNode *pNode, EGameStates iNewState) const;
 		int GetLastPlayedRank (DWORD dwUNID) const;
 		void Play (CSoundType *pTrack);
 		void Reinit (void);
