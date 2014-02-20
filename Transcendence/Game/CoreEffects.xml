@@ -1146,8 +1146,8 @@
 							style=			"plain"
 							minWidth=		"1"
 							maxWidth=		"4"
-							primaryColor=	"#8e6c29"
-							secondaryColor=	"#392623"
+							primaryColor=	"#e5c483"
+							secondaryColor=	"#392f2e"
 							/>
 				</ParticleEffect>
 			</ParticleCloud>
@@ -1189,7 +1189,7 @@
 			<ParticleCloud
 					style=				"cloud"
 					slowMotion=			"25"
-					emitRate=			"6"
+					emitRate=			"6-9"
 					emitSpeed=			"1-4"
 					particleLifetime=	"10-15"
 					>
@@ -1210,7 +1210,7 @@
 			<ParticleCloud
 					style=				"cloud"
 					slowMotion=			"25"
-					emitRate=			"10"
+					emitRate=			"10-15"
 					emitSpeed=			"1-4"
 					particleLifetime=	"15-20"
 					>
@@ -1218,7 +1218,7 @@
 					<Particle
 							style=			"smoke"
 							minWidth=		"1"
-							maxWidth=		"6"
+							maxWidth=		"4"
 							/>
 				</ParticleEffect>
 			</ParticleCloud>

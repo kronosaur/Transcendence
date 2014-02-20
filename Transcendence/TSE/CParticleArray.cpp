@@ -236,7 +236,7 @@ void CParticleArray::Paint (CG16bitImage &Dest,
 			int iCore = 1;
 			int iFlame = Desc.iMaxLifetime / 6;
 			int iSmoke = Desc.iMaxLifetime / 4;
-			int iSmokeBrightness = 120;
+			int iSmokeBrightness = 60;
 
 			PaintFireAndSmoke(Dest, 
 					xPos, yPos, 
