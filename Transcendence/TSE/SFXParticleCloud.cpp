@@ -254,12 +254,7 @@ CParticleCloudPainter::CParticleCloudPainter (CCreatePainterCtx &Ctx, CParticleC
 	{
 	//	Get the total lifetime of the cloud (this could be -1, meaning immortal)
 
-	int iTotalLifetime = m_pCreator->GetLifetime();
-
-	//	Figure out how many ticks we will be emitting for. For mortal clouds, this
-	//	is the % of total lifetime. For immortal clouds, this is an absolute number of ticks
-
-	m_iEmitLifetime = (iTotalLifetime == -1 ? m_pCreator->GetEmitLifetime() : m_pCreator->GetEmitLifetime() * iTotalLifetime / 100);
+	SetLifetime(m_pCreator->GetLifetime());
 
 	//	Initialize the single particle painter
 
@@ -698,7 +693,10 @@ void CParticleCloudPainter::SetLifetime (int iLifetime)
 	//	Figure out how many ticks we will be emitting for. For mortal clouds, this
 	//	is the % of total lifetime. For immortal clouds, this is an absolute number of ticks
 
-	m_iEmitLifetime = (iLifetime == -1 ? m_pCreator->GetEmitLifetime() : m_pCreator->GetEmitLifetime() * iLifetime / 100);
+	if (iLifetime == -1)
+		m_iEmitLifetime = m_pCreator->GetEmitLifetime();
+	else
+		m_iEmitLifetime = (m_pCreator->GetEmitLifetime() == -1 ? 100 : m_pCreator->GetEmitLifetime()) * iLifetime / 100;
 	}
 
 void CParticleCloudPainter::SetParam (CCreatePainterCtx &Ctx, const CString &sParam, const CEffectParamDesc &Value)
