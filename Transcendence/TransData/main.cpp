@@ -576,6 +576,7 @@ bool IsMainCommandParam (const CString &sAttrib)
 			|| strEquals(sAttrib, CONSTLIT("allClasses"))
 			|| strEquals(sAttrib, CONSTLIT("criteria"))
 			|| strEquals(sAttrib, CONSTLIT("debug"))
+			|| strEquals(sAttrib, CONSTLIT("extensionFolder"))
 			|| strEquals(sAttrib, CONSTLIT("extensions"))
 			|| strEquals(sAttrib, CONSTLIT("noLogo")));
 	}
