@@ -54,6 +54,7 @@ const int MAJOR_PADDING_LEFT =					20;
 const int MAJOR_PADDING_TOP =					20;
 const int PANE_CORNER_RADIUS =					10;
 const int PANE_WIDTH =							500;
+const int EXTENSION_PANE_EXTRA =				120;
 const int SMALL_BUTTON_HEIGHT =					48;
 const int SMALL_BUTTON_WIDTH =					48;
 const int SMALL_SPACING_HORZ =					8;
@@ -282,7 +283,7 @@ ALERROR CChooseAdventureSession::OnInit (CString *retsError)
 	//	Compute some metrics
 
 	RECT rcCenter;
-	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter);
+	VI.GetWidescreenRect(m_HI.GetScreen(), &rcCenter, &m_rcFull);
 
 	int cxPane = Min(RectWidth(rcCenter) / 2, PANE_WIDTH);
 	int xCenterLine = rcCenter.right - (RectWidth(rcCenter) / 4);
@@ -777,7 +778,7 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 
 	int x = (RectWidth(m_rcPane) / 2) + INNER_PADDING_LEFT;
 	int y = INNER_PADDING_BOTTOM;
-	int cxMaxWidth = RectWidth(m_rcPane) / 2;
+	int cxMaxWidth = (m_rcFull.right - INNER_PADDING_LEFT - (m_rcPane.left + x));
 
 	IAnimatron *pLabel = new CAniText;
 	pLabel->SetPropertyVector(PROP_POSITION, CVector(x, y));
@@ -805,8 +806,13 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 
 		//	Label
 
-		CString sLabel = (bDisabled ? strPatternSubst(CONSTLIT("%s [%s]"), m_ExtensionList[i]->GetName(), m_ExtensionList[i]->GetDisabledReason())
-				: m_ExtensionList[i]->GetName());
+		CString sLabel;
+		if (bDisabled)
+			sLabel = strPatternSubst(CONSTLIT("%s [%s]"), m_ExtensionList[i]->GetName(), m_ExtensionList[i]->GetDisabledReason());
+		else if (g_pUniverse->InDebugMode() && !m_ExtensionList[i]->GetVersion().IsBlank())
+			sLabel = strPatternSubst(CONSTLIT("%s [%s]"), m_ExtensionList[i]->GetName(), m_ExtensionList[i]->GetVersion());
+		else
+			sLabel = m_ExtensionList[i]->GetName();
 
 		//	Create a button
 

@@ -79,6 +79,7 @@ class CChooseAdventureSession : public IHISession
 		CAniVScroller *m_pRoot;
 		CG16bitImage *m_pBackground;
 
+		RECT m_rcFull;
 		RECT m_rcPane;
 		RECT m_rcBackground;
 		int m_yBottomSection;
