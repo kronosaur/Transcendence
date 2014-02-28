@@ -1112,10 +1112,10 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 			if (Ctx.bForceTDB)
 				Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
 
-			//	Check the development subdirector first.
+			//	Check the source subdirector first.
 
-			else if (pathExists("Development\\Transcendence.xml"))
-				Ctx.sFilespec = CONSTLIT("Development\\Transcendence.xml");
+			else if (pathExists("Source\\Transcendence.xml"))
+				Ctx.sFilespec = CONSTLIT("Source\\Transcendence.xml");
 
 			//	If we don't have it, then check the current directory for
 			//	backwards compatibility.

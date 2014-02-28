@@ -244,111 +244,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Antarctica.xml">
-      <Filter>XML Files</Filter>
-    </None>
-    <None Include="Game\Code.xml">
-      <Filter>XML Files</Filter>
-    </None>
-    <None Include="Game\Compatibility10.xml">
-      <Filter>XML Files</Filter>
-    </None>
-    <None Include="Game\Heretic.xml">
-      <Filter>XML Files</Filter>
-    </None>
-    <None Include="Game\PointJuno.xml">
-      <Filter>XML Files</Filter>
-    </None>
-    <None Include="Game\Elysium.xml">
-      <Filter>XML Files\Part I</Filter>
-    </None>
-    <None Include="Game\Huari.xml">
-      <Filter>XML Files\Part I</Filter>
-    </None>
-    <None Include="Game\PlayerShips.xml">
-      <Filter>XML Files\Part I</Filter>
-    </None>
-    <None Include="Game\StarsOfThePilgrim.xml">
-      <Filter>XML Files\Part I</Filter>
-    </None>
-    <None Include="Game\BattleArena.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\BattleArenaGladiators.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CharonFortress.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Eridani.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\HumanSpaceMap.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdArmor.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdEffects.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdFuel.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdPlayerShips.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdShields.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdSystems.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdTypes.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdUnknownItems.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdWeapons.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StKatharines.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CoreEffects.xml">
-      <Filter>XML Files\Core Types</Filter>
-    </None>
-    <None Include="Game\CoreTypes.xml">
-      <Filter>XML Files\Core Types</Filter>
-    </None>
-    <None Include="Game\Transcendence.xml">
-      <Filter>XML Files\Core Types</Filter>
-    </None>
-    <None Include="Game\HUD.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGPlayer.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGShipScreens.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGTypes.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\Mining.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\StarSystems.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\UniverseEffects.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Worlds.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
     <None Include="Game\Resources\DamageTypes.jpg">
       <Filter>Resources</Filter>
     </None>
@@ -460,179 +355,11 @@
     <None Include="Worklist.txt">
       <Filter>Notes and Documents</Filter>
     </None>
-    <None Include="Game\RPGMissions.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\CoreCode.xml">
-      <Filter>XML Files\Core Types</Filter>
-    </None>
-    <None Include="Game\RPGDockScreens.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGCode.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\Stargates.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\AresOrthodoxy.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\BlackMarket.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CentauriWarlords.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CharonPirates.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Commonwealth.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CommonwealthAgricultural.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CommonwealthFleet.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CommonwealthMetropolis.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CommonwealthMilitia.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CommonwealthMining.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\CorporateHierarchy.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\DwargRaiders.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\EncountersVol01.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Iocrym.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\KorolovShipping.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Luminous.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\OutlawMiners.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Rasiermesser.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Ringers.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\RogueFleet.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\SistersOfDomina.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Teratons.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\Tinkers.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\UrakWarlords.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\HSCompatibility.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\RPGCompatibility.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\Neurohack.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\StdDockScreens.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\MiscItems.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\UsefulItems.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdAutons.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\SungSlavers.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdSovereigns.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdExplosions.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\StdDevices.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
     <None Include="Game\Readme.htm">
       <Filter>Notes and Documents</Filter>
     </None>
-    <None Include="Game\Environments.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Ice.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Metallic.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Primordial.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Rocky.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Volcanic.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\UniverseCompatibility.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\Groups.xml">
-      <Filter>XML Files\Universe Library</Filter>
-    </None>
-    <None Include="Game\KateMorgental.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\RPGCharacters.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGAutons.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGAnalyzers.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\RPGBehaviors.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
     <None Include="Game\Extensions\Debug\DebugCode.xml">
       <Filter>XML Files\Debug</Filter>
-    </None>
-    <None Include="Game\RPGAuxDevices.xml">
-      <Filter>XML Files\RPG Library</Filter>
-    </None>
-    <None Include="Game\Domina.xml">
-      <Filter>XML Files\Human Space Library</Filter>
-    </None>
-    <None Include="Game\RPGWingmen.xml">
-      <Filter>XML Files\RPG Library</Filter>
     </None>
     <None Include="Game\Extensions\Debug\DebugShips.xml">
       <Filter>XML Files\Debug</Filter>
@@ -658,6 +385,279 @@
     </Xml>
     <Xml Include="Game\Extensions\Debug\HighLevelTest.xml">
       <Filter>XML Files\Debug</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CoreCode.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CoreEffects.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CoreTypes.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Transcendence.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\AresOrthodoxy.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\BattleArena.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\BattleArenaGladiators.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\BlackMarket.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CentauriWarlords.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CharonFortress.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CharonPirates.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Commonwealth.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CommonwealthAgricultural.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CommonwealthFleet.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CommonwealthMetropolis.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CommonwealthMilitia.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CommonwealthMining.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\CorporateHierarchy.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Domina.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\DwargRaiders.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\EncountersVol01.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Eridani.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\HSCompatibility.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\HumanSpaceMap.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Iocrym.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\KateMorgental.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\KorolovShipping.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Luminous.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\MiscItems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\OutlawMiners.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Rasiermesser.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Ringers.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RogueFleet.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\SistersOfDomina.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdArmor.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdAutons.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdDevices.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdDockScreens.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdEffects.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdExplosions.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdFuel.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdPlayerShips.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdShields.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdSovereigns.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdSystems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdTypes.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdUnknownItems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StdWeapons.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StKatharines.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\SungSlavers.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Teratons.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Tinkers.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\UrakWarlords.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\UsefulItems.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Elysium.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Huari.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\PlayerShips.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StarsOfThePilgrim.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\HUD.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGAnalyzers.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGAutons.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGAuxDevices.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGBehaviors.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGCharacters.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGCode.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGCompatibility.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGMissions.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGPlayer.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGShipScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGTypes.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\RPGWingmen.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Environments.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Groups.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Ice.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Metallic.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Mining.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Neurohack.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Primordial.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Rocky.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Stargates.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\StarSystems.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\UniverseCompatibility.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\UniverseEffects.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Volcanic.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Worlds.xml">
+      <Filter>XML Files\Universe Library</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Code.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Compatibility10.xml">
+      <Filter>XML Files\Core Types</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Antarctica.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\Heretic.xml">
+      <Filter>XML Files\Part I</Filter>
+    </Xml>
+    <Xml Include="Game\Source\PointJuno.xml">
+      <Filter>XML Files\Part I</Filter>
     </Xml>
   </ItemGroup>
 </Project>

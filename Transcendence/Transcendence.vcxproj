@@ -484,239 +484,8 @@
     <ClInclude Include="Transcendence.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Antarctica.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\AresOrthodoxy.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Groups.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\BlackMarket.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CentauriWarlords.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CharonPirates.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Code.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Commonwealth.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CommonwealthAgricultural.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CommonwealthFleet.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CommonwealthMetropolis.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CommonwealthMilitia.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CommonwealthMining.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Compatibility10.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CoreCode.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CorporateHierarchy.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Domina.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\DwargRaiders.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\EncountersVol01.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Environments.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Heretic.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\HSCompatibility.xml" />
-    <None Include="Game\Ice.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Iocrym.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\KateMorgental.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\KorolovShipping.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Luminous.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\MiscItems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Neurohack.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\OutlawMiners.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\PointJuno.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Primordial.xml" />
-    <None Include="Game\Rasiermesser.xml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Game\Readme.htm">
       <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Game\Ringers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Rocky.xml" />
-    <None Include="Game\RogueFleet.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGCharacters.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGCode.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGCompatibility.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGMissions.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\SistersOfDomina.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Stargates.xml" />
-    <None Include="Game\StdAutons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdDevices.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdDockScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdExplosions.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdSovereigns.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\SungSlavers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Teratons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Tinkers.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\UniverseCompatibility.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\UrakWarlords.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\UsefulItems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Elysium.xml" />
-    <None Include="Game\Huari.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\PlayerShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StarsOfThePilgrim.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\BattleArena.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\BattleArenaGladiators.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CharonFortress.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Eridani.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\HumanSpaceMap.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdArmor.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdEffects.xml" />
-    <None Include="Game\StdFuel.xml" />
-    <None Include="Game\StdPlayerShips.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdShields.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdSystems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdTypes.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdUnknownItems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StdWeapons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\StKatharines.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CoreEffects.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\CoreTypes.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\Transcendence.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\HUD.xml" />
-    <None Include="Game\RPGPlayer.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGShipScreens.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGTypes.xml" />
-    <None Include="Game\Mining.xml" />
-    <None Include="Game\StarSystems.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\UniverseEffects.xml" />
-    <None Include="Game\Volcanic.xml" />
-    <None Include="Game\Worlds.xml">
-      <SubType>Designer</SubType>
     </None>
     <None Include="Game\Resources\DamageTypes.jpg" />
     <None Include="Game\Resources\DamageTypesMask.bmp" />
@@ -738,9 +507,6 @@
     <None Include="Game\Resources\SubTitleHeavyBold.dxfn" />
     <None Include="Game\Resources\Title.dxfn" />
     <None Include="Game\Resources\Title.jpg" />
-    <None Include="Game\Metallic.xml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Transcendence.ico" />
     <None Include="Game\Resources\UIIcons.jpg" />
     <None Include="Game\Resources\UIIconsMask.bmp" />
@@ -810,19 +576,97 @@
     <Xml Include="Game\Extensions\Debug\PerformanceTest.xml" />
     <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
     <Xml Include="Game\Extensions\Debug\ShipChangeSample.xml" />
-    <None Include="Game\RPGAnalyzers.xml" />
-    <None Include="Game\RPGAutons.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGBehaviors.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGWingmen.xml">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Game\RPGAuxDevices.xml">
-      <SubType>Designer</SubType>
-    </None>
+    <Xml Include="Game\Source\Antarctica.xml" />
+    <Xml Include="Game\Source\AresOrthodoxy.xml" />
+    <Xml Include="Game\Source\BattleArena.xml" />
+    <Xml Include="Game\Source\BattleArenaGladiators.xml" />
+    <Xml Include="Game\Source\BlackMarket.xml" />
+    <Xml Include="Game\Source\CentauriWarlords.xml" />
+    <Xml Include="Game\Source\CharonFortress.xml" />
+    <Xml Include="Game\Source\CharonPirates.xml" />
+    <Xml Include="Game\Source\Code.xml" />
+    <Xml Include="Game\Source\Commonwealth.xml" />
+    <Xml Include="Game\Source\CommonwealthAgricultural.xml" />
+    <Xml Include="Game\Source\CommonwealthFleet.xml" />
+    <Xml Include="Game\Source\CommonwealthMetropolis.xml" />
+    <Xml Include="Game\Source\CommonwealthMilitia.xml" />
+    <Xml Include="Game\Source\CommonwealthMining.xml" />
+    <Xml Include="Game\Source\Compatibility10.xml" />
+    <Xml Include="Game\Source\CoreCode.xml" />
+    <Xml Include="Game\Source\CoreEffects.xml" />
+    <Xml Include="Game\Source\CoreTypes.xml" />
+    <Xml Include="Game\Source\CorporateHierarchy.xml" />
+    <Xml Include="Game\Source\Domina.xml" />
+    <Xml Include="Game\Source\DwargRaiders.xml" />
+    <Xml Include="Game\Source\Elysium.xml" />
+    <Xml Include="Game\Source\EncountersVol01.xml" />
+    <Xml Include="Game\Source\Environments.xml" />
+    <Xml Include="Game\Source\Eridani.xml" />
+    <Xml Include="Game\Source\Groups.xml" />
+    <Xml Include="Game\Source\Heretic.xml" />
+    <Xml Include="Game\Source\HSCompatibility.xml" />
+    <Xml Include="Game\Source\Huari.xml" />
+    <Xml Include="Game\Source\HUD.xml" />
+    <Xml Include="Game\Source\HumanSpaceMap.xml" />
+    <Xml Include="Game\Source\Ice.xml" />
+    <Xml Include="Game\Source\Iocrym.xml" />
+    <Xml Include="Game\Source\KateMorgental.xml" />
+    <Xml Include="Game\Source\KorolovShipping.xml" />
+    <Xml Include="Game\Source\Luminous.xml" />
+    <Xml Include="Game\Source\Metallic.xml" />
+    <Xml Include="Game\Source\Mining.xml" />
+    <Xml Include="Game\Source\MiscItems.xml" />
+    <Xml Include="Game\Source\Neurohack.xml" />
+    <Xml Include="Game\Source\OutlawMiners.xml" />
+    <Xml Include="Game\Source\PlayerShips.xml" />
+    <Xml Include="Game\Source\PointJuno.xml" />
+    <Xml Include="Game\Source\Primordial.xml" />
+    <Xml Include="Game\Source\Rasiermesser.xml" />
+    <Xml Include="Game\Source\Ringers.xml" />
+    <Xml Include="Game\Source\Rocky.xml" />
+    <Xml Include="Game\Source\RogueFleet.xml" />
+    <Xml Include="Game\Source\RPGAnalyzers.xml" />
+    <Xml Include="Game\Source\RPGAutons.xml" />
+    <Xml Include="Game\Source\RPGAuxDevices.xml" />
+    <Xml Include="Game\Source\RPGBehaviors.xml" />
+    <Xml Include="Game\Source\RPGCharacters.xml" />
+    <Xml Include="Game\Source\RPGCode.xml" />
+    <Xml Include="Game\Source\RPGCompatibility.xml" />
+    <Xml Include="Game\Source\RPGDockScreens.xml" />
+    <Xml Include="Game\Source\RPGMissions.xml" />
+    <Xml Include="Game\Source\RPGPlayer.xml" />
+    <Xml Include="Game\Source\RPGShipScreens.xml" />
+    <Xml Include="Game\Source\RPGTypes.xml" />
+    <Xml Include="Game\Source\RPGWingmen.xml" />
+    <Xml Include="Game\Source\SistersOfDomina.xml" />
+    <Xml Include="Game\Source\Stargates.xml" />
+    <Xml Include="Game\Source\StarsOfThePilgrim.xml" />
+    <Xml Include="Game\Source\StarSystems.xml" />
+    <Xml Include="Game\Source\StdArmor.xml" />
+    <Xml Include="Game\Source\StdAutons.xml" />
+    <Xml Include="Game\Source\StdDevices.xml" />
+    <Xml Include="Game\Source\StdDockScreens.xml" />
+    <Xml Include="Game\Source\StdEffects.xml" />
+    <Xml Include="Game\Source\StdExplosions.xml" />
+    <Xml Include="Game\Source\StdFuel.xml" />
+    <Xml Include="Game\Source\StdPlayerShips.xml" />
+    <Xml Include="Game\Source\StdShields.xml" />
+    <Xml Include="Game\Source\StdSovereigns.xml" />
+    <Xml Include="Game\Source\StdSystems.xml" />
+    <Xml Include="Game\Source\StdTypes.xml" />
+    <Xml Include="Game\Source\StdUnknownItems.xml" />
+    <Xml Include="Game\Source\StdWeapons.xml" />
+    <Xml Include="Game\Source\StKatharines.xml" />
+    <Xml Include="Game\Source\SungSlavers.xml" />
+    <Xml Include="Game\Source\Teratons.xml" />
+    <Xml Include="Game\Source\Tinkers.xml" />
+    <Xml Include="Game\Source\Transcendence.xml" />
+    <Xml Include="Game\Source\UniverseCompatibility.xml" />
+    <Xml Include="Game\Source\UniverseEffects.xml" />
+    <Xml Include="Game\Source\UrakWarlords.xml" />
+    <Xml Include="Game\Source\UsefulItems.xml" />
+    <Xml Include="Game\Source\Volcanic.xml" />
+    <Xml Include="Game\Source\Worlds.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
