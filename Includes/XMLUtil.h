@@ -79,6 +79,7 @@ class CXMLElement : public CObject
 		inline const CString &GetContentText (int iOrdinal) { return (iOrdinal < m_ContentText.GetCount() ? m_ContentText[iOrdinal] : NULL_STR); }
 		inline CXMLElement *GetParentElement (void) const { return m_pParent; }
 		inline const CString &GetTag (void) const { return m_sTag; }
+		void MergeFrom (CXMLElement *pElement);
 		CXMLElement *OrphanCopy (void);
 		ALERROR SetAttribute (const CString &sName, const CString &sValue);
 
