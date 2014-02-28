@@ -625,7 +625,7 @@ void CParticleCloudPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 
 	int xPaint;
 	int yPaint;
-	if (m_bUseObjectCenter)
+	if (m_bUseObjectCenter && Ctx.pObj)
 		Ctx.XForm.Transform(Ctx.pObj->GetPos(), &xPaint, &yPaint);
 	else
 		{
