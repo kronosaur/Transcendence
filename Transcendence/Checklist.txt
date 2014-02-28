@@ -6,6 +6,7 @@ RELEASE
 [ ] Set apiVersion number, if necessary (TSEUtil.h)
 [ ] Set apiVersion number in Transcendence.xml
 [ ] Set TRANSCENDENCE_STABLE_RELEASE in TSE.h
+[ ] Set version in Multiverse
 [ ] Make sure Help screen is up-to-date
 [ ] Make sure Readme is up-to-date
 [ ] Increment saved game version, if necessary (TSEUtil.h)
