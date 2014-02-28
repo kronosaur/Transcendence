@@ -1103,6 +1103,32 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 		m_bDebugMode = Ctx.bDebugMode;
 
+		//	If necessary, figure out where the main files are
+
+		if (Ctx.sFilespec.IsBlank())
+			{
+			//	If we're always using the TDB, then just load that.
+
+			if (Ctx.bForceTDB)
+				Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+
+			//	Check the development subdirector first.
+
+			else if (pathExists("Development\\Transcendence.xml"))
+				Ctx.sFilespec = CONSTLIT("Development\\Transcendence.xml");
+
+			//	If we don't have it, then check the current directory for
+			//	backwards compatibility.
+
+			else if (pathExists("Transcendence.xml"))
+				Ctx.sFilespec = CONSTLIT("Transcendence.xml");
+
+			//	If nothing is found, then just load the TDB file.
+
+			else
+				Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+			}
+
 		//	We only load adventure desc (no need to load the whole thing)
 
 		DWORD dwFlags = CExtensionCollection::FLAG_DESC_ONLY;

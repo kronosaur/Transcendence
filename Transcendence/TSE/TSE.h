@@ -2960,12 +2960,12 @@ class CUniverse : public CObject
 			{
 			SInitDesc (void) :
 					pHost(NULL),
-					sFilespec(CONSTLIT("Transcendence")),
 					bInLoadGame(false),
 					bNoResources(false),
 					bNoReload(false),
 					bDebugMode(false),
 					bDefaultExtensions(false),
+					bForceTDB(false),
 					pAdventure(NULL),
 					dwAdventure(0)
 				{ }
@@ -2982,6 +2982,7 @@ class CUniverse : public CObject
 			bool bNoReload;					//	If TRUE, do not reload extensions
 			bool bDebugMode;				//	Initialize in debug mode
 			bool bDefaultExtensions;		//	If TRUE, we include all appropriate extensions
+			bool bForceTDB;					//	If TRUE, use Transcendence.tdb even if XMLs exist
 
 			//	Adventure to bind to (choose one, in order)
 

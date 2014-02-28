@@ -1273,9 +1273,7 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.bDebugMode = m_bDebugMode;
 		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
 		Ctx.bDefaultExtensions = true;
-
-		if (m_bForceTDB)
-			Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+		Ctx.bForceTDB = m_bForceTDB;
 
 		if (error = m_Universe.Init(Ctx, retsError))
 			return error;
