@@ -105,6 +105,28 @@ int main (int argc, char *argv[ ], char *envp[ ])
 
 	{
 	ALERROR error;
+	CString sError;
+
+	//	Look for a TransData.xml file. If we find it, load it.
+
+	CXMLElement *pOptions = NULL;
+	CString sDefaultOptionsFile = CONSTLIT("TransData.xml");
+	if (pathExists(sDefaultOptionsFile))
+		{
+		if (error = CreateXMLElementFromDataFile(sDefaultOptionsFile, &pOptions, &sError))
+			{
+			printf("ERROR: Unable to parse %s: %s.\n", sDefaultOptionsFile.GetASCIIZPointer(), sError.GetASCIIZPointer());
+			return 1;
+			}
+		}
+
+	//	Otherwise we just create an empty element
+
+	else
+		pOptions = new CXMLElement(CONSTLIT("TransData"), NULL);
+
+	//	Load the command line and merge it into pOptions
+
 	CXMLElement *pCmdLine;
 	if (error = CreateXMLElementFromCommandLine(argc, argv, &pCmdLine))
 		{
@@ -112,12 +134,14 @@ int main (int argc, char *argv[ ], char *envp[ ])
 		return 1;
 		}
 
+	pOptions->MergeFrom(pCmdLine);
+	delete pCmdLine;
+
 	//	If we have a text argument, then use it as a command-line file:
 
-	const CString &sArg = pCmdLine->GetContentText(0);
+	const CString &sArg = pOptions->GetContentText(0);
 	if (!sArg.IsBlank())
 		{
-		CString sError;
 		CXMLElement *pDataFile;
 		if (error = CreateXMLElementFromDataFile(sArg, &pDataFile, &sError))
 			{
@@ -125,18 +149,19 @@ int main (int argc, char *argv[ ], char *envp[ ])
 			return 1;
 			}
 
-		AlchemyMain(pDataFile);
+		//	Merge into options
+
+		pOptions->MergeFrom(pDataFile);
 		delete pDataFile;
 		}
 
-	//	Otherwise, just use the command line
+	//	Now run
 
-	else
-		AlchemyMain(pCmdLine);
+	AlchemyMain(pOptions);
 
 	//	Done
 
-	delete pCmdLine;
+	delete pOptions;
 	}
 
 	//	Done
