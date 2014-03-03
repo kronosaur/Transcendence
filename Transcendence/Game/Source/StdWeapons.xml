@@ -1104,12 +1104,10 @@
 						missileSpeed=	"30"
 						
 						hitPoints=		"20"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1132,12 +1130,10 @@
 						missileSpeed=	"30"
 						
 						hitPoints=		"20"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1161,12 +1157,10 @@
 						
 						hitPoints=		"20"
 						failsafe=		"6"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1215,12 +1209,10 @@
 						missileSpeed=	"30"
 						
 						hitPoints=		"20"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1244,12 +1236,10 @@
 						
 						hitPoints=		"20"
 						failsafe=		"6"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1312,12 +1302,10 @@
 						missileSpeed=	"15"
 						
 						hitPoints=		"30"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1340,12 +1328,10 @@
 						missileSpeed=	"20"
 						
 						hitPoints=		"30"
+						 
+						effect=			"&efMissileMAG;"
 						sound=			"&snMissileLauncher;"
 						>
-
-					<Effect>
-						<Image imageID="&rsMissiles;" imageX="0" imageY="16" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
 
 					<HitEffect
 							sound="&snArmorHit1;"
@@ -1379,11 +1365,8 @@
 						</Effect>
 					</Fragment>
 				</Missile>
-
 			</Missiles>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Particle Beam Weapon-->
@@ -3432,9 +3415,9 @@
 							>
 
 						<Effect>
-							<Image imageID="&rsStdMissile1;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="40"/>
+							<Image imageID="&rsMissileNAMI;" imageX="0" imageY="0" imageWidth="24" imageHeight="24" rotationCount="40"/>
 							
-							<Group angleOffset="180" radiusOffset="12">
+							<Group angleOffset="180" radiusOffset="10">
 								<ParticleJet
 										fixedPos=			"true"
 										emitRate=			"30"
@@ -4584,6 +4567,40 @@
 		</Variants>
 	</Effect>
 	
+	<EffectType UNID="&efMissileMAG;"
+			instance=			"creator"
+			>
+		
+		<Effect>
+			<ParticleJet
+					fixedPos=			"true"
+					emitRate=			"20"
+					tangentSpeed=		"3d2-3"
+					particleLifetime=	"10-30"
+					XformTime=			"30"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"5"
+							primaryColor=	"#f1f6ff"
+							secondaryColor=	"#73767d"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
+			<Image	imageID=			"&rsMissiles;"
+					imageX=				"0"
+					imageY=				"16"
+					imageWidth=			"16"
+					imageHeight=		"16"
+					imageFrameCount=	"12"
+					imageTicksPerFrame=	"3"
+					/>
+		</Effect>
+	</EffectType>
+
 	<EffectType UNID="&efMissileNAMI;"
 			instance=			"creator"
 			>
@@ -4679,15 +4696,15 @@
 			>
 		
 		<Effect>
-			<Image	imageID=		"&rsStdMissile1;"
+			<Image	imageID=		"&rsMissileNAMI;"
 					imageX=			"0"
 					imageY=			"0"
-					imageWidth=		"32"
-					imageHeight=	"32"
+					imageWidth=		"24"
+					imageHeight=	"24"
 					rotationCount=	"40"
 					/>
 			
-			<Group angleOffset="180" radiusOffset="12">
+			<Group angleOffset="180" radiusOffset="10">
 				<ParticleJet
 						fixedPos=			"true"
 						emitRate=			"80"

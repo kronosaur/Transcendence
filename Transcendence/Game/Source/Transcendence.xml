@@ -78,6 +78,7 @@
 	<!ENTITY efMissileStrelka			"0x00000083">
 	<!ENTITY efMissileRasiermesser		"0x00000084">
 	<!ENTITY efMissileNAMIHeavy			"0x00000085">
+	<!ENTITY efMissileMAG				"0x00000086">
 	
 	<!ENTITY efManeuveringThrusterDefault	"0x00000090">
 	<!ENTITY efMainThrusterDefault		"0x00000091">
