@@ -766,5 +766,8 @@
     <ClCompile Include="CMapViewportCtx.cpp">
       <Filter>Source Files\StarSystem</Filter>
     </ClCompile>
+    <ClCompile Include="SFXParticleJet.cpp">
+      <Filter>Source Files\SFX</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

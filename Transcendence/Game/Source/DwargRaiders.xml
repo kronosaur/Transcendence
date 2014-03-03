@@ -399,19 +399,10 @@
 				hitPoints=			"15"
 				powerUse=			"250"
 
-				fireEffect=			"&efMediumCannonFlash;"
+				effect=				"&efThermoShellDefault;"
+				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<MoltenBolt
-						width=				"6"
-						length=				"24"
-						growth=				"3"
-						primaryColor=		"0xea, 0xed, 0xae"
-						secondaryColor=		"0xc0, 0xc2, 0x85"
-						/>
-			</Effect>
 
 			<HitEffect
 					sound="&snArmorHit1;"

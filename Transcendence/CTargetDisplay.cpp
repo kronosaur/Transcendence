@@ -241,6 +241,7 @@ void CTargetDisplay::Update (void)
 					g_KlicksPerPixel, 
 					TARGET_IMAGE_X, 
 					TARGET_IMAGE_Y);
+			Ctx.XFormRel = Ctx.XForm;
 			Ctx.fNoRecon = true;
 			Ctx.fNoDockedShips = true;
 			Ctx.fNoSelection = true;

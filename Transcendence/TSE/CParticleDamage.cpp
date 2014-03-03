@@ -219,7 +219,12 @@ void CParticleDamage::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Update the single particle painter
 
 	if (m_pPainter)
-		m_pPainter->OnMove();
+		{
+		SEffectMoveCtx Ctx;
+		Ctx.pObj = this;
+
+		m_pPainter->OnMove(Ctx);
+		}
 
 	//	Update particle motion
 

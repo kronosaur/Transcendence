@@ -1756,18 +1756,11 @@
 				powerUse=			"3500"
 				charges=			"true"
 
+				effect=				"&efThermoShellDefault;"
+				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
 
-			<Effect>
-				<Beam
-						beamType=			"heavyblaster"
-						primaryColor=		"0xfe, 0xfe, 0x75"
-						secondaryColor=		"0xc9, 0x64, 0x3a"
-						intensity=			"12"
-						/>
-			</Effect>
-			
 			<HitEffect
 					sound="&snArmorHit1;"
 					>

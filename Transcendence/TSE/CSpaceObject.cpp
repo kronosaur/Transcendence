@@ -6146,6 +6146,9 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 			m_sHighlightText = NULL_STR;
 		}
 
+	SEffectMoveCtx MoveCtx;
+	MoveCtx.pObj = this;
+
 	//	Update the effects
 
 	SEffectNode *pEffect = m_pFirstEffect;
@@ -6167,7 +6170,7 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 		else
 			{
 			pEffect->pPainter->OnUpdate();
-			pEffect->pPainter->OnMove();
+			pEffect->pPainter->OnMove(MoveCtx);
 
 			pPrev = pEffect;
 			}

@@ -121,6 +121,8 @@ class CEffectGroupCreator : public CEffectCreator
 		inline int GetCount (void) { return m_iCount; }
 		inline CEffectCreator *GetCreator (int iIndex) { return m_pCreators[iIndex]; }
 		static CString GetClassTag (void) { return CONSTLIT("Group"); }
+		CVector GetOffsetPos (int iRotation);
+		inline int GetRotationAdj (void) const { return m_iRotationAdj; }
 		virtual CString GetTag (void) { return GetClassTag(); }
 		inline bool HasOffsets (void) { return m_bHasOffsets; }
 
@@ -490,9 +492,13 @@ class CParticleCloudEffectCreator : public CEffectCreator
 			styleExhaust,
 			};
 
+		CParticleCloudEffectCreator (void) : m_pParticleEffect(NULL)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("ParticleCloud"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
+		inline Metric GetDrag (void) const { return m_rDrag; }
 		inline int GetCohesion (void) const { return m_iCohesion; }
 		inline int GetEmitLifetime (void) const { return m_iEmitLifetime; }
 		inline int GetEmitRotation (void) const { return m_iEmitRotation; }
@@ -508,6 +514,7 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		inline int GetParticleLifetimeMax (void) const { return Max(1, (m_rSlowMotionFactor == 1.0 ? m_ParticleLifetime.GetMaxValue() : (int)(m_ParticleLifetime.GetMaxValue() / m_rSlowMotionFactor))); }
 		inline Metric GetRingRadius (void) const { return m_rRingRadius; }
 		inline Metric GetSlowMotionFactor (void) const { return m_rSlowMotionFactor; }
+		inline int GetSpreadAngle (void) const { return m_Spread.Roll(); }
 		inline Styles GetStyle (void) const { return m_iStyle; }
 		inline int GetViscosity (void) const { return m_iViscosity; }
 		inline int GetWakePotential (void) const { return m_iWakePotential; }
@@ -533,6 +540,7 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		int m_iEmitRotation;							//	Rotation
 		DiceRange m_NewParticles;						//	Number of new particles per tick
 		DiceRange m_InitSpeed;							//	Initial speed of each particle
+		DiceRange m_Spread;								//	Spread angle (for jet and exhaust)
 
 		Metric m_rRingRadius;							//	If non-zero, particles form a ring at this radius
 		Metric m_rMaxRadius;							//	If RingRadius is non-zero, this is the outer edge of ring
@@ -543,6 +551,8 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		int m_iCohesion;								//	Strength of force keeping particles together (0-100)
 		int m_iViscosity;								//	Drag on particles while inside bounds (0-100)
 		int m_iWakePotential;							//	Influence of moving objects (0-100)
+
+		Metric m_rDrag;									//	Drag when source object is moving
 
 		CEffectCreator *m_pParticleEffect;				//	Effect to use to paint particles
 	};
@@ -625,6 +635,44 @@ class CParticleExplosionEffectCreator : public CEffectCreator
 		Metric m_rParticleSpeed;						//	Speed of particles
 		int m_iParticleLifetime;						//	Particle lifespan
 		CObjectImageArray m_Image;						//	Images
+	};
+
+class CParticleJetEffectCreator : public CEffectCreator
+	{
+	public:
+		CParticleJetEffectCreator (void);
+		~CParticleJetEffectCreator (void);
+			
+		inline CEffectCreator *GetParticleEffect (void) const { return m_pParticleEffect; }
+
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("ParticleJet"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_FixedPos;		//	Particles fixed on background (not obj)
+
+		CEffectParamDesc m_EmitRate;		//	Particles to create per tick
+		CEffectParamDesc m_EmitSpeed;		//	Particle speed (% of lightspeed)
+		CEffectParamDesc m_ParticleLifetime;//	In ticks
+		CEffectParamDesc m_SpreadAngle;		//	Full angle of spread
+		CEffectParamDesc m_TangentSpeed;	//	Trangental speed (if spread angle is omitted)
+
+		CEffectParamDesc m_Lifetime;		//	lifetime: Lifetime in ticks (optional)
+		CEffectParamDesc m_XformRotation;	//	XformRotation: Rotations (degrees)
+		CEffectParamDesc m_XformTime;		//	XformTime: 100 = normal speed; <100 = slower
+
+		CEffectCreator *m_pParticleEffect;	//	Effect to use to paint particles
+
+		IEffectPainter *m_pSingleton;
 	};
 
 class CPlasmaSphereEffectCreator : public CEffectCreator,

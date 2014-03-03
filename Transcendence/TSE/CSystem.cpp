@@ -311,6 +311,9 @@
 //	98: 1.3
 //		m_bUseObjectCenter in CParticleCloudPainter
 //
+//	99: 1.3
+//		CEffectParamDesc saving
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -723,6 +726,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 	Ctx.xCenter = rcView.left + RectWidth(rcView) / 2;
 	Ctx.yCenter = rcView.top + RectHeight(rcView) / 2;
 	Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Figure out the extended boundaries. This is used for enhanced display.
 
@@ -2916,6 +2920,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		//	Adjust the transform to deal with parallax
 
 		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+		Ctx.XFormRel = Ctx.XForm;
 
 		//	Figure out the position of the object in pixels
 
@@ -2935,6 +2940,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		SetProgramState(psPaintingSRS);
 		}
 	Ctx.XForm = SavedXForm;
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint any space environment
 
@@ -2988,6 +2994,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		//	Compute the transform
 
 		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+		Ctx.XFormRel = Ctx.XForm;
 
 		//	Figure out the position of the object in pixels
 
@@ -3007,6 +3014,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		SetProgramState(psPaintingSRS);
 		}
 	Ctx.XForm = SavedXForm;
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint all the enhanced display markers
 
@@ -3172,6 +3180,7 @@ void CSystem::PaintViewportObject (CG16bitImage &Dest, const RECT &rcView, CSpac
 	SViewportPaintCtx Ctx;
 	Ctx.wSpaceColor = CalculateSpaceColor(pCenter);
 	Ctx.XForm = ViewportTransform(pCenter->GetPos(), g_KlicksPerPixel, xCenter, yCenter);
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint object
 

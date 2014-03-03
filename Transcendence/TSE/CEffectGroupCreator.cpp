@@ -22,7 +22,7 @@ class CEffectGroupPainter : public IEffectPainter
 		virtual int GetFadeLifetime (void);
 		virtual void GetRect (RECT *retRect) const;
 		virtual void OnBeginFade (void);
-		virtual void OnMove (bool *retbBoundsChanged);
+		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged);
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx);
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -133,7 +133,7 @@ void CEffectGroupPainter::OnBeginFade (void)
 			m_Painters[i]->OnBeginFade();
 	}
 
-void CEffectGroupPainter::OnMove (bool *retbBoundsChanged)
+void CEffectGroupPainter::OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged)
 
 //	OnMove
 
@@ -145,7 +145,7 @@ void CEffectGroupPainter::OnMove (bool *retbBoundsChanged)
 			{
 			bool bSingleBoundsChanged;
 
-			m_Painters[i]->OnMove(&bSingleBoundsChanged);
+			m_Painters[i]->OnMove(Ctx, &bSingleBoundsChanged);
 
 			if (bSingleBoundsChanged)
 				bBoundsChanged = true;
@@ -211,7 +211,20 @@ void CEffectGroupPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 	{
 	for (int i = 0; i < m_Painters.GetCount(); i++)
 		if (m_Painters[i])
-			m_Painters[i]->OnUpdate(Ctx);
+			{
+			//	If we have offsets, we need to modify the emit position
+
+			if (m_pCreator->HasOffsets())
+				{
+				SEffectUpdateCtx AdjustCtx = Ctx;
+				AdjustCtx.vEmitPos = Ctx.vEmitPos + m_pCreator->GetOffsetPos(Ctx.iRotation);
+				AdjustCtx.iRotation = AngleMod(Ctx.iRotation + m_pCreator->GetRotationAdj());
+
+				m_Painters[i]->OnUpdate(AdjustCtx);
+				}
+			else
+				m_Painters[i]->OnUpdate(Ctx);
+			}
 	}
 
 void CEffectGroupPainter::OnWriteToStream (IWriteStream *pStream)
@@ -333,12 +346,15 @@ void CEffectGroupCreator::ApplyOffsets (SViewportPaintCtx *ioCtx, int *retx, int
 		}
 
 	//	Adjust the Xform
+	//
+	//	NOTE: We alter the relative Xform, not the main one because sometimes
+	//	effects still need to know the global Xform.
 
-	ioCtx->XForm.Offset(xOffset, -yOffset);
+	ioCtx->XFormRel.Offset(xOffset, -yOffset);
 
 	//	Adjust the rotation
 
-	ioCtx->iRotation = (360 + ioCtx->iRotation + m_iRotationAdj) % 360;
+	ioCtx->iRotation = AngleMod(ioCtx->iRotation + m_iRotationAdj);
 
 	//	Done
 
@@ -418,6 +434,20 @@ int CEffectGroupCreator::GetLifetime (void)
 		}
 
 	return iTotalLifetime;
+	}
+
+CVector CEffectGroupCreator::GetOffsetPos (int iRotation)
+
+//	GetOffsetPos
+//
+//	Returns the offset as a vector (in game coordinates)
+
+	{
+	CVector vOffset((Metric)m_xOffset, (Metric)m_yOffset);
+	if (m_iAngleOffset || m_iRadiusOffset)
+		vOffset = vOffset + PolarToVector(360 + iRotation + m_iAngleOffset, (Metric)m_iRadiusOffset);
+
+	return vOffset * g_KlicksPerPixel;
 	}
 
 ALERROR CEffectGroupCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID)

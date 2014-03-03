@@ -46,7 +46,7 @@ void CObjectEffectList::Init (const CObjectEffectDesc &Desc, const TArray<IEffec
 		m_FixedEffects[i].pPainter = Painters[i];
 	}
 
-void CObjectEffectList::Move (bool *retbBoundsChanged)
+void CObjectEffectList::Move (CSpaceObject *pObj, const CVector &vOldPos, bool *retbBoundsChanged)
 
 //	Move
 //
@@ -56,11 +56,15 @@ void CObjectEffectList::Move (bool *retbBoundsChanged)
 	int i;
 	bool bBoundsChanged = false;
 
+	SEffectMoveCtx MoveCtx;
+	MoveCtx.pObj = pObj;
+	MoveCtx.vOldPos = vOldPos;
+
 	for (i = 0; i < m_FixedEffects.GetCount(); i++)
 		if (m_FixedEffects[i].pPainter)
 			{
 			bool bChanged;
-			m_FixedEffects[i].pPainter->OnMove(&bChanged);
+			m_FixedEffects[i].pPainter->OnMove(MoveCtx, &bChanged);
 			if (bChanged)
 				bBoundsChanged = true;
 			}
@@ -138,7 +142,7 @@ void CObjectEffectList::PaintAll (SViewportPaintCtx &Ctx, const CObjectEffectDes
 	Ctx.iTick = iOldTick;
 	}
 
-void CObjectEffectList::Update (const CObjectEffectDesc &Desc, int iRotation, DWORD dwEffects)
+void CObjectEffectList::Update (CSpaceObject *pObj, const CObjectEffectDesc &Desc, int iRotation, DWORD dwEffects)
 
 //	Update
 //
@@ -147,6 +151,7 @@ void CObjectEffectList::Update (const CObjectEffectDesc &Desc, int iRotation, DW
 	{
 	int i;
 	SEffectUpdateCtx PainterCtx;
+	PainterCtx.pObj = pObj;
 
 	for (i = 0; i < m_FixedEffects.GetCount(); i++)
 		if (m_FixedEffects[i].pPainter)
@@ -164,6 +169,10 @@ void CObjectEffectList::Update (const CObjectEffectDesc &Desc, int iRotation, DW
 			int yEmit;
 			Desc.GetEffectDesc(i).PosCalc.GetCoord(iRotation, &xEmit, &yEmit);
 			PainterCtx.vEmitPos = CVector(xEmit * g_KlicksPerPixel, -yEmit * g_KlicksPerPixel);
+
+			//	Compute the rotation (180 for thruster effects)
+
+			PainterCtx.iRotation = AngleMod(iRotation + Desc.GetEffectDesc(i).iRotation + 180);
 
 			//	Update
 

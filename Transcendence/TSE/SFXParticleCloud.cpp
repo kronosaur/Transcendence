@@ -8,6 +8,7 @@
 
 #define PARTICLE_EFFECT_TAG						CONSTLIT("ParticleEffect")
 
+#define DRAG_ATTRIB								CONSTLIT("drag")
 #define COHESION_ATTRIB							CONSTLIT("cohesion")
 #define EMIT_LIFETIME_ATTRIB					CONSTLIT("emitDuration")
 #define NEW_PARTICLES_ATTRIB					CONSTLIT("emitRate")
@@ -19,6 +20,7 @@
 #define RADIUS_ATTRIB							CONSTLIT("radius")
 #define RING_WIDTH_ATTRIB						CONSTLIT("ringWidth")
 #define SLOW_MOTION_ATTRIB						CONSTLIT("slowMotion")
+#define SPREAD_ANGLE_ATTRIB						CONSTLIT("spreadAngle")
 #define STYLE_ATTRIB							CONSTLIT("style")
 #define VISCOSITY_ATTRIB						CONSTLIT("viscosity")
 #define WAKE_POTENTIAL_ATTRIB					CONSTLIT("wakePotential")
@@ -46,7 +48,7 @@ class CParticleCloudPainter : public IEffectPainter
 		virtual int GetParticleCount (void) { return m_Particles.GetCount(); }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void OnBeginFade (void) { m_iEmitLifetime = 0; }
-		virtual void OnMove (bool *retbBoundsChanged = NULL);
+		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged = NULL);
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx);
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { bool bOldFade = Ctx.bFade; Ctx.bFade = true; Paint(Dest, x, y, Ctx); Ctx.bFade = bOldFade; }
@@ -168,12 +170,21 @@ ALERROR CParticleCloudEffectCreator::OnEffectCreateFromXML (SDesignLoadCtx &Ctx,
 	if (error = m_InitSpeed.LoadFromXML(pDesc->GetAttribute(EMIT_SPEED_ATTRIB), DEFAULT_EMIT_SPEED))
 		return error;
 
+	if (error = m_Spread.LoadFromXML(pDesc->GetAttribute(SPREAD_ANGLE_ATTRIB), -1))
+		return error;
+
 	int iDefaultEmitLifetime = (m_ParticleLifetime.GetAveValue() == -1 ? 100 : -1);
 	m_iEmitLifetime = pDesc->GetAttributeIntegerBounded(EMIT_LIFETIME_ATTRIB, 0, -1, iDefaultEmitLifetime);
 	m_iEmitRotation = pDesc->GetAttributeInteger(EMIT_ROTATION_ATTRIB);
 	m_iCohesion = pDesc->GetAttributeIntegerBounded(COHESION_ATTRIB, 0, 100, 0);
 	m_iViscosity = pDesc->GetAttributeIntegerBounded(VISCOSITY_ATTRIB, 0, 100, 0);
 	m_iWakePotential = pDesc->GetAttributeIntegerBounded(WAKE_POTENTIAL_ATTRIB, 0, 100, 0);
+
+	int iDrag;
+	if (pDesc->FindAttributeInteger(DRAG_ATTRIB, &iDrag))
+		m_rDrag = -(Metric)(iDrag / 100.0);
+	else
+		m_rDrag = -0.5;
 
 	//	Size and shape
 
@@ -359,15 +370,38 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 
 	{
 	int i;
+	const Metric rJitterFactor = LIGHT_SPEED / 100000.0;
 
 	switch (m_pCreator->GetStyle())
 		{
 		case CParticleCloudEffectCreator::styleExhaust:
+		case CParticleCloudEffectCreator::styleJet:
 			{
 			if (m_iLastDirection == -1)
 				break;
 
-			int iBaseRotation = 180 + m_pCreator->GetEmitRotation() + m_iLastDirection;
+			//	Compute the standard direction
+
+			int iBaseRotation = m_pCreator->GetEmitRotation() + m_iLastDirection;
+			if (m_pCreator->GetStyle() == CParticleCloudEffectCreator::styleExhaust)
+				iBaseRotation += 180;
+
+			Metric rBaseRotation = AngleToRadians(iBaseRotation);
+
+			//	Compute the spread angle, in radians
+
+			Metric rSpread;
+			int iSpreadAngle = m_pCreator->GetSpreadAngle();
+			if (iSpreadAngle >= 0)
+				rSpread = AngleToRadians(iSpreadAngle);
+			else if (m_pCreator->GetStyle() == CParticleCloudEffectCreator::styleExhaust)
+				rSpread = AngleToRadians(4);
+			else
+				rSpread = AngleToRadians(20);
+
+			Metric rHalfSpread = 0.5 * rSpread;
+
+			//	Create particles
 
 			for (i = 0; i < iCount; i++)
 				{
@@ -377,8 +411,8 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 
 				//	Generate a random velocity backwards
 
-				int iRotation = iBaseRotation + mathRandom(-2, 2);
-				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed()));
+				Metric rRotation = rBaseRotation + (rHalfSpread * mathRandom(-1000, 1000) / 1000.0);
+				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVectorRadians(rRotation, m_pCreator->GetEmitSpeed() + rJitterFactor * mathRandom(-500, 500)));
 
 				//	Lifetime
 
@@ -386,34 +420,7 @@ void CParticleCloudPainter::CreateNewParticles (int iCount, const CVector &vInit
 
 				//	Add the particle
 
-				m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation);
-				}
-
-			break;
-			}
-
-		case CParticleCloudEffectCreator::styleJet:
-			{
-			int iBaseRotation = m_pCreator->GetEmitRotation() + (m_iLastDirection != -1 ? m_iLastDirection : 0);
-
-			for (i = 0; i < iCount; i++)
-				{
-				//	Position
-
-				CVector vPos = vInitialPos;
-
-				//	Generate a random velocity along the jet direction
-
-				int iRotation = iBaseRotation + mathRandom(-10, 10);
-				CVector vVel = m_pCreator->GetSlowMotionFactor() * (vInitialVel + ::PolarToVector(iRotation, m_pCreator->GetEmitSpeed()));
-
-				//	Lifetime
-
-				int iLifeLeft = m_pCreator->GetParticleLifetime();
-
-				//	Add the particle
-
-				m_Particles.AddParticle(vPos, vVel, iLifeLeft, iRotation);
+				m_Particles.AddParticle(vPos, vVel, iLifeLeft, AngleToDegrees(rRotation));
 				}
 
 			break;
@@ -478,7 +485,7 @@ void CParticleCloudPainter::InitParticles (const CVector &vInitialPos)
 		}
 	}
 
-void CParticleCloudPainter::OnMove (bool *retbBoundsChanged)
+void CParticleCloudPainter::OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged)
 
 //	OnMove
 //
@@ -492,7 +499,7 @@ void CParticleCloudPainter::OnMove (bool *retbBoundsChanged)
 	//	Update the single-particle painter
 
 	if (m_pParticlePainter)
-		m_pParticlePainter->OnMove();
+		m_pParticlePainter->OnMove(Ctx);
 
 	//	Update particle motion
 
@@ -577,7 +584,7 @@ void CParticleCloudPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 	if (!Ctx.bFade
 			&& (m_iEmitLifetime == -1 || m_iTick < m_iEmitLifetime))
 		{
-		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
+		CVector vVel = (Ctx.pObj ? m_pCreator->GetDrag() * Ctx.pObj->GetVel() : CVector());
 		CreateNewParticles(m_pCreator->GetNewParticleCount(), Ctx.vEmitPos, vVel);
 		}
 
@@ -655,7 +662,7 @@ void CParticleCloudPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPa
 
 		InitParticles(vPos);
 
-		CVector vVel = (Ctx.pObj ? -0.5 * Ctx.pObj->GetVel() : CVector());
+		CVector vVel = (Ctx.pObj ? m_pCreator->GetDrag() * Ctx.pObj->GetVel() : CVector());
 		CreateNewParticles(m_pCreator->GetNewParticleCount(), vPos, vVel);
 		}
 

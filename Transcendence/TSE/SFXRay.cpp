@@ -1069,7 +1069,7 @@ void CRayEffectPainter::PaintHit (CG16bitImage &Dest, int x, int y, const CVecto
 
 	int xFrom;
 	int yFrom;
-	Ctx.XForm.Transform(vHitPos, &xFrom, &yFrom);
+	Ctx.XFormRel.Transform(vHitPos, &xFrom, &yFrom);
 
 	//	Paint the ray
 

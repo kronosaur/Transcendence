@@ -86,10 +86,6 @@
 				sound=				"&snMissileLauncher;"
 
 				effect=				"&efMissileNAMI;"
-				vaporTrailLength=	"16"
-				vaporTrailWidth=	"110"
-				vaporTrailWidthInc=	"5"
-				vaporTrailColor=	"0xd0, 0xd0, 0xd0"
 				>
 
 			<HitEffect

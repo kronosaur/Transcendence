@@ -144,8 +144,11 @@ void CRadiusDamage::OnMove (const CVector &vOldPos, Metric rSeconds)
 
 	if (m_pPainter)
 		{
+		SEffectMoveCtx Ctx;
+		Ctx.pObj = this;
+
 		bool bBoundsChanged;
-		m_pPainter->OnMove(&bBoundsChanged);
+		m_pPainter->OnMove(Ctx, &bBoundsChanged);
 
 		//	Set bounds, if they've changed
 

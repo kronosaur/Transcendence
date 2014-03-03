@@ -1134,6 +1134,7 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		{
 		int x, y;
 		Ctx.XForm.Transform(m_vAutoDockPort, &x, &y);
+		Ctx.XFormRel = Ctx.XForm;
 
 		int iSpeed = 3;
 		int iRange = 10;

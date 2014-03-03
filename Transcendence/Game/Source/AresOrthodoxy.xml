@@ -264,13 +264,27 @@
 						failsafe=		"15"
 
 						sound=			"&snMissileLauncher;"
-						vaporTrailLength="64"
-						vaporTrailWidth="400"
-						vaporTrailWidthInc="25"
-						vaporTrailColor="0xd0, 0xd0, 0xd0"
 						>
 
 					<Effect>
+						<ParticleJet
+								fixedPos=			"true"
+								emitRate=			"60"
+								tangentSpeed=		"3d2-3"
+								particleLifetime=	"10-30"
+								XformTime=			"30"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"5"
+										primaryColor=	"#f7ffc6"
+										secondaryColor=	"#b63718"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
@@ -325,6 +339,24 @@
 						>
 
 					<Effect>
+						<ParticleJet
+								fixedPos=			"true"
+								emitRate=			"40"
+								tangentSpeed=		"3d2-3"
+								particleLifetime=	"10-30"
+								XformTime=			"20"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"4"
+										primaryColor=	"#f7ffc6"
+										secondaryColor=	"#b63718"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
@@ -438,6 +470,24 @@
 						>
 
 					<Effect>
+						<ParticleJet
+								fixedPos=			"true"
+								emitRate=			"40"
+								tangentSpeed=		"3d2-3"
+								particleLifetime=	"10-30"
+								XformTime=			"20"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"4"
+										primaryColor=	"#f7ffc6"
+										secondaryColor=	"#b63718"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
 						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
 					</Effect>
 
@@ -507,19 +557,10 @@
 				powerUse=			"900"
 				recoil=				"2"
 
-				fireEffect=			"&efMediumCannonFlash;"
+				effect=				"&efThermoShellDefault;"
+				fireEffect=			"&efThermoFireDefault;"
 				sound=				"&snRecoillessCannon;"
 				>
-
-			<Effect>
-				<Starburst
-						style=			"morningStar"
-						spikeCount=		"2d6+10"
-						spikeLength=	"2d10"
-						primaryColor=	"0xff, 0xff, 0x80"
-						secondaryColor=	"0xd0, 0x20, 0x00"
-						/>
-			</Effect>
 
 			<HitEffect
 					sound="&snArmorHit1;"
@@ -783,7 +824,7 @@
 		
 		<Armor
 			armorID=			"&itTharsisPlate;"
-			count=				"12"
+			count=				"8"
 			/>
 		
 		<Devices>
@@ -800,7 +841,7 @@
 
 		<Interior>
 			<Compartment name="interior"
-					hitPoints=	"300"
+					hitPoints=	"200"
 					/>
 			
 			<Compartment name="main drive"

@@ -3994,7 +3994,7 @@ void CShip::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Move effects
 
 	if (WasPainted())
-		m_Effects.Move();
+		m_Effects.Move(this, vOldPos);
 	}
 
 void CShip::OnNewSystem (CSystem *pSystem)
@@ -4971,7 +4971,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	//	last tick.
 
 	if (WasPainted())
-		m_Effects.Update(m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
+		m_Effects.Update(this, m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
 
 	//	Invalidate
 

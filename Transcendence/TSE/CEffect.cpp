@@ -109,6 +109,9 @@ void CEffect::OnMove (const CVector &vOldPos, Metric rSeconds)
 
 	if (m_pPainter)
 		{
+		SEffectMoveCtx Ctx;
+		Ctx.pObj = this;
+
 		//	Tell the painter about the new absolute position
 
 		m_pPainter->SetPos(GetPos());
@@ -116,7 +119,7 @@ void CEffect::OnMove (const CVector &vOldPos, Metric rSeconds)
 		//	Let the painter handle a move
 
 		bool bBoundsChanged;
-		m_pPainter->OnMove(&bBoundsChanged);
+		m_pPainter->OnMove(Ctx, &bBoundsChanged);
 
 		//	Set bounds, if they've changed
 

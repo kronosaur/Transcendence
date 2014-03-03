@@ -27,7 +27,7 @@ class CShockwavePainter : public IEffectPainter
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
 		virtual Metric GetRadius (void) const { return g_KlicksPerPixel * m_iRadius; }
 		virtual void GetRect (RECT *retRect) const;
-		virtual void OnMove (bool *retbBoundsChanged = NULL);
+		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged = NULL);
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx);
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void SetParamMetric (const CString &sParam, Metric rValue);
@@ -233,7 +233,7 @@ void CShockwavePainter::GetRect (RECT *retRect) const
 	retRect->bottom = m_iRadius + 1;
 	}
 
-void CShockwavePainter::OnMove (bool *retbBoundsChanged)
+void CShockwavePainter::OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged)
 
 //	OnMove
 //

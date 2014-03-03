@@ -170,7 +170,7 @@ void CWeaponFireDesc::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 		}
 	}
 
-IEffectPainter *CWeaponFireDesc::CreateEffect (void)
+IEffectPainter *CWeaponFireDesc::CreateEffect (bool bTrackingObj, bool bUseObjectCenter)
 
 //	CreateEffect
 //
@@ -182,6 +182,8 @@ IEffectPainter *CWeaponFireDesc::CreateEffect (void)
 	{
 	CCreatePainterCtx Ctx;
 	Ctx.SetWeaponFireDesc(this);
+	Ctx.SetTrackingObject(bTrackingObj);
+	Ctx.SetUseObjectCenter(bUseObjectCenter);
 
 	return m_pEffect.CreatePainter(Ctx);
 	}

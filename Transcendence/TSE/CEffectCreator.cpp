@@ -38,6 +38,14 @@ static char *CACHED_EVENTS[CEffectCreator::evtCount] =
 		"GetParameters",
 	};
 
+CEffectCreator::CEffectCreator (void) : m_pDamage(NULL)
+
+//	CEffectCreator constructor
+
+	{
+	utlMemSet(m_CachedEvents, sizeof(m_CachedEvents), 0);
+	}
+
 CEffectCreator::~CEffectCreator (void)
 
 //	CEffectCreator destructor
@@ -117,6 +125,8 @@ ALERROR CEffectCreator::CreateFromTag (const CString &sTag, CEffectCreator **ret
 		pCreator = new CImageEffectCreator;
 	else if (strEquals(sTag, CRayEffectCreator::GetClassTag()))
 		pCreator = new CRayEffectCreator;
+	else if (strEquals(sTag, CParticleJetEffectCreator::GetClassTag()))
+		pCreator = new CParticleJetEffectCreator;
 	else if (strEquals(sTag, CPolyflashEffectCreator::GetClassTag()))
 		pCreator = new CPolyflashEffectCreator;
 	else if (strEquals(sTag, CShockwaveEffectCreator::GetClassTag()))

@@ -409,6 +409,7 @@ class CMissile : public CSpaceObject
 
 		int ComputeVaporTrail (void);
 		void CreateFragments (const CVector &vPos);
+		bool SetMissileFade (void);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
 		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements

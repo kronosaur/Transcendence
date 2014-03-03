@@ -731,6 +731,36 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType UNID="&efThermoFireDefault;"
+			instance=			"owner"
+			>
+		<Effect>
+			<Ray	style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#feffa1"
+					secondaryColor=	"#f76e24"
+					xformRotation=	"180"
+					
+					lifetime=		"3"
+					animateOpacity= "fade"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP 6 80 16 64 50)
+								width: (mathScale damageHP 6 80 24 96 50)
+								intensity: 70
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 <!-- DEFAULT PROJECTILE EFFECTS ================================================
 
 	These effects may be used in weapons to create some standard effects, such
@@ -1002,6 +1032,93 @@
 		</Events>
 	</EffectType>
 
+	<EffectType UNID="&efThermoShellDefault;"
+			instance=			"creator"
+			>
+		
+		<Effect>
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"2-10"
+					particleLifetime=	"5-15"
+					spreadAngle=		"45"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP lifetimeAdj)
+							(setq damageHP (@ gData 'damageHP))
+							(setq lifetimeAdj (mathScale damageHP 20 80 1 5 50))
+
+							{
+								particleLifetime: (cat lifetimeAdj "-" (multiply lifetimeAdj 3))
+								}
+							)
+					</GetParameters>
+				</Events>
+				
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"2"
+							primaryColor=	"#ffe695"
+							secondaryColor=	"#ff5400"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"40-60"
+					spreadAngle=		"1"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP lifetimeAdj)
+							(setq damageHP (@ gData 'damageHP))
+							(setq lifetimeAdj (mathScale damageHP 20 80 2 8 50))
+
+							{
+								particleLifetime: (cat lifetimeAdj "-" (multiply lifetimeAdj 3))
+								}
+							)
+					</GetParameters>
+				</Events>
+				
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#ffe695"
+							secondaryColor=	"#ff5400"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
+			<Ray
+					style=			"smooth"
+					shape=			"tapered"
+					primaryColor=	"#ffe695"
+					secondaryColor=	"#ff5400"
+					>
+				<Events>
+					<GetParameters>
+						(block (damageHP primaryColor secondaryColor)
+							(setq damageHP (@ gData 'damageHP))
+
+							{
+								length:	(mathScale damageHP	20 160 90 180 50)
+								width: (mathScale damageHP 20 160 16 45 50)
+								intensity: 50
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+		</Effect>
+	</EffectType>
+
 	<EffectType UNID="&efGravitonBeamDefault;"
 			instance=			"creator"
 			>
@@ -1135,11 +1252,11 @@
 			instance=			"creator"
 			>
 		<Effect>
-			<ParticleCloud
-					style=				"exhaust"
+			<ParticleJet
 					emitRate=			"15-30"
 					emitSpeed=			"5-8"
 					particleLifetime=	"24-60"
+					spreadAngle=		"3"
 					>
 				<ParticleEffect>
 					<Particle
@@ -1150,7 +1267,7 @@
 							secondaryColor=	"#392f2e"
 							/>
 				</ParticleEffect>
-			</ParticleCloud>
+			</ParticleJet>
 			
 			<Ray>
 				<Events>

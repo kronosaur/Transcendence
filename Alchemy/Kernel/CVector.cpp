@@ -113,6 +113,16 @@ CVector PolarToVector (int iAngle, Metric rRadius)
 	return CVector(rRadius * g_Cosine[AngleMod(iAngle)], rRadius * g_Sine[AngleMod(iAngle)]);
 	}
 
+CVector PolarToVectorRadians (Metric rRadians, Metric rRadius)
+
+//	PolarToVector
+//
+//	Creates a vector from polar coordinates.
+
+	{
+	return CVector(rRadius * cos(rRadians), rRadius * sin(rRadians));
+	}
+
 int VectorToPolar (const CVector &vP, Metric *retrRadius)
 
 //	VectorToPolar

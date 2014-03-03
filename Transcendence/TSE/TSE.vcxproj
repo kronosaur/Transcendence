@@ -281,6 +281,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="IListData.cpp" />
+    <ClCompile Include="SFXParticleJet.cpp" />
     <ClCompile Include="SFXRay.cpp" />
     <ClCompile Include="XMLLoader.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

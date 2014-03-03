@@ -72,7 +72,7 @@
 //#define DEBUG_SHIP
 //#define DEBUG_SOURCE_LOAD_TRACE
 //#define DEBUG_STATION_EXCLUSION_ZONE
-#define DEBUG_TARGET_LIST
+//#define DEBUG_TARGET_LIST
 #define DEBUG_VECTOR
 //#define DEBUG_WEAPON_POS
 //#define DEBUG_SINGLETON_EFFECTS
@@ -367,7 +367,7 @@ class CWeaponFireDesc
 		void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		inline bool CanAutoTarget (void) const { return m_bAutoTarget; }
 		inline bool CanHitFriends (void) const { return !m_bNoFriendlyFire; }
-		IEffectPainter *CreateEffect (void);
+		IEffectPainter *CreateEffect (bool bTrackingObj, bool bUseObjectCenter);
 		void CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx);
 		bool FindDataField (const CString &sField, CString *retsValue);
 		CEffectCreator *FindEffectCreator (const CString &sUNID);
@@ -1323,6 +1323,7 @@ class CParticleArray
 		inline SParticle *GetArray (int *retiCount = NULL) const { if (retiCount) *retiCount = m_iCount; return m_pArray; }
 		inline const CVector &GetOrigin (void) const { return m_vOrigin; }
 		void Init (int iMaxCount, const CVector &vOrigin = NullVector);
+		void Move (const CVector &vMove);
 		void Paint (CG16bitImage &Dest,
 					int xPos,
 					int yPos,

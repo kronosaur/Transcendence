@@ -685,6 +685,8 @@ struct SViewportPaintCtx
 	int yCenter;						//	Center of viewport (pixels)
 	ViewportTransform XForm;			//	Converts from object to screen viewport coordinates
 										//		Screen viewport coordinates has positive-Y down.
+	ViewportTransform XFormRel;			//	In the case of effects, this Xform has been translated
+										//		to offset for the effect position
 
 	CVector vDiagonal;					//	Length of 1/2 viewport diagonal (in global coordinates).
 	CVector vUR;						//	upper-right and lower-left of viewport in global
@@ -2856,10 +2858,10 @@ class CObjectEffectList
 		~CObjectEffectList (void);
 
 		void Init (const CObjectEffectDesc &Desc, const TArray<IEffectPainter *> &Painters);
-		void Move (bool *retbBoundsChanged = NULL);
+		void Move (CSpaceObject *pObj, const CVector &vOldPos, bool *retbBoundsChanged = NULL);
 		void Paint (SViewportPaintCtx &Ctx, const CObjectEffectDesc &Desc, DWORD dwEffects, CG16bitImage &Dest, int x, int y);
 		void PaintAll (SViewportPaintCtx &Ctx, const CObjectEffectDesc &Desc, CG16bitImage &Dest, int x, int y);
-		void Update (const CObjectEffectDesc &Desc, int iRotation, DWORD dwEffects);
+		void Update (CSpaceObject *pObj, const CObjectEffectDesc &Desc, int iRotation, DWORD dwEffects);
 
 	private:
 		struct SFixedEffect
@@ -3141,11 +3143,22 @@ struct SEffectHitDesc
 
 typedef TArray<SEffectHitDesc> CEffectHitResults;
 
+struct SEffectMoveCtx
+	{
+	SEffectMoveCtx (void) :
+			pObj(NULL)
+		{ }
+
+	CSpaceObject *pObj;							//	The object that owns the effect
+	CVector vOldPos;							//	Old position of object
+	};
+
 struct SEffectUpdateCtx
 	{
 	SEffectUpdateCtx (void) : 
 			pSystem(NULL),
 			pObj(NULL),
+			iRotation(0),
 			bFade(false),
 
 			pDamageDesc(NULL),
@@ -3162,6 +3175,7 @@ struct SEffectUpdateCtx
 	//	Object context
 	CSystem *pSystem;							//	Current system
 	CSpaceObject *pObj;							//	The object that the effect is part of
+	int iRotation;								//	Rotation
 	CVector vEmitPos;							//	Emittion pos (if not center of effect)
 												//		Relative to center of effect.
 	bool bFade;									//	Effect fading
@@ -3187,13 +3201,15 @@ class CEffectParamDesc
 	public:
 		enum EDataTypes
 			{
-			typeNull,
+			typeNull =						0,
 
-			typeColorConstant,
-			typeIntegerConstant,
-			typeIntegerDiceRange,
-			typeIntegerExpression,
-			typeStringConstant,
+			typeColorConstant =				1,
+			typeIntegerConstant =			2,
+			typeIntegerDiceRange =			3,
+			typeIntegerExpression =			4,
+			typeStringConstant =			5,
+			typeBoolConstant =				6,
+			typeVectorConstant =			7,
 			};
 
 		CEffectParamDesc (void) : m_iType(typeNull), m_pItem(NULL)
@@ -3201,16 +3217,22 @@ class CEffectParamDesc
 
 		~CEffectParamDesc (void);
 
+		bool EvalBool (CCreatePainterCtx &Ctx) const;
 		WORD EvalColor (CCreatePainterCtx &Ctx) const;
+		DiceRange EvalDiceRange (CCreatePainterCtx &Ctx, int iDefault = -1) const;
 		int EvalIdentifier (CCreatePainterCtx &Ctx, LPSTR *pIDMap, int iMax, int iDefault = 0) const;
 		int EvalInteger (CCreatePainterCtx &Ctx) const;
 		int EvalIntegerBounded (CCreatePainterCtx &Ctx, int iMin, int iMax = -1, int iDefault = -1) const;
 		CString EvalString (CCreatePainterCtx &Ctx) const;
+		CVector EvalVector (CCreatePainterCtx &Ctx) const;
 		inline EDataTypes GetType (void) const { return m_iType; }
+		inline void InitBool (bool bValue) { CleanUp(); m_dwData = (bValue ? 1 : 0); m_iType = typeBoolConstant; }
 		inline void InitColor (WORD wValue) { CleanUp(); m_dwData = wValue; m_iType = typeColorConstant; }
+		inline void InitDiceRange (const DiceRange &Value) { CleanUp(); m_DiceRange = Value; m_iType = typeIntegerDiceRange; }
 		inline void InitInteger (int iValue) { CleanUp(); m_dwData = iValue; m_iType = typeIntegerConstant; }
 		inline void InitNull (void) { CleanUp(); }
 		inline void InitString (const CString &sValue) { CleanUp(); m_sData = sValue; m_iType = typeStringConstant; }
+		inline void InitVector (const CVector &vValue) { CleanUp(); m_vVector = vValue; m_iType = typeVectorConstant; }
 		ALERROR InitColorFromXML (SDesignLoadCtx &Ctx, const CString &sValue);
 		ALERROR InitIdentifierFromXML (SDesignLoadCtx &Ctx, const CString &sValue, LPSTR *pIDMap);
 		ALERROR InitIntegerFromXML (SDesignLoadCtx &Ctx, const CString &sValue);
@@ -3224,9 +3246,13 @@ class CEffectParamDesc
 		bool FindIdentifier (const CString &sValue, LPSTR *pIDMap, DWORD *retdwID = NULL) const;
 
 		EDataTypes m_iType;
+
 		DWORD m_dwData;
-		DiceRange m_DiceRange;
 		CString m_sData;
+
+		DiceRange m_DiceRange;
+		CVector m_vVector;
+
 		ICCItem *m_pItem;
 	};
 
@@ -3270,7 +3296,7 @@ class IEffectPainter
 		virtual void GetRect (RECT *retRect) const;
 		virtual int GetVariants (void) const { return 1; }
 		virtual void OnBeginFade (void) { }
-		virtual void OnMove (bool *retbBoundsChanged = NULL) { if (retbBoundsChanged) *retbBoundsChanged = false; }
+		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged = NULL) { if (retbBoundsChanged) *retbBoundsChanged = false; }
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx) { }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) = 0;
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
@@ -4367,6 +4393,7 @@ class CCreatePainterCtx
 				m_iLifetime(0),
 				m_pWeaponFireDesc(NULL),
 				m_bUseObjectCenter(false),
+				m_bTracking(false),
 				m_pData(NULL)
 			{ }
 
@@ -4375,7 +4402,9 @@ class CCreatePainterCtx
 		void AddDataInteger (const CString &sField, int iValue);
 		ICCItem *GetData (void);
 		inline int GetLifetime (void) const { return m_iLifetime; }
+		inline bool IsTracking (void) const { return m_bTracking; }
 		inline void SetLifetime (int iLifetime) { m_iLifetime = iLifetime; }
+		inline void SetTrackingObject (bool bValue = true) { m_bTracking = bValue; }
 		inline void SetUseObjectCenter (bool bValue = true) { m_bUseObjectCenter = bValue; }
 		inline void SetWeaponFireDesc (CWeaponFireDesc *pDesc) { m_pWeaponFireDesc = pDesc; }
 		inline bool UseObjectCenter (void) const { return m_bUseObjectCenter; }
@@ -4394,6 +4423,7 @@ class CCreatePainterCtx
 		TArray<SDataEntry> m_Data;				//	Data to add
 
 		bool m_bUseObjectCenter;				//	If TRUE, particle clouds always use the object as center
+		bool m_bTracking;						//	If TRUE, object sets velocity
 
 		ICCItem *m_pData;						//	Generated data
 	};
@@ -4415,7 +4445,7 @@ class CEffectCreator : public CDesignType
 			instCreator,
 			};
 
-		CEffectCreator (void) : m_pDamage(NULL) { }
+		CEffectCreator (void);
 		virtual ~CEffectCreator (void);
 
 		static ALERROR CreateBeamEffect (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, CEffectCreator **retpCreator);
