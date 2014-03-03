@@ -45,6 +45,12 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (!sFilespec.IsBlank())
 		sFilespec = pathAddExtensionIfNecessary(sFilespec, CONSTLIT(".bmp"));
 
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
+	Ctx.bForcePainted = true;
+
 	//	Loop over all systems until we find what we're looking for
 
 	int iLoops = 20;
@@ -81,7 +87,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Update for a while
 
 			for (i = 0; i < iInitialUpdateTime; i++)
-				Universe.Update(g_SecondsPerUpdate, true);
+				Universe.Update(Ctx);
 
 			//	Compose the criteria
 
@@ -126,7 +132,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 				if ((i % 100) == 99)
 					printf(".");
 
-				Universe.Update(g_SecondsPerUpdate, true);
+				Universe.Update(Ctx);
 				}
 
 			if (iUpdateTime >= 99)

@@ -230,6 +230,12 @@ EResults RunEncounter (CUniverse &Universe, CSimViewer &Viewer, CStationType *pD
 	Universe.SetPOV(pAttacker);
 	pSystem->SetPOVLRS(pAttacker);
 
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
+	Ctx.bForcePainted = true;
+
 	//	Now keep updating until either the station is destroyed, the ship is destroyed, or we time-out
 
 	int iTime = 0;
@@ -239,7 +245,7 @@ EResults RunEncounter (CUniverse &Universe, CSimViewer &Viewer, CStationType *pD
 	while (iTime < iTimeOut && (!bDestroyed || iDestroyedTime > 0))
 		{
 		iTime++;
-		Universe.Update(g_SecondsPerUpdate, true);
+		Universe.Update(Ctx);
 
 		if (!Viewer.IsEmpty())
 			Viewer.PaintViewport(Universe);

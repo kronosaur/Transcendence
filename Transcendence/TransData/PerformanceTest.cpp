@@ -86,12 +86,18 @@ void PerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine)
 		Universe.GarbageCollectLibraryBitmaps();
 		Universe.StartGame(true);
 
+		//	Update context
+
+		SSystemUpdateCtx Ctx;
+		Ctx.bForceEventFiring = true;
+		Ctx.bForcePainted = true;
+
 		//	Update for a while
 
 		DWORD dwStart = ::GetTickCount();
 		for (i = 0; i < iUpdateCount; i++)
 			{
-			Universe.Update(g_SecondsPerUpdate, true);
+			Universe.Update(Ctx);
 
 			if (i > 0 && (i % SAMPLE_SIZE) == 0)
 				{

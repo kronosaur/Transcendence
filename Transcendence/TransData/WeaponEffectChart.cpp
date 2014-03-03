@@ -243,6 +243,12 @@ void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform,
 
 	pPlatform->SetWeaponTriggered(iDev);
 
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
+	Ctx.bForcePainted = true;
+
 	//	Now loop over the appropriate number of frames
 
 	int xDest = x;
@@ -251,7 +257,7 @@ void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform,
 		{
 		//	Update the universe
 
-		g_pUniverse->Update(g_SecondsPerUpdate, true);
+		g_pUniverse->Update(Ctx);
 
 		//	Paint
 
@@ -272,7 +278,7 @@ void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform,
 		if (i == iFrameToSkip)
 			{
 			for (j = 0; j < iTicksToHit; j++)
-				g_pUniverse->Update(g_SecondsPerUpdate, true);
+				g_pUniverse->Update(Ctx);
 			}
 
 		yDest += cyCell;
@@ -281,7 +287,7 @@ void PaintWeaponFrames (CG16bitImage &Image, CItemType *pType, CShip *pPlatform,
 	//	Skip for a while
 
 	for (j = 0; j < 20; j++)
-		g_pUniverse->Update(g_SecondsPerUpdate, true);
+		g_pUniverse->Update(Ctx);
 
 	//	Uninstall weapon
 

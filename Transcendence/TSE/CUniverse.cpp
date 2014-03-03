@@ -2504,7 +2504,7 @@ CTimeSpan CUniverse::StopGameTime (void)
 	return timeSpan(m_StartTime, StopTime);
 	}
 
-void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
+void CUniverse::Update (SSystemUpdateCtx &Ctx)
 
 //	Update
 //
@@ -2514,7 +2514,7 @@ void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	Update system
 
 	if (m_pPOV)
-		m_pPOV->GetSystem()->Update(rSecondsPerTick, bForceEventFiring);
+		m_pPOV->GetSystem()->Update(Ctx);
 
 	//	Fire timed events
 

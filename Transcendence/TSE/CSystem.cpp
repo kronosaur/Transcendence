@@ -4154,7 +4154,7 @@ void CSystem::UnregisterEventHandler (CSpaceObject *pObj)
 		}
 	}
 
-void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
+void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 
 //	Update
 //
@@ -4194,7 +4194,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	create the universe.
 
 	SetProgramState(psUpdatingEvents);
-	if (!IsTimeStopped() && (g_pUniverse->GetPlayer() || bForceEventFiring))
+	if (!IsTimeStopped() && (g_pUniverse->GetPlayer() || SystemCtx.bForceEventFiring))
 		m_TimedEvents.Update(m_iTick, this);
 
 	//	Add all objects to the grid so that we can do faster
@@ -4209,6 +4209,18 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 			m_ObjGrid.AddObject(pObj);
 		}
 	DebugStopTimer("Adding objects to grid");
+
+	//	If necessary, mark as painted so that objects update correctly.
+
+	if (SystemCtx.bForcePainted)
+		{
+		for (i = 0; i < GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = GetObject(i);
+			if (pObj)
+				pObj->SetPainted();
+			}
+		}
 
 	//	Give all objects a chance to react
 
@@ -4270,7 +4282,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 			//	Move the objects
 
 			SetProgramState(psUpdatingMove, pObj);
-			pObj->Move(m_BarrierObjects, rSecondsPerTick);
+			pObj->Move(m_BarrierObjects, SystemCtx.rSecondsPerTick);
 
 #ifdef DEBUG_PERFORMANCE
 			iMoveObj++;
@@ -4329,11 +4341,13 @@ void CSystem::UpdateExtended (const CTimeSpan &ExtraTime)
 	{
 	int i;
 
+	SSystemUpdateCtx UpdateCtx;
+
 	//	Update for a few seconds
 
 	int iTime = mathRandom(250, 350);
 	for (i = 0; i < iTime; i++)
-		Update(g_SecondsPerUpdate);
+		Update(UpdateCtx);
 
 	//	Give all objects a chance to update
 

@@ -38,6 +38,12 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int iSystemUpdateTime = 1000;
 
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
+	Ctx.bForcePainted = true;
+
 	//	Generate systems for multiple games
 
 	CSymbolTable AllSystems(TRUE, TRUE);
@@ -72,7 +78,7 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Update for a while
 
 			for (j = 0; j < iSystemUpdateTime; j++)
-				Universe.Update(g_SecondsPerUpdate, true);
+				Universe.Update(Ctx);
 
 			//	Get the next node
 

@@ -67,6 +67,10 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 	bool bFailed = false;
 	CG16bitImage &TheScreen = g_pHI->GetScreen();
 
+	//	Update context
+
+	SSystemUpdateCtx UpdateCtx;
+
 	try
 		{
 		SetProgramState(psAnimating);
@@ -233,13 +237,13 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				if (!m_bPaused || m_bPausedStep)
 					{
 					SetProgramState(psUpdating);
-					g_pUniverse->Update(g_SecondsPerUpdate);
+					g_pUniverse->Update(UpdateCtx);
 					if (m_bAutopilot)
 						{
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
 						}
 					SetProgramState(psAnimating);
 
@@ -305,7 +309,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				//	Update the universe (at 1/4 rate)
 
 				if ((m_iTick % 4) == 0)
-					g_pUniverse->Update(g_SecondsPerUpdate);
+					g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_CurrentDock.Update(m_iTick);
 				m_iTick++;
@@ -372,7 +376,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Update the universe
 
-				g_pUniverse->Update(g_SecondsPerUpdate);
+				g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_iTick++;
 
@@ -419,7 +423,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Update the universe
 
-				g_pUniverse->Update(g_SecondsPerUpdate);
+				g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_iTick++;
 

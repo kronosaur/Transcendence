@@ -733,6 +733,18 @@ struct SSystemCreateCtx
 	CStationTableCache StationTables;		//	Cached station tables
 	};
 
+struct SSystemUpdateCtx
+	{
+	SSystemUpdateCtx (void) : rSecondsPerTick(g_SecondsPerUpdate),
+			bForceEventFiring(false),
+			bForcePainted(false)
+		{ }
+
+	Metric rSecondsPerTick;
+	bool bForceEventFiring;					//	If TRUE, fire events even if no player ship
+	bool bForcePainted;						//	If TRUE, mark objects as painted 
+	};
+
 //	CMoveCtx is currently unused; it was part of an experiment to see
 //	if I could improve the moving algorithms, but it proved too time-consuming
 
@@ -1172,7 +1184,7 @@ class CSystem : public CObject
 		void TransferObjEventsOut (CSpaceObject *pObj, CTimedEventList &ObjEvents);
 		void UnnameObject (CSpaceObject *pObj);
 		void UnregisterEventHandler (CSpaceObject *pObj);
-		void Update (Metric rSecondsPerTick, bool bForceEventFiring = false);
+		void Update (SSystemUpdateCtx &SystemCtx);
 		void UpdateExtended (const CTimeSpan &ExtraTime);
 		void VectorToTile (const CVector &vPos, int *retx, int *rety) const;
 		void WriteObjRefToStream (CSpaceObject *pObj, IWriteStream *pStream, CSpaceObject *pReferrer = NULL);
@@ -3173,7 +3185,7 @@ class CUniverse : public CObject
 		void PaintObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pObj);
 		void PaintObjectMap (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pObj);
 		inline void SetLogImageLoad (bool bLog = true) { CSmartLock Lock(m_cs); m_iLogImageLoad += (bLog ? -1 : +1); }
-		void Update (Metric rSecondsPerTick, bool bForceEventFiring = false);
+		void Update (SSystemUpdateCtx &Ctx);
 		void UpdateExtended (void);
 
 		void DebugOutput (char *pszLine, ...);

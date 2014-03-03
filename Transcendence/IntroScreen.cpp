@@ -168,6 +168,11 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	m_Reanimator.PaintFrame(TheScreen);
 
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
+
 	//	Paint based on state
 
 	switch (m_iIntroState)
@@ -251,7 +256,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	if (!m_bPaused)
 		{
-		g_pUniverse->Update(g_SecondsPerUpdate, true);
+		g_pUniverse->Update(Ctx);
 		m_iTick++;
 		}
 
