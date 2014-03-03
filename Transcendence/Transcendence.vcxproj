@@ -587,7 +587,9 @@
     <None Include="Game\Source\CommonwealthMining.xml" />
     <None Include="Game\Source\Compatibility10.xml" />
     <None Include="Game\Source\CoreCode.xml" />
-    <None Include="Game\Source\CoreEffects.xml" />
+    <None Include="Game\Source\CoreEffects.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CoreTypes.xml" />
     <None Include="Game\Source\CorporateHierarchy.xml" />
     <None Include="Game\Source\Domina.xml" />

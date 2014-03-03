@@ -689,6 +689,12 @@ void CParticleJetEffectPainter::OnUpdate (SEffectUpdateCtx &Ctx)
 		CreateNewParticles(Ctx.pObj, m_EmitRate.Roll(), Ctx.vEmitPos, CalcInitialVel(Ctx.pObj));
 	else if (m_bUseObjectMotion && Ctx.pObj)
 		m_vLastEmitPos = Ctx.pObj->GetPos();
+
+	//	If we're fading, reset direction (otherwise, when painting thruster 
+	//	effects we'll try to interpolate between stale directions).
+
+	if (Ctx.bFade)
+		m_iCurDirection = -1;
 	}
 
 void CParticleJetEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)

@@ -1207,11 +1207,11 @@
 			instance=			"creator"
 			>
 		<Effect>
-			<ParticleCloud
-					style=				"exhaust"
+			<ParticleJet
 					emitRate=			"20"
 					emitSpeed=			"20-30"
 					particleLifetime=	"3-6"
+					spreadAngle=		"4"
 					>
 				<ParticleEffect>
 					<Particle
@@ -1222,7 +1222,7 @@
 							secondaryColor=	"#812617"
 							/>
 				</ParticleEffect>
-			</ParticleCloud>
+			</ParticleJet>
 			
 			<Ray>
 				<Events>
