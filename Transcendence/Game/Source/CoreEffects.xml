@@ -1164,31 +1164,11 @@
 			instance=			"creator"
 			>
 		<Effect>
-			<Ray>
-				<Events>
-					<GetParameters>
-						(block (thrusterPower)
-							(setq thrusterPower (@ gData 'thrusterPower))
-
-							{
-								style: "smooth"
-								shape: "cone"
-								length: (mathScale thrusterPower 1 1000 18 40 50)
-								width: (mathScale thrusterPower 1 1000 12 26 50)
-								intensity: 40
-								primaryColor: "#c0c0c0"
-								secondaryColor: "#808080"
-								}
-							)
-					</GetParameters>
-				</Events>
-			</Ray>
-			
-			<ParticleCloud
-					style=				"exhaust"
-					emitRate=			"6"
-					emitSpeed=			"20-30"
+			<ParticleJet
+					emitRate=			"16"
+					emitSpeed=			"10-15"
 					particleLifetime=	"2-3"
+					spreadAngle=		"1"
 					>
 				<ParticleEffect>
 					<Particle
@@ -1199,7 +1179,7 @@
 							secondaryColor=	"#808080"
 							/>
 				</ParticleEffect>
-			</ParticleCloud>
+			</ParticleJet>
 		</Effect>
 	</EffectType>
 
