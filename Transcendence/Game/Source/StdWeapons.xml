@@ -4387,10 +4387,27 @@
 	<!-- Resources -->
 	
 	<EffectType UNID="&efAkanCannonShell;"
-			instance=			"owner"
+			instance=			"creator"
 			>
 		
 		<Effect>
+			<ParticleJet
+					emitRate=			"20"
+					emitSpeed=			"30-45"
+					particleLifetime=	"7-20"
+					spreadAngle=		"1"
+					>
+				<ParticleEffect>
+					<Particle
+							style=			"plain"
+							minWidth=		"1"
+							maxWidth=		"3"
+							primaryColor=	"#effeff"
+							secondaryColor=	"#5b777a"
+							/>
+				</ParticleEffect>
+			</ParticleJet>
+			
 			<Ray
 					style=			"smooth"
 					shape=			"diamond"
