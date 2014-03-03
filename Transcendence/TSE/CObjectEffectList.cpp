@@ -13,6 +13,42 @@ CObjectEffectList::~CObjectEffectList (void)
 	CleanUp();
 	}
 
+void CObjectEffectList::AccumulateBounds (CSpaceObject *pObj, const CObjectEffectDesc &Desc, int iRotation, RECT *ioBounds)
+
+//	AccumulateBounds
+//
+//	Increases ioBounds to account for effects.
+
+	{
+	int i;
+
+	for (i = 0; i < m_FixedEffects.GetCount(); i++)
+		{
+		const CObjectEffectDesc::SEffectDesc &EffectDesc = Desc.GetEffectDesc(i);
+
+		if (m_FixedEffects[i].pPainter)
+			{
+			//	Figure out where to paint the effect
+
+			int xPainter, yPainter;
+			EffectDesc.PosCalc.GetCoord(iRotation, &xPainter, &yPainter);
+
+			//	Get the painter bounds
+
+			RECT rcRect;
+			m_FixedEffects[i].pPainter->GetBounds(&rcRect);
+
+			//	Offset the painter rect based on position
+
+			::OffsetRect(&rcRect, xPainter, yPainter);
+
+			//	Adjust resulting RECT to include painter rect
+
+			::UnionRect(ioBounds, ioBounds, &rcRect);
+			}
+		}
+	}
+
 void CObjectEffectList::CleanUp (void)
 
 //	CleanUp

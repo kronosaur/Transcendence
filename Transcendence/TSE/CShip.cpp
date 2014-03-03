@@ -211,6 +211,37 @@ void CShip::CalcArmorBonus (void)
 	m_iStealth = iStealth;
 	}
 
+void CShip::CalcBounds (void)
+
+//	CalcBounds
+//
+//	Calculates bounds based on ship image and any effects and sets the object
+//	bounds.
+
+	{
+	//	Start with image bounds
+
+	const CObjectImageArray &Image = m_pClass->GetImage();
+	const RECT &rcImageRect = Image.GetImageRect();
+
+	int cxWidth = RectWidth(rcImageRect);
+	int cyHeight = RectHeight(rcImageRect);
+	
+	RECT rcBounds;
+	rcBounds.left = -cxWidth / 2;
+	rcBounds.right = rcBounds.left + cxWidth;
+	rcBounds.top = -cyHeight / 2;
+	rcBounds.bottom = rcBounds.top + cyHeight;
+
+	//	Add the effect bounds
+
+	m_Effects.AccumulateBounds(this, m_pClass->GetEffectsDesc(), GetRotation(), &rcBounds);
+
+	//	Set bounds
+
+	SetBounds(rcBounds);
+	}
+
 void CShip::CalcDeviceBonus (void)
 
 //	CalcDeviceBonus
@@ -3994,7 +4025,15 @@ void CShip::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Move effects
 
 	if (WasPainted())
-		m_Effects.Move(this, vOldPos);
+		{
+		bool bRecalcBounds;
+		m_Effects.Move(this, vOldPos, &bRecalcBounds);
+
+		//	Recalculate bounds, if necessary
+
+		if (bRecalcBounds)
+			CalcBounds();
+		}
 	}
 
 void CShip::OnNewSystem (CSystem *pSystem)

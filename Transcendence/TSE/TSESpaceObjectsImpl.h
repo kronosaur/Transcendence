@@ -1087,6 +1087,7 @@ class CShip : public CSpaceObject
 		CShip (void);
 
 		void CalcArmorBonus (void);
+		void CalcBounds (void);
 		int CalcMaxCargoSpace (void) const;
 		void CalcDeviceBonus (void);
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);

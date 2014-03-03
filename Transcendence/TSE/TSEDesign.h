@@ -2857,6 +2857,7 @@ class CObjectEffectList
 	public:
 		~CObjectEffectList (void);
 
+		void AccumulateBounds (CSpaceObject *pObj, const CObjectEffectDesc &Desc, int iRotation, RECT *ioBounds);
 		void Init (const CObjectEffectDesc &Desc, const TArray<IEffectPainter *> &Painters);
 		void Move (CSpaceObject *pObj, const CVector &vOldPos, bool *retbBoundsChanged = NULL);
 		void Paint (SViewportPaintCtx &Ctx, const CObjectEffectDesc &Desc, DWORD dwEffects, CG16bitImage &Dest, int x, int y);
