@@ -3049,8 +3049,9 @@ class IShipController
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg) { }
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) { }
 		virtual void OnNewSystem (CSystem *pSystem) { }
-		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { }
+		virtual void OnObjDamaged (const SDamageCtx &Ctx) { }
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx) { }
+		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate) { }
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip) { }
 		virtual void OnPlayerObj (CSpaceObject *pPlayer) { }

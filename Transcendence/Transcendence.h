@@ -440,6 +440,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg);
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess);
 		virtual void OnNewSystem (CSystem *pSystem);
+		virtual void OnObjDamaged (const SDamageCtx &Ctx);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx);
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
@@ -458,6 +459,7 @@ class CPlayerShipController : public CObject, public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
+		void PaintDamageBar (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);
@@ -504,6 +506,9 @@ class CPlayerShipController : public CObject, public IShipController
 		bool m_bShowAutoTarget;					//	If TRUE, we show the autotarget
 		CSpaceObject *m_pAutoTarget;			//	Saved autotarget.
 		mutable int m_iAutoTargetTick;
+
+		CSpaceObject *m_pAutoDamage;			//	Show damage bar for this object
+		DWORD m_dwAutoDamageExpire;				//	Stop showing on this tick
 
 	friend CObjectClass<CPlayerShipController>;
 	};

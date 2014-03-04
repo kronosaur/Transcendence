@@ -1970,6 +1970,11 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 	if (HasOnDamageEvent())
 		FireOnDamage(Ctx);
 
+	//	Tell our attacker that we got hit
+
+	if (pOrderGiver && pOrderGiver->CanAttack())
+		pOrderGiver->OnObjDamaged(Ctx);
+
 	//	If we've still got armor left, then we take damage but otherwise
 	//	we're OK.
 

@@ -3652,6 +3652,12 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	if (iResult != damageArmorHit)
 		return iResult;
 
+	//	Tell our attacker that we got hit
+
+	CSpaceObject *pOrderGiver = (Ctx.Attacker.GetObj() ? Ctx.Attacker.GetObj()->GetOrderGiver(Ctx.Damage.GetCause()) : NULL);
+	if (pOrderGiver && pOrderGiver->CanAttack())
+		pOrderGiver->OnObjDamaged(Ctx);
+
 	//	If armor absorbed all the damage, then we're OK
 
 	if (Ctx.iDamage == 0)

@@ -1025,6 +1025,7 @@ class CShip : public CSpaceObject
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) { m_pController->OnMissionCompleted(pMission, bSuccess); }
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void OnNewSystem (CSystem *pSystem);
+		virtual void OnObjDamaged (SDamageCtx &Ctx) { m_pController->OnObjDamaged(Ctx); }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip);
 		virtual void OnPlayerObj (CSpaceObject *pPlayer);
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);

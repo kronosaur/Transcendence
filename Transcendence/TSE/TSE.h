@@ -2483,6 +2483,7 @@ class CSpaceObject : public CObject
 		virtual void OnHitByRadioactiveDamage (SDamageCtx &Ctx) { }
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) { }
 		virtual void OnNewSystem (CSystem *pSystem) { }
+		virtual void OnObjDamaged (SDamageCtx &Ctx) { }
 		virtual void OnObjLeaveGate (CSpaceObject *pObj) { }
 		virtual void OnPlayerObj (CSpaceObject *pPlayer) { }
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx) { }
