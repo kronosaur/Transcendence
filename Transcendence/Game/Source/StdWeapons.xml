@@ -507,7 +507,7 @@
 				fireRate=			"15"
 				missileSpeed=		"40"
 				interaction=		"80"
-				lifetime=			"12"
+				lifetime=			"24"
 				powerUse=			"30"
 
 				effect=				"&efBlastShellDefault;"
