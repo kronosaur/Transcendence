@@ -7398,15 +7398,24 @@ ICCItem *fnShipSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
 
-			//	Fire CanBeUninstalled to check for custom conditions
+			//	See if we can remove it
 
-			CString sError;
-			if (!Item.FireCanBeUninstalled(pShip, &sError))
-				return pCC->CreateString(sError);
+			CString sResult;
+			CShip::RemoveDeviceStatus iStatus = pShip->CanRemoveDevice(Item, &sResult);
 
-			//	Check standard conditions
+			//	Result based on status
 
-			return pCC->CreateInteger((int)pShip->CanRemoveDevice(Item));
+			switch (iStatus)
+				{
+				case CShip::remOK:
+					return pCC->CreateInteger(0);
+
+				case CShip::remCannotRemove:
+					return pCC->CreateString(sResult);
+
+				default:
+					return pCC->CreateInteger((int)iStatus);
+				}
 			}
 
 		case FN_SHIP_COMMAND_CODE:

@@ -742,6 +742,14 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 			iResult = insCannotInstall;
 			}
 
+		//	Ask the object if we can install this item
+
+		else if (!FireCanInstallItem(Item, -1, &sResult))
+			{
+			bCanInstall = false;
+			iResult = insCannotInstall;
+			}
+
 		//	See if the ship's engine core is powerful enough
 
 		else if (GetMaxPower() > 0
@@ -782,6 +790,15 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 				CItemListManipulator ItemList(GetItemList());
 				SetCursorAtDevice(ItemList, iSlot);
 				ItemToReplace = ItemList.GetItemAtCursor();
+
+				//	See if the item can be removed. If not, then error
+
+				if (bCanInstall 
+						&& CanRemoveDevice(ItemToReplace, &sResult) != remOK)
+					{
+					bCanInstall = false;
+					iResult = insCannotInstall;
+					}
 				}
 			}
 		}
@@ -808,7 +825,7 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 	return bCanInstall;
 	}
 
-CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
+CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item, CString *retsResult)
 
 //	CanRemoveDevice
 //
@@ -821,6 +838,16 @@ CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
 	CDeviceClass *pDevice = Item.GetType()->GetDeviceClass();
 	if (pDevice == NULL)
 		return remNotInstalled;
+
+	//	Ask the item if it can be removed
+
+	if (!Item.FireCanBeUninstalled(this, retsResult))
+		return remCannotRemove;
+
+	//	Check to see if we are allowed to remove the item
+
+	else if (!FireCanRemoveItem(Item, -1, retsResult))
+		return remCannotRemove;
 
 	//	Check for special device cases
 
@@ -836,7 +863,10 @@ CShip::RemoveDeviceStatus CShip::CanRemoveDevice (const CItem &Item)
 			//	If this is larger than the ship class max, then we cannot remove
 
 			if (rCargoSpace > (Metric)m_pClass->GetCargoSpace())
+				{
+				*retsResult = CONSTLIT("Your ship has too much cargo to be able to replace the cargo hold.");
 				return remTooMuchCargo;
+				}
 
 			break;
 			}

@@ -2088,6 +2088,7 @@ class CSpaceObject : public CObject
 		inline bool FindEventSubscriber (CSpaceObject *pObj) { return m_SubscribedObjs.FindObj(pObj); }
 		bool FireCanDockAsPlayer (CSpaceObject *pDockTarget, CString *retsError);
 		bool FireCanInstallItem (const CItem &Item, int iSlot, CString *retsResult);
+		bool FireCanRemoveItem (const CItem &Item, int iSlot, CString *retsResult);
 		void FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent = eventNone, ICCItem **retpResult = NULL);
 		void FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData = NULL, ICCItem **retpResult = NULL);
 		void FireCustomOverlayEvent (const CString &sEvent, DWORD dwID, ICCItem **retpResult = NULL);

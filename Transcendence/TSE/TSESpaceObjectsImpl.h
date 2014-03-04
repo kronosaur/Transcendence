@@ -792,6 +792,7 @@ class CShip : public CSpaceObject
 			remOK					= 0,	//	Can remove this device
 			remTooMuchCargo			= 1,	//	Can't remove cargo expansion (because too much cargo)
 			remNotInstalled			= 2,	//	Device is not installed
+			remCannotRemove			= 3,	//	Custom reason
 			};
 
 		static ALERROR CreateFromClass (CSystem *pSystem, 
@@ -824,7 +825,7 @@ class CShip : public CSpaceObject
 		void UninstallArmor (CItemListManipulator &ItemList);
 
 		//	Device methods
-		RemoveDeviceStatus CanRemoveDevice (const CItem &Item);
+		RemoveDeviceStatus CanRemoveDevice (const CItem &Item, CString *retsResult);
 		void ClearAllTriggered (void);
 		void DamageCargo (SDamageCtx &Ctx);
 		void DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx);

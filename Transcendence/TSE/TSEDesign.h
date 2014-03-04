@@ -293,12 +293,13 @@ class CDesignType
 		enum ECachedHandlers
 			{
 			evtCanInstallItem			= 0,
-			evtOnGlobalTypesInit		= 1,
-			evtOnObjDestroyed			= 2,
-			evtOnSystemObjAttacked		= 3,
-			evtOnSystemWeaponFire		= 4,
+			evtCanRemoveItem			= 1,
+			evtOnGlobalTypesInit		= 2,
+			evtOnObjDestroyed			= 3,
+			evtOnSystemObjAttacked		= 4,
+			evtOnSystemWeaponFire		= 5,
 
-			evtCount					= 5,
+			evtCount					= 6,
 			};
 
 		CDesignType (void);

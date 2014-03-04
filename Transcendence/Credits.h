@@ -153,6 +153,7 @@ static char *FEEDBACK[] =
 	"Rhonda Reese",
 	"Retroactive",
 	"Revolver",
+	"robotarozum",
 	"David Rotberg",
 
 	"Salvagebot 1.0",

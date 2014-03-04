@@ -1538,6 +1538,50 @@ bool CSpaceObject::FireCanInstallItem (const CItem &Item, int iSlot, CString *re
 		return true;
 	}
 
+bool CSpaceObject::FireCanRemoveItem (const CItem &Item, int iSlot, CString *retsResult)
+
+//	FireCanRemoveItem
+//
+//	Asks the object whether we can remove the given item.
+
+	{
+	SEventHandlerDesc Event;
+	if (FindEventHandler(CDesignType::evtCanRemoveItem, &Event))
+		{
+		CCodeChainCtx Ctx;
+
+		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineItemVar(Item);
+		if (iSlot != -1)
+			Ctx.DefineInteger(CONSTLIT("aArmorSeg"), iSlot);
+		else
+			Ctx.DefineNil(CONSTLIT("aArmorSeg"));
+
+		ICCItem *pResult = Ctx.Run(Event);
+
+		bool bCanBeRemoved;
+		if (pResult->IsError())
+			{
+			*retsResult = pResult->GetStringValue();
+			ReportEventError(strPatternSubst(CONSTLIT("Ship %x CanRemoveItem"), GetType()->GetUNID()), pResult);
+			bCanBeRemoved = false;
+			}
+		else if (!pResult->IsTrue())
+			{
+			*retsResult = pResult->GetStringValue();
+			bCanBeRemoved = false;
+			}
+		else
+			bCanBeRemoved = true;
+
+		Ctx.Discard(pResult);
+
+		return bCanBeRemoved;
+		}
+	else
+		return true;
+	}
+
 void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem **retpResult)
 
 //	FireCustomEvent
