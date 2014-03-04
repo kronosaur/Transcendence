@@ -850,7 +850,6 @@ class CShip : public CSpaceObject
 		void SetCursorAtNamedDevice (CItemListManipulator &ItemList, DeviceNames iDev);
 		void SetWeaponTriggered (DeviceNames iDev, bool bTriggered = true);
 		void SetWeaponTriggered (CInstalledDevice *pWeapon, bool bTriggered = true);
-		CInstalledDevice *GetNamedDevice (DeviceNames iDev);
 		CDeviceClass *GetNamedDeviceClass (DeviceNames iDev);
 		CString GetReactorName (void);
 		inline int GetWeaponAimTolerance (DeviceNames iDev) { return 3; }
@@ -968,6 +967,7 @@ class CShip : public CSpaceObject
 		virtual Metric GetMass (void);
 		virtual int GetMaxPower (void) const;
 		virtual CString GetName (DWORD *retdwFlags = NULL);
+		virtual CInstalledDevice *GetNamedDevice (DeviceNames iDev);
 		virtual int GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CShip"); }
 		virtual int GetOpenDockingPortCount (void) { return m_DockingPorts.GetPortCount(this) - m_DockingPorts.GetPortsInUseCount(this); }

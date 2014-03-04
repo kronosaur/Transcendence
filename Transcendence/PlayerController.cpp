@@ -51,6 +51,7 @@ CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_bUnderAttack(false),
 		m_pAutoDock(NULL),
 		m_iAutoDockPort(0),
+		m_bShowAutoTarget(false),
 		m_pAutoTarget(NULL),
 		m_iAutoTargetTick(0)
 
@@ -1124,17 +1125,20 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 //	Paint SRS enhancements.
 
 	{
+	//	Skip if we're not in the proper state
+
+	if (m_pShip == NULL
+			|| m_pShip->IsDestroyed())
+		return;
+
 	//	Paint the docking target, if necessary
 
 	if (m_bDockPortIndicators
 			&& m_pAutoDock 
-			&& m_pShip
-			&& !m_pShip->IsDestroyed()
 			&& (m_vAutoDockPort - m_pShip->GetPos()).Length2() > MIN_PORT_ANIMATION_DIST2)
 		{
 		int x, y;
 		Ctx.XForm.Transform(m_vAutoDockPort, &x, &y);
-		Ctx.XFormRel = Ctx.XForm;
 
 		int iSpeed = 3;
 		int iRange = 10;
@@ -1157,6 +1161,18 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		Dest.FillLineTrans(x + 2, y - iSize, iPos, wColor, dwOpacity);
 		Dest.FillLineTrans(x + 2, y + iSize - 1, iPos, wColor, dwOpacity);
 		}
+
+	//	If we have a target, then paint a target reticle.
+	//	NOTE: We do this even if friendly because weapons will still aim at them.
+
+	if (m_pTarget)
+		PaintTargetingReticle(Ctx, Dest, m_pTarget);
+
+	//	If we have an auto target and we want to show it, paint a reticle
+
+	else if (m_pAutoTarget 
+			&& m_bShowAutoTarget)
+		PaintTargetingReticle(Ctx, Dest, m_pAutoTarget);
 	}
 
 void CPlayerShipController::OnRadiationWarning (int iSecondsLeft)
@@ -1277,6 +1293,37 @@ void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
 	m_dwWreckObjID = pWreck->GetID();
 	}
 
+void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget)
+
+//	PaintTargetingReticle
+//
+//	Paints a targeting reticle on the given object
+
+	{
+	int x, y;
+	Ctx.XForm.Transform(pTarget->GetPos(), &x, &y);
+
+	WORD wColor = pTarget->GetSymbolColor();
+	int iSize = 8;
+	DWORD dwOpacity = 255;
+	int iIndent = iSize / 4;
+
+	const RECT &rcImage = pTarget->GetImage().GetImageRect();
+	int cxWidth = RectWidth(rcImage);
+	int cyHeight = RectHeight(rcImage);
+
+	int cxHorz = Max(0, (cxWidth / 2) - iIndent);
+	int cyVert = Max(0, (cyHeight / 2) - iIndent);
+
+	//	Draw
+
+	Dest.FillColumnTrans(x, y - cyVert - iSize, iSize, wColor, dwOpacity);
+	Dest.FillColumnTrans(x, y + cyVert, iSize, wColor, dwOpacity);
+
+	Dest.FillLineTrans(x + cxHorz, y, iSize, wColor, dwOpacity);
+	Dest.FillLineTrans(x - cxHorz - iSize, y, iSize, wColor, dwOpacity);
+	}
+
 bool CPlayerShipController::ToggleEnableDevice (int iDeviceIndex)
 
 //	ToggleEnableDevice
@@ -1356,7 +1403,6 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 			return m_pAutoTarget;
 
 		m_iAutoTargetTick = iTick;
-		m_pAutoTarget = FindAutoTarget(ItemCtx);
 
 		//	Make sure the fire angle is set to -1 if we don't have a target.
 		//	Otherwise, we will keep firing at the wrong angle after we destroy
@@ -1509,6 +1555,24 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 //	This is called every tick after all other objects have been updated.
 
 	{
+	//	Remember the AutoTarget. NOTE: We need to check again to see if the
+	//	target is destroyed because it could have gotten destroyed after it
+	//	was picked.
+
+	if (Ctx.pTargetObj && !Ctx.pTargetObj->IsDestroyed())
+		{
+		m_pAutoTarget = Ctx.pTargetObj;
+		if (Ctx.bNeedsAutoTarget)
+			m_bShowAutoTarget = true;
+		else
+			m_bShowAutoTarget = false;
+		}
+	else
+		{
+		m_pAutoTarget = NULL;
+		m_bShowAutoTarget = false;
+		}
+
 	//	Compute the AutoDock target.
 	//
 	//	If we're already in the middle of docking then we don't change anything.

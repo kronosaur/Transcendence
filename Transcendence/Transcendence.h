@@ -458,6 +458,7 @@ class CPlayerShipController : public CObject, public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
+		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);
 
@@ -500,9 +501,9 @@ class CPlayerShipController : public CObject, public IShipController
 		int m_iAutoDockPort;					//	The current dock port.
 		CVector m_vAutoDockPort;				//	The current dock port position;
 
-		mutable CSpaceObject *m_pAutoTarget;	//	Saved autotarget. Note: We recompute this
-		mutable int m_iAutoTargetTick;			//	every tick so we don't have to worry about
-												//	it getting stale.
+		bool m_bShowAutoTarget;					//	If TRUE, we show the autotarget
+		CSpaceObject *m_pAutoTarget;			//	Saved autotarget.
+		mutable int m_iAutoTargetTick;
 
 	friend CObjectClass<CPlayerShipController>;
 	};

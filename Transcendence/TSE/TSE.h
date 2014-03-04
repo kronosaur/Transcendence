@@ -2441,6 +2441,7 @@ class CSpaceObject : public CObject
 		virtual int GetLevel (void) const { return 1; }
 		virtual int GetMaxPower (void) const { return 0; }
 		virtual int GetMaxLightDistance (void) { return 0; }
+		virtual CInstalledDevice *GetNamedDevice (DeviceNames iDev) { return NULL; }
 		virtual int GetOpenDockingPortCount (void) { return 0; }
 		virtual CEnergyField *GetOverlay (DWORD dwID) const { return NULL; }
 		virtual const CString &GetOverlayData (DWORD dwID, const CString &sAttrib) { return NULL_STR; }

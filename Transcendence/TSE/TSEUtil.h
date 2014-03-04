@@ -250,7 +250,13 @@ struct SUpdateCtx
 	SUpdateCtx (void) :
 			pSystem(NULL),
 			pPlayer(NULL),
-			pDockingObj(NULL)
+			pDockingObj(NULL),
+			bNeedsAutoTarget(false),
+			iPlayerPerception(0),
+			pTargetObj(NULL),
+			rTargetDist2(g_InfiniteDistance * g_InfiniteDistance),
+			iMinFireArc(0),
+			iMaxFireArc(0)
 		{ }
 
 	CSystem *pSystem;					//	Current system
@@ -262,6 +268,16 @@ struct SUpdateCtx
 	int iDockingPort;					//	Nearest docking port
 	CVector vDockingPort;				//	Position of docking port (absolute)
 	Metric rDockingPortDist2;			//	Distance from player to docking port
+
+	//	Used to compute player's auto target
+
+	bool bNeedsAutoTarget;				//	TRUE if player's weapon needs an autotarget
+	int iPlayerPerception;				//	Player's perception
+
+	CSpaceObject *pTargetObj;			//	If non-null, nearest possible target for player
+	Metric rTargetDist2;				//	Distance from player to target
+	int iMinFireArc;					//	Fire arc of primary weapon
+	int iMaxFireArc;
 	};
 
 //	Utility classes

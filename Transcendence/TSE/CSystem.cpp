@@ -323,9 +323,11 @@
 #define ENHANCED_SRS_BLOCK_SIZE			6
 
 #define LEVEL_ENCOUNTER_CHANCE			10
-const Metric MAX_ENCOUNTER_DIST	=		(30.0 * LIGHT_MINUTE);
 
 #define MAX_TARGET_RANGE				(24.0 * LIGHT_SECOND)
+
+const Metric MAX_AUTO_TARGET_DISTANCE =			30.0 * LIGHT_SECOND;
+const Metric MAX_ENCOUNTER_DIST	=				30.0 * LIGHT_MINUTE;
 
 #define ON_CREATE_EVENT					CONSTLIT("OnCreate")
 #define ON_OBJ_JUMP_POS_ADJ				CONSTLIT("OnObjJumpPosAdj")
@@ -4172,6 +4174,32 @@ void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 	SUpdateCtx Ctx;
 	Ctx.pSystem = this;
 	Ctx.pPlayer = GetPlayer();
+
+	//	Initialize the player weapon context so that we can select the auto-
+	//	target.
+
+	if (Ctx.pPlayer)
+		{
+		CInstalledDevice *pWeapon = Ctx.pPlayer->GetNamedDevice(devPrimaryWeapon);
+		if (pWeapon)
+			{
+			//	If the weapon is omni or has an arc, then we need an auto target
+
+			CItemCtx ItemCtx(Ctx.pPlayer, pWeapon);
+			Ctx.bNeedsAutoTarget = pWeapon->GetClass()->CanRotate(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
+
+			//	Adjust arc based on player rotation
+
+			if (Ctx.iMinFireArc != Ctx.iMaxFireArc)
+				{
+				Ctx.iMinFireArc = AngleMod(Ctx.iMinFireArc + Ctx.pPlayer->GetRotation());
+				Ctx.iMaxFireArc = AngleMod(Ctx.iMaxFireArc + Ctx.pPlayer->GetRotation());
+				}
+			}
+
+		Ctx.iPlayerPerception = Ctx.pPlayer->GetPerception();
+		Ctx.rTargetDist2 = MAX_AUTO_TARGET_DISTANCE * MAX_AUTO_TARGET_DISTANCE;
+		}
 
 	//	Delete all objects in the deleted list (we do this at the
 	//	beginning because we want to keep the list after the update

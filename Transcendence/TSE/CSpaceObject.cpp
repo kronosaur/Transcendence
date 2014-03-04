@@ -6227,6 +6227,50 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 	if (IsDestinyTime(ITEM_ON_UPDATE_CYCLE, ITEM_ON_UPDATE_OFFSET))
 		FireOnItemUpdate();
 
+	//	See if this is the nearest player target
+
+	if (Ctx.bNeedsAutoTarget
+			&& CanAttack()
+			&& !IsDestroyed()
+			&& Ctx.pPlayer
+			&& Ctx.pPlayer->IsEnemy(this)
+			&& !Ctx.pPlayer->IsDestroyed()
+			&& this != Ctx.pPlayer)
+		{
+		CVector vDist = GetPos() - Ctx.pPlayer->GetPos();
+
+		//	If the player's weapons has an arc of fire, then limit ourselves to
+		//	targets in the arc.
+
+		if (Ctx.iMinFireArc != Ctx.iMaxFireArc)
+			{
+			Metric rDist;
+			int iAngle = VectorToPolar(vDist, &rDist);
+			Metric rDist2 = rDist * rDist;
+
+			if (rDist2 < Ctx.rTargetDist2
+					&& AngleInArc(iAngle, Ctx.iMinFireArc, Ctx.iMaxFireArc)
+					&& rDist <= GetDetectionRange(Ctx.iPlayerPerception))
+				{
+				Ctx.pTargetObj = this;
+				Ctx.rTargetDist2 = rDist2;
+				}
+			}
+
+		//	Otherwise, just find the nearest target
+
+		else
+			{
+			Metric rDist2 = vDist.Length2();
+			if (rDist2 < Ctx.rTargetDist2
+					&& rDist2 <= GetDetectionRange2(Ctx.iPlayerPerception))
+				{
+				Ctx.pTargetObj = this;
+				Ctx.rTargetDist2 = rDist2;
+				}
+			}
+		}
+
 	//	Update the specific object
 
 	OnUpdate(Ctx, g_SecondsPerUpdate);

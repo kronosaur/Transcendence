@@ -594,7 +594,7 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 
 	int i;
 
-	CSpaceObject *pPlayer = Ctx.pSystem->GetPlayer();
+	CSpaceObject *pPlayer = Ctx.pPlayer;
 	Metric rDist2 = (pPlayer ? pPlayer->GetDistance2(pOwner) : 0.0);
 	Metric rMaxDist = m_iMaxDist * LIGHT_SECOND;
 	Metric rMaxDist2 = rMaxDist * rMaxDist;
