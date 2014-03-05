@@ -352,7 +352,7 @@
 			value=				"350"
 			mass=				"4000"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			attributes=			"MinorItem; Makayev"
 
 			description=		"This is a radiation-immune version of the popular reactive armor plate."
@@ -365,6 +365,8 @@
 		<Armor
 				hitPoints=	"50"
 				hpBonus=	"  +0,+100,  +0, +50"
+				
+				blindingDamageAdj=	"0"
 				radiationImmune="true"
 
 				repairTech=	"4"
@@ -425,7 +427,7 @@
 				repairTech=	"5"
 
 				shieldInterference=	"true"
-				blindingDamageAdj=	"50"
+				blindingDamageAdj=	"0"
 				radiationImmune=	"true"
 				deviceDamageAdj=	"50"
 				EMPDamageAdj=		"50"
@@ -441,7 +443,7 @@
 			value=				"400"
 			mass=				"3000"
 			frequency=			"common"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			attributes=			"MinorItem; Makayev"
 
 			description=		"Stronger than titanium yet almost as light, plasteel is a popular metal for use in all forms of space construction."
@@ -490,7 +492,7 @@
 			value=				"600"
 			mass=				"4000"
 			frequency=			"uncommon"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			attributes=			"MinorItem; Makayev"
 
 			description=		"This is a more sophisticated version of reactive armor. Advanced reactive armor is very resistant to blast and kinetic damage."
@@ -605,7 +607,7 @@
 			value=				"1100"
 			mass=				"4000"
 			frequency=			"uncommon"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			attributes=			"MinorItem; Makayev"
 
 			description=		"Light blast plate is more effective against blast damage than advanced reactive armor."
@@ -688,7 +690,7 @@
 			value=				"1200"
 			mass=				"4000"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			attributes=			"MinorItem; Makayev"
 
 			description=		"This segment of plasteel armor has been specially modified to resist radiation."
@@ -704,6 +706,7 @@
 
 				repairTech=	"6"
 				
+				blindingDamageAdj=	"0"
 				radiationImmune=	"true"
 				/>
 
@@ -718,7 +721,7 @@
 			mass=				"3000"
 			attributes=			"MinorItem; Makayev"
 			frequency=			"common"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 
 			description=		"This is a stronger plate of the popular plasteel armor."
 
@@ -742,7 +745,7 @@
 			level=				"6"
 			value=				"2000"
 			frequency=			"common"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			mass=				"5000"
 			attributes=			"MinorItem; Makayev"
 
@@ -826,7 +829,7 @@
 			mass=				"4000"
 			attributes=			"MinorItem; Specialty; Makayev; OmskArmor; OmskDS"
 			frequency=			"common"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 
 			description=		"When installed on a ship with an Omsk deflector, this segment adds 25 hp strength to the shields."
 
@@ -853,7 +856,7 @@
 			mass=				"3200"
 			attributes=			"MinorItem; Specialty; Makayev"
 			frequency=			"uncommon"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 
 			description=		"Advanced plasteel is stronger by weight than normal plasteel."
 
@@ -905,7 +908,7 @@
 			level=				"7"
 			value=				"5000"
 			frequency=			"uncommon"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 			mass=				"7000"
 			attributes=			"Makayev; Military; MinorItem"
 
@@ -1064,7 +1067,7 @@
 			mass=				"6000"
 			attributes=			"Makayev; Military; MinorItem; OmskArmor; OmskDS; Specialty"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 
 			description=		"The embedded field projectors in this armor enhance the power of Omsk deflectors by 50 hp."
 
@@ -1315,7 +1318,7 @@
 			mass=				"12000"
 			attributes=			"Makayev; Military; MinorItem; OmskArmor; OmskDS; Specialty"
 			frequency=			"rare"
-			numberAppearing=	"1d4"
+			numberAppearing=	"1d6"
 
 			description=		"The heaviest armor in the Omsk series, originally designed for Makayev's canceled cruiser project, adds 100 hp to Omsk shields."
 
