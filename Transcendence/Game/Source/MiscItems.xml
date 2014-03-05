@@ -227,7 +227,7 @@
 			description=		"Cerium electrodes have several industrial uses, including as catalysts for nanofactories."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Cerusite Crystal -->
@@ -375,7 +375,7 @@
 			description=		"Forged into an exotic alloy, erbium rods are used in high-performance starship components."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Etherium Ore -->
@@ -524,14 +524,14 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d8"
-			attributes=			"Consumable; Res; ZeroPoint"
+			attributes=			"Consumable; Res; Ore; ZeroPoint"
 
 			description=		"This rare resource was originally created in the Big Bang and cannot be replenished. It is used today as a fuel for zero-point energy generators."
 
 			sortName=			"hadron archeolith, ton of"
 			>
 
-		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="96" imageY="576" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- itHeartAndLungsProsthesis -->
@@ -641,7 +641,7 @@
 			description=		"This exotic rare-earth element is woven into fibers for use in ion-sensitive equipment."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- itHumanOrgans -->
@@ -894,7 +894,7 @@
 			description=		"Lanthanum glass has special optical properties used in lasers, fields generators, and other starship components."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Laudanum Ampule -->
@@ -1056,7 +1056,7 @@
 			description=		"Neodymium permanent magnets are ubiquitous in various starship components and devices."
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Neuranase -->
