@@ -61,16 +61,8 @@
 		<Image imageID="&rsMediumShips2;" imageX="768" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="26,27,28,29,30,31,32,33"/>
-			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"	sendToBack="7,8,9,10,11,12,13,14"/>
-			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
-			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
-			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
-			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
-			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
-			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
-			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
-			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
 		</Effects>
 
 		<AISettings

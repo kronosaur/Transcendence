@@ -581,7 +581,9 @@
     <None Include="Game\Source\Code.xml" />
     <None Include="Game\Source\Commonwealth.xml" />
     <None Include="Game\Source\CommonwealthAgricultural.xml" />
-    <None Include="Game\Source\CommonwealthFleet.xml" />
+    <None Include="Game\Source\CommonwealthFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CommonwealthMetropolis.xml" />
     <None Include="Game\Source\CommonwealthMilitia.xml" />
     <None Include="Game\Source\CommonwealthMining.xml" />
