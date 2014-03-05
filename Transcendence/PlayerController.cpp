@@ -1451,9 +1451,11 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 		return m_pTarget;
 	else
 		{
+		//	Return the autotarget
+
 		int iTick = g_pUniverse->GetTicks();
 		if (iTick == m_iAutoTargetTick)
-			return m_pAutoTarget;
+			return ((m_pAutoTarget && !m_pAutoTarget->IsDestroyed()) ? m_pAutoTarget : NULL);
 
 		m_iAutoTargetTick = iTick;
 
@@ -1472,7 +1474,7 @@ CSpaceObject *CPlayerShipController::GetTarget (CItemCtx &ItemCtx, bool bNoAutoT
 				pDevice->SetFireAngle(-1);
 			}
 
-		return m_pAutoTarget;
+		return ((m_pAutoTarget && !m_pAutoTarget->IsDestroyed()) ? m_pAutoTarget : NULL);
 		}
 	}
 

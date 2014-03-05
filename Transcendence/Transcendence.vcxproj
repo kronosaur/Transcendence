@@ -597,7 +597,9 @@
     <None Include="Game\Source\Domina.xml" />
     <None Include="Game\Source\DwargRaiders.xml" />
     <None Include="Game\Source\Elysium.xml" />
-    <None Include="Game\Source\EncountersVol01.xml" />
+    <None Include="Game\Source\EncountersVol01.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Environments.xml" />
     <None Include="Game\Source\Eridani.xml" />
     <None Include="Game\Source\Groups.xml" />
