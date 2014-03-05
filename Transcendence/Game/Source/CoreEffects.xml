@@ -1165,9 +1165,9 @@
 			>
 		<Effect>
 			<ParticleJet
-					emitRate=			"16"
-					emitSpeed=			"10-15"
-					particleLifetime=	"2-3"
+					emitRate=			"24"
+					emitSpeed=			"6-10"
+					particleLifetime=	"3-4"
 					spreadAngle=		"1"
 					>
 				<ParticleEffect>
