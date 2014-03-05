@@ -658,24 +658,25 @@ class CCurrencyAndRange
 
 struct SViewportPaintCtx
 	{
-	SViewportPaintCtx (void)
-		{
-		pCenter = NULL;
-		pObj = NULL;
-		wSpaceColor = 0;
-		fNoSelection = false;
-		fNoRecon = false;
-		fNoDockedShips = false;
-		fEnhancedDisplay = false;
-		fNoStarfield = false;
-		bInFront = true;
-		bFade = false;
-		iTick = 0;
-		iVariant = 0;
-		iDestiny = 0;
-		iRotation = 0;
-		iMaxLength = -1;
-		};
+	SViewportPaintCtx (void) :
+			pCenter(NULL),
+			xCenter(0),
+			yCenter(0),
+			pObj(NULL),
+			wSpaceColor(0),
+			fNoSelection(false),
+			fNoRecon(false),
+			fNoDockedShips(false),
+			fEnhancedDisplay(false),
+			fNoStarfield(false),
+			bInFront(false),
+			bFade(false),
+			iTick(0),
+			iVariant(0),
+			iDestiny(0),
+			iRotation(0),
+			iMaxLength(-1)
+		{ }
 
 	//	Viewport metrics
 

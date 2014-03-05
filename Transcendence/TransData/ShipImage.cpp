@@ -60,11 +60,6 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	CIntegralRotation Rotation;
 	Rotation.Init(pClass->GetRotationDesc());
 
-	//	Create an effects structure
-
-	CObjectEffectList Effects;
-	pClass->InitEffects(NULL, &Effects);
-
 	//	Paint
 
 	SViewportPaintCtx Ctx;
@@ -79,6 +74,17 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 		Rotation.SetRotationAngle(pClass->GetRotationDesc(), pClass->GetRotationDesc().GetRotationAngle(i));
 		Ctx.iVariant = Rotation.GetFrameIndex();
 		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetRotationDesc());
+
+		//	Since we don't have an object, we use the viewport center to indicate
+		//	the center of the object.
+
+		Ctx.xCenter = x;
+		Ctx.yCenter = y;
+
+		//	Create an effects structure
+
+		CObjectEffectList Effects;
+		pClass->InitEffects(NULL, &Effects);
 
 		//	Paint thrusters behind ship
 

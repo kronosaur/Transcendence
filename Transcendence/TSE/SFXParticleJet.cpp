@@ -715,8 +715,20 @@ void CParticleJetEffectPainter::Paint (CG16bitImage &Dest, int x, int y, SViewpo
 
 	int xPaint;
 	int yPaint;
-	if (m_bUseObjectCenter && Ctx.pObj)
-		Ctx.XForm.Transform(Ctx.pObj->GetPos(), &xPaint, &yPaint);
+	if (m_bUseObjectCenter)
+		{
+		if (Ctx.pObj)
+			Ctx.XForm.Transform(Ctx.pObj->GetPos(), &xPaint, &yPaint);
+		else
+			{
+			//	If we don't have an object then we use the viewport center. This
+			//	handles the case where we paint in TransData (where there is
+			//	no object).
+
+			xPaint = Ctx.xCenter;
+			yPaint = Ctx.yCenter;
+			}
+		}
 	else
 		{
 		xPaint = x;
