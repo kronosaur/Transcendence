@@ -156,6 +156,17 @@ void CRegenDesc::Init (int iHPPerEra, int iCyclesPerBurst)
 	m_bEmpty = (m_iHPPerCycle == 0 && m_iHPPerEraRemainder == 0);
 	}
 
+void CRegenDesc::InitFromRegen (double rRegen, int iTicksPerCycle)
+
+//	InitFromRegen
+//
+//	Initializes from a regen value
+
+	{
+	int iHPPerEra = (int)((rRegen * (CYCLES_PER_ERA * iTicksPerCycle) / STANDARD_REGEN_PERIOD) + 0.5);
+	Init(iHPPerEra);
+	}
+
 ALERROR CRegenDesc::InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle)
 
 //	InitFromRegenString

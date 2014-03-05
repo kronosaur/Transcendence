@@ -227,13 +227,22 @@ class CReactorClass : public CDeviceClass
 class CRepairerClass : public CDeviceClass
 	{
 	public:
+		enum ECachedHandlers
+			{
+			evtGetArmorRegen			= 0,
+
+			evtCount					= 1,
+			};
+
 		static ALERROR CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CItemType *pType, CDeviceClass **retpDevice);
+		inline bool FindEventHandlerRepairerClass (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
 
 		//	CDeviceClass virtuals
 
 		virtual int CalcPowerUsed (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		virtual ItemCategories GetCategory (void) const { return itemcatMiscDevice; }
 		virtual int GetPowerRating (CItemCtx &Ctx) { return 2 * m_iPowerUse; }
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);
 		virtual void Update (CInstalledDevice *pDevice, 
 							 CSpaceObject *pSource, 
@@ -244,8 +253,12 @@ class CRepairerClass : public CDeviceClass
 	private:
 		CRepairerClass (void);
 
+		void CalcRegen (CInstalledDevice *pDevice, CShip *pShip, int iSegment, int iTick, int *retiHP, int *retiPower);
+
 		TArray<CRegenDesc> m_Repair;			//	Repair descriptor (by level)
 		int m_iPowerUse;						//	Power used for each hp of repair
+
+		SEventHandlerDesc m_CachedEvents[evtCount];		//	Cached events
 	};
 
 class CShieldClass : public CDeviceClass

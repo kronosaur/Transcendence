@@ -1092,6 +1092,7 @@ class CRegenDesc
 		CString GetReferenceRate (const CString &sUnits, int iTicksPerCycle = 1) const;
 		int GetRegen (int iTick, int iTicksPerCycle = 1);
 		void Init (int iHPPerEra, int iCyclesPerBurst = 1);
+		void InitFromRegen (double rRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime, int iRegenHP, int iTicksPerCycle = 1);
 		ALERROR InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate, int iTicksPerCycle = 1);
