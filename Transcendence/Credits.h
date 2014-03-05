@@ -98,6 +98,7 @@ static char *FEEDBACK[] =
 	"Kamikaze",
 	"Hatsuya Kanzaki",
 	"Karl",
+	"kay.py",
 	"Keleus",
 	"Kenquinn The Insane One",
 	"Kobell",
