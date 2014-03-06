@@ -29,7 +29,7 @@
 		
 		<!-- ERIDANI -->
 		
-		<Node ID="SE" x="-29" y="-33">
+		<Node ID="SE" x="-15" y="-66">
 			<System 
 					name=			"Eridani"
 					level=			"1"
@@ -39,7 +39,7 @@
 			</System>
 
 			<MapEffect>
-				<Group xOffset="180" yOffset="-120">
+				<Group xOffset="194" yOffset="-97">
 					<Text text=				"New Beyond" 
 							font=			"Title"
 							primaryColor=	"0xff, 0xff, 0xff"
@@ -51,7 +51,7 @@
 		
 		<!-- RIGEL AURELIUS -->
 
-		<Node ID="BA" x="196" y="-189">
+		<Node ID="BA" x="207" y="-205">
 			<System
 					name=			"Rigel Aurelius"
 					level=			"2"
@@ -63,7 +63,7 @@
 
 		<!-- CHARON -->
 		
-		<Node ID="CP" x="259" y="-58">
+		<Node ID="CP" x="267" y="-40">
 			<System
 					name="Charon"
 					level=			"3"
@@ -73,7 +73,7 @@
 			</System>
 
 			<MapEffect>
-				<Group xOffset="-120" yOffset="-60">
+				<Group xOffset="-172" yOffset="-58">
 					<Text text=				"Charon Pirates" 
 							font=			"SubTitle"
 							primaryColor=	"0xff, 0xff, 0xff"
@@ -97,7 +97,7 @@
 		
 		<!-- MINOR NEW BEYOND SYSTEMS -->
 
-		<Node ID="C1" x="27" y="-96">
+		<Node ID="C1" x="18" y="-139">
 			<System
 					level=			"1"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -110,7 +110,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C3" x="78" y="-140">
+		<Node ID="C3" x="71" y="-189">
 			<System
 					level=			"2"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -124,7 +124,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C3A" x="137" y="-173">
+		<Node ID="C3A" x="143" y="-219">
 			<System
 					level=			"2"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -136,7 +136,7 @@
 			</System>
 		</Node>
 		
-		<Node ID="C4" x="240" y="-157">
+		<Node ID="C4" x="266" y="-172">
 			<System
 					level=			"3"
 					attributes=		"humanSpace, mainline, newBeyond"
@@ -151,7 +151,7 @@
 			</System>
 		</Node>
 
-		<Node ID="C4A" x="258" y="-107">
+		<Node ID="C4A" x="284" y="-96">
 			<System
 					level=			"3"
 					attributes=		"humanSpace, mainline, newBeyond"
