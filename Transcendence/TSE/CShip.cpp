@@ -514,48 +514,55 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 		return insOK;
 
 	//	If we need more space, check to see if we replace an existing device.
+	//
+	//	NOTE: We only do this for non-player ship; players need to handle this
+	//	manually.
 
 	int iSlotToReplace = -1;
 	int iBestLevel;
 	int iBestType;
-	for (i = 0; i < GetDeviceCount(); i++)
+
+	if (!IsPlayer())
 		{
-		CInstalledDevice *pDevice = GetDevice(i);
-		if (!pDevice->IsEmpty())
+		for (i = 0; i < GetDeviceCount(); i++)
 			{
-			bool bThisIsWeapon = (pDevice->GetSlotCategory() == itemcatWeapon || pDevice->GetSlotCategory() == itemcatLauncher);
-			bool bThisIsMisc = (pDevice->GetSlotCategory() == itemcatMiscDevice);
-			int iAllSlotsFreed = pDevice->GetClass()->GetSlotsRequired();
-			int iWeaponSlotsFreed = (bThisIsWeapon ? iAllSlotsFreed	: 0);
-			int iNonWeaponSlotsFreed = (!bThisIsWeapon ? iAllSlotsFreed : 0);
-
-			int iThisType;
-			if (bThisIsMisc)
-				iThisType = 3;
-			else if (bThisIsWeapon)
-				iThisType = 2;
-			else
-				iThisType = 1;
-
-			int iThisLevel = pDevice->GetClass()->GetLevel();
-
-			//	See if uninstalling this device would be enough; if not, then
-			//	don't bother.
-
-			if (iAllSlotsFreed < iAllSlotsNeeded
-					|| iWeaponSlotsFreed < iWeaponSlotsNeeded
-					|| iNonWeaponSlotsFreed < iNonWeaponSlotsNeeded)
-				continue;
-
-			//	See if removing this device is better than removing another one.
-
-			if (iSlotToReplace == -1
-					|| (iThisType > iBestType)
-					|| (iThisType == iBestType && iThisLevel > iBestLevel))
+			CInstalledDevice *pDevice = GetDevice(i);
+			if (!pDevice->IsEmpty())
 				{
-				iSlotToReplace = i;
-				iBestType = iThisType;
-				iBestLevel = iThisLevel;
+				bool bThisIsWeapon = (pDevice->GetSlotCategory() == itemcatWeapon || pDevice->GetSlotCategory() == itemcatLauncher);
+				bool bThisIsMisc = (pDevice->GetSlotCategory() == itemcatMiscDevice);
+				int iAllSlotsFreed = pDevice->GetClass()->GetSlotsRequired();
+				int iWeaponSlotsFreed = (bThisIsWeapon ? iAllSlotsFreed	: 0);
+				int iNonWeaponSlotsFreed = (!bThisIsWeapon ? iAllSlotsFreed : 0);
+
+				int iThisType;
+				if (bThisIsMisc)
+					iThisType = 3;
+				else if (bThisIsWeapon)
+					iThisType = 2;
+				else
+					iThisType = 1;
+
+				int iThisLevel = pDevice->GetClass()->GetLevel();
+
+				//	See if uninstalling this device would be enough; if not, then
+				//	don't bother.
+
+				if (iAllSlotsFreed < iAllSlotsNeeded
+						|| iWeaponSlotsFreed < iWeaponSlotsNeeded
+						|| iNonWeaponSlotsFreed < iNonWeaponSlotsNeeded)
+					continue;
+
+				//	See if removing this device is better than removing another one.
+
+				if (iSlotToReplace == -1
+						|| (iThisType > iBestType)
+						|| (iThisType == iBestType && iThisLevel > iBestLevel))
+					{
+					iSlotToReplace = i;
+					iBestType = iThisType;
+					iBestLevel = iThisLevel;
+					}
 				}
 			}
 		}
