@@ -3109,6 +3109,7 @@ void CShipClass::OnUnbindDesign (void)
 	//	have changed.
 
 	m_fCommsHandlerInit = false;
+	m_CommsHandler.DeleteAll();
 	}
 
 void CShipClass::OnWriteToStream (IWriteStream *pStream)

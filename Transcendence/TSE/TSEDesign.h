@@ -1408,6 +1408,7 @@ class CCommunicationsHandler
 
 		ALERROR InitFromXML (CXMLElement *pDesc, CString *retsError);
 
+		inline void DeleteAll (void) { m_Messages.DeleteAll(); }
 		int FindMessage (const CString &sMessage) const;
 		inline int GetCount (void) const { return m_Messages.GetCount(); }
 		inline const SMessage &GetMessage (int iIndex) { return m_Messages[iIndex]; }
