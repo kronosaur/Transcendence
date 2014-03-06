@@ -51,6 +51,7 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
+#define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
 #define IMAGES_SWITCH						CONSTLIT("typeImages")
@@ -361,6 +362,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateSystemTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TOPOLOGY_SWITCH))
 		GenerateTopology(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TOPOLOGY_MAP_SWITCH))
+		GenerateTopologyMap(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ATTRIBUTE_LIST_SWITCH))
 		GenerateAttributeList(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(PERF_TEST_SWITCH))
@@ -516,6 +519,7 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, C
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
 			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH)
+			|| pCmdLine->GetAttributeBool(TOPOLOGY_MAP_SWITCH)
 			|| pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH) 
 			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
 		;

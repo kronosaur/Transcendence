@@ -273,6 +273,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="Topology.cpp" />
+    <ClCompile Include="TopologyMap.cpp" />
     <ClCompile Include="TradeSim.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WeaponEffectChart.cpp" />

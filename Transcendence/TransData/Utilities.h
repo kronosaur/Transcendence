@@ -42,11 +42,12 @@ class CItemTypeTable
 class COutputChart
 	{
 	public:
-		CG16bitImage &GetOutputImage (int *retxOrigin, int *retyOrigin);
+		CG16bitImage &GetOutputImage (int *retxOrigin = NULL, int *retyOrigin = NULL);
 		WORD GetStyleColor (const CString &sStyle);
 		const CG16bitFont &GetStyleFont (const CString &sStyle);
 		bool Output (void);
 		void SetContentSize (int cxWidth, int cyHeight);
+		void SetOutputFilespec (const CString &sFilespec);
 		void SetStyleFont (const CString &sStyle, const CString &sFontDesc);
 		void SetStyleColor (const CString &sStyle, WORD wColor);
 
