@@ -1513,6 +1513,18 @@ CRandomEnhancementGenerator::~CRandomEnhancementGenerator (void)
 		m_pCode->Discard(&(g_pUniverse->GetCC()));
 	}
 
+CRandomEnhancementGenerator &CRandomEnhancementGenerator::operator= (const CRandomEnhancementGenerator &Src)
+
+//	CRandomEnhancementGenerator operator =
+
+	{
+	m_iChance = Src.m_iChance;
+	m_dwMods = Src.m_dwMods;
+	m_pCode = (Src.m_pCode ? Src.m_pCode->Reference() : NULL);
+
+	return *this;
+	}
+
 ALERROR CRandomEnhancementGenerator::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	InitFromXML

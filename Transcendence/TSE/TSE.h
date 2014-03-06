@@ -1597,6 +1597,7 @@ class CDockingPorts
 		int GetPortsInUseCount (CSpaceObject *pOwner);
 		void InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius);
 		void InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos);
+		void InitPorts (CSpaceObject *pOwner, const TArray<CVector> &Desc);
 		void InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElement);
 		inline bool IsObjDocked (CSpaceObject *pObj) { return IsDocked(pObj); }
 		inline bool IsObjDockedOrDocking (CSpaceObject *pObj) { return IsDockedOrDocking(pObj); }

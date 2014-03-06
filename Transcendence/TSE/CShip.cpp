@@ -1214,9 +1214,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 	//	Initialize docking ports (if any)
 
-	pShip->m_DockingPorts.InitPorts(pShip, 
-			pShip->m_pClass->GetDockingPortCount(),
-			pShip->m_pClass->GetDockingPortPositions());
+	pShip->m_DockingPorts.InitPorts(pShip, pShip->m_pClass->GetDockingPortPositions());
 
 	//	If any of our items need an OnInstall call, raise the
 	//	event now.
@@ -4499,9 +4497,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	if (m_pClass->HasDockingPorts()
 			&& m_DockingPorts.GetPortCount(this) == 0)
 		{
-		m_DockingPorts.InitPorts(this, 
-				m_pClass->GetDockingPortCount(),
-				m_pClass->GetDockingPortPositions());
+		m_DockingPorts.InitPorts(this, m_pClass->GetDockingPortPositions());
 		}
 #endif
 

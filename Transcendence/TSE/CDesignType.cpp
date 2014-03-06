@@ -233,6 +233,147 @@ ALERROR CDesignType::ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sErro
 	return ERR_FAIL;
 	}
 
+void CDesignType::CreateClone (CDesignType **retpType)
+
+//	CreateClone
+//
+//	Creates a clone of this type. Caller is responsible for freeing it.
+
+	{
+	CDesignType *pClone;
+
+	switch (GetType())
+		{
+		case designItemType:
+			pClone = new CItemType;
+			break;
+
+		case designItemTable:
+			pClone = new CItemTable;
+			break;
+
+		case designShipClass:
+			pClone = new CShipClass;
+			break;
+
+		case designEnergyFieldType:
+			pClone = new CEnergyFieldType;
+			break;
+
+		case designSystemType:
+			pClone = new CSystemType;
+			break;
+
+		case designStationType:
+			pClone = new CStationType;
+			break;
+
+		case designSovereign:
+			pClone = new CSovereign;
+			break;
+
+		case designDockScreen:
+			pClone = new CDockScreenType;
+			break;
+
+		case designEffectType:
+			{
+			CEffectCreator *pEffectType = CEffectCreator::AsType(this);
+			if (pEffectType == NULL)
+				{
+				ASSERT(false);
+				return;
+				}
+
+			CEffectCreator *pEffectClone;
+			if (CEffectCreator::CreateFromTag(pEffectType->GetTag(), &pEffectClone) != NOERROR)
+				{
+				ASSERT(false);
+				return;
+				}
+
+			pClone = pEffectClone;
+			break;
+			}
+
+		case designPower:
+			pClone = new CPower;
+			break;
+
+		case designSpaceEnvironmentType:
+			pClone = new CSpaceEnvironmentType;
+			break;
+
+		case designShipTable:
+			pClone = new CShipTable;
+			break;
+
+		case designAdventureDesc:
+			pClone = new CAdventureDesc;
+			break;
+
+		case designImage:
+			pClone = new CObjectImage;
+			break;
+
+		case designSound:
+			pClone = new CSoundType;
+			break;
+
+		case designMissionType:
+			pClone = new CMissionType;
+			break;
+
+		case designSystemTable:
+			pClone = new CSystemTable;
+			break;
+
+		case designSystemMap:
+			pClone = new CSystemMap;
+			break;
+
+		case designEconomyType:
+			pClone = new CEconomyType;
+			break;
+
+		case designTemplateType:
+			pClone = new CTemplateType;
+			break;
+
+		case designGenericType:
+			pClone = new CGenericType;
+			break;
+
+		default:
+			ASSERT(false);
+			return;
+		}
+
+	//	Initialize
+
+	pClone->m_dwUNID = m_dwUNID;
+	pClone->m_pExtension = m_pExtension;
+	pClone->m_dwVersion = m_dwVersion;
+	pClone->m_dwInheritFrom = m_dwInheritFrom;
+	pClone->m_pInheritFrom = m_pInheritFrom;
+	pClone->m_sAttributes = m_sAttributes;
+	pClone->m_StaticData = m_StaticData;
+	pClone->m_GlobalData = m_GlobalData;
+	pClone->m_InitGlobalData = m_InitGlobalData;
+	pClone->m_Language = m_Language;
+	pClone->m_Events = m_Events;
+	pClone->m_pLocalScreens = (m_pLocalScreens ? m_pLocalScreens->OrphanCopy() : NULL);
+	pClone->m_DisplayAttribs = m_DisplayAttribs;
+
+	//	Let our subclass initialize
+
+	pClone->OnInitFromClone(this);
+
+	//	Done
+
+	*retpType = pClone;
+	}
+
 ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType)
 
 //	CreateFromXML

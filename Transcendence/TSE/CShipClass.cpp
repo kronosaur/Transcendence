@@ -239,7 +239,9 @@ CShipClass::CShipClass (void) :
 		m_pPlayerSettings(NULL),
 		m_pItems(NULL),
 		m_pEscorts(NULL),
-		m_DockingPorts(NULL)
+		m_fInheritedDevices(false),
+		m_fInheritedItems(false),
+		m_fInheritedEscorts(false)
 
 //	CShipClass constructor
 
@@ -251,20 +253,17 @@ CShipClass::~CShipClass (void)
 //	CShip destructor
 
 	{
-	if (m_pDevices)
+	if (m_pDevices && !m_fInheritedDevices)
 		delete m_pDevices;
 
 	if (m_pPlayerSettings && !m_fInheritedPlayerSettings)
 		delete m_pPlayerSettings;
 
-	if (m_pItems)
+	if (m_pItems && !m_fInheritedItems)
 		delete m_pItems;
 
-	if (m_pEscorts)
+	if (m_pEscorts && !m_fInheritedEscorts)
 		delete m_pEscorts;
-
-	if (m_DockingPorts)
-		delete [] m_DockingPorts;
 	}
 
 CShipClass::EBalanceTypes CShipClass::CalcBalanceType (CString *retsDesc) const
@@ -1960,7 +1959,7 @@ CString CShipClass::GenerateShipName (DWORD *retdwFlags)
 					m_sShipNames,
 					';',
 					DELIMIT_TRIM_WHITESPACE,
-					m_ShipNamesIndices.GetElement(m_iShipName++ % m_ShipNamesIndices.GetCount()));
+					m_ShipNamesIndices[m_iShipName++ % m_ShipNamesIndices.GetCount()]);
 
 			return GenerateRandomNameFromTemplate(sNameTemplate);
 			}
@@ -2364,9 +2363,10 @@ void CShipClass::InitShipNamesIndices (void)
 	int i;
 	int iCount = strDelimitCount(m_sShipNames, ';', DELIMIT_TRIM_WHITESPACE);
 
-	m_ShipNamesIndices.RemoveAll();
+	m_ShipNamesIndices.DeleteAll();
+	m_ShipNamesIndices.InsertEmpty(iCount);
 	for (i = 0; i < iCount; i++)
-		m_ShipNamesIndices.AppendElement(i);
+		m_ShipNamesIndices[i] = i;
 
 	m_ShipNamesIndices.Shuffle();
 
@@ -2616,6 +2616,117 @@ ALERROR CShipClass::OnFinishBindDesign (SDesignLoadCtx &Ctx)
 	//	Done
 
 	return NOERROR;
+	}
+
+void CShipClass::OnInitFromClone (CDesignType *pSource)
+
+//	OnInitFromClone
+//
+//	Initializes from pSource
+
+	{
+	CShipClass *pClass = CShipClass::AsType(pSource);
+	if (pClass == NULL)
+		{
+		ASSERT(false);
+		return;
+		}
+
+	m_sManufacturer = pClass->m_sManufacturer;
+	m_sName = pClass->m_sName;
+	m_sTypeName = pClass->m_sTypeName;
+	m_dwClassNameFlags = pClass->m_dwClassNameFlags;
+
+	m_sShipNames = pClass->m_sShipNames;
+	m_dwShipNameFlags = pClass->m_dwShipNameFlags;
+	m_ShipNamesIndices = pClass->m_ShipNamesIndices;
+	m_iShipName = pClass->m_iShipName;
+
+	m_iScore = pClass->m_iScore;
+	m_iLevel = pClass->m_iLevel;
+	m_fScoreOverride = pClass->m_fScoreOverride;
+	m_fLevelOverride = pClass->m_fLevelOverride;
+
+	m_iMass = pClass->m_iMass;
+	m_iSize = pClass->m_iSize;
+	m_iCargoSpace = pClass->m_iCargoSpace;
+	m_RotationDesc = pClass->m_RotationDesc;
+	m_rThrustRatio = pClass->m_rThrustRatio;
+	m_DriveDesc = pClass->m_DriveDesc;
+	m_ReactorDesc = pClass->m_ReactorDesc;
+	m_iCyberDefenseLevel = pClass->m_iCyberDefenseLevel;
+
+	m_iMaxArmorMass = pClass->m_iMaxArmorMass;
+	m_iMaxCargoSpace = pClass->m_iMaxCargoSpace;
+	m_iMaxReactorPower = pClass->m_iMaxReactorPower;
+	m_iMaxDevices = pClass->m_iMaxDevices;
+	m_iMaxWeapons = pClass->m_iMaxWeapons;
+	m_iMaxNonWeapons = pClass->m_iMaxNonWeapons;
+
+	m_iLeavesWreck = pClass->m_iLeavesWreck;
+	m_iStructuralHP = pClass->m_iStructuralHP;
+	m_pWreckType = pClass->m_pWreckType;
+	m_Hull = pClass->m_Hull;
+	m_Interior = pClass->m_Interior;
+
+	if (pClass->m_pDevices)
+		{
+		m_pDevices = pClass->m_pDevices;
+		m_fInheritedDevices = true;
+		}
+
+	m_AverageDevices = pClass->m_AverageDevices;
+
+	m_Equipment = pClass->m_Equipment;
+
+	m_AISettings = pClass->m_AISettings;
+
+	if (pClass->m_pPlayerSettings)
+		{
+		m_pPlayerSettings = pClass->m_pPlayerSettings;
+		m_fInheritedPlayerSettings = true;
+		}
+
+	if (pClass->m_pItems)
+		{
+		m_pItems = pClass->m_pItems;
+		m_fInheritedItems = true;
+		}
+
+	if (pClass->m_pEscorts)
+		{
+		m_pEscorts = pClass->m_pEscorts;
+		m_fInheritedEscorts = true;
+		}
+
+	m_CharacterClass = pClass->m_CharacterClass;
+	m_Character = pClass->m_Character;
+
+	m_DockingPorts = pClass->m_DockingPorts;
+	m_pDefaultScreen = pClass->m_pDefaultScreen;
+	m_dwDefaultBkgnd = pClass->m_dwDefaultBkgnd;
+	m_fHasDockingPorts = pClass->m_fHasDockingPorts;
+
+	m_OriginalCommsHandler = pClass->m_OriginalCommsHandler;
+	m_CommsHandler = pClass->m_CommsHandler;
+	m_fCommsHandlerInit = pClass->m_fCommsHandlerInit;
+
+	m_Image = pClass->m_Image;
+	m_Effects = pClass->m_Effects;
+
+	//	No need to copy m_WreckImage or m_WreckBitmap because they are just
+	//	caches.
+
+	m_pExplosionType = pClass->m_pExplosionType;
+	m_ExhaustImage = pClass->m_ExhaustImage;
+	m_Exhaust = pClass->m_Exhaust;
+
+	m_fRadioactiveWreck = pClass->m_fRadioactiveWreck;
+	m_fTimeStopImmune = pClass->m_fTimeStopImmune;
+
+	//	m_fHasOn... are computed during bind
+
+	m_fVirtual = pClass->m_fVirtual;
 	}
 
 ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -2913,11 +3024,10 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	CDockingPorts DockingPorts;
 	DockingPorts.InitPortsFromXML(NULL, pDesc);
-	m_iDockingPortsCount = DockingPorts.GetPortCount(NULL);
-	if (m_iDockingPortsCount > 0)
+	m_DockingPorts.InsertEmpty(DockingPorts.GetPortCount(NULL));
+	if (m_DockingPorts.GetCount() > 0)
 		{
-		m_DockingPorts = new CVector [m_iDockingPortsCount];
-		for (i = 0; i < m_iDockingPortsCount; i++)
+		for (i = 0; i < m_DockingPorts.GetCount(); i++)
 			m_DockingPorts[i] = DockingPorts.GetPortPos(NULL, i);
 
 		//	Load the default screen
@@ -2935,9 +3045,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		}
 	else
 		{
-		m_DockingPorts = NULL;
 		m_dwDefaultBkgnd = 0;
-
 		m_fHasDockingPorts = false;
 		}
 
@@ -3064,12 +3172,12 @@ void CShipClass::OnReadFromStream (SUniverseLoadCtx &Ctx)
 		{
 		int iCount;
 		Ctx.pStream->Read((char *)&iCount, sizeof(DWORD));
-		m_ShipNamesIndices.RemoveAll();
-
+		m_ShipNamesIndices.DeleteAll();
+		m_ShipNamesIndices.InsertEmpty(iCount);
 		for (i = 0; i < iCount; i++)
 			{
 			Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-			m_ShipNamesIndices.AppendElement(dwLoad);
+			m_ShipNamesIndices[i] = dwLoad;
 			}
 
 		Ctx.pStream->Read((char *)&m_iShipName, sizeof(DWORD));
@@ -3135,7 +3243,7 @@ void CShipClass::OnWriteToStream (IWriteStream *pStream)
 
 	for (i = 0; i < m_ShipNamesIndices.GetCount(); i++)
 		{
-		dwSave = (DWORD)m_ShipNamesIndices.GetElement(i);
+		dwSave = (DWORD)m_ShipNamesIndices[i];
 		pStream->Write((char *)&dwSave, sizeof(DWORD));
 		}
 

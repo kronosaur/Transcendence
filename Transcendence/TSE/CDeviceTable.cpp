@@ -907,12 +907,7 @@ ALERROR CGroupOfDeviceGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 
 //	CDeviceDescList -----------------------------------------------------------
 
-const int ALLOC_SIZE =							16;
-
-CDeviceDescList::CDeviceDescList (void) :
-		m_pDesc(NULL),
-		m_iCount(0),
-		m_iAlloc(0)
+CDeviceDescList::CDeviceDescList (void)
 
 //	CDeviceDescList constructor
 
@@ -924,8 +919,6 @@ CDeviceDescList::~CDeviceDescList (void)
 //	CDeviceDescList destructor
 
 	{
-	if (m_pDesc)
-		delete [] m_pDesc;
 	}
 
 void CDeviceDescList::AddDeviceDesc (const SDeviceDesc &Desc)
@@ -935,26 +928,7 @@ void CDeviceDescList::AddDeviceDesc (const SDeviceDesc &Desc)
 //	Adds a device desc to the list
 
 	{
-	//	Allocate, if necessary
-
-	if (m_iCount == m_iAlloc)
-		{
-		int iNewAlloc = m_iAlloc + ALLOC_SIZE;
-		SDeviceDesc *pNewDesc = new SDeviceDesc [iNewAlloc];
-
-		for (int i = 0; i < m_iCount; i++)
-			pNewDesc[i] = m_pDesc[i];
-
-		if (m_pDesc)
-			delete [] m_pDesc;
-
-		m_pDesc = pNewDesc;
-		m_iAlloc = iNewAlloc;
-		}
-
-	//	Add to the end
-
-	m_pDesc[m_iCount++] = Desc;
+	m_List.Insert(Desc);
 	}
 
 CDeviceClass *CDeviceDescList::GetNamedDevice (DeviceNames iDev) const
@@ -967,7 +941,7 @@ CDeviceClass *CDeviceDescList::GetNamedDevice (DeviceNames iDev) const
 	int i;
 	ItemCategories iCatToFind = CDeviceClass::GetItemCategory(iDev);
 
-	for (i = 0; i < m_iCount; i++)
+	for (i = 0; i < GetCount(); i++)
 		{
 		CDeviceClass *pDevice = GetDeviceClass(i);
 
@@ -987,12 +961,5 @@ void CDeviceDescList::RemoveAll (void)
 //	Removes all devices
 
 	{
-	if (m_pDesc)
-		{
-		delete [] m_pDesc;
-		m_pDesc = NULL;
-		}
-
-	m_iAlloc = 0;
-	m_iCount = 0;
+	m_List.DeleteAll();
 	}

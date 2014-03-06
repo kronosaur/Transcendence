@@ -304,6 +304,7 @@ class CDesignType
 
 		CDesignType (void);
 		virtual ~CDesignType (void);
+		void CreateClone (CDesignType **retpType);
 		static ALERROR CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType);
 
 		ALERROR BindDesign (SDesignLoadCtx &Ctx);
@@ -398,6 +399,7 @@ class CDesignType
 		virtual bool OnFindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent = NULL) const { return false; }
 		virtual ALERROR OnFinishBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
 		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const { return false; }
+		virtual void OnInitFromClone (CDesignType *pSource) { ASSERT(false); }
 		virtual void OnMarkImages (void) { }
 		virtual ALERROR OnPrepareBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
 		virtual void OnPrepareReinit (void) { }
@@ -1406,9 +1408,10 @@ class CCommunicationsHandler
 		CCommunicationsHandler (void);
 		~CCommunicationsHandler (void);
 
+		CCommunicationsHandler &operator= (const CCommunicationsHandler &Src);
 		ALERROR InitFromXML (CXMLElement *pDesc, CString *retsError);
 
-		inline void DeleteAll (void) { m_Messages.DeleteAll(); }
+		void DeleteAll (void);
 		int FindMessage (const CString &sMessage) const;
 		inline int GetCount (void) const { return m_Messages.GetCount(); }
 		inline const SMessage &GetMessage (int iIndex) { return m_Messages[iIndex]; }
@@ -1887,6 +1890,23 @@ struct ReactorDesc
 			delete pFuelCriteria;
 		}
 
+	ReactorDesc &operator= (const ReactorDesc &Src)
+		{
+		iMaxPower = Src.iMaxPower;
+		iMaxFuel = Src.iMaxFuel;
+		iPowerPerFuelUnit = Src.iPowerPerFuelUnit;
+
+		pFuelCriteria = (Src.pFuelCriteria ? new CItemCriteria(*Src.pFuelCriteria) : NULL);
+		iMinFuelLevel = Src.iMinFuelLevel;
+		iMaxFuelLevel = Src.iMaxFuelLevel;
+
+		fDamaged = Src.fDamaged;
+		fEnhanced = Src.fEnhanced;
+		fFreeFuelCriteria = (pFuelCriteria != NULL);
+
+		return *this;
+		}
+
 	int iMaxPower;								//	Maximum power output
 	int iMaxFuel;								//	Maximum fuel space
 	int iPowerPerFuelUnit;						//	MW/10-tick per fuel unit
@@ -2210,10 +2230,11 @@ class CRandomEnhancementGenerator
 		CRandomEnhancementGenerator (void) : m_iChance(0), m_dwMods(0), m_pCode(NULL) { }
 		~CRandomEnhancementGenerator (void);
 
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		CRandomEnhancementGenerator &operator= (const CRandomEnhancementGenerator &Src);
 
 		void EnhanceItem (CItem &Item);
 		inline int GetChance (void) const { return m_iChance; }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 
 	private:
 		int m_iChance;
@@ -2299,16 +2320,14 @@ class CDeviceDescList
 		~CDeviceDescList (void);
 
 		void AddDeviceDesc (const SDeviceDesc &Desc);
-		inline int GetCount (void) const { return m_iCount; }
+		inline int GetCount (void) const { return m_List.GetCount(); }
 		inline CDeviceClass *GetDeviceClass (int iIndex) const;
-		inline const SDeviceDesc &GetDeviceDesc (int iIndex) const { return m_pDesc[iIndex]; }
+		inline const SDeviceDesc &GetDeviceDesc (int iIndex) const { return m_List[iIndex]; }
 		CDeviceClass *GetNamedDevice (DeviceNames iDev) const;
 		void RemoveAll (void);
 
 	private:
-		SDeviceDesc *m_pDesc;
-		int m_iCount;
-		int m_iAlloc;
+		TArray<SDeviceDesc> m_List;
 	};
 
 struct SDeviceGenerateCtx
@@ -4143,8 +4162,8 @@ class CShipClass : public CDesignType
 		inline CGenericType *GetCharacterClass (void) { return m_CharacterClass; }
 		inline int GetCyberDefenseLevel (void) { return m_iCyberDefenseLevel; }
 		inline DWORD GetDefaultBkgnd (void) { return m_dwDefaultBkgnd; }
-		inline int GetDockingPortCount (void) { return m_iDockingPortsCount; }
-		inline CVector *GetDockingPortPositions (void) { return m_DockingPorts; }
+		inline int GetDockingPortCount (void) { return m_DockingPorts.GetCount(); }
+		inline const TArray<CVector> &GetDockingPortPositions (void) { return m_DockingPorts; }
 		void GetDriveDesc (DriveDesc *retDriveDesc) const;
 		inline CObjectEffectDesc &GetEffectsDesc (void) { return m_Effects; }
 		IShipGenerator *GetEscorts (void) { return m_pEscorts; }
@@ -4236,6 +4255,7 @@ class CShipClass : public CDesignType
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID);
 		virtual ALERROR OnFinishBindDesign (SDesignLoadCtx &Ctx);
 		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const;
+		virtual void OnInitFromClone (CDesignType *pSource);
 		virtual void OnMarkImages (void) { MarkImages(true); }
 		virtual void OnReadFromStream (SUniverseLoadCtx &Ctx);
 		virtual void OnReinit (void);
@@ -4299,7 +4319,7 @@ class CShipClass : public CDesignType
 
 		CString m_sShipNames;					//	Names to use for individual ship
 		DWORD m_dwShipNameFlags;				//	Flags for ship name
-		CIntArray m_ShipNamesIndices;			//	Shuffled indices for ship names
+		TArray<int> m_ShipNamesIndices;			//	Shuffled indices for ship names
 		int m_iShipName;						//	Current ship name index
 
 		int m_iScore;							//	Score when destroyed
@@ -4344,8 +4364,7 @@ class CShipClass : public CDesignType
 		CGenericTypeRef m_Character;			//	Character for ship
 
 		//	Docking
-		int m_iDockingPortsCount;				//	Number of docking ports
-		CVector *m_DockingPorts;			//	Position of docking ports
+		TArray<CVector> m_DockingPorts;			//	Position of docking ports
 		CDockScreenTypeRef m_pDefaultScreen;	//	Default screen
 		DWORD m_dwDefaultBkgnd;					//	Default background screen
 
@@ -4380,9 +4399,9 @@ class CShipClass : public CDesignType
 		DWORD m_fInheritedPlayerSettings:1;		//	TRUE if m_pPlayerSettings is inherited from a base class
 		DWORD m_fScoreOverride:1;				//	TRUE if score is specified in XML
 		DWORD m_fLevelOverride:1;				//	TRUE if level is specified in XML
-		DWORD m_fSpare4:1;
-		DWORD m_fSpare5:1;
-		DWORD m_fSpare6:1;
+		DWORD m_fInheritedDevices:1;			//	TRUE if m_pDevices is inherited from another class
+		DWORD m_fInheritedItems:1;				//	TRUE if m_pItems is inherited from another class
+		DWORD m_fInheritedEscorts:1;			//	TRUE if m_pEscorts is inherited from another class
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 
@@ -6355,7 +6374,7 @@ inline bool CItem::IsArmor (void) const { return (m_pItemType && m_pItemType->Ge
 inline bool CItem::IsDevice (void) const { return (m_pItemType && m_pItemType->GetDeviceClass()); }
 inline CEconomyType *CItem::GetCurrencyType (void) const { return m_pItemType->GetCurrencyType(); }
 
-inline CDeviceClass *CDeviceDescList::GetDeviceClass (int iIndex) const { return m_pDesc[iIndex].Item.GetType()->GetDeviceClass(); }
+inline CDeviceClass *CDeviceDescList::GetDeviceClass (int iIndex) const { return m_List[iIndex].Item.GetType()->GetDeviceClass(); }
 
 inline CString CArmorClass::GetName (void) { return m_pItemType->GetNounPhrase(); }
 inline DWORD CArmorClass::GetUNID (void) { return m_pItemType->GetUNID(); }

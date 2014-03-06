@@ -437,8 +437,11 @@ class CEventHandler
 		CEventHandler (void);
 		~CEventHandler (void);
 
+		CEventHandler &operator= (const CEventHandler &Src);
+
 		void AddEvent (const CString &sEvent, ICCItem *pCode);
 		ALERROR AddEvent (const CString &sEvent, const CString &sCode, CString *retsError = NULL);
+		void DeleteAll (void);
 		bool FindEvent (const CString &sEvent, ICCItem **retpCode) const;
 		inline int GetCount (void) const { return m_Handlers.GetCount(); }
 		const CString &GetEvent (int iIndex, ICCItem **retpCode = NULL) const;
@@ -480,6 +483,8 @@ class CLanguageDataBlock
 	{
 	public:
 		~CLanguageDataBlock (void);
+
+		CLanguageDataBlock &operator= (const CLanguageDataBlock &Src);
 
 		void AddEntry (const CString &sID, const CString &sText);
 		void DeleteAll (void);

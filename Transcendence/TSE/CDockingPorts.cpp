@@ -227,6 +227,32 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius)
 	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
 	}
 
+void CDockingPorts::InitPorts (CSpaceObject *pOwner, const TArray<CVector> &Desc)
+
+//	InitPorts
+//
+//	Initialize from array
+
+	{
+	ASSERT(m_pPort == NULL);
+
+	if (Desc.GetCount() > 0)
+		{
+		m_iPortCount = Desc.GetCount();
+		m_pPort = new SDockingPort[m_iPortCount];
+
+		for (int i = 0; i < m_iPortCount; i++)
+			{
+			m_pPort[i].iStatus = psEmpty;
+			m_pPort[i].pObj = NULL;
+			m_pPort[i].vPos = Desc[i];
+			m_pPort[i].iRotation = (VectorToPolar(Desc[i]) + 180) % 360;
+			}
+		}
+
+	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
+	}
+
 void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
 
 //	InitPorts

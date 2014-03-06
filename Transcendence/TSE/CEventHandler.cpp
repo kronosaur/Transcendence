@@ -16,11 +16,30 @@ CEventHandler::~CEventHandler (void)
 //	CEventHandler destructor
 
 	{
-	for (int i = 0; i < m_Handlers.GetCount(); i++)
+	DeleteAll();
+	}
+
+CEventHandler &CEventHandler::operator= (const CEventHandler &Src)
+
+//	CEventHandler equals operator
+
+	{
+	int i;
+
+	//	Copy the data
+
+	DeleteAll();
+	m_Handlers = Src.m_Handlers;
+
+	//	Add a reference to every item
+
+	for (i = 0; i < m_Handlers.GetCount(); i++)
 		{
-		ICCItem *pItem = m_Handlers[i];
-		pItem->Discard(&g_pUniverse->GetCC());
+		if (m_Handlers[i])
+			m_Handlers[i] = m_Handlers[i]->Reference();
 		}
+
+	return *this;
 	}
 
 void CEventHandler::AddEvent (const CString &sEvent, ICCItem *pCode)
@@ -51,6 +70,22 @@ ALERROR CEventHandler::AddEvent (const CString &sEvent, const CString &sCode, CS
 	m_Handlers.Insert(sEvent, pCode);
 
 	return NOERROR;
+	}
+
+void CEventHandler::DeleteAll (void)
+
+//	DeleteAll
+//
+//	Delete all events
+
+	{
+	for (int i = 0; i < m_Handlers.GetCount(); i++)
+		{
+		ICCItem *pItem = m_Handlers[i];
+		pItem->Discard(&g_pUniverse->GetCC());
+		}
+
+	m_Handlers.DeleteAll();
 	}
 
 bool CEventHandler::FindEvent (const CString &sEvent, ICCItem **retpCode) const
