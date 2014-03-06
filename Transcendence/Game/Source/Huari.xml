@@ -2260,8 +2260,14 @@
 								(block (gateID gateObj)
 
 									; Figure out which gate in the system leads to Huaramarca
-									(setq gateID (item (filter (sysGetStargates (sysGetNode)) theGate (huaIsGateToHuaramarca (sysGetNode) theGate Nil)) 0))
-
+									(setq gateID
+										(map (sysGetStargates (sysGetNode)) '(reduceMin original) theGate
+											(sysGetTopologyDistance (sysGetStargateDestinationNode theGate) "Huaramarca")
+											)
+										)
+										
+									(print "Gate: " gateID)
+									
 									; Set the coordinates
 									(if (and gateID (setq gateObj (sysFindObject gPlayerShip (cat "NG:" gateID))))
 										(block Nil
