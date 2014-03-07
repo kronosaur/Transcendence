@@ -1347,12 +1347,7 @@ void CSpaceObject::EnterGate (CTopologyNode *pDestNode, const CString &sDestEntr
 
 	//	Notify subscribers
 
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-		if (!pObj->IsDestroyed())
-			pObj->FireOnObjEnteredGate(this, pDestNode, sDestEntryPoint, pStargate);
-		}
+	m_SubscribedObjs.NotifyOnObjEnteredGate(this, pDestNode, sDestEntryPoint, pStargate);
 
 	//	Tell all listeners that this object entered a stargate
 
@@ -2549,12 +2544,7 @@ void CSpaceObject::FireOnPlayerBlacklisted (void)
 
 	//	Now fire an event for all subscribers
 
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-		if (!pObj->IsDestroyed())
-			pObj->FireOnObjBlacklistedPlayer(this);
-		}
+	m_SubscribedObjs.NotifyOnPlayerBlacklisted(this);
 	}
 
 CSpaceObject::InterSystemResults CSpaceObject::FireOnPlayerEnteredSystem (CSpaceObject *pPlayer)
@@ -4578,12 +4568,7 @@ void CSpaceObject::Jump (const CVector &vPos)
 
 	//	Notify subscribers
 
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-		if (!pObj->IsDestroyed())
-			pObj->FireOnObjJumped(this);
-		}
+	m_SubscribedObjs.NotifyOnObjJumped(this);
 	}
 
 bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit)
@@ -5008,14 +4993,7 @@ void CSpaceObject::NotifyOnObjDestroyed (SDestroyCtx &Ctx)
 //	Notify subscribers OnObjDestroyed
 
 	{
-	int i;
-
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-		if (!pObj->IsDestroyed())
-			pObj->OnObjDestroyedNotify(Ctx);
-		}
+	m_SubscribedObjs.NotifyOnObjDestroyed(Ctx);
 	}
 
 void CSpaceObject::NotifyOnObjDocked (CSpaceObject *pDockTarget)
@@ -5025,22 +5003,7 @@ void CSpaceObject::NotifyOnObjDocked (CSpaceObject *pDockTarget)
 //	Notify subscribers OnObjDocked
 
 	{
-	int i;
-
-	//	Notify all other subscribers
-
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-
-		//	NOTE: We do not notify the dock target because it got notified
-		//	separately.
-
-		if (!pObj->IsDestroyed() 
-				&& pObj != pDockTarget 
-				&& pObj->HasOnObjDockedEvent())
-			pObj->FireOnObjDocked(this, pDockTarget);
-		}
+	m_SubscribedObjs.NotifyOnObjDocked(this, pDockTarget);
 	}
 
 void CSpaceObject::OnObjDestroyed (const SDestroyCtx &Ctx)
@@ -5632,14 +5595,7 @@ void CSpaceObject::Reconned (void)
 //	(used for missions)
 
 	{
-	int i;
-
-	for (i = 0; i < m_SubscribedObjs.GetCount(); i++)
-		{
-		CSpaceObject *pObj = m_SubscribedObjs.GetObj(i);
-		if (!pObj->IsDestroyed())
-			pObj->FireOnObjReconned(this);
-		}
+	m_SubscribedObjs.NotifyOnObjReconned(this);
 	}
 
 void CSpaceObject::Remove (DestructionTypes iCause, const CDamageSource &Attacker)

@@ -13,6 +13,7 @@ class COrbit;
 struct CItemCriteria;
 struct SDesignLoadCtx;
 struct SDamageCtx;
+struct SDestroyCtx;
 struct SSystemCreateCtx;
 
 //	Utility inlines
@@ -676,6 +677,12 @@ class CSpaceObjectList
 		inline CSpaceObject *GetObj (int iIndex) const { return m_List[iIndex]; }
 		inline TArray<CSpaceObject *> &GetRawList (void) { return m_List; }
 		inline bool IsEmpty (void) const { return (m_List.GetCount() == 0); }
+		void NotifyOnObjDestroyed (SDestroyCtx &Ctx);
+		void NotifyOnObjDocked (CSpaceObject *pDockingObj, CSpaceObject *pDockTarget);
+		void NotifyOnObjEnteredGate (CSpaceObject *pGatingObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
+		void NotifyOnObjJumped (CSpaceObject *pJumpObj);
+		void NotifyOnObjReconned (CSpaceObject *pReconnedObj);
+		void NotifyOnPlayerBlacklisted (CSpaceObject *pBlacklistingObj);
 		void ReadFromStream (SLoadCtx &Ctx, bool bIgnoreMissing = false);
 		inline void Remove (int iIndex) { m_List.Delete(iIndex); }
 		bool Remove (CSpaceObject *pObj);
