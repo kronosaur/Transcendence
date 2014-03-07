@@ -109,40 +109,40 @@ void CMapViewportCtx::PaintGrid (CG16bitImage &Dest, const CVector &vPos, Metric
 		{
 		//	Paint line above
 
-		vLeft = CVector(vPos.GetX() - rHalfWidth, rLine);
+		vLeft = CVector(vPos.GetX() - rHalfWidth, vPos.GetY() + rLine);
 		Transform(vLeft, &xFrom, &yFrom);
 
-		vRight = CVector(vPos.GetX() + rHalfWidth, rLine);
+		vRight = CVector(vPos.GetX() + rHalfWidth, vPos.GetY() + rLine);
 		Transform(vRight, &xTo, &yTo);
 
 		Dest.DrawLine(xFrom, yFrom, xTo, yTo, 1, RGB_GRID_LINE);
 
 		//	Paint line below
 
-		vLeft = CVector(vPos.GetX() - rHalfWidth, -rLine);
+		vLeft = CVector(vPos.GetX() - rHalfWidth, vPos.GetY() - rLine);
 		Transform(vLeft, &xFrom, &yFrom);
 
-		vRight = CVector(vPos.GetX() + rHalfWidth, -rLine);
+		vRight = CVector(vPos.GetX() + rHalfWidth, vPos.GetY() - rLine);
 		Transform(vRight, &xTo, &yTo);
 
 		Dest.DrawLine(xFrom, yFrom, xTo, yTo, 1, RGB_GRID_LINE);
 
 		//	Paint to the right
 
-		vLeft = CVector(rLine, vPos.GetY() - rHalfWidth);
+		vLeft = CVector(vPos.GetX() + rLine, vPos.GetY() - rHalfWidth);
 		Transform(vLeft, &xFrom, &yFrom);
 
-		vRight = CVector(rLine, vPos.GetY() + rHalfWidth);
+		vRight = CVector(vPos.GetX() + rLine, vPos.GetY() + rHalfWidth);
 		Transform(vRight, &xTo, &yTo);
 
 		Dest.DrawLine(xFrom, yFrom, xTo, yTo, 1, RGB_GRID_LINE);
 
 		//	Paint to the left
 
-		vLeft = CVector(-rLine, vPos.GetY() - rHalfWidth);
+		vLeft = CVector(vPos.GetX() - rLine, vPos.GetY() - rHalfWidth);
 		Transform(vLeft, &xFrom, &yFrom);
 		
-		vRight = CVector(-rLine, vPos.GetY() + rHalfWidth);
+		vRight = CVector(vPos.GetX() - rLine, vPos.GetY() + rHalfWidth);
 		Transform(vRight, &xTo, &yTo);
 
 		Dest.DrawLine(xFrom, yFrom, xTo, yTo, 1, RGB_GRID_LINE);
