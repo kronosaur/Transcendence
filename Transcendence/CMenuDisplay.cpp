@@ -50,27 +50,37 @@ void CMenuDisplay::ComputeMenuRect (RECT *retrcRect)
 	retrcRect->bottom = retrcRect->top + cyHeight;
 	}
 
-CString CMenuDisplay::GetHotKeyFromOrdinal (int iOrdinal, char chKeyToExclude)
+CString CMenuDisplay::GetHotKeyFromOrdinal (int *ioOrdinal, const TSortMap<CString, bool> &Exclude)
 
 //	GetHotKeyFromOrdinal
 //
-//	Returns a hot key
+//	Returns a hot key based on the ordinal and making sure that the key is not
+//	already being used. Increments ioOrdinal to the next available.
+//
+//	If we return NULL_STR then there are no more keys available.
 
 	{
-	char chChar;
+	CString sKey;
 
-	int iExcludeOrdinal = (chKeyToExclude == '\0' ? 1000 : (chKeyToExclude - 'A') + 9);
+	do
+		{
+		char chChar;
 
-	if (iOrdinal >= 0 && iOrdinal <= 8)
-		chChar = '1' + iOrdinal;
-	else if (iOrdinal >= 9 && iOrdinal < iExcludeOrdinal)
-		chChar = 'A' + (iOrdinal - 9);
-	else if (iOrdinal >= iExcludeOrdinal)
-		chChar = chKeyToExclude + 1 + iOrdinal - iExcludeOrdinal;
-	else
-		return NULL_STR;
+		if (*ioOrdinal >= 0 && *ioOrdinal < 9)
+			chChar = '1' + *ioOrdinal;
+		else if (*ioOrdinal < 35)
+			chChar = 'A' + (*ioOrdinal - 9);
+		else
+			return NULL_STR;
 
-	return CString(&chChar, 1);
+		//	Next
+
+		sKey = CString(&chChar, 1);
+		*ioOrdinal += 1;
+		}
+	while (Exclude.GetAt(sKey) != NULL);
+
+	return sKey;
 	}
 
 ALERROR CMenuDisplay::Init (CMenuData *pMenu, const RECT &rcRect)

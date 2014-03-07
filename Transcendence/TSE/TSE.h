@@ -2140,6 +2140,7 @@ class CSpaceObject : public CObject
 		inline const CString &GetData (const CString &sAttrib) const { return m_Data.GetData(sAttrib); }
 		inline CString GetDataField (const CString &sField) { CString sValue; FindDataField(sField, &sValue); return sValue; }
 		int GetDataInteger (const CString &sAttrib) const;
+		CString GetDesiredCommsKey (void) const;
 		inline int GetDestiny (void) const { return m_iDestiny; }
 		inline Metric GetDetectionRange (int iPerception) { return RangeIndex2Range(GetDetectionRangeIndex(iPerception)); }
 		Metric GetDetectionRange2 (int iPerception) const;
@@ -2665,7 +2666,7 @@ class CSpaceObject : public CObject
 		CString m_sHighlightText;				//	Show message text when highlighting
 		int m_iHighlightCountdown:16;			//	Frames left to highlight
 		int m_iHighlightChar:8;					//	Show character when painting (0 = none)
-		int m_iHighlightSpare:8;
+		int m_iDesiredHighlightChar:8;			//	Desired character
 
 		CItemList m_ItemList;					//	List of items
 		CAttributeDataBlock m_Data;				//	Opaque data

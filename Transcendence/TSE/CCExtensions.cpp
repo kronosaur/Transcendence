@@ -1340,6 +1340,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'blindingImmune\n"
 			"   'character\n"
 			"   'characterClass\n"
+			"   'commsKey\n"
 			"   'deviceDamageImmune\n"
 			"   'deviceDisruptImmune\n"
 			"   'disintegrationImmune\n"
@@ -1589,6 +1590,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (ships)\n\n"
 
 			"   'dockingEnabled True|Nil\n"
+			"   'commsKey key\n"
 			"   'known True|Nil\n"
 			"   'playerWingman True|Nil\n"
 			"   'rotation angle\n"

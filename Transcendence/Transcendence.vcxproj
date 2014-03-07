@@ -618,7 +618,9 @@
     <None Include="Game\Source\MiscItems.xml" />
     <None Include="Game\Source\Neurohack.xml" />
     <None Include="Game\Source\OutlawMiners.xml" />
-    <None Include="Game\Source\PlayerShips.xml" />
+    <None Include="Game\Source\PlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\PointJuno.xml" />
     <None Include="Game\Source\Primordial.xml" />
     <None Include="Game\Source\Rasiermesser.xml" />

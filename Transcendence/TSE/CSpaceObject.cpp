@@ -70,6 +70,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define ORDER_DOCKED							CONSTLIT("docked")
 
 #define PROPERTY_CATEGORY						CONSTLIT("category")
+#define PROPERTY_COMMS_KEY						CONSTLIT("commsKey")
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_HP								CONSTLIT("hp")
@@ -158,6 +159,7 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 
 		m_iHighlightCountdown(0),
 		m_iHighlightChar(0),
+		m_iDesiredHighlightChar(0),
 
 		m_pFirstEffect(NULL),
 		m_pOverride(NULL),
@@ -761,7 +763,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 //	Vector		m_vVel
 //	Metric		m_rBoundsX
 //	Metric		m_rBoundsY
-//	DWORD		low = unused; hi = m_iHighlightCountdown
+//	DWORD		low = m_iDesiredHighlightChar; hi = m_iHighlightCountdown
 //	DWORD		m_pOverride
 //	CItemList	m_ItemList
 //	DWORD		m_iControlsFrozen
@@ -815,7 +817,10 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	Ctx.pStream->Read((char *)&pObj->m_rBoundsX, sizeof(Metric));
 	Ctx.pStream->Read((char *)&pObj->m_rBoundsY, sizeof(Metric));
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	//	LOWORD unused
+	if (Ctx.dwVersion >= 99)
+		pObj->m_iDesiredHighlightChar = LOWORD(dwLoad);
+	else
+		pObj->m_iDesiredHighlightChar = 0;
 	pObj->m_iHighlightCountdown = HIWORD(dwLoad);
 
 	//	Override
@@ -2524,7 +2529,6 @@ void CSpaceObject::FireOnPlayerBlacklisted (void)
 //	Fire OnPlayerBlacklisted event
 
 	{
-	int i;
 	SEventHandlerDesc Event;
 
 	//	Fire an event for ourselves
@@ -2847,6 +2851,21 @@ CEconomyType *CSpaceObject::GetDefaultEconomy (void)
 	
 	{
 	return CEconomyType::AsType(g_pUniverse->FindDesignType(GetDefaultEconomyUNID()));
+	}
+
+CString CSpaceObject::GetDesiredCommsKey (void) const
+
+//	GetDesiredCommsKey
+//
+//	Returns the key that we want to use for comms. If NULL_STR then we will use
+//	the default.
+
+	{
+	if (m_iDesiredHighlightChar == 0)
+		return NULL_STR;
+
+	char chChar = (char)m_iDesiredHighlightChar;
+	return CString(&chChar, 1);
 	}
 
 Metric CSpaceObject::GetDetectionRange2 (int iPerception) const
@@ -3495,6 +3514,21 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 			default:
 				return CC.CreateString(CATEGORY_EFFECT);
 			}
+		}
+	else if (strEquals(sName, PROPERTY_COMMS_KEY))
+		{
+		if (m_iHighlightChar)
+			{
+			char chChar = m_iHighlightChar;
+			return CC.CreateString(CString(&chChar, 1));
+			}
+		else if (m_iDesiredHighlightChar)
+			{
+			char chChar = m_iHighlightChar;
+			return CC.CreateString(CString(&chChar, 1));
+			}
+		else
+			return CC.CreateNil();
 		}
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
@@ -4530,8 +4564,6 @@ void CSpaceObject::Jump (const CVector &vPos)
 //	Object jumps to a different position in the system
 
 	{
-	int i;
-
 	//	Create a gate effect at the old position
 
 	CEffectCreator *pEffect = g_pUniverse->FindEffectType(g_StargateInUNID);
@@ -6071,7 +6103,13 @@ bool CSpaceObject::SetProperty (const CString &sName, ICCItem *pValue, CString *
 //	Sets an object property
 
 	{
-	if (strEquals(sName, PROPERTY_KNOWN))
+	if (strEquals(sName, PROPERTY_COMMS_KEY))
+		{
+		CString sKey = pValue->GetStringValue();
+		m_iDesiredHighlightChar = *sKey.GetASCIIZPointer();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_KNOWN))
 		{
 		SetKnown(!pValue->IsNil());
 		return true;
@@ -6357,7 +6395,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_vVel, sizeof(m_vVel));
 	pStream->Write((char *)&m_rBoundsX, sizeof(m_rBoundsX));
 	pStream->Write((char *)&m_rBoundsY, sizeof(m_rBoundsY));
-	dwSave = MAKELONG(0, m_iHighlightCountdown);
+	dwSave = MAKELONG((WORD)(BYTE)m_iDesiredHighlightChar, m_iHighlightCountdown);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Override

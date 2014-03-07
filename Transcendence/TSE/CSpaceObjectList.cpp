@@ -48,7 +48,7 @@ void CSpaceObjectList::NotifyOnObjDestroyed (SDestroyCtx &Ctx)
 		//	We make a copy of our list because an event might remove an object
 		//	from our list.
 
-		TArray<CSpaceObject *> List(m_List);
+ 		TArray<CSpaceObject *> List(m_List);
 
 		for (i = 0; i < List.GetCount(); i++)
 			{

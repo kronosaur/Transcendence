@@ -2790,15 +2790,15 @@ class CIntegralRotationDesc
 
 		ALERROR Bind (SDesignLoadCtx &Ctx, CObjectImageArray &Image);
 		inline int GetFrameAngle (void) const { return (int)((360.0 / m_iCount) + 0.5); }
-		inline int GetFrameCount (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iCount; }
+		inline int GetFrameCount (void) const { return m_iCount; }
 		int GetFrameIndex (int iAngle) const;
 		int GetManeuverDelay (void) const;
 		int GetManeuverability (void) const;
-		inline int GetMaxRotationSpeed (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iMaxRotationRate; }
+		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
 		Metric GetMaxRotationSpeedPerTick (void) const;
-		inline int GetRotationAccel (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iRotationAccel; }
+		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
 		Metric GetRotationAccelPerTick (void) const;
-		inline int GetRotationAngle (int iIndex) const { ASSERT(m_Rotations.GetCount() > 0); return m_Rotations[iIndex % m_iCount].iRotation; }
+		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc);
 
 	private:

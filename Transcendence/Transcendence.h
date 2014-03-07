@@ -1157,7 +1157,7 @@ class CMenuDisplay
 		void Paint (CG16bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
-		static CString GetHotKeyFromOrdinal (int iOrdinal, char chKeyToExclude = '\0');
+		static CString GetHotKeyFromOrdinal (int *ioOrdinal, const TSortMap<CString, bool> &Exclude);
 
 	private:
 		void ComputeMenuRect (RECT *retrcRect);
@@ -1718,7 +1718,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void DoInvocation (CPower *pPower);
 		void DoUseItemCommand (DWORD dwData);
 		DWORD GetCommsStatus (void);
-		void HideCommsTargetMenu (void);
+		void HideCommsTargetMenu (CSpaceObject *pExlude = NULL);
 		void ShowCommsMenu (CSpaceObject *pObj);
 		void ShowCommsSquadronMenu (void);
 		void ShowCommsTargetMenu (void);

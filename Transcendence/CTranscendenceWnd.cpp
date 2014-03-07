@@ -1141,12 +1141,15 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 							break;
 
 						case menuCommsTarget:
-							HideCommsTargetMenu();
-							if (dwData)
-								ShowCommsMenu((CSpaceObject *)dwData);
+							{
+							CSpaceObject *pObj = (CSpaceObject *)dwData;
+							HideCommsTargetMenu(pObj);
+							if (pObj)
+								ShowCommsMenu((CSpaceObject *)pObj);
 							else
 								ShowCommsSquadronMenu();
 							break;
+							}
 
 						case menuCommsSquadron:
 							DoCommsSquadronMenu(m_MenuData.GetItemLabel(iIndex), (MessageTypes)dwData, dwData2);

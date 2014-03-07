@@ -141,11 +141,16 @@ void CTranscendenceWnd::DoCommsMenu (int iIndex)
 //	Send message to the object
 
 	{
-	if (GetPlayer())
-		m_pMenuObj->CommsMessageFrom(GetPlayer()->GetShip(), iIndex);
+	if (m_pMenuObj)
+		{
+		if (GetPlayer())
+			m_pMenuObj->CommsMessageFrom(GetPlayer()->GetShip(), iIndex);
+
+		m_pMenuObj->SetHighlightChar(0);
+		m_pMenuObj = NULL;
+		}
 
 	m_CurrentMenu = menuNone;
-	m_pMenuObj = NULL;
 	}
 
 void CTranscendenceWnd::DoCommsSquadronMenu (const CString &sName, MessageTypes iOrder, DWORD dwData2)
@@ -376,7 +381,7 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 	return dwStatus;
 	}
 
-void CTranscendenceWnd::HideCommsTargetMenu (void)
+void CTranscendenceWnd::HideCommsTargetMenu (CSpaceObject *pExclude)
 
 //	HideCommsTargetMenu
 //
@@ -390,11 +395,16 @@ void CTranscendenceWnd::HideCommsTargetMenu (void)
 		for (i = 0; i < m_MenuData.GetCount(); i++)
 			{
 			CSpaceObject *pObj = (CSpaceObject *)m_MenuData.GetItemData(i);
-			if (pObj)
+			if (pObj && pObj != pExclude)
 				pObj->SetHighlightChar(0);
 			}
 
 		m_CurrentMenu = menuNone;
+		}
+	else if (m_CurrentMenu == menuComms)
+		{
+		if (m_pMenuObj)
+			m_pMenuObj->SetHighlightChar(0);
 		}
 	}
 
@@ -851,7 +861,16 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 		m_MenuData.SetTitle(CONSTLIT("Communications"));
 		m_MenuData.RemoveAll();
 
+		//	Keep track of which keys we've used, in case specific objects want
+		//	to use their own keys.
+
+		TSortMap<CString, bool> KeyMap;
+		int iNextKey = 0;
+
+		//	Add the comms key to the list of keys to exclude
+
 		char chCommsKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyCommunications);
+		KeyMap.Insert(CString(&chCommsKey, 1), true);
 
 		//	First add all the objects that are following the player
 
@@ -868,13 +887,20 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
-					m_MenuData.AddMenuItem(sKey,
-							pObj->GetName(),
-							0,
-							(DWORD)pObj);
+					CString sKey = pObj->GetDesiredCommsKey();
+					if (sKey.IsBlank() || KeyMap.GetAt(sKey) != NULL)
+						sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iNextKey, KeyMap);
 
-					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+					if (!sKey.IsBlank())
+						{
+						m_MenuData.AddMenuItem(sKey,
+								pObj->GetName(),
+								CMenuData::FLAG_SORT_BY_KEY,
+								(DWORD)pObj);
+
+						pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+						KeyMap.SetAt(sKey, true);
+						}
 					}
 				}
 			}
@@ -893,13 +919,20 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
-					m_MenuData.AddMenuItem(sKey,
-							pObj->GetName(),
-							0,
-							(DWORD)pObj);
+					CString sKey = pObj->GetDesiredCommsKey();
+					if (sKey.IsBlank() || KeyMap.GetAt(sKey) != NULL)
+						sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iNextKey, KeyMap);
 
-					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+					if (!sKey.IsBlank())
+						{
+						m_MenuData.AddMenuItem(sKey,
+								pObj->GetName(),
+								CMenuData::FLAG_SORT_BY_KEY,
+								(DWORD)pObj);
+
+						pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+						KeyMap.SetAt(sKey, true);
+						}
 					}
 				}
 			}
@@ -939,7 +972,10 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 		m_MenuData.RemoveAll();
 
 		bool bUseLetters = m_pTC->GetOptionBoolean(CGameSettings::allowInvokeLetterHotKeys);
+
+		TSortMap<CString, bool> KeyMap;
 		char chInvokeKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyInvokePower);
+		KeyMap.Insert(CString(&chInvokeKey, 1), true);
 
 		//	Add the powers
 
@@ -957,16 +993,22 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 				if (!bUseLetters && !sKey.IsBlank())
 					{
 					char chLetter = *sKey.GetASCIIZPointer();
-					sKey = CMenuDisplay::GetHotKeyFromOrdinal(chLetter - 'A', chInvokeKey);
+					int iOrdinal = chLetter - 'A';
+					sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iOrdinal, KeyMap);
 					}
 
 				//	Add the menu
 
-				m_MenuData.AddMenuItem(
-						sKey,
-						pPower->GetName(),
-						CMenuData::FLAG_SORT_BY_KEY,
-						(DWORD)pPower);
+				if (!sKey.IsBlank())
+					{
+					m_MenuData.AddMenuItem(
+							sKey,
+							pPower->GetName(),
+							CMenuData::FLAG_SORT_BY_KEY,
+							(DWORD)pPower);
+
+					KeyMap.Insert(sKey, true);
+					}
 				}
 
 			if (!sError.IsBlank())
