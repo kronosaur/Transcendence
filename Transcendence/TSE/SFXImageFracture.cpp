@@ -24,7 +24,7 @@ ALERROR CImageFractureEffectCreator::CreateEffect (CSystem *pSystem,
 
 	//	Create the effect
 
-	if (!m_Image.IsEmpty())
+	if (m_Image.IsLoaded())
 		{
 		if (error = CFractureEffect::Create(pSystem,
 				vPos,

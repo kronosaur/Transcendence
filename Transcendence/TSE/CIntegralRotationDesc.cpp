@@ -22,13 +22,40 @@
 #define ROTATE_LEFT_MANEUVER					CONSTLIT("rotateLeft")
 #define ROTATE_RIGHT_MANEUVER					CONSTLIT("rotateRight")
 
-ALERROR CIntegralRotationDesc::Bind (SDesignLoadCtx &Ctx)
+ALERROR CIntegralRotationDesc::Bind (SDesignLoadCtx &Ctx, CObjectImageArray &Image)
 
 //	Bind
 //
 //	Bind the design
 
 	{
+	//	If our rotation count is not set to default, and the image is set to
+	//	defaults, then we take our count. [We do this for backwards compatibility,
+	//	but newer extensions should always specify a rotation count in the
+	//	image.]
+
+	if (m_iCount != STD_ROTATION_COUNT && Image.GetRotationCount() == STD_ROTATION_COUNT)
+		{
+		Image.SetRotationCount(m_iCount);
+		InitRotationCount(m_iCount);
+		}
+
+	//	Otherwise, make sure we match the image's rotation count.
+
+	else
+		{
+		//	At bind time we take the rotation count from the image itself
+
+		int iRotationCount = (!Image.IsEmpty() ? Image.GetRotationCount() : 0);
+		if (iRotationCount < 0)
+			{
+			Ctx.sError = CONSTLIT("Image must specify valid rotation count.");
+			return ERR_FAIL;
+			}
+
+		InitRotationCount(iRotationCount);
+		}
+
 	return NOERROR;
 	}
 
@@ -73,6 +100,9 @@ Metric CIntegralRotationDesc::GetMaxRotationSpeedPerTick (void) const
 //	Returns the max speed in degrees per tick.
 
 	{
+	if (m_iCount == 0)
+		return 0.0;
+
 	return 360.0 * m_iMaxRotationRate / (ROTATION_FRACTION * m_iCount); 
 	}
 
@@ -83,18 +113,19 @@ Metric CIntegralRotationDesc::GetRotationAccelPerTick (void) const
 //	Returns the degrees per tick acceleration.
 
 	{
+	if (m_iCount == 0)
+		return 0.0;
+
 	return 360.0 * m_iRotationAccel / (ROTATION_FRACTION * m_iCount); 
 	}
 
-ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iImageScale, int iShipMass, CXMLElement *pDesc)
+ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc)
 
 //	InitFromXML
 //
 //	Initialize from an XML descriptor
 
 	{
-	int i;
-
 	//	If we have a Maneuver element, then use that (and ignore other attributes)
 
 	CXMLElement *pManeuver = pDesc->GetContentElementByTag(MANEUVER_TAG);
@@ -102,16 +133,14 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 		{
 		m_iCount = pManeuver->GetAttributeIntegerBounded(ROTATION_COUNT_ATTRIB, 1, -1, STD_ROTATION_COUNT);
 
-		//	Max rotation rate is in degrees per tick. We need to convert that to
-		//	rotation frames per tick.
+		//	Max rotation rate is in degrees per tick. Later we convert that to rotation frames per tick
+		//	(but not until we figure out the number of rotation frames).
 
-		Metric rDegreesPerTick = pManeuver->GetAttributeDoubleBounded(MAX_ROTATION_RATE_ATTRIB, 0.01, -1.0, 360.0 / STD_ROTATION_COUNT);
-		m_iMaxRotationRate = Max(1, mathRound(ROTATION_FRACTION * rDegreesPerTick * m_iCount / 360.0));
+		m_rDegreesPerTick = pManeuver->GetAttributeDoubleBounded(MAX_ROTATION_RATE_ATTRIB, 0.01, -1.0, 360.0 / STD_ROTATION_COUNT);
 
 		//	Also convert rotation acceleration
 
-		Metric rAccelPerTick = pManeuver->GetAttributeDoubleBounded(ROTATION_ACCEL_ATTRIB, 0.01, -1.0, rDegreesPerTick);
-		m_iRotationAccel = Max(1, mathRound(ROTATION_FRACTION * rAccelPerTick * m_iCount / 360.0));
+		m_rAccelPerTick = pManeuver->GetAttributeDoubleBounded(ROTATION_ACCEL_ATTRIB, 0.01, -1.0, m_rDegreesPerTick);
 		}
 
 	//	Otherwise we look for attributes on the root (this is backwards compatible
@@ -129,21 +158,43 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 
 		int iManeuverability = pDesc->GetAttributeIntegerBounded(MANEUVER_ATTRIB, 2, -1, 2);
 
-		//	Convert that to max rotation rate in 1/1000th of rotation per tick
+		//	Convert that to degrees per tick
 
-		m_iMaxRotationRate = (int)(ROTATION_FRACTION * STD_SECONDS_PER_UPDATE / iManeuverability);
+		m_rDegreesPerTick = (m_iCount > 0 ? (STD_SECONDS_PER_UPDATE * 360.0) / (m_iCount * iManeuverability) : 0.0);
 
 		//	Default acceleration is equal to rotation rate
 
-		m_iRotationAccel = m_iMaxRotationRate;
+		m_rAccelPerTick = m_rDegreesPerTick;
 		}
 
-	//	Initialize the rotation angles
-
-	Metric rFrameAngle = 360.0 / m_iCount;
-	m_Rotations.InsertEmpty(m_iCount);
-	for (i = 0; i < m_iCount; i++)
-		m_Rotations[i].iRotation = AngleMod(mathRound(90.0 - i * rFrameAngle));
-
 	return NOERROR;
+	}
+
+void CIntegralRotationDesc::InitRotationCount (int iCount)
+
+//	InitRotationCount
+//
+//	Initialize count
+
+	{
+	int i;
+
+	m_iCount = iCount;
+	m_Rotations.DeleteAll();
+
+	if (m_iCount > 0)
+		{
+		m_iMaxRotationRate = Max(1, mathRound(ROTATION_FRACTION * m_rDegreesPerTick * m_iCount / 360.0));
+		m_iRotationAccel = Max(1, mathRound(ROTATION_FRACTION * m_rAccelPerTick * m_iCount / 360.0));
+
+		Metric rFrameAngle = 360.0 / m_iCount;
+		m_Rotations.InsertEmpty(m_iCount);
+		for (i = 0; i < m_iCount; i++)
+			m_Rotations[i].iRotation = AngleMod(mathRound(90.0 - i * rFrameAngle));
+		}
+	else
+		{
+		m_iMaxRotationRate = 0;
+		m_iRotationAccel = 0;
+		}
 	}

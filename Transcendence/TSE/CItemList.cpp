@@ -11,6 +11,14 @@ CItemList::CItemList (void)
 	{
 	}
 
+CItemList::CItemList (const CItemList &Src)
+
+//	CItemList constructor
+
+	{
+	Copy(Src);
+	}
+
 CItemList::~CItemList (void)
 
 //	CItemList destructor
@@ -19,23 +27,13 @@ CItemList::~CItemList (void)
 	DeleteAll();
 	}
 
-CItemList &CItemList::operator= (const CItemList &Copy)
+CItemList &CItemList::operator= (const CItemList &Src)
 
 //	CItemList assign operator
 
 	{
-	int i;
-
 	DeleteAll();
-
-	if (Copy.GetCount() > 0)
-		{
-		m_List.InsertEmpty(Copy.GetCount());
-
-		for (i = 0; i < m_List.GetCount(); i++)
-			m_List[i] = new CItem(Copy.GetItem(i));
-		}
-
+	Copy(Src);
 	return *this;
 	}
 
@@ -47,6 +45,24 @@ void CItemList::AddItem (const CItem &Item)
 
 	{
 	m_List.Insert(new CItem(Item));
+	}
+
+void CItemList::Copy (const CItemList &Src)
+
+//	Copy
+//
+//	Copy stuff. We assume that we are clean.
+
+	{
+	int i;
+
+	if (Src.GetCount() > 0)
+		{
+		m_List.InsertEmpty(Src.GetCount());
+
+		for (i = 0; i < m_List.GetCount(); i++)
+			m_List[i] = new CItem(Src.GetItem(i));
+		}
 	}
 
 void CItemList::DeleteAll (void)

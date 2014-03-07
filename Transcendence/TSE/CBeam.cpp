@@ -152,7 +152,7 @@ void CBeam::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 	//	Draw the head of the beam if we have an image
 
-	if (!m_pDesc->m_Image.IsEmpty())
+	if (m_pDesc->m_Image.IsLoaded())
 		{
 		m_pDesc->m_Image.PaintImage(Dest,
 				BeamCtx.xTo,

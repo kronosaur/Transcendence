@@ -8,6 +8,7 @@
 class CCommunicationsHandler;
 class CCreatePainterCtx;
 class CDockScreen;
+class CDynamicDesignTable;
 class CEffect;
 class CGameStats;
 class CItemCtx;
@@ -310,8 +311,9 @@ class CDesignType
 		ALERROR BindDesign (SDesignLoadCtx &Ctx);
 		ALERROR ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sError);
 		inline ALERROR FinishBindDesign (SDesignLoadCtx &Ctx) { return OnFinishBindDesign(Ctx); }
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bIsOverride = false);
 		bool MatchesCriteria (const CDesignTypeCriteria &Criteria);
+		void MergeType (CDesignType *pSource);
 		ALERROR PrepareBindDesign (SDesignLoadCtx &Ctx);
 		inline void PrepareReinit (void) { OnPrepareReinit(); }
 		void ReadFromStream (SUniverseLoadCtx &Ctx);
@@ -369,6 +371,8 @@ class CDesignType
 		inline bool HasLiteralAttribute (const CString &sAttrib) const { return ::HasModifier(m_sAttributes, sAttrib); }
 		bool HasSpecialAttribute (const CString &sAttrib) const;
 		void InitCachedEvents (int iCount, char **pszEvents, SEventHandlerDesc *retEvents);
+		inline bool IsClone (void) const { return m_bIsClone; }
+		inline bool IsModification (void) const { return m_bIsModification; }
 		inline void MarkImages (void) { OnMarkImages(); }
 		inline void SetGlobalData (const CString &sAttrib, const CString &sData) { m_GlobalData.SetData(sAttrib, sData); }
 		inline void SetUNID (DWORD dwUNID) { m_dwUNID = dwUNID; }
@@ -401,6 +405,7 @@ class CDesignType
 		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const { return false; }
 		virtual void OnInitFromClone (CDesignType *pSource) { ASSERT(false); }
 		virtual void OnMarkImages (void) { }
+		virtual void OnMergeType (CDesignType *pSource) { ASSERT(false); }
 		virtual ALERROR OnPrepareBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
 		virtual void OnPrepareReinit (void) { }
 		virtual void OnReadFromStream (SUniverseLoadCtx &Ctx) { }
@@ -432,6 +437,9 @@ class CDesignType
 		CEventHandler m_Events;					//	Event handlers
 		CXMLElement *m_pLocalScreens;			//	Local dock screen
 		CDisplayAttributeDefinitions m_DisplayAttribs;	//	Display attribute definitions
+
+		bool m_bIsModification;					//	TRUE if this modifies the type it overrides
+		bool m_bIsClone;						//	TRUE if we cloned this from another type
 
 		SEventHandlerDesc m_EventsCache[evtCount];	//	Cached events
 	};
@@ -825,7 +833,7 @@ class CObjectImageArray : public CObject
 		ALERROR Init (CG16bitImage *pBitmap, const RECT &rcImage, int iFrameCount, int iTicksPerFrame, bool bFreeBitmap);
 		ALERROR Init (DWORD dwBitmapUNID, const RECT &rcImage, int iFrameCount, int iTicksPerFrame);
 		ALERROR InitFromXML (CXMLElement *pDesc);
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bResolveNow = false);
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bResolveNow = false, int iDefaultRotationCount = 1);
 		ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 
 		void CleanUp (void);
@@ -842,7 +850,8 @@ class CObjectImageArray : public CObject
 		inline int GetTicksPerFrame (void) const { return m_iTicksPerFrame; }
 		inline bool HasAlpha (void) const { return (m_pImage ? m_pImage->HasAlpha() : false); }
 		bool ImagesIntersect (int iTick, int iRotation, int x, int y, const CObjectImageArray &Image2, int iTick2, int iRotation2) const;
-		inline bool IsEmpty (void) const { return m_pImage == NULL; }
+		inline bool IsEmpty (void) const { return ((m_pImage == NULL) && (m_dwBitmapUNID == 0)); }
+		inline bool IsLoaded (void) const { return (m_pImage != NULL); }
 		void MarkImage (void);
 		void PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
 		void PaintImageGrayed (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
@@ -1779,8 +1788,10 @@ class CItemList
 	{
 	public:
 		CItemList (void);
+		CItemList (const CItemList &Src);
 		~CItemList (void);
-		CItemList &operator= (const CItemList &Copy);
+
+		CItemList &operator= (const CItemList &Src);
 
 		void AddItem (const CItem &Item);
 		void DeleteAll (void);
@@ -1793,6 +1804,8 @@ class CItemList
 		void WriteToStream (IWriteStream *pStream);
 
 	private:
+		void Copy (const CItemList &Src);
+
 		TArray<CItem *> m_List;
 	};
 
@@ -2522,6 +2535,7 @@ class CPlayerSettings
 		inline bool IsDebugOnly (void) const { return (m_fDebug ? true : false); }
 		inline bool IsIncludedInAllAdventures (void) const { return (m_fIncludeInAllAdventures ? true : false); }
 		inline bool IsInitialClass (void) const { return (m_fInitialClass ? true : false); }
+		void MergeFrom (const CPlayerSettings &Src);
 
 		const SArmorImageDesc *GetArmorImageDescRaw (void) const { return (m_fHasArmorDesc ? &m_ArmorDesc : NULL); }
 		const SReactorImageDesc *GetReactorImageDescRaw (void) const { return (m_fHasReactorDesc ? &m_ReactorDesc : NULL); }
@@ -2774,18 +2788,18 @@ class CIntegralRotationDesc
 
 		CIntegralRotationDesc (void) { }
 
-		ALERROR Bind (SDesignLoadCtx &Ctx);
+		ALERROR Bind (SDesignLoadCtx &Ctx, CObjectImageArray &Image);
 		inline int GetFrameAngle (void) const { return (int)((360.0 / m_iCount) + 0.5); }
-		inline int GetFrameCount (void) const { return m_iCount; }
+		inline int GetFrameCount (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iCount; }
 		int GetFrameIndex (int iAngle) const;
 		int GetManeuverDelay (void) const;
 		int GetManeuverability (void) const;
-		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
+		inline int GetMaxRotationSpeed (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iMaxRotationRate; }
 		Metric GetMaxRotationSpeedPerTick (void) const;
-		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
+		inline int GetRotationAccel (void) const { ASSERT(m_Rotations.GetCount() > 0); return m_iRotationAccel; }
 		Metric GetRotationAccelPerTick (void) const;
-		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iImageScale, int iShipMass, CXMLElement *pDesc);
+		inline int GetRotationAngle (int iIndex) const { ASSERT(m_Rotations.GetCount() > 0); return m_Rotations[iIndex % m_iCount].iRotation; }
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc);
 
 	private:
 		struct SEntry
@@ -2793,7 +2807,12 @@ class CIntegralRotationDesc
 			int iRotation;					//	Angle at this rotation position
 			};
 
+		void InitRotationCount (int iCount);
+
 		int m_iCount;						//	Number of rotations
+		Metric m_rDegreesPerTick;			//	Rotations per tick
+		Metric m_rAccelPerTick;				//	Degrees acceleration per tick
+
 		int m_iMaxRotationRate;				//	Rotations per tick (in 1/1000ths of a rotation)
 		int m_iRotationAccel;				//	Rotation acceleration (in 1/1000ths of a rotation)
 		TArray<SEntry> m_Rotations;			//	Entries for each rotation
@@ -2861,13 +2880,13 @@ class CObjectEffectDesc
 			int iRotation;					//	Direction of effect
 			};
 
-		ALERROR Bind (SDesignLoadCtx &Ctx);
+		ALERROR Bind (SDesignLoadCtx &Ctx, const CObjectImageArray &Image);
 		inline IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx, int iIndex) { return m_Effects[iIndex].pEffect.CreatePainter(Ctx); }
 		CEffectCreator *FindEffectCreator (const CString &sUNID) const;
 		inline int GetEffectCount (void) const { return m_Effects.GetCount(); }
 		int GetEffectCount (DWORD dwEffects) const;
 		const SEffectDesc &GetEffectDesc (int iIndex) const { return m_Effects[iIndex]; }
-		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iFrameCount, int iImageScale, CXMLElement *pDesc);
+		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc);
 		void MarkImages (void);
 
 	private:
@@ -3928,7 +3947,7 @@ class CItemType : public CDesignType
 		inline const CString &GetData (void) const { return m_sData; }
 		const CString &GetDesc (void) const;
 		inline CDeviceClass *GetDeviceClass (void) const { return m_pDevice; }
-		inline CObjectImageArray &GetFlotsamImage (void) { if (m_FlotsamImage.IsEmpty()) CreateFlotsamImage(); return m_FlotsamImage; }
+		inline CObjectImageArray &GetFlotsamImage (void) { if (!m_FlotsamImage.IsLoaded()) CreateFlotsamImage(); return m_FlotsamImage; }
 		inline int GetFrequency (void) const { return m_Frequency; }
 		int GetFrequencyByLevel (int iLevel);
 		inline const CObjectImageArray &GetImage (void) { return m_Image; }
@@ -4203,7 +4222,7 @@ class CShipClass : public CDesignType
 		inline const CString &GetManufacturerName (void) const { return m_sManufacturer; }
 		inline const CString &GetShipTypeName (void) { return m_sTypeName; }
 		inline int GetWreckChance (void) { return m_iLeavesWreck; }
-		CObjectImageArray &GetWreckImage (void) { if (m_WreckImage.IsEmpty()) CreateWreckImage(); return m_WreckImage; }
+		CObjectImageArray &GetWreckImage (void) { if (!m_WreckImage.IsLoaded()) CreateWreckImage(); return m_WreckImage; }
 		void GetWreckImage (CObjectImageArray *retWreckImage);
 		int GetWreckImageVariants (void);
 		inline bool HasDockingPorts (void) { return (m_fHasDockingPorts ? true : false); }
@@ -4257,6 +4276,7 @@ class CShipClass : public CDesignType
 		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const;
 		virtual void OnInitFromClone (CDesignType *pSource);
 		virtual void OnMarkImages (void) { MarkImages(true); }
+		virtual void OnMergeType (CDesignType *pSource);
 		virtual void OnReadFromStream (SUniverseLoadCtx &Ctx);
 		virtual void OnReinit (void);
 		virtual void OnUnbindDesign (void);
@@ -5910,7 +5930,7 @@ class CDesignList
 
 		inline void AddEntry (CDesignType *pType) { m_List.Insert(pType); }
 		void Delete (DWORD dwUNID);
-		inline void DeleteAll (void) { m_List.DeleteAll(); }
+		void DeleteAll (bool bFree = false);
 		inline int GetCount (void) const { return m_List.GetCount(); }
 		inline CDesignType *GetEntry (int iIndex) const { return m_List[iIndex]; }
 
@@ -5931,7 +5951,8 @@ class CDesignTable
 		CDesignType *FindByUNID (DWORD dwUNID) const;
 		inline int GetCount (void) const { return m_Table.GetCount(); }
 		inline CDesignType *GetEntry (int iIndex) const { return m_Table.GetValue(iIndex); }
-		ALERROR Merge (const CDesignTable &Table);
+		ALERROR Merge (const CDesignTable &Source, CDesignList *ioOverride = NULL);
+		ALERROR Merge (const CDynamicDesignTable &Source, CDesignList *ioOverride = NULL);
 
 	private:
 		TSortMap<DWORD, CDesignType *> m_Table;
@@ -6305,6 +6326,7 @@ class CDesignCollection
 		ALERROR AddExtension (SDesignLoadCtx &Ctx, EExtensionTypes iType, DWORD dwUNID, bool bDefaultResource, CExtension **retpExtension);
 		void CacheGlobalEvents (CDesignType *pType);
 		ALERROR CreateTemplateTypes (SDesignLoadCtx &Ctx);
+		ALERROR ResolveOverrides (SDesignLoadCtx &Ctx);
 
 		//	Loaded types. These are initialized at load-time and never change.
 
@@ -6317,6 +6339,8 @@ class CDesignCollection
 		TArray<CExtension *> m_BoundExtensions;
 		CDesignTable m_AllTypes;
 		CDesignList m_ByType[designCount];
+		CDesignList m_OverrideTypes;
+		CDesignList m_CreatedTypes;
 		CTopologyDescTable *m_pTopology;
 		CExtension *m_pAdventureExtension;
 		CAdventureDesc *m_pAdventureDesc;

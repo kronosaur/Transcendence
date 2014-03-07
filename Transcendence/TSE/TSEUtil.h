@@ -377,6 +377,7 @@ class CAttributeDataBlock
 		inline bool IsEmpty (void) const { return (m_pData == NULL && m_pObjRefData == NULL); }
 		bool IsEqual (const CAttributeDataBlock &Src);
 		void LoadObjReferences (CSystem *pSystem);
+		void MergeFrom (const CAttributeDataBlock &Src);
 		void OnObjDestroyed (CSpaceObject *pObj);
 		void OnSystemChanged (CSystem *pSystem);
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -447,6 +448,7 @@ class CEventHandler
 		const CString &GetEvent (int iIndex, ICCItem **retpCode = NULL) const;
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		inline bool IsEmpty (void) const { return m_Handlers.GetCount() == 0; }
+		void MergeFrom (const CEventHandler &Src);
 
 	private:
 		TSortMap<CString, ICCItem *> m_Handlers;
@@ -1263,11 +1265,14 @@ class C3DConversion
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVector *retvPos);
 		static void CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ, CVector *retvPos);
 		static void CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety);
+
 		inline void CleanUp (void) { m_Cache.DeleteAll(); }
+		ALERROR Init (CXMLElement *pDesc);
 		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing);
 		void Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ, int iFacing);
 		void InitCompatible (int iDirectionCount, int iAngle, int iRadius, int iFacing);
 		void InitCompatibleXY (int iDirectionCount, int iX, int iY, int iFacing);
+		void InitComplete (int iDirectionCount, int iScale, int iFacing);
 		void InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ, int iFacing);
 		inline bool IsEmpty (void) const { return (m_Cache.GetCount() == 0); }
 		void GetCoord (int iRotation, int *retx, int *rety) const;
@@ -1283,6 +1288,13 @@ class C3DConversion
 			};
 
 		ALERROR OverridePaintFirst (const CString &sAttrib, bool bPaintFirstValue);
+
+		int m_iAngle;
+		int m_iRadius;
+		int m_iZ;
+		bool m_bUseCompatible;
+		CString m_sBringToFront;
+		CString m_sSendToBack;
 
 		TArray<SEntry> m_Cache;
 	};

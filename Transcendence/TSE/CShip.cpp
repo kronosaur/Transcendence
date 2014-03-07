@@ -3860,7 +3860,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 				iTick = GetDestiny();
 
 			const CObjectImageArray &Image = GetImage();
-			if (!Image.IsEmpty())
+			if (Image.IsLoaded())
 				{
 				CFractureEffect::Create(GetSystem(),
 						GetPos(),

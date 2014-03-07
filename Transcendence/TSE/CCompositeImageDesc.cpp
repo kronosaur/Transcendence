@@ -662,7 +662,7 @@ void CFilterColorizeEntry::GetImage (const CCompositeImageSelector &Selector, CO
 	CG16bitImage &SourceImage = Source.GetImage(NULL_STR);
 	int cxWidth = RectWidth(rcSource);
 	int cyHeight = RectHeight(rcSource);
-	if (Source.IsEmpty() || cxWidth == 0 || cyHeight == 0)
+	if (!Source.IsLoaded() || cxWidth == 0 || cyHeight == 0)
 		{
 		*retImage = EMPTY_IMAGE;
 		return;

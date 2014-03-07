@@ -700,7 +700,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		//	LATER: We should incorporate this into the painter when we
 		//	load the CWeaponFireDesc.
 
-		if (m_pDesc->GetFireType() == ftBeam && !m_pDesc->m_Image.IsEmpty())
+		if (m_pDesc->GetFireType() == ftBeam && m_pDesc->m_Image.IsLoaded())
 			{
 			m_pDesc->m_Image.PaintImage(Dest,
 					x,

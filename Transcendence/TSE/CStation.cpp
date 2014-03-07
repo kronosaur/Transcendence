@@ -864,7 +864,7 @@ ALERROR CStation::CreateMapImage (void)
 
 	int iTick, iRotation;
 	const CObjectImageArray &Image = GetImage(false, &iTick, &iRotation);
-	if (Image.IsEmpty())
+	if (!Image.IsLoaded())
 		return NOERROR;
 
 	CG16bitImage &BmpImage = Image.GetImage(strFromInt(m_pType->GetUNID()));
@@ -916,7 +916,7 @@ void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
 	int iTick, iVariant;
 	const CObjectImageArray &Image = GetImage(false, &iTick, &iVariant);
 
-	if (!Image.IsEmpty())
+	if (Image.IsLoaded())
 		{
 		CFractureEffect::Create(GetSystem(),
 				GetPos(),

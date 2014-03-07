@@ -430,6 +430,32 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 	return NOERROR;
 	}
 
+void CPlayerSettings::MergeFrom (const CPlayerSettings &Src)
+
+//	MergeFrom
+//
+//	Merges from the source
+
+	{
+	if (Src.m_fHasArmorDesc)
+		{
+		m_ArmorDesc = Src.m_ArmorDesc;
+		m_fHasArmorDesc = true;
+		}
+
+	if (Src.m_fHasReactorDesc)
+		{
+		m_ReactorDesc = Src.m_ReactorDesc;
+		m_fHasReactorDesc = true;
+		}
+
+	if (Src.m_fHasShieldDesc)
+		{
+		m_ShieldDesc = Src.m_ShieldDesc;
+		m_fHasShieldDesc = true;
+		}
+	}
+
 ALERROR InitRectFromElement (CXMLElement *pItem, RECT *retRect)
 
 //	InitRectFromElement

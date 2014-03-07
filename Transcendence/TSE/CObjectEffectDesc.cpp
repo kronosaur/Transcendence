@@ -13,7 +13,7 @@
 #define EFFECT_ROTATE_RIGHT						CONSTLIT("rotateRight")
 #define EFFECT_THRUST_MAIN						CONSTLIT("thrustMain")
 
-ALERROR CObjectEffectDesc::Bind (SDesignLoadCtx &Ctx)
+ALERROR CObjectEffectDesc::Bind (SDesignLoadCtx &Ctx, const CObjectImageArray &Image)
 
 //	Bind
 //
@@ -25,6 +25,10 @@ ALERROR CObjectEffectDesc::Bind (SDesignLoadCtx &Ctx)
 
 	for (i = 0; i < m_Effects.GetCount(); i++)
 		{
+		//	Finish initialization
+
+		m_Effects[i].PosCalc.InitComplete(Image.GetRotationCount(), Image.GetImageViewportSize(), m_Effects[i].iRotation);
+
 		//	Default effect
 
 		if (m_Effects[i].pEffect.IsEmpty())
@@ -78,7 +82,7 @@ int CObjectEffectDesc::GetEffectCount (DWORD dwEffects) const
 	return iCount;
 	}
 
-ALERROR CObjectEffectDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, int iFrameCount, int iImageScale, CXMLElement *pDesc)
+ALERROR CObjectEffectDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc)
 
 //	InitFromXML
 //
@@ -114,7 +118,7 @@ ALERROR CObjectEffectDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNI
 
 		//	Load the position
 
-		if (error = pEntry->PosCalc.Init(pEffectXML, iFrameCount, iImageScale, pEntry->iRotation))
+		if (error = pEntry->PosCalc.Init(pEffectXML))
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Invalid effect position."));
 			return ERR_FAIL;

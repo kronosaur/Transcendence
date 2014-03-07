@@ -202,7 +202,7 @@ void CItemType::CreateFlotsamImage (void)
 //	Creates a 32x32 image used when the item is floating in space.
 
 	{
-	if (m_Image.IsEmpty())
+	if (!m_Image.IsLoaded())
 		return;
 
 	RECT rcImage = m_Image.GetImageRect();

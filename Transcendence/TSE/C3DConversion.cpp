@@ -137,6 +137,62 @@ void C3DConversion::CalcCoordCompatible (int iAngle, int iRadius, int *retx, int
 	*rety = -(int)vPos.GetY();
 	}
 
+ALERROR C3DConversion::Init (CXMLElement *pDesc)
+
+//	Init
+//
+//	Initializes from an XML element. We accept the following forms:
+//
+//	x="nnn" y="nnn"				-> old-style 2D mapping of points
+//	x="nnn" y="nnn" z="nnn"		-> use the 3D transformation
+//
+//	OR
+//
+//	posAngle="nnn"	posRadius="nnn"	posZ="nnn"
+//
+//	NOTE: Must call InitComplete to finish initialization
+
+	{
+	//	Initialize based on which of the formats we've got. If we have posAngle
+	//	then we have polar coordinates.
+
+	if (pDesc->FindAttributeInteger(POS_ANGLE_ATTRIB, &m_iAngle))
+		{
+		m_iRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
+		m_iZ = pDesc->GetAttributeInteger(POS_Z_ATTRIB);
+		m_bUseCompatible = false;
+		}
+
+	//	Otherwise, we expect Cartessian coordinates
+
+	else
+		{
+		//	Get the position
+
+		int x = pDesc->GetAttributeInteger(X_ATTRIB);
+		int y = -pDesc->GetAttributeInteger(Y_ATTRIB);
+
+		//	Convert to polar coordinates
+
+		m_iAngle = IntVectorToPolar(x, y, &m_iRadius);
+
+		//	If we have a z attribute then user the new 3D conversion.
+
+		m_bUseCompatible = !pDesc->FindAttributeInteger(Z_ATTRIB, &m_iZ);
+		if (m_bUseCompatible)
+			m_iZ = 0;
+		}
+
+	//	Read the sendToBack and bringToFront attributes
+
+	m_sBringToFront = pDesc->GetAttribute(BRING_TO_FRONT_ATTRIB);
+	m_sSendToBack = pDesc->GetAttribute(SEND_TO_BACK_ATTRIB);
+
+	//	Done
+
+	return NOERROR;
+	}
+
 ALERROR C3DConversion::Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing)
 
 //	Init
@@ -153,58 +209,14 @@ ALERROR C3DConversion::Init (CXMLElement *pDesc, int iDirectionCount, int iScale
 	{
 	ALERROR error;
 
-	//	Initialize based on which of the formats we've got. If we have posAngle
-	//	then we have polar coordinates.
+	//	First load the data
 
-	int iAngle;
-	if (pDesc->FindAttributeInteger(POS_ANGLE_ATTRIB, &iAngle))
-		{
-		int iRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
-		int iZ = pDesc->GetAttributeInteger(POS_Z_ATTRIB);
+	if (error = Init(pDesc))
+		return error;
 
-		Init(iDirectionCount, iScale, iAngle, iRadius, iZ, iFacing);
-		}
+	//	Finish initialization
 
-	//	Otherwise, we expect Cartessian coordinates
-
-	else
-		{
-		//	Get the position
-
-		int x = pDesc->GetAttributeInteger(X_ATTRIB);
-		int y = -pDesc->GetAttributeInteger(Y_ATTRIB);
-
-		//	Convert to polar coordinates
-
-		int iRadius;
-		int iAngle = IntVectorToPolar(x, y, &iRadius);
-
-		//	If we have a z attribute then user the new 3D conversion.
-
-		int iZ;
-		if (pDesc->FindAttributeInteger(Z_ATTRIB, &iZ))
-			Init(iDirectionCount, iScale, iAngle, iRadius, iZ, iFacing);
-
-		//	Otherwise use the compatible method
-
-		else
-			InitCompatible(iDirectionCount, iAngle, iRadius, iFacing);
-		}
-
-	//	Read the sendToBack and bringToFront attributes
-
-	CString sAttrib;
-	if (pDesc->FindAttribute(BRING_TO_FRONT_ATTRIB, &sAttrib))
-		{
-		if (error = OverridePaintFirst(sAttrib, false))
-			return error;
-		}
-
-	if (pDesc->FindAttribute(SEND_TO_BACK_ATTRIB, &sAttrib))
-		{
-		if (error = OverridePaintFirst(sAttrib, true))
-			return error;
-		}
+	InitComplete(iDirectionCount, iScale, iFacing);
 
 	//	Done
 
@@ -307,6 +319,25 @@ void C3DConversion::InitXY (int iDirectionCount, int iScale, int iX, int iY, int
 	//	Init the normal way
 
 	Init(iDirectionCount, iScale, iAngle, iRadius, iZ, iFacing);
+	}
+
+void C3DConversion::InitComplete (int iDirectionCount, int iScale, int iFacing)
+
+//	InitComplete
+//
+//	Completes the initialization based on stored parameters.
+
+	{
+	if (m_bUseCompatible)
+		InitCompatible(iDirectionCount, m_iAngle, m_iRadius, iFacing);
+	else
+		Init(iDirectionCount, iScale, m_iAngle, m_iRadius, m_iZ, iFacing);
+
+	if (!m_sBringToFront.IsBlank())
+		OverridePaintFirst(m_sBringToFront, false);
+
+	if (!m_sSendToBack.IsBlank())
+		OverridePaintFirst(m_sSendToBack, true);
 	}
 
 void C3DConversion::GetCoord (int iRotation, int *retx, int *rety) const

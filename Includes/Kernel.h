@@ -1395,6 +1395,7 @@ CString strCapitalizeWords (const CString &sString);
 CString strCEscapeCodes (const CString &sString);
 CString strEncodeUTF8Char (DWORD dwCodePoint);
 CString strEncodeW1252ToUTF8Char (char chChar);
+bool strEndsWith (const CString &sString, const CString &sStringToFind);
 bool strEquals (const CString &sString1, const CString &sString2);
 int strFind (const CString &sString, const CString &sStringToFind);
 

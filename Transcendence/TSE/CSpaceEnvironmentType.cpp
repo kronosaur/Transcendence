@@ -667,7 +667,7 @@ void CSpaceEnvironmentType::OnMarkImages (void)
 		{
 		if (m_bAutoEdges)
 			CreateAutoTileSet(1);
-		else if (!m_EdgeMask.IsEmpty())
+		else if (m_EdgeMask.IsLoaded())
 			CreateTileSet(m_EdgeMask);
 		}
 	}

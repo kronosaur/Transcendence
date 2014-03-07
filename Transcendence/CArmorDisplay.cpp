@@ -191,7 +191,7 @@ void CArmorDisplay::Update (void)
 	//	Draw the base ship image, if we have it
 
 	const SArmorImageDesc &ArmorDesc = pSettings->GetArmorDesc();
-	if (!ArmorDesc.ShipImage.IsEmpty())
+	if (ArmorDesc.ShipImage.IsLoaded())
 		{
 		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
 

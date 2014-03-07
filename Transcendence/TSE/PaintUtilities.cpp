@@ -131,7 +131,7 @@ void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType)
 
 	{
 	const CObjectImageArray &Image = pType->GetImage();
-	if (!Image.IsEmpty())
+	if (Image.IsLoaded())
 		{
 		RECT rcImage = Image.GetImageRect();
 

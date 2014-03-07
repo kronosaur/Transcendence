@@ -1516,6 +1516,31 @@ CString strCEscapeCodes (const CString &sString)
 	return sResult;
 	}
 
+bool strEndsWith (const CString &sString, const CString &sStringToFind)
+
+//	strEndsWith
+//
+//	Returns TRUE if sString ends with sStringToFind
+
+	{
+	int iStrLen = sString.GetLength();
+	int iTargetLen = sStringToFind.GetLength();
+	if (iTargetLen > iStrLen)
+		return false;
+
+	char *pPos = sString.GetASCIIZPointer() + (iStrLen - iTargetLen);
+	char *pEndPos = pPos + iTargetLen;
+	char *pTarget = sStringToFind.GetASCIIZPointer();
+
+	while (pPos < pEndPos)
+		{
+		if (CharLower((LPTSTR)(BYTE)(*pPos++)) != CharLower((LPTSTR)(BYTE)(*pTarget++)))
+			return false;
+		}
+
+	return true;
+	}
+
 CString strFormatMicroseconds (DWORD dwMicroseconds)
 
 //	strFormatMicroseconds

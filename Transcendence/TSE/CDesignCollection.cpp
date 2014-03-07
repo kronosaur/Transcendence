@@ -210,6 +210,9 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 	for (i = 0; i < designCount; i++)
 		m_ByType[i].DeleteAll();
 
+	m_CreatedTypes.DeleteAll(true);
+	m_OverrideTypes.DeleteAll();
+
 	//	Reset
 
 	m_pTopology = NULL;
@@ -250,7 +253,7 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 
 		//	Add the types
 
-		m_AllTypes.Merge(Types);
+		m_AllTypes.Merge(Types, &m_OverrideTypes);
 
 		//	If this is the adventure, then remember it
 
@@ -301,10 +304,15 @@ ALERROR CDesignCollection::BindDesign (const TArray<CExtension *> &BindOrder, bo
 	//	Add all the dynamic types. These came either from the saved game file or
 	//	from the Template types above.
 
-	DEBUG_TRY
-	for (i = 0; i < m_DynamicTypes.GetCount(); i++)
-		m_AllTypes.AddOrReplaceEntry(m_DynamicTypes.GetType(i));
-	DEBUG_CATCH_MSG("Crash adding dynamic types.");
+	m_AllTypes.Merge(m_DynamicTypes, &m_OverrideTypes);
+
+	//	Now resolve all overrides and inheritance
+
+	if (error = ResolveOverrides(Ctx))
+		{
+		*retsError = Ctx.sError;
+		return error;
+		}
 
 	//	Initialize the byType lists
 
@@ -476,6 +484,8 @@ void CDesignCollection::CleanUp (void)
 //	Free all entries so that we don't hold on to any resources.
 
 	{
+	m_CreatedTypes.DeleteAll(true);
+
 	//	Some classes need to clean up global data
 	//	(But we need to do this before we destroy the types)
 
@@ -1225,6 +1235,56 @@ void CDesignCollection::Reinit (void)
 		}
 	}
 
+ALERROR CDesignCollection::ResolveOverrides (SDesignLoadCtx &Ctx)
+
+//	ResolveOverrides
+//
+//	Resolve all overrides
+
+	{
+	int i;
+
+	//	Apply all overrides
+
+	for (i = 0; i < m_OverrideTypes.GetCount(); i++)
+		{
+		CDesignType *pOverride = m_OverrideTypes.GetEntry(i);
+
+		//	Find the type that we are trying to override. If we can't find it
+		//	then just continue without error (it means we're trying to override
+		//	a type that doesn't currently exist).
+
+		CDesignType *pType = m_AllTypes.FindByUNID(pOverride->GetUNID());
+		if (pType == NULL)
+			continue;
+
+		//	If this type is not already a clone then we need to clone it first
+		//	(Because we never modify the original loaded type).
+
+		if (!pType->IsClone())
+			{
+			CDesignType *pClone;
+			pType->CreateClone(&pClone);
+
+			m_CreatedTypes.AddEntry(pClone);
+
+			pType = pClone;
+			}
+
+		//	Now modify the type with the override
+
+		pType->MergeType(pOverride);
+
+		//	Replace the original
+
+		m_AllTypes.AddOrReplaceEntry(pType);
+		}
+
+	//	Done
+
+	return NOERROR;
+	}
+
 void CDesignCollection::SweepImages (void)
 
 //	SweepImages
@@ -1278,4 +1338,22 @@ void CDesignList::Delete (DWORD dwUNID)
 			m_List.Delete(i);
 			break;
 			}
+	}
+
+void CDesignList::DeleteAll (bool bFree)
+
+//	DeleteAll
+//
+//	Delete all entries
+	
+	{
+	int i;
+
+	if (bFree)
+		{
+		for (i = 0; i < m_List.GetCount(); i++)
+			delete m_List[i];
+		}
+
+	m_List.DeleteAll();
 	}

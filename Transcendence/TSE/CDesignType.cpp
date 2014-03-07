@@ -24,6 +24,7 @@
 #define OVERLAY_TYPE_TAG						CONSTLIT("OverlayType")
 #define POWER_TAG								CONSTLIT("Power")
 #define SHIP_CLASS_TAG							CONSTLIT("ShipClass")
+#define SHIP_CLASS_OVERRIDE_TAG					CONSTLIT("ShipClassOverride")
 #define SHIP_ENERGY_FIELD_TYPE_TAG				CONSTLIT("ShipEnergyFieldType")
 #define SHIP_TABLE_TAG							CONSTLIT("ShipTable")
 #define SOUNDTRACK_TAG							CONSTLIT("Soundtrack")
@@ -150,7 +151,9 @@ CDesignType::CDesignType (void) :
 		m_dwUNID(0), 
 		m_pLocalScreens(NULL), 
 		m_dwInheritFrom(0), 
-		m_pInheritFrom(NULL)
+		m_pInheritFrom(NULL),
+		m_bIsModification(false),
+		m_bIsClone(false)
 	{
 	utlMemSet(m_EventsCache, sizeof(m_EventsCache), 0);
 	}
@@ -351,6 +354,8 @@ void CDesignType::CreateClone (CDesignType **retpType)
 
 	//	Initialize
 
+	pClone->m_bIsClone = true;
+
 	pClone->m_dwUNID = m_dwUNID;
 	pClone->m_pExtension = m_pExtension;
 	pClone->m_dwVersion = m_dwVersion;
@@ -385,6 +390,7 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 		{
 		ALERROR error;
 		CDesignType *pType = NULL;
+		bool bOverride = false;
 
 		if (strEquals(pDesc->GetTag(), ITEM_TYPE_TAG))
 			pType = new CItemType;
@@ -469,18 +475,25 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			if (error = CEffectCreator::CreateTypeFromXML(Ctx, pDesc, (CEffectCreator **)&pType))
 				return error;
 			}
+		else if (strEquals(pDesc->GetTag(), SHIP_CLASS_OVERRIDE_TAG))
+			{
+			pType = new CShipClass;
+			bOverride = true;
+			}
 		else
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Unknown design element: <%s>"), pDesc->GetTag());
 			return ERR_FAIL;
 			}
 
+		//	Result
+
 		if (retpType)
 			*retpType = pType;
 
 		//	Initialize
 
-		return pType->InitFromXML(Ctx, pDesc);
+		return pType->InitFromXML(Ctx, pDesc, bOverride);
 		}
 	catch (...)
 		{
@@ -1477,7 +1490,7 @@ void CDesignType::InitCachedEvents (int iCount, char **pszEvents, SEventHandlerD
 		}
 	}
 
-ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bIsOverride)
 
 //	InitFromXML
 //
@@ -1504,6 +1517,8 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_dwVersion = Ctx.GetAPIVersion();
 
 	//	Inheritance
+
+	m_bIsModification = bIsOverride;
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB), &m_dwInheritFrom))
 		return error;
@@ -1660,6 +1675,36 @@ void CDesignType::MergeLanguageTo (CLanguageDataBlock &Dest)
 		m_pInheritFrom->MergeLanguageTo(Dest);
 
 	DEBUG_CATCH
+	}
+
+void CDesignType::MergeType (CDesignType *pSource)
+
+//	MergeType
+//
+//	Merges the info from that given type
+	
+	{
+	//	We take the extension of the source because it has taken responsibility
+	//	for the type.
+	//
+	//	If we didn't do this then it would be possible for someone to override
+	//	a registered type and use its permissions.
+
+	m_pExtension = pSource->m_pExtension;
+	m_dwVersion = Max(m_dwVersion, pSource->m_dwVersion);
+
+	//	Merge our variables
+
+	m_StaticData.MergeFrom(pSource->m_StaticData);
+	m_InitGlobalData.MergeFrom(pSource->m_InitGlobalData);
+	m_Language.MergeFrom(pSource->m_Language);
+	m_Events.MergeFrom(pSource->m_Events);
+
+	//	LATER: Merge local screens
+
+	//	Let our subclass handle the rest.
+
+	OnMergeType(pSource); 
 	}
 
 ALERROR CDesignType::PrepareBindDesign (SDesignLoadCtx &Ctx)

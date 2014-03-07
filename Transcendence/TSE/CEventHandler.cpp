@@ -158,3 +158,26 @@ ALERROR CEventHandler::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	return NOERROR;
 	}
+
+void CEventHandler::MergeFrom (const CEventHandler &Src)
+
+//	MergeFrom
+//
+//	Merges from the source
+
+	{
+	int i;
+	CCodeChain &CC(g_pUniverse->GetCC());
+
+	for (i = 0; i < Src.GetCount(); i++)
+		{
+		ICCItem **ppCode = m_Handlers.GetAt(Src.m_Handlers.GetKey(i));
+		if (ppCode)
+			{
+			(*ppCode)->Discard(&CC);
+			(*ppCode) = Src.m_Handlers.GetValue(i)->Reference();
+			}
+		else
+			m_Handlers.SetAt(Src.m_Handlers.GetKey(i), Src.m_Handlers.GetValue(i)->Reference());
+		}
+	}

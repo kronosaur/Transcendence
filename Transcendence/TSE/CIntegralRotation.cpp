@@ -129,6 +129,12 @@ void CIntegralRotation::ReadFromStream (SLoadCtx &Ctx, const CIntegralRotationDe
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iRotationSpeed = (int)dwLoad;
+
+	//	Make sure our frame is within bounds; this can change if the ship's
+	//	rotation count is altered in the XML.
+
+	if (GetFrameIndex() >= Desc.GetFrameCount())
+		SetRotationAngle(Desc, 0);
 	}
 
 void CIntegralRotation::SetRotationAngle (const CIntegralRotationDesc &Desc, int iAngle)

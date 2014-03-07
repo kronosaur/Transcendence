@@ -1497,7 +1497,7 @@ void CShipClass::CreateWreckImage (void)
 //	Creates a wreck image randomly
 
 	{
-	if (m_Image.IsEmpty())
+	if (!m_Image.IsLoaded())
 		return;
 
 	int cxWidth = RectWidth(m_Image.GetImageRect());
@@ -2432,7 +2432,7 @@ void CShipClass::MarkImages (bool bMarkDevices)
 
 	//	Wreck images
 
-	if (m_WreckImage.IsEmpty())
+	if (!m_WreckImage.IsLoaded())
 		CreateWreckImage();
 
 	//	Effects
@@ -2484,26 +2484,38 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	ALERROR error;
 	int i;
 
+	//	Image
+
 	if (error = m_Image.OnDesignLoadComplete(Ctx))
 		goto Fail;
 
-	if (error = m_Effects.Bind(Ctx))
+	//	Now that we have the image we can bind the rotation desc, because it needs
+	//	the rotation count, etc.
+
+	if (error = m_RotationDesc.Bind(Ctx, m_Image))
 		goto Fail;
 
-	if (error = m_ExhaustImage.OnDesignLoadComplete(Ctx))
+	//	Thruster effects
+
+	if (error = m_Effects.Bind(Ctx, m_Image))
 		goto Fail;
 
-	if (error = m_Character.Bind(Ctx))
-		goto Fail;
+	//	Drive images
 
-	if (error = m_CharacterClass.Bind(Ctx))
-		goto Fail;
+	if (m_Exhaust.GetCount() > 0)
+		{
+		int iRotationCount = m_RotationDesc.GetFrameCount();
+		int iScale = m_Image.GetImageViewportSize();
 
-	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
-		goto Fail;
+		m_ExhaustImage.SetRotationCount(iRotationCount);
+		if (error = m_ExhaustImage.OnDesignLoadComplete(Ctx))
+			goto Fail;
 
-	if (error = m_RotationDesc.Bind(Ctx))
-		goto Fail;
+		for (i = 0; i < m_Exhaust.GetCount(); i++)
+			m_Exhaust[i].PosCalc.InitComplete(iRotationCount, iScale, 180);
+		}
+
+	//	Hull
 
 	for (i = 0; i < GetHullSectionCount(); i++)
 		{
@@ -2520,6 +2532,17 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 		}
 
 	if (error = m_pExplosionType.Bind(Ctx))
+		goto Fail;
+
+	//	More
+
+	if (error = m_Character.Bind(Ctx))
+		goto Fail;
+
+	if (error = m_CharacterClass.Bind(Ctx))
+		goto Fail;
+
+	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
 		goto Fail;
 
 	//	Load player settings
@@ -2540,7 +2563,7 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 
 	if (m_AISettings.GetMinCombatSeparation() < 0.0)
 		{
-		if (!m_Image.IsEmpty())
+		if (m_Image.IsLoaded())
 			m_AISettings.SetMinCombatSeparation(RectWidth(m_Image.GetImageRect()) * g_KlicksPerPixel);
 		else
 			m_AISettings.SetMinCombatSeparation(60.0 * g_KlicksPerPixel);
@@ -2771,7 +2794,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	CXMLElement *pImage = pDesc->GetContentElementByTag(IMAGE_TAG);
 	if (pImage)
-		if (error = m_Image.InitFromXML(Ctx, pImage))
+		if (error = m_Image.InitFromXML(Ctx, pImage, false, STD_ROTATION_COUNT))
 			return ComposeLoadError(Ctx, Ctx.sError);
 
 	//	Initialize design
@@ -2783,17 +2806,12 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iMaxArmorMass = pDesc->GetAttributeInteger(MAX_ARMOR_ATTRIB);
 	m_iMaxReactorPower = pDesc->GetAttributeInteger(MAX_REACTOR_POWER_ATTRIB);
 
-	//	NOTE: We need to initialize this AFTER we initialize the image because 
-	//	we need the image size.
-
 	if (error = m_RotationDesc.InitFromXML(Ctx, 
 			strPatternSubst(CONSTLIT("%d:r"), GetUNID()), 
-			m_Image.GetImageViewportSize(), 
-			m_iMass,
 			pDesc))
 		return ComposeLoadError(Ctx, Ctx.sError);
 
-	m_Image.SetRotationCount(m_RotationDesc.GetFrameCount());
+//	m_Image.SetRotationCount(m_RotationDesc.GetFrameCount());
 
 	m_DriveDesc.dwUNID = GetUNID();
 	m_DriveDesc.rMaxSpeed = (double)pDesc->GetAttributeInteger(CONSTLIT(g_MaxSpeedAttrib)) * LIGHT_SPEED / 100;
@@ -2805,8 +2823,6 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		{
 		if (error = m_Effects.InitFromXML(Ctx, 
 				strPatternSubst(CONSTLIT("%d"), GetUNID()), 
-				m_RotationDesc.GetFrameCount(), 
-				m_Image.GetImageViewportSize(), 
 				pEffects))
 			return ComposeLoadError(Ctx, Ctx.sError);
 		}
@@ -2982,8 +2998,6 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				{
 				if (error = m_ExhaustImage.InitFromXML(Ctx, pItem))
 					return ComposeLoadError(Ctx, ERR_BAD_EXHAUST_IMAGE);
-
-				m_ExhaustImage.SetRotationCount(m_RotationDesc.GetFrameCount());
 				}
 			else if (strEquals(pItem->GetTag(), NOZZLE_POS_TAG))
 				{
@@ -2993,7 +3007,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 				//	Load the position
 
-				if (error = pExhaust->PosCalc.Init(pItem, m_RotationDesc.GetFrameCount(), iScale, 180))
+				if (error = pExhaust->PosCalc.Init(pItem))
 					return ComposeLoadError(Ctx, ERR_DRIVE_IMAGE_FORMAT);
 				}
 			else
@@ -3144,6 +3158,56 @@ bool CShipClass::OnHasSpecialAttribute (const CString &sAttrib) const
 		}
 	else
 		return false;
+	}
+
+void CShipClass::OnMergeType (CDesignType *pSource)
+
+//	OnMergeType
+//
+//	Merges the definitions from pSource into our class
+
+	{
+	CShipClass *pClass = CShipClass::AsType(pSource);
+	if (pClass == NULL)
+		{
+		ASSERT(false);
+		return;
+		}
+
+	//	Merge image
+
+	if (!pClass->m_Image.IsEmpty())
+		m_Image = pClass->m_Image;
+
+	//	Merge player settings
+
+	if (pClass->m_pPlayerSettings)
+		{
+		if (m_pPlayerSettings == NULL)
+			{
+			m_pPlayerSettings = new CPlayerSettings;
+			*m_pPlayerSettings = *pClass->m_pPlayerSettings;
+			}
+		else if (m_fInheritedPlayerSettings)
+			{
+			CPlayerSettings *pNew = new CPlayerSettings;
+			*pNew = *m_pPlayerSettings;
+
+			pNew->MergeFrom(*pClass->m_pPlayerSettings);
+
+			m_pPlayerSettings = pNew;
+			}
+		else
+			m_pPlayerSettings->MergeFrom(*pClass->m_pPlayerSettings);
+
+		m_fInheritedPlayerSettings = false;
+		}
+
+	//	Comms handler
+	//	LATER: Currently only adds new handlers; does not replace existing ones.
+
+	if (pClass->m_OriginalCommsHandler.GetCount() > 0)
+		m_OriginalCommsHandler.Merge(pClass->m_OriginalCommsHandler);
 	}
 
 void CShipClass::OnReadFromStream (SUniverseLoadCtx &Ctx)
