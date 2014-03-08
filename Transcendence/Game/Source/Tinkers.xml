@@ -542,12 +542,21 @@
 						
 						;	Set the description
 						
-						(scrSetDesc gScreen
-							"\"To fabricate " (itmGetName theItem 0x0108) " we need "
-							componentDesc
-							" plus " workCost " credits."
-							errorDesc
-							"\""
+						(switch
+							(not componentDesc)
+								(scrSetDesc gScreen
+									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " workCost " credits."
+									errorDesc
+									"\""
+									)
+								
+							(scrSetDesc gScreen
+								"\"To fabricate " (itmGetName theItem 0x0108) " we need "
+								componentDesc
+								" plus " workCost " credits."
+								errorDesc
+								"\""
+								)
 							)
 							
 						;	Remember the recipe, the components, and the cost for later
