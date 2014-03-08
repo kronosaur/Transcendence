@@ -32,9 +32,9 @@
 
 	<ItemType UNID="&itDvalinIon9Cannon;"
 			name=				"Dvalin Ion9 cannon"
-			level=				"8"
-			value=				"150000"
-			mass=				"5000"
+			level=				"9"
+			value=				"200000"
+			mass=				"4000"
 			frequency=			"notrandom"
 			attributes=			"MajorItem; EnergyWeapon; Rasiermesser; NotForSale"
 
@@ -46,11 +46,11 @@
 		<Weapon
 				type=				"particles"
 
-				damage=				"ion:40"
+				damage=				"ion:50; shield:9;"
 				fireRate=			"15"
 				missileSpeed=		"100"
 				lifetime=			"30"
-				powerUse=			"1200"
+				powerUse=			"1500"
 
 				particleCount=		"1d11+44"
 				particleSpreadAngle="5"
@@ -58,14 +58,17 @@
 				>
 
 			<Effect>
-				<Particle
-						style=			"line"
-						primaryColor=	"0x80, 0xc0, 0xff"
-						secondaryColor=	"0x00, 0x80, 0xff"
+				<Ray
+						style=			"smooth"
+						shape=			"tapered"
+						primaryColor=	"#00d5ff"
+						secondaryColor=	"#006b80"
+						width=			"6"
+						length=			"80"
+						intensity=		"45"
 						/>
 			</Effect>
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Arms Dealer, Rasiermesser -->
@@ -405,7 +408,7 @@
 											"His name is Dvalin, the chief scientist for the Rasiermesser Corporation."
 											))
 
-									(ls xp 250)
+									(ls xp 150)
 										(setq desc (cat "The center of the lab has a massive testing area; a segment of armor on a static frame is being subjected to intense energies.\n\n"
 											"Dvalin walks over to you and points to the test: \"Dat is my new nano-sintered armor. It will be twice as strong as hexphase, ya? It will be done soon!\""
 											))
@@ -567,22 +570,22 @@
 										(geq xp 2400)
 											(setq gItem Nil)
 
-										(geq xp 1200)
+										(geq xp 800)
 											(block Nil
 												(setq gItem 
 													(itmSetEnhanced 
 														(itmCreate &itDvalinIon9Cannon; 1)
-														(random (list 0x0108 0x0109 0x010a))
+														(random (list 0x0105 0x0106 0x0107))
 														)
 													)
 												)
 
-										(geq xp 600)
+										(geq xp 400)
 											(block Nil
 												(setq gItem (itmCreate &itDvalinArmor; 4))
 												)
 
-										(geq xp 300)
+										(geq xp 200)
 											(switch
 												(leq roll 60)
 													(setq gItem (itmSetEnhanced (itmCreate &itAkan600Turret; 1) 0x0105))
@@ -593,7 +596,7 @@
 												(setq gItem (itmSetEnhanced (itmCreate &itAkan600Turret; 1) 0x1003))
 												)
 
-										(geq xp 150)
+										(geq xp 100)
 											(switch
 												(leq roll 60)
 													(setq gItem (itmSetEnhanced (itmCreate &itAdvancedCeralloyArmor; 4) 0x010a))
