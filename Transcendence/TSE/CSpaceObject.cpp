@@ -6223,8 +6223,7 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 
 	//	See if this is the nearest player target
 
-	if (Ctx.bNeedsAutoTarget
-			&& CanAttack()
+	if (CanAttack()
 			&& !IsDestroyed()
 			&& Ctx.pPlayer
 			&& Ctx.pPlayer->IsEnemy(this)

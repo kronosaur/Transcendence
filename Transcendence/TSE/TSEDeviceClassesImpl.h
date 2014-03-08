@@ -442,8 +442,10 @@ class CWeaponClass : public CDeviceClass
 		virtual int GetWeaponEffectiveness (CSpaceObject *pSource, CInstalledDevice *pDevice, CSpaceObject *pTarget);
 		virtual bool IsAmmoWeapon (void);
 		virtual bool IsAreaWeapon (CSpaceObject *pSource, CInstalledDevice *pDevice);
+		virtual bool IsTrackingWeapon (CItemCtx &Ctx);
 		virtual bool IsVariantSelected (CSpaceObject *pSource, CInstalledDevice *pDevice);
 		virtual bool IsWeaponAligned (CSpaceObject *pShip, CInstalledDevice *pDevice, CSpaceObject *pTarget, int *retiAimAngle = NULL, int *retiFireAngle = NULL);
+		virtual bool NeedsAutoTarget (CItemCtx &Ctx, int *retiMinFireArc = NULL, int *retiMaxFireArc = NULL);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual bool RequiresItems (void);
 		virtual bool SelectFirstVariant (CSpaceObject *pSource, CInstalledDevice *pDevice);

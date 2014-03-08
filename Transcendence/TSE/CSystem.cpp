@@ -4180,22 +4180,26 @@ void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 
 	if (Ctx.pPlayer)
 		{
+		//	Check to see if the primary weapon requires autotargetting
+
 		CInstalledDevice *pWeapon = Ctx.pPlayer->GetNamedDevice(devPrimaryWeapon);
 		if (pWeapon)
 			{
-			//	If the weapon is omni or has an arc, then we need an auto target
-
 			CItemCtx ItemCtx(Ctx.pPlayer, pWeapon);
-			Ctx.bNeedsAutoTarget = pWeapon->GetClass()->CanRotate(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
-
-			//	Adjust arc based on player rotation
-
-			if (Ctx.iMinFireArc != Ctx.iMaxFireArc)
-				{
-				Ctx.iMinFireArc = AngleMod(Ctx.iMinFireArc + Ctx.pPlayer->GetRotation());
-				Ctx.iMaxFireArc = AngleMod(Ctx.iMaxFireArc + Ctx.pPlayer->GetRotation());
-				}
+			Ctx.bNeedsAutoTarget = pWeapon->GetClass()->NeedsAutoTarget(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
 			}
+
+		//	If the primary does not need it, check the missile launcher
+
+		CInstalledDevice *pLauncher;
+		if (!Ctx.bNeedsAutoTarget
+				&& (pLauncher = Ctx.pPlayer->GetNamedDevice(devMissileWeapon)))
+			{
+			CItemCtx ItemCtx(Ctx.pPlayer, pLauncher);
+			Ctx.bNeedsAutoTarget = pLauncher->GetClass()->NeedsAutoTarget(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
+			}
+
+		//	Set up perception and max target dist
 
 		Ctx.iPlayerPerception = Ctx.pPlayer->GetPerception();
 		Ctx.rTargetDist2 = MAX_AUTO_TARGET_DISTANCE * MAX_AUTO_TARGET_DISTANCE;

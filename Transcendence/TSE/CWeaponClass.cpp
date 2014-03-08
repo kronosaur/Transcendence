@@ -2578,6 +2578,20 @@ bool CWeaponClass::IsStdDamageType (DamageTypes iDamageType, int iLevel)
 	return (iLevel >= iTierLevel && iLevel < iTierLevel + 3);
 	}
 
+bool CWeaponClass::IsTrackingWeapon (CItemCtx &Ctx)
+
+//	IsTrackingWeapon
+//
+//	Returns TRUE if we're a tracking weapon
+	
+	{
+	CWeaponFireDesc *pShot = GetSelectedShotData(Ctx);
+	if (pShot == NULL)
+		return false;
+
+	return pShot->IsTracking();
+	}
+
 bool CWeaponClass::IsVariantSelected (CSpaceObject *pSource, CInstalledDevice *pDevice)
 
 //	IsVariantSelected
@@ -2764,6 +2778,52 @@ bool CWeaponClass::IsWeaponAligned (CSpaceObject *pShip,
 
 	else
 		return false;
+	}
+
+bool CWeaponClass::NeedsAutoTarget (CItemCtx &Ctx, int *retiMinFireArc, int *retiMaxFireArc)
+
+//	NeedsAutoTarget
+//
+//	Returns TRUE if this weapon is either a swivel weapon, an omniweapon, or a
+//	tracking weapon.
+//
+//	If necessary we return the (absolute) fire arc where we should look for 
+//	targets (if we're a swivel weapon).
+
+	{
+	//	If we're a tracking weapon then we have no swivel restrictions
+
+	if (IsTrackingWeapon(Ctx))
+		{
+		if (retiMinFireArc) *retiMinFireArc = 0;
+		if (retiMaxFireArc) *retiMaxFireArc = 0;
+		return true;
+		}
+
+	//	If we're an omni or swivel weapon, adjust our fire arc
+
+	int iMinFireArc = 0;
+	int iMaxFireArc = 0;
+	if (CanRotate(Ctx, &iMinFireArc, &iMaxFireArc))
+		{
+		//	Adjust arc based on player rotation
+
+		if (iMinFireArc != iMaxFireArc
+				&& Ctx.GetSource())
+			{
+			iMinFireArc = AngleMod(iMinFireArc + Ctx.GetSource()->GetRotation());
+			iMaxFireArc = AngleMod(iMaxFireArc + Ctx.GetSource()->GetRotation());
+			}
+
+		if (retiMinFireArc) *retiMinFireArc = iMinFireArc;
+		if (retiMaxFireArc) *retiMaxFireArc = iMaxFireArc;
+
+		return true;
+		}
+
+	//	Otherwise, we don't need a target
+
+	return false;
 	}
 
 void CWeaponClass::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)

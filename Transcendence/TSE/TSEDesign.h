@@ -2180,8 +2180,10 @@ class CDeviceClass : public CObject
 		virtual bool IsAutomatedWeapon (void) { return false; }
 		virtual bool IsExternal (void) { return (m_fExternal ? true : false); }
 		virtual bool IsFuelCompatible (CItemCtx &Ctx, const CItem &FuelItem) { return false; }
+		virtual bool IsTrackingWeapon (CItemCtx &Ctx) { return false; }
 		virtual bool IsVariantSelected (CSpaceObject *pSource, CInstalledDevice *pDevice) { return true; }
 		virtual bool IsWeaponAligned (CSpaceObject *pShip, CInstalledDevice *pDevice, CSpaceObject *pTarget, int *retiAimAngle = NULL, int *retiFireAngle = NULL) { return false; }
+		virtual bool NeedsAutoTarget (CItemCtx &Ctx, int *retiMinFireArc = NULL, int *retiMaxFireArc = NULL) { return false; }
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList) { }
 		virtual void OnUninstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList) { }
 		virtual void Recharge (CInstalledDevice *pDevice, CShip *pShip, int iStatus) { }
