@@ -166,6 +166,7 @@ static char *FEEDBACK[] =
 	"Section6",
 	"Sero",
 	"SevereTireDamage",
+	"Shaman",
 	"Sheltem",
 	"Shrike",
 	"SiaFu",
