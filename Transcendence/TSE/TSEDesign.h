@@ -1979,7 +1979,6 @@ class CArmorClass : public CObject
 		EDamageResults AbsorbDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx);
 		void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		void CalcAdjustedDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx);
-		int CalcAdjustedDamage (CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage);
 		int CalcAverageRelativeDamageAdj (void);
 		int CalcBalance (void);
 		void CalcDamageEffects (CItemCtx &ItemCtx, SDamageCtx &Ctx);

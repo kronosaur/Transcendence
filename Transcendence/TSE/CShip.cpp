@@ -1417,23 +1417,25 @@ int CShip::DamageArmor (int iSect, DamageDesc &Damage)
 
 //	DamageArmor
 //
-//	Damage armor
+//	Damage armor. Returns the number of hits points of damage caused.
 
 	{
 	CInstalledArmor *pArmor = GetArmorSection(iSect);
+	CItemCtx ItemCtx(this, pArmor);
+
+	SDamageCtx DamageCtx;
+	DamageCtx.Damage = Damage;
+	DamageCtx.iDamage = Damage.RollDamage();
 
 	//	Adjust the damage for the armor
 
-	int iDamage = Damage.RollDamage();
-	iDamage = pArmor->GetClass()->CalcAdjustedDamage(pArmor,
-			Damage, 
-			iDamage);
-	if (iDamage == 0)
+	pArmor->GetClass()->CalcAdjustedDamage(ItemCtx, DamageCtx);
+	if (DamageCtx.iDamage == 0)
 		return 0;
 
 	//	Armor takes damage
 
-	iDamage = Min(iDamage, pArmor->GetHitPoints());
+	int iDamage = Min(DamageCtx.iDamage, pArmor->GetHitPoints());
 	if (iDamage == 0)
 		return 0;
 

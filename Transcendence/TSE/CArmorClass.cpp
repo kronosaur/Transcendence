@@ -326,19 +326,6 @@ void CArmorClass::CalcAdjustedDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx)
 	Ctx.iDamage = (iDamageAdj * Ctx.iDamage + 50) / 100;
 	}
 
-int CArmorClass::CalcAdjustedDamage (CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) 
-
-//	CalcAdjustedDamage
-//
-//	Adjust damage for damage type and armor
-
-	{
-	if (pArmor)
-		return (GetDamageAdj(pArmor->GetMods(), Damage) * iDamage + 50) / 100;
-	else
-		return (GetDamageAdj(CItemEnhancement(), Damage) * iDamage + 50) / 100;
-	}
-
 int CArmorClass::CalcAverageRelativeDamageAdj (void)
 
 //	CalcAverageRelativeDamageAdj
