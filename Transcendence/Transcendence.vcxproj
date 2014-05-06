@@ -565,7 +565,9 @@
   <ItemGroup>
     <None Include="Game\Extensions\Debug\AdventureSample.xml" />
     <None Include="Game\Extensions\Debug\DebugCode.xml" />
-    <None Include="Game\Extensions\Debug\DebugShips.xml" />
+    <None Include="Game\Extensions\Debug\DebugShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Extensions\Debug\HighLevelTest.xml" />
     <None Include="Game\Extensions\Debug\PerformanceTest.xml" />
     <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
@@ -662,7 +664,9 @@
     <None Include="Game\Source\SungSlavers.xml" />
     <None Include="Game\Source\Teratons.xml" />
     <None Include="Game\Source\Tinkers.xml" />
-    <None Include="Game\Source\Transcendence.xml" />
+    <None Include="Game\Source\Transcendence.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\UniverseCompatibility.xml" />
     <None Include="Game\Source\UniverseEffects.xml" />
     <None Include="Game\Source\UrakWarlords.xml" />

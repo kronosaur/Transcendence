@@ -557,8 +557,8 @@
 									; We double to xp required after each gift
 									(setq xp (objGetData gSource "XP"))
 									(setq minXP (multiply (objGetData gSource "giftXP") 2))
-									(if (ls minXP 150)
-										(setq minXP 150)
+									(if (ls minXP 100)
+										(setq minXP 100)
 										)
 
 									; Figure out what kind of gift to give
