@@ -188,6 +188,7 @@ class CPlayerGameStats
 		CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const;
 		CTimeSpan GetPlayTime (void) const { return (!m_PlayTime.IsBlank() ? m_PlayTime : g_pUniverse->StopGameTime()); }
 		CString GetStat (const CString &sStat) const;
+		DWORD GetSystemEnteredTime (const CString &sNodeID);
 		int IncStat (const CString &sStat, int iInc = 1);
 		void OnGameEnd (CSpaceObject *pPlayer);
 		void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice);
@@ -348,6 +349,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline CShip *GetShip (void) { return m_pShip; }
 		inline DWORD GetStartingShipClass (void) const { return m_dwStartingShipClass; }
 		inline CString GetStat (const CString &sStat) { return m_Stats.GetStat(sStat); }
+		inline DWORD GetSystemEnteredTime (const CString &sNodeID) { return m_Stats.GetSystemEnteredTime(sNodeID); }
 		inline int GetSystemsVisited (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("systemsVisited")), 0); }
 		inline CTranscendenceWnd *GetTrans (void) { return m_pTrans; }
 		inline void IncScore (int iBonus) { m_Stats.IncStat(CONSTLIT("score"), iBonus); }

@@ -104,8 +104,9 @@ class CSoundtrackManager
 		CSoundtrackManager (void);
 		~CSoundtrackManager (void);
 
+		void NextTrack (void);
 		void NotifyEndCombat (void);
-		void NotifyEnterSystem (CTopologyNode *pNode = NULL);
+		void NotifyEnterSystem (CTopologyNode *pNode = NULL, bool bFirstTime = true);
 		void NotifyStartCombat (void);
 		void NotifyStartCombatMission (void);
 		void NotifyTrackDone (void);
@@ -128,6 +129,7 @@ class CSoundtrackManager
 		bool m_bEnabled;					//	Music is enabled
 		EGameStates m_iGameState;			//	Current soundtrack state
 		CSoundType *m_pNowPlaying;			//	What we've scheduled to play
+		CSoundType *m_pLastTravel;			//	Travel music track interrupted by combat
 
 		TQueue<DWORD> m_LastPlayed;			//	UNID of tracks played.
 		bool m_bSystemTrackPlayed;			//	systemSoundtrack already played in system.

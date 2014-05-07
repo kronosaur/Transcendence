@@ -852,6 +852,21 @@ CPlayerGameStats::SStationTypeStats *CPlayerGameStats::GetStationStats (DWORD dw
 	return pStats;
 	}
 
+DWORD CPlayerGameStats::GetSystemEnteredTime (const CString &sNodeID)
+
+//	GetSystemEnteredTime
+//
+//	Returns the tick on which the player last entered the system.
+//	0xffffffff if the player has never entered it.
+
+	{
+	SSystemStats *pStats = m_SystemStats.Find(sNodeID);
+	if (pStats == NULL)
+		return INVALID_TIME;
+
+	return pStats->dwLastEntered;
+	}
+
 CPlayerGameStats::SSystemStats *CPlayerGameStats::GetSystemStats (const CString &sNodeID)
 
 //	GetSystemStats

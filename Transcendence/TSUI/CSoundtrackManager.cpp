@@ -15,6 +15,7 @@ CSoundtrackManager::CSoundtrackManager (void) :
 		m_bEnabled(false),
 		m_iGameState(stateNone),
 		m_pNowPlaying(NULL),
+		m_pLastTravel(NULL),
 		m_LastPlayed(10),
 		m_bSystemTrackPlayed(false),
 		m_bStartCombatWhenUndocked(false),
@@ -191,6 +192,29 @@ int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID) const
 	return -1;
 	}
 
+void CSoundtrackManager::NextTrack (void)
+
+//	NextTrack
+//
+//	Play the next track
+
+	{
+	if (m_bInTransition)
+		return;
+
+	if (m_bEnabled)
+		{
+		CSoundType *pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), m_iGameState);
+		if (pTrack == NULL)
+			return;
+
+		//	Transition
+
+		TransitionTo(pTrack, pTrack->GetNextPlayPos());
+		m_bInTransition = true;
+		}
+	}
+
 void CSoundtrackManager::NotifyEndCombat (void)
 
 //	NotifyEndCombat
@@ -213,9 +237,22 @@ void CSoundtrackManager::NotifyEndCombat (void)
 
 	if (m_bEnabled)
 		{
-		CSoundType *pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameTravel);
-		if (pTrack == NULL)
-			return;
+		CSoundType *pTrack;
+
+		//	If we interrupted a travel track, see if we can go back to it.
+
+		if (m_pLastTravel
+				&& m_pLastTravel->GetNextPlayPos() != 0)
+			pTrack = m_pLastTravel;
+
+		//	Otherwise, calc a new track
+
+		else
+			{
+			pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameTravel);
+			if (pTrack == NULL)
+				return;
+			}
 
 		//	Transition
 
@@ -228,7 +265,7 @@ void CSoundtrackManager::NotifyEndCombat (void)
 	m_iGameState = stateGameTravel;
 	}
 
-void CSoundtrackManager::NotifyEnterSystem (CTopologyNode *pNode)
+void CSoundtrackManager::NotifyEnterSystem (CTopologyNode *pNode, bool bFirstTime)
 
 //	NotifyEnterSystem
 //
@@ -241,6 +278,12 @@ void CSoundtrackManager::NotifyEnterSystem (CTopologyNode *pNode)
 #ifdef DEBUG_SOUNDTRACK
 	kernelDebugLogMessage("Entered system.");
 #endif
+
+	//	If it's not the first time we've entered the system, then continue 
+	//	playing.
+
+	if (!bFirstTime)
+		return;
 
 	//	If no node passed in then assume the current node. Generally, when
 	//	passing through a stargate we get an explicit node because we're still 
@@ -302,6 +345,16 @@ void CSoundtrackManager::NotifyStartCombat (void)
 
 	if (m_bEnabled)
 		{
+		//	If we're in a travel bed track, remember it so we can go back to it later.
+
+		if (m_pNowPlaying 
+				&& !m_pNowPlaying->HasAttribute(ATTRIB_COMBAT_SOUNDTRACK))
+			m_pLastTravel = m_pNowPlaying;
+		else
+			m_pLastTravel = NULL;
+
+		//	Pick a combat track
+
 		CSoundType *pCombatTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameCombat);
 		if (pCombatTrack == NULL)
 			return;

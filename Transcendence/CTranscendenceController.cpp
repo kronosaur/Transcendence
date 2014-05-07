@@ -900,6 +900,11 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		m_Model.StartGame(false);
 		m_iState = stateInGame;
+
+		//	NOTE: It's OK to leave the default param (firstTime = true) for
+		//	NotifyEnterSystem. We want the soundtrack to change to the system
+		//	track.
+
 		m_Soundtrack.NotifyEnterSystem();
 		}
 	else if (strEquals(sCmd, CMD_GAME_START_NEW))
@@ -928,7 +933,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_ENTER_STARGATE))
 		{
 		CTopologyNode *pDestNode = (CTopologyNode *)pData;
-		m_Soundtrack.NotifyEnterSystem(pDestNode);
+		if (pDestNode && !pDestNode->IsEndGame())
+			{
+			//	Figure out if we've entered this system before
+
+			bool bFirstTime = m_Model.GetPlayer()->GetSystemEnteredTime(pDestNode->GetID()) == 0xffffffff;
+
+			//	Tell the soundtrack
+
+			m_Soundtrack.NotifyEnterSystem(pDestNode, bFirstTime);
+			}
 		}
 
 	//	Left system; now inside the stargate
@@ -1412,7 +1426,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Soundtrack.NotifyTrackDone();
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NEXT))
-		m_Soundtrack.NotifyTrackDone();
+		m_Soundtrack.NextTrack();
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
 		m_Soundtrack.NotifyTrackPlaying((CSoundType *)pData);
