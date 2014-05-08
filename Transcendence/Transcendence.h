@@ -2275,6 +2275,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 	public:
 		CTranscendenceController (CHumanInterface &HI) : IHIController(HI),
 				m_iState(stateNone),
+				m_iBackgroundState(stateIdle),
 				m_Model(HI),
 				m_bUpgradeDownloaded(false)
 			{ }
@@ -2315,15 +2316,29 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateEndGameStats,
 			};
 
+		enum BackgroundStates
+			{
+			stateIdle,
+
+			stateSignedIn,					//	Signed in and idle
+			stateLoadingCollection,			//	Waiting for collection to load
+			stateDownloadingUpgrade,		//	Downloading an upgrade to the game
+			stateDownloadingCatalogEntry,	//	Downloading a TDB file
+			stateLoadingNews,				//	Waiting for news to load
+			stateDownloadingResource,		//	Downloading a resource file
+			};
+
 		void CleanUpUpgrade (void);
 		bool CheckAndRunUpgrade (void);
 		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
 		bool InstallUpgrade (CString *retsError);
 		bool IsUpgradeReady (void);
 		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+		bool RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads);
 		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
 		States m_iState;
+		BackgroundStates m_iBackgroundState;
 		CTranscendenceModel m_Model;
 
 		CCloudService m_Service;

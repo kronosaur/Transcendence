@@ -321,6 +321,7 @@ class CDesignType
 		inline void UnbindDesign (void) { OnUnbindDesign(); }
 		void WriteToStream (IWriteStream *pStream);
 
+		inline void AddExternals (TArray<CString> *retExternals) { OnAddExternals(retExternals); }
 		void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		static CDesignType *AsType (CDesignType *pType) { return pType; }
 		inline CEffectCreator *FindEffectCreatorInType (const CString &sUNID) { return OnFindEffectCreator(sUNID); }
@@ -396,6 +397,7 @@ class CDesignType
 		void ReportEventError (const CString &sEvent, ICCItem *pError);
 
 		//	CDesignType overrides
+		virtual void OnAddExternals (TArray<CString> *retExternals) { }
 		virtual void OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { }
 		virtual ALERROR OnBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc) { return NOERROR; }
@@ -1090,6 +1092,7 @@ class CSoundType : public CDesignType
 
 		~CSoundType (void) { }
 
+		CString GetFilename (void) const { return m_sFilename; }
 		CString GetFilespec (void) const;
 		inline const CAttributeCriteria &GetLocationCriteria (void) const { return m_LocationCriteria; }
 		int GetNextFadePos (int iPos);
@@ -1106,6 +1109,7 @@ class CSoundType : public CDesignType
 
 	protected:
 		//	CDesignType overrides
+		virtual void OnAddExternals (TArray<CString> *retExternals) { if (!m_sFilespec.IsBlank()) retExternals->Insert(m_sFilespec); }
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 
 	private:
@@ -1118,6 +1122,7 @@ class CSoundType : public CDesignType
 		int FindSegment (int iPos);
 
 		CString m_sResourceDb;			//	Resource db
+		CString m_sFilename;			//	Filename
 		CString m_sFilespec;			//	Sound resource within db
 
 		int m_iPriority;				//	Track priority
@@ -6018,6 +6023,7 @@ class CExtension
 		inline const CDesignTable &GetDesignTypes (void) { return m_DesignTypes; }
 		inline const CIntegerIP &GetDigest (void) const { return m_Digest; }
 		inline CExternalEntityTable *GetEntities (void) { return m_pEntities; }
+		inline const TArray<CString> &GetExternalResources (void) const { return m_Externals; }
 		inline const CString &GetFilespec (void) const { return m_sFilespec; }
 		inline EFolderTypes GetFolderType (void) const { return m_iFolderType; }
 		inline const SLibraryDesc &GetLibrary (int iIndex) const { return m_Libraries[iIndex]; }
@@ -6097,6 +6103,7 @@ class CExtension
 		DWORD m_dwAutoIncludeAPIVersion;	//	Library adds compatibility to any
 											//		extension at or below this
 											//		API version.
+		TArray<CString> m_Externals;		//	External resources
 
 		mutable CG16bitImage *m_pCoverImage;	//	Large cover image
 
@@ -6142,6 +6149,8 @@ class CExtensionCollection
 		bool FindBestExtension (DWORD dwUNID, DWORD dwRelease = 0, DWORD dwFlags = 0, CExtension **retpExtension = NULL);
 		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension::EFolderTypes iFolder, CExtension **retpExtension = NULL);
 		void FreeDeleted (void);
+		CString GetExternalResourceFilespec (CExtension *pExtension, const CString &sFilename) const;
+		bool GetRequiredResources (TArray<CString> *retFilespecs);
 		void InitEntityResolver (CExtension *pExtension, DWORD dwFlags, CEntityResolverList *retResolver);
 		bool IsRegisteredGame (CExtension *pAdventure, const TArray<CExtension *> &DesiredExtensions, DWORD dwFlags);
 		ALERROR Load (const CString &sFilespec, DWORD dwFlags, CString *retsError);

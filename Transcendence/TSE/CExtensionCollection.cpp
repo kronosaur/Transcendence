@@ -919,6 +919,67 @@ void CExtensionCollection::FreeDeleted (void)
 	DEBUG_CATCH
 	}
 
+CString CExtensionCollection::GetExternalResourceFilespec (CExtension *pExtension, const CString &sFilename) const
+
+//	GetExternalResourceFilespec
+//
+//	Returns a filespec to an external resource. NOTE: This is only valid for
+//	extensions in the Collection folder.
+
+	{
+	ASSERT(pExtension && pExtension->GetFolderType() == CExtension::folderCollection);
+
+	//	We look in a subdirectory of the Collection folder
+
+	CString sExternalFolder = pathAddComponent(m_sCollectionFolder, strPatternSubst(CONSTLIT("%08X"), pExtension->GetUNID()));
+
+	//	Compose the path
+
+	return pathAddComponent(sExternalFolder, sFilename);
+	}
+
+bool CExtensionCollection::GetRequiredResources (TArray<CString> *retFilespecs)
+
+//	GetRequiredResources
+//
+//	Returns a list of resources that we need to download.
+//	NOTE: The filespec includes the path where the file is expected to be.
+
+	{
+	CSmartLock Lock(m_cs);
+	int i, j;
+
+	retFilespecs->DeleteAll();
+
+	//	Loop over all extensions and return a list of missing TDB resources
+	//	(generally music files that we download later).
+
+	for (i = 0; i < m_Extensions.GetCount(); i++)
+		{
+		CExtension *pExtension = m_Extensions[i];
+		if (pExtension == NULL
+				|| pExtension->GetFolderType() != CExtension::folderCollection
+				|| pExtension->GetLoadState() != CExtension::loadComplete
+				|| pExtension->IsDisabled()
+				|| !pExtension->IsRegistrationVerified())
+			continue;
+
+		//	Look for any deferred resources
+
+		const TArray<CString> &Resources = pExtension->GetExternalResources();
+
+		//	If any files don't exist, add them
+
+		for (j = 0; j < Resources.GetCount(); j++)
+			{
+			if (!::pathExists(Resources[j]))
+				retFilespecs->Insert(Resources[j]);
+			}
+		}
+
+	return (retFilespecs->GetCount() > 0);
+	}
+
 void CExtensionCollection::InitEntityResolver (CExtension *pExtension, DWORD dwFlags, CEntityResolverList *retResolver)
 
 //	InitEntityResolver

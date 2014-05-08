@@ -93,9 +93,24 @@ ALERROR CSoundType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	int i;
 	ALERROR error;
 
-	CString sFilename = pDesc->GetAttribute(FILENAME_ATTRIB);
-	if (!sFilename.IsBlank())
-		m_sFilespec = Ctx.pResDb->ResolveFilespec(Ctx.sFolder, pDesc->GetAttribute(FILENAME_ATTRIB));
+	m_sFilename = pDesc->GetAttribute(FILENAME_ATTRIB);
+
+	//	Set the actual location of the file
+
+	if (!m_sFilename.IsBlank())
+		{
+		//	If this is in the Collection folder, then we expect it to be under
+		//	the extension folder.
+
+		if (Ctx.pExtension
+				&& Ctx.pExtension->GetFolderType() == CExtension::folderCollection)
+			m_sFilespec = g_pUniverse->GetExtensionCollection().GetExternalResourceFilespec(Ctx.pExtension, m_sFilename);
+
+		//	Otherwise, it is part of the resource db
+
+		else
+			m_sFilespec = Ctx.pResDb->ResolveFilespec(Ctx.sFolder, m_sFilename);
+		}
 
 	//	Location criteria
 

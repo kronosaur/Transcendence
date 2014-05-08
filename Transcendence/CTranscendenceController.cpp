@@ -89,10 +89,10 @@
 #define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
-#define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
 #define CMD_SERVICE_EXTENSION_LOAD_BEGIN		CONSTLIT("serviceExtensionLoadBegin")
 #define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
+#define CMD_SERVICE_FILE_DOWNLOADED				CONSTLIT("serviceFileDownloaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
@@ -1187,9 +1187,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Modify Multiverse state
 
 		if (m_Service.HasCapability(ICIService::canGetUserProfile))
+			{
 			m_Multiverse.OnUserSignedIn(m_Service.GetUsername());
+			m_iBackgroundState = stateSignedIn;
+			}
 		else
+			{
 			m_Multiverse.OnUserSignedOut();
+			m_iBackgroundState = stateIdle;
+			}
 
 		//	If we're signed in then we should load the user's collection from
 		//	the service.
@@ -1199,6 +1205,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the collection (we pass in Multiverse so
 			//	that the collection is placed there).
 
+			m_iBackgroundState = stateLoadingCollection;
 			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), 0, this, CMD_SERVICE_COLLECTION_LOADED);
 			}
 
@@ -1211,6 +1218,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_COLLECTION_LOADED))
 		{
+		m_iBackgroundState = stateIdle;
+
 		//	Set registration status
 
 		CMultiverseCollection Collection;
@@ -1231,6 +1240,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				&& !IsUpgradeReady()
 				&& !m_bUpgradeDownloaded)
 			{
+			m_iBackgroundState = stateDownloadingUpgrade;
 			m_HI.AddBackgroundTask(new CUpgradeProgram(m_HI, m_Service, m_Multiverse.GetUpgradeURL()), CHumanInterface::FLAG_LOW_PRIORITY);
 
 			//	Remember that we already did this so we don't try again later (e.g., if
@@ -1244,7 +1254,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
+			{
+			m_iBackgroundState = stateDownloadingCatalogEntry;
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+			}
 
 		//	Otherwise we're done downloading
 
@@ -1308,16 +1321,37 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Extension file downloaded
 
-	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_DOWNLOADED))
+	else if (strEquals(sCmd, CMD_SERVICE_FILE_DOWNLOADED))
 		{
-		//	Add a task to load the newly downloaded extension
+		if (m_iBackgroundState == stateDownloadingCatalogEntry)
+			{
+			//	Add a task to load the newly downloaded extension
 
-		CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
-		m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus), 0);
-		delete pStatus;
+			CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
+			m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus), 0);
+			delete pStatus;
 
-		//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
-		//	message.
+			//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
+			//	message.
+			}
+		else if (m_iBackgroundState == stateDownloadingResource)
+			{
+			CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
+
+			//	Rename the file
+
+			CString sPath = pathGetPath(pStatus->sFilespec);
+			CString sFilename = pathGetFilename(pStatus->sFilespec);
+			if (*sFilename.GetASCIIZPointer() == '~')
+				sFilename = strSubString(sFilename, 1);
+
+			CString sNewFilespec = pathAddComponent(sPath, sFilename);
+			fileMove(pStatus->sFilespec, sNewFilespec);
+
+			//	Continue loading resources
+
+			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+			}
 		}
 
 	//	Starting to load extension. We need to temporarily freeze the
@@ -1350,9 +1384,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_COMPLETE))
 		{
-		//	Download news
+		//	If we're done loading catalog entries, then download news
 
-		if (m_Service.HasCapability(ICIService::canLoadNews)
+		if ((m_iBackgroundState == stateIdle || m_iBackgroundState == stateDownloadingCatalogEntry)
+				&& m_Service.HasCapability(ICIService::canLoadNews)
 				&& m_Multiverse.IsLoadNewsNeeded())
 			{
 			//	Figure out the path for the news image cache
@@ -1367,8 +1402,21 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the news (we pass in Multiverse so
 			//	that the collection is placed there).
 
+			m_iBackgroundState = stateLoadingNews;
 			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), 0, this, CMD_SERVICE_NEWS_LOADED);
 			}
+
+		//	Otherwise, if we're loading loading resources, then handle them
+
+		else if (m_iBackgroundState == stateDownloadingResource)
+			{
+			m_iBackgroundState = stateIdle;
+			}
+
+		//	Otherwise, we're done
+
+		else
+			m_iBackgroundState = stateIdle;
 		}
 
 	//	News loaded
@@ -1378,6 +1426,27 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Tell the current session that we loaded news.
 
 		m_HI.GetSession()->HICommand(CMD_SERVICE_NEWS_LOADED);
+
+		//	Ask the extension collection for a list of missing resource files.
+
+		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload))
+			{
+			TArray<CString> LocalFilenames;
+			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);
+
+			//	Ask the multiverse to map to a list of cloud filepaths
+
+			TArray<CMultiverseFileRef> CloudFileRefs;
+			m_Multiverse.GetResourceFileRefs(LocalFilenames, &CloudFileRefs);
+
+			//	If necessary, request downloads
+
+			if (RequestResourceDownload(CloudFileRefs))
+				{
+				m_iBackgroundState = stateDownloadingResource;
+				m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+				}
+			}
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
@@ -1673,6 +1742,55 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 		//	doesn't take long and the call is thread-safe).
 
 		m_Service.RequestExtensionDownload(sFilePath, sFilespec, FileDigest);
+		}
+
+	//	Done
+
+	return true;
+	}
+
+bool CTranscendenceController::RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads)
+
+//	RequestResourceDownload
+//
+//	Initiates a request to download the given files.
+
+	{
+	int i;
+
+	//	If nothing to do then we're done.
+
+	if (Downloads.GetCount() == 0)
+		return false;
+
+	//	Figure out the path
+
+	CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+	//	Make sure that we have the Downloads folder
+
+	if (!pathExists(sDownloadsFolder))
+		pathCreate(sDownloadsFolder);
+
+	//	Loop over all files to download
+
+	for (i = 0; i < Downloads.GetCount(); i++)
+		{
+		//	We download straight to the final destination (Collections folder) 
+		//	but we add a tilde so it doesn't get used yet.
+
+		CString sDestFolder = pathGetPath(Downloads[i].GetFilespec());
+		CString sDestFilename = strPatternSubst(CONSTLIT("~%s"), pathGetFilename(Downloads[i].GetFilespec()));
+
+		//	Make sure the folder exists
+
+		if (!pathExists(sDestFolder))
+			pathCreate(sDestFolder);
+
+		//	Request a download. (We can do this synchronously because it
+		//	doesn't take long and the call is thread-safe).
+
+		m_Service.RequestExtensionDownload(Downloads[i].GetFilePath(), pathAddComponent(sDestFolder, sDestFilename), CIntegerIP());
 		}
 
 	//	Done

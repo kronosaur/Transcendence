@@ -131,6 +131,7 @@ void CExtension::CleanUp (void)
 		delete m_DesignTypes.GetEntry(i);
 
 	m_DesignTypes.DeleteAll();
+	m_Externals.DeleteAll();
 
 	//	Delete global functions
 
@@ -1068,6 +1069,10 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 				return error;
 				}
 			}
+
+		//	Let this type add external definitions
+
+		pType->AddExternals(&m_Externals);
 		}
 
 	//	Done

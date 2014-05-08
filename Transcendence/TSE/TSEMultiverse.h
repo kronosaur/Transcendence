@@ -11,11 +11,15 @@ class CMultiverseFileRef
 	public:
 		inline const CIntegerIP &GetDigest (void) const { return m_Digest; }
 		inline const CString &GetFilePath (void) const { return m_sFilePath; }
+		inline const CString &GetFilespec (void) const { return m_sFilespec; }
+		inline const CString &GetOriginalFilename (void) const { return m_sOriginalFilename; }
 		ALERROR InitFromJSON (const CJSONValue &Desc, CString *retsResult);
 		inline bool IsEmpty (void) const { return m_sFilePath.IsBlank(); }
+		inline void SetFilespec (const CString &sFilespec) { m_sFilespec = sFilespec; }
 
 	private:
 		CString m_sFilePath;				//	FilePath on service
+		CString m_sOriginalFilename;		//	Original filename
 		CTimeDate m_ModifiedTime;
 		DWORD m_dwSize;
 		CIntegerIP m_Digest;				//	File data digest (according to server)
@@ -56,6 +60,8 @@ class CMultiverseCatalogEntry
 		inline ELicenseTypes GetLicenseType (void) const { return m_iLicenseType; }
 		inline const CString &GetName (void) const { return m_sName; }
 		inline DWORD GetRelease (void) const { return m_dwRelease; }
+		inline int GetResourceCount (void) const { return m_Resources.GetCount(); }
+		inline const CMultiverseFileRef &GetResourceRef (int iIndex) const { return m_Resources[iIndex]; }
 		inline ELocalStatus GetStatus (void) const { return m_iStatus; }
 		inline const CMultiverseFileRef &GetTDBFileRef (void) const { return m_TDBFile; }
 		inline EExtensionTypes GetType (void) const { return m_iType; }
@@ -83,6 +89,8 @@ class CMultiverseCatalogEntry
 		CString m_sDesc;					//	Description
 		CMultiverseFileRef m_TDBFile;		//	Reference to TDB file.
 		ELicenseTypes m_iLicenseType;		//	Type of license
+
+		TArray<CMultiverseFileRef> m_Resources;
 
 		DWORD m_dwUNID;						//	UNID
 		ELocalStatus m_iStatus;				//	Current status
@@ -208,6 +216,7 @@ class CMultiverseModel
 		ALERROR GetEntry (DWORD dwUNID, DWORD dwRelease, CMultiverseCollection *retCollection) const;
 		CMultiverseNewsEntry *GetNextNewsEntry (void);
 		EOnlineStates GetOnlineState (CString *retsUsername = NULL) const;
+		bool GetResourceFileRefs (const TArray<CString> &Filespecs, TArray<CMultiverseFileRef> *retFileRefs) const;
 		inline const CString &GetServiceStatus (void) { return m_sLastStatus; }
 		const CString &GetUpgradeURL (void) const { return m_sUpgradeURL; }
 		inline ULONG64 GetUpgradeVersion (void) const { return m_UpgradeVersion.dwProductVersion; }
@@ -225,6 +234,16 @@ class CMultiverseModel
 		void SetUsername (const CString &sUsername);
 
 	private:
+		struct SResourceDesc
+			{
+			CString sFilename;				//	Local filename
+			CString sFilePath;				//	Multiverse filePath
+
+			const CMultiverseCatalogEntry *pEntry;
+			int iIndex;
+			};
+
+		void AddResources (const CMultiverseCatalogEntry &Entry);
 		void DeleteCollection (void);
 		void SetUpgradeVersion (const CJSONValue &Entry);
 
@@ -234,6 +253,7 @@ class CMultiverseModel
 		CMultiverseNews m_News;				//	News from the Multiverse
 		SFileVersionInfo m_UpgradeVersion;	//	This is the engine version available on the Multiverse
 		CString m_sUpgradeURL;				//	The URL where we can find an upgrade, if necessary
+		TSortMap<CString, SResourceDesc> m_Resources;	//	Resources, indexed by local filename
 
 		CString m_sLastStatus;				//	Most recent service status
 
