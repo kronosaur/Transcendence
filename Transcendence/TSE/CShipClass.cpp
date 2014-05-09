@@ -77,6 +77,7 @@
 #define SCORE_ATTRIB							CONSTLIT("score")
 #define SIZE_ATTRIB								CONSTLIT("size")
 #define SHIP_SCREEN_ATTRIB						CONSTLIT("shipScreen")
+#define START_AT_ATTRIB							CONSTLIT("startAt")
 #define STARTING_CREDITS_ATTRIB					CONSTLIT("startingCredits")
 #define STARTING_POS_ATTRIB						CONSTLIT("startingPos")
 #define STARTING_SYSTEM_ATTRIB					CONSTLIT("startingSystem")
@@ -2859,15 +2860,18 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			int iSegCount = pArmor->GetAttributeIntegerBounded(COUNT_ATTRIB, 1, -1, 4);
 			CString sArmorUNID = pArmor->GetAttribute(ARMOR_ID_ATTRIB);
 
-			int iSegSize = 360 / iSegCount;
-			int iSegPos = 360 - (iSegSize / 2);
+			int iSegSize = Max(1, 360 / iSegCount);
+
+			int iSegPos;
+			if (!pArmor->FindAttributeInteger(START_AT_ATTRIB, &iSegPos))
+				iSegPos = 360 - (iSegSize / 2);
 
 			m_Hull.InsertEmpty(iSegCount);
 			for (i = 0; i < iSegCount; i++)
 				{
 				HullSection &Section = m_Hull[i];
 
-				Section.iStartAt = iSegPos;
+				Section.iStartAt = AngleMod(iSegPos);
 				Section.iSpan = iSegSize;
 
 				if (error = Section.pArmor.LoadUNID(Ctx, sArmorUNID))
