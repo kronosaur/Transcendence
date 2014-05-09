@@ -1131,6 +1131,8 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 //	Paint SRS enhancements.
 
 	{
+	DEBUG_TRY
+
 	//	Skip if we're not in the proper state
 
 	if (m_pShip == NULL
@@ -1190,6 +1192,8 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		if ((DWORD)g_pUniverse->GetTicks() > m_dwAutoDamageExpire)
 			m_pAutoDamage = NULL;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CPlayerShipController::OnRadiationWarning (int iSecondsLeft)
@@ -1607,6 +1611,9 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 	if (m_pAutoDock == Ctx.pObj)
 		m_pAutoDock = NULL;
 
+	if (m_pAutoTarget == Ctx.pObj)
+		m_pAutoTarget = NULL;
+
 	if (m_pAutoDamage == Ctx.pObj)
 		m_pAutoDamage = NULL;
 
@@ -1933,9 +1940,11 @@ void CPlayerShipController::Reset (void)
 
 	m_TargetList.RemoveAll();
 
-	//	Create autodock
+	//	Clear autodock
 
 	m_pAutoDock = NULL;
+	m_pAutoDamage = NULL;
+	m_pAutoTarget = NULL;
 
 	DEBUG_CATCH
 	}
