@@ -987,17 +987,41 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 			if (pPower->OnShow(GetPlayer()->GetShip(), NULL, &sError))
 				{
 				CString sKey = pPower->GetInvokeKey();
+				if (sKey.IsBlank())
+					continue;
+
+				//	If we're the default letter keys, then make sure we don't
+				//	conflict.
+
+				if (bUseLetters)
+					{
+					//	If the key conflicts, then pick another key (the next 
+					//	key in the sequence).
+
+					while (!sKey.IsBlank() && KeyMap.GetAt(sKey) != NULL)
+						{
+						char chChar = (*sKey.GetASCIIZPointer()) + 1;
+						if (chChar == ':')
+							chChar = 'A';
+
+						if (chChar <= 'Z')
+							sKey = CString(&chChar, 1);
+						else
+							sKey = NULL_STR;
+						}
+					}
 
 				//	If we're not using letters, then convert to a number
 
-				if (!bUseLetters && !sKey.IsBlank())
+				else
 					{
 					char chLetter = *sKey.GetASCIIZPointer();
 					int iOrdinal = chLetter - 'A';
 					sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iOrdinal, KeyMap);
 					}
 
-				//	Add the menu
+				//	Add the menu. (We check again to see if the key is valid
+				//	because we might have collided and failed to find a substitute.)
 
 				if (!sKey.IsBlank())
 					{
