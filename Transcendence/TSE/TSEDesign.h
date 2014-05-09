@@ -2818,6 +2818,7 @@ class CIntegralRotationDesc
 		int m_iCount;						//	Number of rotations
 		Metric m_rDegreesPerTick;			//	Rotations per tick
 		Metric m_rAccelPerTick;				//	Degrees acceleration per tick
+		int m_iManeuverability;				//	Only for backwards compatibility (during InitFromXML)
 
 		int m_iMaxRotationRate;				//	Rotations per tick (in 1/1000ths of a rotation)
 		int m_iRotationAccel;				//	Rotation acceleration (in 1/1000ths of a rotation)

@@ -131,6 +131,7 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 	CXMLElement *pManeuver = pDesc->GetContentElementByTag(MANEUVER_TAG);
 	if (pManeuver)
 		{
+		m_iManeuverability = 0;
 		m_iCount = pManeuver->GetAttributeIntegerBounded(ROTATION_COUNT_ATTRIB, 1, -1, STD_ROTATION_COUNT);
 
 		//	Max rotation rate is in degrees per tick. Later we convert that to rotation frames per tick
@@ -156,11 +157,11 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 		//	NOTE: For compatibility we don't allow maneuverability less than 2, which was the 
 		//	limit using the old method (1 tick delay).
 
-		int iManeuverability = pDesc->GetAttributeIntegerBounded(MANEUVER_ATTRIB, 2, -1, 2);
+		m_iManeuverability = pDesc->GetAttributeIntegerBounded(MANEUVER_ATTRIB, 2, -1, 2);
 
 		//	Convert that to degrees per tick
 
-		m_rDegreesPerTick = (m_iCount > 0 ? (STD_SECONDS_PER_UPDATE * 360.0) / (m_iCount * iManeuverability) : 0.0);
+		m_rDegreesPerTick = (m_iCount > 0 ? (STD_SECONDS_PER_UPDATE * 360.0) / (m_iCount * m_iManeuverability) : 0.0);
 
 		//	Default acceleration is equal to rotation rate
 
@@ -178,6 +179,17 @@ void CIntegralRotationDesc::InitRotationCount (int iCount)
 
 	{
 	int i;
+
+	//	If we're in backwards compatibility mode and if we've got a different
+	//	count, then we need to recompute our degrees per tick.
+
+	if (m_iManeuverability && iCount != m_iCount && iCount > 0)
+		{
+		m_rDegreesPerTick = (STD_SECONDS_PER_UPDATE * 360.0) / (iCount * m_iManeuverability);
+		m_rAccelPerTick = m_rDegreesPerTick;
+		}
+
+	//	Initialize count
 
 	m_iCount = iCount;
 	m_Rotations.DeleteAll();
