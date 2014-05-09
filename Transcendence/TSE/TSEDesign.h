@@ -2479,7 +2479,7 @@ struct SArmorImageDesc
 	{
 	CObjectImageArray ShipImage;				//	Image for ship (with no armor)
 
-	TArray<SArmorSegmentImageDesc> Segments;
+	TSortMap<int, SArmorSegmentImageDesc> Segments;
 	};
 
 struct SReactorImageDesc
@@ -2525,8 +2525,7 @@ class CPlayerSettings
 		ALERROR Bind (SDesignLoadCtx &Ctx, CShipClass *pClass);
 		CEffectCreator *FindEffectCreator (const CString &sUNID);
 		inline const SArmorImageDesc &GetArmorDesc (void) const { return (m_fHasArmorDesc ? m_ArmorDesc : *m_pArmorDescInherited); }
-		inline const SArmorSegmentImageDesc &GetArmorDesc (int iIndex) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments[iIndex] : m_pArmorDescInherited->Segments[iIndex]); }
-		inline int GetArmorDescCount (void) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments.GetCount() : m_pArmorDescInherited->Segments.GetCount()); }
+		inline const SArmorSegmentImageDesc *GetArmorDesc (int iSegment) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments.GetAt(iSegment) : m_pArmorDescInherited->Segments.GetAt(iSegment)); }
 		inline const CString &GetDesc (void) const { return m_sDesc; }
 		inline DWORD GetLargeImage (void) const { return m_dwLargeImage; }
 		inline const SReactorImageDesc &GetReactorDesc (void) const { return (m_fHasReactorDesc ? m_ReactorDesc : *m_pReactorDescInherited); }
@@ -2550,6 +2549,7 @@ class CPlayerSettings
 	private:
 		void CleanUp (void);
 		ALERROR ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sError);
+		int GetArmorSegment (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc);
 
 		CString m_sDesc;							//	Description
 		DWORD m_dwLargeImage;						//	UNID of large image
@@ -6062,7 +6062,7 @@ class CExtension
 			ICCItem *pCode;
 			};
 
-		static ALERROR CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, CExtension **retpExtension, CString *retsError);
+		static ALERROR CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, DWORD dwInheritAPIVersion, CExtension **retpExtension, CString *retsError);
 
 		ALERROR LoadDesignElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		ALERROR LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType = NULL);
@@ -6230,7 +6230,8 @@ struct SDesignLoadCtx
 			bNoResources(false),
 			bNoVersionCheck(false),
 			bLoadAdventureDesc(false),
-			bLoadModule(false)
+			bLoadModule(false),
+			dwInheritAPIVersion(0)
 		{ }
 
 	inline DWORD GetAPIVersion (void) const { return (pExtension ? pExtension->GetAPIVersion() : API_VERSION); }
@@ -6242,6 +6243,7 @@ struct SDesignLoadCtx
 	CExtension *pExtension;					//	Extension
 	bool bLoadAdventureDesc;				//	If TRUE, we are loading an adventure desc only
 	bool bLoadModule;						//	If TRUE, we are loading elements in a module
+	DWORD dwInheritAPIVersion;				//	APIVersion of parent (if base file)
 
 	//	Options
 	bool bBindAsNewGame;					//	If TRUE, then we are binding a new game

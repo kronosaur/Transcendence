@@ -2325,8 +2325,10 @@ CString CShip::GetInstallationPhrase (const CItem &Item) const
 				{
 				int iSeg = Item.GetInstalled();
 				const CPlayerSettings *pSettings = m_pClass->GetPlayerSettings();
-				if (pSettings && iSeg >= 0 && iSeg < pSettings->GetArmorDescCount())
-					return strPatternSubst(CONSTLIT("Installed as %s armor"), pSettings->GetArmorDesc(iSeg).sName);
+				const SArmorSegmentImageDesc *pSegmentDesc = (pSettings ? pSettings->GetArmorDesc(iSeg) : NULL);
+
+				if (pSegmentDesc)
+					return strPatternSubst(CONSTLIT("Installed as %s armor"), pSegmentDesc->sName);
 				else
 					return CONSTLIT("Installed as armor");
 				}

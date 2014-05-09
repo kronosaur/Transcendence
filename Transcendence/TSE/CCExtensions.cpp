@@ -4498,14 +4498,9 @@ ICCItem *fnObjGetArmor (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwDat
 			{
 			CString sName;
 			const CPlayerSettings *pPlayer = pShip->GetClass()->GetPlayerSettings();
-			if (pPlayer)
-				if (iArmorSeg >=0 && iArmorSeg < pPlayer->GetArmorDescCount())
-					sName = pPlayer->GetArmorDesc(iArmorSeg).sName;
+			const SArmorSegmentImageDesc *pSegmentDesc = (pPlayer ? pPlayer->GetArmorDesc(iArmorSeg) : NULL);
 
-			if (sName.IsBlank())
-				pResult = pCC->CreateNil();
-			else
-				pResult = pCC->CreateString(sName);
+			pResult = (pSegmentDesc ? pCC->CreateString(pSegmentDesc->sName) : pCC->CreateNil());
 			break;
 			}
 

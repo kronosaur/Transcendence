@@ -295,10 +295,11 @@ void CArmorDisplay::Update (void)
 
 	//	Draw armor
 
-	int iArmorCount = Min(pShip->GetArmorSectionCount(), pSettings->GetArmorDescCount());
-	for (i = 0; i < iArmorCount; i++)
+	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
 		{
-		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
+		if (pImage == NULL)
+			continue;
 
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 		int iMaxHP = pArmor->GetMaxHP(pShip);
@@ -340,9 +341,12 @@ void CArmorDisplay::Update (void)
 
 	//	Draw armor names
 
-	for (i = 0; i < iArmorCount; i++)
+	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
 		{
-		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
+		if (pImage == NULL)
+			continue;
+
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 
 		//	Paint the HPs

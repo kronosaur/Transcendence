@@ -35,6 +35,7 @@
 #define NAME_DEST_X_ATTRIB						CONSTLIT("nameDestX")
 #define NAME_DEST_Y_ATTRIB						CONSTLIT("nameDestY")
 #define NAME_Y_ATTRIB							CONSTLIT("nameY")
+#define SEGMENT_ATTRIB							CONSTLIT("segment")
 #define SHIELD_EFFECT_ATTRIB					CONSTLIT("shieldLevelEffect")
 #define SHIP_SCREEN_ATTRIB						CONSTLIT("shipScreen")
 #define STARTING_CREDITS_ATTRIB					CONSTLIT("startingCredits")
@@ -44,6 +45,15 @@
 #define WIDTH_ATTRIB							CONSTLIT("width")
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
+
+#define SEGMENT_AFT								CONSTLIT("aft")
+#define SEGMENT_AFT_PORT						CONSTLIT("aft-port")
+#define SEGMENT_AFT_STARBOARD					CONSTLIT("aft-starboard")
+#define SEGMENT_FORE_PORT						CONSTLIT("fore-port")
+#define SEGMENT_FORE_STARBOARD					CONSTLIT("fore-starboard")
+#define SEGMENT_FORWARD							CONSTLIT("forward")
+#define SEGMENT_PORT							CONSTLIT("port")
+#define SEGMENT_STARBOARD						CONSTLIT("starboard")
 
 #define ERR_SHIELD_DISPLAY_NEEDED				CONSTLIT("missing or invalid <ShieldDisplay> element")
 #define ERR_ARMOR_DISPLAY_NEEDED				CONSTLIT("missing or invalid <ArmorDisplay> element")
@@ -247,6 +257,56 @@ CEffectCreator *CPlayerSettings::FindEffectCreator (const CString &sUNID)
 		}
 	}
 
+int CPlayerSettings::GetArmorSegment (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc)
+
+//	GetArmorSegment
+//
+//	While loading the armor segment descriptors, returns the segment number for 
+//	this descriptor.
+
+	{
+	//	For API versions 21 and higher, we figure out the segment version based
+	//	on either an explicit attribute or on the name.
+
+	if (Ctx.GetAPIVersion() >= 21)
+		{
+		int iSegment = pDesc->GetAttributeIntegerBounded(SEGMENT_ATTRIB, 0, -1, -1);
+
+		//	If we don't have an explicit segment, then see if we can use the name
+		//	as a value.
+
+		if (iSegment == -1)
+			{
+			CString sName = pDesc->GetAttribute(NAME_ATTRIB);
+			if (strEquals(sName, SEGMENT_AFT))
+				iSegment = pClass->GetHullSectionAtAngle(180);
+			else if (strEquals(sName, SEGMENT_FORWARD))
+				iSegment = pClass->GetHullSectionAtAngle(0);
+			else if (strEquals(sName, SEGMENT_PORT))
+				iSegment = pClass->GetHullSectionAtAngle(90);
+			else if (strEquals(sName, SEGMENT_PORT))
+				iSegment = pClass->GetHullSectionAtAngle(270);
+			else if (strEquals(sName, SEGMENT_AFT_PORT))
+				iSegment = pClass->GetHullSectionAtAngle(150);
+			else if (strEquals(sName, SEGMENT_AFT_STARBOARD))
+				iSegment = pClass->GetHullSectionAtAngle(210);
+			else if (strEquals(sName, SEGMENT_FORE_PORT))
+				iSegment = pClass->GetHullSectionAtAngle(30);
+			else if (strEquals(sName, SEGMENT_FORE_STARBOARD))
+				iSegment = pClass->GetHullSectionAtAngle(330);
+			}
+
+		//	If we still can't find the segment, then do it based on order
+
+		return (iSegment != -1 ? iSegment : m_ArmorDesc.Segments.GetCount());
+		}
+
+	//	Otherwise, it is based on the order of elements in the XML
+
+	else
+		return m_ArmorDesc.Segments.GetCount();
+	}
+
 ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc)
 
 //	InitFromXML
@@ -323,7 +383,8 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 
 			if (strEquals(pSub->GetTag(), ARMOR_SECTION_TAG))
 				{
-				SArmorSegmentImageDesc &ArmorDesc = *m_ArmorDesc.Segments.Insert();
+				int iSegment = GetArmorSegment(Ctx, pClass, pSub);
+				SArmorSegmentImageDesc &ArmorDesc = *m_ArmorDesc.Segments.SetAt(iSegment);
 
 				if (error = ArmorDesc.Image.InitFromXML(Ctx, pSub))
 					return ComposeLoadError(Ctx, ERR_ARMOR_DISPLAY_NEEDED);

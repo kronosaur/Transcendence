@@ -1887,7 +1887,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"20"
+		apiVersion=						"21"
 		>
 
 <!-- TRANSCENDENCE ************************************************************
@@ -2082,7 +2082,6 @@
 			UNID=				"&unidRPGLibrary;"
 			name=				"Transcendence RPG"
 			release=			"1"
-			apiVersion=			"14"
 			private=			"true"
 			>
 			
@@ -2106,7 +2105,6 @@
 			UNID=				"&unidUniverseLibrary;"
 			name=				"Transcendence Universe"
 			release=			"1"
-			apiVersion=			"14"
 			private=			"true"
 			>
 
@@ -2130,7 +2128,6 @@
 			UNID=				"&unidHumanSpaceLibrary;"
 			name=				"Human Space"
 			release=			"1"
-			apiVersion=			"14"
 			>
 			
 		<Library unid="&unidUniverseLibrary;"/>
@@ -2211,7 +2208,6 @@
 			UNID=				"&unidCompatibilityLibrary;"
 			name=				"Transcendence Compatibility Library" 
 			release=			"1" 
-			apiVersion=			"14"
 			>
 			
 		<Library unid="&unidRPGLibrary;"/>
@@ -2227,7 +2223,6 @@
 			UNID=				"&unidStarsOfThePilgrim;"
 			name=				"Domina &amp; Oracus I: The Stars of the Pilgrim"
 			release=			"1" 
-			apiVersion=			"14"
 			>
 
 		<Library unid="&unidRPGLibrary;"/>

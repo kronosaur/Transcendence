@@ -256,6 +256,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 			AdvCtx.pResDb = Ctx.pResDb;
 			AdvCtx.bNoResources = Ctx.bNoResources;
 			AdvCtx.bNoVersionCheck = true;	//	Obsolete now
+			AdvCtx.dwInheritAPIVersion = pExtension->GetAPIVersion();
 			//	No need to set bBindAsNewGame because it is only useful during Bind.
 			//	AdvCtx.bBindAsNewGame = Ctx.bBindAsNewGame;
 
@@ -320,7 +321,7 @@ ALERROR CExtension::CreateExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, EF
 	//	Create an extension object
 
 	CExtension *pExtension;
-	if (error = CreateExtensionFromRoot(Ctx.sResDb, pDesc, iFolder, pEntities, &pExtension, &Ctx.sError))
+	if (error = CreateExtensionFromRoot(Ctx.sResDb, pDesc, iFolder, pEntities, Ctx.dwInheritAPIVersion, &pExtension, &Ctx.sError))
 		return error;
 
 	//	Set up context
@@ -374,7 +375,7 @@ ALERROR CExtension::CreateExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, EF
 	return NOERROR;
 	}
 
-ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, CExtension **retpExtension, CString *retsError)
+ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, DWORD dwInheritAPIVersion, CExtension **retpExtension, CString *retsError)
 
 //	CreateExtension
 //
@@ -424,6 +425,11 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 		pExtension->m_dwAPIVersion = (DWORD)strToInt(sAPIVersion, 0);
 		if (pExtension->m_dwAPIVersion < 12)
 			pExtension->m_dwAPIVersion = 0;
+		pExtension->m_sVersion = pDesc->GetAttribute(VERSION_ATTRIB);
+		}
+	else if (dwInheritAPIVersion)
+		{
+		pExtension->m_dwAPIVersion = dwInheritAPIVersion;
 		pExtension->m_sVersion = pDesc->GetAttribute(VERSION_ATTRIB);
 		}
 	else
@@ -529,7 +535,7 @@ ALERROR CExtension::CreateExtensionStub (const CString &sFilespec, EFolderTypes 
 	//	If sucessful then pExtension takes ownership of	pEntities.
 
 	CExtension *pExtension;
-	error = CreateExtensionFromRoot(sFilespec, pGameFile, iFolder, pEntities, &pExtension, retsError);
+	error = CreateExtensionFromRoot(sFilespec, pGameFile, iFolder, pEntities, 0, &pExtension, retsError);
 
 	//	Clean up
 
