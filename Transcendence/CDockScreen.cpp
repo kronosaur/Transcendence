@@ -811,7 +811,13 @@ int CDockScreen::GetCounter (void)
 
 	{
 	if (m_pCounter)
-		return strToInt(m_pCounter->GetText(), 0, NULL);
+		{
+		int iValue = strToInt(m_pCounter->GetText(), 0, NULL);
+
+		//	Counter values are always positive.
+
+		return Max(0, iValue);
+		}
 	else
 		return 0;
 	}

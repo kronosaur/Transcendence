@@ -63,6 +63,7 @@ static char *FEEDBACK[] =
 	"Bill Dunigan",
 
 	"Markus Eckert",
+	"EditorRUS",
 	"El FluffyDragon",
 	"Evilbob",
 
