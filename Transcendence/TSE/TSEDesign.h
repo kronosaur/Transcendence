@@ -4020,6 +4020,7 @@ class CItemType : public CDesignType
 		CString GetUnknownName (int iIndex, DWORD *retdwFlags = NULL);
 
 		CString m_sName;						//	Full name of item
+		DWORD m_dwNameFlags;					//	Name flags
 		CString m_sUnknownName;					//	Name of item when unknown (may be NULL)
 		CString m_sSortName;					//	Name to sort by
 
@@ -4057,20 +4058,20 @@ class CItemType : public CDesignType
 		CG16bitImage m_FlotsamBitmap;			//	Image used for flotsam
 		CObjectImageArray m_FlotsamImage;		//	Image used for flotsam
 
-		DWORD m_fFirstPlural:1;					//	Pluralize first word
-		DWORD m_fSecondPlural:1;				//	Pluralize second word
-		DWORD m_fESPlural:1;					//	Pluralize by adding "es"
 		DWORD m_fRandomDamaged:1;				//	Randomly damaged when found
 		DWORD m_fKnown:1;						//	Is this type known?
 		DWORD m_fReference:1;					//	Does this type show reference info?
 		DWORD m_fDefaultReference:1;			//	TRUE if this shows reference by default
 		DWORD m_fInstanceData:1;				//	TRUE if we need to set instance data at create time
-
-		DWORD m_fReverseArticle:1;				//	"a" instead of "an" or vice versa
 		DWORD m_fVirtual:1;						//	TRUE if this is a virtual item needed for a weapon that invokes
 		DWORD m_fUseInstalled:1;				//	If TRUE, item can only be used when installed
 		DWORD m_fValueCharges:1;				//	TRUE if value should be adjusted based on charges
+
 		DWORD m_fUseUninstalled:1;				//	If TRUE, item can only be used when uninstalled
+		DWORD m_fSpare2:1;
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;

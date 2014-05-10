@@ -28,7 +28,6 @@
 #define INSTANCE_DATA_ATTRIB					CONSTLIT("charges")
 #define DATA_ATTRIB								CONSTLIT("data")
 #define ENHANCEMENT_ATTRIB						CONSTLIT("enhancement")
-#define ES_PLURAL_ATTRIB						CONSTLIT("esPlural")
 #define FREQUENCY_ATTRIB						CONSTLIT("frequency")
 #define INSTALLED_ONLY_ATTRIB					CONSTLIT("installedOnly")
 #define KEY_ATTRIB								CONSTLIT("key")
@@ -101,7 +100,6 @@ static char g_NameAttrib[] = "name";
 static char g_ObjectAttrib[] = "object";
 static char g_MassAttrib[] = "mass";
 static char g_DescriptionAttrib[] = "description";
-static char g_FirstPluralAttrib[] = "firstPlural";
 static char g_RandomDamagedAttrib[] = "randomDamaged";
 
 const int FLOTSAM_IMAGE_WIDTH =					32;
@@ -630,16 +628,7 @@ CString CItemType::GetName (DWORD *retdwFlags, bool bActualName) const
 
 	if (retdwFlags)
 		{
-		*retdwFlags = 0;
-		if (m_fFirstPlural)
-			*retdwFlags |= nounFirstPlural;
-		if (m_fSecondPlural)
-			*retdwFlags |= nounSecondPlural;
-		if (m_fESPlural)
-			*retdwFlags |= nounPluralES;
-		if (m_fReverseArticle)
-			*retdwFlags |= nounVowelArticle;
-
+		*retdwFlags = m_dwNameFlags;
 		return m_sName;
 		}
 	else
@@ -961,6 +950,8 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (!pDesc->FindAttribute(PLURAL_NAME_ATTRIB, &m_sName))
 		m_sName = pDesc->GetAttribute(CONSTLIT(g_NameAttrib));
 
+	m_dwNameFlags = ::LoadNameFlags(pDesc);
+
 	m_sSortName = pDesc->GetAttribute(SORT_NAME_ATTRIB);
 	if (m_sSortName.IsBlank())
 		m_sSortName = m_sName;
@@ -1012,11 +1003,7 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Flags
 
-	m_fFirstPlural = pDesc->GetAttributeBool(CONSTLIT(g_FirstPluralAttrib));
-	m_fSecondPlural = pDesc->GetAttributeBool(SECOND_PLURAL_ATTRIB);
-	m_fESPlural = pDesc->GetAttributeBool(ES_PLURAL_ATTRIB);
 	m_fRandomDamaged = pDesc->GetAttributeBool(CONSTLIT(g_RandomDamagedAttrib));
-	m_fReverseArticle = pDesc->GetAttributeBool(REVERSE_ARTICLE_ATTRIB);
 	m_fVirtual = pDesc->GetAttributeBool(VIRTUAL_ATTRIB);
 	if (m_fVirtual)
 		m_Frequency = ftNotRandom;
