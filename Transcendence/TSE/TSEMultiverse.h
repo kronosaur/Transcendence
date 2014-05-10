@@ -63,13 +63,14 @@ class CMultiverseCatalogEntry
 		inline int GetResourceCount (void) const { return m_Resources.GetCount(); }
 		inline const CMultiverseFileRef &GetResourceRef (int iIndex) const { return m_Resources[iIndex]; }
 		inline ELocalStatus GetStatus (void) const { return m_iStatus; }
+		inline const CString &GetStatusText (void) const { return m_sStatus; }
 		inline const CMultiverseFileRef &GetTDBFileRef (void) const { return m_TDBFile; }
 		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
 		inline const CString &GetVersion (void) const { return m_sVersion; }
 		bool IsValid (void);
 		void SetIcon (CG16bitImage *pImage);
-		inline void SetStatus (ELocalStatus iStatus) { m_iStatus = iStatus; }
+		inline void SetStatus (ELocalStatus iStatus, const CString &sStatus = NULL_STR) { m_iStatus = iStatus; m_sStatus = sStatus; }
 		inline void SetVersion (const CString &sVersion) { m_sVersion = sVersion; }
 
 	private:
@@ -94,6 +95,7 @@ class CMultiverseCatalogEntry
 
 		DWORD m_dwUNID;						//	UNID
 		ELocalStatus m_iStatus;				//	Current status
+		CString m_sStatus;					//	Status message
 		CG16bitImage *m_pIcon;				//	200x100 image
 	};
 

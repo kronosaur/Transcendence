@@ -356,12 +356,14 @@ enum EColorPalette
 	colorTextAltNormal =			15,
 	colorTextAltFade =				16,
 	colorTextWarningMsg =			17,
+
 	colorTextDialogInput =			18,
 	colorTextDialogLabel =			19,
 	colorTextDialogLink =			20,
 	colorTextDialogTitle =			21,
+	colorTextDialogWarning =		22,
 
-	colorCount =					22,
+	colorCount =					23,
 	};
 
 enum EFontScale

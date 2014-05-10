@@ -617,7 +617,9 @@
     <None Include="Game\Source\Luminous.xml" />
     <None Include="Game\Source\Metallic.xml" />
     <None Include="Game\Source\Mining.xml" />
-    <None Include="Game\Source\MiscItems.xml" />
+    <None Include="Game\Source\MiscItems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Neurohack.xml" />
     <None Include="Game\Source\OutlawMiners.xml" />
     <None Include="Game\Source\PlayerShips.xml">
@@ -659,7 +661,9 @@
     <None Include="Game\Source\StdSystems.xml" />
     <None Include="Game\Source\StdTypes.xml" />
     <None Include="Game\Source\StdUnknownItems.xml" />
-    <None Include="Game\Source\StdWeapons.xml" />
+    <None Include="Game\Source\StdWeapons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StKatharines.xml" />
     <None Include="Game\Source\SungSlavers.xml" />
     <None Include="Game\Source\Teratons.xml" />

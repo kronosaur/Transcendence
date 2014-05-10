@@ -50,6 +50,7 @@ static SColorInitTable COLOR_TABLE[] =
 		{	"TextDialogLink",			CG16bitImage::RGBValue(218, 235, 255) },
 
 		{	"TextDialogTitle",			CG16bitImage::RGBValue(115, 134, 153) },
+		{	"TextDialogWarning",		CG16bitImage::RGBValue(255, 127, 0) },
 	};
 
 struct SFontInitTable

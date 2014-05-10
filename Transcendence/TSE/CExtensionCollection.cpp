@@ -1550,7 +1550,9 @@ void CExtensionCollection::UpdateCollectionStatus (CMultiverseCollection &Collec
 		CExtension *pExtension;
 		if (FindExtension(pEntry->GetUNID(), 0, iFolder, &pExtension))
 			{
-			if (pExtension->IsRegistrationVerified())
+			if (pExtension->IsDisabled())
+				pEntry->SetStatus(CMultiverseCatalogEntry::statusError, pExtension->GetDisabledReason());
+			else if (pExtension->IsRegistrationVerified())
 				pEntry->SetStatus(CMultiverseCatalogEntry::statusLoaded);
 			else
 				pEntry->SetStatus(CMultiverseCatalogEntry::statusCorrupt);
