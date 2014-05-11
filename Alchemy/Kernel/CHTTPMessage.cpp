@@ -7,14 +7,12 @@
 
 #include "Internets.h"
 
-CString GetToken (char *pPos, char *pEndPos, char chDelimiter, char **retpPos);
-bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos, bool *retbHeadersDone);
+bool ReadLine (IReadStream &Stream, CString *retsLine);
 
 CHTTPMessage::CHTTPMessage (void) : 
 		m_iType(typeUnknown),
 		m_dwStatusCode(0),
-		m_pBody(NULL),
-		m_iState(stateStart)
+		m_pBody(NULL)
 
 //	CHTTPMessage constructor
 
@@ -86,262 +84,141 @@ bool CHTTPMessage::FindHeader (const CString &sField, CString *retsValue) const
 	return false;
 	}
 
-ALERROR CHTTPMessage::InitFromBuffer (const CString &sBuffer, bool bNoBody)
+ALERROR CHTTPMessage::InitFromStream (IReadStream &Stream, CString *retsError, bool bNoBody)
 
-//	InitFromBuffer
+//	InitFromStream
 //
-//	This function parses the given buffer into a message. The function
-//	may be called multiple times. When we're done, a call to IsMessageComplete
-//	will return TRUE.
+//	Initializes from a stream.
 
 	{
-	char *pPos = sBuffer.GetASCIIZPointer();
-	char *pEndPos = sBuffer.GetASCIIZPointer() + sBuffer.GetLength();
+	CleanUp();
 
-	//	Keep looping until we have nothing left to process
+	//	Parse and interpret the start line
 
-	while (pPos < pEndPos && m_iState != stateDone)
+	if (!ParseHTTPStartLine(Stream, retsError))
+		return ERR_FAIL;
+
+	//	Parse the headers
+
+	CString sHeaderLine;
+	do
 		{
-		switch (m_iState)
+		if (!ReadLine(Stream, &sHeaderLine))
+			return ERR_FAIL;
+
+		if (!sHeaderLine.IsBlank())
 			{
-			case stateStart:
+			//	If this line starts with a space, then it is a continuation of 
+			//	the previous field's content
+
+			if ((*sHeaderLine.GetASCIIZPointer()) == ' ' || (*sHeaderLine.GetASCIIZPointer()) == '\t')
 				{
-				//	Get the first token
-
-				CString sToken = GetToken(pPos, pEndPos, ' ', &pPos);
-
-				//	If this starts with HTTP then this is a version (which means that
-				//	this is a response).
-
-				if (strStartsWith(sToken, CONSTLIT("HTTP")))
-					{
-					m_iType = typeResponse;
-					m_sVersion = sToken;
-
-					//	Parse the rest of the response line
-
-					m_dwStatusCode = strToInt(GetToken(pPos, pEndPos, ' ', &pPos), 0);
-					m_sStatusMsg = GetToken(pPos, pEndPos, '\r', &pPos);
-					m_sMethod = NULL_STR;
-					m_sURL = NULL_STR;
-					}
-
-				//	Otherwise, this is a request
-
-				else
-					{
-					m_iType = typeRequest;
-					m_sMethod = sToken;
-
-					//	Parse the rest of the request line
-
-					m_sURL = GetToken(pPos, pEndPos, ' ', &pPos);
-					m_sVersion = GetToken(pPos, pEndPos, '\r', &pPos);
-					m_sStatusMsg = NULL_STR;
-					m_dwStatusCode = 0;
-					}
-
-				//	Reset everything
-
-				m_Headers.DeleteAll();
-				if (m_pBody)
-					{
-					delete m_pBody;
-					m_pBody = NULL;
-					}
-
-				m_iState = stateHeaders;
-				break;
+				if (m_Headers.GetCount() > 0)
+					m_Headers[m_Headers.GetCount() - 1].sValue.Append(sHeaderLine);
 				}
 
-			case stateHeaders:
+			//	Otherwise, we just parse and add
+
+			else
 				{
-				//	If we have data from a previous buffer, add it all together
-
-				if (!m_sHeaders.IsBlank())
-					{
-					m_sHeaders.Append(sBuffer);
-					pPos = m_sHeaders.GetASCIIZPointer();
-					pEndPos = pPos + m_sHeaders.GetLength();
-					}
-
-				//	Parse headers
-
-				CString sField;
-				CString sValue;
-				bool bHeadersDone;
-				while (ParseHeader(pPos, pEndPos, &sField, &sValue, &pPos, &bHeadersDone))
-					AddHeader(sField, sValue);
-
-				//	If we're done with headers, process the body
-
-				if (bHeadersDone)
-					{
-					//	Some messages never have a body
-
-					CString sLength;
-
-					if (bNoBody 
-							|| (m_dwStatusCode >= 100 && m_dwStatusCode < 200)
-							|| (m_dwStatusCode == 204) || (m_dwStatusCode == 304))
-						m_iState = stateDone;
-
-					//	If content length is 0 then we have no body
-
-					else if (FindHeader(CONSTLIT("Content-Length"), &sLength) && strToInt(sLength, 0) == 0)
-						m_iState = stateDone;
-
-					//	Otherwise, parse the body
-
-					else
-						m_iState = stateBody;
-					}
-
-				//	Otherwise, if we've still got data it means that we need more
-				//	headers, so we remember this data and wait for more.
-
-				else if (pPos != pEndPos)
-					{
-					m_sHeaders = CString(pPos, (int)(pEndPos - pPos));
-					pPos = pEndPos;
-					}
-
-				break;
-				}
-
-			case stateBody:
-				{
-				CString sEncoding;
-				CString sLength;
-
-				//	Chunked transfer encoding
-
-				if (FindHeader(CONSTLIT("Transfer-Encoding"), &sEncoding)
-						&& strEquals(sEncoding, CONSTLIT("chunked")))
-					{
-					//	Read the chunk size line
-
-					CString sLine = GetToken(pPos, pEndPos, '\r', &pPos);
-					int iTotalLength = strParseIntOfBase(sLine.GetASCIIZPointer(), 16, 0);
-
-					//	0-length means we're done
-
-					if (iTotalLength == 0)
-						{
-						m_iState = stateDone;
-						break;
-						}
-
-					//	Otherwise, read as much as we can
-
-					int iLength = Min(iTotalLength, pEndPos - pPos);
-					m_Buffer.Write(pPos, iLength);
-					pPos += iLength;
-
-					//	If we have a partial chunk, then we need to remember state
-					//	and wait for more
-
-					if (iLength < iTotalLength)
-						{
-						m_iChunkLeft = iTotalLength - iLength;
-						m_iState = stateChunk;
-						}
-
-					//	Otherwise, we're done with this chunk
-
-					else
-						{
-						//	Read the terminating line end
-
-						GetToken(pPos, pEndPos, '\r', &pPos);
-						}
-					}
-
-				//	Otherwise, look for content length
-
-				else if (FindHeader(CONSTLIT("Content-Length"), &sLength))
-					{
-					int iTotalLength = strToInt(sLength, 0);
-					int iRemaining = iTotalLength - m_Buffer.GetLength();
-					int iLength = Min(iRemaining, pEndPos - pPos);
-
-					//	Append the remainder of the buffer to the body
-
-					if (iLength > 0)
-						{
-						m_Buffer.Write(pPos, iLength);
-						pPos += iLength;
-						}
-
-					//	If we hit the end, then we're done
-
-					if (iLength == iRemaining)
-						m_iState = stateDone;
-
-					//	Otherwise exit the look and get more data
-					}
-
-				//	Otherwise, we are done
-
-				else
-					m_iState = stateDone;
-
-				break;
-				}
-
-			case stateChunk:
-				{
-				//	Keep reading
-
-				int iLength = Min(m_iChunkLeft, pEndPos - pPos);
-				m_Buffer.Write(pPos, iLength);
-				pPos += iLength;
-				m_iChunkLeft -= iLength;
-
-				//	Done?
-
-				if (m_iChunkLeft == 0)
-					{
-					//	Read the terminating line end
-
-					GetToken(pPos, pEndPos, '\r', &pPos);
-
-					//	Parse the next chunk
-
-					m_iState = stateBody;
-					}
-
-				break;
+				if (!ParseHTTPHeader(sHeaderLine, retsError))
+					return ERR_FAIL;
 				}
 			}
 		}
+	while (!sHeaderLine.IsBlank());
 
-	//	If we're done, decode the body into an IMediaType object
+	//	Some messages never have a body
 
-	if (m_pBody == NULL && m_iState == stateDone && m_Buffer.GetLength() > 0)
+	if (bNoBody 
+			|| (m_dwStatusCode >= 100 && m_dwStatusCode < 200)
+			|| (m_dwStatusCode == 204) || (m_dwStatusCode == 304))
+		return NOERROR;
+
+	//	If we have a content length, then see if it is 0
+
+	CString sLength;
+	DWORD dwLength = 0;
+	if (FindHeader(CONSTLIT("Content-Length"), &sLength) 
+			&& (dwLength = strToInt(sLength, 0)) == 0)
+		return NOERROR;
+
+	//	Chunked encoding?
+
+	CString sEncoding;
+	if (FindHeader(CONSTLIT("Transfer-Encoding"), &sEncoding)
+			&& strEquals(sEncoding, CONSTLIT("chunked")))
 		{
+		//	Build up the body
+
+		CMemoryWriteStream Body;
+		if (Body.Create() != NOERROR)
+			return ERR_MEMORY;
+
+		//	Loop over all chunks
+
+		CString sChunkLen;
+		do
+			{
+			if (!ReadLine(Stream, &sChunkLen))
+				return ERR_FAIL;
+
+			DWORD dwChunkLen = strParseIntOfBase(sChunkLen.GetASCIIZPointer(), 16, 0);
+			if (dwChunkLen)
+				{
+				char *pBuffer = new char [dwChunkLen];
+				if (Stream.Read(pBuffer, dwChunkLen) != NOERROR)
+					{
+					delete [] pBuffer;
+					return ERR_FAIL;
+					}
+
+				if (Body.Write(pBuffer, dwChunkLen) != NOERROR)
+					{
+					delete [] pBuffer;
+					return ERR_MEMORY;
+					}
+
+				delete [] pBuffer;
+
+				//	Expect a CRLF
+
+				CString sCRLF;
+				if (!ReadLine(Stream, &sCRLF))
+					return ERR_FAIL;
+				}
+			}
+		while (!sChunkLen.IsBlank());
+
+		//	Create the body
+
 		CString sMediaType;
 		if (!FindHeader(CONSTLIT("Content-Type"), &sMediaType))
 			sMediaType = NULL_STR;
 
 		m_pBody = new CRawMediaType;
-		m_pBody->DecodeFromBuffer(sMediaType, CString(m_Buffer.GetPointer(), m_Buffer.GetLength()));
+		m_pBody->DecodeFromBuffer(sMediaType, CString(Body.GetPointer(), Body.GetLength()));
 		}
 
-	return NOERROR;
-	}
+	//	Otherwise, we have a set length (which must have been set by the
+	//	Content-Length header).
 
-ALERROR CHTTPMessage::InitFromBufferReset (void)
+	else if (dwLength)
+		{
+		CString sBody;
+		char *pPos = sBody.GetWritePointer(dwLength);
+		if (Stream.Read(pPos, dwLength) != NOERROR)
+			return ERR_FAIL;
 
-//	InitFromBufferReset
-//
-//	Call once before the first calls to InitFromBuffer.
+		CString sMediaType;
+		if (!FindHeader(CONSTLIT("Content-Type"), &sMediaType))
+			sMediaType = NULL_STR;
 
-	{
-	m_iState = stateStart;
-	m_sHeaders = NULL_STR;
-	if (m_Buffer.Create() != NOERROR)
-		return ERR_FAIL;
+		m_pBody = new CRawMediaType;
+		m_pBody->DecodeFromBuffer(sMediaType, sBody);
+		}
+
+	//	Done
 
 	return NOERROR;
 	}
@@ -378,6 +255,154 @@ ALERROR CHTTPMessage::InitResponse (DWORD dwStatusCode, const CString &sStatusMs
 	m_sStatusMsg = sStatusMsg;
 
 	return NOERROR;
+	}
+
+bool CHTTPMessage::ParseHTTPHeader (const CString &sHeaderLine, CString *retsError)
+
+//	ParseHTTPHeader
+//
+//	Parses a header
+
+	{
+	char *pPos = sHeaderLine.GetASCIIZPointer();
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	//	Field name
+
+	char *pStart = pPos;
+	while (!strIsWhitespace(pPos) && *pPos != ':' && *pPos != '\0')
+		pPos++;
+
+	if (*pPos == '\0')
+		return false;
+
+	CString sField(pStart, (pPos - pStart));
+
+	while (*pPos != ':' && *pPos != '\0')
+		pPos++;
+
+	if (*pPos == '\0')
+		return false;
+
+	pPos++;
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	//	Content
+
+	CString sValue(pPos);
+
+	//	Add it
+
+	AddHeader(sField, sValue);
+	return true;
+	}
+
+bool CHTTPMessage::ParseHTTPStartLine (IReadStream &Stream, CString *retsError)
+
+//	ParseHTTPStartLine
+//
+//	Parses the start line of a request or response
+
+	{
+	//	Read the line
+
+	CString sLine;
+	if (!ReadLine(Stream, &sLine))
+		return ERR_FAIL;
+
+	//	If this starts with HTTP then this is a response.
+
+	if (strStartsWith(sLine, CONSTLIT("HTTP")))
+		{
+		m_iType = typeResponse;
+
+		//	Parse the version
+
+		char *pPos = sLine.GetASCIIZPointer();
+		char *pStart = pPos;
+		while (*pPos != ' ' && *pPos != '\0')
+			pPos++;
+
+		if (*pPos == '\0')
+			return false;
+
+		m_sVersion = CString(pStart, (pPos - pStart));
+
+		//	Next is a status code
+
+		pPos++;
+		pStart = pPos;
+		while (*pPos != ' ' && *pPos != '\0')
+			pPos++;
+
+		if (*pPos == '\0')
+			return false;
+
+		m_dwStatusCode = strToInt(CString(pStart, (pPos - pStart)), 0);
+
+		//	Next is the status message
+
+		pPos++;
+		pStart = pPos;
+		while (*pPos != '\0')
+			pPos++;
+
+		m_sStatusMsg = CString(pStart, (pPos - pStart));
+
+		//	Unused for responses
+
+		m_sMethod = NULL_STR;
+		m_sURL = NULL_STR;
+		}
+
+	//	Otherwise, this is a request
+
+	else
+		{
+		m_iType = typeRequest;
+
+		//	Parse the method
+
+		char *pPos = sLine.GetASCIIZPointer();
+		char *pStart = pPos;
+		while (*pPos != ' ' && *pPos != '\0')
+			pPos++;
+
+		if (*pPos == '\0')
+			return false;
+
+		m_sMethod = CString(pStart, (pPos - pStart));
+
+		//	Parse the URI
+
+		pPos++;
+		pStart = pPos;
+		while (*pPos != ' ' && *pPos != '\0')
+			pPos++;
+
+		if (*pPos == '\0')
+			return false;
+
+		m_sURL = CString(pStart, (pPos - pStart));
+
+		//	Parse the version
+
+		pPos++;
+		pStart = pPos;
+		while (*pPos != '\0')
+			pPos++;
+
+		m_sVersion = CString(pStart, (pPos - pStart));
+
+		//	Unused
+
+		m_sStatusMsg = NULL_STR;
+		m_dwStatusCode = 0;
+		}
+
+	return true;
 	}
 
 ALERROR CHTTPMessage::WriteToBuffer (IWriteStream *pOutput) const
@@ -460,147 +485,72 @@ ALERROR CHTTPMessage::WriteToBuffer (IWriteStream *pOutput) const
 
 //	Utilities ------------------------------------------------------------------
 
-CString GetToken (char *pPos, char *pEndPos, char chDelimiter, char **retpPos)
+bool ReadLine (IReadStream &Stream, CString *retsLine)
 	{
-	char *pStart = pPos;
-	while (pPos < pEndPos && *pPos != chDelimiter)
-		pPos++;
+	int iAlloc = 1024;
 
-	int iLen = pPos - pStart;
+	CString sLine;
+	char *pDest;
+	int iTotalAlloc = 0;
+	int iTotalLen = 0;
 
-	//	If we hit the end, then we're done
+	bool bFoundCR = false;
 
-	if (pPos == pEndPos)
+	while (true)
 		{
-		if (retpPos)
-			*retpPos = pPos;
-		return CString(pStart, iLen);
-		}
+		//	If we need more room, reallocate
 
-	//	Otherwise, skip the delimiter
-
-	if (chDelimiter == ' ')
-		{
-		while (*pPos == ' ' && pPos < pEndPos)
-			pPos++;
-		}
-	else if (chDelimiter == '\r')
-		{
-		pPos++;
-		if (pPos < pEndPos && *pPos == '\n')
-			pPos++;
-		}
-	else
-		pPos++;
-
-	//	Return the new position
-
-	if (retpPos)
-		*retpPos = pPos;
-
-	return CString(pStart, iLen);
-	}
-
-bool ParseHeader (char *pPos, char *pEndPos, CString *retpField, CString *retpValue, char **retpPos, bool *retbHeadersDone)
-	{
-	char *pOriginal = pPos;
-
-	//	If we hit CRLF, then no more headers
-
-	if (pPos < pEndPos && *pPos == '\r')
-		{
-		pPos++;
-		if (pPos < pEndPos && *pPos == '\n')
-			pPos++;
-		if (retpPos)
-			*retpPos = pPos;
-		if (retbHeadersDone)
-			*retbHeadersDone = true;
-		return false;
-		}
-
-	//	Skip leading whitespace
-
-	while (pPos < pEndPos && (*pPos == ' ' || *pPos == '\t'))
-		pPos++;
-
-	//	Parse the field name
-
-	char *pStart = pPos;
-	while (pPos < pEndPos && *pPos != ':' && *pPos != ' ' && *pPos != '\t')
-		pPos++;
-
-	CString sField(pStart, pPos - pStart);
-
-	//	Find the colon
-
-	while (pPos < pEndPos && *pPos != ':')
-		pPos++;
-
-	if (*pPos == ':')
-		pPos++;
-
-	//	Skip any whitespace
-
-	while (pPos < pEndPos && (*pPos == ' ' || *pPos == '\t'))
-		pPos++;
-
-	//	Accumulate the value
-
-	pStart = pPos;
-	while (pPos < pEndPos)
-		{
-		//	If our next two characters are CRLF...
-
-		if (pPos[0] == '\r' && pPos + 1 < pEndPos && pPos[1] == '\n')
+		if (iTotalLen == iTotalAlloc)
 			{
-			//	If the character after that is whitepace, then just keep
-			//	going...
-
-			if (pPos + 2 < pEndPos && (pPos[2] == ' ' || pPos[2] == '\t'))
-				pPos += 3;
-
-			//	Otherwise, we've reached the end, so we break out
-
-			else
-				break;
+			pDest = sLine.GetWritePointer(iTotalAlloc + iAlloc);
+			pDest += iTotalAlloc;
+			iTotalAlloc += iAlloc;
 			}
+
+		//	Read a character
+
+		if (Stream.Read(pDest, 1) != NOERROR)
+			return false;
+
+		//	If we've already found a CR, then see if we have an LF
+
+		if (bFoundCR)
+			{
+			if (*pDest == '\n')
+				{
+				//	We're done; omit the ending CR in the result.
+
+				sLine.Truncate(iTotalLen - 1);
+				if (retsLine)
+					*retsLine = sLine;
+
+				//	Done
+
+				return true;
+				}
+			else
+				{
+				pDest++;
+				iTotalLen++;
+				bFoundCR = false;
+				}
+			}
+
+		//	Otherwise, see if we have a CR
+
+		else if (*pDest == '\r')
+			{
+			pDest++;
+			iTotalLen++;
+			bFoundCR = true;
+			}
+
+		//	Otherwise, keep building the string
+
 		else
-			pPos++;
+			{
+			pDest++;
+			iTotalLen++;
+			}
 		}
-
-	//	Value
-
-	CString sValue(pStart, pPos - pStart);
-
-	//	Swallow the CRLF
-
-	if (pPos + 1 < pEndPos)
-		pPos += 2;
-
-	//	If we hit the end of the buffer (even if we've hit a CRLF) then we can't
-	//	process this header. We wait for more data and restore back to the
-	//	beginning
-
-	if (pPos == pEndPos)
-		{
-		if (retpPos)
-			*retpPos = pOriginal;
-		if (retbHeadersDone)
-			*retbHeadersDone = false;
-		return false;
-		}
-
-	//	Done
-
-	if (retpPos)
-		*retpPos = pPos;
-
-	*retpField = sField;
-	*retpValue = sValue;
-	if (retbHeadersDone)
-		*retbHeadersDone = false;
-
-	return true;
 	}
-
