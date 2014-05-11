@@ -2802,6 +2802,7 @@ class CIntegralRotationDesc
 		int GetManeuverability (void) const;
 		inline int GetMaxRotationSpeed (void) const { return m_iMaxRotationRate; }
 		Metric GetMaxRotationSpeedPerTick (void) const;
+		inline int GetMaxRotationTimeTicks (void) const { Metric rSpeed = GetMaxRotationSpeedPerTick(); return (rSpeed > 0.0 ? (int)(360.0 / rSpeed) : 0); }
 		inline int GetRotationAccel (void) const { return m_iRotationAccel; }
 		Metric GetRotationAccelPerTick (void) const;
 		inline int GetRotationAngle (int iIndex) const { return m_Rotations[iIndex % m_iCount].iRotation; }

@@ -998,9 +998,9 @@ void CShipClass::ComputeMovementStats (CDeviceDescList &Devices, int *retiSpeed,
 
 	//	Figure out the maneuverability of the ship
 
-	if (GetManeuverability() >= 7)
+	if (m_RotationDesc.GetMaxRotationTimeTicks() >= 90)
 		*retiManeuver = enumLow;
-	else if (GetManeuverability() > 2)
+	else if (m_RotationDesc.GetMaxRotationTimeTicks() > 30)
 		*retiManeuver = enumMedium;
 	else
 		*retiManeuver = enumHigh;

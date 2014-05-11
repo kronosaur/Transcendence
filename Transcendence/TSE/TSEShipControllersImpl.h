@@ -178,6 +178,7 @@ class CAIBehaviorCtx
 		int m_iMaxTurnCount;					//	Max ticks turning in the same direction
 		Metric m_rMaxWeaponRange;				//	Range of longest range primary weapon
 		int m_iBestNonLauncherWeaponLevel;		//	Level of best non-launcher weapon
+		int m_iPrematureFireChance;				//	Chance of firing prematurely
 
 		DWORD m_fImmobile:1;					//	TRUE if ship does not move
 		DWORD m_fSuperconductingShields:1;		//	TRUE if ship has superconducting shields

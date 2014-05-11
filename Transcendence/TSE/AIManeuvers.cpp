@@ -1102,8 +1102,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 			}
 		else if (iAimAngle != -1)
 			{
-			int iPrematureFiring = (100 - GetFireAccuracy()) / 5;
-			if (mathRandom(1, 100) <= iPrematureFiring)
+			if (mathRandom(1, 100) <= m_iPrematureFireChance)
 				{
 				int iAimOffset = AngleOffset(iFireAngle, iAimAngle);
 				if (iAimOffset < 20)

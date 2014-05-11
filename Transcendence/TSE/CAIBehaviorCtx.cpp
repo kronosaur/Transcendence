@@ -309,7 +309,12 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	//	Max turn count
 
-	m_iMaxTurnCount =  (10 + (pShip->GetDestiny() % 20)) * pShip->GetClass()->GetManeuverability();
+	int iFullRotationTime = Max(1, pShip->GetClass()->GetRotationDesc().GetMaxRotationTimeTicks());
+	m_iMaxTurnCount = iFullRotationTime * (1 + (pShip->GetDestiny() % 6));
+
+	//	Chance of premature fire based on turn rate
+
+	m_iPrematureFireChance = (6 * (100 - m_AISettings.GetFireAccuracy())) / iFullRotationTime;
 
 	//	Compute some properties of installed devices
 

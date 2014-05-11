@@ -2695,7 +2695,14 @@ bool CWeaponClass::IsWeaponAligned (CSpaceObject *pShip,
 			break;
 
 		default:
-			iAimTolerance = 6;
+			{
+			if (m_iFireRate > 10)
+				iAimTolerance = 2;
+			else if (m_iFireRate > 4)
+				iAimTolerance = 4;
+			else
+				iAimTolerance = 6;
+			}
 		}
 
 	//	If this is a directional weapon, figure out whether the target
