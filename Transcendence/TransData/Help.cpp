@@ -256,8 +256,9 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /snapshot             Generates a snapshot of an object.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
-		printf("      [/node:ID]            Look for object in given node.\n");
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
+		printf("      [/node:ID]            Look for object in given node.\n");
+		printf("      [/noStars]            Do not paint starfield.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
 		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");

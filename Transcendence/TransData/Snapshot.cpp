@@ -39,6 +39,12 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 		cyHeight = 1024;
 		}
 
+	//	Paint flags
+
+	DWORD dwPaintFlags = 0;
+	if (pCmdLine->GetAttributeBool(CONSTLIT("noStars")))
+		dwPaintFlags |= CSystem::VWP_NO_STAR_FIELD;
+
 	//	Output file
 
 	CString sFilespec = pCmdLine->GetAttribute(CONSTLIT("output"));
@@ -54,7 +60,8 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Loop over all systems until we find what we're looking for
 
 	int iLoops = 20;
-	CTopologyNode *pNode = Universe.GetFirstTopologyNode();
+	int iNodeIndex = 0;
+	CTopologyNode *pNode = Universe.GetTopologyNode(iNodeIndex);
 	while (true)
 		{
 		//	Create the system
@@ -148,7 +155,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			rcViewport.right = cxWidth;
 			rcViewport.bottom = cyHeight;
 			
-			pSystem->PaintViewport(Output, rcViewport, pTarget, 0);
+			pSystem->PaintViewport(Output, rcViewport, pTarget, dwPaintFlags);
 
 			//	Write to file
 
@@ -184,23 +191,29 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 			break;
 			}
 
-		//	Otherwise, loop to the next system
-
-		CString sEntryPoint;
-		pNode = pSystem->GetStargateDestination(CONSTLIT("Outbound"), &sEntryPoint);
-
 		//	Done with old system
 
 		Universe.DestroySystem(pSystem);
 
-		//	If no next node, then we loop through another universe
+		//	Loop to the next node
 
-		if (pNode == NULL || pNode->IsEndGame())
+		do
+			{
+			iNodeIndex = ((iNodeIndex + 1) % Universe.GetTopologyNodeCount());
+			pNode = Universe.GetTopologyNode(iNodeIndex);
+			}
+		while (pNode == NULL || pNode->IsEndGame());
+
+		//	If we're back to the first node again, restart
+
+		if (iNodeIndex == 0)
 			{
 			if (--iLoops > 0)
 				{
 				Universe.Reinit();
-				pNode = Universe.GetFirstTopologyNode();
+
+				iNodeIndex = 0;
+				pNode = Universe.GetTopologyNode(iNodeIndex);
 				}
 			else
 				{
