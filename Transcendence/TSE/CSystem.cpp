@@ -742,6 +742,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 
 	Ctx.fEnhancedDisplay = ((dwFlags & VWP_ENHANCED_DISPLAY) ? true : false);
 	Ctx.fNoStarfield = ((dwFlags & VWP_NO_STAR_FIELD) ? true : false);
+	Ctx.fShowManeuverEffects = ((dwFlags & VWP_SHOW_MANEUVER_EFFECTS) ? true : false);
 
 	//	Figure out what color space should be. Space gets lighter as we get
 	//	near the central star
@@ -2840,6 +2841,10 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	SViewportPaintCtx Ctx;
 	CalcViewportCtx(Ctx, rcView, pCenter, dwFlags);
 
+	//	Keep track of the player object because sometimes we do special processing
+
+	CSpaceObject *pPlayerCenter = (pCenter->IsPlayer() ? pCenter : NULL);
+
 	//	Clear the rect
 
 	Dest.SetClipRect(rcView);
@@ -2897,8 +2902,11 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 				}
 			else if (pObj->InBox(Ctx.vUR, Ctx.vLL) && !pObj->IsVirtual())
 				{
-				m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
-				pObj->SetPaintNeeded();
+				if (pObj != pPlayerCenter)
+					{
+					m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
+					pObj->SetPaintNeeded();
+					}
 				}
 			else if ((Ctx.fEnhancedDisplay
 							&& (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
@@ -2910,6 +2918,14 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 						|| pObj->IsHighlighted())
 				m_EnhancedDisplayObjs.FastAdd(pObj);
 			}
+		}
+
+	//	Always add the player at the end (so we paint on top of our layer)
+
+	if (pPlayerCenter)
+		{
+		m_LayerObjs[pPlayerCenter->GetPaintLayer()].FastAdd(pPlayerCenter);
+		pPlayerCenter->SetPaintNeeded();
 		}
 
 	//	Paint background objects

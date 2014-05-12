@@ -103,7 +103,7 @@
 			multiHull=			"true"
 			immutable=			"true"
 
-			attributes=			"battleArena, corporate, corporateDecon, friendly, human, majorStation, populated"
+			attributes=			"battleArena, corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated"
 			level=				"2"
 			>
 

@@ -123,31 +123,39 @@ void CObjectEffectList::Paint (SViewportPaintCtx &Ctx, const CObjectEffectDesc &
 		{
 		const CObjectEffectDesc::SEffectDesc &EffectDesc = Desc.GetEffectDesc(i);
 
-		if (EffectDesc.PosCalc.PaintFirst(Ctx.iVariant) != Ctx.bInFront
-				&& m_FixedEffects[i].pPainter)
-			{
-			//	Figure out where to paint the effect
+		//	Skip effects that are not in the right plane (in front or behind) OR
+		//	that don't have a painter.
 
-			int xPainter, yPainter;
-			EffectDesc.PosCalc.GetCoordFromDir(Ctx.iVariant, &xPainter, &yPainter);
+		if (m_FixedEffects[i].pPainter == NULL
+				|| EffectDesc.PosCalc.PaintFirst(Ctx.iVariant) == Ctx.bInFront)
+			continue;
 
-			//	Compute the rotation (180 for thruster effects)
+		//	Skip maneuvering effects unless we want them
 
-			Ctx.iRotation = AngleMod(iObjRotation + EffectDesc.iRotation + 180);
+		if (!Ctx.fShowManeuverEffects && CObjectEffectDesc::IsManeuverEffect(EffectDesc))
+			continue;
 
-			//	Paint
+		//	Figure out where to paint the effect
 
-			if (dwEffects & EffectDesc.iType)
-				m_FixedEffects[i].pPainter->Paint(Dest,
-						x + xPainter,
-						y + yPainter,
-						Ctx);
-			else
-				m_FixedEffects[i].pPainter->PaintFade(Dest,
-						x + xPainter,
-						y + yPainter,
-						Ctx);
-			}
+		int xPainter, yPainter;
+		EffectDesc.PosCalc.GetCoordFromDir(Ctx.iVariant, &xPainter, &yPainter);
+
+		//	Compute the rotation (180 for thruster effects)
+
+		Ctx.iRotation = AngleMod(iObjRotation + EffectDesc.iRotation + 180);
+
+		//	Paint
+
+		if (dwEffects & EffectDesc.iType)
+			m_FixedEffects[i].pPainter->Paint(Dest,
+					x + xPainter,
+					y + yPainter,
+					Ctx);
+		else
+			m_FixedEffects[i].pPainter->PaintFade(Dest,
+					x + xPainter,
+					y + yPainter,
+					Ctx);
 		}
 
 	Ctx.iRotation = iObjRotation;

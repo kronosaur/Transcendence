@@ -57,6 +57,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"invokeLetterHotKeys",		optionBoolean,	"false",	0	},
 		{	"noAutoSave",				optionBoolean,	"false",	0	},
 		{	"noFullCreate",				optionBoolean,	"false",	0	},
+		{	"showManeuverEffects",		optionBoolean,	"false",	0	},
 
 		//	Installation options
 

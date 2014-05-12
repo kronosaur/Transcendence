@@ -681,6 +681,7 @@ struct SViewportPaintCtx
 			fNoDockedShips(false),
 			fEnhancedDisplay(false),
 			fNoStarfield(false),
+			fShowManeuverEffects(false),
 			bInFront(false),
 			bFade(false),
 			iTick(0),
@@ -712,15 +713,20 @@ struct SViewportPaintCtx
 
 	Metric rIndicatorRadius;			//	Radius of circle to show target indicators (in pixels)
 	WORD wSpaceColor;					//	Space color
+	WORD wSpare;
 
 	//	Options
 
-	WORD fNoSelection:1;
-	WORD fNoRecon:1;
-	WORD fNoDockedShips:1;
-	WORD fEnhancedDisplay:1;
-	WORD fNoStarfield:1;
-	WORD wSpare:11;
+	DWORD fNoSelection:1;
+	DWORD fNoRecon:1;
+	DWORD fNoDockedShips:1;
+	DWORD fEnhancedDisplay:1;
+	DWORD fNoStarfield:1;
+	DWORD fShowManeuverEffects:1;
+	DWORD fSpare7:1;
+	DWORD fSpare8:1;
+
+	DWORD dwSpare:24;
 
 	CSpaceObject *pObj;					//	Current object being painted
 
@@ -2896,6 +2902,8 @@ class CObjectEffectDesc
 		const SEffectDesc &GetEffectDesc (int iIndex) const { return m_Effects[iIndex]; }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, const CString &sUNID, CXMLElement *pDesc);
 		void MarkImages (void);
+
+		static bool IsManeuverEffect (const SEffectDesc &Desc) { return (((DWORD)Desc.iType & (effectThrustLeft | effectThrustRight | effectThrustStop)) ? true : false); }
 
 	private:
 		TArray<SEffectDesc> m_Effects;

@@ -163,7 +163,7 @@
 
 	<StationType UNID="&stKorolovAtCharon;"
 			name=				"Korolov Shipping"
-			sovereign=			"&svCommonwealth;"
+			sovereign=			"&svCorporate;"
 			dockScreen=			"Dispatch"
 			abandonedScreen=	"Destroyed"
 			dockingPorts=		"10"
@@ -630,7 +630,7 @@
 
 	<StationType UNID="&stKorolovAtCharonCons;"
 			name=				"Korolov Shipping"
-			sovereign=			"&svCommonwealth;"
+			sovereign=			"&svCorporate;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"10"

@@ -2040,6 +2040,7 @@ class CGameSettings
 			allowInvokeLetterHotKeys,		//	Allow invoke entries to have letter hot keys
 			noAutoSave,						//	NOT YET IMPLEMENTED
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
+			showManeuverEffects,			//	Shows maneuvering effects
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -2070,7 +2071,7 @@ class CGameSettings
 			noCollectionDownload,			//	Do not automatically download collection
 
 			//	Constants
-			OPTIONS_COUNT = 27,
+			OPTIONS_COUNT = 28,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
