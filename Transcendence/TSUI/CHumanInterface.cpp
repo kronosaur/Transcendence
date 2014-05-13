@@ -843,6 +843,11 @@ LONG CHumanInterface::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 		m_pCurSession->HIKeyDown(iVirtKey, dwKeyData);
 
+		//	If we're dead, then exit
+
+		if (g_pHI == NULL)
+			return 0;
+
 		//	If the session changed, then we need to ignore a
 		//	subsequent WM_CHAR
 
