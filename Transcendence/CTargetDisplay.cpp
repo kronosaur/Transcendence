@@ -203,19 +203,36 @@ void CTargetDisplay::Update (void)
 //	Updates buffer
 
 	{
+	//	Nothing to do if no player
+
+	if (m_pPlayer == NULL)
+		return;
+
+	CShip *pShip = m_pPlayer->GetShip();
+	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
+	const SWeaponImageDesc *pDisplayDesc = pSettings->GetWeaponDesc();
+
 	//	Erase
 
 	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
 
 	//	Paint the buffer with the appropriate background bitmap
 
-	if (m_pBackground)
+	if (pDisplayDesc)
+		{
+		const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
+
+		m_Buffer.ColorTransBlt(rcImage.left, 
+				rcImage.top, 
+				RectWidth(rcImage), 
+				RectHeight(rcImage), 
+				255,
+				pDisplayDesc->Image.GetImage(NULL_STR),
+				0,
+				0);
+		}
+	else if (m_pBackground)
 		m_Buffer.Blt(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, *m_pBackground, 0, 0);
-
-	//	Nothing to do if no player
-
-	if (m_pPlayer == NULL)
-		return;
 
 	//	Draw the primary weapon status
 

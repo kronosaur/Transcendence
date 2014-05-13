@@ -2514,13 +2514,19 @@ struct SShieldImageDesc
 	CObjectImageArray Image;					//	Image for shields
 	};
 
+struct SWeaponImageDesc
+	{
+	CObjectImageArray Image;					//	Background image
+	};
+
 class CPlayerSettings
 	{
 	public:
 		CPlayerSettings (void) : 
 				m_pArmorDescInherited(NULL),
 				m_pReactorDescInherited(NULL),
-				m_pShieldDescInherited(NULL)
+				m_pShieldDescInherited(NULL),
+				m_pWeaponDescInherited(NULL)
 			{ }
 
 		~CPlayerSettings (void) { CleanUp(); }
@@ -2541,6 +2547,7 @@ class CPlayerSettings
 		inline DWORD GetStartingMap (void) const { return m_dwStartMap; }
 		inline const CString &GetStartingNode (void) const { return m_sStartNode; }
 		inline const CString &GetStartingPos (void) const { return m_sStartPos; }
+		inline const SWeaponImageDesc *GetWeaponDesc (void) const { return (m_fHasWeaponDesc ? &m_WeaponDesc : m_pWeaponDescInherited); }
 		inline bool HasAutopilot (void) const { return (m_fAutopilot ? true : false); }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc);
 		inline bool IsDebugOnly (void) const { return (m_fDebug ? true : false); }
@@ -2551,6 +2558,7 @@ class CPlayerSettings
 		const SArmorImageDesc *GetArmorImageDescRaw (void) const { return (m_fHasArmorDesc ? &m_ArmorDesc : NULL); }
 		const SReactorImageDesc *GetReactorImageDescRaw (void) const { return (m_fHasReactorDesc ? &m_ReactorDesc : NULL); }
 		const SShieldImageDesc *GetShieldImageDescRaw (void) const { return (m_fHasShieldDesc ? &m_ShieldDesc : NULL); }
+		const SWeaponImageDesc *GetWeaponImageDescRaw (void) const { return (m_fHasWeaponDesc ? &m_WeaponDesc : NULL); }
 
 	private:
 		void CleanUp (void);
@@ -2579,6 +2587,10 @@ class CPlayerSettings
 		SReactorImageDesc m_ReactorDesc;
 		const SReactorImageDesc *m_pReactorDescInherited;
 
+		//	Weapons
+		SWeaponImageDesc m_WeaponDesc;
+		const SWeaponImageDesc *m_pWeaponDescInherited;
+
 		//	Flags
 		DWORD m_fInitialClass:1;					//	Use ship class at game start
 		DWORD m_fDebug:1;							//	Debug only
@@ -2587,7 +2599,7 @@ class CPlayerSettings
 		DWORD m_fHasReactorDesc:1;					//	TRUE if m_ReactorDesc initialized
 		DWORD m_fHasShieldDesc:1;					//	TRUE if m_ShieldDesc initialized
 		DWORD m_fIncludeInAllAdventures:1;			//	TRUE if we should always include this ship
-		DWORD m_fSpare8:1;
+		DWORD m_fHasWeaponDesc:1;					//	TRUE if m_WeaponDesc initialized
 
 		DWORD m_dwSpare:24;
 	};
@@ -4238,6 +4250,7 @@ class CShipClass : public CDesignType
 		inline const CString &GetClassName (void) { return m_sName; }
 		inline const CString &GetManufacturerName (void) const { return m_sManufacturer; }
 		inline const CString &GetShipTypeName (void) { return m_sTypeName; }
+		const SWeaponImageDesc *GetWeaponDescInherited (void);
 		inline int GetWreckChance (void) { return m_iLeavesWreck; }
 		CObjectImageArray &GetWreckImage (void) { if (!m_WreckImage.IsLoaded()) CreateWreckImage(); return m_WreckImage; }
 		void GetWreckImage (CObjectImageArray *retWreckImage);

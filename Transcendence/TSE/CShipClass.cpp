@@ -2226,6 +2226,27 @@ CString CShipClass::GetShortName (void)
 		return GetClassName();
 	}
 
+const SWeaponImageDesc *CShipClass::GetWeaponDescInherited (void)
+
+//	GetWeaponDescInherited
+//
+//	Returns the shield desc from this class or base classes
+
+	{
+	CDesignType *pBase;
+
+	const SWeaponImageDesc *pDesc = (m_pPlayerSettings ? m_pPlayerSettings->GetWeaponImageDescRaw() : NULL);
+	if (pDesc)
+		return pDesc;
+	else if (pBase = GetInheritFrom())
+		{
+		CShipClass *pBaseClass = CShipClass::AsType(pBase);
+		return pBaseClass->GetWeaponDescInherited();
+		}
+	else
+		return NULL;
+	}
+
 CStationType *CShipClass::GetWreckDesc (void)
 	{
 	if (m_pWreckType)

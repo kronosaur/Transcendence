@@ -72,6 +72,10 @@
 				<PowerLevelText x="62" y="0" width="154" height="9"/>
 				<FuelLevelText x="62" y="51" width="154" height="9"/>
 			</ReactorDisplay>
+			
+			<WeaponDisplay>
+				<Image imageID="&rsZubrinTargeting;" imageX="0" imageY="0" imageWidth="360" imageHeight="120"/>
+			</WeaponDisplay>
 		</PlayerSettings>
 		
 	</ShipClass>

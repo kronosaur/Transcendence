@@ -18,6 +18,7 @@
 #define SHIELD_DISPLAY_TAG						CONSTLIT("ShieldDisplay")
 #define SHIELD_EFFECT_TAG						CONSTLIT("ShieldLevelEffect")
 #define SHIP_IMAGE_TAG							CONSTLIT("ShipImage")
+#define WEAPON_DISPLAY_TAG						CONSTLIT("WeaponDisplay")
 
 #define AUTOPILOT_ATTRIB						CONSTLIT("autopilot")
 #define ARMOR_ID_ATTRIB							CONSTLIT("armorID")
@@ -61,6 +62,7 @@
 #define ERR_INVALID_STARTING_CREDITS			CONSTLIT("invalid starting credits")
 #define ERR_SHIP_IMAGE_NEEDED					CONSTLIT("invalid <ShipImage> element")
 #define ERR_MUST_HAVE_SHIP_IMAGE				CONSTLIT("<ShipImage> in <ArmorDisplay> required if using shield level effect")
+#define ERR_WEAPON_DISPLAY_NEEDED				CONSTLIT("missing or invalid <WeaponDisplay> element")
 
 ALERROR InitRectFromElement (CXMLElement *pItem, RECT *retRect);
 
@@ -95,6 +97,11 @@ CPlayerSettings &CPlayerSettings::operator= (const CPlayerSettings &Source)
 
 	m_fHasReactorDesc = Source.m_fHasReactorDesc;
 	m_ReactorDesc = Source.m_ReactorDesc;
+
+	//	Weapon
+
+	m_fHasWeaponDesc = Source.m_fHasWeaponDesc;
+	m_WeaponDesc = Source.m_WeaponDesc;
 
 	//	Flags
 
@@ -201,6 +208,16 @@ ALERROR CPlayerSettings::Bind (SDesignLoadCtx &Ctx, CShipClass *pClass)
 		;
 	else
 		return ComposeLoadError(Ctx, ERR_REACTOR_DISPLAY_NEEDED);
+
+	//	Weapon
+
+	if (m_fHasWeaponDesc)
+		{
+		if (error = m_WeaponDesc.Image.OnDesignLoadComplete(Ctx))
+			return error;
+		}
+	else
+		m_pWeaponDescInherited = pClass->GetWeaponDescInherited();
 
 	//	Done
 
@@ -337,6 +354,7 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 	m_fHasArmorDesc = false;
 	m_fHasReactorDesc = false;
 	m_fHasShieldDesc = false;
+	m_fHasWeaponDesc = false;
 
 	//	Some ship capabilities
 
@@ -486,6 +504,20 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 		m_fHasReactorDesc = true;
 		}
 
+	//	Load weapon display data
+
+	CXMLElement *pWeaponDisplay = pDesc->GetContentElementByTag(WEAPON_DISPLAY_TAG);
+	if (pWeaponDisplay)
+		{
+		//	Load the image
+
+		if (error = m_WeaponDesc.Image.InitFromXML(Ctx, 
+				pWeaponDisplay->GetContentElementByTag(IMAGE_TAG)))
+			return ComposeLoadError(Ctx, ERR_WEAPON_DISPLAY_NEEDED);
+
+		m_fHasWeaponDesc = true;
+		}
+
 	//	Done
 
 	return NOERROR;
@@ -514,6 +546,12 @@ void CPlayerSettings::MergeFrom (const CPlayerSettings &Src)
 		{
 		m_ShieldDesc = Src.m_ShieldDesc;
 		m_fHasShieldDesc = true;
+		}
+
+	if (Src.m_fHasWeaponDesc)
+		{
+		m_WeaponDesc = Src.m_WeaponDesc;
+		m_fHasWeaponDesc = true;
 		}
 	}
 
