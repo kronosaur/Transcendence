@@ -3175,23 +3175,25 @@ void CG16bitImage::SetTransparentColor (WORD wColor)
 	{
 	try
 		{
-		//	Generate a pixel that is NOT the transparent color.
-
-		WORD wRed = GetRedValue(wColor);
-		WORD wGreen = GetGreenValue(wColor);
-		WORD wBlue = GetBlueValue(wColor);
-
-		if (wGreen < 63)
-			wGreen++;
-		else
-			wGreen--;
-
-		WORD wReplaceColor = MakePixel(wRed, wGreen, wBlue);
-
 		//	Modify
 
 		if (m_pAlpha && m_pRGB)
 			{
+			//	Generate a pixel that is NOT the transparent color.
+
+			WORD wRed = GetRedValue(wColor);
+			WORD wGreen = GetGreenValue(wColor);
+			WORD wBlue = GetBlueValue(wColor);
+
+			if (wGreen < 63)
+				wGreen++;
+			else
+				wGreen--;
+
+			WORD wReplaceColor = MakePixel(wRed, wGreen, wBlue);
+
+			//	Replace
+
 			for (int y = 0; y < m_cyHeight; y++)
 				{
 				BYTE *pSource = (BYTE *)(m_pAlpha + m_iAlphaRowSize * y);

@@ -83,6 +83,7 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 		return error;
 
 	m_Buffer.SetBlending(200);
+	m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}
@@ -202,6 +203,10 @@ void CTargetDisplay::Update (void)
 //	Updates buffer
 
 	{
+	//	Erase
+
+	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+
 	//	Paint the buffer with the appropriate background bitmap
 
 	if (m_pBackground)
