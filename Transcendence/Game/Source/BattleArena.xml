@@ -2313,7 +2313,7 @@
 		<Image imageID="&rsCorporateCruiser;" imageX="0" imageY="0" imageWidth="230" imageHeight="230"/>
 
 		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="40"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
 		</Effects>
 		
 		<!-- AI and Behavior -->
