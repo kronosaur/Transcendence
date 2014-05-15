@@ -574,7 +574,9 @@
     <None Include="Game\Extensions\Debug\ShipChangeSample.xml" />
     <None Include="Game\Source\Antarctica.xml" />
     <None Include="Game\Source\AresOrthodoxy.xml" />
-    <None Include="Game\Source\BattleArena.xml" />
+    <None Include="Game\Source\BattleArena.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\BattleArenaGladiators.xml" />
     <None Include="Game\Source\BlackMarket.xml" />
     <None Include="Game\Source\CentauriWarlords.xml" />
@@ -595,7 +597,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\CoreTypes.xml" />
-    <None Include="Game\Source\CorporateHierarchy.xml" />
+    <None Include="Game\Source\CorporateHierarchy.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Domina.xml" />
     <None Include="Game\Source\DwargRaiders.xml" />
     <None Include="Game\Source\Elysium.xml" />

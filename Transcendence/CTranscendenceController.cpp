@@ -70,10 +70,12 @@
 #define CMD_GAME_LEAVE_STARGATE					CONSTLIT("gameLeaveStargate")
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
+#define CMD_GAME_PAUSE							CONSTLIT("gamePause")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
 #define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
 #define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
+#define CMD_GAME_UNPAUSE						CONSTLIT("gameUnpause")
 
 #define CMD_MODEL_ADVENTURE_INIT_DONE			CONSTLIT("modelAdventureInitDone")
 #define CMD_MODEL_INIT_DONE						CONSTLIT("modelInitDone")
@@ -1106,6 +1108,17 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CHelpSession *pSession = new CHelpSession(m_HI);
 		if (error = m_HI.OpenPopupSession(pSession))
 			return error;
+		}
+
+	//	Pause/unpause
+
+	else if (strEquals(sCmd, CMD_GAME_PAUSE))
+		{
+		m_Soundtrack.SetPlayPaused(false);
+		}
+	else if (strEquals(sCmd, CMD_GAME_UNPAUSE))
+		{
+		m_Soundtrack.SetPlayPaused(true);
 		}
 
 	//	Show login session

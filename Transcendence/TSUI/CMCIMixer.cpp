@@ -513,6 +513,11 @@ bool CMCIMixer::ProcessRequest (void)
 		case typeWaitForPos:
 			ProcessWaitForPos(Request);
 			break;
+
+		case typeSetPaused:
+		case typeSetUnpaused:
+			ProcessSetPlayPaused(Request);
+			break;
 		}
 
 	//	Return whether we think there are more events in the queue. This is a
@@ -520,6 +525,29 @@ bool CMCIMixer::ProcessRequest (void)
 	//	but callers just use this as a hint. No harm if we're wrong.
 
 	return bMoreEvents;
+	}
+
+void CMCIMixer::ProcessSetPlayPaused (const SRequest &Request)
+
+//	ProcessSetPlayPaused
+//
+//	Set to play or paused
+
+	{
+	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
+
+	int iMode = MCIWndGetMode(hMCI, 0, NULL);
+
+	if (Request.iType == typeSetPaused)
+		{
+		if (iMode == MCI_MODE_PLAY)
+			MCIWndPause(hMCI);
+		}
+	else if (Request.iType == typeSetUnpaused)
+		{
+		if (iMode == MCI_MODE_PAUSE)
+			MCIWndPlay(hMCI);
+		}
 	}
 
 void CMCIMixer::ProcessStop (const SRequest &Request)
@@ -627,6 +655,19 @@ DWORD WINAPI CMCIMixer::ProcessingThread (LPVOID pData)
 		}
 
 	return 0;
+	}
+
+void CMCIMixer::SetPlayPaused (bool bPlay)
+
+//	SetPlayPaused
+//
+//	Pause/Play
+
+	{
+	if (m_hParent == NULL)
+		return;
+
+	EnqueueRequest(bPlay ? typeSetUnpaused : typeSetPaused);
 	}
 
 void CMCIMixer::Stop (void)

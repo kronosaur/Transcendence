@@ -554,6 +554,16 @@ void CSoundtrackManager::SetMusicEnabled (bool bEnabled)
 		m_Mixer.Stop();
 	}
 
+void CSoundtrackManager::SetPlayPaused (bool bPlay)
+
+//	SetPlayPaused
+//
+//	Plays or pauses
+
+	{
+	m_Mixer.SetPlayPaused(bPlay);
+	}
+
 void CSoundtrackManager::TogglePlayPaused (void)
 
 //	TogglePlayPaused

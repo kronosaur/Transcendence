@@ -20,6 +20,7 @@ class CMCIMixer
 		int GetCurrentPlayLength (void) const;
 		int GetCurrentPlayPos (void) const;
 		bool Play (CSoundType *pTrack, int iPos = 0);
+		void SetPlayPaused (bool bPlay);
 		void Stop (void);
 		void TogglePausePlay (void);
 
@@ -44,6 +45,8 @@ class CMCIMixer
 			typePlayPause,
 			typeWaitForPos,
 			typeFadeOut,
+			typeSetPaused,
+			typeSetUnpaused,
 			};
 
 		struct SRequest
@@ -62,6 +65,7 @@ class CMCIMixer
 		void ProcessPlay (const SRequest &Request);
 		void ProcessPlayPause (const SRequest &Request);
 		bool ProcessRequest (void);
+		void ProcessSetPlayPaused (const SRequest &Request);
 		void ProcessStop (const SRequest &Request);
 		void ProcessWaitForPos (const SRequest &Request);
 		bool Wait (DWORD dwTimeout);
@@ -115,6 +119,7 @@ class CSoundtrackManager
 		void SetGameState (EGameStates iNewState);
 		void SetGameState (EGameStates iNewState, CSoundType *pTrack);
 		void SetMusicEnabled (bool bEnabled = true);
+		void SetPlayPaused (bool bPlay = true);
 		void TogglePlayPaused (void);
 
 	private:

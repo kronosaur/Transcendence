@@ -1107,6 +1107,7 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 				else
 					{
 					m_bPaused = false;
+					g_pHI->HICommand(CONSTLIT("gameUnpause"));
 					DisplayMessage(CONSTLIT("Game continues"));
 					}
 				return 0;
@@ -1472,6 +1473,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 				if ((iVirtKey < 'A' || iVirtKey > 'Z') && iVirtKey != VK_SPACE && iVirtKey != VK_F9)
 					{
 					m_bPaused = false;
+					g_pHI->HICommand(CONSTLIT("gameUnpause"));
 					DisplayMessage(CONSTLIT("Game continues"));
 					}
 
@@ -1680,6 +1682,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->SetFireMissile(false);
 							}
+						g_pHI->HICommand(CONSTLIT("gamePause"));
 						DisplayMessage(CONSTLIT("Game paused"));
 						m_chKeyDown = iVirtKey;
 						break;
