@@ -659,7 +659,9 @@
     <None Include="Game\Source\StdEffects.xml" />
     <None Include="Game\Source\StdExplosions.xml" />
     <None Include="Game\Source\StdFuel.xml" />
-    <None Include="Game\Source\StdPlayerShips.xml" />
+    <None Include="Game\Source\StdPlayerShips.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdShields.xml" />
     <None Include="Game\Source\StdSovereigns.xml" />
     <None Include="Game\Source\StdSystems.xml" />
@@ -680,7 +682,9 @@
     <None Include="Game\Source\UrakWarlords.xml" />
     <None Include="Game\Source\UsefulItems.xml" />
     <None Include="Game\Source\Volcanic.xml" />
-    <None Include="Game\Source\Worlds.xml" />
+    <None Include="Game\Source\Worlds.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -366,7 +366,8 @@ class CWeaponFireDesc
 
 		void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
 		inline bool CanAutoTarget (void) const { return m_bAutoTarget; }
-		inline bool CanHitFriends (void) const { return !m_bNoFriendlyFire; }
+		bool CanHit (CSpaceObject *pObj) const;
+		inline bool CanHitFriends (void) const { return !m_fNoFriendlyFire; }
 		IEffectPainter *CreateEffect (bool bTrackingObj, bool bUseObjectCenter);
 		void CreateHitEffect (CSystem *pSystem, SDamageCtx &DamageCtx);
 		bool FindDataField (const CString &sField, CString *retsValue);
@@ -464,10 +465,6 @@ class CWeaponFireDesc
 		//	Miscellaneous
 		CWeaponFireDesc *m_pEnhanced;		//	Data when weapon is enhanced
 
-		//	Flags
-		DWORD m_fVariableInitialSpeed:1;	//	TRUE if initial speed is random
-		DWORD m_dwSpare:31;
-
 	private:
 		CExtension *m_pExtension;			//	Extension that defines the weaponfiredesc
 
@@ -478,7 +475,6 @@ class CWeaponFireDesc
 		DiceRange m_InitialDelay;			//	Delay for n ticks before starting
 
 		bool m_bAutoTarget;					//	TRUE if we can acquire new targets after launch
-		bool m_bNoFriendlyFire;				//	TRUE if we cannot hit our friends
 		int m_iPassthrough;					//	Chance that the missile will continue through target
 
 		//	Effects
@@ -523,6 +519,18 @@ class CWeaponFireDesc
 		//	Events
 		CEventHandler m_Events;				//	Events
 		SEventHandlerDesc m_CachedEvents[evtCount];
+
+		//	Flags
+		DWORD m_fVariableInitialSpeed:1;	//	TRUE if initial speed is random
+		DWORD m_fNoFriendlyFire:1;			//	TRUE if we cannot hit our friends
+		DWORD m_fNoWorldHits:1;				//	If TRUE, we never hit worlds (or stars)
+		DWORD m_fNoImmutableHits:1;			//	If TRUE, we never hit immutable objects
+		DWORD m_fNoStationHits:1;			//	If TRUE, we never hit station-scale objects
+		DWORD m_fNoImmobileHits:1;			//	If TRUE, we never hit immobile objects
+		DWORD m_fNoShipHits:1;				//	If TRUE, we never hit ship-scale objects
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
 	};
 
 //	Space environment
@@ -2386,6 +2394,7 @@ class CSpaceObject : public CObject
 		virtual bool HasAttribute (const CString &sAttribute) const { return false; }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
 		virtual bool IsExplored (void) { return true; }
+		virtual bool IsImmutable (void) const { return false; }
 		virtual bool IsKnown (void) { return true; }
 		virtual bool IsMarker (void) { return false; }
 		virtual bool IsNonSystemObj (void) { return false; }
@@ -2611,7 +2620,7 @@ class CSpaceObject : public CObject
 				const CObjectImageArray &Image2, int iTick2, int iRotation2, const CVector &vPos2);
 		inline bool IsObjectDestructionHooked (void) { return (m_fHookObjectDestruction ? true : false); }
 		inline void ItemEnhancementModified (CItemListManipulator &ItemList) { OnItemEnhanced(ItemList); }
-		bool MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, bool bCanDamageSource);
+		bool MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, CWeaponFireDesc *pDesc);
 		void PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx);
 		inline void SetObjectDestructionHook (void) { m_fHookObjectDestruction = true; }

@@ -4822,7 +4822,7 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 	return true;
 	}
 
-bool CSpaceObject::MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, bool bCanDamageSource)
+bool CSpaceObject::MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, CWeaponFireDesc *pDesc)
 
 //	MissileCanHitObj
 //
@@ -4836,8 +4836,8 @@ bool CSpaceObject::MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, 
 		{
 		//	If we can damage our source, then we don't need to check further
 
-		if (bCanDamageSource)
-			return true;
+		if (pDesc->m_bCanDamageSource)
+			return pDesc->CanHit(pObj);
 
 		//	Otherwise, we can only hit if we're not hitting our source, etc.
 
@@ -4848,6 +4848,9 @@ bool CSpaceObject::MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, 
 
 				//	We cannot hit another beam/missile from the same source...
 				&& (pObj->GetSource() != pSource)
+
+				//	See if the missile has rules about what it cannot hit
+				&& pDesc->CanHit(pObj)
 
 				//	We cannot hit our friends (if our source can't)
 				//	(NOTE: we check for sovereign as opposed to IsEnemy because
@@ -4867,6 +4870,11 @@ bool CSpaceObject::MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, 
 		//	primary source or else the tombstone message will be wrong)
 
 		if (pObj == GetSecondarySource())
+			return false;
+
+		//	Make sure we can hit
+
+		else if (!pDesc->CanHit(pObj))
 			return false;
 
 		//	If we are part of an explosion, then we cannot hit other parts of an explosion

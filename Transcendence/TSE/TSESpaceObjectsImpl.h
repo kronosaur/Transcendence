@@ -36,7 +36,7 @@ class CAreaDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -83,7 +83,7 @@ class CBeam : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -390,7 +390,7 @@ class CMissile : public CSpaceObject
 	protected:
 
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -471,7 +471,7 @@ class CParticleDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -728,7 +728,7 @@ class CRadiusDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -1336,6 +1336,7 @@ class CStation : public CSpaceObject
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
 		virtual bool IsExplored (void) { return m_fExplored; }
 		virtual bool IsIdentified (void) { return m_fKnown; }
+		virtual bool IsImmutable (void) const { return m_fImmutable; }
 		virtual bool IsKnown (void) { return m_fKnown; }
 		virtual bool IsMultiHull (void) { return m_pType->IsMultiHull(); }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
@@ -1419,7 +1420,6 @@ class CStation : public CSpaceObject
 		Metric GetAttackDistance (void) const;
 		const CObjectImageArray &GetImage (bool bFade, int *retiTick, int *retiRotation);
 		bool IsBlacklisted (CSpaceObject *pObj = NULL);
-		inline bool IsImmutable (void) const { return m_fImmutable; }
 		void RaiseAlert (CSpaceObject *pTarget);
 		void SetAngry (void);
 		inline bool ShowWreckImage (void) { return (IsAbandoned() && m_iMaxHitPoints > 0); }
