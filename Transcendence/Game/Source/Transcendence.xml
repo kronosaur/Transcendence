@@ -924,6 +924,9 @@
 	<!ENTITY rsItemsRasiermesser3		"0x0000F15E">
 	<!ENTITY rsItemsRasiermesser4		"0x0000F15F">
 	<!ENTITY rsItemsTaikon1				"0x0000F160">
+	<!ENTITY rsSapphireYachtHD			"0x0000F161">
+	<!ENTITY rsEI500FreighterHD			"0x0000F162">
+	<!ENTITY rsWolfenGunshipHD			"0x0000F163">
 
 	<!ENTITY snLaserCannon				"0x0000F201">
 	<!ENTITY snRecoillessCannon			"0x0000F202">

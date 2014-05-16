@@ -249,4 +249,8 @@
 	<Image UNID="&rsWolfenGunship;"		bitmap="Resources\ShipsWolfenGunship.jpg" bitmask="Resources\ShipsWolfenGunshipMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI500Freighter;"	bitmap="Resources\ShipsEI500Freighter.jpg" bitmask="Resources\ShipsEI500FreighterMask.bmp" loadOnUse="true"/>
 	
+	<Image UNID="&rsSapphireYachtHD;"	bitmap="Resources\SapphireYachtHD.jpg" bitmask="Resources\SapphireYachtHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI500FreighterHD;"	bitmap="Resources\EI500FreighterHD.jpg" bitmask="Resources\EI500FreighterHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsWolfenGunshipHD;"	bitmap="Resources\WolfenGunshipHD.jpg" bitmask="Resources\WolfenGunshipHDMask.bmp" loadOnUse="true"/>
+
 </TranscendenceModule>

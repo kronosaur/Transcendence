@@ -617,7 +617,9 @@
     <None Include="Game\Source\Ice.xml" />
     <None Include="Game\Source\Iocrym.xml" />
     <None Include="Game\Source\KateMorgental.xml" />
-    <None Include="Game\Source\KorolovShipping.xml" />
+    <None Include="Game\Source\KorolovShipping.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Luminous.xml" />
     <None Include="Game\Source\Metallic.xml" />
     <None Include="Game\Source\Mining.xml" />
