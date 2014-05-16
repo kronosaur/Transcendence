@@ -1294,6 +1294,7 @@ class C3DConversion
 			bool bPaintFirst;
 			};
 
+		bool InitCache (int iDirectionCount);
 		ALERROR OverridePaintFirst (const CString &sAttrib, bool bPaintFirstValue);
 
 		int m_iAngle;

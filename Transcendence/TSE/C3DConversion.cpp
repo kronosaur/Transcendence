@@ -236,10 +236,9 @@ void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadi
 
 	ASSERT(iScale > 0);
 
-	if (!IsEmpty())
+	if (!InitCache(iDirectionCount))
 		return;
 
-	m_Cache.InsertEmpty(iDirectionCount);
 	for (i = 0; i < iDirectionCount; i++)
 		{
 		int iRotAngle = (i * 360 / iDirectionCount);
@@ -258,6 +257,24 @@ void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadi
 		}
 	}
 
+bool C3DConversion::InitCache (int iDirectionCount)
+
+//	InitCache
+//
+//	Prepares the cache for initialization. Returns FALSE if the cache is already
+//	set up for this number of facings.
+
+	{
+	if (m_Cache.GetCount() == iDirectionCount)
+		return false;
+
+	if (m_Cache.GetCount() > 0)
+		m_Cache.DeleteAll();
+
+	m_Cache.InsertEmpty(iDirectionCount);
+	return true;
+	}
+
 void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius, int iFacing)
 
 //	InitCompatible
@@ -268,10 +285,9 @@ void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius
 	{
 	int i;
 
-	if (!IsEmpty())
+	if (!InitCache(iDirectionCount))
 		return;
 
-	m_Cache.InsertEmpty(iDirectionCount);
 	for (i = 0; i < iDirectionCount; i++)
 		{
 		int iRotAngle = (i * 360 / iDirectionCount);
