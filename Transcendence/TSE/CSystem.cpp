@@ -314,6 +314,9 @@
 //	99: 1.3
 //		CEffectParamDesc saving
 //
+//	100: 1.3
+//		m_iOrder in CPlayerShipController
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

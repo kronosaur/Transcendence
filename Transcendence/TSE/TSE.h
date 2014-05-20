@@ -2235,6 +2235,7 @@ class CSpaceObject : public CObject
 		inline bool IsPaintNeeded (void) { return m_fPaintNeeded; }
 		inline bool IsPlayerDestination (void) { return m_fPlayerDestination; }
 		inline bool IsPlayerDocked (void) { return m_fPlayerDocked; }
+		bool IsPlayerEscortTarget (CSpaceObject *pPlayer = NULL);
 		inline bool IsPlayerTarget (void) { return m_fPlayerTarget; }
 		inline bool IsSelected (void) { return m_fSelected; }
 		inline bool IsShowingDistanceAndBearing (void) { return m_fShowDistanceAndBearing; }

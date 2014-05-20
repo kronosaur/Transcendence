@@ -157,9 +157,11 @@ void CShip::Behavior (SUpdateCtx &Ctx)
 
 		//	If we're targeting the player, then the player is under attack
 
+		CSpaceObject *pTarget;
 		if (Ctx.pPlayer 
-				&& GetTarget(CItemCtx()) == Ctx.pPlayer
-				&& Ctx.pPlayer->IsEnemy(this))
+				&& (pTarget = GetTarget(CItemCtx()))
+				&& Ctx.pPlayer->IsEnemy(this)
+				&& (pTarget == Ctx.pPlayer || pTarget->IsPlayerEscortTarget(Ctx.pPlayer)))
 			Ctx.pSystem->SetPlayerUnderAttack();
 		}
 	}

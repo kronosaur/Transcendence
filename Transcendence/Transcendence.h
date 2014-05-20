@@ -403,6 +403,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual CString DebugCrashInfo (void);
 		virtual int GetCombatPower (void);
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
 		virtual CSpaceObject *GetDestination (void) const { return m_pDestination; }
 		virtual EManeuverTypes GetManeuver (void);
 		virtual GenomeTypes GetPlayerGenome (void) { return m_iGenome; }
@@ -469,6 +470,7 @@ class CPlayerShipController : public CObject, public IShipController
 		CTranscendenceWnd *m_pTrans;
 		CShip *m_pShip;
 
+		OrderTypes m_iOrder;					//	Last order
 		CSpaceObject *m_pTarget;
 		CSpaceObject *m_pDestination;
 		CSpaceObjectTable m_TargetList;

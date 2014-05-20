@@ -4237,6 +4237,40 @@ bool CSpaceObject::IsEscortingFriendOf (const CSpaceObject *pObj) const
 		return false;
 	}
 
+bool CSpaceObject::IsPlayerEscortTarget (CSpaceObject *pPlayer)
+
+//	IsPlayerEscortTarget
+//
+//	Returns TRUE if we are being escorted by the player.
+
+	{
+	//	If we're not a player destination, then we're not being escorted.
+
+	if (!IsPlayerDestination())
+		return false;
+
+	//	Get the player as a ship object
+
+	if (pPlayer == NULL)
+		{
+		pPlayer = g_pUniverse->GetPlayer();
+		if (pPlayer == NULL)
+			return false;
+		}
+
+	CShip *pPlayerShip = pPlayer->AsShip();
+	if (pPlayerShip == NULL)
+		return false;
+
+	//	Check the player's target
+
+	CSpaceObject *pTarget;
+	IShipController::OrderTypes iOrder = pPlayerShip->GetController()->GetCurrentOrderEx(&pTarget);
+
+	return (pTarget == this
+			&& (iOrder == IShipController::orderGuard || iOrder == IShipController::orderEscort));
+	}
+
 bool CSpaceObject::IsStargateInRange (Metric rMaxRange)
 
 //	IsStargateInRange

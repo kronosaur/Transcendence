@@ -44,6 +44,7 @@ CPlayerShipController::CPlayerShipController (void) : CObject(&g_Class),
 		m_bActivate(false),
 		m_bStopThrust(false),
 		m_pStation(NULL),
+		m_iOrder(orderNone),
 		m_pTarget(NULL),
 		m_pDestination(NULL),
 		m_dwWreckObjID(OBJID_NULL),
@@ -105,6 +106,10 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 			|| Order == orderEscort
 			|| Order == orderDestroyTarget)
 		g_pHI->HICommand(CMD_PLAYER_COMBAT_MISSION_STARTED);
+
+	//	Remember our orders
+
+	m_iOrder = Order;
 	}
 
 bool CPlayerShipController::AreAllDevicesEnabled (void)
@@ -137,6 +142,7 @@ void CPlayerShipController::CancelAllOrders (void)
 //	Cancel all orders
 
 	{
+	m_iOrder = orderNone;
 	SetDestination(NULL);
 	}
 
@@ -147,6 +153,7 @@ void CPlayerShipController::CancelCurrentOrder (void)
 //	Cancel current order
 
 	{
+	m_iOrder = orderNone;
 	SetDestination(NULL);
 	}
 
@@ -530,6 +537,36 @@ DWORD CPlayerShipController::GetCommsStatus (void)
 		}
 
 	return dwStatus;
+	}
+
+IShipController::OrderTypes CPlayerShipController::GetCurrentOrderEx (CSpaceObject **retpTarget, IShipController::SData *retData)
+
+//	GetCurrentOrderEx
+//
+//	Returns the current order
+
+	{
+	switch (m_iOrder)
+		{
+		case orderGuard:
+		case orderEscort:
+		case orderDock:
+		case orderAimAtTarget:
+		case orderDestroyTarget:
+			if (m_pDestination == NULL)
+				return orderNone;
+
+			if (retpTarget)
+				*retpTarget = m_pDestination;
+
+			if (retData)
+				*retData = SData();
+
+			return m_iOrder;
+
+		default:
+			return orderNone;
+		}
 	}
 
 void CPlayerShipController::GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
@@ -1756,6 +1793,7 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 //	DWORD		m_pStation (CSpaceObject ref)
 //	DWORD		m_pTarget (CSpaceObject ref)
 //	DWORD		m_pDestination (CSpaceObject ref)
+//	DWORD		m_iOrder
 //	DWORD		m_iManeuver
 //	CCurrencyBlock m_Credits
 //	CPlayerGameStats m_Stats
@@ -1772,6 +1810,15 @@ void CPlayerShipController::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 	CSystem::ReadObjRefFromStream(Ctx, &m_pStation);
 	CSystem::ReadObjRefFromStream(Ctx, &m_pTarget);
 	CSystem::ReadObjRefFromStream(Ctx, &m_pDestination);
+
+	if (Ctx.dwVersion >= 100)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		m_iOrder = (OrderTypes)dwLoad;
+		}
+	else
+		m_iOrder = orderNone;
+
 	Ctx.pStream->Read((char *)&m_iManeuver, sizeof(DWORD));
 
 	if (Ctx.dwVersion >= 49)
@@ -1955,6 +2002,10 @@ void CPlayerShipController::Reset (void)
 	//	Clear target list
 
 	m_TargetList.RemoveAll();
+
+	//	Clear orders
+
+	m_iOrder = orderNone;
 
 	//	Clear autodock
 
@@ -2498,6 +2549,7 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 //	DWORD		m_pStation (CSpaceObject ref)
 //	DWORD		m_pTarget (CSpaceObject ref)
 //	DWORD		m_pDestination (CSpaceObject ref)
+//	DWORD		m_iOrder
 //	DWORD		m_iManeuver
 //	CCurrencyBlock m_Credits
 //	CPlayerGameStats m_Stats
@@ -2516,6 +2568,10 @@ void CPlayerShipController::WriteToStream (IWriteStream *pStream)
 	m_pShip->WriteObjRefToStream(m_pStation, pStream);
 	m_pShip->WriteObjRefToStream(m_pTarget, pStream);
 	m_pShip->WriteObjRefToStream(m_pDestination, pStream);
+
+	dwSave = (DWORD)m_iOrder;
+	pStream->Write((char *)&dwSave, sizeof(DWORD));
+
 	pStream->Write((char *)&m_iManeuver, sizeof(DWORD));
 	m_Credits.WriteToStream(pStream);
 	m_Stats.WriteToStream(pStream);
