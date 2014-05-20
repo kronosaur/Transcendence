@@ -192,6 +192,16 @@ int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID) const
 	return -1;
 	}
 
+bool CSoundtrackManager::IsPlayingCombatTrack (void) const
+
+//	IsPlayingCombatTrack
+//
+//	Returns TRUE if we're currently playing a combat track.
+
+	{
+	return (m_pNowPlaying && m_pNowPlaying->HasAttribute(ATTRIB_COMBAT_SOUNDTRACK));
+	}
+
 void CSoundtrackManager::NextTrack (void)
 
 //	NextTrack
@@ -228,37 +238,14 @@ void CSoundtrackManager::NotifyEndCombat (void)
 
 	//	If we're not in combat, then nothing to do
 
-	if (m_iGameState != stateGameCombat
-			|| m_bInTransition)
+	if (m_iGameState != stateGameCombat)
 		return;
 
 	//	Figure out which track to play. If there is nothing to play then we're
 	//	done.
 
-	if (m_bEnabled)
-		{
-		CSoundType *pTrack;
-
-		//	If we interrupted a travel track, see if we can go back to it.
-
-		if (m_pLastTravel
-				&& m_pLastTravel->GetNextPlayPos() != 0)
-			pTrack = m_pLastTravel;
-
-		//	Otherwise, calc a new track
-
-		else
-			{
-			pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameTravel);
-			if (pTrack == NULL)
-				return;
-			}
-
-		//	Transition
-
-		TransitionTo(pTrack, pTrack->GetNextPlayPos());
-		m_bInTransition = true;
-		}
+	if (m_bEnabled && !m_bInTransition)
+		TransitionToTravel();
 
 	//	Remember our state
 
@@ -336,34 +323,14 @@ void CSoundtrackManager::NotifyStartCombat (void)
 
 	//	If we're already in combat, then nothing to do
 
-	if (m_iGameState == stateGameCombat
-			|| m_bInTransition)
+	if (m_iGameState == stateGameCombat)
 		return;
 
 	//	Figure out which track to play. If there is nothing to play then we're
 	//	done.
 
-	if (m_bEnabled)
-		{
-		//	If we're in a travel bed track, remember it so we can go back to it later.
-
-		if (m_pNowPlaying 
-				&& !m_pNowPlaying->HasAttribute(ATTRIB_COMBAT_SOUNDTRACK))
-			m_pLastTravel = m_pNowPlaying;
-		else
-			m_pLastTravel = NULL;
-
-		//	Pick a combat track
-
-		CSoundType *pCombatTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameCombat);
-		if (pCombatTrack == NULL)
-			return;
-
-		//	Transition
-
-		TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
-		m_bInTransition = true;
-		}
+	if (m_bEnabled && !m_bInTransition)
+		TransitionToCombat();
 
 	//	Set state
 
@@ -447,6 +414,40 @@ void CSoundtrackManager::NotifyUndocked (void)
 		}
 	}
 
+void CSoundtrackManager::NotifyUpdatePlayPos (int iPos)
+
+//	NotifyUpdatePlayPos
+//
+//	Notifies the soundtrack manager that the current track has reached the
+//	given play position.
+
+	{
+	//	Sometimes, if we transition in/out of combat too quickly, we get out
+	//	of synch because we have to wait until we're done transitioning. Here we
+	//	take the opportunity to make sure we're in the right mode.
+
+	if (!m_bInTransition 
+			&& m_bEnabled)
+		{
+		if (IsPlayingCombatTrack())
+			{
+			//	If we're playing a combat track and we are not in combat, then
+			//	transition to travel music
+
+			if (m_iGameState == stateGameTravel)
+				TransitionToTravel();
+			}
+		else
+			{
+			//	If we're playing a travel track and we're in combat, then 
+			//	transition to combat.
+
+			if (m_iGameState == stateGameCombat)
+				TransitionToCombat();
+			}
+		}
+	}
+
 void CSoundtrackManager::Play (CSoundType *pTrack)
 
 //	Play
@@ -497,11 +498,20 @@ void CSoundtrackManager::SetGameState (EGameStates iNewState)
 	//	If our state has not changed, then nothing to do
 
 	if (iNewState == m_iGameState)
-		return;
+		NULL;
 
-	//	Set new state
+	//	If we're quitting, then clean up
 
-	SetGameState(iNewState, CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), iNewState));
+	else if (iNewState == stateProgramQuit)
+		{
+		m_iGameState = stateProgramQuit;
+		m_Mixer.Shutdown();
+		}
+
+	//	Otherwise, set the new state
+
+	else
+		SetGameState(iNewState, CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), iNewState));
 	}
 
 void CSoundtrackManager::SetGameState (EGameStates iNewState, CSoundType *pTrack)
@@ -613,3 +623,61 @@ void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos)
 
 	m_Mixer.Play(pTrack, iPos);
 	}
+
+void CSoundtrackManager::TransitionToCombat (void)
+
+//	TransitionToCombat
+//
+//	Transition to a combat track.
+
+	{
+	//	If we're in a travel bed track, remember it so we can go back to it later.
+
+	if (m_pNowPlaying 
+			&& !m_pNowPlaying->HasAttribute(ATTRIB_COMBAT_SOUNDTRACK))
+		m_pLastTravel = m_pNowPlaying;
+	else
+		m_pLastTravel = NULL;
+
+	//	Pick a combat track
+
+	CSoundType *pCombatTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameCombat);
+	if (pCombatTrack == NULL)
+		return;
+
+	//	Transition
+
+	TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
+	m_bInTransition = true;
+	}
+
+void CSoundtrackManager::TransitionToTravel (void)
+
+//	TransitionToTravel
+//
+//	Transition to a travel bed track.
+
+	{
+	CSoundType *pTrack;
+
+	//	If we interrupted a travel track, see if we can go back to it.
+
+	if (m_pLastTravel
+			&& m_pLastTravel->GetNextPlayPos() != 0)
+		pTrack = m_pLastTravel;
+
+	//	Otherwise, calc a new track
+
+	else
+		{
+		pTrack = CalcTrackToPlay(g_pUniverse->GetCurrentTopologyNode(), stateGameTravel);
+		if (pTrack == NULL)
+			return;
+		}
+
+	//	Transition
+
+	TransitionTo(pTrack, pTrack->GetNextPlayPos());
+	m_bInTransition = true;
+	}
+

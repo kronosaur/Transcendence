@@ -21,6 +21,7 @@ class CMCIMixer
 		int GetCurrentPlayPos (void) const;
 		bool Play (CSoundType *pTrack, int iPos = 0);
 		void SetPlayPaused (bool bPlay);
+		void Shutdown (void);
 		void Stop (void);
 		void TogglePausePlay (void);
 
@@ -61,6 +62,7 @@ class CMCIMixer
 		bool FindChannel (HWND hMCI, SChannel **retpChannel = NULL);
 		void LogError (HWND hMCI, const CString &sFilespec = NULL_STR);
 		LONG OnNotifyMode (HWND hWnd, int iMode);
+		LONG OnNotifyPos (HWND hWnd, int iPos);
 		void ProcessFadeOut (const SRequest &Request);
 		void ProcessPlay (const SRequest &Request);
 		void ProcessPlayPause (const SRequest &Request);
@@ -116,6 +118,7 @@ class CSoundtrackManager
 		void NotifyTrackDone (void);
 		void NotifyTrackPlaying (CSoundType *pTrack);
 		void NotifyUndocked (void);
+		void NotifyUpdatePlayPos (int iPos);
 		void SetGameState (EGameStates iNewState);
 		void SetGameState (EGameStates iNewState, CSoundType *pTrack);
 		void SetMusicEnabled (bool bEnabled = true);
@@ -126,9 +129,12 @@ class CSoundtrackManager
 		CSoundType *CalcGameTrackToPlay (CTopologyNode *pNode, const CString &sRequiredAttrib) const;
 		CSoundType *CalcTrackToPlay (CTopologyNode *pNode, EGameStates iNewState) const;
 		int GetLastPlayedRank (DWORD dwUNID) const;
+		bool IsPlayingCombatTrack (void) const;
 		void Play (CSoundType *pTrack);
 		void Reinit (void);
 		void TransitionTo (CSoundType *pTrack, int iPos);
+		void TransitionToCombat (void);
+		void TransitionToTravel (void);
 
 		CMCIMixer m_Mixer;					//	Music mixer
 		bool m_bEnabled;					//	Music is enabled

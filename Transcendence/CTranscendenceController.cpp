@@ -59,6 +59,7 @@
 #define CMD_SOUNDTRACK_PLAY_PAUSE				CONSTLIT("cmdSoundtrackPlayPause")
 #define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
 #define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
+#define CMD_SOUNDTRACK_UPDATE_PLAY_POS			CONSTLIT("cmdSoundtrackUpdatePlayPos")
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
@@ -1512,6 +1513,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
 		m_Soundtrack.NotifyTrackPlaying((CSoundType *)pData);
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_UPDATE_PLAY_POS))
+		m_Soundtrack.NotifyUpdatePlayPos((int)pData);
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_PLAY_PAUSE))
 		m_Soundtrack.TogglePlayPaused();

@@ -7,6 +7,7 @@
 
 #define CMD_SOUNDTRACK_DONE						CONSTLIT("cmdSoundtrackDone")
 #define CMD_SOUNDTRACK_NOW_PLAYING				CONSTLIT("cmdSoundtrackNowPlaying")
+#define CMD_SOUNDTRACK_UPDATE_PLAY_POS			CONSTLIT("cmdSoundtrackUpdatePlayPos")
 
 const DWORD CHECK_INTERVAL =					50;
 const int FADE_LENGTH =							2000;
@@ -75,26 +76,7 @@ CMCIMixer::~CMCIMixer (void)
 //	CMCIMixer destructor
 
 	{
-	if (m_hProcessingThread != INVALID_HANDLE_VALUE)
-		{
-		::SetEvent(m_hQuitEvent);
-		::kernelDispatchUntilEventSet(m_hProcessingThread, 5000);
-
-		::CloseHandle(m_hProcessingThread);
-		m_hProcessingThread = INVALID_HANDLE_VALUE;
-
-		::CloseHandle(m_hWorkEvent);
-		m_hWorkEvent = INVALID_HANDLE_VALUE;
-
-		::CloseHandle(m_hQuitEvent);
-		m_hQuitEvent = INVALID_HANDLE_VALUE;
-
-		::CloseHandle(m_hAbortEvent);
-		m_hAbortEvent = INVALID_HANDLE_VALUE;
-		}
-
-	if (m_hParent)
-		::DestroyWindow(m_hParent);
+	Shutdown();
 	}
 
 void CMCIMixer::CreateParentWindow (void)
@@ -298,6 +280,25 @@ LONG CMCIMixer::OnNotifyMode (HWND hWnd, int iMode)
 	return 0;
 	}
 
+LONG CMCIMixer::OnNotifyPos (HWND hWnd, int iPos)
+
+//	OnNotifyPos
+//
+//	Notify that we've played to a certain position.
+
+	{
+	CSmartLock Lock(m_cs);
+
+	SChannel *pChannel;
+	if (!FindChannel(hWnd, &pChannel))
+		return 0;
+
+	if (g_pHI)
+		g_pHI->HICommand(CMD_SOUNDTRACK_UPDATE_PLAY_POS, (void *)iPos);
+
+	return 0;
+	}
+
 LONG APIENTRY CMCIMixer::ParentWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam)
 
 //	ParentWndProc
@@ -319,6 +320,12 @@ LONG APIENTRY CMCIMixer::ParentWndProc (HWND hWnd, UINT message, UINT wParam, LO
 			{
 			CMCIMixer *pThis = (CMCIMixer *)::GetWindowLong(hWnd, GWL_USERDATA);
 			return pThis->OnNotifyMode((HWND)wParam, (int)lParam);
+			}
+
+		case MCIWNDM_NOTIFYPOS:
+			{
+			CMCIMixer *pThis = (CMCIMixer *)::GetWindowLong(hWnd, GWL_USERDATA);
+			return pThis->OnNotifyPos((HWND)wParam, (int)lParam);
 			}
 
 		default:
@@ -668,6 +675,41 @@ void CMCIMixer::SetPlayPaused (bool bPlay)
 		return;
 
 	EnqueueRequest(bPlay ? typeSetUnpaused : typeSetPaused);
+	}
+
+void CMCIMixer::Shutdown (void)
+
+//	Shutdown
+//
+//	Program is quitting, so clean up.
+
+	{
+	if (m_hProcessingThread != INVALID_HANDLE_VALUE)
+		{
+		::SetEvent(m_hQuitEvent);
+		::kernelDispatchUntilEventSet(m_hProcessingThread, 5000);
+
+		::CloseHandle(m_hProcessingThread);
+		m_hProcessingThread = INVALID_HANDLE_VALUE;
+
+		::CloseHandle(m_hWorkEvent);
+		m_hWorkEvent = INVALID_HANDLE_VALUE;
+
+		::CloseHandle(m_hQuitEvent);
+		m_hQuitEvent = INVALID_HANDLE_VALUE;
+
+		::CloseHandle(m_hAbortEvent);
+		m_hAbortEvent = INVALID_HANDLE_VALUE;
+		}
+
+	if (m_hParent)
+		{
+		::DestroyWindow(m_hParent);
+		m_hParent = NULL;
+		}
+
+	m_Channels.DeleteAll();
+	m_pNowPlaying = NULL;
 	}
 
 void CMCIMixer::Stop (void)
