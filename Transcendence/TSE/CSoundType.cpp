@@ -155,6 +155,16 @@ ALERROR CSoundType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			m_Segments[i].iStartPos = iStartPos;
 			m_Segments[i].iEndPos = iEndPos;
 			}
+
+		//	If the first segment does not start at 0, then add an initial segment
+
+		if (m_Segments.GetCount() > 0 && m_Segments[0].iStartPos != 0)
+			{
+			int iEndPos = m_Segments[0].iStartPos;
+			SSegmentDesc *pFirst = m_Segments.InsertAt(0);
+			pFirst->iStartPos = 0;
+			pFirst->iEndPos = iEndPos;
+			}
 		}
 
 	return NOERROR;
