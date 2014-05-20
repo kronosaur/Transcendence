@@ -1700,21 +1700,37 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 	else
 		m_pAutoDock = NULL;
 
-	//	See if the player is under attack and if that status has changed from
-	//	the last tick.
+	//	Notify the game controller when we transition in/out of combat.
+	//
+	//	If we're currently in combat, figure out if we're still in combat. If 
+	//	not, then we transition out.
 
-	bool bUnderAttack = Ctx.pSystem->EnemiesInLRS()
-			&& (Ctx.pSystem->IsPlayerUnderAttack()
-				|| m_pShip->HasBeenHitLately(HIT_THRESHOLD)
-				|| m_pShip->HasFiredLately(FIRE_THRESHOLD));
-	if (bUnderAttack != m_bUnderAttack)
+	if (m_bUnderAttack)
 		{
-		if (bUnderAttack)
-			g_pHI->HICommand(CMD_PLAYER_COMBAT_STARTED);
-		else
+		bool bStillUnderAttack = Ctx.pSystem->EnemiesInLRS()
+				&& (Ctx.pSystem->IsPlayerUnderAttack()
+					|| m_pShip->HasBeenHitLately(HIT_THRESHOLD)
+					|| m_pShip->HasFiredLately(FIRE_THRESHOLD));
+		if (!bStillUnderAttack)
+			{
 			g_pHI->HICommand(CMD_PLAYER_COMBAT_ENDED);
+			m_bUnderAttack = false;
+			}
+		}
 
-		m_bUnderAttack = bUnderAttack;
+	//	Otherwise, if we're not in combat, figure out if we're in combat.
+	//	NOTE: We have different criteria for entering combat vs. staying in 
+	//	comabt.
+
+	else
+		{
+		bool bUnderAttack = Ctx.pSystem->IsPlayerUnderAttack()
+				|| (Ctx.pSystem->EnemiesInLRS() && m_pShip->HasBeenHitLately(HIT_THRESHOLD));
+		if (bUnderAttack)
+			{
+			g_pHI->HICommand(CMD_PLAYER_COMBAT_STARTED);
+			m_bUnderAttack = true;
+			}
 		}
 	}
 
