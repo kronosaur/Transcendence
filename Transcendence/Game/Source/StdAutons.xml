@@ -50,6 +50,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 		
 		<Language>
@@ -105,6 +106,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 			
 		<Events>
@@ -185,6 +187,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 			
 		<Events>
@@ -256,6 +259,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 
 		<Language>
@@ -405,6 +409,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 
 		<Events>
@@ -486,6 +491,7 @@
 			perception=			"4"
 			noAttackOnThreat=	"true"
 			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
 			/>
 
 		<Language>
