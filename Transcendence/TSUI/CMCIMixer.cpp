@@ -497,7 +497,7 @@ bool CMCIMixer::ProcessRequest (void)
 
 	m_cs.Unlock();
 
-	//	Now process the even based on the type
+	//	Now process the event based on the type
 
 	switch (Request.iType)
 		{

@@ -14,7 +14,9 @@
 #endif
 
 class CDockScreen;
+class CGameSession;
 class CGameSettings;
+class CIntroSession;
 class CTranscendenceWnd;
 class CUIResources;
 class CTranscendenceController;
@@ -1539,7 +1541,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 	public:
 		CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC);
 
-		void Animate (bool bTopMost);
+		void Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost);
 
 		void Autopilot (bool bTurnOn);
 		void CleanUpPlayerShip (void);
@@ -1879,7 +1881,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 	friend LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
 	friend class CIntroShipController;
-	friend class CLegacySession;
+	friend class CGameSession;
+	friend class CIntroSession;
 	friend class CTranscendenceController;
 	friend class CTranscendenceModel;
 	};
@@ -2071,9 +2074,10 @@ class CGameSettings
 			debugVideo,						//	Write out video information
 			noCrashPost,					//	Do not post crash log to Multiverse
 			noCollectionDownload,			//	Do not automatically download collection
+			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 28,
+			OPTIONS_COUNT = 29,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2290,6 +2294,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		inline int GetOptionInteger (int iOption) { return m_Settings.GetInteger(iOption); }
 		inline CCloudService &GetService (void) { return m_Service; }
 		inline CGameSettings &GetSettings (void) { return m_Settings; }
+		inline CSoundtrackManager &GetSoundtrack (void) { return m_Soundtrack; }
 		void SetOptionBoolean (int iOption, bool bValue);
 		void SetOptionInteger (int iOption, int iValue);
 

@@ -57,7 +57,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 	ClearDebugLines();
 	}
 
-void CTranscendenceWnd::Animate (bool bTopMost)
+void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost)
 
 //	Animate
 //
@@ -65,7 +65,6 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 	{
 	bool bFailed = false;
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
 
 	//	Update context
 
@@ -79,10 +78,6 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 		switch (m_State)
 			{
-			case gsIntro:
-				AnimateIntro(bTopMost);
-				break;
-
 			case gsInGame:
 			case gsDestroyed:
 				{
@@ -208,6 +203,12 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 #ifdef DEBUG
 				PaintDebugLines();
 #endif
+
+				//	Paint soundtrack info
+
+				if (m_pTC->GetOptionBoolean(CGameSettings::debugSoundtrack)
+						&& !m_bShowingMap)
+					pSession->PaintSoundtrackTitles(TheScreen);
 
 				//	Figure out how long it took to paint
 

@@ -166,6 +166,22 @@ CSoundType *CSoundtrackManager::CalcTrackToPlay (CTopologyNode *pNode, EGameStat
 		}
 	}
 
+CSoundType *CSoundtrackManager::GetCurrentTrack (int *retiPos) const
+
+//	GetCurrentTrack
+//
+//	Returns the current track playing
+	
+	{
+	if (m_pNowPlaying == NULL)
+		return NULL;
+
+	if (retiPos)
+		*retiPos = m_Mixer.GetCurrentPlayPos();
+
+	return m_pNowPlaying; 
+	}
+
 int CSoundtrackManager::GetLastPlayedRank (DWORD dwUNID) const
 
 //	GetLastPlayedRank

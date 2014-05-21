@@ -7,11 +7,14 @@
 
 #define SEGMENTS_TAG						CONSTLIT("Segments")
 
+#define COMPOSED_BY_ATTRIB					CONSTLIT("composedBy")
 #define END_POS_ATTRIB						CONSTLIT("endPos")
 #define FILENAME_ATTRIB						CONSTLIT("filename")
 #define LOCATION_CRITERIA_ATTRIB			CONSTLIT("locationCriteria")
+#define PERFORMED_BY_ATTRIB					CONSTLIT("performedBy")
 #define PRIORITY_ATTRIB						CONSTLIT("priority")
 #define START_POS_ATTRIB					CONSTLIT("startPos")
+#define TITLE_ATTRIB						CONSTLIT("title")
 
 bool CSoundType::FindDataField (const CString &sField, CString *retsValue)
 
@@ -94,6 +97,9 @@ ALERROR CSoundType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	ALERROR error;
 
 	m_sFilename = pDesc->GetAttribute(FILENAME_ATTRIB);
+	m_sTitle = pDesc->GetAttribute(TITLE_ATTRIB);
+	m_sComposedBy = pDesc->GetAttribute(COMPOSED_BY_ATTRIB);
+	m_sPerformedBy = pDesc->GetAttribute(PERFORMED_BY_ATTRIB);
 
 	//	Set the actual location of the file
 

@@ -58,6 +58,9 @@
     <Filter Include="Notes and Documents">
       <UniqueIdentifier>{64f46807-8cf9-4d33-9bb2-b2543826e0a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game Session">
+      <UniqueIdentifier>{71f6b08b-1213-4ea9-b840-8e42661b07de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CIntroShipController.cpp">
@@ -124,9 +127,6 @@
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="CWaitSession.cpp">
-      <Filter>Source Files\Sessions</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScreen.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>
     <ClCompile Include="IntroScreen.cpp">
@@ -221,6 +221,15 @@
     </ClCompile>
     <ClCompile Include="CExtensionListMap.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CIntroSession.cpp">
+      <Filter>Source Files\Sessions</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScreen.cpp">
+      <Filter>Source Files\Game Session</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameSession.cpp">
+      <Filter>Source Files\Game Session</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

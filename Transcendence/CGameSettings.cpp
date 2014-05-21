@@ -87,6 +87,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"debugVideo",				optionBoolean,	"false",	0	},
 		{	"noCrashPost",				optionBoolean,	"false",	0	},
 		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
+		{	"debugSoundtrack",			optionBoolean,	"false",	0	},
 	};
 
 SCommandLineData g_CommandLineData[] =
@@ -104,6 +105,7 @@ SCommandLineData g_CommandLineData[] =
 		{	"debug",				CGameSettings::debugGame,			0 },
 		{	"nolog",				CGameSettings::noDebugLog,			0 },
 		{	"debugVideo",			CGameSettings::debugVideo,			0 },
+		{	"debugSoundtrack",		CGameSettings::debugSoundtrack,		0 },
 	};
 
 const int COMMAND_LINE_DATA_COUNT =			(sizeof(g_CommandLineData) / sizeof(g_CommandLineData[0]));

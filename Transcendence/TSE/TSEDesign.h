@@ -1098,13 +1098,17 @@ class CSoundType : public CDesignType
 
 		~CSoundType (void) { }
 
+		int FindSegment (int iPos);
+		inline const CString &GetComposedBy (void) const { return m_sComposedBy; }
 		CString GetFilename (void) const { return m_sFilename; }
 		CString GetFilespec (void) const;
 		inline const CAttributeCriteria &GetLocationCriteria (void) const { return m_LocationCriteria; }
 		int GetNextFadePos (int iPos);
 		int GetNextPlayPos (void);
+		inline const CString &GetPerformedBy (void) const { return m_sPerformedBy; }
 		inline int GetPriority (void) const { return m_iPriority; }
 		inline int GetSegmentCount (void) const { return (m_Segments.GetCount() == 0 ? 1 : m_Segments.GetCount()); }
+		inline const CString &GetTitle (void) const { return m_sTitle; }
 		inline void Init (DWORD dwUNID, const CString &sFilespec, int iPriority = 0) { SetUNID(dwUNID); m_sFilespec = sFilespec; m_iPriority = iPriority; }
 		void SetLastPlayPos (int iPos);
 
@@ -1125,12 +1129,13 @@ class CSoundType : public CDesignType
 			int iEndPos;				//	-1 = end of track
 			};
 
-		int FindSegment (int iPos);
-
 		CString m_sResourceDb;			//	Resource db
 		CString m_sFilename;			//	Filename
 		CString m_sFilespec;			//	Sound resource within db
 
+		CString m_sTitle;
+		CString m_sComposedBy;
+		CString m_sPerformedBy;
 		int m_iPriority;				//	Track priority
 		CAttributeCriteria m_LocationCriteria;	//	Play in specific systems
 

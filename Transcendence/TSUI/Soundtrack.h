@@ -110,6 +110,7 @@ class CSoundtrackManager
 		CSoundtrackManager (void);
 		~CSoundtrackManager (void);
 
+		CSoundType *GetCurrentTrack (int *retiPos = NULL) const;
 		void NextTrack (void);
 		void NotifyEndCombat (void);
 		void NotifyEnterSystem (CTopologyNode *pNode = NULL, bool bFirstTime = true);

@@ -599,7 +599,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Legacy CTranscendenceWnd takes over
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CIntroSession(m_HI));
 
 		//	Start the intro
 
@@ -703,7 +703,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CIntroSession(m_HI));
 		g_pTrans->StartIntro(CTranscendenceWnd::isBlank);
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
@@ -798,7 +798,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_START_GAME))
 		{
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame(true);
 		}
 
@@ -851,7 +851,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame();
 		}
 
@@ -890,7 +890,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Back to intro screen
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CIntroSession(m_HI));
 		g_pTrans->StartIntro(CTranscendenceWnd::isShipStats);
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
@@ -1029,7 +1029,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CLegacySession(m_HI));
+			m_HI.ShowSession(new CIntroSession(m_HI));
 			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
@@ -1046,7 +1046,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CLegacySession(m_HI));
+			m_HI.ShowSession(new CIntroSession(m_HI));
 			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
