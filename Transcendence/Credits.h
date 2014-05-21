@@ -192,11 +192,14 @@ static char *FEEDBACK[] =
 	"Teslin K. R.",
 	"trouver",
 
+	"Ultimate Chicken",
+
 	"Vachtra",
 	"Vastin",
 	"Viperion",
 
 	"The Wanderer",
+	"Watch TV, Do Nothing",
 	"Weelillad",
 	"Wurmish",
 

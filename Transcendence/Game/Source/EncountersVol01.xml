@@ -4322,7 +4322,7 @@
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
-			attributes=			"chitometallicEco; enemy; envFire; envAvoidsWater; galacticCreature; pteravore"
+			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
 			locationCriteria=	"++asteroids; +++chitometallicEco; -planet"
 			>

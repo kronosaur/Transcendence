@@ -1091,7 +1091,8 @@ void CPlayerGameStats::OnObjDestroyedByPlayer (const SDestroyCtx &Ctx, CSpaceObj
 
 	else if (Ctx.pObj->GetCategory() == CSpaceObject::catStation)
 		{
-		if (Ctx.pObj->HasAttribute(CONSTLIT("populated")))
+		if (Ctx.pObj->HasAttribute(CONSTLIT("populated"))
+				|| Ctx.pObj->HasAttribute(CONSTLIT("score")))
 			{
 			SStationTypeStats *pStats = GetStationStats(Ctx.pObj->GetType()->GetUNID());
 

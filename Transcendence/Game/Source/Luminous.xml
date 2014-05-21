@@ -416,7 +416,7 @@
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"ai, enemy, envWater, envAvoidsEarth, luminous"
+			attributes=			"ai, enemy, envWater, envAvoidsEarth, luminous, score"
 			levelFrequency=		"----- -ucur ----- ----- -----"
 			locationCriteria=	"+planetary,-void"
 			enemyExclusionRadius="50"
