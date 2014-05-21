@@ -73,6 +73,11 @@
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
+			reactorPower=		"250"
+			maxArmor=			"3000"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
 			leavesWreck=		"0"
 			>
 
@@ -148,6 +153,11 @@
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
+			reactorPower=		"250"
+			maxArmor=			"3000"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
 			leavesWreck=		"0"
 			>
 
@@ -213,6 +223,11 @@
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
+			reactorPower=		"250"
+			maxArmor=			"3000"
+			maxDevices=			"3"
+			maxWeapons=			"1"
+			   
 			leavesWreck=		"0"
 			>
 
@@ -264,6 +279,11 @@
 			maxSpeed=			"20"
 			cargoSpace=			"75"
 
+			reactorPower=		"150"
+			maxArmor=			"3500"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
 			dockScreen=			"Main"
 
 			leavesWreck=		"95"
@@ -353,6 +373,11 @@
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
+			reactorPower=		"450"
+			maxArmor=			"4000"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
 			leavesWreck=		"0"
 			>
 
@@ -429,6 +454,11 @@
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
+			reactorPower=		"450"
+			maxArmor=			"4000"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
 			leavesWreck=		"0"
 			>
 
