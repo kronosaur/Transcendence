@@ -2011,7 +2011,7 @@ class CArmorClass : public CObject
 		inline int GetInstallCost (void) { return m_iInstallCost; }
 		ICCItem *GetItemProperty (CItemCtx &Ctx, const CString &sName);
 		inline CItemType *GetItemType (void) { return m_pItemType; }
-		int GetMaxHP (CItemCtx &ItemCtx);
+		int GetMaxHP (CItemCtx &ItemCtx, bool bForceComplete = false);
 		inline int GetMaxHPBonus (void) const { return m_iMaxHPBonus; }
 		inline CString GetName (void);
 		CString GetReference (CItemCtx &Ctx, int iVariant = -1);

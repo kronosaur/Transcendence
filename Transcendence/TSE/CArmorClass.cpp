@@ -47,6 +47,7 @@
 #define FIELD_SHIELD_INTERFERENCE				CONSTLIT("shieldInterference")
 
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
+#define PROPERTY_COMPLETE_HP					CONSTLIT("completeHP")
 #define PROPERTY_DEVICE_DAMAGE_IMMUNE			CONSTLIT("deviceDamageImmune")
 #define PROPERTY_DEVICE_DISRUPT_IMMUNE			CONSTLIT("deviceDisruptImmune")
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
@@ -1006,6 +1007,9 @@ ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
 		return CC.CreateBool(IsBlindingDamageImmune(Ctx));
 
+	else if (strEquals(sName, PROPERTY_COMPLETE_HP))
+		return CC.CreateInteger(GetMaxHP(Ctx, true));
+
 	else if (strEquals(sName, PROPERTY_DEVICE_DAMAGE_IMMUNE))
 		return CC.CreateBool(IsDeviceDamageImmune(Ctx));
 
@@ -1034,7 +1038,7 @@ ICCItem *CArmorClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 		return CC.CreateNil();
 	}
 
-int CArmorClass::GetMaxHP (CItemCtx &ItemCtx)
+int CArmorClass::GetMaxHP (CItemCtx &ItemCtx, bool bForceComplete)
 
 //	GetMaxHP
 //
@@ -1058,7 +1062,7 @@ int CArmorClass::GetMaxHP (CItemCtx &ItemCtx)
 	//	Add complete bonus
 
 	CInstalledArmor *pSect = ItemCtx.GetArmor();
-	if (pSect && pSect->IsComplete())
+	if (bForceComplete || (pSect && pSect->IsComplete()))
 		iHP += m_iArmorCompleteBonus;
 
 	//	Done

@@ -249,7 +249,7 @@
 					(setq autonItem (itmSetData autonItem 'autonConfig {
 						armor: (map (objGetItems gSource "aI") theArmor	{
 							item: (itmSetProperty theArmor 'installed Nil)
-							hp: (subtract (itmGetProperty theArmor 'hp) (objGetArmorDamage gSource theArmor))
+							hp: (subtract (itmGetProperty theArmor 'completeHP) (objGetArmorDamage gSource theArmor))
 							})
 							
 						devices: (map (objGetItems gSource "dI") theDev {
@@ -547,7 +547,7 @@
 								armor: (map (typGetDataField autonShipClass 'armorItems) Nil theArmor
 									{
 										item: theArmor
-										hp: (itmGetProperty theArmor 'hp)
+										hp: (itmGetProperty theArmor 'completeHP)
 										}
 									)
 
