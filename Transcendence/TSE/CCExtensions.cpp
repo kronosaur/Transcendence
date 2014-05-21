@@ -705,8 +705,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmIsEqual",					fnItemGet,		FN_ITEM_IS_EQUAL,
-			"(itmIsEqual item1 item2) -> True/Nil",
-			"vv",	0,	},
+			"(itmIsEqual item1 item2 [options]) -> True/Nil\n\n"
+			
+			"options\n\n"
+			
+			"   'ignoreInstalled\n",
+
+			"vv*",	0,	},
 
 		{	"itmIsInstalled",				fnItemGet,		FN_ITEM_INSTALLED,
 			"(itmIsInstalled item)",
@@ -3417,8 +3422,24 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_ITEM_IS_EQUAL:
 			{
+			int i;
 			CItem Item2 = GetItemFromArg(*pCC, pArgs->GetElement(1));
-			pResult = pCC->CreateBool(Item.IsEqual(Item2));
+
+			//	Options
+
+			bool bIgnoreInstalled = false;
+			ICCItem *pOptions = (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL);
+			if (pOptions)
+				{
+				for (i = 0; i < pOptions->GetCount(); i++)
+					{
+					ICCItem *pOption = pOptions->GetElement(i);
+					if (strEquals(pOption->GetStringValue(), CONSTLIT("ignoreInstalled")))
+						bIgnoreInstalled = true;
+					}
+				}
+
+			pResult = pCC->CreateBool(Item.IsEqual(Item2, bIgnoreInstalled));
 			break;
 			}
 

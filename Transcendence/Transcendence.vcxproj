@@ -677,7 +677,9 @@
     <None Include="Game\Source\StKatharines.xml" />
     <None Include="Game\Source\SungSlavers.xml" />
     <None Include="Game\Source\Teratons.xml" />
-    <None Include="Game\Source\Tinkers.xml" />
+    <None Include="Game\Source\Tinkers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Transcendence.xml">
       <SubType>Designer</SubType>
     </None>

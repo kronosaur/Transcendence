@@ -1696,7 +1696,7 @@ class CItem
 		static CItem CreateItemByName (const CString &sName, const CItemCriteria &Criteria, bool bActualName = false);
 		inline bool IsArmor (void) const;
 		inline bool IsDevice (void) const;
-		bool IsEqual (const CItem &Item) const;
+		bool IsEqual (const CItem &Item, bool bIgnoreInstalled = false) const;
 		bool FireCanBeInstalled (CSpaceObject *pSource, CString *retsError) const;
 		bool FireCanBeUninstalled (CSpaceObject *pSource, CString *retsError) const;
 		void FireOnAddedAsEnhancement (CSpaceObject *pSource, const CItem &ItemEnhanced, EnhanceItemStatus iStatus) const;

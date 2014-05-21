@@ -975,7 +975,7 @@ bool CItem::HasSpecialAttribute (const CString &sAttrib) const
 	return m_pItemType->HasSpecialAttribute(sAttrib);
 	}
 
-bool CItem::IsEqual (const CItem &Item) const
+bool CItem::IsEqual (const CItem &Item, bool bIgnoreInstalled) const
 
 //	IsEqual
 //
@@ -985,7 +985,7 @@ bool CItem::IsEqual (const CItem &Item) const
 	{
 	return (m_pItemType == Item.m_pItemType
 			&& m_dwFlags == Item.m_dwFlags
-			&& m_dwInstalled == Item.m_dwInstalled
+			&& (bIgnoreInstalled || m_dwInstalled == Item.m_dwInstalled)
 			&& IsExtraEqual(Item.m_pExtra));
 	}
 
