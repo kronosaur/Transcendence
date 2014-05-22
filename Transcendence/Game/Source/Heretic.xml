@@ -657,7 +657,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"5"
 			rotationAccel=		"0.5"
 			/>
@@ -831,7 +830,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"3"
 			rotationAccel=		"0.5"
 			/>

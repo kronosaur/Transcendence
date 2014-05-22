@@ -40,7 +40,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"3.0"
 			rotationAccel=		"0.5"
 			/>

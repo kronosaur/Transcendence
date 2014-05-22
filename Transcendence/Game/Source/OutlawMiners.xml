@@ -31,7 +31,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"3.0"
 			rotationAccel=		"0.5"
 			/>
@@ -110,7 +109,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"5.0"
 			rotationAccel=		"0.8"
 			/>
@@ -195,7 +193,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"18.0"
 			rotationAccel=		"2.0"
 			/>
@@ -245,7 +242,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"18.0"
 			rotationAccel=		"2.0"
 			/>

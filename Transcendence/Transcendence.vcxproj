@@ -575,24 +575,36 @@
     <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
     <None Include="Game\Extensions\Debug\ShipChangeSample.xml" />
     <None Include="Game\Source\Antarctica.xml" />
-    <None Include="Game\Source\AresOrthodoxy.xml" />
+    <None Include="Game\Source\AresOrthodoxy.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\BattleArena.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\BattleArenaGladiators.xml" />
-    <None Include="Game\Source\BlackMarket.xml" />
-    <None Include="Game\Source\CentauriWarlords.xml" />
+    <None Include="Game\Source\BattleArenaGladiators.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\BlackMarket.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\CentauriWarlords.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CharonFortress.xml" />
     <None Include="Game\Source\CharonPirates.xml" />
     <None Include="Game\Source\Code.xml" />
-    <None Include="Game\Source\Commonwealth.xml" />
+    <None Include="Game\Source\Commonwealth.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CommonwealthAgricultural.xml" />
     <None Include="Game\Source\CommonwealthFleet.xml">
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\CommonwealthMetropolis.xml" />
     <None Include="Game\Source\CommonwealthMilitia.xml" />
-    <None Include="Game\Source\CommonwealthMining.xml" />
+    <None Include="Game\Source\CommonwealthMining.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Compatibility10.xml" />
     <None Include="Game\Source\CoreCode.xml" />
     <None Include="Game\Source\CoreEffects.xml">
@@ -603,7 +615,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Domina.xml" />
-    <None Include="Game\Source\DwargRaiders.xml" />
+    <None Include="Game\Source\DwargRaiders.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Elysium.xml" />
     <None Include="Game\Source\EncountersVol01.xml">
       <SubType>Designer</SubType>
@@ -611,14 +625,18 @@
     <None Include="Game\Source\Environments.xml" />
     <None Include="Game\Source\Eridani.xml" />
     <None Include="Game\Source\Groups.xml" />
-    <None Include="Game\Source\Heretic.xml" />
+    <None Include="Game\Source\Heretic.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\HSCompatibility.xml" />
     <None Include="Game\Source\Huari.xml" />
     <None Include="Game\Source\HUD.xml" />
     <None Include="Game\Source\HumanSpaceMap.xml" />
     <None Include="Game\Source\Ice.xml" />
     <None Include="Game\Source\Iocrym.xml" />
-    <None Include="Game\Source\KateMorgental.xml" />
+    <None Include="Game\Source\KateMorgental.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\KorolovShipping.xml">
       <SubType>Designer</SubType>
     </None>
@@ -675,7 +693,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\StKatharines.xml" />
-    <None Include="Game\Source\SungSlavers.xml" />
+    <None Include="Game\Source\SungSlavers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Teratons.xml" />
     <None Include="Game\Source\Tinkers.xml">
       <SubType>Designer</SubType>

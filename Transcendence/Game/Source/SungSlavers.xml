@@ -485,7 +485,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"18.0"
 			rotationAccel=		"4.0"
 			/>
@@ -543,7 +542,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"5.0"
 			rotationAccel=		"1.0"
 			/>
@@ -610,7 +608,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"5"
 			rotationAccel=		"0.5"
 			/>
@@ -708,7 +705,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"5"
 			rotationAccel=		"0.5"
 			/>
@@ -915,7 +911,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"9.0"
 			rotationAccel=		"1.0"
 			/>
@@ -993,7 +988,6 @@
 		</Devices>
 
 		<Maneuver
-			rotationCount=		"20"
 			maxRotationRate=	"2.0"
 			rotationAccel=		"0.2"
 			/>

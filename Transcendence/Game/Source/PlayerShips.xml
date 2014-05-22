@@ -177,7 +177,6 @@
 			thrustRatio=		"13"
 			maxSpeed=			"25"
 			cargoSpace=			"35"
-			rotationCount=		"40"
 
 			reactorPower=		"100"
 			fuelCapacity=		"25000"
