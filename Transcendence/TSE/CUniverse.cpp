@@ -1194,7 +1194,7 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 					retsError))
 				return error;
 			}
-		else if (!Ctx.bInLoadGame)
+		else if (!Ctx.bInLoadGame && !m_bDebugMode)
 			{
 			//	If the caller passed in a list of extension objects (or if we 
 			//	didn't add any extensions) then include auto extensions.

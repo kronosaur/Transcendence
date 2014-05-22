@@ -428,7 +428,7 @@ ALERROR CExtensionCollection::ComputeAvailableExtensions (CExtension *pAdventure
 
 		if (!bAllExtensions 
 				&& !Extensions.Find(ExtensionList[0]->GetUNID())
-				&& !ExtensionList[0]->IsAutoInclude())
+				&& (!bIncludeAuto || !ExtensionList[0]->IsAutoInclude()))
 			continue;
 
 		//	Out of all the releases, select the latest version.

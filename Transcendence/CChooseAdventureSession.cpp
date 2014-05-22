@@ -753,7 +753,7 @@ void CChooseAdventureSession::SetExtensions (CExtension *pAdventure, int yPos)
 	//	Make a list of extensions valid for the given adventure
 
 	if (g_pUniverse->GetExtensionCollection().ComputeAvailableExtensions(pAdventure, 
-			(g_pUniverse->InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0),
+			(g_pUniverse->InDebugMode() ? (CExtensionCollection::FLAG_DEBUG_MODE | CExtensionCollection::FLAG_INCLUDE_AUTO) : 0),
 			TArray<DWORD>(),
 			&m_ExtensionList,
 			&sError) != NOERROR)
