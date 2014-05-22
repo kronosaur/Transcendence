@@ -39,6 +39,7 @@
 #define TRANSCENDENCE_MODULE_TAG				CONSTLIT("TranscendenceModule")
 
 #define API_VERSION_ATTRIB						CONSTLIT("apiVersion")
+#define AUTO_INCLUDE_ATTRIB						CONSTLIT("autoInclude")
 #define AUTO_INCLUDE_FOR_COMPATIBILITY_ATTRIB	CONSTLIT("autoIncludeForCompatibility")
 #define COVER_IMAGE_UNID_ATTRIB					CONSTLIT("coverImageID")
 #define CREDITS_ATTRIB							CONSTLIT("credits")
@@ -187,6 +188,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 	pExtension->m_ModifiedTime = fileGetModifiedTime(Ctx.sResDb);
 	pExtension->m_bRegistered = true;
 	pExtension->m_bPrivate = true;
+	pExtension->m_bAutoInclude = true;
 
 	//	Load the apiVersion
 
@@ -416,6 +418,7 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 	pExtension->m_bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
 	pExtension->m_bRegistered = IsRegisteredUNID(pExtension->m_dwUNID);
 	pExtension->m_bPrivate = pDesc->GetAttributeBool(PRIVATE_ATTRIB);
+	pExtension->m_bAutoInclude = pDesc->GetAttributeBool(AUTO_INCLUDE_ATTRIB);
 
 	//	API version
 

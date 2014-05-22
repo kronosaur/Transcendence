@@ -1167,8 +1167,13 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 		if (Ctx.bDefaultExtensions)
 			{
+			ASSERT(!Ctx.bInLoadGame);
+
+			//	If we want default extensions, then add all possible extensions,
+			//	including auto extensions.
+
 			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
-					dwFlags,
+					dwFlags | CExtensionCollection::FLAG_INCLUDE_AUTO,
 					TArray<DWORD>(),
 					&Ctx.Extensions, 
 					retsError))
@@ -1176,9 +1181,28 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 			}
 		else if (Ctx.ExtensionUNIDs.GetCount() > Ctx.Extensions.GetCount())
 			{
+			//	If our caller passed in an UNID list, then resolve to actual
+			//	extension objects.
+			//
+			//	NOTE: If we're creating a new game we take this opportunity to
+			//	add auto extensions.
+
 			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure,
-					dwFlags,
+					dwFlags | (Ctx.bInLoadGame ? 0 : CExtensionCollection::FLAG_INCLUDE_AUTO),
 					Ctx.ExtensionUNIDs,
+					&Ctx.Extensions,
+					retsError))
+				return error;
+			}
+		else if (!Ctx.bInLoadGame)
+			{
+			//	If the caller passed in a list of extension objects (or if we 
+			//	didn't add any extensions) then include auto extensions.
+			//	(But only if we're in a new game).
+
+			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure,
+					dwFlags | CExtensionCollection::FLAG_AUTO_ONLY | CExtensionCollection::FLAG_ACCUMULATE,
+					TArray<DWORD>(),
 					&Ctx.Extensions,
 					retsError))
 				return error;

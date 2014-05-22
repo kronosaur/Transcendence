@@ -6065,6 +6065,7 @@ class CExtension
 		inline EExtensionTypes GetType (void) const { return m_iType; }
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
 		inline const CString &GetVersion (void) const { return m_sVersion; }
+		inline bool IsAutoInclude (void) const { return m_bAutoInclude; }
 		inline bool IsDebugOnly (void) const { return m_bDebugOnly; }
 		inline bool IsDisabled (void) const { return m_bDisabled; }
 		inline bool IsHidden (void) const { return m_bPrivate; }
@@ -6145,6 +6146,7 @@ class CExtension
 		bool m_bPrivate;					//	Do not show in stats
 		bool m_bDisabled;					//	Disabled (for some reason)
 		bool m_bDeleted;
+		bool m_bAutoInclude;				//	Extension should always be included (if appropriate)
 	};
 
 class CExtensionCollection
@@ -6163,6 +6165,12 @@ class CExtensionCollection
 			//	FindExtension
 
 			FLAG_ADVENTURE_ONLY =	0x00000010,	//	Must be an adventure (not found otherwise)
+
+			//	ComputeAvailableExtension
+
+			FLAG_INCLUDE_AUTO =		0x00000020,	//	Include extensions that are automatic
+			FLAG_AUTO_ONLY =		0x00000040,	//	Only include extensions that are automatic
+			FLAG_ACCUMULATE =		0x00000080,	//	Add to result list
 			};
 
 		CExtensionCollection (void);
