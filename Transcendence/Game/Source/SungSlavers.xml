@@ -150,7 +150,7 @@
 			value=				"50000"
 			mass=				"6000"
 			frequency=			"notRandom"
-			attributes=			"MajorItem; NotForSale; sungSlavers"
+			attributes=			"majorItem, military, notForSale; sungSlavers"
 
 			description=		"Used by the Sung Dragon slavers, these shields are a much enhanced version of the Yoroi S500."
 			>

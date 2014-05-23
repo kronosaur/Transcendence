@@ -961,7 +961,7 @@
 			level=				"7"
 			value=				"4000"
 			mass=				"2500"
-			attributes=			"MinorItem; Specialty; Bushido"
+			attributes=			"bushido, military, minorItem, specialty"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
 

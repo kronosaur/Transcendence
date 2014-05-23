@@ -10,7 +10,7 @@
 			value=				"6000"
 			frequency=			"notrandom"
 			mass=				"4000"
-			attributes=			"MinorItem; Rasiermesser; NotForSale"
+			attributes=			"military, minorItem, rasiermesser, notForSale"
 
 			description=		"Dvalin's nano-sintering process can create armor that is stronger than hexphase."
 
@@ -36,7 +36,7 @@
 			value=				"200000"
 			mass=				"4000"
 			frequency=			"notrandom"
-			attributes=			"MajorItem; EnergyWeapon; Rasiermesser; NotForSale"
+			attributes=			"energyWeapon, majorItem, military, rasiermesser, notForSale"
 
 			description=		"This is an experimental ion cannon created by Rasiermesser's chief scientist."
 			>
