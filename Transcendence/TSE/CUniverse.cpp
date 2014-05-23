@@ -822,7 +822,7 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 //	GetCurrentAdventureExtensions
 //
 //	Returns the list of extensions enabled for the current adventure.
-//	[Does not include any extensions that the adventure itself included.]
+//	[Does not include any libraries nor any auto-included extension.]
 
 	{
 	int i;
@@ -841,6 +841,11 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 		//	adventure;
 
 		else if (pExtension->GetType() == extLibrary)
+			NULL;
+
+		//	Do no include extensions that are automatically included.
+
+		else if (pExtension->IsAutoInclude())
 			NULL;
 
 		//	Include other extensions
