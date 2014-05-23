@@ -2392,7 +2392,7 @@ class CSpaceObject : public CObject
 		virtual CSovereign *GetSovereign (void) const { return NULL; }
 		virtual CDesignType *GetType (void) const { return NULL; }
 		virtual CDesignType *GetWreckType (void) const { return NULL; }
-		virtual bool HasAttribute (const CString &sAttribute) const { return false; }
+		virtual bool HasAttribute (const CString &sAttribute) const { return sAttribute.IsBlank(); }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
 		virtual bool IsExplored (void) { return true; }
 		virtual bool IsImmutable (void) const { return false; }

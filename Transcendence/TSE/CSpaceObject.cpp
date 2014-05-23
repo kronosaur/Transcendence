@@ -5409,8 +5409,12 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 				break;
 
 			case 'B':
-				retCriteria->AttribsRequired.Insert(ParseCriteriaParam(&pPos));
+				{
+				CString sAttrib = ParseCriteriaParam(&pPos);
+				if (!sAttrib.IsBlank())
+					retCriteria->AttribsRequired.Insert(sAttrib);
 				break;
+				}
 
 			case 'b':
 				retCriteria->dwCategories |= catBeam;
@@ -5565,15 +5569,26 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 				}
 
 			case 't':
+				{
 				retCriteria->dwCategories |= CSpaceObject::catStation;
-				retCriteria->AttribsRequired.Insert(ParseCriteriaParam(&pPos));
+
+				CString sAttrib = ParseCriteriaParam(&pPos);
+				if (!sAttrib.IsBlank())
+					retCriteria->AttribsRequired.Insert(sAttrib);
 				break;
+				}
 
 			case 'T':
+				{
 				retCriteria->dwCategories |= CSpaceObject::catStation;
-				retCriteria->AttribsRequired.Insert(ParseCriteriaParam(&pPos));
+
+				CString sAttrib = ParseCriteriaParam(&pPos);
+				if (!sAttrib.IsBlank())
+					retCriteria->AttribsRequired.Insert(sAttrib);
+
 				retCriteria->bStructureScaleOnly = true;
 				break;
+				}
 
 			case 'V':
 				retCriteria->bIncludeVirtual = true;
@@ -5598,19 +5613,22 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 				bool bBinaryParam;
 				CString sParam = ParseCriteriaParam(&pPos, false, &bBinaryParam);
 
-				if (bRequired)
+				if (!sParam.IsBlank())
 					{
-					if (bBinaryParam)
-						retCriteria->SpecialRequired.Insert(sParam);
+					if (bRequired)
+						{
+						if (bBinaryParam)
+							retCriteria->SpecialRequired.Insert(sParam);
+						else
+							retCriteria->AttribsRequired.Insert(sParam);
+						}
 					else
-						retCriteria->AttribsRequired.Insert(sParam);
-					}
-				else
-					{
-					if (bBinaryParam)
-						retCriteria->SpecialNotAllowed.Insert(sParam);
-					else
-						retCriteria->AttribsNotAllowed.Insert(sParam);
+						{
+						if (bBinaryParam)
+							retCriteria->SpecialNotAllowed.Insert(sParam);
+						else
+							retCriteria->AttribsNotAllowed.Insert(sParam);
+						}
 					}
 				break;
 				}

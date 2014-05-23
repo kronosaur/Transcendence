@@ -404,7 +404,7 @@ class CDesignType
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID) { return NULL; }
 		virtual bool OnFindEventHandler (const CString &sEvent, SEventHandlerDesc *retEvent = NULL) const { return false; }
 		virtual ALERROR OnFinishBindDesign (SDesignLoadCtx &Ctx) { return NOERROR; }
-		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const { return false; }
+		virtual bool OnHasSpecialAttribute (const CString &sAttrib) const { return sAttrib.IsBlank(); }
 		virtual void OnInitFromClone (CDesignType *pSource) { ASSERT(false); }
 		virtual void OnMarkImages (void) { }
 		virtual void OnMergeType (CDesignType *pSource) { ASSERT(false); }
