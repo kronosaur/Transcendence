@@ -640,7 +640,9 @@
     <None Include="Game\Source\KorolovShipping.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Luminous.xml" />
+    <None Include="Game\Source\Luminous.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Metallic.xml" />
     <None Include="Game\Source\Mining.xml" />
     <None Include="Game\Source\MiscItems.xml">
