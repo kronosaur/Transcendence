@@ -101,19 +101,20 @@
 	<OverlayType UNID="&ovAuxForwardLeftMount;"
 			>
 		<Effect>
-			<Image imageID="&rsAuxMountOverlay;" imageX="0" imageWidth="32" imageHeight="32" rotationCount="40"/>
+			<Image imageID="&rsAuxMountOverlayHD;" imageX="0" imageWidth="32" imageHeight="32" rotationCount="120"/>
 		</Effect>
 	</OverlayType>
 
 	<OverlayType UNID="&ovAuxForwardRightMount;"
 			>
 		<Effect>
-			<Image imageID="&rsAuxMountOverlay;" imageX="32" imageWidth="32" imageHeight="32" rotationCount="40"/>
+			<Image imageID="&rsAuxMountOverlayHD;" imageX="32" imageWidth="32" imageHeight="32" rotationCount="120"/>
 		</Effect>
 	</OverlayType>
 	
 <!-- RESOURCES -->
 
+	<Image UNID="&rsAuxMountOverlayHD;"	bitmap="Resources\AuxiliaryWeaponMountHD.jpg"	bitmask="Resources\AuxiliaryWeaponMountHDMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsAuxMountOverlay;"	bitmap="Resources\AuxiliaryWeaponMount.jpg"	bitmask="Resources\AuxiliaryWeaponMountMask.bmp"	loadOnUse="true"/>
 	
 </TranscendenceModule>

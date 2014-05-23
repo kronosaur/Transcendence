@@ -958,6 +958,7 @@
 	<!ENTITY ovAuxForwardLeftMount		"0x0001001E">
 	<!ENTITY ovAuxForwardRightMount		"0x0001001F">
 	<!ENTITY rsAuxMountOverlay			"0x00010020">
+	<!ENTITY rsAuxMountOverlayHD		"0x00010021">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -1671,6 +1672,7 @@
 	<!ENTITY rsPteravoreDebris			"0x08010145">
 	<!ENTITY vtPteravoreBite			"0x08010146">
 	<!ENTITY rsPteravoreLair			"0x08010147">
+	<!ENTITY rsPteravoreClawOverlayHD	"0x08010148">
 
 	<!-- MISCELLANEOUS WATER ENCOUNTERS 0802 -->
 

@@ -4517,7 +4517,7 @@
 	<OverlayType UNID="&ovPteravoreFuelDrain;"
 			>
 		<Effect>
-			<Image imageID="&rsPteravoreClawOverlay;" imageWidth="32" imageHeight="32" rotationCount="40"/>
+			<Image imageID="&rsPteravoreClawOverlayHD;" imageWidth="32" imageHeight="32" rotationCount="120"/>
 		</Effect>
 
 		<HitEffect 
@@ -4654,10 +4654,11 @@
 		</Events>
 	</OverlayType>
 
-	<Image UNID="&rsPteravoreClaw;"			bitmap="Resources\PteravoreClaw.jpg"	bitmask="Resources\PteravoreClawMask.bmp"	loadOnUse="true"/>
-	<Image UNID="&rsPteravoreLair;"			bitmap="Resources\PteravoreLair.jpg"	bitmask="Resources\PteravoreLairMask.bmp"	loadOnUse="true"/>
-	<Image UNID="&rsPteravoreClawOverlay;"	bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	loadOnUse="true"/>
-	<Image UNID="&rsPteravoreDebris;"		bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClaw;"				bitmap="Resources\PteravoreClaw.jpg"	bitmask="Resources\PteravoreClawMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreLair;"				bitmap="Resources\PteravoreLair.jpg"	bitmask="Resources\PteravoreLairMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClawOverlayHD;"	bitmap="Resources\PteravoreClawOverlayHD.jpg"	bitmask="Resources\PteravoreClawOverlayHDMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreClawOverlay;"		bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsPteravoreDebris;"			bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	loadOnUse="true"/>
 
 <!-- Ranx Warlords ======================================================== -->
 
