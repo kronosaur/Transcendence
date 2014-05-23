@@ -212,7 +212,7 @@ void CFleetCommandAI::Behavior (void)
 			//	Maneuver so that we can defend the station against this threat
 
 			CVector vPos = m_pObjective->GetPos() + (m_vThreatPotential.Normal() * DEFENSE_RANGE);
-			m_AICtx.ImplementFormationManeuver(m_pShip, vPos, NullVector, VectorToPolar(m_vThreatPotential));
+			m_AICtx.ImplementFormationManeuver(m_pShip, vPos, NullVector, m_pShip->AlignToRotationAngle(VectorToPolar(m_vThreatPotential)));
 
 			//	Loop over all our targets and make sure that they have enough ships
 			//	taking care of them.
@@ -528,7 +528,7 @@ void CFleetCommandAI::ImplementAttackFromRallyPoint (void)
 	{
 	//	Stay in position
 
-	m_AICtx.ImplementFormationManeuver(m_pShip, m_vRallyPoint, NullVector, m_iRallyFacing);
+	m_AICtx.ImplementFormationManeuver(m_pShip, m_vRallyPoint, NullVector, m_pShip->AlignToRotationAngle(m_iRallyFacing));
 
 	//	Fire our weapon
 	
@@ -563,7 +563,7 @@ void CFleetCommandAI::ImplementChargeInFormation (void)
 //	Charge towards objective
 
 	{
-	m_AICtx.ImplementFormationManeuver(m_pShip, m_pObjective->GetPos(), NullVector, m_iRallyFacing);
+	m_AICtx.ImplementFormationManeuver(m_pShip, m_pObjective->GetPos(), NullVector, m_pShip->AlignToRotationAngle(m_iRallyFacing));
 
 	//	Compute our distance to the target
 
@@ -618,7 +618,7 @@ void CFleetCommandAI::ImplementFormAtRallyPoint (void)
 	{
 	//	Move to rally point
 
-	m_AICtx.ImplementFormationManeuver(m_pShip, m_vRallyPoint, NullVector, m_iRallyFacing);
+	m_AICtx.ImplementFormationManeuver(m_pShip, m_vRallyPoint, NullVector, m_pShip->AlignToRotationAngle(m_iRallyFacing));
 
 	//	Every once in a while check to see if all our ships are in formation
 

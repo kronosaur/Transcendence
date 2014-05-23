@@ -41,6 +41,7 @@ class CAIBehaviorCtx
 		inline bool AvoidsExplodingStations (void) const { return m_fAvoidExplodingStations; }
 		inline void ClearBestWeapon (void) { m_fRecalcBestWeapon = true; }
 		inline void ClearNavPath (void) { m_pNavPath = NULL; m_iNavPathPos = -1; }
+		void DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		inline CString GetAISetting (const CString &sSetting) { return m_AISettings.GetValue(sSetting); }
 		inline const CAISettings &GetAISettings (void) const { return m_AISettings; }
 		inline CInstalledDevice *GetBestWeapon (void) const { return (m_iBestWeapon != devNone ? m_pBestWeapon : NULL); }

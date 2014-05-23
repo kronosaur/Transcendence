@@ -722,13 +722,13 @@ void CAIBehaviorCtx::ImplementCloseOnImmobileTarget (CShip *pShip, CSpaceObject 
 
 		int iDestFacing = VectorToPolar(vTarget);
 		if (iDestFacing >= 0 && iDestFacing < 90)
-			iDestFacing = 45;
+			iDestFacing = pShip->AlignToRotationAngle(45);
 		else if (iDestFacing >=90 && iDestFacing < 180)
-			iDestFacing = 135;
+			iDestFacing = pShip->AlignToRotationAngle(135);
 		else if (iDestFacing >=180 && iDestFacing < 270)
-			iDestFacing = 225;
+			iDestFacing = pShip->AlignToRotationAngle(225);
 		else
-			iDestFacing = 315;
+			iDestFacing = pShip->AlignToRotationAngle(315);
 
 		//	Close in
 
@@ -909,7 +909,7 @@ void CAIBehaviorCtx::ImplementEscortManeuvers (CShip *pShip, CSpaceObject *pTarg
 
 		//	Maneuver towards the position
 
-		ImplementFormationManeuver(pShip, pTarget->GetPos() + vEscortPos, pTarget->GetVel(), pTarget->GetRotation());
+		ImplementFormationManeuver(pShip, pTarget->GetPos() + vEscortPos, pTarget->GetVel(), pShip->AlignToRotationAngle(pTarget->GetRotation()));
 		}
 	}
 
@@ -1221,7 +1221,7 @@ void CAIBehaviorCtx::ImplementFollowNavPath (CShip *pShip, bool *retbAtDestinati
 		//	If we're at the last nav point, then we've reached our
 		//	destination.
 
-		if (m_iNavPathPos + 1 == m_pNavPath->GetNavPointCount())
+		if (m_iNavPathPos + 1 >= m_pNavPath->GetNavPointCount())
 			{
 			if (retbAtDestination)
 				*retbAtDestination = true;
@@ -1249,7 +1249,9 @@ void CAIBehaviorCtx::ImplementFormationManeuver (CShip *pShip, const CVector vDe
 
 //	ImplementFormationManeuver
 //
-//	Moves the ship to the given formation point
+//	Moves the ship to the given formation point.
+//
+//	NOTE: iDestFacing must be aligned to one of the ship's rotation angles
 
 	{
 	//	Figure out how far we are from where we want to be

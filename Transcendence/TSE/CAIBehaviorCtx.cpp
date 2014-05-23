@@ -770,6 +770,19 @@ void CAIBehaviorCtx::CommunicateWithEscorts (CShip *pShip, MessageTypes iMessage
 		}
 	}
 
+void CAIBehaviorCtx::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	DebugPaintInfo
+//
+//	Paint debug info
+
+	{
+#ifdef DEBUG_NAV_PATH
+	if (m_pNavPath)
+		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx);
+#endif
+	}
+
 void CAIBehaviorCtx::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream

@@ -817,7 +817,7 @@ void CStandardShipAI::OnBehavior (void)
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
 
 			bool bInPosition = false;
-			m_AICtx.ImplementFormationManeuver(m_pShip, m_pDest->GetPos(), m_pDest->GetVel(), m_iCountdown, &bInPosition);
+			m_AICtx.ImplementFormationManeuver(m_pShip, m_pDest->GetPos(), m_pDest->GetVel(), m_pShip->AlignToRotationAngle(m_iCountdown), &bInPosition);
 			if (bInPosition)
 				CancelCurrentOrder();
 

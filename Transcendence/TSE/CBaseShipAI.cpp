@@ -613,10 +613,7 @@ void CBaseShipAI::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPai
 //	Paint debug information
 
 	{
-#ifdef DEBUG_NAV_PATH
-	if (m_pNavPath)
-		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx);
-#endif
+	m_AICtx.DebugPaintInfo(Dest, x, y, Ctx);
 	}
 
 void CBaseShipAI::FireOnOrderChanged (void)
