@@ -375,7 +375,7 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			else if (!pTarget->CanMove())
 				{
 				int iClock = g_pUniverse->GetTicks() / (170 + pShip->GetDestiny() / 3);
-				int iAngle = AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
+				int iAngle = pShip->AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
 				Metric rRadius = MIN_STATION_TARGET_DIST + (LIGHT_SECOND * (pShip->GetDestiny() % 100) / 10.0);
 
 				//	This is the position that we want to go to
@@ -475,7 +475,7 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			else if (!pTarget->CanMove())
 				{
 				int iClock = g_pUniverse->GetTicks() / (170 + pShip->GetDestiny() / 3);
-				int iAngle = AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
+				int iAngle = pShip->AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
 				Metric rRadius = MIN_STATION_TARGET_DIST + (LIGHT_SECOND * (pShip->GetDestiny() % 100) / 10.0);
 
 				//	This is the position that we want to go to
@@ -580,8 +580,8 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			//	it is aligned on a rotation angle, so we can get a shot in)
 
 			int iTargetMotion = (pTarget->CanMove() ?
-					AlignToRotationAngle(VectorToPolar(pTarget->GetVel()))
-					: AlignToRotationAngle(pShip->GetDestiny()));
+					pShip->AlignToRotationAngle(VectorToPolar(pTarget->GetVel()))
+					: pShip->AlignToRotationAngle(pShip->GetDestiny()));
 
 			//	Compute the target's angle with respect to us. We want to end up facing
 			//	directly towards the target

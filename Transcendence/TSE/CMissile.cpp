@@ -684,7 +684,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	if (m_pPainter)
 		{
 		Ctx.iTick = m_iTick;
-		Ctx.iVariant = (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0);
+		Ctx.iVariant = 0;
 		Ctx.iRotation = m_iRotation;
 		Ctx.iDestiny = GetDestiny();
 		Ctx.iMaxLength = (int)((g_SecondsPerUpdate * Max(1, m_iTick) * m_pDesc->GetRatedSpeed()) / g_KlicksPerPixel);
@@ -718,7 +718,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				x,
 				y,
 				m_iTick,
-				(m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
+				(m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation, g_RotationRange) : 0));
 
 		//	Paint exhaust trail
 
@@ -1274,9 +1274,9 @@ bool CMissile::PointInObject (const CVector &vObjPos, const CVector &vPointPos)
 	int y = -(int)((vOffset.GetY() / g_KlicksPerPixel) + 0.5);
 
 	if (m_pPainter)
-		return m_pPainter->PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0), m_iRotation);
+		return m_pPainter->PointInImage(x, y, m_iTick, 0, m_iRotation);
 	else
-		return m_pDesc->m_Image.PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
+		return m_pDesc->m_Image.PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation, g_RotationRange) : 0));
 	}
 
 bool CMissile::SetMissileFade (void)

@@ -18,17 +18,9 @@ struct SSystemCreateCtx;
 
 //	Utility inlines
 
-inline int Angle2Direction (int iAngle)
-	{
-	return ((g_RotationRange - (iAngle / g_RotationAngle)) + 5) % g_RotationRange;
-	}
 inline int Angle2Direction (int iAngle, int iRotationCount)
 	{
 	return ((iRotationCount - (iAngle / (360 / iRotationCount))) + (iRotationCount / 4)) % iRotationCount;
-	}
-inline int AlignToRotationAngle (int iAngle) 
-	{
-	return (((g_RotationRange - Angle2Direction(iAngle)) + 5) * g_RotationAngle) % 360; 
 	}
 inline int Direction2Angle (int iDirection, int iRotationCount)
 	{
