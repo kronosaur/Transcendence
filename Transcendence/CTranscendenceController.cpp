@@ -675,10 +675,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	If the player name is NULL then we come up with a better idea
 
 		if (Defaults.sPlayerName.IsBlank())
+			{
 			Defaults.sPlayerName = m_Service.GetDefaultUsername();
+			Defaults.bDefaultPlayerName = true;
+			}
 
 		if (Defaults.sPlayerName.IsBlank())
+			{
 			Defaults.sPlayerName = ::sysGetUserName();
+			Defaults.bDefaultPlayerName = true;
+			}
 
 		Defaults.sPlayerName = CUniverse::ValidatePlayerName(Defaults.sPlayerName);
 
@@ -729,8 +735,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 
 		//	Remember the player settings
+		//
+		//	NOTE: We don't save the player name if it is a default name. This 
+		//	allows us to pick a different name if we two different people sign in.
+		//	Also, it prevents from us from posting the computer's username to
+		//	the Multiverse (which some people see as a privacy issue).
 
-		m_Settings.SetString(CGameSettings::playerName, pNewGame->sPlayerName);
+		if (!pNewGame->bDefaultPlayerName)
+			m_Settings.SetString(CGameSettings::playerName, pNewGame->sPlayerName);
+
 		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
 		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
 

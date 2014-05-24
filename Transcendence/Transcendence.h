@@ -149,7 +149,8 @@ struct SNewGameSettings
 	SNewGameSettings (void) :
 			iPlayerGenome(genomeUnknown),
 			dwPlayerShip(0),
-			bFullCreate(false)
+			bFullCreate(false),
+			bDefaultPlayerName(false)
 		{ }
 
 	CString sPlayerName;						//	Character name
@@ -157,6 +158,7 @@ struct SNewGameSettings
 	DWORD dwPlayerShip;							//	Starting ship class
 
 	bool bFullCreate;							//	If TRUE, create all systems
+	bool bDefaultPlayerName;					//	If TRUE, this is a default player name
 	};
 
 struct SAdventureSettings
