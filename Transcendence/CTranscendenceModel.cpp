@@ -686,6 +686,8 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	NewFrame.sScreen = sScreen;
 	NewFrame.sPane = sPane;
 	NewFrame.pInitialData = pData;
+	NewFrame.pResolvedRoot = pRoot;
+	NewFrame.sResolvedScreen = (pRoot ? sScreen : NULL_STR);
 	m_DockFrames.Push(NewFrame);
 
 	//	From this point forward we are considered in a screen session.
@@ -1992,6 +1994,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	NewFrame.sScreen = sScreenActual;
 	NewFrame.sPane = sPane;
 	NewFrame.pInitialData = pData;
+	NewFrame.pResolvedRoot = pRoot;
+	NewFrame.sResolvedScreen = sScreenActual;
 
 	//	Some screens pop us into a new frame
 
@@ -2001,6 +2005,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		m_DockFrames.Push(NewFrame);
 	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
+	else
+		m_DockFrames.ResolveCurrent(NewFrame);
 
 	//	Show the screen
 	//

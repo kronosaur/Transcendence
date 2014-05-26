@@ -984,7 +984,8 @@ struct SDockFrame
 			pLocation(NULL),
 			pRoot(NULL),
 			pInitialData(NULL),
-			pStoredData(NULL)
+			pStoredData(NULL),
+			pResolvedRoot(NULL)
 		{ }
 
 	CSpaceObject *pLocation;				//	Current location
@@ -993,6 +994,9 @@ struct SDockFrame
 	CString sPane;							//	Current pane
 	ICCItem *pInitialData;					//	Data for the screen
 	ICCItem *pStoredData;					//	Read-write data
+
+	CDesignType *pResolvedRoot;
+	CString sResolvedScreen;
 	};
 
 class CDockScreenStack
@@ -1006,6 +1010,7 @@ class CDockScreenStack
 		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
 		void Push (const SDockFrame &Frame);
 		void Pop (void);
+		void ResolveCurrent (const SDockFrame &ResolvedFrame);
 		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
 		void SetCurrentPane (const CString &sPane);
 		void SetData (const CString &sAttrib, ICCItem *pData);

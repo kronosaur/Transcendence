@@ -2359,7 +2359,7 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Allow other design types to override the pane
 
-	g_pUniverse->FireOnGlobalPaneInit(this, CurFrame.pRoot, CurFrame.sScreen, sName);
+	g_pUniverse->FireOnGlobalPaneInit(this, CurFrame.pResolvedRoot, CurFrame.sResolvedScreen, sName);
 
 	//	Check to see if the description is too large for the area. If so, then
 	//	we shift everything down.
