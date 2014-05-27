@@ -763,7 +763,7 @@ class CDockScreenActions
 
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
 		void CleanUp (void);
-		void CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame);
+		void CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
 		void ExecuteExitScreen (bool bForceUndock = false);
 		void ExecuteShowPane (const CString &sPane);
