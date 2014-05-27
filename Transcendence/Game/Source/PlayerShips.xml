@@ -44,7 +44,7 @@
 		</Devices>
 		
 		<Maneuver
-			maxRotationRate=	"6.0"
+			maxRotationRate=	"9.0"
 			rotationAccel=		"2.0"
 			/>
 
@@ -204,7 +204,7 @@
 		</Devices>
 
 		<Maneuver
-			maxRotationRate=	"9.0"
+			maxRotationRate=	"12.0"
 			rotationAccel=		"3.0"
 			/>
 
