@@ -96,7 +96,7 @@ void CDockScreenActions::CleanUp (void)
 		}
 	}
 
-void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame)
+void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame)
 
 //	CreateButtons
 //
@@ -115,10 +115,47 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, c
 		if (!pAction->bVisible)
 			continue;
 
+		//	Add the button
+
 		CGButtonArea *pButton = new CGButtonArea;
-		pButton->SetLabel(pAction->sLabel);
-		pButton->SetLabelFont(&LabelFont);
+
+		//	If the label is currently blank, then look up the ID in the language
+		//	table and see if we have something.
+
+		if (pAction->sLabel.IsBlank() 
+				&& pRoot
+				&& !pAction->sID.IsBlank())
+			{
+			CString sLabelDesc;
+			if (pRoot->TranslateText(NULL, pAction->sID, &sLabelDesc))
+				{
+				CString sLabel;
+				CString sKey;
+				ParseLabelDesc(sLabelDesc, &sLabel, &sKey);
+
+				//	Set the label. Note that we don't update pAction->sLabel in case
+				//	we want the label to be determined dynamically.
+
+				pButton->SetLabel(sLabel);
+
+				//	We need to set the action key because we have to check for it
+				//	during input.
+
+				if (!sKey.IsBlank())
+					pAction->sKey = sKey;
+				}
+			}
+
+		//	Otherwise, just use the stored label and key
+
+		else
+			pButton->SetLabel(pAction->sLabel);
+
 		pButton->SetLabelAccelerator(pAction->sKey);
+
+		//	Set font, etc.
+
+		pButton->SetLabelFont(&LabelFont);
 		if (!pAction->bEnabled)
 			pButton->SetDisabled();
 

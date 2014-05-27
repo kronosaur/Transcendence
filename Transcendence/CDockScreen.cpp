@@ -2416,7 +2416,7 @@ void CDockScreen::ShowPane (const CString &sName)
 	rcActions.right = m_rcPane.right;
 	rcActions.bottom = m_rcPane.bottom;
 
-	m_CurrentActions.CreateButtons(pFrame, g_FirstActionID, rcActions);
+	m_CurrentActions.CreateButtons(pFrame, CurFrame.pResolvedRoot, g_FirstActionID, rcActions);
 
 	//	Update screen
 
