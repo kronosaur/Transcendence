@@ -1696,7 +1696,7 @@
 		<Invoke>
 			(block Nil
 				(if (eq (objGetEquipmentStatus gPlayerShip 'TargetingComputer) 'ready)
-					(objSendMessage gSource Nil "Ship already has targeting program")
+					(objSendMessage gSource Nil "Ship already has a targeting program")
 					(block Nil
 						(objChangeEquipmentStatus gPlayerShip 'TargetingComputer 'install)
 						(objSendMessage gSource Nil "Targeting program installed")
