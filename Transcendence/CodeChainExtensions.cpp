@@ -1264,7 +1264,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sKey;
 			if (pArgs->GetCount() > iArg + 1)
 				{
-				sKey = pArgs->GetElement(iArg)->GetStringValue();
+				if (!pArgs->GetElement(iArg)->IsNil())
+					sKey = pArgs->GetElement(iArg)->GetStringValue();
 				iArg++;
 				}
 

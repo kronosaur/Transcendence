@@ -782,14 +782,12 @@ class CDockScreenActions
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
 		inline void SetButton (int iAction, CGButtonArea *pButton) { m_Actions[iAction].pButton = pButton; }
 		void SetEnabled (int iAction, bool bEnabled = true);
-		void SetLabel (int iAction, const CString &sLabel, const CString &sKey);
+		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);
 		void SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled = true);
 		bool SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpecial, ICCItem **retpError);
 		void SetVisible (int iAction, bool bVisible = true);
 
 	private:
-		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
-
 		struct SActionDesc
 			{
 			CString sID;
@@ -811,6 +809,11 @@ class CDockScreenActions
 			bool bPrev;				//	This is the prev action [<-]
 			bool bNext;				//	This is the next action [->]
 			};
+
+		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
+		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
+		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc);
+		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
 
 		TArray<SActionDesc> m_Actions;
 		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
