@@ -278,7 +278,20 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		//	(plyGetRedirectMessage player)
 
 		{	"plyGetStat",					fnPlyGet,			FN_PLY_GET_STAT,
-			"(plyGetStat player stat) -> value",
+			"(plyGetStat player stat) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'bestEnemyShipDestroyed\n"
+			"   'enemyShipsDestroyed\n"
+			"   'enemyStationsDestroyed\n"
+			"   'friendlyShipsDestroyed\n"
+			"   'friendlyStationsDestroyed\n"
+			"   'resurrectCount\n"
+			"   'score\n"
+			"   'systemData\n"
+			"   'systemsVisited\n",
+
 			"is",	0,	},
 
 		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
