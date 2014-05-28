@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict Story Arc
+
+	This type holds all global data and events for the Benedict and Sisters of
+	Domina story arc.
+	
+	This is the main story arc in Stars of the Pilgrim.
+
+	GLOBAL DATA
+	
+	curMission: The UNID of the most recent mission that the player accepted.
+			Nil if the player has not yet accepted any mission in the story
+			arc. Use benedict_missionAccepted to set this value.
+
+	firstDockedAtSisters: The tick on which the player first docked at a Sisters
+			of Domina station. Nil if never docked.
+			
+	introDone: If True, then we no longer need to show the Benedict Intro screen
+			at the Sisters of Domina.
+
+	-->
+
+	<Type UNID="&unidBenedictStoryArc;">
+		<Events>
+			<GetGlobalDockScreen>
+				(switch
+					;	If we're not a pilgrim, then nothing to do.
+						
+					(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+						Nil
+							
+					;	If we're in the starting system, and if we dock with a Sisters
+					;	of Domina station, and if this is the first time we've docked,
+					;	then show the intro screen
+						
+					(and (eq (objGetType gSource) &stSistersOfDomina;)
+							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
+							(not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
+							)
+						(list &dsBenedictIntro; Nil 4)
+
+					;	In the Eridani system, if we dock with Bering station, and if
+					;	we started in Eridani, and if we are a pilgrim, then we
+					;	show our home.
+				
+					(and (eq (objGetType gSource) &stBeringStation;)
+							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
+							)
+						(list &dsPilgrimBeringStation; Nil 6)
+							
+					;	Otherwise, nothing
+
+					Nil
+					)
+			</GetGlobalDockScreen>
+			
+			<OnGlobalPaneInit>
+				(switch
+					;	If not a pilgrim, nothing to do
+					
+					(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+						Nil
+						
+					;	If we're at a Sisters of Domina station, see if we need to add
+					;	some actions.
+					
+					(and (eq aScreen "0x00182001/Main") (eq aPane "Default"))
+						(switch
+						
+							;	If we're in the starting system, then we add actions to interact
+							;	with Benedict
+							
+							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
+								(switch
+							
+									;	If we're showing the Sisters of Domina main screen, and if we're
+									;	in the starting system, then give access to the intro screen.
+					
+									(and (not (typGetData &unidBenedictStoryArc; 'introDone))
+											(typGetData &unidBenedictStoryArc; 'firstDockedAtSisters)
+											)
+										(block Nil
+											;	Add an action to talk to the Abbess
+						
+											(scrAddAction gScreen 'talkToAbbess 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToAbbess)
+												(scrShowScreen gScreen &dsBenedictIntro;)
+												)
+											)
+											
+									;	If we have an active mission, then add an action to talk to Benedict.
+									
+									(msnFind gSource "aS +benedictStoryArc;")
+										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)
+											(scrShowScreen gScreen &dsRPGMission;
+												{
+												missionObj: (@ (msnFind gSource "aS +benedictStoryArc;") 0)
+												})
+											)
+							
+									;	If we still have missions to given, add action to talk to Benedict.
+					
+									(benedict_isMissionAvailable &msBenedictFirstMission;)
+										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)
+											nil
+											)
+									)
+							)
+							
+					;	Otherwise, nothing
+					
+					Nil
+					)
+			</OnGlobalPaneInit>
+		</Events>
+		
+		<Language>
+			<Text id="actionTalkToAbbess">"Talk to [A]bbess"</Text>
+			<Text id="actionTalkToBenedict">"Talk to [B]enedict"</Text>
+		</Language>
+	</Type>
+
+<!-- CODE -->
+
+	<Globals>
+		(block Nil
+			(setq benedict_isFirstMission (lambda ()
+				(not (typGetData &unidBenedictStoryArc; 'curMission))
+				))
+
+			(setq benedict_isMissionAvailable (lambda (missionUNID)
+				(block (curMission)
+					(setq curMission (typGetData &unidBenedictStoryArc; 'curMission))
+
+					(switch
+						;	If there are active missions that the player has not 
+						;	yet completed, then they need to complete them first.
+
+						(msnFind "a +benedictStoryArc;")
+							Nil
+
+						;	If the new mission is earlier than the latest mission
+						;	then it is too late.
+
+						(and curMission (leq (typGetStaticData missionUNID 'sequence) (typGetStaticData curMission 'sequence)))
+							Nil
+
+						;	Otherwise, the mission is available
+
+						True
+						)
+					)
+				))
+
+			(setq benedict_missionAccepted (lambda (missionObj)
+				(typSetData &unidBenedictStoryArc; 'curMission (msnGetProperty missionObj 'unid))
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

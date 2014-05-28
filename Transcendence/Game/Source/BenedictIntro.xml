@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict Intro
+	
+	GLOBAL DATA
+	
+	q1, q2, ... q{n}: These are set to True if the player has already been given
+			answers to the question.
+	
+	-->
+
+	<DockScreen UNID="&dsBenedictIntro;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(nextActionPos 0)
+						)
+						
+						;	Set the description
+						
+						(switch
+							(not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
+								(scrSetDesc gScreen (typTranslate &dsBenedictIntro; 'IntroFirst))
+							
+							(not (scrGetData gScreen 'answerQ))
+								(scrSetDesc gScreen (typTranslate &dsBenedictIntro; 'IntroReturning))
+								
+							(scrSetDesc gScreen
+								(typTranslate &dsBenedictIntro; (cat (scrGetData gScreen 'answerQ) ":Answer"))
+								)
+							)
+						
+						;	Add unanswered questions as actions:
+						
+						(if (not (typGetData &dsBenedictIntro; 'q1))
+							(block Nil
+								(scrAddAction gScreen 'q1 nextActionPos
+									(typTranslate &dsBenedictIntro; "q1:Label")
+									(block Nil
+										(scrSetData gScreen 'answerQ 'q1)
+										(typSetData &dsBenedictIntro; 'q1 True)
+										(scrRefreshScreen gScreen)
+										)
+									)
+								(setq nextActionPos (add nextActionPos 1))
+								)
+							)
+							
+						(if (not (typGetData &dsBenedictIntro; 'q2))
+							(block Nil
+								(scrAddAction gScreen 'q2 nextActionPos
+									(typTranslate &dsBenedictIntro; "q2:Label")
+									(block Nil
+										(scrSetData gScreen 'answerQ 'q2)
+										(typSetData &dsBenedictIntro; 'q2 True)
+										(scrRefreshScreen gScreen)
+										)
+									)
+								(setq nextActionPos (add nextActionPos 1))
+								)
+							)
+							
+						;	Last question always goes to Benedict, but we set the label
+						;	based on whether we've talked to him before
+							
+						(scrSetActionLabel gScreen 'actionBenedict 
+							(typTranslate &dsBenedictIntro; 
+								(if (typGetData &dsBenedictIntro; 'q3)
+									"q3:LabelAgain"
+									"q3:Label"
+									)
+								)
+							)
+							
+						;	Remember the first time we talk to the Sisters.
+						
+						(if (not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
+							(typSetData &unidBenedictStoryArc; 'firstDockedAtSisters (unvGetTick))
+							)
+							
+						;	Allow access to Sanctum
+
+						(objSetData gSource "freeSanctum" True)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionBenedict">
+						(block Nil
+						
+							;	Remember that we've already talked to Benedict
+							(typSetData &dsBenedictIntro; 'q3 True)
+							
+							;	Continue
+							(scrShowPane gScreen "BenedictIntro")
+							)
+					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<BenedictIntro>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsBenedictIntro; "q3:Answer"))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (theMission)
+						
+							;	Exit the screen so when we return, we're back at the main screen
+							
+							(scrExitScreen gScreen)
+							
+							;	If we have an open mission or if the first Benedict mission is
+							;	available, then show it.
+							
+							(if	(or (setq theMission (@ (msnFind gSource "oS") 0))
+									(setq theMission (msnCreate &msBenedictsDrones; gSource)))
+								(scrShowScreen gScreen &dsRPGMission;
+									{
+									missionObj: theMission
+									})
+								)
+							)
+					</Action>
+				</Actions>
+			</BenedictIntro>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDone">"Do[n]e"</Text>
+			
+			<Text id="IntroFirst">
+				(cat
+					"You are docked at an abbey of the Sisters of Domina. "
+					"A woman wearing a flowing cardinal robe approaches you.\n\n"
+							
+					"\"Welcome, pilgrim! Your journey to the Galactic Core has just begun. "
+					"Your path will be filled with many obstacles, but do not worry: "
+					"Domina chooses only those who have the strength to succeed.\""
+					)
+			</Text>
+			
+			<Text id="IntroReturning">
+				(cat "LATER: Welcome back!")
+			</Text>
+			
+			<Text id="q1:Label">"\"Who is [D]omina?\""</Text>
+			<Text id="q1:Answer">"LATER: How should I know?"</Text>
+			
+			<Text id="q2:Label">"\"How do I reach the [G]alactic Core?\""</Text>
+			<Text id="q2:Answer">"LATER: With great difficulty."</Text>
+			
+			<Text id="q3:Label">"\"[W]hat obstacles will I face?\""</Text>
+			<Text id="q3:Answer">
+				(cat
+					"\"Star travel is dangerous, even in the Commonwealth. "
+					"You'll face pirates, outlaws and worse before you reach the Core. "
+					"But we can prepare you.\n\n"
+					
+					"The abbess signals an unseen companion and a stout man emerges from "
+					"the shadows. He marches to the abbess's side, looking past you at "
+					"your ship.\n\n"
+					
+					"The abbess continues: \"This is Benedict, our most valuable friend. "
+					"He will help you.\""
+					)
+			</Text>
+			
+			<Text id="q3:LabelAgain">"\"I'd like [B]enedict to help\""</Text>
+		</Language>
+	</DockScreen>
+
+</TranscendenceModule>

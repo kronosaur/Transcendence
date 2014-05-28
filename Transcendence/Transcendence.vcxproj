@@ -614,7 +614,9 @@
     <None Include="Game\Source\CorporateHierarchy.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Domina.xml" />
+    <None Include="Game\Source\Domina.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\DwargRaiders.xml">
       <SubType>Designer</SubType>
     </None>
@@ -667,12 +669,16 @@
     <None Include="Game\Source\RPGCode.xml" />
     <None Include="Game\Source\RPGCompatibility.xml" />
     <None Include="Game\Source\RPGDockScreens.xml" />
-    <None Include="Game\Source\RPGMissions.xml" />
+    <None Include="Game\Source\RPGMissions.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGPlayer.xml" />
     <None Include="Game\Source\RPGShipScreens.xml" />
     <None Include="Game\Source\RPGTypes.xml" />
     <None Include="Game\Source\RPGWingmen.xml" />
-    <None Include="Game\Source\SistersOfDomina.xml" />
+    <None Include="Game\Source\SistersOfDomina.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Stargates.xml" />
     <None Include="Game\Source\StarsOfThePilgrim.xml" />
     <None Include="Game\Source\StarSystems.xml" />
@@ -708,11 +714,29 @@
     <None Include="Game\Source\UniverseCompatibility.xml" />
     <None Include="Game\Source\UniverseEffects.xml" />
     <None Include="Game\Source\UrakWarlords.xml" />
-    <None Include="Game\Source\UsefulItems.xml" />
+    <None Include="Game\Source\UsefulItems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Volcanic.xml" />
     <None Include="Game\Source\Worlds.xml">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Game\Source\BenedictIntro.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\BenedictStoryArc.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Game\Source\Benedict00.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Game\Source\Benedict01.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

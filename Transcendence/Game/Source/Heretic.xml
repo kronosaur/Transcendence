@@ -2744,6 +2744,7 @@
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsSistersShrineBkgnd;"
 			canAttack=			"true"
 			noBlacklist=		"true"
 
@@ -2819,9 +2820,7 @@
 		</Events>
 
 		<DockScreens>
-			<Main
-				backgroundID=	"&rsSistersShrineBkgnd;"
-				>
+			<Main>
 
 				<Panes>
 					<Default>

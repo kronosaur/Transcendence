@@ -60,6 +60,7 @@
 			sovereign=			"&svCommonwealth;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsSistersShrineBkgnd;"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -131,7 +132,6 @@
 
 		<DockScreens>
 			<Main
-				backgroundID=	"&rsSistersShrineBkgnd;"
 				>
 				<Panes>
 					<Default>
@@ -254,9 +254,7 @@
 
 		-->
 
-	<DockScreen UNID="&dsContemplateDomina;"
-			backgroundID=		"&rsSistersShrineBkgnd;"
-			>
+	<DockScreen UNID="&dsContemplateDomina;">
 
 		<Panes>
 
@@ -643,9 +641,7 @@
 				to when done.
 		-->
 
-	<DockScreen UNID="&dsDominaTithe;"
-			backgroundID=	"&rsSistersShrineBkgnd;"
-			>
+	<DockScreen UNID="&dsDominaTithe;">
 
 		<Panes>
 			<Default
@@ -758,7 +754,6 @@
 	<!-- Sisters Decontamination -->
 
 	<DockScreen UNID="&dsSistersDecon;"
-			backgroundID=		"&rsSistersShrineBkgnd;"
 			nestedScreen=		"true"
 			>
 
@@ -793,9 +788,7 @@
 				to when done.
 		-->
 
-	<DockScreen UNID="&dsSistersDockServices;"
-			backgroundID=	"&rsSistersShrineBkgnd;"
-			>
+	<DockScreen UNID="&dsSistersDockServices;">
 
 		<Panes>
 			<Default
@@ -939,10 +932,13 @@
 
 	</DockScreen>
 
-	<!-- Sisters Intro -->
+	<!-- Sisters Intro
+	
+	NOTE: Deprecated in 1.3. See BenedictStoryArc.xml instead.
+	
+	-->
 
 	<DockScreen UNID="&dsSistersIntro;"
-			backgroundID=	"&rsSistersShrineBkgnd;"
 			nestedScreen=	"true"
 			>
 
@@ -1161,11 +1157,6 @@
 					(shpIsRadioactive gPlayerShip)
 						(list &dsSistersDecon; 10)
 						
-					; Game intro
-					(and (eq (sysGetLevel) 1)
-							(not (objGetData gPlayerShip "sistersStory")))
-						(list &dsSistersIntro; 4)
-
 					Nil
 					)
 			</GetGlobalDockScreen>

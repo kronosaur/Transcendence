@@ -2,29 +2,12 @@
 
 <TranscendenceModule>
 	
-<!-- PILGRIM CHARACTER CLASS -->
+	<!-- PILGRIM CHARACTER CLASS
+
+	-->
 	
 	<Type UNID="&unidPilgrimClass;">
 		<Events>
-			<GetGlobalDockScreen>
-				;	In the Eridani system, if we dock with Bering station, and if
-				;	we started in Eridani, and if we are a pilgrim, then we
-				;	show our home.
-				
-				(block Nil
-					(switch
-						(and (eq (objGetType gSource) &stBeringStation;)
-								(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
-								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
-								)
-							(list &dsPilgrimBeringStation; Nil 6)
-
-						; Otherwise, nothing
-
-						Nil
-						)
-					)
-			</GetGlobalDockScreen>
 		</Events>
 	</Type>
 		 

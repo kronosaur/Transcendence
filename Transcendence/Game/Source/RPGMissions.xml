@@ -34,6 +34,7 @@
 
 	<DockScreen UNID="&dsRPGMission;"
 			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 		<OnScreenInit>
 			(block Nil
@@ -119,7 +120,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
@@ -164,9 +165,17 @@
 						(setq atLastPage (eq pageNo pageCount))
 
 						; Initialize actions
-						(scrShowAction gScreen 'continue (not atLastPage))
-						(scrShowAction gScreen 'accept atLastPage)
-						(scrShowAction gScreen 'decline atLastPage)
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionAccept atLastPage)
+						(scrShowAction gScreen 'actionDecline atLastPage)
+						
+						; Set the text for the actions
+						(if atLastPage
+							(block Nil
+								(scrSetActionLabel gScreen 'actionAccept (msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept)))
+								(scrSetActionLabel gScreen 'actionDecline (msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline)))
+								)
+							)
 
 						; Remeber page
 						(scrSetData gSCreen 'curPage (if atLastPage Nil pageNo))
@@ -174,11 +183,11 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrShowPane gScreen "Briefing")
 					</Action>
 
-					<Action id="accept" name="Accept" key="A" default="1">
+					<Action id="actionAccept" default="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
@@ -188,12 +197,13 @@
 							)
 					</Action>
 
-					<Action id="decline" name="Decline" key="D" cancel="1">
+					<Action id="actionDecline" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
 
-							(msnDecline missionObj)
+							(scrSetData gScreen 'declineOptions (msnDecline missionObj))
+							(print (scrGetData gScreen 'declineOptions))
 							(scrShowPane gScreen "ReplyDecline")
 							)
 					</Action>
@@ -212,7 +222,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
@@ -229,25 +239,76 @@
 				<OnPaneInit>
 					(block (
 						(missionObj (scrGetData gScreen 'missionObj))
-						(declineText (msnTranslate missionObj 'DeclineReply))
+						
+						;	Text
+						
+						(descText (msnTranslate missionObj 'DeclineReply))
+						(pageCount (rpgPageCount descText))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (rpgPageDesc descText pageNo))
+						
+						atLastPage
 						)
 
-						(scrSetDesc gScreen declineText)
+						; Show the appropriate page
+
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
+
+						(if (@ pageDesc 'nextLabel)
+							(scrSetActionLabel 
+								gScreen 
+								(if atLastPage 'actionDone 'actionContinue)
+								(@ pageDesc 'nextLabel)
+								(@ pageDesc 'nextKey)
+								)
+							)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
-						(switch
-							(not (@ gData 'nextScreen))
-								(scrExitScreen gScreen)
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "ReplyDecline")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(declineOptions (scrGetData gScreen 'declineOptions))
+							)
+							
+							(switch
+								(eq (@ declineOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ declineOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ declineOptions 'nextScreen) (@ declineOptions 'nextScreenData))
+										)
+										
+								(eq (@ gData 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
 
-							(eq (@ gData 'nextScreen) 'forceUndock)
-								(scrExitScreen gScreen 'forceUndock)
-
-							(block Nil
+								(@ gData 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ gData 'nextScreen) (@ gData 'nextScreenData))
+										)
+									
 								(scrExitScreen gScreen)
-								(scrShowScreen gScreen (@ gData 'nextScreen))
 								)
 							)
 					</Action>
@@ -266,7 +327,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
@@ -284,7 +345,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen 'forceUndock)
 					</Action>
 				</Actions>
@@ -331,13 +392,13 @@
 
 						; Initialize actions
 
-						(scrShowAction gScreen 'continue (not atLastPage))
-						(scrShowAction gScreen 'done atLastPage)
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
 
 						(if (@ pageDesc 'nextLabel)
 							(scrSetActionLabel 
 								gScreen 
-								(if atLastPage 'done 'continue)
+								(if atLastPage 'actionDone 'actionContinue)
 								(@ pageDesc 'nextLabel)
 								(@ pageDesc 'nextKey)
 								)
@@ -350,11 +411,11 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="continue" name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrShowPane gScreen "Success")
 					</Action>
 
-					<Action id="done" name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionDone" default="1" cancel="1">
 						(block (missionObj)
 							(setq missionObj (scrGetData gScreen 'missionObj))
 
@@ -400,7 +461,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
@@ -443,7 +504,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(switch
 							(not (@ gData 'nextScreen))
 								(scrExitScreen gScreen)
@@ -472,7 +533,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(switch
 							(not (@ gData 'nextScreen))
 								(scrExitScreen gScreen)
@@ -506,6 +567,12 @@
 					)
 			</GetGlobalDockScreen>
 		</Events>
+		
+		<Language>
+			<Text id="actionAccept">"[A]ccept"</Text>
+			<Text id="actionDecline">"[D]ecline"</Text>
+			<Text id="actionDone">"[C]ontinue"</Text>
+		</Language>
 	</DockScreen>
 
 <!-- DELIVERY MISSION SCREEN ===================================================
@@ -540,6 +607,7 @@
 
 	<DockScreen UNID="&dsRPGDeliveryMission;"
 			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
 			>
 		<OnScreenInit>
 			(block Nil
@@ -574,7 +642,7 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" key="C" default="1" cancel="1">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen (scrGetData gScreen 'forceUndock))
 					</Action>
 				</Actions>

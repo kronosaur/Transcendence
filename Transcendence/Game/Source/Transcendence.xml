@@ -791,6 +791,7 @@
 	<!ENTITY dsUseDataROM				"0x0000A01F">
 	<!ENTITY dsNeurohack				"0x0000A020">
 	<!ENTITY dsNeurohackHelp			"0x0000A021">
+	<!ENTITY dsDockScreenBase			"0x0000A022">
 
 	<!ENTITY pwSustain					"0x0000B001">
 	<!ENTITY pwHeal						"0x0000B002">
@@ -1858,6 +1859,10 @@
 	<!ENTITY smElysium					"0x00200003">
 	<!ENTITY unidPartISystemMap			"0x00200004">
 	<!ENTITY msReachGalacticCore		"0x00200005">
+	<!ENTITY unidBenedictStoryArc		"0x00200006">
+	<!ENTITY dsBenedictIntro			"0x00200007">
+	<!ENTITY msBenedictsDrones			"0x00200008">
+	<!ENTITY msBenedictFirstMission		"0x00200009">
 	
 	<!-- DOMINA 0020 1xxx -->
 	
@@ -2349,7 +2354,11 @@
 		</AdventureDesc>
 		
 		<Image UNID="&rsPart1Cover;"			bitmap="Resources\Part1Cover.jpg"			loadOnUse="true" />
-		
+
+		<Module filename="Benedict00.xml"/>
+		<Module filename="Benedict01.xml"/>
+		<Module filename="BenedictIntro.xml"/>
+		<Module filename="BenedictStoryArc.xml"/>
 		<Module filename="Elysium.xml"/>
 		<Module filename="Huari.xml"/>
 		<Module filename="PlayerShips.xml"/>

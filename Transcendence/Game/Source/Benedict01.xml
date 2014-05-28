@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- First Mission =========================================================
+
+	EXTRA DATA
+
+	targetID:			Target ID to destroy.
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictFirstMission;"
+			name=				"First Mission"
+			attributes=			"benedictStoryArc"
+
+			maxAppearing=		"1"
+			debriefAfterOutOfSystem="true"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>20</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+
+					(switch
+						;	This mission only works in the starting system
+
+						(not (eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem)))
+							(msnDestroy gSource)
+
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable &msBenedictFirstMission;))
+							(msnDestroy gSource)
+
+						;	Set up the mission
+
+						(block Nil
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+			</OnAcceptedUndock>
+			
+			<OnDeclined>
+			</OnDeclined>
+			
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					(eq (msnGetData gSource 'targetID) (objGetID aObjDestroyed))
+						(msnSuccess gSource)
+					)
+			</OnObjDestroyed>
+			
+			<OnCompleted>
+			</OnCompleted>
+
+			<OnReward>
+			</OnReward>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"First Mission"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Destroy a Target"
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"LATER: OK, go destroy this."
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"LATER: Destroy something."
+					)
+			</Text>
+			<Text id="AcceptReply">
+				(cat
+					"LATER: Go!"
+					)
+			</Text>
+			<Text id="DeclineReply">
+				"LATER: Sucks!"
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"LATER: Get back out there."
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					"LATER: Great!"
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>
