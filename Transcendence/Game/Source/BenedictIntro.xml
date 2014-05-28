@@ -182,4 +182,154 @@
 		</Language>
 	</DockScreen>
 
+	<!-- Benedict Training
+	
+	GLOBAL DATA
+	
+	-->
+
+	<DockScreen UNID="&dsBenedictTraining;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (foundItem)
+						(switch
+							
+							;	If we've never destroyed an enemy station, then 
+							;	send the player out to explore.
+							
+							(not (plyGetStat gPlayer 'enemyStationsDestroyed))
+								(block Nil
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingExplore1))
+									)
+								
+							;	If we've never looted a station, then tell the player
+							;	how to do that.
+						
+							(not (typGetData &svPlayer; 'tutorialLooted))
+								(block Nil
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingLoot))
+									)
+								
+							;	If we haven't yet installed a device and we've got a device
+							;	in our cargo hold, then tell the player how to install it.
+						
+							(and (not (typGetData &svPlayer; 'tutorialInstalled))
+									(setq foundItem
+										(filter (objGetItems gPlayerShip "pUN") theItem 
+											(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+											)
+										)
+									)
+								(block Nil
+									(scrSetData gScreen 'foundItem (@ foundItem 0))
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
+									)
+						
+							(and (not (typGetData &svPlayer; 'tutorialInstalled))
+									(setq foundItem
+										(filter (objGetItems gPlayerShip "lUN") theItem 
+											(not (objGetProperty gPlayerShip 'selectedLauncher))
+											)
+										)
+									)
+								(block Nil
+									(scrSetData gScreen 'foundItem (@ foundItem 0))
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
+									)
+						
+							(and (not (typGetData &svPlayer; 'tutorialInstalled))
+									(setq foundItem
+										(filter (objGetItems gPlayerShip "sUN") theItem 
+											(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+											)
+										)
+									)
+								(block Nil
+									(scrSetData gScreen 'foundItem (@ foundItem 0))
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
+									)
+									
+							(and (not (typGetData &svPlayer; 'tutorialInstalled))
+									(setq foundItem
+										(filter (objGetItems gPlayerShip "aUN") theItem 
+											(gr (itmGetLevel theItem) 
+												(map (objGetItems gPlayerShip "aI") 'reduceMax theArmor (itmGetLevel theArmor))
+												)
+											)
+										)
+									)
+								(block Nil
+									(scrSetData gScreen 'foundItem (@ foundItem 0))
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
+									)
+									
+							;	If we haven't sold anything yet and we have something in our 
+							;	cargo hold worth selling, then sell it.
+							
+							(and (not (typGetData &svPlayer; 'tutorialSold))
+									(objGetItems gPlayerShip "*~fU")
+									)
+								(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingSell))
+								
+							;	Nothing else
+								
+							(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'NothingMore))
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="NothingMore">
+				(cat
+					"\"LATER: I have nothing more to teach you.\""
+					)
+			</Text>
+			<Text id="TrainingExplore1">
+				(cat
+					"\"Time for you to get your hands dirty. There are enemy "
+					"stations in this system for you to destroy. Go find one "
+					"and come back when you've destroyed it.\""
+					)
+			</Text>
+			<Text id="TrainingInstallDevice">
+				(block (
+					(itemToInstall (scrGetData gScreen 'foundItem))
+					)
+					
+					(cat
+						"\"The " (itmGetName itemToInstall 0) " in your cargo hold will come in handy. "
+						"Go to Starton Eridani and have it installed at their dock services.\""
+						)
+					)
+			</Text>
+			<Text id="TrainingLoot">
+				(cat
+					"\"You must learn to survive off your kills. The next time "
+					"you destroy a ship or station, make sure you dock with "
+					"the wreckage and loot any items on it. You might find something "
+					"valuable.\""
+					)
+			</Text>
+			<Text id="TrainingSell">
+				(cat
+					"\"You can earn money to buy fuel and upgrade by selling items in your "
+					"cargo hold. Go to Starton Eridani and sell some stuff.\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
 </TranscendenceModule>

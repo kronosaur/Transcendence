@@ -54,6 +54,10 @@
 							)
 						(objIncData gPlayerShip "blackMarketXP" (divide thePrice 100))
 						)
+						
+					; Remember that we've bought something, for tutorial 
+					; purposes.
+					(typSetData &svPlayer; 'tutorialBought True)
 					)
 				))
 

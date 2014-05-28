@@ -100,13 +100,10 @@
 					
 					(typSetData &unidBenedictStoryArc; 'introDone True)
 				
-					;	Construct the result so we can start the next mission
+					;	Construct the result so we can start the next screen
 					
 					{
-						nextScreen: &dsRPGMission;
-						nextScreenData: {
-							missionObj: (msnCreate &msBenedictFirstMission; (objGetObjByID (msnGetProperty gSource 'ownerID)))
-							}
+						nextScreen: &dsBenedictTraining;
 						}
 					)
 			</OnDeclined>

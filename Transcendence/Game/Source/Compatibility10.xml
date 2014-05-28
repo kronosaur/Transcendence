@@ -203,6 +203,7 @@
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
 								(objIncData gPlayerShip "rins" (subtract 0 gCost))
+								(typSetData &svPlayer; 'tutorialInstalled True)
 								(scrShowScreen gScreen gPrevScreen gPrevPane)
 								)
 							)
@@ -256,6 +257,7 @@
 								(objAddItem gPlayerShip gItem)
 								(shpInstallDevice gPlayerShip gItem)
 								(objIncData gPlayerShip "rins" (subtract 0 gCost))
+								(typSetData &svPlayer; 'tutorialInstalled True)
 
 								(setq gResult True)
 								(scrShowScreen gScreen gPrevScreen gPrevPane)

@@ -7,7 +7,13 @@
 	GLOBAL DATA
 	
 	missionRewards:		Total amount of credits earned in missions
-
+	
+	tutorialBought:		True if the player has bought something.
+	tutorialInstalled:	True if the player has installed a device.
+	tutorialLooted:		True if the player has looted something.
+	tutorialRepaired:	True if the player has repaired his ship's armor
+	tutorialSold:		True if the player has sold anything.
+	
 -->
 
 	<Sovereign UNID="&svPlayer;"

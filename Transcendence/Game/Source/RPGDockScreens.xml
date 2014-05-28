@@ -5,6 +5,7 @@
 	<DockScreen unid="&dsDockScreenBase;">
 		<Language>
 			<Text id="actionContinue">"[C]ontinue"</Text>
+			<Text id="actionDone">"[D]one"</Text>
 		</Language>
 	</DockScreen>
 
@@ -91,6 +92,7 @@
 						(block Nil
 							(rpgBuyItem gSource gItem gCost (objGetDefaultCurrency gSource))
 							(shpInstallDevice gPlayerShip gItem)
+							(typSetData &svPlayer; 'tutorialInstalled True)
 							(scrShowPane gScreen "InstallSuccess")
 							)
                     </Action>
@@ -311,6 +313,7 @@
 								(block (itemsToLoot)
 									(setq itemsToLoot (scrRemoveItem gScreen 1))
 									(objAddItem gPlayerShip itemsToLoot)
+									(typSetData &svPlayer; 'tutorialLooted True)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -349,6 +352,7 @@
 								(block (itemsToLoot)
 									(setq itemsToLoot (scrRemoveItem gScreen count))
 									(objAddItem gPlayerShip itemsToLoot)
+									(typSetData &svPlayer; 'tutorialLooted True)
 									(scrShowPane gScreen "Default")
 									)
 								)
@@ -628,6 +632,7 @@
 						(block Nil
 							(objRepairArmor gPlayerShip (scrGetItem gScreen))
 							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+							(typSetData &svPlayer; 'tutorialRepaired True)
 							(scrShowPane gScreen "Default")
 							)
 					</Action>

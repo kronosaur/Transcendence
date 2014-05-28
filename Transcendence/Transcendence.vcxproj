@@ -566,7 +566,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Extensions\Debug\AdventureSample.xml" />
-    <None Include="Game\Extensions\Debug\DebugCode.xml" />
+    <None Include="Game\Extensions\Debug\DebugCode.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Extensions\Debug\DebugShips.xml">
       <SubType>Designer</SubType>
     </None>
@@ -574,7 +576,9 @@
     <None Include="Game\Extensions\Debug\PerformanceTest.xml" />
     <None Include="Game\Extensions\Debug\RandomnessTest.xml" />
     <None Include="Game\Extensions\Debug\ShipChangeSample.xml" />
-    <None Include="Game\Source\Antarctica.xml" />
+    <None Include="Game\Source\Antarctica.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\AresOrthodoxy.xml">
       <SubType>Designer</SubType>
     </None>
@@ -592,7 +596,9 @@
     </None>
     <None Include="Game\Source\CharonFortress.xml" />
     <None Include="Game\Source\CharonPirates.xml" />
-    <None Include="Game\Source\Code.xml" />
+    <None Include="Game\Source\Code.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Commonwealth.xml">
       <SubType>Designer</SubType>
     </None>
@@ -605,12 +611,18 @@
     <None Include="Game\Source\CommonwealthMining.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Compatibility10.xml" />
-    <None Include="Game\Source\CoreCode.xml" />
+    <None Include="Game\Source\Compatibility10.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\CoreCode.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CoreEffects.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\CoreTypes.xml" />
+    <None Include="Game\Source\CoreTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CorporateHierarchy.xml">
       <SubType>Designer</SubType>
     </None>
@@ -662,7 +674,9 @@
     <None Include="Game\Source\Rocky.xml" />
     <None Include="Game\Source\RogueFleet.xml" />
     <None Include="Game\Source\RPGAnalyzers.xml" />
-    <None Include="Game\Source\RPGAutons.xml" />
+    <None Include="Game\Source\RPGAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGAuxDevices.xml" />
     <None Include="Game\Source\RPGBehaviors.xml" />
     <None Include="Game\Source\RPGCharacters.xml" />
@@ -685,7 +699,9 @@
     <None Include="Game\Source\StdArmor.xml" />
     <None Include="Game\Source\StdAutons.xml" />
     <None Include="Game\Source\StdDevices.xml" />
-    <None Include="Game\Source\StdDockScreens.xml" />
+    <None Include="Game\Source\StdDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdEffects.xml" />
     <None Include="Game\Source\StdExplosions.xml" />
     <None Include="Game\Source\StdFuel.xml" />

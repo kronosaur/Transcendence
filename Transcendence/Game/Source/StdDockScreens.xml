@@ -478,6 +478,7 @@
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+								(typSetData &svPlayer; 'tutorialInstalled True)
 								
 								(scrExitScreen gScreen)
 								)
@@ -540,6 +541,7 @@
 								(objAddItem gPlayerShip gItem)
 								(shpInstallDevice gPlayerShip gItem)
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+								(typSetData &svPlayer; 'tutorialInstalled True)
 								
 								; If we're charging the player more than the cost of
 								; the device, then count it as a purchase
@@ -625,6 +627,7 @@
 							(block Nil
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+								(typSetData &svPlayer; 'tutorialInstalled True)
 								(scrExitScreen gScreen)
 								)
 							)
@@ -1258,6 +1261,7 @@
 								(intBuyItems 1 (add gCost gInstallCost))
 								
 								(shpInstallDevice gPlayerShip itemInstalled)
+								(typSetData &svPlayer; 'tutorialInstalled True)
 								(scrShowPane gScreen "InstallSuccess")
 								)
 							)

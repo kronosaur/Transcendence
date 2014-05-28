@@ -1293,6 +1293,7 @@
 										; Install the item
 										(objAddItem gPlayerShip gItem)
 										(shpInstallDevice gPlayerShip gItem)
+										(typSetData &svPlayer; 'tutorialInstalled True)
 
 										(objSetData gSource "MissionStatus" "testing")
 										(objSetData gSource "MissionTime" (unvGetTick))

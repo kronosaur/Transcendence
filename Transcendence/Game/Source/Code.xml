@@ -551,6 +551,10 @@
 								)
 							)
 						)
+						
+					; Remember that we've sold something, for tutorial 
+					; purposes.
+					(typSetData &svPlayer; 'tutorialSold True)
 					)
 				))
 
