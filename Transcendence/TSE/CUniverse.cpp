@@ -855,16 +855,6 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 		}
 	}
 
-CTimeSpan CUniverse::GetElapsedGameTime (void)
-
-//	GetElapsedGameTime
-//
-//	Returns the amount of time that has elapsed in the game.
-
-	{
-	return m_Time.GetElapsedTimeAt(m_iTick);
-	}
-
 CString CUniverse::GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib)
 
 //	GetExtensionData

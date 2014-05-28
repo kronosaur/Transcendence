@@ -462,6 +462,7 @@ ICCItem *fnDesignFind (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_UNIVERSE_GET_EXTENSION_DATA	4
 #define FN_UNIVERSE_SET_EXTENSION_DATA	5
 #define FN_UNIVERSE_FIND_OBJ			6
+#define FN_UNIVERSE_GET_ELAPSED_GAME_TIME	7
 
 ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -2340,6 +2341,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"unvGetCurrentExtensionUNID",	fnUniverseGet,	FN_UNIVERSE_EXTENSION_UNID,
 			"(unvGetCurrentExtensionUNID) -> UNID",
 			NULL,	0,	},
+
+		{	"unvGetElapsedGameTime",		fnUniverseGet,	FN_UNIVERSE_GET_ELAPSED_GAME_TIME,
+			"(unvGetElapsedGameTime [startTick] endTick format) -> result\n\n"
+			
+			"format\n\n"
+			
+			"   display:           Elapsed time in display format.\n"
+			"   seconds:           Elapsed time in game seconds.\n",
+
+			"*is",	0,	},
 
 		{	"unvGetExtensionData",			fnUniverseGet,	FN_UNIVERSE_GET_EXTENSION_DATA,
 			"(unvGetExtensionData scope attrib) -> data",
@@ -10582,6 +10593,23 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			return pCC->CreateInteger(pExtension->GetUNID());
+			}
+
+		case FN_UNIVERSE_GET_ELAPSED_GAME_TIME:
+			{
+			int iArg = 0;
+			DWORD dwStartTick = (pArgs->GetCount() > 2 ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
+			DWORD dwEndTick = pArgs->GetElement(iArg++)->GetIntegerValue();
+			CString sFormat = pArgs->GetElement(iArg++)->GetStringValue();
+
+			CTimeSpan Span = g_pUniverse->GetElapsedGameTimeAt(dwEndTick) - g_pUniverse->GetElapsedGameTimeAt(dwStartTick);
+
+			if (strEquals(sFormat, CONSTLIT("display")))
+				return pCC->CreateString(Span.Format(NULL_STR));
+			else if (strEquals(sFormat, CONSTLIT("seconds")))
+				return pCC->CreateInteger(Span.Seconds());
+			else
+				return pCC->CreateError(strPatternSubst(CONSTLIT("Unknown format: %s"), sFormat));
 			}
 
 		case FN_UNIVERSE_FIND_OBJ:
