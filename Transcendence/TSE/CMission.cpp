@@ -1149,7 +1149,7 @@ bool CMission::SetDeclined (ICCItem **retpResult)
 	{
 	//	Must be available to player.
 
-	if (m_iStatus == statusOpen)
+	if (m_iStatus != statusOpen)
 		{
 		if (retpResult)
 			*retpResult = NULL;
