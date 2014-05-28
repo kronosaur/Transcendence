@@ -45,6 +45,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_ENABLE_MESSAGE		19
 #define FN_PLY_GET_KEY_EVENT_STAT	20
 #define FN_PLY_USE_ITEM				21
+#define FN_PLY_IS_MESSAGE_ENABLED	22
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -244,13 +245,28 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, "",	NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(plyDestroyed player destroyed-text)
 
-		{	"plyEnableMessage",				fnPlySet,			FN_PLY_ENABLE_MESSAGE,
-			"(plyEnableMessage player messageID True/Nil) -> True/Nil",
-			"isv",	PPFLAG_SIDEEFFECTS, },
+		{	"plyIsMessageEnabled",			fnPlyGet,			FN_PLY_IS_MESSAGE_ENABLED,
+			"(plyIsMessageEnabled player messageID) -> True/Nil\n\n"
+
+			"messageID:\n\n"
+			
+			"   'autopilotHint\n"
+			"   'commsHint\n"
+			"   'dockHint\n"
+			"   'enableDeviceHint\n"
+			"   'fireMissileHint\n"
+			"   'galacticMapHint\n"
+			"   'gateHint\n"
+			"   'mapHint\n"
+			"   'refuelHint\n"
+			"   'switchMissileHint\n"
+			"   'useItemHint\n",
+
+			"is",	0, },
 
 		{	"plyGetCredits",				fnPlyGet,		FN_PLY_CREDITS,
 			"(plyGetCredits player [currency]) -> credits left",
-			"i*",	PPFLAG_SIDEEFFECTS,	},
+			"i*",	0,	},
 
 		{	"plyGetGenome",					fnPlyGet,			FN_PLY_GENOME,
 			"(plyGetGenome player) -> 'humanMale | 'humanFemale",
@@ -273,6 +289,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'objsDestroyed\n",
 
 			"isvs",	0,	},
+
+		{	"plyEnableMessage",				fnPlySet,			FN_PLY_ENABLE_MESSAGE,
+			"(plyEnableMessage player messageID True/Nil) -> True/Nil",
+			"isv",	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(plyGetRedirectMessage player)
@@ -748,6 +768,16 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pResult = pCC->Link(sResult, 0, NULL);
 			else
 				pResult = pCC->CreateNil();
+			break;
+			}
+
+		case FN_PLY_IS_MESSAGE_ENABLED:
+			{
+			UIMessageTypes iMsg = pPlayer->FindUIMessage(pArgs->GetElement(1)->GetStringValue());
+			if (iMsg == uimsgUnknown)
+				return pCC->CreateError(CONSTLIT("Unknown messageID"), pArgs->GetElement(1));
+
+			pResult = pCC->CreateBool(pPlayer->IsUIMessageEnabled(iMsg));
 			break;
 			}
 
