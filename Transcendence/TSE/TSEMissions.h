@@ -67,7 +67,7 @@ class CMission : public CSpaceObject
 		void OnPlayerEnteredSystem (void);
 		bool Reward (ICCItem *pData);
 		bool SetAccepted (void);
-		bool SetDeclined (void);
+		bool SetDeclined (ICCItem **retpResult = NULL);
 		bool SetFailure (ICCItem *pData);
 		bool SetPlayerTarget (void);
 		bool SetSuccess (ICCItem *pData);
@@ -111,7 +111,7 @@ class CMission : public CSpaceObject
 		void CloseMission (void);
 		void CompleteMission (ECompletedReasons iReason);
 		void FireOnAccepted (void);
-		void FireOnDeclined (void);
+		ICCItem *FireOnDeclined (void);
 		void FireOnReward (ICCItem *pData);
 		void FireOnSetPlayerTarget (const CString &sReason);
 		void FireOnStart (void);

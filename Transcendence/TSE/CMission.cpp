@@ -318,11 +318,14 @@ void CMission::FireOnAccepted (void)
 		}
 	}
 
-void CMission::FireOnDeclined (void)
+ICCItem *CMission::FireOnDeclined (void)
 
 //	FireOnDeclined
 //
-//	Fire <OnDeclined>
+//	Fire <OnDeclined>. We return the result of the event, which might contain
+//	instructions for the mission screen.
+//
+//	Callers are responsible for discarding the result, if not NULL.
 
 	{
 	SEventHandlerDesc Event;
@@ -335,9 +338,16 @@ void CMission::FireOnDeclined (void)
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
+			{
 			ReportEventError(EVENT_ON_DECLINED, pResult);
-		Ctx.Discard(pResult);
+			Ctx.Discard(pResult);
+			return NULL;
+			}
+
+		return pResult;
 		}
+
+	return NULL;
 	}
 
 void CMission::FireOnReward (ICCItem *pData)
@@ -1129,21 +1139,30 @@ bool CMission::SetAccepted (void)
 	return true;
 	}
 
-bool CMission::SetDeclined (void)
+bool CMission::SetDeclined (ICCItem **retpResult)
 
 //	SetDeclined
 //
-//	Mission declined by player
+//	Mission declined by player. Optionally returns the result of <OnDeclined>,
+//	which the caller is responsible for discarding.
 
 	{
 	//	Must be available to player.
 
 	if (m_iStatus == statusOpen)
+		{
+		if (retpResult)
+			*retpResult = NULL;
 		return false;
+		}
 
 	//	Player declines the mission
 
-	FireOnDeclined();
+	ICCItem *pResult = FireOnDeclined();
+	if (retpResult)
+		*retpResult = pResult;
+	else if (pResult)
+		pResult->Discard(&g_pUniverse->GetCC());
 
 	//	Set flag
 

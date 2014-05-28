@@ -6862,7 +6862,15 @@ ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateBool(pMission->SetUnavailable());
 
 		case FN_MISSION_DECLINED:
-			return pCC->CreateBool(pMission->SetDeclined());
+			{
+			ICCItem *pResult;
+			if (!pMission->SetDeclined(&pResult))
+				return pCC->CreateBool(false);
+			else if (pResult == NULL)
+				return pCC->CreateBool(true);
+			else
+				return pResult;
+			}
 			
 		case FN_MISSION_FAILURE:
 			return pCC->CreateBool(pMission->SetFailure((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
