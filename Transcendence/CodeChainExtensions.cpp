@@ -1272,6 +1272,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sKey;
 			if (pArgs->GetCount() > 3 && !pArgs->GetElement(3)->IsNil())
 				sKey = pArgs->GetElement(3)->GetStringValue();
+			else
+				sKey = Actions.GetKey(iAction);
 
 			Actions.SetLabel(iAction, sLabel, sKey);
 
@@ -1341,7 +1343,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Set key and special
 
 			if (!sKey.IsBlank())
-				Actions.SetLabel(iAction, sLabel, sKey);
+				Actions.SetLabel(iAction, NULL_STR, sKey);
 
 			if (pSpecial)
 				Actions.SetSpecial(*pCC, iAction, pSpecial, NULL);
