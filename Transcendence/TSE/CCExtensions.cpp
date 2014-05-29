@@ -1617,7 +1617,14 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetShowAsDestination",			fnObjSet,		FN_OBJ_SET_AS_DESTINATION,
-			"(objSetShowAsDestination obj [show dist/bearing] [autoclear])",
+			"(objSetShowAsDestination obj [options]) -> True/Nil\n\n"
+			
+			"options:\n\n"
+			
+			"   'autoClear         Clear when in SRS range\n"
+			"   'autoClearOnDock   Clear when player docks\n"
+			"   'showDistance      Show distance\n",
+
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetSovereign",				fnObjSetOld,		FN_OBJ_SOVEREIGN,
@@ -6026,8 +6033,6 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_CLEAR_AS_DESTINATION:
 			pObj->ClearPlayerDestination();
-			pObj->ClearShowDistanceAndBearing();
-			pObj->ClearAutoClearDestination();
 			return pCC->CreateTrue();
 
 		case FN_OBJ_SET_ABILITY:
@@ -6085,19 +6090,56 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_SET_AS_DESTINATION:
 			{
+			int i;
 			bool bShowDistanceAndBearing = false;
 			bool bAutoClearDestination = false;
-			if (pArgs->GetCount() > 1)
-				bShowDistanceAndBearing = !pArgs->GetElement(1)->IsNil();
+			bool bAutoClearOnDock = false;
 
-			if (pArgs->GetCount() > 2)
+			//	If we have an extra argument then it is either a boolean (which
+			//	is old-style) or it is a string or list of string.
+
+			if (pArgs->GetCount() == 2)
+				{
+				ICCItem *pOptions = pArgs->GetElement(1);
+				if (!pOptions->IsNil() 
+						&& (pOptions->IsIdentifier() || pOptions->IsList()))
+					{
+					for (i = 0; i < pOptions->GetCount(); i++)
+						{
+						CString sOption = pOptions->GetElement(i)->GetStringValue();
+
+						if (strEquals(sOption, CONSTLIT("autoClear")))
+							bAutoClearDestination = true;
+						else if (strEquals(sOption, CONSTLIT("autoClearOnDock")))
+							bAutoClearOnDock = true;
+						else if (strEquals(sOption, CONSTLIT("showDistance")))
+							bShowDistanceAndBearing = true;
+						else
+							return pCC->CreateError(strPatternSubst(CONSTLIT("Invalid option: %s"), sOption));
+						}
+					}
+				else
+					bShowDistanceAndBearing = !pOptions->IsNil();
+				}
+
+			//	Otherwise, if we have more than two arguments, then we expect the
+			//	old-style flags
+
+			else if (pArgs->GetCount() > 2)
+				{
+				bShowDistanceAndBearing = !pArgs->GetElement(1)->IsNil();
 				bAutoClearDestination = !pArgs->GetElement(2)->IsNil();
+				}
+
+			//	Set the options
 
 			pObj->SetPlayerDestination();
 			if (bShowDistanceAndBearing)
 				pObj->SetShowDistanceAndBearing();
 			if (bAutoClearDestination)
 				pObj->SetAutoClearDestination();
+			if (bAutoClearOnDock)
+				pObj->SetAutoClearDestinationOnDock();
 
 			return pCC->CreateTrue();
 			}

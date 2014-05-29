@@ -2071,8 +2071,9 @@ class CSpaceObject : public CObject
 		bool CanCommunicateWith (CSpaceObject *pSender);
 		inline bool CanHitFriends (void) { return !m_fNoFriendlyFire; }
 		inline void ClearAutoClearDestination (void) { m_fAutoClearDestination = false; }
+		inline void ClearAutoClearDestinationOnDock (void) { m_fAutoClearDestinationOnDock = false; }
 		inline void ClearPaintNeeded (void) { m_fPaintNeeded = false; }
-		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; }
+		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; m_fAutoClearDestination = false; m_fAutoClearDestinationOnDock = false; m_fShowDistanceAndBearing = false; }
 		inline void ClearPlayerDocked (void) { m_fPlayerDocked = false; }
 		inline void ClearPlayerTarget (void) { m_fPlayerTarget = false; }
 		inline void ClearPOVLRS (void) { m_fInPOVLRS = false; }
@@ -2213,6 +2214,7 @@ class CSpaceObject : public CObject
 					&& (vLL.GetY() < m_vPos.GetY()); }
 		inline bool IsAscended (void) const { return m_fAscended; }
 		bool IsAutoClearDestination (void) { return m_fAutoClearDestination; }
+		bool IsAutoClearDestinationOnDock (void) { return m_fAutoClearDestinationOnDock; }
 		bool IsAutomatedWeapon (void) const { return (m_fAutomatedWeapon ? true : false); }
 		bool IsBarrier (void) const { return (m_fIsBarrier ? true : false); }
 		bool IsCommsMessageValidFrom (CSpaceObject *pSender, int iIndex, CString *retsMsg = NULL, CString *retsKey = NULL);
@@ -2267,6 +2269,7 @@ class CSpaceObject : public CObject
 		inline void RestartTime (void) { m_fTimeStop = false; }
 		inline void SetAscended (bool bAscended = true) { m_fAscended = bAscended; }
 		inline void SetAutoClearDestination (void) { m_fAutoClearDestination = true; }
+		inline void SetAutoClearDestinationOnDock (void) { m_fAutoClearDestinationOnDock = true; }
 		inline void SetAutomatedWeapon (void) { m_fAutomatedWeapon = true; }
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
 		inline void SetDataFromDataBlock (const CAttributeDataBlock &Block) { m_Data = Block; }
@@ -2726,7 +2729,7 @@ class CSpaceObject : public CObject
 		DWORD m_fOutOfPlaneObj:1;				//	TRUE if object is out of plane
 
 		DWORD m_fPainted:1;						//	TRUE if we painted the object last tick
-		DWORD m_fSpare2:1;
+		DWORD m_fAutoClearDestinationOnDock:1;	//	TRUE if we should clear the destination when player docks
 		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;

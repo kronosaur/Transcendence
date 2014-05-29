@@ -748,7 +748,12 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 		//	Set the owner as "explored" (if the ship is the player)
 
 		if (pShip->IsPlayer())
+			{
 			pOwner->SetExplored();
+
+			if (pOwner->IsAutoClearDestinationOnDock())
+				pOwner->ClearPlayerDestination();
+			}
 
 		//	Dock
 

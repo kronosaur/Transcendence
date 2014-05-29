@@ -2998,11 +2998,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 			//	Clear destination, if necessary
 
 			if (pObj->IsAutoClearDestination())
-				{
 				pObj->ClearPlayerDestination();
-				pObj->ClearShowDistanceAndBearing();
-				pObj->ClearAutoClearDestination();
-				}
 			}
 
 	//	Paint foreground objects
