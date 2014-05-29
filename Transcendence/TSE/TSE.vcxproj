@@ -216,6 +216,7 @@
     <ClCompile Include="CObjectStats.cpp" />
     <ClCompile Include="CObjectTracker.cpp" />
     <ClCompile Include="COrderList.cpp" />
+    <ClCompile Include="CPaintHelper.cpp" />
     <ClCompile Include="CParticleArray.cpp" />
     <ClCompile Include="CPlayerSettings.cpp" />
     <ClCompile Include="CRegenDesc.cpp" />

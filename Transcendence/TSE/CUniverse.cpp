@@ -129,6 +129,7 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_bRegistered(false),
 		m_bResurrectMode(false),
 		m_iTick(1),
+		m_iPaintTick(1),
 		m_pAdventure(NULL),
 		m_pPOV(NULL),
 		m_pPlayer(NULL),
@@ -1921,6 +1922,8 @@ void CUniverse::PaintPOV (CG16bitImage &Dest, const RECT &rcView, DWORD dwFlags)
 	{
 	if (m_pPOV)
 		m_pPOV->GetSystem()->PaintViewport(Dest, rcView, m_pPOV, dwFlags);
+
+	m_iPaintTick++;
 	}
 
 void CUniverse::PaintPOVLRS (CG16bitImage &Dest, const RECT &rcView, bool *retbNewEnemies)
@@ -1943,6 +1946,8 @@ void CUniverse::PaintPOVMap (CG16bitImage &Dest, const RECT &rcView, Metric rMap
 	{
 	if (m_pPOV)
 		m_pPOV->GetSystem()->PaintViewportMap(Dest, rcView, m_pPOV, rMapScale);
+
+	m_iPaintTick++;
 	}
 
 void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
@@ -2063,6 +2068,7 @@ ALERROR CUniverse::Reinit (void)
 	//	in the past.
 
 	m_iTick = 1;
+	m_iPaintTick = 1;
 
 	//	Clear some basic variables
 

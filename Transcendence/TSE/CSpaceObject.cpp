@@ -5315,6 +5315,26 @@ void CSpaceObject::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTra
 			CG16bitImage::markerSmallRound);
 	}
 
+void CSpaceObject::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
+
+//	PaintMap
+//
+//	Paints the object on a system map
+
+	{
+	OnPaintMap(Ctx, Dest, x, y);
+
+	if (IsPlayerDestination())
+		{
+		int iTick = g_pUniverse->GetPaintTick();
+		int iRadius = 10;
+		int iRingSpacing = 4;
+		WORD wColor = GetSymbolColor();
+
+		CPaintHelper::PaintTargetHighlight(Dest, x, y, iTick, iRadius, iRingSpacing, 6, wColor);
+		}
+	}
+
 void CSpaceObject::PaintTargetHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 //	PaintTargetHighlight
@@ -5322,19 +5342,12 @@ void CSpaceObject::PaintTargetHighlight (CG16bitImage &Dest, int x, int y, SView
 //	Paints an animated highlight
 
 	{
-	int iTick = g_pUniverse->GetTicks();
-	Metric rRadius = GetBoundsRadius() / g_KlicksPerPixel;
+	int iTick = g_pUniverse->GetPaintTick();
+	int iRadius = (int)(GetBoundsRadius() / g_KlicksPerPixel);
+	int iRingSpacing = 10;
 	WORD wColor = GetSymbolColor();
 
-	//	Paint rings
-
-	int iRingSpacing = 10;
-	int iExpand = ((iTick / 3) % iRingSpacing);
-	int iOpacityStep = iExpand * (80 / iRingSpacing);
-	DrawGlowRing(Dest, x, y, (int)rRadius, 6, wColor);
-	DrawGlowRing(Dest, x, y, (int)rRadius + iExpand, 3, wColor, 240 - iOpacityStep);
-	DrawGlowRing(Dest, x, y, (int)rRadius + iRingSpacing + iExpand, 2, wColor, 160 - iOpacityStep);
-	DrawGlowRing(Dest, x, y, (int)rRadius + 2 * iRingSpacing + iExpand, 1, wColor, 80 - iOpacityStep);
+	CPaintHelper::PaintTargetHighlight(Dest, x, y, iTick, iRadius, iRingSpacing, 3, wColor);
 	}
 
 void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteria, Criteria *retCriteria)

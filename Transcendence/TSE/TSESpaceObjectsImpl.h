@@ -1035,7 +1035,6 @@ class CShip : public CSpaceObject
 		virtual void MakeParalyzed (int iTickCount = -1);
 		virtual void MakeRadioactive (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx);
@@ -1076,6 +1075,7 @@ class CShip : public CSpaceObject
 		virtual CSpaceObject *OnGetOrderGiver (void);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { m_pController->OnPaintSRSEnhancements(Dest, Ctx); }
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnSetEventFlags (void);
@@ -1356,7 +1356,6 @@ class CStation : public CSpaceObject
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnSystemCreated (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void PlaceAtRandomDockPort (CSpaceObject *pObj) { m_DockingPorts.DockAtRandomPort(this, pObj); }
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
@@ -1392,6 +1391,7 @@ class CStation : public CSpaceObject
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnSetEventFlags (void);
 		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);

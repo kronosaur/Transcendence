@@ -3438,14 +3438,6 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 					Dest, 
 					x,
 					y);
-
-			//	Paint destination marker
-
-			if (pObj->IsPlayerDestination())
-				{
-				Dest.FillColumn(x, y - 4, 9, CG16bitImage::RGBValue(255, 255, 0));
-				Dest.FillLine(x - 4, y, 9, CG16bitImage::RGBValue(255, 255, 0));
-				}
 			}
 		}
 

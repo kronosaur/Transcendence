@@ -4231,6 +4231,64 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 #endif
 	}
 
+void CShip::OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
+
+//	Paint
+//
+//	Paint the ship
+
+	{
+	if (IsInactive())
+		return;
+
+	//	Do not paint ships on the map unless we are the point of view
+
+	if (GetUniverse()->GetPOV() == this)
+		{
+		m_pClass->PaintMap(Ctx,
+				Dest, 
+				x, 
+				y, 
+				m_Rotation.GetFrameIndex(), 
+				GetSystem()->GetTick(),
+				m_pController->GetThrust() && !IsParalyzed(),
+				IsRadioactive()
+				);
+		}
+
+	//	Or if it has docking services and the player knows about it
+
+	else if (m_fKnown && m_pClass->HasDockingPorts())
+		{
+		WORD wColor;
+		if (IsEnemy(GetUniverse()->GetPOV()))
+			wColor = CG16bitImage::RGBValue(255, 0, 0);
+		else
+			wColor = CG16bitImage::RGBValue(0, 192, 0);
+
+		Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
+		Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
+
+		if (m_sMapLabel.IsBlank())
+			{
+			DWORD dwFlags;
+			CString sName = GetName(&dwFlags);
+			m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
+			}
+
+		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+				x + MAP_LABEL_X + 1, 
+				y + MAP_LABEL_Y + 1, 
+				0,
+				m_sMapLabel);
+		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+				x + MAP_LABEL_X, 
+				y + MAP_LABEL_Y, 
+				RGB_MAP_LABEL,
+				m_sMapLabel);
+		}
+	}
+
 void CShip::OnPlayerObj (CSpaceObject *pPlayer)
 
 //	OnPlayerObj
@@ -5292,64 +5350,6 @@ void CShip::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform 
 	//	Identified
 
 	m_fIdentified = true;
-	}
-
-void CShip::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
-
-//	Paint
-//
-//	Paint the ship
-
-	{
-	if (IsInactive())
-		return;
-
-	//	Do not paint ships on the map unless we are the point of view
-
-	if (GetUniverse()->GetPOV() == this)
-		{
-		m_pClass->PaintMap(Ctx,
-				Dest, 
-				x, 
-				y, 
-				m_Rotation.GetFrameIndex(), 
-				GetSystem()->GetTick(),
-				m_pController->GetThrust() && !IsParalyzed(),
-				IsRadioactive()
-				);
-		}
-
-	//	Or if it has docking services and the player knows about it
-
-	else if (m_fKnown && m_pClass->HasDockingPorts())
-		{
-		WORD wColor;
-		if (IsEnemy(GetUniverse()->GetPOV()))
-			wColor = CG16bitImage::RGBValue(255, 0, 0);
-		else
-			wColor = CG16bitImage::RGBValue(0, 192, 0);
-
-		Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
-		Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
-
-		if (m_sMapLabel.IsBlank())
-			{
-			DWORD dwFlags;
-			CString sName = GetName(&dwFlags);
-			m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
-			}
-
-		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-				x + MAP_LABEL_X + 1, 
-				y + MAP_LABEL_Y + 1, 
-				0,
-				m_sMapLabel);
-		g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-				x + MAP_LABEL_X, 
-				y + MAP_LABEL_Y, 
-				RGB_MAP_LABEL,
-				m_sMapLabel);
-		}
 	}
 
 bool CShip::PointInObject (const CVector &vObjPos, const CVector &vPointPos)

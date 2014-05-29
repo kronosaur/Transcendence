@@ -2476,6 +2476,95 @@ void CStation::OnObjLeaveGate (CSpaceObject *pObj)
 		}
 	}
 
+void CStation::OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
+
+//	OnPaintMap
+//
+//	Paint the station
+
+	{
+	if (m_pType->IsVirtual())
+		return;
+
+	//	Draw an orbit
+
+	if (m_pMapOrbit)
+		m_pMapOrbit->Paint(Ctx, Dest, RGB_ORBIT_LINE);
+
+	//	Draw the station
+
+	if (m_Scale == scaleWorld)
+		Dest.ColorTransBlt(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
+				m_MapImage,
+				x - (m_MapImage.GetWidth() / 2),
+				y - (m_MapImage.GetHeight() / 2));
+
+	else if (m_Scale == scaleStar)
+		Dest.BltLighten(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
+				m_MapImage,
+				x - (m_MapImage.GetWidth() / 2),
+				y - (m_MapImage.GetHeight() / 2));
+
+	else if (m_pType->ShowsMapIcon() && m_fKnown)
+		{
+		//	Figure out the color
+
+		WORD wColor;
+		if (IsEnemy(GetUniverse()->GetPOV()))
+			wColor = CG16bitImage::RGBValue(255, 0, 0);
+		else
+			wColor = CG16bitImage::RGBValue(0, 192, 0);
+
+		//	Paint the marker
+
+		if (m_Scale == scaleStructure && m_rMass > 100000.0)
+			{
+			if (IsActiveStargate())
+				{
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
+				}
+			else if (!IsAbandoned() || IsImmutable())
+				{
+				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
+				}
+			else
+				{
+				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
+				}
+			}
+		else
+			Dest.DrawDot(x, y, 
+					wColor, 
+					CG16bitImage::markerSmallRound);
+
+		//	Paint the label
+
+		if (!m_fNoMapLabel)
+			{
+			if (m_sMapLabel.IsBlank())
+				{
+				DWORD dwFlags;
+				CString sName = GetName(&dwFlags);
+				m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
+				}
+
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+					x + m_xMapLabel + 1, 
+					y + m_yMapLabel + 1, 
+					0,
+					m_sMapLabel);
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+					x + m_xMapLabel, 
+					y + m_yMapLabel, 
+					RGB_MAP_LABEL,
+					m_sMapLabel);
+			}
+		}
+	}
+
 void CStation::OnPlayerObj (CSpaceObject *pPlayer)
 
 //	OnPlayObj
@@ -3250,95 +3339,6 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				Dest.DrawDot(x, y, 
 						wColor, 
 						CG16bitImage::markerTinyCircle);
-			}
-		}
-	}
-
-void CStation::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
-
-//	PaintMap
-//
-//	Paint the station
-
-	{
-	if (m_pType->IsVirtual())
-		return;
-
-	//	Draw an orbit
-
-	if (m_pMapOrbit)
-		m_pMapOrbit->Paint(Ctx, Dest, RGB_ORBIT_LINE);
-
-	//	Draw the station
-
-	if (m_Scale == scaleWorld)
-		Dest.ColorTransBlt(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
-				m_MapImage,
-				x - (m_MapImage.GetWidth() / 2),
-				y - (m_MapImage.GetHeight() / 2));
-
-	else if (m_Scale == scaleStar)
-		Dest.BltLighten(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
-				m_MapImage,
-				x - (m_MapImage.GetWidth() / 2),
-				y - (m_MapImage.GetHeight() / 2));
-
-	else if (m_pType->ShowsMapIcon() && m_fKnown)
-		{
-		//	Figure out the color
-
-		WORD wColor;
-		if (IsEnemy(GetUniverse()->GetPOV()))
-			wColor = CG16bitImage::RGBValue(255, 0, 0);
-		else
-			wColor = CG16bitImage::RGBValue(0, 192, 0);
-
-		//	Paint the marker
-
-		if (m_Scale == scaleStructure && m_rMass > 100000.0)
-			{
-			if (IsActiveStargate())
-				{
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
-				}
-			else if (!IsAbandoned() || IsImmutable())
-				{
-				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
-				}
-			else
-				{
-				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
-				}
-			}
-		else
-			Dest.DrawDot(x, y, 
-					wColor, 
-					CG16bitImage::markerSmallRound);
-
-		//	Paint the label
-
-		if (!m_fNoMapLabel)
-			{
-			if (m_sMapLabel.IsBlank())
-				{
-				DWORD dwFlags;
-				CString sName = GetName(&dwFlags);
-				m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
-				}
-
-			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-					x + m_xMapLabel + 1, 
-					y + m_yMapLabel + 1, 
-					0,
-					m_sMapLabel);
-			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-					x + m_xMapLabel, 
-					y + m_yMapLabel, 
-					RGB_MAP_LABEL,
-					m_sMapLabel);
 			}
 		}
 	}

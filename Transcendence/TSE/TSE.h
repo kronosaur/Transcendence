@@ -2255,6 +2255,7 @@ class CSpaceObject : public CObject
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor);
+		void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		inline void PaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { OnPaintSRSEnhancements(Dest, Ctx); }
 		inline void Place (const CVector &vPos, const CVector &vVel = NullVector) { m_vPos = vPos; m_vOldPos = vPos; m_vVel = vVel; }
 		inline bool PosInBox (const CVector &vUR, const CVector &vLL) const
@@ -2411,7 +2412,6 @@ class CSpaceObject : public CObject
 		virtual void OnSystemCreated (void) { }
 		virtual void OnSystemLoaded (void) { }
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y) { }
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos) { return false; }
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos) { return PointInObject(vObjPos, vPointPos); }
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx) { }
@@ -2603,6 +2603,7 @@ class CSpaceObject : public CObject
 		virtual void OnUpdateExtended (const CTimeSpan &ExtraTime) { }
 		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) { }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
+		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y) { }
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { }
 		virtual void OnReadFromStream (SLoadCtx &Ctx) { }
 		virtual void OnSetEventFlags (void) { }
@@ -3165,6 +3166,7 @@ class CUniverse : public CObject
 		inline CCodeChain &GetCC (void) { return m_CC; }
 		inline CTopologyNode *GetCurrentTopologyNode (void) { return (m_pCurrentSystem ? m_pCurrentSystem->GetTopology() : NULL); }
 		inline CSystem *GetCurrentSystem (void) { return m_pCurrentSystem; }
+		inline int GetPaintTick (void) { return m_iPaintTick; }
 		inline CSpaceObject *GetPOV (void) const { return m_pPOV; }
 		inline CSpaceObject *GetPlayer (void) const { return m_pPlayer; }
 		GenomeTypes GetPlayerGenome (void) const;
@@ -3264,6 +3266,7 @@ class CUniverse : public CObject
 		bool m_bRegistered;						//	If TRUE, this is a registered game
 		bool m_bResurrectMode;					//	If TRUE, this session is a game resurrect
 		int m_iTick;							//	Ticks since beginning of time
+		int m_iPaintTick;						//	Advances only when we paint a frame
 		CGameTimeKeeper m_Time;					//	Game time tracker
 		CAdventureDesc *m_pAdventure;			//	Current adventure
 		CSpaceObject *m_pPOV;					//	Point of view

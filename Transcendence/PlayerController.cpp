@@ -87,8 +87,13 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 		{
 		case orderGuard:
 		case orderEscort:
+			SetDestination(pTarget);
+			break;
+
 		case orderDock:
 			SetDestination(pTarget);
+			if (pTarget)
+				pTarget->SetShowHighlight();
 			break;
 
 		case orderAimAtTarget:
@@ -1190,7 +1195,7 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 		int iMin = 3;
 		WORD wColor = m_pAutoDock->GetSymbolColor();
 
-		int iPos = (iRange - 1) - ((g_pUniverse->GetTicks() / iSpeed) % iRange);
+		int iPos = (iRange - 1) - ((g_pUniverse->GetPaintTick() / iSpeed) % iRange);
 		int iSize = iMin + iPos;
 		DWORD dwOpacity = 255 - (iPos * 20);
 
