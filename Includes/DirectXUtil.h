@@ -485,7 +485,8 @@ void DrawGlowRing (CG16bitImage &Dest,
 				   int yDest,
 				   int iRadius,
 				   int iRingThickness,
-				   WORD wColor);
+				   WORD wColor,
+				   DWORD dwOpacity = 255);
 void DrawGlowRing (CG16bitImage &Dest,
 				   int xDest,
 				   int yDest,

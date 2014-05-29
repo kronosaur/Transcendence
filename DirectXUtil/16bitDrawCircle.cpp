@@ -1420,7 +1420,8 @@ void DrawGlowRing (CG16bitImage &Dest,
 				   int yDest,
 				   int iRadius,
 				   int iRingThickness,
-				   WORD wColor)
+				   WORD wColor,
+				   DWORD dwOpacity)
 
 //	DrawGlowRing
 //
@@ -1444,11 +1445,11 @@ void DrawGlowRing (CG16bitImage &Dest,
 
 	//	Init the center
 
-	DWORD dwOpacity = 255;
+	DWORD dwPosOpacity = dwOpacity;
 	if (iExtra)
 		{
 		wColorRamp[iCenter] = wColor;
-		byOpacityRamp[iCenter] = dwOpacity;
+		byOpacityRamp[iCenter] = dwPosOpacity;
 		}
 
 	//	Edges
@@ -1458,13 +1459,13 @@ void DrawGlowRing (CG16bitImage &Dest,
 		ASSERT(iOuter >= 0 && iOuter < iRingThickness);
 		ASSERT(iInner >=0 && iInner < iRingThickness);
 
-		dwOpacity = 255 * (iCenter - i) / (iCenter + 1);
+		dwPosOpacity = dwOpacity * (iCenter - i) / (iCenter + 1);
 
 		wColorRamp[iOuter] = wColor;
-		byOpacityRamp[iOuter] = dwOpacity;
+		byOpacityRamp[iOuter] = dwPosOpacity;
 
 		wColorRamp[iInner] = wColor;
-		byOpacityRamp[iInner] = dwOpacity;
+		byOpacityRamp[iInner] = dwPosOpacity;
 
 		iOuter--;
 		iInner++;

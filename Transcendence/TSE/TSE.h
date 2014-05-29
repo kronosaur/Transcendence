@@ -2073,7 +2073,7 @@ class CSpaceObject : public CObject
 		inline void ClearAutoClearDestination (void) { m_fAutoClearDestination = false; }
 		inline void ClearAutoClearDestinationOnDock (void) { m_fAutoClearDestinationOnDock = false; }
 		inline void ClearPaintNeeded (void) { m_fPaintNeeded = false; }
-		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; m_fAutoClearDestination = false; m_fAutoClearDestinationOnDock = false; m_fShowDistanceAndBearing = false; }
+		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; m_fAutoClearDestination = false; m_fAutoClearDestinationOnDock = false; m_fShowDistanceAndBearing = false; m_fShowHighlight = false; }
 		inline void ClearPlayerDocked (void) { m_fPlayerDocked = false; }
 		inline void ClearPlayerTarget (void) { m_fPlayerTarget = false; }
 		inline void ClearPOVLRS (void) { m_fInPOVLRS = false; }
@@ -2241,6 +2241,7 @@ class CSpaceObject : public CObject
 		inline bool IsPlayerTarget (void) { return m_fPlayerTarget; }
 		inline bool IsSelected (void) { return m_fSelected; }
 		inline bool IsShowingDistanceAndBearing (void) { return m_fShowDistanceAndBearing; }
+		inline bool IsShowingHighlight (void) { return m_fShowHighlight; }
 		bool IsStargateInRange (Metric rMaxRange);
 		inline bool IsSubscribedToEvents (CSpaceObject *pObj) { return m_SubscribedObjs.FindObj(pObj); }
 		inline bool IsTimeStopped (void) { return m_fTimeStop; }
@@ -2304,6 +2305,7 @@ class CSpaceObject : public CObject
 			}
 		inline void SetSelection (void) { m_fSelected = true; }
 		inline void SetShowDistanceAndBearing (void) { m_fShowDistanceAndBearing = true; }
+		inline void SetShowHighlight (void) { m_fShowHighlight = true; }
 		inline void SetVel (const CVector &vVel) { m_vVel = vVel; }
 		inline void StopTime (void) { m_fTimeStop = true; }
 		inline bool SupportsDocking (void) { return (GetDefaultDockScreen() != NULL && GetDockingPortCount() > 0); }
@@ -2627,6 +2629,7 @@ class CSpaceObject : public CObject
 		bool MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, CWeaponFireDesc *pDesc);
 		void PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx);
+		void PaintTargetHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		inline void SetObjectDestructionHook (void) { m_fHookObjectDestruction = true; }
 		inline void SetCannotBeHit (void) { m_fCannotBeHit = true; }
 		inline void SetCannotMove (void) { m_fCannotMove = true; }
@@ -2730,7 +2733,7 @@ class CSpaceObject : public CObject
 
 		DWORD m_fPainted:1;						//	TRUE if we painted the object last tick
 		DWORD m_fAutoClearDestinationOnDock:1;	//	TRUE if we should clear the destination when player docks
-		DWORD m_fSpare3:1;
+		DWORD m_fShowHighlight:1;				//	TRUE if we should paint a target highlight in SRS
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;

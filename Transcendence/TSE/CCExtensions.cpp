@@ -1623,7 +1623,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"   'autoClear         Clear when in SRS range\n"
 			"   'autoClearOnDock   Clear when player docks\n"
-			"   'showDistance      Show distance\n",
+			"   'showDistance      Show distance\n"
+			"   'showHighlight     Show target highlight\n",
 
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -6094,6 +6095,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			bool bShowDistanceAndBearing = false;
 			bool bAutoClearDestination = false;
 			bool bAutoClearOnDock = false;
+			bool bShowHighlight = false;
 
 			//	If we have an extra argument then it is either a boolean (which
 			//	is old-style) or it is a string or list of string.
@@ -6114,6 +6116,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 							bAutoClearOnDock = true;
 						else if (strEquals(sOption, CONSTLIT("showDistance")))
 							bShowDistanceAndBearing = true;
+						else if (strEquals(sOption, CONSTLIT("showHighlight")))
+							bShowHighlight = true;
 						else
 							return pCC->CreateError(strPatternSubst(CONSTLIT("Invalid option: %s"), sOption));
 						}
@@ -6140,6 +6144,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pObj->SetAutoClearDestination();
 			if (bAutoClearOnDock)
 				pObj->SetAutoClearDestinationOnDock();
+			if (bShowHighlight)
+				pObj->SetShowHighlight();
 
 			return pCC->CreateTrue();
 			}
