@@ -2070,10 +2070,8 @@ class CSpaceObject : public CObject
 		bool CanDetect (int Perception, CSpaceObject *pObj);
 		bool CanCommunicateWith (CSpaceObject *pSender);
 		inline bool CanHitFriends (void) { return !m_fNoFriendlyFire; }
-		inline void ClearAutoClearDestination (void) { m_fAutoClearDestination = false; }
-		inline void ClearAutoClearDestinationOnDock (void) { m_fAutoClearDestinationOnDock = false; }
 		inline void ClearPaintNeeded (void) { m_fPaintNeeded = false; }
-		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; m_fAutoClearDestination = false; m_fAutoClearDestinationOnDock = false; m_fShowDistanceAndBearing = false; m_fShowHighlight = false; }
+		inline void ClearPlayerDestination (void) { m_fPlayerDestination = false; m_fAutoClearDestination = false; m_fAutoClearDestinationOnDock = false; m_fAutoClearDestinationOnDestroy = false; m_fShowDistanceAndBearing = false; m_fShowHighlight = false; }
 		inline void ClearPlayerDocked (void) { m_fPlayerDocked = false; }
 		inline void ClearPlayerTarget (void) { m_fPlayerTarget = false; }
 		inline void ClearPOVLRS (void) { m_fInPOVLRS = false; }
@@ -2214,6 +2212,7 @@ class CSpaceObject : public CObject
 					&& (vLL.GetY() < m_vPos.GetY()); }
 		inline bool IsAscended (void) const { return m_fAscended; }
 		bool IsAutoClearDestination (void) { return m_fAutoClearDestination; }
+		bool IsAutoClearDestinationOnDestroy (void) { return m_fAutoClearDestinationOnDestroy; }
 		bool IsAutoClearDestinationOnDock (void) { return m_fAutoClearDestinationOnDock; }
 		bool IsAutomatedWeapon (void) const { return (m_fAutomatedWeapon ? true : false); }
 		bool IsBarrier (void) const { return (m_fIsBarrier ? true : false); }
@@ -2271,6 +2270,7 @@ class CSpaceObject : public CObject
 		inline void RestartTime (void) { m_fTimeStop = false; }
 		inline void SetAscended (bool bAscended = true) { m_fAscended = bAscended; }
 		inline void SetAutoClearDestination (void) { m_fAutoClearDestination = true; }
+		inline void SetAutoClearDestinationOnDestroy (void) { m_fAutoClearDestinationOnDestroy = true; }
 		inline void SetAutoClearDestinationOnDock (void) { m_fAutoClearDestinationOnDock = true; }
 		inline void SetAutomatedWeapon (void) { m_fAutomatedWeapon = true; }
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
@@ -2735,7 +2735,7 @@ class CSpaceObject : public CObject
 		DWORD m_fPainted:1;						//	TRUE if we painted the object last tick
 		DWORD m_fAutoClearDestinationOnDock:1;	//	TRUE if we should clear the destination when player docks
 		DWORD m_fShowHighlight:1;				//	TRUE if we should paint a target highlight in SRS
-		DWORD m_fSpare4:1;
+		DWORD m_fAutoClearDestinationOnDestroy:1;//	TRUE if we should clear the destination when station is destroyed
 		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;

@@ -2061,6 +2061,11 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 				RaiseAlert(pOrderGiver);
 			}
 
+		//	Clear destination
+
+		if (IsAutoClearDestinationOnDestroy())
+			ClearPlayerDestination();
+
 		//	Explosion effect
 
 		CreateDestructionEffect();

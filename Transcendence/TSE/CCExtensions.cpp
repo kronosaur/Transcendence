@@ -1621,10 +1621,11 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			
 			"options:\n\n"
 			
-			"   'autoClear         Clear when in SRS range\n"
-			"   'autoClearOnDock   Clear when player docks\n"
-			"   'showDistance      Show distance\n"
-			"   'showHighlight     Show target highlight\n",
+			"   'autoClear            Clear when in SRS range\n"
+			"   'autoClearOnDestroy   Clear when destroyed\n"
+			"   'autoClearOnDock      Clear when player docks\n"
+			"   'showDistance         Show distance\n"
+			"   'showHighlight        Show target highlight\n",
 
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
@@ -6094,6 +6095,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			int i;
 			bool bShowDistanceAndBearing = false;
 			bool bAutoClearDestination = false;
+			bool bAutoClearOnDestroy = false;
 			bool bAutoClearOnDock = false;
 			bool bShowHighlight = false;
 
@@ -6112,6 +6114,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 						if (strEquals(sOption, CONSTLIT("autoClear")))
 							bAutoClearDestination = true;
+						else if (strEquals(sOption, CONSTLIT("autoClearOnDestroy")))
+							bAutoClearOnDestroy = true;
 						else if (strEquals(sOption, CONSTLIT("autoClearOnDock")))
 							bAutoClearOnDock = true;
 						else if (strEquals(sOption, CONSTLIT("showDistance")))
@@ -6142,6 +6146,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pObj->SetShowDistanceAndBearing();
 			if (bAutoClearDestination)
 				pObj->SetAutoClearDestination();
+			if (bAutoClearOnDestroy)
+				pObj->SetAutoClearDestinationOnDestroy();
 			if (bAutoClearOnDock)
 				pObj->SetAutoClearDestinationOnDock();
 			if (bShowHighlight)

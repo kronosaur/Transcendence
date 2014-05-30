@@ -643,7 +643,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\HSCompatibility.xml" />
-    <None Include="Game\Source\Huari.xml" />
+    <None Include="Game\Source\Huari.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\HUD.xml" />
     <None Include="Game\Source\HumanSpaceMap.xml" />
     <None Include="Game\Source\Ice.xml" />

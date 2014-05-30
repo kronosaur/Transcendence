@@ -202,6 +202,7 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fOutOfPlaneObj(false),
 		m_fPainted(false),
 		m_fAutoClearDestinationOnDock(false),
+		m_fAutoClearDestinationOnDestroy(false),
 		m_fShowHighlight(false)
 
 //	CSpaceObject constructor
@@ -872,6 +873,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fOutOfPlaneObj =			((dwLoad & 0x01000000) ? true : false);
 	pObj->m_fAutoClearDestinationOnDock = ((dwLoad & 0x02000000) ? true : false);
 	pObj->m_fShowHighlight =			((dwLoad & 0x04000000) ? true : false);
+	pObj->m_fAutoClearDestinationOnDestroy = ((dwLoad & 0x08000000) ? true : false);
 
 	//	At this point, OnCreate has always been called--no need to save
 
@@ -6542,6 +6544,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fOutOfPlaneObj				? 0x01000000 : 0);
 	dwSave |= (m_fAutoClearDestinationOnDock ? 0x02000000 : 0);
 	dwSave |= (m_fShowHighlight				? 0x04000000 : 0);
+	dwSave |= (m_fAutoClearDestinationOnDestroy ? 0x08000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
