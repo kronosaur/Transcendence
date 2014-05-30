@@ -186,6 +186,8 @@
 	
 	GLOBAL DATA
 	
+	trainingHabitatMission: If True, we've already pointed the player towards a habitat.
+	
 	-->
 
 	<DockScreen UNID="&dsBenedictTraining;"
@@ -196,22 +198,66 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (foundItem)
+					(block (foundItem targetObj)
 						(switch
 							
 							;	If we've never destroyed an enemy station, then 
 							;	send the player out to explore.
 							
 							(not (plyGetStat gPlayer 'enemyStationsDestroyed))
-								(block Nil
+								(switch
+								
+									;	If we're in Eridani, point the player to a habitat so they can get
+									;	a mission.
+
+									(and (eq (sysGetNode) 'SE)
+											(setq targetObj (sysFindObject gSource "TAN +unid:&stCommonwealthSlums;;"))
+											(not (typGetData &dsBenedictTraining; 'trainingHabitatMission))
+											)
+										(block Nil
+											(scrSetData gScreen 'targetID (objGetID targetObj))
+											(scrSetData gScreen 'action 'pointToHabitat)
+											(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingHabitatMission))
+											)
+											
+									;	Otherwise, we tell the player to attack a different station
+									
+									(setq targetObj (sysFindObject gSource "TAEN +populated;"))
+										(block Nil
+											(scrSetData gScreen 'targetID (objGetID targetObj))
+											(scrSetData gScreen 'action 'pointToTarget)
+											(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingEnemyStation))
+											)
+											
+									;	Otherwise, explore
+									
 									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingExplore1))
 									)
 								
+							;	If we've never use the map, tell the player about it.
+									
+							(plyIsMessageEnabled gPlayer 'mapHint)
+								(block Nil
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingExplore1))
+									)
+
 							;	If we've never looted a station, then tell the player
 							;	how to do that.
 						
-							(not (typGetData &svPlayer; 'tutorialLooted))
+							(and (not (typGetData &svPlayer; 'tutorialLooted))
+									(setq targetObj (sysFindObject gSource "TKEN +populated;"))
+									)
 								(block Nil
+									;	Make sure there is stuff to loot
+									
+									(if (not (objGetItems targetObj "*UN"))
+										(objAddItem targetObj &itCentauriRice; (random 1 4))
+										)
+										
+									;	Send player to loot
+									
+									(scrSetData gScreen 'targetID (objGetID targetObj))
+									(scrSetData gScreen 'action 'pointToDockTarget)
 									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingLoot))
 									)
 								
@@ -220,7 +266,7 @@
 						
 							(and (not (typGetData &svPlayer; 'tutorialInstalled))
 									(setq foundItem
-										(filter (objGetItems gPlayerShip "pUN") theItem 
+										(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
 											(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
 											)
 										)
@@ -232,7 +278,7 @@
 						
 							(and (not (typGetData &svPlayer; 'tutorialInstalled))
 									(setq foundItem
-										(filter (objGetItems gPlayerShip "lUN") theItem 
+										(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
 											(not (objGetProperty gPlayerShip 'selectedLauncher))
 											)
 										)
@@ -284,8 +330,40 @@
 				</OnPaneInit>
 
 				<Actions>
-					<Action id="actionDone" cancel="1">
-						(scrExitScreen gScreen 'forceUndock)
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(theAction (scrGetData gScreen 'action))
+							)
+							
+							(switch
+								(eq theAction 'pointToDockTarget)
+									(block (
+										(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+										)
+										
+										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+										)
+										
+								(eq theAction 'pointToHabitat)
+									(block (
+										(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+										)
+										
+										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+										(typSetData &dsBenedictTraining; 'trainingHabitatMission True)
+										)
+										
+								(eq theAction 'pointToTarget)
+									(block (
+										(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+										)
+										
+										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDestroy))
+										)
+								)
+							
+							(scrExitScreen gScreen 'forceUndock)
+							)
 					</Action>
 				</Actions>
 			</Default>
@@ -297,11 +375,33 @@
 					"\"LATER: I have nothing more to teach you.\""
 					)
 			</Text>
+			<Text id="TrainingEnemyStation">
+				(block (
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						)
+					)
+			</Text>
 			<Text id="TrainingExplore1">
 				(cat
-					"\"Time for you to get your hands dirty. There are enemy "
-					"stations in this system for you to destroy. Go find one "
-					"and come back when you've destroyed it.\""
+					"\"LATER: You're ready to explore! Use your map ([M] key) to see your "
+					"position in the star system. Visit planets and asteroids and look for "
+					"stations.\n\n"
+					"Green stations are friendly; you can dock with them and see what "
+					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					)
+			</Text>
+			<Text id="TrainingHabitatMission">
+				(block (
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and see what they have to say.\""
+						)
 					)
 			</Text>
 			<Text id="TrainingInstallDevice">
@@ -316,11 +416,13 @@
 					)
 			</Text>
 			<Text id="TrainingLoot">
-				(cat
-					"\"You must learn to survive off your kills. The next time "
-					"you destroy a ship or station, make sure you dock with "
-					"the wreckage and loot any items on it. You might find something "
-					"valuable.\""
+				(block (
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and loot it.\""
+						)
 					)
 			</Text>
 			<Text id="TrainingSell">
