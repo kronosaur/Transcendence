@@ -28,8 +28,6 @@ const DWORD FIRE_THRESHOLD =					150;
 const DWORD HIT_THRESHOLD =						90;
 
 const DWORD DAMAGE_BAR_TIMER =					30 * 5;
-const int DAMAGE_BAR_WIDTH =					100;
-const int DAMAGE_BAR_HEIGHT =					12;
 
 #define MAX_GATE_DISTANCE						(g_KlicksPerPixel * 64.0)
 #define MAX_STARGATE_HELP_RANGE					(g_KlicksPerPixel * 256.0)
@@ -102,6 +100,8 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 				SetTarget(pTarget);
 
 			SetDestination(pTarget);
+			if (pTarget)
+				pTarget->SetShowHighlight();
 			break;
 		}
 
@@ -1227,12 +1227,10 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 	//	If necessary, show damage bar
 
 	if (m_pAutoDamage
-			&& m_pAutoDamage->WasPainted())
+			&& (DWORD)g_pUniverse->GetTicks() > m_dwAutoDamageExpire)
 		{
-		PaintDamageBar(Ctx, Dest, m_pAutoDamage);
-
-		if ((DWORD)g_pUniverse->GetTicks() > m_dwAutoDamageExpire)
-			m_pAutoDamage = NULL;
+		m_pAutoDamage->ClearShowDamageBar();
+		m_pAutoDamage = NULL;
 		}
 
 	DEBUG_CATCH
@@ -1335,7 +1333,10 @@ void CPlayerShipController::OnStationDestroyed (const SDestroyCtx &Ctx)
 		}
 
 	if (m_pAutoDamage == Ctx.pObj)
+		{
+		m_pAutoDamage->ClearShowDamageBar();
 		m_pAutoDamage = NULL;
+		}
 	}
 
 void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
@@ -1357,39 +1358,6 @@ void CPlayerShipController::OnWreckCreated (CSpaceObject *pWreck)
 	//	(since the player ship has been taken out of the system)
 
 	m_dwWreckObjID = pWreck->GetID();
-	}
-
-void CPlayerShipController::PaintDamageBar (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget)
-
-//	PaintDamageBar
-//
-//	Paints a damage bar for th given object
-
-	{
-	int x, y;
-	Ctx.XForm.Transform(pTarget->GetPos(), &x, &y);
-
-	int iHP = 100 - pTarget->GetVisibleDamage();
-	WORD wColor = pTarget->GetSymbolColor();
-	DWORD dwOpacity = 160;
-
-	const RECT &rcImage = pTarget->GetImage().GetImageRect();
-	int cxWidth = RectWidth(rcImage);
-	int cyHeight = RectHeight(rcImage);
-
-	int xStart = x - (DAMAGE_BAR_WIDTH / 2);
-	int yStart = y + (cyHeight / 2);
-
-	int iFill = Max(1, iHP * DAMAGE_BAR_WIDTH / 100);
-
-	//	Draw
-
-	Dest.FillTrans(xStart, yStart, iFill, DAMAGE_BAR_HEIGHT, wColor, dwOpacity);
-
-	Dest.FillLineTrans(xStart + iFill, yStart, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-	Dest.FillLineTrans(xStart + iFill, yStart + DAMAGE_BAR_HEIGHT - 1, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-
-	Dest.FillColumnTrans(xStart + DAMAGE_BAR_WIDTH - 1, yStart + 1, DAMAGE_BAR_HEIGHT - 2, wColor, dwOpacity);
 	}
 
 void CPlayerShipController::PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget)
@@ -1593,7 +1561,11 @@ void CPlayerShipController::OnObjDamaged (const SDamageCtx &Ctx)
 			&& (Ctx.pObj->GetCategory() == CSpaceObject::catStation
 				|| Ctx.pObj->IsMultiHull()))
 		{
+		if (m_pAutoDamage)
+			m_pAutoDamage->ClearShowDamageBar();
+
 		m_pAutoDamage = Ctx.pObj;
+		m_pAutoDamage->SetShowDamageBar();
 		m_dwAutoDamageExpire = g_pUniverse->GetTicks() + DAMAGE_BAR_TIMER;
 		}
 	}
@@ -1657,7 +1629,10 @@ void CPlayerShipController::OnObjDestroyed (const SDestroyCtx &Ctx)
 		m_pAutoTarget = NULL;
 
 	if (m_pAutoDamage == Ctx.pObj)
+		{
+		m_pAutoDamage->ClearShowDamageBar();
 		m_pAutoDamage = NULL;
+		}
 
 	//	Clear out the target list
 
@@ -2012,10 +1987,15 @@ void CPlayerShipController::Reset (void)
 
 	m_iOrder = orderNone;
 
-	//	Clear autodock
+	//	Clear auto
+
+	if (m_pAutoDamage)
+		{
+		m_pAutoDamage->ClearShowDamageBar();
+		m_pAutoDamage = NULL;
+		}
 
 	m_pAutoDock = NULL;
-	m_pAutoDamage = NULL;
 	m_pAutoTarget = NULL;
 
 	DEBUG_CATCH

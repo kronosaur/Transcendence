@@ -466,7 +466,6 @@ class CPlayerShipController : public CObject, public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
-		void PaintDamageBar (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);

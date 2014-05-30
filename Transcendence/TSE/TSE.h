@@ -2076,6 +2076,7 @@ class CSpaceObject : public CObject
 		inline void ClearPlayerTarget (void) { m_fPlayerTarget = false; }
 		inline void ClearPOVLRS (void) { m_fInPOVLRS = false; }
 		inline void ClearSelection (void) { m_fSelected = false; }
+		inline void ClearShowDamageBar (void) { m_fShowDamageBar = false; }
 		inline void ClearShowDistanceAndBearing (void) { m_fShowDistanceAndBearing = false; }
 		inline void ClipSpeed (Metric rMaxSpeed) { m_vVel.Clip(rMaxSpeed); }
 		void CommsMessageFrom (CSpaceObject *pSender, int iIndex);
@@ -2239,6 +2240,7 @@ class CSpaceObject : public CObject
 		bool IsPlayerEscortTarget (CSpaceObject *pPlayer = NULL);
 		inline bool IsPlayerTarget (void) { return m_fPlayerTarget; }
 		inline bool IsSelected (void) { return m_fSelected; }
+		inline bool IsShowingDamageBar (void) { return m_fShowDamageBar; }
 		inline bool IsShowingDistanceAndBearing (void) { return m_fShowDistanceAndBearing; }
 		inline bool IsShowingHighlight (void) { return m_fShowHighlight; }
 		bool IsStargateInRange (Metric rMaxRange);
@@ -2253,6 +2255,7 @@ class CSpaceObject : public CObject
 		inline bool NotifyOthersWhenDestroyed (void) { return (m_fNoObjectDestructionNotify ? false : true); }
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void PaintDamageBar (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor);
 		void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		inline void PaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { OnPaintSRSEnhancements(Dest, Ctx); }
@@ -2305,6 +2308,7 @@ class CSpaceObject : public CObject
 			return true;
 			}
 		inline void SetSelection (void) { m_fSelected = true; }
+		inline void SetShowDamageBar (void) { m_fShowDamageBar = true; }
 		inline void SetShowDistanceAndBearing (void) { m_fShowDistanceAndBearing = true; }
 		inline void SetShowHighlight (void) { m_fShowHighlight = true; }
 		inline void SetVel (const CVector &vVel) { m_vVel = vVel; }
@@ -2736,7 +2740,7 @@ class CSpaceObject : public CObject
 		DWORD m_fAutoClearDestinationOnDock:1;	//	TRUE if we should clear the destination when player docks
 		DWORD m_fShowHighlight:1;				//	TRUE if we should paint a target highlight in SRS
 		DWORD m_fAutoClearDestinationOnDestroy:1;//	TRUE if we should clear the destination when station is destroyed
-		DWORD m_fSpare5:1;
+		DWORD m_fShowDamageBar:1;				//	TRUE if we should show damage bar
 		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;

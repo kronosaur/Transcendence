@@ -18,6 +18,9 @@ const int HIGHLIGHT_TIMER =						200;
 const int HIGHLIGHT_BLINK =						110;
 const int HIGHLIGHT_FADE =						30;
 
+const int DAMAGE_BAR_WIDTH =					100;
+const int DAMAGE_BAR_HEIGHT =					12;
+
 const Metric g_rMaxCommsRange =					(LIGHT_MINUTE * 8.0);
 const Metric g_rMaxCommsRange2 =				(g_rMaxCommsRange * g_rMaxCommsRange);
 
@@ -203,7 +206,8 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fPainted(false),
 		m_fAutoClearDestinationOnDock(false),
 		m_fAutoClearDestinationOnDestroy(false),
-		m_fShowHighlight(false)
+		m_fShowHighlight(false),
+		m_fShowDamageBar(false)
 
 //	CSpaceObject constructor
 
@@ -874,8 +878,9 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fAutoClearDestinationOnDock = ((dwLoad & 0x02000000) ? true : false);
 	pObj->m_fShowHighlight =			((dwLoad & 0x04000000) ? true : false);
 	pObj->m_fAutoClearDestinationOnDestroy = ((dwLoad & 0x08000000) ? true : false);
+	pObj->m_fShowDamageBar =			((dwLoad & 0x10000000) ? true : false);
 
-	//	At this point, OnCreate has always been called--no need to save
+	//	No need to save the following
 
 	pObj->m_fOnCreateCalled = true;
 	pObj->m_fItemEventsValid = false;
@@ -5117,13 +5122,46 @@ void CSpaceObject::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &C
 	{
 	PaintDebugVector(Dest, x, y, Ctx);
 
-	if (m_fShowHighlight && !Ctx.fNoSelection)
+	if (m_fShowHighlight && !Ctx.fNoSelection && !m_fShowDamageBar)
 		PaintTargetHighlight(Dest, x, y, Ctx);
 
 	OnPaint(Dest, x, y, Ctx);
 
+	if (m_fShowDamageBar)
+		PaintDamageBar(Dest, x, y, Ctx);
+
 	SetPainted();
 	ClearPaintNeeded();
+	}
+
+void CSpaceObject::PaintDamageBar (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintDamageBar
+//
+//	Paints a damage bar for the object
+
+	{
+	int iHP = 100 - GetVisibleDamage();
+	WORD wColor = GetSymbolColor();
+	DWORD dwOpacity = 160;
+
+	const RECT &rcImage = GetImage().GetImageRect();
+	int cxWidth = RectWidth(rcImage);
+	int cyHeight = RectHeight(rcImage);
+
+	int xStart = x - (DAMAGE_BAR_WIDTH / 2);
+	int yStart = y + (cyHeight / 2);
+
+	int iFill = Max(1, iHP * DAMAGE_BAR_WIDTH / 100);
+
+	//	Draw
+
+	Dest.FillTrans(xStart, yStart, iFill, DAMAGE_BAR_HEIGHT, wColor, dwOpacity);
+
+	Dest.FillLineTrans(xStart + iFill, yStart, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
+	Dest.FillLineTrans(xStart + iFill, yStart + DAMAGE_BAR_HEIGHT - 1, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
+
+	Dest.FillColumnTrans(xStart + DAMAGE_BAR_WIDTH - 1, yStart + 1, DAMAGE_BAR_HEIGHT - 2, wColor, dwOpacity);
 	}
 
 void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -6545,6 +6583,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fAutoClearDestinationOnDock ? 0x02000000 : 0);
 	dwSave |= (m_fShowHighlight				? 0x04000000 : 0);
 	dwSave |= (m_fAutoClearDestinationOnDestroy ? 0x08000000 : 0);
+	dwSave |= (m_fShowDamageBar				? 0x10000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
