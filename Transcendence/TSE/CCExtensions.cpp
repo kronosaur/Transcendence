@@ -1019,7 +1019,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"ivi",		PPFLAG_SIDEEFFECTS,	},
 
 		{	"objAddItem",					fnObjItem,		FN_OBJ_ADD_ITEM,
-			"(objAddItem obj item [count])",
+			"(objAddItem obj item|type [count])",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objAddItemEnhancement",		fnObjSet,		FN_OBJ_ADD_ITEM_ENHANCEMENT,
@@ -6547,12 +6547,12 @@ ICCItem *fnObjItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 		{
 		case FN_OBJ_ADD_ITEM:
 			{
-			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
+			CItem Item(GetItemFromArg(*pCC, pArgs->GetElement(1)));
 			if (2 < pArgs->GetCount())
 				Item.SetCount(pArgs->GetElement(2)->GetIntegerValue());
 			pArgs->Discard(pCC);
 
-			if (Item.GetCount() > 0)
+			if (Item.GetType() && Item.GetCount() > 0)
 				{
 				//	Do not allow adding installed items
 				Item.SetInstalled(-1);
@@ -6562,9 +6562,12 @@ ICCItem *fnObjItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 				pObj->OnComponentChanged(comCargo);
 				pObj->ItemsModified();
 				pObj->InvalidateItemListAddRemove();
-				}
 
-			pResult = pCC->CreateTrue();
+				pResult = pCC->CreateTrue();
+				}
+			else
+				pResult = pCC->CreateNil();
+
 			break;
 			}
 
