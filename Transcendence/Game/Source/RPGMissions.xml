@@ -203,7 +203,6 @@
 							)
 
 							(scrSetData gScreen 'declineOptions (msnDecline missionObj))
-							(print (scrGetData gScreen 'declineOptions))
 							(scrShowPane gScreen "ReplyDecline")
 							)
 					</Action>

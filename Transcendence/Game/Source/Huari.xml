@@ -2266,8 +2266,6 @@
 											)
 										)
 										
-									(print "Gate: " gateID)
-									
 									; Set the coordinates
 									(if (and gateID (setq gateObj (sysFindObject gPlayerShip (cat "NG:" gateID))))
 										(block Nil
