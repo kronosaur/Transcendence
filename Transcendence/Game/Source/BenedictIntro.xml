@@ -153,14 +153,49 @@
 			</Text>
 			
 			<Text id="IntroReturning">
-				(cat "LATER: Welcome back!")
+				(cat
+					"The abbess greets you:\n\n"
+					
+					"\"Welcome back, %name%! Your journey to the Galactic Core has just begun. "
+					"Whatever obstacles you've faced so far are nothing compared to what "
+					"awaits you. Take comfort in Domina's guidance.\""
+					)
 			</Text>
 			
 			<Text id="q1:Label">"\"Who is [D]omina?\""</Text>
-			<Text id="q1:Answer">"LATER: How should I know?"</Text>
+			<Text id="q1:Answer">
+				(random (list
+					(cat
+						"\"Domina speaks to you in your dreams and visions. "
+						"She summons those like you to journey to the Core. "
+						"Perhaps if you reach her you will understand. "
+						"But do not be afraid&#x97;Domina will protect you.\""
+						)
+					(cat
+						"\"Domina speaks to you from her throne at the Galactic Core. "
+						"Only she knows the purpose of your journey. Perhaps if you reach her you will understand.\""
+						)
+					(cat
+						"\"Domina is the divine intelligence that guides you. "
+						"She waits for you at the Galactic Core for some purpose. "
+						"Perhaps if you reach her you will understand.\""
+						)
+					))
+			</Text>
 			
 			<Text id="q2:Label">"\"How do I reach the [G]alactic Core?\""</Text>
-			<Text id="q2:Answer">"LATER: With great difficulty."</Text>
+			<Text id="q2:Answer">
+				(random (list
+					(cat
+						"\"The stargates will take you. Seek them out and enter. "
+						"But be prepared for many obstacles. You must grow stronger to reach the Core.\""
+						)
+					(cat
+						"\"The stargates will take you. Seek them out and enter. "
+						"But remember that the farther you go, the greater the dangers.\""
+						)
+					))
+			</Text>
 			
 			<Text id="q3:Label">"\"[W]hat obstacles will I face?\""</Text>
 			<Text id="q3:Answer">
