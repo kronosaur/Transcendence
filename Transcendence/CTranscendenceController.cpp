@@ -1473,6 +1473,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				m_iBackgroundState = stateDownloadingResource;
 				m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 				}
+			else
+				::kernelDebugLogMessage("All resources downloaded.");
 			}
 		}
 

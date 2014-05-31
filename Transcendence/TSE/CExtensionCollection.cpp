@@ -989,7 +989,10 @@ bool CExtensionCollection::GetRequiredResources (TArray<CString> *retFilespecs)
 		for (j = 0; j < Resources.GetCount(); j++)
 			{
 			if (!::pathExists(Resources[j]))
+				{
 				retFilespecs->Insert(Resources[j]);
+				::kernelDebugLogMessage("Request download: %s", Resources[j]);
+				}
 			}
 		}
 
