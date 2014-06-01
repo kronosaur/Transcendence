@@ -335,6 +335,8 @@ ALERROR CUniverse::CreateRandomItem (const CItemCriteria &Crit,
 
 	pTable->AddItems(Ctx);
 
+	delete pTable;
+
 	//	Done
 
 	Items.ResetCursor();
