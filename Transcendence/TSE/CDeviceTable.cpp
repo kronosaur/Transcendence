@@ -736,6 +736,8 @@ ALERROR CLevelTableOfDeviceGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx
 	ALERROR error;
 	int i;
 
+	m_iComputedLevel = -1;
+
 	for (i = 0; i < m_Table.GetCount(); i++)
 		{
 		if (error = m_Table[i].pDevice->OnDesignLoadComplete(Ctx))

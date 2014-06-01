@@ -3285,6 +3285,7 @@ void CShipClass::OnReinit (void)
 
 	{
 	InitShipNamesIndices();
+	m_WreckImage.CleanUp();
 	}
 
 void CShipClass::OnUnbindDesign (void)

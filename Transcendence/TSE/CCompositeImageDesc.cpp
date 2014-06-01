@@ -386,6 +386,16 @@ ALERROR CCompositeImageDesc::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
+void CCompositeImageDesc::Reinit (void)
+
+//	Reinit
+//
+//	Reinitialize
+
+	{
+	m_Cache.DeleteAll();
+	}
+
 //	CCompositeEntry ------------------------------------------------------------
 
 CCompositeEntry::~CCompositeEntry (void)

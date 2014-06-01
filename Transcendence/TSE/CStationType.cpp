@@ -1615,6 +1615,7 @@ void CStationType::OnReinit (void)
 
 	{
 	m_EncounterRecord.Reinit(m_RandomPlacement);
+	m_Image.Reinit();
 	}
 
 void CStationType::OnTopologyInitialized (void)

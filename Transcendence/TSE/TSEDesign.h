@@ -1054,6 +1054,7 @@ class CCompositeImageDesc
 		void MarkImage (void);
 		void MarkImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers = CCompositeImageModifiers());
 		ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+		void Reinit (void);
 
 	private:
 		struct SCacheEntry
