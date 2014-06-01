@@ -1520,13 +1520,15 @@ bool strRegEx (char *pStart, const CString &sPattern, TArray<SRegExMatch> *retMa
 
 const double g_Pi = 3.14159265358979323846;			//	Pi
 
-int mathRound (double x);
+DWORD mathGetSeed (void);
 int mathNearestPowerOf2 (int x);
 int mathPower (int x, int n);
 DWORD mathRandom (void);
 int mathRandom (int iFrom, int iTo);
 double mathRandomGaussian (void);
+int mathRound (double x);
 int mathSeededRandom (int iSeed, int iFrom, int iTo);
+void mathSetSeed (DWORD dwSeed);
 int mathSqrt (int x);
 inline double mathDegreesToRadians (double rDegrees) { return g_Pi * rDegrees / 180.0; }
 
