@@ -1035,6 +1035,10 @@ ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, 
 
 	::kernelDebugLogMessage("Initializing adventure: %s", Settings.pAdventure->GetFilespec());
 
+#ifdef DEBUG_RANDOM_SEED
+	mathSetSeed(100);
+#endif
+
 	return m_Universe.Init(Ctx, retsError);
 	}
 
