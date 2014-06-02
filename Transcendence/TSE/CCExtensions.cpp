@@ -210,6 +210,7 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_ARMOR_REPLACE_PRICE	113
 #define FN_OBJ_GET_PLAYER_PRICE_ADJ	114
 #define FN_OBJ_CAN_INSTALL_ITEM		115
+#define FN_OBJ_ADD_ITEM				116
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -223,7 +224,6 @@ ICCItem *fnObjGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 ICCItem *fnObjSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnObjIDGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
-#define FN_OBJ_ADD_ITEM				1
 #define FN_OBJ_REMOVE_ITEM			2
 #define FN_OBJ_ENUM_ITEMS			3
 #define FN_OBJ_HAS_ITEM				4
@@ -1018,9 +1018,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objAddBuyOrder obj criteria priceAdj) -> True/Nil",
 			"ivi",		PPFLAG_SIDEEFFECTS,	},
 
-		{	"objAddItem",					fnObjItem,		FN_OBJ_ADD_ITEM,
+		{	"objAddItem",					fnObjSet,		FN_OBJ_ADD_ITEM,
 			"(objAddItem obj item|type [count])",
-			NULL,	PPFLAG_SIDEEFFECTS,	},
+			"iv*",		PPFLAG_SIDEEFFECTS,	},
 
 		{	"objAddItemEnhancement",		fnObjSet,		FN_OBJ_ADD_ITEM_ENHANCEMENT,
 			"(objAddItemEnhancement obj item enhancementType [lifetime]) -> enhancementID",
@@ -1250,6 +1250,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"   'enabled\n"
 			"   'fireArc\n"
+			"   'installDevicePrice\n"
 			"   'linkedFireOptions\n"
 			"   'pos\n"
 			"   'secondary\n"
@@ -5621,6 +5622,27 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_OBJ_ADD_ITEM:
+			{
+			CItem Item(GetItemFromArg(*pCC, pArgs->GetElement(1)));
+			if (2 < pArgs->GetCount())
+				Item.SetCount(pArgs->GetElement(2)->GetIntegerValue());
+
+			if (Item.GetType() == NULL || Item.GetCount() <= 0)
+				return pCC->CreateNil();
+
+			//	Do not allow adding installed items
+			Item.SetInstalled(-1);
+
+			CItemListManipulator ObjList(pObj->GetItemList());
+			ObjList.AddItem(Item);
+			pObj->OnComponentChanged(comCargo);
+			pObj->ItemsModified();
+			pObj->InvalidateItemListAddRemove();
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_OBJ_ADD_ITEM_ENHANCEMENT:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
@@ -6551,32 +6573,6 @@ ICCItem *fnObjItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 	switch (dwData)
 		{
-		case FN_OBJ_ADD_ITEM:
-			{
-			CItem Item(GetItemFromArg(*pCC, pArgs->GetElement(1)));
-			if (2 < pArgs->GetCount())
-				Item.SetCount(pArgs->GetElement(2)->GetIntegerValue());
-			pArgs->Discard(pCC);
-
-			if (Item.GetType() && Item.GetCount() > 0)
-				{
-				//	Do not allow adding installed items
-				Item.SetInstalled(-1);
-
-				CItemListManipulator ObjList(pObj->GetItemList());
-				ObjList.AddItem(Item);
-				pObj->OnComponentChanged(comCargo);
-				pObj->ItemsModified();
-				pObj->InvalidateItemListAddRemove();
-
-				pResult = pCC->CreateTrue();
-				}
-			else
-				pResult = pCC->CreateNil();
-
-			break;
-			}
-
 		case FN_OBJ_HAS_ITEM:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
