@@ -184,8 +184,11 @@
 							(switch
 								(@ data 'totalPrice)
 									(setq totalCost (@ data 'totalPrice))
-								
-								(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
+
+								(@ data 'installPriceAdj)
+									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
+
+								(setq totalCost (objGetItemProperty installerObj thisItem 'installDevicePrice))
 								)
 								
 							;	Ask the object is we can install the item
@@ -213,6 +216,14 @@
 											)
 										)
 									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+
+								(and (not totalCost)
+										(gr (itmGetLevel thisItem) (objGetProperty installerObj 'installDeviceMaxLevel))
+										)
+									(setq desc (cat (strCapitalize textWe) " do not have the technology to install " itemName " on " textYourShip "."))
+
+								(not totalCost)
+									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
 
 								(and (@ data 'checkMilitaryID)
 										(itmHasModifier thisItem "Military")

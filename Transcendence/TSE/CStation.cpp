@@ -1257,6 +1257,29 @@ DWORD CStation::GetDefaultEconomyUNID (void)
 	return DEFAULT_ECONOMY_UNID;
 	}
 
+bool CStation::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
+
+//	GetDeviceInstallPrice
+//
+//	Returns the price to install the given device
+
+	{
+	//	See if we have an override
+
+	if (m_pTrade && m_pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if (pTrade && pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, we do not install
+
+	return false;
+	}
+
 const CObjectImageArray &CStation::GetImage (bool bFade, int *retiTick, int *retiRotation)
 
 //	GetImage

@@ -11,6 +11,83 @@
 
 <!-- INSTALL DEVICE SCREEN =====================================================
 
+	This screen asks the user to install a device from the ship's cargo hold.
+
+	gData uses the following fields:
+
+	checkMilitaryID:	If True we check to make sure the player has a military
+						ID before selling them a military reactor.
+
+	installPriceAdj:	The price to install the device. If Nil, we use the 
+						item's default install price. If an integer, we treat it
+						as a % price adjustment. If a function, we evaluate it
+						to determine the price.
+
+	noItemsText:		Text to show if itemList is empty
+
+-->
+
+	<DockScreen UNID="&dsRPGInstallDevice;"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"dUN"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"Pick a device to install.">
+
+				<OnPaneInit>
+					(block (thisItem theResult)
+						(setq theResult (rpgInstallDevicePrep {
+							item: (scrGetItem gScreen)
+
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							currencyUsed: (objGetDefaultCurrency gSource)
+							installerObj: gSource
+							installPriceAdj: (@ gData 'installPriceAdj)
+							itemInCargo: True
+							}))
+
+						(setq gCanInstall (@ theResult 'canInstall))
+						(setq gCost (@ theResult 'price))
+
+						; Set the description						
+						(scrSetDesc gScreen (@ theResult 'desc))
+
+						; Disable actions
+						(scrEnableAction gScreen 0 gCanInstall)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Install this Device" default="1" key="I">
+						(if gCanInstall
+							(block Nil
+								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
+								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+								(typSetData &svPlayer; 'tutorialInstalled True)
+								
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+<!-- INSTALL DEVICE SCREEN =====================================================
+
 	This screen asks the user to pick a device from a list of itemStructs and
 	then installs the device (charging appropriately).
 
@@ -61,8 +138,7 @@
 										)
 									)
 
-								(setq result (rpgInstallDevicePrep
-									{
+								(setq result (rpgInstallDevicePrep {
 									item: gItem
 									totalPrice: gCost
 									currencyUsed: (objGetDefaultCurrency gSource)

@@ -1291,6 +1291,7 @@ class CStation : public CSpaceObject
 		virtual DWORD GetDefaultEconomyUNID (void);
 		virtual CInstalledDevice *GetDevice (int iDev) const { return &m_pDevices[iDev]; }
 		virtual int GetDeviceCount (void) const { return (m_pDevices ? maxDevices : 0); }
+		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
 		virtual int GetDockingPortCount (void) { return m_DockingPorts.GetPortCount(this); }
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }

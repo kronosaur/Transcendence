@@ -69,7 +69,7 @@
 //#define DEBUG_NAV_PATH
 //#define DEBUG_NEBULA_PAINTING
 //#define DEBUG_PERFORMANCE
-#define DEBUG_RANDOM_SEED
+//#define DEBUG_RANDOM_SEED
 //#define DEBUG_SHIP
 //#define DEBUG_SOURCE_LOAD_TRACE
 //#define DEBUG_STATION_EXCLUSION_ZONE
@@ -2455,6 +2455,7 @@ class CSpaceObject : public CObject
 		virtual CSpaceObject *GetDestination (void) const { return NULL; }
 		virtual CInstalledDevice *GetDevice (int iDev) const { return NULL; }
 		virtual int GetDeviceCount (void) const { return 0; }
+		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice) { return false; }
 		virtual CSpaceObject *GetDockedObj (void) { return NULL; }
 		virtual int GetDockingPortCount (void) { return 0; }
 		virtual CStationType *GetEncounterInfo (void) { return NULL; }

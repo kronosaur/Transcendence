@@ -64,6 +64,9 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -192,6 +195,9 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -644,40 +650,31 @@
 					<Action name="Refuel" key="R">
 						(block Nil
 							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-							(scrShowScreen gScreen "&dsRefuel;")
+							(scrShowScreen gScreen &dsRefuel;)
 							)
 					</Action>
 
 					<Action name="Repair or Replace Armor" key="A" >
-						(block Nil
-							(setq gTechLevel 7)
-							(setq gArmorSegment 0)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRepairArmor;")
-							)
+						(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Install Device" key="D" >
-						(block Nil
-							(setq gTechLevel 6)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallDevice;")
-							)
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Remove Device" key="V" >
 						(block Nil
 							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRemoveDevice;")
+							(scrShowScreen gScreen &dsRemoveDevice;)
 							)
 					</Action>
 
 					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
+						(scrShowScreen gScreen &dsRPGInstallDeviceFromList; {
 							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-4;")
 							priceAdj: Nil
 							checkMilitaryID: True
@@ -699,14 +696,14 @@
 				<Actions>
 					<Action name="Trafalgar Pub" key="P">
 						(block Nil
-							(setq gPrevScreen "&dsCommonwealthStation;")
+							(setq gPrevScreen &dsCommonwealthStation;)
 							(setq gPrevPane "CentralPlaza")
-							(scrShowScreen gScreen "&dsCommonwealthPub;")
+							(scrShowScreen gScreen &dsCommonwealthPub;)
 							)
 					</Action>
 
 					<Action name="The Victorian Nightclub" imageIndex="0" key="V">
-						(scrShowScreen gScreen "&dsCommonwealthNightclub;")
+						(scrShowScreen gScreen &dsCommonwealthNightclub;)
 					</Action>
 
 					<Action name="Done" cancel="1" key="D">

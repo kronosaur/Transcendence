@@ -77,6 +77,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
 #define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
@@ -3051,16 +3052,27 @@ ICCItem *CSpaceObject::GetItemProperty (CCodeChainCtx *pCCCtx, const CItem &Item
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	//	Select the item (to make sure that it is part of the object)
-
-	CItemListManipulator ItemList(GetItemList());
-	if (!ItemList.SetCursorAtItem(Item))
-		return CC.CreateError(CONSTLIT("Item not found on object."));
-
 	//	Return the property
 
-	CItemCtx Ctx(&Item, this);
-	return Item.GetProperty(pCCCtx, Ctx, sName);
+	if (strEquals(sName, PROPERTY_INSTALL_DEVICE_PRICE))
+		{
+		int iPrice;
+		if (!GetDeviceInstallPrice(Item, 0, &iPrice))
+			return CC.CreateNil();
+
+		return CC.CreateInteger(iPrice);
+		}
+	else
+		{
+		//	Select the item (to make sure that it is part of the object)
+
+		CItemListManipulator ItemList(GetItemList());
+		if (!ItemList.SetCursorAtItem(Item))
+			return CC.CreateError(CONSTLIT("Item not found on object."));
+
+		CItemCtx Ctx(&Item, this);
+		return Item.GetProperty(pCCCtx, Ctx, sName);
+		}
 	}
 
 CSpaceObject *CSpaceObject::GetNearestEnemy (Metric rMaxRange, bool bIncludeStations)

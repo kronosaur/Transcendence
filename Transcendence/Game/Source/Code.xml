@@ -651,7 +651,7 @@
 						{
 						item: thisItem
 						totalPrice: costToInstall
-						installPriceAdj: installMargin
+						installPriceAdj: (if installMargin installMargin 100)
 						currencyUsed: currencyUsed
 						maxTechLevel: maxTechLevel
 						techCriteria: techCriteria

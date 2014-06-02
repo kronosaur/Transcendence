@@ -458,6 +458,38 @@ bool CTradingDesc::GetArmorRepairPrice (CSpaceObject *pObj, const CItem &Item, i
 	return false;
 	}
 
+bool CTradingDesc::GetDeviceInstallPrice (CSpaceObject *pObj, const CItem &Item, DWORD dwFlags, int *retiPrice) const
+
+//	GetDeviceInstallPrice
+//
+//	Returns the price to install the given device
+
+	{
+	int i;
+
+	//	Loop over the commodity list and find the first entry that matches
+
+	for (i = 0; i < m_List.GetCount(); i++)
+		if (m_List[i].iService == serviceInstallDevice
+				&& Matches(Item, m_List[i]))
+			{
+			//	Compute price
+
+			int iPrice = ComputePrice(pObj, Item, 1, m_List[i], dwFlags);
+			if (iPrice < 0)
+				return false;
+
+			//	Done
+
+			if (retiPrice)
+				*retiPrice = iPrice;
+
+			return true;
+			}
+
+	return false;
+	}
+
 int CTradingDesc::GetMaxLevelMatched (ETradeServiceTypes iService) const
 
 //	GetMaxLevelMatched
