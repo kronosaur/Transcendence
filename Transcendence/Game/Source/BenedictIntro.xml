@@ -300,55 +300,48 @@
 							;	in our cargo hold, then tell the player how to install it.
 						
 							(and (not (typGetData &svPlayer; 'tutorialInstalled))
-									(setq foundItem
-										(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
-											(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
-											)
-										)
-									)
-								(block Nil
-									(scrSetData gScreen 'foundItem (@ foundItem 0))
-									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
-									)
-						
-							(and (not (typGetData &svPlayer; 'tutorialInstalled))
-									(setq foundItem
-										(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
-											(not (objGetProperty gPlayerShip 'selectedLauncher))
-											)
-										)
-									)
-								(block Nil
-									(scrSetData gScreen 'foundItem (@ foundItem 0))
-									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
-									)
-						
-							(and (not (typGetData &svPlayer; 'tutorialInstalled))
-									(setq foundItem
-										(filter (objGetItems gPlayerShip "sUN") theItem 
-											(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
-											)
-										)
-									)
-								(block Nil
-									(scrSetData gScreen 'foundItem (@ foundItem 0))
-									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
-									)
-									
-							(and (not (typGetData &svPlayer; 'tutorialInstalled))
-									(setq foundItem
-										(filter (objGetItems gPlayerShip "aUN") theItem 
-											(gr (itmGetLevel theItem) 
-												(map (objGetItems gPlayerShip "aI") 'reduceMax theArmor (itmGetLevel theArmor))
+									(or
+										(setq foundItem (@
+											(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
+												(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
 												)
-											)
+											0
+											))
+										(setq foundItem (@
+											(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
+												(not (objGetProperty gPlayerShip 'selectedLauncher))
+												)
+											0
+											))
+										(setq foundItem (@
+											(filter (objGetItems gPlayerShip "sUN") theItem 
+												(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+												)
+											0
+											))
+										;(setq foundItem (@
+										;	(filter (objGetItems gPlayerShip "aUN") theItem 
+										;		(gr (itmGetLevel theItem) 
+										;			(map (objGetItems gPlayerShip "aI") 'reduceMax theArmor (itmGetLevel theArmor))
+										;			)
+										;		)
+										;	0
+										;	))
 										)
+									(setq targetObj (@
+										(filter (sysFindObject gSource "TAF +populated; S:d") theObj
+											(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+											)
+										0
+										))
 									)
 								(block Nil
-									(scrSetData gScreen 'foundItem (@ foundItem 0))
+									(scrSetData gScreen 'foundItem foundItem)
+									(scrSetData gScreen 'targetID (objGetID targetObj))
+									(scrSetData gScreen 'action 'pointToDockTarget)
 									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingInstallDevice))
 									)
-									
+						
 							;	If we haven't sold anything yet and we have something in our 
 							;	cargo hold worth selling, then sell it.
 							
@@ -442,11 +435,12 @@
 			<Text id="TrainingInstallDevice">
 				(block (
 					(itemToInstall (scrGetData gScreen 'foundItem))
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
 					)
 					
 					(cat
 						"\"The " (itmGetName itemToInstall 0) " in your cargo hold will come in handy. "
-						"Go to Starton Eridani and have it installed at their dock services.\""
+						"Go to " (objGetName targetObj) " and have it installed at their dock services.\""
 						)
 					)
 			</Text>
