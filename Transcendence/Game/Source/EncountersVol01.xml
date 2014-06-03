@@ -3292,8 +3292,8 @@
 		<Weapon
 				type=				"missile"
 
-				damage=				"darkAcid:1d8; WMD1"
-				fireRate=			"45"
+				damage=				"darkAcid:2d8; WMD1"
+				fireRate=			"30"
 				missileSpeed=		"45"
 				lifetime=			"40"
 				powerUse=			"200"
@@ -3375,8 +3375,8 @@
 		</Devices>
 
 		<Maneuver
-			maxRotationRate=	"12.0"
-			rotationAccel=		"1.0"
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
 			/>
 
 		<Items>
@@ -3433,7 +3433,7 @@
 
 		<Maneuver
 			maxRotationRate=	"18.0"
-			rotationAccel=		"2.0"
+			rotationAccel=		"6.0"
 			/>
 
 		<Items>
@@ -3449,9 +3449,10 @@
 		
 		<AISettings
 			aggressor=			"true"
-			fireRateAdj=		"20"
+			fireRateAdj=		"10"
 			fireAccuracy=		"90"
 			perception=			"4"
+			ignoreShieldsDown=	"true"
 			
 			combatStyle=		"advanced"
 			/>
