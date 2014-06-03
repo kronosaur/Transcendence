@@ -61,7 +61,7 @@
 //#define DEBUG_ATTACK_TARGET
 //#define DEBUG_AVOID_POTENTIAL
 //#define DEBUG_BOUNDING_RECT
-#define DEBUG_COMBAT
+//#define DEBUG_COMBAT
 //#define DEBUG_COMBAT_AI
 //#define DEBUG_DOCK_PORT_POS
 //#define DEBUG_FIRE_ON_OPPORTUNITY
@@ -2160,6 +2160,7 @@ class CSpaceObject : public CObject
 		Metric GetDistance (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length(); }
 		Metric GetDistance2 (CSpaceObject *pObj) const { return (pObj->GetPos() - GetPos()).Length2(); }
 		CDesignType *GetFirstDockScreen (CString *retsScreen, ICCItem **retpData);
+		Metric GetHitSize (void);
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline int GetIndex (void) const { return m_iIndex; }
 		CSpaceObject *GetNearestEnemy (Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false);

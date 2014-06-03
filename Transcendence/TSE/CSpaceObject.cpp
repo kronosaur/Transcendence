@@ -3020,6 +3020,24 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **re
 	return GetDefaultDockScreen(retsScreen);
 	}
 
+Metric CSpaceObject::GetHitSize (void)
+
+//	GetHitSize
+//
+//	Returns the size of the object (in kilometers) for purposes of determining
+//	the size that can be hit. This is much larger than the real size of the
+//	object (since object images are greatly magnified) but it is less than the
+//	object bounds, which includes engine effects.
+
+	{
+	const CObjectImageArray &Image = GetImage();
+	if (Image.IsEmpty())
+		return 32.0 * g_KlicksPerPixel;
+
+	const RECT &rcRect = Image.GetImageRect();
+	return Max(RectWidth(rcRect), RectHeight(rcRect)) * g_KlicksPerPixel;
+	}
+
 const CObjectImageArray &CSpaceObject::GetImage (void)
 
 //	GetImage
