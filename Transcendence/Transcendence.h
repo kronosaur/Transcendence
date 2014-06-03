@@ -288,6 +288,7 @@ class CPlayerGameStats
 enum UIMessageTypes
 	{
 	uimsgUnknown =					-1,
+	uimsgEnabledHints =				-2,
 
 	uimsgAllMessages =				0,
 	uimsgAllHints =					1,			//	IsEnabled(uimsgAllHints) returns TRUE if ANY hint is enabled

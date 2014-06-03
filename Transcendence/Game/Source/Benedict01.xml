@@ -73,6 +73,11 @@
 
 					(msnSetData gSource 'stargateID (objGetID stargateObj))
 
+					;	Disable hints (so player does not get instructions to enter 
+					;	stargate).
+
+					(plyEnableMessage gPlayer 'enabledHints Nil)
+
 					;	Remember that we accepted this mission
 					
 					(benedict_missionAccepted gSource)
@@ -106,6 +111,11 @@
 			</OnObjDestroyed>
 			
 			<OnCompleted>
+				(block Nil
+					;	Re-enable hints.
+
+					(plyEnableMessage gPlayer 'enabledHints True)
+					)
 			</OnCompleted>
 
 			<OnReward>

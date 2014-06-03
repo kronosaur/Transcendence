@@ -291,7 +291,15 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"isvs",	0,	},
 
 		{	"plyEnableMessage",				fnPlySet,			FN_PLY_ENABLE_MESSAGE,
-			"(plyEnableMessage player messageID True/Nil) -> True/Nil",
+			"(plyEnableMessage player messageID True/Nil) -> True/Nil\n\n"
+			
+			"messageID:\n\n"
+			
+			"   'allHints\n"
+			"   'allMessages\n"
+			"   'enabledHints\n"
+			"   (plus all messageIDs for plyIsMessageEnabled)\n",
+
 			"isv",	PPFLAG_SIDEEFFECTS, },
 
 		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
