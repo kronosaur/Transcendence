@@ -35,7 +35,7 @@ const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_T
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 
 #ifdef DEBUG_COMBAT
-#define DEBUG_COMBAT_OUTPUT(x)			if (pShip->IsSelected()) g_pUniverse->DebugOutput("%d> %s", g_iDebugLine++, x)
+#define DEBUG_COMBAT_OUTPUT(x)			{ if (g_pUniverse->GetPlayer()) g_pUniverse->GetPlayer()->SendMessage(pShip, strPatternSubst(CONSTLIT("%d: %s"), pShip->GetID(), CString(x))); }
 #else
 #define DEBUG_COMBAT_OUTPUT(x)
 #endif
@@ -1072,6 +1072,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 			&iAimAngle,
 			&iFireAngle,
 			&iFacingAngle);
+	bool bAimError = false;
 
 	//	iAimAngle is the direction that we should fire in order to hit
 	//	the target.
@@ -1097,6 +1098,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 				//	the new aim point.
 
 				iAimAngle = -1;
+				bAimError = true;
 				DEBUG_COMBAT_OUTPUT("Aim error: hold fire when aligned");
 				}
 			}
@@ -1108,6 +1110,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 				if (iAimOffset < 20)
 					{
 					bAligned = true;
+					bAimError = true;
 					DEBUG_COMBAT_OUTPUT("Aim error: fire when not aligned");
 					}
 				}
@@ -1121,7 +1124,11 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 #ifdef DEBUG
 		{
 		char szDebug[1024];
-		wsprintf(szDebug, "Fire: Weapon aligned  iAim=%d  iFireAngle=%d", iAimAngle, iFireAngle);
+		if (bAimError)
+			wsprintf(szDebug, "%s: false positive  iAim=%d  iFireAngle=%d", pShip->GetNamedDevice(iWeaponToFire)->GetName().GetASCIIZPointer(), iAimAngle, iFireAngle);
+		else
+			wsprintf(szDebug, "%s: aligned  iAim=%d  iFireAngle=%d", pShip->GetNamedDevice(iWeaponToFire)->GetName().GetASCIIZPointer(), iAimAngle, iFireAngle);
+
 		DEBUG_COMBAT_OUTPUT(szDebug);
 		}
 #endif
@@ -1468,19 +1475,15 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 
 	if (iDir != -1)
 		{
+		int iDesiredDir = pShip->AlignToRotationAngle(iDir);
 		int iCurrentDir = pShip->GetRotation();
 
 		//	If we're within a few degrees of where we want to be, then
 		//	don't bother changing
 
-		if (!AreAnglesAligned(iDir, iCurrentDir, 9))
+		if (iDesiredDir != iCurrentDir)
 			{
-			int iTurn = (iDir + 360 - iCurrentDir) % 360;
-
-			if (iTurn >= 180)
-				SetManeuver(RotateRight);
-			else
-				SetManeuver(RotateLeft);
+			SetManeuver(pShip->GetManeuverToFace(iDesiredDir));
 
 			//	If we're turning in a new direction now, then reset
 			//	our counter
@@ -1627,7 +1630,6 @@ void CAIBehaviorCtx::ImplementTurnTo (CShip *pShip, int iRotation)
 //	Turn towards the given angle
 
 	{
-	//	LATER: Deal with acceleration
 	SetManeuver(pShip->GetManeuverToFace(iRotation));
 	}
 
