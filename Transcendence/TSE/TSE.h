@@ -61,7 +61,8 @@
 //#define DEBUG_ATTACK_TARGET
 //#define DEBUG_AVOID_POTENTIAL
 //#define DEBUG_BOUNDING_RECT
-//#define DEBUG_COMBAT
+#define DEBUG_COMBAT
+//#define DEBUG_COMBAT_AI
 //#define DEBUG_DOCK_PORT_POS
 //#define DEBUG_FIRE_ON_OPPORTUNITY
 //#define DEBUG_HENCHMAN
@@ -2409,6 +2410,7 @@ class CSpaceObject : public CObject
 		virtual bool IsImmutable (void) const { return false; }
 		virtual bool IsKnown (void) { return true; }
 		virtual bool IsMarker (void) { return false; }
+		virtual bool IsMission (void) { return false; }
 		virtual bool IsNonSystemObj (void) { return false; }
 		virtual bool IsVirtual (void) const { return false; }
 		virtual bool IsWreck (void) const { return false; }

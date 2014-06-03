@@ -84,6 +84,7 @@ class CMission : public CSpaceObject
 		virtual CDesignType *GetType (void) const { return m_pType; }
 		virtual bool HasAttribute (const CString &sAttribute) const { return m_pType->HasLiteralAttribute(sAttribute); }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
+		virtual bool IsMission (void) { return true; }
 		virtual bool IsNonSystemObj (void) { return true; }
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
