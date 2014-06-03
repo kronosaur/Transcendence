@@ -1509,7 +1509,7 @@ void CPlayerShipController::OnMessage (CSpaceObject *pSender, const CString &sMs
 //	Receive a message from some other object
 
 	{
-	if (pSender)
+	if (pSender && !pSender->IsVirtual() && !pSender->IsMission())
 		pSender->Highlight(sMsg);
 	else
 		m_pTrans->DisplayMessage(sMsg);
