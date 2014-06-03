@@ -996,7 +996,28 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"shpSetAISetting",				fnShipSet,			FN_SHIP_AI_SETTING,
-			"(shpSetAISetting ship setting value)",
+			"(shpSetAISetting ship setting value)\n\n"
+			
+			"setting:\n\n"
+			
+			"   'combatStyle\n"
+			"      = 'advanced\n"
+			"      = 'chase\n"
+			"      = 'flyby\n"
+			"      = 'noRetreat\n"
+			"      = 'standard\n"
+			"      = 'standOff\n"
+			"\n"
+			"   'aggressor (True/Nil)\n"
+			"   'ascendOnGate (True/Nil)\n"
+			"   'ignoreShieldsDown (True/Nil)\n"
+			"   'noAttackOnThreat (True/Nil)\n"
+			"   'noDogfights (True/Nil)\n"
+			"   'noFriendlyFire (True/Nil)\n"
+			"   'noFriendlyFireCheck (True/Nil)\n"
+			"   'noNavPaths (True/Nil)\n"
+			"   'noOrderGiver (True/Nil)\n",
+
 			"isv",	0,	},
 
 		{	"shpSetCommandCode",			fnShipSet,		FN_SHIP_COMMAND_CODE,
