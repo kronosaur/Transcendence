@@ -103,13 +103,6 @@
 					)
 			</OnSetPlayerTarget>
 			
-			<OnObjDestroyed>
-				(switch
-					(eq (msnGetData gSource 'targetID) (objGetID aObjDestroyed))
-						(msnSuccess gSource)
-					)
-			</OnObjDestroyed>
-			
 			<OnCompleted>
 				(block Nil
 					;	Re-enable hints.
@@ -119,6 +112,14 @@
 			</OnCompleted>
 
 			<OnReward>
+				(block Nil
+					;	Player gets mission to visit Korolov
+
+					(setq theMission (msnCreate &msBenedictToKorolov; Nil))
+					(if theMission
+						(msnAccept theMission)
+						)
+					)
 			</OnReward>
 
 			<OnFreighterArrives>
@@ -215,8 +216,23 @@
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(cat
-					"LATER: Great!"
+				(block (
+					(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
+					)
+
+					(list
+						(cat
+							"LATER: Great!"
+							)
+						(if korolovMsn
+							(cat
+								"LATER: Go to " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " and find the Korolov station."
+								)
+							(cat
+								"LATER: Maybe I'll see you again"
+								)
+							)
+						)
 					)
 			</Text>
 			<Text id="SuccessMsg">

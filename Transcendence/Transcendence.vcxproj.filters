@@ -673,6 +673,9 @@
     <None Include="Game\Source\Benedict01.xml">
       <Filter>XML Files\Part I</Filter>
     </None>
+    <None Include="Game\Source\Benedict02.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">

@@ -1865,6 +1865,7 @@
 	<!ENTITY msBenedictsDrones			"0x00200008">
 	<!ENTITY msBenedictAndFiona			"0x00200009">
 	<!ENTITY dsBenedictTraining			"0x0020000A">
+	<!ENTITY msBenedictToKorolov		"0x0020000B">
 	
 	<!-- DOMINA 0020 1xxx -->
 	
@@ -2359,6 +2360,7 @@
 
 		<Module filename="Benedict00.xml"/>
 		<Module filename="Benedict01.xml"/>
+		<Module filename="Benedict02.xml"/>
 		<Module filename="BenedictIntro.xml"/>
 		<Module filename="BenedictStoryArc.xml"/>
 		<Module filename="Elysium.xml"/>
