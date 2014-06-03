@@ -754,7 +754,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Game\Source\Benedict01.xml" />
+    <None Include="Game\Source\Benedict01.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -319,14 +319,6 @@
 												)
 											0
 											))
-										;(setq foundItem (@
-										;	(filter (objGetItems gPlayerShip "aUN") theItem 
-										;		(gr (itmGetLevel theItem) 
-										;			(map (objGetItems gPlayerShip "aI") 'reduceMax theArmor (itmGetLevel theArmor))
-										;			)
-										;		)
-										;	0
-										;	))
 										)
 									(setq targetObj (@
 										(filter (sysFindObject gSource "TAF +populated; S:d") theObj
@@ -346,13 +338,69 @@
 							;	cargo hold worth selling, then sell it.
 							
 							(and (not (typGetData &svPlayer; 'tutorialSold))
-									(objGetItems gPlayerShip "*~fU")
+									(setq foundItem
+										(map
+											(map (objGetItems gPlayerShip "*~fU") 'excludeNil theItem 
+												(block (buyerObj)
+													(switch
+														(not (itmIsKnown theItem))
+															Nil
+
+														(not (setq buyerObj 
+																(map (sysFindObject gSource "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
+																	(objGetBuyPrice theObj theItem)
+																	)
+																))
+															Nil
+
+														{
+														item: theItem
+														buyerObj: buyerObj
+														buyerPrice: (objGetBuyPrice buyerObj theItem)
+														})
+													)
+												)
+											(list 'reduceMax 'original)
+											theResult
+											(@ theResult 'buyerPrice)
+											)
+										)
 									)
-								(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingSell))
+								(block Nil
+									(scrSetData gScreen 'foundItem (@ foundItem 'item))
+									(scrSetData gScreen 'targetID (objGetID (@ foundItem 'buyerObj)))
+									(scrSetData gScreen 'action 'pointToDockTarget)
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingSell))
+									)
+
+							;	If we're in Eridani and the player has destroyed fewer than 3 Centauri warlord
+							;	stations, then send the player out to destroy one.
+
+							(and (eq (sysGetNode) 'SE)
+									(setq targetObj (sysFindObject gSource "TAEN +centauriWarlords; +populated; -occupation; -uncharted;"))
+									(ls (count (sysFindObject gSource "TKE +centauriWarlords; +populated; -occupation; -uncharted;")) 3)
+									)
+								(block Nil
+									(scrSetData gScreen 'targetID (objGetID targetObj))
+									(scrSetData gScreen 'action 'pointToTarget)
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingCentauriStation))
+									)
+
+							;	If we're in Eridani then we get the mission to defend a freighter
+
+							(and (eq (sysGetNode) 'SE)
+									(benedict_isMissionAvailable &msBenedictAndFiona;)
+									)
+								(block Nil
+									(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'TrainingFionaMission))
+									(scrSetData gScreen 'action 'fionaMission)
+									)
 								
 							;	Nothing else
 								
-							(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'NothingMore))
+							(block Nil
+								(scrSetDesc gScreen (typTranslate &dsBenedictTraining; 'NothingMore))
+								)
 							)
 						)
 				</OnPaneInit>
@@ -370,6 +418,7 @@
 										)
 										
 										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+										(scrExitScreen gScreen 'forceUndock)
 										)
 										
 								(eq theAction 'pointToHabitat)
@@ -379,6 +428,7 @@
 										
 										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
 										(typSetData &dsBenedictTraining; 'trainingHabitatMission True)
+										(scrExitScreen gScreen 'forceUndock)
 										)
 										
 								(eq theAction 'pointToTarget)
@@ -387,10 +437,19 @@
 										)
 										
 										(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDestroy))
+										(scrExitScreen gScreen 'forceUndock)
 										)
+
+								(eq theAction 'fionaMission)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen &dsRPGMission; {
+											missionObj: (msnCreate &msBenedictAndFiona; gSource)
+											})
+										)
+
+								(scrExitScreen gScreen 'forceUndock)
 								)
-							
-							(scrExitScreen gScreen 'forceUndock)
 							)
 					</Action>
 				</Actions>
@@ -401,6 +460,16 @@
 			<Text id="NothingMore">
 				(cat
 					"\"LATER: I have nothing more to teach you.\""
+					)
+			</Text>
+			<Text id="TrainingCentauriStation">
+				(block (
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						)
 					)
 			</Text>
 			<Text id="TrainingEnemyStation">
@@ -420,6 +489,11 @@
 					"stations.\n\n"
 					"Green stations are friendly; you can dock with them and see what "
 					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					)
+			</Text>
+			<Text id="TrainingFionaMission">
+				(cat
+					"\"LATER: Help a freighter to escape.\""
 					)
 			</Text>
 			<Text id="TrainingHabitatMission">
@@ -455,9 +529,18 @@
 					)
 			</Text>
 			<Text id="TrainingSell">
-				(cat
-					"\"You can earn money to buy fuel and upgrade by selling items in your "
-					"cargo hold. Go to Starton Eridani and sell some stuff.\""
+				(block (
+					(itemToSell (scrGetData gScreen 'foundItem))
+					(targetObj (objGetObjByID (scrGetData gScreen 'targetID)))
+					)
+
+					(cat
+						"\"You can earn money to buy fuel and upgrade by selling items in your "
+						"cargo hold.\n\n"
+						
+						"\"You can sell the " (itmGetName itemToSell 0) " in your cargo hold to "
+						(objGetName targetObj) ". Go there now.\""
+						)
 					)
 			</Text>
 		</Language>

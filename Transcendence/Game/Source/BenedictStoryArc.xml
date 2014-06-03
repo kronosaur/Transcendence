@@ -102,7 +102,7 @@
 							
 									;	If we still have missions to given, add action to talk to Benedict.
 					
-									(benedict_isMissionAvailable &msBenedictFirstMission;)
+									(benedict_isMissionAvailable &msBenedictAndFiona;)
 										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)
 											(scrShowScreen gScreen &dsBenedictTraining;)
 											)

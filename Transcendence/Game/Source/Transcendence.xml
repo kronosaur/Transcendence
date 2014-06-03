@@ -1863,7 +1863,7 @@
 	<!ENTITY unidBenedictStoryArc		"0x00200006">
 	<!ENTITY dsBenedictIntro			"0x00200007">
 	<!ENTITY msBenedictsDrones			"0x00200008">
-	<!ENTITY msBenedictFirstMission		"0x00200009">
+	<!ENTITY msBenedictAndFiona			"0x00200009">
 	<!ENTITY dsBenedictTraining			"0x0020000A">
 	
 	<!-- DOMINA 0020 1xxx -->
