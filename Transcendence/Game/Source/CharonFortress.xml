@@ -179,7 +179,7 @@
 			explosionType=		"&vtBlastExplosion3;"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, populated, majorStation, KorolovCharon"
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, populated, majorStation, korolovCharon, korolovShipping"
 
 			noArticle=			"true"
 			>
@@ -644,7 +644,7 @@
 			shipRepairRate=		"3"
 			ejectaType=			"&vtWreckEjecta;"
 
-			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated"
+			attributes=			"corporate, corporateCustoms, corporateDecon, friendly, human, majorStation, populated, korolovShipping, underConstruction"
 
 			noArticle=			"true"
 			>
