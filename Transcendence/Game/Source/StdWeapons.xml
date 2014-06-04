@@ -856,7 +856,7 @@
 						missileSpeed=	"50"
 						lifetime=		"60"
 						interaction=	"50"
-						maneuverability="2"
+						maneuverRate=	"18"
 
 						sound=			"&snRecoillessCannon;"
 						>
