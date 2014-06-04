@@ -1582,6 +1582,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
 	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
 	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
+	m_Model.SetNoMissionCheckpoint(m_Settings.GetBoolean(CGameSettings::noMissionCheckpoint));
 	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
 
 	//	Figure out where the Collection folder is and where the Extension

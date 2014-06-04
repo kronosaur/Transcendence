@@ -122,6 +122,7 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bDebugMode(false),
 		m_bForceTDB(false),
 		m_bNoSound(false),
+		m_bNoMissionCheckpoint(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
@@ -1790,6 +1791,12 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 	ALERROR error;
 
 	ASSERT(m_GameFile.IsOpen());
+
+	//	If we're saving a mission, check the option and exit if we're not 
+	//	supposed to save on mission accept.
+
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) && m_bNoMissionCheckpoint)
+		return NOERROR;
 
 	//	Fire and event to give global types a chance to save any volatiles
 

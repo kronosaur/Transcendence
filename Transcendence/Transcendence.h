@@ -2056,6 +2056,7 @@ class CGameSettings
 			noAutoSave,						//	NOT YET IMPLEMENTED
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
 			showManeuverEffects,			//	Shows maneuvering effects
+			noMissionCheckpoint,			//	Do not save on mission accept
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -2087,7 +2088,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 29,
+			OPTIONS_COUNT = 30,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2211,6 +2212,7 @@ class CTranscendenceModel
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
 		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
+		inline void SetNoMissionCheckpoint (bool bValue = true) { m_bNoMissionCheckpoint = bValue; }
 		inline void SetNoSound (bool bNoSound = true) { m_bNoSound = bNoSound; }
 		ALERROR SaveHighScoreList (CString *retsError = NULL);
 		ALERROR SaveGame (DWORD dwFlags, CString *retsError = NULL);
@@ -2250,6 +2252,7 @@ class CTranscendenceModel
 		bool m_bDebugMode;							//	Game in debug mode (or next game should be in debug mode)
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound
+		bool m_bNoMissionCheckpoint;				//	Do not save game on mission accept
 
 		CGameFile m_GameFile;
 		CUniverse m_Universe;

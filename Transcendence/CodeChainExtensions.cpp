@@ -15,6 +15,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_GAME_SET_CRAWL_TEXT		1
 #define FN_GAME_SET_CRAWL_IMAGE		2
 #define FN_GAME_SET_CRAWL_SOUNDTRACK	3
+#define FN_GAME_SAVE				4
 
 ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -92,6 +93,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 	{
 		//	Game function
 		//	-------------
+
+		{	"gamSave",						fnGameSet,		FN_GAME_SAVE,
+			"(gamSave [options]) -> True/Nil\n\n"
+			
+			"options:\n\n"
+			
+			"   'checkpoint (or Nil)\n"
+			"   'missionCheckpoint\n",
+
+			"*",	PPFLAG_SIDEEFFECTS, },
 
 		{	"gamSetCrawlImage",				fnGameSet,		FN_GAME_SET_CRAWL_IMAGE,
 			"(gamSetCrawlImage imageUNID) -> True/Nil",
@@ -599,6 +610,27 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_GAME_SAVE:
+			{
+			CString sOption = (pArgs->GetCount() > 0 ? pArgs->GetElement(0)->GetStringValue() : NULL_STR);
+			DWORD dwFlags;
+			if (sOption.IsBlank() || strEquals(sOption, CONSTLIT("checkpoint")))
+				dwFlags = CGameFile::FLAG_CHECKPOINT;
+			else if (strEquals(sOption, CONSTLIT("missionCheckpoint")))
+				dwFlags = CGameFile::FLAG_CHECKPOINT | CGameFile::FLAG_ACCEPT_MISSION;
+			else
+				return pCC->CreateError(CONSTLIT("Invalid option"), pArgs->GetElement(0));
+
+			CString sError;
+			if (!g_pTrans->GetModel().SaveGame(dwFlags, &sError))
+				{
+				::kernelDebugLogMessage("Unable to save game: %s", sError);
+				return pCC->CreateNil();
+				}
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_GAME_SET_CRAWL_IMAGE:
 			g_pTrans->GetModel().SetCrawlImage((DWORD)pArgs->GetElement(0)->GetIntegerValue());
 			return pCC->CreateTrue();

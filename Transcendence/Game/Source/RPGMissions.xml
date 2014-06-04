@@ -229,6 +229,10 @@
 							(scrExitScreen gScreen 'forceUndock)
 							(setq aDockTarget gSource)
 							(msnFireEvent missionObj "OnAcceptedUndock")
+
+							;	Save the game
+
+							(gamSave 'missionCheckpoint)
 							)
 					</Action>
 				</Actions>
