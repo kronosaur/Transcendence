@@ -6,6 +6,7 @@
 
 	EXTRA DATA
 
+	attackersLeft:			Number of attackers left.
 	freighterID:			Target ID to escort.
 	stargateID:				Stargate to wait at.
 
@@ -145,12 +146,16 @@
 						(block (enemyObj)
 							(setq enemyObj (sysCreateShip &scAtonement; stargateObj &svCult;))
 							(shpOrder enemyObj 'attack freighterObj)
+							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
+							(msnRegisterForEvents gSource freighterObj)
 
 							;	Set the ships so they don't retreat when shields drop
 
 							(shpSetAISetting enemyObj 'ignoreShieldsDown True)
 							)
 						)
+
+					(msnSetData gSource 'attackersLeft 3)
 
 					;	Refresh the target
 
@@ -162,6 +167,11 @@
 				(switch
 					(eq (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
 						(msnFailure gSource)
+
+					(eq (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
+						(block Nil
+							(msnIncData gSource 'attackersLeft -1)
+							)
 					)
 			</OnObjDestroyed>
 
