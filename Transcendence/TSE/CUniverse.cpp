@@ -615,10 +615,21 @@ CSpaceObject *CUniverse::FindObject (DWORD dwID)
 //	Finds the object by ID
 
 	{
+	CSpaceObject *pObj = NULL;
+
+	//	Look for an object in the current system
+
 	if (m_pCurrentSystem)
-		return m_pCurrentSystem->FindObject(dwID);
-	else
-		return NULL;
+		pObj = m_pCurrentSystem->FindObject(dwID);
+
+	//	Look for a mission
+
+	if (pObj == NULL)
+		pObj = m_AllMissions.GetMissionByID(dwID);
+
+	//	Done
+
+	return pObj;
 	}
 
 CShipClass *CUniverse::FindShipClassByName (const CString &sName)

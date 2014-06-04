@@ -77,6 +77,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
 #define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_ID								CONSTLIT("id")
 #define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
 #define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
@@ -3570,6 +3571,8 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		else
 			return CC.CreateNil();
 		}
+	else if (strEquals(sName, PROPERTY_ID))
+		return CC.CreateInteger(GetID());
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
 	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))

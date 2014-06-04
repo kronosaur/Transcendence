@@ -1359,6 +1359,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'id\n"
 			"   'known\n"
 			"   'playerMissionsGiven\n"
 			"   'underAttack\n"
@@ -1803,6 +1804,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'acceptedOn        Tick on which player accepted mission (or Nil)\n"
 			"   'canBeDeleted      Mission can be deleted by player\n"
 			"   'debrieferID       ID of the object that will debrief the player\n"
+			"   'id                Mission object ID\n"
 			"   'isActive          Is an active player mission\n"
 			"   'isCompleted       Is a completed mission (player or non-player)\n"
 			"   'isDebriefed       Player has been debriefed\n"
