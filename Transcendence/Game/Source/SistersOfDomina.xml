@@ -135,7 +135,6 @@
 				>
 				<Panes>
 					<Default>
-
 						<OnPaneInit>
 							(block Nil
 								(if (not (objGetData gPlayerShip "sistersAttitude"))
@@ -143,8 +142,8 @@
 									)
 
 								(if (objGetData gSource "freeSanctum")
-									(scrSetDesc gScreen "You are docked at an abbey of the Sisters of Domina. A woman wearing a flowing red robe is before you.\n\n\"Take your ease here before you go, or seek guidance at our Sanctum. May the blessings of Domina protect you.\"")
-									(scrSetDesc gScreen "You are docked at an abbey of the Sisters of Domina. A woman wearing a flowing red robe approaches you,\n\n\"How may I help you, child?\"")
+									(scrSetDesc gScreen (objTranslate gSource 'WelcomeFreeSanctum))
+									(scrSetDesc gScreen (objTranslate gSource 'Welcome))
 									)
 								)
 						</OnPaneInit>
@@ -173,13 +172,13 @@
 							<Action name="Undock" cancel="1" key="U">
 								<Exit/>
 							</Action>
-
 						</Actions>
-
 					</Default>
 
-					<Sanctum
-							desc="You are in the sanctum of the Sisters of Domina. The plasteel walls that surround you are micro-engraved with the revelation of Domina. You see before you a holographic display of indescribable beauty and you feel immersed in the energies of a vast cosmic fountain.">
+					<Sanctum>
+						<OnPaneInit>
+							(scrSetDesc gScreen (objTranslate gSource 'Sanctum))
+						</OnPaneInit>
 
 						<Actions>
 							<Action name="Offer Item" key="O">
@@ -209,23 +208,20 @@
 								<ShowPane pane="Default"/>
 							</Action>
 						</Actions>
-
 					</Sanctum>
 
-					<SanctumBlocked
-							desc="&quot;You are not yet ready to commune with Domina. The burden of the material world weighs heavily on you.&quot;">
-
+					<SanctumBlocked>
+						<OnPaneInit>
+							(scrSetDesc gScreen (objTranslate gSource "SanctumBlocked"))
+						</OnPaneInit>
 						<Actions>
 							<Action name="Continue" default="1" key="C" cancel="1">
 								<ShowPane pane="Sanctum"/>
 							</Action>
 						</Actions>
-
 					</SanctumBlocked>
-
 				</Panes>
 			</Main>
-
 		</DockScreens>
 
 		<DockingPorts>
@@ -239,6 +235,36 @@
 			<Port x="-60"	y="-60" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="Sanctum">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"The plasteel walls that surround you are micro-engraved with the revelation of Domina. "
+					"You see before you a holographic display of indescribable beauty and "
+					"you feel immersed in the energies of a vast cosmic fountain."
+					)
+			</Text>
+			<Text id="SanctumBlocked">
+				(cat
+					"\"You are not yet ready to commune with Domina. "
+					"The burden of the material world weighs heavily on you.\""
+					)
+			</Text>
+			<Text id="Welcome">
+				(cat
+					"You are docked at an abbey of the Sisters of Domina."
+					)
+			</Text>
+			<Text id="WelcomeFreeSanctum">
+				(cat
+					"You are docked at an abbey of the Sisters of Domina. "
+					"A woman wearing a flowing cardinal robe is before you.\n\n"
+					
+					"\"Take your ease here before you go, or seek guidance at our Sanctum. "
+					"May the blessings of Domina protect you.\""
+					)
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- Contemplate Domina Screen

@@ -99,13 +99,6 @@
 												missionObj: (@ (msnFind gSource "aS +benedictStoryArc;") 0)
 												})
 											)
-							
-									;	If we still have missions to give, add action to talk to Benedict.
-					
-									(benedict_isMissionAvailable &msBenedictAndFiona;)
-										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)
-											(scrShowScreen gScreen &dsBenedictTraining;)
-											)
 									)
 							)
 							

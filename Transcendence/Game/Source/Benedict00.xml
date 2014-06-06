@@ -201,7 +201,9 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Destroy Benedict's autons."
+					"Destroy Benedict's autons.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
 					)
 			</Text>
 			<Text id="Intro">

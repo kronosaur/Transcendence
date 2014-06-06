@@ -259,6 +259,11 @@
 							(msnSetData gSource 'state state)
 							(msnSetData gSource 'targetID (if targetObj (objGetID targetObj)))
 							(msnSetData gSource 'foundItem foundItem)
+							
+							;	Reset the summary. The summary is normally only calculateed once,
+							;	but since our mission changes, we reset it here.
+							
+							(msnSetProperty gSource 'summary (msnTranslate gSource 'Summary))
 							)
 							
 						;	Otherwise, we refresh the player targets
@@ -420,30 +425,32 @@
 		
 		<Language>
 			<Text id="Name">
-				"Benedict Training"
+				"Training Day"
 			</Text>
 			<Text id="Summary">
-				(cat
-					"Escort a freighter"
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					
+					(switch
+						(not state)
+							(cat
+								"Follow Benedict's instructions and learn how to survive your journey to the Galactic Core.\n\n"
+								"System: " (sysGetName) "\n"
+								"Payment: None"
+								)
+								
+						(msnTranslate gSource (cat state ":Summary"))
+						)
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"LATER: OK, we want you to escort a frieghter."
-					)
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"LATER: Don't let it be destroyed."
-					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"LATER: Go!"
-					)
 			</Text>
 			<Text id="DeclineReply">
-				"LATER: Sucks!"
 			</Text>
 			<Text id="InProgress">
 				(block (
@@ -479,13 +486,25 @@
 					)
 					
 					(cat
-						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						"\"I have little respect for Centauri warlords; they're "
+						"undiciplined and predictable. Still, they've managed to "
+						"scare half the star system into paying them tribute.\n\n"
+						
+						"\"Go out to one of their stations. Smash it and loot its "
+						"remains. It's time for them to be afraid.\""
 						)
 					)
 			</Text>
 			<Text id="attackCentauri:Debrief">
 				(cat
-					"LATER: Nice work destroying Centauri station."
+					"\"Keep it up and we'll free this system of their filth.\""
+					)
+			</Text>
+			<Text id="attackCentauri:Summary">
+				(cat
+					"Destroy a Centauri station.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
 					)
 			</Text>
 			<Text id="attackFirstStation:Begin">
@@ -494,27 +513,63 @@
 					)
 					
 					(cat
-						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						"\"Every star system has its share of outlaws and warlords. "
+						"Most people fear them, but you can't afford to.\n\n"
+						
+						"\"There's " (objGetName targetObj 0x04) " nearby. Let's see "
+						"if you can take them on.\""
 						)
 					)
 			</Text>
 			<Text id="attackFirstStation:Debrief">
 				(cat
-					"LATER: Nice work destroying enemy station."
+					"\"You won't get to the Core without fighting. "
+					"Outlaws, pirates, and warlords are outside the law: "
+					"no one will miss them.\n\n"
+					
+					"\"But not everyone is your enemy. Don't attack civilized "
+					"stations or you’ll turn the whole Commonwealth against you.\""
+					)
+			</Text>
+			<Text id="attackFirstStation:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Destroy " (objGetName targetObj 0x04) ".\n\n"
+						"System: " (sysGetName) "\n"
+						"Payment: None"
+						)
 					)
 			</Text>
 			<Text id="explore:Begin">
 				(cat
-					"\"LATER: You're ready to explore! Use your map ([M] key) to see your "
-					"position in the star system. Visit planets and asteroids and look for "
-					"stations.\n\n"
-					"Green stations are friendly; you can dock with them and see what "
-					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					"\"The [M] key will bring up a map of the entire star system.\n\n"
+					
+					"\"Visit planets and asteroid fields to look for stations. "
+					"Green stations are friendly; you can dock with them and see "
+					"what services they offer.\n\n"
+					
+					"\"Red stations are enemies. Kill them if you can; run if you can't.\""
 					)
 			</Text>
 			<Text id="explore:Debrief">
 				(cat
-					"LATER: Nice work exploring."
+					"\"Domina’s call is strong, but don’t rush to the Core.\n\n"
+					
+					"\"I've seen dreadnoughts blast a warship into dust; "
+					"I've seen swarms of gunships preying on helpless freighters. "
+					"Take your time; build up your skills and weapons.\""
+					)
+			</Text>
+			<Text id="explore:Summary">
+				(cat
+					"Use the [M] key to bring up a system map. Explore the star system "
+					"and destroy enemy stations.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
 					)
 			</Text>
 			<Text id="fionaMission:Begin">
@@ -529,14 +584,28 @@
 					)
 					
 					(cat
-						"\"The " (itmGetName itemToInstall 0) " in your cargo hold will come in handy. "
+						"\"The " (itmGetName itemToInstall 0) " in your cargo hold is powerful. "
 						"Go to " (objGetName targetObj) " and have it installed at their dock services.\""
 						)
 					)
 			</Text>
 			<Text id="installDevice:Debrief">
 				(cat
-					"LATER: Nice work installing a device."
+					"\"Weapons, armor, and most other items need to be properly "
+					"installed on your ship to function. Most major stations have "
+					"dock services that will help you.\""
+					)
+			</Text>
+			<Text id="installDevice:Summary">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Visit dock services at " (objGetName targetObj) " to install "
+						(itmGetName itemToInstall 0x04) "."
+						)
 					)
 			</Text>
 			<Text id="loot:Begin">
@@ -545,13 +614,26 @@
 					)
 					
 					(cat
-						"\"LATER: Go to " (objGetName targetObj) " and loot it.\""
+						"\"The destroyed " (objGetName targetObj 0x00) " might have valuable items. "
+						"Dock with the station and loot everything that seems worthwhile.\""
 						)
 					)
 			</Text>
 			<Text id="loot:Debrief">
 				(cat
-					"LATER: Nice work looting."
+					"\"You're a masterless pilgrim on your way to the Core. Looting is the only way you'll survive.\""
+					)
+			</Text>
+			<Text id="loot:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Dock at " (objGetName targetObj 0x04) " and loot its remains.\n\n"
+						"System: " (sysGetName) "\n"
+						"Payment: None"
+						)
 					)
 			</Text>
 			<Text id="sellLoot:Begin">
@@ -561,52 +643,93 @@
 					)
 
 					(cat
-						"\"You can earn money to buy fuel and upgrade by selling items in your "
-						"cargo hold.\n\n"
+						"\"You'll always need money to buy fuel and ship upgrades.\n\n"
 						
 						"\"You can sell the " (itmGetName itemToSell 0) " in your cargo hold to "
-						(objGetName targetObj) ". Go there now.\""
+						(objGetName targetObj) ". That's a start.\""
 						)
 					)
 			</Text>
 			<Text id="sellLoot:Debrief">
 				(cat
-					"LATER: Nice work selling loot."
+					"\"Not as much money as you expected, eh? Don't worry: "
+					"the universe is big and there are many ways to earn money.\""
+					)
+			</Text>
+			<Text id="sellLoot:Summary">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"Visit " (objGetName targetObj 0x04) " and sell " (itmGetName itemToSell 0x04) ".\n\n"
+						
+						"System: " (sysGetName) "\n"
+						"Payment: " (objGetBuyPrice targetObj itemToSell) " credits"
+						)
 					)
 			</Text>
 			<Text id="useMap:Begin">
 				(cat
-					"\"LATER: You're ready to explore! Use your map ([M] key) to see your "
-					"position in the star system. Visit planets and asteroids and look for "
-					"stations.\n\n"
-					"Green stations are friendly; you can dock with them and see what "
-					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					"\"The [M] key will bring up a map of the entire star system.\n\n"
+					
+					"\"Visit planets and asteroid fields to look for stations. "
+					"Green stations are friendly; you can dock with them and see "
+					"what services they offer.\n\n"
+					
+					"\"Red stations are enemies. Kill them if you can; run if you can't.\""
 					)
 			</Text>
 			<Text id="useMap:Debrief">
 				(cat
-					"LATER: Nice work using the map."
+					"\"Domina’s call is strong, but don’t rush to the Core.\n\n"
+					
+					"\"I've seen dreadnoughts blast a warship into dust; "
+					"I've seen swarms of gunships preying on helpless freighters. "
+					"Take your time; build up your skills and weapons.\""
+					)
+			</Text>
+			<Text id="useMap:Summary">
+				(cat
+					"Use the [M] key to bring up a system map. Explore the star system "
+					"and destroy enemy stations.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
 					)
 			</Text>
 			<Text id="visitHabitat:Begin">
-				(block (
-					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
-					)
+				(cat
+					"\"There's a Commonwealth habitat nearby that needs protection "
+					"from warlords.\n\n"
 					
-					(cat
-						"\"LATER: Go to " (objGetName targetObj) " and see what they have to say.\""
-						)
+					"\"Help them now and they may pay you in hard credits.\""
 					)
 			</Text>
 			<Text id="visitHabitat:Debrief">
 				(cat
-					"LATER: Nice work visiting habitat."
+					"Benedict nods a greeting. \"When you've got a gunship, "
+					"everyone wants your help, isn't that right?\"\n\n"
+					
+					"\"You'll need a lot of help to get to the Core. You "
+					"might as well help people in return.\""
+					)
+			</Text>
+			<Text id="visitHabitat:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"Visit " (objGetName targetObj 0x04) " and help them against warlords.\n\n"
+						
+						"System: " (sysGetName) "\n"
+						"Payment: Unknown"
+						)
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(cat
-					"LATER: Success!"
-					)
 			</Text>
 			<Text id="SuccessMsg">
 				"Mission complete!"
