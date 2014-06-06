@@ -2,27 +2,45 @@
 
 <TranscendenceModule>
 	
-	<!-- Benedict and Fiona ====================================================
+	<!-- Benedict Training =====================================================
 
 	EXTRA DATA
-
-	attackersLeft:			Number of attackers left.
-	freighterID:			Target ID to escort.
-	stargateID:				Stargate to wait at.
+	
+	state: One of the following:
+	
+		Nil: We don't know what the next training task should be.
+		
+		attackCentauri: Attack a Centauri station.
+		attackFirstStation: Attack an enemy station.
+		explore: Explore worlds and asteroid fields in the system.
+		installDevice: Install a device.
+		loot: Loot a station.
+		nothing: Nothing more to learn.
+		sellLoot: Sell loot at a station.
+		visitHabitat: Visit Commonwealth habitat and get a mission from them.
+		useMap: Use the system map.
+		
+		fionaMission: Next mission
+		
+	targetID: ID of target.
+	
+	taskCompleted: If True, the current task (specified by state) has been
+		completed successfully.
+		
+	trainingHabitatMission: If True, already assigned.
 
 	======================================================================== -->
 	
-	<MissionType UNID="&msBenedictAndFiona;"
-			name=				"Benedict and Fiona"
+	<MissionType UNID="&msBenedictTraining;"
+			name=				"Benedict Training"
 			attributes=			"benedictStoryArc"
 
 			maxAppearing=		"1"
-			debriefAfterOutOfSystem="true"
-			failureAfterOutOfSystem="5400"
+			noDebrief=			"true"
 			>
 
 		<StaticData>
-			<sequence>20</sequence>
+			<sequence>15</sequence>
 		</StaticData>
 
 		<Events>
@@ -30,16 +48,6 @@
 				(block Nil
 
 					(switch
-						;	This mission only works in Eridani
-
-						(not (eq (sysGetNode) 'SE))
-							(msnDestroy gSource)
-
-						;	See if the mission is still available
-
-						(not (benedict_isMissionAvailable &msBenedictAndFiona;))
-							(msnDestroy gSource)
-
 						;	Set up the mission
 
 						(block Nil
@@ -49,39 +57,14 @@
 			</OnCreate>
 
 			<OnAccepted>
-				(block (
-					(stargateObj (sysFindObject nil "G:Outbound; N"))
-					(timeToGate (sysCalcTravelTime (objGetDistance gPlayerShip stargateObj) (shpGetMaxSpeed gPlayerShip)))
-					(specialWeapon (itmCreate &itSmartCannon; 1))
-					(specialAmmo (itmCreate &itSmartCannonShell; 300))
-					)
-
-					;	Give the player a better weapon
-
-					(objAddItem gPlayerShip specialWeapon)
-					(objAddItem gPlayerShip specialAmmo)
-					(shpInstallDevice gPlayerShip specialWeapon)
-
-					;	Set a timer for when the freighter comes in
-
-					(sysAddObjTimerEvent
-						(add timeToGate 300)
-						gSource
-						"OnFreighterArrives"
-						)
-
-					;	Remember the stargate
-
-					(msnSetData gSource 'stargateID (objGetID stargateObj))
-
-					;	Disable hints (so player does not get instructions to enter 
-					;	stargate).
-
-					(plyEnableMessage gPlayer 'enabledHints Nil)
-
-					;	Remember that we accepted this mission
+				(block Nil
+					;	Keep track of player
 					
-					(benedict_missionAccepted gSource)
+					(msnRegisterForEvents gSource gPlayerShip)
+					
+					;	Update call allows us to check when various sub-tasks are done.
+					
+					(msnAddRecurringTimerEvent gSource 30 "OnUpdate")
 					)
 			</OnAccepted>
 
@@ -92,110 +75,352 @@
 			</OnDeclined>
 			
 			<OnSetPlayerTarget>
-				(switch
-					;	If we have a freighter ID, then escort it.
-
-					(msnGetData gSource 'freighterID)
-						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
-
-					;	Otherwise, point to the stargate
-
-					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stargateID)) 'dock)
-					)
 			</OnSetPlayerTarget>
 			
-			<OnCompleted>
-				(block Nil
-					;	Re-enable hints.
-
-					(plyEnableMessage gPlayer 'enabledHints True)
+			<OnInProgress>
+				(block (
+					(state (msnGetData gSource 'state))
+					
+					foundItem
+					targetObj
+					fionaMission
+					ownerObj
 					)
+				
+					;	If we don't have a current state then figure out what mission we 
+					;	should give the player.
+					
+					(if (not state)
+						(block Nil
+							(switch
+							
+								;	If we've never destroyed an enemy station, then 
+								;	send the player out to explore.
+							
+								(not (plyGetStat gPlayer 'enemyStationsDestroyed))
+									(switch
+								
+										;	If we're in Eridani, point the player to a habitat so they can get
+										;	a mission.
+
+										(and (eq (sysGetNode) 'SE)
+												(setq targetObj (sysFindObject gPlayerShip "TAN +unid:&stCommonwealthSlums;;"))
+												(not (typGetData &msBenedictTraining; 'trainingHabitatMission))
+												)
+											(block Nil
+												(typSetData &msBenedictTraining; 'trainingHabitatMission True)
+												(setq state 'visitHabitat)
+												)
+											
+										;	Otherwise, we tell the player to attack a different station
+									
+										(setq targetObj (sysFindObject gPlayerShip "TAEN +populated;"))
+											(block Nil
+												(msnRegisterForEvents gSource targetObj)
+												(setq state 'attackFirstStation)
+												)
+											
+										;	Otherwise, explore
+									
+										(setq state 'explore)
+										)
+								
+								;	If we've never use the map, tell the player about it.
+									
+								(plyIsMessageEnabled gPlayer 'mapHint)
+									(setq state 'useMap)
+									
+								;	If we've never looted a station, then tell the player
+								;	how to do that.
+						
+								(and (not (typGetData &svPlayer; 'tutorialLooted))
+										(setq targetObj (sysFindObject gPlayerShip "TKEN +populated;"))
+										)
+									(block Nil
+										;	Make sure there is stuff to loot
+									
+										(if (not (objGetItems targetObj "*UN"))
+											(objAddItem targetObj &itCentauriRice; (random 1 4))
+											)
+										
+										;	Send player to loot
+									
+										(setq state 'loot)
+										)
+								
+								;	If we haven't yet installed a device and we've got a device
+								;	in our cargo hold, then tell the player how to install it.
+						
+								(and (not (typGetData &svPlayer; 'tutorialInstalled))
+										(or
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
+													(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+													)
+												0
+												))
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
+													(not (objGetProperty gPlayerShip 'selectedLauncher))
+													)
+												0
+												))
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "sUN") theItem 
+													(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+													)
+												0
+												))
+											)
+										(setq targetObj (@
+											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
+												(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+												)
+											0
+											))
+										)
+									(setq state 'installDevice)
+						
+								;	If we haven't sold anything yet and we have something in our 
+								;	cargo hold worth selling, then sell it.
+							
+								(and (not (typGetData &svPlayer; 'tutorialSold))
+										(setq foundItem
+											(map
+												(map (objGetItems gPlayerShip "*~fU") 'excludeNil theItem 
+													(block (buyerObj)
+														(switch
+															(not (itmIsKnown theItem))
+																Nil
+
+															(not (setq buyerObj 
+																	(map (sysFindObject gPlayerShip "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
+																		(objGetBuyPrice theObj theItem 'noDonations)
+																		)
+																	))
+																Nil
+
+															{
+															item: theItem
+															buyerObj: buyerObj
+															buyerPrice: (objGetBuyPrice buyerObj theItem 'noDonations)
+															})
+														)
+													)
+												(list 'reduceMax 'original)
+												theResult
+												(@ theResult 'buyerPrice)
+												)
+											)
+										)
+									(block Nil
+										(setq targetObj (@ foundItem 'buyerObj))
+										(setq foundItem (@ foundItem 'item))
+										(setq state 'sellLoot)
+										)
+
+								;	If we're in Eridani and the player has destroyed fewer than 3 Centauri warlord
+								;	stations, then send the player out to destroy one.
+
+								(and (eq (sysGetNode) 'SE)
+										(setq targetObj (sysFindObject gPlayerShip "TAEN +centauriWarlords; +populated; -occupation; -uncharted;"))
+										(ls (count (sysFindObject gPlayerShip "TKE +centauriWarlords; +populated; -occupation; -uncharted;")) 3)
+										)
+									(block Nil
+										(msnRegisterForEvents gSource targetObj)
+										(setq state 'attackCentauri)
+										)
+
+								;	If we're in Eridani then we get the mission to defend a freighter
+
+								(and (eq (sysGetNode) 'SE)
+										(setq ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+										(setq fionaMission (msnCreate &msBenedictAndFiona; ownerObj))
+										)
+									(block Nil
+										
+										;	Current mission is done
+										
+										(msnSuccess gSource)
+										
+										;	Accept Fiona mission
+										
+										(msnAccept fionaMission)
+										(setq state 'fionaMission)
+										)
+								
+								;	Nothing else
+								
+								(setq state 'nothing)
+								)
+								
+							;	Set the state on the mission
+							
+							(msnSetData gSource 'state state)
+							(msnSetData gSource 'targetID (if targetObj (objGetID targetObj)))
+							(msnSetData gSource 'foundItem foundItem)
+							)
+							
+						;	Otherwise, we refresh the player targets
+						
+						(setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+						)
+						
+					;	Point the player at the current target. We do this both the first time
+					;	and subsequent times.
+						
+					(if targetObj
+						(switch
+							(eq state 'attackCentauri)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDestroy))
+								
+							(eq state 'attackFirstStation)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDestroy))
+								
+							(eq state 'installDevice)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+								
+							(eq state 'loot)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+								
+							(eq state 'sellLoot)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+								
+							(eq state 'visitHabitat)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)
+			</OnInProgress>
+			
+			<OnObjDestroyed>
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskDone Nil)
+					)
+					
+					(switch
+						;	If we've already completed a task, then skip
+						
+						(msnGetData gSource 'taskCompleted)
+							Nil
+							
+						;	Check to see if destroying this object completes a task
+						
+						(and (or (eq state 'attackFirstStation) (eq state 'attackCentauri))
+								(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID)))
+							(setq taskDone True)
+						)
+						
+					;	If we completed a task, then set state
+					
+					(if taskDone
+						(block (
+							(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							)
+							
+							(msnSetData gSource 'taskCompleted state)
+							(msnSetData gSource 'state Nil)
+							
+							;	Dock at Sisters
+							
+							(objSetShowAsDestination ownerObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)				
+			</OnObjDestroyed>
+			
+			<OnUpdate>
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskDone Nil)
+					)
+					
+					(switch
+						;	If we've already completed a task, then skip
+						
+						(msnGetData gSource 'taskCompleted)
+							Nil
+							
+						;	Check to see if we completed the Habitat mission
+						
+						(eq state 'visitHabitat)
+							(switch
+								;	If we destroyed a station, or if we've completed 
+								;	a habitat mission, then we're done
+								
+								(or (msnFind "r +commonwealthHabitat")
+										(and (plyGetStat gPlayer 'enemyStationsDestroyed)
+											(not (msnFind "a +commonwealthHabitat;"))
+											)
+										)
+									(setq taskDone True)
+								)
+								
+						;	Check if we've explored
+						
+						(eq state 'explore)
+							(if (plyGetStat gPlayer 'enemyStationsDestroyed)
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've used the map
+						
+						(eq state 'useMap)
+							(if (not (plyIsMessageEnabled gPlayer 'mapHint))
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've looted something
+						
+						(eq state 'loot)
+							(if	(typGetData &svPlayer; 'tutorialLooted)
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've installed something
+						
+						(eq state 'installDevice)
+							(if	(typGetData &svPlayer; 'tutorialInstalled)
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've sold something
+						
+						(eq state 'sellLoot)
+							(if	(typGetData &svPlayer; 'tutorialSold)
+								(setq taskDone True)
+								)
+						)
+						
+					;	If we completed a task, then set state
+					
+					(if taskDone
+						(block (
+							(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							)
+							
+							(msnSetData gSource 'taskCompleted state)
+							(msnSetData gSource 'state Nil)
+							
+							;	Dock at Sisters
+							
+							(objSetShowAsDestination ownerObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)
+			</OnUpdate>
+			
+			<OnCompleted>
 			</OnCompleted>
 
 			<OnReward>
-				(block Nil
-					;	Player gets mission to visit Korolov
-
-					(setq theMission (msnCreate &msBenedictToKorolov; Nil))
-					(if theMission
-						(msnAccept theMission)
-						)
-					)
 			</OnReward>
-
-			<OnFreighterArrives>
-				(block (
-					(stargateObj (objGetObjByID (msnGetData gSource 'stargateID)))
-					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-
-					freighterObj
-					)
-
-					(plyMessage gPlayer "Freighter arrived!")
-
-					;	Create the freighter and have it exit the gate towards the sisters
-
-					(setq freighterObj (sysCreateShip &scEI7000; stargateObj &svCommonwealth;))
-					(shpOrder freighterObj 'dock destObj)
-					(msnRegisterForEvents gSource freighterObj)
-					(msnSetData gSource 'freighterID (objGetID freighterObj))
-
-					;	Create the enemies and set them to attack the freigther
-
-					(for i 1 3
-						(block (enemyObj)
-							(setq enemyObj (sysCreateShip &scAtonement; stargateObj &svCult;))
-							(shpOrder enemyObj 'attack freighterObj)
-							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
-							(msnRegisterForEvents gSource freighterObj)
-
-							;	Set the ships so they don't retreat when shields drop
-
-							(shpSetAISetting enemyObj 'ignoreShieldsDown True)
-							)
-						)
-
-					(msnSetData gSource 'attackersLeft 3)
-
-					;	Refresh the target
-
-					(msnSetPlayerTarget gSource)
-					)
-			</OnFreighterArrives>
-
-			<OnObjDestroyed>
-				(switch
-					(eq (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
-						(msnFailure gSource)
-
-					(eq (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
-						(block Nil
-							(msnIncData gSource 'attackersLeft -1)
-							)
-					)
-			</OnObjDestroyed>
-
-			<OnObjDocked>
-				(switch
-					(eq (objGetID aObjDocked) (msnGetData gSource 'freighterID))
-						(block Nil
-							;	Mission success
-
-							(msnSuccess gSource)
-
-							;	Attacking ships retreat
-
-							(enum (sysFindObject aObjDocked "sO:attack") enemyObj
-								(shpCancelOrders enemyObj)
-								)
-							)
-					)
-			</OnObjDocked>
 		</Events>
 		
 		<Language>
 			<Text id="Name">
-				"Benedict and Fiona"
+				"Benedict Training"
 			</Text>
 			<Text id="Summary">
 				(cat
@@ -221,28 +446,166 @@
 				"LATER: Sucks!"
 			</Text>
 			<Text id="InProgress">
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskCompleted (msnGetData gSource 'taskCompleted))
+					)
+					
+					(if taskCompleted
+						;	If we've just finished a task, then do a debrief followed by 
+						;	a briefing on the next task.
+						;
+						;	We also clear the task completed variable so that we don't
+						;	debrief twice.
+					
+						(block Nil
+							(msnSetData gSource 'taskCompleted Nil)
+							
+							(list
+								(msnTranslate gSource (cat taskCompleted ":Debrief"))
+								(msnTranslate gSource (cat state ":Begin"))
+								)
+							)
+						
+						;	Otherwise, we just describe the current mission
+					
+						(msnTranslate gSource (cat state ":Begin"))
+						)
+					)
+			</Text>
+			<Text id="attackCentauri:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						)
+					)
+			</Text>
+			<Text id="attackCentauri:Debrief">
 				(cat
-					"LATER: Get back out there."
+					"LATER: Nice work destroying Centauri station."
+					)
+			</Text>
+			<Text id="attackFirstStation:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and destroy it.\""
+						)
+					)
+			</Text>
+			<Text id="attackFirstStation:Debrief">
+				(cat
+					"LATER: Nice work destroying enemy station."
+					)
+			</Text>
+			<Text id="explore:Begin">
+				(cat
+					"\"LATER: You're ready to explore! Use your map ([M] key) to see your "
+					"position in the star system. Visit planets and asteroids and look for "
+					"stations.\n\n"
+					"Green stations are friendly; you can dock with them and see what "
+					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					)
+			</Text>
+			<Text id="explore:Debrief">
+				(cat
+					"LATER: Nice work exploring."
+					)
+			</Text>
+			<Text id="fionaMission:Begin">
+				(cat
+					"LATER: OK, go escort a freighter..."
+					)
+			</Text>
+			<Text id="installDevice:Begin">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"The " (itmGetName itemToInstall 0) " in your cargo hold will come in handy. "
+						"Go to " (objGetName targetObj) " and have it installed at their dock services.\""
+						)
+					)
+			</Text>
+			<Text id="installDevice:Debrief">
+				(cat
+					"LATER: Nice work installing a device."
+					)
+			</Text>
+			<Text id="loot:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and loot it.\""
+						)
+					)
+			</Text>
+			<Text id="loot:Debrief">
+				(cat
+					"LATER: Nice work looting."
+					)
+			</Text>
+			<Text id="sellLoot:Begin">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"\"You can earn money to buy fuel and upgrade by selling items in your "
+						"cargo hold.\n\n"
+						
+						"\"You can sell the " (itmGetName itemToSell 0) " in your cargo hold to "
+						(objGetName targetObj) ". Go there now.\""
+						)
+					)
+			</Text>
+			<Text id="sellLoot:Debrief">
+				(cat
+					"LATER: Nice work selling loot."
+					)
+			</Text>
+			<Text id="useMap:Begin">
+				(cat
+					"\"LATER: You're ready to explore! Use your map ([M] key) to see your "
+					"position in the star system. Visit planets and asteroids and look for "
+					"stations.\n\n"
+					"Green stations are friendly; you can dock with them and see what "
+					"services they provide. Red stations are enemies. Kill them and loot them.\""
+					)
+			</Text>
+			<Text id="useMap:Debrief">
+				(cat
+					"LATER: Nice work using the map."
+					)
+			</Text>
+			<Text id="visitHabitat:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"LATER: Go to " (objGetName targetObj) " and see what they have to say.\""
+						)
+					)
+			</Text>
+			<Text id="visitHabitat:Debrief">
+				(cat
+					"LATER: Nice work visiting habitat."
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(block (
-					(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
-					)
-
-					(list
-						(cat
-							"LATER: Great!"
-							)
-						(if korolovMsn
-							(cat
-								"LATER: Go to " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " and find the Korolov station."
-								)
-							(cat
-								"LATER: Maybe I'll see you again"
-								)
-							)
-						)
+				(cat
+					"LATER: Success!"
 					)
 			</Text>
 			<Text id="SuccessMsg">

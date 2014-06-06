@@ -65,7 +65,7 @@ class CMission : public CSpaceObject
 		inline bool KeepsStats (void) const { return m_pType->KeepsStats(); }
 		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
 		void OnPlayerEnteredSystem (void);
-		bool Reward (ICCItem *pData);
+		bool Reward (ICCItem *pData, ICCItem **retpResult = NULL);
 		bool SetAccepted (void);
 		bool SetDeclined (ICCItem **retpResult = NULL);
 		bool SetFailure (ICCItem *pData);
@@ -113,7 +113,7 @@ class CMission : public CSpaceObject
 		void CompleteMission (ECompletedReasons iReason);
 		void FireOnAccepted (void);
 		ICCItem *FireOnDeclined (void);
-		void FireOnReward (ICCItem *pData);
+		ICCItem *FireOnReward (ICCItem *pData);
 		void FireOnSetPlayerTarget (const CString &sReason);
 		void FireOnStart (void);
 		void FireOnStop (const CString &sReason, ICCItem *pData);

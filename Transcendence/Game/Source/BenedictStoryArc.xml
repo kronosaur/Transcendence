@@ -100,7 +100,7 @@
 												})
 											)
 							
-									;	If we still have missions to given, add action to talk to Benedict.
+									;	If we still have missions to give, add action to talk to Benedict.
 					
 									(benedict_isMissionAvailable &msBenedictAndFiona;)
 										(scrAddAction gScreen 'talkToBenedict 0 (typTranslate &unidBenedictStoryArc; 'actionTalkToBenedict)

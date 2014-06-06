@@ -670,10 +670,13 @@
     <None Include="Game\Source\Benedict00.xml">
       <Filter>XML Files\Part I</Filter>
     </None>
-    <None Include="Game\Source\Benedict01.xml">
+    <None Include="Game\Source\Benedict03.xml">
       <Filter>XML Files\Part I</Filter>
     </None>
     <None Include="Game\Source\Benedict02.xml">
+      <Filter>XML Files\Part I</Filter>
+    </None>
+    <None Include="Game\Source\Benedict01.xml">
       <Filter>XML Files\Part I</Filter>
     </None>
   </ItemGroup>

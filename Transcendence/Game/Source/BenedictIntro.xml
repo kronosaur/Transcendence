@@ -217,14 +217,7 @@
 		</Language>
 	</DockScreen>
 
-	<!-- Benedict Training
-	
-	GLOBAL DATA
-	
-	trainingHabitatMission: If True, we've already pointed the player towards a habitat.
-	
-	-->
-
+<!--
 	<DockScreen UNID="&dsBenedictTraining;"
 			nestedScreen=		"true"
 			inherit=			"&dsDockScreenBase;"
@@ -545,5 +538,6 @@
 			</Text>
 		</Language>
 	</DockScreen>
+-->
 
 </TranscendenceModule>

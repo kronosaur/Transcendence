@@ -350,11 +350,13 @@ ICCItem *CMission::FireOnDeclined (void)
 	return NULL;
 	}
 
-void CMission::FireOnReward (ICCItem *pData)
+ICCItem *CMission::FireOnReward (ICCItem *pData)
 
 //	FireOnReward
 //
 //	Fire <OnReward>
+//
+//	Callers are responsible for discarding the result, if not NULL.
 
 	{
 	SEventHandlerDesc Event;
@@ -368,9 +370,16 @@ void CMission::FireOnReward (ICCItem *pData)
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
+			{
 			ReportEventError(EVENT_ON_REWARD, pResult);
-		Ctx.Discard(pResult);
+			Ctx.Discard(pResult);
+			return NULL;
+			}
+
+		return pResult;
 		}
+
+	return NULL;
 	}
 
 void CMission::FireOnSetPlayerTarget (const CString &sReason)
@@ -1048,7 +1057,7 @@ bool CMission::ParseCriteria (const CString &sCriteria, SCriteria *retCriteria)
 	return true;
 	}
 
-bool CMission::Reward (ICCItem *pData)
+bool CMission::Reward (ICCItem *pData, ICCItem **retpResult)
 
 //	Reward
 //
@@ -1062,7 +1071,12 @@ bool CMission::Reward (ICCItem *pData)
 
 	//	Reward
 
-	FireOnReward(pData);
+	ICCItem *pResult = FireOnReward(pData);
+	if (retpResult == NULL || (pResult && !pResult->IsSymbolTable()))
+		{
+		pResult->Discard(&g_pUniverse->GetCC());
+		pResult = NULL;
+		}
 
 	//	Set debriefed to true as a convenience
 
@@ -1071,6 +1085,9 @@ bool CMission::Reward (ICCItem *pData)
 	CloseMission();
 
 	//	Done
+
+	if (retpResult)
+		*retpResult = pResult;
 
 	return true;
 	}
@@ -1159,14 +1176,20 @@ bool CMission::SetDeclined (ICCItem **retpResult)
 	//	Player declines the mission
 
 	ICCItem *pResult = FireOnDeclined();
-	if (retpResult)
-		*retpResult = pResult;
-	else if (pResult)
+	if (retpResult == NULL || (pResult && !pResult->IsSymbolTable()))
+		{
 		pResult->Discard(&g_pUniverse->GetCC());
+		pResult = NULL;
+		}
 
 	//	Set flag
 
 	m_fDeclined = true;
+
+	//	Done
+
+	if (retpResult)
+		*retpResult = pResult;
 
 	return true;
 	}

@@ -322,19 +322,57 @@
 				<OnPaneInit>
 					(block (
 						(missionObj (scrGetData gScreen 'missionObj))
+						(dummy (msnFireEvent missionObj "OnInProgress"))
+						
+						;	Text
+						
 						(descText (msnTranslate missionObj 'InProgress))
+						(pageCount (rpgPageCount descText))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (rpgPageDesc descText pageNo))
+						
+						atLastPage
 						)
 
-						(scrSetDesc gScreen descText)
+						; Show the appropriate page
+
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
+
+						(if (@ pageDesc 'nextLabel)
+							(scrSetActionLabel 
+								gScreen 
+								(if atLastPage 'actionDone 'actionContinue)
+								(@ pageDesc 'nextLabel)
+								(@ pageDesc 'nextKey)
+								)
+							)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "InProgress")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
-
+							
 							(msnSetPlayerTarget missionObj)
 							(scrExitScreen gScreen 'forceUndock)
 							)
@@ -366,7 +404,7 @@
 
 						(if (not (msnGetProperty missionObj 'isDebriefed))
 							(block Nil
-								(msnReward missionObj)
+								(scrSetData gScreen 'successOptions (msnReward missionObj))
 								(msnSetProperty missionObj 'isDebriefed True)
 								)
 							)
@@ -419,10 +457,21 @@
 					</Action>
 
 					<Action id="actionDone" default="1" cancel="1">
-						(block (missionObj)
-							(setq missionObj (scrGetData gScreen 'missionObj))
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							(successOptions (scrGetData gScreen 'successOptions))
+							)
 
 							(switch
+								(eq (@ successOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ successOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ successOptions 'nextScreen) (@ successOptions 'nextScreenData))
+										)
+										
 								(or (eq (@ gData 'nextScreen) 'forceUndock)
 										(msnGetProperty missionObj 'forceUndockAfterDebrief)
 										)

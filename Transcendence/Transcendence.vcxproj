@@ -682,9 +682,13 @@
     <None Include="Game\Source\RPGAuxDevices.xml" />
     <None Include="Game\Source\RPGBehaviors.xml" />
     <None Include="Game\Source\RPGCharacters.xml" />
-    <None Include="Game\Source\RPGCode.xml" />
+    <None Include="Game\Source\RPGCode.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGCompatibility.xml" />
-    <None Include="Game\Source\RPGDockScreens.xml" />
+    <None Include="Game\Source\RPGDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGMissions.xml">
       <SubType>Designer</SubType>
     </None>
@@ -718,7 +722,9 @@
     <None Include="Game\Source\StdWeapons.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\StKatharines.xml" />
+    <None Include="Game\Source\StKatharines.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\SungSlavers.xml">
       <SubType>Designer</SubType>
     </None>
@@ -754,10 +760,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict01.xml" />
+    <None Include="Game\Source\Benedict02.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict02.xml" />
+    <None Include="Game\Source\Benedict03.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Game\Source\Benedict01.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

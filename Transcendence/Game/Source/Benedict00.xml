@@ -95,15 +95,28 @@
 			</OnAcceptedUndock>
 			
 			<OnDeclined>
-				(block Nil
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(trainingMission (msnCreate &msBenedictTraining; ownerObj))
+					)
+				
 					;	Once we decline this mission, we're done with the intro
 					
 					(typSetData &unidBenedictStoryArc; 'introDone True)
-				
+					
+					;	Create the training mission
+					
+					(if trainingMission
+						(msnAccept trainingMission)
+						)
+						
 					;	Construct the result so we can start the next screen
 					
 					{
-						nextScreen: &dsBenedictTraining;
+						nextScreen: &dsRPGMission;
+						nextScreenData: {
+							missionObj: trainingMission
+							}
 						}
 					)
 			</OnDeclined>
@@ -155,6 +168,26 @@
 			</OnCompleted>
 
 			<OnReward>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(trainingMission (msnCreate &msBenedictTraining; ownerObj))
+					)
+				
+					;	Auto-accept training mission
+					
+					(if trainingMission
+						(msnAccept trainingMission)
+						)
+						
+					;	Construct the result so we can start the next screen
+					
+					{
+						nextScreen: &dsRPGMission;
+						nextScreenData: {
+							missionObj: trainingMission
+							}
+						}
+					)
 			</OnReward>
 			
 			<GetGlobalAchievements>

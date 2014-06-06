@@ -1188,8 +1188,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i*",	0,	},
 
 		{	"objGetBuyPrice",				fnObjGet,		FN_OBJ_GET_BUY_PRICE,	
-			"(objGetBuyPrice obj item) -> price",
-			"il",	0,	},
+			"(objGetBuyPrice obj item [options]) -> price\n\n"
+			
+			"options:\n\n"
+			
+			"   'noDonations\n",
+
+			"il*",	0,	},
 
 		{	"objGetCargoSpaceLeft",			fnObjGetOld,		FN_OBJ_CARGO_SPACE_LEFT,
 			"(objGetCargoSpaceLeft obj) -> space left in Kg",
@@ -4892,7 +4897,26 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_GET_BUY_PRICE:
 			{
+			int i;
 			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
+			ICCItem *pOptions = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL);
+
+			//	Parse options
+
+			bool bNoDonations = false;
+			if (pOptions)
+				{
+				for (i = 0; i < pOptions->GetCount(); i++)
+					{
+					CString sOption = pOptions->GetElement(i)->GetStringValue();
+					if (strEquals(sOption, CONSTLIT("noDonations")))
+						bNoDonations = true;
+					else
+						return pCC->CreateError(CONSTLIT("Invalid option"), pOptions->GetElement(i));
+					}
+				}
+
+			//	Calc value
 
 			int iValue;
 
@@ -4905,7 +4929,13 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the value from the station that is buying
 
 			else
-				iValue = pObj->GetBuyPrice(Item, 0);
+				{
+				DWORD dwFlags = 0;
+				if (bNoDonations)
+					dwFlags |= CTradingDesc::FLAG_NO_DONATION;
+
+				iValue = pObj->GetBuyPrice(Item, dwFlags);
+				}
 
 			if (iValue >= 0)
 				return pCC->CreateInteger(iValue);
@@ -6941,9 +6971,9 @@ ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			ICCItem *pResult;
 			if (!pMission->SetDeclined(&pResult))
-				return pCC->CreateBool(false);
+				return pCC->CreateNil();
 			else if (pResult == NULL)
-				return pCC->CreateBool(true);
+				return pCC->CreateNil();
 			else
 				return pResult;
 			}
@@ -6952,7 +6982,17 @@ ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateBool(pMission->SetFailure((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
 
 		case FN_MISSION_REWARD:
-			return pCC->CreateBool(pMission->Reward((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
+			{
+			ICCItem *pData = (pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL);
+			ICCItem *pResult;
+
+			if (!pMission->Reward(pData, &pResult))
+				return pCC->CreateNil();
+			else if (pResult == NULL)
+				return pCC->CreateNil();
+			else
+				return pResult;
+			}
 
 		case FN_MISSION_SET_PLAYER_TARGET:
 			return pCC->CreateBool(pMission->SetPlayerTarget());
