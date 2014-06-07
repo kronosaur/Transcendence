@@ -89,6 +89,7 @@
 
 #define CMD_SERVICE_ACCOUNT_CHANGED				CONSTLIT("serviceAccountChanged")
 #define CMD_SERVICE_COLLECTION_LOADED			CONSTLIT("serviceCollectionLoaded")
+#define CMD_SERVICE_DOWNLOAD_RESOURCES			CONSTLIT("serviceDownloadResources")
 #define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
@@ -1450,6 +1451,35 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 		}
 
+	//	Download external resource
+
+	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOAD_RESOURCES))
+		{
+		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload))
+			{
+			TArray<CString> LocalFilenames;
+			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);
+
+			//	Ask the multiverse to map to a list of cloud filepaths
+
+			TArray<CMultiverseFileRef> CloudFileRefs;
+			m_Multiverse.GetResourceFileRefs(LocalFilenames, &CloudFileRefs);
+
+			//	If necessary, request downloads
+
+			if (RequestResourceDownload(CloudFileRefs))
+				{
+				m_iBackgroundState = stateDownloadingResource;
+				m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+				}
+			else
+				{
+				m_iBackgroundState = stateIdle;
+				::kernelDebugLogMessage("All resources downloaded.");
+				}
+			}
+		}
+
 	//	Done downloading extensions.
 
 	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_COMPLETE))
@@ -1483,10 +1513,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			m_iBackgroundState = stateIdle;
 			}
 
-		//	Otherwise, we're done
+		//	Ask the extension collection for a list of missing resource files.
 
 		else
-			m_iBackgroundState = stateIdle;
+			HICommand(CMD_SERVICE_DOWNLOAD_RESOURCES);
 		}
 
 	//	News loaded
@@ -1499,26 +1529,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Ask the extension collection for a list of missing resource files.
 
-		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload))
-			{
-			TArray<CString> LocalFilenames;
-			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);
-
-			//	Ask the multiverse to map to a list of cloud filepaths
-
-			TArray<CMultiverseFileRef> CloudFileRefs;
-			m_Multiverse.GetResourceFileRefs(LocalFilenames, &CloudFileRefs);
-
-			//	If necessary, request downloads
-
-			if (RequestResourceDownload(CloudFileRefs))
-				{
-				m_iBackgroundState = stateDownloadingResource;
-				m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
-				}
-			else
-				::kernelDebugLogMessage("All resources downloaded.");
-			}
+		HICommand(CMD_SERVICE_DOWNLOAD_RESOURCES);
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
