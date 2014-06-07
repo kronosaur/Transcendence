@@ -190,52 +190,111 @@
 		
 		<Language>
 			<Text id="Name">
-				"Benedict and Fiona"
+				"Defend Returning Freighter"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Escort a freighter"
+					"Meet the freighter at the stargate and defend it back to the station.\n\n"
+					
+					"System: Eridani\n"
+					"Payment: None"
 					)
 			</Text>
 			<Text id="Intro">
-				(cat
-					"LATER: OK, we want you to escort a frieghter."
-					)
 			</Text>
 			<Text id="Briefing">
-				(cat
-					"LATER: Don't let it be destroyed."
-					)
 			</Text>
 			<Text id="AcceptReply">
-				(cat
-					"LATER: Go!"
-					)
 			</Text>
 			<Text id="DeclineReply">
-				"LATER: Sucks!"
 			</Text>
 			<Text id="InProgress">
 				(cat
-					"LATER: Get back out there."
+					"Benedict rushes out to meet you.\n\n"
+					
+					"\"What are you doing here? They need you out there!\""
 					)
 			</Text>
 			<Text id="SuccessDebrief">
-				(block (
-					(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
-					)
-
-					(list
-						(cat
-							"LATER: Great!"
+				(list
+					{	desc: (cat
+							"The docking bay swarms with activity. Techs hook up "
+							"cables and equipment to the docked freighter while "
+							"Benedict and the abbess talk with the freighter's captain.\n\n"
+							
+							"\"...the Penitents hit them hard,\" says the captain. "
+							"\"There was no trace of the explorer ship; we just found "
+							"her drifting in space. She must have ejected...\"\n\n"
+							
+							"Behind them you see cardinal-robed medics maneuver a "
+							"rejuv tank through the bay. Inside you see an unconscious "
+							"woman, her long black hair waving in the tank's fluid."
 							)
+						}
+					{	desc: (cat
+							"Benedict makes his way towards you.\n\n"
+							
+							"\"Thank you for helping us,\" he says, shaking your hand. "
+							"\"They wouldn't have survived without you.\""
+							)
+							
+						nextLabel: "\"Who is the woman in the tank?\""
+						}
+					{	desc: (cat
+							"Benedict looks across the docking bay at the rejuv tank "
+							"and for the first time you see tears in his eyes.\n\n"
+							
+							"\"I should have never let her go,\" he says, mostly to himself.\n\n"
+							
+							"\"Penitents attacked her exploration ship, just as they "
+							"were about to make a critical discovery. Now their data "
+							"is lost along with the ship and crew. She's all we have left.\""
+							)
+						nextLabel: "\"Who are the Penitents?\""
+						}
+					{	desc: (cat
+							"Anger flashes across Benedict's face.\n\n"
+							
+							"\"Domina is not the only god, you know? The Penitents worship "
+							"Oracus, their god of death. But they've gotten stronger "
+							"in the last few years. I've never seen them come all the "
+							"way to Eridani before.\n\n"
+							
+							"\"They've got my attention now.\""
+							)
+						}
+					{	desc: (cat
+							"\"But your task here is done. Your fate is to reach the Galactic "
+							"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
+							
+							"\"I have one more gift for you: I've installed a map computer "
+							"on your ship that will help you chart your course through the galaxy.\""
+							)
+						nextLabel: "\"Thank you!\""
+						}
+						
+					(block (
+						(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
+						)
+						
 						(if korolovMsn
-							(cat
-								"LATER: Go to " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " and find the Korolov station."
+							{
+							desc: (cat
+								"\"Remember what I've taught you and you'll be fine.\n\n"
+								
+								"\"You've shown aptitude for defending ships; if you're interested "
+								"you can visit Korolov Shipping in the " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " system. "
+								"They're always looking for skilled pilots to defend their freighters.\n\n"
+								
+								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
 								)
-							(cat
-								"LATER: Maybe I'll see you again"
+							}
+							
+							{
+							desc: (cat
+								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
 								)
+							}
 							)
 						)
 					)

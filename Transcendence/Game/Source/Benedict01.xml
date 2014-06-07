@@ -22,6 +22,9 @@
 		
 		fionaMission: Next mission
 		
+	centauriMissions: Number of times we sent the player to destroy a
+		Centauri station.
+		
 	targetID: ID of target.
 	
 	taskCompleted: If True, the current task (specified by state) has been
@@ -227,6 +230,7 @@
 										(ls (count (sysFindObject gPlayerShip "TKE +centauriWarlords; +populated; -occupation; -uncharted;")) 3)
 										)
 									(block Nil
+										(msnIncData gSource 'centauriMissions 1)
 										(msnRegisterForEvents gSource targetObj)
 										(setq state 'attackCentauri)
 										)
@@ -297,6 +301,12 @@
 						)
 					)
 			</OnInProgress>
+			
+			<OnInProgressUndock>
+				;	Mark the debrief as being completed so we don't show it again.
+				
+				(msnSetData gSource 'taskCompleted Nil)
+			</OnInProgressUndock>
 			
 			<OnObjDestroyed>
 				(block (
@@ -465,13 +475,9 @@
 						;	We also clear the task completed variable so that we don't
 						;	debrief twice.
 					
-						(block Nil
-							(msnSetData gSource 'taskCompleted Nil)
-							
-							(list
-								(msnTranslate gSource (cat taskCompleted ":Debrief"))
-								(msnTranslate gSource (cat state ":Begin"))
-								)
+						(append
+							(msnTranslate gSource (cat taskCompleted ":Debrief"))
+							(msnTranslate gSource (cat state ":Begin"))
 							)
 						
 						;	Otherwise, we just describe the current mission
@@ -482,16 +488,25 @@
 			</Text>
 			<Text id="attackCentauri:Begin">
 				(block (
+					(missionCount (msnGetData gSource 'centauriMissions))
 					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
 					)
 					
-					(cat
-						"\"I have little respect for Centauri warlords; they're "
-						"undiciplined and predictable. Still, they've managed to "
-						"scare half the star system into paying them tribute.\n\n"
+					(switch
+						(eq missionCount 1)
+							(cat
+								"\"I have little respect for Centauri warlords; they're "
+								"undiciplined and predictable. Still, they've managed to "
+								"scare half the star system into paying them tribute.\n\n"
 						
-						"\"Go out to one of their stations. Smash it and loot its "
-						"remains. It's time for them to be afraid.\""
+								"\"Go out to one of their stations. Smash it and loot its "
+								"remains. It's time for them to be afraid.\""
+								)
+								
+						(cat
+							"\"We've found another band of warlords for you to attack. "
+							"Go out there and smash!\""
+							)
 						)
 					)
 			</Text>
@@ -528,7 +543,7 @@
 					"no one will miss them.\n\n"
 					
 					"\"But not everyone is your enemy. Don't attack civilized "
-					"stations or you’ll turn the whole Commonwealth against you.\""
+					"stations or you'll turn the whole Commonwealth against you.\""
 					)
 			</Text>
 			<Text id="attackFirstStation:Summary">
@@ -556,7 +571,7 @@
 			</Text>
 			<Text id="explore:Debrief">
 				(cat
-					"\"Domina’s call is strong, but don’t rush to the Core.\n\n"
+					"\"Domina's call is strong, but don't rush to the Core.\n\n"
 					
 					"\"I've seen dreadnoughts blast a warship into dust; "
 					"I've seen swarms of gunships preying on helpless freighters. "
@@ -573,8 +588,36 @@
 					)
 			</Text>
 			<Text id="fionaMission:Begin">
-				(cat
-					"LATER: OK, go escort a freighter..."
+				(list
+					(cat
+						"The abbess rushes towards Benedict with a datapad. "
+						"In between anxious breaths, she updates him on some crisis. "
+						"Benedict reassures her and turns to you.\n\n"
+						
+						"\"We're going to need your help on this, %name%.\"\n\n"
+						
+						"\"You're ready for it,\" says the abbess, though her face "
+						"makes it a question."
+						)
+						
+					(cat
+						"Benedict continues:\n\n"
+						
+						"\"A mission has gone wrong, and we need you to help salvage it.\n\n"
+						
+						"\"There's freighter coming in to the system. We need you to "
+						"meet her at the stargate and protect her until she can reach us here.\""
+						)
+
+					(cat
+						"\"You're going to be passing through civilian areas, "
+						"so be very careful discharging your weapons.\n\n"
+						
+						"\"We're going to install a SmartCannon on your ship, "
+						"which will make it easier to avoid collateral damage.\n\n"
+						
+						"\"You are ready for this, %name%. Training is over.\""
+						)
 					)
 			</Text>
 			<Text id="installDevice:Begin">
@@ -683,7 +726,7 @@
 			</Text>
 			<Text id="useMap:Debrief">
 				(cat
-					"\"Domina’s call is strong, but don’t rush to the Core.\n\n"
+					"\"Domina's call is strong, but don't rush to the Core.\n\n"
 					
 					"\"I've seen dreadnoughts blast a warship into dust; "
 					"I've seen swarms of gunships preying on helpless freighters. "

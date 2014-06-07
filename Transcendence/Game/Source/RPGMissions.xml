@@ -374,6 +374,10 @@
 							)
 							
 							(msnSetPlayerTarget missionObj)
+							
+							(setq aDockTarget gSource)
+							(msnFireEvent missionObj "OnInProgressUndock")
+							
 							(scrExitScreen gScreen 'forceUndock)
 							)
 					</Action>
