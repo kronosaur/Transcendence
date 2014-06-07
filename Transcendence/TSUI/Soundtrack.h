@@ -5,10 +5,6 @@
 
 #pragma once
 
-#ifdef DEBUG
-#define DEBUG_SOUNDTRACK
-#endif
-
 class CMCIMixer
 	{
 	public:

@@ -1741,8 +1741,9 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 	else
 		{
-		bool bUnderAttack = Ctx.pSystem->IsPlayerUnderAttack()
-				|| (Ctx.pSystem->EnemiesInLRS() && m_pShip->HasBeenHitLately(HIT_THRESHOLD));
+		bool bUnderAttack = Ctx.pSystem->EnemiesInLRS()
+				&& (Ctx.pSystem->IsPlayerUnderAttack()
+					|| m_pShip->HasBeenHitLately(HIT_THRESHOLD));
 		if (bUnderAttack)
 			{
 			g_pHI->HICommand(CMD_PLAYER_COMBAT_STARTED);
