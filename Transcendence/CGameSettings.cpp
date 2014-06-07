@@ -79,6 +79,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noSound",					optionBoolean,	"false",	0	},
 		{	"noMusic",					optionBoolean,	"false",	0	},
 		{	"soundVolume",				optionInteger,	"7",		0	},
+		{	"musicVolume",				optionInteger,	"7",		0	},
 		{	"musicPath",				optionString,	"",			0	},
 
 		//	Debug options

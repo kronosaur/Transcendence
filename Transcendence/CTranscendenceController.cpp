@@ -108,6 +108,8 @@
 #define CMD_UI_BACK_TO_INTRO					CONSTLIT("uiBackToIntro")
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
 #define CMD_UI_EXIT								CONSTLIT("uiExit")
+#define CMD_UI_MUSIC_VOLUME_DOWN				CONSTLIT("uiMusicVolumeDown")
+#define CMD_UI_MUSIC_VOLUME_UP					CONSTLIT("uiMusicVolumeUp")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
@@ -118,6 +120,8 @@
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
+#define CMD_UI_VOLUME_DOWN						CONSTLIT("uiVolumeDown")
+#define CMD_UI_VOLUME_UP						CONSTLIT("uiVolumeUp")
 
 #define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Cache")
 #define FILESPEC_UPGRADE_FILE					CONSTLIT("Cache\\Upgrade.zip")
@@ -1124,6 +1128,45 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return error;
 		}
 
+	//	Volume controls
+
+	else if (strEquals(sCmd, CMD_UI_MUSIC_VOLUME_DOWN))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::musicVolume);
+		if (--iVolume >= 0)
+			{
+			SetOptionInteger(CGameSettings::musicVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_MUSIC_VOLUME_UP))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::musicVolume);
+		if (++iVolume <= 10)
+			{
+			SetOptionInteger(CGameSettings::musicVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_VOLUME_DOWN))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::soundVolume);
+		if (--iVolume >= 0)
+			{
+			SetOptionInteger(CGameSettings::soundVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_VOLUME_UP))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::soundVolume);
+		if (++iVolume <= 10)
+			{
+			SetOptionInteger(CGameSettings::soundVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+
 	//	Pause/unpause
 
 	else if (strEquals(sCmd, CMD_GAME_PAUSE))
@@ -1650,6 +1693,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Play Intro Music
 
 	m_Soundtrack.SetMusicEnabled(!GetOptionBoolean(CGameSettings::noMusic));
+	m_Soundtrack.SetVolume(GetOptionInteger(CGameSettings::musicVolume));
 	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramLoad);
 
 	return NOERROR;
@@ -1865,6 +1909,11 @@ void CTranscendenceController::SetOptionInteger (int iOption, int iValue)
 	bool bModifySettings = true;
 	switch (iOption)
 		{
+		case CGameSettings::musicVolume:
+			ASSERT(iValue >= 0 && iValue <= 10);
+			m_Soundtrack.SetVolume(iValue);
+			break;
+
 		case CGameSettings::soundVolume:
 			ASSERT(iValue >= 0 && iValue <= 10);
 			m_HI.SetSoundVolume(iValue);

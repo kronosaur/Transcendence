@@ -750,16 +750,6 @@ void CTranscendenceWnd::SelectArmor (int iSeg)
 		m_ArmorDisplay.SetSelection(iSeg);
 	}
 
-void CTranscendenceWnd::SetSoundVolumeOption (int iVolume)
-
-//	SetSoundVolumeOption
-//
-//	Sets the volume level
-
-	{
-	m_pTC->SetOptionInteger(CGameSettings::soundVolume, iVolume);
-	}
-
 void CTranscendenceWnd::ShowCommsMenu (CSpaceObject *pObj)
 
 //	ShowCommsMenu

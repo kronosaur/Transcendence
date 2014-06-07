@@ -9,6 +9,29 @@
 #define ATTRIB_SYSTEM_SOUNDTRACK				CONSTLIT("systemSoundtrack")
 #define ATTRIB_TRAVEL_SOUNDTRACK				CONSTLIT("travelSoundtrack")
 
+//	VOLUME_LEVEL
+//
+//	Exponential volume level:
+//
+//	Level(X) = 1000 * (1-((POWER(K,X)-1)/(POWER(K,10)-1)))
+//
+//	K = 1.3
+
+const int VOLUME_LEVEL[11] =
+	{
+	   0,			//	Vol 0
+	  23,			//	Vol 1
+	  54,			//	Vol 2
+	  94,			//	Vol 3
+	 145,			//	Vol 4
+	 212,			//	Vol 5
+	 299,			//	Vol 6
+	 413,			//	Vol 7
+	 560,			//	Vol 8
+	 751,			//	Vol 9
+	1000,			//	Vol 10
+	};
+
 const int SEGMENT_BOUNDARY_THRESHOLD =			5000;	//	5 seconds
 
 CSoundtrackManager::CSoundtrackManager (void) :
@@ -588,6 +611,17 @@ void CSoundtrackManager::SetPlayPaused (bool bPlay)
 
 	{
 	m_Mixer.SetPlayPaused(bPlay);
+	}
+
+void CSoundtrackManager::SetVolume (int iVolume)
+
+//	SetVolume
+//
+//	Sets the volume (0 to 10)
+
+	{
+	iVolume = Max(0, Min(iVolume, 10));
+	m_Mixer.SetVolume(VOLUME_LEVEL[iVolume]);
 	}
 
 void CSoundtrackManager::TogglePlayPaused (void)

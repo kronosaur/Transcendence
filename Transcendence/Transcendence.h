@@ -1569,7 +1569,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline CTranscendenceModel &GetModel (void);
 		void GetMousePos (POINT *retpt);
 		inline CPlayerShipController *GetPlayer (void);
-		inline int GetSoundVolumeOption (void);
 		inline CReanimator &GetReanimator (void) { return m_Reanimator; }
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
@@ -1590,7 +1589,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void RedirectDisplayMessage (bool bRedirect = true);
 		void SelectArmor (int iSeg);
 		CXMLElement *SetCurrentLocalScreens (CXMLElement *pLocalScreens);
-		void SetSoundVolumeOption (int iVolume);
 		void ShowDockScreen (bool bShow = true);
 		ALERROR ShowDockScreen (CSpaceObject *pLocation, CXMLElement *pScreenDesc, const CString &sPane);
 		inline void ShowSystemMap (bool bShow = true) { m_bShowingMap = bShow; }
@@ -2075,7 +2073,8 @@ class CGameSettings
 			//	Sounds options
 			noSound,						//	No sound (either music or sound effects)
 			noMusic,						//	TRUE if we should play music
-			soundVolume,					//	Volume level
+			soundVolume,					//	FX volume level
+			musicVolume,					//	Music volume level
 			musicPath,						//	Path to music folder (may be NULL_STR)
 
 			//	Debug options
@@ -2088,7 +2087,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 30,
+			OPTIONS_COUNT = 31,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2432,11 +2431,6 @@ inline CPlayerShipController *CTranscendenceWnd::GetPlayer (void)
 inline CGameSettings &CTranscendenceWnd::GetSettings (void)
 	{
 	return m_pTC->GetSettings();
-	}
-
-inline int CTranscendenceWnd::GetSoundVolumeOption (void)
-	{
-	return m_pTC->GetOptionInteger(CGameSettings::soundVolume);
 	}
 
 #include "BackgroundTasks.h"

@@ -17,6 +17,7 @@ class CMCIMixer
 		int GetCurrentPlayPos (void) const;
 		bool Play (CSoundType *pTrack, int iPos = 0);
 		void SetPlayPaused (bool bPlay);
+		void SetVolume (int iVolume);
 		void Shutdown (void);
 		void Stop (void);
 		void TogglePausePlay (void);
@@ -120,6 +121,7 @@ class CSoundtrackManager
 		void SetGameState (EGameStates iNewState, CSoundType *pTrack);
 		void SetMusicEnabled (bool bEnabled = true);
 		void SetPlayPaused (bool bPlay = true);
+		void SetVolume (int iVolume);
 		void TogglePlayPaused (void);
 
 	private:

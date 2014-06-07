@@ -1840,26 +1840,12 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyVolumeDown:
-						{
-						int iVolume = GetSoundVolumeOption();
-						if (--iVolume >= 0)
-							{
-							SetSoundVolumeOption(iVolume);
-							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-							}
+						g_pHI->HICommand(CONSTLIT("uiVolumeDown"));
 						break;
-						}
 
 					case CGameKeys::keyVolumeUp:
-						{
-						int iVolume = GetSoundVolumeOption();
-						if (++iVolume <= 10)
-							{
-							SetSoundVolumeOption(iVolume);
-							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-							}
+						g_pHI->HICommand(CONSTLIT("uiVolumeUp"));
 						break;
-						}
 
 					case CGameKeys::keyShowConsole:
 						{

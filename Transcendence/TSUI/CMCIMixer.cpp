@@ -677,6 +677,19 @@ void CMCIMixer::SetPlayPaused (bool bPlay)
 	EnqueueRequest(bPlay ? typeSetUnpaused : typeSetPaused);
 	}
 
+void CMCIMixer::SetVolume (int iVolume)
+
+//	SetVolume
+//
+//	Sets the volume, where 1000 is normal volume and 0 is no volume.
+
+	{
+	m_iDefaultVolume = Max(0, iVolume);
+
+	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
+	MCIWndSetVolume(hMCI, m_iDefaultVolume);
+	}
+
 void CMCIMixer::Shutdown (void)
 
 //	Shutdown
