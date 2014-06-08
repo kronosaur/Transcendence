@@ -573,23 +573,6 @@ void CTranscendenceWnd::GetMousePos (POINT *retpt)
 	::ScreenToClient(m_hWnd, retpt);
 	}
 
-ALERROR CTranscendenceWnd::HICommand (const CString &sCmd, void *pData)
-
-//	HICommand
-//
-//	Handle HICommands
-
-	{
-	switch (m_State)
-		{
-		case gsIntro:
-			OnCommandIntro(sCmd, pData);
-			break;
-		}
-
-	return NOERROR;
-	}
-
 void CTranscendenceWnd::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)
 
 //	OnAniCommand

@@ -1100,6 +1100,7 @@ class CSoundType : public CDesignType
 		~CSoundType (void) { }
 
 		int FindSegment (int iPos);
+		const CString &GetAlbum (void) const;
 		inline const CString &GetComposedBy (void) const { return m_sComposedBy; }
 		CString GetFilename (void) const { return m_sFilename; }
 		CString GetFilespec (void) const;

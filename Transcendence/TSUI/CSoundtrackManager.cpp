@@ -163,6 +163,88 @@ CSoundType *CSoundtrackManager::CalcGameTrackToPlay (CTopologyNode *pNode, const
 	return pResult;
 	}
 
+CSoundType *CSoundtrackManager::CalcRandomTrackToPlay (void) const
+
+//	CalcRandomTrackToPlay
+//
+//	Calculates a random track to play. All tracks are treated equally, except 
+//	that we decrease probabilities for tracks we've played recently.
+
+	{
+	int i;
+
+	//	Create a probability table of tracks to play.
+
+	TProbabilityTable<CSoundType *> Table;
+	for (i = 0; i < g_pUniverse->GetSoundTypeCount(); i++)
+		{
+		CSoundType *pTrack = g_pUniverse->GetSoundType(i);
+
+		//	Adjust probability based on when we last played this tack.
+
+		int iChance = 1000;
+		switch (GetLastPlayedRank(pTrack->GetUNID()))
+			{
+			case 0:
+				iChance = 0;
+				break;
+
+			case 1:
+				iChance = iChance / 10;
+				break;
+
+			case 2:
+				iChance = iChance / 5;
+				break;
+
+			case 3:
+			case 4:
+				iChance = iChance / 3;
+				break;
+
+			case 5:
+			case 6:
+			case 7:
+				iChance = iChance / 2;
+				break;
+
+			case 8:
+			case 9:
+			case 10:
+				iChance = 2 * iChance / 3;
+				break;
+			}
+
+		if (iChance == 0)
+			continue;
+
+		//	Add to the probability table
+
+		Table.Insert(pTrack, iChance);
+		}
+
+	//	If the table is empty, then there is nothing to play.
+
+	if (Table.GetCount() == 0)
+		{
+#ifdef DEBUG_SOUNDTRACK
+		kernelDebugLogMessage("Unable to find soundtrack for state %d.", m_iGameState);
+#endif
+		return NULL;
+		}
+
+	//	Otherwise, roll out of the first table.
+
+	CSoundType *pResult = Table.GetAt(Table.RollPos());
+
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("State: %d: Found %d tracks in priority %d table.", m_iGameState, Table[0].GetCount(), Table.GetKey(0));
+	kernelDebugLogMessage("Chose: %s", (pResult ? pResult->GetFilespec() : CONSTLIT("(none)")));
+#endif
+
+	return pResult;
+	}
+
 CSoundType *CSoundtrackManager::CalcTrackToPlay (CTopologyNode *pNode, EGameStates iNewState) const
 
 //	CalcTrackToPlay
@@ -174,8 +256,10 @@ CSoundType *CSoundtrackManager::CalcTrackToPlay (CTopologyNode *pNode, EGameStat
 	switch (iNewState)
 		{
 		case stateProgramLoad:
-		case stateProgramIntro:
 			return m_pIntroTrack;
+
+		case stateProgramIntro:
+			return CalcRandomTrackToPlay();
 
 		case stateGameCombat:
 			return CalcGameTrackToPlay(pNode, ATTRIB_COMBAT_SOUNDTRACK);
@@ -430,7 +514,8 @@ void CSoundtrackManager::NotifyTrackPlaying (CSoundType *pTrack)
 
 		//	Remember if we played the system track
 
-		if (pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
+		if (m_iGameState != stateProgramIntro
+				&& pTrack->HasAttribute(ATTRIB_SYSTEM_SOUNDTRACK))
 			m_bSystemTrackPlayed = true;
 
 		//	Done with transition
@@ -511,6 +596,7 @@ void CSoundtrackManager::Play (CSoundType *pTrack)
 			return;
 			}
 
+		m_bInTransition = true;
 		m_Mixer.Play(pTrack);
 		}
 	}
@@ -547,6 +633,12 @@ void CSoundtrackManager::SetGameState (EGameStates iNewState)
 		m_Mixer.Shutdown();
 		}
 
+	//	If we're transitioning from loading to intro, then nothing to do (other
+	//	than set state)
+
+	else if (iNewState == stateProgramIntro && m_iGameState == stateProgramLoad)
+		m_iGameState = iNewState;
+
 	//	Otherwise, set the new state
 
 	else
@@ -569,11 +661,6 @@ void CSoundtrackManager::SetGameState (EGameStates iNewState, CSoundType *pTrack
 	//	Set our state
 
 	m_iGameState = iNewState;
-
-	//	If we're back at program intro then reinit our playlist.
-
-	if (iNewState == stateProgramIntro)
-		Reinit();
 
 	//	Play the soundtrack
 

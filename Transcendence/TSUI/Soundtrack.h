@@ -111,6 +111,7 @@ class CSoundtrackManager
 		void NextTrack (void);
 		void NotifyEndCombat (void);
 		void NotifyEnterSystem (CTopologyNode *pNode = NULL, bool bFirstTime = true);
+		inline void NotifyGameStart (void) { Reinit(); }
 		void NotifyStartCombat (void);
 		void NotifyStartCombatMission (void);
 		void NotifyTrackDone (void);
@@ -126,6 +127,7 @@ class CSoundtrackManager
 
 	private:
 		CSoundType *CalcGameTrackToPlay (CTopologyNode *pNode, const CString &sRequiredAttrib) const;
+		CSoundType *CalcRandomTrackToPlay (void) const;
 		CSoundType *CalcTrackToPlay (CTopologyNode *pNode, EGameStates iNewState) const;
 		int GetLastPlayedRank (DWORD dwUNID) const;
 		bool IsPlayingCombatTrack (void) const;

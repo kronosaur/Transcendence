@@ -49,6 +49,17 @@ int CSoundType::FindSegment (int iPos)
 	return i;
 	}
 
+const CString &CSoundType::GetAlbum (void) const
+
+//	GetAlbum
+//
+//	Returns the album name
+	
+	{
+	CExtension *pExtension = GetExtension();
+	return (pExtension ? pExtension->GetName() : NULL_STR);
+	}
+
 int CSoundType::GetNextFadePos (int iPos)
 
 //	GetNextFadePos

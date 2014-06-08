@@ -1573,7 +1573,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
-		ALERROR HICommand (const CString &sCmd, void *pData = NULL);
 		void HideDockScreen (void);
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
@@ -1696,7 +1695,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void SetHighScoresScroll (void);
 		void SetIntroState (IntroState iState);
 		void SetMusicOption (void);
-		ALERROR StartIntro (IntroState iState = isHighScores);
+		ALERROR StartIntro (CIntroSession *pThis, IntroState iState = isHighScores);
 		void StopAnimations (void);
 		void StopIntro (void);
 
@@ -1799,6 +1798,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CString m_sBackgroundError;
 
 		//	Intro screen
+		CIntroSession *m_pIntroSession;
 		IntroState m_iIntroState;
 		int m_iIntroCounter;
 		DWORD m_dwIntroShipClass;

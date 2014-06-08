@@ -113,7 +113,7 @@ class IHITask : public IHICommand
 
 //	Session Objects -----------------------------------------------------------
 
-class IHISession : public IHICommand, private IAniCommand
+class IHISession : public IHICommand, public IAniCommand
 	{
 	public:
 		IHISession (CHumanInterface &HI);
