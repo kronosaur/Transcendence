@@ -115,6 +115,8 @@
 					(if theMission
 						(msnAccept theMission)
 						)
+						
+					Nil
 					)
 			</OnReward>
 

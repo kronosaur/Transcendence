@@ -84,10 +84,6 @@
 						(if (not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
 							(typSetData &unidBenedictStoryArc; 'firstDockedAtSisters (unvGetTick))
 							)
-							
-						;	Allow access to Sanctum
-
-						(objSetData gSource "freeSanctum" True)
 						)
 				</OnPaneInit>
 
@@ -117,6 +113,10 @@
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(block (theMission)
+						
+							;	If we listened this far, we get to use the sanctum
+							
+							(objSetData gSource "freeSanctum" True)
 						
 							;	Exit the screen so when we return, we're back at the main screen
 							

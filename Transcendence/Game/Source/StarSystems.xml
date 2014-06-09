@@ -1110,6 +1110,8 @@
 
 	<Globals>
 		(block Nil
+		
+			
 
 			(setq trnCreateAllStargates (lambda (options)
 

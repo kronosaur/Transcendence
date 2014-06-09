@@ -553,6 +553,7 @@
 
 	level:				Player's level:
 							Nil	= Not yet initialized
+							0	= Non-pilgrim
 							1	= Novice
 							2	= Acolyte
 							3	= Adept
@@ -730,12 +731,17 @@
 				(block (level)
 					(if (not (setq level (typGetGlobalData &stDomina; "level")))
 						(block Nil
-							(typSetGlobalData &stDomina; "level" 1)
+							(if (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+								(setq level 1)
+								(setq level 0)
+								)
+							
+							(typSetGlobalData &stDomina; "level" level)
 							(typSetGlobalData &stDomina; "xp" 0)
-							1
 							)
-						level
 						)
+						
+					level
 					)
 				))
 

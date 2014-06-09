@@ -110,14 +110,9 @@
 						(msnAccept trainingMission)
 						)
 						
-					;	Construct the result so we can start the next screen
+					;	Return Nil to exit
 					
-					{
-						nextScreen: &dsRPGMission;
-						nextScreenData: {
-							missionObj: trainingMission
-							}
-						}
+					Nil
 					)
 			</OnDeclined>
 			
@@ -179,14 +174,9 @@
 						(msnAccept trainingMission)
 						)
 						
-					;	Construct the result so we can start the next screen
+					;	Nil means exit
 					
-					{
-						nextScreen: &dsRPGMission;
-						nextScreenData: {
-							missionObj: trainingMission
-							}
-						}
+					Nil
 					)
 			</OnReward>
 			

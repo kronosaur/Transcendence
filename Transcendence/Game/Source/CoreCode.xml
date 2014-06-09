@@ -478,6 +478,19 @@
 					theValue
 					)
 				))
+				
+			(setq sysGetStargateLeadingToCore (lambda ()
+				(block (
+					(corewardNode (typGetStaticData (@ (typFind "a") 0) 'defaultCorewardNode))
+					)
+					(switch
+						(not corewardNode)
+							Nil
+							
+						(sysGetStargateLeadingToNode corewardNode)
+						)
+					)
+				))
 
 			(setq sysGetStargateLeadingToNode (lambda (nodeID)
 			

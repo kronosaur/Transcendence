@@ -1362,6 +1362,8 @@
 	<!ENTITY dsSistersDockServices		"0x0018A004">
 	<!ENTITY dsSistersIntro				"0x0018A005">
 	<!ENTITY dsSistersDecon				"0x0018A006">
+	<!ENTITY dsSistersSanctum			"0x0018A007">
+	<!ENTITY dsSistersDonate			"0x0018A008">
 
 	<!ENTITY rsSistersShrineBkgnd		"0x0018F001">
 

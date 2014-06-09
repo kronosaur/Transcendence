@@ -680,7 +680,7 @@
 		<StaticData>
 			<00182001_Donation>
 				;			attd	rel		text
-				'(Nil		0		50		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
+				'(Nil		-1		135		"This empty vessel may nevertheless possess a connection to the soul it once housed. Domina will use it to gather her flock.")
 			</00182001_Donation>
 		</StaticData>
 	</ItemType>
