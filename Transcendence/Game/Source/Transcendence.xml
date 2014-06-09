@@ -187,6 +187,7 @@
 	<!ENTITY evStdConvoyEncounterBehavior	"0x00003015">
 	<!ENTITY evStdZoneEncounterBehavior	"0x00003016">
 	<!ENTITY sc200ADefenderAuton		"0x00003017">
+	<!ENTITY scExplorerAuton			"0x00003018">
 
 	<!ENTITY scSapphirePlayer			"0x00003801">
 	<!ENTITY scEI100XPlayer				"0x00003802">
@@ -646,6 +647,7 @@
 	<!ENTITY itHolmiumFiber				"0x000041C4">
 	<!ENTITY itDualMarkIIIHowitzer		"0x000041C5">
 	<!ENTITY itOmniXRayLaserCannon		"0x000041C6">
+	<!ENTITY itExplorerAuton			"0x000041C7">
 
 	<!ENTITY vtStoneAsteroidEjecta		"0x00005001">
 	<!ENTITY vtIceAsteroidEjecta		"0x00005002">

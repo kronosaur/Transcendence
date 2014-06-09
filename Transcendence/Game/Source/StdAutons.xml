@@ -499,6 +499,223 @@
 		</Language>
 	</ShipClass>
 	
+	<!-- Auton, TX3 explorer auton -->
+
+	<ShipClass UNID="&scExplorerAuton;"
+			manufacturer=		"Taikon"
+			class=				"TX3 explorer auton"
+			type=				""
+
+			attributes=			"auton, genericClass, taikon"
+			inherit=			"&baStdAutonBase;"
+			   
+			mass=				"2"
+			thrustRatio=		"8"
+			maxSpeed=			"25"
+			cargoSpace=			"0"
+
+			reactorPower=		"250"
+			maxArmor=			"3000"
+			maxDevices=			"2"
+			maxWeapons=			"1"
+			   
+			leavesWreck=		"0"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itPolyceramicPlate;"
+			count=				"1"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itCyclotronDeflectorIII;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
+		
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			nonCombatant=		"true"
+			noAttackOnThreat=	"true"
+			noNavPaths=			"true"
+			ignoreShieldsDown=	"true"
+			/>
+		
+		<Communications>
+			<Message name="Explore" key="E">
+				<OnShow>
+					(and (eq (objGetData gSource "behavior") 'escorting)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+				
+				<Invoke>
+					(block (
+						;	Look for the nearest unknown object
+						
+						(targetObj (@
+							(filter (sysFindObject gSource "Ts -uncharted; S:d;") theObj
+								(and (not (objIsKnown theObj))
+										(objGetProperty theObj 'hasDockingPorts)
+										(objCanAttack theObj)
+										)
+								)
+							0))
+						)
+						
+						(switch
+							;	If no unknown objects, then say so
+
+							(not targetObj)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoExploreTarget))
+							
+							;	Otherwise, send the auton to the nearest object
+							
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'approach targetObj 25)
+								(objSetShowAsDestination gSource)
+								
+								(objSetData gSource 'behavior 'custom)
+								(objSetData gSource 'targetID (objGetID targetObj))
+								(objSendMessage gSender gSource (objTranslate gSource 'ExploreAck))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Form up" key="F">
+				<OnShow>
+					(and
+						(objGetProperty gSource 'playerWingman)
+						(or (eq (objGetData gSource 'behavior) 'waiting)
+							(eq (objGetData gSource 'behavior) 'custom)
+							(objCommunicate gSource gSender 'QueryAttackStatus)
+							)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block (behavior)
+						(setq behavior (objGetData gSource 'behavior))
+						(switch
+							(or (not behavior) (eq behavior 'escorting))
+								(block Nil
+									(objCommunicate gSource gSender 'FormUp)
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+									)
+
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'escort gPlayerShip)
+								
+								(objSetData gSource 'behavior 'escorting)
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+		</Communications>
+
+		<Events>
+			<OnOrdersCompleted>
+				(block (behavior theTarget)
+					(setq behavior (objGetData gSource 'behavior))
+					
+					(switch
+						;	If we're exploring, then pick a new target
+						
+						(eq behavior 'custom)
+							(block (
+								(exploredObj (objGetObjByID (objGetData gSource 'targetID)))
+								
+								;	Look for the nearest unknown object
+						
+								(targetObj (@
+									(filter (sysFindObject gSource "Ts -uncharted; S:d;") theObj
+										(and (not (objIsKnown theObj))
+												(objGetProperty theObj 'hasDockingPorts)
+												(objCanAttack theObj)
+												)
+										)
+									0))
+								)
+								
+								;	Explore object
+								
+								(if exploredObj
+									(block Nil
+										(objSetKnown exploredObj)
+										(objSendMessage gSender gSource (objTranslate gSource 'ObjectExplored))
+										
+										(objClearShowAsDestination exploredObj)
+										)
+									)
+								
+								;	Pick a new target
+								
+								(switch
+									;	If no unknown objects, then exploration is done
+									
+									(not targetObj)
+										(block Nil
+											(shpOrder gSource 'escort gPlayerShip)
+											(objClearShowAsDestination gSource)
+								
+											(objSetData gSource 'behavior 'escorting)
+											(objSendMessage gSender gSource (objTranslate gSource 'ExplorationDone))
+											)
+											
+									;	Otherwise, go to new object
+									
+									(block Nil
+										(shpOrder gSource 'approach targetObj 25)
+										(objSetData gSource 'targetID (objGetID targetObj))
+										)
+									)
+								)
+
+						;	Otherwise, let our base class handle it.
+						
+						(typFireEvent &baStdAutonBase; 'OnOrdersCompleted)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+		
+		<Language>
+			<Text id="DeployAck">"\"Tx3 explorer online\""</Text>
+			<Text id="ExplorationDone">"\"Exploration complete\""</Text>
+			<Text id="ExploreAck">"\"Commencing exploration\""</Text>
+			<Text id="NoExploreTarget">"\"No unexplored objects in system.\""</Text>
+			<Text id="ObjectExplored">
+				(block (
+					(exploredObj (objGetObjByID (objGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"" (objGetName exploredObj 0x01) " explored\""
+						)
+					)
+			</Text>
+		</Language>
+	</ShipClass>
+
 <!-- ITEMS -->
 
 	<!-- Auton, AutoSentinel -->
@@ -672,6 +889,35 @@
 		
 		<StaticData>
 			<AutonShipClass>&sc1MBattleAuton;</AutonShipClass>
+		</StaticData>
+	</ItemType>
+
+	<!-- Auton, TX3 Explorer -->
+
+	<ItemType UNID="&itExplorerAuton;"
+			name=				"TX3 explorer auton"
+			attributes=			"auton, minorItem, taikon"
+			  
+			level=				"5"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownAuton;"
+			  
+			value=				"5000"
+			mass=				"5000"
+			charges=			"0"
+			massBonusPerCharge=	"1000"
+
+			description=		"Developed at the Taikon School of Exploration, this experimental auton can explore an entire star system."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="A">
+			(rpgDeployAutonFromItem gSource (itmGetStaticData gItem 'autonShipClass) gItem)
+		</Invoke>
+		
+		<StaticData>
+			<AutonShipClass>&scExplorerAuton;</AutonShipClass>
 		</StaticData>
 	</ItemType>
 

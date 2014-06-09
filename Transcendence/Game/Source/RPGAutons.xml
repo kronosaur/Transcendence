@@ -16,6 +16,7 @@
 							Nil						= nothing
 							'attackingAtWill		= attacking any target in range
 							'attackingTarget		= attacking a target
+							'custom					= handled by derived class
 							'escorting				= escorting the player
 							'returning				= returning to player ship
 							'waiting				= waiting for the player
@@ -73,6 +74,7 @@
 				<OnShow>
 					(and (objGetTarget gSender)
 						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
+						(not (shpGetAISetting gSource 'nonCombatant))
 						(objGetItems gSource "wI")
 						(objGetProperty gSource 'playerWingman)
 						)
@@ -105,7 +107,8 @@
 
 			<Message name="Break &amp; attack" key="B">
 				<OnShow>
-					(and (eq (objGetData gSource "behavior") 'escorting)
+					(and (eq (objGetData gSource 'behavior) 'escorting)
+						(not (shpGetAISetting gSource 'nonCombatant))
 						(objGetProperty gSource 'playerWingman)
 						)
 				</OnShow>
@@ -122,7 +125,7 @@
 								(shpCancelOrders gSource)
 								(shpOrder gSource 'attack theTarget)
 								
-								(objSetData gSource "behavior" 'attackingAtWill)
+								(objSetData gSource 'behavior 'attackingAtWill)
 								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
 								)
 							)
@@ -142,7 +145,7 @@
 
 				<Invoke>
 					(block (behavior)
-						(setq behavior (objGetData gSource "behavior"))
+						(setq behavior (objGetData gSource 'behavior))
 						(switch
 							(or (not behavior) (eq behavior 'escorting))
 								(block Nil
