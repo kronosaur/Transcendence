@@ -21,7 +21,7 @@ const int HIGHLIGHT_FADE =						30;
 const int DAMAGE_BAR_WIDTH =					100;
 const int DAMAGE_BAR_HEIGHT =					12;
 
-const Metric g_rMaxCommsRange =					(LIGHT_MINUTE * 8.0);
+const Metric g_rMaxCommsRange =					(LIGHT_MINUTE * 60.0);
 const Metric g_rMaxCommsRange2 =				(g_rMaxCommsRange * g_rMaxCommsRange);
 
 #define BOUNDS_CHECK_DIST 						(256.0 * g_KlicksPerPixel)
@@ -76,6 +76,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_COMMS_KEY						CONSTLIT("commsKey")
 #define PROPERTY_DAMAGED						CONSTLIT("damaged")
 #define PROPERTY_ENABLED						CONSTLIT("enabled")
+#define PROPERTY_HAS_DOCKING_PORTS				CONSTLIT("hasDockingPorts")
 #define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_ID								CONSTLIT("id")
 #define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
@@ -3571,10 +3572,15 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		else
 			return CC.CreateNil();
 		}
+	else if (strEquals(sName, PROPERTY_HAS_DOCKING_PORTS))
+		return CC.CreateBool(SupportsDocking());
+
 	else if (strEquals(sName, PROPERTY_ID))
 		return CC.CreateInteger(GetID());
+
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
+
 	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))
 		{
 		int iCount = g_pUniverse->GetObjStats(GetID()).iPlayerMissionsGiven;
@@ -3585,8 +3591,10 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		}
 	else if (strEquals(sName, PROPERTY_UNDER_ATTACK))
 		return CC.CreateBool(IsUnderAttack());
+
 	else if (pType = GetType())
 		return CreateResultFromDataField(CC, pType->GetDataField(sName));
+
 	else
 		return CC.CreateNil();
 	}
@@ -6713,7 +6721,13 @@ CSpaceObject::SCriteriaMatchCtx::SCriteriaMatchCtx (const Criteria &Crit) :
 	rBestDist2 = (Crit.bNearestOnly ? g_InfiniteDistance * g_InfiniteDistance : 0.0);
 
 	bCalcPolar = (Crit.iIntersectAngle != -1);
-	bCalcDist2 = (!bCalcPolar && (Crit.bNearestOnly || Crit.bFarthestOnly || Crit.bNearerThan || Crit.bFartherThan || Crit.bPerceivableOnly));
+	bCalcDist2 = (!bCalcPolar 
+			&& (Crit.bNearestOnly 
+				|| Crit.bFarthestOnly 
+				|| Crit.bNearerThan 
+				|| Crit.bFartherThan 
+				|| Crit.bPerceivableOnly
+				|| Crit.iSort == CSpaceObject::sortByDistance));
 
 	rMinRadius2 = Crit.rMinRadius * Crit.rMinRadius;
 	rMaxRadius2 = Crit.rMaxRadius * Crit.rMaxRadius;

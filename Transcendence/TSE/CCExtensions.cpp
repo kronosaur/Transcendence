@@ -1364,6 +1364,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'hasDockingPorts\n"
 			"   'id\n"
 			"   'known\n"
 			"   'playerMissionsGiven\n"
@@ -2020,8 +2021,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			//		O:guard;	Ships ordered to guard source
 			//		P			Only objects that can be detected (perceived) by source
 			//		Q			(unused)
+			//		R			Return only the farthest object to the source
 			//		R:nn;		Return only objects greater than nn light-seconds away
-			//		S			(unused)
+			//		S:sort		Sort order ('d' = distance ascending; 'D' = distance descending
 			//		T			Include structure-scale stations
 			//		T:xyz;		Include stations with attribute 'xyz'
 			//		U			(unused)
