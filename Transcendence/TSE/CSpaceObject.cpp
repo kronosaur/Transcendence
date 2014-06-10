@@ -1149,7 +1149,7 @@ void CSpaceObject::Destroy (DestructionTypes iCause, const CDamageSource &Attack
 	//	Prepare struct
 
 	SDestroyCtx Ctx;
-	Ctx.pObj  = this;
+	Ctx.pObj = this;
 	Ctx.iCause = iCause;
 	Ctx.Attacker = Attacker;
 	Ctx.pWreck = NULL;

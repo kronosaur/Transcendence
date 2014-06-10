@@ -713,6 +713,7 @@ class CRadiusDamage : public CSpaceObject
 
 		//	CSpaceObject virtuals
 		virtual bool CanMove (void) { return true; }
+		virtual CString DebugCrashInfo (void);
 		virtual CString GetDamageCauseNounPhrase (DWORD dwFlags) { return m_Source.GetDamageCauseNounPhrase(dwFlags); }
 		virtual DestructionTypes GetDamageCauseType (void) { return m_iCause; }
 		virtual CString GetName (DWORD *retdwFlags = NULL);

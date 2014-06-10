@@ -119,6 +119,53 @@ ALERROR CRadiusDamage::Create (CSystem *pSystem,
 	return NOERROR;
 	}
 
+CString CRadiusDamage::DebugCrashInfo (void)
+
+//	DebugCrashInfo
+//
+//	Dump debug information
+
+	{
+	CString sResult;
+
+	sResult.Append(strPatternSubst(CONSTLIT("m_pDesc: %s\r\n"), m_pDesc->m_sUNID));
+	sResult.Append(strPatternSubst(CONSTLIT("m_Source: %s\r\n"), CSpaceObject::DebugDescribe(m_Source.GetObj())));
+	sResult.Append(strPatternSubst(CONSTLIT("m_pTarget: %s\r\n"), CSpaceObject::DebugDescribe(m_pTarget)));
+	sResult.Append(strPatternSubst(CONSTLIT("m_iDestiny: %d\r\n"), GetDestiny()));
+	sResult.Append(strPatternSubst(CONSTLIT("m_iTick: %d\r\n"), m_iTick));
+	sResult.Append(strPatternSubst(CONSTLIT("m_iLifeLeft: %d\r\n"), m_iLifeLeft));
+
+	//	m_pEnhancements
+
+	try
+		{
+		if (m_pEnhancements)
+			sResult.Append(strPatternSubst(CONSTLIT("m_pEnhancements: %d\r\n"), m_pEnhancements->GetCount()));
+		else
+			sResult.Append(CONSTLIT("m_pEnhancements: none\r\n"));
+		}
+	catch (...)
+		{
+		sResult.Append(strPatternSubst(CONSTLIT("m_pEnhancements: %x [invalid]\r\n"), (DWORD)m_pEnhancements));
+		}
+
+	//	m_pPainter
+
+	try
+		{
+		if (m_pPainter)
+			sResult.Append(strPatternSubst(CONSTLIT("m_pPainter: %s\r\n"), m_pPainter->GetCreator()->GetTypeClassName()));
+		else
+			sResult.Append(CONSTLIT("m_pPainter: none\r\n"));
+		}
+	catch (...)
+		{
+		sResult.Append(strPatternSubst(CONSTLIT("m_pPainter: %x [invalid]\r\n"), (DWORD)m_pPainter));
+		}
+
+	return sResult;
+	}
+
 CString CRadiusDamage::GetName (DWORD *retdwFlags)
 
 //	GetName
