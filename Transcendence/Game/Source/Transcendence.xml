@@ -1102,6 +1102,7 @@
 	<!ENTITY unidKateMorgental			"0x00100006">
 	<!ENTITY scKateMorgentalCruiser		"0x00100007">
 	<!ENTITY trStdLevelTreasure			"0x00100008">
+	<!ENTITY unidBenedict				"0x00100009">
 	
 	<!-- COMMONWEALTH 0010 -->
 	
@@ -2180,6 +2181,7 @@
 			most part. -->
 		
 		<Module filename="AresOrthodoxy.xml"/>
+		<Module filename="Benedict.xml"/>
 		<Module filename="BlackMarket.xml"/>
 		<Module filename="CentauriWarlords.xml"/>
 		<Module filename="CharonPirates.xml"/>

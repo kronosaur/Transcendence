@@ -255,7 +255,10 @@
 								
 								;	Nothing else
 								
-								(setq state 'nothing)
+								(block Nil
+									(msnSuccess gSource)
+									(setq state 'nothing)
+									)
 								)
 								
 							;	Set the state on the mission
@@ -677,6 +680,14 @@
 						"System: " (sysGetName) "\n"
 						"Payment: None"
 						)
+					)
+			</Text>
+			<Text id="nothing:Begin">
+				(cat
+					"\"You've handled yourself well. Remember what I've taught "
+					"you and you'll be fine on your journey to the Core.\n\n"
+								
+					"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
 					)
 			</Text>
 			<Text id="sellLoot:Begin">

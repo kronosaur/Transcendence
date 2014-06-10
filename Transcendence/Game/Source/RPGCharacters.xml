@@ -149,6 +149,116 @@
 						)
 					)
 				))
+				
+			(setq rpgCharacterChangeRel (lambda (charType event)
+			
+				; This function changes the character's relationship with the
+				; player based on something the player did.
+				;
+				; The following events are valid:
+				;
+				; 'betrayal: The player betrayed the character in a fundamental
+				;		way, generally by agreeing to pursuing a goal and then
+				;		actively opposing that goal.
+				;
+				; 'opposition: The player acted against a major character goal,
+				;		but did not necessarily betray the character.
+				;
+				; 'failure: The player failed in a task that the character was
+				;		counting on, generally through incompetence rather than
+				;		enmity.
+				;
+				; 'aid: The player helped the character in pursuit of a major
+				;		goal.
+				;
+				; 'rescue: The player risked his/her life to save the character
+				;		(or to save the life of someone the character cares
+				;		about).
+				
+				(block (
+					(curRel (if (typGetData charType 'playerRel) (typGetData charType 'playerRel) 'notSet))
+					)
+					
+					(switch
+						
+						(eq event 'betrayal)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'nemesis			;	First impression count for a lot.
+									nemesis: 'nemesis
+									dislikes: 'nemesis
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: 'nemesis			;	Betrayal hurts most if you feel loyal to someone.
+									}
+									curRel
+									))
+								
+						(eq event 'opposition)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'dislikes
+									nemesis: 'nemesis
+									dislikes: 'dislikes
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: (random (list		;	60% of the time we stay loyal
+										'nemesis
+										'dislikes
+										'neutral
+										'likes
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										))
+									}
+									curRel
+									))
+						
+						(eq event 'failure)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'dislikes
+									nemesis: 'nemesis
+									dislikes: 'dislikes
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+								
+						(eq event 'aid)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'likes
+									nemesis: 'nemesis
+									dislikes: (if (leq (random 1 100) 50) 'neutral 'dislikes)
+									neutral: 'likes
+									likes: (if (leq (random 1 100) 20) 'loyalty 'likes)
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+								
+						(eq event 'rescue)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'loyalty
+									nemesis: 'loyalty
+									dislikes: 'likes
+									neutral: 'likes
+									likes: 'loyalty
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+						)
+					)
+				))
 
 			(setq rpgCharacterCreateShip (lambda (charType shipClassUNID pos)
 				(block (objID shipObj)
@@ -223,7 +333,8 @@
 				; This function returns the given character's relationship with 
 				; the player. The function returns one of the following values:
 				;
-				; Nil: The player and the character have never met
+				; Nil: The player and the character have never met (or the
+				;		character does not have an opinion).
 				;
 				; 'favorable: The character is favorable towards the player.
 				;		(i.e., rel is neutral, likes, or loyalty)
@@ -252,7 +363,8 @@
 				; This function returns the given character's relationship with 
 				; the player. The function returns one of the following values:
 				;
-				; Nil: The player and the character have never met
+				; Nil: The player and the character have never met (or the
+				;		character has not yet formed an opinion).
 				;
 				; 'nemesis: The character hates the player.
 				;
@@ -267,13 +379,8 @@
 				;
 				; 'loyalty: The character feels loyalty and friendship for the
 				;		player.
-
-				(switch
-					(not (typGetData charType 'firstPlayerMeetingTime))
-						Nil
-
-					'neutral
-					)
+				
+				(typGetData charType 'playerRel)
 				))
 
 			(setq rpgCharacterSetMeeting (lambda (charType)

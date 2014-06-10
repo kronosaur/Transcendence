@@ -685,4 +685,9 @@
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Game\Source\Benedict.xml">
+      <Filter>XML Files\Human Space Library</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

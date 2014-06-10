@@ -16,7 +16,7 @@
 			attributes=			"benedictStoryArc"
 
 			maxAppearing=		"1"
-			debriefAfterOutOfSystem="true"
+			noDebrief=			"true"
 			>
 
 		<StaticData>
@@ -54,26 +54,26 @@
 			</OnCreate>
 
 			<OnAccepted>
-				(benedict_missionAccepted gSource)
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					(benedict_missionAccepted gSource)
+					)
 			</OnAccepted>
 
-			<OnAcceptedUndock>
-			</OnAcceptedUndock>
-			
-			<OnDeclined>
-			</OnDeclined>
-			
 			<OnSetPlayerTarget>
 				(if (eq (sysGetNode) (msnGetData gSource 'korolovNodeID))
 					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'korolovID)) 'dock)
 					)
 			</OnSetPlayerTarget>
 			
-			<OnCompleted>
-			</OnCompleted>
-
-			<OnReward>
-			</OnReward>
+			<OnObjDocked>
+				(switch
+					(and (eq aObjDocked gPlayerShip) 
+							(eq (objGetID aDockTarget) (msnGetData gSource 'korolovID))
+							)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
 		</Events>
 		
 		<Language>

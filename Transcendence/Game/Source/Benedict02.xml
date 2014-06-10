@@ -8,6 +8,7 @@
 
 	attackersLeft:			Number of attackers left.
 	freighterID:			Target ID to escort.
+	playerDestroyedFreighter: If True, player destroyed the freighter.
 	stargateID:				Stargate to wait at.
 
 	======================================================================== -->
@@ -101,6 +102,20 @@
 			
 			<OnCompleted>
 				(block Nil
+					;	Handle result and set Benedict's relationship to the
+					;	player based on it.
+					
+					(switch
+						(eq aReason 'success)
+							(rpgCharacterChangeRel &unidBenedict; 'aid)
+							
+						(eq aReason 'failure)
+							(if (msnGetData gSource 'playerDestroyedFreighter)
+								(rpgCharacterChangeRel &unidBenedict; 'betrayal)
+								(rpgCharacterChangeRel &unidBenedict; 'failure)
+								)
+						)
+						
 					;	Re-enable hints.
 
 					(plyEnableMessage gPlayer 'enabledHints True)
@@ -169,7 +184,10 @@
 			<OnObjDestroyed>
 				(switch
 					(eq (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
-						(msnFailure gSource)
+						(block Nil
+							(msnSetData gSource 'playerDestroyedFreighter (and gPlayerShip (eq aOrderGiver gPlayerShip)))
+							(msnFailure gSource)
+							)
 
 					(eq (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
 						(block Nil
@@ -309,6 +327,32 @@
 			</Text>
 			<Text id="SuccessMsg">
 				"Mission complete!"
+			</Text>
+			<Text id="FailureDebrief">
+				(switch
+					(msnGetData gSource 'playerDestroyedFreighter)
+						(msnTranslate gSource 'FailureDebriefBetrayal)
+						
+					(msnTranslate gSource 'FailureDebriefFailure)
+					)
+			</Text>
+			<Text id="FailureDebriefBetrayal">
+				(cat
+					"Benedict's eyes burn with fury:\n\n"
+					
+					"\"What have you done?! You deliberately destroyed the freighter! "
+					"But your turn will come. You will suffer and burn for this!\""
+					)
+			</Text>
+			<Text id="FailureDebriefFailure">
+				(cat
+					"Benedict slums in a chair, rubbing his forehead with his hand:\n\n"
+					
+					"\"I should have never trusted you on such a mission! "
+					"I failed her...\"\n\n"
+					
+					"Benedict says no more."
+					)
 			</Text>
 		</Language>
 	</MissionType>
