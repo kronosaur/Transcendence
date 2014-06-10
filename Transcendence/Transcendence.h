@@ -453,7 +453,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx);
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
-		virtual void OnRadiationWarning (int iSecondsLeft);
+		virtual void OnRadiationWarning (int iTicksLeft);
 		virtual void OnRadiationCleared (void);
 		virtual void OnReactorOverloadWarning (int iSeq);
 		void OnStartGame (void);

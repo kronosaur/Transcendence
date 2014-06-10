@@ -1252,24 +1252,29 @@ void CPlayerShipController::OnPaintSRSEnhancements (CG16bitImage &Dest, SViewpor
 	DEBUG_CATCH
 	}
 
-void CPlayerShipController::OnRadiationWarning (int iSecondsLeft)
+void CPlayerShipController::OnRadiationWarning (int iTicksLeft)
 
 //	OnRadiationWarning
 //
 //	Handle radiation warning
 
 	{
-	if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
-		NULL;
-	else if (iSecondsLeft > 1)
-		m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Radiation Warning: Fatal exposure in %d seconds"), iSecondsLeft));
-	else if (iSecondsLeft == 1)
-		m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure in 1 second"));
-	else
-		m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure received"));
+	if ((iTicksLeft % 10) == 0)
+		{
+		int iSecondsLeft = iTicksLeft / g_TicksPerSecond;
 
-	if ((iSecondsLeft % 10) == 0)
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_RADIATION_ALARM));
+		if (iSecondsLeft > 10 && ((iSecondsLeft % 5) != 0))
+			NULL;
+		else if (iSecondsLeft > 1)
+			m_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Radiation Warning: Fatal exposure in %d seconds"), iSecondsLeft));
+		else if (iSecondsLeft == 1)
+			m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure in 1 second"));
+		else
+			m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure received"));
+
+		if ((iTicksLeft % 150) == 0)
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_RADIATION_ALARM));
+		}
 	}
 
 void CPlayerShipController::OnRadiationCleared (void)

@@ -3359,7 +3359,7 @@ void CShip::MakeRadioactive (void)
 		{
 		m_iContaminationTimer = (IsPlayer() ? 180 : 60) * g_TicksPerSecond;
 		m_fRadioactive = true;
-		m_pController->OnRadiationWarning(m_iContaminationTimer / g_TicksPerSecond);
+		m_pController->OnRadiationWarning(m_iContaminationTimer);
 		}
 	}
 
@@ -5028,8 +5028,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		m_iContaminationTimer--;
 		if (m_iContaminationTimer > 0)
 			{
-			if ((iTick % 10) == 0)
-				m_pController->OnRadiationWarning(m_iContaminationTimer / g_TicksPerSecond);
+			m_pController->OnRadiationWarning(m_iContaminationTimer);
 			}
 		else
 			{

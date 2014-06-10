@@ -3131,7 +3131,7 @@ class IShipController
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip) { }
 		virtual void OnPlayerObj (CSpaceObject *pPlayer) { }
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program) { }
-		virtual void OnRadiationWarning (int iSecondsLeft) { }
+		virtual void OnRadiationWarning (int iTicksLeft) { }
 		virtual void OnRadiationCleared (void) { }
 		virtual void OnReactorOverloadWarning (int iSeq) { }
 		virtual void OnStatsChanged (void) { }

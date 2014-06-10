@@ -204,19 +204,11 @@ void CUniverse::AddSound (DWORD dwUNID, int iChannel)
 	if (m_pSoundMgr == NULL)
 		return;
 
-#ifdef DEBUG
-	::kernelDebugLogMessage("Sound UNID %08x: %d", dwUNID, iChannel);
-#endif
-
 	//	If this UNID is already in the list, then delete it
 
 	int iOldChannel = FindSound(dwUNID);
 	if (iOldChannel != -1)
 		{
-#ifdef DEBUG
-		::kernelDebugLogMessage("Replaced channel %d", iOldChannel);
-#endif
-
 		m_pSoundMgr->Delete(iOldChannel);
 		m_Sounds.RemoveEntry(dwUNID, NULL);
 		}
@@ -224,10 +216,6 @@ void CUniverse::AddSound (DWORD dwUNID, int iChannel)
 	//	Add the new one
 
 	m_Sounds.AddEntry((int)dwUNID, (CObject *)iChannel);
-
-#ifdef DEBUG
-	::kernelDebugLogMessage("UNID %08x assigned to channel %d", dwUNID, g_pUniverse->FindSound(dwUNID));
-#endif
 	}
 
 ALERROR CUniverse::AddStarSystem (CTopologyNode *pTopology, CSystem *pSystem)
