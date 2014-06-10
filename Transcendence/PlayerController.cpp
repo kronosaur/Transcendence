@@ -891,7 +891,7 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 				//	If the sender did not handle it and if it is an older version, then use
 				//	the now deprecated <OnTranslateMessage>
 
-				if (!bHandled && pSender->GetVersion() < 3)
+				if (!bHandled && pSender->GetAPIVersion() < 3)
 					bHandled = pSender->FireOnTranslateMessage(sID, &sMessage);
 				}
 			else

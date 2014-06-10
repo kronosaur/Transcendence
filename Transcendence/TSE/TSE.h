@@ -2143,6 +2143,7 @@ class CSpaceObject : public CObject
 		void FireOnSystemWeaponFire (CSpaceObject *pShot, CSpaceObject *pSource, DWORD dwItemUNID);
 		bool FireOnTranslateMessage (const CString &sMessage, CString *retsMessage);
 		inline void FreezeControls (void) { m_iControlsFrozen++; }
+		inline DWORD GetAPIVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetBoundingRect (CVector *retvUR, CVector *retvLL);
 		inline CVector GetBoundsDiag (void) { return CVector(m_rBoundsX, m_rBoundsY); }
 		inline int GetBoundsHalfAngle (Metric rDist) const { return Max((int)(180.0 * atan(GetBoundsRadius() / rDist) / g_Pi), 1); }
@@ -2191,7 +2192,6 @@ class CSpaceObject : public CObject
 		inline CSystem *GetSystem (void) const { return m_pSystem; }
 		inline CUniverse *GetUniverse (void) const { return m_pSystem->GetUniverse(); }
 		inline const CVector &GetVel (void) const { return m_vVel; }
-		inline DWORD GetVersion (void) const { CDesignType *pType = GetType(); return (pType ? pType->GetAPIVersion() : API_VERSION); }
 		void GetVisibleEnemies (DWORD dwFlags, TArray<CSpaceObject *> *retList, CSpaceObject *pExcludeObj = NULL);
 		CSpaceObject *GetVisibleEnemyInRange (CSpaceObject *pCenter, Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
 		bool HasBeenHitLately (int iTicks = 30);
@@ -3155,6 +3155,7 @@ class CUniverse : public CObject
 		inline CEconomyType *FindEconomyType (const CString &sName) { return m_Design.FindEconomyType(sName); }
 		inline CShipTable *FindEncounterTable (DWORD dwUNID) { return CShipTable::AsType(m_Design.FindEntry(dwUNID)); }
 		bool FindExtension (DWORD dwUNID, DWORD dwRelease, CExtension **retpExtension = NULL) { return m_Extensions.FindBestExtension(dwUNID, dwRelease, (InDebugMode() ? CExtensionCollection::FLAG_DEBUG_MODE : 0), retpExtension); }
+		inline CGenericType *FindGenericType (DWORD dwUNID) { return CGenericType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CItemTable *FindItemTable (DWORD dwUNID) { return CItemTable::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CItemType *FindItemType (DWORD dwUNID) { return CItemType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CMissionType *FindMissionType (DWORD dwUNID) { return CMissionType::AsType(m_Design.FindEntry(dwUNID)); }
