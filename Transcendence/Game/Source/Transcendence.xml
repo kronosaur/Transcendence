@@ -36,7 +36,7 @@
 	<!ENTITY rsShieldHUDDefault			"0x00000021">
 	
 	<!ENTITY rsMikeno					"0x00000030">
-
+	
 	<!ENTITY efLaserBeamDefault			"0x00000040">
 	<!ENTITY efKineticBoltDefault		"0x00000041">
 	<!ENTITY efParticleBeamDefault		"0x00000042">
@@ -83,6 +83,15 @@
 	<!ENTITY efManeuveringThrusterDefault	"0x00000090">
 	<!ENTITY efMainThrusterDefault		"0x00000091">
 	<!ENTITY efMainThrusterLarge		"0x00000092">
+	
+	<!ENTITY snDefaultEnemyShipAlarm	"0x000000A0">
+	<!ENTITY snDefaultFuelLowAlarm		"0x000000A1">
+	<!ENTITY snDefaultRadiationAlarm	"0x000000A2">
+	<!ENTITY snDefaultHullBreachAlarm	"0x000000A3">
+	<!ENTITY snDefaultReactorOverloadAlarm	"0x000000A4">
+	<!ENTITY snDefaultShieldsDownAlarm	"0x000000A5">
+	<!ENTITY snDefaultButtonClick		"0x000000A6">
+	<!ENTITY snDefaultSelect			"0x000000A7">
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
@@ -930,6 +939,7 @@
 	<!ENTITY rsSapphireYachtHD			"0x0000F161">
 	<!ENTITY rsEI500FreighterHD			"0x0000F162">
 	<!ENTITY rsWolfenGunshipHD			"0x0000F163">
+	<!ENTITY rsExplorerAuton			"0x0000F164">
 
 	<!ENTITY snLaserCannon				"0x0000F201">
 	<!ENTITY snRecoillessCannon			"0x0000F202">
@@ -1905,7 +1915,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"21"
+		apiVersion=						"22"
 		>
 
 <!-- TRANSCENDENCE ************************************************************

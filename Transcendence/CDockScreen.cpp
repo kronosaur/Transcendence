@@ -185,6 +185,7 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		case g_PrevActionID:
 			if (!m_bNoListNavigation)
 				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				SelectPrevItem();
 				ShowItem();
 				m_CurrentActions.ExecuteShowPane(EvalInitialPane());
@@ -194,6 +195,7 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		case g_NextActionID:
 			if (!m_bNoListNavigation)
 				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				SelectNextItem();
 				ShowItem();
 				m_CurrentActions.ExecuteShowPane(EvalInitialPane());
@@ -206,6 +208,7 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 				{
 				if (dwData == ITEM_LIST_AREA_PAGE_UP_ACTION)
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					SelectPrevItem();
 					SelectPrevItem();
 					SelectPrevItem();
@@ -214,6 +217,7 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 					}
 				else if (dwData == ITEM_LIST_AREA_PAGE_DOWN_ACTION)
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					SelectNextItem();
 					SelectNextItem();
 					SelectNextItem();
@@ -222,6 +226,7 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 					}
 				else
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_pItemListControl->SetCursor(dwData);
 					m_CurrentActions.ExecuteShowPane(EvalInitialPane());
 					}
@@ -233,7 +238,10 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 			{
 			if (dwTag >= g_FirstActionID && dwTag <= g_LastActionID)
 				{
-				m_CurrentActions.Execute(dwTag - g_FirstActionID, this);
+				int iAction = (dwTag - g_FirstActionID);
+
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+				m_CurrentActions.Execute(iAction, this);
 				break;
 				}
 			}
@@ -801,6 +809,8 @@ void CDockScreen::ExecuteCancelAction (void)
 		m_CurrentActions.Execute(iAction, this);
 	else
 		m_CurrentActions.ExecuteExitScreen();
+
+	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 	}
 
 int CDockScreen::GetCounter (void)
@@ -1209,7 +1219,10 @@ void CDockScreen::HandleChar (char chChar)
 
 	int iAction;
 	if (m_CurrentActions.FindByKey(CString(&chChar, 1), &iAction))
+		{
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 		m_CurrentActions.Execute(iAction, this);
+		}
 	}
 
 void CDockScreen::HandleKeyDown (int iVirtKey)
@@ -1229,7 +1242,10 @@ void CDockScreen::HandleKeyDown (int iVirtKey)
 				{
 				int iAction;
 				if (m_CurrentActions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_CurrentActions.Execute(iAction, this);
+					}
 				}
 			break;
 
@@ -1241,7 +1257,10 @@ void CDockScreen::HandleKeyDown (int iVirtKey)
 				{
 				int iAction;
 				if (m_CurrentActions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_CurrentActions.Execute(iAction, this);
+					}
 				}
 			break;
 
@@ -1297,9 +1316,15 @@ void CDockScreen::HandleKeyDown (int iVirtKey)
 			{
 			int iAction;
 			if (m_CurrentActions.FindSpecial(CDockScreenActions::specialDefault, &iAction))
+				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				m_CurrentActions.Execute(iAction, this);
+				}
 			else if (m_CurrentActions.GetCount() == 1)
+				{
+				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 				m_CurrentActions.Execute(0, this);
+				}
 			break;
 			}
 		}

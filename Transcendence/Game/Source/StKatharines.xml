@@ -1970,14 +1970,9 @@
 									"Be careful with it! I've got a containment vessel ready for it. You didn't "
 									"damage it did you? Good!\n\n"
 									
-									(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
-										(cat 
-											"\"As promised, I have something to help you. I've written some "
-											"software to map your position throughout the galaxy. I've already "
-											"installed it on your ship's computer! Go and try it out!\""
-											)
-										""
-										)
+									"\"As promised, I have something to help you. I've created an "
+									"experimental auton that will explore an entire star system all "
+									"by itself. Go and try it out!\""
 									))
 									
 							(setq desc (cat
@@ -1999,15 +1994,9 @@
 									(typSetGlobalData &stStKatsArcology; "exploreStatus" 'success)
 									(typSetGlobalData &itDallSphere; "status" 'withDall)
 									
-									(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
-										(objChangeEquipmentStatus gPlayerShip 'GalacticMap 'install)
-										)
-										
-									; We reveal the key systems in Human Space
-									(sysSetKnown "CD" True)		; Sanctuary system
-									(sysSetKnown "C9" True)		; Jiang's Star system
-									(sysSetKnown "EC" True)		; Eta Ceti system
-									(sysSetKnown "PJ" True)		; Point Juno system
+									;	Give the player an explorer auton
+									
+									(objAddItem gPlayerShip (itmCreate &itExplorerAuton; 1))
 									)
 								)
 								
@@ -2949,4 +2938,3 @@
 	<Image UNID="&rsDallSphere;"		bitmap="Resources\DallSphere.jpg" bitmask="Resources\DallSphereMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>
-

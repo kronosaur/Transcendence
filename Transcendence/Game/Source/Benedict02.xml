@@ -109,6 +109,12 @@
 
 			<OnReward>
 				(block Nil
+					;	Give the player a galactic map
+					
+					(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
+						(objChangeEquipmentStatus gPlayerShip 'GalacticMap 'install)
+						)
+						
 					;	Player gets mission to visit Korolov
 
 					(setq theMission (msnCreate &msBenedictToKorolov; Nil))

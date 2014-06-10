@@ -363,6 +363,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline bool IsGalacticMapAvailable (void) { return (m_pShip && (m_pShip->GetAbility(::ablGalacticMap) > ::ablUninstalled)); }
 		inline bool IsMapHUDActive (void) { return m_bMapHUD; }
 		inline bool IsUIMessageEnabled (UIMessageTypes iMsg) { return m_UIMsgs.IsEnabled(iMsg); }
+		void OnEnemyShipsDetected (void);
 		inline void OnGameEnd (void) { m_Stats.OnGameEnd(m_pShip); }
 		inline void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemBought(Item, iTotalPrice); }
 		inline void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemSold(Item, iTotalPrice); }

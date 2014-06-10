@@ -1970,7 +1970,9 @@ void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
 //	Plays a sound from the given source
 
 	{
-	if (!m_bNoSound && m_pSoundMgr && m_pPOV)
+	if (!m_bNoSound 
+			&& m_pSoundMgr 
+			&& iChannel != -1)
 		{
 		//	Default to full volume
 
@@ -1980,7 +1982,7 @@ void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
 		//	Figure out how close the source is to the POV. The sound fades as we get
 		//	further away.
 
-		if (pSource)
+		if (pSource && m_pPOV)
 			{
 			CVector vDist = pSource->GetPos() - m_pPOV->GetPos();
 			Metric rDist2 = vDist.Length2();

@@ -969,7 +969,10 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 	//	If we're down to 25% armor, then warn the player
 
 	if (pArmor->GetHitPoints() < (iMaxArmorHP / 4))
+		{
 		m_pTrans->DisplayMessage(CONSTLIT("Hull breach imminent!"));
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_HULL_BREACH_ALARM));
+		}
 
 	m_pTrans->UpdateArmorDisplay();
 	}
@@ -1099,6 +1102,17 @@ void CPlayerShipController::OnDeviceStatus (CInstalledDevice *pDev, int iEvent)
 		}
 	}
 
+void CPlayerShipController::OnEnemyShipsDetected (void)
+
+//	OnEnemyShipsDetected
+//
+//	Enemy ships
+
+	{
+	m_pTrans->DisplayMessage(CONSTLIT("Enemy ships detected"));
+	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_ENEMY_SHIP_ALARM));
+	}
+
 void CPlayerShipController::OnFuelLowWarning (int iSeq)
 
 //	OnFuelLowWarning
@@ -1127,6 +1141,8 @@ void CPlayerShipController::OnFuelLowWarning (int iSeq)
 		if (m_UIMsgs.IsEnabled(uimsgRefuelHint))
 			m_pTrans->DisplayMessage(CONSTLIT("(press [S] to access refueling screen)"));
 		m_pTrans->DisplayMessage(CONSTLIT("Fuel low!"));
+		if ((iSeq % 30) == 0)
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_FUEL_LOW_ALARM));
 		}
 	}
 
@@ -1251,6 +1267,9 @@ void CPlayerShipController::OnRadiationWarning (int iSecondsLeft)
 		m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure in 1 second"));
 	else
 		m_pTrans->DisplayMessage(CONSTLIT("Radiation Warning: Fatal exposure received"));
+
+	if ((iSecondsLeft % 10) == 0)
+		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_RADIATION_ALARM));
 	}
 
 void CPlayerShipController::OnRadiationCleared (void)
@@ -1273,7 +1292,11 @@ void CPlayerShipController::OnReactorOverloadWarning (int iSeq)
 	//	Warn every 60 ticks
 
 	if ((iSeq % 6) == 0)
+		{
 		m_pTrans->DisplayMessage(CONSTLIT("Warning: Reactor overload"));
+		if ((iSeq % 24) == 0)
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_REACTOR_OVERLOAD_ALARM));
+		}
 	}
 
 void CPlayerShipController::OnStartGame (void)

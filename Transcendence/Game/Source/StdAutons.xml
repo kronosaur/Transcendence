@@ -540,7 +540,7 @@
 		
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsSmallShips1;" imageX="320" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+		<Image imageID="&rsExplorerAuton;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="20"/>
 
 		<!-- AI and Behavior -->
 
@@ -620,6 +620,8 @@
 									)
 
 							(block Nil
+								(objClearShowAsDestination gSource)
+								
 								(shpCancelOrders gSource)
 								(shpOrder gSource 'escort gPlayerShip)
 								
@@ -950,4 +952,8 @@
 		</StaticData>
 	</ItemType>
 	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsExplorerAuton;" bitmap="Resources\ExplorerAuton.jpg" bitmask="Resources\ExplorerAutonMask.bmp" loadOnUse="true" />
+
 </TranscendenceModule>

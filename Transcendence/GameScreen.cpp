@@ -565,7 +565,7 @@ void CTranscendenceWnd::PaintLRS (void)
 			//	Notify player of enemies
 
 			if (bNewEnemies)
-				DisplayMessage(CONSTLIT("Enemy ships detected"));
+				GetPlayer()->OnEnemyShipsDetected();
 			}
 
 		//	If we're blind, paint snow

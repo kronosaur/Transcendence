@@ -1344,6 +1344,23 @@
 		</Effect>
 	</OverlayType>
 	
+<!-- DEFAULT SOUND EFFECTS =====================================================
+
+-->
+	
+	<Sound unid="&snDefaultEnemyShipAlarm;"			filename="Resources\EnemyShipAlarm.wav"/>
+	<Sound unid="&snDefaultFuelLowAlarm;"			filename="Resources\FuelLowAlarm.wav"/>
+	<Sound unid="&snDefaultRadiationAlarm;"			filename="Resources\RadiationAlarm.wav"/>
+	<Sound unid="&snDefaultHullBreachAlarm;"		filename="Resources\HullBreachAlarm.wav"/>
+	<Sound unid="&snDefaultReactorOverloadAlarm;"	filename="Resources\ReactorOverloadAlarm.wav"/>
+	<Sound unid="&snDefaultShieldsDownAlarm;"		filename="Resources\ShieldsDownAlarm.wav"/>
+	<Sound unid="&snDefaultButtonClick;"			filename="Resources\UIClick.wav"/>
+	<Sound unid="&snDefaultSelect;"					filename="Resources\UISelect.wav"/>
+	
+	<Sound UNID="&snLaserCannon;"		filename="Resources\LaserFire1.wav"/>
+	<Sound UNID="&snRecoillessCannon;"	filename="Resources\CannonFire1.wav"/>
+	<Sound UNID="&snArmorHit1;"			filename="Resources\ArmorHit1.wav"/>
+	
 <!-- RESOURCES =================================================================
 
 	These resources are used by these effects.
