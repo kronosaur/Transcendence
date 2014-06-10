@@ -140,6 +140,7 @@ static char *FEEDBACK[] =
 	"Palmiche",
 	"Kris Parker",
 	"Petrus",
+	"pixelfck",
 	"PKodon",
 	"PlayMeNow",
 	"PM",
