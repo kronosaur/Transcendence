@@ -1372,8 +1372,4 @@
 	<Image UNID="&rsMediumExplosions;" bitmap="Resources\MediumExplosions.jpg" bitmask="Resources\MediumExplosionsMask.bmp"/>
 	<Image UNID="&rsMediumHit;"		bitmap="Resources\MediumHit.jpg"		bitmask="Resources\MediumHitMask.bmp"/>
 	
-	<Sound UNID="&snLaserCannon;"		filename="Resources\LaserFire1.wav"/>
-	<Sound UNID="&snRecoillessCannon;"	filename="Resources\CannonFire1.wav"/>
-	<Sound UNID="&snArmorHit1;"			filename="Resources\ArmorHit1.wav"/>
-
 </TranscendenceModule>
