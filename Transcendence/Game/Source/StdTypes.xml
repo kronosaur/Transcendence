@@ -1111,7 +1111,6 @@
 			mass=				"250"
 			cargoSpace=			"150"
 			thrust=				"200"
-			maneuver=			"6"
 			maxSpeed=			"12"
 
 			leavesWreck=		"75"
@@ -1131,6 +1130,11 @@
 			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true" />
 			<Device deviceID="&itClass1Deflector;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"2.0"
+			/>
 
 		<Items>
 			<Item count="2d6" item="&itKM500Missile;"/>
@@ -1161,7 +1165,6 @@
 			size=				"4"
 			mass=				"3"
 			thrustRatio=		"3"
-			maneuver=			"1"
 			maxSpeed=			"5"
 			cargoSpace=			"0"
 
@@ -1178,6 +1181,11 @@
 		<Devices>
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"9.0"
+			/>
 
 		<!-- Image and Effects -->
 

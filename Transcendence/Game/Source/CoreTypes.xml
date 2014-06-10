@@ -128,7 +128,6 @@
 			mass=				"5000"
 			cargoSpace=			"500"
 			thrust=				"2000"
-			maneuver=			"10"
 			maxSpeed=			"12"
 
 			leavesWreck=		"100"
@@ -155,6 +154,11 @@
 			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" minFireArc="30" maxFireArc="175" posAngle="90" posRadius="20"/>
 			<Device deviceID="&itLaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="330" posAngle="270" posRadius="20"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3.6"
+			rotationAccel=		"1.2"
+			/>
 
 		<Items>
 		</Items>

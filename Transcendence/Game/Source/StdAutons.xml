@@ -16,7 +16,6 @@
 			   
 			mass=				"1"
 			thrustRatio=		"5"
-			maneuver=			"2"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -37,6 +36,11 @@
 		<Devices>
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Image and Effects -->
 		
@@ -70,7 +74,6 @@
 			   
 			mass=				"2"
 			thrustRatio=		"8"
-			maneuver=			"2"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -93,6 +96,11 @@
 			<Device deviceID="&itTurbolaserCannon;"/>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Image and Effects -->
 
@@ -151,7 +159,6 @@
 			   
 			mass=				"2"
 			thrustRatio=		"8"
-			maneuver=			"2"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -174,6 +181,11 @@
 			<Device deviceID="&itTurbolaserCannon;"/>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Image and Effects -->
 
@@ -222,7 +234,6 @@
 			   
 			mass=				"2"
 			thrustRatio=		"8"
-			maneuver=			"2"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -246,6 +257,11 @@
 			<Device deviceID="&itLongreachIAutocannon;"/>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Image and Effects -->
 
@@ -279,7 +295,6 @@
 			   
 			mass=				"2"
 			thrustRatio=		"6"
-			maneuver=			"12"
 			maxSpeed=			"20"
 			cargoSpace=			"75"
 
@@ -303,6 +318,11 @@
 		<Devices>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"1.0"
+			/>
 
 		<!-- Image and Effects -->
 
@@ -373,7 +393,6 @@
 			   
 			mass=				"4"
 			thrustRatio=		"8"
-			maneuver=			"4"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -396,6 +415,11 @@
 			<Device deviceID="&itParticleBeamWeapon;"/>
 			<Device deviceID="&itMonopoleDeflector;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"4.5"
+			/>
 
 		<!-- Image and Effects -->
 
@@ -455,7 +479,6 @@
 			   
 			mass=				"4"
 			thrustRatio=		"8"
-			maneuver=			"4"
 			maxSpeed=			"25"
 			cargoSpace=			"0"
 
@@ -478,6 +501,11 @@
 			<Device deviceID="&itIonCannon;"/>
 			<Device deviceID="&itMonopoleDeflector;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"4.5"
+			/>
 
 		<!-- Image and Effects -->
 

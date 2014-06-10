@@ -706,7 +706,6 @@
 			   
 			mass=				"400"
 			thrustRatio=		"0"
-			maneuver=			"1"
 			maxSpeed=			"0"
 			cargoSpace=			"0"
 
@@ -723,6 +722,11 @@
 		<Devices>
 			<Device deviceID="&itAresArchcannon;" minFireArc="350" maxFireArc="10" />
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"3.0"
+			/>
 
 		<!-- Image and Effects -->
 

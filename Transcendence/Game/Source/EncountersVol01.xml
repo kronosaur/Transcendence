@@ -357,7 +357,6 @@
 			size=				"200"
 			mass=				"420000"
 			thrustRatio=		"0.5"
-			maneuver=			"16"
 			maxSpeed=			"6"
 			cargoSpace=			"50000"
 
@@ -398,6 +397,11 @@
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 			<Device deviceID="&it1GWReactor;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -1784,7 +1788,6 @@
 			mass=				"50000"
 			cargoSpace=			"25000"
 			thrust=				"50000"
-			maneuver=			"16"
 			maxSpeed=			"6"
 
 			cyberDefenseLevel=	"8"
@@ -1811,6 +1814,11 @@
 
 			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2"
+			rotationAccel=		"0.25"
+			/>
 
 		<Items>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>

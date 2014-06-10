@@ -17,7 +17,6 @@
 			mass=				"100"
 			cargoSpace=			"5"
 			thrustRatio=		"4"
-			maneuver=			"2"
 			maxSpeed=			"16"
 
 			leavesWreck=		"15"
@@ -33,6 +32,11 @@
 		<Devices>
 			<Device deviceID="&itUrakMassDriver;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<Items>
 		</Items>
