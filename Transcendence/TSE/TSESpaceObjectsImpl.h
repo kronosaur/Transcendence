@@ -377,6 +377,7 @@ class CMissile : public CSpaceObject
 		virtual CString GetName (DWORD *retdwFlags = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CMissile"); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return (m_pDesc->GetPassthrough() > 0 ? CSystem::layerEffects : CSystem::layerStations); }
+		virtual ICCItem *GetProperty (const CString &sName);
 		virtual int GetRotation (void) const { return m_iRotation; }
 		virtual CSpaceObject *GetSecondarySource (void) { return m_Source.GetSecondaryObj(); }
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
@@ -386,6 +387,7 @@ class CMissile : public CSpaceObject
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
+		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 
 	protected:
 

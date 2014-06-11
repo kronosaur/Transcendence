@@ -4,10 +4,12 @@
 
 #include "PreComp.h"
 
-#define TRAIL_COUNT							4
-#define MAX_TARGET_RANGE					(24.0 * LIGHT_SECOND)
+#define TRAIL_COUNT								4
+#define MAX_TARGET_RANGE						(24.0 * LIGHT_SECOND)
 
-const DWORD VAPOR_TRAIL_OPACITY =			80;
+#define PROPERTY_ROTATION						CONSTLIT("rotation")
+
+const DWORD VAPOR_TRAIL_OPACITY =				80;
 
 static CObjectClass<CMissile>g_Class(OBJID_CMISSILE, NULL);
 
@@ -509,6 +511,22 @@ CString CMissile::GetName (DWORD *retdwFlags)
 		*retdwFlags = nounNoArticle;
 
 	return strPatternSubst(CONSTLIT("%s damage"), GetDamageShortName(m_pDesc->m_Damage.GetDamageType()));
+	}
+
+ICCItem *CMissile::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_ROTATION))
+		return CC.CreateInteger(GetRotation());
+
+	else
+		return CSpaceObject::GetProperty(sName);
 	}
 
 int CMissile::GetStealth (void) const
@@ -1320,4 +1338,22 @@ bool CMissile::SetMissileFade (void)
 	m_iHitDir = iFadeLife;
 
 	return true;
+	}
+
+bool CMissile::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Sets an object property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_ROTATION))
+		{
+		m_iRotation = AngleMod(pValue->GetIntegerValue());
+		return true;
+		}
+	else
+		return CSpaceObject::SetProperty(sName, pValue, retsError);
 	}
