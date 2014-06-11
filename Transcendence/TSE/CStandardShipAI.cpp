@@ -2234,6 +2234,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				//	our ancestor class).
 
 				case IShipController::orderLoot:
+				case IShipController::orderAttackArea:
 					break;
 
 				//	In these cases we avenge the target
