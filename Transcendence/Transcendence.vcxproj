@@ -594,7 +594,9 @@
     <None Include="Game\Source\CentauriWarlords.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\CharonFortress.xml" />
+    <None Include="Game\Source\CharonFortress.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CharonPirates.xml" />
     <None Include="Game\Source\Code.xml">
       <SubType>Designer</SubType>

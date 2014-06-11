@@ -28,12 +28,12 @@ int CIntegralRotation::CalcFinalRotationFrame (const CIntegralRotationDesc &Desc
 	int iRotationFrame = m_iRotationFrame;
 	int iRotationSpeed = m_iRotationSpeed;
 
-	while (iRotationSpeed > m_iRotationAccel || iRotationSpeed < -m_iRotationAccel)
+	while (iRotationSpeed > m_iRotationAccelStop || iRotationSpeed < -m_iRotationAccelStop)
 		{
 		if (iRotationSpeed > 0)
-			iRotationSpeed = Max(0, iRotationSpeed - m_iRotationAccel);
+			iRotationSpeed = Max(0, iRotationSpeed - m_iRotationAccelStop);
 		else
-			iRotationSpeed = Min(0, iRotationSpeed + m_iRotationAccel);
+			iRotationSpeed = Min(0, iRotationSpeed + m_iRotationAccelStop);
 
 		if (iRotationSpeed != 0)
 			{
@@ -108,6 +108,7 @@ void CIntegralRotation::Init (const CIntegralRotationDesc &Desc, int iRotationAn
 
 	m_iMaxRotationRate = Desc.GetMaxRotationSpeed();
 	m_iRotationAccel = Desc.GetRotationAccel();
+	m_iRotationAccelStop = Desc.GetRotationAccelStop();
 
 	if (iRotationAngle != -1)
 		SetRotationAngle(Desc, iRotationAngle);
@@ -165,12 +166,12 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 
 				if (m_iRotationSpeed > 0)
 					{
-					m_iRotationSpeed = Max(0, m_iRotationSpeed - m_iRotationAccel);
+					m_iRotationSpeed = Max(0, m_iRotationSpeed - m_iRotationAccelStop);
 					m_iLastManeuver = RotateLeft;
 					}
 				else
 					{
-					m_iRotationSpeed = Min(0, m_iRotationSpeed + m_iRotationAccel);
+					m_iRotationSpeed = Min(0, m_iRotationSpeed + m_iRotationAccelStop);
 					m_iLastManeuver = RotateRight;
 					}
 
@@ -250,6 +251,7 @@ void CIntegralRotation::UpdateAccel (const CIntegralRotationDesc &Desc, Metric r
 
 		Metric rRatio = 1.0f / Min(MAX_INERTIA_RATIO, (1.0f + (rExtraMass / rHullMass)));
 		m_iRotationAccel = Max(1, (int)mathRound(rRatio * Desc.GetRotationAccel()));
+		m_iRotationAccelStop = Max(1, (int)mathRound(rRatio * Desc.GetRotationAccelStop()));
 		m_iMaxRotationRate = Max(1, (int)mathRound(pow(rRatio, 0.3) * Desc.GetMaxRotationSpeed()));
 		}
 	}

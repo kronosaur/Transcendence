@@ -16,6 +16,7 @@
 #define POS_Z_ATTRIB							CONSTLIT("posZ")
 #define ROTATION_ATTRIB							CONSTLIT("rotation")
 #define ROTATION_ACCEL_ATTRIB					CONSTLIT("rotationAccel")
+#define ROTATION_STOP_ACCEL_ATTRIB				CONSTLIT("rotationStopAccel")
 #define ROTATION_COUNT_ATTRIB					CONSTLIT("rotationCount")
 #define THRUST_EFFECT_ATTRIB					CONSTLIT("thrustEffect")
 
@@ -142,6 +143,7 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 		//	Also convert rotation acceleration
 
 		m_rAccelPerTick = pManeuver->GetAttributeDoubleBounded(ROTATION_ACCEL_ATTRIB, 0.01, -1.0, m_rDegreesPerTick);
+		m_rAccelPerTickStop = pManeuver->GetAttributeDoubleBounded(ROTATION_STOP_ACCEL_ATTRIB, 0.01, -1.0, m_rAccelPerTick);
 		}
 
 	//	Otherwise we look for attributes on the root (this is backwards compatible
@@ -166,6 +168,7 @@ ALERROR CIntegralRotationDesc::InitFromXML (SDesignLoadCtx &Ctx, const CString &
 		//	Default acceleration is equal to rotation rate
 
 		m_rAccelPerTick = m_rDegreesPerTick;
+		m_rAccelPerTickStop = m_rDegreesPerTick;
 		}
 
 	return NOERROR;
@@ -187,6 +190,7 @@ void CIntegralRotationDesc::InitRotationCount (int iCount)
 		{
 		m_rDegreesPerTick = (STD_SECONDS_PER_UPDATE * 360.0) / (iCount * m_iManeuverability);
 		m_rAccelPerTick = m_rDegreesPerTick;
+		m_rAccelPerTickStop = m_rDegreesPerTick;
 		}
 
 	//	Initialize count
@@ -198,6 +202,7 @@ void CIntegralRotationDesc::InitRotationCount (int iCount)
 		{
 		m_iMaxRotationRate = Max(1, mathRound(ROTATION_FRACTION * m_rDegreesPerTick * m_iCount / 360.0));
 		m_iRotationAccel = Max(1, mathRound(ROTATION_FRACTION * m_rAccelPerTick * m_iCount / 360.0));
+		m_iRotationAccelStop = Max(1, mathRound(ROTATION_FRACTION * m_rAccelPerTickStop * m_iCount / 360.0));
 
 		Metric rFrameAngle = 360.0 / m_iCount;
 		m_Rotations.InsertEmpty(m_iCount);
