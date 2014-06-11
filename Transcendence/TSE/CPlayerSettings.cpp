@@ -283,38 +283,11 @@ int CPlayerSettings::GetArmorSegment (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 
 	{
 	//	For API versions 21 and higher, we figure out the segment version based
-	//	on either an explicit attribute or on the name.
+	//	on an explicit attribute.
 
 	if (Ctx.GetAPIVersion() >= 21)
 		{
 		int iSegment = pDesc->GetAttributeIntegerBounded(SEGMENT_ATTRIB, 0, -1, -1);
-
-		//	If we don't have an explicit segment, then see if we can use the name
-		//	as a value.
-
-		if (iSegment == -1)
-			{
-			CString sName = pDesc->GetAttribute(NAME_ATTRIB);
-			if (strEquals(sName, SEGMENT_AFT))
-				iSegment = pClass->GetHullSectionAtAngle(180);
-			else if (strEquals(sName, SEGMENT_FORWARD))
-				iSegment = pClass->GetHullSectionAtAngle(0);
-			else if (strEquals(sName, SEGMENT_PORT))
-				iSegment = pClass->GetHullSectionAtAngle(90);
-			else if (strEquals(sName, SEGMENT_PORT))
-				iSegment = pClass->GetHullSectionAtAngle(270);
-			else if (strEquals(sName, SEGMENT_AFT_PORT))
-				iSegment = pClass->GetHullSectionAtAngle(150);
-			else if (strEquals(sName, SEGMENT_AFT_STARBOARD))
-				iSegment = pClass->GetHullSectionAtAngle(210);
-			else if (strEquals(sName, SEGMENT_FORE_PORT))
-				iSegment = pClass->GetHullSectionAtAngle(30);
-			else if (strEquals(sName, SEGMENT_FORE_STARBOARD))
-				iSegment = pClass->GetHullSectionAtAngle(330);
-			}
-
-		//	If we still can't find the segment, then do it based on order
-
 		return (iSegment != -1 ? iSegment : m_ArmorDesc.Segments.GetCount());
 		}
 
