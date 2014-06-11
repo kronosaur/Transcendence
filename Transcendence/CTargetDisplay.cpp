@@ -269,6 +269,22 @@ void CTargetDisplay::Update (void)
 			Ctx.fNoSelection = true;
 
 			pTarget->Paint(m_Buffer, TARGET_IMAGE_X, TARGET_IMAGE_Y, Ctx);
+
+			//	Erase the area outside the target pane
+
+			if (pDisplayDesc)
+				{
+				const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
+
+				m_Buffer.ClearMaskBlt(rcImage.left, 
+						rcImage.top, 
+						RectWidth(rcImage), 
+						RectHeight(rcImage), 
+						pDisplayDesc->Image.GetImage(NULL_STR),
+						0,
+						0,
+						DEFAULT_TRANSPARENT_COLOR);
+				}
 			}
 
 		//	Paint the name of the target

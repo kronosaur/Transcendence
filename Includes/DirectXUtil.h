@@ -245,6 +245,7 @@ class CG16bitImage : public CObject
 		void ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, DWORD dwOpacity, const CG16bitImage &Source, int xDest, int yDest);
 		void CopyAlpha (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Soruce, int xDest, int yDest);
 		ALERROR CopyToClipboard (void);
+		void ClearMaskBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest, WORD wColor = DEFAULT_TRANSPARENT_COLOR);
 		void DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker);
 		inline void DrawLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor) { BresenhamLineAA(x1, y1, x2, y2, iWidth, wColor); }
 		void DrawLineProc (SDrawLineCtx *pCtx, DRAWLINEPROC pfProc);

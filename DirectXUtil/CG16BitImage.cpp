@@ -1230,6 +1230,113 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 		}
 	}
 
+void CG16bitImage::ClearMaskBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest, WORD wColor)
+
+//	ClearMaskBlt
+//
+//	Blts all the transparent parts of Source with the given color.
+
+	{
+	//	Deal with sprite sources
+
+	if (Source.m_pSprite)
+		{
+		//	LATER:
+		ASSERT(false);
+		return;
+		}
+
+	//	Make sure we're in bounds
+
+	if (!AdjustCoords(&xSrc, &ySrc, Source.m_cxWidth, Source.m_cyHeight, 
+			&xDest, &yDest,
+			&cxWidth, &cyHeight))
+		return;
+
+	WORD *pSrcRow = Source.GetPixel(Source.GetRowStart(ySrc), xSrc);
+	WORD *pSrcRowEnd = Source.GetPixel(Source.GetRowStart(ySrc + cyHeight), xSrc);
+	WORD *pDestRow = GetPixel(GetRowStart(yDest), xDest);
+
+	//	If we've got an alpha mask then blt using the transparency
+	//	information.
+
+	if (Source.m_pAlpha)
+		{
+		BYTE *pAlphaSrcRow = Source.GetAlphaValue(xSrc, ySrc);
+
+		while (pSrcRow < pSrcRowEnd)
+			{
+			BYTE *pAlphaPos = pAlphaSrcRow;
+			WORD *pSrcPos = pSrcRow;
+			WORD *pSrcPosEnd = pSrcRow + cxWidth;
+			WORD *pDestPos = pDestRow;
+
+			while (pSrcPos < pSrcPosEnd)
+				if (*pAlphaPos == 0)
+					{
+					*pDestPos++ = wColor;
+					pSrcPos++;
+					pAlphaPos++;
+					}
+				else if (*pAlphaPos == 255)
+					{
+					pDestPos++;
+					pSrcPos++;
+					pAlphaPos++;
+					}
+				else
+					{
+					DWORD pxSource = wColor;
+					DWORD pxDest = *pDestPos;
+					DWORD dwTrans = 255 - *pAlphaPos;
+					DWORD dwInvTrans = (((DWORD)(dwTrans)) ^ 0xff);
+
+					DWORD dwRedGreenS = ((pxSource << 8) & 0x00f80000) | (pxSource & 0x000007e0);
+					DWORD dwRedGreen = (((((pxDest << 8) & 0x00f80000) | (pxDest & 0x000007e0)) * dwInvTrans) >> 8) + dwRedGreenS;
+					DWORD dwBlue = (((pxDest & 0x1f) * dwInvTrans) >> 8) + (pxSource & 0x1f);
+
+					*pDestPos++ = (WORD)(((dwRedGreen & 0x00f80000) >> 8) | (dwRedGreen & 0x000007e0) | dwBlue);
+
+					pSrcPos++;
+					pAlphaPos++;
+					}
+
+			pSrcRow = Source.NextRow(pSrcRow);
+			pDestRow = NextRow(pDestRow);
+			pAlphaSrcRow = Source.NextAlphaRow(pAlphaSrcRow);
+			}
+		}
+
+	//	If we've got constant transparency then use the alpha tables
+
+	else
+		{
+		WORD wBackColor = Source.m_wBackColor;
+
+		while (pSrcRow < pSrcRowEnd)
+			{
+			WORD *pSrcPos = pSrcRow;
+			WORD *pSrcPosEnd = pSrcRow + cxWidth;
+			WORD *pDestPos = pDestRow;
+
+			while (pSrcPos < pSrcPosEnd)
+				if (*pSrcPos == wBackColor)
+					{
+					*pDestPos++ = wColor;
+					pSrcPos++;
+					}
+				else
+					{
+					pDestPos++;
+					pSrcPos++;
+					}
+
+			pSrcRow = Source.NextRow(pSrcRow);
+			pDestRow = NextRow(pDestRow);
+			}
+		}
+	}
+
 void CG16bitImage::ConvertToSprite (void)
 
 //	ConvertToSprite
