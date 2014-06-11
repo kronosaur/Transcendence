@@ -252,7 +252,7 @@
 				"Mission complete!"
 			</Text>
 			<Text id="AchievementDesc">
-				(cat "Destroyed Benedict's autons in " (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display) ".")
+				(cat "Destroyed Benedict's autons in " (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display))
 			</Text>
 		</Language>
 	</MissionType>

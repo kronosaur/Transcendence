@@ -101,19 +101,46 @@
 			</OnSetPlayerTarget>
 			
 			<OnCompleted>
-				(block Nil
+				(block (achievementText)
+				
 					;	Handle result and set Benedict's relationship to the
 					;	player based on it.
 					
 					(switch
+					
+						;	Player succeeded in defending the freighter
+						
 						(eq aReason 'success)
-							(rpgCharacterChangeRel &unidBenedict; 'aid)
-							
-						(eq aReason 'failure)
-							(if (msnGetData gSource 'playerDestroyedFreighter)
-								(rpgCharacterChangeRel &unidBenedict; 'betrayal)
-								(rpgCharacterChangeRel &unidBenedict; 'failure)
+							(block Nil
+								(rpgCharacterChangeRel &unidBenedict; 'aid)
+								(setq achievementText 'AchievementSuccess)
 								)
+								
+						;	Player deliberately destroyed freighter
+						
+						(msnGetData gSource 'playerDestroyedFreighter)
+							(block Nil
+								(rpgCharacterChangeRel &unidBenedict; 'betrayal)
+								(setq achievementText 'AchievementBetrayal)
+								)
+								
+						;	Player failed to defend freighter
+
+						(block Nil
+							(rpgCharacterChangeRel &unidBenedict; 'failure)
+							(setq achievementText 'AchievementFailure)
+							)
+						)
+						
+					;	Achievement
+					
+					(typSetData &msBenedictAndFiona; 'achievements
+						(list
+							(list (msnTranslate gSource achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
 						)
 						
 					;	Re-enable hints.
@@ -212,15 +239,19 @@
 							)
 					)
 			</OnObjDocked>
+			
+			<GetGlobalAchievements>
+				(typGetData &msBenedictAndFiona; 'achievements)
+			</GetGlobalAchievements>
 		</Events>
 		
 		<Language>
 			<Text id="Name">
-				"Defend Returning Freighter"
+				"Defend Fiona's Freighter"
 			</Text>
 			<Text id="Summary">
 				(cat
-					"Meet the freighter at the stargate and defend it back to the station.\n\n"
+					"Meet the Fiona's freighter at the stargate and defend it back to the station.\n\n"
 					
 					"System: Eridani\n"
 					"Payment: None"
@@ -270,7 +301,7 @@
 							"Benedict looks across the docking bay at the rejuv tank "
 							"and for the first time you see tears in his eyes.\n\n"
 							
-							"\"I should have never let her go,\" he says, mostly to himself.\n\n"
+							"\"That's Fiona. I should have never let her go,\" he says, mostly to himself.\n\n"
 							
 							"\"Penitents attacked her exploration ship, just as they "
 							"were about to make a critical discovery. Now their data "
@@ -353,6 +384,16 @@
 					
 					"Benedict says no more."
 					)
+			</Text>
+			
+			<Text id="AchievementSuccess">
+				"Defended Fiona's freighter from Penitents"
+			</Text>
+			<Text id="AchievementFailure">
+				"Failed to defend Fiona's freighter from Penitents"
+			</Text>
+			<Text id="AchievementBetrayal">
+				"Destroyed Fiona's freighter"
 			</Text>
 		</Language>
 	</MissionType>
