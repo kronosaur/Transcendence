@@ -48,15 +48,7 @@
 				(block (
 					(stargateObj (sysFindObject nil "G:Outbound; N"))
 					(timeToGate (sysCalcTravelTime (objGetDistance gPlayerShip stargateObj) (shpGetMaxSpeed gPlayerShip)))
-					(specialWeapon (itmCreate &itSmartCannon; 1))
-					(specialAmmo (itmCreate &itSmartCannonShell; 300))
 					)
-
-					;	Give the player a better weapon
-
-					(objAddItem gPlayerShip specialWeapon)
-					(objAddItem gPlayerShip specialAmmo)
-					(shpInstallDevice gPlayerShip specialWeapon)
 
 					;	Set a timer for when the freighter comes in
 
