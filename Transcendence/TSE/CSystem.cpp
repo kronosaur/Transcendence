@@ -2878,7 +2878,9 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
-		if (pObj)
+		if (pObj 
+				&& !pObj->IsVirtual() 
+				&& pObj != pPlayerCenter)
 			{
 			Metric rParallaxDist;
 
@@ -2903,23 +2905,34 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 						m_ForegroundObjs.FastAdd(pObj);
 					}
 				}
-			else if (pObj->InBox(Ctx.vUR, Ctx.vLL) && !pObj->IsVirtual())
+			else
 				{
-				if (pObj != pPlayerCenter)
+				bool bInViewport = pObj->InBox(Ctx.vUR, Ctx.vLL);
+
+				//	If we're in the viewport, then we need to paint on the main screen
+
+				if (bInViewport)
 					{
 					m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
 					pObj->SetPaintNeeded();
 					}
-				}
-			else if ((Ctx.fEnhancedDisplay
+
+				//	See if we need to paint a marker. Note that sometimes we end up 
+				//	painting both because we might be in-bounds (because of effects)
+				//	but still off-screen.
+
+				bool bMarker = pObj->IsPlayerTarget()
+						|| pObj->IsPlayerDestination()
+						|| pObj->IsHighlighted()
+						|| (Ctx.fEnhancedDisplay
 							&& (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
 							&& pObj->PosInBox(Ctx.vEnhancedUR, Ctx.vEnhancedLL)
-							&& !pObj->IsInactive()
-							&& !pObj->IsVirtual())
-						|| pObj->IsPlayerTarget()
-						|| pObj->IsPlayerDestination()
-						|| pObj->IsHighlighted())
-				m_EnhancedDisplayObjs.FastAdd(pObj);
+							&& !pObj->IsInactive());
+
+				if (bMarker
+						&& (!bInViewport || !pObj->HitSizeInBox(Ctx.vUR, Ctx.vLL)))
+					m_EnhancedDisplayObjs.FastAdd(pObj);
+				}
 			}
 		}
 
