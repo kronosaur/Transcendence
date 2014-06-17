@@ -352,12 +352,6 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 
 	for (i = 0; i < OPTIONS_COUNT; i++)
 		{
-		//	Don't bother saving if our current value is the same 
-		//	as the default value
-
-		if (strEquals(m_Options[i].sSettingsValue, CString(g_OptionData[i].pszDefaultValue, -1, true)))
-			continue;
-
 		//	Compose option element and write
 
 		sData = strPatternSubst(CONSTLIT("\t<Option name=\"%s\"\tvalue=\"%s\"/>\r\n"),
