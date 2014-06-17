@@ -285,6 +285,17 @@ void CTargetDisplay::Update (void)
 						0,
 						DEFAULT_TRANSPARENT_COLOR);
 				}
+			else if (m_pBackground)
+				{
+				m_Buffer.ClearMaskBlt(0, 
+						0, 
+						DISPLAY_WIDTH, 
+						DISPLAY_HEIGHT, 
+						*m_pBackground,
+						0,
+						0,
+						DEFAULT_TRANSPARENT_COLOR);
+				}
 			}
 
 		//	Paint the name of the target
