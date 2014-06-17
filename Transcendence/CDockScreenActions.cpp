@@ -609,7 +609,7 @@ void CDockScreenActions::SetLabel (int iAction, const CString &sLabelDesc, const
 	SActionDesc *pAction = &m_Actions[iAction];
 
 	if (!sLabelDesc.IsBlank())
-		SetLabelDesc(pAction, sLabelDesc);
+		SetLabelDesc(pAction, sLabelDesc, false);
 
 	if (!sKey.IsBlank())
 		pAction->sKey = sKey;
@@ -621,7 +621,7 @@ void CDockScreenActions::SetLabel (int iAction, const CString &sLabelDesc, const
 		}
 	}
 
-void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc)
+void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial)
 
 //	SetLabelDesc
 //
@@ -642,13 +642,16 @@ void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLab
 	pAction->sLabel = sLabel;
 	pAction->sKey = sKey;
 
-	pAction->bCancel = false;
-	pAction->bDefault = false;
-	pAction->bNext = false;
-	pAction->bPrev = false;
+	if (bOverrideSpecial || Special.GetCount() > 0)
+		{
+		pAction->bCancel = false;
+		pAction->bDefault = false;
+		pAction->bNext = false;
+		pAction->bPrev = false;
 
-	for (i = 0; i < Special.GetCount(); i++)
-		SetSpecial(pAction, Special[i], true);
+		for (i = 0; i < Special.GetCount(); i++)
+			SetSpecial(pAction, Special[i], true);
+		}
 	}
 
 void CDockScreenActions::SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled)

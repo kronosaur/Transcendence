@@ -813,7 +813,7 @@ class CDockScreenActions
 
 		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
 		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
-		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc);
+		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
 		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
 
 		TArray<SActionDesc> m_Actions;
