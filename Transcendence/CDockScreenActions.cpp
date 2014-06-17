@@ -501,6 +501,7 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 //
 //	Action:		This is a normal label
 //	[A]ction:	A is the special key
+//	[Enter]:	Treated as a normal label because key is > 1 character
 //	*Action:	This is the default action
 //	^Action:	This is the cancel action
 //	>Action:	This is the next key
@@ -546,7 +547,7 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 
 	while (*pPos != '\0')
 		{
-		if (*pPos == '[')
+		if (pPos[0] == '[' && pPos[1] != '\0' && pPos[2] == ']')
 			{
 			if (pStart)
 				sLabel.Append(CString(pStart, (int)(pPos - pStart)));
