@@ -14,14 +14,15 @@
 		attackFirstStation: Attack an enemy station.
 		attackHiddenEnemy: Attack hidden enemy station.
 		explore: Explore worlds and asteroid fields in the system.
+		exploreSystem: Explore all friendly stations.
 		installDevice: Install a device.
-		installSmartCannon: Install SmartCannon
+		installSmartCannon: Install SmartCannon.
 		loot: Loot a station.
 		lootHiddenEnemy: Loot hidden enemy.
 		nothing: Nothing more to learn.
 		sellLoot: Sell loot at a station.
 		visitHabitat: Visit Commonwealth habitat and get a mission from them.
-		useMap: Use the system map.
+		waitForMission: Wait for other misison to be complete
 		
 		fionaMission: Next mission
 		
@@ -36,7 +37,7 @@
 		completed successfully.
 		
 	trainingHabitatMission: If True, already assigned.
-
+	
 	======================================================================== -->
 	
 	<MissionType UNID="&msBenedictTraining;"
@@ -120,6 +121,8 @@
 					targetObj
 					fionaMission
 					ownerObj
+					unexploredObjs
+					totalObjs
 					)
 				
 					;	If we don't have a current state then figure out what mission we 
@@ -128,6 +131,11 @@
 					(if (not state)
 						(block Nil
 							(switch
+							
+								;	Make sure we're not in the middle of some other mission
+								
+								(shpGetOrder gPlayerShip)
+									(setq state 'waitForMission)
 							
 								;	If we've never destroyed an enemy station, then 
 								;	send the player out to explore.
@@ -160,11 +168,6 @@
 										(setq state 'explore)
 										)
 								
-								;	If we've never use the map, tell the player about it.
-									
-								(plyIsMessageEnabled gPlayer 'mapHint)
-									(setq state 'useMap)
-									
 								;	If we've never looted a station, then tell the player
 								;	how to do that.
 						
@@ -190,19 +193,28 @@
 										(or
 											(setq foundItem (@
 												(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
-													(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+													(and 
+														(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
 													)
 												0
 												))
 											(setq foundItem (@
 												(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
-													(not (objGetProperty gPlayerShip 'selectedLauncher))
+													(and
+														(not (objGetProperty gPlayerShip 'selectedLauncher))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
 													)
 												0
 												))
 											(setq foundItem (@
 												(filter (objGetItems gPlayerShip "sUN") theItem 
-													(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+													(and
+														(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
 													)
 												0
 												))
@@ -227,7 +239,12 @@
 														(switch
 															(not (itmIsKnown theItem))
 																Nil
-
+																
+															(and (itmMatches theItem "ad L:2-25;")
+																	(@ (objCanInstallItem gPlayerShip theItem) 0)
+																	)
+																Nil
+																
 															(not (setq buyerObj 
 																	(map (sysFindObject gPlayerShip "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
 																		(objGetBuyPrice theObj theItem 'noDonations)
@@ -254,8 +271,6 @@
 										(setq state 'sellLoot)
 										)
 										
-								;	Send the player to explore all friendly stations (until they are all explored)
-								
 								;	If we're in Eridani and the player has destroyed fewer than 3 Centauri warlord
 								;	stations, then send the player out to destroy one.
 
@@ -269,6 +284,13 @@
 										(setq state 'attackCentauri)
 										)
 										
+								;	Send the player to explore all friendly stations (until they are all explored)
+								
+								(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
+										(not (objIsKnown theObj))
+										)
+									(setq state 'exploreSystem)
+									
 								;	Send the player to destroy the hidden station, if it's not yet destroyed
 								
 								(and (eq (sysGetNode) 'SE)
@@ -443,10 +465,12 @@
 								(setq taskDone True)
 								)
 								
-						;	Check to see if we've used the map
+						;	Check if we've explored everything
 						
-						(eq state 'useMap)
-							(if (not (plyIsMessageEnabled gPlayer 'mapHint))
+						(eq state 'exploreSystem)
+							(if (not (filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj
+									(not (objIsKnown theObj))
+									))
 								(setq taskDone True)
 								)
 								
@@ -488,6 +512,13 @@
 									(setq taskDone True)
 									)
 								)
+								
+						;	Mission done
+						
+						(eq state 'waitForMission)
+							(if (not (shpGetOrder gPlayerShip))
+								(setq taskDone True)
+								)
 						)
 						
 					;	If we completed a task, then set state
@@ -500,8 +531,18 @@
 							(msnSetData gSource 'taskCompleted state)
 							(msnSetData gSource 'state Nil)
 							
-							;	Dock at Sisters
+							;	Clear the target, if necessary
 							
+							(if (or (eq state 'loot)
+									(eq state 'installDevice)
+									(eq state 'installSmartCannon)
+									(eq state 'sellLoot)
+									)
+								(objClearShowAsDestination (objGetObjByID (msnGetData gSource 'targetID)))
+								)
+							
+							;	Dock at Sisters
+
 							(objSetShowAsDestination ownerObj (list 'showHighlight 'autoClearOnDock))
 							)
 						)
@@ -655,7 +696,7 @@
 									(cat
 										"\"There's " (objGetName targetObj 0x04) " at the edge of "
 										"the system. The Abbasid follow a false prophet and they have "
-										"no problems killing us if we get in their way."
+										"no problems killing us if we get in their way.\n\n"
 									
 										"\"I want you to go out there and destroy their station.\""
 										)
@@ -664,7 +705,7 @@
 									(cat
 										"\"There's " (objGetName targetObj 0x04) " at the edge of "
 										"the system. Anarchists are parasites on the Commonwealth. "
-										"They steal what we produce and give nothing back."
+										"They steal what we produce and give nothing back.\n\n"
 									
 										"\"I want you to go out there and smash them.\""
 										)
@@ -674,7 +715,7 @@
 										"\"There's " (objGetName targetObj 0x04) " at the edge of "
 										"the system. The Urak never recovered from the plague that "
 										"hit their colonies. Now they follow a military dictator "
-										"and fear all outsiders."
+										"and fear all outsiders.\n\n"
 									
 										"\"I want you to go out there and destroy their outpust.\""
 										)
@@ -738,6 +779,42 @@
 				(cat
 					"Use the [M] key to bring up a system map. Explore the star system "
 					"and destroy enemy stations.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="exploreSystem:Begin">
+				(block (
+					(unexploredObjs (count
+						(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
+							(not (objIsKnown theObj))
+							)
+						))
+					)
+					
+					(cat
+						"\"This system has many Commonwealth and Corporate stations "
+						"providing various services, from refueling to commodity trading.\n\n"
+						
+						"\"You have found all but " (if (eq unexploredObjs 1) "one friendly station " (cat unexploredObjs " friendly stations "))
+						"in the system. Search for " (if (eq unexploredObjs 1) "it" "them") " by visiting "
+						"the planets and asteroid fields in the star system. Use your map ([M] key) "
+						"to navigate.\""
+						)
+					)
+			</Text>
+			<Text id="exploreSystem:Debrief">
+				(cat
+					"\"You've found all the friendly stations in the system. Now that "
+					"you know what services each provide you can return to them when "
+					"needed.\""
+					)
+			</Text>
+			<Text id="exploreSystem:Summary">
+				(cat
+					"Use the [M] key to bring up a system map. Explore the planets and "
+					"asteroid fields of the system to find friendly stations.\n\n"
 					
 					"System: " (sysGetName) "\n"
 					"Payment: None"
@@ -941,35 +1018,6 @@
 						)
 					)
 			</Text>
-			<Text id="useMap:Begin">
-				(cat
-					"\"The [M] key will bring up a map of the entire star system.\n\n"
-					
-					"\"Visit planets and asteroid fields to look for stations. "
-					"Green stations are friendly; you can dock with them and see "
-					"what services they offer.\n\n"
-					
-					"\"Red stations are enemies. Kill them if you can; run if you can't.\""
-					)
-			</Text>
-			<Text id="useMap:Debrief">
-				(cat
-					"\"Domina's call is strong, but don't rush to the Core.\n\n"
-					
-					"\"I've seen dreadnoughts blast a warship into dust; "
-					"I've seen swarms of gunships preying on helpless freighters. "
-					"Take your time; build up your skills and weapons.\""
-					)
-			</Text>
-			<Text id="useMap:Summary">
-				(cat
-					"Use the [M] key to bring up a system map. Explore the star system "
-					"and destroy enemy stations.\n\n"
-					
-					"System: " (sysGetName) "\n"
-					"Payment: None"
-					)
-			</Text>
 			<Text id="visitHabitat:Begin">
 				(cat
 					"\"There's a Commonwealth habitat nearby that needs protection "
@@ -998,6 +1046,25 @@
 						"System: " (sysGetName) "\n"
 						"Payment: Unknown"
 						)
+					)
+			</Text>
+			<Text id="waitForMission:Begin">
+				(cat
+					"\"Looks like you're busy helping someone else. Go finish your task "
+					"and come back when you're done.\""
+					)
+			</Text>
+			<Text id="waitForMission:Debrief">
+				(cat
+					"\"Glad you were able to help others.\""
+					)
+			</Text>
+			<Text id="waitForMission:Summary">
+				(cat
+					"Finish your mission and then return to Benedict.\n\n"
+						
+					"System: " (sysGetName) "\n"
+					"Payment: Unknown"
 					)
 			</Text>
 			<Text id="SuccessDebrief">

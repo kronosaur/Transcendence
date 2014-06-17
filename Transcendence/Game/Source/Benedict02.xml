@@ -164,6 +164,11 @@
 				(block (
 					(stargateObj (objGetObjByID (msnGetData gSource 'stargateID)))
 					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(enemies (list
+						{	class:&scAtonement; }
+						{	class:&scRepentant; }
+						{	class:&scRepentant; }
+						))
 
 					freighterObj
 					)
@@ -179,9 +184,9 @@
 
 					;	Create the enemies and set them to attack the freigther
 
-					(for i 1 3
+					(enum enemies enemyDesc
 						(block (enemyObj)
-							(setq enemyObj (sysCreateShip &scAtonement; stargateObj &svCult;))
+							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svCult;))
 							(shpOrder enemyObj 'attack freighterObj)
 							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
 							(msnRegisterForEvents gSource freighterObj)
@@ -209,8 +214,22 @@
 							)
 
 					(eq (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
-						(block Nil
-							(msnIncData gSource 'attackersLeft -1)
+						(block (
+							(freighterObj (objGetObjByID (msnGetData gSource 'freighterID)))
+							attackersLeft
+							)
+							
+							(setq attackersLeft (msnIncData gSource 'attackersLeft -1))
+							
+							(switch
+								(not freighterObj)
+									Nil
+									
+								(eq attackersLeft 0)
+									(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:AllClear"))
+									
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:PenitentDestroyed"))
+								)
 							)
 					)
 			</OnObjDestroyed>
@@ -264,6 +283,23 @@
 					"\"What are you doing here? They need you out there!\""
 					)
 			</Text>
+			<Text id="Freighter:AllClear">
+				"We're all clear! Thanks for your help!"
+			</Text>
+			<Text id="Freighter:PenitentDestroyed">
+				(block (
+					(attackersLeft (@ (list "zero" "one" "two" "three" "four" "five") (msnGetData gSource 'attackersLeft)))
+					)
+					
+					(random (list
+						"Nice shooting!"
+						(cat (strCapitalize attackersLeft) " more to go!")
+						"Go with Oracus, Penitent!"
+						"Splash one Penitent!"
+						"That got him!"
+						))
+					)
+			</Text>
 			<Text id="SuccessDebrief">
 				(list
 					{	desc: (cat
@@ -312,15 +348,6 @@
 							"\"They've got my attention now.\""
 							)
 						}
-					{	desc: (cat
-							"\"But your task here is done. Your fate is to reach the Galactic "
-							"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
-							
-							"\"I have one more gift for you: I've installed a map computer "
-							"on your ship that will help you chart your course through the galaxy.\""
-							)
-						nextLabel: "\"Thank you!\""
-						}
 						
 					(block (
 						(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
@@ -329,7 +356,8 @@
 						(if korolovMsn
 							{
 							desc: (cat
-								"\"Remember what I've taught you and you'll be fine.\n\n"
+								"\"But your task here is done. Your fate is to reach the Galactic "
+								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
 								
 								"\"You've shown aptitude for defending ships; if you're interested "
 								"you can visit Korolov Shipping in the " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " system. "
@@ -341,6 +369,9 @@
 							
 							{
 							desc: (cat
+								"\"But your task here is done. Your fate is to reach the Galactic "
+								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
+								
 								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
 								)
 							}

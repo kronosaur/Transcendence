@@ -664,9 +664,6 @@
     <None Include="Game\Source\BenedictStoryArc.xml">
       <Filter>XML Files\Part I</Filter>
     </None>
-    <None Include="Game\Source\BenedictIntro.xml">
-      <Filter>XML Files\Part I</Filter>
-    </None>
     <None Include="Game\Source\Benedict00.xml">
       <Filter>XML Files\Part I</Filter>
     </None>

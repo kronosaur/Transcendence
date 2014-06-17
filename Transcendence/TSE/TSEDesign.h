@@ -2555,7 +2555,6 @@ class CPlayerSettings
 		inline const CString &GetStartingNode (void) const { return m_sStartNode; }
 		inline const CString &GetStartingPos (void) const { return m_sStartPos; }
 		inline const SWeaponImageDesc *GetWeaponDesc (void) const { return (m_fHasWeaponDesc ? &m_WeaponDesc : m_pWeaponDescInherited); }
-		inline bool HasAutopilot (void) const { return (m_fAutopilot ? true : false); }
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc);
 		inline bool IsDebugOnly (void) const { return (m_fDebug ? true : false); }
 		inline bool IsIncludedInAllAdventures (void) const { return (m_fIncludeInAllAdventures ? true : false); }
@@ -2601,12 +2600,12 @@ class CPlayerSettings
 		//	Flags
 		DWORD m_fInitialClass:1;					//	Use ship class at game start
 		DWORD m_fDebug:1;							//	Debug only
-		DWORD m_fAutopilot:1;						//	Add autopilot to this class
 		DWORD m_fHasArmorDesc:1;					//	TRUE if m_pArmorDesc initialized
 		DWORD m_fHasReactorDesc:1;					//	TRUE if m_ReactorDesc initialized
 		DWORD m_fHasShieldDesc:1;					//	TRUE if m_ShieldDesc initialized
 		DWORD m_fIncludeInAllAdventures:1;			//	TRUE if we should always include this ship
 		DWORD m_fHasWeaponDesc:1;					//	TRUE if m_WeaponDesc initialized
+		DWORD m_fSpare8:1;
 
 		DWORD m_dwSpare:24;
 	};

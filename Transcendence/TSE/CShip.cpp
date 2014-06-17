@@ -706,10 +706,7 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 		//	Fire CanBeInstalled to check for custom conditions
 
 		if (!Item.FireCanBeInstalled(this, &sResult))
-			{
-			bCanInstall = false;
 			iResult = insCannotInstall;
-			}
 
 		//	See if the armor is too heavy
 
@@ -719,10 +716,7 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 		//	Ask the object if we can install this item
 
 		else if (!FireCanInstallItem(Item, iSlot, &sResult))
-			{
-			bCanInstall = false;
 			iResult = insCannotInstall;
-			}
 
 		//	Otherwise, we're OK
 
@@ -746,18 +740,12 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 		//	Fire CanBeInstalled to check for custom conditions
 
 		if (!Item.FireCanBeInstalled(this, &sResult))
-			{
-			bCanInstall = false;
 			iResult = insCannotInstall;
-			}
 
 		//	Ask the object if we can install this item
 
 		else if (!FireCanInstallItem(Item, -1, &sResult))
-			{
-			bCanInstall = false;
 			iResult = insCannotInstall;
-			}
 
 		//	See if the ship's engine core is powerful enough
 
@@ -781,6 +769,7 @@ bool CShip::CanInstallItem (const CItem &Item, int iSlot, InstallItemResults *re
 			iResult = CalcDeviceToReplace(Item, &iSlot);
 			switch (iResult)
 				{
+				case insOK:
 				case insReplaceCargo:
 				case insReplaceDrive:
 				case insReplaceLauncher:
@@ -1050,13 +1039,14 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	if (pClass->IsVirtual())
 		pShip->SetCannotBeHit();
 
-	//	Add some built-in stuff for player ships
+	//	Add some built-in stuff for player ships. These can be overridden by
+	//	the <Equipment> element.
 
 	const CPlayerSettings *pPlayerSettings = pClass->GetPlayerSettings();
 	if (pPlayerSettings)
 		{
-		if (pPlayerSettings->HasAutopilot())
-			pShip->SetAbility(ablAutopilot, ablInstall, -1, 0);
+		pShip->SetAbility(ablAutopilot, ablInstall, -1, 0);
+		pShip->SetAbility(ablGalacticMap, ablInstall, -1, 0);
 		}
 
 	//	Create items

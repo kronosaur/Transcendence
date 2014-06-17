@@ -107,7 +107,6 @@ CPlayerSettings &CPlayerSettings::operator= (const CPlayerSettings &Source)
 
 	m_fInitialClass = Source.m_fInitialClass;					//	Use ship class at game start
 	m_fDebug = Source.m_fDebug;
-	m_fAutopilot = Source.m_fAutopilot;
 	m_fIncludeInAllAdventures = Source.m_fIncludeInAllAdventures;
 
 	//	Don
@@ -328,14 +327,6 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 	m_fHasReactorDesc = false;
 	m_fHasShieldDesc = false;
 	m_fHasWeaponDesc = false;
-
-	//	Some ship capabilities
-
-	bool bValue;
-	if (pDesc->FindAttributeBool(AUTOPILOT_ATTRIB, &bValue))
-		m_fAutopilot = bValue;
-	else
-		m_fAutopilot = true;
 
 	//	Load some miscellaneous data
 

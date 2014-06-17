@@ -785,29 +785,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(shpCancelOrders ship)",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
-		{	"shpCanInstallArmor",			fnShipSet,			FN_SHIP_CAN_INSTALL_ARMOR,
-			"(shpCanInstallArmor ship item [armorSeg]) -> result",
-		//			0 = OK
-		//			1 = Armor too heavy
-		//			string = custom fail reason
-			"iv*",	0,	},
-
-		{	"shpCanInstallDevice",			fnShipSet,			FN_SHIP_CAN_INSTALL_DEVICE,
-			"(shpCanInstallDevice ship item) -> result",
-		//			0 = OK
-		//			1 = Not a device
-		//			2 = No slots
-		//			3 = Already installed
-		//			4 = Shields already installed
-		//			5 = Drive already installed
-		//			6 = Missile launcher already installed
-		//			7 = Reactor too weak
-		//			8 = Cargo expansion already installed
-		//			9 = Reactor already installed
-		//			10 = Cargo expansion does not fit
-		//			string = Custom fail reason
-			"iv",	0,	},
-
 		{	"shpCanRemoveDevice",			fnShipSet,			FN_SHIP_CAN_REMOVE_DEVICE,
 			"(shpCanRemoveDevice ship item) -> result",
 		//			0 = OK
@@ -2421,6 +2398,14 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
+
+		{	"shpCanInstallArmor",			fnShipSet,			FN_SHIP_CAN_INSTALL_ARMOR,
+			"DEPRECATED: Use objCanInstallItem instead.",
+			"iv*",	0,	},
+
+		{	"shpCanInstallDevice",			fnShipSet,			FN_SHIP_CAN_INSTALL_DEVICE,
+			"DEPRECATED: Use objCanInstallItem instead.",
+			"iv",	0,	},
 
 		{	"shpSetPlayerWingman",			fnShipSet,		FN_SHIP_PLAYER_WINGMAN,
 			"DEPRECATED: Use (objSetProperty ship 'playerWingman ...) instead.",

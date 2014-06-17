@@ -749,9 +749,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\BenedictIntro.xml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Game\Source\BenedictStoryArc.xml">
       <SubType>Designer</SubType>
     </None>
@@ -762,7 +759,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict02.xml" />
+    <None Include="Game\Source\Benedict02.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Source\Benedict03.xml" />
