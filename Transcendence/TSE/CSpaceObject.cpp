@@ -5424,7 +5424,7 @@ void CSpaceObject::PaintTargetHighlight (CG16bitImage &Dest, int x, int y, SView
 
 	{
 	int iTick = g_pUniverse->GetPaintTick();
-	int iRadius = (int)(GetBoundsRadius() / g_KlicksPerPixel);
+	int iRadius = (int)(0.5 * GetHitSize() / g_KlicksPerPixel);
 	int iRingSpacing = 10;
 	WORD wColor = GetSymbolColor();
 
