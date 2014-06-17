@@ -903,8 +903,9 @@ class CShip : public CSpaceObject
 		inline int GetRotationRange (void) { return m_pClass->GetRotationRange(); }
 		inline EManeuverTypes GetManeuverToFace (int iAngle) const { return m_Rotation.GetManeuverToFace(m_pClass->GetRotationDesc(), iAngle); }
 		inline Metric GetThrust (void) { return (IsMainDriveDamaged() ? (m_iThrust / 2) : m_iThrust); }
-		inline bool IsMainDriveDamaged (void) const { return m_iDriveDamagedTimer != 0; }
 		inline bool IsInertialess (void) { return (m_pDriveDesc->fInertialess ? true : false); }
+		inline bool IsMainDriveDamaged (void) const { return m_iDriveDamagedTimer != 0; }
+		bool IsPointingTo (int iAngle);
 		inline void SetMaxSpeedHalf (void) { m_fHalfSpeed = true; }
 		inline void ResetMaxSpeed (void) { m_fHalfSpeed = false; }
 

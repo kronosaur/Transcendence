@@ -3211,6 +3211,25 @@ bool CShip::IsPlayer (void) const
 	return m_pController->IsPlayer();
 	}
 
+bool CShip::IsPointingTo (int iAngle)
+
+//	IsPointingTo
+//
+//	Returns TRUE if our current rotation aligned with iAngle within the
+//	tolerance of our maneuvering system and rotation frame.
+
+	{
+	//	Compute the difference in angle
+
+	int iOffset = AngleOffset(GetRotation(), AlignToRotationAngle(iAngle));
+
+	//	Compute our tolerance. This is the smallest angle that we can turn by,
+	//	so if our offset is within this value, then we're OK.
+
+	int iMinAngle = (int)ceil(m_pClass->GetRotationDesc().GetRotationAccelPerTick());
+	return (iOffset <= iMinAngle);
+	}
+
 bool CShip::IsRadiationImmune (void)
 
 //	IsRadiationImmune

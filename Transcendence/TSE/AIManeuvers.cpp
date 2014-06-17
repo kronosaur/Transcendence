@@ -1346,7 +1346,7 @@ void CAIBehaviorCtx::ImplementFormationManeuver (CShip *pShip, const CVector vDe
 	//	See if we're in formation
 
 	if (retbInFormation)
-		*retbInFormation = ((pShip->GetRotation() == iDestFacing)
+		*retbInFormation = (pShip->IsPointingTo(iDestFacing)
 				&& (rDelta2 < MAX_IN_FORMATION_DELTA2)
 				&& (rDiff2 < MAX_DELTA_VEL2));
 	}
@@ -1475,15 +1475,14 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 
 	if (iDir != -1)
 		{
-		int iDesiredDir = pShip->AlignToRotationAngle(iDir);
 		int iCurrentDir = pShip->GetRotation();
 
 		//	If we're within a few degrees of where we want to be, then
 		//	don't bother changing
 
-		if (iDesiredDir != iCurrentDir)
+		if (!pShip->IsPointingTo(iDir))
 			{
-			SetManeuver(pShip->GetManeuverToFace(iDesiredDir));
+			SetManeuver(pShip->GetManeuverToFace(iDir));
 
 			//	If we're turning in a new direction now, then reset
 			//	our counter

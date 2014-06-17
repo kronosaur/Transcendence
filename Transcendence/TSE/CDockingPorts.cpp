@@ -716,16 +716,12 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 
 	CVector vDelta = vDest - pShip->GetPos();
 
-	//	Figure out if we're aligned
-
-	int iFinalRotation = pShip->AlignToRotationAngle(Port.iRotation);
-
 	//	If the docking object is within the appropriate threshold 
 	//	of the port, then complete the docking sequence.
 
 	Metric rDelta2 = vDelta.Length2();
 	if (rDelta2 < DOCKING_THRESHOLD2 
-			&& (pShip == g_pUniverse->GetPlayer() || iFinalRotation == pShip->GetRotation()))
+			&& (pShip == g_pUniverse->GetPlayer() || pShip->IsPointingTo(Port.iRotation)))
 		{
 		pShip->Place(vDest);
 		pShip->UnfreezeControls();
@@ -803,7 +799,7 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 			//	If we're close enough, align to rotation angle
 
 			if (rDelta2 < FINAL_APPROACH2)
-				pController->SetManeuver(pShip->GetManeuverToFace(iFinalRotation));
+				pController->SetManeuver(pShip->GetManeuverToFace(Port.iRotation));
 
 			//	Otherwise, align along delta v
 

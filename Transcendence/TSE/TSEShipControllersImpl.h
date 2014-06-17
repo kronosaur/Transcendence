@@ -19,7 +19,7 @@ class CAIShipControls
 		CAIShipControls (void);
 
 		inline EManeuverTypes GetManeuver (void) const { return m_iManeuver; }
-		inline bool GetThrust (CShip *pShip) const { return (m_iThrustDir == constAlwaysThrust || m_iThrustDir == pShip->GetRotation()); }
+		inline bool GetThrust (CShip *pShip) const { return (m_iThrustDir == constAlwaysThrust || pShip->IsPointingTo(m_iThrustDir)); }
 		inline int GetThrustDir (void) const { return m_iThrustDir; }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }

@@ -970,7 +970,7 @@ void CStandardShipAI::OnBehavior (void)
 
 			//	Are we done?
 
-			if (AreAnglesAligned(m_iCountdown, m_pShip->GetRotation(), 1))
+			if (m_pShip->IsPointingTo(m_iCountdown))
 				CancelCurrentOrder();
 			break;
 			}
