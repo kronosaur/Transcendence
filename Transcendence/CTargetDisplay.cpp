@@ -203,6 +203,8 @@ void CTargetDisplay::Update (void)
 //	Updates buffer
 
 	{
+	DEBUG_TRY
+
 	//	Nothing to do if no player
 
 	if (m_pPlayer == NULL)
@@ -357,5 +359,7 @@ void CTargetDisplay::Update (void)
 		}
 
 	m_bInvalid = false;
+
+	DEBUG_CATCH
 	}
 

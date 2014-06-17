@@ -480,6 +480,8 @@ void CEnvironmentGrid::Paint (CG16bitImage &Dest, SViewportPaintCtx &Ctx, const 
 //	Paint the environment
 
 	{
+	DEBUG_TRY
+
 	int x, y, x1, y1, x2, y2;
 
 	VectorToTile(vUR, &x2, &y1);
@@ -504,6 +506,8 @@ void CEnvironmentGrid::Paint (CG16bitImage &Dest, SViewportPaintCtx &Ctx, const 
 				pEnv->Paint(Dest, xCenter, yCenter, x, y, dwEdgeMask);
 				}
 			}
+
+	DEBUG_CATCH
 	}
 
 void CEnvironmentGrid::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest)

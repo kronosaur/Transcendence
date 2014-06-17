@@ -703,6 +703,8 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 //	Updates the motion of a ship docking with a port
 
 	{
+	DEBUG_TRY
+
 	CShip *pShip = Port.pObj->AsShip();
 
 	ASSERT(pShip);
@@ -816,6 +818,8 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 		pShip->Accelerate(vDeltaV * pShip->GetMass() / 10000.0, g_SecondsPerUpdate);
 		pShip->ClipSpeed(rSpeed);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CDockingPorts::WriteToStream (CSpaceObject *pOwner, IWriteStream *pStream)

@@ -2494,6 +2494,8 @@ void CDockScreen::Update (int iTick)
 //	Updates the display
 
 	{
+	DEBUG_TRY
+
 	if (m_pScreen)
 		m_pScreen->Update();
 
@@ -2527,6 +2529,8 @@ void CDockScreen::Update (int iTick)
 		Ctx.Discard(pResult);
 		Ctx.Discard(pCode);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CDockScreen::UpdateCredits (void)

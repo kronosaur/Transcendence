@@ -107,6 +107,8 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 //	Paints to the destination
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	Dest.ColorTransBlt(0,
@@ -129,6 +131,8 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 				pPaint->wColor,
 				pPaint->sText);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CArmorDisplay::SetSelection (int iSelection)

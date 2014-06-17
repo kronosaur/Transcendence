@@ -718,6 +718,8 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 //	Initializes the viewport context
 
 	{
+	DEBUG_TRY
+
 	Ctx.pCenter = pCenter;
 	Ctx.vCenterPos = pCenter->GetPos();
 	Ctx.rcView = rcView;
@@ -756,6 +758,8 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 	//	(in pixels)
 
 	Ctx.rIndicatorRadius = Min(RectWidth(rcView), RectHeight(rcView)) / 2.0;
+
+	DEBUG_CATCH
 	}
 
 void CSystem::CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bool bInDoEvent)
