@@ -3310,11 +3310,17 @@
 				>
 
 			<Effect>
+				<ParticleComet
+						particleCount=	"160"
+						primaryColor=	"0x00, 0xd8, 0xc6"
+
+						width=			"6"
+						length=			"80"
+						/>
+				
 				<Image imageID="&rsMissiles4;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="1"/>
 			</Effect>
-
 		</Weapon>
-
 	</ItemType>
 
 	<!-- Oracus HARASS power -->
