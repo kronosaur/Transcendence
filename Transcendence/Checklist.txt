@@ -17,14 +17,16 @@ RELEASE
 [ ] Sign executables (signall.bat)
 [ ] Test with tdb (/useTDB)
 
-[ ] GIT GUI: Stage changes and commit
-[ ] GIT Bash: cd documents/dev
-[ ] GIT Bash: git push origin master
+[ ] Generate .zip file and copy to Releases
+[ ] Rename Transcendence.zip or TranscendenceNext.zip
+[ ] Upload .zip to hosting server (and publish)
+[ ] Update Engine version in Multiverse (people will start downloading at this point)
 
-[ ] Update version history
-[ ] Post build on web site
-[ ] Redirect older .zip files to new version
-[ ] Post source on web site
+[ ] Post announcement to Multiverse (work on this ahead of time)
+[ ] Post announcement to Forums, Facebook, Twitter
+
+[ ] Check in new version to GitHub
+
 
 NEW APPLICATION (UI)
 -------------------------------------------------------------------------------
