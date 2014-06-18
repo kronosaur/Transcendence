@@ -863,7 +863,7 @@ class CDockScreen : public CObject,
 		CString GetTextInput (void);
 		bool IsCurrentItemValid (void);
 		void SelectNextItem (bool *retbMore = NULL);
-		void SelectPrevItem (void);
+		void SelectPrevItem (bool *retbMore = NULL);
 		void SetDescription (const CString &sDesc);
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		void SetCounter (int iCount);

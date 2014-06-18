@@ -185,8 +185,11 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		case g_PrevActionID:
 			if (!m_bNoListNavigation)
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				SelectPrevItem();
+				bool bOK;
+				SelectPrevItem(&bOK);
+				if (bOK)
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+
 				ShowItem();
 				m_CurrentActions.ExecuteShowPane(EvalInitialPane());
 				}
@@ -195,8 +198,11 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		case g_NextActionID:
 			if (!m_bNoListNavigation)
 				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				SelectNextItem();
+				bool bOK;
+				SelectNextItem(&bOK);
+				if (bOK)
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+
 				ShowItem();
 				m_CurrentActions.ExecuteShowPane(EvalInitialPane());
 				}
@@ -208,19 +214,25 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 				{
 				if (dwData == ITEM_LIST_AREA_PAGE_UP_ACTION)
 					{
-					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+					bool bOK;
+					SelectPrevItem(&bOK);
 					SelectPrevItem();
 					SelectPrevItem();
-					SelectPrevItem();
+					if (bOK)
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+
 					m_pItemListControl->Invalidate();
 					m_CurrentActions.ExecuteShowPane(EvalInitialPane());
 					}
 				else if (dwData == ITEM_LIST_AREA_PAGE_DOWN_ACTION)
 					{
-					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+					bool bOK;
+					SelectNextItem(&bOK);
 					SelectNextItem();
 					SelectNextItem();
-					SelectNextItem();
+					if (bOK)
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+
 					m_pItemListControl->Invalidate();
 					m_CurrentActions.ExecuteShowPane(EvalInitialPane());
 					}
@@ -2471,14 +2483,17 @@ void CDockScreen::SelectNextItem (bool *retbMore)
 		*retbMore = bMore;
 	}
 
-void CDockScreen::SelectPrevItem (void)
+void CDockScreen::SelectPrevItem (bool *retbMore)
 
 //	SelectPrevItem
 //
 //	Selects the previous item in the list
 
 	{
-	m_pItemListControl->MoveCursorBack();
+	bool bMore = m_pItemListControl->MoveCursorBack();
+
+	if (retbMore)
+		*retbMore = bMore;
 	}
 
 void CDockScreen::SetDescription (const CString &sDesc)
