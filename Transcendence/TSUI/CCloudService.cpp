@@ -85,7 +85,10 @@ ALERROR CCloudService::DownloadUpgrade (ITaskProcessor *pProcessor, const CStrin
 	IMediaType *pBody;
 	CCommsProgress Progress(*m_pHI, STR_DOWNLOADING_UPGRADE_PROGRESS);
 	if (ICIService::DownloadFile(sDownloadURL, &pBody, &Progress, retsResult) != NOERROR)
+		{
+		SendServiceError(retsResult ? *retsResult : CONSTLIT("Unknown error"));
 		return ERR_FAIL;
+		}
 
 	//	Return the body up our controller (it takes ownership of it).
 

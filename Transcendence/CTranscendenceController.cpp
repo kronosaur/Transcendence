@@ -1304,7 +1304,11 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	If we need to download a new version, do so now.
 
+#ifdef DEBUG_PROGRAM_UPGRADE
+		if (true
+#else
 		if (m_Multiverse.GetUpgradeVersion() > m_Model.GetProgramVersion().dwProductVersion
+#endif
 				&& !m_Settings.GetBoolean(CGameSettings::noAutoUpdate)
 				&& !IsUpgradeReady()
 				&& !m_bUpgradeDownloaded)
@@ -1338,6 +1342,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_UPGRADE_READY))
 		{
+		DisplayMultiverseStatus(CONSTLIT("Saving install files..."));
+
 		CString sError;
 		error = WriteUpgradeFile((IMediaType *)pData, &sError);
 		delete (IMediaType *)pData;
