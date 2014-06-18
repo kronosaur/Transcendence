@@ -234,7 +234,7 @@
 								(and (not (typGetData &svPlayer; 'tutorialSold))
 										(setq foundItem
 											(map
-												(map (objGetItems gPlayerShip "*~fU") 'excludeNil theItem 
+												(map (objGetItems gPlayerShip "*~fuU") 'excludeNil theItem 
 													(block (buyerObj)
 														(switch
 															(not (itmIsKnown theItem))
@@ -846,9 +846,9 @@
 				(list
 					(cat
 						"The abbess rushes towards Benedict with a datapad. "
-						"In between anxious breaths, she updates him on some crisis. "
-						"Benedict reassures her and turns to you.\n\n"
+						"In between anxious breaths, she updates him on some crisis.\n\n"
 						
+						"Benedict reassures her and turns to you: "
 						"\"We're going to need your help on this, %name%.\"\n\n"
 						
 						"\"You're ready for it,\" says the abbess, though her face "
