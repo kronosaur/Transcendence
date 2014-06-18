@@ -189,7 +189,7 @@
 							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svCult;))
 							(shpOrder enemyObj 'attack freighterObj)
 							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
-							(msnRegisterForEvents gSource freighterObj)
+							(msnRegisterForEvents gSource enemyObj)
 
 							;	Set the ships so they don't retreat when shields drop
 
