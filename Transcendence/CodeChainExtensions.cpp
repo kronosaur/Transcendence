@@ -1417,13 +1417,13 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 					if (!pArgs->GetElement(i)->IsNil())
 						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
-				pScreen->SetDescription(sText);
+				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(sText));
 				}
 
 			//	Otherwise, we just set the text
 
 			else
-				pScreen->SetDescription(pArgs->GetElement(1)->GetStringValue());
+				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
 
 			//	Done
 

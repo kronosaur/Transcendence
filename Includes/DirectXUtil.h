@@ -877,6 +877,10 @@ float NoiseSmoothStep (float x);
 inline float CNoiseGenerator::GetAt (SNoisePos &x, SNoisePos &y)
 	{ return Noise2D(x.iInteger, m_Frac[x.iFraction], m_InvFrac[x.iFraction], m_Smooth[x.iFraction], y.iInteger, m_Frac[y.iFraction], m_InvFrac[y.iFraction], m_Smooth[y.iFraction]); }
 
+#ifndef INCL_TEXT_FORMAT
+#include "TextFormat.h"
+#endif
+
 //	Screen Elements ------------------------------------------------------------
 
 class AGArea;
@@ -1100,9 +1104,11 @@ class CGTextArea : public AGArea
 		inline void SetCursor (int iLine, int iCol = 0) { m_iCursorLine = iLine; m_iCursorPos = iCol; }
 		inline void SetEditable (bool bEditable = true) { m_bEditable = bEditable; }
 		inline void SetFont (const CG16bitFont *pFont) { m_pFont = pFont; m_cxJustifyWidth = 0; }
+		inline void SetFontTable (const IFontTable *pFontTable) { m_pFontTable = pFontTable; }
 		inline void SetLineSpacing (int cySpacing) { m_cyLineSpacing = cySpacing; m_cxJustifyWidth = 0; }
+		inline void SetRichText (const CString &sRTF) { m_sRTF = sRTF; m_sText = NULL_STR; m_bRTFInvalid = true; Invalidate(); }
 		inline void SetStyles (DWORD dwStyles) { m_dwStyles = dwStyles; m_cxJustifyWidth = 0; }
-		inline void SetText (const CString &sText) { m_sText = sText; m_cxJustifyWidth = 0; Invalidate(); }
+		inline void SetText (const CString &sText) { m_sText = sText; m_sRTF = NULL_STR; m_cxJustifyWidth = 0; Invalidate(); }
 
 		//	AGArea virtuals
 		virtual int Justify (const RECT &rcRect);
@@ -1110,13 +1116,22 @@ class CGTextArea : public AGArea
 		virtual void Update (void) { m_iTick++; }
 
 	private:
+		void FormatRTF (const RECT &rcRect);
+		void PaintRTF (CG16bitImage &Dest, const RECT &rcRect);
+		void PaintText (CG16bitImage &Dest, const RECT &rcRect);
+
 		CString m_sText;						//	Text text to draw
+		CString m_sRTF;							//	Rich text to draw (only if m_sText is blank)
 
 		bool m_bEditable;						//	TRUE if editable
 		DWORD m_dwStyles;						//	AlignmentStyles
 		int m_cyLineSpacing;					//	Extra spacing between lines
 		const CG16bitFont *m_pFont;
 		WORD m_Color;
+
+		bool m_bRTFInvalid;						//	TRUE if we need to format rich text
+		CTextBlock m_RichText;					//	Rich text to draw (only if m_sText is blank)
+		const IFontTable *m_pFontTable;			//	For rich text
 
 		TArray<CString> m_Lines;				//	Justified lines of text
 		int m_cxJustifyWidth;					//	Width (in pixels) for which m_Lines

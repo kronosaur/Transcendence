@@ -674,6 +674,8 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 //	Creates a standard screen based on the screen descriptor element
 
 	{
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+
 	//	Generate a background image
 
 	CreateBackgroundImage(pDesc, rcRect, rcInner.left - rcRect.left);
@@ -707,7 +709,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	//	Add a background bar to the title part
 
 	pImage = new CGImageArea;
-	pImage->SetBackColor(m_pFonts->wAltBlueBackground);
+	pImage->SetBackColor(VI.GetColor(colorAreaDockTitle));
 	RECT rcArea;
 	rcArea.left = rcRect.left;
 	rcArea.top = rcBackArea.top - g_cyTitle;
@@ -716,7 +718,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	pScreen->AddArea(pImage, rcArea, 0);
 
 	pImage = new CGImageArea;
-	pImage->SetBackColor(CG16bitImage::DarkenPixel(m_pFonts->wAltBlueBackground, 200));
+	pImage->SetBackColor(CG16bitImage::DarkenPixel(VI.GetColor(colorAreaDockTitle), 200));
 	rcArea.left = rcRect.left;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT;
 	rcArea.right = rcRect.right;
@@ -734,7 +736,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	CGTextArea *pText = new CGTextArea;
 	pText->SetText(sName);
 	pText->SetFont(&m_pFonts->Title);
-	pText->SetColor(m_pFonts->wTitleColor);
+	pText->SetColor(VI.GetColor(colorTextDockTitle));
 	pText->AddShadowEffect();
 	rcArea.left = rcRect.left + 8;
 	rcArea.top = rcBackArea.top - g_cyTitle;
@@ -748,7 +750,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 
 	m_pCredits = new CGTextArea;
 	m_pCredits->SetFont(&m_pFonts->MediumHeavyBold);
-	m_pCredits->SetColor(m_pFonts->wTitleColor);
+	m_pCredits->SetColor(VI.GetColor(colorTextDockTitle));
 
 	rcArea.left = rcInner.right - g_cxStats;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
@@ -761,7 +763,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 	pText = new CGTextArea;
 	pText->SetText(CONSTLIT("Cargo Space:"));
 	pText->SetFont(&m_pFonts->MediumHeavyBold);
-	pText->SetColor(m_pFonts->wTitleColor);
+	pText->SetColor(VI.GetColor(colorTextDockTitle));
 
 	rcArea.left = rcInner.right - g_cxCargoStats;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
@@ -773,7 +775,7 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 
 	m_pCargoSpace = new CGTextArea;
 	m_pCargoSpace->SetFont(&m_pFonts->MediumHeavyBold);
-	m_pCargoSpace->SetColor(m_pFonts->wTitleColor);
+	m_pCargoSpace->SetColor(VI.GetColor(colorTextDockTitle));
 
 	rcArea.left = rcInner.right - g_cxCargoStats + g_cxCargoStatsLabel;
 	rcArea.top = rcBackArea.top - STATUS_BAR_HEIGHT + cyOffset;
@@ -862,7 +864,7 @@ const CString &CDockScreen::GetDescription (void)
 	if (m_pFrameDesc == NULL)
 		return NULL_STR;
 
-	return m_pFrameDesc->GetText();
+	return m_sDesc;
 	}
 
 CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
@@ -2204,6 +2206,8 @@ void CDockScreen::ShowPane (const CString &sName)
 //	Shows the pane of the given name
 
 	{
+	const CVisualPalette &VI = g_pHI->GetVisuals();
+
 #ifdef DEBUG_STRING_LEAKS
 	CString::DebugMark();
 #endif
@@ -2311,10 +2315,11 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	CString sDesc = EvalString(m_pCurrentPane->GetAttribute(CONSTLIT(g_DescAttrib)), pData);
 	m_pFrameDesc = new CGTextArea;
-	m_pFrameDesc->SetText(sDesc);
 	m_pFrameDesc->SetFont(&m_pFonts->Large);
-	m_pFrameDesc->SetColor(m_pFonts->wTextColor);
+	m_pFrameDesc->SetColor(VI.GetColor(colorTextDockText));
 	m_pFrameDesc->SetLineSpacing(6);
+	m_pFrameDesc->SetFontTable(&VI);
+	SetDescription(sDesc);
 
 	//	Justify the text
 
@@ -2483,8 +2488,16 @@ void CDockScreen::SetDescription (const CString &sDesc)
 //	Sets the description of the current pane
 
 	{
+	m_sDesc = sDesc;
+
 	if (m_pFrameDesc)
-		m_pFrameDesc->SetText(g_pTrans->ComposePlayerNameString(sDesc));
+		{
+		CUIHelper UIHelper(*g_pHI);
+		CString sRTF;
+		UIHelper.GenerateDockScreenRTF(sDesc, &sRTF);
+
+		m_pFrameDesc->SetRichText(sRTF);
+		}
 	}
 
 void CDockScreen::Update (int iTick)

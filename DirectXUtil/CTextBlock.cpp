@@ -315,7 +315,7 @@ void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 
 			//	Advance the line
 
-			y += cyLine;
+			y += cyLine + BlockFormat.iExtraLineSpacing;
 			Line.DeleteAll();
 
 			cxLeft = BlockFormat.cxWidth;

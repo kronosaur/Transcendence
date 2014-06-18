@@ -975,6 +975,7 @@ class CDockScreen : public CObject,
 		RECT m_rcPane;
 		CGFrameArea *m_pCurrentFrame;
 		CGTextArea *m_pFrameDesc;
+		CString m_sDesc;
 		bool m_bInShowPane;
 		bool m_bNoListNavigation;
 

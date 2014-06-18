@@ -363,7 +363,13 @@ enum EColorPalette
 	colorTextDialogTitle =			21,
 	colorTextDialogWarning =		22,
 
-	colorCount =					23,
+	colorAreaDockTitle =			23,
+	colorTextDockAction =			24,
+	colorTextDockActionHotKey =		25,
+	colorTextDockText =				26,
+	colorTextDockTitle =			27,
+
+	colorCount =					28,
 	};
 
 enum EFontScale
