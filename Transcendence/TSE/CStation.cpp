@@ -43,7 +43,7 @@ const int STATION_ATTACK_FREQUENCY =	67;
 const int STATION_REINFORCEMENT_FREQUENCY =	607;
 const int STATION_TARGET_FREQUENCY =	503;
 const int DAYS_TO_REFRESH_INVENTORY =	5;
-const int INVENTORY_REFRESHED_PER_UPDATE = 5;			//	% of inventory refreshed on each update frequency
+const int INVENTORY_REFRESHED_PER_UPDATE = 20;			//	% of inventory refreshed on each update frequency
 
 const Metric MAX_ATTACK_DISTANCE =				LIGHT_SECOND * 25;
 const Metric MAX_ATTACK_DISTANCE2 =				MAX_ATTACK_DISTANCE * MAX_ATTACK_DISTANCE;
