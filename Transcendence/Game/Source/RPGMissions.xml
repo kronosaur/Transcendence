@@ -375,10 +375,12 @@
 							
 							(msnSetPlayerTarget missionObj)
 							
-							(setq aDockTarget gSource)
-							(msnFireEvent missionObj "OnInProgressUndock")
+							;	Exit screen before OnInProgressUndock because in some cases
+							;	we want to be able to save the game.
 							
 							(scrExitScreen gScreen 'forceUndock)
+							(setq aDockTarget gSource)
+							(msnFireEvent missionObj "OnInProgressUndock")
 							)
 					</Action>
 				</Actions>
