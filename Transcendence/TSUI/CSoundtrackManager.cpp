@@ -9,6 +9,9 @@
 #define ATTRIB_SYSTEM_SOUNDTRACK				CONSTLIT("systemSoundtrack")
 #define ATTRIB_TRAVEL_SOUNDTRACK				CONSTLIT("travelSoundtrack")
 
+const DWORD MIN_COMBAT_LENGTH =					300;
+const DWORD MIN_TRAVEL_LENGTH =					300;
+
 //	VOLUME_LEVEL
 //
 //	Exponential volume level:
@@ -42,7 +45,10 @@ CSoundtrackManager::CSoundtrackManager (void) :
 		m_LastPlayed(10),
 		m_bSystemTrackPlayed(false),
 		m_bStartCombatWhenUndocked(false),
-		m_bInTransition(false)
+		m_bInTransition(false),
+		m_dwHoldUntil(0),
+		m_dwStartedCombat(0),
+		m_dwStartedTravel(0)
 
 //	CSoundtrackManager constructor
 
@@ -364,11 +370,22 @@ void CSoundtrackManager::NotifyEndCombat (void)
 	if (m_iGameState != stateGameCombat)
 		return;
 
-	//	Figure out which track to play. If there is nothing to play then we're
-	//	done.
+	//	If we've been in combat for longer than the minimum time, then
+	//	switch to travel. Otherwise, we stay in combat.
 
-	if (m_bEnabled && !m_bInTransition)
-		TransitionToTravel();
+	if (m_bEnabled)
+		{
+		DWORD dwTimeInCombat = g_pUniverse->GetTicks() - m_dwStartedCombat;
+		if (dwTimeInCombat < MIN_COMBAT_LENGTH)
+			m_dwHoldUntil = g_pUniverse->GetTicks() + (MIN_COMBAT_LENGTH - dwTimeInCombat);
+		else
+			{
+			m_dwHoldUntil = 0;
+
+			if (!m_bInTransition)
+				TransitionToTravel();
+			}
+		}
 
 	//	Remember our state
 
@@ -424,7 +441,7 @@ void CSoundtrackManager::NotifyEnterSystem (CTopologyNode *pNode, bool bFirstTim
 		if (pTrack == NULL)
 			return;
 
-		TransitionTo(pTrack, pTrack->GetNextPlayPos());
+		TransitionTo(pTrack, 0);
 		m_bInTransition = true;
 		}
 
@@ -449,11 +466,22 @@ void CSoundtrackManager::NotifyStartCombat (void)
 	if (m_iGameState == stateGameCombat)
 		return;
 
-	//	Figure out which track to play. If there is nothing to play then we're
-	//	done.
+	//	Figure out how long we've been in travel mode. If long enough,
+	//	then switch to combat immediately. Otherwise, we wait.
 
-	if (m_bEnabled && !m_bInTransition)
-		TransitionToCombat();
+	if (m_bEnabled)
+		{
+		DWORD dwTimeInTravel = g_pUniverse->GetTicks() - m_dwStartedTravel;
+		if (dwTimeInTravel < MIN_TRAVEL_LENGTH)
+			m_dwHoldUntil = g_pUniverse->GetTicks() + (MIN_TRAVEL_LENGTH - dwTimeInTravel);
+		else
+			{
+			m_dwHoldUntil = 0;
+
+			if (!m_bInTransition)
+				TransitionToCombat();
+			}
+		}
 
 	//	Set state
 
@@ -551,7 +579,8 @@ void CSoundtrackManager::NotifyUpdatePlayPos (int iPos)
 	//	take the opportunity to make sure we're in the right mode.
 
 	if (!m_bInTransition 
-			&& m_bEnabled)
+			&& m_bEnabled
+			&& (m_dwHoldUntil == 0 || (DWORD)g_pUniverse->GetTicks() > m_dwHoldUntil))
 		{
 		if (IsPlayingCombatTrack())
 			{
@@ -569,6 +598,8 @@ void CSoundtrackManager::NotifyUpdatePlayPos (int iPos)
 			if (m_iGameState == stateGameCombat)
 				TransitionToCombat();
 			}
+
+		m_dwHoldUntil = 0;
 		}
 	}
 
@@ -721,7 +752,7 @@ void CSoundtrackManager::TogglePlayPaused (void)
 	m_Mixer.TogglePausePlay();
 	}
 
-void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos)
+void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos, bool bFadeIn)
 
 //	TransitionTo
 //
@@ -758,7 +789,10 @@ void CSoundtrackManager::TransitionTo (CSoundType *pTrack, int iPos)
 
 	//	Now queue up the next track
 
-	m_Mixer.Play(pTrack, iPos);
+	if (bFadeIn)
+		m_Mixer.PlayFadeIn(pTrack, iPos);
+	else
+		m_Mixer.Play(pTrack, iPos);
 	}
 
 void CSoundtrackManager::TransitionToCombat (void)
@@ -786,6 +820,7 @@ void CSoundtrackManager::TransitionToCombat (void)
 
 	TransitionTo(pCombatTrack, pCombatTrack->GetNextPlayPos());
 	m_bInTransition = true;
+	m_dwStartedCombat = g_pUniverse->GetTicks();
 	}
 
 void CSoundtrackManager::TransitionToTravel (void)
@@ -814,7 +849,8 @@ void CSoundtrackManager::TransitionToTravel (void)
 
 	//	Transition
 
-	TransitionTo(pTrack, pTrack->GetNextPlayPos());
+	TransitionTo(pTrack, pTrack->GetNextPlayPos(), true);
 	m_bInTransition = true;
+	m_dwStartedTravel = g_pUniverse->GetTicks();
 	}
 

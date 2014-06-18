@@ -16,6 +16,7 @@ class CMCIMixer
 		int GetCurrentPlayLength (void) const;
 		int GetCurrentPlayPos (void) const;
 		bool Play (CSoundType *pTrack, int iPos = 0);
+		bool PlayFadeIn (CSoundType *pTrack, int iPos = 0);
 		void SetPlayPaused (bool bPlay);
 		void SetVolume (int iVolume);
 		void Shutdown (void);
@@ -42,6 +43,7 @@ class CMCIMixer
 			typeStop,
 			typePlayPause,
 			typeWaitForPos,
+			typeFadeIn,
 			typeFadeOut,
 			typeSetPaused,
 			typeSetUnpaused,
@@ -60,6 +62,7 @@ class CMCIMixer
 		void LogError (HWND hMCI, const CString &sFilespec = NULL_STR);
 		LONG OnNotifyMode (HWND hWnd, int iMode);
 		LONG OnNotifyPos (HWND hWnd, int iPos);
+		void ProcessFadeIn (const SRequest &Request);
 		void ProcessFadeOut (const SRequest &Request);
 		void ProcessPlay (const SRequest &Request);
 		void ProcessPlayPause (const SRequest &Request);
@@ -133,7 +136,7 @@ class CSoundtrackManager
 		bool IsPlayingCombatTrack (void) const;
 		void Play (CSoundType *pTrack);
 		void Reinit (void);
-		void TransitionTo (CSoundType *pTrack, int iPos);
+		void TransitionTo (CSoundType *pTrack, int iPos, bool bFadeIn = false);
 		void TransitionToCombat (void);
 		void TransitionToTravel (void);
 
@@ -147,6 +150,9 @@ class CSoundtrackManager
 		bool m_bSystemTrackPlayed;			//	systemSoundtrack already played in system.
 		bool m_bStartCombatWhenUndocked;	//	If TRUE, we play combat music when we undock
 		bool m_bInTransition;				//	Transitioning to a new track
+		DWORD m_dwHoldUntil;				//	Do not transition until this tick
+		DWORD m_dwStartedCombat;			//	Tick on which we started combat
+		DWORD m_dwStartedTravel;			//	Tick on which we started travel mode
 
 		CSoundType *m_pIntroTrack;			//	Track to play for intro.
 	};

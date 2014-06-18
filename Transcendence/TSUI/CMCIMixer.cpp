@@ -349,6 +349,95 @@ bool CMCIMixer::Play (CSoundType *pTrack, int iPos)
 	return true;
 	}
 
+bool CMCIMixer::PlayFadeIn (CSoundType *pTrack, int iPos)
+
+//	Play
+//
+//	Stops all channels and begins playing the given track.
+
+	{
+	if (m_hParent == NULL)
+		return false;
+
+	//	Enqueue
+
+	EnqueueRequest(typeFadeIn, pTrack, iPos);
+	return true;
+	}
+
+void CMCIMixer::ProcessFadeIn (const SRequest &Request)
+
+//	ProcessFadeIn
+//
+//	Fade in the given track starting at the given position.
+
+	{
+#ifdef DEBUG_SOUNDTRACK
+	kernelDebugLogMessage("ProcessFadeIn");
+#endif
+
+	//	Stop all channels
+
+	ProcessStop(Request);
+
+	//	Play on some channel
+
+	HWND hMCI = m_Channels[m_iCurChannel].hMCI;
+
+	//	Open new file
+
+	CString sFilespec = Request.pTrack->GetFilespec();
+	if (MCIWndOpen(hMCI, sFilespec.GetASCIIZPointer(), 0) != 0)
+		{
+		LogError(hMCI, sFilespec);
+		return;
+		}
+
+	//	Set state (we need to do this before we play because the callback inside
+	//	MCIWndPlay needs m_pNowPlaying to be valid).
+
+	m_pNowPlaying = Request.pTrack;
+
+	//	Seek to the proper position
+
+	MCIWndSeek(hMCI, Request.iPos);
+	
+	//	Play it
+
+	MCIWndSetVolume(hMCI, 0);
+	if (MCIWndPlay(hMCI) != 0)
+		{
+		LogError(hMCI, sFilespec);
+		return;
+		}
+
+	//	Fade in util we reach this position
+
+	int iFullVolPos = Request.iPos + FADE_LENGTH;
+	while (true)
+		{
+		//	Wait a little bit
+
+		if (!Wait(FADE_DELAY))
+			return;
+
+		//	How far into the fade
+
+		int iCurPos = GetCurrentPlayPos();
+		int iPlaying = iCurPos - Request.iPos;
+		if (iPlaying <= 0 || iPlaying >= FADE_LENGTH)
+			{
+			MCIWndSetVolume(hMCI, m_iDefaultVolume);
+			return;
+			}
+
+		//	The volume should be proportional to how much we have left
+
+		int iVolume = m_iDefaultVolume * iPlaying / FADE_LENGTH;
+		MCIWndSetVolume(hMCI, iVolume);
+		}
+	}
+
 void CMCIMixer::ProcessFadeOut (const SRequest &Request)
 
 //	ProcessFadeOut
@@ -501,6 +590,10 @@ bool CMCIMixer::ProcessRequest (void)
 
 	switch (Request.iType)
 		{
+		case typeFadeIn:
+			ProcessFadeIn(Request);
+			break;
+
 		case typeFadeOut:
 			ProcessFadeOut(Request);
 			break;

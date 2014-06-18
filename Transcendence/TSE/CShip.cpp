@@ -69,6 +69,8 @@ const Metric MAX_AUTO_TARGET_DISTANCE =			(LIGHT_SECOND * 30.0);
 const int MAX_DAMAGE_OVERLAY_COUNT =			10;
 const int MAX_DRIVE_DAMAGE_OVERLAY_COUNT =		3;
 
+const int ATTACK_THRESHOLD =					90;
+
 CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_pDocked(NULL),
 		m_pDriveDesc(NULL),
@@ -161,6 +163,7 @@ void CShip::Behavior (SUpdateCtx &Ctx)
 		if (Ctx.pPlayer 
 				&& (pTarget = GetTarget(CItemCtx()))
 				&& Ctx.pPlayer->IsEnemy(this)
+				&& (g_pUniverse->GetTicks() - GetLastFireTime()) < ATTACK_THRESHOLD
 				&& (pTarget == Ctx.pPlayer || pTarget->IsPlayerEscortTarget(Ctx.pPlayer)))
 			Ctx.pSystem->SetPlayerUnderAttack();
 		}
