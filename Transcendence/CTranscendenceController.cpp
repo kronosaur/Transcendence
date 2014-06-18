@@ -1378,12 +1378,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pState)
 			{
+			::kernelDebugLogMessage(pState->GetASCIIZPointer());
 			m_Multiverse.SetServiceStatus(*pState);
 			DisplayMultiverseStatus(*pState, true);
 			delete pState;
 			}
 		else
 			{
+			::kernelDebugLogMessage("Unknown service error");
 			m_Multiverse.SetServiceStatus(NULL_STR);
 			DisplayMultiverseStatus(NULL_STR, true);
 			}
