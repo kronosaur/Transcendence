@@ -3401,7 +3401,7 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 		//	Paint a grid for the star
 
-		Ctx.PaintGrid(Dest, pStar->GetPos(), 10.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
+		Ctx.PaintGrid(Dest, pStar->GetPos(), 30.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
 
 		//	Paint glow
 
