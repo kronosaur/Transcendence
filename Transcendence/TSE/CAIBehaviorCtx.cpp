@@ -382,6 +382,7 @@ bool CAIBehaviorCtx::CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget,
 
 	if (pNewTarget == NULL 
 			|| pNewTarget->IsDestroyed()
+			|| !pNewTarget->CanAttack()
 			|| !pShip->IsEnemy(pNewTarget))
 		return false;
 

@@ -576,6 +576,11 @@ void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObj
 			return;
 			}
 		}
+	else if (pOrderTarget == NULL || pOrderTarget->IsDestroyed())
+		{
+		pShip->CancelCurrentOrder();
+		return;
+		}
 
 	//	Set our state
 
@@ -819,6 +824,16 @@ void CAttackStationOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CS
 	//	Make sure we're undocked because we're going flying
 
 	Ctx.Undock(pShip);
+
+	//	If our target is already destroyed, then we're done
+
+	if (pOrderTarget == NULL 
+			|| pOrderTarget->IsDestroyed() 
+			|| pOrderTarget->IsAbandoned())
+		{
+		pShip->CancelCurrentOrder();
+		return;
+		}
 
 	//	Remember our target.
 
