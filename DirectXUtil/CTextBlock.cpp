@@ -319,6 +319,7 @@ void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 			Line.DeleteAll();
 
 			cxLeft = BlockFormat.cxWidth;
+			bLineStart = true;
 			}
 
 		//	Next span
@@ -333,7 +334,6 @@ void CTextBlock::Format (const SBlockFormatDesc &BlockFormat)
 			}
 
 		bLineEnd = false;
-		bLineStart = true;
 		}
 	}
 
