@@ -391,7 +391,7 @@ void CUIHelper::GenerateDockScreenRTF (const CString &sText, CString *retsRTF) c
 	//	16-bit colors.
 
 	DWORD wQuoteColor = RGB(178, 217, 255);	//	H:210 S:30 B:100
-	CString sCloseQuote = CONSTLIT("{/f:LargeBold; ”}}");
+	CString sCloseQuote = CONSTLIT("”}");
 
 	//	Start with the RTF open
 
@@ -412,7 +412,7 @@ void CUIHelper::GenerateDockScreenRTF (const CString &sText, CString *retsRTF) c
 				}
 			else
 				{
-				CString sQuoteStart = strPatternSubst(CONSTLIT("{/c:0x%08x; {/f:LargeBold; “}"), wQuoteColor);
+				CString sQuoteStart = strPatternSubst(CONSTLIT("{/c:0x%08x; “"), wQuoteColor);
 				Output.Write(sQuoteStart.GetASCIIZPointer(), sQuoteStart.GetLength());
 				bInQuotes = true;
 				}
