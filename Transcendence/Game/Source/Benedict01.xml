@@ -306,7 +306,13 @@
 										(objGetProperty targetObj 'abandoned)
 										(setq foundItem (@ (objGetItems targetObj "w +unid:&itSmartCannon;;") 0))
 										)
-									(setq state 'lootHiddenEnemy)
+									(block Nil
+										(setq state 'lootHiddenEnemy)
+										
+										;	This is a risky mission, so save the game
+										
+										(msnSetData gSource 'missionCheckpoint True)
+										)
 									
 								;	If we haven't yet installed the SmartCannon, remind the player
 						
@@ -336,6 +342,10 @@
 										
 										(msnAccept fionaMission)
 										(setq state 'fionaMission)
+										
+										;	This is a risky mission, so save the game
+										
+										(msnSetData gSource 'missionCheckpoint True)
 										)
 								
 								;	Nothing else
@@ -352,7 +362,7 @@
 							(msnSetData gSource 'targetID (if targetObj (objGetID targetObj)))
 							(msnSetData gSource 'foundItem foundItem)
 							
-							;	Reset the summary. The summary is normally only calculateed once,
+							;	Reset the summary. The summary is normally only calculated once,
 							;	but since our mission changes, we reset it here.
 							
 							(msnSetProperty gSource 'summary (msnTranslate gSource 'Summary))
@@ -388,9 +398,21 @@
 			</OnInProgress>
 			
 			<OnInProgressUndock>
-				;	Mark the debrief as being completed so we don't show it again.
+				(block Nil
 				
-				(msnSetData gSource 'taskCompleted Nil)
+					;	Mark the debrief as being completed so we don't show it again.
+				
+					(msnSetData gSource 'taskCompleted Nil)
+				
+					;	Checkpoint if necessary
+					
+					(if (msnGetData gSource 'missionCheckpoint)
+						(block Nil
+							(msnSetData gSource 'missionCheckpoint Nil)
+							(gamSave 'missionCheckpoint)
+							)
+						)
+					)
 			</OnInProgressUndock>
 			
 			<OnObjDestroyed>
