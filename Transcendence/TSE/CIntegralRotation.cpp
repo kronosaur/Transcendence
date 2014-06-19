@@ -187,7 +187,10 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 		case RotateRight:
 			if (m_iRotationSpeed < m_iMaxRotationRate)
 				{
-				m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccel);
+				if (m_iRotationSpeed < 0)
+					m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccelStop);
+				else
+					m_iRotationSpeed = Min(m_iMaxRotationRate, m_iRotationSpeed + m_iRotationAccel);
 				m_iLastManeuver = RotateRight;
 				}
 			else
@@ -197,7 +200,10 @@ void CIntegralRotation::Update (const CIntegralRotationDesc &Desc, EManeuverType
 		case RotateLeft:
 			if (m_iRotationSpeed > -m_iMaxRotationRate)
 				{
-				m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccel);
+				if (m_iRotationSpeed > 0)
+					m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccelStop);
+				else
+					m_iRotationSpeed = Max(-m_iMaxRotationRate, m_iRotationSpeed - m_iRotationAccel);
 				m_iLastManeuver = RotateLeft;
 				}
 			else
