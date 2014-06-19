@@ -614,7 +614,7 @@
 							
 							(block Nil
 								(shpCancelOrders gSource)
-								(shpOrder gSource 'approach targetObj 25)
+								(shpOrder gSource 'approach targetObj 75)
 								(objSetShowAsDestination gSource)
 								
 								(objSetData gSource 'behavior 'custom)
@@ -714,7 +714,7 @@
 									;	Otherwise, go to new object
 									
 									(block Nil
-										(shpOrder gSource 'approach targetObj 25)
+										(shpOrder gSource 'approach targetObj 75)
 										(objSetData gSource 'targetID (objGetID targetObj))
 										)
 									)
