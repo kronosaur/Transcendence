@@ -202,14 +202,14 @@
 					"Skin-armor plates peek through his collar. He crosses his arms "
 					"and turns to look at you:\n\n"
 						
-					"\"I can offer you training. Nothing more. But if you do what I say, "
+					"\"I offer you training. Nothing more. Do what I say and "
 					"you'll be ready for your journey.\""
 					)
 			</Text>
 			<Text id="Briefing">
 				(cat
-					"\"You've got a good ship there. She'll take you where you need to go. "
-					"But you'll have to learn to control her. You'll have to fly better, faster, "
+					"\"You've got a good ship. She'll take you where you need to go. "
+					"But you must learn to control her. You must fly better, faster, "
 					"and more accurately than your targets.\n\n"
 					
 					"\"Do you want to practice combat maneuvers?\""
@@ -218,11 +218,11 @@
 			<Text id="AcceptLabel">"\"[Y]es, I need practice.\""</Text>
 			<Text id="AcceptReply">
 				(cat
-					"\"I'm going to launch three autons&#x97;autonomous ships&#x97;for you to practice on.\n\n"
+					"\"I'll launch three autons&#x97;autonomous ships&#x97;for target practice.\n\n"
 					
 					"\"Use the [Ctrl] key to fire your primary weapon. See if you can destroy them all.\n\n"
 					
-					"\"Are you ready?\""
+					"\"Ready?\""
 					)
 			</Text>
 			<Text id="DeclineLabel">"\"[N]o, thanks.\""</Text>
@@ -236,7 +236,7 @@
 			</Text>
 			<Text id="InProgress">
 				(cat
-					"\"I guess I forgot to tell you that they fire back. Don't worry: "
+					"\"I guess I forgot to tell you they fire back. Don't worry: "
 					"they're nothing compared to what you'll face out there.\n\n"
 					
 					"\"Remember, use the [Ctrl] key to fire your primary weapon.\""

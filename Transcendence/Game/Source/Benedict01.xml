@@ -849,7 +849,7 @@
 						"In between anxious breaths, she updates him on some crisis.\n\n"
 						
 						"Benedict reassures her and turns to you: "
-						"\"We're going to need your help on this, %name%.\"\n\n"
+						"\"We need your help on this, %name%.\"\n\n"
 						
 						"\"You're ready for it,\" says the abbess, though her face "
 						"makes it a question."
@@ -860,13 +860,13 @@
 						
 						"\"Fiona, one of our operatives, is in trouble. We need you to help her.\n\n"
 						
-						"\"She's on a freighter, coming in to the system. We need you to "
-						"meet her at the stargate and protect her until she can reach us here.\""
+						"\"She's on a freighter, coming in to the system. "
+						"Meet her at the stargate and protect her until she can reach us here.\""
 						)
 
 					(cat
-						"\"You're going to be passing through civilian areas, "
-						"so be very careful discharging your weapons. "
+						"\"You'll pass through civilian areas, "
+						"so be careful discharging your weapons. "
 						
 						(if (objGetItems gPlayerShip "wI +unid:&itSmartCannon;;")
 							"You can use the SmartCannon you found to avoid collateral damage.\n\n"
