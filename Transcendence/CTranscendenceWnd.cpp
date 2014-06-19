@@ -24,7 +24,7 @@ int g_cxScreen = 0;
 int g_cyScreen = 0;
 
 #define STR_SMALL_TYPEFACE					CONSTLIT("Tahoma")
-#define STR_MEDIUM_TYPEFACE					CONSTLIT("Lucida Sans")
+#define STR_MEDIUM_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
 #define STR_FIXED_TYPEFACE					CONSTLIT("Lucida Console")
 
