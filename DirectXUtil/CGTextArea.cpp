@@ -91,6 +91,16 @@ void CGTextArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 //	Handle paint
 
 	{
+	//	Paint the editable box
+
+	if (m_bEditable)
+		{
+		WORD wBorderColor = CG16bitImage::BlendPixel(CG16bitImage::RGBValue(0, 0, 0), m_Color, 128);
+		DrawRectDotted(Dest, rcRect.left, rcRect.top, RectWidth(rcRect), RectHeight(rcRect), wBorderColor);
+		}
+
+	//	Paint the content
+
 	if (!m_sText.IsBlank())
 		PaintText(Dest, rcRect);
 	else
@@ -138,14 +148,6 @@ void CGTextArea::PaintText (CG16bitImage &Dest, const RECT &rcRect)
 //	Paint plain text
 
 	{
-	//	Paint the editable box
-
-	if (m_bEditable)
-		{
-		WORD wBorderColor = CG16bitImage::BlendPixel(CG16bitImage::RGBValue(0, 0, 0), m_Color, 128);
-		DrawRectDotted(Dest, rcRect.left, rcRect.top, RectWidth(rcRect), RectHeight(rcRect), wBorderColor);
-		}
-
 	//	Paint the text
 
 	if (m_pFont)
