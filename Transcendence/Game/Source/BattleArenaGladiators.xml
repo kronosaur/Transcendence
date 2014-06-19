@@ -1094,7 +1094,6 @@
 			mass=				"150"
 			cargoSpace=			"50"
 			thrustRatio=		"1.0"
-			maneuver=			"3"
 			maxSpeed=			"16"
 
 			leavesWreck=		"75"

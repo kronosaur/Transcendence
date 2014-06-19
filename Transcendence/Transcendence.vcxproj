@@ -597,7 +597,9 @@
     <None Include="Game\Source\CharonFortress.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\CharonPirates.xml" />
+    <None Include="Game\Source\CharonPirates.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Code.xml">
       <SubType>Designer</SubType>
     </None>
@@ -609,7 +611,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\CommonwealthMetropolis.xml" />
-    <None Include="Game\Source\CommonwealthMilitia.xml" />
+    <None Include="Game\Source\CommonwealthMilitia.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CommonwealthMining.xml">
       <SubType>Designer</SubType>
     </None>
@@ -651,7 +655,9 @@
     <None Include="Game\Source\HUD.xml" />
     <None Include="Game\Source\HumanSpaceMap.xml" />
     <None Include="Game\Source\Ice.xml" />
-    <None Include="Game\Source\Iocrym.xml" />
+    <None Include="Game\Source\Iocrym.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\KateMorgental.xml">
       <SubType>Designer</SubType>
     </None>
@@ -667,7 +673,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Neurohack.xml" />
-    <None Include="Game\Source\OutlawMiners.xml" />
+    <None Include="Game\Source\OutlawMiners.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\PlayerShips.xml">
       <SubType>Designer</SubType>
     </None>

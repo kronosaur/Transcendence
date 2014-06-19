@@ -89,7 +89,6 @@
 			   
 			mass=				"200"
 			thrustRatio=		"6"
-			maneuver=			"8"
 			maxSpeed=			"10"
 			cargoSpace=			"25"
 

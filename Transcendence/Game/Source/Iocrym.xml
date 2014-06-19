@@ -417,7 +417,6 @@
 			mass=				"100000"
 			cargoSpace=			"50000"
 			thrust=				"100000"
-			maneuver=			"12"
 			maxSpeed=			"6"
 
 			cyberDefenseLevel=	"12"
@@ -446,6 +445,11 @@
 			<Device deviceID="&itIocrymHealer;"/>
 			<Device deviceID="&itIocrymCocoon;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
 
 		<Interior>
 			<Compartment name="interior"
@@ -532,7 +536,6 @@
 			mass=				"5000"
 			cargoSpace=			"1000"
 			thrust=				"4000"
-			maneuver=			"2"
 			maxSpeed=			"12"
 
 			explosionType=		"&vtPlasmaExplosion1;"
@@ -552,6 +555,11 @@
 			<Device deviceID="&itIocrymFractureCannon;"/>
 			<Device deviceID="&itIocrymVeil;"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"3.0"
+			/>
 
 		<Image imageID="&rsIocrymSentinel;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" />
 

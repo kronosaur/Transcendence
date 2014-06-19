@@ -4776,7 +4776,6 @@
 			mass=				"25000"
 			cargoSpace=			"15000"
 			thrustRatio=		"0.5"
-			maneuver=			"16"
 			maxSpeed=			"8"
 
 			cyberDefenseLevel=	"6"

@@ -473,7 +473,6 @@
 			mass=				"100"
 			cargoSpace=			"50"
 			thrust=				"200"
-			maneuver=			"8"
 			maxSpeed=			"10"
 
 			leavesWreck=		"50"
@@ -491,6 +490,11 @@
 		<Devices>
 			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" omnidirectional="true"/>
 		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"1.0"
+			/>
 
 		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
 
