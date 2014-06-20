@@ -1193,7 +1193,7 @@
 
 			<pirateData>
 				(	; class			description
-					(&scCorsair;	"The backbone of the Charon Pirate fleet consists of these fast and deadly gunships. Piloted by young and somewhat inexperienced pirates, they are nontheless dangerous in large numbers.")
+					(&scCorsair;	"The backbone of the Charon Pirate fleet consists of these fast and deadly gunships. Piloted by young and somewhat inexperienced pirates, they are nonetheless dangerous in large numbers.")
 					(&scViking;		"The Viking-class gunship is powerful and well-armored. It is slower than a Corsair, but more than fast enough to chase down a freighter.")
 					(&scCorsair-II;	"More than an upgrade, the Corsair-II sports shields and a missile launcher.")
 					(&scViking-II;	"The Viking-II is an upgraded version with shields and dual turbolasers.")

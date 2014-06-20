@@ -1913,6 +1913,7 @@
 	<!-- PART I SOUNDTRACK 0082 -->
 
 	<!ENTITY muDominaMainTheme			"0x00820020">
+	<!ENTITY muDominaEndTitles01		"0x00820120">
 	]>
 
 <TranscendenceUniverse
@@ -2307,7 +2308,7 @@
 								)
 							)
 
-						(gamSetCrawlSoundtrack &muDominaMainTheme;)
+						(gamSetCrawlSoundtrack &muDominaEndTitles01;)
 
 						(gamSetCrawlText 
 							(plyComposeString gPlayer

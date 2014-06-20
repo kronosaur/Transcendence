@@ -193,6 +193,7 @@ static char *FEEDBACK[] =
 	"Rick Tengdin",
 	"Teslin K. R.",
 	"trouver",
+	"TVR",
 
 	"Ultimate Chicken",
 

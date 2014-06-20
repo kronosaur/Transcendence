@@ -274,7 +274,7 @@
 					<Default>
 						<OnPaneInit>
 							(scrSetDesc gScreen
-								"You are docked with a Teraton chrysalis\x97a pulsing mass of biomechamical systems. "
+								"You are docked with a Teraton chrysalis\x97a pulsing mass of biomechanical systems. "
 								"You see a bony structure taking shape inside the large spherical structure."
 								)
 						</OnPaneInit>
@@ -985,7 +985,7 @@
 									(scrSetDesc gScreen "You wake up in your ship with bloody bandages over both your arms. You open a case of artificial plasma and set up a transfusion.\n\nYou start to feel better after an hour.")
 
 								(eq gResult "use-autodoc")
-									(scrSetDesc gScreen "You wake up in your ship with bloddy bandages over both your arms. You activate your portable autodoc and it drips a concoction of fluids and growth stims into your arm.\n\nYou start to feel better immediately.")
+									(scrSetDesc gScreen "You wake up in your ship with bloody bandages over both your arms. You activate your portable autodoc and it drips a concoction of fluids and growth stims into your arm.\n\nYou start to feel better immediately.")
 
 								(scrSetDesc gScreen "Overnight your blood pressure drops as the bleeding continues.\n\nIn the morning, the Teraton takes your lifeless body and dumps it into space.")
 								)

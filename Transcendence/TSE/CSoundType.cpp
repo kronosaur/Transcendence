@@ -162,7 +162,7 @@ ALERROR CSoundType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			//	Check for errors
 
 			if (iStartPos < 0 || (iEndPos != -1 && iEndPos < iStartPos))
-				return ComposeLoadError(Ctx, CONSTLIT("Invalid segment positions."));
+				return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Invalid segment positions: startPos=%d endPos=%d"), iStartPos, iEndPos));
 
 			if (i > 0 && iStartPos < m_Segments[i - 1].iStartPos)
 				return ComposeLoadError(Ctx, CONSTLIT("Segments must be in order of increasing startPos."));
