@@ -749,6 +749,7 @@ class CMapViewportCtx
 
 		inline const CVector &GetCenterPos (void) const { return m_vCenter; }
 		inline const RECT &GetViewportRect (void) const { return m_rcView; }
+		inline ViewportTransform &GetXform (void) { return m_Trans; }
 		bool IsInViewport (CSpaceObject *pObj) const;
 		void PaintGrid (CG16bitImage &Dest, const CVector &vPos, Metric rWidth, Metric rInterval = 100.0 * LIGHT_SECOND) const;
 		void Transform (const CVector &vPos, int *retx, int *rety) const;

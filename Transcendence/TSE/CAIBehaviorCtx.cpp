@@ -780,7 +780,7 @@ void CAIBehaviorCtx::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewport
 	{
 #ifdef DEBUG_NAV_PATH
 	if (m_pNavPath)
-		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx);
+		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx.XForm);
 #endif
 	}
 

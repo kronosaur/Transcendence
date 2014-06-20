@@ -67,7 +67,7 @@
 //#define DEBUG_FIRE_ON_OPPORTUNITY
 //#define DEBUG_HENCHMAN
 //#define DEBUG_LOAD
-//#define DEBUG_NAV_PATH
+#define DEBUG_NAV_PATH
 //#define DEBUG_NEBULA_PAINTING
 //#define DEBUG_PERFORMANCE
 //#define DEBUG_PROGRAM_UPGRADE
@@ -552,7 +552,8 @@ class CNavigationPath : public TSEListNode<CNavigationPath>
 		Metric ComputePathLength (CSystem *pSystem) const;
 		CVector ComputePointOnPath (CSystem *pSystem, Metric rDist) const;
 		static CString DebugDescribe (CSpaceObject *pObj, CNavigationPath *pNavPath);
-		void DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void DebugPaintInfo (CG16bitImage &Dest, int x, int y, ViewportTransform &Xform);
+		void DebugPaintInfo (CG16bitImage &Dest, int x, int y, const CMapViewportCtx &Ctx);
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline int GetNavPointCount (void) const { return m_iWaypointCount; }
 		CVector GetNavPoint (int iIndex) const;

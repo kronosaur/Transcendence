@@ -316,7 +316,7 @@ CString CNavigationPath::DebugDescribe (CSpaceObject *pObj, CNavigationPath *pNa
 		}
 	}
 
-void CNavigationPath::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+void CNavigationPath::DebugPaintInfo (CG16bitImage &Dest, int x, int y, ViewportTransform &Xform)
 
 //	DebugPaintInfo
 //
@@ -327,13 +327,42 @@ void CNavigationPath::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewpor
 	int xFrom;
 	int yFrom;
 
-	Ctx.XForm.Transform(m_vStart, &xFrom, &yFrom);
+	Xform.Transform(m_vStart, &xFrom, &yFrom);
 	for (i = 0; i < m_iWaypointCount; i++)
 		{
 		int xTo;
 		int yTo;
 
-		Ctx.XForm.Transform(m_Waypoints[i], &xTo, &yTo);
+		Xform.Transform(m_Waypoints[i], &xTo, &yTo);
+
+		Dest.DrawLine(xFrom, yFrom,
+				xTo, yTo,
+				3,
+				CG16bitImage::RGBValue(0,255,0));
+
+		xFrom = xTo;
+		yFrom = yTo;
+		}
+	}
+
+void CNavigationPath::DebugPaintInfo (CG16bitImage &Dest, int x, int y, const CMapViewportCtx &Ctx)
+
+//	DebugPaintInfo
+//
+//	Paint the nav path
+
+	{
+	int i;
+	int xFrom;
+	int yFrom;
+
+	Ctx.Transform(m_vStart, &xFrom, &yFrom);
+	for (i = 0; i < m_iWaypointCount; i++)
+		{
+		int xTo;
+		int yTo;
+
+		Ctx.Transform(m_Waypoints[i], &xTo, &yTo);
 
 		Dest.DrawLine(xFrom, yFrom,
 				xTo, yTo,
