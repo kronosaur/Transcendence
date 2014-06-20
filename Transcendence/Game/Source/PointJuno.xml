@@ -1084,7 +1084,7 @@
 							desc=		"The bridge is completely smashed. Bodies float around in zero-G amid the shredded remains of consoles and other electronic equipment.">
 
 						<Actions>
-							<Action name="Leave" key="L" default="1" cancel="1">
+							<Action name="Done" key="D" default="1" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1102,7 +1102,7 @@
 								(scrShowScreen gScreen &dsRPGJettison;)
 							</Action>
 
-							<Action name="Leave" cancel="1" key="L">
+							<Action name="Done" cancel="1" key="D">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
@@ -1126,7 +1126,7 @@
 									)
 							</Action>
 
-							<Action name="Leave" key="L" cancel="1">
+							<Action name="Done" key="D" cancel="1">
 								(scrShowPane gScreen "Default")
 							</Action>
 						</Actions>
