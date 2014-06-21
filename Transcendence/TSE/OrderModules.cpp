@@ -263,6 +263,9 @@ CAttackOrder::CAttackOrder (IShipController::OrderTypes iOrder) : IOrderModule(o
 			m_fNearestTarget = true;
 			m_fInRangeOfObject = true;
 			break;
+
+		default:
+			ASSERT(false);
 		}
 	}
 

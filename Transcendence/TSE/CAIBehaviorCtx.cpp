@@ -14,6 +14,9 @@ const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_T
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 const Metric WALL_RANGE2 =				(WALL_RANGE * WALL_RANGE);
 
+const Metric MAX_NAV_START_DIST =		(20.0 * LIGHT_SECOND);
+const Metric MAX_NAV_START_DIST2 =		(MAX_NAV_START_DIST * MAX_NAV_START_DIST);
+
 CAIBehaviorCtx::CAIBehaviorCtx (void) :
 		m_iLastTurn(NoRotation),
 		m_iLastTurnCount(0),
@@ -444,7 +447,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 	//	Figure out an appropriate starting point
 
 	CSpaceObject *pBestObj = NULL;
-	Metric rBestDist2 = pShip->GetDistance2(pTo);
+	Metric rBestDist2 = MAX_NAV_START_DIST2;
 	for (i = 0; i < pSystem->GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
@@ -456,7 +459,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 						&& pObj->GetScale() == scaleStructure
 						&& !pObj->IsInactive()
 						&& !pObj->IsVirtual()
-						&& pObj->HasAttribute(CONSTLIT("populated"))
+						&& pObj->SupportsDocking()
 						&& pObj->IsFriend(pShip))))
 			{
 			Metric rDist2 = (pObj->GetPos() - pShip->GetPos()).Length2();
@@ -468,8 +471,25 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 			}
 		}
 
+	//	If we couldn't find a suitable object, create a marker
+
 	if (pBestObj == NULL)
+		{
+#ifdef NAV_PATH_MARKER
+		CMarker *pMarker;
+		if (CMarker::Create(pSystem,
+				pShip->GetSovereign(),
+				pShip->GetPos(),
+				NullVector,
+				strPatternSubst(CONSTLIT("NavPath-%x-%x"), pShip->GetID(), g_pUniverse->GetTicks()),
+				&pMarker) != NOERROR)
+			return false;
+
+		pBestObj = pMarker;
+#else
 		return false;
+#endif
+		}
 
 	CSpaceObject *pFrom = pBestObj;
 
