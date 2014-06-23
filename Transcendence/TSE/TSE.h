@@ -49,7 +49,7 @@
 
 //	Uncomment out the following define when building a stable release
 
-//#define TRANSCENDENCE_STABLE_RELEASE
+#define TRANSCENDENCE_STABLE_RELEASE
 
 //	Define some debugging symbols
 
@@ -67,7 +67,7 @@
 //#define DEBUG_FIRE_ON_OPPORTUNITY
 //#define DEBUG_HENCHMAN
 //#define DEBUG_LOAD
-#define DEBUG_NAV_PATH
+//#define DEBUG_NAV_PATH
 //#define DEBUG_NEBULA_PAINTING
 //#define DEBUG_PERFORMANCE
 //#define DEBUG_PROGRAM_UPGRADE
