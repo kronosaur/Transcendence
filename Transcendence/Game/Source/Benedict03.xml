@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict to Korolov ===================================================
+
+	EXTRA DATA
+
+	korolovNodeID:			The system where the station can be found.
+	korolovID:				ID of Korolov station.
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictToKorolov;"
+			name=				"Benedict to Korolov"
+			attributes=			"benedictStoryArc"
+
+			maxAppearing=		"1"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>25</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block (korolovDesc)
+
+					(switch
+						;	This mission only works in Eridani
+
+						(not (eq (sysGetNode) 'SE))
+							(msnDestroy gSource)
+
+						;	Make sure there exists a Korolov station somewhere in the
+						;	universe.
+
+						(not (setq korolovDesc (map (unvFindObj "t +korolovShipping; +populated;") (list 'reduceMin 'original) theDesc
+								(sysGetTopologyDistance (sysGetNode) (@ theDesc 2))
+								)))
+							(msnDestroy gSource)
+
+						;	Set up the mission
+
+						(block Nil
+							;	Remember the system and station ID
+
+							(msnSetData gSource 'korolovNodeID (@ korolovDesc 2))
+							(msnSetData gSource 'korolovID (@ korolovDesc 0))
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block Nil
+					(msnRegisterForEvents gSource gPlayerShip)
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnSetPlayerTarget>
+				(if (eq (sysGetNode) (msnGetData gSource 'korolovNodeID))
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'korolovID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+			
+			<OnObjDocked>
+				(switch
+					(and (eq aObjDocked gPlayerShip) 
+							(eq (objGetID aDockTarget) (msnGetData gSource 'korolovID))
+							)
+						(msnSuccess gSource)
+					)
+			</OnObjDocked>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Visit Korolov Shipping"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Travel to the " (sysGetName (msnGetData gSource 'korolovNodeID)) " System and visit Korolov Shipping.\n\n"
+					"System: " (sysGetName (msnGetData gSource 'korolovNodeID)) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

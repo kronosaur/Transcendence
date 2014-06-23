@@ -94,7 +94,7 @@ void CZoanthropeAI::Behavior (void)
 			int iFlockFacing;
 			if (CalcFlockingFormation(m_pBase, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 				{
-				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, iFlockFacing);
+				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 				}
 			else
 				{
@@ -124,7 +124,7 @@ void CZoanthropeAI::Behavior (void)
 			int iFlockFacing;
 			if (CalcFlockingFormation(NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 				{
-				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, iFlockFacing);
+				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 				}
 			else
 				{
@@ -358,7 +358,7 @@ void CZoanthropeAI::ImplementCombatManeuvers (CSpaceObject *pTarget)
 	if (rTargetDist2 > COMBAT_RANGE2
 			&& CalcFlockingFormation(NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 		{
-		m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, iFlockFacing);
+		m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 		}
 
 	//	Otherwise, if we are the leader, then fight

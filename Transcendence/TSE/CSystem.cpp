@@ -302,6 +302,21 @@
 //		Updated to fix a bug in 94 in which asteroids were marked as immutable
 //		(preventing mining from working).
 //
+//	96: 1.3
+//		m_iLastHitTime in CShip
+//
+//	97: 1.3
+//		m_Rotation in CShip
+//
+//	98: 1.3
+//		m_bUseObjectCenter in CParticleCloudPainter
+//
+//	99: 1.3
+//		CEffectParamDesc saving
+//
+//	100: 1.3
+//		m_iOrder in CPlayerShipController
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
@@ -311,9 +326,11 @@
 #define ENHANCED_SRS_BLOCK_SIZE			6
 
 #define LEVEL_ENCOUNTER_CHANCE			10
-const Metric MAX_ENCOUNTER_DIST	=		(30.0 * LIGHT_MINUTE);
 
 #define MAX_TARGET_RANGE				(24.0 * LIGHT_SECOND)
+
+const Metric MAX_AUTO_TARGET_DISTANCE =			30.0 * LIGHT_SECOND;
+const Metric MAX_ENCOUNTER_DIST	=				30.0 * LIGHT_MINUTE;
 
 #define ON_CREATE_EVENT					CONSTLIT("OnCreate")
 #define ON_OBJ_JUMP_POS_ADJ				CONSTLIT("OnObjJumpPosAdj")
@@ -394,7 +411,10 @@ CSystem::CSystem (void) : CObject(&g_Class),
 		m_fInCreate(false),
 		m_fEncounterTableValid(false),
 		m_StarField(sizeof(CStar), STARFIELD_COUNT),
-		m_ObjGrid(GRID_SIZE, CELL_SIZE, CELL_BORDER)
+		m_ObjGrid(GRID_SIZE, CELL_SIZE, CELL_BORDER),
+		m_fEnemiesInLRS(false),
+		m_fEnemiesInSRS(false),
+		m_fPlayerUnderAttack(false)
 
 //	CSystem constructor
 
@@ -698,6 +718,8 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 //	Initializes the viewport context
 
 	{
+	DEBUG_TRY
+
 	Ctx.pCenter = pCenter;
 	Ctx.vCenterPos = pCenter->GetPos();
 	Ctx.rcView = rcView;
@@ -711,6 +733,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 	Ctx.xCenter = rcView.left + RectWidth(rcView) / 2;
 	Ctx.yCenter = rcView.top + RectHeight(rcView) / 2;
 	Ctx.XForm = ViewportTransform(Ctx.vCenterPos, g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Figure out the extended boundaries. This is used for enhanced display.
 
@@ -724,6 +747,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 
 	Ctx.fEnhancedDisplay = ((dwFlags & VWP_ENHANCED_DISPLAY) ? true : false);
 	Ctx.fNoStarfield = ((dwFlags & VWP_NO_STAR_FIELD) ? true : false);
+	Ctx.fShowManeuverEffects = ((dwFlags & VWP_SHOW_MANEUVER_EFFECTS) ? true : false);
 
 	//	Figure out what color space should be. Space gets lighter as we get
 	//	near the central star
@@ -734,6 +758,8 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 	//	(in pixels)
 
 	Ctx.rIndicatorRadius = Min(RectWidth(rcView), RectHeight(rcView)) / 2.0;
+
+	DEBUG_CATCH
 	}
 
 void CSystem::CancelTimedEvent (CSpaceObject *pSource, const CString &sEvent, bool bInDoEvent)
@@ -1045,11 +1071,14 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	//	Flags
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	Ctx.pSystem->m_fNoRandomEncounters = ((dwLoad & 0x00000001) ? true : false);
+	Ctx.pSystem->m_fNoRandomEncounters =	((dwLoad & 0x00000001) ? true : false);
 	if (dwLoad & 0x00000002)
 		Ctx.pStream->Read((char *)&Ctx.dwVersion, sizeof(DWORD));
-	Ctx.pSystem->m_fUseDefaultTerritories = ((dwLoad & 0x00000004) ? false : true);
+	Ctx.pSystem->m_fUseDefaultTerritories =	((dwLoad & 0x00000004) ? false : true);
 	Ctx.pSystem->m_fEncounterTableValid = false;
+	Ctx.pSystem->m_fEnemiesInLRS =			((dwLoad & 0x00000008) ? false : true);
+	Ctx.pSystem->m_fEnemiesInSRS =			((dwLoad & 0x00000010) ? false : true);
+	Ctx.pSystem->m_fPlayerUnderAttack =		((dwLoad & 0x00000020) ? false : true);
 
 	//	Scales
 
@@ -2819,6 +2848,10 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	SViewportPaintCtx Ctx;
 	CalcViewportCtx(Ctx, rcView, pCenter, dwFlags);
 
+	//	Keep track of the player object because sometimes we do special processing
+
+	CSpaceObject *pPlayerCenter = (pCenter->IsPlayer() ? pCenter : NULL);
+
 	//	Clear the rect
 
 	Dest.SetClipRect(rcView);
@@ -2849,7 +2882,9 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
-		if (pObj)
+		if (pObj 
+				&& !pObj->IsVirtual() 
+				&& pObj != pPlayerCenter)
 			{
 			Metric rParallaxDist;
 
@@ -2874,21 +2909,43 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 						m_ForegroundObjs.FastAdd(pObj);
 					}
 				}
-			else if (pObj->InBox(Ctx.vUR, Ctx.vLL) && !pObj->IsVirtual())
+			else
 				{
-				m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
-				pObj->SetPaintNeeded();
-				}
-			else if ((Ctx.fEnhancedDisplay
+				bool bInViewport = pObj->InBox(Ctx.vUR, Ctx.vLL);
+
+				//	If we're in the viewport, then we need to paint on the main screen
+
+				if (bInViewport)
+					{
+					m_LayerObjs[pObj->GetPaintLayer()].FastAdd(pObj);
+					pObj->SetPaintNeeded();
+					}
+
+				//	See if we need to paint a marker. Note that sometimes we end up 
+				//	painting both because we might be in-bounds (because of effects)
+				//	but still off-screen.
+
+				bool bMarker = pObj->IsPlayerTarget()
+						|| pObj->IsPlayerDestination()
+						|| pObj->IsHighlighted()
+						|| (Ctx.fEnhancedDisplay
 							&& (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
 							&& pObj->PosInBox(Ctx.vEnhancedUR, Ctx.vEnhancedLL)
-							&& !pObj->IsInactive()
-							&& !pObj->IsVirtual())
-						|| pObj->IsPlayerTarget()
-						|| pObj->IsPlayerDestination()
-						|| pObj->IsHighlighted())
-				m_EnhancedDisplayObjs.FastAdd(pObj);
+							&& !pObj->IsInactive());
+
+				if (bMarker
+						&& (!bInViewport || !pObj->HitSizeInBox(Ctx.vUR, Ctx.vLL)))
+					m_EnhancedDisplayObjs.FastAdd(pObj);
+				}
 			}
+		}
+
+	//	Always add the player at the end (so we paint on top of our layer)
+
+	if (pPlayerCenter)
+		{
+		m_LayerObjs[pPlayerCenter->GetPaintLayer()].FastAdd(pPlayerCenter);
+		pPlayerCenter->SetPaintNeeded();
 		}
 
 	//	Paint background objects
@@ -2901,6 +2958,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		//	Adjust the transform to deal with parallax
 
 		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+		Ctx.XFormRel = Ctx.XForm;
 
 		//	Figure out the position of the object in pixels
 
@@ -2920,6 +2978,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		SetProgramState(psPaintingSRS);
 		}
 	Ctx.XForm = SavedXForm;
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint any space environment
 
@@ -2956,11 +3015,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 			//	Clear destination, if necessary
 
 			if (pObj->IsAutoClearDestination())
-				{
 				pObj->ClearPlayerDestination();
-				pObj->ClearShowDistanceAndBearing();
-				pObj->ClearAutoClearDestination();
-				}
 			}
 
 	//	Paint foreground objects
@@ -2973,6 +3028,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		//	Compute the transform
 
 		Ctx.XForm = ViewportTransform(Ctx.vCenterPos, pObj->GetParallaxDist() * g_KlicksPerPixel, Ctx.xCenter, Ctx.yCenter);
+		Ctx.XFormRel = Ctx.XForm;
 
 		//	Figure out the position of the object in pixels
 
@@ -2992,6 +3048,7 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 		SetProgramState(psPaintingSRS);
 		}
 	Ctx.XForm = SavedXForm;
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint all the enhanced display markers
 
@@ -3072,25 +3129,27 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	Dest.ResetClipRect();
 	}
 
-void CSystem::PaintViewportGrid (CG16bitImage &Dest, const RECT &rcView, const ViewportTransform &Trans, const CVector &vCenter, Metric rGridSize)
+void CSystem::PaintViewportGrid (CMapViewportCtx &Ctx, CG16bitImage &Dest, Metric rGridSize)
 
 //	PaintViewportGrid
 //
 //	Paints a grid
 
 	{
+	const RECT &rcView = Ctx.GetViewportRect();
+
 	int cxWidth = RectWidth(rcView);
 	int cyHeight = RectHeight(rcView);
 
 	//	Figure out where the center is
 
 	int xCenter, yCenter;
-	Trans.Transform(vCenter, &xCenter, &yCenter);
+	Ctx.Transform(Ctx.GetCenterPos(), &xCenter, &yCenter);
 
 	//	Figure out the grid spacing
 
 	int xSpacing, ySpacing;
-	Trans.Transform(vCenter + CVector(rGridSize, -rGridSize), &xSpacing, &ySpacing);
+	Ctx.Transform(Ctx.GetCenterPos() + CVector(rGridSize, -rGridSize), &xSpacing, &ySpacing);
 	xSpacing -= xCenter;
 	ySpacing -= yCenter;
 	ySpacing = xSpacing;
@@ -3155,6 +3214,7 @@ void CSystem::PaintViewportObject (CG16bitImage &Dest, const RECT &rcView, CSpac
 	SViewportPaintCtx Ctx;
 	Ctx.wSpaceColor = CalculateSpaceColor(pCenter);
 	Ctx.XForm = ViewportTransform(pCenter->GetPos(), g_KlicksPerPixel, xCenter, yCenter);
+	Ctx.XFormRel = Ctx.XForm;
 
 	//	Paint object
 
@@ -3191,9 +3251,8 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	CVector vUR[RANGE_INDEX_COUNT];
 	CVector vLL[RANGE_INDEX_COUNT];
+	Metric rMaxDist2[RANGE_INDEX_COUNT];
 
-	CVector vDiagonal(rKlicksPerPixel * (Metric)(RectWidth(rcView)) / 2,
-				rKlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
 	for (i = 0; i < RANGE_INDEX_COUNT; i++)
 		{
 		Metric rRange = RangeIndex2Range(i);
@@ -3206,9 +3265,18 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		CVector vRange(rRange, rRange);
 		vUR[i] = pCenter->GetPos() + vRange;
 		vLL[i] = pCenter->GetPos() - vRange;
+		rMaxDist2[i] = rRange * rRange;
 		}
 
 	int iPerception = pCenter->GetPerception();
+
+	//	For planetary and stellar objects we use a larger box to make sure that 
+	//	we include it even if it is slightly off screen.
+
+	CVector vLargeDiagonal(rKlicksPerPixel * ((RectWidth(rcView) / 2) + 128),
+				rKlicksPerPixel * ((RectHeight(rcView) / 2) + 128));
+	CVector vLargeUR = pCenter->GetPos() + vLargeDiagonal;
+	CVector vLargeLL = pCenter->GetPos() - vLargeDiagonal;
 
 	//	Compute the transformation to map world coordinates to the viewport
 
@@ -3247,42 +3315,52 @@ void CSystem::PaintViewportLRS (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	//	Loop over all objects
 
+	m_fEnemiesInLRS = false;
 	bool bNewEnemies = false;
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
+		if (pObj == NULL)
+			continue;
 
-		if (pObj)
+		int iRange;
+		if (!pObj->IsInactive()
+				&& !pObj->IsVirtual()
+				&& pObj->InBox(vLargeUR, vLargeLL)
+				&& (pObj->GetScale() == scaleStar 
+					|| pObj->GetScale() == scaleWorld 
+					|| ((iRange = pObj->GetDetectionRangeIndex(iPerception)) < RANGE_INDEX_COUNT
+						&& pCenter->GetDistance2(pObj) <= rMaxDist2[iRange])))
 			{
-			int iRange = pObj->GetDetectionRangeIndex(iPerception);
+			//	Figure out the position of the object in pixels
 
-			if (pObj->InBox(vUR[iRange], vLL[iRange]) 
-					&& !pObj->IsInactive() 
-					&& !pObj->IsVirtual())
+			int x, y;
+			Trans.Transform(pObj->GetPos(), &x, &y);
+
+			//	Paint the object in the viewport
+
+			pObj->PaintLRS(Dest, x, y, Trans);
+
+			//	This object is now in the LRS
+
+			bool bNewInLRS = pObj->SetPOVLRS();
+
+			//	If an enemy, keep track
+
+			if (pCenter->IsEnemy(pObj))
 				{
-				//	Figure out the position of the object in pixels
-
-				int x, y;
-				Trans.Transform(pObj->GetPos(), &x, &y);
-
-				//	Paint the object in the viewport
-
-				pObj->PaintLRS(Dest, x, y, Trans);
-
-				//	This object is now in the LRS
-
-				bool bNewInLRS = pObj->SetPOVLRS();
 				if (bNewInLRS 
-						&& pCenter->IsEnemy(pObj) 
 						&& pObj->GetCategory() == CSpaceObject::catShip)
 					bNewEnemies = true;
-				}
-			else
-				{
-				//	This object is not in the LRS
 
-				pObj->ClearPOVLRS();
+				m_fEnemiesInLRS = true;
 				}
+			}
+		else
+			{
+			//	This object is not in the LRS
+
+			pObj->ClearPOVLRS();
 			}
 		}
 
@@ -3302,43 +3380,32 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	int i;
 	int x, y;
 
+	//	Initialize context
+
+	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, rMapScale);
+
 	//	Clear the rect
 
 	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), g_rgbSpaceColor);
 
-	//	Figure out the boundary of the viewport in system coordinates
-
-	int xCenter = rcView.left + RectWidth(rcView) / 2;
-	int yCenter = rcView.top + RectHeight(rcView) / 2;
-
-	CVector vDiagonal(rMapScale * (Metric)(RectWidth(rcView) + 256) / 2,
-				rMapScale * MAP_VERTICAL_ADJUST * (Metric)(RectHeight(rcView) + 256) / 2);
-	CVector vUR = pCenter->GetPos() + vDiagonal;
-	CVector vLL = pCenter->GetPos() - vDiagonal;
-
-	//	Compute the transformation to map world coordinates to the viewport
-
-	ViewportTransform Trans(pCenter->GetPos(), 
-			rMapScale, 
-			rMapScale * MAP_VERTICAL_ADJUST,
-			xCenter, 
-			yCenter);
-
-	//	Paint the grid
-
-	PaintViewportGrid(Dest, rcView, Trans, CVector(), 100.0 * LIGHT_SECOND);
-
 	//	Paint space environment
 
 	if (m_pEnvironment)
-		m_pEnvironment->PaintMap(Dest, vUR, vLL, Trans);
+		m_pEnvironment->PaintMap(Ctx, Dest);
 
 	//	Paint the glow from all stars
 
 	for (i = 0; i < m_Stars.GetCount(); i++)
 		{
 		CSpaceObject *pStar = m_Stars.GetObj(i);
-		Trans.Transform(pStar->GetPos(), &x, &y);
+
+		//	Paint a grid for the star
+
+		Ctx.PaintGrid(Dest, pStar->GetPos(), 30.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
+
+		//	Paint glow
+
+		Ctx.Transform(pStar->GetPos(), &x, &y);
 		int iGlowRadius = (int)((pStar->GetMaxLightDistance() * LIGHT_SECOND) / rMapScale);
 
 		DrawAlphaGradientCircle(Dest, x, y, iGlowRadius, (WORD)CG16bitImage::PixelFromRGB(pStar->GetSpaceColor()));
@@ -3352,18 +3419,18 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 		if (pObj 
 				&& (pObj->GetScale() == scaleStar || pObj->GetScale() == scaleWorld)
-				&& (pObj->GetMapOrbit() || pObj->InBox(vUR, vLL)))
+				&& (pObj->GetMapOrbit() || Ctx.IsInViewport(pObj)))
 			{
 			//	Figure out the position of the object in pixels
 
-			Trans.Transform(pObj->GetPos(), &x, &y);
+			Ctx.Transform(pObj->GetPos(), &x, &y);
 
 			//	Paint the object in the viewport
 
-			pObj->PaintMap(Dest, 
+			pObj->PaintMap(Ctx,
+					Dest, 
 					x,
-					y,
-					Trans);
+					y);
 			}
 		}
 
@@ -3374,35 +3441,39 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 		CSpaceObject *pObj = GetObject(i);
 
 		if (pObj 
-				&& pObj->InBox(vUR, vLL) 
 				&& (pObj->GetScale() == scaleStructure
-					|| pObj->GetScale() == scaleShip))
+					|| pObj->GetScale() == scaleShip)
+				&& Ctx.IsInViewport(pObj))
 			{
 			//	Figure out the position of the object in pixels
 
-			Trans.Transform(pObj->GetPos(), &x, &y);
+			Ctx.Transform(pObj->GetPos(), &x, &y);
 
 			//	Paint the object in the viewport
 
-			pObj->PaintMap(Dest, 
+			pObj->PaintMap(Ctx,
+					Dest, 
 					x,
-					y,
-					Trans);
-
-			//	Paint destination marker
-
-			if (pObj->IsPlayerDestination())
-				{
-				Dest.FillColumn(x, y - 4, 9, CG16bitImage::RGBValue(255, 255, 0));
-				Dest.FillLine(x - 4, y, 9, CG16bitImage::RGBValue(255, 255, 0));
-				}
+					y);
 			}
 		}
 
+	//	Paint NavPaths
+
+#ifdef DEBUG_NAV_PATH
+	CNavigationPath *pNext = m_NavPaths.GetNext();
+	while (pNext)
+		{
+		pNext->DebugPaintInfo(Dest, 0, 0, Ctx);
+
+		pNext = pNext->GetNext();
+		}
+#endif
+
 	//	Paint the POV
 
-	Trans.Transform(pCenter->GetPos(), &x, &y);
-	pCenter->PaintMap(Dest, x, y, Trans);
+	Ctx.Transform(pCenter->GetPos(), &x, &y);
+	pCenter->PaintMap(Ctx, Dest, x, y);
 	}
 
 void CSystem::PaintViewportMapObject (CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, CSpaceObject *pObj)
@@ -3414,28 +3485,14 @@ void CSystem::PaintViewportMapObject (CG16bitImage &Dest, const RECT &rcView, CS
 	{
 	int x, y;
 
-	//	Figure out the boundary of the viewport in system coordinates
+	//	Initialize context
 
-	int xCenter = rcView.left + RectWidth(rcView) / 2;
-	int yCenter = rcView.top + RectHeight(rcView) / 2;
-
-	CVector vDiagonal(g_MapKlicksPerPixel * (Metric)(RectWidth(rcView) + 256) / 2,
-				g_MapKlicksPerPixel * (Metric)(RectHeight(rcView) + 256) / 2);
-	CVector vUR = pCenter->GetPos() + vDiagonal;
-	CVector vLL = pCenter->GetPos() - vDiagonal;
-
-	//	Compute the transformation to map world coordinates to the viewport
-
-	ViewportTransform Trans(pCenter->GetPos(), 
-			g_MapKlicksPerPixel, 
-			g_MapKlicksPerPixel * MAP_VERTICAL_ADJUST,
-			xCenter, 
-			yCenter);
+	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, g_KlicksPerPixel);
 
 	//	Paint the obj
 
-	Trans.Transform(pObj->GetPos(), &x, &y);
-	pObj->PaintMap(Dest, x, y, Trans);
+	Ctx.Transform(pObj->GetPos(), &x, &y);
+	pObj->PaintMap(Ctx, Dest, x, y);
 	}
 
 void CSystem::PlaceInGate (CSpaceObject *pObj, CSpaceObject *pGate)
@@ -3819,9 +3876,12 @@ ALERROR CSystem::SaveToStream (IWriteStream *pStream)
 	//	Write flags
 
 	dwSave = 0;
-	dwSave |= (m_fNoRandomEncounters ? 0x00000001 : 0);
+	dwSave |= (m_fNoRandomEncounters ?		0x00000001 : 0);
 	dwSave |= 0x00000002;	//	Include version (this is a hack for backwards compatibility)
-	dwSave |= (!m_fUseDefaultTerritories ? 0x00000004 : 0);
+	dwSave |= (!m_fUseDefaultTerritories ?	0x00000004 : 0);
+	dwSave |= (m_fEnemiesInLRS ?			0x00000008 : 0);
+	dwSave |= (m_fEnemiesInSRS ?			0x00000010 : 0);
+	dwSave |= (m_fPlayerUnderAttack ?		0x00000020 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Save version
@@ -4132,7 +4192,7 @@ void CSystem::UnregisterEventHandler (CSpaceObject *pObj)
 		}
 	}
 
-void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
+void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 
 //	Update
 //
@@ -4149,6 +4209,37 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 
 	SUpdateCtx Ctx;
 	Ctx.pSystem = this;
+	Ctx.pPlayer = GetPlayer();
+
+	//	Initialize the player weapon context so that we can select the auto-
+	//	target.
+
+	if (Ctx.pPlayer)
+		{
+		//	Check to see if the primary weapon requires autotargetting
+
+		CInstalledDevice *pWeapon = Ctx.pPlayer->GetNamedDevice(devPrimaryWeapon);
+		if (pWeapon)
+			{
+			CItemCtx ItemCtx(Ctx.pPlayer, pWeapon);
+			Ctx.bNeedsAutoTarget = pWeapon->GetClass()->NeedsAutoTarget(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
+			}
+
+		//	If the primary does not need it, check the missile launcher
+
+		CInstalledDevice *pLauncher;
+		if (!Ctx.bNeedsAutoTarget
+				&& (pLauncher = Ctx.pPlayer->GetNamedDevice(devMissileWeapon)))
+			{
+			CItemCtx ItemCtx(Ctx.pPlayer, pLauncher);
+			Ctx.bNeedsAutoTarget = pLauncher->GetClass()->NeedsAutoTarget(ItemCtx, &Ctx.iMinFireArc, &Ctx.iMaxFireArc);
+			}
+
+		//	Set up perception and max target dist
+
+		Ctx.iPlayerPerception = Ctx.pPlayer->GetPerception();
+		Ctx.rTargetDist2 = MAX_AUTO_TARGET_DISTANCE * MAX_AUTO_TARGET_DISTANCE;
+		}
 
 	//	Delete all objects in the deleted list (we do this at the
 	//	beginning because we want to keep the list after the update
@@ -4171,7 +4262,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	create the universe.
 
 	SetProgramState(psUpdatingEvents);
-	if (!IsTimeStopped() && (g_pUniverse->GetPlayer() || bForceEventFiring))
+	if (!IsTimeStopped() && (g_pUniverse->GetPlayer() || SystemCtx.bForceEventFiring))
 		m_TimedEvents.Update(m_iTick, this);
 
 	//	Add all objects to the grid so that we can do faster
@@ -4187,8 +4278,21 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 		}
 	DebugStopTimer("Adding objects to grid");
 
+	//	If necessary, mark as painted so that objects update correctly.
+
+	if (SystemCtx.bForcePainted)
+		{
+		for (i = 0; i < GetObjectCount(); i++)
+			{
+			CSpaceObject *pObj = GetObject(i);
+			if (pObj)
+				pObj->SetPainted();
+			}
+		}
+
 	//	Give all objects a chance to react
 
+	m_fPlayerUnderAttack = false;
 	DebugStartTimer();
 	for (i = 0; i < GetObjectCount(); i++)
 		{
@@ -4197,7 +4301,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 		if (pObj && !pObj->IsTimeStopped())
 			{
 			SetProgramState(psUpdatingBehavior, pObj);
-			pObj->Behavior();
+			pObj->Behavior(Ctx);
 
 			//	Update the objects
 
@@ -4246,7 +4350,7 @@ void CSystem::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 			//	Move the objects
 
 			SetProgramState(psUpdatingMove, pObj);
-			pObj->Move(m_BarrierObjects, rSecondsPerTick);
+			pObj->Move(m_BarrierObjects, SystemCtx.rSecondsPerTick);
 
 #ifdef DEBUG_PERFORMANCE
 			iMoveObj++;
@@ -4305,11 +4409,13 @@ void CSystem::UpdateExtended (const CTimeSpan &ExtraTime)
 	{
 	int i;
 
+	SSystemUpdateCtx UpdateCtx;
+
 	//	Update for a few seconds
 
 	int iTime = mathRandom(250, 350);
 	for (i = 0; i < iTime; i++)
-		Update(g_SecondsPerUpdate);
+		Update(UpdateCtx);
 
 	//	Give all objects a chance to update
 

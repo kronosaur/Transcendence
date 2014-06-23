@@ -23,6 +23,8 @@ static char *FEEDBACK[] =
 	"Aniki",
 	"Apemant",
 	"Aquilai",
+	"Arkheias",
+	"AssumedPseudonym",
 	"Azmond",
 
 	"Lee Baugh",
@@ -63,6 +65,7 @@ static char *FEEDBACK[] =
 	"Bill Dunigan",
 
 	"Markus Eckert",
+	"EditorRUS",
 	"El FluffyDragon",
 	"Evilbob",
 
@@ -98,6 +101,7 @@ static char *FEEDBACK[] =
 	"Kamikaze",
 	"Hatsuya Kanzaki",
 	"Karl",
+//	"kay.py",	Same as Kris Parker
 	"Keleus",
 	"Kenquinn The Insane One",
 	"Kobell",
@@ -137,6 +141,7 @@ static char *FEEDBACK[] =
 	"Palmiche",
 	"Kris Parker",
 	"Petrus",
+	"pixelfck",
 	"PKodon",
 	"PlayMeNow",
 	"PM",
@@ -153,6 +158,7 @@ static char *FEEDBACK[] =
 	"Rhonda Reese",
 	"Retroactive",
 	"Revolver",
+	"robotarozum",
 	"David Rotberg",
 
 	"Salvagebot 1.0",
@@ -164,6 +170,7 @@ static char *FEEDBACK[] =
 	"Section6",
 	"Sero",
 	"SevereTireDamage",
+	"Shaman",
 	"Sheltem",
 	"Shrike",
 	"SiaFu",
@@ -186,12 +193,16 @@ static char *FEEDBACK[] =
 	"Rick Tengdin",
 	"Teslin K. R.",
 	"trouver",
+	"TVR",
+
+	"Ultimate Chicken",
 
 	"Vachtra",
 	"Vastin",
 	"Viperion",
 
 	"The Wanderer",
+	"Watch TV, Do Nothing",
 	"Weelillad",
 	"Wurmish",
 
@@ -238,10 +249,12 @@ const int INSPIRATION_COUNT = (sizeof(INSPIRATION) / sizeof(INSPIRATION[0]));
 
 static char *SOFTWARE[] =
 	{
-	"Microsoft® Visual Studio®",
 	"Adobe® Photoshop®",
 	"Caligari trueSpace®",
+	"Intel® JPEG Library",
+	"Microsoft® Visual Studio®",
 	"Luminous",
+	"zlib"
 	};
 
 const int SOFTWARE_COUNT = (sizeof(SOFTWARE) / sizeof(SOFTWARE[0]));

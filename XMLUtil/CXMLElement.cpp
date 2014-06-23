@@ -281,6 +281,40 @@ double CXMLElement::GetAttributeDouble (const CString &sName)
 	return strToDouble(GetAttribute(sName), 0.0);
 	}
 
+double CXMLElement::GetAttributeDoubleBounded (const CString &sName, double rMin, double rMax, double rNull)
+
+//	GetAttributeDoubleBounded
+//
+//	Returns a double, insuring that it is in range
+
+	{
+	CString sValue;
+	if (FindAttribute(sName, &sValue))
+		{
+		bool bFailed;
+		double rValue = strToDouble(sValue, rNull, &bFailed);
+		if (bFailed)
+			return rNull;
+
+		//	The null value is always valid
+
+		if (rValue == rNull)
+			return rValue;
+
+		//	If iMax is less than iMin, then there is no maximum
+
+		else if (rMax < rMin)
+			return Max(rValue, rMin);
+
+		//	Bounded
+
+		else
+			return Max(Min(rValue, rMax), rMin);
+		}
+	else
+		return rNull;
+	}
+
 float CXMLElement::GetAttributeFloat (const CString &sName)
 
 //	GetAttributeFloat
@@ -361,6 +395,56 @@ CXMLElement *CXMLElement::GetContentElementByTag (const CString &sTag) const
 		}
 
 	return NULL;
+	}
+
+void CXMLElement::MergeFrom (CXMLElement *pElement)
+
+//	MergeFrom
+//
+//	Merges the given element into ours.
+//
+//	Attributes are replaced if they duplicate; child elements are appended to the end.
+
+	{
+	int i;
+
+	//	Copy all attributes (replacing in case of duplication)
+
+	for (i = 0; i < pElement->GetAttributeCount(); i++)
+		SetAttribute(pElement->GetAttributeName(i), pElement->GetAttribute(i));
+
+	//	If we have at least one text item then append it to our last
+	//	text item.
+
+	if (pElement->m_ContentText.GetCount() > 0)
+		{
+		if (m_ContentText.GetCount() == 0)
+			m_ContentText.Insert(pElement->m_ContentText[0]);
+		else
+			m_ContentText[m_ContentText.GetCount() - 1].Append(pElement->m_ContentText[0]);
+		}
+
+	//	Now add each of the child elements
+
+	for (i = 0; i < pElement->GetContentElementCount(); i++)
+		{
+		m_ContentElements.Insert(pElement->GetContentElement(i)->OrphanCopy());
+
+		//	If we have no text items then we need to insert one (it goes before
+		//	this new element). NOTE: This shouldn't happen if pElement is
+		//	properly formed.
+
+		if (m_ContentText.GetCount() == 0)
+			m_ContentText.Insert(NULL_STR);
+
+		//	Now insert the text that goes AFTER the element that we just
+		//	inserted.
+
+		if (i + 1 < pElement->m_ContentText.GetCount())
+			m_ContentText.Insert(pElement->m_ContentText[i + 1]);
+		else
+			m_ContentText.Insert(NULL_STR);
+		}
 	}
 
 CXMLElement *CXMLElement::OrphanCopy (void)

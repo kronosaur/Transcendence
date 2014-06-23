@@ -141,11 +141,16 @@ void CTranscendenceWnd::DoCommsMenu (int iIndex)
 //	Send message to the object
 
 	{
-	if (GetPlayer())
-		m_pMenuObj->CommsMessageFrom(GetPlayer()->GetShip(), iIndex);
+	if (m_pMenuObj)
+		{
+		if (GetPlayer())
+			m_pMenuObj->CommsMessageFrom(GetPlayer()->GetShip(), iIndex);
+
+		m_pMenuObj->SetHighlightChar(0);
+		m_pMenuObj = NULL;
+		}
 
 	m_CurrentMenu = menuNone;
-	m_pMenuObj = NULL;
 	}
 
 void CTranscendenceWnd::DoCommsSquadronMenu (const CString &sName, MessageTypes iOrder, DWORD dwData2)
@@ -376,7 +381,7 @@ DWORD CTranscendenceWnd::GetCommsStatus (void)
 	return dwStatus;
 	}
 
-void CTranscendenceWnd::HideCommsTargetMenu (void)
+void CTranscendenceWnd::HideCommsTargetMenu (CSpaceObject *pExclude)
 
 //	HideCommsTargetMenu
 //
@@ -390,11 +395,16 @@ void CTranscendenceWnd::HideCommsTargetMenu (void)
 		for (i = 0; i < m_MenuData.GetCount(); i++)
 			{
 			CSpaceObject *pObj = (CSpaceObject *)m_MenuData.GetItemData(i);
-			if (pObj)
+			if (pObj && pObj != pExclude)
 				pObj->SetHighlightChar(0);
 			}
 
 		m_CurrentMenu = menuNone;
+		}
+	else if (m_CurrentMenu == menuComms)
+		{
+		if (m_pMenuObj)
+			m_pMenuObj->SetHighlightChar(0);
 		}
 	}
 
@@ -555,7 +565,7 @@ void CTranscendenceWnd::PaintLRS (void)
 			//	Notify player of enemies
 
 			if (bNewEnemies)
-				DisplayMessage(CONSTLIT("Enemy ships detected"));
+				GetPlayer()->OnEnemyShipsDetected();
 			}
 
 		//	If we're blind, paint snow
@@ -646,18 +656,14 @@ void CTranscendenceWnd::PaintMap (void)
 			}
 		}
 
-	g_pUniverse->PaintPOVMap(TheScreen, m_rcMainScreen, rScale);
-
-	//	Paint the edges
-
-	PaintMainScreenBorder();
+	g_pUniverse->PaintPOVMap(TheScreen, m_rcScreen, rScale);
 
 	//	Paint some text, including the system name
 
 	CSpaceObject *pPOV = g_pUniverse->GetPOV();
 	if (pPOV)
 		{
-		int x = m_rcMainScreen.left + 2 * m_Fonts.LargeBold.GetAverageWidth();
+		int x = m_rcScreen.left + 2 * m_Fonts.LargeBold.GetAverageWidth();
 		int y;
 		if (GetPlayer()->IsMapHUDActive())
 			y = m_TargetDisplay.GetRect().top - 3 * m_Fonts.Header.GetHeight();
@@ -742,16 +748,6 @@ void CTranscendenceWnd::SelectArmor (int iSeg)
 	{
 	if (GetPlayer())
 		m_ArmorDisplay.SetSelection(iSeg);
-	}
-
-void CTranscendenceWnd::SetSoundVolumeOption (int iVolume)
-
-//	SetSoundVolumeOption
-//
-//	Sets the volume level
-
-	{
-	m_pTC->SetOptionInteger(CGameSettings::soundVolume, iVolume);
 	}
 
 void CTranscendenceWnd::ShowCommsMenu (CSpaceObject *pObj)
@@ -855,7 +851,16 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 		m_MenuData.SetTitle(CONSTLIT("Communications"));
 		m_MenuData.RemoveAll();
 
+		//	Keep track of which keys we've used, in case specific objects want
+		//	to use their own keys.
+
+		TSortMap<CString, bool> KeyMap;
+		int iNextKey = 0;
+
+		//	Add the comms key to the list of keys to exclude
+
 		char chCommsKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyCommunications);
+		KeyMap.Insert(CString(&chCommsKey, 1), true);
 
 		//	First add all the objects that are following the player
 
@@ -872,13 +877,20 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
-					m_MenuData.AddMenuItem(sKey,
-							pObj->GetName(),
-							0,
-							(DWORD)pObj);
+					CString sKey = pObj->GetDesiredCommsKey();
+					if (sKey.IsBlank() || KeyMap.GetAt(sKey) != NULL)
+						sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iNextKey, KeyMap);
 
-					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+					if (!sKey.IsBlank())
+						{
+						m_MenuData.AddMenuItem(sKey,
+								pObj->GetName(),
+								CMenuData::FLAG_SORT_BY_KEY,
+								(DWORD)pObj);
+
+						pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+						KeyMap.SetAt(sKey, true);
+						}
 					}
 				}
 			}
@@ -897,13 +909,20 @@ void CTranscendenceWnd::ShowCommsTargetMenu (void)
 				{
 				if (m_MenuData.GetCount() < MAX_COMMS_OBJECTS)
 					{
-					CString sKey = CMenuDisplay::GetHotKeyFromOrdinal(m_MenuData.GetCount(), chCommsKey);
-					m_MenuData.AddMenuItem(sKey,
-							pObj->GetName(),
-							0,
-							(DWORD)pObj);
+					CString sKey = pObj->GetDesiredCommsKey();
+					if (sKey.IsBlank() || KeyMap.GetAt(sKey) != NULL)
+						sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iNextKey, KeyMap);
 
-					pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+					if (!sKey.IsBlank())
+						{
+						m_MenuData.AddMenuItem(sKey,
+								pObj->GetName(),
+								CMenuData::FLAG_SORT_BY_KEY,
+								(DWORD)pObj);
+
+						pObj->SetHighlightChar(*sKey.GetASCIIZPointer());
+						KeyMap.SetAt(sKey, true);
+						}
 					}
 				}
 			}
@@ -943,7 +962,10 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 		m_MenuData.RemoveAll();
 
 		bool bUseLetters = m_pTC->GetOptionBoolean(CGameSettings::allowInvokeLetterHotKeys);
+
+		TSortMap<CString, bool> KeyMap;
 		char chInvokeKey = m_pTC->GetKeyMap().GetKeyIfChar(CGameKeys::keyInvokePower);
+		KeyMap.Insert(CString(&chInvokeKey, 1), true);
 
 		//	Add the powers
 
@@ -955,22 +977,52 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 			if (pPower->OnShow(GetPlayer()->GetShip(), NULL, &sError))
 				{
 				CString sKey = pPower->GetInvokeKey();
+				if (sKey.IsBlank())
+					continue;
+
+				//	If we're the default letter keys, then make sure we don't
+				//	conflict.
+
+				if (bUseLetters)
+					{
+					//	If the key conflicts, then pick another key (the next 
+					//	key in the sequence).
+
+					while (!sKey.IsBlank() && KeyMap.GetAt(sKey) != NULL)
+						{
+						char chChar = (*sKey.GetASCIIZPointer()) + 1;
+						if (chChar == ':')
+							chChar = 'A';
+
+						if (chChar <= 'Z')
+							sKey = CString(&chChar, 1);
+						else
+							sKey = NULL_STR;
+						}
+					}
 
 				//	If we're not using letters, then convert to a number
 
-				if (!bUseLetters && !sKey.IsBlank())
+				else
 					{
 					char chLetter = *sKey.GetASCIIZPointer();
-					sKey = CMenuDisplay::GetHotKeyFromOrdinal(chLetter - 'A', chInvokeKey);
+					int iOrdinal = chLetter - 'A';
+					sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iOrdinal, KeyMap);
 					}
 
-				//	Add the menu
+				//	Add the menu. (We check again to see if the key is valid
+				//	because we might have collided and failed to find a substitute.)
 
-				m_MenuData.AddMenuItem(
-						sKey,
-						pPower->GetName(),
-						CMenuData::FLAG_SORT_BY_KEY,
-						(DWORD)pPower);
+				if (!sKey.IsBlank())
+					{
+					m_MenuData.AddMenuItem(
+							sKey,
+							pPower->GetName(),
+							CMenuData::FLAG_SORT_BY_KEY,
+							(DWORD)pPower);
+
+					KeyMap.Insert(sKey, true);
+					}
 				}
 
 			if (!sError.IsBlank())

@@ -1,0 +1,2058 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Charon Pirate Map ROM -->
+
+	<ItemType UNID="&itCharonPirateMapROM;"
+			name=				"Charon base map ROM"
+			level=				"3"
+			value=				"100"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"Consumable; Info"
+
+			description=		"This program contains the location of all Charon pirate bases in the system."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block (found)
+				; We map all Charon stations
+				(enum (sysFindObject gSource "AT:charonPirates;") obj
+					(block Nil
+						(objSetKnown obj)
+						(setq found True)
+						)
+					)
+
+				(if found
+					(objSendMessage gSource Nil "Mapped all Charon pirate stations in system")
+					(objSendMessage gSource Nil "No Charon pirate stations in system")
+					)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+
+				; Identify the item
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Corsair-class Gunship -->
+
+	<ShipClass UNID="&scCorsair;"
+			manufacturer=		"Charon Pirates"
+			class=				"Corsair"
+			type=				"gunship"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrustRatio=		"10"
+			maxSpeed=			"25"
+
+			leavesWreck=		"20"
+
+			attributes=			"charonPirates,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumPlate;"/>
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumPlate;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="10"	posZ="10"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"30"
+			fireAccuracy=		"75"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Corsair II-class Gunship -->
+
+	<ShipClass UNID="&scCorsair-II;"
+			manufacturer=		"Charon Pirates"
+			class=				"Corsair II"
+			type=				"gunship"
+			level=				"3"
+
+			attributes=			"charonPirates, genericClass"
+			   
+			mass=				"25"
+			thrustRatio=		"10"
+			maxSpeed=			"25"
+			cargoSpace=			"5"
+
+			leavesWreck=		"20"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightTitaniumPlate;"
+			count=				"2"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itDualLaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itAClassDefenseScreen;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itKM100Missile;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips1;" imageX="288" imageY="0" imageWidth="48" imageHeight="48" rotationOffset="-10"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="10"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="10"	posZ="10"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"80"
+			ignoreShieldsDown=	"true"
+
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Drake-class Missileship -->
+
+	<ShipClass UNID="&scDrake;"
+			manufacturer=		"Charon Pirates"
+			class=				"Drake"
+			type=				"missileship"
+
+			attributes=			"capitalShip, charonPirates, genericClass"
+			   
+			mass=				"1000"
+			thrustRatio=		"1"
+			maxSpeed=			"12"
+			cargoSpace=			"5"
+
+			explosionType=		"&vtKineticExplosion3;"
+			leavesWreck=		"85"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="20"  maxFireArc="160" posAngle="60"  posRadius="30"/>
+			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="200" maxFireArc="340" posAngle="300" posRadius="30"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"60"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"40"
+
+					posX=		"-34"
+					posY=		"0"
+					sizeX=		"28"
+					sizeY=		"28"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+			<Table>
+				<Item chance="85" count="10d20" item="&itKM100Missile;"/>
+				<Item chance="15" count="10d20" item="&itFragmentationMissile;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="43"	posZ="5"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			combatStyle=		"standOff"
+			fireRateAdj=		"50"
+			fireAccuracy=		"90"
+
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Viking-class Gunship -->
+
+	<ShipClass UNID="&scViking;"
+			manufacturer=		"Charon Pirates"
+			class=				"Viking"
+			type=				"gunship"
+			level=				"2"
+
+			attributes=			"charonPirates, genericClass"
+			   
+			mass=				"80"
+			thrustRatio=		"4"
+			maxSpeed=			"20"
+			cargoSpace=			"5"
+
+			leavesWreck=		"35"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"7.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Viking II-class Gunship -->
+
+	<ShipClass UNID="&scViking-II;"
+			manufacturer=		"Charon Pirates"
+			class=				"Viking II"
+			type=				"gunship"
+
+			attributes=			"charonPirates, genericClass"
+			   
+			mass=				"80"
+			thrustRatio=		"4"
+			maxSpeed=			"20"
+			cargoSpace=			"5"
+
+			leavesWreck=		"35"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"2"
+			/>
+
+		<Devices>
+			<Device deviceID="&itDualTurbolaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"7.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips1;" imageX="336" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="10"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Charon Frigate
+
+	GLOBAL DATA
+
+	totalCreated:		Total number of frigates created
+
+	totalDestroyed:		Total number of frigates destroyed by player
+
+	EXTRA DATA
+
+	ambushMarker:		Marker where we wait to ambush freighter
+
+	cargoValue:			Value of cargo that we are going after
+
+	end:				Transport path destination
+
+	raiderCount:		Number of raiders
+	raider{n}:			Raider
+
+	raiderMaxCount:		Max number of raiders
+	raiderMinCount:		Summon more raiders when we fall below this count
+	raiderClassTable:	Probability table for raider class
+
+	start:				Transport path origin
+
+	status:				Current ship status:
+							Nil						= no mission yet
+							'wander					= wander around
+							'gotoAmbushMarker		= traveling to ambush marker
+							'waitForTransport		= waiting for transport to come in range
+							'waitForRaiders			= waiting for raiders to destroy transport
+							'attackTransport		= attacking transport directly
+							'dockWithTransport		= docking with transport
+							'dockWithBase			= dock with pirate base and dump loot
+							'leaveSystem			= leave the system
+							'patrol					= patroling
+							'ambush					= random encounter
+							'attackingEnemy			= attacking enemy
+
+	target:				Transport to ambush
+
+	targetBase:			Base to dump loot at
+
+	targetToLoot:		Transport wreck to loot
+
+
+	SHIP DATA
+
+	charonFrigate:		Raiders have this variable to point back to this frigate
+
+	-->
+
+	<ShipClass UNID="&scCharonFrigateRaider;"
+			manufacturer=		"Charon Pirates"
+			class=				"Charon frigate"
+			type=				""
+
+			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
+			   
+			mass=				"1000"
+			cargoSpace=			"1000"
+			thrustRatio=		"2"
+			maxSpeed=			"18"
+
+			explosionType=		"&vtKineticExplosion4;"
+			leavesWreck=		"85"
+			>
+
+		<Names definiteArticle="true">
+			pirate ship Anemone; pirate ship Archelon; pirate ship Architeuthis;
+			pirate ship Basilosaurus; pirate ship Charybdis; pirate ship Draug;
+			pirate ship Grindylow; pirate ship Hippocampus; pirate ship Hydra;
+			pirate ship J&#xf6;rmungandr; pirate ship Kraken; pirate ship Leviathan;
+			pirate ship Moray Eel; pirate ship Morgawr; pirate ship Mosasaur;
+			pirate ship Orca; pirate ship Pliosaur; pirate ship Proteus;
+			pirate ship Rahab; pirate ship Rusalka; pirate ship Scylla;
+			pirate ship Tiamat;	pirate ship Triton; pirate ship Undine;
+			pirate ship Xuanlong;
+		</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.25"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+			<Table>
+				<Item chance="85" count="10d20" item="&itKM500Missile;"/>
+				<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+		<StaticData>
+			<raidersTableIndex>
+				(	; chance	table				min		max
+					(25			'raidersTable1		3		(random '(4 5 5 5 5 6 6 8)))
+					(55			'raidersTable2		3		(random '(5 5 5 5 6 8)))
+					(60			'raidersTable3		2		(random '(4 4 4 4 4 5 5 5 6)))
+					(75			'raidersTable4		3		(random '(4 5 5 5 5)))
+					(80			'raidersTable5		2		(random '(3 3 3 3 3 3 4 4)))
+					(100		'raidersTable6		3		(random '(4 5 5 5 5 5 6 6)))
+					)
+			</raidersTableIndex>
+
+			<raidersTable1>
+				(	; chance	class
+					(100		&scCorsair;)
+					)
+			</raidersTable1>
+
+			<raidersTable2>
+				(	; chance	class
+					(80			&scCorsair;)
+					(100		&scViking;)
+					)
+			</raidersTable2>
+
+			<raidersTable3>
+				(	; chance	class
+					(50			&scCorsair;)
+					(100		&scViking;)
+					)
+			</raidersTable3>
+
+			<raidersTable4>
+				(	; chance	class
+					(80			&scCorsair;)
+					(100		&scCorsair-II;)
+					)
+			</raidersTable4>
+
+			<raidersTable5>
+				(	; chance	class
+					(100		&scViking;)
+					)
+			</raidersTable5>
+
+			<raidersTable6>
+				(	; chance	class
+					(60			&scCorsair;)
+					(90			&scViking;)
+					(100		&scCorsair-II;)
+					)
+			</raidersTable6>
+		</StaticData>
+
+		<Events>
+			<OrderAmbush>
+				; aBaseObj = base
+				
+				(block Nil
+					; First we position ourselves in the path of the player
+					(setq theResult (intComputeRandomEncounterPosEx))
+					(setq thePos (item theResult 0))
+					(objMoveTo gSource thePos)
+
+					; Move towards the player's path
+					(setq theCourse (item theResult 1))
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'holdCourse theCourse 300)
+					
+					(objSetObjRefData gSource "targetBase" aBaseObj)
+					(objSetData gSource "status" 'ambush)
+					)
+			</OrderAmbush>
+			
+			<OrderPatrol>
+				; aBaseObj = base to patrol
+				
+				(block Nil
+					(objAddSubordinate aBaseObj gSource)
+					
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'patrol aBaseObj 20)
+					
+					(objSetData gSOurce "status" 'patrol)
+					)
+			</OrderPatrol>
+			
+			<OrderRaidTransport>
+				; aTargetObj = transport to raid
+				; aOriginObj = transport origin
+				; aDestObj = transport destination
+				; aCargoValue = value of cargo
+
+				(block (ambushPos ambushMarker)
+					; Destroy any previous ambush markers
+					(setq ambushMarker (objGetObjRefData gSource "ambushMarker"))
+					(if ambushMarker
+						(objDestroy ambushMarker)
+						)
+
+					; 30% of the time we pick a spot on the transports's path
+					; the rest of the time we pick a random spot near (but not on)
+					; the transport's path
+					(if (and (leq (random 1 100) 30)
+							(geq aCargoValue 100000))
+						(setq ambushPos (sysGetNavPathPoint &svCorporate; aOriginObj aDestObj (random 40 60)))
+						(setq ambushPos (chrComputeAmbushPos aOriginObj aDestObj))
+						)
+
+					; Create a marker at the ambush position
+					(setq ambushMarker (sysCreateMarker "ambush" ambushPos &svPirates;))
+					(objSetObjRefData gSource "ambushMarker" ambushMarker)
+
+					; Go to the ambush position
+					(shpCancelOrders gSource)
+					(shpOrder gSource "goto" ambushMarker)
+
+					; Set our state and remember the target
+					(objSetObjRefData gSource "target" aTargetObj)
+					(objRegisterForEvents gSource aTargetObj)
+
+					(objSetObjRefData gSource "start" aOriginObj)
+					(objSetObjRefData gSource "end" aDestObj)
+
+					(objSetData gSource "cargoValue" aCargoValue)
+
+					(objSetData gSource "status" "gotoAmbushMarker")
+					)
+			</OrderRaidTransport>
+
+			<OnBehaviorControl>
+				(block (status targetObj)
+					(setq status (objGetData gSource "status"))
+					(setq targetObj (objGetObjRefData gSource "target"))
+
+					(switch
+						; If we're close enough to the transport and we've got enough
+						; raiders, then send them out
+						(and (eq status "waitForTransport")
+								(ls (objGetDistance gSource targetObj) 180)
+								(geq (objGetData gSource "raiderCount") 4)
+								)
+							(block Nil
+								;(dbgOutput "Charon frigate launching raiders")
+								(chrCancelRaiderOrders gSource)
+								(chrOrderRaiders gSource "attack" targetObj 0)
+								(objSetData gSource "status" "waitForRaiders")
+								)
+								
+						(eq status 'ambush)
+							(block (theEnemy)
+								(if (setq theEnemy (sysFindObject gSource "sEPAN"))
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'attack theEnemy)
+										(shpOrder gSource 'attackNearestEnemy)
+										(objSetData gSource "status" 'attackingEnemy)
+										)
+									)
+								)
+
+						(block Nil
+							;(dbgOutput "Charon frigate status: " status)
+							)
+						)
+
+					; If we don't have enough raiders, create some new ones
+					(if (ls (objGetData gSource "raiderCount") (objGetData gSource "raiderMinCount"))
+						(for i 1 (subtract (objGetData gSource "raiderMaxCount") (objGetData gSource "raiderCount"))
+							(chrCreateRaider gSource (sysFindObject gSource "GN -uncharted;"))
+							)
+						)
+					)
+			</OnBehaviorControl>
+
+			<OnCreate>
+				(block (roll tableIndex tableEntry totalCreated)
+					; Choose a random raider table
+					(setq tableIndex (objGetStaticData gSource "raidersTableIndex"))
+					(switch
+						(eq (sysGetLevel) 1)
+							(setq roll (random 1 70))
+						(eq (sysGetLevel) 2)
+							(setq roll (random 1 90))
+						(setq roll (random 1 100))
+						)
+
+					(setq i 0)
+					(loop (gr roll (item (item tableIndex i) 0))
+						(setq i (add i 1))
+						)
+
+					; Store the raider table
+					(setq tableEntry (item tableIndex i))
+					(objSetData gSource "raiderClassTable" (objGetStaticData gSource (item tableEntry 1)))
+					(objSetData gSource "raiderMinCount" (eval (item tableEntry 2)))
+					(objSetData gSource "raiderMaxCount" (eval (item tableEntry 3)))
+
+					; Create some raiders to accompany us
+					(for i 1 (objGetData gSource "raiderMaxCount")
+						(chrCreateRaider gSource gSource)
+						)
+
+					; Register timer event to control behavior
+					(sysAddObjRecurringTimerEvent 60 gSource "OnBehaviorControl")
+
+					; Increment count of frigates created
+					(setq totalCreated (typGetGlobalData &scCharonFrigateRaider; "totalCreated"))
+					(if totalCreated
+						(typSetGlobalData &scCharonFrigateRaider; "totalCreated" (add totalCreated 1))
+						(typSetGlobalData &scCharonFrigateRaider; "totalCreated" 1)
+						)
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				; Keep track of how many frigates the player has destroyed
+				(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+					(block (totalDestroyed)
+						(setq totalDestroyed (typGetGlobalData &scCharonFrigateRaider; "totalDestroyed"))
+						(if totalDestroyed
+							(setq totalDestroyed (add totalDestroyed 1))
+							(setq totalDestroyed 1)
+							)
+						(typSetGlobalData &scCharonFrigateRaider; "totalDestroyed" totalDestroyed)
+
+						; Tell Korolov that player has destroyed a frigate
+						(korFrigateDestroyed)
+
+						; If the player has destroyed 4 frigates, then we unleash the Kronosaurus
+						; (if we haven't already--Korolov sends out Kronosaurus after 3 frigates)
+						(if (eq totalDestroyed 4)
+							(chrDeployKronosaurus)
+							)
+						)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(block (status)
+					(setq status (objGetData gSource "status"))
+					(switch
+						; If one of our raiders got destroyed, decrement our count
+						(eq (objGetObjRefData aObjDestroyed "charonFrigate") gSource)
+							(block Nil
+								(objIncData gSource "raiderCount" -1)
+
+								; If we're attacking a freighter and our raiders have
+								; been almost destroyed, there is a chance that we 
+								; engage directly.
+
+								(if (and (eq status 'waitForRaiders)
+										(leq (objGetData gSource "raiderCount") 1)
+										(leq (shpGetMaxSpeed (objGetObjRefData gSource "target")) 12)
+										(geq (objGetData gSource "cargoValue") 100000)
+										(leq (random 1 100) (divide (objGetData gSource "cargoValue") 20000))
+										)
+									(block Nil
+										;(dbgOutput "Charon frigate attacking transport")
+										(objSetData gSource "status" 'attackTransport)
+										(shpCancelOrders gSource)
+										(shpOrder gSource "attack" (objGetObjRefData gSource "target"))
+										)
+									)
+								)
+
+						; If transport got destroyed, dock with its wreck
+						(eq aObjDestroyed (objGetObjRefData gSource "target"))
+							(block Nil
+								(if aWreckObj
+									; If we have a wreck, dock with it
+									(block Nil
+										(objSetData gSource "status" "dockWithTransport")
+										(objSetObjRefData gSource "targetToLoot" aWreckObj)
+										(shpCancelOrders gSource)
+										(shpOrder gSource "dock" aWreckObj)
+										(shpOrder gSource "wait" Nil (random 5 10))
+
+										; Order the raiders to attack the nearest enemy
+										(chrCancelRaiderOrders gSource)
+										(chrOrderRaiders gSource "attackNearestEnemy")
+										(chrOrderRaiders gSource "escort" gSource)
+										)
+
+									; Otherwise, back to wandering
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource "wander")
+										(objSetData gSource "status" "wander")
+
+										; Order the raiders to return
+										(chrCancelRaiderOrders gSource)
+										(chrOrderRaiders gSource "escort" gSource)
+										)
+									)
+								)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnOrdersCompleted>
+				(block (status)
+					(setq status (objGetData gSource "status"))
+					(switch
+						; If we reached our ambush position, send out raiders
+						(eq status "gotoAmbushMarker")
+							(block Nil
+								;(dbgOutput "Charon frigate at ambush position")
+								(shpOrder gSource "hold")
+								(objSetData gSource "status" "waitForTransport")
+								)
+
+						; If we've docked with the transport, then loot the goods
+						; and take them to a pirate base
+						(eq status "dockWithTransport")
+							(block (pirateBase wreck)
+								; Loot all items from the transport
+								(setq wreck (objGetObjRefData gSource "targetToLoot"))
+								(if wreck
+									(intLootAllItems wreck gSource "*U")
+									)
+
+								; Look for the nearest pirate base in the system
+								(setq pirateBase (sysFindObject gSource "ANT:charonPirates;"))
+
+								; If we found a base, dock with it. Otherwise, we gate out
+								(if pirateBase
+									(block Nil
+										(objSetData gSource "status" "dockWithBase")
+										(objSetObjRefData gSource "targetBase" pirateBase)
+										(shpOrder gSource "dock" pirateBase)
+										(shpOrder gSource "wait" Nil (random 3 7))
+										)
+									(block Nil
+										(objSetData gSource "status" "leaveSystem")
+										(shpOrder gSource "gate")
+										)
+									)
+								)
+
+						; If we're docked with the pirate base, then dump the loot and
+						; go back to wandering
+						(eq status "dockWithBase")
+							(block Nil
+								(enum (objGetItems gSource "*U~m -ID;") theItem
+									(objRemoveItem gSource theItem)
+									)
+
+								; Wander the system
+								(shpOrder gSource "wander")
+								(objSetData gSource "status" "wander")
+								)
+								
+						; Back to patrol
+						(eq status 'attackingEnemy)
+							(block Nil
+								(setq aBaseObj (objGetObjRefData gSource "targetBase"))
+								(objFireEvent gSource "OrderPatrol")
+								)
+
+						; If we don't know what to do, just wait
+						(block Nil
+							;(dbgOutput "Charon frigate doesn't have a mission")
+							(shpOrder gSource "hold")
+							)
+						)
+					)
+			</OnOrdersCompleted>
+		</Events>
+
+	</ShipClass>
+
+	<!-- The Kronosaurus
+
+	GLOBAL DATA
+
+	status:				Status of Kronosaurus
+							Nil						= never encountered
+							"huntPlayer"			= hunting the player
+							"destroyed"				= destroyed
+							"destroyedByPlayer"		= player has destroyed it
+	-->
+
+	<ShipClass UNID="&scCharonFrigateKronosaurus;"
+			manufacturer=		"Charon Pirates"
+			class=				"Charon frigate"
+			type=				""
+			   
+			attributes=			"capitalShip, charonPirates, charonFrigate, majorShip"
+
+			mass=				"1000"
+			cargoSpace=			"1000"
+			thrustRatio=		"2"
+			maxSpeed=			"18"
+
+			explosionType=		"&vtKineticExplosion4;"
+			leavesWreck=		"85"
+			>
+
+		<Names definiteArticle="true">pirate ship Kronosaurus</Names>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="24"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="27"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="20"/>
+			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="20"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.25"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+			<Item count="20d20" item="&itKM500Missile;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCharonFrigateImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="170"	posRadius="55"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="53"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-170"	posRadius="55"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"25"
+			fireAccuracy=		"95"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+		<Events>
+			<OrderHuntPlayer>
+				(block Nil
+					(typSetGlobalData &scCharonFrigateKronosaurus; "status" 'huntPlayer)
+
+					; Attack the player
+					(shpCancelOrders gSource)
+					(shpOrder gSource "attack" gPlayerShip)
+
+					; Register for events
+					(objRegisterForEvents gSource gPlayerShip)
+					)
+			</OrderHuntPlayer>
+
+			<OnCreate>
+			</OnCreate>
+
+			<OnDestroy>
+				; If we're destroyed while on a mission (as opposed to after entering a gate)
+				; then mark ourselves so that we cannot come back
+				(if (typGetGlobalData &scCharonFrigateKronosaurus; "status")
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(typSetGlobalData &scCharonFrigateKronosaurus; "status" 'destroyedByPlayer)
+						(typSetGlobalData &scCharonFrigateKronosaurus; "status" 'destroyed)
+						)
+					)
+			</OnDestroy>
+
+			<OnEnteredGate>
+				; If we entered a gate, then reset our status (we can come back later)
+				(typSetGlobalData &scCharonFrigateKronosaurus; "status" Nil)
+			</OnEnteredGate>
+
+			<OnObjDestroyed>
+				(switch
+					; If the player was destroyed, then we're done
+					(and (eq aObjDestroyed gPlayerShip) (not (eq aDestroyReason 'enteredStargate)))
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource "gate")
+							)
+					)
+			</OnObjDestroyed>
+			
+			<OnPlayerEnteredSystem>
+				(if (eq (typGetGlobalData &scCharonFrigateKronosaurus; "status") 'huntPlayer)
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource "attack" gPlayerShip)
+						(objRegisterForEvents gSource gPlayerShip)
+						)
+					)
+			</OnPlayerEnteredSystem>
+
+			<OnPlayerLeftSystem>
+				(if (eq (typGetGlobalData &scCharonFrigateKronosaurus; "status") 'huntPlayer)
+					'waitForPlayer
+					Nil
+					)
+			</OnPlayerLeftSystem>
+		</Events>
+	</ShipClass>
+
+	<!-- Charon Pirate Cache -->
+
+	<StationType UNID="&stCharonPirateOutpost;"
+			name=				"Charon Pirates cache"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itLightTitaniumPlate;"
+			hitPoints=			"70"
+			fireRateAdj=		"80"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			levelFrequency=		"cuv-- ----- ----- ----- -----"
+			locationCriteria=	"-planet,-void"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="85"	count="1d4"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="5"	count="1d2"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup chance="50" table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="75" count="1"		class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d3" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="25" count="1"		class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;"/>
+			</Table>
+		</Encounters>
+	</StationType>
+
+	<!-- Charon Pirate Outpost II -->
+
+	<StationType UNID="&stCharonPirateOutpost2;"
+			name=				"Charon Pirates outpost"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"75"
+			fireRateAdj=		"60"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			levelFrequency=		"-cuv- ----- ----- ----- -----"
+			locationCriteria=	"-planet,-void"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="35"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d2"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group	levelValue="0, 1000, 1500, 2000, 0">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Null chance="50"/>
+							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
+						</Table>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Charon Pirate Outpost IIa -->
+
+	<StationType UNID="&stCharonPirateOutpost2a;"
+			name=				"Charon Pirates outpost"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"50"
+			fireRateAdj=		"60"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			levelFrequency=		"r---- ----- ----- ----- -----"
+			locationCriteria=	"-planet,-void"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="45"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup	chance="60"		table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
+							<Null chance="50"/>
+						</Table>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Charon Pirate Outpost III -->
+
+	<StationType UNID="&stCharonPirateOutpost3;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"100"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, pirates, populated"
+			levelFrequency=		"-rcr- ----- ----- ----- -----"
+			locationCriteria=	"-planet,-void"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Group	levelValue="0, 2000, 3000, 4000, 0">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="60" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Ship chance="40" count="1d6" class="&scCorsair;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scViking;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scCorsair-II;" orders="escort"/>
+						</Table>
+					</Escorts>
+				</Ship>
+				<Ship chance="30" count="1"	class="&scCorsair-II;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship chance="60" count="1d6" class="&scCorsair;" orders="escort"/>
+						<Ship chance="40" count="1" class="&scViking;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;">
+					<OnCreate>(objFireEvent gSource "OrderAmbush")</OnCreate>
+				</Ship>
+			</Table>
+		</Encounters>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 1 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold1;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"50"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="35"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d2"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d4" class="&scCorsair;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scViking;"		orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCorsair-II;"	orders="patrol" patrolDist="20">
+					<Escorts>
+						<Ship			count="1d6"	class="&scCorsair;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 2 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold2;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"75"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 3 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold3;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"100"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	count="2d8"	item="&itKM100Missile;" />
+				<Lookup				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+<!-- SHIP ENCOUNTER TABLES ================================================ -->
+
+	<EncounterTable UNID="&etPirateAmbush1;">
+		<Ship class="&scCorsair;"	count="1d3" orders="attack"	sovereign="&svPirates;"/>
+		<Table>
+			<Ship chance="75" count="1"		class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+			<Ship chance="25" count="1"		class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etPirateAmbush2;">
+		<Table>
+			<Ship chance="40" count="2d3"	class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+			<Group chance="30">
+				<Ship         count="1d4+1"	class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+				<Ship         count="1"		class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Ship chance="30" count="2"	class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etPirateAmbush3;">
+		<Table>
+			<Ship chance="10" count="2d6"	class="&scCorsair;" orders="attack"	sovereign="&svPirates;"/>
+			<Group chance="10">
+				<Ship		  count="1d6"	class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+				<Ship		  count="1d4"	class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Ship chance="15" count="2d3"	class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+			<Group chance="25">
+				<Ship		  count="1d6"	class="&scCorsair;"	orders="attack"	sovereign="&svPirates;"/>
+				<Ship		  count="1d2"	class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Group chance="25">
+				<Ship		  count="1d4"	class="&scViking;"	orders="attack"	sovereign="&svPirates;"/>
+				<Ship		  count="1"		class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Ship chance="15" count="1d4"	class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etPirateAmbush4;">
+		<Table>
+			<Ship chance="15" count="2d6"   class="&scViking;" orders="attack"	sovereign="&svPirates;"/>
+			<Group chance="25">
+				<Ship		  count="1d6"	class="&scViking;" orders="attack"	sovereign="&svPirates;"/>
+				<Ship		  count="1d4"	class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Ship chance="30" count="2d3"	class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+			<Group chance="30">
+				<Ship		  count="1d4"	class="&scCorsair-II;" orders="attack"	sovereign="&svPirates;"/>
+				<Ship		  count="1"		class="&scDrake;" orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etMarauderAmbush1;">
+		<Table>
+			<Ship chance="60" count="1d3+1"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			<Group chance="40">
+				<Ship         count="1d3"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+				<Ship         count="1"		class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			</Group>
+		</Table>
+	</EncounterTable>
+
+	<EncounterTable UNID="&etMarauderAmbush2;">
+		<Table>
+			<Ship chance="40" count="2d3"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			<Group chance="30">
+				<Ship         count="1d4+1"	class="&scViking-II;"	orders="attack"	sovereign="&svMarauders;"/>
+				<Ship         count="1"		class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+			</Group>
+			<Ship chance="30" count="2"	class="&scCorsair-II;"	orders="attack"	sovereign="&svMarauders;"/>
+		</Table>
+	</EncounterTable>
+
+<!-- GLOBALS ------------------------------------------------------------------>
+
+	<Globals>
+		(block Nil
+			(setq chrCancelRaiderOrders (lambda (frigateObj)
+				(block Nil
+					(for i 1 (objGetData frigateObj "raiderMaxCount")
+						(block (raider)
+							(setq raider (objGetObjRefData frigateObj (cat "raider" i)))
+							(if raider
+								(shpCancelOrders raider)
+								)
+							)
+						)
+					)
+				))
+
+			(setq chrComputeAmbushPos (lambda (fromObj toObj)
+				(block (pathPercent pathVector p0 p1 p2)
+					; Pick a random position along the path
+					(setq pathPercent (random 40 60))
+					(setq p0 (sysGetNavPathPoint
+						&svCorporate;
+						fromObj
+						toObj
+						pathPercent
+						))
+
+					; Get two other points along the path to form a vector parallel to
+					; the path
+					(setq p1 (sysGetNavPathPoint
+						&svCorporate;
+						fromObj
+						toObj
+						(subtract pathPercent 10)
+						))
+					(setq p2 (sysGetNavPathPoint
+						&svCorporate;
+						fromObj
+						toObj
+						(add pathPercent 10)
+						))
+					(setq pathVector (sysVectorSubtract p2 p1))
+
+					; Compute a point a random distance from the path
+					(sysVectorPolarOffset
+						p0
+						(add (sysVectorAngle pathVector) (random '(90 270)))
+						(random 80 120)
+						)
+					)
+				))
+
+			(setq chrCreateRaider (lambda (frigateObj pos)
+				(block (raider found i classTable class roll)
+					; Get the probability table from the frigate
+					(setq classTable (objGetData frigateObj "raiderClassTable"))
+
+					; Pick a random class for the raider
+					(setq roll (random 1 100))
+					(setq i 0)
+					(loop (gr roll (item (item classTable i) 0))
+						(setq i (add i 1))
+						)
+					(setq class (item (item classTable i) 1))
+
+					; Create the raider
+					(setq raider (sysCreateShip class pos (objGetSovereign frigateObj)))
+					;(dbgOutput "Created " (objGetName raider))
+
+					; Order the raider to escort the frigate and remember a
+					; pointer to the frigate
+					(shpOrder raider "escort" frigateObj)
+					(objSetObjRefData raider "charonFrigate" frigateObj)
+
+					; Remember a pointer to the raider
+					(objIncData frigateObj "raiderCount" 1)
+					(objRegisterForEvents frigateObj raider)
+
+					; Add the raider to a list
+					(setq i 1)
+					(setq found Nil)
+					(loop (not found)
+						(if (not (objGetObjRefData frigateObj (cat "raider" i)))
+							(block Nil
+								(objSetObjRefData frigateObj (cat "raider" i) raider)
+								(setq found True)
+								)
+							(setq i (add i 1))
+							)
+						)
+					)
+				))
+
+			(setq chrDeployFrigateRaid (lambda (transportObj originObj destObj cargoValue)
+				(block (raidMarker frigateList frigate)
+					; Compute the half-way point of the transport route
+					(setq raidMarker (sysCreateMarker 
+						"temp" 
+						(sysGetNavPathPoint &svCorporate; originObj destObj 50)
+						&svPirates;
+						))
+
+					; Look for any frigates in the area
+					(setq frigateList (sysFindObject raidMarker "s +charonFrigate; N:300;"))
+					(setq frigateList (filter frigateList theFrigate
+						(eq (objGetData theFrigate "status") "wander")
+						))
+
+					; Choose an existing frigate or create a new one
+					(if frigateList
+						(setq frigate (random frigateList))
+						(setq frigate (sysCreateShip &scCharonFrigateRaider; (objGetPos raidMarker) &svPirates;))
+						)
+
+					;(dbgOutput "Charon frigate deployed: " frigate)
+
+					; Order raid
+					(setq aTargetObj transportObj)
+					(setq aOriginObj originObj)
+					(setq aDestObj destObj)
+					(setq aCargoValue cargoValue)
+					(objFireEvent frigate "OrderRaidTransport")
+
+					; Done with marker
+					(objDestroy raidMarker)
+					)
+				))
+
+			(setq chrDeployKronosaurus (lambda ()
+				(if (not (typGetGlobalData &scCharonFrigateKronosaurus; "status"))
+					(block (kronosaurus)
+						; Create the Kronosaurus
+						(setq kronosaurus
+							(sysCreateShip
+								&scCharonFrigateKronosaurus;
+								(sysFindObject gPlayerShip "GR -uncharted;")
+								&svPirates;
+								)
+							)
+
+						; Order the Kronosaurus to attack the player
+						(objFireEvent kronosaurus "OrderHuntPlayer")
+						)
+					)
+				))
+
+			(setq chrGetPrimaryStronghold (lambda (sourceObj)
+				(block (primaryObj)
+					; See if the stronghold exists already
+					(setq primaryObj (sysFindObject sourceObj "TN +charonPirates; +primaryStronghold;"))
+
+					; If it does not exist, create one
+					(if (not primaryObj)
+						(block (bestDist bestPlanet primaryPos primaryType)
+							; Find the most distant planet in the system
+							(setq bestDist 0)
+							(enum (sysFindObject sourceObj "t +isPlanet:true;") theObj
+								(block (theDist)
+									(setq theDist (sysVectorDistance (objGetPos theObj)))
+									(if (gr theDist bestDist)
+										(setq bestDist theDist)
+										)
+									)
+								)
+							(if (ls bestDist 480)
+								(setq bestDist (random 480 600))
+								(setq bestDist (add bestDist (random 120 240)))
+								)
+
+							; Compute the position of the primary stronghold. It must be
+							; in the outer system far from anything else
+							(setq primaryPos (sysVectorRandom Nil bestDist 180 "T"))
+
+							; Create a different stronghold depending on the system level
+							(switch
+								(eq (sysGetLevel) 1)
+									(setq primaryType &stCharonPrimaryStronghold1;)
+
+								(eq (sysGetLevel) 2)
+									(setq primaryType &stCharonPrimaryStronghold2;)
+
+								(setq primaryType &stCharonPrimaryStronghold2;)
+								)
+
+							; Create the stronghold
+							(setq primaryObj (sysCreateStation primaryType primaryPos))
+							)
+						)
+
+					primaryObj
+					)
+				))
+
+			(setq chrOrderRaiders (lambda (frigateObj order orderTarget orderData)
+				(block Nil
+					(for i 1 (objGetData frigateObj "raiderMaxCount")
+						(block (raider)
+							(setq raider (objGetObjRefData frigateObj (cat "raider" i)))
+							(if raider
+								(shpOrder raider order orderTarget orderData)
+								)
+							)
+						)
+					)
+				))
+
+			(setq chrRaidTransport (lambda (transportObj originObj destObj cargoValue)
+				(block (travelTime roundTrip)
+					; Figure out how many ticks it will take for the transport to
+					; travel the distance
+					(setq travelTime (sysCalcTravelTime (objGetDistance originObj destObj) (shpGetMaxSpeed transportObj)))
+					(setq roundTrip (objMatches destObj Nil "G"))
+					;(dbgOutput "Freighter travel time: " travelTime)
+
+					(switch
+						(leq cargoValue 50000)
+							(block Nil
+								; Raiding parties half way
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 30 45) travelTime) 100)
+									transportObj &etPirateAmbush1; (random 60 100)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 50 65) travelTime) 100)
+									transportObj &etPirateAmbush1; (random 60 100)
+									)
+
+								; 50% chance of a raiding party on the way back
+								(if (and roundTrip (leq (random 1 100) 50))
+									(sysAddEncounterEventAtDist 
+										(divide (multiply (random 145 175) travelTime) 100)
+										transportObj &etPirateAmbush1; (random 60 100)
+										)
+									)
+								)
+
+						(leq cargoValue 100000)
+							(block Nil
+								(if (leq (random 1 100) 50)
+									; 50% of the time we send out a frigate
+									(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+
+									; 50% of the time we send out two raiding parties
+									(block Nil
+										(sysAddEncounterEventAtDist 
+											(divide (multiply (random 25 40) travelTime) 100)
+											transportObj
+											(random '(&etPirateAmbush1; &etPirateAmbush2;))
+											(random 60 100)
+											)
+										(sysAddEncounterEventAtDist 
+											(divide (multiply (random 60 75) travelTime) 100)
+											transportObj
+											(random '(&etPirateAmbush1; &etPirateAmbush2;))
+											(random 60 100)
+											)
+										)
+									)
+
+								; 60% chance of a raiding party on the way back
+								(if (and roundTrip (leq (random 1 100) 60))
+									(sysAddEncounterEventAtDist 
+										(divide (multiply (random 145 175) travelTime) 100)
+										transportObj &etPirateAmbush1; (random 60 100)
+										)
+									)
+								)
+
+						(leq cargoValue 250000)
+							(block Nil
+								; Send out a raiding party to weaken the transport
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 25 35) travelTime) 100)
+									transportObj &etPirateAmbush2; (random 60 100)
+									)
+
+								; Send out a frigate
+								(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+
+								; 70% chance of a raiding party on the way back
+								(if (and roundTrip (leq (random 1 100) 70))
+									(sysAddEncounterEventAtDist 
+										(divide (multiply (random 145 175) travelTime) 100)
+										transportObj &etPirateAmbush1; (random 60 100)
+										)
+									)
+								)
+
+						(leq cargoValue 500000)
+							(block Nil
+								; Send out a couple of raiding parties to weaken the transport
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 25 35) travelTime) 100)
+									transportObj
+									(random '(&etPirateAmbush2; &etPirateAmbush3;))
+									(random 60 100)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 45 65) travelTime) 100)
+									transportObj
+									(random '(&etPirateAmbush2; &etPirateAmbush3;))
+									(random 60 100)
+									)
+
+								; Send out a frigate
+								(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+
+								; 80% chance of a raiding party on the way back
+								(if (and roundTrip (leq (random 1 100) 80))
+									(sysAddEncounterEventAtDist 
+										(divide (multiply (random 145 175) travelTime) 100)
+										transportObj &etPirateAmbush2; (random 60 100)
+										)
+									)
+								)
+
+						(leq cargoValue 1000000)
+							(block Nil
+								; Send out a couple of raiding parties to weaken the transport
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 25 35) travelTime) 100)
+									transportObj &etPirateAmbush3; (random 60 100)
+									)
+
+								(sysAddEncounterEventAtDist 
+									(divide (multiply (random 45 65) travelTime) 100)
+									transportObj &etPirateAmbush3; (random 60 100)
+									)
+
+								; Send out a frigate
+								(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+
+								; 90% chance of a raiding party on the way back
+								(if (and roundTrip (leq (random 1 100) 90))
+									(sysAddEncounterEventAtDist 
+										(divide (multiply (random 145 175) travelTime) 100)
+										transportObj &etPirateAmbush2; (random 60 100)
+										)
+									)
+								)
+
+						(block Nil
+							; Send out a three of raiding parties to weaken the transport
+							(sysAddEncounterEventAtDist 
+								(divide (multiply (random 25 35) travelTime) 100)
+								transportObj &etPirateAmbush2; (random 60 100)
+								)
+
+							(sysAddEncounterEventAtDist 
+								(divide (multiply (random 45 65) travelTime) 100)
+								transportObj &etPirateAmbush3; (random 60 100)
+								)
+
+							(sysAddEncounterEventAtDist 
+								(divide (multiply (random 45 65) travelTime) 100)
+								transportObj &etPirateAmbush3; (random 60 100)
+								)
+
+							; Send out a frigate
+							(chrDeployFrigateRaid transportObj originObj destObj cargoValue)
+
+							; 100% chance of a raiding party on the way back
+							(sysAddEncounterEventAtDist 
+								(divide (multiply (random 145 175) travelTime) 100)
+								transportObj &etPirateAmbush2; (random 60 100)
+								)
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+
+	<!-- Resources -->
+
+	<Image UNID="&rsCharonFrigateImage;"	bitmap="Resources\CharonFrigate.jpg" bitmask="Resources\CharonFrigateMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

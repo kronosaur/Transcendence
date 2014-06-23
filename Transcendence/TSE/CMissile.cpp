@@ -4,8 +4,12 @@
 
 #include "PreComp.h"
 
-#define TRAIL_COUNT							4
-#define MAX_TARGET_RANGE					(24.0 * LIGHT_SECOND)
+#define TRAIL_COUNT								4
+#define MAX_TARGET_RANGE						(24.0 * LIGHT_SECOND)
+
+#define PROPERTY_ROTATION						CONSTLIT("rotation")
+
+const DWORD VAPOR_TRAIL_OPACITY =				80;
 
 static CObjectClass<CMissile>g_Class(OBJID_CMISSILE, NULL);
 
@@ -273,7 +277,8 @@ ALERROR CMissile::Create (CSystem *pSystem,
 
 	//	Create a painter instance
 
-	pMissile->m_pPainter = pDesc->CreateEffect();
+	bool bIsTracking = pTarget && pDesc->IsTracking();
+	pMissile->m_pPainter = pDesc->CreateEffect(bIsTracking, true);
 	if (pMissile->m_pPainter)
 		pMissile->SetBounds(pMissile->m_pPainter);
 
@@ -508,6 +513,22 @@ CString CMissile::GetName (DWORD *retdwFlags)
 	return strPatternSubst(CONSTLIT("%s damage"), GetDamageShortName(m_pDesc->m_Damage.GetDamageType()));
 	}
 
+ICCItem *CMissile::GetProperty (const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_ROTATION))
+		return CC.CreateInteger(GetRotation());
+
+	else
+		return CSpaceObject::GetProperty(sName);
+	}
+
 int CMissile::GetStealth (void) const
 
 //	GetStealth
@@ -564,12 +585,9 @@ EDamageResults CMissile::OnDamage (SDamageCtx &Ctx)
 	//	We are destroyed
 
 	m_iHitPoints = 0;
-	if (m_pDesc->GetVaporTrailLength())
-		{
-		m_fDestroyed = true;
-		m_iLifeLeft = m_pDesc->GetVaporTrailLength();
+
+	if (SetMissileFade())
 		return damagePassthrough;
-		}
 	else
 		{
 		Destroy(killedByDamage, Ctx.Attacker);
@@ -588,10 +606,15 @@ void CMissile::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Note that we do this even if we're destroyed because we might have
 	//	some fading particles.
 
-	if (m_pPainter)
+	if (m_pPainter
+			&& WasPainted())
 		{
+		SEffectMoveCtx Ctx;
+		Ctx.pObj = this;
+		Ctx.vOldPos = vOldPos;
+
 		bool bBoundsChanged;
-		m_pPainter->OnMove(&bBoundsChanged);
+		m_pPainter->OnMove(Ctx, &bBoundsChanged);
 
 		//	Set bounds, if they've changed
 
@@ -679,7 +702,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	if (m_pPainter)
 		{
 		Ctx.iTick = m_iTick;
-		Ctx.iVariant = (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0);
+		Ctx.iVariant = 0;
 		Ctx.iRotation = m_iRotation;
 		Ctx.iDestiny = GetDestiny();
 		Ctx.iMaxLength = (int)((g_SecondsPerUpdate * Max(1, m_iTick) * m_pDesc->GetRatedSpeed()) / g_KlicksPerPixel);
@@ -695,7 +718,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		//	LATER: We should incorporate this into the painter when we
 		//	load the CWeaponFireDesc.
 
-		if (m_pDesc->GetFireType() == ftBeam && !m_pDesc->m_Image.IsEmpty())
+		if (m_pDesc->GetFireType() == ftBeam && m_pDesc->m_Image.IsLoaded())
 			{
 			m_pDesc->m_Image.PaintImage(Dest,
 					x,
@@ -713,7 +736,7 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				x,
 				y,
 				m_iTick,
-				(m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
+				(m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation, g_RotationRange) : 0));
 
 		//	Paint exhaust trail
 
@@ -740,9 +763,17 @@ void CMissile::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	if (m_pDesc->GetVaporTrailLength())
 		{
 		int iCount = ComputeVaporTrail();
-		int iFadeStep = (128 / m_pDesc->GetVaporTrailLength());
-		int iOpacity = (!m_fDestroyed ? 128 : (iFadeStep * m_iLifeLeft));
-		int iStart = (!m_fDestroyed ? 0 : 1 + (m_pDesc->GetVaporTrailLength() - m_iLifeLeft));
+		int iFadeStep = (VAPOR_TRAIL_OPACITY / m_pDesc->GetVaporTrailLength());
+		int iFade = Max(0, m_pDesc->GetVaporTrailLength() - (m_iHitDir - m_iLifeLeft));
+		int iOpacity = (!m_fDestroyed ? VAPOR_TRAIL_OPACITY : (iFadeStep * iFade));
+
+		//	HACK: We store the maximum life left in m_iHitDir after the missile
+		//	is destroyed. This saves us from having to do a new variable.
+		//
+		//	NOTE: We still check to make sure we don't go negative so we don't
+		//	overflow the array.
+
+		int iStart = Max(0, (!m_fDestroyed ? 0 : 1 + (m_iHitDir - m_iLifeLeft)));
 
 		for (int i = iStart; i < iCount; i++)
 			{
@@ -878,7 +909,7 @@ void CMissile::OnReadFromStream (SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&m_iSavedRotationsCount, sizeof(DWORD));
 		if (m_iSavedRotationsCount > 0)
 			{
-			m_pSavedRotations = new int [m_pDesc->GetVaporTrailLength()];
+			m_pSavedRotations = new int [Max(m_pDesc->GetVaporTrailLength(), m_iSavedRotationsCount)];
 			Ctx.pStream->Read((char *)m_pSavedRotations, sizeof(DWORD) * m_iSavedRotationsCount);
 			}
 		else
@@ -905,9 +936,12 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		{
 		//	Update the painter
 
-		if (m_pPainter)
+		if (m_pPainter 
+				&& WasPainted())
 			{
 			SEffectUpdateCtx PainterCtx;
+			PainterCtx.pObj = this;
+			PainterCtx.iRotation = GetRotation();
 			PainterCtx.bFade = true;
 
 			m_pPainter->OnUpdate(PainterCtx);
@@ -1016,9 +1050,14 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 		//	Update the painter
 
-		if (m_pPainter)
+		if (m_pPainter
+				&& WasPainted())
 			{
-			m_pPainter->OnUpdate();
+			SEffectUpdateCtx PainterCtx;
+			PainterCtx.pObj = this;
+			PainterCtx.iRotation = GetRotation();
+
+			m_pPainter->OnUpdate(PainterCtx);
 
 			//	LATER: We shouldn't have to update bounds here because
 			//	it is set in OnMove.
@@ -1115,37 +1154,10 @@ void CMissile::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			if (!bDestroy && m_pDesc->ProximityBlast())
 				CreateFragments(GetPos());
 
-			//	If we've got a vapor trail effect, then keep the missile object alive
-			//	but mark it destroyed
+			//	If the missile should fade, then we leave it alive. Otherwise, 
+			//	we destroy the missile.
 
-			int iFadeLife;
-			if (m_pDesc->GetVaporTrailLength())
-				iFadeLife = m_pDesc->GetVaporTrailLength();
-			else
-				iFadeLife = 0;
-
-			//	If we've got an effect that needs time to fade out, then keep
-			//	the missile object alive
-
-			int iPainterFadeLife;
-			if (m_pPainter && (iPainterFadeLife = m_pPainter->GetFadeLifetime()))
-				{
-				m_pPainter->OnBeginFade();
-				m_fPainterFade = true;
-				iFadeLife = Max(iPainterFadeLife, iFadeLife);
-				}
-
-			//	If we've got a fade life, then keep the missile alive
-
-			if (iFadeLife > 0)
-				{
-				m_fDestroyed = true;
-				m_iLifeLeft = iFadeLife;
-				}
-
-			//	Otherwise, destroy the missile
-
-			else
+			if (!SetMissileFade())
 				{
 				Destroy(removedFromSystem, CDamageSource());
 				return;
@@ -1280,7 +1292,68 @@ bool CMissile::PointInObject (const CVector &vObjPos, const CVector &vPointPos)
 	int y = -(int)((vOffset.GetY() / g_KlicksPerPixel) + 0.5);
 
 	if (m_pPainter)
-		return m_pPainter->PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0), m_iRotation);
+		return m_pPainter->PointInImage(x, y, m_iTick, 0, m_iRotation);
 	else
-		return m_pDesc->m_Image.PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation) : 0));
+		return m_pDesc->m_Image.PointInImage(x, y, m_iTick, (m_pDesc->m_bDirectional ? Angle2Direction(m_iRotation, g_RotationRange) : 0));
+	}
+
+bool CMissile::SetMissileFade (void)
+
+//	SetMissileFade
+//
+//	Missile is destroyed, but we keep it alive to paint any effects that fade.
+//	We return TRUE if the missile should be kept alive.
+
+	{
+	//	If we've got a vapor trail effect, then keep the missile object alive
+	//	but mark it destroyed
+
+	int iFadeLife = m_pDesc->GetVaporTrailLength();
+
+	//	If we've got an effect that needs time to fade out, then keep
+	//	the missile object alive
+
+	int iPainterFadeLife;
+	if (m_pPainter && (iPainterFadeLife = m_pPainter->GetFadeLifetime()))
+		{
+		m_pPainter->OnBeginFade();
+		m_fPainterFade = true;
+		iFadeLife = Max(iPainterFadeLife, iFadeLife);
+		}
+
+	//	If we don't have any fade life then we don't need to keep the missile
+	//	alive.
+
+	if (iFadeLife <= 0)
+		return false;
+
+	//	Otherwise, mark destroyed and remember fade time
+
+	m_fDestroyed = true;
+	m_iLifeLeft = iFadeLife;
+
+	//	HACK: We use m_iHitDir to remember the maximum fade life (we need this
+	//	to calculate how to fade the vapor trail).
+
+	m_iHitDir = iFadeLife;
+
+	return true;
+	}
+
+bool CMissile::SetProperty (const CString &sName, ICCItem *pValue, CString *retsError)
+
+//	SetProperty
+//
+//	Sets an object property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_ROTATION))
+		{
+		m_iRotation = AngleMod(pValue->GetIntegerValue());
+		return true;
+		}
+	else
+		return CSpaceObject::SetProperty(sName, pValue, retsError);
 	}

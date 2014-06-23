@@ -55,9 +55,11 @@
 #define CMD_SHOW_WAIT_ANIMATION					CONSTLIT("cmdShowWaitAnimation")
 #define CMD_SOUNDTRACK_DONE						CONSTLIT("cmdSoundtrackDone")
 #define CMD_SOUNDTRACK_NEXT						CONSTLIT("cmdSoundtrackNext")
+#define CMD_SOUNDTRACK_NOW_PLAYING				CONSTLIT("cmdSoundtrackNowPlaying")
 #define CMD_SOUNDTRACK_PLAY_PAUSE				CONSTLIT("cmdSoundtrackPlayPause")
 #define CMD_SOUNDTRACK_PREV						CONSTLIT("cmdSoundtrackPrev")
 #define CMD_SOUNDTRACK_STOP						CONSTLIT("cmdSoundtrackStop")
+#define CMD_SOUNDTRACK_UPDATE_PLAY_POS			CONSTLIT("cmdSoundtrackUpdatePlayPos")
 
 #define CMD_GAME_ADVENTURE						CONSTLIT("gameAdventure")
 #define CMD_GAME_CREATE							CONSTLIT("gameCreate")
@@ -65,30 +67,36 @@
 #define CMD_GAME_END_SAVE						CONSTLIT("gameEndSave")
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
 #define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
+#define CMD_GAME_INSIDE_STARGATE				CONSTLIT("gameInsideStargate")
 #define CMD_GAME_LEAVE_STARGATE					CONSTLIT("gameLeaveStargate")
 #define CMD_GAME_LOAD							CONSTLIT("gameLoad")
 #define CMD_GAME_LOAD_DONE						CONSTLIT("gameLoadDone")
+#define CMD_GAME_PAUSE							CONSTLIT("gamePause")
 #define CMD_GAME_SELECT_ADVENTURE				CONSTLIT("gameSelectAdventure")
 #define CMD_GAME_SELECT_SAVE_FILE				CONSTLIT("gameSelectSaveFile")
 #define CMD_GAME_START_EXISTING					CONSTLIT("gameStartExisting")
 #define CMD_GAME_START_NEW						CONSTLIT("gameStartNew")
+#define CMD_GAME_UNPAUSE						CONSTLIT("gameUnpause")
 
 #define CMD_MODEL_ADVENTURE_INIT_DONE			CONSTLIT("modelAdventureInitDone")
 #define CMD_MODEL_INIT_DONE						CONSTLIT("modelInitDone")
 #define CMD_MODEL_NEW_GAME_CREATED				CONSTLIT("modelNewGameCreated")
 
+#define CMD_PLAYER_COMBAT_ENDED					CONSTLIT("playerCombatEnded")
 #define CMD_PLAYER_COMBAT_MISSION_STARTED		CONSTLIT("playerCombatMisionStarted")
+#define CMD_PLAYER_COMBAT_STARTED				CONSTLIT("playerCombatStarted")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
 #define CMD_SERVICE_ACCOUNT_CHANGED				CONSTLIT("serviceAccountChanged")
 #define CMD_SERVICE_COLLECTION_LOADED			CONSTLIT("serviceCollectionLoaded")
+#define CMD_SERVICE_DOWNLOAD_RESOURCES			CONSTLIT("serviceDownloadResources")
 #define CMD_SERVICE_DOWNLOADS_COMPLETE			CONSTLIT("serviceDownloadsComplete")
 #define CMD_SERVICE_DOWNLOADS_IN_PROGRESS		CONSTLIT("serviceDownloadsInProgress")
 #define CMD_SERVICE_ERROR						CONSTLIT("serviceError")
-#define CMD_SERVICE_EXTENSION_DOWNLOADED		CONSTLIT("serviceExtensionDownloaded")
 #define CMD_SERVICE_EXTENSION_LOAD_BEGIN		CONSTLIT("serviceExtensionLoadBegin")
 #define CMD_SERVICE_EXTENSION_LOAD_END			CONSTLIT("serviceExtensionLoadEnd")
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
+#define CMD_SERVICE_FILE_DOWNLOADED				CONSTLIT("serviceFileDownloaded")
 #define CMD_SERVICE_HOUSEKEEPING				CONSTLIT("serviceHousekeeping")
 #define CMD_SERVICE_NEWS_LOADED					CONSTLIT("serviceNewsLoaded")
 #define CMD_SERVICE_STATUS						CONSTLIT("serviceStatus")
@@ -101,6 +109,8 @@
 #define CMD_UI_BACK_TO_INTRO					CONSTLIT("uiBackToIntro")
 #define CMD_UI_CHANGE_PASSWORD					CONSTLIT("uiChangePassword")
 #define CMD_UI_EXIT								CONSTLIT("uiExit")
+#define CMD_UI_MUSIC_VOLUME_DOWN				CONSTLIT("uiMusicVolumeDown")
+#define CMD_UI_MUSIC_VOLUME_UP					CONSTLIT("uiMusicVolumeUp")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
@@ -111,6 +121,8 @@
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
 #define CMD_UI_START_EPILOGUE					CONSTLIT("uiStartEpilogue")
 #define CMD_UI_START_GAME						CONSTLIT("uiStartGame")
+#define CMD_UI_VOLUME_DOWN						CONSTLIT("uiVolumeDown")
+#define CMD_UI_VOLUME_UP						CONSTLIT("uiVolumeUp")
 
 #define FILESPEC_DOWNLOADS_FOLDER				CONSTLIT("Cache")
 #define FILESPEC_UPGRADE_FILE					CONSTLIT("Cache\\Upgrade.zip")
@@ -516,6 +528,8 @@ void CTranscendenceController::OnCleanUp (void)
 //	Clean up
 
 	{
+	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramQuit);
+
 	//	Clean up
 
 	m_Model.CleanUp();
@@ -590,11 +604,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Legacy CTranscendenceWnd takes over
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isOpeningTitles));
 
 		//	Start the intro
 
-		g_pTrans->StartIntro(CTranscendenceWnd::isOpeningTitles);
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -666,10 +679,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	If the player name is NULL then we come up with a better idea
 
 		if (Defaults.sPlayerName.IsBlank())
+			{
 			Defaults.sPlayerName = m_Service.GetDefaultUsername();
+			Defaults.bDefaultPlayerName = true;
+			}
 
 		if (Defaults.sPlayerName.IsBlank())
+			{
 			Defaults.sPlayerName = ::sysGetUserName();
+			Defaults.bDefaultPlayerName = true;
+			}
 
 		Defaults.sPlayerName = CUniverse::ValidatePlayerName(Defaults.sPlayerName);
 
@@ -694,8 +713,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CLegacySession(m_HI));
-		g_pTrans->StartIntro(CTranscendenceWnd::isBlank);
+		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isBlank));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -720,8 +738,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 
 		//	Remember the player settings
+		//
+		//	NOTE: We don't save the player name if it is a default name. This 
+		//	allows us to pick a different name if we two different people sign in.
+		//	Also, it prevents from us from posting the computer's username to
+		//	the Multiverse (which some people see as a privacy issue).
 
-		m_Settings.SetString(CGameSettings::playerName, pNewGame->sPlayerName);
+		if (!pNewGame->bDefaultPlayerName)
+			m_Settings.SetString(CGameSettings::playerName, pNewGame->sPlayerName);
+
 		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
 		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
 
@@ -789,7 +814,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_START_GAME))
 		{
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame(true);
 		}
 
@@ -842,7 +867,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
+		m_HI.ShowSession(new CGameSession(m_HI, m_Settings, m_Soundtrack));
 		g_pTrans->StartGame();
 		}
 
@@ -881,8 +906,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Back to intro screen
 
-		m_HI.ShowSession(new CLegacySession(m_HI));
-		g_pTrans->StartIntro(CTranscendenceWnd::isShipStats);
+		m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -894,12 +918,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		m_Model.StartGame(false);
 		m_iState = stateInGame;
+
+		//	NOTE: It's OK to leave the default param (firstTime = true) for
+		//	NotifyEnterSystem. We want the soundtrack to change to the system
+		//	track.
+
+		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
 		}
 	else if (strEquals(sCmd, CMD_GAME_START_NEW))
 		{
 		m_Model.StartGame(true);
 		m_iState = stateInGame;
+
+		m_Soundtrack.NotifyGameStart();
 		m_Soundtrack.NotifyEnterSystem();
 		}
 
@@ -908,12 +940,35 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_MISSION_STARTED))
 		m_Soundtrack.NotifyStartCombatMission();
 
+	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_ENDED))
+		m_Soundtrack.NotifyEndCombat();
+
+	else if (strEquals(sCmd, CMD_PLAYER_COMBAT_STARTED))
+		m_Soundtrack.NotifyStartCombat();
+
 	else if (strEquals(sCmd, CMD_PLAYER_UNDOCKED))
 		m_Soundtrack.NotifyUndocked();
 
-	//	Entering a stargate
+	//	Player hit 'G' to enter stargate
 
 	else if (strEquals(sCmd, CMD_GAME_ENTER_STARGATE))
+		{
+		CTopologyNode *pDestNode = (CTopologyNode *)pData;
+		if (pDestNode && !pDestNode->IsEndGame())
+			{
+			//	Figure out if we've entered this system before
+
+			bool bFirstTime = m_Model.GetPlayer()->GetSystemEnteredTime(pDestNode->GetID()) == 0xffffffff;
+
+			//	Tell the soundtrack
+
+			m_Soundtrack.NotifyEnterSystem(pDestNode, bFirstTime);
+			}
+		}
+
+	//	Left system; now inside the stargate
+
+	else if (strEquals(sCmd, CMD_GAME_INSIDE_STARGATE))
 		{
 		m_Model.OnPlayerTraveledThroughGate();
 		}
@@ -923,7 +978,6 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_LEAVE_STARGATE))
 		{
 		m_Model.OnPlayerExitedGate();
-		m_Soundtrack.NotifyEnterSystem();
 		}
 
 	//	Player has entered final stargate and the game is over
@@ -993,8 +1047,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CLegacySession(m_HI));
-			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
+			m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1010,8 +1063,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CLegacySession(m_HI));
-			g_pTrans->StartIntro(CTranscendenceWnd::isEndGame);
+			m_HI.ShowSession(new CIntroSession(m_HI, CTranscendenceWnd::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1073,6 +1125,56 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CHelpSession *pSession = new CHelpSession(m_HI);
 		if (error = m_HI.OpenPopupSession(pSession))
 			return error;
+		}
+
+	//	Volume controls
+
+	else if (strEquals(sCmd, CMD_UI_MUSIC_VOLUME_DOWN))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::musicVolume);
+		if (--iVolume >= 0)
+			{
+			SetOptionInteger(CGameSettings::musicVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_MUSIC_VOLUME_UP))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::musicVolume);
+		if (++iVolume <= 10)
+			{
+			SetOptionInteger(CGameSettings::musicVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_VOLUME_DOWN))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::soundVolume);
+		if (--iVolume >= 0)
+			{
+			SetOptionInteger(CGameSettings::soundVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+	else if (strEquals(sCmd, CMD_UI_VOLUME_UP))
+		{
+		int iVolume = GetOptionInteger(CGameSettings::soundVolume);
+		if (++iVolume <= 10)
+			{
+			SetOptionInteger(CGameSettings::soundVolume, iVolume);
+			g_pTrans->DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
+			}
+		}
+
+	//	Pause/unpause
+
+	else if (strEquals(sCmd, CMD_GAME_PAUSE))
+		{
+		m_Soundtrack.SetPlayPaused(false);
+		}
+	else if (strEquals(sCmd, CMD_GAME_UNPAUSE))
+		{
+		m_Soundtrack.SetPlayPaused(true);
 		}
 
 	//	Show login session
@@ -1154,9 +1256,15 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Modify Multiverse state
 
 		if (m_Service.HasCapability(ICIService::canGetUserProfile))
+			{
 			m_Multiverse.OnUserSignedIn(m_Service.GetUsername());
+			m_iBackgroundState = stateSignedIn;
+			}
 		else
+			{
 			m_Multiverse.OnUserSignedOut();
+			m_iBackgroundState = stateIdle;
+			}
 
 		//	If we're signed in then we should load the user's collection from
 		//	the service.
@@ -1166,6 +1274,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the collection (we pass in Multiverse so
 			//	that the collection is placed there).
 
+			m_iBackgroundState = stateLoadingCollection;
 			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), 0, this, CMD_SERVICE_COLLECTION_LOADED);
 			}
 
@@ -1178,6 +1287,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_COLLECTION_LOADED))
 		{
+		m_iBackgroundState = stateIdle;
+
 		//	Set registration status
 
 		CMultiverseCollection Collection;
@@ -1193,11 +1304,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	If we need to download a new version, do so now.
 
+#ifdef DEBUG_PROGRAM_UPGRADE
+		if (true
+#else
 		if (m_Multiverse.GetUpgradeVersion() > m_Model.GetProgramVersion().dwProductVersion
+#endif
 				&& !m_Settings.GetBoolean(CGameSettings::noAutoUpdate)
 				&& !IsUpgradeReady()
 				&& !m_bUpgradeDownloaded)
 			{
+			m_iBackgroundState = stateDownloadingUpgrade;
 			m_HI.AddBackgroundTask(new CUpgradeProgram(m_HI, m_Service, m_Multiverse.GetUpgradeURL()), CHumanInterface::FLAG_LOW_PRIORITY);
 
 			//	Remember that we already did this so we don't try again later (e.g., if
@@ -1211,7 +1327,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		else if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload)
 				&& RequestCatalogDownload(Download))
+			{
+			m_iBackgroundState = stateDownloadingCatalogEntry;
 			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+			}
 
 		//	Otherwise we're done downloading
 
@@ -1223,6 +1342,8 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_SERVICE_UPGRADE_READY))
 		{
+		DisplayMultiverseStatus(CONSTLIT("Saving install files..."));
+
 		CString sError;
 		error = WriteUpgradeFile((IMediaType *)pData, &sError);
 		delete (IMediaType *)pData;
@@ -1257,12 +1378,14 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (pState)
 			{
+			::kernelDebugLogMessage(pState->GetASCIIZPointer());
 			m_Multiverse.SetServiceStatus(*pState);
 			DisplayMultiverseStatus(*pState, true);
 			delete pState;
 			}
 		else
 			{
+			::kernelDebugLogMessage("Unknown service error");
 			m_Multiverse.SetServiceStatus(NULL_STR);
 			DisplayMultiverseStatus(NULL_STR, true);
 			}
@@ -1275,16 +1398,37 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Extension file downloaded
 
-	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_DOWNLOADED))
+	else if (strEquals(sCmd, CMD_SERVICE_FILE_DOWNLOADED))
 		{
-		//	Add a task to load the newly downloaded extension
+		if (m_iBackgroundState == stateDownloadingCatalogEntry)
+			{
+			//	Add a task to load the newly downloaded extension
 
-		CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
-		m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus), 0);
-		delete pStatus;
+			CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
+			m_HI.AddBackgroundTask(new CLoadExtensionTask(m_HI, *pStatus), 0);
+			delete pStatus;
 
-		//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
-		//	message.
+			//	When done, CLoadExtensionTask will send us a cmdServiceExtensionLoaded 
+			//	message.
+			}
+		else if (m_iBackgroundState == stateDownloadingResource)
+			{
+			CHexarcDownloader::SStatus *pStatus = (CHexarcDownloader::SStatus *)pData;
+
+			//	Rename the file
+
+			CString sPath = pathGetPath(pStatus->sFilespec);
+			CString sFilename = pathGetFilename(pStatus->sFilespec);
+			if (*sFilename.GetASCIIZPointer() == '~')
+				sFilename = strSubString(sFilename, 1);
+
+			CString sNewFilespec = pathAddComponent(sPath, sFilename);
+			fileMove(pStatus->sFilespec, sNewFilespec);
+
+			//	Continue loading resources
+
+			m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+			}
 		}
 
 	//	Starting to load extension. We need to temporarily freeze the
@@ -1313,13 +1457,43 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
 		}
 
+	//	Download external resource
+
+	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOAD_RESOURCES))
+		{
+		if (!m_Settings.GetBoolean(CGameSettings::noCollectionDownload))
+			{
+			TArray<CString> LocalFilenames;
+			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);
+
+			//	Ask the multiverse to map to a list of cloud filepaths
+
+			TArray<CMultiverseFileRef> CloudFileRefs;
+			m_Multiverse.GetResourceFileRefs(LocalFilenames, &CloudFileRefs);
+
+			//	If necessary, request downloads
+
+			if (RequestResourceDownload(CloudFileRefs))
+				{
+				m_iBackgroundState = stateDownloadingResource;
+				m_HI.AddBackgroundTask(new CProcessDownloadsTask(m_HI, m_Service), 0);
+				}
+			else
+				{
+				m_iBackgroundState = stateIdle;
+				::kernelDebugLogMessage("All resources downloaded.");
+				}
+			}
+		}
+
 	//	Done downloading extensions.
 
 	else if (strEquals(sCmd, CMD_SERVICE_DOWNLOADS_COMPLETE))
 		{
-		//	Download news
+		//	If we're done loading catalog entries, then download news
 
-		if (m_Service.HasCapability(ICIService::canLoadNews)
+		if ((m_iBackgroundState == stateIdle || m_iBackgroundState == stateDownloadingCatalogEntry)
+				&& m_Service.HasCapability(ICIService::canLoadNews)
 				&& m_Multiverse.IsLoadNewsNeeded())
 			{
 			//	Figure out the path for the news image cache
@@ -1334,8 +1508,21 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	Start a task to load the news (we pass in Multiverse so
 			//	that the collection is placed there).
 
+			m_iBackgroundState = stateLoadingNews;
 			m_HI.AddBackgroundTask(new CLoadNewsTask(m_HI, m_Service, m_Multiverse, m_Model.GetProgramVersion(), sDownloadsFolder), 0, this, CMD_SERVICE_NEWS_LOADED);
 			}
+
+		//	Otherwise, if we're loading loading resources, then handle them
+
+		else if (m_iBackgroundState == stateDownloadingResource)
+			{
+			m_iBackgroundState = stateIdle;
+			}
+
+		//	Ask the extension collection for a list of missing resource files.
+
+		else
+			HICommand(CMD_SERVICE_DOWNLOAD_RESOURCES);
 		}
 
 	//	News loaded
@@ -1345,6 +1532,10 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Tell the current session that we loaded news.
 
 		m_HI.GetSession()->HICommand(CMD_SERVICE_NEWS_LOADED);
+
+		//	Ask the extension collection for a list of missing resource files.
+
+		HICommand(CMD_SERVICE_DOWNLOAD_RESOURCES);
 		}
 
 	else if (strEquals(sCmd, CMD_SERVICE_STATUS))
@@ -1393,7 +1584,16 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Soundtrack.NotifyTrackDone();
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_NEXT))
-		m_Soundtrack.NotifyTrackDone();
+		m_Soundtrack.NextTrack();
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_NOW_PLAYING))
+		{
+		m_Soundtrack.NotifyTrackPlaying((CSoundType *)pData);
+		m_HI.GetSession()->HICommand(sCmd, pData);
+		}
+
+	else if (strEquals(sCmd, CMD_SOUNDTRACK_UPDATE_PLAY_POS))
+		m_Soundtrack.NotifyUpdatePlayPos((int)pData);
 
 	else if (strEquals(sCmd, CMD_SOUNDTRACK_PLAY_PAUSE))
 		m_Soundtrack.TogglePlayPaused();
@@ -1445,6 +1645,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	m_Model.AddSaveFileFolder(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_SAVE_FILES));
 	m_Model.SetDebugMode(m_Settings.GetBoolean(CGameSettings::debugGame));
 	m_Model.SetForceTDB(m_Settings.GetBoolean(CGameSettings::useTDB));
+	m_Model.SetNoMissionCheckpoint(m_Settings.GetBoolean(CGameSettings::noMissionCheckpoint));
 	m_Model.SetNoSound(m_Settings.GetBoolean(CGameSettings::noSound));
 
 	//	Figure out where the Collection folder is and where the Extension
@@ -1512,6 +1713,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	//	Play Intro Music
 
 	m_Soundtrack.SetMusicEnabled(!GetOptionBoolean(CGameSettings::noMusic));
+	m_Soundtrack.SetVolume(GetOptionInteger(CGameSettings::musicVolume));
 	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramLoad);
 
 	return NOERROR;
@@ -1644,6 +1846,55 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 	return true;
 	}
 
+bool CTranscendenceController::RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads)
+
+//	RequestResourceDownload
+//
+//	Initiates a request to download the given files.
+
+	{
+	int i;
+
+	//	If nothing to do then we're done.
+
+	if (Downloads.GetCount() == 0)
+		return false;
+
+	//	Figure out the path
+
+	CString sDownloadsFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FILESPEC_DOWNLOADS_FOLDER);
+
+	//	Make sure that we have the Downloads folder
+
+	if (!pathExists(sDownloadsFolder))
+		pathCreate(sDownloadsFolder);
+
+	//	Loop over all files to download
+
+	for (i = 0; i < Downloads.GetCount(); i++)
+		{
+		//	We download straight to the final destination (Collections folder) 
+		//	but we add a tilde so it doesn't get used yet.
+
+		CString sDestFolder = pathGetPath(Downloads[i].GetFilespec());
+		CString sDestFilename = strPatternSubst(CONSTLIT("~%s"), pathGetFilename(Downloads[i].GetFilespec()));
+
+		//	Make sure the folder exists
+
+		if (!pathExists(sDestFolder))
+			pathCreate(sDestFolder);
+
+		//	Request a download. (We can do this synchronously because it
+		//	doesn't take long and the call is thread-safe).
+
+		m_Service.RequestExtensionDownload(Downloads[i].GetFilePath(), pathAddComponent(sDestFolder, sDestFilename), CIntegerIP());
+		}
+
+	//	Done
+
+	return true;
+	}
+
 void CTranscendenceController::SetOptionBoolean (int iOption, bool bValue)
 
 //	SetOptionBoolean
@@ -1678,6 +1929,11 @@ void CTranscendenceController::SetOptionInteger (int iOption, int iValue)
 	bool bModifySettings = true;
 	switch (iOption)
 		{
+		case CGameSettings::musicVolume:
+			ASSERT(iValue >= 0 && iValue <= 10);
+			m_Soundtrack.SetVolume(iValue);
+			break;
+
 		case CGameSettings::soundVolume:
 			ASSERT(iValue >= 0 && iValue <= 10);
 			m_HI.SetSoundVolume(iValue);

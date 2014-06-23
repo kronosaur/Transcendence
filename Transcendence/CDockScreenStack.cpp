@@ -105,6 +105,8 @@ void CDockScreenStack::Push (const SDockFrame &Frame)
 	pNewFrame->pRoot = Frame.pRoot;
 	pNewFrame->sScreen = Frame.sScreen;
 	pNewFrame->sPane = Frame.sPane;
+	pNewFrame->pResolvedRoot = Frame.pResolvedRoot;
+	pNewFrame->sResolvedScreen = Frame.sResolvedScreen;
 
 	//	If we have data, inc ref count
 
@@ -128,6 +130,25 @@ void CDockScreenStack::Pop (void)
 
 		DiscardOldFrame(m_Stack[iTop]);
 		m_Stack.Delete(iTop);
+		}
+	}
+
+void CDockScreenStack::ResolveCurrent (const SDockFrame &ResolvedFrame)
+
+//	SetCurrent
+//
+//	Sets the current frame (and optionally returns the old frame).
+//
+//	NOTE: Caller is responsible for discarding pInitialData if it get the previous
+//	frame.
+
+	{
+	if (!IsEmpty())
+		{
+		int iTop = m_Stack.GetCount() - 1;
+
+		m_Stack[iTop].pResolvedRoot = ResolvedFrame.pResolvedRoot;
+		m_Stack[iTop].sResolvedScreen = ResolvedFrame.sResolvedScreen;
 		}
 	}
 

@@ -143,6 +143,8 @@ class CUIHelper
 								 IAnimatron **retpControl) const;
 		void CreateSessionWaitAnimation (const CString &sID, const CString &sText, IAnimatron **retpControl) const;
 
+		void GenerateDockScreenRTF (const CString &sText, CString *retsRTF) const;
+
 	private:
 		void CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString &sText, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
 

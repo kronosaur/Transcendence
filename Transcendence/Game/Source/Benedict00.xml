@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict's Drones =====================================================
+
+	EXTRA DATA
+
+	endTime:			Tick on which we ended
+	startTime:			Tick on which we started
+	targetIDs:			List of IDs of targets to destroy.
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictsDrones;"
+			name=				"Benedict&apos;s Autons"
+			attributes=			"benedictStoryArc"
+
+			maxAppearing=		"1"
+			debriefAfterOutOfSystem="true"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>10</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+
+					(switch
+						;	This mission only works in the starting system
+
+						(not (eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem)))
+							(msnDestroy gSource)
+
+						;	See if the mission is still available
+
+						(not (benedict_isMissionAvailable &msBenedictsDrones;))
+							(msnDestroy gSource)
+
+						;	Set up the mission
+
+						(block Nil
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(trainingPos (sysVectorRandom ownerObj 20 15 "t"))
+					
+					droneObjList
+					)
+					
+					;	Create 3 training drones and set them to hold
+
+					(setq droneObjList
+						(map (list 1 2 3) theIndex
+							(block (theDrone)
+								(setq theDrone (sysCreateShip 
+									&scTenhoveSentinel;
+									(sysVectorPolarOffset trainingPos (multiply theIndex 120) 4)
+									&svDefectiveAuton;
+									))
+									
+								(shpOrder theDrone 'hold)
+								(objRegisterForEvents gSource theDrone)
+									
+								theDrone
+								)
+							)
+						)
+						
+					;	Add each of the drones to our list of targets
+					
+					(msnSetData gSource 'targetIDs (map droneObjList theObj (objGetID theObj)))
+					
+					;	Remember that we accepted this mission
+					
+					(benedict_missionAccepted gSource)
+					
+					;	Once we accept this mission, we're done with the intro
+					
+					(typSetData &unidBenedictStoryArc; 'introDone True)
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+				;	Remember when we started the battle
+				(msnSetData gSource 'startTime (unvGetTick))
+			</OnAcceptedUndock>
+			
+			<OnDeclined>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(trainingMission (msnCreate &msBenedictTraining; ownerObj))
+					)
+				
+					;	Once we decline this mission, we're done with the intro
+					
+					(typSetData &unidBenedictStoryArc; 'introDone True)
+					
+					;	Create the training mission
+					
+					(if trainingMission
+						(msnAccept trainingMission)
+						)
+						
+					;	Return Nil to exit
+					
+					Nil
+					)
+			</OnDeclined>
+			
+			<OnSetPlayerTarget>
+				(rpgSetTarget gSource aReason (objGetObjByID (@ (msnGetData gSource 'targetIDs) 0)))
+			</OnSetPlayerTarget>
+			
+			<OnObjDestroyed>
+				(switch
+					(find (msnGetData gSource 'targetIDs) (objGetID aObjDestroyed))
+						(block (
+							(newTargetIDs 
+								(filter (msnGetData gSource 'targetIDs) theID (neq theID (objGetID aObjDestroyed)))
+								)
+							)
+							
+							(msnSetData gSource 'targetIDs newTargetIDs)
+							
+							(if (not newTargetIDs)
+							
+								;	If all targets destroyed, then mission is a success
+								(msnSuccess gSource)
+								
+								;	Otherwise, we set a new target
+								(msnSetPlayerTarget gSource)
+								)
+							)
+					)
+			</OnObjDestroyed>
+			
+			<OnCompleted>
+				(if (eq aReason 'success)
+					(block Nil
+						(msnSetData gSource 'endTime (unvGetTick))
+					
+						;	Achievement
+					
+						(typSetData &msBenedictsDrones; 'achievements
+							(list
+								(list (msnTranslate gSource 'AchievementDesc)
+									Nil
+									"achievements &amp; regrets"
+									)
+								)
+							)
+						)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block (
+					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(trainingMission (msnCreate &msBenedictTraining; ownerObj))
+					)
+				
+					;	Auto-accept training mission
+					
+					(if trainingMission
+						(msnAccept trainingMission)
+						)
+						
+					;	Nil means exit
+					
+					Nil
+					)
+			</OnReward>
+			
+			<GetGlobalAchievements>
+				(typGetData &msBenedictsDrones; 'achievements)
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Benedict's Autons"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Destroy Benedict's autons.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+				(cat
+					"Benedict wears a quasi-military uniform without patches or insignia. "
+					"Skin-armor plates peek through his collar. He crosses his arms "
+					"and turns to look at you:\n\n"
+						
+					"\"I offer you training. Nothing more. Do what I say and "
+					"you'll be ready for your journey.\""
+					)
+			</Text>
+			<Text id="Briefing">
+				(cat
+					"\"You've got a good ship. She'll take you where you need to go. "
+					"But you must learn to control her. You must fly better, faster, "
+					"and more accurately than your targets.\n\n"
+					
+					"\"Do you want to practice combat maneuvers?\""
+					)
+			</Text>
+			<Text id="AcceptLabel">"\"[Y]es, I need practice.\""</Text>
+			<Text id="AcceptReply">
+				(cat
+					"\"I'll launch three autons&#x97;autonomous ships&#x97;for target practice.\n\n"
+					
+					"\"Use the [Ctrl] key to fire your primary weapon. See if you can destroy them all.\n\n"
+					
+					"\"Ready?\""
+					)
+			</Text>
+			<Text id="DeclineLabel">"\"[N]o, thanks.\""</Text>
+			<Text id="DeclineReply">
+				(cat
+					"Benedict stares. A smile flashes for an instant.\n\n"
+					
+					"\"Fine. You'll be working your weapons soon enough. "
+					"Come back when you're ready to tackle something more dangerous.\""
+					)
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"\"I guess I forgot to tell you they fire back. Don't worry: "
+					"they're nothing compared to what you'll face out there.\n\n"
+					
+					"\"Remember, use the [Ctrl] key to fire your primary weapon.\""
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(cat
+					"\"Excellent work! You destroyed all autons in " 
+						(unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display) ".\""
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="AchievementDesc">
+				(cat "Destroyed Benedict's autons in " (unvGetElapsedGameTime (msnGetData gSource 'startTime) (msnGetData gSource 'endTime) 'display))
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

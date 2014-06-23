@@ -62,6 +62,7 @@ struct SBlockFormatDesc
 	SBlockFormatDesc (void) :
 			iHorzAlign(alignLeft),
 			iVertAlign(alignTop),
+			iExtraLineSpacing(0),
 			cxWidth(-1),
 			cyHeight(-1)
 
@@ -69,6 +70,7 @@ struct SBlockFormatDesc
 
 	AlignmentStyles iHorzAlign;
 	AlignmentStyles iVertAlign;
+	int iExtraLineSpacing;				//	Pixels between lines
 
 	STextFormat DefaultFormat;			//	Default format
 

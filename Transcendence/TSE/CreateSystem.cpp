@@ -3949,6 +3949,15 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 
 	//	Create the station (or ship encounter). Note that pStation may come back NULL
 
+#ifdef DEBUG_RANDOM_SEED
+	DWORD dwOldSeed = mathGetSeed();
+	static DWORD g_Count = 0;
+	static bool g_Collect = true;
+	static int g_Index = 0;
+	static DWORD g_Values[10000];
+	static DWORD g_ValuesOld[10000];
+#endif
+
 	if (error = CreateStationInt(pCtx,
 			pType,
 			vPos,
@@ -3957,6 +3966,36 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 			&pStation,
 			&pCtx->sError))
 		return ERR_FAIL;
+
+#ifdef DEBUG_RANDOM_SEED
+	if (dwOldSeed != mathGetSeed())
+		{
+		DWORD dwNewSeed = mathGetSeed();
+
+		if (dwNewSeed == 0x2e809d20 && g_Index > 0)
+			{
+			g_Collect = false;
+			g_Index = 0;
+			}
+		else if (g_Collect && g_Index < 9999)
+			{
+			g_ValuesOld[g_Index] = dwOldSeed;
+			g_Values[g_Index] = dwNewSeed;
+
+			g_Index++;
+			}
+
+		if (!g_Collect && g_Index < 9999)
+			{
+			if (dwOldSeed != g_ValuesOld[g_Index])
+				::kernelDebugLogMessage("%s (%x): Discrepancy before create", pType->GetName(), pType->GetUNID());
+			else if (dwNewSeed != g_Values[g_Index])
+				::kernelDebugLogMessage("%s (%x): Discrepancy during create", pType->GetName(), pType->GetUNID());
+
+			g_Index++;
+			}
+		}
+#endif
 
 	if (pStation)
 		pCtx->dwLastObjID = pStation->GetID();

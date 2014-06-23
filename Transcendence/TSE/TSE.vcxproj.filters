@@ -48,6 +48,9 @@
     <Filter Include="Source Files\Sound">
       <UniqueIdentifier>{2090b34e-be38-44e4-b7c3-4abe3d0e51ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Ships">
+      <UniqueIdentifier>{cf0514bc-e424-404e-a805-0331b997edaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry.h">
@@ -106,9 +109,6 @@
     <ClCompile Include="CAdventureRecord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CAISettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CCommunicationsHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -136,16 +136,7 @@
     <ClCompile Include="CParticleArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayerSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CRegenDesc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CResourceDb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CShipTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CShockwaveHitTest.cpp">
@@ -311,9 +302,6 @@
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
     <ClCompile Include="CPower.cpp">
-      <Filter>Source Files\DesignTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="CShipClass.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
     <ClCompile Include="CShipEnergyFieldType.cpp">
@@ -619,9 +607,6 @@
     <ClCompile Include="CSequencerEffect.cpp">
       <Filter>Source Files\SpaceObjects</Filter>
     </ClCompile>
-    <ClCompile Include="CShip.cpp">
-      <Filter>Source Files\SpaceObjects</Filter>
-    </ClCompile>
     <ClCompile Include="CSpaceObject.cpp">
       <Filter>Source Files\SpaceObjects</Filter>
     </ClCompile>
@@ -721,12 +706,6 @@
     <ClCompile Include="CSoundType.cpp">
       <Filter>Source Files\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="CShipInteriorDesc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CShipInterior.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CItemEnhancementStack.cpp">
       <Filter>Source Files\Items</Filter>
     </ClCompile>
@@ -747,6 +726,51 @@
     </ClCompile>
     <ClCompile Include="CMultiverseNewsEntry.cpp">
       <Filter>Source Files\Multiverse</Filter>
+    </ClCompile>
+    <ClCompile Include="CShipClass.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CShip.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CAISettings.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
+    <ClCompile Include="CShipInterior.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CShipInteriorDesc.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CRegenDesc.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CShipTable.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerSettings.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CIntegralRotationDesc.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CIntegralRotation.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectEffectDesc.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectEffectList.cpp">
+      <Filter>Source Files\Ships</Filter>
+    </ClCompile>
+    <ClCompile Include="CMapViewportCtx.cpp">
+      <Filter>Source Files\StarSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="SFXParticleJet.cpp">
+      <Filter>Source Files\SFX</Filter>
+    </ClCompile>
+    <ClCompile Include="CPaintHelper.cpp">
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

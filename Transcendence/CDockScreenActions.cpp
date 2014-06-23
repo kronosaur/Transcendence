@@ -52,7 +52,6 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 
 	SActionDesc *pAction = m_Actions.InsertAt(iPos);
 	pAction->sID = sID;
-	pAction->sLabel = sLabel;
 	pAction->pButton = NULL;
 	pAction->pExtension = pExtension;
 	pAction->pCmd = NULL;
@@ -61,10 +60,9 @@ ALERROR CDockScreenActions::AddAction (const CString &sID, int iPos, const CStri
 	pAction->bVisible = true;
 	pAction->bEnabled = true;
 
-	pAction->bDefault = false;
-	pAction->bCancel = false;
-	pAction->bPrev = false;
-	pAction->bNext = false;
+	//	Set the label, etc.
+
+	SetLabelDesc(pAction, sLabel);
 
 	//	Done
 
@@ -98,7 +96,7 @@ void CDockScreenActions::CleanUp (void)
 		}
 	}
 
-void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame)
+void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame)
 
 //	CreateButtons
 //
@@ -117,10 +115,47 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, c
 		if (!pAction->bVisible)
 			continue;
 
+		//	Add the button
+
 		CGButtonArea *pButton = new CGButtonArea;
-		pButton->SetLabel(pAction->sLabel);
-		pButton->SetLabelFont(&LabelFont);
+
+		//	If the label is currently blank, then look up the ID in the language
+		//	table and see if we have something.
+
+		if (pAction->sLabel.IsBlank() 
+				&& pRoot
+				&& !pAction->sID.IsBlank())
+			{
+			CString sLabelDesc;
+			if (pRoot->TranslateText(NULL, pAction->sID, &sLabelDesc))
+				{
+				CString sLabel;
+				CString sKey;
+				ParseLabelDesc(sLabelDesc, &sLabel, &sKey);
+
+				//	Set the label. Note that we don't update pAction->sLabel in case
+				//	we want the label to be determined dynamically.
+
+				pButton->SetLabel(sLabel);
+
+				//	We need to set the action key because we have to check for it
+				//	during input.
+
+				if (!sKey.IsBlank())
+					pAction->sKey = sKey;
+				}
+			}
+
+		//	Otherwise, just use the stored label and key
+
+		else
+			pButton->SetLabel(pAction->sLabel);
+
 		pButton->SetLabelAccelerator(pAction->sKey);
+
+		//	Set font, etc.
+
+		pButton->SetLabelFont(&LabelFont);
 		if (!pAction->bEnabled)
 			pButton->SetDisabled();
 
@@ -386,9 +421,11 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 
 		//	Label and key
 
+		SetLabelDesc(pAction, pActionDesc->GetAttribute(NAME_ATTRIB));
+
+		//	ID
+
 		pAction->sID = pActionDesc->GetAttribute(ID_ATTRIB);
-		pAction->sLabel = pActionDesc->GetAttribute(NAME_ATTRIB);
-		pAction->sKey = pActionDesc->GetAttribute(KEY_ATTRIB);
 
 		//	For backwards compatibility we generate an ID if one is
 		//	not specified.
@@ -411,12 +448,14 @@ ALERROR CDockScreenActions::InitFromXML (CExtension *pExtension, CXMLElement *pA
 			pAction->pCode = NULL;
 			}
 
-		//	Some flags
+		//	Handle older settings. We only set these if they are specified.
+		//	Otherwise, we take the values set by SetLabelDesc.
 
-		pAction->bDefault = pActionDesc->GetAttributeBool(DEFAULT_ATTRIB);
-		pAction->bCancel = pActionDesc->GetAttributeBool(CANCEL_ATTRIB);
-		pAction->bNext = pActionDesc->GetAttributeBool(NEXT_KEY_ATTRIB);
-		pAction->bPrev = pActionDesc->GetAttributeBool(PREV_KEY_ATTRIB);
+		pActionDesc->FindAttribute(KEY_ATTRIB, &pAction->sKey);
+		pActionDesc->FindAttributeBool(DEFAULT_ATTRIB, &pAction->bDefault);
+		pActionDesc->FindAttributeBool(CANCEL_ATTRIB, &pAction->bCancel);
+		pActionDesc->FindAttributeBool(NEXT_KEY_ATTRIB, &pAction->bNext);
+		pActionDesc->FindAttributeBool(PREV_KEY_ATTRIB, &pAction->bPrev);
 
 		//	Defaults
 
@@ -454,6 +493,98 @@ bool CDockScreenActions::IsSpecial (int iAction, SpecialAttribs iSpecial)
 		}
 	}
 
+void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey, TArray<SpecialAttribs> *retSpecial)
+
+//	ParseLabelDesc
+//
+//	Parses a label descriptor of the following forms:
+//
+//	Action:		This is a normal label
+//	[A]ction:	A is the special key
+//	[Enter]:	Treated as a normal label because key is > 1 character
+//	*Action:	This is the default action
+//	^Action:	This is the cancel action
+//	>Action:	This is the next key
+//	<Action:	This is the prev key
+
+	{
+	char *pPos = sLabelDesc.GetASCIIZPointer();
+
+	//	Parse any special attribute prefixes
+
+	while (*pPos == '*' || *pPos == '^' || *pPos == '>' || *pPos == '<')
+		{
+		if (retSpecial)
+			{
+			switch (*pPos)
+				{
+				case '*':
+					retSpecial->Insert(specialDefault);
+					break;
+
+				case '^':
+					retSpecial->Insert(specialCancel);
+					break;
+
+				case '>':
+					retSpecial->Insert(specialNextKey);
+					break;
+
+				case '<':
+					retSpecial->Insert(specialPrevKey);
+					break;
+				}
+			}
+
+		pPos++;
+		}
+
+	//	Now parse the label looking for the bracket syntax.
+
+	CString sLabel;
+	CString sKey;
+	char *pStart = pPos;
+
+	while (*pPos != '\0')
+		{
+		if (pPos[0] == '[' && pPos[1] != '\0' && pPos[2] == ']')
+			{
+			if (pStart)
+				sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+
+			pPos++;
+			if (*pPos == '\0')
+				break;
+
+			if (*pPos != ']')
+				{
+				sKey = CString(pPos, 1);
+				sLabel.Append(sKey);
+				pPos++;
+				}
+
+			if (*pPos == ']')
+				pPos++;
+
+			pStart = pPos;
+			continue;
+			}
+		else
+			pPos++;
+		}
+
+	if (pStart != pPos)
+		sLabel.Append(CString(pStart, (int)(pPos - pStart)));
+
+	//	Done
+
+	if (retsLabel)
+		*retsLabel = sLabel;
+
+	if (retsKey)
+		*retsKey = sKey;
+	}
+
 void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)
 
 //	SetEnabled
@@ -468,7 +599,7 @@ void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)
 		pAction->pButton->SetDisabled(!bEnabled);
 	}
 
-void CDockScreenActions::SetLabel (int iAction, const CString &sLabel, const CString &sKey)
+void CDockScreenActions::SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey)
 
 //	SetLabel
 //
@@ -477,8 +608,8 @@ void CDockScreenActions::SetLabel (int iAction, const CString &sLabel, const CSt
 	{
 	SActionDesc *pAction = &m_Actions[iAction];
 
-	if (!sLabel.IsBlank())
-		pAction->sLabel = sLabel;
+	if (!sLabelDesc.IsBlank())
+		SetLabelDesc(pAction, sLabelDesc, false);
 
 	if (!sKey.IsBlank())
 		pAction->sKey = sKey;
@@ -490,7 +621,40 @@ void CDockScreenActions::SetLabel (int iAction, const CString &sLabel, const CSt
 		}
 	}
 
-void CDockScreenActions::SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled)
+void CDockScreenActions::SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial)
+
+//	SetLabelDesc
+//
+//	Sets the label and key based on a label descriptor.
+//
+//	NOTE: We overwrite label, key, and special, so all other ways of specifying
+//	those should happen after this call.
+
+	{
+	int i;
+
+	CString sLabel;
+	CString sKey;
+	TArray<SpecialAttribs> Special;
+
+	ParseLabelDesc(sLabelDesc, &sLabel, &sKey, &Special);
+
+	pAction->sLabel = sLabel;
+	pAction->sKey = sKey;
+
+	if (bOverrideSpecial || Special.GetCount() > 0)
+		{
+		pAction->bCancel = false;
+		pAction->bDefault = false;
+		pAction->bNext = false;
+		pAction->bPrev = false;
+
+		for (i = 0; i < Special.GetCount(); i++)
+			SetSpecial(pAction, Special[i], true);
+		}
+	}
+
+void CDockScreenActions::SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled)
 
 //	SetSpecial
 //
@@ -500,28 +664,38 @@ void CDockScreenActions::SetSpecial (int iAction, SpecialAttribs iSpecial, bool 
 	switch (iSpecial)
 		{
 		case specialAll:
-			m_Actions[iAction].bCancel = bEnabled;
-			m_Actions[iAction].bDefault = bEnabled;
-			m_Actions[iAction].bNext = bEnabled;
-			m_Actions[iAction].bPrev = bEnabled;
+			pAction->bCancel = bEnabled;
+			pAction->bDefault = bEnabled;
+			pAction->bNext = bEnabled;
+			pAction->bPrev = bEnabled;
 			break;
 
 		case specialDefault:
-			m_Actions[iAction].bDefault = bEnabled;
+			pAction->bDefault = bEnabled;
 			break;
 
 		case specialCancel:
-			m_Actions[iAction].bCancel = bEnabled;
+			pAction->bCancel = bEnabled;
 			break;
 
 		case specialNextKey:
-			m_Actions[iAction].bNext = bEnabled;
+			pAction->bNext = bEnabled;
 			break;
 
 		case specialPrevKey:
-			m_Actions[iAction].bPrev = bEnabled;
+			pAction->bPrev = bEnabled;
 			break;
 		}
+	}
+
+void CDockScreenActions::SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled)
+
+//	SetSpecial
+//
+//	Sets the special attribute for an action
+
+	{
+	SetSpecial(&m_Actions[iAction], iSpecial, bEnabled);
 	}
 
 bool CDockScreenActions::SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpecial, ICCItem **retpError)

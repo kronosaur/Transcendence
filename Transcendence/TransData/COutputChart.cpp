@@ -20,8 +20,12 @@ CG16bitImage &COutputChart::GetOutputImage (int *retxOrigin, int *retyOrigin)
 //	Returns the output image and the origin of the content region.
 
 	{
-	*retxOrigin = 0;
-	*retyOrigin = 0;
+	if (retxOrigin)
+		*retxOrigin = 0;
+
+	if (retyOrigin)
+		*retyOrigin = 0;
+
 	return m_Image;
 	}
 
@@ -98,6 +102,18 @@ void COutputChart::SetContentSize (int cxWidth, int cyHeight)
 
 	{
 	m_Image.CreateBlank(cxWidth, cyHeight, false);
+	}
+
+void COutputChart::SetOutputFilespec (const CString &sFilespec)
+
+//	SetOutputFilespec
+//
+//	Sets the output file. NULL means copy to clipboard
+	
+	{
+	m_sFilespec = sFilespec;
+	if (!m_sFilespec.IsBlank())
+		m_sFilespec = pathAddExtensionIfNecessary(sFilespec, CONSTLIT(".bmp"));
 	}
 
 void COutputChart::SetStyleFont (const CString &sStyle, const CString &sFontDesc)

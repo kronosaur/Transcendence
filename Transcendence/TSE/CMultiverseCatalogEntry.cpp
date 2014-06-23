@@ -10,6 +10,7 @@
 #define FIELD_LICENSE_TYPE						CONSTLIT("licenseType")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_RELEASE							CONSTLIT("release")
+#define FIELD_RESOURCES							CONSTLIT("resources")
 #define FIELD_TYPE								CONSTLIT("type")
 #define FIELD_UNID								CONSTLIT("unid")
 #define FIELD_VERSION							CONSTLIT("$version")
@@ -66,6 +67,8 @@ ALERROR CMultiverseCatalogEntry::CreateFromJSON (const CJSONValue &Entry, CMulti
 //	Creates a new entry from a JSON value.
 
 	{
+	int i;
+
 	CMultiverseCatalogEntry *pNewEntry = new CMultiverseCatalogEntry;
 
 	pNewEntry->m_sUNID = Entry.GetElement(FIELD_UNID).AsString();
@@ -133,6 +136,23 @@ ALERROR CMultiverseCatalogEntry::CreateFromJSON (const CJSONValue &Entry, CMulti
 			{
 			delete pNewEntry;
 			return ERR_FAIL;
+			}
+		}
+
+	//	Get the resources
+
+	const CJSONValue &Resources = Entry.GetElement(FIELD_RESOURCES);
+	if (Resources.GetType() == CJSONValue::typeArray)
+		{
+		pNewEntry->m_Resources.InsertEmpty(Resources.GetCount());
+
+		for (i = 0; i < Resources.GetCount(); i++)
+			{
+			if (pNewEntry->m_Resources[i].InitFromJSON(Resources.GetElement(i), retsResult) != NOERROR)
+				{
+				delete pNewEntry;
+				return ERR_FAIL;
+				}
 			}
 		}
 

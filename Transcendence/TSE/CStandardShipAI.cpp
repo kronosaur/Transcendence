@@ -417,7 +417,10 @@ void CStandardShipAI::OnBehavior (void)
 		case stateDeterTargetNoChase:
 			{
 			ASSERT(m_pTarget);
-			m_AICtx.ImplementAttackTarget(m_pShip, m_pTarget, true);
+			bool bInPlace;
+			m_AICtx.ImplementHold(m_pShip, &bInPlace);
+			if (bInPlace)
+				m_AICtx.ImplementAttackTarget(m_pShip, m_pTarget, true);
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
 
 			//	Check to see if target has hit back. If not, stop the attack
@@ -817,7 +820,7 @@ void CStandardShipAI::OnBehavior (void)
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
 
 			bool bInPosition = false;
-			m_AICtx.ImplementFormationManeuver(m_pShip, m_pDest->GetPos(), m_pDest->GetVel(), m_iCountdown, &bInPosition);
+			m_AICtx.ImplementFormationManeuver(m_pShip, m_pDest->GetPos(), m_pDest->GetVel(), m_pShip->AlignToRotationAngle(m_iCountdown), &bInPosition);
 			if (bInPosition)
 				CancelCurrentOrder();
 
@@ -967,7 +970,7 @@ void CStandardShipAI::OnBehavior (void)
 
 			//	Are we done?
 
-			if (AreAnglesAligned(m_iCountdown, m_pShip->GetRotation(), 1))
+			if (m_pShip->IsPointingTo(m_iCountdown))
 				CancelCurrentOrder();
 			break;
 			}
@@ -1590,6 +1593,8 @@ void CStandardShipAI::BehaviorStart (void)
 
 		case IShipController::orderWander:
 			{
+			int i;
+
 			//	Figure out which bearing to take. We set m_rDistance with
 			//	the direction that we want to move. We will continue moving
 			//	in that direction until we are blocked by an enemy or until
@@ -1619,8 +1624,7 @@ void CStandardShipAI::BehaviorStart (void)
 
 			iBearing = m_pShip->AlignToRotationAngle(iBearing);
 			int iBearingStart = iBearing;
-			ASSERT((360 % m_pShip->GetRotationAngle()) == 0);
-			while (true)
+			for (i = 0; i < m_pShip->GetRotationRange(); i++)
 				{
 				if (!EnemyStationsAtBearing(m_pShip, iBearing, WANDER_SAFETY_RANGE))
 					break;
@@ -2230,6 +2234,7 @@ void CStandardShipAI::OnObjDestroyedNotify (const SDestroyCtx &Ctx)
 				//	our ancestor class).
 
 				case IShipController::orderLoot:
+				case IShipController::orderAttackArea:
 					break;
 
 				//	In these cases we avenge the target

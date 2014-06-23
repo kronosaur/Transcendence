@@ -269,7 +269,7 @@ void GenerateShipImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 						x,
 						y,
 						0,
-						Angle2Direction(iRotation));
+						pClass->Angle2Direction(iRotation));
 
 			//	Paint name
 

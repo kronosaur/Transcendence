@@ -4,12 +4,14 @@
 
 #include "PreComp.h"
 
-//static Metric g_rViewAngle =					0.4636448f;
-static Metric g_rViewAngle =					0.27925268;		//	16 degree angle
+static Metric g_rViewAngle =					0.4636448f;		//	26.56 degrees (z=12 x=6)
 static Metric g_rK1 =							sin(g_rViewAngle);
 static Metric g_rK2 =							cos(g_rViewAngle);
 
 #define BRING_TO_FRONT_ATTRIB					CONSTLIT("bringToFront")
+#define POS_ANGLE_ATTRIB						CONSTLIT("posAngle")
+#define POS_RADIUS_ATTRIB						CONSTLIT("posRadius")
+#define POS_Z_ATTRIB							CONSTLIT("posZ")
 #define SEND_TO_BACK_ATTRIB						CONSTLIT("sendToBack")
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
@@ -89,6 +91,40 @@ void C3DConversion::CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVec
 	retvPos->SetY(rYp);
 	}
 
+void C3DConversion::CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ, CVector *retvPos)
+
+//	CalcCoord
+//
+//	Calculates the coordinate
+
+	{
+	Metric rX = vPos.GetX() / rScale;
+	Metric rY = vPos.GetY() / rScale;
+	Metric rZ = -rPosZ / rScale;
+
+	//	Convert to global coordinates (which we align on the camera,
+	//	in effect we rotate the object to align to the camera).
+
+	Metric rXg = rX;
+	Metric rYg = rY * g_rK2 - rZ * g_rK1;
+	Metric rZg = rY * g_rK1 + rZ * g_rK2;
+
+	rZg += 2.0f;
+
+	Metric rD = rScale * 2.0f;
+
+	//	Now convert to projection coordinates
+
+	Metric rDen = rZg / rD;
+	Metric rXp = rXg / rDen;
+	Metric rYp = rYg / rDen;
+
+	//	Done
+
+	retvPos->SetX(rXp);
+	retvPos->SetY(rYp);
+	}
+
 void C3DConversion::CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety)
 
 //	CalcCoordCompatible
@@ -101,7 +137,7 @@ void C3DConversion::CalcCoordCompatible (int iAngle, int iRadius, int *retx, int
 	*rety = -(int)vPos.GetY();
 	}
 
-ALERROR C3DConversion::Init (CXMLElement *pDesc, int iDirectionCount, int iScale)
+ALERROR C3DConversion::Init (CXMLElement *pDesc)
 
 //	Init
 //
@@ -109,52 +145,85 @@ ALERROR C3DConversion::Init (CXMLElement *pDesc, int iDirectionCount, int iScale
 //
 //	x="nnn" y="nnn"				-> old-style 2D mapping of points
 //	x="nnn" y="nnn" z="nnn"		-> use the 3D transformation
+//
+//	OR
+//
+//	posAngle="nnn"	posRadius="nnn"	posZ="nnn"
+//
+//	NOTE: Must call InitComplete to finish initialization
 
 	{
-	ALERROR error;
+	//	Initialize based on which of the formats we've got. If we have posAngle
+	//	then we have polar coordinates.
 
-	//	Get the position
+	if (pDesc->FindAttributeInteger(POS_ANGLE_ATTRIB, &m_iAngle))
+		{
+		m_iRadius = pDesc->GetAttributeInteger(POS_RADIUS_ATTRIB);
+		m_iZ = pDesc->GetAttributeInteger(POS_Z_ATTRIB);
+		m_bUseCompatible = false;
+		}
 
-	int x = pDesc->GetAttributeInteger(X_ATTRIB);
-	int y = -pDesc->GetAttributeInteger(Y_ATTRIB);
-
-	//	Convert to polar coordinates
-
-	int iRadius;
-	int iAngle = IntVectorToPolar(x, y, &iRadius);
-
-	//	If we have a z attribute then user the new 3D conversion.
-
-	int z;
-	if (pDesc->FindAttributeInteger(Z_ATTRIB, &z))
-		Init(iDirectionCount, iScale, iAngle, iRadius, z);
-
-	//	Otherwise use the compatible method
+	//	Otherwise, we expect Cartessian coordinates
 
 	else
-		InitCompatible(iDirectionCount, iAngle, iRadius);
+		{
+		//	Get the position
+
+		int x = pDesc->GetAttributeInteger(X_ATTRIB);
+		int y = -pDesc->GetAttributeInteger(Y_ATTRIB);
+
+		//	Convert to polar coordinates
+
+		m_iAngle = IntVectorToPolar(x, y, &m_iRadius);
+
+		//	If we have a z attribute then user the new 3D conversion.
+
+		m_bUseCompatible = !pDesc->FindAttributeInteger(Z_ATTRIB, &m_iZ);
+		if (m_bUseCompatible)
+			m_iZ = 0;
+		}
 
 	//	Read the sendToBack and bringToFront attributes
 
-	CString sAttrib;
-	if (pDesc->FindAttribute(BRING_TO_FRONT_ATTRIB, &sAttrib))
-		{
-		if (error = OverridePaintFirst(sAttrib, false))
-			return error;
-		}
-
-	if (pDesc->FindAttribute(SEND_TO_BACK_ATTRIB, &sAttrib))
-		{
-		if (error = OverridePaintFirst(sAttrib, true))
-			return error;
-		}
+	m_sBringToFront = pDesc->GetAttribute(BRING_TO_FRONT_ATTRIB);
+	m_sSendToBack = pDesc->GetAttribute(SEND_TO_BACK_ATTRIB);
 
 	//	Done
 
 	return NOERROR;
 	}
 
-void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ)
+ALERROR C3DConversion::Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing)
+
+//	Init
+//
+//	Initializes from an XML element. We accept the following forms:
+//
+//	x="nnn" y="nnn"				-> old-style 2D mapping of points
+//	x="nnn" y="nnn" z="nnn"		-> use the 3D transformation
+//
+//	OR
+//
+//	posAngle="nnn"	posRadius="nnn"	posZ="nnn"
+
+	{
+	ALERROR error;
+
+	//	First load the data
+
+	if (error = Init(pDesc))
+		return error;
+
+	//	Finish initialization
+
+	InitComplete(iDirectionCount, iScale, iFacing);
+
+	//	Done
+
+	return NOERROR;
+	}
+
+void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ, int iFacing)
 
 //	Init
 //
@@ -167,27 +236,46 @@ void C3DConversion::Init (int iDirectionCount, int iScale, int iAngle, int iRadi
 
 	ASSERT(iScale > 0);
 
-	if (!IsEmpty())
+	if (!InitCache(iDirectionCount))
 		return;
 
-	m_Cache.InsertEmpty(iDirectionCount);
 	for (i = 0; i < iDirectionCount; i++)
 		{
 		int iRotAngle = (i * 360 / iDirectionCount);
 		int iDir = Angle2Direction(iRotAngle, iDirectionCount);
+		int iDestAngle = AngleMod(iRotAngle + iAngle);
+		int iFacingAngle = AngleMod(iRotAngle + iFacing);
 
 		CalcCoord(iScale, 
-				iRotAngle + iAngle, 
+				iDestAngle, 
 				iRadius, 
 				iZ, 
 				&m_Cache[iDir].x,
 				&m_Cache[iDir].y);
 
-		m_Cache[iDir].bPaintFirst = !DirectionFacesUp(iDir, iDirectionCount);
+		m_Cache[iDir].bPaintFirst = (iFacingAngle >= 0 && iFacingAngle <= 180);
 		}
 	}
 
-void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius)
+bool C3DConversion::InitCache (int iDirectionCount)
+
+//	InitCache
+//
+//	Prepares the cache for initialization. Returns FALSE if the cache is already
+//	set up for this number of facings.
+
+	{
+	if (m_Cache.GetCount() == iDirectionCount)
+		return false;
+
+	if (m_Cache.GetCount() > 0)
+		m_Cache.DeleteAll();
+
+	m_Cache.InsertEmpty(iDirectionCount);
+	return true;
+	}
+
+void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius, int iFacing)
 
 //	InitCompatible
 //
@@ -197,24 +285,24 @@ void C3DConversion::InitCompatible (int iDirectionCount, int iAngle, int iRadius
 	{
 	int i;
 
-	if (!IsEmpty())
+	if (!InitCache(iDirectionCount))
 		return;
 
-	m_Cache.InsertEmpty(iDirectionCount);
 	for (i = 0; i < iDirectionCount; i++)
 		{
 		int iRotAngle = (i * 360 / iDirectionCount);
 		int iDir = Angle2Direction(iRotAngle, iDirectionCount);
+		int iFacingAngle = AngleMod(iRotAngle + iFacing);
 
 		CVector vPos = PolarToVector(iRotAngle + iAngle, (Metric)iRadius);
 		m_Cache[iDir].x = (int)vPos.GetX();
 		m_Cache[iDir].y = -(int)vPos.GetY();
 
-		m_Cache[iDir].bPaintFirst = !DirectionFacesUp(iDir, iDirectionCount);
+		m_Cache[iDir].bPaintFirst = (iFacingAngle >= 0 && iFacingAngle <= 180);
 		}
 	}
 
-void C3DConversion::InitCompatibleXY (int iDirectionCount, int iX, int iY)
+void C3DConversion::InitCompatibleXY (int iDirectionCount, int iX, int iY, int iFacing)
 
 //	InitCompatibleXY
 //
@@ -229,10 +317,10 @@ void C3DConversion::InitCompatibleXY (int iDirectionCount, int iX, int iY)
 
 	//	Init the normal way
 
-	InitCompatible(iDirectionCount, iAngle, iRadius);
+	InitCompatible(iDirectionCount, iAngle, iRadius, iFacing);
 	}
 
-void C3DConversion::InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ)
+void C3DConversion::InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ, int iFacing)
 
 //	InitXY
 //
@@ -246,10 +334,29 @@ void C3DConversion::InitXY (int iDirectionCount, int iScale, int iX, int iY, int
 
 	//	Init the normal way
 
-	Init(iDirectionCount, iScale, iAngle, iRadius, iZ);
+	Init(iDirectionCount, iScale, iAngle, iRadius, iZ, iFacing);
 	}
 
-void C3DConversion::GetCoord (int iRotation, int *retx, int *rety)
+void C3DConversion::InitComplete (int iDirectionCount, int iScale, int iFacing)
+
+//	InitComplete
+//
+//	Completes the initialization based on stored parameters.
+
+	{
+	if (m_bUseCompatible)
+		InitCompatible(iDirectionCount, m_iAngle, m_iRadius, iFacing);
+	else
+		Init(iDirectionCount, iScale, m_iAngle, m_iRadius, m_iZ, iFacing);
+
+	if (!m_sBringToFront.IsBlank())
+		OverridePaintFirst(m_sBringToFront, false);
+
+	if (!m_sSendToBack.IsBlank())
+		OverridePaintFirst(m_sSendToBack, true);
+	}
+
+void C3DConversion::GetCoord (int iRotation, int *retx, int *rety) const
 
 //	GetCoord
 //
@@ -268,7 +375,7 @@ void C3DConversion::GetCoord (int iRotation, int *retx, int *rety)
 	*rety = pEntry->y;
 	}
 
-void C3DConversion::GetCoordFromDir (int iDirection, int *retx, int *rety)
+void C3DConversion::GetCoordFromDir (int iDirection, int *retx, int *rety) const
 
 //	GetCoordFromDir
 //

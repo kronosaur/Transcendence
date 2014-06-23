@@ -249,7 +249,7 @@ ALERROR CParticleEffect::CreateExplosion (CSystem *pSystem,
 
 	//	Set the image
 
-	if (Image.IsEmpty())
+	if (!Image.IsLoaded())
 		{
 		pType->iPaintStyle = paintSmoke;
 		}

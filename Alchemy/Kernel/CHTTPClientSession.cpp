@@ -233,6 +233,73 @@ bool CHTTPClientSession::IsInternetAvailable (void)
 		}
 	}
 
+ALERROR CHTTPClientSession::Read (char *pData, int iLength, int *retiBytesRead)
+
+//	Read
+//
+//	Reads
+
+	{
+	const DWORD BUFFER_LEN = 1024 * 64;
+	DWORD dwLeftToWrite = iLength;
+
+	while (dwLeftToWrite > 0)
+		{
+		//	If we've got data in the buffer, the read that.
+
+		if (m_dwBufferLeft > 0)
+			{
+			DWORD dwWrite = Min(m_dwBufferLeft, dwLeftToWrite);
+			utlMemCopy(m_pBufferStart, pData, dwWrite);
+
+			m_pBufferStart += dwWrite;
+			m_dwBufferLeft -= dwWrite;
+			dwLeftToWrite -= dwWrite;
+			pData += dwWrite;
+
+			continue;
+			}
+
+		//	If we've got less than the buffer size left to read, then read into
+		//	the buffer for efficiency
+
+		if (dwLeftToWrite < BUFFER_LEN)
+			{
+			//	If we need more data, read into the buffer
+
+			m_pBufferStart = m_sBuffer.GetWritePointer(BUFFER_LEN);
+
+			if (!ReadBuffer(m_pBufferStart, BUFFER_LEN, &m_dwBufferLeft))
+				return ERR_FAIL;
+
+			m_iTotalRead += m_dwBufferLeft;
+			}
+
+		//	Otherwise, read directly into the result
+
+		else
+			{
+			DWORD dwWritten;
+			if (!ReadBuffer(pData, dwLeftToWrite, &dwWritten))
+				return ERR_FAIL;
+
+			pData += dwWritten;
+			dwLeftToWrite -= dwWritten;
+
+			m_iTotalRead += dwWritten;
+			}
+
+		//	Send events, if necessary
+
+		if (m_pEvents)
+			m_pEvents->OnReceiveData(m_iTotalRead, -1);
+
+		//	Continue
+		}
+
+	return NOERROR;
+	}
+
 bool CHTTPClientSession::ReadBuffer (void *pBuffer, DWORD dwLen, DWORD *retdwRead)
 
 //	ReadBuffer
@@ -329,48 +396,23 @@ EInetsErrors CHTTPClientSession::Send (const CHTTPMessage &Request, CHTTPMessage
 		return m_iLastError;
 		}
 
-	//	As we read the buffer we parse into the response
+	//	Prepare the receive buffer and state
 
-	if (retResponse->InitFromBufferReset() != NOERROR)
-		{
-		::kernelDebugLogMessage("Out of memory: Unable to create response buffer.");
-		m_iLastError = inetsOutOfMemory;
-		return m_iLastError;
-		}
+	Open();
+	m_pEvents = pEvents;
+	m_iTotalRead = 0;
 
 	//	Keep reading until we've got enough (or until the connection drops)
 
-	int iTotalRead = 0;
-	while (!retResponse->IsMessageComplete())
+	CString sError;
+	if (retResponse->InitFromStream(*this, &sError, false) != NOERROR)
 		{
-		CString sBuffer;
-		const int iReadSize = 4096;
-		char *pBuffer = sBuffer.GetWritePointer(iReadSize);
-
-		//	Read
-
-		DWORD dwBytesRead;
-		bool bOK = ReadBuffer(pBuffer, iReadSize, &dwBytesRead);
-		sBuffer.Truncate(dwBytesRead);
-		iTotalRead += dwBytesRead;
-		if (!bOK)
-			{
-			::kernelDebugLogMessage("Unable to read from server. Reponse:\r\n%s", sBuffer);
-			Disconnect();
-			m_iLastError = inetsUnableToRead;
-			if (m_iInternetStatus != internetChecking)
-				m_iInternetStatus = internetUnknown;
-			return m_iLastError;
-			}
-
-		//	Parse some more
-
-		retResponse->InitFromBuffer(sBuffer);
-
-		//	Send notification, if necessary
-
-		if (pEvents)
-			pEvents->OnReceiveData(iTotalRead, -1);
+		::kernelDebugLogMessage("Unable to read from server: %s", sError);
+		Disconnect();
+		m_iLastError = inetsUnableToRead;
+		if (m_iInternetStatus != internetChecking)
+			m_iInternetStatus = internetUnknown;
+		return m_iLastError;
 		}
 
 	//	Done

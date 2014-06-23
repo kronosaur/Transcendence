@@ -67,6 +67,7 @@ class CXMLElement : public CObject
 		bool GetAttributeBool (const CString &sName);
 		inline int GetAttributeCount (void) { return m_Attributes.GetCount(); }
 		double GetAttributeDouble (const CString &sName);
+		double GetAttributeDoubleBounded (const CString &sName, double rMin, double rMax = -1.0, double rNull = 0.0);
 		int GetAttributeInteger (const CString &sName);
 		int GetAttributeIntegerBounded (const CString &sName, int iMin, int iMax = -1, int iNull = 0);
 		ALERROR GetAttributeIntegerList (const CString &sName, CIntArray *pList);
@@ -78,6 +79,7 @@ class CXMLElement : public CObject
 		inline const CString &GetContentText (int iOrdinal) { return (iOrdinal < m_ContentText.GetCount() ? m_ContentText[iOrdinal] : NULL_STR); }
 		inline CXMLElement *GetParentElement (void) const { return m_pParent; }
 		inline const CString &GetTag (void) const { return m_sTag; }
+		void MergeFrom (CXMLElement *pElement);
 		CXMLElement *OrphanCopy (void);
 		ALERROR SetAttribute (const CString &sName, const CString &sValue);
 

@@ -13,21 +13,14 @@ class COrbit;
 struct CItemCriteria;
 struct SDesignLoadCtx;
 struct SDamageCtx;
+struct SDestroyCtx;
 struct SSystemCreateCtx;
 
 //	Utility inlines
 
-inline int Angle2Direction (int iAngle)
-	{
-	return ((g_RotationRange - (iAngle / g_RotationAngle)) + 5) % g_RotationRange;
-	}
 inline int Angle2Direction (int iAngle, int iRotationCount)
 	{
 	return ((iRotationCount - (iAngle / (360 / iRotationCount))) + (iRotationCount / 4)) % iRotationCount;
-	}
-inline int AlignToRotationAngle (int iAngle) 
-	{
-	return (((g_RotationRange - Angle2Direction(iAngle)) + 5) * g_RotationAngle) % 360; 
 	}
 inline int Direction2Angle (int iDirection, int iRotationCount)
 	{
@@ -168,10 +161,10 @@ inline void DebugStopTimer (char *szTiming) { }
 #define UPGRADE_ENTRY_UNID								CONSTLIT("Engine:Transcendence.next")
 #endif
 
-const DWORD API_VERSION =								19;		//	See: LoadExtensionVersion in Utilities.cpp
+const DWORD API_VERSION =								22;		//	See: LoadExtensionVersion in Utilities.cpp
 																//	See: ExtensionVersionToInteger in Utilities.cpp
 const DWORD UNIVERSE_SAVE_VERSION =						25;
-const DWORD SYSTEM_SAVE_VERSION =						95;		//	See: CSystem.cpp
+const DWORD SYSTEM_SAVE_VERSION =						100;	//	See: CSystem.cpp
 
 struct SUniverseLoadCtx
 	{
@@ -249,10 +242,18 @@ struct SUpdateCtx
 	{
 	SUpdateCtx (void) :
 			pSystem(NULL),
-			pDockingObj(NULL)
+			pPlayer(NULL),
+			pDockingObj(NULL),
+			bNeedsAutoTarget(false),
+			iPlayerPerception(0),
+			pTargetObj(NULL),
+			rTargetDist2(g_InfiniteDistance * g_InfiniteDistance),
+			iMinFireArc(0),
+			iMaxFireArc(0)
 		{ }
 
 	CSystem *pSystem;					//	Current system
+	CSpaceObject *pPlayer;				//	The player
 
 	//	Used to compute nearest docking port to player
 
@@ -260,6 +261,16 @@ struct SUpdateCtx
 	int iDockingPort;					//	Nearest docking port
 	CVector vDockingPort;				//	Position of docking port (absolute)
 	Metric rDockingPortDist2;			//	Distance from player to docking port
+
+	//	Used to compute player's auto target
+
+	bool bNeedsAutoTarget;				//	TRUE if player's weapon needs an autotarget
+	int iPlayerPerception;				//	Player's perception
+
+	CSpaceObject *pTargetObj;			//	If non-null, nearest possible target for player
+	Metric rTargetDist2;				//	Distance from player to target
+	int iMinFireArc;					//	Fire arc of primary weapon
+	int iMaxFireArc;
 	};
 
 //	Utility classes
@@ -359,6 +370,7 @@ class CAttributeDataBlock
 		inline bool IsEmpty (void) const { return (m_pData == NULL && m_pObjRefData == NULL); }
 		bool IsEqual (const CAttributeDataBlock &Src);
 		void LoadObjReferences (CSystem *pSystem);
+		void MergeFrom (const CAttributeDataBlock &Src);
 		void OnObjDestroyed (CSpaceObject *pObj);
 		void OnSystemChanged (CSystem *pSystem);
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -419,13 +431,17 @@ class CEventHandler
 		CEventHandler (void);
 		~CEventHandler (void);
 
+		CEventHandler &operator= (const CEventHandler &Src);
+
 		void AddEvent (const CString &sEvent, ICCItem *pCode);
 		ALERROR AddEvent (const CString &sEvent, const CString &sCode, CString *retsError = NULL);
+		void DeleteAll (void);
 		bool FindEvent (const CString &sEvent, ICCItem **retpCode) const;
 		inline int GetCount (void) const { return m_Handlers.GetCount(); }
 		const CString &GetEvent (int iIndex, ICCItem **retpCode = NULL) const;
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		inline bool IsEmpty (void) const { return m_Handlers.GetCount() == 0; }
+		void MergeFrom (const CEventHandler &Src);
 
 	private:
 		TSortMap<CString, ICCItem *> m_Handlers;
@@ -462,6 +478,8 @@ class CLanguageDataBlock
 	{
 	public:
 		~CLanguageDataBlock (void);
+
+		CLanguageDataBlock &operator= (const CLanguageDataBlock &Src);
 
 		void AddEntry (const CString &sID, const CString &sText);
 		void DeleteAll (void);
@@ -651,6 +669,12 @@ class CSpaceObjectList
 		inline CSpaceObject *GetObj (int iIndex) const { return m_List[iIndex]; }
 		inline TArray<CSpaceObject *> &GetRawList (void) { return m_List; }
 		inline bool IsEmpty (void) const { return (m_List.GetCount() == 0); }
+		void NotifyOnObjDestroyed (SDestroyCtx &Ctx);
+		void NotifyOnObjDocked (CSpaceObject *pDockingObj, CSpaceObject *pDockTarget);
+		void NotifyOnObjEnteredGate (CSpaceObject *pGatingObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
+		void NotifyOnObjJumped (CSpaceObject *pJumpObj);
+		void NotifyOnObjReconned (CSpaceObject *pReconnedObj);
+		void NotifyOnPlayerBlacklisted (CSpaceObject *pBlacklistingObj);
 		void ReadFromStream (SLoadCtx &Ctx, bool bIgnoreMissing = false);
 		inline void Remove (int iIndex) { m_List.Delete(iIndex); }
 		bool Remove (CSpaceObject *pObj);
@@ -1074,6 +1098,7 @@ class CRegenDesc
 		CString GetReferenceRate (const CString &sUnits, int iTicksPerCycle = 1) const;
 		int GetRegen (int iTick, int iTicksPerCycle = 1);
 		void Init (int iHPPerEra, int iCyclesPerBurst = 1);
+		void InitFromRegen (double rRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenString (SDesignLoadCtx &Ctx, const CString &sRegen, int iTicksPerCycle = 1);
 		ALERROR InitFromRegenTimeAndHP (SDesignLoadCtx &Ctx, int iRegenTime, int iRegenHP, int iTicksPerCycle = 1);
 		ALERROR InitFromRepairRateString (SDesignLoadCtx &Ctx, const CString &sRepairRate, int iTicksPerCycle = 1);
@@ -1237,17 +1262,21 @@ class C3DConversion
 	public:
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, int *retx, int *rety);
 		static void CalcCoord (int iScale, int iAngle, int iRadius, int iZ, CVector *retvPos);
+		static void CalcCoord (Metric rScale, const CVector &vPos, Metric rPosZ, CVector *retvPos);
 		static void CalcCoordCompatible (int iAngle, int iRadius, int *retx, int *rety);
+
 		inline void CleanUp (void) { m_Cache.DeleteAll(); }
-		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale);
-		void Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ = 0);
-		void InitCompatible (int iDirectionCount, int iAngle, int iRadius);
-		void InitCompatibleXY (int iDirectionCount, int iX, int iY);
-		void InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ);
-		inline bool IsEmpty (void) { return (m_Cache.GetCount() == 0); }
-		void GetCoord (int iRotation, int *retx, int *rety);
-		void GetCoordFromDir (int iDirection, int *retx, int *rety);
-		inline bool PaintFirst (int iDirection) { return m_Cache[iDirection].bPaintFirst; }
+		ALERROR Init (CXMLElement *pDesc);
+		ALERROR Init (CXMLElement *pDesc, int iDirectionCount, int iScale, int iFacing);
+		void Init (int iDirectionCount, int iScale, int iAngle, int iRadius, int iZ, int iFacing);
+		void InitCompatible (int iDirectionCount, int iAngle, int iRadius, int iFacing);
+		void InitCompatibleXY (int iDirectionCount, int iX, int iY, int iFacing);
+		void InitComplete (int iDirectionCount, int iScale, int iFacing);
+		void InitXY (int iDirectionCount, int iScale, int iX, int iY, int iZ, int iFacing);
+		inline bool IsEmpty (void) const { return (m_Cache.GetCount() == 0); }
+		void GetCoord (int iRotation, int *retx, int *rety) const;
+		void GetCoordFromDir (int iDirection, int *retx, int *rety) const;
+		inline bool PaintFirst (int iDirection) const { return m_Cache[iDirection].bPaintFirst; }
 
 	private:
 		struct SEntry
@@ -1257,7 +1286,15 @@ class C3DConversion
 			bool bPaintFirst;
 			};
 
+		bool InitCache (int iDirectionCount);
 		ALERROR OverridePaintFirst (const CString &sAttrib, bool bPaintFirstValue);
+
+		int m_iAngle;
+		int m_iRadius;
+		int m_iZ;
+		bool m_bUseCompatible;
+		CString m_sBringToFront;
+		CString m_sSendToBack;
 
 		TArray<SEntry> m_Cache;
 	};
@@ -1300,6 +1337,8 @@ class CDeviceStorage
 		TSortMap<CString, CString> m_Storage;
 		bool m_bModified;
 	};
+
+//	Integral Rotation Class ----------------------------------------------------
 
 //	IListData ------------------------------------------------------------------
 

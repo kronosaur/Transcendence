@@ -725,7 +725,7 @@ void CBeamEffectCreator::PaintHit (CG16bitImage &Dest, int x, int y, const CVect
 
 	Line.xFrom = x + (int)(vFrom.GetX() + 0.5);
 	Line.yFrom = y - (int)(vFrom.GetY() + 0.5);
-	Ctx.XForm.Transform(vHitPos, &Line.xTo, &Line.yTo);
+	Ctx.XFormRel.Transform(vHitPos, &Line.xTo, &Line.yTo);
 
 	DrawBeam(Dest, Line, Ctx);
 	}

@@ -108,6 +108,7 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define ID_SHIP_DESC_PERFORMANCE				CONSTLIT("idShipDescPerformance")
 #define ID_TITLES_PERFORMANCE					CONSTLIT("idTitles")
 #define ID_NEWS_PERFORMANCE						CONSTLIT("idNews")
+#define ID_SOUNDTRACK_TITLE_PERFORMANCE			CONSTLIT("idSoundtrackTitle")
 
 #define PROP_COLOR								CONSTLIT("color")
 #define PROP_FONT								CONSTLIT("font")
@@ -167,6 +168,11 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 	//	Paint reanimator
 
 	m_Reanimator.PaintFrame(TheScreen);
+
+	//	Update context
+
+	SSystemUpdateCtx Ctx;
+	Ctx.bForceEventFiring = true;
 
 	//	Paint based on state
 
@@ -251,7 +257,7 @@ void CTranscendenceWnd::AnimateIntro (bool bTopMost)
 
 	if (!m_bPaused)
 		{
-		g_pUniverse->Update(g_SecondsPerUpdate, true);
+		g_pUniverse->Update(Ctx);
 		m_iTick++;
 		}
 
@@ -893,7 +899,7 @@ void CTranscendenceWnd::CreateNewsAnimation (CMultiverseNewsEntry *pEntry, IAnim
 	pButton->SetStyle(STYLE_NORMAL, NULL);
 	pButton->SetStyle(STYLE_DISABLED, NULL);
 	pButton->SetStyle(STYLE_TEXT, NULL);
-	pButton->AddListener(EVENT_ON_CLICK, this, CMD_OPEN_NEWS);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_OPEN_NEWS);
 
 	pSeq->AddTrack(pButton, 0);
 
@@ -1032,7 +1038,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	if (m_pTC->GetOptionBoolean(CGameSettings::debugMode))
 		{
 		VI.CreateImageButton(pRoot, CMD_TOGGLE_DEBUG, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageDebugIcon), CONSTLIT("Debug"), 0, &pButton);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_TOGGLE_DEBUG);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_TOGGLE_DEBUG);
 
 		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
@@ -1040,7 +1046,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	//	Music toggle
 
 	VI.CreateImageButton(pRoot, CMD_TOGGLE_MUSIC, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageMusicIconOn), CONSTLIT("Music On"), 0, &pButton);
-	pButton->AddListener(EVENT_ON_CLICK, this, CMD_TOGGLE_MUSIC);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_TOGGLE_MUSIC);
 
 	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
@@ -1049,7 +1055,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	if (Service.HasCapability(ICIService::userProfile))
 		{
 		VI.CreateImageButton(pRoot, CMD_SHOW_PROFILE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageProfileIcon), CONSTLIT("Records"), 0, &pButton);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_PROFILE);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_PROFILE);
 
 		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
@@ -1059,7 +1065,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 	if (Service.HasCapability(ICIService::modExchange))
 		{
 		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Collection"), 0, &pButton);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SHOW_MOD_EXCHANGE);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_MOD_EXCHANGE);
 		}
 
 	//	Done
@@ -1551,10 +1557,7 @@ void CTranscendenceWnd::OnCommandIntro (const CString &sCmd, void *pData)
 //	Handle commands from Reanimator, etc.
 
 	{
-	if (strEquals(sCmd, CMD_SHOW_PROFILE))
-		g_pHI->HICommand(CMD_UI_SHOW_PROFILE);
-
-	else if (strEquals(sCmd, CMD_TOGGLE_MUSIC))
+	if (strEquals(sCmd, CMD_TOGGLE_MUSIC))
 		{
 		m_pTC->SetOptionBoolean(CGameSettings::noMusic, !m_pTC->GetOptionBoolean(CGameSettings::noMusic));
 		SetMusicOption();
@@ -1566,26 +1569,11 @@ void CTranscendenceWnd::OnCommandIntro (const CString &sCmd, void *pData)
 		SetDebugOption();
 		}
 
-	else if (strEquals(sCmd, CMD_ACCOUNT))
-		g_pHI->HICommand(CMD_UI_SHOW_LOGIN);
-
-	else if (strEquals(sCmd, CMD_SIGN_OUT))
-		g_pHI->HICommand(CMD_UI_SIGN_OUT);
-
-	else if (strEquals(sCmd, CMD_SHOW_MOD_EXCHANGE))
-		g_pHI->HICommand(CMD_UI_SHOW_MOD_EXCHANGE);
-
-	else if (strEquals(sCmd, CMD_CHANGE_PASSWORD))
-		g_pHI->HICommand(CMD_UI_CHANGE_PASSWORD);
-
 	else if (strEquals(sCmd, CMD_OPEN_NEWS))
 		{
 		if (!m_sNewsURL.IsBlank())
 			sysOpenURL(m_sNewsURL);
 		}
-
-	else if (strEquals(sCmd, CMD_SERVICE_NEWS_LOADED))
-		SetIntroState(isNews);
 	}
 
 void CTranscendenceWnd::OnDblClickIntro (int x, int y, DWORD dwFlags)
@@ -2250,7 +2238,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 				SubTitleFont.GetHeight() + 2 * MediumFont.GetHeight() + PADDING_LEFT,
 				0,
 				&pButton);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_ACCOUNT);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_ACCOUNT);
 		}
 
 	//	Username
@@ -2289,10 +2277,10 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 		int cxLink;
 #ifdef EDIT_ACCOUNT
 		VI.CreateLink(pRoot, CMD_ACCOUNT_EDIT, x, y, CONSTLIT("edit account"), CVisualPalette::OPTION_LINK_MEDIUM_FONT, &pButton, &cxLink);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_ACCOUNT_EDIT);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_ACCOUNT_EDIT);
 #else
 		VI.CreateLink(pRoot, CMD_CHANGE_PASSWORD, x, y, CONSTLIT("change password"), CVisualPalette::OPTION_LINK_MEDIUM_FONT, &pButton, &cxLink);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_CHANGE_PASSWORD);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_CHANGE_PASSWORD);
 #endif
 
 		x += cxLink;
@@ -2313,7 +2301,7 @@ void CTranscendenceWnd::SetAccountControls (const CMultiverseModel &Multiverse)
 		//	Sign out
 
 		VI.CreateLink(pRoot, CMD_SIGN_OUT, x, y, CONSTLIT("sign out"), CVisualPalette::OPTION_LINK_MEDIUM_FONT, &pButton, &cxLink);
-		pButton->AddListener(EVENT_ON_CLICK, this, CMD_SIGN_OUT);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SIGN_OUT);
 
 		x += cxLink;
 		}
@@ -2634,7 +2622,7 @@ void CTranscendenceWnd::SetMusicOption (void)
 		}
 	}
 
-ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
+ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 
 //	StartIntro
 //
@@ -2643,6 +2631,14 @@ ALERROR CTranscendenceWnd::StartIntro (IntroState iState)
 	{
 	ALERROR error;
 	int i;
+
+	//	Temporarily set this member variable because some of our functions are
+	//	implemented in CTranscendenceWnd. Over time, all those functions should
+	//	be moved to CIntroSession.
+
+	m_pIntroSession = pThis;
+
+	//	Init
 
 	ClearDebugLines();
 
@@ -2871,5 +2867,5 @@ void CTranscendenceWnd::StopIntro (void)
 	//	Hide cursor
 
 	ShowCursor(false);
+	m_pIntroSession = NULL;
 	}
-

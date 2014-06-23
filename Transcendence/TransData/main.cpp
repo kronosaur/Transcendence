@@ -51,6 +51,7 @@
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
+#define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
 #define TRADE_SIM_SWITCH					CONSTLIT("tradeSim")
 #define TYPE_DEPENDENCIES_SWITCH			CONSTLIT("typeDependencies")
 #define IMAGES_SWITCH						CONSTLIT("typeImages")
@@ -105,6 +106,28 @@ int main (int argc, char *argv[ ], char *envp[ ])
 
 	{
 	ALERROR error;
+	CString sError;
+
+	//	Look for a TransData.xml file. If we find it, load it.
+
+	CXMLElement *pOptions = NULL;
+	CString sDefaultOptionsFile = CONSTLIT("TransData.xml");
+	if (pathExists(sDefaultOptionsFile))
+		{
+		if (error = CreateXMLElementFromDataFile(sDefaultOptionsFile, &pOptions, &sError))
+			{
+			printf("ERROR: Unable to parse %s: %s.\n", sDefaultOptionsFile.GetASCIIZPointer(), sError.GetASCIIZPointer());
+			return 1;
+			}
+		}
+
+	//	Otherwise we just create an empty element
+
+	else
+		pOptions = new CXMLElement(CONSTLIT("TransData"), NULL);
+
+	//	Load the command line and merge it into pOptions
+
 	CXMLElement *pCmdLine;
 	if (error = CreateXMLElementFromCommandLine(argc, argv, &pCmdLine))
 		{
@@ -112,12 +135,14 @@ int main (int argc, char *argv[ ], char *envp[ ])
 		return 1;
 		}
 
+	pOptions->MergeFrom(pCmdLine);
+	delete pCmdLine;
+
 	//	If we have a text argument, then use it as a command-line file:
 
-	const CString &sArg = pCmdLine->GetContentText(0);
+	const CString &sArg = pOptions->GetContentText(0);
 	if (!sArg.IsBlank())
 		{
-		CString sError;
 		CXMLElement *pDataFile;
 		if (error = CreateXMLElementFromDataFile(sArg, &pDataFile, &sError))
 			{
@@ -125,18 +150,19 @@ int main (int argc, char *argv[ ], char *envp[ ])
 			return 1;
 			}
 
-		AlchemyMain(pDataFile);
+		//	Merge into options
+
+		pOptions->MergeFrom(pDataFile);
 		delete pDataFile;
 		}
 
-	//	Otherwise, just use the command line
+	//	Now run
 
-	else
-		AlchemyMain(pCmdLine);
+	AlchemyMain(pOptions);
 
 	//	Done
 
-	delete pCmdLine;
+	delete pOptions;
 	}
 
 	//	Done
@@ -336,6 +362,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateSystemTest(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(TOPOLOGY_SWITCH))
 		GenerateTopology(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(TOPOLOGY_MAP_SWITCH))
+		GenerateTopologyMap(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ATTRIBUTE_LIST_SWITCH))
 		GenerateAttributeList(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(PERF_TEST_SWITCH))
@@ -491,6 +519,7 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, CXMLElement *pCmdLine, C
 			|| pCmdLine->GetAttributeBool(SHIP_IMAGES_SWITCH)
 			|| pCmdLine->GetAttributeBool(SMOKE_TEST_SWITCH)
 			|| pCmdLine->GetAttributeBool(SNAPSHOT_SWITCH)
+			|| pCmdLine->GetAttributeBool(TOPOLOGY_MAP_SWITCH)
 			|| pCmdLine->GetAttributeBool(WEAPON_IMAGES_SWITCH) 
 			|| pCmdLine->GetAttributeBool(WORLD_IMAGES_SWITCH))
 		;
@@ -551,6 +580,7 @@ bool IsMainCommandParam (const CString &sAttrib)
 			|| strEquals(sAttrib, CONSTLIT("allClasses"))
 			|| strEquals(sAttrib, CONSTLIT("criteria"))
 			|| strEquals(sAttrib, CONSTLIT("debug"))
+			|| strEquals(sAttrib, CONSTLIT("extensionFolder"))
 			|| strEquals(sAttrib, CONSTLIT("extensions"))
 			|| strEquals(sAttrib, CONSTLIT("noLogo")));
 	}

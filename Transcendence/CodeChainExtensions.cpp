@@ -15,6 +15,7 @@ ICCItem *fnCanvas (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_GAME_SET_CRAWL_TEXT		1
 #define FN_GAME_SET_CRAWL_IMAGE		2
 #define FN_GAME_SET_CRAWL_SOUNDTRACK	3
+#define FN_GAME_SAVE				4
 
 ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -45,6 +46,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_ENABLE_MESSAGE		19
 #define FN_PLY_GET_KEY_EVENT_STAT	20
 #define FN_PLY_USE_ITEM				21
+#define FN_PLY_IS_MESSAGE_ENABLED	22
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -91,6 +93,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 	{
 		//	Game function
 		//	-------------
+
+		{	"gamSave",						fnGameSet,		FN_GAME_SAVE,
+			"(gamSave [options]) -> True/Nil\n\n"
+			
+			"options:\n\n"
+			
+			"   'checkpoint (or Nil)\n"
+			"   'missionCheckpoint\n",
+
+			"*",	PPFLAG_SIDEEFFECTS, },
 
 		{	"gamSetCrawlImage",				fnGameSet,		FN_GAME_SET_CRAWL_IMAGE,
 			"(gamSetCrawlImage imageUNID) -> True/Nil",
@@ -244,13 +256,28 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"plyDestroyed",					fnPlySetOld,		FN_PLY_DESTROYED, "",	NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(plyDestroyed player destroyed-text)
 
-		{	"plyEnableMessage",				fnPlySet,			FN_PLY_ENABLE_MESSAGE,
-			"(plyEnableMessage player messageID True/Nil) -> True/Nil",
-			"isv",	PPFLAG_SIDEEFFECTS, },
+		{	"plyIsMessageEnabled",			fnPlyGet,			FN_PLY_IS_MESSAGE_ENABLED,
+			"(plyIsMessageEnabled player messageID) -> True/Nil\n\n"
+
+			"messageID:\n\n"
+			
+			"   'autopilotHint\n"
+			"   'commsHint\n"
+			"   'dockHint\n"
+			"   'enableDeviceHint\n"
+			"   'fireMissileHint\n"
+			"   'galacticMapHint\n"
+			"   'gateHint\n"
+			"   'mapHint\n"
+			"   'refuelHint\n"
+			"   'switchMissileHint\n"
+			"   'useItemHint\n",
+
+			"is",	0, },
 
 		{	"plyGetCredits",				fnPlyGet,		FN_PLY_CREDITS,
 			"(plyGetCredits player [currency]) -> credits left",
-			"i*",	PPFLAG_SIDEEFFECTS,	},
+			"i*",	0,	},
 
 		{	"plyGetGenome",					fnPlyGet,			FN_PLY_GENOME,
 			"(plyGetGenome player) -> 'humanMale | 'humanFemale",
@@ -274,11 +301,36 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"isvs",	0,	},
 
+		{	"plyEnableMessage",				fnPlySet,			FN_PLY_ENABLE_MESSAGE,
+			"(plyEnableMessage player messageID True/Nil) -> True/Nil\n\n"
+			
+			"messageID:\n\n"
+			
+			"   'allHints\n"
+			"   'allMessages\n"
+			"   'enabledHints\n"
+			"   (plus all messageIDs for plyIsMessageEnabled)\n",
+
+			"isv",	PPFLAG_SIDEEFFECTS, },
+
 		{	"plyGetRedirectMessage",		fnPlyGetOld,		FN_PLY_REDIRECT_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(plyGetRedirectMessage player)
 
 		{	"plyGetStat",					fnPlyGet,			FN_PLY_GET_STAT,
-			"(plyGetStat player stat) -> value",
+			"(plyGetStat player stat) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'bestEnemyShipDestroyed\n"
+			"   'enemyShipsDestroyed\n"
+			"   'enemyStationsDestroyed\n"
+			"   'friendlyShipsDestroyed\n"
+			"   'friendlyStationsDestroyed\n"
+			"   'resurrectCount\n"
+			"   'score\n"
+			"   'systemData\n"
+			"   'systemsVisited\n",
+
 			"is",	0,	},
 
 		{	"plyMessage",					fnPlySetOld,		FN_PLY_MESSAGE,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
@@ -558,6 +610,27 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_GAME_SAVE:
+			{
+			CString sOption = (pArgs->GetCount() > 0 ? pArgs->GetElement(0)->GetStringValue() : NULL_STR);
+			DWORD dwFlags;
+			if (sOption.IsBlank() || strEquals(sOption, CONSTLIT("checkpoint")))
+				dwFlags = CGameFile::FLAG_CHECKPOINT;
+			else if (strEquals(sOption, CONSTLIT("missionCheckpoint")))
+				dwFlags = CGameFile::FLAG_CHECKPOINT | CGameFile::FLAG_ACCEPT_MISSION;
+			else
+				return pCC->CreateError(CONSTLIT("Invalid option"), pArgs->GetElement(0));
+
+			CString sError;
+			if (!g_pTrans->GetModel().SaveGame(dwFlags, &sError))
+				{
+				::kernelDebugLogMessage("Unable to save game: %s", sError);
+				return pCC->CreateNil();
+				}
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_GAME_SET_CRAWL_IMAGE:
 			g_pTrans->GetModel().SetCrawlImage((DWORD)pArgs->GetElement(0)->GetIntegerValue());
 			return pCC->CreateTrue();
@@ -735,6 +808,16 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pResult = pCC->Link(sResult, 0, NULL);
 			else
 				pResult = pCC->CreateNil();
+			break;
+			}
+
+		case FN_PLY_IS_MESSAGE_ENABLED:
+			{
+			UIMessageTypes iMsg = pPlayer->FindUIMessage(pArgs->GetElement(1)->GetStringValue());
+			if (iMsg == uimsgUnknown)
+				return pCC->CreateError(CONSTLIT("Unknown messageID"), pArgs->GetElement(1));
+
+			pResult = pCC->CreateBool(pPlayer->IsUIMessageEnabled(iMsg));
 			break;
 			}
 
@@ -1229,6 +1312,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sKey;
 			if (pArgs->GetCount() > 3 && !pArgs->GetElement(3)->IsNil())
 				sKey = pArgs->GetElement(3)->GetStringValue();
+			else
+				sKey = Actions.GetKey(iAction);
 
 			Actions.SetLabel(iAction, sLabel, sKey);
 
@@ -1264,7 +1349,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sKey;
 			if (pArgs->GetCount() > iArg + 1)
 				{
-				sKey = pArgs->GetElement(iArg)->GetStringValue();
+				if (!pArgs->GetElement(iArg)->IsNil())
+					sKey = pArgs->GetElement(iArg)->GetStringValue();
 				iArg++;
 				}
 
@@ -1297,7 +1383,7 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Set key and special
 
 			if (!sKey.IsBlank())
-				Actions.SetLabel(iAction, sLabel, sKey);
+				Actions.SetLabel(iAction, NULL_STR, sKey);
 
 			if (pSpecial)
 				Actions.SetSpecial(*pCC, iAction, pSpecial, NULL);
@@ -1331,13 +1417,13 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 					if (!pArgs->GetElement(i)->IsNil())
 						sText.Append(pArgs->GetElement(i)->GetStringValue());
 
-				pScreen->SetDescription(sText);
+				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(sText));
 				}
 
 			//	Otherwise, we just set the text
 
 			else
-				pScreen->SetDescription(pArgs->GetElement(1)->GetStringValue());
+				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
 
 			//	Done
 

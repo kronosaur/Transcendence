@@ -180,7 +180,7 @@ void CListSaveFilesTask::CreateFileEntry (CGameFile &GameFile, const CTimeDate &
 	if (pClass)
 		{
 		const CObjectImageArray &ObjImage = pClass->GetImage();
-		if (!ObjImage.IsEmpty())
+		if (ObjImage.IsLoaded())
 			{
 			RECT rcRect = ObjImage.GetImageRect();
 			CG16bitImage &Image = ObjImage.GetImage(NULL_STR);

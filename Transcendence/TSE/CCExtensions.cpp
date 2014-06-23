@@ -210,6 +210,7 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_ARMOR_REPLACE_PRICE	113
 #define FN_OBJ_GET_PLAYER_PRICE_ADJ	114
 #define FN_OBJ_CAN_INSTALL_ITEM		115
+#define FN_OBJ_ADD_ITEM				116
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -223,7 +224,6 @@ ICCItem *fnObjGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 ICCItem *fnObjSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 ICCItem *fnObjIDGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
-#define FN_OBJ_ADD_ITEM				1
 #define FN_OBJ_REMOVE_ITEM			2
 #define FN_OBJ_ENUM_ITEMS			3
 #define FN_OBJ_HAS_ITEM				4
@@ -462,6 +462,7 @@ ICCItem *fnDesignFind (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_UNIVERSE_GET_EXTENSION_DATA	4
 #define FN_UNIVERSE_SET_EXTENSION_DATA	5
 #define FN_UNIVERSE_FIND_OBJ			6
+#define FN_UNIVERSE_GET_ELAPSED_GAME_TIME	7
 
 ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -705,8 +706,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"v",	0,	},
 
 		{	"itmIsEqual",					fnItemGet,		FN_ITEM_IS_EQUAL,
-			"(itmIsEqual item1 item2) -> True/Nil",
-			"vv",	0,	},
+			"(itmIsEqual item1 item2 [options]) -> True/Nil\n\n"
+			
+			"options\n\n"
+			
+			"   'ignoreInstalled\n",
+
+			"vv*",	0,	},
 
 		{	"itmIsInstalled",				fnItemGet,		FN_ITEM_INSTALLED,
 			"(itmIsInstalled item)",
@@ -778,29 +784,6 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"shpCancelOrders",				fnShipGetOld,		FN_SHIP_CANCEL_ORDERS,
 			"(shpCancelOrders ship)",
 			NULL,	PPFLAG_SIDEEFFECTS,	},
-
-		{	"shpCanInstallArmor",			fnShipSet,			FN_SHIP_CAN_INSTALL_ARMOR,
-			"(shpCanInstallArmor ship item [armorSeg]) -> result",
-		//			0 = OK
-		//			1 = Armor too heavy
-		//			string = custom fail reason
-			"iv*",	0,	},
-
-		{	"shpCanInstallDevice",			fnShipSet,			FN_SHIP_CAN_INSTALL_DEVICE,
-			"(shpCanInstallDevice ship item) -> result",
-		//			0 = OK
-		//			1 = Not a device
-		//			2 = No slots
-		//			3 = Already installed
-		//			4 = Shields already installed
-		//			5 = Drive already installed
-		//			6 = Missile launcher already installed
-		//			7 = Reactor too weak
-		//			8 = Cargo expansion already installed
-		//			9 = Reactor already installed
-		//			10 = Cargo expansion does not fit
-		//			string = Custom fail reason
-			"iv",	0,	},
 
 		{	"shpCanRemoveDevice",			fnShipSet,			FN_SHIP_CAN_REMOVE_DEVICE,
 			"(shpCanRemoveDevice ship item) -> result",
@@ -990,7 +973,28 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"shpSetAISetting",				fnShipSet,			FN_SHIP_AI_SETTING,
-			"(shpSetAISetting ship setting value)",
+			"(shpSetAISetting ship setting value)\n\n"
+			
+			"setting:\n\n"
+			
+			"   'combatStyle\n"
+			"      = 'advanced\n"
+			"      = 'chase\n"
+			"      = 'flyby\n"
+			"      = 'noRetreat\n"
+			"      = 'standard\n"
+			"      = 'standOff\n"
+			"\n"
+			"   'aggressor (True/Nil)\n"
+			"   'ascendOnGate (True/Nil)\n"
+			"   'ignoreShieldsDown (True/Nil)\n"
+			"   'noAttackOnThreat (True/Nil)\n"
+			"   'noDogfights (True/Nil)\n"
+			"   'noFriendlyFire (True/Nil)\n"
+			"   'noFriendlyFireCheck (True/Nil)\n"
+			"   'noNavPaths (True/Nil)\n"
+			"   'noOrderGiver (True/Nil)\n",
+
 			"isv",	0,	},
 
 		{	"shpSetCommandCode",			fnShipSet,		FN_SHIP_COMMAND_CODE,
@@ -1012,9 +1016,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objAddBuyOrder obj criteria priceAdj) -> True/Nil",
 			"ivi",		PPFLAG_SIDEEFFECTS,	},
 
-		{	"objAddItem",					fnObjItem,		FN_OBJ_ADD_ITEM,
-			"(objAddItem obj item [count])",
-			NULL,	PPFLAG_SIDEEFFECTS,	},
+		{	"objAddItem",					fnObjSet,		FN_OBJ_ADD_ITEM,
+			"(objAddItem obj item|type [count])",
+			"iv*",		PPFLAG_SIDEEFFECTS,	},
 
 		{	"objAddItemEnhancement",		fnObjSet,		FN_OBJ_ADD_ITEM_ENHANCEMENT,
 			"(objAddItemEnhancement obj item enhancementType [lifetime]) -> enhancementID",
@@ -1161,8 +1165,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i*",	0,	},
 
 		{	"objGetBuyPrice",				fnObjGet,		FN_OBJ_GET_BUY_PRICE,	
-			"(objGetBuyPrice obj item) -> price",
-			"il",	0,	},
+			"(objGetBuyPrice obj item [options]) -> price\n\n"
+			
+			"options:\n\n"
+			
+			"   'noDonations\n",
+
+			"il*",	0,	},
 
 		{	"objGetCargoSpaceLeft",			fnObjGetOld,		FN_OBJ_CARGO_SPACE_LEFT,
 			"(objGetCargoSpaceLeft obj) -> space left in Kg",
@@ -1244,6 +1253,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 			"   'enabled\n"
 			"   'fireArc\n"
+			"   'installDevicePrice\n"
 			"   'linkedFireOptions\n"
 			"   'pos\n"
 			"   'secondary\n"
@@ -1331,6 +1341,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'hasDockingPorts\n"
+			"   'id\n"
 			"   'known\n"
 			"   'playerMissionsGiven\n"
 			"   'underAttack\n"
@@ -1340,6 +1352,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'blindingImmune\n"
 			"   'character\n"
 			"   'characterClass\n"
+			"   'commsKey\n"
 			"   'deviceDamageImmune\n"
 			"   'deviceDisruptImmune\n"
 			"   'disintegrationImmune\n"
@@ -1589,6 +1602,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (ships)\n\n"
 
 			"   'dockingEnabled True|Nil\n"
+			"   'commsKey key\n"
 			"   'known True|Nil\n"
 			"   'playerWingman True|Nil\n"
 			"   'rotation angle\n"
@@ -1609,7 +1623,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetShowAsDestination",			fnObjSet,		FN_OBJ_SET_AS_DESTINATION,
-			"(objSetShowAsDestination obj [show dist/bearing] [autoclear])",
+			"(objSetShowAsDestination obj [options]) -> True/Nil\n\n"
+			
+			"options:\n\n"
+			
+			"   'autoClear            Clear when in SRS range\n"
+			"   'autoClearOnDestroy   Clear when destroyed\n"
+			"   'autoClearOnDock      Clear when player docks\n"
+			"   'showDistance         Show distance\n"
+			"   'showHighlight        Show target highlight\n",
+
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetSovereign",				fnObjSetOld,		FN_OBJ_SOVEREIGN,
@@ -1764,6 +1787,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'acceptedOn        Tick on which player accepted mission (or Nil)\n"
 			"   'canBeDeleted      Mission can be deleted by player\n"
 			"   'debrieferID       ID of the object that will debrief the player\n"
+			"   'id                Mission object ID\n"
 			"   'isActive          Is an active player mission\n"
 			"   'isCompleted       Is a completed mission (player or non-player)\n"
 			"   'isDebriefed       Player has been debriefed\n"
@@ -1974,8 +1998,9 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			//		O:guard;	Ships ordered to guard source
 			//		P			Only objects that can be detected (perceived) by source
 			//		Q			(unused)
+			//		R			Return only the farthest object to the source
 			//		R:nn;		Return only objects greater than nn light-seconds away
-			//		S			(unused)
+			//		S:sort		Sort order ('d' = distance ascending; 'D' = distance descending
 			//		T			Include structure-scale stations
 			//		T:xyz;		Include stations with attribute 'xyz'
 			//		U			(unused)
@@ -2334,6 +2359,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(unvGetCurrentExtensionUNID) -> UNID",
 			NULL,	0,	},
 
+		{	"unvGetElapsedGameTime",		fnUniverseGet,	FN_UNIVERSE_GET_ELAPSED_GAME_TIME,
+			"(unvGetElapsedGameTime [startTick] endTick format) -> result\n\n"
+			
+			"format\n\n"
+			
+			"   display:           Elapsed time in display format.\n"
+			"   seconds:           Elapsed time in game seconds.\n",
+
+			"*is",	0,	},
+
 		{	"unvGetExtensionData",			fnUniverseGet,	FN_UNIVERSE_GET_EXTENSION_DATA,
 			"(unvGetExtensionData scope attrib) -> data",
 			"ss",	0,	},
@@ -2363,6 +2398,14 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
+
+		{	"shpCanInstallArmor",			fnShipSet,			FN_SHIP_CAN_INSTALL_ARMOR,
+			"DEPRECATED: Use objCanInstallItem instead.",
+			"iv*",	0,	},
+
+		{	"shpCanInstallDevice",			fnShipSet,			FN_SHIP_CAN_INSTALL_DEVICE,
+			"DEPRECATED: Use objCanInstallItem instead.",
+			"iv",	0,	},
 
 		{	"shpSetPlayerWingman",			fnShipSet,		FN_SHIP_PLAYER_WINGMAN,
 			"DEPRECATED: Use (objSetProperty ship 'playerWingman ...) instead.",
@@ -3415,8 +3458,24 @@ ICCItem *fnItemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_ITEM_IS_EQUAL:
 			{
+			int i;
 			CItem Item2 = GetItemFromArg(*pCC, pArgs->GetElement(1));
-			pResult = pCC->CreateBool(Item.IsEqual(Item2));
+
+			//	Options
+
+			bool bIgnoreInstalled = false;
+			ICCItem *pOptions = (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL);
+			if (pOptions)
+				{
+				for (i = 0; i < pOptions->GetCount(); i++)
+					{
+					ICCItem *pOption = pOptions->GetElement(i);
+					if (strEquals(pOption->GetStringValue(), CONSTLIT("ignoreInstalled")))
+						bIgnoreInstalled = true;
+					}
+				}
+
+			pResult = pCC->CreateBool(Item.IsEqual(Item2, bIgnoreInstalled));
 			break;
 			}
 
@@ -4496,14 +4555,9 @@ ICCItem *fnObjGetArmor (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwDat
 			{
 			CString sName;
 			const CPlayerSettings *pPlayer = pShip->GetClass()->GetPlayerSettings();
-			if (pPlayer)
-				if (iArmorSeg >=0 && iArmorSeg < pPlayer->GetArmorDescCount())
-					sName = pPlayer->GetArmorDesc(iArmorSeg).sName;
+			const SArmorSegmentImageDesc *pSegmentDesc = (pPlayer ? pPlayer->GetArmorDesc(iArmorSeg) : NULL);
 
-			if (sName.IsBlank())
-				pResult = pCC->CreateNil();
-			else
-				pResult = pCC->CreateString(sName);
+			pResult = (pSegmentDesc ? pCC->CreateString(pSegmentDesc->sName) : pCC->CreateNil());
 			break;
 			}
 
@@ -4830,7 +4884,26 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_GET_BUY_PRICE:
 			{
+			int i;
 			CItem Item = CreateItemFromList(*pCC, pArgs->GetElement(1));
+			ICCItem *pOptions = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2) : NULL);
+
+			//	Parse options
+
+			bool bNoDonations = false;
+			if (pOptions)
+				{
+				for (i = 0; i < pOptions->GetCount(); i++)
+					{
+					CString sOption = pOptions->GetElement(i)->GetStringValue();
+					if (strEquals(sOption, CONSTLIT("noDonations")))
+						bNoDonations = true;
+					else
+						return pCC->CreateError(CONSTLIT("Invalid option"), pOptions->GetElement(i));
+					}
+				}
+
+			//	Calc value
 
 			int iValue;
 
@@ -4843,7 +4916,13 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Get the value from the station that is buying
 
 			else
-				iValue = pObj->GetBuyPrice(Item, 0);
+				{
+				DWORD dwFlags = 0;
+				if (bNoDonations)
+					dwFlags |= CTradingDesc::FLAG_NO_DONATION;
+
+				iValue = pObj->GetBuyPrice(Item, dwFlags);
+				}
 
 			if (iValue >= 0)
 				return pCC->CreateInteger(iValue);
@@ -5583,6 +5662,27 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateTrue();
 			}
 
+		case FN_OBJ_ADD_ITEM:
+			{
+			CItem Item(GetItemFromArg(*pCC, pArgs->GetElement(1)));
+			if (2 < pArgs->GetCount())
+				Item.SetCount(pArgs->GetElement(2)->GetIntegerValue());
+
+			if (Item.GetType() == NULL || Item.GetCount() <= 0)
+				return pCC->CreateNil();
+
+			//	Do not allow adding installed items
+			Item.SetInstalled(-1);
+
+			CItemListManipulator ObjList(pObj->GetItemList());
+			ObjList.AddItem(Item);
+			pObj->OnComponentChanged(comCargo);
+			pObj->ItemsModified();
+			pObj->InvalidateItemListAddRemove();
+
+			return pCC->CreateTrue();
+			}
+
 		case FN_OBJ_ADD_ITEM_ENHANCEMENT:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
@@ -5997,8 +6097,6 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_CLEAR_AS_DESTINATION:
 			pObj->ClearPlayerDestination();
-			pObj->ClearShowDistanceAndBearing();
-			pObj->ClearAutoClearDestination();
 			return pCC->CreateTrue();
 
 		case FN_OBJ_SET_ABILITY:
@@ -6056,19 +6154,66 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_SET_AS_DESTINATION:
 			{
+			int i;
 			bool bShowDistanceAndBearing = false;
 			bool bAutoClearDestination = false;
-			if (pArgs->GetCount() > 1)
-				bShowDistanceAndBearing = !pArgs->GetElement(1)->IsNil();
+			bool bAutoClearOnDestroy = false;
+			bool bAutoClearOnDock = false;
+			bool bShowHighlight = false;
 
-			if (pArgs->GetCount() > 2)
+			//	If we have an extra argument then it is either a boolean (which
+			//	is old-style) or it is a string or list of string.
+
+			if (pArgs->GetCount() == 2)
+				{
+				ICCItem *pOptions = pArgs->GetElement(1);
+				if (!pOptions->IsNil() 
+						&& (pOptions->IsIdentifier() || pOptions->IsList()))
+					{
+					for (i = 0; i < pOptions->GetCount(); i++)
+						{
+						CString sOption = pOptions->GetElement(i)->GetStringValue();
+
+						if (strEquals(sOption, CONSTLIT("autoClear")))
+							bAutoClearDestination = true;
+						else if (strEquals(sOption, CONSTLIT("autoClearOnDestroy")))
+							bAutoClearOnDestroy = true;
+						else if (strEquals(sOption, CONSTLIT("autoClearOnDock")))
+							bAutoClearOnDock = true;
+						else if (strEquals(sOption, CONSTLIT("showDistance")))
+							bShowDistanceAndBearing = true;
+						else if (strEquals(sOption, CONSTLIT("showHighlight")))
+							bShowHighlight = true;
+						else
+							return pCC->CreateError(strPatternSubst(CONSTLIT("Invalid option: %s"), sOption));
+						}
+					}
+				else
+					bShowDistanceAndBearing = !pOptions->IsNil();
+				}
+
+			//	Otherwise, if we have more than two arguments, then we expect the
+			//	old-style flags
+
+			else if (pArgs->GetCount() > 2)
+				{
+				bShowDistanceAndBearing = !pArgs->GetElement(1)->IsNil();
 				bAutoClearDestination = !pArgs->GetElement(2)->IsNil();
+				}
+
+			//	Set the options
 
 			pObj->SetPlayerDestination();
 			if (bShowDistanceAndBearing)
 				pObj->SetShowDistanceAndBearing();
 			if (bAutoClearDestination)
 				pObj->SetAutoClearDestination();
+			if (bAutoClearOnDestroy)
+				pObj->SetAutoClearDestinationOnDestroy();
+			if (bAutoClearOnDock)
+				pObj->SetAutoClearDestinationOnDock();
+			if (bShowHighlight)
+				pObj->SetShowHighlight();
 
 			return pCC->CreateTrue();
 			}
@@ -6468,29 +6613,6 @@ ICCItem *fnObjItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 
 	switch (dwData)
 		{
-		case FN_OBJ_ADD_ITEM:
-			{
-			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
-			if (2 < pArgs->GetCount())
-				Item.SetCount(pArgs->GetElement(2)->GetIntegerValue());
-			pArgs->Discard(pCC);
-
-			if (Item.GetCount() > 0)
-				{
-				//	Do not allow adding installed items
-				Item.SetInstalled(-1);
-
-				CItemListManipulator ObjList(pObj->GetItemList());
-				ObjList.AddItem(Item);
-				pObj->OnComponentChanged(comCargo);
-				pObj->ItemsModified();
-				pObj->InvalidateItemListAddRemove();
-				}
-
-			pResult = pCC->CreateTrue();
-			break;
-			}
-
 		case FN_OBJ_HAS_ITEM:
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
@@ -6833,13 +6955,31 @@ ICCItem *fnMissionSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return pCC->CreateBool(pMission->SetUnavailable());
 
 		case FN_MISSION_DECLINED:
-			return pCC->CreateBool(pMission->SetDeclined());
+			{
+			ICCItem *pResult;
+			if (!pMission->SetDeclined(&pResult))
+				return pCC->CreateNil();
+			else if (pResult == NULL)
+				return pCC->CreateNil();
+			else
+				return pResult;
+			}
 			
 		case FN_MISSION_FAILURE:
 			return pCC->CreateBool(pMission->SetFailure((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
 
 		case FN_MISSION_REWARD:
-			return pCC->CreateBool(pMission->Reward((pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL)));
+			{
+			ICCItem *pData = (pArgs->GetCount() >= 2 ? pArgs->GetElement(1) : NULL);
+			ICCItem *pResult;
+
+			if (!pMission->Reward(pData, &pResult))
+				return pCC->CreateNil();
+			else if (pResult == NULL)
+				return pCC->CreateNil();
+			else
+				return pResult;
+			}
 
 		case FN_MISSION_SET_PLAYER_TARGET:
 			return pCC->CreateBool(pMission->SetPlayerTarget());
@@ -6964,7 +7104,7 @@ ICCItem *fnShipClass (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			int iRotation = 0;
 			if (pArgs->GetCount() > 1)
-				iRotation = Angle2Direction(pArgs->GetElement(1)->GetIntegerValue(), pClass->GetRotationRange());
+				iRotation = pClass->Angle2Direction(pArgs->GetElement(1)->GetIntegerValue());
 
 			pResult = CreateListFromImage(*pCC, pClass->GetImage(), iRotation);
 			break;
@@ -7398,15 +7538,24 @@ ICCItem *fnShipSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			CItem Item(CreateItemFromList(*pCC, pArgs->GetElement(1)));
 
-			//	Fire CanBeUninstalled to check for custom conditions
+			//	See if we can remove it
 
-			CString sError;
-			if (!Item.FireCanBeUninstalled(pShip, &sError))
-				return pCC->CreateString(sError);
+			CString sResult;
+			CShip::RemoveDeviceStatus iStatus = pShip->CanRemoveDevice(Item, &sResult);
 
-			//	Check standard conditions
+			//	Result based on status
 
-			return pCC->CreateInteger((int)pShip->CanRemoveDevice(Item));
+			switch (iStatus)
+				{
+				case CShip::remOK:
+					return pCC->CreateInteger(0);
+
+				case CShip::remCannotRemove:
+					return pCC->CreateString(sResult);
+
+				default:
+					return pCC->CreateInteger((int)iStatus);
+				}
 			}
 
 		case FN_SHIP_COMMAND_CODE:
@@ -10555,6 +10704,23 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			return pCC->CreateInteger(pExtension->GetUNID());
+			}
+
+		case FN_UNIVERSE_GET_ELAPSED_GAME_TIME:
+			{
+			int iArg = 0;
+			DWORD dwStartTick = (pArgs->GetCount() > 2 ? pArgs->GetElement(iArg++)->GetIntegerValue() : 0);
+			DWORD dwEndTick = pArgs->GetElement(iArg++)->GetIntegerValue();
+			CString sFormat = pArgs->GetElement(iArg++)->GetStringValue();
+
+			CTimeSpan Span = g_pUniverse->GetElapsedGameTimeAt(dwEndTick) - g_pUniverse->GetElapsedGameTimeAt(dwStartTick);
+
+			if (strEquals(sFormat, CONSTLIT("display")))
+				return pCC->CreateString(Span.Format(NULL_STR));
+			else if (strEquals(sFormat, CONSTLIT("seconds")))
+				return pCC->CreateInteger(Span.Seconds());
+			else
+				return pCC->CreateError(strPatternSubst(CONSTLIT("Unknown format: %s"), sFormat));
 			}
 
 		case FN_UNIVERSE_FIND_OBJ:

@@ -65,9 +65,9 @@ class CMission : public CSpaceObject
 		inline bool KeepsStats (void) const { return m_pType->KeepsStats(); }
 		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
 		void OnPlayerEnteredSystem (void);
-		bool Reward (ICCItem *pData);
+		bool Reward (ICCItem *pData, ICCItem **retpResult = NULL);
 		bool SetAccepted (void);
-		bool SetDeclined (void);
+		bool SetDeclined (ICCItem **retpResult = NULL);
 		bool SetFailure (ICCItem *pData);
 		bool SetPlayerTarget (void);
 		bool SetSuccess (ICCItem *pData);
@@ -84,6 +84,7 @@ class CMission : public CSpaceObject
 		virtual CDesignType *GetType (void) const { return m_pType; }
 		virtual bool HasAttribute (const CString &sAttribute) const { return m_pType->HasLiteralAttribute(sAttribute); }
 		virtual bool HasSpecialAttribute (const CString &sAttrib) const;
+		virtual bool IsMission (void) { return true; }
 		virtual bool IsNonSystemObj (void) { return true; }
 		virtual void OnNewSystem (CSystem *pSystem);
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
@@ -111,8 +112,8 @@ class CMission : public CSpaceObject
 		void CloseMission (void);
 		void CompleteMission (ECompletedReasons iReason);
 		void FireOnAccepted (void);
-		void FireOnDeclined (void);
-		void FireOnReward (ICCItem *pData);
+		ICCItem *FireOnDeclined (void);
+		ICCItem *FireOnReward (ICCItem *pData);
 		void FireOnSetPlayerTarget (const CString &sReason);
 		void FireOnStart (void);
 		void FireOnStop (const CString &sReason, ICCItem *pData);

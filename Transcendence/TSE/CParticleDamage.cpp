@@ -219,7 +219,12 @@ void CParticleDamage::OnMove (const CVector &vOldPos, Metric rSeconds)
 	//	Update the single particle painter
 
 	if (m_pPainter)
-		m_pPainter->OnMove();
+		{
+		SEffectMoveCtx Ctx;
+		Ctx.pObj = this;
+
+		m_pPainter->OnMove(Ctx);
+		}
 
 	//	Update particle motion
 
@@ -273,6 +278,7 @@ void CParticleDamage::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 	if (m_pPainter)
 		{
 		Ctx.iTick = m_iTick;
+		Ctx.iMaxLength = Max(10, (int)((g_SecondsPerUpdate * (m_iTick - 1) * m_pDesc->GetRatedSpeed()) / g_KlicksPerPixel));
 
 		//	Painting is relative to the origin
 

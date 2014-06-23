@@ -1,0 +1,1868 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svSung;"
+			name="Sung Slavers"
+			alignment="destructive order"
+			/>
+
+	<Sovereign UNID="&svSungSlaves;"
+			name="Slaves of Sung"
+			alignment="neutral"
+			/>
+
+<!-- LEVEL IX ITEMS -->
+
+	<!-- Qianlong Archcannon -->
+
+	<ItemType UNID="&itQianlongArchcannon;"
+			name=				"Qianlong archcannon"
+			level=				"9"
+			value=				"190000"
+			mass=				"2500"
+			frequency=			"notrandom"
+			attributes=			"MajorItem; Military; NotForSale; qianlongArchcannon; sungSlavers"
+
+			description=		"The pinnacle of Sung Slaver technology, the Qianlong archcannon fires antimatter shells. The archcannon recharges with longzhu spheres."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"antimatter:4d12; WMD7"
+				fireRate=			"15"
+				missileSpeed=		"40"
+				hitPoints=			"5"
+				lifetime=			"113"
+				powerUse=			"100"
+				charges=			"true"
+
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Starburst
+						spikeCount=		"1d6+2"
+						spikeLength=	"4d20"
+						primaryColor=	"0xff, 0xff, 0x80"
+						secondaryColor=	"0xff, 0xff, 0x00"
+						/>
+			</Effect>
+
+			<HitEffect
+					sound="&snArmorHit1;"
+					>
+				<Image imageID="&rsExplosionsAG48;"
+						imageX="0"
+						imageY="0"
+						imageWidth="48"
+						imageHeight="48"
+						imageFrameCount="16"
+						imageTicksPerFrame="2"/>
+			</HitEffect>
+		</Weapon>
+
+		<Events>
+			<OnAIUpdate>
+				(if (and (leq (itmGetCharges gItem) 128)
+						(objGetItems gSource "u +LongzhuSphere;"))
+					(block Nil
+						(setq aCharges 128)
+						(objFireItemEvent gSource gItem "Recharge")
+						(objRemoveItem gSource (itmCreate &itLongzhuSphere; 1))
+						)
+					)
+			</OnAIUpdate>
+
+			<Recharge>
+				; aCharges = amount to recharge
+				; Returns the amount recharged
+				(block (rechargeNeeded)
+					(setq rechargeNeeded (min aCharges (subtract 256 (itmGetCharges gItem))))
+					(if (gr rechargeNeeded 0)
+						(shpRechargeItem gSource gItem rechargeNeeded)
+						)
+					rechargeNeeded
+					)
+			</Recharge>
+		</Events>
+
+	</ItemType>
+
+<!-- LEVEL VII ITEMS -->
+
+	<!-- Segment of Dragon Armor -->
+
+	<ItemType UNID="&itDragonArmor;"
+			name=				"[segment(s) of ]Dragon armor"
+			level=				"7"
+			value=				"5000"
+			frequency=			"notRandom"
+			numberAppearing=	"1d4"
+			mass=				"6500"
+			attributes=			"Military; MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This is a heavier version of the Sung's innovative armor, used on its Dragon slavers."
+
+			useScreen=			"&dsUseArmorPatch;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	"  +0,  +0,+100,+100, +25,  +0"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="0"
+				EMPDamageAdj=	"0"
+				radiationImmune="true"
+				/>
+
+		<StaticData>
+			<RepairHP>125</RepairHP>
+		</StaticData>
+
+		<Events>
+			<CanRepairItem>
+				(itmMatches aItemToRepair "a +TiledArmor")
+			</CanRepairItem>
+			
+			<GetRepairItemIntro>
+				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
+			</GetRepairItemIntro>
+		</Events>
+	</ItemType>
+
+	<!-- Dragon Shields -->
+
+	<ItemType UNID="&itDragonShields;"
+			name=				"Dragon shield generator"
+			level=				"7"
+			value=				"50000"
+			mass=				"6000"
+			frequency=			"notRandom"
+			attributes=			"majorItem, military, notForSale; sungSlavers"
+
+			description=		"Used by the Sung Dragon slavers, these shields are a much enhanced version of the Yoroi S500."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"140"
+				hpBonus=		"  +0,+100,  +0,+400,  +0,+100"
+				regen=			"60"
+				depletionDelay=	"480"
+				powerUse=		"500"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL VI ITEMS -->
+
+	<!-- CyberDeck (Lower Shields) -->
+
+	<ItemType UNID="&itCyberDeckLowerShields;"
+			name=				"CyberDeck lower shields"
+			virtual=			"true"
+			level=				"6"
+			>
+
+		<CyberDeckDevice
+				range=			"30"
+				attackChance=	"20"
+				aiLevel=		"6"
+				program=		"ShieldsDown"
+				programName=	"Shi3ldsDown 3.1.5"
+				/>
+
+	</ItemType>
+
+	<!-- Longzhu Sphere -->
+
+	<ItemType UNID="&itLongzhuSphere;"
+			name=				"longzhu sphere"
+			level=				"6"
+			value=				"500"
+			mass=				"1"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"AntiMatter; ConfirmRefuel; Consumable; Fuel; 100MW; LongzhuSphere; sungSlavers"
+
+			useScreen=			"&dsUseLongzhuSphere;"
+			data=				"500000"
+
+			description=		"Longzhu spheres are antimatter containment vessels used by the Sung Slavers as power sources."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Particle Bolt Cannon -->
+
+	<ItemType UNID="&itParticleBoltCannon;"
+			name=				"Nandao bolt cannon"
+			level=				"6"
+			value=				"16000"
+			mass=				"2000"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"MajorItem; Military; NotForSale; sungSlavers"
+
+			description=		"The Nandao bolt cannon fires a sublight pulse of heavy ions. The weapon requires Nandao bolt cartridges."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"30"
+				powerUse=			"60"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itParticleBoltCartridge;"
+						type=			"missile"
+
+						lifetime=		"100"
+						damage=			"particle:12d8+6; WMD4"
+						hitPoints=		"15"
+
+						missileSpeed=	"60"
+						sound=			"&snRecoillessCannon;"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles4;" imageX="0" imageY="64" imageWidth="16" imageHeight="16" imageFrameCount="4" imageTicksPerFrame="2"/>
+
+						<Starburst
+								spikeCount=		"1d6+2"
+								spikeLength=	"2d20"
+								primaryColor=	"0x80, 0xff, 0x80"
+								secondaryColor=	"0x00, 0xff, 0x00"
+								/>
+					</Effect>
+
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Segment of Heavy Sung Armor -->
+
+	<ItemType UNID="&itHeavySungArmor;"
+			name=				"[segment(s) of ]heavy Sung armor"
+			level=				"6"
+			value=				"2300"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+			mass=				"7500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This is a heavier version of the Sung's innovative armor, generally used on its Earth slavers."
+
+			useScreen=			"&dsUseArmorPatch;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.20"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"180"
+				hpBonus=	"  +0,  +0, +50, -25, +25,  +0"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="25"
+				EMPDamageAdj=	"10"
+				/>
+
+		<StaticData>
+			<RepairHP>90</RepairHP>
+		</StaticData>
+
+		<Events>
+			<CanRepairItem>
+				(itmMatches aItemToRepair "a +TiledArmor")
+			</CanRepairItem>
+			
+			<GetRepairItemIntro>
+				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
+			</GetRepairItemIntro>
+		</Events>
+	</ItemType>
+
+<!-- LEVEL V ITEMS -->
+
+	<!-- CyberDeck (Disarm) -->
+
+	<ItemType UNID="&itCyberDeckDisarm;"
+			name=				"CyberDeck disarm"
+			virtual=			"true"
+			level=				"5"
+			>
+
+		<CyberDeckDevice
+				range=			"20"
+				attackChance=	"20"
+				aiLevel=		"5"
+				program=		"Disarm"
+				programName=	"PeacefulConstraint R1.1"
+				/>
+
+	</ItemType>
+
+	<!-- Particle bolt cartridge -->
+
+	<ItemType UNID="&itParticleBoltCartridge;"
+			name=				"Nandao bolt cartridge"
+			level=				"5"
+			value=				"15"
+			mass=				"25"
+			frequency=			"common"
+			numberAppearing=	"20d40"
+			attributes=			"Consumable; Missile; NotForSale; sungSlavers"
+
+			description=		"This energy cartridge is used by the Nandao bolt cannon."
+
+			sortName=			"~.Nandao bolt cartridge"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Slave Coffin -->
+
+	<ItemType UNID="&itSlaveCoffin;"
+			name=				"slave coffin"
+			level=				"5"
+			value=				"2500"
+			mass=				"500"
+			frequency=			"rare"
+			numberAppearing=	"1d3"
+			attributes=			"Illegal; MinorItem; Slaves; Soul"
+
+			description=		"The Sung Slavers of Jiang's Star transport their slaves in life-support canisters that keep their captive occupants in biological suspension."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Segment of Sung Armor -->
+
+	<ItemType UNID="&itSungArmor;"
+			name=				"[segment(s) of ]Sung armor"
+			level=				"5"
+			value=				"600"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"2500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This ceralloy-derived tiled armor can be cannibalized to repair other Sung armor segments."
+
+			useScreen=			"&dsUseArmorPatch;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.30"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"70"
+				hpBonus=	"  +0,  +0, +50, -25,  +0"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="50"
+				EMPDamageAdj=	"25"
+				/>
+
+		<StaticData>
+			<RepairHP>35</RepairHP>
+		</StaticData>
+
+		<Events>
+			<CanRepairItem>
+				(itmMatches aItemToRepair "a +TiledArmor")
+			</CanRepairItem>
+			
+			<GetRepairItemIntro>
+				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
+			</GetRepairItemIntro>
+		</Events>
+	</ItemType>
+	
+<!-- LEVEL II ITEMS -->
+
+	<!-- Segment of Light Sung Armor -->
+
+	<ItemType UNID="&itLightSungArmor;"
+			name=				"[segment(s) of ]light Sung armor"
+			level=				"2"
+			value=				"60"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"1500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"The Sung created this ceralloy-derived tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
+
+			useScreen=			"&dsUseArmorPatch;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.40"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"25"
+				hpBonus=	"  +0,  +0, +50, -25,  +0"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				EMPDamageAdj=	"25"
+				/>
+
+		<StaticData>
+			<RepairHP>12</RepairHP>
+		</StaticData>
+		
+		<Events>
+			<CanRepairItem>
+				(itmMatches aItemToRepair "a +TiledArmor")
+			</CanRepairItem>
+			
+			<GetRepairItemIntro>
+				"You can use tiles from the Sung armor to repair other tiled Sung armor.\n\n"
+			</GetRepairItemIntro>
+		</Events>
+	</ItemType>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Slaver, Wind -->
+
+	<ShipClass UNID="&scWindSlaver;"
+			manufacturer=		"Sung Slavers"
+			class=				"Wind slaver"
+			type=				""
+
+			attributes=			"genericClass, sungSlavers"
+			   
+			mass=				"20"
+			thrustRatio=		"14"
+			maxSpeed=			"30"
+			cargoSpace=			"10"
+
+			cyberDefenseLevel=	"4"
+
+			leavesWreck=		"35"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightSungArmor;"
+			count=				"1"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itNeutronBlaster;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"4.0"
+			/>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips1;" imageX="480" imageY="0" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="141"	posRadius="7"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-141"	posRadius="7"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Slaver, Steel -->
+
+	<ShipClass UNID="&scSteelSlaver;"
+			manufacturer=		"Sung Slavers"
+			class=				"Steel slaver"
+			type=				""
+
+			attributes=			"genericClass, sungSlavers"
+			   
+			mass=				"150"
+			thrustRatio=		"4"
+			maxSpeed=			"15"
+			cargoSpace=			"10"
+
+			cyberDefenseLevel=	"6"
+
+			leavesWreck=		"65"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itSungArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;" omnidirectional="true"/>
+			<Device deviceID="&itCyberDeckDisarm;"/>
+			<Device deviceID="&itYoroiS100;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item chance="50"	count="2d6"		item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips2;" imageX="512" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="166"	posRadius="25"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-166"	posRadius="25"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Slaver, Earth -->
+
+	<ShipClass UNID="&scEarthSlaver;"
+			manufacturer=		"Sung Slavers"
+			class=				"Earth Slaver"
+			type=				""
+
+			attributes=			"capitalShip, genericClass, sungSlavers"
+			   
+			mass=				"9500"
+			thrustRatio=		"1"
+			maxSpeed=			"12"
+			cargoSpace=			"500"
+
+			cyberDefenseLevel=	"6"
+
+			explosionType=		"&vtBlastExplosion2;"
+			leavesWreck=		"100"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavySungArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itParticleBoltCannon;"/>
+			<Device deviceID="&itCyberDeckLowerShields;"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itYoroiS100;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-43"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"68"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
+			<Item				  count="20d20"	item="&itParticleBoltCartridge;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"5"
+
+			ignoreShieldsDown=	"true"
+			/>
+
+	</ShipClass>
+
+	<!-- Slaver, Carrier Earth
+
+	EXTRA DATA
+
+	totalCount:			Total number of Wind slavers
+	inFlight:			List of ObjIDs of Wind slavers in flight
+	bombardTarget:		Target to bombard
+
+	-->
+
+	<ShipClass UNID="&scCarrierEarthSlaver;"
+			manufacturer=		"Sung Slavers"
+			class=				"Earth Slaver"
+			type=				""
+
+			attributes=			"capitalShip, sungSlavers"
+			   
+			mass=				"9500"
+			thrustRatio=		"1"
+			maxSpeed=			"12"
+			cargoSpace=			"500"
+
+			cyberDefenseLevel=	"6"
+
+			explosionType=		"&vtBlastExplosion2;"
+			leavesWreck=		"100"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavySungArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itParticleBoltCannon;"/>
+			<Device deviceID="&itCyberDeckLowerShields;"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="100" posRadius="50" posZ="0"/>
+			<Device deviceID="&itParticleBeamWeapon;" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="260" posRadius="50" posZ="0"/>
+			<Device deviceID="&itYoroiS100;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-43"
+					posY=		"0"
+					sizeX=		"42"
+					sizeY=		"68"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
+			<Item				  count="20d20"	item="&itParticleBoltCartridge;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsMediumShips4;" imageX="384" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="-7"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-159"	posRadius="50"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="46"	posZ="7"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"5"
+
+			ignoreShieldsDown=	"true"
+			/>
+
+		<Events>
+			<OnCreate>
+				(block (totalCount)
+					(setq totalCount (random 8 12))
+					(objSetData gSource "totalCount" totalCount)
+					(objSetData gSource "inFlight" Nil)
+					)
+			</OnCreate>
+
+			<OnObjDestroyed>
+				(switch
+					; If the bombard target is destroyed, choose a new target
+					(eq aObjDestroyed (objGetObjRefData gSource "bombardTarget"))
+						(block Nil
+							(objUnregisterForEvents gSource aObjDestroyed)
+
+							(setq aTargetObj (sysFindObject gSource "ATEN +populated;"))
+							(if aTargetObj
+								(if (gr (objGetDistance gSource aTargetObj) 50)
+									(objFireEvent gSource "OrderBombardTarget")
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'bombard aTargetObj)
+										(objRegisterForEvents gSource aTargetObj)
+										(objSetObjRefData gSource "bombardTarget" aTargetObj)
+										)
+									)
+								)
+							)
+
+					; Otherwise, it is one of our fighters
+					(block (inFlight)
+						(setq inFlight (filter (objGetData gSource "inFlight") theObjID 
+							(not (eq theObjID (objGetID aObjDestroyed)))
+							))
+						(objSetData gSource "inFlight" inFlight)
+						(objIncData gSource "totalCount" -1)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnObjEnteredGate>
+				(block (inFlight)
+					(setq inFlight (filter (objGetData gSource "inFlight") theObjID 
+						(not (eq theObjID (objGetID aObj)))
+						))
+					(objSetData gSource "inFlight" inFlight)
+					)
+			</OnObjEnteredGate>
+
+			<OrderAttackTarget>
+				; aTargetObj is target to attack
+
+				(block (inFlight totalCount)
+					(setq totalCount (objGetData gSource "totalCount"))
+					(setq inFlight (objGetData gSource "inFlight"))
+
+					; Deploy all slavers in flight
+					(enum inFlight theObjID
+						(block (theObj)
+							(setq theObj (objGetObjByID theObjID))
+							(shpCancelOrders theObj)
+							(sunAttackTarget gSource theObj aTargetObj)
+							(shpOrder theObj 'gate gSource)
+							)
+						)
+
+					; Deploy the remaining slavers
+					(for i 1 (subtract totalCount (count inFlight))
+						(block (theObj)
+							(setq theObj (sysCreateShip &scWindSlaver; (objGetPos gSource) &svSung;))
+							(sunAttackTarget gSource theObj aTargetObj)
+							(shpOrder theObj 'gate gSource)
+
+							(objRegisterForEvents gSource theObj)
+							(setq inFlight (append inFlight (list (objGetID theObj))))
+							)
+						)
+
+					(objSetData gSource "inFlight" inFlight)
+
+					; We attack the target
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'attack aTargetObj)
+					)
+			</OrderAttackTarget>
+
+			<OrderBombardTarget>
+				; aTargetObj is target to attack
+
+				(block (bearing markerObj maxDist)
+					; Find the bearing from the target to us
+					(setq bearing (sysVectorAngle (sysVectorSubtract (objGetPos gSource) (objGetPos aTargetObj))))
+					(setq bearing (add bearing (random -60 60) 360))
+
+					; Pick a point a certain distance from the target
+					(setq maxDist 50)
+					(setq markerObj (sysCreateMarker "Staging" (sysVectorPolarOffset (objGetPos aTargetObj) bearing maxDist) &svSung;))
+
+					; Go to the staging point
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'approach markerObj 15)
+					(shpOrder gSource 'bombard aTargetObj)
+
+					(objRegisterForEvents gSource aTargetObj)
+					(objSetObjRefData gSource "bombardTarget" aTargetObj)
+
+					; Deploy the wing
+					(sunOrderWing gSource 'escort gSource)
+					)
+			</OrderBombardTarget>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Slaver, Dragon -->
+
+	<ShipClass UNID="&scDragonSlaver;"
+			manufacturer=		"Sung Slavers"
+			class=				"Dragon Slaver"
+			type=				""
+
+			mass=				"4000"
+			cargoSpace=			"200"
+			thrustRatio=		"2.5"
+			maxSpeed=			"18"
+
+			cyberDefenseLevel=	"8"
+
+			explosionType=		"&vtBlastExplosion2;"
+			leavesWreck=		"100"
+
+			attributes=			"capitalShip, genericClass, majorShip, sungSlavers"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itDragonArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itQianlongArchcannon;">
+				<Items>
+					<Item count="1d4" item="&itLongzhuSphere;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itCyberDeckLowerShields;"/>
+			<Device deviceID="&itParticleBeamWeapon;" enhancement="0x0105" secondaryWeapon="true" minFireArc="350" maxFireArc="190" posAngle="50" posRadius="50" posZ="-3"/>
+			<Device deviceID="&itParticleBeamWeapon;" enhancement="0x0105" secondaryWeapon="true" minFireArc="170" maxFireArc="10" posAngle="310" posRadius="50" posZ="-3"/>
+			<Device deviceID="&itDragonShields;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item				  count="2d6"	item="&itPteracniumFuelRod;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables6;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem6;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsDragonSlaverImage;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="90"	posRadius="12"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-90"	posRadius="12"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"10"
+			fireAccuracy=		"95"
+			perception=			"6"
+
+			combatStyle=		"advanced"
+			ignoreShieldsDown=	"true"
+			/>
+
+		<Events>
+			<OnDestroy>
+				(block Nil
+					; The wreck always has a damaged Qianlong archcannon
+					; We remove the any that were created in the wreck
+					(enum (objGetItems aWreckObj "w +qianlongArchcannon;") theItem
+						(objRemoveItem aWreckObj theItem)
+						)
+
+					; Add a damaged one
+					(objAddItem aWreckObj (itmSetDamaged (itmCreate &itQianlongArchcannon; 1)))
+					)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+	<!-- Sung Transport -->
+
+	<ShipClass UNID="&scSungTransport;"
+			manufacturer=		"Sung Slavers"
+			class=				"Sung transport"
+			type=				""
+
+			mass=				"8000"
+			cargoSpace=			"5000"
+			thrustRatio=		"0.3"
+			maxSpeed=			"6"
+
+			explosionType=		"&vtBlastExplosion3;"
+			leavesWreck=		"100"
+
+			attributes=			"freighter, genericClass, sungSlavers"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itSungArmor;"
+			count=				"20"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;" omnidirectional="true"/>
+			<Device deviceID="&itYoroiS100;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"2.0"
+			rotationAccel=		"0.2"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"50"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-66"
+					posY=		"0"
+					sizeX=		"60"
+					sizeY=		"30"
+					/>
+			
+			<Compartment name="cargo contatiners"
+					type=		"cargo"
+					hitPoints=	"150"
+
+					posX=		"10"
+					posY=		"0"
+					sizeX=		"118"
+					sizeY=		"30"
+					/>
+		</Interior>
+
+		<Image imageID="&rsLargeShips1;" imageX="1152" imageY="0" imageWidth="192" imageHeight="192" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-176"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"	sendToBack="*"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+<!-- STATIONS -->
+
+	<!-- Sung Slave Camp -->
+
+	<StationType UNID="&stSungSlaveCamp;"
+			name=				"Sung slave camp"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"125"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
+			levelFrequency=		"--vcu r---- ----- ----- -----"
+			locationCriteria=	"+planetary,-asteroids"
+			enemyExclusionRadius="60"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="192" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship		count="1d3+1"	class="&scWindSlaver;" orders="patrol" patrolDist="20"/>
+		</Ships>
+
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables5;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem5;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem5;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Ship   count="1d4"	class="&scWindSlaver;" orders="attack"/>
+		</Encounters>
+
+		<Satellites>
+			<Orbitals count="6" distance="8" angle="equidistant">
+				<Station type="&stSungDefenseSat1;"/>
+			</Orbitals>
+
+			<Orbitals count="3d2" distance="3" angle="equidistant">
+				<Station type="&stSungSlaveQuarters1;"/>
+			</Orbitals>
+
+			<Orbitals count="4d2" distance="5" angle="equidistant">
+				<Table>
+					<Station chance="50" type="&stSungSlaveQuarters1;"/>
+					<Station chance="50" type="&stSungSlaveQuarters2;"/>
+				</Table>
+			</Orbitals>
+
+			<Orbitals count="5d2" distance="7" angle="random">
+				<Station type="&stSungSlaveQuarters2;"/>
+			</Orbitals>
+
+		</Satellites>
+
+		<InitialData>
+			<sung>True</sung>
+		</InitialData>
+
+		<Events>
+			<OnCreate>
+				; Count the number of slave quarters in the area
+				(objSetData gSource "totalSlaveCount" 
+					(count (sysFindObject gSource "T:sungSlaveQuarters; N:8;"))
+					)
+			</OnCreate>
+		</Events>
+
+	</StationType>
+
+	<!-- Sung Fortress -->
+
+	<StationType UNID="&stSungFortress;"
+			name=				"Sung fortress"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"200"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			levelFrequency=		"---vc uu--- ----- ----- -----"
+			locationCriteria=	"+planetary,-asteroids"
+			enemyExclusionRadius="100"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="192" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Table>
+				<Ship chance="30"	count="2d6" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				<Group chance="60">
+					<Ship			count="1"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="2d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="3">
+			<Table>
+				<Ship chance="75"	count="1d4"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="25"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1"	table="&trConsumables6;"/>
+			<Lookup					count="1"	table="&trMinorItem6;"/>
+			<Table chance="75">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Ship   count="1d4"	class="&scWindSlaver;" orders="attack"/>
+		</Encounters>
+
+		<Satellites>
+			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"/>
+			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"/>
+			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"/>
+			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"/>
+		</Satellites>
+
+	</StationType>
+
+	<!-- Sung Citadel -->
+
+	<StationType UNID="&stSungCitadel;"
+			name=				"Sung citadel"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"500"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
+			levelFrequency=		"----r ur--- ----- ----- -----"
+			locationCriteria=	"+planetary,-asteroids"
+			enemyExclusionRadius="100"
+			>
+
+		<Image			imageID="&rsStations6;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Devices>
+			<Device deviceID="&itCyberDeckLowerShields;"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="40"  posRadius="120"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="145" posRadius="125"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="270" posRadius="90"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Group chance="60">
+					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
+					<Ship			count="1d2"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="1d3"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Group chance="30">
+					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
+					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Ship chance="50"	count="1d3"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="30"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="20"	count="1"	class="&scEarthSlaver;"	orders="patrol" patrolDist="30"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Item chance="80"		count="1d4" item="&itLongzhuSphere;"/>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1"	table="&trConsumables6;"/>
+			<Lookup					count="1"	table="&trMinorItem6;"/>
+			<Table>
+				<Lookup chance="45" count="1" table="&trConsumables7;"/>
+				<Lookup chance="30" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="25" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="30"	count="2d3" class="&scWindSlaver;"		orders="attack"/>
+				<Group chance="60">
+					<Ship			count="1"	class="&scSteelSlaver;"		orders="attack"/>
+					<Ship			count="1d4"	class="&scWindSlaver;"		orders="attack"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="attack"/>
+			</Table>
+		</Encounters>
+
+		<Satellites>
+			<Orbitals count="8" distance="14" angle="equidistant">
+				<Station type="&stSungDefenseSat1;"/>
+			</Orbitals>
+		</Satellites>
+
+	</StationType>
+
+	<!-- Sung Defense Satellite -->
+
+	<StationType UNID="&stSungDefenseSat1;"
+			name=				"Sung defense satellite"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			noMapLabel=			"true"
+			fireRateAdj=		"40"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"2500"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"60"
+			structuralHitPoints="20"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="192" imageY="0" imageWidth="32" imageHeight="32"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Sung Slave Quarters -->
+
+	<StationType UNID="&stSungSlaveQuarters1;"
+			name=				"Sung slave quarters"
+			sovereign=			"&svSungSlaves;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsSungSlaveQuarters;"
+			noMapLabel=			"true"
+
+			armorID=			"&itLightTitaniumPlate;"
+			hitPoints=			"35"
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"sungSlaveQuarters"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="32" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="64" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="96" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at a ruined structure once housing slaves. "
+					"Lifeless forms float around in zero-G amid the scraps and mementos they once owned."
+					)
+			</Text>
+		</Language>
+
+		<InitialData>
+			<sungSlave>True</sungSlave>
+		</InitialData>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<!-- Sung Slave Quarters -->
+
+	<StationType UNID="&stSungSlaveQuarters2;"
+			name=				"Sung slave quarters"
+			sovereign=			"&svSungSlaves;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsSungSlaveQuarters;"
+			noMapLabel=			"true"
+
+			armorID=			"&itLightTitaniumPlate;"
+			hitPoints=			"20"
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"sungSlaveQuarters"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations4;" imageX="224" imageY="0"  imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsStations4;" imageX="224" imageY="32" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsStations4;" imageX="224" imageY="64" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsStations4;" imageX="224" imageY="96" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at a ruined structure once housing slaves. "
+					"Lifeless forms float around in zero-G amid the scraps and mementos they once owned."
+					)
+			</Text>
+		</Language>
+
+		<InitialData>
+			<sungSlave>True</sungSlave>
+		</InitialData>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<!-- Sung Walls -->
+
+	<StationType UNID="&stSungNWWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<Image			imageID="&rsStations5;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+	</StationType>
+
+	<StationType UNID="&stSungNEWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<Image			imageID="&rsStations5;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+	</StationType>
+
+	<StationType UNID="&stSungSEWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<Image			imageID="&rsStations5;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+	</StationType>
+
+	<StationType UNID="&stSungSWWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<Image			imageID="&rsStations5;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
+
+	</StationType>
+
+<!-- DOCK SCREENS -->
+
+	<!-- Sung Slave Quarters -->
+
+	<DockScreen UNID="&dsSungSlaveQuarters;">
+
+		<InitialPane>
+			(block Nil
+				; Look for the sung slaver
+				(setq gSlaver (sysFindObject gSource "T:sungSlaveCamp; N"))
+				(if gSlaver
+					(switch
+						; If the slaver has not been destroyed, then we're not free
+						(not (objIsAbandoned gSlaver))
+							"NotFree"
+
+						; If we have a reward, then the slaver quarters are empty
+						(eq (objGetData gSlaver "sungState") "done")
+							"Empty"
+
+						; If we have just taken some coffins, then we're done
+						(eq (objGetData gSlaver "sungState") "coffins")
+							"Done"
+
+						; Otherwise, the player may or may not get a reward
+						(block (slaves alive dead)
+							; Get all the slave quarters
+							(setq slaves (sysFindObject gSlaver "T:sungSlaveQuarters; N:8;"))
+
+							; Count how many are still alive
+							(setq alive 1)
+							(enum slaves obj
+								(if (not (objIsAbandoned obj))
+									(setq alive (add alive 1))
+									)
+								)
+
+							; The dead are the total minus the living
+							(setq dead (subtract (objGetData gSlaver "totalSlaveCount") alive))
+
+							; If there are more dead than alive then the player gets
+							; nothing.
+							(if (gr dead alive)
+								"NoReward"
+								"Default"
+								)
+							)
+						)
+
+					; No slaver found
+					"Empty"
+					)
+				)
+		</InitialPane>
+
+		<Panes>
+			<Default
+					desc="As you enter the station you are surrounded by cheering families: &quot;Thank you for freeing us! The Slavers are finally dead! But some of our people are still not liberated. Please take them to a place where they can be free.&quot;">
+
+				<Actions>
+					<Action name="Continue" cancel="1" default="1" key="C">
+						(block Nil
+							(objSetData gSlaver "sungState" "coffins")
+							(objAddItem gSource (itmCreate &itSlaveCoffin; (random 1 12)))
+							(scrShowScreen gScreen &dsRPGLoot; {
+								nextScreen: &dsSungSlaveQuarters;
+								})
+							)
+					</Action>
+				</Actions>
+
+			</Default>
+
+			<Done
+					desc="&quot;Thank you again for saving us! We will never forget you.&quot;">
+
+				<Actions>
+					<Action name="Undock" cancel="1" key="U">
+						(block Nil
+							(objSetData gSlaver "sungState" "done")
+							(scrExitDock gScreen)
+							)
+					</Action>
+				</Actions>
+			</Done>
+
+			<Empty
+					desc="You are docked at a station once used to house slaves of the Sung Empire. Now abandoned, these living quarters appear no worse than sub-standard Corporate quarters. But a closer look reveals surveillance sensors and discarded docility collars.">
+
+				<Actions>
+					<Action name="Undock" cancel="1" key="U">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Empty>
+
+			<NoReward
+					desc="You are docked at the living quarters of a small slave community. Though free at last, they weep for the hundreds who died in the attack and for the family that the dead have left behind. The piercing wail of the inconsolable does not completely mask the anger of those looking for revenge. You are not welcome here.">
+
+				<Actions>
+					<Action name="Undock" cancel="1" key="U">
+						(block Nil
+							(objSetData gSlaver "sungState" "done")
+							(scrExitDock gScreen)
+							)
+					</Action>
+				</Actions>
+			</NoReward>
+
+			<NotFree
+					desc="You are docked at a station used to house slaves. Two men meet you at the airlock: &quot;Get out of here! Leave while you can before the Slavers return!&quot;">
+
+				<Actions>
+					<Action name="Undock" cancel="1" key="U">
+						<Exit/>
+					</Action>
+				</Actions>
+			</NotFree>
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Use Longzhu Sphere -->
+
+	<DockScreen UNID="&dsUseLongzhuSphere;"
+			name=				"Ship's Cargo Hold"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"* -LongzhuSphere;"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"What item do you wish to use the longzhu sphere on?">
+
+				<Actions>
+					<Action name="Use on this Item" default="1" key="U">
+						(block (itemType)
+							(setq gItem (scrGetItem gScreen))
+							(setq itemType (itmGetType gItem))
+
+							(switch
+								(eq itemType &itQianlongArchcannon;)
+									(block (recharged)
+										(setq aCharges 128)
+										(setq recharged (objFireItemEvent gPlayerShip gItem "Recharge"))
+
+										(switch
+											(eq recharged 0)
+												(setq gTitle "The longzhu sphere glows with stored power but the Qianlong archcannon is unaffected.")
+
+											(setq gTitle (cat "The longzhu sphere glows with stored power and the Qianlong archcannon hums with new energy. Your Qianlong archcannon has been recharged."))
+											)
+
+										(objRemoveItem gPlayerShip (itmCreate &itLongzhuSphere; 1))
+										(scrShowPane gScreen "Used")
+										)
+
+								(itmMatches gItem "s L:1-10;")
+									(block Nil
+										(switch
+											(itmIsDamaged gItem)
+												(block Nil
+													(setq gTitle (cat "The longzhu sphere glows with stored power and the " (itmGetName gItem 32) " hums with new energy. Your " (itmGetName gItem 32) " has been repaired."))
+													(shpRepairItem gPlayerShip gItem)
+													)
+											(block (result newMod)
+												(if (eq (divide (itmIsEnhanced gItem) 0x100) 0x01)
+													(setq newMod 0x0100)
+													(setq newMod 0x0102)
+													)
+												(setq result (shpEnhanceItem gPlayerShip gItem newMod))
+												(setq gTitle 
+													(cat "The longzhu sphere glows with stored power and the " 
+														(itmGetName gItem 32) 
+														" hums with new energy. " 
+														(intItemEnhanceStatus result "Your shield generator is more powerful" "your shield generator")
+														"."
+														)
+													)
+												)
+											)
+										(objRemoveItem gPlayerShip (itmCreate &itLongzhuSphere; 1))
+										(scrShowPane gScreen "Used")
+										)
+
+								(itmMatches gItem "w L:1-10; +EnergyWeapon;")
+									(block Nil
+										(switch
+											(itmIsDamaged gItem)
+												(block Nil
+													(setq gTitle (cat "The longzhu sphere glows with stored power and the " (itmGetName gItem 32) " hums with new energy. Your " (itmGetName gItem 32) " has been repaired."))
+													(shpRepairItem gPlayerShip gItem)
+													)
+											(block (result newMod)
+												(if (eq (divide (itmIsEnhanced gItem) 0x100) 0x01)
+													(setq newMod 0x0100)
+													(setq newMod 0x0102)
+													)
+												(setq result (shpEnhanceItem gPlayerShip gItem newMod))
+												(setq gTitle 
+													(cat "The longzhu sphere glows with stored power and the " 
+														(itmGetName gItem 32) 
+														" hums with new energy. " 
+														(intItemEnhanceStatus result "Your weapon is more powerful" "your weapon")
+														"."
+														)
+													)
+												)
+											)
+										(objRemoveItem gPlayerShip (itmCreate &itLongzhuSphere; 1))
+										(scrShowPane gScreen "Used")
+										)
+
+								(itmMatches gItem "v L:1-10; -Alien")
+									(block Nil
+										(switch
+											(itmIsDamaged gItem)
+												(setq gTitle (cat "The longzhu sphere glows with stored power and the " (itmGetName gItem 32) " hums with new energy. Your " (itmGetName gItem 32) " has been repaired."))
+											(itmIsEnhanced gItem)
+												(setq gTitle (cat "The longzhu sphere glows with stored power and the " (itmGetName gItem 32) " hums with new energy. Your " (itmGetName gItem 32) " is already enhanced and cannot be enhanced further."))
+											(setq gTitle (cat "The longzhu sphere glows with stored power and the " (itmGetName gItem 32) " hums with new energy. Your " (itmGetName gItem 32) " has been enhanced."))
+											)
+										(shpEnhanceItem gPlayerShip gItem)
+										(objRemoveItem gPlayerShip (itmCreate &itLongzhuSphere; 1))
+										(scrShowPane gScreen "Used")
+										)
+
+								(scrShowPane gScreen "NoEffect")
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<Exit/>
+					</Action>
+
+				</Actions>
+
+			</Default>
+
+			<NoEffect>
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "The longzhu sphere has no effect on " (itmGetName gItem 4) "."))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</NoEffect>
+
+			<Used 
+					desc="=gTitle"
+					noListNavigation="true"
+					>
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Used>
+		</Panes>
+
+	</DockScreen>
+
+<!-- MISCELLANEOUS -->
+
+	<!-- Sung Encounter Table -->
+
+	<ShipTable unid="&tbSungEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="--ucu r----" count="1"	 class="&scWindSlaver;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4-1" class="&scWindSlaver;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="---rc uu---" count="1"	 class="&scWindSlaver;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="2d3"	 class="&scWindSlaver;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="----r ur---" count="1"	 class="&scSteelSlaver;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4"	 class="&scWindSlaver;" orders="escort"/>
+				</Escorts>
+			</Ship>
+
+			<Ship levelFrequency="--rru ur---" count="1"	 class="&scSungTransport;" eventHandler="&evStdConvoyEncounterBehavior;">
+				<Items>
+					<Table>
+						<RandomItem chance="15" count="1d3" levelFrequency="ucccc uv---" criteria="a +sungSlavers;" />
+						<Item		chance="10" count="1"	item="&itLongzhuSphere;"/>
+						<Item		chance="10" count="4d8"	item="&itParticleBoltCartridge;"/>
+						<Item		chance="20" count="1d8"	item="&itSlaveCoffin;"/>
+						<Item		chance="5" count="1d12" item="&itCeralloyOre;"/>
+						<Item		chance="5" count="1d12" item="&itXenotiteOre;"/>
+						<Item		chance="5" count="1d12" item="&itPteracniumOre;"/>
+						<Lookup chance="15" count="1d4" table="&trConsumables5;"/>
+						<Lookup chance="10" count="1" table="&trMinorItem5;"/>
+						<Lookup chance="5" count="1" table="&trMajorItem5;"/>
+					</Table>
+				</Items>
+
+				<Escorts>
+					<Ship					   count="2d4"	 class="&scWindSlaver;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+	<Globals>
+		(block Nil
+			(setq sunAttackTarget (lambda (theCarrier theShip theTarget)
+				(if (objIsShip theTarget)
+					(shpOrder theShip 'attack theTarget)
+					(shpOrder theShip 'escort theCarrier)
+					)
+				))
+
+			(setq sunOrderWing (lambda (theCarrier theOrder theTarget)
+				(block (totalCount inFlight)
+					(setq totalCount (objGetData theCarrier "totalCount"))
+					(setq inFlight (objGetData theCarrier "inFlight"))
+
+					; Deploy the remaining slavers
+					(if (not (eq theOrder 'gate))
+						(for i 1 (subtract totalCount (count inFlight))
+							(block (theObj)
+								(setq theObj (sysCreateShip &scWindSlaver; (objGetPos theCarrier) &svSung;))
+
+								(objRegisterForEvents theCarrier theObj)
+								(setq inFlight (append inFlight (list (objGetID theObj))))
+								)
+							)
+						)
+
+					; Order all slavers in flight
+					(enum inFlight theObjID
+						(block (theObj)
+							(setq theObj (objGetObjByID theObjID))
+							(shpCancelOrders theObj)
+							(shpOrder theObj theOrder theTarget)
+							)
+						)
+
+					(objSetData theCarrier "inFlight" inFlight)
+					)
+				))
+			)
+	</Globals>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsDragonSlaverImage;"	bitmap="Resources\DragonSlaver.jpg"	bitmask="Resources\DragonSlaverMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

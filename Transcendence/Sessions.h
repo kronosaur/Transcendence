@@ -79,6 +79,7 @@ class CChooseAdventureSession : public IHISession
 		CAniVScroller *m_pRoot;
 		CG16bitImage *m_pBackground;
 
+		RECT m_rcFull;
 		RECT m_rcPane;
 		RECT m_rcBackground;
 		int m_yBottomSection;
@@ -139,17 +140,23 @@ class CHelpSession : public IHISession
 		int m_iHelpPage;
 	};
 
-class CLegacySession : public IHISession
+class CGameSession : public IHISession
 	{
 	public:
-		CLegacySession (CHumanInterface &HI) : IHISession(HI) { }
+		CGameSession (CHumanInterface &HI, 
+					  CGameSettings &Settings,
+					  CSoundtrackManager &Soundtrack) : IHISession(HI),
+				m_Settings(Settings),
+				m_Soundtrack(Soundtrack)
+			{ }
 
 		//	IHISession virtuals
+
 		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
-		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(bTopMost); }
+		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost) { g_pTrans->Animate(Screen, this, bTopMost); }
 		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
-		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return g_pTrans->HICommand(sCmd, pData); }
-		virtual ALERROR OnInit (CString *retsError) { SetNoCursor(true); return NOERROR; }
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) { return NOERROR; }
+		virtual ALERROR OnInit (CString *retsError) { m_rcScreen = g_pTrans->m_rcScreen; SetNoCursor(true); return NOERROR; }
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
 		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
 		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
@@ -159,6 +166,50 @@ class CLegacySession : public IHISession
 		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
 		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
 		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
+
+		//	Helpers
+
+		void PaintInfoText (CG16bitImage &Dest, const CString &sTitle, const TArray<CString> &Body, bool bAboveTargeting = true);
+		void PaintSoundtrackTitles (CG16bitImage &Dest);
+
+	private:
+		CGameSettings &m_Settings;
+		CSoundtrackManager &m_Soundtrack;
+		RECT m_rcScreen;					//	RECT of main screen within window.
+	};
+
+class CIntroSession : public IHISession
+	{
+	public:
+		CIntroSession (CHumanInterface &HI, CTranscendenceWnd::IntroState iInitialState) : IHISession(HI),
+				m_iInitialState(iInitialState)
+			{ }
+
+		//	IHISession virtuals
+		virtual CReanimator &GetReanimator (void) { return g_pTrans->GetReanimator(); }
+		virtual void OnAnimate (CG16bitImage &Screen, bool bTopMost);
+		virtual void OnChar (char chChar, DWORD dwKeyData) { g_pTrans->WMChar(chChar, dwKeyData); }
+		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL);
+		virtual ALERROR OnInit (CString *retsError);
+		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyDown(iVirtKey, dwKeyData); }
+		virtual void OnKeyUp (int iVirtKey, DWORD dwKeyData) { g_pTrans->WMKeyUp(iVirtKey, dwKeyData); }
+		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonDown(x, y, dwFlags); }
+		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) { g_pTrans->WMLButtonUp(x, y, dwFlags); }
+		virtual void OnMouseMove (int x, int y, DWORD dwFlags) { g_pTrans->WMMouseMove(x, y, dwFlags); }
+		virtual void OnMove (int x, int y) { g_pTrans->WMMove(x, y); }
+		virtual void OnReportHardCrash (CString *retsMessage) { *retsMessage = g_pTrans->GetCrashInfo(); }
+		virtual void OnSize (int cxWidth, int cyHeight) { g_pTrans->WMSize(cxWidth, cyHeight, 0); }
+
+	private:
+		void CreateSoundtrackTitleAnimation (CSoundType *pTrack, IAnimatron **retpAni);
+		void StartSoundtrackTitleAnimation (CSoundType *pTrack);
+
+		CTranscendenceWnd::IntroState m_iInitialState;
+
+		RECT m_rcMain;						//	Center RECT
+		RECT m_rcTop;						//	Top area (sign in controls, etc.)
+		RECT m_rcBottom;					//	Bottom area (buttons)
 	};
 
 class CLoadingSession : public IHISession

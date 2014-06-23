@@ -43,9 +43,11 @@ const int STATION_ATTACK_FREQUENCY =	67;
 const int STATION_REINFORCEMENT_FREQUENCY =	607;
 const int STATION_TARGET_FREQUENCY =	503;
 const int DAYS_TO_REFRESH_INVENTORY =	5;
-const int INVENTORY_REFRESHED_PER_UPDATE = 5;			//	% of inventory refreshed on each update frequency
+const int INVENTORY_REFRESHED_PER_UPDATE = 20;			//	% of inventory refreshed on each update frequency
 
-#define MAX_ATTACK_DISTANCE				(LIGHT_SECOND * 25)
+const Metric MAX_ATTACK_DISTANCE =				LIGHT_SECOND * 25;
+const Metric MAX_ATTACK_DISTANCE2 =				MAX_ATTACK_DISTANCE * MAX_ATTACK_DISTANCE;
+
 #define BEACON_RANGE					(LIGHT_SECOND * 20)
 #define MAX_SUBORDINATES				12
 #define BLACKLIST_HIT_LIMIT				3
@@ -862,7 +864,7 @@ ALERROR CStation::CreateMapImage (void)
 
 	int iTick, iRotation;
 	const CObjectImageArray &Image = GetImage(false, &iTick, &iRotation);
-	if (Image.IsEmpty())
+	if (!Image.IsLoaded())
 		return NOERROR;
 
 	CG16bitImage &BmpImage = Image.GetImage(strFromInt(m_pType->GetUNID()));
@@ -914,7 +916,7 @@ void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
 	int iTick, iVariant;
 	const CObjectImageArray &Image = GetImage(false, &iTick, &iVariant);
 
-	if (!Image.IsEmpty())
+	if (Image.IsLoaded())
 		{
 		CFractureEffect::Create(GetSystem(),
 				GetPos(),
@@ -1145,6 +1147,19 @@ bool CStation::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dw
 	return false;
 	}
 
+Metric CStation::GetAttackDistance (void) const
+
+//	GetAttackDistance
+//
+//	Returns the distance at which we attack enemies.
+
+	{
+	if (m_iAngryCounter > 0)
+		return Max(MAX_ATTACK_DISTANCE, m_pType->GetMaxEffectiveRange());
+	else
+		return MAX_ATTACK_DISTANCE;
+	}
+
 CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
 
 //	GetBalance
@@ -1240,6 +1255,29 @@ DWORD CStation::GetDefaultEconomyUNID (void)
 		return pTrade->GetEconomyType()->GetUNID();
 
 	return DEFAULT_ECONOMY_UNID;
+	}
+
+bool CStation::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
+
+//	GetDeviceInstallPrice
+//
+//	Returns the price to install the given device
+
+	{
+	//	See if we have an override
+
+	if (m_pTrade && m_pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, ask our design type
+
+	CTradingDesc *pTrade = m_pType->GetTradingDesc();
+	if (pTrade && pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
+		return true;
+
+	//	Otherwise, we do not install
+
+	return false;
 	}
 
 const CObjectImageArray &CStation::GetImage (bool bFade, int *retiTick, int *retiRotation)
@@ -1546,6 +1584,32 @@ CString CStation::GetStargateID (void) const
 		return NULL_STR;
 
 	return pNode->FindStargateName(m_sStargateDestNode, m_sStargateDestEntryPoint);
+	}
+
+CSpaceObject *CStation::GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget) const
+
+//	GetTarget
+//
+//	Returns the station's current target
+
+	{
+	//	If we're not armed, then we never have a target
+
+	if (IsAbandoned() || !m_fArmed || m_pType->IsVirtual())
+		return NULL;
+
+	//	Otherwise, see if the player is in range, if so, then it is our target.
+
+	CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
+	if (pPlayer == NULL)
+		return NULL;
+
+	Metric rAttackDist = GetAttackDistance();
+	Metric rAttackDist2 = rAttackDist * rAttackDist;
+	if (GetDistance2(pPlayer) < rAttackDist2)
+		return pPlayer;
+
+	return NULL;
 	}
 
 int CStation::GetVisibleDamage (void)
@@ -1929,6 +1993,11 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 	if (HasOnDamageEvent())
 		FireOnDamage(Ctx);
 
+	//	Tell our attacker that we got hit
+
+	if (pOrderGiver && pOrderGiver->CanAttack())
+		pOrderGiver->OnObjDamaged(Ctx);
+
 	//	If we've still got armor left, then we take damage but otherwise
 	//	we're OK.
 
@@ -2014,6 +2083,11 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 			if (m_pType->AlertWhenDestroyed())
 				RaiseAlert(pOrderGiver);
 			}
+
+		//	Clear destination
+
+		if (IsAutoClearDestinationOnDestroy())
+			ClearPlayerDestination();
 
 		//	Explosion effect
 
@@ -2274,7 +2348,14 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
 				if (yObj < y)
+					{
+					CSpaceObject *pOldObj = Ctx.pObj;
+					Ctx.pObj = pObj;
+
 					pObj->Paint(Dest, xObj, yObj, Ctx);
+
+					Ctx.pObj = pOldObj;
+					}
 				}
 			}
 		}
@@ -2328,7 +2409,14 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
 				if (yObj >= y)
+					{
+					CSpaceObject *pOldObj = Ctx.pObj;
+					Ctx.pObj = pObj;
+
 					pObj->Paint(Dest, xObj, yObj, Ctx);
+
+					Ctx.pObj = pOldObj;
+					}
 				}
 			}
 		}
@@ -2413,6 +2501,95 @@ void CStation::OnObjLeaveGate (CSpaceObject *pObj)
 					GetPos(),
 					GetVel(),
 					0);
+		}
+	}
+
+void CStation::OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)
+
+//	OnPaintMap
+//
+//	Paint the station
+
+	{
+	if (m_pType->IsVirtual())
+		return;
+
+	//	Draw an orbit
+
+	if (m_pMapOrbit)
+		m_pMapOrbit->Paint(Ctx, Dest, RGB_ORBIT_LINE);
+
+	//	Draw the station
+
+	if (m_Scale == scaleWorld)
+		Dest.ColorTransBlt(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
+				m_MapImage,
+				x - (m_MapImage.GetWidth() / 2),
+				y - (m_MapImage.GetHeight() / 2));
+
+	else if (m_Scale == scaleStar)
+		Dest.BltLighten(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
+				m_MapImage,
+				x - (m_MapImage.GetWidth() / 2),
+				y - (m_MapImage.GetHeight() / 2));
+
+	else if (m_pType->ShowsMapIcon() && m_fKnown)
+		{
+		//	Figure out the color
+
+		WORD wColor;
+		if (IsEnemy(GetUniverse()->GetPOV()))
+			wColor = CG16bitImage::RGBValue(255, 0, 0);
+		else
+			wColor = CG16bitImage::RGBValue(0, 192, 0);
+
+		//	Paint the marker
+
+		if (m_Scale == scaleStructure && m_rMass > 100000.0)
+			{
+			if (IsActiveStargate())
+				{
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
+				}
+			else if (!IsAbandoned() || IsImmutable())
+				{
+				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
+				}
+			else
+				{
+				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
+				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
+				}
+			}
+		else
+			Dest.DrawDot(x, y, 
+					wColor, 
+					CG16bitImage::markerSmallRound);
+
+		//	Paint the label
+
+		if (!m_fNoMapLabel)
+			{
+			if (m_sMapLabel.IsBlank())
+				{
+				DWORD dwFlags;
+				CString sName = GetName(&dwFlags);
+				m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
+				}
+
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+					x + m_xMapLabel + 1, 
+					y + m_yMapLabel + 1, 
+					0,
+					m_sMapLabel);
+			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
+					x + m_xMapLabel, 
+					y + m_yMapLabel, 
+					RGB_MAP_LABEL,
+					m_sMapLabel);
+			}
 		}
 	}
 
@@ -2819,7 +2996,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	//	Basic update
 
-	UpdateAttacking(iTick);
+	UpdateAttacking(Ctx, iTick);
 	m_DockingPorts.UpdateAll(Ctx, this);
 	UpdateReinforcements(iTick);
 
@@ -3190,95 +3367,6 @@ void CStation::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransfo
 				Dest.DrawDot(x, y, 
 						wColor, 
 						CG16bitImage::markerTinyCircle);
-			}
-		}
-	}
-
-void CStation::PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)
-
-//	PaintMap
-//
-//	Paint the station
-
-	{
-	if (m_pType->IsVirtual())
-		return;
-
-	//	Draw an orbit
-
-	if (m_pMapOrbit)
-		m_pMapOrbit->Paint(Dest, Trans, RGB_ORBIT_LINE);
-
-	//	Draw the station
-
-	if (m_Scale == scaleWorld)
-		Dest.ColorTransBlt(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
-				m_MapImage,
-				x - (m_MapImage.GetWidth() / 2),
-				y - (m_MapImage.GetHeight() / 2));
-
-	else if (m_Scale == scaleStar)
-		Dest.BltLighten(0, 0, m_MapImage.GetWidth(), m_MapImage.GetHeight(), 255,
-				m_MapImage,
-				x - (m_MapImage.GetWidth() / 2),
-				y - (m_MapImage.GetHeight() / 2));
-
-	else if (m_pType->ShowsMapIcon() && m_fKnown)
-		{
-		//	Figure out the color
-
-		WORD wColor;
-		if (IsEnemy(GetUniverse()->GetPOV()))
-			wColor = CG16bitImage::RGBValue(255, 0, 0);
-		else
-			wColor = CG16bitImage::RGBValue(0, 192, 0);
-
-		//	Paint the marker
-
-		if (m_Scale == scaleStructure && m_rMass > 100000.0)
-			{
-			if (IsActiveStargate())
-				{
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerMediumCross);
-				}
-			else if (!IsAbandoned() || IsImmutable())
-				{
-				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallFilledSquare);
-				}
-			else
-				{
-				Dest.DrawDot(x+1, y+1, 0, CG16bitImage::markerSmallSquare);
-				Dest.DrawDot(x, y, wColor, CG16bitImage::markerSmallSquare);
-				}
-			}
-		else
-			Dest.DrawDot(x, y, 
-					wColor, 
-					CG16bitImage::markerSmallRound);
-
-		//	Paint the label
-
-		if (!m_fNoMapLabel)
-			{
-			if (m_sMapLabel.IsBlank())
-				{
-				DWORD dwFlags;
-				CString sName = GetName(&dwFlags);
-				m_sMapLabel = ::ComposeNounPhrase(sName, 1, NULL_STR, dwFlags, nounTitleCapitalize);
-				}
-
-			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-					x + m_xMapLabel + 1, 
-					y + m_yMapLabel + 1, 
-					0,
-					m_sMapLabel);
-			g_pUniverse->GetNamedFont(CUniverse::fontMapLabel).DrawText(Dest, 
-					x + m_xMapLabel, 
-					y + m_yMapLabel, 
-					RGB_MAP_LABEL,
-					m_sMapLabel);
 			}
 		}
 	}
@@ -3771,7 +3859,7 @@ void CStation::Undock (CSpaceObject *pObj)
 		}
 	}
 
-void CStation::UpdateAttacking (int iTick)
+void CStation::UpdateAttacking (SUpdateCtx &Ctx, int iTick)
 
 //	UpdateAttacking
 //
@@ -3797,13 +3885,27 @@ void CStation::UpdateAttacking (int iTick)
 	//	Compute the range at which we attack enemies
 
 	Metric rAttackRange;
+	Metric rAttackRange2;
 	if (m_iAngryCounter > 0)
 		{
 		rAttackRange = Max(MAX_ATTACK_DISTANCE, m_pType->GetMaxEffectiveRange());
+		rAttackRange2 = rAttackRange * rAttackRange;
+
+		//	If the player is in range, then she is under attack
+
+		if (Ctx.pPlayer 
+				&& GetDistance2(Ctx.pPlayer) < rAttackRange2)
+			Ctx.pSystem->SetPlayerUnderAttack();
+
+		//	Countdown
+
 		m_iAngryCounter--;
 		}
 	else
+		{
 		rAttackRange = MAX_ATTACK_DISTANCE;
+		rAttackRange2 = rAttackRange * rAttackRange;
+		}
 
 	//	Look for the nearest enemy ship to attack
 
@@ -3812,7 +3914,7 @@ void CStation::UpdateAttacking (int iTick)
 		//	Look for a target
 
 		m_pTarget = NULL;
-		Metric rBestDist = rAttackRange * rAttackRange;
+		Metric rBestDist = rAttackRange2;
 		CSystem *pSystem = GetSystem();
 		for (i = 0; i < pSystem->GetObjectCount(); i++)
 			{

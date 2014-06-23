@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- MISSION SCREEN ============================================================
+
+	gData uses the following fields:
+
+	missionObj:			The mission that we are showing.
+
+	nextScreen:			If specified, we navigate to the given screen when we're
+						done. This may also be a list consisting of a screen and
+						a pane.
+
+						If nextScreen is equal to 'forceUndock, then we force 
+						undock when we exit.
+
+	MISSION OBJECT
+
+	If the mission object has a data value named "rewardNextScreen" then it is used
+	as a nextScreen parameter during debrief. This is used to implement things
+	like promotions.
+
+	We fire OnAcceptedUndock after the mission has been accepted and the player has
+	undocked.
+
+	We fire OnCanDebrief when the player docks with the mission object and the 
+	mission is completed. The mission type may return Nil to continue or a message
+	to delay debriefing.
+	
+	We fire OnDebriefedUndock if we undock after debrief
+
+-->
+
+	<DockScreen UNID="&dsRPGMission;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<OnScreenInit>
+			(block Nil
+				; Store the mission object in screen data
+				(scrSetData gScreen 'missionObj (@ gData 'missionObj))
+				)
+		</OnScreenInit>
+
+		<InitialPane>
+			(block (
+				(missionObj (scrGetData gScreen 'missionObj))
+				delayDebriefMsg
+				)
+
+				(switch
+					; If mission is available and player has not previously been
+					; briefed, then start with intro...
+
+					(msnGetProperty missionObj 'isOpen)
+						(if (msnGetProperty missionObj 'isIntroShown)
+							"Briefing"
+							"Intro"
+							)
+
+					; If this is an active mission, then handle it
+
+					(msnGetProperty missionObj 'isActive)
+						(switch
+							;	If cannot yet debrief, tell the player to wait
+
+							(setq delayDebriefMsg (msnFireEvent missionObj "OnCanDebrief"))
+								(block Nil
+									(scrSetData gScreen 'DelayDebriefMsg delayDebriefMsg)
+									"DelayDebrief"
+									)
+							
+							(msnGetProperty missionObj 'isSuccess)
+								"Success"
+
+							(msnGetProperty missionObj 'isFailure)
+								"Failure"
+
+							"InProgress"
+							)
+
+					; If we've already been debriefed
+
+					(msnGetProperty missionObj 'isDebriefed)
+						"AlreadyDebriefed"
+
+					; Otherwise, this is not a player mission
+
+					"Unavailable"
+					)
+				)
+		</InitialPane>
+
+		<Panes>
+			<Intro>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(missionText (msnTranslate missionObj 'Intro))
+						(pageCount (if (isatom missionText) 1 (count missionText)))
+						(pageNo (scrGetData gScreen 'curPage))
+						)
+
+						; Start at the beginning if we have no page number
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+						(scrSetDesc gScreen (@ missionText pageNo))
+
+						; Next page
+						(setq pageNo (add pageNo 1))
+						(if (eq pageNo pageCount)
+							(scrSetData gSCreen 'curPage nil)
+							(scrSetData gScreen 'curPage pageNo)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(if (scrGetData gScreen 'curPage)
+
+								; If more pages, then continue
+								(scrShowPane gScreen "Intro")
+
+								; Otherwise, intro is done
+								(block nil
+									(msnSetProperty missionObj 'isIntroShown True)
+									(scrRefreshScreen gScreen)
+									)
+								)
+							)
+					</Action>
+				</Actions>
+			</Intro>
+
+			<Briefing>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(missionText (msnTranslate missionObj 'Briefing))
+						(pageCount (if (isatom missionText) 1 (count missionText)))
+						(pageNo (scrGetData gScreen 'curPage))
+
+						(atLastPage Nil)
+						)
+
+						; Start at the beginning if we have no page number
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+						(scrSetDesc gScreen (@ missionText pageNo))
+
+						; Next page
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (eq pageNo pageCount))
+
+						; Initialize actions
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionAccept atLastPage)
+						(scrShowAction gScreen 'actionDecline atLastPage)
+						
+						; Set the text for the actions
+						(if atLastPage
+							(block Nil
+								(scrSetActionLabel gScreen 'actionAccept (msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept)))
+								(scrSetActionLabel gScreen 'actionDecline (msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline)))
+								)
+							)
+
+						; Remeber page
+						(scrSetData gSCreen 'curPage (if atLastPage Nil pageNo))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Briefing")
+					</Action>
+
+					<Action id="actionAccept" default="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnAccept missionObj)
+							(scrShowPane gScreen "ReplyAccept")
+							)
+					</Action>
+
+					<Action id="actionDecline" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(scrSetData gScreen 'declineOptions (msnDecline missionObj))
+							(scrShowPane gScreen "ReplyDecline")
+							)
+					</Action>
+				</Actions>
+			</Briefing>
+
+			<ReplyAccept>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'AcceptReply))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(scrExitScreen gScreen 'forceUndock)
+							(setq aDockTarget gSource)
+							(msnFireEvent missionObj "OnAcceptedUndock")
+
+							;	Save the game
+
+							(gamSave 'missionCheckpoint)
+							)
+					</Action>
+				</Actions>
+			</ReplyAccept>
+
+			<ReplyDecline>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						
+						;	Text
+						
+						(descText (msnTranslate missionObj 'DeclineReply))
+						(pageCount (rpgPageCount descText))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (rpgPageDesc descText pageNo))
+						
+						atLastPage
+						)
+
+						; Show the appropriate page
+
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
+
+						(if (@ pageDesc 'nextLabel)
+							(scrSetActionLabel 
+								gScreen 
+								(if atLastPage 'actionDone 'actionContinue)
+								(@ pageDesc 'nextLabel)
+								(@ pageDesc 'nextKey)
+								)
+							)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "ReplyDecline")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(declineOptions (scrGetData gScreen 'declineOptions))
+							)
+							
+							(switch
+								(eq (@ declineOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ declineOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ declineOptions 'nextScreen) (@ declineOptions 'nextScreenData))
+										)
+										
+								(eq (@ gData 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+
+								(@ gData 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ gData 'nextScreen) (@ gData 'nextScreenData))
+										)
+									
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+				</Actions>
+			</ReplyDecline>
+
+			<InProgress>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(dummy (msnFireEvent missionObj "OnInProgress"))
+						
+						;	Text
+						
+						(descText (msnTranslate missionObj 'InProgress))
+						(pageCount (rpgPageCount descText))
+						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
+						(pageDesc (rpgPageDesc descText pageNo))
+						
+						atLastPage
+						)
+
+						; Show the appropriate page
+
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
+
+						(if (@ pageDesc 'nextLabel)
+							(scrSetActionLabel 
+								gScreen 
+								(if atLastPage 'actionDone 'actionContinue)
+								(@ pageDesc 'nextLabel)
+								(@ pageDesc 'nextKey)
+								)
+							)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "InProgress")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+							
+							(msnSetPlayerTarget missionObj)
+							
+							;	Exit screen before OnInProgressUndock because in some cases
+							;	we want to be able to save the game.
+							
+							(scrExitScreen gScreen 'forceUndock)
+							(setq aDockTarget gSource)
+							(msnFireEvent missionObj "OnInProgressUndock")
+							)
+					</Action>
+				</Actions>
+			</InProgress>
+
+			<DelayDebrief>
+				<OnPaneInit>
+					(scrSetDesc gScreen (scrGetData gScreen 'DelayDebriefMsg))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen 'forceUndock)
+					</Action>
+				</Actions>
+			</DelayDebrief>
+
+			<Success>
+				<OnPaneInit>
+					(block (missionObj descText pageCount pageNo atLastPage rewardResult pageDesc)
+
+						(setq missionObj (scrGetData gScreen 'missionObj))
+
+						; If we haven't already, give the player the reward. We need
+						; to call msnReward before getting the debriefing text because
+						; we might have gotten a promotion (or something).
+
+						(if (not (msnGetProperty missionObj 'isDebriefed))
+							(block Nil
+								(scrSetData gScreen 'successOptions (msnReward missionObj))
+								(msnSetProperty missionObj 'isDebriefed True)
+								)
+							)
+
+						; Get the debriefing text and page counts
+
+						(setq descText (msnTranslate missionObj 'SuccessDebrief))
+						(setq pageCount (rpgPageCount descText))
+						(setq pageNo (scrGetData gScreen 'curPage))
+
+						; Start at the beginning if we have no page number
+
+						(if (not pageNo)
+							(setq pageNo 0)
+							)
+
+						; Show the appropriate page
+
+						(setq pageDesc (rpgPageDesc descText pageNo))
+						(scrSetDesc gScreen (@ pageDesc 'desc))
+
+						; Next page
+
+						(setq pageNo (add pageNo 1))
+						(setq atLastPage (geq pageNo pageCount))
+
+						; Initialize actions
+
+						(scrShowAction gScreen 'actionContinue (not atLastPage))
+						(scrShowAction gScreen 'actionDone atLastPage)
+
+						(if (@ pageDesc 'nextLabel)
+							(scrSetActionLabel 
+								gScreen 
+								(if atLastPage 'actionDone 'actionContinue)
+								(@ pageDesc 'nextLabel)
+								(@ pageDesc 'nextKey)
+								)
+							)
+
+						; Remember page
+
+						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Success")
+					</Action>
+
+					<Action id="actionDone" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							(successOptions (scrGetData gScreen 'successOptions))
+							)
+
+							(switch
+								(eq (@ successOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ successOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ successOptions 'nextScreen) (@ successOptions 'nextScreenData))
+										)
+										
+								(or (eq (@ gData 'nextScreen) 'forceUndock)
+										(msnGetProperty missionObj 'forceUndockAfterDebrief)
+										)
+									(block Nil
+										(scrExitScreen gScreen 'forceUndock)
+
+										(setq aDockTarget gSource)
+										(msnFireEvent missionObj "OnDebriefedUndock")
+										)
+
+								(@ gData 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ gData 'nextScreen))
+										)
+
+								(msnGetData missionObj 'rewardNextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (msnGetData missionObj 'rewardNextScreen))
+										)
+
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+				</Actions>
+			</Success>
+
+			<Failure>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'FailureDebrief))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
+							)
+
+							(msnSetProperty missionObj 'isDebriefed True)
+
+							(switch
+								(or (eq (@ gData 'nextScreen) 'forceUndock)
+										(msnGetProperty missionObj 'forceUndockAfterDebrief)
+										)
+									(block Nil
+										(scrExitScreen gScreen 'forceUndock)
+
+										(setq aDockTarget gSource)
+										(msnFireEvent missionObj "OnDebriefedUndock")
+										)
+
+								(@ gData 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ gData 'nextScreen))
+										)
+
+								(scrExitScreen gScreen)
+								)
+							)
+					</Action>
+				</Actions>
+			</Failure>
+
+			<AlreadyDebriefed>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'AlreadyDebriefed "\"Welcome back! Thanks for the great work last time.\""))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(switch
+							(not (@ gData 'nextScreen))
+								(scrExitScreen gScreen)
+
+							(eq (@ gData 'nextScreen) 'forceUndock)
+								(scrExitScreen gScreen 'forceUndock)
+
+							(block Nil
+								(scrExitScreen gScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
+					</Action>
+				</Actions>
+			</AlreadyDebriefed>
+
+			<Unavailable>
+				<OnPaneInit>
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						(descText (msnTranslate missionObj 'Unavailable "\"Sorry, there are no missions available.\""))
+						)
+
+						(scrSetDesc gScreen descText)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(switch
+							(not (@ gData 'nextScreen))
+								(scrExitScreen gScreen)
+
+							(eq (@ gData 'nextScreen) 'forceUndock)
+								(scrExitScreen gScreen 'forceUndock)
+
+							(block Nil
+								(scrExitScreen gScreen)
+								(scrShowScreen gScreen (@ gData 'nextScreen))
+								)
+							)
+					</Action>
+				</Actions>
+			</Unavailable>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				(block (missionObj)
+					(switch
+						; Find any mission that is completed and not yet debriefed
+
+						(setq missionObj (@ (filter (msnFind gSource "aD") theMission (msnGetProperty theMission 'isCompleted)) 0))
+							(list &dsRPGMission; { missionObj: missionObj } 4)
+
+						; Otherwise, nothing
+
+						Nil
+						)
+					)
+			</GetGlobalDockScreen>
+		</Events>
+		
+		<Language>
+			<Text id="actionAccept">"[A]ccept"</Text>
+			<Text id="actionDecline">"[D]ecline"</Text>
+			<Text id="actionDone">"[C]ontinue"</Text>
+		</Language>
+	</DockScreen>
+
+<!-- DELIVERY MISSION SCREEN ===================================================
+
+	gData uses the following fields:
+
+	missionObj:			The mission that we are showing.
+
+	MISSION OBJECT
+
+	In order to take advantage of this screen, the mission object should have
+	the following characteristics:
+
+	1.	The mission type must have the "deliveryMission" attribute.
+
+	2.	The mission object must have data of "destID" with the ID of the
+		recipient of the delivery.
+
+	3.	The mission type should handle an event called "OnDeliveryMissionCompleted"
+		which handles the delivery (e.g., removing the appropriate object
+		from the player's cargo. The event must call either msnSuccess or
+		msnFailure. It must return a string to display to the user describing
+		the result.
+
+		The result of OnDeliveryMissionCompleted may also be a struct with the
+		following fields:
+
+		desc:			The screen descriptions
+		forceUndock:	If non-nil, we undock after the delivery.
+
+-->
+
+	<DockScreen UNID="&dsRPGDeliveryMission;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<OnScreenInit>
+			(block Nil
+				; Store the mission object in screen data
+				(scrSetData gScreen 'missionObj (@ gData 'missionObj))
+				)
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (missionObj result)
+						(setq missionObj (scrGetData gScreen 'missionObj))
+						(setq result (msnFireEvent missionObj 'OnDeliveryMissionCompleted))
+
+						(if (eq (typeof result) 'struct)
+							(block Nil
+								(scrSetData gScreen 'forceUndock (@ result 'forceUndock))
+								(scrSetDesc gScreen (@ result 'desc))
+
+								(if (@ result 'forceUndock)
+									(scrSetActionLabel gScreen 0 "Undock" "U")
+									)
+								)
+
+							(block Nil
+								(scrSetData gScreen 'forceUndock Nil)
+								(scrSetDesc gScreen result)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen (scrGetData gScreen 'forceUndock))
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Events>
+			<GetGlobalDockScreen>
+				; Find a delivery mission that is not completed and whose recipient
+				; is this station.
+
+				(block (missionObj)
+					(switch
+						(setq missionObj (@ 
+								(filter (msnFind gSource "a +deliveryMission;") theMission 
+									(and
+										(not (msnGetProperty theMission 'isCompleted))
+										(eq gSource (objGetObjByID (msnGetData theMission 'destID)))
+										)
+									)
+								0))
+							(list &dsRPGDeliveryMission; { missionObj: missionObj } 4)
+
+						; Otherwise, nothing
+
+						Nil
+						)
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</DockScreen>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq rpgIsMissionActive (lambda (missionUNID)
+				(and missionUNID (msnFind (cat "a +unid:" missionUNID ";")))
+				))
+
+			(setq rpgIsMissionDeclined (lambda (missionUNID)
+				(block (missionObj)
+					(and missionUNID 
+						(setq missionObj (msnFind (cat "o +unid:" missionUNID ";")))
+						(msnGetProperty missionObj 'isDeclined)
+						)
+					)
+				))
+
+			(setq rpgMissionAchievementString (lambda (missionsCompleted missionsFailed)
+				(if (eq (int missionsFailed) 0)
+					(int missionsCompleted)
+					(cat missionsCompleted " (" missionsFailed " failed)")
+					)
+				))
+
+			(setq rpgMissionRewardPayment (lambda (theReward)
+				(block Nil
+					(plyCredit gPlayer theReward)
+					(typIncGlobalData &svPlayer; "missionRewards" theReward)
+					)
+				))
+
+			(setq rpgSetTarget (lambda (missionObj reasonCode targetObj command)
+				(block (newTargetObj)
+					(switch
+						; If we just got debriefed then we clear our targets.
+
+						(eq reasonCode 'debriefed)
+							(shpCancelOrders gPlayerShip)
+
+						; If the mission is complete, then we point towards the 
+						; owner station.
+
+						(msnGetProperty missionObj 'isCompleted)
+							(if (setq newTargetObj (objGetObjByID (msnGetProperty missionObj 'ownerID)))
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'dock newTargetObj)
+									)
+								)
+
+						; Otherwise, we point towards the target
+
+						(if targetObj
+							(block Nil
+								(shpCancelOrders gPlayerShip)
+								(shpOrder gPlayerShip (if command command 'attack) targetObj)
+								)
+							)
+						)
+					)
+				))
+
+			(setq intMissionAchievementString rpgMissionAchievementString)
+			(setq intMissionRewardPayment rpgMissionRewardPayment)
+			)
+	</Globals>
+
+</TranscendenceModule>

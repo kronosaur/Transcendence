@@ -1,1 +1,1 @@
-@"signtool.exe" sign /f "\\mazian\core\Kronosaur\Keys\Kronosaur Productions Code Signing.pfx" /p %1 /t http://timestamp.comodoca.com/authenticode /v "Transcendence.exe" "TransData.exe" "TransCompiler.exe"
+@"signtool.exe" sign /f "c:\users\George\Documents\Kronosaur\Keys\Kronosaur Productions Code Signing.pfx" /p %1 /t http://timestamp.comodoca.com/authenticode /v "Transcendence.exe" "TransData.exe" "TransCompiler.exe"

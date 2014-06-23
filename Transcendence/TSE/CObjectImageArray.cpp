@@ -761,7 +761,7 @@ ALERROR CObjectImageArray::InitFromXML (CXMLElement *pDesc)
 	return InitFromXML(Ctx, pDesc, true);
 	}
 
-ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bResolveNow)
+ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bResolveNow, int iDefaultRotationCount)
 
 //	InitFromXML
 //
@@ -779,7 +779,7 @@ ALERROR CObjectImageArray::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc,
 	m_iFrameCount = pDesc->GetAttributeInteger(CONSTLIT(g_ImageFrameCountAttrib));
 	m_iRotationCount = pDesc->GetAttributeInteger(ROTATION_COUNT_ATTRIB);
 	if (m_iRotationCount <= 0)
-		m_iRotationCount = 1;
+		m_iRotationCount = iDefaultRotationCount;
 	m_iTicksPerFrame = pDesc->GetAttributeInteger(CONSTLIT(g_ImageTicksPerFrameAttrib));
 	if (m_iTicksPerFrame <= 0 && m_iFrameCount > 1)
 		m_iTicksPerFrame = 1;

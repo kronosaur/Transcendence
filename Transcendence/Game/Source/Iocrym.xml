@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svIocrym;"
+			name="Iocrym"
+			alignment="destructive order"
+			/>
+
+<!-- LEVEL XIII ITEMS -->
+
+	<!-- Iocrym cocoon -->
+
+	<ItemType UNID="&itIocrymCocoon;"
+			name=				"Iocrym cocoon"
+			level=				"13"
+			value=				"2000000"
+			mass=				"25000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice10;"
+			attributes=			"Alien; Iocrym; MajorItem"
+
+			description=		"This alien device is designed to defend the giant commandships of the Iocrym."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"520"
+				regen=			"290"
+				depletionDelay=	"1500"
+				powerUse=		"10000"
+				/>
+	</ItemType>
+
+	<!-- Quantumsphere disintegrator -->
+
+	<ItemType UNID="&itQuantumsphereDisintegrator;"
+			name=				"Quantumsphere disintegrator"
+			level=				"13"
+			value=				"4000000"
+			mass=				"15000"
+			frequency=			"veryrare"
+			attributes=			"Alien; Iocrym; MajorItem"
+
+			description=		"As the Iocrym abhor chaos, their weapons are designed to reduce their targets to plasma clouds of uniform density."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"50"
+				powerUse=			"8000"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itQuantumsphereShell;"
+						type=			"missile"
+
+						damage=			"antimatter:6d8; disintegration1; WMD7"
+						missileSpeed=	"15"
+						hitPoints=		"10"
+						accelerationFactor="125"
+						maxMissileSpeed="60"
+						maneuverability="6"
+						lifetime=		"360"
+						
+						noFriendlyFire=	"true"
+
+						sound=			"&snRecoillessCannon;"
+						>
+
+					<Effect>
+						<PlasmaSphere
+								spikeCount=		"1d6+2"
+								spikeLength=	"4d20"
+								primaryColor=	"0x80, 0xff, 0xff"
+								secondaryColor=	"0x00, 0xff, 0xff"
+								/>
+					</Effect>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Quantumsphere Shell -->
+
+	<ItemType UNID="&itQuantumsphereShell;"
+			name=				"Quantumsphere shell"
+			level=				"13"
+			value=				"1000"
+			mass=				"500"
+			frequency=			"rare"
+			numberAppearing=	"20d40"
+			attributes=			"Alien; Consumable; Iocrym; Missile"
+
+			description=		"This receptacle contains the fierce energies that power the quantumsphere disintegrator."
+
+			sortName=			"~.quantumsphere shell"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+<!-- LEVEL XII ITEMS -->
+
+	<!-- Segment of heavy Iocrym Plate -->
+
+	<ItemType UNID="&itIocrymPlate;"
+			name=				"[segment(s) of ]heavy Iocrym armor"
+			level=				"12"
+			value=				"100000"
+			mass=				"12000"
+			attributes=			"Alien; Iocrym; MinorItem"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"This armor is used by the enormous command ships of the Iocrym fleet."
+
+			sortName=			"Iocrym armor, heavy, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=		"800"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="0"
+				EMPDamageAdj=	"0"
+				radiationImmune="true"
+				disintegrationImmune="true"
+				/>
+
+	</ItemType>
+
+	<!-- Iocrym Healer -->
+
+	<ItemType UNID="&itIocrymHealer;"
+			name=				"Iocrym healer"
+			level=				"12"
+			value=				"750000"
+			mass=				"100000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice10;"
+			attributes=			"Alien; Iocrym; MajorItem"
+
+			description=		"This alien device heals Iocrym armor. It is possible that it is able to repair other kinds of armor as well."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<RepairerDevice
+				regen=			"10,10, 9, 9, 8,  8, 7, 6, 5, 4,  3, 2, 1"
+				powerUse=		"100"
+				/>
+
+	</ItemType>
+
+	<!-- Avalanche cannon -->
+
+	<ItemType UNID="&itPlasmaThrower;"
+			name=				"Iocrym Avalanche cannon"
+			level=				"12"
+			value=				"1000000"
+			mass=				"50000"
+			attributes=			"Alien; Iocrym; MajorItem"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This weapon is used on Iocrym capital ships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		
+		<Weapon
+				type=			"particles"
+				count=			"1d4+4"
+
+				configuration=	"wall"
+				damage=			"plasma:50; WMD5"
+				fireRate=		"20"
+				missileSpeed=	"20-40"
+				lifetime=		"26-32"
+				powerUse=		"6000"
+
+				particleCount=	"5d6"
+				particleEmitTime="5-12"
+				particleSpreadWidth="25" 
+				particleSpreadAngle="0"
+
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<Shape
+						directional=		"true"
+						scaleLength=		"16" 
+						scaleWidth=			"6"
+
+						scaleLengthInc=		"3" 
+
+						color=				"0xff, 0xfd, 0xad"
+						opacity=			"64"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-5"	y="29"/>
+					<Point x="-10"	y="44"/>
+					<Point x="-20"	y="50"/>
+					<Point x="-30"	y="47"/>
+					<Point x="-40"	y="44"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-40"	y="-44"/>
+					<Point x="-30"	y="-47"/>
+					<Point x="-20"	y="-50"/>
+					<Point x="-10"	y="-44"/>
+					<Point x="-5"	y="-29"/>
+				</Shape>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+<!-- LEVEL XI ITEMS -->
+
+	<!-- Segment of light Iocrym Plate -->
+
+	<ItemType UNID="&itLightIocrymPlate;"
+			name=				"[segment(s) of ]light Iocrym armor"
+			level=				"11"
+			value=				"50000"
+			mass=				"1700"
+			attributes=			"Alien; Iocrym; MinorItem"
+			frequency=			"common"
+			numberAppearing=	"1d4"
+
+			description=		"The carbon aerogel armor of Iocrym ships is beyond human technology."
+
+			sortName=			"Iocrym armor, light, segment of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=		"325"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="0"
+				EMPDamageAdj=	"0"
+				radiationImmune="true"
+				disintegrationImmune="true"
+				/>
+
+	</ItemType>
+
+<!-- LEVEL X ITEMS -->
+
+	<!-- Iocrym Fracture cannon -->
+
+	<ItemType UNID="&itIocrymFractureCannon;"
+			name=				"Iocrym Fracture cannon"
+			level=				"10"
+			value=				"400000"
+			mass=				"5000"
+			frequency=			"veryrare"
+			attributes=			"Alien; Iocrym; Military; MajorItem; NotForSale"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This is a plasma weapon used by the Iocrym gunships."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=			"particles"
+				count=			"1d4+4"
+
+				damage=			"plasma:50; WMD2"
+				fireRate=		"15"
+				missileSpeed=	"20-40"
+				lifetime=		"26-32"
+				powerUse=		"3000"
+
+				particleCount=	"5d6"
+				particleEmitTime="5-12"
+				particleSpreadWidth="25" 
+				particleSpreadAngle="0"
+
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90"  posRadius="10" angle="0"/>
+				<Shot posAngle="270" posRadius="10" angle="0"/>
+			</Configuration>
+
+			<Effect>
+				<Shape
+						directional=		"true"
+						scaleLength=		"16" 
+						scaleWidth=			"6"
+
+						scaleLengthInc=		"3" 
+
+						color=				"0xff, 0xfd, 0xad"
+						opacity=			"64"
+						>
+					<Point x="0"	y="0"/>
+					<Point x="-5"	y="29"/>
+					<Point x="-10"	y="44"/>
+					<Point x="-20"	y="50"/>
+					<Point x="-30"	y="47"/>
+					<Point x="-40"	y="44"/>
+					<Point x="-100"	y="0"/>
+					<Point x="-40"	y="-44"/>
+					<Point x="-30"	y="-47"/>
+					<Point x="-20"	y="-50"/>
+					<Point x="-10"	y="-44"/>
+					<Point x="-5"	y="-29"/>
+				</Shape>
+			</Effect>
+		</Weapon>
+
+	</ItemType>
+
+	<!-- Iocrym Repeller -->
+
+	<ItemType UNID="&itIocrymRepeller;"
+			name=				"Iocrym repeller"
+			level=				"10"
+			value=				"400000"
+			mass=				"5000"
+			frequency=			"veryrare"
+			attributes=			"Alien; Iocrym; Military; MajorItem; NotForSale"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This is a short-range weapon used by Iocrym commandships to defend their perimeter."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"plasma:4d12; momentum6; WMD3"
+				fireRate=			"10"
+				missileSpeed=		"65"
+				lifetime=			"10"
+				powerUse=			"3000"
+
+				sound=				"&snRecoillessCannon;"
+				vaporTrailLength=	"50"
+				vaporTrailWidth=	"110"
+				vaporTrailWidthInc=	"1"
+				vaporTrailColor=	"0xff, 0x65, 0x21"
+				>
+
+			<Effect>
+				<MoltenBolt
+						width=				"3"
+						length=				"16"
+						growth=				"3"
+						primaryColor=		"0xff, 0xfd, 0xad"
+						secondaryColor=		"0xff, 0x65, 0x21"
+						/>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+<!-- LEVEL IX ITEMS -->
+
+	<!-- Iocrym veil -->
+
+	<ItemType UNID="&itIocrymVeil;"
+			name=				"Iocrym veil"
+			level=				"9"
+			value=				"130000"
+			mass=				"5000"
+			frequency=			"rare"
+			unknownType=		"&itUnknownAlienDevice;"
+			attributes=			"Alien; Iocrym; MajorItem; Military; NotForSale"
+
+			description=		"This byzantine alien device generates a particle shield that absorbs most human weapons."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"250"
+				hpBonus=		"  +0,  +0, +50, +50, +75, +75,  +0,  +0"
+				regen=			"80"
+				depletionDelay=	"360"
+				powerUse=		"2200"
+				/>
+
+	</ItemType>
+
+<!-- SHIPS -->
+
+	<!-- Iocrym Command Ship
+	
+	EXTRA DATA:
+	
+	sentinelsDeployed:	Number of sentinels currently deployed attacking target
+	
+	sentinelTime:		Tick at which it is possible to deploy more sentinels
+	
+	-->
+
+	<ShipClass UNID="&scIocrymCommandShip;"
+			manufacturer=		"Iocrym"
+			class=				""
+			type=				"command ship"
+
+			attributes=			"capitalShip, genericClass, iocrym, iocrymCommandShip, majorShip"
+			   
+			mass=				"100000"
+			cargoSpace=			"50000"
+			thrust=				"100000"
+			maxSpeed=			"6"
+
+			cyberDefenseLevel=	"12"
+			timeStopImmune=		"true"
+
+			explosionType=		"&vtPlasmaExplosion1;"
+			leavesWreck=		"100"
+			structuralHitPoints="50000"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itIocrymPlate;"
+			count=				"20"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itPlasmaThrower;" posAngle="0" posRadius="96" minFireArc="330" maxFireArc="30"/>
+			<Device deviceID="&itQuantumsphereDisintegrator;" omnidirectional="true"/>
+			<Device deviceID="&itIocrymRepeller;" secondaryWeapon="true" omnidirectional="true" posAngle="64" posRadius="78"/>
+			<Device deviceID="&itIocrymRepeller;" secondaryWeapon="true" omnidirectional="true" posAngle="117" posRadius="79"/>
+			<Device deviceID="&itIocrymRepeller;" secondaryWeapon="true" omnidirectional="true" posAngle="222" posRadius="46"/>
+			<Device deviceID="&itIocrymRepeller;" secondaryWeapon="true" omnidirectional="true" posAngle="320" posRadius="44"/>
+			
+			<Device deviceID="&itIocrymHealer;"/>
+			<Device deviceID="&itIocrymCocoon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"800"
+					/>
+		</Interior>
+		
+		<Items>
+			<Item count="500" item="&itQuantumsphereShell;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsIocrymCommandShip;" imageWidth="300" imageHeight="300" />
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"95"
+			perception=			"7"
+			/>
+
+		<Events>
+			<OnBehavior>
+				(block (theTarget)
+					(setq theTarget (objGetTarget gSource))
+					
+					; If we have a target and if no sentinels are deployed
+					; and if shields are down, then deploy sentinels
+					
+					(if (and theTarget
+							(not (objGetData gSource "sentinelsDeployed"))
+							(gr (unvGetTick) (objGetData gSource "sentinelTime"))
+							(leq (objGetShieldLevel gSource) 0)
+							)
+						(block (theCount)
+							(setq theCount (random 3 4))
+							(objSetData gSource "sentinelsDeployed" theCount)
+							
+							; Deploy sentinels
+							(for i 1 theCount
+								(block (theSentinel)
+									(setq theSentinel (sysCreateShip &scIocrymSentinel; gSource &svIocrym;))
+									(shpOrder theSentinel 'attack theTarget)
+									(shpOrder theSentinel 'gate gSource)
+									
+									(objRegisterForEvents gSource theSentinel)
+									)
+								)
+							
+							; Set time
+							(objSetData gSource "sentinelTime" (add (unvGetTick) 1350))
+							)
+						)
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block Nil
+					; Register timer event to control behavior
+					(sysAddObjRecurringTimerEvent 60 gSource "OnBehavior")
+					)
+			</OnCreate>
+			
+			<OnObjDestroyed>
+				(if (objHasAttribute aObjDestroyed 'iocrymSentinel)
+					(if (eq (objIncData gSource "sentinelsDeployed" -1) 0)
+						(objSetData gSource "sentinelsDeployed" Nil)
+						)
+					)
+			</OnObjDestroyed>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Iocrym sentinel -->
+
+	<ShipClass UNID="&scIocrymSentinel;"
+			manufacturer=		"Iocrym"
+			class=				""
+			type=				"sentinel"
+
+			mass=				"5000"
+			cargoSpace=			"1000"
+			thrust=				"4000"
+			maxSpeed=			"12"
+
+			explosionType=		"&vtPlasmaExplosion1;"
+			leavesWreck=		"60"
+
+			attributes=			"genericClass,iocrym,iocrymSentinel"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightIocrymPlate;"
+			count=				"8"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itIocrymFractureCannon;"/>
+			<Device deviceID="&itIocrymVeil;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<Image imageID="&rsIocrymSentinel;" imageX="0" imageY="0" imageWidth="128" imageHeight="128" />
+
+		<Items>
+		</Items>
+		
+		<AISettings
+			fireRateAdj=		"15"
+			fireAccuracy=		"90"
+			perception=			"5"
+			
+			ignoreShieldsDown=	"true"
+			/>
+
+	</ShipClass>
+	
+<!-- STATIONS -->
+
+	<!-- Iocrym Outpost -->
+
+	<StationType UNID="&stIocrymOutpost;"
+			name=				"Iocrym outpost"
+			sovereign=			"&svIocrym;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itIocrymPlate;"
+			hitPoints=			"750"
+			fireRateAdj=		"20"
+			explosionType=		"&vtPlasmaExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, iocrym, iocrymOutpost"
+			>
+
+		<Image imageID="&rsIocrymOutpost;" imageWidth="162" imageHeight="218"/>
+
+		<Devices>
+			<Device deviceID="&itIocrymRepeller;" omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship		count="1d6"		class="&scIocrymSentinel;" orders="patrol" patrolDist="10"/>
+		</Ships>
+		
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at the remains of an alien outpost. "
+					"The crystalline walls of this structure are cracked and pitted; "
+					"it appears that the outpost was fully automated as you see no signs of alien bodies."
+					)
+			</Text>
+		</Language>
+
+		<DockingPorts>
+			<Port x="-36"	y="80" />
+			<Port x="-87"	y="40" />
+			<Port x="-92"	y="-33" />
+			<Port x="-42"	y="-85" />
+			<Port x="36"	y="80" />
+			<Port x="87"	y="40" />
+			<Port x="92"	y="-33" />
+			<Port x="42"	y="-85" />
+		</DockingPorts>
+	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsIocrymSentinel;"	bitmap="Resources\IocrymSentinel.jpg" bitmask="Resources\IocrymSentinelMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIocrymOutpost;"		bitmap="Resources\IocrymOutpost.jpg" bitmask="Resources\IocrymOutpostMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsIocrymCommandShip;"	bitmap="Resources\IocrymCommandShip.jpg" bitmask="Resources\IocrymCommandShipMask.bmp" loadOnUse="true"/>
+
+</TranscendenceModule>

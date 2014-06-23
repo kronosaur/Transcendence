@@ -54,7 +54,10 @@ UIMessageTypes CUIMessageController::Find (const CString &sMessageName)
 		if (strEquals(sMessageName, CString(g_MessageData[i].pszName, g_MessageData[i].iNameLen, true)))
 			return (UIMessageTypes)i;
 
-	return uimsgUnknown;
+	if (strEquals(sMessageName, CONSTLIT("enabledHints")))
+		return uimsgEnabledHints;
+	else
+		return uimsgUnknown;
 	}
 
 bool CUIMessageController::IsHint (UIMessageTypes iMsg)
@@ -64,6 +67,9 @@ bool CUIMessageController::IsHint (UIMessageTypes iMsg)
 //	Returns TRUE if the message is a hint
 
 	{
+	if (iMsg < 0)
+		return false;
+
 	return ((g_MessageData[iMsg].dwFlags & FLAG_IS_HINT) ? true : false);
 	}
 
@@ -127,6 +133,22 @@ void CUIMessageController::SetEnabled (UIMessageTypes iMsg, bool bEnabled)
 
 		m_bMsgEnabled[uimsgAllHints] = bEnabled;
 		}
+	else if (iMsg == uimsgEnabledHints)
+		{
+		if (bEnabled)
+			{
+			//	Re-enable hints, but only if we have some hints left.
+
+			for (i = 0; i < uimsgCount; i++)
+				if (IsHint((UIMessageTypes)i) && m_bMsgEnabled[i])
+					{
+					m_bMsgEnabled[uimsgAllHints] = true;
+					break;
+					}
+			}
+		else
+			m_bMsgEnabled[uimsgAllHints] = false;
+		}
 	else
 		{
 		m_bMsgEnabled[iMsg] = bEnabled;
@@ -137,7 +159,7 @@ void CUIMessageController::SetEnabled (UIMessageTypes iMsg, bool bEnabled)
 			{
 			if (bEnabled)
 				m_bMsgEnabled[uimsgAllHints] = true;
-			else
+			else if (m_bMsgEnabled[uimsgAllHints])
 				{
 				m_bMsgEnabled[uimsgAllHints] = false;
 				for (i = 0; i < uimsgCount; i++)

@@ -62,4 +62,10 @@ class CImageArranger
 		int m_cyMaxHeight;
 	};
 
+class CPaintHelper
+	{
+	public:
+		static void PaintTargetHighlight (CG16bitImage &Dest, int x, int y, int iTick, int iRadius, int iRingSpacing, int iDelay, WORD wColor);
+	};
+
 #endif

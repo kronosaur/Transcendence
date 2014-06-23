@@ -86,7 +86,42 @@ CDesignType *CDesignTable::FindByUNID (DWORD dwUNID) const
 	return (pObj ? *pObj : NULL);
 	}
 
-ALERROR CDesignTable::Merge (const CDesignTable &Table)
+ALERROR CDesignTable::Merge (const CDynamicDesignTable &Source, CDesignList *ioOverride)
+
+//	Merge
+//
+//	Merge the given table into ours.
+
+	{
+	DEBUG_TRY
+
+	int i;
+
+	for (i = 0; i < Source.GetCount(); i++)
+		{
+		CDesignType *pNewType = Source.GetType(i);
+
+		//	If this is an override then we put it on a different table and
+		//	leave the type alone.
+
+		if (pNewType->IsModification())
+			{
+			if (ioOverride)
+				ioOverride->AddEntry(pNewType);
+			}
+
+		//	Otherwise, add or replace
+
+		else
+			AddOrReplaceEntry(pNewType);
+		}
+
+	return NOERROR;
+
+	DEBUG_CATCH
+	}
+
+ALERROR CDesignTable::Merge (const CDesignTable &Source, CDesignList *ioOverride)
 
 //	Merge
 //
@@ -98,17 +133,99 @@ ALERROR CDesignTable::Merge (const CDesignTable &Table)
 
 	TArray<CDesignType *> Replaced;
 
-	//	Merge. If we need to free replaced entries then get a list.
+	//	We move through both tables in order and handle when we get an 
+	//	addition or overlap.
 
-	m_Table.Merge(Table.m_Table, (m_bFreeTypes ? &Replaced : NULL));
+	int iSrcPos = 0;
+	int iDestPos = 0;
+
+	//	Merge
+
+	while (iSrcPos < Source.GetCount())
+		{
+		//	If we're at the end of the destination then just insert
+
+		if (iDestPos == m_Table.GetCount())
+			{
+			m_Table.InsertSorted(Source.m_Table.GetKey(iSrcPos), Source.m_Table.GetValue(iSrcPos));
+
+			//	Advance
+
+			iDestPos++;
+			iSrcPos++;
+			}
+
+		//	Otherwise, see if we need to insert or replace
+
+		else
+			{
+			int iCompare = AscendingSort * KeyCompare(Source.m_Table.GetKey(iSrcPos), m_Table.GetKey(iDestPos));
+
+			//	If the same key then we replace
+
+			if (iCompare == 0)
+				{
+				CDesignType *pNewType = Source.m_Table.GetValue(iSrcPos);
+
+				//	If this is an override then we put it on a different table and
+				//	leave the type alone.
+				//
+				//	NOTE: It is OK if we add multiple types of the same UNID. As long
+				//	as we add them in order, we're OK.
+
+				if (pNewType->IsModification())
+					{
+					if (ioOverride)
+						ioOverride->AddEntry(pNewType);
+					}
+
+				//	Otherwise we just replace the type
+
+				else
+					{
+					//	If we have to free our originals, then remember them here.
+
+					if (m_bFreeTypes)
+						{
+						CDesignType *pOriginalType = m_Table.GetValue(iDestPos);
+						Replaced.Insert(pOriginalType);
+						}
+
+					//	Replace
+
+					m_Table.GetValue(iDestPos) = pNewType;
+					}
+
+				//	Advance
+
+				iDestPos++;
+				iSrcPos++;
+				}
+
+			//	If the source is less than dest then we insert at this
+			//	position.
+
+			else if (iCompare == 1)
+				{
+				m_Table.InsertSorted(Source.m_Table.GetKey(iSrcPos), Source.m_Table.GetValue(iSrcPos), iDestPos);
+
+				//	Advance
+
+				iDestPos++;
+				iSrcPos++;
+				}
+
+			//	Otherwise, go to the next destination slot
+
+			else
+				iDestPos++;
+			}
+		}
 
 	//	Delete replaced entries
 
-	if (m_bFreeTypes)
-		{
-		for (i = 0; i < Replaced.GetCount(); i++)
-			delete Replaced[i];
-		}
+	for (i = 0; i < Replaced.GetCount(); i++)
+		delete Replaced[i];
 
 	return NOERROR;
 	}

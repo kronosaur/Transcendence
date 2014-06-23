@@ -14,7 +14,9 @@
 #endif
 
 class CDockScreen;
+class CGameSession;
 class CGameSettings;
+class CIntroSession;
 class CTranscendenceWnd;
 class CUIResources;
 class CTranscendenceController;
@@ -98,7 +100,7 @@ class CIntroShipController : public CObject, public IShipController
 		virtual void Behavior (void) { m_pDelegate->Behavior(); }
 		virtual CString DebugCrashInfo (void) { return m_pDelegate->DebugCrashInfo(); }
 		virtual int GetCombatPower (void) { return m_pDelegate->GetCombatPower(); }
-		virtual ManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
+		virtual EManeuverTypes GetManeuver (void) { return m_pDelegate->GetManeuver(); }
 		virtual bool GetThrust (void) { return m_pDelegate->GetThrust(); }
 		virtual bool GetReverseThrust (void) { return m_pDelegate->GetReverseThrust(); }
 		virtual bool GetStopThrust (void) { return m_pDelegate->GetStopThrust(); }
@@ -147,7 +149,8 @@ struct SNewGameSettings
 	SNewGameSettings (void) :
 			iPlayerGenome(genomeUnknown),
 			dwPlayerShip(0),
-			bFullCreate(false)
+			bFullCreate(false),
+			bDefaultPlayerName(false)
 		{ }
 
 	CString sPlayerName;						//	Character name
@@ -155,6 +158,7 @@ struct SNewGameSettings
 	DWORD dwPlayerShip;							//	Starting ship class
 
 	bool bFullCreate;							//	If TRUE, create all systems
+	bool bDefaultPlayerName;					//	If TRUE, this is a default player name
 	};
 
 struct SAdventureSettings
@@ -188,6 +192,7 @@ class CPlayerGameStats
 		CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const;
 		CTimeSpan GetPlayTime (void) const { return (!m_PlayTime.IsBlank() ? m_PlayTime : g_pUniverse->StopGameTime()); }
 		CString GetStat (const CString &sStat) const;
+		DWORD GetSystemEnteredTime (const CString &sNodeID);
 		int IncStat (const CString &sStat, int iInc = 1);
 		void OnGameEnd (CSpaceObject *pPlayer);
 		void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice);
@@ -283,6 +288,7 @@ class CPlayerGameStats
 enum UIMessageTypes
 	{
 	uimsgUnknown =					-1,
+	uimsgEnabledHints =				-2,
 
 	uimsgAllMessages =				0,
 	uimsgAllHints =					1,			//	IsEnabled(uimsgAllHints) returns TRUE if ANY hint is enabled
@@ -348,6 +354,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline CShip *GetShip (void) { return m_pShip; }
 		inline DWORD GetStartingShipClass (void) const { return m_dwStartingShipClass; }
 		inline CString GetStat (const CString &sStat) { return m_Stats.GetStat(sStat); }
+		inline DWORD GetSystemEnteredTime (const CString &sNodeID) { return m_Stats.GetSystemEnteredTime(sNodeID); }
 		inline int GetSystemsVisited (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("systemsVisited")), 0); }
 		inline CTranscendenceWnd *GetTrans (void) { return m_pTrans; }
 		inline void IncScore (int iBonus) { m_Stats.IncStat(CONSTLIT("score"), iBonus); }
@@ -356,6 +363,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline bool IsGalacticMapAvailable (void) { return (m_pShip && (m_pShip->GetAbility(::ablGalacticMap) > ::ablUninstalled)); }
 		inline bool IsMapHUDActive (void) { return m_bMapHUD; }
 		inline bool IsUIMessageEnabled (UIMessageTypes iMsg) { return m_UIMsgs.IsEnabled(iMsg); }
+		void OnEnemyShipsDetected (void);
 		inline void OnGameEnd (void) { m_Stats.OnGameEnd(m_pShip); }
 		inline void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemBought(Item, iTotalPrice); }
 		inline void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice) { m_Stats.OnItemSold(Item, iTotalPrice); }
@@ -401,8 +409,9 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual CString DebugCrashInfo (void);
 		virtual int GetCombatPower (void);
 		virtual CCurrencyBlock *GetCurrencyBlock (void) { return &m_Credits; }
+		virtual OrderTypes GetCurrentOrderEx (CSpaceObject **retpTarget = NULL, IShipController::SData *retData = NULL);
 		virtual CSpaceObject *GetDestination (void) const { return m_pDestination; }
-		virtual ManeuverTypes GetManeuver (void);
+		virtual EManeuverTypes GetManeuver (void);
 		virtual GenomeTypes GetPlayerGenome (void) { return m_iGenome; }
 		virtual CString GetPlayerName (void) { return m_sName; }
 		virtual bool GetThrust (void);
@@ -415,7 +424,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void GetWeaponTarget (STargetingCtx &TargetingCtx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		virtual bool IsPlayer (void) const { return true; }
 		virtual void ReadFromStream (SLoadCtx &Ctx, CShip *pShip);
-		virtual void SetManeuver (IShipController::ManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
+		virtual void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
 		virtual void SetThrust (bool bThrust) { m_bThrust = bThrust; }
 		virtual void WriteToStream (IWriteStream *pStream);
 
@@ -440,10 +449,11 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnMessage (CSpaceObject *pSender, const CString &sMsg);
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess);
 		virtual void OnNewSystem (CSystem *pSystem);
+		virtual void OnObjDamaged (const SDamageCtx &Ctx);
 		virtual void OnObjDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx);
 		virtual void OnProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
-		virtual void OnRadiationWarning (int iSecondsLeft);
+		virtual void OnRadiationWarning (int iTicksLeft);
 		virtual void OnRadiationCleared (void);
 		virtual void OnReactorOverloadWarning (int iSeq);
 		void OnStartGame (void);
@@ -458,12 +468,14 @@ class CPlayerShipController : public CObject, public IShipController
 		CSpaceObject *FindDockTarget (void);
 		bool HasCommsTarget (void);
 		void InitTargetList (TargetTypes iTargetType, bool bUpdate = false);
+		void PaintTargetingReticle (SViewportPaintCtx &Ctx, CG16bitImage &Dest, CSpaceObject *pTarget);
 		void Reset (void);
 		void UpdateHelp (int iTick);
 
 		CTranscendenceWnd *m_pTrans;
 		CShip *m_pShip;
 
+		OrderTypes m_iOrder;					//	Last order
 		CSpaceObject *m_pTarget;
 		CSpaceObject *m_pDestination;
 		CSpaceObjectTable m_TargetList;
@@ -476,7 +488,7 @@ class CPlayerShipController : public CObject, public IShipController
 		int m_iLastHelpUseTick;
 		int m_iLastHelpFireMissileTick;
 
-		ManeuverTypes m_iManeuver;
+		EManeuverTypes m_iManeuver;
 		bool m_bThrust;
 		bool m_bActivate;
 		bool m_bStopThrust;
@@ -492,15 +504,20 @@ class CPlayerShipController : public CObject, public IShipController
 		GenomeTypes m_iGenome;					//	Player genome
 		DWORD m_dwStartingShipClass;			//	Starting ship class
 
+		bool m_bUnderAttack;					//	TRUE if we're currently under attack
+
 		CSpaceObject *m_pAutoDock;				//	The current station to dock with if we were to 
 												//		press 'D' right now. NULL means no station
 												//		to dock with.
 		int m_iAutoDockPort;					//	The current dock port.
 		CVector m_vAutoDockPort;				//	The current dock port position;
 
-		mutable CSpaceObject *m_pAutoTarget;	//	Saved autotarget. Note: We recompute this
-		mutable int m_iAutoTargetTick;			//	every tick so we don't have to worry about
-												//	it getting stale.
+		bool m_bShowAutoTarget;					//	If TRUE, we show the autotarget
+		CSpaceObject *m_pAutoTarget;			//	Saved autotarget.
+		mutable int m_iAutoTargetTick;
+
+		CSpaceObject *m_pAutoDamage;			//	Show damage bar for this object
+		DWORD m_dwAutoDamageExpire;				//	Stop showing on this tick
 
 	friend CObjectClass<CPlayerShipController>;
 	};
@@ -747,7 +764,7 @@ class CDockScreenActions
 
 		ALERROR AddAction (const CString &sID, int iPos, const CString &sLabel, CExtension *pExtension, ICCItem *pCode, int *retiAction);
 		void CleanUp (void);
-		void CreateButtons (CGFrameArea *pFrame, DWORD dwFirstTag, const RECT &rcFrame);
+		void CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot, DWORD dwFirstTag, const RECT &rcFrame);
 		void Execute (int iAction, CDockScreen *pScreen);
 		void ExecuteExitScreen (bool bForceUndock = false);
 		void ExecuteShowPane (const CString &sPane);
@@ -766,14 +783,12 @@ class CDockScreenActions
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
 		inline void SetButton (int iAction, CGButtonArea *pButton) { m_Actions[iAction].pButton = pButton; }
 		void SetEnabled (int iAction, bool bEnabled = true);
-		void SetLabel (int iAction, const CString &sLabel, const CString &sKey);
+		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);
 		void SetSpecial (int iAction, SpecialAttribs iSpecial, bool bEnabled = true);
 		bool SetSpecial (CCodeChain &CC, int iAction, ICCItem *pSpecial, ICCItem **retpError);
 		void SetVisible (int iAction, bool bVisible = true);
 
 	private:
-		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
-
 		struct SActionDesc
 			{
 			CString sID;
@@ -795,6 +810,11 @@ class CDockScreenActions
 			bool bPrev;				//	This is the prev action [<-]
 			bool bNext;				//	This is the next action [->]
 			};
+
+		void ExecuteCode (CDockScreen *pScreen, const CString &sID, CExtension *pExtension, ICCItem *pCode);
+		void ParseLabelDesc (const CString &sLabelDesc, CString *retsLabel, CString *retsKey = NULL, TArray<SpecialAttribs> *retSpecial = NULL);
+		void SetLabelDesc (SActionDesc *pAction, const CString &sLabelDesc, bool bOverrideSpecial = true);
+		void SetSpecial (SActionDesc *pAction, SpecialAttribs iSpecial, bool bEnabled);
 
 		TArray<SActionDesc> m_Actions;
 		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
@@ -843,7 +863,7 @@ class CDockScreen : public CObject,
 		CString GetTextInput (void);
 		bool IsCurrentItemValid (void);
 		void SelectNextItem (bool *retbMore = NULL);
-		void SelectPrevItem (void);
+		void SelectPrevItem (bool *retbMore = NULL);
 		void SetDescription (const CString &sDesc);
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
 		void SetCounter (int iCount);
@@ -955,6 +975,7 @@ class CDockScreen : public CObject,
 		RECT m_rcPane;
 		CGFrameArea *m_pCurrentFrame;
 		CGTextArea *m_pFrameDesc;
+		CString m_sDesc;
 		bool m_bInShowPane;
 		bool m_bNoListNavigation;
 
@@ -968,7 +989,8 @@ struct SDockFrame
 			pLocation(NULL),
 			pRoot(NULL),
 			pInitialData(NULL),
-			pStoredData(NULL)
+			pStoredData(NULL),
+			pResolvedRoot(NULL)
 		{ }
 
 	CSpaceObject *pLocation;				//	Current location
@@ -977,6 +999,9 @@ struct SDockFrame
 	CString sPane;							//	Current pane
 	ICCItem *pInitialData;					//	Data for the screen
 	ICCItem *pStoredData;					//	Read-write data
+
+	CDesignType *pResolvedRoot;
+	CString sResolvedScreen;
 	};
 
 class CDockScreenStack
@@ -990,6 +1015,7 @@ class CDockScreenStack
 		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
 		void Push (const SDockFrame &Frame);
 		void Pop (void);
+		void ResolveCurrent (const SDockFrame &ResolvedFrame);
 		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
 		void SetCurrentPane (const CString &sPane);
 		void SetData (const CString &sAttrib, ICCItem *pData);
@@ -1149,7 +1175,7 @@ class CMenuDisplay
 		void Paint (CG16bitImage &Dest);
 		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
 
-		static CString GetHotKeyFromOrdinal (int iOrdinal, char chKeyToExclude = '\0');
+		static CString GetHotKeyFromOrdinal (int *ioOrdinal, const TSortMap<CString, bool> &Exclude);
 
 	private:
 		void ComputeMenuRect (RECT *retrcRect);
@@ -1527,7 +1553,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 	public:
 		CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC);
 
-		void Animate (bool bTopMost);
+		void Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost);
 
 		void Autopilot (bool bTurnOn);
 		void CleanUpPlayerShip (void);
@@ -1545,12 +1571,10 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		inline CTranscendenceModel &GetModel (void);
 		void GetMousePos (POINT *retpt);
 		inline CPlayerShipController *GetPlayer (void);
-		inline int GetSoundVolumeOption (void);
 		inline CReanimator &GetReanimator (void) { return m_Reanimator; }
 		inline const CString &GetRedirectMessage (void) { return m_sRedirectMessage; }
 		inline CGameSettings &GetSettings (void);
 		inline const CUIResources &GetUIRes (void) { return m_UIRes; }
-		ALERROR HICommand (const CString &sCmd, void *pData = NULL);
 		void HideDockScreen (void);
 		inline bool InAutopilot (void) { return m_bAutopilot; }
 		inline bool InDockState (void) { return m_State == gsDocked; }
@@ -1566,7 +1590,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void RedirectDisplayMessage (bool bRedirect = true);
 		void SelectArmor (int iSeg);
 		CXMLElement *SetCurrentLocalScreens (CXMLElement *pLocalScreens);
-		void SetSoundVolumeOption (int iVolume);
 		void ShowDockScreen (bool bShow = true);
 		ALERROR ShowDockScreen (CSpaceObject *pLocation, CXMLElement *pScreenDesc, const CString &sPane);
 		inline void ShowSystemMap (bool bShow = true) { m_bShowingMap = bShow; }
@@ -1674,7 +1697,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void SetHighScoresScroll (void);
 		void SetIntroState (IntroState iState);
 		void SetMusicOption (void);
-		ALERROR StartIntro (IntroState iState = isHighScores);
+		ALERROR StartIntro (CIntroSession *pThis, IntroState iState = isHighScores);
 		void StopAnimations (void);
 		void StopIntro (void);
 
@@ -1710,7 +1733,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void DoInvocation (CPower *pPower);
 		void DoUseItemCommand (DWORD dwData);
 		DWORD GetCommsStatus (void);
-		void HideCommsTargetMenu (void);
+		void HideCommsTargetMenu (CSpaceObject *pExlude = NULL);
 		void ShowCommsMenu (CSpaceObject *pObj);
 		void ShowCommsSquadronMenu (void);
 		void ShowCommsTargetMenu (void);
@@ -1777,6 +1800,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CString m_sBackgroundError;
 
 		//	Intro screen
+		CIntroSession *m_pIntroSession;
 		IntroState m_iIntroState;
 		int m_iIntroCounter;
 		DWORD m_dwIntroShipClass;
@@ -1867,7 +1891,8 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 
 	friend LONG APIENTRY MainWndProc (HWND hWnd, UINT message, UINT wParam, LONG lParam);
 	friend class CIntroShipController;
-	friend class CLegacySession;
+	friend class CGameSession;
+	friend class CIntroSession;
 	friend class CTranscendenceController;
 	friend class CTranscendenceModel;
 	};
@@ -2030,6 +2055,8 @@ class CGameSettings
 			allowInvokeLetterHotKeys,		//	Allow invoke entries to have letter hot keys
 			noAutoSave,						//	NOT YET IMPLEMENTED
 			noFullCreate,					//	If TRUE, we don't create all systems in the topology
+			showManeuverEffects,			//	Shows maneuvering effects
+			noMissionCheckpoint,			//	Do not save on mission accept
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -2048,7 +2075,8 @@ class CGameSettings
 			//	Sounds options
 			noSound,						//	No sound (either music or sound effects)
 			noMusic,						//	TRUE if we should play music
-			soundVolume,					//	Volume level
+			soundVolume,					//	FX volume level
+			musicVolume,					//	Music volume level
 			musicPath,						//	Path to music folder (may be NULL_STR)
 
 			//	Debug options
@@ -2058,9 +2086,10 @@ class CGameSettings
 			debugVideo,						//	Write out video information
 			noCrashPost,					//	Do not post crash log to Multiverse
 			noCollectionDownload,			//	Do not automatically download collection
+			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 27,
+			OPTIONS_COUNT = 31,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
@@ -2184,6 +2213,7 @@ class CTranscendenceModel
 		inline void SetCrawlText (const CString &sText) { m_sCrawlText = sText; }
 		void SetDebugMode (bool bDebugMode = true);
 		inline void SetForceTDB (bool bForceTDB = true) { m_bForceTDB = bForceTDB; }
+		inline void SetNoMissionCheckpoint (bool bValue = true) { m_bNoMissionCheckpoint = bValue; }
 		inline void SetNoSound (bool bNoSound = true) { m_bNoSound = bNoSound; }
 		ALERROR SaveHighScoreList (CString *retsError = NULL);
 		ALERROR SaveGame (DWORD dwFlags, CString *retsError = NULL);
@@ -2223,6 +2253,7 @@ class CTranscendenceModel
 		bool m_bDebugMode;							//	Game in debug mode (or next game should be in debug mode)
 		bool m_bForceTDB;							//	Use TDB even if XML files exist
 		bool m_bNoSound;							//	No sound
+		bool m_bNoMissionCheckpoint;				//	Do not save game on mission accept
 
 		CGameFile m_GameFile;
 		CUniverse m_Universe;
@@ -2265,6 +2296,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 	public:
 		CTranscendenceController (CHumanInterface &HI) : IHIController(HI),
 				m_iState(stateNone),
+				m_iBackgroundState(stateIdle),
 				m_Model(HI),
 				m_bUpgradeDownloaded(false)
 			{ }
@@ -2276,6 +2308,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		inline int GetOptionInteger (int iOption) { return m_Settings.GetInteger(iOption); }
 		inline CCloudService &GetService (void) { return m_Service; }
 		inline CGameSettings &GetSettings (void) { return m_Settings; }
+		inline CSoundtrackManager &GetSoundtrack (void) { return m_Soundtrack; }
 		void SetOptionBoolean (int iOption, bool bValue);
 		void SetOptionInteger (int iOption, int iValue);
 
@@ -2305,15 +2338,29 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 			stateEndGameStats,
 			};
 
+		enum BackgroundStates
+			{
+			stateIdle,
+
+			stateSignedIn,					//	Signed in and idle
+			stateLoadingCollection,			//	Waiting for collection to load
+			stateDownloadingUpgrade,		//	Downloading an upgrade to the game
+			stateDownloadingCatalogEntry,	//	Downloading a TDB file
+			stateLoadingNews,				//	Waiting for news to load
+			stateDownloadingResource,		//	Downloading a resource file
+			};
+
 		void CleanUpUpgrade (void);
 		bool CheckAndRunUpgrade (void);
 		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
 		bool InstallUpgrade (CString *retsError);
 		bool IsUpgradeReady (void);
 		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+		bool RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads);
 		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
 		States m_iState;
+		BackgroundStates m_iBackgroundState;
 		CTranscendenceModel m_Model;
 
 		CCloudService m_Service;
@@ -2386,11 +2433,6 @@ inline CPlayerShipController *CTranscendenceWnd::GetPlayer (void)
 inline CGameSettings &CTranscendenceWnd::GetSettings (void)
 	{
 	return m_pTC->GetSettings();
-	}
-
-inline int CTranscendenceWnd::GetSoundVolumeOption (void)
-	{
-	return m_pTC->GetOptionInteger(CGameSettings::soundVolume);
 	}
 
 #include "BackgroundTasks.h"

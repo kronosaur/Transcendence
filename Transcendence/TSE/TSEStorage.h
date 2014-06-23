@@ -13,6 +13,7 @@ class CGameFile
 			FLAG_CHECKPOINT =						0x00000001,
 			FLAG_ENTER_GATE =						0x00000002,
 			FLAG_EXIT_GATE =						0x00000004,
+			FLAG_ACCEPT_MISSION =					0x00000008,
 			};
 
 		CGameFile (void);

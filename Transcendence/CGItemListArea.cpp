@@ -386,12 +386,13 @@ void CGItemListArea::Paint (CG16bitImage &Dest, const RECT &rcRect)
 		int iCount = m_pListData->GetCount();
 
 		ASSERT(iCursor >= 0 && iCursor < m_Rows.GetCount());
-		//ASSERT(iCount == m_Rows.GetCount());
 
 		//	If the cursor has changed, update the offset so that we
 		//	have a smooth scroll.
 
-		if (m_iOldCursor != -1 && m_iOldCursor != iCursor)
+		if (m_iOldCursor != -1 
+				&& m_iOldCursor != iCursor
+				&& m_iOldCursor < m_Rows.GetCount())
 			{
 			int cyDiff = (m_Rows[iCursor].cyHeight - m_Rows[m_iOldCursor].cyHeight) / 2;
 

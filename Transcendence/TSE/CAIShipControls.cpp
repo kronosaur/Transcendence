@@ -6,7 +6,7 @@
 #include "PreComp.h"
 
 CAIShipControls::CAIShipControls (void) : 
-		m_iManeuver(IShipController::NoRotation),
+		m_iManeuver(NoRotation),
 		m_iThrustDir(constNeverThrust)
 
 //	CAIShipControls constructor

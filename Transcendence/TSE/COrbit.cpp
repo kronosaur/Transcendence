@@ -54,7 +54,7 @@ CVector COrbit::GetPointCircular (Metric rAngle) const
 	return m_vFocus + CVector(cos(rAngle) * m_rSemiMajorAxis, sin(rAngle) * m_rSemiMajorAxis);
 	}
 
-void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF rgbColor)
+void COrbit::Paint (CMapViewportCtx &Ctx, CG16bitImage &Dest, COLORREF rgbColor)
 
 //	Paint
 //
@@ -85,7 +85,7 @@ void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF
 
 		//	Compute the position of the starting point
 
-		Trans.Transform(GetPointCircular(0.0), &xPrev, &yPrev);
+		Ctx.Transform(GetPointCircular(0.0), &xPrev, &yPrev);
 
 		//	Paint the orbit in multiple segments
 
@@ -94,7 +94,7 @@ void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF
 			//	Compute the end point
 
 			int x, y;
-			Trans.Transform(GetPointCircular(rAngle), &x, &y);
+			Ctx.Transform(GetPointCircular(rAngle), &x, &y);
 
 			//	Draw a line segment
 
@@ -114,7 +114,7 @@ void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF
 
 		//	Compute the position of the starting point
 
-		Trans.Transform(GetPoint(0.0), &xPrev, &yPrev);
+		Ctx.Transform(GetPoint(0.0), &xPrev, &yPrev);
 
 		//	Paint the orbit in multiple segments
 
@@ -127,7 +127,7 @@ void COrbit::Paint (CG16bitImage &Dest, const ViewportTransform &Trans, COLORREF
 			//	Compute the end point
 
 			int x, y;
-			Trans.Transform(vPos, &x, &y);
+			Ctx.Transform(vPos, &x, &y);
 
 			//	The orbit color fades depending on the distance from the sun
 

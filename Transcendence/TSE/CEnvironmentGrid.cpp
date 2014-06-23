@@ -480,6 +480,8 @@ void CEnvironmentGrid::Paint (CG16bitImage &Dest, SViewportPaintCtx &Ctx, const 
 //	Paint the environment
 
 	{
+	DEBUG_TRY
+
 	int x, y, x1, y1, x2, y2;
 
 	VectorToTile(vUR, &x2, &y1);
@@ -504,9 +506,11 @@ void CEnvironmentGrid::Paint (CG16bitImage &Dest, SViewportPaintCtx &Ctx, const 
 				pEnv->Paint(Dest, xCenter, yCenter, x, y, dwEdgeMask);
 				}
 			}
+
+	DEBUG_CATCH
 	}
 
-void CEnvironmentGrid::PaintMap (CG16bitImage &Dest, const CVector &vUR, const CVector &vLL, const ViewportTransform &Trans)
+void CEnvironmentGrid::PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest)
 
 //	PaintMap
 //
@@ -520,17 +524,17 @@ void CEnvironmentGrid::PaintMap (CG16bitImage &Dest, const CVector &vUR, const C
 
 	int cxOrigin;
 	int cyOrigin;
-	Trans.Transform(CVector(), &cxOrigin, &cyOrigin);
+	Ctx.Transform(Ctx.GetCenterPos(), &cxOrigin, &cyOrigin);
 
 	int cxTile;
 	int cyTile;
 	CVector vTile(m_iTileSize * g_KlicksPerPixel, m_iTileSize * g_KlicksPerPixel);
-	Trans.Transform(vTile, &cxTile, &cyTile);
+	Ctx.Transform(Ctx.GetCenterPos() + vTile, &cxTile, &cyTile);
 
 	//	+1 because the floating-point conversion is sometimes off.
 
-	cxTile = AlignUp(Absolute(cxTile - cxOrigin), 2);
-	cyTile = AlignUp(Absolute(cyTile - cyOrigin), 2);
+	cxTile = AlignUp(Absolute(cxTile - cxOrigin), 2) + 1;
+	cyTile = AlignUp(Absolute(cyTile - cyOrigin), 2) + 1;
 
 	int cxHalfTile = cxTile / 2;
 	int cyHalfTile = cyTile / 2;
@@ -564,7 +568,7 @@ void CEnvironmentGrid::PaintMap (CG16bitImage &Dest, const CVector &vUR, const C
 
 		int x;
 		int y;
-		Trans.Transform(vPos, &x, &y);
+		Ctx.Transform(vPos, &x, &y);
 
 		//	Paint the tile
 

@@ -10,7 +10,7 @@ const Metric CLOSE_RANGE =				(50.0 * LIGHT_SECOND);
 const Metric DEFAULT_DIST_CHECK =		(700.0 * KLICKS_PER_PIXEL);
 const Metric DOCKING_APPROACH_DISTANCE = (200.0 * KLICKS_PER_PIXEL);
 const Metric ESCORT_DISTANCE =			(6.0 * LIGHT_SECOND);
-const Metric HIT_NAV_POINT_DIST =		(8.0 * LIGHT_SECOND);
+const Metric HIT_NAV_POINT_DIST =		(24.0 * LIGHT_SECOND);
 const Metric MAX_DELTA =				(2.0 * KLICKS_PER_PIXEL);
 const Metric MAX_DELTA_VEL =			(g_KlicksPerPixel / 2.0);
 const Metric MAX_DISTANCE =				(400 * KLICKS_PER_PIXEL);
@@ -35,7 +35,7 @@ const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_T
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 
 #ifdef DEBUG_COMBAT
-#define DEBUG_COMBAT_OUTPUT(x)			if (pShip->IsSelected()) g_pUniverse->DebugOutput("%d> %s", g_iDebugLine++, x)
+#define DEBUG_COMBAT_OUTPUT(x)			{ if (g_pUniverse->GetPlayer()) g_pUniverse->GetPlayer()->SendMessage(pShip, strPatternSubst(CONSTLIT("%d: %s"), pShip->GetID(), CString(x))); }
 #else
 #define DEBUG_COMBAT_OUTPUT(x)
 #endif
@@ -375,7 +375,7 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			else if (!pTarget->CanMove())
 				{
 				int iClock = g_pUniverse->GetTicks() / (170 + pShip->GetDestiny() / 3);
-				int iAngle = AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
+				int iAngle = pShip->AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
 				Metric rRadius = MIN_STATION_TARGET_DIST + (LIGHT_SECOND * (pShip->GetDestiny() % 100) / 10.0);
 
 				//	This is the position that we want to go to
@@ -475,7 +475,7 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			else if (!pTarget->CanMove())
 				{
 				int iClock = g_pUniverse->GetTicks() / (170 + pShip->GetDestiny() / 3);
-				int iAngle = AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
+				int iAngle = pShip->AlignToRotationAngle((pShip->GetDestiny() + (iClock * 141 * (1 + pShip->GetDestiny()))) % 360);
 				Metric rRadius = MIN_STATION_TARGET_DIST + (LIGHT_SECOND * (pShip->GetDestiny() % 100) / 10.0);
 
 				//	This is the position that we want to go to
@@ -580,8 +580,8 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			//	it is aligned on a rotation angle, so we can get a shot in)
 
 			int iTargetMotion = (pTarget->CanMove() ?
-					AlignToRotationAngle(VectorToPolar(pTarget->GetVel()))
-					: AlignToRotationAngle(pShip->GetDestiny()));
+					pShip->AlignToRotationAngle(VectorToPolar(pTarget->GetVel()))
+					: pShip->AlignToRotationAngle(pShip->GetDestiny()));
 
 			//	Compute the target's angle with respect to us. We want to end up facing
 			//	directly towards the target
@@ -722,13 +722,13 @@ void CAIBehaviorCtx::ImplementCloseOnImmobileTarget (CShip *pShip, CSpaceObject 
 
 		int iDestFacing = VectorToPolar(vTarget);
 		if (iDestFacing >= 0 && iDestFacing < 90)
-			iDestFacing = 45;
+			iDestFacing = pShip->AlignToRotationAngle(45);
 		else if (iDestFacing >=90 && iDestFacing < 180)
-			iDestFacing = 135;
+			iDestFacing = pShip->AlignToRotationAngle(135);
 		else if (iDestFacing >=180 && iDestFacing < 270)
-			iDestFacing = 225;
+			iDestFacing = pShip->AlignToRotationAngle(225);
 		else
-			iDestFacing = 315;
+			iDestFacing = pShip->AlignToRotationAngle(315);
 
 		//	Close in
 
@@ -909,7 +909,7 @@ void CAIBehaviorCtx::ImplementEscortManeuvers (CShip *pShip, CSpaceObject *pTarg
 
 		//	Maneuver towards the position
 
-		ImplementFormationManeuver(pShip, pTarget->GetPos() + vEscortPos, pTarget->GetVel(), pTarget->GetRotation());
+		ImplementFormationManeuver(pShip, pTarget->GetPos() + vEscortPos, pTarget->GetVel(), pShip->AlignToRotationAngle(pTarget->GetRotation()));
 		}
 	}
 
@@ -1072,6 +1072,7 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 			&iAimAngle,
 			&iFireAngle,
 			&iFacingAngle);
+	bool bAimError = false;
 
 	//	iAimAngle is the direction that we should fire in order to hit
 	//	the target.
@@ -1097,18 +1098,19 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 				//	the new aim point.
 
 				iAimAngle = -1;
+				bAimError = true;
 				DEBUG_COMBAT_OUTPUT("Aim error: hold fire when aligned");
 				}
 			}
 		else if (iAimAngle != -1)
 			{
-			int iPrematureFiring = (100 - GetFireAccuracy()) / 5;
-			if (mathRandom(1, 100) <= iPrematureFiring)
+			if (mathRandom(1, 100) <= m_iPrematureFireChance)
 				{
 				int iAimOffset = AngleOffset(iFireAngle, iAimAngle);
 				if (iAimOffset < 20)
 					{
 					bAligned = true;
+					bAimError = true;
 					DEBUG_COMBAT_OUTPUT("Aim error: fire when not aligned");
 					}
 				}
@@ -1122,7 +1124,11 @@ void CAIBehaviorCtx::ImplementFireWeaponOnTarget (CShip *pShip,
 #ifdef DEBUG
 		{
 		char szDebug[1024];
-		wsprintf(szDebug, "Fire: Weapon aligned  iAim=%d  iFireAngle=%d", iAimAngle, iFireAngle);
+		if (bAimError)
+			wsprintf(szDebug, "%s: false positive  iAim=%d  iFireAngle=%d", pShip->GetNamedDevice(iWeaponToFire)->GetName().GetASCIIZPointer(), iAimAngle, iFireAngle);
+		else
+			wsprintf(szDebug, "%s: aligned  iAim=%d  iFireAngle=%d", pShip->GetNamedDevice(iWeaponToFire)->GetName().GetASCIIZPointer(), iAimAngle, iFireAngle);
+
 		DEBUG_COMBAT_OUTPUT(szDebug);
 		}
 #endif
@@ -1222,7 +1228,7 @@ void CAIBehaviorCtx::ImplementFollowNavPath (CShip *pShip, bool *retbAtDestinati
 		//	If we're at the last nav point, then we've reached our
 		//	destination.
 
-		if (m_iNavPathPos + 1 == m_pNavPath->GetNavPointCount())
+		if (m_iNavPathPos + 1 >= m_pNavPath->GetNavPointCount())
 			{
 			if (retbAtDestination)
 				*retbAtDestination = true;
@@ -1250,7 +1256,9 @@ void CAIBehaviorCtx::ImplementFormationManeuver (CShip *pShip, const CVector vDe
 
 //	ImplementFormationManeuver
 //
-//	Moves the ship to the given formation point
+//	Moves the ship to the given formation point.
+//
+//	NOTE: iDestFacing must be aligned to one of the ship's rotation angles
 
 	{
 	//	Figure out how far we are from where we want to be
@@ -1331,14 +1339,14 @@ void CAIBehaviorCtx::ImplementFormationManeuver (CShip *pShip, const CVector vDe
 
 		//	If we don't need to turn, engage thrust
 
-		if (GetManeuver() == IShipController::NoRotation)
+		if (GetManeuver() == NoRotation)
 			SetThrustDir(CAIShipControls::constAlwaysThrust);
 		}
 
 	//	See if we're in formation
 
 	if (retbInFormation)
-		*retbInFormation = ((pShip->GetRotation() == iDestFacing)
+		*retbInFormation = (pShip->IsPointingTo(iDestFacing)
 				&& (rDelta2 < MAX_IN_FORMATION_DELTA2)
 				&& (rDiff2 < MAX_DELTA_VEL2));
 	}
@@ -1401,7 +1409,7 @@ void CAIBehaviorCtx::ImplementHold (CShip *pShip, bool *retbInPlace)
 
 		//	If we don't need to turn, engage thrust
 
-		if (GetManeuver() == IShipController::NoRotation)
+		if (GetManeuver() == NoRotation)
 			SetThrustDir(CAIShipControls::constAlwaysThrust);
 
 		bInPlace = false;
@@ -1472,14 +1480,9 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 		//	If we're within a few degrees of where we want to be, then
 		//	don't bother changing
 
-		if (!AreAnglesAligned(iDir, iCurrentDir, 9))
+		if (!pShip->IsPointingTo(iDir))
 			{
-			int iTurn = (iDir + 360 - iCurrentDir) % 360;
-
-			if (iTurn >= 180)
-				SetManeuver(IShipController::RotateRight);
-			else
-				SetManeuver(IShipController::RotateLeft);
+			SetManeuver(pShip->GetManeuverToFace(iDir));
 
 			//	If we're turning in a new direction now, then reset
 			//	our counter
@@ -1499,10 +1502,10 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 
 				if (m_iLastTurnCount > m_iMaxTurnCount)
 					{
-					if (GetManeuver() == IShipController::RotateRight)
-						SetManeuver(IShipController::RotateLeft);
+					if (GetManeuver() == RotateRight)
+						SetManeuver(RotateLeft);
 					else
-						SetManeuver(IShipController::RotateRight);
+						SetManeuver(RotateRight);
 #ifdef DEBUG_SHIP
 					if (bDebug)
 						g_pUniverse->DebugOutput("Reverse direction");
@@ -1513,8 +1516,8 @@ void CAIBehaviorCtx::ImplementManeuver (CShip *pShip, int iDir, bool bThrust, bo
 #ifdef DEBUG_SHIP
 			if (bDebug)
 				g_pUniverse->DebugOutput("Turn: %s (%d -> %d)",
-						(m_iManeuver == IShipController::RotateRight ? "right" : 
-							(m_iManeuver == IShipController::RotateLeft ? "left" : "none")),
+						(m_iManeuver == RotateRight ? "right" : 
+							(m_iManeuver == RotateLeft ? "left" : "none")),
 						iCurrentDir,
 						iDir);
 #endif
@@ -1626,18 +1629,6 @@ void CAIBehaviorCtx::ImplementTurnTo (CShip *pShip, int iRotation)
 //	Turn towards the given angle
 
 	{
-	int iCurrentDir = pShip->GetRotation();
-	int iTurn = (iRotation + 360 - iCurrentDir) % 360;
-
-	if ((iTurn >= (360 - (pShip->GetRotationAngle() / 2)))
-			|| (iTurn <= (pShip->GetRotationAngle() / 2)))
-		SetManeuver(IShipController::NoRotation);
-	else
-		{
-		if (iTurn >= 180)
-			SetManeuver(IShipController::RotateRight);
-		else
-			SetManeuver(IShipController::RotateLeft);
-		}
+	SetManeuver(pShip->GetManeuverToFace(iRotation));
 	}
 

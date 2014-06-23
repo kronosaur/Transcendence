@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- PLAYER SOVEREIGN ==========================================================
+
+	GLOBAL DATA
+	
+	missionRewards:		Total amount of credits earned in missions
+	
+	tutorialBought:		True if the player has bought something.
+	tutorialInstalled:	True if the player has installed a device.
+	tutorialLooted:		True if the player has looted something.
+	tutorialRepaired:	True if the player has repaired his ship's armor
+	tutorialSold:		True if the player has sold anything.
+	
+-->
+
+	<Sovereign UNID="&svPlayer;"
+			name="independent"
+			alignment="constructive chaos"
+			>
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList missionRewards)
+				
+					; Current player money
+
+					(setq theList
+						(map (filter (typFind "$") theEcon (gr (objGetBalance gPlayerShip theEcon) 0)) theEcon
+							(list (cat "Money (" (fmtCurrency theEcon True) ")") (objGetBalance gPlayerShip theEcon))
+							)
+						)					
+					
+					; Money earned on missions
+					
+					(if (setq missionRewards (typGetGlobalData &svPlayer; "missionRewards"))
+						(setq theList (append theList (list
+							(list "Money earned on missions" missionRewards "missions &amp; activities")
+							)))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnGlobalUniverseLoad>
+				; If we're loading because of a resurrect, repair the ship
+
+				(if (eq aReason 'resurrect)
+					(block Nil
+						; Put the player in a safe place and repair the ship
+						(rpgRestorePlayer)
+
+						; Tell the player about the resurrection
+						(plyMessage gPlayer "You wake up somewhere else in an identical body...")
+						)
+					)
+			</OnGlobalUniverseLoad>
+		</Events>
+	</Sovereign>
+
+</TranscendenceModule>

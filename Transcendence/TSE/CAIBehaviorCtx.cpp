@@ -14,8 +14,11 @@ const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_T
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
 const Metric WALL_RANGE2 =				(WALL_RANGE * WALL_RANGE);
 
+const Metric MAX_NAV_START_DIST =		(20.0 * LIGHT_SECOND);
+const Metric MAX_NAV_START_DIST2 =		(MAX_NAV_START_DIST * MAX_NAV_START_DIST);
+
 CAIBehaviorCtx::CAIBehaviorCtx (void) :
-		m_iLastTurn(IShipController::NoRotation),
+		m_iLastTurn(NoRotation),
 		m_iLastTurnCount(0),
 		m_iManeuverCounter(0),
 		m_iLastAttack(0),
@@ -309,7 +312,12 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	//	Max turn count
 
-	m_iMaxTurnCount =  (10 + (pShip->GetDestiny() % 20)) * pShip->GetClass()->GetManeuverability();
+	int iFullRotationTime = Max(1, pShip->GetClass()->GetRotationDesc().GetMaxRotationTimeTicks());
+	m_iMaxTurnCount = iFullRotationTime * (1 + (pShip->GetDestiny() % 6));
+
+	//	Chance of premature fire based on turn rate
+
+	m_iPrematureFireChance = (6 * (100 - m_AISettings.GetFireAccuracy())) / iFullRotationTime;
 
 	//	Compute some properties of installed devices
 
@@ -377,6 +385,7 @@ bool CAIBehaviorCtx::CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget,
 
 	if (pNewTarget == NULL 
 			|| pNewTarget->IsDestroyed()
+			|| !pNewTarget->CanAttack()
 			|| !pShip->IsEnemy(pNewTarget))
 		return false;
 
@@ -438,7 +447,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 	//	Figure out an appropriate starting point
 
 	CSpaceObject *pBestObj = NULL;
-	Metric rBestDist2 = pShip->GetDistance2(pTo);
+	Metric rBestDist2 = MAX_NAV_START_DIST2;
 	for (i = 0; i < pSystem->GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = pSystem->GetObject(i);
@@ -450,7 +459,7 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 						&& pObj->GetScale() == scaleStructure
 						&& !pObj->IsInactive()
 						&& !pObj->IsVirtual()
-						&& pObj->HasAttribute(CONSTLIT("populated"))
+						&& pObj->SupportsDocking()
 						&& pObj->IsFriend(pShip))))
 			{
 			Metric rDist2 = (pObj->GetPos() - pShip->GetPos()).Length2();
@@ -462,8 +471,25 @@ bool CAIBehaviorCtx::CalcNavPath (CShip *pShip, CSpaceObject *pTo)
 			}
 		}
 
+	//	If we couldn't find a suitable object, create a marker
+
 	if (pBestObj == NULL)
+		{
+#ifdef NAV_PATH_MARKER
+		CMarker *pMarker;
+		if (CMarker::Create(pSystem,
+				pShip->GetSovereign(),
+				pShip->GetPos(),
+				NullVector,
+				strPatternSubst(CONSTLIT("NavPath-%x-%x"), pShip->GetID(), g_pUniverse->GetTicks()),
+				&pMarker) != NOERROR)
+			return false;
+
+		pBestObj = pMarker;
+#else
 		return false;
+#endif
+		}
 
 	CSpaceObject *pFrom = pBestObj;
 
@@ -763,6 +789,19 @@ void CAIBehaviorCtx::CommunicateWithEscorts (CShip *pShip, MessageTypes iMessage
 		if (!bEscortsFound)
 			SetHasEscorts(false);
 		}
+	}
+
+void CAIBehaviorCtx::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	DebugPaintInfo
+//
+//	Paint debug info
+
+	{
+#ifdef DEBUG_NAV_PATH
+	if (m_pNavPath)
+		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx.XForm);
+#endif
 	}
 
 void CAIBehaviorCtx::ReadFromStream (SLoadCtx &Ctx)

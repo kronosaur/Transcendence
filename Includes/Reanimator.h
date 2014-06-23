@@ -13,10 +13,6 @@
 #include "DirectXUtil.h
 #endif
 
-#ifndef INCL_TEXT_FORMAT
-#include "TextFormat.h"
-#endif
-
 //	Command class --------------------------------------------------------------
 
 class IAniCommand

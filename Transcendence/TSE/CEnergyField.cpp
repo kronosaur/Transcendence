@@ -615,16 +615,19 @@ void CEnergyField::Update (CSpaceObject *pSource)
 	UpdateCtx.pSystem = pSource->GetSystem();
 	UpdateCtx.pObj = pSource;
 
+	SEffectMoveCtx MoveCtx;
+	MoveCtx.pObj = pSource;
+	
 	if (m_pPainter)
 		{
 		m_pPainter->OnUpdate(UpdateCtx);
-		m_pPainter->OnMove();
+		m_pPainter->OnMove(MoveCtx);
 		}
 
 	if (m_pHitPainter)
 		{
 		m_pHitPainter->OnUpdate(UpdateCtx);
-		m_pHitPainter->OnMove();
+		m_pHitPainter->OnMove(MoveCtx);
 		}
 
 	//	Call OnUpdate

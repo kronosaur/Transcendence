@@ -24,7 +24,7 @@ int g_cxScreen = 0;
 int g_cyScreen = 0;
 
 #define STR_SMALL_TYPEFACE					CONSTLIT("Tahoma")
-#define STR_MEDIUM_TYPEFACE					CONSTLIT("Lucida Sans")
+#define STR_MEDIUM_TYPEFACE					CONSTLIT("Tahoma")
 #define STR_LARGE_TYPEFACE					CONSTLIT("Trebuchet MS")
 #define STR_FIXED_TYPEFACE					CONSTLIT("Lucida Console")
 
@@ -57,7 +57,7 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 	ClearDebugLines();
 	}
 
-void CTranscendenceWnd::Animate (bool bTopMost)
+void CTranscendenceWnd::Animate (CG16bitImage &TheScreen, CGameSession *pSession, bool bTopMost)
 
 //	Animate
 //
@@ -65,7 +65,10 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 	{
 	bool bFailed = false;
-	CG16bitImage &TheScreen = g_pHI->GetScreen();
+
+	//	Update context
+
+	SSystemUpdateCtx UpdateCtx;
 
 	try
 		{
@@ -75,10 +78,6 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 		switch (m_State)
 			{
-			case gsIntro:
-				AnimateIntro(bTopMost);
-				break;
-
 			case gsInGame:
 			case gsDestroyed:
 				{
@@ -101,6 +100,11 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 					if (pShip->IsSRSEnhanced())
 						dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
 					}
+
+				//	More options
+
+				if (m_pTC->GetOptionBoolean(CGameSettings::showManeuverEffects))
+					dwViewportFlags |= CSystem::VWP_SHOW_MANEUVER_EFFECTS;
 
 				//	Update some displays
 
@@ -145,10 +149,8 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				else
 					{
 					SetProgramState(psPaintingSRS);
-					g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, dwViewportFlags);
+					g_pUniverse->PaintPOV(TheScreen, m_rcScreen, dwViewportFlags);
 					SetProgramState(psAnimating);
-
-					PaintMainScreenBorder();
 					}
 
 				if (m_iDamageFlash > 0)
@@ -202,6 +204,12 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				PaintDebugLines();
 #endif
 
+				//	Paint soundtrack info
+
+				if (m_pTC->GetOptionBoolean(CGameSettings::debugSoundtrack)
+						&& !m_bShowingMap)
+					pSession->PaintSoundtrackTitles(TheScreen);
+
 				//	Figure out how long it took to paint
 
 				if (m_pTC->GetOptionBoolean(CGameSettings::debugVideo))
@@ -235,13 +243,13 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				if (!m_bPaused || m_bPausedStep)
 					{
 					SetProgramState(psUpdating);
-					g_pUniverse->Update(g_SecondsPerUpdate);
+					g_pUniverse->Update(UpdateCtx);
 					if (m_bAutopilot)
 						{
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
-						g_pUniverse->Update(g_SecondsPerUpdate);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
+						g_pUniverse->Update(UpdateCtx);
 						}
 					SetProgramState(psAnimating);
 
@@ -307,7 +315,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 				//	Update the universe (at 1/4 rate)
 
 				if ((m_iTick % 4) == 0)
-					g_pUniverse->Update(g_SecondsPerUpdate);
+					g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_CurrentDock.Update(m_iTick);
 				m_iTick++;
@@ -350,8 +358,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
-				PaintMainScreenBorder();
+				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);
@@ -375,13 +382,13 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Update the universe
 
-				g_pUniverse->Update(g_SecondsPerUpdate);
+				g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_iTick++;
 
 				if (--m_iCountdown == 0)
 					{
-					g_pHI->HICommand(CONSTLIT("gameEnterStargate"));
+					g_pHI->HICommand(CONSTLIT("gameInsideStargate"));
 					m_State = gsLeavingStargate;
 					m_iCountdown = TICKS_AFTER_GATE;
 					}
@@ -398,8 +405,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Tell the universe to paint
 
-				g_pUniverse->PaintPOV(TheScreen, m_rcMainScreen, 0);
-				PaintMainScreenBorder();
+				g_pUniverse->PaintPOV(TheScreen, m_rcScreen, 0);
 				PaintLRS();
 				m_ArmorDisplay.Paint(TheScreen);
 				m_MessageDisplay.Paint(TheScreen);
@@ -423,7 +429,7 @@ void CTranscendenceWnd::Animate (bool bTopMost)
 
 				//	Update the universe
 
-				g_pUniverse->Update(g_SecondsPerUpdate);
+				g_pUniverse->Update(UpdateCtx);
 				m_MessageDisplay.Update();
 				m_iTick++;
 
@@ -464,6 +470,8 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 //	Clean up player ship structures when ship is destroyed
 
 	{
+	DEBUG_TRY
+
 	m_ReactorDisplay.CleanUp();
 	m_DeviceDisplay.CleanUp();
 	m_TargetDisplay.CleanUp();
@@ -472,6 +480,8 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 
 	m_bDebugConsole = false;
 	m_bPaused = false;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::ClearDebugLines (void)
@@ -561,23 +571,6 @@ void CTranscendenceWnd::GetMousePos (POINT *retpt)
 	{
 	::GetCursorPos(retpt);
 	::ScreenToClient(m_hWnd, retpt);
-	}
-
-ALERROR CTranscendenceWnd::HICommand (const CString &sCmd, void *pData)
-
-//	HICommand
-//
-//	Handle HICommands
-
-	{
-	switch (m_State)
-		{
-		case gsIntro:
-			OnCommandIntro(sCmd, pData);
-			break;
-		}
-
-	return NOERROR;
 	}
 
 void CTranscendenceWnd::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)
@@ -688,6 +681,8 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 //	This method gets called when the player is destroyed
 
 	{
+	DEBUG_TRY
+
 	//	Clean up
 
 	HideCommsTargetMenu();
@@ -729,6 +724,8 @@ void CTranscendenceWnd::PlayerDestroyed (const CString &sText, bool bResurrectio
 		m_State = gsDestroyed;
 		m_iCountdown = TICKS_AFTER_DESTROYED;
 		}
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceWnd::PlayerEnteredGate (CSystem *pSystem, 
@@ -1090,10 +1087,16 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 			if (m_bPaused)
 				{
 				if (chChar == ' ')
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_bPausedStep = true;
+					}
 				else
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
+
 					m_bPaused = false;
+					g_pHI->HICommand(CONSTLIT("gameUnpause"));
 					DisplayMessage(CONSTLIT("Game continues"));
 					}
 				return 0;
@@ -1121,30 +1124,39 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 					switch (m_CurrentMenu)
 						{
 						case menuGame:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							DoGameMenuCommand(dwData);
 							break;
 
 						case menuSelfDestructConfirm:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							DoSelfDestructConfirmCommand(dwData);
 							break;
 
 						case menuComms:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							DoCommsMenu(dwData);
 							break;
 
 						case menuCommsTarget:
-							HideCommsTargetMenu();
-							if (dwData)
-								ShowCommsMenu((CSpaceObject *)dwData);
+							{
+							CSpaceObject *pObj = (CSpaceObject *)dwData;
+							HideCommsTargetMenu(pObj);
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+							if (pObj)
+								ShowCommsMenu((CSpaceObject *)pObj);
 							else
 								ShowCommsSquadronMenu();
 							break;
+							}
 
 						case menuCommsSquadron:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							DoCommsSquadronMenu(m_MenuData.GetItemLabel(iIndex), (MessageTypes)dwData, dwData2);
 							break;
 
 						case menuInvoke:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							DoInvocation((CPower *)dwData);
 							break;
 						}
@@ -1161,18 +1173,26 @@ LONG CTranscendenceWnd::WMChar (char chChar, DWORD dwKeyData)
 				bool bHotKey = m_MenuData.FindItemData(sKey, &dwData);
 
 				if (chChar == ']')
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_PickerDisplay.SelectNext();
+					}
 				else if (chChar == '[')
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_PickerDisplay.SelectPrev();
+					}
 				else if (bHotKey)
 					{
 					switch (m_CurrentPicker)
 						{
 						case pickUsableItem:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							DoUseItemCommand(dwData);
 							break;
 
 						case pickEnableDisableItem:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							DoEnableDisableItemCommand(dwData);
 							break;
@@ -1444,7 +1464,10 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 			else if (m_bDebugConsole)
 				{
 				if (iVirtKey == VK_ESCAPE)
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_bDebugConsole = false;
+					}
 				else
 					m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
 				}
@@ -1455,7 +1478,9 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 				{
 				if ((iVirtKey < 'A' || iVirtKey > 'Z') && iVirtKey != VK_SPACE && iVirtKey != VK_F9)
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 					m_bPaused = false;
+					g_pHI->HICommand(CONSTLIT("gameUnpause"));
 					DisplayMessage(CONSTLIT("Game continues"));
 					}
 
@@ -1467,7 +1492,10 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					if (iCommand == CGameKeys::keyShowConsole 
 							&& m_pTC->GetOptionBoolean(CGameSettings::debugMode)
 							&& !g_pUniverse->IsRegistered())
+						{
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						m_bDebugConsole = !m_bDebugConsole;
+						}
 					}
 				}
 
@@ -1477,6 +1505,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 				{
 				if (iVirtKey == VK_ESCAPE)
 					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					HideCommsTargetMenu();
 					m_CurrentMenu = menuNone;
 					}
@@ -1486,6 +1515,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					if ((iCommand == CGameKeys::keyInvokePower && m_CurrentMenu == menuInvoke)
 							|| (iCommand == CGameKeys::keyCommunications && m_CurrentMenu == menuCommsTarget))
 						{
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						HideCommsTargetMenu();
 						m_CurrentMenu = menuNone;
 						}
@@ -1501,30 +1531,44 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					switch (m_CurrentPicker)
 						{
 						case pickUsableItem:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							DoUseItemCommand(m_MenuData.GetItemData(m_PickerDisplay.GetSelection()));
 							break;
 
 						case pickEnableDisableItem:
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							DoEnableDisableItemCommand(m_MenuData.GetItemData(m_PickerDisplay.GetSelection()));
 							break;
 						}
 					}
 				else if (iVirtKey == VK_LEFT)
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_PickerDisplay.SelectPrev();
+					}
 
 				else if (iVirtKey == VK_RIGHT)
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_PickerDisplay.SelectNext();
+					}
 
 				else if (iVirtKey == VK_ESCAPE)
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 					m_CurrentPicker = pickNone;
+					}
 
 				else
 					{
 					CGameKeys::Keys iCommand = m_pTC->GetKeyMap().GetGameCommand(iVirtKey);
 					if ((iCommand == CGameKeys::keyEnableDevice && m_CurrentPicker == pickEnableDisableItem)
 							|| (iCommand == CGameKeys::keyUseItem && m_CurrentPicker == pickUsableItem))
+						{
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						m_CurrentPicker = pickNone;
+						}
 					}
 				}
 
@@ -1539,6 +1583,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					switch (iVirtKey)
 						{
 						case 'H':
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							GetPlayer()->SetMapHUD(!GetPlayer()->IsMapHUDActive());
 							break;
 
@@ -1546,6 +1591,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						case VK_OEM_MINUS:
 							if (m_iMapScale < (MAP_SCALE_COUNT - 1))
 								{
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 								m_iMapScale++;
 								m_iMapZoomEffect = 100;
 								}
@@ -1555,6 +1601,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						case VK_OEM_PLUS:
 							if (m_iMapScale > 0)
 								{
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 								m_iMapScale--;
 								m_iMapZoomEffect = -100;
 								}
@@ -1570,6 +1617,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 				switch (iCommand)
 					{
 					case CGameKeys::keyAutopilot:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						Autopilot(!m_bAutopilot);
 						GetPlayer()->SetUIMessageEnabled(uimsgAutopilotHint, false);
 						m_chKeyDown = iVirtKey;
@@ -1580,6 +1628,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsOutOfFuel()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							ShowEnableDisablePicker();
 							}
@@ -1590,6 +1639,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (!GetPlayer()->DockingInProgress()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->SetUIMessageEnabled(uimsgCommsHint, false);
 							ShowCommsTargetMenu();
@@ -1602,6 +1652,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsTimeStopped()
 								&& !bKeyRepeat)
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							Autopilot(false);
 							GetPlayer()->Dock();
 							m_bDockKeyDown = true;
@@ -1612,11 +1663,13 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyTargetNextFriendly:
 						GetPlayer()->SelectNextFriendly(1);
 						m_chKeyDown = iVirtKey;
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						break;
 
 					case CGameKeys::keyTargetPrevFriendly:
 						GetPlayer()->SelectNextFriendly(-1);
 						m_chKeyDown = iVirtKey;
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						break;
 
 					case CGameKeys::keyEnterGate:
@@ -1627,6 +1680,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 							Autopilot(false);
 							GetPlayer()->Gate();
 							}
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 						m_chKeyDown = iVirtKey;
 						break;
 
@@ -1634,6 +1688,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (!GetPlayer()->DockingInProgress()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							ShowInvokeMenu();
 							}
@@ -1643,12 +1698,14 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyShowMap:
 						if (m_bShowingMap)
 							Autopilot(false);
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						m_bShowingMap = !m_bShowingMap;
 						GetPlayer()->SetUIMessageEnabled(uimsgMapHint, false);
 						m_chKeyDown = iVirtKey;
 						break;
 
 					case CGameKeys::keyShowGalacticMap:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						g_pHI->HICommand(CONSTLIT("uiShowGalacticMap"));
 						GetPlayer()->SetUIMessageEnabled(uimsgGalacticMapHint, false);
 						m_chKeyDown = iVirtKey;
@@ -1656,14 +1713,16 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 
 					case CGameKeys::keyPause:
 						{
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 						m_bPaused = true;
 						if (GetPlayer())
 							{
 							GetPlayer()->SetThrust(false);
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+							GetPlayer()->SetManeuver(NoRotation);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->SetFireMissile(false);
 							}
+						g_pHI->HICommand(CONSTLIT("gamePause"));
 						DisplayMessage(CONSTLIT("Game paused"));
 						m_chKeyDown = iVirtKey;
 						break;
@@ -1673,6 +1732,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (!GetPlayer()->DockingInProgress()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							ShowCommsSquadronMenu();
 							}
@@ -1680,22 +1740,28 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyClearTarget:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						GetPlayer()->SetTarget(NULL);
 						m_chKeyDown = iVirtKey;
 						break;
 
 					case CGameKeys::keyShipStatus:
 						if (!GetPlayer()->DockingInProgress())
+							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							GetModel().ShowShipScreen();
+							}
 						m_chKeyDown = iVirtKey;
 						break;
 
 					case CGameKeys::keyTargetNextEnemy:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						GetPlayer()->SelectNextTarget(1);
 						m_chKeyDown = iVirtKey;
 						break;
 
 					case CGameKeys::keyTargetPrevEnemy:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						GetPlayer()->SelectNextTarget(-1);
 						m_chKeyDown = iVirtKey;
 						break;
@@ -1704,6 +1770,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						if (!GetPlayer()->DockingInProgress()
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							ShowUsePicker();
 							}
@@ -1713,6 +1780,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyNextWeapon:
 						if (GetPlayer() && !m_bNextWeaponKey)
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->ReadyNextWeapon(1);
@@ -1725,6 +1793,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyPrevWeapon:
 						if (GetPlayer() && !m_bPrevWeaponKey)
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->SetFireMain(false);
 							GetPlayer()->ReadyNextWeapon(-1);
@@ -1748,7 +1817,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
 							Autopilot(false);
-							GetPlayer()->SetManeuver(IShipController::RotateLeft);
+							GetPlayer()->SetManeuver(RotateLeft);
 							}
 						break;
 
@@ -1757,7 +1826,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								&& !GetPlayer()->GetShip()->IsTimeStopped())
 							{
 							Autopilot(false);
-							GetPlayer()->SetManeuver(IShipController::RotateRight);
+							GetPlayer()->SetManeuver(RotateRight);
 							}
 						break;
 
@@ -1792,6 +1861,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyNextMissile:
 						if (!m_bNextMissileKey)
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->ReadyNextMissile(1);
 							UpdateWeaponStatus();
@@ -1803,6 +1873,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyPrevMissile:
 						if (!m_bPrevMissileKey)
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							Autopilot(false);
 							GetPlayer()->ReadyNextMissile(-1);
 							UpdateWeaponStatus();
@@ -1812,46 +1883,40 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyShowHelp:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						g_pHI->HICommand(CONSTLIT("uiShowHelp"));
 						break;
 
 					case CGameKeys::keyShowGameStats:
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						g_pHI->HICommand(CONSTLIT("uiShowGameStats"));
 						break;
 
 					case CGameKeys::keyVolumeDown:
-						{
-						int iVolume = GetSoundVolumeOption();
-						if (--iVolume >= 0)
-							{
-							SetSoundVolumeOption(iVolume);
-							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-							}
+						g_pHI->HICommand(CONSTLIT("uiVolumeDown"));
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						break;
-						}
 
 					case CGameKeys::keyVolumeUp:
-						{
-						int iVolume = GetSoundVolumeOption();
-						if (++iVolume <= 10)
-							{
-							SetSoundVolumeOption(iVolume);
-							DisplayMessage(strPatternSubst(CONSTLIT("Volume %d"), iVolume));
-							}
+						g_pHI->HICommand(CONSTLIT("uiVolumeUp"));
+						g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 						break;
-						}
 
 					case CGameKeys::keyShowConsole:
 						{
 						if (m_pTC->GetOptionBoolean(CGameSettings::debugMode)
 								&& !g_pUniverse->IsRegistered())
+							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							m_bDebugConsole = !m_bDebugConsole;
+							}
 						break;
 						}
 
 					case CGameKeys::keyEnableAllDevices:
 						if (!GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							GetPlayer()->EnableAllDevices(true);
 							}
@@ -1860,6 +1925,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyDisableAllDevices:
 						if (!GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							GetPlayer()->EnableAllDevices(false);
 							}
@@ -1868,6 +1934,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 					case CGameKeys::keyEnableAllDevicesToggle:
 						if (!GetPlayer()->GetShip()->IsTimeStopped())
 							{
+							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 							GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 							GetPlayer()->EnableAllDevices(!GetPlayer()->AreAllDevicesEnabled());
 							}
@@ -1882,6 +1949,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 								{
 								int iDevice = (iCommand - CGameKeys::keyEnableDeviceToggle00);
 
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_BUTTON_CLICK));
 								GetPlayer()->SetUIMessageEnabled(uimsgEnableDeviceHint, false);
 								GetPlayer()->ToggleEnableDevice(iDevice);
 								}
@@ -1889,11 +1957,20 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						else if (iVirtKey == VK_ESCAPE)
 							{
 							if (m_bShowingMap)
+								{
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 								m_bShowingMap = false;
+								}
 							else if (m_bAutopilot)
+								{
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 								Autopilot(false);
+								}
 							else
+								{
+								g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 								ShowGameMenu();
+								}
 							}
 						break;
 						}
@@ -1993,13 +2070,13 @@ LONG CTranscendenceWnd::WMKeyUp (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyRotateLeft:
-						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateLeft)
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						if (GetPlayer() && GetPlayer()->GetManeuver() == RotateLeft)
+							GetPlayer()->SetManeuver(NoRotation);
 						break;
 
 					case CGameKeys::keyRotateRight:
-						if (GetPlayer() && GetPlayer()->GetManeuver() == IShipController::RotateRight)
-							GetPlayer()->SetManeuver(IShipController::NoRotation);
+						if (GetPlayer() && GetPlayer()->GetManeuver() == RotateRight)
+							GetPlayer()->SetManeuver(NoRotation);
 						break;
 
 					case CGameKeys::keyStop:

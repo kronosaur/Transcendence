@@ -129,6 +129,7 @@ CUniverse::CUniverse (void) : CObject(&g_Class),
 		m_bRegistered(false),
 		m_bResurrectMode(false),
 		m_iTick(1),
+		m_iPaintTick(1),
 		m_pAdventure(NULL),
 		m_pPOV(NULL),
 		m_pPlayer(NULL),
@@ -209,7 +210,7 @@ void CUniverse::AddSound (DWORD dwUNID, int iChannel)
 	if (iOldChannel != -1)
 		{
 		m_pSoundMgr->Delete(iOldChannel);
-		m_Sounds.RemoveEntry(iOldChannel, NULL);
+		m_Sounds.RemoveEntry(dwUNID, NULL);
 		}
 
 	//	Add the new one
@@ -333,6 +334,8 @@ ALERROR CUniverse::CreateRandomItem (const CItemCriteria &Crit,
 	Ctx.iLevel = (GetCurrentSystem() ? GetCurrentSystem()->GetLevel() : 1);
 
 	pTable->AddItems(Ctx);
+
+	delete pTable;
 
 	//	Done
 
@@ -612,10 +615,21 @@ CSpaceObject *CUniverse::FindObject (DWORD dwID)
 //	Finds the object by ID
 
 	{
+	CSpaceObject *pObj = NULL;
+
+	//	Look for an object in the current system
+
 	if (m_pCurrentSystem)
-		return m_pCurrentSystem->FindObject(dwID);
-	else
-		return NULL;
+		pObj = m_pCurrentSystem->FindObject(dwID);
+
+	//	Look for a mission
+
+	if (pObj == NULL)
+		pObj = m_AllMissions.GetMissionByID(dwID);
+
+	//	Done
+
+	return pObj;
 	}
 
 CShipClass *CUniverse::FindShipClassByName (const CString &sName)
@@ -822,7 +836,7 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 //	GetCurrentAdventureExtensions
 //
 //	Returns the list of extensions enabled for the current adventure.
-//	[Does not include any extensions that the adventure itself included.]
+//	[Does not include any libraries nor any auto-included extension.]
 
 	{
 	int i;
@@ -843,21 +857,16 @@ void CUniverse::GetCurrentAdventureExtensions (TArray<DWORD> *retList)
 		else if (pExtension->GetType() == extLibrary)
 			NULL;
 
+		//	Do no include extensions that are automatically included.
+
+		else if (pExtension->IsAutoInclude())
+			NULL;
+
 		//	Include other extensions
 
 		else
 			retList->Insert(pExtension->GetUNID());
 		}
-	}
-
-CTimeSpan CUniverse::GetElapsedGameTime (void)
-
-//	GetElapsedGameTime
-//
-//	Returns the amount of time that has elapsed in the game.
-
-	{
-	return m_Time.GetElapsedTimeAt(m_iTick);
 	}
 
 CString CUniverse::GetExtensionData (EStorageScopes iScope, DWORD dwExtension, const CString &sAttrib)
@@ -1103,6 +1112,32 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 		m_bDebugMode = Ctx.bDebugMode;
 
+		//	If necessary, figure out where the main files are
+
+		if (Ctx.sFilespec.IsBlank())
+			{
+			//	If we're always using the TDB, then just load that.
+
+			if (Ctx.bForceTDB)
+				Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+
+			//	Check the source subdirector first.
+
+			else if (pathExists("Source\\Transcendence.xml"))
+				Ctx.sFilespec = CONSTLIT("Source\\Transcendence.xml");
+
+			//	If we don't have it, then check the current directory for
+			//	backwards compatibility.
+
+			else if (pathExists("Transcendence.xml"))
+				Ctx.sFilespec = CONSTLIT("Transcendence.xml");
+
+			//	If nothing is found, then just load the TDB file.
+
+			else
+				Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+			}
+
 		//	We only load adventure desc (no need to load the whole thing)
 
 		DWORD dwFlags = CExtensionCollection::FLAG_DESC_ONLY;
@@ -1141,8 +1176,13 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 
 		if (Ctx.bDefaultExtensions)
 			{
+			ASSERT(!Ctx.bInLoadGame);
+
+			//	If we want default extensions, then add all possible extensions,
+			//	including auto extensions.
+
 			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure, 
-					dwFlags,
+					dwFlags | CExtensionCollection::FLAG_INCLUDE_AUTO,
 					TArray<DWORD>(),
 					&Ctx.Extensions, 
 					retsError))
@@ -1150,9 +1190,28 @@ ALERROR CUniverse::Init (SInitDesc &Ctx, CString *retsError)
 			}
 		else if (Ctx.ExtensionUNIDs.GetCount() > Ctx.Extensions.GetCount())
 			{
+			//	If our caller passed in an UNID list, then resolve to actual
+			//	extension objects.
+			//
+			//	NOTE: If we're creating a new game we take this opportunity to
+			//	add auto extensions.
+
 			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure,
-					dwFlags,
+					dwFlags | (Ctx.bInLoadGame ? 0 : CExtensionCollection::FLAG_INCLUDE_AUTO),
 					Ctx.ExtensionUNIDs,
+					&Ctx.Extensions,
+					retsError))
+				return error;
+			}
+		else if (!Ctx.bInLoadGame && !m_bDebugMode)
+			{
+			//	If the caller passed in a list of extension objects (or if we 
+			//	didn't add any extensions) then include auto extensions.
+			//	(But only if we're in a new game).
+
+			if (error = m_Extensions.ComputeAvailableExtensions(Ctx.pAdventure,
+					dwFlags | CExtensionCollection::FLAG_AUTO_ONLY | CExtensionCollection::FLAG_ACCUMULATE,
+					TArray<DWORD>(),
 					&Ctx.Extensions,
 					retsError))
 				return error;
@@ -1593,7 +1652,8 @@ ALERROR CUniverse::LoadFromStream (IReadStream *pStream, DWORD *retdwSystemID, D
 		{
 		pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		ExtensionList.InsertEmpty(dwLoad);
-		pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(SExtensionSaveDesc));
+		if (dwLoad > 0)
+			pStream->Read((char *)&ExtensionList[0], dwLoad * sizeof(SExtensionSaveDesc));
 		}
 	else if (Ctx.dwVersion >= 8)
 		{
@@ -1875,6 +1935,8 @@ void CUniverse::PaintPOV (CG16bitImage &Dest, const RECT &rcView, DWORD dwFlags)
 	{
 	if (m_pPOV)
 		m_pPOV->GetSystem()->PaintViewport(Dest, rcView, m_pPOV, dwFlags);
+
+	m_iPaintTick++;
 	}
 
 void CUniverse::PaintPOVLRS (CG16bitImage &Dest, const RECT &rcView, bool *retbNewEnemies)
@@ -1897,6 +1959,8 @@ void CUniverse::PaintPOVMap (CG16bitImage &Dest, const RECT &rcView, Metric rMap
 	{
 	if (m_pPOV)
 		m_pPOV->GetSystem()->PaintViewportMap(Dest, rcView, m_pPOV, rMapScale);
+
+	m_iPaintTick++;
 	}
 
 void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
@@ -1906,7 +1970,9 @@ void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
 //	Plays a sound from the given source
 
 	{
-	if (!m_bNoSound && m_pSoundMgr && m_pPOV)
+	if (!m_bNoSound 
+			&& m_pSoundMgr 
+			&& iChannel != -1)
 		{
 		//	Default to full volume
 
@@ -1916,7 +1982,7 @@ void CUniverse::PlaySound (CSpaceObject *pSource, int iChannel)
 		//	Figure out how close the source is to the POV. The sound fades as we get
 		//	further away.
 
-		if (pSource)
+		if (pSource && m_pPOV)
 			{
 			CVector vDist = pSource->GetPos() - m_pPOV->GetPos();
 			Metric rDist2 = vDist.Length2();
@@ -2017,9 +2083,12 @@ ALERROR CUniverse::Reinit (void)
 	//	in the past.
 
 	m_iTick = 1;
+	m_iPaintTick = 1;
 
 	//	Clear some basic variables
 
+	m_bRegistered = false;
+	m_bResurrectMode = false;
 	m_Time.DeleteAll();
 	m_pPOV = NULL;
 	SetCurrentSystem(NULL);
@@ -2475,7 +2544,7 @@ CTimeSpan CUniverse::StopGameTime (void)
 	return timeSpan(m_StartTime, StopTime);
 	}
 
-void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
+void CUniverse::Update (SSystemUpdateCtx &Ctx)
 
 //	Update
 //
@@ -2485,7 +2554,7 @@ void CUniverse::Update (Metric rSecondsPerTick, bool bForceEventFiring)
 	//	Update system
 
 	if (m_pPOV)
-		m_pPOV->GetSystem()->Update(rSecondsPerTick, bForceEventFiring);
+		m_pPOV->GetSystem()->Update(Ctx);
 
 	//	Fire timed events
 

@@ -587,7 +587,7 @@ Metric CalcLevelDiffStrength (int iDiff)
 		}
 	}
 
-IShipController::ManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle)
+EManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle)
 
 //	CalcTurnManeuver
 //
@@ -598,13 +598,13 @@ IShipController::ManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int
 
 	if ((iTurn >= (360 - (iRotationAngle / 2)))
 			|| (iTurn <= (iRotationAngle / 2)))
-		return IShipController::NoRotation;
+		return NoRotation;
 	else
 		{
 		if (iTurn >= 180)
-			return IShipController::RotateRight;
+			return RotateRight;
 		else
-			return IShipController::RotateLeft;
+			return RotateLeft;
 		}
 	}
 

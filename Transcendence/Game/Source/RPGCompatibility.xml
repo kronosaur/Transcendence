@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- COMPATIBILITY TYPES =======================================================
+
+	This module contains types that have been DEPRECATED and superceded by 
+	newer types.
+
+							SYSTEM
+	OLD TYPE				VERSION		NEW TYPE
+
+	dsJettison				78			dsRPGJettison
+	dsLoot					78			dsRPGLoot
+	dsRepairItem			78			dsRPGRepairItem
+
+	-->
+
+	<DockScreen UNID="&dsRepairItem;"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*"
+			>
+			(scrSetListFilter gScreen gShowCriteria)
+		</ListOptions>
+
+		<Panes>
+			<Default
+					desc=	"You do not have any items that we can repair.">
+
+				<OnPaneInit>
+					(block (thisItem currencyUsed)
+						(setq thisItem (scrGetItem gScreen))
+						(setq currencyUsed (objGetDefaultCurrency gSource))
+						(setq gResult Nil)
+
+						(if thisItem
+							(block (desc)
+								; Compute the cost to repair the item
+								(setq gCost (divide (multiply (itmGetPrice thisItem currencyUsed) gMargin) 100))
+
+								(switch
+									(gr gCost (objGetBalance gPlayerShip currencyUsed))
+										(setq desc (cat "It will cost " (fmtCurrency currencyUsed gCost) " to repair " (itmGetName thisItem 0x04) ". Unfortunately, you cannot afford the cost."))
+
+									(block Nil
+										(setq desc (cat "We can repair " (itmGetName thisItem 0x04) " for " (fmtCurrency currencyUsed gCost) "."))
+										(setq gResult True)
+										)
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+							)
+
+						(scrEnableAction gScreen 0 gResult)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Repair Item" default="1" key="R">
+						(block Nil
+							(setq gItem (scrGetItem gScreen))
+							
+							(shpEnhanceItem gPlayerShip gItem)
+							(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
+							
+							(scrShowPane gScreen "Success")
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+                        (scrExitScreen gScreen)
+					</Action>
+				</Actions>
+
+			</Default>
+
+			<Success
+					noListNavigation="true"
+					>
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "Your " (itmGetName gItem 0) " has been repaired successfully."))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+                        (scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Success>
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Jettison
+
+		gPrevScreen: Must be set to the name/UNID of the screen to
+				navigate to when done.
+
+	-->
+
+	<DockScreen UNID="&dsJettison;"
+			name=				"Ship's Cargo Hold"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*U"
+			/>
+
+		<Panes>
+			<Default
+					desc=	"There are no items in your cargo hold that can be jettisoned.">
+
+				<OnPaneInit>
+					(block (thisItem)
+						(setq thisItem (scrGetItem gScreen))
+
+						(if thisItem
+							(block (availCount fitCount)
+								(setq availCount (itmGetCount thisItem))
+								(setq fitCount (objGetFitCount gSource thisItem))
+								(setq gMaxCount (min availCount fitCount))
+
+								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
+								(if (gr gMaxCount 1)
+									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
+									)
+
+								(if (ls (objGetCargoSpaceLeft gSource) 200000)
+									(setq desc (cat desc "\nCapacity: " (strMassString (objGetCargoSpaceLeft gSource))))
+									)
+
+								(switch
+									(eq gMaxCount 0)
+										(setq desc (cat desc "\n\nThere is not enough space here to jettison " (itmGetName thisItem 4) "."))
+									(eq gMaxCount 1)
+										(setq desc (cat desc "\n\nThere is enough space to jettison one " (itmGetName thisItem 0) "."))
+									(gr availCount fitCount)
+										(setq desc (cat desc "\n\nThere is enough space to jettison only " fitCount " " (itmGetName thisItem 2) "."))
+									(setq desc (cat desc "\n\nThere is enough space to jettison all " (itmGetName thisItem 8) "."))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+							(setq gMaxCount 0)
+							)
+
+						; Enable/disable actions
+						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Jettison this Item" default="1" key="J" >
+						(switch
+							(gr gMaxCount 1)
+								(scrShowPane gScreen "JettisonQuantity")
+
+							(eq gMaxCount 1)
+								(block (itemsToJettison)
+									; Dump items
+									(setq itemsToJettison (scrRemoveItem gScreen 1))
+									(intJettisonItem gSource itemsToJettison)
+									(scrShowPane gScreen "Default")
+									)
+							)
+				</Action>
+
+					<Action name="Done" cancel="1" key="D">
+						(scrShowScreen gScreen gPrevScreen)
+				</Action>
+
+			</Actions>
+
+		</Default>
+
+			<JettisonQuantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "How many items do you wish to jettison?"))
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Jettison" default="1" key="J">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								(block (itemsToJettison)
+									; Dump items
+									(setq itemsToJettison (scrRemoveItem gScreen count))
+									(intJettisonItem gSource itemsToJettison)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<ShowPane pane="Default"/>
+					</Action>
+
+				</Actions>
+
+			</JettisonQuantity>
+		</Panes>
+	</DockScreen>
+
+	<!-- Loot 
+
+		gPrevScreen: Must be set to the name/UNID of the screen to
+				navigate to when done.
+
+	-->
+
+	<DockScreen UNID="&dsLoot;"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"station"
+			list=		"*U"
+			/>
+
+		<Panes>
+			<Default
+					desc=		"There are no items here.">
+
+				<OnPaneInit>
+					(block (thisItem)
+						(setq thisItem (scrGetItem gScreen))
+						(if thisItem
+							(block (fitCount availCount desc)
+								(setq availCount (itmGetCount thisItem))
+								(setq fitCount (objGetFitCount gPlayerShip thisItem))
+								
+								(setq gMaxCount (min availCount fitCount))
+
+								(setq desc (cat "Unit mass: " (strMassString (itmGetMass thisItem))))
+								(if (gr gMaxCount 1)
+									(setq desc (cat desc " (" gMaxCount " at " (strMassString (multiply (itmGetMass thisItem) gMaxCount)) ")"))
+									)
+
+								(setq desc (cat desc "\n\n"))
+
+								(switch
+									(eq gMaxCount 0)
+										(setq desc (cat desc "You do not have enough space to carry " (itmGetName thisItem 4) "."))
+									(eq gMaxCount 1)
+										(setq desc (cat desc "You have enough room to carry one " (itmGetName thisItem 0) "."))
+									(gr availCount fitCount)
+										(setq desc (cat desc "You have enough room to carry only " fitCount " " (itmGetName thisItem 2) "."))
+									(setq desc (cat desc "You have enough room to carry all " (itmGetName thisItem 8) "."))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+							(setq gMaxCount 0)
+							)
+
+						; Enable/disable actions
+						(scrEnableAction gScreen 0 (gr gMaxCount 0))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Loot this Item" key="L" default="1" >
+						<![CDATA[
+						(if (> gMaxCount 1)
+							(scrShowPane gScreen "LootQuantity")
+							(if (eq gMaxCount 1)
+								(block (itemsToLoot)
+									(setq itemsToLoot (scrRemoveItem gScreen 1))
+									(objAddItem gPlayerShip itemsToLoot)
+									(typSetData &svPlayer; 'tutorialLooted True)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+							]]>
+					</Action>
+
+					<Action name="Done" cancel="1" key="D">
+						(scrShowScreen gScreen gPrevScreen)
+					</Action>
+
+				</Actions>
+
+			</Default>
+
+			<LootQuantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "How many items do you wish to loot?"))
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Loot" default="1" key="L">
+						<![CDATA[
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (> count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								(block (itemsToLoot)
+									(setq itemsToLoot (scrRemoveItem gScreen count))
+									(objAddItem gPlayerShip itemsToLoot)
+									(typSetData &svPlayer; 'tutorialLooted True)
+									(scrShowPane gScreen "Default")
+									)
+								)
+							)
+							]]>
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<ShowPane pane="Default"/>
+					</Action>
+
+				</Actions>
+
+			</LootQuantity>
+		</Panes>
+
+	</DockScreen>
+
+</TranscendenceModule>

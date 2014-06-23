@@ -26,6 +26,7 @@
 #define FIELD_EPITAPH						CONSTLIT("epitaph")
 #define FIELD_EXTENSIONS					CONSTLIT("extensions")
 #define FIELD_GAME_ID						CONSTLIT("gameID")
+#define FIELD_LEAGUE						CONSTLIT("league")
 #define FIELD_RESURRECT_COUNT				CONSTLIT("resurrectCount")
 #define FIELD_SCORE							CONSTLIT("score")
 #define FIELD_SHIP_CLASS					CONSTLIT("shipClass")
@@ -303,6 +304,11 @@ void CGameRecord::SaveToJSON (CJSONValue *retOutput) const
 	retOutput->InsertHandoff(FIELD_GAME_ID, CJSONValue(m_sGameID));
 	retOutput->InsertHandoff(FIELD_ADVENTURE, CJSONValue((int)m_dwAdventure));
 	retOutput->InsertHandoff(FIELD_ADVENTURE_ID, CJSONValue(GetAdventureID()));
+
+	if (IsRegistered())
+		retOutput->InsertHandoff(FIELD_LEAGUE, CJSONValue(CONSTLIT("registered")));
+	else
+		retOutput->InsertHandoff(FIELD_LEAGUE, CJSONValue(CONSTLIT("unregistered")));
 
 	CJSONValue Extensions(CJSONValue::typeArray);
 	for (i = 0; i < m_Extensions.GetCount(); i++)

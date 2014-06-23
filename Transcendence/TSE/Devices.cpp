@@ -397,16 +397,17 @@ ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 	//	Get the device
 
 	CInstalledDevice *pDevice = Ctx.GetDevice();
-	if (pDevice == NULL)
-		return CC.CreateNil();
 
 	//	Get the property
 
 	if (strEquals(sName, PROPERTY_ENABLED))
-		return CC.CreateBool(pDevice->IsEnabled());
+		return (pDevice ? CC.CreateBool(pDevice->IsEnabled()) : CC.CreateNil());
 
 	else if (strEquals(sName, PROPERTY_POS))
 		{
+		if (pDevice == NULL)
+			return CC.CreateNil();
+
 		//	Create a list
 
 		ICCItem *pResult = CC.CreateLinkedList();
@@ -428,7 +429,7 @@ ICCItem *CDeviceClass::GetItemProperty (CItemCtx &Ctx, const CString &sName)
 		}
 
 	else if (strEquals(sName, PROPERTY_SECONDARY))
-		return CC.CreateBool(pDevice->IsSecondaryWeapon());
+		return (pDevice ? CC.CreateBool(pDevice->IsSecondaryWeapon()) : CC.CreateNil());
 
 	else if (m_pItemType)
 		return CreateResultFromDataField(CC, m_pItemType->GetDataField(sName));

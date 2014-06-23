@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Auton Base Class
+	
+	Do not rely on the implementation of this class across versions. If you wish
+	to inherit from this class in an Extension, you should copy the class into
+	your own Extension and then inherit from that.
+
+	EXTRA DATA
+	
+	autonItemType:		The type of item that created the auton.
+	
+	behavior:			Autons's current behavior
+							Nil						= nothing
+							'attackingAtWill		= attacking any target in range
+							'attackingTarget		= attacking a target
+							'custom					= handled by derived class
+							'escorting				= escorting the player
+							'returning				= returning to player ship
+							'waiting				= waiting for the player
+
+	EVENTS
+		
+	Derrived types may implement the following events:
+		
+	CreateFromItem: Create the auton ship. gData has the following fields:
+				
+			item: The item used to create the auton
+			sourceObj: The object launching the auton
+			type: The ship class of the auton to create
+				
+			By default this event creates an auton of the given type and 
+			orders it to escort the launching object.
+				
+			NOTE: If you override this event it recommended that you call
+			the base class event (which returns the auton object) and then
+			modify the auton.
+				
+	ConvertToItem: This event must return an item structure representing the
+			auton when converted to an item. By default we look at the auton
+			object's data ("autonItemType"), which is set by the default
+			CreateFromItem event.
+		
+	OrderAttackSelf: Implement behavior when the auton is ordered to attack 
+			itself. By default, the auton refuses to comply.
+			
+	LANGUAGE
+	
+	Derrived types may define the following language elements:
+	
+	AttackTargetAck: Reply when auton is ordered to attack a valid target.
+	
+	DeployAck: Reply when auton is deployed.
+	
+	FormUpAck: Reply when auton is ordered to form up.
+	
+	ReturnAck: Reply when auton is ordered to return to the ship.
+	
+	WaitAck: Reply when auton is ordered to wait.
+				
+	-->
+
+	<ShipClass UNID="&baStdAutonBase;"
+			class=				"(auton base class)"
+			virtual=			"true"
+
+			attributes=			"baseClass"
+			>
+
+		<Communications>
+			<Message name="Attack target" key="A">
+				<OnShow>
+					(and (objGetTarget gSender)
+						(not (eq (objGetTarget gSender) (objGetTarget gSource)))
+						(not (shpGetAISetting gSource 'nonCombatant))
+						(objGetItems gSource "wI")
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+				
+				<Invoke>
+					(switch
+						;	If ordered to attack ourselves, hilarity ensues
+						
+						(eq (objGetTarget gSender) gSource)
+							(objFireEvent gSource "OrderAttackSelf")
+							
+						;	If no target, unable to compy
+						
+						(not (objGetTarget gSender))
+							(objSendMessage gSender gSource "\"Unable to comply\"")
+
+						;	Attack the target
+						
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack (objGetTarget gSender))
+							
+							(objSetData gSource 'behavior 'attackingTarget)
+							(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Break &amp; attack" key="B">
+				<OnShow>
+					(and (eq (objGetData gSource 'behavior) 'escorting)
+						(not (shpGetAISetting gSource 'nonCombatant))
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+				
+				<Invoke>
+					(block (theTarget)
+						(switch
+							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
+									(gr (objGetDistance gPlayerShip theTarget) 100)
+									)
+								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
+							
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'attack theTarget)
+								
+								(objSetData gSource 'behavior 'attackingAtWill)
+								(objSendMessage gSender gSource (objTranslate gSource 'AttackTargetAck "\"Auton order acknowledged\""))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Form up" key="F">
+				<OnShow>
+					(and
+						(or (eq (objGetData gSource 'behavior) 'waiting)
+							(objCommunicate gSource gSender 'QueryAttackStatus)
+							)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block (behavior)
+						(setq behavior (objGetData gSource 'behavior))
+						(switch
+							(or (not behavior) (eq behavior 'escorting))
+								(block Nil
+									(objCommunicate gSource gSender 'FormUp)
+									(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+									)
+
+							(block Nil
+								(shpCancelOrders gSource)
+								(shpOrder gSource 'escort gPlayerShip)
+								
+								(objSetData gSource 'behavior 'escorting)
+								(objSendMessage gSender gSource (objTranslate gSource 'FormUpAck "\"Auton order acknowledged\""))
+								)
+							)
+						)
+				</Invoke>
+			</Message>
+			
+			<Message name="Return to ship" key="R">
+				<OnShow>
+					(and
+						(objGetItems gSender "cIN +AutonBay;")
+						(objGetData gSource 'autonItemType)
+						(or
+							(not (objGetData gSource 'behavior))
+							(eq (objGetData gSource 'behavior) 'escorting)
+							)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+				
+				<Invoke>
+					(switch
+						
+						;	Make sure that there is enough cargo space in the ship to
+						;	hold the auton.
+						
+						(gr (objFireEvent gSource "CalcMass") (objGetCargoSpaceLeft gSender))
+							(objSendMessage gSender gSource (objTranslate gSource 'ErrNoSpaceToReturn "\"Not enough space in cargo hold to return to ship\""))
+								
+						;	Return
+							
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate gSender)
+						
+							(objSetData gSource 'behavior 'returning)
+							(objSendMessage gSender gSource (objTranslate gSource 'ReturnAck "\"Auton order acknowledged\""))
+							)
+						)
+				</Invoke>
+			</Message>
+
+			<Message name="Wait" key="W">
+				<OnShow>
+					(and
+						(or
+							(not (objGetData gSource 'behavior))
+							(eq (objGetData gSource 'behavior) 'escorting)
+							)
+						(objGetProperty gSource 'playerWingman)
+						)
+				</OnShow>
+
+				<Invoke>
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'hold)
+						
+						(objSetData gSource 'behavior 'waiting)
+						(objSendMessage gSender gSource (objTranslate gSource 'WaitAck "\"Auton order acknowledged\""))
+						)
+				</Invoke>
+			</Message>
+		</Communications>
+		
+		<Events>
+			<CalcMass>
+				(block (autonType)
+					(setq autonType (objGetData gSource 'autonItemType))
+					(if (not autonType)
+						(setq autonType &itAutoSentinel;)
+						)
+
+					(add
+						(itmGetMass autonType)
+						(map (objGetItems gSource "*U") 'reduceSum theItem 
+							(multiply (itmGetCount theItem) (itmGetMass theItem))
+							)
+						)
+					)
+			</CalcMass>
+			
+			<ConvertToItem>
+				(block (autonType autonItem)
+					(setq autonType (objGetData gSource 'autonItemType))
+					(setq autonItem 
+						(itmCreate (if autonType autonType &itAutoSentinel;) 1)
+						)
+						
+					;	Store the current armor and devices on the auton
+					
+					(setq autonItem (itmSetData autonItem 'autonConfig {
+						armor: (map (objGetItems gSource "aI") theArmor	{
+							item: (itmSetProperty theArmor 'installed Nil)
+							hp: (subtract (itmGetProperty theArmor 'completeHP) (objGetArmorDamage gSource theArmor))
+							})
+							
+						devices: (map (objGetItems gSource "dI") theDev {
+							item: (itmSetProperty theDev 'installed Nil)
+							})
+							
+						cargo: (objGetItems gSource "*U")
+						}))
+						
+					;	Add one charge on the item for every ton of cargo inside the auton
+					
+					(setq autonItem (itmSetProperty autonItem 'charges
+						(divide 
+							(map (objGetItems gSource "*U") 'reduceSum theItem 
+								(multiply (itmGetCount theItem) (itmGetMass theItem))
+								)
+							1000
+							)
+						))
+						
+					;	Done
+					
+					autonItem
+					)
+			</ConvertToItem>
+			
+			<CreateFromItem>
+				(block (auton sourceObj sourceItem autonConfig)
+					(setq sourceObj (@ gData 'sourceObj))
+					(setq sourceItem (@ gData 'item))
+					
+					;	Create the auton
+					
+					(setq auton
+						(sysCreateShip 
+							(@ gData 'type)
+							(objGetPos sourceObj)
+							&svFriendlyAuton;
+							)
+						)
+						
+					;	If the source item has a configuration then we need to initialize the ship.
+					
+					(if (setq autonConfig (itmGetData sourceItem 'autonConfig))
+						(block Nil
+						
+							;	Start by installing the proper armor
+							
+							(for i 0 (subtract (shpGetArmorCount auton) 1)
+								(block (newArmorItem)
+									(setq newArmorItem (@ (@ (@ autonConfig 'armor) i) 'item))
+									
+									(objAddItem auton newArmorItem)
+									(shpInstallArmor auton newArmorItem i)
+									
+									;	Set the appropriate hit points
+									
+									(objSetItemProperty auton (shpGetArmor auton i) 'hp (@ (@ (@ autonConfig 'armor) i) 'hp))
+									)
+								)
+								
+							;	Uninstall all devices
+							
+							(enum (objGetItems auton "dI") theItem
+								(shpRemoveDevice auton theItem)
+								)
+								
+							;	Install required devices
+							
+							(enum (@ autonConfig 'devices) deviceDesc
+								(block (newDeviceItem)
+									(setq newDeviceItem (@ deviceDesc 'item))
+									
+									(objAddItem auton newDeviceItem)
+									(shpInstallDevice auton newDeviceItem)
+									)
+								)
+								
+							;	Remove uninstalled armor and devices
+								
+							(enum (objGetItems auton "adU") theItem
+								(objRemoveItem auton theItem)
+								)
+								
+							;	Add items to cargo
+							
+							(enum (@ autonConfig 'cargo) theItem
+								(objAddItem auton theItem)
+								)
+							)
+						)
+						
+					;	Order the auton to escort the source
+					
+					(shpOrder auton 'escort sourceObj)
+					(objSetData auton 'behavior 'escorting)
+					
+					;	Store the item type in the auton object so that we can
+					;	convert it back later.
+					
+					(objSetData auton 'autonItem sourceItem)
+					(objSetData auton 'autonItemType (itmGetType sourceItem))
+					
+					;	Welcome message
+					
+					(objSendMessage sourceObj auton (objTranslate auton 'DeployAck (cat "\"" (objGetName auton 0x01) " online\"")))
+					
+					;	Return the auton created, in case subclasses want to
+					;	modify it.
+					
+					auton
+					)
+			</CreateFromItem>
+			
+			<OnCreate>
+				(block Nil
+					;	If this is a friendly auton then we assume that we are escorting
+					;	the player. We need to do this for backwards compatibility, in case
+					;	anyone tries to create an auton without going through CreateFromItem
+					
+					(if (eq (objGetSovereign gSource) &svFriendlyAuton;)
+						(block Nil
+							(objSetProperty gSource 'playerWingman True)
+							)
+						)
+					)
+			</OnCreate>
+			
+			<OnEnteredGate>
+				(switch
+					;	If we returned to the player, convert back to an item
+						
+					(and aGateObj (eq aGateObj gPlayerShip))
+						(block Nil
+							(objAddItem gPlayerShip (objFireEvent gSource "ConvertToItem"))
+							)
+					)
+			</OnEnteredGate>
+			
+			<OnOrdersCompleted>
+				(block (behavior theTarget)
+					(setq behavior (objGetData gSource 'behavior))
+					
+					; Set orders and state
+					
+					(switch
+						(not (objGetProperty gSource 'playerWingman))
+							Nil
+							
+						(and (eq behavior 'attackingAtWill)
+								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
+								(leq (objGetDistance gPlayerShip theTarget) 100)
+								)
+							(shpOrder gSource 'attack theTarget)
+							
+						gPlayerShip
+							(block Nil
+								(shpOrder gSource 'escort gPlayerShip)
+								(objSetData gSource 'behavior 'escorting)
+								)
+
+						(block Nil
+							(shpOrder gSource 'hold)
+							(objSetData gSource 'behavior 'waiting)
+							)
+						)
+					)
+			</OnOrdersCompleted>
+			
+			<OnPlayerLeftSystem>
+				(block (behavior)
+					(setq behavior (objGetData gSource 'behavior))
+					(switch
+						(not (objGetProperty gSource 'playerWingman))
+							Nil
+							
+						; If we're waiting, stay in this system and wait for the player
+						
+						(eq behavior 'waiting)
+							'waitForPlayer
+
+						; Otherwise, follow the player through the gate
+						
+						'followPlayer
+						)
+					)
+			</OnPlayerLeftSystem>
+			
+			<OrderAttackSelf>
+				(objSendMessage gSender gSource "\"Unable to comply\"")
+			</OrderAttackSelf>
+		</Events>
+	</ShipClass>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq rpgCleanUpSuspendedAuton (lambda (sourceObj)
+				(block (auton)
+					(if (setq auton (objGetObjRefData sourceObj 'rpgSuspendedAuton))
+						(objDestroy auton)
+						)
+						
+					(objSetObjRefData sourceObj 'rpgSuspendedAuton Nil)
+					)
+				))
+
+			(setq rpgCreateSuspendedAuton (lambda (sourceObj autonItem)
+				(block (autonUNID auton)
+					(switch
+					
+						;	Get the UNID
+						
+						(not (setq autonUNID (itmGetStaticData autonItem 'autonShipClass)))
+							Nil
+					
+						;	Check to see if we've already created this auton. If so, then
+						;	we just return it.
+					
+						(and (setq auton (objGetObjRefData sourceObj 'rpgSuspendedAuton))
+								(itmIsEqual autonItem (objGetData auton 'autonItem))
+								)
+							auton
+					
+						;	Let the auton ship class create itself based on the item
+					
+						(block Nil
+							(setq auton
+								(typFireEvent autonUNID 'CreateFromItem { sourceObj:sourceObj type:autonUNID item:autonItem })
+								)
+								
+							;	Suspend the ship
+							
+							(objSuspend auton)
+								
+							;	Remember the suspended auton, in case we need it later.
+							
+							(objSetObjRefData sourceObj 'rpgSuspendedAuton auton)
+							
+							;	Done
+							
+							auton
+							)
+						)
+					)
+				))
+				
+			(setq rpgDeployAutonFromItem (lambda (sourceObj autonUNID autonItem)
+				(block Nil
+					;	Let the auton ship class create itself based on the item
+				
+					(typFireEvent autonUNID 'CreateFromItem { sourceObj:sourceObj type:autonUNID item:autonItem })
+				
+					;	Identify and remove the item from the source
+				
+					(itmSetKnown autonItem)
+					(objRemoveItem sourceObj autonItem 1)
+					)
+				))
+				
+			(setq rpgGetAutonConfig (lambda (autonItem)
+				;
+				;	We return a struct with the following elements:
+				;
+				;		armor: An array of structs, each struct with the following elements:
+				;
+				;				item: An item descriptor
+				;				hp: The number of hit points left
+				;
+				;		default: If True, then the auton is identical to its original
+				;				ship class.
+				;
+				;		devices: An array of structs, each struct with the following
+				;				elements:
+				;
+				;				item: An item descriptor
+				
+				(block (savedConfig autonShipClass)
+				
+					(switch
+						;	We've already stored the information, so we just return it.
+						
+						(setq savedConfig (itmGetData autonItem 'autonConfig))
+							savedConfig
+							
+						;	If we have the ship class then we can take information directly
+						;	from it.
+						
+						(setq autonShipClass (itmGetStaticData autonItem 'autonShipClass))
+							{	default: True
+							
+								armor: (map (typGetDataField autonShipClass 'armorItems) Nil theArmor
+									{
+										item: theArmor
+										hp: (itmGetProperty theArmor 'completeHP)
+										}
+									)
+
+								devices: (map (typGetDataField autonShipClass 'deviceItems) Nil theDevice
+									{
+										item: theDevice
+										}
+									)
+								}
+
+						;	Otherwise, there is nothing we can do.
+
+						Nil
+						)
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

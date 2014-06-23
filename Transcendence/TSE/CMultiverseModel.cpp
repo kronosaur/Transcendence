@@ -48,6 +48,28 @@ CMultiverseModel::CMultiverseModel (void) :
 	{
 	}
 
+void CMultiverseModel::AddResources (const CMultiverseCatalogEntry &Entry)
+
+//	AddResources
+//
+//	Adds resources from the given entry to the m_Resources array.
+
+	{
+	int i;
+
+	for (i = 0; i < Entry.GetResourceCount(); i++)
+		{
+		const CMultiverseFileRef &FileRef = Entry.GetResourceRef(i);
+
+		SResourceDesc *pNewDesc = m_Resources.SetAt(FileRef.GetOriginalFilename());
+		pNewDesc->sFilename = FileRef.GetOriginalFilename();
+		pNewDesc->sFilePath = FileRef.GetFilePath();
+
+		pNewDesc->pEntry = &Entry;
+		pNewDesc->iIndex = i;
+		}
+	}
+
 void CMultiverseModel::DeleteCollection (void)
 
 //	DeleteCollection
@@ -59,6 +81,7 @@ void CMultiverseModel::DeleteCollection (void)
 
 	{
 	m_Collection.DeleteAll();
+	m_Resources.DeleteAll();
 	m_fCollectionLoaded = false;
 	}
 
@@ -226,6 +249,47 @@ CMultiverseModel::EOnlineStates CMultiverseModel::GetOnlineState (CString *retsU
 			*retsUsername = m_sUsername;
 		return stateOnline;
 		}
+	}
+
+bool CMultiverseModel::GetResourceFileRefs (const TArray<CString> &Filespecs, TArray<CMultiverseFileRef> *retFileRefs) const
+
+//	GetResourceFilePaths
+//
+//	Returns a filepath for each of the files
+
+	{
+	CSmartLock Lock(m_cs);
+	int i;
+
+	retFileRefs->DeleteAll();
+	for (i = 0; i < Filespecs.GetCount(); i++)
+		{
+		//	We index by filename
+
+		CString sFilename = pathGetFilename(Filespecs[i]);
+
+		//	Look up the resource
+
+		SResourceDesc *pDesc = m_Resources.GetAt(sFilename);
+		if (pDesc == NULL)
+			{
+			::kernelDebugLogMessage("Unable to find TDB resource file: %s.", sFilename);
+			continue;
+			}
+
+		//	Return a copy of it
+
+		CMultiverseFileRef *pNewRef = retFileRefs->Insert();
+		*pNewRef = pDesc->pEntry->GetResourceRef(pDesc->iIndex);
+
+		//	Set the local filespec that we expect.
+
+		pNewRef->SetFilespec(Filespecs[i]);
+		}
+
+	//	Done
+
+	return (retFileRefs->GetCount() > 0);
 	}
 
 bool CMultiverseModel::IsLoadCollectionNeeded (void) const
@@ -399,7 +463,13 @@ ALERROR CMultiverseModel::SetCollection (const CJSONValue &Data, CString *retsRe
 
 	DeleteCollection();
 	for (i = 0; i < NewCollection.GetCount(); i++)
+		{
 		m_Collection.Insert(NewCollection[i]);
+
+		//	Get the resources in this entry and add them to our list
+
+		AddResources(*NewCollection[i]);
+		}
 
 	//	Done
 

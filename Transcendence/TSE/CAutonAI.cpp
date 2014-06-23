@@ -330,6 +330,28 @@ void CAutonAI::OnReadFromStream (SLoadCtx &Ctx)
 	CSystem::ReadObjRefFromStream(Ctx, &m_pDest);
 	}
 
+void CAutonAI::OnSystemLoadedNotify (void)
+
+//	OnSystemLoadedNotify
+//
+//	Deal with stuff after the system is loaded.
+
+	{
+#ifdef DEBUG
+	//	Due to a bug in previous versions, we ended up with m_pDest NULL.
+	//	I'm still not sure how this happened, but it could have been due
+	//	to a bug with not being able to save objects out of the system.
+	//
+	//	See:
+	//	http://multiverse.kronosaur.com/crashReport.hexm?clientVersion=Transcendence%2fWindows%2f1.1&reportedOn=2013-11-26T09%3a19%3a51.0976
+	//	http://multiverse.kronosaur.com/crashReport.hexm?clientVersion=Transcendence%2fWindows%2f1.1&reportedOn=2013-11-26T08%3a58%3a43.0510
+
+	if (m_State == stateOnCourseForStargate
+			&& m_pDest == NULL)
+		m_pDest = m_pShip->GetNearestStargate();
+#endif
+	}
+
 void CAutonAI::OnWriteToStream (IWriteStream *pStream)
 
 //	OnWriteToStream

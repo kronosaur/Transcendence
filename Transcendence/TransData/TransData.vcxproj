@@ -273,6 +273,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="Topology.cpp" />
+    <ClCompile Include="TopologyMap.cpp" />
     <ClCompile Include="TradeSim.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WeaponEffectChart.cpp" />
@@ -316,6 +317,11 @@
       <Project>{797712ea-a2b5-4e30-a2f9-5998e90afecc}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Game\TransData.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

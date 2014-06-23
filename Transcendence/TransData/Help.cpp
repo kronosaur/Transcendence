@@ -256,8 +256,9 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /snapshot             Generates a snapshot of an object.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
-		printf("      [/node:ID]            Look for object in given node.\n");
 		printf("      [/criteria:xxx]       Object must match criteria.\n");
+		printf("      [/node:ID]            Look for object in given node.\n");
+		printf("      [/noStars]            Do not paint starfield.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/size:n]             Size of snapshot in pixels.\n");
 		printf("      [/wait:n]             Wait this many ticks before snapshot.\n");
@@ -342,6 +343,8 @@ void ShowHelp (CXMLElement *pCmdLine)
 		}
 	else
 		{
+		printf("TransData [options] [{command-file}]\n\n");
+
 		printf("  /attributelist        List of attributes used by types.\n");
 		if (bDebug)
 			printf("  /clearRegistered      Clears registered flag on game file.\n");

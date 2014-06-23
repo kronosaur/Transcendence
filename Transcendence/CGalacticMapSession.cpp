@@ -238,7 +238,7 @@ void CGalacticMapSession::OnPaint (CG16bitImage &Screen, const RECT &rcInvalid)
 			int xShip, yShip;
 			m_pPainter->GetPos(xPos, yPos, m_rcView, m_xCenter, m_yCenter, m_iScale, &xShip, &yShip);
 
-			pPlayer->PaintMap(Screen, xShip, yShip, ViewportTransform());
+			pPlayer->PaintMap(CMapViewportCtx(), Screen, xShip, yShip);
 			}
 		}
 

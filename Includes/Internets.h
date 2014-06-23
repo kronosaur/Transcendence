@@ -7,6 +7,12 @@
 
 #include <winhttp.h>
 
+#ifdef DEBUG
+//#define DEBUG_DOWNLOAD
+#endif
+
+class IHTTPClientSessionEvents;
+
 enum EInetsErrors
 	{
 	inetsOK =						0,	//	Success
@@ -43,11 +49,9 @@ class CHTTPMessage
 		inline DWORD GetStatusCode (void) const { return m_dwStatusCode; }
 		inline const CString &GetStatusMsg (void) const { return m_sStatusMsg; }
 		inline const CString &GetURL (void) const { return m_sURL; }
-		ALERROR InitFromBuffer (const CString &sBuffer, bool bNoBody = false);
-		ALERROR InitFromBufferReset (void);
+		ALERROR InitFromStream (IReadStream &Stream, CString *retsError, bool bNoBody = false);
 		ALERROR InitRequest (const CString &sMethod, const CString &sURL);
 		ALERROR InitResponse (DWORD dwStatusCode, const CString &sStatusMsg);
-		bool IsMessageComplete (void) const { return m_iState == stateDone; }
 		inline void SetBody (IMediaType *pBody) { if (m_pBody) delete m_pBody; m_pBody = pBody; }
 		ALERROR WriteToBuffer (IWriteStream *pOutput) const;
 
@@ -59,6 +63,11 @@ class CHTTPMessage
 			stateBody,					//	Parse the body
 			stateChunk,					//	In the middle of a chunk
 			stateDone,					//	Found end of message
+
+			stateBodyDoneExpectCRLF,	//	Parse terminating CRLF (for chunked)
+			stateBodyDoneExpectLF,		//	Parse terminating LF
+			stateChunkDoneExpectCRLF,
+			stateChunkDoneExpectLF,
 			};
 
 		enum MessageTypes
@@ -75,6 +84,8 @@ class CHTTPMessage
 			};
 
 		void CleanUp (void);
+		bool ParseHTTPHeader (const CString &sHeaderLine, CString *retsError);
+		bool ParseHTTPStartLine (IReadStream &Stream, CString *retsError);
 
 		MessageTypes m_iType;
 		CString m_sMethod;				//	If method is blank, then this is a response
@@ -84,14 +95,6 @@ class CHTTPMessage
 		CString m_sStatusMsg;
 		TArray<SHeader> m_Headers;
 		IMediaType *m_pBody;
-
-		//	Parse state
-		States m_iState;
-		CMemoryWriteStream m_Buffer;	//	Accumulated buffer; depends on m_iState
-		CString m_sHeaders;				//	Sometimes headers get split across buffers
-		char *m_pPos;					//	Current parsing position in m_Buffer
-		char *m_pPosEnd;				//	End of buffer.
-		int m_iChunkLeft;				//	Amount left to read
 	};
 
 class IHTTPClientSessionEvents
@@ -101,7 +104,7 @@ class IHTTPClientSessionEvents
 		virtual void OnReceiveData (int iBytesReceived, int iBytesLeft) { }
 	};
 
-class CHTTPClientSession
+class CHTTPClientSession : public IReadStream
 	{
 	public:
 		enum EStatuses
@@ -124,6 +127,12 @@ class CHTTPClientSession
 		bool IsInternetAvailable (void);
 		EInetsErrors Send (const CHTTPMessage &Request, CHTTPMessage *retResponse, IHTTPClientSessionEvents *pEvents = NULL);
 		inline void SetStopEvent (HANDLE hEvent) { m_hStop = hEvent; }
+
+		//	IReadStream interface
+
+		virtual ALERROR Close (void) { m_sBuffer = NULL_STR; return NOERROR; }
+		virtual ALERROR Open (void) { m_sBuffer = NULL_STR; m_pBufferStart = NULL; m_dwBufferLeft = 0; return NOERROR; }
+		virtual ALERROR Read (char *pData, int iLength, int *retiBytesRead = NULL);
 
 	private:
 		enum EInternetStatuses
@@ -152,6 +161,14 @@ class CHTTPClientSession
 		EStatuses m_iStatus;
 		EInternetStatuses m_iInternetStatus;
 		DWORD m_dwLastActivity;			//	Tick on which we last used the connection
+
+		//	Buffer and state during Send()
+
+		CString m_sBuffer;
+		char *m_pBufferStart;
+		DWORD m_dwBufferLeft;
+		IHTTPClientSessionEvents *m_pEvents;
+		int m_iTotalRead;
 	};
 
 //	Media Types ----------------------------------------------------------------

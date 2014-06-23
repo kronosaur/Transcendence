@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Commonwealth Station, Starton Eridani -->
+
+	<StationType UNID="&stStartonEridani;"
+			name=				"Starton Eridani"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"&dsCommonwealthStation;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"500"
+			repairRate=			"3"
+			shipRepairRate=		"2"
+			explosionType=		"&vtThermoExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated, startonEridani"
+			level=				"1"
+
+			noArticle=			"true"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Items>
+			<RandomItem count="20" 
+					criteria=		"ad -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					level=			"2"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="20" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					level=			"2"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="5" 
+					criteria=		"* -Illegal; -Military; -Alien; -Specialty; -NotStandard; -NotForSale;"
+					level=			"3"
+					levelCurve=		"1"
+					/>
+		</Items>
+
+		<Ships>
+			<Lookup count="3" table="&tbCommEliteDefenders;"/>
+			<Lookup count="1d4" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Lookup chance="75" table="&tbCommEliteDefenders;"/>
+				<Lookup chance="25" table="&tbCommPrivateCrafts;"/>
+			</Table>
+		</Reinforcements>
+
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-3;" priceAdj="115" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
+			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
+			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+		</Trade>
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateStandardRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+			
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 150 gSource "OnTrafficControl")
+			</OnCreate>
+
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+
+			<OnTrafficControl>
+				(comTrafficControl gSource 20)
+			</OnTrafficControl>
+		</Events>
+
+		<StaticData>
+			<Info>
+				"Welcome to the Eridani system and to Starton Eridani! Settled in 2176, our small star system is one of the most friendly in all the Commonwealth. Whatever your purpose here, whether business or pleasure, we're sure that you will enjoy your stay! Please select your topic of interest:"
+			</Info>
+
+			<TouristInfo>
+				"Though far from St. Katharine's Star, the Eridani system is not the backwater station shown on the 3DVs. The bars and nightclubs of Central Plaza are always ready for visitors. But if you prefer a quieter time, you can travel out to St. John's ice moon and visit the monastery of the Sisters of Domina."
+			</TouristInfo>
+
+			<CorporateInfo>
+				"If you are here on corporate business you will find the Commodities Exchange to have many popular items, including starship equipment. The Corporate Enclave near Starton Eridani also trades in supplies.\n\nNote: In accordance with Commonwealth laws, all customs officers are required to search for contraband&#x97;buy and sell legal goods only."
+			</CorporateInfo>
+
+			<TravelInfo>
+				"Starships are very common here, so you will have no problem obtaining fuel or making repairs to your ship. Starton Eridani's shipyard can install new devices on your ship. And when you've enjoyed everything that the Eridani system has to offer, you can find an outbound stargate around the innermost planet."
+			</TravelInfo>
+
+			<SafetyInfo>
+				"Like any populated star system, Eridani has its share of dangers. Charon pirates and Centauri warlords control some parts of the system&#x97;avoid all non-Commonwealth stations unless escorted or armed.\n\nNote: In accordance with Commonwealth laws, legally armed ships may attack and loot designated enemy targets only. Ships attacking Commonwealth stations or ships will be prosecuted and/or fired upon."
+			</SafetyInfo>
+
+			<FunFacts>
+				(
+				"Starton is more than seven stargates away from St. Katharine's Star."
+				"Starton Eridani was founded by the Commonwealth in 2176."
+				"According to the 2410 census, 29 million people live in this star system; half of them live in Starton Eridani itself."
+				"For some reason, more pilgrims have started their journey to the Galactic Core from Eridani than from any other system of the Commonwealth."
+				"Conrad Decker, admiral of the Commonwealth Fleet, spent his summers in Starton Eridani as a young boy."
+				"In 2240, Starton Eridani was almost evacuated because of rumors that a large Ares fleet was approaching. It later turned out to be a group of Salvagers traveling together."
+				"During the Eridani Bicentennial in 2376, then governor Jerad Norton convinced the Charon pirates to join in the celebrations in exchange for an unspecified sum."
+				)
+			</FunFacts>
+		</StaticData>
+
+		<DockingPorts>
+			<Port x="0"		y="150" />
+			<Port x="0"		y="-150" />
+			<Port x="100"	y="100" />
+			<Port x="100"	y="-100" />
+			<Port x="150"	y="0" />
+			<Port x="-150"	y="0" />
+			<Port x="-100"	y="100" />
+			<Port x="-100"	y="-100" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Raisu Station
+	
+	GLOBAL DATA
+	
+	status:				Status of Raisu station
+							Nil						= Controlled by Centauri Warlords
+							'destroyed				= Destroyed
+							'destroyedByPlayer		= Destroyed by player
+							'liberated				= Liberared
+
+	EXTRA DATA
+	
+	missionStatus:		Status of mission to kill Arco Vaughn
+							Nil						= no mission assigned
+							'inprogress				= Player has agreed to kill Arco Vaughn
+							'declined				= Player has declined mission
+							'success				= Player has killed Arco Vaughn
+							'complete				= Arco Vaughn is dead and player has been rewarded
+
+	raidersSummoned:	Total count of raiders summoned
+
+	-->
+
+	<StationType UNID="&stRaisuStation;"
+			name=				"Raisu Station"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			repairRate=			"1"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, occupation, populated, raisuStation"
+			level=				"1"
+
+			noArticle=			"true"
+			>
+
+		<ImageVariants>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="64" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="128" imageY="0" imageWidth="64" imageHeight="128"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="192" imageY="0" imageWidth="64" imageHeight="128"/>
+		</ImageVariants>
+
+		<Ships>
+			<Ship count="1d4+1"	class="&scCentauriRaider;"	orders="patrol"	patrolDist="10"	sovereign="&svCentauriWarlords;"/>
+		</Ships>
+
+		<Events>
+			<GetGlobalAchievements>
+				(block (theList theStatus)
+					(setq theStatus (typGetGlobalData &stRaisuStation; "status"))
+					
+					(if theStatus
+						(setq theList (list
+							(list 
+								(switch
+									(eq theStatus 'liberated) "Liberated Raisu station"
+									(eq theStatus 'destroyed) "Allowed Raisu station to be destroyed"
+									(eq theStatus 'destroyedByPlayer) "Destroyed Raisu station"
+									(cat "ERROR: Raisu station status: " theStatus)
+									) 
+								Nil 
+								"achievements &amp; regrets"
+								)
+							))
+						)
+						
+					theList
+					)
+			</GetGlobalAchievements>
+
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 451 gSource "OnTimer")
+			</OnCreate>
+
+			<OnDestroy>
+				(block Nil
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(objSetGlobalData gSource "status" 'destroyedByPlayer)
+						(objSetGlobalData gSource "status" 'destroyed)
+						)
+						
+					(intCommonwealthOnDestroy)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(if (and (eq (objGetData gSource "missionStatus") 'inprogress)
+						(eq aObjDestroyed (objGetObjRefData gSource "target")))
+					(block Nil
+						(objSetData gSource "missionStatus" 'success)
+						(shpCancelOrders gPlayerShip)
+						(shpOrder gPlayerShip 'dock gSource)
+						(plyMessage gPlayer "Mission complete!")
+						)
+					)
+			</OnObjDestroyed>
+
+			<OnTimer>
+				(block (arcoVaughnStatus)
+					(setq arcoVaughnStatus (typGetGlobalData &scArcoVaughnHeavyRaider; "status"))
+					(switch
+						; If Arco vaughn is destroyed, then some commonwealth ships show up
+						(and (eq arcoVaughnStatus 'destroyed)
+								(ls (count (staGetSubordinates gSource)) 3))
+							(block (theShip)
+								(setq theShip 
+									(sysCreateShip (random '(&scEI100; &scEI100; &scSapphireYacht; &scBorer;))
+										(sysFindObject gSource "GN -uncharted;")
+										&svCommonwealth;
+										)
+									)
+								(shpOrder theShip 'dock gSource)
+								(shpOrder theShip 'gateOnThreat)
+								(objAddSubordinate gSource theShip)
+								)
+
+						; If there are no raiders around, then summon some more
+						(and (not (eq arcoVaughnStatus 'destroyed))
+								(not (objGetData gSource "missionStatus"))
+								(leq (random 1 100) 20)
+								(not (sysFindObject gSource "s +centauriWarlords; N:150")))
+
+							(if (gr (objGetData gSource "raidersSummoned") 20)
+
+								; If we've already summoned lots of raiders, then send Arco Vaughn
+								(block (arcoVaughn)
+									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
+									(if arcoVaughn
+										(objFireEvent arcoVaughn "OrderKillPlayer")
+										)
+									)
+
+								; Otherwise, summon more raiders
+								(block (newShips)
+									(setq newShips (random 3 4))
+									(objIncData gSource "raidersSummoned" newShips)
+									(for i 1 newShips
+										(block (theShip)
+											(setq theShip 
+												(sysCreateShip &scCentauriRaider;
+													(sysFindObject gSource "GN -uncharted;")
+													&svCentauriWarlords;
+													)
+												)
+											(shpOrder theShip 'patrol gSource 10)
+											)
+										)
+									)
+								)
+						)
+					)
+			</OnTimer>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<InitialPane>
+					(block (missionStatus)
+						(setq missionStatus (objGetData gSource "missionStatus"))
+
+						(switch
+							; Mission in progress
+							(eq missionStatus 'inprogress)
+								"MissionInProgress"
+
+							; See if player has destroyed target
+							(eq missionStatus 'success)
+								"MissionSuccess"
+
+							"Default"
+							)
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The loud voices of a packed multitude bounce off every bulkhead and corridor in the station. "
+								"Old air scrubbers pump a thin, odorous breeze out of rusty vents. Discarded packets of Salmonite and Red Nebula beer huddle in the corner.\n\n"
+								"Welcome to " (objGetName gSource) "!"
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Meeting Hall" key="M" default="1">
+								(block (missionStatus)
+									; Get some status
+									(setq missionStatus (objGetData gSource "missionStatus"))
+
+									(switch
+										; If Arco Vaughn is dead, everyone is happy
+										(eq (typGetGlobalData &scArcoVaughnHeavyRaider; "status") 'destroyed)
+											(scrShowPane gScreen "MeetingHallHappy")
+
+										; If the player declined, then everyone is still in fear
+										(eq missionStatus 'declined)
+											(scrShowPane gScreen "MeetingHallHiding")
+
+										; If there are Centauri raiders in range, then everyone is hinding
+										(sysFindObject gSource "s +centauriWarlords; N:100;")
+											(scrShowPane gScreen "MeetingHallHiding")
+
+										; Otherwise, see if we get a mission
+										(block (centauriStations centauriStationsDestroyed theStation)
+
+											; Count the number of Centauri stations in the system
+											(setq centauriStations (sysFindObject gSource "T +centauriWarlords; +populated; -occupation; -uncharted;"))
+											(setq centauriStationsDestroyed (filter centauriStations theStation (objIsAbandoned theStation)))
+
+											; If more than 2 stations have been destroyed or if all stations
+											; have been destroyed, then the player gets the Arco Vaughn mission
+											(if (or (geq (count centauriStationsDestroyed) 3) 
+													(eq (count centauriStations) (count centauriStationsDestroyed))
+													(gr (objGetData gSource "raidersSummoned") 12)
+													)
+												(scrShowPane gScreen "MissionIntro")
+												(scrShowPane gScreen "MeetingHallFearful")
+												)
+											)
+										)
+									)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<MissionIntro>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The station master stands at her console. She runs towards you tearfully:\n\n"
+								"\"Is it true? Have you fought the Centauri warlords? It's been so long since anyone stood up to them. Will you finish what you've begun? If you don't kill the rest of them now, we will be the ones who suffer. Arco Vaughn is the key. Kill him and the rest will leave us alone.\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Mission")
+							</Action>
+						</Actions>
+					</MissionIntro>
+
+					<Mission>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"I can help you; I'm not afraid anymore. Arco Vaughn lives deep in the outer belt&#x97;I can give you the coordinates. Kill him and we will all be free. Will you help us?\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Accept" key="A" default="1">
+								(block (arcoVaughn target)
+									; Track Arco Vaughn
+									(setq arcoVaughn (sysFindObject gSource "sN +arcoVaughn;"))
+									(objSetObjRefData gSource "target" arcoVaughn)
+									(objRegisterForEvents gSource arcoVaughn)
+
+									; Set the player to Arco Vaughn's habitat
+									(setq target (sysFindObject gSource "TN +arcoVaughn;"))
+									(if (or (not target)
+											(eq (objGetEquipmentStatus gPlayerShip 'TargetingComputer) 'ready))
+										(setq target arcoVaughn)
+										)
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'attack target)
+
+									; Give the player some KM500 missiles
+									(if (objGetItems gPlayerShip "lI -Disposable;")
+										(setq gItem (itmCreate &itKM500Missile; (random 24 48)))
+										(setq gItem (itmCreate &itDM1500MissileRack; 1))
+										)
+									(objAddItem gPlayerShip gItem)
+
+									; Set mission
+									(objSetData gSource "missionStatus" 'inprogress)
+									(scrShowPane gScreen "MissionAccept")
+									)
+							</Action>
+
+							<Action name="Decline" key="D" cancel="1">
+								(block Nil
+									(objSetData gSource "missionStatus" 'declined)
+									(scrShowPane gScreen "MissionDecline")
+									)
+							</Action>
+						</Actions>
+					</Mission>
+
+					<MissionAccept>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"\"You will need all the power you can to kill him. "
+								(if (gr (itmGetCount gItem) 1)
+									(cat "I have some hidden " (itmGetName gItem 0x02) 
+										" that the warlords never found. They belonged to my husband...many years ago. Take them! Take them and good luck!\"")
+									(cat "I have a hidden " (itmGetName gItem 0x00) 
+										" that the warlords never found. It belonged to my husband...many years ago. Take it! Take it and good luck!\"")
+									)
+								"\n\nShe hugs you quickly and runs off."
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</MissionAccept>
+
+					<MissionDecline>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The station master stares at you in shock and then begins to weep.\n\n"
+								"\"Why did you start this war if you won't finish it! You've doomed us all!\""
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MissionDecline>
+
+					<MissionSuccess>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The station master runs towards you; she puts her arms around you as the rest of the citizens come out of hiding.\n\n"
+								"\"You did it! I never thought I would live to see it! You've freed us from the warlords!\"\n\n"
+								(if (eq (plyGetGenome gPlayer) 'humanMale)
+									"She hugs you again and whispers her name in your ear."
+									"She beams a smile and hugs you again."
+									)
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(objSetData gSource "missionStatus" 'complete)
+									(objSetGlobalData gSource "status" 'liberated)
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</MissionSuccess>
+
+					<MissionInProgress>
+						<OnPaneInit>
+							(block Nil
+								(scrSetDesc gScreen
+									"The station master's console is empty. Everyone on the station is hiding in the central hub."
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(block Nil
+									(shpCancelOrders gPlayerShip)
+									(shpOrder gPlayerShip 'attack (sysFindObject gSource "TN +arcoVaughn;"))
+									(scrExitDock gScreen)
+									)
+							</Action>
+						</Actions>
+					</MissionInProgress>
+
+					<MeetingHallHiding>
+						<OnPaneInit>
+							(block Nil
+								(scrSetDesc gScreen
+									"The station master's console is empty. Everyone on the station is hiding in the central hub."
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" key="C" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MeetingHallHiding>
+
+					<MeetingHallFearful>
+						<OnPaneInit>
+							(block (desc centauriStations centauriStationsDestroyed)
+								; Count the number of destroyed Centauri stations
+								(setq centauriStations (sysFindObject gSource "T +centauriWarlords; +populated; -occupation; -uncharted;"))
+								(setq centauriStationsDestroyed (filter centauriStations theStation (objIsAbandoned theStation)))
+
+								(setq desc "The station master stands at her console. She turns her attention towards you:\n\n")
+								(switch
+									(eq (count centauriStationsDestroyed) 0)
+										(setq desc (cat desc
+											"\"You'd better leave before the warlords return. If they see an armed ship here they will kill you; and we will be punished. Go now!\""
+											))
+											
+									(eq (count centauriStationsDestroyed) 1)
+										(setq desc (cat desc
+											"\"The Centauri warlords are furious that you've blown up one of their stations! "
+											"Do you really think you're strong enough to stand up to them?! Please leave before you get us all killed!\""
+											))
+											
+									(setq desc (cat desc
+										"\"Please leave! You know what will happen if you try to destroy more Centauri bases? You'll be killed and we'll be punished! "
+										"And if Arco Vaughn sees you here, we're all dead!\""
+										))
+									)
+
+								(scrSetDesc gScreen desc)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" key="L" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MeetingHallFearful>
+
+					<MeetingHallHappy>
+						<OnPaneInit>
+							(scrSetDesc gScreen (cat
+								"The meeting hall is busy with commercial activity; everyone goes about their business, sometimes stopping to say hello to you."
+								))
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" key="L" default="1" cancel="1">
+								(scrShowPane gScreen "Default")
+							</Action>
+						</Actions>
+					</MeetingHallHappy>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="80" />
+			<Port x="43"	y="56" />
+			<Port x="52"	y="8" />
+			<Port x="35"	y="-44" />
+			<Port x="-35"	y="-44" />
+			<Port x="-52"	y="8" />
+			<Port x="-43"	y="56" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Bering Station -->
+
+	<StationType UNID="&stBeringStation;"
+			name=				"Commonwealth residentials"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"250"
+			repairRate=			"1"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, populated"
+
+			noArticle=			"true"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Lookup count="1d4+2" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Events>
+			<OnContractGenerate>
+				(intGenerateStandardRequestContract1)
+			</OnContractGenerate>
+
+			<OnContractQuery>True</OnContractQuery>
+
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+		</Events>			
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"Welcome to Commonwealth Residentials.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Eridani System -->
+
+	<SystemType UNID="&ssStartonEridani;">
+
+		<Tables>
+			<!-- Planets and Asteroids -->
+
+			<SmallInnerAsteroid>
+				<Table>
+					<Station chance="80" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeA;"/>
+				</Table>
+			</SmallInnerAsteroid>
+
+			<MediumInnerAsteroid>
+				<Table>
+					<Station chance="80" type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeB;"/>
+				</Table>
+			</MediumInnerAsteroid>
+
+			<StJohnAsteroid>
+				<Table>
+					<Station chance="35" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="20" type="&stMetallicAsteroidSizeA;"/>
+					<Station chance="35" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="4"  type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="2"  type="&stMetallicAsteroidSizeB;"/>
+					<Station chance="4"  type="&stRockyAsteroidSizeB;"/>
+				</Table>
+			</StJohnAsteroid>
+
+			<StJohnTrojans>
+				<Group>
+					<Siblings count="2d20" arcInc="2d205-206" radiusInc="-4-4">
+						<Lookup table="StJohnAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d20" arcInc="2d159-160" radiusInc="-6-6">
+						<Lookup table="StJohnAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d16" arcInc="2d109-110" radiusInc="-8-8">
+						<Lookup table="StJohnAsteroid"/>
+					</Siblings>
+
+					<Siblings count="2d12" arcInc="2d49-50" radiusInc="-12-12">
+						<Lookup table="StJohnAsteroid"/>
+					</Siblings>
+				</Group>
+			</StJohnTrojans>
+
+			<OuterAsteroid>
+				<Table>
+					<Station chance="70" type="&stRockyOuterAsteroidSizeA;"/>
+					<Station chance="20" type="&stRockyAsteroidSizeA;"/>
+					<Station chance="8"  type="&stRockyOuterAsteroidSizeB;"/>
+					<Station chance="2"  type="&stRockyAsteroidSizeB;"/>
+				</Table>
+			</OuterAsteroid>
+
+			<!-- Random Stations -->
+
+			<Stations1>
+				<Table>
+					<Station weight="8"  type="&stArmorDealer;"/>
+					<Station weight="4"  type="&stArmsDealer;"/>
+					<Station weight="12" type="&stCommonwealthSlums;"/>
+					<Station weight="50" type="&stCentauriCamp;"/>
+					<Station weight="25" type="&stCharonPirateOutpost;"/>
+				</Table>
+			</Stations1>
+
+			<DanteStations>
+				<Table>
+					<Station chance="45"	type="&stMiningColony;"/>
+					<Station chance="25"	type="&stCentauriCamp;"/>
+					<Station chance="10"	type="&stCharonPirateOutpost;"/>
+					<Station chance="5"		type="&stCommonwealthSlums;"/>
+					<Station chance="5"		type="&stFuelDepot;"/>
+					<Null	 chance="10" />
+				</Table>
+			</DanteStations>
+
+			<MetropolisStation>
+				<Table>
+					<Station chance="20"	type="&stArmorDealer;"	noMapLabel="true"/>
+					<Station chance="15"	type="&stArmsDealer;"	noMapLabel="true"/>
+					<Station chance="20"	type="&stFuelDepot;"	noMapLabel="true"/>
+					<Station chance="35"	type="&stCommonwealthResidentials;"	noMapLabel="true"/>
+					<Station chance="10"	type="&stMedicalSuburb;"	noMapLabel="true"/>
+				</Table>
+			</MetropolisStation>
+
+			<StJohnTrojanStations>
+				<Table>
+					<Station chance="25"	type="&stMiningColony;"/>
+					<Station chance="45"	type="&stCentauriCamp;"/>
+					<Station chance="10"	type="&stCharonPirateOutpost;"/>
+					<Station chance="5"		type="&stCommonwealthSlums;"/>
+					<Station chance="5"		type="&stFuelDepot;"/>
+					<Null	 chance="10" />
+				</Table>
+			</StJohnTrojanStations>
+		</Tables>
+
+		<SystemGroup>
+
+			<!-- Epsilon Eridani
+				This is a G-type star much like the Sun. -->
+
+			<Station type="&stG-TypeStar;" name="Epsilon Eridani"/>
+
+			<AddAttribute attributes="GTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+
+			<Orbitals angle="incrementing:30-330">
+
+				<!-- Dante II
+					The inner world is a barren, rocky world -->
+
+				<Group distance="80">
+					<Primary>
+						<Station type="&stRockyPlanetoidSizeF;" 
+								objName="OldStart"
+								name="Dante II" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<Orbitals distance="24" angle="random">
+						<Group>
+							<Lookup table="StargateOutbound"/>
+
+							<Orbitals distance="8" angle="0">
+								<Station type="&stCommonwealthNavSign;">
+									<InitialData>
+										<Sign>"Travel\nAdvisory"</Sign>
+										<Info>
+											"Pirate activity reported in systems between Eridani and St. Katharine's Star. Please use caution. Make sure you have current star maps and avoid travel to non-Commonwealth stations."
+										</Info>
+									</InitialData>
+								</Station>
+							</Orbitals>
+						</Group>
+					</Orbitals>
+
+					<!-- Trojans of Dante II are metal-rich asteroids -->
+
+					<Trojan>
+						<Group>
+							<Siblings count="1d20" arcInc="2d105-106" radiusInc="-4-4">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d20" arcInc="2d79-80" radiusInc="-6-6">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d16" arcInc="2d55-56" radiusInc="-8-8">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d12" arcInc="2d25-26" radiusInc="-12-12">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d5-1" arcInc="2d15-16" radiusInc="-16-16">
+								<Lookup table="MediumInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
+								<Lookup table="DanteStations"/>
+							</Siblings>
+						</Group>
+					</Trojan>
+
+					<AntiTrojan>
+						<Group>
+							<Siblings count="1d20" arcInc="2d105-106" radiusInc="-4-4">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d20" arcInc="2d79-80" radiusInc="-6-6">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d16" arcInc="2d55-56" radiusInc="-8-8">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d12" arcInc="2d25-26" radiusInc="-12-12">
+								<Lookup table="SmallInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1d5-1" arcInc="2d15-16" radiusInc="-16-16">
+								<Lookup table="MediumInnerAsteroid"/>
+							</Siblings>
+
+							<Siblings count="1" arcInc="2d15-16" radiusInc="-20-20">
+								<Lookup table="DanteStations"/>
+							</Siblings>
+						</Group>
+					</AntiTrojan>
+
+				</Group>
+
+				<!-- Hagaron
+					Another inner world -->
+
+				<Group distance="160">
+					<Primary>
+						<Station type="&stDesertTerrestrialSizeH;" name="Hageron" showOrbit="true"/>
+					</Primary>
+
+					<Orbitals distance="1d8+8" angle="random">
+						<Lookup table="Stations1" probability="80"/>
+					</Orbitals>
+
+				</Group>
+
+				<!-- Raphael -->
+
+				<Group distance="270">
+					<Primary>
+						<Station type="&stRockyPlanetoidSizeG;" name="Raphael" showOrbit="true"/>
+					</Primary>
+
+					<Orbitals distance="1d8+8" angle="random">
+						<Lookup table="Stations1" probability="80"/>
+					</Orbitals>
+
+					<!-- Trojans -->
+
+					<Trojan>
+						<Group probability="50">
+							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="1d6" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Orbitals distance="1d8+6" angle="random">
+								<Lookup table="Stations1" probability="75"/>
+							</Orbitals>
+
+						</Group>
+					</Trojan>
+
+					<AntiTrojan>
+						<Group probability="50">
+							<Orbitals count="2d4+4" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidSmall"/>
+							</Orbitals>
+
+							<Orbitals count="1d6" distance="2d8+8" angle="random">
+								<Lookup table="AsteroidMedium"/>
+							</Orbitals>
+
+							<Orbitals distance="1d8+6" angle="random">
+								<Lookup table="Stations1" probability="75"/>
+							</Orbitals>
+
+						</Group>
+					</AntiTrojan>
+
+				</Group>
+
+				<!-- St. John's World
+					The worlds around this gas giant form the core of the
+					Starton community. -->
+
+				<Group distance="520">
+
+					<!-- St. John's World -->
+
+					<Primary>
+						<Station type="&stHydrogenGasGiantSizeM;" 
+								name="St. John's World" 
+								showOrbit="true"
+								/>
+					</Primary>
+
+					<!-- Moons of St. John's WOrld -->
+
+					<Orbitals angle="incrementing:45-315">
+
+						<!-- Morgana -->
+
+						<Group distance="22">
+							<Primary>
+								<Station type="&stPrimordialPlanetoidSizeF;" name="Morgana"/>
+							</Primary>
+
+							<!-- Debug Objects -->
+
+							<Orbitals debugOnly="true" distance="8" angle="random">
+								<Stargate objName="Debug" type="&stStargate;"/>
+							</Orbitals>
+
+							<Orbitals debugOnly="true" count="1" distance="5" scale="light-minute" angle="random">
+								<!--<Station type="&stCSCSaharaEncounter;" />-->
+								<!--<Station type="&stBlackMarketShipyard;" />-->
+							</Orbitals>
+
+							<Orbitals debugOnly="true" count="1" distance="5" scale="light-minute" angle="random">
+								<Orbitals distance="12" angle="random">
+									<!--<Station type="&stDwargFortress;"/>-->
+								</Orbitals>
+								<!--<Station type="&stHuariFortress;"/>-->
+								<!--<Station type="&stCommonwealthColonyArmed;" />-->
+							</Orbitals>
+
+							<Orbitals debugOnly="true" count="1" distance="20" angle="random">
+								<Station type="&stTinkerGathering;"/>
+								<!--
+								<Station type="&stTeratonFactory;"/>
+								<Station type="&stCommonwealthFortress;"/>
+								<Station type="&stSungSlaveCamp;"/>
+								<Station type="&stCentauriOccupation;"/>
+								<Station type="&stCSCAmericaEncounter;"/>
+								<LevelTable>
+									<Station levelFrequency="c----" type="&stWondrousDevices;"/>
+									<Station levelFrequency="-----" type="&stInsuranceCompany;"/>
+								</LevelTable>
+								<Station type="&stCSCSaharaEncounter;"/>
+								<Station type="&stInsuranceCompany;"/>
+								<Station type="&stKorolovShipping;"/>
+								<Station type="&stAgriculturalStation;" />
+								<Station type="&stCorporateTradingPost;" />
+								<Station type="&stCSCArcticaEncounter;"/>
+								<Station type="&stRingerShipyard;"/>
+								<Station type="&stGaianProcessorEncounter;" />
+								<Station type="&stFerianColony;" />
+								-->
+							</Orbitals>
+
+							<!--
+							<Orbitals debugOnly="true" count="50" distance="2d10" scale="light-minute" angle="random">
+								<Group>
+									<Station type="&stFerianColony;" />
+									<Orbitals count="3d6" distance="6d6" angle="random">
+										<Station type="&stMediumAsteroid;" />
+									</Orbitals>
+								</Group>
+							</Orbitals>
+							-->
+
+						</Group>
+
+						<!-- Mordred -->
+
+						<Group distance="45">
+							<Primary>
+								<Station type="&stRockyPlanetoidSizeG;" name="Mordred"/>
+							</Primary>
+						</Group>
+
+						<!-- Uther
+							The main Commonwealth station is here. -->
+
+						<Group distance="80">
+
+							<!-- The planet Uther -->
+
+							<Primary>
+								<Station type="&stIcePlanetoidSizeG;" name="Uther"/>
+							</Primary>
+
+							<!-- The main stations are all in a group -->
+
+							<Siblings angleInc="180">
+								<Group>
+
+									<!-- Commonwealth Station -->
+									<Primary>
+										<Station type="&stStartonEridani;"/>
+									</Primary>
+
+									<!-- Industrial Center -->
+									<Siblings arcInc="+15">
+										<Station type="&stCorporateEnclave;" name="Greenwich Industries" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Dry Dock -->
+									<Siblings arcInc="-15">
+										<Station type="&stCommonwealthDryDock;" name="Starton Dry Dock" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Metropolis Station -->
+									<Siblings radiusInc="+15">
+										<Lookup table="MetropolisStation"/>
+									</Siblings>
+
+									<!-- Metropolis Station -->
+									<Siblings radiusInc="-15">
+										<Lookup table="MetropolisStation"/>
+									</Siblings>
+
+									<!-- Central Nav beacons -->
+									<Siblings arcInc="+7" radiusInc="+7">
+										<Station type="&stNavBeacon;" imageVariant="0"/>
+									</Siblings>
+
+									<Siblings arcInc="-7" radiusInc="-7">
+										<Station type="&stNavBeacon;" imageVariant="1"/>
+									</Siblings>
+
+									<!-- Metropolis Stations -->
+									<Table>
+										<Group chance="50">
+											<Siblings arcInc="+30">
+												<Station type="&stBeringStation;" noMapLabel="true"/>
+											</Siblings>
+
+											<!-- Metropolis Station -->
+											<Siblings arcInc="-30">
+												<Lookup table="MetropolisStation"/>
+											</Siblings>
+										</Group>
+
+										<Group chance="50">
+											<Siblings arcInc="+30">
+												<Lookup table="MetropolisStation"/>
+											</Siblings>
+
+											<!-- Metropolis Station -->
+											<Siblings arcInc="-30">
+												<Station type="&stBeringStation;" noMapLabel="true"/>
+											</Siblings>
+										</Group>
+									</Table>
+
+									<!-- Slums -->
+									<Siblings arcInc="+50">
+										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Slums -->
+									<Siblings arcInc="-50">
+										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Peripheral nav beacons -->
+									<Siblings arcInc="+62">
+										<Station type="&stNavBeacon;" imageVariant="0"/>
+									</Siblings>
+
+									<Siblings arcInc="-62">
+										<Station type="&stNavBeacon;" imageVariant="0"/>
+									</Siblings>
+
+									<!-- Slums -->
+									<Siblings arcInc="+75">
+										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Slums -->
+									<Siblings arcInc="-75">
+										<Station type="&stCommonwealthSlums;" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Container Habitat -->
+									<Siblings arcInc="100-110">
+										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Container Habitat -->
+									<Siblings arcInc="-100--110">
+										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Container Habitat -->
+									<Siblings radiusInc="10-13" arcInc="10-13">
+										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+									<!-- Container Habitat -->
+									<Siblings radiusInc="10-13" arcInc="-10--13">
+										<Station type="&stContainerHabitat;" name="Starton Residentials" noArticle="true" noMapLabel="true"/>
+									</Siblings>
+
+								</Group>
+							</Siblings>
+
+							<!-- The Sisters of Domina is opposite -->
+
+							<Siblings radiusInc="12">
+								<Group>
+									<Station type="&stSistersOfDomina;"/>
+
+									<Siblings radiusInc="8">
+										<Marker objName="Start"/>
+									</Siblings>
+								</Group>
+							</Siblings>
+
+						</Group>
+
+						<!-- Lancelot -->
+
+						<Group distance="140">
+							<Primary>
+								<Station type="&stMetallicPlanetoidSizeF;" name="Lancelot"/>
+							</Primary>
+
+							<Orbitals distance="6" angle="random">
+								<Station type="&stCentauriCamp;"/>
+							</Orbitals>
+						</Group>
+
+					</Orbitals>
+
+					<!-- Trojans -->
+
+					<Table>
+						<Group chance="50">
+							<Trojan>
+								<Lookup table="StJohnTrojans"/>
+
+								<Orbitals distance="1d8+6" angle="random">
+									<Station type="&stRaisuStation;" />
+								</Orbitals>
+							</Trojan>
+
+							<AntiTrojan>
+								<Lookup table="StJohnTrojans"/>
+
+								<Orbitals distance="1d8+6" angle="random">
+									<Lookup table="StJohnTrojanStations"/>
+								</Orbitals>
+							</AntiTrojan>
+						</Group>
+
+						<Group chance="50">
+							<Trojan>
+								<Lookup table="StJohnTrojans"/>
+
+								<Orbitals distance="1d8+6" angle="random">
+									<Lookup table="StJohnTrojanStations"/>
+								</Orbitals>
+							</Trojan>
+
+							<AntiTrojan>
+								<Lookup table="StJohnTrojans"/>
+
+								<Orbitals distance="1d8+6" angle="random">
+									<Station type="&stRaisuStation;" />
+								</Orbitals>
+							</AntiTrojan>
+						</Group>
+					</Table>
+
+				</Group>
+
+				<!-- Voerms -->
+
+				<Group distance="900">
+					<Primary>
+						<Station type="&stMethaneGasGiantSizeK;" name="Voerms" showOrbit="true"/>
+					</Primary>
+
+					<Orbitals count="6d6" distance="2d4+15" angle="random">
+						<Lookup table="OuterAsteroid"/>
+					</Orbitals>
+					
+					<!-- Voerms is in a sparse asteroid belt -->
+
+					<Siblings count="80-120" distribution="4d40-80">
+						<Lookup table="OuterAsteroid"/>
+					</Siblings>
+
+					<!-- Arco Vaugh's base is somewhere around here -->
+
+					<Siblings count="1" angleInc="20-340" radiusInc="-20-180">
+						<Station type="&stArcoVaughnHabitat;"/>
+					</Siblings>
+
+					<!-- There are a few other Centauri bases here -->
+
+					<Siblings count="2-3" angleInc="40-320" radiusInc="-90-90">
+						<Station type="&stCentauriCamp;"/>
+					</Siblings>
+				</Group>
+
+			</Orbitals>
+
+			<!-- Create more stargates in case an extension added more links -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
+		</SystemGroup>
+
+		<Events>
+			<OnCreate>
+				(block (centauriStations)
+					; Devices greater than level III are not for sale in Eridani
+					(enum (sysFindObject Nil "TF +populated;") theObj
+						(enum (objGetItems theObj "dU") theItem
+							(if (and (gr (itmGetLevel theItem) 3) (objGetSellPrice theObj theItem))
+								(objRemoveItem theObj theItem)
+								)
+							)
+						)
+
+					; Count the number of centauri camps in the inner system (inside 800 light-seconds)
+					(setq centauriStations (sysFindObject Nil "T +centauriWarlords; +populated; -occupation; -uncharted;"))
+					(setq centauriStations (filter centauriStations theObj
+						(ls (sysVectorDistance (objGetPos theObj)) 800)
+						))
+
+					; If we don't have at least 3, then create some near Voerms
+					(if (ls (count centauriStations) 3)
+						(block (voerms)
+							(setq voerms (item (filter (sysFindObject Nil "t +isPlanet:true;") theObj (eq (objGetName theObj) "Voerms")) 0))
+							(if voerms
+								(for i 1 (random 2 3)
+									(block Nil
+										(sysCreateStation &stCentauriCamp;
+											(sysVectorRandom voerms (random 30 50) 10 "t +populated;")
+											)
+										)
+									)
+								(dbgLog "ERROR: Unable to find planet Voerms in Eridani system.")
+								)
+							)
+						)
+					)
+			</OnCreate>
+		</Events>
+
+	</SystemType>
+
+</TranscendenceModule>

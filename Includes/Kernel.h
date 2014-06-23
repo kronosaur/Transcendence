@@ -606,7 +606,7 @@ class CString : public CObject
 			};
 
 		CString (void);
-		CString (char *pString);
+		CString (const char *pString);
 		CString (char *pString, int iLength);
 		CString (char *pString, int iLength, BOOL bExternal);
 		virtual ~CString (void);
@@ -624,7 +624,7 @@ class CString : public CObject
 		char *GetWritePointer (int iLength);
 		inline bool IsBlank (void) const { return (GetLength() == 0); }
 		void ReadFromStream (IReadStream *pStream);
-		ALERROR Transcribe (char *pString, int iLen);
+		ALERROR Transcribe (const char *pString, int iLen);
 		void Truncate (int iLength);
 		void WriteToStream (IWriteStream *pStream) const;
 
@@ -1369,6 +1369,7 @@ BOOL kernelInit (DWORD dwFlags = 0);
 ALERROR kernelSetDebugLog (const CString &sFilespec, bool bAppend = true);
 ALERROR kernelSetDebugLog (CTextFileLog *pLog, bool bAppend = true, bool bFreeLog = false);
 HANDLE kernelCreateThread (LPTHREAD_START_ROUTINE pfStart, LPVOID pData);
+bool kernelDispatchUntilEventSet (HANDLE hEvent, DWORD dwTimeout = INFINITE);
 
 //	String functions (CString.cpp)
 
@@ -1394,6 +1395,7 @@ CString strCapitalizeWords (const CString &sString);
 CString strCEscapeCodes (const CString &sString);
 CString strEncodeUTF8Char (DWORD dwCodePoint);
 CString strEncodeW1252ToUTF8Char (char chChar);
+bool strEndsWith (const CString &sString, const CString &sStringToFind);
 bool strEquals (const CString &sString1, const CString &sString2);
 int strFind (const CString &sString, const CString &sStringToFind);
 
@@ -1518,13 +1520,15 @@ bool strRegEx (char *pStart, const CString &sPattern, TArray<SRegExMatch> *retMa
 
 const double g_Pi = 3.14159265358979323846;			//	Pi
 
-int mathRound (double x);
+DWORD mathGetSeed (void);
 int mathNearestPowerOf2 (int x);
 int mathPower (int x, int n);
 DWORD mathRandom (void);
 int mathRandom (int iFrom, int iTo);
 double mathRandomGaussian (void);
+int mathRound (double x);
 int mathSeededRandom (int iSeed, int iFrom, int iTo);
+void mathSetSeed (DWORD dwSeed);
 int mathSqrt (int x);
 inline double mathDegreesToRadians (double rDegrees) { return g_Pi * rDegrees / 180.0; }
 

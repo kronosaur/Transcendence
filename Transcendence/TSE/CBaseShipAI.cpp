@@ -613,10 +613,7 @@ void CBaseShipAI::DebugPaintInfo (CG16bitImage &Dest, int x, int y, SViewportPai
 //	Paint debug information
 
 	{
-#ifdef DEBUG_NAV_PATH
-	if (m_pNavPath)
-		m_pNavPath->DebugPaintInfo(Dest, x, y, Ctx);
-#endif
+	m_AICtx.DebugPaintInfo(Dest, x, y, Ctx);
 	}
 
 void CBaseShipAI::FireOnOrderChanged (void)
@@ -1369,13 +1366,13 @@ void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 	if (Ctx.dwVersion < 75)
 		{
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		m_AICtx.SetManeuver((ManeuverTypes)dwLoad);
+		m_AICtx.SetManeuver((EManeuverTypes)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		m_AICtx.SetThrustDir((int)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-		m_AICtx.SetLastTurn((IShipController::ManeuverTypes)dwLoad);
+		m_AICtx.SetLastTurn((EManeuverTypes)dwLoad);
 
 		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 		m_AICtx.SetLastTurnCount(dwLoad);
@@ -1488,7 +1485,26 @@ void CBaseShipAI::ReadFromStream (SLoadCtx &Ctx, CShip *pShip)
 	if (Ctx.dwVersion < 75)
 		m_fOldStyleBehaviors = true;
 	else
-		m_fOldStyleBehaviors = (m_pOrderModule == NULL);
+		{
+		//	Unfortunately, the only way to tell if we're using an order
+		//	modules it to try to create one. [There is an edge condition
+		//	if we saved the game before we got to create an order module,
+		//	which happens when saving missions.]
+
+		if (m_pOrderModule)
+			m_fOldStyleBehaviors = false;
+		else
+			{
+			IOrderModule *pDummy = IOrderModule::Create(GetCurrentOrder());
+			if (pDummy)
+				{
+				m_fOldStyleBehaviors = false;
+				delete pDummy;
+				}
+			else
+				m_fOldStyleBehaviors = true;
+			}
+		}
 
 	//	In version 75 some flags were moved to the AI context
 
@@ -1512,7 +1528,7 @@ void CBaseShipAI::ResetBehavior (void)
 	{
 	if (!IsDockingRequested())
 		{
-		m_AICtx.SetManeuver(IShipController::NoRotation);
+		m_AICtx.SetManeuver(NoRotation);
 		m_AICtx.SetThrustDir(CAIShipControls::constNeverThrust);
 		}
 

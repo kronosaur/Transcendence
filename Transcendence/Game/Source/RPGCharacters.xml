@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- CHARACTER SCREEN ==========================================================
+
+	USAGE
+
+	The object (generally a ship) with this screen must set the character 
+	parameter on the class.
+
+	The object must also define the following language elements:
+
+		FirstMeetingIntro
+		MeetingIntro
+		NoMissions
+
+	The character type must define the following static data elements:
+
+		MissionAttribute: A string representing the attribute to use for all 
+				missions that may be assigned by the character.
+
+	The character type must define the following events:
+
+		OnCharacterCanBeMet: If handled, the event may return True to indicate
+				that the meeting should continue. Or the event may return a
+				string to display declining the meeting.
+
+-->
+
+	<DockScreen UNID="&dsRPGCharacterDefault;"
+			>
+		<OnScreenInit>
+			;	Make sure the player is allowed to talk to this character.
+
+			(block (explanation)
+				(switch
+					;	If Nil, then the event is not handled so we continue meeting.
+
+					(not (setq explanation (typFireObjEvent (objGetProperty gSource 'character) gSource 'OnCharacterCanBeMet)))
+						True
+
+					;	If True, then we are allowed to meet and continue.
+
+					(eq explanation True)
+						True
+
+					;	Otherwise, we expect an explanation string.
+
+					(scrShowScreen gScreen &dsRPGMessage; {
+						desc: explanation
+						nextScreen: 'forceUndock
+						})
+					)
+				)
+		</OnScreenInit>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(switch
+						;	If the player has never met the character, then we do a quick intro.
+
+						(not (typGetData (objGetProperty gSource 'character) 'firstPlayerMeetingTime))
+							(scrSetDesc gScreen (objTranslate gSource 'FirstMeetingIntro))
+
+						;	Otherwise, the normal description
+
+						(scrSetDesc gScreen (objTranslate gSource 'MeetingIntro))
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" key="C" default="1" cancel="1">
+						(block (charType screenData)
+							(setq charType (objGetProperty gSource 'character))
+
+							;	We've met character
+
+							(rpgCharacterSetMeeting charType)
+							
+							;	Next screen
+
+							(setq screenData (typGetData charType 'screenData))
+							(if screenData
+								(scrShowScreen gScreen (@ screenData 'screen) (@ screenData 'pane) (@ screenData 'data))
+
+								;	If no set screen, look for missions.
+
+								(rpgCharacterShowMissionScreen gSource { 
+									nextScreen: 'forceUndock
+									})
+								)
+							)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+<!-- GLOBAL FUNCTIONS ==========================================================
+
+	USAGE
+
+	These functions use the following global variables on character types:
+
+	firstPlayerMeetingTime: Tick of player's first meeting with character.
+			Nil if the player has never met face to face.
+
+	lastestPlayerMeetingTime: Tick of most recent meeting with character.
+
+	lastNodeID: Character's last known position. Nil means unknown.
+
+	lastSystemPos: Character's last known position in the lastNodeID system.
+
+	objID: The objID of character's current ship. If Nil, then no ship has
+			been created yet.
+
+	playerRel: If Nil, character has never met the player. Positive numbers mean that
+			character likes/trusts/respects the player. Negative numbers mean the
+			opposite.
+
+	screenData: This is a structure specifying the screen to show when the player
+			interacts with the character. The struct has the following fields:
+
+			screen: The screen to show
+			pane: If non-Nil, the pane to navigate to
+			data: If non-Nil, data to pass to the screen
+
+			If this value is Nil, then we look for missions tagged with 
+			character mission attribute (e.g., kateMorgentalMission).
+
+-->
+
+	<Globals>
+		(block Nil
+			(setq rpgCharacterAscend (lambda (type)
+				(block (shipObj)
+					;	If character is in this system, then ascend them (so that
+					;	they can appear in other systems).
+
+					(setq shipObj (objGetObjByID (typGetData type 'objID)))
+					(if shipObj
+						(block Nil
+							(typSetData type 'lastNodeID (sysGetNode))
+							(typSetData type 'lastSystemPos (objGetPos shipObj))
+							(sysAscendObject shipObj)
+							)
+						)
+					)
+				))
+				
+			(setq rpgCharacterChangeRel (lambda (charType event)
+			
+				; This function changes the character's relationship with the
+				; player based on something the player did.
+				;
+				; The following events are valid:
+				;
+				; 'betrayal: The player betrayed the character in a fundamental
+				;		way, generally by agreeing to pursuing a goal and then
+				;		actively opposing that goal.
+				;
+				; 'opposition: The player acted against a major character goal,
+				;		but did not necessarily betray the character.
+				;
+				; 'failure: The player failed in a task that the character was
+				;		counting on, generally through incompetence rather than
+				;		enmity.
+				;
+				; 'aid: The player helped the character in pursuit of a major
+				;		goal.
+				;
+				; 'rescue: The player risked his/her life to save the character
+				;		(or to save the life of someone the character cares
+				;		about).
+				
+				(block (
+					(curRel (if (typGetData charType 'playerRel) (typGetData charType 'playerRel) 'notSet))
+					)
+					
+					(switch
+						
+						(eq event 'betrayal)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'nemesis			;	First impression count for a lot.
+									nemesis: 'nemesis
+									dislikes: 'nemesis
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: 'nemesis			;	Betrayal hurts most if you feel loyal to someone.
+									}
+									curRel
+									))
+								
+						(eq event 'opposition)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'dislikes
+									nemesis: 'nemesis
+									dislikes: 'dislikes
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: (random (list		;	60% of the time we stay loyal
+										'nemesis
+										'dislikes
+										'neutral
+										'likes
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										'loyalty
+										))
+									}
+									curRel
+									))
+						
+						(eq event 'failure)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'dislikes
+									nemesis: 'nemesis
+									dislikes: 'dislikes
+									neutral: 'dislikes
+									likes: 'neutral
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+								
+						(eq event 'aid)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'likes
+									nemesis: 'nemesis
+									dislikes: (if (leq (random 1 100) 50) 'neutral 'dislikes)
+									neutral: 'likes
+									likes: (if (leq (random 1 100) 20) 'loyalty 'likes)
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+								
+						(eq event 'rescue)
+							(typSetData charType 'playerRel
+								(@ {
+									notSet: 'loyalty
+									nemesis: 'loyalty
+									dislikes: 'likes
+									neutral: 'likes
+									likes: 'loyalty
+									loyalty: 'loyalty
+									}
+									curRel
+									))
+						)
+					)
+				))
+
+			(setq rpgCharacterCreateShip (lambda (charType shipClassUNID pos)
+				(block (objID shipObj)
+					(setq objID (typGetData charType 'objID))
+
+					(switch
+						;	If ship for character does not exist, then we need to 
+						;	create him.
+
+						(not objID)
+							(block Nil
+								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+								(typSetData charType 'objID (objGetId shipObj))
+								(typSetData charType 'screenData Nil)
+								)
+
+						;	If we can't access the object, then we assume that he is
+						;	ascended and we need to bring him to this system.
+
+						(not (setq shipObj (objGetObjByID objID)))
+							(block Nil
+
+								;	If ship has been here all along, then just place him in the
+								;	original position.
+
+								(if (eq (sysGetNode) (typGetData charType 'lastNodeID))
+									(setq pos (typGetData charType 'lastSystemPos))
+									
+									;	If he was not here last, then clear out the player's
+									;	knowledge of the ship's position
+
+									(objSetProperty shipObj 'known Nil)
+									)
+
+								;	Descend him back to the system
+
+								(setq shipObj (sysDescendObject objID pos))
+								
+								;	If we could not descend, then something happened. Just create
+								;	the character here.
+
+								(if (not shipObj)
+									(block Nil
+										(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+										(typSetData charType 'objID (objGetId shipObj))
+										)
+									)
+									
+								;	Done
+								
+								(typSetData charType 'screenData Nil)
+								)
+							
+						;	Otherwise, we assume shipObj is valid
+
+						)
+
+					;	We always reenable docking, in case some previous code disabled it.
+
+					(if shipObj
+						(objSetProperty shipObj 'dockingEnabled True)
+						)
+
+					;	Return character's ship
+
+					shipObj
+					)
+				))
+
+			(setq rpgCharacterGetQuickRel (lambda (charType)
+
+				; This function returns the given character's relationship with 
+				; the player. The function returns one of the following values:
+				;
+				; Nil: The player and the character have never met (or the
+				;		character does not have an opinion).
+				;
+				; 'favorable: The character is favorable towards the player.
+				;		(i.e., rel is neutral, likes, or loyalty)
+				;
+				; 'unfavorable: The character is unfavorable towards the player.
+				;		(i.e., rel is dislikes or nemesis)
+
+				(block (rel)
+					(setq rel (rpgCharacterGetRel charType))
+
+					(switch
+						(not rel)
+							Nil
+
+						(or (eq rel 'nemesis)
+								(eq rel 'dislikes))
+							'unfavorable
+
+						'favorable
+						)
+					)
+				))
+
+			(setq rpgCharacterGetRel (lambda (charType)
+				
+				; This function returns the given character's relationship with 
+				; the player. The function returns one of the following values:
+				;
+				; Nil: The player and the character have never met (or the
+				;		character has not yet formed an opinion).
+				;
+				; 'nemesis: The character hates the player.
+				;
+				; 'dislikes: The character dislikes the player, but not enough
+				;		to actively work against her.
+				;
+				; 'neutral: The character does not have an opinion about the
+				;		player.
+				;
+				; 'likes: The character generally likes the player, but is not
+				;		necessarily a close friend.
+				;
+				; 'loyalty: The character feels loyalty and friendship for the
+				;		player.
+				
+				(typGetData charType 'playerRel)
+				))
+
+			(setq rpgCharacterSetMeeting (lambda (charType)
+				(block Nil
+					(typSetData charType 'latestPlayerMeetingTime (unvGetTick))
+					(if (not (typGetData charType 'firstPlayerMeetingTime))
+						(typSetData charType 'firstPlayerMeetingTime (unvGetTick))
+						)
+					)
+				))
+
+			(setq rpgCharacterSetScreen (lambda (charType screenData)
+				(typSetData charType 'screenData screenData)
+				))
+
+			(setq rpgCharacterShowMissionScreen (lambda (missionSource options)
+				
+				; This function is used to offer players a new mission.
+				;
+				; CONTEXT
+				;
+				; This must be called from inside a dock screen with a valid
+				; gScreen parameter.
+				;
+				; PARAMETERS
+				;
+				; missionSource: The object that is giving the mission, generally
+				;		character's ship.
+				;
+				; options:
+				;		nextScreen: Screen to show when we're done.
+
+				(block (nextMissionTime theMission rank newMissions)
+
+					(setq charType (objGetProperty missionSource 'character))
+					(setq missionAttrib (cat " +" (typGetStaticData charType 'MissionAttribute) ";"))
+
+					(switch
+
+						;	If we have an active mission from this ship then we show it.
+
+						(setq theMission (@ (msnFind missionSource (cat "aS" missionAttrib)) 0))
+							(scrShowScreen gScreen &dsRPGMission;
+								{
+								missionObj: theMission
+								nextScreen: (@ options 'nextScreen)
+								})
+
+						;	If we have an open mission available, return that
+
+						(setq theMission (@ (msnFind missionSource (cat "oS" missionAttrib)) 0))
+							(scrShowScreen gScreen &dsRPGMission;
+								{
+								missionObj: theMission
+								nextScreen: (@ options 'nextScreen)
+								})
+
+						;	Make a list of available missions. 
+						;	If we can't find anything, then we've got nothing.
+
+						(not (setq newMissions (typFind (cat "n" missionAttrib))))
+							(scrShowScreen gScreen &dsRPGMessage; {
+								desc: (objTranslate missionSource 'NoMissions)
+								nextScreen: 'forceUndock
+								})
+
+						; Create a random mission from the list. If we succeed, then show the mission
+						; screen.
+
+						(setq theMission (msnCreate newMissions missionSource))
+							(scrShowScreen gScreen &dsRPGMission;
+								{
+								missionObj: theMission
+								nextScreen: (@ options 'nextScreen)
+								})
+
+						; Otherwise, nothing
+
+						(scrShowScreen gScreen &dsRPGMessage; {
+							desc: (objTranslate missionSource 'NoMissions)
+							nextScreen: 'forceUndock
+							})
+						)
+					)
+				))
+			)
+	</Globals>
+
+</TranscendenceModule>

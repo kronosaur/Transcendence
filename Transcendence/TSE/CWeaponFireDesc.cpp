@@ -44,6 +44,11 @@
 #define MISSILE_SPEED_ATTRIB					CONSTLIT("missileSpeed")
 #define MULTI_TARGET_ATTRIB						CONSTLIT("multiTarget")
 #define NO_FRIENDLY_FIRE_ATTRIB					CONSTLIT("noFriendlyFire")
+#define NO_IMMOBILE_HITS_ATTRIB					CONSTLIT("noImmobileHits")
+#define NO_IMMUTABLE_HITS_ATTRIB				CONSTLIT("noImmutableHits")
+#define NO_SHIP_HITS_ATTRIB						CONSTLIT("noShipHits")
+#define NO_STATION_HITS_ATTRIB					CONSTLIT("noStationHits")
+#define NO_WORLD_HITS_ATTRIB					CONSTLIT("noWorldHits")
 #define PARTICLE_COUNT_ATTRIB					CONSTLIT("particleCount")
 #define PARTICLE_EMIT_TIME_ATTRIB				CONSTLIT("particleEmitTime")
 #define PARTICLE_MISS_CHANCE_ATTRIB				CONSTLIT("particleMissChance")
@@ -170,7 +175,49 @@ void CWeaponFireDesc::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 		}
 	}
 
-IEffectPainter *CWeaponFireDesc::CreateEffect (void)
+bool CWeaponFireDesc::CanHit (CSpaceObject *pObj) const
+
+//	CanHit
+//
+//	Returns TRUE if we can hit the given object.
+
+	{
+	//	Can we hit worlds?
+	
+	if (m_fNoWorldHits 
+			&& (pObj->GetScale() == scaleWorld || pObj->GetScale() == scaleStar))
+		return false;
+
+	//	Can we hit immutables?
+
+	if (m_fNoImmutableHits
+			&& pObj->IsImmutable())
+		return false;
+
+	//	Can we hit stations
+
+	if (m_fNoStationHits
+			&& pObj->GetScale() == scaleStructure)
+		return false;
+
+	//	Can we hit immobile objects
+
+	if (m_fNoImmobileHits
+			&& !pObj->CanMove())
+		return false;
+
+	//	Can we hit ships?
+
+	if (m_fNoShipHits
+			&& pObj->GetScale() == scaleShip)
+		return false;
+
+	//	OK
+
+	return true;
+	}
+
+IEffectPainter *CWeaponFireDesc::CreateEffect (bool bTrackingObj, bool bUseObjectCenter)
 
 //	CreateEffect
 //
@@ -182,6 +229,8 @@ IEffectPainter *CWeaponFireDesc::CreateEffect (void)
 	{
 	CCreatePainterCtx Ctx;
 	Ctx.SetWeaponFireDesc(this);
+	Ctx.SetTrackingObject(bTrackingObj);
+	Ctx.SetUseObjectCenter(bUseObjectCenter);
 
 	return m_pEffect.CreatePainter(Ctx);
 	}
@@ -842,8 +891,16 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 	m_Lifetime.SetConstant(1);
 	m_bCanDamageSource = false;
 	m_bAutoTarget = false;
-	m_bNoFriendlyFire = false;
 	m_InitialDelay.SetConstant(0);
+
+	//	Hit criteria
+
+	m_fNoFriendlyFire = false;
+	m_fNoWorldHits = false;
+	m_fNoImmutableHits = false;
+	m_fNoStationHits = false;
+	m_fNoImmobileHits = false;
+	m_fNoShipHits = false;
 
 	//	Load missile speed
 
@@ -941,8 +998,16 @@ ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, c
 	int iMaxLifetime = m_Lifetime.GetMaxValue();
 	m_bCanDamageSource = pDesc->GetAttributeBool(CAN_HIT_SOURCE_ATTRIB);
 	m_bAutoTarget = pDesc->GetAttributeBool(AUTO_TARGET_ATTRIB);
-	m_bNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
 	m_InitialDelay.LoadFromXML(pDesc->GetAttribute(INITIAL_DELAY_ATTRIB));
+
+	//	Hit criteria
+
+	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
+	m_fNoWorldHits = pDesc->GetAttributeBool(NO_WORLD_HITS_ATTRIB);
+	m_fNoImmutableHits = pDesc->GetAttributeBool(NO_IMMUTABLE_HITS_ATTRIB);
+	m_fNoStationHits = pDesc->GetAttributeBool(NO_STATION_HITS_ATTRIB);
+	m_fNoImmobileHits = pDesc->GetAttributeBool(NO_IMMOBILE_HITS_ATTRIB);
+	m_fNoShipHits = pDesc->GetAttributeBool(NO_SHIP_HITS_ATTRIB);
 
 	//	Load missile speed
 

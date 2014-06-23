@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- STARTING PLAYER SHIPS -->
+	
+	<!-- Player Ship: Sapphire-class Yacht -->
+
+	<ShipClass UNID="&scSapphirePlayer;"
+			manufacturer=		"Zubrin Systems"
+			class=				"Sapphire"
+			type=				"yacht"
+
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerSapphireBase;"
+			characterClass=		"&unidPilgrimClass;"
+			   
+			mass=				"30"
+			thrustRatio=		"6.6"
+			maxSpeed=			"20"
+			cargoSpace=			"50"
+
+			reactorPower=		"150"
+			fuelCapacity=		"37500"
+			maxArmor=			"6000"
+			maxCargoSpace=		"150"
+			maxDevices=			"8"
+
+			leavesWreck=		"30"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itReactiveArmor;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
+			<Device deviceID="&itRecoillessCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+		
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.5"
+			rotationStopAccel=	"9.0"
+			/>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsSapphireYachtHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"	rotationCount="120"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="7"	posZ="0"	rotation="180"	bringToFront="*"/>
+			<Effect type="rotateRight"		posAngle="12"	posRadius="20"	posZ="0"	rotation="90"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="18"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="-12"	posRadius="20"	posZ="0"	rotation="270"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="18"	posZ="0"	rotation="90"/>
+		</Effects>
+	
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+		
+	</ShipClass>
+
+	<!-- Player Ship: EI500 Freighter -->
+
+	<ShipClass UNID="&scEI100XPlayer;"
+			manufacturer=		"Earth Industries"
+			class=				"EI500"
+			type=				"freighter"
+
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerEI500Base;"
+			characterClass=		"&unidPilgrimClass;"
+			   
+			mass=				"150"
+			thrustRatio=		"1.5"
+			maxSpeed=			"18"
+			cargoSpace=			"200"
+
+			reactorPower=		"250"
+			fuelCapacity=		"60000"
+			maxArmor=			"20000"
+			maxCargoSpace=		"200"
+			maxDevices=			"9"
+			maxWeapons=			"2"
+
+			leavesWreck=		"75"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHeavyTitaniumPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
+			<Device deviceID="&itOmniLaserCannon;"/>
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"3.0"
+			/>
+
+		<Items>
+			<Item count="6d6" item="&itHelium3FuelRod;"/>
+			<Item count="2d4+2" item="&itLargeArmorPatch;"/>
+			<Table>
+				<Item chance="40" count="4" item="&itAblativeArmorCoating;"/>
+				<Item chance="40" count="4" item="&itReactiveArmorCoating;"/>
+				<Item chance="20" count="4" item="&itRegeneratingNanos;"/>
+			</Table>
+			<Table>
+				<Item chance="40" count="1" item="&itEnhanceSRSROM;"/>
+				<Item chance="40" count="1" item="&itTargetingComputerROM;"/>
+				<Item chance="20" count="1" item="&itEnhanceShieldsROM;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsEI500FreighterHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-144"	posRadius="28"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="60"	posRadius="20"	posZ="0"	rotation="120"/>
+			<Effect type="rotateRight"		posAngle="40"	posRadius="18"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-130"	posRadius="28"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateRight"		posAngle="-120"	posRadius="28"	posZ="0"	rotation="300"/>
+			<Effect type="rotateLeft"		posAngle="-60"	posRadius="20"	posZ="0"	rotation="240"/>
+			<Effect type="rotateLeft"		posAngle="-40"	posRadius="18"	posZ="0"	rotation="270"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="130"	posRadius="28"	posZ="0"	rotation="90"	sendToBack="*"/>
+			<Effect type="rotateLeft"		posAngle="120"	posRadius="28"	posZ="0"	rotation="60"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"120"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+		
+	</ShipClass>
+
+	<!-- Player Ship: Wolfen-class Gunship -->
+
+	<ShipClass UNID="&scWolfenPlayer;"
+			manufacturer=		"Pacific Defense Corporation"
+			class=				"Wolfen"
+			type=				"gunship"
+
+			attributes=			"00200000_PlayerShip"
+			inherit=			"&scPlayerWolfenBase;"
+			characterClass=		"&unidPilgrimClass;"
+			   
+			mass=				"30"
+			thrustRatio=		"13"
+			maxSpeed=			"25"
+			cargoSpace=			"35"
+
+			reactorPower=		"100"
+			fuelCapacity=		"25000"
+			maxArmor=			"12000"
+			maxCargoSpace=		"100"
+			maxDevices=			"8"
+			maxNonWeapons=		"4"
+
+			leavesWreck=		"20"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itLightPlasteelPlate;"
+			count=				"4"
+			/>
+		
+		<Devices>
+			<DeviceSlot criteria="w" posAngle="0" posRadius="20"/>
+			
+			<Device deviceID="&itDualLaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;"/>
+			<Device deviceID="&itHullPlateIonizer;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"3.0"
+			rotationStopAccel=	"12.0"
+			/>
+
+		<Items>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+			<Item count="4d6" item="&itKM100Missile;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+		
+		<Image imageID="&rsWolfenGunshipHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-180"	posRadius="18"	posZ="-5"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="rotateRight"		posAngle="45"	posRadius="20"	posZ="0"	rotation="135"/>
+			<Effect type="rotateRight"		posAngle="-110"	posRadius="16"	posZ="0"	rotation="315"/>
+			<Effect type="rotateLeft"		posAngle="-45"	posRadius="20"	posZ="0"	rotation="225"/>
+			<Effect type="rotateLeft"		posAngle="110"	posRadius="16"	posZ="0"	rotation="45"/>
+		</Effects>
+
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"90"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+</TranscendenceModule>

@@ -113,7 +113,7 @@ class IHITask : public IHICommand
 
 //	Session Objects -----------------------------------------------------------
 
-class IHISession : public IHICommand, private IAniCommand
+class IHISession : public IHICommand, public IAniCommand
 	{
 	public:
 		IHISession (CHumanInterface &HI);
@@ -356,12 +356,20 @@ enum EColorPalette
 	colorTextAltNormal =			15,
 	colorTextAltFade =				16,
 	colorTextWarningMsg =			17,
+
 	colorTextDialogInput =			18,
 	colorTextDialogLabel =			19,
 	colorTextDialogLink =			20,
 	colorTextDialogTitle =			21,
+	colorTextDialogWarning =		22,
 
-	colorCount =					22,
+	colorAreaDockTitle =			23,
+	colorTextDockAction =			24,
+	colorTextDockActionHotKey =		25,
+	colorTextDockText =				26,
+	colorTextDockTitle =			27,
+
+	colorCount =					28,
 	};
 
 enum EFontScale

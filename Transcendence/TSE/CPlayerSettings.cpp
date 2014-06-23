@@ -18,6 +18,7 @@
 #define SHIELD_DISPLAY_TAG						CONSTLIT("ShieldDisplay")
 #define SHIELD_EFFECT_TAG						CONSTLIT("ShieldLevelEffect")
 #define SHIP_IMAGE_TAG							CONSTLIT("ShipImage")
+#define WEAPON_DISPLAY_TAG						CONSTLIT("WeaponDisplay")
 
 #define AUTOPILOT_ATTRIB						CONSTLIT("autopilot")
 #define ARMOR_ID_ATTRIB							CONSTLIT("armorID")
@@ -35,6 +36,7 @@
 #define NAME_DEST_X_ATTRIB						CONSTLIT("nameDestX")
 #define NAME_DEST_Y_ATTRIB						CONSTLIT("nameDestY")
 #define NAME_Y_ATTRIB							CONSTLIT("nameY")
+#define SEGMENT_ATTRIB							CONSTLIT("segment")
 #define SHIELD_EFFECT_ATTRIB					CONSTLIT("shieldLevelEffect")
 #define SHIP_SCREEN_ATTRIB						CONSTLIT("shipScreen")
 #define STARTING_CREDITS_ATTRIB					CONSTLIT("startingCredits")
@@ -45,12 +47,22 @@
 #define X_ATTRIB								CONSTLIT("x")
 #define Y_ATTRIB								CONSTLIT("y")
 
+#define SEGMENT_AFT								CONSTLIT("aft")
+#define SEGMENT_AFT_PORT						CONSTLIT("aft-port")
+#define SEGMENT_AFT_STARBOARD					CONSTLIT("aft-starboard")
+#define SEGMENT_FORE_PORT						CONSTLIT("fore-port")
+#define SEGMENT_FORE_STARBOARD					CONSTLIT("fore-starboard")
+#define SEGMENT_FORWARD							CONSTLIT("forward")
+#define SEGMENT_PORT							CONSTLIT("port")
+#define SEGMENT_STARBOARD						CONSTLIT("starboard")
+
 #define ERR_SHIELD_DISPLAY_NEEDED				CONSTLIT("missing or invalid <ShieldDisplay> element")
 #define ERR_ARMOR_DISPLAY_NEEDED				CONSTLIT("missing or invalid <ArmorDisplay> element")
 #define ERR_REACTOR_DISPLAY_NEEDED				CONSTLIT("missing or invalid <ReactorDisplay> element")
 #define ERR_INVALID_STARTING_CREDITS			CONSTLIT("invalid starting credits")
 #define ERR_SHIP_IMAGE_NEEDED					CONSTLIT("invalid <ShipImage> element")
 #define ERR_MUST_HAVE_SHIP_IMAGE				CONSTLIT("<ShipImage> in <ArmorDisplay> required if using shield level effect")
+#define ERR_WEAPON_DISPLAY_NEEDED				CONSTLIT("missing or invalid <WeaponDisplay> element")
 
 ALERROR InitRectFromElement (CXMLElement *pItem, RECT *retRect);
 
@@ -86,11 +98,15 @@ CPlayerSettings &CPlayerSettings::operator= (const CPlayerSettings &Source)
 	m_fHasReactorDesc = Source.m_fHasReactorDesc;
 	m_ReactorDesc = Source.m_ReactorDesc;
 
+	//	Weapon
+
+	m_fHasWeaponDesc = Source.m_fHasWeaponDesc;
+	m_WeaponDesc = Source.m_WeaponDesc;
+
 	//	Flags
 
 	m_fInitialClass = Source.m_fInitialClass;					//	Use ship class at game start
 	m_fDebug = Source.m_fDebug;
-	m_fAutopilot = Source.m_fAutopilot;
 	m_fIncludeInAllAdventures = Source.m_fIncludeInAllAdventures;
 
 	//	Don
@@ -192,6 +208,16 @@ ALERROR CPlayerSettings::Bind (SDesignLoadCtx &Ctx, CShipClass *pClass)
 	else
 		return ComposeLoadError(Ctx, ERR_REACTOR_DISPLAY_NEEDED);
 
+	//	Weapon
+
+	if (m_fHasWeaponDesc)
+		{
+		if (error = m_WeaponDesc.Image.OnDesignLoadComplete(Ctx))
+			return error;
+		}
+	else
+		m_pWeaponDescInherited = pClass->GetWeaponDescInherited();
+
 	//	Done
 
 	return NOERROR;
@@ -247,6 +273,29 @@ CEffectCreator *CPlayerSettings::FindEffectCreator (const CString &sUNID)
 		}
 	}
 
+int CPlayerSettings::GetArmorSegment (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc)
+
+//	GetArmorSegment
+//
+//	While loading the armor segment descriptors, returns the segment number for 
+//	this descriptor.
+
+	{
+	//	For API versions 21 and higher, we figure out the segment version based
+	//	on an explicit attribute.
+
+	if (Ctx.GetAPIVersion() >= 21)
+		{
+		int iSegment = pDesc->GetAttributeIntegerBounded(SEGMENT_ATTRIB, 0, -1, -1);
+		return (iSegment != -1 ? iSegment : m_ArmorDesc.Segments.GetCount());
+		}
+
+	//	Otherwise, it is based on the order of elements in the XML
+
+	else
+		return m_ArmorDesc.Segments.GetCount();
+	}
+
 ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, CXMLElement *pDesc)
 
 //	InitFromXML
@@ -277,14 +326,7 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 	m_fHasArmorDesc = false;
 	m_fHasReactorDesc = false;
 	m_fHasShieldDesc = false;
-
-	//	Some ship capabilities
-
-	bool bValue;
-	if (pDesc->FindAttributeBool(AUTOPILOT_ATTRIB, &bValue))
-		m_fAutopilot = bValue;
-	else
-		m_fAutopilot = true;
+	m_fHasWeaponDesc = false;
 
 	//	Load some miscellaneous data
 
@@ -323,7 +365,8 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 
 			if (strEquals(pSub->GetTag(), ARMOR_SECTION_TAG))
 				{
-				SArmorSegmentImageDesc &ArmorDesc = *m_ArmorDesc.Segments.Insert();
+				int iSegment = GetArmorSegment(Ctx, pClass, pSub);
+				SArmorSegmentImageDesc &ArmorDesc = *m_ArmorDesc.Segments.SetAt(iSegment);
 
 				if (error = ArmorDesc.Image.InitFromXML(Ctx, pSub))
 					return ComposeLoadError(Ctx, ERR_ARMOR_DISPLAY_NEEDED);
@@ -425,9 +468,55 @@ ALERROR CPlayerSettings::InitFromXML (SDesignLoadCtx &Ctx, CShipClass *pClass, C
 		m_fHasReactorDesc = true;
 		}
 
+	//	Load weapon display data
+
+	CXMLElement *pWeaponDisplay = pDesc->GetContentElementByTag(WEAPON_DISPLAY_TAG);
+	if (pWeaponDisplay)
+		{
+		//	Load the image
+
+		if (error = m_WeaponDesc.Image.InitFromXML(Ctx, 
+				pWeaponDisplay->GetContentElementByTag(IMAGE_TAG)))
+			return ComposeLoadError(Ctx, ERR_WEAPON_DISPLAY_NEEDED);
+
+		m_fHasWeaponDesc = true;
+		}
+
 	//	Done
 
 	return NOERROR;
+	}
+
+void CPlayerSettings::MergeFrom (const CPlayerSettings &Src)
+
+//	MergeFrom
+//
+//	Merges from the source
+
+	{
+	if (Src.m_fHasArmorDesc)
+		{
+		m_ArmorDesc = Src.m_ArmorDesc;
+		m_fHasArmorDesc = true;
+		}
+
+	if (Src.m_fHasReactorDesc)
+		{
+		m_ReactorDesc = Src.m_ReactorDesc;
+		m_fHasReactorDesc = true;
+		}
+
+	if (Src.m_fHasShieldDesc)
+		{
+		m_ShieldDesc = Src.m_ShieldDesc;
+		m_fHasShieldDesc = true;
+		}
+
+	if (Src.m_fHasWeaponDesc)
+		{
+		m_WeaponDesc = Src.m_WeaponDesc;
+		m_fHasWeaponDesc = true;
+		}
 	}
 
 ALERROR InitRectFromElement (CXMLElement *pItem, RECT *retRect)

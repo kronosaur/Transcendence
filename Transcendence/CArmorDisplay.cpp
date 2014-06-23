@@ -107,6 +107,8 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 //	Paints to the destination
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	Dest.ColorTransBlt(0,
@@ -129,6 +131,8 @@ void CArmorDisplay::Paint (CG16bitImage &Dest)
 				pPaint->wColor,
 				pPaint->sText);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CArmorDisplay::SetSelection (int iSelection)
@@ -191,7 +195,7 @@ void CArmorDisplay::Update (void)
 	//	Draw the base ship image, if we have it
 
 	const SArmorImageDesc &ArmorDesc = pSettings->GetArmorDesc();
-	if (!ArmorDesc.ShipImage.IsEmpty())
+	if (ArmorDesc.ShipImage.IsLoaded())
 		{
 		const RECT &rcShip = ArmorDesc.ShipImage.GetImageRect();
 
@@ -295,10 +299,11 @@ void CArmorDisplay::Update (void)
 
 	//	Draw armor
 
-	int iArmorCount = Min(pShip->GetArmorSectionCount(), pSettings->GetArmorDescCount());
-	for (i = 0; i < iArmorCount; i++)
+	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
 		{
-		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
+		if (pImage == NULL)
+			continue;
 
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 		int iMaxHP = pArmor->GetMaxHP(pShip);
@@ -340,9 +345,12 @@ void CArmorDisplay::Update (void)
 
 	//	Draw armor names
 
-	for (i = 0; i < iArmorCount; i++)
+	for (i = 0; i < pShip->GetArmorSectionCount(); i++)
 		{
-		const SArmorSegmentImageDesc *pImage = &pSettings->GetArmorDesc(i);
+		const SArmorSegmentImageDesc *pImage = pSettings->GetArmorDesc(i);
+		if (pImage == NULL)
+			continue;
+
 		CInstalledArmor *pArmor = pShip->GetArmorSection(i);
 
 		//	Paint the HPs

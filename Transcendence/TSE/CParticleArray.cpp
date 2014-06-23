@@ -188,6 +188,86 @@ void CParticleArray::Init (int iMaxCount, const CVector &vOrigin)
 	m_vOrigin = vOrigin;
 	}
 
+void CParticleArray::Move (const CVector &vMove)
+
+//	Move
+//
+//	Moves all particles by the given vector
+
+	{
+	UseRealCoords();
+
+	SParticle *pParticle = m_pArray;
+	SParticle *pEnd = pParticle + m_iCount;
+	int iParticleCount = 0;
+	CVector vTotalPos;
+
+	//	Keep track of bounds
+
+	Metric xLeft = g_InfiniteDistance;
+	Metric xRight = -g_InfiniteDistance;
+	Metric yTop = -g_InfiniteDistance;
+	Metric yBottom = g_InfiniteDistance;
+
+	//	Loop
+
+	while (pParticle < pEnd)
+		{
+		if (pParticle->fAlive)
+			{
+			iParticleCount++;
+
+			//	Update position
+
+			pParticle->Pos = pParticle->Pos + vMove;
+
+			//	Convert to integer
+			//	NOTE: If we're using real coords we always ignore integer
+			//	velocity.
+
+			PosToXY(pParticle->Pos, &pParticle->x, &pParticle->y);
+
+			//	Update the bounding box
+
+			if (pParticle->Pos.GetX() > xRight)
+				xRight = pParticle->Pos.GetX();
+			if (pParticle->Pos.GetX() < xLeft)
+				xLeft = pParticle->Pos.GetX();
+
+			if (pParticle->Pos.GetY() < yBottom)
+				yBottom = pParticle->Pos.GetY();
+			if (pParticle->Pos.GetY() > yTop)
+				yTop = pParticle->Pos.GetY();
+
+			//	Update center of mass
+
+			vTotalPos = vTotalPos + pParticle->Pos;
+			}
+
+		//	Next
+
+		pParticle++;
+		}
+
+	//	Set bounds
+
+	m_vUR = CVector(xRight, yTop);
+	m_vLL = CVector(xLeft, yBottom);
+
+	int xiRight, xiLeft, yiTop, yiBottom;
+	PosToXY(m_vUR, &xiRight, &yiTop);
+	PosToXY(m_vLL, &xiLeft, &yiBottom);
+
+	m_rcBounds.left = xiLeft / FIXED_POINT;
+	m_rcBounds.top = yiTop / FIXED_POINT;
+	m_rcBounds.right = xiRight / FIXED_POINT;
+	m_rcBounds.bottom = yiBottom / FIXED_POINT;
+
+	//	Center of mass
+
+	m_vCenterOfMass = (iParticleCount > 0 ? vTotalPos / (Metric)iParticleCount : NullVector);
+	}
+
 void CParticleArray::Paint (CG16bitImage &Dest,
 							int xPos,
 							int yPos,
@@ -236,7 +316,7 @@ void CParticleArray::Paint (CG16bitImage &Dest,
 			int iCore = 1;
 			int iFlame = Desc.iMaxLifetime / 6;
 			int iSmoke = Desc.iMaxLifetime / 4;
-			int iSmokeBrightness = 120;
+			int iSmokeBrightness = 60;
 
 			PaintFireAndSmoke(Dest, 
 					xPos, yPos, 

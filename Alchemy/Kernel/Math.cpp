@@ -5,8 +5,17 @@
 #include "Kernel.h"
 #include <math.h>
 
-
 DWORD g_Seed = 0;
+
+DWORD mathGetSeed (void)
+
+//	mathGetSeed
+//
+//	Returns the current seed value.
+
+	{
+	return g_Seed;
+	}
 
 int mathNearestPowerOf2 (int x)
 
@@ -121,10 +130,17 @@ int mathRandom (int iFrom, int iTo)
 	int iRandom;
 	int iRange = Absolute(iTo - iFrom) + 1;
 
-	if (iRange > RAND_MAX)
-		iRandom = ((10000 * rand()) + (rand() % 10000)) % iRange;
+	//	mathRandom returns a value from 0 to 2,147,483,647. If our range is less
+	//	than 1,000,000 then we just use a single value. Otherwise, we use
+	//	DWORDLONGs
+
+	if (iRange < 1000000)
+		iRandom = mathRandom() % iRange;
 	else
-		iRandom = rand() % iRange;
+		{
+		DWORDLONG dwValue = (mathRandom() << 31) | mathRandom();
+		iRandom = (int)(dwValue % (DWORDLONG)iRange);
+		}
 
 	return iRandom + iFrom;
 	}
@@ -217,6 +233,18 @@ int mathSeededRandom (int iSeed, int iFrom, int iTo)
 	return iFrom + (Absolute(iRandom) % iRange);
 	}
 
+void mathSetSeed (DWORD dwSeed)
+
+//	mathSetSeed
+//
+//	Sets the seed for seeded random.
+
+	{
+	//	Must be a 31-bit number
+
+	g_Seed = (dwSeed &= 0x7fffffff);
+	}
+
 int mathSqrt (int x)
 
 //	mathSqrt
@@ -229,4 +257,3 @@ int mathSqrt (int x)
 	return (int)sqrt((double)x);
 #endif
 	}
-

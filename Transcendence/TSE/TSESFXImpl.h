@@ -9,6 +9,9 @@ class CBeamEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CBeamEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Beam"); }
 
 		virtual CString GetTag (void) { return GetClassTag(); }
@@ -18,7 +21,6 @@ class CBeamEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -82,6 +84,9 @@ class CBoltEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CBoltEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Bolt"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -90,7 +95,6 @@ class CBoltEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -117,6 +121,8 @@ class CEffectGroupCreator : public CEffectCreator
 		inline int GetCount (void) { return m_iCount; }
 		inline CEffectCreator *GetCreator (int iIndex) { return m_pCreators[iIndex]; }
 		static CString GetClassTag (void) { return CONSTLIT("Group"); }
+		CVector GetOffsetPos (int iRotation);
+		inline int GetRotationAdj (void) const { return m_iRotationAdj; }
 		virtual CString GetTag (void) { return GetClassTag(); }
 		inline bool HasOffsets (void) { return m_bHasOffsets; }
 
@@ -248,6 +254,9 @@ class CEllipseEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CEllipseEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Ellipse"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -256,7 +265,6 @@ class CEllipseEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return m_iLifetime; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -319,6 +327,9 @@ class CImageEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CImageEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Image"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -333,7 +344,6 @@ class CImageEffectCreator : public CEffectCreator,
 		virtual void SetVariants (int iVariants);
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual bool GetParticlePaintDesc (SParticlePaintDesc *retDesc);
 		virtual void GetRect (RECT *retRect) const;
@@ -359,6 +369,9 @@ class CImageAndTailEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CImageAndTailEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("ImageAndTail"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -368,7 +381,6 @@ class CImageAndTailEffectCreator : public CEffectCreator,
 		virtual void SetVariants (int iVariants) { m_iVariants = iVariants; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const { *retRect = m_Image.GetImageRect(); }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -420,6 +432,9 @@ class CMoltenBoltEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CMoltenBoltEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("MoltenBolt"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -428,7 +443,6 @@ class CMoltenBoltEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -451,6 +465,9 @@ class CNullEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CNullEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Null"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -459,7 +476,6 @@ class CNullEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
 	};
@@ -476,11 +492,16 @@ class CParticleCloudEffectCreator : public CEffectCreator
 			styleExhaust,
 			};
 
+		CParticleCloudEffectCreator (void) : m_pParticleEffect(NULL)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("ParticleCloud"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
+		inline Metric GetDrag (void) const { return m_rDrag; }
 		inline int GetCohesion (void) const { return m_iCohesion; }
 		inline int GetEmitLifetime (void) const { return m_iEmitLifetime; }
+		inline int GetEmitRotation (void) const { return m_iEmitRotation; }
 		Metric GetEmitSpeed (void) const;
 		inline Metric GetMaxRadius (void) const { return m_rMaxRadius; }
 		inline Metric GetMinRadius (void) const { return m_rMinRadius; }
@@ -493,6 +514,7 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		inline int GetParticleLifetimeMax (void) const { return Max(1, (m_rSlowMotionFactor == 1.0 ? m_ParticleLifetime.GetMaxValue() : (int)(m_ParticleLifetime.GetMaxValue() / m_rSlowMotionFactor))); }
 		inline Metric GetRingRadius (void) const { return m_rRingRadius; }
 		inline Metric GetSlowMotionFactor (void) const { return m_rSlowMotionFactor; }
+		inline int GetSpreadAngle (void) const { return m_Spread.Roll(); }
 		inline Styles GetStyle (void) const { return m_iStyle; }
 		inline int GetViscosity (void) const { return m_iViscosity; }
 		inline int GetWakePotential (void) const { return m_iWakePotential; }
@@ -515,8 +537,10 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		DiceRange m_ParticleLifetime;					//	Lifetime of each particle
 
 		int m_iEmitLifetime;							//	% time that it emits particles
+		int m_iEmitRotation;							//	Rotation
 		DiceRange m_NewParticles;						//	Number of new particles per tick
 		DiceRange m_InitSpeed;							//	Initial speed of each particle
+		DiceRange m_Spread;								//	Spread angle (for jet and exhaust)
 
 		Metric m_rRingRadius;							//	If non-zero, particles form a ring at this radius
 		Metric m_rMaxRadius;							//	If RingRadius is non-zero, this is the outer edge of ring
@@ -527,6 +551,8 @@ class CParticleCloudEffectCreator : public CEffectCreator
 		int m_iCohesion;								//	Strength of force keeping particles together (0-100)
 		int m_iViscosity;								//	Drag on particles while inside bounds (0-100)
 		int m_iWakePotential;							//	Influence of moving objects (0-100)
+
+		Metric m_rDrag;									//	Drag when source object is moving
 
 		CEffectCreator *m_pParticleEffect;				//	Effect to use to paint particles
 	};
@@ -550,7 +576,6 @@ class CParticleCometEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return -1; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -612,10 +637,51 @@ class CParticleExplosionEffectCreator : public CEffectCreator
 		CObjectImageArray m_Image;						//	Images
 	};
 
+class CParticleJetEffectCreator : public CEffectCreator
+	{
+	public:
+		CParticleJetEffectCreator (void);
+		~CParticleJetEffectCreator (void);
+			
+		inline CEffectCreator *GetParticleEffect (void) const { return m_pParticleEffect; }
+
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("ParticleJet"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_FixedPos;		//	Particles fixed on background (not obj)
+
+		CEffectParamDesc m_EmitRate;		//	Particles to create per tick
+		CEffectParamDesc m_EmitSpeed;		//	Particle speed (% of lightspeed)
+		CEffectParamDesc m_ParticleLifetime;//	In ticks
+		CEffectParamDesc m_SpreadAngle;		//	Full angle of spread
+		CEffectParamDesc m_TangentSpeed;	//	Trangental speed (if spread angle is omitted)
+
+		CEffectParamDesc m_Lifetime;		//	lifetime: Lifetime in ticks (optional)
+		CEffectParamDesc m_XformRotation;	//	XformRotation: Rotations (degrees)
+		CEffectParamDesc m_XformTime;		//	XformTime: 100 = normal speed; <100 = slower
+
+		CEffectCreator *m_pParticleEffect;	//	Effect to use to paint particles
+
+		IEffectPainter *m_pSingleton;
+	};
+
 class CPlasmaSphereEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CPlasmaSphereEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("PlasmaSphere"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -624,7 +690,6 @@ class CPlasmaSphereEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return 0; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -855,6 +920,9 @@ class CStarburstEffectCreator : public CEffectCreator,
 		public IEffectPainter
 	{
 	public:
+		CStarburstEffectCreator (void) : IEffectPainter(true)
+			{ }
+
 		static CString GetClassTag (void) { return CONSTLIT("Starburst"); }
 		virtual CString GetTag (void) { return GetClassTag(); }
 
@@ -863,7 +931,6 @@ class CStarburstEffectCreator : public CEffectCreator,
 		virtual int GetLifetime (void) { return m_iLifetime; }
 
 		//	IEffectPainter virtuals
-		virtual void Delete (void) { }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual void GetRect (RECT *retRect) const;
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);

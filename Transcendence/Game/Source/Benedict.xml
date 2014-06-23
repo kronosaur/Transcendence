@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Benedict
+
+	GLOBAL DATA
+
+	firstPlayerMeetingTime: Tick of player's first meeting.
+			Nil if the player has never met him face to face.
+
+	lastestPlayerMeetingTime: Tick of most recent meeting with Kate.
+
+	lastNodeID: Last known position. Nil means unknown.
+
+	lastSystemPos: Last known position in the lastNodeID system.
+
+	objID: The objID of current ship. If Nil, then no ship has
+			been created yet.
+
+	playerRel: See rpgCharacterGetRel in RPGCharacter.xml
+					
+	-->
+
+	<Type UNID="&unidBenedict;">
+		<StaticData>
+			<MissionAttribute>"benedictMission"</MissionAttribute>
+			<Name>"Benedict"</Name>
+			<Sovereign>&svCommonwealth;</Sovereign>
+		</StaticData>
+
+		<Events>
+		</Events>
+
+		<Language>
+		</Language>
+	</Type>
+
+</TranscendenceModule>

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict and Fiona ====================================================
+
+	EXTRA DATA
+
+	attackersLeft:			Number of attackers left.
+	freighterID:			Target ID to escort.
+	playerDestroyedFreighter: If True, player destroyed the freighter.
+	stargateID:				Stargate to wait at.
+
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictAndFiona;"
+			name=				"Benedict and Fiona"
+			attributes=			"benedictStoryArc"
+
+			maxAppearing=		"1"
+			debriefAfterOutOfSystem="true"
+			failureAfterOutOfSystem="5400"
+			>
+
+		<StaticData>
+			<sequence>20</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+
+					(switch
+						;	This mission only works in Eridani
+
+						(not (eq (sysGetNode) 'SE))
+							(msnDestroy gSource)
+
+						;	Set up the mission
+
+						(block Nil
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block (
+					(stargateObj (sysFindObject nil "G:Outbound; N"))
+					(timeToGate (sysCalcTravelTime (objGetDistance gPlayerShip stargateObj) (shpGetMaxSpeed gPlayerShip)))
+					)
+
+					;	Set a timer for when the freighter comes in
+
+					(sysAddObjTimerEvent
+						(add timeToGate 300)
+						gSource
+						"OnFreighterArrives"
+						)
+
+					;	Remember the stargate
+
+					(msnSetData gSource 'stargateID (objGetID stargateObj))
+
+					;	Disable hints (so player does not get instructions to enter 
+					;	stargate).
+
+					(plyEnableMessage gPlayer 'enabledHints Nil)
+
+					;	Remember that we accepted this mission
+					
+					(benedict_missionAccepted gSource)
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+			</OnAcceptedUndock>
+			
+			<OnDeclined>
+			</OnDeclined>
+			
+			<OnSetPlayerTarget>
+				(switch
+					;	If we have a freighter ID, then escort it.
+
+					(msnGetData gSource 'freighterID)
+						(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'freighterID)) 'escort)
+
+					;	Otherwise, point to the stargate
+
+					(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'stargateID)) 'dock)
+					)
+			</OnSetPlayerTarget>
+			
+			<OnCompleted>
+				(block (achievementText)
+				
+					;	Handle result and set Benedict's relationship to the
+					;	player based on it.
+					
+					(switch
+					
+						;	Player succeeded in defending the freighter
+						
+						(eq aReason 'success)
+							(block Nil
+								(rpgCharacterChangeRel &unidBenedict; 'aid)
+								(setq achievementText 'AchievementSuccess)
+								)
+								
+						;	Player deliberately destroyed freighter
+						
+						(msnGetData gSource 'playerDestroyedFreighter)
+							(block Nil
+								(rpgCharacterChangeRel &unidBenedict; 'betrayal)
+								(setq achievementText 'AchievementBetrayal)
+								)
+								
+						;	Player failed to defend freighter
+
+						(block Nil
+							(rpgCharacterChangeRel &unidBenedict; 'failure)
+							(setq achievementText 'AchievementFailure)
+							)
+						)
+						
+					;	Achievement
+					
+					(typSetData &msBenedictAndFiona; 'achievements
+						(list
+							(list (msnTranslate gSource achievementText)
+								Nil
+								"achievements &amp; regrets"
+								)
+							)
+						)
+						
+					;	Re-enable hints.
+
+					(plyEnableMessage gPlayer 'enabledHints True)
+					)
+			</OnCompleted>
+
+			<OnReward>
+				(block Nil
+					;	Give the player a galactic map
+					
+					(if (eq (objGetEquipmentStatus gPlayerShip 'GalacticMap) 'notInstalled)
+						(objChangeEquipmentStatus gPlayerShip 'GalacticMap 'install)
+						)
+						
+					;	Player gets mission to visit Korolov
+
+					(setq theMission (msnCreate &msBenedictToKorolov; Nil))
+					(if theMission
+						(msnAccept theMission)
+						)
+						
+					Nil
+					)
+			</OnReward>
+
+			<OnFreighterArrives>
+				(block (
+					(stargateObj (objGetObjByID (msnGetData gSource 'stargateID)))
+					(destObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					(enemies (list
+						{	class:&scAtonement; }
+						{	class:&scRepentant; }
+						{	class:&scRepentant; }
+						))
+
+					freighterObj
+					)
+
+					(plyMessage gPlayer "Freighter arrived!")
+
+					;	Create the freighter and have it exit the gate towards the sisters
+
+					(setq freighterObj (sysCreateShip &scEI7000; stargateObj &svCommonwealth;))
+					(shpOrder freighterObj 'dock destObj)
+					(msnRegisterForEvents gSource freighterObj)
+					(msnSetData gSource 'freighterID (objGetID freighterObj))
+
+					;	Create the enemies and set them to attack the freigther
+
+					(enum enemies enemyDesc
+						(block (enemyObj)
+							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svCult;))
+							(shpOrder enemyObj 'attack freighterObj)
+							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
+							(msnRegisterForEvents gSource enemyObj)
+
+							;	Set the ships so they don't retreat when shields drop
+
+							(shpSetAISetting enemyObj 'ignoreShieldsDown True)
+							)
+						)
+
+					(msnSetData gSource 'attackersLeft 3)
+
+					;	Refresh the target
+
+					(msnSetPlayerTarget gSource)
+					)
+			</OnFreighterArrives>
+
+			<OnObjDestroyed>
+				(switch
+					(eq (objGetID aObjDestroyed) (msnGetData gSource 'freighterID))
+						(block Nil
+							(msnSetData gSource 'playerDestroyedFreighter (and gPlayerShip (eq aOrderGiver gPlayerShip)))
+							(msnFailure gSource)
+							)
+
+					(eq (objGetData aObjDestroyed 'mission) (msnGetProperty gSource 'id))
+						(block (
+							(freighterObj (objGetObjByID (msnGetData gSource 'freighterID)))
+							attackersLeft
+							)
+							
+							(setq attackersLeft (msnIncData gSource 'attackersLeft -1))
+							
+							(switch
+								(not freighterObj)
+									Nil
+									
+								(eq attackersLeft 0)
+									(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:AllClear"))
+									
+								(objSendMessage gPlayerShip freighterObj (msnTranslate gSource "Freighter:PenitentDestroyed"))
+								)
+							)
+					)
+			</OnObjDestroyed>
+
+			<OnObjDocked>
+				(switch
+					(eq (objGetID aObjDocked) (msnGetData gSource 'freighterID))
+						(block Nil
+							;	Mission success
+
+							(msnSuccess gSource)
+
+							;	Attacking ships retreat
+
+							(enum (sysFindObject aObjDocked "sO:attack") enemyObj
+								(shpCancelOrders enemyObj)
+								)
+							)
+					)
+			</OnObjDocked>
+			
+			<GetGlobalAchievements>
+				(typGetData &msBenedictAndFiona; 'achievements)
+			</GetGlobalAchievements>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Defend Fiona's Freighter"
+			</Text>
+			<Text id="Summary">
+				(cat
+					"Meet the Fiona's freighter at the stargate and defend it back to the station.\n\n"
+					
+					"System: Eridani\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="Intro">
+			</Text>
+			<Text id="Briefing">
+			</Text>
+			<Text id="AcceptReply">
+			</Text>
+			<Text id="DeclineReply">
+			</Text>
+			<Text id="InProgress">
+				(cat
+					"Benedict rushes out to meet you.\n\n"
+					
+					"\"What are you doing here? They need you out there!\""
+					)
+			</Text>
+			<Text id="Freighter:AllClear">
+				"We're all clear! Thanks for your help!"
+			</Text>
+			<Text id="Freighter:PenitentDestroyed">
+				(block (
+					(attackersLeft (@ (list "zero" "one" "two" "three" "four" "five") (msnGetData gSource 'attackersLeft)))
+					)
+					
+					(random (list
+						"Nice shooting!"
+						(cat (strCapitalize attackersLeft) " more to go!")
+						"Go with Oracus, Penitent!"
+						"Splash one Penitent!"
+						"That got him!"
+						))
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+				(list
+					{	desc: (cat
+							"The docking bay swarms with activity. Techs hook up "
+							"cables and equipment to the docked freighter while "
+							"Benedict and the abbess talk with the freighter's captain.\n\n"
+							
+							"\"...the Penitents hit them hard,\" says the captain. "
+							"\"There was no trace of the explorer ship; we just found "
+							"her drifting in space. She must have ejected...\"\n\n"
+							
+							"Behind them you see cardinal-robed medics maneuver a "
+							"rejuv tank through the bay. Inside you see an unconscious "
+							"woman, her long black hair waving in the tank's fluid."
+							)
+						}
+					{	desc: (cat
+							"Benedict makes his way towards you.\n\n"
+							
+							"\"Thank you for helping us,\" he says, shaking your hand. "
+							"\"They wouldn't have survived without you.\""
+							)
+							
+						nextLabel: "\"Who is the woman in the tank?\""
+						}
+					{	desc: (cat
+							"Benedict looks across the docking bay at the rejuv tank "
+							"and for the first time you see tears in his eyes.\n\n"
+							
+							"\"That's Fiona. I should have never let her go,\" he says, mostly to himself.\n\n"
+							
+							"\"Penitents attacked her exploration ship, just as they "
+							"were about to make a critical discovery. Now their data "
+							"is lost along with the ship and crew. She's all we have left.\""
+							)
+						nextLabel: "\"Who are the Penitents?\""
+						}
+					{	desc: (cat
+							"Anger flashes across Benedict's face.\n\n"
+							
+							"\"Domina is not the only god, you know? The Penitents worship "
+							"Oracus, their god of death. But they've gotten stronger "
+							"in the last few years. I've never seen them come all the "
+							"way to Eridani before.\n\n"
+							
+							"\"They've got my attention now.\""
+							)
+						}
+						
+					(block (
+						(korolovMsn (@ (msnFind "a +unid:&msBenedictToKorolov;;") 0))
+						)
+						
+						(if korolovMsn
+							{
+							desc: (cat
+								"\"But your task here is done. Your fate is to reach the Galactic "
+								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
+								
+								"\"You've shown aptitude for defending ships; if you're interested "
+								"you can visit Korolov Shipping in the " (sysGetName (msnGetData korolovMsn 'korolovNodeID)) " system. "
+								"They're always looking for skilled pilots to defend their freighters.\n\n"
+								
+								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
+								)
+							}
+							
+							{
+							desc: (cat
+								"\"But your task here is done. Your fate is to reach the Galactic "
+								"Core&#x97;or die trying. I hope I've taught you enough.\n\n"
+								
+								"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
+								)
+							}
+							)
+						)
+					)
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+			<Text id="FailureDebrief">
+				(switch
+					(msnGetData gSource 'playerDestroyedFreighter)
+						(msnTranslate gSource 'FailureDebriefBetrayal)
+						
+					(msnTranslate gSource 'FailureDebriefFailure)
+					)
+			</Text>
+			<Text id="FailureDebriefBetrayal">
+				(cat
+					"Benedict's eyes burn with fury:\n\n"
+					
+					"\"What have you done?! You deliberately destroyed the freighter! "
+					"But your turn will come. You will suffer and burn for this!\""
+					)
+			</Text>
+			<Text id="FailureDebriefFailure">
+				(cat
+					"Benedict slumps in a chair, rubbing his forehead with his hand:\n\n"
+					
+					"\"I should never have trusted you on such a mission! "
+					"I failed her...\"\n\n"
+					
+					"Benedict says no more."
+					)
+			</Text>
+			
+			<Text id="AchievementSuccess">
+				"Defended Fiona's freighter from Penitents"
+			</Text>
+			<Text id="AchievementFailure">
+				"Failed to defend Fiona's freighter from Penitents"
+			</Text>
+			<Text id="AchievementBetrayal">
+				"Destroyed Fiona's freighter"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

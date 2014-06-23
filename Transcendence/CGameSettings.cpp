@@ -57,6 +57,8 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"invokeLetterHotKeys",		optionBoolean,	"false",	0	},
 		{	"noAutoSave",				optionBoolean,	"false",	0	},
 		{	"noFullCreate",				optionBoolean,	"false",	0	},
+		{	"showManeuverEffects",		optionBoolean,	"false",	0	},
+		{	"noMissionCheckpoint",		optionBoolean,	"false",	0	},
 
 		//	Installation options
 
@@ -77,6 +79,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"noSound",					optionBoolean,	"false",	0	},
 		{	"noMusic",					optionBoolean,	"false",	0	},
 		{	"soundVolume",				optionInteger,	"7",		0	},
+		{	"musicVolume",				optionInteger,	"7",		0	},
 		{	"musicPath",				optionString,	"",			0	},
 
 		//	Debug options
@@ -86,6 +89,7 @@ SOptionDefaults g_OptionData[CGameSettings::OPTIONS_COUNT] =
 		{	"debugVideo",				optionBoolean,	"false",	0	},
 		{	"noCrashPost",				optionBoolean,	"false",	0	},
 		{	"noCollectionDownload",		optionBoolean,	"false",	0	},
+		{	"debugSoundtrack",			optionBoolean,	"false",	0	},
 	};
 
 SCommandLineData g_CommandLineData[] =
@@ -103,6 +107,7 @@ SCommandLineData g_CommandLineData[] =
 		{	"debug",				CGameSettings::debugGame,			0 },
 		{	"nolog",				CGameSettings::noDebugLog,			0 },
 		{	"debugVideo",			CGameSettings::debugVideo,			0 },
+		{	"debugSoundtrack",		CGameSettings::debugSoundtrack,		0 },
 	};
 
 const int COMMAND_LINE_DATA_COUNT =			(sizeof(g_CommandLineData) / sizeof(g_CommandLineData[0]));
@@ -347,12 +352,6 @@ ALERROR CGameSettings::Save (const CString &sFilespec)
 
 	for (i = 0; i < OPTIONS_COUNT; i++)
 		{
-		//	Don't bother saving if our current value is the same 
-		//	as the default value
-
-		if (strEquals(m_Options[i].sSettingsValue, CString(g_OptionData[i].pszDefaultValue, -1, true)))
-			continue;
-
 		//	Compose option element and write
 
 		sData = strPatternSubst(CONSTLIT("\t<Option name=\"%s\"\tvalue=\"%s\"/>\r\n"),

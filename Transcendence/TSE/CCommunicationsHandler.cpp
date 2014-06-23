@@ -24,6 +24,39 @@ CCommunicationsHandler::~CCommunicationsHandler (void)
 //	CCommunicationsHandler destructor
 
 	{
+	DeleteAll();
+	}
+
+CCommunicationsHandler &CCommunicationsHandler::operator= (const CCommunicationsHandler &Src)
+
+//	CCommunicationsHandler operator =
+
+	{
+	int i;
+
+	DeleteAll();
+
+	m_Messages = Src.m_Messages;
+
+	for (i = 0; i < GetCount(); i++)
+		{
+		if (m_Messages[i].InvokeEvent.pCode)
+			m_Messages[i].InvokeEvent.pCode = m_Messages[i].InvokeEvent.pCode->Reference();
+
+		if (m_Messages[i].OnShowEvent.pCode)
+			m_Messages[i].OnShowEvent.pCode = m_Messages[i].OnShowEvent.pCode->Reference();
+		}
+
+	return *this;
+	}
+
+void CCommunicationsHandler::DeleteAll (void)
+
+//	DeleteAll
+//
+//	Delete all messages
+	
+	{
 	for (int i = 0; i < GetCount(); i++)
 		{
 		if (m_Messages[i].InvokeEvent.pCode)
@@ -32,6 +65,8 @@ CCommunicationsHandler::~CCommunicationsHandler (void)
 		if (m_Messages[i].OnShowEvent.pCode)
 			m_Messages[i].OnShowEvent.pCode->Discard(&g_pUniverse->GetCC());
 		}
+
+	m_Messages.DeleteAll(); 
 	}
 
 int CCommunicationsHandler::FindByShortcut (const CString &sShortcut, int *retiInsert)

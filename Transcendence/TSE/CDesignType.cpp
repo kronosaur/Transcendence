@@ -24,6 +24,7 @@
 #define OVERLAY_TYPE_TAG						CONSTLIT("OverlayType")
 #define POWER_TAG								CONSTLIT("Power")
 #define SHIP_CLASS_TAG							CONSTLIT("ShipClass")
+#define SHIP_CLASS_OVERRIDE_TAG					CONSTLIT("ShipClassOverride")
 #define SHIP_ENERGY_FIELD_TYPE_TAG				CONSTLIT("ShipEnergyFieldType")
 #define SHIP_TABLE_TAG							CONSTLIT("ShipTable")
 #define SOUNDTRACK_TAG							CONSTLIT("Soundtrack")
@@ -135,6 +136,7 @@ static char *DESIGN_CLASS_NAME[designCount] =
 static char *CACHED_EVENTS[CDesignType::evtCount] =
 	{
 		"CanInstallItem",
+		"CanRemoveItem",
 		"OnGlobalTypesInit",
 		"OnObjDestroyed",
 		"OnSystemObjAttacked",
@@ -149,7 +151,9 @@ CDesignType::CDesignType (void) :
 		m_dwUNID(0), 
 		m_pLocalScreens(NULL), 
 		m_dwInheritFrom(0), 
-		m_pInheritFrom(NULL)
+		m_pInheritFrom(NULL),
+		m_bIsModification(false),
+		m_bIsClone(false)
 	{
 	utlMemSet(m_EventsCache, sizeof(m_EventsCache), 0);
 	}
@@ -232,6 +236,149 @@ ALERROR CDesignType::ComposeLoadError (SDesignLoadCtx &Ctx, const CString &sErro
 	return ERR_FAIL;
 	}
 
+void CDesignType::CreateClone (CDesignType **retpType)
+
+//	CreateClone
+//
+//	Creates a clone of this type. Caller is responsible for freeing it.
+
+	{
+	CDesignType *pClone;
+
+	switch (GetType())
+		{
+		case designItemType:
+			pClone = new CItemType;
+			break;
+
+		case designItemTable:
+			pClone = new CItemTable;
+			break;
+
+		case designShipClass:
+			pClone = new CShipClass;
+			break;
+
+		case designEnergyFieldType:
+			pClone = new CEnergyFieldType;
+			break;
+
+		case designSystemType:
+			pClone = new CSystemType;
+			break;
+
+		case designStationType:
+			pClone = new CStationType;
+			break;
+
+		case designSovereign:
+			pClone = new CSovereign;
+			break;
+
+		case designDockScreen:
+			pClone = new CDockScreenType;
+			break;
+
+		case designEffectType:
+			{
+			CEffectCreator *pEffectType = CEffectCreator::AsType(this);
+			if (pEffectType == NULL)
+				{
+				ASSERT(false);
+				return;
+				}
+
+			CEffectCreator *pEffectClone;
+			if (CEffectCreator::CreateFromTag(pEffectType->GetTag(), &pEffectClone) != NOERROR)
+				{
+				ASSERT(false);
+				return;
+				}
+
+			pClone = pEffectClone;
+			break;
+			}
+
+		case designPower:
+			pClone = new CPower;
+			break;
+
+		case designSpaceEnvironmentType:
+			pClone = new CSpaceEnvironmentType;
+			break;
+
+		case designShipTable:
+			pClone = new CShipTable;
+			break;
+
+		case designAdventureDesc:
+			pClone = new CAdventureDesc;
+			break;
+
+		case designImage:
+			pClone = new CObjectImage;
+			break;
+
+		case designSound:
+			pClone = new CSoundType;
+			break;
+
+		case designMissionType:
+			pClone = new CMissionType;
+			break;
+
+		case designSystemTable:
+			pClone = new CSystemTable;
+			break;
+
+		case designSystemMap:
+			pClone = new CSystemMap;
+			break;
+
+		case designEconomyType:
+			pClone = new CEconomyType;
+			break;
+
+		case designTemplateType:
+			pClone = new CTemplateType;
+			break;
+
+		case designGenericType:
+			pClone = new CGenericType;
+			break;
+
+		default:
+			ASSERT(false);
+			return;
+		}
+
+	//	Initialize
+
+	pClone->m_bIsClone = true;
+
+	pClone->m_dwUNID = m_dwUNID;
+	pClone->m_pExtension = m_pExtension;
+	pClone->m_dwVersion = m_dwVersion;
+	pClone->m_dwInheritFrom = m_dwInheritFrom;
+	pClone->m_pInheritFrom = m_pInheritFrom;
+	pClone->m_sAttributes = m_sAttributes;
+	pClone->m_StaticData = m_StaticData;
+	pClone->m_GlobalData = m_GlobalData;
+	pClone->m_InitGlobalData = m_InitGlobalData;
+	pClone->m_Language = m_Language;
+	pClone->m_Events = m_Events;
+	pClone->m_pLocalScreens = (m_pLocalScreens ? m_pLocalScreens->OrphanCopy() : NULL);
+	pClone->m_DisplayAttribs = m_DisplayAttribs;
+
+	//	Let our subclass initialize
+
+	pClone->OnInitFromClone(this);
+
+	//	Done
+
+	*retpType = pClone;
+	}
+
 ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType)
 
 //	CreateFromXML
@@ -243,6 +390,7 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 		{
 		ALERROR error;
 		CDesignType *pType = NULL;
+		bool bOverride = false;
 
 		if (strEquals(pDesc->GetTag(), ITEM_TYPE_TAG))
 			pType = new CItemType;
@@ -327,18 +475,25 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 			if (error = CEffectCreator::CreateTypeFromXML(Ctx, pDesc, (CEffectCreator **)&pType))
 				return error;
 			}
+		else if (strEquals(pDesc->GetTag(), SHIP_CLASS_OVERRIDE_TAG))
+			{
+			pType = new CShipClass;
+			bOverride = true;
+			}
 		else
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Unknown design element: <%s>"), pDesc->GetTag());
 			return ERR_FAIL;
 			}
 
+		//	Result
+
 		if (retpType)
 			*retpType = pType;
 
 		//	Initialize
 
-		return pType->InitFromXML(Ctx, pDesc);
+		return pType->InitFromXML(Ctx, pDesc, bOverride);
 		}
 	catch (...)
 		{
@@ -1045,7 +1200,7 @@ ALERROR CDesignType::FireOnGlobalUniverseCreated (const SEventHandlerDesc &Event
 
 ALERROR CDesignType::FireOnGlobalUniverseLoad (const SEventHandlerDesc &Event)
 
-//	FireOnGlobalUniverseCreated
+//	FireOnGlobalUniverseLoad
 //
 //	Fire event
 
@@ -1335,7 +1490,7 @@ void CDesignType::InitCachedEvents (int iCount, char **pszEvents, SEventHandlerD
 		}
 	}
 
-ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool bIsOverride)
 
 //	InitFromXML
 //
@@ -1362,6 +1517,8 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_dwVersion = Ctx.GetAPIVersion();
 
 	//	Inheritance
+
+	m_bIsModification = bIsOverride;
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB), &m_dwInheritFrom))
 		return error;
@@ -1518,6 +1675,36 @@ void CDesignType::MergeLanguageTo (CLanguageDataBlock &Dest)
 		m_pInheritFrom->MergeLanguageTo(Dest);
 
 	DEBUG_CATCH
+	}
+
+void CDesignType::MergeType (CDesignType *pSource)
+
+//	MergeType
+//
+//	Merges the info from that given type
+	
+	{
+	//	We take the extension of the source because it has taken responsibility
+	//	for the type.
+	//
+	//	If we didn't do this then it would be possible for someone to override
+	//	a registered type and use its permissions.
+
+	m_pExtension = pSource->m_pExtension;
+	m_dwVersion = Max(m_dwVersion, pSource->m_dwVersion);
+
+	//	Merge our variables
+
+	m_StaticData.MergeFrom(pSource->m_StaticData);
+	m_InitGlobalData.MergeFrom(pSource->m_InitGlobalData);
+	m_Language.MergeFrom(pSource->m_Language);
+	m_Events.MergeFrom(pSource->m_Events);
+
+	//	LATER: Merge local screens
+
+	//	Let our subclass handle the rest.
+
+	OnMergeType(pSource); 
 	}
 
 ALERROR CDesignType::PrepareBindDesign (SDesignLoadCtx &Ctx)
@@ -1947,7 +2134,8 @@ IEffectPainter *CEffectCreatorRef::CreatePainter (CCreatePainterCtx &Ctx)
 
 	//	If we're an owner singleton then we only need to create this once.
 
-	if (m_pType->GetInstance() == CEffectCreator::instOwner)
+	if (m_pType->GetInstance() == CEffectCreator::instOwner
+			&& !pPainter->IsSingleton())
 		{
 		pPainter->SetSingleton(true);
 		m_pSingleton = pPainter;

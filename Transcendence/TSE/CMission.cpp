@@ -318,11 +318,14 @@ void CMission::FireOnAccepted (void)
 		}
 	}
 
-void CMission::FireOnDeclined (void)
+ICCItem *CMission::FireOnDeclined (void)
 
 //	FireOnDeclined
 //
-//	Fire <OnDeclined>
+//	Fire <OnDeclined>. We return the result of the event, which might contain
+//	instructions for the mission screen.
+//
+//	Callers are responsible for discarding the result, if not NULL.
 
 	{
 	SEventHandlerDesc Event;
@@ -335,16 +338,25 @@ void CMission::FireOnDeclined (void)
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
+			{
 			ReportEventError(EVENT_ON_DECLINED, pResult);
-		Ctx.Discard(pResult);
+			Ctx.Discard(pResult);
+			return NULL;
+			}
+
+		return pResult;
 		}
+
+	return NULL;
 	}
 
-void CMission::FireOnReward (ICCItem *pData)
+ICCItem *CMission::FireOnReward (ICCItem *pData)
 
 //	FireOnReward
 //
 //	Fire <OnReward>
+//
+//	Callers are responsible for discarding the result, if not NULL.
 
 	{
 	SEventHandlerDesc Event;
@@ -358,9 +370,16 @@ void CMission::FireOnReward (ICCItem *pData)
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
+			{
 			ReportEventError(EVENT_ON_REWARD, pResult);
-		Ctx.Discard(pResult);
+			Ctx.Discard(pResult);
+			return NULL;
+			}
+
+		return pResult;
 		}
+
+	return NULL;
 	}
 
 void CMission::FireOnSetPlayerTarget (const CString &sReason)
@@ -1038,7 +1057,7 @@ bool CMission::ParseCriteria (const CString &sCriteria, SCriteria *retCriteria)
 	return true;
 	}
 
-bool CMission::Reward (ICCItem *pData)
+bool CMission::Reward (ICCItem *pData, ICCItem **retpResult)
 
 //	Reward
 //
@@ -1052,7 +1071,12 @@ bool CMission::Reward (ICCItem *pData)
 
 	//	Reward
 
-	FireOnReward(pData);
+	ICCItem *pResult = FireOnReward(pData);
+	if (retpResult == NULL || (pResult && !pResult->IsSymbolTable()))
+		{
+		pResult->Discard(&g_pUniverse->GetCC());
+		pResult = NULL;
+		}
 
 	//	Set debriefed to true as a convenience
 
@@ -1061,6 +1085,9 @@ bool CMission::Reward (ICCItem *pData)
 	CloseMission();
 
 	//	Done
+
+	if (retpResult)
+		*retpResult = pResult;
 
 	return true;
 	}
@@ -1129,25 +1156,40 @@ bool CMission::SetAccepted (void)
 	return true;
 	}
 
-bool CMission::SetDeclined (void)
+bool CMission::SetDeclined (ICCItem **retpResult)
 
 //	SetDeclined
 //
-//	Mission declined by player
+//	Mission declined by player. Optionally returns the result of <OnDeclined>,
+//	which the caller is responsible for discarding.
 
 	{
 	//	Must be available to player.
 
-	if (m_iStatus == statusOpen)
+	if (m_iStatus != statusOpen)
+		{
+		if (retpResult)
+			*retpResult = NULL;
 		return false;
+		}
 
 	//	Player declines the mission
 
-	FireOnDeclined();
+	ICCItem *pResult = FireOnDeclined();
+	if (retpResult == NULL || (pResult && !pResult->IsSymbolTable()))
+		{
+		pResult->Discard(&g_pUniverse->GetCC());
+		pResult = NULL;
+		}
 
 	//	Set flag
 
 	m_fDeclined = true;
+
+	//	Done
+
+	if (retpResult)
+		*retpResult = pResult;
 
 	return true;
 	}

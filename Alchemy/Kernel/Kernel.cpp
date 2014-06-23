@@ -308,6 +308,74 @@ HANDLE kernelCreateThread (LPTHREAD_START_ROUTINE pfStart, LPVOID pData)
 	return hThread;
 	}
 
+bool kernelDispatchUntilEventSet (HANDLE hEvent, DWORD dwTimeout)
+
+//	kernelDispatchUntilEventSet
+//
+//	Waits on the given event while dispatching messages. We return TRUE if the 
+//	event is set (FALSE if we hit the timeout).
+
+	{
+	//	If the event is already set, we're done--no need to wait.
+
+	if (::WaitForSingleObject(hEvent, 0) == WAIT_OBJECT_0)
+		return true;
+
+	//	Keep looping until we're done
+
+	while (true)
+		{
+		//	Dispatch messages until there are no more messages or until our
+		//	event is set.
+
+		MSG msg;
+		while (::PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
+			{
+			//	If this is a PM_QUIT, then we need to repost it and exit
+
+			if (msg.message == WM_QUIT)
+				{
+				::PostQuitMessage((int)msg.wParam);
+				return false; // abandoned due to WM_QUIT
+				}
+
+			//	Otherwise, dispatch
+
+			::TranslateMessage(&msg); 
+			::DispatchMessage(&msg); 
+
+			//	If we're signalled now, we're done.
+
+			if (::WaitForSingleObject(hEvent, 0) == WAIT_OBJECT_0)
+				return true;
+			}
+
+		//	Wait for more messages or until our event is set.
+
+		DWORD dwResult = ::MsgWaitForMultipleObjects(1, &hEvent, FALSE, dwTimeout, QS_ALLINPUT); 
+		switch (dwResult)
+			{
+			//	Event was signalled
+
+			case WAIT_OBJECT_0:
+				return true;
+
+			//	Timeout
+
+			case WAIT_TIMEOUT:
+				return false;
+
+			//	Otherwise, more messages in the queue
+
+			default:
+				if (dwResult == WAIT_OBJECT_0 + 1)
+					continue;
+				else
+					return false;
+			}
+		}
+	}
+
 DWORD WINAPI kernelThreadProc (LPVOID pData)
 	{
 	THREADCTX *pCtx = (THREADCTX *)pData;

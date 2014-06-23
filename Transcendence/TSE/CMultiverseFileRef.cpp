@@ -7,6 +7,7 @@
 
 #define FIELD_DIGEST							CONSTLIT("digest")
 #define FIELD_FILE_PATH							CONSTLIT("filePath")
+#define FIELD_ORIGINAL_FILENAME					CONSTLIT("originalFilename")
 #define FIELD_UPLOADED_ON						CONSTLIT("uploadedOn")
 
 #define ERR_INVALID_DIGEST						CONSTLIT("Unable to read file digest.")
@@ -20,6 +21,7 @@ ALERROR CMultiverseFileRef::InitFromJSON (const CJSONValue &Desc, CString *retsR
 
 	{
 	m_sFilePath = Desc.GetElement(FIELD_FILE_PATH).AsString();
+	m_sOriginalFilename = Desc.GetElement(FIELD_ORIGINAL_FILENAME).AsString();
 	CString sUploadedOn = Desc.GetElement(FIELD_UPLOADED_ON).AsString();
 
 	const CJSONValue &Digest = Desc.GetElement(FIELD_DIGEST);

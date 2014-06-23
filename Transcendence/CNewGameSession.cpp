@@ -171,6 +171,7 @@ void CNewGameSession::CmdEditName (void)
 		if (m_pRoot->FindElement(ID_PLAYER_NAME_FIELD, &pEdit))
 			{
 			m_Settings.sPlayerName = CUniverse::ValidatePlayerName(pEdit->GetPropertyString(PROP_TEXT));
+			m_Settings.bDefaultPlayerName = false;
 
 			DeleteElement(ID_PLAYER_NAME_FIELD);
 			}
@@ -264,6 +265,7 @@ void CNewGameSession::CmdOK (void)
 	NewGame.sPlayerName = m_Settings.sPlayerName;
 	NewGame.iPlayerGenome = m_Settings.iPlayerGenome;
 	NewGame.dwPlayerShip = m_ShipClasses[m_iCurShipClass]->GetUNID();
+	NewGame.bDefaultPlayerName = m_Settings.bDefaultPlayerName;
 
 	//	Remember some variables because after we close the session this object
 	//	will be gone.

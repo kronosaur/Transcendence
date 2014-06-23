@@ -83,6 +83,7 @@ ALERROR CTargetDisplay::Init (CPlayerShipController *pPlayer, const RECT &rcRect
 		return error;
 
 	m_Buffer.SetBlending(200);
+	m_Buffer.SetTransparentColor();
 
 	return NOERROR;
 	}
@@ -202,15 +203,38 @@ void CTargetDisplay::Update (void)
 //	Updates buffer
 
 	{
-	//	Paint the buffer with the appropriate background bitmap
-
-	if (m_pBackground)
-		m_Buffer.Blt(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, *m_pBackground, 0, 0);
+	DEBUG_TRY
 
 	//	Nothing to do if no player
 
 	if (m_pPlayer == NULL)
 		return;
+
+	CShip *pShip = m_pPlayer->GetShip();
+	const CPlayerSettings *pSettings = pShip->GetClass()->GetPlayerSettings();
+	const SWeaponImageDesc *pDisplayDesc = pSettings->GetWeaponDesc();
+
+	//	Erase
+
+	m_Buffer.Fill(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, DEFAULT_TRANSPARENT_COLOR);
+
+	//	Paint the buffer with the appropriate background bitmap
+
+	if (pDisplayDesc)
+		{
+		const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
+
+		m_Buffer.ColorTransBlt(rcImage.left, 
+				rcImage.top, 
+				RectWidth(rcImage), 
+				RectHeight(rcImage), 
+				255,
+				pDisplayDesc->Image.GetImage(NULL_STR),
+				0,
+				0);
+		}
+	else if (m_pBackground)
+		m_Buffer.Blt(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, *m_pBackground, 0, 0);
 
 	//	Draw the primary weapon status
 
@@ -241,11 +265,39 @@ void CTargetDisplay::Update (void)
 					g_KlicksPerPixel, 
 					TARGET_IMAGE_X, 
 					TARGET_IMAGE_Y);
+			Ctx.XFormRel = Ctx.XForm;
 			Ctx.fNoRecon = true;
 			Ctx.fNoDockedShips = true;
 			Ctx.fNoSelection = true;
 
 			pTarget->Paint(m_Buffer, TARGET_IMAGE_X, TARGET_IMAGE_Y, Ctx);
+
+			//	Erase the area outside the target pane
+
+			if (pDisplayDesc)
+				{
+				const RECT &rcImage = pDisplayDesc->Image.GetImageRect();
+
+				m_Buffer.ClearMaskBlt(rcImage.left, 
+						rcImage.top, 
+						RectWidth(rcImage), 
+						RectHeight(rcImage), 
+						pDisplayDesc->Image.GetImage(NULL_STR),
+						0,
+						0,
+						DEFAULT_TRANSPARENT_COLOR);
+				}
+			else if (m_pBackground)
+				{
+				m_Buffer.ClearMaskBlt(0, 
+						0, 
+						DISPLAY_WIDTH, 
+						DISPLAY_HEIGHT, 
+						*m_pBackground,
+						0,
+						0,
+						DEFAULT_TRANSPARENT_COLOR);
+				}
 			}
 
 		//	Paint the name of the target
@@ -307,5 +359,7 @@ void CTargetDisplay::Update (void)
 		}
 
 	m_bInvalid = false;
+
+	DEBUG_CATCH
 	}
 

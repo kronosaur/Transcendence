@@ -443,7 +443,20 @@ void OutputTable (SItemTableCtx &Ctx, const SItemTypeList &ItemList)
 					sValue = CONSTLIT("?");
 				}
 			else
-				sValue = pType->GetDataField(sField);
+				{
+				CItem Item(pType, 1);
+				CItemCtx ItemCtx(Item);
+				CCodeChainCtx CCCtx;
+
+				ICCItem *pResult = Item.GetProperty(&CCCtx, ItemCtx, sField);
+
+				if (pResult->IsNil())
+					sValue = NULL_STR;
+				else
+					sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
+
+				pResult->Discard(&g_pUniverse->GetCC());
+				}
 
 			//	Format the value
 

@@ -1,0 +1,1506 @@
+<?xml version="1.0" ?>
+
+<TranscendenceModule>
+
+	<!-- Kytryn Blaster -->
+
+	<ItemType UNID="&itKytrynBlaster;"
+			name=				"Kytryn blaster"
+			level=				"9"
+			value=				"250000"
+			mass=				"3000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"15"
+
+				type=				"missile"
+				missileSpeed=		"40"
+				hitPoints=			"15"
+
+				lifetime=			"80"
+				damage=				"plasma:5d12; WMD5"
+				powerUse=			"2000"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Launcher -->
+
+	<ItemType UNID="&itKytrynLauncher;"
+			name=				"Kytryn launcher"
+			level=				"10"
+			value=				"350000"
+			mass=				"5000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This Teraton weapon launches a Kytryn plasma pod warhead, which blossoms into a shell of plasma energy."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				launcher=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itKytrynPlasmaSeed;"
+						type=			"missile"
+						lifetime=		"480"
+						damage=			"plasma:3d12; WMD5"
+						missileSpeed=	"30"
+						hitPoints=		"20"
+
+						failsafe=		"6"
+
+						hitEffect=		"&efFragmentationExplosion;"
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							count=			"36"
+							type=			"missile"
+
+							damage=			"plasma:3d12; WMD5"
+							missileSpeed=	"20"
+							lifetime=		"30"
+							>
+
+						<Effect>
+							<Image imageID="&rsMediumExplosions;" imageX="0" imageY="64" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+						</Effect>
+					</Fragment>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Plasma Seed -->
+
+	<ItemType UNID="&itKytrynPlasmaSeed;"
+			name=				"Kytryn plasma pod"
+			level=				"12"
+			value=				"1500"
+			mass=				"300"
+			attributes=			"Consumable; Alien; Missile; Teraton"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6"
+
+			description=		"These alien warheads are launched by the Kytryn launcher."
+
+			sortName=			"Kytryn.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Teraton Nest Base
+	
+	All Teraton nests are derived from this type
+	
+	-->
+	
+	<StationType UNID="&baTeratonNestBase;"
+			name=				"(teraton nest base)"
+			virtual=			"true"
+			>
+
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at the remains of a Teraton nest. "
+					"The sickly sweet smell of burnt flesh fills the air and mucusy discharges flow out of organic walls."
+					)
+			</Text>
+		</Language>
+
+		<Events>
+			<OnBehavior>
+				(if (not (objIsAbandoned gSource))
+					(block (totalDefenders)
+						; Count the number of defenders
+						(setq totalDefenders (count (sysFindObject gSource "TAN:25; +teraton; -populated;")))
+						(setq optimalDefenders (add 3 (typGetGlobalData &baTeratonNestBase; "nestsDestroyed")))
+						
+						(if (ls totalDefenders optimalDefenders)
+							(terCreateDefender gSource)
+							)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreate>
+				(block Nil
+					; Create some defenders
+					(for i 1 (random 3 5)
+						(block (thePos theObj)
+							(setq thePos (sysVectorRandom gSource (random 7 20) 4 "t"))
+							(setq theObj (sysCreateStation &stTeratonDefender; thePos))
+							(objAddSubordinate gSource theObj)
+							)
+						)
+					
+					; Register update event
+					(sysAddObjRecurringTimerEvent 301 gSource "OnBehavior")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(block (playerItems)
+					; Keep track of stations destroyed
+					(typIncGlobalData &baTeratonNestBase; "nestsDestroyed")
+					
+					; Before we destroy items on the station, take away any items
+					; that we took from the player; these have a greater chance of showing
+					; up.
+					
+					(setq playerItems (filter (objGetItems gSource "*") theItem (itmGetData theItem "001F2001_fromPlayer")))
+					(enum playerItems theItem (objRemoveItem gSource theItem))
+					
+					; Destroy items on the station
+					(intDestroyItems gSource)
+					
+					; Add back the player items
+					(enum playerItems theItem
+						(if (leq (random 1 100) 90)
+							(objAddItem gSource (itmSetData theItem "001F2001_fromPlayer" Nil (itmGetCount theItem)))
+							)
+						)
+					)
+			</OnDestroy>
+		</Events>
+	</StationType>
+	
+	<!-- Teraton Chrysalis
+	
+	EXTRA DATA
+	
+	openTime:			Tick on which chrysalis will open
+	type:				One of the following
+							'defender = Create a Teraton defender
+	
+	-->
+
+	<StationType UNID="&stTeratonChrysalis;"
+			name=				"Teraton chrysalis"
+			sovereign=			"&svIndependentTrader;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			mass=				"5000"
+			armorID=			"&itLightIthaliumArmor;"
+			hitPoints=			"250"
+			repairRate=			"10"
+			structuralHitPoints="20"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"teraton, teratonChrysalis"
+			>
+
+		<Image	imageID="&rsTeratonChrysalis;" imageWidth="100" imageHeight="100"/>
+		
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at the dead remains of a Teraton chrysalis. "
+					"The bony, motionless mass at its center bleeds an ochre fluid."
+					)
+			</Text>
+		</Language>
+		
+		<Events>
+			<OnBehavior>
+				(block (openTime)
+					(if (and (setq openTime (objGetData gSource "openTime"))
+							(geq (unvGetTick) openTime)
+							(not (objIsAbandoned gSource)))
+						(block (theType theObj)
+							; Create open animation effect
+							(sysCreateEffect &efTeratonChrysalisOpen; Nil (objGetPos gSource))
+							
+							; Create the object
+							(setq theType (objGetData gSource "type"))
+							(switch
+								(eq theType 'defender)
+									(block (theBase)
+										(setq theObj (sysCreateStation &stTeratonDefender; (objGetPos gSource)))
+										
+										; Find the nearest Teraton nest and make this a subordinate
+										(if (setq theBase (sysFindObject gSource "TAN +teraton; +populated"))
+											(objAddSubordinate theBase theObj)
+											)
+										)
+								)
+							
+							; Destroy ourselves
+							(objDestroy gSource)
+							)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+			</OnCreate>
+		</Events>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You are docked with a Teraton chrysalis\x97a pulsing mass of biomechanical systems. "
+								"You see a bony structure taking shape inside the large spherical structure."
+								)
+						</OnPaneInit>
+						
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+	</StationType>
+
+	<!-- Teraton Defense Satellite -->
+
+	<StationType UNID="&stTeratonDefender;"
+			name=				"Teraton Defender"
+			sovereign=			"&svIndependentTrader;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			mass=				"5000"
+			armorID=			"&itLightIthaliumArmor;"
+			hitPoints=			"150"
+			structuralHitPoints="40"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"teraton, teratonDefender"
+			>
+
+		<Image	imageID="&rsTeratonDefender;" imageWidth="64" imageHeight="64" imageFrameCount="12" imageTicksPerFrame="2"/>
+
+		<Devices>
+			<Device deviceID="&itKytrynBlaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<Language>
+			<Text id="AbandonedScreenDesc">
+				(cat "You are docked at the dead remains of a Teraton defender. "
+					"Wisps of high-energy plasma vent from holes along a bony central mass."
+					)
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Teraton Factory -->
+
+	<StationType UNID="&stTeratonFactory;"
+			name=				"Teraton fabricator"
+			sovereign=			"&svIndependentTrader;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itIthaliumArmor;"
+			hitPoints=			"850"
+			repairRate=			"10"
+			fireRateAdj=		"10"
+			explosionType=		"&vtPlasmaExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonFactory"
+			levelFrequency=		"----- --ruv ----- ----- -----"
+			locationCriteria=	"+OuterSystem,-void"
+			enemyExclusionRadius="50"
+
+			inherit=			"&baTeratonNestBase;"
+			>
+
+		<Names>Teraton Nest</Names>
+
+		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Items>
+			<RandomItem count="20" 
+					criteria=		"* +Res; -NotStandard"
+					level=			"7"
+					levelCurve=		"3"
+					/>
+			<RandomItem count="10" 
+					criteria=		"f -NotStandard"
+					level=			"8"
+					levelCurve=		"3"
+					/>
+		</Items>
+
+		<Trade currency="rin" max="50000" replenish="2500">
+			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
+			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+		</Trade>
+		
+		<StaticData>
+			<FactoryTable>
+				(	; pattern				minM	minE	minD	chgM	chgE	chgD	output		output level
+					(&itRingerAmbrosia;		Nil		Nil		Nil		0		0		+5		Nil			Nil)
+					(&itRingerSpice;		Nil		Nil		Nil		0		0		+1		Nil			Nil)
+					(&itRadioactiveWaste;	Nil		Nil		Nil		0		-1		-5		Nil			Nil)
+					(&itOrganicAcid;		Nil		Nil		Nil		0		0		-1		Nil			Nil)
+					("* +Soul;"				Nil		Nil		Nil		0		0		"+l"	Nil			Nil)
+					("* +Food; +Lux;"		Nil		1		Nil		0		-1		+1		Nil			Nil)
+					("* +Res; +ZeroPoint;"	Nil		Nil		Nil		0		"+l"	0		Nil			Nil)
+					("* +Res; +AntiMatter;"	Nil		Nil		Nil		0		"+l"	0		Nil			Nil)
+					("* +Res; +Nuclear;"	Nil		Nil		Nil		0		"+l"	0		Nil			Nil)
+					("* +Res;"				Nil		Nil		Nil		"+l"	0		0		Nil			Nil)
+					("f"					Nil		Nil		Nil		0		"+l"	0		Nil			Nil)
+					("a"					Nil		1		Nil		"+l"	-1		0		Nil			Nil)
+					("* +Meds;"				Nil		Nil		Nil		0		0		"-l"	Nil			Nil)
+
+					("wD L:2-7;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l")
+					("wD L:2-7;"			"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"w"			"l-1")
+					("w L:2-7;"				"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l+1")
+					("w L:2-7;"				"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"w"			"l")
+					("wD L:8-10;"			"+2l"	"+2l"	5		"-2l"	"-2l"	-5		"w"			"l-1")
+					("wD L:8-10;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l-2")
+					("w L:8-10;"			"+2l"	"+2l"	5		"-2l"	"-2l"	-5		"w"			"l")
+					("w L:8-10;"			"+2l"	"+2l"	2		"-2l"	"-2l"	-2		"w"			"l-1")
+
+					("sD L:2-7;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l")
+					("sD L:2-7;"			"+l"	"+l"	Nil		"-l"	"-l"	0		"s"			"l-1")
+					("s L:2-7;"				"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l+1")
+					("s L:2-7;"				"+l"	"+l"	Nil		"-l"	"-l"	0		"s"			"l")
+					("sD L:8-10;"			"+l"	"+l"	5		"-l"	"-l"	-5		"s"			"l-1")
+					("sD L:8-10;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l-2")
+					("s L:8-10;"			"+l"	"+l"	5		"-l"	"-l"	-5		"s"			"l")
+					("s L:8-10;"			"+l"	"+l"	2		"-l"	"-l"	-2		"s"			"l-1")
+
+					("vrD L:2-7;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l")
+					("vrD L:2-7;"			"+l"	"+2l"	Nil		"-l"	"-2l"	0		"vr"		"l-1")
+					("vr L:2-7;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l+1")
+					("vr L:2-7;"			"+l"	"+2l"	Nil		"-l"	"-2l"	0		"vr"		"l")
+					("vrD L:8-10;"			"+l"	"+2l"	5		"-l"	"-2l"	-5		"vr"		"l-1")
+					("vrD L:8-10;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l-2")
+					("vr L:8-10;"			"+l"	"+2l"	5		"-l"	"-2l"	-5		"vr"		"l")
+					("vr L:8-10;"			"+l"	"+2l"	2		"-l"	"-2l"	-2		"vr"		"l-1")
+
+					("d~swvrD L:2-7;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l")
+					("d~swvrD L:2-7;"		"+l"	"+l"	Nil		"-l"	"-l"	0		"d~swvr"	"l-1")
+					("d~swvr L:2-7;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l+1")
+					("d~swvr L:2-7;"		"+l"	"+l"	Nil		"-l"	"-l"	0		"d~swvr"	"l")
+					("d~swvrD L:8-10;"		"+l"	"+l"	5		"-l"	"-l"	-5		"d~swvr"	"l-1")
+					("d~swvrD L:8-10;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l-2")
+					("d~swvr L:8-10;"		"+l"	"+l"	5		"-l"	"-l"	-5		"d~swvr"	"l")
+					("d~swvr L:8-10;"		"+l"	"+l"	2		"-l"	"-l"	-2		"d~swvr"	"l-1")
+
+					("d"					Nil		Nil		Nil		"+l"	"+l"	"-l"	Nil			Nil)
+
+					("m &lt;11"				"+l"	"+l"	Nil		"-l"	"-l"	0		"replicate"	Nil)
+					("m &lt;16"				"+2l"	"+2l"	Nil		"-2l"	"-2l"	0		"replicate"	Nil)
+
+					(Nil					Nil		Nil		Nil		0		0		0		Nil			Nil)
+					)
+			</FactoryTable>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block (allFoods)
+					; Set energy, material, and disposition randomly
+					(objSetData gSource "disposition" (random -1 1))
+					(objSetData gSource "energy" (random -2 2))
+					(objSetData gSource "material" (random -2 2))
+
+					; The "bias" of the creature alters its tells
+					(objSetData gSource "bias" (random -2 2))
+
+					; Make a list of the creature's food preferences
+					(setq allFoods (shuffle (itmGetTypes "* +Food; +Lux; -UNID:&itRingerAmbrosia;; -UNID:&itRingerSpice;;")))
+					(objSetData gSource "love" (subset allFoods 0 2))
+					(objSetData gSource "hate" (subset allFoods 2 4))
+					)
+			</OnCreate>
+		</Events>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+
+						<Actions>
+							<Action name="Fabricator Chamber" default="1" key="F">
+								<Navigate screen="Factory"/>
+							</Action>
+
+							<Action name="Trading Chamber" key="T">
+								(intTeratonMugging "Exchange")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<Exchange
+							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+
+						<Actions>
+							<Action name="Buy Items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell Items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+					</Exchange>
+				</Panes>
+			</Main>
+
+			<Factory>
+
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (disposition energy material)
+								(setq disposition (add (objGetData gSource "disposition") (objGetData gSource "bias")))
+								(setq energy (objGetData gSource "energy"))
+								(setq material (objGetData gSource "material"))
+								(scrSetDesc gScreen
+									(cat "You are in the vast central chamber of the Teraton nest. A large pit in the center of the cavern is inhabited by a mass of tentacles, cilia, and grotesque organs.\n\n"
+										(switch
+											(geq disposition 7)
+												"The organic mass purrs with contentment."
+
+											(geq disposition 2)
+												"The organic mass appears calm."
+
+											(geq disposition 0)
+												"The organic mass appears wary."
+
+											(ls disposition -7)
+												"The organic mass flails its tentacles in rage."
+
+											"The organic mass appears restless and angry."
+											)
+
+										(switch
+											(leq energy 0)
+												" It has 0 energy points"
+
+											(eq energy 1)
+												" It has 1 energy point"
+
+											(cat " It has " energy " energy points")
+											)
+
+										(switch
+											(leq material 0)
+												" and 0 material points."
+
+											(eq material 1)
+												" and 1 material point."
+
+											(cat " and " material " material points.")
+											)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Drop Item in Pit" default="1" key="D">
+								<Navigate screen="DropItem"/>
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<Navigate screen="Main"/>
+							</Action>
+						</Actions>
+					</Default>
+
+					<Result>
+						<OnPaneInit>
+							(scrSetDesc gScreen gResult)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(if (and (ls (objGetData gSource "disposition") -9) (leq (random 1 100) 25))
+									(scrShowPane gScreen "AngryTentacles")
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</Result>
+
+					<AngryTentacles>
+						<OnPaneInit>
+							(scrSetDesc gScreen "Angered by your offerings, the tentacles of the pit reach out to grab you. Before you can run, they slip around your neck and waist and pull you down into the pit.\n\nYou are dissolved by the various acids and enzymes of the grotesque organic mass.")
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(plyDestroyed gPlayer "was eaten by an angry Teraton fabricator")
+									(scrExitScreen gScreen 'forceUndock)
+									)
+							</Action>
+						</Actions>
+					</AngryTentacles>
+				</Panes>
+			</Factory>
+
+			<DropItem
+				type=			"itemPicker"
+				backgroundID=	"&rsItemListScreen;"
+				>
+
+				<ListOptions
+					dataFrom=	"player"
+					list=		"*U"
+					/>
+
+				<Panes>
+					<Default
+							desc=	"There are no items here.">
+
+						<OnPaneInit>
+							(block (enableDrop)
+								(setq gItem (scrGetItem gScreen))
+								(if gItem
+									(block Nil
+										(scrSetDesc gScreen "What item do you wish to drop into the Teraton pit?")
+										(scrEnableAction gScreen 0 True)
+										)
+									(scrEnableAction gScreen 0 Nil)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Drop this Item" default="1" key="D">
+								(block (table entry criteria material energy disposition)
+									(setq gItem (scrGetItem gScreen))
+
+									; Load some variables
+									(setq energy (objGetData gSource "energy"))
+									(setq material (objGetData gSource "material"))
+									(setq disposition (objGetData gSource "disposition"))
+
+									(switch
+										; If this is the creature's favorite food, then we have a special entry
+										; +5 disposition
+
+										(find (objGetData gSource "love") (itmGetType gItem))
+											(setq entry (list Nil Nil Nil Nil 0 0 +5 Nil Nil))
+
+										; If this is the creature's least favorite food, then we have a special
+										; entry: -5 to -8 disposition.
+
+										(find (objGetData gSource "hate") (itmGetType gItem))
+											(setq entry (list Nil Nil Nil Nil 0 0 (random -8 -5) Nil Nil))
+
+										; Otherwise, look for the item in the table
+
+										(setq entry Nil)
+										)
+
+									; Look for the entry in the table
+									(setq table (objGetStaticData gSource "FactoryTable"))
+									(enumwhile table (not entry) thisEntry
+										(switch
+											; Skip if not enough material
+											(ls material (intTeratonGetValue (item thisEntry 1) gItem))
+												Nil
+
+											; Skip if not enough energy
+											(ls energy (intTeratonGetValue (item thisEntry 2) gItem))
+												Nil
+
+											; Skip if not enough disposition
+											(ls disposition (intTeratonGetValue (item thisEntry 3) gItem))
+												Nil
+
+											; If the criteria in the table is Nil, then we always match. This
+											; is for the last (default) entry.
+											(not (setq criteria (item thisEntry 0)))
+												(setq entry thisEntry)
+
+											; If the criteria is an integer, then we see if this is the UNID
+											; of the item.
+											(isint criteria)
+												(if (eq (itmGetType gItem) criteria)
+													(setq entry thisEntry)
+													)
+
+											; If the criteria matches, then we have an entry
+											(itmMatches gItem criteria)
+												(setq entry thisEntry)
+											)
+										)
+
+									; Consume the item	
+									(objRemoveItem gPlayerShip gItem 1)
+
+									; Figure out the result
+									(if entry
+										(block (incEnergy incMaterial incDisposition output newItem)
+											(setq incMaterial (intTeratonGetValue (item entry 4) gItem))
+											(setq incEnergy (intTeratonGetValue (item entry 5) gItem))
+											(setq incDisposition (intTeratonGetValue (item entry 6) gItem))
+
+											(setq output (item entry 7))
+											(switch
+												(not output)
+													(setq newItem Nil)
+
+												(eq output "replicate")
+													(setq newItem (itmCreate (itmGetType gItem) (random 8 12)))
+
+												(isint output)
+													(setq newItem (itmCreate output 1))
+
+												(setq newItem (itmCreateRandom output (intTeratonGetLevelCurve (item entry 8) gItem)))
+												)
+
+											; State changes
+											(objIncData gSource "material" incMaterial)
+											(objIncData gSource "energy" incEnergy)
+											(objIncData gSource "disposition" incDisposition)
+											(if newItem
+												(objAddItem gPlayerShip newItem)
+												)
+
+											; Compute the result description string
+											(switch
+												newItem
+													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it with a hiss. Organs gurgle and glow for a while, and then tentacles pull a slimy mass out of some orifice and deposit it at your feet.\n\nYou see " (itmGetName newItem 8) "."))
+
+												(gr incDisposition 0)
+													(setq gResult "Tentacles eagerly reach out to accept your offering and the organic mass swallows it with a hiss.\n\nThe organic mass spews a sweet, pleasant mist.")
+
+												(ls incDisposition 0)
+													(setq gResult "Tentacles reach out to accept your offering and the organic mass tentatively swallows it.\n\nWith a roar of anger, the organic mass spews a thick mist of bile. You are covered in a slimy broth of chemicals.")
+
+												(or (gr incMaterial 0) (gr incEnergy 0))
+													(setq gResult (cat "Tentacles reach out to accept your offering and the organic mass swallows it.\n\nOrgans and bladers gurgle as they process the " (if (gr incEnergy 0) "energy" "material") " you have fed them."))
+
+												(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste they discard it through one of the many tunnels along the wall of the pit.")
+												)
+
+											; DEBUG
+											; (setq gResult (cat gResult "\n\nM=" (objGetData gSource "material") " E=" (objGetData gSource "energy") " D=" (objGetData gSource "disposition")))
+											)
+										(setq gResult "Tentacles reach out to accept your offering, but after a tentative taste, they crush it and discard it through one of the many tunnels along the wall of the pit.")
+										)
+
+									; Next
+									(scrShowScreen gScreen "Factory" "Result")
+									)
+							</Action>
+
+							<Action name="Cancel" cancel="1" key="C">
+								<Navigate screen="Factory"/>
+							</Action>
+						</Actions>
+					</Default>
+
+				</Panes>
+			</DropItem>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="-64"	y="77" />
+			<Port x="-32"	y="126" />
+			<Port x="0"		y="77" />
+			<Port x="78"	y="-20" />
+			<Port x="124"	y="-80" />
+			<Port x="54"	y="-80" />
+			<Port x="-40"	y="-68" />
+			<Port x="-106"	y="-64" />
+			<Port x="-72"	y="0" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Teraton Research Center -->
+
+	<StationType UNID="&stTeratonResearch;"
+			name=				"Teraton research center"
+			sovereign=			"&svIndependentTrader;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itIthaliumArmor;"
+			hitPoints=			"850"
+			repairRate=			"10"
+			fireRateAdj=		"10"
+			explosionType=		"&vtPlasmaExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
+			levelFrequency=		"----- --rr- ----- ----- -----"
+			locationCriteria=	"+OuterSystem,-void"
+			enemyExclusionRadius="50"
+
+			inherit=			"&baTeratonNestBase;"
+			>
+
+		<Names>Teraton Nest</Names>
+
+		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Items>
+			<RandomItem count="12" 
+					criteria=		"* -NotStandard"
+					level=			"7"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="1d2" 
+					criteria=		"* +Alien; -NotStandard;"
+					level=			"9"
+					levelCurve=		"3"
+					/>
+		</Items>
+
+		<Trade currency="rin" max="50000" replenish="2500">
+			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
+			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+		</Trade>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+
+						<Actions>
+							<Action name="Research Chamber" default="1" key="R">
+								(if (or (not (objGetData gSource "LastExperiment"))
+										(gr (subtract (unvGetTick) (objGetData gSource "LastExperiment")) 3600))
+									(scrShowPane gScreen "Research")
+									(scrShowPane gScreen "ResearchNone")
+									)
+							</Action>
+
+							<Action name="Trading Chamber" key="T">
+								(intTeratonMugging "Exchange")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<Research>
+						<OnPaneInit>
+							(scrSetDesc gScreen
+								"You enter a dim cavern filled with arcane equipment. Dozens of human subjects, wired, tubed, and in various stages of health and wholeness, lie on articulated beds.\n\nA tall Teraton with supernumerary fingers approaches you. \"Human! You desire to join the research? You will be compensated with gifts from beyond.\""
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="&quot;Sure&#x97;anything for the advancement of science.&quot;" default="1" key="S">
+								(block (dieRoll)
+									(setq dieRoll (random 1 100))
+									(switch
+										; Physical mutilation
+										(leq dieRoll 15)
+											(block Nil
+												(switch
+													(leq (random 1 100) 95)
+														(setq gResult "success")
+
+													(intConsumeItem gPlayerShip (itmCreate &itArtificialPlasma; 1))
+														(setq gResult "use-plasma")
+
+													(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+														(setq gResult "use-autodoc")
+
+													(setq gResult "death")
+													)
+
+												(scrShowPane gScreen "ResearchMutilation")
+												)
+
+										; Filovirus
+										(leq dieRoll 50)
+											(block Nil
+												(switch
+													(leq (random 1 100) 85)
+														(setq gResult "success")
+
+													(intConsumeItem gPlayerShip (itmCreate &itCyanavir; 1))
+														(setq gResult "use-cyanavir")
+
+													(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+														(setq gResult "use-autodoc")
+
+													(setq gResult "death")
+													)
+
+												(scrShowPane gScreen "ResearchFilovirus")
+												)
+
+										; Mutagens
+										(leq dieRoll 85)
+											(block Nil
+												(switch
+													(leq (random 1 100) 67)
+														(setq gResult "success")
+
+													(intConsumeItem gPlayerShip (itmCreate &itDeathDrugs; 1))
+														(setq gResult "use-deathdrugs")
+
+													(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+														(setq gResult "use-autodoc")
+
+													(setq gResult "death")
+													)
+
+												(scrShowPane gScreen "ResearchMutagen")
+												)
+
+										; Alien parasite
+										(leq dieRoll 100)
+											(block Nil
+												(switch
+													(intConsumeItem gPlayerShip (itmCreate &itHypermycin; 1))
+														(if (leq (random 1 100) 95)
+															(setq gResult "use-hypermycin")
+															(setq gResult "death")
+															)
+
+													(objHasItem gPlayerShip (itmCreate &itPortableAutodoc; 1))
+														(if (leq (random 1 100) 80)
+															(setq gResult "use-autodoc")
+															(setq gResult "death")
+															)
+
+													(setq gResult "death")
+													)
+
+												(scrShowPane gScreen "ResearchParasite")
+												)
+										)
+									)
+							</Action>
+
+							<Action name="&quot;No thanks.&quot;" cancel="1" key="N">
+								<ShowPane pane="ResearchDecline"/>
+							</Action>
+						</Actions>
+					</Research>
+
+					<ResearchNone
+							desc=	"You enter a dim cavern filled with arcane equipment. Dozens of human subjects, wired, tubed, and in various stages of health and wholeness, lie on articulated beds. A tall Teraton with supernumerary fingers tends to the patients with a mixture of curiosity and concern.">
+						<Actions>
+							<Action name="Leave" cancel="1" default="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</ResearchNone>
+
+					<ResearchMutilation
+							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then takes a scalpel and slices open both your forearms from the elbow to the wrist. You bleed profusely and mercifully pass out after a few minutes of screaming.">
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								<ShowPane pane="ResearchMutilation2"/>
+							</Action>
+						</Actions>
+					</ResearchMutilation>
+
+					<ResearchMutilation2>
+						<OnPaneInit>
+							(switch
+								(eq gResult "success")
+									(scrSetDesc gScreen "You wake up in the nightmarish chamber and notice that both your arms are bandaged up.\n\nThe Teraton attempts a smile and says, \"Human! Your body is weak and easily killed. We have repaired as best as possible. For your pains we will reward you.\"")
+
+								(eq gResult "use-plasma")
+									(scrSetDesc gScreen "You wake up in your ship with bloody bandages over both your arms. You open a case of artificial plasma and set up a transfusion.\n\nYou start to feel better after an hour.")
+
+								(eq gResult "use-autodoc")
+									(scrSetDesc gScreen "You wake up in your ship with bloody bandages over both your arms. You activate your portable autodoc and it drips a concoction of fluids and growth stims into your arm.\n\nYou start to feel better immediately.")
+
+								(scrSetDesc gScreen "Overnight your blood pressure drops as the bleeding continues.\n\nIn the morning, the Teraton takes your lifeless body and dumps it into space.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(if (eq gResult "death")
+									(block Nil
+										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
+										(scrExitDock gScreen)
+										)
+									(scrShowPane gScreen "ResearchGift")
+									)
+							</Action>
+						</Actions>
+					</ResearchMutilation2>
+
+					<ResearchFilovirus
+							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then takes a syringe and injects you with something. At first you feel OK, but after a few hours you ache all over and begin to vomit. After a couple of days you begin to bleed from every orifice and you mercifully fall into a coma.">
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								<ShowPane pane="ResearchFilovirus2"/>
+							</Action>
+						</Actions>
+					</ResearchFilovirus>
+
+					<ResearchFilovirus2>
+						<OnPaneInit>
+							(switch
+								(eq gResult "success")
+									(scrSetDesc gScreen "You wake up in the nightmarish chamber, a taste of vomit in your mouth, but otherwise OK.\n\nThe Teraton attempts a smile and says, \"Human! Your body is weak and easily killed. We have repaired as best as possible. For your pains we will reward you.\"")
+
+								(eq gResult "use-cyanavir")
+									(scrSetDesc gScreen "You wake up in your ship covered in blood and vomit. You dose yourself with a course of cyanavir and try to sleep it off.\n\nAfter several days you recover enough to be able to eat again.")
+
+								(eq gResult "use-autodoc")
+									(scrSetDesc gScreen "You wake up in your ship covered in blood and vomit. You activate your portable autodoc and it drips a concoction of antivirals into your arm.\n\nYou start to feel better after a few days.")
+
+								(scrSetDesc gScreen "Overnight you crash out as your organs liquify from the viral load.\n\nIn the morning, the Teraton carefully places your lifeless form into a body bag and dumps it into space.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(if (eq gResult "death")
+									(block Nil
+										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
+										(scrExitDock gScreen)
+										)
+									(scrShowPane gScreen "ResearchGift")
+									)
+							</Action>
+						</Actions>
+					</ResearchFilovirus2>
+
+					<ResearchMutagen
+							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then opens up a large jar and carefully removes what looks like a cancerous growth. Slicing your chest with quick strokes, the Teraton implants the growth into your body. You pass out from the pain before it finishes.">
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								<ShowPane pane="ResearchMutagen2"/>
+							</Action>
+						</Actions>
+					</ResearchMutagen>
+
+					<ResearchMutagen2>
+						<OnPaneInit>
+							(switch
+								(eq gResult "success")
+									(scrSetDesc gScreen "You wake up in the nightmarish chamber, a large bandage covering your chest.\n\nThe Teraton attempts a smile and says, \"Human! Your body is weak and easily killed. We have repaired as best as possible. For your pains we will reward you.\"")
+
+								(eq gResult "use-deathdrugs")
+									(scrSetDesc gScreen "You wake up in your ship covered in blood. You dose yourself with a course of cancer dust and try to sleep it off.\n\nAfter several days you recover enough to be able to eat again.")
+
+								(eq gResult "use-autodoc")
+									(scrSetDesc gScreen "You wake up in your ship covered in blood. You activate your portable autodoc and it drips a concoction of oncokillers into your arm.\n\nYou start to feel better after a few days.")
+
+								(scrSetDesc gScreen "For days, the growth inside your chest gets bigger, feeding on your blood supply. After a month, the cancer metastasizes to your eyes and mouth.\n\nAfter two months, the Teraton dumps your lifeless body into space.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(if (eq gResult "death")
+									(block Nil
+										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
+										(scrExitDock gScreen)
+										)
+									(scrShowPane gScreen "ResearchGift")
+									)
+							</Action>
+						</Actions>
+					</ResearchMutagen2>
+
+					<ResearchParasite
+							desc=	"The Teraton takes you to an empty bed and straps you down so that you cannot move. It then opens up a small jar and carefully removes a translucent and gelatinous eel of some sort. Holding your head steady, it guides the eel into your nasal passage. The eel seems undisturbed by your piercing screams.">
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								<ShowPane pane="ResearchParasite2"/>
+							</Action>
+						</Actions>
+					</ResearchParasite>
+
+					<ResearchParasite2>
+						<OnPaneInit>
+							(switch
+								(eq gResult "use-hypermycin")
+									(scrSetDesc gScreen "You wake up in your ship with a splitting headache and a nasty nose bleed. You dose yourself with a course of hypermycin and try to sleep it off.\n\nOne morning you find a shriveled and desiccated eel by your pillow, and after that the headaches disappear.")
+
+								(eq gResult "use-autodoc")
+									(scrSetDesc gScreen "You wake up in your ship with a splitting headache and a nasty nose bleed. You activate your portable autodoc and it drips a concoction of antibiotics into your arm.\n\nOne morning you find a shriveled and desiccated eel by your pillow, and after that the headaches disappear.")
+
+								(scrSetDesc gScreen "For days the eel grows inside your head, eating everything before it. Fortunately, the damage to your brain slips you into a deep catatonia and you feel nothing.\n\nAfter a month, the Teraton takes your lifeless body and dumps it into space.")
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" cancel="1" default="1" key="C">
+								(if (eq gResult "death")
+									(block Nil
+										(plyDestroyed gPlayer (cat "was killed in a Teraton medical experiment"))
+										(scrExitDock gScreen)
+										)
+									(scrShowPane gScreen "ResearchGift")
+									)
+							</Action>
+						</Actions>
+					</ResearchParasite2>
+
+					<ResearchGift>
+						<OnPaneInit>
+							(block (dieRoll)
+								(setq dieRoll (random 1 100))
+								(switch
+									(leq dieRoll 40)
+										(setq gItem (itmCreate &itPromethiumCrystal; 1))
+
+									(leq dieRoll 75)
+										(setq gItem (itmCreateRandom "* +Res;" "----- -ccur"))
+
+									(leq dieRoll 100)
+										(setq gItem (itmCreateRandom "wsd +MajorItem;" "----- -c---"))
+									)
+
+								(scrSetDesc gScreen
+									(cat "Once you've recovered, the Teraton comes to your ship, \"Human! This payment compensates for your damage.\""
+										"\n\nIt drops off " (itmGetName gItem 8) " and leaves without another word."
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Leave" cancel="1" default="1" key="L">
+								(block Nil
+									(objAddItem gPlayerShip gItem)
+									(objSetData gSource "LastExperiment" (unvGetTick))
+									(scrShowPane gScreen "Default")
+									)
+							</Action>
+						</Actions>
+					</ResearchGift>
+
+					<ResearchDecline
+							desc=	"The Teraton growls in disappointment. He turns away and continues his work on the human subjects.">
+
+						<Actions>
+							<Action name="Leave" cancel="1" default="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+						</Actions>
+					</ResearchDecline>
+
+					<Exchange
+							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+
+						<Actions>
+							<Action name="Buy Items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell Items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Leave" cancel="1" key="L">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+					</Exchange>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="-64"	y="77" />
+			<Port x="-32"	y="126" />
+			<Port x="0"		y="77" />
+			<Port x="78"	y="-20" />
+			<Port x="124"	y="-80" />
+			<Port x="54"	y="-80" />
+			<Port x="-40"	y="-68" />
+			<Port x="-106"	y="-64" />
+			<Port x="-72"	y="0" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Teraton Trading Post -->
+
+	<StationType UNID="&stTeratonTradingPost;"
+			name=				"Teraton trading post"
+			sovereign=			"&svIndependentTrader;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itIthaliumArmor;"
+			hitPoints=			"850"
+			repairRate=			"10"
+			fireRateAdj=		"10"
+			explosionType=		"&vtPlasmaExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
+			levelFrequency=		"----- -vcuv ----- ----- -----"
+			locationCriteria=	"+OuterSystem,-void"
+			enemyExclusionRadius="50"
+
+			inherit=			"&baTeratonNestBase;"
+			>
+
+		<Names>Teraton Nest</Names>
+
+		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Items>
+			<RandomItem count="20" 
+					criteria=		"* -NotStandard"
+					level=			"7"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="10" 
+					criteria=		"adm -NotStandard"
+					level=			"8"
+					levelCurve=		"1"
+					/>
+			<RandomItem count="5" 
+					criteria=		"wm -NotStandard"
+					level=			"9"
+					levelCurve=		"2"
+					/>
+			<RandomItem count="5" 
+					criteria=		"fmut +Consumable; -NotStandard;"
+					level=			"10"
+					levelCurve=		"2"
+					/>
+		</Items>
+
+		<Trade currency="rin" max="50000" replenish="2500">
+			<Sell	criteria="*NU +Soul;"							priceAdj="unavailable"/>
+			<Sell	criteria="*NU +RingerValuable;"					priceAdj="400"/>
+			<Sell	criteria="*NU +Alien;"							priceAdj="125"/>
+			<Sell	criteria="*NU -ID;"								priceAdj="100"/>
+			<Buy	criteria="*NU +Soul;"							priceAdj="constant:1000"/>
+			<Buy	criteria="*NU +Alien;"							priceAdj="50"/>
+			<Buy	criteria="*NU +Res; &gt;=6;"					priceAdj="42"/>
+			<Buy	criteria="wmNU &gt;=5;"							priceAdj="25"/>
+		</Trade>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default
+							desc=	"You are in the peripheral tunnel of a Teraton nest. The hard walls are covered by a sinewous membrane and odd growths hang from the ceiling. There is a foul smell of rot and bile in the air.">
+
+						<Actions>
+							<Action name="Trading Chamber" default="1" key="T">
+								(intTeratonMugging "Exchange")
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+
+					</Default>
+
+					<Exchange
+							desc=	"The Trading Chamber is a vast, dark cavern where Teratons trade with various human and neo-humans. From a distance the Teratons look like abnormally tall humans, but up close you notice their deformities and mutations.">
+
+						<Actions>
+							<Action name="Buy Items" default="1" key="B">
+								(scrShowBuyScreen 
+									"*"						; items sold to player
+									)
+							</Action>
+
+							<Action name="Sell Items" key="S">
+								(scrShowSellScreen
+									"*"						; items bought from player
+									)
+							</Action>
+
+							<Action name="Done" cancel="1" key="D">
+								<ShowPane pane="Default"/>
+							</Action>
+
+						</Actions>
+					</Exchange>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="-64"	y="77" />
+			<Port x="-32"	y="126" />
+			<Port x="0"		y="77" />
+			<Port x="78"	y="-20" />
+			<Port x="124"	y="-80" />
+			<Port x="54"	y="-80" />
+			<Port x="-40"	y="-68" />
+			<Port x="-106"	y="-64" />
+			<Port x="-72"	y="0" />
+		</DockingPorts>
+
+	</StationType>
+
+	<Globals>
+		(block Nil
+			(setq intConsumeItem (lambda (theObj theItem)
+				(if (objHasItem theObj theItem)
+					(block Nil
+						(objRemoveItem theObj theItem)
+						True
+						)
+					Nil
+					)
+				))
+				
+			(setq terCreateDefender (lambda (theNest)
+				(block (thePos theObj)
+					; Pick a proper location for the defender
+					(setq thePos (sysVectorRandom theNest (random 7 20) 4 "t"))
+					
+					; Create the chrysalis
+					(setq theObj (sysCreateStation &stTeratonChrysalis; thePos))
+					(objAddSubordinate theNest theObj)
+					
+					; Set params
+					(objSetData theObj "type" 'defender)
+					
+					; Chrysalis will open in 1 minute
+					(objSetData theObj "openTime" (add (unvGetTick) 1800))
+					)
+				))
+
+			(setq intTeratonGetLevelCurve (lambda (value theItem)
+				(switch
+					(isint value)
+						(block (result)
+							(setq result "")
+							(for i 1 5 (setq result (cat result (if (eq i value) "c" "-"))))
+							(setq result (cat result " "))
+							(for i 6 10 (setq result (cat result (if (eq i value) "c" "-"))))
+							(setq result (cat result " "))
+							(for i 11 15 (setq result (cat result (if (eq i value) "c" "-"))))
+							result
+							)
+
+					(eq value "l")
+						(intTeratonGetLevelCurve (itmGetLevel theItem) theItem)
+
+					(eq value "l+1")
+						(intTeratonGetLevelCurve (add (itmGetLevel theItem) 1) theItem)
+
+					(eq value "l-1")
+						(intTeratonGetLevelCurve (subtract (itmGetLevel theItem) 1) theItem)
+
+					(eq value "l+2")
+						(intTeratonGetLevelCurve (add (itmGetLevel theItem) 2) theItem)
+
+					"ccccc ccccc"
+					)
+				))
+
+			(setq intTeratonGetValue (lambda (value theItem)
+				(switch
+					(not value)
+						-1000
+
+					(isint value)
+						value
+
+					(eq value "+l")
+						(itmGetLevel theItem)
+
+					(eq value "-l")
+						(subtract 0 (itmGetLevel theItem))
+
+					(eq value "+2l")
+						(multiply (itmGetLevel theItem) 2)
+
+					(eq value "-2l")
+						(subtract 0 (multiply (itmGetLevel theItem) 2))
+
+					0
+					)
+				))
+
+			(setq intTeratonMugging (lambda (destination)
+				(switch
+					; If the player is not too powerful then there is a chance that
+					; the Teratons will just take what they want.
+
+					(or (and (ls (objGetCombatPower gPlayerShip) 15) (leq (random 1 100) 25))
+							(and (ls (objGetCombatPower gPlayerShip) 25) (leq (random 1 100) 5)))
+						(block (bestItem bestValue value)
+
+							; Look for the most expensive item that the player has
+							(setq bestValue 0)
+							(objEnumItems gPlayerShip "*U" theItem
+								(block Nil
+									(setq value (multiply (objGetBuyPrice gSource theItem) (itmGetCount theItem)))
+									(if (and value (gr value bestValue))
+										(block Nil
+											(setq bestItem theItem)
+											(setq bestValue value)
+											)
+										)
+									)
+								)
+
+							; If we found something interesting, then take it
+							(if bestItem
+								(block Nil
+									; Take the item from the player
+									(objRemoveItem gPlayerShip bestItem)
+									
+									; Mark it so we know where it came from
+									(setq bestItem (itmSetData bestItem "001F2001_fromPlayer" True (itmGetCount bestItem)))
+									
+									; Add it to the nest
+									(objAddItem gSource bestItem)
+
+									(setq gItem bestItem)
+									(scrShowScreen gScreen "&dsTeratonMugging;")
+									)
+								(scrShowPane gScreen destination)
+								)
+							)
+
+					(scrShowPane gScreen destination)
+					)
+				))
+			)
+	</Globals>
+
+	<!-- Teraton Mugging Screen -->
+
+	<DockScreen UNID="&dsTeratonMugging;">
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen
+						(cat 
+							"You try to enter the Trading Chamber but a group of Teratons grab you and drag you back to your ship. Snorting with contempt for your weak ship, they rumage through your cargo hold looking for valuable items.\n\nThey take "
+							(itmGetName gItem 8)
+							" and leave you in pain on the deck of your ship."
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+	</DockScreen>
+
+<!-- RESOURCES -->
+
+	<Effect UNID="&efTeratonChrysalisOpen;">
+		<Sequencer>
+			<Image imageID="&rsTeratonChrysalis;" 
+					imageX="0" 
+					imageY="0" 
+					imageWidth="100" 
+					imageHeight="100"
+					imageFrameCount="16"
+					imageTicksPerFrame="2"/>
+
+			<ImageFracture>
+				<Image imageID="&rsTeratonChrysalis;" 
+						imageX="1500" 
+						imageY="0" 
+						imageWidth="100" 
+						imageHeight="100"/>
+			</ImageFracture>
+		</Sequencer>
+	</Effect>
+
+	<Image UNID="&rsTeratonChrysalis;" bitmap="Resources\TeratonChrysalis.jpg" bitmask="Resources\TeratonChrysalisMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsTeratonDefender;" bitmap="Resources\TeratonDefender.jpg" bitmask="Resources\TeratonDefender.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>	

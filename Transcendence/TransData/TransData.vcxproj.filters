@@ -13,6 +13,9 @@
       <UniqueIdentifier>{1bd7a7db-4715-4024-ac22-66f4879edbb5}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="XML Files">
+      <UniqueIdentifier>{907de3ae-7d49-4088-afb7-f3daa875d329}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Armor.cpp">
@@ -123,6 +126,9 @@
     <ClCompile Include="ImageChart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TopologyMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -139,5 +145,10 @@
     <ResourceCompile Include="TransData.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\Game\TransData.xml">
+      <Filter>XML Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

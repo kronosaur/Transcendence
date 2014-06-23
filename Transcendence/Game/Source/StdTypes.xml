@@ -1,0 +1,1861 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- EFFECT TYPES ========================================================= -->
+
+	<Effect UNID="&efLargeExplosion1;">
+		<Image imageID="&rsLargeExplosions;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="128" 
+				imageHeight="128"
+				imageFrameCount="16"
+				imageTicksPerFrame="2"/>
+	</Effect>
+
+	<Effect UNID="&efMediumExplosion1;">
+		<Image imageID="&rsMediumExplosions;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="64" 
+				imageHeight="64"
+				imageFrameCount="16"
+				imageTicksPerFrame="2"/>
+	</Effect>
+
+	<Effect UNID="&efSmallExplosion1;"
+			sound="&snArmorHit1;"
+			>
+		<Image imageID="&rsMediumHit;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="32" 
+				imageHeight="32"
+				imageFrameCount="12"
+				imageTicksPerFrame="1"/>
+	</Effect>
+
+	<Effect UNID="&efBattleArenaWallHit;">
+		<Image imageID="&rsShieldHit;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="32" 
+				imageHeight="32"
+				imageFrameCount="12"
+				imageTicksPerFrame="1"/>
+	</Effect>
+
+	<Effect UNID="&efStationExplosion;">
+		<Image imageID="&rsMediumHit;" 
+				imageX="0" 
+				imageY="0" 
+				imageWidth="32" 
+				imageHeight="32"
+				imageFrameCount="12"
+				imageTicksPerFrame="1"/>
+	</Effect>
+
+	<Effect UNID="&efGemOfSacrifice;">
+		<Starburst
+				lifetime=		"40"
+				spikeCount=		"1d6+2"
+				spikeLength=	"4d80"
+				primaryColor=	"0xde, 0xb7, 0xff"
+				secondaryColor=	"0x89, 0x00, 0xff"
+				/>
+	</Effect>
+
+<!-- RESOURCES ================================================================
+
+	NOTE: For images that have a 1-bit mask, we specify the backColor attribute
+	to apply the mask to the in-memory image. This saves us from having to carry
+	around the mask. Images that use an 8-bit mask should not use this technique
+
+	Naming conventions
+
+	A		Animation (default 16 frames)
+	A{n}	Animation of n frames (e.g., "A20")
+	B{n}	Bitmap (black = trans) of size n x n (e.g., "B32")
+	D		Directional (default 20 frames)
+	D{n}	Directional with n directions (e.g., "D40")
+	G{n}	Alpha blended image of size n x n (e.g., "G128")
+
+-->
+	<Image UNID="&rsZubrinLRS;"			bitmap="Resources\LargeHUD.jpg"		/>
+	<Image UNID="&rsZubrinLRSBorder;"	bitmask="Resources\LRSBorderMask.bmp"/>
+	<Image UNID="&rsZubrinTargeting;"	bitmap="Resources\WeaponsHUD.bmp"	bitmask="Resources\WeaponsHUDMask.bmp"	/>
+	<Image UNID="&rsZubrinDockScreenBkgnd;"	bitmap="Resources\DockScreenBackground.jpg"/>
+	<Image UNID="&rsZubrinDockScreenMask;"	bitmask="Resources\DockScreenMask.bmp"/>
+
+	<Image UNID="&rsSRSSnow;"			bitmap="Resources\ScreenSnow.jpg"/>
+
+	<Image UNID="&rsEndGameEscaped;"	bitmap="Resources\GameOverEscape.jpg"			loadOnUse="true" />
+	<Image UNID="&rsEndGameDestroyed;"	bitmap="Resources\GameOver.jpg"				loadOnUse="true" />
+
+	<Image UNID="&rsShipInterior;"		bitmap="Resources\ShipInterior.jpg"			loadOnUse="true" />
+	<Image UNID="&rsItemListScreen;"	bitmap="Resources\ItemListScreen.jpg"		bitmask="Resources\ItemListScreenMask.bmp"		loadOnUse="true" />
+
+	<Image UNID="&rsSmallShips1;"	bitmap="Resources\SmallShips1.jpg"	bitmask="Resources\SmallShips1Mask.bmp" />
+	<Image UNID="&rsMediumShips1;"	bitmap="Resources\MediumShips1.jpg"	bitmask="Resources\MediumShips1Mask.bmp" />
+	<Image UNID="&rsMediumShips2;"	bitmap="Resources\MediumShips2.jpg"	bitmask="Resources\MediumShips2Mask.bmp" />
+	<Image UNID="&rsMediumShips3;"	bitmap="Resources\MediumShips3.jpg"	bitmask="Resources\MediumShips3Mask.bmp" />
+	<Image UNID="&rsMediumShips4;"	bitmap="Resources\MediumShips4.jpg"	bitmask="Resources\MediumShips4Mask.bmp" />
+	<Image UNID="&rsLargeShips1;"	bitmap="Resources\LargeShips1.jpg"	bitmask="Resources\LargeShips1Mask.bmp" />
+	<Image UNID="&rsLargeShips2;"	bitmap="Resources\LargeShips2.jpg"	bitmask="Resources\LargeShips2Mask.bmp" />
+	<Image UNID="&rsEI100Image;"		bitmap="Resources\EI100.jpg" bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
+
+	<Image UNID="&rsExplosion3AG128;"	bitmap="Resources\Explosion-3-AG128.jpg"	bitmask="Resources\Explosion-3-AG128Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsExplosionsA20G192;"	bitmap="Resources\Explosions-A20G192.jpg"	bitmask="Resources\Explosions-A20G192Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsExplosion2A20G192;"	bitmap="Resources\Explosion-2-A20G192.jpg"	bitmask="Resources\Explosion-2-A20G192Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsExplosionsA20G256;"	bitmap="Resources\Explosions-A20G256.jpg"	bitmask="Resources\Explosions-A20G256Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsLargeExplosions;" bitmap="Resources\LargeExplosions.jpg" bitmask="Resources\LargeExplosionsMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMediumDamage;"	bitmap="Resources\MediumDamage.jpg"	bitmask="Resources\MediumDamageMask.bmp"/>
+	<Image UNID="&rsLargeDamage;"	bitmap="Resources\LargeDamage.jpg"	bitmask="Resources\LargeDamageMask.bmp"/>
+
+	<Image UNID="&rsStations1;"		bitmap="Resources\Stations1.jpg"		bitmask="Resources\Stations1Mask.bmp"  />
+	<Image UNID="&rsStations2;"		bitmap="Resources\Stations2.jpg"		bitmask="Resources\Stations2Mask.bmp"  />
+	<Image UNID="&rsStations3;"		bitmap="Resources\Stations3.jpg"		bitmask="Resources\Stations3Mask.bmp"  />
+	<Image UNID="&rsStations4;"		bitmap="Resources\Stations4.jpg"		bitmask="Resources\Stations4Mask.bmp"  />
+	<Image UNID="&rsStations5;"		bitmap="Resources\Stations5.jpg"		bitmask="Resources\Stations5Mask.bmp"  />
+	<Image UNID="&rsStations6;"		bitmap="Resources\Stations6.jpg"		bitmask="Resources\Stations6Mask.bmp"  />
+	<Image UNID="&rsStations7;"		bitmap="Resources\Stations7.jpg"		bitmask="Resources\Stations7Mask.bmp"  />
+	<Image UNID="&rsStations8;"		bitmap="Resources\Stations8.jpg"		bitmask="Resources\Stations8Mask.bmp"  />
+	<Image UNID="&rsStations9;"		bitmap="Resources\Stations9.jpg"		bitmask="Resources\Stations9Mask.bmp"  />
+
+	<Image UNID="&rsStargate;"		bitmap="Resources\Stargates1.jpg"		bitmask="Resources\Stargates1Mask.bmp"  />
+	<Image UNID="&rsNavBeacon;"		bitmap="Resources\NavBeacon.jpg"		bitmask="Resources\NavBeaconMask.bmp" NoPM="true"/>
+	<Image UNID="&rsBarricades;"	bitmap="Resources\Barricades.jpg"		bitmask="Resources\BarricadesMask.bmp" />
+	<Image UNID="&rsLogBuoy;"		bitmap="Resources\LogBuoy.jpg"		bitmask="Resources\LogBuoyMask.bmp"  loadOnUse="true"/>
+
+	<Image UNID="&rsShockwave1;"	bitmap="Resources\Shockwave1.jpg"		bitmask="Resources\Shockwave1Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsShockwave2;"	bitmap="Resources\Shockwave2.jpg"		bitmask="Resources\Shockwave2Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsShockwave3;"	bitmap="Resources\Shockwave3.jpg"		bitmask="Resources\Shockwave3Mask.bmp" loadOnUse="true"/>
+
+	<Sound UNID="&snShipExplosion1;"		filename="Resources\ShipExplosion1.wav"/>
+	<Sound UNID="&snStationExplosion1;"		filename="Resources\StationExplosion1.wav"/>
+	<Sound UNID="&snShieldHit1;"			filename="Resources\ShieldHit1.wav"/>
+	<Sound UNID="&snMissileLauncher;"		filename="Resources\MissileLaunch1.wav"/>
+
+<!-- ITEM TABLES ==============================================================
+
+	Item Table Attributes
+
+	<RandomItem>
+
+	categories:
+			*	all categories
+			a	armor
+			d	device (weapon, shield, drive, etc.)
+			f	fuel
+			l	launcher weapon only
+			m	missile
+			r	reactor
+			s	shields
+			t	miscellaneous
+			u	useful (armor coating, ROM, etc.)
+			v	drive
+			w	weapon (including launchers)
+			I	is installed
+			D	is damaged
+			N	is not damaged
+			S	is useable
+			U	is not installed
+
+	modifiers:
+			+	must have this modifier
+			-	must not have this modifier
+
+-->
+	
+	<ItemTable UNID="&trStdLevelTreasure;">
+		<Group	levelValue="
+				  	750,     1000,     1500,     2000,      4000,
+				   8000,    16000,    32000,    64000,    128000,
+				 256000,   512000,  1000000,  2000000,   4100000,
+				8200000, 16400000, 32800000, 65500000, 131000000"
+				>
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"systemLevel:vu|c|uv"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables1;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
+				level=				"1"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables2;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
+				level=				"2"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables3;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
+				level=				"3"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables4;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
+				level=				"4"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables5;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -Military; -NotStandard"
+				level=				"5"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables6;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
+				level=				"6"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables7;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
+				level=				"7"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables8;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
+				level=				"8"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables9;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
+				level=				"9"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trConsumables10;">
+		<RandomItem
+				criteria=			"fmut +Consumable; -Illegal; -NotStandard;"
+				level=				"10"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem1;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"1"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem2;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"2"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem3;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"3"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem4;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"4"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem5;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"5"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem6;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -Military; -NotStandard"
+				level=				"6"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem7;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
+				level=				"7"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem8;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
+				level=				"8"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem9;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
+				level=				"9"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMajorItem10;">
+		<RandomItem
+				criteria=			"wsd +MajorItem; -Illegal; -NotStandard;"
+				level=				"10"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem1;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
+				level=				"1"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem2;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
+				level=				"2"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem3;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
+				level=				"3"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem4;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
+				level=				"4"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem5;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -Military; -NotStandard"
+				level=				"5"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem6;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
+				level=				"6"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem7;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
+				level=				"7"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem8;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
+				level=				"8"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem9;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
+				level=				"9"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMinorItem10;">
+		<RandomItem
+				criteria=			"afmut +MinorItem; -Illegal; -NotStandard;"
+				level=				"10"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trStationSupplies;">
+		<Table>
+			<Item chance="15" count="1d6"	item="&itHelium3FuelRod;" />
+			<Item chance="25" count="1d8"	item="&itFrozenSupplies;" />
+			<Item chance="20" count="1d8"	item="&itHydrocarbons;" />
+			<Item chance="30" count="1d12"	item="&itWaterIce;" />
+			<Item chance="10" count="1d6"	item="&itMedicalSupplies;" />
+		</Table>
+	</ItemTable>
+
+	<!-- LEVEL I-II -->
+
+	<ItemTable UNID="&trUsefulItems1;">
+		<Table>
+			<RandomItem chance="50"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
+					level=			"1"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
+					level=			"2"
+					levelCurve=		"2"
+					/>
+		</Table>
+	</ItemTable>
+
+	<ItemTable UNID="&trMiscItems1;">
+		<Table>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"1"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"2"
+					levelCurve=		"2"
+					/>
+		</Table>
+	</ItemTable>
+
+	<!-- LEVEL III-IV -->
+
+	<ItemTable UNID="&trMiscItems2;">
+		<Table>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"3"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"4"
+					levelCurve=		"2"
+					/>
+		</Table>
+	</ItemTable>
+
+	<ItemTable UNID="&trUsefulItems2;">
+		<Table>
+			<RandomItem chance="50"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
+					level=			"3"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"
+					criteria=		"fmu -Illegal; -Military; -Alien; -NotStandard"
+					level=			"4"
+					levelCurve=		"2"
+					/>
+		</Table>
+	</ItemTable>
+
+	<!-- LEVEL V-VI -->
+
+	<ItemTable UNID="&trMiscItems3;">
+		<Table>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"5"
+					levelCurve=		"2"
+					/>
+			<RandomItem chance="50"
+					criteria=		"t -Illegal; -Military; -Alien; -NotStandard"
+					level=			"6"
+					levelCurve=		"2"
+					/>
+		</Table>
+	</ItemTable>
+
+	<ItemTable UNID="&trHaloGems;">
+		<RandomItem 
+				criteria=			"* +HaloGem; -NotStandard"
+				level=				"7"
+				levelCurve=			"1"
+				/>
+	</ItemTable>
+
+	<!-- Cargo Container Items -->
+
+	<ItemTable UNID="&trCargoContainer;">
+		<Table>
+			<Item chance="10" count="6d6"	item="&itHelium3FuelRod;" />
+			<Item chance="10" count="3d6"	item="&itSiliconArmorPatch;" />
+			<Item chance="5" count="3d6"	item="&itOrganicAcid;" />
+			<Item chance="10" count="3d12"	item="&itTitaniumOre;" />
+			<Item chance="10" count="2d12"	item="&itDuralloyOre;" />
+			<Item chance="10" count="3d12"	item="&itHydrocarbons;" />
+			<Item chance="10" count="1d12"	item="&itPteracniumOre;" />
+			<Group chance="5">
+				<Item count="3d6"	item="&itKM100Missile;" />
+				<Item count="2d6"	item="&itKM500Missile;" />
+			</Group>
+			<Group chance="15">
+				<Lookup count="1d4" table="&trMiscItems1;"/>
+				<Lookup count="1" table="&trUsefulItems1;"/>
+			</Group>
+			<Lookup chance="10" count="1d6" table="&trMiscItems1;"/>
+			<Lookup chance="5" count="1d6" table="&trMiscItems2;"/>
+		</Table>
+	</ItemTable>
+
+	<!-- Illegal items -->
+
+	<ItemTable UNID="&trIllegalItems1;">
+		<RandomItem
+				criteria=			"* +Illegal"
+				level=				"1"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trIllegalItems2;">
+		<RandomItem
+				criteria=			"* +Illegal"
+				level=				"2"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trIllegalItems3;">
+		<RandomItem
+				criteria=			"* +Illegal"
+				level=				"3"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<!-- Military items -->
+
+	<ItemTable UNID="&trMilitaryItem4;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"4"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem5;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"5"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem6;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"6"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem7;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"7"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem8;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"8"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem9;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"9"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<ItemTable UNID="&trMilitaryItem10;">
+		<RandomItem	
+				criteria=			"* +Military; -NotStandard"	
+				level=				"10"
+				levelCurve=			"2"
+				/>
+	</ItemTable>
+
+	<!-- Miscellaneous -->
+
+	<ItemTable UNID="&trMedicalItem;">
+		<RandomItem
+				criteria=			"* +Meds; -NotStandard"
+				level=				"5"
+				levelCurve=			"4"
+				/>
+	</ItemTable>
+
+<!-- ITEM TYPES ===============================================================
+
+	MODIFIERS
+
+	Alien						Item is not found in Human Space
+	AntiMatter					Item is involved in AntiMatter industry
+	Auton						Item is an auton
+	BlackMarketID				This is a black market ID
+	Bushido						Item is sold by Bushido corp
+	Food						Item is human food or drink
+	Fuel						Item is starship fuel
+	HaloGem						Item is a halo gem
+	ID							Item is an ID
+	Illegal						Item is illegal in Human Space
+	Info						Item consists of digital information
+	Lux							Item is human luxury good
+	Makayev						Item is sold by Makayev corp
+	Meds						Item is human medicine
+	Military					Item is restricted to military in Human Space
+	MilitaryID					Item is a military ID
+	Missile						Item is ammo or missile
+	Nuclear						Item is involved in nuclear industry
+	Rasiermesser				Item is sold by Rasiermesser corp
+	Res							Item is a resource needed for industry
+	RingerValuable				Item is used by Ringers
+	Soul						Item contains (possibly dormant) intelligence of HIG III or above
+	Specialty					Item is not a commodity; for sale only in specific stations
+	ZeroPoint					Item is used in Zero-point energy industry
+
+	Consumable					Item is consumable (missiles/ammo/treasure)
+	MajorItem					Device/Shield/Weapon
+	MinorItem					Armor/Enhancements
+
+	DAMAGE TYPES
+
+	laser
+	kinetic
+	particle
+	blast
+	ion
+	thermo
+	positron
+	plasma
+	antimatter
+	nano
+	graviton
+	singularity
+	dark acid
+	dark steel
+	dark lightning
+	dark fire
+
+	USE KEYS
+
+	5							Luminous 5scare
+	A							autons
+	C							gem of contrition
+	F							gem of sacrifice
+	J							transpace jumpdrive
+	L							superconducting coils
+	S							Scramble1.4
+
+	COMMON USE PHRASES
+
+	Ship already has a(n) xyz
+	xyz installed
+	xyz uninstalled
+	Ship cannot support xyz
+	xyz required
+	xyz: blah blah
+	Not enough fuel to xyz
+
+-->
+
+	<!-- Military ID -->
+
+	<ItemType UNID="&itMilitaryID;"
+			name=				"Commonwealth military identification chip"
+			level=				"4"
+			value=				"500"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownID;"
+			attributes=			"MilitaryID; ID; MinorItem"
+
+			description=		"This identification chip is used by the Commonwealth military to identify authorized military personnel."
+
+			sortName=			"identification chip, military"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Scramble Algorithm -->
+
+	<ItemType UNID="&itScrambleAlgorithm;"
+			name=				"Scramble1.5 algorithm cube"
+			level=				"6"
+			value=				"1000"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"Consumable; Info"
+
+			description=		"This algorithm hacks into near-by enemy ship computers and temporarily disable their control systems. Scramble1.5 requires a quantum CPU to execute."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke key="S">
+			(switch
+				; If we don't have a quantum CPU
+				(not (objGetItems gSource "*I+QuantumCPU"))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Otherwise, we paralyze enemy ships in the area
+				(block (targets)
+					(setq targets (sysFindObject gSource "sEN:16;"))
+					(enum targets target
+						(objProgramDamage target gSource "Scramble1.5" 6
+							(objMakeParalyzed target (random 600 1200))
+							)
+						)
+					(if targets
+						(objSendMessage gSource Nil "Scramble1.5: Targets disabled")
+						(objSendMessage gSource Nil "Scramble1.5: No targets in range")
+						)
+
+					(itmSetKnown gItem)
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Shield Optimizer Cube -->
+
+	<ItemType UNID="&itShieldOptimizer;"
+			name=				"ShieldPower v3.1.8 algorithm cube"
+			level=				"5"
+			value=				"1000"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"Info; MinorItem"
+
+			description=		"This algorithm enhances shield generators of technology levels IV through IX."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (objGetItems gSource "*I+QuantumCPU"))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gSource "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
+
+										; If the item is damaged, we repair it
+										(itmIsDamaged shieldItem)
+											(block Nil
+												(shpRepairItem gSource theItem)
+												(objSendMessage gSource Nil "Shield generator has been repaired")
+												)
+
+										; Enhance the shield generator
+										(block (result)
+											(setq result (shpEnhanceItem gSource theItem 0x0102))
+											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Shield Power Saver Cube -->
+
+	<ItemType UNID="&itShieldPowerSaver;"
+			name=				"ShieldEfficiency v1.2.5 algorithm cube"
+			level=				"6"
+			value=				"1500"
+			mass=				"50"
+			frequency=			"uncommon"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"Info; MinorItem"
+
+			description=		"This algorithm increase the efficiency of shield generators of technology levels IV through IX."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (objGetItems gSource "*I+QuantumCPU"))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gSource "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldEfficiency algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldEfficiency algorithm")
+
+										; If the item is damaged, we repair it
+										(itmIsDamaged shieldItem)
+											(block Nil
+												(shpRepairItem gSource theItem)
+												(objSendMessage gSource Nil "Shield generator has been repaired")
+												)
+
+										; Enhance the shield generator
+										(block (result)
+											(setq result (shpEnhanceItem gSource theItem 0x0f02))
+											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more efficient" "shield generator"))
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Defective Shield Optimizer Cube -->
+
+	<ItemType UNID="&itDefectiveShieldOptimizer;"
+			name=				"ShieldPower v1.0 algorithm cube"
+			level=				"5"
+			value=				"5"
+			mass=				"50"
+			frequency=			"rare"
+			unknownType=		"&itUnknownMnemonicCube;"
+			attributes=			"Info; MinorItem"
+
+			description=		"The first version of the ShieldPower algorithm is promising but contains significant bugs."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(switch
+				; If we don't have a quantum CPU
+				(not (objGetItems gSource "*I+QuantumCPU"))
+					(objSendMessage gSource Nil "Quantum CPU required")
+
+				; Enhance shield generator
+				(block (notFound)
+					; Install
+					(setq notFound True)
+					(objEnumItems gPlayerShip "sI" theItem
+						(block (shieldItem)
+							(setq shieldItem theItem)
+							(if notFound
+								(block Nil
+									(switch
+										; If the shield generator is not advanced enough, then nothing happens
+										(ls (itmGetLevel shieldItem) 4)
+											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
+
+										; If the shield generator is too advanced, then nothing happens
+										(gr (itmGetLevel shieldItem) 9)
+											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
+
+										; If the item is damaged, we cannot do anything
+										(itmIsDamaged shieldItem)
+											(objSendMessage gSource Nil "Shield generator is too damaged for optimization")
+
+										; 10% chance of enhancing the shield generator (otherwise, a bug)
+										(if (leq (random 1 100) 10)
+											(block (result)
+												(setq result (shpEnhanceItem gSource theItem 0x0102))
+												(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
+												)
+											(block (result)
+												(setq result (shpEnhanceItem gSource theItem 0x8102))
+												(objSendMessage gSource Nil (intItemEnhanceStatus result "ShieldPower: qbit indeterminacy exception [#!800A410!]" "shield generator"))
+												)
+											)
+										)
+									(setq notFound Nil)
+									)
+								)
+							)
+						)
+
+					(if notFound
+						(objSendMessage gSource Nil "Shield generator required")
+						)
+
+					; Identify the item
+					(itmSetKnown gItem)
+
+					; Remove ROM
+					(objRemoveItem gSource gItem 1)
+					)
+				)
+		</Invoke>
+	</ItemType>
+
+	<!-- Segment of Reinforced Titanium Plate 1 -->
+
+	<ItemType UNID="&itReinforcedTitanium1;"
+			name=				"titanium barricade"
+			level=				"2"
+			value=				"200"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"5000"
+			attributes=			"MinorItem; Specialty; Barricade"
+
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+
+			sortName=			"titanium barricade.30"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade1;)
+		</Invoke>
+
+	</ItemType>
+
+	<!-- Segment of Reinforced Titanium Plate 2 -->
+
+	<ItemType UNID="&itReinforcedTitanium2;"
+			name=				"double titanium barricade"
+			level=				"3"
+			value=				"500"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"10000"
+			attributes=			"MinorItem; Specialty; Barricade"
+
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+
+			sortName=			"titanium barricade.20"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"200"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade2;)
+		</Invoke>
+
+	</ItemType>
+
+	<!-- Segment of Reinforced Titanium Plate 3 -->
+
+	<ItemType UNID="&itReinforcedTitanium3;"
+			name=				"quad titanium barricade"
+			level=				"4"
+			value=				"1000"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"20000"
+			attributes=			"MinorItem; Specialty; Barricade"
+
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+
+			sortName=			"titanium barricade.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"400"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade3;)
+		</Invoke>
+
+	</ItemType>
+
+<!-- SHIP CLASSES ========================================================= -->
+
+	<!-- EI100/M Missileship-->
+
+	<ShipClass UNID="&scEI100M;"
+			manufacturer=		"Earth Industries"
+			class=				"EI100/M"
+			type=				"missileship"
+
+			mass=				"250"
+			cargoSpace=			"150"
+			thrust=				"200"
+			maxSpeed=			"12"
+
+			leavesWreck=		"75"
+
+			attributes=			""
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itReactiveArmor;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itReactiveArmor;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itReactiveArmor;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itReactiveArmor;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itOmniLaserCannon;"/>
+			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true" />
+			<Device deviceID="&itClass1Deflector;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itKM500Missile;"/>
+			<Item count="4d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<Image imageID="&rsEI100Image;" imageX="0" imageY="0" imageWidth="70" imageHeight="70"/>
+
+		<AISettings
+			fireRateAdj=		"60"
+			fireAccuracy=		"100"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+
+	</ShipClass>
+
+	<!-- Tenhove Sentinel -->
+
+	<ShipClass UNID="&scTenhoveSentinel;"
+			manufacturer=		"Tenhove Defense Systems"
+			class=				"TA3"
+			type=				"sentinel"
+
+			attributes=			"auton, genericClass"
+
+			size=				"4"
+			mass=				"3"
+			thrustRatio=		"3"
+			maxSpeed=			"5"
+			cargoSpace=			"0"
+
+			leavesWreck=		"10"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightTitaniumPlate;"
+			count=				"1"
+			/>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"9.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsSmallShips1;" imageX="96" imageY="0" imageWidth="32" imageHeight="32" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"50"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+<!-- STATION TYPES ============================================================
+
+	STATION ATTRIBUTES
+
+	anarchists				anarchists
+	commonwealth			commonwealth station
+	commonFleet				Commonwealth Fleet
+	commonMilitary			either Commonwealth militia or Commonwealth Fleet
+	enemy					enemy of the player
+	friendly				friend of the player
+	populated				not an automated station
+	primary					main station in the system
+
+	ENVIRONMENT ATTRIBUTES
+
+	envEarth				station found in earth systems
+	envFire					station found in fire systems
+	envWater				station found in water systems
+	envAir					station found in air systems
+
+	For example, in asteroid systems (+envEarth) any station that
+	DOES NOT have the envEarth attribute is half as likely to appear
+	in the system.
+
+	Each of the above attributes also has a pair of the form envAvoidsXXX. For
+	example, envAvoidsAir means that the station is less likely than average to
+	be found in an ice system.
+
+	LOCATION CRITERIA
+
+	+planetary				station twice as likely to appear near a planet
+
+-->
+
+	<Effect UNID="&efLargeStationDamage;">
+		<Image imageID="&rsLargeDamage;"
+				imageWidth="64"
+				imageHeight="64"
+				imageFrameCount="5"/>
+	</Effect>
+
+	<Effect UNID="&efMediumStationDamage;">
+		<Image imageID="&rsMediumDamage;"
+				imageWidth="24"
+				imageHeight="24"
+				imageFrameCount="10"/>
+	</Effect>
+
+	<!-- Barricade -->
+
+	<StationType UNID="&stBarricade1;"
+			name=				"titanium barricade"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsBarricade;"
+
+			structuralHitPoints="25"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"8"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<StationType UNID="&stBarricade2;"
+			name=				"titanium barricade"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsBarricade;"
+
+			structuralHitPoints="50"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"15"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<StationType UNID="&stBarricade3;"
+			name=				"titanium barricade"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsBarricade;"
+
+			structuralHitPoints="100"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"30"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
+			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"32"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<!-- Cargo Crate -->
+
+	<StationType UNID="&stCargoCrate;"
+			name=				"abandoned cargo crate"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsAbandonedCrate;"
+
+			structuralHitPoints="10"
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"50"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="288" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="320" imageWidth="32" imageHeight="32" />
+			<Image			imageID="&rsStations1;" imageX="480" imageY="352" imageWidth="32" imageHeight="32" />
+		</ImageVariants>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+
+	<!-- Flotsam -->
+
+	<StationType UNID="&stFlotsam;"
+			name=				"(flotsam)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+
+			scale=				"ship"
+			mobile=				"true"
+			mass=				"1"
+			immutable=			"true"
+			destroyWhenEmpty=	"true"
+			noMapIcon=			"true"
+			>
+
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block (
+								(theItem (item (objGetItems gSource "*") 0))
+								)
+
+								(if theItem
+									(scrSetDesc gScreen "You find " (itmGetName theItem 0x08) " floating in space.")
+
+									(block Nil
+										(scrSetDesc gScreen "The item is secure aboard your ship.")
+										(scrEnableAction gScreen 0 Nil)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Loot" key="L" default="1" >
+								(scrShowScreen gScreen &dsRPGLoot;)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck -->
+
+	<StationType UNID="&stShipwreck;"
+			name=				"(shipwreck)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"shipwreck"
+			>
+		<Image imageID="&rsMediumShips1;" imageX="0" imageY="96" imageWidth="48" imageHeight="48" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck 1 -->
+
+	<StationType UNID="&stShipwreck1;"
+			name=				"(shipwreck I)"
+			sovereign=			"&svPirates;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"ucccu rrvv- ----- ----- -----"
+			locationCriteria=	"-planetary"
+			>
+		<Image shipwreckID="&scCorsair;, &scBorer;, &scEarthzone;, &scRoninA;"/>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck 2 -->
+
+	<StationType UNID="&stShipwreck2;"
+			name=				"(shipwreck II)"
+			sovereign=			"&svPirates;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"-uccc urrvv ----- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<Image shipwreckID="&scRoninB;, &scSotho;, &scEI100;, &scT31ArmedTransport;"/>
+
+		<Items>
+			<Table count="2">
+				<Null	chance="10"/>
+				<Lookup chance="15" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="20" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck 3 -->
+
+	<StationType UNID="&stShipwreck3;"
+			name=				"(shipwreck III)"
+			sovereign=			"&svPirates;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"--ucc currv v---- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<Image shipwreckID="&scRepentant;, &scEI100;, &scBarbary;"/>
+
+		<Items>
+			<Table count="1d4">
+				<Null	chance="5"/>
+				<Lookup chance="5"  count="1d3" table="&trConsumables2;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="16" count="1"	table="&trConsumables4;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables5;"/>
+				<Lookup chance="10" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="8"  count="1"	table="&trMinorItem4;"/>
+				<Lookup chance="8"  count="1"	table="&trMajorItem2;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem3;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck, Radioactive -->
+
+	<StationType UNID="&stRadioactiveShipwreck;"
+			name=				"(radioactive shipwreck)"
+			sovereign=			"&svPirates;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+			radioactive=		"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"-rccc urv-- ----- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<Image shipwreckID="&scPlague;, &scEI100;, &scRevelations;"/>
+
+		<Items>
+			<Table count="1d4">
+				<Null	chance="5"/>
+				<Item   chance="13"	count="1d4" item="&itHeavyWater;"/>
+				<Item	chance="10"	count="1d4" item="&itFusionTrigger;"/>
+				<Item	chance="10"	count="1d4"	item="&itRadioactiveWaste;"/>
+				<Item	chance="15"	count="1d4"	item="&itHardenedReactiveArmor;"/>
+				<Item	chance="6"	count="1d4" item="&itHardenedPlasteelPlate;"/>
+				<Lookup chance="5"  count="1d3" table="&trConsumables3;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables4;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables5;"/>
+				<Lookup chance="5"  count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="5"  count="1"	table="&trMinorItem4;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem3;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Tan Ru Dorem -->
+
+	<StationType UNID="&stTanRuDorem;"
+			name=				"Tan&#x95;Ru&#x95;Dorem"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+
+			multiHull=			"true"
+			immutable=			"true"
+
+			noArticle=			"true"
+			>
+
+		<Image imageID="&rsStations7;" imageX="0" imageY="768" imageWidth="256" imageHeight="256"/>
+
+		<DockScreens>
+
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at a strange station, apparently devoid of inhabitants. The immense docking bay is built out of a metal engraved with faintly luminous hieroglyphics. The walls are warm to the touch and hum with power.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="79"	y="75" />
+			<Port x="0"		y="100" />
+			<Port x="-73"	y="74" />
+			<Port x="-109"	y="0" />
+			<Port x="-87"	y="-75" />
+			<Port x="0"		y="-109" />
+			<Port x="82"	y="-82" />
+			<Port x="109"	y="8" />
+		</DockingPorts>
+	</StationType>
+
+	<!-- SPECIAL STATIONS -->
+
+	<!-- Majellen Stargate -->
+
+	<StationType UNID="&stMajellenStargate;"
+			name=				"(stargate)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+			dockingPorts=		"4"
+
+			multiHull=			"true"
+			immutable=			"true"
+			attributes=			"majellen, stargate"
+
+			gateEffect=			"&efStargateOut;"
+
+			definiteArticle=	"true"
+			>
+		<Image imageID="&rsStargate;" imageX="0" imageY="128" imageWidth="192" imageHeight="192" imageFrameCount="12" imageTicksPerFrame="3"/>
+
+		<DockScreens>
+
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+	</StationType>
+
+	<StationType UNID="&stUnchartedMajellenStargate;"
+			name=				"(stargate)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+			dockingPorts=		"4"
+
+			multiHull=			"true"
+			immutable=			"true"
+			attributes=			"majellen, stargate, uncharted"
+
+			gateEffect=			"&efStargateOut;"
+
+			definiteArticle=	"true"
+			>
+		<Image imageID="&rsStargate;" imageX="0" imageY="128" imageWidth="192" imageHeight="192" imageFrameCount="12" imageTicksPerFrame="3"/>
+
+		<DockScreens>
+
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at an alien stargate. These giant structures are used by the Ancient Races to move their starships across the Galaxy. Stargates are the best mode of faster-than-light travel and they are the only method known to humans.">
+
+						<Actions>
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+	</StationType>
+
+	<!-- NavBeacon -->
+
+	<StationType UNID="&stNavBeacon;"
+			name=				"(navigational beacon)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"&dsNavBeacon;"
+			noMapLabel=			"true"
+			beacon=				"true"
+			mass=				"2500"
+			>
+
+		<Names noArticle="true">NavBeacon %s-%0%0%0</Names>
+
+		<DockingPorts
+				maxDist=		"3"
+				>
+			<Port x="0"		y="24" />
+			<Port x="0"		y="-24" />
+			<Port x="24"	y="0" />
+			<Port x="-24"	y="0" />
+		</DockingPorts>
+
+		<ImageVariants>
+			<Image imageID="&rsNavBeacon;" imageX="0" imageY="0"   imageWidth="64" imageHeight="64" imageFrameCount="2" imageTicksPerFrame="120" flashTicks="3" />
+			<Image imageID="&rsNavBeacon;" imageX="0" imageY="64"  imageWidth="64" imageHeight="64" imageFrameCount="2" imageTicksPerFrame="120" flashTicks="3" />
+			<Image imageID="&rsNavBeacon;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="2" imageTicksPerFrame="120" flashTicks="3" />
+			<Image imageID="&rsNavBeacon;" imageX="0" imageY="192" imageWidth="64" imageHeight="64" imageFrameCount="2" imageTicksPerFrame="120" flashTicks="3" />
+		</ImageVariants>
+
+	</StationType>
+
+	<!-- Debug Depot (Obsolete) -->
+	
+	<StationType UNID="&stDebugDepot;"
+			name=				"(debug depot)"
+			sovereign=			"&svIndependent;"
+			dockScreen=			"Main"
+			scale=				"ship"
+			noMapIcon=			"true"
+			>
+			
+		<Image shipwreckID="&scMikeno;"/>
+		
+		<DockScreens>
+			<Main name="Debug Depot">
+				<Panes>
+					<Default>
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+</TranscendenceModule>

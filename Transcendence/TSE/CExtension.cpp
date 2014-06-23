@@ -39,6 +39,7 @@
 #define TRANSCENDENCE_MODULE_TAG				CONSTLIT("TranscendenceModule")
 
 #define API_VERSION_ATTRIB						CONSTLIT("apiVersion")
+#define AUTO_INCLUDE_ATTRIB						CONSTLIT("autoInclude")
 #define AUTO_INCLUDE_FOR_COMPATIBILITY_ATTRIB	CONSTLIT("autoIncludeForCompatibility")
 #define COVER_IMAGE_UNID_ATTRIB					CONSTLIT("coverImageID")
 #define CREDITS_ATTRIB							CONSTLIT("credits")
@@ -131,6 +132,7 @@ void CExtension::CleanUp (void)
 		delete m_DesignTypes.GetEntry(i);
 
 	m_DesignTypes.DeleteAll();
+	m_Externals.DeleteAll();
 
 	//	Delete global functions
 
@@ -186,6 +188,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 	pExtension->m_ModifiedTime = fileGetModifiedTime(Ctx.sResDb);
 	pExtension->m_bRegistered = true;
 	pExtension->m_bPrivate = true;
+	pExtension->m_bAutoInclude = true;
 
 	//	Load the apiVersion
 
@@ -255,6 +258,7 @@ ALERROR CExtension::CreateBaseFile (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CEx
 			AdvCtx.pResDb = Ctx.pResDb;
 			AdvCtx.bNoResources = Ctx.bNoResources;
 			AdvCtx.bNoVersionCheck = true;	//	Obsolete now
+			AdvCtx.dwInheritAPIVersion = pExtension->GetAPIVersion();
 			//	No need to set bBindAsNewGame because it is only useful during Bind.
 			//	AdvCtx.bBindAsNewGame = Ctx.bBindAsNewGame;
 
@@ -319,7 +323,7 @@ ALERROR CExtension::CreateExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, EF
 	//	Create an extension object
 
 	CExtension *pExtension;
-	if (error = CreateExtensionFromRoot(Ctx.sResDb, pDesc, iFolder, pEntities, &pExtension, &Ctx.sError))
+	if (error = CreateExtensionFromRoot(Ctx.sResDb, pDesc, iFolder, pEntities, Ctx.dwInheritAPIVersion, &pExtension, &Ctx.sError))
 		return error;
 
 	//	Set up context
@@ -373,7 +377,7 @@ ALERROR CExtension::CreateExtension (SDesignLoadCtx &Ctx, CXMLElement *pDesc, EF
 	return NOERROR;
 	}
 
-ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, CExtension **retpExtension, CString *retsError)
+ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, DWORD dwInheritAPIVersion, CExtension **retpExtension, CString *retsError)
 
 //	CreateExtension
 //
@@ -414,6 +418,7 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 	pExtension->m_bDebugOnly = pDesc->GetAttributeBool(DEBUG_ONLY_ATTRIB);
 	pExtension->m_bRegistered = IsRegisteredUNID(pExtension->m_dwUNID);
 	pExtension->m_bPrivate = pDesc->GetAttributeBool(PRIVATE_ATTRIB);
+	pExtension->m_bAutoInclude = pDesc->GetAttributeBool(AUTO_INCLUDE_ATTRIB);
 
 	//	API version
 
@@ -423,6 +428,11 @@ ALERROR CExtension::CreateExtensionFromRoot (const CString &sFilespec, CXMLEleme
 		pExtension->m_dwAPIVersion = (DWORD)strToInt(sAPIVersion, 0);
 		if (pExtension->m_dwAPIVersion < 12)
 			pExtension->m_dwAPIVersion = 0;
+		pExtension->m_sVersion = pDesc->GetAttribute(VERSION_ATTRIB);
+		}
+	else if (dwInheritAPIVersion)
+		{
+		pExtension->m_dwAPIVersion = dwInheritAPIVersion;
 		pExtension->m_sVersion = pDesc->GetAttribute(VERSION_ATTRIB);
 		}
 	else
@@ -528,7 +538,7 @@ ALERROR CExtension::CreateExtensionStub (const CString &sFilespec, EFolderTypes 
 	//	If sucessful then pExtension takes ownership of	pEntities.
 
 	CExtension *pExtension;
-	error = CreateExtensionFromRoot(sFilespec, pGameFile, iFolder, pEntities, &pExtension, retsError);
+	error = CreateExtensionFromRoot(sFilespec, pGameFile, iFolder, pEntities, 0, &pExtension, retsError);
 
 	//	Clean up
 
@@ -1068,6 +1078,10 @@ ALERROR CExtension::LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 				return error;
 				}
 			}
+
+		//	Let this type add external definitions
+
+		pType->AddExternals(&m_Externals);
 		}
 
 	//	Done

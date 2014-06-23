@@ -36,7 +36,7 @@ class CAreaDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -83,7 +83,7 @@ class CBeam : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -377,6 +377,7 @@ class CMissile : public CSpaceObject
 		virtual CString GetName (DWORD *retdwFlags = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CMissile"); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return (m_pDesc->GetPassthrough() > 0 ? CSystem::layerEffects : CSystem::layerStations); }
+		virtual ICCItem *GetProperty (const CString &sName);
 		virtual int GetRotation (void) const { return m_iRotation; }
 		virtual CSpaceObject *GetSecondarySource (void) { return m_Source.GetSecondaryObj(); }
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
@@ -386,11 +387,12 @@ class CMissile : public CSpaceObject
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
+		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 
 	protected:
 
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -409,6 +411,7 @@ class CMissile : public CSpaceObject
 
 		int ComputeVaporTrail (void);
 		void CreateFragments (const CVector &vPos);
+		bool SetMissileFade (void);
 
 		CWeaponFireDesc *m_pDesc;				//	Weapon descriptor
 		CItemEnhancementStack *m_pEnhancements;	//	Stack of enhancements
@@ -470,7 +473,7 @@ class CParticleDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -712,6 +715,7 @@ class CRadiusDamage : public CSpaceObject
 
 		//	CSpaceObject virtuals
 		virtual bool CanMove (void) { return true; }
+		virtual CString DebugCrashInfo (void);
 		virtual CString GetDamageCauseNounPhrase (DWORD dwFlags) { return m_Source.GetDamageCauseNounPhrase(dwFlags); }
 		virtual DestructionTypes GetDamageCauseType (void) { return m_iCause; }
 		virtual CString GetName (DWORD *retdwFlags = NULL);
@@ -727,7 +731,7 @@ class CRadiusDamage : public CSpaceObject
 
 	protected:
 		//	Virtuals to be overridden
-		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc->m_bCanDamageSource); }
+		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx) { return damagePassthrough; }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
@@ -791,6 +795,7 @@ class CShip : public CSpaceObject
 			remOK					= 0,	//	Can remove this device
 			remTooMuchCargo			= 1,	//	Can't remove cargo expansion (because too much cargo)
 			remNotInstalled			= 2,	//	Device is not installed
+			remCannotRemove			= 3,	//	Custom reason
 			};
 
 		static ALERROR CreateFromClass (CSystem *pSystem, 
@@ -823,7 +828,7 @@ class CShip : public CSpaceObject
 		void UninstallArmor (CItemListManipulator &ItemList);
 
 		//	Device methods
-		RemoveDeviceStatus CanRemoveDevice (const CItem &Item);
+		RemoveDeviceStatus CanRemoveDevice (const CItem &Item, CString *retsResult);
 		void ClearAllTriggered (void);
 		void DamageCargo (SDamageCtx &Ctx);
 		void DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx);
@@ -848,7 +853,6 @@ class CShip : public CSpaceObject
 		void SetCursorAtNamedDevice (CItemListManipulator &ItemList, DeviceNames iDev);
 		void SetWeaponTriggered (DeviceNames iDev, bool bTriggered = true);
 		void SetWeaponTriggered (CInstalledDevice *pWeapon, bool bTriggered = true);
-		CInstalledDevice *GetNamedDevice (DeviceNames iDev);
 		CDeviceClass *GetNamedDeviceClass (DeviceNames iDev);
 		CString GetReactorName (void);
 		inline int GetWeaponAimTolerance (DeviceNames iDev) { return 3; }
@@ -895,12 +899,13 @@ class CShip : public CSpaceObject
 		inline int Angle2Direction (int iAngle) const { return m_pClass->Angle2Direction(iAngle); }
 		inline int AlignToRotationAngle (int iAngle) const { return m_pClass->AlignToRotationAngle(iAngle); }
 		inline int GetManeuverability (void) { return m_pClass->GetManeuverability(); }
-		int GetManeuverDelay (void);
 		inline int GetRotationAngle (void) { return m_pClass->GetRotationAngle(); }
 		inline int GetRotationRange (void) { return m_pClass->GetRotationRange(); }
+		inline EManeuverTypes GetManeuverToFace (int iAngle) const { return m_Rotation.GetManeuverToFace(m_pClass->GetRotationDesc(), iAngle); }
 		inline Metric GetThrust (void) { return (IsMainDriveDamaged() ? (m_iThrust / 2) : m_iThrust); }
-		inline bool IsMainDriveDamaged (void) const { return m_iDriveDamagedTimer != 0; }
 		inline bool IsInertialess (void) { return (m_pDriveDesc->fInertialess ? true : false); }
+		inline bool IsMainDriveDamaged (void) const { return m_iDriveDamagedTimer != 0; }
+		bool IsPointingTo (int iAngle);
 		inline void SetMaxSpeedHalf (void) { m_fHalfSpeed = true; }
 		inline void ResetMaxSpeed (void) { m_fHalfSpeed = false; }
 
@@ -913,14 +918,14 @@ class CShip : public CSpaceObject
 		inline void SetDestroyInGate (void) { m_fDestroyInGate = true; }
 		inline void SetEncounterInfo (CStationType *pEncounterInfo) { m_pEncounterInfo = pEncounterInfo; }
 		inline void SetPlayerWingman (bool bIsWingman) const { m_pController->SetPlayerWingman(bIsWingman); }
-		inline void SetRotation (int iAngle) { m_iRotation = AlignToRotationAngle(iAngle); }
+		inline void SetRotation (int iAngle) { m_Rotation.SetRotationAngle(m_pClass->GetRotationDesc(), iAngle); }
 		void Undock (void);
 
 		//	CSpaceObject virtuals
 		virtual bool AbsorbWeaponFire (CInstalledDevice *pWeapon);
 		virtual void AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
 		virtual CShip *AsShip (void) { return this; }
-		virtual void Behavior (void);
+		virtual void Behavior (SUpdateCtx &Ctx);
 		virtual bool CanAttack (void) const;
 		virtual bool CanInstallItem (const CItem &Item, int iSlot = -1, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual bool CanMove (void) { return true; }
@@ -961,10 +966,12 @@ class CShip : public CSpaceObject
 		virtual const CObjectImageArray &GetImage (void) { return m_pClass->GetImage(); }
 		virtual CString GetInstallationPhrase (const CItem &Item) const;
 		virtual int GetLastFireTime (void) const { return m_iLastFireTime; }
+		virtual int GetLastHitTime (void) const { return m_iLastHitTime; }
 		virtual int GetLevel (void) const { return m_pClass->GetLevel(); }
 		virtual Metric GetMass (void);
 		virtual int GetMaxPower (void) const;
 		virtual CString GetName (DWORD *retdwFlags = NULL);
+		virtual CInstalledDevice *GetNamedDevice (DeviceNames iDev);
 		virtual int GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CShip"); }
 		virtual int GetOpenDockingPortCount (void) { return m_DockingPorts.GetPortCount(this) - m_DockingPorts.GetPortsInUseCount(this); }
@@ -977,7 +984,7 @@ class CShip : public CSpaceObject
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return CSystem::layerShips; }
 		virtual int GetPerception (void);
 		virtual ICCItem *GetProperty (const CString &sName);
-		virtual int GetRotation (void) const { return AlignToRotationAngle(m_iRotation); }
+		virtual int GetRotation (void) const { return m_Rotation.GetRotationAngle(m_pClass->GetRotationDesc()); }
 		virtual ScaleTypes GetScale (void) const { return scaleShip; }
 		virtual int GetScore (void) { return m_pClass->GetScore(); }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pClass->GetScreen(sName); }
@@ -1022,6 +1029,7 @@ class CShip : public CSpaceObject
 		virtual void OnMissionCompleted (CMission *pMission, bool bSuccess) { m_pController->OnMissionCompleted(pMission, bSuccess); }
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void OnNewSystem (CSystem *pSystem);
+		virtual void OnObjDamaged (SDamageCtx &Ctx) { m_pController->OnObjDamaged(Ctx); }
 		virtual void OnPlayerChangedShips (CSpaceObject *pOldShip);
 		virtual void OnPlayerObj (CSpaceObject *pPlayer);
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
@@ -1031,7 +1039,6 @@ class CShip : public CSpaceObject
 		virtual void MakeParalyzed (int iTickCount = -1);
 		virtual void MakeRadioactive (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx);
@@ -1072,6 +1079,7 @@ class CShip : public CSpaceObject
 		virtual CSpaceObject *OnGetOrderGiver (void);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { m_pController->OnPaintSRSEnhancements(Dest, Ctx); }
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnSetEventFlags (void);
@@ -1085,10 +1093,12 @@ class CShip : public CSpaceObject
 		CShip (void);
 
 		void CalcArmorBonus (void);
+		void CalcBounds (void);
 		int CalcMaxCargoSpace (void) const;
 		void CalcDeviceBonus (void);
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		InstallItemResults CalcDeviceToReplace (const CItem &Item, int *retiSlot = NULL);
+		DWORD CalcEffectsMask (void);
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
@@ -1112,15 +1122,14 @@ class CShip : public CSpaceObject
 		DWORD m_dwNameFlags;					//	Name flags
 		CString m_sMapLabel;					//	Map label
 
-		int m_iRotation:16;						//	Current rotation (in degrees)
-		int m_iPrevRotation:16;					//	Previous rotation
-
 		TArray<CInstalledArmor> m_Armor;		//	Array of CInstalledArmor
 		int m_iDeviceCount;						//	Number of devices
 		CInstalledDevice *m_Devices;			//	Array of devices
 		int m_NamedDevices[devNamesCount];
 		const DriveDesc *m_pDriveDesc;			//	Drive descriptor
 		const ReactorDesc *m_pReactorDesc;		//	Reactor descriptor
+		CIntegralRotation m_Rotation;			//	Ship rotation
+		CObjectEffectList m_Effects;			//	List of effects to paint
 		CShipInterior m_Interior;				//	Interior decks and compartments (optionally)
 		CEnergyFieldList m_EnergyFields;		//	List of energy fields
 		CDockingPorts m_DockingPorts;			//	Docking ports (optionally)
@@ -1128,7 +1137,7 @@ class CShip : public CSpaceObject
 
 		int m_iFireDelay:16;					//	Ticks until next fire
 		int m_iMissileFireDelay:16;				//	Ticks until next missile fire
-		int m_iManeuverDelay:16;				//	Ticks until next rotation
+		int m_iSpare:16;
 		int m_iContaminationTimer:16;			//	Ticks left to live
 		int m_iBlindnessTimer:16;				//	Ticks until blindness wears off
 												//	(-1 = permanent)
@@ -1142,6 +1151,7 @@ class CShip : public CSpaceObject
 		int m_iDriveDamagedTimer:16;			//	Ticks until drive repaired
 												//	(-1 = permanent)
 		int m_iLastFireTime;					//	Tick when we last fired a weapon
+		int m_iLastHitTime;						//	Tick when we last got hit by something
 
 		int m_iFuelLeft;						//	Fuel left (kilos)
 		Metric m_rItemMass;						//	Total mass of all items (including installed)
@@ -1177,8 +1187,9 @@ class CShip : public CSpaceObject
 
 		DWORD m_fDockingDisabled:1;				//	TRUE if docking is disabled
 		DWORD m_fControllerDisabled:1;			//	TRUE if we want to disable controller
+		DWORD m_fRecalcRotationAccel:1;			//	TRUE if we need to recalc rotation acceleration
 
-		DWORD m_dwSpare:14;
+		DWORD m_dwSpare:13;
 
 	friend CObjectClass<CShip>;
 	};
@@ -1284,6 +1295,7 @@ class CStation : public CSpaceObject
 		virtual DWORD GetDefaultEconomyUNID (void);
 		virtual CInstalledDevice *GetDevice (int iDev) const { return &m_pDevices[iDev]; }
 		virtual int GetDeviceCount (void) const { return (m_pDevices ? maxDevices : 0); }
+		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
 		virtual int GetDockingPortCount (void) { return m_DockingPorts.GetPortCount(this); }
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }
@@ -1317,6 +1329,7 @@ class CStation : public CSpaceObject
 		virtual COLORREF GetSpaceColor (void) { return m_pType->GetSpaceColor(); }
 		virtual CString GetStargateID (void) const;
 		virtual int GetStealth (void) const { return ((m_fKnown && !IsMobile()) ? stealthMin : m_pType->GetStealth()); }
+		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual CDesignType *GetType (void) const { return m_pType; }
 		virtual int GetVisibleDamage (void);
 		virtual CDesignType *GetWreckType (void) const;
@@ -1328,6 +1341,7 @@ class CStation : public CSpaceObject
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
 		virtual bool IsExplored (void) { return m_fExplored; }
 		virtual bool IsIdentified (void) { return m_fKnown; }
+		virtual bool IsImmutable (void) const { return m_fImmutable; }
 		virtual bool IsKnown (void) { return m_fKnown; }
 		virtual bool IsMultiHull (void) { return m_pType->IsMultiHull(); }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
@@ -1347,7 +1361,6 @@ class CStation : public CSpaceObject
 		virtual void OnStationDestroyed (const SDestroyCtx &Ctx);
 		virtual void OnSystemCreated (void);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
-		virtual void PaintMap (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
 		virtual void PlaceAtRandomDockPort (CSpaceObject *pObj) { m_DockingPorts.DockAtRandomPort(this, pObj); }
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
@@ -1383,6 +1396,7 @@ class CStation : public CSpaceObject
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnSetEventFlags (void);
 		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);
@@ -1408,13 +1422,13 @@ class CStation : public CSpaceObject
 		ALERROR CreateMapImage (void);
 		void FinishCreation (void);
 		void FriendlyFire (CSpaceObject *pAttacker);
+		Metric GetAttackDistance (void) const;
 		const CObjectImageArray &GetImage (bool bFade, int *retiTick, int *retiRotation);
 		bool IsBlacklisted (CSpaceObject *pObj = NULL);
-		inline bool IsImmutable (void) const { return m_fImmutable; }
 		void RaiseAlert (CSpaceObject *pTarget);
 		void SetAngry (void);
 		inline bool ShowWreckImage (void) { return (IsAbandoned() && m_iMaxHitPoints > 0); }
-		void UpdateAttacking (int iTick);
+		void UpdateAttacking (SUpdateCtx &Ctx, int iTick);
 		void UpdateReinforcements (int iTick);
 
 		CStationType *m_pType;					//	Station type

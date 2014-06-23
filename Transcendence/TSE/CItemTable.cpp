@@ -880,6 +880,8 @@ ALERROR CLevelTableOfItemGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	ALERROR error;
 	int i;
 
+	m_iComputedLevel = -1;
+
 	for (i = 0; i < m_Table.GetCount(); i++)
 		{
 		if (error = m_Table[i].pEntry->OnDesignLoadComplete(Ctx))
@@ -1501,6 +1503,10 @@ ALERROR CRandomItems::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	if (!m_bDynamicLevelFrequency)
 		InitTable(m_sLevelFrequency);
 
+	//	Reset
+
+	m_iDynamicLevel = 0;
+
 	return NOERROR;
 	}
 
@@ -1511,6 +1517,18 @@ CRandomEnhancementGenerator::~CRandomEnhancementGenerator (void)
 	{
 	if (m_pCode)
 		m_pCode->Discard(&(g_pUniverse->GetCC()));
+	}
+
+CRandomEnhancementGenerator &CRandomEnhancementGenerator::operator= (const CRandomEnhancementGenerator &Src)
+
+//	CRandomEnhancementGenerator operator =
+
+	{
+	m_iChance = Src.m_iChance;
+	m_dwMods = Src.m_dwMods;
+	m_pCode = (Src.m_pCode ? Src.m_pCode->Reference() : NULL);
+
+	return *this;
 	}
 
 ALERROR CRandomEnhancementGenerator::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)

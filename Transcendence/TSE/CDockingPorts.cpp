@@ -227,6 +227,32 @@ void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius)
 	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
 	}
 
+void CDockingPorts::InitPorts (CSpaceObject *pOwner, const TArray<CVector> &Desc)
+
+//	InitPorts
+//
+//	Initialize from array
+
+	{
+	ASSERT(m_pPort == NULL);
+
+	if (Desc.GetCount() > 0)
+		{
+		m_iPortCount = Desc.GetCount();
+		m_pPort = new SDockingPort[m_iPortCount];
+
+		for (int i = 0; i < m_iPortCount; i++)
+			{
+			m_pPort[i].iStatus = psEmpty;
+			m_pPort[i].pObj = NULL;
+			m_pPort[i].vPos = Desc[i];
+			m_pPort[i].iRotation = (VectorToPolar(Desc[i]) + 180) % 360;
+			}
+		}
+
+	m_iMaxDist = DEFAULT_DOCK_DISTANCE_LS;
+	}
+
 void CDockingPorts::InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos)
 
 //	InitPorts
@@ -594,7 +620,7 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 
 	int i;
 
-	CSpaceObject *pPlayer = Ctx.pSystem->GetPlayer();
+	CSpaceObject *pPlayer = Ctx.pPlayer;
 	Metric rDist2 = (pPlayer ? pPlayer->GetDistance2(pOwner) : 0.0);
 	Metric rMaxDist = m_iMaxDist * LIGHT_SECOND;
 	Metric rMaxDist2 = rMaxDist * rMaxDist;
@@ -677,6 +703,8 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 //	Updates the motion of a ship docking with a port
 
 	{
+	DEBUG_TRY
+
 	CShip *pShip = Port.pObj->AsShip();
 
 	ASSERT(pShip);
@@ -690,21 +718,17 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 
 	CVector vDelta = vDest - pShip->GetPos();
 
-	//	Figure out if we're aligned
-
-	int iFinalRotation = pShip->AlignToRotationAngle(Port.iRotation);
-
 	//	If the docking object is within the appropriate threshold 
 	//	of the port, then complete the docking sequence.
 
 	Metric rDelta2 = vDelta.Length2();
 	if (rDelta2 < DOCKING_THRESHOLD2 
-			&& (pShip == g_pUniverse->GetPlayer() || iFinalRotation == pShip->GetRotation()))
+			&& (pShip == g_pUniverse->GetPlayer() || pShip->IsPointingTo(Port.iRotation)))
 		{
 		pShip->Place(vDest);
 		pShip->UnfreezeControls();
 		IShipController *pController = pShip->GetController();
-		pController->SetManeuver(IShipController::NoRotation);
+		pController->SetManeuver(NoRotation);
 
 		Port.iStatus = psInUse;
 
@@ -722,7 +746,12 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 		//	Set the owner as "explored" (if the ship is the player)
 
 		if (pShip->IsPlayer())
+			{
 			pOwner->SetExplored();
+
+			if (pOwner->IsAutoClearDestinationOnDock())
+				pOwner->ClearPlayerDestination();
+			}
 
 		//	Dock
 
@@ -772,12 +801,12 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 			//	If we're close enough, align to rotation angle
 
 			if (rDelta2 < FINAL_APPROACH2)
-				pController->SetManeuver(CalcTurnManeuver(iFinalRotation, pShip->GetRotation(), pShip->GetRotationAngle()));
+				pController->SetManeuver(pShip->GetManeuverToFace(Port.iRotation));
 
 			//	Otherwise, align along delta v
 
 			else
-				pController->SetManeuver(CalcTurnManeuver(VectorToPolar(vDeltaV), pShip->GetRotation(), pShip->GetRotationAngle()));
+				pController->SetManeuver(pShip->GetManeuverToFace(VectorToPolar(vDeltaV)));
 
 			//	Don't let the AI thrust
 
@@ -789,6 +818,8 @@ void CDockingPorts::UpdateDockingManeuvers (CSpaceObject *pOwner, SDockingPort &
 		pShip->Accelerate(vDeltaV * pShip->GetMass() / 10000.0, g_SecondsPerUpdate);
 		pShip->ClipSpeed(rSpeed);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CDockingPorts::WriteToStream (CSpaceObject *pOwner, IWriteStream *pStream)

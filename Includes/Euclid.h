@@ -332,6 +332,7 @@ bool IntSegmentsIntersect (int A1x, int A1y, int A2x, int A2y, int B1x, int B1y,
 int IntVectorToPolar (int x, int y, int *retiRadius = NULL);
 
 CVector PolarToVector (int iAngle, Metric rRadius);
+CVector PolarToVectorRadians (Metric rRadians, Metric rRadius);
 int VectorToPolar (const CVector &vP, Metric *retrRadius = NULL);
 Metric VectorToPolarRadians (const CVector &vP, Metric *retrRadius = NULL);
 

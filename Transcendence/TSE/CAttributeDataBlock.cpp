@@ -276,6 +276,37 @@ void CAttributeDataBlock::LoadObjReferences (CSystem *pSystem)
 		}
 	}
 
+void CAttributeDataBlock::MergeFrom (const CAttributeDataBlock &Src)
+
+//	MergeFrom
+//
+//	Merges data from source
+
+	{
+	int i;
+
+	//	Plain data
+
+	if (Src.m_pData)
+		{
+		for (i = 0; i < Src.m_pData->GetCount(); i++)
+			{
+			CString *pValue = (CString *)Src.m_pData->GetValue(i);
+			SetData(Src.m_pData->GetKey(i), *pValue);
+			}
+		}
+
+	//	Object reference
+
+	SObjRefEntry *pEntry = Src.m_pObjRefData;
+	while (pEntry)
+		{
+		SetObjRefData(pEntry->sName, pEntry->pObj);
+
+		pEntry = pEntry->pNext;
+		}
+	}
+
 void CAttributeDataBlock::OnObjDestroyed (CSpaceObject *pObj)
 
 //	OnObjDestroyed

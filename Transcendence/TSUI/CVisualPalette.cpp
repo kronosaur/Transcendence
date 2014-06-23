@@ -50,6 +50,13 @@ static SColorInitTable COLOR_TABLE[] =
 		{	"TextDialogLink",			CG16bitImage::RGBValue(218, 235, 255) },
 
 		{	"TextDialogTitle",			CG16bitImage::RGBValue(115, 134, 153) },
+		{	"TextDialogWarning",		CG16bitImage::RGBValue(255, 127, 0) },
+		{	"AreaDockTitle",			CG16bitImage::RGBValue(0x37, 0x3f, 0x47) },	//	H:210 S:23 B:28
+		{	"TextDockAction",			CG16bitImage::RGBValue(218, 235, 255) },
+		{	"TextDockActionHotKey",		CG16bitImage::RGBValue(218, 235, 255) },
+
+		{	"TextDockText",				CG16bitImage::RGBValue(0xAF, 0xB7, 0xBF) },	//	H:210 S:8 B:75
+		{	"TextDockTitle",			CG16bitImage::RGBValue(0xE7, 0xF3, 0xFF) },	//	H:210 S:9 B:100
 	};
 
 struct SFontInitTable

@@ -1,0 +1,1019 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Sovereign UNID="&svCentauriWarlords;"
+			name="Centauri Clans"
+			alignment="destructive order"
+			/>
+
+	<!-- Centauri CLAW cannon -->
+
+	<ItemType UNID="&itCentauriCLAW;"
+			name=				"CLAW cannon"
+			level=				"3"
+			value=				"2800"
+			mass=				"6000"
+			frequency=			"rare"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"Centauri warlords create these weapons by linking together two DK10 Arbalest cannons. The CLAW cannon requires two device slots to install."
+
+			sortName=			"CLAW cannon, Centauri"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				deviceSlots=		"2"
+
+				repeating=			"3"
+				damage=				"kinetic:1d6+1; momentum1"
+				fireRate=			"35"
+				missileSpeed=		"50"
+				lifetime=			"30"
+				powerUse=			"100"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Centauri Heavy CLAW cannon -->
+
+	<ItemType UNID="&itCentauriHeavyCLAW;"
+			name=				"heavy CLAW cannon"
+			level=				"3"
+			value=				"2800"
+			mass=				"6000"
+			frequency=			"rare"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"The Centauri warlord's favorite weapon is a massive dual kinetic-cannon. The heavy CLAW cannon requires two device slots to install."
+
+			sortName=			"CLAW cannon, Centauri heavy"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				deviceSlots=		"2"
+
+				damage=				"kinetic:2d8+1; momentum1; WMD1"
+				fireRate=			"15"
+				missileSpeed=		"50"
+				interaction=		"50"
+				lifetime=			"20"
+				powerUse=			"100"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Centauri Recoilless -->
+
+	<ItemType UNID="&itCentauriRecoilless;"
+			name=				"Centauri recoilless| Centauri recoilless cannons"
+			level=				"1"
+			value=				"350"
+			mass=				"2500"
+			frequency=			"uncommon"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"Centauri raiders use twin recoilless cannons, firing light rounds."
+
+			sortName=			"recoilless cannon, Centauri"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"kinetic:1d3; momentum1"
+				fireRate=			"15"
+				missileSpeed=		"30"
+				interaction=		"30"
+				lifetime=			"30"
+				powerUse=			"10"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Barrel of Centauri Nanos -->
+
+	<ItemType UNID="&itCentauriNanos;"
+			name=				"[barrel(s) of ]Centauri nanos"
+			level=				"3"
+			value=				"250"
+			mass=				"1000"
+			frequency=			"veryrare"
+			numberAppearing=	"1d4"
+			unknownType=		"&itUnknownBarrel;"
+			attributes=			"ArmorEnhance; centauriWarlords; MinorItem; NotForSale"
+
+			description=		"These nanomachines weave a diamond matrix through the target material. Armor that has been treated in this way will be more resistant to laser and impact damage."
+
+			useScreen=			"&dsUseArmorCoating;"
+			data=				"centauriNanos"
+
+			sortName=			"Centauri nanos, barrel of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+	
+<!-- SHIP CLASSES -->
+
+	<!-- Arco Vaughn's Heavy Raider
+
+	GLOBAL DATA
+
+	destroyedByPlayer:	True if destroyed by player
+
+	status:				Status of Arco Vaughn
+							Nil						= never encountered
+							"destroyed"				= destroyed
+
+	EXTRA DATA
+
+	home:				Our container
+
+	behavior:			Current behavior
+							Nil						= waiting for player
+							'scarePlayer			= scare the player, shoot if shields are full
+							'scarePlayerWithForce	= shoot at player but stop when shields drop
+							'killPlayer				= kill the player
+
+	warning:			True if we warned the player
+
+	-->
+
+	<ShipClass UNID="&scArcoVaughnHeavyRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"heavy raider"
+
+			mass=				"100"
+			cargoSpace=			"10"
+			thrustRatio=		"1.8"
+			maxSpeed=			"13"
+
+			leavesWreck=		"100"
+
+			attributes=			"arcoVaughn,centauriWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="25"	deviceID="&itCentauriCLAW;"/>
+				<Device chance="25"	deviceID="&itCentauriHeavyCLAW;"/>
+				<Group chance="25">
+					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
+					<Device deviceID="&itClass2Deflector;"/>
+				</Group>
+				<Group chance="25">
+					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
+					<Device deviceID="&itNAMIMissileLauncher;">
+						<Items>
+							<Table>
+								<Item chance="50" count="40-60"  item="&itFragmentationMissile;"/>
+								<Item chance="50" count="40-60"  item="&itKM500Missile;"/>
+							</Table>
+						</Items>
+					</Device>
+				</Group>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item chance="60"	count="2d6" item="&itHelium3FuelRod;"/>
+			<Table>
+				<Item chance="25"	count="4" item="&itHeavyReactiveArmor;"/>
+				<Item chance="10"	count="1" item="&itTritiumPropulsionUpgrade;"/>
+				<Item chance="15"	count="1" item="&itMonopoleDeflector;"/>
+				<Item chance="25"	count="4" item="&itCentauriNanos;"/>
+				<Lookup chance="15" count="1" table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1" table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<Names noArticle="true" personalName="true">Arco Vaughn</Names>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"12"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<StaticData>
+			<msgTableGoHome>
+				(
+					"Go home before you hurt yourself, kid"
+					"This isn't your fight; get out while you can"
+					"That was a warning"
+					"This is a restricted area; I will shoot"
+					"Go home; this system is mine!"
+					"Don't make me destroy you"
+					)
+			</msgTableGoHome>
+
+			<msgTableTickled>
+				(
+					"Quit it!"
+					"Go home kid, or I'm really going to get mad"
+					"What, did I kill your microsaur or something?"
+					"Forget it, you don't have a chance!"
+					"Clear out or I will blast you!"
+					"Don't make me bust you up"
+					)
+			</msgTableTickled>
+
+			<msgTableWTF>
+				(
+					"What the...!?"
+					"You are going to die!"
+					"You are dead!"
+					"Enough!"
+					"Kack!"
+					"Huh!?"
+					)
+			</msgTableWTF>
+		</StaticData>
+
+		<Events>
+			<OnAttacked>
+				(if (and (eq aOrderGiver gPlayerShip) 
+						(not (eq (objGetData gSource "behavior") 'killPlayer)))
+					(if (and (or (eq aDamageType 'kinetic) (eq aDamageType 'laser))
+							(leq aDamageHP 6)
+							)
+
+						; If we're attacked with laser or kinetic, laugh it off
+
+						(if (and (eq (random 1 3) 1)
+								(eq (objGetData gSource "behavior") 'scarePlayer))
+							(objSendMessage gPlayerShip gSource
+								(random (objGetStaticData gSource "msgTableTickled"))
+								)
+							)
+
+						; If we're attacked with something more powerful, then we
+						; attack in force.
+
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack gPlayerShip)
+							(objSetData gSource "behavior" 'killPlayer)
+
+							(objSendMessage gPlayerShip gSource
+								(random (objGetStaticData gSource "msgTableWTF"))
+								)
+							)
+						)
+					)
+			</OnAttacked>
+
+			<OnBehavior>
+				(block (behavior playerDist)
+					(setq behavior (objGetData gSource "behavior"))
+
+					(switch
+						; Wait for player to show up
+						(not behavior)
+							(if (and gPlayerShip 
+									(ls (objGetDistance gPlayerShip gSource) 60)
+									(ls (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 200))
+								(block Nil
+
+									; Once the player shows up, aim for the player, but don't attack yet
+									(shpCancelOrders gSource)
+									(shpOrder gSource 'aim gPlayerShip)
+
+									(objRegisterForEvents gSource gPlayerShip)
+									(objSetData gSource "behavior" 'scarePlayer)
+									)
+								)
+
+						; Scare the player away
+						(eq behavior 'scarePlayer)
+							(block Nil
+								(if (eq (objGetShieldLevel gPlayerShip) 100)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'attack gPlayerShip)
+										(objSetData gSource "behavior" 'scarePlayerWithForce)
+										)
+									)
+
+								(if (gr (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 300)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
+										(objSetData gSource "behavior" Nil)
+										(objSetData gSource "warning" Nil)
+										)
+									)
+								)
+
+						(eq behavior 'scarePlayerWithForce)
+							(block Nil
+								(if (ls (objGetShieldLevel gPlayerShip) 100)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'aim gPlayerShip)
+										(objSetData gSource "behavior" 'scarePlayer)
+										)
+									)
+
+								(if (and 
+										(not (objGetData gSource "warning"))
+										(ls (objGetDistance gSource gPlayerShip) 25)
+										)
+									(block Nil
+										(objSendMessage gPlayerShip gSource
+											(random (objGetStaticData gSource "msgTableGoHome"))
+											)
+										(objSetData gSource "warning" True)
+										)
+									)
+
+								(if (gr (objGetDistance gPlayerShip (objGetObjRefData gSource "home")) 300)
+									(block Nil
+										(shpCancelOrders gSource)
+										(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
+										(objSetData gSource "behavior" Nil)
+										(objSetData gSource "warning" Nil)
+										)
+									)
+								)
+						)
+					)
+			</OnBehavior>
+
+			<OnCreate>
+				(block Nil
+					; Vaughn's armor is resistant to laser and kinetic (only 20% damage gets through)
+					(objEnumItems gSource "aI" theItem
+						(shpEnhanceItem gSource theItem 0x0808)
+						)
+
+					; Set a timer so that we can do some custom behavior
+					(sysAddObjRecurringTimerEvent 10 gSource "OnBehavior")
+
+					; Remember our home
+					(objSetObjRefData gSource "home" (sysFindObject gSource "TN +arcoVaughn;"))
+					)
+			</OnCreate>
+
+			<OnDamage>
+				(block Nil
+
+					; If the player damaged us, then attack
+					(if (and (eq aAttacker gPlayerShip) 
+							(not (eq (objGetData gSource "behavior") 'killPlayer)))
+						(block Nil
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'attack gPlayerShip)
+							(objSetData gSource "behavior" 'killPlayer)
+
+							(objSendMessage gPlayerShip gSource
+								(random (objGetStaticData gSource "msgTableWTF"))
+								)
+							)
+						)
+
+					; We always return full hit points
+					aDamageHP
+					)
+			</OnDamage>
+
+			<OnDestroy>
+				(block Nil
+					(objSetGlobalData gSource "status" 'destroyed)
+
+					(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+						(objSetGlobalData gSource "destroyedByPlayer" True)
+						)
+					)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				(if (eq aObjDestroyed gPlayerShip)
+					(block Nil
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'patrol (objGetObjRefData gSource "home") 5)
+						(objSetData gSource "behavior" Nil)
+						)
+					)
+			</OnObjDestroyed>
+
+			<OrderKillPlayer>
+				(block Nil
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'attack gPlayerShip)
+					(objSetData gSource "behavior" 'killPlayer)
+					)
+			</OrderKillPlayer>
+		</Events>
+
+	</ShipClass>
+
+	<!-- Centauri Commandship (Obsolete) -->
+
+	<ShipClass UNID="&scCentauriCommandShip;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"command ship"
+
+			mass=				"100"
+			cargoSpace=			"50"
+			thrust=				"200"
+			maxSpeed=			"10"
+
+			leavesWreck=		"50"
+
+			attributes=			"centauriWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="315" span="90" armorID="&itLightPlasteelPlate;" areaSet="0,2" />
+			<ArmorSection start="225" span="90" armorID="&itLightPlasteelPlate;" areaSet="3,4" />
+			<ArmorSection start="135" span="90" armorID="&itLightPlasteelPlate;" areaSet="1,6" />
+			<ArmorSection start="45"  span="90" armorID="&itLightPlasteelPlate;" areaSet="7,13" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itPartisanCannon;" secondaryWeapon="true" omnidirectional="true"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"4.5"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsMediumShips2;" imageX="384" imageY="0" imageWidth="64" imageHeight="64" imageFrameCount="0" imageTicksPerFrame="0"/>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Centauri Heavy Raider -->
+
+	<ShipClass UNID="&scCentauriHeavyRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"heavy raider"
+
+			mass=				"60"
+			cargoSpace=			"10"
+			thrustRatio=		"1.8"
+			maxSpeed=			"13"
+
+			leavesWreck=		"50"
+
+			attributes=			"centauriWarlords,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="40" deviceID="&itCentauriCLAW;"/>
+				<Device chance="60" deviceID="&itCentauriHeavyCLAW;"/>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsCentauriHeavyRaiderImage;" imageX="0" imageY="0" imageWidth="64" imageHeight="64"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Centauri Raider -->
+
+	<ShipClass UNID="&scCentauriRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"raider"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrustRatio=		"4.0"
+			maxSpeed=			"13"
+
+			leavesWreck=		"20"
+
+			attributes=			"centauriWarlords,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itLightTitaniumPlate;" />
+			<ArmorSection start="90"  span="180" armorID="&itLightTitaniumPlate;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itCentauriRecoilless;" enhanced="10"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsCentauriRaiderImage;" imageX="0" imageY="0" imageWidth="48" imageHeight="48"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+	
+<!-- STATION TYPES -->
+
+	<!-- Centauri Occupation -->
+
+	<StationType UNID="&stCentauriOccupation;"
+			name=				"occupied Commonwealth colony"
+			sovereign=			"&svCommonwealth;"
+			controllingSovereign="&svCentauriWarlords;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			allowEnemyDocking=	"true"
+			canAttack=			"true"
+			noBlacklist=		"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, occupation, populated"
+			levelFrequency=		"uuv-- ----- ----- ----- -----"
+			locationCriteria=	"+planetary,-asteroids"
+			>
+
+		<Names noArticle="true">Arenius Colony; Baja Colony; Clearspace Station; Durin Colony;
+				Earthnight Colony; Fairmoon Settlement; Greenfield Colony;
+				Hector Colony; Ionfalls Colony; Jovian Clouds Settlement; Keller Station;
+				Lama Colony; Murchenson Settlement; Nightfall Colony; Oort Settlement;
+				Pallas Station; Queequeg Colony; Radiant Settlement; Star's End Station;
+				Terra Ex Colony; Uriel Station; Venuslight Colony; Weathermoon Colony
+		</Names>
+
+		<Image			imageID="&rsStations1;" imageX="256" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Ship count="1d4+1"	class="&scCentauriRaider;"	orders="guard"	sovereign="&svCentauriWarlords;"/>
+		</Ships>
+
+		<Items>
+			<Table>
+				<Item chance="90"	count="1d8" item="&itCentauriRice;"/>
+				<Item chance="5"	count="3d6" item="&itNaturalPeriweed;"/>
+				<Item chance="5"	count="1d6" item="&itHogeiSalmon;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbCentauriEncounters;"/>
+		</Encounters>
+
+		<Events>
+			<OnCreate>
+				; Register events for when subordinates are destroyed
+				(enum (sysFindObject gSource "sA O:guard;") tObj
+					(objRegisterForEvents gSource tObj)
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+
+			<OnObjDestroyed>
+				; If the player destroys any of the warlords then she
+				; counts as the liberator
+				(if (and gPlayerShip (eq aOrderGiver gPlayerShip))
+					(objSetData gSource "LiberatedByPlayer" True)
+					)
+			</OnObjDestroyed>
+		</Events>
+
+		<DockScreens>
+			<Main>
+
+				<InitialPane>
+					(switch
+						(objGetData gSource "Liberated")
+							"Default"
+
+						(sysFindObject gSource "sA O:guard;")
+							"Hiding"
+
+						(objGetData gSource "LiberatedByPlayer")
+							"Welcome1"
+
+						"LiberatedByOther"
+						)
+				</InitialPane>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at a small Commonwealth settlement. The people here are friendly and grateful to you, but they mostly go on with their business.">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+
+					<Hiding
+							desc=	"The docks and corridors of this station are deserted. The men and women of the station hide in their apartments and refuse to talk with you.">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Hiding>
+
+					<LiberatedByOther
+							desc=	"You are docked at a small Commonwealth settlement. The people here are friendly, but they mostly go on with their business.">
+
+						<Actions>
+							<Action name="Undock" default="1" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</LiberatedByOther>
+
+					<Welcome1
+							desc=	"As you exit the airlock dozens of men and women cheer for you. The leader approaches you: &quot;Thank you for killing the warlords! We've been hiding ourselves ever since they took over the station.&quot;">
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								<ShowPane pane="Welcome2"/>
+							</Action>
+
+						</Actions>
+
+					</Welcome1>
+
+					<Welcome2>
+						<OnPaneInit>
+							(block (theReward)
+								(setq theReward (item (objGetItems gSource "*U") 0))
+								(scrSetDesc gScreen
+									(cat "The leader continues: \"We would like to reward you for liberating our station. Please accept "
+										(itmGetName theReward 0x40)
+										(if (gr (itmGetCount theReward) 1)
+											"; they were left behind by the warlords.\""
+											"; it was left behind by the warlords.\""
+											)
+										)
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action name="Continue" default="1" cancel="1" key="C">
+								(block Nil
+									(objSetData gSource "Liberated" True)
+									(scrShowScreen gScreen &dsRPGLoot; {
+										nextScreen: "Main"
+										})
+									)
+							</Action>
+
+						</Actions>
+
+					</Welcome2>
+
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="64" />
+			<Port x="64"	y="0" />
+			<Port x="0"		y="0" />
+			<Port x="50"	y="90" />
+			<Port x="90"	y="20" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Centauri Camp -->
+
+	<StationType UNID="&stCentauriCamp;"
+			name=				"Centauri warlord camp"
+			sovereign=			"&svCentauriWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itLightPlasteelPlate;"
+			hitPoints=			"50"
+			fireRateAdj=		"80"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
+			levelFrequency=		"crv-- ----- ----- ----- -----"
+			locationCriteria=	"+OuterSystem,-asteroids,-void"
+			>
+
+		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itCentauriRecoilless;" posAngle="90" posRadius="50" omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="30"	count="1d4+1"	class="&scCentauriRaider;"			orders="guard"/>
+				<Ship chance="60"	count="1d3+2"	class="&scCentauriRaider;"			orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scCentauriRaider;"			orders="guard"/>
+					<Ship			count="1"	class="&scCentauriHeavyRaider;"		orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
+				<Lookup	chance="50"				table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbCentauriEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Centauri Stronghold -->
+
+	<StationType UNID="&stCentauriStronghold;"
+			name=				"Centauri warlord stronghold"
+			sovereign=			"&svCentauriWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockScreen=			"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"75"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
+			levelFrequency=		"rurv- ----- ----- ----- -----"
+			locationCriteria=	"+OuterSystem,-asteroids,-void"
+			>
+
+		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itCentauriCLAW;"	posAngle="90" posRadius="50" omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="30"	count="2d4"	class="&scCentauriRaider;"			orders="guard"/>
+				<Group chance="60">
+					<Ship			count="1d4"	class="&scCentauriRaider;"			orders="guard"/>
+					<Ship			count="1"	class="&scCentauriHeavyRaider;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="2"	class="&scCentauriHeavyRaider;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group	levelValue="750, 1000, 1500, 2000, 4000, 8000, 16000, 32000, 64000, 128000">
+				<Item	chance="80" count="1d6" item="&itCentauriRice;"/>
+				<Lookup							table="&trStdLevelTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbCentauriEncounters;"/>
+		</Encounters>
+	</StationType>
+
+	<!-- Arco Vaughn's Habitat -->
+
+	<StationType UNID="&stArcoVaughnHabitat;"
+			name=				"Arco Vaughn's container habitat"
+			sovereign=			"&svCentauriWarlords;"
+			abandonedScreen=	"Main"
+			dockScreen=			"Main"
+			canAttack=			"true"
+			noFriendlyTarget=	"true"
+
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"35"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"arcoVaughn, centauriWarlords, enemy, human, populated, uncharted, warlords"
+			maxAppearing=		"1"
+
+			noArticle=			"true"
+			>
+
+		<ImageVariants>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="64" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Ships>
+			<Ship				count="1" class="&scArcoVaughnHeavyRaider;"		orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<Items>
+			<Item		chance="80" count="1d6" item="&itCentauriRice;"/>
+		</Items>
+
+		<Events>
+			<OnCreate>
+				(block (email)
+					(setq email (itmCreate &itDataROM; 1))
+					(setq email (itmSetData email "Text"
+						(cat
+							"RECEIVED from relay07.cynus.anderson.187janus_station.comm\n"
+							"by helios_receiver.f5astarton_eridani.comm (EID 089830_7188919)\n"
+							"for &lt;arcovaughn.17591&gt; (EID 089830_8179210) 2403-11-25 17:34:11\n\n"
+							"MESSAGE BEGINS\n"
+							"I know that you must hate me right now; truth is I don't like myself very much either. "
+							"But I promise you that everything happens for a reason and that one day you and I will both understand. "
+							"I can't explain to you or anyone why I'm going. No one can understand. "
+							"But I know that I am doing the right thing and I know that I am doing what I must. "
+							"I can't do anything else. Something is about to happen. Something feels wrong. "
+							"Whatever fate awaits me at the Core, I know that it is entwined with the fate of all Humanity. "
+							"When I get there, I will understand. When I get there, we will all understand. "
+							"I must get there before it is too late. Take care of your mother.\n\n"
+							"MESSAGE ENDS"
+							)
+						))
+					(objAddItem gSource email)
+					)
+			</OnCreate>
+		</Events>
+
+		<DockScreens>
+			<Main>
+
+				<Panes>
+					<Default
+							desc=	"You are docked at the lifeless ruins of a container habitat. This makeshift station has been recently occupied by a band of Centauri warlords.">
+
+						<Actions>
+							<Action name="Loot" key="L" default="1" >
+								(scrShowScreen gScreen &dsRPGLoot;)
+							</Action>
+
+							<Action name="Jettison" key="J">
+								(scrShowScreen gScreen &dsRPGJettison;)
+							</Action>
+
+							<Action name="Undock" cancel="1" key="U">
+								<Exit/>
+							</Action>
+
+						</Actions>
+
+					</Default>
+				</Panes>
+			</Main>
+
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="70" />
+			<Port x="61"	y="35" />
+			<Port x="61"	y="-35" />
+			<Port x="0"		y="-70" />
+			<Port x="-61"	y="-35" />
+			<Port x="-61"	y="35" />
+		</DockingPorts>
+
+	</StationType>
+	
+<!-- MISCELLANEOUS -->
+
+	<ShipTable unid="&tbCentauriEncounters;">
+		<LevelTable>
+			<Ship levelFrequency="cuu-- -----" count="1"	 class="&scCentauriRaider;" eventHandler="&evStdPatrolEncounterBehavior;" sovereign="&svCentauriWarlords;">
+				<Escorts>
+					<Ship					   count="1d4-1" class="&scCentauriRaider;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="rucc- -----" count="1"	 class="&scCentauriHeavyRaider;" eventHandler="&evStdPatrolEncounterBehavior;" sovereign="&svCentauriWarlords;">
+				<Escorts>
+					<Ship					   count="1d4"	 class="&scCentauriRaider;" orders="escort"/>
+				</Escorts>
+			</Ship>
+			
+			<Ship levelFrequency="-ruc- -----" count="1"	 class="&scCentauriHeavyRaider;" eventHandler="&evStdPatrolEncounterBehavior;" sovereign="&svCentauriWarlords;">
+				<Escorts>
+					<Ship					   count="1d3-1" class="&scCentauriHeavyRaider;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</LevelTable>
+	</ShipTable>
+
+<!-- RESOURCE -->
+
+	<Image UNID="&rsCentauriHeavyRaiderImage;"	bitmap="Resources\CentauriHeavyRaider.jpg" bitmask="Resources\CentauriHeavyRaiderMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCentauriRaiderImage;"		bitmap="Resources\CentauriRaider.jpg" bitmask="Resources\CentauriRaiderMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCentauriStationsImage;"		bitmap="Resources\CentauriStations.jpg" bitmask="Resources\CentauriStationsMask.bmp"  loadOnUse="true"/>
+
+</TranscendenceModule>

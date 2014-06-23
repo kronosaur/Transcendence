@@ -174,14 +174,6 @@ void CListCollectionTask::CreateEntry (CMultiverseCatalogEntry *pCatalogEntry, i
 	if (!pCatalogEntry->GetVersion().IsBlank())
 		sVersion = strPatternSubst(CONSTLIT("version: %s"), pCatalogEntry->GetVersion());
 
-	if (pCatalogEntry->GetStatus() == CMultiverseCatalogEntry::statusCorrupt)
-		{
-		if (!sVersion.IsBlank())
-			sVersion.Append(CONSTLIT(" "));
-
-		sVersion.Append(CONSTLIT("Registration signature does not match."));
-		}
-
 	//	Add the version number
 
 	if (!sVersion.IsBlank())
@@ -197,6 +189,36 @@ void CListCollectionTask::CreateEntry (CMultiverseCatalogEntry *pCatalogEntry, i
 		}
 
 	y += cyTypeBackground;
+
+	//	Add status, if necessary
+
+	CString sStatus;
+	switch (pCatalogEntry->GetStatus())
+		{
+		case CMultiverseCatalogEntry::statusCorrupt:
+			sStatus = CONSTLIT("Registration signature does not match.");
+			break;
+
+		case CMultiverseCatalogEntry::statusError:
+			sStatus = pCatalogEntry->GetStatusText();
+			break;
+		}
+
+	if (!sStatus.IsBlank())
+		{
+		IAnimatron *pStatus = new CAniText;
+		pStatus->SetPropertyVector(PROP_POSITION, CVector(xText, y));
+		pStatus->SetPropertyVector(PROP_SCALE, CVector(cxText, 1000));
+		pStatus->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogWarning));
+		pStatus->SetPropertyFont(PROP_FONT, &MediumFont);
+		pStatus->SetPropertyString(PROP_TEXT, sStatus);
+
+		RECT rcLine;
+		pStatus->GetSpacingRect(&rcLine);
+
+		pRoot->AddTrack(pStatus, 0);
+		y += RectHeight(rcLine);
+		}
 
 	//	Now add the description
 

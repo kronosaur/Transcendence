@@ -601,9 +601,11 @@ void CBattlesSession::OnUpdate (bool bTopMost)
 	{
 	int i;
 
+	SSystemUpdateCtx UpdateCtx;
+
 	//	Update the universe
 
-	g_pUniverse->Update(g_SecondsPerUpdate);
+	g_pUniverse->Update(UpdateCtx);
 
 	//	If the same ship has been here for a while, then create a new ship
 

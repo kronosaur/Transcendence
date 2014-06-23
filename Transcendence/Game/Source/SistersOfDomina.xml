@@ -1,0 +1,1597 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Prayer Stone -->
+
+	<ItemType UNID="&itCarvedPrayerStone;"
+			name=				"carved prayer stone"
+			level=				"1"
+			value=				"500"
+			mass=				"1"
+			frequency=			"rare"
+			attributes=			"Art; Consumable; Lux; Psionic"
+
+			description=		"A beautiful prayer stone cut out of a crystal of some sort; the symbol of Domina is carved on one face."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+	<!-- Jewel of Contemplation -->
+
+	<ItemType UNID="&itJewelOfContemplation;"
+			name=				"jewel(s) of contemplation"
+			level=				"3"
+			value=				"2000"
+			mass=				"10"
+			frequency=			"rare"
+			attributes=			"Art; Consumable; Lux; Psionic"
+
+			description=		"A heavy, pure crystal set in a platinum band; the symbol of Domina is inscribed on one face."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+	<!-- Hierolith Crystal -->
+
+	<ItemType UNID="&itHierolithCrystal;"
+			name=				"hierolith crystal"
+			level=				"9"
+			value=				"5000"
+			mass=				"100"
+			frequency=			"rare"
+			attributes=			"Art; Consumable; Lux; Psionic; RingerValuable"
+
+			description=		"These hyperdense crystals are formed inside black holes; they resonate with transcendent consciousness."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
+
+	<!-- Sisters of Domina -->
+
+	<StationType UNID="&stSistersOfDomina;"
+			name=				"Sisters of Domina"
+			sovereign=			"&svCommonwealth;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsAbandonedStation;"
+			defaultBackgroundID="&rsSistersShrineBkgnd;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			repairRate=			"3"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"envAir, envAvoidsFire, friendly, human, majorStation, populated, religious, sistersOfDomina"
+			levelFrequency=		"ruccc ur--- ----- ----- -----"
+			unique=				"inSystem"
+			locationCriteria=	"+planetary; -innerSystem"
+
+			definiteArticle=	"true"
+			>
+
+		<Image			imageID="&rsStations1;" imageX="384" imageY="512" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Lookup count="1d2" table="&tbCommDefenders;"/>
+			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
+		</Ships>
+
+		<Items>
+			<Table count="1d6">
+				<Lookup chance="25" count="1d3" table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Trade currency="credit" max="50000" replenish="2500">
+			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
+		</Trade>
+
+		<StaticData>
+			<DonationTable>
+				; attd =	If -1, gain 1 attitude per item donated
+				;			If 0, gain no attitude
+				;			If greater than 0, this is the credit value to gain 1 attitude
+				;
+				; rel =		Points of relationship gained per item
+
+				(	; pattern				attd	rel		text
+					(&itCarvedPrayerStone;	0		20		"We thank you for your offering. These beautiful stones are a fitting tribute to Domina's grace and power.")
+					(&itJewelOfContemplation; 0		35		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
+					(&itHierolithCrystal;	-1		175		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
+					(&itDeathCube;			-1		80		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+					(&itAbbasidThanogram;	0		70		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+					(&itCDMArchive;			-1		105		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+					(&itOpticalKnowledgeArray; 0	24		"We thank you for your offering. These intricate devices will help us with our communion.")
+					(&itSlaveCoffin;		-1		100		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
+					(&itCashCardGold;		500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
+					(&itCashCardPlatinum;	500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
+					("ad +Illegal;"			0		0		"We shall dispose of this equipment for your own good. Do not give in to its corrupting influence.")
+					("*+ID;"				0		0		"We thank you for your good intentions, but this kind of item is useless to us.")
+					("*+HaloGem;"			-1		200		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
+					("*+Meds;"				500		0		"We thank you for your sacrifice. Seek us when you are in need of healing.")
+					("*+Illegal;"			0		0		"We shall dispose of this poison so that it may do no harm. Cleanse yourself of its influence.")
+					("*+Lux;"				2000	0		"We thank you for your sacrifice. Seek us when you are in need of peace.")
+					("*+Food;"				1000	0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
+					("f"					750		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
+					(Nil					0		0		"We thank you for your donation and your good intentions. Go in peace.")
+					)
+			</DonationTable>
+		</StaticData>
+
+		<DockScreens>
+			<Main
+				>
+				<Panes>
+					<Default>
+						<OnPaneInit>
+							(block Nil
+								(if (not (objGetData gPlayerShip "sistersAttitude"))
+									(objSetData gPlayerShip "sistersAttitude" 0)
+									)
+
+								(if (objGetData gSource "freeSanctum")
+									(scrSetDesc gScreen (objTranslate gSource 'WelcomeFreeSanctum))
+									(scrSetDesc gScreen (objTranslate gSource 'Welcome))
+									)
+								)
+						</OnPaneInit>
+
+						<Actions>
+							<Action id="actionSanctum">
+								(scrShowScreen gScreen &dsSistersSanctum;)
+							</Action>
+							<Action id="actionPilgrimsAid" default="1">
+								(scrShowScreen gScreen &dsSistersDockServices;)
+							</Action>
+							<Action id="actionDonate">
+								(scrShowScreen gScreen &dsSistersDonate;)
+							</Action>
+							<Action id="actionUndock" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+		<DockingPorts>
+			<Port x="0"		y="90" />
+			<Port x="0"		y="-90" />
+			<Port x="60"	y="60" />
+			<Port x="60"	y="-60" />
+			<Port x="90"	y="0" />
+			<Port x="-90"	y="0" />
+			<Port x="-60"	y="60" />
+			<Port x="-60"	y="-60" />
+		</DockingPorts>
+
+		<Language>
+			<Text id="actionDonate">"[D]onate"</Text>
+			<Text id="actionPilgrimsAid">"[P]ilgrim's Aid"</Text>
+			<Text id="actionSanctum">"[S]anctum"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+			
+			<Text id="Welcome">
+				(cat
+					"You are docked at an abbey of the Sisters of Domina."
+					)
+			</Text>
+			<Text id="WelcomeFreeSanctum">
+				(cat
+					"You are docked at an abbey of the Sisters of Domina. "
+					"A woman wearing a flowing cardinal robe is before you.\n\n"
+					
+					"\"Take your ease here before you go, or seek guidance at our Sanctum. "
+					"May the blessings of Domina protect you.\""
+					)
+			</Text>
+		</Language>
+	</StationType>
+	
+	<!-- Sanctum Screen 
+	
+	-->
+	
+	<DockScreen unid="&dsSistersSanctum;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(attitude (objGetData gPlayerShip 'sistersAttitude))
+						(level (domInitRelationship))
+						)
+						
+						(switch
+						
+							;	If the player has not donated to the Sisters, then they
+							;	cannot contemplate.
+							
+							(and (or (not attitude) (ls attitude 1))
+									(not (objGetData gSource 'freeSanctum))
+									)
+								(block Nil
+									(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "SanctumClosed"))
+									(scrEnableAction gScreen 'actionContemplate Nil)
+									)
+							
+							;	Otherwise, we allow contemplation
+							
+							(block Nil
+								(scrSetDesc gScreen (typTranslate &dsSistersSanctum; (cat "SanctumIntro:" level)))
+								(scrEnableAction gScreen 'actionContemplate True)
+								)
+							)
+						)
+				</OnPaneInit>
+			
+				<Actions>
+					<Action id="actionContemplate" default="1">
+						(block (
+							(roll (random 1 100))
+							)
+							
+							;	Consume 1 attitude point
+							
+							(objIncData gPlayerShip 'sistersAttitude -1)
+							
+							;	If we have a free sanctum pass then we always get the stargate
+							;	option.
+							
+							(if (objGetData gSource 'freeSanctum)
+								(block Nil
+									(setq roll 40)
+									(objSetData gSource 'freeSanctum Nil)
+									)
+								)
+							
+							;	Figure out what happened
+							
+							(switch
+							
+								;	10% of the time, Domina reveals stations in the system
+								
+								(leq roll 10)
+									(block Nil
+										(enum (sysFindObject gPlayerShip "Ts -uncharted;") obj
+											(objSetKnown obj)
+											)
+										(scrShowPane gScreen "MappedSystem")
+										)
+							
+								;	30% of the time, Domina reveals the stargate that leads
+								;	to the Core.
+								
+								(leq roll 40)
+									(block (
+										(stargateObj (sysGetStargateLeadingToCore))
+										)
+										
+										(if stargateObj
+											(block Nil
+												(scrSetData gScreen 'stargateID (objGetID stargateObj))
+												(scrShowPane gScreen "StargateRevealed")
+												)
+											(scrShowPane gScreen "Nothing")
+											)
+										)
+							
+								;	30% of the time we gain Domina relationship.
+							
+								(leq roll 70)
+									(block Nil
+										(domGainXP (random 20 10 10))
+										(scrShowPane gScreen "DominaRelationship")
+										)
+							
+								;	30% of the time, nothing happens.
+								
+								(scrShowPane gScreen "Nothing")
+								)
+							)
+					</Action>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<MappedSystem>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "MappedSystemDesc"))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</MappedSystem>
+			
+			<StargateRevealed>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "StargateRevealedDesc"))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</StargateRevealed>
+			
+			<DominaRelationship>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "DominaRelationshipDesc"))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</DominaRelationship>
+			
+			<Nothing>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersSanctum; "NothingDesc"))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Nothing>
+		</Panes>
+		
+		<Language>
+			<Text id="actionContemplate">"[C]ontemplate"</Text>
+			
+			<Text id="DominaRelationshipDesc">
+				(cat
+					"Your disembodied mind hurtles through space. "
+					"Stars dance like fireflies, and nebulous veils part "
+					"to reveal a fragment of the Eternal Pattern.\n\n"
+					
+					"You feel the blessing of Domina upon you. She urges you to continue "
+					"your journey to the Galactic Core."
+					)
+			</Text>
+			<Text id="MappedSystemDesc">
+				(cat
+					"Images and patterns dance in your head like spinning galaxies. "
+					"You see with the eyes of Domina but the visions blast your brain like a nova.\n\n"
+					
+					"When you recover from your reverie you remember only some mundane "
+					"information about the position of stations in this star system."
+					)
+			</Text>
+			<Text id="NothingDesc">
+				(cat
+					"Your contemplation ends as your rational mind considers "
+					"the impossibility of communicating across the light-years."
+					)
+			</Text>
+			<Text id="StargateRevealedDesc">
+				(block (
+					(stargateObj (objGetObjByID (scrGetData gScreen 'stargateID)))
+					)
+					(cat
+						"A connection with Domina is denied to you, but your brief attempt "
+						"points the way to your destiny's end.\n\n"
+						
+						"Step through the " (objGetName stargateObj) " to the next system "
+						"and you will be one step nearer to your goal."
+						)
+					)
+			</Text>
+			
+			<Text id="SanctumClosed">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"Tools and scaffolding fill the room and various cardinal-robed techs "
+					"work to repair the micro-engraved plasteel walls.\n\n"
+					
+					"One of the sisters oversees the work: \"Sorry, but the sanctum "
+					"is closed for maintenance. We would appreciate any donation you can "
+					"make to help us defray the cost.\""
+					)
+			</Text>
+			
+			<Text id="SanctumIntro:0">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"The plasteel walls that surround you are micro-engraved with the revelation of Domina.\n\n"
+					
+					"You close your eyes and open your thoughts, but no one answers."
+					)
+			</Text>
+			<Text id="SanctumIntro:1">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"The plasteel walls that surround you are micro-engraved with the revelation of Domina.\n\n"
+					
+					"You are a novice in the service of Domina and have access to first-tier powers. "
+					(if (typGetGlobalData &stDomina; "xp")
+						(cat "The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") ".")
+						)
+					)
+			</Text>
+			<Text id="SanctumIntro:2">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"The plasteel walls that surround you are micro-engraved with the revelation of Domina.\n\n"
+					
+					"You are an acolyte in the service of Domina and have access to second-tier powers. "
+					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
+					)
+			</Text>
+			<Text id="SanctumIntro:3">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"A faint glow eminates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
+					
+					"You are an adept in the service of Domina and have access to third-tier powers. "
+					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
+					)
+			</Text>
+			<Text id="SanctumIntro:4">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"A faint glow eminates from the micro-engraved plasteel walls and you feel a peaceful presence.\n\n"
+					
+					"You are a curate in the service of Domina and have access to fourth-tier powers. "
+					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
+					)
+			</Text>
+			<Text id="SanctumIntro:5">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"You feel the presence of Domina within and around you.\n\n"
+					
+					"You are a canon in the service of Domina and have access to fifth-tier powers. "
+					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
+					)
+			</Text>
+			<Text id="SanctumIntro:6">
+				(cat
+					"You are in the sanctum of the Sisters of Domina. "
+					"You feel the presence of Domina within and around you.\n\n"
+					
+					"You are a " (if (eq (plyGetGenome gPlayer) 'humanMale) "patriarch" "matriarch") " in the service of Domina and have access to fifth-tier powers. "
+					"The strength of your connection to Domina is: " (typGetGlobalData &stDomina; "xp") "."
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
+	<!-- Pilgrim's Aid Screen
+
+	-->
+
+	<DockScreen UNID="&dsSistersDockServices;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionRefuel">
+						(if (and (gr (plyGetCredits gPlayer) 0) 
+								(leq (objGetData gPlayerShip "sistersAttitude") 0))
+							(scrShowPane gScreen "TooRich")
+							(block (count itemsToUse)
+								(setq count (shpGetFuelNeeded gPlayerShip (itmCreate &itHelium3FuelRod; 1)))
+								(setq itemsToUse (itmCreate &itHelium3FuelRod; count))
+								(shpRefuelFromItem gPlayerShip itemsToUse)
+								(objSetData gPlayerShip "sistersAttitude" 
+								(subtract (objGetData gPlayerShip "sistersAttitude") 1))
+								(scrShowPane gScreen "RefuelShip")
+								)
+							)
+					</Action>
+
+					<Action id="actionRepairArmor">
+						(if (and (gr (plyGetCredits gPlayer) 0)
+								(leq (objGetData gPlayerShip "sistersAttitude") 0))
+							(scrShowPane gScreen "TooRich")
+							(block (armorSeg repaired noDamage)
+								(setq repaired Nil)
+								(setq noDamage True)
+								(for armorSeg 0 (subtract (shpGetArmorCount gPlayerShip) 1)
+									(block (type damage maxHP)
+										(setq type (objGetArmorType gPlayerShip armorSeg))
+										(setq damage (objGetArmorDamage gPlayerShip armorSeg))
+										(if (gr damage 0) (setq noDamage Nil))
+										(setq maxHP (shpGetArmorMaxHitPoints gPlayerShip armorSeg))
+
+										(switch
+											; No need to repair if no damage
+											(eq damage 0)
+												Nil
+
+											; If armor needs higher tech to repair, we can't do anything
+											(gr (armGetRepairTech type) 9)
+												Nil
+
+											; Can't repair if damage is too much
+											(ls (subtract maxHP damage) (divide maxHP 4))
+												Nil
+
+											; Repair
+											(block Nil
+												(objRepairArmor gPlayerShip armorSeg)
+												(setq repaired True)
+												)
+											)
+										)
+									)
+
+								(switch
+									repaired
+										(block Nil
+											(objSetData gPlayerShip "sistersAttitude" 
+												(subtract (objGetData gPlayerShip "sistersAttitude") 1))
+											(scrShowPane gScreen "RepairArmor")
+											)
+
+									noDamage
+										(scrShowPane gScreen "NoDamage")
+
+									(scrShowPane gScreen "UnableToRepair")
+									)
+								)
+							)
+					</Action>
+
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<RefuelShip>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'RefuelShipDesc))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</RefuelShip>
+
+			<RepairArmor>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'RepairArmorDesc))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</RepairArmor>
+
+			<NoDamage>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'NoDamageDesc))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</NoDamage>
+
+			<UnableToRepair>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'UnableToRepairDesc))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</UnableToRepair>
+
+			<TooRich>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'TooRichDesc))
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</TooRich>
+		</Panes>
+		
+		<Language>
+			<Text id="Welcome">
+				(cat
+					"\"Welcome, Pilgrim! Your journey to the Galactic Core "
+					"will be long and arduous but we are here to help those "
+					"of pure spirit and in true need.\""
+					)
+			</Text>
+
+			<Text id="NoDamageDesc">
+				(cat
+					"\"Your vessel is undamaged. There is no need for repairs.\""
+					)
+			</Text>
+			<Text id="RefuelShipDesc">
+				(cat
+					"\"Your vessel has been refueled. Go in peace and spread the teachings of Domina.\""
+					)
+			</Text>
+			<Text id="RepairArmorDesc">
+				(cat
+					"\"Your vessel has been repaired as best as we could manage. "
+					"Devote your life to Domina and your spirit shall be similarly healed.\""
+					)
+			</Text>
+			<Text id="TooRichDesc">
+				(cat
+					"\"Please forgive us, but it is the wish of Domina that we "
+					"help only those truly in need.\""
+					)
+			</Text>
+			<Text id="UnableToRepairDesc">
+				(cat
+					"\"The damage to your vessel is beyond our capability to repair. "
+					"Open yourself to Domina and leave your worthless ship behind.\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
+	<!-- Donate Screen
+	
+	-->
+	
+	<DockScreen unid="&dsSistersDonate;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDonate; 'Welcome))
+				</OnPaneInit>
+			
+				<Actions>
+					<Action id="actionDonateCredits">
+						(switch
+							(and (setq lastDonation (objGetData gPlayerShip "sistersLastDonation"))
+									(leq (subtract (unvGetTick) lastDonation) 1000)
+									)
+								(scrShowPane gScreen "NotNeeded")
+
+							(scrShowScreen gScreen &dsDominaTithe;)
+							)
+					</Action>
+					<Action id="actionDonateItem">
+						(scrShowScreen gScreen &dsDominaDonateItem;)
+					</Action>
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+			
+			<NotNeeded>
+				<OnPaneInit>
+					(scrSetDesc gScreen (typTranslate &dsSistersDonate; 'NotNeededDesc))
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</NotNeeded>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDonateCredits">"Donate [C]redits"</Text>
+			<Text id="actionDonateItem">"Donate [I]tem"</Text>
+			
+			<Text id="Welcome">
+				(cat
+					"\"Domina cannot help us without our participation. Certain items "
+					"are useful to her in maintaining her connection with us. "
+					"And, of course, we use your donations in our own efforts.\n\n"
+					
+					"\"Please donate generously; your sacrifices will be rewarded.\""
+					)
+			</Text>
+			
+			<Text id="NotNeededDesc">
+				(cat
+					"\"Thank you for your consideration, but we have sufficient "
+					"money for our needs. We would appreciate more useful items, however.\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
+	<!-- Domina Donate Item
+
+	-->
+
+	<DockScreen UNID="&dsDominaDonateItem;"
+			type=				"itemPicker"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			backgroundID=		"&rsItemListScreen;"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"*U"
+			/>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (donationEntry)
+						(setq gItem (scrGetItem gScreen))
+						(setq gMaxCount (itmGetCount gItem))
+						
+						(scrEnableAction gScreen 'actionDonateItem True)
+						
+						(switch
+							(not gItem)
+								(block Nil
+									(scrEnableAction gScreen 'actionDonateItem Nil)
+									(scrSetDesc gScreen (typTranslate &dsDominaDonateItem; 'NoItemsDesc))
+									)
+									
+							(not (setq donationEntry (domGetDonationEntry gItem)))
+								(scrSetDesc gScreen (typTranslate &dsDominaDonateItem; 'DonateGenericDesc))
+								
+							;	If the item increases Domina relationship, say so
+							
+							(gr (@ donationEntry 2) 0)
+								(scrSetDesc gScreen (typTranslate &dsDominaDonateItem; 'DonateDominaItemDesc))
+								
+							;	If this helps the Sisters, say so
+							
+							(not (eq (@ donationEntry 1) 0))
+								(scrSetDesc gScreen (typTranslate &dsDominaDonateItem; 'DonateUsefulItemDesc))
+							
+							;	Otherwise, generic item
+							
+							(scrSetDesc gScreen (typTranslate &dsDominaDonateItem; 'DonateGenericDesc))
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDonateItem" name="Donate this Item" default="1" key="D">
+						(switch
+							(gr gMaxCount 1)
+								(scrShowPane gScreen "Quantity")
+
+							(eq gMaxCount 1)
+								(block Nil
+									(setq gItem (scrRemoveItem gScreen 1))
+									(scrShowPane gScreen "Donate")
+									)
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>					
+			</Default>
+
+			<Quantity
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen (cat "How many items do you wish to donate?"))
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Donate" default="1" key="D">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(if (gr count gMaxCount)
+								(scrSetCounter gScreen gMaxCount)
+								(block Nil
+									(setq gItem (scrRemoveItem gScreen count))
+									(scrShowPane gScreen "Donate")
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</Quantity>
+
+			<Donate noListNavigation="true">
+				<OnPaneInit>
+					(block (table entry criteria)
+					
+						;	Get the donation entry
+						
+						(setq entry (domGetDonationEntry gItem))
+						
+						; Deal with the entry that we found
+
+						(switch
+
+							; This should never happen, but we have it just in case
+							(not entry)
+								(scrSetDesc gScreen "\"We thank you for your donation and your good intentions. Go in peace.\"")
+
+							; If the entry has no increase in att or rel, then we output the message
+							; from the entry
+							(and (eq (item entry 1) 0) (eq (item entry 2) 0))
+								(scrSetDesc gScreen (cat "\"" (item entry 3) "\""))
+
+							; Otherwise, do more calculations
+
+							(block (incAtt incRel totalValue bonusText)
+
+								; Compute the total value of the donation. Note that we use objGetBuyPrice
+								; so that items like fresh fruit are computed correctly. Also, our TradeDesc
+								; indicates that the Sisters pay actual price for items.
+								
+								(setq totalValue (multiply (objGetBuyPrice gSource gItem) (itmGetCount gItem)))
+								
+								; Calculate the increase in attitude
+								
+								(switch
+									; If 0, then we get no increase in attitude
+									(eq (item entry 1) 0)
+										(setq incAtt 0)
+
+									; If -1, then each item counts for +1 attitude
+									(eq (item entry 1) -1)
+										(setq incAtt (itmGetCount gItem))
+
+									; Otherwise, depends on the value of the item
+									(setq incAtt (divide totalValue (item entry 1)))
+									)
+
+								; Calculate the increase in relationship
+								
+								(if (eq (item entry 2) 0)
+									(setq incRel 0)
+									(setq incRel (multiply (itmGetCount gItem) (item entry 2)))
+									)
+									
+								;	Calculate bonus text
+								
+								(switch
+									(and (gr incAtt 0) (gr incRel 0))
+										(setq bonusText
+											(cat "\n\n\"Your relationship to Domina is stronger and you've helped to support our abbey.\"")
+											)
+											
+									(gr incRel 0)
+										(setq bonusText
+											(cat "\n\n\"Your relationship to Domina is stronger.\"")
+											)
+											
+									(gr incAtt 0)
+										(setq bonusText
+											(cat "\n\n\"You've helped to support our abbey.\"")
+											)
+									)
+									
+								; Display the appropriate message
+
+								(switch
+									; If we donated rotted food, then special message
+									(and (itmMatches gItem "* +FreshFood;") (eq totalValue 0))
+										(scrSetDesc gScreen "\"Such an offering is hardly fitting! Uncloud your mind before communing with Domina.\"")
+									
+									; If donation is not enough, then disappointed message
+									(and (eq incRel 0) (eq incAtt 0))
+										(scrSetDesc gScreen "\"We thank you for your donation and your good intentions. Go in peace.\"")
+
+									; Otherwise, message specified in table
+									(scrSetDesc gScreen (cat "\"" (item entry 3) "\"" bonusText))
+									)
+
+								; Increase attitude and relationship
+
+								(objIncData gPlayerShip "sistersAttitude" incAtt)
+								(domGainXP incRel)
+								
+								; Record stats
+								
+								(switch
+									(eq incRel 0)
+										Nil
+										
+									(itmMatches gItem "* +Slaves;")
+										(typIncGlobalData &stDomina; "slavesOffered" (itmGetCount gItem))
+										
+									(typIncGlobalData &stDomina; "psionicsOffered" (itmGetCount gItem))
+									)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" cancel="1" default="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Donate>
+		</Panes>
+		
+		<Language>
+			<Text id="DonateDominaItemDesc">
+				(cat 
+					"\"We are grateful for your contribution to Domina's cause.\n\n"
+					
+					"\"" (itmGetName gItem 0x41) (if (gr (itmGetCount gItem) 1) " are " " is ")
+					"filled with resonant energies. Domina will be very pleased.\""
+					)
+			</Text>
+			<Text id="DonateUsefulItemDesc">
+				(cat 
+					"\"We are grateful for your contribution to Domina's cause.\n\n"
+					
+					"\"" (itmGetName gItem 0x41) (if (gr (itmGetCount gItem) 1) " are " " is ")
+					"useful to us in serving Domina.\""
+					)
+			</Text>
+			<Text id="DonateGenericDesc">
+				(cat
+					"\"We are grateful for your contribution to Domina's cause.\""
+					)
+			</Text>
+			<Text id="NoItemsDesc">
+				(cat
+					"\"We are grateful for your good intentions, but you have no items to donate.\""
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+
+	<!-- Domina Tithe Screen
+
+	-->
+
+	<DockScreen UNID="&dsDominaTithe;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<Panes>
+			<Default
+					showCounter=	"true">
+
+				<OnPaneInit>
+					(block Nil
+						(setq gMaxCount (plyGetCredits gPlayer))
+						(scrEnableAction gScreen 'actionDonate (gr gMaxCount 0))
+						(if (gr gMaxCount 0)
+							(scrSetDesc gScreen "\"We are devoutly grateful for your generosity. How many credits do you wish to donate?\"")
+							(scrSetDesc gScreen "\"We are devoutly grateful for your good intentions. Unfortunately, you have no credits to give.\"")
+							)
+							
+						(scrSetCounter gScreen gMaxCount)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionDonate" name="Donate" default="1" key="D">
+						(block (count)
+							(setq count (scrGetCounter gScreen))
+							(switch
+								(eq count 0)
+									(scrExitScreen gScreen)
+
+								(gr count gMaxCount)
+									(scrSetCounter gScreen gMaxCount)
+									
+								(block (donationCounts tithe totalLevels minDonation netWorth)
+									; Compute the player's net worth
+									(setq netWorth (plyGetCredits gPlayer))
+									(setq netWorth (add netWorth 1000))
+
+									(setq totalLevels 0)
+									(objEnumItems gPlayerShip "dI" theItem
+										(setq netWorth (add netWorth (itmGetPrice theItem 'credit)))
+										)
+
+									; Tithe is 10% of net worth (but no less than 1000 credits)
+									(setq tithe (max 1000 (divide (intRoundUp netWorth 100) 10)))
+
+									; Charge
+									(setq gCost count)
+									(plyCharge gPlayer gCost)
+
+									(if (geq gCost tithe)
+										(setq donationCounts True)
+										)
+
+									; For each 10% of total that the player donates, increate
+									; the sisters' attitude by 1.
+									(if donationCounts
+										(block Nil
+											(objIncData gPlayerShip 'sistersAttitude (divide gCost tithe))
+
+											; Remember when we donated
+											(objSetData gPlayerShip "sistersLastDonation" (unvGetTick))
+
+											; Show thanks
+											(scrShowPane gScreen "Thanks")
+											)
+
+										; Else, not as grateful
+										(scrShowPane gScreen "NotEnough")
+										)
+									)
+								)
+							)
+					</Action>
+
+					<Action name="Cancel" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+
+				</Actions>
+			</Default>
+
+			<Thanks
+					desc="&quot;Thank you for your generous contribution. Your faithful support enables us to help the truly needy. May the blessings of Domina illuminate your way.&quot;">
+
+				<Actions>
+					<Action name="Continue" default="1" key="C" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Thanks>
+
+			<NotEnough
+					desc="&quot;Thank you for your token contribution. May Domina's influence open your heart.&quot;">
+
+				<Actions>
+					<Action name="Continue" default="1" key="C" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</NotEnough>
+		</Panes>
+		
+		<Language>
+		</Language>
+	</DockScreen>
+
+	<!-- Sisters Decontamination -->
+
+	<DockScreen UNID="&dsSistersDecon;"
+			nestedScreen=		"true"
+			>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(if (and (gr (plyGetCredits gPlayer) 0) 
+							(leq (objGetData gPlayerShip "sistersAttitude") 0))
+						(scrSetDesc gScreen "\"Forgive us, child, but we cannot allow your ship to contaminate our shrine.\"")
+						(block Nil
+							(scrSetDesc gScreen "\"Your vessel has been purified. Devote your life to Domina and your spirit shall be similarly cleansed.\"")
+							(objIncData gPlayerShip "sistersAttitude" -1)
+							(shpDecontaminate gPlayerShip)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrExitScreen gScreen (shpIsRadioactive gPlayerShip))
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
+
+	<!-- Contemplate Domina Screen
+	
+		NOTE: Deprecated in 1.3 (API 22)
+
+		gPrevScreen: Must be set to the name/UNID of the screen to
+				navigate to when done.
+		gPrevPane: Must be set to the name of the pane to navigate
+				to when done.
+		gBonus: Increases/decreases chance of getting through to domina.
+				-1 to -10	= decreases chance
+				0			= no bonus
+				1 to 10		= increases chance
+
+		-->
+
+	<DockScreen UNID="&dsContemplateDomina;">
+
+		<Panes>
+
+			<Default
+					desc="Luminous veils dance in your head as your consciousness strains to hear the distant voice of Domina's mind...">
+
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(block (roll attitude contemplate)
+							; consume
+							(setq attitude (objGetData gPlayerShip "sistersAttitude"))
+							(setq contemplate Nil)
+							(if (gr attitude 0)
+								(block Nil
+									(setq attitude (subtract attitude 1))
+									(objSetData gPlayerShip "sistersAttitude" attitude)
+									(setq contemplate True)
+									)
+								)
+
+							; Random result
+							(setq roll (subtract (random 1 20) gBonus))
+							(if (gr gBonus 0)
+								(setq gBonus (subtract gBonus 1))
+								)
+
+							; If we listened to the story, we always get the stargate
+							(if (objGetData gSource "freeSanctum")
+								(block Nil
+									(if (eq (sysGetLevel) 1)
+										(block Nil
+											(setq contemplate True)
+											(setq roll 8)
+											)
+										)
+									(objSetData gSource "freeSanctum" Nil)
+									)
+								)
+
+							(switch
+								(not contemplate)
+									(scrShowPane gScreen "Nothing")
+
+								; Gain in relationship
+								(leq roll 2)
+									(block Nil
+										(domGainXP 10)
+										(if (eq (random 1 3) 1)
+											(domGainXP 10)
+											)
+										(scrShowPane gScreen "Domina")
+										)
+
+								; All stations in system mapped
+								(leq roll 4)
+									(block Nil
+										(enum (sysFindObject gPlayerShip "Ts -uncharted;") obj
+											(objSetKnown obj)
+											)
+										(scrShowPane gScreen "MapSystem")
+										)
+
+								; Outbound stargate revealed
+								(leq roll 8)
+									(block Nil
+										(setq gDest (sysGetObjectByName gSource "Outbound"))
+										(if (and gDest (not (objIsKnown gDest)))
+											(block Nil
+												(objSetKnown gDest)
+												(scrShowPane gScreen "RevealStargate")
+												)
+
+											(scrShowPane gScreen "Nothing")
+											)
+										)
+
+								(scrShowPane gScreen "Nothing")
+								)
+							)
+					</Action>
+				</Actions>
+
+			</Default>
+
+			<Domina
+					desc="Your disembodied mind hurtles through space in the wake of a photon. Stars dance around you like fireflies. Nebulous veils part before you to reveal a fragment of the Eternal Pattern.\n\nYou feel the blessing of Domina upon you. She urges you to continue your journey to the Galactic Core.">
+
+				<Actions>
+					<Action name="Continue Contemplating" default="1" key="C">
+						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
+							(scrShowPane gScreen "Default")
+							(scrShowPane gScreen "NoMoreContemplating")
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					</Action>
+				</Actions>
+			</Domina>
+
+			<MapSystem
+					desc="Images and patterns dance in your head like spinning galaxies. You see with the eyes of Domina but the visions blast your brain like a nova.\n\nWhen you recover from your reverie you remember only some mundane information about the position of stations in this star system.">
+
+				<Actions>
+					<Action name="Continue Contemplating" default="1" key="C">
+						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
+							(scrShowPane gScreen "Default")
+							(scrShowPane gScreen "NoMoreContemplating")
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					</Action>
+				</Actions>
+			</MapSystem>
+
+			<Nothing
+					desc="Your contemplation ends as your rational mind considers the impossibility of communicating across the light-years.">
+
+				<Actions>
+					<Action name="Continue Contemplating" default="1" key="C">
+						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
+							(scrShowPane gScreen "Default")
+							(scrShowPane gScreen "NoMoreContemplating")
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					</Action>
+				</Actions>
+			</Nothing>
+
+			<RevealStargate>
+
+				<OnPaneInit>
+					(scrSetDesc gScreen (cat "A connection with Domina is denied to you, but your brief attempt points the way to your destiny's end.\n\nStep through the " (objGetName gDest) " to the next system and you will be one step nearer to your goal."))
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Continue Contemplating" default="1" key="C">
+						(if (gr (objGetData gPlayerShip "sistersAttitude") 0)
+							(scrShowPane gScreen "Default")
+							(scrShowPane gScreen "NoMoreContemplating")
+							)
+					</Action>
+
+					<Action name="Leave" cancel="1" key="L">
+						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					</Action>
+				</Actions>
+			</RevealStargate>
+
+			<NoMoreContemplating
+					desc=	"&quot;You must not abuse the kindness of Domina. You must give of yourself to receive her blessing.&quot;">
+
+				<Actions>
+					<Action name="Leave" default="1" cancel="1" key="L">
+						(scrShowScreen gScreen gPrevScreen gPrevPane)
+					</Action>
+				</Actions>
+			</NoMoreContemplating>
+
+		</Panes>
+
+	</DockScreen>
+
+	<!-- Sisters Intro
+	
+	NOTE: Deprecated in 1.3. See BenedictStoryArc.xml instead.
+	
+	-->
+
+	<DockScreen UNID="&dsSistersIntro;"
+			nestedScreen=	"true"
+			>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						(scrSetDesc gScreen "You are docked at an abbey of the Sisters of Domina. A woman wearing a flowing red robe approaches you.\n\n\"Welcome, pilgrim! Your journey to the Galactic Core has just begun. Your path will be filled with many obstacles, but do not worry: Domina chooses only those who have the strength to succeed.\"")
+
+						(objSetData gSource "freeSanctum" True)
+						(objSetData gPlayerShip "sistersStory" "done")
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="&quot;Who is Domina?&quot;" default="1" key="D">
+						<ShowPane pane="A1"/>
+					</Action>
+					<Action name="&quot;How do I reach the Galactic Core?&quot;" key="G">
+						<ShowPane pane="A2"/>
+					</Action>
+					<Action name="&quot;What kind of obstacles will I face?&quot;" key="W">
+						<ShowPane pane="A3"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+
+			<A1 desc="&quot;Domina speaks to you in your dreams and visions. She summons those like you to journey to the Core. Perhaps if you reach her you will understand. But do not be afraid&#x97;Domina will protect you.&quot;">
+				<Actions>
+					<Action name="&quot;How do I reach the Galactic Core?&quot;" default="1" key="G">
+						<ShowPane pane="A11"/>
+					</Action>
+					<Action name="&quot;What kind of obstacles will I face?&quot;" key="W">
+						<ShowPane pane="A12"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A1>
+
+			<A11 desc="&quot;The stargates will take you. Seek them out and enter. But be prepared for many obstacles. You must grow stronger to reach the Core.&quot;">
+				<Actions>
+					<Action name="&quot;What kind of obstacles will I face?&quot;" default="1" key="W">
+						<ShowPane pane="A111"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A11>
+
+			<A111 desc="&quot;Star travel is not safe anymore. Pirates, outlaws and worse will attack you. But if you can overcome them, you might be able to improve the weapons and armor of your own ship.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A111>
+
+			<A12 desc="&quot;Star travel is not safe anymore. Pirates, outlaws and worse will attack you. But if you can overcome them, you might be able to improve the weapons and armor of your own ship.&quot;">
+				<Actions>
+					<Action name="&quot;How do I reach the Galactic Core?&quot;" default="1" key="G">
+						<ShowPane pane="A121"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A12>
+
+			<A121 desc="&quot;The stargates will take you. Seek them out and enter. But remember that the farther you go, the greater the dangers.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A121>
+
+
+			<A2 desc="&quot;The stargates will take you. Seek them out and enter. But be prepared for many obstacles. You must grow stronger to reach the Core.&quot;">
+				<Actions>
+					<Action name="&quot;Who is Domina?&quot;" default="1" key="D">
+						<ShowPane pane="A21"/>
+					</Action>
+					<Action name="&quot;What kind of obstacles will I face?&quot;" key="W">
+						<ShowPane pane="A22"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A2>
+
+			<A21 desc="&quot;Domina speaks to you from her throne at the Galactic Core. Only she knows the purpose of your journey. Perhaps if you reach her you will understand.&quot;">
+				<Actions>
+					<Action name="&quot;What kind of obstacles will I face?&quot;" default="1" key="W">
+						<ShowPane pane="A211"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A21>
+
+			<A211 desc="&quot;The civilized universe is smaller than you think. Pirates, outlaws and worse live in the deep dark of space. But if you can overcome them, you might be able to improve the weapons and armor of your own ship.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A211>
+
+			<A22 desc="&quot;Pirates, outlaws and worse live out in the depths of space. They will kill you and take your ship, if you let them. The deeper you go, the more dangerous it becomes. But with luck and Domina&apos;s help you will be able to improve your ship.&quot;">
+				<Actions>
+					<Action name="&quot;Who is Domina?&quot;" default="1" key="D">
+						<ShowPane pane="A221"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A22>
+
+			<A221 desc="&quot;Domina speaks to you from her throne at the Galactic Core. Only she knows the purpose of your journey. Perhaps if you reach her you will understand.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A221>
+
+
+			<A3 desc="&quot;Pirates and outlaws rule the depths of space. They will kill you and take your ship, if you let them. But if you can overcome them, perhaps you will find more powerful weapons to help you in your journey to Domina.&quot;">
+				<Actions>
+					<Action name="&quot;Who is Domina?&quot;" default="1" key="D">
+						<ShowPane pane="A31"/>
+					</Action>
+					<Action name="&quot;How do I reach the Galactic Core?&quot;" key="G">
+						<ShowPane pane="A32"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A3>
+
+			<A31 desc="&quot;Domina speaks to you through dreams and visions. Only she knows what the purpose of your journey is. Perhaps if you reach the Core you will understand.&quot;">
+				<Actions>
+					<Action name="&quot;How do I reach the Galactic Core?&quot;" default="1" key="G">
+						<ShowPane pane="A311"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A31>
+
+			<A311 desc="&quot;The stargates will take you to the Core. Seek them out and enter. But remember that the farther you go, the greater the danger.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A311>
+
+			<A32 desc="&quot;The stargates will take you to Domina. Seek them out and enter. But remember that the farther you go, the greater the danger.&quot;">
+				<Actions>
+					<Action name="&quot;Who is Domina?&quot;" default="1" key="D">
+						<ShowPane pane="A321"/>
+					</Action>
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A32>
+
+			<A321 desc="&quot;Domina is the divine intelligence that guides you. She waits for you at the Galactic Core for some purpose. Perhaps if you reach her you will understand.&quot;">
+				<Actions>
+					<Action name="Done" cancel="1" default="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</A321>
+
+
+			<Done desc="&quot;Take your ease here before you go, or seek guidance at our Sanctum, if you wish. May the blessings of Domina protect you.&quot;">
+				<Actions>
+					<Action name="Continue" default="1" cancel="1" key="C">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Done>
+		</Panes>
+	</DockScreen>
+
+<!-- SISTERS OF DOMINA -->
+
+	<Sovereign UNID="&svSistersOfDomina;"
+			name="Sisters of Domina"
+			alignment="constructive chaos"
+			>
+
+		<Events>
+			<GetGlobalDockScreen>
+				(switch
+					; This only applies to stations of the Sisters.
+					(not (objMatches gSource Nil "sTAV +sistersOfDomina;"))
+						Nil
+
+					; If the player ship is radioactive, then we need to
+					; decontaminate.
+					(shpIsRadioactive gPlayerShip)
+						(list &dsSistersDecon; 10)
+						
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</Sovereign>
+	
+<!-- GLOBALS -->
+	
+	<Globals>
+		(block Nil
+			(setq domGetDonationEntry (lambda (theItem)
+				(block (entry)
+					(switch
+					
+						;	First check to see if the item itself has a donation entry
+						
+						(setq entry (eval (itmGetStaticData theItem "00182001_Donation")))
+							entry
+						
+						;	If the item doesn't tell us anything then look for an entry
+						;	in the donation table
+
+						(block Nil
+							(setq table (typGetStaticData &stSistersOfDomina; "DonationTable"))
+							(enumwhile table (not entry) thisEntry
+								(switch
+									; If the criteria in the table is Nil, then we always match. This
+									; is for the last (default) entry.
+									(not (setq criteria (@ thisEntry 0)))
+										(setq entry thisEntry)
+
+									; If the criteria is an integer, then we see if this is the UNID
+									; of the item.
+									(isint criteria)
+										(if (eq (itmGetType theItem) criteria)
+											(setq entry thisEntry)
+											)
+
+									; If the criteria matches, then we have an entry
+									(itmMatches theItem criteria)
+										(setq entry thisEntry)
+									)
+								)
+							)
+						)
+					)
+				))
+			)
+	</Globals>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsSistersShrineBkgnd;" bitmap="Resources\SistersShrine.jpg" loadOnUse="true" />
+
+</TranscendenceModule>

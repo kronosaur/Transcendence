@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+	<!-- Benedict Training =====================================================
+
+	EXTRA DATA
+	
+	state: One of the following:
+	
+		Nil: We don't know what the next training task should be.
+		
+		attackCentauri: Attack a Centauri station.
+		attackFirstStation: Attack an enemy station.
+		attackHiddenEnemy: Attack hidden enemy station.
+		explore: Explore worlds and asteroid fields in the system.
+		exploreSystem: Explore all friendly stations.
+		installDevice: Install a device.
+		installSmartCannon: Install SmartCannon.
+		loot: Loot a station.
+		lootHiddenEnemy: Loot hidden enemy.
+		nothing: Nothing more to learn.
+		sellLoot: Sell loot at a station.
+		visitHabitat: Visit Commonwealth habitat and get a mission from them.
+		waitForMission: Wait for other misison to be complete
+		
+		fionaMission: Next mission
+		
+	centauriMissions: Number of times we sent the player to destroy a
+		Centauri station.
+		
+	hiddenEnemyID: ID of a special enemy station to attack
+		
+	targetID: ID of target.
+	
+	taskCompleted: If True, the current task (specified by state) has been
+		completed successfully.
+		
+	trainingHabitatMission: If True, already assigned.
+	
+	======================================================================== -->
+	
+	<MissionType UNID="&msBenedictTraining;"
+			name=				"Benedict Training"
+			attributes=			"benedictStoryArc"
+
+			maxAppearing=		"1"
+			noDebrief=			"true"
+			>
+
+		<StaticData>
+			<sequence>15</sequence>
+		</StaticData>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+
+					(switch
+						;	Set up the mission
+
+						(block Nil
+							)
+						)
+					)
+			</OnCreate>
+
+			<OnAccepted>
+				(block Nil
+					;	Keep track of player
+					
+					(msnRegisterForEvents gSource gPlayerShip)
+					
+					;	Create a hidden station somewhere out in the deep
+					
+					(if (eq (sysGetNode) 'SE)
+						(block (hiddenObj enemyPos enemyType)
+						
+							;	Pick a random enemy and location
+							
+							(setq enemyType (random (list &stAbbasidOutpost; &stAnarchistGathering; &stUrakOutpost;)))
+							(setq enemyPos (sysVectorRandom Nil (random 950 1000) 150 "TsA"))
+							
+							;	Create the enemy station
+							
+							(setq hiddenObj (sysCreateStation enemyType enemyPos))
+							
+							;	Place treasure on the station (but first remove any existing treasure)
+							
+							(enum (objGetItems hiddenObj "*U") theItem (objRemoveItem hiddenObj theItem))
+							(objAddItem hiddenObj (itmCreate &itSmartCannon; 1))
+							(objAddItem hiddenObj (itmCreate &itSmartCannonShell; 300))
+							
+							;	Remember it
+							
+							(msnSetData gSource 'hiddenEnemyID (objGetID hiddenObj))
+							(msnRegisterForEvents gSource hiddenObj)
+							)
+						)
+					
+					;	Update call allows us to check when various sub-tasks are done.
+					
+					(msnAddRecurringTimerEvent gSource 30 "OnUpdate")
+					)
+			</OnAccepted>
+
+			<OnAcceptedUndock>
+			</OnAcceptedUndock>
+			
+			<OnDeclined>
+			</OnDeclined>
+			
+			<OnSetPlayerTarget>
+			</OnSetPlayerTarget>
+			
+			<OnInProgress>
+				(block (
+					(state (msnGetData gSource 'state))
+					
+					foundItem
+					targetObj
+					fionaMission
+					ownerObj
+					unexploredObjs
+					totalObjs
+					)
+				
+					;	If we don't have a current state then figure out what mission we 
+					;	should give the player.
+					
+					(if (not state)
+						(block Nil
+							(switch
+							
+								;	Make sure we're not in the middle of some other mission
+								
+								(shpGetOrder gPlayerShip)
+									(setq state 'waitForMission)
+							
+								;	If we've never destroyed an enemy station, then 
+								;	send the player out to explore.
+							
+								(not (plyGetStat gPlayer 'enemyStationsDestroyed))
+									(switch
+								
+										;	If we're in Eridani, point the player to a habitat so they can get
+										;	a mission.
+
+										(and (eq (sysGetNode) 'SE)
+												(setq targetObj (sysFindObject gPlayerShip "TAN +unid:&stCommonwealthSlums;;"))
+												(not (typGetData &msBenedictTraining; 'trainingHabitatMission))
+												)
+											(block Nil
+												(typSetData &msBenedictTraining; 'trainingHabitatMission True)
+												(setq state 'visitHabitat)
+												)
+											
+										;	Otherwise, we tell the player to attack a different station
+									
+										(setq targetObj (sysFindObject gPlayerShip "TAEN +populated;"))
+											(block Nil
+												(msnRegisterForEvents gSource targetObj)
+												(setq state 'attackFirstStation)
+												)
+											
+										;	Otherwise, explore
+									
+										(setq state 'explore)
+										)
+								
+								;	If we've never looted a station, then tell the player
+								;	how to do that.
+						
+								(and (not (typGetData &svPlayer; 'tutorialLooted))
+										(setq targetObj (sysFindObject gPlayerShip "TKEN +populated;"))
+										)
+									(block Nil
+										;	Make sure there is stuff to loot
+									
+										(if (not (objGetItems targetObj "*UN"))
+											(objAddItem targetObj &itCentauriRice; (random 1 4))
+											)
+										
+										;	Send player to loot
+									
+										(setq state 'loot)
+										)
+								
+								;	If we haven't yet installed a device and we've got a device
+								;	in our cargo hold, then tell the player how to install it.
+						
+								(and (not (typGetData &svPlayer; 'tutorialInstalled))
+										(or
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "pUN -disposable;") theItem 
+													(and 
+														(gr (itmGetLevel theItem) (itmGetLevel (objGetProperty gPlayerShip 'selectedWeapon)))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
+													)
+												0
+												))
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "lUN -disposable;") theItem 
+													(and
+														(not (objGetProperty gPlayerShip 'selectedLauncher))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
+													)
+												0
+												))
+											(setq foundItem (@
+												(filter (objGetItems gPlayerShip "sUN") theItem 
+													(and
+														(gr (itmGetLevel theItem) (itmGetLevel (@ (objGetItems gPlayerShip "sI") 0)))
+														(@ (objCanInstallItem gPlayerShip theItem) 0)
+														)
+													)
+												0
+												))
+											)
+										(setq targetObj (@
+											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
+												(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+												)
+											0
+											))
+										)
+									(setq state 'installDevice)
+						
+								;	If we haven't sold anything yet and we have something in our 
+								;	cargo hold worth selling, then sell it.
+							
+								(and (not (typGetData &svPlayer; 'tutorialSold))
+										(setq foundItem
+											(map
+												(map (objGetItems gPlayerShip "*~fuU") 'excludeNil theItem 
+													(block (buyerObj)
+														(switch
+															(not (itmIsKnown theItem))
+																Nil
+																
+															(and (itmMatches theItem "ad L:2-25;")
+																	(@ (objCanInstallItem gPlayerShip theItem) 0)
+																	)
+																Nil
+																
+															(not (setq buyerObj 
+																	(map (sysFindObject gPlayerShip "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
+																		(objGetBuyPrice theObj theItem 'noDonations)
+																		)
+																	))
+																Nil
+
+															{
+															item: theItem
+															buyerObj: buyerObj
+															buyerPrice: (objGetBuyPrice buyerObj theItem 'noDonations)
+															})
+														)
+													)
+												(list 'reduceMax 'original)
+												theResult
+												(@ theResult 'buyerPrice)
+												)
+											)
+										)
+									(block Nil
+										(setq targetObj (@ foundItem 'buyerObj))
+										(setq foundItem (@ foundItem 'item))
+										(setq state 'sellLoot)
+										)
+										
+								;	If we're in Eridani and the player has destroyed fewer than 3 Centauri warlord
+								;	stations, then send the player out to destroy one.
+
+								(and (eq (sysGetNode) 'SE)
+										(setq targetObj (sysFindObject gPlayerShip "TAEN +centauriWarlords; +populated; -occupation; -uncharted;"))
+										(ls (count (sysFindObject gPlayerShip "TKE +centauriWarlords; +populated; -occupation; -uncharted;")) 3)
+										)
+									(block Nil
+										(msnIncData gSource 'centauriMissions 1)
+										(msnRegisterForEvents gSource targetObj)
+										(setq state 'attackCentauri)
+										)
+										
+								;	Send the player to explore all friendly stations (until they are all explored)
+								
+								(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
+										(not (objIsKnown theObj))
+										)
+									(setq state 'exploreSystem)
+									
+								;	Send the player to destroy the hidden station, if it's not yet destroyed
+								
+								(and (eq (sysGetNode) 'SE)
+										(setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
+										(not (objGetProperty targetObj 'abandoned))
+										)
+									(setq state 'attackHiddenEnemy)
+									
+								;	If the player forgot to loot the station, remind her
+								
+								(and (eq (sysGetNode) 'SE)
+										(setq targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
+										(objGetProperty targetObj 'abandoned)
+										(setq foundItem (@ (objGetItems targetObj "w +unid:&itSmartCannon;;") 0))
+										)
+									(block Nil
+										(setq state 'lootHiddenEnemy)
+										
+										;	This is a risky mission, so save the game
+										
+										(msnSetData gSource 'missionCheckpoint True)
+										)
+									
+								;	If we haven't yet installed the SmartCannon, remind the player
+						
+								(and (setq foundItem (@ (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;") 0))
+										(setq targetObj (@
+											(filter (sysFindObject gPlayerShip "TAF +populated; S:d") theObj
+												(geq (objGetProperty theObj 'installDeviceMaxLevel) (itmGetLevel foundItem))
+												)
+											0
+											))
+										)
+									(setq state 'installSmartCannon)
+
+								;	If we're in Eridani then we get the mission to defend a freighter
+
+								(and (eq (sysGetNode) 'SE)
+										(setq ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+										(setq fionaMission (msnCreate &msBenedictAndFiona; ownerObj))
+										)
+									(block Nil
+										
+										;	Current mission is done
+										
+										(msnSuccess gSource)
+										
+										;	Accept Fiona mission
+										
+										(msnAccept fionaMission)
+										(setq state 'fionaMission)
+										
+										;	This is a risky mission, so save the game
+										
+										(msnSetData gSource 'missionCheckpoint True)
+										)
+								
+								;	Nothing else
+								
+								(block Nil
+									(msnSuccess gSource)
+									(setq state 'nothing)
+									)
+								)
+								
+							;	Set the state on the mission
+							
+							(msnSetData gSource 'state state)
+							(msnSetData gSource 'targetID (if targetObj (objGetID targetObj)))
+							(msnSetData gSource 'foundItem foundItem)
+							
+							;	Reset the summary. The summary is normally only calculated once,
+							;	but since our mission changes, we reset it here.
+							
+							(msnSetProperty gSource 'summary (msnTranslate gSource 'Summary))
+							)
+							
+						;	Otherwise, we refresh the player targets
+						
+						(setq targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+						)
+						
+					;	Point the player at the current target. We do this both the first time
+					;	and subsequent times.
+						
+					(if targetObj
+						(switch
+							(or (eq state 'attackCentauri)
+									(eq state 'attackFirstStation)
+									(eq state 'attackHiddenEnemy)
+									)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDestroy))
+								
+							(or (eq state 'installDevice)
+									(eq state 'installSmartCannon)
+									(eq state 'loot)
+									(eq state 'lootHiddenEnemy)
+									(eq state 'sellLoot)
+									(eq state 'visitHabitat)
+									)
+								(objSetShowAsDestination targetObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)
+			</OnInProgress>
+			
+			<OnInProgressUndock>
+				(block Nil
+				
+					;	Mark the debrief as being completed so we don't show it again.
+				
+					(msnSetData gSource 'taskCompleted Nil)
+				
+					;	Checkpoint if necessary
+					
+					(if (msnGetData gSource 'missionCheckpoint)
+						(block Nil
+							(msnSetData gSource 'missionCheckpoint Nil)
+							(gamSave 'missionCheckpoint)
+							)
+						)
+					)
+			</OnInProgressUndock>
+			
+			<OnObjDestroyed>
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskDone Nil)
+					)
+					
+					(switch
+						;	If we've already completed a task, then skip
+						
+						(msnGetData gSource 'taskCompleted)
+							Nil
+							
+						;	Check to see if destroying this object completes a task
+						
+						(and (or (eq state 'attackFirstStation) (eq state 'attackCentauri) (eq state 'attackHiddenEnemy))
+								(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
+								)
+							(setq taskDone True)
+						)
+						
+					;	If we completed a task, then set state
+					
+					(if taskDone
+						(block (
+							(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							)
+							
+							(msnSetData gSource 'taskCompleted state)
+							(msnSetData gSource 'state Nil)
+							
+							;	Dock at Sisters
+							
+							(objSetShowAsDestination ownerObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)				
+			</OnObjDestroyed>
+			
+			<OnUpdate>
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskDone Nil)
+					)
+					
+					(switch
+						;	If we've already completed a task, then skip
+						
+						(msnGetData gSource 'taskCompleted)
+							Nil
+							
+						;	Check to see if we completed the Habitat mission
+						
+						(eq state 'visitHabitat)
+							(switch
+								;	If we destroyed a station, or if we've completed 
+								;	a habitat mission, then we're done
+								
+								(or (msnFind "r +commonwealthHabitat")
+										(and (plyGetStat gPlayer 'enemyStationsDestroyed)
+											(not (msnFind "a +commonwealthHabitat;"))
+											)
+										)
+									(setq taskDone True)
+								)
+								
+						;	Check if we've explored
+						
+						(eq state 'explore)
+							(if (plyGetStat gPlayer 'enemyStationsDestroyed)
+								(setq taskDone True)
+								)
+								
+						;	Check if we've explored everything
+						
+						(eq state 'exploreSystem)
+							(if (not (filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj
+									(not (objIsKnown theObj))
+									))
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've looted something
+						
+						(eq state 'loot)
+							(if	(typGetData &svPlayer; 'tutorialLooted)
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've installed something
+						
+						(eq state 'installDevice)
+							(if	(typGetData &svPlayer; 'tutorialInstalled)
+								(setq taskDone True)
+								)
+								
+						(eq state 'installSmartCannon)
+							(if (not (objGetItems gPlayerShip "wU +unid:&itSmartCannon;;"))
+								(setq taskDone True)
+								)
+								
+						;	Check to see if we've sold something
+						
+						(eq state 'sellLoot)
+							(if	(typGetData &svPlayer; 'tutorialSold)
+								(setq taskDone True)
+								)
+								
+						;	Check if we've looted the item
+						
+						(eq state 'lootHiddenEnemy)
+							(block (
+								(targetObj (objGetObjByID (msnGetData gSource 'hiddenEnemyID)))
+								(foundItem (@ (objGetItems targetObj "w +unid:&itSmartCannon;;") 0))
+								)
+								
+								(if (not foundItem)
+									(setq taskDone True)
+									)
+								)
+								
+						;	Mission done
+						
+						(eq state 'waitForMission)
+							(if (not (shpGetOrder gPlayerShip))
+								(setq taskDone True)
+								)
+						)
+						
+					;	If we completed a task, then set state
+					
+					(if taskDone
+						(block (
+							(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+							)
+							
+							(msnSetData gSource 'taskCompleted state)
+							(msnSetData gSource 'state Nil)
+							
+							;	Clear the target, if necessary
+							
+							(if (or (eq state 'loot)
+									(eq state 'installDevice)
+									(eq state 'installSmartCannon)
+									(eq state 'sellLoot)
+									)
+								(objClearShowAsDestination (objGetObjByID (msnGetData gSource 'targetID)))
+								)
+							
+							;	Dock at Sisters
+
+							(objSetShowAsDestination ownerObj (list 'showHighlight 'autoClearOnDock))
+							)
+						)
+					)
+			</OnUpdate>
+			
+			<OnCompleted>
+			</OnCompleted>
+
+			<OnReward>
+			</OnReward>
+		</Events>
+		
+		<Language>
+			<Text id="Name">
+				"Training Day"
+			</Text>
+			<Text id="Summary">
+				(block (
+					(state (msnGetData gSource 'state))
+					)
+					
+					(switch
+						(not state)
+							(cat
+								"Follow Benedict's instructions and learn how to survive your journey to the Galactic Core.\n\n"
+								"System: " (sysGetName) "\n"
+								"Payment: None"
+								)
+								
+						(msnTranslate gSource (cat state ":Summary"))
+						)
+					)
+			</Text>
+			<Text id="Intro">
+			</Text>
+			<Text id="Briefing">
+			</Text>
+			<Text id="AcceptReply">
+			</Text>
+			<Text id="DeclineReply">
+			</Text>
+			<Text id="InProgress">
+				(block (
+					(state (msnGetData gSource 'state))
+					(taskCompleted (msnGetData gSource 'taskCompleted))
+					)
+					
+					(if taskCompleted
+						;	If we've just finished a task, then do a debrief followed by 
+						;	a briefing on the next task.
+						;
+						;	We also clear the task completed variable so that we don't
+						;	debrief twice.
+					
+						(append
+							(msnTranslate gSource (cat taskCompleted ":Debrief"))
+							(msnTranslate gSource (cat state ":Begin"))
+							)
+						
+						;	Otherwise, we just describe the current mission
+					
+						(msnTranslate gSource (cat state ":Begin"))
+						)
+					)
+			</Text>
+			<Text id="attackCentauri:Begin">
+				(block (
+					(missionCount (msnGetData gSource 'centauriMissions))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(switch
+						(eq missionCount 1)
+							(cat
+								"\"I have little respect for Centauri warlords; they're "
+								"undiciplined and predictable. Still, they've managed to "
+								"scare half the star system into paying them tribute.\n\n"
+						
+								"\"Go out to one of their stations. Smash it and loot its "
+								"remains. It's time for them to be afraid.\""
+								)
+								
+						(cat
+							"\"We've found another band of warlords for you to attack. "
+							"Go out there and smash!\""
+							)
+						)
+					)
+			</Text>
+			<Text id="attackCentauri:Debrief">
+				(cat
+					"\"Keep it up and we'll free this system of their filth.\""
+					)
+			</Text>
+			<Text id="attackCentauri:Summary">
+				(cat
+					"Destroy a Centauri station.\n\n"
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="attackFirstStation:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"Every star system has its share of outlaws and warlords. "
+						"Most people fear them, but you can't afford to.\n\n"
+						
+						"\"There's " (objGetName targetObj 0x04) " nearby. Let's see "
+						"if you can take them on.\""
+						)
+					)
+			</Text>
+			<Text id="attackFirstStation:Debrief">
+				(cat
+					"\"You won't get to the Core without fighting. "
+					"Outlaws, pirates, and warlords are outside the law: "
+					"no one will miss them.\n\n"
+					
+					"\"But not everyone is your enemy. Don't attack civilized "
+					"stations or you'll turn the whole Commonwealth against you.\""
+					)
+			</Text>
+			<Text id="attackFirstStation:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Destroy " (objGetName targetObj 0x04) ".\n\n"
+						"System: " (sysGetName) "\n"
+						"Payment: None"
+						)
+					)
+			</Text>
+			<Text id="attackHiddenEnemy:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(list
+						(cat
+							"\"You've done well, %name%. You're ready for your "
+							"final exam.\n\n"
+						
+							(switch
+								(eq (objGetType targetObj) &stAbbasidOutpost;)
+									(cat
+										"\"There's " (objGetName targetObj 0x04) " at the edge of "
+										"the system. The Abbasid follow a false prophet and they have "
+										"no problems killing us if we get in their way.\n\n"
+									
+										"\"I want you to go out there and destroy their station.\""
+										)
+							
+								(eq (objGetType targetObj) &stAnarchistGathering;)
+									(cat
+										"\"There's " (objGetName targetObj 0x04) " at the edge of "
+										"the system. Anarchists are parasites on the Commonwealth. "
+										"They steal what we produce and give nothing back.\n\n"
+									
+										"\"I want you to go out there and smash them.\""
+										)
+									
+								(eq (objGetType targetObj) &stUrakOutpost;)
+									(cat
+										"\"There's " (objGetName targetObj 0x04) " at the edge of "
+										"the system. The Urak never recovered from the plague that "
+										"hit their colonies. Now they follow a military dictator "
+										"and fear all outsiders.\n\n"
+									
+										"\"I want you to go out there and destroy their outpust.\""
+										)
+								)
+							)
+							
+						(cat
+							"\"Take your time on this mission. Your target is "
+							"well-defended and very dangerous. If you can, upgrade "
+							"your weapons before you go. Either way, make sure your "
+							"armor is fully repaired.\n\n"
+							
+							"\"One last thing: the station has something you'll want. "
+							"After you smash it, remember to loot the wreckage.\n\n"
+							
+							"\"Ready? Good hunting!\""
+							)
+						)
+					)
+			</Text>
+			<Text id="attackHiddenEnemy:Debrief">
+				(cat
+					"\"Well done! Every enemy you fight will make you stronger. "
+					"But don't take anything for granted. There are much more "
+					"dangerous things out there.\""
+					)
+			</Text>
+			<Text id="attackHiddenEnemy:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Destroy " (objGetName targetObj 0x04) ".\n\n"
+						"System: " (sysGetName) "\n"
+						"Payment: None"
+						)
+					)
+			</Text>
+			<Text id="explore:Begin">
+				(cat
+					"\"The [M] key will bring up a map of the entire star system.\n\n"
+					
+					"\"Visit planets and asteroid fields to look for stations. "
+					"Green stations are friendly; you can dock with them and see "
+					"what services they offer.\n\n"
+					
+					"\"Red stations are enemies. Kill them if you can; run if you can't.\""
+					)
+			</Text>
+			<Text id="explore:Debrief">
+				(cat
+					"\"Domina's call is strong, but don't rush to the Core.\n\n"
+					
+					"\"I've seen dreadnoughts blast a warship into dust; "
+					"I've seen swarms of gunships preying on helpless freighters. "
+					"Take your time; build up your skills and weapons.\""
+					)
+			</Text>
+			<Text id="explore:Summary">
+				(cat
+					"Use the [M] key to bring up a system map. Explore the star system "
+					"and destroy enemy stations.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="exploreSystem:Begin">
+				(block (
+					(unexploredObjs (count
+						(filter (sysFindObject gPlayerShip "TAF +populated; -uncharted;") theObj 
+							(not (objIsKnown theObj))
+							)
+						))
+					)
+					
+					(cat
+						"\"This system has many Commonwealth and Corporate stations "
+						"providing various services, from refueling to commodity trading.\n\n"
+						
+						"\"You have found all but " (if (eq unexploredObjs 1) "one friendly station " (cat unexploredObjs " friendly stations "))
+						"in the system. Search for " (if (eq unexploredObjs 1) "it" "them") " by visiting "
+						"the planets and asteroid fields in the star system. Use your map ([M] key) "
+						"to navigate.\""
+						)
+					)
+			</Text>
+			<Text id="exploreSystem:Debrief">
+				(cat
+					"\"You've found all the friendly stations in the system. Now that "
+					"you know what services each provide you can return to them when "
+					"needed.\""
+					)
+			</Text>
+			<Text id="exploreSystem:Summary">
+				(cat
+					"Use the [M] key to bring up a system map. Explore the planets and "
+					"asteroid fields of the system to find friendly stations.\n\n"
+					
+					"System: " (sysGetName) "\n"
+					"Payment: None"
+					)
+			</Text>
+			<Text id="fionaMission:Begin">
+				(list
+					(cat
+						"The abbess rushes towards Benedict with a datapad. "
+						"In between anxious breaths, she updates him on some crisis.\n\n"
+						
+						"Benedict reassures her and turns to you: "
+						"\"We need your help on this, %name%.\"\n\n"
+						
+						"\"You're ready for it,\" says the abbess, though her face "
+						"makes it a question."
+						)
+						
+					(cat
+						"Benedict continues:\n\n"
+						
+						"\"Fiona, one of our operatives, is in trouble. We need you to help her.\n\n"
+						
+						"\"She's on a freighter, coming in to the system. "
+						"Meet her at the stargate and protect her until she can reach us here.\""
+						)
+
+					(cat
+						"\"You'll pass through civilian areas, "
+						"so be careful discharging your weapons. "
+						
+						(if (objGetItems gPlayerShip "wI +unid:&itSmartCannon;;")
+							"You can use the SmartCannon you found to avoid collateral damage.\n\n"
+							"Too bad you don't have that SmartCannon you found. You could have used it.\n\n"
+							)
+						
+						"\"You are ready for this, %name%. Training is over.\""
+						)
+					)
+			</Text>
+			<Text id="installDevice:Begin">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"The " (itmGetName itemToInstall 0) " in your cargo hold is powerful. "
+						"Go to " (objGetName targetObj) " and have it installed at their dock services.\""
+						)
+					)
+			</Text>
+			<Text id="installDevice:Debrief">
+				(cat
+					"\"Weapons, armor, and most other items need to be properly "
+					"installed on your ship to function. Most major stations have "
+					"dock services that will help you.\""
+					)
+			</Text>
+			<Text id="installDevice:Summary">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Visit dock services at " (objGetName targetObj) " to install "
+						(itmGetName itemToInstall 0x04) "."
+						)
+					)
+			</Text>
+			<Text id="installSmartCannon:Begin">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"The " (itmGetName itemToInstall 0) " in your cargo hold is powerful. "
+						"Go to " (objGetName targetObj) " and have it installed at their dock services.\""
+						)
+					)
+			</Text>
+			<Text id="installSmartCannon:Debrief">
+				(cat
+					"\"Weapons, armor, and most other items need to be properly "
+					"installed on your ship to function. Most major stations have "
+					"dock services that will help you.\""
+					)
+			</Text>
+			<Text id="installSmartCannon:Summary">
+				(block (
+					(itemToInstall (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Visit dock services at " (objGetName targetObj) " to install "
+						(itmGetName itemToInstall 0x04) "."
+						)
+					)
+			</Text>
+			<Text id="loot:Begin">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"\"The destroyed " (objGetName targetObj 0x00) " might have valuable items. "
+						"Dock with the station and loot everything that seems worthwhile.\""
+						)
+					)
+			</Text>
+			<Text id="loot:Debrief">
+				(cat
+					"\"You're a masterless pilgrim on your way to the Core. Looting is the only way you'll survive.\""
+					)
+			</Text>
+			<Text id="loot:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+					
+					(cat
+						"Dock at " (objGetName targetObj 0x04) " and loot its remains.\n\n"
+						"System: " (sysGetName) "\n"
+						"Payment: None"
+						)
+					)
+			</Text>
+			<Text id="lootHiddenEnemy:Begin">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"\"The " (objGetName targetObj 0x00) " you destroyed has a weapon "
+						"you can use. Go there now and loot it.\""
+						)
+					)
+			</Text>
+			<Text id="lootHiddenEnemy:Debrief">
+				(cat
+					"\"Great! That SmartCannon will help you tackle even stronger enemies.\""
+					)
+			</Text>
+			<Text id="lootHiddenEnemy:Summary">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"Visit " (objGetName targetObj 0x04) " and loot it.\n\n"
+						
+						"System: " (sysGetName) "\n"
+						"Payment: A weapon"
+						)
+					)
+			</Text>
+			<Text id="nothing:Begin">
+				(cat
+					"\"You've handled yourself well. Remember what I've taught "
+					"you and you'll be fine on your journey to the Core.\n\n"
+								
+					"\"Goodbye, %name%! Perhaps I'll see you again someday.\""
+					)
+			</Text>
+			<Text id="sellLoot:Begin">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"\"You'll always need money to buy fuel and ship upgrades.\n\n"
+						
+						"\"You can sell the " (itmGetName itemToSell 0) " in your cargo hold to "
+						(objGetName targetObj) ". That's a start.\""
+						)
+					)
+			</Text>
+			<Text id="sellLoot:Debrief">
+				(cat
+					"\"Not as much money as you expected, eh? Don't worry: "
+					"the universe is big and there are many ways to earn money.\""
+					)
+			</Text>
+			<Text id="sellLoot:Summary">
+				(block (
+					(itemToSell (msnGetData gSource 'foundItem))
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"Visit " (objGetName targetObj 0x04) " and sell " (itmGetName itemToSell 0x04) ".\n\n"
+						
+						"System: " (sysGetName) "\n"
+						"Payment: " (objGetBuyPrice targetObj itemToSell) " credits"
+						)
+					)
+			</Text>
+			<Text id="visitHabitat:Begin">
+				(cat
+					"\"There's a Commonwealth habitat nearby that needs protection "
+					"from warlords.\n\n"
+					
+					"\"Help them now and they may pay you in hard credits.\""
+					)
+			</Text>
+			<Text id="visitHabitat:Debrief">
+				(cat
+					"Benedict nods a greeting. \"When you've got a gunship, "
+					"everyone wants your help, isn't that right?\"\n\n"
+					
+					"\"You'll need a lot of help to get to the Core. You "
+					"might as well help people in return.\""
+					)
+			</Text>
+			<Text id="visitHabitat:Summary">
+				(block (
+					(targetObj (objGetObjByID (msnGetData gSource 'targetID)))
+					)
+
+					(cat
+						"Visit " (objGetName targetObj 0x04) " and help them against warlords.\n\n"
+						
+						"System: " (sysGetName) "\n"
+						"Payment: Unknown"
+						)
+					)
+			</Text>
+			<Text id="waitForMission:Begin">
+				(cat
+					"\"Looks like you're busy helping someone else. Go finish your task "
+					"and come back when you're done.\""
+					)
+			</Text>
+			<Text id="waitForMission:Debrief">
+				(cat
+					"\"Glad you were able to help others.\""
+					)
+			</Text>
+			<Text id="waitForMission:Summary">
+				(cat
+					"Finish your mission and then return to Benedict.\n\n"
+						
+					"System: " (sysGetName) "\n"
+					"Payment: Unknown"
+					)
+			</Text>
+			<Text id="SuccessDebrief">
+			</Text>
+			<Text id="SuccessMsg">
+				"Mission complete!"
+			</Text>
+		</Language>
+	</MissionType>
+
+</TranscendenceModule>

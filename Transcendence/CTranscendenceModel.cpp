@@ -81,7 +81,7 @@
 //	
 //	...wait for timer...
 //
-//	CTranscendenceController::HICommand("cmdGameEnterStargate")
+//	CTranscendenceController::HICommand("gameInsideStargate")
 //		CTranscendenceModel::OnPlayerTraveledThroughGate
 //			Create or load system
 //			UpdateExtended
@@ -104,6 +104,7 @@
 #include "Transcendence.h"
 
 #define CMD_GAME_ENTER_FINAL_STARGATE			CONSTLIT("gameEnterFinalStargate")
+#define CMD_GAME_ENTER_STARGATE					CONSTLIT("gameEnterStargate")
 #define CMD_PLAYER_UNDOCKED						CONSTLIT("playerUndocked")
 
 #define HIGH_SCORES_FILENAME					CONSTLIT("HighScores.xml")
@@ -121,6 +122,7 @@ CTranscendenceModel::CTranscendenceModel (CHumanInterface &HI) :
 		m_bDebugMode(false),
 		m_bForceTDB(false),
 		m_bNoSound(false),
+		m_bNoMissionCheckpoint(false),
 		m_pPlayer(NULL),
 		m_pResurrectType(NULL),
 		m_pCrawlImage(NULL),
@@ -685,6 +687,8 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	NewFrame.sScreen = sScreen;
 	NewFrame.sPane = sPane;
 	NewFrame.pInitialData = pData;
+	NewFrame.pResolvedRoot = pRoot;
+	NewFrame.sResolvedScreen = (pRoot ? sScreen : NULL_STR);
 	m_DockFrames.Push(NewFrame);
 
 	//	From this point forward we are considered in a screen session.
@@ -726,6 +730,8 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 //	Exits docking
 
 	{
+	DEBUG_TRY
+
 	ASSERT(!m_DockFrames.IsEmpty());
 
 	//	If we have another frame, then switch back to that screen
@@ -776,6 +782,8 @@ void CTranscendenceModel::ExitScreenSession (bool bForceUndock)
 
 		m_DockFrames.DeleteAll();
 		}
+
+	DEBUG_CATCH
 	}
 
 bool CTranscendenceModel::FindScreenRoot (const CString &sScreen, CDesignType **retpRoot, CString *retsScreen, ICCItem **retpData)
@@ -1028,6 +1036,10 @@ ALERROR CTranscendenceModel::InitAdventure (const SAdventureSettings &Settings, 
 
 	::kernelDebugLogMessage("Initializing adventure: %s", Settings.pAdventure->GetFilespec());
 
+#ifdef DEBUG_RANDOM_SEED
+	mathSetSeed(100);
+#endif
+
 	return m_Universe.Init(Ctx, retsError);
 	}
 
@@ -1268,9 +1280,7 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
 		Ctx.bDebugMode = m_bDebugMode;
 		Ctx.dwAdventure = DEFAULT_ADVENTURE_EXTENSION_UNID;
 		Ctx.bDefaultExtensions = true;
-
-		if (m_bForceTDB)
-			Ctx.sFilespec = CONSTLIT("Transcendence.tdb");
+		Ctx.bForceTDB = m_bForceTDB;
 
 		if (error = m_Universe.Init(Ctx, retsError))
 			return error;
@@ -1340,6 +1350,8 @@ void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpit
 //	Called from inside the ship's OnDestroyed
 
 	{
+	DEBUG_TRY
+
 	//	Undock, if necessary
 
 	if (InScreenSession())
@@ -1380,6 +1392,8 @@ void CTranscendenceModel::OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpit
 		}
 	else
 		m_iState = statePlayerInResurrect;
+
+	DEBUG_CATCH
 	}
 
 void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
@@ -1491,6 +1505,10 @@ void CTranscendenceModel::OnPlayerEnteredGate (CTopologyNode *pDestNode, const C
 	//	Done
 
 	m_iState = statePlayerInGateOldSystem;
+
+	//	Notify the controller
+
+	m_HI.HICommand(CMD_GAME_ENTER_STARGATE, pDestNode);
 	}
 
 void CTranscendenceModel::OnPlayerExitedGate (void)
@@ -1774,6 +1792,12 @@ ALERROR CTranscendenceModel::SaveGame (DWORD dwFlags, CString *retsError)
 
 	ASSERT(m_GameFile.IsOpen());
 
+	//	If we're saving a mission, check the option and exit if we're not 
+	//	supposed to save on mission accept.
+
+	if ((dwFlags & CGameFile::FLAG_ACCEPT_MISSION) && m_bNoMissionCheckpoint)
+		return NOERROR;
+
 	//	Fire and event to give global types a chance to save any volatiles
 
 	m_Universe.FireOnGlobalUniverseSave();
@@ -1981,6 +2005,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	NewFrame.sScreen = sScreenActual;
 	NewFrame.sPane = sPane;
 	NewFrame.pInitialData = pData;
+	NewFrame.pResolvedRoot = pRoot;
+	NewFrame.sResolvedScreen = sScreenActual;
 
 	//	Some screens pop us into a new frame
 
@@ -1990,6 +2016,8 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		m_DockFrames.Push(NewFrame);
 	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
+	else
+		m_DockFrames.ResolveCurrent(NewFrame);
 
 	//	Show the screen
 	//

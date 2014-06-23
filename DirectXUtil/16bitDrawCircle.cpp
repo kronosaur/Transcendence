@@ -9,19 +9,54 @@
 #include <math.h>
 #include <stdio.h>
 
+const DWORD RED_BLUE_COUNT =						(1 << 5);
+const DWORD GREEN_COUNT =							(1 << 6);
+
 //	DrawAlphaGradientCircle ---------------------------------------------------
 
 struct SAlphaGradientCircleLineCtx
 	{
+	SAlphaGradientCircleLineCtx (void) :
+			pTrans(NULL),
+			pRedByTrans(NULL),
+			pGreenByTrans(NULL),
+			pBlueByTrans(NULL)
+		{ }
+
+	~SAlphaGradientCircleLineCtx (void)
+		{
+		if (pTrans)
+			delete [] pTrans;
+
+		if (pRedByTrans)
+			delete [] pRedByTrans;
+
+		if (pGreenByTrans)
+			delete [] pGreenByTrans;
+
+		if (pBlueByTrans)
+			delete [] pBlueByTrans;
+		}
+
 	CG16bitImage *pDest;
 	int xDest;
 	int yDest;
 	int iRadius;
 	WORD wColor;
 
+	//	These are pre-computed if we're calculating each pixel
+
 	DWORD dwRed;
 	DWORD dwGreen;
 	DWORD dwBlue;
+
+	WORD *pTrans;
+
+	//	These are pre-computed if we are using a table
+
+	WORD *pRedByTrans;
+	WORD *pGreenByTrans;
+	WORD *pBlueByTrans;
 	};
 
 void DrawAlphaGradientCircleLine (const SAlphaGradientCircleLineCtx &Ctx, int x, int y)
@@ -87,8 +122,9 @@ void DrawAlphaGradientCircleLine (const SAlphaGradientCircleLineCtx &Ctx, int x,
 
 		//	Compute the transparency based on the radius
 
-		DWORD dwTrans = 255 - (255 * iRadius / Ctx.iRadius);
-		if (dwTrans > 255)
+		WORD dwTrans;
+		if (iRadius >= Ctx.iRadius
+				|| (dwTrans = Ctx.pTrans[iRadius]) >= 255)
 			{
 			xPos++;
 			continue;
@@ -96,14 +132,119 @@ void DrawAlphaGradientCircleLine (const SAlphaGradientCircleLineCtx &Ctx, int x,
 
 #define DRAW_PIXEL(pos)	\
 			{ \
-			DWORD dwDest = (DWORD)*(pos);	\
-			DWORD dwRedDest = (dwDest >> 11) & 0x1f;	\
-			DWORD dwGreenDest = (dwDest >> 5) & 0x3f;	\
-			DWORD dwBlueDest = dwDest & 0x1f;	\
+			WORD dwDest = *(pos);	\
+			WORD dwRedDest = (dwDest >> 11) & 0x1f;	\
+			WORD dwGreenDest = (dwDest >> 5) & 0x3f;	\
+			WORD dwBlueDest = dwDest & 0x1f;	\
 \
 			*(pos) = (WORD)((dwTrans * (Ctx.dwBlue - dwBlueDest) >> 8) + dwBlueDest |	\
 					((dwTrans * (Ctx.dwGreen - dwGreenDest) >> 8) + dwGreenDest) << 5 |	\
 					((dwTrans * (Ctx.dwRed - dwRedDest) >> 8) + dwRedDest) << 11);	\
+			}
+
+		//	Paint
+
+		if (Ctx.xDest - xPos < rcClip.right && Ctx.xDest - xPos >= rcClip.left)
+			{
+			if (bPaintTop)
+				DRAW_PIXEL(pCenterTop - xPos);
+
+			if (bPaintBottom)
+				DRAW_PIXEL(pCenterBottom - xPos);
+			}
+
+		if (xPos > 0 && Ctx.xDest + xPos < rcClip.right && Ctx.xDest + xPos >= rcClip.left)
+			{
+			if (bPaintTop)
+				DRAW_PIXEL(pCenterTop + xPos);
+
+			if (bPaintBottom)
+				DRAW_PIXEL(pCenterBottom + xPos);
+			}
+#undef DRAW_PIXEL
+
+		xPos++;
+		}
+	}
+
+void DrawAlphaGradientCircleLineTable (const SAlphaGradientCircleLineCtx &Ctx, int x, int y)
+	{
+	int xStart = Ctx.xDest - x;
+	int xEnd = Ctx.xDest + x + 1;
+	const RECT &rcClip = Ctx.pDest->GetClipRect();
+
+	if (xEnd <= rcClip.left || xStart >= rcClip.right)
+		return;
+
+	//	See which lines we need to paint
+
+	int yLine = Ctx.yDest - y;
+	bool bPaintTop = (yLine >= rcClip.top && yLine < rcClip.bottom);
+	WORD *pCenterTop = Ctx.pDest->GetRowStart(yLine) + Ctx.xDest;
+
+	yLine = Ctx.yDest + y;
+	bool bPaintBottom = ((y > 0) && (yLine >= rcClip.top && yLine < rcClip.bottom));
+	WORD *pCenterBottom = Ctx.pDest->GetRowStart(yLine) + Ctx.xDest;
+
+	//	Compute radius increment
+
+	int iRadius = y;
+	int d = -y;
+	int deltaE = 3;
+	int deltaSE = -2 * y + 1;
+
+	//	Loop
+
+	int xPos = 0;
+
+	//	This will skip the center pixel in the circle (avoids a divide by
+	//	zero in the inner loop).
+
+	if (y == 0)
+		{
+		xPos = 1;
+		d += deltaSE;
+		deltaE += 2;
+		iRadius++;
+		}
+
+	//	Blt the line 
+
+	while (xPos <= x)
+		{
+		//	Figure out the radius of the pixel at this location
+
+		if (d < 0)
+			{
+			d += deltaE;
+			deltaE += 2;
+			deltaSE += 2;
+			}
+		else
+			{
+			d += deltaSE;
+			deltaE += 2;
+			//  deltaSE += 0;
+			iRadius++;
+			}
+
+		//	Compute the transparency based on the radius
+
+		WORD dwTrans;
+		if (iRadius >= Ctx.iRadius
+				|| (dwTrans = Ctx.pTrans[iRadius]) >= 255)
+			{
+			xPos++;
+			continue;
+			}
+
+#define DRAW_PIXEL(pos)	\
+			{ \
+			WORD dwDest = *(pos);	\
+\
+			*(pos) = (Ctx.pBlueByTrans[((dwDest & 0x1f) << 8) | dwTrans]	\
+					| Ctx.pGreenByTrans[((dwDest & 0x7e0) << 3) | dwTrans] \
+					| Ctx.pRedByTrans[((dwDest & 0xf800) >> 3) | dwTrans]); \
 			}
 
 		//	Paint
@@ -143,6 +284,8 @@ void DrawAlphaGradientCircle (CG16bitImage &Dest,
 //	that ranges from fully opaque in the center to fully transparent at the edges.
 
 	{
+	int i;
+
 	//	Deal with edge-conditions
 
 	if (iRadius <= 0)
@@ -168,50 +311,141 @@ void DrawAlphaGradientCircle (CG16bitImage &Dest,
 	Ctx.iRadius = iRadius;
 	Ctx.wColor = wColor;
 
-	//	Pre-compute some color info
+	//	If the radius is less than 256 then it's faster just to compute the 
+	//	values for each pixel inside the circle.
 
-	DWORD dwColor = wColor;
-	Ctx.dwRed = (dwColor >> 11) & 0x1f;
-	Ctx.dwGreen = (dwColor >> 5) & 0x3f;
-	Ctx.dwBlue = dwColor & 0x1f;
-
-	//	Draw central line
-
-	DrawAlphaGradientCircleLine(Ctx, iRadius, 0);
-
-	//	Draw lines above and below the center
-
-	int iLastDraw = -1;
-	while (y > x)
+	if (iRadius <= 320)
 		{
-		if (d < 0)
+		//	Pre-compute some color info
+
+		DWORD dwColor = wColor;
+		Ctx.dwRed = (dwColor >> 11) & 0x1f;
+		Ctx.dwGreen = (dwColor >> 5) & 0x3f;
+		Ctx.dwBlue = dwColor & 0x1f;
+
+		//	Compute the transparency for each radius value
+
+		Ctx.pTrans = new WORD [iRadius];
+		for (i = 0; i < iRadius; i++)
+			Ctx.pTrans[i] = (WORD)(255 - (255 * i / iRadius));
+
+		//	Draw central line
+
+		DrawAlphaGradientCircleLine(Ctx, iRadius, 0);
+
+		//	Draw lines above and below the center
+
+		int iLastDraw = -1;
+		while (y > x)
 			{
-			d += deltaE;
-			deltaE += 2;
-			deltaSE += 2;
-			}
-		else
-			{
-			d += deltaSE;
-			deltaE += 2;
-			deltaSE += 4;
+			if (d < 0)
+				{
+				d += deltaE;
+				deltaE += 2;
+				deltaSE += 2;
+				}
+			else
+				{
+				d += deltaSE;
+				deltaE += 2;
+				deltaSE += 4;
+
+				//	Draw lines
+
+				DrawAlphaGradientCircleLine(Ctx, x, y);
+				iLastDraw = y;
+
+				//	Next
+
+				y--;
+				}
+
+			x++;
 
 			//	Draw lines
 
-			DrawAlphaGradientCircleLine(Ctx, x, y);
-			iLastDraw = y;
-
-			//	Next
-
-			y--;
+			if (x != iLastDraw)
+				DrawAlphaGradientCircleLine(Ctx, y, x);
 			}
+		}
 
-		x++;
+	//	Otherwise it's faster to compute a table of red/blue and green values 
+	//	for each possible transparency
 
-		//	Draw lines
+	else
+		{
+		DWORD dwTrans;
+		DWORD dwValue;
 
-		if (x != iLastDraw)
-			DrawAlphaGradientCircleLine(Ctx, y, x);
+		//	Compute the transparency for each radius value
+
+		Ctx.pTrans = new WORD [iRadius];
+		for (i = 0; i < iRadius; i++)
+			Ctx.pTrans[i] = 255 - (255 * i / iRadius);
+
+		//	Decompose the color
+
+		DWORD dwColor = wColor;
+		Ctx.dwRed = (dwColor >> 11) & 0x1f;
+		Ctx.dwGreen = (dwColor >> 5) & 0x3f;
+		Ctx.dwBlue = dwColor & 0x1f;
+
+		//	Build the red/blue table
+
+		Ctx.pRedByTrans = new WORD [RED_BLUE_COUNT * 256];
+		Ctx.pBlueByTrans = new WORD [RED_BLUE_COUNT * 256];
+		for (dwTrans = 0; dwTrans < 256; dwTrans++)
+			for (dwValue = 0; dwValue < RED_BLUE_COUNT; dwValue++)
+				{
+				Ctx.pBlueByTrans[(dwValue << 8) | dwTrans] = (WORD)((dwTrans * (Ctx.dwBlue - dwValue) >> 8) + dwValue);
+				Ctx.pRedByTrans[(dwValue << 8) | dwTrans] = (WORD)((dwTrans * (Ctx.dwRed - dwValue) >> 8) + dwValue) << 11;
+				}
+
+		//	Build the green table
+
+		Ctx.pGreenByTrans = new WORD [GREEN_COUNT * 256];
+		for (dwTrans = 0; dwTrans < 256; dwTrans++)
+			for (dwValue = 0; dwValue < GREEN_COUNT; dwValue++)
+				Ctx.pGreenByTrans[(dwValue << 8) | dwTrans] = (WORD)((dwTrans * (Ctx.dwGreen - dwValue) >> 8) + dwValue) << 5;
+
+		//	Draw central line
+
+		DrawAlphaGradientCircleLineTable(Ctx, iRadius, 0);
+
+		//	Draw lines above and below the center
+
+		int iLastDraw = -1;
+		while (y > x)
+			{
+			if (d < 0)
+				{
+				d += deltaE;
+				deltaE += 2;
+				deltaSE += 2;
+				}
+			else
+				{
+				d += deltaSE;
+				deltaE += 2;
+				deltaSE += 4;
+
+				//	Draw lines
+
+				DrawAlphaGradientCircleLineTable(Ctx, x, y);
+				iLastDraw = y;
+
+				//	Next
+
+				y--;
+				}
+
+			x++;
+
+			//	Draw lines
+
+			if (x != iLastDraw)
+				DrawAlphaGradientCircleLineTable(Ctx, y, x);
+			}
 		}
 	}
 
@@ -1186,7 +1420,8 @@ void DrawGlowRing (CG16bitImage &Dest,
 				   int yDest,
 				   int iRadius,
 				   int iRingThickness,
-				   WORD wColor)
+				   WORD wColor,
+				   DWORD dwOpacity)
 
 //	DrawGlowRing
 //
@@ -1210,11 +1445,11 @@ void DrawGlowRing (CG16bitImage &Dest,
 
 	//	Init the center
 
-	DWORD dwOpacity = 255;
+	DWORD dwPosOpacity = dwOpacity;
 	if (iExtra)
 		{
 		wColorRamp[iCenter] = wColor;
-		byOpacityRamp[iCenter] = dwOpacity;
+		byOpacityRamp[iCenter] = dwPosOpacity;
 		}
 
 	//	Edges
@@ -1224,13 +1459,13 @@ void DrawGlowRing (CG16bitImage &Dest,
 		ASSERT(iOuter >= 0 && iOuter < iRingThickness);
 		ASSERT(iInner >=0 && iInner < iRingThickness);
 
-		dwOpacity = 255 * (iCenter - i) / (iCenter + 1);
+		dwPosOpacity = dwOpacity * (iCenter - i) / (iCenter + 1);
 
 		wColorRamp[iOuter] = wColor;
-		byOpacityRamp[iOuter] = dwOpacity;
+		byOpacityRamp[iOuter] = dwPosOpacity;
 
 		wColorRamp[iInner] = wColor;
-		byOpacityRamp[iInner] = dwOpacity;
+		byOpacityRamp[iInner] = dwPosOpacity;
 
 		iOuter--;
 		iInner++;

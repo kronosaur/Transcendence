@@ -291,7 +291,7 @@ void CFleetShipAI::Behavior (void)
 				else
 					m_iCounter--;
 
-				m_AICtx.ImplementFormationManeuver(m_pShip, m_vVector, NullVector, m_iAngle);
+				m_AICtx.ImplementFormationManeuver(m_pShip, m_vVector, NullVector, m_pShip->AlignToRotationAngle(m_iAngle));
 				}
 
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
@@ -568,7 +568,7 @@ void CFleetShipAI::ImplementKeepFormation (bool *retbInFormation)
 
 	//	Form up
 
-	m_AICtx.ImplementFormationManeuver(m_pShip, vDest, vDestVel, m_pLeader->GetRotation(), retbInFormation);
+	m_AICtx.ImplementFormationManeuver(m_pShip, vDest, vDestVel, m_pShip->AlignToRotationAngle(m_pLeader->GetRotation()), retbInFormation);
 	}
 
 DWORD CFleetShipAI::OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2)

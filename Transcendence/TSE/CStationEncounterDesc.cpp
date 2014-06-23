@@ -170,7 +170,7 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 	{
 	ALERROR error;
 
-	//	Number appearing
+	//	Number appearing (at least this number, unique in system)
 
 	CString sAttrib;
 	if (pDesc->FindAttribute(NUMBER_APPEARING_ATTRIB, &sAttrib))
@@ -181,9 +181,11 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 			Ctx.sError = strPatternSubst(CONSTLIT("Invalid numberAppearing parameter."));
 			return error;
 			}
+
+		m_iMaxCountInSystem = 1;
 		}
 
-	//	Get unique attributes
+	//	Get maximum limit (at most this number, unique in system)
 
 	else if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sAttrib))
 		{
@@ -197,7 +199,9 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 		m_iMaxCountInSystem = 1;
 		}
 
-	if (!m_bMaxCountLimit)
+	//	Otherwise, we check uniqueness values
+
+	else
 		{
 		CString sUnique = pDesc->GetAttribute(UNIQUE_ATTRIB);
 		if (strEquals(sUnique, UNIQUE_IN_SYSTEM))
