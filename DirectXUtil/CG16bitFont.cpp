@@ -153,8 +153,10 @@ int CG16bitFont::BreakText (const CString &sText, int cxWidth, TArray<CString> *
 					//	Reset the word
 
 					pStartWord = pPos;
+					pStartLine = pStartWord;
 					iCharsInWord = 1;
 					cxWordWidth = pMetrics->cxAdvance;
+					cxRemainingWidth = cxWidth - cxWordWidth;
 					}
 
 				//	Otherwise, add the line to the array
