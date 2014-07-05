@@ -4,7 +4,13 @@
 
 #include "PreComp.h"
 
+#define SYSTEM_GROUP_TAG						CONSTLIT("SystemGroup")
 #define TABLES_TAG								CONSTLIT("Tables")
+
+#define BACKGROUND_ID_ATTRIB					CONSTLIT("backgroundID")
+#define NO_RANDOM_ENCOUNTERS_ATTRIB				CONSTLIT("noRandomEncounters")
+#define SPACE_SCALE_ATTRIB						CONSTLIT("spaceScale")
+#define TIME_SCALE_ATTRIB						CONSTLIT("timeScale")
 
 #define ON_CREATE_EVENT							CONSTLIT("OnCreate")
 
@@ -14,7 +20,8 @@ static char *CACHED_EVENTS[CSystemType::evtCount] =
 	};
 
 CSystemType::CSystemType (void) : 
-		m_pDesc(NULL)
+		m_pDesc(NULL),
+		m_pLocalTables(NULL)
 
 //	CSystemType constructor
 
@@ -28,6 +35,9 @@ CSystemType::~CSystemType (void)
 	{
 	if (m_pDesc)
 		delete m_pDesc;
+
+	if (m_pLocalTables)
+		delete m_pLocalTables;
 	}
 
 ALERROR CSystemType::FireOnCreate (SSystemCreateCtx &SysCreateCtx, CString *retsError)
@@ -126,16 +136,6 @@ ALERROR CSystemType::FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCIt
 	return NOERROR;
 	}
 
-CXMLElement *CSystemType::GetLocalSystemTables (void)
-
-//	GetLocalSystemTables
-//
-//	Returns the local tables
-
-	{
-	return m_pDesc->GetContentElementByTag(TABLES_TAG);
-	}
-
 ALERROR CSystemType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign
@@ -155,6 +155,35 @@ ALERROR CSystemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 //	Create from XML
 
 	{
-	m_pDesc = pDesc->OrphanCopy();
+	ALERROR error;
+
+	//	Load the background image UNID
+
+	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(BACKGROUND_ID_ATTRIB), &m_dwBackgroundUNID))
+		return error;
+
+	//	Options
+
+	m_bNoRandomEncounters = pDesc->GetAttributeBool(NO_RANDOM_ENCOUNTERS_ATTRIB);
+	if (!pDesc->FindAttributeDouble(SPACE_SCALE_ATTRIB, &m_rSpaceScale) || m_rSpaceScale <= 0.0)
+		m_rSpaceScale = KLICKS_PER_PIXEL;
+
+	if (!pDesc->FindAttributeDouble(TIME_SCALE_ATTRIB, &m_rTimeScale) || m_rTimeScale <= 0.0)
+		m_rTimeScale = TIME_SCALE;
+
+	//	We keep the XML around for system definitions.
+
+	CXMLElement *pRoot = pDesc->GetContentElementByTag(SYSTEM_GROUP_TAG);
+	if (pRoot == NULL)
+		return ComposeLoadError(Ctx, CONSTLIT("Unable to find <SystemGroup> element."));
+
+	m_pDesc = pRoot->OrphanCopy();
+
+	//	We also need to keep the local tables
+
+	CXMLElement *pLocalTables = pDesc->GetContentElementByTag(TABLES_TAG);
+	if (pLocalTables)
+		m_pLocalTables = pLocalTables->OrphanCopy();
+
 	return NOERROR;
 	}

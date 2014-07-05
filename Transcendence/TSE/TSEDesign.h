@@ -4663,8 +4663,12 @@ class CSystemType : public CDesignType
 		ALERROR FireOnCreate (SSystemCreateCtx &SysCreateCtx, CString *retsError = NULL);
 		bool FireOnObjJumpPosAdj (CSpaceObject *pPos, CVector *iovPos);
 		ALERROR FireSystemCreateCode (SSystemCreateCtx &SysCreateCtx, ICCItem *pCode, const COrbit &OrbitDesc, CString *retsError);
+		inline DWORD GetBackgroundUNID (void) { return m_dwBackgroundUNID; }
 		inline CXMLElement *GetDesc (void) { return m_pDesc; }
-		CXMLElement *GetLocalSystemTables (void);
+		inline CXMLElement *GetLocalSystemTables (void) { return m_pLocalTables; }
+		inline Metric GetSpaceScale (void) const { return m_rSpaceScale; }
+		inline Metric GetTimeScale (void) const { return m_rTimeScale; }
+		inline bool HasRandomEncounters (void) const { return !m_bNoRandomEncounters; }
 
 		//	CDesignType overrides
 		static CSystemType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designSystemType) ? (CSystemType *)pType : NULL); }
@@ -4676,7 +4680,15 @@ class CSystemType : public CDesignType
 		virtual ALERROR OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 
 	private:
-		CXMLElement *m_pDesc;
+		DWORD m_dwBackgroundUNID;
+		Metric m_rSpaceScale;				//	Klicks per pixel
+		Metric m_rTimeScale;				//	Seconds of game time per real time
+
+		CXMLElement *m_pDesc;				//	System definition
+		CXMLElement *m_pLocalTables;		//	Local system tables
+
+		bool m_bNoRandomEncounters;			//	TRUE if we don't have random encounters
+
 		SEventHandlerDesc m_CachedEvents[evtCount];
 	};
 

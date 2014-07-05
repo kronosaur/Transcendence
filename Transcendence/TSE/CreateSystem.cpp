@@ -3465,10 +3465,6 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	ALERROR error;
 	int i, j;
 
-	CXMLElement *pDesc = pType->GetDesc();
-	if (pDesc == NULL)
-		return ERR_FAIL;
-
 #ifdef DEBUG_STATION_PLACEMENT
 	{
 	char szBuffer[1024];
@@ -3494,24 +3490,13 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Load some data
 
 	pSystem->m_pType = pType;
-	pSystem->m_fNoRandomEncounters = pDesc->GetAttributeBool(NO_RANDOM_ENCOUNTERS_ATTRIB);
+	pSystem->m_fNoRandomEncounters = !pType->HasRandomEncounters();
 	pSystem->m_fUseDefaultTerritories = true;
 
 	//	Set scales
 
-	CString sAttrib;
-	if (pDesc->FindAttribute(SPACE_SCALE_ATTRIB, &sAttrib))
-		{
-		int iScale = strToInt(sAttrib, 0, NULL);
-		if (iScale > 0)
-			pSystem->m_rKlicksPerPixel = (Metric)iScale;
-		}
-	if (pDesc->FindAttribute(TIME_SCALE_ATTRIB, &sAttrib))
-		{
-		int iScale = strToInt(sAttrib, 0, NULL);
-		if (iScale > 0)
-			pSystem->m_rTimeScale = (Metric)iScale;
-		}
+	pSystem->m_rKlicksPerPixel = pType->GetSpaceScale();
+	pSystem->m_rTimeScale = pType->GetTimeScale();
 
 	//	Get a pointer to the tables element (may be NULL)
 
@@ -3519,7 +3504,7 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 
 	//	Look for the outer-most group tag
 
-	CXMLElement *pPrimary = pDesc->GetContentElementByTag(SYSTEM_GROUP_TAG);
+	CXMLElement *pPrimary = pType->GetDesc();
 	if (pPrimary == NULL)
 		{
 		if (retsError)
