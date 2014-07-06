@@ -178,7 +178,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				//	Skip generic classes
 
-				if (!bAll && pStationType->HasLiteralAttribute(CONSTLIT("generic")))
+				if (!bAll && !pStationType->HasLiteralAttribute(CONSTLIT("generic")))
 					continue;
 
 				NewEntry.pType = pType;

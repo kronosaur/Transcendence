@@ -372,6 +372,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /stats                Shows a list of basic stats.\n");
 		printf("  /stdarmor             Shows stats about standard armors.\n");
 		printf("  /stdshield            Shows stats about standard shields.\n");
+		printf("  /systemimages         Generate snapshots of system maps.\n");
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
 			printf("  /systemtest           Generates sample of all systems.\n");

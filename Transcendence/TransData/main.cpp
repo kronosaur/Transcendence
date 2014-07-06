@@ -48,6 +48,7 @@
 #define STATS_SWITCH						CONSTLIT("stats")
 #define STD_ARMOR_SWITCH					CONSTLIT("stdarmor")
 #define STD_SHIELD_SWITCH					CONSTLIT("stdshield")
+#define SYSTEM_IMAGES_SWITCH				CONSTLIT("systemImages")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_SWITCH						CONSTLIT("topology")
@@ -356,6 +357,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateStdArmorTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(STD_SHIELD_SWITCH))
 		GenerateStdShieldTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(SYSTEM_IMAGES_SWITCH))
+		GenerateSystemImages(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		GenerateSystemLabelCount(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(SYSTEM_TEST_SWITCH))
