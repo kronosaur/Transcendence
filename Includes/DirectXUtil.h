@@ -251,10 +251,10 @@ class CG16bitImage : public CObject
 		void DrawLineProc (SDrawLineCtx *pCtx, DRAWLINEPROC pfProc);
 		void DrawLineProcInit (int x1, int y1, int x2, int y2, SDrawLineCtx *pCtx);
 		inline void DrawBiColorLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor1, WORD wColor2) { BresenhamLineAAFade(x1, y1, x2, y2, iWidth, wColor1, wColor2); }
-		inline void DrawPixel (int x, int y, WORD wColor) { if (x >=0 && y >= 0 && x < m_cxWidth && y < m_cyHeight) *GetPixel(GetRowStart(y), x) = wColor; }
+		inline void DrawPixel (int x, int y, WORD wColor) { if (x >= m_rcClip.left && y >= m_rcClip.top && x < m_rcClip.right && y < m_rcClip.bottom) *GetPixel(GetRowStart(y), x) = wColor; }
 		inline void DrawPixelTrans (int x, int y, WORD wColor, BYTE byTrans)
 				{
-				if (x >=0 && y >= 0 && x < m_cxWidth && y < m_cyHeight) 
+				if (x >= m_rcClip.left && y >= m_rcClip.top && x < m_rcClip.right && y < m_rcClip.bottom) 
 					{
 					WORD *pPos = GetPixel(GetRowStart(y), x);
 					*pPos = BlendPixel(*pPos, wColor, byTrans);

@@ -155,13 +155,13 @@ void CG16bitImage::BresenhamLineAA (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
 				WORD *pPos = GetPixel(GetRowStart(yTop), x);
 
 				for (i = yTop; i < yTop + cyCount; i++)
 					{
-					if (i >= 0 && i < m_cyHeight)
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
 						*pPos = wColor;
 
 					pPos = NextRow(pPos);
@@ -227,12 +227,12 @@ void CG16bitImage::BresenhamLineAA (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pPos = GetPixel(GetRowStart(y), xTop);
 
 				for (i = xTop; i < xTop + cxCount; i++)
-					if (i >= 0 && i < m_cxWidth)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
 						*pPos++ = wColor;
 					else
 						pPos++;
@@ -346,13 +346,13 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
 				WORD *pPos = GetPixel(GetRowStart(yTop), x);
 
 				for (i = yTop; i < yTop + cyCount; i++)
 					{
-					if (i >= 0 && i < m_cyHeight)
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
 						*pPos = wColor;
 
 					pPos = NextRow(pPos);
@@ -423,12 +423,12 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 
 			//	Draw the solid part of the line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pPos = GetPixel(GetRowStart(y), xTop);
 
 				for (i = xTop; i < xTop + cxCount; i++)
-					if (i >= 0 && i < m_cxWidth)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
 						*pPos++ = wColor;
 					else
 						pPos++;
@@ -916,10 +916,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 			x = x - 1;
 			y = y - 1;
 
-			xStart = max(0, x);
-			xEnd = min(m_cxWidth, x + 3);
-			yStart = max(0, y);
-			yEnd = min(m_cyHeight, y + 3);
+			xStart = max(m_rcClip.left, x);
+			xEnd = min(m_rcClip.right, x + 3);
+			yStart = max(m_rcClip.top, y);
+			yEnd = min(m_rcClip.bottom, y + 3);
 
 			for (int yPos = yStart; yPos < yEnd; yPos++)
 				{
@@ -954,11 +954,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the horizontal line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(y);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -966,10 +966,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the vertical line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + x;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + x;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + x;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + x;
 
 				while (pPos < pPosEnd)
 					{
@@ -990,11 +990,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the horizontal line
 
-			if (y >= 0 && y < m_cyHeight)
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(y);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1002,10 +1002,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the vertical line
 
-			if (x >= 0 && x < m_cxWidth)
+			if (x >= m_rcClip.left && x < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop, 0)) + x;
-				WORD *pPosEnd = GetRowStart(min(yBottom+1, m_cyHeight)) + x;
+				WORD *pPos = GetRowStart(max(yTop, m_rcClip.top)) + x;
+				WORD *pPosEnd = GetRowStart(min(yBottom+1, m_rcClip.bottom)) + x;
 
 				while (pPos < pPosEnd)
 					{
@@ -1077,11 +1077,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the top line
 
-			if (yTop >= 0 && yTop < m_cyHeight)
+			if (yTop >= m_rcClip.top && yTop < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(yTop);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1089,11 +1089,11 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the bottom line
 
-			if (yBottom >= 0 && yBottom < m_cyHeight)
+			if (yBottom >= m_rcClip.top && yBottom < m_rcClip.bottom)
 				{
 				WORD *pRowStart = GetRowStart(yBottom);
-				WORD *pPos = pRowStart + max(0, xLeft);
-				WORD *pPosEnd = pRowStart + min(xRight+1, m_cxWidth);
+				WORD *pPos = pRowStart + max(m_rcClip.left, xLeft);
+				WORD *pPosEnd = pRowStart + min(xRight+1, m_rcClip.right);
 
 				while (pPos < pPosEnd)
 					*pPos++ = wColor;
@@ -1101,10 +1101,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the left line
 
-			if (xLeft >= 0 && xLeft < m_cxWidth)
+			if (xLeft >= m_rcClip.left && xLeft < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + xLeft;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + xLeft;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + xLeft;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + xLeft;
 
 				while (pPos < pPosEnd)
 					{
@@ -1115,10 +1115,10 @@ void CG16bitImage::DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker)
 
 			//	Draw the right line
 
-			if (xRight >= 0 && xRight < m_cxWidth)
+			if (xRight >= m_rcClip.left && xRight < m_rcClip.right)
 				{
-				WORD *pPos = GetRowStart(max(yTop+1, 0)) + xRight;
-				WORD *pPosEnd = GetRowStart(min(yBottom, m_cyHeight)) + xRight;
+				WORD *pPos = GetRowStart(max(yTop+1, m_rcClip.top)) + xRight;
+				WORD *pPosEnd = GetRowStart(min(yBottom, m_rcClip.bottom)) + xRight;
 
 				while (pPos < pPosEnd)
 					{
