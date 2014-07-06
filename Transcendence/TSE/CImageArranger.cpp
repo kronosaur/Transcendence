@@ -52,14 +52,15 @@ void CImageArranger::ArrangeByRow (const SArrangeDesc &Desc, const TArray<SCellD
 		while (iNext < Cells.GetCount())
 			{
 			int cxSize = Cells[iNext].cxWidth;
+			int cySize = Cells[iNext].cyHeight;
 			if (cxSize > cxWidthLeft && iStart != iNext)
 				break;
 
 			int cxCell = Max(cxSize + cxInternalSpacing, Desc.cxSpacing);
 
 			cxWidthLeft -= cxCell;
-			if (cxSize > cyRowHeight)
-				cyRowHeight = cxSize;
+			if (cySize > cyRowHeight)
+				cyRowHeight = cySize;
 
 			iNext++;
 			}
@@ -103,15 +104,17 @@ void CImageArranger::ArrangeByRow (const SArrangeDesc &Desc, const TArray<SCellD
 		for (i = iStart; i < iNext; i++)
 			{
 			int cxSize = Cells[i].cxWidth;
+			int cySize = Cells[i].cyHeight;
 			int cxCell = Max(cxSize + cxInternalSpacing, Desc.cxSpacing);
+			int cyCell = Max(cySize + cyInternalSpacing, Desc.cxSpacing);
 
 			//	Center vertically
 
-			int yOffset = (cyRowHeight - cxSize) / 2;
+			int yOffset = (cyRowHeight - cySize) / 2;
 
 			//	Place
 
-			Place(i, x + xOffset, y + yOffset, cxSize, cxSize);
+			Place(i, x + xOffset, y + yOffset, cxSize, cySize);
 
 			//	Figure out the position of the text
 
@@ -119,7 +122,7 @@ void CImageArranger::ArrangeByRow (const SArrangeDesc &Desc, const TArray<SCellD
 			int cxName = Desc.pHeader->MeasureText(Cells[i].sText, &cyName);
 			if (cxName <= cxSize)
 				{
-				int yText = y + yOffset + cxSize + cyNameSpacing;
+				int yText = y + yOffset + cySize + cyNameSpacing;
 				PlaceText(i,
 						x + xOffset + (cxSize - cxName) / 2,
 						yText,
@@ -137,7 +140,7 @@ void CImageArranger::ArrangeByRow (const SArrangeDesc &Desc, const TArray<SCellD
 						&& i > iStart 
 						&& (x + xOffset + cxSize - (GetX(i - 1) + GetWidth(i - 1) / 2)) > cxName + 8)
 					{
-					yText = y + yOffset + cxSize + cyNameSpacing;
+					yText = y + yOffset + cySize + cyNameSpacing;
 					if (yText < GetY(i - 1) + GetHeight(i - 1))
 						yText = GetY(i - 1) + GetHeight(i - 1) + cyNameSpacing;
 
@@ -148,7 +151,7 @@ void CImageArranger::ArrangeByRow (const SArrangeDesc &Desc, const TArray<SCellD
 				//	Otherwise, use the overlap, if it exits
 
 				else if (yOverlapOffset == 0)
-					yText = y + yOffset + cxSize + cyNameSpacing;
+					yText = y + yOffset + cySize + cyNameSpacing;
 				else
 					yText = yOverlapOffset;
 
