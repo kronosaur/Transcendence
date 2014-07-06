@@ -10,6 +10,10 @@
 //		{ordered list of entries}
 //	</Composite>
 //
+//	<Effect>
+//		{some effect tag}
+//	</Effect>
+//
 //	<FilterColorize color="...">
 //		{an entry}
 //	</FilterColorize>
@@ -39,14 +43,17 @@
 #include "PreComp.h"
 
 #define COMPOSITE_TAG							CONSTLIT("Composite")
+#define EFFECT_TAG								CONSTLIT("Effect")
 #define FILTER_COLORIZE_TAG						CONSTLIT("FilterColorize")
 #define IMAGE_TAG								CONSTLIT("Image")
 #define IMAGE_COMPOSITE_TAG						CONSTLIT("ImageComposite")
+#define IMAGE_EFFECT_TAG						CONSTLIT("ImageEffect")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
 #define TABLE_TAG								CONSTLIT("Table")
 
 #define CHANCE_ATTRIB							CONSTLIT("chance")
 #define COLOR_ATTRIB							CONSTLIT("color")
+#define EFFECT_ATTRIB							CONSTLIT("effect")
 #define HUE_ATTRIB								CONSTLIT("hue")
 #define SATURATION_ATTRIB						CONSTLIT("saturation")
 
@@ -72,6 +79,25 @@ class CCompositeEntry : public IImageEntry
 
 		CObjectImageArray m_Image;
 		CG16bitImage *m_pImageCache;
+	};
+
+class CEffectEntry : public IImageEntry
+	{
+	public:
+		CEffectEntry (void) { }
+		virtual ~CEffectEntry (void);
+
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed) { if (m_pEffect) m_pEffect->AddTypesUsed(retTypesUsed); }
+		virtual void GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage);
+		virtual int GetMaxLifetime (void) const;
+		virtual int GetVariantCount (void) { return 1; }
+		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc);
+		virtual bool IsConstant (void) { return true; }
+		virtual void MarkImage (void);
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectCreatorRef m_pEffect;
 	};
 
 class CFilterColorizeEntry : public IImageEntry
@@ -286,6 +312,8 @@ ALERROR CCompositeImageDesc::InitEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement 
 		}
 	else if (strEquals(pDesc->GetTag(), IMAGE_COMPOSITE_TAG) || strEquals(pDesc->GetTag(), COMPOSITE_TAG))
 		pEntry = new CCompositeEntry;
+	else if (strEquals(pDesc->GetTag(), IMAGE_EFFECT_TAG) || strEquals(pDesc->GetTag(), EFFECT_TAG))
+		pEntry = new CEffectEntry;
 	else if (strEquals(pDesc->GetTag(), TABLE_TAG) || strEquals(pDesc->GetTag(), IMAGE_VARIANTS_TAG))
 		pEntry = new CTableEntry;
 	else if (strEquals(pDesc->GetTag(), FILTER_COLORIZE_TAG))
@@ -634,6 +662,137 @@ ALERROR CCompositeEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 		if (error = m_Layers[i]->OnDesignLoadComplete(Ctx))
 			return error;
 		}
+
+	return NOERROR;
+	}
+
+//	CEffectEntry ---------------------------------------------------------------
+
+CEffectEntry::~CEffectEntry (void)
+
+//	CFilterColorizeEntry destructor
+
+	{
+	}
+
+void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectImageArray *retImage)
+
+//	GetImage
+//
+//	Fills in the image
+
+	{
+	//	Short circuit
+
+	if (m_pEffect.IsEmpty())
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
+
+	//	Create a painter
+
+	CCreatePainterCtx Ctx;
+	IEffectPainter *pPainter = m_pEffect->CreatePainter(Ctx);
+
+	//	Get the painter bounds
+
+	RECT rcBounds;
+	pPainter->GetBounds(&rcBounds);
+	int cxWidth = RectWidth(rcBounds);
+	int cyHeight = RectHeight(rcBounds);
+
+	//	Create a resulting image
+
+	CG16bitImage *pDest = new CG16bitImage;
+	pDest->CreateBlank(cxWidth, cyHeight, true);
+
+	//	Set up paint context
+
+	SViewportPaintCtx PaintCtx;
+
+	//	Since we don't have an object, we use the viewport center to indicate
+	//	the center of the object.
+
+	PaintCtx.xCenter = -rcBounds.left;
+	PaintCtx.yCenter = -rcBounds.top;
+
+	//	Paint
+
+	pPainter->Paint(*pDest, (cxWidth / 2), (cyHeight / 2), PaintCtx);
+
+	//	Initialize an image
+
+	RECT rcFinalRect;
+	rcFinalRect.left = 0;
+	rcFinalRect.top = 0;
+	rcFinalRect.right = cxWidth;
+	rcFinalRect.bottom = cyHeight;
+
+	CObjectImageArray Comp;
+	Comp.Init(pDest, rcFinalRect, 0, 0, true);
+
+	//	Done
+
+	retImage->TakeHandoff(Comp);
+	}
+
+int CEffectEntry::GetMaxLifetime (void) const
+
+//	GetMaxLifetime
+//
+//	Returns the maximum lifetime
+
+	{
+	return 0;
+	}
+
+ALERROR CEffectEntry::InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc)
+
+//	InitFromXML
+//
+//	Initialize from XML
+
+	{
+	ALERROR error;
+
+	m_dwID = IDGen.GetID();
+
+	//	Load
+
+	if (error = m_pEffect.LoadEffect(Ctx,
+			NULL_STR,
+			pDesc,
+			pDesc->GetAttribute(EFFECT_ATTRIB)))
+		return error;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+void CEffectEntry::MarkImage (void)
+
+//	MarkImage
+//
+//	Mark all images
+
+	{
+	if (m_pEffect)
+		m_pEffect->MarkImages();
+	}
+
+ALERROR CEffectEntry::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
+
+//	OnDesignLoadComplete
+//
+//	Bind design
+
+	{
+	ALERROR error;
+
+	if (error = m_pEffect.Bind(Ctx))
+		return error;
 
 	return NOERROR;
 	}

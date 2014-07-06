@@ -13,6 +13,7 @@
 #define ENCOUNTERS_TAG							CONSTLIT("Encounters")
 #define EVENTS_TAG								CONSTLIT("Events")
 #define IMAGE_TAG								CONSTLIT("Image")
+#define IMAGE_EFFECT_TAG						CONSTLIT("ImageEffect")
 #define IMAGE_VARIANTS_TAG						CONSTLIT("ImageVariants")
 #define ITEMS_TAG								CONSTLIT("Items")
 #define NAMES_TAG								CONSTLIT("Names")
@@ -1332,6 +1333,8 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		pImage = pDesc->GetContentElementByTag(IMAGE_VARIANTS_TAG);
 	if (pImage == NULL)
 		pImage = pDesc->GetContentElementByTag(COMPOSITE_TAG);
+	if (pImage == NULL)
+		pImage = pDesc->GetContentElementByTag(IMAGE_EFFECT_TAG);
 
 	//	Load the image
 
