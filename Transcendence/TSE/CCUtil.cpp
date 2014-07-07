@@ -314,17 +314,28 @@ bool CreateOrbitFromList (CCodeChain &CC, ICCItem *pList, COrbit *retOrbitDesc)
 //	Creates an orbit from a list.
 
 	{
+	//	Nil means default orbit
+
+	if (pList->IsNil())
+		{
+		*retOrbitDesc = COrbit();
+		return true;
+		}
+
 	//	Must be a list
 
-	if (!pList->IsList())
+	else if (!pList->IsList())
 		return false;
 
 	//	Load binary from list and check the class
 
-	if (!CreateBinaryFromList(CC, CLASS_CORBIT, pList, retOrbitDesc))
-		return false;
+	else
+		{
+		if (!CreateBinaryFromList(CC, CLASS_CORBIT, pList, retOrbitDesc))
+			return false;
 
-	return true;
+		return true;
+		}
 	}
 
 ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue)

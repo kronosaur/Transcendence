@@ -343,6 +343,7 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_SYS_PLAY_SOUND				4
 #define FN_SYS_CREATE_FLOTSAM			5
 #define FN_SYS_CREATE_ENVIRONMENT		6
+#define FN_SYS_CREATE_TERRITORY			7
 
 ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 
@@ -1959,6 +1960,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"sysCreateStation",				fnSystemCreateStation,	FN_SYS_CREATE_STATION,
 			"(sysCreateStation unid pos) -> obj",
 			"iv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"sysCreateTerritory",			fnSystemCreate,			FN_SYS_CREATE_TERRITORY,
+			"(sysCreateTerritory orbit minRadius maxRadius attributes) -> True/Nil",
+			"viiv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateWeaponFire",			fnSystemCreate,			FN_SYS_CREATE_WEAPON_FIRE,
 			"(sysCreateWeaponFire weaponID objSource pos dir speed objTarget [detonateNow] [bonus%]) -> obj",
@@ -8883,6 +8888,7 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 	{
 	ALERROR error;
 	CCodeChain *pCC = pEvalCtx->pCC;
+	int i;
 
 	switch (dwData)
 		{
@@ -9036,6 +9042,58 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Done
 
 			return pCC->CreateInteger((int)pWreck);
+			}
+
+		case FN_SYS_CREATE_TERRITORY:
+			{
+			CSystem *pSystem = g_pUniverse->GetCurrentSystem();
+			if (pSystem == NULL)
+				return StdErrorNoSystem(*pCC);
+
+			//	Get the orbit
+
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(*pCC, pArgs->GetElement(0), &OrbitDesc))
+				return pCC->CreateError(CONSTLIT("Invalid orbit object"), pArgs->GetElement(0));
+
+			//	Get the radii
+
+			int iMinRadius = pArgs->GetElement(1)->GetIntegerValue();
+			int iMaxRadius = pArgs->GetElement(2)->GetIntegerValue();
+			if (iMinRadius < 0 || iMaxRadius < 0 || (iMaxRadius != 0 && iMaxRadius < iMinRadius))
+				return pCC->CreateError(CONSTLIT("Invalid radius"));
+
+			Metric rMinRadius = iMinRadius * LIGHT_SECOND;
+			Metric rMaxRadius = iMaxRadius * LIGHT_SECOND;
+
+			//	Get the attributes
+
+			CString sAttribs;
+			ICCItem *pAttribs = pArgs->GetElement(3);
+			if (pAttribs->IsList() && pAttribs->GetCount() > 0)
+				{
+				sAttribs = pAttribs->GetElement(0)->GetStringValue();
+				for (i = 1; i < pAttribs->GetCount(); i++)
+					sAttribs.Append(strPatternSubst(CONSTLIT(", %s"), pAttribs->GetElement(i)->GetStringValue()));
+				}
+			else
+				sAttribs = pAttribs->GetStringValue();
+
+			//	Create the territory
+
+			CTerritoryDef *pTerritory = new CTerritoryDef;
+			pTerritory->AddRegion(OrbitDesc, rMinRadius, rMaxRadius);
+			pTerritory->AddAttributes(sAttribs);
+
+			//	Add it 
+
+			if (pSystem->AddTerritory(pTerritory) != NOERROR)
+				{
+				delete pTerritory;
+				return pCC->CreateNil();
+				}
+
+			return pCC->CreateTrue();
 			}
 
 		case FN_SYS_CREATE_WEAPON_FIRE:
