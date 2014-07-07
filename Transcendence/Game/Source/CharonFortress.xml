@@ -769,12 +769,12 @@
 
 			<!-- Star -->
 
-			<Station type="&stRedDwarfStar;" name="Cardel Orionis"/>
+			<Station type="&stStarClassM8;" name="Cardel Orionis"/>
 
 			<AddAttribute attributes="redDwarfSystem"/>
-			<AddTerritory minRadius="0"		maxRadius="190"		attributes="innerSystem, rockyComp, cinderZone"/>
-			<AddTerritory minRadius="190"	maxRadius="320"		attributes="lifeZone, rockyComp, desertZone"/>
-			<AddTerritory minRadius="320"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+			<AddTerritory minRadius="0"		maxRadius="200"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="200"	maxRadius="350"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="350"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
 
 			<!-- Lesser Anterock -->
 

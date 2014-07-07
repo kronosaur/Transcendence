@@ -239,7 +239,7 @@
 -->
 
 	<SystemPartTable unid="&tbSystemMorphologies;">
-
+		
 		<!-- ASTEROID ARC BELT SYSTEM ==========================================
 
 			Arc Belt
@@ -249,36 +249,16 @@
 
 		<AsteroidArcBeltSystem>
 			<Group>
-				<Station type="&stK-TypeStar;"/>
-
-				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
-
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="60"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="30"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="30"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="60"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="0"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassK5; &stStarClassK0;)) {
+						metallicComp:	'(60 60 60)
+						organicComp:	'( 5  5  0)
+						rockyComp:		'(30 30 30)
+						waterComp:		'( 5  5 10)
+						})
+				</Code>
+				
+				<AddAttribute attributes="asteroidBeltSystem, KTypeSystem"/>
 
 				<!-- Worlds -->
 
@@ -324,36 +304,16 @@
 
 		<AsteroidBeltSystem>
 			<Group>
-				<Station type="&stK-TypeStar;"/>
-
-				<AddAttribute attributes="asteroidBeltSystem, GTypeSystem"/>
-
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="60"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="5"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="5"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="0"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="60"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassK5; &stStarClassK0;)) {
+						metallicComp:	'(30 30 30)
+						organicComp:	'( 5  5  0)
+						rockyComp:		'(60 60 60)
+						waterComp:		'( 5  5 10)
+						})
+				</Code>
+				
+				<AddAttribute attributes="asteroidBeltSystem, KTypeSystem"/>
 
 				<!-- Worlds -->
 
@@ -433,36 +393,16 @@
 
 		<DesertSystem>
 			<Group>
-				<Station type="&stA-TypeStar;"/>
-
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassA5; &stStarClassA0;)) {
+						metallicComp:	'(30 30 30)
+						organicComp:	'(10 10  0)
+						rockyComp:		'(60 60 60)
+						waterComp:		'( 0  0 10)
+						})
+				</Code>
+				
 				<AddAttribute attributes="ATypeSystem"/>
-
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="0"		maxRadius="480"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="10"	minRadius="0"		maxRadius="480"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="60"	minRadius="0"		maxRadius="480"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="0"	minRadius="0"		maxRadius="480"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="480"		maxRadius="800"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="10"	minRadius="480"		maxRadius="800"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="60"	minRadius="480"		maxRadius="800"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="0"	minRadius="480"		maxRadius="800"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="30"	minRadius="800"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="0"	minRadius="800"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="60"	minRadius="800"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="10"	minRadius="800"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
 
 				<!-- Worlds -->
 
@@ -614,37 +554,17 @@
 
 		<PrimordialSystem>
 			<Group>
-				<Station type="&stPrimordialStar;"/>
-
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassG2; &stStarClassG0; &stStarClassF5;)) {
+						metallicComp:	'(10  5 10)
+						organicComp:	'(60 80 60)
+						rockyComp:		'(30 10 20)
+						waterComp:		'( 0  5 10)
+						})
+				</Code>
+				
 				<AddAttribute attributes="GTypeSystem, primordialSystem"/>
 				
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="10"	minRadius="0"		maxRadius="240"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="60"	minRadius="0"		maxRadius="240"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="30"	minRadius="0"		maxRadius="240"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="0"	minRadius="0"		maxRadius="240"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="5"	minRadius="240"		maxRadius="400"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="80"	minRadius="240"		maxRadius="400"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="10"	minRadius="240"		maxRadius="400"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="5"	minRadius="240"		maxRadius="400"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="10"	minRadius="400"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="60"	minRadius="400"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="20"	minRadius="400"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="10"	minRadius="400"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
-
 				<!-- Primordial Mists -->
 
 				<Orbitals distance="1" scale="light-minute" angle="random">
@@ -718,37 +638,17 @@
 
 		<RedDwarfSystem>
 			<Group>
-				<Station type="&stRedDwarfStar;" showOrbit="true"/>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassM8; &stStarClassM5; &stStarClassM0;)) {
+						metallicComp:	'(20 20 10)
+						organicComp:	'(10 10 20)
+						rockyComp:		'(65 50 40)
+						waterComp:		'( 5 20 30)
+						})
+				</Code>
 				
 				<AddAttribute attributes="redDwarfSystem"/>
 				
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="20"	minRadius="0"		maxRadius="190"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="10"	minRadius="0"		maxRadius="190"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="65"	minRadius="0"		maxRadius="190"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="5"	minRadius="0"		maxRadius="190"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="20"	minRadius="190"		maxRadius="320"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="10"	minRadius="190"		maxRadius="320"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="50"	minRadius="190"		maxRadius="320"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="20"	minRadius="190"		maxRadius="320"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="10"	minRadius="320"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="20"	minRadius="320"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="40"	minRadius="320"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="30"	minRadius="320"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
-
 				<!-- Worlds -->
 
 				<Orbitals count="4-5" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d100+740" angle="random">
@@ -860,37 +760,17 @@
 
 		<YellowStarSystem>
 			<Group>
-				<Station type="&stG-TypeStar;"/>
-
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassG5; &stStarClassG2; &stStarClassG0;)) {
+						metallicComp:	'(20 20 10)
+						organicComp:	'(10 10 30)
+						rockyComp:		'(70 60 30)
+						waterComp:		'( 0 10 30)
+						})
+				</Code>
+				
 				<AddAttribute attributes="GTypeSystem"/>
 				
-				<!-- Inner Zone -->
-
-				<Table>
-					<AddTerritory chance="20"	minRadius="0"		maxRadius="370"		attributes="innerSystem, metallicComp, moltenZone"/>
-					<AddTerritory chance="10"	minRadius="0"		maxRadius="370"		attributes="innerSystem, organicComp, greenhouseZone"/>
-					<AddTerritory chance="70"	minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
-					<AddTerritory chance="0"	minRadius="0"		maxRadius="370"		attributes="innerSystem, waterComp, steamZone"/>
-				</Table>
-
-				<!-- Life Zone -->
-
-				<Table>
-					<AddTerritory chance="20"	minRadius="370"		maxRadius="620"		attributes="lifeZone, metallicComp, metallicZone"/>
-					<AddTerritory chance="10"	minRadius="370"		maxRadius="620"		attributes="lifeZone, organicComp, primordialZone"/>
-					<AddTerritory chance="60"	minRadius="370"		maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
-					<AddTerritory chance="10"	minRadius="370"		maxRadius="620"		attributes="lifeZone, waterComp, biosphereZone"/>
-				</Table>
-
-				<!-- Outer Zone -->
-
-				<Table>
-					<AddTerritory chance="10"	minRadius="620"		maxRadius="0"		attributes="outerSystem, metallicComp, barrenZone"/>
-					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, organicComp, tholinZone"/>
-					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
-					<AddTerritory chance="30"	minRadius="620"		maxRadius="0"		attributes="outerSystem, waterComp, iceZone"/>
-				</Table>
-
 				<!-- Worlds -->
 
 				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
@@ -978,7 +858,6 @@
 				<Image imageID="&rsAStar;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
 			</FilterColorize>
 		</Image>
-
 	</StationType>
 
 	<!-- G-Type Star -->
@@ -987,7 +866,7 @@
 		name=				"(G class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
-		spaceColor=			"0x68, 0x63, 0x23"
+		spaceColor=			"#656551"
 		maxLightRadius=		"620"
 
 		attributes=			"generic, star"
@@ -1111,8 +990,6 @@
 	<Globals>
 		(block Nil
 		
-			
-
 			(setq trnCreateAllStargates (lambda (options)
 
 				; The options parameter may have the following fields
@@ -1206,6 +1083,140 @@
 								(sysCreateStation beaconType beacon1Pos)
 								(sysCreateStation beaconType beacon2Pos)
 								)
+							)
+						)
+					)
+				))
+				
+			(setq trnCreateStarAndZones (lambda (orbitDesc starType zones)
+				(block Nil
+					(sysCreateStation starType (sysOrbitPos orbitDesc))
+					(trnCreateStarZones orbitDesc (typGetDataField starType 'maxLightRadius) zones)
+					)
+				))
+
+			(setq trnCreateStarZones (lambda (orbitDesc maxLightRadius zones)
+				
+				;	The zones parameter is a structure with an entry for each defined composition:
+				;
+				;	metallicComp, organicComp, rockyComp, waterComp.
+				;
+				;	Each entry is a list of 3 values, each value representing the probability
+				;	(out of 100) that the given zone will be of the given composition. Each
+				;	value represents a different zone in order: innerZone, lifeZone, outerZone.
+				;
+				;	The function creates the appropriate territories
+				
+				(block (
+					(compList (list 'metallicComp 'organicComp 'rockyComp 'waterComp))
+					(lightList (list 'innerSystem 'lifeZone 'outerSystem))
+					(zoneList {
+						innerSystem: {
+							metallicComp: 'moltenZone
+							organicComp: 'greenhouseZone
+							rockyComp: 'cinderZone
+							waterComp: 'steamZone
+							}
+						lifeZone: {
+							metallicComp: 'metallicZone
+							organicComp: 'primordialZone
+							rockyComp: 'desertZone
+							waterComp: 'biosphereZone
+							}
+						outerSystem: {
+							metallicComp: 'barrenZone
+							organicComp: 'tholinZone
+							rockyComp: 'frostZone
+							waterComp: 'iceZone
+							}
+						})
+					(minRadiusTable {
+						innerSystem: 0
+						lifeZone: (divide (multiply 60 maxLightRadius) 100)
+						outerSystem: maxLightRadius
+						})
+					(maxRadiusTable {
+						innerSystem: (@ minRadiusTable 'lifeZone)
+						lifeZone: maxLightRadius
+						outerSystem: 0
+						})
+					(i 0)
+					)
+					
+					(enum lightList theLight
+						(block (probTable totalProb randomComp)
+							;	Make a probability table for each composition. We end up
+							;	with a list of tuples (prob comp)
+							
+							(setq probTable
+								(map compList nil theComp
+									(if (@ (@ zones theComp) i)
+										(list (@ (@ zones theComp) i) theComp)
+										(list 0 theComp)
+										)
+									)
+								)
+								
+							(print "Table: " probTable)
+								
+							;	Add up the probabilities
+							
+							(setq totalProb (map probTable 'reduceSum theEntry (@ theEntry 0)))
+							(print "Total: " totalProb)
+							
+							;	Pick a random entry
+							
+							(setq roll (random 1 totalProb))
+							(print "Roll: " roll)
+							
+							(setq randomComp
+								(@
+									(map probTable 'excludeNil theEntry
+										(switch
+											(not roll)
+												Nil
+										
+											(leq roll (@ theEntry 0))
+												(block Nil
+													(setq roll Nil)
+													(@ theEntry 1)
+													)
+											
+											(block Nil
+												(setq roll (subtract roll (@ theEntry 0)))
+												Nil
+												)
+											)
+										)
+									0)
+								)
+								
+							(print "Composition: " randomComp)
+								
+							;	Now create the territory
+							
+							(sysCreateTerritory 
+								orbitDesc
+								(@ minRadiusTable theLight)
+								(@ maxRadiusTable theLight)
+								(list
+									theLight
+									randomComp
+									(@ (@ zoneList theLight) randomComp)
+									)
+								)
+								
+							(print "AddZone "
+								(@ minRadiusTable theLight)
+								"-"
+								(@ maxRadiusTable theLight)
+								" "
+								(list theLight randomComp (@ (@ zoneList theLight) randomComp))
+								)
+							
+							;	Next
+							
+							(setq i (add i 1))
 							)
 						)
 					)

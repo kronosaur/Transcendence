@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- MAIN SEQUENCE STARS
+
+	The set of stars defined below are all main sequence stars of increasing size
+	and brightness.
+	
+	CLASS	COLOR		STAR RADIUS		MAX LIGHT RADIUS	SPACE COLOR
+	
+	M8		#ff2600			300				350				#673b34
+	M5		#ff8534			375				450				#674a38
+	M0		#ffb367			445				545				#675442
+	K5		#ffcc99			460				570				#675747
+	K0		#ffecb3			480				590				#67604c
+	G5		#ffffbf			490				610				#66664c
+	G2		#ffffcc			500				620				#676752
+	G0		#ffffe6			510				630				#67675c
+	F5		#f3ffff			525				650				#616767
+	F0		#d9f3ff			535				670				#575b67
+	A5		#bfd1ff			570				720				#4c5367
+	A0		#a6beff			630				800				#495167
+	
+-->
+
+	<StationType UNID="&stStarClassM8;"
+		name=				"(M8 class red dwarf)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#673b34"
+		maxLightRadius=		"350"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"300"
+					intensity=		"25"
+					primaryColor=	"#ff2600"
+					secondaryColor=	"#ff2600"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassM5;"
+		name=				"(M5 class red dwarf)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#674a38"
+		maxLightRadius=		"450"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"375"
+					intensity=		"25"
+					primaryColor=	"#ff8534"
+					secondaryColor=	"#ff8534"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassM0;"
+		name=				"(M0 class red dwarf)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#675442"
+		maxLightRadius=		"545"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"445"
+					intensity=		"25"
+					primaryColor=	"#ffb367"
+					secondaryColor=	"#ffb367"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassK5;"
+		name=				"(K5 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#675747"
+		maxLightRadius=		"570"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"460"
+					intensity=		"25"
+					primaryColor=	"#ffcc99"
+					secondaryColor=	"#ffcc99"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassK0;"
+		name=				"(K0 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#67604c"
+		maxLightRadius=		"590"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"480"
+					intensity=		"25"
+					primaryColor=	"#ffecb3"
+					secondaryColor=	"#ffecb3"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassG5;"
+		name=				"(G5 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#66664c"
+		maxLightRadius=		"610"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"490"
+					intensity=		"25"
+					primaryColor=	"#ffffbf"
+					secondaryColor=	"#ffffbf"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassG2;"
+		name=				"(G2 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#676752"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"500"
+					intensity=		"25"
+					primaryColor=	"#ffffcc"
+					secondaryColor=	"#ffffcc"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassG0;"
+		name=				"(G0 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#67675c"
+		maxLightRadius=		"630"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"510"
+					intensity=		"25"
+					primaryColor=	"#ffffe6"
+					secondaryColor=	"#ffffe6"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassF5;"
+		name=				"(F5 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#616767"
+		maxLightRadius=		"650"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"525"
+					intensity=		"25"
+					primaryColor=	"#f3ffff"
+					secondaryColor=	"#f3ffff"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassF0;"
+		name=				"(F0 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#575b67"
+		maxLightRadius=		"670"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"535"
+					intensity=		"25"
+					primaryColor=	"#d9f3ff"
+					secondaryColor=	"#d9f3ff"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassA5;"
+		name=				"(A5 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#4c5367"
+		maxLightRadius=		"720"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"570"
+					intensity=		"25"
+					primaryColor=	"#bfd1ff"
+					secondaryColor=	"#bfd1ff"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<StationType UNID="&stStarClassA0;"
+		name=				"(A0 class star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#495167"
+		maxLightRadius=		"800"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"630"
+					intensity=		"25"
+					primaryColor=	"#a6beff"
+					secondaryColor=	"#a6beff"
+					/>
+		</ImageEffect>
+	</StationType>
+
+</TranscendenceModule>

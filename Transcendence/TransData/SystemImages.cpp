@@ -151,10 +151,11 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Create the system
 
+		CString sError;
 		CSystem *pSystem;
-		if (Universe.CreateStarSystem(pNode, &pSystem) != NOERROR)
+		if (Universe.CreateStarSystem(pNode, &pSystem, &sError) != NOERROR)
 			{
-			printf("ERROR: Unable to create star system for node %s.\n", pNode->GetID().GetASCIIZPointer());
+			printf("ERROR: node %s: %s\n", pNode->GetID().GetASCIIZPointer(), sError.GetASCIIZPointer());
 			return;
 			}
 

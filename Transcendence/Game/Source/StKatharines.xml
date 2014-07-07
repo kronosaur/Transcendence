@@ -2396,7 +2396,7 @@
 
 		<SystemGroup>
 
-			<Station type="&stA-TypeStar;" name="St. Katharine's Star"/>
+			<Station type="&stStarClassA0;" name="St. Katharine's Star"/>
 
 			<AddAttribute attributes="ATypeSystem"/>
 			<AddTerritory minRadius="0"		maxRadius="480"		attributes="innerSystem, metallicComp, moltenZone"/>

@@ -776,15 +776,14 @@
 
 		<SystemGroup>
 
-			<!-- Epsilon Eridani
-				This is a G-type star much like the Sun. -->
+			<!-- Epsilon Eridani -->
 
-			<Station type="&stG-TypeStar;" name="Epsilon Eridani"/>
+			<Station type="&stStarClassK0;" name="Epsilon Eridani"/>
 
-			<AddAttribute attributes="GTypeSystem"/>
-			<AddTerritory minRadius="0"		maxRadius="370"		attributes="innerSystem, rockyComp, cinderZone"/>
-			<AddTerritory minRadius="370"	maxRadius="620"		attributes="lifeZone, rockyComp, desertZone"/>
-			<AddTerritory minRadius="620"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
+			<AddAttribute attributes="KTypeSystem"/>
+			<AddTerritory minRadius="0"		maxRadius="350"		attributes="innerSystem, rockyComp, cinderZone"/>
+			<AddTerritory minRadius="350"	maxRadius="590"		attributes="lifeZone, rockyComp, desertZone"/>
+			<AddTerritory minRadius="590"	maxRadius="0"		attributes="outerSystem, rockyComp, frostZone"/>
 
 			<Orbitals angle="incrementing:30-330">
 

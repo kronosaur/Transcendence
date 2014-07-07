@@ -1063,6 +1063,19 @@
 	<!ENTITY tbRockyPlanets				"0x00020062">
 	<!ENTITY tbVolcanicPlanets			"0x00020063">
 	
+	<!ENTITY stStarClassM8				"0x00020070">
+	<!ENTITY stStarClassM5				"0x00020071">
+	<!ENTITY stStarClassM0				"0x00020072">
+	<!ENTITY stStarClassK5				"0x00020073">
+	<!ENTITY stStarClassK0				"0x00020074">
+	<!ENTITY stStarClassG5				"0x00020075">
+	<!ENTITY stStarClassG2				"0x00020076">
+	<!ENTITY stStarClassG0				"0x00020077">
+	<!ENTITY stStarClassF5				"0x00020078">
+	<!ENTITY stStarClassF0				"0x00020079">
+	<!ENTITY stStarClassA5				"0x0002007A">
+	<!ENTITY stStarClassA0				"0x0002007B">
+	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
 	<!-- RESERVED 0005 -->
@@ -2147,6 +2160,7 @@
 		<Module filename="Primordial.xml"/>
 		<Module filename="Rocky.xml"/>
 		<Module filename="Stargates.xml"/>
+		<Module filename="Stars.xml"/>
 		<Module filename="StarSystems.xml"/>
 		<Module filename="UniverseCompatibility.xml"/>
 		<Module filename="UniverseEffects.xml"/>
