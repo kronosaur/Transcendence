@@ -480,6 +480,37 @@ class CNullEffectCreator : public CEffectCreator,
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
 	};
 
+class COrbEffectCreator : public CEffectCreator
+	{
+	public:
+		COrbEffectCreator (void);
+		~COrbEffectCreator (void);
+			
+		virtual CString GetTag (void) { return GetClassTag(); }
+
+		//	CEffectCreator virtuals
+		virtual IEffectPainter *CreatePainter (CCreatePainterCtx &Ctx);
+		virtual int GetLifetime (void) { return 0; }
+
+		static CString GetClassTag (void) { return CONSTLIT("Orb"); }
+
+	protected:
+		virtual ALERROR OnEffectCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID);
+		virtual ALERROR OnEffectBindDesign (SDesignLoadCtx &Ctx);
+
+	private:
+		CEffectParamDesc m_Radius;			//	radius: Radius of orb (pixels)
+		CEffectParamDesc m_Style;			//	style: Style of ray
+		CEffectParamDesc m_Intensity;		//	intensity: Intensity of ray
+		CEffectParamDesc m_PrimaryColor;	//	primaryColor: Primary color
+		CEffectParamDesc m_SecondaryColor;	//	secondaryColor: Secondary color
+
+		CEffectParamDesc m_Animate;			//	animate: Animation styles
+		CEffectParamDesc m_Lifetime;		//	lifetime: Lifetime in ticks (optional)
+
+		IEffectPainter *m_pSingleton;
+	};
+
 class CParticleCloudEffectCreator : public CEffectCreator
 	{
 	public:

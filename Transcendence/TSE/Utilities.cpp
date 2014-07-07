@@ -2332,11 +2332,26 @@ COLORREF LoadCOLORREF (const CString &sString)
 
 	{
 	char *pPos = sString.GetASCIIZPointer();
-	int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
-	int iBlue = strParseInt(pPos, 0, &pPos, NULL);
 
-	return RGB(iRed, iGreen, iBlue);
+	//	If it starts with a # we expect an RGB DWORD
+
+	if (*pPos == '#')
+		{
+		pPos++;
+		DWORD dwColor = strParseIntOfBase(pPos, 16, 0);
+		return RGB((dwColor >> 16) & 0xFF, (dwColor >> 8) & 0xFF, dwColor & 0xFF);
+		}
+
+	//	Otherwise, we expect three comma-separated values
+
+	else
+		{
+		int iRed = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iGreen = strParseInt(pPos, 0, &pPos, NULL); if (*pPos) pPos++;
+		int iBlue = strParseInt(pPos, 0, &pPos, NULL);
+
+		return RGB(iRed, iGreen, iBlue);
+		}
 	}
 
 ALERROR LoadUNID (SDesignLoadCtx &Ctx, const CString &sString, DWORD *retdwUNID)

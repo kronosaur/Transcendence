@@ -216,7 +216,7 @@ class CG16bitImage : public CObject
 		int AdjustTextX (const CG16bitFont &Font, const CString &sText, AlignmentStyles iAlign, int x);
 		void AssociateSurface (LPDIRECTDRAW7 pDD);
 		void ConvertToSprite (void);
-		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0);
+		ALERROR CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor = 0, BYTE byInitAlpha = 0xff);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight);
 		ALERROR CreateBlankAlpha (int cxWidth, int cyHeight, BYTE byOpacity);
 		ALERROR CreateFromBitmap (HBITMAP hBitmap, HBITMAP hBitmask = NULL, DWORD dwFlags = 0);
@@ -308,6 +308,7 @@ class CG16bitImage : public CObject
 		void WriteToStream (IWriteStream *pStream);
 		void WriteToWindowsBMP (IWriteStream *pStream);
 
+		static inline BYTE BlendAlpha (BYTE dwOpacity1, BYTE dwOpacity2) { return (BYTE)255 - (BYTE)(((DWORD)(255 - dwOpacity1) * (DWORD)(255 - dwOpacity2)) / 255); }
 		static WORD BlendPixel (WORD pxDest, WORD pxSource, DWORD byOpacity);
 		static WORD BlendPixelGray (WORD pxDest, WORD pxSource, DWORD byOpacity);
 		static WORD BlendPixelPM (DWORD pxDest, DWORD pxSource, DWORD byOpacity);
@@ -413,6 +414,7 @@ bool CalcBltTransform (Metric rX,
 					   CXForm *retSrcToDest, 
 					   CXForm *retDestToSrc, 
 					   RECT *retrcDest);
+void CompositeFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable, bool bStochastic = false);
 void CopyBltColorize (CG16bitImage &Dest,
 					  int xDest,
 					  int yDest,
@@ -479,6 +481,7 @@ void DrawBltTransformed (CG16bitImage &Dest,
 void DrawBrokenLine (CG16bitImage &Dest, int xSrc, int ySrc, int xDest, int yDest, int xyBreak, WORD wColor);
 void DrawDottedLine (CG16bitImage &Dest, int x1, int y1, int x2, int y2, WORD wColor);
 void DrawFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor);
+void DrawFilledCircle (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD *pColorTable, BYTE *pOpacityTable);
 void DrawFilledCircleGray (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor, DWORD byOpacity);
 void DrawFilledCircleTrans (CG16bitImage &Dest, int xDest, int yDest, int iRadius, WORD wColor, DWORD byOpacity);
 void DrawGlowRing (CG16bitImage &Dest,

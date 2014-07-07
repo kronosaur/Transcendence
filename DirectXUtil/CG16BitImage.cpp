@@ -1064,7 +1064,13 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 						{
 						DWORD pxSource = *pSrcPos;
 						DWORD pxDest = *pDestPos;
-						DWORD dwInvTrans = (((DWORD)(*pAlphaPos)) ^ 0xff);
+
+						//	x ^ 0xff is the same as 255 - x
+						//	| 0x0f so that we round-up
+						//	+ 1 because below we divide by 256 instead of 255.
+						//	LATER: Use a table lookup
+
+						DWORD dwInvTrans = ((((DWORD)(*pAlphaPos)) ^ 0xff) | 0x0f) + 1;
 
 						DWORD dwRedGreenS = ((pxSource << 8) & 0x00f80000) | (pxSource & 0x000007e0);
 						DWORD dwRedGreen = (((((pxDest << 8) & 0x00f80000) | (pxDest & 0x000007e0)) * dwInvTrans) >> 8) + dwRedGreenS;
@@ -1472,7 +1478,7 @@ ALERROR CG16bitImage::CopyToClipboard (void)
 	return NOERROR;
 	}
 
-ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor)
+ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, WORD wInitColor, BYTE byInitAlpha)
 
 //	CreateBlank
 //
@@ -1501,7 +1507,7 @@ ALERROR CG16bitImage::CreateBlank (int cxWidth, int cyHeight, bool bAlphaMask, W
 		{
 		iAlphaRowSize = AlignUp(cxWidth, sizeof(DWORD)) / sizeof(DWORD);
 		pAlpha = (DWORD *)MemAlloc(cyHeight * iAlphaRowSize * sizeof(DWORD));
-		utlMemSet(pAlpha, cyHeight * iAlphaRowSize * sizeof(DWORD), (char)0xFF);
+		utlMemSet(pAlpha, cyHeight * iAlphaRowSize * sizeof(DWORD), (char)byInitAlpha);
 		}
 
 	//	Done

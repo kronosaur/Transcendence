@@ -282,6 +282,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="IListData.cpp" />
+    <ClCompile Include="SFXOrb.cpp" />
     <ClCompile Include="SFXParticleJet.cpp" />
     <ClCompile Include="SFXRay.cpp" />
     <ClCompile Include="XMLLoader.cpp">

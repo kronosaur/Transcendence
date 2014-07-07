@@ -694,6 +694,11 @@ void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectIma
 
 	CCreatePainterCtx Ctx;
 	IEffectPainter *pPainter = m_pEffect->CreatePainter(Ctx);
+	if (pPainter == NULL)
+		{
+		*retImage = EMPTY_IMAGE;
+		return;
+		}
 
 	//	Get the painter bounds
 
@@ -702,10 +707,14 @@ void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectIma
 	int cxWidth = RectWidth(rcBounds);
 	int cyHeight = RectHeight(rcBounds);
 
+	//	Manual compositing
+
+	bool bCanComposite = pPainter->CanPaintComposite();
+
 	//	Create a resulting image
 
 	CG16bitImage *pDest = new CG16bitImage;
-	pDest->CreateBlank(cxWidth, cyHeight, true);
+	pDest->CreateBlank(cxWidth, cyHeight, true, 0x00, (bCanComposite ? 0x00 : 0xff));
 
 	//	Set up paint context
 
@@ -719,7 +728,7 @@ void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectIma
 
 	//	Paint
 
-	pPainter->Paint(*pDest, (cxWidth / 2), (cyHeight / 2), PaintCtx);
+	pPainter->PaintComposite(*pDest, (cxWidth / 2), (cyHeight / 2), PaintCtx);
 
 	//	Initialize an image
 
@@ -735,6 +744,7 @@ void CEffectEntry::GetImage (const CCompositeImageSelector &Selector, CObjectIma
 	//	Done
 
 	retImage->TakeHandoff(Comp);
+	pPainter->Delete();
 	}
 
 int CEffectEntry::GetMaxLifetime (void) const

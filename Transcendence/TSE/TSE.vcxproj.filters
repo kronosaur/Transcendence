@@ -772,5 +772,8 @@
     <ClCompile Include="CPaintHelper.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="SFXOrb.cpp">
+      <Filter>Source Files\SFX</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

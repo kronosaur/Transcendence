@@ -3367,6 +3367,7 @@ class IEffectPainter
 #else
 		virtual ~IEffectPainter (void) { }
 #endif
+		virtual bool CanPaintComposite (void) { return false; }
 		virtual void Delete (void) { if (!m_bSingleton) delete this; }
 		virtual CEffectCreator *GetCreator (void) = 0;
 		virtual int GetFadeLifetime (void) { return 0; }
@@ -3382,6 +3383,7 @@ class IEffectPainter
 		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged = NULL) { if (retbBoundsChanged) *retbBoundsChanged = false; }
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx) { }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) = 0;
+		virtual void PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { Paint(Dest, x, y, Ctx); }
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx) { }
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const { return false; }
