@@ -2424,17 +2424,21 @@
 		name=				"(G class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
-		spaceColor=			"0x68, 0x63, 0x23"
+		spaceColor=			"#66664c"
 		maxLightRadius=		"300"
 
 		attributes=			"generic, star"
 		>
 
-		<Image>
-			<FilterColorize hue="57" saturation="50">
-				<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
-			</FilterColorize>
-		</Image>
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"490"
+					intensity=		"25"
+					primaryColor=	"#ffffbf"
+					secondaryColor=	"#ffffbf"
+					/>
+		</ImageEffect>
 	</StationType>
 
 	<!-- Rigel Aurelius system -->

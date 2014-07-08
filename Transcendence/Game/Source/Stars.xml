@@ -35,13 +35,16 @@
 		>
 
 		<ImageEffect>
-			<Orb
-					style=			"smooth"
-					radius=			"300"
-					intensity=		"25"
-					primaryColor=	"#ff2600"
-					secondaryColor=	"#ff2600"
-					/>
+			<Group>
+				<Orb
+						style=			"smooth"
+						radius=			"300"
+						intensity=		"25"
+						primaryColor=	"#ff2600"
+						secondaryColor=	"#ff2600"
+						/>
+				<Image imageID="&rsRedDwarfStar2;" imageX="0" imageY="0" imageWidth="150" imageHeight="150"/>
+			</Group>
 		</ImageEffect>
 	</StationType>
 
@@ -56,13 +59,16 @@
 		>
 
 		<ImageEffect>
-			<Orb
-					style=			"smooth"
-					radius=			"375"
-					intensity=		"25"
-					primaryColor=	"#ff8534"
-					secondaryColor=	"#ff8534"
-					/>
+			<Group>
+				<Orb
+						style=			"smooth"
+						radius=			"375"
+						intensity=		"25"
+						primaryColor=	"#ff8534"
+						secondaryColor=	"#ff8534"
+						/>
+				<Image imageID="&rsRedDwarfStar2;" imageX="0" imageY="150" imageWidth="200" imageHeight="200"/>
+			</Group>
 		</ImageEffect>
 	</StationType>
 
@@ -276,4 +282,63 @@
 		</ImageEffect>
 	</StationType>
 
+<!-- EXOTIC STARS
+
+-->
+	
+	<!-- Nebula Star -->
+
+	<StationType UNID="&stNebulaStar;"
+		name=				"(nebula star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#433d4d"
+		maxLightRadius=		"400"
+
+		attributes=			"generic, star"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"400"
+					intensity=		"25"
+					primaryColor=	"#cfb2ff"
+					secondaryColor=	"#cfb2ff"
+					/>
+		</ImageEffect>
+	</StationType>
+
+	<!-- Red Giant Star -->
+
+	<StationType UNID="&stRedGiantStar;"
+		name=				"(red giant star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+		spaceColor=			"#663524"
+		maxLightRadius=		"620"
+
+		attributes=			"generic, star"
+		>
+		
+		<ImageEffect>
+			<Group>
+				<Orb
+						style=			"smooth"
+						radius=			"500"
+						intensity=		"30"
+						primaryColor=	"#ff4000"
+						secondaryColor=	"#ff4000"
+						/>
+				
+				<Image imageID="&rsRedGiantStar2;" imageX="0" imageY="0" imageWidth="512" imageHeight="512"/>
+			</Group>
+		</ImageEffect>
+	</StationType>
+	
+<!-- RESOURCES -->
+
+	<Image UNID="&rsRedGiantStar2;"			bitmap="Resources\RedGiantStar2.jpg"			bitmask="Resources\RedGiantStar2Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsRedDwarfStar2;"			bitmap="Resources\RedDwarfStar2.jpg"			bitmask="Resources\RedDwarfStar2Mask.bmp"  loadOnUse="true"/>
+	
 </TranscendenceModule>

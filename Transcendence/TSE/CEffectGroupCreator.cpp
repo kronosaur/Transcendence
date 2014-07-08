@@ -18,6 +18,7 @@ class CEffectGroupPainter : public IEffectPainter
 		CEffectGroupPainter (CEffectGroupCreator *pCreator, CCreatePainterCtx &Ctx);
 
 		virtual ~CEffectGroupPainter (void);
+		virtual bool CanPaintComposite (void);
 		virtual CEffectCreator *GetCreator (void) { return m_pCreator; }
 		virtual int GetFadeLifetime (void);
 		virtual void GetRect (RECT *retRect) const;
@@ -25,6 +26,7 @@ class CEffectGroupPainter : public IEffectPainter
 		virtual void OnMove (SEffectMoveCtx &Ctx, bool *retbBoundsChanged);
 		virtual void OnUpdate (SEffectUpdateCtx &Ctx);
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void PaintHit (CG16bitImage &Dest, int x, int y, const CVector &vHitPos, SViewportPaintCtx &Ctx);
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
@@ -83,6 +85,23 @@ SViewportPaintCtx *CEffectGroupPainter::AdjustCtx (SViewportPaintCtx &Ctx, SView
 		}
 	else
 		return &Ctx;
+	}
+
+bool CEffectGroupPainter::CanPaintComposite (void)
+
+//	CanPaintComposite
+//
+//	Returns TRUE if we can paint composite.
+
+	{
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			if (!m_Painters[i]->CanPaintComposite())
+				return false;
+
+	//	If we get this far, all painters can paint composite
+
+	return true;
 	}
 
 int CEffectGroupPainter::GetFadeLifetime (void)
@@ -252,6 +271,21 @@ void CEffectGroupPainter::Paint (CG16bitImage &Dest, int x, int y, SViewportPain
 	for (int i = 0; i < m_Painters.GetCount(); i++)
 		if (m_Painters[i])
 			m_Painters[i]->Paint(Dest, x, y, *pCtx);
+	}
+
+void CEffectGroupPainter::PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintComposite
+//
+//	Paint the effect
+
+	{
+	SViewportPaintCtx NewCtx;
+	SViewportPaintCtx *pCtx = AdjustCtx(Ctx, NewCtx, &x, &y);
+
+	for (int i = 0; i < m_Painters.GetCount(); i++)
+		if (m_Painters[i])
+			m_Painters[i]->PaintComposite(Dest, x, y, *pCtx);
 	}
 
 void CEffectGroupPainter::PaintFade (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)

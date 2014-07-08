@@ -344,11 +344,13 @@ class CImageEffectCreator : public CEffectCreator,
 		virtual void SetVariants (int iVariants);
 
 		//	IEffectPainter virtuals
+		virtual bool CanPaintComposite (void) { return true; }
 		virtual CEffectCreator *GetCreator (void) { return this; }
 		virtual bool GetParticlePaintDesc (SParticlePaintDesc *retDesc);
 		virtual void GetRect (RECT *retRect) const;
 		virtual int GetVariants (void) const { return m_iVariants; }
 		virtual void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void PaintComposite (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual bool PointInImage (int x, int y, int iTick, int iVariant = 0, int iRotation = 0) const;
 
 	protected:

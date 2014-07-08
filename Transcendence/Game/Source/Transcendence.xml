@@ -1076,6 +1076,9 @@
 	<!ENTITY stStarClassA5				"0x0002007A">
 	<!ENTITY stStarClassA0				"0x0002007B">
 	
+	<!ENTITY rsRedGiantStar2			"0x00020080">
+	<!ENTITY rsRedDwarfStar2			"0x00020081">
+	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
 	<!-- RESERVED 0005 -->

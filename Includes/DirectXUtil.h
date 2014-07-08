@@ -27,6 +27,8 @@
 #include "Euclid.h"
 #endif
 
+#define BLT_RANGE_CHECK
+
 #define ALPHA_BITS				8
 #define ALPHA_LEVELS			256
 
@@ -243,6 +245,7 @@ class CG16bitImage : public CObject
 		void BltToSurface (LPDIRECTDRAWSURFACE7 pSurface, SurfaceTypes iType, const RECT &rcDest);
 		void BltWithMask (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Mask, const CG16bitImage &Source, int xDest, int yDest);
 		void ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, DWORD dwOpacity, const CG16bitImage &Source, int xDest, int yDest);
+		void CompositeTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, DWORD dwOpacity, const CG16bitImage &Source, int xDest, int yDest);
 		void CopyAlpha (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Soruce, int xDest, int yDest);
 		ALERROR CopyToClipboard (void);
 		void ClearMaskBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest, WORD wColor = DEFAULT_TRANSPARENT_COLOR);

@@ -865,7 +865,7 @@ ALERROR CObjectImageArray::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const
+void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, bool bComposite) const
 
 //	PaintImage
 //
@@ -886,7 +886,18 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 			y -= m_pRotationOffset[iRotation % m_iRotationCount].y;
 			}
 
-		if (m_iBlending == blendLighten)
+		if (bComposite)
+			{
+			Dest.CompositeTransBlt(xSrc,
+					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
+					RectWidth(m_rcImage),
+					RectHeight(m_rcImage),
+					255,
+					*pSource,
+					x - (RectWidth(m_rcImage) / 2),
+					y - (RectHeight(m_rcImage) / 2));
+			}
+		else if (m_iBlending == blendLighten)
 			{
 			Dest.BltLighten(xSrc,
 					m_rcImage.top + (iRotation * RectHeight(m_rcImage)),
@@ -1037,7 +1048,8 @@ void CObjectImageArray::PaintRotatedImage (CG16bitImage &Dest,
 										   int x,
 										   int y,
 										   int iTick,
-										   int iRotation) const
+										   int iRotation,
+										   bool bComposite) const
 
 //	PaintRotatedImage
 //
@@ -1088,7 +1100,8 @@ void CObjectImageArray::PaintScaledImage (CG16bitImage &Dest,
 										  int iTick,
 										  int iRotation,
 										  int cxWidth,
-										  int cyHeight) const
+										  int cyHeight,
+										  bool bComposite) const
 
 //	PaintScaledImage
 //

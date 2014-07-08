@@ -862,7 +862,7 @@ class CObjectImageArray : public CObject
 		inline bool IsEmpty (void) const { return ((m_pImage == NULL) && (m_dwBitmapUNID == 0)); }
 		inline bool IsLoaded (void) const { return (m_pImage != NULL); }
 		void MarkImage (void);
-		void PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
+		void PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, bool bComposite = false) const;
 		void PaintImageGrayed (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
 		void PaintImageUL (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
 		void PaintImageWithGlow (CG16bitImage &Dest,
@@ -875,14 +875,16 @@ class CObjectImageArray : public CObject
 								int x,
 								int y,
 								int iTick,
-								int iRotation) const;
+								int iRotation,
+								bool bComposite = false) const;
 		void PaintScaledImage (CG16bitImage &Dest,
 							   int x,
 							   int y,
 							   int iTick,
 							   int iRotation,
 							   int cxWidth,
-							   int cyHeight) const;
+							   int cyHeight,
+							   bool bComposite = false) const;
 		void PaintSilhoutte (CG16bitImage &Dest,
 							 int x,
 							 int y,

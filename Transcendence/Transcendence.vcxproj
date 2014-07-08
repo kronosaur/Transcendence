@@ -643,7 +643,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Environments.xml" />
-    <None Include="Game\Source\Eridani.xml" />
+    <None Include="Game\Source\Eridani.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Groups.xml" />
     <None Include="Game\Source\Heretic.xml">
       <SubType>Designer</SubType>
@@ -679,7 +681,9 @@
     <None Include="Game\Source\PlayerShips.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\PointJuno.xml" />
+    <None Include="Game\Source\PointJuno.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Primordial.xml" />
     <None Include="Game\Source\Rasiermesser.xml" />
     <None Include="Game\Source\Ringers.xml" />
@@ -711,7 +715,9 @@
     </None>
     <None Include="Game\Source\Stargates.xml" />
     <None Include="Game\Source\StarsOfThePilgrim.xml" />
-    <None Include="Game\Source\StarSystems.xml" />
+    <None Include="Game\Source\StarSystems.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdArmor.xml" />
     <None Include="Game\Source\StdAutons.xml" />
     <None Include="Game\Source\StdDevices.xml" />
@@ -779,7 +785,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Game\Source\Benedict.xml" />
-    <Xml Include="Game\Source\Stars.xml" />
+    <None Include="Game\Source\Stars.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
