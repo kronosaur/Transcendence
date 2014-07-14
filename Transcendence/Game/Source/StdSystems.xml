@@ -248,6 +248,56 @@
 		</SystemGroup>
 	</SystemType>
 
+	<!-- EarthSpace (Metallic) -->
+
+	<SystemType UNID="&ssEarthSpaceMetallic;">
+		<SystemGroup>
+			<Lookup table="MetallicSystem"/>
+
+			<!-- Place the two stargates -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
+			<!-- Primary Station (90% chance) -->
+
+			<RandomLocation probability="90" locationCriteria="++lifeZone; *planet">
+				<RandomStation stationCriteria="*friendly; *primary"/>
+			</RandomLocation>
+
+			<!-- Random Stations -->
+
+			<FillLocations
+					percentFull=		"80"
+					stationCriteria=	"!primary; !debris; +envEarth; -envAvoidsEarth" 
+					percentEnemies=		"65"
+					separateEnemies=	"true"
+					/>
+
+			<!-- Random Debris -->
+
+			<RandomLocation probability="50" locationCriteria="++outerSystem; ++asteroids">
+				<Orbitals count="1d6" distance="1d8+6" angle="random">
+					<RandomStation stationCriteria="*debris"/>
+				</Orbitals>
+			</RandomLocation>
+
+			<FillLocations
+					percentFull=		"50"
+					stationCriteria=	"*debris"
+					/>
+
+			<!-- Void Encounters -->
+
+			<Orbitals count="1d12" distance="3d200+240" angle="random" exclusionRadius="100">
+				<Table>
+					<RandomStation chance="80" stationCriteria="*debris"/>
+					<RandomStation chance="18" stationCriteria="*enemy" locationAttribs="void"/>
+					<RandomStation chance="2"  stationCriteria="*friendly; !debris; !primary" locationAttribs="void"/>
+				</Table>
+			</Orbitals>
+		</SystemGroup>
+	</SystemType>
+
 	<!-- EarthSpace (Nebulae) -->
 
 	<SystemType UNID="&ssEarthSpaceNebulae;">
@@ -269,6 +319,56 @@
 			<FillLocations
 					percentFull=		"80" 
 					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					percentEnemies=		"65"
+					separateEnemies=	"true"
+					/>
+
+			<!-- Random Debris -->
+
+			<RandomLocation probability="50" locationCriteria="++outerSystem; ++asteroids">
+				<Orbitals count="1d6" distance="1d8+6" angle="random">
+					<RandomStation stationCriteria="*debris"/>
+				</Orbitals>
+			</RandomLocation>
+
+			<FillLocations
+					percentFull=		"50"
+					stationCriteria=	"*debris"
+					/>
+
+			<!-- Void Encounters -->
+
+			<Orbitals count="1d12" distance="3d200+240" angle="random" exclusionRadius="100">
+				<Table>
+					<RandomStation chance="80" stationCriteria="*debris"/>
+					<RandomStation chance="18" stationCriteria="*enemy" locationAttribs="void"/>
+					<RandomStation chance="2"  stationCriteria="*friendly; !debris; !primary" locationAttribs="void"/>
+				</Table>
+			</Orbitals>
+		</SystemGroup>
+	</SystemType>
+	
+	<!-- EarthSpace (Primordial) -->
+
+	<SystemType UNID="&ssEarthSpacePrimordial;">
+		<SystemGroup>
+			<Lookup table="PrimordialSystem"/>
+
+			<!-- Place the two stargates -->
+
+			<Lookup table="HumanSpaceStargates"/>
+
+			<!-- Primary Station (90% chance) -->
+
+			<RandomLocation probability="90" locationCriteria="++lifeZone; *planet">
+				<RandomStation stationCriteria="*friendly; *primary"/>
+			</RandomLocation>
+
+			<!-- Random Stations -->
+
+			<FillLocations
+					percentFull=		"80" 
+					stationCriteria=	"!primary; !debris; +envWater; -envAvoidsWater" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>

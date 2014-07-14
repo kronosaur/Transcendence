@@ -1062,6 +1062,8 @@
 	<!ENTITY tbMetallicPlanets			"0x00020061">
 	<!ENTITY tbRockyPlanets				"0x00020062">
 	<!ENTITY tbVolcanicPlanets			"0x00020063">
+	<!ENTITY rsRedGiantStar2			"0x00020064">
+	<!ENTITY rsRedDwarfStar2			"0x00020065">
 	
 	<!ENTITY stStarClassM8				"0x00020070">
 	<!ENTITY stStarClassM5				"0x00020071">
@@ -1076,8 +1078,6 @@
 	<!ENTITY stStarClassA5				"0x0002007A">
 	<!ENTITY stStarClassA0				"0x0002007B">
 	
-	<!ENTITY rsRedGiantStar2			"0x00020080">
-	<!ENTITY rsRedDwarfStar2			"0x00020081">
 	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
@@ -1119,6 +1119,8 @@
 	<!ENTITY scKateMorgentalCruiser		"0x00100007">
 	<!ENTITY trStdLevelTreasure			"0x00100008">
 	<!ENTITY unidBenedict				"0x00100009">
+	<!ENTITY ssEarthSpacePrimordial		"0x0010000A">
+	<!ENTITY ssEarthSpaceMetallic		"0x0010000B">
 	
 	<!-- COMMONWEALTH 0010 -->
 	
