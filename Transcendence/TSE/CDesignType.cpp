@@ -75,6 +75,8 @@
 #define FIELD_UNID								CONSTLIT("unid")
 #define FIELD_VERSION							CONSTLIT("version")
 
+#define FIELD_ATTRIB_PREFIX						CONSTLIT("attrib-")
+
 static char DESIGN_CHAR[designCount] =
 	{
 		'i',
@@ -511,6 +513,8 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 //	to change all the instances.]
 
 	{
+	int i;
+
 	if (strEquals(sField, FIELD_EXTENSION_UNID))
 		*retsValue = strPatternSubst("0x%08x", (m_pExtension ? m_pExtension->GetUNID() : 0));
 	else if (strEquals(sField, FIELD_NAME))
@@ -526,6 +530,51 @@ bool CDesignType::FindDataField (const CString &sField, CString *retsValue)
 			*retsValue = strFromInt(m_dwVersion);
 		else
 			*retsValue = strPatternSubst("%d", ExtensionVersionToInteger(m_dwVersion));
+		}
+	else if (strStartsWith(sField, FIELD_ATTRIB_PREFIX))
+		{
+		CString sParam = strSubString(sField, FIELD_ATTRIB_PREFIX.GetLength());
+
+		//	Parse into a list of attributes
+
+		TArray<CString> Attribs;
+		char *pPos = sParam.GetASCIIZPointer();
+		char *pStart = pPos;
+		while (true)
+			{
+			if (*pPos == '\0' || *pPos == '-')
+				{
+				CString sAttrib = CString(pStart, (int)(pPos - pStart));
+				if (!sAttrib.IsBlank())
+					Attribs.Insert(sAttrib);
+
+				if (*pPos == '\0')
+					break;
+				else
+					pStart = pPos + 1;
+				}
+
+			pPos++;
+			}
+
+		//	See which attribute we have
+
+		CString sValue;
+		for (i = 0; i < Attribs.GetCount(); i++)
+			if (HasAttribute(Attribs[i]))
+				{
+				if (sValue.IsBlank())
+					sValue = Attribs[i];
+				else
+					sValue = strPatternSubst(CONSTLIT("%s, %s"), sValue, Attribs[i]);
+				}
+
+		//	If not found, return false
+
+		if (sValue.IsBlank())
+			return false;
+
+		*retsValue = sValue;
 		}
 	else
 		return false;
