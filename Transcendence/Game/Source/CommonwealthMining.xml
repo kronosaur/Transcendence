@@ -690,7 +690,7 @@
 												(setq theClass (random '(&scBorer; &scBorer; &scHammerhead;)))
 												(setq theClass (random '(&scBorer; &scBorer; &scHammerhead; &scHammerhead-II; &scBorer-II;)))
 												)
-											(setq theShip (sysCreateShip theClass (objGetPos gTarget) &svSettlers;))
+											(setq theShip (sysCreateShip theClass (objGetPos gTarget) &svOutlawMiners;))
 											(shpOrder theShip 'guard gTarget)
 
 											(objSetObjRefData gSource (cat "target" i) theShip)

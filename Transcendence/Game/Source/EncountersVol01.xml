@@ -29,6 +29,11 @@
 
 <!-- Abbasid Survivalists ================================================= -->
 
+	<Sovereign UNID="&svAbbasid;"
+			name="Abbasid Survivalists"
+			alignment="destructive order"
+			/>
+
 	<!-- Abbasid Thanogram -->
 
 	<ItemType UNID="&itAbbasidThanogram;"
@@ -50,7 +55,7 @@
 
 	<StationType UNID="&stAbbasidOutpost;"
 			name=				"Abbasid outpost"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svAbbasid;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -98,6 +103,11 @@
 
 <!-- Bennin Xenophobes ==================================================== -->
 
+	<Sovereign UNID="&svXenophobes;"
+			name="Bennin Xenophobes"
+			alignment="destructive chaos"
+			/>
+	
 	<!-- Xenophobe Fighter -->
 
 	<ShipClass UNID="&scXenophobeFighter;"
@@ -526,7 +536,7 @@
 			name=				"(Xenophobe fleet)"
 			scale=				"world"
 			sovereign=			"&svIndependent;"
-			controllingSovereign="&svDestructiveChaos;"
+			controllingSovereign="&svXenophobes;"
 
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
@@ -548,7 +558,7 @@
 		</ImageVariants>
 
 		<Ships>
-			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svDestructiveChaos;" >
+			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svXenophobes;" >
 				<Escorts>
 					<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
 				</Escorts>
@@ -568,7 +578,7 @@
 	<StationType UNID="&stXenophobeWorldship;"
 			name=				"(Xenophobe worldship)"
 			sovereign=			"&svCommonwealth;"
-			controllingSovereign="&svDestructiveChaos;"
+			controllingSovereign="&svXenophobes;"
 			abandonedScreen=	"Main"
 
 			multiHull=			"true"
@@ -597,7 +607,7 @@
 		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
 
 		<Ships>
-			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svDestructiveChaos;" >
+			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
 				<Escorts>
 					<Ship		count="1d3+1"	class="&scXenophobeDefender;"	orders="escort">
 						<Escorts>
@@ -733,6 +743,11 @@
 
 <!-- Death Drugs Cartel =================================================== -->
 
+	<Sovereign UNID="&svDeathDrugsCartel;"
+			name="Death Drugs Cartel"
+			alignment="destructive order"
+			/>
+
 	<!-- Meth Enforcer -->
 
 	<ShipClass UNID="&scMethEnforcer;"
@@ -790,7 +805,7 @@
 
 	<StationType UNID="&stDrugCartelOutpost;"
 			name=				"Death Drug Cartel outpost"
-			sovereign=			"&svOutlaw;"
+			sovereign=			"&svDeathDrugsCartel;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1723,6 +1738,11 @@
 	
 <!-- Gaian Terraformers =================================================== -->
 
+	<Sovereign UNID="&svGaianTerraformers;"
+			name="Gaian Terraformers"
+			alignment="destructive order"
+			/>
+
 	<!-- Gaian Demolition Cannon -->
 
 	<ItemType UNID="&itGaianDemolitionCannon;"
@@ -1847,6 +1867,7 @@
 	<StationType UNID="&stGaianProcessorEncounter;"
 			name=				"(Gaian processor)"
 			sovereign=			"&svIndependentTrader;"
+			controllingSovereign="&svGaianTerraformers;"
 			dockScreen=			"&dsAbandonedShip;"
 
 			scale=				"ship"
@@ -3282,6 +3303,11 @@
 
 <!-- Order of Penitence =================================================== -->
 
+	<Sovereign UNID="&svPenitents;"
+			name="Order of Penitence"
+			alignment="destructive order"
+			/>
+
 	<!-- Absolution cannon -->
 
 	<ItemType UNID="&itAbsolutionCannon;"
@@ -3477,7 +3503,7 @@
 
 	<StationType UNID="&stPenitentShrine;"
 			name=				"Penitent shrine"
-			sovereign=			"&svCult;"
+			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -3527,7 +3553,7 @@
 
 	<StationType UNID="&stPenitentSanctum;"
 			name=				"Penitent sanctum"
-			sovereign=			"&svCult;"
+			sovereign=			"&svPenitents;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -4295,11 +4321,16 @@
 	
 <!-- Pteravores =========================================================== -->
 
+	<Sovereign UNID="&svPteravores;"
+			name="pteravores"
+			alignment="destructive chaos"
+			/>
+
 	<!-- Pteravore Lair -->
 
 	<StationType UNID="&stPteravoreLair;"
 			name=				"pteravore lair"
-			sovereign=			"&svDestructiveChaos;"
+			sovereign=			"&svPteravores;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -4675,7 +4706,12 @@
 	<Image UNID="&rsPteravoreClawOverlay;"		bitmap="Resources\PteravoreClawOverlay.jpg"	bitmask="Resources\PteravoreClawOverlayMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsPteravoreDebris;"			bitmap="Resources\PteravoreDebris.jpg"	bitmask="Resources\PteravoreDebrisMask.bmp"	loadOnUse="true"/>
 
-<!-- Ranx Warlords ======================================================== -->
+<!-- Ranx Empire =========================================================== -->
+
+	<Sovereign UNID="&svRanxEmpire;"
+			name="Ranx Empire"
+			alignment="destructive order"
+			/>
 
 	<!-- Segment of Depleted Uranium Armor -->
 
@@ -4859,7 +4895,7 @@
 
 	<StationType UNID="&stRanxOutpost;"
 			name=				"Ranx outpost"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svRanxEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -4910,7 +4946,7 @@
 
 	<StationType UNID="&stRanxFortress;"
 			name=				"Ranx fortress"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svRanxEmpire;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5150,6 +5186,11 @@
 
 <!-- Sapiens ============================================================== -->
 
+	<Sovereign UNID="&svSapiens;"
+			name="Sapiens Preservation Society"
+			alignment="destructive chaos"
+			/>
+
 	<!-- Plague Gunship -->
 
 	<ShipClass UNID="&scPlague;"
@@ -5261,7 +5302,7 @@
 
 	<StationType UNID="&stTerroristCamp;"
 			name=				"Sapiens camp"
-			sovereign=			"&svAnarchists;"
+			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5317,7 +5358,7 @@
 
 	<StationType UNID="&stTerroristCompound;"
 			name=				"Sapiens compound"
-			sovereign=			"&svAnarchists;"
+			sovereign=			"&svSapiens;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -5674,6 +5715,11 @@
 
 <!-- Ventari Settlers ===================================================== -->
 
+	<Sovereign UNID="&svVentariSettlers;"
+			name="Ventari Settlers"
+			alignment="destructive order"
+			/>
+
 	<!-- Ventari Cruiser -->
 
 	<ShipClass UNID="&scVentariCruiser;"
@@ -5760,7 +5806,7 @@
 
 	<StationType UNID="&stVentariColony;"
 			name=				"Ventari colony"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svVentariSettlers;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"

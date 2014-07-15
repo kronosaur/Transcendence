@@ -670,7 +670,9 @@
 
 	<!-- Eridani System -->
 
-	<SystemType UNID="&ssStartonEridani;">
+	<SystemType UNID="&ssStartonEridani;"
+				attributes="envWater"
+				>
 
 		<Tables>
 			<!-- Planets and Asteroids -->

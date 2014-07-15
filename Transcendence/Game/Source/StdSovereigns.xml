@@ -69,11 +69,6 @@
 			alignment="destructive order"
 			/>
 
-	<Sovereign UNID="&svGaianTerraformers;"
-			name="Gaian Terraformers"
-			alignment="destructive order"
-			/>
-
 	<!-- DESTRUCTIVE CHAOS -->
 
 	<Sovereign UNID="&svDestructiveChaos;"

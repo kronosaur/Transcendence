@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svLuminous;"
+			name="Luminous"
+			alignment="destructive order"
+			/>
+
 	<Sovereign UNID="&svFriendlyLuminous;"
 			name="Luminous drone"
 			alignment="constructive chaos"
@@ -403,7 +408,7 @@
 
 	<StationType UNID="&stLuminousAssembler;"
 			name=				"Luminous Assembler"
-			sovereign=			"&svDestructiveOrder;"
+			sovereign=			"&svLuminous;"
 			dockScreen=			"&dsAbandonedStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"

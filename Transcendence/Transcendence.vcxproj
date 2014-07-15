@@ -638,7 +638,9 @@
     <None Include="Game\Source\DwargRaiders.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Elysium.xml" />
+    <None Include="Game\Source\Elysium.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\EncountersVol01.xml">
       <SubType>Designer</SubType>
     </None>

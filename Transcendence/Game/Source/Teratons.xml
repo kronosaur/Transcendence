@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svTeratons;"
+			name="Teratons"
+			alignment="neutral"
+			/>
+
 	<!-- Kytryn Blaster -->
 
 	<ItemType UNID="&itKytrynBlaster;"
@@ -202,7 +207,7 @@
 
 	<StationType UNID="&stTeratonChrysalis;"
 			name=				"Teraton chrysalis"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"4"
@@ -295,7 +300,7 @@
 
 	<StationType UNID="&stTeratonDefender;"
 			name=				"Teraton Defender"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"4"
 			noMapLabel=			"true"
@@ -332,7 +337,7 @@
 
 	<StationType UNID="&stTeratonFactory;"
 			name=				"Teraton fabricator"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -782,7 +787,7 @@
 
 	<StationType UNID="&stTeratonResearch;"
 			name=				"Teraton research center"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1204,7 +1209,7 @@
 
 	<StationType UNID="&stTeratonTradingPost;"
 			name=				"Teraton trading post"
-			sovereign=			"&svIndependentTrader;"
+			sovereign=			"&svTeratons;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"

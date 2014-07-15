@@ -103,9 +103,10 @@
 					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
-					<System chance="30" name="Groombridge" UNID="&ssEarthSpaceStandard;"/>
-					<System chance="40" name="Lalande"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="30" name="5 Indi"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Groombridge" UNID="&ssEarthSpaceStandard;"/>
+					<System chance="25" name="Lalande"	UNID="&ssEarthSpaceRedDwarf;"/>
+					<System chance="25" name="5 Indi"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Foum Alhaut" UNID="&ssEarthSpaceDesert;"/>
 				</Table>
 			</System>
 		</Node>
@@ -157,8 +158,8 @@
 					attributes=		"humanSpace, mainline, newBeyond"
 					>
 				<Table>
-					<System chance="17" name="Manchester"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="8"  name="Fridlund"	UNID="&ssEarthSpaceBinary;"/>
+					<System chance="20" name="Manchester"	UNID="&ssEarthSpaceStandard;"/>
+					<System chance="5"  name="Fridlund"	UNID="&ssEarthSpaceBinary;"/>
 					<System chance="25" name="L372"		UNID="&ssEarthSpaceRedDwarf;"/>
 					<System chance="25" name="Kaus Media" UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="25" name="Al Maisan"	UNID="&ssEarthSpaceDesert;"/>
@@ -169,13 +170,8 @@
 		<!-- UNGOVERNED TERRITORIES ======================================== -->
 		
 		<NodeGroup ID="UngovernedTerritoriesMainline">
-			<StargateTable>
-				<Group chance="50">
-					<Stargate from="SK:Outbound" to="C5A:Inbound"/>
-					<Stargate from="C5A:Outbound" to="C5:Inbound"/>
-				</Group>
-				<Stargate chance="50" from="SK:Outbound" to="C5:Inbound"/>
-			</StargateTable>
+			<Stargate from="SK:Outbound" to="C5A:Inbound"/>
+			<Stargate from="C5A:Outbound" to="C5:Inbound"/>
 			<Stargate from="C5:Outbound"	to="C6:Inbound"/>
 			<StargateTable>
 				<Group chance="50">
@@ -255,8 +251,8 @@
 					attributes=		"humanSpace, mainline, ungoverned"
 					>
 				<Table>
-					<System chance="50" name="Mu Casser"	UNID="&ssEarthSpaceStandard;"/>
-					<System chance="50" name="Dorado"		UNID="&ssEarthSpaceDesert;"/>
+					<System chance="50" name="Mu Casser"	UNID="&ssEarthSpacePrimordial;"/>
+					<System chance="50" name="Dorado"		UNID="&ssEarthSpaceMetallic;"/>
 				</Table>
 			</System>
 		</Node>
@@ -286,7 +282,8 @@
 					<System chance="8"  name="Kinder's Star"	UNID="&ssEarthSpaceStandard;"/>
 					<System chance="17" name="Lebezerin"	UNID="&ssEarthSpaceNebulae;"/>
 					<System chance="8"  name="Kruger 60"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Tiberius"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Tiberius"	UNID="&ssEarthSpaceAsteroidArcs;"/>
+					<System chance="8"  name="Carinus"	UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="17" name="Acheron"	UNID="&ssEarthSpaceVolcanic;"/>
 					<System chance="8"  name="Khaldun"	UNID="&ssEarthSpaceDesert;"/>
 				</Table>
@@ -303,7 +300,8 @@
 					<System chance="8"  name="Ravena"		UNID="&ssEarthSpaceBinary;"/>
 					<System chance="17" name="Jaoel"		UNID="&ssEarthSpaceNebulae;"/>
 					<System chance="8"  name="55 Cancri"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Trajan"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Trajan"		UNID="&ssEarthSpaceAsteroidArcs;"/>
+					<System chance="8"  name="Gordian"		UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="17" name="Tarterus"	UNID="&ssEarthSpaceVolcanic;"/>
 					<System chance="8"  name="Shihab"		UNID="&ssEarthSpaceDesert;"/>
 				</Table>
@@ -320,7 +318,8 @@
 					<System chance="8"  name="Kanto"		UNID="&ssEarthSpaceStandard;"/>
 					<System chance="17" name="Raziel"		UNID="&ssEarthSpaceNebulae;"/>
 					<System chance="8"  name="Estelle"	UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Domitus"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="17" name="Domitus"	UNID="&ssEarthSpaceAsteroidArcs;"/>
+					<System chance="8"  name="Honorius"	UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="17" name="Gehenna"	UNID="&ssEarthSpaceVolcanic;"/>
 					<System chance="8"  name="Arrakis"	UNID="&ssEarthSpaceDesert;"/>
 				</Table>
@@ -337,7 +336,8 @@
 					<System chance="8"  name="Nobunaga"	UNID="&ssEarthSpaceStandard;"/>
 					<System chance="20" name="Galgaliel"	UNID="&ssEarthSpaceNebulae;"/>
 					<System chance="5"  name="Cinder"		UNID="&ssEarthSpaceRedDwarf;"/>
-					<System chance="25" name="Numerianus"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="20" name="Numerianus"	UNID="&ssEarthSpaceAsteroidArcs;"/>
+					<System chance="5" name="Galerius"	UNID="&ssEarthSpaceAsteroids;"/>
 					<System chance="20" name="Exael"		UNID="&ssEarthSpaceVolcanic;"/>
 					<System chance="5"  name="Alembra"	UNID="&ssEarthSpaceDesert;"/>
 				</Table>
@@ -350,8 +350,8 @@
 					attributes=			"huaramarcaGate, humanSpace, mainline, ungoverned"
 					>
 				<Table>
-					<System chance="50" name="Maharashtra" UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="50" name="Bhutihan"	UNID="&ssEarthSpaceVolcanic;"/>
+					<System chance="50" name="Maharashtra" UNID="&ssEarthSpacePrimordial;"/>
+					<System chance="50" name="Bhutihan"	UNID="&ssEarthSpaceMetallic;"/>
 				</Table>
 			</System>
 		</Node>
@@ -460,7 +460,7 @@
 					<System chance="17" name="Sleng"		UNID="&ssEarthSpaceStandard;"/>
 					<System chance="8"  name="Enkidu"		UNID="&ssEarthSpaceBinary;"/>
 					<System chance="25" name="Tzadkiel"	UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Severian's Star" UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Severian's Star" UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Flauros"	UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -475,7 +475,7 @@
 					<System chance="17" name="Zhang Li"	UNID="&ssEarthSpaceStandard;"/>
 					<System chance="8"  name="Liu Bai"	UNID="&ssEarthSpaceBinary;"/>
 					<System chance="25" name="Peng Lai"	UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Kunlun"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Kunlun"		UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Shenlong"	UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -490,7 +490,7 @@
 					<System chance="17" name="Ki Xyrrmir"	UNID="&ssEarthSpaceStandard;"/>
 					<System chance="8"  name="Ulom"		UNID="&ssEarthSpaceBinary;"/>
 					<System chance="25" name="Qilin"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Tao Tie"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Tao Tie"	UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Tianlong"	UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -504,7 +504,7 @@
 				<Table>
 					<System chance="25" name="St. Esperance's Star" UNID="&ssEarthSpaceStandard;"/>
 					<System chance="25" name="Metatron"	UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Que Qiao"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Que Qiao"	UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Li"			UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -518,7 +518,7 @@
 				<Table>
 					<System chance="25" name="Umi"		UNID="&ssEarthSpaceStandard;"/>
 					<System chance="25" name="Vori"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Meri"		UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Meri"		UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Penati"		UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -532,7 +532,7 @@
 				<Table>
 					<System chance="25" name="Denebola"	UNID="&ssEarthSpaceStandard;"/>
 					<System chance="25" name="Pharos"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="Saurus Mons" UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="Saurus Mons" UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="Erebus"		UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>
@@ -548,7 +548,7 @@
 				<Table>
 					<System chance="25" name="LV 426"		UNID="&ssEarthSpaceStandard;"/>
 					<System chance="25" name="IC 767"		UNID="&ssEarthSpaceNebulae;"/>
-					<System chance="25" name="HD 11901"	UNID="&ssEarthSpaceAsteroids;"/>
+					<System chance="25" name="HD 11901"	UNID="&ssEarthSpaceAsteroidArcs;"/>
 					<System chance="25" name="HD 44594"	UNID="&ssEarthSpaceVolcanic;"/>
 				</Table>
 			</System>

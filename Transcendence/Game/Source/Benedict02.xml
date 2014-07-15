@@ -186,7 +186,7 @@
 
 					(enum enemies enemyDesc
 						(block (enemyObj)
-							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svCult;))
+							(setq enemyObj (sysCreateShip (@ enemyDesc 'class) stargateObj &svPenitents;))
 							(shpOrder enemyObj 'attack freighterObj)
 							(objSetData enemyObj 'mission (msnGetProperty gSource 'id))
 							(msnRegisterForEvents gSource enemyObj)

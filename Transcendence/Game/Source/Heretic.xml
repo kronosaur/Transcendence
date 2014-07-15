@@ -3353,7 +3353,7 @@
 									(setq theTarget
 										(sysCreateShip &scXenophobeArk;
 											(sysVectorRandom Nil orbitRadius 150 "TA")
-											&svDestructiveChaos;
+											&svXenophobes;
 											))
 									(shpOrder theTarget 'orbit (sysFindObject Nil "tN +star") orbitRadius)
 
@@ -3366,12 +3366,12 @@
 									(setq angleInc (divide 360 escortCount))
 									(for i 1 escortCount
 										(block (theEscort)
-											(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svDestructiveChaos;))
+											(setq theEscort (sysCreateShip &scXenophobeDefender; (objGetPos theTarget) &svXenophobes;))
 											(shpOrder theEscort 'escort theTarget theAngle 150)
 											(setq theAngle (add theAngle angleInc))
 											(for j 1 20
 												(block (theFighter)
-													(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theTarget) &svDestructiveChaos;))
+													(setq theFighter (sysCreateShip &scXenophobeFighter; (objGetPos theTarget) &svXenophobes;))
 													(shpOrder theFighter 'patrol theEscort 15)
 													)
 												)

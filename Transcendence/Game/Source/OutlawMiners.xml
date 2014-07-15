@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svOutlawMiners;"
+			name="Freeminer Union"
+			alignment="destructive order"
+			/>
+
 	<!-- Borer-class Gunship -->
 
 	<ShipClass UNID="&scBorer;"
@@ -269,7 +274,7 @@
 
 	<StationType UNID="&stAsteroidMineTitanium;"
 			name=				"outlaw titanium mine"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -347,7 +352,7 @@
 
 	<StationType UNID="&stAsteroidMinePalladium;"
 			name=				"outlaw palladium mine"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -422,7 +427,7 @@
 
 	<StationType UNID="&stAsteroidMineCeralloy;"
 			name=				"outlaw ceralloy mine"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -493,7 +498,7 @@
 
 	<StationType UNID="&stAsteroidMineDuralloy;"
 			name=				"outlaw duranium mine"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -577,7 +582,7 @@
 
 	<StationType UNID="&stAsteroidMinePteracnium;"
 			name=				"outlaw pteracnium mine"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -665,7 +670,7 @@
 
 	<StationType UNID="&stOutlawTurret;"
 			name=				"Outlaw defense turret"
-			sovereign=			"&svSettlers;"
+			sovereign=			"&svOutlawMiners;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockScreen=			"&dsAbandonedStation;"
 			noMapLabel=			"true"

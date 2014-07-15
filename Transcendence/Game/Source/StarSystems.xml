@@ -406,7 +406,7 @@
 
 				<!-- Worlds -->
 
-				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+				<Orbitals count="6-8" BodeDistanceStart="60-70" BodeDistanceEnd="1200" angle="random">
 					<Variants>
 						<Table maxRadius="300">
 							<Lookup chance="60" table="DesertPrimary"/>
@@ -419,9 +419,9 @@
 							<Lookup chance="5"  table="GreenhousePrimary"/>
 							<Lookup chance="5"  table="MetallicPrimary"/>
 							<Lookup chance="10" table="RockyPrimary"/>
-							<Lookup chance="60" table="GasGiantPrimary"/>
-							<Lookup chance="4"  table="AsteroidBelt12"/>
-							<Lookup chance="3"  table="AsteroidBelt25"/>
+							<Lookup chance="45" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"  table="AsteroidBelt25"/>
 						</Table>
 						<Table maxRadius="2000">
 							<Lookup chance="40" table="DesertPrimary"/>

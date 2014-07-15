@@ -763,7 +763,9 @@
 
 	<!-- Charon Pirate Fortress System -->
 
-	<SystemType UNID="&ssCharonPirateFortress;">
+	<SystemType UNID="&ssCharonPirateFortress;"
+				attributes="envAir"
+				>
 
 		<SystemGroup>
 

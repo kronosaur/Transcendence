@@ -999,9 +999,9 @@
 					<Ship	count="1d2"	class="&scCometfall;" orders="patrol" patrolDist="15" sovereign="&svAres;"/>
 				</Group>
 				<Group chance="30">
-					<Ship	count="2d6"	class="&scKobolGunshipDualTeV9;"	orders="patrol" patrolDist="5" sovereign="&svDestructiveChaos;"/>
-					<Ship	count="2d4"	class="&scKobolGunshipOmniTeV9;"	orders="patrol" patrolDist="5" sovereign="&svDestructiveChaos;"/>
-					<Ship	count="1d6"	class="&scKobolGunshipMissiles;"	orders="guard" sovereign="&svDestructiveChaos;"/>
+					<Ship	count="2d6"	class="&scKobolGunshipDualTeV9;"	orders="patrol" patrolDist="5" sovereign="&svKobolWarlords;"/>
+					<Ship	count="2d4"	class="&scKobolGunshipOmniTeV9;"	orders="patrol" patrolDist="5" sovereign="&svKobolWarlords;"/>
+					<Ship	count="1d6"	class="&scKobolGunshipMissiles;"	orders="guard" sovereign="&svKobolWarlords;"/>
 				</Group>
 				<Group chance="10">
 					<Ship	count="2d8"	class="&scCenturion;"	orders="patrol"	patrolDist="5" sovereign="&svRogueFleet;"/>

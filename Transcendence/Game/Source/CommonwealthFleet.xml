@@ -4654,9 +4654,9 @@
 
 	<EncounterTable UNID="&etKobolAmbush1;">
 		<Table count="1d3+2">
-			<Ship chance="50"	count="1"	class="&scKobolGunshipDualTeV9;"	orders="attack" sovereign="&svDestructiveChaos;"/>
-			<Ship chance="30"	count="1"	class="&scKobolGunshipOmniTeV9;"	orders="attack" sovereign="&svDestructiveChaos;"/>
-			<Ship chance="20"	count="1"	class="&scKobolGunshipMissiles;"	orders="attack" sovereign="&svDestructiveChaos;"/>
+			<Ship chance="50"	count="1"	class="&scKobolGunshipDualTeV9;"	orders="attack" sovereign="&svKobolWarlords;"/>
+			<Ship chance="30"	count="1"	class="&scKobolGunshipOmniTeV9;"	orders="attack" sovereign="&svKobolWarlords;"/>
+			<Ship chance="20"	count="1"	class="&scKobolGunshipMissiles;"	orders="attack" sovereign="&svKobolWarlords;"/>
 		</Table>
 	</EncounterTable>
 

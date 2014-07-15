@@ -1776,11 +1776,13 @@
 
 	<!-- Dantalion star system -->
 
-	<SystemType UNID="&ssDantalion;">
+	<SystemType UNID="&ssDantalion;"
+				attributes="envEarth"
+				>
 
 		<SystemGroup>
 
-			<Lookup table="VolcanicSystem"/>
+			<Lookup table="MetallicSystem"/>
 
 			<!-- Place the two stargates -->
 
