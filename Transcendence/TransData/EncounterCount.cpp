@@ -24,13 +24,33 @@ void AddSystemData (CSystem *pSystem, bool bAll, SNodeDesc *retResult);
 
 void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
-	int i, j, k;
+	int i, j, k, l;
 
 	//	Options
 
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 	bool bLogo = !pCmdLine->GetAttributeBool(CONSTLIT("noLogo"));
 	bool bAll = pCmdLine->GetAttributeBool(CONSTLIT("all"));
+
+	//	Additional columns
+
+	TArray<CString> Cols;
+	for (i = 0; i < pCmdLine->GetAttributeCount(); i++)
+		{
+		CString sAttrib = pCmdLine->GetAttributeName(i);
+
+		if (!IsMainCommandParam(sAttrib)
+				&& !strEquals(sAttrib, CONSTLIT("count"))
+				&& !strEquals(sAttrib, CONSTLIT("encountercount")))
+			{
+			CString sValue = pCmdLine->GetAttribute(i);
+			
+			if (!strEquals(sValue, CONSTLIT("true")))
+				Cols.Insert(strPatternSubst(CONSTLIT("%s:%s"), sAttrib, sValue));
+			else
+				Cols.Insert(sAttrib);
+			}
+		}
 
 	//	Generate systems for multiple games
 
@@ -40,6 +60,15 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		if (bLogo)
 			printf("pass %d...\n", i+1);
+
+		//	Initialize the game
+
+		CString sError;
+		if (Universe.InitGame(0, &sError) != NOERROR)
+			{
+			printf("%s\n", sError.GetASCIIZPointer());
+			return;
+			}
 
 		for (j = 0; j < Universe.GetTopologyNodeCount(); j++)
 			{
@@ -82,9 +111,15 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 		Universe.Reinit();
 		}
 
+	//	Header
+
+	printf("Level\tNode\tSystemType\tCategory\tSovereign\tEncounter\tCount");
+	for (i = 0; i < Cols.GetCount(); i++)
+		printf("\t%s", Cols[i].GetASCIIZPointer());
+	printf("\n");
+
 	//	Output all rows
 
-	printf("Level\tNode\tSystemType\tCategory\tSovereign\tEncounter\tCount\n");
 	for (i = 0; i < NodeTable.GetCount(); i++)
 		{
 		for (j = 0; j < NodeTable[i].Table.GetCount(); j++)
@@ -99,10 +134,10 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 				if (pEncounterType == NULL)
 					continue;
 
-				CSovereign *pSovereign = pEncounterType->GetSovereign();
+				CSovereign *pSovereign = pEncounterType->GetControllingSovereign();
 				CString sSovereign = (pSovereign ? pSovereign->GetTypeName() : CONSTLIT("(Unknown)"));
 
-				printf("%d\t%s\t%08x\t%s\t%s\t%s\t%d.%03d\n",
+				printf("%d\t%s\t0x%08x\t%s\t%s\t%s\t%d.%03d",
 						NodeTable[i].iLevel,
 						NodeTable[i].sNodeID.GetASCIIZPointer(),
 						NodeTable[i].Table.GetKey(j),
@@ -111,6 +146,14 @@ void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine)
 						pEncounterType->GetName().GetASCIIZPointer(),
 						iCount,
 						iCountFrac);
+
+				for (l = 0; l < Cols.GetCount(); l++)
+					{
+					CString sValue = pEncounterType->GetDataField(Cols[l]);
+					printf("\t%s", sValue.GetASCIIZPointer());
+					}
+
+				printf("\n");
 				}
 			}
 		}

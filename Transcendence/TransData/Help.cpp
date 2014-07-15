@@ -360,7 +360,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /itemsim              Simulation of items encountered.\n");
 		printf("  /itemtable            Item table.\n");
-		printf("  /encountercount       Counts of encounters for a whole game.\n");
+		printf("  /encountercount       Counts encounters in a game.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)
@@ -375,12 +375,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /smoketest            Tests the game.\n");
 		printf("  /snapshot             Generates a snapshot of the given object.\n");
-		printf("  /stationfrequency     Table of station types by level.\n");
 		if (bDebug)
 			printf("  /stationSeparationSim Generate enemy station separation statistics.\n");
 		printf("  /stats                Shows a list of basic stats.\n");
 		printf("  /stdarmor             Shows stats about standard armors.\n");
 		printf("  /stdshield            Shows stats about standard shields.\n");
+		printf("  /systemcount          Counts systems in a game.\n");
 		printf("  /systemimages         Generate snapshots of system maps.\n");
 		printf("  /systemlabels         Generate counts for all labels.\n");
 		if (bDebug)
@@ -395,7 +395,6 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /weaponimages         Generates images of weapon effects.\n");
 		if (bDebug)
 			printf("  /wordlist             Lists all unique words.\n");
-		printf("  /worldimages          Generates images of worlds.\n");
 		}
 
 	printf("\n");

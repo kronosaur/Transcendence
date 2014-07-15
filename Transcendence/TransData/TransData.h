@@ -105,6 +105,7 @@ void GenerateStationPlaceSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateStdArmorTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateStdShieldTable (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateSystemTest (CUniverse &Universe, CXMLElement *pCmdLine);
