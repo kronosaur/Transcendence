@@ -14,6 +14,7 @@
 #define CLEAR_REGISTERED_SWITCH				CONSTLIT("clearRegistered")
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define DEBUG_SWITCH						CONSTLIT("debug")
+#define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entities")
@@ -50,7 +51,14 @@ void ShowHelp (CXMLElement *pCmdLine)
 	{
 	bool bDebug = pCmdLine->GetAttributeBool(DEBUG_SWITCH);
 
-	if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
+	if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
+		{
+		printf("  /encountercount       Counts of encounters for a whole game.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/all]                include non-random stations.\n");
+		printf("      [/count]              Number of games to create.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_SIM_SWITCH))
 		{
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
@@ -352,6 +360,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		if (bDebug)
 			printf("  /itemsim              Simulation of items encountered.\n");
 		printf("  /itemtable            Item table.\n");
+		printf("  /encountercount       Counts of encounters for a whole game.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)

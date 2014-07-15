@@ -193,6 +193,7 @@
     <ClCompile Include="COutputChart.cpp" />
     <ClCompile Include="CSimViewer.cpp" />
     <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="EncounterCount.cpp" />
     <ClCompile Include="EncounterSim.cpp" />
     <ClCompile Include="EncounterTable.cpp" />
     <ClCompile Include="Entities.cpp" />

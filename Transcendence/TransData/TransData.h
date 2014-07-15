@@ -86,6 +86,7 @@ void DoTradeSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateArmorTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateAttributeList (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEffectImage (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateEncounterCount (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine, CIDTable &EntityTable);
 void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
