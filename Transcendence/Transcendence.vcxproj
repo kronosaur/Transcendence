@@ -735,7 +735,9 @@
     <None Include="Game\Source\StdShields.xml" />
     <None Include="Game\Source\StdSovereigns.xml" />
     <None Include="Game\Source\StdSystems.xml" />
-    <None Include="Game\Source\StdTypes.xml" />
+    <None Include="Game\Source\StdTypes.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdUnknownItems.xml" />
     <None Include="Game\Source\StdWeapons.xml">
       <SubType>Designer</SubType>
@@ -755,7 +757,9 @@
     </None>
     <None Include="Game\Source\UniverseCompatibility.xml" />
     <None Include="Game\Source\UniverseEffects.xml" />
-    <None Include="Game\Source\UrakWarlords.xml" />
+    <None Include="Game\Source\UrakWarlords.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\UsefulItems.xml">
       <SubType>Designer</SubType>
     </None>

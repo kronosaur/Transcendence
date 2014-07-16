@@ -751,7 +751,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, majorStation, primary, populated"
 			levelFrequency=		"cuc-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -1237,7 +1237,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, fleetDelivery, friendly, human, majorStation, populated"
 			levelFrequency=		"uucuu r---- ----- ----- -----"
-			locationCriteria=	"-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 			>
 
@@ -1315,7 +1315,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated"
 			levelFrequency=		"uuurr ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			>
 
 		<Names noArticle="true">Asclepius Station; Barnard Station; Station Charity; 

@@ -1042,7 +1042,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1096,7 +1096,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"-cuv- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1166,7 +1166,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
 			levelFrequency=		"r---- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
@@ -1231,7 +1231,7 @@
 
 			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, majorStation, pirates, populated"
 			levelFrequency=		"-rcr- ----- ----- ----- -----"
-			locationCriteria=	"-planet,-void"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>

@@ -422,7 +422,7 @@
 
 			attributes=			"ai, enemy, envWater, envAvoidsEarth, luminous, score"
 			levelFrequency=		"----- -ucur ----- ----- -----"
-			locationCriteria=	"+planetary,-void"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 

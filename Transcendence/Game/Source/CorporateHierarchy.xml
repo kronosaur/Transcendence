@@ -155,7 +155,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru cu--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"
@@ -346,7 +346,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"ccuv- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			>
 
 		<Names noArticle="true">Armor United; Brentano Armor; Carbellium Armor Systems;
@@ -521,7 +521,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"uccr- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			>
 
 		<Names noArticle="true">Azure Protection Systems; Bixbie Arms; Chiba Arms Dealers; 
@@ -701,7 +701,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"--rur v---- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			noArticle=			"true"
 			>
@@ -804,7 +804,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru rv--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -905,7 +905,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"--rcu ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -1280,7 +1280,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"cccuu rv--- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			>
 
 		<Names noArticle="true">Antares Fuel; Bapco Fuel; Cerulean Energy;
@@ -1394,7 +1394,7 @@
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, Makayev, populated"
 			levelFrequency=		"----- rrur- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			definiteArticle=	"true"
@@ -2093,7 +2093,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envAvoidsFire, friendly, independent, human, populated"
 			levelFrequency=		"rccuu rv--- ----- ----- -----"
-			locationCriteria=	"++frost; -innerSystem"
+			locationCriteria=	"++outerSystem"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="512" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -2206,7 +2206,7 @@
 			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"-rrru r---- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			definiteArticle=	"true"
 			>
@@ -2457,7 +2457,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"----- -uur- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			noArticle=			"true"
@@ -2638,7 +2638,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---rc uur-- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"
@@ -3088,7 +3088,7 @@
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, populated"
 			levelFrequency=		"---ru ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 
 			noArticle=			"true"

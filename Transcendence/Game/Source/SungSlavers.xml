@@ -1054,7 +1054,7 @@
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
 			levelFrequency=		"--vcu r---- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="60"
 			>
 
@@ -1136,7 +1136,7 @@
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"---vc uu--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -1203,7 +1203,7 @@
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, majorStation, populated, sungSlavers"
 			levelFrequency=		"----r ur--- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="100"
 			>
 

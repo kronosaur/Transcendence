@@ -70,7 +70,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
-			locationCriteria=	"+void; -planetary; -innerSystem; -lifeZone"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -819,7 +819,7 @@
 
 			attributes=			"drugcartel, enemy, envWater, envAvoidsEarth, human, outlaws, populated"
 			levelFrequency=		"--ucu r---- ----- ----- -----"
-			locationCriteria=	"+planetary; -innerSystem"
+			locationCriteria=	"-innerSystem, +planetary"
 			>
 
 		<Image			imageID="&rsStations4;" imageX="0" imageY="320" imageWidth="96" imageHeight="96"/>
@@ -1104,7 +1104,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, ferian, neoHuman, miners, populated, zoanthrope"
 			levelFrequency=		"---ru ccr-- ----- ----- -----"
-			locationCriteria=	"++asteroids,-planet"
+			locationCriteria=	"++asteroids"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
@@ -1444,7 +1444,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			>
 
 		<ImageVariants>
@@ -1506,7 +1506,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"rcuv- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="50"
 			>
 
@@ -1641,7 +1641,7 @@
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, human, populated"
 			levelFrequency=		"-rcuv ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="244" imageWidth="260" imageHeight="260"/>
@@ -1878,7 +1878,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, shipwreck"
 			levelFrequency=		"----- --vuu r----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 		<Image shipwreckID="&scTundra;, &scCenturion;, &scSandstorm;"/>
 
@@ -2216,7 +2216,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"---cu r---- ----- ----- -----"
-			locationCriteria=	"+innerSystem; -frost; -nebulae; -void"
+			locationCriteria=	"+innerSystem, -void"
 			enemyExclusionRadius="50"
 			>
 
@@ -2271,7 +2271,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			levelFrequency=		"--cuv ----- ----- ----- -----"
-			locationCriteria=	"+innerSystem; -frost; -nebulae; -void"
+			locationCriteria=	"+innerSystem, -void"
 			>
 
 		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
@@ -2407,7 +2407,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, populated"
 			levelFrequency=		"curv- ----- ----- ----- -----"
-			locationCriteria=	"+frost,+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="256" imageWidth="96" imageHeight="128"/>
@@ -2555,7 +2555,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-LifeZone,+planetary"
+			locationCriteria=	"-lifeZone, +planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -2788,7 +2788,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, human, kobol, populated, warlords"
 			levelFrequency=		"----- -cur- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="50"
 			>
 
@@ -3096,7 +3096,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, pirates, populated"
 			levelFrequency=		"--uu- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
 			>
 
@@ -3143,7 +3143,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderCompound, pirates, populated"
 			levelFrequency=		"--vcr ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			enemyExclusionRadius="100"
 			>
 
@@ -3211,7 +3211,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, lombardMarauders, marauderStronghold, pirates,populated"
 			levelFrequency=		"---ru v---- ----- ----- -----"
-			locationCriteria=	"+LifeZone,-planetary"
+			locationCriteria=	"+lifeZone, -planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -3517,7 +3517,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"---rc urv-- ----- ----- -----"
-			locationCriteria=	"+nebulae,-planet,-void"
+			locationCriteria=	"+void"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -3568,7 +3568,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"----v curv- ----- ----- -----"
-			locationCriteria=	"+nebulae,-planet,-void"
+			locationCriteria=	"+void"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -3970,7 +3970,7 @@
 
 			attributes=			"debris, envAir, envAvoidsFire, friendly, outlaw"
 			levelFrequency=		"uuurv ----- ----- ----- -----"
-			locationCriteria=	"--planetary,-void"
+			locationCriteria=	"--planetary"
 			>
 
 		<Names>abandoned cargo container</Names>
@@ -4040,7 +4040,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
 			levelFrequency=		"ucv-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem; -void"
+			locationCriteria=	"--innerSystem, +planetary"
 			>
 
 		<ImageVariants>
@@ -4094,7 +4094,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlaws, populated"
 			levelFrequency=		"vcr-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem"
+			locationCriteria=	"--innerSystem, +planetary"
 			>
 
 		<ImageVariants>
@@ -4156,7 +4156,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, outlawHaven, outlaws, populated"
 			levelFrequency=		"-vcr- ----- ----- ----- -----"
-			locationCriteria=	"+planetary; --innerSystem; -lifeZone"
+			locationCriteria=	"+outerSystem, +planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -4344,7 +4344,7 @@
 
 			attributes=			"chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, pteravore, score"
 			levelFrequency=		"----- ----r cur-- ----- -----"
-			locationCriteria=	"++asteroids; +++chitometallicEco; -planet"
+			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
 
 		<ImageVariants>
@@ -4909,7 +4909,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, populated, ranx"
 			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="60"
 			>
 
@@ -4960,7 +4960,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, majorStation, populated, ranx"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"+planetary,-OuterSystem"
+			locationCriteria=	"-outerSystem, +planetary"
 			enemyExclusionRadius="100"
 			>
 
@@ -5316,7 +5316,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCamp"
 			levelFrequency=		"-vcuv ----- ----- ----- -----"
-			locationCriteria=	"+lifeZone; -innerSystem; -void"
+			locationCriteria=	"+lifeZone"
 			>
 
 		<ImageVariants>
@@ -5373,7 +5373,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, populated, sapiens, sapiensCompound"
 			levelFrequency=		"--vcu v---- ----- ----- -----"
-			locationCriteria=	"+lifeZone; -innerSystem; -void"
+			locationCriteria=	"+lifeZone"
 			enemyExclusionRadius="50"
 			>
 
@@ -5487,7 +5487,7 @@
 
 			attributes=			"debris,friendly"
 			levelFrequency=		"ucccu rrvv- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 
 		<ImageVariants>
@@ -5821,7 +5821,7 @@
 
 			attributes=			"enemy, envFire, envAvoidsWater, human, majorStation, populated"
 			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="100"
 			>
 

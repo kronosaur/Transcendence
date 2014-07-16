@@ -623,7 +623,7 @@
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, occupation, populated"
 			levelFrequency=		"uuv-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			>
 
 		<Names noArticle="true">Arenius Colony; Baja Colony; Clearspace Station; Durin Colony;
@@ -803,7 +803,7 @@
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
 			levelFrequency=		"crv-- ----- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-asteroids,-void"
+			locationCriteria=	"+outerSystem, +planetary"
 			>
 
 		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>
@@ -854,7 +854,7 @@
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, populated, warlords"
 			levelFrequency=		"rurv- ----- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-asteroids,-void"
+			locationCriteria=	"+outerSystem, +planetary"
 			>
 
 		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>

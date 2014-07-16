@@ -288,7 +288,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"ucr-- ----- ----- ----- -----"
-			locationCriteria=	"++asteroids,--frost,--ice"
+			locationCriteria=	"++asteroids"
 			>
 
 		<Names noArticle="true">Asteroid T%1%0%0%0</Names>
@@ -366,7 +366,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"-ucr- ----- ----- ----- -----"
-			locationCriteria=	"++asteroids,--frost,--ice"
+			locationCriteria=	"++asteroids"
 			>
 
 		<Names noArticle="true">Asteroid L%1%0%0%0</Names>
@@ -441,7 +441,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"--uur ----- ----- ----- -----"
-			locationCriteria=	"++asteroids,--frost,--ice"
+			locationCriteria=	"++asteroids"
 			>
 
 		<Names noArticle="true">Asteroid C%1%0%0%0</Names>
@@ -512,7 +512,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"---uc r---- ----- ----- -----"
-			locationCriteria=	"++asteroids,--frost,--ice"
+			locationCriteria=	"++asteroids"
 			enemyExclusionRadius="40"
 			>
 
@@ -596,7 +596,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, outlawMiners, outlaws, populated, settlers"
 			levelFrequency=		"----u ur--- ----- ----- -----"
-			locationCriteria=	"++asteroids,--frost,--ice"
+			locationCriteria=	"++asteroids"
 			enemyExclusionRadius="40"
 			>
 

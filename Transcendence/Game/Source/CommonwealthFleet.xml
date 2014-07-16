@@ -4135,7 +4135,7 @@
 			levelFrequency=		"----- -ucu- ----- ----- -----"
 			maxAppearing=		"2-4"
 			unique=				"inSystem"
-			locationCriteria=	"+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="50"
 			>
 

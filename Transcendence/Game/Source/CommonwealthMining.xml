@@ -197,7 +197,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, envEarth, envAvoidsAir, friendly, human, mining, populated"
 			levelFrequency=		"ccur- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids,--frost,--ice"
+			locationCriteria=	"+asteroids, -outerSystem"
 
 			noArticle=			"true"
 			>

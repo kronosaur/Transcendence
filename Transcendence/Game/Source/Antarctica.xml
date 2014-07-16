@@ -1758,7 +1758,7 @@
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
 			levelFrequency=		"----- ---c- ----- ----- -----"
 			maxAppearing=		"1"
-			locationCriteria=	"+OuterSystem,-planetary"
+			locationCriteria=	"+outerSystem, -planetary"
 			enemyExclusionRadius="50"
 			>
 

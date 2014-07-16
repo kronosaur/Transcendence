@@ -862,7 +862,7 @@
 
 			<!-- Random Debris -->
 
-			<RandomLocation probability="50" locationCriteria="++OuterSystem,++asteroids">
+			<RandomLocation probability="50" locationCriteria="++outerSystem, ++asteroids">
 				<Orbitals count="1d6" distance="1d8+6" angle="random">
 					<RandomStation stationCriteria="*debris"/>
 				</Orbitals>

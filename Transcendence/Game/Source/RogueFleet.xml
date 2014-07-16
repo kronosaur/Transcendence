@@ -137,7 +137,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
 			levelFrequency=		"----- vcu-- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 
 		<ImageVariants>
@@ -190,7 +190,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, populated, rogue"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"+asteroids,-planetary"
+			locationCriteria=	"+asteroids"
 			>
 
 		<Image			imageID="&rsStations8;" imageX="128" imageY="896" imageWidth="128" imageHeight="128"/>

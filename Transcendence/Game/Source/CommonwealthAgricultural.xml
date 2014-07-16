@@ -30,7 +30,7 @@
 
 			attributes=			"commonwealth, commonwealthCustoms, friendly, human, populated, primary"
 			levelFrequency=		"rrr-- ----- ----- ----- -----"
-			locationCriteria=	"+LifeZone,-OuterSystem,-asteroids"
+			locationCriteria=	"-asteroids, +lifeZone"
 			>
 
 		<Names noArticle="true">Archer Colony; Buran Station; Chekov Colony; Dante Station;

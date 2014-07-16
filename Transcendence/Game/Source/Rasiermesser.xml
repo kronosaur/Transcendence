@@ -90,7 +90,7 @@
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, populated"
 			levelFrequency=		"-rurv ----- ----- ----- -----"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 
 			noArticle=			"true"
 			>
@@ -200,7 +200,7 @@
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, human, independent, majorStation, populated"
 			levelFrequency=		"----- rur-- ----- ----- -----"
 			unique=				"inSystem"
-			locationCriteria=	"+planetary,-asteroids"
+			locationCriteria=	"+planetary"
 			enemyExclusionRadius="75"
 
 			definiteArticle=	"true"

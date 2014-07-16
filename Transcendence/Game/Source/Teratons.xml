@@ -352,7 +352,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonFactory"
 			levelFrequency=		"----- --ruv ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
@@ -802,7 +802,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
 			levelFrequency=		"----- --rr- ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
@@ -1224,7 +1224,7 @@
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
 			levelFrequency=		"----- -vcuv ----- ----- -----"
-			locationCriteria=	"+OuterSystem,-void"
+			locationCriteria=	"+outerSystem, -void"
 			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"

@@ -59,7 +59,7 @@
 
 			attributes=			"envEarth, envAvoidsAir, friendly, human, independent, majorStation, populated, tinkers"
 			levelFrequency=		"uccuu r---- ----- ----- -----"
-			locationCriteria=	"+asteroids,-asteroidbelt"
+			locationCriteria=	"+asteroids, -asteroidbelt"
 			>
 
 		<Names noArticle="true">Tinker Alvarez; Tinker Bell; Tinker Cray; Tinker Draper;
