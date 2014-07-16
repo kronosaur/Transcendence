@@ -878,7 +878,10 @@ ALERROR CreateLabel (SSystemCreateCtx *pCtx,
 	//	Keep stats
 
 	if (pCtx->pStats)
-		pCtx->pStats->AddLabel(pLoc->GetAttributes());
+		{
+		CString sAttribs = ::AppendModifiers(pLoc->GetAttributes(), pCtx->pSystem->GetAttribsAtPos(pLoc->GetOrbit().GetObjectPos()));
+		pCtx->pStats->AddLabel(sAttribs);
+		}
 
 	STATION_PLACEMENT_OUTPUT("+create label\n");
 

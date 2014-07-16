@@ -126,6 +126,7 @@
 #define FIELD_HITS_TO_DESTROY					CONSTLIT("hitsToDestroy")			//	# of hits by std level weapon to destroy station
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_LOCATION_CRITERIA					CONSTLIT("locationCriteria")
 #define FIELD_MAX_LIGHT_RADIUS					CONSTLIT("maxLightRadius")
 #define FIELD_NAME								CONSTLIT("name")
 #define FIELD_REGEN								CONSTLIT("regen")					//	hp repaired per 180 ticks
@@ -717,6 +718,8 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = m_pFirstDockScreen.GetStringUNID(this);
 	else if (strEquals(sField, FIELD_LEVEL))
 		*retsValue = strFromInt(GetLevel());
+	else if (strEquals(sField, FIELD_LOCATION_CRITERIA))
+		*retsValue = GetLocationCriteria();
 	else if (strEquals(sField, FIELD_NAME))
 		*retsValue = GetName();
 	else if (strEquals(sField, FIELD_ARMOR_CLASS))

@@ -35,9 +35,7 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Samples
 
-	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
-	if (iSystemSample == 0)
-		iSystemSample = 1;
+	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 
 	//	Permutations
 
@@ -46,6 +44,7 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Generate systems for multiple games
 
 	CSystemCreateStats Stats;
+	Stats.SetPermute(bPermutations);
 	for (i = 0; i < iSystemSample; i++)
 		{
 		printf("pass %d...\n", i+1);
@@ -63,6 +62,8 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 		for (j = 0; j < Universe.GetTopologyNodeCount(); j++)
 			{
 			CTopologyNode *pNode = Universe.GetTopologyNode(j);
+			if (pNode->IsEndGame())
+				continue;
 
 			//	Different stats depending on type
 

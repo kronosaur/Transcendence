@@ -2166,7 +2166,8 @@ CString CSystem::GetAttribsAtPos (const CVector &vPos)
 //	Returns the attributes at the given position
 
 	{
-	return m_Territories.GetAttribsAtPos(vPos);
+	CString sAttribs = (m_pTopology ? m_pTopology->GetAttributes() : NULL_STR);
+	return ::AppendModifiers(sAttribs, m_Territories.GetAttribsAtPos(vPos));
 	}
 
 int CSystem::GetEmptyLocationCount (void)

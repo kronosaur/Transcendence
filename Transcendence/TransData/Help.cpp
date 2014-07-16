@@ -284,7 +284,6 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("       /count:n             n iterations.\n");
 		printf("      [/nodes]              Show node attribute counts instead.\n");
 		printf("      [/nodeDebug]          Output sample nodes with attributes instead.\n");
-		printf("      [/permutations]       Include attribute permutations.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_TEST_SWITCH))
 		{

@@ -644,6 +644,7 @@ class CSystemCreateStats
 		inline int GetLabelAttributesCount (void) { return m_LabelAttributeCounts.GetCount(); }
 		void GetLabelAttributes (int iIndex, CString *retsAttribs, int *retiCount);
 		inline int GetTotalLabelCount (void) { return m_iLabelCount; }
+		inline void SetPermute (bool bValue = true) { m_bPermute = bValue; }
 
 	private:
 		struct SLabelAttributeEntry
@@ -652,8 +653,11 @@ class CSystemCreateStats
 			int iCount;
 			};
 
+		void AddEntry (const CString &sAttributes);
+		void AddLabelAttributes (const CString &sAttributes);
 		void AddLabelExpansion (const CString &sAttributes, const CString &sPrefix = NULL_STR);
 
+		bool m_bPermute;
 		int m_iLabelCount;
 		CSymbolTable m_LabelAttributeCounts;
 	};

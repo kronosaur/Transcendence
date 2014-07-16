@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 CSystemCreateStats::CSystemCreateStats (void) :
+		m_bPermute(false),
 		m_LabelAttributeCounts(FALSE, TRUE),
 		m_iLabelCount(0)
 
@@ -27,6 +28,32 @@ CSystemCreateStats::~CSystemCreateStats (void)
 		}
 	}
 
+void CSystemCreateStats::AddEntry (const CString &sAttributes)
+
+//	AddEntry
+//
+//	Adds this attribute set
+
+	{
+	CString sAttribCap = strToUpper(sAttributes);
+
+	//	Find the entry
+
+	SLabelAttributeEntry *pEntry;
+	if (m_LabelAttributeCounts.Lookup(sAttribCap, (CObject **)&pEntry) != NOERROR)
+		{
+		pEntry = new SLabelAttributeEntry;
+		pEntry->iCount = 0;
+		pEntry->sAttributes = sAttributes;
+
+		m_LabelAttributeCounts.AddEntry(sAttribCap, (CObject *)pEntry);
+		}
+
+	//	Increment the count
+
+	pEntry->iCount++;
+	}
+
 void CSystemCreateStats::AddLabel (const CString &sAttributes)
 
 //	AddLabel
@@ -34,8 +61,54 @@ void CSystemCreateStats::AddLabel (const CString &sAttributes)
 //	Adds the attributes for the label
 
 	{
-	AddLabelExpansion(sAttributes);
+	if (m_bPermute)
+		AddLabelExpansion(sAttributes);
+	else
+		AddLabelAttributes(sAttributes);
+
 	m_iLabelCount++;
+	}
+
+void CSystemCreateStats::AddLabelAttributes (const CString &sAttributes)
+
+//	AddLabelAttributes
+//
+//	Add each of the attributes alone.
+
+	{
+	char *pPos = sAttributes.GetASCIIZPointer();
+	char *pStart = NULL;
+	while (true)
+		{
+		if (pStart == NULL)
+			{
+			if (*pPos == '\0')
+				break;
+			else if (*pPos == ',' || *pPos == ';' || *pPos == ' ')
+				pPos++;
+			else
+				{
+				pStart = pPos;
+				pPos++;
+				}
+			}
+		else
+			{
+			if (*pPos == '\0' || *pPos == ',' || *pPos == ';' || *pPos == ' ')
+				{
+				CString sAttrib = CString(pStart, (int)(pPos - pStart));
+				AddEntry(sAttrib);
+
+				pStart = NULL;
+				if (*pPos == '\0')
+					break;
+				else
+					pPos++;
+				}
+			else
+				pPos++;
+			}
+		}
 	}
 
 void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CString &sPrefix)
@@ -51,7 +124,7 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 	strParseWhitespace(pPos, &pPos);
 
 	char *pStart = pPos;
-	while (*pPos != ',' && *pPos != ' ' && *pPos != '\0')
+	while (*pPos != ',' && *pPos != ';' && *pPos != ' ' && *pPos != '\0')
 		pPos++;
 
 	CString sAttrib(pStart, pPos - pStart);
@@ -61,7 +134,7 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 	CString sRemainder;
 	if (*pPos != '\0')
 		{
-		if (*pPos == ',')
+		if (*pPos == ',' || *pPos == ';')
 			pPos++;
 
 		sRemainder = strTrimWhitespace(CString(pPos));
@@ -71,23 +144,10 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 
 	if (!sPrefix.IsBlank())
 		sAttrib = strPatternSubst(CONSTLIT("%s,%s"), sPrefix, sAttrib);
-	CString sAttribCap = strToUpper(sAttrib);
 
-	//	Find the entry
+	//	Add
 
-	SLabelAttributeEntry *pEntry;
-	if (m_LabelAttributeCounts.Lookup(sAttribCap, (CObject **)&pEntry) != NOERROR)
-		{
-		pEntry = new SLabelAttributeEntry;
-		pEntry->iCount = 0;
-		pEntry->sAttributes = sAttrib;
-
-		m_LabelAttributeCounts.AddEntry(sAttribCap, (CObject *)pEntry);
-		}
-
-	//	Increment the count
-
-	pEntry->iCount++;
+	AddEntry(sAttrib);
 
 	//	Recurse
 

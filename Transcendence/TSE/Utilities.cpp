@@ -1211,7 +1211,7 @@ CVector ConvertObjectPos2Pos (int iAngle, Metric rRadius, Metric rHeight, Metric
 	}
 #endif
 
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength)
+int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength, int iAttribFreq)
 
 //	ComputeWeightAdjFromMatchStrength
 //
@@ -1225,44 +1225,108 @@ int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength)
 //
 //	OPTION	CODE		HAVE ATTRIB			DON'T HAVE ATTRIB
 //	---------------------------------------------------------
-//	!		-4			x 0					x 1
-//	---		-3			x 1/20				x 1
-//	--		-2			x 1/5				x 1
-//	-		-1			x 1/2				x 1
-//	+		+1			x 2					x 1
-//	++		+2			x 5					x 1
-//	+++		+3			x 5					x 1/2
-//	*		+4			x 5					x 0
+//	!		-4			0					1250
+//	---		-3			50					1238
+//	--		-2			160					1210
+//	-		-1			500 				1125
+//	+		+1			3000				500
+//	++		+2			4360				160
+//	+++		+3			4800				50
+//	*		+4			5000				0
+//
+//	NOTE: The above numbers assume iAttribFreq is 20.
 
 	{
-	switch (iMatchStrength)
+	//	Attribute frequency must be >0 and <100.
+
+	if (iAttribFreq <= 0 || iAttribFreq >= 100)
 		{
-		case -4:
-			return (bHasAttrib ? 0 : 1000);
+		::kernelDebugLogMessage("ERROR: Invalid attribute frequency: %d", iAttribFreq);
+		return 1000;
+		}
 
-		case -3:
-			return (bHasAttrib ? 50 : 1000);
+	//	We only appear at locations with the attribute
 
-		case -2:
-			return (bHasAttrib ? 200 : 1000);
+	if (iMatchStrength >= 4)
+		{
+		//	If this location has the attribute, then we increase our chance inversely with
+		//	the frequency of the attribute. That is, if we MUST be at a location with
+		//	a rare attribute, then we INCREASE our probability relative to other
+		//	objects, so that we keep our overall frequency relatively constant.
 
-		case -1:
-			return (bHasAttrib ? 500 : 1000);
+		if (bHasAttrib)
+			return 100000 / iAttribFreq;
 
-		case 1:
-			return (bHasAttrib ? 2000 : 1000);
+		//	If this location DOES NOT have the attribute, then we have 0 chance of
+		//	appearing here.
 
-		case 2:
-			return (bHasAttrib ? 5000 : 1000);
+		else
+			return 0;
+		}
 
-		case 3:
-			return (bHasAttrib ? 5000 : 500);
+	//	We never appear at locations with the attribute
 
-		case 4:
-			return (bHasAttrib ? 5000 : 0);
+	else if (iMatchStrength <= -4)
+		{
+		//	If the location has the attribute, we have 0 chance of appearing here.
 
-		default:
-			return 1000;
+		if (bHasAttrib)
+			return 0;
+
+		//	Otherwise, our chance of appearing is proportional to the frequency
+		//	of the attribute. 
+
+		else
+			return 100000 / (100 - iAttribFreq);
+		}
+
+	//	Compute based on match strength
+
+	else
+		{
+		//	First we compute the % of objects that should be at locations with the
+		//	given attribute, based on the match strength and the global probability
+		//	that a location has the given attribute.
+
+		Metric rF;
+		switch (iMatchStrength)
+			{
+			case 3:
+				rF = 100.0 - ((100 - iAttribFreq) * 0.05);
+				break;
+
+			case 2:
+				rF = 100.0 - ((100 - iAttribFreq) * 0.16);
+				break;
+
+			case 1:
+				rF = 100.0 - ((100 - iAttribFreq) * 0.5);
+				break;
+
+			case -1:
+				rF = iAttribFreq * 0.5;
+				break;
+
+			case -2:
+				rF = iAttribFreq * 0.16;
+				break;
+
+			case -3:
+				rF = iAttribFreq * 0.05;
+				break;
+
+			//	This should never happen, but just in case
+
+			default:
+				return 1000;
+			}
+
+		//	Compute our probability based on whether we have the attribute our not
+
+		if (bHasAttrib)
+			return (int)(1000.0 * rF / iAttribFreq);
+		else
+			return (int)(1000.0 * (100.0 - rF) / (100 - iAttribFreq));
 		}
 	}
 

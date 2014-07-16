@@ -523,7 +523,7 @@
 
 							encountersCount="1d4+2"
 							>
-						<Label attributes="nebulae"/>
+						<Label attributes="nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
@@ -540,7 +540,7 @@
 
 							encountersCount="1d2"
 							>
-						<Label attributes="nebulae"/>
+						<Label attributes="nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
@@ -678,7 +678,7 @@
 
 							encountersCount="1d4+2"
 							>
-						<Label attributes="primordial"/>
+						<Label attributes="primordial, nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
@@ -692,7 +692,7 @@
 
 							encountersCount="1d2"
 							>
-						<Label attributes="primordial"/>
+						<Label attributes="primordial, nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
