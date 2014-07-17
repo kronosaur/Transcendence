@@ -138,6 +138,9 @@
     <ClCompile Include="SystemCount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EncounterFrequency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">

@@ -24,6 +24,7 @@
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define EFFECT_IMAGE_SWITCH					CONSTLIT("effectImage")
 #define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
+#define ENCOUNTER_FREQ_SWITCH				CONSTLIT("encounterfreq")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entitiesReference")
@@ -307,6 +308,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateArmorTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_COUNT_SWITCH))
 		GenerateEncounterCount(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
+		GenerateEncounterFrequency(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
 		CIDTable EntityTable(TRUE, TRUE);
