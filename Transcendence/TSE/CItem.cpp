@@ -569,7 +569,7 @@ bool CItem::GetDisplayAttributes (CSpaceObject *pSource, TArray<SDisplayAttribut
 	//	Add additional custom attributes
 
 	if (m_pItemType->IsKnown())
-		g_pUniverse->GetDisplayAttributes().AccumulateAttributes(*this, retList);
+		g_pUniverse->GetAttributeDesc().AccumulateAttributes(*this, retList);
 
 	//	Military and Illegal attributes
 

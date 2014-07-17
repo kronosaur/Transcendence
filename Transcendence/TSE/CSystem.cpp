@@ -672,9 +672,13 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 		bool bHasAttrib = (::HasModifier(sAttributes, sAttrib)
 				|| HasAttribute(vPos, sAttrib));
 
+		//	Compute the frequency of the given attribute
+
+		int iAttribFreq = g_pUniverse->GetAttributeDesc().GetLocationAttribFrequency(sAttrib);
+
 		//	Adjust probability based on the match strength
 
-		int iAdj = ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength);
+		int iAdj = ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength, iAttribFreq);
 		iWeight = iWeight * iAdj / 1000;
 
 		//	If weight is 0, then no need to continue

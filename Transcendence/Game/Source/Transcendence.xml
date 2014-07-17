@@ -1064,6 +1064,7 @@
 	<!ENTITY tbVolcanicPlanets			"0x00020063">
 	<!ENTITY rsRedGiantStar2			"0x00020064">
 	<!ENTITY rsRedDwarfStar2			"0x00020065">
+	<!ENTITY unidLocationAttribDef		"0x00020066">
 	
 	<!ENTITY stStarClassM8				"0x00020070">
 	<!ENTITY stStarClassM5				"0x00020071">

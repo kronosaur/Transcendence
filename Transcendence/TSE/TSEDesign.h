@@ -143,6 +143,12 @@ enum EDisplayAttributeTypes
 	attribNegative,
 	};
 
+enum EAttributeTypes
+	{
+	attribTypeLocation,
+	attribTypeItem,
+	};
+
 struct SDisplayAttribute
 	{
 	SDisplayAttribute (EDisplayAttributeTypes iTypeCons, const CString &sTextCons) :
@@ -161,19 +167,31 @@ class CDisplayAttributeDefinitions
 	public:
 		void AccumulateAttributes (const CItem &Item, TArray<SDisplayAttribute> *retList) const;
 		void Append (const CDisplayAttributeDefinitions &Attribs);
-		inline void DeleteAll (void) { m_Definitions.DeleteAll(); }
+		inline void DeleteAll (void) { m_Attribs.DeleteAll(); m_ItemAttribs.DeleteAll(); }
+		int GetLocationAttribFrequency (const CString &sAttrib) const;
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
-		inline bool IsEmpty (void) const { return (m_Definitions.GetCount() == 0); }
+		inline bool IsEmpty (void) const { return ((m_Attribs.GetCount() == 0) && (m_ItemAttribs.GetCount() == 0)); }
 
 	private:
-		struct SEntry
+		struct SItemEntry
 			{
 			CItemCriteria Criteria;
 			EDisplayAttributeTypes iType;
 			CString sText;
 			};
 
-		TArray<SEntry> m_Definitions;
+		struct SAttribDesc
+			{
+			EAttributeTypes iType;
+			CString sName;			//	Human readable name
+
+			//	Location attributes
+
+			int iFrequency;			//	% of locations with this attribute. (1-99)
+			};
+
+		TSortMap<CString, SAttribDesc> m_Attribs;
+		TArray<SItemEntry> m_ItemAttribs;
 	};
 
 //	Base Design Type ----------------------------------------------------------

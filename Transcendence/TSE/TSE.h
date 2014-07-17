@@ -634,13 +634,51 @@ class COrbit
 		Metric m_rPos;					//	Obj position in orbit (radians)
 	};
 
+class CStationTableCache
+	{
+	public:
+		struct SEntry
+			{
+			CStationType *pType;
+			int iChance;
+			};
+
+		CStationTableCache (void) : m_iCacheHits(0), m_iCacheMisses(0) { }
+		~CStationTableCache (void) { DeleteAll(); }
+
+		void DeleteAll (void);
+		bool FindTable (const CString &sDesc, TArray<SEntry> **retpTable);
+		int GetCacheHitRate (void) const;
+		inline int GetCacheSize (void) const { return m_Cache.GetCount(); }
+
+	private:
+		TSortMap<CString, TArray<SEntry> *> m_Cache;
+		int m_iCacheHits;
+		int m_iCacheMisses;
+	};
+
 class CSystemCreateStats
 	{
 	public:
+		struct SEncounterTable
+			{
+			int iLevel;
+			CSystemType *pSystemType;
+			CString sStationCriteria;
+			TArray<CString> LabelAttribs;
+			int iCount;
+			TProbabilityTable<CStationType *> Table;
+
+			bool bHasStation;
+			};
+
 		CSystemCreateStats (void);
 		~CSystemCreateStats (void);
 
 		void AddLabel (const CString &sAttributes);
+		void AddStationTable (int iLevel, CSystemType *pSystemType, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table);
+		inline const SEncounterTable &GetEncounterTable (int iIndex) const { return m_EncounterTables[iIndex]; }
+		inline int GetEncounterTableCount (void) const { return m_EncounterTables.GetCount(); }
 		inline int GetLabelAttributesCount (void) { return m_LabelAttributeCounts.GetCount(); }
 		void GetLabelAttributes (int iIndex, CString *retsAttribs, int *retiCount);
 		inline int GetTotalLabelCount (void) { return m_iLabelCount; }
@@ -656,10 +694,17 @@ class CSystemCreateStats
 		void AddEntry (const CString &sAttributes);
 		void AddLabelAttributes (const CString &sAttributes);
 		void AddLabelExpansion (const CString &sAttributes, const CString &sPrefix = NULL_STR);
+		bool FindEncounterTable (TArray<CStationTableCache::SEntry> &Src, SEncounterTable **retpTable) const;
+
+		//	Label stats
 
 		bool m_bPermute;
 		int m_iLabelCount;
 		CSymbolTable m_LabelAttributeCounts;
+
+		//	Encounter tables
+
+		TArray<SEncounterTable> m_EncounterTables;
 	};
 
 class CSystemCreateEvents
@@ -689,29 +734,6 @@ struct SLocationCriteria
 	CAttributeCriteria AttribCriteria;		//	Attribute criteria
 	Metric rMinDist;						//	Minimum distance from source
 	Metric rMaxDist;						//	Maximum distance from source
-	};
-
-class CStationTableCache
-	{
-	public:
-		struct SEntry
-			{
-			CStationType *pType;
-			int iChance;
-			};
-
-		CStationTableCache (void) : m_iCacheHits(0), m_iCacheMisses(0) { }
-		~CStationTableCache (void) { DeleteAll(); }
-
-		void DeleteAll (void);
-		bool FindTable (const CString &sDesc, TArray<SEntry> **retpTable);
-		int GetCacheHitRate (void) const;
-		inline int GetCacheSize (void) const { return m_Cache.GetCount(); }
-
-	private:
-		TSortMap<CString, TArray<SEntry> *> m_Cache;
-		int m_iCacheHits;
-		int m_iCacheMisses;
 	};
 
 struct SSystemCreateCtx
@@ -3112,7 +3134,7 @@ class CUniverse : public CObject
 		inline CAdventureDesc *GetCurrentAdventureDesc (void) { return m_pAdventure; }
 		void GetCurrentAdventureExtensions (TArray<DWORD> *retList);
 		CMission *GetCurrentMission (void);
-		inline const CDisplayAttributeDefinitions &GetDisplayAttributes (void) const { return m_Design.GetDisplayAttributes(); }
+		inline const CDisplayAttributeDefinitions &GetAttributeDesc (void) const { return m_Design.GetDisplayAttributes(); }
 		inline CTimeSpan GetElapsedGameTime (void) { return m_Time.GetElapsedTimeAt(m_iTick); }
 		inline CTimeSpan GetElapsedGameTimeAt (int iTick) { return m_Time.GetElapsedTimeAt(iTick); }
 		inline CExtensionCollection &GetExtensionCollection (void) { return m_Extensions; }

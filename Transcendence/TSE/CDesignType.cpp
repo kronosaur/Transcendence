@@ -5,6 +5,7 @@
 #include "PreComp.h"
 
 #define ADVENTURE_DESC_TAG						CONSTLIT("AdventureDesc")
+#define ATTRIBUTE_DESC_TAG						CONSTLIT("AttributeDesc")
 #define DISPLAY_ATTRIBUTES_TAG					CONSTLIT("DisplayAttributes")
 #define DOCK_SCREEN_TAG							CONSTLIT("DockScreen")
 #define DOCK_SCREENS_TAG						CONSTLIT("DockScreens")
@@ -1611,7 +1612,8 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 			if (error = m_Language.InitFromXML(Ctx, pItem))
 				return ComposeLoadError(Ctx, Ctx.sError);
 			}
-		else if (strEquals(pItem->GetTag(), DISPLAY_ATTRIBUTES_TAG))
+		else if (strEquals(pItem->GetTag(), DISPLAY_ATTRIBUTES_TAG)
+				|| strEquals(pItem->GetTag(), ATTRIBUTE_DESC_TAG))
 			{
 			if (error = m_DisplayAttribs.InitFromXML(Ctx, pItem))
 				return ComposeLoadError(Ctx, Ctx.sError);

@@ -163,6 +163,109 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 		}
 	}
 
+void CSystemCreateStats::AddStationTable (int iLevel, CSystemType *pSystemType, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table)
+
+//	AddStationTable
+//
+//	Adds the station table.
+
+	{
+	int i;
+
+	//	See if we already have an entry for this table.
+	//	If we don't we add it.
+
+	SEncounterTable *pEntry;
+	if (!FindEncounterTable(Table, &pEntry))
+		{
+		pEntry = m_EncounterTables.Insert();
+		pEntry->iLevel = iLevel;
+		pEntry->pSystemType = pSystemType;
+		pEntry->sStationCriteria = sStationCriteria;
+		pEntry->iCount = 1;
+
+		ParseAttributes(sLocationAttribs, &pEntry->LabelAttribs);
+
+		pEntry->bHasStation = false;
+		for (i = 0; i < Table.GetCount(); i++)
+			{
+			pEntry->Table.Insert(Table[i].pType, Table[i].iChance);
+			if (Table[i].pType->GetScale() == scaleStructure
+					|| Table[i].pType->GetScale() == scaleShip)
+				pEntry->bHasStation = true;
+			}
+
+		return;
+		}
+
+	//	If we already have the table we need to aggregate the entry. We start
+	//	by incrementing the count.
+
+	pEntry->iCount++;
+
+	//	Next we remove any location/label attributes that are not common to 
+	//	both tables. [We assume that if we have two identical tables then only
+	//	the attributes in common count to make the table unique.]
+
+	TArray<CString> NewAttribs;
+	ParseAttributes(sLocationAttribs, &NewAttribs);
+	for (i = 0; i < pEntry->LabelAttribs.GetCount(); i++)
+		{
+		if (!NewAttribs.Find(pEntry->LabelAttribs[i]))
+			{
+			pEntry->LabelAttribs.Delete(i);
+			i--;
+			}
+		}
+	}
+
+bool CSystemCreateStats::FindEncounterTable (TArray<CStationTableCache::SEntry> &Src, SEncounterTable **retpTable) const
+
+//	FindEncounterTable
+//
+//	Looks for an encounter table that matches the source. If we find one, we
+//	return a pointer to the table. Otherwise we return FALSE.
+
+	{
+	int i, j;
+
+	for (i = 0; i < m_EncounterTables.GetCount(); i++)
+		{
+		const TProbabilityTable<CStationType *> &Table = m_EncounterTables[i].Table;
+		
+		//	If we have different counts, then we're different
+
+		if (Table.GetCount() != Src.GetCount())
+			continue;
+
+		//	Compare each entry
+
+		bool bMatches = true;
+		for (j = 0; j < Src.GetCount(); j++)
+			{
+			if (Src[j].pType != Table.GetAt(j)
+					|| Src[j].iChance != Table.GetChance(j))
+				{
+				bMatches = false;
+				break;
+				}
+			}
+
+		//	If we match, then we found a table.
+
+		if (bMatches)
+			{
+			if (retpTable)
+				*retpTable = &m_EncounterTables[i];
+			return true;
+			}
+		}
+
+	//	Otherwise, we did not find it.
+
+	return false;
+	}
+
 void CSystemCreateStats::GetLabelAttributes (int iIndex, CString *retsAttribs, int *retiCount)
 
 //	GetLabelAttributes

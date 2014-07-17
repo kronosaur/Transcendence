@@ -237,6 +237,40 @@
 	void
 
 -->
+	
+<!-- LOCATION ATTRIBUTE DEFINITIONS
+
+	This type sets the frequency of the core location attributes used by the
+	system definitions. We need the frequency to adjust the station placement
+	probabilities.
+	
+	For example, we want +asteroids to be roughly equivalent to +void even though
+	asteroid locations are much more common.
+	
+	Frequency is expressed as the percent of labels in the universe with the
+	given attribute. This number must be >0 and <100. These values can be
+	calculated with the following command:
+	
+	TransData /systemlabels
+	
+	Any attribute not defined here is assumed to have a frequency of 20%.
+	
+-->
+	
+	<Type unid="&unidLocationAttribDef;">
+		<AttributeDesc>
+			<LocationAttribute attribute="asteroids"		percentLocations="50"/>
+			<LocationAttribute attribute="asteroidBelt"		percentLocations="40"/>
+			<LocationAttribute attribute="innerSystem"		percentLocations="45"/>
+			<LocationAttribute attribute="lifeZone"			percentLocations="35"/>
+			<LocationAttribute attribute="nebulae"			percentLocations="12"/>
+			<LocationAttribute attribute="outerSystem"		percentLocations="30"/>
+			<LocationAttribute attribute="planetary"		percentLocations="40"/>
+			<LocationAttribute attribute="void"				percentLocations="10"/>
+		</AttributeDesc>
+	</Type>
+	
+<!-- SYSTEM PART TABLE -->
 
 	<SystemPartTable unid="&tbSystemMorphologies;">
 		

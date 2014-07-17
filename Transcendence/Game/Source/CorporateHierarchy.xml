@@ -44,7 +44,7 @@
 			</GetGlobalDockScreen>
 		</Events>
 		
-		<DisplayAttributes>
+		<AttributeDesc>
 			<!-- Define item attributes so that the player can see which Corporation 
 				created the item. -->
 		
@@ -54,7 +54,7 @@
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
-		</DisplayAttributes>
+		</AttributeDesc>
 	</Sovereign>
 
 	<!-- CorporateCruiser -->

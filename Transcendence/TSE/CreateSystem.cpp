@@ -464,6 +464,11 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 			return error;
 		}
 
+	//	Add to stats
+
+	if (pCtx->pStats)
+		pCtx->pStats->AddStationTable(pCtx->pSystem->GetLevel(), pCtx->pSystem->GetType(), sCriteria, sLocationAttribs, *pTable);
+
 	//	Now generate a probability table and add all the entries
 
 	TProbabilityTable<CStationType *> Table;
@@ -545,9 +550,13 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 	bool bHasAttrib = (::HasModifier(sLocationAttribs, sAttrib)
 			|| pCtx->pSystem->HasAttribute(vPos, sAttrib));
 
+	//	Compute the frequency of the given attribute
+
+	int iAttribFreq = g_pUniverse->GetAttributeDesc().GetLocationAttribFrequency(sAttrib);
+
 	//	Adjust probability based on the match strength
 
-	return ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength);
+	return ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength, iAttribFreq);
 	}
 
 int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, int iMatchStrength)
