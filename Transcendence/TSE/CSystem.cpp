@@ -678,7 +678,7 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 
 		//	Adjust probability based on the match strength
 
-		int iAdj = ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength, iAttribFreq);
+		int iAdj = ComputeWeightAdjFromMatchStrengthAndAttribFreq(bHasAttrib, iMatchStrength, iAttribFreq);
 		iWeight = iWeight * iAdj / 1000;
 
 		//	If weight is 0, then no need to continue

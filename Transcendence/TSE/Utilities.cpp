@@ -1211,9 +1211,58 @@ CVector ConvertObjectPos2Pos (int iAngle, Metric rRadius, Metric rHeight, Metric
 	}
 #endif
 
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength, int iAttribFreq)
+int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength)
 
 //	ComputeWeightAdjFromMatchStrength
+//
+//	OPTION	CODE		HAVE ATTRIB			DON'T HAVE ATTRIB
+//	---------------------------------------------------------
+//	!		-4			0					1000
+//	---		-3			100					1000
+//	--		-2			250					1000
+//	-		-1			500 				1000
+//	+		+1			1000				500
+//	++		+2			1000				250
+//	+++		+3			1000				100
+//	*		+4			1000				0
+//
+//	NOTE: The above numbers assume iAttribFreq is 20.
+
+	{
+	switch (iMatchStrength)
+		{
+		case -4:
+			return (bHasAttrib ? 0 : 1000);
+
+		case -3:
+			return (bHasAttrib ? 100 : 1000);
+
+		case -2:
+			return (bHasAttrib ? 250 : 1000);
+
+		case -1:
+			return (bHasAttrib ? 500 : 1000);
+
+		case 1:
+			return (bHasAttrib ? 1000 : 500);
+
+		case 2:
+			return (bHasAttrib ? 1000 : 250);
+
+		case 3:
+			return (bHasAttrib ? 1000 : 100);
+
+		case 4:
+			return (bHasAttrib ? 1000 : 0);
+
+		default:
+			return 1000;
+		}
+	}
+
+int ComputeWeightAdjFromMatchStrengthAndAttribFreq (bool bHasAttrib, int iMatchStrength, int iAttribFreq)
+
+//	ComputeWeightAdjFromMatchStrengthAndAttribFreq
 //
 //	If iMatchStrength is positive, then it means we want a certain
 //	attribute. If we have the attribute, then we increase our probability

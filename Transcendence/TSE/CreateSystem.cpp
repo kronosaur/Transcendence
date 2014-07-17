@@ -467,7 +467,7 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 	//	Add to stats
 
 	if (pCtx->pStats)
-		pCtx->pStats->AddStationTable(pCtx->pSystem->GetLevel(), pCtx->pSystem->GetType(), sCriteria, sLocationAttribs, *pTable);
+		pCtx->pStats->AddStationTable(pCtx->pSystem, sCriteria, ::AppendModifiers(sLocationAttribs, pCtx->pSystem->GetAttribsAtPos(vPos)), *pTable);
 
 	//	Now generate a probability table and add all the entries
 
@@ -556,7 +556,7 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 
 	//	Adjust probability based on the match strength
 
-	return ComputeWeightAdjFromMatchStrength(bHasAttrib, iMatchStrength, iAttribFreq);
+	return ComputeWeightAdjFromMatchStrengthAndAttribFreq(bHasAttrib, iMatchStrength, iAttribFreq);
 	}
 
 int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, int iMatchStrength)
@@ -3069,14 +3069,14 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 		//	of a type.
 
 		for (i = 0; i < iCount; i++)
-			g_pUniverse->GetStationType(i)->SetTempChance(100);
+			g_pUniverse->GetStationType(i)->SetTempChance(1000);
 		}
 	else
 		{
 		for (i = 0; i < iCount; i++)
 			{
 			CStationType *pType = g_pUniverse->GetStationType(i);
-			pType->SetTempChance(pType->GetFrequencyForSystem(pCtx->pSystem));
+			pType->SetTempChance((1000 / ftCommon) * pType->GetFrequencyForSystem(pCtx->pSystem));
 			}
 		}
 

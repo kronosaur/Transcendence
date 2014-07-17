@@ -163,7 +163,7 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 		}
 	}
 
-void CSystemCreateStats::AddStationTable (int iLevel, CSystemType *pSystemType, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table)
+void CSystemCreateStats::AddStationTable (CSystem *pSystem, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table)
 
 //	AddStationTable
 //
@@ -179,8 +179,8 @@ void CSystemCreateStats::AddStationTable (int iLevel, CSystemType *pSystemType, 
 	if (!FindEncounterTable(Table, &pEntry))
 		{
 		pEntry = m_EncounterTables.Insert();
-		pEntry->iLevel = iLevel;
-		pEntry->pSystemType = pSystemType;
+		pEntry->iLevel = pSystem->GetLevel();
+		pEntry->pSystemType = pSystem->GetType();
 		pEntry->sStationCriteria = sStationCriteria;
 		pEntry->iCount = 1;
 

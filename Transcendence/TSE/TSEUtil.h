@@ -1372,7 +1372,8 @@ class IListData
 
 CString AppendModifiers (const CString &sModifierList1, const CString &sModifierList2);
 CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs = NULL);
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength, int iAttribFreq = 20);
+int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
+int ComputeWeightAdjFromMatchStrengthAndAttribFreq (bool bHasAttrib, int iMatchStrength, int iAttribFreq);
 CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);

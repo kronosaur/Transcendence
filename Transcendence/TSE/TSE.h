@@ -676,7 +676,7 @@ class CSystemCreateStats
 		~CSystemCreateStats (void);
 
 		void AddLabel (const CString &sAttributes);
-		void AddStationTable (int iLevel, CSystemType *pSystemType, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table);
+		void AddStationTable (CSystem *pSystem, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table);
 		inline const SEncounterTable &GetEncounterTable (int iIndex) const { return m_EncounterTables[iIndex]; }
 		inline int GetEncounterTableCount (void) const { return m_EncounterTables.GetCount(); }
 		inline int GetLabelAttributesCount (void) { return m_LabelAttributeCounts.GetCount(); }
