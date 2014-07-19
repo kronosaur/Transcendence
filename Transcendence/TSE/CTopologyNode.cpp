@@ -622,7 +622,8 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 
 //	InitFromSystemXML
 //
-//	Initializes the system information based on an XML element
+//	Initializes the system information based on an XML element.
+//	NOTE: We assume the universe is fully bound at this point.
 
 	{
 	ALERROR error;
@@ -670,6 +671,10 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 	if (dwUNID != 0)
 		m_SystemUNID = dwUNID;
 
+	//	Get the system type
+
+	CSystemType *pSystemType = g_pUniverse->FindSystemType(m_SystemUNID);
+
 	//	Set the name of the system
 
 	CString sName;
@@ -710,6 +715,9 @@ ALERROR CTopologyNode::InitFromSystemXML (CXMLElement *pSystem, CString *retsErr
 
 	if (pSystemParent && pSystemParent->FindAttribute(ATTRIBUTES_ATTRIB, &sAttribs))
 		AddAttributes(sAttribs);
+
+	if (pSystemType && !pSystemType->GetAttributes().IsBlank())
+		AddAttributes(pSystemType->GetAttributes());
 
 	return NOERROR;
 	}

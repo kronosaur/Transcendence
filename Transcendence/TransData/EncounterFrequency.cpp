@@ -40,6 +40,7 @@ void GenerateEncounterFrequency (CUniverse &Universe, CXMLElement *pCmdLine)
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 	bool bLogo = !pCmdLine->GetAttributeBool(CONSTLIT("noLogo"));
 	bool bAll = pCmdLine->GetAttributeBool(CONSTLIT("all"));
+
 	bool bRawData = pCmdLine->GetAttributeBool(CONSTLIT("rawData"));
 
 	//	Additional columns

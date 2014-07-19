@@ -1122,7 +1122,6 @@
 	<!ENTITY unidBenedict				"0x00100009">
 	<!ENTITY ssEarthSpacePrimordial		"0x0010000A">
 	<!ENTITY ssEarthSpaceMetallic		"0x0010000B">
-	
 	<!ENTITY svPteravores				"0x0010000C">
 	<!ENTITY svLuminous					"0x0010000D">
 	<!ENTITY svRanxEmpire				"0x0010000E">
@@ -1134,6 +1133,8 @@
 	<!ENTITY svOutlawMiners				"0x00100014">
 	<!ENTITY svAbbasid					"0x00100015">
 	<!ENTITY svSapiens					"0x00100016">
+	<!ENTITY ssEarthSpaceIceAsteroids	"0x00100017">
+	<!ENTITY ssEarthSpaceVolcanicAsteroids	"0x00100018">
 	
 	<!-- COMMONWEALTH 0010 -->
 	

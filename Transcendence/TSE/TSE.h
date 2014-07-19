@@ -676,6 +676,7 @@ class CSystemCreateStats
 		~CSystemCreateStats (void);
 
 		void AddLabel (const CString &sAttributes);
+		inline void AddPermuteAttrib (const CString &sAttrib) { m_PermuteAttribs.Insert(sAttrib); }
 		void AddStationTable (CSystem *pSystem, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table);
 		inline const SEncounterTable &GetEncounterTable (int iIndex) const { return m_EncounterTables[iIndex]; }
 		inline int GetEncounterTableCount (void) const { return m_EncounterTables.GetCount(); }
@@ -692,6 +693,7 @@ class CSystemCreateStats
 			};
 
 		void AddEntry (const CString &sAttributes);
+		void AddEntryPermutations (const CString &sPrefix, const TArray<CString> &Attribs, int iPos);
 		void AddLabelAttributes (const CString &sAttributes);
 		void AddLabelExpansion (const CString &sAttributes, const CString &sPrefix = NULL_STR);
 		bool FindEncounterTable (TArray<CStationTableCache::SEntry> &Src, SEncounterTable **retpTable) const;
@@ -701,6 +703,7 @@ class CSystemCreateStats
 		bool m_bPermute;
 		int m_iLabelCount;
 		CSymbolTable m_LabelAttributeCounts;
+		TArray<CString> m_PermuteAttribs;
 
 		//	Encounter tables
 

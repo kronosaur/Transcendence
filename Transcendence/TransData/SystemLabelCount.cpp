@@ -37,14 +37,25 @@ void GenerateSystemLabelCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, 1);
 
-	//	Permutations
+	//	Options
 
 	bool bPermutations = pCmdLine->GetAttributeBool(CONSTLIT("permutations"));
 
 	//	Generate systems for multiple games
 
 	CSystemCreateStats Stats;
-	Stats.SetPermute(bPermutations);
+	Stats.AddPermuteAttrib(CONSTLIT("asteroids"));
+	Stats.AddPermuteAttrib(CONSTLIT("planetary"));
+	Stats.AddPermuteAttrib(CONSTLIT("void"));
+	Stats.AddPermuteAttrib(CONSTLIT("innerSystem"));
+	Stats.AddPermuteAttrib(CONSTLIT("lifeZone"));
+	Stats.AddPermuteAttrib(CONSTLIT("outerSystem"));
+	Stats.AddPermuteAttrib(CONSTLIT("envAir"));
+	Stats.AddPermuteAttrib(CONSTLIT("envEarth"));
+	Stats.AddPermuteAttrib(CONSTLIT("envFire"));
+	Stats.AddPermuteAttrib(CONSTLIT("envWater"));
+	bPermutations = true;
+
 	for (i = 0; i < iSystemSample; i++)
 		{
 		printf("pass %d...\n", i+1);

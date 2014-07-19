@@ -1962,8 +1962,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateTerritory",			fnSystemCreate,			FN_SYS_CREATE_TERRITORY,
-			"(sysCreateTerritory orbit minRadius maxRadius attributes) -> True/Nil",
-			"viiv",	PPFLAG_SIDEEFFECTS,	},
+			"(sysCreateTerritory orbit minRadius maxRadius attributes [criteria]) -> True/Nil",
+			"viiv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateWeaponFire",			fnSystemCreate,			FN_SYS_CREATE_WEAPON_FIRE,
 			"(sysCreateWeaponFire weaponID objSource pos dir speed objTarget [detonateNow] [bonus%]) -> obj",
@@ -9079,11 +9079,20 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			else
 				sAttribs = pAttribs->GetStringValue();
 
+			//	Criteria
+
+			CString sCriteria;
+			if (pArgs->GetCount() > 4
+					&& !pArgs->GetElement(4)->IsNil())
+				sCriteria = pArgs->GetElement(4)->GetStringValue();
+
 			//	Create the territory
 
 			CTerritoryDef *pTerritory = new CTerritoryDef;
 			pTerritory->AddRegion(OrbitDesc, rMinRadius, rMaxRadius);
 			pTerritory->AddAttributes(sAttribs);
+			if (!sCriteria.IsBlank())
+				pTerritory->SetCriteria(sCriteria);
 
 			//	Add it 
 

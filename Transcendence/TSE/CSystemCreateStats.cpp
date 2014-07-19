@@ -54,6 +54,37 @@ void CSystemCreateStats::AddEntry (const CString &sAttributes)
 	pEntry->iCount++;
 	}
 
+void CSystemCreateStats::AddEntryPermutations (const CString &sPrefix, const TArray<CString> &Attribs, int iPos)
+
+//	AddEntryPermutations
+//
+//	Adds permutions
+
+	{
+	//	If nothing, then nothing
+
+	if (iPos >= Attribs.GetCount())
+		return;
+
+	//	Get the base case
+
+	CString sNewPrefix;
+	if (!sPrefix.IsBlank())
+		sNewPrefix = strPatternSubst(CONSTLIT("%s,%s"), sPrefix, Attribs[iPos]);
+	else
+		sNewPrefix = Attribs[iPos];
+
+	AddEntry(sNewPrefix);
+
+	//	Permute with the base case
+
+	AddEntryPermutations(sNewPrefix, Attribs, iPos + 1);
+
+	//	Permute the remainder
+
+	AddEntryPermutations(sPrefix, Attribs, iPos + 1);
+	}
+
 void CSystemCreateStats::AddLabel (const CString &sAttributes)
 
 //	AddLabel
@@ -61,7 +92,13 @@ void CSystemCreateStats::AddLabel (const CString &sAttributes)
 //	Adds the attributes for the label
 
 	{
-	if (m_bPermute)
+#ifdef DEBUG
+	if (strFind(sAttributes, CONSTLIT("outerSystem")) != -1
+			&& strFind(sAttributes, CONSTLIT("innerSystem")) != -1)
+		g_pUniverse->DebugOutput("ERROR: %s", sAttributes.GetASCIIZPointer());
+#endif
+
+	if (m_PermuteAttribs.GetCount() > 0)
 		AddLabelExpansion(sAttributes);
 	else
 		AddLabelAttributes(sAttributes);
@@ -118,49 +155,26 @@ void CSystemCreateStats::AddLabelExpansion (const CString &sAttributes, const CS
 //	Expands and adds the given attributes to the label counter
 
 	{
-	//	Parse the first attribute
+	int i;
 
-	char *pPos = sAttributes.GetASCIIZPointer();
-	strParseWhitespace(pPos, &pPos);
+	TArray<CString> Attribs;
+	ParseAttributes(sAttributes, &Attribs);
 
-	char *pStart = pPos;
-	while (*pPos != ',' && *pPos != ';' && *pPos != ' ' && *pPos != '\0')
-		pPos++;
+	//	Add each of the attributes alone (and make a list of permutations)
 
-	CString sAttrib(pStart, pPos - pStart);
-
-	//	Remember the remainder so that we can recurse
-
-	CString sRemainder;
-	if (*pPos != '\0')
+	TArray<CString> Permutable;
+	for (i = 0; i < Attribs.GetCount(); i++)
 		{
-		if (*pPos == ',' || *pPos == ';')
-			pPos++;
-
-		sRemainder = strTrimWhitespace(CString(pPos));
+		if (m_PermuteAttribs.Find(Attribs[i]))
+			Permutable.Insert(Attribs[i]);
+		else
+			AddEntry(Attribs[i]);
 		}
 
-	//	Combine with prefix and capitalize
+	//	Now add all permutations
 
-	if (!sPrefix.IsBlank())
-		sAttrib = strPatternSubst(CONSTLIT("%s,%s"), sPrefix, sAttrib);
-
-	//	Add
-
-	AddEntry(sAttrib);
-
-	//	Recurse
-
-	if (!sRemainder.IsBlank())
-		{
-		//	Add the remainder alone
-
-		AddLabelExpansion(sRemainder, sPrefix);
-
-		//	Add the remainder plus the attribute
-
-		AddLabelExpansion(sRemainder, sAttrib);
-		}
+	if (Permutable.GetCount() >= 1)
+		AddEntryPermutations(NULL_STR, Permutable, 0);
 	}
 
 void CSystemCreateStats::AddStationTable (CSystem *pSystem, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table)

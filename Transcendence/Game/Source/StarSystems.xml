@@ -524,6 +524,70 @@
 			</Group>
 		</IceSystem>
 
+		<!-- ICE ASTEROID SYSTEM ==========================================
+
+		-->
+
+		<IceAsteroidSystem>
+			<Group>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassM5; &stStarClassM0; &stStarClassK5;)) {
+						metallicComp:	'( 5  5 10)
+						organicComp:	'( 5  0  0)
+						rockyComp:		'(30  5 30)
+						waterComp:		'(60 90 60)
+						})
+				</Code>
+				
+				<AddAttribute attributes="redDwarfSystem"/>
+				
+				<!-- Eccentric Inner Worlds -->
+
+				<Orbitals count="1-4" distance="100-400" angle="random" eccentricity="10-40" rotation="random" exclusionRadius="100">
+					<Group>
+						<Table>
+							<Lookup chance="10" table="IcePrimary"/>
+							<Lookup chance="60" table="IcePlanetoidPrimary"/>
+							<Lookup chance="30" table="RockyPlanetoidPrimary"/>
+						</Table>
+					</Group>
+				</Orbitals>
+				
+				<!-- Ice Asteroid Patches -->
+
+				<Orbitals count="10-15" distance="500-650" angle="random" rotation="random" exclusionRadius="100">
+					<Group>
+						<Table>
+							<Lookup chance="30" table="AsteroidArc50"/>
+							<Lookup chance="60" table="AsteroidArc100"/>
+							<Lookup chance="10" table="AsteroidArc200"/>
+						</Table>
+					</Group>
+				</Orbitals>
+				
+				<!-- Worlds -->
+
+				<Orbitals count="1-3" BodeDistanceStart="700" BodeDistanceEnd="1200" angle="random">
+					<Variants>
+						<Table maxRadius="700">
+							<Lookup chance="10" table="PrimordialPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="10" table="RockyPlanetoidPrimary"/>
+							<Lookup chance="60" table="IcePrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+						</Table>
+						<Table maxRadius="1200">
+							<Lookup chance="30" table="IcePrimary"/>
+							<Lookup chance="40" table="IcePlanetoidPrimary"/>
+							<Lookup chance="5"  table="AsteroidBelt12"/>
+							<Lookup chance="15" table="AsteroidBelt25"/>
+							<Lookup chance="10" table="AsteroidBelt50"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</IceAsteroidSystem>
+
 		<!-- LIGHT NEBULA SYSTEM ===============================================
 
 			Nebula
@@ -614,11 +678,61 @@
 			</Group>
 		</LightNebulaSystem>
 
-		<!-- METALLIC SYSTEM ==========================================
-
+		<!-- METALLIC SYSTEM ===================================================
 		-->
 
 		<MetallicSystem>
+			<Group>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassG0; &stStarClassF5; &stStarClassF0;)) {
+						metallicComp:	'(60 90 60)
+						organicComp:	'( 5  0  0)
+						rockyComp:		'(30  5 30)
+						waterComp:		'( 5  5 10)
+						})
+				</Code>
+				
+				<AddAttribute attributes="GTypeSystem"/>
+				
+				<!-- Worlds -->
+
+				<Orbitals count="6-10" BodeDistanceStart="70-90" BodeDistanceEnd="900-1200" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="VolcanicPrimary"/>
+							<Lookup chance="50" table="MetallicPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+						</Table>
+						<Table maxRadius="500">
+							<Lookup chance="5"  table="DesertPrimary"/>
+							<Lookup chance="10" table="VolcanicPrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="50" table="GasGiantPrimary"/>
+							<Lookup chance="10"  table="AsteroidBelt12"/>
+							<Lookup chance="5"  table="AsteroidBelt25"/>
+						</Table>
+						<Table maxRadius="2000">
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="IcePrimary"/>
+							<Lookup chance="25" table="MetallicPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidBelt12"/>
+							<Lookup chance="5"	table="AsteroidBelt25"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</MetallicSystem>
+		
+		<!-- METALLIC ASTEROID SYSTEM ==========================================
+
+		-->
+
+		<MetallicAsteroidSystem>
 			<Group>
 				<Code>
 					(trnCreateStarAndZones aOrbit (random (list &stStarClassK5; &stStarClassK0;)) {
@@ -680,7 +794,7 @@
 					</Variants>
 				</Orbitals>
 			</Group>
-		</MetallicSystem>
+		</MetallicAsteroidSystem>
 
 		<!-- PRIMORDIAL SYSTEM =================================================
 
@@ -870,6 +984,57 @@
 				</Orbitals>
 			</Group>
 		</VolcanicSystem>
+
+		<!-- VOLCANIC ASTEROID SYSTEM ==========================================
+
+		-->
+
+		<VolcanicAsteroidSystem>
+			<Group>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassF0; &stStarClassA5; &stStarClassA0;)) {
+						metallicComp:	'(60 40 30)
+						organicComp:	'(10 10 20)
+						rockyComp:		'(30 50 40)
+						waterComp:		'( 0  0 10)
+						})
+				</Code>
+				
+				<AddAttribute attributes="volcanicSystem, KTypeSystem"/>
+				
+				<!-- Worlds -->
+				
+				<Orbitals count="5-9" BodeDistanceStart="70-80" BodeDistanceEnd="760-900" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup	chance="10" table="AsteroidVulcanoidBelt300"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="5"  table="RockyPrimary"/>
+							<Lookup chance="65" table="VolcanicPrimary"/>
+						</Table>
+						<Lookup	maxRadius="450" table="AsteroidVulcanoidBelt500"/>
+						<Table maxRadius="600">
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="10" table="GreenhousePrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="10" table="RockyPrimary"/>
+							<Lookup chance="50" table="VolcanicPrimary"/>
+							<Lookup chance="10" table="GasGiantPrimary"/>
+						</Table>
+						<Table maxRadius="2000">
+							<Lookup chance="5"  table="DesertPrimary"/>
+							<Lookup chance="15" table="IcePrimary"/>
+							<Lookup chance="5"  table="MetallicPrimary"/>
+							<Lookup chance="55" table="GasGiantPrimary"/>
+							<Lookup chance="5"  table="AsteroidBelt12"/>
+							<Lookup chance="10" table="AsteroidBelt25"/>
+							<Lookup chance="10" table="AsteroidBelt50"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</VolcanicAsteroidSystem>
 
 		<!-- YELLOW STAR SYSTEM ================================================
 		-->
@@ -1085,6 +1250,11 @@
 						lifeZone: maxLightRadius
 						outerSystem: 0
 						})
+					(criteriaTable {
+						innerSystem: Nil
+						lifeZone: Nil
+						outerSystem: "-innerSystem; -lifeZone;"
+						})
 					(i 0)
 					)
 					
@@ -1143,6 +1313,7 @@
 									randomComp
 									(@ (@ zoneList theLight) randomComp)
 									)
+								(@ criteriaTable theLight)
 								)
 								
 							;	Next
