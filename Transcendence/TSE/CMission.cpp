@@ -153,7 +153,8 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 
 			//	Let the player record the mission success
 
-			pPlayer->OnMissionCompleted(this, true);
+			if (pPlayer)
+				pPlayer->OnMissionCompleted(this, true);
 			}
 
 		//	If there is no debrief, then we close the mission
