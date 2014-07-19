@@ -259,14 +259,14 @@
 	
 	<Type unid="&unidLocationAttribDef;">
 		<AttributeDesc>
-			<LocationAttribute attribute="asteroids"		percentLocations="50"/>
+			<LocationAttribute attribute="asteroids"		percentLocations="49"/>
 			<LocationAttribute attribute="asteroidBelt"		percentLocations="40"/>
 			<LocationAttribute attribute="innerSystem"		percentLocations="45"/>
 			<LocationAttribute attribute="lifeZone"			percentLocations="35"/>
 			<LocationAttribute attribute="nebulae"			percentLocations="12"/>
 			<LocationAttribute attribute="outerSystem"		percentLocations="30"/>
-			<LocationAttribute attribute="planetary"		percentLocations="40"/>
-			<LocationAttribute attribute="void"				percentLocations="10"/>
+			<LocationAttribute attribute="planetary"		percentLocations="38"/>
+			<LocationAttribute attribute="void"				percentLocations="13"/>
 		</AttributeDesc>
 	</Type>
 	
@@ -495,20 +495,18 @@
 				<Orbitals count="4-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1100" angle="random">
 					<Variants>
 						<Table maxRadius="290">
-							<Lookup chance="10" table="PrimordialPlanetoidPrimary"/>
-							<Lookup chance="30" table="RockyPlanetoidPrimary"/>
-							<Lookup chance="60" table="IcePlanetoidPrimary"/>
+							<Lookup chance="10" table="PrimordialPrimary"/>
+							<Lookup chance="30" table="RockyPrimary"/>
+							<Lookup chance="60" table="IcePrimary"/>
 						</Table>
 						<Table maxRadius="480">
 							<Lookup chance="10" table="PrimordialPrimary"/>
-							<Lookup chance="10" table="RockyPrimary"/>
-							<Lookup chance="10" table="RockyPlanetoidPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
 							<Lookup chance="60" table="IcePrimary"/>
 							<Lookup chance="10" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="2000">
-							<Lookup chance="30" table="IcePrimary"/>
-							<Lookup chance="40" table="IcePlanetoidPrimary"/>
+							<Lookup chance="70" table="IcePrimary"/>
 							<Lookup chance="5"  table="AsteroidBelt12"/>
 							<Lookup chance="15" table="AsteroidBelt25"/>
 							<Lookup chance="10" table="AsteroidBelt50"/>
@@ -546,9 +544,8 @@
 				<Orbitals count="1-4" distance="100-400" angle="random" eccentricity="10-40" rotation="random" exclusionRadius="100">
 					<Group>
 						<Table>
-							<Lookup chance="10" table="IcePrimary"/>
-							<Lookup chance="60" table="IcePlanetoidPrimary"/>
-							<Lookup chance="30" table="RockyPlanetoidPrimary"/>
+							<Lookup chance="70" table="IcePrimary"/>
+							<Lookup chance="30" table="RockyPrimary"/>
 						</Table>
 					</Group>
 				</Orbitals>
@@ -558,9 +555,9 @@
 				<Orbitals count="10-15" distance="500-650" angle="random" rotation="random" exclusionRadius="100">
 					<Group>
 						<Table>
-							<Lookup chance="30" table="AsteroidArc50"/>
-							<Lookup chance="60" table="AsteroidArc100"/>
-							<Lookup chance="10" table="AsteroidArc200"/>
+							<Lookup chance="30" table="AsteroidIceArc50"/>
+							<Lookup chance="60" table="AsteroidIceArc100"/>
+							<Lookup chance="10" table="AsteroidIceArc200"/>
 						</Table>
 					</Group>
 				</Orbitals>
@@ -571,14 +568,12 @@
 					<Variants>
 						<Table maxRadius="700">
 							<Lookup chance="10" table="PrimordialPrimary"/>
-							<Lookup chance="10" table="RockyPrimary"/>
-							<Lookup chance="10" table="RockyPlanetoidPrimary"/>
+							<Lookup chance="20" table="RockyPrimary"/>
 							<Lookup chance="60" table="IcePrimary"/>
 							<Lookup chance="10" table="GasGiantPrimary"/>
 						</Table>
 						<Table maxRadius="1200">
-							<Lookup chance="30" table="IcePrimary"/>
-							<Lookup chance="40" table="IcePlanetoidPrimary"/>
+							<Lookup chance="70" table="IcePrimary"/>
 							<Lookup chance="5"  table="AsteroidBelt12"/>
 							<Lookup chance="15" table="AsteroidBelt25"/>
 							<Lookup chance="10" table="AsteroidBelt50"/>
@@ -621,7 +616,7 @@
 
 							encountersCount="1d4+2"
 							>
-						<Label attributes="nebulae, void"/>
+						<Label attributes="brightNebulae, nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
@@ -638,7 +633,7 @@
 
 							encountersCount="1d2"
 							>
-						<Label attributes="nebulae, void"/>
+						<Label attributes="brightNebulae, nebulae, void"/>
 					</SpaceEnvironment>
 				</Orbitals>
 
@@ -762,9 +757,9 @@
 				<Orbitals count="1-4" distance="300-600" angle="random" eccentricity="40-90" rotation="random" exclusionRadius="100">
 					<Group>
 						<Table>
-							<Lookup chance="10" table="VolcanicPlanetoidPrimary"/>
-							<Lookup chance="60" table="MetallicPlanetoidPrimary"/>
-							<Lookup chance="30" table="RockyPlanetoidPrimary"/>
+							<Lookup chance="10" table="VolcanicPrimary"/>
+							<Lookup chance="60" table="MetallicPrimary"/>
+							<Lookup chance="30" table="RockyPrimary"/>
 						</Table>
 					</Group>
 				</Orbitals>

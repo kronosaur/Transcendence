@@ -1607,7 +1607,8 @@
 
 			attributes=			"corporate, corporateCustoms, friendly, independent, human, majorStation, populated"
 			levelFrequency=		"-uuuu r---- ----- ----- -----"
-			locationCriteria=	"*"
+			unique=				"inSystem"
+			locationCriteria=	"-planetary"
 			>
 			
 		<Names noArticle="true">Arcoter Industrials; Bosen-Haggen Manufacturing; Cloud9 Industrials;
@@ -1787,7 +1788,7 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, human, majorStation, populated"
-			levelFrequency=		"ucurr v---- ----- ----- -----"
+			levelFrequency=		"uuurr v---- ----- ----- -----"
 			locationCriteria=	"*"
 			>
 

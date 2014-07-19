@@ -193,12 +193,12 @@ int CTopologyNode::CalcMatchStrength (const CAttributeCriteria &Criteria)
 	int iStrength = 1000;
 	for (i = 0; i < Criteria.GetCount(); i++)
 		{
-		int iWeight;
+		DWORD dwMatchStrength;
 		bool bIsSpecial;
-		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iWeight, &bIsSpecial);
+		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &dwMatchStrength, &bIsSpecial);
 
 		bool bHasAttrib = (bIsSpecial ? HasSpecialAttribute(sAttrib) : HasAttribute(sAttrib));
-		int iAdj = ::ComputeWeightAdjFromMatchStrength(bHasAttrib, iWeight);
+		int iAdj = CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength);
 
 		iStrength = iStrength * iAdj / 1000;
 		}

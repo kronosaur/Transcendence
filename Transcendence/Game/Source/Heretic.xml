@@ -5774,7 +5774,7 @@
 
 						encountersCount="1d4+2"
 						>
-					<Label attributes="innerNebula, nebulae, void"/>
+					<Label attributes="brightNebulae, innerNebula, nebulae, void"/>
 				</SpaceEnvironment>
 			</Orbitals>
 
@@ -5791,7 +5791,7 @@
 
 						encountersCount="1d4+2"
 						>
-					<Label attributes="outerNebula, nebulae, void"/>
+					<Label attributes="brightNebulae, outerNebula, nebulae, void"/>
 				</SpaceEnvironment>
 			</Orbitals>
 

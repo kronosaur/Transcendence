@@ -606,7 +606,9 @@
     <None Include="Game\Source\Commonwealth.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\CommonwealthAgricultural.xml" />
+    <None Include="Game\Source\CommonwealthAgricultural.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\CommonwealthFleet.xml">
       <SubType>Designer</SubType>
     </None>
@@ -644,7 +646,9 @@
     <None Include="Game\Source\EncountersVol01.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Environments.xml" />
+    <None Include="Game\Source\Environments.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Eridani.xml">
       <SubType>Designer</SubType>
     </None>
@@ -687,10 +691,16 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Primordial.xml" />
-    <None Include="Game\Source\Rasiermesser.xml" />
-    <None Include="Game\Source\Ringers.xml" />
+    <None Include="Game\Source\Rasiermesser.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\Ringers.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Rocky.xml" />
-    <None Include="Game\Source\RogueFleet.xml" />
+    <None Include="Game\Source\RogueFleet.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGAnalyzers.xml" />
     <None Include="Game\Source\RPGAutons.xml">
       <SubType>Designer</SubType>
@@ -748,7 +758,9 @@
     <None Include="Game\Source\SungSlavers.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Game\Source\Teratons.xml" />
+    <None Include="Game\Source\Teratons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\Tinkers.xml">
       <SubType>Designer</SubType>
     </None>

@@ -3517,7 +3517,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"---rc urv-- ----- ----- -----"
-			locationCriteria=	"+void"
+			locationCriteria=	"+nebulae"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -3568,7 +3568,7 @@
 
 			attributes=			"enemy, envAir, envAvoidsFire, human, penitents, populated, religious"
 			levelFrequency=		"----v curv- ----- ----- -----"
-			locationCriteria=	"+void"
+			locationCriteria=	"+nebulae"
 			>
 
 		<Image			imageID="&rsStations5;" imageX="128" imageY="256" imageWidth="128" imageHeight="128"/>
@@ -4909,7 +4909,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, populated, ranx"
 			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"-outerSystem, +planetary"
+			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="60"
 			>
 
@@ -4960,7 +4960,7 @@
 
 			attributes=			"enemy, envEarth, envAvoidsAir, human, majorStation, populated, ranx"
 			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"-outerSystem, +planetary"
+			locationCriteria=	"-outerSystem, +planetary|+50"
 			enemyExclusionRadius="100"
 			>
 

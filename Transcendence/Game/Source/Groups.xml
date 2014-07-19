@@ -148,7 +148,7 @@
 			<Lookup table="LocationDefinition">
 				<_Morphology>
 					<OrbitalDistribution count="2d4+8" radialWidth="18">
-						<Lookup table="VariantAsteroid"/>
+						<Lookup table="VariantAsteroidAndLabel"/>
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="1"	radialWidth="18">
@@ -162,7 +162,7 @@
 			<Lookup table="LocationDefinition">
 				<_Morphology>
 					<OrbitalDistribution count="2d8+16" radialWidth="30">
-						<Lookup table="VariantAsteroid"/>
+						<Lookup table="VariantAsteroidAndLabel"/>
 					</OrbitalDistribution>
 
 					<OrbitalDistribution count="2"	radialWidth="30">
@@ -176,10 +176,10 @@
 			<Lookup table="LocationDefinition">
 				<_Morphology>
 					<OrbitalDistribution count="2d14+35" radialWidth="42">
-						<Lookup table="VariantAsteroid"/>
+						<Lookup table="VariantAsteroidAndLabel"/>
 					</OrbitalDistribution>
 
-					<OrbitalDistribution count="2-4"	radialWidth="42">
+					<OrbitalDistribution count="1-3"	radialWidth="42">
 						<Lookup table="VariantAsteroidBeltLabel"/>
 					</OrbitalDistribution>
 				</_Morphology>
@@ -421,6 +421,50 @@
 				</_Morphology>
 			</Lookup>
 		</AsteroidAntiTrojans100>
+		
+		<!-- ICE ASTEROIDS -->
+
+		<AsteroidIceArc50>
+			<Variant variant="lifeZone">
+				<Variant variant="volcanic">
+					<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</Variant>
+			</Variant>
+		</AsteroidIceArc50>
+
+		<AsteroidIceArc100>
+			<Variant variant="lifeZone">
+				<Variant variant="volcanic">
+					<OrbitalDistribution count="2d25+75" arcLength="500" radialWidth="60">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="3-5" arcLength="620"	radialWidth="30">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</Variant>
+			</Variant>
+		</AsteroidIceArc100>
+
+		<AsteroidIceArc200>
+			<Variant variant="lifeZone">
+				<Variant variant="volcanic">
+					<OrbitalDistribution count="2d50+150" arcLength="400" radialWidth="84">
+						<Lookup table="VariantAsteroid"/>
+					</OrbitalDistribution>
+
+					<OrbitalDistribution count="4-8" arcLength="500"	radialWidth="84">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</OrbitalDistribution>
+				</Variant>
+			</Variant>
+		</AsteroidIceArc200>
 
 		<!-- ASTEROID VULCANOIDS -->
 
@@ -481,7 +525,7 @@
 				</_Morphology>
 			</Lookup>
 
-			<Orbitals distance="2d4+8" angle="random">
+			<Orbitals count="1-3" distance="2d4+8" angle="random">
 				<Label attributes="moon, planetary"/>
 			</Orbitals>
 		</PlanetoidCompanion>
@@ -784,6 +828,27 @@
 				<Lookup chance="1"		table="VariantSizeD"/>
 			</Table>
 		</VariantAsteroid>
+		
+		<VariantAsteroidAndLabel>
+			<Table>
+				<Lookup chance="80"		table="VariantSizeA"/>
+				<Lookup chance="14"		table="VariantSizeB"/>
+				<Group  chance="5">
+					<Lookup chance="5"	table="VariantSizeC"/>
+					
+					<Orbitals distance="2d4+4" angle="random">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</Orbitals>
+				</Group>
+				<Group  chance="1">
+					<Lookup chance="1"	table="VariantSizeD"/>
+					
+					<Orbitals distance="2d4+8" angle="random">
+						<Lookup table="VariantAsteroidBeltLabel"/>
+					</Orbitals>
+				</Group>
+			</Table>
+		</VariantAsteroidAndLabel>
 
 		<VariantAsteroidBeltLabel>
 			<VariantTable>
@@ -1046,7 +1111,7 @@
 			<!-- A label in orbit around the planet (also an input, in case the
 				caller wants to define some special attributes. -->
 
-			<Orbitals distance="2d6+10" angle="random">
+			<Orbitals count="1-3" distance="2d6+10" angle="random">
 				<Lookup table="_PlanetLabel"/>
 			</Orbitals>
 

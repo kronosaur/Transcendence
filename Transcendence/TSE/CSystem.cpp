@@ -637,7 +637,7 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 //	Calculates the weight of the given location relative to the given
 //	criteria.
 //
-//	See: ComputeWeightAdjFromMatchStrength
+//	See: CAttributeCriteria::CalcWeightAdj
 //
 //	EXAMPLES:
 //
@@ -663,8 +663,8 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 
 	for (i = 0; i < Criteria.GetCount(); i++)
 		{
-		int iMatchStrength;
-		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &iMatchStrength);
+		DWORD dwMatchStrength;
+		const CString &sAttrib = Criteria.GetAttribAndWeight(i, &dwMatchStrength);
 
 		//	Do we have the attribute? Check the location and any attributes
 		//	inherited from territories and the system.
@@ -678,7 +678,7 @@ int CSystem::CalcLocationWeight (CLocationDef *pLoc, const CAttributeCriteria &C
 
 		//	Adjust probability based on the match strength
 
-		int iAdj = ComputeWeightAdjFromMatchStrengthAndAttribFreq(bHasAttrib, iMatchStrength, iAttribFreq);
+		int iAdj = CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength, iAttribFreq);
 		iWeight = iWeight * iAdj / 1000;
 
 		//	If weight is 0, then no need to continue

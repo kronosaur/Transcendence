@@ -288,35 +288,53 @@ class CIDCounter
 class CAttributeCriteria
 	{
 	public:
-		enum Weights
+		enum EMatchStrength
 			{
-			critRequired =	4,
-			critExcluded =	-4,
-
-			critSeek1 = 1,
-			critSeek2 = 2,
-			critSeek3 = 3,
-
-			critAvoid1 = -1,
-			critAvoid2 = -2,
-			critAvoid3 = -3,
-
-			critNeutral = 0,
+			matchRequired =					0x00010000,
+			matchExcluded =					0x00020000,
 			};
 
 		inline int GetCount (void) const { return m_Attribs.GetCount(); }
 		const CString &GetAttribAndRequired (int iIndex, bool *retbRequired) const;
-		const CString &GetAttribAndWeight (int iIndex, int *retiWeight, bool *retbIsSpecial = NULL) const;
+		const CString &GetAttribAndWeight (int iIndex, DWORD *retdwMatchStrength, bool *retbIsSpecial = NULL) const;
 		inline bool MatchesAll (void) const { return (GetCount() == 0); }
 		ALERROR Parse (const CString &sCriteria, DWORD dwFlags = 0, CString *retsError = NULL);
 
+		static int CalcWeightAdj (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq = -1);
+
 	private:
+		enum MatchStrengthEncoding
+			{
+			CODE_MASK =						0xFFFF0000,
+			VALUE_MASK =					0x0000FFFF,
+
+			CODE_REQUIRED =					0x00010000,
+			CODE_EXCLUDED =					0x00020000,
+			CODE_SEEK =						0x00030000,		//	Value = 1-3
+			CODE_AVOID =					0x00040000,		//	Value = 1-3
+			CODE_INCREASE_IF =				0x00050000,		//	Value = % to increase
+			CODE_INCREASE_UNLESS =			0x00060000,		//	Value = % to increase
+			CODE_DECREASE_IF =				0x00070000,		//	Value = % to decrease
+			CODE_DECREASE_UNLESS =			0x00080000,		//	Value = % to decrease
+
+			matchSeek1 =					0x00030001,
+			matchSeek2 =					0x00030002,
+			matchSeek3 =					0x00030003,
+
+			matchAvoid1 =					0x00040001,
+			matchAvoid2 =					0x00040002,
+			matchAvoid3 =					0x00040003,
+			};
+
 		struct SEntry
 			{
 			CString sAttrib;
-			int iWeight;
+			DWORD dwMatchStrength;
 			bool bIsSpecial;
 			};
+
+		static int CalcWeightAdjCustom (bool bHasAttrib, DWORD dwMatchStrength);
+		static int CalcWeightAdjWithAttribFreq (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq);
 
 		TArray<SEntry> m_Attribs;
 		DWORD m_dwFlags;
@@ -1372,8 +1390,6 @@ class IListData
 
 CString AppendModifiers (const CString &sModifierList1, const CString &sModifierList2);
 CString ComposePlayerNameString (const CString &sString, const CString &sPlayerName, int iGenome, ICCItem *pArgs = NULL);
-int ComputeWeightAdjFromMatchStrength (bool bHasAttrib, int iMatchStrength);
-int ComputeWeightAdjFromMatchStrengthAndAttribFreq (bool bHasAttrib, int iMatchStrength, int iAttribFreq);
 CString GetLoadStateString (ELoadStates iState);
 Metric GetScale (CXMLElement *pObj);
 bool HasModifier (const CString &sModifierList, const CString &sModifier);

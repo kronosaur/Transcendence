@@ -1066,7 +1066,7 @@
 
 			attributes=			"enemy, envWater, envAvoidsEarth, huari, human, majorStation, populated"
 			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-lifeZone, +planetary"
+			locationCriteria=	"-lifeZone, +planetary|+50"
 			enemyExclusionRadius="100"
 			>
 

@@ -238,9 +238,9 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 						   const CString &sLocationAttribs,
 						   const CVector &vPos,
 						   const CString &sAttrib, 
-						   int iMatchStrength);
+						   DWORD dwMatchStrength);
 const COrbit *ComputeOffsetOrbit (CXMLElement *pObj, const COrbit &Original, COrbit *retOrbit);
-int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, int iMatchStrength);
+int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, DWORD dwMatchStrength);
 ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx, 
 												  TProbabilityTable<int> &LocationTable,
 												  const CString &sStationCriteria,
@@ -536,7 +536,7 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 						   const CString &sLocationAttribs,
 						   const CVector &vPos,
 						   const CString &sAttrib, 
-						   int iMatchStrength)
+						   DWORD dwMatchStrength)
 
 //	ComputeLocationWeight
 //
@@ -556,19 +556,17 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 
 	//	Adjust probability based on the match strength
 
-	return ComputeWeightAdjFromMatchStrengthAndAttribFreq(bHasAttrib, iMatchStrength, iAttribFreq);
+	return CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength, iAttribFreq);
 	}
 
-int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, int iMatchStrength)
+int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, DWORD dwMatchStrength)
 
 //	ComputeStationWeight
 //
 //	Returns the weight of this station type given the attribute and match weight
 
 	{
-	return ComputeWeightAdjFromMatchStrength(
-			pType->HasAttribute(sAttrib),
-			iMatchStrength);
+	return CAttributeCriteria::CalcWeightAdj(pType->HasAttribute(sAttrib), dwMatchStrength);
 	}
 
 ALERROR DistributeStationsAtRandomLocations (SSystemCreateCtx *pCtx, CXMLElement *pDesc, const COrbit &OrbitDesc)
@@ -977,14 +975,14 @@ ALERROR CreateLocationCriteriaTable (SSystemCreateCtx *pCtx, CXMLElement *pDesc,
 
 				for (j = 0; j < Criteria.GetCount(); j++)
 					{
-					int iMatchStrength;
-					const CString &sAttrib = Criteria.GetAttribAndWeight(j, &iMatchStrength);
+					DWORD dwMatchStrength;
+					const CString &sAttrib = Criteria.GetAttribAndWeight(j, &dwMatchStrength);
 
 					int iAdj = ComputeLocationWeight(pCtx, 
 							pCtx->sLocationAttribs,
 							OrbitDesc.GetObjectPos(),
 							sAttrib,
-							iMatchStrength);
+							dwMatchStrength);
 
 					ProbTable[i] = (ProbTable[i] * iAdj) / 1000;
 					}
@@ -2721,7 +2719,7 @@ ALERROR CreateVariantsTable (SSystemCreateCtx *pCtx, CXMLElement *pDesc, const C
 							pCtx->sLocationAttribs,
 							OrbitDesc.GetObjectPos(),
 							sAttrib,
-							(bRequired ? 4 : -4));
+							(bRequired ? CAttributeCriteria::matchRequired : CAttributeCriteria::matchExcluded));
 
 					if (iAdj == 0)
 						{
@@ -3097,10 +3095,10 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 				{
 				for (j = 0; j < StationCriteria.GetCount(); j++)
 					{
-					int iMatchStrength;
-					const CString &sAttrib = StationCriteria.GetAttribAndWeight(j, &iMatchStrength);
+					DWORD dwMatchStrength;
+					const CString &sAttrib = StationCriteria.GetAttribAndWeight(j, &dwMatchStrength);
 
-					int iAdj = ComputeStationWeight(pCtx, pType, sAttrib, iMatchStrength);
+					int iAdj = ComputeStationWeight(pCtx, pType, sAttrib, dwMatchStrength);
 
 					if (iAdj > 0)
 						pType->SetTempChance((pType->GetTempChance() * iAdj) / 1000);
@@ -3135,14 +3133,14 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 
 					for (j = 0; j < Criteria.GetCount(); j++)
 						{
-						int iMatchStrength;
-						const CString &sAttrib = Criteria.GetAttribAndWeight(j, &iMatchStrength);
+						DWORD dwMatchStrength;
+						const CString &sAttrib = Criteria.GetAttribAndWeight(j, &dwMatchStrength);
 
 						int iAdj = ComputeLocationWeight(pCtx,
 								sLocationAttribs,
 								vPos,
 								sAttrib,
-								iMatchStrength);
+								dwMatchStrength);
 						pType->SetTempChance((pType->GetTempChance() * iAdj) / 1000);
 						}
 					}

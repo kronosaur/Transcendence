@@ -21,7 +21,7 @@
 
 			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- rcurv ----- ----- -----"
-			locationCriteria=	"+outerSystem, +ringedGiant"
+			locationCriteria=	"+outerSystem, +ringedGiant|+100"
 			enemyExclusionRadius="50"
 			>
 
@@ -202,7 +202,7 @@
 
 			attributes=			"envEarth, envAvoidsAir, friendly, independent, majorStation, neoHuman, populated, ringers"
 			levelFrequency=		"----- -ruur ----- ----- -----"
-			locationCriteria=	"+outerSystem, +ringedGiant"
+			locationCriteria=	"+outerSystem, +ringedGiant|+100"
 			enemyExclusionRadius="100"
 			>
 
