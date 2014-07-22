@@ -53,7 +53,9 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define PROPERTY_DISINTEGRATION_IMMUNE			CONSTLIT("disintegrationImmune")
 #define PROPERTY_DOCKED_AT_ID					CONSTLIT("dockedAtID")
 #define PROPERTY_DOCKING_ENABLED				CONSTLIT("dockingEnabled")
+#define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_PLAYER_WINGMAN					CONSTLIT("playerWingman")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
 #define PROPERTY_ROTATION						CONSTLIT("rotation")
@@ -2618,6 +2620,9 @@ ICCItem *CShip::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
 		return CC.CreateBool(SupportsDocking());
 
+	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));
+
 	else if (strEquals(sName, PROPERTY_EMP_IMMUNE))
 		{
 		for (i = 0; i < GetArmorSectionCount(); i++)
@@ -2629,6 +2634,10 @@ ICCItem *CShip::GetProperty (const CString &sName)
 
 		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
 		}
+
+	else if (strEquals(sName, PROPERTY_OPEN_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(GetOpenDockingPortCount());
+
 	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))
 		{
 		return CC.CreateBool(m_pController->IsPlayerWingman());

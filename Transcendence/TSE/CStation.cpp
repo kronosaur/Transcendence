@@ -24,11 +24,13 @@
 #define NAME_ATTRIB								CONSTLIT("name")
 
 #define PROPERTY_ABANDONED						CONSTLIT("abandoned")
+#define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_IMMUTABLE						CONSTLIT("immutable")
 #define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_MAX_HP							CONSTLIT("maxHP")
 #define PROPERTY_MAX_STRUCTURAL_HP				CONSTLIT("maxStructuralHP")
+#define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_ORBIT							CONSTLIT("orbit")
 #define PROPERTY_PARALLAX						CONSTLIT("parallax")
 #define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
@@ -1393,6 +1395,9 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	if (strEquals(sName, PROPERTY_ABANDONED))
 		return CC.CreateBool(IsAbandoned());
 
+	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));
+
 	else if (strEquals(sName, PROPERTY_HP))
 		return CC.CreateInteger(m_iHitPoints);
 
@@ -1425,6 +1430,9 @@ ICCItem *CStation::GetProperty (const CString &sName)
 
 	else if (strEquals(sName, PROPERTY_MAX_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iMaxStructuralHP);
+
+	else if (strEquals(sName, PROPERTY_OPEN_DOCKING_PORT_COUNT))
+		return CC.CreateInteger(GetOpenDockingPortCount());
 
 	else if (strEquals(sName, PROPERTY_ORBIT))
 		return (m_pMapOrbit ? CreateListFromOrbit(CC, *m_pMapOrbit) : CC.CreateNil());

@@ -1371,11 +1371,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (stations)\n\n"
 
 			"   'abandoned\n"
+			"   'dockingPortCount\n"
 			"   'hp\n"
 			"   'immutable\n"
 			"   'installDeviceMaxLevel\n"
 			"   'maxHP\n"
 			"   'maxStructuralHP\n"
+			"   'openDockingPortCount\n"
 			"   'orbit\n"
 			"   'parallax\n"
 			"   'playerBlacklisted\n"
