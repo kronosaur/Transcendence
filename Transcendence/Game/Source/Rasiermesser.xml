@@ -85,6 +85,7 @@
 			armorID=			"&itGusokuArmor;"
 			hitPoints=			"250"
 			repairRate=			"3"
+			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
 
@@ -194,6 +195,7 @@
 			armorID=			"&itGusokuArmor;"
 			hitPoints=			"700"
 			repairRate=			"3"
+			fireRateAdj=		"80"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
 

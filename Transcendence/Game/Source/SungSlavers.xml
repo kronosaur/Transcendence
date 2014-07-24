@@ -1050,6 +1050,7 @@
 			multiHull=			"true"
 			armorID=			"&itSungArmor;"
 			hitPoints=			"125"
+			fireRateAdj=		"80"
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envEarth, envFire, envWater, human, populated, sungSlaveCamp, sungSlavers"
