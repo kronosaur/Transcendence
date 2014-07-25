@@ -790,9 +790,10 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Create any ships registered to this station
 
-	IShipGenerator *pShipGenerator = pType->GetInitialShips();
+	int iShipCount;
+	IShipGenerator *pShipGenerator = pType->GetInitialShips(pStation->GetDestiny(), &iShipCount);
 	if (pShipGenerator)
-		pStation->CreateRandomDockedShips(pShipGenerator);
+		pStation->CreateRandomDockedShips(pShipGenerator, iShipCount);
 
 	//	If we have a trade descriptor, create appropriate items
 
@@ -885,13 +886,15 @@ ALERROR CStation::CreateMapImage (void)
 	return NOERROR;
 	}
 
-void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator)
+void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator, int iCount)
 
 //	CreateRandomDockedShips
 //
 //	Creates all the ships that are registered at this station
 
 	{
+	int i;
+
 	SShipCreateCtx Ctx;
 
 	Ctx.pSystem = GetSystem();
@@ -903,7 +906,8 @@ void CStation::CreateRandomDockedShips (IShipGenerator *pShipGenerator)
 
 	//	Create the ships
 
-	pShipGenerator->CreateShips(Ctx);
+	for (i = 0; i < iCount; i++)
+		pShipGenerator->CreateShips(Ctx);
 	}
 
 void CStation::CreateStructuralDestructionEffect (SDestroyCtx &Ctx)
@@ -4030,9 +4034,10 @@ void CStation::UpdateReinforcements (int iTick)
 
 	//	Get reinforcements
 
+	int iMinShips;
 	if ((iTick % STATION_REINFORCEMENT_FREQUENCY) == 0
-			&& m_pType->GetMinShips() > 0
-			&& !m_fNoReinforcements)
+			&& !m_fNoReinforcements
+			&& (iMinShips = m_pType->GetMinShips(GetDestiny())) > 0)
 		{
 		//	Iterate over all ships and count the number that are
 		//	associated with the station.
@@ -4042,7 +4047,7 @@ void CStation::UpdateReinforcements (int iTick)
 		//	If we don't have the minimum number of ships at the
 		//	station then send reinforcements.
 
-		if (iCount < m_pType->GetMinShips())
+		if (iCount < iMinShips)
 			{
 			//	If we've requested several rounds of reinforcements but have
 			//	never received any, then it's likely that they are being

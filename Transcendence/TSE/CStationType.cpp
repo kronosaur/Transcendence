@@ -1427,6 +1427,18 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			Ctx.sError = ComposeLoadError(strPatternSubst(CONSTLIT("<Ships>: %s"), Ctx.sError));
 			return error;
 			}
+
+		//	If defined, we use this count to create initial ships AND reinforcements.
+
+		CString sCount;
+		if (pShips->FindAttribute(COUNT_ATTRIB, &sCount))
+			{
+			if (error = m_ShipsCount.LoadFromXML(sCount))
+				{
+				Ctx.sError = ComposeLoadError(CONSTLIT("Invalid count attribute in <Ships>"));
+				return error;
+				}
+			}
 		}
 
 	//	Load reinforcements

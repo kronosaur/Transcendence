@@ -356,6 +356,7 @@ class DiceRange
 		inline bool IsConstant (void) const { return (m_iFaces * m_iCount) == 0; }
 		inline bool IsEmpty (void) const { return (m_iFaces == 0 && m_iCount == 0 && m_iBonus == 0); }
 		int Roll (void) const;
+		int RollSeeded (int iSeed) const;
 		ALERROR LoadFromXML (const CString &sAttrib, int iDefault, CString *retsSuffix = NULL);
 		inline ALERROR LoadFromXML (const CString &sAttrib, CString *retsSuffix = NULL) { return LoadFromXML(sAttrib, 0, retsSuffix); }
 		void ReadFromStream (SLoadCtx &Ctx);

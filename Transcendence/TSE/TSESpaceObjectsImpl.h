@@ -1280,7 +1280,7 @@ class CStation : public CSpaceObject
 		virtual bool CanMove (void) { return IsMobile(); }
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual bool ClassCanAttack (void);
-		virtual void CreateRandomDockedShips (IShipGenerator *pGenerator);
+		virtual void CreateRandomDockedShips (IShipGenerator *pGenerator, int iCount = 1);
 		virtual CurrencyValue CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual CString DebugCrashInfo (void);
 		virtual void Decontaminate (void) { m_fRadioactive = false; }

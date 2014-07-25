@@ -4977,11 +4977,11 @@ class CStationType : public CDesignType
 		inline IImageEntry *GetImageRoot (void) const { return m_Image.GetRoot(); }
 		inline int GetImageVariants (void) { return m_iImageVariants; }
 		inline int GetInitialHitPoints (void) { return m_iHitPoints; }
-		inline IShipGenerator *GetInitialShips (void) { return m_pInitialShips; }
+		inline IShipGenerator *GetInitialShips (int iDestiny, int *retiCount) { *retiCount = (!m_ShipsCount.IsEmpty() ? m_ShipsCount.RollSeeded(iDestiny) : 1); return m_pInitialShips; }
 		Metric GetLevelStrength (int iLevel);
 		inline const CString &GetLocationCriteria (void) { return m_RandomPlacement.GetLocationCriteria(); }
 		inline Metric GetMass (void) { return m_rMass; }
-		inline int GetMinShips (void) { return m_iMinShips; }
+		inline int GetMinShips (int iDestiny) { return (!m_ShipsCount.IsEmpty() ? m_ShipsCount.RollSeeded(iDestiny) : m_iMinShips); }
 		inline Metric GetMaxEffectiveRange (void) { return m_rMaxAttackDistance; }
 		inline int GetMaxHitPoints (void) { return m_iMaxHitPoints; }
 		inline int GetMaxLightDistance (void) { return m_iMaxLightDistance; }
@@ -4994,7 +4994,7 @@ class CStationType : public CDesignType
 		inline Metric GetParallaxDist (void) const { return m_rParallaxDist; }
 		inline IItemGenerator *GetRandomItemTable (void) { return m_pItems; }
 		inline DWORD GetRandomNameFlags (void) { return m_dwRandomNameFlags; }
-		inline IShipGenerator *GetReinforcementsTable (void) { return m_pReinforcements; }
+		inline IShipGenerator *GetReinforcementsTable (void) { return (!m_ShipsCount.IsEmpty() ? m_pInitialShips : m_pReinforcements); }
 		inline int GetRepairRate (void) { return m_iRepairRate; }
 		inline CXMLElement *GetSatellitesDesc (void) { return m_pSatellitesDesc; }
 		inline ScaleTypes GetScale (void) const { return m_iScale; }
@@ -5157,6 +5157,7 @@ class CStationType : public CDesignType
 		CStationEncounterCtx m_EncounterRecord;			//	Record of encounters so far
 
 		//	Ships
+		DiceRange m_ShipsCount;							//	Station should have this number of ship
 		IShipGenerator *m_pInitialShips;				//	Ships at creation time
 		IShipGenerator *m_pReinforcements;				//	Reinforcements table
 		int m_iMinShips;								//	Min ships at station

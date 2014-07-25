@@ -418,6 +418,21 @@ int DiceRange::Roll (void) const
 	return iRoll + m_iBonus;
 	}
 
+int DiceRange::RollSeeded (int iSeed) const
+
+//	RollSeeded
+//
+//	Generate a random number
+
+	{
+	int iRoll = 0;
+
+	for (int i = 0; i < m_iCount; i++)
+		iRoll += mathSeededRandom(iSeed, 1, m_iFaces);
+
+	return iRoll + m_iBonus;
+	}
+
 CString DiceRange::SaveToXML (void) const
 
 //	SaveToXML
