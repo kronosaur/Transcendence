@@ -15,6 +15,7 @@
 			inherit=			"&scPlayerSapphireBase;"
 			characterClass=		"&unidPilgrimClass;"
 			   
+			size=				"31"
 			mass=				"30"
 			thrustRatio=		"6.6"
 			maxSpeed=			"20"
@@ -86,7 +87,8 @@
 			attributes=			"00200000_PlayerShip"
 			inherit=			"&scPlayerEI500Base;"
 			characterClass=		"&unidPilgrimClass;"
-			   
+
+			size=				"27"
 			mass=				"150"
 			thrustRatio=		"1.5"
 			maxSpeed=			"18"
@@ -174,6 +176,7 @@
 			inherit=			"&scPlayerWolfenBase;"
 			characterClass=		"&unidPilgrimClass;"
 			   
+			size=				"26"
 			mass=				"30"
 			thrustRatio=		"13"
 			maxSpeed=			"25"
