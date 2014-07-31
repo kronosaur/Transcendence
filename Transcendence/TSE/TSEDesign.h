@@ -4486,7 +4486,7 @@ class CShipClass : public CDesignType
 		DWORD m_fInheritedDevices:1;			//	TRUE if m_pDevices is inherited from another class
 		DWORD m_fInheritedItems:1;				//	TRUE if m_pItems is inherited from another class
 		DWORD m_fInheritedEscorts:1;			//	TRUE if m_pEscorts is inherited from another class
-		DWORD m_fSpare7:1;
+		DWORD m_fCyberDefenseOverride:1;		//	TRUE if cyberDefenseLevel is specified in XML
 		DWORD m_fSpare8:1;
 
 		DWORD m_fSpare:16;

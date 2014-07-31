@@ -141,6 +141,7 @@
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 #define FIELD_THRUSTER_POWER					CONSTLIT("thrusterPower")
 #define FIELD_TREASURE_VALUE					CONSTLIT("treasureValue")
+#define FIELD_WRECK_CHANCE						CONSTLIT("wreckChance")
 
 #define ERR_OUT_OF_MEMORY						CONSTLIT("out of memory")
 #define ERR_BAD_IMAGE							CONSTLIT("invalid ship image")
@@ -1797,6 +1798,10 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_TREASURE_VALUE))
 		*retsValue = strFromInt(m_pItems ? (int)m_pItems->GetAverageValue(GetLevel()) : 0);
+
+	else if (strEquals(sField, FIELD_WRECK_CHANCE))
+		*retsValue = strFromInt(m_iLeavesWreck);
+
 	else if (strEquals(sField, FIELD_PRIMARY_WEAPON_RANGE))
 		{
 		int iRange = 0;
@@ -2658,6 +2663,9 @@ ALERROR CShipClass::OnFinishBindDesign (SDesignLoadCtx &Ctx)
 	if (!m_fLevelOverride)
 		m_iLevel = CalcLevel();
 
+	if (!m_fCyberDefenseOverride)
+		m_iCyberDefenseLevel = m_iLevel;
+
 	//	Done
 
 	return NOERROR;
@@ -2700,6 +2708,7 @@ void CShipClass::OnInitFromClone (CDesignType *pSource)
 	m_DriveDesc = pClass->m_DriveDesc;
 	m_ReactorDesc = pClass->m_ReactorDesc;
 	m_iCyberDefenseLevel = pClass->m_iCyberDefenseLevel;
+	m_fCyberDefenseOverride = pClass->m_fCyberDefenseOverride;
 
 	m_iMaxArmorMass = pClass->m_iMaxArmorMass;
 	m_iMaxCargoSpace = pClass->m_iMaxCargoSpace;
@@ -2865,7 +2874,10 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (error = CReactorClass::InitReactorDesc(Ctx, pDesc, &m_ReactorDesc, true))
 		return error;
 
-	m_iCyberDefenseLevel = Max(1, pDesc->GetAttributeInteger(CYBER_DEFENSE_LEVEL_ATTRIB));
+	if ((m_fCyberDefenseOverride = pDesc->FindAttributeInteger(CYBER_DEFENSE_LEVEL_ATTRIB, &m_iCyberDefenseLevel)))
+		m_iCyberDefenseLevel = Max(1, m_iCyberDefenseLevel);
+	else
+		m_iCyberDefenseLevel = 0;
 
 	m_fTimeStopImmune = pDesc->GetAttributeBool(TIME_STOP_IMMUNE_ATTRIB);
 
@@ -3099,7 +3111,17 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Miscellaneous
 
-	m_iLeavesWreck = pDesc->GetAttributeInteger(LEAVES_WRECK_ATTRIB);
+	if (pDesc->FindAttributeInteger(LEAVES_WRECK_ATTRIB, &m_iLeavesWreck))
+		m_iLeavesWreck = Max(0, m_iLeavesWreck);
+	else
+		{
+		//	Chance of wreck is a function of mass:
+		//
+		//	prob = 5 * MASS^0.45
+
+		m_iLeavesWreck = Max(0, Min((int)(5.0 * pow((Metric)m_iMass, 0.45)), 100));
+		}
+
 	if (error = m_pWreckType.LoadUNID(Ctx, pDesc->GetAttribute(WRECK_TYPE_ATTRIB)))
 		return error;
 
