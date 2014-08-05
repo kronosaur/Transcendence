@@ -191,6 +191,196 @@
 			</Table>
 		</Group>
 	</ItemTable>
+	
+	<ItemTable unid="&trStdTreasureLevel1;">
+		<Group	value="750">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"cuv-- -----"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"cuv-- -----"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"cuv-- -----"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel2;">
+		<Group	value="1000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"ucuv- -----"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"ucuv- -----"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"ucuv- -----"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel3;">
+		<Group	value="1500">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"vucuv -----"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"vucuv -----"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"vucuv -----"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel4;">
+		<Group	value="2000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"-vucu v----"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"-vucu v----"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"-vucu v----"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel5;">
+		<Group	value="4000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"--vuc uv---"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"--vuc uv---"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"--vuc uv---"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel6;">
+		<Group	value="8000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"---vu cuv--"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"---vu cuv--"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"---vu cuv--"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel7;">
+		<Group	value="16000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"----v ucuv-"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"----v ucuv-"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"----v ucuv-"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel8;">
+		<Group	value="32000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"----- vucuv"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"----- vucuv"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"----- vucuv"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel9;">
+		<Group	value="64000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"----- -vucu v----"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"----- -vucu v----"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"----- -vucu v----"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
+
+	<ItemTable unid="&trStdTreasureLevel10;">
+		<Group	value="128000">
+			<Table>
+				<RandomItem chance="15"
+						criteria=			"* +MajorItem; -NotStandard;"
+						levelFrequency=		"----- --vuc uv---"
+						/>
+				<RandomItem chance="30"
+						criteria=			"* +MinorItem; -NotStandard;"
+						levelFrequency=		"----- --vuc uv---"
+						/>
+				<RandomItem chance="55"
+						criteria=			"* +Consumable; -NotStandard;"
+						levelFrequency=		"----- --vuc uv---"
+						/>
+			</Table>
+		</Group>
+	</ItemTable>
 
 	<ItemTable UNID="&trConsumables1;">
 		<RandomItem

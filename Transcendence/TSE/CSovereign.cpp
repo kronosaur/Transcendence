@@ -166,6 +166,7 @@ static SAlignData ALIGN_DATA[CSovereign::alignCount] =
 
 		{	CONSTDEF("unorganized"),	alignNeutral,				0 },
 		{	CONSTDEF("subsapient"),		alignNeutral,				0 },
+		{	CONSTDEF("predator"),		alignDestructiveChaos,		0 },
 	};
 
 CSovereign::CSovereign (void) : 

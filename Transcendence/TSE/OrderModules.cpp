@@ -1183,6 +1183,19 @@ DWORD CEscortOrder::OnCommunicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObje
 		}
 	}
 
+CSpaceObject *CEscortOrder::OnGetBase (void)
+
+//	OnGetBase
+//
+//	Returns our base, which is the base of the principal.
+
+	{
+	if (m_Objs[objPrincipal] == NULL)
+		return NULL;
+
+	return m_Objs[objPrincipal]->GetBase();
+	}
+
 void CEscortOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder)
 
 //	OnObjDestroyed

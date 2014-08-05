@@ -4994,7 +4994,7 @@ class CStationType : public CDesignType
 		inline Metric GetParallaxDist (void) const { return m_rParallaxDist; }
 		inline IItemGenerator *GetRandomItemTable (void) { return m_pItems; }
 		inline DWORD GetRandomNameFlags (void) { return m_dwRandomNameFlags; }
-		inline IShipGenerator *GetReinforcementsTable (void) { return (!m_ShipsCount.IsEmpty() ? m_pInitialShips : m_pReinforcements); }
+		IShipGenerator *GetReinforcementsTable (void);
 		inline int GetRepairRate (void) { return m_iRepairRate; }
 		inline CXMLElement *GetSatellitesDesc (void) { return m_pSatellitesDesc; }
 		inline ScaleTypes GetScale (void) const { return m_iScale; }
@@ -5271,8 +5271,9 @@ class CSovereign : public CDesignType
 
 			alignUnorganized =			16,	//	unorganized group of beings										(neutral)
 			alignSubsapient =			17,	//	animals, zoanthropes, cyberorgs, and other creatures			(neutral)
+			alignPredator =				18,	//	aggressive subsapient											(destructive chaos)
 
-			alignCount =				18,
+			alignCount =				19,
 			};
 
 		enum Disposition

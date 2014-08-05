@@ -126,6 +126,7 @@ class CEscortOrder : public IOrderModule
 		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
 		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data);
 		virtual DWORD OnCommunicate (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2);
+		virtual CSpaceObject *OnGetBase (void);
 		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderEscort; }
 		virtual void OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iObj, bool *retbCancelOrder);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);

@@ -1135,6 +1135,16 @@
 	<!ENTITY svSapiens					"0x00100016">
 	<!ENTITY ssEarthSpaceIceAsteroids	"0x00100017">
 	<!ENTITY ssEarthSpaceVolcanicAsteroids	"0x00100018">
+	<!ENTITY trStdTreasureLevel1		"0x00100019">
+	<!ENTITY trStdTreasureLevel2		"0x0010001A">
+	<!ENTITY trStdTreasureLevel3		"0x0010001B">
+	<!ENTITY trStdTreasureLevel4		"0x0010001C">
+	<!ENTITY trStdTreasureLevel5		"0x0010001D">
+	<!ENTITY trStdTreasureLevel6		"0x0010001E">
+	<!ENTITY trStdTreasureLevel7		"0x0010001F">
+	<!ENTITY trStdTreasureLevel8		"0x00100020">
+	<!ENTITY trStdTreasureLevel9		"0x00100021">
+	<!ENTITY trStdTreasureLevel10		"0x00100022">
 	
 	<!-- COMMONWEALTH 0010 -->
 	

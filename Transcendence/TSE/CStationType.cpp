@@ -893,6 +893,30 @@ CString CStationType::GetNounPhrase (DWORD dwFlags)
 	return ::ComposeNounPhrase(sName, 1, NULL_STR, dwNameFlags, dwFlags);
 	}
 
+IShipGenerator *CStationType::GetReinforcementsTable (void)
+
+//	GetReinforcementsTable
+//
+//	Return the reinforcements table.
+	
+	{
+	//	If we have a ship count structure, then we always use the main ship 
+	//	table.
+
+	if (!m_ShipsCount.IsEmpty())
+		return m_pInitialShips;
+
+	//	Otherwise, if we have an explicit reinforcements table, use that.
+
+	else if (m_pReinforcements)
+		return m_pReinforcements;
+
+	//	Otherwise, we use the main table.
+
+	else
+		return m_pInitialShips;
+	}
+
 bool CStationType::IsSizeClass (ESizeClass iClass) const
 
 //	IsSizeClass
@@ -1439,6 +1463,12 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				return error;
 				}
 			}
+
+		//	Otherwise, see if we define minShips, in which case we use that value for
+		//	reinforcements only.
+
+		else
+			m_iMinShips = pShips->GetAttributeInteger(MIN_SHIPS_ATTRIB);
 		}
 
 	//	Load reinforcements
