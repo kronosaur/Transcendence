@@ -4019,6 +4019,7 @@ class CItemType : public CDesignType
 		int GetMassKg (CItemCtx &Ctx) const;
 		inline int GetMaxCharges (void) const { return (m_fInstanceData ? m_InitDataValue.GetMaxValue() : 0); }
 		int GetMaxHPBonus (void) const;
+		inline CWeaponFireDesc *GetMissileDesc (void) const { return m_pMissile;  }
 		inline DWORD GetModCode (void) const { return m_dwModCode; }
 		CString GetName (DWORD *retdwFlags, bool bActualName = false) const;
 		CString GetNounPhrase (DWORD dwFlags = 0) const;
@@ -4108,6 +4109,9 @@ class CItemType : public CDesignType
 
 		//	Devices
 		CDeviceClass *m_pDevice;				//	Device properties (may be NULL)
+
+		//	Missiles
+		CWeaponFireDesc *m_pMissile;			//	Missile desc (may be NULL)
 
 		//	Flotsam
 		CG16bitImage m_FlotsamBitmap;			//	Image used for flotsam

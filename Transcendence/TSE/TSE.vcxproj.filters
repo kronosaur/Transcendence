@@ -775,5 +775,8 @@
     <ClCompile Include="SFXOrb.cpp">
       <Filter>Source Files\SFX</Filter>
     </ClCompile>
+    <ClCompile Include="CItemCtx.cpp">
+      <Filter>Source Files\Items</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

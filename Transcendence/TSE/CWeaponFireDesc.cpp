@@ -836,44 +836,78 @@ CItemType *CWeaponFireDesc::GetWeaponType (CItemType **retpLauncher) const
 	//	Get the weapon UNID and the ordinal
 
 	DWORD dwUNID = (DWORD)strParseInt(pPos, 0, &pPos);
-	ASSERT(*pPos == '/');
-	pPos++;
-	int iOrdinal = strParseInt(pPos, 0, &pPos);
 
-	//	Get the weapon descriptor
+	//	Get the type
 
-	CWeaponClass *pClass = (CWeaponClass *)g_pUniverse->FindDeviceClass(dwUNID);
-	if (pClass == NULL)
+	CItemType *pItemType = g_pUniverse->FindItemType(dwUNID);
+	if (pItemType == NULL)
 		return NULL;
 
-	//	Return the device/launcher
+	//	If this is a device, we expect it to be a weapon
 
-	if (retpLauncher)
-		*retpLauncher = pClass->GetItemType();
+	CWeaponFireDesc *pMissileDesc;
+	CWeaponClass *pClass;
 
-	//	For launchers, figure out which missile this is
-
-	if (pClass->GetCategory() == itemcatLauncher)
+	if (pClass = (CWeaponClass *)pItemType->GetDeviceClass())
 		{
-		CWeaponFireDesc *pMissileDesc = pClass->GetVariant(iOrdinal);
-		if (pMissileDesc == NULL)
+		ASSERT(*pPos == '/');
+		pPos++;
+		int iOrdinal = strParseInt(pPos, 0, &pPos);
+
+		//	Get the weapon descriptor
+
+		CWeaponClass *pClass = (CWeaponClass *)g_pUniverse->FindDeviceClass(dwUNID);
+		if (pClass == NULL)
 			return NULL;
 
-		//	If we have ammo, then return the ammo type
+		//	Return the device/launcher
 
-		CItemType *pAmmoType = pMissileDesc->GetAmmoType();
-		if (pAmmoType)
-			return pAmmoType;
+		if (retpLauncher)
+			*retpLauncher = pClass->GetItemType();
 
-		//	Otherwise return the launcher (e.g., DM600)
+		//	For launchers, figure out which missile this is
 
-		return pClass->GetItemType();
+		if (pClass->GetCategory() == itemcatLauncher)
+			{
+			CWeaponFireDesc *pMissileDesc = pClass->GetVariant(iOrdinal);
+			if (pMissileDesc == NULL)
+				return NULL;
+
+			//	If we have ammo, then return the ammo type
+
+			CItemType *pAmmoType = pMissileDesc->GetAmmoType();
+			if (pAmmoType)
+				return pAmmoType;
+
+			//	Otherwise return the launcher (e.g., DM600)
+
+			return pClass->GetItemType();
+			}
+
+		//	Otherwise, return the weapon
+
+		else
+			return pClass->GetItemType();
 		}
 
-	//	Otherwise, return the weapon
+	//	Otherwise, we expect this to be a missile
+
+	else if (pMissileDesc = pItemType->GetMissileDesc())
+		{
+		if (retpLauncher)
+			{
+			CDeviceClass *pLauncher = pItemType->GetAmmoLauncher();
+			if (pLauncher)
+				*retpLauncher = pLauncher->GetItemType();
+			}
+
+		return pItemType;
+		}
+
+	//	Otherwise, nothing
 
 	else
-		return pClass->GetItemType();
+		return NULL;
 	}
 
 void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
