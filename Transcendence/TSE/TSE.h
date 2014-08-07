@@ -1782,6 +1782,7 @@ class CEnergyField
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
 		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
+		inline bool Paralyzes (CSpaceObject *pSource) { return m_pType->Paralyzes(); }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
 		inline void SetDevice (int iDev) { m_iDevice = iDev; }
@@ -1821,6 +1822,15 @@ class CEnergyField
 class CEnergyFieldList
 	{
 	public:
+		struct SImpactDesc
+			{
+			SImpactDesc (void) :
+					bParalyze(false)
+				{ }
+
+			bool bParalyze;					//	TRUE if source is paralyzed.
+			};
+
 		CEnergyFieldList (void);
 		~CEnergyFieldList (void);
 
@@ -1837,6 +1847,7 @@ class CEnergyFieldList
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
 		int GetCountOfType (COverlayType *pType);
 		const CString &GetData (DWORD dwID, const CString &sAttrib);
+		void GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact);
 		void GetList (TArray<CEnergyField *> &List);
 		CEnergyField *GetOverlay (DWORD dwID) const;
 		CVector GetPos (CSpaceObject *pSource, DWORD dwID);

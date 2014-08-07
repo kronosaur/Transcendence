@@ -142,6 +142,7 @@ void CShip::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int 
 
 	//	Recalc bonuses, etc.
 
+	CalcOverlayImpact();
 	CalcArmorBonus();
 	CalcDeviceBonus();
 	m_pController->OnWeaponStatusChanged();
@@ -638,6 +639,22 @@ int CShip::CalcMaxCargoSpace (void) const
 	return Min(iCargoSpace, m_pClass->GetMaxCargoSpace());
 	}
 
+void CShip::CalcOverlayImpact (void)
+
+//	CalcOverlayImpact
+//
+//	Calculates the impact of overlays on the ship. This should be called 
+//	whenever the set of overlays changes.
+
+	{
+	CEnergyFieldList::SImpactDesc Impact;
+	m_EnergyFields.GetImpact(this, &Impact);
+
+	//	Update our cache
+
+	m_fParalyzedByOverlay = Impact.bParalyze;
+	}
+
 void CShip::CalcReactorStats (void)
 
 //	CalcReactorStats
@@ -1037,6 +1054,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fRecalcRotationAccel = true;
 	pShip->m_fDockingDisabled = false;
 	pShip->m_fControllerDisabled = false;
+	pShip->m_fParalyzedByOverlay = false;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -4194,7 +4212,7 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 	//	If paralyzed, draw energy arcs
 
-	if (IsParalyzed() || m_iDisarmedTimer > 0 || m_fDeviceDisrupted)
+	if (ShowParalyzedEffect())
 		{
 		Metric rSize = (Metric)RectWidth(m_pClass->GetImage().GetImageRect()) / 2;
 		for (i = 0; i < PARALYSIS_ARC_COUNT; i++)
@@ -4508,6 +4526,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fGalacticMap =			((dwLoad & 0x00010000) ? true : false);
 	m_fDockingDisabled =		((dwLoad & 0x00020000) ? true : false);
 	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
+	m_fParalyzedByOverlay =		((dwLoad & 0x00080000) ? true : false);
 
 	//	OK to recompute
 	m_fRecalcRotationAccel = true;
@@ -4703,6 +4722,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	{
 	int i;
+	bool bOverlaysChanged = false;
 	bool bWeaponStatusChanged = false;
 	bool bArmorStatusChanged = false;
 	bool bCalcDeviceBonus = false;
@@ -4902,7 +4922,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	//	If we're paralyzed, rotate in one direction
 
-	else
+	else if (ShowParalyzedEffect())
 		{
 		//	Rotate wildly
 
@@ -4913,7 +4933,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 		SetVel(CVector(GetVel().GetX() * g_SpaceDragFactor, GetVel().GetY() * g_SpaceDragFactor));
 
-		if (m_iParalysisTimer != -1)
+		if (m_iParalysisTimer > 0)
 			m_iParalysisTimer--;
 		}
 
@@ -5093,6 +5113,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			return;
 		else if (bModified)
 			{
+			bOverlaysChanged = true;
 			bWeaponStatusChanged = true;
 			bArmorStatusChanged = true;
 			bCalcDeviceBonus = true;
@@ -5145,6 +5166,9 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		m_Effects.Update(this, m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
 
 	//	Invalidate
+
+	if (bOverlaysChanged)
+		CalcOverlayImpact();
 
 	if (bCalcDeviceBonus)
 		CalcDeviceBonus();
@@ -5281,6 +5305,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fGalacticMap ?			0x00010000 : 0);
 	dwSave |= (m_fDockingDisabled ?		0x00020000 : 0);
 	dwSave |= (m_fControllerDisabled ?	0x00040000 : 0);
+	dwSave |= (m_fParalyzedByOverlay ?	0x00080000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Armor
@@ -5793,6 +5818,24 @@ ALERROR CShip::RemoveItemAsDevice (CItemListManipulator &ItemList)
 	InvalidateItemListState();
 
 	return NOERROR;
+	}
+
+void CShip::RemoveOverlay (DWORD dwID)
+
+//	RemoveOverlay
+//
+//	Removes an overlay from the ship
+	
+	{
+	m_EnergyFields.RemoveField(this, dwID);
+
+	//	Recalc bonuses, etc.
+
+	CalcOverlayImpact();
+	CalcArmorBonus();
+	CalcDeviceBonus();
+	m_pController->OnWeaponStatusChanged();
+	m_pController->OnArmorRepaired(-1);
 	}
 
 void CShip::RepairAllArmor (void)

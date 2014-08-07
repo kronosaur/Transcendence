@@ -12,6 +12,7 @@
 #define ABSORB_ADJ_ATTRIB						CONSTLIT("absorbAdj")
 #define ALT_EFFECT_ATTRIB						CONSTLIT("altEffect")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
+#define PARALYZE_ATTRIB							CONSTLIT("paralyze")
 #define SHIELD_OVERLAY_ATTRIB					CONSTLIT("shieldOverlay")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
@@ -249,6 +250,10 @@ ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_fShieldOverlay = bValue;
 	else
 		m_fShieldOverlay = (iAbsorbCount > 0);
+
+	//	Options
+
+	m_fParalyzeShip = pDesc->GetAttributeBool(PARALYZE_ATTRIB);
 
 	//	Done
 

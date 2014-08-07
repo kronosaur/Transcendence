@@ -126,6 +126,27 @@ int CEnergyFieldList::GetCountOfType (COverlayType *pType)
 	return iCount;
 	}
 
+void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact)
+
+//	GetImpact
+//
+//	Returns the impact of this set of overlays on the source.
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		//	Do we paralyze the source?
+
+		if (pField->Paralyzes(pSource))
+			retImpact->bParalyze = true;
+
+		//	Next
+
+		pField = pField->GetNext();
+		}
+	}
+
 void CEnergyFieldList::AddField (CSpaceObject *pSource, 
 								 COverlayType *pType,
 								 int iPosAngle,

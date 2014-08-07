@@ -1007,7 +1007,7 @@ class CShip : public CSpaceObject
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
 		virtual bool IsOutOfFuel (void) { return m_fOutOfFuel; }
-		virtual bool IsParalyzed (void) { return m_iParalysisTimer != 0; }
+		virtual bool IsParalyzed (void) { return m_fParalyzedByOverlay || m_iParalysisTimer != 0; }
 		virtual bool IsPlayer (void) const;
 		virtual bool IsRadioactive (void) { return (m_fRadioactive ? true : false); }
 		virtual bool IsSuspended (void) const { return m_fManualSuspended; }
@@ -1045,7 +1045,7 @@ class CShip : public CSpaceObject
 		virtual void ProgramDamage (CSpaceObject *pHacker, const ProgramDesc &Program);
 		virtual void Refuel (int iFuel);
 		virtual void Refuel (const CItem &Fuel);
-		virtual void RemoveOverlay (DWORD dwID) { m_EnergyFields.RemoveField(this, dwID); }
+		virtual void RemoveOverlay (DWORD dwID);
 		virtual void RepairDamage (int iHitPoints);
 		virtual bool RequestDock (CSpaceObject *pObj, int iPort = -1);
 		virtual void Resume (void) { m_fManualSuspended = false; if (!IsInGate()) ClearCannotBeHit(); }
@@ -1099,6 +1099,7 @@ class CShip : public CSpaceObject
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		InstallItemResults CalcDeviceToReplace (const CItem &Item, int *retiSlot = NULL);
 		DWORD CalcEffectsMask (void);
+		void CalcOverlayImpact (void);
 		void CalcReactorStats (void);
 		int FindDeviceIndex (CInstalledDevice *pDevice) const;
 		int FindFreeDeviceSlot (void);
@@ -1114,6 +1115,7 @@ class CShip : public CSpaceObject
 		bool ShieldsAbsorbFire (CInstalledDevice *pWeapon);
 		void SetDriveDesc (const DriveDesc *pDesc);
 		void SetOrdersFromGenerator (SShipGeneratorCtx &Ctx);
+		inline bool ShowParalyzedEffect (void) const { return (m_iParalysisTimer != 0 || m_iDisarmedTimer > 0 || m_fDeviceDisrupted); }
 
 		CShipClass *m_pClass;					//	Ship class
 		IShipController *m_pController;			//	Controller
@@ -1188,8 +1190,9 @@ class CShip : public CSpaceObject
 		DWORD m_fDockingDisabled:1;				//	TRUE if docking is disabled
 		DWORD m_fControllerDisabled:1;			//	TRUE if we want to disable controller
 		DWORD m_fRecalcRotationAccel:1;			//	TRUE if we need to recalc rotation acceleration
+		DWORD m_fParalyzedByOverlay:1;			//	TRUE if one or more overlays paralyze the ship.
 
-		DWORD m_dwSpare:13;
+		DWORD m_dwSpare:12;
 
 	friend CObjectClass<CShip>;
 	};

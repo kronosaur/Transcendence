@@ -4642,6 +4642,7 @@ class COverlayType : public CDesignType
 		inline bool HasOnUpdateEvent (void) { return m_fHasOnUpdateEvent; }
 		inline bool IsHitEffectAlt (void) { return m_fAltHitEffect; }
 		inline bool IsShieldOverlay (void) { return m_fShieldOverlay; }
+		inline bool Paralyzes (void) const { return m_fParalyzeShip; }
 		inline bool RotatesWithShip (void) { return m_fRotateWithShip; }
 
 		//	CDesignType overrides
@@ -4668,6 +4669,12 @@ class COverlayType : public CDesignType
 		DWORD m_fAltHitEffect:1;				//	If TRUE, hit effect replaces normal effect
 		DWORD m_fRotateWithShip:1;				//	If TRUE, we rotate along with source rotation
 		DWORD m_fShieldOverlay:1;				//	If TRUE, we are above hull/armor
+		DWORD m_fParalyzeShip:1;				//	If TRUE, ship is paralyzed
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:24;
 	};
 
 //	CSystemType ---------------------------------------------------------------
