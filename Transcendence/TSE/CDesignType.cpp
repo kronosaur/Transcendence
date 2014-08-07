@@ -263,7 +263,7 @@ void CDesignType::CreateClone (CDesignType **retpType)
 			break;
 
 		case designEnergyFieldType:
-			pClone = new CEnergyFieldType;
+			pClone = new COverlayType;
 			break;
 
 		case designSystemType:
@@ -402,11 +402,11 @@ ALERROR CDesignType::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDe
 		else if (strEquals(pDesc->GetTag(), SHIP_CLASS_TAG))
 			pType = new CShipClass;
 		else if (strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG))
-			pType = new CEnergyFieldType;
+			pType = new COverlayType;
 		else if (strEquals(pDesc->GetTag(), MISSION_TYPE_TAG))
 			pType = new CMissionType;
 		else if (strEquals(pDesc->GetTag(), OVERLAY_TYPE_TAG))
-			pType = new CEnergyFieldType;
+			pType = new COverlayType;
 		else if (strEquals(pDesc->GetTag(), SYSTEM_TYPE_TAG))
 			pType = new CSystemType;
 		else if (strEquals(pDesc->GetTag(), STATION_TYPE_TAG))

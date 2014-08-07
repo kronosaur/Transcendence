@@ -163,7 +163,7 @@ void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 		}
 	}
 
-void CEnergyField::CreateFromType (CEnergyFieldType *pType, 
+void CEnergyField::CreateFromType (COverlayType *pType, 
 								   int iPosAngle,
 								   int iPosRadius,
 								   int iRotation,

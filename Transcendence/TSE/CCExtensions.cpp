@@ -5106,7 +5106,7 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_GET_OVERLAY_TYPE:
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
-			CEnergyFieldType *pType = pObj->GetOverlayType(dwID);
+			COverlayType *pType = pObj->GetOverlayType(dwID);
 			if (pType)
 				return pCC->CreateInteger(pType->GetUNID());
 			else
@@ -5724,7 +5724,7 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Find the overlay type
 
 			DWORD dwUNID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
-			CEnergyFieldType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
+			COverlayType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
 			if (pField == NULL)
 				return pCC->CreateError(CONSTLIT("Unknown overlay type"), NULL);
 
@@ -7797,7 +7797,7 @@ ICCItem *fnShipSetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData
 			int iLifetime = pArgs->GetElement(2)->GetIntegerValue();
 			pArgs->Discard(pCC);
 
-			CEnergyFieldType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
+			COverlayType *pField = g_pUniverse->FindShipEnergyFieldType(dwUNID);
 			if (pField == NULL)
 				return pCC->CreateError(CONSTLIT("Unknown ship energy field"), NULL);
 

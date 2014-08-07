@@ -129,7 +129,7 @@ void CInstalledDevice::FinishInstall (CSpaceObject *pSource)
 
 	//	If necessary create an overlay for this device
 
-	CEnergyFieldType *pOverlayType;
+	COverlayType *pOverlayType;
 	pOverlayType = m_pClass->FireGetOverlayType(CItemCtx(pSource, this));
 
 	//	Add it

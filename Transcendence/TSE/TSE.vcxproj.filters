@@ -304,9 +304,6 @@
     <ClCompile Include="CPower.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
-    <ClCompile Include="CShipEnergyFieldType.cpp">
-      <Filter>Source Files\DesignTypes</Filter>
-    </ClCompile>
     <ClCompile Include="CSovereign.cpp">
       <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
@@ -777,6 +774,9 @@
     </ClCompile>
     <ClCompile Include="CItemCtx.cpp">
       <Filter>Source Files\Items</Filter>
+    </ClCompile>
+    <ClCompile Include="COverlayType.cpp">
+      <Filter>Source Files\DesignTypes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

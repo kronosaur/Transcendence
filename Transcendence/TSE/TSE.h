@@ -105,7 +105,7 @@ class CDeviceClass;
 class CDockScreenType;
 class CEffectCreator;
 class CEnergyField;
-class CEnergyFieldType;
+class COverlayType;
 class CInstalledDevice;
 class CItem;
 class CItemListManipulator;
@@ -1758,7 +1758,7 @@ class CEnergyField
 	public:
 		CEnergyField (void);
 		~CEnergyField (void);
-		static void CreateFromType (CEnergyFieldType *pType, 
+		static void CreateFromType (COverlayType *pType, 
 									int iPosAngle,
 									int iPosRadius,
 									int iRotation,
@@ -1778,7 +1778,7 @@ class CEnergyField
 		inline CEnergyField *GetNext (void) const { return m_pNext; }
 		CVector GetPos (CSpaceObject *pSource);
 		inline int GetRotation (void) const { return m_iRotation; }
-		inline CEnergyFieldType *GetType (void) const { return m_pType; }
+		inline COverlayType *GetType(void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
 		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
@@ -1796,7 +1796,7 @@ class CEnergyField
 		void FireOnUpdate (CSpaceObject *pSource);
 		void CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx);
 
-		CEnergyFieldType *m_pType;				//	Type of field
+		COverlayType *m_pType;					//	Type of field
 		DWORD m_dwID;							//	Universal ID
 		int m_iLifeLeft;						//	Ticks left of energy field life (-1 = permanent)
 		int m_iDevice;							//	Index of device that we're associated with (-1 if not a device)
@@ -1825,7 +1825,7 @@ class CEnergyFieldList
 		~CEnergyFieldList (void);
 
 		void AddField (CSpaceObject *pSource, 
-					   CEnergyFieldType *pType, 
+					   COverlayType *pType,
 					   int iPosAngle,
 					   int iPosRadius,
 					   int iRotation,
@@ -1835,13 +1835,13 @@ class CEnergyFieldList
 		bool AbsorbsWeaponFire (CInstalledDevice *pDevice);
 		bool Damage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
-		int GetCountOfType (CEnergyFieldType *pType);
+		int GetCountOfType (COverlayType *pType);
 		const CString &GetData (DWORD dwID, const CString &sAttrib);
 		void GetList (TArray<CEnergyField *> &List);
 		CEnergyField *GetOverlay (DWORD dwID) const;
 		CVector GetPos (CSpaceObject *pSource, DWORD dwID);
 		int GetRotation (DWORD dwID);
-		CEnergyFieldType *GetType (DWORD dwID);
+		COverlayType *GetType(DWORD dwID);
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		inline bool IsEmpty (void) { return (m_pFirst == NULL); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
@@ -2091,12 +2091,12 @@ class CSpaceObject : public CObject
 		void AccelerateStop (Metric rPush, Metric rSeconds);
 		void AddEffect (IEffectPainter *pPainter, const CVector &vPos, int iTick = 0, int iRotation = 0);
 		void AddEventSubscriber (CSpaceObject *pObj);
-		void AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID = NULL);
+		void AddOverlay (COverlayType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID = NULL);
 		ALERROR AddToSystem (CSystem *pSystem, bool bNoGlobalInsert = false);
 		void Ascend (void);
 		inline bool Blocks (CSpaceObject *pObj) { return (m_fIsBarrier && CanBlock(pObj)); }
 		inline bool BlocksShips (void) { return (m_fIsBarrier && CanBlockShips()); }
-		void CalcOverlayPos (CEnergyFieldType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius);
+		void CalcOverlayPos (COverlayType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius);
 		inline bool CanBeControlled (void) { return m_iControlsFrozen == 0; }
 		inline bool CanBeHit (void) { return (!m_fCannotBeHit && !m_fOutOfPlaneObj); }
 		inline bool CanBeHitByFriends (void) { return !m_fNoFriendlyTarget; }
@@ -2472,7 +2472,7 @@ class CSpaceObject : public CObject
 		virtual void SetSovereign (CSovereign *pSovereign) { }
 
 		//	...for active/intelligent objects (ships, stations, etc.)
-		virtual void AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL) { if (retdwID) *retdwID = 0; }
+		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL) { if (retdwID) *retdwID = 0; }
 		virtual bool CanInstallItem (const CItem &Item, int iSlot = -1, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue) { return 0; }
 		virtual void CreateRandomDockedShips (IShipGenerator *pGenerator, int iCount = 1) { }
@@ -2515,7 +2515,7 @@ class CSpaceObject : public CObject
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { List.DeleteAll(); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return GetPos(); }
 		virtual int GetOverlayRotation (DWORD dwID) { return -1; }
-		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return NULL; }
+		virtual COverlayType *GetOverlayType(DWORD dwID) { return NULL; }
 		virtual int GetPerception (void) { return perceptNormal; }
 		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return NULL; }
@@ -3198,12 +3198,12 @@ class CUniverse : public CObject
 		inline CItemTable *FindItemTable (DWORD dwUNID) { return CItemTable::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CItemType *FindItemType (DWORD dwUNID) { return CItemType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CMissionType *FindMissionType (DWORD dwUNID) { return CMissionType::AsType(m_Design.FindEntry(dwUNID)); }
-		inline CEnergyFieldType *FindOverlayType (DWORD dwUNID) { return CEnergyFieldType::AsType(m_Design.FindEntry(dwUNID)); }
+		inline COverlayType *FindOverlayType(DWORD dwUNID) { return COverlayType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CPower *FindPower (DWORD dwUNID) { return CPower::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CDockScreenType *FindSharedDockScreen (DWORD dwUNID) { return CDockScreenType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CShipClass *FindShipClass (DWORD dwUNID) { return CShipClass::AsType(m_Design.FindEntry(dwUNID)); }
 		CShipClass *FindShipClassByName (const CString &sName);
-		inline CEnergyFieldType *FindShipEnergyFieldType (DWORD dwUNID) { return CEnergyFieldType::AsType(m_Design.FindEntry(dwUNID)); }
+		inline COverlayType *FindShipEnergyFieldType(DWORD dwUNID) { return COverlayType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline int FindSound (DWORD dwUNID) { CObject *pObj; if (!FindByUNID(m_Sounds, dwUNID, &pObj)) return -1; return (int)pObj; }
 		inline CSoundType *FindSoundType (DWORD dwUNID) { return CSoundType::AsType(m_Design.FindEntry(dwUNID)); }
 		inline CSovereign *FindSovereign (DWORD dwUNID) const { return CSovereign::AsType(m_Design.FindEntry(dwUNID)); }

@@ -633,7 +633,7 @@ class CGenericTypeRef : public CDesignTypeRef<CGenericType>
 	{
 	};
 
-class COverlayTypeRef : public CDesignTypeRef<CEnergyFieldType>
+class COverlayTypeRef : public CDesignTypeRef<COverlayType>
 	{
 	};
 
@@ -2156,14 +2156,14 @@ class CDeviceClass : public CObject
 		ALERROR Bind (SDesignLoadCtx &Ctx);
 		inline CEffectCreator *FindEffectCreator (const CString &sUNID) { return OnFindEffectCreator(sUNID); }
 		inline bool FindEventHandlerDeviceClass (ECachedHandlers iEvent, SEventHandlerDesc *retEvent = NULL) const { if (retEvent) *retEvent = m_CachedEvents[iEvent]; return (m_CachedEvents[iEvent].pCode != NULL); }
-		CEnergyFieldType *FireGetOverlayType (CItemCtx &Ctx) const;
+		COverlayType *FireGetOverlayType(CItemCtx &Ctx) const;
 		inline CString GetDataField (const CString &sField) { CString sValue; FindDataField(sField, &sValue); return sValue; }
 		inline int GetDataFieldInteger (const CString &sField) { CString sValue; if (FindDataField(sField, &sValue)) return strToInt(sValue, 0, NULL); else return 0; }
 		inline CItemType *GetItemType (void) { return m_pItemType; }
 		inline int GetLevel (void) const;
 		inline int GetMaxHPBonus (void) const { return m_iMaxHPBonus; }
 		inline CString GetName (void);
-		inline CEnergyFieldType *GetOverlayType (void) const { return m_pOverlayType; }
+		inline COverlayType *GetOverlayType(void) const { return m_pOverlayType; }
 		CString GetReferencePower (CItemCtx &Ctx);
 		inline ItemCategories GetSlotCategory (void) const { return (m_iSlotCategory == itemcatNone ? GetCategory() : m_iSlotCategory); }
 		inline int GetSlotsRequired (void) { return m_iSlots; }
@@ -4626,26 +4626,26 @@ class CEffectCreator : public CDesignType
 		SEventHandlerDesc m_CachedEvents[evtCount];
 	};
 
-//	CEnergyFieldType ----------------------------------------------------------
+//	COverlayType ----------------------------------------------------------
 
-class CEnergyFieldType : public CDesignType
+class COverlayType : public CDesignType
 	{
 	public:
-		CEnergyFieldType (void);
-		virtual ~CEnergyFieldType (void);
+		COverlayType(void);
+		virtual ~COverlayType(void);
 
 		bool AbsorbsWeaponFire (CInstalledDevice *pWeapon);
 		int GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx);
 		inline CEffectCreator *GetEffectCreator (void) const { return m_pEffect; }
 		inline CEffectCreator *GetHitEffectCreator (void) const { return m_pHitEffect; }
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
-		inline bool HasOnUpdateEvent (void) { return m_bHasOnUpdateEvent; }
-		inline bool IsHitEffectAlt (void) { return m_bAltHitEffect; }
-		inline bool IsShieldOverlay (void) { return m_bShieldOverlay; }
-		inline bool RotatesWithShip (void) { return m_bRotateWithShip; }
+		inline bool HasOnUpdateEvent (void) { return m_fHasOnUpdateEvent; }
+		inline bool IsHitEffectAlt (void) { return m_fAltHitEffect; }
+		inline bool IsShieldOverlay (void) { return m_fShieldOverlay; }
+		inline bool RotatesWithShip (void) { return m_fRotateWithShip; }
 
 		//	CDesignType overrides
-		static CEnergyFieldType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designEnergyFieldType) ? (CEnergyFieldType *)pType : NULL); }
+		static COverlayType *AsType(CDesignType *pType) { return ((pType && pType->GetType() == designEnergyFieldType) ? (COverlayType *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual DesignTypes GetType (void) const { return designEnergyFieldType; }
 
@@ -4664,10 +4664,10 @@ class CEnergyFieldType : public CDesignType
 		CEffectCreator *m_pEffect;				//	Effect for field
 		CEffectCreator *m_pHitEffect;			//	Effect when field is hit by damage
 
-		bool m_bHasOnUpdateEvent;				//	TRUE if we have OnUpdate
-		bool m_bAltHitEffect;					//	If TRUE, hit effect replaces normal effect
-		bool m_bRotateWithShip;					//	If TRUE, we rotate along with source rotation
-		bool m_bShieldOverlay;					//	If TRUE, we are above hull/armor
+		DWORD m_fHasOnUpdateEvent:1;			//	TRUE if we have OnUpdate
+		DWORD m_fAltHitEffect:1;				//	If TRUE, hit effect replaces normal effect
+		DWORD m_fRotateWithShip:1;				//	If TRUE, we rotate along with source rotation
+		DWORD m_fShieldOverlay:1;				//	If TRUE, we are above hull/armor
 	};
 
 //	CSystemType ---------------------------------------------------------------

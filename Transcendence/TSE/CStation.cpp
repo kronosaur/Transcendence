@@ -133,7 +133,7 @@ void CStation::AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPri
 	m_pTrade->AddBuyOrder(pType, sCriteria, iPriceAdj);
 	}
 
-void CStation::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
+void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
 
 //	AddOverlay
 //

@@ -1,6 +1,6 @@
-//	CEnergyFieldType.cpp
+//	COverlayType.cpp
 //
-//	CEnergyFieldType class
+//	COverlayType class
 
 #include "PreComp.h"
 
@@ -23,18 +23,18 @@
 
 #define SUPPRESS_ALL							CONSTLIT("*")
 
-CEnergyFieldType::CEnergyFieldType (void) : 
+COverlayType::COverlayType (void) :
 		m_pEffect(NULL),
 		m_pHitEffect(NULL)
 
-//	CEnergyFieldType constructor
+//	COverlayType constructor
 
 	{
 	}
 
-CEnergyFieldType::~CEnergyFieldType (void)
+COverlayType::~COverlayType (void)
 
-//	CEnergyFieldType destructor
+//	COverlayType destructor
 
 	{
 	if (m_pEffect)
@@ -44,7 +44,7 @@ CEnergyFieldType::~CEnergyFieldType (void)
 		delete m_pHitEffect;
 	}
 
-bool CEnergyFieldType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
+bool COverlayType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
 
 //	AbsorbsWeaponFire
 //
@@ -58,7 +58,7 @@ bool CEnergyFieldType::AbsorbsWeaponFire (CInstalledDevice *pWeapon)
 		return false;
 	}
 
-bool CEnergyFieldType::FindDataField (const CString &sField, CString *retsValue)
+bool COverlayType::FindDataField (const CString &sField, CString *retsValue)
 
 //	FindDataField
 //
@@ -95,7 +95,7 @@ bool CEnergyFieldType::FindDataField (const CString &sField, CString *retsValue)
 	return true;
 	}
 
-int CEnergyFieldType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
+int COverlayType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	GetDamageAbsorbed
 //
@@ -119,7 +119,7 @@ int CEnergyFieldType::GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx)
 	return (Ctx.iDamage * m_iAbsorbAdj[Ctx.Damage.GetDamageType()]) / 100;
 	}
 
-int CEnergyFieldType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource)
+int COverlayType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource)
 
 //	GetWeaponBonus
 //
@@ -133,7 +133,7 @@ int CEnergyFieldType::GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *p
 	return m_iBonusAdj[iType];
 	}
 
-void CEnergyFieldType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+void COverlayType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 
 //	OnAddTypesUsed
 //
@@ -144,7 +144,7 @@ void CEnergyFieldType::OnAddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
 	//	them to be an design type.
 	}
 
-ALERROR CEnergyFieldType::OnBindDesign (SDesignLoadCtx &Ctx)
+ALERROR COverlayType::OnBindDesign (SDesignLoadCtx &Ctx)
 
 //	OnBindDesign
 //
@@ -164,7 +164,7 @@ ALERROR CEnergyFieldType::OnBindDesign (SDesignLoadCtx &Ctx)
 	return NOERROR;
 	}
 
-ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 //	OnCreateFromXML
 //
@@ -209,16 +209,16 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 		bool bAltEffect;
 		if (pEffect->FindAttributeBool(ALT_EFFECT_ATTRIB, &bAltEffect))
-			m_bAltHitEffect = bAltEffect;
+			m_fAltHitEffect = bAltEffect;
 		else
-			m_bAltHitEffect = strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG);
+			m_fAltHitEffect = strEquals(pDesc->GetTag(), SHIP_ENERGY_FIELD_TYPE_TAG);
 		}
 	else
-		m_bAltHitEffect = false;
+		m_fAltHitEffect = false;
 
 	//	Rotation
 
-	m_bRotateWithShip = !pDesc->GetAttributeBool(IGNORE_SHIP_ROTATION_ATTRIB);
+	m_fRotateWithShip = !pDesc->GetAttributeBool(IGNORE_SHIP_ROTATION_ATTRIB);
 
 	//	Damage adjustment
 
@@ -239,20 +239,23 @@ ALERROR CEnergyFieldType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDe
 
 	//	Keep track of the events that we have
 
-	m_bHasOnUpdateEvent = FindEventHandler(ON_UPDATE_EVENT);
+	m_fHasOnUpdateEvent = FindEventHandler(ON_UPDATE_EVENT);
 
 	//	Are we a field/shield overlay (or part of hull)?
 	//	By default, we are a shield overlay if we absorb damage.
 
-	if (!pDesc->FindAttributeBool(SHIELD_OVERLAY_ATTRIB, &m_bShieldOverlay))
-		m_bShieldOverlay = (iAbsorbCount > 0);
+	bool bValue;
+	if (pDesc->FindAttributeBool(SHIELD_OVERLAY_ATTRIB, &bValue))
+		m_fShieldOverlay = bValue;
+	else
+		m_fShieldOverlay = (iAbsorbCount > 0);
 
 	//	Done
 
 	return NOERROR;
 	}
 
-CEffectCreator *CEnergyFieldType::OnFindEffectCreator (const CString &sUNID)
+CEffectCreator *COverlayType::OnFindEffectCreator (const CString &sUNID)
 
 //	OnFindEffectCreator
 //

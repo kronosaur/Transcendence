@@ -443,7 +443,7 @@ EnhanceItemStatus CSpaceObject::AddItemEnhancement (CItemListManipulator &ItemLi
 	return iResult;
 	}
 
-void CSpaceObject::AddOverlay (CEnergyFieldType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID)
+void CSpaceObject::AddOverlay (COverlayType *pType, const CVector &vPos, int iRotation, int iLifetime, DWORD *retdwID)
 
 //	AddOverlay
 //
@@ -521,7 +521,7 @@ void CSpaceObject::Ascend (void)
 	SetAscended(true);
 	}
 
-void CSpaceObject::CalcOverlayPos (CEnergyFieldType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
+void CSpaceObject::CalcOverlayPos (COverlayType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
 
 //	CalcOverlayPos
 //

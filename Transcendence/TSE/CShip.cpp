@@ -131,7 +131,7 @@ bool CShip::AbsorbWeaponFire (CInstalledDevice *pWeapon)
 		return false;
 	}
 
-void CShip::AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
+void CShip::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
 
 //	AddOverlay
 //
@@ -1335,7 +1335,7 @@ void CShip::DamageCargo (SDamageCtx &Ctx)
 	//	Create an overlay to spew smoke
 
 	DWORD dwDamageUNID = (mathRandom(1, 100) <= 20 ? UNID_DAMAGED_SITE_SMALL : UNID_DEPREZ_SITE_SMALL);
-	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
+	COverlayType *pOverlayType = g_pUniverse->FindOverlayType(dwDamageUNID);
 	if (pOverlayType
 			&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DAMAGE_OVERLAY_COUNT)
 		{
@@ -1365,7 +1365,7 @@ void CShip::DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx)
 
 	//	Create an overlay to spew smoke
 
-	CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_SMALL);
+	COverlayType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_SMALL);
 	if (pOverlayType)
 		CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, 9000);
 	}
@@ -1399,7 +1399,7 @@ void CShip::DamageDrive (SDamageCtx &Ctx)
 
 		//	Create an overlay to spew smoke
 
-		CEnergyFieldType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
+		COverlayType *pOverlayType = g_pUniverse->FindOverlayType(UNID_DAMAGED_SITE_MEDIUM);
 		if (pOverlayType
 				&& m_EnergyFields.GetCountOfType(pOverlayType) < MAX_DRIVE_DAMAGE_OVERLAY_COUNT)
 			CSpaceObject::AddOverlay(pOverlayType, Ctx.vHitPos, 180, iDamageTime);

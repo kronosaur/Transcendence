@@ -923,7 +923,7 @@ class CShip : public CSpaceObject
 
 		//	CSpaceObject virtuals
 		virtual bool AbsorbWeaponFire (CInstalledDevice *pWeapon);
-		virtual void AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
+		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
 		virtual CShip *AsShip (void) { return this; }
 		virtual void Behavior (SUpdateCtx &Ctx);
 		virtual bool CanAttack (void) const;
@@ -980,7 +980,7 @@ class CShip : public CSpaceObject
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_EnergyFields.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_EnergyFields.GetPos(this, dwID); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_EnergyFields.GetRotation(dwID); }
-		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return m_EnergyFields.GetType(dwID); }
+		virtual COverlayType *GetOverlayType (DWORD dwID) { return m_EnergyFields.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return CSystem::layerShips; }
 		virtual int GetPerception (void);
 		virtual ICCItem *GetProperty (const CString &sName);
@@ -1269,7 +1269,7 @@ class CStation : public CSpaceObject
 
 		//	CSpaceObject virtuals
 		virtual void AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
-		virtual void AddOverlay (CEnergyFieldType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
+		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
 		virtual void AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
 		virtual void AddSubordinate (CSpaceObject *pSubordinate);
 		virtual CStation *AsStation (void) { return this; }
@@ -1314,7 +1314,7 @@ class CStation : public CSpaceObject
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_Overlays.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_Overlays.GetPos(this, dwID); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_Overlays.GetRotation(dwID); }
-		virtual CEnergyFieldType *GetOverlayType (DWORD dwID) { return m_Overlays.GetType(dwID); }
+		virtual COverlayType *GetOverlayType (DWORD dwID) { return m_Overlays.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void);
 		virtual Metric GetParallaxDist (void) { return m_rParallaxDist; }
 		virtual EDamageResults GetPassthroughDefault (void);

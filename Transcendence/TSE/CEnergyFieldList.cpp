@@ -106,7 +106,7 @@ bool CEnergyFieldList::Damage (CSpaceObject *pSource, SDamageCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)
+int CEnergyFieldList::GetCountOfType (COverlayType *pType)
 
 //	GetCountOfType
 //
@@ -127,7 +127,7 @@ int CEnergyFieldList::GetCountOfType (CEnergyFieldType *pType)
 	}
 
 void CEnergyFieldList::AddField (CSpaceObject *pSource, 
-								 CEnergyFieldType *pType, 
+								 COverlayType *pType,
 								 int iPosAngle,
 								 int iPosRadius,
 								 int iRotation,
@@ -295,7 +295,7 @@ int CEnergyFieldList::GetRotation (DWORD dwID)
 	return -1;
 	}
 
-CEnergyFieldType *CEnergyFieldList::GetType (DWORD dwID)
+COverlayType *CEnergyFieldList::GetType (DWORD dwID)
 
 //	GetType
 //

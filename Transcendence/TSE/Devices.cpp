@@ -132,7 +132,7 @@ ALERROR CDeviceClass::Bind (SDesignLoadCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
+COverlayType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 
 //	FireGetOverlayType
 //
@@ -160,7 +160,7 @@ CEnergyFieldType *CDeviceClass::FireGetOverlayType (CItemCtx &ItemCtx) const
 
 		//	Done
 
-		return CEnergyFieldType::AsType(g_pUniverse->FindDesignType(dwUNID));
+		return COverlayType::AsType(g_pUniverse->FindDesignType(dwUNID));
 		}
 	else
 		return GetOverlayType();
