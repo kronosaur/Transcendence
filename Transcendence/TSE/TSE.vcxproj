@@ -169,6 +169,8 @@
     <ClCompile Include="CAdventureRecord.cpp" />
     <ClCompile Include="CAISettings.cpp" />
     <ClCompile Include="CAscendedObjectList.cpp" />
+    <ClCompile Include="CAttackOrder.cpp" />
+    <ClCompile Include="CAttackStationOrder.cpp" />
     <ClCompile Include="CCommunicationsHandler.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>
@@ -197,6 +199,8 @@
     <ClCompile Include="CEffectParamDesc.cpp" />
     <ClCompile Include="CEnergyField.cpp" />
     <ClCompile Include="CEnergyFieldList.cpp" />
+    <ClCompile Include="CEscortOrder.cpp" />
+    <ClCompile Include="CFireEventOrder.cpp" />
     <ClCompile Include="CGameFile.cpp" />
     <ClCompile Include="CGameRecord.cpp" />
     <ClCompile Include="CGameStats.cpp" />
@@ -232,6 +236,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="CSendMessageOrder.cpp" />
     <ClCompile Include="CShipInterior.cpp" />
     <ClCompile Include="CShipInteriorDesc.cpp" />
     <ClCompile Include="CShipTable.cpp" />
@@ -259,6 +264,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="CUserProfile.cpp" />
+    <ClCompile Include="CWaitOrder.cpp" />
     <ClCompile Include="CWaveGenerator.cpp" />
     <ClCompile Include="Damage.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
