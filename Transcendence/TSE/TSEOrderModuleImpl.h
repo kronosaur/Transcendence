@@ -35,7 +35,7 @@ class CApproachOrder : public IOrderModule
 			};
 
 		States m_iState;						//	Current behavior state
-		Metric m_rMinDist;						//	Minimum distance to target
+		Metric m_rMinDist2;						//	Minimum distance to target
 	};
 
 class CAttackOrder : public IOrderModule
