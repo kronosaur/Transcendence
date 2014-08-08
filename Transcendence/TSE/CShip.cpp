@@ -5829,13 +5829,8 @@ void CShip::RemoveOverlay (DWORD dwID)
 	{
 	m_EnergyFields.RemoveField(this, dwID);
 
-	//	Recalc bonuses, etc.
-
-	CalcOverlayImpact();
-	CalcArmorBonus();
-	CalcDeviceBonus();
-	m_pController->OnWeaponStatusChanged();
-	m_pController->OnArmorRepaired(-1);
+	//	NOTE: No need to recalc bonuses or overlap impact because the overlay
+	//	is not actually removed until Update (at which point we recalc).
 	}
 
 void CShip::RepairAllArmor (void)

@@ -317,6 +317,9 @@
 //	100: 1.3
 //		m_iOrder in CPlayerShipController
 //
+//	101: 1.4
+//		Flags in CEnergyField
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

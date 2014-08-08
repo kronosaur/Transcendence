@@ -510,6 +510,7 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 //	CAttributeDataBlock m_Data
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
+//	DWORD	Flags
 
 	{
 	DWORD dwLoad;
@@ -551,6 +552,14 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 	m_pHitPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pType->GetHitEffectCreator());
 
 	m_iPaintHit = 0;
+
+	//	Flags
+
+	DWORD dwFlags = 0;
+	if (Ctx.dwVersion >= 101)
+		Ctx.pStream->Read((char *)&dwFlags, sizeof(DWORD));
+
+	m_fDestroyed = ((dwFlags & 0x00000001) ? true : false);
 	}
 
 bool CEnergyField::SetEffectProperty (const CString &sProperty, ICCItem *pValue)
@@ -653,6 +662,7 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 //	CAttributeDataBlock m_Data
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
+//	DWORD	Flags
 
 	{
 	DWORD dwSave = m_pType->GetUNID();
@@ -668,5 +678,9 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 
 	CEffectCreator::WritePainterToStream(pStream, m_pPainter);
 	CEffectCreator::WritePainterToStream(pStream, m_pHitPainter);
+
+	DWORD dwFlags = 0;
+	dwFlags |= (m_fDestroyed ? 0x00000001 : 0);
+	pStream->Write((char *)&dwFlags, sizeof(DWORD));
 	}
 
