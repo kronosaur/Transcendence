@@ -1066,17 +1066,33 @@ void CG16bitImage::ColorTransBlt (int xSrc, int ySrc, int cxWidth, int cyHeight,
 						DWORD pxDest = *pDestPos;
 
 						//	x ^ 0xff is the same as 255 - x
-						//	| 0x0f so that we round-up
+						//	| 0x07 so that we round-up
 						//	+ 1 because below we divide by 256 instead of 255.
 						//	LATER: Use a table lookup
 
-						DWORD dwInvTrans = ((((DWORD)(*pAlphaPos)) ^ 0xff) | 0x0f) + 1;
+						DWORD dwInvTrans = ((((DWORD)(*pAlphaPos)) ^ 0xff) | 0x07) + 1;
 
+#ifdef BLT_RANGE_CHECK
+						WORD wRedSrc = (*pSrcPos >> 11) & 0x1f;
+						WORD wGreenSrc = (*pSrcPos >> 5) & 0x3f;
+						WORD wBlueSrc = (*pSrcPos) & 0x1f;
+
+						WORD wRedDest = ((WORD)dwInvTrans * ((*pDestPos >> 11) & 0x1f)) >> 8;
+						WORD wGreenDest = ((WORD)dwInvTrans * ((*pDestPos >> 5) & 0x3f)) >> 8;
+						WORD wBlueDest = ((WORD)dwInvTrans * ((*pDestPos) & 0x1f)) >> 8;
+
+						WORD wRedResult = Min((WORD)0x1f, (WORD)(wRedSrc + wRedDest));
+						WORD wGreenResult = Min((WORD)0x3f, (WORD)(wGreenSrc + wGreenDest));
+						WORD wBlueResult = Min((WORD)0x1f, (WORD)(wBlueSrc + wBlueDest));
+
+						*pDestPos++ = (wRedResult << 11) | (wGreenResult << 5) | wBlueResult;
+#else
 						DWORD dwRedGreenS = ((pxSource << 8) & 0x00f80000) | (pxSource & 0x000007e0);
 						DWORD dwRedGreen = (((((pxDest << 8) & 0x00f80000) | (pxDest & 0x000007e0)) * dwInvTrans) >> 8) + dwRedGreenS;
 						DWORD dwBlue = (((pxDest & 0x1f) * dwInvTrans) >> 8) + (pxSource & 0x1f);
 
 						*pDestPos++ = (WORD)(((dwRedGreen & 0x00f80000) >> 8) | (dwRedGreen & 0x000007e0) | dwBlue);
+#endif
 
 						pSrcPos++;
 						pAlphaPos++;
