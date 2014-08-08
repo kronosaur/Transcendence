@@ -622,7 +622,7 @@ ICCItem *fnGameSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateError(CONSTLIT("Invalid option"), pArgs->GetElement(0));
 
 			CString sError;
-			if (!g_pTrans->GetModel().SaveGame(dwFlags, &sError))
+			if (g_pTrans->GetModel().SaveGame(dwFlags, &sError) != NOERROR)
 				{
 				::kernelDebugLogMessage("Unable to save game: %s", sError);
 				return pCC->CreateNil();
