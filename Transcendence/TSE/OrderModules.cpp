@@ -84,6 +84,9 @@ IOrderModule *IOrderModule::Create (IShipController::OrderTypes iOrder)
 	{
 	switch (iOrder)
 		{
+		case IShipController::orderApproach:
+			return new CApproachOrder;
+
 		case IShipController::orderAttackArea:
 		case IShipController::orderAttackNearestEnemy:
 		case IShipController::orderDestroyTarget:

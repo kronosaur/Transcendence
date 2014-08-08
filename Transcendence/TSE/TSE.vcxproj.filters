@@ -796,5 +796,8 @@
     <ClCompile Include="CWaitOrder.cpp">
       <Filter>Source Files\ShipAI</Filter>
     </ClCompile>
+    <ClCompile Include="CApproachOrder.cpp">
+      <Filter>Source Files\ShipAI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

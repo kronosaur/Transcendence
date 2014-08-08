@@ -5,6 +5,39 @@
 #ifndef INCL_TSE_ORDER_MODULES
 #define INCL_TSE_ORDER_MODULES
 
+class CApproachOrder : public IOrderModule
+	{
+	public:
+		CApproachOrder (void) : IOrderModule(objCount)
+			{ }
+
+	protected:
+		//	IOrderModule virtuals
+		virtual void OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx);
+		virtual void OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObject *pOrderTarget, const IShipController::SData &Data);
+		virtual IShipController::OrderTypes OnGetOrder (void) { return IShipController::orderApproach; }
+		virtual void OnReadFromStream (SLoadCtx &Ctx);
+		virtual void OnWriteToStream (CSystem *pSystem, IWriteStream *pStream);
+
+	private:
+		enum Objs
+			{
+			objDest =		0,
+			objTarget =		1,
+
+			objCount =		2,
+			};
+
+		enum States
+			{
+			stateOnCourseViaNavPath,
+			stateApproaching,
+			};
+
+		States m_iState;						//	Current behavior state
+		Metric m_rMinDist;						//	Minimum distance to target
+	};
+
 class CAttackOrder : public IOrderModule
 	{
 	public:

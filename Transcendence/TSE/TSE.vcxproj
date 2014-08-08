@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="CAdventureRecord.cpp" />
     <ClCompile Include="CAISettings.cpp" />
+    <ClCompile Include="CApproachOrder.cpp" />
     <ClCompile Include="CAscendedObjectList.cpp" />
     <ClCompile Include="CAttackOrder.cpp" />
     <ClCompile Include="CAttackStationOrder.cpp" />
