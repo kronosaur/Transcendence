@@ -749,6 +749,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
 		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
+		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)g_pUniverse->GetCurrentAdventureDesc()->GetExtensionUNID());
 
 		//	Report creation
 

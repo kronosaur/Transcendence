@@ -246,6 +246,28 @@ void CChooseAdventureSession::CreateAdventureDesc (CExtension *pAdventure)
 	SetAdventureDesc(pAdventure);
 	}
 
+bool CChooseAdventureSession::FindAdventurePos (DWORD dwUNID, int *retiPos)
+
+//	FindAdventurePos
+//
+//	Looks for the position of the given adventure (by extension UNID). If not
+//	found, we return FALSE.
+
+	{
+	int i;
+
+	for (i = 0; i < m_AdventureList.GetCount(); i++)
+		if (m_AdventureList[i]->GetUNID() == dwUNID)
+			{
+			if (retiPos)
+				*retiPos = i;
+
+			return true;
+			}
+
+	return false;
+	}
+
 ALERROR CChooseAdventureSession::OnCommand (const CString &sCmd, void *pData)
 
 //	OnCommand
@@ -297,7 +319,8 @@ ALERROR CChooseAdventureSession::OnInit (CString *retsError)
 
 	//	Start at the first adventure
 
-	m_iSelection = 0;
+	if (!FindAdventurePos(m_Settings.GetInteger(CGameSettings::lastAdventure), &m_iSelection))
+		m_iSelection = 0;
 
 	//	Set up a menu
 

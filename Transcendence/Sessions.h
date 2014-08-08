@@ -64,6 +64,7 @@ class CChooseAdventureSession : public IHISession
 		void CmdPrevAdventure (void);
 		void CmdSelectExtensions (bool bSelect);
 		void CreateAdventureDesc (CExtension *pAdventure);
+		bool FindAdventurePos (DWORD dwUNID, int *retiPos);
 		void SetBackgroundImage (CExtension *pAdventure);
 		void SetAdventureDesc (CExtension *pAdventure);
 		void SetAdventureStatus (CExtension *pAdventure, int yPos);

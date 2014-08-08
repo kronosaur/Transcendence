@@ -2050,6 +2050,7 @@ class CGameSettings
 			playerName,						//	Default player name
 			playerGenome,					//	Default player genome ("humanMale" or "humanFemale")
 			playerShipClass,				//	Default player ship class
+			lastAdventure,					//	Last adventure created
 
 			dockPortIndicator,				//	Options for dock port indicator
 			allowInvokeLetterHotKeys,		//	Allow invoke entries to have letter hot keys
@@ -2089,7 +2090,7 @@ class CGameSettings
 			debugSoundtrack,				//	Soundtrack debugging UI
 
 			//	Constants
-			OPTIONS_COUNT = 31,
+			OPTIONS_COUNT = 32,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }
