@@ -581,6 +581,9 @@ void CEnergyFieldList::WriteToStream (IWriteStream *pStream)
 //	CEnergyField array
 
 	{
+	//	NOTE: We have to saved destroyed overlays because we need to run some 
+	//	code when removing an overlay (e.g., see CShip::CalcOverlayImpact).
+
 	DWORD dwSave = 0;
 	CEnergyField *pField = m_pFirst;
 	while (pField)

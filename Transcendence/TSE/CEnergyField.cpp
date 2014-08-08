@@ -559,6 +559,13 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 	if (Ctx.dwVersion >= 101)
 		Ctx.pStream->Read((char *)&dwFlags, sizeof(DWORD));
 
+	//	NOTE: We need to saved the destroyed flag because we defer removal of
+	//	overlays. There are cases where we set the flag, save the game, and then
+	//	remove the overlay on the first update after load.
+	//
+	//	We have to saved destroyed overlays because we need to run some code
+	//	when removing an overlay (e.g., see CShip::CalcOverlayImpact).
+
 	m_fDestroyed = ((dwFlags & 0x00000001) ? true : false);
 	}
 
