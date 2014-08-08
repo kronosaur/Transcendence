@@ -450,29 +450,43 @@ CWeaponFireDesc *CWeaponFireDesc::FindWeaponFireDescFromFullUNID (const CString 
 		CItemType *pItemType = CItemType::AsType(pType);
 		ASSERT(pItemType);
 
-		CDeviceClass *pDevice = pItemType->GetDeviceClass();
-		if (pDevice == NULL)
+		CWeaponFireDesc *pMissileDesc;
+		CDeviceClass *pDevice;
+		
+		//	If this is a device, then parse as weapon
+
+		if (pDevice = pItemType->GetDeviceClass())
+			{
+			CWeaponClass *pClass = pDevice->AsWeaponClass();
+			if (pClass == NULL)
+				return NULL;
+
+			//	Get the ordinal
+
+			ASSERT(*pPos == '/');
+			pPos++;
+			int iOrdinal = strParseInt(pPos, 0, &pPos);
+
+			//	Get the weapon fire desc of the ordinal
+
+			CWeaponFireDesc *pDesc = pClass->GetVariant(iOrdinal);
+			if (pDesc == NULL)
+				return NULL;
+
+			//	Continue parsing
+
+			return pDesc->FindWeaponFireDesc(CString(pPos));
+			}
+
+		//	Otherwise, see if this is a missile
+
+		else if (pMissileDesc = pItemType->GetMissileDesc())
+			return pMissileDesc;
+
+		//	Nothing
+
+		else
 			return NULL;
-
-		CWeaponClass *pClass = pDevice->AsWeaponClass();
-		if (pClass == NULL)
-			return NULL;
-
-		//	Get the ordinal
-
-		ASSERT(*pPos == '/');
-		pPos++;
-		int iOrdinal = strParseInt(pPos, 0, &pPos);
-
-		//	Get the weapon fire desc of the ordinal
-
-		CWeaponFireDesc *pDesc = pClass->GetVariant(iOrdinal);
-		if (pDesc == NULL)
-			return NULL;
-
-		//	Continue parsing
-
-		return pDesc->FindWeaponFireDesc(CString(pPos));
 		}
 
 	//	If this is an effect, then get it from that
