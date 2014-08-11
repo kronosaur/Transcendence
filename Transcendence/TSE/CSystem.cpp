@@ -399,6 +399,8 @@ const int GRID_SIZE =									128;
 
 const Metric SAME_POS_THRESHOLD2 =						(g_KlicksPerPixel * g_KlicksPerPixel);
 
+const Metric MAP_GRID_SIZE =							3000.0 * LIGHT_SECOND;
+
 bool CalcOverlap (SLabelEntry *pEntries, int iCount);
 void SetLabelBelow (SLabelEntry &Entry, int cyChar);
 void SetLabelLeft (SLabelEntry &Entry, int cyChar);
@@ -3392,6 +3394,17 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 
 	CMapViewportCtx Ctx(pCenter->GetPos(), rcView, rMapScale);
 
+	//	Make sure we've initialized the grid
+
+	if (m_GridPainter.IsEmpty())
+		{
+		for (i = 0; i < m_Stars.GetCount(); i++)
+			{
+			CSpaceObject *pStar = m_Stars.GetObj(i);
+			m_GridPainter.AddRegion(pStar->GetPos(), MAP_GRID_SIZE, MAP_GRID_SIZE);
+			}
+		}
+
 	//	Clear the rect
 
 	Dest.FillRGB(rcView.left, rcView.top, RectWidth(rcView), RectHeight(rcView), g_rgbSpaceColor);
@@ -3401,15 +3414,15 @@ void CSystem::PaintViewportMap (CG16bitImage &Dest, const RECT &rcView, CSpaceOb
 	if (m_pEnvironment)
 		m_pEnvironment->PaintMap(Ctx, Dest);
 
+	//	Paint grid
+
+	m_GridPainter.Paint(Dest, Ctx);
+
 	//	Paint the glow from all stars
 
 	for (i = 0; i < m_Stars.GetCount(); i++)
 		{
 		CSpaceObject *pStar = m_Stars.GetObj(i);
-
-		//	Paint a grid for the star
-
-		Ctx.PaintGrid(Dest, pStar->GetPos(), 30.0 * LIGHT_MINUTE, 100.0 * LIGHT_SECOND);
 
 		//	Paint glow
 

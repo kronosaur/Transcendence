@@ -1014,6 +1014,34 @@ class CEnvironmentGrid
 		int m_iTileCount;					//	Size of grid in tiles
 	};
 
+class CMapGridPainter
+	{
+	public:
+		void AddRegion (const CVector &vCenter, Metric rWidth, Metric rHeight);
+		inline bool IsEmpty (void) const { return (m_HorzLines.GetCount() == 0); }
+		void Paint (CG16bitImage &Dest, CMapViewportCtx &PaintCtx);
+
+	private:
+		struct SLine
+			{
+			int xyKey;						//	x of vertical line or y of horizontal line
+			int xyFrom;						//	From <= To
+			int xyTo;
+
+			CVector vFrom;
+			CVector vTo;
+			};
+
+		void AddLines (const TArray<SLine> &NewLines, TArray<SLine> *retLines);
+		bool FindKey (const TArray<SLine> &Lines, int xyKey, int *retiIndex);
+		void Paint (CG16bitImage &Dest, CMapViewportCtx &PaintCtx, const TArray<SLine> &Lines);
+		void RecalcGrid (void);
+
+		TArray<SLine> m_HorzLines;
+		TArray<SLine> m_VertLines;
+		bool m_bRecalcNeeded;
+	};
+
 class CSystem : public CObject
 	{
 	public:
@@ -1335,6 +1363,7 @@ class CSystem : public CObject
 		CSpaceObjectList m_BackgroundObjs;		//	List of background objects to paint in viewport
 		CSpaceObjectList m_ForegroundObjs;		//	List of foreground objects to paint in viewport
 		CSpaceObjectList m_DeferredOnCreate;	//	Ordered list of objects that need an OnSystemCreated call
+		CMapGridPainter m_GridPainter;			//	Structure to paint a grid
 
 		static const Metric g_MetersPerKlick;
 

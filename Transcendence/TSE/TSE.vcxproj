@@ -212,6 +212,7 @@
     <ClCompile Include="CIntegralRotationDesc.cpp" />
     <ClCompile Include="CItemCtx.cpp" />
     <ClCompile Include="CItemEnhancementStack.cpp" />
+    <ClCompile Include="CMapGridPainter.cpp" />
     <ClCompile Include="CMapViewportCtx.cpp" />
     <ClCompile Include="CMissionList.cpp" />
     <ClCompile Include="CMoveCtx.cpp" />
