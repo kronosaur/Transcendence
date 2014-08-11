@@ -11,6 +11,7 @@
 	<!ENTITY ssEarthSpaceIceRing		"0x00000007">
 	<!ENTITY ssEarthSpaceBinary			"0x00000008">
 	<!ENTITY ssEarthSpaceAsteroidArcs	"0x00000009">
+	<!ENTITY ssEarthSpaceAsteroids2		"0x00000009">	<!-- Needed for backwards compatibility -->
 	<!ENTITY ssEarthSpaceDesert2		"0x0000000A">
 	<!ENTITY tbBasicSystemParts			"0x0000000B">
 	<!ENTITY tbHumanSystemParts			"0x0000000C">
