@@ -1194,9 +1194,10 @@
 				))
 				
 			(setq trnCreateStarAndZones (lambda (orbitDesc starType zones)
-				(block Nil
-					(sysCreateStation starType (sysOrbitPos orbitDesc))
+				(block (starObj)
+					(setq starObj (sysCreateStation starType (sysOrbitPos orbitDesc)))
 					(trnCreateStarZones orbitDesc (typGetDataField starType 'maxLightRadius) zones)
+					starObj
 					)
 				))
 

@@ -1619,6 +1619,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'known True|Nil\n"
 			"   'maxHP hitPoints\n"
 			"   'maxStructuralHP hitPoints\n"
+			"   'orbit orbit|Nil\n"
 			"   'parallax factor\n"
 			"   'playerBlacklisted True|Nil\n"
 			"   'structuralHP hitPoints\n",

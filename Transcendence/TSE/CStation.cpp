@@ -3826,6 +3826,31 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 		m_iStructuralHP = Min(m_iStructuralHP, m_iMaxStructuralHP);
 		return true;
 		}
+	else if (strEquals(sName, PROPERTY_ORBIT))
+		{
+		if (pValue->IsNil())
+			{
+			if (m_pMapOrbit)
+				{
+				delete m_pMapOrbit;
+				m_pMapOrbit = NULL;
+				}
+
+			return true;
+			}
+		else
+			{
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(CC, pValue, &OrbitDesc))
+				{
+				*retsError = CONSTLIT("Invalid orbit.");
+				return false;
+				}
+
+			SetMapOrbit(OrbitDesc);
+			return true;
+			}
+		}
 	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
 		{
 		CSpaceObject *pPlayer = g_pUniverse->GetPlayer();
