@@ -204,14 +204,17 @@ void CFractureEffect::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintC
 		SParticle *pParticleEnd = pParticle + m_iParticleCount;
 		while (pParticle < pParticleEnd)
 			{
-			Dest.ColorTransBlt(pParticle->xSrc,
-					pParticle->ySrc,
-					m_iCellSize,
-					m_iCellSize,
-					255,
-					Source,
-					x + (pParticle->x / FIXED_POINT),
-					y + (pParticle->y / FIXED_POINT));
+			if (pParticle->iShape != -1)
+				{
+				Dest.ColorTransBlt(pParticle->xSrc,
+						pParticle->ySrc,
+						m_iCellSize,
+						m_iCellSize,
+						255,
+						Source,
+						x + (pParticle->x / FIXED_POINT),
+						y + (pParticle->y / FIXED_POINT));
+				}
 
 			pParticle++;
 			}
@@ -285,37 +288,103 @@ void CFractureEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			int xAttract = FIXED_POINT * (int)(vDist.GetX() / g_KlicksPerPixel);
 			int yAttract = -FIXED_POINT * (int)(vDist.GetY() / g_KlicksPerPixel);
 
-			while (pParticle < pParticleEnd)
+			//	If the attractor is a gravity source, then handle it differently
+
+			if (m_pAttractor->HasGravity())
 				{
-				int xDelta = xAttract - pParticle->x;
-				int yDelta = yAttract - pParticle->y;
-				int xDist = abs(xDelta);
-				int yDist = abs(yDelta);
+				int iMinRadius = 50 * FIXED_POINT;
+				int iMaxAccel = 5 * FIXED_POINT;
+				Metric rMinRadius2 = (Metric)iMinRadius * (Metric)iMinRadius;
 
-				//	If within threshold, then particles do not move
-
-				if (xDist < (8 * FIXED_POINT) && yDist < (8 * FIXED_POINT))
-					;
-
-				//	Otherwise, move towards attractor
-
-				else
+				while (pParticle < pParticleEnd)
 					{
-					int iDist = Max(xDist, yDist);
-					int iSpeed = 256 * 256 * FIXED_POINT / iDist;
-					iSpeed = Min(iSpeed, 4 * FIXED_POINT);
+					if (pParticle->iShape == -1)
+						{
+						pParticle++;
+						continue;
+						}
 
-					int iFade = (m_iTick > 100 ? 0 : (100 - m_iTick));
-					int xV = (iSpeed * xDelta / iDist) + (iFade * pParticle->xV / 100);
-					int yV = (iSpeed * yDelta / iDist) + (iFade * pParticle->yV / 100);
+					int xDelta = xAttract - pParticle->x;
+					int yDelta = yAttract - pParticle->y;
+					int xDist = abs(xDelta);
+					int yDist = abs(yDelta);
+					int iDist = (int)sqrt((Metric)xDist * (Metric)xDist + (Metric)yDist * (Metric)yDist);
 
-					pParticle->x += xV;
-					pParticle->y += yV;
+					//	If within threshold, then particles is destroyed
 
-					bParticlesLeft = true;
+					if (iDist < iMinRadius)
+						pParticle->iShape = -1;
+
+					//	Otherwise, move towards attractor
+
+					else
+						{
+						Metric rDist2 = (Metric)iDist * (Metric)iDist;
+						int iAccel = (int)(iDist > iMinRadius ? rMinRadius2 * iMaxAccel / rDist2 : iMaxAccel);
+						int xA = iAccel * xDelta / iDist;
+						int yA = iAccel * yDelta / iDist;
+
+						if (xA == 0 && yA == 0)
+							{
+							xA = Sign(xDelta);
+							yA = Sign(yDelta);
+							}
+
+						pParticle->xV += xA;
+						pParticle->yV += yA;
+
+						pParticle->x += pParticle->xV;
+						pParticle->y += pParticle->yV;
+
+						bParticlesLeft = true;
+						}
+
+					pParticle++;
 					}
+				}
 
-				pParticle++;
+			//	Otherwise, this is an attractor like a Gaian terraformer
+
+			else
+				{
+				while (pParticle < pParticleEnd)
+					{
+					if (pParticle->iShape == -1)
+						{
+						pParticle++;
+						continue;
+						}
+
+					int xDelta = xAttract - pParticle->x;
+					int yDelta = yAttract - pParticle->y;
+					int xDist = abs(xDelta);
+					int yDist = abs(yDelta);
+
+					//	If within threshold, then particles do not move
+
+					if (xDist < (8 * FIXED_POINT) && yDist < (8 * FIXED_POINT))
+						pParticle->iShape = -1;
+
+					//	Otherwise, move towards attractor
+
+					else
+						{
+						int iDist = Max(xDist, yDist);
+						int iSpeed = 256 * 256 * FIXED_POINT / iDist;
+						iSpeed = Min(iSpeed, 4 * FIXED_POINT);
+
+						int iFade = (m_iTick > 100 ? 0 : (100 - m_iTick));
+						int xV = (iSpeed * xDelta / iDist) + (iFade * pParticle->xV / 100);
+						int yV = (iSpeed * yDelta / iDist) + (iFade * pParticle->yV / 100);
+
+						pParticle->x += xV;
+						pParticle->y += yV;
+
+						bParticlesLeft = true;
+						}
+
+					pParticle++;
+					}
 				}
 
 			//	If no particles left, destroy the effect

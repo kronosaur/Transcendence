@@ -3841,6 +3841,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 			&& (Ctx.iCause != enteredStargate)
 			&& (Ctx.iCause != killedByDisintegration)
 			&& (Ctx.iCause != killedByShatter)
+			&& (Ctx.iCause != killedByGravity)
 			&& (Ctx.bResurrectPending
 				|| Ctx.iCause == killedByRadiationPoisoning
 				|| Ctx.iCause == killedByRunningOutOfFuel
@@ -3907,6 +3908,7 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 					NULL);
 			break;
 
+		case killedByGravity:
 		case killedByShatter:
 			{
 			int iTick = GetSystem()->GetTick();
@@ -3916,6 +3918,8 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 			const CObjectImageArray &Image = GetImage();
 			if (Image.IsLoaded())
 				{
+				CFractureEffect *pEffect;
+
 				CFractureEffect::Create(GetSystem(),
 						GetPos(),
 						GetVel(),
@@ -3923,7 +3927,10 @@ void CShip::OnDestroyed (SDestroyCtx &Ctx)
 						iTick,
 						m_Rotation.GetFrameIndex(),
 						CFractureEffect::styleExplosion,
-						NULL);
+						&pEffect);
+
+				if (Ctx.iCause == killedByGravity && Ctx.Attacker.GetObj())
+					pEffect->SetAttractor(Ctx.Attacker.GetObj());
 				}
 
 			g_pUniverse->PlaySound(this, g_pUniverse->FindSound(g_ShipExplosionSoundUNID));

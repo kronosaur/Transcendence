@@ -1572,7 +1572,19 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetName",					fnObjSetOld,		FN_OBJ_NAME,
-			"(objSetName obj name [flags])",
+			"(objSetName obj name [flags])\n\n"
+			
+			"flags\n\n"
+			
+			"   0x0001 Definite article\n"
+			"   0x0002 Pluralize first word\n"
+			"   0x0004 Add 'es' to pluralize\n"
+			"   0x0008 Custom plural after semicolon\n"
+			"   0x0010 Pluralize second word\n"
+			"   0x0020 Reverse 'a' vs 'an'\n"
+			"   0x0040 No article\n"
+			"   0x0080 Personal name\n",
+
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetObjRefData",				fnObjData,		FN_OBJ_SET_OBJREF_DATA,

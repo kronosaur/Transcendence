@@ -51,6 +51,7 @@
 #define FIRE_RATE_ADJ_ATTRIB					CONSTLIT("fireRateAdj")
 #define FREQUENCY_ATTRIB						CONSTLIT("frequency")
 #define GATE_EFFECT_ATTRIB						CONSTLIT("gateEffect")
+#define GRAVITY_ATTRIB							CONSTLIT("gravity")
 #define HIT_POINTS_ATTRIB						CONSTLIT("hitPoints")
 #define IMMUTABLE_ATTRIB						CONSTLIT("immutable")
 #define INACTIVE_ATTRIB							CONSTLIT("inactive")
@@ -1219,6 +1220,7 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
 	m_rMaxAttackDistance = MAX_ATTACK_DISTANCE;
 	m_iStealth = pDesc->GetAttributeIntegerBounded(STEALTH_ATTRIB, CSpaceObject::stealthMin, CSpaceObject::stealthMax, CSpaceObject::stealthNormal);
+	m_fHasGravity = pDesc->GetAttributeBool(GRAVITY_ATTRIB);
 
 	//	Starting in API 23 we change the default to 40 instead of 80
 
@@ -1304,7 +1306,14 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	//	Mass & Size
 	
 	m_iSize = pDesc->GetAttributeIntegerBounded(SIZE_ATTRIB, 1, -1, 0);
-	m_rMass = pDesc->GetAttributeIntegerBounded(MASS_ATTRIB, 1, -1, 1000000);
+
+	if (!pDesc->FindAttributeDouble(MASS_ATTRIB, &m_rMass))
+		{
+		if (m_iScale == scaleWorld || m_iScale == scaleStar)
+			m_rMass = 1.0;	//	1 Earth mass or 1 solar mass.
+		else
+			m_rMass = 1000000.0;
+		}
 
 	//	Load devices
 

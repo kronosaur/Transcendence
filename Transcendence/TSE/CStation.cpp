@@ -603,6 +603,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_yMapLabel = -6;
 	pStation->m_rMass = pType->GetMass();
 	pStation->m_dwWreckUNID = 0;
+	pStation->SetHasGravity(pType->HasGravity());
 
 	//	We generally don't move
 

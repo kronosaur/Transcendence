@@ -5018,6 +5018,7 @@ class CStationType : public CDesignType
 		inline int GetTempChance (void) const { return m_iChance; }
 		inline CTradingDesc *GetTradingDesc (void) { return m_pTrade; }
 		inline bool HasAnimations (void) const { return (m_pAnimations != NULL); }
+		inline bool HasGravity (void) const { return (m_fHasGravity ? true : false); }
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
 		inline bool HasWreckImage (void) const { return (!IsImmutable() && m_iMaxHitPoints > 0); }
 		inline bool IsActive (void) { return (m_fInactive ? false : true); }
@@ -5101,7 +5102,12 @@ class CStationType : public CDesignType
 		Metric m_rParallaxDist;							//	Parallax distance for background objects
 		int m_iLevel;									//	Station level
 		Metric m_rMass;									//	Mass of station
-		int m_iSize;									//	Size (meters or kilometers, depending on scale)
+														//		For stars, this is in solar masses
+														//		For worlds, this is in Earth masses
+														//		Otherwise, in metric tons
+		int m_iSize;									//	Size
+														//		For stars and worlds, this is in kilometers
+														//		Otherwise, in meters
 		int m_iFireRateAdj;								//	Fire rate adjustment
 
 		//	Armor & HP
@@ -5130,6 +5136,7 @@ class CStationType : public CDesignType
 		DWORD m_fNoFriendlyFire:1;						//	Station cannot hit friends
 		DWORD m_fSign:1;								//	Station is a text sign
 		DWORD m_fBeacon:1;								//	Station is a nav beacon
+
 		DWORD m_fRadioactive:1;							//	Station is radioactive
 		DWORD m_fCanAttack:1;							//	Station is active (i.e., will react if attacked)
 		DWORD m_fShipEncounter:1;						//	This is a ship encounter
@@ -5138,12 +5145,17 @@ class CStationType : public CDesignType
 		DWORD m_fMultiHull:1;							//	Only harmed by WMD damage
 		DWORD m_fTimeStopImmune:1;						//	TRUE if station is immune to time-stop
 		DWORD m_fNoBlacklist:1;							//	Does not blacklist player if attacked
+
 		DWORD m_fReverseArticle:1;						//	Use "a" instead of "an" and vice versa
 		DWORD m_fStatic:1;								//	Use CStatic instead of CStation
 		DWORD m_fOutOfPlane:1;							//	Background or foreground object
 		DWORD m_fNoFriendlyTarget:1;					//	Station cannot be hit by friends
 		DWORD m_fVirtual:1;								//	Virtual stations do not show up
-		DWORD m_fSpare:11;
+		DWORD m_fHasGravity:1;							//	Implement gravity (stars only, mass and size must be defined)
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:8;
 
 		//	Images
 		CCompositeImageDesc m_Image;
@@ -5191,16 +5203,19 @@ class CStationType : public CDesignType
 														//		>100 = greater than normal chance
 		CWeaponFireDescRef m_pEjectaType;				//	Type of ejecta generated
 
-		//	Miscellaneous
+		//	Stellar objects
 		COLORREF m_rgbSpaceColor;						//	Space color
 		int m_iMaxLightDistance;						//	Max distance at which there is no (effective) light from star
-		CEffectCreatorRef m_pBarrierEffect;				//	Effect when object hits station
-		CSovereignRef m_pControllingSovereign;			//	If controlled by different sovereign
-														//	(e.g., centauri occupation)
+
+		//	Stargates
 		CString m_sStargateDestNode;					//	Dest node
 		CString m_sStargateDestEntryPoint;				//	Dest entry point
 		CEffectCreatorRef m_pGateEffect;				//	Effect when object gates in/out of station
 
+		//	Miscellaneous
+		CEffectCreatorRef m_pBarrierEffect;				//	Effect when object hits station
+		CSovereignRef m_pControllingSovereign;			//	If controlled by different sovereign
+														//	(e.g., centauri occupation)
 		//	Temporary
 		int m_iChance;									//	Used when computing chance of encounter
 	};

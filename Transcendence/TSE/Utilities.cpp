@@ -154,7 +154,7 @@ static const SOrderTypeData g_OrderTypes[] =
 
 #define ORDER_TYPES_COUNT		(sizeof(g_OrderTypes) / sizeof(g_OrderTypes[0]))
 
-static char *g_pszDestructionCauses[] =
+static char *g_pszDestructionCauses[killedCount] =
 	{
 	"",
 
@@ -172,6 +172,7 @@ static char *g_pszDestructionCauses[] =
 
 	"enteredStargate",
 	"custom",
+	"gravity",
 	};
 
 #define DESTRUCTION_CAUSES_COUNT	(sizeof(g_pszDestructionCauses) / sizeof(g_pszDestructionCauses[0]))

@@ -4344,18 +4344,27 @@ void CSystem::Update (SSystemUpdateCtx &SystemCtx)
 	DebugStartTimer();
 
 	m_BarrierObjects.SetAllocSize(GetObjectCount());
+	m_GravityObjects.SetAllocSize(GetObjectCount());
 
-	//	Make a list of all barrier objects
+	//	Make a list of all barrier and gravity objects
 
 	for (i = 0; i < GetObjectCount(); i++)
 		{
 		CSpaceObject *pObj = GetObject(i);
-		if (pObj)
+		if (pObj && !pObj->IsDestroyed())
 			{
-			if (pObj->IsBarrier() && !pObj->IsDestroyed())
+			if (pObj->IsBarrier())
 				m_BarrierObjects.FastAdd(pObj);
+
+			if (pObj->HasGravity())
+				m_GravityObjects.FastAdd(pObj);
 			}
 		}
+
+	//	Accelerate objects affected by gravity
+
+	for (i = 0; i < m_GravityObjects.GetCount(); i++)
+		UpdateGravity(Ctx, m_GravityObjects.GetObj(i));
 
 	//	Move all objects. Note: We always move last because we want to
 	//	paint right after a move. Otherwise, when a laser/missile hits
@@ -4452,6 +4461,92 @@ void CSystem::UpdateExtended (const CTimeSpan &ExtraTime)
 		}
 
 	SetProgramState(psUpdating);
+	}
+
+void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
+
+//	UpdateGravity
+//
+//	Accelerates objects around high-gravity fields
+
+	{
+	int i;
+
+	//	Compute the acceleration due to gravity at 1 Earth radius
+	//	(in kilometers per second-squared).
+	//
+	//	Accel = 0.0098 * 330,000 * StellarMass
+	//
+	//	1 StellarMass = 330,000 Earth masses
+	//	Gravity at Earth's radius and Mass = 0.0098 Km/sec^2
+	//
+	//	Accel constant = 0.0098 * 330,000 = 3234
+
+	Metric r1EAccel = 3234.0 * pGravityObj->GetStellarMass();
+	if (r1EAccel <= 0.0)
+		return;
+
+	//	Compute some other properties of the gravity field
+
+	Metric rGravityScale = 500.0;	//	Adjust to simulate the fact that space scales are so big
+	Metric rTidalKillDist = 200.0 * g_KlicksPerPixel;
+	Metric rTidalKillDist2 = rTidalKillDist * rTidalKillDist;
+
+	//	We don't care about accelerations less than 10 km/sec^2.
+
+	const Metric MIN_ACCEL = 1.0;
+	const Metric EARTH_RADIUS = 6371.0;	//	Kilometers
+
+	Metric rScaleRadius = EARTH_RADIUS * rGravityScale;
+	Metric rScaleRadius2 = rScaleRadius * rScaleRadius;
+
+	//	Compute the radius at which the acceleration is the minimum that we 
+	//	care about.
+	//
+	//	minA = A/r^2
+	//	r = sqrt(A/minA) * Earth-radius
+
+	Metric rMinDist = sqrt(r1EAccel / MIN_ACCEL) * rScaleRadius;
+	Metric rMinDist2 = rMinDist * rMinDist;
+
+	const Metric MIN_GRAVITY_DIST = 200.0 * g_KlicksPerPixel;
+	const Metric MIN_GRAVITY_DIST2 = MIN_GRAVITY_DIST * MIN_GRAVITY_DIST;
+
+	//	Loop over all objects inside the given distance and accelerate them.
+
+	CSpaceObjectList Objs;
+	GetObjectsInBox(pGravityObj->GetPos(), rMinDist, Objs);
+
+	for (i = 0; i < Objs.GetCount(); i++)
+		{
+		CSpaceObject *pObj = Objs.GetObj(i);
+		if (pObj == pGravityObj || pObj->IsDestroyed())
+			continue;
+
+		CVector vDist = (pGravityObj->GetPos() - pObj->GetPos());
+		Metric rDist2 = pGravityObj->GetDistance2(pObj);
+		if (rDist2 > rMinDist2)
+			continue;
+
+		//	Inside the kill radius, we destroy the object
+
+		if (rDist2 < rTidalKillDist2)
+			{
+			if (pObj->OnDestroyCheck(killedByGravity, pGravityObj))
+				pObj->Destroy(killedByGravity, pGravityObj);
+
+			continue;
+			}
+
+		//	Compute acceleration
+
+		Metric rAccel = r1EAccel * rScaleRadius2 / Max(MIN_GRAVITY_DIST2, rDist2);
+
+		//	Accelerate towards the center
+
+		pObj->DeltaV(g_SecondsPerUpdate * rAccel * vDist / sqrt(rDist2));
+		pObj->ClipSpeed(LIGHT_SPEED);
+		}
 	}
 
 void CSystem::UpdateRandomEncounters (void)

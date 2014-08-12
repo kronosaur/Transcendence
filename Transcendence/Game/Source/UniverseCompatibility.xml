@@ -1391,18 +1391,6 @@
 	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
 	</StationType>
 
-	<!-- White Dwarf Star -->
-
-	<StationType UNID="&stWhiteDwarfStar;"
-		name=				"(star)"
-		scale=				"star"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"star"
-		>
-	<Image imageID="&rsStar1;" imageX="0" imageY="0" imageWidth="512" imageHeight="512" imageFrameCount="0" imageTicksPerFrame="0"/>
-	</StationType>
-
 	<!-- Red Dwarf Star -->
 
 	<StationType UNID="&stRedDwarfStar;"

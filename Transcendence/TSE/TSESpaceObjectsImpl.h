@@ -295,7 +295,7 @@ class CFractureEffect : public CSpaceObject
 
 			int xSrc;						//	Position in source
 			int ySrc;
-			int iShape;						//	Index of shape
+			int iShape;						//	Index of shape (-1 = destroyed)
 			};
 
 		CFractureEffect (void);
@@ -1332,6 +1332,7 @@ class CStation : public CSpaceObject
 		virtual COLORREF GetSpaceColor (void) { return m_pType->GetSpaceColor(); }
 		virtual CString GetStargateID (void) const;
 		virtual int GetStealth (void) const { return ((m_fKnown && !IsMobile()) ? stealthMin : m_pType->GetStealth()); }
+		virtual Metric GetStellarMass (void) const { return (GetScale() == scaleStar ? m_rMass : 0.0); }
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
 		virtual CDesignType *GetType (void) const { return m_pType; }
 		virtual int GetVisibleDamage (void);
@@ -1439,7 +1440,7 @@ class CStation : public CSpaceObject
 		DWORD m_dwNameFlags;					//	Name flags
 		CSovereign *m_pSovereign;				//	Allegiance
 		ScaleTypes m_Scale;						//	Scale of station
-		Metric m_rMass;							//	Mass of station
+		Metric m_rMass;							//	Mass of station (depends on scale)
 
 		CCompositeImageSelector m_ImageSelector;//	Image variant to display
 		int m_iDestroyedAnimation;				//	Frames left of destroyed animation

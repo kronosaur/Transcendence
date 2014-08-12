@@ -184,7 +184,9 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 	CSpaceObject *pAttacker = Ctx.Attacker.GetObj();
 	if (pAttacker)
 		{
-		if (pAttacker->IsAngryAt(pShip) || pAttacker->GetSovereign() == NULL)
+		if (pAttacker->IsAngryAt(pShip) 
+				|| pAttacker->GetSovereign() == NULL
+				|| (pAttacker->GetScale() == scaleWorld || pAttacker->GetScale() == scaleStar))
 			sCause = strPatternSubst(CONSTLIT("by %s"), Ctx.Attacker.GetDamageCauseNounPhrase(nounArticle));
 		else
 			{
@@ -247,6 +249,10 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 		case killedByShatter:
 			sText = strPatternSubst(CONSTLIT("was shattered %s"), sCause);
+			break;
+
+		case killedByGravity:
+			sText = strPatternSubst(CONSTLIT("was ripped apart %s"), sCause);
 			break;
 
 		case killedByOther:

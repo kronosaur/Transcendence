@@ -210,7 +210,8 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fAutoClearDestinationOnDock(false),
 		m_fAutoClearDestinationOnDestroy(false),
 		m_fShowHighlight(false),
-		m_fShowDamageBar(false)
+		m_fShowDamageBar(false),
+		m_fHasGravity(false)
 
 //	CSpaceObject constructor
 
@@ -882,6 +883,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fShowHighlight =			((dwLoad & 0x04000000) ? true : false);
 	pObj->m_fAutoClearDestinationOnDestroy = ((dwLoad & 0x08000000) ? true : false);
 	pObj->m_fShowDamageBar =			((dwLoad & 0x10000000) ? true : false);
+	pObj->m_fHasGravity =				((dwLoad & 0x20000000) ? true : false);
 
 	//	No need to save the following
 
@@ -6625,6 +6627,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fShowHighlight				? 0x04000000 : 0);
 	dwSave |= (m_fAutoClearDestinationOnDestroy ? 0x08000000 : 0);
 	dwSave |= (m_fShowDamageBar				? 0x10000000 : 0);
+	dwSave |= (m_fHasGravity				? 0x20000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 

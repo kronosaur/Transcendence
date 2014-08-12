@@ -547,9 +547,10 @@ enum DestructionTypes
 	killedByPlayerCreatedExplosion	= 10,	//	Killed by explosion created by the player
 	enteredStargate					= 11,	//	Entered a stargate
 	killedByOther					= 12,	//	Custom death
+	killedByGravity					= 13,	//	Killed by white dwarf/neutron star/black hole
 
 	killedNone						= -1,
-	killedCount						= 12
+	killedCount						= 14
 	};
 
 class CDamageSource

@@ -1313,6 +1313,7 @@ class CSystem : public CObject
 		void PaintDestinationMarker (SViewportPaintCtx &Ctx, CG16bitImage &Dest, int x, int y, CSpaceObject *pObj);
 		void PaintStarField(CG16bitImage &Dest, const RECT &rcView, CSpaceObject *pCenter, Metric rKlicksPerPixel, WORD wSpaceColor);
 		void ResetStarField (void);
+		void UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj);
 		void UpdateRandomEncounters (void);
 
 		//	Game instance data
@@ -1355,6 +1356,7 @@ class CSystem : public CObject
 		CStructArray m_StarField;				//	Star field
 		CSpaceObjectList m_EncounterObjs;		//	List of objects that generate encounters
 		CSpaceObjectList m_BarrierObjects;		//	List of barrier objects
+		CSpaceObjectList m_GravityObjects;		//	List of objects that have gravity
 		CSpaceObjectList m_Stars;				//	List of stars in the system
 		CSpaceObjectGrid m_ObjGrid;				//	Grid to help us hit test
 		CSpaceObjectList m_DeletedObjects;		//	List of objects deleted in the current update
@@ -2267,6 +2269,7 @@ class CSpaceObject : public CObject
 		CSpaceObject *GetVisibleEnemyInRange (CSpaceObject *pCenter, Metric rMaxRange = g_InfiniteDistance, bool bIncludeStations = false, CSpaceObject *pExcludeObj = NULL);
 		bool HasBeenHitLately (int iTicks = 30);
 		bool HasFiredLately (int iTicks = 30);
+		bool HasGravity (void) const { return (m_fHasGravity ? true : false); }
 		inline bool HasInterSystemEvent (void) const { return (m_fHasInterSystemEvent ? true : false); }
 		inline bool HasNonLinearMove (void) const { return (m_fNonLinearMove ? true : false); }
 		inline bool HasOnAttackedEvent (void) const { return (m_fHasOnAttackedEvent ? true : false); }
@@ -2483,6 +2486,7 @@ class CSpaceObject : public CObject
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual ScaleTypes GetScale (void) const { return scaleFlotsam; }
 		virtual CSovereign *GetSovereign (void) const { return NULL; }
+		virtual Metric GetStellarMass (void) const { return 0.0; }
 		virtual CDesignType *GetType (void) const { return NULL; }
 		virtual CDesignType *GetWreckType (void) const { return NULL; }
 		virtual bool HasAttribute (const CString &sAttribute) const { return sAttribute.IsBlank(); }
@@ -2736,6 +2740,7 @@ class CSpaceObject : public CObject
 			pPainter->GetBounds(&rcRect);
 			SetBounds(rcRect);
 			}
+		inline void SetHasGravity (bool bGravity = true) { m_fHasGravity = bGravity; }
 		inline void SetIsBarrier (void) { m_fIsBarrier = true; }
 		inline void SetInDamageCode (void) { m_fInDamage = true; }
 		inline void SetInUpdateCode (void) { m_pObjInUpdate = this; m_bObjDestroyed = false; }
@@ -2826,7 +2831,7 @@ class CSpaceObject : public CObject
 		DWORD m_fShowHighlight:1;				//	TRUE if we should paint a target highlight in SRS
 		DWORD m_fAutoClearDestinationOnDestroy:1;//	TRUE if we should clear the destination when station is destroyed
 		DWORD m_fShowDamageBar:1;				//	TRUE if we should show damage bar
-		DWORD m_fSpare6:1;
+		DWORD m_fHasGravity:1;					//	TRUE if object has gravity
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 

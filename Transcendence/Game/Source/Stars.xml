@@ -28,10 +28,11 @@
 		name=				"(M8 class red dwarf)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#673b34"
 		maxLightRadius=		"350"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -52,10 +53,11 @@
 		name=				"(M5 class red dwarf)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#674a38"
 		maxLightRadius=		"450"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -76,10 +78,11 @@
 		name=				"(M0 class red dwarf)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#675442"
 		maxLightRadius=		"545"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -97,10 +100,11 @@
 		name=				"(K5 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#675747"
 		maxLightRadius=		"570"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -118,10 +122,11 @@
 		name=				"(K0 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#67604c"
 		maxLightRadius=		"590"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -139,10 +144,11 @@
 		name=				"(G5 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#66664c"
 		maxLightRadius=		"610"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -160,10 +166,11 @@
 		name=				"(G2 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#676752"
 		maxLightRadius=		"620"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -181,10 +188,11 @@
 		name=				"(G0 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#67675c"
 		maxLightRadius=		"630"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -202,10 +210,11 @@
 		name=				"(F5 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#616767"
 		maxLightRadius=		"650"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -223,10 +232,11 @@
 		name=				"(F0 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#575b67"
 		maxLightRadius=		"670"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -244,10 +254,11 @@
 		name=				"(A5 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#4c5367"
 		maxLightRadius=		"720"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -265,10 +276,11 @@
 		name=				"(A0 class star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#495167"
 		maxLightRadius=		"800"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -292,10 +304,11 @@
 		name=				"(nebula star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#433d4d"
 		maxLightRadius=		"400"
-
-		attributes=			"generic, star"
 		>
 
 		<ImageEffect>
@@ -315,10 +328,11 @@
 		name=				"(red giant star)"
 		scale=				"star"
 		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, star"
+				 
 		spaceColor=			"#663524"
 		maxLightRadius=		"620"
-
-		attributes=			"generic, star"
 		>
 		
 		<ImageEffect>
@@ -336,6 +350,32 @@
 		</ImageEffect>
 	</StationType>
 	
+	<!-- White Dwarf Star -->
+
+	<StationType UNID="&stWhiteDwarfStar;"
+		name=				"(white dwarf star)"
+		scale=				"star"
+		sovereign=			"&svIndependent;"
+				 
+		attributes=			"generic, gravityDanger, star"
+				 
+		spaceColor=			"#495167"
+		maxLightRadius=		"300"
+		mass=				"1.0"
+		gravity=			"true"
+		>
+
+		<ImageEffect>
+			<Orb
+					style=			"smooth"
+					radius=			"330"
+					intensity=		"50"
+					primaryColor=	"#a6beff"
+					secondaryColor=	"#a6beff"
+					/>
+		</ImageEffect>
+	</StationType>
+
 <!-- RESOURCES -->
 
 	<Image UNID="&rsRedGiantStar2;"			bitmap="Resources\RedGiantStar2.jpg"			bitmask="Resources\RedGiantStar2Mask.bmp"  loadOnUse="true"/>
