@@ -1493,42 +1493,79 @@ ALERROR CreateOffsetObjects (SSystemCreateCtx *pCtx, CXMLElement *pObj, const CO
 	if (iObjCount == 0)
 		return NOERROR;
 
+	int iCount = Max(GetDiceCountFromAttribute(pObj->GetAttribute(COUNT_ATTRIB)), iObjCount);
+	if (iCount <= 0)
+		return NOERROR;
+
+	//	Generate an array of radius/angle pairs for each object we create
+
+	TArray<CVector> Points;
+	Points.InsertEmpty(iCount);
+
 	//	Get the scale
 
 	Metric rScale = GetScale(pObj);
 
 	//	Get the offset. We look for radius and angle first.
 
-	Metric rRadius;
-	Metric rAngle;
-	int iRadius;
-	if (pObj->FindAttributeInteger(RADIUS_ATTRIB, &iRadius))
+	CString sRadius;
+	if (pObj->FindAttribute(RADIUS_ATTRIB, &sRadius))
 		{
-		rRadius = rScale * Max(0, iRadius);
-		rAngle = mathDegreesToRadians(pObj->GetAttributeIntegerBounded(ANGLE_ATTRIB, 0, 359, 0));
+		DiceRange Radius;
+		if (Radius.LoadFromXML(sRadius) != NOERROR)
+			{
+			pCtx->sError = CONSTLIT("Invalid dice count for radius.");
+			return ERR_FAIL;
+			}
+
+		DiceRange Angle;
+		if (Angle.LoadFromXML(pObj->GetAttribute(ANGLE_ATTRIB)) != NOERROR)
+			{
+			pCtx->sError = CONSTLIT("Invalid dice count for angle.");
+			return ERR_FAIL;
+			}
+
+		//	Generate values
+
+		for (i = 0; i < iCount; i++)
+			Points[i] = CVector(rScale * Radius.Roll(), mathDegreesToRadians(Angle.Roll()));
 		}
 
 	//	Otherwise, we expect Cartessian offset
 
 	else
 		{
-		Metric rX = rScale * GetDiceCountFromAttribute(pObj->GetAttribute(X_OFFSET_ATTRIB));
-		Metric rY = rScale * GetDiceCountFromAttribute(pObj->GetAttribute(Y_OFFSET_ATTRIB));
+		DiceRange X;
+		if (X.LoadFromXML(pObj->GetAttribute(X_OFFSET_ATTRIB)) != NOERROR)
+			{
+			pCtx->sError = CONSTLIT("Invalid dice count for xOffset.");
+			return ERR_FAIL;
+			}
 
-		//	Convert to polar coordinates
+		DiceRange Y;
+		if (Y.LoadFromXML(pObj->GetAttribute(Y_OFFSET_ATTRIB)) != NOERROR)
+			{
+			pCtx->sError = CONSTLIT("Invalid dice count for yOffset.");
+			return ERR_FAIL;
+			}
 
-		rAngle = VectorToPolarRadians(CVector(rX, rY), &rRadius);
+		//	Generate values
+
+		for (i = 0; i < iCount; i++)
+			{
+			Metric rRadius;
+			Metric rAngle = VectorToPolarRadians(CVector(rScale * X.Roll(), rScale * Y.Roll()), &rRadius);
+
+			Points[i] = CVector(rRadius, rAngle);
+			}
 		}
-
-	//	Define the orbit
-
-	COrbit NewOrbit(OrbitDesc.GetObjectPos(), rRadius, rAngle);
 
 	//	Create all the object
 
-	int iCount = Max(GetDiceCountFromAttribute(pObj->GetAttribute(COUNT_ATTRIB)), iObjCount);
 	for (i = 0; i < iCount; i++)
 		{
+		COrbit NewOrbit(OrbitDesc.GetObjectPos(), Points[i].GetX(), Points[i].GetY());
+
 		if (error = CreateSystemObject(pCtx, pObj->GetContentElement(i % iObjCount), NewOrbit))
 			return error;
 		}
