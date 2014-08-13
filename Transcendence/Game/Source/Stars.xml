@@ -2,6 +2,18 @@
 
 <TranscendenceModule>
 	
+<!-- TABLES -->
+	
+	<SystemPartTable unid="&tbStars;">
+
+		<WhiteDwarfEnvirons>
+			<Orbitals count="1d6" distance="40-50" angle="random">
+				<Label attributes="abyssal, void"/>
+			</Orbitals>
+		</WhiteDwarfEnvirons>
+
+	</SystemPartTable>
+	
 <!-- MAIN SEQUENCE STARS
 
 	The set of stars defined below are all main sequence stars of increasing size

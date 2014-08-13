@@ -2287,71 +2287,17 @@ ALERROR CreateSystemObject (SSystemCreateCtx *pCtx,
 		}
 	else if (strEquals(sTag, LOOKUP_TAG))
 		{
-		int i;
+		CString sTable = pObj->GetAttribute(TABLE_ATTRIB);
 
 		//	If we've got an offset, change the orbit
 
 		COrbit NewOrbit;
 		const COrbit *pOrbitDesc = ComputeOffsetOrbit(pObj, OrbitDesc, &NewOrbit);
 
-		//	Keep track of the current extension, because we may change it below
+		//	Create
 
-		CExtension *pOldExtension = pCtx->pExtension;
-
-		//	Find the appropriate table. First we look in the local tables
-
-		CXMLElement *pTableDesc = NULL;
-		CString sTable = pObj->GetAttribute(TABLE_ATTRIB);
-
-		PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Lookup table=%s"), sTable));
-
-		for (i = 0; i < pCtx->LocalTables.GetCount(); i++)
-			{
-			pTableDesc = pCtx->LocalTables[i]->GetContentElementByTag(sTable);
-			if (pTableDesc)
-				break;
-			}
-
-		//	If not found, we look in all global tables
-
-		if (pTableDesc == NULL)
-			{
-			CSystemTable *pTable;
-			pTableDesc = g_pUniverse->FindSystemFragment(sTable, &pTable);
-			if (pTableDesc == NULL)
-				{
-				pCtx->sError = strPatternSubst(CONSTLIT("Unable to find table in <Lookup>: %s"), sTable);
-				return ERR_FAIL;
-				}
-
-			//	Set the extension
-
-			pCtx->pExtension = pTable->GetExtension();
-			}
-
-		//	Add any tables that we define inside the lookup (we use these for
-		//	variable substitution).
-
-		pCtx->LocalTables.Insert(pObj, 0);
-
-		//	Create all the objects
-
-		for (i = 0; i < pTableDesc->GetContentElementCount(); i++)
-			{
-			CXMLElement *pResult = pTableDesc->GetContentElement(i);
-
-			//	Recurse
-
-			if (error = CreateSystemObject(pCtx, pResult, *pOrbitDesc))
-				return error;
-			}
-
-		//	Restore
-
-		pCtx->LocalTables.Delete(0);
-		pCtx->pExtension = pOldExtension;
-
-		PopDebugStack(pCtx);
+		if (error = pCtx->pSystem->CreateLookup(pCtx, sTable, *pOrbitDesc, pObj))
+			return error;
 		}
 	else if (strEquals(sTag, ORBITALS_TAG))
 		{
@@ -3723,6 +3669,77 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	//	Done
 
 	*retpSystem = pSystem;
+
+	return NOERROR;
+	}
+
+ALERROR CSystem::CreateLookup (SSystemCreateCtx *pCtx, const CString &sTable, const COrbit &OrbitDesc, CXMLElement *pSubTables)
+
+//	CreateLookup
+//
+//	Creates objects from a table lookup.
+
+	{
+	ALERROR error;
+	int i;
+
+	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("Lookup table=%s"), sTable));
+
+	//	Keep track of the current extension, because we may change it below
+
+	CExtension *pOldExtension = pCtx->pExtension;
+
+	//	Find the table
+
+	CXMLElement *pTableDesc = NULL;
+	for (i = 0; i < pCtx->LocalTables.GetCount(); i++)
+		{
+		pTableDesc = pCtx->LocalTables[i]->GetContentElementByTag(sTable);
+		if (pTableDesc)
+			break;
+		}
+
+	//	If not found, we look in all global tables
+
+	if (pTableDesc == NULL)
+		{
+		CSystemTable *pTable;
+		pTableDesc = g_pUniverse->FindSystemFragment(sTable, &pTable);
+		if (pTableDesc == NULL)
+			{
+			pCtx->sError = strPatternSubst(CONSTLIT("Unable to find table in <Lookup>: %s"), sTable);
+			return ERR_FAIL;
+			}
+
+		//	Set the extension
+
+		pCtx->pExtension = pTable->GetExtension();
+		}
+
+	//	Add any tables that we define inside the lookup (we use these for
+	//	variable substitution).
+
+	if (pSubTables)
+		pCtx->LocalTables.Insert(pSubTables, 0);
+
+	//	Create all the objects
+
+	for (i = 0; i < pTableDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pResult = pTableDesc->GetContentElement(i);
+
+		//	Recurse
+
+		if (error = CreateSystemObject(pCtx, pResult, OrbitDesc))
+			return error;
+		}
+
+	//	Restore
+
+	pCtx->LocalTables.Delete(0);
+	pCtx->pExtension = pOldExtension;
+
+	PopDebugStack(pCtx);
 
 	return NOERROR;
 	}

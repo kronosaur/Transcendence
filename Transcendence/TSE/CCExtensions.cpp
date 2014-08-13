@@ -344,6 +344,7 @@ ICCItem *fnStationType (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_SYS_CREATE_FLOTSAM			5
 #define FN_SYS_CREATE_ENVIRONMENT		6
 #define FN_SYS_CREATE_TERRITORY			7
+#define FN_SYS_CREATE_LOOKUP			8
 
 ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 
@@ -1946,6 +1947,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(sysCreateFlotsam item|unid pos sovereignID) -> obj",
 		//		pos is either a position vector or a gate object
 			"vvi",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"sysCreateLookup",				fnSystemCreate,	FN_SYS_CREATE_LOOKUP,
+			"(sysCreateLookup tableName orbit) -> True/Nil",
+			"sv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateMarker",				fnSystemCreateMarker,	0,
 			"(sysCreateMarker name pos sovereignID) -> marker",
@@ -9027,6 +9032,31 @@ ICCItem *fnSystemCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Done
 
 			return pCC->CreateInteger((int)pFlotsam);
+			}
+
+		case FN_SYS_CREATE_LOOKUP:
+			{
+			CCodeChainCtx *pCtx = (CCodeChainCtx *)pEvalCtx->pExternalCtx;
+			SSystemCreateCtx *pSysCreateCtx = pCtx->GetSystemCreateCtx();
+			if (pSysCreateCtx == NULL)
+				return pCC->CreateError(CONSTLIT("sysCreateLookup only valid inside <SystemType> definition."));
+
+			CString sTableName = pArgs->GetElement(0)->GetStringValue();
+
+			//	Get the orbit
+
+			COrbit OrbitDesc;
+			if (!CreateOrbitFromList(*pCC, pArgs->GetElement(1), &OrbitDesc))
+				return pCC->CreateError(CONSTLIT("Invalid orbit object"), pArgs->GetElement(0));
+
+			//	Create
+
+			if (pSysCreateCtx->pSystem->CreateLookup(pSysCreateCtx, sTableName, OrbitDesc, NULL) != NOERROR)
+				return pCC->CreateError(pSysCreateCtx->sError);
+
+			//	Done
+
+			return pCC->CreateTrue();
 			}
 
 		case FN_SYS_CREATE_SHIPWRECK:

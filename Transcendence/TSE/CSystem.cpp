@@ -4520,7 +4520,10 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 	for (i = 0; i < Objs.GetCount(); i++)
 		{
 		CSpaceObject *pObj = Objs.GetObj(i);
-		if (pObj == pGravityObj || pObj->IsDestroyed())
+		if (pObj == pGravityObj 
+				|| pObj->IsDestroyed()
+				|| !pObj->IsMobile()
+				|| pObj->GetDockedObj() != NULL)
 			continue;
 
 		CVector vDist = (pGravityObj->GetPos() - pObj->GetPos());

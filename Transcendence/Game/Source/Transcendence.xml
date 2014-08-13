@@ -1066,6 +1066,7 @@
 	<!ENTITY rsRedGiantStar2			"0x00020064">
 	<!ENTITY rsRedDwarfStar2			"0x00020065">
 	<!ENTITY unidLocationAttribDef		"0x00020066">
+	<!ENTITY tbStars					"0x00020067">
 	
 	<!ENTITY stStarClassM8				"0x00020070">
 	<!ENTITY stStarClassM5				"0x00020071">

@@ -1048,7 +1048,7 @@ class CSystem : public CObject
 		//	Other defines
 
 		enum LayerEnum
-			{
+				{
 			layerFirst = 0,
 
 			layerBackground = 0,
@@ -1098,6 +1098,7 @@ class CSystem : public CObject
 		virtual ~CSystem (void);
 
 		ALERROR CreateFlotsam (const CItem &Item, const CVector &vPos, const CVector &vVel, CSovereign *pSovereign, CStation **retpFlotsam);
+		ALERROR CreateLookup (SSystemCreateCtx *pCtx, const CString &sTable, const COrbit &OrbitDesc, CXMLElement *pSubTables);
 		ALERROR CreateMarker (CXMLElement *pDesc, const COrbit &oOrbit, CMarker **retpObj);
 		ALERROR CreateParticles (CXMLElement *pDesc, const COrbit &oOrbit, CParticleEffect **retpObj);
 		ALERROR CreateRandomEncounter (IShipGenerator *pTable, 
