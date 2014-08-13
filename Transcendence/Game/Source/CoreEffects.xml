@@ -1356,6 +1356,7 @@
 	<Sound unid="&snDefaultShieldsDownAlarm;"		filename="Resources\ShieldsDownAlarm.wav"/>
 	<Sound unid="&snDefaultButtonClick;"			filename="Resources\UIClick.wav"/>
 	<Sound unid="&snDefaultSelect;"					filename="Resources\UISelect.wav"/>
+	<Sound unid="&snDefaultGravityAlarm;"			filename="Resources\GravityAlarm.wav"/>
 	
 	<Sound UNID="&snLaserCannon;"		filename="Resources\LaserFire1.wav"/>
 	<Sound UNID="&snRecoillessCannon;"	filename="Resources\CannonFire1.wav"/>

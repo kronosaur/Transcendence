@@ -1778,6 +1778,19 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 			m_bUnderAttack = true;
 			}
 		}
+
+	//	Gravity warning
+
+	if (Ctx.bGravityWarning)
+		{
+		int iTicks = g_pUniverse->GetTicks();
+
+		if ((iTicks % 150) == 0)
+			{
+			m_pTrans->DisplayMessage(CONSTLIT("Warning: Deep gravity detected"));
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_GRAVITY_ALARM));
+			}
+		}
 	}
 
 void CPlayerShipController::OnWeaponStatusChanged (void)

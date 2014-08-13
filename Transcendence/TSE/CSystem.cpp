@@ -335,6 +335,8 @@
 const Metric MAX_AUTO_TARGET_DISTANCE =			30.0 * LIGHT_SECOND;
 const Metric MAX_ENCOUNTER_DIST	=				30.0 * LIGHT_MINUTE;
 
+const Metric GRAVITY_WARNING_THRESHOLD =		40.0;	//	Acceleration value at which we start warning
+
 #define ON_CREATE_EVENT					CONSTLIT("OnCreate")
 #define ON_OBJ_JUMP_POS_ADJ				CONSTLIT("OnObjJumpPosAdj")
 
@@ -4549,6 +4551,11 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 
 		pObj->DeltaV(g_SecondsPerUpdate * rAccel * vDist / sqrt(rDist2));
 		pObj->ClipSpeed(LIGHT_SPEED);
+
+		//	If this is the player, then gravity warning
+
+		if (pObj == Ctx.pPlayer && rAccel > GRAVITY_WARNING_THRESHOLD)
+			Ctx.bGravityWarning = true;
 		}
 	}
 

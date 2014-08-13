@@ -249,7 +249,8 @@ struct SUpdateCtx
 			pTargetObj(NULL),
 			rTargetDist2(g_InfiniteDistance * g_InfiniteDistance),
 			iMinFireArc(0),
-			iMaxFireArc(0)
+			iMaxFireArc(0),
+			bGravityWarning(false)
 		{ }
 
 	CSystem *pSystem;					//	Current system
@@ -271,6 +272,8 @@ struct SUpdateCtx
 	Metric rTargetDist2;				//	Distance from player to target
 	int iMinFireArc;					//	Fire arc of primary weapon
 	int iMaxFireArc;
+
+	bool bGravityWarning;				//	Player in a dangerous gravity field
 	};
 
 //	Utility classes

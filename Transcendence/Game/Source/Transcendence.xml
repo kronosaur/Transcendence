@@ -93,6 +93,7 @@
 	<!ENTITY snDefaultShieldsDownAlarm	"0x000000A5">
 	<!ENTITY snDefaultButtonClick		"0x000000A6">
 	<!ENTITY snDefaultSelect			"0x000000A7">
+	<!ENTITY snDefaultGravityAlarm		"0x000000A8">
 	
 	<!ENTITY svPlayer					"0x00001001">
 	<!ENTITY svCommonwealth				"0x00001002">
