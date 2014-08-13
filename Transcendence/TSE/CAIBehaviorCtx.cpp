@@ -8,7 +8,7 @@
 const Metric MIN_STATION_TARGET_DIST =	(10.0 * LIGHT_SECOND);
 const Metric MIN_TARGET_DIST =			(5.0 * LIGHT_SECOND);
 const int MULTI_HIT_WINDOW =			20;
-const Metric WALL_RANGE =				(KLICKS_PER_PIXEL * 300.0);
+const Metric WALL_RANGE =				(KLICKS_PER_PIXEL * 700.0);
 
 const Metric MIN_STATION_TARGET_DIST2 =	(MIN_STATION_TARGET_DIST * MIN_STATION_TARGET_DIST);
 const Metric MIN_TARGET_DIST2 =			(MIN_TARGET_DIST * MIN_TARGET_DIST);
@@ -67,6 +67,20 @@ void CAIBehaviorCtx::CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget)
 
 			if (pObj == NULL || pObj == pShip || pObj == pTarget || pObj->IsDestroyed())
 				NULL;
+			else if (pObj->HasGravity())
+				{
+				CVector vTarget = pObj->GetPos() - pShip->GetPos();
+				Metric rTargetDist2 = vTarget.Dot(vTarget);
+
+				//	There is a sharp potential away from gravity wells
+
+				if (rTargetDist2 < WALL_RANGE2)
+					{
+					CVector vTargetN = vTarget.Normal(&rDist);
+					if (rDist > 0.0)
+						vPotential = vPotential - (vTargetN * 500.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
+					}
+				}
 			else if (pObj->Blocks(pShip))
 				{
 				CVector vTarget = pObj->GetPos() - pShip->GetPos();
@@ -78,7 +92,7 @@ void CAIBehaviorCtx::CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget)
 					{
 					CVector vTargetN = vTarget.Normal(&rDist);
 					if (rDist > 0.0)
-						vPotential = vPotential - (vTargetN * 100.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
+						vPotential = vPotential - (vTargetN * 50.0 * g_KlicksPerPixel * (WALL_RANGE / rDist));
 					}
 				}
 			else if (pObj->GetCategory() == CSpaceObject::catShip)

@@ -1787,7 +1787,7 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 		if ((iTicks % 150) == 0)
 			{
-			m_pTrans->DisplayMessage(CONSTLIT("Warning: Deep gravity detected"));
+			m_pTrans->DisplayMessage(CONSTLIT("Warning: Deep gravity zone"));
 			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_GRAVITY_ALARM));
 			}
 		}
