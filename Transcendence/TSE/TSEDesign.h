@@ -4983,6 +4983,7 @@ class CStationType : public CDesignType
 		inline int GetFrequencyForNode (CTopologyNode *pNode) { return m_EncounterRecord.GetFrequencyForNode(pNode, this, m_RandomPlacement); }
 		inline int GetFrequencyForSystem (CSystem *pSystem) { return m_EncounterRecord.GetFrequencyForSystem(pSystem, this, m_RandomPlacement); }
 		inline CEffectCreator *GetGateEffect (void) { return m_pGateEffect; }
+		inline Metric GetGravityRadius (void) const { return m_rGravityRadius; }
 		inline const CObjectImageArray &GetImage (const CCompositeImageSelector &Selector, const CCompositeImageModifiers &Modifiers, int *retiRotation = NULL) { return m_Image.GetImage(Selector, Modifiers, retiRotation); }
 		inline IImageEntry *GetImageRoot (void) const { return m_Image.GetRoot(); }
 		inline int GetImageVariants (void) { return m_iImageVariants; }
@@ -5018,7 +5019,7 @@ class CStationType : public CDesignType
 		inline int GetTempChance (void) const { return m_iChance; }
 		inline CTradingDesc *GetTradingDesc (void) { return m_pTrade; }
 		inline bool HasAnimations (void) const { return (m_pAnimations != NULL); }
-		inline bool HasGravity (void) const { return (m_fHasGravity ? true : false); }
+		inline bool HasGravity (void) const { return (m_rGravityRadius > 0.0); }
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
 		inline bool HasWreckImage (void) const { return (!IsImmutable() && m_iMaxHitPoints > 0); }
 		inline bool IsActive (void) { return (m_fInactive ? false : true); }
@@ -5151,7 +5152,7 @@ class CStationType : public CDesignType
 		DWORD m_fOutOfPlane:1;							//	Background or foreground object
 		DWORD m_fNoFriendlyTarget:1;					//	Station cannot be hit by friends
 		DWORD m_fVirtual:1;								//	Virtual stations do not show up
-		DWORD m_fHasGravity:1;							//	Implement gravity (stars only, mass and size must be defined)
+		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 
@@ -5206,6 +5207,7 @@ class CStationType : public CDesignType
 		//	Stellar objects
 		COLORREF m_rgbSpaceColor;						//	Space color
 		int m_iMaxLightDistance;						//	Max distance at which there is no (effective) light from star
+		Metric m_rGravityRadius;						//	Gravity radius
 
 		//	Stargates
 		CString m_sStargateDestNode;					//	Dest node

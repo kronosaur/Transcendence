@@ -2473,6 +2473,7 @@ class CSpaceObject : public CObject
 		virtual Categories GetCategory (void) const { return catOther; }
 		virtual DWORD GetClassUNID (void) { return 0; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return NULL_STR; }
+		virtual Metric GetGravity (Metric *retrRadius) const { return 0.0; }
 		virtual const CObjectImageArray &GetImage (void);
 		virtual int GetInteraction (void) { return 100; }
 		virtual const COrbit *GetMapOrbit (void) const { return NULL; }

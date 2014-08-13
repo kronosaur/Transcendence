@@ -1303,6 +1303,7 @@ class CStation : public CSpaceObject
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pType->GetGlobalData(sAttribute); }
+		virtual Metric GetGravity (Metric *retrRadius) const;
 		virtual const CObjectImageArray &GetImage (void) { return m_pType->GetImage(m_ImageSelector, CCompositeImageModifiers()); }
 		virtual int GetLevel (void) const { return m_pType->GetLevel(); }
 		virtual const COrbit *GetMapOrbit (void) const { return m_pMapOrbit; }

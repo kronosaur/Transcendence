@@ -374,7 +374,7 @@
 		spaceColor=			"#495167"
 		maxLightRadius=		"300"
 		mass=				"1.0"
-		gravity=			"true"
+		gravityRadius=		"10"
 		>
 
 		<ImageEffect>

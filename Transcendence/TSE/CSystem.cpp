@@ -336,6 +336,7 @@ const Metric MAX_AUTO_TARGET_DISTANCE =			30.0 * LIGHT_SECOND;
 const Metric MAX_ENCOUNTER_DIST	=				30.0 * LIGHT_MINUTE;
 
 const Metric GRAVITY_WARNING_THRESHOLD =		40.0;	//	Acceleration value at which we start warning
+const Metric TIDAL_KILL_THRESHOLD =				7250.0;	//	Acceleration at which we get ripped apart
 
 #define ON_CREATE_EVENT					CONSTLIT("OnCreate")
 #define ON_OBJ_JUMP_POS_ADJ				CONSTLIT("OnObjJumpPosAdj")
@@ -4474,33 +4475,23 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 	{
 	int i;
 
-	//	Compute the acceleration due to gravity at 1 Earth radius
+	//	Compute the acceleration due to gravity at the scale radius
 	//	(in kilometers per second-squared).
-	//
-	//	Accel = 0.0098 * 330,000 * StellarMass
-	//
-	//	1 StellarMass = 330,000 Earth masses
-	//	Gravity at Earth's radius and Mass = 0.0098 Km/sec^2
-	//
-	//	Accel constant = 0.0098 * 330,000 = 3234
 
-	Metric r1EAccel = 3234.0 * pGravityObj->GetStellarMass();
+	Metric rScaleRadius;
+	Metric r1EAccel = pGravityObj->GetGravity(&rScaleRadius);
 	if (r1EAccel <= 0.0)
 		return;
 
-	//	Compute some other properties of the gravity field
+	Metric rScaleRadius2 = rScaleRadius * rScaleRadius;
 
-	Metric rGravityScale = 500.0;	//	Adjust to simulate the fact that space scales are so big
-	Metric rTidalKillDist = 200.0 * g_KlicksPerPixel;
-	Metric rTidalKillDist2 = rTidalKillDist * rTidalKillDist;
+	//	Compute the radius at which we get ripped apart
 
-	//	We don't care about accelerations less than 10 km/sec^2.
+	Metric rTidalKillDist2 = r1EAccel * rScaleRadius2 / TIDAL_KILL_THRESHOLD;
+
+	//	We don't care about accelerations less than 1 km/sec^2.
 
 	const Metric MIN_ACCEL = 1.0;
-	const Metric EARTH_RADIUS = 6371.0;	//	Kilometers
-
-	Metric rScaleRadius = EARTH_RADIUS * rGravityScale;
-	Metric rScaleRadius2 = rScaleRadius * rScaleRadius;
 
 	//	Compute the radius at which the acceleration is the minimum that we 
 	//	care about.
@@ -4508,19 +4499,18 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 	//	minA = A/r^2
 	//	r = sqrt(A/minA) * Earth-radius
 
-	Metric rMinDist = sqrt(r1EAccel / MIN_ACCEL) * rScaleRadius;
-	Metric rMinDist2 = rMinDist * rMinDist;
-
-	const Metric MIN_GRAVITY_DIST = 200.0 * g_KlicksPerPixel;
-	const Metric MIN_GRAVITY_DIST2 = MIN_GRAVITY_DIST * MIN_GRAVITY_DIST;
+	Metric rMaxDist = sqrt(r1EAccel / MIN_ACCEL) * rScaleRadius;
+	Metric rMaxDist2 = rMaxDist * rMaxDist;
 
 	//	Loop over all objects inside the given distance and accelerate them.
 
 	CSpaceObjectList Objs;
-	GetObjectsInBox(pGravityObj->GetPos(), rMinDist, Objs);
+	GetObjectsInBox(pGravityObj->GetPos(), rMaxDist, Objs);
 
 	for (i = 0; i < Objs.GetCount(); i++)
 		{
+		//	Skip objects not affected by gravity
+
 		CSpaceObject *pObj = Objs.GetObj(i);
 		if (pObj == pGravityObj 
 				|| pObj->IsDestroyed()
@@ -4528,9 +4518,11 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 				|| pObj->GetDockedObj() != NULL)
 			continue;
 
+		//	Skip objects outside the maximum range
+
 		CVector vDist = (pGravityObj->GetPos() - pObj->GetPos());
 		Metric rDist2 = pGravityObj->GetDistance2(pObj);
-		if (rDist2 > rMinDist2)
+		if (rDist2 > rMaxDist2)
 			continue;
 
 		//	Inside the kill radius, we destroy the object
@@ -4545,7 +4537,7 @@ void CSystem::UpdateGravity (SUpdateCtx &Ctx, CSpaceObject *pGravityObj)
 
 		//	Compute acceleration
 
-		Metric rAccel = r1EAccel * rScaleRadius2 / Max(MIN_GRAVITY_DIST2, rDist2);
+		Metric rAccel = r1EAccel * rScaleRadius2 / rDist2;
 
 		//	Accelerate towards the center
 

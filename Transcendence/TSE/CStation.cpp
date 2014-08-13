@@ -1287,6 +1287,41 @@ bool CStation::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *ret
 	return false;
 	}
 
+Metric CStation::GetGravity (Metric *retrRadius) const
+
+//	GetGravity
+//
+//	Returns the force of gravity.
+
+	{
+	const Metric EARTH_RADIUS = 6371.0;	//	Kilometers
+
+	//	Compute the acceleration due to gravity at 1 Earth radius
+	//	(in kilometers per second-squared).
+	//
+	//	Accel = 0.0098 * 330,000 * StellarMass
+	//
+	//	1 StellarMass = 330,000 Earth masses
+	//	Gravity at Earth's radius and Mass = 0.0098 Km/sec^2
+	//
+	//	Accel constant = 0.0098 * 330,000 = 3234
+
+	Metric r1EAccel = 3234.0 * GetStellarMass();
+	if (r1EAccel <= 0.0)
+		return 0.0;
+
+	//	Normally this is the radius at which the force of gravity is equal to
+	//	1EAccel. Normally, this would always be 1 Earth radius, but that's way
+	//	too small for the game scale, so we allow the object to set it.
+	//
+	//	10 light-seconds is usually a good value.
+
+	if (retrRadius)
+		*retrRadius = m_pType->GetGravityRadius();
+
+	return r1EAccel;
+	}
+
 const CObjectImageArray &CStation::GetImage (bool bFade, int *retiTick, int *retiRotation)
 
 //	GetImage

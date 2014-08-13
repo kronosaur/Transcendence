@@ -51,7 +51,7 @@
 #define FIRE_RATE_ADJ_ATTRIB					CONSTLIT("fireRateAdj")
 #define FREQUENCY_ATTRIB						CONSTLIT("frequency")
 #define GATE_EFFECT_ATTRIB						CONSTLIT("gateEffect")
-#define GRAVITY_ATTRIB							CONSTLIT("gravity")
+#define GRAVITY_RADIUS_ATTRIB					CONSTLIT("gravityRadius")
 #define HIT_POINTS_ATTRIB						CONSTLIT("hitPoints")
 #define IMMUTABLE_ATTRIB						CONSTLIT("immutable")
 #define INACTIVE_ATTRIB							CONSTLIT("inactive")
@@ -1214,13 +1214,10 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fImmutable = pDesc->GetAttributeBool(IMMUTABLE_ATTRIB);
 	m_fNoBlacklist = pDesc->GetAttributeBool(NO_BLACKLIST_ATTRIB);
 	m_iShipRepairRate = pDesc->GetAttributeInteger(SHIP_REPAIR_RATE_ATTRIB);
-	m_rgbSpaceColor = LoadCOLORREF(pDesc->GetAttribute(SPACE_COLOR_ATTRIB));
-	m_iMaxLightDistance = pDesc->GetAttributeIntegerBounded(MAX_LIGHT_DISTANCE, 1, -1, 500);
 	m_iAlertWhenAttacked = pDesc->GetAttributeInteger(ALERT_WHEN_ATTACKED_ATTRIB);
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
 	m_rMaxAttackDistance = MAX_ATTACK_DISTANCE;
 	m_iStealth = pDesc->GetAttributeIntegerBounded(STEALTH_ATTRIB, CSpaceObject::stealthMin, CSpaceObject::stealthMax, CSpaceObject::stealthNormal);
-	m_fHasGravity = pDesc->GetAttributeBool(GRAVITY_ATTRIB);
 
 	//	Starting in API 23 we change the default to 40 instead of 80
 
@@ -1558,15 +1555,28 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	else
 		m_iEjectaAdj = 0;
 
-	//	Miscellaneous
+	//	Stellar objects
 
-	if (error = m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB)))
-		return error;
+	m_rgbSpaceColor = LoadCOLORREF(pDesc->GetAttribute(SPACE_COLOR_ATTRIB));
+	m_iMaxLightDistance = pDesc->GetAttributeIntegerBounded(MAX_LIGHT_DISTANCE, 1, -1, 500);
+
+	int iGravity;
+	if (pDesc->FindAttributeInteger(GRAVITY_RADIUS_ATTRIB, &iGravity))
+		m_rGravityRadius = iGravity * LIGHT_SECOND;
+	else
+		m_rGravityRadius = 0.0;
+
+	//	Stargates
 
 	m_sStargateDestNode = pDesc->GetAttribute(DEST_NODE_ATTRIB);
 	m_sStargateDestEntryPoint = pDesc->GetAttribute(DEST_ENTRY_POINT_ATTRIB);
 
 	if (error = m_pGateEffect.LoadUNID(Ctx, pDesc->GetAttribute(GATE_EFFECT_ATTRIB)))
+		return error;
+
+	//	Miscellaneous
+
+	if (error = m_pBarrierEffect.LoadUNID(Ctx, pDesc->GetAttribute(BARRIER_EFFECT_ATTRIB)))
 		return error;
 
 	//	Done
