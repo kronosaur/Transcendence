@@ -48,11 +48,15 @@
 			<!-- Define item attributes so that the player can see which Corporation 
 				created the item. -->
 		
+			<ItemAttribute label="Assembler"		criteria="* +assemblerCorp;"/>
 			<ItemAttribute label="Bushido"			criteria="* +bushido;"/>
 			<ItemAttribute label="EI"				criteria="* +ei;"/>
+			<ItemAttribute label="Kabuto"			criteria="* +kabuto;"/>
 			<ItemAttribute label="Makayev"			criteria="* +makayev;"/>
 			<ItemAttribute label="NAMI"				criteria="* +nami;"/>
+			<ItemAttribute label="Pacific Defense"	criteria="* +pacificDefense;"/>
 			<ItemAttribute label="Rasiermesser"		criteria="* +rasiermesser;"/>
+			<ItemAttribute label="Solon"			criteria="* +solon;"/>
 			<ItemAttribute label="Taikon"			criteria="* +taikon;"/>
 		</AttributeDesc>
 	</Sovereign>

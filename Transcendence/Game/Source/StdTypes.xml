@@ -1200,16 +1200,16 @@
 
 	<ItemType UNID="&itReinforcedTitanium1;"
 			name=				"titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
 			level=				"2"
-			value=				"200"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
+
+			value=				"200"
 			mass=				"5000"
-			attributes=			"MinorItem; Specialty; Barricade"
-
+			  
 			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-
-			sortName=			"titanium barricade.30"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
@@ -1231,16 +1231,16 @@
 
 	<ItemType UNID="&itReinforcedTitanium2;"
 			name=				"double titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
 			level=				"3"
-			value=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
+
+			value=				"500"
 			mass=				"10000"
-			attributes=			"MinorItem; Specialty; Barricade"
-
+			  
 			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-
-			sortName=			"titanium barricade.20"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
@@ -1262,16 +1262,16 @@
 
 	<ItemType UNID="&itReinforcedTitanium3;"
 			name=				"quad titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
 			level=				"4"
-			value=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
+
+			value=				"1000"
 			mass=				"20000"
-			attributes=			"MinorItem; Specialty; Barricade"
-
+			  
 			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-
-			sortName=			"titanium barricade.10"
 			>
 
 		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>

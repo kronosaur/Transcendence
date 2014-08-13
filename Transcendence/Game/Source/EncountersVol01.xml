@@ -108,6 +108,101 @@
 			alignment="destructive chaos"
 			/>
 	
+	<!-- Segment of light meteorsteel -->
+
+	<ItemType UNID="&itLightMeteorsteel;"
+			name=				"[segment(s) of ]light meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"4"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"600"
+			mass=				"2500"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	" +50, +50,+100,+100"
+
+				repairTech=	"5"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"50"
+				EMPDamageAdj=		"50"
+				/>
+
+	</ItemType>
+
+	<!-- Segment of heavy meteorsteel -->
+
+	<ItemType UNID="&itHeavyMeteorsteel;"
+			name=				"[segment(s) of ]heavy meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"5"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"1300"
+			mass=				"5000"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"150"
+				hpBonus=	" ***, ***,+200,+200"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
+
+	</ItemType>
+
+	<!-- Worldship Armor Plate -->
+
+	<ItemType UNID="&itWorldshipArmorPlate;"
+			name=				"worldship armor plate"
+			attributes=			"benninXenophobes, military, minorItem, notForSale, notStandard"
+			  
+			level=				"8"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"8000"
+			mass=				"15000"
+			  
+			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	" ***, ***, ***, ***,+400,+400,+100,+100"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				/>
+
+	</ItemType>
+
 	<!-- Xenophobe Fighter -->
 
 	<ShipClass UNID="&scXenophobeFighter;"
