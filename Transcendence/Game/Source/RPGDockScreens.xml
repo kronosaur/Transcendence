@@ -4,7 +4,9 @@
 	
 	<DockScreen unid="&dsDockScreenBase;">
 		<Language>
+			<Text id="actionCommoditiesExchange">"[C]ommodities Exchange"</Text>
 			<Text id="actionContinue">"[C]ontinue"</Text>
+			<Text id="actionDockServices">"[D]ock Services"</Text>
 			<Text id="actionDone">"[D]one"</Text>
 			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRepairArmor">"Repair [A]rmor"</Text>
