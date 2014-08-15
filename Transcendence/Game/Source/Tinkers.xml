@@ -10,7 +10,7 @@
 			name="Tinkers Guild"
 			alignment="constructive chaos"
 			>
-		<InitialData>
+		<GlobalData>
 			<Recipes>
 				(
 					{ item:&itYoroiS500;				enhancement:"+resist:thermo:60"		components:( { item:&itHolmiumFiber; count:4 } { item:&itYoroiS100; count:2 } )	extraCost:0 }
@@ -37,7 +37,7 @@
 					{ item:&itArmorRepairDevice;		enhancement:Nil						components:( { item:&itRepairingNanos; count:6 })	extraCost:0 }
 					)
 			</Recipes>
-		</InitialData>
+		</GlobalData>
 	</Sovereign>
 
 	<!-- Tinker Gathering -->
@@ -411,131 +411,30 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (theItem theRecipe theComponents desc componentDesc componentPrice workCost errorDesc missingComponents maxCount availableComponents)
+					(block (theItem theRecipe fabInfo desc errorDesc)
 						(setq theItem (scrGetItem gScreen))
 						
 						;	Find the recipe for this item
 						
-						(setq theRecipe
-							(@ (filter (typGetData &svTinkers; 'Recipes) theRecipe
-									(eq (@ theRecipe 'item) (itmGetType theItem))
-									)
-								0
-								)
-							)
+						(setq theRecipe (tinkerFindRecipe (typGetData &svTinkers; 'Recipes) (itmGetType theItem)))
+						
+						;	Calculate various elements of the fabrication
+						
+						(setq fabInfo (tinkerCalcFabrication theRecipe))
 							
-						;	Describe the components needed
-						
-						(setq theComponents 
-							(map (@ theRecipe 'components) theDesc
-								(itmCreate (@ theDesc 'item) (@ theDesc 'count))
-								)
-							)
-
-						(setq componentDesc (strItemList theComponents 0x0108))
-							
-						;	Compute the total price of the components and compare to the
-						;	price of the result.
-						
-						(setq componentPrice 
-							(map theComponents 'reduceSum theComponent 
-								;	For devices we assume a damaged device
-								(if (itmMatches theComponent "d")
-									(multiply (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True)))
-									(multiply (itmGetCount theComponent) (itmGetPrice theComponent))
-									)
-								)
-							)
-						
-						;	The total cost of the work compensates for any difference between
-						;	the input and output prices.
-						
-						(setq workCost 
-							(add
-								(max 
-									50
-									(intRoundUp (subtract (itmGetPrice theItem) componentPrice) 25)
-									)
-								(@ theRecipe 'extraCost)
-								)
-							)
-							
-						;	For each required component, add up the number of items the player
-						;	actually has. Note that we accept damaged items.
-						
-						(setq availableComponents
-							(map theComponents theComponent
-								(block (countAvailable)
-									(setq countAvailable 0)
-									
-									;	Add the number of non-damaged items we have
-								
-									(setq countAvailable (add countAvailable
-										(objHasItem gPlayerShip theComponent 1)
-										))
-										
-									;	Now add damaged items
-									
-									(setq countAvailable (add countAvailable
-										(objHasItem gPlayerShip (itmSetProperty theComponent 'damaged True) 1)
-										))
-										
-									;	Compose entry
-									
-									{	item: theComponent
-										available: countAvailable
-										}
-									)
-								)
-							)
-							
-						;	Generate a list of the number of items the player is missing.
-						;	Note that we accept damaged items.
-						
-						(setq missingComponents
-							(map availableComponents 'excludeNil theEntry
-								(block (countAvailable)
-									(switch
-										(eq (@ theEntry 'available) 0)
-											(cat "\n\nUnfortunately, you do not have any " (itmGetName (@ theEntry 'item) 0x102) ".")
-											
-										(ls (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
-											(cat "\n\nUnfortunately, you only have " (itmGetName (itmSetCount (@ theEntry 'item) (@ theEntry 'available)) 0x1100) ".")
-											
-										;	Otherwise we have enough, so these items are not missing
-										
-										Nil
-										)
-									)
-								)
-							)
-							
-						;	See if the player has the required components and money
+						;	Generate an error descriptor, if we can't fabricate even a single item
 						
 						(switch
-							missingComponents
-								(block Nil
-									(setq maxCount 0)
-									(setq errorDesc (@ missingComponents 0))
-									)
+							(@ fabInfo 'componentsMissing)
+								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorComponentMissing { item:(@ (@ fabInfo 'componentsMissing) 0) }))
 								
-							(leq (plyGetCredits gPlayer) workCost)
-								(block Nil
-									(setq maxCount 0)
-									(setq errorDesc "\n\nUnfortunately, you cannot afford the cost.")
-									)
+							(@ fabInfo 'componentsLacking)
+								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorComponentLacking { item:(@ (@ fabInfo 'componentsLacking) 0) }))
+								
+							(leq (plyGetCredits gPlayer) (@ fabInfo 'workCost))
+								(setq errorDesc (typTranslate &dsTinkerCustomWork; 'errorMoneyLacking))
 
 							(block Nil
-								;	Figure out the maximum number of items we could create
-						
-								(setq maxCount (divide (plyGetCredits gPlayer) workCost))
-								(enum availableComponents theEntry
-									(setq maxCount (min
-										maxCount
-										(divide (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
-										))
-									)
-									
 								(setq errorDesc "")
 								)
 							)
@@ -543,17 +442,17 @@
 						;	Set the description
 						
 						(switch
-							(not componentDesc)
+							(not (@ fabInfo 'componentsNeededDesc))
 								(scrSetDesc gScreen
-									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " workCost " credits."
+									"\"To fabricate " (itmGetName theItem 0x0108) " we charge " (@ fabInfo 'workCost) " credits."
 									errorDesc
 									"\""
 									)
 								
 							(scrSetDesc gScreen
 								"\"To fabricate " (itmGetName theItem 0x0108) " we need "
-								componentDesc
-								" plus " workCost " credits."
+								(@ fabInfo 'componentsNeededDesc)
+								" plus " (@ fabInfo 'workCost) " credits."
 								errorDesc
 								"\""
 								)
@@ -562,13 +461,13 @@
 						;	Remember the recipe, the components, and the cost for later
 						
 						(scrSetData gScreen 'recipe theRecipe)
-						(scrSetData gScreen 'components theComponents)
-						(scrSetData gScreen 'cost workCost)
-						(scrSetData gScreen 'maxCount maxCount)
+						(scrSetData gScreen 'components (@ fabInfo 'componentsNeeded))
+						(scrSetData gScreen 'cost (@ fabInfo 'workCost))
+						(scrSetData gScreen 'maxCount (@ fabInfo 'maxFabCount))
 							
 						;	Disable Fabricate action if we can't do it
 						
-						(scrEnableAction gScreen 0 (gr maxCount 0))
+						(scrEnableAction gScreen 0 (gr (@ fabInfo 'maxFabCount) 0))
 						)
 				</OnPaneInit>
 				
@@ -692,6 +591,21 @@
 				</Actions>
 			</MissionAdded>
 		</Panes>
+		
+		<Language>
+			<Text id="errorComponentLacking">
+				(if (eq (itmGetCount (@ gData 'item)) 1)
+					(cat "\n\nUnfortunately, you need one more " (itmGetName (@ gData 'item) 0x100) ".")
+					(cat "\n\nUnfortunately, you need " (itmGetCount (@ gData 'item)) " more " (itmGetName (@ gData 'item) 0x102) ".")
+					)
+			</Text>
+			<Text id="errorComponentMissing">
+				(cat "\n\nUnfortunately, you do not have any " (itmGetName (@ gData 'item) 0x102) ".")
+			</Text>
+			<Text id="errorMoneyLacking">
+				"\n\nUnfortunately, you do not have enough credits."
+			</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- MISSIONS -->
@@ -759,6 +673,136 @@
 
 	<Globals>
 		(block Nil
+			(setq tinkerCalcFabrication (lambda (theRecipe)
+				(block (theComponents componentPrice workCost availableComponents maxCount)
+				
+					;	Describe the components needed
+						
+					(setq theComponents 
+						(map (@ theRecipe 'components) theDesc
+							(itmCreate (@ theDesc 'item) (@ theDesc 'count))
+							)
+						)
+
+					;	Compute the total price of the components and compare to the
+					;	price of the result.
+						
+					(setq componentPrice 
+						(map theComponents 'reduceSum theComponent 
+							;	For devices we assume a damaged device
+							(if (itmMatches theComponent "d")
+								(multiply (itmGetCount theComponent) (itmGetPrice (itmSetProperty theComponent 'damaged True)))
+								(multiply (itmGetCount theComponent) (itmGetPrice theComponent))
+								)
+							)
+						)
+						
+					;	The total cost of the work compensates for any difference between
+					;	the input and output prices.
+						
+					(setq workCost 
+						(add
+							(max 
+								50
+								(intRoundUp (subtract (itmGetPrice theItem) componentPrice) 25)
+								)
+							(@ theRecipe 'extraCost)
+							)
+						)
+							
+					;	For each required component, add up the number of items the player
+					;	actually has. Note that we accept damaged items.
+						
+					(setq availableComponents
+						(map theComponents theComponent
+							(block (countAvailable)
+								(setq countAvailable 0)
+									
+								;	Add the number of non-damaged items we have
+								
+								(setq countAvailable (add countAvailable
+									(objHasItem gPlayerShip theComponent 1)
+									))
+										
+								;	Now add damaged items
+									
+								(setq countAvailable (add countAvailable
+									(objHasItem gPlayerShip (itmSetProperty theComponent 'damaged True) 1)
+									))
+										
+								;	Compose entry
+									
+								{	item: theComponent
+									available: countAvailable
+									}
+								)
+							)
+						)
+						
+					;	Figure out the maximum number of items we could create
+						
+					(setq maxCount 
+						(if (gr workCost 0) 
+							(divide (plyGetCredits gPlayer) workCost)
+							1000
+							)
+						)
+					(enum availableComponents theEntry
+						(setq maxCount (min
+							maxCount
+							(divide (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+							))
+						)
+						
+					;	Return a structure describing various aspects of the fabrication
+					
+					{
+						recipe: theRecipe
+						
+						;	This is a list of items (with counts) required to fabricate.
+						
+						componentsNeeded: theComponents
+						componentsNeededDesc: (strItemList theComponents 0x0108)
+						
+						;	These fields determine various prices
+						
+						componentCost: componentPrice
+						workCost: workCost
+						
+						;	This is a list of structures describing what components the
+						;	player has available. Each struct has two fields:
+						;
+						;	item: One of the items required (with counts)
+						;	available: The number of this item the player has (including
+						;		damaged.
+						
+						componentsAvail: availableComponents
+						
+						;	Maximum number of items we can fabricate
+						
+						maxFabCount: maxCount
+						
+						;	Missing components
+						
+						componentsMissing: 
+							(map availableComponents 'excludeNil theEntry 
+								(if (eq (@ theEntry 'available) 0)
+									(@ theEntry 'item)
+									)
+								)
+						
+						componentsLacking: 
+							(map availableComponents 'excludeNil theEntry 
+								(if (ls (@ theEntry 'available) (itmGetCount (@ theEntry 'item)))
+									(itmSetCount (@ theEntry 'item) 
+										(subtract (itmGetCount (@ theEntry 'item)) (@ theEntry 'available))
+										) 
+									)
+								)
+						}
+					)
+				))
+			
 			(setq tinkerCreateItem (lambda (theRecipe theCount)
 				(if (@ theRecipe 'enhancement)
 					(itmSetCount (itmSetEnhanced (itmCreate (@ theRecipe 'item) 1) (@ theRecipe 'enhancement)) theCount)
@@ -826,6 +870,14 @@
 						itemsConsumed: itemsConsumed
 						totalCost: (multiply theCost theCount)
 						}
+					)
+				))
+				
+			(setq tinkerFindRecipe (lambda (recipeList itemType)
+				(@ (filter recipeList theRecipe
+						(eq (@ theRecipe 'item) itemType)
+						)
+					0
 					)
 				))
 			)
