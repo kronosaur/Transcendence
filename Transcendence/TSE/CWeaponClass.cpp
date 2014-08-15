@@ -1746,9 +1746,13 @@ int CWeaponClass::GetAmmoVariant (const CItemType *pItem) const
 	{
 	int i;
 
+	DWORD dwItemUNID = (pItem ? pItem->GetUNID() : 0);
+	if (dwItemUNID == 0)
+		return -1;
+
 	for (i = 0; i < m_ShotData.GetCount(); i++)
 		{
-		if (m_ShotData[i].pAmmoType == pItem)
+		if (m_ShotData[i].pAmmoType.GetUNID() == dwItemUNID)
 			return i;
 		}
 

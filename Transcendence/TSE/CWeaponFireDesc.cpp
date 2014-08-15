@@ -913,6 +913,9 @@ CItemType *CWeaponFireDesc::GetWeaponType (CItemType **retpLauncher) const
 			CDeviceClass *pLauncher = pItemType->GetAmmoLauncher();
 			if (pLauncher)
 				*retpLauncher = pLauncher->GetItemType();
+			else
+				//	Launcher not found
+				*retpLauncher = NULL;
 			}
 
 		return pItemType;
