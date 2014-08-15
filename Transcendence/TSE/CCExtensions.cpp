@@ -1673,7 +1673,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objTranslate",					fnObjGet,		FN_OBJ_TRANSLATE,
-			"(objTranslate obj textID [default]) -> text (or Nil)",
+			"(objTranslate obj textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		{	"objUnregisterForEvents",		fnObjSetOld,		FN_OBJ_UNREGISTER_EVENTS,
@@ -1873,7 +1873,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnTranslate",					fnObjGet,		FN_OBJ_TRANSLATE,
-			"(msnTranslate missionObj textID [default]) -> text (or Nil)",
+			"(msnTranslate missionObj textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		//	System functions
@@ -2328,7 +2328,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"isv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typTranslate",				fnDesignGet,		FN_DESIGN_TRANSLATE,
-			"(typTranslate unid textID [default]) -> text (or Nil)",
+			"(typTranslate unid textID [data] [default]) -> text (or Nil)",
 			"iv*",	0,	},
 
 		//	Economy function
@@ -3135,11 +3135,29 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_DESIGN_TRANSLATE:
 			{
-			ICCItem *pResult;
-			if (!pType->Translate(NULL, pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
+			//	Get parameters
+
+			int iArg = 1;
+			CString sText = pArgs->GetElement(iArg++)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > iArg)
 				{
-				if (pArgs->GetCount() > 2)
-					return pArgs->GetElement(2)->Reference();
+				if (pArgs->GetElement(iArg)->IsSymbolTable())
+					pData = pArgs->GetElement(iArg++);
+				}
+
+			ICCItem *pDefault = NULL;
+			if (pArgs->GetCount() > iArg)
+				pDefault = pArgs->GetElement(iArg++);
+
+			//	Translate
+
+			ICCItem *pResult;
+			if (!pType->Translate(NULL, sText, pData, &pResult) || pResult->IsNil())
+				{
+				if (pDefault)
+					return pDefault->Reference();
 				else
 					return pCC->CreateNil();
 				}
@@ -5373,11 +5391,29 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_OBJ_TRANSLATE:
 			{
-			ICCItem *pResult;
-			if (!pObj->Translate(pArgs->GetElement(1)->GetStringValue(), &pResult) || pResult->IsNil())
+			//	Get parameters
+
+			int iArg = 1;
+			CString sText = pArgs->GetElement(iArg++)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > iArg)
 				{
-				if (pArgs->GetCount() > 2)
-					return pArgs->GetElement(2)->Reference();
+				if (pArgs->GetElement(iArg)->IsSymbolTable())
+					pData = pArgs->GetElement(iArg++);
+				}
+
+			ICCItem *pDefault = NULL;
+			if (pArgs->GetCount() > iArg)
+				pDefault = pArgs->GetElement(iArg++);
+
+			//	Translate
+
+			ICCItem *pResult;
+			if (!pObj->Translate(sText, pData, &pResult) || pResult->IsNil())
+				{
+				if (pDefault)
+					return pDefault->Reference();
 				else
 					return pCC->CreateNil();
 				}

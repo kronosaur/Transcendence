@@ -507,9 +507,9 @@ class CLanguageDataBlock
 		void DeleteAll (void);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		void MergeFrom (const CLanguageDataBlock &Source);
-		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) const;
-		bool Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const;
-		bool Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText) const;
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText) const;
 
 	private:
 		enum ETranslateResult
@@ -529,7 +529,7 @@ class CLanguageDataBlock
 			};
 
 		ICCItem *ComposeCCItem (CCodeChain &CC, ICCItem *pValue, const CString &sPlayerName, GenomeTypes iPlayerGenome) const;
-		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult = NULL) const;
+		ETranslateResult Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText, CString *retsText, ICCItem **retpResult = NULL) const;
 
 		TSortMap<CString, SEntry> m_Data;
 	};

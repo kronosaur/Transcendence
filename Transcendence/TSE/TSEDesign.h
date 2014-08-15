@@ -396,8 +396,8 @@ class CDesignType
 		inline void SetGlobalData (const CString &sAttrib, const CString &sData) { m_GlobalData.SetData(sAttrib, sData); }
 		inline void SetUNID (DWORD dwUNID) { m_dwUNID = dwUNID; }
 		inline void TopologyInitialized (void) { OnTopologyInitialized(); }
-		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult);
-		bool TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText);
+		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult);
+		bool TranslateText (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText);
 
 		static CString GetTypeChar (DesignTypes iType);
 

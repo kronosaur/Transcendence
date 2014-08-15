@@ -2440,8 +2440,8 @@ class CSpaceObject : public CObject
 		bool SetCursorAtDevice (CItemListManipulator &ItemList, CInstalledDevice *pDevice);
 		void SetCursorAtRandomItem (CItemListManipulator &ItemList, const CItemCriteria &Crit);
 		bool SetItemProperty (const CItem &Item, const CString &sName, ICCItem *pValue, int iCount, CItem *retItem, CString *retsError);
-		bool Translate (const CString &sID, CString *retsText);
-		bool Translate (const CString &sID, ICCItem **retpResult);
+		bool Translate (const CString &sID, ICCItem *pData, CString *retsText);
+		bool Translate (const CString &sID, ICCItem *pData, ICCItem **retpResult);
 		void UseItem (CItem &Item, CString *retsError = NULL);
 
 		inline void InvalidateItemListAddRemove (void) { m_fItemEventsValid = false; }

@@ -112,7 +112,7 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			if (pPlayer)
 				{
 				CString sMessage;
-				if (!Translate(CONSTLIT("FailureMsg"), &sMessage))
+				if (!Translate(CONSTLIT("FailureMsg"), NULL, &sMessage))
 					sMessage = CONSTLIT("Mission failed!");
 
 				pPlayer->SendMessage(NULL, sMessage);
@@ -140,7 +140,7 @@ void CMission::CompleteMission (ECompletedReasons iReason)
 			if (pPlayer)
 				{
 				CString sMessage;
-				if (!Translate(CONSTLIT("SuccessMsg"), &sMessage))
+				if (!Translate(CONSTLIT("SuccessMsg"), NULL, &sMessage))
 					sMessage = CONSTLIT("Mission complete!");
 
 				pPlayer->SendMessage(NULL, sMessage);
@@ -1148,10 +1148,10 @@ bool CMission::SetAccepted (void)
 	//	Get the mission title and description (we remember these because we may
 	//	need to access them outside of the system).
 
-	if (!Translate(CONSTLIT("Name"), &m_sTitle))
+	if (!Translate(CONSTLIT("Name"), NULL, &m_sTitle))
 		m_sTitle = m_pType->GetName();
 
-	if (!Translate(CONSTLIT("Summary"), &m_sInstructions))
+	if (!Translate(CONSTLIT("Summary"), NULL, &m_sInstructions))
 		m_sInstructions = NULL_STR;
 
 	return true;

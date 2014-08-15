@@ -6302,7 +6302,7 @@ bool CSpaceObject::SetProperty (const CString &sName, ICCItem *pValue, CString *
 		return false;
 	}
 
-bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
+bool CSpaceObject::Translate (const CString &sID, ICCItem *pData, ICCItem **retpResult)
 
 //	Translate
 //
@@ -6313,13 +6313,13 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
 	//	First we ask the type
 
 	CDesignType *pType = GetType();
-	if (pType && pType->Translate(this, sID, retpResult))
+	if (pType && pType->Translate(this, sID, pData, retpResult))
 		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign && pSovereign->Translate(this, sID, retpResult))
+	if (pSovereign && pSovereign->Translate(this, sID, pData, retpResult))
 		return true;
 
 	//	Otherwise, we can't find it.
@@ -6327,7 +6327,7 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem **retpResult)
 	return false;
 	}
 
-bool CSpaceObject::Translate (const CString &sID, CString *retsText)
+bool CSpaceObject::Translate (const CString &sID, ICCItem *pData, CString *retsText)
 
 //	Translate
 //
@@ -6337,13 +6337,13 @@ bool CSpaceObject::Translate (const CString &sID, CString *retsText)
 	//	First we ask the type
 
 	CDesignType *pType = GetType();
-	if (pType && pType->TranslateText(this, sID, retsText))
+	if (pType && pType->TranslateText(this, sID, pData, retsText))
 		return true;
 
 	//	Otherwise, see if the sovereign has it
 
 	CSovereign *pSovereign = GetSovereign();
-	if (pSovereign && pSovereign->TranslateText(this, sID, retsText))
+	if (pSovereign && pSovereign->TranslateText(this, sID, pData, retsText))
 		return true;
 
 	//	Otherwise, we can't find it.

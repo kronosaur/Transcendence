@@ -127,7 +127,7 @@ void CDockScreenActions::CreateButtons (CGFrameArea *pFrame, CDesignType *pRoot,
 				&& !pAction->sID.IsBlank())
 			{
 			CString sLabelDesc;
-			if (pRoot->TranslateText(NULL, pAction->sID, &sLabelDesc))
+			if (pRoot->TranslateText(NULL, pAction->sID, NULL, &sLabelDesc))
 				{
 				CString sLabel;
 				CString sKey;

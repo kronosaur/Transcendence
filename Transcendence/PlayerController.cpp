@@ -884,7 +884,7 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 			if (pSender)
 				{
 				if (!sID.IsBlank())
-					bHandled = pSender->Translate(sID, &sMessage);
+					bHandled = pSender->Translate(sID, NULL, &sMessage);
 				else
 					bHandled = false;
 

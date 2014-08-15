@@ -245,7 +245,7 @@ void CLanguageDataBlock::MergeFrom (const CLanguageDataBlock &Source)
 	DEBUG_CATCH
 	}
 
-CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText, CString *retsText, ICCItem **retpResult) const
+CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText, CString *retsText, ICCItem **retpResult) const
 
 //	Translate
 //
@@ -284,6 +284,7 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 	CCodeChainCtx Ctx;
 	Ctx.SaveAndDefineSourceVar(pObj);
 	Ctx.DefineString(CONSTLIT("aTextID"), sID);
+	Ctx.SaveAndDefineDataVar(pData);
 	
 	ICCItem *pResult = Ctx.Run(pEntry->pCode);	//	LATER:Event
 	ETranslateResult iResult;
@@ -347,7 +348,7 @@ CLanguageDataBlock::ETranslateResult CLanguageDataBlock::Translate (CSpaceObject
 	return iResult;
 	}
 
-bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult) const
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult) const
 
 //	Translate
 //
@@ -359,7 +360,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCI
 	TArray<CString> List;
 	CString sText;
 	ICCItem *pResult;
-	ETranslateResult iResult = Translate(pObj, sID, &List, &sText, &pResult);
+	ETranslateResult iResult = Translate(pObj, sID, pData, &List, &sText, &pResult);
 
 	switch (iResult)
 		{
@@ -404,7 +405,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCI
 		}
 	}
 
-bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArray<CString> *retText) const
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, TArray<CString> *retText) const
 
 //	Translate
 //
@@ -413,7 +414,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArr
 	{
 	CString sText;
 
-	ETranslateResult iResult = Translate(pObj, sID, retText, &sText);
+	ETranslateResult iResult = Translate(pObj, sID, pData, retText, &sText);
 
 	switch (iResult)
 		{
@@ -444,7 +445,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, TArr
 		}
 	}
 
-bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CString *retsText) const
+bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText) const
 
 //	Translate
 //
@@ -453,7 +454,7 @@ bool CLanguageDataBlock::Translate (CSpaceObject *pObj, const CString &sID, CStr
 	{
 	TArray<CString> List;
 
-	ETranslateResult iResult = Translate(pObj, sID, &List, retsText);
+	ETranslateResult iResult = Translate(pObj, sID, pData, &List, retsText);
 
 	switch (iResult)
 		{

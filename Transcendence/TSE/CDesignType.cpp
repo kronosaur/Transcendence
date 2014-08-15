@@ -1600,7 +1600,8 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 		else if (strEquals(pItem->GetTag(), STATIC_DATA_TAG))
 			m_StaticData.SetFromXML(pItem);
 		else if (strEquals(pItem->GetTag(), GLOBAL_DATA_TAG)
-				|| (GetType() == designSovereign && strEquals(pItem->GetTag(), INITIAL_DATA_TAG)))
+				|| ((GetType() == designSovereign || GetType() == designGenericType)
+						&& strEquals(pItem->GetTag(), INITIAL_DATA_TAG)))
 			{
 			m_InitGlobalData.SetFromXML(pItem);
 			m_GlobalData = m_InitGlobalData;
@@ -1846,7 +1847,7 @@ void CDesignType::ReportEventError (const CString &sEvent, ICCItem *pError)
 	kernelDebugLogMessage(sError);
 	}
 
-bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult)
+bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult)
 
 //	Translate
 //
@@ -1855,7 +1856,7 @@ bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **r
 //	NOTE: Caller is responsible for discarding the result (if we return TRUE).
 	
 	{
-	if (m_Language.Translate(pObj, sID, retpResult))
+	if (m_Language.Translate(pObj, sID, pData, retpResult))
 		return true;
 
 	//	Backwards compatible translate
@@ -1863,14 +1864,14 @@ bool CDesignType::Translate (CSpaceObject *pObj, const CString &sID, ICCItem **r
 	return TranslateVersion2(pObj, sID, retpResult);
 	}
 
-bool CDesignType::TranslateText (CSpaceObject *pObj, const CString &sID, CString *retsText)
+bool CDesignType::TranslateText (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText)
 
 //	Translate
 //
 //	Translate from a <Language> block to text.
 
 	{
-	if (m_Language.Translate(pObj, sID, retsText))
+	if (m_Language.Translate(pObj, sID, pData, retsText))
 		return true;
 
 	//	Backwards compatible translate
