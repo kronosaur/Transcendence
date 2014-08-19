@@ -692,7 +692,7 @@
 			mass=				"1000"
 			frequency=			"uncommon"
 			numberAppearing=	"1d4"
-			attributes=			"ArmorEnhance; MinorItem"
+			attributes=			"ArmorEnhance; MinorItem; Res"
 			unknownType=		"&itUnknownBarrel5;"
 
 			description=		"Meteorsteel interferes with most kinds of shield generators."
@@ -715,7 +715,7 @@
 			mass=				"1000"
 			frequency=			"rare"
 			numberAppearing=	"1d4"
-			attributes=			"ArmorEnhance; MinorItem"
+			attributes=			"ArmorEnhance; MinorItem; Res"
 			unknownType=		"&itUnknownBarrel5;"
 
 			description=		"Dust activated by dyons immunizes armor against ion effects that disable or damage a ship's systems."
