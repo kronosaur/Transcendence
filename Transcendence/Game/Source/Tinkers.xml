@@ -674,7 +674,8 @@
 	<Globals>
 		(block Nil
 			(setq tinkerCalcFabrication (lambda (theRecipe)
-				(block (theComponents componentPrice workCost availableComponents maxCount)
+				(block (theItem theComponents componentPrice workCost availableComponents maxCount)
+					(setq theItem (tinkerCreateItem theRecipe 1))
 				
 					;	Describe the components needed
 						
@@ -709,7 +710,7 @@
 							(@ theRecipe 'extraCost)
 							)
 						)
-							
+						
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
 						
