@@ -320,6 +320,9 @@
 //	101: 1.4
 //		Flags in CEnergyField
 //
+//	102: 1.4
+//		iHPDamaged in SItemTypeStats
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

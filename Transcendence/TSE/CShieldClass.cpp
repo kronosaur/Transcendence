@@ -108,7 +108,8 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 
 //	AbsorbDamage
 //
-//	Absorbs damage
+//	Absorbs damage.
+//	NOTE: We always set Ctx.iAbsorb properly, regardless of the return value.
 
 	{
 	DEBUG_TRY
@@ -117,7 +118,10 @@ bool CShieldClass::AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip,
 
 	Ctx.iHPLeft = GetHPLeft(pDevice, pShip);
 	if (Ctx.iHPLeft == 0)
+		{
+		Ctx.iAbsorb = 0;
 		return false;
+		}
 
 	//	Calculate how much we will absorb
 

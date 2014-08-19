@@ -284,8 +284,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	0,	},
 
 		{	"plyGetItemStat",					fnPlyGet,			FN_PLY_GET_ITEM_STAT,
-			"(plyGetItemStat player stat criteria) -> value",
-			"iss",	0,	},
+			"(plyGetItemStat player stat criteria|type) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'itemsBoughtCount\n"
+			"   'itemsBoughtValue\n"
+			"   'itemsDamagedHP\n"
+			"   'itemsFiredCount\n"
+			"   'itemsSoldCount\n"
+			"   'itemsSoldValue\n",
+
+			"isv",	0,	},
 
 		{	"plyGetKeyEventStat",				fnPlyGet,			FN_PLY_GET_KEY_EVENT_STAT,
 			"(plyGetKeyEventStat player stat nodeID typeCriteria) -> value\n\n"
@@ -775,9 +785,7 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_PLY_GET_ITEM_STAT:
 			{
-			CItemCriteria Crit;
-			CItem::ParseCriteria(pArgs->GetElement(2)->GetStringValue(), &Crit);
-			CString sResult = pPlayer->GetItemStat(pArgs->GetElement(1)->GetStringValue(), Crit);
+			CString sResult = pPlayer->GetItemStat(pArgs->GetElement(1)->GetStringValue(), pArgs->GetElement(2));
 			if (!sResult.IsBlank())
 				pResult = pCC->Link(sResult, 0, NULL);
 			else

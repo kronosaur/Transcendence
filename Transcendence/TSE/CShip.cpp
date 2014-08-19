@@ -3617,6 +3617,8 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 	if (Ctx.iDamage == 0)
 		return damageNoDamage;
 
+	bool bIsPlayer = IsPlayer();
+
 	//	We're hit
 
 	m_iLastHitTime = g_pUniverse->GetTicks();
@@ -3669,10 +3671,22 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 	//	Let our shield generators take a crack at it
 
-	int iOriginalDamage = Ctx.iDamage;
 	for (i = 0; i < GetDeviceCount(); i++)
 		{
 		bool bAbsorbed = m_Devices[i].AbsorbDamage(this, Ctx);
+
+		//	If this is the player, report stats
+
+		if (bIsPlayer
+				&& Ctx.iAbsorb > 0)
+			{
+			CItem *pItem = m_Devices[i].GetItem();
+			if (pItem)
+				GetController()->OnItemDamaged(*pItem, Ctx.iAbsorb);
+			}
+
+		//	If destroyed or completely absorbed, we're done
+
 		if (IsDestroyed())
 			return damageDestroyed;
 		else if (bAbsorbed)
@@ -3707,9 +3721,16 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 
 	//	Let the armor handle it
 
-	EDamageResults iResult = (pArmor ? pArmor->AbsorbDamage(this, Ctx) : damageArmorHit);
-	if (iResult != damageArmorHit)
-		return iResult;
+	int iDamageSustained = Ctx.iDamage;
+	if (pArmor)
+		{
+		EDamageResults iResult = pArmor->AbsorbDamage(this, Ctx);
+
+		//	If special result, we're done.
+
+		if (iResult != damageArmorHit)
+			return iResult;
+		}
 
 	//	Tell our attacker that we got hit
 
@@ -3723,7 +3744,7 @@ EDamageResults CShip::OnDamage (SDamageCtx &Ctx)
 		{
 		//	Tell the controller that we were damaged
 
-		m_pController->OnDamaged(Ctx.Attacker, pArmor, Ctx.Damage, Ctx.iDamage);
+		m_pController->OnDamaged(Ctx.Attacker, pArmor, Ctx.Damage, iDamageSustained);
 		return damageArmorHit;
 		}
 

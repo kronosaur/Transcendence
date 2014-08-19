@@ -974,7 +974,14 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_HULL_BREACH_ALARM));
 		}
 
+	//	Update display
+
 	m_pTrans->UpdateArmorDisplay();
+
+	//	Register stats
+
+	CItem ArmorItem(pArmor->GetClass()->GetItemType(), 1);
+	OnItemDamaged(ArmorItem, iDamage);
 	}
 
 bool CPlayerShipController::OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker)

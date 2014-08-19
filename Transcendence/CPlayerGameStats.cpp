@@ -17,6 +17,8 @@ const DWORD INVALID_TIME = 0xffffffff;
 #define FRIENDLY_STATIONS_DESTROYED_STAT		CONSTLIT("friendlyStationsDestroyed")
 #define ITEMS_BOUGHT_COUNT_STAT					CONSTLIT("itemsBoughtCount")
 #define ITEMS_BOUGHT_VALUE_STAT					CONSTLIT("itemsBoughtValue")
+#define ITEMS_DAMAGED_HP_STAT					CONSTLIT("itemsDamagedHP")
+#define ITEMS_FIRED_COUNT_STAT					CONSTLIT("itemsFiredCount")
 #define ITEMS_SOLD_COUNT_STAT					CONSTLIT("itemsSoldCount")
 #define ITEMS_SOLD_VALUE_STAT					CONSTLIT("itemsSoldValue")
 #define MISSION_COMPLETED_STAT					CONSTLIT("missionCompleted")
@@ -104,6 +106,23 @@ int CPlayerGameStats::CalcEndGameScore (void) const
 
 	{
 	return m_iScore / (1 + min(9, m_iResurrectCount));
+	}
+
+bool CPlayerGameStats::FindItemStats (DWORD dwUNID, SItemTypeStats **retpStats) const
+
+//	FindItemStats
+//
+//	Returns a pointer to stats
+
+	{
+	SItemTypeStats *pStats = m_ItemStats.Find(dwUNID);
+	if (pStats == NULL)
+		return false;
+
+	if (retpStats)
+		*retpStats = pStats;
+
+	return true;
 	}
 
 void CPlayerGameStats::GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlayerShip, bool bGameOver) const
@@ -233,6 +252,12 @@ void CPlayerGameStats::GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlay
 			Stats.Insert(sName, 
 					strFormatInteger(pStats->iCountFired, -1, FORMAT_THOUSAND_SEPARATOR | FORMAT_UNSIGNED), 
 					CONSTLIT("Weapons fired"), 
+					sSort);
+
+		if (pStats->iHPDamaged > 0)
+			Stats.Insert(sName,
+					strFormatInteger(pStats->iHPDamaged, -1, FORMAT_THOUSAND_SEPARATOR | FORMAT_UNSIGNED),
+					CONSTLIT("Damage sustained"),
 					sSort);
 		}
 
@@ -452,7 +477,7 @@ int CPlayerGameStats::GetBestEnemyShipsDestroyed (DWORD *retdwUNID) const
 	return pBest->iEnemyDestroyed;
 	}
 
-CString CPlayerGameStats::GetItemStat (const CString &sStat, const CItemCriteria &Crit) const
+CString CPlayerGameStats::GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const
 
 //	GetItemStat
 //
@@ -469,23 +494,47 @@ CString CPlayerGameStats::GetItemStat (const CString &sStat, const CItemCriteria
 
 	//	Generate a list of all item stats that match criteria
 
-	CMapIterator i;
 	TArray<SEntry> List;
-	m_ItemStats.Reset(i);
-	while (m_ItemStats.HasMore(i))
-		{
-		SItemTypeStats *pStats;
-		DWORD dwUNID = m_ItemStats.GetNext(i, &pStats);
-		CItemType *pType = g_pUniverse->FindItemType(dwUNID);
-		if (pType == NULL)
-			continue;
 
-		CItem theItem(pType, 1);
-		if (theItem.MatchesCriteria(Crit))
+	//	If the criteria is an integer, then expect an UNID
+
+	if (pItemCriteria->IsInteger())
+		{
+		DWORD dwUNID = (DWORD)pItemCriteria->GetIntegerValue();
+		SItemTypeStats *pStats;
+
+		if (FindItemStats(dwUNID, &pStats))
 			{
 			SEntry *pEntry = List.Insert();
-			pEntry->pType = pType;
+			pEntry->pType = g_pUniverse->FindItemType(dwUNID);
 			pEntry->pStats = pStats;
+			}
+		}
+
+	//	Otherwise, we expect this to be a criteria
+
+	else
+		{
+		CItemCriteria Crit;
+		CItem::ParseCriteria(pItemCriteria->GetStringValue(), &Crit);
+
+		CMapIterator i;
+		m_ItemStats.Reset(i);
+		while (m_ItemStats.HasMore(i))
+			{
+			SItemTypeStats *pStats;
+			DWORD dwUNID = m_ItemStats.GetNext(i, &pStats);
+			CItemType *pType = g_pUniverse->FindItemType(dwUNID);
+			if (pType == NULL)
+				continue;
+
+			CItem theItem(pType, 1);
+			if (theItem.MatchesCriteria(Crit))
+				{
+				SEntry *pEntry = List.Insert();
+				pEntry->pType = pType;
+				pEntry->pStats = pStats;
+				}
 			}
 		}
 
@@ -504,6 +553,20 @@ CString CPlayerGameStats::GetItemStat (const CString &sStat, const CItemCriteria
 		for (j = 0; j < List.GetCount(); j++)
 			iTotal += List[j].pStats->iValueBought;
 		return ::strFromInt((int)iTotal);
+		}
+	else if (strEquals(sStat, ITEMS_DAMAGED_HP_STAT))
+		{
+		int iTotalCount = 0;
+		for (j = 0; j < List.GetCount(); j++)
+			iTotalCount += List[j].pStats->iHPDamaged;
+		return ::strFromInt(iTotalCount);
+		}
+	else if (strEquals(sStat, ITEMS_FIRED_COUNT_STAT))
+		{
+		int iTotalCount = 0;
+		for (j = 0; j < List.GetCount(); j++)
+			iTotalCount += List[j].pStats->iCountFired;
+		return ::strFromInt(iTotalCount);
 		}
 	else if (strEquals(sStat, ITEMS_SOLD_COUNT_STAT))
 		{
@@ -546,6 +609,7 @@ CPlayerGameStats::SItemTypeStats *CPlayerGameStats::GetItemStats (DWORD dwUNID)
 		pStats->dwTotalInstalledTime = 0;
 
 		pStats->iCountFired = 0;
+		pStats->iHPDamaged = 0;
 		}
 
 	return pStats;
@@ -934,6 +998,17 @@ void CPlayerGameStats::OnItemBought (const CItem &Item, CurrencyValue iTotalPric
 	pStats->iValueBought += iTotalPrice;
 	}
 
+void CPlayerGameStats::OnItemDamaged (const CItem &Item, int iHP)
+
+//	OnItemDamaged
+//
+//	Player sustained damage
+
+	{
+	SItemTypeStats *pStats = GetItemStats(Item.GetType()->GetUNID());
+	pStats->iHPDamaged += iHP;
+	}
+
 void CPlayerGameStats::OnItemFired (const CItem &Item)
 
 //	OnItemFired
@@ -1174,6 +1249,7 @@ void CPlayerGameStats::ReadFromStream (SLoadCtx &Ctx)
 //	DWORD			dwLastUninstalled
 //	DWORD			dwTotalInstalledTime
 //	DWORD			iCountFired
+//	DWORD			iHPDamaged
 //
 //	DWORD		Count of ship classes
 //	DWORD			UNID
@@ -1266,6 +1342,11 @@ void CPlayerGameStats::ReadFromStream (SLoadCtx &Ctx)
 		Ctx.pStream->Read((char *)&pStats->dwLastUninstalled, sizeof(DWORD));
 		Ctx.pStream->Read((char *)&pStats->dwTotalInstalledTime, sizeof(DWORD));
 		Ctx.pStream->Read((char *)&pStats->iCountFired, sizeof(DWORD));
+
+		if (Ctx.dwVersion >= 102)
+			Ctx.pStream->Read((char *)&pStats->iHPDamaged, sizeof(DWORD));
+		else
+			pStats->iHPDamaged = 0;
 		}
 
 	Ctx.pStream->Read((char *)&dwCount, sizeof(DWORD));
@@ -1377,6 +1458,7 @@ void CPlayerGameStats::WriteToStream (IWriteStream *pStream)
 //	DWORD			dwLastUninstalled
 //	DWORD			dwTotalInstalledTime
 //	DWORD			iCountFired
+//	DWORD			iHPDamaged
 //
 //	DWORD		Count of ship classes
 //	DWORD			UNID
@@ -1434,6 +1516,7 @@ void CPlayerGameStats::WriteToStream (IWriteStream *pStream)
 		pStream->Write((char *)&pStats->dwLastUninstalled, sizeof(DWORD));
 		pStream->Write((char *)&pStats->dwTotalInstalledTime, sizeof(DWORD));
 		pStream->Write((char *)&pStats->iCountFired, sizeof(DWORD));
+		pStream->Write((char *)&pStats->iHPDamaged, sizeof(DWORD));
 		}
 
 	dwSave = m_ShipStats.GetCount();

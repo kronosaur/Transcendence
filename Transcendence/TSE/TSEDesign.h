@@ -2169,7 +2169,7 @@ class CDeviceClass : public CObject
 		inline DWORD GetUNID (void);
 		inline void MarkImages (void) { OnMarkImages(); }
 
-		virtual bool AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip, SDamageCtx &Ctx) { return false; }
+		virtual bool AbsorbDamage (CInstalledDevice *pDevice, CSpaceObject *pShip, SDamageCtx &Ctx) { Ctx.iAbsorb = 0; return false; }
 		virtual bool AbsorbsWeaponFire (CInstalledDevice *pDevice, CSpaceObject *pSource, CInstalledDevice *pWeapon) { return false; }
 		virtual bool Activate (CInstalledDevice *pDevice, 
 							   CSpaceObject *pSource, 
@@ -3141,6 +3141,7 @@ class IShipController
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation) { }
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) { }
 		virtual void OnFuelLowWarning (int iSeq) { }
+		virtual void OnItemDamaged (const CItem &Item, int iHP) { }
 		virtual void OnItemFired (const CItem &Item) { }
 		virtual void OnItemInstalled (const CItem &Item) { }
 		virtual void OnItemUninstalled (const CItem &Item) { }

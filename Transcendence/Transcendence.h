@@ -188,7 +188,7 @@ class CPlayerGameStats
 		void GenerateGameStats (CGameStats &Stats, CSpaceObject *pPlayer, bool bGameOver) const;
 		int GetBestEnemyShipsDestroyed (DWORD *retdwUNID = NULL) const;
 		CTimeSpan GetGameTime (void) const { return (!m_GameTime.IsBlank() ? m_GameTime : g_pUniverse->GetElapsedGameTime()); }
-		CString GetItemStat (const CString &sStat, const CItemCriteria &Crit) const;
+		CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const;
 		CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const;
 		CTimeSpan GetPlayTime (void) const { return (!m_PlayTime.IsBlank() ? m_PlayTime : g_pUniverse->StopGameTime()); }
 		CString GetStat (const CString &sStat) const;
@@ -196,6 +196,7 @@ class CPlayerGameStats
 		int IncStat (const CString &sStat, int iInc = 1);
 		void OnGameEnd (CSpaceObject *pPlayer);
 		void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice);
+		void OnItemDamaged (const CItem &Item, int iHP);
 		void OnItemFired (const CItem &Item);
 		void OnItemInstalled (const CItem &Item);
 		void OnItemSold (const CItem &Item, CurrencyValue iTotalPrice);
@@ -224,6 +225,7 @@ class CPlayerGameStats
 			DWORD dwTotalInstalledTime;			//	Total time installed
 
 			int iCountFired;					//	Number of times item (weapon) has been fired by player
+			int iHPDamaged;						//	HP absorbed by this item type when installed on player
 			};
 
 		struct SKeyEventStats
@@ -263,6 +265,7 @@ class CPlayerGameStats
 			};
 
 		bool AddMatchingKeyEvents (const CString &sNodeID, const CDesignTypeCriteria &Crit, TArray<SKeyEventStats> *pEventList, TArray<SKeyEventStatsResult> *retList) const;
+		bool FindItemStats (DWORD dwUNID, SItemTypeStats **retpStats) const;
 		CString GenerateKeyEventStat (TArray<SKeyEventStatsResult> &List) const;
 		SItemTypeStats *GetItemStats (DWORD dwUNID);
 		bool GetMatchingKeyEvents (const CString &sNodeID, const CDesignTypeCriteria &Crit, TArray<SKeyEventStatsResult> *retList) const;
@@ -346,7 +349,7 @@ class CPlayerShipController : public CObject, public IShipController
 		inline int GetCargoSpace (void) { return (int)(m_pShip->GetCargoSpaceLeft() + 0.5); }
 		inline int GetEndGameScore (void) { return m_Stats.CalcEndGameScore(); }
 		inline int GetEnemiesDestroyed (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("enemyShipsDestroyed")), 0); }
-		inline CString GetItemStat (const CString &sStat, const CItemCriteria &Crit) const { return m_Stats.GetItemStat(sStat, Crit); }
+		inline CString GetItemStat (const CString &sStat, ICCItem *pItemCriteria) const { return m_Stats.GetItemStat(sStat, pItemCriteria); }
 		inline CString GetKeyEventStat (const CString &sStat, const CString &sNodeID, const CDesignTypeCriteria &Crit) const { return m_Stats.GetKeyEventStat(sStat, sNodeID, Crit); }
 		inline int GetResurrectCount (void) const { return ::strToInt(m_Stats.GetStat(CONSTLIT("resurrectCount")), 0); }
 		inline int GetScore (void) { return ::strToInt(m_Stats.GetStat(CONSTLIT("score")), 0); }
@@ -442,6 +445,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation);
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend);
 		virtual void OnFuelLowWarning (int iSeq);
+		virtual void OnItemDamaged (const CItem &Item, int iHP) { m_Stats.OnItemDamaged(Item, iHP); }
 		virtual void OnItemFired (const CItem &Item) { m_Stats.OnItemFired(Item); }
 		virtual void OnItemInstalled (const CItem &Item) { m_Stats.OnItemInstalled(Item); }
 		virtual void OnItemUninstalled (const CItem &Item) { m_Stats.OnItemUninstalled(Item); }
