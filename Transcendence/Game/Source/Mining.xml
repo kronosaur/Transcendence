@@ -34,296 +34,50 @@
 
 	</StationType>
 
-	<!-- Small Asteroid with Ore -->
+<!-- TABLES -->
 
-	<StationType UNID="&stOreSmallAsteroid;"
-			name=				"(small ore asteroid)"
-			scale=				"world"
-			sovereign=			"&svIndependent;"
-
-			attributes=			"asteroid, stoneAsteroid, tinyAsteroid"
-
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup table="&tbStoneAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
-		</Events>
-
-	</StationType>
+	<ItemTable unid="&tbAsteroidOre;">
+		<LocationCriteriaTable>
+			<Group criteria="*metallicComp"
+				   levelValue="
+				  		300,      500,      750,     1000,      2000,
+					   4000,     8000,    16000,    32000,     64000,
+					 128000,   256000,   512000,  1000000,   2000000,
+					4100000,  8200000, 16400000, 32800000,	65500000"
+					>
+				<RandomItem criteria="* +ore; -notStandard; +metallicComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
+			</Group>
+			<Group criteria="*organicComp"
+				   levelValue="
+				  		300,      500,      750,     1000,      2000,
+					   4000,     8000,    16000,    32000,     64000,
+					 128000,   256000,   512000,  1000000,   2000000,
+					4100000,  8200000, 16400000, 32800000,	65500000"
+					>
+				<RandomItem criteria="* +ore; -notStandard; +organicComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
+			</Group>
+			<Group criteria="*rockyComp"
+				   levelValue="
+				  		300,      500,      750,     1000,      2000,
+					   4000,     8000,    16000,    32000,     64000,
+					 128000,   256000,   512000,  1000000,   2000000,
+					4100000,  8200000, 16400000, 32800000,	65500000"
+					>
+				<RandomItem criteria="* +ore; -notStandard; +rockyComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
+			</Group>
+			<Group criteria="*waterComp"
+				   levelValue="
+				  		300,      500,      750,     1000,      2000,
+					   4000,     8000,    16000,    32000,     64000,
+					 128000,   256000,   512000,  1000000,   2000000,
+					4100000,  8200000, 16400000, 32800000,	65500000"
+					>
+				<RandomItem criteria="* +ore; -notStandard; +waterComp;" levelFrequency="systemLevel:vruuc|c|cuurv" />
+			</Group>
+		</LocationCriteriaTable>
+	</ItemTable>
 	
-	<!-- Medium Asteroid with Ore -->
-
-	<StationType UNID="&stOreMediumAsteroid;"
-		name=				"(medium ore asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, stoneAsteroid"
-
-		ejectaType=			"&vtStoneAsteroidEjecta;"
-		>
-
-		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup count="1d6" table="&tbStoneAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Frost Asteroid with Ore -->
-
-	<StationType UNID="&stOreSmallFrostAsteroid;"
-		name=				"(small frost ore asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, frostAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds1;" imageX="224" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup table="&tbFrostAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Frost Asteroid with Ore -->
-
-	<StationType UNID="&stOreMediumFrostAsteroid;"
-		name=				"(medium frost ore asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, frostAsteroid, mediumAsteroid"
-
-		ejectaType=			"&vtIceAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="256" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds1;" imageX="192" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup count="1d6" table="&tbFrostAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 50)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Metallic Asteroid with Ore -->
-
-	<StationType UNID="&stOreSmallMetallicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, metallicAsteroid, tinyAsteroid"
-
-		ejectaType=			"&vtMetallicAsteroidEjecta;"
-		>
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="32"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="96"  imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="128"	imageWidth="32" imageHeight="32"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="160"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192"   imageY="128"	imageWidth="32" imageHeight="32"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="224"   imageY="128"	imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup table="&tbMetallicAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 30)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Metallic Asteroid with Ore -->
-
-	<StationType UNID="&stOreMediumMetallicAsteroid;"
-		name=				"(asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, metallicAsteroid"
-
-		ejectaType=			"&vtMetallicAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="0"		imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="0"   imageY="64"	imageWidth="64" imageHeight="64"/>
-
-			<Image	imageID="&rsMetallicAsteroids;" imageX="64"  imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="128" imageY="64"	imageWidth="64" imageHeight="64"/>
-			<Image	imageID="&rsMetallicAsteroids;" imageX="192" imageY="64"	imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup count="1d6" table="&tbMetallicAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 30)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Small Volcanic Asteroid with Ore -->
-
-	<StationType UNID="&stOreSmallVolcanicAsteroid;"
-		name=				"(small volcanic ore asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, tinyAsteroid, volcanicAsteroid"
-
-		ejectaType=			"&vtVolcanicAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="768" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="800" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="832" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="864" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="896" imageWidth="32" imageHeight="32"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="928" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="960" imageWidth="32" imageHeight="32"/>
-			<Image			imageID="&rsWorlds2;" imageX="192" imageY="992" imageWidth="32" imageHeight="32"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup table="&tbVolcanicAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 20)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Medium Volcanic Asteroid with Ore -->
-
-	<StationType UNID="&stOreMediumVolcanicAsteroid;"
-		name=				"(medium volcanic ore asteroid)"
-		scale=				"world"
-		sovereign=			"&svIndependent;"
-
-		attributes=			"asteroid, mediumAsteroid, volcanicAsteroid"
-
-		ejectaType=			"&vtVolcanicAsteroidEjecta;"
-		>
-
-		<ImageVariants>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="512" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="576" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="640" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="704" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="768" imageWidth="64" imageHeight="64"/>
-
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="832" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="896" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsWorlds2;" imageX="128" imageY="960" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Items>
-			<Lookup count="1d6" table="&tbVolcanicAsteroidOre;"/>
-		</Items>
-
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 20)
-			</OnMining>
-		</Events>
-
-	</StationType>
-
-	<!-- Global -->
+<!-- GLOBAL -->
 
 	<Globals>
 		(block Nil
@@ -362,6 +116,8 @@
 				))
 			)
 	</Globals>
+	
+<!-- DOCK SCREENS -->
 
 	<!-- Mined Ore Dock Screen -->
 

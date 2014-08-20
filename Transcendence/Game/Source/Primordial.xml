@@ -93,7 +93,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" table="&tbPrimordialAsteroidOre;"/>
+				<Lookup chance="8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -134,7 +134,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d6" table="&tbPrimordialAsteroidOre;"/>
+				<Lookup chance="8" count="1d6" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -168,7 +168,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d8" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="8" count="1d8" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
@@ -201,7 +201,7 @@
 		<Items>
 			<Table>
 				<Null chance="92"/>
-				<Lookup chance="8" count="1d10" table="&tbStoneAsteroidOre;"/>
+				<Lookup chance="8" count="1d10" table="&tbAsteroidOre;"/>
 			</Table>
 		</Items>
 
