@@ -242,22 +242,6 @@
 		</ImageVariants>
 	</StationType>
 
-<!-- TABLES -->
-
-	<ItemTable unid="&tbMetallicAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="uuuuu uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itUraniumOre;"/>
-			<Item levelFrequency="ucccc ccccc ccccc ccccc ccccc" count="15-35"	item="&itPlasteelOre;"/>
-			<Item levelFrequency="-rucc ccccc ccccc ccccc ccccc" count="10-15"	item="&itCeralloyOre;"/>
-			<Item levelFrequency="-vruu uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itGoldOre;"/>
-			<Item levelFrequency="--vrr rrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="--ruc ccccc ccccc ccccc ccccc" count="5-10"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
-			<Item levelFrequency="---vr uuuuu uuuuu uuuuu uuuuu" count="5-15"	item="&itOrthoSteelOre;"/>
-			<Item levelFrequency="----- vrrrr rrrrr rrrrr rrrrr" count="5-10"	item="&itIthaliumOre;"/>
-		</LevelTable>
-	</ItemTable>
-	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsMetallicAsteroids;"		bitmap="Resources\MetallicAsteroids.jpg"	bitmask="Resources\MetallicAsteroidsMask.bmp"  loadOnUse="true"/>

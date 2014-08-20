@@ -274,25 +274,6 @@
 		</ImageVariants>
 	</StationType>
 
-<!-- TABLES -->
-
-	<ItemTable unid="&tbVolcanicAsteroidOre;">
-		<LevelTable>
-			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="5-10"	item="&itGoldOre;"/>
-			<Item levelFrequency="vrucc ccccc ccccc ccccc ccccc" count="1-35"	item="&itXenotiteOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-10"	item="&itDuralloyOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itPlatinumOre;"/>
-			<Item levelFrequency="--vru uuuuu uuuuu uuuuu uuuuu" count="5-25"	item="&itPteracniumOre;"/>
-			<Item levelFrequency="---ru ccccc ccccc ccccc ccccc" count="10-45"	item="&itOrthoSteelOre;"/>
-			<Item levelFrequency="----v ruuuu uuuuu uuuuu uuuuu" count="1-10"	item="&itIthaliumOre;"/>
-			<Item levelFrequency="----- -vvvv vvvvv vvvvv vvvvv" count="10-35"	item="&itIthaliumOre;"/>
-			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-4"	item="&itNeutroniumOre;"/>
-			<Item levelFrequency="----- --vrr rrrrr rrrrr rrrrr" count="1-6"	item="&itTetramiteOre;"/>
-			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1-2"	item="&itHyperonicOre;"/>
-			<Item levelFrequency="----- ---vr rrrrr rrrrr rrrrr" count="1"		item="&itEtheriumOre;"/>
-		</LevelTable>
-	</ItemTable>
-	
 <!-- RESOURCES -->
 
 	<Image UNID="&rsVolcanicAsteroids;"		bitmap="Resources\VolcanicAsteroids.jpg"	bitmask="Resources\VolcanicAsteroidsMask.bmp"		loadOnUse="true"/>
