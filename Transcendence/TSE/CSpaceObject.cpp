@@ -949,18 +949,23 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	Ctx.iLoadState = iOldLoadState;
 	}
 
-ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, int iLevel)
+ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, CSystem *pSystem)
 
 //	CreateRandomItems
 //
 //	Creates items based on item table
+//
+//	NOTE: We cannot call GetSystem() because it is not yet set up at the time
+//	that we call this (on create). Thus we rely on pSystem being passed in.
 
 	{
 	if (pItems)
 		{
 		CItemListManipulator ItemList(GetItemList());
 		SItemAddCtx Ctx(ItemList);
-		Ctx.iLevel = iLevel;
+		Ctx.pSystem = pSystem;
+		Ctx.vPos = GetPos();
+		Ctx.iLevel = (Ctx.pSystem ? Ctx.pSystem->GetLevel() : 1);
 
 		pItems->AddItems(Ctx);
 
@@ -972,7 +977,7 @@ ALERROR CSpaceObject::CreateRandomItems (IItemGenerator *pItems, int iLevel)
 	return NOERROR;
 	}
 
-ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, int iLevel)
+ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, CSystem *pSystem)
 
 //	CreateRandomItems
 //
@@ -1002,7 +1007,9 @@ ALERROR CSpaceObject::CreateRandomItems (CXMLElement *pItems, int iLevel)
 
 	CItemListManipulator ItemList(GetItemList());
 	SItemAddCtx ItemCtx(ItemList);
-	ItemCtx.iLevel = iLevel;
+	ItemCtx.pSystem = pSystem;
+	ItemCtx.vPos = GetPos();
+	ItemCtx.iLevel = (ItemCtx.pSystem ? ItemCtx.pSystem->GetLevel() : 1);
 
 	pGenerator->AddItems(ItemCtx);
 

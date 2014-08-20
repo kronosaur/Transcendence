@@ -2159,8 +2159,8 @@ class CSpaceObject : public CObject
 		void CommsMessageFrom (CSpaceObject *pSender, int iIndex);
 		inline DWORD Communicate (CSpaceObject *pReceiver, MessageTypes iMessage, CSpaceObject *pParam1 = NULL, DWORD dwParam2 = 0) { return pReceiver->OnCommunicate(this, iMessage, pParam1, dwParam2); }
 		void CopyDataFromObj (CSpaceObject *pSource);
-		ALERROR CreateRandomItems (CXMLElement *pItems, int iLevel = 1);
-		ALERROR CreateRandomItems (IItemGenerator *pItems, int iLevel = 1);
+		ALERROR CreateRandomItems (CXMLElement *pItems, CSystem *pSystem);
+		ALERROR CreateRandomItems (IItemGenerator *pItems, CSystem *pSystem);
 		EDamageResults Damage (SDamageCtx &Ctx);
 		static CString DebugDescribe (CSpaceObject *pObj);
 		inline bool DebugIsValid (void) { return (DWORD)m_pSystem != 0xdddddddd; }

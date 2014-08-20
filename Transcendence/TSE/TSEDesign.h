@@ -2300,11 +2300,14 @@ struct SItemAddCtx
 	{
 	SItemAddCtx (CItemListManipulator &theItemList) : 
 			ItemList(theItemList),
+			pSystem(NULL),
 			iLevel(1)
 		{ }
 
 	CItemListManipulator &ItemList;				//	Item list to add items to
 
+	CSystem *pSystem;							//	System where we're creating items
+	CVector vPos;								//	Position to use (for LocationCriteriaTable)
 	int iLevel;									//	Level to use for item create (for LevelTable)
 	};
 

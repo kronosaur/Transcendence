@@ -303,6 +303,7 @@ class CAttributeCriteria
 		inline bool MatchesAll (void) const { return (GetCount() == 0); }
 		ALERROR Parse (const CString &sCriteria, DWORD dwFlags = 0, CString *retsError = NULL);
 
+		static int CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength);
 		static int CalcWeightAdj (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq = -1);
 
 	private:

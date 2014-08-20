@@ -10,6 +10,28 @@
 inline bool IsWeightChar (char *pPos) { return (*pPos == '+' || *pPos == '-' || *pPos == '*' || *pPos == '!'); }
 inline bool IsDelimiterChar (char *pPos, bool bIsSpecialAttrib = false) { return (*pPos == '\0' || *pPos == ',' || *pPos == ';' || (!bIsSpecialAttrib && strIsWhitespace(pPos))); }
 
+int CAttributeCriteria::CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength)
+
+//	CalcLocationWeight
+//
+//	Computes the location weight
+
+	{
+	//	Check to see if either the label
+	//	or the node/system has the attribute.
+
+	bool bHasAttrib = (::HasModifier(sLocationAttribs, sAttrib)
+			|| (pSystem && pSystem->HasAttribute(vPos, sAttrib)));
+
+	//	Compute the frequency of the given attribute
+
+	int iAttribFreq = g_pUniverse->GetAttributeDesc().GetLocationAttribFrequency(sAttrib);
+
+	//	Adjust probability based on the match strength
+
+	return CalcWeightAdj(bHasAttrib, dwMatchStrength, iAttribFreq);
+	}
+
 int CAttributeCriteria::CalcWeightAdj (bool bHasAttrib, DWORD dwMatchStrength, int iAttribFreq)
 
 //	CalcWeightAdj

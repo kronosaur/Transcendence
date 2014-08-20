@@ -1074,7 +1074,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 	//	Create items
 
-	if (error = pShip->CreateRandomItems(pClass->GetRandomItemTable(), pSystem->GetLevel()))
+	if (error = pShip->CreateRandomItems(pClass->GetRandomItemTable(), pSystem))
 		return error;
 
 	//	Devices
@@ -1280,7 +1280,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 
 		if (pCtx->pItems)
 			{
-			if (pShip->CreateRandomItems(pCtx->pItems, pSystem->GetLevel()) != NOERROR)
+			if (pShip->CreateRandomItems(pCtx->pItems, pSystem) != NOERROR)
 				kernelDebugLogMessage("Unable to create items for ship: %x", pClass->GetUNID());
 			}
 

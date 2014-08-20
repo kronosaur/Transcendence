@@ -15,6 +15,7 @@
 #define ITEM_TAG								CONSTLIT("Item")
 #define ITEMS_TAG								CONSTLIT("Items")
 #define LEVEL_TABLE_TAG							CONSTLIT("LevelTable")
+#define LOCATION_CRITERIA_TABLE_TAG				CONSTLIT("LocationCriteriaTable")
 #define LOOKUP_TAG								CONSTLIT("Lookup")
 #define NULL_TAG								CONSTLIT("Null")
 #define RANDOM_ITEM_TAG							CONSTLIT("RandomItem")
@@ -96,6 +97,33 @@ class CLevelTableOfItemGenerators : public IItemGenerator
 		TArray<SEntry> m_Table;
 		int m_iTotalChance;
 		int m_iComputedLevel;
+	};
+
+class CLocationCriteriaTableOfItemGenerators : public IItemGenerator
+	{
+	public:
+		virtual ~CLocationCriteriaTableOfItemGenerators (void);
+		virtual void AddItems (SItemAddCtx &Ctx);
+		virtual void AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed);
+		virtual CurrencyValue GetAverageValue (int iLevel);
+		virtual IItemGenerator *GetGenerator (int iIndex) { return m_Table[iIndex].pEntry; }
+		virtual int GetGeneratorCount (void) { return m_Table.GetCount(); }
+		virtual ALERROR LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
+		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
+
+	private:
+		struct SEntry
+			{
+			IItemGenerator *pEntry;
+			CAttributeCriteria Criteria;
+			int iChance;
+			DiceRange Count;
+			};
+
+		TArray<SEntry> m_Table;
+		int m_iTotalChance;
+		CSystem *m_pComputedSystem;
+		CString m_sComputedAttribs;
 	};
 
 class CLookup : public IItemGenerator
@@ -226,6 +254,8 @@ ALERROR IItemGenerator::CreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, 
 		pGenerator = new CLookup;
 	else if (strEquals(pDesc->GetTag(), LEVEL_TABLE_TAG))
 		pGenerator = new CLevelTableOfItemGenerators;
+	else if (strEquals(pDesc->GetTag(), LOCATION_CRITERIA_TABLE_TAG))
+		pGenerator = new CLocationCriteriaTableOfItemGenerators;
 	else if (strEquals(pDesc->GetTag(), NULL_TAG))
 		pGenerator = new CNullItem;
 	else
@@ -881,6 +911,175 @@ ALERROR CLevelTableOfItemGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
 	int i;
 
 	m_iComputedLevel = -1;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		{
+		if (error = m_Table[i].pEntry->OnDesignLoadComplete(Ctx))
+			return error;
+		}
+
+	return NOERROR;
+	}
+
+//	CLocationCriteriaTableOfItemGenerators -------------------------------------
+
+CLocationCriteriaTableOfItemGenerators::~CLocationCriteriaTableOfItemGenerators (void)
+
+//	CLevelTableOfItemGenerators destructor
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		if (m_Table[i].pEntry)
+			delete m_Table[i].pEntry;
+	}
+
+void CLocationCriteriaTableOfItemGenerators::AddItems (SItemAddCtx &Ctx)
+
+//	AddItems
+//
+//	Adds items
+
+	{
+	int i, j;
+
+	//	Cache probabilities, if necessary
+
+	CString sAttribsAtPos = (Ctx.pSystem ? Ctx.pSystem->GetAttribsAtPos(Ctx.vPos) : NULL_STR);
+	if (m_pComputedSystem != Ctx.pSystem 
+			|| !strEquals(m_sComputedAttribs, sAttribsAtPos))
+		{
+		//	Create a table of probabilities
+
+		m_iTotalChance = 0;
+		for (i = 0; i < m_Table.GetCount(); i++)
+			{
+			m_Table[i].iChance = 1000;
+
+			for (j = 0; j < m_Table[i].Criteria.GetCount(); j++)
+				{
+				DWORD dwMatchStrength;
+				const CString &sAttrib = m_Table[i].Criteria.GetAttribAndWeight(j, &dwMatchStrength);
+
+				int iAdj = CAttributeCriteria::CalcLocationWeight(Ctx.pSystem, 
+						NULL_STR,
+						Ctx.vPos,
+						sAttrib,
+						dwMatchStrength);
+
+				m_Table[i].iChance = (m_Table[i].iChance * iAdj) / 1000;
+				}
+
+			m_iTotalChance += m_Table[i].iChance;
+			}
+
+		m_pComputedSystem = Ctx.pSystem;
+		m_sComputedAttribs = sAttribsAtPos;
+		}
+
+	//	Generate
+
+	if (m_iTotalChance)
+		{
+		int iRoll = mathRandom(1, m_iTotalChance);
+		for (i = 0; i < m_Table.GetCount(); i++)
+			{
+			iRoll -= m_Table[i].iChance;
+
+			if (iRoll <= 0)
+				{
+				int iCount = m_Table[i].Count.Roll();
+
+				for (j = 0; j < iCount; j++)
+					m_Table[i].pEntry->AddItems(Ctx);
+
+				break;
+				}
+			}
+		}
+	}
+
+void CLocationCriteriaTableOfItemGenerators::AddTypesUsed (TSortMap<DWORD, bool> *retTypesUsed)
+
+//	AddTypesUsed
+//
+//	Adds types used by this generator
+
+	{
+	int i;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		m_Table[i].pEntry->AddTypesUsed(retTypesUsed);
+	}
+
+CurrencyValue CLocationCriteriaTableOfItemGenerators::GetAverageValue (int iLevel)
+
+//	GetAverageValue
+//
+//	Returns the average value.
+
+	{
+	int i;
+
+	//	Equal probability for each entry
+
+	Metric rTotal = 0.0;
+	int iTotalChance = 0;
+	for (i = 0; i < m_Table.GetCount(); i++)
+		iTotalChance += 1;
+
+	for (i = 0; i < m_Table.GetCount(); i++)
+		rTotal += (m_Table[i].Count.GetAveValueFloat() * (Metric)m_Table[i].pEntry->GetAverageValue(iLevel) / (Metric)iTotalChance);
+
+	return (CurrencyValue)(rTotal + 0.5);
+	}
+
+ALERROR CLocationCriteriaTableOfItemGenerators::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
+
+//	LoadFromXML
+//
+//	Load table from XML
+
+	{
+	int i;
+	ALERROR error;
+
+	for (i = 0; i < pDesc->GetContentElementCount(); i++)
+		{
+		CXMLElement *pEntry = pDesc->GetContentElement(i);
+		SEntry *pNewEntry = m_Table.Insert();
+
+		CString sCriteria = pEntry->GetAttribute(CRITERIA_ATTRIB);
+		if (error = pNewEntry->Criteria.Parse(sCriteria, 0, &Ctx.sError))
+			return error;
+
+		pNewEntry->Count.LoadFromXML(pEntry->GetAttribute(COUNT_ATTRIB));
+		if (pNewEntry->Count.IsEmpty())
+			pNewEntry->Count.SetConstant(1);
+
+		if (error = IItemGenerator::CreateFromXML(Ctx, pEntry, &pNewEntry->pEntry))
+			return error;
+		}
+
+	m_pComputedSystem = NULL;
+	m_sComputedAttribs = NULL_STR;
+
+	return NOERROR;
+	}
+
+ALERROR CLocationCriteriaTableOfItemGenerators::OnDesignLoadComplete (SDesignLoadCtx &Ctx)
+
+//	OnDesignLoadComplete
+//
+//	Bind design
+
+	{
+	ALERROR error;
+	int i;
+
+	m_pComputedSystem = NULL;
+	m_sComputedAttribs = NULL_STR;
 
 	for (i = 0; i < m_Table.GetCount(); i++)
 		{

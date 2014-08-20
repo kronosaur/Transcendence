@@ -690,7 +690,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Create any items on the station
 
-	if (error = pStation->CreateRandomItems(pType->GetRandomItemTable(), pSystem->GetLevel()))
+	if (error = pStation->CreateRandomItems(pType->GetRandomItemTable(), pSystem))
 		{
 		if (retsError)
 			*retsError = CONSTLIT("Unable to create random items");

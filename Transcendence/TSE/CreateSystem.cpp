@@ -544,19 +544,7 @@ int ComputeLocationWeight (SSystemCreateCtx *pCtx,
 //	locations with the given criteria.
 
 	{
-	//	Check to see if either the label
-	//	or the node/system has the attribute.
-
-	bool bHasAttrib = (::HasModifier(sLocationAttribs, sAttrib)
-			|| pCtx->pSystem->HasAttribute(vPos, sAttrib));
-
-	//	Compute the frequency of the given attribute
-
-	int iAttribFreq = g_pUniverse->GetAttributeDesc().GetLocationAttribFrequency(sAttrib);
-
-	//	Adjust probability based on the match strength
-
-	return CAttributeCriteria::CalcWeightAdj(bHasAttrib, dwMatchStrength, iAttribFreq);
+	return CAttributeCriteria::CalcLocationWeight(pCtx->pSystem, sLocationAttribs, vPos, sAttrib, dwMatchStrength);
 	}
 
 int ComputeStationWeight (SSystemCreateCtx *pCtx, CStationType *pType, const CString &sAttrib, DWORD dwMatchStrength)
