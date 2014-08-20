@@ -1077,13 +1077,7 @@
 			/>
 
 		<Items>
-			<Item count="1d6" item="&itHeliumAssembly;"/>
-			<Table>
-				<Null chance="20"/>
-				<Item chance="35" count="1d4" item="&itXenotiteOre;"/>
-				<Item chance="25" count="1d4" item="&itPteracniumOre;"/>
-				<Item chance="20" count="1d4" item="&itChronimiumGas;"/>
-			</Table>
+			<Item count="1d6" item="&itXenotiteFuelRod;"/>
 		</Items>
 
 		<Image imageID="&rsMediumShips2;" imageX="704" imageY="0" imageWidth="64" imageHeight="64"/>
@@ -1093,6 +1087,18 @@
 		</Effects>
 		
 		<Events>
+			<OnCreate>
+				(if (geq (random 1 100) 20)
+					(sysAddRandomOreByValue gSource
+						(@ 
+							(list 0 
+								20 50 100 200 500 1000 2000 5000 10000 20000)
+							(sysGetLevel)
+							)
+						)
+					)
+			</OnCreate>
+			
 			<OnDestroy>
 				(if (eq (shpGetOrder gSource) 'mine)
 					(objFireEvent (shpGetOrderTarget gSource) "OnMinerDestroyed")
@@ -1208,8 +1214,7 @@
 		</Devices>
 
 		<Items>
-			<Item count="8d12"	item="&itXenotiteOre;" />
-			<Item count="5d12"	item="&itPteracniumOre;" />
+			<Lookup count="4d8"	table="&tbAsteroidOre;"/>
 			<Item count="4d12"	item="&itChronimiumGas;" />
 		</Items>
 

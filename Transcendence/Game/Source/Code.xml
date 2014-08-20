@@ -881,6 +881,18 @@
 			
 			; Star system functions  -------------------------------------------
 			
+			(setq sysAddRandomOreByValue (lambda (destObj value)
+				(block (
+					(loops 20)
+					(valuePerLoop (divide value loops))
+					)
+					
+					(for i 1 loops
+						(objAddItemByValue destObj (itmCreate (sysGetRandomOreType) 1) valuePerLoop 'credit)
+						)
+					)
+				))
+			
 			(setq sysGetRandomOreType (lambda ()
 			
 			; Returns a random ore type appropriate to the system. This function

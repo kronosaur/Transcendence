@@ -226,14 +226,6 @@
 					level=			"1"
 					levelCurve=		"2"
 					/>
-			<Table>
-				<Item chance="30"	count="8d12"	item="&itTitaniumOre;" />
-				<Item chance="20"	count="8d12"	item="&itPlasteelOre;" />
-				<Item chance="20"	count="5d12"	item="&itPalladiumOre;" />
-				<Item chance="15"	count="5d12"	item="&itCeralloyOre;" />
-				<Item chance="10"	count="3d12"	item="&itXenotiteOre;" />
-				<Item chance="5"	count="3d12"	item="&itDuralloyOre;" />
-			</Table>
 		</Items>
 
 		<Trade currency="credit" max="10000" replenish="500">
@@ -285,6 +277,19 @@
 		</StaticData>
 
 		<Events>
+			<OnCreate>
+				;	Add ore to sell based on system ore frequency
+				
+				(sysAddRandomOreByValue gSource
+					(@ 
+						(list 0 
+							2000 5000 10000 20000 50000 
+							100000 200000 500000 1000000 2000000)
+						(sysGetLevel)
+						)
+					)
+			</OnCreate>
+			
 			<GetGlobalAchievements>
 				(block (theList)
 					(if (gr (typGetGlobalData &stMiningColony; "totalMissionCount") 0)
