@@ -4823,7 +4823,7 @@
 			frequency=			"rare"
 			numberAppearing=	"1d4"
 			mass=				"5000"
-			attributes=			"MinorItem; NotForSale"
+			attributes=			"minorItem, notForSale, ranx"
 
 			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
 			>
@@ -4837,6 +4837,109 @@
 				repairTech=	"6"
 				installCostAdj="150"
 				/>
+	</ItemType>
+
+	<!-- Kiloton Cannon -->
+
+	<ItemType UNID="&itKilotonCannon;"
+			name=				"kiloton cannon"
+			attributes=			"majorItem, military, ranx, specialty"
+			  
+			level=				"7"
+			frequency=			"uncommon"
+
+			value=				"45000"
+			mass=				"4000"
+			  
+			description=		"This heavy nuclear cannon requires kiloton cannon shells."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"20"
+				powerUse=			"100"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itKilotonCannonShell;"
+						type=			"missile"
+
+						damage=			"thermo:1d8+1; WMD4"
+						missileSpeed=	"50"
+						lifetime=		"120"
+						hitPoints=		"15"
+
+						failsafe=		"10"
+
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<ParticleJet
+								emitRate=			"20"
+								emitSpeed=			"40-50"
+								particleLifetime=	"10-30"
+								spreadAngle=		"2"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"3"
+										primaryColor=	"#effeff"
+										secondaryColor=	"#5b777a"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
+						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<HitEffect
+							sound="&snArmorHit1;"
+							>
+						<Flare
+								style=			"fadingBlast"
+								radius=			"150"
+								primaryColor=	"0xff, 0xff, 0xf0"
+								lifetime=		"8"
+								/>
+					</HitEffect>
+
+					<Fragment 
+							count=				"48"
+							type=				"missile"
+
+							damage=				"thermo:1d8+2; WMD4"
+							missileSpeed=		"70-90"
+							lifetime=			"5"
+							
+							effect=				"&efThermoShellDefault;"
+							>
+					</Fragment>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kiloton Cannon Shell -->
+
+	<ItemType UNID="&itKilotonCannonShell;"
+			name=				"kiloton cannon shell"
+			attributes=			"consumable, missile, ranx"
+			  
+			level=				"6"
+			frequency=			"common"
+			numberAppearing=	"1d20"
+
+			value=				"50"
+			mass=				"150"
+			  
+			description=		"This shell cartridge is used by the kiloton cannon."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
 	<!-- Ranx Gunship -->
@@ -5291,6 +5394,44 @@
 			name="Sapiens Preservation Society"
 			alignment="destructive chaos"
 			/>
+
+	<!-- Actinide Waste Cannon -->
+
+	<ItemType UNID="&itWasteCannon;"
+			name=				"actinide waste cannon"
+			attributes=			"illegal, majorItem, sapiens, notStandard;"
+			  
+			level=				"4"
+			frequency=			"rare"
+
+			value=				"3500"
+			mass=				"6000"
+			  
+			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"30"
+
+				type=				"missile"
+				repeating=			"3"
+
+				hitPoints=			"5"
+				lifetime=			"60"
+				damage=				"blast:1d8; radiation1; WMD1"
+				powerUse=			"60"
+
+				missileSpeed=		"20"
+				sound=				"&snLaserCannon;"
+				>
+
+			<Effect>
+				<Image imageID="&rsMediumExplosions;" imageX="0" imageY="128" imageWidth="64" imageHeight="64" imageFrameCount="16" imageTicksPerFrame="5" blend="brighten" />
+			</Effect>
+		</Weapon>
+	</ItemType>
 
 	<!-- Plague Gunship -->
 

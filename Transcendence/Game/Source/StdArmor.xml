@@ -32,7 +32,7 @@
 
 	<ItemType UNID="&itLightReactiveArmor;"
 			name=				"[segment(s) of ]light reactive armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"1"
 			frequency=			"uncommon"
@@ -56,7 +56,7 @@
 
 	<ItemType UNID="&itUltraLightTitaniumPlate;"
 			name=				"[segment(s) of ]ultra-light titanium armor"
-			attributes=			"minorItem, nami"
+			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"1"
 			frequency=			"common"
@@ -79,7 +79,7 @@
 
 	<ItemType UNID="&itLightTitaniumPlate;"
 			name=				"[segment(s) of ]light titanium armor"
-			attributes=			"minorItem, nami"
+			attributes=			"commonwealth, minorItem, nami"
 
 			level=				"1"
 			frequency=			"uncommon"
@@ -103,7 +103,7 @@
 
 	<ItemType UNID="&itTitaniumPlate;"
 			name=				"[segment(s) of ]titanium armor"
-			attributes=			"minorItem, nami"
+			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"1"
 			frequency=			"uncommon"
@@ -129,7 +129,7 @@
 
 	<ItemType UNID="&itCeramicPlate;"
 			name=				"[segment(s) of ]ceramic armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"2"
 			frequency=			"uncommon"
@@ -154,7 +154,7 @@
 
 	<ItemType UNID="&itReactiveArmor;"
 			name=				"[segment(s) of ]reactive armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"2"
 			frequency=			"uncommon"
@@ -179,7 +179,7 @@
 
 	<ItemType UNID="&itHeavyTitaniumPlate;"
 			name=				"[segment(s) of ]heavy titanium armor"
-			attributes=			"minorItem, nami"
+			attributes=			"commonwealth, minorItem, nami"
 			  
 			level=				"2"
 			frequency=			"common"
@@ -203,7 +203,7 @@
 
 	<ItemType UNID="&itXMHArmor;"
 			name=				"[segment(s) of ]XMH armor"
-			attributes=			"minorItem, solon"
+			attributes=			"commonwealth, minorItem, solon"
 			  
 			level=				"2"
 			frequency=			"rare"
@@ -233,7 +233,7 @@
 
 	<ItemType UNID="&itHeavyCeramicPlate;"
 			name=				"[segment(s) of ]heavy ceramic armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"3"
 			frequency=			"uncommon"
@@ -258,7 +258,7 @@
 
 	<ItemType UNID="&itPhotorepairArmor;"
 			name=				"[segment(s) of ]photo-organic armor"
-			attributes=			"minorItem, solon, specialty"
+			attributes=			"commonwealth, minorItem, solon, specialty"
 			  
 			level=				"3"
 			frequency=			"rare"
@@ -288,7 +288,7 @@
 
 	<ItemType UNID="&itLightPlasteelPlate;"
 			name=				"[segment(s) of ]light plasteel armor"
-			attributes=			"ei, minorItem"
+			attributes=			"commonwealth, ei, minorItem"
 			  
 			level=				"3"
 			frequency=			"common"
@@ -312,7 +312,7 @@
 
 	<ItemType UNID="&itPolymeshArmor;"
 			name=				"[segment(s) of ]polymesh armor"
-			attributes=			"minorItem, solon, specialty"
+			attributes=			"commonwealth, minorItem, solon, specialty"
 			  
 			level=				"3"
 			frequency=			"rare"
@@ -339,7 +339,7 @@
 
 	<ItemType UNID="&itHardenedReactiveArmor;"
 			name=				"[segment(s) of ]hardened reactive armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"3"
 			frequency=			"rare"
@@ -369,7 +369,7 @@
 
 	<ItemType UNID="&itHeavyReactiveArmor;"
 			name=				"[segment(s) of ]heavy reactive armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"3"
 			frequency=			"uncommon"
@@ -396,7 +396,7 @@
 
 	<ItemType UNID="&itPlasteelPlate;"
 			name=				"[segment(s) of ]plasteel armor"
-			attributes=			"ei, minorItem"
+			attributes=			"commonwealth, ei, minorItem"
 			  
 			level=				"4"
 			frequency=			"common"
@@ -420,7 +420,7 @@
 
 	<ItemType UNID="&itPolyceramicPlate;"
 			name=				"[segment(s) of ]polyceramic armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"4"
 			frequency=			"common"
@@ -445,7 +445,7 @@
 
 	<ItemType UNID="&itAdvancedReactiveArmor;"
 			name=				"[segment(s) of ]advanced reactive armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"4"
 			frequency=			"uncommon"
@@ -470,7 +470,7 @@
 
 	<ItemType UNID="&itSolarArmor;"
 			name=				"[segment(s) of ]solar armor"
-			attributes=			"minorItem, solon"
+			attributes=			"commonwealth, minorItem, solon"
 			  
 			level=				"4"
 			frequency=			"rare"
@@ -501,7 +501,7 @@
 
 	<ItemType UNID="&itTevlarCompositeArmor;"
 			name=				"[segment(s) of ]Tevlar-composite armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"4"
 			frequency=			"uncommon"
@@ -529,7 +529,7 @@
 
 	<ItemType UNID="&itV10PoweredArmor;"
 			name=				"[segment(s) of ]V10 powered armor"
-			attributes=			"minorItem, rasiermesser, specialty"
+			attributes=			"commonwealth, minorItem, rasiermesser, specialty"
 			  
 			level=				"4"
 			frequency=			"rare"
@@ -560,7 +560,7 @@
 
 	<ItemType UNID="&itLightBlastPlate;"
 			name=				"[segment(s) of ]light blast plate"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"5"
 			frequency=			"uncommon"
@@ -585,7 +585,7 @@
 
 	<ItemType UNID="&itCeralloyArmor;"
 			name=				"[segment(s) of ]ceralloy armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"5"
 			frequency=			"common"
@@ -612,7 +612,7 @@
 
 	<ItemType UNID="&itHardenedPlasteelPlate;"
 			name=				"[segment(s) of ]hardened plasteel armor"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"5"
 			frequency=			"rare"
@@ -642,7 +642,7 @@
 
 	<ItemType UNID="&itHeavyPlasteelPlate;"
 			name=				"[segment(s) of ]heavy plasteel armor"
-			attributes=			"ei, minorItem"
+			attributes=			"commonwealth, ei, minorItem"
 			  
 			level=				"5"
 			frequency=			"common"
@@ -668,7 +668,7 @@
 
 	<ItemType UNID="&itBlastPlate;"
 			name=				"[segment(s) of ]blast plate"
-			attributes=			"makayev, minorItem"
+			attributes=			"commonwealth, makayev, minorItem"
 			  
 			level=				"6"
 			frequency=			"common"
@@ -695,7 +695,7 @@
 
 	<ItemType UNID="&itHeavyCeralloyArmor;"
 			name=				"[segment(s) of ]heavy ceralloy armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"6"
 			frequency=			"uncommon"
@@ -722,7 +722,7 @@
 
 	<ItemType UNID="&itDuralloyArmor;"
 			name=				"[segment(s) of ]Duralloy armor"
-			attributes=			"kabuto, minorItem, specialty"
+			attributes=			"commonwealth, kabuto, minorItem, specialty"
 			  
 			level=				"6"
 			frequency=			"rare"
@@ -750,7 +750,7 @@
 
 	<ItemType UNID="&itLightOmskArmor;"
 			name=				"[segment(s) of ]light Omsk armor"
-			attributes=			"makayev, minorItem, omskArmor, omskDS, specialty"
+			attributes=			"commonwealth, makayev, minorItem, omskArmor, omskDS, specialty"
 			  
 			level=				"6"
 			frequency=			"common"
@@ -777,7 +777,7 @@
 
 	<ItemType UNID="&itAdvancedPlasteelPlate;"
 			name=				"[segment(s) of ]advanced plasteel armor"
-			attributes=			"ei, minorItem, specialty"
+			attributes=			"commonwealth, ei, minorItem, specialty"
 			  
 			level=				"6"
 			frequency=			"uncommon"
@@ -801,7 +801,7 @@
 
 	<ItemType UNID="&itStealthPlate;"
 			name=				"[segment(s) of ]stealth armor"
-			attributes=			"military, minorItem, pacificDefense"
+			attributes=			"commonwealth, military, minorItem, pacificDefense"
 			  
 			level=				"6"
 			frequency=			"rare"
@@ -831,7 +831,7 @@
 
 	<ItemType UNID="&itHeavyBlastPlate;"
 			name=				"[segment(s) of ]heavy blast plate"
-			attributes=			"makayev, military, minorItem"
+			attributes=			"commonwealth, makayev, military, minorItem"
 			  
 			level=				"7"
 			frequency=			"uncommon"
@@ -856,7 +856,7 @@
 
 	<ItemType UNID="&itAdvancedCeralloyArmor;"
 			name=				"[segment(s) of ]advanced ceralloy armor"
-			attributes=			"minorItem, rasiermesser"
+			attributes=			"commonwealth, minorItem, rasiermesser"
 			  
 			level=				"7"
 			frequency=			"common"
@@ -884,7 +884,7 @@
 
 	<ItemType UNID="&itGusokuArmor;"
 			name=				"[segment(s) of ]Gusoku armor"
-			attributes=			"bushido, military, minorItem, specialty"
+			attributes=			"bushido, commonwealth, military, minorItem, specialty"
 			  
 			level=				"7"
 			frequency=			"uncommon"
@@ -911,7 +911,7 @@
 
 	<ItemType UNID="&itP120HexphaseArmor;"
 			name=				"[segment(s) of ]P150 Hexphase armor"
-			attributes=			"hexphase, military, minorItem, pacificDefense"
+			attributes=			"commonwealth, hexphase, military, minorItem, pacificDefense"
 			  
 			level=				"7"
 			frequency=			"rare"
@@ -936,7 +936,7 @@
 
 	<ItemType UNID="&itLightOrthoSteel;"
 			name=				"[segment(s) of ]light orthosteel armor"
-			attributes=			"ei, military, minorItem"
+			attributes=			"commonwealth, ei, military, minorItem"
 			  
 			level=				"7"
 			frequency=			"uncommon"
@@ -962,7 +962,7 @@
 
 	<ItemType UNID="&itCarbideCarapace;"
 			name=				"[segment(s) of ]carbide carapace"
-			attributes=			"bushido, military, minorItem"
+			attributes=			"bushido, commonwealth, military, minorItem"
 			  
 			level=				"8"
 			frequency=			"rare"
@@ -988,7 +988,7 @@
 
 	<ItemType UNID="&itMediumOmskArmor;"
 			name=				"[segment(s) of ]medium Omsk armor"
-			attributes=			"makayev, military, minorItem, omskArmor, omskDS, specialty"
+			attributes=			"commonwealth, makayev, military, minorItem, omskArmor, omskDS, specialty"
 			  
 			level=				"8"
 			frequency=			"rare"
@@ -1015,7 +1015,7 @@
 
 	<ItemType UNID="&itP210HexphaseArmor;"
 			name=				"[segment(s) of ]P450 Hexphase armor"
-			attributes=			"hexphase, military, minorItem, pacificDefense"
+			attributes=			"commonwealth, hexphase, military, minorItem, pacificDefense"
 			  
 			level=				"8"
 			frequency=			"rare"
@@ -1040,7 +1040,7 @@
 
 	<ItemType UNID="&itLightIthaliumArmor;"
 			name=				"[segment(s) of ]light ithalium armor"
-			attributes=			"minorItem, military, nami"
+			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"8"
 			frequency=			"uncommon"
@@ -1065,7 +1065,7 @@
 
 	<ItemType UNID="&itOrthoSteel;"
 			name=				"[segment(s) of ]orthosteel armor"
-			attributes=			"ei, military, minorItem"
+			attributes=			"commonwealth, ei, military, minorItem"
 			  
 			level=				"8"
 			frequency=			"common"
@@ -1089,7 +1089,7 @@
 
 	<ItemType UNID="&itQuadroCarbideArmor;"
 			name=				"[segment(s) of ]quadrocarbide armor"
-			attributes=			"minorItem, military, taikon"
+			attributes=			"commonwealth, minorItem, military, taikon"
 			  
 			level=				"8"
 			frequency=			"uncommon"
@@ -1118,7 +1118,7 @@
 
 	<ItemType UNID="&itTransuranicPlate;"
 			name=				"[segment(s) of ]transuranic armor"
-			attributes=			"makayev, military, minorItem"
+			attributes=			"commonwealth, makayev, military, minorItem"
 			  
 			level=				"8"
 			frequency=			"rare"
@@ -1148,7 +1148,7 @@
 
 	<ItemType UNID="&itV300PoweredArmor;"
 			name=				"[segment(s) of ]V300 powered armor"
-			attributes=			"minorItem, military, rasiermesser"
+			attributes=			"commonwealth, minorItem, military, rasiermesser"
 			  
 			level=				"8"
 			frequency=			"rare"
@@ -1179,7 +1179,7 @@
 
 	<ItemType UNID="&itHexaCarbideArmor;"
 			name=				"[segment(s) of ]hexacarbide armor"
-			attributes=			"minorItem, military, taikon"
+			attributes=			"commonwealth, minorItem, military, taikon"
 			  
 			level=				"9"
 			frequency=			"uncommon"
@@ -1208,7 +1208,7 @@
 
 	<ItemType UNID="&itHeavyOmskArmor;"
 			name=				"[segment(s) of ]heavy Omsk armor"
-			attributes=			"makayev, military, minorItem, omskArmor, omskDS, specialty"
+			attributes=			"commonwealth, makayev, military, minorItem, omskArmor, omskDS, specialty"
 			  
 			level=				"9"
 			frequency=			"rare"
@@ -1235,7 +1235,7 @@
 
 	<ItemType UNID="&itP1000HexphaseArmor;"
 			name=				"[segment(s) of ]P1000 Hexphase armor"
-			attributes=			"hexphase, military, minorItem, pacificDefense"
+			attributes=			"commonwealth, hexphase, military, minorItem, pacificDefense"
 			  
 			level=				"9"
 			frequency=			"veryrare"
@@ -1262,7 +1262,7 @@
 
 	<ItemType UNID="&itIthaliumArmor;"
 			name=				"[segment(s) of ]ithalium armor"
-			attributes=			"minorItem, military, nami"
+			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"9"
 			frequency=			"uncommon"
@@ -1287,7 +1287,7 @@
 
 	<ItemType UNID="&itHeavyOrthoSteel;"
 			name=				"[segment(s) of ]heavy orthosteel armor"
-			attributes=			"ei, minorItem, military"
+			attributes=			"commonwealth, ei, minorItem, military"
 			  
 			level=				"9"
 			frequency=			"common"
@@ -1313,7 +1313,7 @@
 
 	<ItemType UNID="&itDiamondLatticeArmor;"
 			name=				"[segment(s) of ]diamond lattice armor"
-			attributes=			"assemblerCorp, minorItem, military"
+			attributes=			"assemblerCorp, commonwealth, minorItem, military"
 			  
 			level=				"10"
 			frequency=			"common"
@@ -1337,7 +1337,7 @@
 
 	<ItemType UNID="&itHeavyIthaliumArmor;"
 			name=				"[segment(s) of ]heavy ithalium armor"
-			attributes=			"minorItem, military, nami"
+			attributes=			"commonwealth, minorItem, military, nami"
 			  
 			level=				"10"
 			frequency=			"uncommon"
@@ -1362,7 +1362,7 @@
 
 	<ItemType UNID="&itOctoCarbideArmor;"
 			name=				"[segment(s) of ]octocarbide armor"
-			attributes=			"minorItem, military, taikon"
+			attributes=			"commonwealth, minorItem, military, taikon"
 			  
 			level=				"10"
 			frequency=			"uncommon"

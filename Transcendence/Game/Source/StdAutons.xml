@@ -752,7 +752,7 @@
 
 	<ItemType UNID="&itAutoSentinel;"
 			name=				"AutoSentinel&#xae;| AutoSentinels&#xae;"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 			  
 			level=				"3"
 			frequency=			"common"
@@ -781,7 +781,7 @@
 
 	<ItemType UNID="&it300DDefenderAuton;"
 			name=				"300D defender auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 			  
 			level=				"4"
 			frequency=			"rare"
@@ -810,7 +810,7 @@
 
 	<ItemType UNID="&it310AAegisAuton;"
 			name=				"310A aegis auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 			  
 			level=				"4"
 			frequency=			"rare"
@@ -839,7 +839,7 @@
 
 	<ItemType UNID="&itMuleAuton;"
 			name=				"330M mule auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 
 			level=				"4"
 			frequency=			"rare"
@@ -868,7 +868,7 @@
 
 	<ItemType UNID="&itDefectiveAuton;"
 			name=				"defective auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 			  
 			level=				"4"
 			frequency=			"uncommon"
@@ -897,7 +897,7 @@
 
 	<ItemType UNID="&it1MBattleAuton;"
 			name=				"1M battle auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 			  
 			level=				"5"
 			frequency=			"rare"
@@ -926,7 +926,7 @@
 
 	<ItemType UNID="&itExplorerAuton;"
 			name=				"TX3 explorer auton"
-			attributes=			"auton, minorItem, taikon"
+			attributes=			"auton, commonwealth, minorItem, taikon"
 			  
 			level=				"5"
 			frequency=			"veryrare"
@@ -955,7 +955,7 @@
 
 	<ItemType UNID="&it1MiBattleAuton;"
 			name=				"1M/i battle auton"
-			attributes=			"Auton; MinorItem"
+			attributes=			"auton, commonwealth, minorItem"
 
 			level=				"6"
 			frequency=			"rare"
