@@ -1149,6 +1149,15 @@
 	<!ENTITY trStdTreasureLevel8		"0x00100020">
 	<!ENTITY trStdTreasureLevel9		"0x00100021">
 	<!ENTITY trStdTreasureLevel10		"0x00100022">
+	<!ENTITY rsItems2					"0x00100023">
+	<!ENTITY rsItems3					"0x00100024">
+	<!ENTITY rsItems4					"0x00100025">
+	<!ENTITY rsItems5					"0x00100026">
+	<!ENTITY rsItems6					"0x00100027">
+	<!ENTITY rsItems7					"0x00100028">
+	<!ENTITY rsItems8					"0x00100029">
+	<!ENTITY rsItems9					"0x0010002A">
+	<!ENTITY rsItems10					"0x0010002B">
 	
 	<!-- COMMONWEALTH 0010 -->
 	

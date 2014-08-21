@@ -2175,4 +2175,16 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
+<!-- RESOURCES -->
+
+	<Image UNID="&rsItems2;"	bitmap="Resources\Items2.jpg"	bitmask="Resources\Items2Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems3;"	bitmap="Resources\Items3.jpg"	bitmask="Resources\Items3Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems4;"	bitmap="Resources\Items4.jpg"	bitmask="Resources\Items4Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems5;"	bitmap="Resources\Items5.jpg"	bitmask="Resources\Items5Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems6;"	bitmap="Resources\Items6.jpg"	bitmask="Resources\Items6Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems7;"	bitmap="Resources\Items7.jpg"	bitmask="Resources\Items7Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems8;"	bitmap="Resources\Items8.jpg"	bitmask="Resources\Items8Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems9;"	bitmap="Resources\Items9.jpg"	bitmask="Resources\Items9Mask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsItems10;"	bitmap="Resources\Items10.jpg"	bitmask="Resources\Items10Mask.bmp"  loadOnUse="true"/>
+	
 </TranscendenceModule>
