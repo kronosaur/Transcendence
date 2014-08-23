@@ -17,7 +17,7 @@
 			sortName=			"Dvalin armor"
 			>
 
-		<Image imageID="&rsItemsRasiermesser4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems7;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"200"

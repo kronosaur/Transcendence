@@ -124,7 +124,7 @@
 			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"100"
@@ -157,7 +157,7 @@
 			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"150"
@@ -188,7 +188,7 @@
 			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"250"
@@ -4828,7 +4828,7 @@
 			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"75"

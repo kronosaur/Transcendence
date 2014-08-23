@@ -115,9 +115,11 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      /criteria:n           Type criteria of images to show.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/sort:xxx]           Sort worlds in given order.\n");
 		printf("         largest               Larger objects first.\n");
+		printf("         level                 By level (ascending).\n");
 		printf("         name                  By name.\n");
 		printf("         smallest              Smaller objects first.\n");
 		printf("      [/textBoxesOnly]      Output textboxes only.\n");
