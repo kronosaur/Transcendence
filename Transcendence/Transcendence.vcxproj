@@ -218,6 +218,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CChooseAdventureSession.cpp" />
+    <ClCompile Include="CDockScreenCustomItemList.cpp" />
+    <ClCompile Include="CDockScreenCustomList.cpp" />
+    <ClCompile Include="CDockScreenItemList.cpp" />
+    <ClCompile Include="CDockScreenList.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CGameSession.cpp" />
@@ -258,6 +262,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="IDockScreenDisplay.cpp" />
     <ClCompile Include="Main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug in Program Files|Win32'">Disabled</Optimization>
@@ -479,7 +484,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h" />
+    <ClInclude Include="CGAreas.h" />
     <ClInclude Include="Credits.h" />
+    <ClInclude Include="DockScreen.h" />
+    <ClInclude Include="DockScreenDisplayImpl.h" />
     <ClInclude Include="PreComp.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sessions.h" />

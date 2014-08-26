@@ -1774,6 +1774,7 @@ class CItem
 
 		static CString GenerateCriteria (const CItemCriteria &Criteria);
 		static void InitCriteriaAll (CItemCriteria *retCriteria);
+		static const CItem &NullItem (void) { return CItem::m_NullItem; }
 		static void ParseCriteria (const CString &sCriteria, CItemCriteria *retCriteria);
 		bool MatchesCriteria (const CItemCriteria &Criteria) const;
 

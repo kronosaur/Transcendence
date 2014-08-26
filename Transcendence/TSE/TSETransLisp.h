@@ -53,6 +53,7 @@ class CCodeChainCtx
 		void RestoreVars (void);
 		ICCItem *Run (ICCItem *pCode);
 		ICCItem *Run (const SEventHandlerDesc &Event);
+		bool RunEvalString (const CString &sString, bool bPlain, CString *retsResult);
 		ICCItem *RunLambda (ICCItem *pCode);
 		void SaveAndDefineDataVar (ICCItem *pData);
 		void SaveAndDefineItemVar (const CItem &Item);

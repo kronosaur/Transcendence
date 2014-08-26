@@ -231,6 +231,21 @@
     <ClCompile Include="CGameSession.cpp">
       <Filter>Source Files\Game Session</Filter>
     </ClCompile>
+    <ClCompile Include="CDockScreenList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenCustomItemList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenItemList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockScreenCustomList.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="IDockScreenDisplay.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -249,6 +264,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGAreas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DockScreenDisplayImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
