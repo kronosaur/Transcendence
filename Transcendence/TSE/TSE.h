@@ -672,14 +672,26 @@ class CSystemCreateStats
 			bool bHasStation;
 			};
 
+		struct SFillLocationsTable
+			{
+			int iLevel;
+			CString sSystemName;
+			CSystemType *pSystemType;
+			CString sStationCriteria;
+			TProbabilityTable<CStationType *> Table;
+			};
+
 		CSystemCreateStats (void);
 		~CSystemCreateStats (void);
 
 		void AddLabel (const CString &sAttributes);
+		void AddFillLocationsTable (CSystem *pSystem, const TProbabilityTable<int> &LocationTable, const CString &sStationCriteria);
 		inline void AddPermuteAttrib (const CString &sAttrib) { m_PermuteAttribs.Insert(sAttrib); }
 		void AddStationTable (CSystem *pSystem, const CString &sStationCriteria, const CString &sLocationAttribs, TArray<CStationTableCache::SEntry> &Table);
 		inline const SEncounterTable &GetEncounterTable (int iIndex) const { return m_EncounterTables[iIndex]; }
 		inline int GetEncounterTableCount (void) const { return m_EncounterTables.GetCount(); }
+		inline const SFillLocationsTable &GetFillLocationsTable (int iIndex) const { return m_FillLocationsTables[iIndex]; }
+		inline int GetFillLocationsTableCount (void) const { return m_FillLocationsTables.GetCount(); }
 		inline int GetLabelAttributesCount (void) { return m_LabelAttributeCounts.GetCount(); }
 		void GetLabelAttributes (int iIndex, CString *retsAttribs, int *retiCount);
 		inline int GetTotalLabelCount (void) { return m_iLabelCount; }
@@ -708,6 +720,7 @@ class CSystemCreateStats
 		//	Encounter tables
 
 		TArray<SEncounterTable> m_EncounterTables;
+		TArray<SFillLocationsTable> m_FillLocationsTables;
 	};
 
 class CSystemCreateEvents

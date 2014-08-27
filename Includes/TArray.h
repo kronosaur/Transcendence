@@ -460,6 +460,8 @@ template <class VALUE> class TProbabilityTable
 
 		inline int GetCount (void) const { return m_Table.GetCount(); }
 
+		inline int GetTotalChance (void) const { return m_iTotalChance; }
+
 		void Insert (const VALUE &NewValue, int iChance)
 			{
 			ASSERT(iChance >= 0);

@@ -9,6 +9,7 @@ class CDesignType;
 class CEconomyType;
 class CItemCtx;
 class CExtension;
+class CLocationDef;
 class COrbit;
 struct CItemCriteria;
 struct SDesignLoadCtx;
@@ -297,6 +298,8 @@ class CAttributeCriteria
 			matchExcluded =					0x00020000,
 			};
 
+		int AdjLocationWeight (CSystem *pSystem, CLocationDef *pLoc, int iOriginalWeight = 1000) const;
+		int AdjStationWeight (CStationType *pType, int iOriginalWeight = 1000) const;
 		inline int GetCount (void) const { return m_Attribs.GetCount(); }
 		const CString &GetAttribAndRequired (int iIndex, bool *retbRequired) const;
 		const CString &GetAttribAndWeight (int iIndex, DWORD *retdwMatchStrength, bool *retbIsSpecial = NULL) const;

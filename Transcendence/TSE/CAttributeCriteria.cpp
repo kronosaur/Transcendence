@@ -10,6 +10,56 @@
 inline bool IsWeightChar (char *pPos) { return (*pPos == '+' || *pPos == '-' || *pPos == '*' || *pPos == '!'); }
 inline bool IsDelimiterChar (char *pPos, bool bIsSpecialAttrib = false) { return (*pPos == '\0' || *pPos == ',' || *pPos == ';' || (!bIsSpecialAttrib && strIsWhitespace(pPos))); }
 
+int CAttributeCriteria::AdjLocationWeight (CSystem *pSystem, CLocationDef *pLoc, int iOriginalWeight) const
+
+//	AdjLocationWeight
+//
+//	Returns the adjusted weight for the given location.
+
+	{
+	int i;
+	int iResult = iOriginalWeight;
+
+	for (i = 0; i < GetCount(); i++)
+		{
+		DWORD dwMatchStrength;
+		const CString &sAttrib = GetAttribAndWeight(i, &dwMatchStrength);
+
+		int iAdj = CalcLocationWeight(pSystem, pLoc->GetAttributes(), pLoc->GetOrbit().GetObjectPos(), sAttrib, dwMatchStrength);
+		if (iAdj == 0)
+			return 0;
+
+		iResult = iResult * iAdj / 1000;
+		}
+
+	return iResult;
+	}
+
+int CAttributeCriteria::AdjStationWeight (CStationType *pType, int iOriginalWeight) const
+
+//	AdjStationWeight
+//
+//	Returns the adjusted weight for the station given this set of criteria.
+
+	{
+	int i;
+	int iResult = iOriginalWeight;
+
+	for (i = 0; i < GetCount(); i++)
+		{
+		DWORD dwMatchStrength;
+		const CString &sAttrib = GetAttribAndWeight(i, &dwMatchStrength);
+
+		int iAdj = CalcWeightAdj(pType->HasAttribute(sAttrib), dwMatchStrength);
+		if (iAdj == 0)
+			return 0;
+
+		iResult = iResult * iAdj / 1000;
+		}
+
+	return iResult;
+	}
+
 int CAttributeCriteria::CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength)
 
 //	CalcLocationWeight

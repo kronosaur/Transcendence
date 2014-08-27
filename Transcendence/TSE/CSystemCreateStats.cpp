@@ -85,6 +85,70 @@ void CSystemCreateStats::AddEntryPermutations (const CString &sPrefix, const TAr
 	AddEntryPermutations(sPrefix, Attribs, iPos + 1);
 	}
 
+void CSystemCreateStats::AddFillLocationsTable (CSystem *pSystem, const TProbabilityTable<int> &LocationTable, const CString &sStationCriteria)
+
+//	AddFillLocationsTable
+//
+//	Adds stats about <FillLocations>
+
+	{
+	int i, j;
+
+	if (LocationTable.GetCount() == 0)
+		return;
+
+	SFillLocationsTable *pEntry = m_FillLocationsTables.Insert();
+	pEntry->iLevel = pSystem->GetLevel();
+	pEntry->sSystemName = pSystem->GetName();
+	pEntry->pSystemType = pSystem->GetType();
+	pEntry->sStationCriteria = sStationCriteria;
+
+	//	Parse station criteria if we've got it.
+	//	NOTE: For now we only do enemies.
+
+	CString sEnemyStationCriteria = strPatternSubst(CONSTLIT("%s,%s"), sStationCriteria, CONSTLIT("*enemy"));
+	CAttributeCriteria StationCriteria;
+	StationCriteria.Parse(sEnemyStationCriteria, 0);
+
+	//	Start by generating a base probability for all station encounters 
+	//	relative to the system.
+
+	TProbabilityTable<CStationType *> BaseProb;
+	for (i = 0; i < g_pUniverse->GetStationTypeCount(); i++)
+		{
+		CStationType *pType = g_pUniverse->GetStationType(i);
+		int iBaseChance = StationCriteria.AdjStationWeight(pType, ((1000 / ftCommon) * pType->GetFrequencyForSystem(pSystem)));
+		if (iBaseChance > 0)
+			{
+			CAttributeCriteria LocationCriteria;
+			LocationCriteria.Parse(pType->GetLocationCriteria(), 0);
+
+			//	Average out our chance of ending up at one of the given locations.
+
+			int iTotal = 0;
+			for (j = 0; j < LocationTable.GetCount(); j++)
+				{
+				int iLocID = LocationTable[j];
+				CLocationDef *pLoc = pSystem->GetLocation(iLocID);
+
+				iTotal += LocationCriteria.AdjLocationWeight(pSystem, pLoc);
+				}
+
+			int iAverageChance = iTotal / LocationTable.GetCount();
+
+			//	Now adjust the base chance
+
+			int iChance = iBaseChance * iAverageChance / 1000;
+			if (iChance <= 0)
+				continue;
+
+			//	Add it to our table.
+
+			pEntry->Table.Insert(pType, iChance);
+			}
+		}
+	}
+
 void CSystemCreateStats::AddLabel (const CString &sAttributes)
 
 //	AddLabel

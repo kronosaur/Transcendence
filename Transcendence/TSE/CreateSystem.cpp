@@ -630,6 +630,11 @@ ALERROR DistributeStationsAtRandomLocations (SSystemCreateCtx *pCtx, CXMLElement
 
 	PushDebugStack(pCtx, strPatternSubst(CONSTLIT("FillLocations locationCriteria=%s stationCriteria=%s"), pDesc->GetAttribute(LOCATION_CRITERIA_ATTRIB), sStationCriteria));
 
+	//	If required, calculate stats
+
+	if (pCtx->pStats && bSeparateEnemies)
+		pCtx->pStats->AddFillLocationsTable(pCtx->pSystem, LocationTable, sStationCriteria);
+
 	//	Create the stations
 
 	for (i = 0; i < iCount; i++)

@@ -15,6 +15,7 @@
 #define DECOMPILE_SWITCH					CONSTLIT("decompile")
 #define DEBUG_SWITCH						CONSTLIT("debug")
 #define ENCOUNTER_COUNT_SWITCH				CONSTLIT("encountercount")
+#define ENCOUNTER_FREQ_SWITCH				CONSTLIT("encounterfreq")
 #define ENCOUNTER_SIM_SWITCH				CONSTLIT("encountersim")
 #define ENCOUNTER_TABLE_SWITCH				CONSTLIT("encountertable")
 #define ENTITIES_SWITCH						CONSTLIT("entities")
@@ -77,6 +78,13 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /decompile            Extracts resources from .tdb (overwrites existing).\n");
 		printf("       /dataFile:filename   TDB file to decompile.\n");
+		}
+	else if (pCmdLine->GetAttributeBool(ENCOUNTER_FREQ_SWITCH))
+		{
+		printf("  /encounterFreq        Outputs encounter tables.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/count]              Number of games to create.\n");
+		printf("      [/fillLocations]      Output tables from <FillLocations> directives.\n");
 		}
 	else if (pCmdLine->GetAttributeBool(ENCOUNTER_TABLE_SWITCH))
 		{
@@ -362,6 +370,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 			printf("  /itemsim              Simulation of items encountered.\n");
 		printf("  /itemtable            Item table.\n");
 		printf("  /encountercount       Counts encounters in a game.\n");
+		printf("  /encounterFreq        Outputs encounter tables.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
 		if (bDebug)
