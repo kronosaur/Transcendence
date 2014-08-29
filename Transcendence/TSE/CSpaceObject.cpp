@@ -6179,7 +6179,47 @@ bool CSpaceObject::SetItemProperty (const CItem &Item, const CString &sName, ICC
 			return false;
 			}
 
-		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), (pValue == NULL || !pValue->IsNil()));
+		//	Parse the parameter
+
+		bool bEnabled;
+		bool bSilent;
+		if (pValue == NULL)
+			{
+			bEnabled = true;
+			bSilent = false;
+			}
+		else if (pValue->IsIdentifier())
+			{
+			if (strEquals(pValue->GetStringValue(), CONSTLIT("silentDisabled")))
+				{
+				bEnabled = false;
+				bSilent = true;
+				}
+			else if (strEquals(pValue->GetStringValue(), CONSTLIT("silentEnabled")))
+				{
+				bEnabled = true;
+				bSilent = true;
+				}
+			else if (strEquals(pValue->GetStringValue(), CONSTLIT("disabled")))
+				{
+				bEnabled = false;
+				bSilent = false;
+				}
+			else
+				{
+				bEnabled = true;
+				bSilent = false;
+				}
+			}
+		else
+			{
+			bEnabled = !pValue->IsNil();
+			bSilent = false;
+			}
+
+		//	Do it.
+
+		pShip->EnableDevice(ItemList.GetItemAtCursor().GetInstalled(), bEnabled, bSilent);
 		}
 
 	else if (strEquals(sName, PROPERTY_HP))

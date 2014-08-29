@@ -833,7 +833,7 @@ class CShip : public CSpaceObject
 		void DamageCargo (SDamageCtx &Ctx);
 		void DamageDevice (CInstalledDevice *pDevice, SDamageCtx &Ctx);
 		void DamageDrive (SDamageCtx &Ctx);
-		void EnableDevice (int iDev, bool bEnable = true);
+		void EnableDevice (int iDev, bool bEnable = true, bool bSilent = false);
 		bool FindDeviceAtPos (const CVector &vPos, CInstalledDevice **retpDevice);
 		DeviceNames GetDeviceNameForCategory (ItemCategories iCategory);
 		int GetItemDeviceName (const CItem &Item) const;

@@ -441,7 +441,7 @@ class CPlayerShipController : public CObject, public IShipController
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage);
 		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker);
 		virtual void OnDestroyed (SDestroyCtx &Ctx);
-		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable);
+		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent = false);
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent);
 		virtual void OnDocked (CSpaceObject *pObj);
 		virtual void OnDockedObjChanged (CSpaceObject *pLocation);

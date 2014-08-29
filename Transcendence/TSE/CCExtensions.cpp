@@ -1558,7 +1558,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'charges charges\n"
 			"   'damaged [True|Nil]\n"
 			"   'disrupted [True|Nil|ticks]\n"
-			"   'enabled [True|Nil]\n"
+			"   'enabled [True|Nil|'silentDisabled|'silentEnabled]\n"
 			"   'fireArc Nil|(min max)|'omnidirectional\n"
 			"   'hp hitPoints\n"
 			"   'incCharges charges\n"

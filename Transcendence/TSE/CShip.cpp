@@ -1633,7 +1633,7 @@ void CShip::DisableDevice (CInstalledDevice *pDevice)
 		EnableDevice(iDev, false);
 	}
 
-void CShip::EnableDevice (int iDev, bool bEnable)
+void CShip::EnableDevice (int iDev, bool bEnable, bool bSilent)
 
 //	EnableDevice
 //
@@ -1651,7 +1651,7 @@ void CShip::EnableDevice (int iDev, bool bEnable)
 	CalcDeviceBonus();
 	m_pController->OnWeaponStatusChanged();
 	m_pController->OnArmorRepaired(-1);
-	m_pController->OnDeviceEnabledDisabled(iDev, bEnable);
+	m_pController->OnDeviceEnabledDisabled(iDev, bEnable, bSilent);
 
 	//	Fire event
 

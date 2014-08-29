@@ -961,14 +961,14 @@ void CPlayerShipController::OnDamaged (const CDamageSource &Cause, CInstalledArm
 
 	m_pTrans->Autopilot(false);
 
-	//	Heavy damage (>= 5%) causes screen flash
+	//	Heavy damage (>= 10%) causes screen flash
 
-	if (iDamage >= (iMaxArmorHP / 20) && Damage.CausesSRSFlash())
+	if (iDamage >= (iMaxArmorHP / 10) && Damage.CausesSRSFlash())
 		m_pTrans->DamageFlash();
 
 	//	If we're down to 25% armor, then warn the player
 
-	if (pArmor->GetHitPoints() < (iMaxArmorHP / 4))
+	if (pArmor->GetHitPoints() < (iMaxArmorHP / 4) && Damage.CausesSRSFlash())
 		{
 		m_pTrans->DisplayMessage(CONSTLIT("Hull breach imminent!"));
 		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_HULL_BREACH_ALARM));
@@ -1037,7 +1037,7 @@ void CPlayerShipController::OnDestroyed (SDestroyCtx &Ctx)
 	DEBUG_CATCH
 	}
 
-void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable)
+void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent)
 
 //	OnDeviceEnabledDisabled
 //
@@ -1045,19 +1045,23 @@ void CPlayerShipController::OnDeviceEnabledDisabled (int iDev, bool bEnable)
 
 	{
 	CInstalledDevice *pDevice = m_pShip->GetDevice(iDev);
-	if (pDevice && !pDevice->IsEmpty())
+	if (pDevice 
+			&& !pDevice->IsEmpty())
 		{
 		if (!bEnable)
 			{
 			if (m_UIMsgs.IsEnabled(uimsgEnableDeviceHint))
 				m_pTrans->DisplayMessage(CONSTLIT("(press [B] to enable/disable devices)"));
-			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s disabled"),
-					pDevice->GetClass()->GetName())));
+
+			if (!bSilent)
+				m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s disabled"),
+						pDevice->GetClass()->GetName())));
 			}
 		else
 			{
-			m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s enabled"),
-					pDevice->GetClass()->GetName())));
+			if (!bSilent)
+				m_pTrans->DisplayMessage(strCapitalize(strPatternSubst(CONSTLIT("%s enabled"),
+						pDevice->GetClass()->GetName())));
 			}
 		}
 	}

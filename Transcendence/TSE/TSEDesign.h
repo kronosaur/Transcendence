@@ -3137,7 +3137,7 @@ class IShipController
 		virtual DWORD OnCommunicate (CSpaceObject *pSender, MessageTypes iMessage, CSpaceObject *pParam1, DWORD dwParam2) { return resNoAnswer; }
 		virtual void OnComponentChanged (ObjectComponentTypes iComponent) { }
 		virtual void OnDamaged (const CDamageSource &Cause, CInstalledArmor *pArmor, const DamageDesc &Damage, int iDamage) { }
-		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnabled) { }
+		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnabled, bool bSilent = false) { }
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, int iEvent) { }
 		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker) { return true; }
 		virtual void OnDestroyed (SDestroyCtx &Ctx) { }
