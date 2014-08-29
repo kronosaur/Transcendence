@@ -264,6 +264,11 @@
 							
 							(switch
 							
+								;	If we're not a Pilgrim, we always get nothing
+								
+								(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
+									(scrShowPane gScreen "Nothing")
+							
 								;	10% of the time, Domina reveals stations in the system
 								
 								(leq roll 10)
