@@ -5,6 +5,7 @@
 
 class CDockScreen;
 class CPlayerShipController;
+struct SDockFrame;
 
 class IDockScreenDisplay
 	{
@@ -162,7 +163,7 @@ class CDockScreen : public CObject,
 		void HandleKeyDown (int iVirtKey);
 		ALERROR InitScreen (HWND hWnd, 
 							RECT &rcRect, 
-							CSpaceObject *pLocation, 
+							const SDockFrame &Frame,
 							CExtension *pExtension,
 							CXMLElement *pDesc, 
 							const CString &sPane,
@@ -238,12 +239,13 @@ class CDockScreen : public CObject,
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
 		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
-		CString EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, bool *retbError = NULL);
+		bool EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, CString *retsResult = NULL);
 		SDisplayControl *FindDisplayControl (const CString &sID);
 		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
 		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
 		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
 		ALERROR InitFonts (void);
+		ALERROR ReportError (const CString &sError);
 		void ShowDisplay (bool bAnimateOnly = false);
 		void ShowItem (void);
 		void UpdateCredits (void);
@@ -259,6 +261,8 @@ class CDockScreen : public CObject,
 		const SFontTable *m_pFonts;
 		CUniverse *m_pUniv;
 		CPlayerShipController *m_pPlayer;
+		CDesignType *m_pRoot;
+		CString m_sScreen;
 		CSpaceObject *m_pLocation;
 		ICCItem *m_pData;
 		CExtension *m_pExtension;

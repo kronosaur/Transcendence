@@ -76,6 +76,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define BOTTOM_ATTRIB				CONSTLIT("bottom")
 #define CENTER_ATTRIB				CONSTLIT("center")
 #define COLOR_ATTRIB				CONSTLIT("color")
+#define DESC_ATTRIB					CONSTLIT("desc")
 #define FONT_ATTRIB					CONSTLIT("font")
 #define HEIGHT_ATTRIB				CONSTLIT("height")
 #define ID_ATTRIB					CONSTLIT("id")
@@ -105,7 +106,6 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 static char g_PanesTag[] = "Panes";
 
 static char g_ScreenTypeAttrib[] = "type";
-static char g_DescAttrib[] = "desc";
 static char g_ShowCounterAttrib[] = "showCounter";
 
 #define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
@@ -643,7 +643,13 @@ ALERROR CDockScreen::CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pSc
 
 	//	Get the name of this location
 
-	CString sName = EvalString(pDesc->GetAttribute(NAME_ATTRIB));
+	CString sName;
+	if (!EvalString(pDesc->GetAttribute(NAME_ATTRIB), m_pData, false, eventNone, &sName))
+		{
+		ReportError(strPatternSubst(CONSTLIT("Error evaluating location name: %s"), sName));
+		sName = NULL_STR;
+		}
+		
 	if (sName.IsBlank())
 		sName = m_pLocation->GetNounPhrase(nounTitleCapitalize);
 
@@ -906,54 +912,23 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 		return CONSTLIT("Default");
 	}
 
-CString CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, ECodeChainEvents iEvent, bool *retbError)
+bool CDockScreen::EvalString (const CString &sString, ICCItem *pData, bool bPlain, ECodeChainEvents iEvent, CString *retsResult)
 
 //	EvalString
 //
-//	Evaluates a string using CodeChain. A string that begins
-//	with an equals sign indicates a CodeChain expression.
+//	Evaluates a string using CodeChain. A string that being with an equal sign
+//	indicates a CodeChain expression.
+//
+//	Returns TRUE if successful. Otherwise, retsResult is an error.
 
 	{
-	if (retbError)
-		*retbError = false;
+	CCodeChainCtx Ctx;
+	Ctx.SetEvent(iEvent);
+	Ctx.SetScreen(this);
+	Ctx.SaveAndDefineSourceVar(m_pLocation);
+	Ctx.SaveAndDefineDataVar(pData);
 
-	CCodeChain &CC = m_pUniv->GetCC();
-	char *pPos = sString.GetPointer();
-
-	if (bPlain || *pPos == '=')
-		{
-		CCodeChainCtx Ctx;
-		Ctx.SetEvent(iEvent);
-		Ctx.SetScreen(this);
-		Ctx.SaveAndDefineSourceVar(m_pLocation);
-		Ctx.SaveAndDefineDataVar(pData);
-
-		ICCItem *pExp = Ctx.Link(sString, (bPlain ? 0 : 1), NULL);
-
-		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-		Ctx.Discard(pExp);
-
-		if (pResult->IsError())
-			{
-			CString sError = pResult->GetStringValue();
-
-			SetDescription(sError);
-			kernelDebugLogMessage(sError);
-			if (retbError)
-				*retbError = true;
-			}
-
-		//	Note: We use GetStringValue instead of Unlink because we don't
-		//	want to preserve CC semantics (e.g., we don't need strings to
-		//	be quoted).
-
-		CString sResult = pResult->GetStringValue();
-		Ctx.Discard(pResult);
-
-		return sResult;
-		}
-	else
-		return strCEscapeCodes(sString);
+	return Ctx.RunEvalString(sString, bPlain, retsResult);
 	}
 
 CDockScreen::SDisplayControl *CDockScreen::FindDisplayControl (const CString &sID)
@@ -1362,7 +1337,7 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 
 ALERROR CDockScreen::InitScreen (HWND hWnd, 
 								 RECT &rcRect, 
-								 CSpaceObject *pLocation, 
+								 const SDockFrame &Frame,
 								 CExtension *pExtension,
 								 CXMLElement *pDesc, 
 								 const CString &sPane,
@@ -1385,7 +1360,9 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Init some variables
 
-	m_pLocation = pLocation;
+	m_pLocation = Frame.pLocation;
+	m_pRoot = Frame.pRoot;
+	m_sScreen = Frame.sScreen;
 	m_pData = pData;
 	m_pPlayer = g_pTrans->GetPlayer();
 	m_pExtension = pExtension;
@@ -1546,6 +1523,24 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	return NOERROR;
 	}
 
+ALERROR CDockScreen::ReportError (const CString &sError)
+
+//	ReportError
+//
+//	Reports an error while evaluating some function in the dock screen.
+
+	{
+	CString sNewError = strPatternSubst(CONSTLIT("%08x%s: %s"),
+				(m_pRoot ? m_pRoot->GetUNID() : 0),
+				(m_sScreen.IsBlank() ? NULL_STR : strPatternSubst(CONSTLIT("/%s"), m_sScreen)),
+				sError);
+
+	SetDescription(sNewError);
+	kernelDebugLogMessage(sNewError);
+
+	return ERR_FAIL;
+	}
+
 void CDockScreen::ResetList (CSpaceObject *pLocation)
 
 //	ResetList
@@ -1572,7 +1567,9 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 	if (m_pDisplayInitialize)
 		{
 		CString sCode = m_pDisplayInitialize->GetContentText(0);
-		EvalString(sCode, NULL, true);
+		CString sError;
+		if (!EvalString(sCode, m_pData, true, eventNone, &sError))
+			ReportError(strPatternSubst(CONSTLIT("Error evaluating <OnDisplayInit>: %s"), sError));
 		}
 
 	//	Set controls
@@ -1953,13 +1950,17 @@ void CDockScreen::ShowPane (const CString &sName)
 
 	//	Create the description
 
-	CString sDesc = EvalString(m_pCurrentPane->GetAttribute(CONSTLIT(g_DescAttrib)), pData);
 	m_pFrameDesc = new CGTextArea;
 	m_pFrameDesc->SetFont(&m_pFonts->Large);
 	m_pFrameDesc->SetColor(VI.GetColor(colorTextDockText));
 	m_pFrameDesc->SetLineSpacing(6);
 	m_pFrameDesc->SetFontTable(&VI);
-	SetDescription(sDesc);
+
+	CString sDesc;
+	if (!EvalString(m_pCurrentPane->GetAttribute(DESC_ATTRIB), pData, false, eventNone, &sDesc))
+		ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sDesc));
+	else
+		SetDescription(sDesc);
 
 	//	Justify the text
 
@@ -1999,7 +2000,9 @@ void CDockScreen::ShowPane (const CString &sName)
 	if (pInit)
 		{
 		CString sCode = pInit->GetContentText(0);
-		EvalString(sCode, pData, true);
+		CString sError;
+		if (!EvalString(sCode, pData, true, eventNone, &sError))
+			ReportError(strPatternSubst(CONSTLIT("Error evaluating <OnPaneInit>: %s"), sError));
 		}
 
 	//	We might have called exit inside OnPaneInit. If so, we exit

@@ -2037,7 +2037,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	m_Universe.SetLogImageLoad(false);
 	error = g_pTrans->m_CurrentDock.InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
-			NewFrame.pLocation,
+			NewFrame,
 			pExtension,
 			pScreen,
 			sPane,
