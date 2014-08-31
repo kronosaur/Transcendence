@@ -300,6 +300,10 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 		int iDefaultDist = Max(DEFAULT_DOCK_DISTANCE_LS, (pOwner ? 8 + (int)((pOwner->GetBoundsRadius() / LIGHT_SECOND) + 0.5) : 0));
 		m_iMaxDist = pDockingPorts->GetAttributeIntegerBounded(MAX_DIST_ATTRIB, 1, -1, iDefaultDist);
 
+		//	Get the image scale
+
+		int iScale = (pOwner ? pOwner->GetImage().GetImageViewportSize() : 512);
+
 		//	If we have sub-elements then these are port definitions.
 
 		m_iPortCount = pDockingPorts->GetContentElementCount();
@@ -331,14 +335,14 @@ void CDockingPorts::InitPortsFromXML (CSpaceObject *pOwner, CXMLElement *pElemen
 			m_pPort = new SDockingPort[m_iPortCount];
 			
 			int iRadius = pDockingPorts->GetAttributeIntegerBounded(PORT_RADIUS_ATTRIB, 0, -1, DEFAULT_PORT_POS_RADIUS);
-			Metric rRadius = g_KlicksPerPixel * iRadius;
+
 
 			int iAngle = 360 / m_iPortCount;
 			for (i = 0; i < m_iPortCount; i++)
 				{
 				m_pPort[i].iStatus = psEmpty;
 				m_pPort[i].pObj = NULL;
-				m_pPort[i].vPos = PolarToVector(i * iAngle, rRadius);
+				C3DConversion::CalcCoord(iScale, i * iAngle, iRadius, 0, &m_pPort[i].vPos);
 				m_pPort[i].iRotation = ((i * iAngle) + 180) % 360;
 				}
 			}
