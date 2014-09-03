@@ -18,10 +18,6 @@ const int EXTRA_BACKGROUND_IMAGE = 128;
 const int STATUS_BAR_HEIGHT	=	20;
 const int g_cyTitle =			72;
 const int g_cxActionsRegion =	400;
-const int g_cyAction =			22;
-const int g_cyActionSpacing =	4;
-const int g_iMaxActions =		8;
-const int g_cyActionsRegion =	(g_cyAction * g_iMaxActions) + (g_cyActionSpacing * (g_iMaxActions - 1));
 
 const int g_cyItemTitle =		32;
 const int g_cxItemMargin =		132;
@@ -32,12 +28,6 @@ const int g_cxStats =			400;
 const int g_cyStats =			30;
 const int g_cxCargoStats =		200;
 const int g_cxCargoStatsLabel =	100;
-
-const int g_cxCounter =			128;
-const int g_cyCounter =			40;
-
-const int TEXT_INPUT_WIDTH =	380;
-const int TEXT_INPUT_HEIGHT	=	40;
 
 const int g_FirstActionID =		100;
 const int g_LastActionID =		199;
@@ -55,7 +45,6 @@ const int DISPLAY_ID =			209;
 const int ACTION_CUSTOM_NEXT_ID =	300;
 const int ACTION_CUSTOM_PREV_ID =	301;
 
-#define ACTIONS_TAG					CONSTLIT("Actions")
 #define CANVAS_TAG					CONSTLIT("Canvas")
 #define DISPLAY_TAG					CONSTLIT("Display")
 #define GROUP_TAG					CONSTLIT("Group")
@@ -68,6 +57,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ON_PANE_INIT_TAG			CONSTLIT("OnPaneInit")
 #define ON_SCREEN_INIT_TAG			CONSTLIT("OnScreenInit")
 #define ON_SCREEN_UPDATE_TAG		CONSTLIT("OnScreenUpdate")
+#define PANES_TAG					CONSTLIT("Panes")
 #define TEXT_TAG					CONSTLIT("Text")
 
 #define ALIGN_ATTRIB				CONSTLIT("align")
@@ -88,6 +78,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define SHOW_TEXT_INPUT_ATTRIB		CONSTLIT("showTextInput")
 #define TOP_ATTRIB					CONSTLIT("top")
 #define TRANSPARENT_ATTRIB			CONSTLIT("transparent")
+#define TYPE_ATTRIB					CONSTLIT("type")
 #define VALIGN_ATTRIB				CONSTLIT("valign")
 #define VCENTER_ATTRIB				CONSTLIT("vcenter")
 #define WIDTH_ATTRIB				CONSTLIT("width")
@@ -103,11 +94,6 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define ALIGN_BOTTOM				CONSTLIT("bottom")
 #define ALIGN_TOP					CONSTLIT("top")
 #define ALIGN_MIDDLE				CONSTLIT("middle")
-
-static char g_PanesTag[] = "Panes";
-
-static char g_ScreenTypeAttrib[] = "type";
-static char g_ShowCounterAttrib[] = "showCounter";
 
 #define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
 
@@ -132,16 +118,7 @@ CDockScreen::CDockScreen (void) :
 		m_bDisplayAnimate(false),
 		m_pDisplay(NULL),
 
-		m_pCounter(NULL),
-		m_bReplaceCounter(false),
-
-		m_pTextInput(NULL),
-
 		m_pPanes(NULL),
-		m_pCurrentPane(NULL),
-		m_pCurrentFrame(NULL),
-		m_pFrameDesc(NULL),
-		m_bInShowPane(false),
 		m_pOnScreenUpdate(NULL)
 
 //	CDockScreen constructor
@@ -176,19 +153,13 @@ void CDockScreen::Action (DWORD dwTag, DWORD dwData)
 		//	If we need to reshow the pane, do it.
 
 		case IDockScreenDisplay::resultShowPane:
-			m_CurrentActions.ExecuteShowPane(EvalInitialPane());
+			m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 			return;
 		}
 
 	//	Otherwise, invoke the button
 
-	if (dwTag >= g_FirstActionID && dwTag <= g_LastActionID)
-		{
-		int iAction = (dwTag - g_FirstActionID);
-
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-		m_CurrentActions.Execute(iAction, this);
-		}
+	m_CurrentPane.HandleAction(dwTag, dwData);
 	}
 
 void CDockScreen::AddDisplayControl (CXMLElement *pDesc, 
@@ -341,13 +312,6 @@ void CDockScreen::CleanUpScreen (void)
 		{
 		delete m_pScreen;
 		m_pScreen = NULL;
-
-		//	Note: No need to free any of the controls because deleting
-		//	the screen will free them.
-		m_pCurrentFrame = NULL;
-		m_pFrameDesc = NULL;
-		m_pCounter = NULL;
-		m_pTextInput = NULL;
 		}
 
 	if (m_pBackgroundImage)
@@ -365,17 +329,16 @@ void CDockScreen::CleanUpScreen (void)
 		}
 
 	m_Controls.DeleteAll();
-	m_CurrentActions.CleanUp();
 	m_pDisplayInitialize = NULL;
 	m_pData = NULL;
+
+	m_CurrentPane.CleanUp();
 
 	if (m_pOnScreenUpdate)
 		{
 		m_pOnScreenUpdate->Discard(&g_pUniverse->GetCC());
 		m_pOnScreenUpdate = NULL;
 		}
-
-	m_bInShowPane = false;
 	}
 
 ALERROR CDockScreen::CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner)
@@ -731,61 +694,6 @@ ALERROR CDockScreen::CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, con
 	return NOERROR;
 	}
 
-void CDockScreen::DeleteCurrentItem (int iCount)
-
-//	DeleteCurrentItem
-//
-//	Deletes the given number of items at the cursor
-
-	{
-	m_pDisplay->DeleteCurrentItem(iCount);
-	}
-
-void CDockScreen::ExecuteCancelAction (void)
-
-//	ExecuteCancelAction
-//
-//	Executes the cancel action for the screen to exit the screen
-
-	{
-	int iAction;
-	if (m_CurrentActions.FindSpecial(CDockScreenActions::specialCancel, &iAction))
-		m_CurrentActions.Execute(iAction, this);
-	else
-		m_CurrentActions.ExecuteExitScreen();
-
-	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-	}
-
-int CDockScreen::GetCounter (void)
-
-//	GetCounter
-//
-//	Returns the value of the counter field
-
-	{
-	if (m_pCounter)
-		{
-		int iValue = strToInt(m_pCounter->GetText(), 0, NULL);
-
-		//	Counter values are always positive.
-
-		return Max(0, iValue);
-		}
-	else
-		return 0;
-	}
-
-const CItem &CDockScreen::GetCurrentItem (void)
-
-//	GetCurrentItem
-//
-//	Returns the current item at the cursor
-
-	{
-	return m_pDisplay->GetCurrentItem();
-	}
-
 ICCItem *CDockScreen::GetCurrentListEntry (void)
 
 //	GetCurrentListEntry
@@ -798,19 +706,6 @@ ICCItem *CDockScreen::GetCurrentListEntry (void)
 		return g_pUniverse->GetCC().CreateNil();
 
 	return pResult;
-	}
-
-const CString &CDockScreen::GetDescription (void)
-
-//	GetDescription
-//
-//	Returns the screen description.
-
-	{
-	if (m_pFrameDesc == NULL)
-		return NULL_STR;
-
-	return m_sDesc;
 	}
 
 CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
@@ -831,27 +726,20 @@ CG16bitImage *CDockScreen::GetDisplayCanvas (const CString &sID)
 	return &pCanvasControl->GetCanvas();
 	}
 
-CString CDockScreen::GetTextInput (void)
+CDesignType *CDockScreen::GetResolvedRoot (CString *retsResolveScreen) const
 
-//	GetTextInput
+//	GetResolvedRoot
 //
-//	Returns the value of the input field
+//	Returns the screen root for the current stack frame.
 
 	{
-	if (m_pTextInput)
-		return m_pTextInput->GetText();
-	else
-		return NULL_STR;
-	}
+	SDockFrame CurFrame;
+	g_pTrans->GetModel().GetScreenSession(&CurFrame);
 
-bool CDockScreen::IsCurrentItemValid (void)
+	if (retsResolveScreen)
+		*retsResolveScreen = CurFrame.sResolvedScreen;
 
-//	IsCurrentItemValid
-//
-//	Returns TRUE if current item is valid
-
-	{
-	return m_pDisplay->IsCurrentItemValid();
+	return CurFrame.pResolvedRoot;
 	}
 
 bool CDockScreen::EvalBool (const CString &sCode)
@@ -1032,57 +920,7 @@ void CDockScreen::HandleChar (char chChar)
 //	Handle char events
 
 	{
-	//	Deal with input fields
-
-	if (m_pTextInput)
-		{
-		if (chChar >= ' ' && chChar <= '~')
-			{
-			CString sText = m_pTextInput->GetText();
-			sText.Append(CString(&chChar, 1));
-			m_pTextInput->SetText(sText);
-			m_pTextInput->SetCursor(0, sText.GetLength());
-			return;
-			}
-		}
-	else if (m_pCounter)
-		{
-		switch (chChar)
-			{
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-				if (m_bReplaceCounter)
-					{
-					m_pCounter->SetText(strFromInt(chChar - '0', false));
-					m_bReplaceCounter = false;
-					}
-				else
-					{
-					CString sCounter = m_pCounter->GetText();
-					sCounter.Append(strFromInt(chChar - '0', false));
-					m_pCounter->SetText(sCounter);
-					}
-				return;
-			}
-		}
-
-	//	Deal with accelerators
-	//	Check to see if one of the key matches one of the accelerators
-
-	int iAction;
-	if (m_CurrentActions.FindByKey(CString(&chChar, 1), &iAction))
-		{
-		g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-		m_CurrentActions.Execute(iAction, this);
-		}
+	m_CurrentPane.HandleChar(chChar);
 	}
 
 void CDockScreen::HandleKeyDown (int iVirtKey)
@@ -1106,92 +944,13 @@ void CDockScreen::HandleKeyDown (int iVirtKey)
 		//	If we need to reshow the pane, do it.
 
 		case IDockScreenDisplay::resultShowPane:
-			m_CurrentActions.ExecuteShowPane(EvalInitialPane());
+			m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 			return;
 		}
 
 	//	Otherwise, handle it ourselves
 
-	switch (iVirtKey)
-		{
-		case VK_UP:
-		case VK_LEFT:
-			{
-			int iAction;
-			if (m_CurrentActions.FindSpecial(CDockScreenActions::specialPrevKey, &iAction))
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_CurrentActions.Execute(iAction, this);
-				}
-			break;
-			}
-
-		case VK_DOWN:
-		case VK_RIGHT:
-			{
-			int iAction;
-			if (m_CurrentActions.FindSpecial(CDockScreenActions::specialNextKey, &iAction))
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_CurrentActions.Execute(iAction, this);
-				}
-			break;
-			}
-
-		case VK_BACK:
-			{
-			if (m_pTextInput)
-				{
-				CString sText = m_pTextInput->GetText();
-				if (sText.GetLength() > 1)
-					{
-					sText = strSubString(sText, 0, sText.GetLength() - 1);
-					m_pTextInput->SetText(sText);
-					m_pTextInput->SetCursor(0, sText.GetLength());
-					}
-				else
-					{
-					m_pTextInput->SetText(NULL_STR);
-					m_pTextInput->SetCursor(0, 0);
-					}
-				}
-			else if (m_pCounter)
-				{
-				CString sCounter = m_pCounter->GetText();
-				if (sCounter.GetLength() > 1)
-					{
-					m_pCounter->SetText(strSubString(sCounter, 0, sCounter.GetLength() - 1));
-					m_bReplaceCounter = false;
-					}
-				else
-					{
-					m_pCounter->SetText(CONSTLIT("0"));
-					m_bReplaceCounter = true;
-					}
-				}
-			break;
-			}
-
-		case VK_ESCAPE:
-			ExecuteCancelAction();
-			break;
-
-		case VK_RETURN:
-			{
-			int iAction;
-			if (m_CurrentActions.FindSpecial(CDockScreenActions::specialDefault, &iAction))
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_CurrentActions.Execute(iAction, this);
-				}
-			else if (m_CurrentActions.GetCount() == 1)
-				{
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_CurrentActions.Execute(0, this);
-				}
-			break;
-			}
-		}
+	m_CurrentPane.HandleKeyDown(iVirtKey);
 	}
 
 ALERROR CDockScreen::InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation)
@@ -1448,11 +1207,11 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Get the list of panes for this screen
 
-	m_pPanes = m_pDesc->GetContentElementByTag(CONSTLIT(g_PanesTag));
+	m_pPanes = m_pDesc->GetContentElementByTag(PANES_TAG);
 
 	//	Create the main display object based on the type parameter.
 
-	CString sType = m_pDesc->GetAttribute(CONSTLIT(g_ScreenTypeAttrib));
+	CString sType = m_pDesc->GetAttribute(TYPE_ATTRIB);
 
 	if (strEquals(sType, SCREEN_TYPE_ITEM_PICKER))
 		m_pDisplay = new CDockScreenItemList;
@@ -1585,7 +1344,7 @@ void CDockScreen::ResetList (CSpaceObject *pLocation)
 
 	{
 	if (m_pDisplay->ResetList(pLocation) == IDockScreenDisplay::resultShowPane)
-		m_CurrentActions.ExecuteShowPane(EvalInitialPane());
+		m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 	}
 
 void CDockScreen::ShowDisplay (bool bAnimateOnly)
@@ -1781,31 +1540,6 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 		}
 	}
 
-void CDockScreen::ShowItem (void)
-
-//	ShowItem
-//
-//	Sets the title and description for the currently selected item
-
-	{
-	m_pDisplay->ShowItem();
-	}
-
-void CDockScreen::SetCounter (int iCount)
-
-//	SetCounter
-//
-//	Sets the value of the counter field
-
-	{
-	if (m_pCounter)
-		{
-		CString sText = strFromInt(iCount);
-		m_pCounter->SetText(sText);
-		m_bReplaceCounter = true;
-		}
-	}
-
 ALERROR CDockScreen::SetDisplayText (const CString &sID, const CString &sText)
 
 //	SetDisplayText
@@ -1838,10 +1572,7 @@ void CDockScreen::SetListCursor (int iCursor)
 
 	{
 	if (m_pDisplay->SetListCursor(iCursor) == IDockScreenDisplay::resultShowPane)
-		{
-		if (!m_bInShowPane)
-			m_CurrentActions.ExecuteShowPane(EvalInitialPane());
-		}
+		m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 	}
 
 void CDockScreen::SetListFilter (const CItemCriteria &Filter)
@@ -1852,24 +1583,7 @@ void CDockScreen::SetListFilter (const CItemCriteria &Filter)
 
 	{
 	if (m_pDisplay->SetListFilter(Filter) == IDockScreenDisplay::resultShowPane)
-		{
-		if (!m_bInShowPane)
-			m_CurrentActions.ExecuteShowPane(EvalInitialPane());
-		}
-	}
-
-void CDockScreen::SetTextInput (const CString &sText)
-
-//	SetTextInput
-//
-//	Sets the value of the text input field
-
-	{
-	if (m_pTextInput)
-		{
-		m_pTextInput->SetText(sText);
-		m_pTextInput->SetCursor(0, sText.GetLength());
-		}
+		m_CurrentPane.ExecuteShowPane(EvalInitialPane());
 	}
 
 void CDockScreen::ShowPane (const CString &sName)
@@ -1896,221 +1610,26 @@ void CDockScreen::ShowPane (const CString &sName)
 	if (pNewPane == NULL)
 		{
 		CString sError = strPatternSubst(CONSTLIT("Unable to find pane: %s"), sName);
-		if (m_pCurrentPane)
-			SetDescription(sError);
+		SetDescription(sError);
 		kernelDebugLogMessage(sError);
 		return;
 		}
 
-	//	Get the current frame data
+	//	Initialize the pane based on the pane descriptor
 
-	SDockFrame CurFrame;
-	g_pTrans->GetModel().GetScreenSession(&CurFrame);
-	ICCItem *pData = CurFrame.pInitialData;
+	m_CurrentPane.InitPane(this, pNewPane, m_rcPane);
 
-	//	Make sure we don't recurse
-
-	m_bInShowPane = true;
-
-	//	Destroy the previous pane
-
-	if (m_pCurrentFrame)
-		m_pScreen->DestroyArea(m_pCurrentFrame);
-
-	//	Create a new pane
-
-	CGFrameArea *pFrame = new CGFrameArea;
-	m_pScreen->AddArea(pFrame, m_rcPane, 0);
-
-	//	Find the pane element
-
-	m_pCurrentPane = pNewPane;
-
-	//	Initialize list of actions
-
-	CString sError;
-	if (m_CurrentActions.InitFromXML(m_pExtension, m_pCurrentPane->GetContentElementByTag(ACTIONS_TAG), pData, &sError) != NOERROR)
-		{
-		sError = strPatternSubst(CONSTLIT("Pane %s: %s"), sName, sError);
-		if (m_pCurrentPane)
-			SetDescription(sError);
-		kernelDebugLogMessage(sError);
-		return;
-		}
-
-	//	Are we showing the counter?
-
-	RECT rcInput;
-	bool bShowCounter = m_pCurrentPane->GetAttributeBool(CONSTLIT(g_ShowCounterAttrib));
-	if (bShowCounter)
-		{
-		m_pCounter = new CGTextArea;
-		m_pCounter->SetEditable();
-		m_pCounter->SetText(CONSTLIT("0"));
-		m_pCounter->SetFont(&m_pFonts->SubTitleHeavyBold);
-		m_pCounter->SetColor(CG16bitImage::RGBValue(255,255,255));
-		m_pCounter->SetStyles(alignCenter);
-
-		rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - g_cxCounter) / 2;
-		rcInput.right = rcInput.left + g_cxCounter;
-		rcInput.top = m_rcPane.bottom - g_cyActionsRegion - g_cyCounter - 24;
-		rcInput.bottom = rcInput.top + g_cyCounter;
-
-		pFrame->AddArea(m_pCounter, rcInput, g_CounterID);
-
-		m_bReplaceCounter = true;
-		}
-	else
-		m_pCounter = NULL;
-
-	//	Are we showing an input field
-
-	bool bShowTextInput = m_pCurrentPane->GetAttributeBool(SHOW_TEXT_INPUT_ATTRIB);
-	if (bShowTextInput && !bShowCounter)
-		{
-		m_pTextInput = new CGTextArea;
-		m_pTextInput->SetEditable();
-		m_pTextInput->SetFont(&m_pFonts->SubTitleHeavyBold);
-		m_pTextInput->SetColor(CG16bitImage::RGBValue(255,255,255));
-		m_pTextInput->SetCursor(0, 0);
-
-		rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - TEXT_INPUT_WIDTH) / 2;
-		rcInput.right = rcInput.left + TEXT_INPUT_WIDTH;
-		rcInput.top = m_rcPane.bottom - g_cyActionsRegion - TEXT_INPUT_HEIGHT - 24;
-		rcInput.bottom = rcInput.top + TEXT_INPUT_HEIGHT;
-
-		pFrame->AddArea(m_pTextInput, rcInput, TEXT_INPUT_ID);
-		}
-	else
-		m_pTextInput = NULL;
-
-	//	Create the description
-
-	m_pFrameDesc = new CGTextArea;
-	m_pFrameDesc->SetFont(&m_pFonts->Large);
-	m_pFrameDesc->SetColor(VI.GetColor(colorTextDockText));
-	m_pFrameDesc->SetLineSpacing(6);
-	m_pFrameDesc->SetFontTable(&VI);
-
-	CString sDesc;
-	if (!EvalString(m_pCurrentPane->GetAttribute(DESC_ATTRIB), pData, false, eventNone, &sDesc))
-		ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sDesc));
-	else
-		SetDescription(sDesc);
-
-	//	Justify the text
-
-	RECT rcDesc;
-	rcDesc.left = m_rcPane.left;
-	rcDesc.top = m_rcPane.top + 16;
-	rcDesc.right = m_rcPane.right;
-	if (bShowCounter || bShowTextInput)
-		rcDesc.bottom = rcInput.top;
-	else
-		rcDesc.bottom = m_rcPane.bottom - g_cyActionsRegion;
-
-	pFrame->AddArea(m_pFrameDesc, rcDesc, 0);
-
+	//	Update screen
 	//	Show the currently selected item
 
-	m_pDisplay->ShowPane(m_pCurrentPane->GetAttributeBool(NO_LIST_NAVIGATION_ATTRIB));
+	m_pDisplay->ShowPane(pNewPane->GetAttributeBool(NO_LIST_NAVIGATION_ATTRIB));
 
 	//	Update the display
 
 	if (m_Controls.GetCount() > 0)
 		ShowDisplay();
 
-	//	Done
-
-	m_pCurrentFrame = pFrame;
-
-	//	Evaluate the initialize element
-	//	
-	//	This gives the frame a chance to initialize any dynamic
-	//	action buttons before we actually create the buttons.
-
-	CXMLElement *pInit = m_pCurrentPane->GetContentElementByTag(ON_PANE_INIT_TAG);
-	if (pInit == NULL)
-		pInit = m_pCurrentPane->GetContentElementByTag(INITIALIZE_TAG);
-
-	if (pInit)
-		{
-		CString sCode = pInit->GetContentText(0);
-		CString sError;
-		if (!EvalString(sCode, pData, true, eventNone, &sError))
-			ReportError(strPatternSubst(CONSTLIT("Error evaluating <OnPaneInit>: %s"), sError));
-		}
-
-	//	We might have called exit inside OnPaneInit. If so, we exit
-
-	if (m_pScreen == NULL)
-		return;
-
-	//	Allow other design types to override the pane
-
-	g_pUniverse->FireOnGlobalPaneInit(this, CurFrame.pResolvedRoot, CurFrame.sResolvedScreen, sName);
-
-	//	Check to see if the description is too large for the area. If so, then
-	//	we shift everything down.
-
-	int cyDesc = m_pFrameDesc->Justify(rcDesc);
-	int cyRow = (g_cyAction + g_cyActionSpacing);
-	int cyExtraNeeded = (cyDesc + cyRow) - RectHeight(rcDesc);
-	int cyExtraSpace = 0;
-	if (cyExtraNeeded > 0)
-		{
-		int iExtraRows = Min(AlignUp(cyExtraNeeded, cyRow) / cyRow, g_iMaxActions - m_CurrentActions.GetVisibleCount());
-		if (iExtraRows > 0)
-			{
-			cyExtraSpace = iExtraRows * cyRow;
-
-			rcDesc.bottom += cyExtraSpace;
-			m_pFrameDesc->SetRect(rcDesc);
-			}
-		}
-
-	//	Compute some metrics for the rest of the controls
-
-	int yDescBottom = rcDesc.top + cyDesc;
-	int yActionsTop = m_rcPane.bottom - g_cyActionsRegion + cyExtraSpace;
-	int cyInput = yActionsTop - yDescBottom;
-
-	//	Move the input field, if necessary
-
-	if (m_pTextInput)
-		{
-		RECT rcRect;
-		rcRect = m_pTextInput->GetRect();
-		rcRect.top = yDescBottom + (cyInput - TEXT_INPUT_HEIGHT) / 2;
-		rcRect.bottom = rcRect.top + TEXT_INPUT_HEIGHT;
-		m_pTextInput->SetRect(rcRect);
-		}
-
-	//	Move the counter, if necessary
-
-	if (m_pCounter)
-		{
-		RECT rcRect;
-		rcRect = m_pCounter->GetRect();
-		rcRect.top = yDescBottom + (cyInput - g_cyCounter) / 2;
-		rcRect.bottom = rcRect.top + g_cyCounter;
-		m_pCounter->SetRect(rcRect);
-		}
-
-	//	Create the action buttons (deals with extra space above and show/hide)
-
-	RECT rcActions;
-	rcActions.left = m_rcPane.left;
-	rcActions.top = yActionsTop;
-	rcActions.right = m_rcPane.right;
-	rcActions.bottom = m_rcPane.bottom;
-
-	m_CurrentActions.CreateButtons(pFrame, CurFrame.pResolvedRoot, g_FirstActionID, rcActions);
-
-	//	Update screen
-
 	UpdateCredits();
-	m_bInShowPane = false;
 
 #ifdef DEBUG_STRING_LEAKS
 	CString::DebugOutputLeakedStrings();
@@ -2139,25 +1658,6 @@ void CDockScreen::SelectPrevItem (bool *retbMore)
 	bool bMore = m_pDisplay->SelectPrevItem();
 	if (retbMore)
 		*retbMore = bMore;
-	}
-
-void CDockScreen::SetDescription (const CString &sDesc)
-
-//	SetDescription
-//
-//	Sets the description of the current pane
-
-	{
-	m_sDesc = sDesc;
-
-	if (m_pFrameDesc)
-		{
-		CUIHelper UIHelper(*g_pHI);
-		CString sRTF;
-		UIHelper.GenerateDockScreenRTF(sDesc, &sRTF);
-
-		m_pFrameDesc->SetRichText(sRTF);
-		}
 	}
 
 void CDockScreen::Update (int iTick)

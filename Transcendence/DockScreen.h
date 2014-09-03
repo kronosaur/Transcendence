@@ -169,11 +169,25 @@ class CDockPane
 		~CDockPane (void);
 
 		void CleanUp (AGScreen *pScreen = NULL);
-		ALERROR InitPane (AGScreen *pScreen, CXMLElement *pPaneDesc, CExtension *pExtension, ICCItem *pData);
+		void ExecuteCancelAction (void);
+		inline void ExecuteShowPane (const CString &sPane) { if (!m_bInShowPane) m_Actions.ExecuteShowPane(sPane); }
+		inline CDockScreenActions &GetActions (void) { return m_Actions; }
+		const CString &GetDescriptionString (void) const;
+		int GetCounterValue (void) const;
+		CString GetTextInputValue (void) const;
+		bool HandleAction (DWORD dwTag, DWORD dwData);
+		bool HandleChar (char chChar);
+		bool HandleKeyDown (int iVirtKey);
+		ALERROR InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcPaneRect);
+		void SetCounterValue (int iValue);
+		void SetDescription (const CString &sDesc);
+		void SetTextInputValue (const CString &sValue);
 
 	private:
 		enum EControlTypes
 			{
+			controlNone,
+
 			controlDesc,
 			controlCounter,
 			controlTextInput,
@@ -181,21 +195,32 @@ class CDockPane
 
 		struct SControl
 			{
+			SControl (void) :
+					iType(controlNone),
+					pTextControl(NULL),
+					bReplaceInput(false)
+				{ }
+
 			EControlTypes iType;
 			CGTextArea *pTextControl;
+			bool bReplaceInput;				//	Keeps track of counter state
 			};
 
-		CXMLElement *m_pPaneDesc;			//	XML describing pane
-		CExtension *m_pExtension;			//	Extension owning the screen
-		ICCItem *m_pData;					//	Current screen data
+		void CreateControl (EControlTypes iType);
+		CGTextArea *GetControlByType (EControlTypes iType) const;
+		SControl *GetControlEntryByType (EControlTypes iType) const;
+		void RenderControls (void);
 
-		AGScreen *m_pScreen;				//	Screen to display on
+		CDockScreen *m_pDockScreen;			//	Dock screen object
+		CXMLElement *m_pPaneDesc;			//	XML describing pane
+
 		RECT m_rcPane;						//	Pane region relative to screen
 		CGFrameArea *m_pContainer;			//	Hold all pane areas
 
 		TArray<SControl> m_Controls;
 		CDockScreenActions m_Actions;
 
+		CString m_sDesc;					//	Current description
 		bool m_bInShowPane;					//	Keep track of re-entrancy
 	};
 
@@ -206,9 +231,14 @@ class CDockScreen : public IScreenController
 		virtual ~CDockScreen (void);
 
 		void CleanUpScreen (void);
-		void ExecuteCancelAction (void);
-		inline CDockScreenActions &GetActions (void) { return m_CurrentActions; }
+		bool EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, CString *retsResult = NULL);
+		inline void ExecuteCancelAction (void) { m_CurrentPane.ExecuteCancelAction(); }
+		inline CDockScreenActions &GetActions (void) { return m_CurrentPane.GetActions(); }
+		inline ICCItem *GetData (void) { return m_pData; }
+		inline CExtension *GetExtension (void) const { return m_pExtension; }
 		inline CSpaceObject *GetLocation (void) { return m_pLocation; }
+		CDesignType *GetResolvedRoot (CString *retsResolveScreen = NULL) const;
+		inline AGScreen *GetScreen (void) const { return m_pScreen; }
 		void HandleChar (char chChar);
 		void HandleKeyDown (int iVirtKey);
 		ALERROR InitScreen (HWND hWnd, 
@@ -223,30 +253,31 @@ class CDockScreen : public IScreenController
 		inline bool InOnInit (void) { return m_bInOnInit; }
 		inline bool IsFirstOnInit (void) { return m_bFirstOnInit; }
 		inline bool IsValid (void) { return (m_pScreen != NULL); }
+		ALERROR ReportError (const CString &sError);
 		inline void ResetFirstOnInit (void) { m_bFirstOnInit = true; }
 		void ResetList (CSpaceObject *pLocation);
 		void SetListFilter (const CItemCriteria &Filter);
 		void Update (int iTick);
 
 		//	Methods used by script code
-		void DeleteCurrentItem (int iCount);
-		int GetCounter (void);
-		const CItem &GetCurrentItem (void);
+		inline void DeleteCurrentItem (int iCount) { m_pDisplay->DeleteCurrentItem(iCount); }
+		inline int GetCounter (void) { return m_CurrentPane.GetCounterValue(); }
+		inline const CItem &GetCurrentItem (void) { return m_pDisplay->GetCurrentItem(); }
 		ICCItem *GetCurrentListEntry (void);
-		const CString &GetDescription (void);
+		inline const CString &GetDescription (void) { return m_CurrentPane.GetDescriptionString(); }
 		CG16bitImage *GetDisplayCanvas (const CString &sID);
 		inline CItemListManipulator &GetItemListManipulator (void) { return m_pDisplay->GetItemListManipulator(); }
 		inline int GetListCursor (void) { return m_pDisplay->GetListCursor(); }
 		inline IListData *GetListData (void) { return m_pDisplay->GetListData(); }
-		CString GetTextInput (void);
-		bool IsCurrentItemValid (void);
+		inline CString GetTextInput (void) { return m_CurrentPane.GetTextInputValue(); }
+		inline bool IsCurrentItemValid (void) { return m_pDisplay->IsCurrentItemValid(); }
 		void SelectNextItem (bool *retbMore = NULL);
 		void SelectPrevItem (bool *retbMore = NULL);
-		void SetDescription (const CString &sDesc);
+		inline void SetDescription (const CString &sDesc) { m_CurrentPane.SetDescription(sDesc); }
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
-		void SetCounter (int iCount);
+		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }
 		void SetListCursor (int iCursor);
-		void SetTextInput (const CString &sText);
+		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
 		bool ShowScreen (const CString &sName, const CString &sPane);
 		//inline void Undock (void) { m_pPlayer->Undock(); }
@@ -290,15 +321,13 @@ class CDockScreen : public IScreenController
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
 		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);
-		bool EvalString (const CString &sString, ICCItem *pData = NULL, bool bPlain = false, ECodeChainEvents iEvent = eventNone, CString *retsResult = NULL);
 		SDisplayControl *FindDisplayControl (const CString &sID);
 		ALERROR FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CString *retsError);
 		ALERROR InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pStation);
 		ALERROR InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, const RECT &rcScreen);
 		ALERROR InitFonts (void);
-		ALERROR ReportError (const CString &sError);
 		void ShowDisplay (bool bAnimateOnly = false);
-		void ShowItem (void);
+		inline void ShowItem (void) { m_pDisplay->ShowItem(); }
 		void UpdateCredits (void);
 
 		void AddDisplayControl (CXMLElement *pDesc, 
@@ -335,22 +364,10 @@ class CDockScreen : public IScreenController
 
 		IDockScreenDisplay *m_pDisplay;
 
-		//	Counter variables;
-		CGTextArea *m_pCounter;
-		bool m_bReplaceCounter;
-
-		//	Text input variables
-		CGTextArea *m_pTextInput;
-
 		//	Panes
 		CXMLElement *m_pPanes;
-		CXMLElement *m_pCurrentPane;
-		CDockScreenActions m_CurrentActions;
 		RECT m_rcPane;
-		CGFrameArea *m_pCurrentFrame;
-		CGTextArea *m_pFrameDesc;
-		CString m_sDesc;
-		bool m_bInShowPane;
+		CDockPane m_CurrentPane;
 
 		//	Events
 		ICCItem *m_pOnScreenUpdate;
