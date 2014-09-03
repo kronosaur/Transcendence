@@ -17,12 +17,8 @@ const int MODIFIER_SPACING_X =				4;
 
 const WORD RGB_DISABLED_TEXT =				CG16bitImage::RGBValue(128,128,128);
 
-const WORD RGB_MODIFIER_NEGATIVE_BACKGROUND =		CG16bitImage::RGBValue(140, 42, 42);	//	H:0   S:70  B:55
-const WORD RGB_MODIFIER_NEGATIVE_TEXT =				CG16bitImage::RGBValue(255,153,153);	//	H:0   S:40  B:100
 const WORD RGB_MODIFIER_NORMAL_BACKGROUND =			CG16bitImage::RGBValue(101,101,101);	//	H:0   S:0   B:40
 const WORD RGB_MODIFIER_NORMAL_TEXT =				CG16bitImage::RGBValue(220,220,220);	//	H:0   S:0   B:86
-const WORD RGB_MODIFIER_POSITIVE_BACKGROUND =		CG16bitImage::RGBValue( 42, 42,140);	//	H:240 S:70  B:55
-const WORD RGB_MODIFIER_POSITIVE_TEXT =				CG16bitImage::RGBValue(153,153,255);	//	H:240 S:40  B:100
 
 const int DAMAGE_ADJ_ICON_WIDTH =			16;
 const int DAMAGE_ADJ_ICON_HEIGHT =			16;
@@ -573,6 +569,7 @@ void CGItemListArea::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplay
 
 	{
 	int i;
+	const CVisualPalette &VI = g_pHI->GetVisuals();
 
 	for (i = 0; i < Attribs.GetCount(); i++)
 		{
@@ -584,13 +581,13 @@ void CGItemListArea::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplay
 		switch (Attribs[i].iType)
 			{
 			case attribPositive:
-				wBackColor = RGB_MODIFIER_POSITIVE_BACKGROUND;
-				wTextColor = RGB_MODIFIER_POSITIVE_TEXT;
+				wBackColor = VI.GetColor(colorAreaAdvantage);
+				wTextColor = VI.GetColor(colorTextAdvantage);
 				break;
 
 			case attribNegative:
-				wBackColor = RGB_MODIFIER_NEGATIVE_BACKGROUND;
-				wTextColor = RGB_MODIFIER_NEGATIVE_TEXT;
+				wBackColor = VI.GetColor(colorAreaDisadvantage);
+				wTextColor = VI.GetColor(colorTextDisadvantage);
 				break;
 
 			default:

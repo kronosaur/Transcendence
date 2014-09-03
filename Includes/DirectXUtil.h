@@ -317,6 +317,7 @@ class CG16bitImage : public CObject
 		static WORD BlendPixelPM (DWORD pxDest, DWORD pxSource, DWORD byOpacity);
 		static WORD FadeColor (WORD wStart, WORD wEnd, int iFade);
 		static inline WORD DarkenPixel (DWORD pxSource, DWORD byOpacity) { return BlendPixel(RGBValue(0,0,0), (WORD)pxSource, byOpacity); }
+		static inline WORD DesaturateValue (WORD wColor) { return ((GreenValue(wColor) * 59) + (RedValue(wColor) * 30) + (BlueValue(wColor) * 11)) / 255; }
 		static inline WORD LightenPixel (DWORD pxSource, DWORD byOpacity) { return BlendPixel(RGBValue(255,255,255), (WORD)pxSource, byOpacity); }
 		static inline bool IsGrayscaleValue (WORD wColor) { return ((BlueValue(wColor) == GreenValue(wColor)) && (GreenValue(wColor) == RedValue(wColor))); }
 		static inline WORD GrayscaleValue (WORD wValue) { return ((wValue << 8) & 0xf800) | ((wValue << 3) & 0x7c0) | (wValue >> 3); }
@@ -441,6 +442,7 @@ void DrawAlphaGradientCircle (CG16bitImage &Dest,
 		int yDest, 
 		int iRadius,
 		WORD wColor);
+void DrawArc (CG16bitImage &Dest, int xCenter, int yCenter, int iRadius, int iStartAngle, int iEndAngle, int iLineWidth, WORD wColor);
 void DrawBltCircle (CG16bitImage &Dest, 
 		int xDest, 
 		int yDest, 
@@ -471,6 +473,17 @@ void DrawBltScaledFast (CG16bitImage &Dest,
 						int cxSrc,
 						int cySrc);
 void DrawBltTransformed (CG16bitImage &Dest, 
+						 Metric rX, 
+						 Metric rY, 
+						 Metric rScaleX, 
+						 Metric rScaleY, 
+						 Metric rRotation, 
+						 const CG16bitImage &Src, 
+						 int xSrc, 
+						 int ySrc, 
+						 int cxSrc, 
+						 int cySrc);
+void DrawBltTransformedGray (CG16bitImage &Dest, 
 						 Metric rX, 
 						 Metric rY, 
 						 Metric rScaleX, 
@@ -512,6 +525,8 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 		DWORD dwEndOpacity);
 void DrawRectDotted (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, WORD wColor);
 void DrawRoundedRect (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor);
+void DrawRoundedRectOutline (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, int iLineWidth, WORD wColor);
+void DrawRoundedRectTrans (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor, DWORD byOpacity);
 
 enum EffectTypes
 	{
@@ -847,7 +862,7 @@ void DrawGradientCircle8bit (CG16bitImage &Dest,
 							 BYTE byEdge);
 void DrawNebulosity8bit (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iScale, BYTE byMin, BYTE byMax);
 void DrawNoise8bit (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iScale, BYTE byMin, BYTE byMax);
-void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge);
+void RasterizeQuarterCircle8bit (int iRadius, int *retSolid, BYTE *retEdge, DWORD byOpacity = 255);
 
 //	Noise Functions ------------------------------------------------------------
 
@@ -915,6 +930,7 @@ class AGArea : public CObject
 		void AddShadowEffect (void);
 		inline IAreaContainer *GetParent (void) { return m_pParent; }
 		inline RECT &GetRect (void) { return m_rcRect; }
+		inline const RECT &GetRect (void) const { return m_rcRect; }
 		inline AGScreen *GetScreen (void) { return m_pScreen; }
 		inline DWORD GetTag (void) { return m_dwTag; }
 		inline void Hide (void) { ShowHide(false); }
@@ -969,10 +985,10 @@ class AGScreen : public CObject, public IAreaContainer
 		AGScreen (HWND hWnd, const RECT &rcRect);
 		virtual ~AGScreen (void);
 
-		ALERROR AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag);
+		ALERROR AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag, bool bSendToBack = false);
 		void DestroyArea (AGArea *pArea);
 		AGArea *FindArea (DWORD dwTag);
-		inline AGArea *GetArea (int iIndex) { return (AGArea *)m_Areas.GetObject(iIndex); }
+		inline AGArea *GetArea (int iIndex) { return m_Areas[iIndex]; }
 		inline int GetAreaCount (void) { return m_Areas.GetCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
 		inline IScreenController *GetController (void) { return m_pController; }
@@ -995,7 +1011,7 @@ class AGScreen : public CObject, public IAreaContainer
 	private:
 		AGScreen (void);
 		void FireMouseMove (const POINT &pt);
-		inline int GetAreaIndex (AGArea *pArea) { return m_Areas.FindObject(pArea); }
+		inline int GetAreaIndex (AGArea *pArea) { int iIndex; if (m_Areas.Find(pArea, &iIndex)) return iIndex; else return -1; }
 		AGArea *HitTest (const POINT &pt);
 		void SetMouseOver (AGArea *pArea);
 
@@ -1004,7 +1020,7 @@ class AGScreen : public CObject, public IAreaContainer
 		RECT m_rcInvalid;						//	Invalid rect relative to m_rcRect
 		IScreenController *m_pController;		//	Screen controller
 
-		CObjectArray m_Areas;
+		TArray<AGArea *> m_Areas;
 
 		AGArea *m_pMouseCapture;				//	Area that has captured the mouse
 		AGArea *m_pMouseOver;					//	Area that the mouse is currently over

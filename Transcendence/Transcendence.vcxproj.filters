@@ -246,6 +246,15 @@
     <ClCompile Include="IDockScreenDisplay.cpp">
       <Filter>Source Files\Dock Screens</Filter>
     </ClCompile>
+    <ClCompile Include="CDockScreenSelector.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
+    <ClCompile Include="CGSelectorArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
+    <ClCompile Include="CDockPane.cpp">
+      <Filter>Source Files\Dock Screens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">
@@ -703,6 +712,8 @@
     <None Include="Game\Source\Stars.xml">
       <Filter>XML Files\Universe Library</Filter>
     </None>
+    <None Include="Game\Source\RPGArmorDockScreens.xml" />
+    <None Include="Game\Source\RPGDeviceDockScreens.xml" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">

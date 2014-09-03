@@ -265,6 +265,9 @@ ICCItem *CreateListFromItem (CCodeChain &CC, const CItem &Item)
 //	Creates a code chain list from an item
 
 	{
+	if (Item.GetType() == NULL)
+		return CC.CreateNil();
+
 	return Item.WriteToCCItem(CC);
 	}
 

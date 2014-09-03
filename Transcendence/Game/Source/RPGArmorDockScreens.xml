@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+	
+<!-- ARMOR MANAGEMENT SCREEN ===================================================
+
+	This screen allows the player to repair and upgrade armor at a station. It 
+	requires the station to use the <RepairArmor> directive in its <Trade> 
+	section.
+
+	gData uses the following fields:
+
+	'checkMilitaryID: If True, we should check for a military ID.
+
+-->
+
+	<DockScreen UNID="&dsRPGManageArmor;"
+			type=				"armorSelector"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"aI"
+
+			initialItem="=(block (
+				(desiredSeg (scrGetData gScreen 'armorSeg))
+				(seg
+					(switch
+						(not (scrGetItem gScreen))
+							'shields
+							
+						(itmMatches (scrGetItem gScreen) 's)
+							'shields
+							
+						(itmGetArmorInstalledLocation (scrGetItem gScreen))
+						)
+					)
+				)
+
+				(or (not desiredSeg) (eq seg desiredSeg))
+				)"
+			/>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theItem (scrGetItem gScreen))
+						(theShip gPlayerShip)
+						)
+						
+						(switch
+							;	If no item is selected we assume that we have an empty
+							;	shield generator slot.
+							
+							(not theItem)
+								(block (
+									(desc Nil)
+									(canInstall Nil)
+									(canUpgrade Nil)
+									)
+									
+									(scrSetDesc gScreen "You do not have a shield generator installed.")
+									
+									;	Remember that we have the shield generator selected
+
+									(scrSetData gScreen 'armorSeg 'shields)
+									
+									;	Do we have any shield generators in cargo hold that we can use
+									;	to replace this generator?
+								
+									(setq canInstall
+										(objGetItems theShip "sUN")
+										)
+									
+									;	Does this station have any shields that we can purchase?
+								
+									(setq canUpgrade
+										(filter (objGetItems gSource "sUN") theItemToBuy
+											(and (objGetSellPrice gSource theItemToBuy)
+													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+													)
+											)
+										)
+								
+									;	Enable/disable various actions
+								
+									(scrShowAction gScreen 'actionRepair Nil)
+									(scrShowAction gScreen 'actionReplace Nil)
+									(scrShowAction gScreen 'actionInstall canInstall)
+									(scrShowAction gScreen 'actionUpgrade canUpgrade)
+									(scrShowAction gScreen 'actionDisable Nil)
+									(scrShowAction gScreen 'actionEnable Nil)
+									(scrShowAction gScreen 'actionRemove Nil)
+									)
+								
+							;	If this is the shield generator...
+							
+							(eq (itmGetProperty theItem 'category) 'shields)
+								(block (
+									;	Shield state
+									
+									(isEnabled (objGetItemProperty theShip theItem 'enabled))
+									
+									(desc Nil)
+									(canEnable Nil)
+									(canDisable Nil)
+									(canRemove Nil)
+									(canReplace Nil)
+									(canUpgrade Nil)
+									)
+									
+									(setq desc "Shield generator installed.")
+									
+									;	Set the description
+								
+									(scrSetDesc gScreen desc)
+									
+									;	Remember that we have the shield generator selected
+
+									(scrSetData gScreen 'armorSeg 'shields)
+									
+									;	Do we have any shield generators in cargo hold that we can use
+									;	to replace this generator?
+								
+									(setq canReplace
+										(filter (objGetItems theShip "sUN") theItemInCargo
+											(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+											)
+										)
+									
+									;	Does this station have any shields that we can purchase?
+								
+									(setq canUpgrade
+										(filter (objGetItems gSource "sUN") theItemToBuy
+											(and (objGetSellPrice gSource theItemToBuy)
+													(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+													(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+													)
+											)
+										)
+								
+									;	Can we remove the shields?
+								
+									(setq canRemove
+										(objGetItemProperty gSource theItem 'installDevicePrice)
+										)
+									
+									;	Enable/disable various actions
+								
+									(scrShowAction gScreen 'actionRepair Nil)
+									(scrShowAction gScreen 'actionReplace canReplace)
+									(scrShowAction gScreen 'actionUpgrade canUpgrade)
+									(scrShowAction gScreen 'actionDisable isEnabled)
+									(scrShowAction gScreen 'actionEnable (not isEnabled))
+									(scrShowAction gScreen 'actionRemove canRemove)
+									(scrShowAction gScreen 'actionInstall Nil)
+									)
+									
+							;	Otherwise, we expect armor...
+							
+							(block (
+							
+								;	Figure out the damage on the armor
+								
+								(damage (objGetArmorDamage theShip theItem))
+								(maxHP (shpGetArmorMaxHitPoints theShip theItem))
+								
+								;	Figure out how much it would cost to repair
+								
+								(currencyUsed (objGetDefaultCurrency gSource))
+								(costToRepair (objGetArmorRepairPrice gSource theItem damage))
+								
+								(armorNoun (cat (objGetArmorName theShip theItem) " " (itmGetName theItem 0)))
+								(desc Nil)
+								(canRepair Nil)
+								(canReplace Nil)
+								(canUpgrade Nil)
+								)
+								
+								; Remember the armor segment so that we can come back to 
+								; this same selection (e.g., when we go to replace armor)
+
+								(scrSetData gScreen 'armorSeg (itmGetArmorInstalledLocation theItem))
+								
+								;	Set a descriptor describing the amount of damage and the cost
+								;	of repairs
+								
+								(switch
+									(eq damage 0)
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNotDamaged { armorNoun:armorNoun }))
+
+									(and (not costToRepair)
+											(gr (itmGetLevel theItem) (objGetProperty gSource 'repairArmorMaxLevel)))
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorNoTech { armorNoun:armorNoun }))
+										
+									(not costToRepair)
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorCantRepair { armorNoun:armorNoun }))
+
+									(ls (subtract maxHP damage) (divide maxHP 4))
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorTooMuchDamage { armorNoun:armorNoun }))
+
+									(ls (objGetBalance gPlayerShip currencyUsed) costToRepair)
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorCantAfford { armorNoun:armorNoun cost:(fmtCurrency currencyUsed costToRepair) }))
+
+									(eq costToRepair 0)
+										(block Nil
+											(setq desc (typTranslate &dsRPGManageArmor; 'descArmorFreeRepair { armorNoun:armorNoun }))
+											(scrSetData gScreen 'costToRepair 0)
+											(setq canRepair True)
+											)
+
+									(block Nil
+										(setq desc (typTranslate &dsRPGManageArmor; 'descArmorRepair { armorNoun:armorNoun cost:(fmtCurrency currencyUsed costToRepair) }))
+										(scrSetData gScreen 'costToRepair costToRepair)
+										(setq canRepair True)
+										)
+									)
+									
+								;	Do we have any armor segments in cargo hold that we can use
+								;	to replace this armor?
+								
+								(setq canReplace
+									(filter (objGetItems theShip "aU") theItemInCargo
+										(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+										)
+									)
+									
+								;	Does this station have any armor segments that we can purchase?
+								
+								(setq canUpgrade
+									(filter (objGetItems gSource "aU") theItemToBuy
+										(and (objGetSellPrice gSource theItemToBuy)
+												(objGetArmorReplacePrice gSource theItemToBuy)
+												(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+												(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+												)
+										)
+									)
+									
+								;	Set the description
+								
+								(scrSetDesc gScreen desc)
+								
+								;	Enable/disable various actions
+								
+								(scrEnableAction gScreen 'actionRepair canRepair)
+								(scrShowAction gScreen 'actionReplace canReplace)
+								(scrShowAction gScreen 'actionUpgrade canUpgrade)
+								(scrShowAction gScreen 'actionDisable Nil)
+								(scrShowAction gScreen 'actionEnable Nil)
+								(scrShowAction gScreen 'actionRemove Nil)
+								(scrShowAction gScreen 'actionInstall Nil)
+								)
+							)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionRepair">
+						(block Nil
+							(objRepairArmor gPlayerShip (scrGetItem gScreen))
+							(objCharge gPlayerShip (objGetDefaultCurrency gSource) (scrGetData gScreen 'costToRepair))
+							(typSetData &svPlayer; 'tutorialRepaired True)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionInstall">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							criteria: "sUN"
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							})
+					</Action>
+					
+					<Action id="actionReplace">
+						(switch
+							;	If this is an armor item, then offer to replace it.
+							
+							(itmMatches (scrGetItem gScreen) "a")
+								(scrShowScreen gScreen &dsRPGReplaceArmor; {
+									armorSeg: (scrGetData gScreen 'armorSeg)
+									checkMilitaryID: (@ gData 'checkMilitaryID)
+									})
+									
+							;	If shields, replace
+							
+							(itmMatches (scrGetItem gScreen) "s")
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									criteria: "sUN"
+									checkMilitaryID: (@ gData 'checkMilitaryID)
+									})
+							)
+					</Action>
+					
+					<Action id="actionUpgrade">
+						(switch
+							;	If this is an armor item, then offer to sell an upgrade
+							
+							(itmMatches (scrGetItem gScreen) "a")
+								(scrShowScreen gScreen &dsRPGUpgradeArmor; {
+									armorSeg: (scrGetData gScreen 'armorSeg)
+									checkMilitaryID: (@ gData 'checkMilitaryID)
+									})
+									
+							;	If shields...
+							
+							(itmMatches (scrGetItem gScreen) "s")
+								(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+									criteria: "sUN"
+									checkMilitaryID: (@ gData 'checkMilitaryID)
+									replaceItem: (scrGetItem gScreen)
+									})
+							)
+					</Action>
+					
+					<Action id="actionEnable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentEnabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionDisable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentDisabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionRemove">
+						(scrShowPane gScreen "RemoveDevice")
+					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		
+			<RemoveDevice
+					noListNavigation="true"
+					>
+				<OnPaneInit>
+					(block (
+						(theItem (scrGetItem gScreen))
+						(theShip gPlayerShip)
+						
+						(currencyUsed (objGetDefaultCurrency gSource))
+						(costToRemove (divide (objGetItemProperty gSource theItem 'installDevicePrice) 2))
+						
+						(result (shpCanRemoveDevice gPlayerShip theItem))
+						
+						(desc Nil)
+						(canRemove Nil)
+						)
+						
+						(switch
+							(not (isint result))
+								(setq desc gResult)
+								
+							(not (eq result 0))
+								(setq desc "The device cannot be removed.")
+								
+							(gr (itmGetMass theItem) (objGetCargoSpaceLeft gPlayerShip))
+								(setq desc (typTranslate &dsRPGManageArmor; 'descNoRoomForDevice))
+								
+							(ls (objGetBalance gPlayerShip currencyUsed) costToRemove)
+								(setq desc (typTranslate &dsRPGManageArmor; 'descRemoveCantAfford { cost:(fmtCurrency currencyUsed costToRemove) }))
+								
+							(eq costToRemove 0)
+								(block Nil
+									(setq desc (typTranslate &dsRPGManageArmor; 'descRemoveFree))
+									(scrSetData gScreen 'cost 0)
+									(setq canRemove True)
+									)
+									
+							(block Nil
+								(setq desc (typTranslate &dsRPGManageArmor; 'descRemove { cost:(fmtCurrency currencyUsed costToRemove) }))
+								(scrSetData gScreen 'cost costToRemove)
+								(setq canRemove True)
+								)
+							)
+						
+						;	Set description
+						
+						(scrSetDesc gScreen desc)
+						
+						;	Set actions
+						
+						(scrEnableAction gScreen 'actionRemove canRemove)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRemove" default="1">
+						(block (thisItem currencyUsed)
+							(setq thisItem (scrGetItem gScreen))
+							(setq currencyUsed (objGetDefaultCurrency gSource))
+
+							(shpRemoveDevice gPlayerShip thisItem)
+							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
+
+							(scrRefreshScreen gScreen)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</RemoveDevice>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDisable">"Disa[b]le"</Text>
+			<Text id="actionEnable">"Ena[b]le"</Text>
+			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionRemove">"Remo[v]e"</Text>
+			<Text id="actionRepair">"[R]epair"</Text>
+			<Text id="actionReplace">"Re[p]lace"</Text>
+			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
+			
+			<Text id="descArmorNotDamaged">(cat "The ship's " (@ gData 'armorNoun) " is not damaged.")</Text>
+			<Text id="descArmorNoTech">(cat "The ship's " (@ gData 'armorNoun) " cannot be repaired. The technology required is not available at this station.")</Text>
+			<Text id="descArmorCantRepair">(cat "The ship's " (@ gData 'armorNoun) " cannot be repaired at this station.")</Text>
+			<Text id="descArmorTooMuchDamage">(cat "The ship's " (@ gData 'armorNoun) " is heavily damaged and cannot be repaired.")</Text>
+			<Text id="descArmorCantAfford">(cat "The ship's " (@ gData 'armorNoun) " can be repaired for " (@ gData 'cost) ", which, unfortunately, is more than you can afford.")</Text>
+			<Text id="descArmorFreeRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and can be repaired free of charge.")</Text>
+			<Text id="descArmorRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and will cost " (@ gData 'cost) " to repair.")</Text>
+			
+			<Text id="descNoRoomForDevice">"The shield generator cannot be removed because there is no room in your cargo hold to store it."</Text>
+			<Text id="descRemoveCantAfford">(cat "The shield generator can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")</Text>
+			<Text id="descRemoveFree">"The shield generator can be removed free of charge."</Text>
+			<Text id="descRemove">(cat "The shield generator can be removed for " (@ gData 'cost) ".")</Text>
+		</Language>
+	</DockScreen>
+
+<!-- UPGRADE ARMOR SCREEN ======================================================
+
+	This screen allows the player to buy and replace and armor segment from the
+	current station.
+
+	gData uses the following fields:
+
+	'armorSeg: The armor segment to replace on the player
+	'checkMilitaryID: If True, we should check for a military ID before 
+			installing Military armor. We also refuse to install Illegal armor.
+
+-->
+
+	<DockScreen UNID="&dsRPGUpgradeArmor;"
+			type=				"itemPicker"
+			backgroundID=		"&rsItemListScreen;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+				dataFrom=	"source"
+				list=		"*"
+				>
+			(scrSetListFilter gScreen (lambda (theItem)
+				(and
+					(itmMatches theItem "aU")
+					(objGetSellPrice gSource theItem)
+					(objGetArmorReplacePrice gSource theItem)
+					(geq (itmGetLevel theItem) (itmGetLevel (shpGetArmor gPlayerShip (@ gData 'armorSeg))))
+					)
+				))
+		</ListOptions>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(armorSeg (@ gData 'armorSeg))
+						(thisItem (scrGetItem gScreen))
+						(oldItem (shpGetArmor gPlayerShip armorSeg))
+						(currencyUsed (objGetDefaultCurrency gSource))
+						
+						(result
+							(if thisItem
+								(objCanInstallItem gPlayerShip thisItem armorSeg)
+								(list Nil 'cannotInstall "The station doesn't have any armor segments to install.")
+								)
+							)
+						(resultCode (@ result 1))
+						
+						(totalCost (add (objGetSellPrice gSource thisItem) (objGetArmorReplacePrice gSource thisItem)))
+						(cargoNeeded (itmGetMass oldItem))
+
+						(desc Nil)
+						(canInstall Nil)
+						)
+						
+						;	Tell the player whether we can install the selected item and how 
+						;	much it will cost.
+						
+						(switch
+							(eq resultCode 'armorTooHeavy)
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorTooHeavy { armor:thisItem }))
+								
+							(eq resultCode 'cannotInstall)
+								(setq desc (@ result 2))
+								
+							(and (@ gData 'checkMilitaryID) 
+									(itmHasModifier thisItem "Military")
+									(not (objGetItems gPlayerShip "*+MilitaryID"))
+									)
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNeedMilitaryID { armor:thisItem }))
+								
+							(and (@ gData 'checkMilitaryID) 
+									(itmHasModifier thisItem "Illegal")
+									)
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descArmorIllegal { armor:thisItem }))
+								
+							(gr cargoNeeded (objGetCargoSpaceLeft gPlayerShip))
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descNotEnoughRoom))
+							
+							(gr totalCost (objGetBalance gPlayerShip currencyUsed))
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descCannotAfford { cost:(fmtCurrency currencyUsed totalCost) }))
+								
+							(eq totalCost 0)
+								(block Nil
+									(setq desc (typTranslate &dsRPGUpgradeArmor; 'descFreeInstall))
+									(scrSetData gScreen 'cost 0)
+									(setq canInstall True)
+									)
+								
+							;	Otherwise, we're OK to install
+								
+							(block Nil
+								(setq desc (typTranslate &dsRPGUpgradeArmor; 'descInstall { cost:(fmtCurrency currencyUsed totalCost) }))
+								(scrSetData gScreen 'cost totalCost)
+								(setq canInstall True)
+								)
+							)
+							
+						;	Set the description
+						
+						(scrSetDesc gScreen desc)
+						
+						;	Enable/disable actions
+						
+						(scrEnableAction gScreen 'actionBuyAndInstall canInstall)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionBuyAndInstall" default="1">
+						(block (thisItem currencyUsed)
+							(setq thisItem (scrGetItem gScreen))
+							(setq currencyUsed (objGetDefaultCurrency gSource))
+							
+							(objRemoveItem gSource thisItem 1)
+							(objAddItem gPlayerShip thisItem 1)
+
+							(shpInstallArmor gPlayerShip thisItem (@ gData 'armorSeg))
+							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	
+		<Language>
+			<Text id="actionBuyAndInstall">"[B]uy and Install"</Text>
+
+			<Text id="descArmorTooHeavy">
+				(cat (itmGetName (@ gData 'armor) 0x03) " are too heavy for your ship's hull.")
+			</Text>
+			<Text id="descNeedMilitaryID">
+				(cat "You must have a military ID to install " (itmGetName (@ gData 'armor) 0x80) ".")
+			</Text>
+			<Text id="descArmorIllegal">
+				(cat "We do not install illegal armor.")
+			</Text>
+			<Text id="descNotEnoughRoom">
+				(cat
+					"There isn't enough room in your cargo hold to store your old armor segment. "
+					"Sell or jettison cargo to make room."
+					)
+			</Text>
+			<Text id="descCannotAfford">
+				(cat "You can buy and install this armor segment for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")))
+			</Text>
+			<Text id="descFreeInstall">
+				"This armor segment can be installed free of charge."
+			</Text>
+			<Text id="descInstall">
+				(cat "You can buy and install this armor segment for " (@ gData 'cost) ".")))
+			</Text>
+		</Language>
+	</DockScreen>
+
+</TranscendenceModule>

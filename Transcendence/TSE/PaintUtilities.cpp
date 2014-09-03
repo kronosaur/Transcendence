@@ -123,7 +123,7 @@ void ComputeLightningPoints (int iCount, CVector *pPoints, Metric rChaos)
 		ComputeLightningPoints(iCount - iMiddle, pPoints + iMiddle, rChaos);
 	}
 
-void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType)
+void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType, int cxSize, int cySize, bool bGray)
 
 //	DrawItemTypeIcon
 //
@@ -135,14 +135,54 @@ void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType)
 		{
 		RECT rcImage = Image.GetImageRect();
 
-		Dest.ColorTransBlt(rcImage.left,
-				rcImage.top,
-				RectWidth(rcImage),
-				RectHeight(rcImage),
-				255,
-				Image.GetImage(NULL_STR),
-				x,
-				y);
+		if (cxSize <= 0 || cySize <= 0)
+			{
+			if (bGray)
+				Dest.BltGray(rcImage.left,
+						rcImage.top,
+						RectWidth(rcImage),
+						RectHeight(rcImage),
+						128,
+						Image.GetImage(NULL_STR),
+						x,
+						y);
+			else
+				Dest.ColorTransBlt(rcImage.left,
+						rcImage.top,
+						RectWidth(rcImage),
+						RectHeight(rcImage),
+						255,
+						Image.GetImage(NULL_STR),
+						x,
+						y);
+			}
+		else
+			{
+			if (bGray)
+				DrawBltTransformedGray(Dest,
+						x + (cxSize / 2),
+						y + (cySize / 2),
+						(Metric)cxSize / (Metric)RectWidth(rcImage),
+						(Metric)cySize / (Metric)RectHeight(rcImage),
+						0.0,
+						Image.GetImage(NULL_STR),
+						rcImage.left,
+						rcImage.top,
+						RectWidth(rcImage),
+						RectHeight(rcImage));
+			else
+				DrawBltTransformed(Dest,
+						x + (cxSize / 2),
+						y + (cySize / 2),
+						(Metric)cxSize / (Metric)RectWidth(rcImage),
+						(Metric)cySize / (Metric)RectHeight(rcImage),
+						0.0,
+						Image.GetImage(NULL_STR),
+						rcImage.left,
+						rcImage.top,
+						RectWidth(rcImage),
+						RectHeight(rcImage));
+			}
 		}
 	}
 

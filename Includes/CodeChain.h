@@ -569,6 +569,7 @@ class CCSymbolTable : public ICCList
 		inline CString GetKey (int iIndex) { return m_Symbols.GetKey(iIndex); }
 		void SetIntegerValue (CCodeChain &CC, const CString &sKey, int iValue);
 		void SetStringValue (CCodeChain &CC, const CString &sKey, const CString &sValue);
+		void SetValue (CCodeChain &CC, const CString &sKey, ICCItem *pValue);
 
 		//	ICCItem virtuals
 

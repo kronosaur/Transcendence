@@ -6,6 +6,25 @@
 #define ITEM_LIST_AREA_PAGE_UP_ACTION			(0xffff0001)
 #define ITEM_LIST_AREA_PAGE_DOWN_ACTION			(0xffff0002)
 
+class CGDrawArea : public AGArea
+	{
+	public:
+		CGDrawArea (void);
+
+		inline CG16bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
+
+		//	AGArea virtuals
+		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+
+	private:
+		void CreateImage (void);
+
+		CG16bitImage m_Image;
+
+		WORD m_wBackColor;
+		bool m_bTransBackground;
+	};
+
 class CGItemListArea : public AGArea
 	{
 	public:
@@ -75,25 +94,6 @@ class CGItemListArea : public AGArea
 		TArray<SRowDesc> m_Rows;
 	};
 
-class CGDrawArea : public AGArea
-	{
-	public:
-		CGDrawArea (void);
-
-		inline CG16bitImage &GetCanvas (void) { CreateImage(); return m_Image; }
-
-		//	AGArea virtuals
-		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
-
-	private:
-		void CreateImage (void);
-
-		CG16bitImage m_Image;
-
-		WORD m_wBackColor;
-		bool m_bTransBackground;
-	};
-
 class CGNeurohackArea : public AGArea
 	{
 	public:
@@ -150,5 +150,93 @@ class CGNeurohackArea : public AGArea
 
 		int m_iWillpower;
 		int m_iDamage;
+	};
+
+class CGSelectorArea : public AGArea
+	{
+	public:
+		enum EConfigurations
+			{
+			configArmor,
+			configMiscDevices,
+			configWeapons,
+			};
+
+		enum EDirections
+			{
+			moveDown,						//	Move cursor to region below
+			moveLeft,						//	Move cursor to region to the left
+			moveRight,						//	Move cursor to region to the right
+			moveUp,							//	Move cursor to region above
+
+			moveNext,						//	Move to next region
+			movePrev,						//	Move to previous region
+			};
+
+		CGSelectorArea (const CVisualPalette &VI);
+		~CGSelectorArea (void);
+
+		inline int GetCursor (void) { return m_iCursor; }
+		ICCItem *GetEntryAtCursor (void);
+		const CItem &GetItemAtCursor (void);
+		inline IListData *GetList (void) const { return NULL; }
+		inline CSpaceObject *GetSource (void) { return m_pSource; }
+		inline bool IsCursorValid (void) { return (m_iCursor != -1); }
+		bool MoveCursor (EDirections iDir);
+		inline void ResetCursor (void) { m_iCursor = -1; Invalidate(); }
+		inline void SetCursor (int iIndex) { m_iCursor = iIndex; Invalidate(); }
+		void SetRegions (CSpaceObject *pSource, EConfigurations iConfig);
+		void SyncCursor (void) { if (m_iCursor != -1 && m_iCursor >= m_Regions.GetCount()) m_iCursor = m_Regions.GetCount() - 1; }
+
+		//	AGArea virtuals
+
+		virtual bool LButtonDown (int x, int y);
+		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+		virtual void Update (void);
+
+	private:
+		enum ETypes
+			{
+			typeNone,
+
+			typeEmptySlot,
+			typeInstalledItem,
+			};
+
+		struct SEntry
+			{
+			SEntry (void) :
+					iType(typeNone),
+					pItemCtx(NULL),
+					iSlotType(devNone)
+				{ }
+
+			~SEntry (void)
+				{
+				if (pItemCtx)
+					delete pItemCtx;
+				}
+
+			ETypes iType;					//	Type of entry
+			CItemCtx *pItemCtx;				//	Item represented (may be NULL)
+			DeviceNames iSlotType;			//	Type of slot (if empty)
+
+			RECT rcRect;					//	Location of region (always relative to the center
+											//	of the area).
+			};
+
+		void CalcRegionRect (const SEntry &Entry, int xCenter, int yCenter, RECT *retrcRect);
+		void CleanUp (void);
+		bool FindRegionInDirection (EDirections iDir, int *retiIndex = NULL) const;
+		void PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
+		void PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
+		void PaintModifier (CG16bitImage &Dest, int x, int y, const CString &sText, WORD wColor, WORD wBackColor, int *rety);
+		void SetRegionsFromArmor (CSpaceObject *pSource);
+
+		const CVisualPalette &m_VI;
+
+		CSpaceObject *m_pSource;
+		TArray<SEntry> m_Regions;
+		int m_iCursor;
 	};
 

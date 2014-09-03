@@ -456,6 +456,109 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 		}
 	}
 
+void DrawArc (CG16bitImage &Dest, int xCenter, int yCenter, int iRadius, int iStartAngle, int iEndAngle, int iLineWidth, WORD wColor)
+
+//	DrawArc
+//
+//	Draws axis-aligned arcs
+
+	{
+	//	Temporaries
+
+	int iHalfWidth = iLineWidth / 2;
+	Metric rOuterRadius = iRadius + iHalfWidth;
+	Metric rInnerRadius = rOuterRadius - iLineWidth;
+	Metric rOuterRadius2 = rOuterRadius * rOuterRadius;
+	Metric rInnerRadius2 = rInnerRadius * rInnerRadius;
+
+	//	Figure out which quadrants we paint
+
+	bool bUpperRight;
+	bool bUpperLeft;
+	bool bLowerLeft;
+	bool bLowerRight;
+	if (iStartAngle <= iEndAngle)
+		{
+		bUpperRight = (iStartAngle < 90);
+		bUpperLeft = (iStartAngle < 180) && (iEndAngle > 90);
+		bLowerLeft = (iStartAngle < 270) && (iEndAngle > 180);
+		bLowerRight = (iStartAngle < 360) && (iEndAngle > 270);
+		}
+	else
+		{
+		bUpperRight = (iEndAngle > 0);
+		bUpperLeft = (iEndAngle > 90) || (iStartAngle < 180);
+		bLowerLeft = (iEndAngle > 180) || (iStartAngle < 270);
+		bLowerRight = (iEndAngle > 270) || (iStartAngle < 360);
+		}
+
+	//	Iterate from the center up (and use symmetry for the four quadrants)
+
+	int iRow = 0;
+	Metric rRow = 0.5;
+	Metric rRowEnd = rOuterRadius;
+	while (rRow < rRowEnd)
+		{
+		Metric rRow2 = rRow * rRow;
+
+		Metric rOuterLen = sqrt(rOuterRadius2 - rRow2);
+		Metric rInnerLen = (rRow < rInnerRadius ? sqrt(rInnerRadius2 - rRow2) : 0.0);
+		Metric rWidth = rOuterLen - rInnerLen;
+
+		int iSolidOuter = (int)rOuterLen;
+		Metric rOuterFraction = rOuterLen - (Metric)iSolidOuter;
+		int iSolidWidth = (int)(rWidth - rOuterFraction);
+		Metric rInnerFraction = (rWidth - rOuterFraction) - (Metric)iSolidWidth;
+
+		//	If we have a solid width, then paint the solid part of the edge
+
+		if (iSolidWidth > 0)
+			{
+			if (bUpperRight)
+				Dest.FillLine(xCenter + iSolidOuter - iSolidWidth, yCenter - 1 - iRow, iSolidWidth, wColor);
+			if (bLowerRight)
+				Dest.FillLine(xCenter + iSolidOuter - iSolidWidth, yCenter + iRow, iSolidWidth, wColor);
+			if (bUpperLeft)
+				Dest.FillLine(xCenter - iSolidOuter, yCenter - 1 - iRow, iSolidWidth, wColor);
+			if (bLowerLeft)
+				Dest.FillLine(xCenter - iSolidOuter, yCenter + iRow, iSolidWidth, wColor);
+			}
+
+		//	Paint the edges
+
+		DWORD byOuterEdge = (DWORD)(255 * rOuterFraction);
+		if (byOuterEdge)
+			{
+			if (bUpperRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter, yCenter - 1 - iRow, wColor, byOuterEdge);
+			if (bLowerRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter, yCenter + iRow, wColor, byOuterEdge);
+			if (bUpperLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter - 1, yCenter - 1 - iRow, wColor, byOuterEdge);
+			if (bLowerLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter - 1, yCenter + iRow, wColor, byOuterEdge);
+			}
+
+		DWORD byInnerEdge = (DWORD)(255 * rInnerFraction);
+		if (byInnerEdge)
+			{
+			if (bUpperRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter - iSolidWidth - 1, yCenter - 1 - iRow, wColor, byInnerEdge);
+			if (bLowerRight)
+				Dest.SetPixelTrans(xCenter + iSolidOuter - iSolidWidth - 1, yCenter + iRow, wColor, byInnerEdge);
+			if (bUpperLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter + iSolidWidth, yCenter - 1 - iRow, wColor, byInnerEdge);
+			if (bLowerLeft)
+				Dest.SetPixelTrans(xCenter - iSolidOuter + iSolidWidth, yCenter + iRow, wColor, byInnerEdge);
+			}
+
+		//	Next
+
+		iRow++;
+		rRow = (Metric)iRow + 0.5;
+		}
+	}
+
 void DrawBrokenLine (CG16bitImage &Dest, int xSrc, int ySrc, int xDest, int yDest, int xyBreak, WORD wColor)
 
 //	DrawBrokenLine
@@ -1255,4 +1358,99 @@ void DrawRoundedRect (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeigh
 
 	delete [] pSolid;
 	delete [] pEdge;
+	}
+
+void DrawRoundedRectTrans (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, WORD wColor, DWORD byOpacity)
+
+//	DrawRoundedRectTrans
+//
+//	Draws a filled rect with rounded corners.
+
+	{
+	int i;
+
+	if (byOpacity == 255)
+		{
+		DrawRoundedRect(Dest, x, y, cxWidth, cyHeight, iRadius, wColor);
+		return;
+		}
+
+	if (iRadius <= 0)
+		{
+		Dest.FillTrans(x, y, cxWidth, cyHeight, wColor, byOpacity);
+		return;
+		}
+
+	//	Generate a set of raster lines for the corner
+
+	int *pSolid = new int [iRadius];
+	BYTE *pEdge = new BYTE [iRadius];
+	RasterizeQuarterCircle8bit(iRadius, pSolid, pEdge, byOpacity);
+
+	//	Fill in each corner
+
+	for (i = 0; i < iRadius; i++)
+		{
+		int xOffset = iRadius - pSolid[i];
+		int cxLine = cxWidth - (iRadius * 2) + (pSolid[i] * 2);
+
+		//	Top edge
+
+		Dest.FillTrans(x + xOffset, y + i, cxLine, 1, wColor, byOpacity);
+		Dest.SetPixelTrans(x + xOffset - 1, y + i, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + i, wColor, pEdge[i]);
+
+		//	Bottom edge
+
+		Dest.FillTrans(x + xOffset, y + cyHeight - i - 1, cxLine, 1, wColor, byOpacity);
+		Dest.SetPixelTrans(x + xOffset - 1, y + cyHeight - i - 1, wColor, pEdge[i]);
+		Dest.SetPixelTrans(x + cxWidth - xOffset, y + cyHeight - i - 1, wColor, pEdge[i]);
+		}
+
+	//	Fill the center
+
+	Dest.FillTrans(x, y + iRadius, cxWidth, (cyHeight - 2 * iRadius), wColor, byOpacity);
+
+	//	Done
+
+	delete [] pSolid;
+	delete [] pEdge;
+	}
+
+void DrawRoundedRectOutline (CG16bitImage &Dest, int x, int y, int cxWidth, int cyHeight, int iRadius, int iLineWidth, WORD wColor)
+
+//	DrawRoundedRectOutline
+//
+//	Draws the outline of a rounded rectangle.
+
+	{
+	//	Range checking
+
+	if (iLineWidth <= 0)
+		return;
+
+	iRadius = Min(Min(Max(0, iRadius), cxWidth / 2), cyHeight / 2);
+
+	//	Intermediates
+
+	int iHalfWidth = iLineWidth / 2;
+
+	//	Paint the straight edges first.
+
+	Dest.Fill(x + iRadius, y - iHalfWidth, cxWidth - (2 * iRadius), iLineWidth, wColor);
+	Dest.Fill(x + iRadius, y + cyHeight - iHalfWidth, cxWidth - (2 * iRadius), iLineWidth, wColor);
+	Dest.Fill(x - iHalfWidth, y + iRadius, iLineWidth, cyHeight - (2 * iRadius), wColor);
+	Dest.Fill(x + cxWidth - iHalfWidth, y + iRadius, iLineWidth, cyHeight - (2 * iRadius), wColor);
+
+	//	If no radius, then we're done
+
+	if (iRadius == 0)
+		return;
+
+	//	Paint the corners
+
+	DrawArc(Dest, x + iRadius, y + iRadius, iRadius, 90, 180, iLineWidth, wColor);
+	DrawArc(Dest, x + cxWidth - iRadius, y + iRadius, iRadius, 0, 90, iLineWidth, wColor);
+	DrawArc(Dest, x + iRadius, y + cyHeight - iRadius, iRadius, 180, 270, iLineWidth, wColor);
+	DrawArc(Dest, x + cxWidth - iRadius, y + cyHeight - iRadius, iRadius, 270, 360, iLineWidth, wColor);
 	}

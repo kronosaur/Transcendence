@@ -188,7 +188,12 @@
 								(@ data 'installPriceAdj)
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
 
-								(setq totalCost (objGetItemProperty installerObj thisItem 'installDevicePrice))
+								(setq totalCost
+									(add
+										(objGetItemProperty installerObj thisItem 'installDevicePrice)
+										(if (@ data 'buyAndInstall) (objGetSellPrice installerObj thisItem) 0)
+										)
+									)
 								)
 								
 							;	Ask the object is we can install the item

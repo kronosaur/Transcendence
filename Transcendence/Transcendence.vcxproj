@@ -218,13 +218,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CChooseAdventureSession.cpp" />
+    <ClCompile Include="CDockPane.cpp" />
     <ClCompile Include="CDockScreenCustomItemList.cpp" />
     <ClCompile Include="CDockScreenCustomList.cpp" />
     <ClCompile Include="CDockScreenItemList.cpp" />
     <ClCompile Include="CDockScreenList.cpp" />
+    <ClCompile Include="CDockScreenSelector.cpp" />
     <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CGameSession.cpp" />
+    <ClCompile Include="CGSelectorArea.cpp" />
     <ClCompile Include="CIntroSession.cpp" />
     <ClCompile Include="CIntroShipController.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -814,6 +817,12 @@
   <ItemGroup>
     <Xml Include="Game\Source\Benedict.xml" />
     <None Include="Game\Source\Stars.xml" />
+    <None Include="Game\Source\RPGArmorDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Game\Source\RPGDeviceDockScreens.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

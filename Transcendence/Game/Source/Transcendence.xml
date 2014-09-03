@@ -975,6 +975,9 @@
 	<!ENTITY rsAuxMountOverlay			"0x00010020">
 	<!ENTITY rsAuxMountOverlayHD		"0x00010021">
 	<!ENTITY dsRPGInstallDevice			"0x00010022">
+	<!ENTITY dsRPGManageArmor			"0x00010023">
+	<!ENTITY dsRPGUpgradeArmor			"0x00010024">
+	<!ENTITY dsRPGUpgradeDevice			"0x00010025">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -2178,6 +2181,8 @@
 		<Module filename="RPGCharacters.xml"/>
 		<Module filename="RPGCode.xml"/>
 		<Module filename="RPGCompatibility.xml"/>
+		<Module filename="RPGArmorDockScreens.xml"/>
+		<Module filename="RPGDeviceDockScreens.xml"/>
 		<Module filename="RPGDockScreens.xml"/>
 		<Module filename="RPGMissions.xml"/>
 		<Module filename="RPGPlayer.xml"/>

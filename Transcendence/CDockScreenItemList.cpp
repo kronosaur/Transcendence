@@ -12,63 +12,6 @@
 #define INITIAL_ITEM_ATTRIB			CONSTLIT("initialItem")
 #define LIST_ATTRIB					CONSTLIT("list")
 
-#define DATA_FROM_PLAYER			CONSTLIT("player")
-#define DATA_FROM_SOURCE			CONSTLIT("source")
-#define DATA_FROM_STATION			CONSTLIT("station")
-
-CSpaceObject *CDockScreenItemList::EvalListSource (const CString &sString, CString *retsError)
-
-//	EvalListSource
-//
-//	Returns the object from which we should display items
-
-	{
-	char *pPos = sString.GetPointer();
-
-	//	See if we need to evaluate
-
-	if (*pPos == '=')
-		{
-		CCodeChainCtx Ctx;
-		Ctx.SetScreen(this);
-		Ctx.SaveAndDefineSourceVar(m_pLocation);
-		Ctx.SaveAndDefineDataVar(m_pData);
-
-		ICCItem *pExp = Ctx.Link(sString, 1, NULL);
-
-		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-		Ctx.Discard(pExp);
-
-		if (pResult->IsError())
-			{
-			*retsError = pResult->GetStringValue();
-			Ctx.Discard(pResult);
-			return NULL;
-			}
-
-		//	Convert to an object pointer
-
-		CSpaceObject *pSource;
-		if (strEquals(pResult->GetStringValue(), DATA_FROM_PLAYER))
-			pSource = m_pPlayer->GetShip();
-		else if (strEquals(pResult->GetStringValue(), DATA_FROM_STATION)
-				|| strEquals(pResult->GetStringValue(), DATA_FROM_SOURCE))
-			pSource = m_pLocation;
-		else
-			pSource = Ctx.AsSpaceObject(pResult);
-
-		Ctx.Discard(pResult);
-		return pSource;
-		}
-
-	//	Otherwise, compare to constants
-
-	else if (strEquals(sString, DATA_FROM_PLAYER))
-		return m_pPlayer->GetShip();
-	else
-		return m_pLocation;
-	}
-
 ALERROR CDockScreenItemList::OnInitList (SInitCtx &Ctx, CString *retsError)
 
 //	OnInitList

@@ -16,15 +16,19 @@ AGScreen::AGScreen (void) : CObject(NULL)
 
 AGScreen::~AGScreen (void)
 	{
+	int i;
+
 	if (m_pMouseCapture)
 		::ReleaseCapture();
+
+	for (i = 0; i < m_Areas.GetCount(); i++)
+		delete m_Areas[i];
 	}
 
 AGScreen::AGScreen (HWND hWnd, const RECT &rcRect) : CObject(NULL),
 		m_hWnd(hWnd),
 		m_rcRect(rcRect),
 		m_pController(NULL),
-		m_Areas(TRUE),
 		m_pMouseCapture(NULL),
 		m_pMouseOver(NULL),
 		m_wBackgroundColor(0)
@@ -38,11 +42,11 @@ AGScreen::AGScreen (HWND hWnd, const RECT &rcRect) : CObject(NULL),
 	m_rcInvalid.bottom = RectHeight(rcRect);
 	}
 
-ALERROR AGScreen::AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag)
+ALERROR AGScreen::AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag, bool bSendToBack)
 
 //	AddArea
 //
-//	Add an area to the screen
+//	Add an area to the screen. NOTE: We take ownership of pArea.
 
 	{
 	ALERROR error;
@@ -54,8 +58,7 @@ ALERROR AGScreen::AddArea (AGArea *pArea, const RECT &rcRect, DWORD dwTag)
 
 	//	Add the area
 
-	if (error = m_Areas.AppendObject(pArea, NULL))
-		return error;
+	m_Areas.Insert(pArea, (bSendToBack ? 0 : -1));
 
 	//	Get the mouse position and fire mouse move, if appropriate
 
@@ -88,7 +91,14 @@ void AGScreen::DestroyArea (AGArea *pArea)
 	//	Destroy and invalidate
 
 	RECT rcRect = pArea->GetRect();
-	m_Areas.RemoveObject(GetAreaIndex(pArea));
+
+	int iIndex;
+	if (m_Areas.Find(pArea, &iIndex))
+		{
+		m_Areas.Delete(iIndex);
+		delete pArea;
+		}
+
 	Invalidate(rcRect);
 	}
 

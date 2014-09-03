@@ -337,8 +337,8 @@ enum EColorPalette
 	{
 	colorUnknown =					0,
 
-	colorAreaDeep =					1,
-	colorAreaDialog =				2,
+	colorAreaDeep =					1,		//	H:228 S:100 B:4
+	colorAreaDialog =				2,		//	H:213 S:28 B:15
 	colorAreaDialogHighlight =		3,
 	colorAreaDialogInput =			4,
 	colorAreaDialogInputFocus =		5,
@@ -349,7 +349,7 @@ enum EColorPalette
 	colorLineDialogFrame =			9,
 	colorLineFrame =				10,
 
-	colorTextHighlight =			11,
+	colorTextHighlight =			11,		//	H:212 S:12 B:100
 	colorTextNormal =				12,
 	colorTextFade =					13,
 	colorTextAltHighlight =			14,
@@ -361,15 +361,23 @@ enum EColorPalette
 	colorTextDialogLabel =			19,
 	colorTextDialogLink =			20,
 	colorTextDialogTitle =			21,
-	colorTextDialogWarning =		22,
+	colorTextDialogWarning =		22,		//	H:30 S:100 B:100
 
 	colorAreaDockTitle =			23,
 	colorTextDockAction =			24,
 	colorTextDockActionHotKey =		25,
 	colorTextDockText =				26,
 	colorTextDockTitle =			27,
+	colorTextDockWarning =			28,		//	H:0 S:80 B:100
 
-	colorCount =					28,
+	colorAreaAdvantage =			29,		//	H:210 S:100 B:65
+	colorAreaDisadvantage =			30,		//	H:0   S:80  B:65
+	colorAreaShields =				31,		//	H:90  S:80  B:45
+	colorTextAdvantage =			32,		//	H:210 S:20  B:100
+	colorTextDisadvantage =			33,		//	H:0   S:20  B:100
+	colorTextShields =				34,		//	H:90  S:20  B:100
+
+	colorCount =					35,
 	};
 
 enum EFontScale

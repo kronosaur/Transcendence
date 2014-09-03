@@ -34,7 +34,12 @@ CInstalledArmor *CItemCtx::GetArmor(void)
 	//	Otherwise, try to get it from the item and source
 
 	CShip *pShip;
-	if (m_pSource && m_pItem && m_pItem->IsInstalled() && (pShip = m_pSource->AsShip()))
+	if (m_pSource 
+			&& m_pItem 
+			&& m_pItem->IsInstalled() 
+			&& m_pItem->GetType()
+			&& m_pItem->GetType()->GetCategory() == itemcatArmor
+			&& (pShip = m_pSource->AsShip()))
 		{
 		//	Cache it in case someone asks later
 		m_pArmor = pShip->GetArmorSection(m_pItem->GetInstalled());
@@ -86,7 +91,11 @@ CInstalledDevice *CItemCtx::GetDevice(void)
 
 	//	Otherwise, try to get it from the item and source
 
-	if (m_pSource && m_pItem && m_pItem->IsInstalled())
+	if (m_pSource 
+			&& m_pItem 
+			&& m_pItem->IsInstalled()
+			&& m_pItem->GetType()
+			&& m_pItem->GetType()->GetDeviceClass())
 		{
 		//	Cache it in case someone asks later
 		m_pDevice = m_pSource->FindDevice(*m_pItem);

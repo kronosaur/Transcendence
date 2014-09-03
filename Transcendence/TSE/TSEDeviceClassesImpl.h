@@ -292,7 +292,7 @@ class CShieldClass : public CDeviceClass
 		virtual int GetPowerRating (CItemCtx &Ctx);
 		virtual CString GetReference (CItemCtx &Ctx, int iVariant = -1, DWORD dwFlags = 0);
 		virtual bool GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pInstalled, int *retiHP, int *retArray) const;
-		virtual void GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus);
+		virtual void GetStatus (CInstalledDevice *pDevice, CSpaceObject *pSource, int *retiStatus, int *retiMaxStatus);
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx);
 		virtual CEffectCreator *OnFindEffectCreator (const CString &sUNID);
 		virtual void OnInstall (CInstalledDevice *pDevice, CSpaceObject *pSource, CItemListManipulator &ItemList);

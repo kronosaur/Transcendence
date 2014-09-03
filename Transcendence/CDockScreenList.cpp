@@ -9,53 +9,6 @@
 const int PICKER_ROW_HEIGHT	=	96;
 const int PICKER_ROW_COUNT =	4;
 
-bool CDockScreenList::EvalBool (const CString &sCode, bool *retbResult, CString *retsError)
-
-//	EvalBool
-//
-//	Evaluates the given string
-
-	{
-	CCodeChainCtx Ctx;
-	Ctx.SetScreen(m_pDockScreen);
-	Ctx.SaveAndDefineSourceVar(m_pLocation);
-	Ctx.SaveAndDefineDataVar(m_pData);
-
-	char *pPos = sCode.GetPointer();
-	ICCItem *pExp = Ctx.Link(sCode, 1, NULL);
-
-	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-	Ctx.Discard(pExp);
-
-	if (pResult->IsError())
-		{
-		*retsError = pResult->GetStringValue();
-		Ctx.Discard(pResult);
-		return false;
-		}
-
-	*retbResult = !pResult->IsNil();
-	Ctx.Discard(pResult);
-
-	return true;
-	}
-
-bool CDockScreenList::EvalString (const CString &sString, bool bPlain, ECodeChainEvents iEvent, CString *retsResult)
-
-//	EvalString
-//
-//	Evaluates the given string.
-
-	{
-	CCodeChainCtx Ctx;
-	Ctx.SetEvent(iEvent);
-	Ctx.SetScreen(m_pDockScreen);
-	Ctx.SaveAndDefineSourceVar(m_pLocation);
-	Ctx.SaveAndDefineDataVar(m_pData);
-
-	return Ctx.RunEvalString(sString, bPlain, retsResult);
-	}
-
 void CDockScreenList::OnDeleteCurrentItem (int iCount)
 
 //	OnDeleteCurrentItem
@@ -98,16 +51,19 @@ IDockScreenDisplay::EResults CDockScreenList::OnHandleAction (DWORD dwTag, DWORD
 		{
 		switch (dwData)
 			{
-			//	Should never happen.
-
 			case ITEM_LIST_AREA_PAGE_DOWN_ACTION:
 			case ITEM_LIST_AREA_PAGE_UP_ACTION:
 				return resultNone;
 
 			default:
-				g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
-				m_pItemListControl->SetCursor(dwData);
-				return resultShowPane;
+				if (!m_bNoListNavigation)
+					{
+					g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+					m_pItemListControl->SetCursor(dwData);
+					return resultShowPane;
+					}
+				else
+					return resultHandled;
 			}
 		}
 	else
@@ -195,10 +151,6 @@ ALERROR CDockScreenList::OnInit (SInitCtx &Ctx, CString *retsError)
 	{
 	ALERROR error;
 
-	m_pDockScreen = Ctx.pDockScreen;
-	m_pPlayer = Ctx.pPlayer;
-	m_pLocation = Ctx.pLocation;
-	m_pData = Ctx.pData;
 	m_dwID = Ctx.dwFirstID;
 
 	//	Calculate some basic metrics

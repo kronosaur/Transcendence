@@ -28,6 +28,7 @@ class IDockScreenDisplay
 			AGScreen *pScreen;
 			RECT rcRect;
 			DWORD dwFirstID;
+			const CVisualPalette *pVI;
 			const SFontTable *pFontTable;
 
 			CSpaceObject *pLocation;
@@ -39,12 +40,13 @@ class IDockScreenDisplay
 		inline void DeleteCurrentItem (int iCount) { OnDeleteCurrentItem(iCount); }
 		inline const CItem &GetCurrentItem (void) const { return OnGetCurrentItem(); }
 		inline ICCItem *GetCurrentListEntry (void) const { return OnGetCurrentListEntry(); }
+		inline bool GetDefaultBackgroundObj (CSpaceObject **retpObj) { return OnGetDefaultBackgroundObj(retpObj); }
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
-		inline ALERROR Init (SInitCtx &Ctx, CString *retsError)	{ return OnInit(Ctx, retsError); }
+		ALERROR Init (SInitCtx &Ctx, CString *retsError);
 		inline bool IsCurrentItemValid (void) const { return OnIsCurrentItemValid(); }
 		inline EResults ResetList (CSpaceObject *pLocation) { return OnResetList(pLocation); }
 		inline EResults SetListCursor (int iCursor) { return OnSetListCursor(iCursor); }
@@ -58,6 +60,7 @@ class IDockScreenDisplay
 		virtual void OnDeleteCurrentItem (int iCount) { }
 		virtual const CItem &OnGetCurrentItem (void) const { return CItem::NullItem(); }
 		virtual ICCItem *OnGetCurrentListEntry (void) const { return NULL; }
+		virtual bool OnGetDefaultBackgroundObj (CSpaceObject **retpObj) { return false; }
 		virtual CItemListManipulator &OnGetItemListManipulator (void) { return g_DummyItemListManipulator; }
 		virtual int OnGetListCursor (void) { return -1; }
 		virtual IListData *OnGetListData (void) { return NULL; }
@@ -72,6 +75,17 @@ class IDockScreenDisplay
 		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual void OnShowItem (void) { }
 		virtual void OnShowPane (bool bNoListNavigation);
+
+		//	Helpers
+
+		bool EvalBool (const CString &sCode, bool *retbResult, CString *retsError);
+		CSpaceObject *EvalListSource (const CString &sString, CString *retsError);
+		bool EvalString (const CString &sString, bool bPlain, ECodeChainEvents iEvent, CString *retsResult);
+
+		CDockScreen *m_pDockScreen;
+		CSpaceObject *m_pLocation;
+		CPlayerShipController *m_pPlayer;
+		ICCItem *m_pData;
 	};
 
 class CDockScreenActions
@@ -148,8 +162,44 @@ class CDockScreenActions
 		ICCItem *m_pData;			//	Data passed in to scrShowScreen (may be NULL)
 	};
 
-class CDockScreen : public CObject,
-					public IScreenController
+class CDockPane
+	{
+	public:
+		CDockPane (void);
+		~CDockPane (void);
+
+		void CleanUp (AGScreen *pScreen = NULL);
+		ALERROR InitPane (AGScreen *pScreen, CXMLElement *pPaneDesc, CExtension *pExtension, ICCItem *pData);
+
+	private:
+		enum EControlTypes
+			{
+			controlDesc,
+			controlCounter,
+			controlTextInput,
+			};
+
+		struct SControl
+			{
+			EControlTypes iType;
+			CGTextArea *pTextControl;
+			};
+
+		CXMLElement *m_pPaneDesc;			//	XML describing pane
+		CExtension *m_pExtension;			//	Extension owning the screen
+		ICCItem *m_pData;					//	Current screen data
+
+		AGScreen *m_pScreen;				//	Screen to display on
+		RECT m_rcPane;						//	Pane region relative to screen
+		CGFrameArea *m_pContainer;			//	Hold all pane areas
+
+		TArray<SControl> m_Controls;
+		CDockScreenActions m_Actions;
+
+		bool m_bInShowPane;					//	Keep track of re-entrancy
+	};
+
+class CDockScreen : public IScreenController
 	{
 	public:
 		CDockScreen (void);
@@ -234,8 +284,9 @@ class CDockScreen : public CObject,
 			bool bAnimate;
 			};
 
+		ALERROR CreateBackgroundArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
 		ALERROR CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRect, int xOffset);
-		ALERROR CreateTitleAndBackground (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
+		ALERROR CreateTitleArea (CXMLElement *pDesc, AGScreen *pScreen, const RECT &rcRect, const RECT &rcInner);
 		bool EvalBool (const CString &sString);
 		CString EvalInitialPane (void);
 		CString EvalInitialPane (CSpaceObject *pSource, ICCItem *pData);

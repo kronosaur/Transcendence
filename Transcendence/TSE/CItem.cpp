@@ -1049,6 +1049,9 @@ bool CItem::MatchesCriteria (const CItemCriteria &Criteria) const
 	{
 	int i;
 
+	if (m_pItemType == NULL)
+		return false;
+
 	//	If we've got a filter, then use that
 
 	if (Criteria.pFilter)

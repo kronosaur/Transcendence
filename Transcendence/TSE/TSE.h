@@ -300,7 +300,7 @@ class CAStarPathFinder
 
 void ComputeLightningPoints (int iCount, CVector *pPoints, Metric rChaos);
 void CreateBlasterShape (int iAngle, int iLength, int iWidth, SPoint *Poly);
-void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType);
+void DrawItemTypeIcon (CG16bitImage &Dest, int x, int y, CItemType *pType, int cxSize = 0, int cySize = 0, bool bGray = false);
 void DrawLightning (CG16bitImage &Dest,
 					int xFrom, int yFrom,
 					int xTo, int yTo,
@@ -2988,7 +2988,7 @@ class CAscendedObjectList
 		TArray<CSpaceObject *> m_List;
 	};
 
-//	IListData implementatsion --------------------------------------------------
+//	IListData implementation ---------------------------------------------------
 
 class CItemListWrapper : public IListData
 	{

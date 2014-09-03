@@ -1007,15 +1007,15 @@ bool CShieldClass::GetReferenceDamageAdj (const CItem *pItem, CSpaceObject *pIns
 	return true;
 	}
 
-void CShieldClass::GetStatus (CInstalledDevice *pDevice, CShip *pShip, int *retiStatus, int *retiMaxStatus)
+void CShieldClass::GetStatus (CInstalledDevice *pDevice, CSpaceObject *pSource, int *retiStatus, int *retiMaxStatus)
 
 //	GetStatus
 //
 //	Returns the status of the shields
 
 	{
-	*retiStatus = GetHPLeft(pDevice, pShip);
-	*retiMaxStatus = GetMaxHP(pDevice, pShip);
+	*retiStatus = GetHPLeft(pDevice, pSource);
+	*retiMaxStatus = GetMaxHP(pDevice, pSource);
 	}
 
 int CShieldClass::GetStdCost (int iLevel)
