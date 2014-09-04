@@ -156,6 +156,8 @@ class ICCItem : public CObject
 
 		bool IsLambdaExpression (void);
 		BOOL IsLambdaSymbol (void);
+		inline bool IsReadOnly (void) { return m_bReadOnly; }
+		inline void SetReadOnly (bool bReadOnly = true) { m_bReadOnly = bReadOnly; }
 		void ResetItem (void);
 
 		//	Symbol/Atom table functions
@@ -198,6 +200,7 @@ class ICCItem : public CObject
 		DWORD m_bError:1;						//	TRUE if it represents a runtime error
 		DWORD m_bModified:1;					//	TRUE if this item was modified
 		DWORD m_bNoRefCount:1;					//	TRUE if we don't care about ref count
+		DWORD m_bReadOnly:1;					//	TRUE if we should do a copy-on-write
 	};
 
 //	An atom is a single value

@@ -11,6 +11,7 @@
 #define ITEM_FLAG_ERROR						0x00000002
 #define ITEM_FLAG_PARTOFLIST				0x00000004
 #define ITEM_FLAG_NO_REF_COUNT				0x00000008
+#define ITEM_FLAG_READ_ONLY					0x00000010
 
 ICCItem::ICCItem (IObjectClass *pClass) : CObject(pClass)
 
@@ -32,6 +33,7 @@ void ICCItem::CloneItem (ICCItem *pItem)
 	//	been set to 1
 
 	m_bModified = FALSE;
+	m_bReadOnly = FALSE;
 
 	m_bQuoted = pItem->m_bQuoted;
 	m_bError = pItem->m_bError;
@@ -128,6 +130,7 @@ void ICCItem::ResetItem (void)
 	m_bError = FALSE;
 	m_bModified = FALSE;
 	m_bNoRefCount = FALSE;
+	m_bReadOnly = FALSE;
 	}
 
 ICCItem *ICCItem::Stream (CCodeChain *pCC, IWriteStream *pStream)
@@ -150,6 +153,8 @@ ICCItem *ICCItem::Stream (CCodeChain *pCC, IWriteStream *pStream)
 		dwFlags |= ITEM_FLAG_ERROR;
 	if (m_bNoRefCount)
 		dwFlags |= ITEM_FLAG_NO_REF_COUNT;
+	if (m_bReadOnly)
+		dwFlags |= ITEM_FLAG_READ_ONLY;
 
 	//	Save the flags
 
@@ -201,6 +206,7 @@ ICCItem *ICCItem::Unstream (CCodeChain *pCC, IReadStream *pStream)
 	m_bQuoted = ((dwFlags & ITEM_FLAG_QUOTED) ? TRUE : FALSE);
 	m_bError = ((dwFlags & ITEM_FLAG_ERROR) ? TRUE : FALSE);
 	m_bNoRefCount = ((dwFlags & ITEM_FLAG_NO_REF_COUNT) ? TRUE : FALSE);
+	m_bReadOnly = ((dwFlags & ITEM_FLAG_READ_ONLY) ? TRUE : FALSE);
 
 	//	Clear modified
 
