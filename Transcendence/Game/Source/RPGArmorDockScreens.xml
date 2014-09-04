@@ -472,6 +472,7 @@
 
 	<DockScreen UNID="&dsRPGUpgradeArmor;"
 			type=				"itemPicker"
+			inherit=			"&dsDockScreenBase;"
 			backgroundID=		"&rsItemListScreen;"
 			nestedScreen=		"true"
 			>
