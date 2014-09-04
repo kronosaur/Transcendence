@@ -62,7 +62,11 @@
 									(canUpgrade Nil)
 									)
 									
-									(scrSetDesc gScreen "You do not have a shield generator installed.")
+									(scrSetDesc gScreen "")
+									(scrSetControlValue gScreen 'currentItem {
+										title: "Shield Generator Slot"
+										desc: "Your ship does not have a shield generator installed."
+										})
 									
 									;	Remember that we have the shield generator selected
 
@@ -112,11 +116,15 @@
 									(canUpgrade Nil)
 									)
 									
-									(setq desc "Shield generator installed.")
+									(setq desc (cat (itmGetName theItem 0x0021) " installed."))
 									
 									;	Set the description
 								
 									(scrSetDesc gScreen desc)
+									(scrSetControlValue gScreen 'currentItem {
+										source: gPlayerShip
+										item: theItem
+										})
 									
 									;	Remember that we have the shield generator selected
 
@@ -244,6 +252,10 @@
 								;	Set the description
 								
 								(scrSetDesc gScreen desc)
+								(scrSetControlValue gScreen 'currentItem {
+									source: gPlayerShip
+									item: theItem
+									})
 								
 								;	Enable/disable various actions
 								
@@ -258,6 +270,11 @@
 							)
 						)
 				</OnPaneInit>
+				
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
 
 				<Actions>
 					<Action id="actionRepair">

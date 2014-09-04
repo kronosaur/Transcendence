@@ -118,6 +118,11 @@ class CUIHelper
 			OPTION_SESSION_OK_BUTTON =				0x00000001,
 			OPTION_SESSION_NO_CANCEL_BUTTON =		0x00000002,
 			OPTION_SESSION_ADD_EXTENSION_BUTTON =	0x00000004,
+
+			//	PaintItemEntry
+			OPTION_SELECTED =						0x00000001,
+			OPTION_NO_ICON =						0x00000002,
+			OPTION_TITLE =							0x00000004,
 			};
 
 		struct SMenuEntry
@@ -127,6 +132,8 @@ class CUIHelper
 			};
 
 		CUIHelper (CHumanInterface &HI) : m_HI(HI) { }
+
+		int CalcItemEntryHeight (CSpaceObject *pSource, const CItem &Item, const RECT &rcRect, DWORD dwOptions) const;
 
 		void CreateClassInfoArmor (CShipClass *pClass, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
 		void CreateClassInfoCargo (CShipClass *pClass, const CDeviceDescList &Devices, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;
@@ -143,7 +150,14 @@ class CUIHelper
 								 IAnimatron **retpControl) const;
 		void CreateSessionWaitAnimation (const CString &sID, const CString &sText, IAnimatron **retpControl) const;
 
+		void FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight) const;
+
 		void GenerateDockScreenRTF (const CString &sText, CString *retsRTF) const;
+
+		void PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs) const;
+		void PaintItemEntry (CG16bitImage &Dest, CSpaceObject *pSource, const CItem &Item, const RECT &rcRect, DWORD dwOptions) const;
+		void PaintReferenceDamageAdj (CG16bitImage &Dest, int x, int y, int iLevel, int iHP, const int *iDamageAdj) const;
+		void PaintReferenceDamageType (CG16bitImage &Dest, int x, int y, int iDamageType, const CString &sRef) const;
 
 	private:
 		void CreateClassInfoSpecialItem (CItemType *pItemIcon, const CString &sText, int x, int y, int cxWidth, DWORD dwOptions, int *retcyHeight, IAnimatron **retpInfo) const;

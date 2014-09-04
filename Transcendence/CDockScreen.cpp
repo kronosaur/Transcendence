@@ -98,9 +98,7 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define BAR_COLOR							CG16bitImage::RGBValue(0, 2, 10)
 
 CDockScreen::CDockScreen (void) : 
-		m_pTrans(NULL),
 		m_pFonts(NULL),
-		m_pUniv(NULL),
 		m_pPlayer(NULL),
 		m_pLocation(NULL),
 		m_pData(NULL),
@@ -174,7 +172,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 
 	{
 	int i;
-	CCodeChain &CC = m_pUniv->GetCC();
+	CCodeChain &CC = g_pUniverse->GetCC();
 	SDisplayControl *pDControl = m_Controls.Insert();
 
 	//	Set basic attribs
@@ -444,7 +442,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	CG16bitImage *pImage = NULL;
 	if (dwBackgroundID)
-		pImage = m_pUniv->GetLibraryBitmap(dwBackgroundID);
+		pImage = g_pUniverse->GetLibraryBitmap(dwBackgroundID);
 
 	//	Sometimes (like in the case of item lists) the image is larger than normal
 
@@ -465,7 +463,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 
 	DWORD dwScreenUNID = DEFAULT_DOCK_SCREEN_IMAGE_UNID;
 	DWORD dwScreenMaskUNID = DEFAULT_DOCK_SCREEN_MASK_UNID;
-	CG16bitImage *pScreenImage = m_pUniv->GetLibraryBitmap(dwScreenUNID);
+	CG16bitImage *pScreenImage = g_pUniverse->GetLibraryBitmap(dwScreenUNID);
 
 	//	Blt to background
 
@@ -562,7 +560,7 @@ ALERROR CDockScreen::CreateBackgroundImage (CXMLElement *pDesc, const RECT &rcRe
 		int cxAvail = (RectWidth(rcRect) / 2) + EXTRA_BACKGROUND_IMAGE;
 		int xImage = -Max(0, pImage->GetWidth() - cxAvail);
 
-		CG16bitImage *pScreenMask = m_pUniv->GetLibraryBitmap(dwScreenMaskUNID);
+		CG16bitImage *pScreenMask = g_pUniverse->GetLibraryBitmap(dwScreenMaskUNID);
 		if (pScreenMask)
 			{
 			//	Center the mask and align it with the position of the background.
@@ -961,7 +959,7 @@ ALERROR CDockScreen::InitCodeChain (CTranscendenceWnd *pTrans, CSpaceObject *pSt
 //	LATER: We should define variables inside of Eval...
 
 	{
-	CCodeChain &CC = m_pUniv->GetCC();
+	CCodeChain &CC = g_pUniverse->GetCC();
 
 	//	Define some globals
 
@@ -979,7 +977,7 @@ ALERROR CDockScreen::InitDisplay (CXMLElement *pDisplayDesc, AGScreen *pScreen, 
 
 	{
 	int i;
-	CCodeChain &CC = m_pUniv->GetCC();
+	CCodeChain &CC = g_pUniverse->GetCC();
 
 	ASSERT(m_Controls.GetCount() == 0);
 
@@ -1151,7 +1149,6 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	m_pPlayer = g_pTrans->GetPlayer();
 	m_pExtension = pExtension;
 	m_pDesc = pDesc;
-	m_pUniv = g_pUniverse;
 
 	//	Initialize CodeChain processor
 
@@ -1355,7 +1352,7 @@ void CDockScreen::ShowDisplay (bool bAnimateOnly)
 
 	{
 	int i;
-	CCodeChain &CC = m_pUniv->GetCC();
+	CCodeChain &CC = g_pUniverse->GetCC();
 
 	//	Run initialize
 

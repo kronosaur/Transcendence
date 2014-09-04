@@ -1084,10 +1084,6 @@ class CUIResources
 		void CreateLargeCredit (const CString &sCredit, const CString &sName, int x, int y, int iDuration, IAnimatron **retpAni);
 		void CreateMediumCredit (const CString &sCredit, TArray<CString> &Names, int x, int y, int iDuration, IAnimatron **retpAni);
 
-		void DrawReferenceDamageType (CG16bitImage &Dest, int x, int y, int iDamageType, const CString &sRef) const;
-		void DrawReferenceDamageAdj (CG16bitImage &Dest, int x, int y, int iLevel, int iHP, const int *iDamageAdj) const;
-		void GetDamageTypeIconRect (RECT *retRect) const;
-
 	private:
 		SFontTable *m_pFonts;						//	Font table
 

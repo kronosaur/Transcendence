@@ -71,6 +71,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_DATA					16
 #define FN_SCR_REFRESH_SCREEN		17
 #define FN_SCR_LIST_CURSOR			18
+#define FN_SCR_CONTROL_VALUE		19
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -184,6 +185,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetActionLabel",			fnScrSet,		FN_SCR_ACTION_LABEL,
 			"(scrSetActionLabel screen actionID label [key] [special])",
 			"ivs*",		PPFLAG_SIDEEFFECTS, },
+
+		{	"scrSetControlValue",			fnScrSet,		FN_SCR_CONTROL_VALUE,
+			"(scrSetControlValue screen controlID value) -> True/Nil",
+			"isv",		PPFLAG_SIDEEFFECTS, },
 
 		{	"scrSetCounter",				fnScrSetOld,		FN_SCR_COUNTER,	"",		NULL,	PPFLAG_SIDEEFFECTS,	},
 		//	(scrSetCounter screen counter)
@@ -1397,6 +1402,13 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				Actions.SetSpecial(*pCC, iAction, pSpecial, NULL);
 
 			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_CONTROL_VALUE:
+			{
+			CString sID = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pValue = pArgs->GetElement(2);
+			return pCC->CreateBool(pScreen->SetControlValue(sID, pValue));
 			}
 
 		case FN_SCR_DATA:

@@ -179,6 +179,7 @@ class CDockPane
 		bool HandleChar (char chChar);
 		bool HandleKeyDown (int iVirtKey);
 		ALERROR InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, const RECT &rcPaneRect);
+		bool SetControlValue (const CString &sID, ICCItem *pValue);
 		void SetCounterValue (int iValue);
 		void SetDescription (const CString &sDesc);
 		void SetTextInputValue (const CString &sValue);
@@ -190,6 +191,7 @@ class CDockPane
 
 			controlDesc,
 			controlCounter,
+			controlItemDisplay,
 			controlTextInput,
 			};
 
@@ -197,19 +199,35 @@ class CDockPane
 			{
 			SControl (void) :
 					iType(controlNone),
-					pTextControl(NULL),
+					pArea(NULL),
+					cyHeight(0),
+					cyMinHeight(0),
+					cyMaxHeight(0),
 					bReplaceInput(false)
 				{ }
 
+			inline CGTextArea *AsTextArea (void) { return (CGTextArea *)pArea; }
+			inline CGItemDisplayArea *AsItemDisplayArea (void) { return (CGItemDisplayArea *)pArea; }
+
 			EControlTypes iType;
-			CGTextArea *pTextControl;
+			CString sID;					//	Control ID
+
+			AGArea *pArea;
+
+			int cyHeight;					//	Computed height of control
+			int cyMinHeight;				//	Minimum control height
+			int cyMaxHeight;				//	Desired control height
+
 			bool bReplaceInput;				//	Keeps track of counter state
 			};
 
-		void CreateControl (EControlTypes iType);
-		CGTextArea *GetControlByType (EControlTypes iType) const;
-		SControl *GetControlEntryByType (EControlTypes iType) const;
+		void CreateControl (EControlTypes iType, const CString &sID);
+		ALERROR CreateControls (CString *retsError);
+		bool FindControl (const CString &sID, SControl **retpControl = NULL) const;
+		CGTextArea *GetTextControlByType (EControlTypes iType) const;
+		SControl *GetControlByType (EControlTypes iType) const;
 		void RenderControls (void);
+		ALERROR ReportError (const CString &sError);
 
 		CDockScreen *m_pDockScreen;			//	Dock screen object
 		CXMLElement *m_pPaneDesc;			//	XML describing pane
@@ -275,6 +293,7 @@ class CDockScreen : public IScreenController
 		void SelectPrevItem (bool *retbMore = NULL);
 		inline void SetDescription (const CString &sDesc) { m_CurrentPane.SetDescription(sDesc); }
 		ALERROR SetDisplayText (const CString &sID, const CString &sText);
+		inline bool SetControlValue (const CString &sID, ICCItem *pValue) { return m_CurrentPane.SetControlValue(sID, pValue); }
 		inline void SetCounter (int iCount) { m_CurrentPane.SetCounterValue(iCount); }
 		void SetListCursor (int iCursor);
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
@@ -337,9 +356,7 @@ class CDockScreen : public IScreenController
 								SDisplayControl **retpDControl = NULL);
 		void InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFrame, RECT *retrcRect);
 
-		CTranscendenceWnd *m_pTrans;
 		const SFontTable *m_pFonts;
-		CUniverse *m_pUniv;
 		CPlayerShipController *m_pPlayer;
 		CDesignType *m_pRoot;
 		CString m_sScreen;

@@ -227,6 +227,7 @@
     <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CExtensionListMap.cpp" />
     <ClCompile Include="CGameSession.cpp" />
+    <ClCompile Include="CGItemDisplayArea.cpp" />
     <ClCompile Include="CGSelectorArea.cpp" />
     <ClCompile Include="CIntroSession.cpp" />
     <ClCompile Include="CIntroShipController.cpp">

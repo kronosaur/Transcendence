@@ -255,6 +255,9 @@
     <ClCompile Include="CDockPane.cpp">
       <Filter>Source Files\Dock Screens</Filter>
     </ClCompile>
+    <ClCompile Include="CGItemDisplayArea.cpp">
+      <Filter>Source Files\Displays</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackgroundTasks.h">

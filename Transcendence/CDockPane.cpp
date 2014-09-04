@@ -7,12 +7,22 @@
 #include "Transcendence.h"
 
 #define ACTIONS_TAG					CONSTLIT("Actions")
+#define CONTROLS_TAG				CONSTLIT("Controls")
+#define COUNTER_TAG					CONSTLIT("Counter")
 #define INITIALIZE_TAG				CONSTLIT("Initialize")
+#define ITEM_DISPLAY_TAG			CONSTLIT("ItemDisplay")
 #define ON_PANE_INIT_TAG			CONSTLIT("OnPaneInit")
+#define TEXT_TAG					CONSTLIT("Text")
+#define TEXT_INPUT_TAG				CONSTLIT("TextInput")
 
 #define DESC_ATTRIB					CONSTLIT("desc")
+#define ID_ATTRIB					CONSTLIT("id")
 #define SHOW_COUNTER_ATTRIB			CONSTLIT("showCounter")
 #define SHOW_TEXT_INPUT_ATTRIB		CONSTLIT("showTextInput")
+
+#define DEFAULT_DESC_ID				CONSTLIT("desc")
+#define DEFAULT_COUNTER_ID			CONSTLIT("counter")
+#define DEFAULT_TEXT_INPUT_ID		CONSTLIT("textInput")
 
 const int ACTION_BUTTON_HEIGHT =	22;
 const int ACTION_BUTTON_SPACING =	4;
@@ -21,13 +31,23 @@ const int ACTION_REGION_HEIGHT =	(ACTION_BUTTON_HEIGHT * MAX_ACTIONS) + (ACTION_
 const int FIRST_ACTION_ID =			100;
 const int LAST_ACTION_ID =			199;
 
+const int CONTROL_PADDING_BOTTOM =	24;
+
 const int COUNTER_ID =				204;
 const int COUNTER_WIDTH =			128;
 const int COUNTER_HEIGHT =			40;
+const int COUNTER_PADDING_BOTTOM =	24;
+
+const int DESC_PADDING_BOTTOM =		24;
+const int DESC_HEIGHT_GRANULARITY =	120;
 
 const int TEXT_INPUT_ID =			207;
 const int TEXT_INPUT_WIDTH =		380;
 const int TEXT_INPUT_HEIGHT	=		40;
+const int TEXT_INPUT_PADDING_BOTTOM = 24;
+
+const int PANE_PADDING_TOP =		24;
+const int PANE_PADDING_EXTRA =		0;
 
 CDockPane::CDockPane (void) :
 		m_pPaneDesc(NULL),
@@ -72,7 +92,7 @@ void CDockPane::CleanUp (AGScreen *pScreen)
 	m_bInShowPane = false;
 	}
 
-void CDockPane::CreateControl (EControlTypes iType)
+void CDockPane::CreateControl (EControlTypes iType, const CString &sID)
 
 //	CreateControl
 //
@@ -87,21 +107,28 @@ void CDockPane::CreateControl (EControlTypes iType)
 			{
 			SControl *pControl = m_Controls.Insert();
 			pControl->iType = iType;
+			pControl->sID = sID;
+			pControl->cyHeight = COUNTER_HEIGHT;
+			pControl->cyMinHeight = pControl->cyHeight;
+			pControl->cyMaxHeight = pControl->cyHeight;
 
-			pControl->pTextControl = new CGTextArea;
-			pControl->pTextControl->SetEditable();
-			pControl->pTextControl->SetText(CONSTLIT("0"));
-			pControl->pTextControl->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
-			pControl->pTextControl->SetColor(CG16bitImage::RGBValue(255,255,255));
-			pControl->pTextControl->SetStyles(alignCenter);
+			CGTextArea *pTextArea = new CGTextArea;
+			pTextArea->SetEditable();
+			pTextArea->SetText(CONSTLIT("0"));
+			pTextArea->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
+			pTextArea->SetColor(CG16bitImage::RGBValue(255,255,255));
+			pTextArea->SetStyles(alignCenter);
 
 			RECT rcInput;
 			rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - COUNTER_WIDTH) / 2;
 			rcInput.right = rcInput.left + COUNTER_WIDTH;
-			rcInput.top = m_rcPane.bottom - ACTION_REGION_HEIGHT - COUNTER_HEIGHT - 24;
+
+			//	Height doesn't matter for now; we recalc later
+			rcInput.top = m_rcPane.top;
 			rcInput.bottom = rcInput.top + COUNTER_HEIGHT;
 
-			m_pContainer->AddArea(pControl->pTextControl, rcInput, COUNTER_ID);
+			pControl->pArea = pTextArea;
+			m_pContainer->AddArea(pControl->pArea, rcInput, COUNTER_ID);
 
 			pControl->bReplaceInput = true;
 			break;
@@ -111,25 +138,35 @@ void CDockPane::CreateControl (EControlTypes iType)
 			{
 			SControl *pControl = m_Controls.Insert();
 			pControl->iType = iType;
+			pControl->sID = sID;
+			pControl->cyHeight = 0;
+			pControl->cyMinHeight = 0;
+			pControl->cyMaxHeight = 0;
 
-			pControl->pTextControl = new CGTextArea;
-			pControl->pTextControl->SetFont(&VI.GetFont(fontLarge));
-			pControl->pTextControl->SetColor(VI.GetColor(colorTextDockText));
-			pControl->pTextControl->SetLineSpacing(6);
-			pControl->pTextControl->SetFontTable(&VI);
+			CGTextArea *pTextArea = new CGTextArea;
+			pTextArea->SetFont(&VI.GetFont(fontLarge));
+			pTextArea->SetColor(VI.GetColor(colorTextDockText));
+			pTextArea->SetLineSpacing(6);
+			pTextArea->SetFontTable(&VI);
 
-			RECT rcDesc;
-			rcDesc.left = m_rcPane.left;
-			rcDesc.top = m_rcPane.top + 16;
-			rcDesc.right = m_rcPane.right;
-#if 0
-			if (bShowCounter || bShowTextInput)
-				rcDesc.bottom = rcInput.top;
-			else
-#endif
-				rcDesc.bottom = m_rcPane.bottom - ACTION_REGION_HEIGHT;
+			pControl->pArea = pTextArea;
+			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
+			break;
+			}
 
-			m_pContainer->AddArea(pControl->pTextControl, rcDesc, 0);
+		case controlItemDisplay:
+			{
+			SControl *pControl = m_Controls.Insert();
+			pControl->iType = iType;
+			pControl->sID = sID;
+			pControl->cyHeight = 0;
+			pControl->cyMinHeight = 0;
+			pControl->cyMaxHeight = 0;
+
+			CGItemDisplayArea *pItemDisplayArea = new CGItemDisplayArea;
+
+			pControl->pArea = pItemDisplayArea;
+			m_pContainer->AddArea(pControl->pArea, m_rcPane, 0);
 			break;
 			}
 
@@ -137,26 +174,102 @@ void CDockPane::CreateControl (EControlTypes iType)
 			{
 			SControl *pControl = m_Controls.Insert();
 			pControl->iType = iType;
+			pControl->sID = sID;
+			pControl->cyHeight = TEXT_INPUT_HEIGHT;
+			pControl->cyMinHeight = pControl->cyHeight;
+			pControl->cyMaxHeight = pControl->cyHeight;
 
-			pControl->pTextControl = new CGTextArea;
-			pControl->pTextControl->SetEditable();
-			pControl->pTextControl->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
-			pControl->pTextControl->SetColor(CG16bitImage::RGBValue(255,255,255));
-			pControl->pTextControl->SetCursor(0, 0);
+			CGTextArea *pTextArea = new CGTextArea;
+			pTextArea->SetEditable();
+			pTextArea->SetFont(&VI.GetFont(fontSubTitleHeavyBold));
+			pTextArea->SetColor(CG16bitImage::RGBValue(255,255,255));
+			pTextArea->SetCursor(0, 0);
 
 			RECT rcInput;
 			rcInput.left = m_rcPane.left + (RectWidth(m_rcPane) - TEXT_INPUT_WIDTH) / 2;
 			rcInput.right = rcInput.left + TEXT_INPUT_WIDTH;
-			rcInput.top = m_rcPane.bottom - ACTION_REGION_HEIGHT - TEXT_INPUT_HEIGHT - 24;
+			rcInput.top = m_rcPane.top;
 			rcInput.bottom = rcInput.top + TEXT_INPUT_HEIGHT;
 
-			m_pContainer->AddArea(pControl->pTextControl, rcInput, TEXT_INPUT_ID);
+			pControl->pArea = pTextArea;
+			m_pContainer->AddArea(pControl->pArea, rcInput, TEXT_INPUT_ID);
 			break;
 			}
 
 		default:
 			ASSERT(false);
 		}
+	}
+
+ALERROR CDockPane::CreateControls (CString *retsError)
+
+//	CreateControls
+//
+//	Creates controls based on the pane descriptor. We assume that m_pContainer has
+//	already been created and is empty.
+
+	{
+	int i;
+
+	//	If there is a <Controls> element then use that to figure out what to
+	//	create.
+
+	CXMLElement *pControls = m_pPaneDesc->GetContentElementByTag(CONTROLS_TAG);
+	if (pControls)
+		{
+		for (i = 0; i < pControls->GetContentElementCount(); i++)
+			{
+			CXMLElement *pControlDef = pControls->GetContentElement(i);
+
+			//	Figure out the type
+
+			EControlTypes iType;
+			if (strEquals(pControlDef->GetTag(), COUNTER_TAG))
+				iType = controlCounter;
+			else if (strEquals(pControlDef->GetTag(), ITEM_DISPLAY_TAG))
+				iType = controlItemDisplay;
+			else if (strEquals(pControlDef->GetTag(), TEXT_TAG))
+				iType = controlDesc;
+			else if (strEquals(pControlDef->GetTag(), TEXT_INPUT_TAG))
+				iType = controlTextInput;
+			else
+				{
+				*retsError = strPatternSubst(CONSTLIT("Unknown control element: <%s>."), pControlDef->GetTag());
+				return ERR_FAIL;
+				}
+
+			//	Get the ID
+
+			CString sID;
+			if (!pControlDef->FindAttribute(ID_ATTRIB, &sID))
+				{
+				*retsError = strPatternSubst(CONSTLIT("Missing ID attrib for control element: <%s>."), pControlDef->GetTag());
+				return ERR_FAIL;
+				}
+
+			//	Create the control
+
+			CreateControl(iType, sID);
+			}
+		}
+
+	//	Otherwise we create default controls
+
+	else
+		{
+		//	Create the text description control
+
+		CreateControl(controlDesc, DEFAULT_DESC_ID);
+
+		//	Create counter or input fields
+
+		if (m_pPaneDesc->GetAttributeBool(SHOW_COUNTER_ATTRIB))
+			CreateControl(controlCounter, DEFAULT_COUNTER_ID);
+		else if (m_pPaneDesc->GetAttributeBool(SHOW_TEXT_INPUT_ATTRIB))
+			CreateControl(controlTextInput, DEFAULT_TEXT_INPUT_ID);
+		}
+
+	return NOERROR;
 	}
 
 void CDockPane::ExecuteCancelAction (void)
@@ -175,25 +288,29 @@ void CDockPane::ExecuteCancelAction (void)
 	g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 	}
 
-CGTextArea *CDockPane::GetControlByType (EControlTypes iType) const
+bool CDockPane::FindControl (const CString &sID, SControl **retpControl) const
 
-//	GetControlByType
+//	FindControl
 //
-//	Returns the control by type
+//	Looks for the control by ID. Returns FALSE if not found.
 
 	{
 	int i;
 
 	for (i = 0; i < m_Controls.GetCount(); i++)
-		if (m_Controls[i].iType == iType)
-			return m_Controls[i].pTextControl;
+		if (strEquals(sID, m_Controls[i].sID))
+			{
+			if (retpControl)
+				*retpControl = &m_Controls[i];
+			return true;
+			}
 
-	return NULL;
+	return false;
 	}
 
-CDockPane::SControl *CDockPane::GetControlEntryByType (EControlTypes iType) const
+CDockPane::SControl *CDockPane::GetControlByType (EControlTypes iType) const
 
-//	GetControlEntryByType
+//	GetControlByType
 //
 //	Returns the control entry
 
@@ -215,7 +332,7 @@ int CDockPane::GetCounterValue (void) const
 
 	{
 	CGTextArea *pCounter;
-	if (pCounter = GetControlByType(controlCounter))
+	if (pCounter = GetTextControlByType(controlCounter))
 		{
 		int iValue = strToInt(pCounter->GetText(), 0, NULL);
 
@@ -234,11 +351,34 @@ const CString &CDockPane::GetDescriptionString (void) const
 //	Returns the current description
 
 	{
-	CGTextArea *pDesc = GetControlByType(controlDesc);
+	CGTextArea *pDesc = GetTextControlByType(controlDesc);
 	if (pDesc == NULL)
 		return NULL_STR;
 
 	return m_sDesc;
+	}
+
+CGTextArea *CDockPane::GetTextControlByType (EControlTypes iType) const
+
+//	GetTextControlByType
+//
+//	Returns the control by type
+
+	{
+	int i;
+
+	switch (iType)
+		{
+		case controlCounter:
+		case controlDesc:
+		case controlTextInput:
+			for (i = 0; i < m_Controls.GetCount(); i++)
+				if (m_Controls[i].iType == iType)
+					return m_Controls[i].AsTextArea();
+			break;
+		}
+
+	return NULL;
 	}
 
 CString CDockPane::GetTextInputValue (void) const
@@ -249,7 +389,7 @@ CString CDockPane::GetTextInputValue (void) const
 
 	{
 	CGTextArea *pControl;
-	if (pControl = GetControlByType(controlTextInput))
+	if (pControl = GetTextControlByType(controlTextInput))
 		return pControl->GetText();
 	else
 		return NULL_STR;
@@ -285,19 +425,22 @@ bool CDockPane::HandleChar (char chChar)
 	//	Deal with input fields
 
 	SControl *pControl;
-	if (pControl = GetControlEntryByType(controlTextInput))
+	if (pControl = GetControlByType(controlTextInput))
 		{
+		CGTextArea *pTextArea = pControl->AsTextArea();
 		if (chChar >= ' ' && chChar <= '~')
 			{
-			CString sText = pControl->pTextControl->GetText();
+			CString sText = pTextArea->GetText();
 			sText.Append(CString(&chChar, 1));
-			pControl->pTextControl->SetText(sText);
-			pControl->pTextControl->SetCursor(0, sText.GetLength());
+			pTextArea->SetText(sText);
+			pTextArea->SetCursor(0, sText.GetLength());
 			return true;
 			}
 		}
-	else if (pControl = GetControlEntryByType(controlCounter))
+	else if (pControl = GetControlByType(controlCounter))
 		{
+		CGTextArea *pTextArea = pControl->AsTextArea();
+
 		switch (chChar)
 			{
 			case '0':
@@ -312,14 +455,14 @@ bool CDockPane::HandleChar (char chChar)
 			case '9':
 				if (pControl->bReplaceInput)
 					{
-					pControl->pTextControl->SetText(strFromInt(chChar - '0', false));
+					pTextArea->SetText(strFromInt(chChar - '0', false));
 					pControl->bReplaceInput = false;
 					}
 				else
 					{
-					CString sCounter = pControl->pTextControl->GetText();
+					CString sCounter = pTextArea->GetText();
 					sCounter.Append(strFromInt(chChar - '0', false));
-					pControl->pTextControl->SetText(sCounter);
+					pTextArea->SetText(sCounter);
 					}
 				return true;
 			}
@@ -379,34 +522,36 @@ bool CDockPane::HandleKeyDown (int iVirtKey)
 		case VK_BACK:
 			{
 			SControl *pControl;
-			if (pControl = GetControlEntryByType(controlTextInput))
+			if (pControl = GetControlByType(controlTextInput))
 				{
-				CString sText = pControl->pTextControl->GetText();
+				CGTextArea *pTextArea = pControl->AsTextArea();
+				CString sText = pTextArea->GetText();
 				if (sText.GetLength() > 1)
 					{
 					sText = strSubString(sText, 0, sText.GetLength() - 1);
-					pControl->pTextControl->SetText(sText);
-					pControl->pTextControl->SetCursor(0, sText.GetLength());
+					pTextArea->SetText(sText);
+					pTextArea->SetCursor(0, sText.GetLength());
 					}
 				else
 					{
-					pControl->pTextControl->SetText(NULL_STR);
-					pControl->pTextControl->SetCursor(0, 0);
+					pTextArea->SetText(NULL_STR);
+					pTextArea->SetCursor(0, 0);
 					}
 
 				return true;
 				}
-			else if (pControl = GetControlEntryByType(controlCounter))
+			else if (pControl = GetControlByType(controlCounter))
 				{
-				CString sCounter = pControl->pTextControl->GetText();
+				CGTextArea *pTextArea = pControl->AsTextArea();
+				CString sCounter = pTextArea->GetText();
 				if (sCounter.GetLength() > 1)
 					{
-					pControl->pTextControl->SetText(strSubString(sCounter, 0, sCounter.GetLength() - 1));
+					pTextArea->SetText(strSubString(sCounter, 0, sCounter.GetLength() - 1));
 					pControl->bReplaceInput = false;
 					}
 				else
 					{
-					pControl->pTextControl->SetText(CONSTLIT("0"));
+					pTextArea->SetText(CONSTLIT("0"));
 					pControl->bReplaceInput = true;
 					}
 
@@ -464,38 +609,33 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 
 	m_bInShowPane = true;
 
+	//	Initialize list of actions.
+
+	CString sError;
+	if (m_Actions.InitFromXML(m_pDockScreen->GetExtension(), m_pPaneDesc->GetContentElementByTag(ACTIONS_TAG), pData, &sError) != NOERROR)
+		{
+		ReportError(strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError));
+		return NOERROR;
+		}
+
 	//	Create a new pane
 
 	m_pContainer = new CGFrameArea;
 	pScreen->AddArea(m_pContainer, m_rcPane, 0);
 
-	//	Initialize list of actions
+	//	Create the appropriate set of controls
 
-	CString sError;
-	if (m_Actions.InitFromXML(m_pDockScreen->GetExtension(), m_pPaneDesc->GetContentElementByTag(ACTIONS_TAG), pData, &sError) != NOERROR)
+	if (CreateControls(&sError) != NOERROR)
 		{
-		sError = strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError);
-		SetDescription(sError);
-		kernelDebugLogMessage(sError);
+		ReportError(strPatternSubst(CONSTLIT("Pane %s: %s"), pPaneDesc->GetTag(), sError));
 		return NOERROR;
 		}
-
-	//	Create the text description control
-
-	CreateControl(controlDesc);
-
-	//	Create counter or input fields
-
-	if (m_pPaneDesc->GetAttributeBool(SHOW_COUNTER_ATTRIB))
-		CreateControl(controlCounter);
-	else if (m_pPaneDesc->GetAttributeBool(SHOW_TEXT_INPUT_ATTRIB))
-		CreateControl(controlTextInput);
 
 	//	Set the description text
 
 	CString sDesc;
 	if (!m_pDockScreen->EvalString(m_pPaneDesc->GetAttribute(DESC_ATTRIB), pData, false, eventNone, &sDesc))
-		m_pDockScreen->ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sDesc));
+		ReportError(strPatternSubst(CONSTLIT("Error evaluating desc param: %s"), sDesc));
 	else
 		SetDescription(sDesc);
 
@@ -513,7 +653,7 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 		CString sCode = pInit->GetContentText(0);
 		CString sError;
 		if (!m_pDockScreen->EvalString(sCode, pData, true, eventNone, &sError))
-			m_pDockScreen->ReportError(strPatternSubst(CONSTLIT("Error evaluating <OnPaneInit>: %s"), sError));
+			ReportError(strPatternSubst(CONSTLIT("Error evaluating <OnPaneInit>: %s"), sError));
 		}
 
 	//	We might have called exit inside OnPaneInit. If so, we exit
@@ -548,66 +688,196 @@ void CDockPane::RenderControls (void)
 //	Position all controls and actions so they fit.
 
 	{
-	//	Check to see if the description is too large for the area. If so, then
-	//	we shift everything down.
+	int i;
 
-	CGTextArea *pDesc = GetControlByType(controlDesc);
-	RECT rcDesc = pDesc->GetRect();
+	//	Figure out how much room we need for actions and how much we have left
+	//	for controls.
 
-	int cyDesc = pDesc->Justify(rcDesc);
-	int cyRow = (ACTION_BUTTON_HEIGHT + ACTION_BUTTON_SPACING);
-	int cyExtraNeeded = (cyDesc + cyRow) - RectHeight(rcDesc);
-	int cyExtraSpace = 0;
-	if (cyExtraNeeded > 0)
+	int iActionCount = m_Actions.GetVisibleCount();
+	int cyActions = (iActionCount * ACTION_BUTTON_HEIGHT) + ((iActionCount - 1) * ACTION_BUTTON_SPACING);
+	int cyAvailable = RectHeight(m_rcPane) - PANE_PADDING_TOP - cyActions;
+
+	//	Compute the desired height of all variable-height controls
+
+	int cyControls = 0;
+	for (i = 0; i < m_Controls.GetCount(); i++)
 		{
-		int iExtraRows = Min(AlignUp(cyExtraNeeded, cyRow) / cyRow, MAX_ACTIONS - m_Actions.GetVisibleCount());
-		if (iExtraRows > 0)
+		SControl &Control = m_Controls[i];
+
+		//	Compute the desired height of all variable-height controls
+
+		switch (Control.iType)
 			{
-			cyExtraSpace = iExtraRows * cyRow;
-
-			rcDesc.bottom += cyExtraSpace;
-			pDesc->SetRect(rcDesc);
+			case controlDesc:
+			case controlItemDisplay:
+				Control.cyHeight = Control.pArea->Justify(Control.pArea->GetRect());
+				break;
 			}
+
+		//	Add up the total
+
+		cyControls += Control.cyHeight + CONTROL_PADDING_BOTTOM;
 		}
 
-	//	Compute some metrics for the rest of the controls
+	//	Compute the buffer between the controls and the actions
 
-	int yDescBottom = rcDesc.top + cyDesc;
-	int yActionsTop = m_rcPane.bottom - ACTION_REGION_HEIGHT + cyExtraSpace;
-	int cyInput = yActionsTop - yDescBottom;
+	int cyControlsFull = Min(cyAvailable, AlignUp(cyControls, DESC_HEIGHT_GRANULARITY));
 
-	//	Move the input field, if necessary
+	//	Figure out where to start.
 
-	CGTextArea *pInput;
-	if (pInput = GetControlByType(controlTextInput))
+	int y = m_rcPane.top + PANE_PADDING_TOP;
+
+	//	Now resize all the control to the appropriate height.
+
+	for (i = 0; i < m_Controls.GetCount(); i++)
 		{
-		RECT rcRect;
-		rcRect = pInput->GetRect();
-		rcRect.top = yDescBottom + (cyInput - TEXT_INPUT_HEIGHT) / 2;
-		rcRect.bottom = rcRect.top + TEXT_INPUT_HEIGHT;
-		pInput->SetRect(rcRect);
-		}
+		SControl &Control = m_Controls[i];
+		RECT rcControl = Control.pArea->GetRect();
 
-	//	Move the counter, if necessary
+		rcControl.top = y;
+		rcControl.bottom = rcControl.top + Control.cyHeight;
+		Control.pArea->SetRect(rcControl);
 
-	if (pInput = GetControlByType(controlCounter))
-		{
-		RECT rcRect;
-		rcRect = pInput->GetRect();
-		rcRect.top = yDescBottom + (cyInput - COUNTER_HEIGHT) / 2;
-		rcRect.bottom = rcRect.top + COUNTER_HEIGHT;
-		pInput->SetRect(rcRect);
+		y += Control.cyHeight + CONTROL_PADDING_BOTTOM;
 		}
 
 	//	Create the action buttons (deals with extra space above and show/hide)
 
 	RECT rcActions;
 	rcActions.left = m_rcPane.left;
-	rcActions.top = yActionsTop;
+	rcActions.top = m_rcPane.top + PANE_PADDING_TOP + cyControlsFull;
 	rcActions.right = m_rcPane.right;
 	rcActions.bottom = m_rcPane.bottom;
 
 	m_Actions.CreateButtons(m_pContainer, m_pDockScreen->GetResolvedRoot(), FIRST_ACTION_ID, rcActions);
+	}
+
+ALERROR CDockPane::ReportError (const CString &sError)
+
+//	ReportError
+//
+//	Report an error while evaluating pane descriptor
+
+	{
+	//	Make sure we have a description control
+
+	if (GetTextControlByType(controlDesc) == NULL)
+		CreateControl(controlDesc, DEFAULT_DESC_ID);
+
+	//	Report the error through the screen. This will add screen information and
+	//	eventually call us back at SetDescription.
+
+	return m_pDockScreen->ReportError(sError);
+	}
+
+bool CDockPane::SetControlValue (const CString &sID, ICCItem *pValue)
+
+//	SetControlValue
+//
+//	Sets the value of the given control. Return FALSE if we could not find a 
+//	control of the given ID.
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	SControl *pControl;
+	if (!FindControl(sID, &pControl))
+		return false;
+
+	switch (pControl->iType)
+		{
+		case controlCounter:
+			{
+			CGTextArea *pTextArea = pControl->AsTextArea();
+			CString sText = strFromInt(pValue->GetIntegerValue());
+			pTextArea->SetText(sText);
+			pControl->bReplaceInput = true;
+			return true;
+			}
+
+		case controlDesc:
+			{
+			CGTextArea *pTextArea = pControl->AsTextArea();
+			CUIHelper UIHelper(*g_pHI);
+			CString sRTF;
+			UIHelper.GenerateDockScreenRTF(pValue->GetStringValue(), &sRTF);
+
+			pTextArea->SetRichText(sRTF);
+			return true;
+			}
+
+		case controlItemDisplay:
+			{
+			CGItemDisplayArea *pItemDisplayArea = pControl->AsItemDisplayArea();
+
+			//	Nil means nil
+
+			if (pValue->IsNil())
+				{
+				pItemDisplayArea->SetItem(NULL, CItem::NullItem());
+				return true;
+				}
+
+			//	If a structure, we expect two fields:
+
+			else if (pValue->IsSymbolTable())
+				{
+				ICCItem *pItemCC = pValue->GetElement(CONSTLIT("item"));
+				if (pItemCC == NULL)
+					{
+					CString sTitle;
+					CString sDesc;
+
+					//	If no item, then we expect title and desc
+
+					ICCItem *pTitleCC = pValue->GetElement(CONSTLIT("title"));
+					if (pTitleCC)
+						sTitle = pTitleCC->GetStringValue();
+
+					ICCItem *pDescCC = pValue->GetElement(CONSTLIT("desc"));
+					if (pDescCC)
+						sDesc = pDescCC->GetStringValue();
+
+					pItemDisplayArea->SetItem(NULL, CItem::NullItem());
+					pItemDisplayArea->SetText(sTitle, sDesc);
+
+					return true;
+					}
+
+				CItem Item = ::CreateItemFromList(CC, pItemCC);
+
+				CSpaceObject *pSource = NULL;
+				ICCItem *pSourceCC = pValue->GetElement(CONSTLIT("source"));
+				if (pSourceCC)
+					pSource = ::CreateObjFromItem(CC, pSourceCC);
+
+				pItemDisplayArea->SetItem(pSource, Item);
+				return true;
+				}
+
+			//	If this is a list then we expect an item value
+
+			else if (pValue->IsList())
+				{
+				CItem Item = ::CreateItemFromList(CC, pValue);
+				pItemDisplayArea->SetItem(NULL, Item);
+				return true;
+				}
+
+			return false;
+			}
+
+		case controlTextInput:
+			{
+			CGTextArea *pTextArea = pControl->AsTextArea();
+			CString sValue = pValue->GetStringValue();
+			pTextArea->SetText(sValue);
+			pTextArea->SetCursor(0, sValue.GetLength());
+			return true;
+			}
+		}
+
+	return false;
 	}
 
 void CDockPane::SetCounterValue (int iValue)
@@ -618,10 +888,11 @@ void CDockPane::SetCounterValue (int iValue)
 
 	{
 	SControl *pControl;
-	if (pControl = GetControlEntryByType(controlCounter))
+	if (pControl = GetControlByType(controlCounter))
 		{
+		CGTextArea *pTextArea = pControl->AsTextArea();
 		CString sText = strFromInt(iValue);
-		pControl->pTextControl->SetText(sText);
+		pTextArea->SetText(sText);
 		pControl->bReplaceInput = true;
 		}
 	}
@@ -636,13 +907,14 @@ void CDockPane::SetDescription (const CString &sDesc)
 	m_sDesc = sDesc;
 
 	SControl *pControl;
-	if (pControl = GetControlEntryByType(controlDesc))
+	if (pControl = GetControlByType(controlDesc))
 		{
+		CGTextArea *pTextArea = pControl->AsTextArea();
 		CUIHelper UIHelper(*g_pHI);
 		CString sRTF;
 		UIHelper.GenerateDockScreenRTF(sDesc, &sRTF);
 
-		pControl->pTextControl->SetRichText(sRTF);
+		pTextArea->SetRichText(sRTF);
 		}
 	}
 
@@ -654,9 +926,10 @@ void CDockPane::SetTextInputValue (const CString &sValue)
 
 	{
 	SControl *pControl;
-	if (pControl = GetControlEntryByType(controlTextInput))
+	if (pControl = GetControlByType(controlTextInput))
 		{
-		pControl->pTextControl->SetText(sValue);
-		pControl->pTextControl->SetCursor(0, sValue.GetLength());
+		CGTextArea *pTextArea = pControl->AsTextArea();
+		pTextArea->SetText(sValue);
+		pTextArea->SetCursor(0, sValue.GetLength());
 		}
 	}

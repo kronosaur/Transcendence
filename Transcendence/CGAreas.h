@@ -25,6 +25,26 @@ class CGDrawArea : public AGArea
 		bool m_bTransBackground;
 	};
 
+class CGItemDisplayArea : public AGArea
+	{
+	public:
+		CGItemDisplayArea (void);
+
+		inline void SetItem (CSpaceObject *pSource, const CItem &Item) { m_pSource = pSource; m_Item = Item; Invalidate(); }
+		inline void SetText (const CString &sTitle, const CString &sDesc) { m_sTitle = sTitle; m_sDesc = sDesc; Invalidate(); }
+
+		//	AGArea virtuals
+		virtual int Justify (const RECT &rcRect);
+		virtual void Paint (CG16bitImage &Dest, const RECT &rcRect);
+
+	private:
+		CSpaceObject *m_pSource;
+		CItem m_Item;
+
+		CString m_sTitle;					//	If no item
+		CString m_sDesc;					//	If no item
+	};
+
 class CGItemListArea : public AGArea
 	{
 	public:
@@ -75,9 +95,7 @@ class CGItemListArea : public AGArea
 		int CalcRowHeight (int iRow);
 		void InitRowDesc (void);
 		int FindRow (int y);
-		void FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight);
 		void PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool bSelected);
-		void PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs);
 		void PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected);
 
 		IListData *m_pListData;

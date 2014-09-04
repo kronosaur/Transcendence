@@ -88,81 +88,8 @@ int CGItemListArea::CalcRowHeight (int iRow)
 				break;
 				}
 
-			const CItem &Item = m_pListData->GetItemAtCursor();
-			CItemCtx Ctx(&Item, m_pListData->GetSource());
-			CItemType *pType = Item.GetType();
-			if (pType == NULL)
-				{
-				cyHeight = DEFAULT_ROW_HEIGHT;
-				break;
-				}
-
-			//	Compute the rect where the reference text will paint
-
-			RECT rcDrawRect = rcRect;
-			rcDrawRect.left += ICON_WIDTH + ITEM_TEXT_MARGIN_X;
-			rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
-
-			int iLevel = pType->GetApparentLevel();
-
-			//	Compute the height of the row
-
-			cyHeight = 0;
-
-			//	Account for margin
-
-			cyHeight += ITEM_TEXT_MARGIN_Y;
-
-			//	Item title
-
-			cyHeight += m_pFonts->LargeBold.GetHeight();
-
-			//	Attributes
-
-			TArray<SDisplayAttribute> Attribs;
-			if (Item.GetDisplayAttributes(m_pListData->GetSource(), &Attribs))
-				{
-				int cyAttribs;
-				FormatDisplayAttributes(Attribs, rcDrawRect, &cyAttribs);
-				cyHeight += cyAttribs + ATTRIB_SPACING_Y;
-				}
-
-			//	Reference
-
-			CString sReference = pType->GetReference(Ctx);
-
-			//	If this is a weapon, then add room for the weapon damage
-
-			if (Item.GetReferenceDamageType(m_pListData->GetSource(), -1, 0, NULL, NULL))
-				cyHeight += m_pFonts->Medium.GetHeight();
-
-			//	If this is armor or a shield, then add room for damage resistance
-
-			else if (Item.GetReferenceDamageAdj(m_pListData->GetSource(), 0, NULL, NULL))
-				cyHeight += m_pFonts->Medium.GetHeight();
-
-			//	Measure the reference text
-
-			int iLines;
-			if (!sReference.IsBlank())
-				{
-				iLines = m_pFonts->Medium.BreakText(sReference, RectWidth(rcDrawRect), NULL, 0);
-				cyHeight += iLines * m_pFonts->Medium.GetHeight();
-				}
-
-			//	Measure the description
-
-			CString sDesc = Item.GetDesc();
-			iLines = m_pFonts->Medium.BreakText(sDesc, RectWidth(rcDrawRect), NULL, 0);
-			cyHeight += iLines * m_pFonts->Medium.GetHeight();
-
-			//	Margin
-
-			cyHeight += ITEM_TEXT_MARGIN_BOTTOM;
-
-			//	Done
-
-			cyHeight = Max(DEFAULT_ROW_HEIGHT, cyHeight);
+			CUIHelper UIHelper(*g_pHI);
+			cyHeight = UIHelper.CalcItemEntryHeight(m_pListData->GetSource(), m_pListData->GetItemAtCursor(), rcRect, 0);
 			break;
 			}
 
@@ -210,44 +137,6 @@ int CGItemListArea::FindRow (int y)
 			return i;
 
 	return -1;
-	}
-
-void CGItemListArea::FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight)
-
-//	FormatDisplayAttributes
-//
-//	Initializes the rcRect structure in all attribute entries.
-
-	{
-	int i;
-
-	int cxLeft = RectWidth(rcRect);
-	int x = rcRect.left;
-	int y = rcRect.top;
-
-	for (i = 0; i < Attribs.GetCount(); i++)
-		{
-		int cxText = (ATTRIB_PADDING_X * 2) + m_pFonts->Medium.MeasureText(Attribs[i].sText);
-		int cyText = (ATTRIB_PADDING_Y * 2) + m_pFonts->Medium.GetHeight();
-		if (cxText > cxLeft && cxLeft != RectWidth(rcRect))
-			{
-			y += cyText + ATTRIB_SPACING_Y;
-			cxLeft = RectWidth(rcRect);
-			}
-
-		Attribs[i].rcRect.left = x;
-		Attribs[i].rcRect.top = y;
-		Attribs[i].rcRect.right = x + cxText;
-		Attribs[i].rcRect.bottom = y + cyText;
-
-		x += cxText + ATTRIB_SPACING_X;
-		cxLeft -= cxText + ATTRIB_SPACING_X;
-		}
-
-	y += (ATTRIB_PADDING_Y * 2) + m_pFonts->Medium.GetHeight();
-
-	if (retcyHeight)
-		*retcyHeight = y - rcRect.top;
 	}
 
 ICCItem *CGItemListArea::GetEntryAtCursor (void)
@@ -560,63 +449,6 @@ void CGItemListArea::PaintCustom (CG16bitImage &Dest, const RECT &rcRect, bool b
 	rcDrawRect.top += cyHeight;
 	}
 
-void CGItemListArea::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs)
-
-//	PaintDisplayAttributes
-//
-//	Paints all display attributes. We assume that FormatDisplayAttributes
-//	has already been called.
-
-	{
-	int i;
-	const CVisualPalette &VI = g_pHI->GetVisuals();
-
-	for (i = 0; i < Attribs.GetCount(); i++)
-		{
-		WORD wBackColor;
-		WORD wTextColor;
-
-		//	Figure out the colors
-
-		switch (Attribs[i].iType)
-			{
-			case attribPositive:
-				wBackColor = VI.GetColor(colorAreaAdvantage);
-				wTextColor = VI.GetColor(colorTextAdvantage);
-				break;
-
-			case attribNegative:
-				wBackColor = VI.GetColor(colorAreaDisadvantage);
-				wTextColor = VI.GetColor(colorTextDisadvantage);
-				break;
-
-			default:
-				wBackColor = RGB_MODIFIER_NORMAL_BACKGROUND;
-				wTextColor = RGB_MODIFIER_NORMAL_TEXT;
-				break;
-			}
-
-		//	Draw the background
-
-		::DrawRoundedRect(Dest, 
-				Attribs[i].rcRect.left, 
-				Attribs[i].rcRect.top, 
-				RectWidth(Attribs[i].rcRect), 
-				RectHeight(Attribs[i].rcRect), 
-				4, 
-				wBackColor);
-
-		//	Draw the text
-
-		m_pFonts->Medium.DrawText(Dest, 
-				Attribs[i].rcRect.left + ATTRIB_PADDING_X, 
-				Attribs[i].rcRect.top + ATTRIB_PADDING_Y, 
-				wTextColor, 
-				255, 
-				Attribs[i].sText);
-		}
-	}
-
 void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const RECT &rcRect, bool bSelected)
 
 //	PaintItem
@@ -624,146 +456,13 @@ void CGItemListArea::PaintItem (CG16bitImage &Dest, const CItem &Item, const REC
 //	Paints the item
 
 	{
-	//	Item context
+	CUIHelper UIHelper(*g_pHI);
 
-	CItemCtx Ctx(&Item, m_pListData->GetSource());
-	CItemType *pItemType = Item.GetType();
+	DWORD dwOptions = 0;
+	if (bSelected)
+		dwOptions |= CUIHelper::OPTION_SELECTED;
 
-	//	Paint the image
-
-	DrawItemTypeIcon(Dest, rcRect.left, rcRect.top, pItemType);
-
-	RECT rcDrawRect = rcRect;
-	rcDrawRect.left += ICON_WIDTH + ITEM_TEXT_MARGIN_X;
-	rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
-	rcDrawRect.top += ITEM_TEXT_MARGIN_Y;
-
-	//	Paint the item name
-
-	int cyHeight;
-	RECT rcTitle = rcDrawRect;
-	m_pFonts->LargeBold.DrawText(Dest,
-			rcTitle,
-			m_pFonts->wItemTitle,
-			Item.GetNounPhrase(nounCount | nounNoModifiers),
-			0,
-			CG16bitFont::SmartQuotes | CG16bitFont::TruncateLine,
-			&cyHeight);
-
-	rcDrawRect.top += cyHeight;
-
-	//	Paint the display attributes
-
-	TArray<SDisplayAttribute> Attribs;
-	if (Item.GetDisplayAttributes(m_pListData->GetSource(), &Attribs))
-		{
-		FormatDisplayAttributes(Attribs, rcDrawRect, &cyHeight);
-		PaintDisplayAttributes(Dest, Attribs);
-		rcDrawRect.top += cyHeight + ATTRIB_SPACING_Y;
-		}
-
-	//	Stats
-
-	CString sStat;
-
-	int iLevel = pItemType->GetApparentLevel();
-	CString sReference = pItemType->GetReference(Ctx);
-	DamageTypes iDamageType;
-	CString sDamageRef;
-	int iDamageAdj[damageCount];
-	int iHP;
-
-	if (Item.GetReferenceDamageType(m_pListData->GetSource(), -1, 0, &iDamageType, &sDamageRef))
-		{
-		//	Paint the damage type reference
-
-		m_pUIRes->DrawReferenceDamageType(Dest,
-				rcDrawRect.left + DAMAGE_ADJ_SPACING_X,
-				rcDrawRect.top,
-				iDamageType,
-				sDamageRef);
-
-		rcDrawRect.top += m_pFonts->Medium.GetHeight();
-
-		//	Paint additional reference in the line below
-
-		if (!sReference.IsBlank())
-			{
-			m_pFonts->Medium.DrawText(Dest, 
-					rcDrawRect,
-					m_pFonts->wItemRef,
-					sReference,
-					0,
-					0,
-					&cyHeight);
-
-			rcDrawRect.top += cyHeight;
-			}
-		}
-	else if (Item.GetReferenceDamageAdj(m_pListData->GetSource(), 0, &iHP, iDamageAdj))
-		{
-		//	Paint the initial text
-
-		sStat = strPatternSubst("hp: %d ", iHP);
-		int cxWidth = m_pFonts->Medium.MeasureText(sStat, &cyHeight);
-		m_pFonts->Medium.DrawText(Dest, 
-				rcDrawRect,
-				m_pFonts->wItemRef,
-				sStat,
-				0,
-				0,
-				&cyHeight);
-
-		//	Paint the damage type array
-
-		m_pUIRes->DrawReferenceDamageAdj(Dest,
-				rcDrawRect.left + cxWidth + DAMAGE_ADJ_SPACING_X,
-				rcDrawRect.top,
-				iLevel,
-				iHP,
-				iDamageAdj);
-
-		rcDrawRect.top += cyHeight;
-
-		//	Paint additional reference in the line below
-
-		if (!sReference.IsBlank())
-			{
-			m_pFonts->Medium.DrawText(Dest, 
-					rcDrawRect,
-					m_pFonts->wItemRef,
-					sReference,
-					0,
-					0,
-					&cyHeight);
-
-			rcDrawRect.top += cyHeight;
-			}
-		}
-	else
-		{
-		m_pFonts->Medium.DrawText(Dest, 
-				rcDrawRect,
-				m_pFonts->wItemRef,
-				sReference,
-				0,
-				0,
-				&cyHeight);
-
-		rcDrawRect.top += cyHeight;
-		}
-
-	//	Description
-
-	CString sDesc = Item.GetDesc();
-	m_pFonts->Medium.DrawText(Dest,
-			rcDrawRect,
-			(bSelected ? m_pFonts->wItemDescSelected : m_pFonts->wItemDesc),
-			sDesc,
-			0,
-			CG16bitFont::SmartQuotes,
-			&cyHeight);
-	rcDrawRect.top += cyHeight;
+	UIHelper.PaintItemEntry(Dest, m_pListData->GetSource(), Item, rcRect, dwOptions);
 	}
 
 void CGItemListArea::SetList (CSpaceObject *pSource)

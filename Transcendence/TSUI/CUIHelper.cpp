@@ -7,8 +7,21 @@
 
 const int TITLE_BAR_HEIGHT =					128;
 
+const int ATTRIB_PADDING_X =					4;
+const int ATTRIB_PADDING_Y =					1;
+const int ATTRIB_SPACING_X =					2;
+const int ATTRIB_SPACING_Y =					2;
+
 const int BUTTON_HEIGHT =						96;
 const int BUTTON_WIDTH =						96;
+
+const int DAMAGE_ADJ_ICON_WIDTH =				16;
+const int DAMAGE_ADJ_ICON_HEIGHT =				16;
+const int DAMAGE_ADJ_ICON_SPACING_X =			2;
+const int DAMAGE_ADJ_SPACING_X =				6;
+
+const int DAMAGE_TYPE_ICON_WIDTH =				16;
+const int DAMAGE_TYPE_ICON_HEIGHT =				16;
 
 const int ICON_CORNER_RADIUS =					8;
 const int ICON_HEIGHT =							96;
@@ -21,11 +34,20 @@ const int INPUT_ERROR_PADDING_RIGHT =			10;
 const int INPUT_ERROR_PADDING_TOP =				10;
 const int INPUT_ERROR_TIME =					(30 * 10);
 
+const int ITEM_TEXT_MARGIN_Y =					4;
+const int ITEM_TEXT_MARGIN_X =					4;
+const int ITEM_TEXT_MARGIN_BOTTOM =				10;
+const int ITEM_DEFAULT_HEIGHT =					96;
+const int ITEM_TITLE_EXTRA_MARGIN =				4;
+
 const int PADDING_LEFT =						20;
 
 const int RING_SIZE =							8;
 const int RING_MIN_RADIUS =						10;
 const int RING_COUNT =							4;
+
+const WORD RGB_MODIFIER_NORMAL_BACKGROUND =		CG16bitImage::RGBValue(101,101,101);	//	H:0   S:0   B:40
+const WORD RGB_MODIFIER_NORMAL_TEXT =			CG16bitImage::RGBValue(220,220,220);	//	H:0   S:0   B:86
 
 #define ALIGN_RIGHT								CONSTLIT("right")
 
@@ -64,6 +86,101 @@ const int RING_COUNT =							4;
 #define STYLE_IMAGE								CONSTLIT("image")
 #define STYLE_NORMAL							CONSTLIT("normal")
 #define STYLE_TEXT								CONSTLIT("text")
+
+int CUIHelper::CalcItemEntryHeight (CSpaceObject *pSource, const CItem &Item, const RECT &rcRect, DWORD dwOptions) const
+
+//	CalcItemEntryHeight
+//
+//	Computes the height necessary to paint the item entry.
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
+	const CG16bitFont &Medium = VI.GetFont(fontMedium);
+
+	bool bNoIcon = ((dwOptions & OPTION_NO_ICON) == OPTION_NO_ICON);
+	bool bTitle = ((dwOptions & OPTION_TITLE) == OPTION_TITLE);
+
+	//	Get the item
+
+	CItemCtx Ctx(&Item, pSource);
+	CItemType *pType = Item.GetType();
+	if (pType == NULL)
+		return ITEM_DEFAULT_HEIGHT;
+
+	//	Compute the rect where the reference text will paint
+
+	RECT rcDrawRect = rcRect;
+	rcDrawRect.left += ITEM_TEXT_MARGIN_X;
+	rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
+	if (!bNoIcon)
+		rcDrawRect.left += ICON_WIDTH;
+
+	int iLevel = pType->GetApparentLevel();
+
+	//	Compute the height of the row
+
+	int cyHeight = 0;
+
+	//	Account for margin
+
+	cyHeight += ITEM_TEXT_MARGIN_Y;
+
+	//	Item title
+
+	cyHeight += LargeBold.GetHeight();
+	if (bTitle)
+		cyHeight += ITEM_TITLE_EXTRA_MARGIN;
+
+	//	Attributes
+
+	TArray<SDisplayAttribute> Attribs;
+	if (Item.GetDisplayAttributes(pSource, &Attribs))
+		{
+		int cyAttribs;
+		FormatDisplayAttributes(Attribs, rcDrawRect, &cyAttribs);
+		cyHeight += cyAttribs + ATTRIB_SPACING_Y;
+		}
+
+	//	Reference
+
+	CString sReference = pType->GetReference(Ctx);
+
+	//	If this is a weapon, then add room for the weapon damage
+
+	if (Item.GetReferenceDamageType(pSource, -1, 0, NULL, NULL))
+		cyHeight += Medium.GetHeight();
+
+	//	If this is armor or a shield, then add room for damage resistance
+
+	else if (Item.GetReferenceDamageAdj(pSource, 0, NULL, NULL))
+		cyHeight += Medium.GetHeight();
+
+	//	Measure the reference text
+
+	int iLines;
+	if (!sReference.IsBlank())
+		{
+		iLines = Medium.BreakText(sReference, RectWidth(rcDrawRect), NULL, 0);
+		cyHeight += iLines * Medium.GetHeight();
+		}
+
+	//	Measure the description
+
+	CString sDesc = Item.GetDesc();
+	iLines = Medium.BreakText(sDesc, RectWidth(rcDrawRect), NULL, 0);
+	cyHeight += iLines * Medium.GetHeight();
+
+	//	Margin
+
+	cyHeight += ITEM_TEXT_MARGIN_BOTTOM;
+
+	//	Done
+
+	cyHeight = Max(ITEM_DEFAULT_HEIGHT, cyHeight);
+
+	return cyHeight;
+	}
 
 void CUIHelper::CreateInputErrorMessage (IHISession *pSession, const RECT &rcRect, const CString &sTitle, CString &sDesc, IAnimatron **retpMsg) const
 
@@ -376,6 +493,45 @@ void CUIHelper::CreateSessionWaitAnimation (const CString &sID, const CString &s
 		*retpControl = pRoot;
 	}
 
+void CUIHelper::FormatDisplayAttributes (TArray<SDisplayAttribute> &Attribs, const RECT &rcRect, int *retcyHeight) const
+
+//	FormatDisplayAttributes
+//
+//	Initializes the rcRect structure in all attribute entries.
+
+	{
+	int i;
+	const CG16bitFont &Medium = m_HI.GetVisuals().GetFont(fontMedium);
+
+	int cxLeft = RectWidth(rcRect);
+	int x = rcRect.left;
+	int y = rcRect.top;
+
+	for (i = 0; i < Attribs.GetCount(); i++)
+		{
+		int cxText = (ATTRIB_PADDING_X * 2) + Medium.MeasureText(Attribs[i].sText);
+		int cyText = (ATTRIB_PADDING_Y * 2) + Medium.GetHeight();
+		if (cxText > cxLeft && cxLeft != RectWidth(rcRect))
+			{
+			y += cyText + ATTRIB_SPACING_Y;
+			cxLeft = RectWidth(rcRect);
+			}
+
+		Attribs[i].rcRect.left = x;
+		Attribs[i].rcRect.top = y;
+		Attribs[i].rcRect.right = x + cxText;
+		Attribs[i].rcRect.bottom = y + cyText;
+
+		x += cxText + ATTRIB_SPACING_X;
+		cxLeft -= cxText + ATTRIB_SPACING_X;
+		}
+
+	y += (ATTRIB_PADDING_Y * 2) + Medium.GetHeight();
+
+	if (retcyHeight)
+		*retcyHeight = y - rcRect.top;
+	}
+
 void CUIHelper::GenerateDockScreenRTF (const CString &sText, CString *retsRTF) const
 
 //	GenerateDockScreenRTF
@@ -465,6 +621,394 @@ void CUIHelper::GenerateDockScreenRTF (const CString &sText, CString *retsRTF) c
 	*retsRTF = CString(Output.GetPointer(), Output.GetLength());
 	}
 
+void CUIHelper::PaintDisplayAttributes (CG16bitImage &Dest, TArray<SDisplayAttribute> &Attribs) const
+
+//	PaintDisplayAttributes
+//
+//	Paints all display attributes. We assume that FormatDisplayAttributes
+//	has already been called.
+
+	{
+	int i;
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &Medium = VI.GetFont(fontMedium);
+
+	for (i = 0; i < Attribs.GetCount(); i++)
+		{
+		WORD wBackColor;
+		WORD wTextColor;
+
+		//	Figure out the colors
+
+		switch (Attribs[i].iType)
+			{
+			case attribPositive:
+				wBackColor = VI.GetColor(colorAreaAdvantage);
+				wTextColor = VI.GetColor(colorTextAdvantage);
+				break;
+
+			case attribNegative:
+				wBackColor = VI.GetColor(colorAreaDisadvantage);
+				wTextColor = VI.GetColor(colorTextDisadvantage);
+				break;
+
+			default:
+				wBackColor = RGB_MODIFIER_NORMAL_BACKGROUND;
+				wTextColor = RGB_MODIFIER_NORMAL_TEXT;
+				break;
+			}
+
+		//	Draw the background
+
+		::DrawRoundedRect(Dest, 
+				Attribs[i].rcRect.left, 
+				Attribs[i].rcRect.top, 
+				RectWidth(Attribs[i].rcRect), 
+				RectHeight(Attribs[i].rcRect), 
+				4, 
+				wBackColor);
+
+		//	Draw the text
+
+		Medium.DrawText(Dest, 
+				Attribs[i].rcRect.left + ATTRIB_PADDING_X, 
+				Attribs[i].rcRect.top + ATTRIB_PADDING_Y, 
+				wTextColor, 
+				255, 
+				Attribs[i].sText);
+		}
+	}
+
+void CUIHelper::PaintItemEntry (CG16bitImage &Dest, CSpaceObject *pSource, const CItem &Item, const RECT &rcRect, DWORD dwOptions) const
+
+//	PaintItemEntry
+//
+//	Paints an item entry suitable for an item list.
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &LargeBold = VI.GetFont(fontLargeBold);
+	const CG16bitFont &Medium = VI.GetFont(fontMedium);
+	WORD wColorTitle = VI.GetColor(colorTextHighlight);
+	WORD wColorRef = VI.GetColor(colorTextHighlight);
+	WORD wColorDescSel = CG16bitImage::RGBValue(200,200,200);
+	WORD wColorDesc = CG16bitImage::RGBValue(128,128,128);
+
+	bool bSelected = ((dwOptions & OPTION_SELECTED) == OPTION_SELECTED);
+	bool bNoIcon = ((dwOptions & OPTION_NO_ICON) == OPTION_NO_ICON);
+	bool bTitle = ((dwOptions & OPTION_TITLE) == OPTION_TITLE);
+
+	//	Item context
+
+	CItemCtx Ctx(&Item, pSource);
+	CItemType *pItemType = Item.GetType();
+
+	//	Calc the rect where we will draw
+
+	RECT rcDrawRect = rcRect;
+	rcDrawRect.left += ITEM_TEXT_MARGIN_X;
+	rcDrawRect.right -= ITEM_TEXT_MARGIN_X;
+	rcDrawRect.top += ITEM_TEXT_MARGIN_Y;
+
+	//	Paint the image
+
+	if (!bNoIcon)
+		{
+		DrawItemTypeIcon(Dest, rcRect.left, rcRect.top, pItemType);
+		rcDrawRect.left += ICON_WIDTH;
+		}
+
+	//	Paint the item name
+
+	DWORD dwNounPhraseFlags = nounNoModifiers;
+	if (bTitle)
+		dwNounPhraseFlags |= nounTitleCapitalize | nounShort;
+	else
+		dwNounPhraseFlags |= nounCount;
+
+	int cyHeight;
+	RECT rcTitle = rcDrawRect;
+	LargeBold.DrawText(Dest,
+			rcTitle,
+			wColorTitle,
+			Item.GetNounPhrase(dwNounPhraseFlags),
+			0,
+			CG16bitFont::SmartQuotes | CG16bitFont::TruncateLine,
+			&cyHeight);
+
+	rcDrawRect.top += cyHeight;
+	if (bTitle)
+		rcDrawRect.top += ITEM_TITLE_EXTRA_MARGIN;
+
+	//	Paint the display attributes
+
+	TArray<SDisplayAttribute> Attribs;
+	if (Item.GetDisplayAttributes(pSource, &Attribs))
+		{
+		FormatDisplayAttributes(Attribs, rcDrawRect, &cyHeight);
+		PaintDisplayAttributes(Dest, Attribs);
+		rcDrawRect.top += cyHeight + ATTRIB_SPACING_Y;
+		}
+
+	//	Stats
+
+	CString sStat;
+
+	int iLevel = pItemType->GetApparentLevel();
+	CString sReference = pItemType->GetReference(Ctx);
+	DamageTypes iDamageType;
+	CString sDamageRef;
+	int iDamageAdj[damageCount];
+	int iHP;
+
+	if (Item.GetReferenceDamageType(pSource, -1, 0, &iDamageType, &sDamageRef))
+		{
+		//	Paint the damage type reference
+
+		PaintReferenceDamageType(Dest,
+				rcDrawRect.left + DAMAGE_ADJ_SPACING_X,
+				rcDrawRect.top,
+				iDamageType,
+				sDamageRef);
+
+		rcDrawRect.top += Medium.GetHeight();
+
+		//	Paint additional reference in the line below
+
+		if (!sReference.IsBlank())
+			{
+			Medium.DrawText(Dest, 
+					rcDrawRect,
+					wColorRef,
+					sReference,
+					0,
+					0,
+					&cyHeight);
+
+			rcDrawRect.top += cyHeight;
+			}
+		}
+	else if (Item.GetReferenceDamageAdj(pSource, 0, &iHP, iDamageAdj))
+		{
+		//	Paint the initial text
+
+		sStat = strPatternSubst("hp: %d ", iHP);
+		int cxWidth = Medium.MeasureText(sStat, &cyHeight);
+		Medium.DrawText(Dest, 
+				rcDrawRect,
+				wColorRef,
+				sStat,
+				0,
+				0,
+				&cyHeight);
+
+		//	Paint the damage type array
+
+		PaintReferenceDamageAdj(Dest,
+				rcDrawRect.left + cxWidth + DAMAGE_ADJ_SPACING_X,
+				rcDrawRect.top,
+				iLevel,
+				iHP,
+				iDamageAdj);
+
+		rcDrawRect.top += cyHeight;
+
+		//	Paint additional reference in the line below
+
+		if (!sReference.IsBlank())
+			{
+			Medium.DrawText(Dest, 
+					rcDrawRect,
+					wColorRef,
+					sReference,
+					0,
+					0,
+					&cyHeight);
+
+			rcDrawRect.top += cyHeight;
+			}
+		}
+	else
+		{
+		Medium.DrawText(Dest, 
+				rcDrawRect,
+				wColorRef,
+				sReference,
+				0,
+				0,
+				&cyHeight);
+
+		rcDrawRect.top += cyHeight;
+		}
+
+	//	Description
+
+	CString sDesc = Item.GetDesc();
+	Medium.DrawText(Dest,
+			rcDrawRect,
+			(bSelected ? wColorDescSel : wColorDesc),
+			sDesc,
+			0,
+			CG16bitFont::SmartQuotes,
+			&cyHeight);
+	rcDrawRect.top += cyHeight;
+	}
+
+void CUIHelper::PaintReferenceDamageAdj (CG16bitImage &Dest, int x, int y, int iLevel, int iHP, const int *iDamageAdj) const
+
+//	PaintReferenceDamageAdj
+//
+//	Takes an array of damage type adj values and displays them
+
+	{
+	int i;
+	bool bSortByDamageType = true;
+	bool bOptionShowDamageAdjAsHP = false;
+
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &Small = VI.GetFont(fontSmall);
+	const CG16bitFont &Medium = VI.GetFont(fontMedium);
+	WORD wColorRef = VI.GetColor(colorTextHighlight);
+
+	//	Must have positive HP
+
+	if (iHP == 0)
+		return;
+
+	//	Sort damage types from highest to lowest
+
+	CSymbolTable Sorted;
+	int iLengthEstimate = 0;
+	int iImmuneCount = 0;
+	for (i = 0; i < damageCount; i++)
+		{
+		//	Skip if this damage type is not appropriate to our level
+
+		int iDamageLevel = GetDamageTypeLevel((DamageTypes)i);
+		if (iDamageLevel < iLevel - 5 || iDamageLevel > iLevel + 3)
+			continue;
+
+		//	Skip if the damage adj is 100%
+
+		if (iDamageAdj[i] == iHP)
+			continue;
+
+		//	Figure out the sort order
+
+		CString sKey;
+		if (bSortByDamageType)
+			sKey = strPatternSubst(CONSTLIT("%02d"), i);
+		else
+			{
+			DWORD dwHighToLow = (iDamageAdj[i] == -1 ? 0 : 1000000 - iDamageAdj[i]);
+			sKey = strPatternSubst(CONSTLIT("%08x %02d"), dwHighToLow, i);
+			}
+
+		//	Add to list
+
+		DWORD dwValue = MAKELONG((WORD)i, (WORD)(short)iDamageAdj[i]);
+
+		Sorted.AddEntry(sKey, (CObject *)dwValue);
+
+		//	Estimate how many entries we will have (so we can decide the font size)
+		//	We assume that immune entries get collapsed.
+
+		if (iDamageAdj[i] != -1)
+			iLengthEstimate++;
+		else
+			iImmuneCount++;
+		}
+
+	//	If we have six or more icons, then we need to paint smaller
+
+	iLengthEstimate += Min(2, iImmuneCount);
+	const CG16bitFont &TheFont = (iLengthEstimate >= 6 ? Small : Medium);
+	int cyOffset = (Medium.GetHeight() - TheFont.GetHeight()) / 2;
+	
+	//	Paint the icons
+
+	for (i = 0; i < Sorted.GetCount(); i++)
+		{
+		DWORD dwValue = (DWORD)Sorted.GetValue(i);
+		int iDamageType = LOWORD(dwValue);
+		int iDamageAdj = (int)(short)HIWORD(dwValue);
+		int iPercentAdj = (100 * (iDamageAdj - iHP) / iHP);
+
+		//	Prettify the % by rounding to a number divisible by 5
+
+		int iPrettyPercent = 5 * ((iPercentAdj + 2 * Sign(iPercentAdj)) / 5);
+
+		//	Skip if prettify results in 0%
+
+		if (bOptionShowDamageAdjAsHP && iPrettyPercent == 0)
+			continue;
+
+		//	Draw icon
+
+		g_pHI->GetVisuals().DrawDamageTypeIcon(Dest, x, y, (DamageTypes)iDamageType);
+		x += DAMAGE_TYPE_ICON_WIDTH + DAMAGE_ADJ_ICON_SPACING_X;
+
+		//	If we have a bunch of entries with "immune", then compress them
+
+		if (i < (Sorted.GetCount() - 1)
+				&& iDamageAdj == -1
+				&& (iDamageAdj == (int)(short)HIWORD((DWORD)Sorted.GetValue(i + 1))))
+			continue;
+
+		//	Figure out how to display damage adj
+
+		CString sStat;
+		if (iDamageAdj == -1)
+			sStat = CONSTLIT("immune");
+		else if (bOptionShowDamageAdjAsHP)
+			sStat = strFromInt(iDamageAdj);
+		else
+			sStat = strPatternSubst(CONSTLIT("%s%d%%"), (iPrettyPercent > 0 ? CONSTLIT("+") : NULL_STR), iPrettyPercent);
+		
+		//	Draw
+
+		Dest.DrawText(x,
+				y + cyOffset,
+				TheFont,
+				wColorRef,
+				sStat,
+				0,
+				&x);
+
+		x += DAMAGE_ADJ_SPACING_X;
+		}
+	}
+
+void CUIHelper::PaintReferenceDamageType (CG16bitImage &Dest, int x, int y, int iDamageType, const CString &sRef) const
+
+//	PaintReferenceDamageType
+//
+//	Draws a single damage type icon (if not damageError) followed by reference text
+
+	{
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	const CG16bitFont &Medium = VI.GetFont(fontMedium);
+	WORD wColorRef = VI.GetColor(colorTextHighlight);
+
+	//	Paint the icon first
+
+	if (iDamageType != damageError)
+		{
+		g_pHI->GetVisuals().DrawDamageTypeIcon(Dest, x, y, (DamageTypes)iDamageType);
+		x += DAMAGE_TYPE_ICON_WIDTH + DAMAGE_ADJ_ICON_SPACING_X;
+		}
+
+	//	Paint the reference text
+
+	Dest.DrawText(x,
+			y,
+			Medium,
+			wColorRef,
+			sRef,
+			0);
+	}
+
+//	PaintItemEntry
 void CInputErrorMessageController::OnAniCommand (const CString &sID, const CString &sEvent, const CString &sCmd, DWORD dwData)
 
 //	OnAniCommand
