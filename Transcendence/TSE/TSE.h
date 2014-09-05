@@ -1812,6 +1812,7 @@ class CEnergyField
 
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void Destroy (CSpaceObject *pSource);
+		inline bool Disarms (CSpaceObject *pSource) { return m_pType->Disarms(); }
 		void FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem **retpResult);
 		void FireOnCreate (CSpaceObject *pSource);
 		bool FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
@@ -1870,9 +1871,11 @@ class CEnergyFieldList
 		struct SImpactDesc
 			{
 			SImpactDesc (void) :
+					bDisarm(false),
 					bParalyze(false)
 				{ }
 
+			bool bDisarm;					//	TRUE if source is disarmed
 			bool bParalyze;					//	TRUE if source is paralyzed.
 			};
 

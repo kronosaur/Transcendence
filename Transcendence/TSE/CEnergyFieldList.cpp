@@ -136,6 +136,11 @@ void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact)
 	CEnergyField *pField = m_pFirst;
 	while (pField)
 		{
+		//	Do we disarm the source?
+
+		if (pField->Disarms(pSource))
+			retImpact->bDisarm = true;
+
 		//	Do we paralyze the source?
 
 		if (pField->Paralyzes(pSource))

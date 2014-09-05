@@ -652,6 +652,7 @@ void CShip::CalcOverlayImpact (void)
 
 	//	Update our cache
 
+	m_fDisarmedByOverlay = Impact.bDisarm;
 	m_fParalyzedByOverlay = Impact.bParalyze;
 	}
 
@@ -1055,6 +1056,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fDockingDisabled = false;
 	pShip->m_fControllerDisabled = false;
 	pShip->m_fParalyzedByOverlay = false;
+	pShip->m_fDisarmedByOverlay = false;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -4555,6 +4557,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fDockingDisabled =		((dwLoad & 0x00020000) ? true : false);
 	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
 	m_fParalyzedByOverlay =		((dwLoad & 0x00080000) ? true : false);
+	m_fDisarmedByOverlay =		((dwLoad & 0x00100000) ? true : false);
 
 	//	OK to recompute
 	m_fRecalcRotationAccel = true;
@@ -4850,7 +4853,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		//	See if we're firing. Note that we fire before we rotate so that the
 		//	fire behavior code can know which way we're aiming.
 
-		if (m_iDisarmedTimer == 0)
+		if (!IsDisarmed())
 			{
 			STargetingCtx TargetingCtx;
 
@@ -4908,7 +4911,10 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 				}
 			}
 		else
-			m_iDisarmedTimer--;
+			{
+			if (m_iDisarmedTimer > 0)
+				m_iDisarmedTimer--;
+			}
 
 		//	Update rotation
 
@@ -5334,6 +5340,7 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fDockingDisabled ?		0x00020000 : 0);
 	dwSave |= (m_fControllerDisabled ?	0x00040000 : 0);
 	dwSave |= (m_fParalyzedByOverlay ?	0x00080000 : 0);
+	dwSave |= (m_fDisarmedByOverlay ?	0x00100000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Armor

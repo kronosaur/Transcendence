@@ -999,7 +999,7 @@ class CShip : public CSpaceObject
 		virtual bool ImageInObject (const CVector &vObjPos, const CObjectImageArray &Image, int iTick, int iRotation, const CVector &vImagePos);
 		virtual bool IsAngryAt (CSpaceObject *pObj);
 		virtual bool IsBlind (void) { return m_iBlindnessTimer != 0; }
-		virtual bool IsDisarmed (void) { return m_iDisarmedTimer != 0; }
+		virtual bool IsDisarmed (void) { return m_fDisarmedByOverlay || m_iDisarmedTimer != 0; }
 		virtual bool IsIdentified (void) { return m_fIdentified; }
 		virtual bool IsInactive (void) const { return (m_fManualSuspended || m_iExitGateTimer > 0); }
 		virtual bool IsKnown (void) { return m_fKnown; }
@@ -1191,8 +1191,12 @@ class CShip : public CSpaceObject
 		DWORD m_fControllerDisabled:1;			//	TRUE if we want to disable controller
 		DWORD m_fRecalcRotationAccel:1;			//	TRUE if we need to recalc rotation acceleration
 		DWORD m_fParalyzedByOverlay:1;			//	TRUE if one or more overlays paralyze the ship.
+		DWORD m_fDisarmedByOverlay:1;			//	TRUE if one or more overlays disarmed the ship.
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
 
-		DWORD m_dwSpare:12;
+		DWORD m_dwSpare:8;
 
 	friend CObjectClass<CShip>;
 	};

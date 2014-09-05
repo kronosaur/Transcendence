@@ -4639,6 +4639,7 @@ class COverlayType : public CDesignType
 		virtual ~COverlayType(void);
 
 		bool AbsorbsWeaponFire (CInstalledDevice *pWeapon);
+		inline bool Disarms (void) const { return m_fDisarmShip; }
 		int GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx);
 		inline CEffectCreator *GetEffectCreator (void) const { return m_pEffect; }
 		inline CEffectCreator *GetHitEffectCreator (void) const { return m_pHitEffect; }
@@ -4674,7 +4675,7 @@ class COverlayType : public CDesignType
 		DWORD m_fRotateWithShip:1;				//	If TRUE, we rotate along with source rotation
 		DWORD m_fShieldOverlay:1;				//	If TRUE, we are above hull/armor
 		DWORD m_fParalyzeShip:1;				//	If TRUE, ship is paralyzed
-		DWORD m_fSpare6:1;
+		DWORD m_fDisarmShip:1;					//	If TRUE, ship is disarmed
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 
