@@ -1343,6 +1343,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property (all)\n\n"
 
 			"   'category\n"
+			"   'cyberDefenseLevel\n"
 			"   'hasDockingPorts\n"
 			"   'id\n"
 			"   'known\n"
