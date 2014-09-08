@@ -498,7 +498,12 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
+					(switch
+						(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+							(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
+							
+						(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'WelcomeNonPilgrim))
+						)
 				</OnPaneInit>
 
 				<Actions>
@@ -643,6 +648,12 @@
 					"\"Welcome, Pilgrim! Your journey to the Galactic Core "
 					"will be long and arduous but we are here to help those "
 					"of pure spirit and in true need.\""
+					)
+			</Text>
+			<Text id="WelcomeNonPilgrim">
+				(cat
+					"\"Welcome! Domina asks that we help those in need. Our powers in "
+					"the material world are at your service.\""
 					)
 			</Text>
 
