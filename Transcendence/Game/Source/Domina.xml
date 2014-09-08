@@ -2,15 +2,6 @@
 
 <TranscendenceModule>
 	
-	<!-- PILGRIM CHARACTER CLASS
-
-	-->
-	
-	<Type UNID="&unidPilgrimClass;">
-		<Events>
-		</Events>
-	</Type>
-		 
 	<Sovereign UNID="&svDomina;"
 			name="Domina"
 			alignment="constructive chaos"

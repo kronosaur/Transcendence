@@ -978,6 +978,9 @@
 	<!ENTITY dsRPGManageArmor			"0x00010023">
 	<!ENTITY dsRPGUpgradeArmor			"0x00010024">
 	<!ENTITY dsRPGUpgradeDevice			"0x00010025">
+	<!ENTITY unidCDMMercenaryClass		"0x00010026">
+	<!ENTITY unidFreelancerClass		"0x00010027">
+	<!ENTITY unidCOMSOCAgentClass		"0x00010028">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -2178,6 +2181,7 @@
 		<Module filename="RPGAutons.xml"/>
 		<Module filename="RPGAuxDevices.xml"/>
 		<Module filename="RPGBehaviors.xml"/>
+		<Module filename="RPGCharacterClasses.xml"/>
 		<Module filename="RPGCharacters.xml"/>
 		<Module filename="RPGCode.xml"/>
 		<Module filename="RPGCompatibility.xml"/>

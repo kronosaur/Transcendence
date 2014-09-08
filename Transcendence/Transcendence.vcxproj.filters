@@ -727,5 +727,8 @@
     <Xml Include="Game\Source\Benedict.xml">
       <Filter>XML Files\Human Space Library</Filter>
     </Xml>
+    <Xml Include="Game\Source\RPGCharacterClasses.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
