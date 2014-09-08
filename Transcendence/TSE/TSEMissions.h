@@ -50,7 +50,7 @@ class CMission : public CSpaceObject
 							   ICCItem *pCreateData,
 							   CMission **retpMission,
 							   CString *retsError);
-		void FireCustomEvent (const CString &sEvent);
+		void FireCustomEvent (const CString &sEvent, ICCItem *pData);
 		inline DWORD GetAcceptedOn (void) const { return m_dwAcceptedOn; }
 		inline bool IsActive (void) const { return (m_iStatus == statusAccepted || (!m_fDebriefed && (m_iStatus == statusPlayerSuccess || m_iStatus == statusPlayerFailure))); }
 		inline bool IsClosed (void) const { return (!IsActive() && IsCompleted()); }

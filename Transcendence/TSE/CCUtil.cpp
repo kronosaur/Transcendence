@@ -500,6 +500,15 @@ CDamageSource GetDamageSourceArg (CCodeChain &CC, ICCItem *pArg)
 	else if (pArg->IsIdentifier())
 		{
 		CString sCause = pArg->GetElement(0)->GetStringValue();
+
+		//	If the cause happens to be a destruction cause ID, then use that.
+
+		DestructionTypes iCause = ::GetDestructionCause(sCause);
+		if (iCause != killedNone)
+			return CDamageSource(NULL, iCause, NULL, NULL_STR, 0);
+
+		//	Otherwise, this is a custom death
+
 		return CDamageSource(NULL, killedByOther, NULL, sCause, 0);
 		}
 

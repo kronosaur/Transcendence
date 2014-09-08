@@ -142,14 +142,9 @@ void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, i
 	{
 	m_Overlays.AddField(this, pType, iPosAngle, iPosRadius, iRotation, iLifeLeft, retdwID);
 
-#if 0
 	//	Recalc bonuses, etc.
 
-	CalcArmorBonus();
-	CalcDeviceBonus();
-	m_pController->OnWeaponStatusChanged();
-	m_pController->OnArmorRepaired(-1);
-#endif
+	CalcOverlayImpact();
 	}
 
 void CStation::AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
@@ -276,6 +271,23 @@ int CStation::CalcNumberOfShips (void)
 	return iCount;
 
 	DEBUG_CATCH
+	}
+
+void CStation::CalcOverlayImpact (void)
+
+//	CalcOverlayImpact
+//
+//	Calculates the impact of overlays on the station. This should be called 
+//	whenever the set of overlays changes.
+
+	{
+	CEnergyFieldList::SImpactDesc Impact;
+	m_Overlays.GetImpact(this, &Impact);
+
+	//	Update our cache
+
+	m_fDisarmedByOverlay = Impact.bDisarm;
+	m_fParalyzedByOverlay = Impact.bParalyze;
 	}
 
 bool CStation::CanAttack (void) const
@@ -603,6 +615,8 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_yMapLabel = -6;
 	pStation->m_rMass = pType->GetMass();
 	pStation->m_dwWreckUNID = 0;
+	pStation->m_fDisarmedByOverlay = false;
+	pStation->m_fParalyzedByOverlay = false;
 	pStation->SetHasGravity(pType->HasGravity());
 
 	//	We generally don't move
@@ -2959,18 +2973,20 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	//	Flags
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
-	m_fArmed =			((dwLoad & 0x00000001) ? true : false);
-	m_fKnown =			((dwLoad & 0x00000002) ? true : false);
-	m_fNoMapLabel =		((dwLoad & 0x00000004) ? true : false);
-	m_fRadioactive =	((dwLoad & 0x00000008) ? true : false);
+	m_fArmed =				((dwLoad & 0x00000001) ? true : false);
+	m_fKnown =				((dwLoad & 0x00000002) ? true : false);
+	m_fNoMapLabel =			((dwLoad & 0x00000004) ? true : false);
+	m_fRadioactive =		((dwLoad & 0x00000008) ? true : false);
 	//	0x00000010 UNUSED m_fCustomImage
-	m_fActive =			((dwLoad & 0x00000020) ? true : false);
-	m_fNoReinforcements =((dwLoad & 0x00000040) ? true : false);
-	m_fReconned =		((dwLoad & 0x00000080) ? true : false);
-	m_fFireReconEvent =	((dwLoad & 0x00000100) ? true : false);
-	bool fNoArticle =	((dwLoad & 0x00000200) ? true : false);
-	m_fImmutable =		((dwLoad & 0x00000400) ? true : false);
-	m_fExplored =		((dwLoad & 0x00000800) ? true : false);
+	m_fActive =				((dwLoad & 0x00000020) ? true : false);
+	m_fNoReinforcements =	((dwLoad & 0x00000040) ? true : false);
+	m_fReconned =			((dwLoad & 0x00000080) ? true : false);
+	m_fFireReconEvent =		((dwLoad & 0x00000100) ? true : false);
+	bool fNoArticle =		((dwLoad & 0x00000200) ? true : false);
+	m_fImmutable =			((dwLoad & 0x00000400) ? true : false);
+	m_fExplored =			((dwLoad & 0x00000800) ? true : false);
+	m_fDisarmedByOverlay =	((dwLoad & 0x00001000) ? true : false);
+	m_fParalyzedByOverlay =	((dwLoad & 0x00002000) ? true : false);
 
 	//	Init name flags
 
@@ -3144,13 +3160,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (CSpaceObject::IsDestroyedInUpdate())
 			return;
 		else if (bModified)
-			{
-#if 0
-			bWeaponStatusChanged = true;
-			bArmorStatusChanged = true;
-			bCalcDeviceBonus = true;
-#endif
-			}
+			CalcOverlayImpact();
 		}
 	}
 
@@ -3353,6 +3363,8 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	//	0x00000200 retired
 	dwSave |= (m_fImmutable ?			0x00000400 : 0);
 	dwSave |= (m_fExplored ?			0x00000800 : 0);
+	dwSave |= (m_fDisarmedByOverlay ?	0x00001000 : 0);
+	dwSave |= (m_fParalyzedByOverlay ?	0x00002000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -4014,7 +4026,10 @@ void CStation::UpdateAttacking (SUpdateCtx &Ctx, int iTick)
 
 	//	Fire with all weapons (if we've got a target)
 
-	if (m_pTarget && m_pDevices)
+	if (m_pTarget 
+			&& m_pDevices
+			&& !IsParalyzed()
+			&& !IsDisarmed())
 		{
 		bool bSourceDestroyed = false;
 

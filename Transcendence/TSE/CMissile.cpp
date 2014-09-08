@@ -539,6 +539,20 @@ int CMissile::GetStealth (void) const
 	return m_pDesc->m_iStealth;
 	}
 
+bool CMissile::HasAttribute (const CString &sAttribute) const
+
+//	HasAttribute
+//
+//	Returns TRUE if it has the given attribute
+
+	{
+	CItemType *pType = m_pDesc->GetWeaponType();
+	if (pType == NULL)
+		return false;
+
+	return pType->HasLiteralAttribute(sAttribute);
+	}
+
 EDamageResults CMissile::OnDamage (SDamageCtx &Ctx)
 
 //	Damage
@@ -593,6 +607,20 @@ EDamageResults CMissile::OnDamage (SDamageCtx &Ctx)
 		Destroy(killedByDamage, Ctx.Attacker);
 		return damagePassthroughDestroyed;
 		}
+	}
+
+void CMissile::OnDestroyed (SDestroyCtx &Ctx)
+
+//	OnDestroyed
+//
+//	Missile destroyed
+
+	{
+	//	If we're destroyed due to weapon malfunction, then we detonate. This
+	//	allows events to detonate a missile on command.
+
+	if (Ctx.iCause == killedByWeaponMalfunction)
+		CreateFragments(GetPos());
 	}
 
 void CMissile::OnMove (const CVector &vOldPos, Metric rSeconds)

@@ -274,7 +274,7 @@ ALERROR CMission::Create (CMissionType *pType,
 	return NOERROR;
 	}
 
-void CMission::FireCustomEvent (const CString &sEvent)
+void CMission::FireCustomEvent (const CString &sEvent, ICCItem *pData)
 
 //	FireCustomEvent
 //
@@ -289,6 +289,7 @@ void CMission::FireCustomEvent (const CString &sEvent)
 
 		Ctx.SetEvent(eventDoEvent);
 		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())

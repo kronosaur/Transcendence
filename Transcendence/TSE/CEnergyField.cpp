@@ -222,7 +222,7 @@ void CEnergyField::Destroy (CSpaceObject *pSource)
 		}
 	}
 
-void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem **retpResult)
+void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomEvent
 //
@@ -237,6 +237,7 @@ void CEnergyField::FireCustomEvent (CSpaceObject *pSource, const CString &sEvent
 		//	Setup 
 
 		Ctx.SaveAndDefineSourceVar(pSource);
+		Ctx.SaveAndDefineDataVar(pData);
 		Ctx.DefineInteger(CONSTLIT("aOverlayID"), m_dwID);
 
 		//	Execute

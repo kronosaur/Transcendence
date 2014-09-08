@@ -374,6 +374,7 @@ class CMissile : public CSpaceObject
 		virtual CString GetDamageCauseNounPhrase (DWORD dwFlags) { return m_Source.GetDamageCauseNounPhrase(dwFlags); }
 		virtual DestructionTypes GetDamageCauseType (void) { return m_iCause; }
 		virtual int GetInteraction (void) { return m_pDesc->GetInteraction(); }
+		virtual int GetLevel (void) const { CItemType *pType = m_pDesc->GetWeaponType(); return (pType ? pType->GetLevel() : 1); }
 		virtual CString GetName (DWORD *retdwFlags = NULL);
 		virtual CString GetObjClassName (void) { return CONSTLIT("CMissile"); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return (m_pDesc->GetPassthrough() > 0 ? CSystem::layerEffects : CSystem::layerStations); }
@@ -383,7 +384,9 @@ class CMissile : public CSpaceObject
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual CSpaceObject *GetSource (void) { return m_Source.GetObj(); }
 		virtual int GetStealth (void) const;
+		virtual CDesignType *GetType (void) const { return m_pDesc->GetWeaponType(); }
 		virtual CWeaponFireDesc *GetWeaponFireDesc (void) { return m_pDesc; }
+		virtual bool HasAttribute (const CString &sAttribute) const;
 		virtual void OnMove (const CVector &vOldPos, Metric rSeconds);
 		virtual void PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans);
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
@@ -395,6 +398,7 @@ class CMissile : public CSpaceObject
 		virtual bool CanHit (CSpaceObject *pObj) { return MissileCanHitObj(pObj, m_Source.GetObj(), m_pDesc); }
 		virtual void ObjectDestroyedHook (const SDestroyCtx &Ctx);
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
+		virtual void OnDestroyed (SDestroyCtx &Ctx);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick);
@@ -1348,6 +1352,7 @@ class CStation : public CSpaceObject
 		virtual bool IsAbandoned (void) const { return (m_iHitPoints == 0 && !IsImmutable()); }
 		virtual bool IsActiveStargate (void) const { return !m_sStargateDestNode.IsBlank() && m_fActive; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return (IsEnemy(pObj) || IsBlacklisted(pObj)); }
+		virtual bool IsDisarmed (void) { return m_fDisarmedByOverlay; }
 		virtual bool IsExplored (void) { return m_fExplored; }
 		virtual bool IsIdentified (void) { return m_fKnown; }
 		virtual bool IsImmutable (void) const { return m_fImmutable; }
@@ -1355,6 +1360,7 @@ class CStation : public CSpaceObject
 		virtual bool IsMultiHull (void) { return m_pType->IsMultiHull(); }
 		virtual bool IsObjDocked (CSpaceObject *pObj) { return m_DockingPorts.IsObjDocked(pObj); }
 		virtual bool IsObjDockedOrDocking (CSpaceObject *pObj) { return m_DockingPorts.IsObjDockedOrDocking(pObj); }
+		virtual bool IsParalyzed (void) { return m_fParalyzedByOverlay; }
 		virtual bool IsRadioactive (void) { return (m_fRadioactive ? true : false); }
 		virtual bool IsStargate (void) const { return !m_sStargateDestNode.IsBlank(); }
 		virtual bool IsTimeStopImmune (void) { return m_pType->IsTimeStopImmune(); }
@@ -1424,6 +1430,7 @@ class CStation : public CSpaceObject
 		void AllocTradeOverride (void);
 		void Blacklist (CSpaceObject *pObj);
 		int CalcNumberOfShips (void);
+		void CalcOverlayImpact (void);
 		void ClearBlacklist (CSpaceObject *pObj);
 		void CreateDestructionEffect (void);
 		void CreateEjectaFromDamage (int iDamage, const CVector &vHitPos, int iDirection, const DamageDesc &Damage);
@@ -1490,8 +1497,8 @@ class CStation : public CSpaceObject
 
 		DWORD m_fImmutable:1;					//	If TRUE, station is immutable
 		DWORD m_fExplored:1;					//	If TRUE, player has docked at least once
-		DWORD m_fSpare3:1;
-		DWORD m_fSpare4:1;
+		DWORD m_fDisarmedByOverlay:1;			//	If TRUE, an overlay has disarmed us
+		DWORD m_fParalyzedByOverlay:1;			//	If TRUE, an overlay has paralyzed us
 		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;

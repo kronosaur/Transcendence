@@ -1135,16 +1135,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireEvent",					fnObjSet,		FN_OBJ_FIRE_EVENT,
-			"(objFireEvent obj event) -> result of event",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"(objFireEvent obj event [data]) -> result of event",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireItemEvent",				fnObjSet,		FN_OBJ_FIRE_ITEM_EVENT,
 			"(objFireItemEvent obj item event [data]) -> result of event",
 			"ivs*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFireOverlayEvent",			fnObjSet,		FN_OBJ_FIRE_OVERLAY_EVENT,
-			"(objFireOverlayEvent obj overlayID event) -> result of event",
-			"iis",	PPFLAG_SIDEEFFECTS,	},
+			"(objFireOverlayEvent obj overlayID event [data]) -> result of event",
+			"iis*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objFixParalysis",				fnObjSet,		FN_OBJ_FIX_PARALYSIS,
 			"(objFixParalysis obj)",
@@ -1995,51 +1995,55 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysFindObject",				fnSystemFind,	0,	
-			"(sysFindObject source filter) -> list of objects",
-			//		b			Include beams
-			//		m			Include missiles
-			//		s			Include ships
-			//		t			Include stations (including planets)
-			//		z			Include the player
-			//
-			//		A			Active objects only (i.e., objects that can attack)
-			//		B:xyz;		Only objects with attribute 'xyz'
-			//		C			(unused)
-			//		D:xyz;		Only objects with data 'xyz'
-			//		E			Enemy objects only
-			//		F			Friendly objects only
-			//		G			Stargates only
-			//		G:xyz;		Stargate with ID 'xyz'
-			//		H			Only objects whose base = source
-			//		I:angle		Only objects that intersect line from source
-			//		J			Same sovereign as source
-			//		J:unid;		Sovereign unid = unid
-			//		K			Killed objects only (i.e., objects that cannot attack)
-			//		L:x-y;		Objects of level x to y.
-			//		M			Manufactured objects only (i.e., no planets or asteroids)
-			//		N			Return only the nearest object to the source
-			//		N:nn;		Return only objects within nn light-seconds
-			//		O:docked;	Ships that are currently docked at source
-			//		O:escort;	Ships ordered to escort source
-			//		O:guard;	Ships ordered to guard source
-			//		P			Only objects that can be detected (perceived) by source
-			//		Q			(unused)
-			//		R			Return only the farthest object to the source
-			//		R:nn;		Return only objects greater than nn light-seconds away
-			//		S:sort		Sort order ('d' = distance ascending; 'D' = distance descending
-			//		T			Include structure-scale stations
-			//		T:xyz;		Include stations with attribute 'xyz'
-			//		U			(unused)
-			//		V			Include virtual objects
-			//		W			(unused)
-			//		X			Only objects whose target is the source
-			//		Y			(unused)
-			//		Z			Exclude the player
-			//
-			//		+xyz;		Include objects with the given attribute
-			//		-xyz;		Exclude objects with the given attribute
-			//
-			//		=n			Level comparisons
+			"(sysFindObject source filter) -> list of objects\n\n"
+			
+			"filter\n\n"
+			
+			"   b           Include beams\n"
+			"   m           Include missiles\n"
+			"   s           Include ships\n"
+			"   t           Include stations (including planets)\n"
+			"   z           Include the player\n"
+			"\n"
+			"   A           Active objects only (i.e., objects that can attack)\n"
+			//"   B:xyz;      Only objects with attribute 'xyz'\n"
+			//"   C           (unused)\n"
+			"   D:xyz;      Only objects with data 'xyz'\n"
+			"   E           Enemy objects only\n"
+			"   F           Friendly objects only\n"
+			"   G           Stargates only\n"
+			"   G:xyz;      Stargate with ID 'xyz'\n"
+			"   H           Only objects whose base = source\n"
+			"   I:angle     Only objects that intersect line from source\n"
+			"   J           Same sovereign as source\n"
+			"   J:unid;     Sovereign unid = unid\n"
+			"   K           Killed objects only (i.e., objects that cannot attack)\n"
+			"   L:x-y;      Objects of level x to y.\n"
+			"   M           Manufactured objects only (i.e., no planets or asteroids)\n"
+			"   N           Return only the nearest object to the source\n"
+			"   N:nn;       Return only objects within nn light-seconds\n"
+			"   O:docked;   Ships that are currently docked at source\n"
+			"   O:escort;   Ships ordered to escort source\n"
+			"   O:guard;    Ships ordered to guard source\n"
+			"   P           Only objects that can be detected (perceived) by source\n"
+			//"   Q           (unused)\n"
+			"   R           Return only the farthest object to the source\n"
+			"   R:nn;       Return only objects greater than nn light-seconds away\n"
+			"   S:sort      Sort order ('d' = distance ascending; 'D' = distance descending\n"
+			"   T           Include structure-scale stations\n"
+			"   T:xyz;      Include stations with attribute 'xyz'\n"
+			//"   U           (unused)\n"
+			"   V           Include virtual objects\n"
+			//"   W           (unused)\n"
+			"   X           Only objects whose target is the source\n"
+			//"   Y           (unused)\n"
+			"   Z           Exclude the player\n"
+			"\n"
+			"   +xyz;       Exclude objects without the given attribute\n"
+			"   -xyz;       Exclude objects with the given attribute\n"
+			"\n"
+			"   =n          Level comparisons\n",
+
 			"is",	0,	},
 
 		{	"sysGetData",					fnSystemGet,	FN_SYS_GET_DATA,
@@ -6014,7 +6018,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_OBJ_FIRE_EVENT:
 			{
 			ICCItem *pResult;
-			pObj->FireCustomEvent(pArgs->GetElement(1)->GetStringValue(), eventObjFireEvent, &pResult);
+			ICCItem *pData = (pArgs->GetCount() > 2 ? pArgs->GetElement(2) : NULL);
+			pObj->FireCustomEvent(pArgs->GetElement(1)->GetStringValue(), eventObjFireEvent, pData, &pResult);
 			return pResult;
 			}
 
@@ -6032,7 +6037,8 @@ ICCItem *fnObjSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			ICCItem *pResult;
 			DWORD dwOverlayID = pArgs->GetElement(1)->GetIntegerValue();
-			pObj->FireCustomOverlayEvent(pArgs->GetElement(2)->GetStringValue(), dwOverlayID, &pResult);
+			ICCItem *pData = (pArgs->GetCount() > 3 ? pArgs->GetElement(3) : NULL);
+			pObj->FireCustomOverlayEvent(pArgs->GetElement(2)->GetStringValue(), dwOverlayID, pData, &pResult);
 			return pResult;
 			}
 

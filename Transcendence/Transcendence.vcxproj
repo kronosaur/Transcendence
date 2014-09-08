@@ -743,7 +743,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\StdArmor.xml" />
-    <None Include="Game\Source\StdAutons.xml" />
+    <None Include="Game\Source\StdAutons.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StdDevices.xml">
       <SubType>Designer</SubType>
     </None>

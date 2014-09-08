@@ -390,7 +390,6 @@ class CWeaponFireDesc
 		inline Metric GetAveDamage (void) const { return m_Damage.GetAverageDamage(); }
 		Metric GetAveInitialSpeed (void) const;
 		inline int GetAveParticleCount (void) const { return m_ParticleCount.GetAveValue(); }
-		CItemType *GetWeaponType (CItemType **retpLauncher = NULL) const;
 		inline CEffectCreator *GetEffect (void) const { return m_pEffect; }
 		inline ICCItem *GetEventHandler (const CString &sEvent) const { SEventHandlerDesc Event; if (!FindEventHandler(sEvent, &Event)) return NULL; return Event.pCode; }
 		inline Metric GetExpansionSpeed (void) const { return (m_ExpansionSpeed.Roll() * LIGHT_SPEED / 100.0); }
@@ -422,6 +421,7 @@ class CWeaponFireDesc
 		inline int GetVaporTrailLength (void) const { return m_iVaporTrailLength; }
 		inline int GetVaporTrailWidth (void) const { return m_iVaporTrailWidth; }
 		inline int GetVaporTrailWidthInc (void) const { return m_iVaporTrailWidthInc; }
+		CItemType *GetWeaponType (CItemType **retpLauncher = NULL) const;
 		inline bool HasEvents (void) const { return !m_Events.IsEmpty(); }
 		inline bool HasFragments (void) const { return m_pFirstFragment != NULL; }
 		inline bool HasOnFragmentEvent (void) const { return m_CachedEvents[evtOnFragment].pCode != NULL; }
@@ -1813,7 +1813,7 @@ class CEnergyField
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void Destroy (CSpaceObject *pSource);
 		inline bool Disarms (CSpaceObject *pSource) { return m_pType->Disarms(); }
-		void FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem **retpResult);
+		void FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem *pData, ICCItem **retpResult);
 		void FireOnCreate (CSpaceObject *pSource);
 		bool FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void FireOnDestroy (CSpaceObject *pSource);
@@ -2192,9 +2192,9 @@ class CSpaceObject : public CObject
 		bool FireCanDockAsPlayer (CSpaceObject *pDockTarget, CString *retsError);
 		bool FireCanInstallItem (const CItem &Item, int iSlot, CString *retsResult);
 		bool FireCanRemoveItem (const CItem &Item, int iSlot, CString *retsResult);
-		void FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent = eventNone, ICCItem **retpResult = NULL);
-		void FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData = NULL, ICCItem **retpResult = NULL);
-		void FireCustomOverlayEvent (const CString &sEvent, DWORD dwID, ICCItem **retpResult = NULL);
+		void FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent = eventNone, ICCItem *pData = NULL, ICCItem **retpResult = NULL);
+		void FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData, ICCItem **retpResult = NULL);
+		void FireCustomOverlayEvent (const CString &sEvent, DWORD dwID, ICCItem *pData, ICCItem **retpResult = NULL);
 		void FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject *pShip, ICCItem **retpResult = NULL);
 		bool FireGetDockScreen (CString *retsScreen, int *retiPriority);
 		void FireGetExplosionType (SExplosionType *retExplosion);
@@ -2553,7 +2553,7 @@ class CSpaceObject : public CObject
 		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL) { return -1; }
 		virtual Metric GetCargoSpaceLeft (void) { return 1000000.0; }
 		virtual int GetCombatPower (void) { return 0; }
-		virtual int GetCyberDefenseLevel (void) { return 1; }
+		virtual int GetCyberDefenseLevel (void) { return GetLevel(); }
 		virtual DamageTypes GetDamageType (void) { return damageGeneric; }
 		virtual CEconomyType *GetDefaultEconomy (void);
 		virtual DWORD GetDefaultEconomyUNID (void) { return DEFAULT_ECONOMY_UNID; }

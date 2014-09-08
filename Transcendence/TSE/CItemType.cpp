@@ -94,6 +94,7 @@
 
 #define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
+#define SPECIAL_IS_LAUNCHER						CONSTLIT("isLauncher:")
 
 #define SPECIAL_TRUE							CONSTLIT("true")
 
@@ -1235,6 +1236,11 @@ bool CItemType::OnHasSpecialAttribute (const CString &sAttrib) const
 			return (true == bValue);
 		else
 			return (false == bValue);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_IS_LAUNCHER))
+		{
+		bool bValue = strEquals(strSubString(sAttrib, SPECIAL_IS_LAUNCHER.GetLength(), -1), SPECIAL_TRUE);
+		return ((GetCategory() == itemcatLauncher) == bValue);
 		}
 	else
 		return false;

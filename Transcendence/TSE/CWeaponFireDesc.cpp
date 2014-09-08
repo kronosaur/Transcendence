@@ -868,16 +868,10 @@ CItemType *CWeaponFireDesc::GetWeaponType (CItemType **retpLauncher) const
 		pPos++;
 		int iOrdinal = strParseInt(pPos, 0, &pPos);
 
-		//	Get the weapon descriptor
-
-		CWeaponClass *pClass = (CWeaponClass *)g_pUniverse->FindDeviceClass(dwUNID);
-		if (pClass == NULL)
-			return NULL;
-
 		//	Return the device/launcher
 
 		if (retpLauncher)
-			*retpLauncher = pClass->GetItemType();
+			*retpLauncher = pItemType;
 
 		//	For launchers, figure out which missile this is
 
@@ -895,13 +889,13 @@ CItemType *CWeaponFireDesc::GetWeaponType (CItemType **retpLauncher) const
 
 			//	Otherwise return the launcher (e.g., DM600)
 
-			return pClass->GetItemType();
+			return pItemType;
 			}
 
 		//	Otherwise, return the weapon
 
 		else
-			return pClass->GetItemType();
+			return pItemType;
 		}
 
 	//	Otherwise, we expect this to be a missile

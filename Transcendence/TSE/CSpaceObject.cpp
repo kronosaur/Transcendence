@@ -82,6 +82,7 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_ID								CONSTLIT("id")
 #define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
 #define PROPERTY_KNOWN							CONSTLIT("known")
+#define PROPERTY_LEVEL							CONSTLIT("level")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
@@ -92,10 +93,11 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 
 #define SPECIAL_VALUE_TRUE						CONSTLIT("true")
 
+#define CATEGORY_BEAM							CONSTLIT("beam")
+#define CATEGORY_EFFECT							CONSTLIT("effect")
+#define CATEGORY_MISSILE						CONSTLIT("missile")
 #define CATEGORY_SHIP							CONSTLIT("ship")
 #define CATEGORY_STATION						CONSTLIT("station")
-#define CATEGORY_MISSILE						CONSTLIT("missile")
-#define CATEGORY_EFFECT							CONSTLIT("effect")
 
 static Metric g_rMaxPerceptionRange[CSpaceObject::perceptMax+1] =
 	{
@@ -1605,7 +1607,7 @@ bool CSpaceObject::FireCanRemoveItem (const CItem &Item, int iSlot, CString *ret
 		return true;
 	}
 
-void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem **retpResult)
+void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEvent, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomEvent
 //
@@ -1619,6 +1621,7 @@ void CSpaceObject::FireCustomEvent (const CString &sEvent, ECodeChainEvents iEve
 		{
 		Ctx.SetEvent(iEvent);
 		Ctx.SaveAndDefineSourceVar(this);
+		Ctx.SaveAndDefineDataVar(pData);
 
 		ICCItem *pResult = Ctx.Run(Event);
 		if (pResult->IsError())
@@ -1676,7 +1679,7 @@ void CSpaceObject::FireCustomItemEvent (const CString &sEvent, const CItem &Item
 		}
 	}
 
-void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverlayID, ICCItem **retpResult)
+void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverlayID, ICCItem *pData, ICCItem **retpResult)
 
 //	FireCustomOverlayEvent
 //
@@ -1697,7 +1700,7 @@ void CSpaceObject::FireCustomOverlayEvent (const CString &sEvent, DWORD dwOverla
 
 	//	Fire event
 
-	pOverlay->FireCustomEvent(this, sEvent, retpResult);
+	pOverlay->FireCustomEvent(this, sEvent, pData, retpResult);
 	}
 
 void CSpaceObject::FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject *pShip, ICCItem **retpResult)
@@ -3560,6 +3563,8 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 				return CC.CreateString(CATEGORY_STATION);
 
 			case catBeam:
+				return CC.CreateString(CATEGORY_BEAM);
+
 			case catMissile:
 				return CC.CreateString(CATEGORY_MISSILE);
 
@@ -3593,6 +3598,9 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
+
+	else if (strEquals(sName, PROPERTY_LEVEL))
+		return CC.CreateInteger(GetLevel());
 
 	else if (strEquals(sName, PROPERTY_PLAYER_MISSIONS_GIVEN))
 		{

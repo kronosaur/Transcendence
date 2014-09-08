@@ -27,12 +27,6 @@
 #define PROPERTY_INC_CHARGES					CONSTLIT("incCharges")
 #define PROPERTY_INSTALLED						CONSTLIT("installed")
 
-#define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
-#define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
-#define SPECIAL_UNID							CONSTLIT("unid:")
-
-#define SPECIAL_TRUE							CONSTLIT("true")
-
 CItemEnhancement CItem::m_NullMod;
 CItem CItem::m_NullItem;
 

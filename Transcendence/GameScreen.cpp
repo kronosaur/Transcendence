@@ -263,7 +263,10 @@ void CTranscendenceWnd::DoInvocation (CPower *pPower)
 		CString sError;
 		pPower->InvokeByPlayer(GetPlayer()->GetShip(), GetPlayer()->GetTarget(CItemCtx()), &sError);
 		if (!sError.IsBlank())
+			{
 			DisplayMessage(sError);
+			kernelDebugLogMessage(sError);
+			}
 		}
 
 	m_CurrentMenu = menuNone;

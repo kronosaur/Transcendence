@@ -42,7 +42,7 @@ void CTimedMissionEvent::DoEvent (DWORD dwTick, CSystem *pSystem)
 
 	{
 	if (m_pMission)
-		m_pMission->FireCustomEvent(m_sEvent);
+		m_pMission->FireCustomEvent(m_sEvent, NULL);
 
 	if (m_iInterval)
 		SetTick(dwTick + m_iInterval);
