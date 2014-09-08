@@ -2196,12 +2196,12 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat
-								"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
-								"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
-								"\"We don't get many pilgrims visiting around here. Why don't you give us some of your worldly possessions; "
-								"they won't do you much good at the Core, or wherever you're trying to get.\""
-								))
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'WelcomePilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stContainerHabitat; 'Welcome))
+								)
 						</OnPaneInit>
 
 						<Actions>
@@ -2234,6 +2234,26 @@
 			
 			<Port x="-61"	y="35" />
 		</DockingPorts>
+		
+		<Language>
+			<Text id="Welcome">
+				(cat
+					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
+					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
+					
+					"\"Traveling the universe, yeah? Why don't you spare some items for us!\""
+					)
+			</Text>
+			<Text id="WelcomePilgrim">
+				(cat
+					"You are docked at a habitat made out of shipping containers. Children bounce off the bulkheads in zero-G while "
+					"maintenance workers repair leaky seals and balky machinery. The station master approaches you:\n\n"
+					
+					"\"We don't get many pilgrims visiting around here. Why don't you give us some of your worldly possessions; "
+					"they won't do you much good at the Core, or wherever you're trying to get.\""
+					)
+			</Text>
+		</Language>
 
 	</StationType>
 

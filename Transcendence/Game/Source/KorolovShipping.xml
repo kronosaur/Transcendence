@@ -2336,10 +2336,11 @@
 
 					<VolkovJoins>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat "As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
-									"\"My name is Volkov. You are going to the Core, is true? I also want to go and I would fly with you, if you are willing.\""
-									)
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stKorolovShipping; 'VolkovIntroPilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stKorolovShipping; 'VolkovIntro))
 								)
 						</OnPaneInit>
 
@@ -2850,6 +2851,24 @@
 			<Port x="70"	y="105" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="VolkovIntro">
+				(cat
+					"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+				
+					"\"My name is Volkov. You are leaving the system, is true? "
+					"I also want to go and I would fly with you, if you're willing.\""
+					)
+			</Text>
+			<Text id="VolkovIntroPilgrim">
+				(cat
+					"As the crowd breaks up, a tall man in a faded flight suit walks up to you:\n\n"
+				
+					"\"My name is Volkov. You are going to the Core, is true? "
+					"I also want to go and I would fly with you, if you're willing.\""
+					)
+			</Text>
+		</Language>
 	</StationType>
 	
 	<!-- Helena Volkov

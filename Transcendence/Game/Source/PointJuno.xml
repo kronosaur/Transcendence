@@ -451,13 +451,11 @@
 
 					<CCGetMission1>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat 
-									"Officers and assistants rush around the room under the glow of massive display screens. "
-									"In the center, standing over a tactical holomap, an older woman with three general's stars consults with her officers.\n\n"
-									"She looks up as you approach. \"My men tell me that you're one of those pilgrims, heading off to the Core on a personal invitation from the Gods or whatever. "
-									"Well, on your way to Heaven, how about helping us mortals who are not so eager to meet our makers?\""
-									)
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stPointJuno; 'Mission1WelcomePilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stPointJuno; 'Mission1Welcome))
 								)
 						</OnPaneInit>
 
@@ -748,13 +746,11 @@
 
 					<CCMissionDone>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"As you enter, everyone in the command center stops to applaud.\n\n"
-									"General Verner walks over to you and offers her hand. \"Well done! I knew I could count on you. "
-									"With the damage that we've inflicted, I doubt that the Ares will be back anytime soon!\n\n"
-									"\"May the Gods give you peace when you reach the Core!\""
-									)
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stPointJuno; 'MissionsDonePilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stPointJuno; 'MissionsDone))
 								)
 						</OnPaneInit>
 
@@ -920,10 +916,11 @@
 
 					<BackToNormal>
 						<OnPaneInit>
-							(scrSetDesc gScreen
-								(cat
-									"General Verner welcomes you as you enter, \"I'm glad you're in no hurry to go to the Core. Take your rest here with us and seek Domina later.\""
-									)
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &stPointJuno; 'NormalWelcomePilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &stPointJuno; 'NormalWelcome))
 								)
 						</OnPaneInit>
 
@@ -964,6 +961,71 @@
 			<Port x="70"	y="105" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="Mission1Welcome">
+				(cat 
+					"Officers and assistants rush around the room under the glow of "
+					"massive display screens. In the center, standing over a tactical "
+					"holomap, an older woman with three general's stars consults with "
+					"her officers.\n\n"
+					
+					"She looks up as you approach. \"My men tell me you're a merc or "
+					"something. I don't like mercs, particularly; but that's neither "
+					"here nor there."
+					
+					"\"I need your help.\""
+					)
+			</Text>
+			<Text id="Mission1WelcomePilgrim">
+				(cat 
+					"Officers and assistants rush around the room under the glow of "
+					"massive display screens. In the center, standing over a tactical "
+					"holomap, an older woman with three general's stars consults with "
+					"her officers.\n\n"
+					
+					"She looks up as you approach. \"My men tell me that you're one "
+					"of those pilgrims, heading off to the Core on a personal "
+					"invitation from the gods or whatever.\n\n"
+					
+					"\"Well, on your way to heaven, how about helping us mortals who "
+					"are not so eager to meet our makers?\""
+					)
+			</Text>
+			<Text id="MissionsDone">
+				(cat
+					"As you enter, everyone in the command center stops to applaud.\n\n"
+					
+					"General Verner walks over to you and offers her hand. \"Well done! "
+					"I knew I could count on you. With the damage that we've inflicted, "
+					"I doubt that the Ares will be back anytime soon!\n\n"
+					
+					"\"May your journey be equally successful!\""
+					)
+			</Text>
+			<Text id="MissionsDonePilgrim">
+				(cat
+					"As you enter, everyone in the command center stops to applaud.\n\n"
+					
+					"General Verner walks over to you and offers her hand. \"Well done! "
+					"I knew I could count on you. With the damage that we've inflicted, "
+					"I doubt that the Ares will be back anytime soon!\n\n"
+					
+					"\"May the Gods give you peace when you reach the Core!\""
+					)
+			</Text>
+			<Text id="NormalWelcome">
+				(cat
+					"General Verner welcomes you as you enter, \"I'm glad you're in no "
+					"hurry. Rest here with us and continue your journey later.\""
+					)
+			</Text>
+			<Text id="NormalWelcomePilgrim">
+				(cat
+					"General Verner welcomes you as you enter, \"I'm glad you're in no "
+					"hurry to go to the Core. Rest here with us and seek Domina later.\""
+					)
+			</Text>
+		</Language>
 	</StationType>
 
 	<!-- CSC Europa Wreckage 

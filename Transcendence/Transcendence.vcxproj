@@ -817,7 +817,9 @@
     <None Include="Game\Source\Benedict03.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict01.xml" />
+    <None Include="Game\Source\Benedict01.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Game\Source\Benedict.xml" />

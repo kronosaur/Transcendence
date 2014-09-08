@@ -940,8 +940,11 @@
 
 					<AssignMission3>
 						<OnPaneInit>
-							(scrSetDesc gScreen (cat "\"" (objGetName gPlayerShip 0x05) " armed like a battleship and a lonely pilot heading for the Core. Another plaything for the Gods. What a waste.\n\n"
-									"\"I'll make a deal with you. Help me with my problem and I'll give you something you're going to need out there.\"")
+							(switch
+								(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+									(scrSetDesc gScreen (typTranslate &scCSCTerra; 'Mission3IntroPilgrim))
+									
+								(scrSetDesc gScreen (typTranslate &scCSCTerra; 'Mission3Intro))
 								)
 						</OnPaneInit>
 
@@ -1378,6 +1381,27 @@
 			<Port x="-50"	y="-50" />
 		</DockingPorts>
 
+		<Language>
+			<Text id="Mission3Intro">
+				(cat 
+					"\"" (objGetName gPlayerShip 0x05) " armed like a battleship "
+					"out here at the edge. What are you looking for?\n\n"
+					
+					"\"I'll make a deal with you. Help me with my problem and "
+					"I'll give you something that will help you.\""
+					)
+			</Text>
+			<Text id="Mission3IntroPilgrim">
+				(cat 
+					"\"" (objGetName gPlayerShip 0x05) " armed like a battleship "
+					"and a lonely pilot heading for the Core. Another plaything "
+					"for the Gods. What a waste.\n\n"
+					
+					"\"I'll make a deal with you. Help me with my problem and "
+					"I'll give you something you're going to need out there.\""
+					)
+			</Text>
+		</Language>
 	</ShipClass>
 
 	<!-- Dantalion Settlement 
