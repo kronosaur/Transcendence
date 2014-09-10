@@ -125,6 +125,7 @@
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
 #define FIELD_FIRE_RATE_ADJ						CONSTLIT("fireRateAdj")
 #define FIELD_HITS_TO_DESTROY					CONSTLIT("hitsToDestroy")			//	# of hits by std level weapon to destroy station
+#define FIELD_INSTALL_DEVICE_MAX_LEVEL			CONSTLIT("installDeviceMaxLevel")
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_LEVEL								CONSTLIT("level")
 #define FIELD_LOCATION_CRITERIA					CONSTLIT("locationCriteria")
@@ -743,6 +744,12 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt(10000 / m_iFireRateAdj);
 	else if (strEquals(sField, FIELD_HITS_TO_DESTROY))
 		*retsValue = strFromInt(CalcHitsToDestroy(GetLevel()));
+	else if (strEquals(sField, FIELD_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = (m_pTrade ? m_pTrade->GetMaxLevelMatched(serviceInstallDevice) : -1);
+		*retsValue = (iMaxLevel != -1 ? strFromInt(iMaxLevel) : NULL_STR);
+		}
+
 	else if (strEquals(sField, FIELD_CAN_ATTACK))
 		*retsValue = (CanAttack() ? VALUE_TRUE : VALUE_FALSE);
 	else if (strEquals(sField, FIELD_EXPLOSION_TYPE))
