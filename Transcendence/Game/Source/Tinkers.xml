@@ -99,6 +99,9 @@
 			<Sell	criteria="*U -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="*DU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
 			<Buy	criteria="*DU -Illegal; -ID;"				priceAdj="50"/>
+			
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Devices>
@@ -173,13 +176,9 @@
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A">
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Custom Work" key="C">

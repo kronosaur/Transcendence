@@ -1469,6 +1469,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"	priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1704,20 +1708,13 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itXenotiteFuelRod; 94) (&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">

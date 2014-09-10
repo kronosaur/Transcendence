@@ -222,6 +222,12 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-7" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 		
 		<StaticData>
@@ -1149,30 +1155,19 @@
 
 				<Actions>
 					<Action name="Refuel" key="R">
-						(block Nil
-							(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-							(scrShowScreen gScreen "&dsRefuel;")
-							)
+						(scrShowScreen gScreen "&dsRPGRefuel;")
 					</Action>
 
 					<Action name="Repair or Replace Armor" key="A" >
-						(block Nil
-							(setq gTechLevel 7)
-							(setq gArmorSegment 0)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRepairArmor;")
-							)
+						(scrShowScreen gScreen &dsRPGRepairArmor; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Install Device" key="D" >
-						(block Nil
-							(setq gTechLevel 6)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallDevice;")
-							)
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Remove Device" key="V" >

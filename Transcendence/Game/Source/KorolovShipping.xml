@@ -2411,13 +2411,9 @@
 							</Action>
 
 							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel (objGetProperty gSource 'installDeviceMaxLevel))
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >

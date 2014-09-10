@@ -1400,6 +1400,10 @@
 			<Buy	criteria="amswNU -Illegal; -NotForSale;"		priceAdj="50"/>
 			<Buy	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -1630,20 +1634,13 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 94) (&itXenotiteFuelRod; 94) (&itHeliumAssembly; 94)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Done" cancel="1" key="D">
@@ -1736,6 +1733,14 @@
 			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-10;" priceAdj="120"/>
+			<ReplaceArmor	criteria="a" priceAdj="120"/>
+			<InstallDevice	criteria="d L:1-10" priceAdj="120"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+		
 		<Items>
 			<Item count="4d12"	item="&itXenotiteFuelRod;" />
 			<Item count="4d12"	item="&itPteracniumFuelRod;" />
@@ -2107,30 +2112,19 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 94) (&itXenotiteFuelRod; 94) (&itHeliumAssembly; 94)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >
@@ -3201,6 +3195,9 @@
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d +taikon;" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -3557,19 +3554,15 @@
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A">
-								(scrShowScreen gScreen "&dsRepairArmor;" {
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
 									checkMilitaryID: Nil
 									})
 							</Action>
 
 							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier "Taikon")
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V">

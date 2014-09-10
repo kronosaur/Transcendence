@@ -292,13 +292,9 @@
 							</Action>
 
 							<Action name="Install Weapon" key="W" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallWeapon;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Weapon" key="V" >
@@ -417,6 +413,9 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="asU -Illegal; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="asU -Illegal; -ID;"				priceAdj="10"/>
+			
+			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -466,13 +465,9 @@
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Upgrade Shield Generator" key="H">
@@ -586,6 +581,7 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
 			<Buy	criteria="mwU -Illegal; -NotForSale;"	priceAdj="60"/>
 			<Buy	criteria="mwU -Illegal; -ID;"				priceAdj="10"/>
+			<InstallDevice	criteria="w L:1-4;" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -757,6 +753,8 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-6;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="w" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -865,6 +863,8 @@
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="120"/>
 
 			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="w" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -1544,13 +1544,9 @@
 							</Action>
 
 							<Action name="Install Device" key="d" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >
@@ -2531,6 +2527,9 @@
 			<Refuel			criteria="f +BasicFuel; L:1-10;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-11;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d +taikon" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -2584,13 +2583,9 @@
 							</Action>
 
 							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier "Taikon")
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V">
@@ -3352,13 +3347,9 @@
 					</Action>
 
 					<Action name="Install Weapon" key="W" >
-						(block Nil
-							(setq gTechLevel 8)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsInstallWeapon;")
-							)
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Remove Weapon" key="V" >

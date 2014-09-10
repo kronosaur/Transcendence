@@ -301,6 +301,16 @@
 			<Lookup table="&tbCommEliteDefenders;"/>
 		</Reinforcements>
 
+		<Trade currency="credit" max="50000" replenish="2500">
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
+		
 		<Items>
 			<RandomItem count="2d4" 
 					criteria=		"w -Illegal; -Alien; -Specialty; -NotStandard; -NotForSale"
@@ -1184,30 +1194,19 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 100) (&itHelium3FuelRod; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 8)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 7)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >
@@ -1220,7 +1219,7 @@
 							<Action name="Upgrade Reactor" key="P" >
 								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
 									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-6;")
+									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
 									priceAdj: 100
 									checkMilitaryID: True
 									noItemsText: "The technology required to upgrade your reactor is not available at this station."

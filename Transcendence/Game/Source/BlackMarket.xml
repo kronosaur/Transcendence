@@ -144,6 +144,10 @@
 			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="92"/>
+		</Trade>
+		
 		<Items>
 			<Item	count="8d12"	item="&itTempusSyrette;" />
 			<Item	count="6d12"	item="&itMartianNori;" />
@@ -226,10 +230,7 @@
 
 						<Actions>
 							<Action name="Refuel" imageIndex="1" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Upgrade Cargo Hold" key="C">
@@ -551,6 +552,14 @@
 			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-7;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="110"/>
+			<ReplaceArmor	criteria="a" priceAdj="110"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="120"/>
+			<RemoveDevice	criteria="d" priceAdj="120"/>
+		</Trade>
+			
 		<Items>
 			<Item	count="8d12"	item="&itTempusSyrette;" />
 			<Item	count="6d12"	item="&itMartianNori;" />
@@ -636,35 +645,19 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx 
-										'((&itXenotiteFuelRod; 94) 
-											(&itHeliumAssembly; 93) 
-											(&itHelium3FuelRod; 92))
-										)
-
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 110)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 9)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 120)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >

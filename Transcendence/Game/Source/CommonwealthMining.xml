@@ -231,6 +231,16 @@
 		<Trade currency="credit" max="10000" replenish="500">
 			<Sell	criteria="*NU +Ore; -NotForSale;"	priceAdj="90"/>
 			<Buy	criteria="*NU +Food; -Illegal; -NotForSale;"	priceAdj="90"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="94"/>
+			<RepairArmor	criteria="a L:1-5;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			
+			<!-- Mining laser -->
+			<InstallDevice	criteria="w +unid:0x0000403D;" priceAdj="100"/>
+			
+			<!-- Miner's cargo hold-->
+			<InstallDevice	criteria="c +unid:0x00004190;" priceAdj="100"/>
 		</Trade>
 
 		<Ships>
@@ -479,23 +489,17 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A" >
-								(block Nil
-									(setq gTechLevel 5)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Install Mining Laser" key="M">
+								<!-- LATER: Use Trade element to compute price -->
 								(block Nil
 									(setq gItem (itmCreate &itMiningLaser; 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))
@@ -505,6 +509,7 @@
 							</Action>
 
 							<Action name="Upgrade Cargo Hold" key="C">
+								<!-- LATER: Use Trade element to compute price -->
 								(block Nil
 									(setq gItem (itmCreate &itMinersCargoHold; 1))
 									(setq gCost (add (itmGetPrice gItem) (divide (itmGetInstallCost gItem) 2)))

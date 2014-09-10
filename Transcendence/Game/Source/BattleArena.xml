@@ -113,6 +113,8 @@
 			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-6;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-6" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Events>
@@ -748,13 +750,9 @@
 							</Action>
 
 							<Action name="Install Device" key="D" >
-								(block Nil
-									(setq gTechLevel 6)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID True)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V" >
@@ -2018,6 +2016,10 @@
 			<Device deviceID="&itSlamCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
 		</Devices>
 
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Refuel			criteria="f +BasicFuel; L:1-5;" priceAdj="92"/>
+		</Trade>
+		
 		<Items>
 			<Item	count="1d12"	item="&itTempusSyrette;" />
 			<Item	count="1d12"	item="&itMartianNori;" />
@@ -2096,10 +2098,7 @@
 
 						<Actions>
 							<Action name="Refuel" imageIndex="1" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itHeliumAssembly; 93) (&itHelium3FuelRod; 92)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Upgrade Cargo Hold" key="C">

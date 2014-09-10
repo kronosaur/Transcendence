@@ -253,6 +253,13 @@
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
 			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="85"/>
+			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
+			<InstallDevice	criteria="d~w L:1-10" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
 		</Trade>
 
 		<Reinforcements minShips="3">
@@ -325,39 +332,19 @@
 
 						<Actions>
 							<Action name="Refuel" key="R">
-								(block Nil
-									(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 85) (&itXenotiteFuelRod; 95) (&itHeliumAssembly; 100)))
-									(scrShowScreen gScreen "&dsRefuel;")
-									)
+								(scrShowScreen gScreen "&dsRPGRefuel;")
 							</Action>
 
 							<Action name="Repair or Replace Armor" key="A">
-								(block Nil
-									(setq gTechLevel 12)
-									(setq gArmorSegment 0)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRepairArmor;")
-									)
+								(scrShowScreen gScreen &dsRPGRepairArmor; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Install Device" key="D">
-								(block Nil
-									(setq gTechLevel 10)
-									(setq gTechModifier Nil)
-									(setq gCheckMilitaryID Nil)
-									(setq gMargin (lambda (theItem)
-										(switch
-											; Weapons cost 200% to install
-											(itmMatches theItem "w")
-												(multiply 2 (itmGetInstallCost theItem 'rin))
-											
-											; All others at 100% of cost
-											(itmGetInstallCost theItem 'rin)
-											)
-										))
-									(scrShowScreen gScreen "&dsInstallDevice;")
-									)
+								(scrShowScreen gScreen &dsRPGInstallDevice; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Remove Device" key="V">
