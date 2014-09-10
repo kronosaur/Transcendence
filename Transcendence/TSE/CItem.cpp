@@ -2394,14 +2394,29 @@ int CItemCriteria::GetMaxLevelMatched (void) const
 //	GetMaxLevelMatches
 //
 //	Returns the maximum item level that this criteria matches. If there is no
-//	explicit level match, then we return the maximum item level.
+//	explicit level match, then we laboriously check for every single
+//	item type that matches and return the max level.
 
 	{
+	int i;
+
 	if (iEqualToLevel != -1)
 		return iEqualToLevel;
 
 	if (iLessThanLevel != -1)
 		return iLessThanLevel - 1;
 
-	return MAX_ITEM_LEVEL;
+	//	Look at every single item that might match
+
+	int iMaxLevel = -1;
+	for (i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
+		{
+		CItemType *pType = g_pUniverse->GetItemType(i);
+		CItem Item(pType, 1);
+
+		if (Item.MatchesCriteria(*this))
+			iMaxLevel = Max(iMaxLevel, pType->GetLevel());
+		}
+
+	return iMaxLevel;
 	}
