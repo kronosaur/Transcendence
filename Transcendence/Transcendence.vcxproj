@@ -738,7 +738,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\Stargates.xml" />
-    <None Include="Game\Source\StarsOfThePilgrim.xml" />
+    <None Include="Game\Source\StarsOfThePilgrim.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\StarSystems.xml">
       <SubType>Designer</SubType>
     </None>
@@ -814,7 +816,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Game\Source\Benedict03.xml" />
+    <None Include="Game\Source\Benedict03.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Game\Source\Benedict01.xml">

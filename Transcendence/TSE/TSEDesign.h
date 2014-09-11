@@ -283,7 +283,7 @@ class CDesignTypeCriteria
 		inline bool IncludesVirtual (void) const { return m_bIncludeVirtual; }
 		inline bool MatchesDesignType (DesignTypes iType) const
 			{ return ((m_dwTypeSet & (1 << iType)) ? true : false); }
-		bool MatchesLevel (int iLevel) const;
+		bool MatchesLevel (int iMinLevel, int iMaxLevel) const;
 		static ALERROR ParseCriteria (const CString &sCriteria, CDesignTypeCriteria *retCriteria);
 
 	private:
@@ -405,7 +405,7 @@ class CDesignType
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CCommunicationsHandler *GetCommsHandler (void) { return NULL; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { if (retdwFlags) *retdwFlags = 0; return GetDataField(CONSTLIT("name")); }
-		virtual int GetLevel (void) const { return -1; }
+		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = -1; if (retiMaxLevel) *retiMaxLevel = -1; return -1; }
 		virtual DesignTypes GetType (void) const = 0;
 		virtual bool IsVirtual (void) const { return false; }
 
@@ -4056,7 +4056,7 @@ class CItemType : public CDesignType
 		//	CDesignType overrides
 		static CItemType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designItemType) ? (CItemType *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual int GetLevel (void) const { return m_iLevel; }
+		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = m_iLevel; if (retiMaxLevel) *retiMaxLevel = m_iLevel; return m_iLevel; }
 		virtual DesignTypes GetType (void) const { return designItemType; }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
 
@@ -4331,7 +4331,7 @@ class CShipClass : public CDesignType
 		static CShipClass *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designShipClass) ? (CShipClass *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CCommunicationsHandler *GetCommsHandler (void);
-		virtual int GetLevel (void) const { return m_iLevel; }
+		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = m_iLevel; if (retiMaxLevel) *retiMaxLevel = m_iLevel; return m_iLevel; }
 		virtual DesignTypes GetType (void) const { return designShipClass; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
@@ -5056,7 +5056,7 @@ class CStationType : public CDesignType
 		//	CDesignType overrides
 		static CStationType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designStationType) ? (CStationType *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
-		virtual int GetLevel (void) const;
+		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const;
 		virtual DesignTypes GetType (void) const { return designStationType; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
@@ -5559,6 +5559,7 @@ class CMissionType : public CDesignType
 
 		static CMissionType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designMissionType) ? (CMissionType *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
+		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = m_iMinLevel; if (retiMaxLevel) *retiMaxLevel = m_iMaxLevel; return (m_iMinLevel + m_iMaxLevel) / 2; }
 		virtual DesignTypes GetType (void) const { return designMissionType; }
 
 	protected:
@@ -5578,7 +5579,8 @@ class CMissionType : public CDesignType
 
 		//	Mission creation
 
-		CString m_sLevelFrequency;			//	String array of frequency distribution by level
+		int m_iMinLevel;					//	Minimum system level supported
+		int m_iMaxLevel;					//	Maximum system level supported
 		DiceRange m_MaxAppearing;			//	Limit to number of times mission has been accepted by player
 											//		(NULL if no limit)
 		int m_iExpireTime;					//	Mission expires after this amount

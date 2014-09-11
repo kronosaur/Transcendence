@@ -818,20 +818,31 @@ CSovereign *CStationType::GetControllingSovereign (void)
 		return m_pSovereign;
 	}
 
-int CStationType::GetLevel (void) const
+int CStationType::GetLevel (int *retiMinLevel, int *retiMaxLevel) const
 
 //	GetLevel
 //
 //	Returns the average level of the station.
+//
+//	NOTE: We don't return a level range yet because we're not sure of the 
+//	backwards compatibility issues.
 
 	{
 	int i;
 	int iLevel;
 
 	if (m_iLevel)
+		{
+		if (retiMinLevel) *retiMinLevel = m_iLevel;
+		if (retiMaxLevel) *retiMaxLevel = m_iLevel;
 		return m_iLevel;
+		}
 	else if (iLevel = m_RandomPlacement.CalcLevelFromFrequency())
+		{
+		if (retiMinLevel) *retiMinLevel = iLevel;
+		if (retiMaxLevel) *retiMaxLevel = iLevel;
 		return iLevel;
+		}
 	else
 		{
 		//	Take the highest level of armor or devices
@@ -849,6 +860,8 @@ int CStationType::GetLevel (void) const
 
 		//	Done
 
+		if (retiMinLevel) *retiMinLevel = iLevel;
+		if (retiMaxLevel) *retiMaxLevel = iLevel;
 		return iLevel;
 		}
 	}

@@ -16,6 +16,8 @@
 			name=				"Benedict&apos;s Autons"
 			attributes=			"benedictStoryArc"
 
+			level=				"1"
+
 			maxAppearing=		"1"
 			debriefAfterOutOfSystem="true"
 			failureAfterOutOfSystem="5400"

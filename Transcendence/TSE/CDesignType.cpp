@@ -1678,8 +1678,11 @@ bool CDesignType::MatchesCriteria (const CDesignTypeCriteria &Criteria)
 
 	if (Criteria.ChecksLevel())
 		{
-		int iLevel = GetLevel();
-		if (iLevel == -1 || !Criteria.MatchesLevel(iLevel))
+		int iMinLevel;
+		int iMaxLevel;
+		GetLevel(&iMinLevel, &iMaxLevel);
+
+		if (iMinLevel == -1 || !Criteria.MatchesLevel(iMinLevel, iMaxLevel))
 			return false;
 		}
 
@@ -2264,17 +2267,19 @@ void CEffectCreatorRef::Set (CEffectCreator *pEffect)
 
 //	CDesignTypeCriteria --------------------------------------------------------
 
-bool CDesignTypeCriteria::MatchesLevel (int iLevel) const
+bool CDesignTypeCriteria::MatchesLevel (int iMinLevel, int iMaxLevel) const
 
 //	MatchesLevel
 //
 //	Returns true if we match the level
 
 	{
-	if (m_iGreaterThanLevel != INVALID_COMPARE && iLevel <= m_iGreaterThanLevel)
+	if (m_iGreaterThanLevel != INVALID_COMPARE 
+			&& iMaxLevel <= m_iGreaterThanLevel)
 		return false;
 
-	if (m_iLessThanLevel != INVALID_COMPARE && iLevel >= m_iLessThanLevel)
+	if (m_iLessThanLevel != INVALID_COMPARE 
+			&& iMinLevel >= m_iLessThanLevel)
 		return false;
 
 	return true;

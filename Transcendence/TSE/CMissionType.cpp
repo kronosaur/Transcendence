@@ -9,6 +9,7 @@
 #define EXPIRE_TIME_ATTRIB						CONSTLIT("expireTime")
 #define FAILURE_AFTER_OUT_OF_SYSTEM_ATTRIB		CONSTLIT("failureAfterOutOfSystem")
 #define FORCE_UNDOCK_AFTER_DEBRIEF_ATTRIB		CONSTLIT("forceUndockAfterDebrief")
+#define LEVEL_ATTRIB							CONSTLIT("level")
 #define MAX_APPEARING_ATTRIB					CONSTLIT("maxAppearing")
 #define NAME_ATTRIB								CONSTLIT("name")
 #define NO_DEBRIEF_ATTRIB						CONSTLIT("noDebrief")
@@ -16,6 +17,9 @@
 #define NO_STATS_ATTRIB							CONSTLIT("noStats")
 #define PRIORITY_ATTRIB							CONSTLIT("priority")
 
+#define FIELD_LEVEL								CONSTLIT("level")
+#define FIELD_MAX_LEVEL							CONSTLIT("maxLevel")
+#define FIELD_MIN_LEVEL							CONSTLIT("minLevel")
 #define FIELD_NAME								CONSTLIT("name")
 
 bool CMissionType::FindDataField (const CString &sField, CString *retsValue)
@@ -25,7 +29,16 @@ bool CMissionType::FindDataField (const CString &sField, CString *retsValue)
 //	Returns the data field.
 
 	{
-	if (strEquals(sField, FIELD_NAME))
+	if (strEquals(sField, FIELD_LEVEL))
+		*retsValue = strFromInt(GetLevel());
+
+	else if (strEquals(sField, FIELD_MAX_LEVEL))
+		*retsValue = strFromInt(m_iMaxLevel);
+
+	else if (strEquals(sField, FIELD_MIN_LEVEL))
+		*retsValue = strFromInt(m_iMinLevel);
+
+	else if (strEquals(sField, FIELD_NAME))
 		*retsValue = m_sName;
 	else
 		return false;
@@ -75,6 +88,32 @@ ALERROR CMissionType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	m_iMaxAppearing = (m_MaxAppearing.IsEmpty() ? -1 : m_MaxAppearing.Roll());
 	m_iAccepted = 0;
+
+	//	Level
+
+	if (pDesc->FindAttribute(LEVEL_ATTRIB, &sAttrib))
+		{
+		//	Parse this value
+
+		char *pPos = sAttrib.GetASCIIZPointer();
+		m_iMinLevel = Max(1, Min(strParseInt(pPos, 1, &pPos), MAX_SYSTEM_LEVEL));
+
+		while (*pPos == ' ')
+			pPos++;
+
+		if (*pPos == '-')
+			{
+			pPos++;
+			m_iMaxLevel = Max(m_iMinLevel, Min(strParseInt(pPos, MAX_SYSTEM_LEVEL), MAX_SYSTEM_LEVEL));
+			}
+		else
+			m_iMaxLevel = m_iMinLevel;
+		}
+	else
+		{
+		m_iMinLevel = 1;
+		m_iMaxLevel = MAX_SYSTEM_LEVEL;
+		}
 
 	return NOERROR;
 	}

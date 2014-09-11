@@ -17,6 +17,8 @@
 			name=				"Benedict and Fiona"
 			attributes=			"benedictStoryArc"
 
+			level=				"1"
+
 			maxAppearing=		"1"
 			debriefAfterOutOfSystem="true"
 			failureAfterOutOfSystem="5400"

@@ -623,6 +623,8 @@
 			name=				"Tinkers Reminder"
 			attributes=			"tinkers"
 
+			level=				"1-10"
+
 			allowPlayerDelete=	"true"
 			noDebrief=			"true"
 			noStats=			"true"

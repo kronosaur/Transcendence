@@ -85,6 +85,7 @@ const int FUEL_UNITS_PER_STD_ROD =		2500;		//	Fuel units in a standard fuel rod 
 const DWORD INFINITE_TICK =					0xffffffff;	//	Highest tick
 
 const int MAX_TECH_LEVEL =				25;
+const int MAX_SYSTEM_LEVEL =			25;
 
 //	Event Timers
 
