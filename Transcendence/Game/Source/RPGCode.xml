@@ -394,6 +394,79 @@
 					pageDesc
 					)
 				))
+				
+			(setq rpgPagePaneInit (lambda (theScreen textDesc options)
+				(block (
+					(missionObj (scrGetData theScreen 'missionObj))
+					(pageCount (rpgPageCount textDesc))
+					(pageNo (if (scrGetData theScreen 'curPage) (scrGetData theScreen 'curPage) 0))
+					(pageDesc (rpgPageDesc textDesc pageNo))
+						
+					atLastPage
+					)
+					
+					; Show the appropriate page
+
+					(scrSetDesc theScreen (@ pageDesc 'desc))
+
+					; Next page
+
+					(setq pageNo (add pageNo 1))
+					(setq atLastPage (geq pageNo pageCount))
+
+					;	Initialize actions
+					
+					(switch
+						
+						;	If we're not at the last page, we always set the continue
+						;	action and hide the others.
+						
+						(not atLastPage)
+							(block Nil
+								(scrShowAction theScreen 'actionContinue True)
+								(if (@ pageDesc 'nextLabel)
+									(scrSetActionLabel theScreen 'actionContinue (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
+									)
+									
+								(if (@ options 'acceptDecline)
+									(block Nil
+										(scrShowAction theScreen 'actionAccept Nil)
+										(scrShowAction theScreen 'actionDecline Nil)
+										)
+										
+									(scrShowAction theScreen 'actionDone Nil)
+									)
+								)
+								
+						;	If we've got accept/decline buttons, show them
+						
+						(@ options 'acceptDecline)
+							(block Nil
+								(scrShowAction theScreen 'actionContinue Nil)
+								
+								(scrShowAction theScreen 'actionAccept True)
+								(scrSetActionLabel theScreen 'actionAccept (msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept)))
+								
+								(scrShowAction theScreen 'actionDecline atLastPage)
+								(scrSetActionLabel theScreen 'actionDecline (msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline)))
+								)
+								
+						;	Otherwise, enable the done button
+						
+						(block Nil
+							(scrShowAction theScreen 'actionContinue Nil)
+							(scrShowAction theScreen 'actionDone True)
+							(if (@ pageDesc 'nextLabel)
+								(scrSetActionLabel theScreen 'actionDone (@ pageDesc 'nextLabel) (@ pageDesc 'nextKey))
+								)
+							)
+						)
+					
+					; Remember page
+
+					(scrSetData theScreen 'curPage (if atLastPage Nil pageNo))
+					)
+				))
 
 			(setq rpgRestorePlayer (lambda ()
 

@@ -95,47 +95,23 @@
 		<Panes>
 			<Intro>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						(missionText (msnTranslate missionObj 'Intro))
-						(pageCount (if (isatom missionText) 1 (count missionText)))
-						(pageNo (scrGetData gScreen 'curPage))
-						)
-
-						; Start at the beginning if we have no page number
-						(if (not pageNo)
-							(setq pageNo 0)
-							)
-
-						; Show the appropriate page
-						(scrSetDesc gScreen (@ missionText pageNo))
-
-						; Next page
-						(setq pageNo (add pageNo 1))
-						(if (eq pageNo pageCount)
-							(scrSetData gSCreen 'curPage nil)
-							(scrSetData gScreen 'curPage pageNo)
-							)
+					(rpgPagePaneInit gScreen 
+						(msnTranslate (scrGetData gScreen 'missionObj) 'Intro)
 						)
 				</OnPaneInit>
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Intro")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
 
-							(if (scrGetData gScreen 'curPage)
-
-								; If more pages, then continue
-								(scrShowPane gScreen "Intro")
-
-								; Otherwise, intro is done
-								(block nil
-									(msnSetProperty missionObj 'isIntroShown True)
-									(scrRefreshScreen gScreen)
-									)
-								)
+							(msnSetProperty missionObj 'isIntroShown True)
+							(scrRefreshScreen gScreen)
 							)
 					</Action>
 				</Actions>
@@ -143,42 +119,9 @@
 
 			<Briefing>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						(missionText (msnTranslate missionObj 'Briefing))
-						(pageCount (if (isatom missionText) 1 (count missionText)))
-						(pageNo (scrGetData gScreen 'curPage))
-
-						(atLastPage Nil)
-						)
-
-						; Start at the beginning if we have no page number
-						(if (not pageNo)
-							(setq pageNo 0)
-							)
-
-						; Show the appropriate page
-						(scrSetDesc gScreen (@ missionText pageNo))
-
-						; Next page
-						(setq pageNo (add pageNo 1))
-						(setq atLastPage (eq pageNo pageCount))
-
-						; Initialize actions
-						(scrShowAction gScreen 'actionContinue (not atLastPage))
-						(scrShowAction gScreen 'actionAccept atLastPage)
-						(scrShowAction gScreen 'actionDecline atLastPage)
-						
-						; Set the text for the actions
-						(if atLastPage
-							(block Nil
-								(scrSetActionLabel gScreen 'actionAccept (msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept)))
-								(scrSetActionLabel gScreen 'actionDecline (msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline)))
-								)
-							)
-
-						; Remeber page
-						(scrSetData gSCreen 'curPage (if atLastPage Nil pageNo))
+					(rpgPagePaneInit gScreen 
+						(msnTranslate (scrGetData gScreen 'missionObj) 'Briefing)
+						{ acceptDecline:True }
 						)
 				</OnPaneInit>
 
@@ -211,17 +154,17 @@
 
 			<ReplyAccept>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						(descText (msnTranslate missionObj 'AcceptReply))
-						)
-
-						(scrSetDesc gScreen descText)
+					(rpgPagePaneInit gScreen 
+						(msnTranslate (scrGetData gScreen 'missionObj) 'AcceptReply)
 						)
 				</OnPaneInit>
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPage gScreen "ReplyAccept")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							(screenOptions Nil)
@@ -261,45 +204,8 @@
 
 			<ReplyDecline>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						
-						;	Text
-						
-						(descText (msnTranslate missionObj 'DeclineReply))
-						(pageCount (rpgPageCount descText))
-						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
-						(pageDesc (rpgPageDesc descText pageNo))
-						
-						atLastPage
-						)
-
-						; Show the appropriate page
-
-						(scrSetDesc gScreen (@ pageDesc 'desc))
-
-						; Next page
-
-						(setq pageNo (add pageNo 1))
-						(setq atLastPage (geq pageNo pageCount))
-
-						; Initialize actions
-
-						(scrShowAction gScreen 'actionContinue (not atLastPage))
-						(scrShowAction gScreen 'actionDone atLastPage)
-
-						(if (@ pageDesc 'nextLabel)
-							(scrSetActionLabel 
-								gScreen 
-								(if atLastPage 'actionDone 'actionContinue)
-								(@ pageDesc 'nextLabel)
-								(@ pageDesc 'nextKey)
-								)
-							)
-
-						; Remember page
-
-						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
+					(rpgPagePaneInit gScreen 
+						(msnTranslate (scrGetData gScreen 'missionObj) 'DeclineReply)
 						)
 				</OnPaneInit>
 
@@ -310,6 +216,7 @@
 					
 					<Action id="actionDone" default="1" cancel="1">
 						(block (
+							(missionObj (scrGetData gScreen 'missionObj))
 							(screenOptions Nil)
 							)
 							
@@ -348,44 +255,17 @@
 				<OnPaneInit>
 					(block (
 						(missionObj (scrGetData gScreen 'missionObj))
-						(dummy (msnFireEvent missionObj "OnInProgress"))
-						
-						;	Text
-						
-						(descText (msnTranslate missionObj 'InProgress))
-						(pageCount (rpgPageCount descText))
-						(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
-						(pageDesc (rpgPageDesc descText pageNo))
-						
-						atLastPage
 						)
-
-						; Show the appropriate page
-
-						(scrSetDesc gScreen (@ pageDesc 'desc))
-
-						; Next page
-
-						(setq pageNo (add pageNo 1))
-						(setq atLastPage (geq pageNo pageCount))
-
-						; Initialize actions
-
-						(scrShowAction gScreen 'actionContinue (not atLastPage))
-						(scrShowAction gScreen 'actionDone atLastPage)
-
-						(if (@ pageDesc 'nextLabel)
-							(scrSetActionLabel 
-								gScreen 
-								(if atLastPage 'actionDone 'actionContinue)
-								(@ pageDesc 'nextLabel)
-								(@ pageDesc 'nextKey)
-								)
+						
+						;	Let the mission get a chance to set some state.
+						
+						(msnFireEvent missionObj "OnInProgress")
+						
+						;	Now set the text
+						
+						(rpgPagePaneInit gScreen 
+							(msnTranslate missionObj 'InProgress)
 							)
-
-						; Remember page
-
-						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
@@ -426,9 +306,9 @@
 
 			<Success>
 				<OnPaneInit>
-					(block (missionObj descText pageCount pageNo atLastPage rewardResult pageDesc)
-
-						(setq missionObj (scrGetData gScreen 'missionObj))
+					(block (
+						(missionObj (scrGetData gScreen 'missionObj))
+						)
 
 						; If we haven't already, give the player the reward. We need
 						; to call msnReward before getting the debriefing text because
@@ -442,44 +322,10 @@
 							)
 
 						; Get the debriefing text and page counts
-
-						(setq descText (msnTranslate missionObj 'SuccessDebrief))
-						(setq pageCount (rpgPageCount descText))
-						(setq pageNo (scrGetData gScreen 'curPage))
-
-						; Start at the beginning if we have no page number
-
-						(if (not pageNo)
-							(setq pageNo 0)
+						
+						(rpgPagePaneInit gScreen 
+							(msnTranslate missionObj 'SuccessDebrief)
 							)
-
-						; Show the appropriate page
-
-						(setq pageDesc (rpgPageDesc descText pageNo))
-						(scrSetDesc gScreen (@ pageDesc 'desc))
-
-						; Next page
-
-						(setq pageNo (add pageNo 1))
-						(setq atLastPage (geq pageNo pageCount))
-
-						; Initialize actions
-
-						(scrShowAction gScreen 'actionContinue (not atLastPage))
-						(scrShowAction gScreen 'actionDone atLastPage)
-
-						(if (@ pageDesc 'nextLabel)
-							(scrSetActionLabel 
-								gScreen 
-								(if atLastPage 'actionDone 'actionContinue)
-								(@ pageDesc 'nextLabel)
-								(@ pageDesc 'nextKey)
-								)
-							)
-
-						; Remember page
-
-						(scrSetData gScreen 'curPage (if atLastPage Nil pageNo))
 						)
 				</OnPaneInit>
 
@@ -535,17 +381,17 @@
 
 			<Failure>
 				<OnPaneInit>
-					(block (
-						(missionObj (scrGetData gScreen 'missionObj))
-						(descText (msnTranslate missionObj 'FailureDebrief))
-						)
-
-						(scrSetDesc gScreen descText)
+					(rpgPagePaneInit gScreen 
+						(msnTranslate (scrGetData gScreen 'missionObj) 'FailureDebrief)
 						)
 				</OnPaneInit>
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
+						(sctShowPage gScreen "Failure")
+					</Action>
+					
+					<Action id="actionDone" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
