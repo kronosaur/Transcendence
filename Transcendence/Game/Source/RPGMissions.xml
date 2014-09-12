@@ -202,7 +202,7 @@
 							(missionObj (scrGetData gScreen 'missionObj))
 							)
 
-							(scrSetData gScreen 'declineOptions (msnDecline missionObj))
+							(msnDecline missionObj)
 							(scrShowPane gScreen "ReplyDecline")
 							)
 					</Action>
@@ -224,15 +224,36 @@
 					<Action id="actionContinue" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
+							(screenOptions Nil)
 							)
+							
+							;	Ask the mission if it wants a different screen
+							
+							(setq aScreenType 'AcceptFollowUp)
+							(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
 
-							(scrExitScreen gScreen 'forceUndock)
-							(setq aDockTarget gSource)
-							(msnFireEvent missionObj "OnAcceptedUndock")
+							(switch
+							
+								;	If so, navigate to that screen
+								
+								(@ screenOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
+										)
+										
+								;	Otherwise, undock
+								
+								(block Nil
+									(scrExitScreen gScreen 'forceUndock)
+									(setq aDockTarget gSource)
+									(msnFireEvent missionObj "OnAcceptedUndock")
 
-							;	Save the game
+									;	Save the game
 
-							(gamSave 'missionCheckpoint)
+									(gamSave 'missionCheckpoint)
+									)
+								)
 							)
 					</Action>
 				</Actions>
@@ -289,17 +310,22 @@
 					
 					<Action id="actionDone" default="1" cancel="1">
 						(block (
-							(declineOptions (scrGetData gScreen 'declineOptions))
+							(screenOptions Nil)
 							)
 							
+							;	Ask the mission if it wants a different screen
+							
+							(setq aScreenType 'DeclineFollowUp)
+							(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
+							
 							(switch
-								(eq (@ declineOptions 'nextScreen) 'forceUndock)
+								(eq (@ screenOptions 'nextScreen) 'forceUndock)
 									(scrExitScreen gScreen 'forceUndock)
 									
-								(@ declineOptions 'nextScreen)
+								(@ screenOptions 'nextScreen)
 									(block Nil
 										(scrExitScreen gScreen)
-										(scrShowScreen gScreen (@ declineOptions 'nextScreen) (@ declineOptions 'nextScreenData))
+										(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
 										)
 										
 								(eq (@ gData 'nextScreen) 'forceUndock)
