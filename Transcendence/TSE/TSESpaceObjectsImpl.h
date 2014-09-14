@@ -964,6 +964,7 @@ class CShip : public CSpaceObject
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CInstalledDevice *GetDevice (int iDev) const { return &m_Devices[iDev]; }
 		virtual int GetDeviceCount (void) const { return m_iDeviceCount; }
+		virtual CVector GetDockingPortOffset (int iRotation) { return m_pClass->GetDockingPortOffset(iRotation); }
 		virtual CStationType *GetEncounterInfo (void) { return m_pEncounterInfo; }
 		virtual CSpaceObject *GetEscortPrincipal (void) const;
 		virtual const CString &GetGlobalData (const CString &sAttribute) { return m_pClass->GetGlobalData(sAttribute); }

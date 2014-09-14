@@ -4253,6 +4253,7 @@ class CShipClass : public CDesignType
 		inline int GetCyberDefenseLevel (void) { return m_iCyberDefenseLevel; }
 		inline DWORD GetDefaultBkgnd (void) { return m_dwDefaultBkgnd; }
 		inline int GetDockingPortCount (void) { return m_DockingPorts.GetCount(); }
+		CVector GetDockingPortOffset (int iRotation);
 		inline const TArray<CVector> &GetDockingPortPositions (void) { return m_DockingPorts; }
 		void GetDriveDesc (DriveDesc *retDriveDesc) const;
 		inline CObjectEffectDesc &GetEffectsDesc (void) { return m_Effects; }

@@ -1677,11 +1677,12 @@ class CDockingPorts
 		~CDockingPorts (void);
 
 		void DockAtRandomPort (CSpaceObject *pOwner, CSpaceObject *pObj);
+		bool DoesPortPaintInFront (CSpaceObject *pOwner, int iPort) const;
 		int FindNearestEmptyPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, CVector *retvDistance = NULL, int *retiEmptyPortCount = NULL);
 		int FindRandomEmptyPort (CSpaceObject *pOwner);
 		inline int GetPortCount (CSpaceObject *pOwner) { return m_iPortCount; }
-		inline CSpaceObject *GetPortObj (CSpaceObject *pOwner, int iPort) { return m_pPort[iPort].pObj; }
-		inline CVector GetPortPos (CSpaceObject *pOwner, int iPort) { return GetPortPos(pOwner, m_pPort[iPort]); }
+		inline CSpaceObject *GetPortObj (CSpaceObject *pOwner, int iPort) { ASSERT(m_pPort[iPort].pObj == NULL || m_pPort[iPort].iStatus != psEmpty); return m_pPort[iPort].pObj; }
+		inline CVector GetPortPos (CSpaceObject *pOwner, int iPort, CSpaceObject *pShip, bool *retbPaintInFront = NULL) { return GetPortPos(pOwner, m_pPort[iPort], pShip, retbPaintInFront); }
 		int GetPortsInUseCount (CSpaceObject *pOwner);
 		void InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius);
 		void InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos);
@@ -1707,15 +1708,31 @@ class CDockingPorts
 			psInUse
 			};
 
+		enum DockingPortLayer
+			{
+			plStandard,							//	Depends on position
+
+			plBringToFront,						//	Ship is always in front of station
+			plSendToBack,						//	Ship is always behind station
+			};
+
 		struct SDockingPort
 			{
+			SDockingPort (void) :
+					iStatus(psEmpty),
+					iLayer(plStandard),
+					pObj(NULL),
+					iRotation(0)
+				{ }
+
 			DockingPortStatus iStatus;			//	Status of port
+			DockingPortLayer iLayer;			//	Port layer relative to station
 			CSpaceObject *pObj;					//	Object docked at this port
 			CVector vPos;						//	Position of dock (relative coords)
 			int iRotation;						//	Rotation of ship at dock
 			};
 
-		CVector GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port) const;
+		CVector GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port, CSpaceObject *pShip, bool *retbPaintInFront = NULL) const;
 		bool IsDocked (CSpaceObject *pObj);
 		bool IsDockedOrDocking (CSpaceObject *pObj);
 		bool ShipsNearPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, const CVector &vPortPos);
@@ -2563,6 +2580,7 @@ class CSpaceObject : public CObject
 		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice) { return false; }
 		virtual CSpaceObject *GetDockedObj (void) { return NULL; }
 		virtual int GetDockingPortCount (void) { return 0; }
+		virtual CVector GetDockingPortOffset (int iRotation) { return NullVector; }
 		virtual CStationType *GetEncounterInfo (void) { return NULL; }
 		virtual CSpaceObject *GetEscortPrincipal (void) const { return NULL; }
 		virtual int GetLastFireTime (void) const { return 0; }

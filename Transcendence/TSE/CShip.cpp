@@ -2534,7 +2534,7 @@ int CShip::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPort)
 	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
 
 	if (retvPort)
-		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort, pRequestingObj);
 
 	return iPort;
 	}

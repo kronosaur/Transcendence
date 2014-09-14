@@ -1407,7 +1407,7 @@ int CStation::GetNearestDockPort (CSpaceObject *pRequestingObj, CVector *retvPor
 	int iPort = m_DockingPorts.FindNearestEmptyPort(this, pRequestingObj);
 
 	if (retvPort)
-		*retvPort = m_DockingPorts.GetPortPos(this, iPort);
+		*retvPort = m_DockingPorts.GetPortPos(this, iPort, pRequestingObj);
 
 	return iPort;
 	}
@@ -2404,20 +2404,20 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		for (i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 			{
 			CSpaceObject *pObj = m_DockingPorts.GetPortObj(this, i);
-			if (pObj && pObj->IsPaintNeeded() && !pObj->IsPlayer())
+			if (pObj 
+					&& pObj->IsPaintNeeded() 
+					&& !pObj->IsPlayer()
+					&& !m_DockingPorts.DoesPortPaintInFront(this, i))
 				{
 				int xObj, yObj;
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
-				if (yObj < y)
-					{
-					CSpaceObject *pOldObj = Ctx.pObj;
-					Ctx.pObj = pObj;
+				CSpaceObject *pOldObj = Ctx.pObj;
+				Ctx.pObj = pObj;
 
-					pObj->Paint(Dest, xObj, yObj, Ctx);
+				pObj->Paint(Dest, xObj, yObj, Ctx);
 
-					Ctx.pObj = pOldObj;
-					}
+				Ctx.pObj = pOldObj;
 				}
 			}
 		}
@@ -2465,20 +2465,19 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		for (i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 			{
 			CSpaceObject *pObj = m_DockingPorts.GetPortObj(this, i);
-			if (pObj && !pObj->IsPlayer())
+			if (pObj 
+					&& !pObj->IsPlayer()
+					&& m_DockingPorts.DoesPortPaintInFront(this, i))
 				{
 				int xObj, yObj;
 				Ctx.XForm.Transform(pObj->GetPos(), &xObj, &yObj);
 
-				if (yObj >= y)
-					{
-					CSpaceObject *pOldObj = Ctx.pObj;
-					Ctx.pObj = pObj;
+				CSpaceObject *pOldObj = Ctx.pObj;
+				Ctx.pObj = pObj;
 
-					pObj->Paint(Dest, xObj, yObj, Ctx);
+				pObj->Paint(Dest, xObj, yObj, Ctx);
 
-					Ctx.pObj = pOldObj;
-					}
+				Ctx.pObj = pOldObj;
 				}
 			}
 		}
@@ -2510,7 +2509,7 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 	for (int i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 		{
 		int x, y;
-		Ctx.XForm.Transform(m_DockingPorts.GetPortPos(this, i), &x, &y);
+		Ctx.XForm.Transform(m_DockingPorts.GetPortPos(this, i, NULL), &x, &y);
 		Dest.Fill(x - 2, y - 2, 4, 4, CG16bitImage::RGBValue(0, 255, 0));
 		}
 #endif

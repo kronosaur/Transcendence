@@ -188,6 +188,8 @@ static char g_FireRateAttrib[] = "fireRate";
 static CG16bitImage *g_pDamageBitmap = NULL;
 static CStationType *g_pWreckDesc = NULL;
 
+const int DOCK_OFFSET_STD_SIZE =				64;
+
 DWORD ParseNonCritical (const CString &sList);
 
 struct ScoreDesc
@@ -2027,6 +2029,26 @@ CCommunicationsHandler *CShipClass::GetCommsHandler (void)
 		return (m_OriginalCommsHandler.GetCount() ? &m_OriginalCommsHandler : NULL);
 	}
 
+CVector CShipClass::GetDockingPortOffset (int iRotation)
+
+//	GetDockingPortOffset
+//
+//	Returns an offset to the ship center from the desired position of the docking
+//	port when the ship is docked.
+//
+//	[In other words, the resulting vector points from the station's docking port
+//	to the ship center.]
+
+	{
+	//	For small ships we just go with the ship center.
+
+	int iImageSize = m_Image.GetImageViewportSize();
+	if (iImageSize <= DOCK_OFFSET_STD_SIZE)
+		return NullVector;
+
+	return PolarToVector(iRotation + 180, (0.8 * g_KlicksPerPixel * ((iImageSize - DOCK_OFFSET_STD_SIZE) / 2)));
+	}
+
 void CShipClass::GetDriveDesc (DriveDesc *retDriveDesc) const
 
 //	GetDriveDesc
@@ -3079,7 +3101,7 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	if (m_DockingPorts.GetCount() > 0)
 		{
 		for (i = 0; i < m_DockingPorts.GetCount(); i++)
-			m_DockingPorts[i] = DockingPorts.GetPortPos(NULL, i);
+			m_DockingPorts[i] = DockingPorts.GetPortPos(NULL, i, NULL);
 
 		//	Load the default screen
 
