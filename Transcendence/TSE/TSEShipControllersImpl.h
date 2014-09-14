@@ -19,7 +19,7 @@ class CAIShipControls
 		CAIShipControls (void);
 
 		inline EManeuverTypes GetManeuver (void) const { return m_iManeuver; }
-		inline bool GetThrust (CShip *pShip) const { return (m_iThrustDir == constAlwaysThrust || pShip->IsPointingTo(m_iThrustDir)); }
+		inline bool GetThrust (CShip *pShip) const;
 		inline int GetThrustDir (void) const { return m_iThrustDir; }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetManeuver (EManeuverTypes iManeuver) { m_iManeuver = iManeuver; }
@@ -887,5 +887,22 @@ class CZoanthropeAI : public CBaseShipAI
 	};
 
 IShipController *CreateShipController (const CString &sAI);
+
+//	Inlines --------------------------------------------------------------------
+
+inline bool CAIShipControls::GetThrust (CShip *pShip) const 
+	{
+	switch (m_iThrustDir)
+		{
+		case constNeverThrust:
+			return false;
+
+		case constAlwaysThrust:
+			return true;
+
+		default:
+			return pShip->IsPointingTo(m_iThrustDir);
+		}
+	}
 
 #endif
