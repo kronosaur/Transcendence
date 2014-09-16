@@ -441,14 +441,24 @@
 						;	If we've got accept/decline buttons, show them
 						
 						(@ options 'acceptDecline)
-							(block Nil
+							(block (
+								(acceptLabel (if (@ pageDesc 'acceptLabel)
+									(@ pageDesc 'acceptLabel)
+									(msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept))
+									))
+								(declineLabel (if (@ pageDesc 'declineLabel)
+									(@ pageDesc 'declineLabel)
+									(msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline))
+									))
+								)
+								
 								(scrShowAction theScreen 'actionContinue Nil)
 								
 								(scrShowAction theScreen 'actionAccept True)
-								(scrSetActionLabel theScreen 'actionAccept (msnTranslate missionObj 'AcceptLabel (typTranslate &dsRPGMission; 'actionAccept)))
+								(scrSetActionLabel theScreen 'actionAccept acceptLabel)
 								
 								(scrShowAction theScreen 'actionDecline atLastPage)
-								(scrSetActionLabel theScreen 'actionDecline (msnTranslate missionObj 'DeclineLabel (typTranslate &dsRPGMission; 'actionDecline)))
+								(scrSetActionLabel theScreen 'actionDecline declineLabel)
 								)
 								
 						;	Otherwise, enable the done button
