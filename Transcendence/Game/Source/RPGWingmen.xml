@@ -12,6 +12,10 @@
 
 		EXTRA DATA
 		
+		The following data is stored on the wingman object. These track internal state
+		used by the base class. You should not change these values nor make assumptions
+		about their meaning.
+		
 		behavior:			Ship's current behavior
 								Nil						= nothing
 								'attackingAtWill		= attacking any target in range
@@ -34,6 +38,24 @@
 								'destroyed				= Dead
 								'destroyedByPlayer		= Killed by player
 								'returnedHome			= Left the player to return home
+								
+		ORDERS
+		
+		orderJoinPlayer:	Fire this event to order the wingman to join the player. The
+							object will receive an OnWingmanJoinedPlayer event.
+								
+		OPTIONS
+		
+		These variables may be set in StaticData to alter the behavior of wingmen.
+		
+		maxSystemLevel:		If set, the wingman will leave the player if they exceed
+							this system level.
+							
+		EVENTS
+		
+		The wingman type may override these events.
+		
+		OnWingmanJoinedPlayer: Fired when the wingman joins the player.
 								
 	-->
 
@@ -382,10 +404,24 @@
 
 			<OrderJoinPlayer>
 				(block Nil
-					(shpSetPlayerWingman gSource)
+					(objSetProperty gSource 'playerWingman True)
 					(objSetGlobalData gSource "status" 'joined)
+					(objFireEvent gSource "OnWingmanJoinedPlayer")
 					)
 			</OrderJoinPlayer>
+			
+			<OrderLeavePlayer>
+				(block Nil
+					(objSetProperty gSource 'playerWingman Nil)
+					
+					(shpCancelOrders gSource)
+					(shpOrder gSource 'hold 30)
+					(shpOrder gSource 'gate)
+					(objSetData gSource "behavior" 'goingHome)
+					
+					(objFireEvent gSource "OnWingmanLeftPlayer")
+					)
+			</OrderLeavePlayer>
 		</Events>
 	</ShipClass>
 

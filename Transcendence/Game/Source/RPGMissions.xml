@@ -338,9 +338,24 @@
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
 							(successOptions (scrGetData gScreen 'successOptions))
+							(screenOptions nil)
 							)
+							
+							;	Ask the mission if it wants a different screen
+							
+							(setq aScreenType 'SuccessFollowUp)
+							(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
 
 							(switch
+								(eq (@ screenOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ screenOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
+										)
+							
 								(eq (@ successOptions 'nextScreen) 'forceUndock)
 									(scrExitScreen gScreen 'forceUndock)
 									
@@ -394,11 +409,26 @@
 					<Action id="actionDone" default="1" cancel="1">
 						(block (
 							(missionObj (scrGetData gScreen 'missionObj))
+							(screenOptions nil)
 							)
 
 							(msnSetProperty missionObj 'isDebriefed True)
 
+							;	Ask the mission if it wants a different screen
+							
+							(setq aScreenType 'FailureFollowUp)
+							(setq screenOptions (msnFireEvent missionObj "OnGetNextScreen"))
+
 							(switch
+								(eq (@ screenOptions 'nextScreen) 'forceUndock)
+									(scrExitScreen gScreen 'forceUndock)
+									
+								(@ screenOptions 'nextScreen)
+									(block Nil
+										(scrExitScreen gScreen)
+										(scrShowScreen gScreen (@ screenOptions 'nextScreen) (@ screenOptions 'nextScreenData))
+										)
+							
 								(or (eq (@ gData 'nextScreen) 'forceUndock)
 										(msnGetProperty missionObj 'forceUndockAfterDebrief)
 										)
