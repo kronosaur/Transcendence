@@ -83,6 +83,7 @@
 #define SIZE_ATTRIB								CONSTLIT("size")
 #define SOVEREIGN_ATTRIB						CONSTLIT("sovereign")
 #define SPACE_COLOR_ATTRIB						CONSTLIT("spaceColor")
+#define STANDING_COUNT_ATTRIB					CONSTLIT("standingCount")
 #define STEALTH_ATTRIB							CONSTLIT("stealth")
 #define STRUCTURAL_HIT_POINTS_ATTRIB			CONSTLIT("structuralHitPoints")
 #define TIME_STOP_IMMUNE_ATTRIB					CONSTLIT("timeStopImmune")
@@ -1481,7 +1482,7 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		//	If defined, we use this count to create initial ships AND reinforcements.
 
 		CString sCount;
-		if (pShips->FindAttribute(COUNT_ATTRIB, &sCount))
+		if (pShips->FindAttribute(STANDING_COUNT_ATTRIB, &sCount))
 			{
 			if (error = m_ShipsCount.LoadFromXML(sCount))
 				{

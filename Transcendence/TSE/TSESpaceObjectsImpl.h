@@ -1500,7 +1500,7 @@ class CStation : public CSpaceObject
 		DWORD m_fExplored:1;					//	If TRUE, player has docked at least once
 		DWORD m_fDisarmedByOverlay:1;			//	If TRUE, an overlay has disarmed us
 		DWORD m_fParalyzedByOverlay:1;			//	If TRUE, an overlay has paralyzed us
-		DWORD m_fSpare5:1;
+		DWORD m_fNoBlacklist:1;					//	If TRUE, do not blacklist player on friendly fire
 		DWORD m_fSpare6:1;
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;

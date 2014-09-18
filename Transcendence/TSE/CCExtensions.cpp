@@ -1111,7 +1111,16 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objCommunicate",				fnObjComms,		0,
-			"(objCommunicate obj senderObj msg [obj] [data])",
+			"(objCommunicate obj senderObj msg [obj] [data]) -> result\n\n"
+			
+			"msg\n\n"
+			
+			"   'AbortAttack\n"
+			"   'AttackTarget\n"
+			"   'FormUp\n"
+			"   'QueryAttackStatus\n"
+			"   'Wait",
+
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objCredit",					fnObjSet,		FN_OBJ_CREDIT,	
@@ -1375,6 +1384,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'abandoned\n"
 			"   'dockingPortCount\n"
 			"   'hp\n"
+			"   'ignoreFriendlyFire\n"
 			"   'immutable\n"
 			"   'installDeviceMaxLevel\n"
 			"   'maxHP\n"
@@ -1628,6 +1638,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"property (stations)\n\n"
 
+			"   'ignoreFriendlyFire True|Nil\n"
 			"   'hp hitPoints\n"
 			"   'immutable True|Nil\n"
 			"   'known True|Nil\n"
@@ -1786,8 +1797,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"*s",	0,	},
 
 		{	"msnFireEvent",					fnObjSet,		FN_OBJ_FIRE_EVENT,
-			"(msnFireEvent missionObj event) -> result of event",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"(msnFireEvent missionObj event [data]) -> result of event",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnGetData",					fnObjData,		FN_OBJ_GETDATA,
 			"(msnGetData missionObj attrib) -> data",

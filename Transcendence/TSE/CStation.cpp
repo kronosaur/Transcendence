@@ -26,6 +26,7 @@
 #define PROPERTY_ABANDONED						CONSTLIT("abandoned")
 #define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_HP								CONSTLIT("hp")
+#define PROPERTY_IGNORE_FRIENDLY_FIRE			CONSTLIT("ignoreFriendlyFire")
 #define PROPERTY_IMMUTABLE						CONSTLIT("immutable")
 #define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_MAX_HP							CONSTLIT("maxHP")
@@ -210,7 +211,7 @@ void CStation::Blacklist (CSpaceObject *pObj)
 
 	//	No need if we don't support blacklist
 
-	if (!m_pType->IsBlacklistEnabled())
+	if (!m_pType->IsBlacklistEnabled() || m_fNoBlacklist)
 		return;
 
 	//	Remember if we need to send out an event
@@ -617,6 +618,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_dwWreckUNID = 0;
 	pStation->m_fDisarmedByOverlay = false;
 	pStation->m_fParalyzedByOverlay = false;
+	pStation->m_fNoBlacklist = false;
 	pStation->SetHasGravity(pType->HasGravity());
 
 	//	We generally don't move
@@ -1110,7 +1112,7 @@ void CStation::FriendlyFire (CSpaceObject *pAttacker)
 
 	//	No need if we don't support blacklist
 
-	if (!m_pType->IsBlacklistEnabled())
+	if (!m_pType->IsBlacklistEnabled() || m_fNoBlacklist)
 		return;
 
 	//	See if we need to blacklist
@@ -1451,6 +1453,9 @@ ICCItem *CStation::GetProperty (const CString &sName)
 
 	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
 		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));
+
+	else if (strEquals(sName, PROPERTY_IGNORE_FRIENDLY_FIRE))
+		return CC.CreateBool(m_pType->IsBlacklistEnabled() && !m_fNoBlacklist);
 
 	else if (strEquals(sName, PROPERTY_HP))
 		return CC.CreateInteger(m_iHitPoints);
@@ -2986,6 +2991,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	m_fExplored =			((dwLoad & 0x00000800) ? true : false);
 	m_fDisarmedByOverlay =	((dwLoad & 0x00001000) ? true : false);
 	m_fParalyzedByOverlay =	((dwLoad & 0x00002000) ? true : false);
+	m_fNoBlacklist =		((dwLoad & 0x00004000) ? true : false);
 
 	//	Init name flags
 
@@ -3364,6 +3370,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fExplored ?			0x00000800 : 0);
 	dwSave |= (m_fDisarmedByOverlay ?	0x00001000 : 0);
 	dwSave |= (m_fParalyzedByOverlay ?	0x00002000 : 0);
+	dwSave |= (m_fNoBlacklist ?			0x00004000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -3810,7 +3817,12 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 	{
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_HP))
+	if (strEquals(sName, PROPERTY_IGNORE_FRIENDLY_FIRE))
+		{
+		m_fNoBlacklist = !pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_HP))
 		{
 		//	Nil means that we don't want to make a change
 
