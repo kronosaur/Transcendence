@@ -161,7 +161,7 @@
 
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
-						(scrShowPage gScreen "ReplyAccept")
+						(scrShowPane gScreen "ReplyAccept")
 					</Action>
 					
 					<Action id="actionDone" default="1" cancel="1">
