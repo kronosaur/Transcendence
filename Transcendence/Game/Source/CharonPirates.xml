@@ -157,6 +157,7 @@
 			manufacturer=		"Charon Pirates"
 			class=				"Drake"
 			type=				"missileship"
+			level=				"3"
 
 			attributes=			"capitalShip, charonPirates, genericClass"
 			   
@@ -173,7 +174,7 @@
 		
 		<Armor
 			armorID=			"&itAdvancedReactiveArmor;"
-			count=				"12"
+			count=				"8"
 			/>
 		
 		<Devices>
@@ -189,12 +190,12 @@
 
 		<Interior>
 			<Compartment name="interior"
-					hitPoints=	"60"
+					hitPoints=	"50"
 					/>
 			
 			<Compartment name="main drive"
 					type=		"mainDrive"
-					hitPoints=	"40"
+					hitPoints=	"30"
 
 					posX=		"-34"
 					posY=		"0"
