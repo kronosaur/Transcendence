@@ -72,6 +72,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_REFRESH_SCREEN		17
 #define FN_SCR_LIST_CURSOR			18
 #define FN_SCR_CONTROL_VALUE		19
+#define FN_SCR_TRANSLATE			20
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -225,6 +226,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrShowScreen",				fnScrShowScreen,	0,
 			"(scrShowScreen screenGlobal screen [pane] [data])",
 			"vv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrTranslate",					fnScrGet,		FN_SCR_TRANSLATE,
+			"(scrTranslate screen textID [data]) -> text or Nil",
+			"is*",	0,	},
 
 		//	Player functions
 		//	----------------
@@ -1217,6 +1222,21 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			return pCC->CreateString(sDesc);
+			}
+
+		case FN_SCR_TRANSLATE:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > 2)
+				pData = pArgs->GetElement(2);
+
+			ICCItem *pResult;
+			if (!pScreen->Translate(sText, pData, &pResult))
+				return pCC->CreateNil();
+
+			return pResult;
 			}
 
 		default:

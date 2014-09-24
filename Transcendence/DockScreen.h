@@ -299,6 +299,7 @@ class CDockScreen : public IScreenController
 		inline void SetTextInput (const CString &sText) { m_CurrentPane.SetTextInputValue(sText); }
 		void ShowPane (const CString &sName);
 		bool ShowScreen (const CString &sName, const CString &sPane);
+		bool Translate (const CString &sTextID, ICCItem *pData, ICCItem **retpResult);
 		//inline void Undock (void) { m_pPlayer->Undock(); }
 
 		//	IScreenController virtuals

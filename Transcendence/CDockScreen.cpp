@@ -1657,6 +1657,20 @@ void CDockScreen::SelectPrevItem (bool *retbMore)
 		*retbMore = bMore;
 	}
 
+bool CDockScreen::Translate (const CString &sTextID, ICCItem *pData, ICCItem **retpResult)
+
+//	Translate
+//
+//	Translate text
+
+	{
+	CDesignType *pRoot = GetResolvedRoot();
+	if (pRoot == NULL)
+		return false;
+
+	return pRoot->Translate(m_pLocation, sTextID, pData, retpResult);
+	}
+
 void CDockScreen::Update (int iTick)
 
 //	Update
