@@ -660,6 +660,25 @@ void CSingleShip::CreateShip (SShipCreateCtx &Ctx,
 	GeneratorCtx.pBase = Ctx.pBase;
 	GeneratorCtx.pTarget = Ctx.pTarget;
 
+	//	For orders that need a base, if we don't have a base, then use the exit
+	//	gate instead. This is to handle case where we come here from sysCreateShip
+	//	and we don't get a chance to set Ctx.pBase.
+
+	if (Ctx.pBase == NULL && Ctx.pGate != NULL)
+		{
+		switch (m_iOrder)
+			{
+			case IShipController::orderGuard:
+			case IShipController::orderMine:
+			case IShipController::orderGateOnThreat:
+			case IShipController::orderPatrol:
+			case IShipController::orderEscort:
+			case IShipController::orderFollow:
+				GeneratorCtx.pBase = Ctx.pGate;
+				break;
+			}
+		}
+
 	//	Get the controller
 
 	IShipController *pController = ::CreateShipController(m_sController);
