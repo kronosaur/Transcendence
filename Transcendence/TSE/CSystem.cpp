@@ -1358,7 +1358,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 							 int iRotation,
 							 CSpaceObject *pExitGate,
 							 SShipGeneratorCtx *pCtx,
-							 CShip **retpShip)
+							 CShip **retpShip,
+							 CSpaceObjectList *retpShipList)
 
 //	CreateShip
 //
@@ -1387,6 +1388,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		CreateCtx.pOverride = pOverride;
 		CreateCtx.dwFlags = SShipCreateCtx::RETURN_RESULT;
 
+		//	Create
+
 		pTable->CreateShips(CreateCtx);
 
 		//	Return at least one of the ships created
@@ -1396,6 +1399,9 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 
 		if (retpShip)
 			*retpShip = CreateCtx.Result.GetObj(0)->AsShip();
+
+		if (retpShipList)
+			*retpShipList = CreateCtx.Result;
 
 		return NOERROR;
 		}
@@ -1417,6 +1423,7 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 
 	//	Create a new ship based on the class
 
+	CShip *pShip;
 	if (error = CShip::CreateFromClass(this, 
 			pClass, 
 			pController, 
@@ -1426,18 +1433,18 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 			vVel, 
 			iRotation,
 			pCtx,
-			retpShip))
+			&pShip))
 		return error;
 
 	//	If we're coming out of a gate, set the timer
 
 	if (pExitGate)
-		PlaceInGate(*retpShip, pExitGate);
+		PlaceInGate(pShip, pExitGate);
 
 	//	Load images, if necessary
 
 	if (!IsCreationInProgress())
-		(*retpShip)->MarkImages();
+		pShip->MarkImages();
 
 	//	Create escorts, if necessary
 
@@ -1449,8 +1456,8 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		//	ship at create time to make the ship appear near the player.]
 
 		CSpaceObject *pEscortGate = pExitGate;
-		if (pExitGate == NULL || (pExitGate->GetPos() - (*retpShip)->GetPos()).Length2() > (LIGHT_SECOND * LIGHT_SECOND))
-			pEscortGate = *retpShip;
+		if (pExitGate == NULL || (pExitGate->GetPos() - pShip->GetPos()).Length2() > (LIGHT_SECOND * LIGHT_SECOND))
+			pEscortGate = pShip;
 		else
 			pEscortGate = pExitGate;
 
@@ -1459,11 +1466,20 @@ ALERROR CSystem::CreateShip (DWORD dwClassID,
 		SShipCreateCtx ECtx;
 		ECtx.pSystem = this;
 		ECtx.vPos = pEscortGate->GetPos();
-		ECtx.pBase = *retpShip;
+		ECtx.pBase = pShip;
 		ECtx.pTarget = NULL;
 		ECtx.pGate = pEscortGate;
 
 		pEscorts->CreateShips(ECtx);
+		}
+
+	if (retpShip)
+		*retpShip = pShip;
+
+	if (retpShipList)
+		{
+		retpShipList->RemoveAll();
+		retpShipList->Add(pShip);
 		}
 
 	return NOERROR;

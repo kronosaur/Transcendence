@@ -1128,7 +1128,8 @@ class CSystem : public CObject
 							int iRotation,
 							CSpaceObject *pExitGate,
 							SShipGeneratorCtx *pCtx,
-							CShip **retpShip);
+							CShip **retpShip,
+							CSpaceObjectList *retpShipList = NULL);
 		ALERROR CreateShipwreck (CShipClass *pClass,
 								 const CVector &vPos,
 								 const CVector &vVel,

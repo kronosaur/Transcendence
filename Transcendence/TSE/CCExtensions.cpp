@@ -9422,6 +9422,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 	{
 	CCodeChain *pCC = pEvalCtx->pCC;
 	ICCItem *pArgs;
+	int i;
 
 	//	Evaluate the arguments and validate them
 
@@ -9475,7 +9476,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 	if (pSystem == NULL)
 		return StdErrorNoSystem(*pCC);
 
-	CShip *pShip;
+	CSpaceObjectList ShipsCreated;
 	ALERROR error;
 	if (error = pSystem->CreateShip(dwClassID,
 				pController,
@@ -9486,7 +9487,8 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 				mathRandom(0, 359),
 				pGate,
 				NULL,
-				&pShip))
+				NULL,
+				&ShipsCreated))
 		{
 		//	ERR_NOTFOUND is not an error--it means that a ship table did not
 		//	create any ships.
@@ -9499,10 +9501,23 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 
 	//	Done
 
-	if (pShip == NULL)
+	if (ShipsCreated.GetCount() == 0)
 		return pCC->CreateNil();
+	else if (ShipsCreated.GetCount() == 1)
+		return pCC->CreateInteger((int)ShipsCreated.GetObj(0));
 	else
-		return pCC->CreateInteger((int)pShip);
+		{
+		ICCItem *pResult = pCC->CreateLinkedList();
+		if (pResult->IsError())
+			return pResult;
+
+		CCLinkedList *pList = (CCLinkedList *)pResult;
+
+		for (i = 0; i < ShipsCreated.GetCount(); i++)
+			pList->AppendIntegerValue(pCC, (int)ShipsCreated.GetObj(i));
+
+		return pResult;
+		}
 	}
 
 ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
