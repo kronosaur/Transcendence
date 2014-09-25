@@ -6369,7 +6369,12 @@ bool CSpaceObject::Translate (const CString &sID, ICCItem *pData, ICCItem **retp
 //	result.
 
 	{
-	//	First we ask the type
+	//	First we ask the override
+
+	if (m_pOverride && m_pOverride->Translate(this, sID, pData, retpResult))
+		return true;
+
+	//	Ask the type
 
 	CDesignType *pType = GetType();
 	if (pType && pType->Translate(this, sID, pData, retpResult))
