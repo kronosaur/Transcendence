@@ -60,6 +60,25 @@
 					(typSetData &svPlayer; 'tutorialBought True)
 					)
 				))
+				
+			(setq rpgDockServices (lambda (targetObj options)
+				(block Nil
+				
+					;	For now we only support the player ship
+					
+					(if (not (eq targetObj gPlayerShip))
+						(error "rpgDockServices only support gPlayerShip.")
+						)
+						
+					;	Show the appropriate dock services screen based on the ship
+					;	class.
+					
+					(scrShowScreen gScreen
+						(objGetProperty targetObj 'dockServicesScreen)
+						options
+						)
+					)
+				))
 
 			(setq rpgGetReactorUpgradeList (lambda (theObj theShip theCriteria)
 				(block (minPower reactorList additionalList)

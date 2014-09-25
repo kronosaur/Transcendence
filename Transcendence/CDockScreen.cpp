@@ -1664,11 +1664,20 @@ bool CDockScreen::Translate (const CString &sTextID, ICCItem *pData, ICCItem **r
 //	Translate text
 
 	{
-	CDesignType *pRoot = GetResolvedRoot();
-	if (pRoot == NULL)
-		return false;
+	//	First ask the object to translate for us
 
-	return pRoot->Translate(m_pLocation, sTextID, pData, retpResult);
+	if (m_pLocation && m_pLocation->Translate(sTextID, pData, retpResult))
+		return true;
+
+	//	Otherwise, let the screen translate
+
+	CDesignType *pRoot = GetResolvedRoot();
+	if (pRoot && pRoot->Translate(m_pLocation, sTextID, pData, retpResult))
+		return true;
+
+	//	Otherwise, we have no translation
+
+	return false;
 	}
 
 void CDockScreen::Update (int iTick)

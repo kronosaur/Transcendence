@@ -1139,7 +1139,10 @@
 					</Action>
 
 					<Action name="Dock Services" key="D">
-						<ShowPane pane="DockServices"/>
+						(rpgDockServices gPlayerShip {
+							checkMilitaryID: True
+							reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
+							})
 					</Action>
 
 					<Action name="Undock" cancel="1" key="n">
@@ -1147,53 +1150,6 @@
 					</Action>
 				</Actions>
 			</Default>
-			
-			<!-- Dock Services -->
-			
-			<DockServices
-					desc=	"Your ship is docked.">
-
-				<Actions>
-					<Action name="Refuel" key="R">
-						(scrShowScreen gScreen "&dsRPGRefuel;")
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(scrShowScreen gScreen &dsRPGRepairArmor; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Install Device" key="D" >
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRemoveDevice;")
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
-							priceAdj: Nil
-							checkMilitaryID: True
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
-							})
-					</Action>
-
-					<Action name="Done" cancel="1" key="N">
-						<Navigate screen="&dsStKatsArcology;"/>
-					</Action>
-
-				</Actions>
-
-			</DockServices>
 		</Panes>
 	</DockScreen>
 	

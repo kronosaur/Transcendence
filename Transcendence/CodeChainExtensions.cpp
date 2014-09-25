@@ -73,6 +73,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_LIST_CURSOR			18
 #define FN_SCR_CONTROL_VALUE		19
 #define FN_SCR_TRANSLATE			20
+#define FN_SCR_DESC_TRANSLATE		21
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -201,6 +202,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrSetDesc",					fnScrSet,		FN_SCR_DESC,
 			"(scrSetDesc screen text [text...])",
 			"i*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"scrSetDescTranslate",			fnScrSet,		FN_SCR_DESC_TRANSLATE,
+			"(scrSetDescTranslate screen textID [data]) -> True/Nil",
+			"is*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"scrSetDisplayText",			fnScrSet,			FN_SCR_SET_DISPLAY_TEXT,
 			"(scrSetDisplayText screen ID text [text...])",
@@ -1466,6 +1471,36 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pArgs->GetElement(1)->GetStringValue()));
 
 			//	Done
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_DESC_TRANSLATE:
+			{
+			//	Only if valid
+
+			if (!pScreen->IsValid())
+				return pCC->CreateNil();
+
+			//	Translate
+
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+
+			ICCItem *pData = NULL;
+			if (pArgs->GetCount() > 2)
+				pData = pArgs->GetElement(2);
+
+			ICCItem *pResult;
+			if (!pScreen->Translate(sText, pData, &pResult))
+				{
+				pScreen->SetDescription(strPatternSubst(CONSTLIT("Unknown Language ID: %s"), sText));
+				return pCC->CreateNil();
+				}
+
+			//	Set the screen descriptor
+
+			pScreen->SetDescription(g_pTrans->ComposePlayerNameString(pResult->GetStringValue()));
+			pResult->Discard(pCC);
 
 			return pCC->CreateTrue();
 			}

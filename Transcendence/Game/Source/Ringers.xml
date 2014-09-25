@@ -292,7 +292,10 @@
 
 							<Action name="Dock Services" default="1" key="D">
 								(if (gr (objGetBalance gPlayerShip 'rin) 0)
-									(scrShowPane gScreen "DockServices")
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: Nil
+										reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
+										})
 									(scrShowPane gScreen "DockServicesGreeter")
 									)
 							</Action>
@@ -327,49 +330,6 @@
 						</Actions>
 					</Exchange>
 
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A">
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Install Device" key="D">
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: Nil
-									})
-							</Action>
-
-							<Action name="Remove Device" key="V">
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Reactor" key="P">
-								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
-									priceAdj: Nil
-									checkMilitaryID: Nil
-									noItemsText: "The technology required to upgrade your reactor is not available at this station."
-									})
-							</Action>
-
-							<Action name="Done" key="N" cancel="1">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
-
 					<ExchangeIntro
 							desc=	"As you enter the main Exchange, a greeter scans you and says,\n\n&quot;Earthican, welcome. Your account balance is 0 rin. Collective does not seek Commonwealth credits. Collective seeks rare and powerful ores and substances. Bring here.&quot;">
 
@@ -386,7 +346,14 @@
 
 						<Actions>
 							<Action name="Continue" cancel="1" default="1" key="C">
-								(scrShowPane gScreen "DockServices")
+								(block Nil
+									(scrShowPane gScreen "Default")
+									
+									(rpgDockServices gPlayerShip {
+										checkMilitaryID: Nil
+										reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
+										})
+									)
 							</Action>
 
 						</Actions>

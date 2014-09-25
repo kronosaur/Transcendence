@@ -1653,7 +1653,10 @@
 									(setq totalMissionCount (typGetGlobalData &stKorolovShipping; "totalMissionCount"))
 									(if (ls totalMissionCount 1)
 										(scrShowPane gScreen "CantUseDockServices")
-										(scrShowPane gScreen "DockServices")
+										
+										(rpgDockServices gPlayerShip {
+											checkMilitaryID: True
+											})
 										)
 									)
 							</Action>
@@ -2395,41 +2398,6 @@
 							</Action>
 						</Actions>
 					</VolkovDisappointed>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 					<CantUseDockServices
 							desc=	"The dock services area is restricted to members only.">

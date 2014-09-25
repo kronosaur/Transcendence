@@ -857,7 +857,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -894,26 +896,6 @@
 						</Actions>
 
 					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-						</Actions>
-					</DockServices>
 
 				</Panes>
 			</Main>
@@ -1133,7 +1115,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -1170,28 +1154,6 @@
 						</Actions>
 
 					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 				</Panes>
 			</Main>
@@ -2385,7 +2347,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -2422,28 +2386,6 @@
 						</Actions>
 
 					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 				</Panes>
 			</Main>
@@ -3571,57 +3513,33 @@
 	<!-- Dry dock screen -->
 
 	<DockScreen UNID="&dsDryDock;"
-			desc=				"Your ship is in dry dock"
-			type=				"dryDock"
+			inherit=			"&dsDockScreenBase;"
 			>
-
+		
 		<Panes>
-			<Default
-					desc=	"Your ship is in dry dock.">
+			<Default>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descWelcome)
+				</OnPaneInit>
 
 				<Actions>
-					<Action name="Refuel" key="R">
-						(scrShowScreen gScreen "&dsRPGRefuel;")
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(scrShowScreen gScreen &dsRPGRepairArmor; {
+					<Action id="actionDockServices" default="1">
+						(rpgDockServices gPlayerShip {
 							checkMilitaryID: True
+							reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
 							})
 					</Action>
-
-					<Action name="Install Device" key="D" >
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
-							checkMilitaryID: True
-							})
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen "&dsRemoveDevice;")
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-5;")
-							priceAdj: Nil
-							checkMilitaryID: True
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
-							})
-					</Action>
-
-					<Action name="Undock" cancel="1" key="U">
+					
+					<Action id="actionUndock" cancel="1">
 						<Exit/>
 					</Action>
-
 				</Actions>
-
 			</Default>
 		</Panes>
-
+		
+		<Language>
+			<Text id="descWelcome">"Your ship is in dry dock."</Text>
+		</Language>
 	</DockScreen>
 	
 <!-- BASIC COMMONWEALTH RULES -->

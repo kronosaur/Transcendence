@@ -712,7 +712,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -734,41 +736,6 @@
 						</Actions>
 
 					</Chicken>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen "&dsRPGRepairArmor;" {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="n">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 					<Melee>
 						<OnPaneInit>

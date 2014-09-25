@@ -168,6 +168,9 @@ const DWORD g_ShipExplosionParticlesUNID =	0x0000F114;	//	rsDebris1
 const DWORD g_ShipExplosionSoundUNID =		0x0000F204;	//	snShipExplosion1
 const DWORD g_StationExplosionSoundUNID =	0x0000F205;	//	snStationExplosion1
 
+const DWORD DEFAULT_DOCK_SERVICES_SCREEN =	0x00010029;
+const DWORD COMPATIBLE_DOCK_SERVICES_SCREEN = 0x0001002A;
+
 #ifdef DEBUG_HENCHMAN
 const DWORD g_DebugHenchmenShipUNID =		0x00103001;	//	scCenturion
 #endif

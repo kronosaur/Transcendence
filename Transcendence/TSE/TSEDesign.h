@@ -2570,6 +2570,7 @@ class CPlayerSettings
 		inline const SArmorImageDesc &GetArmorDesc (void) const { return (m_fHasArmorDesc ? m_ArmorDesc : *m_pArmorDescInherited); }
 		inline const SArmorSegmentImageDesc *GetArmorDesc (int iSegment) const { return (m_fHasArmorDesc ? m_ArmorDesc.Segments.GetAt(iSegment) : m_pArmorDescInherited->Segments.GetAt(iSegment)); }
 		inline const CString &GetDesc (void) const { return m_sDesc; }
+		inline const CDockScreenTypeRef &GetDockServicesScreen (void) const { return m_pDockServicesScreen; }
 		inline DWORD GetLargeImage (void) const { return m_dwLargeImage; }
 		inline const SReactorImageDesc &GetReactorDesc (void) const { return (m_fHasReactorDesc ? m_ReactorDesc : *m_pReactorDescInherited); }
 		inline const SShieldImageDesc &GetShieldDesc (void) const { return (m_fHasShieldDesc ? m_ShieldDesc : *m_pShieldDescInherited); }
@@ -2604,6 +2605,7 @@ class CPlayerSettings
 		CString m_sStartNode;						//	Starting node (may be blank)
 		CString m_sStartPos;						//	Label of starting position (may be blank)
 		CDockScreenTypeRef m_pShipScreen;			//	Ship screen
+		CDockScreenTypeRef m_pDockServicesScreen;	//	Screen used for ship upgrades (may be NULL)
 
 		//	Armor
 		SArmorImageDesc m_ArmorDesc;

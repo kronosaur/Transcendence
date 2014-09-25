@@ -104,6 +104,7 @@
 #define FIELD_DEVICE_SLOTS_NON_WEAPONS			CONSTLIT("deviceSlotsNonWeapons")
 #define FIELD_DEVICE_SLOTS_WEAPONS				CONSTLIT("deviceSlotsWeapons")
 #define FIELD_DEVICE_ITEMS						CONSTLIT("deviceItems")
+#define FIELD_DOCK_SERVICES_SCREEN				CONSTLIT("dockServicesScreen")
 #define FIELD_DODGE_RATE						CONSTLIT("dodgeRate")
 #define FIELD_DRIVE_IMAGE						CONSTLIT("driveImage")
 #define FIELD_EXPLOSION_TYPE					CONSTLIT("explosionType")
@@ -1648,6 +1649,14 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		*retsValue = strFromInt((int)(CalcDamageRate() + 0.5));
 	else if (strEquals(sField, FIELD_DEFENSE_RATE))
 		*retsValue = strFromInt((int)(CalcDefenseRate() + 0.5));
+	else if (strEquals(sField, FIELD_DOCK_SERVICES_SCREEN))
+		{
+		const CPlayerSettings *pPlayer = GetPlayerSettings();
+		if (pPlayer)
+			*retsValue = pPlayer->GetDockServicesScreen().GetStringUNID(this);
+		else
+			*retsValue = CONSTLIT("none");
+		}
 	else if (strEquals(sField, FIELD_DODGE_RATE))
 		*retsValue = strFromInt((int)(100.0 * CalcDodgeRate()));
 	else if (strEquals(sField, FIELD_MANUFACTURER))

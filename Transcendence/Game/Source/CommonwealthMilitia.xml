@@ -982,7 +982,10 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
+									})
 							</Action>
 
 							<Action name="Officer's Club" key="O">
@@ -1188,51 +1191,6 @@
 							</Action>
 						</Actions>
 					</TooManyFailures>
-
-					<DockServices
-							desc=	"Your ship is docked.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Install Device" key="D" >
-								(scrShowScreen gScreen &dsRPGInstallDevice; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Remove Device" key="V" >
-								(block Nil
-									(setq gMargin 100)
-									(scrShowScreen gScreen "&dsRemoveDevice;")
-									)
-							</Action>
-
-							<Action name="Upgrade Reactor" key="P" >
-								(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-									{
-									itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
-									priceAdj: 100
-									checkMilitaryID: True
-									noItemsText: "The technology required to upgrade your reactor is not available at this station."
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="N">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 					<OfficersClub
 							desc=	"The Officer's Club is packed with pilots and other officers having a few drinks to pass away the off-duty hours.">

@@ -981,6 +981,8 @@
 	<!ENTITY unidCDMMercenaryClass		"0x00010026">
 	<!ENTITY unidFreelancerClass		"0x00010027">
 	<!ENTITY unidCOMSOCAgentClass		"0x00010028">
+	<!ENTITY dsRPGDockServices			"0x00010029">
+	<!ENTITY dsRPGDockServicesCompatible	"0x0001002A">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -1978,7 +1980,7 @@
 	]>
 
 <TranscendenceUniverse
-		apiVersion=						"22"
+		apiVersion=						"23"
 		>
 
 <!-- TRANSCENDENCE ************************************************************

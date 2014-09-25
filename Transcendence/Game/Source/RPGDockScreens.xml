@@ -12,7 +12,104 @@
 			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRepairArmor">"Repair [A]rmor"</Text>
 			<Text id="actionRepairReplaceArmor">"Repair or Replace [A]rmor"</Text>
-			<Text id="actionUndock">"[U]undock"</Text>
+			<Text id="actionUndock">"[U]ndock"</Text>
+		</Language>
+	</DockScreen>
+	
+<!-- DOCK SERVICES =============================================================
+
+	This screen allows the player to repair and upgrade their ship at a station.
+	We rely on the <Trade> entries to determine the services that the station 
+	will offer.
+	
+	gData uses the following fields:
+	
+		checkMilitaryID: If True, we check for military ID before installing
+				any military items. We also refuse to install Illegal items.
+		
+		reactorUpgrade: If non-Nil, this must be a list generate with
+				rpgGetReactorUpgradeList. Otherwise, we do not offer a reactor
+				upgrade at this station.
+
+-->
+	
+	<DockScreen unid="&dsRPGDockServices;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
+						(canInstallDevices (objGetProperty gSource 'installDeviceMaxLevel))
+						)
+					
+						;	Show/hide actions based on the services available
+						;	at this station.
+
+						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
+						(scrShowAction gScreen 'actionInstallDevice canInstallDevices)
+						(scrShowAction gScreen 'actionRemoveDevice canInstallDevices)
+						(scrShowAction gScreen 'actionUpgradeReactor (@ gData 'reactorUpgrade))
+						
+						;	Descriptor
+						
+						(scrSetDescTranslate gScreen 'dockServicesScreenDesc)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRefuel">
+						(scrShowScreen gScreen "&dsRPGRefuel;")
+					</Action>
+
+					<Action id="actionRepairArmor">
+						(scrShowScreen gScreen &dsRPGManageArmor; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							})
+					</Action>
+
+					<Action id="actionInstallDevice">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							})
+					</Action>
+
+					<Action id="actionRemoveDevice">
+						(block Nil
+							(setq gMargin 100)
+							(scrShowScreen gScreen &dsRemoveDevice;)
+							)
+					</Action>
+
+					<Action id="actionUpgradeReactor">
+						(scrShowScreen gScreen &dsRPGInstallDeviceFromList; {
+							itemList: (@ gData 'reactorUpgrade)
+							priceAdj: Nil
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							noItemsText: (scrTranslate gScreen 'errorNoReactorTech)
+							})
+					</Action>
+
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDone">"Do[n]e"</Text>
+			<Text id="actionInstallDevice">"Install [D]evice"</Text>
+			<Text id="actionRefuel">"[R]efuel"</Text>
+			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
+			<Text id="actionRepairArmor">"Repair or Replace [A]rmor"</Text>
+			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
+			
+			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
+			
+			<Text id="errorNoReactorTech">"The technology required to upgrade your reactor is not available at this station."</Text>
 		</Language>
 	</DockScreen>
 

@@ -715,8 +715,15 @@
     <None Include="Game\Source\Stars.xml">
       <Filter>XML Files\Universe Library</Filter>
     </None>
-    <None Include="Game\Source\RPGArmorDockScreens.xml" />
-    <None Include="Game\Source\RPGDeviceDockScreens.xml" />
+    <None Include="Game\Source\RPGArmorDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGCharacterClasses.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
+    <None Include="Game\Source\RPGDeviceDockScreens.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Transcendence.rc">
@@ -726,9 +733,6 @@
   <ItemGroup>
     <Xml Include="Game\Source\Benedict.xml">
       <Filter>XML Files\Human Space Library</Filter>
-    </Xml>
-    <Xml Include="Game\Source\RPGCharacterClasses.xml">
-      <Filter>XML Files\RPG Library</Filter>
     </Xml>
   </ItemGroup>
 </Project>

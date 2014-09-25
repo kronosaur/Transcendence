@@ -241,7 +241,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								<ShowPane pane="DockServices"/>
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -459,28 +461,6 @@
 						</Actions>
 
 					</CommoditiesExchange>
-
-					<DockServices
-							desc=	"You are at the docking services terminal.">
-
-						<Actions>
-							<Action name="Refuel" key="R">
-								(scrShowScreen gScreen "&dsRPGRefuel;")
-							</Action>
-
-							<Action name="Repair or Replace Armor" key="A" >
-								(scrShowScreen gScreen &dsRPGRepairArmor; {
-									checkMilitaryID: True
-									})
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</DockServices>
 
 				</Panes>
 
