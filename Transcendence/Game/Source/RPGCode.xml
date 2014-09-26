@@ -397,6 +397,62 @@
 						}
 					)
 				))
+				
+			(setq rpgMissionAssignment (lambda (options)
+			
+				;	Options may contain the following fields
+				;
+				;		maxPerStation: Maximum number of missions that we give out at
+				;				this station.
+				;
+				;		missionCriteria: Criteria used to create new missions. [Required]
+				;
+				;		noMissionTextID: Language ID to display if there is no mission
+				;				available at this station. [Required]
+				
+				(block (
+					(noMissionTextID (@ options 'noMissionTextID))
+					theMission newMissions
+					)
+
+					;	Show proper screen
+
+					(switch
+						;	If we have an active mission from this station then we show it.
+
+						(setq theMission (@ (msnFind gSource "aS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	If we have an open mission available then display it.
+
+						(setq theMission (@ (msnFind gSource "oS") 0))
+							(scrShowScreen gScreen &dsRPGMission; {	missionObj: theMission })
+
+						;	Don't give out more than X mission per station
+								
+						(and (@ options 'maxPerStation) 
+								(geq (count (msnFind gSource "*S")) (@ options 'maxPerStation))
+								)
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Make a list of available missions. We filter out any missions
+						;	that are outside our system level. If we can't find anything, then we've got nothing.
+
+						(not (setq newMissions (typFind (@ options 'missionCriteria))))
+							(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+
+						;	Create a random mission from the list. If we succeed, then show the mission
+						;	screen.
+
+						(setq theMission (msnCreate newMissions gSource))
+							(scrShowScreen gScreen &dsRPGMission; { missionObj: theMission })
+
+						; Otherwise, nothing
+
+						(scrShowScreen gScreen &dsRPGMessage; { desc:(scrTranslate gScreen noMissionTextID) })
+						)
+					)
+				))
 
 			(setq rpgPageCount (lambda (textDesc)
 				(if (isatom textDesc) 1 (count textDesc))
