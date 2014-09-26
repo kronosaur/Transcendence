@@ -254,16 +254,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"w"					; install devices
-										8					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -416,6 +409,7 @@
 			
 			<RepairArmor	criteria="a L:1-7;" priceAdj="100"/>
 			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="s L:1-6" priceAdj="100"/>
 		</Trade>
 
 		<StaticData>
@@ -446,16 +440,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										6					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										-50)				; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -629,16 +616,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										6					; of level 6 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										-50)				; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -969,9 +949,9 @@
 
 						<Actions>
 							<Action name="Buy Autons" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Autons" key="S">
@@ -1343,9 +1323,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Refuel" key="R">
@@ -1499,16 +1479,9 @@
 
 						<Actions>
 							<Action name="Buy Items" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"d"					; install devices
-										8					; of level 8 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Repair Items" key="R">
@@ -1705,9 +1678,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 							
 							<Action name="Sell Items" default="1" key="S">
@@ -2113,9 +2086,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -2521,9 +2494,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" default="1" key="D">
@@ -2666,9 +2639,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -3092,9 +3065,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -3252,16 +3225,9 @@
 
 				<Actions>
 					<Action name="Buy Items" default="1" key="B">
-						(scrShowBuyScreen 
-							"*"						; items sold to player
-							Nil						; obsolete
-							
-							'(	"d"					; install devices
-								8					; of level 8 (and below)
-								Nil					; no special tech modifiers
-								True				; check for military ID
-								0)					; install cost margin
-							)
+						(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">

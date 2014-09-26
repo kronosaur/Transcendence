@@ -568,7 +568,9 @@
 
 				<Actions>
 					<Action name="Commodities Exchange" default="1" key="C">
-						<ShowPane pane="CommoditiesExchange"/>
+						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">
@@ -599,7 +601,9 @@
 					</Action>
 
 					<Action name="Commodities Exchange" default="1" key="C">
-						<ShowPane pane="CommoditiesExchange"/>
+						(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+							checkMilitaryID: True
+							})
 					</Action>
 
 					<Action name="Dock Services" key="D">
@@ -620,40 +624,6 @@
 				</Actions>
 
 			</DefaultWithInfo>
-
-			<CommoditiesExchange>
-
-				<OnPaneInit>
-					(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Buy Items" default="1" key="B">
-						(scrShowBuyScreen 
-							"* -Illegal"			; items sold to player
-							Nil						; obsolete
-							
-							'(	"d"					; install devices
-								6					; of level 6 (and below)
-								Nil					; no special tech modifiers
-								True				; check for military ID
-								0)					; install cost margin
-							)
-					</Action>
-
-					<Action name="Sell Items" key="S">
-						(scrShowSellScreen
-							"*"						; items bought from player
-							)
-					</Action>
-
-					<Action name="Done" cancel="1" key="D">
-						<Navigate screen="&dsCommonwealthStation;"/>
-					</Action>
-
-				</Actions>
-
-			</CommoditiesExchange>
 
 			<CentralPlaza
 					desc=	"You are in the central hub of this station, a busy area where trendy shops mix with high-end residences.">

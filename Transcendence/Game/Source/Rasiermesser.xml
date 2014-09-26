@@ -327,16 +327,9 @@
 							</Action>
 
 							<Action name="Buy Items" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									Nil						; obsolete
-									
-									'(	"w"					; install weapons
-										8					; of level 8 (and below)
-										Nil					; no special tech modifiers
-										True				; check for military ID
-										0)					; install cost margin
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Repair Items" key="R">

@@ -196,7 +196,12 @@
 						)
 						
 					(if thisItem
-						(block (cargoNeeded itemToReplace resultMessage resultCode returnValue)
+						(block (
+							(installDevicePrice (objGetItemProperty installerObj thisItem 'installDevicePrice))
+							(itemPrice (if (@ data 'buyAndInstall) (objGetSellPrice installerObj thisItem) 0))
+							
+							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall
+							)
 						
 							;	Compute the cost to install
 							
@@ -207,10 +212,12 @@
 								(@ data 'installPriceAdj)
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
 
-								(setq totalCost
-									(add
-										(objGetItemProperty installerObj thisItem 'installDevicePrice)
-										(if (@ data 'buyAndInstall) (objGetSellPrice installerObj thisItem) 0)
+								(block Nil
+									(setq itemPrice (objGetSellPrice installerObj thisItem))
+									(if (not installDevicePrice)
+										(setq stationCannotInstall True)
+										
+										(setq totalCost	(add installDevicePrice itemPrice))
 										)
 									)
 								)
@@ -223,6 +230,11 @@
 							(setq itemToReplace (@ returnValue 3))
 							
 							(switch
+								;	If not installable at this station, then ignore
+								
+								stationCannotInstall
+									(setq desc (cat (strCapitalize textWe) " cannot install " itemName " on " textYourShip "."))
+									
 								;	If we don't match the tech criteria then we don't have the
 								;	technology to install.
 								
@@ -345,7 +357,16 @@
 											(setq desc (cat desc " for " (fmtCurrency currencyUsed totalCost) ". Unfortunately, you cannot afford the cost."))
 											(setq canInstall Nil)
 											)
-										(setq desc (cat desc " for " (if (@ data 'buyAndInstall) "an additional " "") (fmtCurrency currencyUsed totalCost) "."))
+										(setq desc 
+											(cat 
+												desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
+												(if (@ data 'installPriceAdj) 
+													(fmtCurrency currencyUsed totalCost)
+													(fmtCurrency currencyUsed (subtract totalCost itemPrice))
+													)
+												"."
+												)
+											)
 										)
 										
 									(if (not (eq installerObj gPlayerShip))

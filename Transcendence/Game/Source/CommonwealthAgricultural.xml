@@ -237,7 +237,9 @@
 							</Action>
 
 							<Action name="Commodities Exchange" key="C">
-								<ShowPane pane="CommoditiesExchange"/>
+								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Dock Services" key="D">
@@ -434,34 +436,6 @@
 						</Actions>
 
 					</MissionStatus>
-
-					<CommoditiesExchange>
-
-						<OnPaneInit>
-							(scrSetDesc gScreen (cat "Welcome to the " (objGetName gSource) " Commodities Exchange Market."))
-						</OnPaneInit>
-
-						<Actions>
-							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
-							</Action>
-
-							<Action name="Sell Items" key="S">
-								(scrShowSellScreen
-									"*"						; items bought from player
-									)
-							</Action>
-
-							<Action name="Done" cancel="1" key="D">
-								<ShowPane pane="Default"/>
-							</Action>
-
-						</Actions>
-
-					</CommoditiesExchange>
-
 				</Panes>
 
 			</Main>

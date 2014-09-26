@@ -983,6 +983,8 @@
 	<!ENTITY unidCOMSOCAgentClass		"0x00010028">
 	<!ENTITY dsRPGDockServices			"0x00010029">
 	<!ENTITY dsRPGDockServicesCompatible	"0x0001002A">
+	<!ENTITY dsRPGCommoditiesExchange	"0x0001002B">
+	<!ENTITY dsRPGCommoditiesExchangeBuy	"0x0001002C">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	

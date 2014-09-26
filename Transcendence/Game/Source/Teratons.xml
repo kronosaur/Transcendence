@@ -497,9 +497,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -1171,9 +1171,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">
@@ -1293,9 +1293,9 @@
 
 						<Actions>
 							<Action name="Buy Items" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: Nil
+									})
 							</Action>
 
 							<Action name="Sell Items" key="S">

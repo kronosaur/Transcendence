@@ -164,9 +164,9 @@
 
 						<Actions>
 							<Action name="Buy Scrap" default="1" key="B">
-								(scrShowBuyScreen 
-									"*"						; items sold to player
-									)
+								(scrShowScreen gScreen &dsRPGCommoditiesExchangeBuy; {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Sell Scrap" key="S">
