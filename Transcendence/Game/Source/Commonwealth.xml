@@ -86,6 +86,7 @@
 			class=				"light IAV"
 			type=				""
 
+			size=				"27"
 			mass=				"25"
 			cargoSpace=			"5"
 			thrustRatio=		"6"
@@ -139,6 +140,7 @@
 			class=				"medium IAV"
 			type=				""
 
+			size=				"42"
 			mass=				"50"
 			cargoSpace=			"10"
 			thrustRatio=		"6.5"
@@ -191,6 +193,7 @@
 			class=				"heavy IAV"
 			type=				""
 
+			size=				"37"
 			mass=				"100"
 			cargoSpace=			"10"
 			thrustRatio=		"5"
