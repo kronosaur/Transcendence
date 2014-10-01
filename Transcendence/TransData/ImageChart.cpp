@@ -220,7 +220,8 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 				NewEntry.sName = pStationType->GetNounPhrase(0);
 				NewEntry.iSize = pStationType->GetSize();
 
-				pStationType->SetImageSelector(&NewEntry.Selector);
+				SSelectorInitCtx InitCtx;
+				pStationType->SetImageSelector(InitCtx, &NewEntry.Selector);
 				NewEntry.pImage = &pStationType->GetImage(NewEntry.Selector, CCompositeImageModifiers());
 				break;
 				}

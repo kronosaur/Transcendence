@@ -1657,8 +1657,9 @@ void CStationType::OnMarkImages (void)
 	//	Since we are generally loading images for this type, we need to create
 	//	a default image selector
 
+	SSelectorInitCtx InitCtx;
 	CCompositeImageSelector Selector;
-	SetImageSelector(&Selector);
+	SetImageSelector(InitCtx, &Selector);
 
 	//	Mark
 
@@ -1807,7 +1808,7 @@ void CStationType::Reinit (void)
 	{
 	}
 
-void CStationType::SetImageSelector (CCompositeImageSelector *retSelector)
+void CStationType::SetImageSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector)
 
 //	SetImageSelector
 //
@@ -1825,7 +1826,7 @@ void CStationType::SetImageSelector (CCompositeImageSelector *retSelector)
 		}
 	else
 		{
-		m_Image.InitSelector(retSelector);
+		m_Image.InitSelector(InitCtx, retSelector);
 
 #if 0
 		int iVariantCount = GetImageVariants();

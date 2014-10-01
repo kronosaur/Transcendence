@@ -840,12 +840,12 @@ class CLocationDef
 	public:
 		CLocationDef (void);
 
-		inline const CString &GetAttributes (void) { return m_sAttributes; }
-		inline DWORD GetObjID (void) { return m_dwObjID; }
-		inline const COrbit &GetOrbit (void) { return m_OrbitDesc; }
-		inline bool HasAttribute (const CString &sAttrib) { return ::HasModifier(m_sAttributes, sAttrib); }
-		inline bool IsBlocked (void) { return m_bBlocked; }
-		inline bool IsEmpty (void) { return (m_dwObjID == 0 && !m_bBlocked); }
+		inline const CString &GetAttributes (void) const { return m_sAttributes; }
+		inline DWORD GetObjID (void) const { return m_dwObjID; }
+		inline const COrbit &GetOrbit (void) const { return m_OrbitDesc; }
+		inline bool HasAttribute (const CString &sAttrib) const { return ::HasModifier(m_sAttributes, sAttrib); }
+		inline bool IsBlocked (void) const { return m_bBlocked; }
+		inline bool IsEmpty (void) const { return (m_dwObjID == 0 && !m_bBlocked); }
 		inline void SetAttributes (const CString &sAttribs) { m_sAttributes = sAttribs; }
 		inline void SetBlocked (bool bBlocked = true) { m_bBlocked = bBlocked; }
 		inline void SetID (const CString &sID) { m_sID = sID; }
@@ -1055,6 +1055,27 @@ class CMapGridPainter
 		bool m_bRecalcNeeded;
 	};
 
+struct SObjCreateCtx
+	{
+	SObjCreateCtx (void) :
+			pLoc(NULL),
+			pOrbit(NULL),
+			pExtraData(NULL),
+			bCreateSatellites(false)
+		{ }
+
+	CVector vPos;							//	Create at this position. This should
+											//		always be set properly, even if orbit
+											//		or location is also provided.
+	CVector vVel;							//	Initial velocity.
+
+	const CLocationDef *pLoc;				//	Optional location (may be NULL)
+	const COrbit *pOrbit;					//	Optional orbit (may be NULL)
+	CXMLElement *pExtraData;				//	Extra data for object (may be NULL)
+
+	bool bCreateSatellites;					//	If TRUE, create satellites
+	};
+
 class CSystem : public CObject
 	{
 	public:
@@ -1146,10 +1167,7 @@ class CSystem : public CObject
 							   CSpaceObject **retpStation = NULL);
 		ALERROR CreateStation (SSystemCreateCtx *pCtx, 
 							   CStationType *pType, 
-							   const CVector &vPos,
-							   const COrbit &OrbitDesc,
-							   bool bCreateSatellites,
-							   CXMLElement *pExtraData,
+							   SObjCreateCtx &CreateCtx,
 							   CSpaceObject **retpStation = NULL);
 		ALERROR CreateWeaponFire (CWeaponFireDesc *pDesc,
 								  CItemEnhancementStack *pEnhancements,
@@ -1316,9 +1334,7 @@ class CSystem : public CObject
 		ALERROR CreateStarField (int cxFieldWidth, int cyFieldHeight);
 		ALERROR CreateStationInt (SSystemCreateCtx *pCtx,
 								  CStationType *pType,
-								  const CVector &vPos,
-								  const CVector &vVel,
-								  CXMLElement *pExtraData,
+								  SObjCreateCtx &CreateCtx,
 								  CSpaceObject **retpStation,
 								  CString *retsError = NULL);
 		void FlushEnemyObjectCache (void);

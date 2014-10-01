@@ -564,9 +564,7 @@ void CStation::CreateEjectaFromDamage (int iDamage, const CVector &vHitPos, int 
 
 ALERROR CStation::CreateFromType (CSystem *pSystem,
 								  CStationType *pType,
-								  const CVector &vPos,
-								  const CVector &vVel,
-								  CXMLElement *pExtraData,
+								  SObjCreateCtx &CreateCtx,
 								  CStation **retpStation,
 								  CString *retsError)
 
@@ -600,7 +598,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	//	Initialize
 
 	pStation->m_pType = pType;
-	pStation->Place(vPos, vVel);
+	pStation->Place(CreateCtx.vPos, CreateCtx.vVel);
 	pStation->m_pMapOrbit = NULL;
 	pStation->m_pTrade = NULL;
 	pStation->m_iDestroyedAnimation = 0;
@@ -683,12 +681,14 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_iStructuralHP = pType->GetStructuralHitPoints();
 
 	//	Pick an appropriate image. This call will set the shipwreck image, if
-	//	necessary or the variant (if appropriate). HACK: In the case of a shipwreck,
-	//	this call also sets the name and other properties (such as structuralHP)
-	//
-	//	This call also sets the bounds (since setting the image sets the bounds)
+	//	necessary or the variant (if appropriate).
 
-	pType->SetImageSelector(&pStation->m_ImageSelector);
+	SSelectorInitCtx InitCtx;
+	InitCtx.pSystem = pSystem;
+	InitCtx.vObjPos = CreateCtx.vPos;
+	InitCtx.sLocAttribs = (CreateCtx.pLoc ? CreateCtx.pLoc->GetAttributes() : NULL_STR);
+
+	pType->SetImageSelector(InitCtx, &pStation->m_ImageSelector);
 
 	//	Now that we have an image, set the bound
 
@@ -802,8 +802,8 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	if (pInitialData)
 		pStation->SetDataFromXML(pInitialData);
 
-	if (pExtraData)
-		pStation->SetDataFromXML(pExtraData);
+	if (CreateCtx.pExtraData)
+		pStation->SetDataFromXML(CreateCtx.pExtraData);
 
 	//	Create any ships registered to this station
 

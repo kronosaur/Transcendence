@@ -19,6 +19,7 @@ class COrderList;
 class CMultiverseCollection;
 class CMultiverseCatalogEntry;
 class CShipClass;
+class CSystem;
 class CSystemMap;
 class CTopology;
 class CTopologyDescTable;
@@ -1002,6 +1003,17 @@ class CCompositeImageSelector
 		TArray<SEntry> m_Sel;
 	};
 
+struct SSelectorInitCtx
+	{
+	SSelectorInitCtx (void) :
+			pSystem(NULL)
+		{ }
+
+	CSystem *pSystem;
+	CVector vObjPos;
+	CString sLocAttribs;
+	};
+
 class IImageEntry
 	{
 	public:
@@ -1013,8 +1025,7 @@ class IImageEntry
 		virtual int GetMaxLifetime (void) const { return 0; }
 		virtual int GetVariantCount (void) = 0;
 		virtual ALERROR InitFromXML (SDesignLoadCtx &Ctx, CIDCounter &IDGen, CXMLElement *pDesc) { return NOERROR; }
-		virtual void InitSelector (CCompositeImageSelector *retSelector) { }
-		virtual void InitSelector (int iVariant, CCompositeImageSelector *retSelector) { }
+		virtual void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector) { }
 		virtual bool IsConstant (void) = 0;
 		virtual void MarkImage (void) { }
 		virtual ALERROR OnDesignLoadComplete (SDesignLoadCtx &Ctx) { return NOERROR; }
@@ -1067,8 +1078,7 @@ class CCompositeImageDesc
 		inline int GetVariantCount (void) { return (m_pRoot ? m_pRoot->GetVariantCount() : 0); }
 		static ALERROR InitEntryFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CIDCounter &IDGen, IImageEntry **retpEntry);
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
-		void InitSelector (CCompositeImageSelector *retSelector);
-		void InitSelector (int iVariant, CCompositeImageSelector *retSelector) { if (m_pRoot) m_pRoot->InitSelector(iVariant, retSelector); }
+		void InitSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		inline bool IsConstant (void) const { return m_bConstant; }
 		inline bool IsEmpty (void) { return (GetVariantCount() == 0); }
 		void MarkImage (void);
@@ -5050,7 +5060,7 @@ class CStationType : public CDesignType
 		inline bool IsWall (void) { return (m_fWall ? true : false); }
 		void MarkImages (const CCompositeImageSelector &Selector);
 		void PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick);
-		void SetImageSelector (CCompositeImageSelector *retSelector);
+		void SetImageSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		inline void SetEncountered (int iLevel) { m_EncounterRecord.AddEncounter(iLevel); }
 		inline void SetTempChance (int iChance) { m_iChance = iChance; }
 		inline bool ShowsMapIcon (void) { return (m_fNoMapIcon ? false : true); }

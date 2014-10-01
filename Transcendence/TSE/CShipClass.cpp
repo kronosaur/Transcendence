@@ -1244,14 +1244,16 @@ void CShipClass::CreateEmptyWreck (CSystem *pSystem,
 //	Create an empty wreck of the given ship class
 
 	{
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.vVel = vVel;
+
 	//	Create the wreck
 
 	CStation *pWreck;
 	CStation::CreateFromType(pSystem,
 			GetWreckDesc(),
-			vPos,
-			vVel,
-			NULL,
+			CreateCtx,
 			&pWreck);
 
 	//	Set properties of the wreck

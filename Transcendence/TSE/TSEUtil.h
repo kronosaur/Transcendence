@@ -298,12 +298,23 @@ class CAttributeCriteria
 			matchExcluded =					0x00020000,
 			};
 
+		enum EFlags
+			{
+			flagDefault =					0x00000001,
+			};
+
+		CAttributeCriteria (void) :
+				m_dwFlags(0)
+			{ }
+
 		int AdjLocationWeight (CSystem *pSystem, CLocationDef *pLoc, int iOriginalWeight = 1000) const;
 		int AdjStationWeight (CStationType *pType, int iOriginalWeight = 1000) const;
+		int CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos) const;
 		inline int GetCount (void) const { return m_Attribs.GetCount(); }
 		const CString &GetAttribAndRequired (int iIndex, bool *retbRequired) const;
 		const CString &GetAttribAndWeight (int iIndex, DWORD *retdwMatchStrength, bool *retbIsSpecial = NULL) const;
 		inline bool MatchesAll (void) const { return (GetCount() == 0); }
+		inline bool MatchesDefault (void) const { return (m_dwFlags & flagDefault); }
 		ALERROR Parse (const CString &sCriteria, DWORD dwFlags = 0, CString *retsError = NULL);
 
 		static int CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength);

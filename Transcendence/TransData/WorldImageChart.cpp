@@ -143,7 +143,8 @@ void GenerateWorldImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		CStationType *pType = Table[i];
 
-		pType->SetImageSelector(&Selectors[i]);
+		SSelectorInitCtx InitCtx;
+		pType->SetImageSelector(InitCtx, &Selectors[i]);
 		const CObjectImageArray &Image = pType->GetImage(Selectors[i], CCompositeImageModifiers());
 
 		CImageArranger::SCellDesc *pNewCell = Cells.Insert();

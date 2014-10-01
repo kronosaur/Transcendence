@@ -176,12 +176,14 @@ void CItemType::CreateEmptyFlotsam (CSystem *pSystem,
 //	Creates an empty flotsam station
 
 	{
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.vVel = vVel;
+
 	CStation *pFlotsam;
 	CStation::CreateFromType(pSystem,
 			GetFlotsamStationType(),
-			vPos,
-			vVel,
-			NULL,
+			CreateCtx,
 			&pFlotsam);
 
 	//	Set properties

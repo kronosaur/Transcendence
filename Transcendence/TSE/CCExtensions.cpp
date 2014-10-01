@@ -9598,12 +9598,15 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 		{
 		CLocationDef *pLoc = pSystem->GetLocation(iLocID);
 
+		SObjCreateCtx CreateCtx;
+		CreateCtx.vPos = vPos;
+		CreateCtx.pLoc = pLoc;
+		CreateCtx.pOrbit = &pLoc->GetOrbit();
+		CreateCtx.bCreateSatellites = true;
+
 		if (pSystem->CreateStation(pSysCreateCtx,
 				pType,
-				vPos,
-				pLoc->GetOrbit(),
-				true,
-				NULL,
+				CreateCtx,
 				&pStation) != NOERROR)
 			return pCC->CreateError(CONSTLIT("Unable to create station"), NULL);
 		}

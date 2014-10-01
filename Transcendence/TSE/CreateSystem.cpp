@@ -749,14 +749,20 @@ ALERROR CreateAppropriateStationAtRandomLocation (SSystemCreateCtx *pCtx,
 		DWORD dwSavedLastObjID = pCtx->dwLastObjID;
 		pCtx->dwLastObjID = 0;
 
+#ifdef DEBUG
+		CString sLocAttribs = pLoc->GetAttributes();
+		CString sPosAttribs = pCtx->pSystem->GetAttribsAtPos(pLoc->GetOrbit().GetObjectPos());
+#endif
+
 		//	Create the station at the location
 
-		if (error = pCtx->pSystem->CreateStation(pCtx,
-				pType,
-				pLoc->GetOrbit().GetObjectPos(),
-				pLoc->GetOrbit(),
-				true,
-				NULL))
+		SObjCreateCtx CreateCtx;
+		CreateCtx.vPos = pLoc->GetOrbit().GetObjectPos();
+		CreateCtx.pLoc = pLoc;
+		CreateCtx.pOrbit = &pLoc->GetOrbit();
+		CreateCtx.bCreateSatellites = true;
+
+		if (error = pCtx->pSystem->CreateStation(pCtx, pType, CreateCtx))
 			return error;
 
 		//	Remove the location so it doesn't match again
@@ -1607,13 +1613,16 @@ ALERROR CreateRandomStation (SSystemCreateCtx *pCtx,
 
 	//	Create the station at the location
 
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = OrbitDesc.GetObjectPos();
+	CreateCtx.pOrbit = &OrbitDesc;
+	CreateCtx.bCreateSatellites = !pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB);
+	CreateCtx.pExtraData = pDesc->GetContentElementByTag(INITIAL_DATA_TAG);
+
 	CSpaceObject *pObj;
 	if (error = pCtx->pSystem->CreateStation(pCtx,
 			pType,
-			OrbitDesc.GetObjectPos(),
-			OrbitDesc,
-			!pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB),
-			pDesc->GetContentElementByTag(INITIAL_DATA_TAG),
+			CreateCtx,
 			&pObj))
 		return error;
 
@@ -1713,12 +1722,13 @@ ALERROR CreateRandomStationAtAppropriateLocation (SSystemCreateCtx *pCtx, CXMLEl
 
 		//	Create the station at the location
 
-		if (error = pCtx->pSystem->CreateStation(pCtx,
-				pType,
-				OrbitDesc.GetObjectPos(),
-				OrbitDesc,
-				true,
-				NULL))
+		SObjCreateCtx CreateCtx;
+		CreateCtx.vPos = OrbitDesc.GetObjectPos();
+		CreateCtx.pLoc = pCtx->pSystem->GetLocation(iLocation);
+		CreateCtx.pOrbit = &OrbitDesc;
+		CreateCtx.bCreateSatellites = true;
+
+		if (error = pCtx->pSystem->CreateStation(pCtx, pType, CreateCtx))
 			return error;
 
 		//	Remember that we filled this location
@@ -3598,12 +3608,13 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 
 			//	Create the station at the location
 
-			if (error = pSystem->CreateStation(&Ctx,
-					pType,
-					OrbitDesc.GetObjectPos(),
-					OrbitDesc,
-					true,
-					NULL))
+			SObjCreateCtx CreateCtx;
+			CreateCtx.vPos = OrbitDesc.GetObjectPos();
+			CreateCtx.pLoc = (iLocation != -1 ? Ctx.pSystem->GetLocation(iLocation) : NULL);
+			CreateCtx.pOrbit = &OrbitDesc;
+			CreateCtx.bCreateSatellites = true;
+
+			if (error = pSystem->CreateStation(&Ctx, pType, CreateCtx))
 				return error;
 
 			//	Remember that we filled this location
@@ -3801,9 +3812,7 @@ ALERROR CSystem::CreateParticles (CXMLElement *pDesc, const COrbit &oOrbit, CPar
 
 ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 								   CStationType *pType,
-								   const CVector &vPos,
-								   const CVector &vVel,
-								   CXMLElement *pExtraData,
+								   SObjCreateCtx &CreateCtx,
 								   CSpaceObject **retpStation,
 								   CString *retsError)
 
@@ -3852,18 +3861,18 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 
 		//	Create the ships
 
-		SShipCreateCtx CreateCtx;
-		CreateCtx.pSystem = this;
-		CreateCtx.vPos = vPos;
-		CreateCtx.pBaseSovereign = pType->GetSovereign();
-		CreateCtx.pEncounterInfo = pType;
-		CreateCtx.dwFlags = SShipCreateCtx::RETURN_RESULT;
+		SShipCreateCtx ShipCreateCtx;
+		ShipCreateCtx.pSystem = this;
+		ShipCreateCtx.vPos = CreateCtx.vPos;
+		ShipCreateCtx.pBaseSovereign = pType->GetSovereign();
+		ShipCreateCtx.pEncounterInfo = pType;
+		ShipCreateCtx.dwFlags = SShipCreateCtx::RETURN_RESULT;
 
-		pGenerator->CreateShips(CreateCtx);
+		pGenerator->CreateShips(ShipCreateCtx);
 
 		//	If no ships are created we return
 
-		if (CreateCtx.Result.GetCount() == 0)
+		if (ShipCreateCtx.Result.GetCount() == 0)
 			{
 			if (retpStation)
 				*retpStation = NULL;
@@ -3872,7 +3881,7 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 
 		//	Return the first ship created
 
-		pStation = CreateCtx.Result.GetObj(0);
+		pStation = ShipCreateCtx.Result.GetObj(0);
 
 		//	This type has now been encountered
 
@@ -3888,9 +3897,7 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 		CString sError;
 		if (error = CStation::CreateFromType(this,
 				pType,
-				vPos,
-				vVel,
-				pExtraData,
+				CreateCtx,
 				(CStation **)&pStation,
 				&sError))
 			{
@@ -3909,9 +3916,7 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 		CString sError;
 		if (error = CStation::CreateFromType(this,
 				pType,
-				vPos,
-				vVel,
-				pExtraData,
+				CreateCtx,
 				(CStation **)&pStation,
 				&sError))
 			{
@@ -3974,11 +3979,8 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 	}
 
 ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx, 
-								CStationType *pType, 
-								const CVector &vPos,
-								const COrbit &OrbitDesc,
-								bool bCreateSatellites,
-								CXMLElement *pExtraData,
+								CStationType *pType,
+								SObjCreateCtx &CreateCtx,
 								CSpaceObject **retpStation)
 
 //	CreateStation
@@ -4002,9 +4004,7 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 
 	if (error = CreateStationInt(pCtx,
 			pType,
-			vPos,
-			NullVector,
-			pExtraData,
+			CreateCtx,
 			&pStation,
 			&pCtx->sError))
 		return ERR_FAIL;
@@ -4061,7 +4061,9 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 	pCtx->pStation = pStation;
 
 	CXMLElement *pSatellites = pType->GetSatellitesDesc();
-	if (pSatellites && bCreateSatellites)
+	if (pSatellites 
+			&& CreateCtx.bCreateSatellites
+			&& CreateCtx.pOrbit)
 		{
 		//	Set the extension to be where the stationType came from. NOTE: This
 		//	works only because the satellite descriptor cannot be inherited.
@@ -4074,7 +4076,7 @@ ALERROR CSystem::CreateStation (SSystemCreateCtx *pCtx,
 		for (int i = 0; i < pSatellites->GetContentElementCount(); i++)
 			{
 			CXMLElement *pSatDesc = pSatellites->GetContentElement(i);
-			if (error = CreateSystemObject(pCtx, pSatDesc, OrbitDesc))
+			if (error = CreateSystemObject(pCtx, pSatDesc, *CreateCtx.pOrbit))
 				return error;
 			}
 
@@ -4149,14 +4151,17 @@ ALERROR CreateStationFromElement (SSystemCreateCtx *pCtx, CXMLElement *pDesc, co
 
 	//	Create the station
 
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.pOrbit = &OrbitDesc;
+	CreateCtx.bCreateSatellites = !pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB);
+	CreateCtx.pExtraData = pDesc->GetContentElementByTag(INITIAL_DATA_TAG);
+
 	CStation *pStation = NULL;
 	CSpaceObject *pObj;
 	if (error = pCtx->pSystem->CreateStation(pCtx,
 			pStationType,
-			vPos,
-			OrbitDesc,
-			!pDesc->GetAttributeBool(NO_SATELLITES_ATTRIB),
-			pDesc->GetContentElementByTag(INITIAL_DATA_TAG),
+			CreateCtx,
 			&pObj))
 		return error;
 

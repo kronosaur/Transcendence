@@ -955,22 +955,7 @@ void CLocationCriteriaTableOfItemGenerators::AddItems (SItemAddCtx &Ctx)
 		m_iTotalChance = 0;
 		for (i = 0; i < m_Table.GetCount(); i++)
 			{
-			m_Table[i].iChance = 1000;
-
-			for (j = 0; j < m_Table[i].Criteria.GetCount(); j++)
-				{
-				DWORD dwMatchStrength;
-				const CString &sAttrib = m_Table[i].Criteria.GetAttribAndWeight(j, &dwMatchStrength);
-
-				int iAdj = CAttributeCriteria::CalcLocationWeight(Ctx.pSystem, 
-						NULL_STR,
-						Ctx.vPos,
-						sAttrib,
-						dwMatchStrength);
-
-				m_Table[i].iChance = (m_Table[i].iChance * iAdj) / 1000;
-				}
-
+			m_Table[i].iChance = m_Table[i].Criteria.CalcLocationWeight(Ctx.pSystem, NULL_STR, Ctx.vPos);
 			m_iTotalChance += m_Table[i].iChance;
 			}
 

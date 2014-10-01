@@ -1242,9 +1242,7 @@ class CStation : public CSpaceObject
 	public:
 		static ALERROR CreateFromType (CSystem *pSystem,
 				CStationType *pType,
-				const CVector &vPos,
-				const CVector &vVel,
-				CXMLElement *pExtraData,
+				SObjCreateCtx &CreateCtx,
 				CStation **retpStation,
 				CString *retsError = NULL);
 		virtual ~CStation (void);

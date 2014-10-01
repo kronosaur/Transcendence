@@ -208,7 +208,9 @@ CImagePainter::CImagePainter (CImageEffectCreator *pCreator) : m_pCreator(pCreat
 //	CImagePainter constructor
 	
 	{
-	m_pCreator->GetImage().InitSelector(&m_Sel);
+	SSelectorInitCtx InitCtx;
+
+	m_pCreator->GetImage().InitSelector(InitCtx, &m_Sel);
 	}
 
 bool CImagePainter::GetParticlePaintDesc (SParticlePaintDesc *retDesc)

@@ -6,6 +6,7 @@
 #include "PreComp.h"
 
 #define MATCH_ALL						CONSTLIT("*")
+#define MATCH_DEFAULT					CONSTLIT("*~")
 
 inline bool IsWeightChar (char *pPos) { return (*pPos == '+' || *pPos == '-' || *pPos == '*' || *pPos == '!'); }
 inline bool IsDelimiterChar (char *pPos, bool bIsSpecialAttrib = false) { return (*pPos == '\0' || *pPos == ',' || *pPos == ';' || (!bIsSpecialAttrib && strIsWhitespace(pPos))); }
@@ -58,6 +59,42 @@ int CAttributeCriteria::AdjStationWeight (CStationType *pType, int iOriginalWeig
 		}
 
 	return iResult;
+	}
+
+int CAttributeCriteria::CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos) const
+
+//	CalcLocationWeight
+//
+//	Computes the location weight 1000 = full.
+
+	{
+	int i;
+
+	//	Special values
+
+	if (MatchesDefault())
+		return 0;
+	else if (MatchesAll())
+		return 1000;
+
+	//	Compute
+
+	int iChance = 1000;
+	for (i = 0; i < GetCount(); i++)
+		{
+		DWORD dwMatchStrength;
+		const CString &sAttrib = GetAttribAndWeight(i, &dwMatchStrength);
+
+		int iAdj = CAttributeCriteria::CalcLocationWeight(pSystem, 
+				sLocationAttribs,
+				vPos,
+				sAttrib,
+				dwMatchStrength);
+
+		iChance = (iChance * iAdj) / 1000;
+		}
+
+	return iChance;
 	}
 
 int CAttributeCriteria::CalcLocationWeight (CSystem *pSystem, const CString &sLocationAttribs, const CVector &vPos, const CString &sAttrib, DWORD dwMatchStrength)
@@ -358,6 +395,11 @@ ALERROR CAttributeCriteria::Parse (const CString &sCriteria, DWORD dwFlags, CStr
 
 	if (strEquals(sCriteria, MATCH_ALL))
 		return NOERROR;
+	else if (strEquals(sCriteria, MATCH_DEFAULT))
+		{
+		m_dwFlags |= flagDefault;
+		return NOERROR;
+		}
 
 	//	Parse
 

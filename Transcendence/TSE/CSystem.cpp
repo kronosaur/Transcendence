@@ -1713,13 +1713,15 @@ ALERROR CSystem::CreateStation (CStationType *pType,
 
 	//	Create the station
 
+	SObjCreateCtx CreateCtx;
+	CreateCtx.vPos = vPos;
+	CreateCtx.pOrbit = &NewOrbit;
+	CreateCtx.bCreateSatellites = true;
+
 	CSpaceObject *pStation;
 	if (error = CreateStation(&Ctx,
 			pType,
-			vPos,
-			NewOrbit,
-			true,
-			NULL,
+			CreateCtx,
 			&pStation))
 		return error;
 
