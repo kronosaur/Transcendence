@@ -704,7 +704,7 @@ ALERROR CTranscendenceModel::EnterScreenSession (CSpaceObject *pLocation, CDesig
 	//	Initialize the current screen object
 
 	CString sError;
-	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError))
+	if (error = ShowScreen(pRoot, sScreen, sPane, pData, &sError, false, true))
 		{
 		//	Undo
 
@@ -1932,7 +1932,7 @@ ALERROR CTranscendenceModel::ShowPane (const CString &sPane)
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn)
+ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn, bool bFirstFrame)
 
 //	ShowScreen
 //
@@ -2018,7 +2018,7 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 
 	bool bNewFrame;
 	SDockFrame OldFrame;
-	if (bNewFrame = (!bReturn && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
+	if (bNewFrame = (!bReturn && !bFirstFrame && pScreen->GetAttributeBool(NESTED_SCREEN_ATTRIB)))
 		m_DockFrames.Push(NewFrame);
 	else if (!bReturn)
 		m_DockFrames.SetCurrent(NewFrame, &OldFrame);
