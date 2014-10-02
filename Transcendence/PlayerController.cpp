@@ -140,6 +140,30 @@ bool CPlayerShipController::AreAllDevicesEnabled (void)
 	return true;
 	}
 
+bool CPlayerShipController::CanShowShipStatus (void)
+
+//	CanShowShowStatus
+//
+//	Returns TRUE if we're allowed to show ship's status screen.
+
+	{
+	//	If we're trying to dock, then we can't
+
+	if (DockingInProgress())
+		return false;
+
+	//	See if we have an overlay preventing us from bring it up
+
+	CEnergyFieldList::SImpactDesc Impact;
+	m_pShip->GetOverlayImpact(&Impact);
+	if (Impact.bShipScreenDisabled)
+		return false;
+
+	//	We're OK
+
+	return true;
+	}
+
 void CPlayerShipController::CancelAllOrders (void)
 
 //	CancelAllOrder

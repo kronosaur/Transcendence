@@ -983,6 +983,7 @@ class CShip : public CSpaceObject
 		virtual int GetOpenDockingPortCount (void) { return m_DockingPorts.GetPortCount(this) - m_DockingPorts.GetPortsInUseCount(this); }
 		virtual CEnergyField *GetOverlay (DWORD dwID) const { return m_EnergyFields.GetOverlay(dwID); }
 		virtual const CString &GetOverlayData (DWORD dwID, const CString &sAttrib) { return m_EnergyFields.GetData(dwID, sAttrib); }
+		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { m_EnergyFields.GetImpact(this, retImpact); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_EnergyFields.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_EnergyFields.GetPos(this, dwID); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_EnergyFields.GetRotation(dwID); }
@@ -1324,6 +1325,7 @@ class CStation : public CSpaceObject
 		virtual int GetOpenDockingPortCount (void) { return m_DockingPorts.GetPortCount(this) - m_DockingPorts.GetPortsInUseCount(this); }
 		virtual CEnergyField *GetOverlay (DWORD dwID) const { return m_Overlays.GetOverlay(dwID); }
 		virtual const CString &GetOverlayData (DWORD dwID, const CString &sAttrib) { return m_Overlays.GetData(dwID, sAttrib); }
+		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { m_Overlays.GetImpact(this, retImpact); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_Overlays.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_Overlays.GetPos(this, dwID); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_Overlays.GetRotation(dwID); }

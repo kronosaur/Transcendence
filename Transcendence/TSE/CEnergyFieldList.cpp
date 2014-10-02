@@ -126,7 +126,7 @@ int CEnergyFieldList::GetCountOfType (COverlayType *pType)
 	return iCount;
 	}
 
-void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact)
+void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact) const
 
 //	GetImpact
 //
@@ -145,6 +145,11 @@ void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact)
 
 		if (pField->Paralyzes(pSource))
 			retImpact->bParalyze = true;
+
+		//	Can't bring up ship status
+
+		if (pField->IsShipScreenDisabled())
+			retImpact->bShipScreenDisabled = true;
 
 		//	Next
 

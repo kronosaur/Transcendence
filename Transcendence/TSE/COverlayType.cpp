@@ -11,6 +11,7 @@
 
 #define ABSORB_ADJ_ATTRIB						CONSTLIT("absorbAdj")
 #define ALT_EFFECT_ATTRIB						CONSTLIT("altEffect")
+#define DISABLE_SHIP_SCREEN_ATTRIB				CONSTLIT("disableShipScreen")
 #define DISARM_ATTRIB							CONSTLIT("disarm")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
 #define PARALYZE_ATTRIB							CONSTLIT("paralyze")
@@ -256,6 +257,7 @@ ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	m_fDisarmShip = pDesc->GetAttributeBool(DISARM_ATTRIB);
 	m_fParalyzeShip = pDesc->GetAttributeBool(PARALYZE_ATTRIB);
+	m_fDisableShipScreen = pDesc->GetAttributeBool(DISABLE_SHIP_SCREEN_ATTRIB);
 
 	//	Done
 

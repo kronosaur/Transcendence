@@ -1861,6 +1861,7 @@ class CEnergyField
 		inline COverlayType *GetType(void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
 		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
+		inline bool IsShipScreenDisabled (void) { return m_pType->IsShipScreenDisabled(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		inline bool Paralyzes (CSpaceObject *pSource) { return m_pType->Paralyzes(); }
 		void ReadFromStream (SLoadCtx &Ctx);
@@ -1906,11 +1907,13 @@ class CEnergyFieldList
 			{
 			SImpactDesc (void) :
 					bDisarm(false),
-					bParalyze(false)
+					bParalyze(false),
+					bShipScreenDisabled(false)
 				{ }
 
 			bool bDisarm;					//	TRUE if source is disarmed
 			bool bParalyze;					//	TRUE if source is paralyzed.
+			bool bShipScreenDisabled;		//	TRUE if source cannot bring up ship screen
 			};
 
 		CEnergyFieldList (void);
@@ -1929,7 +1932,7 @@ class CEnergyFieldList
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
 		int GetCountOfType (COverlayType *pType);
 		const CString &GetData (DWORD dwID, const CString &sAttrib);
-		void GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact);
+		void GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact) const;
 		void GetList (TArray<CEnergyField *> &List);
 		CEnergyField *GetOverlay (DWORD dwID) const;
 		CVector GetPos (CSpaceObject *pSource, DWORD dwID);
@@ -2610,6 +2613,7 @@ class CSpaceObject : public CObject
 		virtual int GetOpenDockingPortCount (void) { return 0; }
 		virtual CEnergyField *GetOverlay (DWORD dwID) const { return NULL; }
 		virtual const CString &GetOverlayData (DWORD dwID, const CString &sAttrib) { return NULL_STR; }
+		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { *retImpact = CEnergyFieldList::SImpactDesc(); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { List.DeleteAll(); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return GetPos(); }
 		virtual int GetOverlayRotation (DWORD dwID) { return -1; }
@@ -2906,6 +2910,10 @@ class CSpaceObject : public CObject
 
 		static CSpaceObject *m_pObjInUpdate;
 		static bool m_bObjDestroyed;
+
+		//	Empty list of overlays
+
+		static CEnergyFieldList m_NullOverlays;
 
 	friend CObjectClass<CSpaceObject>;
 	};

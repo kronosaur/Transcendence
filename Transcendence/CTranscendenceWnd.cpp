@@ -1749,7 +1749,7 @@ LONG CTranscendenceWnd::WMKeyDown (int iVirtKey, DWORD dwKeyData)
 						break;
 
 					case CGameKeys::keyShipStatus:
-						if (!GetPlayer()->DockingInProgress())
+						if (GetPlayer()->CanShowShipStatus())
 							{
 							g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
 							GetModel().ShowShipScreen();

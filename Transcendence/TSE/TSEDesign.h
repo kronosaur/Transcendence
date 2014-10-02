@@ -4664,6 +4664,7 @@ class COverlayType : public CDesignType
 		inline bool HasOnUpdateEvent (void) { return m_fHasOnUpdateEvent; }
 		inline bool IsHitEffectAlt (void) { return m_fAltHitEffect; }
 		inline bool IsShieldOverlay (void) { return m_fShieldOverlay; }
+		inline bool IsShipScreenDisabled (void) { return m_fDisableShipScreen; }
 		inline bool Paralyzes (void) const { return m_fParalyzeShip; }
 		inline bool RotatesWithShip (void) { return m_fRotateWithShip; }
 
@@ -4693,7 +4694,7 @@ class COverlayType : public CDesignType
 		DWORD m_fShieldOverlay:1;				//	If TRUE, we are above hull/armor
 		DWORD m_fParalyzeShip:1;				//	If TRUE, ship is paralyzed
 		DWORD m_fDisarmShip:1;					//	If TRUE, ship is disarmed
-		DWORD m_fSpare7:1;
+		DWORD m_fDisableShipScreen:1;			//	If TRUE, player cannot bring up ship screen
 		DWORD m_fSpare8:1;
 
 		DWORD m_dwSpare:24;

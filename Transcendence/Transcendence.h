@@ -340,6 +340,7 @@ class CPlayerShipController : public CObject, public IShipController
 		void Cargo (void);
 		inline CurrencyValue Charge (DWORD dwEconUNID, CurrencyValue iCredits) { return m_Credits.IncCredits(dwEconUNID, -iCredits); }
 
+		bool CanShowShipStatus (void);
 		void Communications (CSpaceObject *pObj, MessageTypes iMsg, DWORD dwData = 0, DWORD *iodwFormationPlace = NULL);
 		void Dock (void);
 		inline bool DockingInProgress (void) { return m_pStation != NULL; }
