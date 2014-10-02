@@ -1989,6 +1989,7 @@ class CInstalledArmor
 		inline EDamageResults AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void FinishInstall (CSpaceObject *pSource);
 		inline CArmorClass *GetClass (void) const { return m_pArmorClass; }
+		inline int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		inline int GetHitPoints (void) const { return m_iHitPoints; }
 		inline int GetMaxHP (CSpaceObject *pSource);
 		inline const CItemEnhancement &GetMods (void) { return m_pItem->GetMods(); }
@@ -2039,6 +2040,7 @@ class CArmorClass : public CObject
 		inline int GetCompleteBonus (void) { return m_iArmorCompleteBonus; }
 		inline int GetDamageAdj (DamageTypes iDamage) { return m_DamageAdj.GetAdj(iDamage); }
 		int GetDamageAdjForWeaponLevel (int iLevel);
+		int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		inline int GetDeviceDamageAdj (void) { return m_iDeviceDamageAdj; }
 		inline int GetEMPDamageAdj (void) { return m_iEMPDamageAdj; }
 		inline int GetInstallCost (void) { return m_iInstallCost; }
@@ -2074,6 +2076,7 @@ class CArmorClass : public CObject
 	private:
 		CArmorClass (void);
 
+		int CalcArmorDamageAdj (const DamageDesc &Damage) const;
 		int GetDamageAdj (CItemEnhancement Mods, const DamageDesc &Damage);
 		int FireGetMaxHP (CItemCtx &ItemCtx, int iMaxHP) const;
 		void FireOnArmorDamage (CItemCtx &ItemCtx, SDamageCtx &Ctx);
@@ -2203,6 +2206,7 @@ class CDeviceClass : public CObject
 		virtual ItemCategories GetCategory (void) const = 0;
 		virtual int GetCounter (CInstalledDevice *pDevice, CSpaceObject *pSource, CounterTypes *retiType = NULL) { return 0; }
 		virtual const DamageDesc *GetDamageDesc (CItemCtx &Ctx) { return NULL; }
+		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon) { return 0; }
 		virtual int GetDamageType (CInstalledDevice *pDevice = NULL, int iVariant = -1) { return damageGeneric; }
 		virtual int GetDefaultFireAngle (CInstalledDevice *pDevice, CSpaceObject *pSource) { return 0; }
 		virtual bool GetDeviceEnhancementDesc (CInstalledDevice *pDevice, CSpaceObject *pSource, CInstalledDevice *pWeapon, SDeviceEnhancementDesc *retDesc) { return false; }
@@ -5957,6 +5961,7 @@ class CInstalledDevice
 		inline ItemCategories GetCategory (void) const { return m_pClass->GetCategory(); }
 		inline int GetCounter (CSpaceObject *pSource, CDeviceClass::CounterTypes *retiCounter = NULL) { return m_pClass->GetCounter(this, pSource, retiCounter); }
 		inline const DamageDesc *GetDamageDesc (CItemCtx &Ctx) { return m_pClass->GetDamageDesc(Ctx); }
+		inline int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon) { return m_pClass->GetDamageEffectiveness(pAttacker, pWeapon); }
 		inline int GetDamageType (int iVariant = -1) { return m_pClass->GetDamageType(this, iVariant); }
 		inline int GetDefaultFireAngle (CSpaceObject *pSource) { return m_pClass->GetDefaultFireAngle(this, pSource); }
 		bool GetDeviceEnhancementDesc (CSpaceObject *pSource, CInstalledDevice *pWeapon, SDeviceEnhancementDesc *retDesc) { return m_pClass->GetDeviceEnhancementDesc(this, pSource, pWeapon, retDesc); }
@@ -6525,6 +6530,7 @@ bool SetFrequencyByLevel (CString &sLevelFrequency, int iLevel, int iFreq);
 //	Inline implementations
 
 inline EDamageResults CInstalledArmor::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx) { return m_pArmorClass->AbsorbDamage(CItemCtx(pSource, this), Ctx); }
+inline int CInstalledArmor::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon) { return m_pArmorClass->GetDamageEffectiveness(pAttacker, pWeapon); }
 inline int CInstalledArmor::GetMaxHP (CSpaceObject *pSource) { return m_pArmorClass->GetMaxHP(CItemCtx(pSource, this)); }
 
 inline bool CInstalledDevice::IsSecondaryWeapon (void) const 

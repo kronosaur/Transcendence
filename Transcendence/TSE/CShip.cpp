@@ -2239,6 +2239,29 @@ int CShip::GetCombatPower (void)
 	return m_pController->GetCombatPower();
 	}
 
+int CShip::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
+
+//	GetDamageEffectiveness
+//
+//	Returns the effectiveness of the given weapon against this ship.
+//
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
+
+	{
+	//	First ask the shields, if we have them, and if they are up.
+
+	CInstalledDevice *pShields = GetNamedDevice(devShields);
+	if (pShields && GetShieldLevel() > 0)
+		return pShields->GetDamageEffectiveness(pAttacker, pWeapon);
+	else if (m_Armor.GetCount() > 0)
+		return m_Armor[0].GetDamageEffectiveness(pAttacker, pWeapon);
+	else
+		return 100;
+	}
+
 DamageTypes CShip::GetDamageType (void)
 
 //	GetDamageType

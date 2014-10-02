@@ -32,6 +32,7 @@ CAIBehaviorCtx::CAIBehaviorCtx (void) :
 		m_fSuperconductingShields(false),
 		m_fHasMultipleWeapons(false),
 		m_fHasSecondaryWeapons(false),
+		m_fHasMultiplePrimaries(false),
 		m_fRecalcBestWeapon(true),
 		m_fHasEscorts(false)
 
@@ -340,6 +341,8 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 	m_iBestNonLauncherWeaponLevel = 0;
 	m_fHasSecondaryWeapons = false;
 
+	int iPrimaryCount = 0;
+
 	for (i = 0; i < pShip->GetDeviceCount(); i++)
 		{
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
@@ -365,6 +368,8 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 				if (pDevice->IsSecondaryWeapon())
 					m_fHasSecondaryWeapons = true;
+				else if (pDevice->GetCategory() == itemcatWeapon)
+					iPrimaryCount++;
 
 				break;
 				}
@@ -379,6 +384,7 @@ void CAIBehaviorCtx::CalcInvariants (CShip *pShip)
 
 	//	Flags
 
+	m_fHasMultiplePrimaries = (iPrimaryCount > 1);
 	m_fThrustThroughTurn = ((pShip->GetDestiny() % 100) < 50);
 	m_fAvoidExplodingStations = (rAimRange > MIN_STATION_TARGET_DIST);
 
@@ -696,6 +702,18 @@ int CAIBehaviorCtx::CalcWeaponScore (CShip *pShip, CSpaceObject *pTarget, CInsta
 	//	Adjust score based on effectiveness
 
 	iScore += iEffectiveness;
+
+	//	If we have multiple primaries, then include damage type effectiveness against
+	//	the target.
+
+	if (pTarget && m_fHasMultiplePrimaries)
+		{
+		int iDamageEffect = pTarget->GetDamageEffectiveness(pShip, pWeapon);
+		if (iDamageEffect < 0)
+			return 0;
+		else
+			iScore += (iDamageEffect / 10);
+		}
 
 	//	If this weapon has a fire arc and the target is in the arc, then prefer this weapon
 

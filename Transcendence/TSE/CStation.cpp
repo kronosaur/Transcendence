@@ -1239,6 +1239,29 @@ int CStation::GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount)
 	return -1;
 	}
 
+int CStation::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
+
+//	GetDamageEffectiveness
+//
+//	Returns the effectiveness of the given weapon against this station.
+//
+//	< 0		The weapon is ineffective against us.
+//	0-99	The weapon is less effective than average.
+//	100		The weapon has average effectiveness
+//	> 100	The weapon is more effective than average.
+
+	{
+	//	First ask the shields, if we have them, and if they are up.
+
+	CInstalledDevice *pShields = GetNamedDevice(devShields);
+	if (pShields && GetShieldLevel() > 0)
+		return pShields->GetDamageEffectiveness(pAttacker, pWeapon);
+	else if (m_pArmorClass)
+		return m_pArmorClass->GetDamageEffectiveness(pAttacker, pWeapon);
+	else
+		return 100;
+	}
+
 CDesignType *CStation::GetDefaultDockScreen (CString *retsName)
 
 //	GetDockScreen

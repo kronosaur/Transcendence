@@ -190,7 +190,16 @@ class CAIBehaviorCtx
 		DWORD m_fHasSecondaryWeapons:1;			//	TRUE if ship has secondary weapons
 		DWORD m_fHasEscorts:1;					//	TRUE if ship has escorts
 
-		DWORD m_dwSpare:24;
+		DWORD m_fHasMultiplePrimaries:1;		//	TRUE if ship has multiple primary weapons (non-launchers)
+		DWORD m_fSpare2:1;
+		DWORD m_fSpare3:1;
+		DWORD m_fSpare4:1;
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
+
+		DWORD m_dwSpare:16;
 	};
 
 const int MAX_OBJS =	4;

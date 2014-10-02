@@ -956,6 +956,7 @@ class CShip : public CSpaceObject
 		virtual DWORD GetClassUNID (void) { return m_pClass->GetUNID(); }
 		virtual int GetCombatPower (void);
 		virtual int GetCyberDefenseLevel (void) { return m_pClass->GetCyberDefenseLevel(); }
+		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		virtual DamageTypes GetDamageType (void);
 		virtual DWORD GetDefaultBkgnd (void) { return m_pClass->GetDefaultBkgnd(); }
 		virtual CSpaceObject *GetDestination (void) const { return m_pController->GetDestination(); }
@@ -1300,6 +1301,7 @@ class CStation : public CSpaceObject
 		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL);
 		virtual Categories GetCategory (void) const { return catStation; }
 		virtual DWORD GetClassUNID (void) { return m_pType->GetUNID(); }
+		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		virtual DWORD GetDefaultBkgnd (void) { return m_pType->GetDefaultBkgnd(); }
 		virtual CEconomyType *GetDefaultEconomy (void);
 		virtual DWORD GetDefaultEconomyUNID (void);
