@@ -5035,7 +5035,7 @@ class CStationType : public CDesignType
 		inline ScaleTypes GetScale (void) const { return m_iScale; }
 		inline int GetSize (void) const { return m_iSize; }
 		inline int GetShipConstructionRate (void) { return m_iShipConstructionRate; }
-		inline int GetShipRepairRate (void) { return m_iShipRepairRate; }
+		inline const CRegenDesc &GetShipRegenDesc (void) { return m_ShipRegen; }
 		inline CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		inline COLORREF GetSpaceColor (void) { return m_rgbSpaceColor; }
 		inline int GetStealth (void) const { return m_iStealth; }
@@ -5210,7 +5210,7 @@ class CStationType : public CDesignType
 		int m_iMinShips;								//	Min ships at station
 		IShipGenerator *m_pEncounters;					//	Random encounters table
 		int m_iEncounterFrequency;						//	Frequency of random encounter
-		int m_iShipRepairRate;							//	HP repaired every 10 ticks (per docked ship)
+		CRegenDesc m_ShipRegen;							//	Regen for ships docked with us
 		IShipGenerator *m_pConstruction;				//	Ships built by station
 		int m_iShipConstructionRate;					//	Ticks between each construction
 		int m_iMaxConstruction;							//	Stop building when we get this many ships

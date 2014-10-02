@@ -78,6 +78,7 @@
 #define REVERSE_ARTICLE_ATTRIB					CONSTLIT("reverseArticle")
 #define SCALE_ATTRIB							CONSTLIT("scale")
 #define SHIP_ENCOUNTER_ATTRIB					CONSTLIT("shipEncounter")
+#define SHIP_REGEN_ATTRIB						CONSTLIT("shipRegen")
 #define SHIP_REPAIR_RATE_ATTRIB					CONSTLIT("shipRepairRate")
 #define SHIPWRECK_UNID_ATTRIB					CONSTLIT("shipwreckID")
 #define SIGN_ATTRIB								CONSTLIT("sign")
@@ -1234,7 +1235,6 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fShipEncounter = pDesc->GetAttributeBool(SHIP_ENCOUNTER_ATTRIB);
 	m_fImmutable = pDesc->GetAttributeBool(IMMUTABLE_ATTRIB);
 	m_fNoBlacklist = pDesc->GetAttributeBool(NO_BLACKLIST_ATTRIB);
-	m_iShipRepairRate = pDesc->GetAttributeInteger(SHIP_REPAIR_RATE_ATTRIB);
 	m_iAlertWhenAttacked = pDesc->GetAttributeInteger(ALERT_WHEN_ATTACKED_ATTRIB);
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
 	m_rMaxAttackDistance = MAX_ATTACK_DISTANCE;
@@ -1251,6 +1251,16 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		}
 	else if (pDesc->FindAttributeInteger(REPAIR_RATE_ATTRIB, &iRepairRate) && iRepairRate > 0)
 		m_Regen.InitFromRegen(6.0 * iRepairRate, STATION_REPAIR_FREQUENCY);
+
+	//	Ship repair rate
+
+	if (pDesc->FindAttribute(SHIP_REGEN_ATTRIB, &sRegen))
+		{
+		if (error = m_ShipRegen.InitFromRegenString(Ctx, sRegen, STATION_REPAIR_FREQUENCY))
+			return error;
+		}
+	else if (pDesc->FindAttributeInteger(SHIP_REPAIR_RATE_ATTRIB, &iRepairRate) && iRepairRate > 0)
+		m_ShipRegen.InitFromRegen(6.0 * iRepairRate, STATION_REPAIR_FREQUENCY);
 
 	//	Starting in API 23 we change the default to 40 instead of 80
 

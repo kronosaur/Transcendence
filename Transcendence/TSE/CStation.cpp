@@ -4117,7 +4117,8 @@ void CStation::UpdateReinforcements (int iTick)
 
 		//	Repair damage to ships
 
-		m_DockingPorts.RepairAll(this, m_pType->GetShipRepairRate());
+		if (!m_pType->GetShipRegenDesc().IsEmpty())
+			m_DockingPorts.RepairAll(this, m_pType->GetShipRegenDesc().GetRegen(iTick, STATION_REPAIR_FREQUENCY));
 		}
 
 	//	Construction
