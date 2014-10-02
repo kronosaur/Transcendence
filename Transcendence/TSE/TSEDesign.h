@@ -5029,8 +5029,8 @@ class CStationType : public CDesignType
 		inline Metric GetParallaxDist (void) const { return m_rParallaxDist; }
 		inline IItemGenerator *GetRandomItemTable (void) { return m_pItems; }
 		inline DWORD GetRandomNameFlags (void) { return m_dwRandomNameFlags; }
+		inline const CRegenDesc &GetRegenDesc (void) { return m_Regen; }
 		IShipGenerator *GetReinforcementsTable (void);
-		inline int GetRepairRate (void) { return m_iRepairRate; }
 		inline CXMLElement *GetSatellitesDesc (void) { return m_pSatellitesDesc; }
 		inline ScaleTypes GetScale (void) const { return m_iScale; }
 		inline int GetSize (void) const { return m_iSize; }
@@ -5139,7 +5139,7 @@ class CStationType : public CDesignType
 		CItemTypeRef m_pArmor;							//	Armor class
 		int m_iHitPoints;								//	Hit points at creation time
 		int m_iMaxHitPoints;							//	Max hit points
-		int m_iRepairRate;								//	HP repaired every 30 ticks
+		CRegenDesc m_Regen;								//	Repair rate
 		int m_iStealth;									//	Stealth
 
 		int m_iStructuralHP;							//	Initial structural hit points

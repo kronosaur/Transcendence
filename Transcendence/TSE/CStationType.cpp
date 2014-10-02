@@ -73,6 +73,7 @@
 #define NO_MAP_ICON_ATTRIB						CONSTLIT("noMapIcon")
 #define RADIOACTIVE_ATTRIB						CONSTLIT("radioactive")
 #define RANDOM_ENCOUNTERS_ATTRIB				CONSTLIT("randomEncounters")
+#define REGEN_ATTRIB							CONSTLIT("regen")
 #define REPAIR_RATE_ATTRIB						CONSTLIT("repairRate")
 #define REVERSE_ARTICLE_ATTRIB					CONSTLIT("reverseArticle")
 #define SCALE_ATTRIB							CONSTLIT("scale")
@@ -369,8 +370,8 @@ int CStationType::CalcHitsToDestroy (int iLevel)
 		//	Adjust weapon damage for station repairs. The standard fire rate is
 		//	once per 8 ticks, and the repair rate is per 30 ticks.
 
-		if (m_iRepairRate > 0)
-			rWeaponDamage = Max(0.0, rWeaponDamage - (8.0 * m_iRepairRate / STATION_REPAIR_FREQUENCY));
+		if (!m_Regen.IsEmpty())
+			rWeaponDamage = Max(0.0, rWeaponDamage - (8.0 * m_Regen.GetHPPer180(STATION_REPAIR_FREQUENCY) / 180.0));
 		}
 	else
 		iTotalHP = m_iMaxStructuralHP;
@@ -771,7 +772,7 @@ bool CStationType::FindDataField (const CString &sField, CString *retsValue)
 	else if (strEquals(sField, FIELD_MAX_LIGHT_RADIUS))
 		*retsValue = strFromInt(m_iMaxLightDistance);
 	else if (strEquals(sField, FIELD_REGEN))
-		*retsValue = strFromInt(m_iRepairRate * 180 / STATION_REPAIR_FREQUENCY);
+		*retsValue = strFromInt((int)(m_Regen.GetHPPer180(STATION_REPAIR_FREQUENCY) + 0.5));
 	else if (strEquals(sField, FIELD_SATELLITE_STRENGTH))
 		*retsValue = strFromInt((m_pSatellitesDesc ? (int)(100.0 * CalcSatelliteStrength(m_pSatellitesDesc, GetLevel())) : 0));
 	else if (strEquals(sField, FIELD_SIZE))
@@ -1215,7 +1216,6 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		return error;
 
 	m_fVirtual = pDesc->GetAttributeBool(VIRTUAL_ATTRIB);
-	m_iRepairRate = pDesc->GetAttributeInteger(REPAIR_RATE_ATTRIB);
 	m_fMobile = pDesc->GetAttributeBool(MOBILE_ATTRIB);
 	m_fWall = pDesc->GetAttributeBool(WALL_ATTRIB);
 	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
@@ -1239,6 +1239,18 @@ ALERROR CStationType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_iAlertWhenDestroyed = pDesc->GetAttributeInteger(ALERT_WHEN_DESTROYED_ATTRIB);
 	m_rMaxAttackDistance = MAX_ATTACK_DISTANCE;
 	m_iStealth = pDesc->GetAttributeIntegerBounded(STEALTH_ATTRIB, CSpaceObject::stealthMin, CSpaceObject::stealthMax, CSpaceObject::stealthNormal);
+
+	//	Repair rate
+
+	CString sRegen;
+	int iRepairRate;
+	if (pDesc->FindAttribute(REGEN_ATTRIB, &sRegen))
+		{
+		if (error = m_Regen.InitFromRegenString(Ctx, sRegen, STATION_REPAIR_FREQUENCY))
+			return error;
+		}
+	else if (pDesc->FindAttributeInteger(REPAIR_RATE_ATTRIB, &iRepairRate) && iRepairRate > 0)
+		m_Regen.InitFromRegen(6.0 * iRepairRate, STATION_REPAIR_FREQUENCY);
 
 	//	Starting in API 23 we change the default to 40 instead of 80
 

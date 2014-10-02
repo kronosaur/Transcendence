@@ -83,7 +83,7 @@ CString CRegenDesc::GetReferenceRate (const CString &sUnits, int iTicksPerCycle)
 		}
 	}
 
-int CRegenDesc::GetRegen (int iTick, int iTicksPerCycle)
+int CRegenDesc::GetRegen (int iTick, int iTicksPerCycle) const
 
 //	GetRegen
 //

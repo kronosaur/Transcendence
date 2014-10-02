@@ -4112,8 +4112,8 @@ void CStation::UpdateReinforcements (int iTick)
 		{
 		//	Repair damage to station
 
-		if (m_pType->GetRepairRate() > 0 && m_iHitPoints < m_iMaxHitPoints)
-			m_iHitPoints = Min(m_iMaxHitPoints, m_iHitPoints + m_pType->GetRepairRate());
+		if (!m_pType->GetRegenDesc().IsEmpty() && m_iHitPoints < m_iMaxHitPoints)
+			m_iHitPoints = Min(m_iMaxHitPoints, m_iHitPoints + m_pType->GetRegenDesc().GetRegen(iTick, STATION_REPAIR_FREQUENCY));
 
 		//	Repair damage to ships
 
