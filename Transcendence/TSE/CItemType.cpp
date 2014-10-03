@@ -95,6 +95,7 @@
 #define SPECIAL_CAN_BE_DAMAGED					CONSTLIT("canBeDamaged:")
 #define SPECIAL_DAMAGE_TYPE						CONSTLIT("damageType:")
 #define SPECIAL_IS_LAUNCHER						CONSTLIT("isLauncher:")
+#define SPECIAL_LAUNCHED_BY						CONSTLIT("launchedBy:")
 
 #define SPECIAL_TRUE							CONSTLIT("true")
 
@@ -1243,6 +1244,18 @@ bool CItemType::OnHasSpecialAttribute (const CString &sAttrib) const
 		{
 		bool bValue = strEquals(strSubString(sAttrib, SPECIAL_IS_LAUNCHER.GetLength(), -1), SPECIAL_TRUE);
 		return ((GetCategory() == itemcatLauncher) == bValue);
+		}
+	else if (strStartsWith(sAttrib, SPECIAL_LAUNCHED_BY))
+		{
+		DWORD dwLauncher = strToInt(strSubString(sAttrib, SPECIAL_LAUNCHED_BY.GetLength(), -1), 0);
+		if (dwLauncher == 0 || !IsMissile())
+			return false;
+
+		CDeviceClass *pDevice = GetAmmoLauncher();
+		if (pDevice == NULL)
+			return false;
+
+		return (pDevice->GetUNID() == dwLauncher);
 		}
 	else
 		return false;
