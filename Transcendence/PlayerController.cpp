@@ -423,7 +423,7 @@ CSpaceObject *CPlayerShipController::FindDockTarget (void)
 		CSpaceObject *pObj = pSystem->GetObject(i);
 
 		if (pObj 
-				&& pObj->SupportsDocking()
+				&& pObj->SupportsDocking(true)
 				&& !pObj->IsInactive()
 				&& !pObj->IsDestroyed()
 				&& pObj != m_pShip)
@@ -770,7 +770,7 @@ void CPlayerShipController::InitTargetList (TargetTypes iTargetType, bool bUpdat
 					}
 				else
 					{
-					if (pObj->CanAttack() || pObj->SupportsDocking())
+					if (pObj->CanAttack() || pObj->SupportsDocking(true))
 						{
 						if (pObj->GetScale() == scaleShip || pObj->GetScale() == scaleStructure)
 							iMainKey = 0;
@@ -1756,7 +1756,7 @@ void CPlayerShipController::OnUpdatePlayer (SUpdateCtx &Ctx)
 
 	else if (m_pTarget 
 			&& m_pTarget != m_pShip 
-			&& m_pTarget->SupportsDocking()
+			&& m_pTarget->SupportsDocking(true)
 			&& (!m_pShip->IsEnemy(m_pTarget) || m_pTarget->IsAbandoned())
 			&& (m_pTarget->GetPos() - m_pShip->GetPos()).Length2() < MAX_DOCK_DISTANCE2)
 		{

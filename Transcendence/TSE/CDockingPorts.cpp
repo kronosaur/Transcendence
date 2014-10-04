@@ -723,9 +723,9 @@ void CDockingPorts::UpdateAll (SUpdateCtx &Ctx, CSpaceObject *pOwner)
 	if (pPlayer && pOwner->IsStargate() && rDist2 < GATE_DIST2)
 		pPlayer = NULL;
 
-	//	Don't bother if the docking is disabled
+	//	Don't bother if the docking is disabled (for the player)
 
-	if (pPlayer && !pOwner->SupportsDocking())
+	if (pPlayer && !pOwner->SupportsDocking(true))
 		pPlayer = NULL;
 
 	//	Loop over all ports

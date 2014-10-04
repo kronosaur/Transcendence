@@ -3590,7 +3590,7 @@ bool CStation::RequestDock (CSpaceObject *pObj, int iPort)
 	//	If we don't have any docking screens then do not let the
 	//	object dock.
 
-	if (!SupportsDocking())
+	if (!SupportsDocking(pObj->IsPlayer()))
 		{
 		pObj->SendMessage(this, CONSTLIT("No docking services available"));
 		return false;

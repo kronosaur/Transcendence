@@ -2661,7 +2661,7 @@ ICCItem *CShip::GetProperty (const CString &sName)
 		return (m_pDocked ? CC.CreateInteger(m_pDocked->GetID()) : CC.CreateNil());
 
 	else if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
-		return CC.CreateBool(SupportsDocking());
+		return CC.CreateBool(SupportsDocking(true));
 
 	else if (strEquals(sName, PROPERTY_DOCKING_PORT_COUNT))
 		return CC.CreateInteger(m_DockingPorts.GetPortCount(this));

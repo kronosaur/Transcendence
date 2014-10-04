@@ -2453,7 +2453,7 @@ class CSpaceObject : public CObject
 		inline void SetShowHighlight (void) { m_fShowHighlight = true; }
 		inline void SetVel (const CVector &vVel) { m_vVel = vVel; }
 		inline void StopTime (void) { m_fTimeStop = true; }
-		inline bool SupportsDocking (void) { return (GetDefaultDockScreen() != NULL && GetDockingPortCount() > 0); }
+		inline bool SupportsDocking (bool bPlayer = false) { return ((!bPlayer || GetDefaultDockScreen() != NULL) && GetDockingPortCount() > 0); }
 		inline void UnfreezeControls (void) { m_iControlsFrozen--; }
 		void Update (SUpdateCtx &Ctx);
 		inline void UpdateExtended (const CTimeSpan &ExtraTime) { OnUpdateExtended(ExtraTime); }
