@@ -719,7 +719,9 @@
     </None>
     <None Include="Game\Source\RPGAuxDevices.xml" />
     <None Include="Game\Source\RPGBehaviors.xml" />
-    <None Include="Game\Source\RPGCharacters.xml" />
+    <None Include="Game\Source\RPGCharacters.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Game\Source\RPGCode.xml">
       <SubType>Designer</SubType>
     </None>

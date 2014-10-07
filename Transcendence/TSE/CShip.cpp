@@ -1260,12 +1260,12 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 			}
 		}
 
-	//	Set override
+	//	Set override, just before creation.
+	//	
+	//	NOTE: We need to call SetOverride even if we have NULL for a handler 
+	//	because it also sets event flags (SetEventFlags).
 
-	if (pOverride)
-		pShip->SetOverride(pOverride);
-	else
-		pShip->SetEventFlags();
+	pShip->SetOverride(pOverride);
 
 	//	Ship interior
 

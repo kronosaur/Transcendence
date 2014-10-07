@@ -643,10 +643,6 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	if (!pType->CanBeHitByFriends())
 		pStation->SetNoFriendlyTarget();
 
-	//	Other
-
-	pStation->SetEventFlags();
-
 	//	Name
 
 	if (pType->HasRandomNames())
@@ -834,6 +830,13 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 			if (!pStation->m_pDevices[i].IsEmpty())
 				pStation->m_pDevices[i].FinishInstall(pStation);
 		}
+
+	//	Set override, just before creation.
+	//	
+	//	NOTE: We need to call SetOverride even if we have NULL for a handler 
+	//	because it also sets event flags (SetEventFlags).
+
+	pStation->SetOverride(CreateCtx.pEventHandler);
 
 	//	If we're not in the middle of creating the system, call OnCreate
 	//	(otherwise we will call OnCreate in OnSystemCreated)

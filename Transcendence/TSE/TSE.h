@@ -1061,6 +1061,7 @@ struct SObjCreateCtx
 			pLoc(NULL),
 			pOrbit(NULL),
 			pExtraData(NULL),
+			pEventHandler(NULL),
 			bCreateSatellites(false)
 		{ }
 
@@ -1072,6 +1073,7 @@ struct SObjCreateCtx
 	const CLocationDef *pLoc;				//	Optional location (may be NULL)
 	const COrbit *pOrbit;					//	Optional orbit (may be NULL)
 	CXMLElement *pExtraData;				//	Extra data for object (may be NULL)
+	CDesignType *pEventHandler;				//	Event handler for object
 
 	bool bCreateSatellites;					//	If TRUE, create satellites
 	};
@@ -1163,6 +1165,7 @@ class CSystem : public CObject
 								const CString &sDestStargateID,
 								CSpaceObject **retpStation = NULL);
 		ALERROR CreateStation (CStationType *pType,
+							   CDesignType *pEventHandler,
 							   CVector &vPos,
 							   CSpaceObject **retpStation = NULL);
 		ALERROR CreateStation (SSystemCreateCtx *pCtx, 

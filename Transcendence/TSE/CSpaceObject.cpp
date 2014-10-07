@@ -6314,7 +6314,7 @@ void CSpaceObject::SetOverride (CDesignType *pOverride)
 
 //	SetOverride
 //
-//	Sets the override
+//	Sets the override.
 	
 	{
 	m_pOverride = pOverride;

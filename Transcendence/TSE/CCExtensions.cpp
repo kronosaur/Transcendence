@@ -1969,7 +1969,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			NULL,	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateShip",				fnSystemCreateShip,	0,
-			"(sysCreateShip unid pos sovereignID [controller]) -> ship",
+			"(sysCreateShip unid pos sovereignID [eventHandler]) -> ship",
 		//		pos is either a position vector or a gate object
 		//		controller 
 		//			""					= standard
@@ -1990,8 +1990,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"ivs*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateStation",				fnSystemCreateStation,	FN_SYS_CREATE_STATION,
-			"(sysCreateStation unid pos) -> obj",
-			"iv",	PPFLAG_SIDEEFFECTS,	},
+			"(sysCreateStation unid pos [eventHandler]) -> obj",
+			"iv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"sysCreateTerritory",			fnSystemCreate,			FN_SYS_CREATE_TERRITORY,
 			"(sysCreateTerritory orbit minRadius maxRadius attributes [criteria]) -> True/Nil",
@@ -9451,7 +9451,7 @@ ICCItem *fnSystemCreateShip (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD 
 		if (pArgs->GetElement(3)->IsIdentifier())
 			pController = CreateShipController(pArgs->GetElement(3)->GetStringValue());
 		else
-			pOverride = g_pUniverse->FindShipClass(pArgs->GetElement(3)->GetIntegerValue());
+			pOverride = g_pUniverse->FindDesignType(pArgs->GetElement(3)->GetIntegerValue());
 		}
 
 	//	Validate
@@ -9551,6 +9551,7 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 
 	//	If we're creating a stargate, get some extra information
 
+	CDesignType *pEventHandler = NULL;
 	CString sStargateName;
 	CTopologyNode *pDestNode = NULL;
 	CString sDestNode;
@@ -9584,6 +9585,15 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 		else
 			sDestNode = pDestNode->GetID();
 		}
+	else
+		{
+		if (pArgs->GetCount() >= 3)
+			{
+			pEventHandler = g_pUniverse->FindDesignType(pArgs->GetElement(2)->GetIntegerValue());
+			if (pEventHandler == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid event handler"), pArgs->GetElement(2));
+			}
+		}
 
 	//	Make sure we can encounter the station
 
@@ -9603,6 +9613,7 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 		CreateCtx.pLoc = pLoc;
 		CreateCtx.pOrbit = &pLoc->GetOrbit();
 		CreateCtx.bCreateSatellites = true;
+		CreateCtx.pEventHandler = pEventHandler;
 
 		if (pSystem->CreateStation(pSysCreateCtx,
 				pType,
@@ -9615,7 +9626,7 @@ ICCItem *fnSystemCreateStation (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dw
 
 	else
 		{
-		if (pSystem->CreateStation(pType, vPos, &pStation) != NOERROR)
+		if (pSystem->CreateStation(pType, pEventHandler, vPos, &pStation) != NOERROR)
 			return pCC->CreateError(CONSTLIT("Unable to create station"), NULL);
 		}
 
