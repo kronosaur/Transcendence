@@ -835,6 +835,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Game\Source\RPGCharacterClasses.xml" />
+    <None Include="Game\Source\Ovoids.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- TABLES -->
+	
+	<SystemPartTable unid="&tbOvoidTables;">
+		
+		<!-- ASTEROID OVOIDS -->
+
+		<AsteroidOvoidBelt12>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="2d4+8" radialWidth="18">
+							<Lookup table="VariantAsteroidAndLabel"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="1"	radialWidth="18">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt12>
+
+		<AsteroidOvoidBelt25>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="2d8+16" radialWidth="30">
+							<Lookup table="VariantAsteroidAndLabel"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="2"	radialWidth="30">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt25>
+
+		<AsteroidOvoidBelt50>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="2d14+35" radialWidth="42">
+							<Lookup table="VariantAsteroidAndLabel"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="1-3"	radialWidth="42">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt50>
+		
+		<AsteroidOvoidBelt300>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="2d50+250" radialWidth="90">
+							<Lookup table="VariantAsteroidLarge"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="4-8"	radialWidth="90">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt300>
+
+		<AsteroidOvoidBelt500>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="2d125+375" radialWidth="130">
+							<Lookup table="VariantAsteroidLarge"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="6-12"	radialWidth="130">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt500>
+	
+		<AsteroidOvoidBelt1000>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="ovoid">
+						<OrbitalDistribution count="4d125+750" radialWidth="150">
+							<Lookup table="VariantAsteroidLarge"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="6-12"	radialWidth="150">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidOvoidBelt1000>
+	</SystemPartTable>
+	
+<!-- ASTEROIDS & PLANETS -->
+
+	<!-- Size A Ovoid Asteroid -->
+
+	<StationType UNID="&stOvoidAsteroidSizeA;"
+		name=				"(ovoid asteroid)"
+		scale=				"world"
+		size=				"4"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="0" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="32" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="64" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="96" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="128" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="160" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="192" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="0" imageY="224" imageWidth="32" imageHeight="32"/>
+			
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="0" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="32" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="64" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="96" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="128" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="160" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="192" imageWidth="32" imageHeight="32"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="32" imageY="224" imageWidth="32" imageHeight="32"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" table="&tbAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size B Ovoid Asteroid -->
+
+	<StationType UNID="&stOvoidAsteroidSizeB;"
+		name=				"(ovoid asteroid)"
+		scale=				"world"
+		size=				"70"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+
+		<ImageVariants>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="64" imageY="0" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="64" imageY="64" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="64" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="64" imageY="192" imageWidth="64" imageHeight="64"/>
+			
+			<Image			imageID="&rsOvoidAsteroids;" imageX="128" imageY="0" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="128" imageY="64" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+				
+			<Image			imageID="&rsOvoidAsteroids;" imageX="192" imageY="0" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="192" imageY="64" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="192" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="192" imageY="192" imageWidth="64" imageHeight="64"/>
+				
+			<Image			imageID="&rsOvoidAsteroids;" imageX="256" imageY="0" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="256" imageY="64" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="256" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsOvoidAsteroids;" imageX="256" imageY="192" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d6" table="&tbAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size C Ovoid Asteroid -->
+
+	<StationType UNID="&stOvoidAsteroidSizeC;"
+		name=				"(ovoid asteroid)"
+		scale=				"world"
+		size=				"255"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"   imageY="256"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"   imageY="344"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"   imageY="432"   imageWidth="88" imageHeight="88"/>
+		
+			<Image	imageID="&rsOvoidAsteroids;" imageX="88"   imageY="256"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="88"   imageY="344"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="88"   imageY="432"   imageWidth="88" imageHeight="88"/>
+			
+			<Image	imageID="&rsOvoidAsteroids;" imageX="176"   imageY="256"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="176"   imageY="344"   imageWidth="88" imageHeight="88"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="176"   imageY="432"   imageWidth="88" imageHeight="88"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d8" table="&tbAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Size D Ovoid Asteroid -->
+
+	<StationType UNID="&stOvoidAsteroidSizeD;"
+		name=				"(ovoid asteroid)"
+		scale=				"world"
+		size=				"590"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"asteroid, generic, inner, lifeZone, outer, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="264"  imageY="256"   imageWidth="108" imageHeight="108"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="264"  imageY="364"   imageWidth="108" imageHeight="108"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="264"  imageY="472"   imageWidth="108" imageHeight="108"/>
+		
+			<Image	imageID="&rsOvoidAsteroids;" imageX="372"  imageY="256"   imageWidth="108" imageHeight="108"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="372"  imageY="364"   imageWidth="108" imageHeight="108"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="372"  imageY="472"   imageWidth="108" imageHeight="108"/>
+		</ImageVariants>
+
+		<Items>
+			<Table>
+				<Null chance="90"/>
+				<Lookup chance="10" count="1d10" table="&tbAsteroidOre;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+		</Events>
+	</StationType>
+
+	<!-- Ovoid Planetoid Size E -->
+
+	<StationType UNID="&stOvoidPlanetoidSizeE;"
+		name=				"(ovoid planetoid)"
+		scale=				"world"
+		size=				"1000"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="320"  imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="320"  imageY="128"   imageWidth="128" imageHeight="128"/>
+		
+			<Image	imageID="&rsOvoidAsteroids;" imageX="448"  imageY="0"   imageWidth="128" imageHeight="128"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="448"  imageY="128"   imageWidth="128" imageHeight="128"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Ovoid Planetoid Size F -->
+
+	<StationType UNID="&stOvoidPlanetoidSizeF;"
+		name=				"(ovoid planetoid)"
+		scale=				"world"
+		size=				"2450"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, planetoid, ovoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"  imageY="580"   imageWidth="156" imageHeight="156"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="156"  imageY="580"   imageWidth="156" imageHeight="156"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="312"  imageY="580"   imageWidth="156" imageHeight="156"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="468"  imageY="580"   imageWidth="156" imageHeight="156"/>
+		</ImageVariants>
+	</StationType>
+
+	<!-- Ovoid Planetoid Size G -->
+
+	<StationType UNID="&stOvoidPlanetoidSizeG;"
+		name=				"(ovoid planetoid)"
+		scale=				"world"
+		size=				"3750"
+		sovereign=			"&svIndependent;"
+
+		attributes=			"generic, inner, lifeZone, outer, ovoid, planetoid"
+
+		ejectaType=			"&vtStoneAsteroidEjecta;"
+		>
+		<Names noArticle="true">Asteroid %1%0%0%0%0%0</Names>
+		
+		<ImageVariants>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"  imageY="736"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="172"  imageY="736"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="344"  imageY="736"   imageWidth="172" imageHeight="172"/>
+			
+			<Image	imageID="&rsOvoidAsteroids;" imageX="0"  imageY="908"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="172"  imageY="908"   imageWidth="172" imageHeight="172"/>
+			<Image	imageID="&rsOvoidAsteroids;" imageX="344"  imageY="908"   imageWidth="172" imageHeight="172"/>
+		</ImageVariants>
+	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsOvoidAsteroids;"		bitmap="Resources\OvoidAsteroids.jpg"	bitmask="Resources\OvoidAsteroidsMask.bmp"		loadOnUse="true"/>
+	
+</TranscendenceModule>

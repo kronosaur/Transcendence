@@ -791,6 +791,59 @@
 			</Group>
 		</MetallicAsteroidSystem>
 
+		<!-- OVOID BELT SYSTEM =================================================
+
+			Asteroid Belt
+			Rocky
+
+		-->
+
+		<OvoidBeltSystem>
+			<Group>
+				<Code>
+					(trnCreateStarAndZones aOrbit (random (list &stStarClassK5; &stStarClassK0;)) {
+						metallicComp:	'(30 30 30)
+						organicComp:	'( 5  5  0)
+						rockyComp:		'(60 60 60)
+						waterComp:		'( 5  5 10)
+						})
+				</Code>
+				
+				<AddAttribute attributes="asteroidBeltSystem, KTypeSystem"/>
+
+				<!-- Worlds -->
+
+				<Orbitals count="5-7" BodeDistanceStart="1d12+70" BodeDistanceEnd="1d110+760" angle="random">
+					<Variants>
+						<Table maxRadius="300">
+							<Lookup chance="20" table="DesertPrimary"/>
+							<Lookup chance="10" table="MetallicPrimary"/>
+							<Lookup chance="50" table="RockyPrimary"/>
+							<Lookup chance="5"  table="HydrogenGasGiantPrimary"/>
+							<Lookup chance="15" table="MethaneGasGiantPrimary"/>
+						</Table>
+						<Lookup	maxRadius="450" table="AsteroidOvoidBelt1000"/>
+						<Table maxRadius="600">
+							<Lookup chance="2"  table="DesertPrimary"/>
+							<Lookup chance="6"  table="RockyPrimary"/>
+							<Lookup chance="5"  table="IcePrimary"/>
+							<Lookup chance="80" table="GasGiantPrimary"/>
+							<Lookup chance="4"  table="AsteroidOvoidBelt12"/>
+							<Lookup chance="3"  table="AsteroidOvoidBelt25"/>
+						</Table>
+						<Table maxRadius="2000">
+							<Lookup chance="10" table="DesertPrimary"/>
+							<Lookup chance="25" table="IcePrimary"/>
+							<Lookup chance="30" table="RockyPrimary"/>
+							<Lookup chance="20" table="GasGiantPrimary"/>
+							<Lookup chance="10" table="AsteroidOvoidBelt12"/>
+							<Lookup chance="5"	table="AsteroidOvoidBelt25"/>
+						</Table>
+					</Variants>
+				</Orbitals>
+			</Group>
+		</OvoidBeltSystem>
+
 		<!-- PRIMORDIAL SYSTEM =================================================
 
 			Primordial (Organic)

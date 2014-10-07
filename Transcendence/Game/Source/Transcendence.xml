@@ -1093,6 +1093,15 @@
 	<!ENTITY stStarClassA5				"0x0002007A">
 	<!ENTITY stStarClassA0				"0x0002007B">
 	
+	<!ENTITY rsOvoidAsteroids			"0x00020080">
+	<!ENTITY stOvoidAsteroidSizeA		"0x00020081">
+	<!ENTITY stOvoidAsteroidSizeB		"0x00020082">
+	<!ENTITY stOvoidAsteroidSizeC		"0x00020083">
+	<!ENTITY stOvoidAsteroidSizeD		"0x00020084">
+	<!ENTITY stOvoidPlanetoidSizeE		"0x00020085">
+	<!ENTITY stOvoidPlanetoidSizeF		"0x00020086">
+	<!ENTITY stOvoidPlanetoidSizeG		"0x00020087">
+	<!ENTITY tbOvoidTables				"0x00020088">
 	
 	<!-- RESERVED 0003 -->
 	<!-- RESERVED 0004 -->
@@ -2211,6 +2220,7 @@
 		<Module filename="Ice.xml"/>
 		<Module filename="Metallic.xml"/>
 		<Module filename="Mining.xml"/>
+		<Module filename="Ovoids.xml"/>
 		<Module filename="Neurohack.xml"/>
 		<Module filename="Primordial.xml"/>
 		<Module filename="Rocky.xml"/>

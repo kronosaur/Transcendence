@@ -426,7 +426,7 @@
 
 		<AsteroidIceArc50>
 			<Variant variant="lifeZone">
-				<Variant variant="volcanic">
+				<Variant variant="ice">
 					<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
 						<Lookup table="VariantAsteroid"/>
 					</OrbitalDistribution>
@@ -440,7 +440,7 @@
 
 		<AsteroidIceArc100>
 			<Variant variant="lifeZone">
-				<Variant variant="volcanic">
+				<Variant variant="ice">
 					<OrbitalDistribution count="2d25+75" arcLength="500" radialWidth="60">
 						<Lookup table="VariantAsteroid"/>
 					</OrbitalDistribution>
@@ -454,7 +454,7 @@
 
 		<AsteroidIceArc200>
 			<Variant variant="lifeZone">
-				<Variant variant="volcanic">
+				<Variant variant="ice">
 					<OrbitalDistribution count="2d50+150" arcLength="400" radialWidth="84">
 						<Lookup table="VariantAsteroid"/>
 					</OrbitalDistribution>
@@ -812,6 +812,32 @@
 			</LocationCriteriaTable>
 		</LocationDefinition>
 
+		<!-- Region Morphology
+
+			This definition should be invoked inside a Lookup that defines a
+			Morphology subtable. The Morphology subtable may refer to region.
+
+			REQUIRES
+
+			_Morphology:		Directive that will receive proper variant
+								definitions.
+
+		-->
+		
+		<RegionDefinition>
+			<LocationCriteriaTable>
+				<Variant criteria="*innerSystem"	variant="inner">
+					<Lookup table="_Morphology"/>
+				</Variant>
+				<Variant criteria="*lifeZone"	variant="lifeZone">
+					<Lookup table="_Morphology"/>
+				</Variant>
+				<Variant criteria="*outerSystem"	variant="outer">
+					<Lookup table="_Morphology"/>
+				</Variant>
+			</LocationCriteriaTable>
+		</RegionDefinition>
+		
 		<!-- Variant Asteroids & Planetoids
 		
 			These definitions must be invoked with a double Variant directive.
@@ -828,6 +854,18 @@
 				<Lookup chance="1"		table="VariantSizeD"/>
 			</Table>
 		</VariantAsteroid>
+		
+		<VariantAsteroidLarge>
+			<Table>
+				<Lookup chance="35"		table="VariantSizeA"/>
+				<Lookup chance="25"		table="VariantSizeB"/>
+				<Lookup chance="15"		table="VariantSizeC"/>
+				<Lookup chance="12"		table="VariantSizeD"/>
+				<Lookup chance="8"		table="VariantSizeE"/>
+				<Lookup chance="4"		table="VariantSizeF"/>
+				<Lookup chance="1"		table="VariantSizeG"/>
+			</Table>
+		</VariantAsteroidLarge>
 		
 		<VariantAsteroidAndLabel>
 			<Table>
@@ -865,6 +903,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
@@ -872,6 +911,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
@@ -879,6 +919,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:A;" locationAttribs="*" includeAll="true"/>
@@ -891,6 +932,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
@@ -898,6 +940,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
@@ -905,6 +948,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:B;" locationAttribs="*" includeAll="true"/>
@@ -917,6 +961,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
@@ -924,6 +969,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
@@ -931,6 +977,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:C;" locationAttribs="*" includeAll="true"/>
@@ -943,6 +990,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
@@ -950,6 +998,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
@@ -957,6 +1006,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:D;" locationAttribs="*" includeAll="true"/>
@@ -969,6 +1019,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
@@ -976,6 +1027,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZOne; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
@@ -983,6 +1035,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:E;" locationAttribs="*" includeAll="true"/>
@@ -995,6 +1048,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
@@ -1002,6 +1056,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
@@ -1009,6 +1064,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:F;" locationAttribs="*" includeAll="true"/>
@@ -1021,6 +1077,7 @@
 				<VariantTable variant="inner">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *inner; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
@@ -1028,6 +1085,7 @@
 				<VariantTable variant="lifeZone">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *lifeZone; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
@@ -1035,6 +1093,7 @@
 				<VariantTable variant="outer">
 					<RandomStation variant="ice"		stationCriteria="*ice;			*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="metallic"	stationCriteria="*metallic;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
+					<RandomStation variant="ovoid"		stationCriteria="*ovoid;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="primordial" stationCriteria="*primordial;	*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="rocky"		stationCriteria="*rocky;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
 					<RandomStation variant="volcanic"	stationCriteria="*volcanic;		*generic; *outer; *sizeClass:G;" locationAttribs="*" includeAll="true"/>
