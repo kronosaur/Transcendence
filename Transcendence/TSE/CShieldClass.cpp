@@ -866,6 +866,9 @@ int CShieldClass::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDev
 
 	{
 	const DamageDesc *pDamage = pWeapon->GetDamageDesc(CItemCtx(pAttacker, pWeapon));
+	if (pDamage == NULL)
+		return 100;
+
 	int iBonus = m_DamageAdj.GetHPBonus(pDamage->GetDamageType());
 	if (iBonus <= -100)
 		return -1;
