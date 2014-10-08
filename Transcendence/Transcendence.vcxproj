@@ -838,6 +838,7 @@
     </None>
     <None Include="Game\Source\RPGCharacterClasses.xml" />
     <None Include="Game\Source\Ovoids.xml" />
+    <None Include="Game\Source\RPGDialog.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

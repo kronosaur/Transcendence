@@ -74,6 +74,7 @@ ICCItem *fnPlySetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData)
 #define FN_SCR_CONTROL_VALUE		19
 #define FN_SCR_TRANSLATE			20
 #define FN_SCR_DESC_TRANSLATE		21
+#define FN_SCR_REMOVE_ACTION		22
 
 ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnScrGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -180,6 +181,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"scrRefreshScreen",				fnScrSet,		FN_SCR_REFRESH_SCREEN,
 			"(scrRefreshScreen screen)",
 			"i",	PPFLAG_SIDEEFFECTS, },
+
+		{	"scrRemoveAction",				fnScrSet,		FN_SCR_REMOVE_ACTION,
+			"(scrRemoveAction screen actionID)",
+			"is",	PPFLAG_SIDEEFFECTS, },
 
 		{	"scrRemoveItem",				fnScrItem,		FN_SCR_REMOVE_ITEM,	"",		NULL,	PPFLAG_SIDEEFFECTS, },
 		//	(scrRemoveItem screen count) => item
@@ -1548,6 +1553,24 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				return pCC->CreateNil();
 
 			g_pTrans->GetModel().RefreshScreenSession();
+			return pCC->CreateTrue();
+			}
+
+		case FN_SCR_REMOVE_ACTION:
+			{
+			//	Only if valid
+
+			if (!pScreen->IsValid())
+				return pCC->CreateNil();
+
+			//	Parameters
+
+			int iAction;
+			CDockScreenActions &Actions = pScreen->GetActions();
+			if (!Actions.FindByID(pArgs->GetElement(1), &iAction))
+				return pCC->CreateError(CONSTLIT("Invalid action ID"), pArgs->GetElement(1));
+
+			Actions.RemoveAction(iAction);
 			return pCC->CreateTrue();
 			}
 

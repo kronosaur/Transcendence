@@ -985,6 +985,7 @@
 	<!ENTITY dsRPGDockServicesCompatible	"0x0001002A">
 	<!ENTITY dsRPGCommoditiesExchange	"0x0001002B">
 	<!ENTITY dsRPGCommoditiesExchangeBuy	"0x0001002C">
+	<!ENTITY dsRPGDialog				"0x0001002D">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	
@@ -2200,6 +2201,7 @@
 		<Module filename="RPGCompatibility.xml"/>
 		<Module filename="RPGArmorDockScreens.xml"/>
 		<Module filename="RPGDeviceDockScreens.xml"/>
+		<Module filename="RPGDialog.xml"/>
 		<Module filename="RPGDockScreens.xml"/>
 		<Module filename="RPGMissions.xml"/>
 		<Module filename="RPGPlayer.xml"/>

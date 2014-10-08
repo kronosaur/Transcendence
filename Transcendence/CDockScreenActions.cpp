@@ -585,6 +585,25 @@ void CDockScreenActions::ParseLabelDesc (const CString &sLabelDesc, CString *ret
 		*retsKey = sKey;
 	}
 
+ALERROR CDockScreenActions::RemoveAction (int iAction)
+
+//	RemoveAction
+//
+//	Removes the given action
+
+	{
+	SActionDesc *pAction = &m_Actions[iAction];
+	if (pAction->pCode)
+		{
+		pAction->pCode->Discard(&g_pUniverse->GetCC());
+		pAction->pCode = NULL;
+		}
+
+	m_Actions.Delete(iAction);
+
+	return NOERROR;
+	}
+
 void CDockScreenActions::SetEnabled (int iAction, bool bEnabled)
 
 //	SetEnabled

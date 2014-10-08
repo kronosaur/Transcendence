@@ -123,6 +123,7 @@ class CDockScreenActions
 		inline bool IsEnabled (int iAction) const { return m_Actions[iAction].bEnabled; }
 		bool IsSpecial (int iAction, SpecialAttribs iSpecial);
 		inline bool IsVisible (int iAction) const { return m_Actions[iAction].bVisible; }
+		ALERROR RemoveAction (int iAction);
 		inline void SetButton (int iAction, CGButtonArea *pButton) { m_Actions[iAction].pButton = pButton; }
 		void SetEnabled (int iAction, bool bEnabled = true);
 		void SetLabel (int iAction, const CString &sLabelDesc, const CString &sKey);

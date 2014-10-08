@@ -737,5 +737,8 @@
     <Xml Include="Game\Source\Ovoids.xml">
       <Filter>XML Files\Universe Library</Filter>
     </Xml>
+    <Xml Include="Game\Source\RPGDialog.xml">
+      <Filter>XML Files\RPG Library</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

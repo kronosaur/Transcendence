@@ -271,6 +271,7 @@
 						(not objID)
 							(block Nil
 								(setq shipObj (sysCreateShip shipClassUNID pos (typGetStaticData charType 'Sovereign)))
+								(objSetKnown shipObj)
 								(typSetData charType 'objID (objGetId shipObj))
 								(typSetData charType 'screenData Nil)
 								)
