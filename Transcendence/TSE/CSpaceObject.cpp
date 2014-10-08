@@ -1736,7 +1736,7 @@ void CSpaceObject::FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject
 		}
 	}
 
-bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority)
+bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority, ICCItem **retpData)
 
 //	FireGetDockScreen
 //
@@ -1767,12 +1767,14 @@ bool CSpaceObject::FireGetDockScreen (CString *retsScreen, int *retiPriority)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = pResult->GetElement(1)->GetIntegerValue();
+			*retpData = (pResult->GetCount() >= 3 ? pResult->GetElement(2)->Reference() : NULL);
 			bResult = true;
 			}
 		else if (pResult->GetCount() >= 1)
 			{
 			*retsScreen = pResult->GetElement(0)->GetStringValue();
 			*retiPriority = 0;
+			*retpData = NULL;
 			bResult = true;
 			}
 		else
@@ -2981,16 +2983,22 @@ CDesignType *CSpaceObject::GetFirstDockScreen (CString *retsScreen, ICCItem **re
 
 	CString sCustomScreen;
 	int iCustomPriority;
-	if (FireGetDockScreen(&sCustomScreen, &iCustomPriority)
-			&& iCustomPriority > iPriority)
+	ICCItem *pCustomData;
+	if (FireGetDockScreen(&sCustomScreen, &iCustomPriority, &pCustomData))
 		{
-		sScreen = sCustomScreen;
-		iPriority = iCustomPriority;
-
-		if (pData)
+		if (iCustomPriority > iPriority)
 			{
-			pData->Discard(&CC);
-			pData = NULL;
+			sScreen = sCustomScreen;
+			iPriority = iCustomPriority;
+
+			if (pData)
+				pData->Discard(&CC);
+
+			pData = pCustomData;
+			}
+		else
+			{
+			pCustomData->Discard(&CC);
 			}
 		}
 

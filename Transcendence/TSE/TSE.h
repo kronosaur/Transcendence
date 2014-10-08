@@ -2236,7 +2236,7 @@ class CSpaceObject : public CObject
 		void FireCustomItemEvent (const CString &sEvent, const CItem &Item, ICCItem *pData, ICCItem **retpResult = NULL);
 		void FireCustomOverlayEvent (const CString &sEvent, DWORD dwID, ICCItem *pData, ICCItem **retpResult = NULL);
 		void FireCustomShipOrderEvent (const CString &sEvent, CSpaceObject *pShip, ICCItem **retpResult = NULL);
-		bool FireGetDockScreen (CString *retsScreen, int *retiPriority);
+		bool FireGetDockScreen (CString *retsScreen, int *retiPriority, ICCItem **retpData);
 		void FireGetExplosionType (SExplosionType *retExplosion);
 		void FireOnAttacked (SDamageCtx &Ctx);
 		void FireOnAttackedByPlayer (void);
