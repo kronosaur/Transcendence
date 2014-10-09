@@ -1270,6 +1270,7 @@ class CStation : public CSpaceObject
 		void SetMapOrbit (const COrbit &oOrbit);
 		inline void SetMass (Metric rMass) { m_rMass = rMass; }
 		inline void SetMaxStructuralHitPoints (int iHP) { m_iMaxStructuralHP = iHP; }
+		inline void SetNoConstruction (void) { m_fNoConstruction = true; }
 		inline void SetNoMapLabel (void) { m_fNoMapLabel = true; }
 		inline void SetNoReinforcements (void) { m_fNoReinforcements = true; }
 		inline void SetReconned (void) { m_fReconned = true; }
@@ -1503,7 +1504,7 @@ class CStation : public CSpaceObject
 		DWORD m_fDisarmedByOverlay:1;			//	If TRUE, an overlay has disarmed us
 		DWORD m_fParalyzedByOverlay:1;			//	If TRUE, an overlay has paralyzed us
 		DWORD m_fNoBlacklist:1;					//	If TRUE, do not blacklist player on friendly fire
-		DWORD m_fSpare6:1;
+		DWORD m_fNoConstruction:1;				//	Do not build new ships
 		DWORD m_fSpare7:1;
 		DWORD m_fSpare8:1;
 

@@ -36,6 +36,8 @@
 #define PROPERTY_PARALLAX						CONSTLIT("parallax")
 #define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
 #define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
+#define PROPERTY_SHIP_CONSTRUCTION_ENABLED		CONSTLIT("shipConstructionEnabled")
+#define PROPERTY_SHIP_REINFORCEMENT_ENABLED		CONSTLIT("shipReinforcementEnabled")
 #define PROPERTY_STRUCTURAL_HP					CONSTLIT("structuralHP")
 
 #define STR_TRUE								CONSTLIT("true")
@@ -609,6 +611,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	pStation->m_fNoMapLabel = false;
 	pStation->m_fActive = pType->IsActive();
 	pStation->m_fNoReinforcements = false;
+	pStation->m_fNoConstruction = false;
 	pStation->m_fRadioactive = false;
 	pStation->m_xMapLabel = 10;
 	pStation->m_yMapLabel = -6;
@@ -1548,6 +1551,12 @@ ICCItem *CStation::GetProperty (const CString &sName)
 
 		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
 		}
+
+	else if (strEquals(sName, PROPERTY_SHIP_CONSTRUCTION_ENABLED))
+		return CC.CreateBool(m_fNoConstruction);
+
+	else if (strEquals(sName, PROPERTY_SHIP_REINFORCEMENT_ENABLED))
+		return CC.CreateBool(m_fNoReinforcements);
 
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
 		return CC.CreateInteger(m_iStructuralHP);
@@ -3018,6 +3027,7 @@ void CStation::OnReadFromStream (SLoadCtx &Ctx)
 	m_fDisarmedByOverlay =	((dwLoad & 0x00001000) ? true : false);
 	m_fParalyzedByOverlay =	((dwLoad & 0x00002000) ? true : false);
 	m_fNoBlacklist =		((dwLoad & 0x00004000) ? true : false);
+	m_fNoConstruction =		((dwLoad & 0x00008000) ? true : false);
 
 	//	Init name flags
 
@@ -3397,6 +3407,7 @@ void CStation::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fDisarmedByOverlay ?	0x00001000 : 0);
 	dwSave |= (m_fParalyzedByOverlay ?	0x00002000 : 0);
 	dwSave |= (m_fNoBlacklist ?			0x00004000 : 0);
+	dwSave |= (m_fNoConstruction ?		0x00008000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
@@ -3947,6 +3958,16 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 
 		return true;
 		}
+	else if (strEquals(sName, PROPERTY_SHIP_CONSTRUCTION_ENABLED))
+		{
+		m_fNoConstruction = pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_SHIP_REINFORCEMENT_ENABLED))
+		{
+		m_fNoReinforcements = pValue->IsNil();
+		return true;
+		}
 	else if (strEquals(sName, PROPERTY_STRUCTURAL_HP))
 		{
 		//	Nil means that we don't want to make a change
@@ -4127,6 +4148,7 @@ void CStation::UpdateReinforcements (int iTick)
 	//	Construction
 
 	if (m_pType->GetShipConstructionRate()
+			&& !m_fNoConstruction
 			&& (iTick % m_pType->GetShipConstructionRate()) == 0)
 		{
 		//	Iterate over all ships and count the number that are

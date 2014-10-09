@@ -1394,6 +1394,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'parallax\n"
 			"   'playerBlacklisted\n"
 			"   'repairArmorMaxLevel\n"
+			"   'shipConstructionEnabled\n"
+			"   'shipReinforcementEnabled\n"
 			"   'structuralHP\n"
 			"\n"
 			"NOTE: All data fields (accessed via objGetDataField) are also valid properties.\n",
@@ -1647,6 +1649,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'orbit orbit|Nil\n"
 			"   'parallax factor\n"
 			"   'playerBlacklisted True|Nil\n"
+			"   'shipConstructionEnabled True|Nil\n"
+			"   'shipReinforcementEnabled True|Nil\n"
 			"   'structuralHP hitPoints\n",
 
 			"isv",	PPFLAG_SIDEEFFECTS,	},

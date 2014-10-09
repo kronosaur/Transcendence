@@ -90,6 +90,7 @@
 #define MIN_DIST_ATTRIB					CONSTLIT("minDist")
 #define MIN_RADIUS_ATTRIB				CONSTLIT("minRadius")
 #define NAME_ATTRIB						CONSTLIT("name")
+#define NO_CONSTRUCTION_ATTRIB			CONSTLIT("noConstruction")
 #define NO_MAP_LABEL_ATTRIB				CONSTLIT("noMapLabel")
 #define NO_OVERLAP_ATTRIB				CONSTLIT("noOverlap")
 #define NO_RANDOM_ENCOUNTERS_ATTRIB		CONSTLIT("noRandomEncounters")
@@ -3353,6 +3354,9 @@ ALERROR ModifyCreatedStation (SSystemCreateCtx *pCtx, CStation *pStation, CXMLEl
 		pStation->SetNoMapLabel();
 
 	//	No reinforcements
+
+	if (pDesc->GetAttributeBool(NO_CONSTRUCTION_ATTRIB))
+		pStation->SetNoConstruction();
 
 	if (pDesc->GetAttributeBool(NO_REINFORCEMENTS_ATTRIB))
 		pStation->SetNoReinforcements();
