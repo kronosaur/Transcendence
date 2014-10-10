@@ -748,6 +748,10 @@ struct SViewportPaintCtx
 	DWORD dwSpare:24;
 
 	CSpaceObject *pObj;					//	Current object being painted
+	RECT rcObjBounds;					//	Object bounds in screen coordinates.
+	int yAnnotations;					//	Start of free area for annotations (This start at the
+										//		bottom of the object bounds, and each annotation
+										//		should increment the value appropriately.
 
 	//	May be modified by callers
 
@@ -4652,10 +4656,20 @@ class CEffectCreator : public CDesignType
 class COverlayType : public CDesignType
 	{
 	public:
+		enum ECounterDisplay
+			{
+			counterNone,						//	Do not show a counter
+			counterProgress,					//	Show as progress bar
+			};
+
 		COverlayType(void);
 		virtual ~COverlayType(void);
 
 		bool AbsorbsWeaponFire (CInstalledDevice *pWeapon);
+		inline WORD GetCounterColor (void) const { return m_wCounterColor; }
+		inline const CString &GetCounterLabel (void) const { return m_sCounterLabel; }
+		inline int GetCounterMax (void) const { return m_iCounterMax; }
+		inline ECounterDisplay GetCounterStyle (void) const { return m_iCounterType; }
 		inline bool Disarms (void) const { return m_fDisarmShip; }
 		int GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx);
 		inline CEffectCreator *GetEffectCreator (void) const { return m_pEffect; }
@@ -4687,6 +4701,11 @@ class COverlayType : public CDesignType
 
 		CEffectCreator *m_pEffect;				//	Effect for field
 		CEffectCreator *m_pHitEffect;			//	Effect when field is hit by damage
+
+		ECounterDisplay m_iCounterType;			//	Type of counter to paint
+		CString m_sCounterLabel;				//	Label for counter
+		int m_iCounterMax;						//	Max value of counter (for progress bar)
+		WORD m_wCounterColor;					//	Counter color
 
 		DWORD m_fHasOnUpdateEvent:1;			//	TRUE if we have OnUpdate
 		DWORD m_fAltHitEffect:1;				//	If TRUE, hit effect replaces normal effect

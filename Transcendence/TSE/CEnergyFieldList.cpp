@@ -307,6 +307,26 @@ CVector CEnergyFieldList::GetPos (CSpaceObject *pSource, DWORD dwID)
 	return CVector();
 	}
 
+ICCItem *CEnergyFieldList::GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, DWORD dwID, const CString &sName)
+
+//	GetProperty
+//
+//	Returns the property
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+
+		if (pField->GetID() == dwID && !pField->IsDestroyed())
+			return pField->GetProperty(pCCCtx, pSource, sName);
+
+		pField = pField->GetNext();
+		}
+
+	return g_pUniverse->GetCC().CreateNil();
+	}
+
 int CEnergyFieldList::GetRotation (DWORD dwID)
 
 //	GetRotation
@@ -378,6 +398,23 @@ void CEnergyFieldList::Paint (CG16bitImage &Dest, int iScale, int x, int y, SVie
 		{
 		if (!pField->IsDestroyed())
 			pField->Paint(Dest, iScale, x, y, Ctx);
+
+		pField = pField->GetNext();
+		}
+	}
+
+void CEnergyFieldList::PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintAnnotations
+//
+//	Paints all field annotations
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->PaintAnnotations(Dest, x, y, Ctx);
 
 		pField = pField->GetNext();
 		}
@@ -503,6 +540,25 @@ void CEnergyFieldList::SetPos (CSpaceObject *pSource, DWORD dwID, const CVector 
 
 		pField = pField->GetNext();
 		}
+	}
+
+bool CEnergyFieldList::SetProperty (CSpaceObject *pSource, DWORD dwID, const CString &sName, ICCItem *pValue)
+
+//	SetProperty
+//
+//	Sets a property.
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (pField->GetID() == dwID && !pField->IsDestroyed())
+			return pField->SetProperty(pSource, sName, pValue);
+
+		pField = pField->GetNext();
+		}
+
+	return false;
 	}
 
 void CEnergyFieldList::SetRotation (DWORD dwID, int iRotation)

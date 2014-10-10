@@ -211,6 +211,8 @@ ICCItem *fnObjAddRandomItems (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD
 #define FN_OBJ_GET_PLAYER_PRICE_ADJ	114
 #define FN_OBJ_CAN_INSTALL_ITEM		115
 #define FN_OBJ_ADD_ITEM				116
+#define FN_OBJ_GET_OVERLAY_PROPERTY	117
+#define FN_OBJ_SET_OVERLAY_PROPERTY	118
 
 #define NAMED_ITEM_SELECTED_WEAPON		CONSTLIT("selectedWeapon")
 #define NAMED_ITEM_SELECTED_LAUNCHER	CONSTLIT("selectedLauncher")
@@ -452,6 +454,7 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_TRANSLATE				11
 #define FN_DESIGN_MATCHES				12
 #define FN_DESIGN_FIRE_TYPE_EVENT		13
+#define FN_DESIGN_HAS_EVENT				14
 
 ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -1326,6 +1329,19 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"(objGetOverlayPos obj overlayID) -> vector",
 			"ii",	0,	},
 
+		{	"objGetOverlayProperty",			fnObjGet,		FN_OBJ_GET_OVERLAY_PROPERTY,
+			"(objSetOverlayPos obj overlayID property) -> value\n\n"
+			
+			"property\n\n"
+			
+			"   'counter\n"
+			"   'counterLabel\n"
+			"   'pos\n"
+			"   'rotation\n"
+			"   'type\n"
+			,
+			"iis",	0,	},
+
 		{	"objGetOverlayRotation",	fnObjGet,		FN_OBJ_GET_OVERLAY_ROTATION,
 			"(objGetOverlayRotation obj overlayID) -> rotation",
 			"ii",	0,	},
@@ -1616,6 +1632,18 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"objSetOverlayPos",			fnObjGet,		FN_OBJ_SET_OVERLAY_POSITION,
 			"(objSetOverlayPos obj overlayID pos)",
 			"iiv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"objSetOverlayProperty",			fnObjGet,		FN_OBJ_SET_OVERLAY_PROPERTY,
+			"(objSetOverlayPos obj overlayID property value)\n\n"
+			
+			"property:\n\n"
+			
+			"   'counter\n"
+			"   'counterLabel\n"
+			"   'pos position\n"
+			"   'rotation angle\n",
+
+			"iisv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"objSetOverlayRotation",		fnObjGet,		FN_OBJ_SET_OVERLAY_ROTATION,
 			"(objSetOverlayRotation obj overlayID rotation)",
@@ -2329,6 +2357,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"typHasAttribute",				fnDesignGet,		FN_DESIGN_HAS_ATTRIBUTE,
 			"(typHasAttribute unid attrib) -> True/Nil",
+			"is",	0,	},
+
+		{	"typHasEvent",				fnDesignGet,		FN_DESIGN_HAS_EVENT,
+			"(typHasEvent unid event) -> True/Nil",
 			"is",	0,	},
 
 		{	"typIncData",				fnDesignGet,		FN_DESIGN_INC_GLOBAL_DATA,
@@ -3099,6 +3131,9 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_DESIGN_HAS_ATTRIBUTE:
 			return pCC->CreateBool(pType->HasAttribute(pArgs->GetElement(1)->GetStringValue()));
+
+		case FN_DESIGN_HAS_EVENT:
+			return pCC->CreateBool(pType->FindEventHandler(pArgs->GetElement(1)->GetStringValue()));
 
 		case FN_DESIGN_INC_GLOBAL_DATA:
 			{
@@ -5128,6 +5163,13 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			return CreateListFromVector(*pCC, pObj->GetOverlayPos(dwID));
 			}
 
+		case FN_OBJ_GET_OVERLAY_PROPERTY:
+			{
+			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
+			CString sProperty = pArgs->GetElement(2)->GetStringValue();
+			return pObj->GetOverlayProperty(pCtx, dwID, sProperty);
+			}
+
 		case FN_OBJ_GET_OVERLAY_ROTATION:
 			{
 			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
@@ -5389,6 +5431,22 @@ ICCItem *fnObjGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			//	Do it
 
 			pObj->SetOverlayPos(dwID, vPos);
+			return pCC->CreateTrue();
+			}
+
+		case FN_OBJ_SET_OVERLAY_PROPERTY:
+			{
+			DWORD dwID = (DWORD)pArgs->GetElement(1)->GetIntegerValue();
+
+			CString sError;
+			if (!pObj->SetOverlayProperty(dwID, pArgs->GetElement(2)->GetStringValue(), pArgs->GetElement(3), &sError))
+				{
+				if (sError.IsBlank())
+					return pCC->CreateError(CONSTLIT("Invalid property"), pArgs->GetElement(2));
+				else
+					return pCC->CreateError(sError);
+				}
+
 			return pCC->CreateTrue();
 			}
 

@@ -986,6 +986,7 @@ class CShip : public CSpaceObject
 		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { m_EnergyFields.GetImpact(this, retImpact); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_EnergyFields.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_EnergyFields.GetPos(this, dwID); }
+		virtual ICCItem *GetOverlayProperty (CCodeChainCtx *pCCCtx, DWORD dwID, const CString &sName) { return m_EnergyFields.GetProperty(pCCCtx, this, dwID, sName); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_EnergyFields.GetRotation(dwID); }
 		virtual COverlayType *GetOverlayType (DWORD dwID) { return m_EnergyFields.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void) { return CSystem::layerShips; }
@@ -1066,6 +1067,7 @@ class CShip : public CSpaceObject
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_EnergyFields.SetData(dwID, sAttribute, sData); }
 		virtual bool SetOverlayEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue) { return m_EnergyFields.SetEffectProperty(dwID, sProperty, pValue); }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { m_EnergyFields.SetPos(this, dwID, vPos); }
+		virtual bool SetOverlayProperty (DWORD dwID, const CString &sName, ICCItem *pValue, CString *retsError) { return m_EnergyFields.SetProperty(this, dwID, sName, pValue); }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_EnergyFields.SetRotation(dwID, iRotation); }
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
@@ -1086,6 +1088,7 @@ class CShip : public CSpaceObject
 		virtual CSpaceObject *OnGetOrderGiver (void);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { m_pController->OnPaintSRSEnhancements(Dest, Ctx); }
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
@@ -1329,6 +1332,7 @@ class CStation : public CSpaceObject
 		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { m_Overlays.GetImpact(this, retImpact); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { m_Overlays.GetList(List); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return m_Overlays.GetPos(this, dwID); }
+		virtual ICCItem *GetOverlayProperty (CCodeChainCtx *pCCCtx, DWORD dwID, const CString &sName) { return m_Overlays.GetProperty(pCCCtx, this, dwID, sName); }
 		virtual int GetOverlayRotation (DWORD dwID) { return m_Overlays.GetRotation(dwID); }
 		virtual COverlayType *GetOverlayType (DWORD dwID) { return m_Overlays.GetType(dwID); }
 		virtual CSystem::LayerEnum GetPaintLayer (void);
@@ -1397,6 +1401,7 @@ class CStation : public CSpaceObject
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { m_Overlays.SetData(dwID, sAttribute, sData); }
 		virtual bool SetOverlayEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue) { return m_Overlays.SetEffectProperty(dwID, sProperty, pValue); }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { m_Overlays.SetPos(this, dwID, vPos); }
+		virtual bool SetOverlayProperty (DWORD dwID, const CString &sName, ICCItem *pValue, CString *retsError) { return m_Overlays.SetProperty(this, dwID, sName, pValue); }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_Overlays.SetRotation(dwID, iRotation); }
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
@@ -1415,6 +1420,7 @@ class CStation : public CSpaceObject
 		virtual EDamageResults OnDamage (SDamageCtx &Ctx);
 		virtual void OnObjEnteredGate (CSpaceObject *pObj, CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		virtual void OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		virtual void OnReadFromStream (SLoadCtx &Ctx);
 		virtual void OnSetEventFlags (void);

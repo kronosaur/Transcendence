@@ -15,8 +15,17 @@
 
 #define LIFETIME_ATTRIB							CONSTLIT("lifetime")
 
+#define PROPERTY_COUNTER						CONSTLIT("counter")
+#define PROPERTY_COUNTER_LABEL					CONSTLIT("counterLabel")
+#define PROPERTY_POS							CONSTLIT("pos")
+#define PROPERTY_ROTATION						CONSTLIT("rotation")
+#define PROPERTY_TYPE							CONSTLIT("type")
+
+const int ANNOTATION_INNER_SPACING_Y =			2;
+
 CEnergyField::CEnergyField (void) : 
 		m_pType(NULL),
+		m_iCounter(0),
 		m_pPainter(NULL),
 		m_pHitPainter(NULL),
 		m_fDestroyed(false),
@@ -449,6 +458,34 @@ CVector CEnergyField::GetPos (CSpaceObject *pSource)
 		return pSource->GetPos();
 	}
 
+ICCItem *CEnergyField::GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, const CString &sName)
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_COUNTER))
+		return CC.CreateInteger(m_iCounter);
+
+	else if (strEquals(sName, PROPERTY_COUNTER_LABEL))
+		return CC.CreateString(!m_sMessage.IsBlank() ? m_sMessage : m_pType->GetCounterLabel());
+
+	else if (strEquals(sName, PROPERTY_POS))
+		return CreateListFromVector(CC, GetPos(pSource));
+
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		return CC.CreateInteger(GetRotation());
+
+	else if (strEquals(sName, PROPERTY_TYPE))
+		return CC.CreateInteger(GetType()->GetUNID());
+
+	else
+		return CC.CreateNil();
+	}
+
 void CEnergyField::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx)
 
 //	Paint
@@ -497,6 +534,39 @@ void CEnergyField::Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewpor
 	Ctx.iRotation = iSavedRotation;
 	}
 
+void CEnergyField::PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintAnnotations
+//
+//	Paint field annotations.
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterProgress:
+			{
+			int cyHeight;
+
+			WORD wColor = m_pType->GetCounterColor();
+			if (wColor == 0 && Ctx.pObj)
+				wColor = Ctx.pObj->GetSymbolColor();
+
+			CPaintHelper::PaintStatusBar(Dest,
+					x,
+					Ctx.yAnnotations,
+					g_pUniverse->GetPaintTick(),
+					wColor,
+					(!m_sMessage.IsBlank() ? m_sMessage : m_pType->GetCounterLabel()),
+					Min(Max(0, m_iCounter), m_pType->GetCounterMax()),
+					m_pType->GetCounterMax(),
+					&cyHeight);
+
+			Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+			break;
+			}
+		}
+	}
+
 void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 
 //	ReadFromStream
@@ -509,6 +579,8 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 //	DWORD	m_iDevice
 //	DWORD	Life left
 //	CAttributeDataBlock m_Data
+//	DWORD	m_iCounter
+//	CString	m_sMessage
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
 //	DWORD	Flags
@@ -548,6 +620,12 @@ void CEnergyField::ReadFromStream (SLoadCtx &Ctx)
 
 	if (Ctx.dwVersion >= 39)
 		m_Data.ReadFromStream(Ctx);
+
+	if (Ctx.dwVersion >= 103)
+		{
+		Ctx.pStream->Read((char *)&m_iCounter, sizeof(DWORD));
+		m_sMessage.ReadFromStream(Ctx.pStream);
+		}
 
 	m_pPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pType->GetEffectCreator());
 	m_pHitPainter = CEffectCreator::CreatePainterFromStreamAndCreator(Ctx, m_pType->GetHitEffectCreator());
@@ -595,6 +673,40 @@ void CEnergyField::SetPos (CSpaceObject *pSource, const CVector &vPos)
 	int iRotationOrigin = (m_pType->RotatesWithShip() ? pSource->GetRotation() : 0);
 	m_iPosAngle = (iDirection + 360 - iRotationOrigin) % 360;
 	m_iPosRadius = (int)(rRadius / g_KlicksPerPixel);
+	}
+
+bool CEnergyField::SetProperty (CSpaceObject *pSource, const CString &sName, ICCItem *pValue)
+
+//	SetProperty
+//
+//	Sets the property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sName, PROPERTY_COUNTER))
+		m_iCounter = pValue->GetIntegerValue();
+
+	else if (strEquals(sName, PROPERTY_COUNTER_LABEL))
+		m_sMessage = pValue->GetStringValue();
+
+	else if (strEquals(sName, PROPERTY_POS))
+		{
+		CVector vPos = CreateVectorFromList(CC, pValue);
+		SetPos(pSource, vPos);
+		}
+
+	else if (strEquals(sName, PROPERTY_ROTATION))
+		SetRotation(pValue->GetIntegerValue());
+
+	//	If nothing else, ask the painter
+
+	else if (m_pPainter)
+		return m_pPainter->SetProperty(sName, pValue);
+	else
+		return false;
+
+	return true;
 	}
 
 void CEnergyField::Update (CSpaceObject *pSource)
@@ -668,6 +780,8 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 //	DWORD	m_iDevice
 //	DWORD	Life left
 //	CAttributeDataBlock m_Data
+//	DWORD	m_iCounter
+//	CString	m_sMessage
 //	IPainter	m_pPaint
 //	IPainter	m_pHitPainter
 //	DWORD	Flags
@@ -683,6 +797,9 @@ void CEnergyField::WriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&m_iLifeLeft, sizeof(DWORD));
 
 	m_Data.WriteToStream(pStream);
+
+	pStream->Write((char *)&m_iCounter, sizeof(DWORD));
+	m_sMessage.WriteToStream(pStream);
 
 	CEffectCreator::WritePainterToStream(pStream, m_pPainter);
 	CEffectCreator::WritePainterToStream(pStream, m_pHitPainter);

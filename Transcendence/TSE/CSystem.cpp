@@ -323,6 +323,10 @@
 //	102: 1.4
 //		iHPDamaged in SItemTypeStats
 //
+//	103: 1.4
+//		m_iCounter in CEnergyField
+//		m_sMessage in CEnergyField
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

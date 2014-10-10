@@ -65,6 +65,7 @@ class CImageArranger
 class CPaintHelper
 	{
 	public:
+		static void PaintStatusBar (CG16bitImage &Dest, int x, int y, int iTick, WORD wColor, const CString &sLabel, int iPos, int iMaxPos = 100, int *retcyHeight = NULL);
 		static void PaintTargetHighlight (CG16bitImage &Dest, int x, int y, int iTick, int iRadius, int iRingSpacing, int iDelay, WORD wColor);
 	};
 

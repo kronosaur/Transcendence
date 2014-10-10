@@ -2264,9 +2264,14 @@ WORD LoadRGBColor (const CString &sString)
 	{
 	char *pPos = sString.GetASCIIZPointer();
 
+	//	Null
+
+	if (*pPos == '\0')
+		return 0;
+
 	//	If it starts with a # we expect an RGB DWORD
 
-	if (*pPos == '#')
+	else if (*pPos == '#')
 		{
 		pPos++;
 		DWORD dwColor = strParseIntOfBase(pPos, 16, 0);

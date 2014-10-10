@@ -4215,9 +4215,6 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	{
 	int i;
 
-	if (IsInactive())
-		return;
-
 	//	Figure out which effects we need to paint
 
 	DWORD dwEffects = CalcEffectsMask();
@@ -4259,10 +4256,6 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 	m_EnergyFields.Paint(Dest, pImage->GetImageViewportSize(), x, y, Ctx);
 
-	//	Paint effects
-
-	PaintEffects(Dest, x, y, Ctx);
-
 	//	If paralyzed, draw energy arcs
 
 	if (ShowParalyzedEffect())
@@ -4295,11 +4288,6 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			}
 		}
 
-	//	Paint the selection
-
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, pImage->GetImageRectAtPoint(x, y), Ctx);
-
 	//	Known
 
 	m_fKnown = true;
@@ -4330,6 +4318,16 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			}
 		}
 #endif
+	}
+
+void CShip::OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	OnPaintAnnotations
+//
+//	Paint additional annotations.
+
+	{
+	m_EnergyFields.PaintAnnotations(Dest, x, y, Ctx);
 	}
 
 void CShip::OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y)

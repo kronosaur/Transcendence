@@ -448,6 +448,36 @@
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
 			>
+		<InitialPane>
+			(block (
+				(canRepairArmor (objGetProperty gSource 'repairArmorMaxLevel))
+				(removableOverlays Nil)
+				)
+				
+				(switch
+					;	If we've got crap attached to the hull, then we might have
+					;	the option of fixing it.
+					;
+					;	We look for any overlay type with the "OnRemoveAtDockServices"
+					;	event.
+				
+					(and canRepairArmor
+							(setq removableOverlays
+								(filter (objGetOverlays gPlayerShip) theID
+									(typHasEvent (objGetOverlayType gPlayerShip theID) 'OnRemoveAtDockServices)
+									)
+								)
+							)
+						(block Nil
+							(scrSetData gScreen 'removableOverlays removableOverlays)
+							"RemoveOverlays"
+							)
+				
+					"Default"
+					)
+				)
+		</InitialPane>
+		
 		<Panes>
 			<Default>
 				<OnPaneInit>
@@ -508,6 +538,83 @@
 					</Action>
 				</Actions>
 			</Default>
+		
+			<RemoveOverlays>
+				<OnPaneInit>
+					(block (
+						(removableOverlays (scrGetData gScreen 'removableOverlays))
+						(currencyUsed (objGetDefaultCurrency gSource))
+						
+						;	The price of removing each overlay is equal to 25 credits
+						;	per armor level.
+						
+						(costPerOverlay 
+							(ecoExchange
+								(map (objGetItems gPlayerShip "aI") 'reduceSum theArmor
+									(multiply 25 (itmGetLevel theArmor))
+									)
+								'credit
+								currencyUsed
+								)
+							)
+
+						(totalCost (multiply (count removableOverlays) costPerOverlay))
+						(canRemove Nil)
+						)
+						
+						(dbgOutput "total: " totalCost)
+						(dbgOutput "per: " costPerOverlay)
+						(dbgOutput "all: " removableOverlays)
+						
+						(switch
+							(ls (objGetBalance gPlayerShip currencyUsed) totalCost)
+								(scrSetDescTranslate gScreen 'descCannotAffordOverlayRemove { removableOverlays:removableOverlays cost:(fmtCurrency currencyUsed totalCost) })
+							
+							(block Nil
+								(scrSetDescTranslate gScreen 'descOverlayRemove { removableOverlays:removableOverlays cost:(fmtCurrency currencyUsed totalCost) })
+								(setq canRemove True)
+								)
+							)
+	
+						(scrSetData gScreen 'totalCost totalCost)
+						(scrEnableAction gScreen 'actionRemoveOverlays canRemove)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRemoveOverlays" default="1">
+						(block (
+							(removableOverlays (scrGetData gScreen 'removableOverlays))
+							(totalCost (scrGetData gScreen 'totalCost))
+							(currencyUsed (objGetDefaultCurrency gSource))
+							)
+							
+							(enum removableOverlays theID
+								(objFireOverlayEvent gPlayerShip theID 'OnRemoveAtDockServices)
+								)
+								
+							(objCharge gPlayerShip currencyUsed totalCost)
+							(scrShowPane gScreen "OverlaysRemoved")
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</RemoveOverlays>
+			
+			<OverlaysRemoved>
+				<OnPaneInit>
+					(scrSetDescTranslate gScreen 'descOverlaysRemoved { removableOverlays:(scrGetData gScreen 'removableOverlays) })
+				</OnPaneInit>
+			
+				<Actions>
+					<Action id="actionContinue" default="1" cancel="1">
+						(scrShowPane gScreen "Default")
+					</Action>
+				</Actions>
+			</OverlaysRemoved>
 		</Panes>
 		
 		<Language>
@@ -515,12 +622,46 @@
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
 			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
+			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
 			<Text id="actionRepairArmor">"Repair or Replace [A]rmor"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
 			
 			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
 			
 			<Text id="errorNoReactorTech">"The technology required to upgrade your reactor is not available at this station."</Text>
+			
+			<Text id="descOverlayRemove">
+				(if (eq (count (@ gData 'removableOverlays)) 1)
+					(cat
+						"You have a foreign object attached to your armor. "
+						"We can remove it completely for " (@ gData 'cost) "."
+						)
+					(cat
+						"You have some foreign objects attached to your armor. "
+						"We can remove them completely for " (@ gData 'cost) "."
+						)
+					)
+			</Text>
+			<Text id="descCannotAffordOverlayRemove">
+				(if (eq (count (@ gData 'removableOverlays)) 1)
+					(cat
+						"You have a foreign object attached to your armor. "
+						"We could remove it completely for " (@ gData 'cost) ", "
+						"but unfortunately you cannot afford the cost."
+						)
+					(cat
+						"You have some foreign objects attached to your armor. "
+						"We could remove them completely for " (@ gData 'cost) ", "
+						"but unfortunately you cannot afford the cost."
+						)
+					)
+			</Text>
+			<Text id="descOverlaysRemoved">
+				(if (eq (count (@ gData 'removableOverlays)) 1)
+					"We've removed the object and discarded it safely. Your hull is clean."
+					"We've removed the objects and discarded them safely. Your hull is clean."
+					)
+			</Text>
 		</Language>
 	</DockScreen>
 

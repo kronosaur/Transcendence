@@ -18,6 +18,8 @@ const int HIGHLIGHT_TIMER =						200;
 const int HIGHLIGHT_BLINK =						110;
 const int HIGHLIGHT_FADE =						30;
 
+const int ANNOTATION_INNER_SPACING_Y =			2;
+
 const int DAMAGE_BAR_WIDTH =					100;
 const int DAMAGE_BAR_HEIGHT =					12;
 
@@ -3550,6 +3552,17 @@ CSpaceObject *CSpaceObject::GetOrderGiver (DestructionTypes iCause)
 		return OnGetOrderGiver();
 	}
 
+ICCItem *CSpaceObject::GetOverlayProperty (CCodeChainCtx *pCCCtx, DWORD dwID, const CString &sName)
+
+//	GetOverlayProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+	return CC.CreateNil();
+	}
+
 ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 //	GetProperty
@@ -5190,48 +5203,69 @@ void CSpaceObject::Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &C
 //	Paint the object
 
 	{
+	if (IsInactive())
+		{
+		SetPainted();
+		ClearPaintNeeded();
+		return;
+		}
+
+	//	Initialize the object bounds
+
+	Ctx.rcObjBounds = GetImage().GetImageRectAtPoint(x, y);
+	Ctx.yAnnotations = Ctx.rcObjBounds.bottom + ANNOTATION_INNER_SPACING_Y + 1;
+
+	//	Paint annotations under the object
+
 	PaintDebugVector(Dest, x, y, Ctx);
 
 	if (m_fShowHighlight && !Ctx.fNoSelection && !m_fShowDamageBar)
 		PaintTargetHighlight(Dest, x, y, Ctx);
 
+	//	Paint the object
+
 	OnPaint(Dest, x, y, Ctx);
 
-	if (m_fShowDamageBar)
-		PaintDamageBar(Dest, x, y, Ctx);
+	//	Paint effects (e.g., muzzle flash)
+
+	if (m_pFirstEffect)
+		PaintEffects(Dest, x, y, Ctx);
+
+	//	Paint annotations about the object (damage bar, etc.)
+
+	if (!Ctx.fNoSelection)
+		{
+		if (IsHighlighted())
+			PaintHighlight(Dest, x, y, Ctx);
+
+		//	Paint damage bar
+
+		if (m_fShowDamageBar)
+			{
+			int cyHeight;
+
+			CPaintHelper::PaintStatusBar(Dest,
+					x,
+					Ctx.yAnnotations,
+					g_pUniverse->GetPaintTick(),
+					GetSymbolColor(),
+					NULL_STR,
+					100 - GetVisibleDamage(),
+					100,
+					&cyHeight);
+
+			Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+			}
+
+		//	Let the object paint additional annotations
+
+		OnPaintAnnotations(Dest, x, y, Ctx);
+		}
+
+	//	Done
 
 	SetPainted();
 	ClearPaintNeeded();
-	}
-
-void CSpaceObject::PaintDamageBar (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
-
-//	PaintDamageBar
-//
-//	Paints a damage bar for the object
-
-	{
-	int iHP = 100 - GetVisibleDamage();
-	WORD wColor = GetSymbolColor();
-	DWORD dwOpacity = 160;
-
-	const RECT &rcImage = GetImage().GetImageRect();
-	int cxWidth = RectWidth(rcImage);
-	int cyHeight = RectHeight(rcImage);
-
-	int xStart = x - (DAMAGE_BAR_WIDTH / 2);
-	int yStart = y + (cyHeight / 2);
-
-	int iFill = Max(1, iHP * DAMAGE_BAR_WIDTH / 100);
-
-	//	Draw
-
-	Dest.FillTrans(xStart, yStart, iFill, DAMAGE_BAR_HEIGHT, wColor, dwOpacity);
-
-	Dest.FillLineTrans(xStart + iFill, yStart, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-	Dest.FillLineTrans(xStart + iFill, yStart + DAMAGE_BAR_HEIGHT - 1, DAMAGE_BAR_WIDTH - iFill, wColor, dwOpacity);
-
-	Dest.FillColumnTrans(xStart + DAMAGE_BAR_WIDTH - 1, yStart + 1, DAMAGE_BAR_HEIGHT - 2, wColor, dwOpacity);
 	}
 
 void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
@@ -5258,7 +5292,7 @@ void CSpaceObject::PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPain
 		}
 	}
 
-void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx)
+void CSpaceObject::PaintHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 
 //	PaintHighlight
 //
@@ -5271,51 +5305,57 @@ void CSpaceObject::PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SView
 
 	//	Paint the corners
 
-	Dest.DrawLine(rcRect.left, rcRect.top,
-			rcRect.left + HIGHLIGHT_CORNER_WIDTH, rcRect.top,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.left + HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.top,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.top,
-			rcRect.left, rcRect.top + HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.left, Ctx.rcObjBounds.top + HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.top,
-			rcRect.right - HIGHLIGHT_CORNER_WIDTH, rcRect.top,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.right - HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.top,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.top,
-			rcRect.right, rcRect.top + HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.top,
+			Ctx.rcObjBounds.right, Ctx.rcObjBounds.top + HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.bottom,
-			rcRect.left, rcRect.bottom - HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom - HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.left, rcRect.bottom,
-			rcRect.left + HIGHLIGHT_CORNER_WIDTH, rcRect.bottom,
+	Dest.DrawLine(Ctx.rcObjBounds.left, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.left + HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.bottom,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.bottom,
-			rcRect.right - HIGHLIGHT_CORNER_WIDTH, rcRect.bottom,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.right - HIGHLIGHT_CORNER_WIDTH, Ctx.rcObjBounds.bottom,
 			1, wColor);
 
-	Dest.DrawLine(rcRect.right, rcRect.bottom,
-			rcRect.right, rcRect.bottom - HIGHLIGHT_CORNER_HEIGHT,
+	Dest.DrawLine(Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom,
+			Ctx.rcObjBounds.right, Ctx.rcObjBounds.bottom - HIGHLIGHT_CORNER_HEIGHT,
 			1, wColor);
 
 	//	Paint message, if we have one
 
 	if (!m_sHighlightText.IsBlank() || m_iHighlightChar)
-		PaintHighlightText(Dest, rcRect.left + RectWidth(rcRect) / 2, rcRect.bottom + 2, Ctx, alignCenter, wColor);
+		{
+		int cyHeight;
+		PaintHighlightText(Dest, x, Ctx.yAnnotations, Ctx, alignCenter, wColor, &cyHeight);
+		Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+		}
 	}
 
-void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor)
+void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor, int *retcyHeight)
 
 //	PaintHighlightText
 //
 //	Paint highlight text
 
 	{
+	int yOriginal = y;
+
 	const int KEY_BOX_SIZE = 18;
 	const CG16bitFont &NameFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
 	const CG16bitFont &MessageFont = g_pUniverse->GetNamedFont(CUniverse::fontSRSMessage);
@@ -5398,7 +5438,7 @@ void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewpo
 		char chChar = (char)m_iHighlightChar;
 		CString sKey = CString(&chChar, 1);
 
-		y += 2;
+		y += ANNOTATION_INNER_SPACING_Y;
 
 		Dest.Fill(x - KEY_BOX_SIZE / 2, y, KEY_BOX_SIZE, KEY_BOX_SIZE, wColor);
 
@@ -5410,7 +5450,14 @@ void CSpaceObject::PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewpo
 				yText,
 				0,
 				sKey);
+
+		y += KEY_BOX_SIZE;
 		}
+
+	//	Done
+
+	if (retcyHeight)
+		*retcyHeight = y - yOriginal;
 	}
 
 void CSpaceObject::PaintLRS (CG16bitImage &Dest, int x, int y, const ViewportTransform &Trans)

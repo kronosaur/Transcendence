@@ -2422,6 +2422,8 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 
 	{
 	int i;
+	RECT rcOldObjBounds;
+	int yOldAnnotions;
 
 	//	Known
 
@@ -2441,6 +2443,14 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 
 	if (!Ctx.fNoDockedShips)
 		{
+		//	If we need to paint docked ships, then preserve the object-specific
+		//	context.
+
+		rcOldObjBounds = Ctx.rcObjBounds;
+		yOldAnnotions = Ctx.yAnnotations;
+
+		//	Paint docked ships
+
 		for (i = 0; i < m_DockingPorts.GetPortCount(this); i++)
 			{
 			CSpaceObject *pObj = m_DockingPorts.GetPortObj(this, i);
@@ -2520,12 +2530,12 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 				Ctx.pObj = pOldObj;
 				}
 			}
+
+		//	Restore context
+
+		Ctx.rcObjBounds = rcOldObjBounds;
+		Ctx.yAnnotations = yOldAnnotions;
 		}
-
-	//	Highlight
-
-	if (IsHighlighted() && !Ctx.fNoSelection)
-		PaintHighlight(Dest, Image.GetImageRectAtPoint(x, y), Ctx);
 
 #ifdef DEBUG_BOUNDING_RECT
 	{
@@ -2553,6 +2563,16 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		Dest.Fill(x - 2, y - 2, 4, 4, CG16bitImage::RGBValue(0, 255, 0));
 		}
 #endif
+	}
+
+void CStation::OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	OnPaintAnnotations
+//
+//	Paint additional annotations
+
+	{
+	m_Overlays.PaintAnnotations(Dest, x, y, Ctx);
 	}
 
 void CStation::OnObjBounce (CSpaceObject *pObj, const CVector &vPos)

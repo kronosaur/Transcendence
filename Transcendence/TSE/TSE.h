@@ -1860,12 +1860,14 @@ class CEnergyField
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline CEnergyField *GetNext (void) const { return m_pNext; }
 		CVector GetPos (CSpaceObject *pSource);
+		ICCItem *GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, const CString &sName);
 		inline int GetRotation (void) const { return m_iRotation; }
 		inline COverlayType *GetType(void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
 		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
 		inline bool IsShipScreenDisabled (void) { return m_pType->IsShipScreenDisabled(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
+		void PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		inline bool Paralyzes (CSpaceObject *pSource) { return m_pType->Paralyzes(); }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
@@ -1873,6 +1875,7 @@ class CEnergyField
 		bool SetEffectProperty (const CString &sProperty, ICCItem *pValue);
 		inline void SetNext (CEnergyField *pNext) { m_pNext = pNext; }
 		void SetPos (CSpaceObject *pSource, const CVector &vPos);
+		bool SetProperty (CSpaceObject *pSource, const CString &sName, ICCItem *pValue);
 		inline void SetRotation (int iRotation) { m_iRotation = iRotation; }
 		void Update (CSpaceObject *pSource);
 		void WriteToStream (IWriteStream *pStream);
@@ -1891,6 +1894,8 @@ class CEnergyField
 		int m_iRotation;						//	Overlay orientation (degrees)
 
 		CAttributeDataBlock m_Data;				//	data
+		int m_iCounter;							//	Arbitrary counter
+		CString m_sMessage;						//	Message text
 
 		IEffectPainter *m_pPainter;				//	Painter
 
@@ -1939,16 +1944,19 @@ class CEnergyFieldList
 		void GetList (TArray<CEnergyField *> &List);
 		CEnergyField *GetOverlay (DWORD dwID) const;
 		CVector GetPos (CSpaceObject *pSource, DWORD dwID);
+		ICCItem *GetProperty (CCodeChainCtx *pCCCtx, CSpaceObject *pSource, DWORD dwID, const CString &sName);
 		int GetRotation (DWORD dwID);
 		COverlayType *GetType(DWORD dwID);
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
 		inline bool IsEmpty (void) { return (m_pFirst == NULL); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
+		void PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void ReadFromStream (SLoadCtx &Ctx, CSpaceObject *pSource);
 		void RemoveField (CSpaceObject *pSource, DWORD dwID);
 		void SetData (DWORD dwID, const CString &sAttrib, const CString &sData);
 		bool SetEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue);
 		void SetPos (CSpaceObject *pSource, DWORD dwID, const CVector &vPos);
+		bool SetProperty (CSpaceObject *pSource, DWORD dwID, const CString &sName, ICCItem *pValue);
 		void SetRotation (DWORD dwID, int iRotation);
 		void Update (CSpaceObject *pSource, bool *retbModified);
 		void WriteToStream (IWriteStream *pStream);
@@ -2398,8 +2406,7 @@ class CSpaceObject : public CObject
 		inline bool NotifyOthersWhenDestroyed (void) { return (m_fNoObjectDestructionNotify ? false : true); }
 		void OnObjDestroyed (const SDestroyCtx &Ctx);
 		void Paint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		void PaintDamageBar (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		void PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor);
+		void PaintHighlightText (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx, AlignmentStyles iAlign, WORD wColor, int *retcyHeight = NULL);
 		void PaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y);
 		inline void PaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { OnPaintSRSEnhancements(Dest, Ctx); }
 		inline void Place (const CVector &vPos, const CVector &vVel = NullVector) { m_vPos = vPos; m_vOldPos = vPos; m_vVel = vVel; }
@@ -2619,6 +2626,7 @@ class CSpaceObject : public CObject
 		virtual void GetOverlayImpact (CEnergyFieldList::SImpactDesc *retImpact) { *retImpact = CEnergyFieldList::SImpactDesc(); }
 		virtual void GetOverlayList (TArray<CEnergyField *> &List) { List.DeleteAll(); }
 		virtual CVector GetOverlayPos (DWORD dwID) { return GetPos(); }
+		virtual ICCItem *GetOverlayProperty (CCodeChainCtx *pCCCtx, DWORD dwID, const CString &sName);
 		virtual int GetOverlayRotation (DWORD dwID) { return -1; }
 		virtual COverlayType *GetOverlayType(DWORD dwID) { return NULL; }
 		virtual int GetPerception (void) { return perceptNormal; }
@@ -2668,6 +2676,7 @@ class CSpaceObject : public CObject
 		virtual void SetOverlayData (DWORD dwID, const CString &sAttribute, const CString &sData) { }
 		virtual bool SetOverlayEffectProperty (DWORD dwID, const CString &sProperty, ICCItem *pValue) { return false; }
 		virtual void SetOverlayPos (DWORD dwID, const CVector &vPos) { }
+		virtual bool SetOverlayProperty (DWORD dwID, const CString &sName, ICCItem *pValue, CString *retsError) { return false; }
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { }
 		virtual void UpdateArmorItems (void) { }
 
@@ -2757,6 +2766,7 @@ class CSpaceObject : public CObject
 		virtual void OnUpdateExtended (const CTimeSpan &ExtraTime) { }
 		virtual void OnUpdatePlayer (SUpdateCtx &Ctx) { }
 		virtual void OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
+		virtual void OnPaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx) { }
 		virtual void OnPaintMap (CMapViewportCtx &Ctx, CG16bitImage &Dest, int x, int y) { }
 		virtual void OnPaintSRSEnhancements (CG16bitImage &Dest, SViewportPaintCtx &Ctx) { }
 		virtual void OnReadFromStream (SLoadCtx &Ctx) { }
@@ -2783,7 +2793,7 @@ class CSpaceObject : public CObject
 		inline void ItemEnhancementModified (CItemListManipulator &ItemList) { OnItemEnhanced(ItemList); }
 		bool MissileCanHitObj (CSpaceObject *pObj, CSpaceObject *pSource, CWeaponFireDesc *pDesc);
 		void PaintEffects (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		void PaintHighlight (CG16bitImage &Dest, const RECT &rcRect, SViewportPaintCtx &Ctx);
+		void PaintHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintTargetHighlight (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		inline void SetObjectDestructionHook (void) { m_fHookObjectDestruction = true; }
 		inline void SetCannotBeHit (void) { m_fCannotBeHit = true; }
@@ -3197,8 +3207,9 @@ class CUniverse : public CObject
 			fontSign =					1,	//	Font for signs
 			fontSRSObjName =			2,	//	Font for name of objects in SRS
 			fontSRSMessage =			3,	//	Font for comms messages from objects in SRS
+			fontSRSObjCounter =			4,	//	Font for counter labels
 
-			fontCount =					4,
+			fontCount =					5,
 			};
 
 		CUniverse (void);

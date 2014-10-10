@@ -4,6 +4,7 @@
 
 #include "PreComp.h"
 
+#define COUNTER_TAG								CONSTLIT("Counter")
 #define EFFECT_WHEN_HIT_TAG						CONSTLIT("EffectWhenHit")
 #define EFFECT_TAG								CONSTLIT("Effect")
 #define HIT_EFFECT_TAG							CONSTLIT("HitEffect")
@@ -11,14 +12,20 @@
 
 #define ABSORB_ADJ_ATTRIB						CONSTLIT("absorbAdj")
 #define ALT_EFFECT_ATTRIB						CONSTLIT("altEffect")
+#define COLOR_ATTRIB							CONSTLIT("color")
 #define DISABLE_SHIP_SCREEN_ATTRIB				CONSTLIT("disableShipScreen")
 #define DISARM_ATTRIB							CONSTLIT("disarm")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
+#define LABEL_ATTRIB							CONSTLIT("label")
+#define MAX_ATTRIB								CONSTLIT("max")
 #define PARALYZE_ATTRIB							CONSTLIT("paralyze")
 #define SHIELD_OVERLAY_ATTRIB					CONSTLIT("shieldOverlay")
+#define STYLE_ATTRIB							CONSTLIT("style")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
+
+#define COUNTER_PROGRESS						CONSTLIT("progress")
 
 #define FIELD_WEAPON_SUPPRESS					CONSTLIT("weaponSuppress")
 
@@ -252,6 +259,31 @@ ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_fShieldOverlay = bValue;
 	else
 		m_fShieldOverlay = (iAbsorbCount > 0);
+
+	//	Counter
+
+	CXMLElement *pCounter = pDesc->GetContentElementByTag(COUNTER_TAG);
+	if (pCounter)
+		{
+		CString sStyle = pCounter->GetAttribute(STYLE_ATTRIB);
+		if (strEquals(sStyle, COUNTER_PROGRESS))
+			m_iCounterType = counterProgress;
+		else
+			{
+			Ctx.sError = strPatternSubst(CONSTLIT("Unknown counter style: %s"), sStyle);
+			return ERR_FAIL;
+			}
+
+		m_sCounterLabel = pCounter->GetAttribute(LABEL_ATTRIB);
+		m_iCounterMax = pCounter->GetAttributeIntegerBounded(MAX_ATTRIB, 0, -1, 100);
+		m_wCounterColor = ::LoadRGBColor(pCounter->GetAttribute(COLOR_ATTRIB));
+		}
+	else
+		{
+		m_iCounterType = counterNone;
+		m_iCounterMax = 0;
+		m_wCounterColor = 0;
+		}
 
 	//	Options
 
