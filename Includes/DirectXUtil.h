@@ -251,6 +251,7 @@ class CG16bitImage : public CObject
 		void ClearMaskBlt (int xSrc, int ySrc, int cxWidth, int cyHeight, const CG16bitImage &Source, int xDest, int yDest, WORD wColor = DEFAULT_TRANSPARENT_COLOR);
 		void DrawDot (int x, int y, WORD wColor, MarkerTypes iMarker);
 		inline void DrawLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor) { BresenhamLineAA(x1, y1, x2, y2, iWidth, wColor); }
+		inline void DrawLineTrans (int x1, int y1, int x2, int y2, int iWidth, WORD wColor, DWORD dwOpacity) { BresenhamLineAATrans(x1, y1, x2, y2, iWidth, wColor, dwOpacity); }
 		void DrawLineProc (SDrawLineCtx *pCtx, DRAWLINEPROC pfProc);
 		void DrawLineProcInit (int x1, int y1, int x2, int y2, SDrawLineCtx *pCtx);
 		inline void DrawBiColorLine (int x1, int y1, int x2, int y2, int iWidth, WORD wColor1, WORD wColor2) { BresenhamLineAAFade(x1, y1, x2, y2, iWidth, wColor1, wColor2); }
@@ -348,6 +349,11 @@ class CG16bitImage : public CObject
 								  int iWidth,
 								  WORD wColor1,
 								  WORD wColor2);
+		void BresenhamLineAATrans (int x1, int y1, 
+							  int x2, int y2,
+							  int iWidth,
+							  WORD wColor,
+							  DWORD dwOpacity);
 		void WuLine (int x0, int y0, 
 				     int x1, int y1,
 				     int iWidth,

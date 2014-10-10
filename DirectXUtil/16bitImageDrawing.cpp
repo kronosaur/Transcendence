@@ -456,6 +456,185 @@ void CG16bitImage::BresenhamLineAAFade (int x1, int y1,
 		}
 	}
 
+void CG16bitImage::BresenhamLineAATrans (int x1, int y1, 
+										 int x2, int y2,
+										 int iWidth,
+										 WORD wColor,
+										 DWORD dwOpacity)
+
+//	BresenhamLineAATrans
+//
+//	Anti-aliased version of Bresenham's algorithm
+
+	{
+	double rOpacity = dwOpacity;
+
+	//	Calculate the slope
+
+	int dx = x2 - x1;
+	int ax = Absolute(dx) * 2;
+	int sx = (dx > 0 ? 1 : -1);
+
+	int dy = y2 - y1;
+	int ay = Absolute(dy) * 2;
+	int sy = (dy > 0 ? 1 : -1);
+
+	//	Handle special cases
+
+	if (dx == 0 && dy == 0)
+		{
+		DrawPixelTrans(x1, y1, wColor, (BYTE)dwOpacity);
+		return;
+		}
+
+	//	Do it
+
+	int i, x, y;
+
+	if (ax > ay)		//	x-axis dominant
+		{
+		//	Compute the distance from the mid-point of the line to
+		//	the top edge along the y-axis.
+
+		double rHalfHeight = (double)iWidth * sqrt((double)(dx*dx + dy*dy)) / (double)(2 * abs(dx));
+		int cyHalfCount = (int)(((2 * rHalfHeight) - 1) / 2);
+		int cyCount = 2 * cyHalfCount + 1;
+
+		int d = ay - ax / 2;
+
+		//	Compute information for anti-aliasing. rDist is the distance
+		//	from the top solid point to the edge of the line. We update
+		//	the value as we proceed along the x-axis and use it for
+		//	anti-aliasing the edge of the line. A negative value means
+		//	that the top point is outside the edge.
+
+		double rSlope = (double)dy / (double)dx;
+		double rDistTop = rHalfHeight - (double)cyHalfCount - 0.25;
+		double rDistBottom = rDistTop;
+
+		double rDistTopInc = sy;
+		double rDistTopDec = rSlope * sx;
+		double rDistBottomInc = rSlope * sx;
+		double rDistBottomDec = sy;
+
+		//	Draw!
+
+		for (x = x1, y = y1; x != x2; x += sx)
+			{
+			int yTop = y - cyHalfCount;
+
+			//	Draw anti-aliasing above the line
+
+			if (rDistTop > 0)
+				DrawPixelTrans(x, yTop - 1, wColor, (BYTE)(rOpacity * (rDistTop > 1.0 ? 1.0 : rDistTop)));
+
+			//	Draw the solid part of the line
+
+			if (x >= m_rcClip.left && x < m_rcClip.right)
+				{
+				WORD *pPos = GetPixel(GetRowStart(yTop), x);
+
+				for (i = yTop; i < yTop + cyCount; i++)
+					{
+					if (i >= m_rcClip.top && i < m_rcClip.bottom)
+						*pPos = CG16bitImage::BlendPixel(*pPos, wColor, dwOpacity);
+
+					pPos = NextRow(pPos);
+					}
+				}
+
+			//	Draw anti-aliasing below the line
+
+			if (rDistBottom > 0)
+				DrawPixelTrans(x, yTop + cyCount, wColor, (BYTE)(rOpacity * (rDistBottom > 1.0 ? 1.0 : rDistBottom)));
+
+			//	Next point
+
+			if (d >= 0)
+				{
+				y = y + sy;
+				d = d - ax;
+				rDistTop += rDistTopInc;
+				rDistBottom -= rDistBottomDec;
+				}
+
+			d = d + ay;
+			rDistTop -= rDistTopDec;
+			rDistBottom += rDistBottomInc;
+			}
+		}
+	else				//	y-axis dominant
+		{
+		//	Compute the distance from the mid-point of the line to
+		//	the left-edge of the x-axis
+
+		double rHalfWidth = (double)iWidth * sqrt((double)(dx*dx + dy*dy)) / (double)(2 * abs(dy));
+		int cxHalfCount = (int)(((2 * rHalfWidth) - 1) / 2);
+		int cxCount = 2 * cxHalfCount + 1;
+
+		int d = ax - ay / 2;
+
+		//	Compute information for anti-aliasing. rDist is the distance
+		//	from the top solid point to the edge of the line. We update
+		//	the value as we proceed along the x-axis and use it for
+		//	anti-aliasing the edge of the line. A negative value means
+		//	that the top point is outside the edge.
+
+		double rSlope = (double)dx / (double)dy;
+		double rDistLeft = rHalfWidth - (double)cxHalfCount - 0.25;
+		double rDistRight = rDistLeft;
+
+		double rDistLeftInc = sx;
+		double rDistRightDec = sx;
+		double rDistLeftDec = rSlope * sy;
+		double rDistRightInc = rSlope * sy;
+
+		//	Draw!
+
+		for (y = y1, x = x1; y != y2; y += sy)
+			{
+			int xTop = x - cxHalfCount;
+
+			//	Draw anti-aliasing to the left
+
+			if (rDistLeft > 0)
+				DrawPixelTrans(xTop - 1, y, wColor, (BYTE)(rOpacity * (rDistLeft > 1.0 ? 1.0 : rDistLeft)));
+
+			//	Draw the solid part of the line
+
+			if (y >= m_rcClip.top && y < m_rcClip.bottom)
+				{
+				WORD *pPos = GetPixel(GetRowStart(y), xTop);
+
+				for (i = xTop; i < xTop + cxCount; i++)
+					if (i >= m_rcClip.left && i < m_rcClip.right)
+						*pPos = CG16bitImage::BlendPixel(*pPos, wColor, dwOpacity);
+					else
+						pPos++;
+				}
+
+			//	Draw anti-aliasing to the right of the line
+
+			if (rDistRight > 0)
+				DrawPixelTrans(xTop + cxCount, y, wColor, (BYTE)(rOpacity * (rDistRight > 1.0 ? 1.0 : rDistRight)));
+
+			//	Next point
+
+			if (d >= 0)
+				{
+				x = x + sx;
+				d = d - ay;
+				rDistLeft += rDistLeftInc;
+				rDistRight -= rDistRightDec;
+				}
+
+			d = d + ax;
+			rDistLeft -= rDistLeftDec;
+			rDistRight += rDistRightInc;
+			}
+		}
+	}
+
 void DrawArc (CG16bitImage &Dest, int xCenter, int yCenter, int iRadius, int iStartAngle, int iEndAngle, int iLineWidth, WORD wColor)
 
 //	DrawArc
