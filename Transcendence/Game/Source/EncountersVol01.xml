@@ -4707,6 +4707,10 @@
 				(objRemoveOverlay gSource aOverlayID)
 			</OnInsuranceClaim>
 
+			<OnRemoveAtDockServices>
+				(objRemoveOverlay gSource aOverlayID)
+			</OnRemoveAtDockServices>
+			
 			<OnUpdate>
 				(block Nil
 
