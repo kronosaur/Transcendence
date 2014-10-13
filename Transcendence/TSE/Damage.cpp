@@ -777,10 +777,10 @@ int DamageDesc::RollDamage (void) const
 		if (mathRandom(1, 100) <= iPartial)
 			iWhole++;
 
-		return iDamage + iWhole;
+		return Max(0, iDamage + iWhole);
 		}
 	else
-		return iDamage;
+		return Max(0, iDamage);
 	}
 
 void DamageDesc::WriteToStream (IWriteStream *pStream) const
