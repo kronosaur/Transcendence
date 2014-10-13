@@ -892,6 +892,7 @@
 			<VariantTable>
 				<Label variant="ice"		attributes="asteroids, asteroidBelt, ice"/>
 				<Label variant="metallic"	attributes="asteroids, asteroidBelt, metallic"/>
+				<Label variant="ovoid"		attributes="asteroids, asteroidBelt, ovoid"/>
 				<Label variant="primordial"	attributes="asteroids, asteroidBelt, primordial"/>
 				<Label variant="rocky"		attributes="asteroids, asteroidBelt, rocky"/>
 				<Label variant="volcanic"	attributes="asteroids, asteroidBelt, volcanic"/>
@@ -1105,6 +1106,7 @@
 			<VariantTable>
 				<Label variant="ice"		attributes="asteroids, ice, trojan"/>
 				<Label variant="metallic"	attributes="asteroids, metallic, trojan"/>
+				<Label variant="ovoid"		attributes="asteroids, ovoid, trojan"/>
 				<Label variant="primordial"	attributes="asteroids, primordial, trojan"/>
 				<Label variant="rocky"		attributes="asteroids, rocky, trojan"/>
 				<Label variant="volcanic"	attributes="asteroids, trojan, volcanic"/>
