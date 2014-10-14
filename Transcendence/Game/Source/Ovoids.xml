@@ -6,7 +6,7 @@
 	
 	<SystemPartTable unid="&tbOvoidTables;">
 		
-		<!-- ASTEROID OVOIDS -->
+		<!-- ASTEROID FIELDS -->
 
 		<AsteroidOvoidBelt12>
 			<Lookup table="RegionDefinition">
