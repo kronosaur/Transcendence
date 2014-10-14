@@ -1220,6 +1220,7 @@
 	<!ENTITY stDallSphere				"0x00102023">
 	<!ENTITY stCommonwealthNavSign		"0x00102024">
 	<!ENTITY ovNavSignText				"0x00102025">
+	<!ENTITY baCommonwealthStation		"0x00102026">
 
 	<!ENTITY scCenturion				"0x00103001">
 	<!ENTITY scScarabFreighter			"0x00103002">
@@ -1348,6 +1349,7 @@
 	<!ENTITY stManufacturingPlant		"0x00152012">
 	<!ENTITY stHelenaVolkov				"0x00152013">
 	<!ENTITY stMakayevFactory			"0x00152014">
+	<!ENTITY baCorporateStation			"0x00152015">
 
 	<!ENTITY scCorporateCruiser			"0x00153001">
 	<!ENTITY scAntaresI					"0x00153002">
@@ -1658,6 +1660,8 @@
 
 	<!-- RINGERS 001D -->
 
+	<!ENTITY baRingersStation			"0x001D0001">
+	
 	<!ENTITY stRingersCollective		"0x001D2001">
 	<!ENTITY stRingerShipyard			"0x001D2002">
 	<!ENTITY ecRinEconomy				"0x001D2003">

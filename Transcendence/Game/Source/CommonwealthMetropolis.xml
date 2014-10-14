@@ -7,6 +7,8 @@
 	<StationType UNID="&stCommonwealthStation;"
 			name=				"Commonwealth station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -91,10 +93,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 			
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-			
 			<OnTrafficControl>
 				(comTrafficControl gSource 20)
 			</OnTrafficControl>
@@ -128,6 +126,8 @@
 	<StationType UNID="&stCommonwealthStationArmored;"
 			name=				"armed Commonwealth station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsCommonwealthStation;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -216,10 +216,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnTrafficControl>
 				(comTrafficControl gSource 20)

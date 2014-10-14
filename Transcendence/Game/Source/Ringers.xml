@@ -7,6 +7,8 @@
 	<StationType UNID="&stRingersCollective;"
 			name=				"Ringers collective"
 			sovereign=			"&svRingers;"
+			inherit=			"&baRingersStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -103,12 +105,6 @@
 			</Table>
 		</Reinforcements>
 
-		<Events>
-			<OnDestroy>
-				(intRingerOnDestroy)
-			</OnDestroy>
-		</Events>
-
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -188,6 +184,8 @@
 	<StationType UNID="&stRingerShipyard;"
 			name=				"Ringer shipyard"
 			sovereign=			"&svRingers;"
+			inherit=			"&baRingersStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -269,12 +267,6 @@
 				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
 			</Table>
 		</Reinforcements>
-
-		<Events>
-			<OnDestroy>
-				(intRingerOnDestroy)
-			</OnDestroy>
-		</Events>
 
 		<DockScreens>
 			<Main>
@@ -510,6 +502,28 @@
 		</Panes>
 	</DockScreen>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Ringers Station Base Class
+	
+	USAGE: Ringers stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baRingersStation;"
+			name=			"(Ringers station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intRingerOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- RINGERS -->
 
 	<Sovereign UNID="&svRingers;"

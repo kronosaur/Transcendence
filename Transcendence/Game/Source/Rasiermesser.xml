@@ -76,6 +76,8 @@
 	<StationType UNID="&stArmsDealerRasiermesser;"
 			name=				"Rasiermesser Arms &amp; Armor"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -145,10 +147,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<StaticData>
@@ -187,6 +185,8 @@
 	<StationType UNID="&stRasiermesserFactory;"
 			name=				"Rasiermesser manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			defaultBackgroundID="&rsRasiermesserFactoryBkgnd;"
@@ -295,10 +295,6 @@
 						)
 					)
 			</OnCreate>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>

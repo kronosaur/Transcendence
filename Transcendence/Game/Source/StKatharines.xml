@@ -846,6 +846,8 @@
 			name=				"First Contact Monument"
 			definiteArticle=	"true"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			defaultBackgroundID="&rsIocrymMonumentScreen;"
@@ -909,12 +911,6 @@
 					)
 			</BarEncounter>
 		</StaticData>
-		
-		<Events>
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-		</Events>
 		
 		<DockScreens>
 			<Main>

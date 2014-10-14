@@ -608,6 +608,8 @@
 	<StationType UNID="&stCentauriOccupation;"
 			name=				"occupied Commonwealth colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			controllingSovereign="&svCentauriWarlords;"
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
@@ -659,10 +661,6 @@
 					(objRegisterForEvents gSource tObj)
 					)
 			</OnCreate>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnObjDestroyed>
 				; If the player destroys any of the warlords then she

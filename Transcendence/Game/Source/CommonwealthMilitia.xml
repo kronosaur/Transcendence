@@ -273,6 +273,8 @@
 	<StationType UNID="&stCommonwealthFortress;"
 			name=				"Commonwealth fortress"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -699,10 +701,6 @@
 						)
 					)
 			</OnCreate>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnObjDestroyed>
 				(if (eq (objGetData gSource "MissionStatus") "inprogress")

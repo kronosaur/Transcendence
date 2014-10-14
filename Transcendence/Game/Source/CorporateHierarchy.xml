@@ -144,6 +144,8 @@
 	<StationType UNID="&stAdventurerOutfitters;"
 			name=				"Adventurer Outfitters"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -238,10 +240,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -325,6 +323,8 @@
 	<StationType UNID="&stArmorDealer;"
 			name=				"Corporate armor dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -426,10 +426,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -493,6 +489,8 @@
 	<StationType UNID="&stArmsDealer;"
 			name=				"Corporate arms dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -595,10 +593,6 @@
 				; Pick a random upgrade
 				(objSetData gSource "WeaponUpgrade" (random 0 5))
 			</OnCreate>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -666,6 +660,8 @@
 	<StationType UNID="&stArmsDealerMakayev;"
 			name=				"Makayev-Energia Space Systems"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -747,10 +743,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockingPorts>
@@ -771,6 +763,8 @@
 	<StationType UNID="&stArmsDealerBushido;"
 			name=				"Bushido merchant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"&dsArmsDealerSpecial;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -851,12 +845,6 @@
 			<LongName>"a Bushido arms dealer"</LongName>
 		</StaticData>
 
-		<Events>
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-		</Events>
-
 		<DockingPorts>
 			<Port x="0"		y="70" />
 			<Port x="0"		y="-70" />
@@ -875,6 +863,8 @@
 	<StationType UNID="&stAutonDealer;"
 			name=				"Corporate auton dealer"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -935,10 +925,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1065,6 +1051,8 @@
 	<StationType UNID="&stCorporateEnclave;"
 			name=				"Corporate enclave"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1101,10 +1089,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1250,6 +1234,8 @@
 	<StationType UNID="&stFuelDepot;"
 			name=				"Corporate fuel depot"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1306,12 +1292,6 @@
 			<Refuel			criteria="f +BasicFuel; L:4-8;" priceAdj="90"/>
 		</Trade>
 
-		<Events>
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-		</Events>
-
 		<DockScreens>
 			<Main>
 				<Panes>
@@ -1362,6 +1342,8 @@
 	<StationType UNID="&stMakayevFactory;"
 			name=				"Makayev manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1463,10 +1445,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1535,6 +1513,8 @@
 	<StationType UNID="&stManufacturingPlant;"
 			name=				"Corporate manufacturing plant"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1632,10 +1612,6 @@
 					)
 			</OnCreate>
 
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-			
 			<OnManufacture>
 				(block (totalConsumed manufactureRun)
 					; Consume raw materials (and keep track of how much we are consuming)
@@ -1718,6 +1694,8 @@
 	<StationType UNID="&stHotel;"
 			name=				"Corporate hotel"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1761,10 +1739,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2022,6 +1996,8 @@
 	<StationType UNID="&stIceFarm;"
 			name=				"Corporate ice farm"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2069,10 +2045,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2134,6 +2106,8 @@
 	<StationType UNID="&stInsuranceCompany;"
 			name=				"Clavius Insurance Conglomerate"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2209,11 +2183,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
-
 		</Events>
 
 		<DockScreens>
@@ -2385,6 +2354,8 @@
 	<StationType UNID="&stTaikonVentures;"
 			name=				"Taikon Ventures"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2480,10 +2451,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -2534,6 +2501,8 @@
 	<StationType UNID="&stCorporateTradingPost;"
 			name=				"Corporate trading post"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2605,10 +2574,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 
 			<OnObjDestroyed>
 				(if (and (eq (objGetData gSource "MissionStatus") "intransit")
@@ -2984,6 +2949,8 @@
 	<StationType UNID="&stWondrousDevices;"
 			name=				"Thor's Wondrous Devices"
 			sovereign=			"&svCorporate;"
+			inherit=			"&baCorporateStation;"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -3051,10 +3018,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCorporateOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -3293,6 +3256,28 @@
 		</Panes>
 	</DockScreen>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Corporate Hierarchy Station Base Class
+	
+	USAGE: Corporate stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baCorporateStation;"
+			name=			"(Corporate station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intCorporateOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- TABLES -->
 
 	<ShipTable unid="&tbCorpDefenders;">

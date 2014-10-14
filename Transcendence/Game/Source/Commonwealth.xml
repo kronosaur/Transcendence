@@ -739,6 +739,8 @@
 	<StationType UNID="&stCommonwealthColony;"
 			name=				"Commonwealth colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -838,10 +840,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnTrafficControl>
 				(comTrafficControl gSource 10)
@@ -955,6 +953,8 @@
 	<StationType UNID="&stCommonwealthColonyArmed;"
 			name=				"armed Commonwealth colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1071,10 +1071,6 @@
 
 			<OnContractQuery>True</OnContractQuery>
 
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-
 			<OnTrafficControl>
 				(comTrafficControl gSource 10)
 			</OnTrafficControl>
@@ -1130,6 +1126,8 @@
 	<StationType UNID="&stCommonwealthDryDock;"
 			name=				"Commonwealth dry dock"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"&dsDryDock;"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1186,10 +1184,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockingPorts>
@@ -1213,6 +1207,8 @@
 	<StationType UNID="&stMedicalSuburb;"
 			name=				"Commonwealth medical colony"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1286,10 +1282,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -1340,6 +1332,8 @@
 	<StationType UNID="&stCommonwealthResidentials;"
 			name=				"Commonwealth residentials"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1369,10 +1363,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>			
 
 		<DockScreens>
@@ -1667,6 +1657,8 @@
 	<StationType UNID="&stCommonwealthSlums;"
 			name=				"Commonwealth habitat"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -1790,10 +1782,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnMissionAccepted>
 				(typIncGlobalData &stCommonwealthSlums; 'totalMissionCount)
@@ -1936,6 +1924,8 @@
 	<StationType UNID="&stContainerHabitat;"
 			name=				"container habitat"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			canAttack=			"true"
@@ -2019,10 +2009,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 
 			<OnObjDestroyed>
 				(if (eq aObjDestroyed (objGetObjRefData gSource "target"))
@@ -2150,6 +2136,8 @@
 	<StationType UNID="&stCommonwealthSettlement;"
 			name=				"Commonwealth settlement"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -2254,10 +2242,6 @@
 			</OnContractGenerate>
 
 			<OnContractQuery>True</OnContractQuery>
-
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
 		</Events>
 
 		<DockScreens>
@@ -3654,6 +3638,28 @@
 		</Events>
 	</ShipClass>
 	
+<!-- BASE CLASSES -->
+	
+	<!-- Commonwealth Station Base Class
+	
+	USAGE: Commonwealth stations should inherit from this class. Derrived classes
+		should manually call OnCreate and OnDestroy in case they need to override
+		those events.
+	
+	-->
+	
+	<StationType unid="&baCommonwealthStation;"
+			name=			"(Commonwealth station base class)"
+			virtual=		"true"
+			>
+		
+		<Events>
+			<OnDestroy>
+				(intCommonwealthOnDestroy)
+			</OnDestroy>
+		</Events>
+	</StationType>
+
 <!-- TABLES -->
 
 	<!-- Commonwealth defenders for normal stations -->

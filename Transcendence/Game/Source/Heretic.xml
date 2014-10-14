@@ -1349,6 +1349,8 @@
 	<StationType UNID="&stHereticStation;"
 			name=				"Heretic Station"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1445,10 +1447,6 @@
 		</StaticData>
 
 		<Events>
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-			
 			<OnObjDocked>
 				(if (and (eq aObjDocked gPlayerShip) 
 						(eq aDockTarget (objGetObjRefData gSource "Target")))

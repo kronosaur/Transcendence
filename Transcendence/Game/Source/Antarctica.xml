@@ -1418,6 +1418,8 @@
 	<StationType UNID="&stDantalionSettlement;"
 			name=				"Commonwealth settlement"
 			sovereign=			"&svCommonwealth;"
+			inherit=			"&baCommonwealthStation;"
+				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
 			dockingPorts=		"8"
@@ -1512,12 +1514,6 @@
 					)
 			</NPCService>
 		</StaticData>
-
-		<Events>
-			<OnDestroy>
-				(intCommonwealthOnDestroy)
-			</OnDestroy>
-		</Events>
 
 		<DockScreens>
 			<Main>

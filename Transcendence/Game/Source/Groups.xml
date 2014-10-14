@@ -422,50 +422,6 @@
 			</Lookup>
 		</AsteroidAntiTrojans100>
 		
-		<!-- ICE ASTEROIDS -->
-
-		<AsteroidIceArc50>
-			<Variant variant="lifeZone">
-				<Variant variant="ice">
-					<OrbitalDistribution count="2d14+35" arcLength="500" radialWidth="42">
-						<Lookup table="VariantAsteroid"/>
-					</OrbitalDistribution>
-
-					<OrbitalDistribution count="2-4" arcLength="620" radialWidth="42">
-						<Lookup table="VariantAsteroidBeltLabel"/>
-					</OrbitalDistribution>
-				</Variant>
-			</Variant>
-		</AsteroidIceArc50>
-
-		<AsteroidIceArc100>
-			<Variant variant="lifeZone">
-				<Variant variant="ice">
-					<OrbitalDistribution count="2d25+75" arcLength="500" radialWidth="60">
-						<Lookup table="VariantAsteroid"/>
-					</OrbitalDistribution>
-
-					<OrbitalDistribution count="3-5" arcLength="620"	radialWidth="30">
-						<Lookup table="VariantAsteroidBeltLabel"/>
-					</OrbitalDistribution>
-				</Variant>
-			</Variant>
-		</AsteroidIceArc100>
-
-		<AsteroidIceArc200>
-			<Variant variant="lifeZone">
-				<Variant variant="ice">
-					<OrbitalDistribution count="2d50+150" arcLength="400" radialWidth="84">
-						<Lookup table="VariantAsteroid"/>
-					</OrbitalDistribution>
-
-					<OrbitalDistribution count="4-8" arcLength="500"	radialWidth="84">
-						<Lookup table="VariantAsteroidBeltLabel"/>
-					</OrbitalDistribution>
-				</Variant>
-			</Variant>
-		</AsteroidIceArc200>
-
 		<!-- ASTEROID VULCANOIDS -->
 
 		<AsteroidVulcanoidBelt300>
