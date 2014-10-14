@@ -674,6 +674,7 @@ class CParticleEffect : public CSpaceObject
 		void CreateGroup (SParticleType *pType, int iCount, SParticleArray **retpGroup);
 		void PaintFlameParticles (SParticleArray *pGroup, CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintSmokeParticles (SParticleArray *pGroup, CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void SetParticleSpeed (SParticleType *pType, SParticle *pParticle);
 
 		CString m_sName;
 		SParticleArray *m_pFirstGroup;

@@ -6,12 +6,13 @@
 
 #define IMAGE_TAG								CONSTLIT("Image")
 
-#define NAME_ATTRIB								CONSTLIT("name")
 #define COUNT_ATTRIB							CONSTLIT("count")
-#define RADIUS_ATTRIB							CONSTLIT("radius")
-#define MIN_RADIUS_ATTRIB						CONSTLIT("minRadius")
-#define DAMPENING_ATTRIB						CONSTLIT("dampening")
 #define DAMAGE_ATTRIB							CONSTLIT("damage")
+#define DAMPENING_ATTRIB						CONSTLIT("dampening")
+#define MIN_RADIUS_ATTRIB						CONSTLIT("minRadius")
+#define NAME_ATTRIB								CONSTLIT("name")
+#define NO_WAKE_ATTRIB							CONSTLIT("noWake")
+#define RADIUS_ATTRIB							CONSTLIT("radius")
 
 static CObjectClass<CParticleEffect>g_Class(OBJID_CPARTICLEEFFECT, NULL);
 
@@ -95,7 +96,7 @@ ALERROR CParticleEffect::Create (CSystem *pSystem,
 	//	Create the type based on the descriptor
 
 	SParticleType *pType = new SParticleType;
-	pType->m_fWake = true;
+	pType->m_fWake = !pDesc->GetAttributeBool(NO_WAKE_ATTRIB);
 
 	pType->m_fMaxRadius = true;
 	pType->rRadius = pDesc->GetAttributeInteger(RADIUS_ATTRIB) * LIGHT_SECOND;
@@ -396,14 +397,7 @@ void CParticleEffect::CreateGroup (SParticleType *pType, int iCount, SParticleAr
 
 		//	Velocity
 
-		Metric rSpeed = mathRandom(1, 100) * (pType->rAveSpeed / 100.0);
-		if (pType->iDirection == -1)
-			pGroup->pParticles[i].vVel = PolarToVector(mathRandom(0, 359), rSpeed);
-		else
-			{
-			int iAngle = (pType->iDirection + 360 + mathRandom(0, 2 * pType->iDirRange) - pType->iDirRange) % 360;
-			pGroup->pParticles[i].vVel = PolarToVector(iAngle, rSpeed);
-			}
+		SetParticleSpeed(pType, &pGroup->pParticles[i]);
 		}
 
 	//	Done
@@ -659,6 +653,8 @@ void CParticleEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	while (pGroup)
 		{
 		SParticleType *pType = pGroup->pType;
+		Metric rMinSpeed = pType->rAveSpeed * 0.01;
+		Metric rMinSpeed2 = rMinSpeed * rMinSpeed;
 
 		//	Max distance for a particle in this group
 
@@ -767,14 +763,7 @@ void CParticleEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 							//	Speed
 
-							Metric rSpeed = mathRandom(1, 100) * (pType->rAveSpeed / 100.0);
-							if (pType->iDirection == -1)
-								pParticle->vVel = PolarToVector(mathRandom(0, 359), rSpeed);
-							else
-								{
-								int iAngle = (pType->iDirection + 360 + mathRandom(0, 2 * pType->iDirRange) - pType->iDirRange) % 360;
-								pParticle->vVel = PolarToVector(iAngle, rSpeed);
-								}
+							SetParticleSpeed(pType, pParticle);
 							}
 
 						//	Otherwise we die
@@ -801,6 +790,7 @@ void CParticleEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 					if (pType->m_fMaxRadius)
 						{
 						Metric rDist2 = pParticle->vPos.Length2();
+
 						if (pType->m_fMaxRadius && rDist2 > rMaxDist2)
 							{
 							CVector vChange = pParticle->vPos + g_KlicksPerPixel * pParticle->vPos.Perpendicular().Normal();
@@ -812,8 +802,23 @@ void CParticleEffect::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 							CVector vChange = g_KlicksPerPixel * (400 * vNormal - 50 * vNormal.Perpendicular());
 							pParticle->vVel = pParticle->vVel + (0.00005 * vChange);
 							}
-						else
+
+						//	If we're inside the ring and we react to ships passing through
+						//	then we dampen appropriately.
+
+						else if (pType->m_fWake)
 							pParticle->vVel = pParticle->vVel * pType->rDampening;
+
+						//	Otherwise, keep the particle in motions
+
+						else
+							{
+							Metric rVel2 = pParticle->vVel.Length2();
+							if (rVel2 <= rMinSpeed2)
+								SetParticleSpeed(pType, pParticle);
+							else
+								pParticle->vVel = pParticle->vVel * pType->rDampening;
+							}
 						}
 
 					if (pType->m_fDrag)
@@ -1263,3 +1268,19 @@ void CParticleEffect::OnWriteToStream (IWriteStream *pStream)
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
 
+void CParticleEffect::SetParticleSpeed (SParticleType *pType, SParticle *pParticle)
+
+//	SetParticleSpeed
+//
+//	Sets the speed to default based on the type.
+
+	{
+	Metric rSpeed = mathRandom(1, 100) * (pType->rAveSpeed / 100.0);
+	if (pType->iDirection == -1)
+		pParticle->vVel = PolarToVector(mathRandom(0, 359), rSpeed);
+	else
+		{
+		int iAngle = AngleMod(pType->iDirection + mathRandom(0, 2 * pType->iDirRange) - pType->iDirRange);
+		pParticle->vVel = PolarToVector(iAngle, rSpeed);
+		}
+	}
