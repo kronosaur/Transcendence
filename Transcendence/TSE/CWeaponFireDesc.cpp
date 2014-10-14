@@ -928,6 +928,8 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 //	Conses up a new CWeaponFireDesc from just a damage structure.
 
 	{
+	int i;
+
 	m_bFragment = false;
 
 	//	Load basic attributes
@@ -1020,6 +1022,14 @@ void CWeaponFireDesc::InitFromDamage (DamageDesc &Damage)
 	//	Enhanced
 
 	m_pEnhanced = NULL;
+
+	//	Cached events
+
+	for (i = 0; i < evtCount; i++)
+		{
+		m_CachedEvents[i].pExtension = NULL;
+		m_CachedEvents[i].pCode = NULL;
+		}
 	}
 
 ALERROR CWeaponFireDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, const CString &sUNID, bool bDamageOnly)
