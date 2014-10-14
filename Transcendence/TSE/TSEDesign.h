@@ -936,7 +936,8 @@ class CObjectImageArray : public CObject
 
 		void ComputeRotationOffsets (void);
 		void ComputeRotationOffsets (int xOffset, int yOffset);
-		int ComputeSourceX (int iTick) const;
+		void ComputeSourceXY (int iTick, int iRotation, int *retxSrc, int *retySrc) const;
+		inline void ComputeSourceXY (int iTick, int iRotation, LONG *retxSrc, LONG *retySrc) const { ComputeSourceXY(iTick, iRotation, (int *)retxSrc, (int *)retySrc); }
 		void CopyFrom (const CObjectImageArray &Source);
 		void GenerateGlowImage (int iRotation) const;
 		void GenerateScaledImages (int iRotation, int cxWidth, int cyHeight) const;
@@ -952,6 +953,7 @@ class CObjectImageArray : public CObject
 		OffsetStruct *m_pRotationOffset;
 		int m_iBlending;
 		int m_iViewportSize;				//	Size of 3D viewport in pixels (default to image width)
+		int m_iFramesPerColumn;				//	Rotation frames spread out over multiple columns
 
 		//	Glow effect
 		mutable CG16bitImage *m_pGlowImages;

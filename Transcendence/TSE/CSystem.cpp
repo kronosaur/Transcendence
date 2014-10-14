@@ -327,6 +327,9 @@
 //		m_iCounter in CEnergyField
 //		m_sMessage in CEnergyField
 //
+//	104: 1.4
+//		m_iFramesPerColumn in CObjectImageArray
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"
