@@ -4668,12 +4668,13 @@ class COverlayType : public CDesignType
 		virtual ~COverlayType(void);
 
 		bool AbsorbsWeaponFire (CInstalledDevice *pWeapon);
+		inline bool Disarms (void) const { return m_fDisarmShip; }
 		inline WORD GetCounterColor (void) const { return m_wCounterColor; }
 		inline const CString &GetCounterLabel (void) const { return m_sCounterLabel; }
 		inline int GetCounterMax (void) const { return m_iCounterMax; }
 		inline ECounterDisplay GetCounterStyle (void) const { return m_iCounterType; }
-		inline bool Disarms (void) const { return m_fDisarmShip; }
 		int GetDamageAbsorbed (CSpaceObject *pSource, SDamageCtx &Ctx);
+		inline Metric GetDrag (void) const { return m_rDrag; }
 		inline CEffectCreator *GetEffectCreator (void) const { return m_pEffect; }
 		inline CEffectCreator *GetHitEffectCreator (void) const { return m_pHitEffect; }
 		int GetWeaponBonus (CInstalledDevice *pDevice, CSpaceObject *pSource);
@@ -4683,6 +4684,7 @@ class COverlayType : public CDesignType
 		inline bool IsShipScreenDisabled (void) { return m_fDisableShipScreen; }
 		inline bool Paralyzes (void) const { return m_fParalyzeShip; }
 		inline bool RotatesWithShip (void) { return m_fRotateWithShip; }
+		inline bool Spins (void) const { return m_fSpinShip; }
 
 		//	CDesignType overrides
 		static COverlayType *AsType(CDesignType *pType) { return ((pType && pType->GetType() == designEnergyFieldType) ? (COverlayType *)pType : NULL); }
@@ -4700,6 +4702,7 @@ class COverlayType : public CDesignType
 		int m_iAbsorbAdj[damageCount];			//	Damage absorbed by the field
 		DamageTypeSet m_WeaponSuppress;			//	Types of weapons suppressed
 		int m_iBonusAdj[damageCount];			//	Adjustment to weapons damage
+		Metric m_rDrag;							//	Drag coefficient (1.0 = no drag)
 
 		CEffectCreator *m_pEffect;				//	Effect for field
 		CEffectCreator *m_pHitEffect;			//	Effect when field is hit by damage
@@ -4716,7 +4719,7 @@ class COverlayType : public CDesignType
 		DWORD m_fParalyzeShip:1;				//	If TRUE, ship is paralyzed
 		DWORD m_fDisarmShip:1;					//	If TRUE, ship is disarmed
 		DWORD m_fDisableShipScreen:1;			//	If TRUE, player cannot bring up ship screen
-		DWORD m_fSpare8:1;
+		DWORD m_fSpinShip:1;					//	If TRUE, ship spins uncontrollably
 
 		DWORD m_dwSpare:24;
 	};

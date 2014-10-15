@@ -151,6 +151,17 @@ void CEnergyFieldList::GetImpact (CSpaceObject *pSource, SImpactDesc *retImpact)
 		if (pField->IsShipScreenDisabled())
 			retImpact->bShipScreenDisabled = true;
 
+		//	Do we spin the source ?
+
+		if (pField->Spins(pSource))
+			retImpact->bSpin = true;
+
+		//	Get appy drag
+
+		Metric rDrag;
+		if ((rDrag = pField->GetDrag(pSource)) < 1.0)
+			retImpact->rDrag *= rDrag;
+
 		//	Next
 
 		pField = pField->GetNext();

@@ -1203,8 +1203,8 @@ class CShip : public CSpaceObject
 		DWORD m_fRecalcRotationAccel:1;			//	TRUE if we need to recalc rotation acceleration
 		DWORD m_fParalyzedByOverlay:1;			//	TRUE if one or more overlays paralyze the ship.
 		DWORD m_fDisarmedByOverlay:1;			//	TRUE if one or more overlays disarmed the ship.
-		DWORD m_fSpare6:1;
-		DWORD m_fSpare7:1;
+		DWORD m_fSpinningByOverlay:1;			//	TRUE if we should spin wildly
+		DWORD m_fDragByOverlay:1;				//	TRUE if overlay imposes drag
 		DWORD m_fSpare8:1;
 
 		DWORD m_dwSpare:8;

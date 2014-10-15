@@ -15,11 +15,13 @@
 #define COLOR_ATTRIB							CONSTLIT("color")
 #define DISABLE_SHIP_SCREEN_ATTRIB				CONSTLIT("disableShipScreen")
 #define DISARM_ATTRIB							CONSTLIT("disarm")
+#define DRAG_ATTRIB								CONSTLIT("drag")
 #define IGNORE_SHIP_ROTATION_ATTRIB				CONSTLIT("ignoreSourceRotation")
 #define LABEL_ATTRIB							CONSTLIT("label")
 #define MAX_ATTRIB								CONSTLIT("max")
 #define PARALYZE_ATTRIB							CONSTLIT("paralyze")
 #define SHIELD_OVERLAY_ATTRIB					CONSTLIT("shieldOverlay")
+#define SPIN_ATTRIB								CONSTLIT("spin")
 #define STYLE_ATTRIB							CONSTLIT("style")
 #define UNID_ATTRIB								CONSTLIT("UNID")
 #define BONUS_ADJ_ATTRIB						CONSTLIT("weaponBonusAdj")
@@ -290,6 +292,13 @@ ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fDisarmShip = pDesc->GetAttributeBool(DISARM_ATTRIB);
 	m_fParalyzeShip = pDesc->GetAttributeBool(PARALYZE_ATTRIB);
 	m_fDisableShipScreen = pDesc->GetAttributeBool(DISABLE_SHIP_SCREEN_ATTRIB);
+	m_fSpinShip = pDesc->GetAttributeBool(SPIN_ATTRIB);
+
+	int iDrag;
+	if (pDesc->FindAttributeInteger(DRAG_ATTRIB, &iDrag))
+		m_rDrag = Min(Max(0, iDrag), 100) / 100.0;
+	else
+		m_rDrag = 1.0;
 
 	//	Done
 

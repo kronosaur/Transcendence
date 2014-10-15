@@ -654,6 +654,8 @@ void CShip::CalcOverlayImpact (void)
 
 	m_fDisarmedByOverlay = Impact.bDisarm;
 	m_fParalyzedByOverlay = Impact.bParalyze;
+	m_fSpinningByOverlay = Impact.bSpin;
+	m_fDragByOverlay = (Impact.rDrag < 1.0);
 	}
 
 void CShip::CalcReactorStats (void)
@@ -1057,6 +1059,8 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_fControllerDisabled = false;
 	pShip->m_fParalyzedByOverlay = false;
 	pShip->m_fDisarmedByOverlay = false;
+	pShip->m_fSpinningByOverlay = false;
+	pShip->m_fDragByOverlay = false;
 	pShip->m_dwSpare = 0;
 
 	//	Shouldn't be able to hit a virtual ship
@@ -4579,6 +4583,8 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 	m_fControllerDisabled =		((dwLoad & 0x00040000) ? true : false);
 	m_fParalyzedByOverlay =		((dwLoad & 0x00080000) ? true : false);
 	m_fDisarmedByOverlay =		((dwLoad & 0x00100000) ? true : false);
+	m_fSpinningByOverlay =		((dwLoad & 0x00200000) ? true : false);
+	m_fDragByOverlay =			((dwLoad & 0x00400000) ? true : false);
 
 	//	OK to recompute
 	m_fRecalcRotationAccel = true;
@@ -4991,6 +4997,33 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		if (m_iParalysisTimer > 0)
 			m_iParalysisTimer--;
 		}
+	
+	//	Otherwise, we're paralyzed (by an overlay most-likely)
+
+	else
+		{
+		//	Spin wildly
+
+		if (m_pDocked == NULL && m_fSpinningByOverlay)
+			m_Rotation.Update(m_pClass->GetRotationDesc(), ((GetDestiny() % 2) ? RotateLeft : RotateRight));
+		}
+
+	//	Slow down if an overlay is imposing drag
+
+	if (m_fDragByOverlay
+			&& !ShowParalyzedEffect())
+		{
+		//	We're too lazy to store the drag coefficient, so we recalculate it here.
+		//
+		//	(Since it's rare to have this, it shouldn't been too much of a performance
+		//	penalty. But if necessary we have add a special function to just get the
+		//	drag coefficient from the overlay list.)
+
+		CEnergyFieldList::SImpactDesc Impact;
+		m_EnergyFields.GetImpact(this, &Impact);
+
+		SetVel(CVector(GetVel().GetX() * Impact.rDrag, GetVel().GetY() * Impact.rDrag));
+		}
 
 	//	Drive damage timer
 
@@ -5362,6 +5395,8 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fControllerDisabled ?	0x00040000 : 0);
 	dwSave |= (m_fParalyzedByOverlay ?	0x00080000 : 0);
 	dwSave |= (m_fDisarmedByOverlay ?	0x00100000 : 0);
+	dwSave |= (m_fSpinningByOverlay ?	0x00200000 : 0);
+	dwSave |= (m_fDragByOverlay ?		0x00400000 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	//	Armor

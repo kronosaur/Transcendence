@@ -1849,7 +1849,7 @@ class CEnergyField
 
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void Destroy (CSpaceObject *pSource);
-		inline bool Disarms (CSpaceObject *pSource) { return m_pType->Disarms(); }
+		inline bool Disarms (CSpaceObject *pSource) const { return m_pType->Disarms(); }
 		void FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem *pData, ICCItem **retpResult);
 		void FireOnCreate (CSpaceObject *pSource);
 		bool FireOnDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
@@ -1857,6 +1857,7 @@ class CEnergyField
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
 		inline const CString &GetData (const CString &sAttrib) { return m_Data.GetData(sAttrib); }
 		inline int GetDevice (void) const { return m_iDevice; }
+		inline Metric GetDrag (CSpaceObject *pSource) const { return m_pType->GetDrag(); }
 		inline DWORD GetID (void) const { return m_dwID; }
 		inline CEnergyField *GetNext (void) const { return m_pNext; }
 		CVector GetPos (CSpaceObject *pSource);
@@ -1865,10 +1866,10 @@ class CEnergyField
 		inline COverlayType *GetType(void) const { return m_pType; }
 		inline bool IsDestroyed (void) const { return (m_fDestroyed ? true : false); }
 		inline bool IsShieldOverlay (void) const { return m_pType->IsShieldOverlay(); }
-		inline bool IsShipScreenDisabled (void) { return m_pType->IsShipScreenDisabled(); }
+		inline bool IsShipScreenDisabled (void) const { return m_pType->IsShipScreenDisabled(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
-		inline bool Paralyzes (CSpaceObject *pSource) { return m_pType->Paralyzes(); }
+		inline bool Paralyzes (CSpaceObject *pSource) const { return m_pType->Paralyzes(); }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
 		inline void SetDevice (int iDev) { m_iDevice = iDev; }
@@ -1877,6 +1878,7 @@ class CEnergyField
 		void SetPos (CSpaceObject *pSource, const CVector &vPos);
 		bool SetProperty (CSpaceObject *pSource, const CString &sName, ICCItem *pValue);
 		inline void SetRotation (int iRotation) { m_iRotation = iRotation; }
+		inline bool Spins (CSpaceObject *pSource) const { return m_pType->Spins(); }
 		void Update (CSpaceObject *pSource);
 		void WriteToStream (IWriteStream *pStream);
 
@@ -1916,12 +1918,17 @@ class CEnergyFieldList
 			SImpactDesc (void) :
 					bDisarm(false),
 					bParalyze(false),
-					bShipScreenDisabled(false)
+					bSpin(false),
+					bShipScreenDisabled(false),
+					rDrag(1.0)
 				{ }
 
 			bool bDisarm;					//	TRUE if source is disarmed
 			bool bParalyze;					//	TRUE if source is paralyzed.
-			bool bShipScreenDisabled;		//	TRUE if source cannot bring up ship screen
+			bool bSpin;						//	TRUE if source should spin wildly.
+			bool bShipScreenDisabled;		//	TRUE if source cannot bring up ship screen.
+
+			Metric rDrag;					//	Drag coefficient (1.0 = no drag)
 			};
 
 		CEnergyFieldList (void);
