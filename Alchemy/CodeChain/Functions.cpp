@@ -40,6 +40,11 @@ ICCItem *fnAppend (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 	int i, j;
 	CCodeChain *pCC = pCtx->pCC;
 
+	//	Handle some edge-conditions
+
+	if (pArgs->GetCount() == 0)
+		return pCC->CreateNil();
+
 	//	Create a new list to store the result in
 
 	ICCItem *pResult = pCC->CreateLinkedList();

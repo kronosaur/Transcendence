@@ -37,7 +37,7 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 
 		{	"append",			fnAppend,		0,
 			"(append a b [...]) -> lists are concatenated",
-			"vv*",	0,	},
+			"*",	0,	},
 
 		{	"apply",			fnApply,		0,
 			"(apply exp arg1 arg2 ... argn list) -> Result",
