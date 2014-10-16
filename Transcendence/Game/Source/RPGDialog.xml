@@ -72,11 +72,11 @@
 											(@ actionDesc 'label)
 											Nil
 											(switch
-												(eq (count (@ pageDesc 'action)) 0)
+												(eq (count (@ pageDesc 'actions)) 1)
 													(list "default" "cancel")
 												(eq nextActionID 0)
 													"default"
-												(eq nextActionID (count (@ pageDesc 'actions)))
+												(eq nextActionID (subtract (count (@ pageDesc 'actions)) 1))
 													"cancel"
 												Nil
 												)
