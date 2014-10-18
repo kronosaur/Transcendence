@@ -122,11 +122,15 @@
 									(block (
 										(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
 										)
+										(dbgOutput (@ pageDesc 'nextCode))
 										(if (@ pageDesc 'nextCode)
 											((@ pageDesc 'nextCode))
 											)
 										
 										(switch
+											(eq (@ pageDesc 'nextPane) 'forceUndock)
+												(scrExitScreen gScreen 'forceUndock)
+												
 											(@ pageDesc 'nextPane)
 												(block Nil
 													(scrSetData gScreen 'curPage (rpgFindIndexByID gData (@ pageDesc 'nextPane)))

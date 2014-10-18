@@ -83,7 +83,31 @@
 
 							(setq screenData (typGetData charType 'screenData))
 							(if screenData
-								(scrShowScreen gScreen (@ screenData 'screen) (@ screenData 'pane) (@ screenData 'data))
+							
+								;	If a screen has been set, show it.
+								
+								(switch
+								
+									;	If we have a translateType and translateID, then translate
+									;	[We need to do this sometimes if the data that we're passing has 
+									;	non-serializable objects.]
+									
+									(@ screenData 'translateID)
+										(scrShowScreen 
+											gScreen 
+											(@ screenData 'screen) 
+											(typTranslate (@ screenData 'translateType) (@ screenData 'translateID))
+											)
+									
+									;	Otherwise, we expect a screen.
+									
+									(scrShowScreen 
+										gScreen 
+										(@ screenData 'screen) 
+										(@ screenData 'pane) 
+										(@ screenData 'data)
+										)
+									)
 
 								;	If no set screen, look for missions.
 

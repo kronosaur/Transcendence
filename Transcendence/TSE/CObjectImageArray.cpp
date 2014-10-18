@@ -284,8 +284,9 @@ void CObjectImageArray::CopyImage (CG16bitImage &Dest, int x, int y, int iFrame,
 		if (pSource == NULL)
 			return;
 
-		int xSrc = m_rcImage.left + (iFrame * RectWidth(m_rcImage));
-		int ySrc = m_rcImage.top + (iRotation * RectHeight(m_rcImage));
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iFrame, iRotation, &xSrc, &ySrc);
 
 		Dest.Blt(xSrc,
 				ySrc,
