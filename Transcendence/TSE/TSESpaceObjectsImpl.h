@@ -1107,6 +1107,7 @@ class CShip : public CSpaceObject
 		void CalcBounds (void);
 		int CalcMaxCargoSpace (void) const;
 		void CalcDeviceBonus (void);
+		int CalcDeviceSlotsInUse (int *retiWeaponSlots = NULL, int *retiNonWeapon = NULL) const;
 		bool CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution);
 		InstallItemResults CalcDeviceToReplace (const CItem &Item, int *retiSlot = NULL);
 		DWORD CalcEffectsMask (void);

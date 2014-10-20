@@ -20,6 +20,8 @@
 						to determine the price.
 
 	noItemsText:		Text to show if itemList is empty
+	
+	replaceItem: The installed device to replace (may be Nil).
 
 -->
 
@@ -34,9 +36,21 @@
 				dataFrom=	"player"
 				list=		"*"
 				>
-			(if (@ gData 'criteria)
-				(scrSetListFilter gScreen (@ gData 'criteria))
-				(scrSetListFilter gScreen "dUN")
+			(block (
+				(criteria (if (@ gData 'criteria) (@ gData 'criteria) "dUN"))
+				(minLevel (if (@ gData 'replaceItem) (itmGetLevel (@ gData 'replaceItem)) 1))
+				)
+				
+				(scrSetListFilter gScreen (lambda (theItem)
+					(and
+						(itmMatches theItem criteria)
+						(or
+							(not (@ gData 'replaceItem))
+							(not (itmIsEqual theItem (@ gData 'replaceItem) 'ignoreInstalled))
+							)
+						(geq (itmGetLevel theItem) minLevel)
+						)
+					))
 				)
 		</ListOptions>
 
@@ -72,6 +86,18 @@
 								(shpInstallDevice gPlayerShip (scrGetItem gScreen))
 								(objCharge gPlayerShip (objGetDefaultCurrency gSource) gCost)
 								(typSetData &svPlayer; 'tutorialInstalled True)
+								
+								;	If the original item is still installed, then uninstall it
+							
+								(if (and (@ gData 'replaceItem)
+										(filter (objGetItems gPlayerShip "dI") theItem
+											(itmIsEqual theItem (@ gData 'replaceItem))
+											)
+										)
+									(shpRemoveDevice gPlayerShip (@ gData 'replaceItem))
+									)
+								
+								;	Done
 								
 								(scrExitScreen gScreen)
 								)
@@ -237,6 +263,10 @@
 						(itmMatches theItem criteria)
 						(objGetSellPrice gSource theItem)
 						(objGetItemProperty gSource theItem 'installDevicePrice)
+						(or
+							(not (@ gData 'replaceItem))
+							(not (itmIsEqual theItem (@ gData 'replaceItem) 'ignoreInstalled))
+							)
 						(geq (itmGetLevel theItem) minLevel)
 						)
 					))
@@ -271,12 +301,26 @@
 				<Actions>
 					<Action id="actionBuyAndInstall" default="1">
 						(block (
-							(theItem (scrGetItem gScreen))
+							(theItem (itmSetCount (scrGetItem gScreen) 1))
 							)
 							
 							(rpgBuyItem gSource theItem (scrGetData gScreen 'cost) (objGetDefaultCurrency gSource))
 							(shpInstallDevice gPlayerShip theItem)
 							(typSetData &svPlayer; 'tutorialInstalled True)
+							(objRemoveItem gSource theItem)
+							
+							;	If the original item is still installed, then uninstall it
+							
+							(if (and (@ gData 'replaceItem)
+									(filter (objGetItems gPlayerShip "dI") theItem
+										(itmIsEqual theItem (@ gData 'replaceItem))
+										)
+									)
+								(shpRemoveDevice gPlayerShip (@ gData 'replaceItem))
+								)
+								
+							;	Done
+							
 							(scrExitScreen gScreen)
 							)
 					</Action>

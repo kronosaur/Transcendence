@@ -249,6 +249,7 @@
 		<Trade currency="rin" max="100000" replenish="5000">
 			<Sell	criteria="*NU +RingerValuable;"		priceAdj="550"/>
 			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Sell	criteria="rNU L:1-9; -NotForSale;"	priceAdj="100"	inventoryAdj="100"/>
 			<Buy	criteria="*NU +RingerValuable;"		priceAdj="500"/>
 			<Buy	criteria="*NU +Res; &gt;=4;"		priceAdj="65"/>
 			
@@ -286,7 +287,6 @@
 								(if (gr (objGetBalance gPlayerShip 'rin) 0)
 									(rpgDockServices gPlayerShip {
 										checkMilitaryID: Nil
-										reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
 										})
 									(scrShowPane gScreen "DockServicesGreeter")
 									)
@@ -343,7 +343,6 @@
 									
 									(rpgDockServices gPlayerShip {
 										checkMilitaryID: Nil
-										reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
 										})
 									)
 							</Action>

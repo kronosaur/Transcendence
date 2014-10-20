@@ -15,6 +15,127 @@ const int ITEM_ENTRY_PADDING_TOP =			2;
 const int ITEM_ENTRY_PADDING_LEFT =			4;
 const int ITEM_ENTRY_PADDING_RIGHT =		4;
 
+const int WIDE_COLUMN_SPACING =				200;
+const int NARROW_COLUMN_SPACING =			170;
+const int INTER_SPACING_Y =					30;
+
+const int NARROW_COLUMN_LEFT_X =			-NARROW_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
+const int NARROW_COLUMN_RIGHT_X =			NARROW_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
+const int WIDE_COLUMN_LEFT_X =				-WIDE_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
+const int WIDE_COLUMN_RIGHT_X =				WIDE_COLUMN_SPACING - (ITEM_ENTRY_WIDTH / 2);
+
+enum ELayoutPositions
+	{
+	posFront,
+	posMiddleFront,
+	posMiddle,
+	posMiddleBack,
+	posBack,
+
+	posLeft,
+	posCenter,
+	posRight,
+	};
+
+struct SLayoutDesc
+	{
+	DeviceNames iSlotType;					//	Reserved for this slot type
+	int xLeft;								//	Left coordinate of area (relative to center)
+	int yTop;								//	Top coordinate of area (relative to center)
+
+	ELayoutPositions iFrontPos;
+	ELayoutPositions iSidePos;
+	};
+
+const SLayoutDesc g_MiscDevicesLayout[] =
+	{
+		{
+			devReactor,
+			-(ITEM_ENTRY_WIDTH / 2),
+			-(ITEM_ENTRY_HEIGHT / 2),
+			posMiddle,
+			posCenter,
+			},
+		{
+			devDrive,
+			-(ITEM_ENTRY_WIDTH / 2),
+			-(ITEM_ENTRY_HEIGHT / 2) + INTER_SPACING_Y + ITEM_ENTRY_HEIGHT,
+			posBack,
+			posCenter,
+			},
+		{
+			devCargo,
+			-(ITEM_ENTRY_WIDTH / 2),
+			-(ITEM_ENTRY_HEIGHT / 2) - INTER_SPACING_Y - ITEM_ENTRY_HEIGHT,
+			posFront,
+			posCenter,
+			},
+
+		{
+			devNone,
+			WIDE_COLUMN_RIGHT_X,
+			-ITEM_ENTRY_HEIGHT - (INTER_SPACING_Y / 2),
+			posMiddleFront,
+			posRight,
+			},
+		{
+			devNone,
+			WIDE_COLUMN_LEFT_X,
+			-ITEM_ENTRY_HEIGHT - (INTER_SPACING_Y / 2),
+			posMiddleFront,
+			posLeft,
+			},
+		{
+			devNone,
+			WIDE_COLUMN_RIGHT_X,
+			(INTER_SPACING_Y / 2),
+			posMiddleBack,
+			posRight,
+			},
+		{
+			devNone,
+			WIDE_COLUMN_LEFT_X,
+			(INTER_SPACING_Y / 2),
+			posMiddleBack,
+			posLeft,
+			},
+
+		{
+			devNone,
+			NARROW_COLUMN_RIGHT_X,
+			(INTER_SPACING_Y / 2) + ITEM_ENTRY_HEIGHT + INTER_SPACING_Y,
+			posBack,
+			posRight,
+			},
+		{
+			devNone,
+			NARROW_COLUMN_LEFT_X,
+			(INTER_SPACING_Y / 2) + ITEM_ENTRY_HEIGHT + INTER_SPACING_Y,
+			posBack,
+			posLeft,
+			},
+		{
+			devNone,
+			NARROW_COLUMN_RIGHT_X,
+			-(INTER_SPACING_Y / 2) - (2 * ITEM_ENTRY_HEIGHT) - INTER_SPACING_Y,
+			posFront,
+			posRight
+			},
+		{
+			devNone,
+			NARROW_COLUMN_LEFT_X,
+			-(INTER_SPACING_Y / 2) - (2 * ITEM_ENTRY_HEIGHT) - INTER_SPACING_Y,
+			posFront,
+			posLeft
+			},
+	};
+
+const int MISC_DEVICES_LAYOUT_COUNT =		(sizeof(g_MiscDevicesLayout) / sizeof(g_MiscDevicesLayout[0]));
+const int REACTOR_SLOT_INDEX =				0;
+const int DRIVE_SLOT_INDEX =				1;
+const int CARGO_SLOT_INDEX =				2;
+const int FIRST_UNNAMED_SLOT_INDEX =		3;
+
 CGSelectorArea::CGSelectorArea (const CVisualPalette &VI) :
 		m_VI(VI),
 		m_pSource(NULL),
@@ -57,6 +178,125 @@ void CGSelectorArea::CleanUp (void)
 	m_iCursor = -1;
 	}
 
+bool CGSelectorArea::FindLayoutForPos (const CVector &vPos, const TArray<bool> &SlotStatus, int *retiIndex)
+
+//	FindLayoutForPos
+//
+//	Returns the nearest layout index for the given device position.
+
+	{
+	int i;
+
+	ELayoutPositions iDesiredFront;
+	if (Absolute(vPos.GetY()) <= 1.0)
+		iDesiredFront = posMiddle;
+	else if (vPos.GetY() > 0.0)
+		iDesiredFront = posFront;
+	else
+		iDesiredFront = posBack;
+
+	ELayoutPositions iDesiredSide;
+	if (Absolute(vPos.GetX()) < 1.0)
+		iDesiredSide = posCenter;
+	else if (vPos.GetX() > 0.0)
+		iDesiredSide = posRight;
+	else
+		iDesiredSide = posLeft;
+
+	int iBestFit = 0;
+	int iBestLayout = -1;
+	for (i = 0; i < MISC_DEVICES_LAYOUT_COUNT; i++)
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[i];
+
+		//	Skip slots already in use.
+
+		if (!SlotStatus[i])
+			continue;
+
+		//	Compute our fit
+
+		int iFit = 0;
+		switch (pLayout->iFrontPos)
+			{
+			case posFront:
+				if (iDesiredFront == posFront)
+					iFit += 10;
+				else if (iDesiredFront == posBack)
+					iFit -= 10;
+				break;
+
+			case posMiddleFront:
+				if (iDesiredFront == posFront)
+					iFit += 5;
+				else if (iDesiredFront == posBack)
+					iFit -= 5;
+				break;
+
+			case posMiddle:
+				if (iDesiredFront == posMiddle)
+					iFit += 5;
+				break;
+
+			case posMiddleBack:
+				if (iDesiredFront == posFront)
+					iFit -= 5;
+				else if (iDesiredFront == posBack)
+					iFit += 5;
+				break;
+
+			case posBack:
+				if (iDesiredFront == posFront)
+					iFit -= 10;
+				else if (iDesiredFront == posBack)
+					iFit += 10;
+				break;
+			}
+
+		switch (pLayout->iSidePos)
+			{
+			case posLeft:
+				if (iDesiredSide == posLeft)
+					iFit += 10;
+				else if (iDesiredSide == posRight)
+					iFit -= 10;
+				break;
+
+			case posCenter:
+				if (iDesiredSide == posCenter)
+					iFit += 10;
+				else
+					iFit -= 5;
+				break;
+
+			case posRight:
+				if (iDesiredSide == posLeft)
+					iFit -= 10;
+				else if (iDesiredSide == posRight)
+					iFit += 10;
+				break;
+			}
+
+		//	Compare
+
+		if (iBestLayout == -1 || iFit > iBestFit)
+			{
+			iBestFit = iFit;
+			iBestLayout = i;
+			}
+		}
+
+	//	Done
+
+	if (iBestLayout == -1)
+		return false;
+
+	if (retiIndex)
+		*retiIndex = iBestLayout;
+
+	return true;
+	}
+
 bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) const
 
 //	FindRegionInDirection
@@ -76,8 +316,9 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 	int yCur;
 	if (m_iCursor != -1)
 		{
-		xCur = m_Regions[m_iCursor].rcRect.left;
-		yCur = m_Regions[m_iCursor].rcRect.top;
+		const SEntry &Entry = m_Regions[m_iCursor];
+		xCur = Entry.rcRect.left + (RectWidth(Entry.rcRect) / 2);
+		yCur = Entry.rcRect.top + (RectHeight(Entry.rcRect) / 2);
 		}
 	else
 		{
@@ -120,8 +361,8 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 		if (i != m_iCursor)
 			{
 			const SEntry &Entry = m_Regions[i];
-			int xDist = Absolute(Entry.rcRect.left - xCur);
-			int yDist = Absolute(Entry.rcRect.top - yCur);
+			int xDist = Absolute(Entry.rcRect.left + (RectWidth(Entry.rcRect) / 2) - xCur);
+			int yDist = Absolute(Entry.rcRect.top + (RectHeight(Entry.rcRect) / 2) - yCur);
 			bool bCloser = false;
 
 			//	See if this entry is better than the best so far
@@ -130,6 +371,7 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 				{
 				case moveDown:
 					bCloser = (Entry.rcRect.top > yCur
+							&& (yDist >= xDist)
 							&& (iBest == -1 
 								|| yDist < yBestDist 
 								|| (yDist == yBestDist && xDist < xBestDist)));
@@ -137,6 +379,7 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 
 				case moveLeft:
 					bCloser = (Entry.rcRect.left < xCur
+							&& (xDist >= yDist)
 							&& (iBest == -1
 								|| xDist < xBestDist
 								|| (xDist == xBestDist && yDist < yBestDist)));
@@ -144,6 +387,7 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 
 				case moveRight:
 					bCloser = (Entry.rcRect.left > xCur
+							&& (xDist >= yDist)
 							&& (iBest == -1
 								|| xDist < xBestDist
 								|| (xDist == xBestDist && yDist < yBestDist)));
@@ -151,6 +395,7 @@ bool CGSelectorArea::FindRegionInDirection (EDirections iDir, int *retiIndex) co
 
 				case moveUp:
 					bCloser = (Entry.rcRect.top < yCur
+							&& (yDist >= xDist)
 							&& (iBest == -1 
 								|| yDist < yBestDist 
 								|| (yDist == yBestDist && xDist < xBestDist)));
@@ -701,6 +946,14 @@ void CGSelectorArea::SetRegions (CSpaceObject *pSource, EConfigurations iConfig)
 		case configArmor:
 			SetRegionsFromArmor(pSource);
 			break;
+
+		case configMiscDevices:
+			SetRegionsFromMiscDevices(pSource);
+			break;
+
+		case configWeapons:
+			SetRegionsFromWeapons(pSource);
+			break;
 		}
 
 	Invalidate();
@@ -733,7 +986,7 @@ void CGSelectorArea::SetRegionsFromArmor (CSpaceObject *pSource)
 	int cxArea = RectWidth(rcRect);
 	int cyArea = RectHeight(rcRect);
 
-	const int iRadius = 200;
+	const int iRadius = WIDE_COLUMN_SPACING;
 
 	//	Now add all the armor segments
 
@@ -780,6 +1033,241 @@ void CGSelectorArea::SetRegionsFromArmor (CSpaceObject *pSource)
 	pEntry->rcRect.top = -ITEM_ENTRY_HEIGHT / 2;
 	pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
 	pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+	}
+
+void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
+
+//	SetRegionsFromMiscDevices
+//
+//	Generates regions showing misc devices (including reactor, drive, 
+//	and cargo hold).
+
+	{
+	int i;
+	ASSERT(pSource);
+	if (pSource == NULL)
+		return;
+
+	CShip *pShip = pSource->AsShip();
+	if (pShip == NULL)
+		return;
+
+	CShipClass *pClass = pShip->GetClass();
+
+	//	Create a region for each device.
+
+	bool bHasReactor = false;
+	bool bHasDrive = false;
+	bool bHasCargo = false;
+	int iNextUnamedSlot = FIRST_UNNAMED_SLOT_INDEX;
+	for (i = 0; i < pShip->GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = pShip->GetDevice(i);
+		if (pDevice->IsEmpty())
+			continue;
+
+		//	Figure out the layout descriptor
+
+		const SLayoutDesc *pLayout = NULL;
+		switch (pDevice->GetSlotCategory())
+			{
+			case itemcatCargoHold:
+				pLayout = &g_MiscDevicesLayout[CARGO_SLOT_INDEX];
+				bHasCargo = true;
+				break;
+
+			case itemcatDrive:
+				pLayout = &g_MiscDevicesLayout[DRIVE_SLOT_INDEX];
+				bHasDrive = true;
+				break;
+
+			case itemcatMiscDevice:
+				if (iNextUnamedSlot < MISC_DEVICES_LAYOUT_COUNT)
+					pLayout = &g_MiscDevicesLayout[iNextUnamedSlot++];
+				break;
+
+			case itemcatReactor:
+				pLayout = &g_MiscDevicesLayout[REACTOR_SLOT_INDEX];
+				bHasReactor = true;
+				break;
+			}
+
+		//	Create the region (but only if we have a layout position
+		//	for it).
+
+		if (pLayout)
+			{
+			SEntry *pEntry = m_Regions.Insert();
+			pEntry->iType = typeInstalledItem;
+			pEntry->pItemCtx = new CItemCtx(pShip, pDevice);
+
+			pEntry->rcRect.left = pLayout->xLeft;
+			pEntry->rcRect.top = pLayout->yTop;
+			pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+			pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+			}
+		}
+
+	//	Add empty slots, if necessary
+
+	if (!bHasReactor)
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[REACTOR_SLOT_INDEX];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devReactor;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+		}
+
+	if (!bHasDrive)
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[DRIVE_SLOT_INDEX];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devDrive;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+		}
+
+	if (!bHasCargo)
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[CARGO_SLOT_INDEX];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devCargo;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+		}
+
+	//	Always add a misc device slot
+
+	if (iNextUnamedSlot < MISC_DEVICES_LAYOUT_COUNT)
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[iNextUnamedSlot++];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devNone;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+		}
+	}
+
+void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
+
+//	SetRegionsFromWeapons
+//
+//	Creates regions based on installed weapons.
+
+	{
+	int i;
+	ASSERT(pSource);
+	if (pSource == NULL)
+		return;
+
+	CShip *pShip = pSource->AsShip();
+	if (pShip == NULL)
+		return;
+
+	CShipClass *pClass = pShip->GetClass();
+
+	//	Keep track of layouts that have already been used.
+
+	TArray<bool> SlotStatus;
+	SlotStatus.InsertEmpty(MISC_DEVICES_LAYOUT_COUNT);
+	for (i = 0; i < MISC_DEVICES_LAYOUT_COUNT; i++)
+		SlotStatus[i] = true;
+
+	//	Create a region for each weapon.
+
+	bool bHasLauncher = false;
+	int iIndex;
+	for (i = 0; i < pShip->GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = pShip->GetDevice(i);
+		if (pDevice->IsEmpty() 
+				|| (pDevice->GetSlotCategory() != itemcatWeapon 
+					&& pDevice->GetSlotCategory() != itemcatLauncher))
+			continue;
+
+		if (pDevice->GetCategory() == itemcatLauncher)
+			bHasLauncher = true;
+
+		//	Figure out the best layout descriptor
+
+		if (!FindLayoutForPos(pDevice->GetPosOffset(pShip), SlotStatus, &iIndex))
+			continue;
+
+		//	Create the region
+
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[iIndex];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeInstalledItem;
+		pEntry->pItemCtx = new CItemCtx(pShip, pDevice);
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+
+		//	Mark the layout as used
+
+		SlotStatus[iIndex] = false;
+		}
+
+	//	If necessary, add a launcher slot
+
+	if (!bHasLauncher
+			&& FindLayoutForPos(CVector(), SlotStatus, &iIndex))
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[iIndex];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devMissileWeapon;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+
+		SlotStatus[iIndex] = false;
+		}
+
+	//	Always add an empty slot
+
+	if (FindLayoutForPos(CVector(), SlotStatus, &iIndex))
+		{
+		const SLayoutDesc *pLayout = &g_MiscDevicesLayout[iIndex];
+
+		SEntry *pEntry = m_Regions.Insert();
+		pEntry->iType = typeEmptySlot;
+		pEntry->iSlotType = devPrimaryWeapon;
+
+		pEntry->rcRect.left = pLayout->xLeft;
+		pEntry->rcRect.top = pLayout->yTop;
+		pEntry->rcRect.right = pEntry->rcRect.left + ITEM_ENTRY_WIDTH;
+		pEntry->rcRect.bottom = pEntry->rcRect.top + ITEM_ENTRY_HEIGHT;
+
+		SlotStatus[iIndex] = false;
+		}
 	}
 
 void CGSelectorArea::Update (void)

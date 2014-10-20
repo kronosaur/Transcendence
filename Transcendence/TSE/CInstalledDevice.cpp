@@ -236,6 +236,31 @@ CVector CInstalledDevice::GetPos (CSpaceObject *pSource)
 		return pSource->GetPos();
 	}
 
+CVector CInstalledDevice::GetPosOffset (CSpaceObject *pSource)
+
+//	GetPosOffset
+//
+//	Returns the position of the device
+
+	{
+	if (m_f3DPosition)
+		{
+		int iScale = pSource->GetImage().GetImageViewportSize();
+
+		CVector vOffset;
+		C3DConversion::CalcCoord(iScale, 90 + m_iPosAngle, m_iPosRadius, m_iPosZ, &vOffset);
+
+		return vOffset;
+		}
+	else if (m_iPosRadius)
+		{
+		return PolarToVector((m_iPosAngle + 90) % 360,
+					m_iPosRadius * g_KlicksPerPixel);
+		}
+	else
+		return CVector();
+	}
+
 void CInstalledDevice::InitFromDesc (const SDeviceDesc &Desc)
 
 //	InitFromDesc

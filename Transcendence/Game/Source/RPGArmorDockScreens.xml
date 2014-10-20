@@ -323,14 +323,13 @@
 									checkMilitaryID: (@ gData 'checkMilitaryID)
 									})
 									
-							;	If shields...
+							;	Otherwise, assume shields
 							
-							(itmMatches (scrGetItem gScreen) "s")
-								(scrShowScreen gScreen &dsRPGUpgradeDevice; {
-									criteria: "sUN"
-									checkMilitaryID: (@ gData 'checkMilitaryID)
-									replaceItem: (scrGetItem gScreen)
-									})
+							(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+								criteria: "sUN"
+								checkMilitaryID: (@ gData 'checkMilitaryID)
+								replaceItem: (scrGetItem gScreen)
+								})
 							)
 					</Action>
 					
@@ -349,7 +348,11 @@
 					</Action>
 					
 					<Action id="actionRemove">
-						(scrShowPane gScreen "RemoveDevice")
+						(scrShowScreen gScreen &dsRPGRemoveDevice; {
+							shipObj: gPlayerShip
+							dockObj: gSource
+							deviceItem: (scrGetItem gScreen)
+							})
 					</Action>
 					
 					<Action id="actionDone" cancel="1">
@@ -357,80 +360,6 @@
 					</Action>
 				</Actions>
 			</Default>
-		
-			<RemoveDevice
-					noListNavigation="true"
-					>
-				<OnPaneInit>
-					(block (
-						(theItem (scrGetItem gScreen))
-						(theShip gPlayerShip)
-						
-						(currencyUsed (objGetDefaultCurrency gSource))
-						(costToRemove (divide (objGetItemProperty gSource theItem 'installDevicePrice) 2))
-						
-						(result (shpCanRemoveDevice gPlayerShip theItem))
-						
-						(desc Nil)
-						(canRemove Nil)
-						)
-						
-						(switch
-							(not (isint result))
-								(setq desc gResult)
-								
-							(not (eq result 0))
-								(setq desc "The device cannot be removed.")
-								
-							(gr (itmGetMass theItem) (objGetCargoSpaceLeft gPlayerShip))
-								(setq desc (typTranslate &dsRPGManageArmor; 'descNoRoomForDevice))
-								
-							(ls (objGetBalance gPlayerShip currencyUsed) costToRemove)
-								(setq desc (typTranslate &dsRPGManageArmor; 'descRemoveCantAfford { cost:(fmtCurrency currencyUsed costToRemove) }))
-								
-							(eq costToRemove 0)
-								(block Nil
-									(setq desc (typTranslate &dsRPGManageArmor; 'descRemoveFree))
-									(scrSetData gScreen 'cost 0)
-									(setq canRemove True)
-									)
-									
-							(block Nil
-								(setq desc (typTranslate &dsRPGManageArmor; 'descRemove { cost:(fmtCurrency currencyUsed costToRemove) }))
-								(scrSetData gScreen 'cost costToRemove)
-								(setq canRemove True)
-								)
-							)
-						
-						;	Set description
-						
-						(scrSetDesc gScreen desc)
-						
-						;	Set actions
-						
-						(scrEnableAction gScreen 'actionRemove canRemove)
-						)
-				</OnPaneInit>
-				
-				<Actions>
-					<Action id="actionRemove" default="1">
-						(block (thisItem currencyUsed)
-							(setq thisItem (scrGetItem gScreen))
-							(setq currencyUsed (objGetDefaultCurrency gSource))
-
-							(shpRemoveDevice gPlayerShip thisItem)
-							(objCharge gPlayerShip currencyUsed (scrGetData gScreen 'cost))
-
-							(scrRefreshScreen gScreen)
-							(scrShowPane gScreen "Default")
-							)
-					</Action>
-					
-					<Action id="actionCancel" cancel="1">
-						(scrShowPane gScreen "Default")
-					</Action>
-				</Actions>
-			</RemoveDevice>
 		</Panes>
 		
 		<Language>
@@ -449,11 +378,674 @@
 			<Text id="descArmorCantAfford">(cat "The ship's " (@ gData 'armorNoun) " can be repaired for " (@ gData 'cost) ", which, unfortunately, is more than you can afford.")</Text>
 			<Text id="descArmorFreeRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and can be repaired free of charge.")</Text>
 			<Text id="descArmorRepair">(cat "The ship's " (@ gData 'armorNoun) " is damaged and will cost " (@ gData 'cost) " to repair.")</Text>
+		</Language>
+	</DockScreen>
+	
+<!-- MISC DEVICES MANAGEMENT SCREEN ============================================
+
+	This screen allows the player to install miscellaneous devices, including
+	reactor, drive, and cargo hold.
+
+	gData uses the following fields:
+
+	'checkMilitaryID: If True, we should check for a military ID.
+
+-->
+
+	<DockScreen UNID="&dsRPGManageMiscDevices;"
+			type=				"miscSelector"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"d~wsI"
+			initialItem="=(block (
+				(desiredDevice (scrGetData gScreen 'deviceSelected))
+				(device
+					(switch
+						(not (scrGetItem gScreen))
+							(@ (scrGetListEntry gScreen) 'category)
+							
+						(itmGetInstallPos (scrGetItem gScreen))
+						)
+					)
+				)
+
+				(or (not desiredDevice) (eq device desiredDevice))
+				)"
+			/>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theItem (scrGetItem gScreen))
+						(theShip gPlayerShip)
+						
+						(canDisable Nil)
+						(canEnable Nil)
+						(canInstall Nil)
+						(canRemove Nil)
+						(canReplace Nil)
+						(canUpgrade Nil)
+						
+						(deviceTable {
+							cargoHold: {
+								criteria: "cUN"
+								}
+								
+							device: {
+								criteria: "d~wscrv UN"
+								}
+								
+							drive: {
+								criteria: "vUN"
+								}
+								
+							reactor: {
+								criteria: "rUN"
+								}
+							})
+							
+						(category (if theItem (itmGetProperty theItem 'category) (@ (scrGetListEntry gScreen) 'category)))
+						(categoryDesc (@ deviceTable category))
+						)
+						
+						(scrSetData gScreen 'categoryCriteria (@ categoryDesc 'criteria))
+						
+						;	Figure out desc, etc.
+						
+						(switch
+							;	If we have an item then this is an installed device
+
+							theItem
+								(block (
+									(isEnabled (objGetItemProperty theShip theItem 'enabled))
+									)
+								
+									(scrSetControlValue gScreen 'currentItem {
+										source: theShip
+										item: theItem
+										})
+										
+									;	Remember selection
+									
+									(scrSetData gScreen 'deviceSelected (itmGetInstallPos theItem))
+										
+									;	Does this station have any items that we can purchase?
+								
+									(setq canUpgrade
+										(and
+											(not (eq category 'device))
+											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+												(and (objGetSellPrice gSource theItemToBuy)
+														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+														)
+												)
+											)
+										)
+										
+									;	Can we remove the item?
+								
+									(setq canRemove	(objGetItemProperty gSource theItem 'installDevicePrice))
+									
+									;	Do we have any devices in cargo hold that we can use
+									;	to replace this device?
+								
+									(setq canReplace
+										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
+											(and
+												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+												(or (eq category 'device)
+													(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+													)
+												)
+											)
+										)
+										
+									;	Enable disable?
+
+									(if (objGetItemProperty theShip theItem 'canBeDisabled)
+										(block Nil
+											(setq canDisable isEnabled)
+											(setq canEnable (not isEnabled))
+											)
+										)
+									)
+									
+							;	Otherwise, this is an empty slot, so we display something
+							;	based on the item category
+							
+							(block (
+								)
+								
+								;	Set description
+								
+								(scrSetControlValue gScreen 'currentItem {
+									title: (scrTranslate gScreen (cat "slotTitle:" category))
+									desc: (scrTranslate gScreen (cat "slotDesc:" category) {
+										slotsAvail: (objGetProperty theShip 'availableNonWeaponSlots)
+										})
+									})
+									
+								;	Remember selection
+									
+								(scrSetData gScreen 'deviceSelected category)
+								
+								;	Do we have any devices to install from cargo hold?
+
+								(setq canInstall (objGetItems theShip (@ categoryDesc 'criteria)))
+								
+								;	Does this station have any items that we can purchase?
+								
+								(setq canUpgrade
+									(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+										(and (objGetSellPrice gSource theItemToBuy)
+												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+												)
+										)
+									)
+								)
+							)
+							
+						;	Enable/disable various actions
+								
+						(scrShowAction gScreen 'actionReplace canReplace)
+						(scrShowAction gScreen 'actionInstall canInstall)
+						(scrShowAction gScreen 'actionUpgrade canUpgrade)
+						(scrShowAction gScreen 'actionDisable canDisable)
+						(scrShowAction gScreen 'actionEnable canEnable)
+						(scrShowAction gScreen 'actionRemove canRemove)
+						)
+				</OnPaneInit>
+				
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionInstall">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							})
+					</Action>
+					
+					<Action id="actionReplace">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							replaceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionUpgrade">
+						(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							replaceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionEnable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentEnabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionDisable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentDisabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionRemove">
+						(scrShowScreen gScreen &dsRPGRemoveDevice; {
+							shipObj: gPlayerShip
+							dockObj: gSource
+							deviceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDisable">"Disa[b]le"</Text>
+			<Text id="actionEnable">"Ena[b]le"</Text>
+			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionRemove">"Remo[v]e"</Text>
+			<Text id="actionReplace">"Re[p]lace"</Text>
+			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
 			
-			<Text id="descNoRoomForDevice">"The shield generator cannot be removed because there is no room in your cargo hold to store it."</Text>
-			<Text id="descRemoveCantAfford">(cat "The shield generator can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")</Text>
-			<Text id="descRemoveFree">"The shield generator can be removed free of charge."</Text>
-			<Text id="descRemove">(cat "The shield generator can be removed for " (@ gData 'cost) ".")</Text>
+			<Text id="descItemInstalled">
+				(cat
+					(itmGetName (@ gData 'item) 0x0021) " installed."
+					)
+			</Text>
+			
+			<Text id="slotTitle:cargoHold">"Cargo Hold Slot"</Text>
+			<Text id="slotDesc:cargoHold">
+				(cat
+					"Your ship does not have a cargo hold upgrade installed.\n\n"
+					
+					"Cargo hold upgrade can be installed to increase the carrying "
+					"capacity of your ship."
+					)
+			</Text>
+			
+			<Text id="slotTitle:device">"Device Slot"</Text>
+			<Text id="slotDesc:device">
+				(switch
+					(eq (@ gData 'slotsAvail) 0)
+						(cat
+							"There are no free slots available for miscellaneous devices. "
+							"(However, some devices do not require a free slot to be installed.)"
+							)
+							
+					(eq (@ gData 'slotsAvail) 1)
+						(cat
+							"Your ship has a free slot available for installing miscellaneous "
+							"devices."
+							)
+							
+					(cat
+						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing miscellaneous "
+						"devices."
+						)
+					)
+			</Text>
+			
+			<Text id="slotTitle:drive">"Drive Slot"</Text>
+			<Text id="slotDesc:drive">
+				(cat
+					"Your ship does not have a drive upgrade installed.\n\n"
+					
+					"Drive upgrades can be installed to increase the thrust and velocity "
+					"of your ship."
+					)
+			</Text>
+			
+			<Text id="slotTitle:reactor">"Reactor Slot"</Text>
+			<Text id="slotDesc:reactor">"Your ship does not have a reactor installed."</Text>
+		</Language>
+	</DockScreen>
+	
+<!-- WEAPONS MANAGEMENT SCREEN =================================================
+
+	This screen allows the player to install weapons.
+
+	gData uses the following fields:
+
+	'checkMilitaryID: If True, we should check for a military ID.
+
+-->
+
+	<DockScreen UNID="&dsRPGManageWeapons;"
+			type=				"weaponsSelector"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+
+		<ListOptions
+			dataFrom=	"player"
+			list=		"wI"
+			initialItem="=(block (
+				(desiredDevice (scrGetData gScreen 'deviceSelected))
+				(device
+					(switch
+						(not (scrGetItem gScreen))
+							(@ (scrGetListEntry gScreen) 'category)
+							
+						(itmGetInstallPos (scrGetItem gScreen))
+						)
+					)
+				)
+
+				(or (not desiredDevice) (eq device desiredDevice))
+				)"
+			/>
+
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theItem (scrGetItem gScreen))
+						(theShip gPlayerShip)
+						
+						(canDisable Nil)
+						(canEnable Nil)
+						(canInstall Nil)
+						(canRemove Nil)
+						(canReplace Nil)
+						(canUpgrade Nil)
+						
+						(deviceTable {
+							weapon: {
+								criteria: "pUN"
+								}
+								
+							launcher: {
+								criteria: "lUN"
+								}
+							})
+							
+						(category (if theItem (itmGetProperty theItem 'category) (@ (scrGetListEntry gScreen) 'category)))
+						(categoryDesc (@ deviceTable category))
+						)
+						
+						(scrSetData gScreen 'categoryCriteria (@ categoryDesc 'criteria))
+						
+						;	Figure out desc, etc.
+						
+						(switch
+							;	If we have an item then this is an installed device
+
+							theItem
+								(block (
+									(isEnabled (objGetItemProperty theShip theItem 'enabled))
+									)
+								
+									(scrSetControlValue gScreen 'currentItem {
+										source: theShip
+										item: theItem
+										})
+										
+									;	Remember selection
+									
+									(scrSetData gScreen 'deviceSelected (itmGetInstallPos theItem))
+										
+									;	Does this station have any items that we can purchase?
+								
+									(setq canUpgrade
+										(and
+											(not (eq category 'device))
+											(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+												(and (objGetSellPrice gSource theItemToBuy)
+														(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+														(not (itmIsEqual theItemToBuy theItem 'ignoreInstalled))
+														(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+														)
+												)
+											)
+										)
+										
+									;	Can we remove the item?
+								
+									(setq canRemove	(objGetItemProperty gSource theItem 'installDevicePrice))
+									
+									;	Do we have any devices in cargo hold that we can use
+									;	to replace this device?
+								
+									(setq canReplace
+										(filter (objGetItems theShip (@ categoryDesc 'criteria)) theItemInCargo
+											(and
+												(objGetItemProperty gSource theItemInCargo 'installDevicePrice)
+												(not (itmIsEqual theItemInCargo theItem 'ignoreInstalled))
+												(geq (itmGetLevel theItemToBuy) (itmGetLevel theItem))
+												)
+											)
+										)
+										
+									;	Enable disable?
+
+									(if (objGetItemProperty theShip theItem 'canBeDisabled)
+										(block Nil
+											(setq canDisable isEnabled)
+											(setq canEnable (not isEnabled))
+											)
+										)
+									)
+									
+							;	Otherwise, this is an empty slot, so we display something
+							;	based on the item category
+							
+							(block (
+								)
+								
+								;	Set description
+								
+								(scrSetControlValue gScreen 'currentItem {
+									title: (scrTranslate gScreen (cat "slotTitle:" category))
+									desc: (scrTranslate gScreen (cat "slotDesc:" category) {
+										slotsAvail: (objGetProperty theShip 'availableWeaponSlots)
+										})
+									})
+									
+								;	Remember selection
+									
+								(scrSetData gScreen 'deviceSelected category)
+								
+								;	Do we have any devices to install from cargo hold?
+
+								(setq canInstall (objGetItems theShip (@ categoryDesc 'criteria)))
+								
+								;	Does this station have any items that we can purchase?
+								
+								(setq canUpgrade
+									(filter (objGetItems gSource (@ categoryDesc 'criteria)) theItemToBuy
+										(and (objGetSellPrice gSource theItemToBuy)
+												(objGetItemProperty gSource theItemToBuy 'installDevicePrice)
+												)
+										)
+									)
+								)
+							)
+							
+						;	Enable/disable various actions
+								
+						(scrShowAction gScreen 'actionReplace canReplace)
+						(scrShowAction gScreen 'actionInstall canInstall)
+						(scrShowAction gScreen 'actionUpgrade canUpgrade)
+						(scrShowAction gScreen 'actionDisable canDisable)
+						(scrShowAction gScreen 'actionEnable canEnable)
+						(scrShowAction gScreen 'actionRemove canRemove)
+						)
+				</OnPaneInit>
+				
+				<Controls>
+					<ItemDisplay id="currentItem"/>
+					<Text id="desc"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionInstall">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							})
+					</Action>
+					
+					<Action id="actionReplace">
+						(scrShowScreen gScreen &dsRPGInstallDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							replaceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionUpgrade">
+						(scrShowScreen gScreen &dsRPGUpgradeDevice; {
+							criteria: (scrGetData gScreen 'categoryCriteria)
+							checkMilitaryID: (@ gData 'checkMilitaryID)
+							replaceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionEnable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentEnabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionDisable">
+						(block Nil
+							(objSetItemProperty gPlayerShip (scrGetItem gScreen) 'enabled 'silentDisabled)
+							(scrShowPane gScreen "Default")
+							)
+					</Action>
+					
+					<Action id="actionRemove">
+						(scrShowScreen gScreen &dsRPGRemoveDevice; {
+							shipObj: gPlayerShip
+							dockObj: gSource
+							deviceItem: (scrGetItem gScreen)
+							})
+					</Action>
+					
+					<Action id="actionDone" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionDisable">"Disa[b]le"</Text>
+			<Text id="actionEnable">"Ena[b]le"</Text>
+			<Text id="actionInstall">"[I]nstall"</Text>
+			<Text id="actionRemove">"Remo[v]e"</Text>
+			<Text id="actionReplace">"Re[p]lace"</Text>
+			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
+			
+			<Text id="slotTitle:launcher">"Launcher Slot"</Text>
+			<Text id="slotDesc:launcher">"Your ship does not have a missile launcher installed."</Text>
+			
+			<Text id="slotTitle:weapon">"Weapon Slot"</Text>
+			<Text id="slotDesc:weapon">
+				(switch
+					(eq (@ gData 'slotsAvail) 0)
+						(cat
+							"There are no free slots available for weapons. "
+							"(However, some weapons do not require a free slot to be installed.)"
+							)
+							
+					(eq (@ gData 'slotsAvail) 1)
+						(cat
+							"Your ship has a free slot available for installing weapons."
+							)
+							
+					(cat
+						"Your ship has " (@ gData 'slotsAvail) " free slots available for installing weapons."
+						)
+					)
+			</Text>
+		</Language>
+	</DockScreen>
+	
+<!-- REMOVE DEVICE SCREEN ======================================================
+
+	This screen allows the player to remove a currently installed device.
+
+	gData uses the following fields:
+
+	shipObj: The object from which we are removing the device.
+	dockObj: The object that is removing the device.
+	deviceItem: The item to remove.
+	
+-->
+
+	<DockScreen UNID="&dsRPGRemoveDevice;"
+			inherit=			"&dsDockScreenBase;"
+			nestedScreen=		"true"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theItem (@ gData 'deviceItem))
+						(theShip (@ gData 'shipObj))
+						(theDock (@ gData 'dockObj))
+						
+						(currencyUsed (objGetDefaultCurrency theDock))
+						(costToRemove (divide (objGetItemProperty theDock theItem 'installDevicePrice) 2))
+						
+						(result (shpCanRemoveDevice theShip theItem))
+						
+						(desc Nil)
+						(canRemove Nil)
+						)
+						
+						(switch
+							(not (isint result))
+								(setq desc result)
+								
+							(not (eq result 0))
+								(setq desc "The device cannot be removed.")
+								
+							(gr (itmGetMass theItem) (objGetCargoSpaceLeft theShip))
+								(setq desc (scrTranslate gScreen 'descNoRoomForDevice))
+								
+							(ls (objGetBalance theShip currencyUsed) costToRemove)
+								(setq desc (scrTranslate gScreen 'descRemoveCantAfford { cost:(fmtCurrency currencyUsed costToRemove) }))
+								
+							(eq costToRemove 0)
+								(block Nil
+									(setq desc (scrTranslate gScreen 'descRemoveFree))
+									(scrSetData gScreen 'cost 0)
+									(setq canRemove True)
+									)
+									
+							(block Nil
+								(setq desc (scrTranslate gScreen 'descRemove { cost:(fmtCurrency currencyUsed costToRemove) }))
+								(scrSetData gScreen 'cost costToRemove)
+								(setq canRemove True)
+								)
+							)
+						
+						;	Set description
+						
+						(scrSetDesc gScreen desc)
+						
+						;	Set actions
+						
+						(scrEnableAction gScreen 'actionRemove canRemove)
+						)
+				</OnPaneInit>
+				
+				<Actions>
+					<Action id="actionRemove" default="1">
+						(block (
+							(theItem (@ gData 'deviceItem))
+							(theShip (@ gData 'shipObj))
+							(theDock (@ gData 'dockObj))
+							(currencyUsed (objGetDefaultCurrency theDock))
+							)
+							
+							(shpRemoveDevice theShip theItem)
+							(objCharge theShip currencyUsed (scrGetData gScreen 'cost))
+
+							(scrExitScreen gScreen)
+							)
+					</Action>
+					
+					<Action id="actionCancel" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+		
+		<Language>
+			<Text id="actionRemove">"[R]emove"</Text>
+			
+			<Text id="descNoRoomForDevice">"The device cannot be removed because there is no room in your cargo hold to store it."</Text>
+			<Text id="descRemoveCantAfford">(cat "The device can be removed for " (@ gData 'cost) ". Unfortunately, you cannot afford the cost.")</Text>
+			<Text id="descRemoveFree">"The device can be removed free of charge."</Text>
+			<Text id="descRemove">(cat "The device can be removed for " (@ gData 'cost) ".")</Text>
 		</Language>
 	</DockScreen>
 

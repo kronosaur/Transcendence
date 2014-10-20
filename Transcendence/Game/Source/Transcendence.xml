@@ -986,6 +986,9 @@
 	<!ENTITY dsRPGCommoditiesExchange	"0x0001002B">
 	<!ENTITY dsRPGCommoditiesExchangeBuy	"0x0001002C">
 	<!ENTITY dsRPGDialog				"0x0001002D">
+	<!ENTITY dsRPGManageMiscDevices		"0x0001002E">
+	<!ENTITY dsRPGRemoveDevice			"0x0001002F">
+	<!ENTITY dsRPGManageWeapons			"0x00010030">
 	
 	<!-- CANONICAL UNIVERSE LIBRARY 0002 -->
 	

@@ -490,9 +490,8 @@
 						;	at this station.
 
 						(scrShowAction gScreen 'actionRepairArmor canRepairArmor)
-						(scrShowAction gScreen 'actionInstallDevice canInstallDevices)
-						(scrShowAction gScreen 'actionRemoveDevice canInstallDevices)
-						(scrShowAction gScreen 'actionUpgradeReactor (@ gData 'reactorUpgrade))
+						(scrShowAction gScreen 'actionWeapons canInstallDevices)
+						(scrShowAction gScreen 'actionMiscDevices canInstallDevices)
 						
 						;	Descriptor
 						
@@ -510,29 +509,19 @@
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							})
 					</Action>
-
-					<Action id="actionInstallDevice">
-						(scrShowScreen gScreen &dsRPGInstallDevice; {
+					
+					<Action id="actionWeapons">
+						(scrShowScreen gScreen &dsRPGManageWeapons; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							})
 					</Action>
 
-					<Action id="actionRemoveDevice">
-						(block Nil
-							(setq gMargin 100)
-							(scrShowScreen gScreen &dsRemoveDevice;)
-							)
-					</Action>
-
-					<Action id="actionUpgradeReactor">
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList; {
-							itemList: (@ gData 'reactorUpgrade)
-							priceAdj: Nil
+					<Action id="actionMiscDevices">
+						(scrShowScreen gScreen &dsRPGManageMiscDevices; {
 							checkMilitaryID: (@ gData 'checkMilitaryID)
-							noItemsText: (scrTranslate gScreen 'errorNoReactorTech)
 							})
 					</Action>
-
+					
 					<Action id="actionDone" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
@@ -620,11 +609,13 @@
 		<Language>
 			<Text id="actionDone">"Do[n]e"</Text>
 			<Text id="actionInstallDevice">"Install [D]evice"</Text>
+			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
 			<Text id="actionRefuel">"[R]efuel"</Text>
 			<Text id="actionRemoveDevice">"Remo[v]e Device"</Text>
 			<Text id="actionRemoveOverlays">"[R]emove All"</Text>
-			<Text id="actionRepairArmor">"Repair or Replace [A]rmor"</Text>
+			<Text id="actionRepairArmor">"[A]rmor and Shields"</Text>
 			<Text id="actionUpgradeReactor">"U[p]grade Reactor"</Text>
+			<Text id="actionWeapons">"[W]eapons"</Text>
 			
 			<Text id="dockServicesScreenDesc">"You are at a dock services terminal."</Text>
 			

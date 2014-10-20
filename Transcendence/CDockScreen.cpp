@@ -87,6 +87,8 @@ const int ACTION_CUSTOM_PREV_ID =	301;
 #define SCREEN_TYPE_CUSTOM_PICKER	CONSTLIT("customPicker")
 #define SCREEN_TYPE_CUSTOM_ITEM_PICKER	CONSTLIT("customItemPicker")
 #define SCREEN_TYPE_ITEM_PICKER		CONSTLIT("itemPicker")
+#define SCREEN_TYPE_MISC_SELECTOR	CONSTLIT("miscSelector")
+#define SCREEN_TYPE_WEAPONS_SELECTOR	CONSTLIT("weaponsSelector")
 
 #define ALIGN_CENTER				CONSTLIT("center")
 #define ALIGN_RIGHT					CONSTLIT("right")
@@ -1221,6 +1223,12 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	else if (strEquals(sType, SCREEN_TYPE_ARMOR_SELECTOR))
 		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configArmor);
+
+	else if (strEquals(sType, SCREEN_TYPE_MISC_SELECTOR))
+		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configMiscDevices);
+
+	else if (strEquals(sType, SCREEN_TYPE_WEAPONS_SELECTOR))
+		m_pDisplay = new CDockScreenSelector(CGSelectorArea::configWeapons);
 
 	else
 		m_pDisplay = new CDockScreenNullDisplay;

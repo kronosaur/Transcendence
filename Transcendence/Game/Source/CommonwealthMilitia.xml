@@ -305,6 +305,7 @@
 
 		<Trade currency="credit" max="50000" replenish="2500">
 			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="110"/>
+			<Sell	criteria="rNU L:1-7; -Illegal; -NotForSale;"	priceAdj="110"	inventoryAdj="100"/>
 			
 			<Refuel			criteria="f +BasicFuel; L:3-8;" priceAdj="100"/>
 			<RepairArmor	criteria="a L:1-8;" priceAdj="100"/>
@@ -982,7 +983,6 @@
 							<Action name="Dock Services" key="D">
 								(rpgDockServices gPlayerShip {
 									checkMilitaryID: True
-									reactorUpgrade: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-7;")
 									})
 							</Action>
 

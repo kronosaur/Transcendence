@@ -245,11 +245,14 @@ class CGSelectorArea : public AGArea
 
 		void CalcRegionRect (const SEntry &Entry, int xCenter, int yCenter, RECT *retrcRect);
 		void CleanUp (void);
+		bool FindLayoutForPos (const CVector &vPos, const TArray<bool> &SlotStatus, int *retiIndex = NULL);
 		bool FindRegionInDirection (EDirections iDir, int *retiIndex = NULL) const;
 		void PaintEmptySlot (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
 		void PaintInstalledItem (CG16bitImage &Dest, const RECT &rcRect, const SEntry &Entry);
 		void PaintModifier (CG16bitImage &Dest, int x, int y, const CString &sText, WORD wColor, WORD wBackColor, int *rety);
 		void SetRegionsFromArmor (CSpaceObject *pSource);
+		void SetRegionsFromMiscDevices (CSpaceObject *pSource);
+		void SetRegionsFromWeapons (CSpaceObject *pSource);
 
 		const CVisualPalette &m_VI;
 

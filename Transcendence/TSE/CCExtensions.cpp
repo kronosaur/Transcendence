@@ -662,6 +662,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"property\n\n"
 			
 			"   'blindingImmune\n"
+			"   'canBeDisabled\n"
 			"   'category\n"
 			"   'charges\n"
 			"   'damaged\n"
@@ -1377,6 +1378,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"property (ships)\n\n"
 			
+			"   'availableNonWeaponSlots\n"
+			"   'availableWeaponSlots\n"
 			"   'blindingImmune\n"
 			"   'character\n"
 			"   'characterClass\n"

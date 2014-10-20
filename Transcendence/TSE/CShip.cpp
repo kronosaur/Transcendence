@@ -45,6 +45,8 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define FIELD_SHIELD_UNID						CONSTLIT("shieldsUNID")
 #define FIELD_THRUST_TO_WEIGHT					CONSTLIT("thrustToWeight")
 
+#define PROPERTY_AVAILABLE_NON_WEAPON_SLOTS		CONSTLIT("availableNonWeaponSlots")
+#define PROPERTY_AVAILABLE_WEAPON_SLOTS			CONSTLIT("availableWeaponSlots")
 #define PROPERTY_BLINDING_IMMUNE				CONSTLIT("blindingImmune")
 #define PROPERTY_CHARACTER						CONSTLIT("character")
 #define PROPERTY_CHARACTER_CLASS				CONSTLIT("characterClass")
@@ -349,6 +351,45 @@ void CShip::CalcDeviceBonus (void)
 		m_pController->OnStatsChanged();
 	}
 
+int CShip::CalcDeviceSlotsInUse (int *retiWeaponSlots, int *retiNonWeapon) const
+
+//	CalcDeviceSlotsInUse
+//
+//	Returns the number of device slots being used
+
+	{
+	int i;
+	int iAll = 0;
+	int iWeapons = 0;
+	int iNonWeapons = 0;
+
+	//	Count the number of slots being used up currently
+
+	for (i = 0; i < GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = GetDevice(i);
+		if (!pDevice->IsEmpty())
+			{
+			int iSlots = pDevice->GetClass()->GetSlotsRequired();
+			iAll += iSlots;
+
+			if (pDevice->GetSlotCategory() == itemcatWeapon 
+					|| pDevice->GetSlotCategory() == itemcatLauncher)
+				iWeapons += iSlots;
+			else
+				iNonWeapons += iSlots;
+			}
+		}
+
+	if (retiWeaponSlots)
+		*retiWeaponSlots = iWeapons;
+
+	if (retiNonWeapon)
+		*retiNonWeapon = iNonWeapons;
+
+	return iAll;
+	}
+
 bool CShip::CalcDeviceTarget (STargetingCtx &Ctx, CItemCtx &ItemCtx, CSpaceObject **retpTarget, int *retiFireSolution)
 
 //	CalcDeviceTarget
@@ -479,27 +520,12 @@ CSpaceObject::InstallItemResults CShip::CalcDeviceToReplace (const CItem &Item, 
 
 	bool bIsWeapon = (iSlotCategory == itemcatWeapon || iSlotCategory == itemcatLauncher);
 	bool bIsMisc = (iSlotCategory == itemcatMiscDevice);
-	int iAll = 0;
-	int iWeapons = 0;
-	int iNonWeapons = 0;
 
 	//	Count the number of slots being used up currently
 
-	for (i = 0; i < GetDeviceCount(); i++)
-		{
-		CInstalledDevice *pDevice = GetDevice(i);
-		if (!pDevice->IsEmpty())
-			{
-			int iSlots = pDevice->GetClass()->GetSlotsRequired();
-			iAll += iSlots;
-
-			if (pDevice->GetSlotCategory() == itemcatWeapon 
-					|| pDevice->GetSlotCategory() == itemcatLauncher)
-				iWeapons += iSlots;
-			else
-				iNonWeapons += iSlots;
-			}
-		}
+	int iWeapons;
+	int iNonWeapons;
+	int iAll = CalcDeviceSlotsInUse(&iWeapons, &iNonWeapons);
 
 	//	See how many slots we would need to free in order to install this 
 	//	device.
@@ -2609,7 +2635,21 @@ ICCItem *CShip::GetProperty (const CString &sName)
 	int i;
 	CCodeChain &CC = g_pUniverse->GetCC();
 
-	if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
+	if (strEquals(sName, PROPERTY_AVAILABLE_NON_WEAPON_SLOTS))
+		{
+		int iNonWeapon;
+		int iAll = CalcDeviceSlotsInUse(NULL, &iNonWeapon);
+
+		return CC.CreateInteger(Max(0, Min(m_pClass->GetMaxNonWeapons() - iNonWeapon, m_pClass->GetMaxDevices() - iAll)));
+		}
+	else if (strEquals(sName, PROPERTY_AVAILABLE_WEAPON_SLOTS))
+		{
+		int iWeapon;
+		int iAll = CalcDeviceSlotsInUse(&iWeapon);
+
+		return CC.CreateInteger(Max(0, Min(m_pClass->GetMaxWeapons() - iWeapon, m_pClass->GetMaxDevices() - iAll)));
+		}
+	else if (strEquals(sName, PROPERTY_BLINDING_IMMUNE))
 		{
 		for (i = 0; i < GetArmorSectionCount(); i++)
 			{

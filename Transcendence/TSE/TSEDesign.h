@@ -5995,6 +5995,7 @@ class CInstalledDevice
 		inline Metric GetMaxEffectiveRange (CSpaceObject *pSource, CSpaceObject *pTarget = NULL) { return m_pClass->GetMaxEffectiveRange(pSource, this, pTarget); }
 		inline CString GetName (void) { return m_pClass->GetName(); }
 		CVector GetPos (CSpaceObject *pSource);
+		CVector GetPosOffset (CSpaceObject *pSource);
 		inline int GetPowerRating (CItemCtx &Ctx) { return m_pClass->GetPowerRating(Ctx); }
 		inline void GetSelectedVariantInfo (CSpaceObject *pSource, 
 											CString *retsLabel,
