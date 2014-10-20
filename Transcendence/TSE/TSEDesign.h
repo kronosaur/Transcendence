@@ -4662,6 +4662,7 @@ class COverlayType : public CDesignType
 			{
 			counterNone,						//	Do not show a counter
 			counterProgress,					//	Show as progress bar
+			counterRadius,						//	Show as circle of given radius (pixels)
 			};
 
 		COverlayType(void);

@@ -1390,7 +1390,7 @@ class CStation : public CSpaceObject
 		virtual bool PointInObject (const CVector &vObjPos, const CVector &vPointPos);
 		virtual bool PointInObject (SPointInObjectCtx &Ctx, const CVector &vObjPos, const CVector &vPointPos);
 		virtual void PointInObjectInit (SPointInObjectCtx &Ctx);
-		virtual void RemoveOverlay (DWORD dwID) { m_Overlays.RemoveField(this, dwID); }
+		virtual void RemoveOverlay (DWORD dwID);
 		virtual bool RemoveSubordinate (CSpaceObject *pSubordinate);
 		virtual bool RequestDock (CSpaceObject *pObj, int iPort = -1);
 		virtual bool RequestGate (CSpaceObject *pObj);
@@ -1441,6 +1441,7 @@ class CStation : public CSpaceObject
 
 		void AllocTradeOverride (void);
 		void Blacklist (CSpaceObject *pObj);
+		void CalcBounds (void);
 		int CalcNumberOfShips (void);
 		void CalcOverlayImpact (void);
 		void ClearBlacklist (CSpaceObject *pObj);

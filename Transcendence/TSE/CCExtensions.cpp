@@ -999,7 +999,13 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'noFriendlyFire (True/Nil)\n"
 			"   'noFriendlyFireCheck (True/Nil)\n"
 			"   'noNavPaths (True/Nil)\n"
-			"   'noOrderGiver (True/Nil)\n",
+			"   'noOrderGiver (True/Nil)\n"
+			"\n"
+			"   'combatSeparation {pixels}\n"
+			"   'fireAccuracy {percent}\n"
+			"   'fireRangeAdj {percent}\n"
+			"   'fireRateAdj {value; 10 = normal; 20 = twice as slow}\n"
+			"   'perception {value}\n",
 
 			"isv",	0,	},
 
@@ -1331,7 +1337,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"ii",	0,	},
 
 		{	"objGetOverlayProperty",			fnObjGet,		FN_OBJ_GET_OVERLAY_PROPERTY,
-			"(objSetOverlayPos obj overlayID property) -> value\n\n"
+			"(objSetOverlayProperty obj overlayID property) -> value\n\n"
 			
 			"property\n\n"
 			
@@ -1786,12 +1792,17 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"i",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnAddTimerEvent",				fnMissionSet,		FN_MISSION_ADD_TIMER,
-			"(msnAddTimerEvent missionObj delay event)",
+			"(msnAddTimerEvent missionObj delay event)\n\n"
+			
+			"delay in ticks\n",
+
 			"iis",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnAddRecurringTimerEvent",	fnMissionSet,		FN_MISSION_ADD_RECURRING_TIMER,	
-			"(msnAddRecurringTimerEvent missionObj interval event)",
-		//		interval in ticks
+			"(msnAddRecurringTimerEvent missionObj interval event)\n\n"
+			
+			"interval in ticks\n",
+
 			"iis",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"msnCancelTimerEvent",				fnMissionSet,	FN_MISSION_CANCEL_TIMER,

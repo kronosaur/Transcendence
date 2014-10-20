@@ -147,6 +147,7 @@ void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, i
 
 	//	Recalc bonuses, etc.
 
+	CalcBounds();
 	CalcOverlayImpact();
 	}
 
@@ -244,6 +245,25 @@ void CStation::Blacklist (CSpaceObject *pObj)
 		{
 		FireOnPlayerBlacklisted();
 		}
+	}
+
+void CStation::CalcBounds (void)
+
+//	CalcBounds
+//
+//	Calculates and sets station bounds
+
+	{
+	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
+	RECT rcBounds = Image.GetImageRect();
+
+	//	Add overlays
+
+	m_Overlays.AccumulateBounds(this, &rcBounds);
+
+	//	Set it
+
+	SetBounds(rcBounds, GetParallaxDist());
 	}
 
 int CStation::CalcNumberOfShips (void)
@@ -691,9 +711,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	Now that we have an image, set the bound
 
-	const CObjectImageArray &Image = pStation->GetImage(false, NULL, NULL);
-	const RECT &rcImage = Image.GetImageRect();
-	pStation->SetBounds(rcImage, pStation->GetParallaxDist());
+	pStation->CalcBounds();
 
 	//	If we are a wreck, set the wreck parameters (mass, etc.)
 
@@ -2439,6 +2457,10 @@ void CStation::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx
 		m_fReconned = true;
 		}
 
+	//	Paints overlay background
+
+	m_Overlays.PaintBackground(Dest, x, y, Ctx);
+
 	//	First paint any object that are docked behind us
 
 	if (!Ctx.fNoDockedShips)
@@ -3584,6 +3606,21 @@ void CStation::RaiseAlert (CSpaceObject *pTarget)
 		}
 	}
 
+void CStation::RemoveOverlay (DWORD dwID)
+
+//	RemoveOverlay
+//
+//	Removes the given overlay
+	
+	{
+	m_Overlays.RemoveField(this, dwID); 
+
+	//	Recalc bonuses, etc.
+
+	CalcBounds();
+	CalcOverlayImpact();
+	}
+
 bool CStation::RemoveSubordinate (CSpaceObject *pSubordinate)
 
 //	RemoveSubordinate
@@ -3692,12 +3729,7 @@ void CStation::SetFlotsamImage (CItemType *pItemType)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 int CStation::GetImageVariant (void)
@@ -3727,12 +3759,7 @@ void CStation::SetImageVariant (int iVariant)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 void CStation::SetMapOrbit (const COrbit &oOrbit)
@@ -3799,12 +3826,7 @@ void CStation::SetWreckImage (CShipClass *pWreckClass)
 
 	//	Set bounds
 
-	//	We don't care about iTick or iRotation because 
-	//	the image rect dimensions won't change
-	const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-
-	const RECT &rcImage = Image.GetImageRect();
-	SetBounds(rcImage, GetParallaxDist());
+	CalcBounds();
 	}
 
 void CStation::SetWreckParams (CShipClass *pWreckClass, CShip *pShip)
@@ -3910,12 +3932,10 @@ bool CStation::SetProperty (const CString &sName, ICCItem *pValue, CString *rets
 				return false;
 				}
 
-			const CObjectImageArray &Image = GetImage(false, NULL, NULL);
-			const RECT &rcImage = Image.GetImageRect();
-			SetBounds(rcImage, rParallaxDist);
-
 			m_rParallaxDist = rParallaxDist;
 			SetOutOfPlaneObj(m_rParallaxDist != 1.0);
+
+			CalcBounds();
 			}
 
 		return true;

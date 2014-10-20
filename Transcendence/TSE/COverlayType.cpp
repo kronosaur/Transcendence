@@ -28,6 +28,7 @@
 #define WEAPON_SUPPRESS_ATTRIB					CONSTLIT("weaponSuppress")
 
 #define COUNTER_PROGRESS						CONSTLIT("progress")
+#define COUNTER_RADIUS							CONSTLIT("radius")
 
 #define FIELD_WEAPON_SUPPRESS					CONSTLIT("weaponSuppress")
 
@@ -270,6 +271,8 @@ ALERROR COverlayType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		CString sStyle = pCounter->GetAttribute(STYLE_ATTRIB);
 		if (strEquals(sStyle, COUNTER_PROGRESS))
 			m_iCounterType = counterProgress;
+		else if (strEquals(sStyle, COUNTER_RADIUS))
+			m_iCounterType = counterRadius;
 		else
 			{
 			Ctx.sError = strPatternSubst(CONSTLIT("Unknown counter style: %s"), sStyle);

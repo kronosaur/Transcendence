@@ -77,6 +77,23 @@ bool CEnergyFieldList::AbsorbsWeaponFire (CInstalledDevice *pDevice)
 	return false;
 	}
 
+void CEnergyFieldList::AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds)
+
+//	AccumulateBounds
+//
+//	Adds to bounds
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->AccumulateBounds(pSource, ioBounds);
+
+		pField = pField->GetNext();
+		}
+	}
+
 bool CEnergyFieldList::Damage (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	Damage
@@ -426,6 +443,23 @@ void CEnergyFieldList::PaintAnnotations (CG16bitImage &Dest, int x, int y, SView
 		{
 		if (!pField->IsDestroyed())
 			pField->PaintAnnotations(Dest, x, y, Ctx);
+
+		pField = pField->GetNext();
+		}
+	}
+
+void CEnergyFieldList::PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintBackground
+//
+//	Paints all field backgrounds
+
+	{
+	CEnergyField *pField = m_pFirst;
+	while (pField)
+		{
+		if (!pField->IsDestroyed())
+			pField->PaintBackground(Dest, x, y, Ctx);
 
 		pField = pField->GetNext();
 		}

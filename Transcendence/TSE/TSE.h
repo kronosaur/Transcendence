@@ -1848,6 +1848,7 @@ class CEnergyField
 									CEnergyField **retpField);
 
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
+		void AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds);
 		void Destroy (CSpaceObject *pSource);
 		inline bool Disarms (CSpaceObject *pSource) const { return m_pType->Disarms(); }
 		void FireCustomEvent (CSpaceObject *pSource, const CString &sEvent, ICCItem *pData, ICCItem **retpResult);
@@ -1869,6 +1870,7 @@ class CEnergyField
 		inline bool IsShipScreenDisabled (void) const { return m_pType->IsShipScreenDisabled(); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		inline bool Paralyzes (CSpaceObject *pSource) const { return m_pType->Paralyzes(); }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetData (const CString &sAttrib, const CString &sData) { m_Data.SetData(sAttrib, sData); }
@@ -1943,6 +1945,7 @@ class CEnergyFieldList
 					   DWORD *retdwID = NULL);
 		bool AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		bool AbsorbsWeaponFire (CInstalledDevice *pDevice);
+		void AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds);
 		bool Damage (CSpaceObject *pSource, SDamageCtx &Ctx);
 		void FireOnObjDestroyed (CSpaceObject *pSource, const SDestroyCtx &Ctx) const;
 		int GetCountOfType (COverlayType *pType);
@@ -1958,6 +1961,7 @@ class CEnergyFieldList
 		inline bool IsEmpty (void) { return (m_pFirst == NULL); }
 		void Paint (CG16bitImage &Dest, int iScale, int x, int y, SViewportPaintCtx &Ctx);
 		void PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
+		void PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx);
 		void ReadFromStream (SLoadCtx &Ctx, CSpaceObject *pSource);
 		void RemoveField (CSpaceObject *pSource, DWORD dwID);
 		void SetData (DWORD dwID, const CString &sAttrib, const CString &sData);

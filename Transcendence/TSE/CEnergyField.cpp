@@ -130,6 +130,29 @@ bool CEnergyField::AbsorbDamage (CSpaceObject *pSource, SDamageCtx &Ctx)
 		}
 	}
 
+void CEnergyField::AccumulateBounds (CSpaceObject *pSource, RECT *ioBounds)
+
+//	AccumulateBounds
+//
+//	Set bounds
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterRadius:
+			{
+			if (m_iCounter > 0)
+				{
+				ioBounds->left = Min(-m_iCounter, (int)ioBounds->left);
+				ioBounds->top = Min(-m_iCounter, (int)ioBounds->top);
+				ioBounds->right = Max(m_iCounter, (int)ioBounds->right);
+				ioBounds->bottom = Max(m_iCounter, (int)ioBounds->bottom);
+				}
+			break;
+			}
+		}
+	}
+
 void CEnergyField::CreateHitEffect (CSpaceObject *pSource, SDamageCtx &Ctx)
 
 //	CreateHitEffect
@@ -562,6 +585,43 @@ void CEnergyField::PaintAnnotations (CG16bitImage &Dest, int x, int y, SViewport
 					&cyHeight);
 
 			Ctx.yAnnotations += cyHeight + ANNOTATION_INNER_SPACING_Y;
+			break;
+			}
+		}
+	}
+
+void CEnergyField::PaintBackground (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
+
+//	PaintBackground
+//
+//	Paints overlay background
+
+	{
+	switch (m_pType->GetCounterStyle())
+		{
+		case COverlayType::counterRadius:
+			{
+			WORD wColor = m_pType->GetCounterColor();
+			if (wColor == 0 && Ctx.pObj)
+				wColor = Ctx.pObj->GetSymbolColor();
+
+			if (m_iCounter > 0)
+				DrawFilledCircleTrans(Dest, x, y, m_iCounter, wColor, 64);
+
+			//	Paint the label
+
+			if (!m_sMessage.IsBlank())
+				{
+				const CG16bitFont *pTextFont = g_pUniverse->GetFont(CONSTLIT("SubTitle"));
+				WORD wTextColor = CG16bitImage::BlendPixel(wColor, CG16bitImage::RGBValue(255, 255, 255), 128);
+
+				int yText = y + (m_iCounter / 2) - pTextFont->GetHeight();
+				if (yText + pTextFont->GetHeight() > Ctx.rcView.bottom)
+					yText = y - (m_iCounter / 2);
+
+				Dest.DrawText(x, yText, *pTextFont, wTextColor, m_sMessage, CG16bitFont::AlignCenter);
+				}
+
 			break;
 			}
 		}

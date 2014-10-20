@@ -144,6 +144,7 @@ void CShip::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int 
 
 	//	Recalc bonuses, etc.
 
+	CalcBounds();
 	CalcOverlayImpact();
 	CalcArmorBonus();
 	CalcDeviceBonus();
@@ -246,6 +247,10 @@ void CShip::CalcBounds (void)
 	//	Add the effect bounds
 
 	m_Effects.AccumulateBounds(this, m_pClass->GetEffectsDesc(), GetRotation(), &rcBounds);
+
+	//	Overlay bounds
+
+	m_EnergyFields.AccumulateBounds(this, &rcBounds);
 
 	//	Set bounds
 
@@ -4274,6 +4279,10 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	const CObjectImageArray *pImage;
 	pImage = &m_pClass->GetImage();
 
+	//	Paints overlay background
+
+	m_EnergyFields.PaintBackground(Dest, x, y, Ctx);
+
 	//	Paint all effects behind the ship
 
 	Ctx.bInFront = false;
@@ -4825,6 +4834,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	bool bArmorStatusChanged = false;
 	bool bCalcDeviceBonus = false;
 	bool bCargoChanged = false;
+	bool bBoundsChanged = false;
 
 	//	If we passed through a gate, then destroy ourselves
 
@@ -5245,6 +5255,7 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 			bWeaponStatusChanged = true;
 			bArmorStatusChanged = true;
 			bCalcDeviceBonus = true;
+			bBoundsChanged = true;
 			}
 		}
 
@@ -5294,6 +5305,9 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 		m_Effects.Update(this, m_pClass->GetEffectsDesc(), GetRotation(), CalcEffectsMask());
 
 	//	Invalidate
+
+	if (bBoundsChanged)
+		CalcBounds();
 
 	if (bOverlaysChanged)
 		CalcOverlayImpact();
