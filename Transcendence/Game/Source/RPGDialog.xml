@@ -90,6 +90,9 @@
 														(not (@ actionDesc 'nextPane))
 															(scrExitScreen gScreen)
 														
+														(eq (@ actionDesc 'nextPane) 'exitScreen)
+															(scrExitScreen gScreen)
+														
 														(eq (@ actionDesc 'nextPane) 'forceUndock)
 															(scrExitScreen gScreen 'forceUndock)
 														
@@ -122,12 +125,14 @@
 									(block (
 										(pageNo (if (scrGetData gScreen 'curPage) (scrGetData gScreen 'curPage) 0))
 										)
-										(dbgOutput (@ pageDesc 'nextCode))
 										(if (@ pageDesc 'nextCode)
 											((@ pageDesc 'nextCode))
 											)
 										
 										(switch
+											(eq (@ pageDesc 'nextPane) 'exitScreen)
+												(scrExitScreen gScreen)
+												
 											(eq (@ pageDesc 'nextPane) 'forceUndock)
 												(scrExitScreen gScreen 'forceUndock)
 												

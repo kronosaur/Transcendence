@@ -1774,6 +1774,14 @@ void CStandardShipAI::OnAttackedNotify (CSpaceObject *pAttacker, const DamageDes
 					break;
 					}
 
+				case stateOnCourseForPointViaNavPath:
+				case stateOnCourseForStargate:
+					{
+					if (m_pTarget == NULL)
+						m_pTarget = pAttacker;
+					break;
+					}
+
 				case stateHolding:
 					{
 					if (m_pTarget == NULL && mathRandom(1, 3) == 1)
