@@ -574,7 +574,7 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 	//	Make sure each sovereign has a ship
 
 	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(g_PirateSovereignUNID);
+	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
 	CShip *pShip1 = NULL;
 	CShip *pShip2 = NULL;
 
@@ -617,8 +617,8 @@ void CTranscendenceWnd::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereig
 	if (pShip1 == NULL || (dwNewShipClass && dwCurSovereign == g_PlayerSovereignUNID))
 		CreateRandomShip(pSystem, (dwCurSovereign == g_PlayerSovereignUNID ? dwNewShipClass : 0), pSovereign1, &pShip1);
 
-	if (pShip2 == NULL || (dwNewShipClass && dwCurSovereign == g_PirateSovereignUNID))
-		CreateRandomShip(pSystem, (dwCurSovereign == g_PirateSovereignUNID ? dwNewShipClass : 0), pSovereign2, &pShip2);
+	if (pShip2 == NULL || (dwNewShipClass && dwCurSovereign == UNID_UNKNOWN_ENEMY))
+		CreateRandomShip(pSystem, (dwCurSovereign == UNID_UNKNOWN_ENEMY ? dwNewShipClass : 0), pSovereign2, &pShip2);
 
 	//	Make sure every ship has an order to attack someone
 
@@ -2700,7 +2700,7 @@ ALERROR CTranscendenceWnd::StartIntro (CIntroSession *pThis, IntroState iState)
 	g_pUniverse->SetCurrentSystem(m_pIntroSystem);
 
 	CSovereign *pSovereign1 = g_pUniverse->FindSovereign(g_PlayerSovereignUNID);
-	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(g_PirateSovereignUNID);
+	CSovereign *pSovereign2 = g_pUniverse->FindSovereign(UNID_UNKNOWN_ENEMY);
 
 	//	Create a couple of random enemy ships
 

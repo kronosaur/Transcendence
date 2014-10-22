@@ -1660,7 +1660,7 @@
 
 	<StationType UNID="&stShipwreck1;"
 			name=				"(shipwreck I)"
-			sovereign=			"&svPirates;"
+			sovereign=			"&svUnknownEnemy;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"
@@ -1705,7 +1705,7 @@
 
 	<StationType UNID="&stShipwreck2;"
 			name=				"(shipwreck II)"
-			sovereign=			"&svPirates;"
+			sovereign=			"&svUnknownEnemy;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"
@@ -1753,7 +1753,7 @@
 
 	<StationType UNID="&stShipwreck3;"
 			name=				"(shipwreck III)"
-			sovereign=			"&svPirates;"
+			sovereign=			"&svUnknownEnemy;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"
@@ -1804,7 +1804,7 @@
 
 	<StationType UNID="&stRadioactiveShipwreck;"
 			name=				"(radioactive shipwreck)"
-			sovereign=			"&svPirates;"
+			sovereign=			"&svUnknownEnemy;"
 			dockScreen=			"&dsAbandonedShip;"
 			scale=				"ship"
 			mobile=				"true"

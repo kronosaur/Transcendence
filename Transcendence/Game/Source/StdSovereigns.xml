@@ -49,11 +49,6 @@
 			alignment="destructive order"
 			/>
 
-	<Sovereign UNID="&svPirates;"
-			name="Charon Pirates"
-			alignment="destructive order"
-			/>
-
 	<Sovereign UNID="&svCult;"
 			name="Cult"
 			alignment="destructive order"

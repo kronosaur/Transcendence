@@ -118,6 +118,7 @@
 	<!ENTITY svRingers					"0x00001015">
 	<!ENTITY svFerianMinersAngry		"0x00001016">
 	<!ENTITY ecCreditEconomy			"0x00001017">
+	<!ENTITY svUnknownEnemy				"0x00001018">
 
 	<!ENTITY stShipwreck				"0x00002001">
 	<!ENTITY stStargate					"0x00002002">

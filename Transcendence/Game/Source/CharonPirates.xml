@@ -2,6 +2,11 @@
 
 <TranscendenceModule>
 
+	<Sovereign UNID="&svPirates;"
+			name="Charon Pirates"
+			alignment="destructive order"
+			/>
+
 	<!-- Charon Pirate Map ROM -->
 
 	<ItemType UNID="&itCharonPirateMapROM;"
