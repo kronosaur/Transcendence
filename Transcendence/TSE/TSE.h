@@ -2788,6 +2788,7 @@ class CSpaceObject : public CObject
 
 		//	Helper functions
 		void AddEffect (IEffectPainter *pPainter, int xOffset, int yOffset, int iTick = 0, int iRotation = 0);
+		void CalcInsideBarrier (void);
 		Metric CalculateItemMass (Metric *retrCargoMass = NULL);
 		bool CanFireOnObjHelper (CSpaceObject *pObj);
 		inline void ClearCannotBeHit (void) { m_fCannotBeHit = false; }
@@ -2914,7 +2915,7 @@ class CSpaceObject : public CObject
 		DWORD m_fAutoClearDestinationOnDestroy:1;//	TRUE if we should clear the destination when station is destroyed
 		DWORD m_fShowDamageBar:1;				//	TRUE if we should show damage bar
 		DWORD m_fHasGravity:1;					//	TRUE if object has gravity
-		DWORD m_fSpare7:1;
+		DWORD m_fInsideBarrier:1;				//	TRUE if we got created inside a barrier
 		DWORD m_fSpare8:1;
 
 		DWORD m_dwSpare:24;

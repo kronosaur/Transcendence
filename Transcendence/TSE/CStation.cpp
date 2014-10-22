@@ -863,7 +863,10 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 	//	(otherwise we will call OnCreate in OnSystemCreated)
 
 	if (!pSystem->IsCreationInProgress())
+		{
 		pStation->FinishCreation();
+		pStation->CalcInsideBarrier();
+		}
 	else
 		{
 		//	Make sure we get an OnSystemCreated (and that we get it after

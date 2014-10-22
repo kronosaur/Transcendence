@@ -216,7 +216,8 @@ CSpaceObject::CSpaceObject (IObjectClass *pClass) : CObject(pClass),
 		m_fAutoClearDestinationOnDestroy(false),
 		m_fShowHighlight(false),
 		m_fShowDamageBar(false),
-		m_fHasGravity(false)
+		m_fHasGravity(false),
+		m_fInsideBarrier(false)
 
 //	CSpaceObject constructor
 
@@ -525,6 +526,52 @@ void CSpaceObject::Ascend (void)
 	//	Done
 
 	SetAscended(true);
+	}
+
+void CSpaceObject::CalcInsideBarrier (void)
+
+//	CalcInsideBarrier
+//
+//	Figures out if we are currently inside a barrier. If so, we set the 
+//	m_fInsideBarrier flag.
+
+	{
+	int i;
+
+	if (!m_fCanBounce)
+		return;
+
+	//	Compute the bounding rect for this object
+
+	CVector vUR, vLL;
+	GetBoundingRect(&vUR, &vLL);
+
+	//	Loop over all other objects and see if we are inside a barrier
+
+	CSystem *pSystem = GetSystem();
+	for (i = 0; i < pSystem->GetObjectCount(); i++)
+		{
+		CSpaceObject *pObj = pSystem->GetObject(i);
+		if (pObj == NULL
+				|| pObj == this
+				|| pObj->IsDestroyed()
+				|| !pObj->CanBlock(this))
+			continue;
+
+		//	Compute the bounding rect for the barrier.
+
+		CVector vBarrierUR, vBarrierLL;
+		pObj->GetBoundingRect(&vBarrierUR, &vBarrierLL);
+
+		//	If we intersect then we're inside at least one object
+
+		if (IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
+				&& pObj->ObjectInObject(pObj->GetPos(), this, GetPos()))
+			{
+			m_fInsideBarrier = true;
+			break;
+			}
+		}
 	}
 
 void CSpaceObject::CalcOverlayPos (COverlayType *pOverlayType, const CVector &vPos, int *retiPosAngle, int *retiPosRadius)
@@ -889,6 +936,7 @@ void CSpaceObject::CreateFromStream (SLoadCtx &Ctx, CSpaceObject **retpObj)
 	pObj->m_fAutoClearDestinationOnDestroy = ((dwLoad & 0x08000000) ? true : false);
 	pObj->m_fShowDamageBar =			((dwLoad & 0x10000000) ? true : false);
 	pObj->m_fHasGravity =				((dwLoad & 0x20000000) ? true : false);
+	pObj->m_fInsideBarrier =			((dwLoad & 0x40000000) ? true : false);
 
 	//	No need to save the following
 
@@ -5053,94 +5101,116 @@ void CSpaceObject::Move (const CSpaceObjectList &Barriers, Metric rSeconds)
 			for (i = 0; i < iBarrierCount; i++)
 				{
 				CSpaceObject *pBarrier = Barriers.GetObj(i);
-				if (pBarrier != this 
-						&& pBarrier->CanBlock(this))
+
+				//	If this barrier doesn't block us, then nothing to do
+
+				if (pBarrier == this 
+						|| !pBarrier->CanBlock(this))
+					continue;
+
+				//	Compute the bounding rect for the barrier.
+
+				CVector vBarrierUR, vBarrierLL;
+				pBarrier->GetBoundingRect(&vBarrierUR, &vBarrierLL);
+
+				//	If we don't intersect then, nothing
+
+				if (!IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
+						|| !pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+					continue;
+
+				//	Otherwise, we're blocked
+				//	
+				//	If we're started out inside a barrier, we continue 
+				//	moving until we're out.
+
+				if (m_fInsideBarrier)
+					bBlocked = true;
+
+				//	Otherwise, we bounce
+
+				else
 					{
-					//	Compute the bounding rect for the barrier.
+					//	Compute the resulting velocities depending
+					//	on whether the barrier moves or not
 
-					CVector vBarrierUR, vBarrierLL;
-					pBarrier->GetBoundingRect(&vBarrierUR, &vBarrierLL);
-
-					//	If we intersect then block
-
-					if (IntersectRect(vUR, vLL, vBarrierUR, vBarrierLL)
-							&& pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+					if (pBarrier->CanMove())
 						{
-						//	Compute the resulting velocities depending
-						//	on whether the barrier moves or not
-
-						if (pBarrier->CanMove())
-							{
-							//	For a head-on elastic collision where
-							//	the second object has velocity 0, the equations are:
-							//
-							//		  (m1 - m2)
-							//	v1' = --------- v1
-							//		  (m1 + m2)
-							//
-							//		    2m1
-							//	v2' = --------- v1
-							//		  (m1 + m2)
+						//	For a head-on elastic collision where
+						//	the second object has velocity 0, the equations are:
+						//
+						//		  (m1 - m2)
+						//	v1' = --------- v1
+						//		  (m1 + m2)
+						//
+						//		    2m1
+						//	v2' = --------- v1
+						//		  (m1 + m2)
 							
-							Metric rInvM1plusM2 = g_BounceCoefficient / (GetMass() + pBarrier->GetMass());
-							Metric rM1minusM2 = GetMass() - pBarrier->GetMass();
-							Metric r2M1 = 2.0 * GetMass();
-							CVector vVel = GetVel();
+						Metric rInvM1plusM2 = g_BounceCoefficient / (GetMass() + pBarrier->GetMass());
+						Metric rM1minusM2 = GetMass() - pBarrier->GetMass();
+						Metric r2M1 = 2.0 * GetMass();
+						CVector vVel = GetVel();
+
+						m_vPos = m_vOldPos;
+
+						SetVel(rM1minusM2 * rInvM1plusM2 * vVel);
+						pBarrier->SetVel(r2M1 * rInvM1plusM2 * vVel);
+						}
+					else
+						{
+						//	If we've already been blocked, then make sure that we are not inside
+						//	the second barrier. If we are, then revert the position
+
+						if (bBlocked)
+							{
+							if (pBarrier->PointInObject(pBarrier->GetPos(), m_vPos))
+								m_vPos = m_vOldPos;
+							}
+
+						//	Otherwise, deal with the first barrier
+
+						else
+							{
+							//	Revert the position to before the move
 
 							m_vPos = m_vOldPos;
 
-							SetVel(rM1minusM2 * rInvM1plusM2 * vVel);
-							pBarrier->SetVel(r2M1 * rInvM1plusM2 * vVel);
-							}
-						else
-							{
-							//	If we've already been blocked, then make sure that we are not inside
-							//	the second barrier. If we are, then revert the position
+							//	If the old position is not blocked, then bounce and carry on
 
-							if (bBlocked)
-								{
-								if (pBarrier->PointInObject(pBarrier->GetPos(), m_vPos))
-									m_vPos = m_vOldPos;
-								}
+							if (!pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
+								SetVel(-g_BounceCoefficient * GetVel());
 
-							//	Otherwise, deal with the first barrier
+							//	Otherwise, move slowly towards the new position, but make sure that we never
+							//	move the center of the object inside the barrier.
 
 							else
 								{
-								//	Revert the position to before the move
+								CVector vNewPos = m_vPos + (g_KlicksPerPixel * m_vVel.Normal());
+								if (!pBarrier->PointInObject(pBarrier->GetPos(), vNewPos))
+									m_vPos = vNewPos;
 
-								m_vPos = m_vOldPos;
-
-								//	If the old position is not blocked, then bounce and carry on
-
-								if (!pBarrier->ObjectInObject(pBarrier->GetPos(), this, GetPos()))
-									SetVel(-g_BounceCoefficient * GetVel());
-
-								//	Otherwise, move slowly towards the new position, but make sure that we never
-								//	move the center of the object inside the barrier.
-
-								else
-									{
-									CVector vNewPos = m_vPos + (g_KlicksPerPixel * m_vVel.Normal());
-									if (!pBarrier->PointInObject(pBarrier->GetPos(), vNewPos))
-										m_vPos = vNewPos;
-
-									ClipSpeed(0.01 * LIGHT_SPEED);
-									}
+								ClipSpeed(0.01 * LIGHT_SPEED);
 								}
 							}
-
-						//	Tell the barrier and object
-
-						OnBounce(pBarrier, m_vPos);
-						pBarrier->OnObjBounce(this, m_vPos);
-
-						//	Remember that we already dealt with one barrier
-
-						bBlocked = true;
 						}
+
+					//	Tell the barrier and object
+
+					OnBounce(pBarrier, m_vPos);
+					pBarrier->OnObjBounce(this, m_vPos);
+
+					//	Remember that we already dealt with one barrier
+
+					bBlocked = true;
 					}
 				}
+
+			//	If we started out inside a barrier and now we're outside, then
+			//	we can clear our flag
+
+			if (m_fInsideBarrier && !bBlocked)
+				m_fInsideBarrier = false;
 			}
 		}
 
@@ -6747,6 +6817,7 @@ void CSpaceObject::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fAutoClearDestinationOnDestroy ? 0x08000000 : 0);
 	dwSave |= (m_fShowDamageBar				? 0x10000000 : 0);
 	dwSave |= (m_fHasGravity				? 0x20000000 : 0);
+	dwSave |= (m_fInsideBarrier				? 0x40000000 : 0);
 	//	No need to save m_fHasName because it is set by CSystem on load.
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
