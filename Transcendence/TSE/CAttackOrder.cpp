@@ -23,16 +23,25 @@ CAttackOrder::CAttackOrder (IShipController::OrderTypes iOrder) : IOrderModule(o
 		case IShipController::orderDestroyTarget:
 			m_fNearestTarget = false;
 			m_fInRangeOfObject = false;
+			m_fHold = false;
 			break;
 
 		case IShipController::orderAttackNearestEnemy:
 			m_fNearestTarget = true;
 			m_fInRangeOfObject = false;
+			m_fHold = false;
 			break;
 
 		case IShipController::orderAttackArea:
 			m_fNearestTarget = true;
 			m_fInRangeOfObject = true;
+			m_fHold = false;
+			break;
+
+		case IShipController::orderHoldAndAttack:
+			m_fNearestTarget = false;
+			m_fInRangeOfObject = false;
+			m_fHold = true;
 			break;
 
 		default:
@@ -235,6 +244,21 @@ void CAttackOrder::OnBehavior (CShip *pShip, CAIBehaviorCtx &Ctx)
 			break;
 			}
 
+		case stateAttackingTargetAndHolding:
+			{
+			ASSERT(m_Objs[objTarget]);
+			Ctx.ImplementHold(pShip);
+			Ctx.ImplementAttackTarget(pShip, m_Objs[objTarget], true);
+			Ctx.ImplementFireOnTargetsOfOpportunity(pShip, m_Objs[objTarget]);
+
+			//	See if our timer has expired
+
+			if (m_iCountdown != -1 && m_iCountdown-- == 0)
+				pShip->CancelCurrentOrder();
+
+			break;
+			}
+
 		case stateAvoidingEnemyStation:
 			{
 			ASSERT(m_Objs[objTarget]);
@@ -358,7 +382,7 @@ void CAttackOrder::OnBehaviorStart (CShip *pShip, CAIBehaviorCtx &Ctx, CSpaceObj
 
 	//	Set our state
 
-	m_iState = stateAttackingTargetAndAvoiding;
+	m_iState = (m_fHold ? stateAttackingTargetAndHolding : stateAttackingTargetAndAvoiding);
 	m_Objs[objTarget] = pOrderTarget;
 	m_Objs[objAvoid] = NULL;
 	ASSERT(m_Objs[objTarget]);
@@ -399,7 +423,8 @@ void CAttackOrder::OnObjDestroyed (CShip *pShip, const SDestroyCtx &Ctx, int iOb
 		{
 		//	No need to avoid anymore. Reset our state
 
-		m_iState = stateAttackingTargetAndAvoiding;
+		if (m_iState == stateAvoidingEnemyStation)
+			m_iState = stateAttackingTargetAndAvoiding;
 		ASSERT(m_Objs[objTarget]);
 		}
 

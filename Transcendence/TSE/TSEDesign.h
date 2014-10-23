@@ -3104,6 +3104,7 @@ class IShipController
 			orderSendMessage,			//	pTarget = object that gets message; Data = message to send
 
 			orderAttackArea,			//	pTarget = center; dwData1 = radius (light-seconds); dwData2 = timer.
+			orderHoldAndAttack,			//	pTarget = target to destroy; dwData = timer.
 			};
 
 		virtual ~IShipController (void) { }

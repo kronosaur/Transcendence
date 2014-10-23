@@ -69,8 +69,9 @@ class CAttackOrder : public IOrderModule
 
 		enum States
 			{
-			stateAttackingTargetAndAvoiding,
-			stateAvoidingEnemyStation,
+			stateAttackingTargetAndAvoiding =		0,
+			stateAvoidingEnemyStation =				1,
+			stateAttackingTargetAndHolding =		2,
 			};
 
 		CSpaceObject *GetBestTarget (CShip *pShip);
@@ -84,8 +85,8 @@ class CAttackOrder : public IOrderModule
 
 		DWORD m_fNearestTarget:1;				//	If TRUE, continue attacking other targets
 		DWORD m_fInRangeOfObject:1;				//	If TRUE, new target must be in range of order object
+		DWORD m_fHold:1;						//	If TRUE, hold position
 
-		DWORD m_fSpare3:1;
 		DWORD m_fSpare4:1;
 		DWORD m_fSpare5:1;
 		DWORD m_fSpare6:1;
