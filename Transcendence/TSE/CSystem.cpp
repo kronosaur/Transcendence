@@ -2033,9 +2033,9 @@ bool CSystem::DescendObject (DWORD dwObjID, const CVector &vPos, CSpaceObject **
 
 	//	Place the ship at the gate in the new system
 
-	pObj->Resume();
 	pObj->Place(vPos);
 	pObj->AddToSystem(this);
+	pObj->Resume();
 
 	//	Done
 

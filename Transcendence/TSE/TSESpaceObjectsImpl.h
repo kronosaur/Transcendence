@@ -1057,7 +1057,7 @@ class CShip : public CSpaceObject
 		virtual void RemoveOverlay (DWORD dwID);
 		virtual void RepairDamage (int iHitPoints);
 		virtual bool RequestDock (CSpaceObject *pObj, int iPort = -1);
-		virtual void Resume (void) { m_fManualSuspended = false; if (!IsInGate()) ClearCannotBeHit(); }
+		virtual void Resume (void) { m_fManualSuspended = false; if (!IsInGate()) ClearCannotBeHit(); m_pController->OnStatsChanged(); }
 		virtual void SendMessage (CSpaceObject *pSender, const CString &sMsg);
 		virtual bool SetAbility (Abilities iAbility, AbilityModifications iModification, int iDuration, DWORD dwOptions);
 		virtual void SetFireDelay (CInstalledDevice *pWeapon, int iDelay = -1);
