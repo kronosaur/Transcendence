@@ -369,7 +369,7 @@
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionRepair">"[R]epair"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
+			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
 			
 			<Text id="descArmorNotDamaged">(cat "The ship's " (@ gData 'armorNoun) " is not damaged.")</Text>
 			<Text id="descArmorNoTech">(cat "The ship's " (@ gData 'armorNoun) " cannot be repaired. The technology required is not available at this station.")</Text>
@@ -628,7 +628,7 @@
 			<Text id="actionInstall">"[I]nstall"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
+			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
 			
 			<Text id="descItemInstalled">
 				(cat
@@ -919,7 +919,7 @@
 			<Text id="actionInstall">"[I]nstall"</Text>
 			<Text id="actionRemove">"Remo[v]e"</Text>
 			<Text id="actionReplace">"Re[p]lace"</Text>
-			<Text id="actionUpgrade">"[B]uy Upgrade"</Text>
+			<Text id="actionUpgrade">"Buy [U]pgrade"</Text>
 			
 			<Text id="slotTitle:launcher">"Launcher Slot"</Text>
 			<Text id="slotDesc:launcher">"Your ship does not have a missile launcher installed."</Text>
