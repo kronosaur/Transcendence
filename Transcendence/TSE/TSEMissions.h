@@ -64,7 +64,7 @@ class CMission : public CSpaceObject
 		inline bool IsUnavailable (void) const { return (m_iStatus == statusClosed || m_iStatus == statusSuccess || m_iStatus == statusPlayerSuccess); }
 		inline bool KeepsStats (void) const { return m_pType->KeepsStats(); }
 		bool MatchesCriteria (CSpaceObject *pSource, const SCriteria &Criteria);
-		void OnPlayerEnteredSystem (void);
+		void OnPlayerEnteredSystem (CSpaceObject *pPlayer);
 		bool Reward (ICCItem *pData, ICCItem **retpResult = NULL);
 		bool SetAccepted (void);
 		bool SetDeclined (ICCItem **retpResult = NULL);

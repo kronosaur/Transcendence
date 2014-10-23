@@ -794,13 +794,17 @@ void CMission::OnObjDestroyedNotify (SDestroyCtx &Ctx)
 		}
 	}
 
-void CMission::OnPlayerEnteredSystem (void)
+void CMission::OnPlayerEnteredSystem (CSpaceObject *pPlayer)
 
 //	OnPlayerEnteredSystem
 //
 //	Player has entered the system
 
 	{
+	//	Fire event
+
+	FireOnPlayerEnteredSystem(pPlayer);
+
 	//	For active missions, fire event to reset player targets.
 
 	FireOnSetPlayerTarget(REASON_NEW_SYSTEM);

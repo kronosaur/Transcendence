@@ -2053,7 +2053,7 @@ void CUniverse::PutPlayerInSystem (CShip *pPlayerShip, const CVector &vPos, CTim
 		{
 		CMission *pMission = m_AllMissions.GetMission(i);
 		if (pMission->IsActive())
-			pMission->OnPlayerEnteredSystem();
+			pMission->OnPlayerEnteredSystem(pPlayerShip);
 		}
 	}
 
