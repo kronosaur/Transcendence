@@ -2181,8 +2181,6 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 
 		//	Tell all objects that we've been destroyed
 
-		NotifyOnObjDestroyed(DestroyCtx);
-
 		for (int i = 0; i < GetSystem()->GetObjectCount(); i++)
 			{
 			CSpaceObject *pObj = GetSystem()->GetObject(i);
@@ -2190,6 +2188,13 @@ EDamageResults CStation::OnDamage (SDamageCtx &Ctx)
 			if (pObj && pObj != this)
 				pObj->OnStationDestroyed(DestroyCtx);
 			}
+
+		//	NOTE: We fire <OnObjDestroyed> AFTER OnStationDestroyed
+		//	so that script inside <OnObjDestroyed> can add orders
+		//	about the station (without getting clobbered in 
+		//	OnStationDestroyed).
+
+		NotifyOnObjDestroyed(DestroyCtx);
 
 		GetSystem()->FireOnSystemObjDestroyed(DestroyCtx);
 		g_pUniverse->FireOnGlobalObjDestroyed(DestroyCtx);
