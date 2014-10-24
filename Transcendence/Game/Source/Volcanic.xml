@@ -6,6 +6,42 @@
 
 	<SystemPartTable unid="&tbVolcanicPlanets;">
 
+		<!-- ASTEROID FIELDS -->
+
+		<AsteroidVulcanoidBelt300>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="volcanic">
+						<OrbitalDistribution count="2d50+250" radialWidth="90">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="4-8"	radialWidth="90">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidVulcanoidBelt300>
+
+		<AsteroidVulcanoidBelt500>
+			<Lookup table="RegionDefinition">
+				<_Morphology>
+					<Variant variant="volcanic">
+						<OrbitalDistribution count="2d125+375" radialWidth="130">
+							<Lookup table="VariantAsteroid"/>
+						</OrbitalDistribution>
+
+						<OrbitalDistribution count="6-12"	radialWidth="130">
+							<Lookup table="VariantAsteroidBeltLabel"/>
+						</OrbitalDistribution>
+					</Variant>
+				</_Morphology>
+			</Lookup>
+		</AsteroidVulcanoidBelt500>
+		
+		<!-- PLANETS AND PLANETOIDS -->
+		
 		<VolcanicPrimary>
 			<LocationCriteriaTable>
 				<Table criteria="*innerSystem">

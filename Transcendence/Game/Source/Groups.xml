@@ -422,36 +422,6 @@
 			</Lookup>
 		</AsteroidAntiTrojans100>
 		
-		<!-- ASTEROID VULCANOIDS -->
-
-		<AsteroidVulcanoidBelt300>
-			<Variant variant="inner">
-				<Variant variant="volcanic">
-					<OrbitalDistribution count="2d50+250" radialWidth="90">
-						<Lookup table="VariantAsteroid"/>
-					</OrbitalDistribution>
-
-					<OrbitalDistribution count="4-8"	radialWidth="90">
-						<Lookup table="VariantAsteroidBeltLabel"/>
-					</OrbitalDistribution>
-				</Variant>
-			</Variant>
-		</AsteroidVulcanoidBelt300>
-
-		<AsteroidVulcanoidBelt500>
-			<Variant variant="lifeZone">
-				<Variant variant="volcanic">
-					<OrbitalDistribution count="2d125+375" radialWidth="130">
-						<Lookup table="VariantAsteroid"/>
-					</OrbitalDistribution>
-
-					<OrbitalDistribution count="6-12"	radialWidth="130">
-						<Lookup table="VariantAsteroidBeltLabel"/>
-					</OrbitalDistribution>
-				</Variant>
-			</Variant>
-		</AsteroidVulcanoidBelt500>
-		
 		<!-- COMPANIONS -->
 
 		<AsteroidCompanion>
