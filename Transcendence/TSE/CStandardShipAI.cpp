@@ -522,7 +522,8 @@ void CStandardShipAI::OnBehavior (void)
 
 			//	Check to see if there are enemy ships that we need to attack
 
-			if (m_pShip->IsDestinyTime(30))
+			if (m_pShip->IsDestinyTime(30)
+					&& !m_AICtx.NoAttackOnThreat())
 				{
 				CSpaceObject *pTarget = CalcEnemyShipInRange(m_pShip, PATROL_SENSOR_RANGE);
 				if (pTarget)

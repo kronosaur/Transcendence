@@ -1000,6 +1000,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'noFriendlyFireCheck (True/Nil)\n"
 			"   'noNavPaths (True/Nil)\n"
 			"   'noOrderGiver (True/Nil)\n"
+			"   'noTargetsOfOpportunity (True/Nil)\n"
 			"\n"
 			"   'combatSeparation {pixels}\n"
 			"   'fireAccuracy {percent}\n"

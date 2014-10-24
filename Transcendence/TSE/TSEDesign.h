@@ -2690,6 +2690,7 @@ class CAISettings
 		inline bool NoNavPaths (void) const { return m_fNoNavPaths; }
 		inline bool NoOrderGiver (void) const { return m_fNoOrderGiver; }
 		inline bool NoShieldRetreat (void) const { return m_fNoShieldRetreat; }
+		inline bool NoTargetsOfOpportunity (void) const { return m_fNoTargetsOfOpportunity; }
 		void ReadFromStream (SLoadCtx &Ctx);
 		inline void SetMinCombatSeparation (Metric rValue) { m_rMinCombatSeparation = rValue; }
 		CString SetValue (const CString &sSetting, const CString &sValue);
@@ -2719,8 +2720,9 @@ class CAISettings
 
 		DWORD m_fNoNavPaths:1;					//	If TRUE, do not use nav paths
 		DWORD m_fNoAttackOnThreat:1;			//	Do not attack enemies while escorting (unless ordered)
+		DWORD m_fNoTargetsOfOpportunity:1;		//	If TRUE, do not attack targets of opportunity
 
-		DWORD m_dwSpare:22;
+		DWORD m_dwSpare:21;
 	};
 
 enum ProgramTypes

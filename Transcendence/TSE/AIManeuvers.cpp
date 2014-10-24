@@ -250,7 +250,7 @@ void CAIBehaviorCtx::ImplementAttackNearestTarget (CShip *pShip, Metric rMaxRang
 	{
 	DEBUG_TRY
 
-	if (pShip->IsDestinyTime(19))
+	if (pShip->IsDestinyTime(19) && !m_AISettings.NoTargetsOfOpportunity())
 		(*iopTarget) = pShip->GetNearestVisibleEnemy(rMaxRange, false, pExcludeObj);
 
 	if (*iopTarget)
@@ -970,7 +970,8 @@ void CAIBehaviorCtx::ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceOb
 	//	(note that we don't turn this on normally because it is relatively
 	//	expensive)
 
-	if (HasSecondaryWeapons())
+	if (HasSecondaryWeapons() 
+			&& !m_AISettings.NoTargetsOfOpportunity())
 		{
 		for (i = 0; i < pShip->GetDeviceCount(); i++)
 			{

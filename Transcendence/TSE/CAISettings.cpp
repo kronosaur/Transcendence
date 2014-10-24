@@ -20,6 +20,7 @@
 #define NO_FRIENDLY_FIRE_CHECK_ATTRIB			CONSTLIT("noFriendlyFireCheck")
 #define NO_NAV_PATHS_ATTRIB						CONSTLIT("noNavPaths")
 #define NO_ORDER_GIVER_ATTRIB					CONSTLIT("noOrderGiver")
+#define NO_TARGETS_OF_OPPORTUNITY_ATTRIB		CONSTLIT("noTargetsOfOpportunity")
 #define NON_COMBATANT_ATTRIB					CONSTLIT("nonCombatant")
 #define PERCEPTION_ATTRIB						CONSTLIT("perception")
 #define STAND_OFF_COMBAT_ATTRIB					CONSTLIT("standOffCombat")
@@ -118,6 +119,8 @@ CString CAISettings::GetValue (const CString &sSetting)
 		return strFromInt(m_iFireRateAdj);
 	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
 		return (m_fNoAttackOnThreat ? STR_TRUE : NULL_STR);
+	else if (strEquals(sSetting, NO_TARGETS_OF_OPPORTUNITY_ATTRIB))
+		return (m_fNoTargetsOfOpportunity ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_DOGFIGHTS_ATTRIB))
 		return (m_fNoDogfights ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_SHIELD_RETREAT_ATTRIB))
@@ -187,6 +190,7 @@ ALERROR CAISettings::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fNoFriendlyFire = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_ATTRIB);
 	m_fAggressor = pDesc->GetAttributeBool(AGGRESSOR_ATTRIB);
 	m_fNoAttackOnThreat = pDesc->GetAttributeBool(NO_ATTACK_ON_THREAT_ATTRIB);
+	m_fNoTargetsOfOpportunity = pDesc->GetAttributeBool(NO_TARGETS_OF_OPPORTUNITY_ATTRIB);
 	m_fNoFriendlyFireCheck = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_CHECK_ATTRIB);
 	m_fNoNavPaths = pDesc->GetAttributeBool(NO_NAV_PATHS_ATTRIB);
 	m_fNoOrderGiver = pDesc->GetAttributeBool(NO_ORDER_GIVER_ATTRIB);
@@ -261,6 +265,7 @@ void CAISettings::ReadFromStream (SLoadCtx &Ctx)
 	m_fAscendOnGate =			((dwLoad & 0x00000080) ? true : false);
 	m_fNoNavPaths =				((dwLoad & 0x00000100) ? true : false);
 	m_fNoAttackOnThreat =		((dwLoad & 0x00000200) ? true : false);
+	m_fNoTargetsOfOpportunity =	((dwLoad & 0x00000400) ? true : false);
 	}
 
 CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
@@ -286,6 +291,8 @@ CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
 		m_iFireRateAdj = Max(1, strToInt(sValue, 10));
 	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
 		m_fNoAttackOnThreat = !sValue.IsBlank();
+	else if (strEquals(sSetting, NO_TARGETS_OF_OPPORTUNITY_ATTRIB))
+		m_fNoTargetsOfOpportunity = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_DOGFIGHTS_ATTRIB))
 		m_fNoDogfights = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_SHIELD_RETREAT_ATTRIB))
@@ -347,5 +354,6 @@ void CAISettings::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fAscendOnGate ?			0x00000080 : 0);
 	dwSave |= (m_fNoNavPaths ?				0x00000100 : 0);
 	dwSave |= (m_fNoAttackOnThreat ?		0x00000200 : 0);
+	dwSave |= (m_fNoTargetsOfOpportunity ?	0x00000400 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}
