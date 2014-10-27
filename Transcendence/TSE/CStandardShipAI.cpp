@@ -419,7 +419,7 @@ void CStandardShipAI::OnBehavior (void)
 			ASSERT(m_pTarget);
 			bool bInPlace;
 			m_AICtx.ImplementHold(m_pShip, &bInPlace);
-			if (bInPlace)
+			if (bInPlace && !m_AICtx.NoAttackOnThreat())
 				m_AICtx.ImplementAttackTarget(m_pShip, m_pTarget, true);
 			m_AICtx.ImplementFireOnTargetsOfOpportunity(m_pShip, m_pTarget);
 
@@ -428,6 +428,16 @@ void CStandardShipAI::OnBehavior (void)
 			if (m_pShip->IsDestinyTime(20)
 					&& (m_pShip->GetSystem()->GetTick() - m_AICtx.GetLastAttack()) > 3 * ATTACK_TIME_THRESHOLD)
 				SetState(stateNone);
+
+			//	See if we're done holding
+
+			if (m_iCountdown != -1 && m_iCountdown-- == 0)
+				{
+				if (GetCurrentOrder() == IShipController::orderHold)
+					CancelCurrentOrder();
+
+				SetState(stateNone);
+				}
 
 			break;
 			}
