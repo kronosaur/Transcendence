@@ -57,6 +57,8 @@ const DWORD MAX_DISRUPT_TIME_BEFORE_DAMAGE =	(60 * g_TicksPerSecond);
 #define PROPERTY_DOCKING_ENABLED				CONSTLIT("dockingEnabled")
 #define PROPERTY_DOCKING_PORT_COUNT				CONSTLIT("dockingPortCount")
 #define PROPERTY_EMP_IMMUNE						CONSTLIT("EMPImmune")
+#define PROPERTY_INTERIOR_HP					CONSTLIT("interiorHP")
+#define PROPERTY_MAX_INTERIOR_HP				CONSTLIT("maxInteriorHP")
 #define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_PLAYER_WINGMAN					CONSTLIT("playerWingman")
 #define PROPERTY_RADIATION_IMMUNE				CONSTLIT("radiationImmune")
@@ -2725,6 +2727,21 @@ ICCItem *CShip::GetProperty (const CString &sName)
 			}
 
 		return (GetArmorSectionCount() > 0 ? CC.CreateTrue() : CC.CreateNil());
+		}
+
+	else if (strEquals(sName, PROPERTY_INTERIOR_HP))
+		{
+		int iHP;
+		m_Interior.GetHitPoints(this, m_pClass->GetInteriorDesc(), &iHP);
+		return CC.CreateInteger(iHP);
+		}
+
+	else if (strEquals(sName, PROPERTY_MAX_INTERIOR_HP))
+		{
+		int iHP;
+		int iMaxHP;
+		m_Interior.GetHitPoints(this, m_pClass->GetInteriorDesc(), &iHP, &iMaxHP);
+		return CC.CreateInteger(iMaxHP);
 		}
 
 	else if (strEquals(sName, PROPERTY_OPEN_DOCKING_PORT_COUNT))
@@ -6564,6 +6581,11 @@ bool CShip::SetProperty (const CString &sName, ICCItem *pValue, CString *retsErr
 	if (strEquals(sName, PROPERTY_DOCKING_ENABLED))
 		{
 		m_fDockingDisabled = pValue->IsNil();
+		return true;
+		}
+	else if (strEquals(sName, PROPERTY_INTERIOR_HP))
+		{
+		m_Interior.SetHitPoints(this, m_pClass->GetInteriorDesc(), pValue->GetIntegerValue());
 		return true;
 		}
 	else if (strEquals(sName, PROPERTY_PLAYER_WINGMAN))

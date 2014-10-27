@@ -2813,6 +2813,7 @@ class CShipInterior
 		void Init (const CShipInteriorDesc &Desc);
 		inline bool IsEmpty (void) const { return m_Compartments.GetCount() == 0; }
 		void ReadFromStream (CShip *pShip, const CShipInteriorDesc &Desc, SLoadCtx &Ctx);
+		void SetHitPoints (CShip *pShip, const CShipInteriorDesc &Desc, int iHP);
 		void WriteToStream (IWriteStream *pStream);
 
 	private:

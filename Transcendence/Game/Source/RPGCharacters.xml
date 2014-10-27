@@ -284,7 +284,7 @@
 					)
 				))
 
-			(setq rpgCharacterCreateShip (lambda (charType shipClassUNID pos)
+			(setq rpgCharacterCreateShip (lambda (charType shipClassUNID pos options)
 				(block (objID shipObj)
 					(setq objID (typGetData charType 'objID))
 
@@ -345,6 +345,15 @@
 
 					(if shipObj
 						(objSetProperty shipObj 'dockingEnabled True)
+						)
+						
+					;	If requested, we repair all damage
+					
+					(if (@ options 'repairAll)
+						(block Nil
+							(intArmorRepairAll shipObj 25 'alwaysRepair)
+							(objSetProperty shipObj 'interiorHP (objGetProperty shipObj 'maxInteriorHP))
+							)
 						)
 
 					;	Return character's ship

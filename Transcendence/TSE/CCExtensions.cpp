@@ -1415,6 +1415,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'dockedAtID\n"
 			"   'dockingEnabled\n"
 			"   'EMPImmune\n"
+			"   'interiorHP\n"
+			"   'maxInteriorHP\n"
 			"   'playerWingman\n"
 			"   'radiationImmune\n"
 			"   'rotation\n"

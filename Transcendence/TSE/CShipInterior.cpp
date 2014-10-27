@@ -245,6 +245,59 @@ void CShipInterior::ReadFromStream (CShip *pShip, const CShipInteriorDesc &Desc,
 		}
 	}
 
+void CShipInterior::SetHitPoints (CShip *pShip, const CShipInteriorDesc &Desc, int iHP)
+
+//	SetHitPoints
+//
+//	Sets total hit points, spreading out across all compartments.
+
+	{
+	int i;
+
+	//	First compute the maximum hit points for all compartments so we can
+	//	compute a ratio.
+
+	int iMaxHP = 0;
+	for (i = 0; i < m_Compartments.GetCount(); i++)
+		iMaxHP += Desc.GetCompartment(i).iMaxHP;
+
+	//	We can't exceed maximum
+
+	iHP = Max(0, Min(iMaxHP, iHP));
+
+	//	Compute the ratio
+
+	Metric rRatio = (Metric)iHP / (Metric)iMaxHP;
+
+	//	Now set the HP for all compartments
+
+	int iAllocated = 0;
+	for (i = 0; i < m_Compartments.GetCount(); i++)
+		{
+		int iCompartmentMaxHP = Desc.GetCompartment(i).iMaxHP;
+		if (iCompartmentMaxHP > 0)
+			m_Compartments[i].iHP = (int)(rRatio * (Metric)m_Compartments[i].iHP / (Metric)iCompartmentMaxHP);
+		else
+			m_Compartments[i].iHP = 0;
+
+		iAllocated += m_Compartments[i].iHP;
+		}
+
+	//	If necessary, we allocate any HP left over (due to round off).
+
+	int iRemaining = iHP - iAllocated;
+	for (i = 0; i < m_Compartments.GetCount() && iRemaining > 0; i++)
+		{
+		int iCompartmentMaxHP = Desc.GetCompartment(i).iMaxHP;
+		if (m_Compartments[i].iHP < iCompartmentMaxHP)
+			{
+			int iInc = Min(iCompartmentMaxHP - m_Compartments[i].iHP, iRemaining);
+			m_Compartments[i].iHP += iInc;
+			iRemaining -= iInc;
+			}
+		}
+	}
+
 void CShipInterior::WriteToStream (IWriteStream *pStream)
 
 //	WriteToStream
