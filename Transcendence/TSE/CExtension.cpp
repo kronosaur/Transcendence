@@ -174,6 +174,14 @@ void CExtension::CleanUpXML (void)
 		delete m_ModuleXML[i];
 
 	m_ModuleXML.DeleteAll();
+
+	//	Remove references to XML
+
+	for (i = 0; i < m_DesignTypes.GetCount(); i++)
+		{
+		CDesignType *pType = m_DesignTypes.GetEntry(i);
+		pType->SetXMLElement(NULL);
+		}
 	}
 
 ALERROR CExtension::ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError)
@@ -851,9 +859,13 @@ ALERROR CExtension::Load (ELoadStates iDesiredState, IXMLParserController *pReso
 					}
 				}
 
+			//	If we've already loaded a root element, then we need to clean up
+
+			if (m_pRootXML)
+				CleanUpXML();
+
 			//	Parse the XML file into a structure
 
-			ASSERT(m_pRootXML == NULL);
 			if (error = ExtDb.LoadGameFile(&m_pRootXML, pResolver, retsError))
 				{
 				//	If we're in debug mode then this is a real error.

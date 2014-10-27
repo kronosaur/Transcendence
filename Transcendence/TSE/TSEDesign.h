@@ -397,6 +397,7 @@ class CDesignType
 		inline void MarkImages (void) { OnMarkImages(); }
 		inline void SetGlobalData (const CString &sAttrib, const CString &sData) { m_GlobalData.SetData(sAttrib, sData); }
 		inline void SetUNID (DWORD dwUNID) { m_dwUNID = dwUNID; }
+		inline void SetXMLElement (CXMLElement *pDesc) { m_pXML = pDesc; }
 		inline void TopologyInitialized (void) { OnTopologyInitialized(); }
 		bool Translate (CSpaceObject *pObj, const CString &sID, ICCItem *pData, ICCItem **retpResult);
 		bool TranslateText (CSpaceObject *pObj, const CString &sID, ICCItem *pData, CString *retsText);
