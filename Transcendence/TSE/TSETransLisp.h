@@ -153,4 +153,33 @@ class CAddFunctionContextWrapper : public IItemTransform
 		CExtension *m_pExtension;
 	};
 
+class CCXMLWrapper : public ICCAtom
+	{
+	public:
+		CCXMLWrapper (CXMLElement *pXML, ICCItem *pRef = NULL);
+
+		inline CXMLElement *GetXMLElement (void) { return m_pXML; }
+
+		//	ICCItem virtuals
+
+		virtual ICCItem *Clone (CCodeChain *pCC);
+		virtual CString GetStringValue (void) { return m_pXML->ConvertToString(); }
+		virtual CString GetTypeOf (void) { return CONSTLIT("xmlElement"); }
+		virtual ValueTypes GetValueType (void) { return Complex; }
+		virtual BOOL IsIdentifier (void) { return FALSE; }
+		virtual BOOL IsFunction (void) { return FALSE; }
+		virtual BOOL IsPrimitive (void) { return FALSE; }
+		virtual CString Print (CCodeChain *pCC, DWORD dwFlags = 0) { return CCString::Print(GetStringValue(), dwFlags); }
+		virtual void Reset (void) { }
+
+	protected:
+		virtual void DestroyItem (CCodeChain *pCC);
+		virtual ICCItem *StreamItem (CCodeChain *pCC, IWriteStream *pStream);
+		virtual ICCItem *UnstreamItem (CCodeChain *pCC, IReadStream *pStream);
+
+	private:
+		CXMLElement *m_pXML;
+		ICCItem *m_pRef;
+	};
+
 #endif

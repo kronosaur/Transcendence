@@ -1477,25 +1477,7 @@ ICCItem *fnItem (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		case FN_ITEM_TYPE:
 			{
 			ICCItem *pItem = pArgs->GetElement(0);
-
-			if (pItem->IsError())
-				return pCC->CreateString(CONSTLIT("error"));
-			else if (pItem->IsNil())
-				return pCC->CreateString(CONSTLIT("nil"));
-			else if (pItem->IsInteger())
-				return pCC->CreateString(CONSTLIT("int32"));
-			else if (pItem->IsPrimitive())
-				return pCC->CreateString(CONSTLIT("primitive"));
-			else if (pItem->IsLambdaFunction())
-				return pCC->CreateString(CONSTLIT("function"));
-			else if (pItem->IsIdentifier())
-				return pCC->CreateString(CONSTLIT("string"));
-			else if (pItem->IsSymbolTable())
-				return pCC->CreateString(CONSTLIT("struct"));
-			else if (pItem->IsList())
-				return pCC->CreateString(CONSTLIT("list"));
-			else
-				return pCC->CreateString(CONSTLIT("true"));
+			return pCC->CreateString(pItem->GetTypeOf());
 			}
 
 		case FN_SET_ITEM:

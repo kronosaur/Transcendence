@@ -56,7 +56,8 @@ CExtensionCollection::CExtensionCollection (void) :
 		m_sCollectionFolder(FILESPEC_COLLECTION_FOLDER),
 		m_pBase(NULL),
 		m_bReloadNeeded(true),
-		m_bLoadedInDebugMode(false)
+		m_bLoadedInDebugMode(false),
+		m_bKeepXML(false)
 
 //	CExtensionCollection constructor
 
@@ -172,7 +173,7 @@ ALERROR CExtensionCollection::AddToBindList (CExtension *pExtension, DWORD dwFla
 
 	//	Make sure the extension is loaded completely.
 
-	if (error = pExtension->Load(CExtension::loadComplete, &Resolver, bNoResources, retsError))
+	if (error = pExtension->Load(CExtension::loadComplete, &Resolver, bNoResources, m_bKeepXML, retsError))
 		return error;
 
 	//	Now add any libraries used by this extension to the list.
@@ -1108,7 +1109,11 @@ ALERROR CExtensionCollection::Load (const CString &sFilespec, DWORD dwFlags, CSt
 		Resolver.AddLibrary(m_pBase);
 		Resolver.AddLibrary(pExtension);
 
-		if (error = pExtension->Load(CExtension::loadAdventureDesc, &Resolver, ((dwFlags & FLAG_NO_RESOURCES) == FLAG_NO_RESOURCES), retsError))
+		if (error = pExtension->Load(CExtension::loadAdventureDesc, 
+				&Resolver, 
+				((dwFlags & FLAG_NO_RESOURCES) == FLAG_NO_RESOURCES), 
+				m_bKeepXML, 
+				retsError))
 			return error;
 		}
 
@@ -1167,6 +1172,10 @@ ALERROR CExtensionCollection::LoadBaseFile (const CString &sFilespec, DWORD dwFl
 	Ctx.bNoResources = ((dwFlags & FLAG_NO_RESOURCES) ? true : false);
 	Ctx.bNoVersionCheck = true;	//	Obsolete now
 	Ctx.sErrorFilespec = sFilespec;
+
+	//	Always keep the base file XML because we can't tell yet if we need it.
+
+	Ctx.bKeepXML = true;
 
 	//	Load it
 
@@ -1240,6 +1249,7 @@ ALERROR CExtensionCollection::LoadFile (const CString &sFilespec, CExtension::EF
 	if (error = pExtension->Load(((dwFlags & FLAG_DESC_ONLY) ? CExtension::loadAdventureDesc : CExtension::loadComplete),
 			&Resolver,
 			((dwFlags & FLAG_NO_RESOURCES) == FLAG_NO_RESOURCES),
+			m_bKeepXML,
 			retsError))
 		{
 		delete pExtension;
@@ -1346,6 +1356,12 @@ ALERROR CExtensionCollection::LoadFolderStubsOnly (const CString &sFilespec, CEx
 
 		if (error = CExtension::CreateExtensionStub(sExtensionFilespec, iFolder, &pExtension, retsError))
 			return error;
+
+		//	If this extension needs XML, then we remember that so that we keep
+		//	XML around after load.
+
+		if (pExtension->UsesXML())
+			m_bKeepXML = true;
 
 		//	Add the extensions to our list. We lock because we expect this function
 		//	to be called without a lock; we don't want to lock while doing the

@@ -415,6 +415,18 @@ CVector CreateVectorFromList (CCodeChain &CC, ICCItem *pList)
 	return vVec;
 	}
 
+CCXMLWrapper *CreateXMLElementFromItem (CCodeChain &CC, ICCItem *pItem)
+	{
+	if (!strEquals(pItem->GetTypeOf(), CONSTLIT("xmlElement")))
+		return NULL;
+
+	CCXMLWrapper *pWrapper = dynamic_cast<CCXMLWrapper *>(pItem);
+	if (pItem == NULL)
+		return NULL;
+
+	return pWrapper;
+	}
+
 ICCItem *CreateDisposition (CCodeChain &CC, CSovereign::Disposition iDisp)
 
 //	CreateDisposition

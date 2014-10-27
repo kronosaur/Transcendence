@@ -802,5 +802,8 @@
     <ClCompile Include="CMapGridPainter.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="CCXMLWrapper.cpp">
+      <Filter>Source Files\TransLISP</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

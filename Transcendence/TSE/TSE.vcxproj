@@ -185,6 +185,7 @@
     </ClCompile>
     <ClCompile Include="CCompositeImageModifiers.cpp" />
     <ClCompile Include="CCreatePainterCtx.cpp" />
+    <ClCompile Include="CCXMLWrapper.cpp" />
     <ClCompile Include="CDisplayAttributeDefinitions.cpp" />
     <ClCompile Include="CDockingPorts.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

@@ -3232,7 +3232,7 @@ class CUniverse : public CObject
 		void StartGame (bool bNewGame);
 
 		inline void AddAscendedObj (CSpaceObject *pObj) { m_AscendedObjects.Insert(pObj); }
-		inline ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError) { return m_Design.AddDynamicType(pExtension, dwUNID, sSource, bNewGame, retsError); }
+		inline ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, ICCItem *pSource, bool bNewGame, CString *retsError) { return m_Design.AddDynamicType(pExtension, dwUNID, pSource, bNewGame, retsError); }
 		void AddEvent (CTimedEvent *pEvent);
 		inline void AddObject (CSpaceObject *pObj) { m_Objects.Insert(pObj); }
 		void AddSound (DWORD dwUNID, int iChannel);
@@ -3547,6 +3547,7 @@ ICCItem *CreateResultFromDataField (CCodeChain &CC, const CString &sValue);
 CShip *CreateShipObjFromItem (CCodeChain &CC, ICCItem *pArg);
 CStation *CreateStationObjFromItem (CCodeChain &CC, ICCItem *pArg);
 CVector CreateVectorFromList (CCodeChain &CC, ICCItem *pList);
+CCXMLWrapper *CreateXMLElementFromItem (CCodeChain &CC, ICCItem *pItem);
 void DefineGlobalItem (CCodeChain &CC, const CString &sVar, const CItem &Item);
 void DefineGlobalSpaceObject (CCodeChain &CC, const CString &sVar, CSpaceObject *pObj);
 void DefineGlobalVector (CCodeChain &CC, const CString &sVar, const CVector &vVector);

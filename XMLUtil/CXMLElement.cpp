@@ -89,7 +89,7 @@ ALERROR CXMLElement::AddAttribute (const CString &sAttribute, const CString &sVa
 	return NOERROR;
 	}
 
-ALERROR CXMLElement::AppendContent (const CString &sContent)
+ALERROR CXMLElement::AppendContent (const CString &sContent, int iIndex)
 
 //	AppendContent
 //
@@ -101,33 +101,55 @@ ALERROR CXMLElement::AppendContent (const CString &sContent)
 	int iCount = m_ContentText.GetCount();
 	if (iCount == 0)
 		m_ContentText.Insert(sContent);
+	else if (iIndex >= 0 && iIndex < iCount)
+		m_ContentText[iIndex].Append(sContent);
 	else
 		m_ContentText[iCount - 1].Append(sContent);
 
 	return NOERROR;
 	}
 
-ALERROR CXMLElement::AppendSubElement (CXMLElement *pElement)
+ALERROR CXMLElement::AppendSubElement (CXMLElement *pElement, int iIndex)
 
 //	AppendSubElement
 //
-//	Append a sub element
+//	Append a sub element. We take ownership of pElement.
 
 	{
-	//	If this element was previously empty, we have to add
-	//	a content text item. [Because we optimize the case where
-	//	there are no children.]
+	//	Are we appending to the end?
 
-	if (m_ContentText.GetCount() == 0)
+	if (iIndex < 0 || iIndex >= m_ContentElements.GetCount())
+		{
+		//	If this element was previously empty, we have to add
+		//	a content text item. [Because we optimize the case where
+		//	there are no children.]
+
+		if (m_ContentText.GetCount() == 0)
+			m_ContentText.Insert(NULL_STR);
+
+		//	Append the element
+
+		m_ContentElements.Insert(pElement);
+
+		//	We always add a new content text value at the end
+
 		m_ContentText.Insert(NULL_STR);
+		}
 
-	//	Append the element
+	//	Otherwise, we're inserting at a position.
 
-	m_ContentElements.Insert(pElement);
+	else
+		{
+		//	If this element was previously empty, we have to add
+		//	a content text item. [Because we optimize the case where
+		//	there are no children.]
 
-	//	We always add a new content text value at the end
+		if (m_ContentText.GetCount() == 0)
+			m_ContentText.Insert(NULL_STR);
 
-	m_ContentText.Insert(NULL_STR);
+		m_ContentElements.Insert(pElement, iIndex);
+		m_ContentText.Insert(NULL_STR, iIndex + 1);
+		}
 
 	return NOERROR;
 	}
@@ -160,6 +182,41 @@ void CXMLElement::CleanUp (void)
 		delete m_ContentElements[i];
 
 	m_ContentElements.DeleteAll();
+	}
+
+CString CXMLElement::ConvertToString (void)
+
+//	StreamToString
+//
+//	Convert to a string.
+
+	{
+	CMemoryWriteStream Stream;
+	if (Stream.Create() != NOERROR)
+		return NULL_STR;
+
+	WriteToStream(&Stream);
+
+	return CString(Stream.GetPointer(), Stream.GetLength());
+	}
+
+ALERROR CXMLElement::DeleteSubElement (int iIndex)
+
+//	DeleteSubElement
+//
+//	Deletes the given sub-element
+
+	{
+	if (iIndex >= m_ContentElements.GetCount())
+		return ERR_FAIL;
+
+	delete m_ContentElements[iIndex];
+	m_ContentElements.Delete(iIndex);
+
+	m_ContentText[iIndex].Append(m_ContentText[iIndex + 1]);
+	m_ContentText.Delete(iIndex + 1);
+
+	return NOERROR;
 	}
 
 bool CXMLElement::FindAttribute (const CString &sName, CString *retsValue)
@@ -478,6 +535,99 @@ ALERROR CXMLElement::SetAttribute (const CString &sName, const CString &sValue)
 		delete pValue;
 		return error;
 		}
+
+	return NOERROR;
+	}
+
+ALERROR CXMLElement::SetContentText (const CString &sContent, int iIndex)
+
+//	SetContentText
+//
+//	Sets the content
+
+	{
+	//	Always append to the last content element
+
+	int iCount = m_ContentText.GetCount();
+	if (iCount == 0)
+		m_ContentText.Insert(sContent);
+	else if (iIndex >= 0 && iIndex < iCount)
+		m_ContentText[iIndex] = sContent;
+	else
+		m_ContentText[iCount - 1] = sContent;
+
+	return NOERROR;
+	}
+
+ALERROR CXMLElement::WriteToStream (IWriteStream *pStream)
+
+//	WriteToStream
+//
+//	Streams out to text XML
+
+	{
+	int i;
+
+	//	Open tag
+
+	pStream->Write("<", 1);
+	pStream->Write(m_sTag.GetASCIIZPointer(), m_sTag.GetLength());
+
+	//	If we have attributes, write them out
+
+	if (GetAttributeCount() > 0)
+		{
+		for (i = 0; i < GetAttributeCount(); i++)
+			{
+			CString sName = GetAttributeName(i);
+			CString sValue = MakeAttribute(GetAttribute(i));
+
+			pStream->Write(" ", 1);
+			pStream->Write(sName.GetASCIIZPointer(), sName.GetLength());
+			pStream->Write("=\"", 2);
+			pStream->Write(sValue.GetASCIIZPointer(), sValue.GetLength());
+			pStream->Write("\"", 1);
+			}
+		}
+
+	//	If we don't have any sub elements, then we're done.
+
+	if (m_ContentText.GetCount() == 0)
+		{
+		pStream->Write("/>", 2);
+		return NOERROR;
+		}
+
+	//	End of open tag
+
+	pStream->Write(">", 1);
+
+	//	Output sub-elements and text
+
+	for (i = 0; i < m_ContentElements.GetCount(); i++)
+		{
+		//	Write the text before this sub-element
+
+		CString sXMLText = strToXMLText(m_ContentText[i], true);
+		pStream->Write(sXMLText.GetASCIIZPointer(), sXMLText.GetLength());
+
+		//	Write the element
+
+		m_ContentElements[i]->WriteToStream(pStream);
+		}
+
+	//	Output any trailing text
+
+	CString sXMLText = strToXMLText(m_ContentText[i], true);
+	pStream->Write(sXMLText.GetASCIIZPointer(), sXMLText.GetLength());
+
+	//	Close the element
+
+	pStream->Write("</", 2);
+	pStream->Write(m_sTag.GetASCIIZPointer(), m_sTag.GetLength());
+	pStream->Write(">", 1);
+
+	//	Done
 
 	return NOERROR;
 	}

@@ -386,6 +386,7 @@ class CDesignType
 		const CString &GetStaticData (const CString &sAttrib) const;
 		CString GetTypeClassName (void) const;
 		inline DWORD GetUNID (void) const { return m_dwUNID; }
+		inline CXMLElement *GetXMLElement (void) const { return m_pXML; }
 		bool HasAttribute (const CString &sAttrib) const;
 		inline bool HasEvents (void) const { return !m_Events.IsEmpty() || (m_pInheritFrom && m_pInheritFrom->HasEvents()); }
 		inline bool HasLiteralAttribute (const CString &sAttrib) const { return ::HasModifier(m_sAttributes, sAttrib); }
@@ -444,8 +445,9 @@ class CDesignType
 		bool TranslateVersion2 (CSpaceObject *pObj, const CString &sID, ICCItem **retpResult);
 
 		DWORD m_dwUNID;
-		CExtension *m_pExtension;			//	Extension
+		CExtension *m_pExtension;				//	Extension
 		DWORD m_dwVersion;						//	Extension version
+		CXMLElement *m_pXML;					//	Optional XML for this type
 
 		DWORD m_dwInheritFrom;					//	Inherit from this type
 		CDesignType *m_pInheritFrom;			//	Inherit from this type
@@ -6199,7 +6201,7 @@ class CExtension
 		inline bool IsMarked (void) const { return m_bMarked; }
 		inline bool IsRegistered (void) const { return m_bRegistered; }
 		inline bool IsRegistrationVerified (void) { return (m_bRegistered && m_bVerified); }
-		ALERROR Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, CString *retsError);
+		ALERROR Load (ELoadStates iDesiredState, IXMLParserController *pResolver, bool bNoResources, bool bKeepXML, CString *retsError);
 		inline void SetDeleted (void) { m_bDeleted = true; }
 		inline void SetDisabled (const CString &sReason) { if (!m_bDisabled) { m_sDisabledReason = sReason; m_bDisabled = true; } }
 		inline void SetDigest (const CIntegerIP &Digest) { m_Digest = Digest; }
@@ -6208,6 +6210,7 @@ class CExtension
 		inline void SetName (const CString &sName) { m_sName = sName; }
 		inline void SetVerified (bool bVerified = true) { m_bVerified = bVerified; }
 		void SweepImages (void);
+		inline bool UsesXML (void) const { return m_bUsesXML; }
 
 		static ALERROR ComposeLoadError (SDesignLoadCtx &Ctx, CString *retsError);
 		static void DebugDump (CExtension *pExtension, bool bFull = false);
@@ -6221,6 +6224,7 @@ class CExtension
 
 		static ALERROR CreateExtensionFromRoot (const CString &sFilespec, CXMLElement *pDesc, EFolderTypes iFolder, CExternalEntityTable *pEntities, DWORD dwInheritAPIVersion, CExtension **retpExtension, CString *retsError);
 
+		void CleanUpXML (void);
 		ALERROR LoadDesignElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		ALERROR LoadDesignType (SDesignLoadCtx &Ctx, CXMLElement *pDesc, CDesignType **retpType = NULL);
 		ALERROR LoadGlobalsElement (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
@@ -6262,6 +6266,9 @@ class CExtension
 											//		API version.
 		TArray<CString> m_Externals;		//	External resources
 
+		CXMLElement *m_pRootXML;			//	Root XML representation (may be NULL)
+		TSortMap<CString, CXMLElement *> m_ModuleXML;	//	XML for modules
+
 		mutable CG16bitImage *m_pCoverImage;	//	Large cover image
 
 		CAdventureDesc *m_pAdventureDesc;	//	If extAdventure, this is the descriptor
@@ -6274,6 +6281,7 @@ class CExtension
 		bool m_bDisabled;					//	Disabled (for some reason)
 		bool m_bDeleted;
 		bool m_bAutoInclude;				//	Extension should always be included (if appropriate)
+		bool m_bUsesXML;					//	Extension uses XML from other extensions
 	};
 
 class CExtensionCollection
@@ -6345,6 +6353,7 @@ class CExtensionCollection
 		TArray<CExtension *> m_Extensions;	//	All loaded extensions
 		bool m_bReloadNeeded;				//	If TRUE we need to reload our folders
 		bool m_bLoadedInDebugMode;			//	If TRUE we loaded in debug mode
+		bool m_bKeepXML;					//	If TRUE we need to keep XML for all types
 
 		TArray<CExtension *> m_Deleted;		//	Keep around until next bind
 
@@ -6361,7 +6370,7 @@ class CDynamicDesignTable
 		CDynamicDesignTable (void) { }
 		~CDynamicDesignTable (void) { CleanUp(); }
 
-		ALERROR DefineType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, CDesignType **retpType = NULL, CString *retsError = NULL);
+		ALERROR DefineType (CExtension *pExtension, DWORD dwUNID, ICCItem *pSource, CDesignType **retpType = NULL, CString *retsError = NULL);
 		void Delete (DWORD dwUNID);
 		inline void DeleteAll (void) { CleanUp(); }
 		inline int GetCount (void) const { return m_Table.GetCount(); }
@@ -6380,6 +6389,7 @@ class CDynamicDesignTable
 
 		void CleanUp (void);
 		ALERROR Compile (SEntry *pEntry, CDesignType **retpType, CString *retsError = NULL);
+		ALERROR CreateType (SEntry *pEntry, CXMLElement *pDesc, CDesignType **retpType, CString *retsError = NULL);
 		inline SEntry *GetEntry (int iIndex) const { return &m_Table[iIndex]; }
 
 		TSortMap<DWORD, SEntry> m_Table;
@@ -6393,6 +6403,7 @@ struct SDesignLoadCtx
 			bBindAsNewGame(false),
 			bNoResources(false),
 			bNoVersionCheck(false),
+			bKeepXML(false),
 			bLoadAdventureDesc(false),
 			bLoadModule(false),
 			dwInheritAPIVersion(0)
@@ -6413,6 +6424,7 @@ struct SDesignLoadCtx
 	bool bBindAsNewGame;					//	If TRUE, then we are binding a new game
 	bool bNoResources;
 	bool bNoVersionCheck;
+	bool bKeepXML;							//	Keep XML around
 
 	//	Output
 	CString sError;
@@ -6450,7 +6462,7 @@ class CDesignCollection
 		CDesignCollection (void);
 		~CDesignCollection (void);
 
-		ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, bool bNewGame, CString *retsError);
+		ALERROR AddDynamicType (CExtension *pExtension, DWORD dwUNID, ICCItem *pSource, bool bNewGame, CString *retsError);
 		ALERROR BindDesign (const TArray<CExtension *> &BindOrder, bool bNewGame, bool bNoResources, CString *retsError);
 		void CleanUp (void);
 		void ClearImageMarks (void);

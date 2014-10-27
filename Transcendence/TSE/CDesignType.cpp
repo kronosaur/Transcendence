@@ -152,6 +152,8 @@ CString ParseAchievementValue (ICCItem *pItem);
 
 CDesignType::CDesignType (void) : 
 		m_dwUNID(0), 
+		m_pExtension(NULL),
+		m_pXML(NULL),
 		m_pLocalScreens(NULL), 
 		m_dwInheritFrom(0), 
 		m_pInheritFrom(NULL),
@@ -1565,6 +1567,11 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 
 	m_pExtension = Ctx.pExtension;
 	m_dwVersion = Ctx.GetAPIVersion();
+
+	//	Remember XML if necessary
+
+	if (Ctx.bKeepXML)
+		m_pXML = pDesc;
 
 	//	Inheritance
 

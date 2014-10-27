@@ -137,6 +137,7 @@ class ICCItem : public CObject
 		virtual int GetIntegerValue (void) { return 0; }
 		virtual CString GetStringValue (void) { return LITERAL(""); }
 		virtual ValueTypes GetValueType (void) = 0;
+		virtual CString GetTypeOf (void);
 		virtual BOOL IsAtom (void) = 0;
 		virtual BOOL IsAtomTable (void) { return FALSE; }
 		virtual bool IsExpression (void) { return false; }

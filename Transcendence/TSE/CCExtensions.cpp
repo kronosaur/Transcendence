@@ -455,6 +455,7 @@ ICCItem *fnTopologyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 #define FN_DESIGN_MATCHES				12
 #define FN_DESIGN_FIRE_TYPE_EVENT		13
 #define FN_DESIGN_HAS_EVENT				14
+#define FN_DESIGN_GET_XML				15
 
 ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
@@ -500,6 +501,23 @@ ICCItem *fnSystemVectorMath (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 #define DISP_FRIEND						CONSTLIT("friend")
 
 ICCItem *fnSovereignSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+
+#define FN_XML_GET_TAG					0
+#define FN_XML_GET_ATTRIB				1
+#define FN_XML_SET_ATTRIB				2
+
+#define FN_XML_GET_ATTRIB_LIST			3
+#define FN_XML_GET_SUB_ELEMENT			4
+#define FN_XML_GET_SUB_ELEMENT_COUNT	5
+#define FN_XML_GET_SUB_ELEMENT_LIST		6
+#define FN_XML_GET_TEXT					7
+#define FN_XML_APPEND_SUB_ELEMENT		8
+#define FN_XML_DELETE_SUB_ELEMENT		9
+#define FN_XML_APPEND_TEXT				10
+#define FN_XML_SET_TEXT					11
+
+ICCItem *fnXMLCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
+ICCItem *fnXMLGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
 #define FIELD_ANGLE_OFFSET				CONSTLIT("angleOffset")
 #define FIELD_ARC_OFFSET				CONSTLIT("arcOffset")
@@ -2316,7 +2334,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		{	"typCreate",					fnDesignCreate,		FN_DESIGN_CREATE,
 			"(typCreate unid XML) -> True/Nil",
-			"is",	PPFLAG_SIDEEFFECTS,	},
+			"iv",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"typDynamicUNID",				fnDesignCreate,		FN_DESIGN_DYNAMIC_UNID,
 			"(typDynamicUNID uniqueName) -> UNID",
@@ -2369,6 +2387,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"typGetStaticData",				fnDesignGet,		FN_DESIGN_GET_STATIC_DATA,
 			"(typGetStaticData unid attrib) -> data",
 			"is",	0,	},
+
+		{	"typGetXML",				fnDesignGet,		FN_DESIGN_GET_XML,
+			"(typGetXML unid) -> xmlElement",
+			"i",	0,	},
 
 		{	"typHasAttribute",				fnDesignGet,		FN_DESIGN_HAS_ATTRIBUTE,
 			"(typHasAttribute unid attrib) -> True/Nil",
@@ -2487,6 +2509,61 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 		{	"unvUNID",						fnUniverseGet,	FN_UNIVERSE_UNID,
 			"(unvUNID string) -> (unid 'itemtype name) or (unid 'shipclass name)",
 			"s",	0,	},
+
+		//	XML functions
+		//	-------------
+
+		{	"xmlAppendSubElement",			fnXMLGet,		FN_XML_APPEND_SUB_ELEMENT,
+			"(xmlAppendSubElement xml xmlToAdd [index]) -> True/Nil",
+			"vv*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlAppendText",				fnXMLGet,		FN_XML_APPEND_TEXT,
+			"(xmlAppendText xml text [index]) -> True/Nil",
+			"vs*",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlCreate",					fnXMLCreate,	0,
+			"(xmlCreate xml) -> xml",
+			"v",	0,	},
+
+		{	"xmlDeleteSubElement",			fnXMLGet,		FN_XML_DELETE_SUB_ELEMENT,
+			"(xmlDeleteSubElement xml index) -> True/Nil",
+			"vi",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlGetAttrib",					fnXMLGet,		FN_XML_GET_ATTRIB,
+			"(xmlGetAttrib xml attrib) -> value",
+			"vs",	0,	},
+
+		{	"xmlGetAttribList",					fnXMLGet,		FN_XML_GET_ATTRIB_LIST,
+			"(xmlGetAttribList xml) -> list of attribs",
+			"v",	0,	},
+
+		{	"xmlGetSubElement",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT,
+			"(xmlGetSubElement xml tag|index) -> xml",
+			"vv",	0,	},
+
+		{	"xmlGetSubElementCount",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT_COUNT,
+			"(xmlGetSubElementCount xml) -> number of sub-elements",
+			"v",	0,	},
+
+		{	"xmlGetSubElementList",				fnXMLGet,		FN_XML_GET_SUB_ELEMENT_LIST,
+			"(xmlGetSubElementList xml [tag]) -> list of xml",
+			"v*",	0,	},
+
+		{	"xmlGetText",					fnXMLGet,		FN_XML_GET_TEXT,
+			"(xmlGetText xml [index]) -> text",
+			"v*",	0,	},
+
+		{	"xmlGetTag",					fnXMLGet,		FN_XML_GET_TAG,
+			"(xmlGetTag xml) -> tag",
+			"v",	0,	},
+
+		{	"xmlSetAttrib",					fnXMLGet,		FN_XML_SET_ATTRIB,
+			"(xmlSetAttrib xml attrib value) -> value",
+			"vsv",	PPFLAG_SIDEEFFECTS,	},
+
+		{	"xmlSetText",					fnXMLGet,		FN_XML_SET_TEXT,
+			"(xmlSetText xml text [index]) -> True/Nil",
+			"vs*",	PPFLAG_SIDEEFFECTS,	},
 
 		//	DEPRECATED FUNCTIONS
 		//	--------------------
@@ -3058,7 +3135,7 @@ ICCItem *fnDesignCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			CString sError;
 			if (g_pUniverse->AddDynamicType(pCtx->GetExtension(), 
 					dwUNID, 
-					pArgs->GetElement(1)->GetStringValue(), 
+					pArgs->GetElement(1),
 					pCtx->InEvent(eventOnGlobalTypesInit),
 					&sError) != NOERROR)
 				return pCC->CreateError(sError);
@@ -3142,6 +3219,15 @@ ICCItem *fnDesignGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			CString sData = pType->GetStaticData(pArgs->GetElement(1)->GetStringValue());
 			return pCC->Link(sData, 0, NULL);
+			}
+
+		case FN_DESIGN_GET_XML:
+			{
+			CXMLElement *pXML = pType->GetXMLElement();
+			if (pXML == NULL)
+				return pCC->CreateNil();
+
+			return new CCXMLWrapper(pXML);
 			}
 
 		case FN_DESIGN_HAS_ATTRIBUTE:
@@ -11227,4 +11313,253 @@ ICCItem *fnUniverseGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		}
 
 	return pResult;
+	}
+
+ICCItem *fnXMLCreate (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+	ICCItem *pValue = pArgs->GetElement(0);
+
+	//	If we have an XML element, then we create a clone of it.
+
+	if (strEquals(pValue->GetTypeOf(), CONSTLIT("xmlElement")))
+		{
+		CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pValue);
+		if (pWrapper == NULL)
+			return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(0));
+
+		return new CCXMLWrapper(pWrapper->GetXMLElement());
+		}
+
+	//	Otherwise, we expect XML text
+
+	else if (pValue->IsIdentifier())
+		{
+		CString sValue = pValue->GetStringValue();
+		char *pPos = sValue.GetASCIIZPointer();
+		if (*pPos != '<')
+			return pCC->CreateError(CONSTLIT("Invalid XML"), pValue);
+
+		//	Parse it
+
+		CString sError;
+		CBufferReadBlock Stream(sValue);
+		CXMLElement *pElement;
+		if (CXMLElement::ParseSingleElement(&Stream, NULL, &pElement, &sError) != NOERROR)
+			return pCC->CreateError(sError, pValue);
+
+		ICCItem *pResult = new CCXMLWrapper(pElement);
+		delete pElement;
+		return pResult;
+		}
+
+	//	Otherwise, we don't know what
+
+	else
+		return pCC->CreateError(CONSTLIT("Invalid XML"), pValue);
+	}
+
+ICCItem *fnXMLGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
+	{
+	CCodeChain *pCC = pEvalCtx->pCC;
+	int i;
+
+	//	Get the XML element
+
+	CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pArgs->GetElement(0));
+	if (pWrapper == NULL)
+		return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(0));
+
+	CXMLElement *pXML = pWrapper->GetXMLElement();
+
+	//	Function
+
+	switch (dwData)
+		{
+		case FN_XML_APPEND_SUB_ELEMENT:
+			{
+			CCXMLWrapper *pWrapper = CreateXMLElementFromItem(*pCC, pArgs->GetElement(1));
+			if (pWrapper == NULL)
+				return pCC->CreateError(CONSTLIT("Invalid XML element"), pArgs->GetElement(1));
+
+			CXMLElement *pSubElement = pWrapper->GetXMLElement()->OrphanCopy();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			//	Sanity check the index
+
+			if (iIndex < 0 || iIndex > pXML->GetContentElementCount())
+				iIndex = -1;
+
+			//	Append
+
+			if (pXML->AppendSubElement(pSubElement, iIndex) != NOERROR)
+				{
+				delete pSubElement;
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+				}
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_APPEND_TEXT:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			if (pXML->AppendContent(sText, iIndex) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_DELETE_SUB_ELEMENT:
+			{
+			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+			if (iIndex < 0 || iIndex >= pXML->GetContentElementCount())
+				return pCC->CreateNil();
+
+			pXML->DeleteSubElement(iIndex);
+			return pCC->CreateTrue();
+			}
+
+		case FN_XML_GET_ATTRIB:
+			{
+			CString sValue;
+			if (!pXML->FindAttribute(pArgs->GetElement(1)->GetStringValue(), &sValue))
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sValue);
+			}
+
+		case FN_XML_GET_ATTRIB_LIST:
+			{
+			if (pXML->GetAttributeCount() == 0)
+				return pCC->CreateNil();
+
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+			for (i = 0; i < pXML->GetAttributeCount(); i++)
+				pList->AppendStringValue(pCC, pXML->GetAttributeName(i));
+
+			return pResult;
+			}
+
+		case FN_XML_GET_SUB_ELEMENT:
+			{
+			ICCItem *pIndex = pArgs->GetElement(1);
+
+			//	If the index is an integer, then we get the nth sub element
+
+			if (pIndex->IsInteger())
+				{
+				int iIndex = pIndex->GetIntegerValue();
+				if (iIndex < 0 || iIndex >= pXML->GetContentElementCount())
+					return pCC->CreateNil();
+
+				return new CCXMLWrapper(pXML->GetContentElement(iIndex), pWrapper);
+				}
+
+			//	Otherwise we expect a tag
+
+			else
+				{
+				CXMLElement *pSub = pXML->GetContentElementByTag(pIndex->GetStringValue());
+				if (pSub == NULL)
+					return pCC->CreateNil();
+
+				return new CCXMLWrapper(pSub, pWrapper);
+				}
+			}
+
+		case FN_XML_GET_SUB_ELEMENT_COUNT:
+			return pCC->CreateInteger(pXML->GetContentElementCount());
+
+		case FN_XML_GET_SUB_ELEMENT_LIST:
+			{
+			ICCItem *pResult = pCC->CreateLinkedList();
+			if (pResult->IsError())
+				return pResult;
+
+			CCLinkedList *pList = (CCLinkedList *)pResult;
+
+			//	If we have a tag, we only return elements with the given tag
+
+			if (pArgs->GetCount() >= 2)
+				{
+				CString sTag = pArgs->GetElement(1)->GetStringValue();
+
+				for (i = 0; i < pXML->GetContentElementCount(); i++)
+					{
+					CXMLElement *pSub = pXML->GetContentElement(i);
+					if (strEquals(pSub->GetTag(), sTag))
+						{
+						CCXMLWrapper *pNewItem = new CCXMLWrapper(pSub, pWrapper);
+						pList->Append(pCC, pNewItem);
+						pNewItem->Discard(pCC);
+						}
+					}
+				}
+
+			//	Otherwise, we return all elements
+
+			else
+				{
+				for (i = 0; i < pXML->GetContentElementCount(); i++)
+					{
+					CXMLElement *pSub = pXML->GetContentElement(i);
+					CCXMLWrapper *pNewItem = new CCXMLWrapper(pSub, pWrapper);
+					pList->Append(pCC, pNewItem);
+					pNewItem->Discard(pCC);
+					}
+				}
+
+			//	Optimize case with no items
+
+			if (pList->GetCount() == 0)
+				{
+				pResult->Discard(pCC);
+				return pCC->CreateNil();
+				}
+
+			//	Done
+
+			return pResult;
+			}
+			
+		case FN_XML_GET_TEXT:
+			{
+			int iIndex = pArgs->GetElement(1)->GetIntegerValue();
+			return pCC->CreateString(pXML->GetContentText(iIndex));
+			}
+
+		case FN_XML_GET_TAG:
+			return pCC->CreateString(pXML->GetTag());
+
+		case FN_XML_SET_ATTRIB:
+			{
+			CString sAttrib = pArgs->GetElement(1)->GetStringValue();
+			CString sValue = pArgs->GetElement(2)->GetStringValue();
+			pXML->SetAttribute(sAttrib, sValue);
+			return pCC->CreateString(sValue);
+			}
+
+		case FN_XML_SET_TEXT:
+			{
+			CString sText = pArgs->GetElement(1)->GetStringValue();
+			int iIndex = (pArgs->GetCount() >= 3 ? pArgs->GetElement(2)->GetIntegerValue() : -1);
+
+			if (pXML->SetContentText(sText, iIndex) != NOERROR)
+				return pCC->CreateError(CONSTLIT("Invalid index"), pArgs->GetElement(2));
+
+			return pCC->CreateTrue();
+			}
+
+		default:
+			ASSERT(false);
+		}
+
+	return pCC->CreateNil();
 	}

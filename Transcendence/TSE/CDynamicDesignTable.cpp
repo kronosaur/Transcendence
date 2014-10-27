@@ -39,13 +39,34 @@ ALERROR CDynamicDesignTable::Compile (SEntry *pEntry, CDesignType **retpType, CS
 
 	//	Parse the XML
 
-	CXMLElement *pDesc;
 	CBufferReadBlock Source(pEntry->sSource);
 
 	//	Parse
 
+	CXMLElement *pDesc;
 	if (error = CXMLElement::ParseXML(&Source, &Resolver, &pDesc, retsError))
 		return error;
+
+	//	Create the type
+
+	error = CreateType(pEntry, pDesc, retpType, retsError);
+	delete pDesc;
+	if (error)
+		return error;
+
+	//	Done
+
+	return NOERROR;
+	}
+
+ALERROR CDynamicDesignTable::CreateType (SEntry *pEntry, CXMLElement *pDesc, CDesignType **retpType, CString *retsError)
+
+//	CreateType
+//
+//	Creates a new type based on the XML
+
+	{
+	ALERROR error;
 
 	//	Set the UNID properly
 
@@ -61,7 +82,6 @@ ALERROR CDynamicDesignTable::Compile (SEntry *pEntry, CDesignType **retpType, CS
 	CDesignType *pNewType;
 	if (error = CDesignType::CreateFromXML(Ctx, pDesc, &pNewType))
 		{
-		delete pDesc;
 		if (retsError)
 			*retsError = Ctx.sError;
 		return error;
@@ -74,7 +94,7 @@ ALERROR CDynamicDesignTable::Compile (SEntry *pEntry, CDesignType **retpType, CS
 	return NOERROR;
 	}
 
-ALERROR CDynamicDesignTable::DefineType (CExtension *pExtension, DWORD dwUNID, const CString &sSource, CDesignType **retpType, CString *retsError)
+ALERROR CDynamicDesignTable::DefineType (CExtension *pExtension, DWORD dwUNID, ICCItem *pSource, CDesignType **retpType, CString *retsError)
 
 //	DefineType
 //
@@ -87,14 +107,39 @@ ALERROR CDynamicDesignTable::DefineType (CExtension *pExtension, DWORD dwUNID, c
 	pEntry->dwUNID = dwUNID;
 	pEntry->pExtension = pExtension;
 
-	//	We need to trim leading whitespace because the XML parser doesn't like any.
+	//	If this is an XML element, then we can use it directly.
 
-	pEntry->sSource = strTrimWhitespace(sSource);
-
-	if (error = Compile(pEntry, &pEntry->pType, retsError))
+	if (strEquals(pSource->GetTypeOf(), CONSTLIT("xmlElement")))
 		{
-		m_Table.DeleteAt(dwUNID);
-		return error;
+		CCXMLWrapper *pWrapper = dynamic_cast<CCXMLWrapper *>(pSource);
+		CXMLElement *pDesc = pWrapper->GetXMLElement();
+
+		//	Stream the element
+
+		pEntry->sSource = pDesc->ConvertToString();
+
+		//	Create the type
+
+		if (error = CreateType(pEntry, pDesc, &pEntry->pType, retsError))
+			{
+			m_Table.DeleteAt(dwUNID);
+			return error;
+			}
+		}
+
+	//	Otherwise, we assume this is a string
+
+	else
+		{
+		//	We need to trim leading whitespace because the XML parser doesn't like any.
+
+		pEntry->sSource = strTrimWhitespace(pSource->GetStringValue());
+
+		if (error = Compile(pEntry, &pEntry->pType, retsError))
+			{
+			m_Table.DeleteAt(dwUNID);
+			return error;
+			}
 		}
 
 	//	Done

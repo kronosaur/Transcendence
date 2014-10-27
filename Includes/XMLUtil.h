@@ -50,14 +50,20 @@ class CXMLElement : public CObject
 								 CXMLElement **retpElement, 
 								 CString *retsError,
 								 CExternalEntityTable *retEntityTable = NULL);
+		static ALERROR ParseSingleElement (IReadBlock *pStream, 
+										   IXMLParserController *pController,
+										   CXMLElement **retpElement, 
+										   CString *retsError);
 		static ALERROR ParseEntityTable (IReadBlock *pStream, CExternalEntityTable *retEntityTable, CString *retsError);
 		static ALERROR ParseRootElement (IReadBlock *pStream, CXMLElement **retpRoot, CExternalEntityTable *retEntityTable, CString *retsError);
 		static ALERROR ParseRootTag (IReadBlock *pStream, CString *retsTag);
 
 		ALERROR AddAttribute (const CString &sAttribute, const CString &sValue);
-		ALERROR AppendContent (const CString &sContent);
-		ALERROR AppendSubElement (CXMLElement *pElement);
+		ALERROR AppendContent (const CString &sContent, int iIndex = -1);
+		ALERROR AppendSubElement (CXMLElement *pElement, int iIndex = -1);
 		bool AttributeExists (const CString &sName);
+		CString ConvertToString (void);
+		ALERROR DeleteSubElement (int iIndex);
 		bool FindAttribute (const CString &sName, CString *retsValue = NULL);
 		bool FindAttributeBool (const CString &sName, bool *retbValue = NULL);
 		bool FindAttributeDouble (const CString &sName, double *retrValue = NULL);
@@ -76,12 +82,14 @@ class CXMLElement : public CObject
 		inline int GetContentElementCount (void) const { return m_ContentElements.GetCount(); }
 		inline CXMLElement *GetContentElement (int iOrdinal) const { return m_ContentElements[iOrdinal]; }
 		CXMLElement *GetContentElementByTag (const CString &sTag) const;
-		inline const CString &GetContentText (int iOrdinal) { return (iOrdinal < m_ContentText.GetCount() ? m_ContentText[iOrdinal] : NULL_STR); }
+		inline const CString &GetContentText (int iOrdinal) { return ((iOrdinal >= 0 && iOrdinal < m_ContentText.GetCount()) ? m_ContentText[iOrdinal] : NULL_STR); }
 		inline CXMLElement *GetParentElement (void) const { return m_pParent; }
 		inline const CString &GetTag (void) const { return m_sTag; }
 		void MergeFrom (CXMLElement *pElement);
 		CXMLElement *OrphanCopy (void);
 		ALERROR SetAttribute (const CString &sName, const CString &sValue);
+		ALERROR SetContentText (const CString &sContent, int iIndex = -1);
+		ALERROR WriteToStream (IWriteStream *pStream);
 
 		static CString MakeAttribute (const CString &sText) { return strToXMLText(sText); }
 		static bool IsBoolTrueValue (const CString &sValue) { return (strEquals(sValue, CONSTLIT("true")) || strEquals(sValue, CONSTLIT("1"))); }

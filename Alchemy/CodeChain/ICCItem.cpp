@@ -85,6 +85,33 @@ ICCItem *ICCItem::GetElement (CCodeChain *pCC, int iIndex)
 	return pItem->Reference();
 	}
 
+CString ICCItem::GetTypeOf (void)
+
+//	GetTypeOf
+//
+//	Returns the type of basic types. Custom types should override this method.
+
+	{
+	if (IsError())
+		return CONSTLIT("error");
+	else if (IsNil())
+		return CONSTLIT("nil");
+	else if (IsInteger())
+		return CONSTLIT("int32");
+	else if (IsPrimitive())
+		return CONSTLIT("primitive");
+	else if (IsLambdaFunction())
+		return CONSTLIT("function");
+	else if (IsIdentifier())
+		return CONSTLIT("string");
+	else if (IsSymbolTable())
+		return CONSTLIT("struct");
+	else if (IsList())
+		return CONSTLIT("list");
+	else
+		return CONSTLIT("true");
+	}
+
 bool ICCItem::IsLambdaExpression (void)
 
 //	IsLambdaExpression
