@@ -247,6 +247,7 @@
     <ClCompile Include="CEnvironmentGrid.cpp" />
     <ClCompile Include="CSoundType.cpp" />
     <ClCompile Include="CSpaceObjectAddressResolver.cpp" />
+    <ClCompile Include="CSpaceObjectTrade.cpp" />
     <ClCompile Include="CStationEncounterCtx.cpp" />
     <ClCompile Include="CStationEncounterDesc.cpp" />
     <ClCompile Include="CStationTableCache.cpp" />

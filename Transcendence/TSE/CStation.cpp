@@ -28,14 +28,12 @@
 #define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_IGNORE_FRIENDLY_FIRE			CONSTLIT("ignoreFriendlyFire")
 #define PROPERTY_IMMUTABLE						CONSTLIT("immutable")
-#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_MAX_HP							CONSTLIT("maxHP")
 #define PROPERTY_MAX_STRUCTURAL_HP				CONSTLIT("maxStructuralHP")
 #define PROPERTY_OPEN_DOCKING_PORT_COUNT		CONSTLIT("openDockingPortCount")
 #define PROPERTY_ORBIT							CONSTLIT("orbit")
 #define PROPERTY_PARALLAX						CONSTLIT("parallax")
 #define PROPERTY_PLAYER_BACKLISTED				CONSTLIT("playerBlacklisted")
-#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_SHIP_CONSTRUCTION_ENABLED		CONSTLIT("shipConstructionEnabled")
 #define PROPERTY_SHIP_REINFORCEMENT_ENABLED		CONSTLIT("shipReinforcementEnabled")
 #define PROPERTY_STRUCTURAL_HP					CONSTLIT("structuralHP")
@@ -125,17 +123,6 @@ CStation::~CStation (void)
 		delete m_pTrade;
 	}
 
-void CStation::AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
-
-//	AddBuyOrder
-//
-//	Adds an override buy order
-
-	{
-	AllocTradeOverride();
-	m_pTrade->AddBuyOrder(pType, sCriteria, iPriceAdj);
-	}
-
 void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifeLeft, DWORD *retdwID)
 
 //	AddOverlay
@@ -149,17 +136,6 @@ void CStation::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, i
 
 	CalcBounds();
 	CalcOverlayImpact();
-	}
-
-void CStation::AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj)
-
-//	AddSellOrder
-//
-//	Adds an override sell order
-
-	{
-	AllocTradeOverride();
-	m_pTrade->AddSellOrder(pType, sCriteria, iPriceAdj);
 	}
 
 void CStation::AddSubordinate (CSpaceObject *pSubordinate)
@@ -178,9 +154,9 @@ void CStation::AddSubordinate (CSpaceObject *pSubordinate)
 		pSatellite->SetBase(this);
 	}
 
-void CStation::AllocTradeOverride (void)
+CTradingDesc *CStation::AllocTradeDescOverride (void)
 
-//	AllocTradeOverride
+//	AllocTradeDescOverride
 //
 //	Makes sure that we have the m_pTrade structure allocated.
 //	This is an override of the trade desc in the type
@@ -200,6 +176,8 @@ void CStation::AllocTradeOverride (void)
 			m_pTrade->SetReplenishCurrency(pBaseTrade->GetReplenishCurrency());
 			}
 		}
+
+	return m_pTrade;
 	}
 
 void CStation::Blacklist (CSpaceObject *pObj)
@@ -1151,52 +1129,6 @@ void CStation::FriendlyFire (CSpaceObject *pAttacker)
 		}
 	}
 
-bool CStation::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorInstallPrice
-//
-//	Returns the price to install the given armor
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetArmorInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not repair
-
-	return false;
-	}
-
-bool CStation::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorRepairPrice
-//
-//	Returns the price to repair the given number of HP for the given armor item.
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetArmorRepairPrice(this, Item, iHPToRepair, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not repair
-
-	return false;
-	}
-
 Metric CStation::GetAttackDistance (void) const
 
 //	GetAttackDistance
@@ -1224,46 +1156,6 @@ CurrencyValue CStation::GetBalance (DWORD dwEconomyUNID)
 		return (int)m_pMoney->GetCredits(dwEconomyUNID);
 	else
 		return 0;
-	}
-
-int CStation::GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount)
-
-//	GetBuyPrice
-//
-//	Returns the price at which the station will buy the given
-//	item. Also returns the max number of items that the station
-//	will buy at that price.
-//
-//	Returns -1 if the station will not buy the item.
-
-	{
-	int iPrice;
-
-	//	First see if we have an override
-
-	if (m_pTrade)
-		{
-		if (m_pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
-			return iPrice;
-		}
-
-	//	See if our type has a price
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade)
-		{
-		if (pTrade->Buys(this, Item, dwFlags, &iPrice, retiMaxCount))
-			{
-			if (m_pTrade)
-				return (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
-			else
-				return iPrice;
-			}
-		}
-
-	//	Otherwise, we will not buy the item
-
-	return -1;
 	}
 
 int CStation::GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon)
@@ -1300,57 +1192,6 @@ CDesignType *CStation::GetDefaultDockScreen (CString *retsName)
 		return m_pType->GetAbandonedScreen(retsName);
 	else
 		return m_pType->GetFirstDockScreen(retsName);
-	}
-
-CEconomyType *CStation::GetDefaultEconomy (void)
-
-//	GetDefaultEconomy
-//
-//	Returns the default economy
-
-	{
-	CTradingDesc *pTrade = GetDefaultTradingDesc();
-	if (pTrade)
-		return pTrade->GetEconomyType();
-
-	return CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
-	}
-
-DWORD CStation::GetDefaultEconomyUNID (void)
-
-//	GetDefaultEconomyUNID
-//
-//	Returns the default economy
-
-	{
-	CTradingDesc *pTrade = GetDefaultTradingDesc();
-	if (pTrade)
-		return pTrade->GetEconomyType()->GetUNID();
-
-	return DEFAULT_ECONOMY_UNID;
-	}
-
-bool CStation::GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetDeviceInstallPrice
-//
-//	Returns the price to install the given device
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetDeviceInstallPrice(this, Item, dwFlags, retiPrice))
-		return true;
-
-	//	Otherwise, we do not install
-
-	return false;
 	}
 
 Metric CStation::GetGravity (Metric *retrRadius) const
@@ -1513,27 +1354,6 @@ ICCItem *CStation::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_IMMUTABLE))
 		return CC.CreateBool(IsImmutable());
 
-	else if (strEquals(sName, PROPERTY_INSTALL_DEVICE_MAX_LEVEL))
-		{
-		int iMaxLevel = -1;
-		if (m_pTrade)
-			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(serviceInstallDevice);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			int iLevel = pTrade->GetMaxLevelMatched(serviceInstallDevice);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
-		}
-
 	else if (strEquals(sName, PROPERTY_MAX_HP))
 		return CC.CreateInteger(m_iMaxHitPoints);
 
@@ -1551,27 +1371,6 @@ ICCItem *CStation::GetProperty (const CString &sName)
 
 	else if (strEquals(sName, PROPERTY_PLAYER_BACKLISTED))
 		return CC.CreateBool(IsBlacklisted(NULL));
-
-	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
-		{
-		int iMaxLevel = -1;
-		if (m_pTrade)
-			{
-			int iLevel = m_pTrade->GetMaxLevelMatched(serviceRepairArmor);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			int iLevel = pTrade->GetMaxLevelMatched(serviceRepairArmor);
-			if (iLevel > iMaxLevel)
-				iMaxLevel = iLevel;
-			}
-
-		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
-		}
 
 	else if (strEquals(sName, PROPERTY_SHIP_CONSTRUCTION_ENABLED))
 		return CC.CreateBool(m_fNoConstruction);
@@ -1599,93 +1398,6 @@ IShipGenerator *CStation::GetRandomEncounterTable (int *retiFrequency) const
 	if (retiFrequency)
 		*retiFrequency = m_pType->GetEncounterFrequency();
 	return m_pType->GetEncountersTable();
-	}
-
-bool CStation::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
-
-//	GetRefuelItemAndPrice
-//
-//	Returns the appropriate item to use for refueling (based on the trading
-//	directives).
-
-	{
-	//	See if we have an override
-
-	if (m_pTrade && m_pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
-		return true;
-
-	//	Otherwise, ask our design type
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if (pTrade && pTrade->GetRefuelItemAndPrice(this, pObjToRefuel, 0, retpItemType, retiPrice))
-		return true;
-
-	//	Otherwise, we do not refuel
-
-	return false;
-	}
-
-int CStation::GetSellPrice (const CItem &Item, DWORD dwFlags)
-
-//	GetSellPrice
-//
-//	Returns the price at which the station will sell the given
-//	item. Returns 0 if the station cannot or will not sell the
-//	item.
-
-	{
-	bool bHasTradeDirective = false;
-	int iPrice = -1;
-
-	//	See if we have an override price
-
-	if (m_pTrade)
-		{
-		m_pTrade->Sells(this, Item, dwFlags, &iPrice);
-		bHasTradeDirective = true;
-		}
-
-	//	See if our type has a price
-
-	if (iPrice == -1)
-		{
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			pTrade->Sells(this, Item, dwFlags, &iPrice);
-
-			if (m_pTrade && iPrice != -1)
-				iPrice = (int)m_pTrade->GetEconomyType()->Exchange(pTrade->GetEconomyType(), iPrice);
-
-			bHasTradeDirective = true;
-			}
-		}
-
-	//	If we have Trade directives and they specify no price, then we can't
-	//	sell any.
-
-	if (iPrice == -1)
-		{
-		if (bHasTradeDirective)
-			return 0;
-
-		//	Otherwise, get the price from the item itself
-
-		iPrice = (int)GetDefaultEconomy()->Exchange(Item.GetCurrencyType(), Item.GetTradePrice(this));
-		}
-
-	//	If we don't have any of the item, then we don't sell any
-
-	if (!(dwFlags & CTradingDesc::FLAG_NO_INVENTORY_CHECK))
-		{
-		CItemListManipulator ItemList(GetItemList());
-		if (!ItemList.SetCursorAtItem(Item))
-			return 0;
-		}
-
-	//	Return the price
-
-	return iPrice;
 	}
 
 CString CStation::GetStargateID (void) const
@@ -3159,35 +2871,7 @@ void CStation::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 
 	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0
 			 && !IsAbandoned())
-		{
-		if (m_pTrade)
-			{
-			m_pTrade->OnUpdate(this);
-
-			if (!IsPlayerDocked())
-				m_pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-
-		CTradingDesc *pTrade = m_pType->GetTradingDesc();
-		if (pTrade)
-			{
-			//	If we have a trade desc override, then don't update. [Otherwise
-			//	we will replenish currency at double the rate.]
-
-			if (m_pTrade == NULL)
-				pTrade->OnUpdate(this);
-
-			//	But we still need to refresh inventory, since the base 
-			//	may contain items not in the override.
-			//
-			//	LATER: Note that this doesn't handle the case where we try
-			//	to override a specific item. The fix is to add the concept
-			//	of overriding directly into the class.
-
-			if (!IsPlayerDocked())
-				pTrade->RefreshInventory(this, INVENTORY_REFRESHED_PER_UPDATE);
-			}
-		}
+		UpdateTrade(Ctx, INVENTORY_REFRESHED_PER_UPDATE);
 
 	//	Update each device
 
@@ -3262,27 +2946,6 @@ void CStation::OnUpdateExtended (const CTimeSpan &ExtraTime)
 //	Update after an extended period of time
 
 	{
-	//	Refresh inventory, if necessary
-
-	CTradingDesc *pTrade = m_pType->GetTradingDesc();
-	if ((pTrade || m_pTrade) && ExtraTime.Days() > 0 && !IsAbandoned())
-		{
-		//	Compute the percent of the inventory that need to refresh
-
-		int iRefreshPercent;
-		if (ExtraTime.Days() >= DAYS_TO_REFRESH_INVENTORY)
-			iRefreshPercent = 100;
-		else
-			iRefreshPercent = 100 * ExtraTime.Days() / DAYS_TO_REFRESH_INVENTORY;
-
-		//	Do it
-
-		if (m_pTrade)
-			m_pTrade->RefreshInventory(this, iRefreshPercent);
-
-		if (pTrade)
-			pTrade->RefreshInventory(this, iRefreshPercent);
-		}
 	}
 
 void CStation::OnWriteToStream (IWriteStream *pStream)
@@ -3803,23 +3466,6 @@ void CStation::SetStargate (const CString &sDestNode, const CString &sDestEntryP
 	{
 	m_sStargateDestNode = sDestNode;
 	m_sStargateDestEntryPoint = sDestEntryPoint;
-	}
-
-void CStation::SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency)
-
-//	SetTradeDesc
-//
-//	Overrides trade desc
-
-	{
-	AllocTradeOverride();
-	m_pTrade->SetEconomyType(pCurrency);
-	m_pTrade->SetMaxCurrency(iMaxCurrency);
-	m_pTrade->SetReplenishCurrency(iReplenishCurrency);
-
-	//	This call will set up the currency.
-
-	m_pTrade->OnCreate(this);
 	}
 
 void CStation::SetWreckImage (CShipClass *pWreckClass)

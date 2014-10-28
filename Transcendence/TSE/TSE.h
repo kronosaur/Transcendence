@@ -2477,7 +2477,7 @@ class CSpaceObject : public CObject
 		inline bool SupportsDocking (bool bPlayer = false) { return ((!bPlayer || GetDefaultDockScreen() != NULL) && GetDockingPortCount() > 0); }
 		inline void UnfreezeControls (void) { m_iControlsFrozen--; }
 		void Update (SUpdateCtx &Ctx);
-		inline void UpdateExtended (const CTimeSpan &ExtraTime) { OnUpdateExtended(ExtraTime); }
+		void UpdateExtended (const CTimeSpan &ExtraTime);
 		inline void UpdatePlayer (SUpdateCtx &Ctx) { OnUpdatePlayer(Ctx); }
 		inline bool WasPainted (void) const { return m_fPainted; }
 		void WriteToStream (IWriteStream *pStream);
@@ -2526,6 +2526,20 @@ class CSpaceObject : public CObject
 
 		static int ConvertToCompatibleIndex (const CItem &Item, InstallItemResults iResult);
 		static CString ConvertToID (InstallItemResults iResult);
+
+		//	Trade functions
+
+		void AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
+		void AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
+		bool GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
+		bool GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice);
+		int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL);
+		CEconomyType *GetDefaultEconomy (void);
+		DWORD GetDefaultEconomyUNID (void);
+		bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
+		bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
+		int GetSellPrice (const CItem &Item, DWORD dwFlags);
+		void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);
 
 		//	Virtuals to be overridden
 
@@ -2593,6 +2607,7 @@ class CSpaceObject : public CObject
 
 		//	...for active/intelligent objects (ships, stations, etc.)
 		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL) { if (retdwID) *retdwID = 0; }
+		virtual CTradingDesc *AllocTradeDescOverride (void) { return NULL; }
 		virtual bool CanInstallItem (const CItem &Item, int iSlot = -1, InstallItemResults *retiResult = NULL, CString *retsResult = NULL, CItem *retItemToReplace = NULL);
 		virtual CurrencyValue ChargeMoney (DWORD dwEconomyUNID, CurrencyValue iValue) { return 0; }
 		virtual void CreateRandomDockedShips (IShipGenerator *pGenerator, int iCount = 1) { }
@@ -2605,21 +2620,15 @@ class CSpaceObject : public CObject
 		virtual CInstalledArmor *FindArmor (const CItem &Item) { return NULL; }
 		virtual CInstalledDevice *FindDevice (const CItem &Item) { return NULL; }
 		virtual bool FindDeviceSlotDesc (const CItem &Item, SDeviceDesc *retDesc) { return false; }
-		virtual bool GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
-		virtual bool GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice);
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID) { return 0; }
-		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL) { return -1; }
 		virtual Metric GetCargoSpaceLeft (void) { return 1000000.0; }
 		virtual int GetCombatPower (void) { return 0; }
 		virtual int GetCyberDefenseLevel (void) { return GetLevel(); }
 		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon) { return 0; }
 		virtual DamageTypes GetDamageType (void) { return damageGeneric; }
-		virtual CEconomyType *GetDefaultEconomy (void);
-		virtual DWORD GetDefaultEconomyUNID (void) { return DEFAULT_ECONOMY_UNID; }
 		virtual CSpaceObject *GetDestination (void) const { return NULL; }
 		virtual CInstalledDevice *GetDevice (int iDev) const { return NULL; }
 		virtual int GetDeviceCount (void) const { return 0; }
-		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice) { return false; }
 		virtual CSpaceObject *GetDockedObj (void) { return NULL; }
 		virtual int GetDockingPortCount (void) { return 0; }
 		virtual CVector GetDockingPortOffset (int iRotation) { return NullVector; }
@@ -2641,14 +2650,13 @@ class CSpaceObject : public CObject
 		virtual int GetOverlayRotation (DWORD dwID) { return -1; }
 		virtual COverlayType *GetOverlayType(DWORD dwID) { return NULL; }
 		virtual int GetPerception (void) { return perceptNormal; }
-		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const { return NULL; }
 		virtual int GetScore (void) { return 0; }
-		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual int GetShieldLevel (void) { return -1; }
 		virtual COLORREF GetSpaceColor (void) { return 0; }
 		virtual CString GetStargateID (void) const { return NULL_STR; }
 		virtual int GetStealth (void) const { return stealthNormal; }
+		virtual CTradingDesc *GetTradeDescOverride (void) { return NULL; }
 		virtual int GetVisibleDamage (void) { return 0; }
 		virtual bool HasMapLabel (void) { return false; }
 		virtual bool IsAngryAt (CSpaceObject *pObj) { return IsEnemy(pObj); }
@@ -2738,8 +2746,6 @@ class CSpaceObject : public CObject
 		virtual void UpdateDockingManeuver(const CVector &vDest, const CVector &vDestVel, int iDestFacing) { }
 
 		//	...for stations
-		virtual void AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj) { }
-		virtual void AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj) { }
 		virtual void AddSubordinate (CSpaceObject *pSubordinate) { }
 		virtual IShipGenerator *GetRandomEncounterTable (int *retiFrequency = NULL) const { if (retiFrequency) *retiFrequency = 0; return NULL; }
 		virtual bool IsAbandoned (void) const { return false; }
@@ -2747,7 +2753,6 @@ class CSpaceObject : public CObject
 		virtual bool IsStargate (void) const { return false; }
 		virtual bool RemoveSubordinate (CSpaceObject *pSubordinate) { return false; }
 		virtual bool RequestGate (CSpaceObject *pObj);
-		virtual void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency) { }
 		virtual bool SupportsGating (void) { return false; }
 
 		//	...for particle effects
@@ -2830,6 +2835,8 @@ class CSpaceObject : public CObject
 		inline void SetNoFriendlyFire (void) { m_fNoFriendlyFire = true; }
 		inline void SetNoFriendlyTarget (void) { m_fNoFriendlyTarget = true; }
 		inline void SetNonLinearMove (bool bValue = true) { m_fNonLinearMove = bValue; }
+		void UpdateTrade (SUpdateCtx &Ctx, int iInventoryRefreshed);
+		void UpdateTradeExtended (const CTimeSpan &ExtraTime);
 
 	private:
 

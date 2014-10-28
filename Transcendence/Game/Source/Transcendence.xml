@@ -1502,6 +1502,7 @@
 
 	<!-- COMMONWEALTH FLEET 001A -->
 
+	<!ENTITY unidCommonwealthFleet		"0x001A0000">
 	<!ENTITY ssPointJuno				"0x001A0001">
 	<!ENTITY ssDantalion				"0x001A0002">
 

@@ -23,6 +23,7 @@ class CSystem;
 class CSystemMap;
 class CTopology;
 class CTopologyDescTable;
+class CTradingDesc;
 class IDeviceGenerator;
 struct SDestroyCtx;
 struct SSystemCreateCtx;
@@ -407,6 +408,7 @@ class CDesignType
 		//	CDesignType overrides
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CCommunicationsHandler *GetCommsHandler (void) { return NULL; }
+		virtual CTradingDesc *GetTradingDesc (void) { return NULL; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { if (retdwFlags) *retdwFlags = 0; return GetDataField(CONSTLIT("name")); }
 		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = -1; if (retiMaxLevel) *retiMaxLevel = -1; return -1; }
 		virtual DesignTypes GetType (void) const = 0;
@@ -4368,6 +4370,7 @@ class CShipClass : public CDesignType
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual CCommunicationsHandler *GetCommsHandler (void);
 		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const { if (retiMinLevel) *retiMinLevel = m_iLevel; if (retiMaxLevel) *retiMaxLevel = m_iLevel; return m_iLevel; }
+		virtual CTradingDesc *GetTradingDesc (void) { return m_pTrade; }
 		virtual DesignTypes GetType (void) const { return designShipClass; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }
@@ -4495,6 +4498,7 @@ class CShipClass : public CDesignType
 		TArray<CVector> m_DockingPorts;			//	Position of docking ports
 		CDockScreenTypeRef m_pDefaultScreen;	//	Default screen
 		DWORD m_dwDefaultBkgnd;					//	Default background screen
+		CTradingDesc *m_pTrade;					//	Trade descriptors
 
 		CCommunicationsHandler m_OriginalCommsHandler;
 		CCommunicationsHandler m_CommsHandler;	//	Communications handler
@@ -4531,7 +4535,7 @@ class CShipClass : public CDesignType
 		DWORD m_fInheritedItems:1;				//	TRUE if m_pItems is inherited from another class
 		DWORD m_fInheritedEscorts:1;			//	TRUE if m_pEscorts is inherited from another class
 		DWORD m_fCyberDefenseOverride:1;		//	TRUE if cyberDefenseLevel is specified in XML
-		DWORD m_fSpare8:1;
+		DWORD m_fInheritedTrade:1;				//	TRUE if m_pTrade is inherited from another class
 
 		DWORD m_fSpare:16;
 	};
@@ -5079,7 +5083,6 @@ class CStationType : public CDesignType
 		inline int GetStealth (void) const { return m_iStealth; }
 		inline int GetStructuralHitPoints (void) { return m_iStructuralHP; }
 		inline int GetTempChance (void) const { return m_iChance; }
-		inline CTradingDesc *GetTradingDesc (void) { return m_pTrade; }
 		inline bool HasAnimations (void) const { return (m_pAnimations != NULL); }
 		inline bool HasGravity (void) const { return (m_rGravityRadius > 0.0); }
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
@@ -5113,6 +5116,7 @@ class CStationType : public CDesignType
 		static CStationType *AsType (CDesignType *pType) { return ((pType && pType->GetType() == designStationType) ? (CStationType *)pType : NULL); }
 		virtual bool FindDataField (const CString &sField, CString *retsValue);
 		virtual int GetLevel (int *retiMinLevel = NULL, int *retiMaxLevel = NULL) const;
+		virtual CTradingDesc *GetTradingDesc (void) { return m_pTrade; }
 		virtual DesignTypes GetType (void) const { return designStationType; }
 		virtual CString GetTypeName (DWORD *retdwFlags = NULL) { return GetName(retdwFlags); }
 		virtual bool IsVirtual (void) const { return (m_fVirtual ? true : false); }

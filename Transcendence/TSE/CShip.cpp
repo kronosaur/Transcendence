@@ -77,6 +77,9 @@ const int MAX_DRIVE_DAMAGE_OVERLAY_COUNT =		3;
 
 const int ATTACK_THRESHOLD =					90;
 
+const int TRADE_UPDATE_FREQUENCY =				1801;		//	Interval for checking trade
+const int INVENTORY_REFRESHED_PER_UPDATE =		20;			//	% of inventory refreshed on each update frequency
+
 CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_pDocked(NULL),
 		m_pDriveDesc(NULL),
@@ -87,6 +90,7 @@ CShip::CShip (void) : CSpaceObject(&g_Class),
 		m_iDeviceCount(0),
 		m_Devices(NULL),
 		m_pEncounterInfo(NULL),
+		m_pTrade(NULL),
 		m_dwNameFlags(0),
 		m_pExitGate(NULL),
 		m_pDeferredOrders(NULL)
@@ -109,6 +113,9 @@ CShip::~CShip (void)
 
 	if (m_pIrradiatedBy)
 		delete m_pIrradiatedBy;
+
+	if (m_pTrade)
+		delete m_pTrade;
 	}
 
 bool CShip::AbsorbWeaponFire (CInstalledDevice *pWeapon)
@@ -152,6 +159,32 @@ void CShip::AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int 
 	CalcDeviceBonus();
 	m_pController->OnWeaponStatusChanged();
 	m_pController->OnArmorRepaired(-1);
+	}
+
+CTradingDesc *CShip::AllocTradeDescOverride (void)
+
+//	AllocTradeDescOverride
+//
+//	Makes sure that we have the m_pTrade structure allocated.
+//	This is an override of the trade desc in the type
+
+	{
+	if (m_pTrade == NULL)
+		{
+		m_pTrade = new CTradingDesc;
+
+		//	Set the same economy type
+
+		CTradingDesc *pBaseTrade = m_pClass->GetTradingDesc();
+		if (pBaseTrade)
+			{
+			m_pTrade->SetEconomyType(pBaseTrade->GetEconomyType());
+			m_pTrade->SetMaxCurrency(pBaseTrade->GetMaxCurrency());
+			m_pTrade->SetReplenishCurrency(pBaseTrade->GetReplenishCurrency());
+			}
+		}
+
+	return m_pTrade;
 	}
 
 void CShip::Behavior (SUpdateCtx &Ctx)
@@ -1070,6 +1103,7 @@ ALERROR CShip::CreateFromClass (CSystem *pSystem,
 	pShip->m_rCargoMass = 0.0;
 	pShip->SetDriveDesc(NULL);
 	pShip->m_pReactorDesc = pClass->GetReactorDesc();
+	pShip->m_pTrade = NULL;
 
 	pShip->m_fOutOfFuel = false;
 	pShip->m_fTrackFuel = false;
@@ -4525,6 +4559,7 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 //
 //	CShipInterior
 //	CDockingPorts
+//	CTradeDesc	m_pTrade
 //
 //	DWORD		No of registered objects
 //	DWORD		registered object (CSpaceObject ref)
@@ -4738,6 +4773,22 @@ void CShip::OnReadFromStream (SLoadCtx &Ctx)
 		}
 #endif
 
+	//	Trade desc
+
+	if (Ctx.dwVersion >= 105)
+		{
+		Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
+		if (dwLoad != 0xffffffff)
+			{
+			m_pTrade = new CTradingDesc;
+			m_pTrade->ReadFromStream(Ctx);
+			}
+		else
+			m_pTrade = NULL;
+		}
+	else
+		m_pTrade = NULL;
+
 	//	Registered objects / subscriptions
 
 	if (Ctx.dwVersion < 77)
@@ -4927,6 +4978,11 @@ void CShip::OnUpdate (SUpdateCtx &Ctx, Metric rSecondsPerTick)
 	//	Initialize
 
 	int iTick = GetSystem()->GetTick() + GetDestiny();
+
+	//	Trade
+
+	if ((iTick % TRADE_UPDATE_FREQUENCY) == 0)
+		UpdateTrade(Ctx, INVENTORY_REFRESHED_PER_UPDATE);
 
 	//	Calc rotation acceleration (for player ships we adjust this 
 	//	acceleration based on mass, etc.).
@@ -5514,6 +5570,21 @@ void CShip::OnWriteToStream (IWriteStream *pStream)
 	//	Docking ports
 
 	m_DockingPorts.WriteToStream(this, pStream);
+
+	//	Trade desc
+
+	if (m_pTrade)
+		{
+		dwSave = 1;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+
+		m_pTrade->WriteToStream(pStream);
+		}
+	else
+		{
+		dwSave = 0xffffffff;
+		pStream->Write((char *)&dwSave, sizeof(DWORD));
+		}
 
 	//	Encounter info
 

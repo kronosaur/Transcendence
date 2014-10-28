@@ -330,6 +330,9 @@
 //	104: 1.4
 //		m_iFramesPerColumn in CObjectImageArray
 //
+//	105: 1.4
+//		m_pTrade in CShip
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

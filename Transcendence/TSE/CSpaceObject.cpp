@@ -82,10 +82,12 @@ static CObjectClass<CSpaceObject>g_Class(OBJID_CSPACEOBJECT);
 #define PROPERTY_HAS_DOCKING_PORTS				CONSTLIT("hasDockingPorts")
 #define PROPERTY_HP								CONSTLIT("hp")
 #define PROPERTY_ID								CONSTLIT("id")
+#define PROPERTY_INSTALL_DEVICE_MAX_LEVEL		CONSTLIT("installDeviceMaxLevel")
 #define PROPERTY_INSTALL_DEVICE_PRICE			CONSTLIT("installDevicePrice")
 #define PROPERTY_KNOWN							CONSTLIT("known")
 #define PROPERTY_LEVEL							CONSTLIT("level")
 #define PROPERTY_PLAYER_MISSIONS_GIVEN			CONSTLIT("playerMissionsGiven")
+#define PROPERTY_REPAIR_ARMOR_MAX_LEVEL			CONSTLIT("repairArmorMaxLevel")
 #define PROPERTY_UNDER_ATTACK					CONSTLIT("underAttack")
 
 #define SPECIAL_DATA							CONSTLIT("data:")
@@ -2833,32 +2835,6 @@ bool CSpaceObject::FireOnTranslateMessage (const CString &sMessage, CString *ret
 	return bHandled;
 	}
 
-bool CSpaceObject::GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorInstallPrice
-//
-//	Default price for objects that do not implement <Trade>
-
-	{
-	if (retiPrice)
-		*retiPrice = CTradingDesc::CalcPriceForService(serviceReplaceArmor, this, Item, 1, dwFlags);
-
-	return true;
-	}
-
-bool CSpaceObject::GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice)
-
-//	GetArmorRepairPrice
-//
-//	Default price for objects that do not implement <Trade>
-
-	{
-	if (retiPrice)
-		*retiPrice = CTradingDesc::CalcPriceForService(serviceRepairArmor, this, Item, iHPToRepair, dwFlags);
-
-	return true;
-	}
-
 void CSpaceObject::GetBoundingRect (CVector *retvUR, CVector *retvLL)
 
 //	GetBoundingRect
@@ -2919,16 +2895,6 @@ int CSpaceObject::GetDataInteger (const CString &sAttrib) const
 	pResult->Discard(&CC);
 
 	return iResult;
-	}
-
-CEconomyType *CSpaceObject::GetDefaultEconomy (void)
-
-//	GetDefaultEconomy
-//
-//	Returns the default economy
-	
-	{
-	return CEconomyType::AsType(g_pUniverse->FindDesignType(GetDefaultEconomyUNID()));
 	}
 
 CString CSpaceObject::GetDesiredCommsKey (void) const
@@ -3665,6 +3631,34 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 	else if (strEquals(sName, PROPERTY_ID))
 		return CC.CreateInteger(GetID());
 
+	else if (strEquals(sName, PROPERTY_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+
+		//	See if we have an override
+
+		CTradingDesc *pTradeOverride = GetTradeDescOverride();
+		if (pTradeOverride)
+			{
+			int iLevel = pTradeOverride->GetMaxLevelMatched(serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		//	Ask base type
+
+		CDesignType *pType = GetType();
+		CTradingDesc *pTrade = (pType ? pType->GetTradingDesc() : NULL);
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(serviceInstallDevice);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
+
 	else if (strEquals(sName, PROPERTY_KNOWN))
 		return CC.CreateBool(IsKnown());
 
@@ -3679,6 +3673,35 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 		else
 			return CC.CreateNil();
 		}
+
+	else if (strEquals(sName, PROPERTY_REPAIR_ARMOR_MAX_LEVEL))
+		{
+		int iMaxLevel = -1;
+
+		//	See if we have an override
+
+		CTradingDesc *pTradeOverride = GetTradeDescOverride();
+		if (pTradeOverride)
+			{
+			int iLevel = pTradeOverride->GetMaxLevelMatched(serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		//	Ask base type
+
+		CDesignType *pType = GetType();
+		CTradingDesc *pTrade = (pType ? pType->GetTradingDesc() : NULL);
+		if (pTrade)
+			{
+			int iLevel = pTrade->GetMaxLevelMatched(serviceRepairArmor);
+			if (iLevel > iMaxLevel)
+				iMaxLevel = iLevel;
+			}
+
+		return (iMaxLevel != -1 ? CC.CreateInteger(iMaxLevel) : CC.CreateNil());
+		}
+
 	else if (strEquals(sName, PROPERTY_UNDER_ATTACK))
 		return CC.CreateBool(IsUnderAttack());
 
@@ -3687,67 +3710,6 @@ ICCItem *CSpaceObject::GetProperty (const CString &sName)
 
 	else
 		return CC.CreateNil();
-	}
-
-bool CSpaceObject::GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice)
-
-//	GetRefuelItemAndPrice
-//
-//	Classes with a <Trade> element should override this.
-
-	{
-	int i;
-
-	//	Get the ship
-
-	CShip *pShipToRefuel = pObjToRefuel->AsShip();
-	if (pShipToRefuel == NULL)
-		return false;
-
-	//	Find the highest-level item that can be used by the ship
-
-	int iBestLevel = 0;
-	int iBestPrice = 0;
-	CItemType *pBestItem = NULL;
-
-	for (i = 0; i < g_pUniverse->GetItemTypeCount(); i++)
-		{
-		CItemType *pType = g_pUniverse->GetItemType(i);
-		CItem Item(pType, 1);
-
-		if (pShipToRefuel->IsFuelCompatible(Item))
-			{
-			if (pBestItem == NULL || pType->GetLevel() > iBestPrice)
-				{
-				//	Compute the price, because if we don't sell it, then we
-				//	skip it.
-				//
-				//	NOTE: Unlike selling, we allow 0 prices because some 
-				//	stations give fuel for free.
-
-				int iPrice = CTradingDesc::CalcPriceForService(serviceRefuel, this, Item, 1, 0);
-				if (iPrice >= 0)
-					{
-					pBestItem = pType;
-					iBestLevel = pType->GetLevel();
-					iBestPrice = iPrice;
-					}
-				}
-			}
-		}
-
-	if (pBestItem == NULL)
-		return false;
-
-	//	Done
-
-	if (retpItemType)
-		*retpItemType = pBestItem;
-
-	if (retiPrice)
-		*retiPrice = iBestPrice;
-
-	return true;
 	}
 
 CXMLElement *CSpaceObject::GetScreen (const CString &sName)
@@ -3761,16 +3723,6 @@ CXMLElement *CSpaceObject::GetScreen (const CString &sName)
 	Screen.LoadUNID(sName);
 	Screen.Bind(NULL);
 	return Screen.GetDesc();
-	}
-
-int CSpaceObject::GetSellPrice (const CItem &Item, DWORD dwFlags)
-
-//	GetSellPrice
-//
-//	Default sell price computation for objects without a <Trade> desc.
-
-	{
-	return CTradingDesc::CalcPriceForService(serviceSell, this, Item, 1, dwFlags);
 	}
 
 CSovereign *CSpaceObject::GetSovereignToDefend (void) const
@@ -6642,6 +6594,20 @@ void CSpaceObject::Update (SUpdateCtx &Ctx)
 	OnUpdate(Ctx, g_SecondsPerUpdate);
 
 	ClearInUpdateCode();
+	}
+
+void CSpaceObject::UpdateExtended (const CTimeSpan &ExtraTime)
+
+//	UpdateExtended
+//
+//	Update the object after a long time.
+	
+	{
+	UpdateTradeExtended(ExtraTime);
+
+	//	Let subclasses update
+
+	OnUpdateExtended(ExtraTime);
 	}
 
 void CSpaceObject::UseItem (CItem &Item, CString *retsError)

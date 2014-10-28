@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TranscendenceModule>
+	
+	<Type unid="&unidCommonwealthFleet;">
+		<Events>
+			<GetGlobalPlayerPriceAdj>
+				(block (rank)
+					(setq rank (objGetData gPlayerShip 'fleetLevel))
+
+					(switch
+						;	Only at Fleet stations/ships
+
+						(not (objHasAttribute aProviderObj 'commonwealthFleet))
+							Nil
+
+						;	Refuel is free at level 3 or higher
+
+						(eq aService 'priceToRefuel)
+							(switch
+								(geq rank 3)	0
+								Nil
+								)
+
+						;	Armor repair and device installation is free at 
+						;	level 4 or higher
+
+						(or (eq aService 'priceToRepairArmor)
+								(eq aService 'priceToInstallDevice)
+								(eq aService 'priceToRemoveDevice)
+								)
+							(switch
+								(geq rank 4)	0
+								Nil
+								)
+
+						;	No adjustment
+						
+						Nil
+						)
+					)
+			</GetGlobalPlayerPriceAdj>
+		</Events>
+	</Type>
 
 	<!-- Ares Campaign Ribbon -->
 
@@ -696,6 +737,15 @@
 
 		<Items>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			
+			<!-- Some upgrades for sale -->
+			
+			<Item count="3d4"	item="&itBlastPlate;"/>
+			<Item count="3d4"	item="&itP120HexphaseArmor;"/>
+			<Item count="1d4"	item="&itStarCannon;"/>
+			<Item count="1d4"	item="&itTeV9Blaster;"/>
+			<Item count="1d4"	item="&itR1Deflector;"/>
+			<Item count="1d4"	item="&itR5BDeflector;"/>
 		</Items>
 
 		<!-- Image and Effects -->
@@ -715,6 +765,18 @@
 			fireAccuracy=		"95"
 			perception=			"6"
 			/>
+		
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Sell	criteria="rNU L:1-9; -Illegal; -NotForSale;"	priceAdj="100"	inventoryAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
+			<RepairArmor	criteria="a L:1-10;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-9" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
 
 		<StaticData>
 			<!--
@@ -2956,7 +3018,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								(scrShowScreen gScreen "&dsFleetDockServices;")
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -3255,6 +3319,13 @@
 		
 		<Items>
 			<Item				count="6d12"	item="&itPteracniumFuelRod;"/>
+			
+			<!-- Some upgrades for sale -->
+			
+			<Item count="3d4"	item="&itBlastPlate;"/>
+			<Item count="3d4"	item="&itP120HexphaseArmor;"/>
+			<Item count="1d4"	item="&itTeV9Blaster;"/>
+			<Item count="1d4"	item="&itR1Deflector;"/>
 		</Items>
 
 		<Image imageID="&rsLargeShips2;" imageX="0" imageY="0" imageWidth="256" imageHeight="256" />
@@ -3270,6 +3341,18 @@
 			fireAccuracy=		"95"
 			perception=			"4"
 			/>
+
+		<Trade currency="credit" max="100000" replenish="5000">
+			<Sell	criteria="m +Commonwealth; -Illegal; -Military; -NotForSale; L:1-10;" priceAdj="100" inventoryAdj="200"/>
+			<Sell	criteria="*NU -Illegal; -ID; -NotForSale;"	priceAdj="100"/>
+			<Sell	criteria="rNU L:1-8; -Illegal; -NotForSale;"	priceAdj="100"	inventoryAdj="100"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="90"/>
+			<RepairArmor	criteria="a L:1-9;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a" priceAdj="100"/>
+			<InstallDevice	criteria="d L:1-8" priceAdj="100"/>
+			<RemoveDevice	criteria="d" priceAdj="100"/>
+		</Trade>
 
 		<StaticData>
 			<arcticaCaptainWelcome>
@@ -3333,7 +3416,9 @@
 							</Action>
 
 							<Action name="Dock Services" key="D">
-								(scrShowScreen gScreen "&dsFleetDockServices;")
+								(rpgDockServices gPlayerShip {
+									checkMilitaryID: True
+									})
 							</Action>
 
 							<Action name="Undock" cancel="1" key="U">
@@ -4749,79 +4834,6 @@
 				<Actions>
 					<Action name="Undock" default="1" cancel="1" key="U">
 						(scrExitScreen gScreen 'forceUndock)
-					</Action>
-				</Actions>
-			</Default>
-		</Panes>
-	</DockScreen>
-
-	<!-- Fleet Dock Services -->
-
-	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true">
-		<Panes>
-			<Default>
-				<OnPaneInit>
-					(block Nil
-						; Set the description
-						(scrSetDesc gScreen "You are at the docking services deck.")
-						)
-				</OnPaneInit>
-
-				<Actions>
-					<Action name="Refuel" key="R">
-						(block Nil
-							; Figure out what kind of fuel to use
-							(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 88) (&itXenotiteFuelRod; 88) (&itHeliumAssembly; 88)))
-
-							; Free refueling if level 3 or higher
-							(if (geq (objGetData gPlayerShip "fleetLevel") 3)
-								(setq gCost 0)
-								)
-
-							(scrShowScreen gScreen "&dsRefuel;")
-							)
-					</Action>
-
-					<Action name="Repair or Replace Armor" key="A" >
-						(block Nil
-							(setq gTechLevel 10)
-							(setq gArmorSegment 0)
-							(setq gCheckMilitaryID True)
-							; Dock services are free if at fleetLevel 4 or greater
-							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
-							(scrShowScreen gScreen "&dsRepairArmor;")
-							)
-					</Action>
-
-					<Action name="Install Device" key="D" >
-						(block Nil
-							(setq gTechLevel 9)
-							(setq gTechModifier Nil)
-							(setq gCheckMilitaryID True)
-							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
-							(scrShowScreen gScreen "&dsInstallDevice;")
-							)
-					</Action>
-
-					<Action name="Remove Device" key="V" >
-						(block Nil
-							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
-							(scrShowScreen gScreen "&dsRemoveDevice;")
-							)
-					</Action>
-
-					<Action name="Upgrade Reactor" key="P" >
-						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
-							{
-							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
-							priceAdj: 100
-							checkMilitaryID: Nil
-							noItemsText: "The technology required to upgrade your reactor is not available at this station."
-							})
-					</Action>
-
-					<Action name="Done" cancel="1" key="N">
-						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>

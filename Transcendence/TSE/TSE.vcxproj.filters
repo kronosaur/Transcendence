@@ -805,5 +805,8 @@
     <ClCompile Include="CCXMLWrapper.cpp">
       <Filter>Source Files\TransLISP</Filter>
     </ClCompile>
+    <ClCompile Include="CSpaceObjectTrade.cpp">
+      <Filter>Source Files\SpaceObjects</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

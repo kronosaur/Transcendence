@@ -7,10 +7,11 @@
 	This module contains types that have been DEPRECATED and superceded by 
 	newer types.
 
-							SYSTEM
+							API
 	OLD TYPE				VERSION		NEW TYPE
 
-	stNavSign				78			stCommonwealthNavSign
+	stNavSign				19			stCommonwealthNavSign
+	dsFleetDockServices		23			Use rpgDockServices function and <Trade>
 
 	-->
 
@@ -34,5 +35,78 @@
 			<Port x="-80"		y="0" />
 		</DockingPorts>
 	</StationType>
+
+	<!-- Fleet Dock Services -->
+
+	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true">
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block Nil
+						; Set the description
+						(scrSetDesc gScreen "You are at the docking services deck.")
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action name="Refuel" key="R">
+						(block Nil
+							; Figure out what kind of fuel to use
+							(intSetCompatibleFuelEx '((&itPteracniumFuelRod; 88) (&itXenotiteFuelRod; 88) (&itHeliumAssembly; 88)))
+
+							; Free refueling if level 3 or higher
+							(if (geq (objGetData gPlayerShip "fleetLevel") 3)
+								(setq gCost 0)
+								)
+
+							(scrShowScreen gScreen "&dsRefuel;")
+							)
+					</Action>
+
+					<Action name="Repair or Replace Armor" key="A" >
+						(block Nil
+							(setq gTechLevel 10)
+							(setq gArmorSegment 0)
+							(setq gCheckMilitaryID True)
+							; Dock services are free if at fleetLevel 4 or greater
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsRepairArmor;")
+							)
+					</Action>
+
+					<Action name="Install Device" key="D" >
+						(block Nil
+							(setq gTechLevel 9)
+							(setq gTechModifier Nil)
+							(setq gCheckMilitaryID True)
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsInstallDevice;")
+							)
+					</Action>
+
+					<Action name="Remove Device" key="V" >
+						(block Nil
+							(setq gMargin (if (geq (objGetData gPlayerShip "fleetLevel") 4) 0 100))
+							(scrShowScreen gScreen "&dsRemoveDevice;")
+							)
+					</Action>
+
+					<Action name="Upgrade Reactor" key="P" >
+						(scrShowScreen gScreen &dsRPGInstallDeviceFromList;
+							{
+							itemList: (rpgGetReactorUpgradeList gSource gPlayerShip "r L:1-9;")
+							priceAdj: 100
+							checkMilitaryID: Nil
+							noItemsText: "The technology required to upgrade your reactor is not available at this station."
+							})
+					</Action>
+
+					<Action name="Done" cancel="1" key="N">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+	</DockScreen>
 
 </TranscendenceModule>

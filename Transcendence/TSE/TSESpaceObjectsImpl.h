@@ -929,6 +929,7 @@ class CShip : public CSpaceObject
 		//	CSpaceObject virtuals
 		virtual bool AbsorbWeaponFire (CInstalledDevice *pWeapon);
 		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
+		virtual CTradingDesc *AllocTradeDescOverride (void);
 		virtual CShip *AsShip (void) { return this; }
 		virtual void Behavior (SUpdateCtx &Ctx);
 		virtual bool CanAttack (void) const;
@@ -1002,6 +1003,7 @@ class CShip : public CSpaceObject
 		virtual int GetStealth (void) const;
 		virtual Metric GetMaxSpeed (void) { return ((m_fHalfSpeed || IsMainDriveDamaged()) ? (m_rMaxSpeed / 2.0) : m_rMaxSpeed); }
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
+		virtual CTradingDesc *GetTradeDescOverride (void) { return m_pTrade; }
 		virtual CDesignType *GetType (void) const { return m_pClass; }
 		virtual int GetVisibleDamage (void);
 		virtual bool HasAttribute (const CString &sAttribute) const;
@@ -1148,6 +1150,7 @@ class CShip : public CSpaceObject
 		CEnergyFieldList m_EnergyFields;		//	List of energy fields
 		CDockingPorts m_DockingPorts;			//	Docking ports (optionally)
 		CStationType *m_pEncounterInfo;			//	Pointer back to encounter type (generally NULL)
+		CTradingDesc *m_pTrade;					//	Override of trading desc (may be NULL)
 
 		int m_iFireDelay:16;					//	Ticks until next fire
 		int m_iMissileFireDelay:16;				//	Ticks until next missile fire
@@ -1256,7 +1259,6 @@ class CStation : public CSpaceObject
 
 		inline void ClearFireReconEvent (void) { m_fFireReconEvent = false; }
 		inline void ClearReconned (void) { m_fReconned = false; }
-		inline CTradingDesc *GetDefaultTradingDesc (void) { return (m_pTrade ? m_pTrade : m_pType->GetTradingDesc()); }
 		int GetImageVariant (void);
 		inline int GetImageVariantCount (void) { return m_pType->GetImageVariants(); }
 		inline int GetMaxStructuralHitPoints (void) { return m_iMaxStructuralHP; }
@@ -1286,10 +1288,9 @@ class CStation : public CSpaceObject
 		void SetWreckParams (CShipClass *pWreckClass, CShip *pShip = NULL);
 
 		//	CSpaceObject virtuals
-		virtual void AddBuyOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
 		virtual void AddOverlay (COverlayType *pType, int iPosAngle, int iPosRadius, int iRotation, int iLifetime, DWORD *retdwID = NULL);
-		virtual void AddSellOrder (CItemType *pType, const CString &sCriteria, int iPriceAdj);
 		virtual void AddSubordinate (CSpaceObject *pSubordinate);
+		virtual CTradingDesc *AllocTradeDescOverride (void);
 		virtual CStation *AsStation (void) { return this; }
 		virtual bool CanAttack (void) const;
 		virtual bool CanBeDestroyed (void) { return (m_iStructuralHP > 0); }
@@ -1302,19 +1303,13 @@ class CStation : public CSpaceObject
 		virtual CurrencyValue CreditMoney (DWORD dwEconomyUNID, CurrencyValue iValue);
 		virtual CString DebugCrashInfo (void);
 		virtual void Decontaminate (void) { m_fRadioactive = false; }
-		virtual bool GetArmorInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
-		virtual bool GetArmorRepairPrice (const CItem &Item, int iHPToRepair, DWORD dwFlags, int *retiPrice);
 		virtual CurrencyValue GetBalance (DWORD dwEconomyUNID);
-		virtual int GetBuyPrice (const CItem &Item, DWORD dwFlags, int *retiMaxCount = NULL);
 		virtual Categories GetCategory (void) const { return catStation; }
 		virtual DWORD GetClassUNID (void) { return m_pType->GetUNID(); }
 		virtual int GetDamageEffectiveness (CSpaceObject *pAttacker, CInstalledDevice *pWeapon);
 		virtual DWORD GetDefaultBkgnd (void) { return m_pType->GetDefaultBkgnd(); }
-		virtual CEconomyType *GetDefaultEconomy (void);
-		virtual DWORD GetDefaultEconomyUNID (void);
 		virtual CInstalledDevice *GetDevice (int iDev) const { return &m_pDevices[iDev]; }
 		virtual int GetDeviceCount (void) const { return (m_pDevices ? maxDevices : 0); }
-		virtual bool GetDeviceInstallPrice (const CItem &Item, DWORD dwFlags, int *retiPrice);
 		virtual int GetDockingPortCount (void) { return m_DockingPorts.GetPortCount(this); }
 		virtual CDesignType *GetDefaultDockScreen (CString *retsName = NULL);
 		virtual CStationType *GetEncounterInfo (void) { return m_pType; }
@@ -1343,16 +1338,15 @@ class CStation : public CSpaceObject
 		virtual int GetPlanetarySize (void) const { return (GetScale() == scaleWorld ? m_pType->GetSize() : 0); }
 		virtual ICCItem *GetProperty (const CString &sName);
 		virtual IShipGenerator *GetRandomEncounterTable (int *retiFrequency = NULL) const;
-		virtual bool GetRefuelItemAndPrice (CSpaceObject *pObjToRefuel, CItemType **retpItemType, int *retiPrice);
 		virtual ScaleTypes GetScale (void) const { return m_Scale; }
 		virtual CXMLElement *GetScreen (const CString &sName) { return m_pType->GetScreen(sName); }
-		virtual int GetSellPrice (const CItem &Item, DWORD dwFlags);
 		virtual CSovereign *GetSovereign (void) const { return m_pSovereign; }
 		virtual COLORREF GetSpaceColor (void) { return m_pType->GetSpaceColor(); }
 		virtual CString GetStargateID (void) const;
 		virtual int GetStealth (void) const { return ((m_fKnown && !IsMobile()) ? stealthMin : m_pType->GetStealth()); }
 		virtual Metric GetStellarMass (void) const { return (GetScale() == scaleStar ? m_rMass : 0.0); }
 		virtual CSpaceObject *GetTarget (CItemCtx &ItemCtx, bool bNoAutoTarget = false) const;
+		virtual CTradingDesc *GetTradeDescOverride (void) { return m_pTrade; }
 		virtual CDesignType *GetType (void) const { return m_pType; }
 		virtual int GetVisibleDamage (void);
 		virtual CDesignType *GetWreckType (void) const;
@@ -1407,7 +1401,6 @@ class CStation : public CSpaceObject
 		virtual void SetOverlayRotation (DWORD dwID, int iRotation) { m_Overlays.SetRotation(dwID, iRotation); }
 		virtual bool SetProperty (const CString &sName, ICCItem *pValue, CString *retsError);
 		virtual void SetSovereign (CSovereign *pSovereign) { m_pSovereign = pSovereign; }
-		virtual void SetTradeDesc (CEconomyType *pCurrency, int iMaxCurrency, int iReplenishCurrency);
 		virtual bool SupportsGating (void) { return IsActiveStargate(); }
 		virtual void Undock (CSpaceObject *pObj);
 
@@ -1439,7 +1432,6 @@ class CStation : public CSpaceObject
 
 		CStation (void);
 
-		void AllocTradeOverride (void);
 		void Blacklist (CSpaceObject *pObj);
 		void CalcBounds (void);
 		int CalcNumberOfShips (void);

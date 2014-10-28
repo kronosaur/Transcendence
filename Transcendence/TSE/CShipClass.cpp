@@ -30,6 +30,7 @@
 #define REACTOR_TEXT_TAG						CONSTLIT("ReactorText")
 #define REMOVE_TAG								CONSTLIT("Remove")
 #define SHIELD_DISPLAY_TAG						CONSTLIT("ShieldDisplay")
+#define TRADE_TAG								CONSTLIT("Trade")
 #define WRECK_IMAGE_TAG							CONSTLIT("WreckImage")
 
 #define AUTOPILOT_ATTRIB						CONSTLIT("autopilot")
@@ -114,6 +115,7 @@
 #define FIELD_GENERIC_NAME						CONSTLIT("genericName")
 #define FIELD_HP								CONSTLIT("hp")
 #define FIELD_HULL_MASS							CONSTLIT("hullMass")
+#define FIELD_INSTALL_DEVICE_MAX_LEVEL			CONSTLIT("installDeviceMaxLevel")
 #define FIELD_LAUNCHER							CONSTLIT("launcher")
 #define FIELD_LAUNCHER_UNID						CONSTLIT("launcherUNID")
 #define FIELD_LEVEL								CONSTLIT("level")
@@ -244,9 +246,11 @@ CShipClass::CShipClass (void) :
 		m_pPlayerSettings(NULL),
 		m_pItems(NULL),
 		m_pEscorts(NULL),
+		m_pTrade(NULL),
 		m_fInheritedDevices(false),
 		m_fInheritedItems(false),
-		m_fInheritedEscorts(false)
+		m_fInheritedEscorts(false),
+		m_fInheritedTrade(false)
 
 //	CShipClass constructor
 
@@ -269,6 +273,9 @@ CShipClass::~CShipClass (void)
 
 	if (m_pEscorts && !m_fInheritedEscorts)
 		delete m_pEscorts;
+
+	if (m_pTrade && !m_fInheritedTrade)
+		delete m_pTrade;
 	}
 
 CShipClass::EBalanceTypes CShipClass::CalcBalanceType (CString *retsDesc) const
@@ -1661,6 +1668,12 @@ bool CShipClass::FindDataField (const CString &sField, CString *retsValue)
 		}
 	else if (strEquals(sField, FIELD_DODGE_RATE))
 		*retsValue = strFromInt((int)(100.0 * CalcDodgeRate()));
+
+	else if (strEquals(sField, FIELD_INSTALL_DEVICE_MAX_LEVEL))
+		{
+		int iMaxLevel = (m_pTrade ? m_pTrade->GetMaxLevelMatched(serviceInstallDevice) : -1);
+		*retsValue = (iMaxLevel != -1 ? strFromInt(iMaxLevel) : NULL_STR);
+		}
 	else if (strEquals(sField, FIELD_MANUFACTURER))
 		*retsValue = m_sManufacturer;
 	else if (strEquals(sField, FIELD_MASS))
@@ -2605,6 +2618,10 @@ ALERROR CShipClass::OnBindDesign (SDesignLoadCtx &Ctx)
 	if (error = m_pDefaultScreen.Bind(Ctx, GetLocalScreens()))
 		goto Fail;
 
+	if (m_pTrade)
+		if (error = m_pTrade->OnDesignLoadComplete(Ctx))
+			goto Fail;
+
 	//	Load player settings
 
 	CPlayerSettings *pBasePlayerSettings;
@@ -2793,6 +2810,12 @@ void CShipClass::OnInitFromClone (CDesignType *pSource)
 	m_pDefaultScreen = pClass->m_pDefaultScreen;
 	m_dwDefaultBkgnd = pClass->m_dwDefaultBkgnd;
 	m_fHasDockingPorts = pClass->m_fHasDockingPorts;
+
+	if (pClass->m_pTrade)
+		{
+		m_pTrade = pClass->m_pTrade;
+		m_fInheritedTrade = true;
+		}
 
 	m_OriginalCommsHandler = pClass->m_OriginalCommsHandler;
 	m_CommsHandler = pClass->m_CommsHandler;
@@ -3132,6 +3155,17 @@ ALERROR CShipClass::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		m_dwDefaultBkgnd = 0;
 		m_fHasDockingPorts = false;
 		}
+
+	//	Load trade
+
+	CXMLElement *pTrade = pDesc->GetContentElementByTag(TRADE_TAG);
+	if (pTrade)
+		{
+		if (error = CTradingDesc::CreateFromXML(Ctx, pTrade, &m_pTrade))
+			return error;
+		}
+	else
+		m_pTrade = NULL;
 
 	//	Load communications
 
