@@ -813,7 +813,7 @@
 			description=		"The special geometry and coatings of this armor provide a ship with a greatly reduced signature in most standard scanners."
 			>
 
-		<Image imageID="&rsItems6;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsItems6;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
 				hitPoints=	"135"
