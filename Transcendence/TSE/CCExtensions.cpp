@@ -1011,6 +1011,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"\n"
 			"   'aggressor (True/Nil)\n"
 			"   'ascendOnGate (True/Nil)\n"
+			"   'flockFormation (True/Nil)\n"
 			"   'ignoreShieldsDown (True/Nil)\n"
 			"   'noAttackOnThreat (True/Nil)\n"
 			"   'noDogfights (True/Nil)\n"

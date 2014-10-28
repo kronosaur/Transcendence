@@ -12,6 +12,7 @@
 #define FIRE_ACCURACY_ATTRIB					CONSTLIT("fireAccuracy")
 #define FIRE_RANGE_ADJ_ATTRIB					CONSTLIT("fireRangeAdj")
 #define FIRE_RATE_ADJ_ATTRIB					CONSTLIT("fireRateAdj")
+#define FLOCK_FORMATION_ATTRIB					CONSTLIT("flockFormation")
 #define FLYBY_COMBAT_ATTRIB						CONSTLIT("flybyCombat")
 #define NO_SHIELD_RETREAT_ATTRIB				CONSTLIT("ignoreShieldsDown")
 #define NO_ATTACK_ON_THREAT_ATTRIB				CONSTLIT("noAttackOnThreat")
@@ -117,6 +118,8 @@ CString CAISettings::GetValue (const CString &sSetting)
 		return strFromInt(m_iFireRangeAdj);
 	else if (strEquals(sSetting, FIRE_RATE_ADJ_ATTRIB))
 		return strFromInt(m_iFireRateAdj);
+	else if (strEquals(sSetting, FLOCK_FORMATION_ATTRIB))
+		return (m_fFlockFormation ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
 		return (m_fNoAttackOnThreat ? STR_TRUE : NULL_STR);
 	else if (strEquals(sSetting, NO_TARGETS_OF_OPPORTUNITY_ATTRIB))
@@ -194,6 +197,7 @@ ALERROR CAISettings::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 	m_fNoFriendlyFireCheck = pDesc->GetAttributeBool(NO_FRIENDLY_FIRE_CHECK_ATTRIB);
 	m_fNoNavPaths = pDesc->GetAttributeBool(NO_NAV_PATHS_ATTRIB);
 	m_fNoOrderGiver = pDesc->GetAttributeBool(NO_ORDER_GIVER_ATTRIB);
+	m_fFlockFormation = pDesc->GetAttributeBool(FLOCK_FORMATION_ATTRIB);
 
 	return NOERROR;
 	}
@@ -266,6 +270,7 @@ void CAISettings::ReadFromStream (SLoadCtx &Ctx)
 	m_fNoNavPaths =				((dwLoad & 0x00000100) ? true : false);
 	m_fNoAttackOnThreat =		((dwLoad & 0x00000200) ? true : false);
 	m_fNoTargetsOfOpportunity =	((dwLoad & 0x00000400) ? true : false);
+	m_fFlockFormation =			((dwLoad & 0x00000800) ? true : false);
 	}
 
 CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
@@ -289,6 +294,8 @@ CString CAISettings::SetValue (const CString &sSetting, const CString &sValue)
 		m_iFireRangeAdj = Max(1, strToInt(sValue, 100));
 	else if (strEquals(sSetting, FIRE_RATE_ADJ_ATTRIB))
 		m_iFireRateAdj = Max(1, strToInt(sValue, 10));
+	else if (strEquals(sSetting, FLOCK_FORMATION_ATTRIB))
+		m_fFlockFormation = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_ATTACK_ON_THREAT_ATTRIB))
 		m_fNoAttackOnThreat = !sValue.IsBlank();
 	else if (strEquals(sSetting, NO_TARGETS_OF_OPPORTUNITY_ATTRIB))
@@ -355,5 +362,6 @@ void CAISettings::WriteToStream (IWriteStream *pStream)
 	dwSave |= (m_fNoNavPaths ?				0x00000100 : 0);
 	dwSave |= (m_fNoAttackOnThreat ?		0x00000200 : 0);
 	dwSave |= (m_fNoTargetsOfOpportunity ?	0x00000400 : 0);
+	dwSave |= (m_fFlockFormation ?			0x00000800 : 0);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	}

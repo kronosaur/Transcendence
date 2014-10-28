@@ -119,6 +119,7 @@ class CAIBehaviorCtx
 		void ImplementFireOnTargetsOfOpportunity (CShip *pShip, CSpaceObject *pTarget = NULL, CSpaceObject *pExcludeObj = NULL);
 		void ImplementFireWeapon (CShip *pShip, DeviceNames iDev = devNone);
 		void ImplementFireWeaponOnTarget (CShip *pShip, int iWeapon, int iWeaponVariant, CSpaceObject *pTarget, const CVector &vTarget, Metric rTargetDist2, int *retiFireDir = NULL, bool bDoNotShoot = false);
+		bool ImplementFlockingManeuver (CShip *pShip, CSpaceObject *pLeader);
 		void ImplementFollowNavPath (CShip *pShip, bool *retbAtDestination = NULL);
 		void ImplementFormationManeuver (CShip *pShip, const CVector vDest, const CVector vDestVel, int iDestFacing, bool *retbInFormation = NULL);
 		void ImplementGating (CShip *pShip, CSpaceObject *pTarget);
@@ -133,6 +134,7 @@ class CAIBehaviorCtx
 		//	Helpers
 		void CalcAvoidPotential (CShip *pShip, CSpaceObject *pTarget);
 		void CalcBestWeapon (CShip *pShip, CSpaceObject *pTarget, Metric rTargetDist2);
+		bool CalcFlockingFormation (CShip *pShip, CSpaceObject *pLeader, Metric rFOVRange, Metric rSeparationRange, CVector *retvPos, CVector *retvVel, int *retiFacing);
 		void CalcInvariants (CShip *pShip);
 		bool CalcIsBetterTarget (CShip *pShip, CSpaceObject *pCurTarget, CSpaceObject *pNewTarget) const;
 		bool CalcNavPath (CShip *pShip, CSpaceObject *pTo);
@@ -351,12 +353,6 @@ class CBaseShipAI : public CObject, public IShipController
 
 	protected:
 		CSpaceObject *CalcEnemyShipInRange (CSpaceObject *pCenter, Metric rRange, CSpaceObject *pExcludeObj = NULL);
-		bool CalcFlockingFormation (CSpaceObject *pLeader,
-									Metric rFOVRange,
-									Metric rSeparationRange,
-									CVector *retvPos, 
-									CVector *retvVel, 
-									int *retiFacing);
 		Metric CalcShipIntercept (const CVector &vRelPos, const CVector &vAbsVel, Metric rMaxSpeed);
 		int CalcWeaponScore (CSpaceObject *pTarget, CInstalledDevice *pWeapon, Metric rTargetDist2);
 		void CancelDocking (CSpaceObject *pTarget);

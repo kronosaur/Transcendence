@@ -2685,6 +2685,7 @@ class CAISettings
 		ALERROR InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc);
 		void InitToDefault (void);
 		inline bool IsAggressor (void) const { return m_fAggressor; }
+		inline bool IsFlocker (void) const { return m_fFlockFormation; }
 		inline bool IsNonCombatant (void) const { return m_fNonCombatant; }
 		inline bool NoAttackOnThreat (void) const { return m_fNoAttackOnThreat; }
 		inline bool NoDogfights (void) const { return m_fNoDogfights; }
@@ -2724,8 +2725,13 @@ class CAISettings
 		DWORD m_fNoNavPaths:1;					//	If TRUE, do not use nav paths
 		DWORD m_fNoAttackOnThreat:1;			//	Do not attack enemies while escorting (unless ordered)
 		DWORD m_fNoTargetsOfOpportunity:1;		//	If TRUE, do not attack targets of opportunity
+		DWORD m_fFlockFormation:1;				//	If TRUE, flock with like ships
+		DWORD m_fSpare5:1;
+		DWORD m_fSpare6:1;
+		DWORD m_fSpare7:1;
+		DWORD m_fSpare8:1;
 
-		DWORD m_dwSpare:21;
+		DWORD m_dwSpare:16;
 	};
 
 enum ProgramTypes
@@ -6402,6 +6408,7 @@ struct SDesignLoadCtx
 	SDesignLoadCtx (void) :
 			pResDb(NULL),
 			pExtension(NULL),
+			pType(NULL),
 			bBindAsNewGame(false),
 			bNoResources(false),
 			bNoVersionCheck(false),
@@ -6418,6 +6425,7 @@ struct SDesignLoadCtx
 	CResourceDb *pResDb;					//	Open ResourceDb object
 	CString sFolder;						//	Folder context (used when loading images)
 	CExtension *pExtension;					//	Extension
+	CDesignType *pType;						//	Current type being loaded
 	bool bLoadAdventureDesc;				//	If TRUE, we are loading an adventure desc only
 	bool bLoadModule;						//	If TRUE, we are loading elements in a module
 	DWORD dwInheritAPIVersion;				//	APIVersion of parent (if base file)

@@ -92,7 +92,7 @@ void CZoanthropeAI::Behavior (void)
 			CVector vFlockPos;
 			CVector vFlockVel;
 			int iFlockFacing;
-			if (CalcFlockingFormation(m_pBase, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
+			if (m_AICtx.CalcFlockingFormation(m_pShip, m_pBase, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 				{
 				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 				}
@@ -122,7 +122,7 @@ void CZoanthropeAI::Behavior (void)
 			CVector vFlockPos;
 			CVector vFlockVel;
 			int iFlockFacing;
-			if (CalcFlockingFormation(NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
+			if (m_AICtx.CalcFlockingFormation(m_pShip, NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 				{
 				m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 				}
@@ -356,7 +356,7 @@ void CZoanthropeAI::ImplementCombatManeuvers (CSpaceObject *pTarget)
 	int iFlockFacing;
 
 	if (rTargetDist2 > COMBAT_RANGE2
-			&& CalcFlockingFormation(NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
+			&& m_AICtx.CalcFlockingFormation(m_pShip, NULL, MAX_FLOCK_DIST, SEPARATION_RANGE, &vFlockPos, &vFlockVel, &iFlockFacing))
 		{
 		m_AICtx.ImplementFormationManeuver(m_pShip, vFlockPos, vFlockVel, m_pShip->AlignToRotationAngle(iFlockFacing));
 		}
