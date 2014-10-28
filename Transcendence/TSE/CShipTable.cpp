@@ -912,6 +912,21 @@ ALERROR CSingleShip::LoadFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 		return ERR_FAIL;
 		}
 
+	//	If we have no orders, warn
+
+#ifdef DEBUG
+	if (g_pUniverse->InDebugMode()
+			&& m_iOrder == IShipController::orderNone
+			&& Ctx.pType
+			&& Ctx.pType->GetType() != designShipTable
+			&& m_pOverride.GetUNID() == 0
+			&& m_pOnCreate == NULL
+			&& m_sController.IsBlank())
+		{
+		::kernelDebugLogMessage("%s (%08x): Warning: Ship in table has no orders.", Ctx.pType->GetTypeName(), Ctx.pType->GetUNID());
+		}
+#endif
+
 	//	For backwards compatibility, handle patrol distance
 
 	switch (m_iOrder)

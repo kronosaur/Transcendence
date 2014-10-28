@@ -1552,6 +1552,10 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	ALERROR error;
 	int i;
 
+	//	Remember the type we're loading
+
+	Ctx.pType = this;
+
 	//	Load UNID
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(UNID_ATTRIB), &m_dwUNID))
@@ -1560,6 +1564,7 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	if (m_dwUNID == 0)
 		{
 		Ctx.sError = strPatternSubst(CONSTLIT("<%s> must have a valid UNID."), pDesc->GetTag());
+		Ctx.pType = NULL;
 		return ERR_FAIL;
 		}
 
@@ -1578,7 +1583,10 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	m_bIsModification = bIsOverride;
 
 	if (error = ::LoadUNID(Ctx, pDesc->GetAttribute(INHERIT_ATTRIB), &m_dwInheritFrom))
+		{
+		Ctx.pType = NULL;
 		return error;
+		}
 
 	m_pInheritFrom = NULL;
 
@@ -1600,7 +1608,10 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 		if (strEquals(pItem->GetTag(), EVENTS_TAG))
 			{
 			if (error = m_Events.InitFromXML(Ctx, pItem))
+				{
+				Ctx.pType = NULL;
 				return ComposeLoadError(Ctx, Ctx.sError);
+				}
 
 			InitCachedEvents();
 			}
@@ -1624,7 +1635,10 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 				|| strEquals(pItem->GetTag(), ATTRIBUTE_DESC_TAG))
 			{
 			if (error = m_DisplayAttribs.InitFromXML(Ctx, pItem))
+				{
+				Ctx.pType = NULL;
 				return ComposeLoadError(Ctx, Ctx.sError);
+				}
 			}
 
 		//	Otherwise, it is some element that we don't understand.
@@ -1633,10 +1647,14 @@ ALERROR CDesignType::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc, bool 
 	//	Load specific data
 
 	if (error = OnCreateFromXML(Ctx, pDesc))
+		{
+		Ctx.pType = NULL;
 		return error;
+		}
 
 	//	Done
 
+	Ctx.pType = NULL;
 	return NOERROR;
 	}
 

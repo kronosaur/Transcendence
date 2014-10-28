@@ -1136,12 +1136,12 @@
 		<Ships>
 			<Ship					count="1d2" class="&scRoninC;" orders="guard"/>
 			<Table count="1d4+1">
-				<Ship chance="20" 	count="1" class="&scEI100;" orders=""/>
-				<Ship chance="20" 	count="1" class="&scEI200;" orders=""/>
-				<Ship chance="15" 	count="1" class="&scEI7000;" orders=""/>
-				<Ship chance="15" 	count="1" class="&scAntaresI;" orders=""/>
-				<Ship chance="15" 	count="1" class="&scAntaresII;" orders=""/>
-				<Ship chance="15" 	count="1" class="&scAntaresV;" orders=""/>
+				<Ship chance="20" 	count="1" class="&scEI100;" orders="dock"/>
+				<Ship chance="20" 	count="1" class="&scEI200;" orders="dock"/>
+				<Ship chance="15" 	count="1" class="&scEI7000;" orders="dock"/>
+				<Ship chance="15" 	count="1" class="&scAntaresI;" orders="dock"/>
+				<Ship chance="15" 	count="1" class="&scAntaresII;" orders="dock"/>
+				<Ship chance="15" 	count="1" class="&scAntaresV;" orders="dock"/>
 			</Table>
 		</Ships>
 
