@@ -290,7 +290,8 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 									const CString &sLocationAttribs,
 									const CVector &vPos,
 									bool bIncludeAll,
-									TArray<CStationTableCache::SEntry> *retTable);
+									TArray<CStationTableCache::SEntry> **retpTable,
+									bool *retbAddToCache);
 ALERROR GetLocationCriteria (SSystemCreateCtx *pCtx, CXMLElement *pDesc, SLocationCriteria *retCriteria);
 bool IsExclusionZoneClear (SSystemCreateCtx *pCtx, const CVector &vPos, Metric rRadius);
 bool IsExclusionZoneClear (SSystemCreateCtx *pCtx, const CVector &vPos, CStationType *pType);
@@ -458,11 +459,18 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 
 	//	If this table is not cached then generate it.
 
+	bool bFreeTable = false;
 	TArray<CStationTableCache::SEntry> *pTable;
 	if (!pCtx->StationTables.FindTable(sTableDesc, &pTable))
 		{
-		if (error = GenerateRandomStationTable(pCtx, sCriteria, sLocationAttribs, vPos, bIncludeAll, pTable))
+		bool bAddToCache;
+		if (error = GenerateRandomStationTable(pCtx, sCriteria, sLocationAttribs, vPos, bIncludeAll, &pTable, &bAddToCache))
 			return error;
+
+		if (bAddToCache)
+			pCtx->StationTables.AddTable(sTableDesc, pTable);
+		else
+			bFreeTable = true;
 		}
 
 	//	Add to stats
@@ -498,6 +506,8 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 
 	if (Table.GetCount() == 0)
 		{
+		if (bFreeTable)
+			delete pTable;
 		STATION_PLACEMENT_OUTPUT("   no appropriate station found for this location\n");
 		return ERR_NOTFOUND;
 		}
@@ -506,6 +516,8 @@ ALERROR ChooseRandomStation (SSystemCreateCtx *pCtx,
 
 	*retpType = Table.GetAt(Table.RollPos());
 
+	if (bFreeTable)
+		delete pTable;
 	return NOERROR;
 	}
 
@@ -3024,7 +3036,8 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 									const CString &sLocationAttribs,
 									const CVector &vPos,
 									bool bIncludeAll,
-									TArray<CStationTableCache::SEntry> *retTable)
+									TArray<CStationTableCache::SEntry> **retpTable,
+									bool *retbAddToCache)
 
 //	GenerateRandomStationTable
 //
@@ -3034,8 +3047,6 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 	{
 	ALERROR error;
 	int i, j;
-
-	retTable->DeleteAll();
 
 	//	Loop over all station types
 
@@ -3135,60 +3146,60 @@ ALERROR GenerateRandomStationTable (SSystemCreateCtx *pCtx,
 			}
 		}
 
-	//	Loop over all required types and see if any are in our table. If so, 
-	//	then they get priority.
+	//	Check to see if any of the selected stations has priority (because of node
+	//	minimums). If so, then we need to zero out any other stations.
 
 	bool bPrioritizeRequiredEncounters = false;
-	for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
+	if (pCtx->pTopologyNode)
 		{
-		if (pCtx->RequiredEncounters[i].pType->GetTempChance() > 0)
-			{
-			if (pCtx->RequiredEncounters[i].iLeftToCreate > 0)
-				bPrioritizeRequiredEncounters = true;
-			else
-				//	If this encounter cannot be created, remove it from the list
-				pCtx->RequiredEncounters[i].pType->SetTempChance(0);
-			}
-		}
-
-	//	If we are prioritizing required encounters, then we remove all other
-	//	probabilities from the table.
-
-	if (bPrioritizeRequiredEncounters)
-		{
-		//	Keep track of the current probability of all required encounters
-
-		TArray<int> SavedChance;
-		SavedChance.InsertEmpty(pCtx->RequiredEncounters.GetCount());
-		for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
-			SavedChance[i] = pCtx->RequiredEncounters[i].pType->GetTempChance();
-
-		//	Clear all probabilities
-
 		for (i = 0; i < iCount; i++)
-			g_pUniverse->GetStationType(i)->SetTempChance(0);
+			{
+			CStationType *pType = g_pUniverse->GetStationType(i);
 
-		//	Restore the required encounter probabilities
+			//	If we need a minimum number of stations in this node, then we
+			//	prioritize these types.
 
-		for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
-			pCtx->RequiredEncounters[i].pType->SetTempChance(SavedChance[i]);
+			if (pType->GetTempChance() > 0
+					&& pType->GetEncounterRequired(pCtx->pTopologyNode) > 0)
+				{
+				bPrioritizeRequiredEncounters = true;
+				break;
+				}
+			}
+
+		//	If we're prioritizing required encounters, then zero-out any probabilities
+		//	for non-required types
+
+		if (bPrioritizeRequiredEncounters)
+			{
+			for (i = 0; i < iCount; i++)
+				{
+				CStationType *pType = g_pUniverse->GetStationType(i);
+				if (pType->GetEncounterRequired(pCtx->pTopologyNode) == 0)
+					pType->SetTempChance(0);
+				}
+			}
 		}
 
 	//	Now that we've initialized all the types, return the ones with a non-zero
 	//	chance.
 
+	TArray<CStationTableCache::SEntry> *pTable = new TArray<CStationTableCache::SEntry>;
 	for (i = 0; i < iCount; i++)
 		{
 		CStationType *pType = g_pUniverse->GetStationType(i);
 		if (pType->GetTempChance())
 			{
-			CStationTableCache::SEntry *pEntry = retTable->Insert();
+			CStationTableCache::SEntry *pEntry = pTable->Insert();
 			pEntry->pType = pType;
 			pEntry->iChance = pType->GetTempChance();
 			}
 		}
 
 	//	Done
+
+	*retpTable = pTable;
+	*retbAddToCache = !bPrioritizeRequiredEncounters;
 
 	return NOERROR;
 	}
@@ -3530,11 +3541,6 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 	if (pTables)
 		Ctx.LocalTables.Insert(pTables);
 
-	//	Required encounters
-
-	if (pTopology)
-		pTopology->GetRequiredEncounters(&Ctx.RequiredEncounters);
-
 	//	Start the debug stack
 
 	PushDebugStack(&Ctx, strPatternSubst(CONSTLIT("SystemType nodeID=%s unid=%x"), pTopology->GetID(), pType->GetUNID()));
@@ -3573,59 +3579,64 @@ ALERROR CSystem::CreateFromXML (CUniverse *pUniv,
 
 	//	Make sure this system has all the required objects that we want
 
-	for (i = 0; i < Ctx.RequiredEncounters.GetCount(); i++)
+	if (pTopology)
 		{
-		int iToCreate = Ctx.RequiredEncounters[i].iLeftToCreate;
-		for (j = 0; j < iToCreate; j++)
+		for (i = 0; i < g_pUniverse->GetStationTypeCount(); i++)
 			{
-			CStationType *pType = Ctx.RequiredEncounters[i].pType;
-
-			//	Look for an appropriate location to create the station at.
-
-			COrbit OrbitDesc;
-			CString sLocationAttribs;
-			int iLocation;
-			if (error = ChooseRandomLocation(&Ctx, 
-					pType->GetLocationCriteria(), 
-					NULL,
-					&OrbitDesc, 
-					&sLocationAttribs,
-					&iLocation))
+			CStationType *pType = g_pUniverse->GetStationType(i);
+			int iToCreate;
+			if (iToCreate = pType->GetEncounterRequired(pTopology))
 				{
-				//	If we couldn't find an appropriate location then we try 
-				//	picking a random location in the system that is away from
-				//	other stations.
-
-				if (error == ERR_NOTFOUND)
+				for (j = 0; j < iToCreate; j++)
 					{
-					GenerateRandomPosition(&Ctx, &OrbitDesc);
-					iLocation = -1;
+					//	Look for an appropriate location to create the station at.
+
+					COrbit OrbitDesc;
+					CString sLocationAttribs;
+					int iLocation;
+					if (error = ChooseRandomLocation(&Ctx, 
+							pType->GetLocationCriteria(), 
+							NULL,
+							&OrbitDesc, 
+							&sLocationAttribs,
+							&iLocation))
+						{
+						//	If we couldn't find an appropriate location then we try 
+						//	picking a random location in the system that is away from
+						//	other stations.
+
+						if (error == ERR_NOTFOUND)
+							{
+							GenerateRandomPosition(&Ctx, &OrbitDesc);
+							iLocation = -1;
+							}
+						else
+							return error;
+						}
+
+					//	Remember saved last obj
+
+					DWORD dwSavedLastObjID = Ctx.dwLastObjID;
+					Ctx.dwLastObjID = 0;
+
+					//	Create the station at the location
+
+					SObjCreateCtx CreateCtx;
+					CreateCtx.vPos = OrbitDesc.GetObjectPos();
+					CreateCtx.pLoc = (iLocation != -1 ? Ctx.pSystem->GetLocation(iLocation) : NULL);
+					CreateCtx.pOrbit = &OrbitDesc;
+					CreateCtx.bCreateSatellites = true;
+
+					if (error = pSystem->CreateStation(&Ctx, pType, CreateCtx))
+						return error;
+
+					//	Remember that we filled this location
+
+					if (iLocation != -1)
+						pSystem->SetLocationObjID(iLocation, Ctx.dwLastObjID);
+					Ctx.dwLastObjID = dwSavedLastObjID;
 					}
-				else
-					return error;
 				}
-
-			//	Remember saved last obj
-
-			DWORD dwSavedLastObjID = Ctx.dwLastObjID;
-			Ctx.dwLastObjID = 0;
-
-			//	Create the station at the location
-
-			SObjCreateCtx CreateCtx;
-			CreateCtx.vPos = OrbitDesc.GetObjectPos();
-			CreateCtx.pLoc = (iLocation != -1 ? Ctx.pSystem->GetLocation(iLocation) : NULL);
-			CreateCtx.pOrbit = &OrbitDesc;
-			CreateCtx.bCreateSatellites = true;
-
-			if (error = pSystem->CreateStation(&Ctx, pType, CreateCtx))
-				return error;
-
-			//	Remember that we filled this location
-
-			if (iLocation != -1)
-				pSystem->SetLocationObjID(iLocation, Ctx.dwLastObjID);
-			Ctx.dwLastObjID = dwSavedLastObjID;
 			}
 		}
 
@@ -3826,7 +3837,6 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 
 	{
 	ALERROR error;
-	int i;
 	CSpaceObject *pStation = NULL;
 
 	//	If this is a ship encounter, then just create the ship
@@ -3889,7 +3899,7 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 
 		//	This type has now been encountered
 
-		pType->SetEncountered(GetLevel());
+		pType->SetEncountered(this);
 		}
 
 	//	If this is static, create a static object
@@ -3927,18 +3937,6 @@ ALERROR CSystem::CreateStationInt (SSystemCreateCtx *pCtx,
 			if (retsError)
 				*retsError = strPatternSubst(CONSTLIT("Unable to create station from type %s [%08x]: %s"), pType->GetName(), pType->GetUNID(), sError);
 			return error;
-			}
-		}
-
-	//	If necessary, decrement the required encounters counter.
-
-	for (i = 0; i < pCtx->RequiredEncounters.GetCount(); i++)
-		{
-		if (pCtx->RequiredEncounters[i].pType == pType)
-			{
-			if (pCtx->RequiredEncounters[i].iLeftToCreate > 0)
-				pCtx->RequiredEncounters[i].iLeftToCreate--;
-			break;
 			}
 		}
 

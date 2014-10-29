@@ -418,6 +418,25 @@ ALERROR CTranscendenceModel::CreateAllSystems (const CString &sStartNode, CSyste
 	if (error = m_Universe.CreateStarSystem(pStartingNode, retpStartingSystem, retsError))
 		return error;
 
+	//	Output some counts
+
+#ifdef DEBUG_ENCOUNTER_COUNTS
+	for (i = 0; i < m_Universe.GetStationTypeCount(); i++)
+		{
+		CStationType *pType = m_Universe.GetStationType(i);
+		if (!pType->GetLocationCriteria().IsBlank())
+			{
+			CStationEncounterCtx &EncounterRecord = pType->GetEncounterRecord();
+			if (EncounterRecord.GetTotalLimit() != -1 && EncounterRecord.GetTotalCount() > EncounterRecord.GetTotalLimit())
+				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Limit is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalLimit());
+			else if (EncounterRecord.GetTotalMinimum() > 0 && EncounterRecord.GetTotalCount() < EncounterRecord.GetTotalMinimum())
+				::kernelDebugLogMessage("%s (%08x): %d created. WARNING: Minimum is %d", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount(), EncounterRecord.GetTotalMinimum());
+			else
+				::kernelDebugLogMessage("%s (%08x): %d created.", pType->GetName(), pType->GetUNID(), EncounterRecord.GetTotalCount());
+			}
+		}
+#endif
+
 	//	Done
 
 	return NOERROR;

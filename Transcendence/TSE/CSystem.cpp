@@ -333,6 +333,9 @@
 //	105: 1.4
 //		m_pTrade in CShip
 //
+//	106: 1.4
+//		m_EncounterRecord in CStationType changed.
+//
 //	See: TSEUtil.h for definition of SYSTEM_SAVE_VERSION
 
 #include "PreComp.h"

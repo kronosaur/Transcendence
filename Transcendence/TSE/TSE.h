@@ -64,6 +64,7 @@
 //#define DEBUG_COMBAT
 //#define DEBUG_COMBAT_AI
 //#define DEBUG_DOCK_PORT_POS
+#define DEBUG_ENCOUNTER_COUNTS
 //#define DEBUG_FIRE_ON_OPPORTUNITY
 //#define DEBUG_HENCHMAN
 //#define DEBUG_LOAD
@@ -646,6 +647,7 @@ class CStationTableCache
 		CStationTableCache (void) : m_iCacheHits(0), m_iCacheMisses(0) { }
 		~CStationTableCache (void) { DeleteAll(); }
 
+		void AddTable (const CString &sDesc, TArray<SEntry> *pTable) { m_Cache.Insert(sDesc, pTable); }
 		void DeleteAll (void);
 		bool FindTable (const CString &sDesc, TArray<SEntry> **retpTable);
 		int GetCacheHitRate (void) const;
@@ -768,7 +770,6 @@ struct SSystemCreateCtx
 	CSystem *pSystem;						//	System that we're creating
 
 	TArray<CXMLElement *> LocalTables;		//	Stack of local tables
-	TArray<SRequiredEncounterDesc> RequiredEncounters;	//	Required encounters in this system
 
 	//	Stats
 

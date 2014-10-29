@@ -477,24 +477,6 @@ ICCItem *CTopologyNode::GetProperty (const CString &sName)
 		return CC.CreateNil();
 	}
 
-int CTopologyNode::GetRequiredEncounter (CStationType *pType) const
-
-//	GetRequiredEncounter
-//
-//	Returns the required encounters of the given type.
-
-	{
-	int i;
-
-	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
-		{
-		if (m_RequiredEncounters[i].pType == pType)
-			return m_RequiredEncounters[i].iLeftToCreate;
-		}
-
-	return 0;
-	}
-
 CString CTopologyNode::GetStargate (int iIndex)
 
 //	GetStargate
@@ -552,35 +534,6 @@ bool CTopologyNode::HasVariantLabel (const CString &sVariant)
 		}
 
 	return false;
-	}
-
-void CTopologyNode::ChangeRequiredEncounter (CStationType *pType, int iChange)
-
-//	ChangeRequiredEncounter
-//
-//	Increment or decrement encounters left.
-
-	{
-	int i;
-
-	for (i = 0; i < m_RequiredEncounters.GetCount(); i++)
-		{
-		if (m_RequiredEncounters[i].pType == pType)
-			{
-			if (iChange > 0 || -iChange <= m_RequiredEncounters[i].iLeftToCreate)
-				m_RequiredEncounters[i].iLeftToCreate += iChange;
-			return;
-			}
-		}
-
-	//	If we get this far then we could not find the entry and need to add one.
-
-	if (iChange > 0)
-		{
-		SRequiredEncounterDesc *pEntry = m_RequiredEncounters.Insert();
-		pEntry->pType = pType;
-		pEntry->iLeftToCreate = iChange;
-		}
 	}
 
 ALERROR CTopologyNode::InitFromAdditionalXML (CXMLElement *pDesc, CString *retsError)

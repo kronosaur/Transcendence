@@ -169,6 +169,7 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 
 	{
 	ALERROR error;
+	bool bNumberSet = false;
 
 	//	Number appearing (at least this number, unique in system)
 
@@ -183,11 +184,12 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 			}
 
 		m_iMaxCountInSystem = 1;
+		bNumberSet = true;
 		}
 
 	//	Get maximum limit (at most this number, unique in system)
 
-	else if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sAttrib))
+	if (pDesc->FindAttribute(MAX_APPEARING_ATTRIB, &sAttrib))
 		{
 		m_bMaxCountLimit = true;
 		if (error = m_MaxAppearing.LoadFromXML(sAttrib))
@@ -197,11 +199,12 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 			}
 
 		m_iMaxCountInSystem = 1;
+		bNumberSet = true;
 		}
 
 	//	Otherwise, we check uniqueness values
 
-	else
+	if (!bNumberSet)
 		{
 		CString sUnique = pDesc->GetAttribute(UNIQUE_ATTRIB);
 		if (strEquals(sUnique, UNIQUE_IN_SYSTEM))

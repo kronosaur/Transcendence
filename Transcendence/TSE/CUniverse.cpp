@@ -1416,7 +1416,7 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 		//	If this station is unique per system then we need at least the 
 		//	required number of systems. If not, we adjust the count.
 
-		if (pType->IsUniqueInSystem() && iCount < Table.GetCount())
+		if (pType->IsUniqueInSystem() && iCount > Table.GetCount())
 			{
 			iCount = Table.GetCount();
 			kernelDebugLogMessage("Warning: Decreasing number appearing of %s [%08x] to %d due to lack of appropriate systems.", pType->GetNounPhrase(nounPlural), pType->GetUNID(), iCount);
@@ -1431,7 +1431,8 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 			//	If the station is unique in the system and we've already got a 
 			//	station in this system, then try again.
 
-			if (pType->IsUniqueInSystem() && pNode->GetRequiredEncounter(pType) != 0)
+			if (pType->IsUniqueInSystem() 
+					&& pType->GetEncounterMinimum(pNode) > 0)
 				{
 				j--;
 				continue;
@@ -1439,7 +1440,7 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 
 			//	Add it to this node
 
-			pNode->ChangeRequiredEncounter(pType, 1);
+			pType->IncEncounterMinimum(pNode, 1);
 			}
 		}
 

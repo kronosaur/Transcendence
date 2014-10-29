@@ -819,7 +819,7 @@ ALERROR CStation::CreateFromType (CSystem *pSystem,
 
 	//	This type has now been encountered
 
-	pType->SetEncountered(pSystem ? pSystem->GetLevel() : 0);
+	pType->SetEncountered(pSystem);
 
 	//	Fire events on devices
 

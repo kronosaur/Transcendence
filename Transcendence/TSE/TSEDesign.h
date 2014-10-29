@@ -3575,7 +3575,6 @@ class CTopologyNode
 		inline int GetLevel (void) { return m_iLevel; }
 		ICCItem *GetProperty (const CString &sName);
 		int GetRequiredEncounter (CStationType *pType) const;
-		inline void GetRequiredEncounters (TArray<SRequiredEncounterDesc> *retResult) { *retResult = m_RequiredEncounters; }
 		inline int GetStargateCount (void) { return m_NamedGates.GetCount(); }
 		CString GetStargate (int iIndex);
 		CTopologyNode *GetStargateDest (int iIndex, CString *retsEntryPoint = NULL);
@@ -3652,7 +3651,6 @@ class CTopologyNode
 		bool m_bKnown;							//	TRUE if node is visible on galactic map
 		bool m_bMarked;							//	Temp variable used during painting
 		int m_iCalcDistance;					//	Temp variable used during distance calc
-		TArray<SRequiredEncounterDesc> m_RequiredEncounters;	//	Temp variable during creation
 	};
 
 class CTopologyNodeList
@@ -4864,12 +4862,18 @@ class CStationEncounterDesc
 class CStationEncounterCtx
 	{
 	public:
-		void AddEncounter (int iLevel);
+		void AddEncounter (CSystem *pSystem);
 		bool CanBeEncountered (const CStationEncounterDesc &Desc);
 		bool CanBeEncounteredInSystem (CSystem *pSystem, CStationType *pStationType, const CStationEncounterDesc &Desc);
 		int GetFrequencyByLevel (int iLevel, const CStationEncounterDesc &Desc);
 		int GetFrequencyForNode (CTopologyNode *pNode, CStationType *pStation, const CStationEncounterDesc &Desc);
 		int GetFrequencyForSystem (CSystem *pSystem, CStationType *pStation, const CStationEncounterDesc &Desc);
+		int GetMinimumForNode (CTopologyNode *pNode, const CStationEncounterDesc &Desc);
+		int GetRequiredForNode (CTopologyNode *pNode, const CStationEncounterDesc &Desc);
+		inline int GetTotalCount (void) const { return m_Total.iCount; }
+		inline int GetTotalLimit (void) const { return m_Total.iLimit; }
+		inline int GetTotalMinimum (void) const { return m_Total.iMinimum; }
+		void IncMinimumForNode (CTopologyNode *pNode, const CStationEncounterDesc &Desc, int iInc = 1);
 		void ReadFromStream (SUniverseLoadCtx &Ctx);
 		void Reinit (const CStationEncounterDesc &Desc);
 		void WriteToStream (IWriteStream *pStream);
@@ -4879,15 +4883,18 @@ class CStationEncounterCtx
 			{
 			SEncounterStats (void) :
 					iCount(0),
-					iLimit(-1)
+					iLimit(-1),
+					iMinimum(0)
 				{ }
 
 			int iCount;						//	Number of times encountered
 			int iLimit;						//	Encounter limit (-1 = no limit)
+			int iMinimum;					//	Minimum encounters (-1 = no limit)
 			};
 
 		SEncounterStats m_Total;			//	Encounters in entire game
 		TSortMap<int, SEncounterStats> m_ByLevel;	//	Encounters by system level
+		TSortMap<CString, SEncounterStats> m_ByNode;	//	Encounters by topology node
 	};
 
 //	Trading --------------------------------------------------------------------
@@ -5042,6 +5049,9 @@ class CStationType : public CDesignType
 		inline Metric GetEnemyExclusionRadius (void) const { return m_RandomPlacement.GetEnemyExclusionRadius(); }
 		CWeaponFireDesc *GetExplosionType (void) { return m_pExplosionType; }
 		inline int GetEncounterFrequency (void) { return m_iEncounterFrequency; }
+		inline int GetEncounterMinimum (CTopologyNode *pNode) { return m_EncounterRecord.GetMinimumForNode(pNode, m_RandomPlacement); }
+		inline CStationEncounterCtx &GetEncounterRecord (void) { return m_EncounterRecord; }
+		inline int GetEncounterRequired (CTopologyNode *pNode) { return m_EncounterRecord.GetRequiredForNode(pNode, m_RandomPlacement); }
 		inline IShipGenerator *GetEncountersTable (void) { return m_pEncounters; }
 		inline int GetFireRateAdj (void) { return m_iFireRateAdj; }
 		inline CXMLElement *GetFirstDockScreen (void) { return m_pFirstDockScreen.GetDesc(); }
@@ -5088,6 +5098,7 @@ class CStationType : public CDesignType
 		inline bool HasGravity (void) const { return (m_rGravityRadius > 0.0); }
 		inline bool HasRandomNames (void) const { return !m_sRandomNames.IsBlank(); }
 		inline bool HasWreckImage (void) const { return (!IsImmutable() && m_iMaxHitPoints > 0); }
+		inline bool IncEncounterMinimum (CTopologyNode *pNode, int iInc = 1) { m_EncounterRecord.IncMinimumForNode(pNode, m_RandomPlacement, iInc); }
 		inline bool IsActive (void) { return (m_fInactive ? false : true); }
 		inline bool IsOutOfPlaneObject (void) { return (m_fOutOfPlane ? true : false); }
 		inline bool IsBeacon (void) { return (m_fBeacon ? true : false); }
@@ -5108,7 +5119,7 @@ class CStationType : public CDesignType
 		void MarkImages (const CCompositeImageSelector &Selector);
 		void PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick);
 		void SetImageSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
-		inline void SetEncountered (int iLevel) { m_EncounterRecord.AddEncounter(iLevel); }
+		inline void SetEncountered (CSystem *pSystem) { m_EncounterRecord.AddEncounter(pSystem); }
 		inline void SetTempChance (int iChance) { m_iChance = iChance; }
 		inline bool ShowsMapIcon (void) { return (m_fNoMapIcon ? false : true); }
 		inline bool UsesReverseArticle (void) { return (m_fReverseArticle ? true : false); }

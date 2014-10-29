@@ -1714,7 +1714,7 @@ void CStationType::OnReadFromStream (SUniverseLoadCtx &Ctx)
 	else
 		{
 		if (bEncountered)
-			m_EncounterRecord.AddEncounter(0);
+			m_EncounterRecord.AddEncounter(NULL);
 		}
 
 	//	Load opaque data
