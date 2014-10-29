@@ -1620,7 +1620,8 @@ void CPlayerShipController::OnObjDamaged (const SDamageCtx &Ctx)
 
 	if (Ctx.pObj 
 			&& !Ctx.pObj->IsDestroyed()
-			&& m_pShip->IsEnemy(Ctx.pObj)
+			&& (m_pShip->IsEnemy(Ctx.pObj)
+				|| Ctx.pObj->IsAngryAt(m_pShip))
 			&& (Ctx.pObj->GetCategory() == CSpaceObject::catStation
 				|| Ctx.pObj->IsMultiHull()))
 		{
