@@ -710,12 +710,15 @@
 				(block (theServiceEntry)
 					(random
 						(filter (sysFindObject theSource (cat "sTAFN:" maxDist)) theObj
-							(or
-								(and
-									(setq theServiceEntry (lookup (objGetStaticData theObj "NPCService") 'repairArmor 0))
-									(geq (item theServiceEntry 1) minLevel)
+							(and
+								(not (objIsAngryAt theObj gPlayerShip))
+								(or
+									(and
+										(setq theServiceEntry (lookup (objGetStaticData theObj "NPCService") 'repairArmor 0))
+										(geq (item theServiceEntry 1) minLevel)
+										)
+									(geq (objGetProperty theObj 'repairArmorMaxLevel) minLevel)
 									)
-								(geq (objGetProperty theObj 'repairArmorMaxLevel) minLevel)
 								)
 							)
 						)

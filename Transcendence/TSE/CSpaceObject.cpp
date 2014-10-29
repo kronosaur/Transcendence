@@ -4790,6 +4790,11 @@ bool CSpaceObject::MatchesCriteria (SCriteriaMatchCtx &Ctx, const Criteria &Crit
 			&& (!Crit.pSource->IsEnemy(this) || IsEscortingFriendOf(Crit.pSource) || Crit.pSource->IsEscortingFriendOf(this)))
 		return false;
 
+	if (Crit.bAngryObjectsOnly 
+			&& Crit.pSource
+			&& (!IsAngryAt(Crit.pSource) || IsEscortingFriendOf(Crit.pSource) || Crit.pSource->IsEscortingFriendOf(this)))
+		return false;
+
 	if (!Crit.sStargateID.IsBlank() && !strEquals(Crit.sStargateID, GetStargateID()))
 		return false;
 
@@ -5572,7 +5577,7 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 //		V			Include virtual objects
 //		W			(unused)
 //		X			Only objects whose target is the source
-//		Y			(unused)
+//		Y			Enemy/angry objects only
 //		Z			Exclude the player
 //
 //		+xyz;		Include objects with the given attribute
@@ -5593,6 +5598,7 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 	retCriteria->bKilledObjectsOnly = false;
 	retCriteria->bFriendlyObjectsOnly = false;
 	retCriteria->bEnemyObjectsOnly = false;
+	retCriteria->bAngryObjectsOnly = false;
 	retCriteria->bManufacturedObjectsOnly = false;
 	retCriteria->bStructureScaleOnly = false;
 	retCriteria->bStargatesOnly = false;
@@ -5816,6 +5822,10 @@ void CSpaceObject::ParseCriteria (CSpaceObject *pSource, const CString &sCriteri
 
 			case 'X':
 				retCriteria->bTargetIsSource = true;
+				break;
+
+			case 'Y':
+				retCriteria->bAngryObjectsOnly = true;
 				break;
 
 			case 'z':

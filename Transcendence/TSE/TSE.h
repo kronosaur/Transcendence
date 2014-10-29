@@ -2129,6 +2129,7 @@ class CSpaceObject : public CObject
 			bool bKilledObjectsOnly;			//	Only objects that cannot attack
 			bool bFriendlyObjectsOnly;			//	Only friendly to source
 			bool bEnemyObjectsOnly;				//	Only enemy to source
+			bool bAngryObjectsOnly;				//	Only enemy and angry objects
 			bool bManufacturedObjectsOnly;		//	Exclude planets, stars, etc.
 			bool bStructureScaleOnly;			//	Only structure-scale objects
 			bool bStargatesOnly;				//	Only stargates

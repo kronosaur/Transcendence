@@ -79,8 +79,10 @@
 					(switch
 						(eq (objGetTarget gSender) gSource)
 							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackMyself "\"Unable to comply\""))
-							
-						(not (objIsEnemy gPlayerShip (objGetTarget gSender)))
+						
+						(and (not (objIsEnemy gPlayerShip (objGetTarget gSender)))
+								(not (objIsAngryAt (objGetTarget gSender) gPlayerShip))
+								)
 							(objSendMessage gSender gSource (objTranslate gSource 'IcantAttackFriends "\"Unable to comply\""))
 
 						(block Nil
@@ -102,7 +104,7 @@
 				<Invoke>
 					(block (theTarget)
 						(switch
-							(or (not (setq theTarget (sysFindObject gPlayerShip "sTEAN")))
+							(or (not (setq theTarget (sysFindObject gPlayerShip "sTYAN")))
 									(gr (objGetDistance gPlayerShip theTarget) 100)
 									)
 								(objSendMessage gSender gSource (objTranslate gSource 'NoTargetInRange "\"No target in range\""))
@@ -341,7 +343,7 @@
 					
 					(switch
 						(and (eq behavior 'attackingAtWill)
-								(setq theTarget (sysFindObject gPlayerShip "sTEAN"))
+								(setq theTarget (sysFindObject gPlayerShip "sTYAN"))
 								(leq (objGetDistance gPlayerShip theTarget) 100)
 								)
 							(shpOrder gSource 'attack theTarget)

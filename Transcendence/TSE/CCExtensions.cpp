@@ -2115,7 +2115,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   V           Include virtual objects\n"
 			//"   W           (unused)\n"
 			"   X           Only objects whose target is the source\n"
-			//"   Y           (unused)\n"
+			"   Y           Only objects angry at the player (or enemies)\n"
 			"   Z           Exclude the player\n"
 			"\n"
 			"   +xyz;       Exclude objects without the given attribute\n"
