@@ -180,10 +180,11 @@ ALERROR CPower::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 			if (error = LoadCodeBlock(pBlock->GetContentText(0), &m_pOnDestroyCheck, &Ctx.sError))
 				return error;
 			}
+		else if (IsValidLoadXML(pBlock->GetTag()))
+			;
 		else
 			{
-			Ctx.sError = strPatternSubst(CONSTLIT("Unknown element: <%s>"), pBlock->GetTag());
-			return ERR_FAIL;
+			return ComposeLoadError(Ctx, strPatternSubst(CONSTLIT("Unknown element: <%s>"), pBlock->GetTag()));
 			}
 		}
 

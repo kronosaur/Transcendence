@@ -416,6 +416,7 @@ class CDesignType
 
 	protected:
 		ALERROR AddEventHandler (const CString &sEvent, const CString &sCode, CString *retsError = NULL) { return m_Events.AddEvent(sEvent, sCode, retsError); }
+		bool IsValidLoadXML (const CString &sTag);
 		void ReadGlobalData (SUniverseLoadCtx &Ctx);
 		void ReportEventError (const CString &sEvent, ICCItem *pError);
 

@@ -1071,23 +1071,6 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 				m_fUseUninstalled = bValue;
 			}
 
-		//	Process events (skip processing here since we processed above)
-
-		else if (strEquals(pSubDesc->GetTag(), EVENTS_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), DOCK_SCREENS_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), GLOBAL_DATA_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), LANGUAGE_TAG))
-			;
-
-		else if (strEquals(pSubDesc->GetTag(), STATIC_DATA_TAG))
-			;
-
 		//	Process on refuel code
 
 		else if (strEquals(pSubDesc->GetTag(), ON_REFUEL_TAG))
@@ -1174,6 +1157,14 @@ ALERROR CItemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 			m_pMissile->m_pAmmoType = this;
 			}
+
+		//	Other elements
+
+		else if (IsValidLoadXML(pSubDesc->GetTag()))
+			;
+
+		//	Otherwise, error
+
 		else
 			kernelDebugLogMessage("Unknown sub-element for ItemType: %s", pSubDesc->GetTag());
 		}

@@ -1353,6 +1353,23 @@ ICCItem *CDesignType::GetEventHandler (const CString &sEvent) const
 		return NULL;
 	}
 
+bool CDesignType::IsValidLoadXML (const CString &sTag)
+
+//	IsValidLoadXML
+//
+//	Returns TRUE if the given XML element tag is a valid tag for all design
+//	types.
+
+	{
+	return (strEquals(sTag, EVENTS_TAG)
+			|| strEquals(sTag, DOCK_SCREENS_TAG)
+			|| strEquals(sTag, GLOBAL_DATA_TAG)
+			|| strEquals(sTag, LANGUAGE_TAG)
+			|| strEquals(sTag, STATIC_DATA_TAG)
+			|| strEquals(sTag, DISPLAY_ATTRIBUTES_TAG)
+			|| strEquals(sTag, ATTRIBUTE_DESC_TAG));
+	}
+
 void CDesignType::AddUniqueHandlers (TSortMap<CString, SEventHandlerDesc> *retInheritedHandlers)
 
 //	AddUniqueHandlers
