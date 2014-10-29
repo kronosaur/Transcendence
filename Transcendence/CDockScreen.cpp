@@ -1609,6 +1609,12 @@ void CDockScreen::ShowPane (const CString &sName)
 	if (sName.IsBlank())
 		return;
 
+	//	Update the display. We need to do this BEFORE we call OnPaneInit
+	//	because we want OnPaneInit to be able to set values on the display.
+
+	if (m_Controls.GetCount() > 0)
+		ShowDisplay();
+
 	//	Find the pane named
 
 	CXMLElement *pNewPane = m_pPanes->GetContentElementByTag(sName);
@@ -1628,11 +1634,6 @@ void CDockScreen::ShowPane (const CString &sName)
 	//	Show the currently selected item
 
 	m_pDisplay->ShowPane(pNewPane->GetAttributeBool(NO_LIST_NAVIGATION_ATTRIB));
-
-	//	Update the display
-
-	if (m_Controls.GetCount() > 0)
-		ShowDisplay();
 
 	UpdateCredits();
 
