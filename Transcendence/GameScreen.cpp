@@ -1010,6 +1010,13 @@ void CTranscendenceWnd::ShowInvokeMenu (void)
 					{
 					char chLetter = *sKey.GetASCIIZPointer();
 					int iOrdinal = chLetter - 'A';
+
+					//	A double letter means that we really want a letter, so we
+					//	offset to increment past the numbers.
+
+					if (sKey.GetLength() == 2)
+						iOrdinal += 9;
+
 					sKey = CMenuDisplay::GetHotKeyFromOrdinal(&iOrdinal, KeyMap);
 					}
 
