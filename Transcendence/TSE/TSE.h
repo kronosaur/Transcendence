@@ -3536,6 +3536,7 @@ void LoadDamageEffectsFromItem (ICCItem *pItem, SDamageCtx &Ctx);
 EManeuverTypes CalcTurnManeuver (int iDesired, int iCurrent, int iRotationAngle);
 CString ParseCriteriaParam (char **ioPos, bool bExpectColon = true, bool *retbBinaryParam = NULL);
 bool ParseCriteriaParamLevelRange (char **ioPos, int *retiLow, int *retiHigh);
+Metric ParseDistance (const CString &sValue, Metric rDefaultScale);
 
 //	CodeChain helper functions (CCUtil.cpp)
 

@@ -745,7 +745,20 @@ bool CEnergyField::SetProperty (CSpaceObject *pSource, const CString &sName, ICC
 	CCodeChain &CC = g_pUniverse->GetCC();
 
 	if (strEquals(sName, PROPERTY_COUNTER))
-		m_iCounter = pValue->GetIntegerValue();
+		{
+		//	If we're a radius counter, then do unit conversion.
+
+		if (m_pType->GetCounterStyle() == COverlayType::counterRadius)
+			{
+			Metric rRadius = ParseDistance(pValue->GetStringValue(), LIGHT_SECOND);
+			m_iCounter = (int)((rRadius / g_KlicksPerPixel) + 0.5);
+			}
+
+		//	Otherwise, take the integer value
+
+		else
+			m_iCounter = pValue->GetIntegerValue();
+		}
 
 	else if (strEquals(sName, PROPERTY_COUNTER_LABEL))
 		m_sMessage = pValue->GetStringValue();

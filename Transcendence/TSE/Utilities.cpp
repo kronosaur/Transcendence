@@ -2691,6 +2691,55 @@ ALERROR ParseDamageTypeList (const CString &sList, TArray<CString> *retList)
 	return NOERROR;
 	}
 
+Metric ParseDistance (const CString &sValue, Metric rDefaultScale)
+
+//	ParseDistance
+//
+//	Parses a number with optional units:
+//
+//	"123"	-> Multiplied by default scale
+//	"123 px" -> 123 pixels converted to klicks
+//	"123 ls" -> 123 light-seconds
+//	"123 lm" -> 123 light-minutes
+//	"123 au" -> 123 AUs
+
+	{
+	//	First parse the number
+
+	char *pPos = sValue.GetASCIIZPointer();
+	int iValue = strParseInt(pPos, 0, &pPos);
+	if (iValue <= 0)
+		return 0.0;
+
+	//	See if we have units
+
+	while (strIsWhitespace(pPos))
+		pPos++;
+
+	if (*pPos == '\0')
+		return iValue * rDefaultScale;
+
+	char *pStart = pPos;
+	while (*pPos != '\0' && !strIsWhitespace(pPos))
+		pPos++;
+
+	CString sUnits(pStart, (int)(pPos - pStart));
+	if (strEquals(sUnits, CONSTLIT("px")))
+		return iValue * g_KlicksPerPixel;
+	else if (strEquals(sUnits, CONSTLIT("ls"))
+			|| strEquals(sUnits, CONSTLIT("light-second"))
+			|| strEquals(sUnits, CONSTLIT("light-seconds")))
+		return iValue * LIGHT_SECOND;
+	else if (strEquals(sUnits, CONSTLIT("lm"))
+			|| strEquals(sUnits, CONSTLIT("light-minute"))
+			|| strEquals(sUnits, CONSTLIT("light-minutes")))
+		return iValue * LIGHT_MINUTE;
+	else if (strEquals(sUnits, CONSTLIT("au")))
+		return iValue * g_AU;
+	else
+		return 0.0;
+	}
+
 GenomeTypes ParseGenomeID (const CString &sText)
 
 //	ParseGenomeID
