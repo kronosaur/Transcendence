@@ -443,11 +443,11 @@ ALERROR CUniverse::CreateStarSystem (CTopologyNode *pTopology, CSystem **retpSys
 
 	//	Get the description
 
-	CSystemType *pSystemType = FindSystemType(pTopology->GetSystemDescUNID());
+	CSystemType *pSystemType = FindSystemType(pTopology->GetSystemTypeUNID());
 	if (pSystemType == NULL)
 		{
 		if (retsError)
-			*retsError = strPatternSubst(CONSTLIT("Cannot create system %s: Undefined system type %x"), pTopology->GetID(), pTopology->GetSystemDescUNID());
+			*retsError = strPatternSubst(CONSTLIT("Cannot create system %s: Undefined system type %x"), pTopology->GetID(), pTopology->GetSystemTypeUNID());
 		return ERR_FAIL;
 		}
 
@@ -1399,9 +1399,13 @@ ALERROR CUniverse::InitRequiredEncounters (CString *retsError)
 		for (j = 0; j < m_Topology.GetTopologyNodeCount(); j++)
 			{
 			CTopologyNode *pNode = m_Topology.GetTopologyNode(j);
+			CSystemType *pSystemType = FindSystemType(pNode->GetSystemTypeUNID());
+			if (pSystemType == NULL)
+				continue;
 
 			int iFreq = pType->GetFrequencyForNode(pNode);
-			if (iFreq > 0)
+			if (iFreq > 0
+					&& pSystemType->HasExtraEncounters())
 				Table.Insert(pNode, iFreq);
 			}
 

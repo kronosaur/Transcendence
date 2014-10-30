@@ -12,6 +12,7 @@
 #define LEVEL_FREQUENCY_ATTRIB					CONSTLIT("levelFrequency")
 #define LOCATION_CRITERIA_ATTRIB				CONSTLIT("locationCriteria")
 #define MAX_APPEARING_ATTRIB					CONSTLIT("maxAppearing")
+#define MIN_APPEARING_ATTRIB					CONSTLIT("minAppearing")
 #define NUMBER_APPEARING_ATTRIB					CONSTLIT("numberAppearing")
 #define SYSTEM_CRITERIA_ATTRIB					CONSTLIT("systemCriteria")
 #define UNIQUE_ATTRIB							CONSTLIT("unique")
@@ -174,7 +175,8 @@ ALERROR CStationEncounterDesc::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pD
 	//	Number appearing (at least this number, unique in system)
 
 	CString sAttrib;
-	if (pDesc->FindAttribute(NUMBER_APPEARING_ATTRIB, &sAttrib))
+	if (pDesc->FindAttribute(MIN_APPEARING_ATTRIB, &sAttrib)
+			|| pDesc->FindAttribute(NUMBER_APPEARING_ATTRIB, &sAttrib))
 		{
 		m_bNumberAppearing = true;
 		if (error = m_NumberAppearing.LoadFromXML(sAttrib))

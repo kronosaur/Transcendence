@@ -2409,7 +2409,10 @@
 
 	<!-- Rigel Aurelius system -->
 
-	<SystemType UNID="&ssBattleArena;" noRandomEncounters="true">
+	<SystemType UNID="&ssBattleArena;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<Tables>
 			<ArmsQuarterStation>

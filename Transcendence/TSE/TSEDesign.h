@@ -3579,9 +3579,9 @@ class CTopologyNode
 		CString GetStargate (int iIndex);
 		CTopologyNode *GetStargateDest (int iIndex, CString *retsEntryPoint = NULL);
 		inline CSystem *GetSystem (void) { return m_pSystem; }
-		inline DWORD GetSystemDescUNID (void) { return m_SystemUNID; }
 		inline DWORD GetSystemID (void) { return m_dwID; }
 		inline const CString &GetSystemName (void) { return m_sName; }
+		inline DWORD GetSystemTypeUNID (void) { return m_SystemUNID; }
 		inline bool HasAttribute (const CString &sAttrib) { return ::HasModifier(m_sAttributes, sAttrib); }
 		bool HasSpecialAttribute (const CString &sAttrib) const;
 		ALERROR InitFromAdditionalXML (CXMLElement *pDesc, CString *retsError);
@@ -4765,6 +4765,7 @@ class CSystemType : public CDesignType
 		inline CXMLElement *GetLocalSystemTables (void) { return m_pLocalTables; }
 		inline Metric GetSpaceScale (void) const { return m_rSpaceScale; }
 		inline Metric GetTimeScale (void) const { return m_rTimeScale; }
+		inline bool HasExtraEncounters (void) const { return !m_bNoExtraEncounters; }
 		inline bool HasRandomEncounters (void) const { return !m_bNoRandomEncounters; }
 
 		//	CDesignType overrides
@@ -4785,6 +4786,8 @@ class CSystemType : public CDesignType
 		CXMLElement *m_pLocalTables;		//	Local system tables
 
 		bool m_bNoRandomEncounters;			//	TRUE if we don't have random encounters
+		bool m_bNoExtraEncounters;			//	TRUE if we don't add new encounters to
+											//		satisfy minimums.
 
 		SEventHandlerDesc m_CachedEvents[evtCount];
 	};
@@ -5078,7 +5081,7 @@ class CStationType : public CDesignType
 		const CString &GetName (DWORD *retdwFlags = NULL);
 		inline DWORD GetNameFlags (void) { return m_dwNameFlags; }
 		CString GetNounPhrase (DWORD dwFlags);
-		inline int GetNumberAppearing (void) const { return m_RandomPlacement.GetNumberAppearing(); }
+		inline int GetNumberAppearing (void) const { return m_EncounterRecord.GetTotalMinimum(); }
 		inline Metric GetParallaxDist (void) const { return m_rParallaxDist; }
 		inline IItemGenerator *GetRandomItemTable (void) { return m_pItems; }
 		inline DWORD GetRandomNameFlags (void) { return m_dwRandomNameFlags; }

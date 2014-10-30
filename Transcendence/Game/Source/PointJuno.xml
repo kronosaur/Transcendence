@@ -1345,7 +1345,10 @@
 
 	<!-- Point Juno System -->
 
-	<SystemType UNID="&ssPointJuno;" noRandomEncounters="true">
+	<SystemType UNID="&ssPointJuno;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<SystemGroup>
 

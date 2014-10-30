@@ -10359,7 +10359,7 @@ ICCItem *fnSystemGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			if (pNode == NULL)
 				return pCC->CreateError(CONSTLIT("Invalid nodeID"), pArgs->GetElement(0));
 
-			return pCC->CreateInteger(pNode->GetSystemDescUNID());
+			return pCC->CreateInteger(pNode->GetSystemTypeUNID());
 			}
 
 		case FN_SYS_STARGATES:

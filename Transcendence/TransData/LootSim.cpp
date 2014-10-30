@@ -73,7 +73,7 @@ void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine)
 				pSystemEntry = new SystemInfo;
 				pSystemEntry->sName = pNode->GetSystemName();
 				pSystemEntry->iLevel = pNode->GetLevel();
-				pSystemEntry->dwSystemType = pNode->GetSystemDescUNID();
+				pSystemEntry->dwSystemType = pNode->GetSystemTypeUNID();
 				pSystemEntry->iCount = 1;
 				pSystemEntry->iTotalLootValue = 0;
 

@@ -89,7 +89,7 @@ void GenerateSystemCount (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Add the entry
 
-			int *pCount = pResult->Table.SetAt(pNode->GetSystemDescUNID(), &bNew);
+			int *pCount = pResult->Table.SetAt(pNode->GetSystemTypeUNID(), &bNew);
 			if (bNew)
 				*pCount = 1;
 			else

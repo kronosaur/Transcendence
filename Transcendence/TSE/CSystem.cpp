@@ -1089,7 +1089,7 @@ ALERROR CSystem::CreateFromStream (CUniverse *pUniv,
 	CString sNodeID;
 	sNodeID.ReadFromStream(Ctx.pStream);
 	Ctx.pSystem->m_pTopology = pUniv->FindTopologyNode(sNodeID);
-	Ctx.pSystem->m_pType = pUniv->FindSystemType(Ctx.pSystem->m_pTopology->GetSystemDescUNID());
+	Ctx.pSystem->m_pType = pUniv->FindSystemType(Ctx.pSystem->m_pTopology->GetSystemTypeUNID());
 
 	//	More misc info
 

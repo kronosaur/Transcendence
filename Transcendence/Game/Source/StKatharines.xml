@@ -2279,7 +2279,10 @@
 
 <!-- St Katharine's Star System -->
 
-	<SystemType UNID="&ssStKatharine;" noRandomEncounters="true">
+	<SystemType UNID="&ssStKatharine;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<Tables>
 			<!-- Random Stations -->

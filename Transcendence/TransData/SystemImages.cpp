@@ -85,7 +85,7 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		SNodeEntry *pEntry = NodeList.Insert();
 		pEntry->pNode = pNode;
-		pEntry->sLabel = strPatternSubst(CONSTLIT("%s (%08x)"), pNode->GetSystemName(), pNode->GetSystemDescUNID());
+		pEntry->sLabel = strPatternSubst(CONSTLIT("%s (%08x)"), pNode->GetSystemName(), pNode->GetSystemTypeUNID());
 		}
 	
 	if (NodeList.GetCount() == 0)

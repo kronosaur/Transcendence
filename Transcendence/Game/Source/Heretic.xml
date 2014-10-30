@@ -5512,7 +5512,8 @@
 	<!-- Heretic System -->
 
 	<SystemType UNID="&ssHeretic;" 
-			noRandomEncounters="true"
+			noRandomEncounters=	"true"
+			noExtraEncounters=	"true"
 			>
 
 		<Tables>

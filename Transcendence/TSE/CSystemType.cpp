@@ -8,6 +8,7 @@
 #define TABLES_TAG								CONSTLIT("Tables")
 
 #define BACKGROUND_ID_ATTRIB					CONSTLIT("backgroundID")
+#define NO_EXTRA_ENCOUNTERS_ATTRIB				CONSTLIT("noExtraEncounters")
 #define NO_RANDOM_ENCOUNTERS_ATTRIB				CONSTLIT("noRandomEncounters")
 #define SPACE_SCALE_ATTRIB						CONSTLIT("spaceScale")
 #define TIME_SCALE_ATTRIB						CONSTLIT("timeScale")
@@ -164,7 +165,9 @@ ALERROR CSystemType::OnCreateFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
 
 	//	Options
 
+	m_bNoExtraEncounters = pDesc->GetAttributeBool(NO_EXTRA_ENCOUNTERS_ATTRIB);
 	m_bNoRandomEncounters = pDesc->GetAttributeBool(NO_RANDOM_ENCOUNTERS_ATTRIB);
+
 	if (!pDesc->FindAttributeDouble(SPACE_SCALE_ATTRIB, &m_rSpaceScale) || m_rSpaceScale <= 0.0)
 		m_rSpaceScale = KLICKS_PER_PIXEL;
 

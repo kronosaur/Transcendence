@@ -8,7 +8,10 @@
 	
 	<!-- Elysium -->
 
-	<SystemType UNID="&ssElysium;" noRandomEncounters="true">
+	<SystemType UNID="&ssElysium;" 
+				noRandomEncounters=	"true"
+				noExtraEncounters=	"true"
+				>
 
 		<SystemGroup>
 
