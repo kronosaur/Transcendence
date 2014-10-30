@@ -280,7 +280,7 @@
 						(setq theResult (rpgInstallDevicePrep {
 							item: (scrGetItem gScreen)
 
-							buyAndInstall: True
+							upgrade: True
 							checkMilitaryID: (@ gData 'checkMilitaryID)
 							checkTotalPower: True
 							currencyUsed: (objGetDefaultCurrency gSource)

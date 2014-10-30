@@ -153,7 +153,8 @@
 				;	targetObj:				Object on which to install (if Nil, we assume player ship)
 				;	techCriteria:			If not Nil, the item must match this criteria
 				;	techCriteriaOverride:	If not Nil, and item matches this criteria, install even if above maxTechLevel
-				;	totalPrice:				The total price to install (may include purchase price)
+				;	totalPrice:				The total price to install (includes purchase price if buyAndInstall is True)
+				;	upgrade:				If True, we are buying an item as an upgrade
 				;
 				; We return a struct with the following elements:
 				;
@@ -168,7 +169,7 @@
 					(setq targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
 					(setq installerObj (if (@ data 'installerObj) (@ data 'installerObj) gSource))
 					(if (not currencyUsed) (setq currencyUsed (objGetDefaultCurrency targetObj)))
-					(setq itemName (itmGetName thisItem (if (@ data 'buyAndInstall) 0x40 0x04)))
+					(setq itemName (itmGetName thisItem (if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 0x40 0x04)))
 					(setq canInstall Nil)
 					
 					;	If the target object is not the player's ship, then we need to modify
@@ -198,7 +199,12 @@
 					(if thisItem
 						(block (
 							(installDevicePrice (objGetItemProperty installerObj thisItem 'installDevicePrice))
-							(itemPrice (if (@ data 'buyAndInstall) (objGetSellPrice installerObj thisItem) 0))
+							(itemPrice 
+								(if (or (@ data 'upgrade) (@ data 'buyAndInstall)) 
+									(objGetSellPrice installerObj thisItem)
+									0
+									)
+								)
 							
 							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall
 							)
@@ -213,7 +219,7 @@
 									(setq totalCost (rpgAdjustInstallPrice Nil thisItem (@ data 'installPriceAdj) currencyUsed))
 
 								(block Nil
-									(setq itemPrice (objGetSellPrice installerObj thisItem))
+									
 									(if (not installDevicePrice)
 										(setq stationCannotInstall True)
 										
@@ -360,7 +366,7 @@
 										(setq desc 
 											(cat 
 												desc " for " (if (@ data 'buyAndInstall) "an additional " "") 
-												(if (@ data 'installPriceAdj) 
+												(if (or (@ data 'upgrade) (@ data 'installPriceAdj))
 													(fmtCurrency currencyUsed totalCost)
 													(fmtCurrency currencyUsed (subtract totalCost itemPrice))
 													)
