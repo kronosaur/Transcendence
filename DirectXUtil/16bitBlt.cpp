@@ -587,6 +587,173 @@ void DrawBltScaledFast (CG16bitImage &Dest,
 		}
 	}
 
+void DrawBltShimmer (CG16bitImage &Dest,
+					 int xDest,
+					 int yDest,
+					 int cxDest,
+					 int cyDest,
+					 const CG16bitImage &Src,
+					 int xSrc,
+					 int ySrc,
+					 DWORD byIntensity,
+					 DWORD dwSeed)
+
+//	DrawBltShimmer
+//
+//	Draws shimmer
+
+	{
+	const DWORD LARGE_PRIME1 = 433494437;
+	const DWORD LARGE_PRIME2 = 3010349;
+
+	//	Make sure we're in bounds
+
+	if (!Dest.AdjustCoords(&xSrc, &ySrc, Src.GetWidth(), Src.GetHeight(), 
+			&xDest, &yDest,
+			&cxDest, &cyDest))
+		return;
+
+	//	We need noise
+
+	NoiseInit();
+
+	//	Initialize
+
+	WORD *pSrcRow = Src.GetPixel(Src.GetRowStart(ySrc), xSrc);
+	WORD *pSrcRowEnd = Src.GetPixel(Src.GetRowStart(ySrc + cyDest), xSrc);
+	WORD *pDestRow = Dest.GetPixel(Dest.GetRowStart(yDest), xDest);
+
+	//	If we've got an alpha mask then blt using the transparency
+	//	information.
+
+	if (Src.HasAlpha())
+		{
+		DWORD dwRnd = LARGE_PRIME2 * dwSeed;
+		BYTE *pAlphaSrcRow = Src.GetAlphaValue(xSrc, ySrc);
+
+		while (pSrcRow < pSrcRowEnd)
+			{
+			BYTE *pAlphaPos = pAlphaSrcRow;
+			WORD *pSrcPos = pSrcRow;
+			WORD *pSrcPosEnd = pSrcRow + cxDest;
+			WORD *pDestPos = pDestRow;
+
+			while (pSrcPos < pSrcPosEnd)
+				{
+				if (*pAlphaPos == 0)
+					{
+					}
+				else if (*pAlphaPos == 255 || *pDestPos == 0)
+					{
+					if (PERM((DWORD)pDestPos * LARGE_PRIME2 + dwRnd) < byIntensity)
+						*pDestPos = *pSrcPos;
+					}
+				else
+					{
+					if (PERM((DWORD)pDestPos * LARGE_PRIME2 + dwRnd) < byIntensity)
+						{
+						DWORD pxSource = *pSrcPos;
+						DWORD pxDest = *pDestPos;
+
+						//	x ^ 0xff is the same as 255 - x
+						//	| 0x07 so that we round-up
+						//	+ 1 because below we divide by 256 instead of 255.
+						//	LATER: Use a table lookup
+
+						DWORD dwInvTrans = ((((DWORD)(*pAlphaPos)) ^ 0xff) | 0x07) + 1;
+
+						WORD wRedSrc = (*pSrcPos >> 11) & 0x1f;
+						WORD wGreenSrc = (*pSrcPos >> 5) & 0x3f;
+						WORD wBlueSrc = (*pSrcPos) & 0x1f;
+
+						WORD wRedDest = ((WORD)dwInvTrans * ((*pDestPos >> 11) & 0x1f)) >> 8;
+						WORD wGreenDest = ((WORD)dwInvTrans * ((*pDestPos >> 5) & 0x3f)) >> 8;
+						WORD wBlueDest = ((WORD)dwInvTrans * ((*pDestPos) & 0x1f)) >> 8;
+
+						WORD wRedResult = Min((WORD)0x1f, (WORD)(wRedSrc + wRedDest));
+						WORD wGreenResult = Min((WORD)0x3f, (WORD)(wGreenSrc + wGreenDest));
+						WORD wBlueResult = Min((WORD)0x1f, (WORD)(wBlueSrc + wBlueDest));
+
+						*pDestPos = (wRedResult << 11) | (wGreenResult << 5) | wBlueResult;
+						}
+					}
+
+				pDestPos++;
+				pSrcPos++;
+				pAlphaPos++;
+				}
+
+			pSrcRow = Src.NextRow(pSrcRow);
+			pDestRow = Dest.NextRow(pDestRow);
+			pAlphaSrcRow = Src.NextAlphaRow(pAlphaSrcRow);
+			}
+		}
+
+	//	If we've got constant transparency then use the alpha tables
+
+	else if (Src.IsTransparent())
+		{
+#ifdef LATER
+		while (pSrcRow < pSrcRowEnd)
+			{
+			WORD *pSrcPos = pSrcRow;
+			WORD *pSrcPosEnd = pSrcRow + cxWidth;
+			WORD *pDestPos = pDestRow;
+
+			while (pSrcPos < pSrcPosEnd)
+				if (*pSrcPos == m_wBackColor)
+					{
+					pDestPos++;
+					pSrcPos++;
+					}
+				else
+					{
+					//	Blend the pixel using the appropriate tables
+
+					WORD rgbRed = Source.m_pRedAlphaTable[((*pSrcPos & 0xf800) >> 6) | ((*pDestPos & 0xf800) >> 11)];
+					WORD rgbGreen = Source.m_pGreenAlphaTable[((*pSrcPos & 0x7e0) << 1) | ((*pDestPos & 0x7e0) >> 5)];
+					WORD rgbBlue = Source.m_pBlueAlphaTable[(*pSrcPos & 0x1f) << 5 | (*pDestPos & 0x1f)];
+
+					*pDestPos++ = rgbRed | rgbGreen | rgbBlue;
+					pSrcPos++;
+					}
+
+			pSrcRow = Source.NextRow(pSrcRow);
+			pDestRow = NextRow(pDestRow);
+			}
+#endif
+		}
+
+	//	Otherwise just blt
+
+	else
+		{
+		DWORD dwRnd = LARGE_PRIME2 * dwSeed;
+		WORD wSrcBackColor = Src.GetBackColor();
+
+		while (pSrcRow < pSrcRowEnd)
+			{
+			WORD *pSrcPos = pSrcRow;
+			WORD *pSrcPosEnd = pSrcRow + cxDest;
+			WORD *pDestPos = pDestRow;
+
+			while (pSrcPos < pSrcPosEnd)
+				{
+				if ((*pSrcPos != wSrcBackColor)
+						&& (PERM((DWORD)pDestPos * LARGE_PRIME2 + dwRnd) < byIntensity))
+					*pDestPos = *pSrcPos;
+
+				pDestPos++;
+				pSrcPos++;
+				}
+
+			dwRnd *= LARGE_PRIME1;
+			pSrcRow = Src.NextRow(pSrcRow);
+			pDestRow = Dest.NextRow(pDestRow);
+			}
+		}
+	}
+
 void DrawBltTransformed (CG16bitImage &Dest, 
 						 Metric rX, 
 						 Metric rY, 

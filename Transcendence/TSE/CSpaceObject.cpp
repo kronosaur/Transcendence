@@ -2950,15 +2950,9 @@ int CSpaceObject::GetDetectionRangeIndex (int iPerception) const
 	if (iResult <= 0)
 		return 0;
 
-	//	If we are not cloaked, then we are at least visible at SRS range
-
-	else if (iStealth != stealthMax)
-		return Min(iResult, VISUAL_RANGE_INDEX);
-
 	//	Otherwise, we could be invisible
 
-	else
-		return Min(iResult, RANGE_INDEX_COUNT - 1);
+	return Min(iResult, RANGE_INDEX_COUNT - 1);
 	}
 
 CSovereign::Disposition CSpaceObject::GetDispositionTowards (CSpaceObject *pObj)

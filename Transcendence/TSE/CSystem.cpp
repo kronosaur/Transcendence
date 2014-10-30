@@ -747,6 +747,7 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 
 	{
 	DEBUG_TRY
+	ASSERT(pCenter);
 
 	Ctx.pCenter = pCenter;
 	Ctx.vCenterPos = pCenter->GetPos();
@@ -755,6 +756,10 @@ void CSystem::CalcViewportCtx (SViewportPaintCtx &Ctx, const RECT &rcView, CSpac
 				g_KlicksPerPixel * (Metric)(RectHeight(rcView)) / 2);
 	Ctx.vUR = Ctx.vCenterPos + Ctx.vDiagonal;
 	Ctx.vLL = Ctx.vCenterPos - Ctx.vDiagonal;
+
+	//	Perception
+
+	Ctx.iPerception = pCenter->GetPerception();
 
 	//	Compute the transformation to map world coordinates to the viewport
 
@@ -2891,6 +2896,8 @@ void CSystem::PaintViewport (CG16bitImage &Dest,
 	{
 	int i;
 	int iLayer;
+
+	ASSERT(pCenter);
 
 	//	Initialize the viewport context
 

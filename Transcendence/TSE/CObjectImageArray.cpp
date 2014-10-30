@@ -983,6 +983,45 @@ void CObjectImageArray::PaintImage (CG16bitImage &Dest, int x, int y, int iTick,
 		}
 	}
 
+void CObjectImageArray::PaintImageShimmering (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, DWORD byOpacity) const
+
+//	PaintImageShimmering
+//
+//	Paint a distorted/invisible image.
+//
+//	byOpacity = 0 means the image is invisible.
+//	byOpacity = 256 means the image is fully visible.
+
+	{
+	if (m_pImage)
+		{
+		CG16bitImage *pSource = m_pImage->GetImage(NULL_STR);
+		if (pSource == NULL)
+			return;
+
+		int xSrc;
+		int ySrc;
+		ComputeSourceXY(iTick, iRotation, &xSrc, &ySrc);
+
+		if (m_pRotationOffset)
+			{
+			x += m_pRotationOffset[iRotation % m_iRotationCount].x;
+			y -= m_pRotationOffset[iRotation % m_iRotationCount].y;
+			}
+
+		DrawBltShimmer(Dest,
+				x - (RectWidth(m_rcImage) / 2),
+				y - (RectHeight(m_rcImage) / 2),
+				RectWidth(m_rcImage),
+				RectHeight(m_rcImage),
+				*pSource,
+				xSrc,
+				ySrc,
+				byOpacity,
+				iTick);
+		}
+	}
+
 void CObjectImageArray::PaintImageGrayed (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const
 
 //	PaintImageGrayed

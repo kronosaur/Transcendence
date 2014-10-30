@@ -4330,14 +4330,38 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 	const CObjectImageArray *pImage;
 	pImage = &m_pClass->GetImage();
 
+	//	See if we're invisible in SRS
+
+	DWORD byInvisible;
+	int iRangeIndex = GetDetectionRangeIndex(Ctx.iPerception);
+	if (iRangeIndex >= 6 
+			&& Ctx.pCenter
+			&& Ctx.pCenter != this)
+		{
+		Metric rRange = RangeIndex2Range(iRangeIndex);
+		Metric rDist = Ctx.pCenter->GetDistance(this);
+		if (rDist <= rRange)
+			byInvisible = 0;
+		else
+			{
+			byInvisible = 255 - Min(254, (int)((rDist - rRange) / g_KlicksPerPixel) * 2);
+			bPaintThrust = false;
+			}
+		}
+	else
+		byInvisible = 0;
+
 	//	Paints overlay background
 
 	m_EnergyFields.PaintBackground(Dest, x, y, Ctx);
 
 	//	Paint all effects behind the ship
 
-	Ctx.bInFront = false;
-	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+	if (!byInvisible)
+		{
+		Ctx.bInFront = false;
+		m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+		}
 
 	//	Paint the ship
 
@@ -4348,13 +4372,17 @@ void CShip::OnPaint (CG16bitImage &Dest, int x, int y, SViewportPaintCtx &Ctx)
 			m_Rotation.GetFrameIndex(), 
 			Ctx.iTick,
 			bPaintThrust,
-			IsRadioactive()
+			IsRadioactive(),
+			byInvisible
 			);
 
 	//	Paint effects in front of the ship.
 
-	Ctx.bInFront = true;
-	m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+	if (!byInvisible)
+		{
+		Ctx.bInFront = true;
+		m_Effects.Paint(Ctx, m_pClass->GetEffectsDesc(), dwEffects, Dest, x, y);
+		}
 
 	//	Paint energy fields
 

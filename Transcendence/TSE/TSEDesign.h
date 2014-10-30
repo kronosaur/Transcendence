@@ -700,6 +700,7 @@ struct SViewportPaintCtx
 			xCenter(0),
 			yCenter(0),
 			pObj(NULL),
+			iPerception(4),				//	LATER: Same as CSpaceObject::perceptNormal (but we haven't included it yet).
 			wSpaceColor(0),
 			fNoSelection(false),
 			fNoRecon(false),
@@ -736,6 +737,7 @@ struct SViewportPaintCtx
 	CVector vEnhancedUR;
 	CVector vEnhancedLL;
 
+	int iPerception;					//	Perception
 	Metric rIndicatorRadius;			//	Radius of circle to show target indicators (in pixels)
 	WORD wSpaceColor;					//	Space color
 	WORD wSpare;
@@ -892,6 +894,12 @@ class CObjectImageArray : public CObject
 		void MarkImage (void);
 		void PaintImage (CG16bitImage &Dest, int x, int y, int iTick, int iRotation, bool bComposite = false) const;
 		void PaintImageGrayed (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
+		void PaintImageShimmering (CG16bitImage &Dest,
+								   int x,
+								   int y,
+								   int iTick,
+								   int iRotation,
+								   DWORD byOpacity) const;
 		void PaintImageUL (CG16bitImage &Dest, int x, int y, int iTick, int iRotation) const;
 		void PaintImageWithGlow (CG16bitImage &Dest,
 								 int x,
@@ -4353,8 +4361,9 @@ class CShipClass : public CDesignType
 					const ViewportTransform &Trans, 
 					int iDirection, 
 					int iTick, 
-					bool bThrusting,
-					bool bRadioactive);
+					bool bThrusting = false,
+					bool bRadioactive = false,
+					DWORD byInvisible = 0);
 		void PaintMap (CMapViewportCtx &Ctx, 
 					CG16bitImage &Dest, 
 					int x, 

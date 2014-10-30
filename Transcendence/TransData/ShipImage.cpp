@@ -100,8 +100,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 				Ctx.XForm,
 				i, 
 				0,
-				bDriveImages,
-				false);
+				bDriveImages);
 
 		//	Paint thrusters in front of ship
 
