@@ -6,18 +6,17 @@
 #include <ddraw.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
+
 #include <math.h>
 #include <stdio.h>
+#include "NoiseImpl.h"
 
 const DWORD RED_BLUE_COUNT =						(1 << 5);
 const DWORD GREEN_COUNT =							(1 << 6);
 
-const int STOCHASTIC_DIM =							16;
-const int STOCHASTIC_SIZE =							STOCHASTIC_DIM * STOCHASTIC_DIM;
 BYTE STOCHASTIC_OPACITY[STOCHASTIC_SIZE][256];
-bool g_bStochasticInit = false;
 
-void InitStochasticTable (void);
+static bool g_bStochasticInit = false;
 
 //	Template Function ---------------------------------------------------------
 

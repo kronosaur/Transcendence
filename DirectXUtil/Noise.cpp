@@ -4,9 +4,12 @@
 
 #include <windows.h>
 #include <ddraw.h>
-#include <math.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
+
+#include <math.h>
+#include <stdio.h>
+#include "NoiseImpl.h"
 
 const int RAND_MASK =					0x7fffffff;
 const float PI =						3.1415926535f;

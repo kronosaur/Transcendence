@@ -746,11 +746,12 @@ void CChooseAdventureSession::SetBackgroundImage (CExtension *pAdventure)
 
 	if (m_rcBackground.right > xCenter)
 		{
-		int xStart = m_pBackground->GetWidth() - (m_rcBackground.right - xCenter);
+		int xCenterAdj = xCenter + 120;
+		int xStart = m_pBackground->GetWidth() - (m_rcBackground.right - xCenterAdj);
 		DrawGradientRectHorz(*m_pBackground,
 				xStart,
 				0,
-				(xRightEdge - xCenter),
+				(xRightEdge - xCenterAdj),
 				m_pBackground->GetHeight(),
 				VI.GetColor(colorAreaDialog),
 				VI.GetColor(colorAreaDialog),

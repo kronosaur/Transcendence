@@ -6,9 +6,11 @@
 #include <ddraw.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
+
 #include <math.h>
 #include <stdio.h>
 #include "Euclid.h"
+#include "NoiseImpl.h"
 
 #define INTERPOLATE(pos,lineInc,XYFloat,xInt,yInt,result)		\
 	{															\

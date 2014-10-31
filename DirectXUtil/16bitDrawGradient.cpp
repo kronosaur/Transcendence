@@ -7,8 +7,10 @@
 #include <ddraw.h>
 #include "Alchemy.h"
 #include "DirectXUtil.h"
+
 #include <math.h>
 #include <stdio.h>
+#include "NoiseImpl.h"
 
 void DrawGradientRectHorz (CG16bitImage &Dest,
 						   int xDest,
@@ -25,6 +27,10 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 //	Draws a horizontal gradient from left to right.
 
 	{
+	//	We use a stochastic opacity to deal with gradient artifacts.
+
+	InitStochasticTable();
+
 	//	Make sure we're in bounds
 
 	int x = xDest;
@@ -53,6 +59,8 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 	int iRowSize = (Dest.GetRowStart(1) - Dest.GetRowStart(0));
 	int iColSize = pColEnd - pPos;
 
+	int xStochastic = x;
+
 	while (pPos < pPosEnd)
 		{
 		//	Compute the color of this column
@@ -62,6 +70,7 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 
 		//	Compute the opacity of this column
 
+		int iBaseIndex = (xStochastic % STOCHASTIC_DIM) * STOCHASTIC_DIM;
 		DWORD dwOpacity = (DWORD)(dwStartOpacity + (rOpacityRange * rGradient));
 
 		//	Draw the column
@@ -80,15 +89,22 @@ void DrawGradientRectHorz (CG16bitImage &Dest,
 			}
 		else
 			{
+			int yStochastic = 0;
+
 			while (pCol < pColEnd)
 				{
-				*pCol = CG16bitImage::BlendPixel(*pCol, wColor, dwOpacity);
+				DWORD dwJitterOpacity = STOCHASTIC_OPACITY[iBaseIndex + (yStochastic % STOCHASTIC_DIM)][dwOpacity];
+
+				*pCol = CG16bitImage::BlendPixel(*pCol, wColor, dwJitterOpacity);
+
 				pCol += iRowSize;
+				yStochastic++;
 				}
 			}
 
 		//	Next
 
+		xStochastic++;
 		rGradient += rStep;
 		pPos++;
 		}

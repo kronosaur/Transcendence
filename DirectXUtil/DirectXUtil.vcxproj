@@ -154,6 +154,7 @@
     <ClInclude Include="..\Includes\DirectXUtil.h" />
     <ClInclude Include="..\Includes\Reanimator.h" />
     <ClInclude Include="..\Includes\TextFormat.h" />
+    <ClInclude Include="NoiseImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="16bitBlt.cpp" />
