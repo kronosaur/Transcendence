@@ -472,6 +472,28 @@ CString CObjectImageArray::GetFilename (void) const
 	return m_pImage->GetImageFilename();
 	}
 
+bool CObjectImageArray::GetImageOffset (int iTick, int iRotation, int *retx, int *rety) const
+
+//	GetImageOffset
+//
+//	Returns the image offset. Also returns FALSE if there is no image offset.
+//	(But the return variables are always initialized.)
+
+	{
+	if (m_pRotationOffset)
+		{
+		*retx = m_pRotationOffset[iRotation % m_iRotationCount].x;
+		*rety = -m_pRotationOffset[iRotation % m_iRotationCount].y;
+		return true;
+		}
+	else
+		{
+		*retx = 0;
+		*rety = 0;
+		return false;
+		}
+	}
+
 RECT CObjectImageArray::GetImageRect (int iTick, int iRotation, int *retxCenter, int *retyCenter) const
 
 //	GetImageRect

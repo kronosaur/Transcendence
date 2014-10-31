@@ -1783,6 +1783,48 @@ void CStationType::PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick)
 		}
 	}
 
+void CStationType::PaintDockPortPositions (CG16bitImage &Dest, int x, int y)
+
+//	PaintDockPortPositions
+//
+//	Paints the position of all the docking ports for this type.
+
+	{
+	int i;
+
+	//	We need to initialize a docking ports structure
+
+	CDockingPorts Ports;
+	Ports.InitPortsFromXML(NULL, m_pDesc);
+
+	//	Paint all ports
+
+	for (i = 0; i < Ports.GetPortCount(NULL); i++)
+		{
+		int iRotation;
+		bool bInFront;
+		CVector vPos = Ports.GetPortPos(NULL, i, NULL, &bInFront, &iRotation);
+
+		//	Colors
+
+		WORD wArrowColor = (bInFront ? CG16bitImage::RGBValue(0x00, 0x40, 0x80) : CG16bitImage::RGBValue(0x80, 0x40, 0x00));
+		WORD wCenterColor = (bInFront ? CG16bitImage::RGBValue(0x00, 0x7f, 0xff) : CG16bitImage::RGBValue(0xff, 0x7f, 0x00));
+
+		//	Get the position
+
+		int xPos = x + (int)(vPos.GetX() / g_KlicksPerPixel);
+		int yPos = y - (int)(vPos.GetY() / g_KlicksPerPixel);
+
+		//	Paint arrow
+
+		CPaintHelper::PaintArrow(Dest, xPos, yPos, iRotation, wArrowColor);
+
+		//	Paint center crosshairs
+
+		Dest.DrawDot(xPos, yPos, wCenterColor, CG16bitImage::markerMediumCross);
+		}
+	}
+
 ScaleTypes CStationType::ParseScale (const CString sValue)
 
 //	ParseScale

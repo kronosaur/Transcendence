@@ -1703,7 +1703,7 @@ class CDockingPorts
 		int FindRandomEmptyPort (CSpaceObject *pOwner);
 		inline int GetPortCount (CSpaceObject *pOwner) { return m_iPortCount; }
 		inline CSpaceObject *GetPortObj (CSpaceObject *pOwner, int iPort) { ASSERT(m_pPort[iPort].pObj == NULL || m_pPort[iPort].iStatus != psEmpty); return m_pPort[iPort].pObj; }
-		inline CVector GetPortPos (CSpaceObject *pOwner, int iPort, CSpaceObject *pShip, bool *retbPaintInFront = NULL) { return GetPortPos(pOwner, m_pPort[iPort], pShip, retbPaintInFront); }
+		inline CVector GetPortPos (CSpaceObject *pOwner, int iPort, CSpaceObject *pShip, bool *retbPaintInFront = NULL, int *retiRotation = NULL) { return GetPortPos(pOwner, m_pPort[iPort], pShip, retbPaintInFront, retiRotation); }
 		int GetPortsInUseCount (CSpaceObject *pOwner);
 		void InitPorts (CSpaceObject *pOwner, int iCount, Metric rRadius);
 		void InitPorts (CSpaceObject *pOwner, int iCount, CVector *pPos);
@@ -1753,7 +1753,7 @@ class CDockingPorts
 			int iRotation;						//	Rotation of ship at dock
 			};
 
-		CVector GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port, CSpaceObject *pShip, bool *retbPaintInFront = NULL) const;
+		CVector GetPortPos (CSpaceObject *pOwner, const SDockingPort &Port, CSpaceObject *pShip, bool *retbPaintInFront = NULL, int *retiRotation = NULL) const;
 		bool IsDocked (CSpaceObject *pObj);
 		bool IsDockedOrDocking (CSpaceObject *pObj);
 		bool ShipsNearPort (CSpaceObject *pOwner, CSpaceObject *pRequestingObj, const CVector &vPortPos);

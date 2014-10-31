@@ -2735,58 +2735,24 @@ void CSystem::PaintDestinationMarker (SViewportPaintCtx &Ctx, CG16bitImage &Dest
 	{
 	CVector vPos;
 
-	//	Figure out the bearing for the destination object
-	//	(We want the angle of the center with respect to the object because we
-	//	start at the edge of the screen and point inward).
+	//	Figure out the bearing for the destination object.
 
-	int iBearing = VectorToPolar(Ctx.pCenter->GetPos() - pObj->GetPos());
-
-	//	Generate a set of points for the directional indicator
-
-	SPoint Poly[5];
-
-	//	Start at the origin
-
-	Poly[0].x = 0;
-	Poly[0].y = 0;
-
-	//	Do one side first
-
-	vPos = PolarToVector(iBearing + 30, ENHANCED_SRS_BLOCK_SIZE);
-	Poly[1].x = (int)vPos.GetX();
-	Poly[1].y = -(int)vPos.GetY();
-
-	vPos = vPos + PolarToVector(iBearing, 3 * ENHANCED_SRS_BLOCK_SIZE);
-	Poly[2].x = (int)vPos.GetX();
-	Poly[2].y = -(int)vPos.GetY();
-
-	//	The other side
-
-	vPos = PolarToVector(iBearing + 330, ENHANCED_SRS_BLOCK_SIZE);
-	CVector vPos2 = vPos + PolarToVector(iBearing, 3 * ENHANCED_SRS_BLOCK_SIZE);
-
-	Poly[3].x = (int)vPos2.GetX();
-	Poly[3].y = -(int)vPos2.GetY();
-
-	Poly[4].x = (int)vPos.GetX();
-	Poly[4].y = -(int)vPos.GetY();
-
-	//	Paint the directional indicator
-
-	CG16bitBinaryRegion Region;
-	Region.CreateFromConvexPolygon(5, Poly);
+	int iBearing = VectorToPolar(pObj->GetPos() - Ctx.pCenter->GetPos());
 	WORD wColor = pObj->GetSymbolColor();
-	Region.Fill(Dest, x, y, wColor);
+
+	//	Paint the arrow
+
+	CPaintHelper::PaintArrow(Dest, x, y, iBearing, wColor);
 
 	//	Paint the text
 
 	const CG16bitFont &Font = g_pUniverse->GetNamedFont(CUniverse::fontSRSObjName);
 	vPos = PolarToVector(iBearing, 5 * ENHANCED_SRS_BLOCK_SIZE);
-	int xText = x + (int)vPos.GetX();
-	int yText = y - (int)vPos.GetY();
+	int xText = x - (int)vPos.GetX();
+	int yText = y + (int)vPos.GetY();
 
 	DWORD iAlign = alignCenter;
-	if (iBearing > 180)
+	if (iBearing <= 180)
 		yText += 2 * ENHANCED_SRS_BLOCK_SIZE;
 	else
 		{

@@ -95,6 +95,9 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 	else
 		iOrder = orderName;
 
+	bool bDockingPorts = pCmdLine->GetAttributeBool(CONSTLIT("portPos"));
+	bool bDevicePos = pCmdLine->GetAttributeBool(CONSTLIT("devicePos"));
+
 	//	Image size
 
 	int cxDesiredWidth;
@@ -321,8 +324,20 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		int x = Arranger.GetX(i);
 		int y = Arranger.GetY(i);
+
+		//	Paint
+
 		if (x != -1)
 			{
+			int xCenter = x + (Arranger.GetWidth(i) / 2);
+			int yCenter = y + (Arranger.GetHeight(i) / 2);
+
+			int xOffset;
+			int yOffset;
+			Entry.pImage->GetImageOffset(0, Entry.iRotation, &xOffset, &yOffset);
+
+			//	Paint image
+
 			if (!bTextBoxesOnly && Entry.pImage)
 				{
 				Entry.pImage->PaintImageUL(Output,
@@ -330,6 +345,19 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 						y,
 						0,
 						Entry.iRotation);
+				}
+
+			//	Paint type specific stuff
+
+			switch (Entry.pType->GetType())
+				{
+				case designStationType:
+					{
+					CStationType *pStationType = CStationType::AsType(Entry.pType);
+					if (bDockingPorts)
+						pStationType->PaintDockPortPositions(Output, xCenter - xOffset, yCenter - yOffset);
+					break;
+					}
 				}
 
 			//	Paint name
@@ -343,7 +371,7 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 				if (!bTextBoxesOnly)
 					{
-					Output.FillColumn(x + (Arranger.GetWidth(i) / 2),
+					Output.FillColumn(xCenter,
 							y + Arranger.GetHeight(i),
 							yText - (y + Arranger.GetHeight(i)),
 							wNameColor);

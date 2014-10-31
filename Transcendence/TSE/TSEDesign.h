@@ -885,6 +885,7 @@ class CObjectImageArray : public CObject
 		RECT GetImageRect (int iTick, int iRotation, int *retxCenter = NULL, int *retyCenter = NULL) const;
 		RECT GetImageRectAtPoint (int x, int y) const;
 		int GetImageViewportSize (void) const;
+		bool GetImageOffset (int iTick, int iRotation, int *retx, int *rety) const;
 		inline int GetRotationCount (void) const { return m_iRotationCount; }
 		inline int GetTicksPerFrame (void) const { return m_iTicksPerFrame; }
 		inline bool HasAlpha (void) const { return (m_pImage ? m_pImage->HasAlpha() : false); }
@@ -5130,6 +5131,7 @@ class CStationType : public CDesignType
 		inline bool IsWall (void) { return (m_fWall ? true : false); }
 		void MarkImages (const CCompositeImageSelector &Selector);
 		void PaintAnimations (CG16bitImage &Dest, int x, int y, int iTick);
+		void PaintDockPortPositions (CG16bitImage &Dest, int x, int y);
 		void SetImageSelector (SSelectorInitCtx &InitCtx, CCompositeImageSelector *retSelector);
 		inline void SetEncountered (CSystem *pSystem) { m_EncounterRecord.AddEncounter(pSystem); }
 		inline void SetTempChance (int iChance) { m_iChance = iChance; }

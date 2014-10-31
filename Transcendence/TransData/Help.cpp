@@ -125,6 +125,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/font:s]             Use given font for labels.\n");
 		printf("      [/itemCriteria:n]     Item criteria of images to show.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/portPos]            Show docking port positions.\n");
 		printf("      [/sort:xxx]           Sort worlds in given order.\n");
 		printf("         largest               Larger objects first.\n");
 		printf("         level                 By level (ascending).\n");
