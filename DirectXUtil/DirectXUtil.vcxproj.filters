@@ -194,5 +194,8 @@
     <ClCompile Include="CG16bitLinePainter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IPropertyAnimator.cpp">
+      <Filter>Source Files\Reanimator</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

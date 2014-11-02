@@ -342,7 +342,7 @@ void CAniVScroller::GoToFrame (int iFrame)
 		m_List[i].pAni->GoToFrame(iFrame);
 	}
 
-void CAniVScroller::GoToNextFrame (int iFrame)
+void CAniVScroller::GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame)
 
 //	GoToNextFrame
 //
@@ -351,10 +351,10 @@ void CAniVScroller::GoToNextFrame (int iFrame)
 	{
 	int i;
 
-	m_Properties.GoToNextFrame(iFrame);
+	m_Properties.GoToNextFrame(Ctx, iFrame);
 
 	for (i = 0; i < m_List.GetCount(); i++)
-		m_List[i].pAni->GoToNextFrame(iFrame);
+		m_List[i].pAni->GoToNextFrame(Ctx, iFrame);
 	}
 
 void CAniVScroller::GoToStart (void)

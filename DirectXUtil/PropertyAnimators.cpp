@@ -126,3 +126,4 @@ void CLinearRotation::SetProperty (int iFrame, CAniProperty &Property)
 	else
 		Property.Set(CAniProperty::typeInteger, 360 - ((int)-rAngle % 360));
 	}
+

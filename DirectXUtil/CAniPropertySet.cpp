@@ -329,7 +329,7 @@ void CAniPropertySet::GoToFrame (int iFrame)
 		}
 	}
 
-void CAniPropertySet::GoToNextFrame (int iFrame)
+void CAniPropertySet::GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame)
 
 //	GoToNextFrame
 //
@@ -351,7 +351,10 @@ void CAniPropertySet::GoToNextFrame (int iFrame)
 			{
 			pAni->iFrame++;
 			if (iDuration >= 0 && pAni->iFrame >= iDuration)
+				{
 				pAni->iFrame = -1;
+				pAni->pAnimator->OnDoneAnimating(Ctx);
+				}
 			}
 		else if (pAni->iStartFrame == iFrame)
 			{

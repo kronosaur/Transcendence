@@ -256,7 +256,7 @@ void CAniSequencer::GoToFrame (int iFrame)
 		}
 	}
 
-void CAniSequencer::GoToNextFrame (int iFrame)
+void CAniSequencer::GoToNextFrame (SAniUpdateCtx &Ctx, int iFrame)
 
 //	GoToNextFrame
 //
@@ -265,7 +265,7 @@ void CAniSequencer::GoToNextFrame (int iFrame)
 	{
 	int i;
 
-	m_Properties.GoToNextFrame(iFrame);
+	m_Properties.GoToNextFrame(Ctx, iFrame);
 
 	for (i = 0; i < m_Timeline.GetCount(); i++)
 		{
@@ -276,7 +276,7 @@ void CAniSequencer::GoToNextFrame (int iFrame)
 		if (pTrack->iFrame != -1)
 			{
 			pTrack->iFrame++;
-			pTrack->pAni->GoToNextFrame(pTrack->iFrame);
+			pTrack->pAni->GoToNextFrame(Ctx, pTrack->iFrame);
 
 			if (pTrack->iDuration >= 0 && pTrack->iFrame >= pTrack->iDuration)
 				pTrack->iFrame = -1;

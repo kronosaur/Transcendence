@@ -7,7 +7,9 @@
 
 #define ID_GAME_STAT_PERFORMANCE				CONSTLIT("gameStatPerformance")
 #define ID_GAME_STAT_COPY_FLASH					CONSTLIT("gameStatCopyFlash")
+#define ID_CTRL_TITLE							CONSTLIT("title")
 
+#define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_SESSION_STATS_DONE					CONSTLIT("sessionStatsDone")
 #define CMD_UI_SHOW_HELP						CONSTLIT("uiShowHelp")
 
@@ -68,6 +70,19 @@ void CStatsSession::OnCleanUp (void)
 	{
 	}
 
+ALERROR CStatsSession::OnCommand (const CString &sCmd, void *pData)
+
+//	OnCommand
+//
+//	Handle a command
+
+	{
+	if (strEquals(sCmd, CMD_OK_SESSION))
+		m_HI.HICommand(CMD_SESSION_STATS_DONE);
+
+	return NOERROR;
+	}
+
 ALERROR CStatsSession::OnInit (CString *retsError)
 
 //	OnInit
@@ -116,6 +131,20 @@ ALERROR CStatsSession::OnInit (CString *retsError)
 	m_rcTaskProgress.left = m_rcTaskProgress.right - 80 * HeaderFont.GetAverageWidth();
 	m_rcTaskProgress.top = rcCenter.bottom + MediumFont.GetHeight();
 	m_rcTaskProgress.bottom = m_rcTaskProgress.top + HeaderFont.GetHeight();
+
+	//	OK button
+
+	CUIHelper Helper(m_HI);
+	IAnimatron *pTitle;
+	Helper.CreateSessionTitle(this, 
+			m_Service, 
+			NULL_STR, 
+			NULL, 
+			CUIHelper::OPTION_SESSION_NO_HEADER 
+				| CUIHelper::OPTION_SESSION_NO_CANCEL_BUTTON
+				| CUIHelper::OPTION_SESSION_OK_BUTTON, 
+			&pTitle);
+	StartPerformance(pTitle, ID_CTRL_TITLE, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 
 	return NOERROR;
 	}

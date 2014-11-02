@@ -318,57 +318,62 @@ void CUIHelper::CreateSessionTitle (IHISession *pSession,
 	CAniSequencer *pRoot;
 	CAniSequencer::Create(CVector(rcRect.left, rcRect.top - TITLE_BAR_HEIGHT), &pRoot);
 
-	//	The user icon is centered
+	//	Add the header, unless excluded
 
-	CAniRoundedRect *pIcon = new CAniRoundedRect;
-	pIcon->SetPropertyVector(PROP_POSITION, CVector(0, (TITLE_BAR_HEIGHT - ICON_HEIGHT) / 2));
-	pIcon->SetPropertyVector(PROP_SCALE, CVector(ICON_HEIGHT, ICON_WIDTH));
-	pIcon->SetPropertyColor(PROP_COLOR, CG16bitImage::RGBValue(128, 128, 128));
-	pIcon->SetPropertyOpacity(PROP_OPACITY, 255);
-	pIcon->SetPropertyInteger(PROP_UL_RADIUS, ICON_CORNER_RADIUS);
-	pIcon->SetPropertyInteger(PROP_UR_RADIUS, ICON_CORNER_RADIUS);
-	pIcon->SetPropertyInteger(PROP_LL_RADIUS, ICON_CORNER_RADIUS);
-	pIcon->SetPropertyInteger(PROP_LR_RADIUS, ICON_CORNER_RADIUS);
-
-	pRoot->AddTrack(pIcon, 0);
-
-	//	The user name baseline is centered.
-
-	CString sUsername;
-	WORD wUsernameColor;
-	if (Service.HasCapability(ICIService::canGetUserProfile))
+	if (!(dwOptions & OPTION_SESSION_NO_HEADER))
 		{
-		sUsername = Service.GetUsername();
-		wUsernameColor = VI.GetColor(colorTextDialogInput);
+		//	The user icon is centered
+
+		CAniRoundedRect *pIcon = new CAniRoundedRect;
+		pIcon->SetPropertyVector(PROP_POSITION, CVector(0, (TITLE_BAR_HEIGHT - ICON_HEIGHT) / 2));
+		pIcon->SetPropertyVector(PROP_SCALE, CVector(ICON_HEIGHT, ICON_WIDTH));
+		pIcon->SetPropertyColor(PROP_COLOR, CG16bitImage::RGBValue(128, 128, 128));
+		pIcon->SetPropertyOpacity(PROP_OPACITY, 255);
+		pIcon->SetPropertyInteger(PROP_UL_RADIUS, ICON_CORNER_RADIUS);
+		pIcon->SetPropertyInteger(PROP_UR_RADIUS, ICON_CORNER_RADIUS);
+		pIcon->SetPropertyInteger(PROP_LL_RADIUS, ICON_CORNER_RADIUS);
+		pIcon->SetPropertyInteger(PROP_LR_RADIUS, ICON_CORNER_RADIUS);
+
+		pRoot->AddTrack(pIcon, 0);
+
+		//	The user name baseline is centered.
+
+		CString sUsername;
+		WORD wUsernameColor;
+		if (Service.HasCapability(ICIService::canGetUserProfile))
+			{
+			sUsername = Service.GetUsername();
+			wUsernameColor = VI.GetColor(colorTextDialogInput);
+			}
+		else
+			{
+			sUsername = CONSTLIT("Offline");
+			wUsernameColor = VI.GetColor(colorTextDialogLabel);
+			}
+
+		int y = (TITLE_BAR_HEIGHT / 2) - SubTitleFont.GetAscent();
+
+		IAnimatron *pName = new CAniText;
+		pName->SetPropertyVector(PROP_POSITION, CVector(ICON_WIDTH + PADDING_LEFT, y));
+		pName->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
+		pName->SetPropertyColor(PROP_COLOR, wUsernameColor);
+		pName->SetPropertyFont(PROP_FONT, &SubTitleFont);
+		pName->SetPropertyString(PROP_TEXT, sUsername);
+
+		pRoot->AddTrack(pName, 0);
+		y += SubTitleFont.GetHeight();
+
+		//	Add the session title
+
+		IAnimatron *pTitle = new CAniText;
+		pTitle->SetPropertyVector(PROP_POSITION, CVector(ICON_WIDTH + PADDING_LEFT, y));
+		pTitle->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
+		pTitle->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogTitle));
+		pTitle->SetPropertyFont(PROP_FONT, &SubTitleFont);
+		pTitle->SetPropertyString(PROP_TEXT, sTitle);
+
+		pRoot->AddTrack(pTitle, 0);
 		}
-	else
-		{
-		sUsername = CONSTLIT("Offline");
-		wUsernameColor = VI.GetColor(colorTextDialogLabel);
-		}
-
-	int y = (TITLE_BAR_HEIGHT / 2) - SubTitleFont.GetAscent();
-
-	IAnimatron *pName = new CAniText;
-	pName->SetPropertyVector(PROP_POSITION, CVector(ICON_WIDTH + PADDING_LEFT, y));
-	pName->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
-	pName->SetPropertyColor(PROP_COLOR, wUsernameColor);
-	pName->SetPropertyFont(PROP_FONT, &SubTitleFont);
-	pName->SetPropertyString(PROP_TEXT, sUsername);
-
-	pRoot->AddTrack(pName, 0);
-	y += SubTitleFont.GetHeight();
-
-	//	Add the session title
-
-	IAnimatron *pTitle = new CAniText;
-	pTitle->SetPropertyVector(PROP_POSITION, CVector(ICON_WIDTH + PADDING_LEFT, y));
-	pTitle->SetPropertyVector(PROP_SCALE, CVector(RectWidth(rcRect), RectHeight(rcRect)));
-	pTitle->SetPropertyColor(PROP_COLOR, VI.GetColor(colorTextDialogTitle));
-	pTitle->SetPropertyFont(PROP_FONT, &SubTitleFont);
-	pTitle->SetPropertyString(PROP_TEXT, sTitle);
-
-	pRoot->AddTrack(pTitle, 0);
 
 	//	Add command buttons at the bottom
 
