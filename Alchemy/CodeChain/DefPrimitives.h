@@ -224,6 +224,10 @@ static PRIMITIVEPROCDEF g_DefPrimitives[] =
 			"(sort list ['ascending|'descending] [keyIndex]) -> sorted list",
 			"v*",	0,	},
 
+		{	"split",			fnSplit,		0,
+			"(split string [characters]) -> list",
+			"s*",	0,	},
+
 		{	"sqrt",				fnMath,			FN_MATH_SQRT,
 			"(sqrt x) -> z",
 			"v",	0,	},

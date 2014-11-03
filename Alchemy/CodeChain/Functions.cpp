@@ -3278,6 +3278,100 @@ ICCItem *fnSpecial (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
 		}
 	}
 
+ICCItem *fnSplit (CEvalContext *pCtx, ICCItem *pArgs, DWORD dwData)
+
+//	fnSplit
+//
+//	(split string [characters])
+
+	{
+	CCodeChain *pCC = pCtx->pCC;
+	CString sString = pArgs->GetElement(0)->GetStringValue();
+
+	if (sString.IsBlank())
+		return pCC->CreateNil();
+
+	//	Get the list of characters, if available.
+
+	CString sDelimeters;
+	if (pArgs->GetCount() >= 2)
+		sDelimeters = pArgs->GetElement(1)->GetStringValue();
+	
+	//	By default, we do whitespace separation
+
+	if (sDelimeters.IsBlank())
+		sDelimeters = CONSTLIT(" \t\r\n");
+
+	//	Create a new list
+
+	ICCItem *pResult = pCC->CreateLinkedList();
+	if (pResult->IsError())
+		return pResult;
+
+	CCLinkedList *pList = (CCLinkedList *)pResult;
+
+	//	Parse the string
+
+	char *pPos = sString.GetASCIIZPointer();
+	char *pStart = pPos;
+	bool bInWord = false;
+
+	while (*pPos != '\0')
+		{
+		//	Is this a delimeter?
+
+		bool bIsDelimeter = false;
+		char *pDelim = sDelimeters.GetASCIIZPointer();
+		while (*pDelim != '\0')
+			{
+			if (*pPos == *pDelim)
+				{
+				bIsDelimeter = true;
+				break;
+				}
+			pDelim++;
+			}
+
+		//	Handle it based on our current state.
+
+		if (bInWord)
+			{
+			if (bIsDelimeter)
+				{
+				pList->AppendStringValue(pCC, CString(pStart, (int)(pPos - pStart)));
+				bInWord = false;
+				}
+			}
+		else
+			{
+			if (!bIsDelimeter)
+				{
+				pStart = pPos;
+				bInWord = true;
+				}
+			}
+
+		//	Next
+		
+		pPos++;
+		}
+
+	//	Last word
+
+	if (bInWord)
+		pList->AppendStringValue(pCC, CString(pStart, (int)(pPos - pStart)));
+
+	//	Done
+
+	if (pList->GetCount() == 0)
+		{
+		pList->Discard(pCC);
+		return pCC->CreateNil();
+		}
+	else
+		return pList;
+	}
+
 ICCItem *fnStrCapitalize (CEvalContext *pCtx, ICCItem *pArguments, DWORD dwData)
 
 //	fnStrCapitalize
