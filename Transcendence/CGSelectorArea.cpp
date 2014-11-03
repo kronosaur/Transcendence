@@ -1054,6 +1054,28 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 
 	CShipClass *pClass = pShip->GetClass();
 
+	//	Count the number of miscellaneous devices with 0
+	//	slots (because we may need to bump them).
+
+	int iSlottedDevices = 0;
+	int iNonSlotDevices = 0;
+	for (i = 0; i < pShip->GetDeviceCount(); i++)
+		{
+		CInstalledDevice *pDevice = pShip->GetDevice(i);
+		if (pDevice->IsEmpty() || pDevice->GetSlotCategory() != itemcatMiscDevice)
+			continue;
+
+		if (pDevice->GetClass()->GetSlotsRequired() > 0)
+			iSlottedDevices++;
+		else
+			iNonSlotDevices++;
+		}
+
+	//	We try to fit all other devices (and placeholders) before we add a
+	//	non-slotted device.
+
+	int iNonSlotDeviceSlotsAvail = Max(0, MISC_DEVICES_LAYOUT_COUNT - 4 - iSlottedDevices);
+
 	//	Create a region for each device.
 
 	bool bHasReactor = false;
@@ -1065,6 +1087,16 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 		CInstalledDevice *pDevice = pShip->GetDevice(i);
 		if (pDevice->IsEmpty())
 			continue;
+
+		//	If this is a non-slot device, make sure we have room.
+
+		if (pDevice->GetClass()->GetSlotsRequired() == 0)
+			{
+			if (iNonSlotDeviceSlotsAvail == 0)
+				continue;
+
+			iNonSlotDevices--;
+			}
 
 		//	Figure out the layout descriptor
 
@@ -1209,10 +1241,24 @@ void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
 		if (pDevice->GetCategory() == itemcatLauncher)
 			bHasLauncher = true;
 
-		//	Figure out the best layout descriptor
+		//	If the device already has a position index, then use that (assuming
+		//	it's free).
 
-		if (!FindLayoutForPos(pDevice->GetPosOffset(pShip), SlotStatus, &iIndex))
-			continue;
+		iIndex = pDevice->GetSlotPosIndex();
+		if (iIndex != -1 && !SlotStatus[iIndex])
+			iIndex = -1;
+
+		//	If we don't have an assigned slot, figure it out.
+
+		if (iIndex == -1)
+			{
+			if (!FindLayoutForPos(pDevice->GetPosOffset(pShip), SlotStatus, &iIndex))
+				continue;
+
+			//	Remember so we stay in this location.
+
+			pDevice->SetSlotPosIndex(iIndex);
+			}
 
 		//	Create the region
 

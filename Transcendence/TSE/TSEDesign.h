@@ -5971,6 +5971,7 @@ class CInstalledDevice
 		inline int GetPosZ (void) const { return m_iPosZ; }
 		inline int GetRotation (void) const { return AngleMiddle(m_iMinFireArc, m_iMaxFireArc); }
 		inline int GetSlotBonus (void) const { return m_iSlotBonus; }
+		inline int GetSlotPosIndex (void) const { return m_iSlotPosIndex; }
 		inline int GetTemperature (void) const { return m_iTemperature; }
 		inline int GetTimeUntilReady (void) const { return m_iTimeUntilReady; }
 		inline void IncTemperature (int iChange) { m_iTemperature += iChange; }
@@ -6005,6 +6006,7 @@ class CInstalledDevice
 		inline void SetRegenerating (bool bRegenerating) { m_fRegenerating = bRegenerating; }
 		inline void SetSecondary (bool bSecondary = true) { m_fSecondaryWeapon = bSecondary; }
 		inline void SetSlotBonus (int iBonus) { m_iSlotBonus = iBonus; }
+		inline void SetSlotPosIndex (int iIndex) { m_iSlotPosIndex = iIndex; }
 		inline void SetTemperature (int iTemperature) { m_iTemperature = iTemperature; }
 		inline void SetTimeUntilReady (int iDelay) { m_iTimeUntilReady = iDelay; }
 		inline void SetTriggered (bool bTriggered) { m_fTriggered = bTriggered; }
@@ -6099,7 +6101,7 @@ class CInstalledDevice
 		int m_iTemperature:16;					//	Temperature for weapons
 		int m_iActivateDelay:16;				//	Cached activation delay
 		int m_iSlotBonus:16;					//	Bonus from device slot itself
-		int m_iSpare:16;
+		int m_iSlotPosIndex:16;					//	Slot placement
 
 		DWORD m_fOmniDirectional:1;				//	Installed on turret
 		DWORD m_fOverdrive:1;					//	Device has overdrive installed

@@ -26,6 +26,7 @@ CInstalledDevice::CInstalledDevice (void) :
 		m_iTemperature(0),
 		m_iActivateDelay(0),
 		m_iSlotBonus(0),
+		m_iSlotPosIndex(-1),
 
 		m_fOmniDirectional(false),
 		m_fSecondaryWeapon(false),
@@ -78,6 +79,7 @@ CInstalledDevice &CInstalledDevice::operator= (const CInstalledDevice &Obj)
 	m_iTemperature = Obj.m_iTemperature;
 	m_iActivateDelay = Obj.m_iActivateDelay;
 	m_iSlotBonus = Obj.m_iSlotBonus;
+	m_iSlotPosIndex = Obj.m_iSlotPosIndex;
 	
 	m_fOmniDirectional = Obj.m_fOmniDirectional;
 	m_fOverdrive = Obj.m_fOverdrive;
@@ -282,6 +284,7 @@ void CInstalledDevice::InitFromDesc (const SDeviceDesc &Desc)
 	m_fSecondaryWeapon = Desc.bSecondary;
 
 	m_iSlotBonus = Desc.iSlotBonus;
+	m_iSlotPosIndex = -1;
 	}
 
 ALERROR CInstalledDevice::InitFromXML (SDesignLoadCtx &Ctx, CXMLElement *pDesc)
@@ -316,6 +319,7 @@ void CInstalledDevice::Install (CSpaceObject *pObj, CItemListManipulator &ItemLi
 
 	m_pClass.Set(Item.GetType()->GetDeviceClass());
 	m_iDeviceSlot = iDeviceSlot;
+	m_iSlotPosIndex = -1;
 	m_pOverlay = NULL;
 	m_dwData = 0;
 	m_iTemperature = 0;
@@ -438,7 +442,7 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 //	DWORD		device: low = m_iPosAngle; hi = m_iPosRadius
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
-//	DWORD		device: low = unused; hi = m_iTemperature
+//	DWORD		device: low = m_iSlotPosIndex; hi = m_iTemperature
 //	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelay; hi = m_iPosZ
 //	DWORD		device: flags
@@ -493,7 +497,12 @@ void CInstalledDevice::ReadFromStream (CSpaceObject *pSource, SLoadCtx &Ctx)
 			m_pEnhancements = new CItemEnhancementStack;
 			m_pEnhancements->InsertHPBonus(iBonus);
 			}
+		m_iSlotPosIndex = -1;
 		}
+	else if (Ctx.dwVersion < 106)
+		m_iSlotPosIndex = -1;
+	else
+		m_iSlotPosIndex = (int)LOWORD(dwLoad);
 
 	Ctx.pStream->Read((char *)&dwLoad, sizeof(DWORD));
 	m_iSlotBonus = (int)LOWORD(dwLoad);
@@ -745,7 +754,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 //	DWORD		device: low = m_iPosAngle; hi = m_iPosRadius
 //	DWORD		device: low = m_iMinFireArc; hi = m_iMaxFireArc
 //	DWORD		device: low = m_iTimeUntilReady; hi = m_iFireAngle
-//	DWORD		device: low = unused; hi = m_iTemperature
+//	DWORD		device: low = m_iSlotIndex; hi = m_iTemperature
 //	DWORD		device: low = m_iSlotBonus; hi = m_iDeviceSlot
 //	DWORD		device: low = m_iActivateDelay; hi = m_iPosZ
 //	DWORD		device: flags
@@ -772,7 +781,7 @@ void CInstalledDevice::WriteToStream (IWriteStream *pStream)
 	dwSave = MAKELONG(m_iTimeUntilReady, m_iFireAngle);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 	
-	dwSave = MAKELONG(0, m_iTemperature);
+	dwSave = MAKELONG(m_iSlotPosIndex, m_iTemperature);
 	pStream->Write((char *)&dwSave, sizeof(DWORD));
 
 	dwSave = MAKELONG(m_iSlotBonus, m_iDeviceSlot);
